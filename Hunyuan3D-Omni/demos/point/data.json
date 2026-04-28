@@ -1,0 +1,10 @@
+{
+    "image":[
+        "./demos/point/imgs/008.png",
+        "./demos/point/imgs/012.png"
+    ],
+    "point":[
+        "./demos/point/plys/008.ply",
+        "./demos/point/plys/012.ply"
+    ]
+}

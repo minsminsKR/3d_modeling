@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hunyuan3D Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Hunyuan3D 2.1 Web Studio</p>
+          <h1>이미지에서 GLB 모델 생성</h1>
+          <p class="lead">
+            사진을 업로드하면 Hunyuan3D 2.1 shape 모델로 3D mesh를 생성합니다.
+            여러 장을 올리면 첫 번째 이미지를 shape 기준으로 쓰고, 텍스처 단계에서 나머지 이미지를 참고합니다.
+          </p>
+        </div>
+        <div class="orb" aria-hidden="true"></div>
+      </section>
+
+      <form class="panel upload-panel" action="{{ url_for('create_job') }}" method="post" enctype="multipart/form-data">
+        <label class="drop-zone" for="images">
+          <input
+            id="images"
+            name="images"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            multiple
+            required
+          >
+          <span>
+            <span class="drop-title">이미지 선택 또는 붙여넣기</span>
+            <span class="drop-copy">
+              PNG, JPG, WEBP를 최대 {{ max_files }}장까지 업로드할 수 있습니다. Ctrl+V 붙여넣기도 지원합니다.
+            </span>
+          </span>
+        </label>
+        <div id="file-list" class="file-list" aria-live="polite"></div>
+
+        <div class="grid">
+          <label>
+            Shape Model
+            <select name="model">
+              <option value="hunyuan3d-2.1" selected>Hunyuan3D 2.1 - 기본 이미지 기반 생성</option>
+              <option value="hunyuan3d-omni" {% if not omni_ready %}disabled{% endif %}>
+                Hunyuan3D-Omni - bbox 제어 기반 생성{% if not omni_ready %} (준비 필요){% endif %}
+              </option>
+            </select>
+          </label>
+          <label>
+            GPU
+            <select name="gpu_id">
+              {% for gpu_id in gpu_ids %}
+                <option value="{{ gpu_id }}" {% if gpu_id == default_gpu_id %}selected{% endif %}>
+                  GPU {{ gpu_id }}
+                </option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+
+        <div class="grid">
+          <label>
+            Seed
+            <input name="seed" type="number" min="0" max="4294967295" value="1234">
+          </label>
+          <label>
+            Steps
+            <input name="num_inference_steps" type="number" min="1" max="100" value="50">
+          </label>
+          <label>
+            Guidance
+            <input name="guidance_scale" type="number" min="0.1" max="20" step="0.1" value="7.5">
+          </label>
+          <label>
+            Octree
+            <select name="octree_resolution">
+              <option value="256">256</option>
+              <option value="384">384</option>
+              <option value="512" selected>512</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid">
+          <label>
+            Chunks
+            <input name="num_chunks" type="number" min="1000" max="300000" step="1000" value="200000">
+          </label>
+        </div>
+
+        <div class="toggles">
+          <label class="check">
+            <input name="remove_background" type="checkbox" checked>
+            배경 제거
+          </label>
+          <label class="check">
+            <input name="texture" type="checkbox" checked {% if not texture_ready %}disabled{% endif %}>
+            PBR 텍스처 생성
+          </label>
+        </div>
+
+        {% if not texture_ready %}
+          <p class="form-note">
+            텍스처 기능 비활성화: {{ texture_issues | join(", ") }} 준비가 필요합니다.
+          </p>
+        {% endif %}
+        {% if not omni_ready %}
+          <p class="form-note">
+            Hunyuan3D-Omni 선택 비활성화: {{ omni_issues | join(", ") }} 준비가 필요합니다.
+          </p>
+        {% endif %}
+        {% if not multiview_ready %}
+          <p class="muted">
+            현재 설정은 single-image shape 모델입니다. 여러 장을 업로드해도 첫 번째 이미지로 shape를 생성합니다.
+          </p>
+        {% endif %}
+
+        <button class="primary-button" type="submit">3D 모델 생성 시작</button>
+      </form>
+
+      {% if recent_jobs %}
+        <section class="panel">
+          <div class="section-head">
+            <h2>최근 작업</h2>
+          </div>
+          <div class="jobs">
+            {% for job in recent_jobs %}
+              <a class="job-row" href="{{ url_for('job_detail', job_id=job.id) }}">
+                <span class="recent-preview" aria-hidden="true">
+                  {% if job.model_url %}
+                    <model-viewer
+                      class="job-model-preview"
+                      src="{{ job.model_url }}"
+                      auto-rotate
+                      camera-orbit="45deg 70deg auto"
+                      exposure="1"
+                      shadow-intensity="0.45"
+                      interaction-prompt="none">
+                    </model-viewer>
+                  {% else %}
+                    <span class="preview-placeholder">준비 중</span>
+                  {% endif %}
+                </span>
+                <span class="pill {{ job.status }}">{{ job.status }}</span>
+                <span class="job-summary">
+                  <strong>{{ job.id[:8] }}</strong>
+                  <span class="muted">{{ job.message }}</span>
+                </span>
+              </a>
+            {% endfor %}
+          </div>
+        </section>
+      {% endif %}
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

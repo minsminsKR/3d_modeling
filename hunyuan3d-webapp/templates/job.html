@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Job {{ job.id[:8] }} - Hunyuan3D Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  </head>
+  <body data-job-id="{{ job.id }}">
+    <main class="shell">
+      <nav class="topbar">
+        <a href="{{ url_for('index') }}">새 작업 만들기</a>
+      </nav>
+
+      <section class="panel status-card">
+        <p class="eyebrow">Generation Job</p>
+        <h1>{{ job.id }}</h1>
+        <div class="status-line">
+          <span id="status-pill" class="pill {{ job.status }}">{{ job.status }}</span>
+          <span id="job-message">{{ job.message }}</span>
+        </div>
+        <div class="metrics">
+          <div>
+            <span class="metric-label">경과 시간</span>
+            <strong id="elapsed-time" data-elapsed="{{ job.elapsed_seconds }}">{{ job.elapsed_seconds }}s</strong>
+          </div>
+          <div>
+            <span class="metric-label">텍스처</span>
+            <strong>{{ "on" if job.options.texture else "off" }}</strong>
+          </div>
+          <div>
+            <span class="metric-label">GPU</span>
+            <strong>{{ job.options.gpu_id | default(0) }}</strong>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div id="progress-bar" class="progress-bar {{ job.status }}"></div>
+        </div>
+      </section>
+
+      <section id="result-panel" class="panel result-panel {% if job.status != 'completed' %}hidden{% endif %}">
+        <div class="section-head">
+          <h2>생성 결과</h2>
+          <a id="download-link" class="download" href="{{ job.download_url if job.download_url else '#' }}">GLB 다운로드</a>
+        </div>
+        <div id="warning-list" class="warning-list {% if not job.warnings %}hidden{% endif %}">
+          {% for warning in job.warnings %}
+            <p>{{ warning }}</p>
+          {% endfor %}
+        </div>
+        <div id="processed-preview" class="processed-preview {% if not job.processed_input_url %}hidden{% endif %}">
+          <div>
+            <span class="metric-label">전처리 입력</span>
+            <p class="muted">여기서 배경이 투명/흰색으로 제거되어야 3D shape가 제대로 잡힙니다.</p>
+          </div>
+          <img id="processed-image" src="{{ job.processed_input_url if job.processed_input_url else '' }}" alt="Processed input preview">
+        </div>
+        <model-viewer
+          id="model-viewer"
+          src="{{ job.model_url if job.model_url else '' }}"
+          camera-controls
+          auto-rotate
+          exposure="1"
+          shadow-intensity="0.65"
+          ar>
+        </model-viewer>
+        {% if not job.options.texture %}
+          <p class="muted">현재 결과는 텍스처 없이 생성된 shape mesh라 흰색/무광 재질로 보이는 것이 정상입니다.</p>
+        {% endif %}
+      </section>
+
+      <section id="mixamo-panel" class="panel mixamo-panel {% if job.status != 'completed' %}hidden{% endif %}">
+        <div class="section-head">
+          <div>
+            <h2>Mixamo 리깅 / 모션</h2>
+            <p class="muted">
+              Mixamo는 Adobe 웹 서비스라 이 앱이 로그인을 자동화하지 않습니다.
+              아래 패키지를 받아 Mixamo에 업로드한 뒤, 다운로드한 FBX/GLB/DAE 결과를 다시 올려 관리하세요.
+            </p>
+          </div>
+          <a
+            id="mixamo-open-link"
+            class="download secondary"
+            href="{{ job.mixamo_url if job.mixamo_url else 'https://www.mixamo.com/' }}"
+            target="_blank"
+            rel="noreferrer">
+            Mixamo 열기
+          </a>
+        </div>
+
+        <div class="mixamo-actions">
+          <a
+            id="mixamo-package-link"
+            class="download"
+            href="{{ job.mixamo_package_url if job.mixamo_package_url else '#' }}">
+            Mixamo 업로드 패키지 다운로드
+          </a>
+          <form
+            id="mixamo-upload-form"
+            class="mixamo-upload"
+            action="{{ job.mixamo_upload_url if job.mixamo_upload_url else '#' }}"
+            method="post"
+            enctype="multipart/form-data">
+            <label>
+              Mixamo에서 받은 파일 업로드
+              <input name="mixamo_file" type="file" accept=".fbx,.glb,.gltf,.dae" required>
+            </label>
+            <button class="primary-button" type="submit">리깅/모션 결과 저장</button>
+          </form>
+        </div>
+
+        {% if job.mixamo_files %}
+          <div class="mixamo-files">
+            <span class="metric-label">저장된 Mixamo 결과</span>
+            {% for file in job.mixamo_files %}
+              <a href="{{ file.download_url }}">
+                {{ file.name }} <span class="muted">({{ file.extension }}, {{ file.size_kb }} KB)</span>
+              </a>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </section>
+
+      <section id="failed-panel" class="panel danger {% if job.status != 'failed' %}hidden{% endif %}">
+        <h2>작업 실패</h2>
+        <p id="failed-message">{{ job.message }}</p>
+        <p class="muted">대부분은 HUNYUAN3D_REPO 미설정, CUDA/torch 버전, texture renderer 빌드 문제에서 발생합니다.</p>
+      </section>
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

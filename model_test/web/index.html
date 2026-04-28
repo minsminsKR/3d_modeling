@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Model Test Map</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="viewport"></main>
+
+    <section class="panel">
+      <h1>Model Test Map</h1>
+      <p id="status">모델 목록을 불러오는 중...</p>
+
+      <label for="model-select">테스트 캐릭터</label>
+      <select id="model-select"></select>
+
+      <div class="button-row">
+        <button id="reload-models" type="button">목록 새로고침</button>
+        <button id="reset-view" type="button">위치 초기화</button>
+      </div>
+
+      <dl>
+        <dt>이동</dt>
+        <dd>WASD / 방향키</dd>
+        <dt>시점</dt>
+        <dd>마우스 드래그</dd>
+        <dt>모델</dt>
+        <dd>폴더 안의 모델/매시/텍스처/모션을 하나로 묶어 선택</dd>
+      </dl>
+    </section>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

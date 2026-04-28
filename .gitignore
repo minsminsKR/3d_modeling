@@ -1,0 +1,45 @@
+# Python environments and caches
+.venv/
+venv/
+env/
+.pip-cache/
+**/.git.local-backup/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Node/web build artifacts
+node_modules/
+dist/
+build/
+.next/
+.vite/
+
+# Large local model downloads and generated model assets
+local_models/
+model_test/model/
+*.fbx
+*.glb
+*.gltf
+*.obj
+*.stl
+*.blend
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.onnx
+*.gguf
+
+# Logs and temporary files
+*.log
+error.txt
+.DS_Store

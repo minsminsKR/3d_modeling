@@ -1,0 +1,12 @@
+{
+    "image":[
+        "./demos/voxel/imgs/1c1ff58afbf4455ca80228d280f86aef.png",
+        "./demos/voxel/imgs/1ea0a8fed4ddc5b9cd0219c4c25cbf28.png",
+        "./demos/voxel/imgs/73fb31a46a6ac884f17c7dd5c721d09b.png"
+    ],
+    "voxel":[
+        "./demos/voxel/plys/1c1ff58afbf4455ca80228d280f86aef.ply",
+        "./demos/voxel/plys/1ea0a8fed4ddc5b9cd0219c4c25cbf28.ply",
+        "./demos/voxel/plys/73fb31a46a6ac884f17c7dd5c721d09b.ply"
+    ]
+}
