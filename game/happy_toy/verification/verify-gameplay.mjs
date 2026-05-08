@@ -50,6 +50,16 @@ try {
       transitionWaypoints: game.collisionWorld.transitionWaypoints.length,
       lockedDoors: game.doors.filter((door) => door.isLocked || door.isBlocked).length,
       connectedSecondFloorDoors: game.doors.filter((door) => door.position.y > 3 && door.connectedRoomId).length,
+      allOpeningDoorsConnected: game.doors.every((door) => door.isLocked || door.isBlocked || Boolean(door.connectedRoomId)),
+      slidingDoors: game.doors.filter((door) => door.getDebugInfo().mode === "sliding").length,
+      textureState: {
+        wall: Boolean(game.scene.getObjectByName("corridor-left-north")?.material?.map),
+        floor: Boolean(game.scene.getObjectByName("first-floor-panel")?.material?.map),
+        ceiling: Boolean(game.scene.getObjectByName("first-floor-ceiling-east")?.material?.map),
+        stair: Boolean(game.scene.getObjectByName("west-stair-step-0")?.material?.map),
+        door: Boolean(game.doors[0]?.panels?.[0]?.material?.map),
+        cabinet: Boolean(game.scene.getObjectByName("cabinet-workshop-body")?.material?.map),
+      },
       hasRuntimeAudio: Boolean(game.audioManager),
       hasHorrorEventManager: Boolean(game.horrorEventManager),
       horrorLights: game.horrorLights.length,
@@ -74,12 +84,20 @@ try {
   assert(initialState.landingAreas >= 3, `expected registered landing areas, got ${initialState.landingAreas}`);
   assert(initialState.dropZones >= 1, `expected explicit drop zones, got ${initialState.dropZones}`);
   assert(initialState.ramps >= 1, `expected registered stair ramp, got ${initialState.ramps}`);
-  assert(initialState.roomAreas >= 3, `expected second-floor room/event areas, got ${initialState.roomAreas}`);
+  assert(initialState.roomAreas >= 8, `expected every opening door to map to a room/event area, got ${initialState.roomAreas}`);
   assert(initialState.blockedAreas >= 3, `expected explicit blocked areas, got ${initialState.blockedAreas}`);
   assert(initialState.voidAreas >= 2, `expected explicit void debug areas, got ${initialState.voidAreas}`);
   assert(initialState.transitionWaypoints >= 2, `expected stair transition waypoints, got ${initialState.transitionWaypoints}`);
   assert(initialState.lockedDoors >= 1, `expected at least one locked/blocked 2F door, got ${initialState.lockedDoors}`);
   assert(initialState.connectedSecondFloorDoors >= 2, `expected 2F opening doors to have connected rooms, got ${initialState.connectedSecondFloorDoors}`);
+  assert(initialState.allOpeningDoorsConnected, "expected every opening door to have a connected room");
+  assert(initialState.slidingDoors === initialState.doors, `expected all doors to be sliding doors, got ${initialState.slidingDoors}/${initialState.doors}`);
+  assert(initialState.textureState.wall, "expected wall texture material to be applied");
+  assert(initialState.textureState.floor, "expected floor texture material to be applied");
+  assert(initialState.textureState.ceiling, "expected ceiling texture material to be applied");
+  assert(initialState.textureState.stair, "expected stair texture material to be applied");
+  assert(initialState.textureState.door, "expected door texture material to be applied");
+  assert(initialState.textureState.cabinet, "expected cabinet texture material to be applied");
   assert(!initialState.hasRuntimeAudio, "expected runtime audio to be disabled until real sound assets are provided");
   assert(initialState.hasHorrorEventManager, "expected HorrorEventManager for cicada corridor events");
   assert(initialState.horrorLights >= 8, `expected flicker-controlled horror lights, got ${initialState.horrorLights}`);
@@ -136,6 +154,11 @@ try {
     const topY = game.collisionWorld.getGroundY({ x: -7, y: 3.4, z: 9.45 });
     const upperY = game.collisionWorld.getGroundY({ x: 0, y: 3.4, z: -8 });
     const upperStairGuard = game.collisionWorld.blockers.find((blocker) => blocker.id?.startsWith("upper-stair-guard"));
+    const lowerWestWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-open-west-wall");
+    const lowerEastWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-lower-east-wall");
+    const upperWestWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-west-wall");
+    const upperNorthWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-north-wall");
+    const upperSouthWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-south-wall");
     const secondLandingPanel = game.scene.getObjectByName("second-landing-panel");
     const secondStairTopPanel = game.scene.getObjectByName("second-stair-top-panel");
     const stairDoor = game.doors.find((door) => door.id === "door-stairwell");
@@ -147,7 +170,8 @@ try {
     const ceilingPieces = game.scene.children.filter((object) => object.name?.startsWith("first-floor-ceiling-")).length;
     const lowerInnerGuard = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-open-inner-guard");
     const openCorridorEntryClear = !game.collisionWorld.isCircleBlocked({ x: -2.85, y: 0, z: 22 }, 0.3);
-    const lowerStairSideClear = !game.collisionWorld.isCircleBlocked({ x: -4.55, y: 0, z: 17.2 }, 0.3);
+    const lowerStairSideBlockedByWall = game.collisionWorld.isCircleBlocked({ x: -4.55, y: 0, z: 17.2 }, 0.3);
+    const lowerStairCenterClear = !game.collisionWorld.isCircleBlocked({ x: -7.1, y: 0, z: 17.2 }, 0.3);
     const stairTopClear = !game.collisionWorld.isCircleBlocked({ x: -7.0, y: 3.4, z: 9.8 }, 0.34);
     const turnIntoUpperCorridorClear = !game.collisionWorld.isCircleBlocked({ x: -4.4, y: 3.4, z: 9.8 }, 0.34);
     game.player.setPosition({ x: 0, y: 3.4, z: -8 });
@@ -163,8 +187,11 @@ try {
       secondLandingPanelType: secondLandingPanel?.geometry?.type || "",
       secondStairTopPanelType: secondStairTopPanel?.geometry?.type || "",
       stairWidth: stairRamp.maxX - stairRamp.minX,
-      westClearance: stairRamp.minX - (-11.0),
-      eastClearance: -2.6 - stairRamp.maxX,
+      hasLowerWestWall: Boolean(lowerWestWall),
+      hasLowerEastWall: Boolean(lowerEastWall),
+      hasUpperWestWall: Boolean(upperWestWall),
+      hasUpperNorthWall: Boolean(upperNorthWall),
+      hasUpperSouthWall: Boolean(upperSouthWall),
       stairDoorExists: Boolean(stairDoor),
       hasStairDoorFrame: Boolean(stairDoorFrame),
       hasBottomLanding: Boolean(landing),
@@ -174,7 +201,8 @@ try {
       ceilingPieces,
       hasLowerOpenGuard: Boolean(lowerInnerGuard),
       openCorridorEntryClear,
-      lowerStairSideClear,
+      lowerStairSideBlockedByWall,
+      lowerStairCenterClear,
       stairTopClear,
       turnIntoUpperCorridorClear,
     };
@@ -192,17 +220,19 @@ try {
   assert(floorState.secondStairTopPanelType === "BoxGeometry", `expected stair top to have a thick transition slab, got ${floorState.secondStairTopPanelType}`);
   assert(!floorState.stairDoorExists, "expected stair to be open from corridor without a stairwell door");
   assert(floorState.stairWidth >= 4.2, `expected natural stair width, got ${floorState.stairWidth}`);
-  assert(floorState.westClearance >= 1.0, `expected stair clear of west wall, got ${floorState.westClearance}`);
-  assert(floorState.eastClearance >= 1.0, `expected stair clear of east wall, got ${floorState.eastClearance}`);
+  assert(floorState.hasLowerWestWall, "expected lower stair west side to be enclosed by a wall");
+  assert(floorState.hasLowerEastWall, "expected lower stair east side to be enclosed by a wall");
+  assert(floorState.hasUpperWestWall && floorState.hasUpperNorthWall && floorState.hasUpperSouthWall, "expected second-floor stair landing edges to be enclosed by full walls");
   assert(!floorState.hasStairDoorFrame, "expected no stairwell door frame in corridor stair layout");
   assert(floorState.hasBottomLanding, "expected bottom landing between corridor and stairs");
   assert(floorState.landingMaxX >= -2.4, `expected bottom landing to meet the corridor opening, got maxX ${floorState.landingMaxX}`);
   assert(floorState.openCorridorEntryClear, "expected corridor entry into stair landing to be clear");
   assert(!floorState.hasLowerOpenGuard, "expected lower stair side to be free of small guard walls");
-  assert(floorState.lowerStairSideClear, "expected stair side opening to stay clear instead of blocked by a short wall");
+  assert(floorState.lowerStairSideBlockedByWall, "expected stair side edge to be blocked by a real wall");
+  assert(floorState.lowerStairCenterClear, "expected stair centerline to stay playable inside the enclosed stair");
   assert(floorState.stairTopClear, "expected top stair landing to be clear");
   assert(floorState.turnIntoUpperCorridorClear, "expected turn from stair top into upper corridor to be clear");
-  assert(floorState.stairPosts >= 6, `expected open stair railing posts instead of blocky guard walls, got ${floorState.stairPosts}`);
+  assert(floorState.stairPosts === 0, `expected enclosed stair to avoid freestanding railing posts, got ${floorState.stairPosts}`);
   assert(floorState.wallHandrails >= 2, `expected wall-mounted handrails, got ${floorState.wallHandrails}`);
 
   const floorValidationState = await page.evaluate(() => {
@@ -270,11 +300,15 @@ try {
     const nurseryDoor = game.doors.find((door) => door.id === "door-upper-nursery");
     const mirrorDoor = game.doors.find((door) => door.id === "door-upper-mirror");
     const lockedDoor = game.doors.find((door) => door.id === "door-upper-locked-records");
+    const workshopDoor = game.doors.find((door) => door.id === "door-left-workshop");
     nurseryDoor.isOpen = true;
     nurseryDoor.openAmount = 1;
     mirrorDoor.isOpen = true;
     mirrorDoor.openAmount = 1;
     lockedDoor.interact(game.createInteractionContext());
+    workshopDoor.isOpen = true;
+    workshopDoor.openAmount = 1;
+    workshopDoor.update(0);
 
     const nurseryPath = game.collisionWorld.findPath(
       { x: 0, y: 3.4, z: -4 },
@@ -295,13 +329,20 @@ try {
     const roomConnections = game.doors
       .filter((door) => door.position.y > 3)
       .map((door) => door.getDebugInfo());
+    const openingDoorConnections = game.doors
+      .filter((door) => !door.isLocked && !door.isBlocked)
+      .map((door) => door.getDebugInfo());
 
     return {
+      workshopConnected: workshopDoor.connectedRoomId,
       nurseryConnected: nurseryDoor.connectedRoomId,
       mirrorConnected: mirrorDoor.connectedRoomId,
       lockedOpen: lockedDoor.isOpen,
       lockedBlocking: lockedDoor.isBlocking(),
       lockedConnectedRoom: lockedDoor.connectedRoomId,
+      workshopDoorMode: workshopDoor.getDebugInfo().mode,
+      workshopPanelCount: workshopDoor.panels.length,
+      workshopPanelTravel: Math.abs(workshopDoor.panels[0].position[workshopDoor.axis] + workshopDoor.panelSpan * 0.25),
       nurseryPathLength: nurseryPath.length,
       mirrorPathLength: mirrorPath.length,
       stairPathLength: stairPath.length,
@@ -314,13 +355,22 @@ try {
       debugAreaCounts: debug.areaCounts,
       debugWaypointCount: debug.transitionWaypoints.length,
       roomConnections,
+      openingDoorConnections,
     };
   });
+  assert(secondFloorStructureState.workshopConnected === "workshop_1f", "expected 1F workshop door connected to a real room");
   assert(secondFloorStructureState.nurseryConnected === "upper-nursery-room", "expected nursery door connected to upper nursery room");
   assert(secondFloorStructureState.mirrorConnected === "upper-mirror-room", "expected mirror door connected to upper mirror room");
   assert(!secondFloorStructureState.lockedOpen, "expected locked 2F door not to open");
   assert(secondFloorStructureState.lockedBlocking, "expected locked 2F door to remain blocking");
   assert(secondFloorStructureState.lockedConnectedRoom === null, "expected locked door without room to be explicitly non-connected");
+  assert(secondFloorStructureState.workshopDoorMode === "sliding", "expected workshop door to use sliding mode");
+  assert(secondFloorStructureState.workshopPanelCount === 2, `expected sliding door to use two panels, got ${secondFloorStructureState.workshopPanelCount}`);
+  assert(secondFloorStructureState.workshopPanelTravel > 0.5, `expected sliding door panels to translate open, got ${secondFloorStructureState.workshopPanelTravel}`);
+  assert(
+    secondFloorStructureState.openingDoorConnections.every((door) => Boolean(door.connectedRoomId)),
+    "expected every opening door to have a concrete connected room",
+  );
   assert(secondFloorStructureState.nurseryPathLength > 2, `expected path into nursery room, got ${secondFloorStructureState.nurseryPathLength}`);
   assert(secondFloorStructureState.mirrorPathLength > 2, `expected path into mirror room, got ${secondFloorStructureState.mirrorPathLength}`);
   assert(secondFloorStructureState.stairPathLength > 3, `expected stair path to second floor alcove, got ${secondFloorStructureState.stairPathLength}`);

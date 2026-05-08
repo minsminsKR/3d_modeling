@@ -7,6 +7,7 @@ import { Cabinet } from "./Cabinet.js";
 import { Door } from "./Door.js";
 import { FinalExit } from "./FinalExit.js";
 import { KeyItem } from "./KeyItem.js";
+import { TextureLibrary } from "./TextureLibrary.js";
 
 export class MapBuilder {
   constructor(scene, collisionWorld) {
@@ -16,6 +17,7 @@ export class MapBuilder {
     this.keys = [];
     this.cabinets = [];
     this.finalExit = null;
+    this.textures = new TextureLibrary();
   }
 
   build() {
@@ -72,9 +74,10 @@ export class MapBuilder {
       const floorGeometry = slabThickness > 0
         ? new THREE.BoxGeometry(panel.size[0], slabThickness, panel.size[1])
         : new THREE.PlaneGeometry(...panel.size);
+      const floorMaterial = this.textures.createFloorMaterial(panel.size[0], panel.size[1]);
       const floor = new THREE.Mesh(
         floorGeometry,
-        new THREE.MeshStandardMaterial({ color: panel.color ?? WORLD_CONFIG.floorColor, roughness: 0.92 }),
+        floorMaterial,
       );
       floor.name = panel.id;
       if (slabThickness > 0) {
@@ -93,21 +96,19 @@ export class MapBuilder {
 
       const ceiling = new THREE.Mesh(
         new THREE.PlaneGeometry(...panel.size),
-        new THREE.MeshStandardMaterial({ color: 0x0d110d, roughness: 1 }),
+        this.textures.createCeilingMaterial(panel.size[0], panel.size[1]),
       );
       ceiling.name = `${panel.id}-ceiling`;
       ceiling.rotation.x = Math.PI / 2;
       ceiling.position.set(panel.position[0], panel.y + 3, panel.position[2]);
+      ceiling.receiveShadow = true;
       this.scene.add(ceiling);
     }
   }
 
   createCeilingPanels() {
-    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x0d110d, roughness: 1 });
     for (const panel of MAP_CONFIG.ceilingPanels || []) {
-      const material = panel.color
-        ? new THREE.MeshStandardMaterial({ color: panel.color, roughness: 1 })
-        : ceilingMaterial;
+      const material = this.textures.createCeilingMaterial(panel.size[0], panel.size[2]);
       const ceiling = new THREE.Mesh(
         new THREE.BoxGeometry(panel.size[0], panel.size[1], panel.size[2]),
         material,
@@ -120,9 +121,9 @@ export class MapBuilder {
   }
 
   createStairways() {
-    const stepMaterial = new THREE.MeshStandardMaterial({ color: 0x20241f, roughness: 0.94 });
-    const landingMaterial = new THREE.MeshStandardMaterial({ color: 0x1b211b, roughness: 0.94 });
-    const riserMaterial = new THREE.MeshStandardMaterial({ color: 0x151914, roughness: 0.96 });
+    const stepMaterial = this.textures.createStairMaterial();
+    const landingMaterial = this.textures.createStairMaterial();
+    const riserMaterial = this.textures.createStairMaterial();
     const railMaterial = new THREE.MeshStandardMaterial({ color: 0x111510, roughness: 0.85 });
 
     for (const stair of MAP_CONFIG.stairways || []) {
@@ -206,10 +207,7 @@ export class MapBuilder {
   }
 
   createWalls() {
-    const wallMaterial = new THREE.MeshStandardMaterial({
-      color: WORLD_CONFIG.wallColor,
-      roughness: 0.88,
-    });
+    const wallMaterial = this.textures.createWallMaterial();
     const trimMaterial = new THREE.MeshStandardMaterial({
       color: WORLD_CONFIG.trimColor,
       roughness: 0.8,
@@ -217,6 +215,7 @@ export class MapBuilder {
 
     for (const wall of MAP_CONFIG.walls) {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(...wall.size), wallMaterial);
+      mesh.name = wall.id;
       mesh.position.set(...wall.position);
       mesh.castShadow = true;
       mesh.receiveShadow = true;
@@ -245,11 +244,7 @@ export class MapBuilder {
   }
 
   createDoors() {
-    const doorMaterial = new THREE.MeshStandardMaterial({
-      color: WORLD_CONFIG.doorColor,
-      roughness: 0.7,
-      metalness: 0.08,
-    });
+    const doorMaterial = this.textures.createDoorMaterial();
     const frameMaterial = new THREE.MeshStandardMaterial({
       color: 0x211712,
       roughness: 0.86,
@@ -316,8 +311,9 @@ export class MapBuilder {
   }
 
   createCabinets() {
+    const cabinetMaterial = this.textures.createCabinetMaterial();
     for (const cabinetConfig of MAP_CONFIG.cabinets) {
-      const cabinet = new Cabinet(cabinetConfig);
+      const cabinet = new Cabinet(cabinetConfig, { bodyMaterial: cabinetMaterial });
       this.cabinets.push(cabinet);
       this.scene.add(cabinet.group);
 

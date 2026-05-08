@@ -67,6 +67,11 @@ export const MAP_CONFIG = {
     },
   ],
   roomAreas: [
+    { id: "workshop_1f", floor: 1, type: "room", connectedDoorId: "door-left-workshop", minX: -14.2, maxX: -2.4, minZ: -20.4, maxZ: -11.6 },
+    { id: "storage_1f", floor: 1, type: "room", connectedDoorId: "door-left-storage", minX: -13.6, maxX: -2.4, minZ: 0.4, maxZ: 7.6 },
+    { id: "playroom_1f", floor: 1, type: "room", connectedDoorId: "door-right-playroom", minX: 2.4, maxX: 13.6, minZ: -11, maxZ: -3 },
+    { id: "naproom_1f", floor: 1, type: "room", connectedDoorId: "door-right-naproom", minX: 2.4, maxX: 14.4, minZ: 11, maxZ: 19 },
+    { id: "final-room_1f", floor: 1, type: "room", connectedDoorId: "door-final-room", minX: -6.8, maxX: 6.8, minZ: -38.8, maxZ: -30.2 },
     { id: "upper-nursery-room", floor: 2, type: "room", connectedDoorId: "door-upper-nursery", minX: -14, maxX: -2.2, minZ: -8.5, maxZ: 0.8 },
     { id: "upper-mirror-room", floor: 2, type: "room", connectedDoorId: "door-upper-mirror", minX: 2.2, maxX: 14, minZ: -20.5, maxZ: -11.5 },
     { id: "upper-records-alcove", floor: 2, type: "event-space", connectedDoorId: null, minX: 2.2, maxX: 8.8, minZ: 4.8, maxZ: 9.2 },
@@ -126,7 +131,7 @@ export const MAP_CONFIG = {
       startY: 0,
       endY: 3.4,
       steps: 20,
-      railMode: "open-rail",
+      railMode: "wall-handrail",
       landing: {
         minX: -9.95,
         maxX: -2.35,
@@ -145,8 +150,14 @@ export const MAP_CONFIG = {
     { id: "corridor-right-south", position: [2.4, 1.5, 21], size: [0.4, 3, 10] },
     { id: "corridor-end-south", position: [0, 1.5, 26.2], size: [5.2, 3, 0.4] },
 
-    { id: "stair-open-west-wall", position: [-11.2, 1.5, 16.4], size: [0.4, 3, 14.4] },
+    { id: "stair-open-west-wall", position: [-9.95, 1.5, 14.7], size: [0.34, 3, 10.6] },
+    { id: "stair-lower-east-wall", position: [-4.55, 1.5, 15.4], size: [0.3, 3, 9.2] },
+    { id: "stair-lower-north-end", position: [-7.15, 1.5, 9.05], size: [5.6, 3, 0.3] },
     { id: "stair-open-south-return", position: [-6.7, 1.5, 23.6], size: [9.4, 3, 0.4] },
+
+    { id: "upper-stair-west-wall", position: [-9.95, 4.9, 12.0], size: [0.34, 3, 6.3] },
+    { id: "upper-stair-north-wall", position: [-7.1, 4.9, 8.72], size: [5.7, 3, 0.34] },
+    { id: "upper-stair-south-wall", position: [-6.5, 4.9, 15.05], size: [7.2, 3, 0.34] },
 
     { id: "upper-corridor-left-north", position: [-2.4, 4.9, -19.6], size: [0.4, 3, 17.2] },
     { id: "upper-corridor-left-mid", position: [-2.4, 4.9, -7.6], size: [0.4, 3, 5.0] },
@@ -196,6 +207,7 @@ export const MAP_CONFIG = {
       position: [-2.45, 0, -16],
       size: [0.22, 2.35, 1.72],
       openDirection: -1,
+      connectedRoomId: "workshop_1f",
     },
     {
       id: "door-left-storage",
@@ -203,6 +215,7 @@ export const MAP_CONFIG = {
       position: [-2.45, 0, 4],
       size: [0.22, 2.35, 1.72],
       openDirection: 1,
+      connectedRoomId: "storage_1f",
     },
     {
       id: "door-right-playroom",
@@ -210,6 +223,7 @@ export const MAP_CONFIG = {
       position: [2.45, 0, -7],
       size: [0.22, 2.35, 1.72],
       openDirection: 1,
+      connectedRoomId: "playroom_1f",
     },
     {
       id: "door-right-naproom",
@@ -217,6 +231,7 @@ export const MAP_CONFIG = {
       position: [2.45, 0, 15],
       size: [0.22, 2.35, 1.72],
       openDirection: -1,
+      connectedRoomId: "naproom_1f",
     },
     {
       id: "door-upper-nursery",
@@ -250,6 +265,7 @@ export const MAP_CONFIG = {
       position: [0, 0, -30.25],
       size: [3.7, 2.35, 0.22],
       openDirection: 1,
+      connectedRoomId: "final-room_1f",
     },
   ],
   keys: [

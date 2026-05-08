@@ -10,7 +10,7 @@
 | `styles.css` | 전체 화면 캔버스, HUD, 시작/일시정지 화면, 공포 연출 스타일 | UI 분위기와 레이아웃을 바꿀 때 |
 | `web_server.py` | 로컬 정적 서버. FBX/JS/CSS/JPG MIME 타입 처리 | 포트, 호스트, 정적 제공 방식을 바꿀 때 |
 | `vendor/three/` | Three.js와 FBXLoader 로컬 사본 | Three.js 버전을 고정하거나 오프라인 실행성을 관리할 때 |
-| `verification/verify-gameplay.mjs` | Playwright 기반 자동 검증. 초기화, 2층 문/방 연결, 잠긴 문, 계단 waypoint 기반 층간 추격, stuck 방지, 2층 탐색 공간, 층별 walkable/blocked/void/drop zone 검증, 등 뒤 걷기/달리기 감지, 층간 포획 방지, 캐비넷 탈출 시점, 순찰 복귀, 추격 포기, Cyclopse 지면 보정, 일시정지 메뉴, 열쇠/클리어, 캐비넷 생존/사망 흐름 확인 | 큰 기능을 바꾼 뒤 브라우저 동작을 재검증할 때 |
+| `verification/verify-gameplay.mjs` | Playwright 기반 자동 검증. 초기화, 벽/바닥/천장/계단/문/캐비넷 텍스처 적용, 미닫이문 패널 이동, 열리는 문-방 연결, 잠긴 문, 계단 waypoint 기반 층간 추격, stuck 방지, 2층 탐색 공간, 층별 walkable/blocked/void/drop zone 검증, 등 뒤 걷기/달리기 감지, 층간 포획 방지, 캐비넷 탈출 시점, 순찰 복귀, 추격 포기, Cyclopse 지면 보정, 일시정지 메뉴, 열쇠/클리어, 캐비넷 생존/사망 흐름 확인 | 큰 기능을 바꾼 뒤 브라우저 동작을 재검증할 때 |
 
 ## 엔트리와 코어
 
@@ -38,18 +38,32 @@ assets/characters/<CharacterName>/
     model_textured.jpg
 ```
 
+벽, 바닥, 문 같은 환경 스킨은 아래 폴더에 넣습니다. PNG 한 장으로도 적용할 수 있고, 반복되는 벽/바닥 재질은 tileable 이미지가 가장 좋습니다.
+
+```text
+assets/textures/
+  walls/wall.png
+  floors/floor.png
+  ceilings/ceiling.png
+  stairs/stair.png
+  doors/doors.png
+  cabinets/cabinet.png
+  props/
+```
+
 ## 월드와 충돌
 
 | 파일 | 역할 | 주로 수정할 때 |
 | --- | --- | --- |
 | `src/world/MapBuilder.js` | 1층/2층 바닥, 계단, 천장, 벽, 문, 열쇠, 캐비넷, 최종 장치, 장난감/촛불/얼룩/천/배관/바리케이드/창살 창/전선/매미 허물/마네킹 오브제 생성, debug overlay 생성 | 맵 구조와 방 배치, 수집품/은신처, 공포 분위기 오브젝트를 바꿀 때 |
-| `src/world/Door.js` | 열리는 문과 locked/blocked door의 렌더링/상태/충돌/상호작용, connectedRoomId debug 정보 | 잠긴 문, 소리, 자동문을 만들 때 |
+| `src/world/TextureLibrary.js` | `assets/textures`의 벽/바닥/천장/계단/문/캐비넷 PNG를 Three.js material로 변환하고 기본 fallback material 제공 | 환경 스킨 파일명, 반복 방식, 재질 밝기/거칠기를 바꿀 때 |
+| `src/world/Door.js` | 두 패널로 갈라지는 미닫이문과 locked/blocked door의 렌더링/상태/충돌/상호작용, connectedRoomId debug 정보 | 잠긴 문, 문 레일/손잡이, 소리, 자동문을 만들 때 |
 | `src/world/KeyItem.js` | 방 곳곳의 수집 가능한 열쇠. 렌더링, 프롬프트, 수집/리셋 상태 담당 | 열쇠 외형, 수집 조건, 아이템 종류를 바꿀 때 |
-| `src/world/Cabinet.js` | 숨을 수 있는 캐비넷. 외형, 내부 시점, 몬스터 대기 위치, 충돌 크기 제공 | 은신처 시점, 캐비넷 크기/위치, 대기 위치를 바꿀 때 |
+| `src/world/Cabinet.js` | 숨을 수 있는 캐비넷. 텍스처 body 외형, 내부 시점, 몬스터 대기 위치, 충돌 크기 제공 | 은신처 시점, 캐비넷 스킨, 크기/위치, 대기 위치를 바꿀 때 |
 | `src/world/FinalExit.js` | 마지막 방의 장난감 상자. 열쇠 3개 전달 시 클리어를 요청 | 엔딩 조건, 최종 장치 외형, 보상 연출을 바꿀 때 |
 | `src/world/CollisionWorld.js` | 층별 walkable/room/blocked/void area, landing/drop/stair transition zone, stair entry/exit waypoint graph, 벽/문 충돌체 관리, 플레이어/적 이동 보정, 시야 차단 판정, 층간 A* 경로 탐색 | 층 구조, 계단, 충돌 방식, 장애물, 시야/경로 판정을 개선할 때 |
 
-현재 충돌은 AABB 기반이지만 `floorAreas`, `roomAreas`, `blockedAreas`, `voidAreas`, `landingAreas`, `dropZones`, `ramps`, `transitionWaypoints`를 분리해 층별 이동을 검증합니다. 플레이어와 적은 이동 후 `CollisionWorld.resolveActorPosition()`을 거치며, 같은 X/Z에 아래층 바닥이 있어도 명시된 `dropZone`이나 계단 `transitionZone`이 아니면 Y만 낮춰 이동하지 않습니다. invalid landing을 시도하면 콘솔에 경고를 남기고 이동을 취소합니다. 계단 시각 메시는 `MapBuilder.createStairways()`가 복도 바닥에서 이어지는 짧은 랜딩, 촘촘한 계단 블록/라이저, 얇은 난간 포스트와 손잡이로 만들고, 플레이어 카메라는 `PlayerController.updateCamera()`가 `verticalCameraSmoothness`로 Y 이동을 부드럽게 보간합니다. 2층 바닥은 `slabThickness`가 있는 박스 지오메트리라 아래층에서는 천장/슬래브처럼 보입니다. 계단 끝에는 `second-stair-top-panel` 상부 랜딩 슬래브를 둬 2층 복도 바닥과 자연스럽게 이어집니다. 복잡한 3층 이상 구조물이 늘어나면 `transitionWaypoints`의 링크를 추가해 층간 그래프를 확장합니다.
+현재 충돌은 AABB 기반이지만 `floorAreas`, `roomAreas`, `blockedAreas`, `voidAreas`, `landingAreas`, `dropZones`, `ramps`, `transitionWaypoints`를 분리해 층별 이동을 검증합니다. 플레이어와 적은 이동 후 `CollisionWorld.resolveActorPosition()`을 거치며, 같은 X/Z에 아래층 바닥이 있어도 명시된 `dropZone`이나 계단 `transitionZone`이 아니면 Y만 낮춰 이동하지 않습니다. invalid landing을 시도하면 콘솔에 경고를 남기고 이동을 취소합니다. 계단 시각 메시는 `MapBuilder.createStairways()`가 복도 바닥에서 이어지는 짧은 랜딩, 촘촘한 계단 블록/라이저, 양쪽 벽, 벽부착 손잡이, 상부 계단참 벽으로 만들고, 플레이어 카메라는 `PlayerController.updateCamera()`가 `verticalCameraSmoothness`로 Y 이동을 부드럽게 보간합니다. 2층 바닥은 `slabThickness`가 있는 박스 지오메트리라 아래층에서는 천장/슬래브처럼 보입니다. 계단 끝에는 `second-stair-top-panel` 상부 랜딩 슬래브를 둬 2층 복도 바닥과 자연스럽게 이어집니다. 복잡한 3층 이상 구조물이 늘어나면 `transitionWaypoints`의 링크를 추가해 층간 그래프를 확장합니다.
 
 ## 플레이어
 
@@ -121,6 +135,7 @@ index.html
 | 목표 | 수정 시작점 |
 | --- | --- |
 | 새 방/복도/층 추가 | `src/config/gameConfig.js`의 `MAP_CONFIG.floorAreas`, `roomAreas`, `blockedAreas`, `voidAreas`, `landingAreas`, `dropZones`, `transitionWaypoints`, `ramps`, `floorPanels`, `stairways`, `walls`, `doors`, `props` |
+| 환경 스킨 교체 | `assets/textures`, `src/world/TextureLibrary.js` |
 | 새 열쇠/은신처 추가 | `src/config/gameConfig.js`의 `MAP_CONFIG.keys`, `cabinets` |
 | 새 캐릭터 추가 | `assets/characters`, `src/config/gameConfig.js`의 `ENEMY_CONFIGS` |
 | 문 잠금/열쇠 | `src/world/Door.js`, `src/world/KeyItem.js`, `src/core/Game.js`, `src/ui/Hud.js` |
