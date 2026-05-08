@@ -19,7 +19,7 @@ from hunyuan_service import GenerationOptions, Hunyuan3DGenerator
 
 
 BASE_DIR = Path(__file__).resolve().parent
-load_dotenv(BASE_DIR / ".env")
+load_dotenv(BASE_DIR / ".env", override=True)
 
 INSTANCE_DIR = Path(os.getenv("APP_INSTANCE_DIR", BASE_DIR / "instance"))
 if not INSTANCE_DIR.is_absolute():
@@ -601,7 +601,7 @@ app = create_app()
 
 if __name__ == "__main__":
     host = os.getenv("FLASK_HOST", "127.0.0.1")
-    port = env_int("FLASK_PORT", 5000)
+    port = env_int("FLASK_PORT", 5001)
     print("Starting Hunyuan3D Flask Web App", flush=True)
     print(f"Open: http://{host}:{port}", flush=True)
     print("Press Ctrl+C to stop the server.", flush=True)

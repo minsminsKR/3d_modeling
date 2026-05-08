@@ -212,6 +212,13 @@ label {
   font-weight: 800;
 }
 
+.param-help {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
 input,
 select {
   width: 100%;

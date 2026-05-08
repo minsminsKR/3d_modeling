@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>사이클롭스 타워 디펜스</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hud" aria-label="게임 상태">
+        <div class="title-block">
+          <h1>사이클롭스 타워 디펜스</h1>
+          <p id="status">사이클롭스 에셋을 불러오는 중...</p>
+        </div>
+        <div class="command-panel" aria-label="전투 지휘 패널">
+          <div id="hud" class="stats" aria-live="polite">골드: 180 | 생명: 20 | 라운드: 0/10 | 다음: 웨이브 1</div>
+          <div class="wave-panel" aria-label="웨이브 정보">
+            <span class="wave-card is-next">1-4<br><strong>정찰 웨이브</strong></span>
+            <span class="wave-card is-boss">5<br><strong>중간 보스 3마리</strong></span>
+            <span class="wave-card">6-9<br><strong>압박 웨이브</strong></span>
+            <span class="wave-card is-final">10<br><strong>최종 보스</strong></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" aria-label="타워디펜스 전장">
+        <div id="game"></div>
+        <aside class="build-panel" aria-label="타워 선택">
+          <div class="panel-heading">
+            <span>건설</span>
+            <strong>건설 유닛 필요</strong>
+          </div>
+          <div class="tower-list" role="group" aria-label="타워 종류">
+            <button class="tower-button is-selected" type="button" data-tower-type="bolt">
+              <span class="tower-icon">속</span>
+              <span><strong>속사포</strong><small>45골드 / 빠른 단일 공격</small></span>
+            </button>
+            <button class="tower-button" type="button" data-tower-type="cannon">
+              <span class="tower-icon">포</span>
+              <span><strong>대포</strong><small>75골드 / 범위 피해</small></span>
+            </button>
+            <button class="tower-button" type="button" data-tower-type="frost">
+              <span class="tower-icon">빙</span>
+              <span><strong>냉기탑</strong><small>60골드 / 이동 둔화</small></span>
+            </button>
+            <button class="tower-button" type="button" data-tower-type="arc">
+              <span class="tower-icon">번</span>
+              <span><strong>번개탑</strong><small>95골드 / 연쇄 번개</small></span>
+            </button>
+          </div>
+        </aside>
+        <aside id="selection-panel" class="selection-panel" aria-live="polite" aria-label="선택 정보">
+          <div class="panel-heading">
+            <span>선택 정보</span>
+            <strong id="selection-kind">없음</strong>
+          </div>
+          <div id="selection-details" class="selection-details">
+            건설 유닛을 선택한 뒤 우클릭으로 이동하거나 빈 잔디 타일을 클릭해 타워를 건설하세요.
+          </div>
+        </aside>
+        <div class="toolbar" aria-label="게임 조작">
+          <button id="start-wave" class="primary-action" type="button">웨이브 시작</button>
+          <button id="reset-game" type="button">초기화</button>
+          <div class="speed-controls" aria-label="게임 속도">
+            <button class="speed-button is-selected" type="button" data-game-speed="1">1배</button>
+            <button class="speed-button" type="button" data-game-speed="2">2배</button>
+            <button class="speed-button" type="button" data-game-speed="3">3배</button>
+          </div>
+          <span class="hint">금광: 좌하단 | 본진: 연구 | 건설 유닛: 클릭 선택, 우클릭 이동, 잔디 클릭 건설</span>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="{{ url_for('static', filename='game.js') }}"></script>
+  </body>
+</html>

@@ -39,6 +39,18 @@ model_test/model/
 *.onnx
 *.gguf
 
+# Runtime assets needed by the checked-in browser game.
+!model_test/model/
+!model_test/model/.gitkeep
+!model_test/model/Cyclopse/
+!model_test/model/Cyclopse/**
+!model_test/model/Uncat/
+!model_test/model/Uncat/**
+model_test/model/_extracted/
+!game/happy_toy/assets/characters/**/*.fbx
+!game/happy_toy/vendor/three/build/
+!game/happy_toy/vendor/three/build/three.module.js
+
 # Logs and temporary files
 *.log
 error.txt

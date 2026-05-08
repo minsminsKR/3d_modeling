@@ -3,7 +3,6 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MTLLoader } from "three/addons/loaders/MTLLoader.js";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 const viewport = document.querySelector("#viewport");
 const statusText = document.querySelector("#status");
@@ -16,7 +15,7 @@ scene.background = new THREE.Color(0x9fb7d3);
 scene.fog = new THREE.Fog(0x9fb7d3, 48, 120);
 
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 500);
-camera.position.set(12, 10, 18);
+camera.position.set(0, 5.2, -9.5);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -24,13 +23,6 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 viewport.appendChild(renderer.domElement);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.target.set(0, 1.2, 4);
-controls.maxPolarAngle = Math.PI * 0.48;
-controls.minDistance = 5;
-controls.maxDistance = 40;
 
 const clock = new THREE.Clock();
 const keys = new Set();
@@ -40,11 +32,22 @@ const JUMP_SPEED = 10;
 const JUMPABLE_HEIGHT = 1.3;
 const PLAYER_HEIGHT = 2.2;
 const SURFACE_EPSILON = 0.08;
+const CAMERA_DISTANCE = 9.5;
+const CAMERA_TARGET_HEIGHT = 1.55;
+const CAMERA_PITCH_MIN = THREE.MathUtils.degToRad(-10);
+const CAMERA_PITCH_MAX = THREE.MathUtils.degToRad(38);
+const CAMERA_FOLLOW_SPEED = 10;
+const CAMERA_ROTATION_SPEED = 0.006;
 
 const player = new THREE.Group();
 player.position.set(0, 0, 4);
 scene.add(player);
 
+const cameraTarget = new THREE.Vector3();
+const desiredCameraPosition = new THREE.Vector3();
+let cameraYaw = Math.PI;
+let cameraPitch = THREE.MathUtils.degToRad(18);
+let isDraggingCamera = false;
 let loadedModel = null;
 let placeholder = null;
 let animationMixer = null;
@@ -102,11 +105,56 @@ window.addEventListener("keyup", (event) => {
   keys.delete(event.key.toLowerCase());
 });
 
+renderer.domElement.addEventListener("pointerdown", (event) => {
+  if (event.button !== 0) {
+    return;
+  }
+
+  renderer.domElement.requestPointerLock?.();
+  isDraggingCamera = true;
+});
+
+document.addEventListener("mousemove", (event) => {
+  const isPointerLocked = document.pointerLockElement === renderer.domElement;
+  if (!isPointerLocked && !isDraggingCamera) {
+    return;
+  }
+
+  rotateCameraByMouseDelta(event.movementX, event.movementY);
+});
+
+document.addEventListener("pointerlockchange", () => {
+  isDraggingCamera = document.pointerLockElement === renderer.domElement;
+});
+
+document.addEventListener("pointerup", () => {
+  if (document.pointerLockElement !== renderer.domElement) {
+    isDraggingCamera = false;
+  }
+});
+
+renderer.domElement.addEventListener("pointercancel", () => {
+  isDraggingCamera = false;
+});
+
+renderer.domElement.addEventListener("wheel", (event) => {
+  event.preventDefault();
+}, { passive: false });
+
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+function rotateCameraByMouseDelta(deltaX, deltaY) {
+  cameraYaw -= deltaX * CAMERA_ROTATION_SPEED;
+  cameraPitch = THREE.MathUtils.clamp(
+    cameraPitch + deltaY * CAMERA_ROTATION_SPEED,
+    CAMERA_PITCH_MIN,
+    CAMERA_PITCH_MAX,
+  );
+}
 
 function initWorld() {
   const hemiLight = new THREE.HemisphereLight(0xf8fbff, 0x4b5d4f, 1.9);
@@ -337,9 +385,14 @@ function applySourceTextureToMixamoModel(object, asset, character) {
     );
   });
 
-  if (!textureAsset || skinnedMeshes.length === 0) {
-    return;
-  }
+    if (skinnedMeshes.length === 0) {
+      return;
+    }
+
+    if (!textureAsset) {
+      setStatus(`${character.name} 로딩 완료. source/model_textured 이미지가 없어 기본 색으로 표시합니다.`);
+      return;
+    }
 
   const texturedMeshes = skinnedMeshes.filter((mesh) => Boolean(mesh.geometry?.attributes?.uv));
   if (texturedMeshes.length === 0) {
@@ -533,25 +586,24 @@ function resetModelTransform() {
   player.position.set(0, 0, 4);
   player.rotation.set(0, 0, 0);
   modelScale = 1;
+  cameraYaw = Math.PI;
+  cameraPitch = THREE.MathUtils.degToRad(18);
 
   const activeModel = loadedModel || placeholder;
   if (activeModel) {
     activeModel.scale.setScalar(modelScale);
   }
 
-  controls.target.copy(player.position).add(new THREE.Vector3(0, 1.2, 0));
+  updateCameraFollow(1, true);
   setStatus("위치와 모델 크기를 초기화했습니다.");
 }
 
 function updatePlayer(delta) {
   snapToWalkableSurface();
 
-  const direction = new THREE.Vector3();
-
-  if (keys.has("w") || keys.has("arrowup")) direction.z -= 1;
-  if (keys.has("s") || keys.has("arrowdown")) direction.z += 1;
-  if (keys.has("a") || keys.has("arrowleft")) direction.x -= 1;
-  if (keys.has("d") || keys.has("arrowright")) direction.x += 1;
+  const forwardInput = Number(keys.has("w") || keys.has("arrowup")) - Number(keys.has("s") || keys.has("arrowdown"));
+  const strafeInput = Number(keys.has("d") || keys.has("arrowright")) - Number(keys.has("a") || keys.has("arrowleft"));
+  const direction = getCameraRelativeDirection(forwardInput, strafeInput);
 
   const isMovingNow = direction.lengthSq() > 0;
   if (animationAction) {
@@ -577,7 +629,47 @@ function updatePlayer(delta) {
   if (keys.has("r")) resetModelTransform();
 
   updateJump(delta);
-  controls.target.lerp(player.position.clone().add(new THREE.Vector3(0, 1.2, 0)), 0.12);
+  updateCameraFollow(delta);
+}
+
+function getCameraRelativeDirection(forwardInput, strafeInput) {
+  const direction = new THREE.Vector3();
+  if (!forwardInput && !strafeInput) {
+    return direction;
+  }
+
+  const cameraForward = new THREE.Vector3();
+  camera.getWorldDirection(cameraForward);
+  cameraForward.y = 0;
+  cameraForward.normalize();
+
+  const cameraRight = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+  cameraRight.y = 0;
+  cameraRight.normalize();
+
+  direction.addScaledVector(cameraForward, forwardInput);
+  direction.addScaledVector(cameraRight, strafeInput);
+  return direction;
+}
+
+function updateCameraFollow(delta, immediate = false) {
+  cameraTarget.copy(player.position).add(new THREE.Vector3(0, CAMERA_TARGET_HEIGHT, 0));
+
+  const horizontalDistance = Math.cos(cameraPitch) * CAMERA_DISTANCE;
+  desiredCameraPosition.set(
+    cameraTarget.x + Math.sin(cameraYaw) * horizontalDistance,
+    cameraTarget.y + Math.sin(cameraPitch) * CAMERA_DISTANCE,
+    cameraTarget.z + Math.cos(cameraYaw) * horizontalDistance,
+  );
+
+  if (immediate) {
+    camera.position.copy(desiredCameraPosition);
+  } else {
+    const followFactor = 1 - Math.exp(-CAMERA_FOLLOW_SPEED * delta);
+    camera.position.lerp(desiredCameraPosition, followFactor);
+  }
+
+  camera.lookAt(cameraTarget);
 }
 
 function isMoving() {
@@ -709,6 +801,5 @@ function animate() {
     animationMixer.update(delta);
   }
 
-  controls.update();
   renderer.render(scene, camera);
 }

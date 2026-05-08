@@ -12,18 +12,26 @@
 # fine-tuning enabling code and other elements of the foregoing made publicly available
 # by Tencent in accordance with TENCENT HUNYUAN COMMUNITY LICENSE AGREEMENT.
 
+import sys
+
 from setuptools import setup, find_packages
 import torch
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension, CppExtension
 
 # build custom rasterizer
 
+kernel_dir = (
+    "lib/custom_rasterizer_kernel_for_windows"
+    if sys.platform.startswith("win")
+    else "lib/custom_rasterizer_kernel"
+)
+
 custom_rasterizer_module = CUDAExtension(
     "custom_rasterizer_kernel",
     [
-        "lib/custom_rasterizer_kernel/rasterizer.cpp",
-        "lib/custom_rasterizer_kernel/grid_neighbor.cpp",
-        "lib/custom_rasterizer_kernel/rasterizer_gpu.cu",
+        f"{kernel_dir}/rasterizer.cpp",
+        f"{kernel_dir}/grid_neighbor.cpp",
+        f"{kernel_dir}/rasterizer_gpu.cu",
     ],
 )
 

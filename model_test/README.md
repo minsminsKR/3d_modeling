@@ -76,7 +76,20 @@ Mixamo에서 받은 `.fbx` 또는 `.zip`을 `model_test/model` 폴더에 넣고 
 
 `Walking`처럼 모션 파일도 FBX라면 `mixamo/Walking.fbx`에 넣으면 웹의 `파일 / 모션` 선택 목록에 표시됩니다. 다만 캐릭터 메시가 없는 애니메이션 전용 FBX라면 화면에 모델이 보이지 않을 수 있습니다. 캐릭터 테스트용으로는 Mixamo에서 캐릭터가 포함된 FBX 또는 GLB를 준비하는 것이 좋습니다.
 
-FBX가 브라우저에서 제대로 표시되지 않거나 텍스처가 누락되면 Blender에서 `.glb`로 변환해서 테스트하는 것을 권장합니다.
+Mixamo FBX는 애니메이션과 캐릭터 메시를 포함해도 Hunyuan3D 텍스처가 빠지거나 단색 재질로 보일 수 있습니다. 완성된 외형으로 보려면 Hunyuan3D에서 나온 텍스처 이미지를 아래 이름으로 같이 넣어둡니다.
+
+```text
+model_test/model/<캐릭터명>/
+  source/
+    model_textured.jpg
+  mixamo/
+    Walking.fbx
+    Drunk Run Forward.fbx
+```
+
+웹 테스트맵은 `source/model_textured.jpg`, `source/model_textured.png`, `source/model_textured.webp` 순서의 이름을 우선 찾아 Mixamo FBX에 다시 적용합니다. 이 파일이 없으면 모델은 움직이지만 밋밋한 기본 색으로 보일 수 있습니다.
+
+FBX가 브라우저에서 제대로 표시되지 않거나 텍스처 좌표가 맞지 않으면 Blender에서 `.glb`로 변환해서 테스트하는 것을 권장합니다.
 
 권장 변환 흐름:
 

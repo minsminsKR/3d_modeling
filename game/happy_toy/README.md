@@ -1,0 +1,68 @@
+# Happy Toy
+
+`Happy Toy`는 낡은 여름 복도 분위기의 어두운 방을 탐색하는 1인칭 공포 게임 프로토타입입니다. Uncat과 Cyclopse가 순찰하다가 플레이어를 발견하면 추적하고, 플레이어는 1층 복도와 그 안에서 바로 이어지는 2층 계단을 돌며 열쇠 3개를 모아 마지막 방의 장난감 상자를 열어야 합니다.
+
+## 실행
+
+```powershell
+cd E:\AI\3d_modeling\game\happy_toy
+python web_server.py --host 127.0.0.1 --port 8010
+```
+
+브라우저에서 접속합니다.
+
+```text
+http://127.0.0.1:8010
+```
+
+## 조작
+
+| 입력 | 기능 |
+| --- | --- |
+| WASD | 이동 |
+| Mouse | 시점 회전 |
+| Shift | 빠르게 이동 |
+| F | 후레쉬 켜기/끄기 |
+| E | 문 열기/닫기, 열쇠 줍기, 캐비넷 숨기, 최종 장치 상호작용 |
+| Esc | 일시정지 메뉴 열기/닫기 |
+
+## 일시정지 메뉴
+
+- `Esc`를 누르면 게임이 멈추고 중앙에 메뉴가 뜹니다.
+- 옵션에는 마우스 감도 슬라이더가 있습니다.
+- `다시하기`는 현재 런을 처음부터 다시 시작합니다.
+- `종료`는 브라우저 탭을 닫는 대신 타이틀 화면으로 돌아갑니다.
+
+## 현재 목표와 규칙
+
+- 맵 곳곳의 방에 배치된 열쇠 3개를 모두 찾습니다.
+- 1층 복도에서 바로 보이는 계단을 통해 2층 인형방, 거울방, 기록 alcove를 탐색할 수 있습니다.
+- 깊은 복도나 2층 끝으로 갈수록 조명이 불안정해집니다.
+- 복도에는 창살 낀 낡은 창, 늘어진 전선, 매미 허물, 종이 표식, 마네킹이 배치되어 있습니다.
+- 계단은 복도 바닥에서 이어지는 짧은 랜딩, 보행용 램프, 시각용 계단 블록, 얇은 난간 포스트와 손잡이를 함께 써서 1층에서 2층까지 부드럽게 올라갑니다.
+- 1층과 2층은 Y 높이와 두꺼운 바닥/천장 슬래브로 분리되어 있지만, 계단 입구는 복도에 열려 있고 상부 랜딩이 2층 복도 바닥과 직접 이어집니다.
+- 마지막 방의 장난감 상자에 열쇠 3개를 건네면 클리어됩니다.
+- 몬스터와 충분히 멀어지면 추격이 풀리고 다시 배회합니다. 평상시 배회는 현재 층 복도 루프만 사용하고, 층이 달라져도 추격 중일 때만 계단 waypoint를 통해 올라옵니다.
+- 몬스터가 등을 보인 상태에서는 걸어서 지나가면 들키지 않고, 달리면 소리로 들켜 추격당합니다.
+- 1층과 2층은 Y 높이로 분리되어 같은 X/Z 위치에 겹쳐도 다른 층이면 포획되지 않습니다.
+- 층 이동은 계단 transition zone 또는 명시된 drop zone으로만 처리합니다. 같은 X/Z 아래에 1층 바닥이 있어도 검증된 landing point가 아니면 Y만 낮춰 이동하지 않습니다.
+- 화면 우상단 debug HUD에서 현재 floor, X/Z, tile type, 아래층 landing 가능 여부, 최근 drop target, 영역 카운트, 가까운 문의 connected room, stair waypoint, 몬스터별 floor/path target/stuck 상태를 확인할 수 있습니다.
+- 현재 런타임 사운드는 비활성화되어 있습니다. 실제 음원 파일을 준비하면 파일 기반 오디오 시스템으로 연결합니다.
+- 캐비넷에 숨을 수 있습니다. 추격 중 숨으면 대표 몬스터 한 마리가 캐비넷 앞에 서며, 20% 확률로 문을 열어 플레이어가 사망합니다. 나머지 80%는 5초 뒤 다시 배회합니다.
+
+## 파일 안내
+
+전체 모듈 설명과 확장 가이드는 `PROJECT_MAP.md`를 봅니다.
+
+Three.js와 FBXLoader는 `vendor/three`에 로컬로 포함되어 있어 CDN 없이 실행됩니다.
+
+## 검증
+
+브라우저 자동 검증 스크립트는 초기화, 매미 복도용 HorrorEvent manager와 오브제, 런타임 사운드 비활성화, 2층 높이/계단, 2층 문-방 연결, locked/blocked door, 계단 waypoint 기반 층간 추격, stuck 방지, 두꺼운 2층 슬래브, 층별 walkable/blocked/void/drop zone 규칙, 등 뒤 걷기/달리기 감지, 층간 포획 방지, 캐비넷 탈출 시점, 복도 순찰 복귀, 문을 통한 추격, Cyclopse 지면 접지, 일시정지, 열쇠/클리어, 캐비넷 생존/사망 흐름을 확인합니다.
+
+```powershell
+cd E:\AI\3d_modeling\game\happy_toy
+python web_server.py --host 127.0.0.1 --port 8013
+$env:NODE_PATH='C:\Users\sanguk\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\node_modules'
+& 'C:\Users\sanguk\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' '.\verification\verify-gameplay.mjs' 'http://127.0.0.1:8013/'
+```

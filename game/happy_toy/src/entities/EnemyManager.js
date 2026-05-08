@@ -1,0 +1,102 @@
+// 여러 적 캐릭터의 생성과 업데이트를 총괄하는 모듈입니다.
+// 새 적을 추가할 때는 config/gameConfig.js의 ENEMY_CONFIGS만 확장하면 됩니다.
+
+import { ENEMY_CONFIGS } from "../config/gameConfig.js";
+import { CharacterLoader } from "../loaders/CharacterLoader.js";
+import { Enemy } from "./Enemy.js";
+
+export class EnemyManager {
+  constructor(scene, collisionWorld, doors, hud) {
+    this.scene = scene;
+    this.collisionWorld = collisionWorld;
+    this.doors = doors;
+    this.hud = hud;
+    this.loader = new CharacterLoader();
+    this.enemies = [];
+  }
+
+  async loadEnemies() {
+    this.hud.setStatus("Uncat과 Cyclopse가 맵 어딘가에 배치되는 중입니다.");
+    const loadedEnemies = await Promise.all(
+      ENEMY_CONFIGS.map(async (config) => {
+        const asset = await this.loader.load(config);
+        return new Enemy(config, asset, this.collisionWorld, this.doors);
+      }),
+    );
+
+    for (const enemy of loadedEnemies) {
+      this.enemies.push(enemy);
+      this.scene.add(enemy.group);
+    }
+    this.hud.setStatus("문 너머에서 발소리가 들립니다.", 1800);
+  }
+
+  update(deltaTime, playerState) {
+    const playerPosition = playerState.position || playerState;
+    let threat = 0;
+    let caught = false;
+
+    for (const enemy of this.enemies) {
+      enemy.update(deltaTime, playerState);
+      threat = Math.max(threat, enemy.getThreatAmount(playerPosition));
+      caught ||= enemy.caughtPlayer;
+    }
+
+    this.hud.setThreat(threat);
+    return { caught, threat };
+  }
+
+  getClosestChasingEnemy(position) {
+    let closestEnemy = null;
+    let closestDistance = Infinity;
+
+    for (const enemy of this.enemies) {
+      if (!enemy.isActivelyChasing()) {
+        continue;
+      }
+
+      const distance = Math.hypot(enemy.group.position.x - position.x, enemy.group.position.z - position.z);
+      if (distance < closestDistance) {
+        closestEnemy = enemy;
+        closestDistance = distance;
+      }
+    }
+
+    return closestEnemy;
+  }
+
+  endCabinetInvestigations() {
+    for (const enemy of this.enemies) {
+      if (enemy.state === "investigateCabinet") {
+        enemy.endCabinetInvestigation();
+      }
+    }
+  }
+
+  reset() {
+    for (const enemy of this.enemies) {
+      enemy.group.position.set(...enemy.config.spawn);
+      enemy.state = "patrol";
+      enemy.currentWaypoint = 0;
+      enemy.memoryTimer = 0;
+      enemy.lastKnownPlayerPosition = null;
+      enemy.caughtPlayer = false;
+      enemy.cabinetTarget = null;
+      enemy.chasePath = [];
+      enemy.chasePathTimer = 0;
+      enemy.chasePathGoal = null;
+      enemy.patrolPath = [];
+      enemy.patrolPathTimer = 0;
+      enemy.patrolPathGoal = null;
+      enemy.waitTimer = 0;
+      enemy.waitTurnDirection = 1;
+      enemy.stuckTimer = 0;
+      enemy.lastUnstuckTarget = null;
+      enemy.debugPathTarget = null;
+      enemy.group.position.y = this.collisionWorld.getGroundY(enemy.group.position);
+      enemy.resumeAnimatedPose();
+      enemy.playAction("patrol", 0);
+      enemy.snapModelToGround(false);
+    }
+  }
+}

@@ -22,7 +22,7 @@ def main() -> int:
             if not line or line.strip().startswith("#") or "=" not in line:
                 continue
             key, value = line.split("=", 1)
-            os.environ.setdefault(key.strip(), value.strip())
+            os.environ[key.strip()] = value.strip()
 
     repo = os.getenv("HUNYUAN3D_REPO")
     print(f"Python: {sys.version.split()[0]}")

@@ -14,6 +14,11 @@ WEB_DIR = APP_DIR / "web"
 MODEL_DIR = APP_DIR / "model"
 EXTRACTED_DIR = MODEL_DIR / "_extracted"
 
+mimetypes.add_type("text/javascript", ".js")
+mimetypes.add_type("text/css", ".css")
+mimetypes.add_type("model/gltf-binary", ".glb")
+mimetypes.add_type("model/gltf+json", ".gltf")
+
 SUPPORTED_MODEL_EXTENSIONS = {
     ".fbx": "Autodesk FBX",
     ".glb": "Binary glTF",
@@ -50,6 +55,11 @@ class ModelTestRequestHandler(SimpleHTTPRequestHandler):
 
         if parsed_url.path == "/api/models":
             self.send_models()
+            return
+
+        if parsed_url.path == "/favicon.ico":
+            self.send_response(204)
+            self.end_headers()
             return
 
         if parsed_url.path.startswith("/model/"):
@@ -226,8 +236,9 @@ def main() -> None:
     WEB_DIR.mkdir(exist_ok=True)
 
     server = ThreadingHTTPServer((args.host, args.port), ModelTestRequestHandler)
-    print(f"Model test web server: http://{args.host}:{args.port}")
-    print("브라우저에서 서버 IP와 포트로 접속하세요. 종료: Ctrl+C")
+    print(f"Model test web server 바인딩: http://{args.host}:{args.port}")
+    print(f"브라우저에서 열기: http://localhost:{args.port}")
+    print("종료: Ctrl+C")
 
     try:
         server.serve_forever()
