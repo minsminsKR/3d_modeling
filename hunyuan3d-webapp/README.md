@@ -74,6 +74,18 @@ python scripts/download_models.py
 | DINOv2-giant | `<repo>/local_models/facebook--dinov2-giant/` |
 | Real-ESRGAN | `<repo>/hy3dpaint/ckpt/RealESRGAN_x4plus.pth` |
 
+### 원본 다운로드 링크 (브라우저·수동 확인용)
+
+스크립트가 받는 것과 동일한 소스입니다. Hugging Face 모델은 동의·토큰이 필요할 수 있습니다.
+
+| 용도 | 링크 |
+|------|------|
+| Hunyuan3D 2.1 저장소 | [huggingface.co/tencent/Hunyuan3D-2.1](https://huggingface.co/tencent/Hunyuan3D-2.1) |
+| Shape (`hunyuan3d-dit-v2-1`) | [tree/main/hunyuan3d-dit-v2-1](https://huggingface.co/tencent/Hunyuan3D-2.1/tree/main/hunyuan3d-dit-v2-1) |
+| PBR Texture (`hunyuan3d-paintpbr-v2-1`) | [tree/main/hunyuan3d-paintpbr-v2-1](https://huggingface.co/tencent/Hunyuan3D-2.1/tree/main/hunyuan3d-paintpbr-v2-1) |
+| DINOv2-giant | [huggingface.co/facebook/dinov2-giant](https://huggingface.co/facebook/dinov2-giant) |
+| Real-ESRGAN `RealESRGAN_x4plus.pth` | [xinntao/Real-ESRGAN 릴리스 직링크](https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth) |
+
 `huggingface_hub`는 이미 받은 파일은 건너뛰므로 재실행해도 안전합니다.
 
 ## 품질 우선 프리셋 (RTX 3090 Ti 24GB)
