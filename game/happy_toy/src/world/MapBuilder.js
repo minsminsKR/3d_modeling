@@ -10,9 +10,11 @@ import { KeyItem } from "./KeyItem.js";
 import { TextureLibrary } from "./TextureLibrary.js";
 
 export class MapBuilder {
-  constructor(scene, collisionWorld) {
+  constructor(scene, collisionWorld, options = {}) {
     this.scene = scene;
     this.collisionWorld = collisionWorld;
+    this.mapConfig = options.mapConfig || MAP_CONFIG;
+    this.debugEnabled = options.debugEnabled ?? false;
     this.doors = [];
     this.keys = [];
     this.cabinets = [];
@@ -31,45 +33,47 @@ export class MapBuilder {
     this.createCabinets();
     this.createFinalExit();
     this.createProps();
-    this.createDebugOverlays();
+    if (this.debugEnabled) {
+      this.createDebugOverlays();
+    }
     return {
       doors: this.doors,
       keys: this.keys,
       cabinets: this.cabinets,
       finalExit: this.finalExit,
-      playerStart: new THREE.Vector3(...MAP_CONFIG.playerStart),
+      playerStart: new THREE.Vector3(...this.mapConfig.playerStart),
     };
   }
 
   registerNavigationSurfaces() {
-    for (const area of MAP_CONFIG.floorAreas || []) {
+    for (const area of this.mapConfig.floorAreas || []) {
       this.collisionWorld.addFloorArea(area);
     }
-    for (const landing of MAP_CONFIG.landingAreas || []) {
+    for (const landing of this.mapConfig.landingAreas || []) {
       this.collisionWorld.addLandingArea(landing);
     }
-    for (const room of MAP_CONFIG.roomAreas || []) {
+    for (const room of this.mapConfig.roomAreas || []) {
       this.collisionWorld.addRoomArea(room);
     }
-    for (const blocked of MAP_CONFIG.blockedAreas || []) {
+    for (const blocked of this.mapConfig.blockedAreas || []) {
       this.collisionWorld.addBlockedArea(blocked);
     }
-    for (const voidArea of MAP_CONFIG.voidAreas || []) {
+    for (const voidArea of this.mapConfig.voidAreas || []) {
       this.collisionWorld.addVoidArea(voidArea);
     }
-    for (const dropZone of MAP_CONFIG.dropZones || []) {
+    for (const dropZone of this.mapConfig.dropZones || []) {
       this.collisionWorld.addDropZone(dropZone);
     }
-    for (const ramp of MAP_CONFIG.ramps || []) {
+    for (const ramp of this.mapConfig.ramps || []) {
       this.collisionWorld.addRamp(ramp);
     }
-    for (const waypoint of MAP_CONFIG.transitionWaypoints || []) {
+    for (const waypoint of this.mapConfig.transitionWaypoints || []) {
       this.collisionWorld.addTransitionWaypoint(waypoint);
     }
   }
 
   createRoomShell() {
-    for (const panel of MAP_CONFIG.floorPanels) {
+    for (const panel of this.mapConfig.floorPanels || []) {
       const slabThickness = panel.slabThickness ?? 0;
       const floorGeometry = slabThickness > 0
         ? new THREE.BoxGeometry(panel.size[0], slabThickness, panel.size[1])
@@ -107,7 +111,7 @@ export class MapBuilder {
   }
 
   createCeilingPanels() {
-    for (const panel of MAP_CONFIG.ceilingPanels || []) {
+    for (const panel of this.mapConfig.ceilingPanels || []) {
       const material = this.textures.createCeilingMaterial(panel.size[0], panel.size[2]);
       const ceiling = new THREE.Mesh(
         new THREE.BoxGeometry(panel.size[0], panel.size[1], panel.size[2]),
@@ -126,7 +130,7 @@ export class MapBuilder {
     const riserMaterial = this.textures.createStairMaterial();
     const railMaterial = new THREE.MeshStandardMaterial({ color: 0x111510, roughness: 0.85 });
 
-    for (const stair of MAP_CONFIG.stairways || []) {
+    for (const stair of this.mapConfig.stairways || []) {
       if (stair.landing) {
         const landingWidth = stair.landing.maxX - stair.landing.minX;
         const landingDepth = stair.landing.maxZ - stair.landing.minZ;
@@ -213,7 +217,7 @@ export class MapBuilder {
       roughness: 0.8,
     });
 
-    for (const wall of MAP_CONFIG.walls) {
+    for (const wall of this.mapConfig.walls || []) {
       const mesh = new THREE.Mesh(new THREE.BoxGeometry(...wall.size), wallMaterial);
       mesh.name = wall.id;
       mesh.position.set(...wall.position);
@@ -250,7 +254,7 @@ export class MapBuilder {
       roughness: 0.86,
     });
 
-    for (const doorConfig of MAP_CONFIG.doors) {
+    for (const doorConfig of this.mapConfig.doors || []) {
       const door = new Door(doorConfig, doorMaterial);
       this.doors.push(door);
       this.scene.add(door.group);
@@ -303,7 +307,7 @@ export class MapBuilder {
   }
 
   createKeys() {
-    for (const keyConfig of MAP_CONFIG.keys) {
+    for (const keyConfig of this.mapConfig.keys || []) {
       const key = new KeyItem(keyConfig);
       this.keys.push(key);
       this.scene.add(key.group);
@@ -312,7 +316,7 @@ export class MapBuilder {
 
   createCabinets() {
     const cabinetMaterial = this.textures.createCabinetMaterial();
-    for (const cabinetConfig of MAP_CONFIG.cabinets) {
+    for (const cabinetConfig of this.mapConfig.cabinets || []) {
       const cabinet = new Cabinet(cabinetConfig, { bodyMaterial: cabinetMaterial });
       this.cabinets.push(cabinet);
       this.scene.add(cabinet.group);
@@ -330,7 +334,11 @@ export class MapBuilder {
   }
 
   createFinalExit() {
-    this.finalExit = new FinalExit(MAP_CONFIG.finalExit);
+    if (!this.mapConfig.finalExit) {
+      return;
+    }
+
+    this.finalExit = new FinalExit(this.mapConfig.finalExit);
     this.scene.add(this.finalExit.group);
     this.collisionWorld.addStaticBox(
       this.finalExit.id,
@@ -340,7 +348,7 @@ export class MapBuilder {
   }
 
   createProps() {
-    for (const prop of MAP_CONFIG.props) {
+    for (const prop of this.mapConfig.props || []) {
       const mesh = this.createPropMesh(prop);
       if (!mesh) {
         continue;
@@ -435,6 +443,78 @@ export class MapBuilder {
       const flame = new THREE.PointLight(0xd4b24a, 0.85, 4.5, 1.8);
       flame.position.y = prop.size[1] + 0.1;
       group.add(flame);
+      return group;
+    }
+
+    if (prop.type === "guard-rail") {
+      const group = new THREE.Group();
+      group.name = prop.id;
+      group.position.set(...prop.position);
+      group.rotation.set(...(prop.rotation || [0, 0, 0]));
+      const [length, height, depth] = prop.size;
+      const railMaterial = new THREE.MeshStandardMaterial({ color: 0x17120f, roughness: 0.88 });
+      const topRail = new THREE.Mesh(new THREE.BoxGeometry(length, 0.16, depth), railMaterial);
+      topRail.position.y = height;
+      topRail.castShadow = true;
+      group.add(topRail);
+
+      const midRail = new THREE.Mesh(new THREE.BoxGeometry(length * 0.96, 0.11, depth * 0.82), railMaterial);
+      midRail.position.y = height * 0.55;
+      midRail.castShadow = true;
+      group.add(midRail);
+
+      const postCount = prop.posts ?? Math.max(3, Math.ceil(length / 1.15) + 1);
+      for (let index = 0; index < postCount; index += 1) {
+        const t = postCount === 1 ? 0.5 : index / (postCount - 1);
+        const post = new THREE.Mesh(new THREE.BoxGeometry(depth * 1.18, height, depth * 1.18), railMaterial);
+        post.position.set(-length / 2 + length * t, height / 2, 0);
+        post.castShadow = true;
+        group.add(post);
+      }
+      return group;
+    }
+
+    if (prop.type === "floor-curb") {
+      const group = new THREE.Group();
+      group.name = prop.id;
+      group.position.set(...prop.position);
+      group.rotation.set(...(prop.rotation || [0, 0, 0]));
+      const [width, height, depth] = prop.size;
+      const material = new THREE.MeshStandardMaterial({ color: 0x17120f, roughness: 0.9 });
+      const curb = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+      curb.position.y = height / 2;
+      curb.castShadow = true;
+      curb.receiveShadow = true;
+      group.add(curb);
+      return group;
+    }
+
+    if (prop.type === "wall-lamp") {
+      const group = new THREE.Group();
+      group.name = prop.id;
+      group.position.set(...prop.position);
+      group.rotation.set(...(prop.rotation || [0, 0, 0]));
+      const [width, height, depth] = prop.size;
+      const baseMaterial = new THREE.MeshStandardMaterial({ color: 0x17120f, roughness: 0.82 });
+      const glowMaterial = new THREE.MeshStandardMaterial({
+        color: 0x9c7a35,
+        emissive: 0xd4b24a,
+        emissiveIntensity: 0.42,
+        roughness: 0.58,
+      });
+
+      const plate = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.05), baseMaterial);
+      plate.castShadow = true;
+      group.add(plate);
+
+      const shade = new THREE.Mesh(new THREE.BoxGeometry(width * 0.64, height * 0.48, depth), glowMaterial);
+      shade.position.z = depth * 0.48;
+      shade.castShadow = true;
+      group.add(shade);
+
+      const light = new THREE.PointLight(0xd4b24a, prop.intensity ?? 0.45, prop.distance ?? 4.2, 1.7);
+      light.position.set(0, 0, depth * 1.1);
+      group.add(light);
       return group;
     }
 
@@ -660,7 +740,7 @@ export class MapBuilder {
   }
 
   validateDoorConnections() {
-    const roomIds = new Set((MAP_CONFIG.roomAreas || []).map((room) => room.id));
+    const roomIds = new Set((this.mapConfig.roomAreas || []).map((room) => room.id));
     for (const door of this.doors) {
       if (door.connectedRoomId && !roomIds.has(door.connectedRoomId)) {
         console.warn(`[MapBuilder] Door ${door.id} references missing room ${door.connectedRoomId}.`);
@@ -674,10 +754,10 @@ export class MapBuilder {
 
   createDebugOverlays() {
     const overlays = [
-      { areas: MAP_CONFIG.floorAreas || [], color: 0x2f8f4f, yOffset: 0.025, opacity: 0.055 },
-      { areas: MAP_CONFIG.blockedAreas || [], color: 0x9c2730, yOffset: 0.04, opacity: 0.1 },
-      { areas: MAP_CONFIG.voidAreas || [], color: 0x35567a, yOffset: 0.035, opacity: 0.08 },
-      { areas: MAP_CONFIG.dropZones || [], color: 0xd4b24a, yOffset: 0.05, opacity: 0.14 },
+      { areas: this.mapConfig.floorAreas || [], color: 0x2f8f4f, yOffset: 0.025, opacity: 0.055 },
+      { areas: this.mapConfig.blockedAreas || [], color: 0x9c2730, yOffset: 0.04, opacity: 0.1 },
+      { areas: this.mapConfig.voidAreas || [], color: 0x35567a, yOffset: 0.035, opacity: 0.08 },
+      { areas: this.mapConfig.dropZones || [], color: 0xd4b24a, yOffset: 0.05, opacity: 0.14 },
     ];
 
     for (const group of overlays) {
@@ -705,7 +785,7 @@ export class MapBuilder {
     }
 
     const waypointMaterial = new THREE.MeshBasicMaterial({ color: 0xd4b24a });
-    for (const waypoint of MAP_CONFIG.transitionWaypoints || []) {
+    for (const waypoint of this.mapConfig.transitionWaypoints || []) {
       const marker = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 8), waypointMaterial);
       marker.name = `debug-waypoint-${waypoint.id}`;
       marker.position.set(...waypoint.position);

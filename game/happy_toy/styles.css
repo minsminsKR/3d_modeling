@@ -31,6 +31,12 @@ button:hover {
   background: #e04a3f;
 }
 
+button.selected {
+  border-color: rgba(212, 178, 74, 0.9);
+  background: rgba(212, 178, 74, 0.2);
+  color: #fff1b8;
+}
+
 input[type="range"] {
   width: 100%;
   accent-color: #d4b24a;
@@ -45,11 +51,12 @@ input[type="range"] {
   display: block;
   width: 100%;
   height: 100%;
+  filter: brightness(1.28) contrast(1.03);
   transition: filter 140ms ease;
 }
 
 body.flashlight-off #game-root canvas {
-  filter: brightness(0.62) contrast(1.04);
+  filter: brightness(1.28) contrast(1.03);
 }
 
 .hud {
@@ -191,6 +198,25 @@ h2 {
   margin: 0 0 20px;
   color: #ddd2b8;
   line-height: 1.55;
+}
+
+.chapter-seed {
+  min-height: 18px;
+  margin: -8px 0 14px;
+  color: rgba(247, 241, 223, 0.58);
+  font: 12px/1.4 "Consolas", "Cascadia Mono", monospace;
+}
+
+.chapter-select {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 4px 0 14px;
+}
+
+.chapter-select button {
+  min-height: 44px;
+  background: rgba(12, 15, 13, 0.78);
 }
 
 .pause-screen {

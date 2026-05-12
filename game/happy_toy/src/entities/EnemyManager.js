@@ -6,11 +6,12 @@ import { CharacterLoader } from "../loaders/CharacterLoader.js";
 import { Enemy } from "./Enemy.js";
 
 export class EnemyManager {
-  constructor(scene, collisionWorld, doors, hud) {
+  constructor(scene, collisionWorld, doors, hud, enemyConfigs = ENEMY_CONFIGS) {
     this.scene = scene;
     this.collisionWorld = collisionWorld;
     this.doors = doors;
     this.hud = hud;
+    this.enemyConfigs = enemyConfigs;
     this.loader = new CharacterLoader();
     this.enemies = [];
   }
@@ -18,7 +19,7 @@ export class EnemyManager {
   async loadEnemies() {
     this.hud.setStatus("Uncat과 Cyclopse가 맵 어딘가에 배치되는 중입니다.");
     const loadedEnemies = await Promise.all(
-      ENEMY_CONFIGS.map(async (config) => {
+      this.enemyConfigs.map(async (config) => {
         const asset = await this.loader.load(config);
         return new Enemy(config, asset, this.collisionWorld, this.doors);
       }),

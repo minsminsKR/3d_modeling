@@ -282,7 +282,7 @@ export class Enemy {
     if (this[timerKey] <= 0 || goalMoved || this[pathKey].length === 0) {
       this[pathKey] = this.collisionWorld.findPath(this.group.position, goal, this.config.radius, {
         cellSize: this.config.pathCellSize ?? 0.85,
-        allowInterFloor: mode === "chase",
+        allowInterFloor: mode === "chase" || (mode === "patrol" && Boolean(this.config.allowInterFloorPatrol)),
       });
       this[goalKey] = goal.clone?.() || vectorFromArray([goal.x, goal.y, goal.z]);
       this[timerKey] = this.config.pathRefreshSeconds ?? 0.28;
@@ -390,6 +390,10 @@ export class Enemy {
     this.cabinetTarget = cabinet;
     this.memoryTimer = 0;
     this.lastKnownPlayerPosition = null;
+    this.chasePath = [];
+    this.chasePathTimer = 0;
+    this.chasePathGoal = null;
+    this.playAction("chase");
   }
 
   updateCabinetInvestigation(deltaTime) {
@@ -400,13 +404,15 @@ export class Enemy {
 
     const guardPosition = this.cabinetTarget.getGuardPosition();
     if (distance2D(this.group.position, guardPosition) > 0.42) {
-      this.playAction("patrol");
-      this.moveToward(guardPosition, this.config.patrolSpeed * 1.35, deltaTime);
+      const target = this.getPathTarget(guardPosition, deltaTime, "chase") || guardPosition;
+      const speed = this.config.cabinetInvestigateSpeed ?? Math.max(this.config.patrolSpeed * 1.35, this.config.chaseSpeed * 0.82);
+      this.playAction("chase");
+      this.moveToward(target, speed, deltaTime);
       this.snapModelToGround(false);
       return;
     }
 
-    this.playIdlePose();
+    this.playAction("chase");
     this.snapModelToGround(false);
     const faceDirection = direction2D(this.group.position, this.cabinetTarget.position);
     if (faceDirection.lengthSq() > 0.0001) {

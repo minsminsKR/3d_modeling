@@ -27,10 +27,15 @@
 
     <section id="start-screen" class="start-screen">
       <div class="start-copy">
-        <p class="eyebrow">Old Summer Corridor</p>
-        <h1>낡은 여름 복도</h1>
-        <p>낡은 실내 복도를 지나 세 개의 열쇠를 찾아 복도 끝 장난감 상자를 여세요.</p>
-        <button id="start-button" type="button">시작</button>
+        <p id="start-eyebrow" class="eyebrow">Chapter 1</p>
+        <h1 id="start-title">낡은 여름 복도</h1>
+        <p id="start-description">낡은 실내 복도를 지나 세 개의 열쇠를 찾아 복도 끝 장난감 상자를 여세요.</p>
+        <p id="chapter-seed" class="chapter-seed">fixed layout</p>
+        <div class="chapter-select" aria-label="Chapter select">
+          <button type="button" data-chapter="1">낡은 여름 복도</button>
+          <button type="button" data-chapter="2">소음 복도</button>
+        </div>
+        <button id="start-button" type="button">Chapter 1 시작</button>
       </div>
     </section>
 
@@ -46,6 +51,7 @@
       <div>
         <p class="eyebrow">Clear</p>
         <h2>장난감 상자가 열렸습니다.</h2>
+        <p>복도의 소리가 사라졌습니다.</p>
         <button id="clear-restart-button" type="button">다시 시작</button>
       </div>
     </section>

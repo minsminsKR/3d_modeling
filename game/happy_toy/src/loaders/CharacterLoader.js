@@ -1,5 +1,5 @@
 // FBX 캐릭터와 원본 텍스처를 읽어 Three.js 장면에 올릴 수 있게 정리하는 모듈입니다.
-// Mixamo에서 받은 Walking.fbx를 기본 애니메이션으로 쓰고, 실패하면 임시 형상으로 대체합니다.
+// Mixamo에서 받은 Walking/Run FBX를 캐릭터 애니메이션으로 쓰고, 실패하면 임시 형상으로 대체합니다.
 
 import * as THREE from "three";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";

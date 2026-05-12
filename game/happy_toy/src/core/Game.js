@@ -2,7 +2,8 @@
 // 렌더러, 장면, 맵, 플레이어, 적, HUD, 루프를 생성하고 서로 연결합니다.
 
 import * as THREE from "three";
-import { CABINET_CONFIG, CAMERA_CONFIG, MAP_CONFIG, PLAYER_CONFIG, WORLD_CONFIG } from "../config/gameConfig.js";
+import { createChapterSession, CHAPTERS } from "../config/chapterConfig.js";
+import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG } from "../config/gameConfig.js";
 import { CollisionWorld } from "../world/CollisionWorld.js";
 import { EnemyManager } from "../entities/EnemyManager.js";
 import { HorrorEventManager } from "../events/HorrorEventManager.js";
@@ -18,7 +19,7 @@ export class Game {
     this.rootElement = rootElement;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(WORLD_CONFIG.fogColor);
-    this.scene.fog = new THREE.Fog(WORLD_CONFIG.fogColor, 7, 32);
+    this.scene.fog = new THREE.Fog(WORLD_CONFIG.fogColor, 30, 115);
 
     this.camera = new THREE.PerspectiveCamera(
       CAMERA_CONFIG.fov,
@@ -32,9 +33,19 @@ export class Game {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.toneMappingExposure = 1.24;
     this.rootElement.appendChild(this.renderer.domElement);
 
     this.hud = new Hud();
+    const urlParams = new URLSearchParams(window.location.search);
+    this.debugEnabled = urlParams.get("debug") === "1";
+    this.startedFromClear = urlParams.get("fromClear") === "1";
+    this.chapterSession = createChapterSession(urlParams.get("chapter") || 1, { seed: urlParams.get("seed") });
+    this.mapConfig = this.chapterSession.mapConfig;
+    this.enemyConfigs = this.chapterSession.enemyConfigs;
+    this.pendingChapterAdvance = null;
+    this.disableChapterAdvance = false;
+    this.hud.setDebugEnabled(this.debugEnabled);
     this.input = new Input(this.renderer.domElement);
     this.collisionWorld = new CollisionWorld();
     this.doors = [];
@@ -66,7 +77,11 @@ export class Game {
 
   async init() {
     this.setupLighting();
-    const map = new MapBuilder(this.scene, this.collisionWorld).build();
+    this.hud.setChapterInfo(this.chapterSession, CHAPTERS);
+    const map = new MapBuilder(this.scene, this.collisionWorld, {
+      debugEnabled: this.debugEnabled,
+      mapConfig: this.mapConfig,
+    }).build();
     this.doors = map.doors;
     this.keys = map.keys;
     this.cabinets = map.cabinets;
@@ -87,7 +102,7 @@ export class Game {
       this.createInteractionContext(),
     );
 
-    this.enemyManager = new EnemyManager(this.scene, this.collisionWorld, this.doors, this.hud);
+    this.enemyManager = new EnemyManager(this.scene, this.collisionWorld, this.doors, this.hud, this.enemyConfigs);
     this.input.connect();
     this.connectUi();
     window.addEventListener("resize", this.handleResize);
@@ -95,58 +110,68 @@ export class Game {
 
     this.loop.start();
     await this.enemyManager.loadEnemies();
+    if (this.startedFromClear) {
+      this.hud.setStatus(`Chapter 2 seed ${this.chapterSession.seed} 복도가 생성되었습니다.`, 2400);
+    }
   }
 
   setupLighting() {
-    const lowAmbient = new THREE.HemisphereLight(0x6f7f68, 0x17110d, 0.42);
+    const inspectionAmbient = new THREE.AmbientLight(0x9fb29a, 1.75);
+    this.scene.add(inspectionAmbient);
+
+    const lowAmbient = new THREE.HemisphereLight(0xa8b99e, 0x342f25, 1.65);
     this.scene.add(lowAmbient);
 
-    const exitLamp = new THREE.PointLight(0xd4b24a, 1.1, 13, 1.6);
+    const mapInspectionFill = new THREE.DirectionalLight(0xc3d0b6, 0.92);
+    mapInspectionFill.position.set(-8, 12, 18);
+    this.scene.add(mapInspectionFill);
+
+    const exitLamp = new THREE.PointLight(0xd4b24a, 2.25, 18, 1.45);
     exitLamp.position.set(0, 2.5, 23);
     this.scene.add(exitLamp);
     this.horrorLights.push(exitLamp);
 
-    const redRoomLamp = new THREE.PointLight(0xc4332c, 0.8, 8, 1.7);
+    const redRoomLamp = new THREE.PointLight(0xc4332c, 1.45, 12, 1.55);
     redRoomLamp.position.set(8.5, 2.4, -7);
     this.scene.add(redRoomLamp);
     this.horrorLights.push(redRoomLamp);
 
-    const finalLamp = new THREE.PointLight(0xd4b24a, 1.2, 12, 1.6);
+    const finalLamp = new THREE.PointLight(0xd4b24a, 2.25, 17, 1.45);
     finalLamp.position.set(0, 2.45, -35.5);
     this.scene.add(finalLamp);
     this.horrorLights.push(finalLamp);
 
-    const storageLamp = new THREE.PointLight(0x348f6c, 0.65, 9, 1.8);
+    const storageLamp = new THREE.PointLight(0x348f6c, 1.35, 13, 1.55);
     storageLamp.position.set(-8.6, 2.3, 4.5);
     this.scene.add(storageLamp);
     this.horrorLights.push(storageLamp);
 
-    const stairLamp = new THREE.PointLight(0x8a392d, 1.05, 12, 1.9);
+    const stairLamp = new THREE.PointLight(0x8a392d, 2.35, 18, 1.55);
     stairLamp.position.set(-7.2, 2.9, 17.4);
     this.scene.add(stairLamp);
     this.horrorLights.push(stairLamp);
 
-    const stairLandingLamp = new THREE.PointLight(0x6d7a58, 0.45, 7, 1.9);
+    const stairLandingLamp = new THREE.PointLight(0x6d7a58, 1.25, 12, 1.55);
     stairLandingLamp.position.set(-4.4, 1.9, 22);
     this.scene.add(stairLandingLamp);
     this.horrorLights.push(stairLandingLamp);
 
-    const upperLandingLamp = new THREE.PointLight(0x8a392d, 0.55, 8, 1.85);
+    const upperLandingLamp = new THREE.PointLight(0x8a392d, 1.45, 13, 1.55);
     upperLandingLamp.position.set(-4.8, 5.25, 12.4);
     this.scene.add(upperLandingLamp);
     this.horrorLights.push(upperLandingLamp);
 
-    const upperHallLamp = new THREE.PointLight(0x6d7a58, 0.85, 14, 2);
+    const upperHallLamp = new THREE.PointLight(0x6d7a58, 1.9, 22, 1.55);
     upperHallLamp.position.set(0.2, 5.9, -10);
     this.scene.add(upperHallLamp);
     this.horrorLights.push(upperHallLamp);
 
-    const upperNurseryLamp = new THREE.PointLight(0x8a392d, 0.9, 10, 1.8);
+    const upperNurseryLamp = new THREE.PointLight(0x8a392d, 1.75, 14, 1.55);
     upperNurseryLamp.position.set(-8.8, 5.55, -4.2);
     this.scene.add(upperNurseryLamp);
     this.horrorLights.push(upperNurseryLamp);
 
-    const upperMirrorLamp = new THREE.PointLight(0xc4332c, 0.75, 9, 1.8);
+    const upperMirrorLamp = new THREE.PointLight(0xc4332c, 1.55, 13, 1.55);
     upperMirrorLamp.position.set(8.2, 5.8, -16.2);
     this.scene.add(upperMirrorLamp);
     this.horrorLights.push(upperMirrorLamp);
@@ -161,9 +186,18 @@ export class Game {
 
   connectUi() {
     this.hud.startButton.addEventListener("click", this.start);
+    for (const button of this.hud.chapterButtons) {
+      button.addEventListener("click", () => this.selectChapter(Number(button.dataset.chapter)));
+    }
     this.renderer.domElement.addEventListener("click", this.start);
     this.hud.restartButton.addEventListener("click", this.restart);
-    this.hud.clearRestartButton.addEventListener("click", this.restart);
+    this.hud.clearRestartButton.addEventListener("click", () => {
+      if (this.gameCleared && this.chapterSession.id === 1) {
+        this.goToChapter(2);
+        return;
+      }
+      this.restart();
+    });
     this.hud.resumeButton.addEventListener("click", this.resume);
     this.hud.pauseRestartButton.addEventListener("click", this.restart);
     this.hud.quitButton.addEventListener("click", this.quitToTitle);
@@ -200,10 +234,15 @@ export class Game {
     this.hud.hideStart();
     this.hud.hidePause();
     this.input.requestPointerLock();
-    this.hud.setStatus("복도 끝에서 무언가 움직였습니다.", 1800);
+    this.hud.setStatus(`${this.chapterSession.title}에 들어섰습니다.`, 1800);
   }
 
   restart() {
+    if (this.chapterSession.procedural) {
+      this.goToChapter(this.chapterSession.id);
+      return;
+    }
+
     this.gameOver = false;
     this.gameCleared = false;
     this.isStarted = true;
@@ -218,7 +257,7 @@ export class Game {
     this.hud.hideStart();
     this.input.requestPointerLock();
     this.player.exitCabinet();
-    this.player.setPosition(new THREE.Vector3(...MAP_CONFIG.playerStart));
+    this.player.setPosition(new THREE.Vector3(...this.mapConfig.playerStart));
     this.player.resetLook(0, 0);
     this.flashlightController.reset();
     this.enemyManager.reset();
@@ -234,6 +273,31 @@ export class Game {
       cabinet.reset();
     }
     this.hud.setStatus("다시 복도 한가운데에 섰습니다.", 1800);
+  }
+
+  selectChapter(chapterId) {
+    if (chapterId === this.chapterSession.id) {
+      this.start();
+      return;
+    }
+
+    this.goToChapter(chapterId);
+  }
+
+  goToChapter(chapterId, options = {}) {
+    window.clearTimeout(this.pendingChapterAdvance);
+    const params = new URLSearchParams();
+    params.set("chapter", String(chapterId));
+    if (chapterId === 2) {
+      params.set("seed", String(options.seed ?? Date.now()));
+    }
+    if (this.debugEnabled) {
+      params.set("debug", "1");
+    }
+    if (options.fromClear) {
+      params.set("fromClear", "1");
+    }
+    window.location.assign(`${window.location.pathname}?${params.toString()}`);
   }
 
   update(deltaTime) {
@@ -279,7 +343,7 @@ export class Game {
   }
 
   updateDebugHud() {
-    if (!this.player) {
+    if (!this.debugEnabled || !this.player) {
       return;
     }
     const debug = this.collisionWorld.getDebugState(this.player.position);
@@ -370,6 +434,7 @@ export class Game {
   }
 
   quitToTitle() {
+    window.clearTimeout(this.pendingChapterAdvance);
     this.resetRunState();
     this.isStarted = false;
     this.isPaused = false;
@@ -389,7 +454,7 @@ export class Game {
     this.collisionWorld.clearDropAttempt();
     this.horrorEventManager?.reset();
     this.player.exitCabinet();
-    this.player.setPosition(new THREE.Vector3(...MAP_CONFIG.playerStart));
+    this.player.setPosition(new THREE.Vector3(...this.mapConfig.playerStart));
     this.player.resetLook(0, 0);
     this.flashlightController.reset();
     this.enemyManager.reset();
@@ -516,7 +581,25 @@ export class Game {
     this.gameCleared = true;
     this.cabinetEvent = null;
     document.exitPointerLock?.();
-    this.hud.showClear();
+
+    if (this.chapterSession.id === 1 && !this.disableChapterAdvance) {
+      this.hud.showClear({
+        title: "Chapter 1 Clear",
+        message: "복도가 뒤틀리며 다음 소음 복도로 이어집니다.",
+        buttonText: "Chapter 2로",
+      });
+      this.hud.setStatus("잠시 후 Chapter 2가 생성됩니다.", 1600);
+      this.pendingChapterAdvance = window.setTimeout(() => {
+        this.goToChapter(2, { fromClear: true });
+      }, 900);
+      return;
+    }
+
+    this.hud.showClear({
+      title: `${this.chapterSession.title} Clear`,
+      message: "장난감 상자가 열리고 복도의 소리가 사라졌습니다.",
+      buttonText: this.chapterSession.procedural ? "새 복도로 다시" : "다시 시작",
+    });
   }
 
   handleCaught(message = "발소리가 바로 뒤에서 멈췄습니다.") {

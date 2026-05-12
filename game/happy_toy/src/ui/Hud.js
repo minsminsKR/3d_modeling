@@ -11,7 +11,12 @@ export class Hud {
     this.caughtScreen = document.querySelector("#caught-screen");
     this.clearScreen = document.querySelector("#clear-screen");
     this.pauseScreen = document.querySelector("#pause-screen");
+    this.startEyebrow = document.querySelector("#start-eyebrow");
+    this.startTitle = document.querySelector("#start-title");
+    this.startDescription = document.querySelector("#start-description");
+    this.chapterSeed = document.querySelector("#chapter-seed");
     this.startButton = document.querySelector("#start-button");
+    this.chapterButtons = [...document.querySelectorAll("[data-chapter]")];
     this.restartButton = document.querySelector("#restart-button");
     this.clearRestartButton = document.querySelector("#clear-restart-button");
     this.resumeButton = document.querySelector("#resume-button");
@@ -67,10 +72,44 @@ export class Hud {
     this.setThreat(0);
   }
 
-  showClear() {
+  setChapterInfo(chapter, chapters = []) {
+    if (this.startEyebrow) {
+      this.startEyebrow.textContent = chapter.eyebrow || `Chapter ${chapter.id}`;
+    }
+    if (this.startTitle) {
+      this.startTitle.textContent = chapter.title;
+    }
+    if (this.startDescription) {
+      this.startDescription.textContent = chapter.description || "";
+    }
+    if (this.chapterSeed) {
+      this.chapterSeed.textContent = chapter.seed ? `seed ${chapter.seed}` : "fixed layout";
+    }
+    if (this.startButton) {
+      this.startButton.textContent = `${chapter.eyebrow || `Chapter ${chapter.id}`} 시작`;
+    }
+    for (const button of this.chapterButtons) {
+      const buttonChapter = chapters.find((entry) => entry.id === Number(button.dataset.chapter));
+      button.textContent = buttonChapter ? buttonChapter.title : `Chapter ${button.dataset.chapter}`;
+      button.classList.toggle("selected", Number(button.dataset.chapter) === chapter.id);
+    }
+  }
+
+  showClear(options = {}) {
+    const title = this.clearScreen.querySelector("h2");
+    const text = this.clearScreen.querySelector("p:not(.eyebrow)");
+    if (title && options.title) {
+      title.textContent = options.title;
+    }
+    if (text && options.message) {
+      text.textContent = options.message;
+    }
+    if (this.clearRestartButton && options.buttonText) {
+      this.clearRestartButton.textContent = options.buttonText;
+    }
     this.clearScreen.classList.remove("hidden");
     this.setThreat(0);
-    this.setStatus("장난감 상자가 열리고 복도의 소리가 사라졌습니다.");
+    this.setStatus(options.message || "장난감 상자가 열리고 복도의 소리가 사라졌습니다.");
   }
 
   hideClear() {
@@ -88,6 +127,14 @@ export class Hud {
 
   setMouseSensitivityDisplay(value) {
     this.mouseSensitivityValue.textContent = value.toFixed(2);
+  }
+
+  setDebugEnabled(enabled) {
+    if (!this.floorDebugElement) {
+      return;
+    }
+    this.floorDebugElement.classList.toggle("hidden", !enabled);
+    this.floorDebugElement.setAttribute("aria-hidden", enabled ? "false" : "true");
   }
 
   setFloorDebug(debug) {

@@ -156,9 +156,20 @@ try {
     const upperStairGuard = game.collisionWorld.blockers.find((blocker) => blocker.id?.startsWith("upper-stair-guard"));
     const lowerWestWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-open-west-wall");
     const lowerEastWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-lower-east-wall");
+    const lowerEastGapCap = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-lower-east-gap-cap");
     const upperWestWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-west-wall");
+    const upperWestLowerShaftWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-west-lower-shaft-wall");
+    const upperEastShaftWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-east-shaft-wall");
+    const upperEastLowerShaftWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-east-lower-shaft-wall");
+    const upperSouthBackWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-south-back-wall");
     const upperNorthWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-north-wall");
     const upperSouthWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-south-wall");
+    const upperNorthCurb = game.scene.getObjectByName("upper-stair-north-curb");
+    const upperSouthRail = game.scene.getObjectByName("upper-stair-south-rail");
+    const upperLandingLeftWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-landing-left-return-wall");
+    const upperLandingEastWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-landing-east-wall");
+    const upperCorridorSouthEnd = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-corridor-south-end");
+    const upperWallLamps = game.scene.children.filter((object) => object.name?.startsWith("upper-") && object.name?.includes("sconce")).length;
     const secondLandingPanel = game.scene.getObjectByName("second-landing-panel");
     const secondStairTopPanel = game.scene.getObjectByName("second-stair-top-panel");
     const stairDoor = game.doors.find((door) => door.id === "door-stairwell");
@@ -168,6 +179,7 @@ try {
     const stairPosts = game.scene.children.filter((object) => object.name?.startsWith("west-stair-post-")).length;
     const wallHandrails = game.scene.children.filter((object) => object.name?.startsWith("west-stair-wall-handrail-")).length;
     const ceilingPieces = game.scene.children.filter((object) => object.name?.startsWith("first-floor-ceiling-")).length;
+    const stairwellUpperCeiling = game.scene.getObjectByName("stairwell-upper-ceiling");
     const lowerInnerGuard = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-open-inner-guard");
     const openCorridorEntryClear = !game.collisionWorld.isCircleBlocked({ x: -2.85, y: 0, z: 22 }, 0.3);
     const lowerStairSideBlockedByWall = game.collisionWorld.isCircleBlocked({ x: -4.55, y: 0, z: 17.2 }, 0.3);
@@ -189,9 +201,20 @@ try {
       stairWidth: stairRamp.maxX - stairRamp.minX,
       hasLowerWestWall: Boolean(lowerWestWall),
       hasLowerEastWall: Boolean(lowerEastWall),
+      hasLowerEastGapCap: Boolean(lowerEastGapCap),
       hasUpperWestWall: Boolean(upperWestWall),
+      hasUpperWestLowerShaftWall: Boolean(upperWestLowerShaftWall),
+      hasUpperEastShaftWall: Boolean(upperEastShaftWall),
+      hasUpperEastLowerShaftWall: Boolean(upperEastLowerShaftWall),
+      hasUpperSouthBackWall: Boolean(upperSouthBackWall),
       hasUpperNorthWall: Boolean(upperNorthWall),
       hasUpperSouthWall: Boolean(upperSouthWall),
+      hasUpperNorthCurb: Boolean(upperNorthCurb),
+      hasUpperSouthRail: Boolean(upperSouthRail),
+      hasUpperLandingLeftWall: Boolean(upperLandingLeftWall),
+      hasUpperLandingEastWall: Boolean(upperLandingEastWall),
+      hasUpperCorridorSouthEnd: Boolean(upperCorridorSouthEnd),
+      upperWallLamps,
       stairDoorExists: Boolean(stairDoor),
       hasStairDoorFrame: Boolean(stairDoorFrame),
       hasBottomLanding: Boolean(landing),
@@ -199,6 +222,7 @@ try {
       stairPosts,
       wallHandrails,
       ceilingPieces,
+      hasStairwellUpperCeiling: Boolean(stairwellUpperCeiling),
       hasLowerOpenGuard: Boolean(lowerInnerGuard),
       openCorridorEntryClear,
       lowerStairSideBlockedByWall,
@@ -222,7 +246,21 @@ try {
   assert(floorState.stairWidth >= 4.2, `expected natural stair width, got ${floorState.stairWidth}`);
   assert(floorState.hasLowerWestWall, "expected lower stair west side to be enclosed by a wall");
   assert(floorState.hasLowerEastWall, "expected lower stair east side to be enclosed by a wall");
-  assert(floorState.hasUpperWestWall && floorState.hasUpperNorthWall && floorState.hasUpperSouthWall, "expected second-floor stair landing edges to be enclosed by full walls");
+  assert(floorState.hasLowerEastGapCap, "expected lower stair side gap to be capped by a real wall");
+  assert(floorState.hasUpperWestWall, "expected upper stair west side to stay enclosed by a wall");
+  assert(floorState.hasUpperWestLowerShaftWall, "expected upper look-back west stair shaft to be closed by a wall");
+  assert(floorState.hasUpperEastShaftWall, "expected upper stair east shaft side to be closed by a wall");
+  assert(floorState.hasUpperEastLowerShaftWall, "expected upper look-back east stair shaft to be closed by a wall");
+  assert(floorState.hasUpperSouthBackWall, "expected upper look-back stair end to be visually closed by a wall");
+  assert(floorState.hasUpperNorthWall && !floorState.hasUpperSouthWall, "expected upper stair arrival view to be front-walled while leaving the stair run open");
+  assert(floorState.hasStairwellUpperCeiling, "expected the upper stairwell void to be capped by a ceiling panel");
+  assert(!floorState.hasUpperNorthCurb, "expected the front stair opening to be a full wall, not a low curb");
+  assert(!floorState.hasUpperSouthRail, "expected no floating rail over the stair run");
+  assert(
+    floorState.hasUpperLandingLeftWall && floorState.hasUpperLandingEastWall && floorState.hasUpperCorridorSouthEnd,
+    "expected upper landing to be closed by real return walls instead of open void edges",
+  );
+  assert(floorState.upperWallLamps >= 2, `expected dim wall sconces around the upper landing, got ${floorState.upperWallLamps}`);
   assert(!floorState.hasStairDoorFrame, "expected no stairwell door frame in corridor stair layout");
   assert(floorState.hasBottomLanding, "expected bottom landing between corridor and stairs");
   assert(floorState.landingMaxX >= -2.4, `expected bottom landing to meet the corridor opening, got maxX ${floorState.landingMaxX}`);
@@ -590,6 +628,30 @@ try {
     const guardBlocked = game.cabinets.some((cabinet) => (
       game.collisionWorld.isCircleBlocked(cabinet.getGuardPosition(), uncat.config.radius)
     ));
+
+    const workshopDoor = game.doors.find((door) => door.id === "door-left-workshop");
+    workshopDoor.isOpen = false;
+    workshopDoor.openAmount = 0;
+    uncat.group.position.set(0, 0, -16);
+    uncat.collisionWorld.snapToValidSurface(uncat.group.position, { actorId: "patrol-door-test" });
+    uncat.currentWaypoint = uncat.config.waypoints.findIndex((point) => point[0] < -8 && point[2] < -12);
+    uncat.patrolPath = [];
+    uncat.patrolPathGoal = null;
+    uncat.patrolPathTimer = 0;
+    uncat.waitTimer = 0;
+    for (let i = 0; i < 180; i += 1) {
+      uncat.update(1 / 60, { position: game.player.position, isHidden: true });
+    }
+    const doorOpenedDuringPatrol = workshopDoor.isOpen;
+
+    uncat.group.position.set(-0.4, 0, 22);
+    uncat.collisionWorld.snapToValidSurface(uncat.group.position, { actorId: "patrol-interfloor-test" });
+    uncat.patrolPath = [];
+    uncat.patrolPathGoal = null;
+    uncat.patrolPathTimer = 0;
+    uncat.getPathTarget({ x: -8.2, y: 3.4, z: -4.2 }, 1 / 60, "patrol", true);
+    const patrolPathHasSecondFloor = uncat.patrolPath.some((point) => point.y > 1.5);
+
     uncat.group.position.set(-13.0, 0, -13.7);
     uncat.endCabinetInvestigation();
     for (let i = 0; i < 260; i += 1) {
@@ -608,20 +670,25 @@ try {
       blocked: game.collisionWorld.isCircleBlocked(uncat.group.position, uncat.config.radius),
       waypointXMax: Math.max(...uncat.config.waypoints.map((point) => Math.abs(point[0]))),
       waypointFloors: [...new Set(uncat.config.waypoints.map((point) => point[1] > 1.5 ? 2 : 1))],
-      floorPatrols: Object.keys(uncat.config.patrolWaypointsByFloor || {}),
+      hasFloorLocalPatrols: Boolean(uncat.config.patrolWaypointsByFloor),
+      allowInterFloorPatrol: Boolean(uncat.config.allowInterFloorPatrol),
+      roomWaypointCount: uncat.config.waypoints.filter((point) => Math.abs(point[0]) > 3.5).length,
+      doorOpenedDuringPatrol,
+      patrolPathHasSecondFloor,
       activePatrolFloor: surfaceAfterLongPatrol.floor,
-      teleportedToStair: Math.abs(uncat.group.position.x + 7.1) < 0.8 && Math.abs(uncat.group.position.z - 20.15) < 1.2,
       movedDuringLongPatrol: Math.hypot(uncat.group.position.x - longPatrolStart.x, uncat.group.position.z - longPatrolStart.z),
     };
   });
   assert(!patrolState.guardBlocked, "expected cabinet guard positions to be clear");
   assert(patrolState.state === "patrol", `expected patrol after cabinet recovery, got ${patrolState.state}`);
   assert(!patrolState.blocked, "expected recovering enemy not to be inside a wall");
-  assert(patrolState.waypointXMax <= 1.2, `expected base Uncat patrol waypoints to stay 1F corridor-focused, got max x ${patrolState.waypointXMax}`);
-  assert(patrolState.waypointFloors.length === 1 && patrolState.waypointFloors[0] === 1, "expected base Uncat waypoints not to include stair/2F transitions");
-  assert(patrolState.floorPatrols.includes("1") && patrolState.floorPatrols.includes("2"), "expected floor-local patrol sets for 1F and 2F");
-  assert(patrolState.activePatrolFloor === 1, `expected normal 1F patrol not to climb stairs by itself, got floor ${patrolState.activePatrolFloor}`);
-  assert(!patrolState.teleportedToStair, "expected normal patrol not to pop to stair entry");
+  assert(patrolState.waypointXMax > 8, `expected free-roam patrol waypoints to include rooms, got max x ${patrolState.waypointXMax}`);
+  assert(patrolState.waypointFloors.includes(1) && patrolState.waypointFloors.includes(2), "expected free-roam waypoints to include both floors");
+  assert(!patrolState.hasFloorLocalPatrols, "expected normal patrol to use one global route instead of floor-local loops");
+  assert(patrolState.allowInterFloorPatrol, "expected patrol pathfinding to allow stair transitions");
+  assert(patrolState.roomWaypointCount >= 6, `expected patrol waypoints inside several rooms, got ${patrolState.roomWaypointCount}`);
+  assert(patrolState.doorOpenedDuringPatrol, "expected monster patrol to open doors when roaming into rooms");
+  assert(patrolState.patrolPathHasSecondFloor, "expected patrol pathfinding to route through the second floor");
   assert(patrolState.movedDuringLongPatrol > 1, "expected normal patrol to keep walking corridors");
 
   const doorChaseState = await page.evaluate(() => {
@@ -699,6 +766,7 @@ try {
   const keyAndClearState = await page.evaluate(() => {
     const game = window.__happyToy;
     game.restart();
+    game.disableChapterAdvance = true;
     game.tryClearFinal();
     const blockedText = document.querySelector("#status-line")?.textContent || "";
     for (const key of game.keys) {
@@ -725,7 +793,15 @@ try {
     const guard = cabinet.getGuardPosition();
     enemy.state = "chase";
     enemy.group.position.copy(guard);
+    enemy.group.position.x += 1.2;
+    game.collisionWorld.snapToValidSurface(enemy.group.position, { actorId: "cabinet-run-test" });
     game.enterCabinet(cabinet, { forceOutcome: "safe" });
+    enemy.update(1 / 60, { position: game.player.position, isHidden: true });
+    const approachState = {
+      approachAction: enemy.currentActionName,
+      approachIdle: enemy.isIdlePose,
+    };
+    enemy.group.position.copy(guard);
     for (let i = 0; i < 90; i += 1) {
       game.updateCabinetEvent(1 / 60);
       enemy.update(1 / 60, { position: game.player.position, isHidden: true });
@@ -743,6 +819,7 @@ try {
       eventCleared: !game.cabinetEvent,
       enemyState: enemy.state,
       cabinetOccupied: cabinet.occupied,
+      ...approachState,
       ...waitingState,
     };
     game.exitCabinet();
@@ -756,8 +833,10 @@ try {
   assert(cabinetSafeState.eventCleared, "expected safe cabinet event to clear after 5 seconds");
   assert(cabinetSafeState.enemyState === "patrol", `expected enemy patrol after safe cabinet event, got ${cabinetSafeState.enemyState}`);
   assert(cabinetSafeState.cabinetOccupied, "expected cabinet occupied while hidden");
-  assert(cabinetSafeState.enemyAction === "idlePose", `expected enemy to hold idle pose at cabinet, got ${cabinetSafeState.enemyAction}`);
-  assert(cabinetSafeState.enemyIdle, "expected enemy idle pose flag while waiting at cabinet");
+  assert(cabinetSafeState.approachAction === "chase", `expected enemy to run toward cabinet, got ${cabinetSafeState.approachAction}`);
+  assert(!cabinetSafeState.approachIdle, "expected enemy approach to keep animated run pose");
+  assert(cabinetSafeState.enemyAction === "chase", `expected enemy to keep run pose at cabinet, got ${cabinetSafeState.enemyAction}`);
+  assert(!cabinetSafeState.enemyIdle, "expected enemy not to freeze into idle pose while waiting at cabinet");
   assert(
     cabinetSafeState.enemyStateWhileWaiting === "investigateCabinet",
     `expected enemy investigating cabinet while waiting, got ${cabinetSafeState.enemyStateWhileWaiting}`,
