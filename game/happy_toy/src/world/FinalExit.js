@@ -1,5 +1,5 @@
 // 최종 방의 클리어 장치를 표현하는 모듈입니다.
-// 열쇠 3개를 모두 모은 뒤 E키로 상호작용하면 Game이 클리어 처리를 합니다.
+// 필요한 열쇠를 모두 모은 뒤 E키로 상호작용하면 Game이 클리어 처리를 합니다.
 
 import * as THREE from "three";
 import { WORLD_CONFIG } from "../config/gameConfig.js";

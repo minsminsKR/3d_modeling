@@ -9,6 +9,7 @@ const TEXTURE_URLS = {
   stair: "./assets/textures/stairs/stair.png",
   door: "./assets/textures/doors/doors.png",
   cabinet: "./assets/textures/cabinets/cabinet.png",
+  hwaPaint: "./assets/textures/hwa_paint/hwa_paint.png",
 };
 
 export class TextureLibrary {
@@ -72,6 +73,15 @@ export class TextureLibrary {
       color: 0xffffff,
       roughness: 0.84,
       metalness: 0.04,
+    });
+  }
+
+  createHwaPaintMaterial() {
+    return new THREE.MeshStandardMaterial({
+      map: this.load("hwaPaint"),
+      color: 0xffffff,
+      roughness: 0.78,
+      metalness: 0.02,
     });
   }
 

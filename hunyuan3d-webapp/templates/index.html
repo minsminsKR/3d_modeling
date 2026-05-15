@@ -15,7 +15,7 @@
           <h1>이미지에서 GLB 모델 생성</h1>
           <p class="lead">
             사진을 업로드하면 Hunyuan3D 2.1 shape 모델로 3D mesh를 생성합니다.
-            여러 장을 올리면 첫 번째 이미지를 shape 기준으로 쓰고, 텍스처 단계에서 나머지 이미지를 참고합니다.
+            여러 장을 올리면 이미지마다 독립 작업을 만들어 각 이미지에 맞는 GLB 모델을 순서대로 생성합니다.
           </p>
         </div>
         <div class="orb" aria-hidden="true"></div>
@@ -28,13 +28,14 @@
             name="images"
             type="file"
             accept="image/png,image/jpeg,image/webp"
+            data-max-files="{{ max_files }}"
             multiple
             required
           >
           <span>
             <span class="drop-title">이미지 선택 또는 붙여넣기</span>
             <span class="drop-copy">
-              PNG, JPG, WEBP를 최대 {{ max_files }}장까지 업로드할 수 있습니다. Ctrl+V 붙여넣기도 지원합니다.
+              PNG, JPG, WEBP를 최대 {{ max_files }}장까지 업로드할 수 있습니다. 여러 장은 각각 별도 모델로 생성됩니다.
             </span>
           </span>
         </label>
@@ -118,13 +119,11 @@
             Hunyuan3D-Omni 선택 비활성화: {{ omni_issues | join(", ") }} 준비가 필요합니다.
           </p>
         {% endif %}
-        {% if not multiview_ready %}
-          <p class="muted">
-            현재 설정은 single-image shape 모델입니다. 여러 장을 업로드해도 첫 번째 이미지로 shape를 생성합니다.
-          </p>
-        {% endif %}
+        <p class="muted">
+          배치 업로드 시 GPU worker 설정에 맞춰 작업이 대기열에 들어갑니다. 기본 설정에서는 한 번에 하나씩 순차 생성됩니다.
+        </p>
 
-        <button class="primary-button" type="submit">3D 모델 생성 시작</button>
+        <button class="primary-button" type="submit">모델 생성 시작</button>
       </form>
 
       {% if recent_jobs %}

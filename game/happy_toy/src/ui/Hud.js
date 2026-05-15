@@ -14,9 +14,7 @@ export class Hud {
     this.startEyebrow = document.querySelector("#start-eyebrow");
     this.startTitle = document.querySelector("#start-title");
     this.startDescription = document.querySelector("#start-description");
-    this.chapterSeed = document.querySelector("#chapter-seed");
     this.startButton = document.querySelector("#start-button");
-    this.chapterButtons = [...document.querySelectorAll("[data-chapter]")];
     this.restartButton = document.querySelector("#restart-button");
     this.clearRestartButton = document.querySelector("#clear-restart-button");
     this.resumeButton = document.querySelector("#resume-button");
@@ -44,6 +42,16 @@ export class Hud {
   setThreat(amount) {
     const clamped = Math.max(0, Math.min(1, amount));
     this.threatElement.style.opacity = String(clamped);
+  }
+
+  setStartEnabled(enabled, label = null) {
+    if (!this.startButton) {
+      return;
+    }
+    this.startButton.disabled = !enabled;
+    if (label) {
+      this.startButton.textContent = label;
+    }
   }
 
   setFlashlightEnabled(enabled) {
@@ -82,16 +90,8 @@ export class Hud {
     if (this.startDescription) {
       this.startDescription.textContent = chapter.description || "";
     }
-    if (this.chapterSeed) {
-      this.chapterSeed.textContent = chapter.seed ? `seed ${chapter.seed}` : "fixed layout";
-    }
     if (this.startButton) {
       this.startButton.textContent = `${chapter.eyebrow || `Chapter ${chapter.id}`} 시작`;
-    }
-    for (const button of this.chapterButtons) {
-      const buttonChapter = chapters.find((entry) => entry.id === Number(button.dataset.chapter));
-      button.textContent = buttonChapter ? buttonChapter.title : `Chapter ${button.dataset.chapter}`;
-      button.classList.toggle("selected", Number(button.dataset.chapter) === chapter.id);
     }
   }
 
@@ -170,6 +170,7 @@ export class Hud {
       `x/z: ${debug.x.toFixed(2)} / ${debug.z.toFixed(2)}`,
       `tile: ${debug.tileType} (${debug.tileId})`,
       `below valid: ${debug.belowValidLanding} floor=${debug.belowFloor ?? "none"} tile=${debug.belowTileType}`,
+      `test safe: ${debug.testSafeMode ? "ON" : "OFF"}`,
       `drop: ${dropText}`,
       `areas: ${areaText}`,
       `door: ${doorText}`,

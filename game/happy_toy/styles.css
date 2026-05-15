@@ -3,6 +3,17 @@
   font-family: "Segoe UI", system-ui, sans-serif;
   background: #060807;
   color: #f7f1df;
+  --glitch-opacity: 0;
+  --glitch-x: 0px;
+  --glitch-y: 0px;
+  --glitch-rgb: 0px;
+  --glitch-brightness: 1;
+  --glitch-contrast: 1;
+  --glitch-tear: 0px;
+  --glitch-scan-speed: 0.28s;
+  --glitch-darkness: 0;
+  --glitch-vignette: 0;
+  --glitch-static: 0;
 }
 
 * {
@@ -31,10 +42,9 @@ button:hover {
   background: #e04a3f;
 }
 
-button.selected {
-  border-color: rgba(212, 178, 74, 0.9);
-  background: rgba(212, 178, 74, 0.2);
-  color: #fff1b8;
+button:disabled {
+  cursor: wait;
+  opacity: 0.58;
 }
 
 input[type="range"] {
@@ -52,7 +62,7 @@ input[type="range"] {
   width: 100%;
   height: 100%;
   filter: brightness(1.28) contrast(1.03);
-  transition: filter 140ms ease;
+  will-change: transform, filter;
 }
 
 body.flashlight-off #game-root canvas {
@@ -64,6 +74,180 @@ body.flashlight-off #game-root canvas {
   position: fixed;
   inset: 0;
   z-index: 5;
+  will-change: transform, filter;
+}
+
+body.glitch-active #game-root canvas,
+body.glitch-active .hud {
+  transform: translate3d(var(--glitch-x), var(--glitch-y), 0);
+  filter:
+    brightness(var(--glitch-brightness))
+    contrast(var(--glitch-contrast))
+    saturate(0.68);
+}
+
+body.glitch-snap #game-root canvas,
+body.glitch-snap .hud {
+  animation: glitch-frame-skip 90ms steps(2, end);
+}
+
+body.glitch-no-signal #game-root canvas {
+  filter:
+    brightness(0.38)
+    contrast(2.45)
+    saturate(0.28)
+    sepia(0.24);
+}
+
+body.glitch-no-signal .glitch-overlay {
+  mix-blend-mode: hard-light;
+  animation:
+    no-signal-snap 170ms steps(2, end),
+    analog-static 60ms steps(2, end) infinite;
+}
+
+body.glitch-impact #game-root {
+  animation: detection-impact-shake 720ms cubic-bezier(0.2, 0.9, 0.18, 1);
+}
+
+.glitch-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: -4%;
+  z-index: 8;
+  opacity: var(--glitch-opacity);
+  mix-blend-mode: screen;
+  background:
+    linear-gradient(
+      180deg,
+      transparent 0 12%,
+      rgba(255, 255, 255, var(--glitch-static)) 12.4% 13.2%,
+      rgba(0, 0, 0, var(--glitch-static)) 13.4% 14.8%,
+      transparent 15.1% 43%,
+      rgba(255, 255, 255, var(--glitch-static)) 43.4% 44%,
+      transparent 44.5% 100%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.12) 0 1px,
+      rgba(0, 0, 0, 0.14) 1px 3px,
+      transparent 3px 7px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 0, 0, 0.08) 0 2px,
+      rgba(0, 255, 210, 0.05) 2px 4px,
+      transparent 4px 11px
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(0, 0, 0, var(--glitch-darkness)) 0 28%,
+      transparent 39%,
+      rgba(255, 255, 255, 0.1) 62%,
+      rgba(0, 0, 0, var(--glitch-vignette)) 100%
+    ),
+    linear-gradient(rgba(0, 0, 0, var(--glitch-darkness)), rgba(0, 0, 0, var(--glitch-darkness)));
+  transform: translate3d(var(--glitch-tear), 0, 0);
+  animation: analog-static var(--glitch-scan-speed) steps(3, end) infinite;
+}
+
+.glitch-overlay::before,
+.glitch-overlay::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: var(--glitch-opacity);
+}
+
+.glitch-overlay::before {
+  background:
+    linear-gradient(180deg, transparent 0 28%, rgba(255, 255, 255, 0.18) 29%, transparent 31% 62%, rgba(0, 0, 0, 0.22) 63%, transparent 66%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 4px);
+  transform: translateX(calc(0px - var(--glitch-rgb)));
+  mix-blend-mode: difference;
+}
+
+.glitch-overlay::after {
+  background:
+    linear-gradient(90deg, rgba(255, 0, 0, 0.26), transparent 18% 82%, rgba(0, 210, 255, 0.22)),
+    repeating-linear-gradient(180deg, transparent 0 13px, rgba(255, 255, 255, 0.22) 13px 14px, transparent 14px 28px);
+  transform: translateX(var(--glitch-rgb));
+  mix-blend-mode: color-dodge;
+}
+
+@keyframes analog-static {
+  0% {
+    background-position: 0 0, 0 0, 0 0, center, center;
+  }
+
+  33% {
+    background-position: 0 17px, 11px -17px, -8px 0, center, center;
+  }
+
+  66% {
+    background-position: 0 -11px, -9px 13px, 12px 0, center, center;
+  }
+
+  100% {
+    background-position: 0 0, 0 0, 0 0, center, center;
+  }
+}
+
+@keyframes no-signal-snap {
+  0% {
+    opacity: 0.98;
+    transform: translate3d(-26px, 0, 0) scaleY(0.985);
+  }
+
+  48% {
+    opacity: 1;
+    transform: translate3d(31px, -2px, 0) scaleY(1.028);
+  }
+
+  100% {
+    opacity: var(--glitch-opacity);
+    transform: translate3d(var(--glitch-tear), 0, 0);
+  }
+}
+
+@keyframes detection-impact-shake {
+  0% {
+    transform: translate3d(-10px, 4px, 0);
+  }
+
+  9% {
+    transform: translate3d(13px, -6px, 0);
+  }
+
+  18% {
+    transform: translate3d(-8px, 3px, 0);
+  }
+
+  36% {
+    transform: translate3d(5px, -2px, 0);
+  }
+
+  62% {
+    transform: translate3d(-2px, 1px, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes glitch-frame-skip {
+  0% {
+    transform: translate3d(calc(var(--glitch-x) - 7px), var(--glitch-y), 0) skewX(-1deg);
+  }
+
+  50% {
+    transform: translate3d(calc(var(--glitch-x) + 9px), calc(var(--glitch-y) - 2px), 0) skewX(1.4deg);
+  }
+
+  100% {
+    transform: translate3d(var(--glitch-x), var(--glitch-y), 0);
+  }
 }
 
 .crosshair {
@@ -109,6 +293,10 @@ body.flashlight-off #game-root canvas {
   color: #fff1b8;
   font-size: 15px;
   letter-spacing: 0;
+}
+
+.interaction-prompt:empty {
+  display: none;
 }
 
 .status-line {
@@ -198,25 +386,6 @@ h2 {
   margin: 0 0 20px;
   color: #ddd2b8;
   line-height: 1.55;
-}
-
-.chapter-seed {
-  min-height: 18px;
-  margin: -8px 0 14px;
-  color: rgba(247, 241, 223, 0.58);
-  font: 12px/1.4 "Consolas", "Cascadia Mono", monospace;
-}
-
-.chapter-select {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-  margin: 4px 0 14px;
-}
-
-.chapter-select button {
-  min-height: 44px;
-  background: rgba(12, 15, 13, 0.78);
 }
 
 .pause-screen {

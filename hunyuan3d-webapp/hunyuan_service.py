@@ -607,17 +607,40 @@ class Hunyuan3DGenerator:
         env = os.environ.copy()
         if self.device.startswith("cuda"):
             env["CUDA_VISIBLE_DEVICES"] = str(max(0, int(gpu_id)))
-        completed = subprocess.run(
-            command,
-            cwd=str(Path(__file__).resolve().parent),
-            capture_output=True,
-            text=True,
-            env=env,
-        )
+        timeout_minutes = max(1, int(os.getenv("HUNYUAN_TEXTURE_TIMEOUT_MINUTES", "12")))
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=str(Path(__file__).resolve().parent),
+                capture_output=True,
+                text=True,
+                env=env,
+                timeout=timeout_minutes * 60,
+            )
+        except subprocess.TimeoutExpired as exc:
+            stdout = (exc.stdout or "").strip()
+            stderr = (exc.stderr or "").strip()
+            worker_log.write_text(
+                "\n".join(
+                    [
+                        f"command: {' '.join(command)}",
+                        f"timeout_minutes: {timeout_minutes}",
+                        "",
+                        "stdout:",
+                        stdout,
+                        "",
+                        "stderr:",
+                        stderr,
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            raise Hunyuan3DError(f"Texture worker timed out after {timeout_minutes} minutes.") from exc
         worker_log.write_text(
             "\n".join(
                 [
                     f"command: {' '.join(command)}",
+                    f"timeout_minutes: {timeout_minutes}",
                     f"returncode: {completed.returncode}",
                     "",
                     "stdout:",

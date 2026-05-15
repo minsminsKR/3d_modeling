@@ -2,6 +2,7 @@
 // 벽, 바닥, 천장, 문, 장난감 소품을 만들고 CollisionWorld에 충돌체를 등록합니다.
 
 import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { MAP_CONFIG, WORLD_CONFIG } from "../config/gameConfig.js";
 import { Cabinet } from "./Cabinet.js";
 import { Door } from "./Door.js";
@@ -20,6 +21,9 @@ export class MapBuilder {
     this.cabinets = [];
     this.finalExit = null;
     this.textures = new TextureLibrary();
+    this.gltfLoader = new GLTFLoader();
+    this.textureLoader = new THREE.TextureLoader();
+    this.pendingAssets = [];
   }
 
   build() {
@@ -42,6 +46,7 @@ export class MapBuilder {
       cabinets: this.cabinets,
       finalExit: this.finalExit,
       playerStart: new THREE.Vector3(...this.mapConfig.playerStart),
+      pendingAssets: this.pendingAssets,
     };
   }
 
@@ -365,6 +370,10 @@ export class MapBuilder {
   }
 
   createPropMesh(prop) {
+    if (prop.assetUrl) {
+      return this.createGltfProp(prop);
+    }
+
     if (prop.type === "blood-stain") {
       const stain = new THREE.Mesh(
         new THREE.CircleGeometry(prop.size[0] / 2, 24),
@@ -418,14 +427,29 @@ export class MapBuilder {
       const color = WORLD_CONFIG.toyColors[prop.colorIndex % WORLD_CONFIG.toyColors.length];
       const material = new THREE.MeshStandardMaterial({ color, roughness: 0.72 });
       const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x15110f, roughness: 0.86 });
-      const frame = new THREE.Mesh(new THREE.BoxGeometry(...prop.size), frameMaterial);
-      frame.position.y = prop.size[1] / 2;
-      frame.castShadow = true;
-      group.add(frame);
-      for (let index = 0; index < 3; index += 1) {
-        const doll = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 10), material);
-        doll.position.set(0, 0.55 + index * 0.45, -0.45 + index * 0.36);
-        group.add(doll);
+      const [width, height, depth] = prop.size;
+      const postGeometry = new THREE.BoxGeometry(0.08, height, 0.08);
+      for (const x of [-width / 2 + 0.04, width / 2 - 0.04]) {
+        for (const z of [-depth / 2 + 0.04, depth / 2 - 0.04]) {
+          const post = new THREE.Mesh(postGeometry, frameMaterial);
+          post.position.set(x, height / 2, z);
+          post.castShadow = true;
+          group.add(post);
+        }
+      }
+      for (let shelfIndex = 0; shelfIndex < 3; shelfIndex += 1) {
+        const plank = new THREE.Mesh(new THREE.BoxGeometry(width, 0.08, depth), frameMaterial);
+        plank.position.y = 0.18 + shelfIndex * (height * 0.38);
+        plank.castShadow = true;
+        plank.receiveShadow = true;
+        group.add(plank);
+      }
+      if (prop.decorations !== false) {
+        for (let index = 0; index < 3; index += 1) {
+          const doll = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 10), material);
+          doll.position.set(0, 0.36 + index * 0.44, -depth * 0.28 + index * depth * 0.28);
+          group.add(doll);
+        }
       }
       return group;
     }
@@ -597,6 +621,90 @@ export class MapBuilder {
       return group;
     }
 
+    if (prop.type === "mirror-panel") {
+      const group = new THREE.Group();
+      group.name = prop.id;
+      group.position.set(...prop.position);
+      group.rotation.set(...(prop.rotation || [0, 0, 0]));
+      const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x17120f, roughness: 0.84 });
+      const glassMaterial = new THREE.MeshStandardMaterial({
+        color: 0x6c8580,
+        metalness: 0.35,
+        roughness: 0.22,
+        transparent: true,
+        opacity: 0.62,
+      });
+      const [width, height, depth] = prop.size;
+      const glass = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), glassMaterial);
+      glass.castShadow = true;
+      group.add(glass);
+      const top = new THREE.Mesh(new THREE.BoxGeometry(width + 0.18, 0.12, depth + 0.06), frameMaterial);
+      top.position.y = height / 2 + 0.08;
+      const bottom = top.clone();
+      bottom.position.y = -height / 2 - 0.08;
+      const sideGeometry = new THREE.BoxGeometry(0.12, height + 0.28, depth + 0.06);
+      const left = new THREE.Mesh(sideGeometry, frameMaterial);
+      left.position.x = -width / 2 - 0.08;
+      const right = new THREE.Mesh(sideGeometry, frameMaterial);
+      right.position.x = width / 2 + 0.08;
+      group.add(top, bottom, left, right);
+      return group;
+    }
+
+    if (prop.type === "hwa-painting") {
+      const group = new THREE.Group();
+      group.name = prop.id;
+      group.position.set(...prop.position);
+      group.rotation.set(...(prop.rotation || [0, 0, 0]));
+      const [width, height, depth] = prop.size;
+      const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x1c120c, roughness: 0.86, metalness: 0.05 });
+      const backingMaterial = new THREE.MeshStandardMaterial({ color: 0x0d0a08, roughness: 0.95 });
+      const paintingMaterial = this.textures.createHwaPaintMaterial();
+
+      const backing = new THREE.Mesh(new THREE.BoxGeometry(width + 0.28, height + 0.28, depth), backingMaterial);
+      backing.receiveShadow = true;
+      group.add(backing);
+
+      const canvas = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth * 0.35), paintingMaterial);
+      canvas.position.z = depth * 0.55;
+      canvas.castShadow = true;
+      canvas.receiveShadow = true;
+      group.add(canvas);
+
+      const top = new THREE.Mesh(new THREE.BoxGeometry(width + 0.36, 0.16, depth + 0.08), frameMaterial);
+      top.position.set(0, height / 2 + 0.11, depth * 0.62);
+      const bottom = top.clone();
+      bottom.position.y = -height / 2 - 0.11;
+      const sideGeometry = new THREE.BoxGeometry(0.16, height + 0.36, depth + 0.08);
+      const left = new THREE.Mesh(sideGeometry, frameMaterial);
+      left.position.set(-width / 2 - 0.11, 0, depth * 0.62);
+      const right = new THREE.Mesh(sideGeometry, frameMaterial);
+      right.position.set(width / 2 + 0.11, 0, depth * 0.62);
+      for (const part of [top, bottom, left, right]) {
+        part.castShadow = true;
+        part.receiveShadow = true;
+      }
+      group.add(top, bottom, left, right);
+      return group;
+    }
+
+    if (prop.type === "ritual-circle") {
+      const group = new THREE.Group();
+      group.name = prop.id;
+      group.position.set(...prop.position);
+      const radius = prop.size[0] / 2;
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(radius * 0.72, radius, 48),
+        new THREE.MeshBasicMaterial({ color: 0xd2191f, transparent: true, opacity: 0.82, depthWrite: false, side: THREE.DoubleSide }),
+      );
+      ring.rotation.x = -Math.PI / 2;
+      group.add(ring);
+      const light = new THREE.PointLight(0xd2191f, 0.9, 5.5, 1.8);
+      light.position.y = 0.28;
+      group.add(light);
+      return group;
+    }
+
     if (prop.type === "broken-desk") {
       const group = new THREE.Group();
       group.name = prop.id;
@@ -688,6 +796,10 @@ export class MapBuilder {
     }
 
     if (prop.type === "paper-strip") {
+      if (prop.textureUrl) {
+        return this.createTexturedHangingProp(prop);
+      }
+
       const group = new THREE.Group();
       group.name = prop.id;
       group.position.set(...prop.position);
@@ -726,6 +838,10 @@ export class MapBuilder {
       return group;
     }
 
+    if (prop.type === "horror-placeholder") {
+      return this.createHorrorPlaceholder(prop);
+    }
+
       const color = WORLD_CONFIG.toyColors[prop.colorIndex % WORLD_CONFIG.toyColors.length];
       const mesh = new THREE.Mesh(
         new THREE.BoxGeometry(...prop.size),
@@ -737,6 +853,363 @@ export class MapBuilder {
       mesh.receiveShadow = true;
       mesh.rotation.y = (prop.position[0] + prop.position[2]) * 0.18;
       return mesh;
+  }
+
+  createHorrorPlaceholder(prop) {
+    const group = new THREE.Group();
+    group.name = prop.id;
+    group.position.set(...prop.position);
+    group.rotation.set(...(prop.rotation || [0, 0, 0]));
+    group.userData.placeholderKind = prop.placeholderKind;
+    group.userData.description = prop.description;
+
+    const baseMaterial = new THREE.MeshStandardMaterial({ color: prop.color ?? 0x5f5145, roughness: 0.9 });
+    const darkMaterial = new THREE.MeshStandardMaterial({ color: 0x110d0b, roughness: 0.95 });
+    const paleMaterial = new THREE.MeshStandardMaterial({ color: 0xb6aa93, roughness: 0.88 });
+    const redMaterial = new THREE.MeshStandardMaterial({ color: 0x6f1918, emissive: 0x2a0505, emissiveIntensity: 0.18, roughness: 0.82 });
+    const [width, height, depth] = prop.size || [1, 1, 1];
+
+    if (prop.textureUrl && prop.placeholderKind === "red-puddle") {
+      const puddle = this.createTexturedFloorProp(prop);
+      group.add(puddle);
+      return group;
+    }
+
+    if (prop.placeholderKind === "wrapped-body") {
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(width * 0.24, height * 0.62, 8, 12), paleMaterial);
+      body.position.y = height * 0.52;
+      body.rotation.z = Math.PI / 2;
+      body.scale.z = depth / Math.max(width, 0.01);
+      body.castShadow = true;
+      const ropeCount = 4;
+      for (let index = 0; index < ropeCount; index += 1) {
+        const rope = new THREE.Mesh(new THREE.TorusGeometry(width * 0.26, 0.018, 8, 18), darkMaterial);
+        rope.position.y = height * (0.26 + index * 0.17);
+        rope.rotation.x = Math.PI / 2;
+        rope.castShadow = true;
+        group.add(rope);
+      }
+      group.add(body);
+      return group;
+    }
+
+    if (prop.placeholderKind === "watching-mask") {
+      const backing = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth * 0.18), darkMaterial);
+      backing.position.y = height / 2;
+      backing.castShadow = true;
+      const face = new THREE.Mesh(new THREE.SphereGeometry(Math.min(width, height) * 0.28, 16, 12), paleMaterial);
+      face.scale.set(0.8, 1.08, 0.2);
+      face.position.set(0, height * 0.58, -depth * 0.12);
+      const eyeGeometry = new THREE.BoxGeometry(width * 0.1, height * 0.035, depth * 0.08);
+      for (const x of [-width * 0.11, width * 0.11]) {
+        const eye = new THREE.Mesh(eyeGeometry, darkMaterial);
+        eye.position.set(x, height * 0.61, -depth * 0.28);
+        group.add(eye);
+      }
+      group.add(backing, face);
+      return group;
+    }
+
+    if (prop.placeholderKind === "red-puddle") {
+      const puddle = new THREE.Mesh(
+        new THREE.CircleGeometry(Math.max(width, depth) * 0.5, 32),
+        new THREE.MeshBasicMaterial({ color: 0x7a1110, transparent: true, opacity: 0.68, depthWrite: false }),
+      );
+      puddle.rotation.x = -Math.PI / 2;
+      puddle.position.y = 0.025;
+      group.add(puddle);
+      for (let index = 0; index < 5; index += 1) {
+        const drip = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.025, depth * (0.18 + index * 0.03)), redMaterial);
+        drip.position.set((index - 2) * width * 0.16, 0.035, depth * (0.18 + index * 0.02));
+        drip.rotation.y = index * 0.42;
+        group.add(drip);
+      }
+      return group;
+    }
+
+    if (prop.placeholderKind === "hanging-bundle") {
+      const cord = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, height, 8), darkMaterial);
+      cord.position.y = height / 2;
+      cord.castShadow = true;
+      const bundle = new THREE.Mesh(new THREE.BoxGeometry(width, height * 0.34, depth), baseMaterial);
+      bundle.position.y = height * 0.18;
+      bundle.rotation.z = -0.08;
+      bundle.castShadow = true;
+      group.add(cord, bundle);
+      return group;
+    }
+
+    if (prop.placeholderKind === "broken-doll-pile") {
+      for (let index = 0; index < 8; index += 1) {
+        const part = new THREE.Mesh(
+          index % 3 === 0 ? new THREE.SphereGeometry(0.11, 10, 8) : new THREE.BoxGeometry(0.18, 0.12, 0.28),
+          index % 2 === 0 ? paleMaterial : baseMaterial,
+        );
+        part.position.set((index % 4 - 1.5) * width * 0.18, 0.08 + index * 0.012, (Math.floor(index / 4) - 0.5) * depth * 0.28);
+        part.rotation.set(index * 0.3, index * 0.7, index * 0.19);
+        part.castShadow = true;
+        group.add(part);
+      }
+      return group;
+    }
+
+    const marker = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), baseMaterial);
+    marker.position.y = height / 2;
+    marker.castShadow = true;
+    marker.receiveShadow = true;
+    group.add(marker);
+    return group;
+  }
+
+  createGltfProp(prop) {
+    const group = new THREE.Group();
+    group.name = prop.id;
+    group.position.set(...prop.position);
+    group.rotation.set(...(prop.rotation || [0, 0, 0]));
+    group.userData.propType = prop.type;
+    group.userData.assetUrl = prop.assetUrl;
+    group.userData.description = prop.description;
+
+    const fallback = this.createGltfLoadingFallback(prop);
+    group.add(fallback);
+
+    const loadPromise = new Promise((resolve) => {
+      this.gltfLoader.load(
+        prop.assetUrl,
+        (gltf) => {
+          const root = gltf.scene || gltf.scenes?.[0];
+          if (!root) {
+            console.warn(`[MapBuilder] GLB asset has no scene: ${prop.id} (${prop.assetUrl})`);
+            resolve();
+            return;
+          }
+
+          group.clear();
+          root.name = `${prop.id}-gltf-root`;
+          this.normalizeGltfRoot(root, prop);
+          root.traverse((child) => {
+            if (!child.isMesh) {
+              return;
+            }
+            child.castShadow = true;
+            child.receiveShadow = true;
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            for (const material of materials) {
+              if (!material) {
+                continue;
+              }
+              if (prop.assetTextureCutout && material.map) {
+                material.map = this.createCutoutTexture(material.map, prop.assetTextureCutout);
+                material.transparent = true;
+                material.alphaTest = prop.assetTextureCutout.alphaTest ?? 0.08;
+                material.depthWrite = false;
+                material.side = THREE.DoubleSide;
+              }
+              for (const key of ["map", "emissiveMap", "roughnessMap", "metalnessMap", "normalMap"]) {
+                if (material[key]) {
+                  material[key].colorSpace = key === "map" || key === "emissiveMap"
+                    ? THREE.SRGBColorSpace
+                    : material[key].colorSpace;
+                }
+              }
+            }
+          });
+          group.add(root);
+          resolve();
+        },
+        undefined,
+        (error) => {
+          console.warn(`[MapBuilder] Failed to load prop GLB ${prop.id}: ${prop.assetUrl}`, error);
+          resolve();
+        },
+      );
+    });
+    this.pendingAssets.push(loadPromise);
+
+    return group;
+  }
+
+  createCutoutTexture(sourceTexture, options = {}) {
+    const image = sourceTexture.image;
+    if (!image) {
+      return sourceTexture;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
+    const samples = options.samples || [
+      [8, 8],
+      [canvas.width - 9, 8],
+      [8, canvas.height - 9],
+      [canvas.width - 9, canvas.height - 9],
+      [canvas.width / 2, 8],
+      [canvas.width / 2, canvas.height - 9],
+    ];
+    const backgroundColors = samples.map(([x, y]) => {
+      const px = Math.max(0, Math.min(canvas.width - 1, Math.round(x)));
+      const py = Math.max(0, Math.min(canvas.height - 1, Math.round(y)));
+      const index = (py * canvas.width + px) * 4;
+      return [pixels[index], pixels[index + 1], pixels[index + 2]];
+    });
+    const threshold = options.threshold ?? 58;
+    const feather = Math.max(1, options.feather ?? 28);
+
+    for (let index = 0; index < pixels.length; index += 4) {
+      const r = pixels[index];
+      const g = pixels[index + 1];
+      const b = pixels[index + 2];
+      let nearestDistance = Infinity;
+      for (const [br, bg, bb] of backgroundColors) {
+        const distance = Math.hypot(r - br, g - bg, b - bb);
+        nearestDistance = Math.min(nearestDistance, distance);
+      }
+      if (nearestDistance < threshold) {
+        pixels[index + 3] = 0;
+      } else if (nearestDistance < threshold + feather) {
+        pixels[index + 3] = Math.round(255 * ((nearestDistance - threshold) / feather));
+      }
+    }
+
+    context.putImageData(imageData, 0, 0);
+    const cutoutTexture = new THREE.CanvasTexture(canvas);
+    cutoutTexture.colorSpace = THREE.SRGBColorSpace;
+    cutoutTexture.flipY = sourceTexture.flipY;
+    cutoutTexture.wrapS = sourceTexture.wrapS;
+    cutoutTexture.wrapT = sourceTexture.wrapT;
+    cutoutTexture.repeat.copy(sourceTexture.repeat);
+    cutoutTexture.offset.copy(sourceTexture.offset);
+    cutoutTexture.needsUpdate = true;
+    return cutoutTexture;
+  }
+
+  createGltfLoadingFallback(prop) {
+    const [width, height, depth] = prop.size || [0.6, 0.6, 0.6];
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x3b3028,
+      roughness: 0.9,
+      transparent: true,
+      opacity: 0.32,
+    });
+    const fallback = new THREE.Mesh(
+      new THREE.BoxGeometry(Math.max(width, 0.08), Math.max(height, 0.08), Math.max(depth, 0.08)),
+      material,
+    );
+    fallback.name = `${prop.id}-asset-loading-fallback`;
+    fallback.position.y = height / 2;
+    fallback.castShadow = true;
+    fallback.receiveShadow = true;
+    return fallback;
+  }
+
+  normalizeGltfRoot(root, prop) {
+    if (prop.assetRotation) {
+      root.rotation.set(...prop.assetRotation);
+      root.updateMatrixWorld(true);
+    }
+
+    const targetSize = new THREE.Vector3(...(prop.size || [1, 1, 1]));
+    root.updateMatrixWorld(true);
+    let box = new THREE.Box3().setFromObject(root);
+    const sourceSize = new THREE.Vector3();
+    box.getSize(sourceSize);
+
+    const axes = ["x", "y", "z"];
+    if (prop.assetScaleMode === "stretch") {
+      const scale = prop.assetScale ?? 1;
+      root.scale.set(
+        sourceSize.x > 0.0001 ? (targetSize.x / sourceSize.x) * scale : scale,
+        sourceSize.y > 0.0001 ? (targetSize.y / sourceSize.y) * scale : scale,
+        sourceSize.z > 0.0001 ? (targetSize.z / sourceSize.z) * scale : scale,
+      );
+      root.updateMatrixWorld(true);
+      box = new THREE.Box3().setFromObject(root);
+      const stretchedCenter = new THREE.Vector3();
+      box.getCenter(stretchedCenter);
+      root.position.x += -stretchedCenter.x;
+      root.position.z += -stretchedCenter.z;
+      root.position.y += (prop.assetAnchor || "bottom") === "center" ? -stretchedCenter.y : -box.min.y;
+      if (prop.assetOffset) {
+        root.position.x += prop.assetOffset[0] ?? 0;
+        root.position.y += prop.assetOffset[1] ?? 0;
+        root.position.z += prop.assetOffset[2] ?? 0;
+      }
+      return;
+    }
+
+    const fitAxes = prop.assetFitAxes || axes.filter((axis) => targetSize[axis] > 0.12);
+    const scaleCandidates = fitAxes
+      .filter((axis) => targetSize[axis] > 0 && sourceSize[axis] > 0.0001)
+      .map((axis) => targetSize[axis] / sourceSize[axis]);
+    const uniformScale = (scaleCandidates.length ? Math.min(...scaleCandidates) : 1) * (prop.assetScale ?? 1);
+    root.scale.multiplyScalar(uniformScale);
+
+    root.updateMatrixWorld(true);
+    box = new THREE.Box3().setFromObject(root);
+    const center = new THREE.Vector3();
+    box.getCenter(center);
+
+    const anchor = prop.assetAnchor
+      || (prop.type === "barred-window" || prop.type === "wire-bundle" ? "center" : "bottom");
+    root.position.x += -center.x;
+    root.position.z += -center.z;
+    root.position.y += anchor === "center" ? -center.y : -box.min.y;
+
+    if (prop.assetOffset) {
+      root.position.x += prop.assetOffset[0] ?? 0;
+      root.position.y += prop.assetOffset[1] ?? 0;
+      root.position.z += prop.assetOffset[2] ?? 0;
+    }
+  }
+
+  createTexturedFloorProp(prop) {
+    const [width, , depth] = prop.size || [1, 0.02, 1];
+    const texture = this.textureLoader.load(prop.textureUrl);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      color: 0xffffff,
+      transparent: true,
+      opacity: prop.opacity ?? 0.82,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), material);
+    mesh.name = `${prop.id}-texture-plane`;
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.y = 0.026;
+    return mesh;
+  }
+
+  createTexturedHangingProp(prop) {
+    const group = new THREE.Group();
+    group.name = prop.id;
+    group.position.set(...prop.position);
+    group.rotation.set(...(prop.rotation || [0, 0, 0]));
+    group.userData.propType = prop.type;
+    group.userData.textureUrl = prop.textureUrl;
+
+    const texture = this.textureLoader.load(prop.textureUrl);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    const material = new THREE.MeshStandardMaterial({
+      map: texture,
+      color: 0xffffff,
+      roughness: 0.96,
+      transparent: true,
+      alphaTest: 0.02,
+      side: THREE.DoubleSide,
+    });
+    const strip = new THREE.Mesh(new THREE.PlaneGeometry(prop.size[0], prop.size[1]), material);
+    strip.name = `${prop.id}-texture-plane`;
+    strip.position.y = -prop.size[1] / 2;
+    strip.castShadow = true;
+    strip.receiveShadow = true;
+    group.add(strip);
+    return group;
   }
 
   validateDoorConnections() {

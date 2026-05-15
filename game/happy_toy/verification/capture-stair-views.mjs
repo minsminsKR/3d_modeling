@@ -16,10 +16,10 @@ const views = [
     pitch: -0.03,
   },
   {
-    name: "02_1f_stair_side_gap_closed.png",
-    position: { x: -2.65, y: 0, z: 21.7 },
-    yaw: 0.22,
-    pitch: -0.08,
+    name: "02_1f_stair_west_alcove_expanded.png",
+    position: { x: -3.0, y: 0, z: 21.7 },
+    yaw: Math.PI / 2,
+    pitch: -0.07,
   },
   {
     name: "03_2f_look_back_closed_sides.png",

@@ -20,8 +20,7 @@ export class EnemyManager {
     this.hud.setStatus("Uncat과 Cyclopse가 맵 어딘가에 배치되는 중입니다.");
     const loadedEnemies = await Promise.all(
       this.enemyConfigs.map(async (config) => {
-        const asset = await this.loader.load(config);
-        return new Enemy(config, asset, this.collisionWorld, this.doors);
+        return this.createEnemy(config);
       }),
     );
 
@@ -32,19 +31,78 @@ export class EnemyManager {
     this.hud.setStatus("문 너머에서 발소리가 들립니다.", 1800);
   }
 
+  async createEnemy(config) {
+    const asset = await this.loader.load(config);
+    return new Enemy(config, asset, this.collisionWorld, this.doors);
+  }
+
+  async addEnemy(config, options = {}) {
+    const enemy = await this.createEnemy(config);
+    if (options.spawn) {
+      enemy.group.position.set(...options.spawn);
+      this.collisionWorld.snapToValidSurface(enemy.group.position, { actorId: config.id });
+    }
+    if (Number.isFinite(options.yaw)) {
+      enemy.group.rotation.y = options.yaw;
+    }
+    if (options.state) {
+      enemy.state = options.state;
+    }
+    enemy.isDynamic = Boolean(options.dynamic);
+    enemy.snapModelToGround(false);
+    this.enemies.push(enemy);
+    this.scene.add(enemy.group);
+    return enemy;
+  }
+
+  removeEnemyById(id) {
+    const nextEnemies = [];
+    for (const enemy of this.enemies) {
+      if (enemy.config.id === id) {
+        this.scene.remove(enemy.group);
+        continue;
+      }
+      nextEnemies.push(enemy);
+    }
+    this.enemies = nextEnemies;
+  }
+
   update(deltaTime, playerState) {
     const playerPosition = playerState.position || playerState;
     let threat = 0;
     let caught = false;
+    const detectionEvents = [];
 
     for (const enemy of this.enemies) {
       enemy.update(deltaTime, playerState);
+      if (enemy.lastDetectionEvent) {
+        detectionEvents.push(enemy.lastDetectionEvent);
+      }
       threat = Math.max(threat, enemy.getThreatAmount(playerPosition));
       caught ||= enemy.caughtPlayer;
     }
 
     this.hud.setThreat(threat);
-    return { caught, threat };
+    return { caught, threat, detectionEvents };
+  }
+
+  setTestSafeMode(enabled) {
+    if (!enabled) {
+      return;
+    }
+
+    for (const enemy of this.enemies) {
+      enemy.state = "patrol";
+      enemy.memoryTimer = 0;
+      enemy.lastKnownPlayerPosition = null;
+      enemy.caughtPlayer = false;
+      enemy.cabinetTarget = null;
+      enemy.chasePath = [];
+      enemy.chasePathTimer = 0;
+      enemy.chasePathGoal = null;
+      enemy.lastDetectionEvent = null;
+      enemy.playAction("patrol");
+    }
   }
 
   getClosestChasingEnemy(position) {
@@ -75,6 +133,11 @@ export class EnemyManager {
   }
 
   reset() {
+    for (const enemy of this.enemies.filter((entry) => entry.isDynamic)) {
+      this.scene.remove(enemy.group);
+    }
+    this.enemies = this.enemies.filter((entry) => !entry.isDynamic);
+
     for (const enemy of this.enemies) {
       enemy.group.position.set(...enemy.config.spawn);
       enemy.state = "patrol";
@@ -94,6 +157,7 @@ export class EnemyManager {
       enemy.stuckTimer = 0;
       enemy.lastUnstuckTarget = null;
       enemy.debugPathTarget = null;
+      enemy.lastDetectionEvent = null;
       enemy.group.position.y = this.collisionWorld.getGroundY(enemy.group.position);
       enemy.resumeAnimatedPose();
       enemy.playAction("patrol", 0);

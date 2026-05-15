@@ -37,6 +37,17 @@ export class PlayerController {
     this.pitch = pitch;
   }
 
+  setLookAt(target) {
+    const direction = new THREE.Vector3().subVectors(target, this.camera.position);
+    if (direction.lengthSq() <= 0.0001) {
+      return;
+    }
+    direction.normalize();
+    this.yaw = Math.atan2(-direction.x, -direction.z);
+    this.pitch = Math.asin(direction.y);
+    this.camera.rotation.set(this.pitch, this.yaw, 0, "YXZ");
+  }
+
   setInteractables(interactables, context) {
     this.interactables = interactables;
     this.interactionContext = context;

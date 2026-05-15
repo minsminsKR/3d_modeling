@@ -47,6 +47,7 @@ try {
       roomAreas: game.collisionWorld.roomAreas.length,
       blockedAreas: game.collisionWorld.blockedAreas.length,
       voidAreas: game.collisionWorld.voidAreas.length,
+      hasStairWestAlcove: game.collisionWorld.floorAreas.some((area) => area.id === "stair-west-alcove_1f"),
       transitionWaypoints: game.collisionWorld.transitionWaypoints.length,
       lockedDoors: game.doors.filter((door) => door.isLocked || door.isBlocked).length,
       connectedSecondFloorDoors: game.doors.filter((door) => door.position.y > 3 && door.connectedRoomId).length,
@@ -77,7 +78,7 @@ try {
     };
   });
 
-  assert(initialState.keys === 3, `expected 3 keys, got ${initialState.keys}`);
+  assert(initialState.keys === 4, `expected 4 keys, got ${initialState.keys}`);
   assert(initialState.cabinets >= 4, `expected at least 4 cabinets, got ${initialState.cabinets}`);
   assert(initialState.doors >= 7, `expected two-floor map doors, got ${initialState.doors}`);
   assert(initialState.floorAreas >= 5, `expected registered floor areas, got ${initialState.floorAreas}`);
@@ -85,6 +86,7 @@ try {
   assert(initialState.dropZones >= 1, `expected explicit drop zones, got ${initialState.dropZones}`);
   assert(initialState.ramps >= 1, `expected registered stair ramp, got ${initialState.ramps}`);
   assert(initialState.roomAreas >= 8, `expected every opening door to map to a room/event area, got ${initialState.roomAreas}`);
+  assert(initialState.hasStairWestAlcove, "expected the 1F stair west blank space to be registered as walkable map expansion");
   assert(initialState.blockedAreas >= 3, `expected explicit blocked areas, got ${initialState.blockedAreas}`);
   assert(initialState.voidAreas >= 2, `expected explicit void debug areas, got ${initialState.voidAreas}`);
   assert(initialState.transitionWaypoints >= 2, `expected stair transition waypoints, got ${initialState.transitionWaypoints}`);
@@ -155,6 +157,8 @@ try {
     const upperY = game.collisionWorld.getGroundY({ x: 0, y: 3.4, z: -8 });
     const upperStairGuard = game.collisionWorld.blockers.find((blocker) => blocker.id?.startsWith("upper-stair-guard"));
     const lowerWestWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-open-west-wall");
+    const stairWestAlcoveWestWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-west-alcove-west-wall");
+    const stairWestAlcoveNorthWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-west-alcove-north-wall");
     const lowerEastWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-lower-east-wall");
     const lowerEastGapCap = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-lower-east-gap-cap");
     const upperWestWall = game.collisionWorld.blockers.find((blocker) => blocker.id === "upper-stair-west-wall");
@@ -182,6 +186,17 @@ try {
     const stairwellUpperCeiling = game.scene.getObjectByName("stairwell-upper-ceiling");
     const lowerInnerGuard = game.collisionWorld.blockers.find((blocker) => blocker.id === "stair-open-inner-guard");
     const openCorridorEntryClear = !game.collisionWorld.isCircleBlocked({ x: -2.85, y: 0, z: 22 }, 0.3);
+    const stairWestAlcoveProbe = { x: -12.2, y: 0, z: 21.6 };
+    const stairWestAlcoveSurface = game.collisionWorld.getSurfaceAt(stairWestAlcoveProbe);
+    const stairWestAlcoveClear = !game.collisionWorld.isCircleBlocked(stairWestAlcoveProbe, 0.3);
+    const stairWestAlcovePath = game.collisionWorld.findPath(
+      { x: -3.0, y: 0, z: 21.6 },
+      stairWestAlcoveProbe,
+      0.34,
+      { allowInterFloor: false },
+    );
+    const stairWestShelf = game.scene.getObjectByName("stair-west-service-shelf");
+    const stairWestLamp = game.scene.getObjectByName("stair-west-warning-lamp");
     const lowerStairSideBlockedByWall = game.collisionWorld.isCircleBlocked({ x: -4.55, y: 0, z: 17.2 }, 0.3);
     const lowerStairCenterClear = !game.collisionWorld.isCircleBlocked({ x: -7.1, y: 0, z: 17.2 }, 0.3);
     const stairTopClear = !game.collisionWorld.isCircleBlocked({ x: -7.0, y: 3.4, z: 9.8 }, 0.34);
@@ -200,6 +215,8 @@ try {
       secondStairTopPanelType: secondStairTopPanel?.geometry?.type || "",
       stairWidth: stairRamp.maxX - stairRamp.minX,
       hasLowerWestWall: Boolean(lowerWestWall),
+      hasStairWestAlcoveWestWall: Boolean(stairWestAlcoveWestWall),
+      hasStairWestAlcoveNorthWall: Boolean(stairWestAlcoveNorthWall),
       hasLowerEastWall: Boolean(lowerEastWall),
       hasLowerEastGapCap: Boolean(lowerEastGapCap),
       hasUpperWestWall: Boolean(upperWestWall),
@@ -225,6 +242,11 @@ try {
       hasStairwellUpperCeiling: Boolean(stairwellUpperCeiling),
       hasLowerOpenGuard: Boolean(lowerInnerGuard),
       openCorridorEntryClear,
+      stairWestAlcoveWalkable: stairWestAlcoveSurface.walkable && stairWestAlcoveSurface.id === "stair-west-alcove_1f",
+      stairWestAlcoveClear,
+      stairWestAlcovePathLength: stairWestAlcovePath.length,
+      hasStairWestShelf: Boolean(stairWestShelf),
+      hasStairWestLamp: Boolean(stairWestLamp),
       lowerStairSideBlockedByWall,
       lowerStairCenterClear,
       stairTopClear,
@@ -245,8 +267,12 @@ try {
   assert(!floorState.stairDoorExists, "expected stair to be open from corridor without a stairwell door");
   assert(floorState.stairWidth >= 4.2, `expected natural stair width, got ${floorState.stairWidth}`);
   assert(floorState.hasLowerWestWall, "expected lower stair west side to be enclosed by a wall");
+  assert(
+    floorState.hasStairWestAlcoveWestWall && floorState.hasStairWestAlcoveNorthWall,
+    "expected the expanded 1F stair west alcove to be enclosed by real walls",
+  );
   assert(floorState.hasLowerEastWall, "expected lower stair east side to be enclosed by a wall");
-  assert(floorState.hasLowerEastGapCap, "expected lower stair side gap to be capped by a real wall");
+  assert(!floorState.hasLowerEastGapCap, "expected the old stair side gap cap to stay removed for expanded access");
   assert(floorState.hasUpperWestWall, "expected upper stair west side to stay enclosed by a wall");
   assert(floorState.hasUpperWestLowerShaftWall, "expected upper look-back west stair shaft to be closed by a wall");
   assert(floorState.hasUpperEastShaftWall, "expected upper stair east shaft side to be closed by a wall");
@@ -265,6 +291,10 @@ try {
   assert(floorState.hasBottomLanding, "expected bottom landing between corridor and stairs");
   assert(floorState.landingMaxX >= -2.4, `expected bottom landing to meet the corridor opening, got maxX ${floorState.landingMaxX}`);
   assert(floorState.openCorridorEntryClear, "expected corridor entry into stair landing to be clear");
+  assert(floorState.stairWestAlcoveWalkable, "expected the visible 1F stair west blank space to be walkable");
+  assert(floorState.stairWestAlcoveClear, "expected the 1F stair west alcove center to be free of collision");
+  assert(floorState.stairWestAlcovePathLength > 2, "expected a navigable path from the stair landing into the expanded west alcove");
+  assert(floorState.hasStairWestShelf && floorState.hasStairWestLamp, "expected the expanded west alcove to be dressed with props and light");
   assert(!floorState.hasLowerOpenGuard, "expected lower stair side to be free of small guard walls");
   assert(floorState.lowerStairSideBlockedByWall, "expected stair side edge to be blocked by a real wall");
   assert(floorState.lowerStairCenterClear, "expected stair centerline to stay playable inside the enclosed stair");
@@ -621,13 +651,75 @@ try {
   assert(cabinetExitState.dotToCabinet < -0.75, `expected exit camera not to look back at cabinet, dot ${cabinetExitState.dotToCabinet}`);
   assert(Math.abs(cabinetExitState.pitch) <= 0.001, `expected level pitch after cabinet exit, got ${cabinetExitState.pitch}`);
 
+  const cabinetEarlyExitState = await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.restart();
+    const cabinet = game.cabinets.find((entry) => entry.id === "cabinet-stair-side");
+    const enemy = game.enemyManager.enemies.find((entry) => entry.config.id === "uncat");
+    const guard = cabinet.getGuardPosition();
+    game.player.position.copy(cabinet.getExitPosition());
+    enemy.state = "chase";
+    enemy.group.position.set(guard.x, guard.y, guard.z + 5.8);
+    enemy.memoryTimer = enemy.config.memorySeconds;
+    enemy.lastKnownPlayerPosition = game.player.position.clone();
+    game.enterCabinet(cabinet, { forceOutcome: "safe" });
+    const beforeExit = {
+      hidden: game.player.isHidden,
+      eventActive: Boolean(game.cabinetEvent),
+      arrived: game.cabinetEvent?.arrived ?? null,
+      enemyState: enemy.state,
+      enemyCabinetTarget: enemy.cabinetTarget?.id || null,
+    };
+    game.exitCabinet();
+    for (let i = 0; i < 45; i += 1) {
+      enemy.update(1 / 60, {
+        position: game.player.position,
+        isHidden: game.player.isHidden,
+        isMoving: true,
+        isSprinting: true,
+      });
+    }
+    return {
+      beforeExit,
+      hiddenAfterExit: game.player.isHidden,
+      eventCleared: !game.cabinetEvent,
+      cabinetOccupied: cabinet.occupied,
+      enemyState: enemy.state,
+      enemyCabinetTarget: enemy.cabinetTarget?.id || null,
+      enemyMemory: enemy.memoryTimer,
+      enemyDistance: Math.hypot(enemy.group.position.x - game.player.position.x, enemy.group.position.z - game.player.position.z),
+      statusText: document.querySelector("#status-line")?.textContent || "",
+    };
+  });
+  assert(cabinetEarlyExitState.beforeExit.hidden, "expected player hidden before early cabinet exit");
+  assert(cabinetEarlyExitState.beforeExit.eventActive, "expected cabinet event to be active before early exit");
+  assert(cabinetEarlyExitState.beforeExit.arrived === false, "expected early exit test before the monster arrives at the cabinet");
+  assert(!cabinetEarlyExitState.hiddenAfterExit, "expected E to allow exiting while monster is still approaching");
+  assert(cabinetEarlyExitState.eventCleared, "expected early cabinet exit to clear the cabinet event");
+  assert(!cabinetEarlyExitState.cabinetOccupied, "expected cabinet to become available after early exit");
+  assert(cabinetEarlyExitState.enemyState === "chase", `expected monster to resume chase after early exit, got ${cabinetEarlyExitState.enemyState}`);
+  assert(!cabinetEarlyExitState.enemyCabinetTarget, "expected monster cabinet investigation target to clear after early exit");
+  assert(cabinetEarlyExitState.enemyMemory > 0, "expected monster chase memory after early cabinet exit");
+  assert(cabinetEarlyExitState.enemyDistance < 6.2, `expected monster to keep closing after early cabinet exit, got ${cabinetEarlyExitState.enemyDistance}`);
+  assert(cabinetEarlyExitState.statusText.includes("다시 쫓아옵니다"), "expected status text to mention renewed chase after early exit");
+
   const patrolState = await page.evaluate(() => {
     const game = window.__happyToy;
     game.restart();
     const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+    const cyclopse = game.enemyManager.enemies.find((enemy) => enemy.config.id === "cyclopse");
     const guardBlocked = game.cabinets.some((cabinet) => (
       game.collisionWorld.isCircleBlocked(cabinet.getGuardPosition(), uncat.config.radius)
     ));
+    const stairSideCabinet = game.cabinets.find((cabinet) => cabinet.id === "cabinet-stair-side");
+    const stairSideGuard = stairSideCabinet.getGuardPosition();
+    const stairSideExit = stairSideCabinet.getExitPosition();
+    const stairSidePassagePath = game.collisionWorld.findPath(
+      { x: -3.76, y: 0, z: 10.0 },
+      { x: -3.76, y: 0, z: 18.8 },
+      cyclopse.config.radius,
+      { allowInterFloor: false, cellSize: 0.45 },
+    );
 
     const workshopDoor = game.doors.find((door) => door.id === "door-left-workshop");
     workshopDoor.isOpen = false;
@@ -664,6 +756,10 @@ try {
     const surfaceAfterLongPatrol = game.collisionWorld.getSurfaceAt(uncat.group.position, { allowAnyFloor: true });
     return {
       guardBlocked,
+      stairSideCabinetYaw: stairSideCabinet.yaw,
+      stairSideGuardClearForCyclopse: !game.collisionWorld.isCircleBlocked(stairSideGuard, cyclopse.config.radius),
+      stairSideExitClearForPlayer: !game.collisionWorld.isCircleBlocked(stairSideExit, 0.34),
+      stairSidePassagePathLength: stairSidePassagePath.length,
       x: uncat.group.position.x,
       z: uncat.group.position.z,
       state: uncat.state,
@@ -680,6 +776,10 @@ try {
     };
   });
   assert(!patrolState.guardBlocked, "expected cabinet guard positions to be clear");
+  assert(Math.abs(patrolState.stairSideCabinetYaw - Math.PI / 2) <= 0.001, "expected stair-side cabinet to be turned sideways against the wall");
+  assert(patrolState.stairSideGuardClearForCyclopse, "expected stair-side cabinet guard point to be clear for Cyclopse");
+  assert(patrolState.stairSideExitClearForPlayer, "expected stair-side cabinet exit point to be clear for the player");
+  assert(patrolState.stairSidePassagePathLength > 4, "expected monsters to retain a path through the stair-side passage beside the cabinet");
   assert(patrolState.state === "patrol", `expected patrol after cabinet recovery, got ${patrolState.state}`);
   assert(!patrolState.blocked, "expected recovering enemy not to be inside a wall");
   assert(patrolState.waypointXMax > 8, `expected free-roam patrol waypoints to include rooms, got max x ${patrolState.waypointXMax}`);
@@ -766,10 +866,12 @@ try {
   const keyAndClearState = await page.evaluate(() => {
     const game = window.__happyToy;
     game.restart();
-    game.disableChapterAdvance = true;
     game.tryClearFinal();
     const blockedText = document.querySelector("#status-line")?.textContent || "";
     for (const key of game.keys) {
+      if (key.isAvailable === false) {
+        key.revealAt([key.position.x, key.position.y, key.position.z]);
+      }
       game.collectKey(key);
     }
     game.tryClearFinal();
@@ -780,9 +882,9 @@ try {
       clearVisible: !document.querySelector("#clear-screen")?.classList.contains("hidden"),
     };
   });
-  assert(keyAndClearState.blockedText.includes("부족"), "expected final exit to block without 3 keys");
-  assert(keyAndClearState.keyCount === 3, `expected 3 collected keys, got ${keyAndClearState.keyCount}`);
-  assert(keyAndClearState.cleared, "expected gameCleared after handing in 3 keys");
+  assert(keyAndClearState.blockedText.includes("부족"), "expected final exit to block without all keys");
+  assert(keyAndClearState.keyCount === 4, `expected 4 collected keys, got ${keyAndClearState.keyCount}`);
+  assert(keyAndClearState.cleared, "expected gameCleared after handing in 4 keys");
   assert(keyAndClearState.clearVisible, "expected clear overlay to be visible");
 
   const cabinetSafeState = await page.evaluate(() => {
@@ -933,6 +1035,16 @@ try {
 
   await page.evaluate(() => {
     const game = window.__happyToy;
+    game.player.setPosition({ x: -3.0, y: 0, z: 21.7 });
+    game.player.yaw = Math.PI / 2;
+    game.player.pitch = -0.07;
+    game.player.update(0);
+    game.renderer.render(game.scene, game.camera);
+  });
+  await page.screenshot({ path: "E:/AI/3d_modeling/game/happy_toy/verification/stair-west-alcove-check.png", fullPage: false });
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
     game.player.setPosition({ x: -5.6, y: 3.4, z: 12.3 });
     game.player.yaw = Math.PI;
     game.player.pitch = -0.45;
@@ -957,6 +1069,7 @@ try {
     stealthAndFloorState,
     interFloorChaseState,
     cabinetExitState,
+    cabinetEarlyExitState,
     patrolState,
     doorChaseState,
     pauseState,

@@ -28,7 +28,8 @@ export class FlashlightController {
   }
 
   applyState(showMessage) {
-    this.spotLight.visible = this.enabled;
+    // visible 토글은 첫 F 입력 때 조명 셰이더 재컴파일을 유발할 수 있어 intensity만 바꿉니다.
+    this.spotLight.visible = true;
     this.spotLight.intensity = this.enabled ? this.defaultIntensity : 0;
     this.hud.setFlashlightEnabled(this.enabled);
 

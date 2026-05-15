@@ -13,6 +13,8 @@ export class Cabinet {
     this.position = new THREE.Vector3(...config.position);
     this.yaw = config.yaw ?? 0;
     this.size = config.size || [1.18, 2.25, 0.72];
+    this.guardDistance = config.guardDistance ?? 1.28;
+    this.exitDistance = config.exitDistance ?? 1.05;
     this.occupied = false;
 
     this.group = new THREE.Group();
@@ -86,11 +88,11 @@ export class Cabinet {
   }
 
   getGuardPosition() {
-    return this.position.clone().addScaledVector(this.getForwardDirection(), 1.28);
+    return this.position.clone().addScaledVector(this.getForwardDirection(), this.guardDistance);
   }
 
   getExitPosition() {
-    const exitPosition = this.position.clone().addScaledVector(this.getForwardDirection(), 1.05);
+    const exitPosition = this.position.clone().addScaledVector(this.getForwardDirection(), this.exitDistance);
     exitPosition.y = this.position.y;
     return exitPosition;
   }

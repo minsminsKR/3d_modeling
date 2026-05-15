@@ -4,6 +4,7 @@ const dropZone = document.querySelector(".drop-zone");
 
 if (fileInput && fileList && dropZone) {
   const filesBuffer = [];
+  const maxFiles = Number(fileInput.dataset.maxFiles || 0);
 
   const allowedPasteImageTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
 
@@ -59,11 +60,20 @@ if (fileInput && fileList && dropZone) {
       chip.appendChild(removeBtn);
       fileList.appendChild(chip);
     });
+    if (maxFiles > 0 && filesBuffer.length >= maxFiles) {
+      const note = document.createElement("div");
+      note.className = "file-note";
+      note.textContent = `최대 ${maxFiles}장까지 선택되었습니다.`;
+      fileList.appendChild(note);
+    }
   };
 
   const addFiles = (files) => {
     const imageFiles = [...files].filter((file) => file.type.startsWith("image/"));
     for (const file of imageFiles) {
+      if (maxFiles > 0 && filesBuffer.length >= maxFiles) {
+        break;
+      }
       const duplicate = filesBuffer.some((existing) => (
         existing.name === file.name &&
         existing.size === file.size &&
@@ -231,4 +241,109 @@ if (jobId) {
   }
   window.setInterval(renderElapsed, 1000);
   renderElapsed();
+}
+
+const batchId = document.body.dataset.batchId;
+if (batchId) {
+  const batchStatusPill = document.querySelector("#batch-status-pill");
+  const batchMessage = document.querySelector("#batch-message");
+  const batchCompleted = document.querySelector("#batch-completed");
+  const batchFailed = document.querySelector("#batch-failed");
+  const batchDownloadLink = document.querySelector("#batch-download-link");
+
+  const formatDuration = (seconds) => {
+    const safeSeconds = Math.max(0, Math.floor(seconds));
+    const minutes = Math.floor(safeSeconds / 60);
+    const remainingSeconds = safeSeconds % 60;
+    if (minutes === 0) {
+      return `${remainingSeconds}s`;
+    }
+    return `${minutes}m ${String(remainingSeconds).padStart(2, "0")}s`;
+  };
+
+  const ensureModelPreview = (slot, modelUrl) => {
+    if (!slot || !modelUrl) {
+      return;
+    }
+    const existing = slot.querySelector("model-viewer");
+    if (existing) {
+      existing.src = modelUrl;
+      return;
+    }
+    slot.innerHTML = "";
+    slot.classList.remove("empty");
+    const viewer = document.createElement("model-viewer");
+    viewer.src = modelUrl;
+    viewer.setAttribute("camera-controls", "");
+    viewer.setAttribute("auto-rotate", "");
+    viewer.setAttribute("exposure", "1");
+    viewer.setAttribute("shadow-intensity", "0.45");
+    viewer.setAttribute("interaction-prompt", "none");
+    slot.appendChild(viewer);
+  };
+
+  const renderBatchJob = (job) => {
+    const card = document.querySelector(`.batch-job[data-job-id="${job.id}"]`);
+    if (!card) {
+      return;
+    }
+    const status = card.querySelector(".batch-job-status");
+    const message = card.querySelector(".batch-job-message");
+    const elapsed = card.querySelector(".batch-job-elapsed");
+    const slot = card.querySelector(".batch-model-slot");
+    const download = card.querySelector(".batch-download");
+
+    status.textContent = job.status;
+    status.className = `batch-job-status pill ${job.status}`;
+    message.textContent = job.message || "";
+    elapsed.textContent = formatDuration(job.elapsed_seconds || 0);
+
+    if (job.status === "completed") {
+      ensureModelPreview(slot, job.model_url);
+      if (download && job.download_url) {
+        download.href = job.download_url;
+        download.classList.remove("hidden");
+      }
+      return;
+    }
+
+    if (download) {
+      download.classList.add("hidden");
+    }
+    if (slot && !slot.querySelector("model-viewer")) {
+      slot.classList.add("empty");
+      slot.innerHTML = `<span class="preview-placeholder">${job.status === "failed" ? "실패" : "대기 중"}</span>`;
+    }
+  };
+
+  const updateBatch = async () => {
+    const response = await fetch(`/api/batches/${batchId}`);
+    if (!response.ok) {
+      return;
+    }
+    const batch = await response.json();
+    const finished = batch.completed + batch.failed;
+
+    batchCompleted.textContent = batch.completed;
+    batchFailed.textContent = batch.failed;
+    batchMessage.textContent = `${batch.completed} / ${batch.total} 완료${batch.failed ? `, ${batch.failed} 실패` : ""}`;
+
+    batchStatusPill.textContent = finished === batch.total ? "done" : "running";
+    batchStatusPill.className = `pill ${batch.failed ? "failed" : finished === batch.total ? "completed" : "running"}`;
+
+    if (batchDownloadLink) {
+      batchDownloadLink.href = batch.download_url;
+      batchDownloadLink.classList.toggle("hidden", batch.completed === 0);
+    }
+
+    for (const job of batch.jobs) {
+      renderBatchJob(job);
+    }
+
+    if (finished < batch.total) {
+      window.setTimeout(updateBatch, 3000);
+    }
+  };
+
+  window.setTimeout(updateBatch, 1000);
 }
