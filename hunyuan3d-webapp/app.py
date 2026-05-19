@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import re
@@ -718,15 +719,39 @@ def runtime_diagnostics() -> dict:
 app = create_app()
 
 
+def parse_cli_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Hunyuan3D Flask Web App")
+    parser.add_argument(
+        "--host",
+        default=None,
+        help="Bind address (default: FLASK_HOST env or 127.0.0.1)",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=None,
+        help="Listen port (default: FLASK_PORT env or 5001)",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        default=None,
+        help="Enable Flask debug mode (overrides FLASK_DEBUG env)",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    host = os.getenv("FLASK_HOST", "127.0.0.1")
-    port = env_int("FLASK_PORT", 5001)
+    cli = parse_cli_args()
+    host = cli.host or os.getenv("FLASK_HOST", "127.0.0.1")
+    port = cli.port if cli.port is not None else env_int("FLASK_PORT", 5001)
+    debug = cli.debug if cli.debug is not None else env_bool("FLASK_DEBUG", False)
     print("Starting Hunyuan3D Flask Web App", flush=True)
     print(f"Open: http://{host}:{port}", flush=True)
     print("Press Ctrl+C to stop the server.", flush=True)
     app.run(
         host=host,
         port=port,
-        debug=env_bool("FLASK_DEBUG", False),
+        debug=debug,
         use_reloader=False,
     )
