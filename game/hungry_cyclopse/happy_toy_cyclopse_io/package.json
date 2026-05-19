@@ -1,0 +1,14 @@
+{
+  "name": "happy-toy-cyclopse-io",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser-based .io multiplayer prototype for Hungry one eye Cyclopse.",
+  "scripts": {
+    "start": "node server/index.js",
+    "check": "node --check server/index.js && node --check server/gameWorld.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
