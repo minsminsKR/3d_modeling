@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hungry one eye Cyclopse.io</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+    <div id="hud">
+      <div id="title">Hungry one eye Cyclopse.io</div>
+      <div id="stats">Connecting...</div>
+      <div id="hint">WASD move · Shift sprint · Mouse look · Wheel zoom · Eat smaller · Avoid larger</div>
+    </div>
+    <div id="leaderboard"></div>
+    <div id="death" hidden>
+      <strong>YOU WERE CONSUMED</strong>
+      <span>Respawning...</span>
+    </div>
+    <div id="join">
+      <div class="panel">
+        <h1>Hungry one eye Cyclopse.io</h1>
+        <input id="nameInput" maxlength="18" placeholder="Name your Cyclopse" />
+        <button id="playButton">Play</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

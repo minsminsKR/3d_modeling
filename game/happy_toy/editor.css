@@ -1,0 +1,256 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #080b0a;
+  color: #eee7d2;
+  font: 14px/1.4 "Segoe UI", "Noto Sans KR", system-ui, sans-serif;
+}
+
+button,
+select,
+input,
+textarea {
+  font: inherit;
+}
+
+button,
+.ghost-button {
+  min-height: 34px;
+  border: 1px solid rgba(218, 184, 92, 0.34);
+  border-radius: 6px;
+  background: #b83a32;
+  color: #fff9e8;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button:hover,
+.ghost-button:hover {
+  border-color: rgba(247, 224, 157, 0.72);
+}
+
+.ghost-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  background: rgba(23, 29, 26, 0.96);
+}
+
+.danger-button {
+  background: #6e2425;
+}
+
+.editor-app {
+  display: grid;
+  grid-template-rows: 64px minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(122, 136, 118, 0.28);
+  background: #0d110f;
+}
+
+.editor-header h1,
+.editor-header p {
+  margin: 0;
+}
+
+.editor-header h1 {
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+.eyebrow {
+  color: #d4b24a;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editor-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 330px;
+  min-height: 0;
+}
+
+.editor-panel {
+  min-width: 0;
+  overflow: auto;
+  padding: 14px;
+  border-right: 1px solid rgba(122, 136, 118, 0.22);
+  background: #101511;
+}
+
+.inspector-panel {
+  border-right: 0;
+  border-left: 1px solid rgba(122, 136, 118, 0.22);
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  color: rgba(238, 231, 210, 0.72);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+select,
+input,
+textarea {
+  width: 100%;
+  border: 1px solid rgba(117, 132, 112, 0.45);
+  border-radius: 6px;
+  background: #090d0b;
+  color: #eee7d2;
+  outline: none;
+}
+
+select,
+input {
+  height: 34px;
+  padding: 0 9px;
+}
+
+textarea {
+  min-height: 150px;
+  padding: 9px;
+  resize: vertical;
+  font: 12px/1.45 "Cascadia Mono", Consolas, monospace;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.full-button {
+  width: 100%;
+}
+
+.quick-help,
+.validation-output,
+.canvas-status {
+  border: 1px solid rgba(117, 132, 112, 0.18);
+  border-radius: 6px;
+  background: rgba(5, 7, 6, 0.46);
+}
+
+.quick-help {
+  margin: 14px 0;
+  padding: 10px;
+  color: rgba(238, 231, 210, 0.65);
+}
+
+.quick-help p {
+  margin: 4px 0;
+}
+
+.validation-output {
+  min-height: 128px;
+  margin-top: 10px;
+  padding: 10px;
+  color: rgba(238, 231, 210, 0.74);
+  white-space: pre-wrap;
+}
+
+.validation-output.ok {
+  color: #92d8ad;
+}
+
+.validation-output.warn {
+  color: #f1d17b;
+}
+
+.canvas-panel {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    #070908;
+  background-size: 24px 24px;
+}
+
+#map-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas-status {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  max-width: calc(100% - 24px);
+  padding: 7px 10px;
+  color: rgba(238, 231, 210, 0.8);
+  pointer-events: none;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.panel-title h2 {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: 0;
+}
+
+.panel-title span {
+  color: rgba(238, 231, 210, 0.54);
+  font-size: 12px;
+}
+
+.inspector-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.inspector-fields label.full {
+  grid-column: 1 / -1;
+}
+
+.raw-json-label {
+  margin-top: 14px;
+}
+
+.export-block textarea {
+  min-height: 220px;
+}
+
+@media (max-width: 1100px) {
+  .editor-shell {
+    grid-template-columns: 230px minmax(0, 1fr) 280px;
+  }
+}

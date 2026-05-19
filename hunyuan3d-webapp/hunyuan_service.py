@@ -92,10 +92,9 @@ def pushd(path: Path):
 class Hunyuan3DGenerator:
     """Lazy wrapper around the official Hunyuan3D 2.1 Python API.
 
-    Quality-first defaults tuned for a single RTX 3090 Ti (24 GB). Paint
-    parameters mirror the 2.1 README (`max_num_view=6, resolution=512`) and
-    the official `Hunyuan3DPaintConfig` defaults (`render_size=2048`,
-    `texture_size=4096`).
+    Quality-first defaults tuned for a single RTX 3090 Ti (24 GB). Paint uses
+    eight views, 512 multiview resolution (2.1 README), render_size 4096 and
+    texture_size 8192 for sharper PBR maps (slower than official 2048/4096).
     """
 
     def __init__(
@@ -107,10 +106,10 @@ class Hunyuan3DGenerator:
         low_vram: bool = False,
         enable_flashvdm: bool = False,
         compile_model: bool = False,
-        texture_views: int = 6,
+        texture_views: int = 8,
         texture_resolution: int = 512,
-        texture_render_size: int = 2048,
-        texture_texture_size: int = 4096,
+        texture_render_size: int = 4096,
+        texture_texture_size: int = 8192,
         texture_view_selection_resolution: int = 512,
         texture_render_device: str = "cuda",
         hy3dgen_models_dir: str | None = None,
@@ -608,17 +607,40 @@ class Hunyuan3DGenerator:
         env = os.environ.copy()
         if self.device.startswith("cuda"):
             env["CUDA_VISIBLE_DEVICES"] = str(max(0, int(gpu_id)))
-        completed = subprocess.run(
-            command,
-            cwd=str(Path(__file__).resolve().parent),
-            capture_output=True,
-            text=True,
-            env=env,
-        )
+        timeout_minutes = max(1, int(os.getenv("HUNYUAN_TEXTURE_TIMEOUT_MINUTES", "12")))
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=str(Path(__file__).resolve().parent),
+                capture_output=True,
+                text=True,
+                env=env,
+                timeout=timeout_minutes * 60,
+            )
+        except subprocess.TimeoutExpired as exc:
+            stdout = (exc.stdout or "").strip()
+            stderr = (exc.stderr or "").strip()
+            worker_log.write_text(
+                "\n".join(
+                    [
+                        f"command: {' '.join(command)}",
+                        f"timeout_minutes: {timeout_minutes}",
+                        "",
+                        "stdout:",
+                        stdout,
+                        "",
+                        "stderr:",
+                        stderr,
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            raise Hunyuan3DError(f"Texture worker timed out after {timeout_minutes} minutes.") from exc
         worker_log.write_text(
             "\n".join(
                 [
                     f"command: {' '.join(command)}",
+                    f"timeout_minutes: {timeout_minutes}",
                     f"returncode: {completed.returncode}",
                     "",
                     "stdout:",

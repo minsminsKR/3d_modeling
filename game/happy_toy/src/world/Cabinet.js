@@ -7,12 +7,14 @@ import { WORLD_CONFIG } from "../config/gameConfig.js";
 const UP = new THREE.Vector3(0, 1, 0);
 
 export class Cabinet {
-  constructor(config) {
+  constructor(config, materials = {}) {
     this.id = config.id;
     this.label = config.label;
     this.position = new THREE.Vector3(...config.position);
     this.yaw = config.yaw ?? 0;
     this.size = config.size || [1.18, 2.25, 0.72];
+    this.guardDistance = config.guardDistance ?? 1.28;
+    this.exitDistance = config.exitDistance ?? 1.05;
     this.occupied = false;
 
     this.group = new THREE.Group();
@@ -20,7 +22,7 @@ export class Cabinet {
     this.group.position.copy(this.position);
     this.group.rotation.y = this.yaw;
 
-    const bodyMaterial = new THREE.MeshStandardMaterial({
+    const bodyMaterial = materials.bodyMaterial ?? new THREE.MeshStandardMaterial({
       color: WORLD_CONFIG.cabinetColor,
       roughness: 0.82,
       metalness: 0.08,
@@ -29,6 +31,7 @@ export class Cabinet {
     const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x1d1714, roughness: 0.8 });
 
     const body = new THREE.Mesh(new THREE.BoxGeometry(...this.size), bodyMaterial);
+    body.name = `${this.id}-body`;
     body.position.y = this.size[1] / 2;
     body.castShadow = true;
     body.receiveShadow = true;
@@ -85,11 +88,11 @@ export class Cabinet {
   }
 
   getGuardPosition() {
-    return this.position.clone().addScaledVector(this.getForwardDirection(), 1.28);
+    return this.position.clone().addScaledVector(this.getForwardDirection(), this.guardDistance);
   }
 
   getExitPosition() {
-    const exitPosition = this.position.clone().addScaledVector(this.getForwardDirection(), 1.05);
+    const exitPosition = this.position.clone().addScaledVector(this.getForwardDirection(), this.exitDistance);
     exitPosition.y = this.position.y;
     return exitPosition;
   }

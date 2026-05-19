@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import argparse
 import json
 import os
+import re
+import sys
 import threading
 import time
 import traceback
@@ -110,7 +113,7 @@ def custom_rasterizer_ready(repo_path: Path) -> bool:
 def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY", "dev-secret")
-    app.config["MAX_CONTENT_LENGTH"] = env_int("MAX_CONTENT_LENGTH_MB", 80) * 1024 * 1024
+    app.config["MAX_CONTENT_LENGTH"] = env_int("MAX_CONTENT_LENGTH_MB", 200) * 1024 * 1024
 
     for path in [INSTANCE_DIR, UPLOAD_DIR, OUTPUT_DIR]:
         path.mkdir(parents=True, exist_ok=True)
@@ -126,10 +129,10 @@ def create_app() -> Flask:
         low_vram=env_bool("HUNYUAN_LOW_VRAM", False),
         enable_flashvdm=env_bool("HUNYUAN_ENABLE_FLASHVDM", False),
         compile_model=env_bool("HUNYUAN_COMPILE", False),
-        texture_views=env_int("HUNYUAN_TEXTURE_VIEWS", 6),
+        texture_views=env_int("HUNYUAN_TEXTURE_VIEWS", 8),
         texture_resolution=env_int("HUNYUAN_TEXTURE_RESOLUTION", 512),
-        texture_render_size=env_int("HUNYUAN_TEXTURE_RENDER_SIZE", 2048),
-        texture_texture_size=env_int("HUNYUAN_TEXTURE_MAP_SIZE", 4096),
+        texture_render_size=env_int("HUNYUAN_TEXTURE_RENDER_SIZE", 4096),
+        texture_texture_size=env_int("HUNYUAN_TEXTURE_MAP_SIZE", 8192),
         texture_view_selection_resolution=env_int("HUNYUAN_TEXTURE_VIEW_SELECTION_RESOLUTION", 512),
         texture_render_device=os.getenv("HUNYUAN_TEXTURE_RENDER_DEVICE", "cuda"),
         hy3dgen_models_dir=os.getenv("HY3DGEN_MODELS") or None,
@@ -196,7 +199,7 @@ def create_app() -> Flask:
         return render_template(
             "index.html",
             recent_jobs=[public_job(job) for job in visible_recent_jobs],
-            max_files=env_int("MAX_UPLOAD_FILES", 6),
+            max_files=env_int("MAX_UPLOAD_FILES", 15),
             gpu_ids=gpu_ids,
             default_gpu_id=default_gpu_id(gpu_ids),
             texture_ready=not texture_issues,
@@ -209,27 +212,19 @@ def create_app() -> Flask:
     @app.post("/jobs")
     def create_job():
         uploaded_files = [file for file in request.files.getlist("images") if file and file.filename]
-        max_files = env_int("MAX_UPLOAD_FILES", 6)
+        max_files = env_int("MAX_UPLOAD_FILES", 15)
         if not uploaded_files:
             abort(400, "Upload at least one image.")
         if len(uploaded_files) > max_files:
             abort(400, f"Upload up to {max_files} images.")
 
-        job_id = str(uuid.uuid4())
-        job_upload_dir = UPLOAD_DIR / job_id
-        job_output_dir = OUTPUT_DIR / job_id
-        job_upload_dir.mkdir(parents=True, exist_ok=True)
-        job_output_dir.mkdir(parents=True, exist_ok=True)
-
-        saved_paths = []
-        for index, file in enumerate(uploaded_files, start=1):
+        validated_files = []
+        for file in uploaded_files:
             filename = secure_filename(file.filename)
             extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
             if extension not in ALLOWED_EXTENSIONS:
                 abort(400, f"Unsupported image type: {filename}")
-            saved_path = job_upload_dir / f"{index:02d}_{filename}"
-            file.save(saved_path)
-            saved_paths.append(str(saved_path))
+            validated_files.append((file, filename))
 
         model = request.form.get("model", "hunyuan3d-2.1")
         if model not in {"hunyuan3d-2.1", "hunyuan3d-omni"}:
@@ -252,20 +247,74 @@ def create_app() -> Flask:
         )
 
         now = time.time()
+        batch_id = str(uuid.uuid4()) if len(uploaded_files) > 1 else None
+        created_jobs = []
         with jobs_lock:
-            jobs[job_id] = {
-                "id": job_id,
-                "status": "queued",
-                "message": "Waiting for GPU worker...",
-                "created_at": now,
-                "updated_at": now,
-                "image_paths": saved_paths,
-                "options": options.__dict__,
-            }
+            for index, (file, filename) in enumerate(validated_files, start=1):
+                job_id = str(uuid.uuid4())
+                job_upload_dir = UPLOAD_DIR / job_id
+                job_output_dir = OUTPUT_DIR / job_id
+                job_upload_dir.mkdir(parents=True, exist_ok=True)
+                job_output_dir.mkdir(parents=True, exist_ok=True)
+
+                saved_path = job_upload_dir / filename
+                file.save(saved_path)
+                job = {
+                    "id": job_id,
+                    "status": "queued",
+                    "message": "Waiting for GPU worker...",
+                    "created_at": now,
+                    "updated_at": now,
+                    "image_paths": [str(saved_path)],
+                    "source_filename": filename,
+                    "batch_index": index,
+                    "batch_total": len(uploaded_files),
+                    "options": options.__dict__,
+                }
+                if batch_id is not None:
+                    job["batch_id"] = batch_id
+                jobs[job_id] = job
+                created_jobs.append(job)
             save_jobs(jobs)
 
-        executor.submit(run_generation, job_id, saved_paths, options)
-        return redirect(url_for("job_detail", job_id=job_id))
+        for job in created_jobs:
+            executor.submit(run_generation, job["id"], job["image_paths"], options)
+
+        if batch_id is not None:
+            return redirect(url_for("batch_detail", batch_id=batch_id))
+        return redirect(url_for("job_detail", job_id=created_jobs[0]["id"]))
+
+    @app.get("/batches/<batch_id>")
+    def batch_detail(batch_id: str):
+        batch_jobs = jobs_for_batch(batch_id, jobs)
+        if not batch_jobs:
+            abort(404)
+        return render_template(
+            "batch.html",
+            batch_id=batch_id,
+            jobs=[public_job(job) for job in batch_jobs],
+            completed_count=sum(1 for job in batch_jobs if job.get("status") == "completed"),
+            failed_count=sum(1 for job in batch_jobs if job.get("status") == "failed"),
+        )
+
+    @app.get("/api/batches/<batch_id>")
+    def batch_status(batch_id: str):
+        batch_jobs = jobs_for_batch(batch_id, jobs)
+        if not batch_jobs:
+            abort(404)
+        public_jobs = [public_job(job) for job in batch_jobs]
+        return jsonify(
+            {
+                "id": batch_id,
+                "jobs": public_jobs,
+                "total": len(public_jobs),
+                "completed": sum(1 for job in public_jobs if job.get("status") == "completed"),
+                "failed": sum(1 for job in public_jobs if job.get("status") == "failed"),
+                "running": sum(1 for job in public_jobs if job.get("status") == "running"),
+                "queued": sum(1 for job in public_jobs if job.get("status") == "queued"),
+                "download_url": url_for("download_batch", batch_id=batch_id),
+            }
+        )
 
     @app.get("/jobs/<job_id>")
     def job_detail(job_id: str):
@@ -289,7 +338,35 @@ def create_app() -> Flask:
         model_path = Path(job["model_path"])
         if not model_path.exists():
             abort(404)
-        return send_file(model_path, as_attachment=True, download_name=f"hunyuan3d_{job_id}.glb")
+        return send_file(model_path, as_attachment=True, download_name=download_name_for_job(job))
+
+    @app.get("/batches/<batch_id>/download")
+    def download_batch(batch_id: str):
+        batch_jobs = [job for job in jobs_for_batch(batch_id, jobs) if job.get("status") == "completed"]
+        if not batch_jobs:
+            abort(404)
+
+        package_path = OUTPUT_DIR / f"batch_{batch_id}_models.zip"
+        with zipfile.ZipFile(package_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+            written_names = set()
+            for job in batch_jobs:
+                model_path = Path(job["model_path"])
+                if not model_path.exists():
+                    continue
+                archive_name = download_name_for_job(job)
+                if archive_name in written_names:
+                    archive_name = f"{Path(archive_name).stem}_{job['id'][:8]}{Path(archive_name).suffix}"
+                archive.write(model_path, archive_name)
+                written_names.add(archive_name)
+
+        if not package_path.exists() or not written_names:
+            abort(404)
+        return send_file(
+            package_path,
+            as_attachment=True,
+            download_name=f"hunyuan3d_batch_{batch_id[:8]}.zip",
+            mimetype="application/zip",
+        )
 
     @app.get("/jobs/<job_id>/model")
     def view_model(job_id: str):
@@ -356,12 +433,13 @@ def create_app() -> Flask:
 
     @app.get("/health")
     def health():
-        return jsonify({"status": "ok", "jobs": len(jobs)})
+        return jsonify({"status": "ok", "jobs": len(jobs), **runtime_diagnostics()})
 
     def public_job(job: dict) -> dict:
         result = dict(job)
         result["elapsed_seconds"] = elapsed_seconds(job)
         result["warnings"] = job.get("warnings") or read_warnings(job)
+        result["display_name"] = display_name_for_job(job)
         if result["warnings"] and job.get("options", {}).get("texture") and not job.get("used_texture"):
             result["message"] = "Model is ready, but texture generation failed. Showing untextured shape."
         if job.get("status") == "completed":
@@ -382,6 +460,29 @@ def create_app() -> Flask:
         return result
 
     return app
+
+
+def jobs_for_batch(batch_id: str, all_jobs: dict) -> list[dict]:
+    return sorted(
+        [job for job in all_jobs.values() if job.get("batch_id") == batch_id],
+        key=lambda item: (item.get("batch_index", 0), item.get("created_at", 0)),
+    )
+
+
+def display_name_for_job(job: dict) -> str:
+    filename = job.get("source_filename")
+    if filename:
+        return Path(filename).stem or filename
+    if job.get("batch_index") and job.get("batch_total"):
+        return f"image_{job['batch_index']:02d}"
+    return job.get("id", "job")[:8]
+
+
+def download_name_for_job(job: dict) -> str:
+    stem = re.sub(r"[^A-Za-z0-9_.-]+", "_", display_name_for_job(job)).strip("._")
+    if not stem:
+        stem = f"hunyuan3d_{job['id'][:8]}"
+    return f"{stem}_{job['id'][:8]}.glb"
 
 
 def mixamo_output_dir(job_id: str) -> Path:
@@ -596,18 +697,61 @@ def save_jobs(jobs: dict) -> None:
     tmp_path.replace(JOBS_FILE)
 
 
+def runtime_diagnostics() -> dict:
+    diagnostics = {
+        "python_executable": sys.executable,
+        "torch_available": False,
+        "cuda_available": False,
+    }
+    try:
+        import torch
+
+        diagnostics["torch_available"] = True
+        diagnostics["torch_version"] = torch.__version__
+        diagnostics["cuda_available"] = bool(torch.cuda.is_available())
+        if torch.cuda.is_available():
+            diagnostics["cuda_device_count"] = torch.cuda.device_count()
+    except Exception as exc:
+        diagnostics["torch_error"] = str(exc)
+    return diagnostics
+
+
 app = create_app()
 
 
+def parse_cli_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Hunyuan3D Flask Web App")
+    parser.add_argument(
+        "--host",
+        default=None,
+        help="Bind address (default: FLASK_HOST env or 127.0.0.1)",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=None,
+        help="Listen port (default: FLASK_PORT env or 5001)",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        default=None,
+        help="Enable Flask debug mode (overrides FLASK_DEBUG env)",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    host = os.getenv("FLASK_HOST", "127.0.0.1")
-    port = env_int("FLASK_PORT", 5001)
+    cli = parse_cli_args()
+    host = cli.host or os.getenv("FLASK_HOST", "127.0.0.1")
+    port = cli.port if cli.port is not None else env_int("FLASK_PORT", 5001)
+    debug = cli.debug if cli.debug is not None else env_bool("FLASK_DEBUG", False)
     print("Starting Hunyuan3D Flask Web App", flush=True)
     print(f"Open: http://{host}:{port}", flush=True)
     print("Press Ctrl+C to stop the server.", flush=True)
     app.run(
         host=host,
         port=port,
-        debug=env_bool("FLASK_DEBUG", False),
+        debug=debug,
         use_reloader=False,
     )

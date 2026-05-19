@@ -11,6 +11,9 @@ export class Hud {
     this.caughtScreen = document.querySelector("#caught-screen");
     this.clearScreen = document.querySelector("#clear-screen");
     this.pauseScreen = document.querySelector("#pause-screen");
+    this.startEyebrow = document.querySelector("#start-eyebrow");
+    this.startTitle = document.querySelector("#start-title");
+    this.startDescription = document.querySelector("#start-description");
     this.startButton = document.querySelector("#start-button");
     this.restartButton = document.querySelector("#restart-button");
     this.clearRestartButton = document.querySelector("#clear-restart-button");
@@ -41,6 +44,16 @@ export class Hud {
     this.threatElement.style.opacity = String(clamped);
   }
 
+  setStartEnabled(enabled, label = null) {
+    if (!this.startButton) {
+      return;
+    }
+    this.startButton.disabled = !enabled;
+    if (label) {
+      this.startButton.textContent = label;
+    }
+  }
+
   setFlashlightEnabled(enabled) {
     document.body.classList.toggle("flashlight-off", !enabled);
   }
@@ -67,10 +80,36 @@ export class Hud {
     this.setThreat(0);
   }
 
-  showClear() {
+  setChapterInfo(chapter, chapters = []) {
+    if (this.startEyebrow) {
+      this.startEyebrow.textContent = chapter.eyebrow || `Chapter ${chapter.id}`;
+    }
+    if (this.startTitle) {
+      this.startTitle.textContent = chapter.title;
+    }
+    if (this.startDescription) {
+      this.startDescription.textContent = chapter.description || "";
+    }
+    if (this.startButton) {
+      this.startButton.textContent = `${chapter.eyebrow || `Chapter ${chapter.id}`} 시작`;
+    }
+  }
+
+  showClear(options = {}) {
+    const title = this.clearScreen.querySelector("h2");
+    const text = this.clearScreen.querySelector("p:not(.eyebrow)");
+    if (title && options.title) {
+      title.textContent = options.title;
+    }
+    if (text && options.message) {
+      text.textContent = options.message;
+    }
+    if (this.clearRestartButton && options.buttonText) {
+      this.clearRestartButton.textContent = options.buttonText;
+    }
     this.clearScreen.classList.remove("hidden");
     this.setThreat(0);
-    this.setStatus("장난감 상자가 열리고 복도의 소리가 사라졌습니다.");
+    this.setStatus(options.message || "장난감 상자가 열리고 복도의 소리가 사라졌습니다.");
   }
 
   hideClear() {
@@ -88,6 +127,14 @@ export class Hud {
 
   setMouseSensitivityDisplay(value) {
     this.mouseSensitivityValue.textContent = value.toFixed(2);
+  }
+
+  setDebugEnabled(enabled) {
+    if (!this.floorDebugElement) {
+      return;
+    }
+    this.floorDebugElement.classList.toggle("hidden", !enabled);
+    this.floorDebugElement.setAttribute("aria-hidden", enabled ? "false" : "true");
   }
 
   setFloorDebug(debug) {
@@ -123,6 +170,7 @@ export class Hud {
       `x/z: ${debug.x.toFixed(2)} / ${debug.z.toFixed(2)}`,
       `tile: ${debug.tileType} (${debug.tileId})`,
       `below valid: ${debug.belowValidLanding} floor=${debug.belowFloor ?? "none"} tile=${debug.belowTileType}`,
+      `test safe: ${debug.testSafeMode ? "ON" : "OFF"}`,
       `drop: ${dropText}`,
       `areas: ${areaText}`,
       `door: ${doorText}`,

@@ -132,6 +132,7 @@ function keyCodeToAlias(code) {
     ShiftRight: "shift",
     Space: " ",
     Escape: "escape",
+    Numpad0: "numpad0",
   };
 
   return specialKeys[code] || null;

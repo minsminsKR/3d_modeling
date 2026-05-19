@@ -42,11 +42,13 @@ export class Enemy {
     this.stuckTimer = 0;
     this.lastUnstuckTarget = null;
     this.debugPathTarget = null;
+    this.lastDetectionEvent = null;
   }
 
   update(deltaTime, playerState) {
     const playerPosition = playerState.position || playerState;
-    const isPlayerHidden = Boolean(playerState.isHidden);
+    const isPlayerHidden = Boolean(playerState.isHidden || playerState.isUndetectable);
+    this.lastDetectionEvent = null;
 
     if (!this.isIdlePose) {
       this.mixer?.update(deltaTime);
@@ -150,8 +152,9 @@ export class Enemy {
   }
 
   updatePerception(playerPosition, deltaTime, playerState = {}) {
-    const isPlayerHidden = Boolean(playerState.isHidden);
+    const isPlayerHidden = Boolean(playerState.isHidden || playerState.isUndetectable);
     const isPlayerSprinting = Boolean(playerState.isSprinting);
+    const wasChasing = this.state === "chase";
     if (isPlayerHidden) {
       if (this.state === "chase" && this.memoryTimer > 0) {
         this.memoryTimer -= deltaTime;
@@ -165,19 +168,21 @@ export class Enemy {
 
     const distance = distance2D(this.group.position, playerPosition);
     const sameLevel = this.isSameLevelAs(playerPosition);
-    const canNavigateAcrossFloors = !sameLevel && this.collisionWorld.canNavigateBetween(this.group.position, playerPosition);
-    const giveUpRange = sameLevel
-      ? this.config.giveUpRange
-      : (this.config.interFloorGiveUpRange ?? this.config.giveUpRange * 1.8);
+    const currentSurface = this.collisionWorld.getSurfaceAt(this.group.position, { allowAnyFloor: true });
+    const usesTransitionRoute = !sameLevel || currentSurface.type === "stair/transition";
+    const canNavigateAcrossFloors = usesTransitionRoute && this.collisionWorld.canNavigateBetween(this.group.position, playerPosition);
+    const giveUpRange = usesTransitionRoute
+      ? (this.config.interFloorGiveUpRange ?? this.config.giveUpRange * 1.8)
+      : this.config.giveUpRange;
 
-    if (this.state === "chase" && (distance > giveUpRange || (!sameLevel && !canNavigateAcrossFloors))) {
+    if (this.state === "chase" && (distance > giveUpRange || (usesTransitionRoute && !canNavigateAcrossFloors))) {
       this.state = "patrol";
       this.memoryTimer = 0;
       this.lastKnownPlayerPosition = null;
       return;
     }
 
-    if (this.state === "chase" && !sameLevel && canNavigateAcrossFloors) {
+    if (this.state === "chase" && canNavigateAcrossFloors) {
       this.memoryTimer = this.config.memorySeconds;
       this.lastKnownPlayerPosition = playerPosition.clone();
       return;
@@ -198,6 +203,18 @@ export class Enemy {
       this.state = "chase";
       this.memoryTimer = this.config.memorySeconds;
       this.lastKnownPlayerPosition = playerPosition.clone();
+      if (!wasChasing) {
+        const range = Math.max(this.config.detectionRange, 0.001);
+        const proximity = 1 - Math.min(1, distance / range);
+        this.lastDetectionEvent = {
+          enemyId: this.config.id,
+          label: this.config.label,
+          mode: canSee ? "sight" : "hearing",
+          full: canSee,
+          distance,
+          strength: Math.min(1, (canSee ? 0.78 : 0.55) + proximity * 0.35),
+        };
+      }
       return;
     }
 
@@ -282,7 +299,7 @@ export class Enemy {
     if (this[timerKey] <= 0 || goalMoved || this[pathKey].length === 0) {
       this[pathKey] = this.collisionWorld.findPath(this.group.position, goal, this.config.radius, {
         cellSize: this.config.pathCellSize ?? 0.85,
-        allowInterFloor: mode === "chase",
+        allowInterFloor: mode === "chase" || (mode === "patrol" && Boolean(this.config.allowInterFloorPatrol)),
       });
       this[goalKey] = goal.clone?.() || vectorFromArray([goal.x, goal.y, goal.z]);
       this[timerKey] = this.config.pathRefreshSeconds ?? 0.28;
@@ -390,6 +407,10 @@ export class Enemy {
     this.cabinetTarget = cabinet;
     this.memoryTimer = 0;
     this.lastKnownPlayerPosition = null;
+    this.chasePath = [];
+    this.chasePathTimer = 0;
+    this.chasePathGoal = null;
+    this.playAction("chase");
   }
 
   updateCabinetInvestigation(deltaTime) {
@@ -400,13 +421,15 @@ export class Enemy {
 
     const guardPosition = this.cabinetTarget.getGuardPosition();
     if (distance2D(this.group.position, guardPosition) > 0.42) {
-      this.playAction("patrol");
-      this.moveToward(guardPosition, this.config.patrolSpeed * 1.35, deltaTime);
+      const target = this.getPathTarget(guardPosition, deltaTime, "chase") || guardPosition;
+      const speed = this.config.cabinetInvestigateSpeed ?? Math.max(this.config.patrolSpeed * 1.35, this.config.chaseSpeed * 0.82);
+      this.playAction("chase");
+      this.moveToward(target, speed, deltaTime);
       this.snapModelToGround(false);
       return;
     }
 
-    this.playIdlePose();
+    this.playAction("chase");
     this.snapModelToGround(false);
     const faceDirection = direction2D(this.group.position, this.cabinetTarget.position);
     if (faceDirection.lengthSq() > 0.0001) {
@@ -427,6 +450,22 @@ export class Enemy {
     this.waitTimer = this.config.postCabinetWaitSeconds ?? 0.5;
     this.waitTurnDirection = Math.random() < 0.5 ? -1 : 1;
     this.chooseNearestWaypoint();
+  }
+
+  resumeChaseFromCabinet(playerPosition) {
+    this.state = "chase";
+    this.cabinetTarget = null;
+    this.memoryTimer = this.config.memorySeconds;
+    this.lastKnownPlayerPosition = playerPosition.clone?.() || vectorFromArray([playerPosition.x, playerPosition.y, playerPosition.z]);
+    this.caughtPlayer = false;
+    this.chasePath = [];
+    this.chasePathTimer = 0;
+    this.chasePathGoal = null;
+    this.patrolPath = [];
+    this.patrolPathGoal = null;
+    this.waitTimer = 0;
+    this.resumeAnimatedPose();
+    this.playAction("chase");
   }
 
   isActivelyChasing() {

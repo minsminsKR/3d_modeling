@@ -9,12 +9,15 @@ export class KeyItem {
     this.id = config.id;
     this.label = config.label;
     this.position = new THREE.Vector3(...config.position);
+    this.initiallyVisible = config.initiallyVisible ?? true;
+    this.isAvailable = this.initiallyVisible;
     this.isCollected = false;
     this.floatOffset = (this.position.x + this.position.z) * 0.37;
 
     this.group = new THREE.Group();
     this.group.name = config.id;
     this.group.position.set(this.position.x, this.position.y + 0.72, this.position.z);
+    this.group.visible = this.initiallyVisible;
 
     const material = new THREE.MeshStandardMaterial({
       color: WORLD_CONFIG.keyColor,
@@ -41,7 +44,7 @@ export class KeyItem {
   }
 
   update(deltaTime, elapsedTime) {
-    if (this.isCollected) {
+    if (!this.isAvailable || this.isCollected) {
       return;
     }
 
@@ -54,7 +57,7 @@ export class KeyItem {
   }
 
   isInteractable() {
-    return !this.isCollected;
+    return this.isAvailable && !this.isCollected;
   }
 
   getPrompt(context) {
@@ -72,8 +75,18 @@ export class KeyItem {
     this.group.visible = false;
   }
 
-  reset() {
+  revealAt(position) {
+    this.position.set(position[0], position[1], position[2]);
+    this.floatOffset = (this.position.x + this.position.z) * 0.37;
+    this.group.position.set(this.position.x, this.position.y + 0.72, this.position.z);
+    this.isAvailable = true;
     this.isCollected = false;
     this.group.visible = true;
+  }
+
+  reset() {
+    this.isAvailable = this.initiallyVisible;
+    this.isCollected = false;
+    this.group.visible = this.initiallyVisible;
   }
 }

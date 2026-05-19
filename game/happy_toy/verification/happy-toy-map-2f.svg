@@ -1,55 +1,72 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="624" height="780" viewBox="0 0 624 780">
+<svg xmlns="http://www.w3.org/2000/svg" width="624" height="779" viewBox="0 0 624 779">
 <rect width="100%" height="100%" fill="#070907"/>
 <text x="24" y="32" fill="#f0e7c0" font-family="Consolas, monospace" font-size="22" font-weight="700">Happy Toy 2F map</text>
 <text x="24" y="55" fill="#a8b39e" font-family="Consolas, monospace" font-size="12">top-down X/Z plan from current MAP_CONFIG</text>
-<rect x="271.2" y="96.0" width="81.6" height="516.0" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
-<rect x="187.2" y="549.6" width="165.6" height="74.4" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
-<rect x="144.0" y="342.0" width="141.6" height="111.6" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
-<rect x="338.4" y="198.0" width="141.6" height="108.0" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
-<rect x="338.4" y="501.6" width="79.2" height="52.8" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
-<rect x="144.0" y="342.0" width="141.6" height="111.6" fill="#426445" opacity="0.35" stroke="#9fc99a" stroke-width="1" stroke-dasharray="5 4"/>
-<rect x="338.4" y="198.0" width="141.6" height="108.0" fill="#426445" opacity="0.35" stroke="#9fc99a" stroke-width="1" stroke-dasharray="5 4"/>
-<rect x="338.4" y="501.6" width="79.2" height="52.8" fill="#426445" opacity="0.35" stroke="#9fc99a" stroke-width="1" stroke-dasharray="5 4"/>
-<rect x="96.0" y="480.0" width="88.8" height="186.0" fill="#26394f" opacity="0.45" stroke="#6283a6" stroke-width="1" stroke-dasharray="5 4"/>
-<rect x="422.4" y="446.4" width="105.6" height="123.6" fill="#26394f" opacity="0.45" stroke="#6283a6" stroke-width="1" stroke-dasharray="5 4"/>
-<rect x="284.4" y="105.6" width="55.2" height="24.0" fill="#843634" opacity="0.62" stroke="#df7772" stroke-width="1" stroke-dasharray="5 4"/>
-<rect x="339.0" y="460.2" width="9.0" height="25.2" fill="#843634" opacity="0.62" stroke="#df7772" stroke-width="1" stroke-dasharray="5 4"/>
-<rect x="180.0" y="552.0" width="6.6" height="73.2" fill="#843634" opacity="0.62" stroke="#df7772" stroke-width="1" stroke-dasharray="5 4"/>
-<rect x="198.6" y="556.8" width="55.2" height="127.2" fill="#6f5b37" opacity="0.72" stroke="#c9a95e" stroke-width="1"/>
-<rect x="180.6" y="607.2" width="4.8" height="14.4" fill="#b89938" opacity="0.72" stroke="#ffe17b" stroke-width="1"/>
-<rect x="280.8" y="105.6" width="4.8" height="206.4" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="280.8" y="322.8" width="4.8" height="60.0" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="280.8" y="411.6" width="4.8" height="135.6" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="338.4" y="105.6" width="4.8" height="133.2" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="338.4" y="261.6" width="4.8" height="81.6" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="338.4" y="381.6" width="4.8" height="98.4" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="338.4" y="554.4" width="4.8" height="19.2" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="280.8" y="103.2" width="62.4" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="139.2" y="345.6" width="4.8" height="100.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="140.4" y="343.2" width="141.6" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="140.4" y="444.0" width="141.6" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="480.0" y="201.6" width="4.8" height="100.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="342.0" y="199.2" width="141.6" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="342.0" y="300.0" width="141.6" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="415.2" y="501.6" width="4.8" height="52.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="338.4" y="499.2" width="79.2" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="338.4" y="552.0" width="79.2" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
-<rect x="281.3" y="385.7" width="2.6" height="20.6" fill="#8a5b36" opacity="1" stroke="#f0c78a" stroke-width="1.2"/>
-<rect x="340.1" y="241.7" width="2.6" height="20.6" fill="#8a5b36" opacity="1" stroke="#f0c78a" stroke-width="1.2"/>
-<rect x="340.1" y="462.5" width="2.6" height="20.6" fill="#a22f33" opacity="1" stroke="#f0c78a" stroke-width="1.2"/>
-<rect x="144.7" y="410.9" width="14.2" height="8.6" fill="#5c4a3f" opacity="0.95" stroke="#c0aa95" stroke-width="1"/>
-<text x="151.8" y="415.2" fill="#f2d6bd" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">cab</text>
-<rect x="403.9" y="509.9" width="14.2" height="8.6" fill="#5c4a3f" opacity="0.95" stroke="#c0aa95" stroke-width="1"/>
-<text x="411.0" y="514.2" fill="#f2d6bd" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">cab</text>
-<circle cx="226.8" cy="554.4" r="5" fill="#ffe17b" stroke="#fff2a0" stroke-width="1"/>
-<text x="226.8" y="564.6" fill="#ffe17b" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">exit-2f</text>
-<text x="312.0" y="354.0" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-corridor</text>
-<text x="270.0" y="586.8" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-bridge</text>
-<text x="214.8" y="397.8" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-left-room</text>
-<text x="409.2" y="252.0" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-right-room</text>
-<text x="378.0" y="528.0" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-records-alcove</text>
-<text x="282.6" y="408.0" fill="#efc28e" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">2f-nursery</text>
-<text x="341.4" y="264.0" fill="#efc28e" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">2f-mirror</text>
-<text x="341.4" y="484.8" fill="#ff9a9a" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">2f-locked-records</text>
+<rect x="271.2" y="98.4" width="81.6" height="508.8" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
+<rect x="187.2" y="544.8" width="165.6" height="74.4" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
+<rect x="144.0" y="337.2" width="141.6" height="111.6" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
+<rect x="338.4" y="193.2" width="141.6" height="108.0" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
+<rect x="338.4" y="496.8" width="79.2" height="52.8" fill="#32483a" opacity="0.82" stroke="#6d8d6d" stroke-width="1"/>
+<rect x="144.0" y="337.2" width="141.6" height="111.6" fill="#426445" opacity="0.35" stroke="#9fc99a" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="338.4" y="193.2" width="141.6" height="108.0" fill="#426445" opacity="0.35" stroke="#9fc99a" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="338.4" y="496.8" width="79.2" height="52.8" fill="#426445" opacity="0.35" stroke="#9fc99a" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="96.0" y="475.2" width="88.8" height="186.0" fill="#26394f" opacity="0.45" stroke="#6283a6" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="422.4" y="441.6" width="105.6" height="123.6" fill="#26394f" opacity="0.45" stroke="#6283a6" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="284.4" y="100.8" width="55.2" height="24.0" fill="#843634" opacity="0.62" stroke="#df7772" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="339.0" y="455.4" width="9.0" height="25.2" fill="#843634" opacity="0.62" stroke="#df7772" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="180.0" y="547.2" width="6.6" height="73.2" fill="#843634" opacity="0.62" stroke="#df7772" stroke-width="1" stroke-dasharray="5 4"/>
+<rect x="198.6" y="552.0" width="55.2" height="127.2" fill="#6f5b37" opacity="0.72" stroke="#c9a95e" stroke-width="1"/>
+<rect x="180.6" y="602.4" width="4.8" height="14.4" fill="#b89938" opacity="0.72" stroke="#ffe17b" stroke-width="1"/>
+<rect x="190.6" y="545.4" width="4.1" height="75.6" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="190.6" y="619.2" width="4.1" height="60.0" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="255.6" y="567.6" width="3.6" height="49.2" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="255.6" y="618.0" width="3.6" height="61.2" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="192.6" y="678.1" width="67.2" height="4.1" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="194.7" y="541.8" width="64.2" height="4.1" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="257.3" y="541.8" width="25.9" height="4.1" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="280.8" y="572.4" width="4.8" height="46.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="338.4" y="568.8" width="4.8" height="50.4" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="258.0" y="614.9" width="85.2" height="4.3" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="280.8" y="100.8" width="4.8" height="206.4" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="280.8" y="307.2" width="4.8" height="10.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="280.8" y="318.0" width="4.8" height="60.0" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="280.8" y="406.8" width="4.8" height="135.6" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="280.8" y="542.4" width="4.8" height="7.7" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="280.8" y="563.3" width="4.8" height="9.1" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="338.4" y="100.8" width="4.8" height="133.2" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="338.4" y="256.8" width="4.8" height="81.6" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="338.4" y="338.4" width="4.8" height="38.4" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="338.4" y="376.8" width="4.8" height="98.4" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="338.4" y="475.2" width="4.8" height="21.6" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="338.4" y="549.6" width="4.8" height="19.2" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="280.8" y="96.0" width="62.4" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="139.2" y="340.8" width="4.8" height="100.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="140.4" y="338.4" width="141.6" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="140.4" y="439.2" width="141.6" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="480.0" y="196.8" width="4.8" height="100.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="342.0" y="194.4" width="141.6" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="342.0" y="295.2" width="141.6" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="415.2" y="496.8" width="4.8" height="52.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="338.4" y="494.4" width="79.2" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="338.4" y="547.2" width="79.2" height="4.8" fill="#111713" opacity="1" stroke="#293029" stroke-width="1"/>
+<rect x="281.3" y="380.9" width="2.6" height="20.6" fill="#8a5b36" opacity="1" stroke="#f0c78a" stroke-width="1.2"/>
+<rect x="340.1" y="236.9" width="2.6" height="20.6" fill="#8a5b36" opacity="1" stroke="#f0c78a" stroke-width="1.2"/>
+<rect x="340.1" y="457.7" width="2.6" height="20.6" fill="#a22f33" opacity="1" stroke="#f0c78a" stroke-width="1.2"/>
+<rect x="144.7" y="406.1" width="14.2" height="8.6" fill="#5c4a3f" opacity="0.95" stroke="#c0aa95" stroke-width="1"/>
+<text x="151.8" y="410.4" fill="#f2d6bd" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">cab</text>
+<rect x="403.9" y="505.1" width="14.2" height="8.6" fill="#5c4a3f" opacity="0.95" stroke="#c0aa95" stroke-width="1"/>
+<text x="411.0" y="509.4" fill="#f2d6bd" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">cab</text>
+<circle cx="402.0" cy="232.8" r="5" fill="#d7ba45" stroke="#111" stroke-width="1"/>
+<text x="402.0" y="225.0" fill="#ffe680" font-family="Consolas, monospace" font-size="8" text-anchor="middle" dominant-baseline="middle">key</text>
+<circle cx="226.8" cy="549.6" r="5" fill="#ffe17b" stroke="#fff2a0" stroke-width="1"/>
+<text x="226.8" y="559.8" fill="#ffe17b" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">exit-2f</text>
+<text x="312.0" y="352.8" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-corridor</text>
+<text x="270.0" y="582.0" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-bridge</text>
+<text x="214.8" y="393.0" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-left-room</text>
+<text x="409.2" y="247.2" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-right-room</text>
+<text x="378.0" y="523.2" fill="#bfd8bf" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">second-records-alcove</text>
+<text x="282.6" y="403.2" fill="#efc28e" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">2f-nursery</text>
+<text x="341.4" y="259.2" fill="#efc28e" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">2f-mirror</text>
+<text x="341.4" y="480.0" fill="#ff9a9a" font-family="Consolas, monospace" font-size="7" text-anchor="middle" dominant-baseline="middle">2f-locked-records</text>
 <g transform="translate(379, 24)"><rect x="0" y="0" width="220" height="197" fill="#0b0f0b" opacity="0.86" stroke="#657057"/><text x="12" y="18" fill="#f0e7c0" font-family="Consolas, monospace" font-size="12" font-weight="700">Legend</text><rect x="12" y="25" width="14" height="10" fill="#32483a" stroke="#222"/><text x="34" y="34" fill="#d8e3cf" font-family="Consolas, monospace" font-size="11">walkable</text><rect x="12" y="44" width="14" height="10" fill="#426445" stroke="#222"/><text x="34" y="53" fill="#d8e3cf" font-family="Consolas, monospace" font-size="11">room/event outline</text><rect x="12" y="63" width="14" height="10" fill="#111713" stroke="#222"/><text x="34" y="72" fill="#d8e3cf" font-family="Consolas, monospace" font-size="11">wall</text><rect x="12" y="82" width="14" height="10" fill="#8a5b36" stroke="#222"/><text x="34" y="91" fill="#d8e3cf" font-family="Consolas, monospace" font-size="11">door</text><rect x="12" y="101" width="14" height="10" fill="#a22f33" stroke="#222"/><text x="34" y="110" fill="#d8e3cf" font-family="Consolas, monospace" font-size="11">locked/blocked door</text><rect x="12" y="120" width="14" height="10" fill="#843634" stroke="#222"/><text x="34" y="129" fill="#d8e3cf" font-family="Consolas, monospace" font-size="11">blocked area</text><rect x="12" y="139" width="14" height="10" fill="#26394f" stroke="#222"/><text x="34" y="148" fill="#d8e3cf" font-family="Consolas, monospace" font-size="11">void/out-of-bounds</text><rect x="12" y="158" width="14" height="10" fill="#6f5b37" stroke="#222"/><text x="34" y="167" fill="#d8e3cf" font-family="Consolas, monospace" font-size="11">stair/ramp/drop</text><rect x="12" y="177" width="14" height="10" fill="#5c4a3f" stroke="#222"/><text x="34" y="186" fill="#d8e3cf" font-family="Consolas, monospace" font-size="11">cabinet/key/enemy</text></g>
 </svg>

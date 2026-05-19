@@ -199,6 +199,13 @@ h2 {
   outline-offset: 2px;
 }
 
+.file-note {
+  align-self: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -306,6 +313,10 @@ select {
   background: rgba(255, 255, 255, 0.48);
 }
 
+.batch-actions {
+  margin-top: 20px;
+}
+
 .metric-label {
   display: block;
   margin-bottom: 4px;
@@ -374,6 +385,73 @@ select {
 .job-summary {
   display: grid;
   gap: 6px;
+}
+
+.batch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.batch-job {
+  display: grid;
+  gap: 14px;
+}
+
+.batch-job-head,
+.batch-job-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.batch-job h2 {
+  overflow-wrap: anywhere;
+}
+
+.batch-job-message {
+  min-height: 2.8em;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.batch-job-meta {
+  color: var(--muted);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.batch-open {
+  color: var(--fern);
+  text-decoration: none;
+}
+
+.batch-model-slot {
+  display: grid;
+  place-items: center;
+  min-height: 260px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.9), transparent 30%),
+    linear-gradient(135deg, rgba(152, 214, 213, 0.45), rgba(197, 233, 108, 0.2));
+}
+
+.batch-model-slot.empty {
+  min-height: 180px;
+}
+
+.batch-model-slot model-viewer {
+  height: 300px;
+  margin: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.batch-download {
+  width: 100%;
 }
 
 .status-card {
@@ -580,6 +658,9 @@ model-viewer {
 
   .grid,
   .job-row,
+  .batch-grid,
+  .batch-job-head,
+  .batch-job-meta,
   .mixamo-actions,
   .mixamo-upload {
     grid-template-columns: 1fr;
@@ -587,6 +668,8 @@ model-viewer {
 
   .section-head,
   .status-line,
+  .batch-job-head,
+  .batch-job-meta,
   .processed-preview {
     align-items: flex-start;
     flex-direction: column;

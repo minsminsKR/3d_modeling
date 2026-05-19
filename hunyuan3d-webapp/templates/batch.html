@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Batch {{ batch_id[:8] }} - Hunyuan3D Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  </head>
+  <body data-batch-id="{{ batch_id }}">
+    <main class="shell">
+      <nav class="topbar">
+        <a href="{{ url_for('index') }}">새 작업 만들기</a>
+      </nav>
+
+      <section class="panel status-card">
+        <p class="eyebrow">Batch Generation</p>
+        <h1>{{ batch_id }}</h1>
+        <div class="status-line">
+          <span id="batch-status-pill" class="pill running">batch</span>
+          <span id="batch-message">
+            {{ completed_count }} / {{ jobs | length }} 완료{% if failed_count %}, {{ failed_count }} 실패{% endif %}
+          </span>
+        </div>
+        <div class="metrics">
+          <div>
+            <span class="metric-label">전체 작업</span>
+            <strong id="batch-total">{{ jobs | length }}</strong>
+          </div>
+          <div>
+            <span class="metric-label">완료</span>
+            <strong id="batch-completed">{{ completed_count }}</strong>
+          </div>
+          <div>
+            <span class="metric-label">실패</span>
+            <strong id="batch-failed">{{ failed_count }}</strong>
+          </div>
+        </div>
+        <div class="batch-actions">
+          <a
+            id="batch-download-link"
+            class="download {% if completed_count == 0 %}hidden{% endif %}"
+            href="{{ url_for('download_batch', batch_id=batch_id) }}">
+            완료된 GLB 묶음 다운로드
+          </a>
+        </div>
+      </section>
+
+      <section class="batch-grid">
+        {% for job in jobs %}
+          <article class="panel batch-job" data-job-id="{{ job.id }}">
+            <div class="batch-job-head">
+              <div>
+                <span class="metric-label">입력 {{ job.batch_index }} / {{ job.batch_total }}</span>
+                <h2>{{ job.display_name }}</h2>
+              </div>
+              <span class="batch-job-status pill {{ job.status }}">{{ job.status }}</span>
+            </div>
+            <p class="batch-job-message muted">{{ job.message }}</p>
+            <div class="batch-job-meta">
+              <span>경과 <strong class="batch-job-elapsed">{{ job.elapsed_seconds }}s</strong></span>
+              <a class="batch-open" href="{{ url_for('job_detail', job_id=job.id) }}">상세 보기</a>
+            </div>
+            <div class="batch-model-slot {% if job.status != 'completed' %}empty{% endif %}">
+              {% if job.status == 'completed' and job.model_url %}
+                <model-viewer
+                  src="{{ job.model_url }}"
+                  camera-controls
+                  auto-rotate
+                  exposure="1"
+                  shadow-intensity="0.45"
+                  interaction-prompt="none">
+                </model-viewer>
+              {% else %}
+                <span class="preview-placeholder">대기 중</span>
+              {% endif %}
+            </div>
+            <a
+              class="batch-download download {% if job.status != 'completed' %}hidden{% endif %}"
+              href="{{ job.download_url if job.download_url else '#' }}">
+              GLB 다운로드
+            </a>
+          </article>
+        {% endfor %}
+      </section>
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
