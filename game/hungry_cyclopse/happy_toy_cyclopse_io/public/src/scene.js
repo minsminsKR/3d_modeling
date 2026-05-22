@@ -12,6 +12,9 @@ const COLORS = {
 const PLAYER_BASE_SIZE = 5;
 const BASE_VISUAL_DIAMETER = 6.8;
 const MIN_VISUAL_SCALE = 0.5;
+const FLOOR_TEXTURE = "/assets/textures/floors/floor.png";
+const SURVIVAL_FOG_COLOR = 0x09080b;
+const SURVIVAL_FOG_DENSITY = 0.0115;
 
 const CHARACTER_ASSETS = {
   cyclopse: {
@@ -47,15 +50,17 @@ export class GameScene {
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.38;
+    this.renderer.toneMappingExposure = 1.24;
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x111016);
-    this.scene.fog = new THREE.FogExp2(0x18141d, 0.0032);
+    this.scene.background = new THREE.Color(SURVIVAL_FOG_COLOR);
+    this.scene.fog = new THREE.FogExp2(SURVIVAL_FOG_COLOR, SURVIVAL_FOG_DENSITY);
 
     this.camera = new THREE.PerspectiveCamera(64, 1, 0.1, 1800);
     this.cameraLightRig = new THREE.Group();
-    this.headLamp = new THREE.SpotLight(0xffe2b8, 4.8, 210, Math.PI / 5.2, 0.62, 1.1);
-    this.fillLamp = new THREE.PointLight(0x9eb8ff, 1.15, 150, 1.4);
+    this.headLamp = new THREE.SpotLight(0xffe2b8, 0, 260, Math.PI / 5.4, 0.62, 1.1);
+    this.fillLamp = new THREE.PointLight(0x9eb8ff, 0, 150, 1.4);
+    this.flashlightAura = new THREE.PointLight(0xffd6a0, 0, 88, 1.65);
+    this.flashlightVisuals = this.#createFlashlightVisuals();
     this.players = new Map();
     this.enemies = new Map();
     this.selfId = null;
@@ -71,6 +76,7 @@ export class GameScene {
     window.__cyclopseScene = this;
     this.#lights();
     this.#cameraLights();
+    this.scene.add(this.flashlightAura, this.flashlightVisuals);
     this.#arena();
     this.resize();
     window.addEventListener("resize", () => this.resize());
@@ -98,20 +104,22 @@ export class GameScene {
     this.#syncPlayers(snapshot.players, dt, inputState);
     this.#syncEnemies(snapshot.enemies, dt);
     const self = this.players.get(this.selfId);
+    this.#updateFootprintTargets(snapshot);
     this.#updateCamera(self, inputState, dt);
+    this.#updateFlashlight(self, inputState, dt);
     this.#updateMixers(dt);
     this.#snapVisibleModelsToGround(self);
     this.renderer.render(this.scene, this.camera);
   }
 
   #lights() {
-    this.scene.add(new THREE.HemisphereLight(0x9b8faf, 0x30242a, 2.15));
-    this.scene.add(new THREE.AmbientLight(0x8a7c8f, 0.62));
-    const moon = new THREE.DirectionalLight(0xd8c8ff, 2.45);
+    this.scene.add(new THREE.HemisphereLight(0x675f76, 0x1b1720, 1.2));
+    this.scene.add(new THREE.AmbientLight(0x1c1821, 2.15));
+    const moon = new THREE.DirectionalLight(0x6b627d, 1.55);
     moon.position.set(-130, 210, -110);
     this.scene.add(moon);
 
-    const side = new THREE.DirectionalLight(0xffb36f, 0.72);
+    const side = new THREE.DirectionalLight(0x5a3f48, 0.58);
     side.position.set(150, 70, 120);
     this.scene.add(side);
   }
@@ -125,12 +133,36 @@ export class GameScene {
   }
 
   #arena() {
-    const floor = new THREE.Mesh(
-      new THREE.CircleGeometry(530, 96),
-      new THREE.MeshStandardMaterial({ color: 0x3c3338, roughness: 0.88, metalness: 0.02 })
+    const arenaSize = 1100;
+    const tileSize = 16;
+    const floorMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.95,
+      metalness: 0.0,
+      emissive: 0xb8a08d,
+      emissiveIntensity: 0.48
+    });
+    this.textureLoader.load(
+      FLOOR_TEXTURE,
+      (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy?.() || 1;
+        texture.repeat.set(arenaSize / tileSize, arenaSize / tileSize);
+        floorMaterial.map = texture;
+        floorMaterial.emissiveMap = texture;
+        floorMaterial.needsUpdate = true;
+      },
+      undefined,
+      () => {
+        floorMaterial.color.set(0x5c565d);
+      }
     );
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(arenaSize, arenaSize, 1, 1), floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     this.scene.add(floor);
+    this.#groundMist(arenaSize);
 
     const ring = new THREE.Mesh(
       new THREE.RingGeometry(520, 526, 128),
@@ -140,17 +172,70 @@ export class GameScene {
     ring.position.y = 0.2;
     this.scene.add(ring);
 
-    for (let i = 0; i < 90; i += 1) {
+    const silhouetteMaterial = new THREE.MeshStandardMaterial({
+      color: 0x141218,
+      roughness: 0.97,
+      metalness: 0.0,
+      transparent: true,
+      opacity: 0.9
+    });
+    for (let lane = -1; lane <= 1; lane += 2) {
+      for (let i = 0; i < 28; i += 1) {
+        const silhouette = new THREE.Mesh(new THREE.BoxGeometry(4, 26, 18), silhouetteMaterial);
+        const sideShift = lane * (80 + (i % 3) * 14);
+        silhouette.position.set(sideShift, 11, (i - 14) * 38 + (lane * 6));
+        silhouette.rotation.y = (lane * 4 * Math.PI) / 180;
+        this.scene.add(silhouette);
+      }
+    }
+
+    const propMaterialA = new THREE.MeshStandardMaterial({ color: 0x1e1a22, roughness: 0.95 });
+    const propMaterialB = new THREE.MeshStandardMaterial({ color: 0x322a36, roughness: 0.95 });
+    for (let i = 0; i < 60; i += 1) {
       const prop = new THREE.Mesh(
         new THREE.BoxGeometry(1, 1, 1),
-        new THREE.MeshStandardMaterial({ color: i % 4 === 0 ? 0x5d505a : 0x403942, roughness: 0.92 })
+        i % 5 === 0 ? propMaterialB : propMaterialA
       );
       const angle = Math.random() * Math.PI * 2;
-      const radius = 120 + Math.random() * 390;
+      const radius = 140 + Math.random() * 340;
       prop.position.set(Math.cos(angle) * radius, 4, Math.sin(angle) * radius);
-      prop.scale.set(4 + Math.random() * 10, 8 + Math.random() * 24, 4 + Math.random() * 10);
+      prop.scale.set(3 + Math.random() * 9, 7 + Math.random() * 22, 3 + Math.random() * 9);
       prop.rotation.y = Math.random() * Math.PI;
       this.scene.add(prop);
+    }
+  }
+
+  #groundMist(arenaSize) {
+    const softMist = new THREE.MeshBasicMaterial({
+      color: 0x6c6272,
+      transparent: true,
+      opacity: 0.025,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      blending: THREE.AdditiveBlending
+    });
+    const farMist = new THREE.MeshBasicMaterial({
+      color: 0x2b2530,
+      transparent: true,
+      opacity: 0.026,
+      depthWrite: false,
+      side: THREE.DoubleSide
+    });
+
+    const baseVeil = new THREE.Mesh(new THREE.PlaneGeometry(arenaSize, arenaSize), farMist);
+    baseVeil.rotation.x = -Math.PI / 2;
+    baseVeil.position.y = 0.055;
+    this.scene.add(baseVeil);
+
+    for (let i = 0; i < 24; i += 1) {
+      const patch = new THREE.Mesh(new THREE.CircleGeometry(22 + Math.random() * 34, 96), softMist);
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 55 + Math.random() * 460;
+      patch.position.set(Math.cos(angle) * radius, 0.07 + Math.random() * 0.04, Math.sin(angle) * radius);
+      patch.rotation.x = -Math.PI / 2;
+      patch.rotation.z = Math.random() * Math.PI;
+      patch.scale.set(1.1 + Math.random() * 1.35, 0.65 + Math.random() * 0.45, 1);
+      this.scene.add(patch);
     }
   }
 
@@ -205,6 +290,7 @@ export class GameScene {
         this.enemies.set(data.id, mesh);
         this.scene.add(mesh);
       }
+      mesh.userData.server = data;
       mesh.userData.visualSize += (data.size - mesh.userData.visualSize) * Math.min(1, dt * 8);
       const scale = visualScaleFromSize(mesh.userData.visualSize);
       mesh.userData.target.set(data.x, 0, data.z);
@@ -252,9 +338,9 @@ export class GameScene {
     const shadow = new THREE.Mesh(
       new THREE.CircleGeometry(BASE_VISUAL_DIAMETER / 2, 64),
       new THREE.MeshBasicMaterial({
-        color: 0x050508,
+        color: 0xffffff,
         transparent: true,
-        opacity: 0.32,
+        opacity: 0.08,
         depthWrite: false
       })
     );
@@ -263,16 +349,65 @@ export class GameScene {
     const rim = new THREE.Mesh(
       new THREE.TorusGeometry(BASE_VISUAL_DIAMETER / 2, 0.055, 8, 64),
       new THREE.MeshBasicMaterial({
-        color,
+        color: 0xffffff,
         transparent: true,
-        opacity: 0.42,
+        opacity: 0.54,
         depthWrite: false
       })
     );
     rim.rotation.x = Math.PI / 2;
     rim.position.y = 0.045;
     disc.add(shadow, rim);
+    disc.userData.shadow = shadow;
+    disc.userData.rim = rim;
+    disc.userData.baseColor = color;
     return disc;
+  }
+
+  #createFlashlightVisuals() {
+    const group = new THREE.Group();
+    group.visible = false;
+
+    const aura = new THREE.Mesh(
+      new THREE.CircleGeometry(28, 80),
+      new THREE.MeshBasicMaterial({
+        color: 0xffd9a1,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending
+      })
+    );
+    aura.rotation.x = -Math.PI / 2;
+    aura.position.y = 0.12;
+
+    const length = 92;
+    const width = 38;
+    const coneShape = new THREE.Shape();
+    coneShape.moveTo(0, 0);
+    coneShape.lineTo(-width, -length);
+    coneShape.quadraticCurveTo(0, -length - 18, width, -length);
+    coneShape.lineTo(0, 0);
+    const cone = new THREE.Mesh(
+      new THREE.ShapeGeometry(coneShape),
+      new THREE.MeshBasicMaterial({
+        color: 0xffe4ad,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending
+      })
+    );
+    cone.rotation.x = -Math.PI / 2;
+    cone.position.y = 0.135;
+
+    group.add(aura, cone);
+    group.userData.aura = aura;
+    group.userData.cone = cone;
+    group.userData.visibility = 0;
+    return group;
   }
 
   #createSpawnShield() {
@@ -318,6 +453,74 @@ export class GameScene {
     shield.rotation.y += dt * 1.6;
     shield.userData.dome.material.opacity = 0.15 + Math.sin(shield.userData.pulse * 1.7) * 0.035;
     shield.userData.ring.material.opacity = 0.58 + Math.sin(shield.userData.pulse * 2.1) * 0.16;
+  }
+
+  #updateFootprintTargets(snapshot) {
+    const selfData = snapshot.players.find((player) => player.id === this.selfId && player.alive);
+    for (const [id, group] of this.players) {
+      const data = group.userData.server;
+      if (id === this.selfId) {
+        this.#setFootprintStyle(group, "hidden");
+      } else if (selfData && data?.alive && selfData.size > data.size + 1) {
+        this.#setFootprintStyle(group, "eatable");
+      } else {
+        this.#setFootprintStyle(group, "hidden");
+      }
+    }
+
+    for (const enemy of this.enemies.values()) {
+      const data = enemy.userData.server;
+      if (selfData && data && selfData.size > data.size) {
+        this.#setFootprintStyle(enemy, "eatable");
+      } else {
+        this.#setFootprintStyle(enemy, "hidden");
+      }
+    }
+  }
+
+  #setFootprintStyle(group, mode) {
+    const footprint = group.userData.footprint;
+    if (!footprint) return;
+    const rim = footprint.userData.rim;
+    const shadow = footprint.userData.shadow;
+    if (mode === "hidden") {
+      footprint.visible = false;
+      return;
+    }
+    footprint.visible = true;
+    if (mode === "eatable") {
+      rim.material.color.set(0x5cff7a);
+      rim.material.opacity = 0.82;
+      shadow.material.color.set(0x42ff66);
+      shadow.material.opacity = 0.16;
+      return;
+    }
+    rim.material.color.set(0xffffff);
+    rim.material.opacity = 0.42;
+    shadow.material.color.set(0xffffff);
+    shadow.material.opacity = 0.075;
+  }
+
+  #updateFlashlight(selfGroup, inputState, dt) {
+    const active = Boolean(inputState?.flashlightOn && selfGroup?.userData.server?.alive);
+    const target = active ? 1 : 0;
+    const current = this.flashlightVisuals.userData.visibility || 0;
+    const visibility = current + (target - current) * Math.min(1, dt * 10);
+    this.flashlightVisuals.userData.visibility = visibility;
+    this.flashlightVisuals.visible = visibility > 0.01;
+
+    this.headLamp.intensity += ((active ? 8.4 : 0) - this.headLamp.intensity) * Math.min(1, dt * 12);
+    this.fillLamp.intensity += ((active ? 0.75 : 0) - this.fillLamp.intensity) * Math.min(1, dt * 10);
+    this.flashlightAura.intensity += ((active ? 2.35 : 0) - this.flashlightAura.intensity) * Math.min(1, dt * 10);
+
+    if (!selfGroup) return;
+    const yaw = inputState?.yaw ?? selfGroup.rotation.y;
+    const position = selfGroup.position;
+    this.flashlightAura.position.set(position.x, 7.5, position.z);
+    this.flashlightVisuals.position.set(position.x, 0, position.z);
+    this.flashlightVisuals.rotation.y = yaw + Math.PI;
+    this.flashlightVisuals.userData.aura.material.opacity = 0.18 * visibility;
+    this.flashlightVisuals.userData.cone.material.opacity = 0.23 * visibility;
   }
 
   #updateCamera(selfGroup, inputState, dt) {

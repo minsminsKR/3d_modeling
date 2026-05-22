@@ -13,7 +13,10 @@ const playButton = document.querySelector("#playButton");
 const scene = new GameScene(canvas);
 const input = new InputController(canvas);
 const net = new NetworkClient();
-const calibrationMode = new URLSearchParams(location.search).has("calibrate");
+const params = new URLSearchParams(location.search);
+const calibrationMode = params.has("calibrate");
+const debugAutoplay = params.has("autoplay");
+const debugFlashlight = params.has("flashlight");
 
 let joined = false;
 let latestSnapshot = null;
@@ -25,6 +28,11 @@ if (calibrationMode) {
   stats.innerHTML = "Visual calibration<br>All characters size 5<br>Green rings share the same gameplay radius";
   leaderboard.innerHTML = "<strong>Size Check</strong><br>Cyclopse · Hwacat · Uncat · Angry";
   scene.createCalibrationLineup(5);
+} else if (debugAutoplay) {
+  joined = true;
+  pendingName = "Test Cyclopse";
+  input.flashlightOn = debugFlashlight;
+  join.style.display = "none";
 }
 
 playButton.addEventListener("click", () => {
