@@ -9,6 +9,14 @@ const STAMINA_MAX = 100;
 const PLAYER_SPAWN_SAFE_RADIUS = 210;
 const ENEMY_SPAWN_PLAYER_MIN_DISTANCE = 230;
 const SPAWN_PROTECTION_SECONDS = 3.0;
+const NORMAL_AI_SENSE_DISTANCE = 90;
+const NORMAL_CHASE_GIVE_UP_DISTANCE = 150;
+const NORMAL_FLEE_GIVE_UP_DISTANCE = 135;
+const NORMAL_CHASE_MAX_SECONDS = 10;
+const NORMAL_CHASE_CHANCE = 0.4;
+const NORMAL_FLEE_CHANCE = 0.4;
+const GIANT_CHASE_MAX_SECONDS = 10;
+const CHASE_COOLDOWN_SECONDS = 2.5;
 
 function rand(min, max) {
   return min + Math.random() * (max - min);
@@ -201,25 +209,72 @@ export class GameWorld {
   }
 
   #tickEnemy(enemy, dt) {
+    enemy.chaseCooldown = Math.max(0, (enemy.chaseCooldown || 0) - dt);
+
     if (enemy.kind === "giant") {
-      const target = this.#nearestAlivePlayer(enemy, enemy.state === "chasing" ? 140 : 95);
+      const target = enemy.chaseCooldown <= 0 ? this.#nearestAlivePlayer(enemy, enemy.state === "chasing" ? 140 : 95) : null;
       if (target) {
-        enemy.state = "chasing";
-        this.#moveToward(enemy, target, GIANT_SPEED, dt);
+        enemy.chaseTime = enemy.state === "chasing" ? (enemy.chaseTime || 0) + dt : 0;
+        if (enemy.chaseTime >= GIANT_CHASE_MAX_SECONDS) {
+          this.#stopChasing(enemy);
+          this.#wander(enemy, dt);
+        } else {
+          enemy.state = "chasing";
+          enemy.targetId = target.id;
+          this.#moveToward(enemy, target, GIANT_SPEED, dt);
+        }
       } else {
-        enemy.state = "wandering";
+        this.#clearPursuit(enemy);
         this.#wander(enemy, dt);
       }
       return;
     }
 
-    const target = this.#nearestAlivePlayer(enemy, 90);
-    if (target && Math.random() < 0.5) {
-      if (enemy.size > target.size) this.#moveToward(enemy, target, enemy.speed, dt);
-      else this.#moveAway(enemy, target, enemy.speed, dt);
-    } else {
-      this.#wander(enemy, dt);
+    if (enemy.state === "chasing") {
+      const target = this.#playerById(enemy.targetId);
+      enemy.chaseTime = (enemy.chaseTime || 0) + dt;
+      if (!target || dist(enemy, target) > NORMAL_CHASE_GIVE_UP_DISTANCE || enemy.chaseTime >= NORMAL_CHASE_MAX_SECONDS) {
+        this.#stopChasing(enemy);
+        this.#wander(enemy, dt);
+      } else {
+        this.#moveToward(enemy, target, enemy.speed, dt);
+      }
+      return;
     }
+
+    if (enemy.state === "fleeing") {
+      const target = this.#playerById(enemy.targetId);
+      enemy.fleeTime = (enemy.fleeTime || 0) + dt;
+      if (!target || dist(enemy, target) > NORMAL_FLEE_GIVE_UP_DISTANCE || enemy.fleeTime >= NORMAL_CHASE_MAX_SECONDS) {
+        this.#clearPursuit(enemy);
+        this.#wander(enemy, dt);
+      } else {
+        this.#moveAway(enemy, target, enemy.speed, dt);
+      }
+      return;
+    }
+
+    enemy.decisionTimer -= dt;
+    const target = this.#nearestAlivePlayer(enemy, NORMAL_AI_SENSE_DISTANCE);
+    if (target && enemy.decisionTimer <= 0 && enemy.chaseCooldown <= 0) {
+      enemy.decisionTimer = rand(0.8, 1.8);
+      if (enemy.size > target.size && Math.random() < NORMAL_CHASE_CHANCE) {
+        enemy.state = "chasing";
+        enemy.targetId = target.id;
+        enemy.chaseTime = 0;
+        this.#moveToward(enemy, target, enemy.speed, dt);
+        return;
+      }
+      if (enemy.size < target.size && Math.random() < NORMAL_FLEE_CHANCE) {
+        enemy.state = "fleeing";
+        enemy.targetId = target.id;
+        enemy.fleeTime = 0;
+        this.#moveAway(enemy, target, enemy.speed, dt);
+        return;
+      }
+    }
+
+    this.#wander(enemy, dt);
   }
 
   #maintainEnemies() {
@@ -266,6 +321,11 @@ export class GameWorld {
       size,
       speed: kind === "angry" ? 42 : kind === "uncat" ? 36 : 28,
       state: "wandering",
+      targetId: null,
+      chaseTime: 0,
+      fleeTime: 0,
+      chaseCooldown: 0,
+      decisionTimer: rand(0.2, 1.4),
       turnTimer: rand(0.4, 2.4)
     };
   }
@@ -381,6 +441,23 @@ export class GameWorld {
       }
     }
     return best;
+  }
+
+  #playerById(id) {
+    const player = this.players.get(id);
+    return player?.joined && player.alive ? player : null;
+  }
+
+  #clearPursuit(enemy) {
+    enemy.state = "wandering";
+    enemy.targetId = null;
+    enemy.chaseTime = 0;
+    enemy.fleeTime = 0;
+  }
+
+  #stopChasing(enemy) {
+    this.#clearPursuit(enemy);
+    enemy.chaseCooldown = CHASE_COOLDOWN_SECONDS;
   }
 
   #wander(entity, dt) {

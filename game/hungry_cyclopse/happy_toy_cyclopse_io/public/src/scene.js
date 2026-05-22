@@ -57,9 +57,9 @@ export class GameScene {
 
     this.camera = new THREE.PerspectiveCamera(64, 1, 0.1, 1800);
     this.cameraLightRig = new THREE.Group();
-    this.headLamp = new THREE.SpotLight(0xffe2b8, 0, 260, Math.PI / 5.4, 0.62, 1.1);
+    this.headLamp = new THREE.SpotLight(0xffe2b8, 0, 310, Math.PI / 5.1, 0.62, 1.05);
     this.fillLamp = new THREE.PointLight(0x9eb8ff, 0, 150, 1.4);
-    this.flashlightAura = new THREE.PointLight(0xffd6a0, 0, 88, 1.65);
+    this.flashlightAura = new THREE.PointLight(0xffd6a0, 0, 104, 1.55);
     this.flashlightVisuals = this.#createFlashlightVisuals();
     this.players = new Map();
     this.enemies = new Map();
@@ -369,7 +369,7 @@ export class GameScene {
     group.visible = false;
 
     const aura = new THREE.Mesh(
-      new THREE.CircleGeometry(28, 80),
+      new THREE.CircleGeometry(34, 80),
       new THREE.MeshBasicMaterial({
         color: 0xffd9a1,
         transparent: true,
@@ -382,8 +382,8 @@ export class GameScene {
     aura.rotation.x = -Math.PI / 2;
     aura.position.y = 0.12;
 
-    const length = 92;
-    const width = 38;
+    const length = 115;
+    const width = 46;
     const coneShape = new THREE.Shape();
     coneShape.moveTo(0, 0);
     coneShape.lineTo(-width, -length);
@@ -509,9 +509,9 @@ export class GameScene {
     this.flashlightVisuals.userData.visibility = visibility;
     this.flashlightVisuals.visible = visibility > 0.01;
 
-    this.headLamp.intensity += ((active ? 8.4 : 0) - this.headLamp.intensity) * Math.min(1, dt * 12);
-    this.fillLamp.intensity += ((active ? 0.75 : 0) - this.fillLamp.intensity) * Math.min(1, dt * 10);
-    this.flashlightAura.intensity += ((active ? 2.35 : 0) - this.flashlightAura.intensity) * Math.min(1, dt * 10);
+    this.headLamp.intensity += ((active ? 11.2 : 0) - this.headLamp.intensity) * Math.min(1, dt * 12);
+    this.fillLamp.intensity += ((active ? 1.1 : 0) - this.fillLamp.intensity) * Math.min(1, dt * 10);
+    this.flashlightAura.intensity += ((active ? 3.4 : 0) - this.flashlightAura.intensity) * Math.min(1, dt * 10);
 
     if (!selfGroup) return;
     const yaw = inputState?.yaw ?? selfGroup.rotation.y;
@@ -519,8 +519,8 @@ export class GameScene {
     this.flashlightAura.position.set(position.x, 7.5, position.z);
     this.flashlightVisuals.position.set(position.x, 0, position.z);
     this.flashlightVisuals.rotation.y = yaw + Math.PI;
-    this.flashlightVisuals.userData.aura.material.opacity = 0.18 * visibility;
-    this.flashlightVisuals.userData.cone.material.opacity = 0.23 * visibility;
+    this.flashlightVisuals.userData.aura.material.opacity = 0.24 * visibility;
+    this.flashlightVisuals.userData.cone.material.opacity = 0.32 * visibility;
   }
 
   #updateCamera(selfGroup, inputState, dt) {
