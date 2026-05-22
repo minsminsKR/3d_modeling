@@ -17,6 +17,9 @@ const NORMAL_CHASE_CHANCE = 0.4;
 const NORMAL_FLEE_CHANCE = 0.4;
 const GIANT_CHASE_MAX_SECONDS = 10;
 const CHASE_COOLDOWN_SECONDS = 2.5;
+const SNAPSHOT_PLAYER_RADIUS = 420;
+const SNAPSHOT_ENEMY_RADIUS = 380;
+const SNAPSHOT_GIANT_RADIUS = 620;
 const ENEMY_PERSONALITIES = {
   bold: { speed: 1.12, chaseChance: 0.54, fleeChance: 0.32, sense: 106, chaseGiveUp: 170, fleeGiveUp: 120, turnJitter: 1.45 },
   skittish: { speed: 1.05, chaseChance: 0.28, fleeChance: 0.58, sense: 96, chaseGiveUp: 138, fleeGiveUp: 165, turnJitter: 2.25 },
@@ -132,17 +135,44 @@ export class GameWorld {
   }
 
   shouldBroadcast(now) {
-    if (now - this.lastBroadcast < 50) return false;
+    if (now - this.lastBroadcast < 66) return false;
     this.lastBroadcast = now;
     return true;
   }
 
   snapshot() {
+    return this.#buildSnapshot(null);
+  }
+
+  snapshotFor(viewer) {
+    return this.#buildSnapshot(viewer);
+  }
+
+  #buildSnapshot(viewer) {
+    const joinedPlayers = [...this.players.values()].filter((p) => p.joined);
+    const leaders = [...joinedPlayers]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 6)
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        score: p.score,
+        alive: p.alive
+      }));
+    const visiblePlayers = viewer?.joined
+      ? joinedPlayers.filter((p) => p.id === viewer.id || dist(p, viewer) <= SNAPSHOT_PLAYER_RADIUS || leaders.some((leader) => leader.id === p.id))
+      : joinedPlayers;
+    const visibleEnemies = viewer?.joined && viewer.alive
+      ? [...this.enemies.values()].filter((e) => dist(e, viewer) <= (e.kind === "giant" ? SNAPSHOT_GIANT_RADIUS : SNAPSHOT_ENEMY_RADIUS))
+      : [...this.enemies.values()];
+
     return {
       type: "snapshot",
       now: Date.now(),
       uptime: Math.floor((Date.now() - this.startedAt) / 1000),
-      players: [...this.players.values()].filter((p) => p.joined).map((p) => ({
+      playerCount: joinedPlayers.length,
+      leaders,
+      players: visiblePlayers.map((p) => ({
         id: p.id,
         name: p.name,
         x: Math.round(p.x * 10) / 10,
@@ -156,7 +186,7 @@ export class GameWorld {
         godMode: p.godMode,
         color: p.color
       })),
-      enemies: [...this.enemies.values()].map((e) => ({
+      enemies: visibleEnemies.map((e) => ({
         id: e.id,
         kind: e.kind,
         x: Math.round(e.x * 10) / 10,
@@ -428,14 +458,30 @@ export class GameWorld {
   }
 
   #findEnemySpawnPoint() {
-    for (let attempt = 0; attempt < 80; attempt += 1) {
+    for (let attempt = 0; attempt < 160; attempt += 1) {
       const point = randomPoint(240, ARENA_RADIUS - 20);
       const safeFromPlayers = [...this.players.values()].every(
-        (player) => !player.joined || !player.alive || dist(point, player) > ENEMY_SPAWN_PLAYER_MIN_DISTANCE
+        (player) => this.#isEnemySpawnSafeForPlayer(point, player)
       );
       if (safeFromPlayers) return point;
     }
     return randomPoint(320, ARENA_RADIUS - 20);
+  }
+
+  #isEnemySpawnSafeForPlayer(point, player) {
+    if (!player.joined || !player.alive) return true;
+    const d = dist(point, player);
+    if (d <= ENEMY_SPAWN_PLAYER_MIN_DISTANCE) return false;
+    if (d > SNAPSHOT_ENEMY_RADIUS + 80) return true;
+
+    const dx = point.x - player.x;
+    const dz = point.z - player.z;
+    const len = Math.hypot(dx, dz) || 1;
+    const yaw = player.input?.yaw ?? player.yaw ?? 0;
+    const forwardX = -Math.sin(yaw);
+    const forwardZ = -Math.cos(yaw);
+    const facingDot = (dx / len) * forwardX + (dz / len) * forwardZ;
+    return facingDot < 0.22;
   }
 
   #pushApart(a, b, force) {

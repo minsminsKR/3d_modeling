@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 
 const COLORS = {
@@ -13,8 +14,27 @@ const PLAYER_BASE_SIZE = 5;
 const BASE_VISUAL_DIAMETER = 6.8;
 const MIN_VISUAL_SCALE = 0.5;
 const FLOOR_TEXTURE = "/assets/textures/floors/floor.png";
+const WALL_TEXTURE = "/assets/textures/walls/wall.png";
+const DOOR_TEXTURE = "/assets/textures/doors/doors.png";
+const RED_PUDDLE_TEXTURE = "/assets/textures/props/placeholder-red-puddle-1f/basecolor.png";
 const SURVIVAL_FOG_COLOR = 0x09080b;
-const SURVIVAL_FOG_DENSITY = 0.0115;
+const SURVIVAL_FOG_DENSITY = 0.0068;
+const WORLD_PROP_SEED = 73491;
+const MAX_RENDER_PIXEL_RATIO = 1.5;
+const MIN_RENDER_PIXEL_RATIO = 0.9;
+const CHARACTER_FULL_MODEL_DISTANCE = 260;
+const GIANT_FULL_MODEL_DISTANCE = 430;
+
+const PROP_ASSETS = [
+  { key: "barricade", url: "/assets/props/barricade/model.glb", radius: 165, count: 5, scale: [7, 10], y: 0 },
+  { key: "barredWindow", url: "/assets/props/barred-window/model.glb", radius: 205, count: 4, scale: [8, 12], y: 4 },
+  { key: "wire", url: "/assets/props/corridor-wire/model.glb", radius: 145, count: 6, scale: [5, 9], y: 1 },
+  { key: "mannequinA", url: "/assets/props/silent-mannequin-1f/model.glb", radius: 240, count: 4, scale: [7, 12], y: 0 },
+  { key: "mannequinB", url: "/assets/props/silent-mannequin-2f/model.glb", radius: 260, count: 3, scale: [7, 12], y: 0 },
+  { key: "dollCircle", url: "/assets/props/upper-doll-circle/model.glb", radius: 190, count: 4, scale: [6, 9], y: 0 },
+  { key: "wrappedBody", url: "/assets/props/placeholder-wrapped-body-1f/model.glb", radius: 210, count: 3, scale: [6, 10], y: 0 },
+  { key: "mirrorShards", url: "/assets/props/upper-mirror-shards/model.glb", radius: 180, count: 5, scale: [6, 11], y: 0.08 }
+];
 
 const CHARACTER_ASSETS = {
   cyclopse: {
@@ -47,32 +67,47 @@ export class GameScene {
   constructor(canvas) {
     this.canvas = canvas;
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-    this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    this.currentPixelRatio = Math.min(window.devicePixelRatio || 1, MAX_RENDER_PIXEL_RATIO);
+    this.targetPixelRatio = this.currentPixelRatio;
+    this.renderer.setPixelRatio(this.currentPixelRatio);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.24;
+    this.renderer.toneMappingExposure = 1.55;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(SURVIVAL_FOG_COLOR);
     this.scene.fog = new THREE.FogExp2(SURVIVAL_FOG_COLOR, SURVIVAL_FOG_DENSITY);
 
     this.camera = new THREE.PerspectiveCamera(64, 1, 0.1, 1800);
     this.cameraLightRig = new THREE.Group();
-    this.headLamp = new THREE.SpotLight(0xffe2b8, 0, 310, Math.PI / 5.1, 0.62, 1.05);
-    this.fillLamp = new THREE.PointLight(0x9eb8ff, 0, 150, 1.4);
-    this.flashlightAura = new THREE.PointLight(0xffd6a0, 0, 104, 1.55);
+    this.headLamp = new THREE.SpotLight(0xffe6bd, 0, 470, Math.PI / 4.6, 0.78, 0.82);
+    this.headLamp.castShadow = true;
+    this.headLamp.shadow.mapSize.set(512, 512);
+    this.headLamp.shadow.camera.near = 1;
+    this.headLamp.shadow.camera.far = 260;
+    this.headLamp.shadow.bias = -0.0008;
+    this.fillLamp = new THREE.PointLight(0xaec4ff, 0, 48, 1.15);
+    this.flashlightAura = new THREE.PointLight(0xffd6a0, 0, 64, 1.2);
     this.flashlightVisuals = this.#createFlashlightVisuals();
     this.players = new Map();
     this.enemies = new Map();
     this.selfId = null;
     this.clock = new THREE.Clock();
     this.fbxLoader = new FBXLoader();
+    this.gltfLoader = new GLTFLoader();
     this.textureLoader = new THREE.TextureLoader();
     this.modelCache = new Map();
-    this.glowTexture = null;
+    this.propCache = new Map();
+    this.staticProps = [];
     this.mixers = new Set();
     this.calibrationGroups = [];
     this._footProbe = new THREE.Vector3();
     this._groundFrame = 0;
+    this._lodFrame = 0;
+    this._qualityTimer = 0;
+    this._frameTimeAverage = 1 / 60;
+    this._propVisibilityFrame = 0;
 
     window.__cyclopseScene = this;
     this.#lights();
@@ -108,40 +143,43 @@ export class GameScene {
     this.#updateFootprintTargets(snapshot);
     this.#updateCamera(self, inputState, dt);
     this.#updateFlashlight(self, inputState, dt);
-    this.#updateMixers(dt);
+    this.#updateCharacterLod(self);
+    this.#updateStaticPropVisibility(self);
+    this.#updateMixers(dt, self);
     this.#snapVisibleModelsToGround(self);
+    this.#updateRenderQuality(dt);
     this.renderer.render(this.scene, this.camera);
   }
 
   #lights() {
-    this.scene.add(new THREE.HemisphereLight(0x675f76, 0x1b1720, 1.2));
-    this.scene.add(new THREE.AmbientLight(0x1c1821, 2.15));
-    const moon = new THREE.DirectionalLight(0x6b627d, 1.55);
+    this.scene.add(new THREE.HemisphereLight(0x8b8298, 0x2f2630, 2.0));
+    this.scene.add(new THREE.AmbientLight(0x332d36, 2.8));
+    const moon = new THREE.DirectionalLight(0x9489a4, 2.25);
     moon.position.set(-130, 210, -110);
     this.scene.add(moon);
 
-    const side = new THREE.DirectionalLight(0x5a3f48, 0.58);
+    const side = new THREE.DirectionalLight(0x76545f, 0.92);
     side.position.set(150, 70, 120);
     this.scene.add(side);
   }
 
   #cameraLights() {
-    this.headLamp.position.set(0, 0, 0);
-    this.headLamp.target.position.set(0, 0, -1);
-    this.fillLamp.position.set(0, -4, -10);
-    this.cameraLightRig.add(this.headLamp, this.headLamp.target, this.fillLamp);
-    this.scene.add(this.cameraLightRig);
+    this.headLamp.position.set(0, 8, 0);
+    this.headLamp.target.position.set(0, 5, -1);
+    this.fillLamp.position.set(0, 6, 0);
+    this.scene.add(this.headLamp, this.headLamp.target, this.fillLamp);
   }
 
   #arena() {
     const arenaSize = 1100;
     const tileSize = 16;
+    const rng = seededRandom(WORLD_PROP_SEED);
     const floorMaterial = new THREE.MeshStandardMaterial({
       color: 0xffffff,
       roughness: 0.95,
       metalness: 0.0,
       emissive: 0xb8a08d,
-      emissiveIntensity: 0.48
+      emissiveIntensity: 0.62
     });
     this.textureLoader.load(
       FLOOR_TEXTURE,
@@ -149,7 +187,7 @@ export class GameScene {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
-        texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy?.() || 1;
+        texture.anisotropy = Math.min(this.renderer.capabilities.getMaxAnisotropy?.() || 1, 8);
         texture.repeat.set(arenaSize / tileSize, arenaSize / tileSize);
         floorMaterial.map = texture;
         floorMaterial.emissiveMap = texture;
@@ -162,8 +200,13 @@ export class GameScene {
     );
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(arenaSize, arenaSize, 1, 1), floorMaterial);
     floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
     this.scene.add(floor);
-    this.#groundMist(arenaSize);
+    this.#groundMist(arenaSize, rng);
+    this.#corridorWalls(arenaSize);
+    this.#scatterAssetProps(rng);
+    this.#featuredAssetProps();
+    this.#bloodPuddles(rng);
 
     const ring = new THREE.Mesh(
       new THREE.RingGeometry(520, 526, 128),
@@ -172,41 +215,264 @@ export class GameScene {
     ring.rotation.x = -Math.PI / 2;
     ring.position.y = 0.2;
     this.scene.add(ring);
+  }
 
-    const silhouetteMaterial = new THREE.MeshStandardMaterial({
-      color: 0x141218,
-      roughness: 0.97,
-      metalness: 0.0,
-      transparent: true,
-      opacity: 0.9
+  #corridorWalls(arenaSize) {
+    const wallMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.92,
+      metalness: 0,
+      emissive: 0x171018,
+      emissiveIntensity: 0.22
     });
-    for (let lane = -1; lane <= 1; lane += 2) {
-      for (let i = 0; i < 28; i += 1) {
-        const silhouette = new THREE.Mesh(new THREE.BoxGeometry(4, 26, 18), silhouetteMaterial);
-        const sideShift = lane * (80 + (i % 3) * 14);
-        silhouette.position.set(sideShift, 11, (i - 14) * 38 + (lane * 6));
-        silhouette.rotation.y = (lane * 4 * Math.PI) / 180;
-        this.scene.add(silhouette);
-      }
-    }
+    const innerWallMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.94,
+      metalness: 0,
+      emissive: 0x110d13,
+      emissiveIntensity: 0.2,
+      side: THREE.DoubleSide
+    });
+    const doorMaterial = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.9,
+      metalness: 0,
+      emissive: 0x120d12,
+      emissiveIntensity: 0.18
+    });
 
-    const propMaterialA = new THREE.MeshStandardMaterial({ color: 0x1e1a22, roughness: 0.95 });
-    const propMaterialB = new THREE.MeshStandardMaterial({ color: 0x322a36, roughness: 0.95 });
-    for (let i = 0; i < 60; i += 1) {
-      const prop = new THREE.Mesh(
-        new THREE.BoxGeometry(1, 1, 1),
-        i % 5 === 0 ? propMaterialB : propMaterialA
+    this.textureLoader.load(WALL_TEXTURE, (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(2.5, 1.2);
+      wallMaterial.map = texture;
+      wallMaterial.needsUpdate = true;
+      const innerTexture = texture.clone();
+      innerTexture.needsUpdate = true;
+      innerTexture.repeat.set(28, 1.8);
+      innerWallMaterial.map = innerTexture;
+      innerWallMaterial.needsUpdate = true;
+    });
+    this.textureLoader.load(DOOR_TEXTURE, (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(1.2, 1.4);
+      doorMaterial.map = texture;
+      doorMaterial.needsUpdate = true;
+    });
+
+    const panelGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const matrix = new THREE.Matrix4();
+    const quaternion = new THREE.Quaternion();
+    const wallTransforms = [];
+    const doorTransforms = [];
+    const pushTransform = (target, x, y, z, rotationY, sx, sy, sz) => {
+      target.push({
+        position: new THREE.Vector3(x, y, z),
+        quaternion: quaternion.setFromEuler(new THREE.Euler(0, rotationY, 0)).clone(),
+        scale: new THREE.Vector3(sx, sy, sz)
+      });
+    };
+    const createInstancedPanels = (transforms, material) => {
+      if (!transforms.length) return;
+      const mesh = new THREE.InstancedMesh(panelGeometry, material, transforms.length);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      transforms.forEach((transform, index) => {
+        matrix.compose(transform.position, transform.quaternion, transform.scale);
+        mesh.setMatrixAt(index, matrix);
+      });
+      mesh.instanceMatrix.needsUpdate = true;
+      this.scene.add(mesh);
+    };
+
+    const boundaryRadius = Math.min(arenaSize / 2 - 28, 520);
+    const panelCount = 42;
+    const panelHeight = 64;
+    const panelWidth = (Math.PI * 2 * boundaryRadius) / panelCount + 10;
+    const panelDepth = 24;
+
+    const innerWall = new THREE.Mesh(
+      new THREE.CylinderGeometry(boundaryRadius - 12, boundaryRadius - 12, panelHeight * 0.96, 128, 1, true),
+      innerWallMaterial
+    );
+    innerWall.position.y = (panelHeight * 0.96) / 2;
+    innerWall.castShadow = true;
+    innerWall.receiveShadow = true;
+    this.scene.add(innerWall);
+
+    for (let i = 0; i < panelCount; i += 1) {
+      const angle = (i / panelCount) * Math.PI * 2;
+      const x = Math.sin(angle) * boundaryRadius;
+      const z = Math.cos(angle) * boundaryRadius;
+      const target = i % 8 === 3 ? doorTransforms : wallTransforms;
+      pushTransform(
+        target,
+        x,
+        panelHeight / 2,
+        z,
+        -angle,
+        panelWidth,
+        panelHeight + (i % 5 === 0 ? 10 : 0),
+        panelDepth
       );
-      const angle = Math.random() * Math.PI * 2;
-      const radius = 140 + Math.random() * 340;
-      prop.position.set(Math.cos(angle) * radius, 4, Math.sin(angle) * radius);
-      prop.scale.set(3 + Math.random() * 9, 7 + Math.random() * 22, 3 + Math.random() * 9);
-      prop.rotation.y = Math.random() * Math.PI;
-      this.scene.add(prop);
+    }
+    createInstancedPanels(wallTransforms, wallMaterial);
+    createInstancedPanels(doorTransforms, doorMaterial);
+  }
+
+  #scatterAssetProps(rng) {
+    for (const spec of PROP_ASSETS) {
+      for (let i = 0; i < spec.count; i += 1) {
+        const angle = rng() * Math.PI * 2;
+        const radius = spec.radius + rng() * 300;
+        const sideBias = rng() < 0.58 ? Math.sign(Math.cos(angle) || 1) * (80 + rng() * 135) : 0;
+        const x = Math.cos(angle) * radius + sideBias;
+        const z = Math.sin(angle) * radius;
+        if (Math.hypot(x, z) < 72) continue;
+        const scale = spec.scale[0] + rng() * (spec.scale[1] - spec.scale[0]);
+        this.#placeProp(spec, {
+          position: new THREE.Vector3(x, spec.y, z),
+          rotationY: rng() * Math.PI * 2,
+          scale
+        });
+      }
     }
   }
 
-  #groundMist(arenaSize) {
+  #featuredAssetProps() {
+    const specs = Object.fromEntries(PROP_ASSETS.map((spec) => [spec.key, spec]));
+    const placements = [
+      ["mannequinA", -64, 0, -38, 0.35, 11],
+      ["mannequinB", 72, 0, 52, -0.55, 10],
+      ["barricade", 46, 0, -74, 0.92, 10],
+      ["wrappedBody", -20, 0, 70, 0.2, 12],
+      ["barricade", 28, 0, 108, -0.35, 12],
+      ["mannequinA", -42, 0, 122, 0.78, 12],
+      ["barredWindow", -108, 5, 28, Math.PI / 2, 12],
+      ["wrappedBody", -34, 0, 96, -0.25, 9],
+      ["dollCircle", 88, 0, 130, 0.1, 9],
+      ["wire", 0, 1, 154, Math.PI / 2, 8],
+      ["mirrorShards", 33, 0.08, 34, 0.45, 8]
+    ];
+
+    for (const [key, x, y, z, rotationY, scale] of placements) {
+      const spec = specs[key];
+      if (!spec) continue;
+      this.#placeProp(spec, {
+        position: new THREE.Vector3(x, y, z),
+        rotationY,
+        scale
+      });
+    }
+  }
+
+  #placeProp(spec, options) {
+    const group = new THREE.Group();
+    group.position.copy(options.position);
+    group.rotation.y = options.rotationY;
+    group.scale.setScalar(options.scale);
+    group.userData.visibilityRadius = Math.max(220, options.scale * 42);
+    const fallback = this.#propFallback(spec);
+    group.add(fallback);
+    this.scene.add(group);
+    this.staticProps.push(group);
+
+    this.#loadPropModel(spec)
+      .then((model) => {
+        if (!group.parent) return;
+        const instance = SkeletonUtils.clone(model);
+        this.#makeModelMaterialsUnique(instance);
+        this.#normalizePropModel(instance);
+        group.add(instance);
+        fallback.visible = false;
+      })
+      .catch(() => {
+        fallback.visible = true;
+      });
+  }
+
+  #propFallback(spec) {
+    const material = new THREE.MeshStandardMaterial({
+      color: spec.key.includes("mannequin") ? 0xd9d3c6 : 0x312833,
+      roughness: 0.94,
+      metalness: 0
+    });
+    const height = spec.key.includes("window") ? 3.2 : spec.key.includes("wire") ? 0.45 : 1.6;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(1.8, height, 0.35), material);
+    mesh.position.y = height / 2;
+    return mesh;
+  }
+
+  #loadPropModel(spec) {
+    if (this.propCache.has(spec.url)) return this.propCache.get(spec.url);
+    const promise = this.gltfLoader.loadAsync(spec.url).then((gltf) => {
+      const root = gltf.scene;
+      root.traverse((child) => {
+        if (!child.isMesh) return;
+        child.castShadow = false;
+        child.receiveShadow = false;
+        child.frustumCulled = true;
+        child.geometry?.computeVertexNormals?.();
+        if (child.geometry?.attributes?.normal) child.geometry.attributes.normal.needsUpdate = true;
+        if (child.material) {
+          const materials = Array.isArray(child.material) ? child.material : [child.material];
+          for (const material of materials) {
+            if (material.map) {
+              material.map.colorSpace = THREE.SRGBColorSpace;
+              material.map.anisotropy = Math.min(this.renderer.capabilities.getMaxAnisotropy?.() || 1, 6);
+            }
+            material.side = THREE.DoubleSide;
+            material.needsUpdate = true;
+          }
+        }
+      });
+      this.#normalizePropModel(root);
+      return root;
+    });
+    this.propCache.set(spec.url, promise);
+    return promise;
+  }
+
+  #normalizePropModel(model) {
+    model.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(model);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    const maxDimension = Math.max(size.x, size.y, size.z, 0.001);
+    const scale = 1 / maxDimension;
+    model.scale.setScalar(scale);
+    model.position.set(-center.x * scale, -box.min.y * scale, -center.z * scale);
+    model.updateMatrixWorld(true);
+  }
+
+  #bloodPuddles(rng) {
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.42,
+      depthWrite: false,
+      side: THREE.DoubleSide
+    });
+    this.textureLoader.load(RED_PUDDLE_TEXTURE, (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      material.map = texture;
+      material.needsUpdate = true;
+    });
+    for (let i = 0; i < 18; i += 1) {
+      const angle = rng() * Math.PI * 2;
+      const radius = 80 + rng() * 420;
+      const puddle = new THREE.Mesh(new THREE.PlaneGeometry(10 + rng() * 14, 7 + rng() * 10), material);
+      puddle.position.set(Math.cos(angle) * radius, 0.09, Math.sin(angle) * radius);
+      puddle.rotation.x = -Math.PI / 2;
+      puddle.rotation.z = rng() * Math.PI;
+      this.scene.add(puddle);
+    }
+  }
+
+  #groundMist(arenaSize, rng) {
     const softMist = new THREE.MeshBasicMaterial({
       color: 0x6c6272,
       transparent: true,
@@ -229,15 +495,52 @@ export class GameScene {
     this.scene.add(baseVeil);
 
     for (let i = 0; i < 24; i += 1) {
-      const patch = new THREE.Mesh(new THREE.CircleGeometry(22 + Math.random() * 34, 96), softMist);
-      const angle = Math.random() * Math.PI * 2;
-      const radius = 55 + Math.random() * 460;
-      patch.position.set(Math.cos(angle) * radius, 0.07 + Math.random() * 0.04, Math.sin(angle) * radius);
+      const patch = new THREE.Mesh(new THREE.CircleGeometry(22 + rng() * 34, 96), softMist);
+      const angle = rng() * Math.PI * 2;
+      const radius = 55 + rng() * 460;
+      patch.position.set(Math.cos(angle) * radius, 0.07 + rng() * 0.04, Math.sin(angle) * radius);
       patch.rotation.x = -Math.PI / 2;
-      patch.rotation.z = Math.random() * Math.PI;
-      patch.scale.set(1.1 + Math.random() * 1.35, 0.65 + Math.random() * 0.45, 1);
+      patch.rotation.z = rng() * Math.PI;
+      patch.scale.set(1.1 + rng() * 1.35, 0.65 + rng() * 0.45, 1);
       this.scene.add(patch);
     }
+  }
+
+  #updateStaticPropVisibility(selfGroup) {
+    if (!selfGroup?.visible || !this.staticProps.length) return;
+    this._propVisibilityFrame += 1;
+    if (this._propVisibilityFrame % 6 !== 0) return;
+    const origin = selfGroup.position;
+    for (const prop of this.staticProps) {
+      const dx = prop.position.x - origin.x;
+      const dz = prop.position.z - origin.z;
+      const visibleDistance = prop.userData.visibilityRadius || 260;
+      prop.visible = dx * dx + dz * dz < visibleDistance * visibleDistance;
+    }
+  }
+
+  #updateCharacterLod(selfGroup) {
+    this._lodFrame += 1;
+    if (this._lodFrame % 4 !== 0) return;
+    const origin = selfGroup?.visible ? selfGroup.position : this.camera.position;
+    const applyLod = (group, forceFull = false) => {
+      if (!group.visible || !group.userData.modelRoot) return;
+      const data = group.userData.server;
+      const isGiant = data?.kind === "giant" || data?.size >= 60;
+      const fullDistance = isGiant ? GIANT_FULL_MODEL_DISTANCE : CHARACTER_FULL_MODEL_DISTANCE;
+      const dx = group.position.x - origin.x;
+      const dz = group.position.z - origin.z;
+      const useFullModel = forceFull || dx * dx + dz * dz <= fullDistance * fullDistance;
+      if (group.userData.fullModelVisible === useFullModel) return;
+      group.userData.fullModelVisible = useFullModel;
+      group.userData.modelRoot.visible = useFullModel;
+      for (const placeholder of group.userData.placeholder || []) {
+        placeholder.visible = !useFullModel;
+      }
+    };
+
+    for (const group of this.players.values()) applyLod(group, group === selfGroup);
+    for (const group of this.enemies.values()) applyLod(group);
   }
 
   #syncPlayers(players, dt, inputState) {
@@ -245,6 +548,7 @@ export class GameScene {
     for (const data of players) {
       seen.add(data.id);
       let group = this.players.get(data.id);
+      let isNew = false;
       if (!group) {
         group = this.#createCharacter("cyclopse", data.color);
         group.userData.target = new THREE.Vector3();
@@ -254,13 +558,16 @@ export class GameScene {
         group.add(group.userData.shield);
         this.players.set(data.id, group);
         this.scene.add(group);
+        isNew = true;
       }
       group.visible = data.alive;
       group.userData.server = data;
       group.userData.visualSize += (data.size - group.userData.visualSize) * Math.min(1, dt * 8);
       const scale = visualScaleFromSize(group.userData.visualSize);
       group.userData.target.set(data.x, 0, data.z);
-      if (data.id === this.selfId && inputState && data.alive) {
+      if (isNew) {
+        group.position.copy(group.userData.target);
+      } else if (data.id === this.selfId && inputState && data.alive) {
         this.#predictSelf(group, inputState, dt);
         group.position.lerp(group.userData.target, 0.08);
       } else {
@@ -284,18 +591,21 @@ export class GameScene {
     for (const data of enemies) {
       seen.add(data.id);
       let mesh = this.enemies.get(data.id);
+      let isNew = false;
       if (!mesh) {
         mesh = this.#createCharacter(data.kind === "giant" ? "cyclopse" : data.kind, COLORS[data.kind] || COLORS.hwacat);
         mesh.userData.target = new THREE.Vector3();
         mesh.userData.visualSize = data.size;
         this.enemies.set(data.id, mesh);
         this.scene.add(mesh);
+        isNew = true;
       }
       mesh.userData.server = data;
       mesh.userData.visualSize += (data.size - mesh.userData.visualSize) * Math.min(1, dt * 8);
       const scale = visualScaleFromSize(mesh.userData.visualSize);
       mesh.userData.target.set(data.x, 0, data.z);
-      mesh.position.lerp(mesh.userData.target, Math.min(1, dt * 9));
+      if (isNew) mesh.position.copy(mesh.userData.target);
+      else mesh.position.lerp(mesh.userData.target, Math.min(1, dt * 9));
       mesh.scale.setScalar(scale);
       mesh.rotation.y = this.#lerpAngle(mesh.rotation.y, data.yaw, Math.min(1, dt * 10));
     }
@@ -313,12 +623,16 @@ export class GameScene {
     group.userData.assetKey = assetKey;
     const body = new THREE.Mesh(
       new THREE.SphereGeometry(3.4, 24, 16),
-      new THREE.MeshStandardMaterial({ color, roughness: 0.58, emissive: new THREE.Color(color).multiplyScalar(0.18) })
+      new THREE.MeshLambertMaterial({
+        color,
+        emissive: new THREE.Color(color).multiplyScalar(0.12),
+        emissiveIntensity: 0.48
+      })
     );
     body.position.y = 3.4;
     const eye = new THREE.Mesh(
       new THREE.SphereGeometry(1.05, 18, 12),
-      new THREE.MeshStandardMaterial({ color: 0xf5eee4, emissive: 0x332211, roughness: 0.35 })
+      new THREE.MeshLambertMaterial({ color: 0xf5eee4, emissive: 0x21170f, emissiveIntensity: 0.45 })
     );
     const pupil = new THREE.Mesh(
       new THREE.SphereGeometry(0.38, 12, 8),
@@ -327,12 +641,9 @@ export class GameScene {
     eye.position.set(0, 4.3, 2.75);
     pupil.position.set(0, 4.3, 3.55);
     const footprint = this.#createFootprintDisc(color);
-    const revealGlow = this.#createRevealGlow(color);
-    group.add(footprint, revealGlow, body, eye, pupil);
+    group.add(footprint, body, eye, pupil);
     group.userData.footprint = footprint;
-    group.userData.revealGlow = revealGlow;
     group.userData.placeholder = [body, eye, pupil];
-    group.userData.revealMaterials = this.#collectRevealMaterials(group.userData.placeholder);
     this.#attachAssetModel(group, assetKey, color);
     return group;
   }
@@ -371,101 +682,8 @@ export class GameScene {
   #createFlashlightVisuals() {
     const group = new THREE.Group();
     group.visible = false;
-
-    const aura = new THREE.Mesh(
-      new THREE.CircleGeometry(34, 80),
-      new THREE.MeshBasicMaterial({
-        color: 0xffd9a1,
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-        blending: THREE.AdditiveBlending
-      })
-    );
-    aura.rotation.x = -Math.PI / 2;
-    aura.position.y = 0.12;
-
-    const length = 115;
-    const width = 46;
-    const coneShape = new THREE.Shape();
-    coneShape.moveTo(0, 0);
-    coneShape.lineTo(-width, -length);
-    coneShape.quadraticCurveTo(0, -length - 18, width, -length);
-    coneShape.lineTo(0, 0);
-    const cone = new THREE.Mesh(
-      new THREE.ShapeGeometry(coneShape),
-      new THREE.MeshBasicMaterial({
-        color: 0xffe4ad,
-        transparent: true,
-        opacity: 0,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-        blending: THREE.AdditiveBlending
-      })
-    );
-    cone.rotation.x = -Math.PI / 2;
-    cone.position.y = 0.135;
-
-    group.add(aura, cone);
-    group.userData.aura = aura;
-    group.userData.cone = cone;
     group.userData.visibility = 0;
     return group;
-  }
-
-  #createRevealGlow(color) {
-    const glow = new THREE.Sprite(
-      new THREE.SpriteMaterial({
-        color: 0xfff1bd,
-        map: this.#getGlowTexture(),
-        transparent: true,
-        opacity: 0,
-        depthTest: false,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending
-      })
-    );
-    glow.position.y = 6.2;
-    glow.scale.set(14, 14, 1);
-    glow.visible = false;
-    const shell = new THREE.Mesh(
-      new THREE.SphereGeometry(4.9, 24, 12),
-      new THREE.MeshBasicMaterial({
-        color: 0xffedbf,
-        transparent: true,
-        opacity: 0,
-        depthTest: false,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-        blending: THREE.AdditiveBlending
-      })
-    );
-    shell.position.y = 4.0;
-    shell.visible = false;
-    const group = new THREE.Group();
-    group.add(glow, shell);
-    group.userData.sprite = glow;
-    group.userData.shell = shell;
-    group.visible = false;
-    return group;
-  }
-
-  #getGlowTexture() {
-    if (this.glowTexture) return this.glowTexture;
-    const canvas = document.createElement("canvas");
-    canvas.width = 128;
-    canvas.height = 128;
-    const ctx = canvas.getContext("2d");
-    const gradient = ctx.createRadialGradient(64, 64, 4, 64, 64, 64);
-    gradient.addColorStop(0, "rgba(255,255,255,0.95)");
-    gradient.addColorStop(0.35, "rgba(255,230,170,0.45)");
-    gradient.addColorStop(1, "rgba(255,210,120,0)");
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 128, 128);
-    this.glowTexture = new THREE.CanvasTexture(canvas);
-    this.glowTexture.colorSpace = THREE.SRGBColorSpace;
-    return this.glowTexture;
   }
 
   #createSpawnShield() {
@@ -567,76 +785,26 @@ export class GameScene {
     this.flashlightVisuals.userData.visibility = visibility;
     this.flashlightVisuals.visible = visibility > 0.01;
 
-    this.headLamp.intensity += ((active ? 18.5 : 0) - this.headLamp.intensity) * Math.min(1, dt * 12);
-    this.fillLamp.intensity += ((active ? 2.4 : 0) - this.fillLamp.intensity) * Math.min(1, dt * 10);
-    this.flashlightAura.intensity += ((active ? 6.2 : 0) - this.flashlightAura.intensity) * Math.min(1, dt * 10);
+    this.headLamp.intensity += ((active ? 1500 : 0) - this.headLamp.intensity) * Math.min(1, dt * 12);
+    this.fillLamp.intensity += ((active ? 14 : 0) - this.fillLamp.intensity) * Math.min(1, dt * 10);
+    this.flashlightAura.intensity += ((active ? 38 : 0) - this.flashlightAura.intensity) * Math.min(1, dt * 10);
 
     if (!selfGroup) return;
     const yaw = inputState?.yaw ?? selfGroup.rotation.y;
     const position = selfGroup.position;
-    this.flashlightAura.position.set(position.x, 7.5, position.z);
+    const visualScale = visualScaleFromSize(selfGroup.userData.visualSize || PLAYER_BASE_SIZE);
+    const source = new THREE.Vector3(position.x, 4.6 + visualScale * 2.1, position.z);
+    const forward = new THREE.Vector3(-Math.sin(yaw), -0.17, -Math.cos(yaw)).normalize();
+    source.addScaledVector(forward, Math.max(2.2, visualScale * 1.2));
+    const targetPosition = source.clone().addScaledVector(forward, 240);
+
+    this.headLamp.position.copy(source);
+    this.headLamp.target.position.copy(targetPosition);
+    this.headLamp.target.updateMatrixWorld();
+    this.fillLamp.position.copy(source).add(new THREE.Vector3(0, 1.3, 0));
+    this.flashlightAura.position.copy(source);
     this.flashlightVisuals.position.set(position.x, 0, position.z);
     this.flashlightVisuals.rotation.y = yaw + Math.PI;
-    this.flashlightVisuals.userData.aura.material.opacity = 0.38 * visibility;
-    this.flashlightVisuals.userData.cone.material.opacity = 0.46 * visibility;
-    this.#updateCharacterReveals(selfGroup, yaw, visibility, dt);
-  }
-
-  #updateCharacterReveals(selfGroup, yaw, flashlightVisibility, dt) {
-    if (!selfGroup) return;
-    const origin = selfGroup.position;
-    const forwardX = -Math.sin(yaw);
-    const forwardZ = -Math.cos(yaw);
-    for (const group of [...this.enemies.values(), ...this.players.values()]) {
-      if (group === selfGroup || !group.visible) {
-        this.#setCharacterReveal(group, 0, dt);
-        continue;
-      }
-      const dx = group.position.x - origin.x;
-      const dz = group.position.z - origin.z;
-      const distance = Math.hypot(dx, dz);
-      const nearReveal = distance < 115 ? 1 - distance / 115 : 0;
-      const dot = distance > 0 ? (dx / distance) * forwardX + (dz / distance) * forwardZ : 1;
-      const coneReveal = distance < 260 && dot > 0.16 ? Math.min(1, (dot - 0.16) / 0.84) * (1 - distance / 285) : 0;
-      const reveal = Math.min(1, Math.max(nearReveal * 0.9, coneReveal)) * flashlightVisibility;
-      this.#setCharacterReveal(group, reveal, dt);
-    }
-  }
-
-  #setCharacterReveal(group, targetReveal, dt) {
-    if (!group?.userData) return;
-    const current = group.userData.reveal || 0;
-    const reveal = current + (targetReveal - current) * Math.min(1, dt * 12);
-    group.userData.reveal = reveal;
-
-    const glow = group.userData.revealGlow;
-    if (glow) {
-      glow.visible = reveal > 0.03;
-      const sprite = glow.userData.sprite;
-      const shell = glow.userData.shell;
-      sprite.material.opacity = Math.min(1, 1.85 * reveal);
-      const size = 14 + reveal * 12;
-      sprite.scale.set(size, size, 1);
-      shell.visible = reveal > 0.06;
-      shell.material.opacity = 0.9 * reveal;
-    }
-
-    for (const entry of group.userData.revealMaterials || []) {
-      const material = entry.material;
-      if (!material) continue;
-      const boost = 1 + reveal * 8.5;
-      material.color.setRGB(entry.color.r * boost, entry.color.g * boost, entry.color.b * boost);
-      material.fog = reveal > 0.06 ? false : entry.fog;
-      if (material.emissive && entry.emissive) {
-        material.emissive.setRGB(
-          entry.emissive.r + reveal * 0.7,
-          entry.emissive.g + reveal * 0.5,
-          entry.emissive.b + reveal * 0.28
-        );
-        material.emissiveIntensity = (entry.emissiveIntensity || 1) + reveal * 1.4;
-      }
-      material.needsUpdate = true;
-    }
   }
 
   #updateCamera(selfGroup, inputState, dt) {
@@ -704,19 +872,18 @@ export class GameScene {
         group.add(instance);
         group.userData.modelRoot = instance;
         group.userData.groundAnchors = this.#collectGroundAnchors(instance);
-        group.userData.revealMaterials = this.#collectRevealMaterials([instance]);
         for (const placeholder of group.userData.placeholder || []) placeholder.visible = false;
         this.#snapCharacterModelToGround(group, true);
         if (animations.length) {
           const mixer = new THREE.AnimationMixer(instance);
           mixer.clipAction(animations[0]).play();
+          mixer.userData = { group };
           group.userData.mixer = mixer;
           this.mixers.add(mixer);
         }
       })
       .catch(() => {
         for (const placeholder of group.userData.placeholder || []) placeholder.visible = true;
-        group.userData.revealMaterials = this.#collectRevealMaterials(group.userData.placeholder || []);
       });
   }
 
@@ -735,6 +902,7 @@ export class GameScene {
         texture = await this.textureLoader.loadAsync(spec.texture);
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.flipY = true;
+        texture.anisotropy = Math.min(this.renderer.capabilities.getMaxAnisotropy?.() || 1, 6);
         texture.needsUpdate = true;
       } catch {
         texture = null;
@@ -744,10 +912,15 @@ export class GameScene {
       if (!child.isMesh && !child.isSkinnedMesh) return;
       child.castShadow = false;
       child.receiveShadow = false;
-      child.frustumCulled = false;
-      child.material = new THREE.MeshBasicMaterial({
+      child.frustumCulled = true;
+      child.geometry?.computeVertexNormals?.();
+      if (child.geometry?.attributes?.normal) child.geometry.attributes.normal.needsUpdate = true;
+      child.material = new THREE.MeshLambertMaterial({
         color: texture ? 0xffffff : fallbackColor,
         map: texture,
+        emissive: texture ? 0xffffff : fallbackColor,
+        emissiveMap: texture,
+        emissiveIntensity: texture ? 0.24 : 0.16,
         side: THREE.DoubleSide
       });
       child.material.needsUpdate = true;
@@ -776,8 +949,39 @@ export class GameScene {
     model.userData.normalizedVisualDiameter = targetDiameter;
   }
 
-  #updateMixers(dt) {
-    for (const mixer of this.mixers) mixer.update(dt);
+  #updateMixers(dt, selfGroup = null) {
+    const origin = selfGroup?.position || this.camera.position;
+    for (const mixer of this.mixers) {
+      const group = mixer.userData?.group;
+      if (group && !group.visible) continue;
+      if (group?.userData?.modelRoot && group.userData.modelRoot.visible === false) continue;
+      if (group && origin) {
+        const dx = group.position.x - origin.x;
+        const dz = group.position.z - origin.z;
+        if (dx * dx + dz * dz > 330 * 330 && this._groundFrame % 3 !== 0) continue;
+      }
+      mixer.update(dt);
+    }
+  }
+
+  #updateRenderQuality(dt) {
+    this._frameTimeAverage += (dt - this._frameTimeAverage) * 0.05;
+    this._qualityTimer += dt;
+    if (this._qualityTimer < 1.2) return;
+    this._qualityTimer = 0;
+
+    const fps = 1 / Math.max(this._frameTimeAverage, 0.001);
+    const nativeRatio = Math.min(window.devicePixelRatio || 1, MAX_RENDER_PIXEL_RATIO);
+    if (fps < 42 && this.targetPixelRatio > MIN_RENDER_PIXEL_RATIO) {
+      this.targetPixelRatio = Math.max(MIN_RENDER_PIXEL_RATIO, this.targetPixelRatio - 0.15);
+    } else if (fps > 56 && this.targetPixelRatio < nativeRatio) {
+      this.targetPixelRatio = Math.min(nativeRatio, this.targetPixelRatio + 0.1);
+    }
+
+    if (Math.abs(this.currentPixelRatio - this.targetPixelRatio) < 0.04) return;
+    this.currentPixelRatio += (this.targetPixelRatio - this.currentPixelRatio) * 0.7;
+    this.renderer.setPixelRatio(this.currentPixelRatio);
+    this.resize();
   }
 
   #snapVisibleModelsToGround(selfGroup = null) {
@@ -805,34 +1009,6 @@ export class GameScene {
       if (/foot|toe|ankle/.test(normalized)) fallback.push(child);
     });
     return preferred.length ? preferred : fallback;
-  }
-
-  #collectRevealMaterials(roots) {
-    const entries = [];
-    const addMaterial = (material) => {
-      if (!material || entries.some((entry) => entry.material === material)) return;
-      entries.push({
-        material,
-        color: material.color ? material.color.clone() : new THREE.Color(1, 1, 1),
-        emissive: material.emissive ? material.emissive.clone() : null,
-        emissiveIntensity: material.emissiveIntensity,
-        fog: material.fog
-      });
-    };
-
-    for (const root of roots || []) {
-      if (!root) continue;
-      if (root.material) {
-        if (Array.isArray(root.material)) root.material.forEach(addMaterial);
-        else addMaterial(root.material);
-      }
-      root.traverse?.((child) => {
-        if (!child.material) return;
-        if (Array.isArray(child.material)) child.material.forEach(addMaterial);
-        else addMaterial(child.material);
-      });
-    }
-    return entries;
   }
 
   #makeModelMaterialsUnique(modelRoot) {
@@ -951,6 +1127,14 @@ export class GameScene {
 
 function visualScaleFromSize(size) {
   return Math.max(MIN_VISUAL_SCALE, size / PLAYER_BASE_SIZE);
+}
+
+function seededRandom(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state = (state * 1664525 + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
 }
 
 function isRootPositionTrack(track) {

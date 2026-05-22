@@ -6,7 +6,7 @@
   "description": "Browser-based .io multiplayer prototype for Hungry one eye Cyclopse.",
   "scripts": {
     "start": "node server/index.js",
-    "check": "node --check server/index.js && node --check server/gameWorld.js"
+    "check": "node --check server/index.js && node --check server/gameWorld.js && node --check server/ws.js && node --check public/src/main.js && node --check public/src/scene.js"
   },
   "engines": {
     "node": ">=20"

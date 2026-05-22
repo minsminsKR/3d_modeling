@@ -5,23 +5,18 @@ Current tuning reference for the browser `.io` prototype. Values below reflect t
 ## Flashlight Reveal Behavior
 
 - `F` toggles the local flashlight.
-- The flashlight is a client-side visual aid, active only while the local player is alive.
+- The flashlight is a physical Three.js lighting setup, active only while the local player is alive.
 - Visuals fade toward on/off at roughly `dt * 10`; the head lamp fades at `dt * 12`.
 - Current light targets when active:
-  - head lamp intensity: `18.5`
-  - fill lamp intensity: `2.4`
-  - aura intensity: `6.2`
-  - ground aura opacity: `0.38`
-  - cone opacity: `0.46`
-- The ground aura radius is `34`; the forward cone is `115` long and `46` wide.
-- Characters inside the flashlight aura/cone are also visually revealed:
-  - nearby reveal radius: `115`
-  - forward reveal range: `260`
-  - forward reveal angle threshold: `dot > 0.16`
-  - model material brightness is boosted client-side because character FBX meshes use `MeshBasicMaterial`
-  - a warm additive sprite glow and subtle shell glow are shown on revealed enemies/other players
-  - fog is temporarily disabled on strongly revealed character materials so monsters do not disappear into the floor lighting
-  - cloned FBX materials are made unique per character instance so one revealed monster does not brighten every monster using the same model
+  - head lamp spot intensity: `1500`
+  - small camera fill intensity: `14`
+  - short-range spill light intensity: `38`
+- The spotlight source is attached near the local Cyclopse body and aims along the character/camera yaw direction with a slight downward pitch, creating a cone-shaped lit area in front of the player.
+- The head lamp casts a small soft shadow map so corridor wall panels can interrupt the light path without adding fake white reveal geometry.
+- The fake additive monster glow/shell was removed. Monsters no longer get white spheres when approached.
+- Character FBX meshes use `MeshLambertMaterial` so the spotlight/fill lights brighten models through the renderer lighting path instead of manual material color boosting.
+- FBX vertex normals are recomputed on load so character surfaces respond correctly to physical lights.
+- The map baseline is slightly brighter through lower fog density, higher tone-mapping exposure, and stronger ambient/hemisphere/moon lights.
 - Eatable footprint reveal is not currently gated by the flashlight. It is based on the local player's size compared with each enemy/player snapshot.
 
 ## Enemy AI Probabilities
@@ -64,10 +59,49 @@ Current tuning reference for the browser `.io` prototype. Values below reflect t
 
 - Start the prototype with `node server/index.js` from `happy_toy_cyclopse_io`.
 - Open `http://localhost:8080` and join a match.
-- Press `F`; confirm the cone and warm ground aura fade in/out and follow camera yaw.
-- Confirm monsters inside the cone/aura become visibly brighter, not just the floor.
+- Press `F`; confirm the world brightens only from actual light sources attached to the camera/player.
+- Confirm monsters in the flashlight path become brighter without white glow spheres or fake shell overlays.
 - Confirm eatable enemy/player footprints still appear based on relative size, independent of flashlight state.
 - Grow the player past size `15`, `35`, and `60`; confirm enemy composition changes at those thresholds.
 - Observe larger normal enemies chasing and smaller normal enemies fleeing only after they are within sense range.
 - Confirm normal chases stop after distance/time limits and do not immediately restart during cooldown.
 - In giant phase, confirm giants replace regular enemies and give up after the configured chase duration or lost target range.
+
+## Environment Props
+
+- The Node server mounts `E:\AI\3d_modeling\game\happy_toy\assets` at `/assets`.
+- `public/src/scene.js` loads prop GLB files with `GLTFLoader`; no asset copy step is required.
+- Random prop placement is deterministic with `WORLD_PROP_SEED = 73491`, making visual QA repeatable.
+- Static props are distance-culled around the local player every few frames.
+- Active prop families:
+  - `barricade`
+  - `barred-window`
+  - `corridor-wire`
+  - `silent-mannequin-1f`
+  - `silent-mannequin-2f`
+  - `upper-doll-circle`
+  - `placeholder-wrapped-body-1f`
+  - `upper-mirror-shards`
+- Boundary walls use `/assets/textures/walls/wall.png`; intermittent outer panels use `/assets/textures/doors/doors.png`.
+- Walls are placed only on the map boundary ring, leaving the playable interior open for large characters.
+- Boundary walls use a continuous inner cylindrical liner plus instanced outer panels, so approaching the edge no longer exposes a hollow wall interior.
+- Boundary panels are rendered as instanced box panels rather than dozens of independent meshes.
+- Red floor stains use `/assets/textures/props/placeholder-red-puddle-1f/basecolor.png`.
+
+## Performance Budget
+
+- Renderer pixel ratio is capped at `1.5` and can adapt down toward `0.9` when the local frame average falls below the target range.
+- Character FBX animation uses a distance budget:
+  - local player: always full model
+  - normal far actors: primitive fallback after roughly `260` world units
+  - giants: full model kept farther out because their silhouettes matter
+- Animation mixers are skipped for hidden/far LOD actors.
+- Character and prop textures cap anisotropy to avoid high-DPI texture bandwidth spikes.
+- Server snapshots are interest-area filtered per player:
+  - nearby players are sent to the scene
+  - global top leaders remain available for the leaderboard
+  - regular enemies are sent within the local enemy AOI
+  - giants use a wider AOI
+- Server broadcast cadence is `66ms` instead of `50ms`; local input prediction keeps the local player smooth.
+- Newly visible enemies/players are placed directly at their first server coordinate before interpolation starts. This prevents spawn/AOI entities from streaking across the screen from world origin.
+- Enemy spawn points avoid active players' forward view cone as well as the minimum safe distance, reducing visible pop-in.

@@ -24,16 +24,19 @@ No `npm install` is required for this prototype server. The browser client loads
 - `WASD`: move
 - `Shift`: sprint
 - `Mouse`: look
+- `F`: flashlight on/off
 - Eat smaller enemies and players
 - Avoid larger enemies and players
 - New spawns get a short shield and enemies spawn away from active players.
 - Remote movement is smoothed client-side with interpolation, while the local player uses light input prediction.
+- The flashlight uses real Three.js lights: a player-mounted spotlight, short spill light, and small fill light.
 
 ## Architecture
 
 - `server/index.js`: static HTTP server and WebSocket entry
 - `server/ws.js`: dependency-free WebSocket handshake/frame handling
 - `server/gameWorld.js`: authoritative simulation
+- `server/gameWorld.js`: authoritative simulation, enemy AI, AOI-filtered snapshots
 - `public/src/network.js`: browser WebSocket client
 - `public/src/input.js`: keyboard/mouse input
 - `public/src/scene.js`: Three.js renderer
@@ -64,7 +67,7 @@ This is the correct shape for a public `.io` game because clients do not decide 
 
 The browser client loads character FBX files through Three.js `FBXLoader` and follows the same application pattern as `game/happy_toy`:
 
-- `MeshBasicMaterial` with source texture
+- source texture mapped onto a light-reactive character material
 - `texture.flipY = true`
 - root motion drift removed from looping clips
 - actor group positioned at ground level
@@ -76,6 +79,12 @@ The browser client loads character FBX files through Three.js `FBXLoader` and fo
 - Angry: Hwacat_angry `Zombie Run.fbx`
 
 If a model or texture fails to load, the renderer keeps the primitive fallback so the match remains playable.
+
+## Environment Assets
+
+The scene also loads horror-toy props from the mounted `/assets` route using `GLTFLoader`. Current map dressing uses barricades, barred windows, corridor wires, mannequins, doll circles, wrapped bodies, mirror shards, red floor stains, and textured boundary wall panels. If any GLB fails to load, a small primitive fallback stays in place instead of crashing the match.
+
+Static boundary walls are instanced, prop placement is deterministic, and far props/characters use distance visibility and animation LOD so the scene stays playable with many enemies.
 
 ## Visual Size Calibration
 

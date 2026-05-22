@@ -70,6 +70,7 @@ nameInput.addEventListener("keydown", (event) => {
 });
 
 net.on("welcome", (message) => {
+  if (visualTestMode) return;
   scene.setSelf(message.id);
   if (joined && !calibrationMode) net.send("join", { name: pendingName });
 });
@@ -81,10 +82,10 @@ net.on("snapshot", (snapshot) => {
   if (self) {
     const protection = self.protected ? "<br>Spawn shield active" : "";
     const godMode = self.godMode ? "<br><strong>무적 모드 ON</strong> (숫자패드 0)" : "";
-    stats.innerHTML = `Size: ${self.size}<br>Score: ${Math.floor(self.score)}<br>Time: ${snapshot.uptime}s<br>Players: ${snapshot.players.length}${godMode}${protection}`;
+    stats.innerHTML = `Size: ${self.size}<br>Score: ${Math.floor(self.score)}<br>Time: ${snapshot.uptime}s<br>Players: ${snapshot.playerCount ?? snapshot.players.length}${godMode}${protection}`;
     death.hidden = !joined || self.alive;
   }
-  const top = [...snapshot.players].sort((a, b) => b.score - a.score).slice(0, 6);
+  const top = snapshot.leaders ?? [...snapshot.players].sort((a, b) => b.score - a.score).slice(0, 6);
   leaderboard.innerHTML = `<strong>Leaderboard</strong><br>${top
     .map((p, index) => `${index + 1}. ${p.name} · ${Math.floor(p.score)}`)
     .join("<br>")}`;

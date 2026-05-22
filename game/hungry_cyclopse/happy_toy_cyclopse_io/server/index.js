@@ -46,6 +46,11 @@ function serveFile(res, baseDir, routePath) {
 
 function serveStatic(req, res) {
   const url = new URL(req.url, `http://${req.headers.host}`);
+  if (url.pathname === "/favicon.ico") {
+    res.writeHead(204);
+    res.end();
+    return;
+  }
   if (url.pathname.startsWith("/assets/")) {
     serveFile(res, assetDir, url.pathname.slice("/assets".length));
     return;
@@ -74,9 +79,8 @@ setInterval(() => {
   last = now;
   world.tick(dt);
   if (world.shouldBroadcast(Date.now())) {
-    const snapshot = world.snapshot();
     for (const player of world.players.values()) {
-      player.peer.sendJson(snapshot);
+      player.peer.sendJson(world.snapshotFor(player));
     }
   }
 }, 50);
