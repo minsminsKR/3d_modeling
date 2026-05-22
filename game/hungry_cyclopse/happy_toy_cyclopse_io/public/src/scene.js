@@ -68,6 +68,7 @@ export class GameScene {
     this.fbxLoader = new FBXLoader();
     this.textureLoader = new THREE.TextureLoader();
     this.modelCache = new Map();
+    this.glowTexture = null;
     this.mixers = new Set();
     this.calibrationGroups = [];
     this._footProbe = new THREE.Vector3();
@@ -326,9 +327,12 @@ export class GameScene {
     eye.position.set(0, 4.3, 2.75);
     pupil.position.set(0, 4.3, 3.55);
     const footprint = this.#createFootprintDisc(color);
-    group.add(footprint, body, eye, pupil);
+    const revealGlow = this.#createRevealGlow(color);
+    group.add(footprint, revealGlow, body, eye, pupil);
     group.userData.footprint = footprint;
+    group.userData.revealGlow = revealGlow;
     group.userData.placeholder = [body, eye, pupil];
+    group.userData.revealMaterials = this.#collectRevealMaterials(group.userData.placeholder);
     this.#attachAssetModel(group, assetKey, color);
     return group;
   }
@@ -408,6 +412,60 @@ export class GameScene {
     group.userData.cone = cone;
     group.userData.visibility = 0;
     return group;
+  }
+
+  #createRevealGlow(color) {
+    const glow = new THREE.Sprite(
+      new THREE.SpriteMaterial({
+        color: 0xfff1bd,
+        map: this.#getGlowTexture(),
+        transparent: true,
+        opacity: 0,
+        depthTest: false,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+      })
+    );
+    glow.position.y = 6.2;
+    glow.scale.set(14, 14, 1);
+    glow.visible = false;
+    const shell = new THREE.Mesh(
+      new THREE.SphereGeometry(4.9, 24, 12),
+      new THREE.MeshBasicMaterial({
+        color: 0xffedbf,
+        transparent: true,
+        opacity: 0,
+        depthTest: false,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending
+      })
+    );
+    shell.position.y = 4.0;
+    shell.visible = false;
+    const group = new THREE.Group();
+    group.add(glow, shell);
+    group.userData.sprite = glow;
+    group.userData.shell = shell;
+    group.visible = false;
+    return group;
+  }
+
+  #getGlowTexture() {
+    if (this.glowTexture) return this.glowTexture;
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 128;
+    const ctx = canvas.getContext("2d");
+    const gradient = ctx.createRadialGradient(64, 64, 4, 64, 64, 64);
+    gradient.addColorStop(0, "rgba(255,255,255,0.95)");
+    gradient.addColorStop(0.35, "rgba(255,230,170,0.45)");
+    gradient.addColorStop(1, "rgba(255,210,120,0)");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 128, 128);
+    this.glowTexture = new THREE.CanvasTexture(canvas);
+    this.glowTexture.colorSpace = THREE.SRGBColorSpace;
+    return this.glowTexture;
   }
 
   #createSpawnShield() {
@@ -509,9 +567,9 @@ export class GameScene {
     this.flashlightVisuals.userData.visibility = visibility;
     this.flashlightVisuals.visible = visibility > 0.01;
 
-    this.headLamp.intensity += ((active ? 11.2 : 0) - this.headLamp.intensity) * Math.min(1, dt * 12);
-    this.fillLamp.intensity += ((active ? 1.1 : 0) - this.fillLamp.intensity) * Math.min(1, dt * 10);
-    this.flashlightAura.intensity += ((active ? 3.4 : 0) - this.flashlightAura.intensity) * Math.min(1, dt * 10);
+    this.headLamp.intensity += ((active ? 18.5 : 0) - this.headLamp.intensity) * Math.min(1, dt * 12);
+    this.fillLamp.intensity += ((active ? 2.4 : 0) - this.fillLamp.intensity) * Math.min(1, dt * 10);
+    this.flashlightAura.intensity += ((active ? 6.2 : 0) - this.flashlightAura.intensity) * Math.min(1, dt * 10);
 
     if (!selfGroup) return;
     const yaw = inputState?.yaw ?? selfGroup.rotation.y;
@@ -519,8 +577,66 @@ export class GameScene {
     this.flashlightAura.position.set(position.x, 7.5, position.z);
     this.flashlightVisuals.position.set(position.x, 0, position.z);
     this.flashlightVisuals.rotation.y = yaw + Math.PI;
-    this.flashlightVisuals.userData.aura.material.opacity = 0.24 * visibility;
-    this.flashlightVisuals.userData.cone.material.opacity = 0.32 * visibility;
+    this.flashlightVisuals.userData.aura.material.opacity = 0.38 * visibility;
+    this.flashlightVisuals.userData.cone.material.opacity = 0.46 * visibility;
+    this.#updateCharacterReveals(selfGroup, yaw, visibility, dt);
+  }
+
+  #updateCharacterReveals(selfGroup, yaw, flashlightVisibility, dt) {
+    if (!selfGroup) return;
+    const origin = selfGroup.position;
+    const forwardX = -Math.sin(yaw);
+    const forwardZ = -Math.cos(yaw);
+    for (const group of [...this.enemies.values(), ...this.players.values()]) {
+      if (group === selfGroup || !group.visible) {
+        this.#setCharacterReveal(group, 0, dt);
+        continue;
+      }
+      const dx = group.position.x - origin.x;
+      const dz = group.position.z - origin.z;
+      const distance = Math.hypot(dx, dz);
+      const nearReveal = distance < 115 ? 1 - distance / 115 : 0;
+      const dot = distance > 0 ? (dx / distance) * forwardX + (dz / distance) * forwardZ : 1;
+      const coneReveal = distance < 260 && dot > 0.16 ? Math.min(1, (dot - 0.16) / 0.84) * (1 - distance / 285) : 0;
+      const reveal = Math.min(1, Math.max(nearReveal * 0.9, coneReveal)) * flashlightVisibility;
+      this.#setCharacterReveal(group, reveal, dt);
+    }
+  }
+
+  #setCharacterReveal(group, targetReveal, dt) {
+    if (!group?.userData) return;
+    const current = group.userData.reveal || 0;
+    const reveal = current + (targetReveal - current) * Math.min(1, dt * 12);
+    group.userData.reveal = reveal;
+
+    const glow = group.userData.revealGlow;
+    if (glow) {
+      glow.visible = reveal > 0.03;
+      const sprite = glow.userData.sprite;
+      const shell = glow.userData.shell;
+      sprite.material.opacity = Math.min(1, 1.85 * reveal);
+      const size = 14 + reveal * 12;
+      sprite.scale.set(size, size, 1);
+      shell.visible = reveal > 0.06;
+      shell.material.opacity = 0.9 * reveal;
+    }
+
+    for (const entry of group.userData.revealMaterials || []) {
+      const material = entry.material;
+      if (!material) continue;
+      const boost = 1 + reveal * 8.5;
+      material.color.setRGB(entry.color.r * boost, entry.color.g * boost, entry.color.b * boost);
+      material.fog = reveal > 0.06 ? false : entry.fog;
+      if (material.emissive && entry.emissive) {
+        material.emissive.setRGB(
+          entry.emissive.r + reveal * 0.7,
+          entry.emissive.g + reveal * 0.5,
+          entry.emissive.b + reveal * 0.28
+        );
+        material.emissiveIntensity = (entry.emissiveIntensity || 1) + reveal * 1.4;
+      }
+      material.needsUpdate = true;
+    }
   }
 
   #updateCamera(selfGroup, inputState, dt) {
@@ -584,9 +700,11 @@ export class GameScene {
         if (!group.parent) return;
         const instance = SkeletonUtils.clone(model);
         instance.userData.isAssetModel = true;
+        this.#makeModelMaterialsUnique(instance);
         group.add(instance);
         group.userData.modelRoot = instance;
         group.userData.groundAnchors = this.#collectGroundAnchors(instance);
+        group.userData.revealMaterials = this.#collectRevealMaterials([instance]);
         for (const placeholder of group.userData.placeholder || []) placeholder.visible = false;
         this.#snapCharacterModelToGround(group, true);
         if (animations.length) {
@@ -598,6 +716,7 @@ export class GameScene {
       })
       .catch(() => {
         for (const placeholder of group.userData.placeholder || []) placeholder.visible = true;
+        group.userData.revealMaterials = this.#collectRevealMaterials(group.userData.placeholder || []);
       });
   }
 
@@ -686,6 +805,43 @@ export class GameScene {
       if (/foot|toe|ankle/.test(normalized)) fallback.push(child);
     });
     return preferred.length ? preferred : fallback;
+  }
+
+  #collectRevealMaterials(roots) {
+    const entries = [];
+    const addMaterial = (material) => {
+      if (!material || entries.some((entry) => entry.material === material)) return;
+      entries.push({
+        material,
+        color: material.color ? material.color.clone() : new THREE.Color(1, 1, 1),
+        emissive: material.emissive ? material.emissive.clone() : null,
+        emissiveIntensity: material.emissiveIntensity,
+        fog: material.fog
+      });
+    };
+
+    for (const root of roots || []) {
+      if (!root) continue;
+      if (root.material) {
+        if (Array.isArray(root.material)) root.material.forEach(addMaterial);
+        else addMaterial(root.material);
+      }
+      root.traverse?.((child) => {
+        if (!child.material) return;
+        if (Array.isArray(child.material)) child.material.forEach(addMaterial);
+        else addMaterial(child.material);
+      });
+    }
+    return entries;
+  }
+
+  #makeModelMaterialsUnique(modelRoot) {
+    modelRoot.traverse((child) => {
+      if (!child.material) return;
+      child.material = Array.isArray(child.material)
+        ? child.material.map((material) => material.clone())
+        : child.material.clone();
+    });
   }
 
   #getLowestFootWorldY(bones) {

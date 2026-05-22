@@ -17,6 +17,12 @@ const NORMAL_CHASE_CHANCE = 0.4;
 const NORMAL_FLEE_CHANCE = 0.4;
 const GIANT_CHASE_MAX_SECONDS = 10;
 const CHASE_COOLDOWN_SECONDS = 2.5;
+const ENEMY_PERSONALITIES = {
+  bold: { speed: 1.12, chaseChance: 0.54, fleeChance: 0.32, sense: 106, chaseGiveUp: 170, fleeGiveUp: 120, turnJitter: 1.45 },
+  skittish: { speed: 1.05, chaseChance: 0.28, fleeChance: 0.58, sense: 96, chaseGiveUp: 138, fleeGiveUp: 165, turnJitter: 2.25 },
+  erratic: { speed: 1.0, chaseChance: NORMAL_CHASE_CHANCE, fleeChance: NORMAL_FLEE_CHANCE, sense: 90, chaseGiveUp: 150, fleeGiveUp: 135, turnJitter: 2.85 },
+  lazy: { speed: 0.88, chaseChance: 0.32, fleeChance: 0.34, sense: 76, chaseGiveUp: 125, fleeGiveUp: 112, turnJitter: 1.1 }
+};
 
 function rand(min, max) {
   return min + Math.random() * (max - min);
@@ -157,7 +163,8 @@ export class GameWorld {
         z: Math.round(e.z * 10) / 10,
         yaw: Math.round(e.yaw * 100) / 100,
         size: e.size,
-        state: e.state
+        state: e.state,
+        personality: e.personality
       }))
     };
   }
@@ -233,7 +240,7 @@ export class GameWorld {
     if (enemy.state === "chasing") {
       const target = this.#playerById(enemy.targetId);
       enemy.chaseTime = (enemy.chaseTime || 0) + dt;
-      if (!target || dist(enemy, target) > NORMAL_CHASE_GIVE_UP_DISTANCE || enemy.chaseTime >= NORMAL_CHASE_MAX_SECONDS) {
+      if (!target || dist(enemy, target) > enemy.chaseGiveUpDistance || enemy.chaseTime >= enemy.maxChaseSeconds) {
         this.#stopChasing(enemy);
         this.#wander(enemy, dt);
       } else {
@@ -245,7 +252,7 @@ export class GameWorld {
     if (enemy.state === "fleeing") {
       const target = this.#playerById(enemy.targetId);
       enemy.fleeTime = (enemy.fleeTime || 0) + dt;
-      if (!target || dist(enemy, target) > NORMAL_FLEE_GIVE_UP_DISTANCE || enemy.fleeTime >= NORMAL_CHASE_MAX_SECONDS) {
+      if (!target || dist(enemy, target) > enemy.fleeGiveUpDistance || enemy.fleeTime >= enemy.maxChaseSeconds) {
         this.#clearPursuit(enemy);
         this.#wander(enemy, dt);
       } else {
@@ -255,17 +262,17 @@ export class GameWorld {
     }
 
     enemy.decisionTimer -= dt;
-    const target = this.#nearestAlivePlayer(enemy, NORMAL_AI_SENSE_DISTANCE);
+    const target = this.#nearestAlivePlayer(enemy, enemy.senseDistance || NORMAL_AI_SENSE_DISTANCE);
     if (target && enemy.decisionTimer <= 0 && enemy.chaseCooldown <= 0) {
       enemy.decisionTimer = rand(0.8, 1.8);
-      if (enemy.size > target.size && Math.random() < NORMAL_CHASE_CHANCE) {
+      if (enemy.size > target.size && Math.random() < enemy.chaseChance) {
         enemy.state = "chasing";
         enemy.targetId = target.id;
         enemy.chaseTime = 0;
         this.#moveToward(enemy, target, enemy.speed, dt);
         return;
       }
-      if (enemy.size < target.size && Math.random() < NORMAL_FLEE_CHANCE) {
+      if (enemy.size < target.size && Math.random() < enemy.fleeChance) {
         enemy.state = "fleeing";
         enemy.targetId = target.id;
         enemy.fleeTime = 0;
@@ -312,6 +319,10 @@ export class GameWorld {
 
   #makeEnemy(kind, size) {
     const pos = this.#findEnemySpawnPoint();
+    const personalities = Object.keys(ENEMY_PERSONALITIES);
+    const personality = kind === "giant" ? "bold" : personalities[Math.floor(rand(0, personalities.length))];
+    const baseSpeed = kind === "giant" ? GIANT_SPEED : kind === "angry" ? 42 : kind === "uncat" ? 36 : 28;
+    const tuning = ENEMY_PERSONALITIES[personality] || ENEMY_PERSONALITIES.erratic;
     return {
       id: `e${nextId++}`,
       kind,
@@ -319,7 +330,15 @@ export class GameWorld {
       z: pos.z,
       yaw: rand(-Math.PI, Math.PI),
       size,
-      speed: kind === "angry" ? 42 : kind === "uncat" ? 36 : 28,
+      personality,
+      speed: Math.round(baseSpeed * tuning.speed * 10) / 10,
+      senseDistance: kind === "giant" ? 95 : tuning.sense,
+      chaseChance: kind === "giant" ? 1 : tuning.chaseChance,
+      fleeChance: kind === "giant" ? 0 : tuning.fleeChance,
+      chaseGiveUpDistance: kind === "giant" ? 140 : tuning.chaseGiveUp,
+      fleeGiveUpDistance: tuning.fleeGiveUp,
+      maxChaseSeconds: kind === "giant" ? GIANT_CHASE_MAX_SECONDS : NORMAL_CHASE_MAX_SECONDS,
+      turnJitter: tuning.turnJitter,
       state: "wandering",
       targetId: null,
       chaseTime: 0,
@@ -433,7 +452,7 @@ export class GameWorld {
     let best = null;
     let bestDistance = range;
     for (const player of this.players.values()) {
-      if (!player.alive) continue;
+      if (!player.joined || !player.alive || player.spawnProtection > 0 || player.godMode) continue;
       const d = dist(entity, player);
       if (d < bestDistance) {
         bestDistance = d;
@@ -445,7 +464,7 @@ export class GameWorld {
 
   #playerById(id) {
     const player = this.players.get(id);
-    return player?.joined && player.alive ? player : null;
+    return player?.joined && player.alive && player.spawnProtection <= 0 && !player.godMode ? player : null;
   }
 
   #clearPursuit(enemy) {
@@ -463,7 +482,8 @@ export class GameWorld {
   #wander(entity, dt) {
     entity.turnTimer -= dt;
     if (entity.turnTimer <= 0) {
-      entity.yaw += rand(-1.8, 1.8);
+      const jitter = entity.turnJitter || 1.8;
+      entity.yaw += rand(-jitter, jitter);
       entity.turnTimer = rand(0.6, 2.6);
     }
     entity.x += Math.sin(entity.yaw) * entity.speed * dt;

@@ -17,6 +17,7 @@ const params = new URLSearchParams(location.search);
 const calibrationMode = params.has("calibrate");
 const debugAutoplay = params.has("autoplay");
 const debugFlashlight = params.has("flashlight");
+const visualTestMode = params.has("visualtest");
 
 let joined = false;
 let latestSnapshot = null;
@@ -28,6 +29,27 @@ if (calibrationMode) {
   stats.innerHTML = "Visual calibration<br>All characters size 5<br>Green rings share the same gameplay radius";
   leaderboard.innerHTML = "<strong>Size Check</strong><br>Cyclopse · Hwacat · Uncat · Angry";
   scene.createCalibrationLineup(5);
+} else if (visualTestMode) {
+  joined = true;
+  input.flashlightOn = debugFlashlight;
+  join.style.display = "none";
+  death.hidden = true;
+  stats.innerHTML = "Visual flashlight test<br>Nearby and cone monsters should brighten";
+  leaderboard.innerHTML = "<strong>Reveal Check</strong><br>F toggles flashlight in normal play";
+  scene.setSelf("visual-player");
+  latestSnapshot = {
+    type: "snapshot",
+    uptime: 0,
+    players: [
+      { id: "visual-player", name: "Tester", x: 0, z: 0, yaw: 0, size: 5, score: 0, stamina: 100, alive: true, protected: false, color: "#d88f6a" }
+    ],
+    enemies: [
+      { id: "front-small", kind: "hwacat", x: 0, z: 46, yaw: 0, size: 3, state: "wandering", personality: "skittish" },
+      { id: "front-large", kind: "uncat", x: 18, z: 70, yaw: 0, size: 30, state: "chasing", personality: "bold" },
+      { id: "side-small", kind: "hwacat", x: -38, z: 8, yaw: 0, size: 2, state: "fleeing", personality: "erratic" },
+      { id: "far-dark", kind: "angry", x: 70, z: 65, yaw: 0, size: 45, state: "wandering", personality: "lazy" }
+    ]
+  };
 } else if (debugAutoplay) {
   joined = true;
   pendingName = "Test Cyclopse";
@@ -53,7 +75,7 @@ net.on("welcome", (message) => {
 });
 
 net.on("snapshot", (snapshot) => {
-  if (calibrationMode) return;
+  if (calibrationMode || visualTestMode) return;
   latestSnapshot = snapshot;
   const self = snapshot.players.find((p) => p.id === net.id);
   if (self) {
@@ -69,6 +91,7 @@ net.on("snapshot", (snapshot) => {
 });
 
 net.on("death", () => {
+  if (visualTestMode) return;
   if (input.godMode) return;
   death.hidden = false;
 });
