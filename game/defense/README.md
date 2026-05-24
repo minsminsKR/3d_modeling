@@ -7,10 +7,13 @@ Control a player who automatically shoots bullets forward and runs along an infi
 
 ## Features
 - **Endless Runner Mechanics**: Road tiles and barriers spawn and cycle automatically.
-- **Crowd Control Gate System**: Choose the best gates (Addition vs. Multiplication) to boost your ally count.
-- **Weapon Upgrade Progression**: Automatic upgrades from Pistol to Dual Pistol, SMG, Rifle, and Minigun based on total allies and kills.
-- **Durable Enemy Wave System**: Waves grow dynamically, spawning fast runners and high-health tank giants.
-- **Object Pooling**: Fast particle and bullet pooling for high performance.
+- **Formation Army System**: Allies keep adaptive rows, spacing, smooth follow, and throttled updates for large crowds.
+- **Crowd Control Gate System**: Choose army gates, multiplier gates, weapon gates, and stat gates.
+- **Class-Based Weapons**: Pistol, Dual Pistol, SMG, Rifle, Shotgun, Laser, Minigun, and Rocket Launcher.
+- **High-Feedback Combat**: Bullet trails, muzzle flashes, hit flash, knockback, particles, combo UI, and camera shake.
+- **Durable Enemy Wave System**: Basic, fast, tank, exploder, shooter, and boss enemies scale over time.
+- **Run Progression**: Level ups trigger upgrade choices for fire rate, damage, allies, crit, spread, and projectiles.
+- **Object Pooling**: Bullet, muzzle flash, enemy, enemy shot, pickup, and particle limits keep large fights playable.
 
 ## Controls
 - **A / D** or **Left / Right Arrow**: Move Left/Right
@@ -36,11 +39,18 @@ game/defense/
 ```
 
 ## Running the Game
-Ensure you have `ursina` installed:
-```bash
-pip install ursina
+Create or use the local virtual environment:
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
 Then run the entry point script:
-```bash
-python main.py
+```powershell
+.\.venv\Scripts\python.exe main.py
 ```
+
+## System Docs
+- `docs/COMBAT_SYSTEM.md`
+- `docs/UPGRADE_SYSTEM.md`
+- `docs/WAVE_SYSTEM.md`
+- `docs/PERFORMANCE_GUIDE.md`

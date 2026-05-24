@@ -1,0 +1,52 @@
+{
+  "movement": {
+    "startWorldX": 0,
+    "afterAWorldX": 3.74,
+    "afterDWorldX": -1.8783999986648559,
+    "leftMovesScreenLeft": true,
+    "rightMovesScreenRight": true
+  },
+  "gateResultsFromFourAllies": [
+    {
+      "label": "+2",
+      "after": 6,
+      "expected": 6,
+      "pass": true
+    },
+    {
+      "label": "+5",
+      "after": 9,
+      "expected": 9,
+      "pass": true
+    },
+    {
+      "label": "x2",
+      "after": 8,
+      "expected": 8,
+      "pass": true
+    },
+    {
+      "label": "x3",
+      "after": 12,
+      "expected": 12,
+      "pass": true
+    }
+  ],
+  "state": {
+    "script": "http://127.0.0.1:8020/static/src/main.js?v=20260523-speed-impact-gates-3",
+    "activeBullets": 85,
+    "activeParticles": 32,
+    "activeGates": [
+      {
+        "left": "x2",
+        "right": "+2"
+      },
+      {
+        "left": "+5",
+        "right": "x3"
+      }
+    ],
+    "fpsText": "60 fps"
+  },
+  "severeConsole": []
+}

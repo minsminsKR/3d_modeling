@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 from ursina import Entity, Text, Button, color, destroy, camera
 
 class GameOverUI:
@@ -8,7 +8,7 @@ class GameOverUI:
         self.background = Entity(
             parent=camera.ui,
             model="quad",
-            color=color.rgba(30, 0, 0, 220),
+            color=color.rgba32(30, 0, 0, 220),
             scale=(2, 2),
             enabled=False,
             z=-1
@@ -37,7 +37,7 @@ class GameOverUI:
             parent=self.background,
             position=(0, -0.15),
             scale=(0.3, 0.08),
-            color=color.rgb(200, 50, 50),
+            color=color.rgb32(200, 50, 50),
             on_click=self.restart_callback
         )
 

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 from ursina import Entity, Text, Button, color, destroy, application
 
 class PauseMenu:
@@ -10,7 +10,7 @@ class PauseMenu:
         self.background = Entity(
             parent=camera.ui,
             model="quad",
-            color=color.rgba(0, 0, 0, 180),
+            color=color.rgba32(0, 0, 0, 180),
             scale=(2, 2),
             enabled=False,
             z=-1

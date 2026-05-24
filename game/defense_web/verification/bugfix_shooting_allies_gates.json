@@ -1,0 +1,375 @@
+{
+  "url": "http://127.0.0.1:8020/?verify=1779544342919",
+  "firstAfter2_4s": {
+    "running": true,
+    "pausedForUpgrade": false,
+    "elapsed": 2.21,
+    "wave": 1,
+    "level": 1,
+    "exp": 0,
+    "expNeed": 90,
+    "pendingUpgradeCount": 0,
+    "allies": 1,
+    "weapon": "Dual Pistol",
+    "kills": 0,
+    "coins": 0,
+    "activeEnemies": 0,
+    "activeBullets": 24,
+    "activeMuzzleFlashes": 0,
+    "shotEvents": 17,
+    "muzzleEvents": 17,
+    "soundEvents": 17,
+    "gateApplications": 0,
+    "modelReady": true,
+    "visibleModels": 0,
+    "modelLoadError": null,
+    "loaderStatus": {
+      "Cyclopse": {
+        "state": "ready",
+        "at": 381.10000002384186,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 1.9
+      },
+      "Hwacat": {
+        "state": "ready",
+        "at": 579.2999999523163,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 2.65
+      },
+      "Hwacat Angry": {
+        "state": "ready",
+        "at": 619.1000000238419,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 3.8499999999999996
+      },
+      "Player Uncat": {
+        "state": "ready",
+        "at": 336.89999997615814,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 1.9499999999999997
+      }
+    }
+  },
+  "secondAfter10s": {
+    "running": true,
+    "pausedForUpgrade": false,
+    "elapsed": 9.82,
+    "wave": 1,
+    "level": 1,
+    "exp": 0,
+    "expNeed": 90,
+    "pendingUpgradeCount": 0,
+    "allies": 1,
+    "weapon": "Dual Pistol",
+    "kills": 0,
+    "coins": 0,
+    "activeEnemies": 0,
+    "activeBullets": 24,
+    "activeMuzzleFlashes": 1,
+    "shotEvents": 77,
+    "muzzleEvents": 77,
+    "soundEvents": 77,
+    "gateApplications": 0,
+    "modelReady": true,
+    "visibleModels": 0,
+    "modelLoadError": null,
+    "loaderStatus": {
+      "Cyclopse": {
+        "state": "ready",
+        "at": 381.10000002384186,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 1.9
+      },
+      "Hwacat": {
+        "state": "ready",
+        "at": 579.2999999523163,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 2.65
+      },
+      "Hwacat Angry": {
+        "state": "ready",
+        "at": 619.1000000238419,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 3.8499999999999996
+      },
+      "Player Uncat": {
+        "state": "ready",
+        "at": 336.89999997615814,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 1.9499999999999997
+      }
+    }
+  },
+  "shotEventsIncreasedAfterLongWait": true,
+  "muzzleEventsIncreasedAfterLongWait": true,
+  "soundEventsIncreasedAfterLongWait": true,
+  "gateResults": [
+    {
+      "label": "+2",
+      "before": 1,
+      "after": 3,
+      "ui": "3",
+      "appsDelta": 1,
+      "firstAppsDelta": 1,
+      "afterFirst": 3,
+      "gateActive": false,
+      "gateConsumed": true
+    },
+    {
+      "label": "+5",
+      "before": 3,
+      "after": 8,
+      "ui": "8",
+      "appsDelta": 1,
+      "firstAppsDelta": 1,
+      "afterFirst": 8,
+      "gateActive": false,
+      "gateConsumed": true
+    },
+    {
+      "label": "x2",
+      "before": 8,
+      "after": 16,
+      "ui": "16",
+      "appsDelta": 1,
+      "firstAppsDelta": 1,
+      "afterFirst": 16,
+      "gateActive": false,
+      "gateConsumed": true
+    },
+    {
+      "label": "x3",
+      "before": 16,
+      "after": 48,
+      "ui": "48",
+      "appsDelta": 1,
+      "firstAppsDelta": 1,
+      "afterFirst": 48,
+      "gateActive": false,
+      "gateConsumed": true
+    }
+  ],
+  "afterGates": {
+    "state": {
+      "running": true,
+      "pausedForUpgrade": false,
+      "elapsed": 11.37,
+      "wave": 1,
+      "level": 1,
+      "exp": 0,
+      "expNeed": 90,
+      "pendingUpgradeCount": 0,
+      "allies": 48,
+      "weapon": "Dual Pistol",
+      "kills": 0,
+      "coins": 0,
+      "activeEnemies": 0,
+      "activeBullets": 576,
+      "activeMuzzleFlashes": 12,
+      "shotEvents": 365,
+      "muzzleEvents": 365,
+      "soundEvents": 365,
+      "gateApplications": 4,
+      "modelReady": true,
+      "visibleModels": 0,
+      "modelLoadError": null,
+      "loaderStatus": {
+        "Cyclopse": {
+          "state": "ready",
+          "at": 381.10000002384186,
+          "meshes": 1,
+          "texturedMeshes": 1,
+          "uvMissingMeshes": 0,
+          "height": 1.9
+        },
+        "Hwacat": {
+          "state": "ready",
+          "at": 579.2999999523163,
+          "meshes": 1,
+          "texturedMeshes": 1,
+          "uvMissingMeshes": 0,
+          "height": 2.65
+        },
+        "Hwacat Angry": {
+          "state": "ready",
+          "at": 619.1000000238419,
+          "meshes": 1,
+          "texturedMeshes": 1,
+          "uvMissingMeshes": 0,
+          "height": 3.8499999999999996
+        },
+        "Player Uncat": {
+          "state": "ready",
+          "at": 336.89999997615814,
+          "meshes": 1,
+          "texturedMeshes": 1,
+          "uvMissingMeshes": 0,
+          "height": 1.9499999999999997
+        }
+      }
+    },
+    "activeBulletXs": [
+      -4,
+      -3.1,
+      -6.6,
+      -5.8,
+      -3.8,
+      -3.7,
+      -2.7,
+      -6.1,
+      -3.2,
+      -2,
+      -1.7,
+      -3.6,
+      -3.3,
+      -5,
+      -1,
+      0.1,
+      -6.8,
+      -5.1,
+      -6,
+      -5.7,
+      -3.5,
+      -2.9,
+      0.5,
+      0.6,
+      -0.5,
+      0.3,
+      0.7,
+      1.6,
+      1.2,
+      2.6
+    ],
+    "uniqueActiveBulletXCount": 97,
+    "visibleAllyCount": 48,
+    "uiAllies": "48"
+  },
+  "consoleDebugSamples": [
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=32"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=33"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=34"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=35"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=36"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=37"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=38"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=39"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=40"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=41"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=42"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=43"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=44"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=45"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=46"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=47"
+    },
+    {
+      "type": "log",
+      "text": "[ALLY] spawned, total=48"
+    },
+    {
+      "type": "log",
+      "text": "[GATE] type=x3, before=16, after=48"
+    },
+    {
+      "type": "log",
+      "text": "[SHOOTING] player/allies firing, ally_count=48, active_bullets=90"
+    },
+    {
+      "type": "log",
+      "text": "[SHOOTING] player/allies firing, ally_count=48, active_bullets=462"
+    }
+  ],
+  "severeConsole": [
+    {
+      "type": "warning",
+      "text": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights."
+    },
+    {
+      "type": "warning",
+      "text": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights."
+    },
+    {
+      "type": "warning",
+      "text": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights."
+    },
+    {
+      "type": "warning",
+      "text": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights."
+    }
+  ],
+  "pageErrors": [],
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:8020/assets/characters/Cyclopse/mixamo/Run.fbx",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:8020/assets/characters/Hwacat_angry/mixamo/Zombie%20Run.fbx",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "screenshot": "C:\\Users\\User\\Desktop\\민수\\3d_modeling\\game\\defense_web\\verification\\bugfix_shooting_allies_gates.png"
+}

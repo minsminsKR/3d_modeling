@@ -1,0 +1,26 @@
+{
+  "state": {
+    "activeBullets": 40,
+    "activeParticles": 2,
+    "activeEnemies": 4,
+    "gates": [
+      [
+        "x2",
+        "+2"
+      ],
+      [
+        "+2",
+        "x3"
+      ]
+    ],
+    "fps": "60 fps",
+    "modelReady": true
+  },
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:8020/assets/characters/Hwacat_angry/mixamo/Zombie%20Run.fbx",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
+  "severeConsole": []
+}

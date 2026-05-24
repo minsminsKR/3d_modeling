@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 from pathlib import Path
 import sys
 from ursina import Ursina, color, window
@@ -27,8 +27,8 @@ def input(key):
 if __name__ == "__main__":
     app = Ursina(title="Mob Shooter Defense", borderless=False)
     app.restart_game = restart_game
-    window.color = color.rgb(10, 10, 15)
+    window.color = color.rgb32(10, 10, 15)
     window.exit_button.visible = False
-    window.fps_counter.enabled = True
+    window.fps_counter.enabled = False
     restart_game()
     app.run()

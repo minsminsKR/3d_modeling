@@ -1,15 +1,18 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 from pathlib import Path
 from ursina import Audio
 
+
 class AudioManager:
-    def __init__(self, audio_root: Path | None = None):
+    def __init__(self, audio_root: Path | None = None, event_bus=None):
         self.audio_root = audio_root
-        self.shoot_sound = self._load_optional("shoot")
-        self.hit_sound = self._load_optional("hit")
-        self.gate_sound = self._load_optional("gate")
-        self.death_sound = self._load_optional("death")
+        self.sounds = {}
+        for key in ("shoot", "pistol", "smg", "rifle", "shotgun", "laser", "minigun", "rocket", "hit", "gate", "death", "upgrade", "pickup"):
+            self.sounds[key] = self._load_optional(key)
         self.music = self._load_optional("music", loop=True, autoplay=True)
+        if event_bus:
+            event_bus.on("weapon_fired", self._on_weapon_fired)
+            event_bus.on("weapon_upgraded", self._on_weapon_upgraded)
 
     def _load_optional(self, stem: str, loop: bool = False, autoplay: bool = False):
         if not self.audio_root or not self.audio_root.exists():
@@ -23,18 +26,28 @@ class AudioManager:
                     return None
         return None
 
+    def play(self, key: str, fallback: str | None = None):
+        sound = self.sounds.get(key) or (self.sounds.get(fallback) if fallback else None)
+        if sound:
+            sound.play()
+
+    def _on_weapon_fired(self, sound_key: str = "shoot", **_):
+        self.play(sound_key, "shoot")
+
+    def _on_weapon_upgraded(self, **_):
+        self.play("upgrade", "gate")
+
     def play_shoot(self):
-        if self.shoot_sound:
-            self.shoot_sound.play()
+        self.play("shoot")
 
     def play_hit(self):
-        if self.hit_sound:
-            self.hit_sound.play()
+        self.play("hit")
 
     def play_gate(self):
-        if self.gate_sound:
-            self.gate_sound.play()
+        self.play("gate")
 
     def play_death(self):
-        if self.death_sound:
-            self.death_sound.play()
+        self.play("death")
+
+    def play_pickup(self):
+        self.play("pickup")

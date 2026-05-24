@@ -1,0 +1,525 @@
+{
+  "url": "http://127.0.0.1:8020/?verify=1779545320065",
+  "pistolStateAfterStart": {
+    "running": true,
+    "pausedForUpgrade": false,
+    "elapsed": 1.21,
+    "wave": 0,
+    "level": 1,
+    "exp": 0,
+    "expNeed": 90,
+    "pendingUpgradeCount": 0,
+    "allies": 1,
+    "weapon": "Pistol",
+    "weaponEffect": {
+      "level": 1,
+      "bulletScale": 0.5,
+      "bulletLength": 0.48,
+      "trailWidth": 0.18,
+      "trailLength": 0.28,
+      "flashScale": 0.2,
+      "flashTtl": 0.045,
+      "particles": 0,
+      "hitParticles": 1,
+      "hitSize": 0.16
+    },
+    "kills": 0,
+    "coins": 0,
+    "activeEnemies": 0,
+    "activeBullets": 6,
+    "activeMuzzleFlashes": 0,
+    "shotEvents": 6,
+    "muzzleEvents": 6,
+    "soundEvents": 6,
+    "gateApplications": 0,
+    "screenRightSign": -1,
+    "allyVisualMode": "playerModel",
+    "allyModelCount": 1,
+    "modelReady": true,
+    "visibleModels": 0,
+    "modelLoadError": null,
+    "loaderStatus": {
+      "Cyclopse": {
+        "state": "ready",
+        "at": 684.2999999523163,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 1.9
+      },
+      "Hwacat": {
+        "state": "ready",
+        "at": 741.3999999761581,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 2.65
+      },
+      "Hwacat Angry": {
+        "state": "ready",
+        "at": 786,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 3.8499999999999996
+      },
+      "Player Uncat": {
+        "state": "ready",
+        "at": 483.5,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 1.9499999999999997
+      }
+    }
+  },
+  "movement": {
+    "start": {
+      "worldX": 0,
+      "ndcX": 0,
+      "screenRightSign": -1
+    },
+    "afterA": {
+      "worldX": 4.0071999998092664,
+      "ndcX": -0.2408317959614752,
+      "screenRightSign": -1
+    },
+    "afterD": {
+      "worldX": -1.1872000007629395,
+      "ndcX": 0.07136229326558433,
+      "screenRightSign": -1
+    },
+    "aMovedScreenLeft": true,
+    "dMovedScreenRight": true
+  },
+  "weaponProfiles": [
+    {
+      "weapon": "Pistol",
+      "effectLevel": 1,
+      "config": {
+        "bulletScale": 0.5,
+        "bulletLength": 0.48,
+        "trailWidth": 0.18,
+        "trailLength": 0.28,
+        "flashScale": 0.2,
+        "flashTtl": 0.045,
+        "particles": 0,
+        "hitParticles": 1,
+        "hitSize": 0.16,
+        "level": 1
+      },
+      "sampleBullet": {
+        "bulletScale": 0.5,
+        "bulletLength": 0.48,
+        "trailWidth": 0.18,
+        "trailLength": 0.28,
+        "hitParticles": 1
+      },
+      "muzzleCreated": 1,
+      "bulletsCreatedAtLeast": 1,
+      "sampleFlash": {
+        "baseScale": 0.2,
+        "maxTtl": 0.045,
+        "wide": false
+      }
+    },
+    {
+      "weapon": "Dual Pistol",
+      "effectLevel": 2,
+      "config": {
+        "bulletScale": 0.54,
+        "bulletLength": 0.55,
+        "trailWidth": 0.22,
+        "trailLength": 0.36,
+        "flashScale": 0.26,
+        "flashTtl": 0.055,
+        "particles": 0,
+        "hitParticles": 2,
+        "hitSize": 0.18,
+        "level": 2,
+        "muzzlePerProjectile": true
+      },
+      "sampleBullet": {
+        "bulletScale": 0.54,
+        "bulletLength": 0.55,
+        "trailWidth": 0.22,
+        "trailLength": 0.36,
+        "hitParticles": 2
+      },
+      "muzzleCreated": 2,
+      "bulletsCreatedAtLeast": 2,
+      "sampleFlash": {
+        "baseScale": 0.26,
+        "maxTtl": 0.055,
+        "wide": false
+      }
+    },
+    {
+      "weapon": "SMG",
+      "effectLevel": 3,
+      "config": {
+        "bulletScale": 0.42,
+        "bulletLength": 0.46,
+        "trailWidth": 0.14,
+        "trailLength": 0.45,
+        "flashScale": 0.2,
+        "flashTtl": 0.04,
+        "particles": 0,
+        "hitParticles": 1,
+        "hitSize": 0.15,
+        "level": 3
+      },
+      "sampleBullet": {
+        "bulletScale": 0.42,
+        "bulletLength": 0.46,
+        "trailWidth": 0.14,
+        "trailLength": 0.45,
+        "hitParticles": 1
+      },
+      "muzzleCreated": 1,
+      "bulletsCreatedAtLeast": 1,
+      "sampleFlash": {
+        "baseScale": 0.2,
+        "maxTtl": 0.04,
+        "wide": false
+      }
+    },
+    {
+      "weapon": "Rifle",
+      "effectLevel": 4,
+      "config": {
+        "bulletScale": 0.68,
+        "bulletLength": 0.74,
+        "trailWidth": 0.3,
+        "trailLength": 0.62,
+        "flashScale": 0.34,
+        "flashTtl": 0.065,
+        "particles": 1,
+        "hitParticles": 3,
+        "hitSize": 0.22,
+        "level": 4
+      },
+      "sampleBullet": {
+        "bulletScale": 0.68,
+        "bulletLength": 0.74,
+        "trailWidth": 0.3,
+        "trailLength": 0.62,
+        "hitParticles": 3
+      },
+      "muzzleCreated": 1,
+      "bulletsCreatedAtLeast": 1,
+      "sampleFlash": {
+        "baseScale": 0.34,
+        "maxTtl": 0.065,
+        "wide": false
+      }
+    },
+    {
+      "weapon": "Shotgun",
+      "effectLevel": 5,
+      "config": {
+        "bulletScale": 0.5,
+        "bulletLength": 0.42,
+        "trailWidth": 0.2,
+        "trailLength": 0.25,
+        "flashScale": 0.58,
+        "flashTtl": 0.07,
+        "particles": 2,
+        "hitParticles": 2,
+        "hitSize": 0.2,
+        "level": 5,
+        "wideFlash": true
+      },
+      "sampleBullet": {
+        "bulletScale": 0.5,
+        "bulletLength": 0.42,
+        "trailWidth": 0.2,
+        "trailLength": 0.25,
+        "hitParticles": 2
+      },
+      "muzzleCreated": 1,
+      "bulletsCreatedAtLeast": 6,
+      "sampleFlash": {
+        "baseScale": 0.783,
+        "maxTtl": 0.07,
+        "wide": true
+      }
+    },
+    {
+      "weapon": "Laser",
+      "effectLevel": 7,
+      "config": {
+        "bulletScale": 0.36,
+        "bulletLength": 1.45,
+        "trailWidth": 0.4,
+        "trailLength": 1.45,
+        "flashScale": 0.4,
+        "flashTtl": 0.055,
+        "particles": 1,
+        "hitParticles": 4,
+        "hitSize": 0.24,
+        "level": 7,
+        "muzzlePerProjectile": true
+      },
+      "sampleBullet": {
+        "bulletScale": 0.36,
+        "bulletLength": 1.45,
+        "trailWidth": 0.4,
+        "trailLength": 1.45,
+        "hitParticles": 4
+      },
+      "muzzleCreated": 2,
+      "bulletsCreatedAtLeast": 2,
+      "sampleFlash": {
+        "baseScale": 0.4,
+        "maxTtl": 0.055,
+        "wide": false
+      }
+    },
+    {
+      "weapon": "Minigun",
+      "effectLevel": 6,
+      "config": {
+        "bulletScale": 0.46,
+        "bulletLength": 0.58,
+        "trailWidth": 0.24,
+        "trailLength": 0.55,
+        "flashScale": 0.36,
+        "flashTtl": 0.035,
+        "particles": 1,
+        "hitParticles": 2,
+        "hitSize": 0.18,
+        "level": 6
+      },
+      "sampleBullet": {
+        "bulletScale": 0.46,
+        "bulletLength": 0.58,
+        "trailWidth": 0.24,
+        "trailLength": 0.55,
+        "hitParticles": 2
+      },
+      "muzzleCreated": 1,
+      "bulletsCreatedAtLeast": 1,
+      "sampleFlash": {
+        "baseScale": 0.36,
+        "maxTtl": 0.035,
+        "wide": false
+      }
+    },
+    {
+      "weapon": "Rocket",
+      "effectLevel": 8,
+      "config": {
+        "bulletScale": 1.2,
+        "bulletLength": 1,
+        "trailWidth": 0.55,
+        "trailLength": 0.9,
+        "flashScale": 0.7,
+        "flashTtl": 0.09,
+        "particles": 4,
+        "hitParticles": 8,
+        "hitSize": 0.34,
+        "level": 8,
+        "smoke": true
+      },
+      "sampleBullet": {
+        "bulletScale": 1.2,
+        "bulletLength": 1,
+        "trailWidth": 0.55,
+        "trailLength": 0.9,
+        "hitParticles": 8
+      },
+      "muzzleCreated": 1,
+      "bulletsCreatedAtLeast": 1,
+      "sampleFlash": {
+        "baseScale": 0.7,
+        "maxTtl": 0.09,
+        "wide": false
+      }
+    }
+  ],
+  "allyBefore": {
+    "running": true,
+    "pausedForUpgrade": false,
+    "elapsed": 2.41,
+    "wave": 0,
+    "level": 1,
+    "exp": 0,
+    "expNeed": 90,
+    "pendingUpgradeCount": 0,
+    "allies": 1,
+    "weapon": "Pistol",
+    "weaponEffect": {
+      "level": 1,
+      "bulletScale": 0.5,
+      "bulletLength": 0.48,
+      "trailWidth": 0.18,
+      "trailLength": 0.28,
+      "flashScale": 0.2,
+      "flashTtl": 0.045,
+      "particles": 0,
+      "hitParticles": 1,
+      "hitSize": 0.16
+    },
+    "kills": 0,
+    "coins": 0,
+    "activeEnemies": 0,
+    "activeBullets": 25,
+    "activeMuzzleFlashes": 10,
+    "shotEvents": 22,
+    "muzzleEvents": 24,
+    "soundEvents": 22,
+    "gateApplications": 0,
+    "screenRightSign": -1,
+    "allyVisualMode": "playerModel",
+    "allyModelCount": 1,
+    "modelReady": true,
+    "visibleModels": 0,
+    "modelLoadError": null,
+    "loaderStatus": {
+      "Cyclopse": {
+        "state": "ready",
+        "at": 684.2999999523163,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 1.9
+      },
+      "Hwacat": {
+        "state": "ready",
+        "at": 741.3999999761581,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 2.65
+      },
+      "Hwacat Angry": {
+        "state": "ready",
+        "at": 786,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 3.8499999999999996
+      },
+      "Player Uncat": {
+        "state": "ready",
+        "at": 483.5,
+        "meshes": 1,
+        "texturedMeshes": 1,
+        "uvMissingMeshes": 0,
+        "height": 1.9499999999999997
+      }
+    }
+  },
+  "allyAfter": {
+    "state": {
+      "running": true,
+      "pausedForUpgrade": false,
+      "elapsed": 3.8,
+      "wave": 0,
+      "level": 1,
+      "exp": 0,
+      "expNeed": 90,
+      "pendingUpgradeCount": 0,
+      "allies": 6,
+      "weapon": "Pistol",
+      "weaponEffect": {
+        "level": 1,
+        "bulletScale": 0.5,
+        "bulletLength": 0.48,
+        "trailWidth": 0.18,
+        "trailLength": 0.28,
+        "flashScale": 0.2,
+        "flashTtl": 0.045,
+        "particles": 0,
+        "hitParticles": 1,
+        "hitSize": 0.16
+      },
+      "kills": 0,
+      "coins": 0,
+      "activeEnemies": 0,
+      "activeBullets": 46,
+      "activeMuzzleFlashes": 1,
+      "shotEvents": 51,
+      "muzzleEvents": 53,
+      "soundEvents": 51,
+      "gateApplications": 0,
+      "screenRightSign": -1,
+      "allyVisualMode": "playerModel",
+      "allyModelCount": 6,
+      "modelReady": true,
+      "visibleModels": 0,
+      "modelLoadError": null,
+      "loaderStatus": {
+        "Cyclopse": {
+          "state": "ready",
+          "at": 684.2999999523163,
+          "meshes": 1,
+          "texturedMeshes": 1,
+          "uvMissingMeshes": 0,
+          "height": 1.9
+        },
+        "Hwacat": {
+          "state": "ready",
+          "at": 741.3999999761581,
+          "meshes": 1,
+          "texturedMeshes": 1,
+          "uvMissingMeshes": 0,
+          "height": 2.65
+        },
+        "Hwacat Angry": {
+          "state": "ready",
+          "at": 786,
+          "meshes": 1,
+          "texturedMeshes": 1,
+          "uvMissingMeshes": 0,
+          "height": 3.8499999999999996
+        },
+        "Player Uncat": {
+          "state": "ready",
+          "at": 483.5,
+          "meshes": 1,
+          "texturedMeshes": 1,
+          "uvMissingMeshes": 0,
+          "height": 1.9499999999999997
+        }
+      }
+    },
+    "visibleAllyModels": 6,
+    "allyModelScales": [
+      0.58,
+      0.58,
+      0.58
+    ],
+    "shotEvents": 51,
+    "muzzleEvents": 53,
+    "activeBulletXs": [
+      -0.7,
+      -1.2,
+      0.2,
+      -0.6,
+      -1.4,
+      -2.1,
+      -1.5,
+      -3.3,
+      -1.1,
+      -5.8,
+      -1,
+      -6.1,
+      -0.3,
+      -2,
+      -1.6,
+      -0.5,
+      0.4,
+      -1.3,
+      -2.5,
+      0.3,
+      0.1
+    ]
+  },
+  "allyModelVisibleMatchesCount": true,
+  "alliesFiredAfterAdd": true,
+  "severeConsole": [],
+  "pageErrors": [],
+  "screenshot": "C:\\Users\\User\\Desktop\\민수\\3d_modeling\\game\\defense_web\\verification\\direction_effects_allymodels.png"
+}

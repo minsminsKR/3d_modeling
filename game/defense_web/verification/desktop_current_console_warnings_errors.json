@@ -1,0 +1,26 @@
+[
+  {
+    "level": "warn",
+    "message": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights.",
+    "timestamp": "2026-05-22T11:13:16.502Z",
+    "url": "http://127.0.0.1:8020/vendor/three/examples/jsm/loaders/FBXLoader.js"
+  },
+  {
+    "level": "warn",
+    "message": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights.",
+    "timestamp": "2026-05-22T11:13:16.598Z",
+    "url": "http://127.0.0.1:8020/vendor/three/examples/jsm/loaders/FBXLoader.js"
+  },
+  {
+    "level": "warn",
+    "message": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights.",
+    "timestamp": "2026-05-22T11:13:16.644Z",
+    "url": "http://127.0.0.1:8020/vendor/three/examples/jsm/loaders/FBXLoader.js"
+  },
+  {
+    "level": "error",
+    "message": "SyntaxError: Identifier 'ModelDecoratorSystem' has already been declared",
+    "timestamp": "2026-05-22T11:16:21.687Z",
+    "url": "http://127.0.0.1:8020/static/src/main.js"
+  }
+]

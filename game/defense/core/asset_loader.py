@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 from ursina import Entity
 
 def safe_entity(model=None, fallback_model="cube", **kwargs) -> Entity:

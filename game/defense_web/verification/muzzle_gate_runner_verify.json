@@ -1,0 +1,82 @@
+{
+  "muzzleRepeat": {
+    "shotEventsAtT1": 20,
+    "shotEventsAtT2": 42,
+    "muzzleEventsAtT1": 20,
+    "muzzleEventsAtT2": 42,
+    "soundEventsAtT1": 20,
+    "soundEventsAtT2": 42,
+    "shotRepeats": true,
+    "muzzleRepeats": true,
+    "soundHookRepeats": true
+  },
+  "gateResults": [
+    {
+      "label": "+2",
+      "expectedAllyCount": 6,
+      "actualAllyCount": 6,
+      "uiArmy": 7,
+      "uiMatchesAlliesPlusPlayer": true,
+      "appliedOnce": true,
+      "shotsAfterGrowth": true,
+      "muzzleAfterGrowth": true,
+      "soundAfterGrowth": true
+    },
+    {
+      "label": "+5",
+      "expectedAllyCount": 9,
+      "actualAllyCount": 9,
+      "uiArmy": 10,
+      "uiMatchesAlliesPlusPlayer": true,
+      "appliedOnce": true,
+      "shotsAfterGrowth": true,
+      "muzzleAfterGrowth": true,
+      "soundAfterGrowth": true
+    },
+    {
+      "label": "x2",
+      "expectedAllyCount": 8,
+      "actualAllyCount": 8,
+      "uiArmy": 9,
+      "uiMatchesAlliesPlusPlayer": true,
+      "appliedOnce": true,
+      "shotsAfterGrowth": true,
+      "muzzleAfterGrowth": true,
+      "soundAfterGrowth": true
+    },
+    {
+      "label": "x3",
+      "expectedAllyCount": 12,
+      "actualAllyCount": 12,
+      "uiArmy": 13,
+      "uiMatchesAlliesPlusPlayer": true,
+      "appliedOnce": true,
+      "shotsAfterGrowth": true,
+      "muzzleAfterGrowth": true,
+      "soundAfterGrowth": true
+    }
+  ],
+  "final": {
+    "script": "http://127.0.0.1:8020/static/src/main.js?v=20260523-muzzle-gates-runner",
+    "playerSpeed": 8.8,
+    "shotEvents": 451,
+    "muzzleEvents": 451,
+    "soundEvents": 451,
+    "activeBullets": 209,
+    "activeMuzzleFlashes": 15,
+    "activeParticles": 93,
+    "activeGates": [],
+    "fpsText": "57 fps"
+  },
+  "failedRequests": [
+    {
+      "url": "http://127.0.0.1:8020/assets/characters/Hwacat/mixamo/Normal_standing.fbx",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "url": "http://127.0.0.1:8020/assets/characters/Hwacat_angry/mixamo/Zombie%20Run.fbx",
+      "failure": "net::ERR_ABORTED"
+    }
+  ],
+  "severeConsole": []
+}

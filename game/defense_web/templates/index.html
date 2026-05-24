@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mob Shooter Defense Web</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/vendor/three/build/three.module.js",
+          "three/addons/": "/vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="game-shell">
+      <canvas id="game-canvas" aria-label="Mob Shooter Defense"></canvas>
+      <section id="hud">
+        <div class="left">
+          <div class="army">ALLIES <span id="army-count">1</span></div>
+          <div id="weapon">Pistol</div>
+          <div>KOs <span id="kills">0</span></div>
+          <div>Coins <span id="coins">0</span></div>
+        </div>
+        <div class="center">
+          <div class="bar" title="Experience"><div id="exp-fill"></div></div>
+          <div class="bar ult-bar-container" title="Ultimate"><div id="ult-fill"></div></div>
+          <div id="ult-label">ULTIMATE [SPACE] READY</div>
+          <div id="combo"></div>
+        </div>
+        <div class="right">
+          <div>LV <span id="level">1</span></div>
+          <div>DPS <span id="dps">26</span></div>
+          <div id="fps">60</div>
+        </div>
+      </section>
+      <div id="vignette"></div>
+      <div id="event-banner" class="hidden"></div>
+      <div id="reward-banner" class="hidden"></div>
+      <div id="buffs-list"></div>
+      <section id="upgrade-panel" class="hidden">
+        <h1>LEVEL UP</h1>
+        <div id="upgrade-options"></div>
+      </section>
+      <section id="start-panel">
+        <h1>Mob Shooter Defense</h1>
+        <button id="start-button">Start</button>
+      </section>
+    </main>
+    <script type="module" src="/static/src/main.js?v=20260523-direction-effects-allymodels"></script>
+  </body>
+</html>

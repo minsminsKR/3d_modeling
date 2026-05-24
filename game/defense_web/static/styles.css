@@ -1,0 +1,323 @@
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #101827;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#game-shell,
+#game-canvas {
+  width: 100vw;
+  height: 100vh;
+}
+
+#game-canvas {
+  display: block;
+}
+
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  padding: 28px 34px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: start;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+}
+
+#hud .left {
+  font-size: 32px;
+  line-height: 1.28;
+  color: #ffd66b;
+}
+
+#hud .army {
+  font-size: 52px;
+  color: #42f7ff;
+}
+
+#weapon {
+  color: #7dff58;
+}
+
+#hud .center {
+  justify-self: center;
+  width: min(520px, 40vw);
+  text-align: center;
+}
+
+.bar {
+  height: 18px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+#exp-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #32d6ff, #f8dd58);
+}
+
+#combo {
+  margin-top: 24px;
+  font-size: 46px;
+  color: #ff5b5b;
+}
+
+#hud .right {
+  justify-self: end;
+  text-align: right;
+  font-size: 34px;
+  line-height: 1.35;
+}
+
+#fps {
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+#upgrade-panel,
+#start-panel {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: rgba(5, 8, 18, 0.72);
+}
+
+#upgrade-panel.hidden,
+#start-panel.hidden {
+  display: none;
+}
+
+#upgrade-panel h1,
+#start-panel h1 {
+  margin: 0;
+  font-size: 56px;
+  letter-spacing: 0;
+}
+
+#upgrade-options {
+  display: flex;
+  gap: 18px;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 18px 24px;
+  min-width: 190px;
+  background: #1fd0ff;
+  color: #07111d;
+  font-size: 22px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 14px 32px rgba(31, 208, 255, 0.28);
+}
+
+.upgrade-card {
+  width: 230px;
+  min-height: 140px;
+  background: #17243a;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+}
+
+.upgrade-card strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #ffe16c;
+}
+
+/* Ultimate Bar */
+.ult-bar-container {
+  margin-top: 8px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 51, 170, 0.4);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+#ult-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff0055, #ff33aa, #ff00ff);
+  box-shadow: 0 0 8px #ff33aa;
+  transition: width 0.1s ease-out;
+}
+
+#ult-label {
+  font-size: 13px;
+  color: #ff33aa;
+  margin-top: 5px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#ult-label.ready {
+  opacity: 1;
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff33aa;
+  animation: ultPulse 1.2s infinite alternate;
+}
+
+@keyframes ultPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.06); }
+}
+
+/* Event Banner */
+#event-banner {
+  position: fixed;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 36px;
+  font-size: 32px;
+  font-weight: 900;
+  border-radius: 8px;
+  pointer-events: none;
+  letter-spacing: 2px;
+  z-index: 10;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+#event-banner.gold-rush {
+  background: rgba(255, 215, 0, 0.25);
+  border: 2px solid #ffd700;
+  color: #ffd700;
+  text-shadow: 0 0 10px #ffd700;
+  animation: goldPulse 1.5s infinite alternate;
+}
+
+#event-banner.weapon-fever {
+  background: rgba(255, 87, 87, 0.25);
+  border: 2px solid #ff5757;
+  color: #ff5757;
+  text-shadow: 0 0 10px #ff5757;
+  animation: feverPulse 1.5s infinite alternate;
+}
+
+#event-banner.ally-rush {
+  background: rgba(66, 247, 255, 0.25);
+  border: 2px solid #42f7ff;
+  color: #42f7ff;
+  text-shadow: 0 0 10px #42f7ff;
+  animation: allyPulse 1.5s infinite alternate;
+}
+
+#event-banner.slow-motion {
+  background: rgba(192, 94, 255, 0.25);
+  border: 2px solid #c05eff;
+  color: #c05eff;
+  text-shadow: 0 0 10px #c05eff;
+  animation: slowPulse 1.5s infinite alternate;
+}
+
+@keyframes goldPulse {
+  from { box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+  to { box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); }
+}
+@keyframes feverPulse {
+  from { box-shadow: 0 0 15px rgba(255, 87, 87, 0.3); }
+  to { box-shadow: 0 0 25px rgba(255, 87, 87, 0.6); }
+}
+@keyframes allyPulse {
+  from { box-shadow: 0 0 15px rgba(66, 247, 255, 0.3); }
+  to { box-shadow: 0 0 25px rgba(66, 247, 255, 0.6); }
+}
+@keyframes slowPulse {
+  from { box-shadow: 0 0 15px rgba(192, 94, 255, 0.3); }
+  to { box-shadow: 0 0 25px rgba(192, 94, 255, 0.6); }
+}
+
+/* Reward Banner (Upgrades / Gates) */
+#reward-banner {
+  position: fixed;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  font-size: 56px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 18px #ff33aa, 0 4px 8px rgba(0, 0, 0, 0.85);
+  z-index: 100;
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  opacity: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+#reward-banner.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Vignette Overlay */
+#vignette {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9;
+  box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+  transition: box-shadow 0.25s ease;
+}
+
+#vignette.danger {
+  box-shadow: inset 0 0 70px rgba(255, 0, 0, 0.5);
+  animation: dangerBlink 1s infinite alternate;
+}
+
+#vignette.slow-mo {
+  box-shadow: inset 0 0 80px rgba(100, 50, 255, 0.35);
+}
+
+@keyframes dangerBlink {
+  0% { box-shadow: inset 0 0 40px rgba(255, 0, 0, 0.35); }
+  100% { box-shadow: inset 0 0 80px rgba(255, 0, 0, 0.6); }
+}
+
+/* Temporary Buff Tracker */
+#buffs-list {
+  position: fixed;
+  bottom: 28px;
+  left: 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 8;
+}
+
+.buff-item {
+  background: rgba(10, 18, 32, 0.82);
+  border: 1px solid #00ffcc;
+  color: #00ffcc;
+  padding: 6px 14px;
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  animation: buffPulse 1s infinite alternate;
+}
+
+@keyframes buffPulse {
+  0% { box-shadow: 0 0 6px rgba(0, 255, 204, 0.15); }
+  100% { box-shadow: 0 0 10px rgba(0, 255, 204, 0.35); }
+}
