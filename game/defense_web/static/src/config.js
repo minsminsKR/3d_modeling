@@ -26,13 +26,13 @@ export const ASSETS = {
 };
 
 export const LIMITS = {
-  allies: 320,
-  bullets: 720,
+  allies: 360,
+  bullets: 840,
   muzzleFlashes: 420,
-  enemies: 260,
+  enemies: 680,
   pickups: 180,
   particles: 360,
-  modelDecorators: 28,
+  modelDecorators: 90,
 };
 
 export const LANES = {

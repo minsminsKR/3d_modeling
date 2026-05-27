@@ -19,6 +19,11 @@ export class FlashlightController {
 
   toggle() {
     this.enabled = !this.enabled;
+    if (this.enabled) {
+      console.log("[FLASHLIGHT] ON");
+    } else {
+      console.log("[FLASHLIGHT] OFF");
+    }
     this.applyState(true);
   }
 

@@ -48,6 +48,10 @@ export class EnemyManager {
     if (options.state) {
       enemy.state = options.state;
     }
+    if (options.lastKnownPlayerPosition) {
+      enemy.lastKnownPlayerPosition = options.lastKnownPlayerPosition.clone();
+      enemy.memoryTimer = config.memorySeconds;
+    }
     enemy.isDynamic = Boolean(options.dynamic);
     enemy.snapModelToGround(false);
     this.enemies.push(enemy);
@@ -60,6 +64,7 @@ export class EnemyManager {
     for (const enemy of this.enemies) {
       if (enemy.config.id === id) {
         this.scene.remove(enemy.group);
+        enemy.dispose();
         continue;
       }
       nextEnemies.push(enemy);
@@ -92,7 +97,7 @@ export class EnemyManager {
     }
 
     for (const enemy of this.enemies) {
-      enemy.state = "patrol";
+      enemy.state = "wander";
       enemy.memoryTimer = 0;
       enemy.lastKnownPlayerPosition = null;
       enemy.caughtPlayer = false;
@@ -132,13 +137,21 @@ export class EnemyManager {
     }
   }
 
-  reset() {
+  reset(doors = null) {
+    if (doors) {
+      this.doors = doors;
+    }
+
     for (const enemy of this.enemies.filter((entry) => entry.isDynamic)) {
       this.scene.remove(enemy.group);
+      enemy.dispose();
     }
     this.enemies = this.enemies.filter((entry) => !entry.isDynamic);
 
     for (const enemy of this.enemies) {
+      if (doors) {
+        enemy.doors = doors;
+      }
       enemy.group.position.set(...enemy.config.spawn);
       enemy.state = "patrol";
       enemy.currentWaypoint = 0;
@@ -158,6 +171,9 @@ export class EnemyManager {
       enemy.lastUnstuckTarget = null;
       enemy.debugPathTarget = null;
       enemy.lastDetectionEvent = null;
+      enemy.wanderTarget = null;
+      enemy.wanderRetargetTimer = 0;
+      enemy.wanderStuckCount = 0;
       enemy.group.position.y = this.collisionWorld.getGroundY(enemy.group.position);
       enemy.resumeAnimatedPose();
       enemy.playAction("patrol", 0);

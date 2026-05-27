@@ -69,7 +69,7 @@ Current tuning reference for the browser `.io` prototype. Values below reflect t
 
 ## Environment Props
 
-- The Node server mounts `E:\AI\3d_modeling\game\happy_toy\assets` at `/assets`.
+- The Node server mounts `E:\AI\3d_modeling\game\assets` at `/assets`.
 - `public/src/scene.js` loads prop GLB files with `GLTFLoader`; no asset copy step is required.
 - Random prop placement is deterministic with `WORLD_PROP_SEED = 73491`, making visual QA repeatable.
 - Static props are distance-culled around the local player every few frames.

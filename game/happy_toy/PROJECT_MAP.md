@@ -38,7 +38,7 @@
 새 캐릭터를 추가할 때는 `ENEMY_CONFIGS`에 항목을 하나 추가하고, 아래 에셋 폴더에 FBX와 텍스처를 넣습니다.
 
 ```text
-assets/characters/<CharacterName>/
+../assets/characters/<CharacterName>/
   mixamo/
     Walking.fbx
     Run.fbx
@@ -53,7 +53,7 @@ assets/characters/<CharacterName>/
 벽, 바닥, 문 같은 환경 스킨은 아래 폴더에 넣습니다. PNG 한 장으로도 적용할 수 있고, 반복되는 벽/바닥 재질은 tileable 이미지가 가장 좋습니다.
 
 ```text
-assets/textures/
+../assets/textures/
   walls/wall.png
   floors/floor.png
   ceilings/ceiling.png
@@ -68,7 +68,7 @@ assets/textures/
 | 파일 | 역할 | 주로 수정할 때 |
 | --- | --- | --- |
 | `src/world/MapBuilder.js` | 1층/2층 바닥, 계단, 천장, 벽, 문, 열쇠, 캐비넷, 최종 장치, 장난감/촛불/벽등/낮은 난간/얼룩/천/배관/바리케이드/열린 선반/창살 창/전선/매미 허물/마네킹/`hwa_paint` 액자/붉은 원 오브제 생성, `assetUrl` GLB 프롭 로드와 pending asset 추적, `textureUrl` 투명 PNG 프롭 적용, GLB 방향/축/비율 보정, debug overlay 생성 | 맵 구조와 방 배치, 수집품/은신처, 공포 분위기 오브젝트를 바꿀 때 |
-| `src/world/TextureLibrary.js` | `assets/textures`의 벽/바닥/천장/계단/문/캐비넷 PNG를 Three.js material로 변환하고 기본 fallback material 제공 | 환경 스킨 파일명, 반복 방식, 재질 밝기/거칠기를 바꿀 때 |
+| `src/world/TextureLibrary.js` | `../assets/textures`의 벽/바닥/천장/계단/문/캐비넷 PNG를 Three.js material로 변환하고 기본 fallback material 제공 | 환경 스킨 파일명, 반복 방식, 재질 밝기/거칠기를 바꿀 때 |
 | `src/world/Door.js` | 두 패널로 갈라지는 미닫이문과 locked/blocked door의 렌더링/상태/충돌/상호작용, connectedRoomId debug 정보 | 잠긴 문, 문 레일/손잡이, 소리, 자동문을 만들 때 |
 | `src/world/KeyItem.js` | 방 곳곳의 수집 가능한 열쇠. 렌더링, 프롬프트, 수집/리셋 상태 담당 | 열쇠 외형, 수집 조건, 아이템 종류를 바꿀 때 |
 | `src/world/Cabinet.js` | 숨을 수 있는 캐비넷. 텍스처 body 외형, 내부 시점, 몬스터 대기 위치, 충돌 크기 제공 | 은신처 시점, 캐비넷 스킨, 크기/위치, 대기 위치를 바꿀 때 |
@@ -151,7 +151,7 @@ index.html
 
 ## 공포 프롭 카탈로그
 
-나중에 GLB로 교체할 때는 `src/config/gameConfig.js`의 `props[].id`를 기준으로 바꾸면 됩니다. `horror-placeholder` 타입은 임시 geometry이며, `placeholderKind`가 GLB 컨셉을 나타냅니다. 프롭 텍스처는 `assets/textures/props/<prop_kind>/`, GLB 모델은 `assets/props/<prop_kind>/`에 둡니다. 현재 파일 리스트의 확정 분류는 `assets/PROP_ASSET_REQUIREMENTS.md`를 봅니다.
+나중에 GLB로 교체할 때는 `src/config/gameConfig.js`의 `props[].id`를 기준으로 바꾸면 됩니다. `horror-placeholder` 타입은 임시 geometry이며, `placeholderKind`가 GLB 컨셉을 나타냅니다. 프롭 텍스처는 `../assets/textures/props/<prop_kind>/`, GLB 모델은 `../assets/props/<prop_kind>/`에 둡니다. 현재 파일 리스트의 확정 분류는 `../assets/PROP_ASSET_REQUIREMENTS.md`를 봅니다.
 
 1. `placeholder-wrapped-body-1f`: 1층 북쪽 복도 구석의 천으로 감긴 사람 형상 덩어리. 정체를 알 수 없는 인체 실루엣용.
 2. `placeholder-watching-mask-1f`: 1층 복도 벽에 붙은 창백한 가면 액자. 지나갈 때 누군가 보고 있는 느낌을 주는 벽부착 얼굴용.
@@ -179,9 +179,9 @@ index.html
 | 목표 | 수정 시작점 |
 | --- | --- |
 | 새 방/복도/층 추가 | `src/config/gameConfig.js`의 `MAP_CONFIG.floorAreas`, `roomAreas`, `blockedAreas`, `voidAreas`, `landingAreas`, `dropZones`, `transitionWaypoints`, `ramps`, `floorPanels`, `stairways`, `walls`, `doors`, `props` |
-| 환경 스킨 교체 | `assets/textures`, `src/world/TextureLibrary.js` |
+| 환경 스킨 교체 | `../assets/textures`, `src/world/TextureLibrary.js` |
 | 새 열쇠/은신처 추가 | `src/config/gameConfig.js`의 `MAP_CONFIG.keys`, `cabinets` |
-| 새 캐릭터 추가 | `assets/characters`, `src/config/gameConfig.js`의 `ENEMY_CONFIGS` |
+| 새 캐릭터 추가 | `../assets/characters`, `src/config/gameConfig.js`의 `ENEMY_CONFIGS` |
 | 새 scripted 등장 이벤트 | `src/events/MirrorHwacatEvent.js` 패턴, `src/config/gameConfig.js`의 event config와 캐릭터 config |
 | 문 잠금/열쇠 | `src/world/Door.js`, `src/world/KeyItem.js`, `src/core/Game.js`, `src/ui/Hud.js` |
 | 적이 문과 계단을 통해 추격 | `src/entities/Enemy.js`, `src/world/Door.js`, `src/world/CollisionWorld.js` |

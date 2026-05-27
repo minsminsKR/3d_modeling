@@ -237,10 +237,15 @@ export class MirrorHwacatEvent {
       retreatDirection.set(0, 0, 1);
     }
     retreatDirection.normalize();
-    this.targetCameraPosition
-      .copy(this.startCameraPosition)
+    const desiredCameraPosition = this.startCameraPosition.clone()
       .addScaledVector(retreatDirection, this.config.cameraBackStep ?? 0.45);
-    this.targetCameraPosition.y += this.config.cameraLift ?? 0.04;
+    desiredCameraPosition.y += this.config.cameraLift ?? 0.04;
+
+    // Resolve camera collision to prevent wall clipping
+    this.targetCameraPosition.copy(
+      this.player.collisionWorld.resolveCameraPosition(this.startCameraPosition, desiredCameraPosition, 0.25)
+    );
+
     this.startYaw = this.player.yaw;
     this.startPitch = this.player.pitch;
     const targetDirection = this.lookTarget.clone().sub(this.targetCameraPosition).normalize();
@@ -336,21 +341,26 @@ export class MirrorHwacatEvent {
     const spawn = this.group.position.toArray();
     const yaw = this.group.rotation.y;
 
+    this.state = "transformOverlap";
+    this.timer = 0;
+    this.isTransforming = true;
+    this.hud.setStatus("hwacat이 뒤틀리며 달려듭니다.", 2200);
+
     const enemyConfig = {
       ...HWACAT_ANGRY_ENEMY_CONFIG,
       spawn,
     };
-    const enemy = await this.enemyManager.addEnemy(enemyConfig, { spawn, yaw, state: "chase", dynamic: true });
-    enemy.state = "chase";
-    enemy.lastKnownPlayerPosition = this.player.position.clone();
-    enemy.memoryTimer = enemy.config.memorySeconds;
+    const enemy = await this.enemyManager.addEnemy(enemyConfig, {
+      spawn,
+      yaw,
+      state: "chase",
+      dynamic: true,
+      lastKnownPlayerPosition: this.player.position,
+    });
     if (this.config.rewardKeyId) {
       this.revealKeyById?.(this.config.rewardKeyId, spawn);
     }
     this.pendingRemovalGroup = this.group;
-    this.state = "transformOverlap";
-    this.timer = 0;
-    this.hud.setStatus("hwacat이 뒤틀리며 달려듭니다.", 2200);
   }
 
   removeHwacatModel() {

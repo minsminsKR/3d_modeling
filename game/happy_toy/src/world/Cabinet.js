@@ -111,4 +111,19 @@ export class Cabinet {
   reset() {
     this.occupied = false;
   }
+
+  dispose() {
+    this.group.traverse((child) => {
+      if (child.isMesh) {
+        child.geometry?.dispose();
+        if (child.name !== `${this.id}-body`) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m) => m.dispose());
+          } else {
+            child.material?.dispose();
+          }
+        }
+      }
+    });
+  }
 }

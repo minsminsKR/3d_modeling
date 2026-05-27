@@ -49,7 +49,7 @@ Clients never send size, score, or kill/eat results.
 
 ## Asset Serving
 
-The Node server mounts `E:\AI\3d_modeling\game\happy_toy\assets` at `/assets`. The browser loads FBX character files and JPG textures from this route. This keeps the web prototype connected to the same source art as the Ursina prototype while avoiding browser filesystem access restrictions.
+The Node server mounts `E:\AI\3d_modeling\game\assets` at `/assets`. The browser loads FBX character files and JPG textures from this route. This keeps the web prototype connected to the same source art as the Ursina prototype while avoiding browser filesystem access restrictions.
 
 ## Scaling Model
 

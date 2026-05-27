@@ -23,6 +23,8 @@ export class PlayerController {
     this.isSprinting = false;
     this.cameraY = PLAYER_CONFIG.height;
     this.mouseSensitivity = PLAYER_CONFIG.mouseSensitivity;
+    this.stuckTimer = 0;
+    this.noclip = false;
   }
 
   setPosition(position) {
@@ -143,15 +145,41 @@ export class PlayerController {
     const speed = this.isSprinting ? PLAYER_CONFIG.sprintSpeed : PLAYER_CONFIG.walkSpeed;
     const previousPosition = this.position.clone();
     this.position.addScaledVector(move, speed * deltaTime);
-    this.collisionWorld.resolveCircle(this.position, PLAYER_CONFIG.radius);
-    const result = this.collisionWorld.resolveActorPosition(
-      previousPosition,
-      this.position,
-      PLAYER_CONFIG.radius,
-      { actorId: "player" },
-    );
-    if (!result.allowed) {
-      this.isMoving = false;
+
+    if (this.noclip) {
+      this.stuckTimer = 0;
+    } else {
+      this.collisionWorld.resolveCircle(this.position, PLAYER_CONFIG.radius);
+      const result = this.collisionWorld.resolveActorPosition(
+        previousPosition,
+        this.position,
+        PLAYER_CONFIG.radius,
+        { actorId: "player" },
+      );
+      if (!result.allowed) {
+        this.isMoving = false;
+      }
+    }
+
+    // Stuck check and unstuck teleport logic
+    if (!this.noclip) {
+      const movedDist = previousPosition.distanceTo(this.position);
+      const expectedDist = speed * deltaTime;
+      if (this.isMoving && movedDist < expectedDist * 0.1) {
+        this.stuckTimer += deltaTime;
+        if (this.stuckTimer > 1.2) {
+          // Player is stuck! Teleport to center of current chunk
+          const cx = Math.floor((this.position.x + 8) / 16);
+          const cz = Math.floor((this.position.z + 8) / 16);
+          this.position.set(cx * 16, 0, cz * 16);
+          this.collisionWorld.snapToValidSurface(this.position, { actorId: "player-unstuck" });
+          this.stuckTimer = 0;
+          this.hud.setStatus("끼임 방지: 복도 중앙으로 복귀했습니다.", 1800);
+          console.warn(`[PlayerController] Player stuck detected. Teleported to chunk center (${cx}, ${cz}).`);
+        }
+      } else {
+        this.stuckTimer = 0;
+      }
     }
   }
 

@@ -89,4 +89,17 @@ export class KeyItem {
     this.isCollected = false;
     this.group.visible = this.initiallyVisible;
   }
+
+  dispose() {
+    this.group.traverse((child) => {
+      if (child.isMesh) {
+        child.geometry?.dispose();
+        if (Array.isArray(child.material)) {
+          child.material.forEach((m) => m.dispose());
+        } else {
+          child.material?.dispose();
+        }
+      }
+    });
+  }
 }

@@ -2,7 +2,7 @@
 
 ## Asset Root
 
-`E:\AI\3d_modeling\game\happy_toy\assets`
+`E:\AI\3d_modeling\game\assets`
 
 ## Auto-Detected Characters
 

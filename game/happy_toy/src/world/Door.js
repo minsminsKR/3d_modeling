@@ -149,4 +149,17 @@ export class Door {
       this.group.add(track);
     }
   }
+
+  dispose() {
+    this.group.traverse((child) => {
+      if (child.isMesh) {
+        child.geometry?.dispose();
+        if (Array.isArray(child.material)) {
+          child.material.forEach((m) => m.dispose());
+        } else {
+          child.material?.dispose();
+        }
+      }
+    });
+  }
 }

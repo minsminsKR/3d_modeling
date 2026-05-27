@@ -15,6 +15,7 @@ export class InstancedPool {
 
     this.dummy = new THREE.Object3D();
     this.color = new THREE.Color();
+    this.visible = new Uint8Array(capacity);
     for (let i = 0; i < capacity; i += 1) {
       this.mesh.setMatrixAt(i, hiddenMatrix);
     }
@@ -27,6 +28,7 @@ export class InstancedPool {
     this.dummy.scale.copy(scale);
     this.dummy.updateMatrix();
     this.mesh.setMatrixAt(index, this.dummy.matrix);
+    this.visible[index] = 1;
     if (color !== null) {
       this.mesh.setColorAt(index, this.color.setHex(color));
       this.mesh.instanceColor.needsUpdate = true;
@@ -34,6 +36,8 @@ export class InstancedPool {
   }
 
   hide(index) {
+    if (!this.visible[index]) return;
+    this.visible[index] = 0;
     this.mesh.setMatrixAt(index, hiddenMatrix);
   }
 

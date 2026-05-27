@@ -36,7 +36,15 @@ export class ModelDecoratorSystem {
         root.userData.baseScale = root.userData.baseScale?.clone?.() ?? root.scale.clone();
         root.visible = false;
         this.scene.add(root);
-        this.slots.push({ type, root });
+        
+        let mixer = null;
+        let action = null;
+        if (root.animations && root.animations.length > 0) {
+          mixer = new THREE.AnimationMixer(root);
+          action = mixer.clipAction(root.animations[0]);
+          action.play();
+        }
+        this.slots.push({ type, root, mixer, action });
       }
 
       this.ready = true;
@@ -49,7 +57,7 @@ export class ModelDecoratorSystem {
     }
   }
 
-  update(enemies, player) {
+  update(enemies, player, dt = 0.016) {
     this.decoratedEnemies = new WeakSet();
     this.visibleCount = 0;
     if (!this.ready) return;
@@ -72,6 +80,13 @@ export class ModelDecoratorSystem {
       this.decoratedEnemies.add(enemy);
       this.applyEnemyTransform(slot.root, enemy);
       this.visibleCount += 1;
+    }
+
+    // Update active animations
+    for (const slot of this.slots) {
+      if (slot.root.visible && slot.mixer) {
+        slot.mixer.update(dt);
+      }
     }
   }
 
@@ -100,9 +115,9 @@ export class ModelDecoratorSystem {
     root.rotation.set(0, this.rotationY, 0);
 
     const scale = enemy.type === "bigBoss"
-      ? BIG_BOSS_SCALE
+      ? BIG_BOSS_SCALE * (enemy.scale / 2.12)
       : enemy.type === "midBoss"
-        ? MID_BOSS_SCALE
+        ? MID_BOSS_SCALE * (enemy.scale / 1.5)
         : enemy.type === "tank"
           ? 1.16
           : enemy.type === "fast"

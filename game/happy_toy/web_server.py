@@ -16,6 +16,8 @@ from urllib.parse import unquote, urlparse
 
 
 APP_DIR = Path(__file__).resolve().parent
+GAME_DIR = APP_DIR.parent
+ASSET_DIR = GAME_DIR / "assets"
 MAP_OVERRIDE_PATH = APP_DIR / "src" / "config" / "mapConfigOverride.js"
 MAX_EDITOR_PAYLOAD_BYTES = 8 * 1024 * 1024
 
@@ -31,6 +33,17 @@ class HappyToyRequestHandler(SimpleHTTPRequestHandler):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, directory=str(APP_DIR), **kwargs)
+
+    def translate_path(self, path: str) -> str:
+        parsed_path = unquote(urlparse(path).path)
+        if parsed_path == "/assets" or parsed_path.startswith("/assets/"):
+            relative = parsed_path.removeprefix("/assets").lstrip("/")
+            requested = (ASSET_DIR / relative).resolve()
+            asset_root = ASSET_DIR.resolve()
+            if requested != asset_root and asset_root not in requested.parents:
+                return str(asset_root / "__forbidden__")
+            return str(requested)
+        return super().translate_path(path)
 
     def do_GET(self) -> None:
         parsed_url = urlparse(self.path)

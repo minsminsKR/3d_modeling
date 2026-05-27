@@ -32,8 +32,22 @@ export class Loop {
     if (!this.running) {
       return;
     }
+    const t0 = performance.now();
     const deltaTime = Math.min(this.clock.getDelta(), 0.05);
     this.update(deltaTime);
+    const dt = performance.now() - t0;
+
+    if (typeof window !== "undefined") {
+      if (!window.__happyToyFrameTimes) {
+        window.__happyToyFrameTimes = [];
+      }
+      window.__happyToyFrameTimes.push(dt);
+    }
+
+    if (dt > 16.7) {
+      console.warn(`[PERF] Frame took ${dt.toFixed(2)}ms (Spike!)`);
+    }
+
     this.frameId = requestAnimationFrame(() => this.tick());
   }
 }

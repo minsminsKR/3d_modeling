@@ -1,6 +1,7 @@
 // 맵의 벽, 층별 walkable area, 계단/낙하 전환 구역을 관리하는 모듈입니다.
 // 층 이동은 같은 X/Z에서 Y만 내리는 방식이 아니라, 명시된 transition/drop zone을 통해서만 허용합니다.
 
+import * as THREE from "three";
 import { clamp, makeAabbFromCenter } from "../utils/math.js";
 
 const FLOOR_EPSILON = 0.18;
@@ -20,86 +21,127 @@ export class CollisionWorld {
     this.warningCache = new Set();
   }
 
-  addFloorArea(area) {
+  addFloorArea(area, chunkId = null) {
     this.floorAreas.push({
       type: "walkable",
       ...area,
       floor: area.floor ?? inferFloorFromY(area.y),
+      chunkId: chunkId ?? area.chunkId,
     });
   }
 
-  addLandingArea(area) {
+  addLandingArea(area, chunkId = null) {
     this.landingAreas.push({
       ...area,
       floor: area.floor ?? inferFloorFromY(area.position?.[1] ?? 0),
+      chunkId: chunkId ?? area.chunkId,
     });
   }
 
-  addRoomArea(area) {
+  addRoomArea(area, chunkId = null) {
     this.roomAreas.push({
       ...area,
       floor: area.floor ?? 1,
       type: area.type || "room",
+      chunkId: chunkId ?? area.chunkId,
     });
   }
 
-  addBlockedArea(area) {
+  addBlockedArea(area, chunkId = null) {
     this.blockedAreas.push({
       ...area,
       floor: area.floor ?? 1,
       type: area.type || "blocked",
+      chunkId: chunkId ?? area.chunkId,
     });
   }
 
-  addVoidArea(area) {
+  addVoidArea(area, chunkId = null) {
     this.voidAreas.push({
       ...area,
       floor: area.floor ?? 1,
       type: area.type || "void/out-of-bounds",
+      chunkId: chunkId ?? area.chunkId,
     });
   }
 
-  addDropZone(zone) {
+  addDropZone(zone, chunkId = null) {
     this.dropZones.push({
       type: "dropZone",
       ...zone,
       floor: zone.floor ?? 1,
+      chunkId: chunkId ?? zone.chunkId,
     });
   }
 
-  addRamp(ramp) {
+  addRamp(ramp, chunkId = null) {
     this.ramps.push({
       type: "transitionZone",
       ...ramp,
       startFloor: ramp.startFloor ?? inferFloorFromY(ramp.startY),
       endFloor: ramp.endFloor ?? inferFloorFromY(ramp.endY),
+      chunkId: chunkId ?? ramp.chunkId,
     });
   }
 
-  addTransitionWaypoint(waypoint) {
+  addTransitionWaypoint(waypoint, chunkId = null) {
     this.transitionWaypoints.push({
       ...waypoint,
       floor: waypoint.floor ?? inferFloorFromY(waypoint.position?.[1] ?? 0),
       links: waypoint.links || [],
+      chunkId: chunkId ?? waypoint.chunkId,
     });
   }
 
-  addStaticBox(id, position, size) {
+  addStaticBox(id, position, size, chunkId = null) {
     this.blockers.push({
       id,
       type: "static",
       aabb: makeAabbFromCenter(position, size),
       active: () => true,
+      chunkId: chunkId ?? id.split("_")[0],
     });
   }
 
-  addDoor(door) {
+  addDoor(door, chunkId = null) {
     this.blockers.push({
       id: door.id,
       type: door.isLocked || door.isBlocked ? "lockedDoor" : "door",
       aabb: () => door.getAabb(),
       active: () => door.isBlocking(),
+      chunkId: chunkId ?? door.chunkId,
     });
+  }
+
+  clearChunkData(chunkId) {
+    this.blockers = this.blockers.filter((b) => b.chunkId !== chunkId);
+    this.floorAreas = this.floorAreas.filter((a) => a.chunkId !== chunkId);
+    this.roomAreas = this.roomAreas.filter((a) => a.chunkId !== chunkId);
+    this.blockedAreas = this.blockedAreas.filter((a) => a.chunkId !== chunkId);
+    this.voidAreas = this.voidAreas.filter((a) => a.chunkId !== chunkId);
+    this.landingAreas = this.landingAreas.filter((l) => l.chunkId !== chunkId);
+    this.dropZones = this.dropZones.filter((z) => z.chunkId !== chunkId);
+    this.ramps = this.ramps.filter((r) => r.chunkId !== chunkId);
+    this.transitionWaypoints = this.transitionWaypoints.filter((w) => w.chunkId !== chunkId);
+  }
+
+  resolveCameraPosition(playerPosition, cameraPosition, wallPadding = 0.25) {
+    let target = cameraPosition.clone();
+    const dir = new THREE.Vector3().subVectors(cameraPosition, playerPosition);
+    const dist = dir.length();
+    if (dist < 0.01) {
+      return target;
+    }
+    dir.normalize();
+    const steps = 10;
+    for (let i = 1; i <= steps; i++) {
+      const testPoint = playerPosition.clone().addScaledVector(dir, dist * (i / steps));
+      if (this.isCircleBlocked(testPoint, wallPadding)) {
+        const safeDist = dist * ((i - 1) / steps);
+        return playerPosition.clone().addScaledVector(dir, Math.max(0, safeDist - 0.08));
+      }
+    }
+    return target;
   }
 
   getActiveBlockers(options = {}) {

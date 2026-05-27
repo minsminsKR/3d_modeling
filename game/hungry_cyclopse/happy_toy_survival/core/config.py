@@ -7,7 +7,7 @@ from pathlib import Path
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-ASSET_ROOT = Path(r"E:\AI\3d_modeling\game\happy_toy\assets")
+ASSET_ROOT = Path(__file__).resolve().parents[3] / "assets"
 
 
 PLAYER_BASE_SIZE = 5

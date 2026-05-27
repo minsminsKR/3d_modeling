@@ -13,6 +13,7 @@ export class Enemy {
     this.group.name = config.label;
     this.group.position.copy(vectorFromArray(config.spawn));
     this.collisionWorld.snapToValidSurface(this.group.position, { actorId: config.id });
+    this.collisionWorld.resolveCircle(this.group.position, config.radius);
     this.modelRoot = loadedAsset.root;
     this.group.add(loadedAsset.root);
 
@@ -25,7 +26,7 @@ export class Enemy {
     this.playAction("patrol", 0);
     this.snapModelToGround(false);
 
-    this.state = "patrol";
+    this.state = "wander";
     this.currentWaypoint = 0;
     this.lastKnownPlayerPosition = null;
     this.memoryTimer = 0;
@@ -43,10 +44,26 @@ export class Enemy {
     this.lastUnstuckTarget = null;
     this.debugPathTarget = null;
     this.lastDetectionEvent = null;
+    // Waypoint-based long-distance wander state
+    this.wanderTarget = null;          // current far waypoint goal
+    this.wanderRetargetTimer = 0;      // countdown until we pick a new waypoint
+    this.wanderStuckCount = 0;         // how many times we got stuck on this waypoint
+    this.wanderDirection = new THREE.Vector3(1, 0, 0); // kept for unstuck fallback
   }
 
   update(deltaTime, playerState) {
     const playerPosition = playerState.position || playerState;
+    if (this.state !== "chase" && this.state !== "flee") {
+      const distance = distance2D(this.group.position, playerPosition);
+      if (distance > 45) {
+        this.group.visible = false;
+        this.mixer?.stopAllAction();
+        this.currentActionName = null;
+        return;
+      }
+    }
+    this.group.visible = true;
+
     const isPlayerHidden = Boolean(playerState.isHidden || playerState.isUndetectable);
     this.lastDetectionEvent = null;
 
@@ -63,15 +80,15 @@ export class Enemy {
 
     this.updatePerception(playerPosition, deltaTime, playerState);
     const target = this.getTarget(playerPosition, deltaTime);
-    if (target || this.state === "chase") {
-      this.playAction(this.state === "chase" ? "chase" : "patrol");
+    if (target || this.state === "chase" || this.state === "flee") {
+      this.playAction(this.state === "chase" || this.state === "flee" ? "chase" : "patrol");
     } else {
       this.playIdlePose();
     }
     this.snapModelToGround(this.shouldAllowAirborneMotion());
 
     if (target) {
-      const speed = this.state === "chase" ? this.config.chaseSpeed : this.config.patrolSpeed;
+      const speed = (this.state === "chase" || this.state === "flee") ? this.config.chaseSpeed : this.config.patrolSpeed;
       const beforeMove = this.group.position.clone();
       this.moveToward(target, speed, deltaTime);
       this.updateStuckState(deltaTime, target, beforeMove);
@@ -83,6 +100,7 @@ export class Enemy {
     const isPlayerSprinting = Boolean(playerState.isSprinting);
     const canReactAtCloseRange = this.state === "chase" || this.isPlayerInFront(playerPosition) || isPlayerSprinting;
     this.caughtPlayer = !isPlayerHidden
+      && this.state !== "flee"
       && this.isSameLevelAs(playerPosition)
       && canReactAtCloseRange
       && distance2D(this.group.position, playerPosition) <= this.config.catchDistance;
@@ -133,7 +151,12 @@ export class Enemy {
       return;
     }
 
-    const groundY = this.group.position.y - (this.config.visualGroundSink ?? 0);
+    // Target ground level: group.position.y (set by collisionWorld)
+    // minus visualGroundSink (sinks model slightly into floor for realism)
+    // plus footOffset (per-model correction for models whose pivot ≠ foot sole)
+    const footOffset = this.config.footOffset ?? 0;
+    const groundY = this.group.position.y - (this.config.visualGroundSink ?? 0) + footOffset;
+
     if (allowAirborne && bounds.min.y >= groundY) {
       return;
     }
@@ -154,12 +177,12 @@ export class Enemy {
   updatePerception(playerPosition, deltaTime, playerState = {}) {
     const isPlayerHidden = Boolean(playerState.isHidden || playerState.isUndetectable);
     const isPlayerSprinting = Boolean(playerState.isSprinting);
-    const wasChasing = this.state === "chase";
+    const wasChasing = this.state === "chase" || this.state === "flee";
     if (isPlayerHidden) {
-      if (this.state === "chase" && this.memoryTimer > 0) {
+      if ((this.state === "chase" || this.state === "flee") && this.memoryTimer > 0) {
         this.memoryTimer -= deltaTime;
         if (this.memoryTimer <= 0) {
-          this.state = "patrol";
+          this.state = "wander";
           this.lastKnownPlayerPosition = null;
         }
       }
@@ -175,14 +198,14 @@ export class Enemy {
       ? (this.config.interFloorGiveUpRange ?? this.config.giveUpRange * 1.8)
       : this.config.giveUpRange;
 
-    if (this.state === "chase" && (distance > giveUpRange || (usesTransitionRoute && !canNavigateAcrossFloors))) {
-      this.state = "patrol";
+    if ((this.state === "chase" || this.state === "flee") && (distance > giveUpRange || (usesTransitionRoute && !canNavigateAcrossFloors))) {
+      this.state = "wander";
       this.memoryTimer = 0;
       this.lastKnownPlayerPosition = null;
       return;
     }
 
-    if (this.state === "chase" && canNavigateAcrossFloors) {
+    if ((this.state === "chase" || this.state === "flee") && canNavigateAcrossFloors) {
       this.memoryTimer = this.config.memorySeconds;
       this.lastKnownPlayerPosition = playerPosition.clone();
       return;
@@ -200,7 +223,16 @@ export class Enemy {
       && this.collisionWorld.hasLineOfSight(this.group.position, playerPosition);
 
     if (canHear || canSee) {
-      this.state = "chase";
+      const wasAlert = this.state === "chase" || this.state === "flee";
+      if (!wasAlert) {
+        const playerKeys = window.__happyToy?.keyCount || 0;
+        // 45% chance to flee if player has >= 2 keys
+        if (playerKeys >= 2 && Math.random() < 0.45) {
+          this.state = "flee";
+        } else {
+          this.state = "chase";
+        }
+      }
       this.memoryTimer = this.config.memorySeconds;
       this.lastKnownPlayerPosition = playerPosition.clone();
       if (!wasChasing) {
@@ -223,7 +255,7 @@ export class Enemy {
       return;
     }
 
-    this.state = "patrol";
+    this.state = "wander";
     this.lastKnownPlayerPosition = null;
   }
 
@@ -232,38 +264,184 @@ export class Enemy {
       return this.getChaseTarget(this.lastKnownPlayerPosition || playerPosition, deltaTime);
     }
 
+    if (this.state === "flee") {
+      return this.getFleeTarget(playerPosition, deltaTime);
+    }
+
+    if (this.state === "idle_short") {
+      this.waitTimer -= deltaTime;
+      this.group.rotation.y += deltaTime * (this.config.lookAroundTurnSpeed ?? 0.36) * this.waitTurnDirection;
+      if (this.waitTimer <= 0) {
+        this.state = "wander";
+      }
+      return null;
+    }
+
     if (this.state === "investigateCabinet") {
       return null;
     }
 
-    return this.getPatrolTarget(deltaTime);
+    return this.getWanderTarget(deltaTime);
   }
 
-  getPatrolTarget(deltaTime) {
-    if (this.waitTimer > 0) {
-      this.waitTimer -= deltaTime;
-      this.group.rotation.y += deltaTime * (this.config.lookAroundTurnSpeed ?? 0.42) * this.waitTurnDirection;
-      return null;
+  getWanderTarget(deltaTime) {
+    const pos = this.group.position;
+    const minDist = this.config.wanderMinDistance ?? 10;
+    const maxDist = this.config.wanderMaxDistance ?? 40;
+    const chunkRadius = this.config.wanderChunkRadius ?? 3;
+    const retargetRange = this.config.wanderRetargetSeconds ?? [6, 12];
+
+    // 1. Countdown — when timer hits zero (or we have no target), pick a new waypoint
+    this.wanderRetargetTimer -= deltaTime;
+    const needNewTarget = this.wanderRetargetTimer <= 0 || !this.wanderTarget;
+
+    if (needNewTarget) {
+      this.pickNextWaypointTarget(minDist, maxDist, chunkRadius);
+      const span = retargetRange[1] - retargetRange[0];
+      this.wanderRetargetTimer = retargetRange[0] + Math.random() * span;
     }
 
-    const waypoints = this.getActivePatrolWaypoints();
-    if (this.currentWaypoint >= waypoints.length) {
-      this.currentWaypoint = 0;
+    // 2. If we have a valid far waypoint, use pathfinding to move toward it
+    if (this.wanderTarget) {
+      const distToTarget = distance2D(pos, this.wanderTarget);
+
+      // Arrived — pick a new target next frame
+      if (distToTarget < 1.2) {
+        this.wanderTarget = null;
+        this.wanderRetargetTimer = 0;
+        this.patrolPath = [];
+        this.patrolPathGoal = null;
+        this.wanderStuckCount = 0;
+        return null;
+      }
+
+      return this.getPathTarget(this.wanderTarget, deltaTime, "wander");
     }
-    const waypoint = vectorFromArray(waypoints[this.currentWaypoint]);
-    if (distance2D(this.group.position, waypoint) < 0.48) {
-      this.advancePatrolWaypoint(waypoints.length);
+
+    return null;
+  }
+
+  pickNextWaypointTarget(minDist = 10, maxDist = 40, chunkRadius = 3) {
+    const pos = this.group.position;
+    const cx = Math.floor((pos.x + 8) / 16);
+    const cz = Math.floor((pos.z + 8) / 16);
+
+    // Collect waypoints from all chunks within chunkRadius
+    const candidates = [];
+    const mapBuilder = window.__happyToy?.mapBuilder;
+    if (mapBuilder) {
+      for (let dx = -chunkRadius; dx <= chunkRadius; dx++) {
+        for (let dz = -chunkRadius; dz <= chunkRadius; dz++) {
+          const key = `${cx + dx},${cz + dz}`;
+          const chunk = mapBuilder.loadedChunks.get(key);
+          if (chunk?.waypoints) {
+            for (const wp of chunk.waypoints) {
+              const wpVec = new THREE.Vector3(wp[0], 0, wp[2]);
+              const dist = distance2D(pos, wpVec);
+              // Only consider waypoints in the desired distance band
+              if (dist >= minDist && dist <= maxDist) {
+                // Prefer waypoints that aren't the same as the last stuck target
+                candidates.push(wpVec);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Shuffle and pick the best candidate (farthest first for maximum roaming)
+    if (candidates.length > 0) {
+      // Pick randomly among the top half (farthest) for variety
+      candidates.sort((a, b) => distance2D(pos, b) - distance2D(pos, a));
+      const topHalf = candidates.slice(0, Math.max(1, Math.ceil(candidates.length / 2)));
+      const chosen = topHalf[Math.floor(Math.random() * topHalf.length)];
+      this.wanderTarget = chosen;
+      this.wanderStuckCount = 0;
       this.patrolPath = [];
       this.patrolPathGoal = null;
-      this.waitTimer = this.getNextPatrolWait();
-      this.waitTurnDirection = Math.random() < 0.5 ? -1 : 1;
-      return null;
+      return;
     }
 
-    return this.getPathTarget(waypoint, deltaTime, "patrol");
+    // Fallback: if no distant waypoints exist (e.g. first frame, sparse map),
+    // pick any nearby waypoint so the monster still moves
+    const fallbackCandidates = [];
+    if (mapBuilder) {
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dz = -1; dz <= 1; dz++) {
+          const key = `${cx + dx},${cz + dz}`;
+          const chunk = mapBuilder.loadedChunks.get(key);
+          if (chunk?.waypoints) {
+            for (const wp of chunk.waypoints) {
+              const wpVec = new THREE.Vector3(wp[0], 0, wp[2]);
+              if (distance2D(pos, wpVec) > 1.5) {
+                fallbackCandidates.push(wpVec);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (fallbackCandidates.length > 0) {
+      const chosen = fallbackCandidates[Math.floor(Math.random() * fallbackCandidates.length)];
+      this.wanderTarget = chosen;
+      return;
+    }
+
+    // Last resort: random direction 5m ahead
+    const theta = Math.random() * Math.PI * 2;
+    this.wanderTarget = new THREE.Vector3(
+      pos.x + Math.cos(theta) * 5,
+      0,
+      pos.z + Math.sin(theta) * 5,
+    );
+  }
+
+  getFleeTarget(playerPosition, deltaTime) {
+    if (!playerPosition || typeof playerPosition.x !== "number") {
+      return null;
+    }
+    this.chasePathTimer -= deltaTime;
+    // Calculate opposite direction vector from player to enemy
+    const dir = new THREE.Vector3().subVectors(this.group.position, playerPosition).normalize();
+    // Project a point 20–30 m away in the opposite direction for long-distance fleeing
+    const fleeDistance = 20 + Math.random() * 10;
+    const goal = new THREE.Vector3().copy(this.group.position).addScaledVector(dir, fleeDistance);
+
+    // Prefer the farthest valid waypoint in the flee direction
+    const waypoints = this.getActivePatrolWaypoints();
+    let bestWp = null;
+    let bestScore = -Infinity;
+    for (const wp of waypoints) {
+      const wpPoint = vectorFromArray(wp);
+      const distFromPlayer = distance2D(wpPoint, playerPosition);
+      const alignment = dir.dot(
+        new THREE.Vector3().subVectors(wpPoint, this.group.position).normalize(),
+      );
+      // Score: distance from player + bonus for aligning with flee direction
+      const score = distFromPlayer + alignment * 8;
+      if (score > bestScore) {
+        bestScore = score;
+        bestWp = wpPoint;
+      }
+    }
+
+    if (bestWp && distance2D(bestWp, playerPosition) > distance2D(this.group.position, playerPosition)) {
+      return this.getPathTarget(bestWp, deltaTime, "flee");
+    }
+
+    // Fallback: straight-line flee goal
+    const surface = this.collisionWorld.getSurfaceAt(goal, { allowAnyFloor: true });
+    if (surface.walkable) {
+      return this.getPathTarget(goal, deltaTime, "flee");
+    }
+    return null;
   }
 
   getChaseTarget(playerPosition, deltaTime) {
+    if (!playerPosition || typeof playerPosition.x !== "number") {
+      return null;
+    }
     this.chasePathTimer -= deltaTime;
     const goalMoved = !this.chasePathGoal || distance2D(this.chasePathGoal, playerPosition) > 0.9;
     const canMoveDirect = this.isSameLevelAs(playerPosition)
@@ -280,9 +458,13 @@ export class Enemy {
   }
 
   getPathTarget(goal, deltaTime, mode, forceRefresh = false) {
-    const pathKey = mode === "chase" ? "chasePath" : "patrolPath";
-    const timerKey = mode === "chase" ? "chasePathTimer" : "patrolPathTimer";
-    const goalKey = mode === "chase" ? "chasePathGoal" : "patrolPathGoal";
+    if (!goal || typeof goal.x !== "number") {
+      return null;
+    }
+    const isAlert = mode === "chase" || mode === "flee";
+    const pathKey = isAlert ? "chasePath" : "patrolPath";
+    const timerKey = isAlert ? "chasePathTimer" : "patrolPathTimer";
+    const goalKey = isAlert ? "chasePathGoal" : "patrolPathGoal";
     this[timerKey] -= deltaTime;
 
     const canMoveDirect = this.isSameLevelAs(goal)
@@ -299,16 +481,25 @@ export class Enemy {
     if (this[timerKey] <= 0 || goalMoved || this[pathKey].length === 0) {
       this[pathKey] = this.collisionWorld.findPath(this.group.position, goal, this.config.radius, {
         cellSize: this.config.pathCellSize ?? 0.85,
-        allowInterFloor: mode === "chase" || (mode === "patrol" && Boolean(this.config.allowInterFloorPatrol)),
+        allowInterFloor: mode === "chase" || mode === "flee" || (mode === "wander" && Boolean(this.config.allowInterFloorPatrol)),
       });
       this[goalKey] = goal.clone?.() || vectorFromArray([goal.x, goal.y, goal.z]);
       this[timerKey] = this.config.pathRefreshSeconds ?? 0.28;
       if (this[pathKey].length === 0) {
-        console.warn(`[Enemy:${this.config.id}] pathfinding failed in ${mode} mode.`);
-        if (mode === "patrol") {
-          this.advancePatrolWaypoint();
+        if (mode === "wander") {
+          // Pathfinding to wanderTarget failed — clear it so the next frame picks a new one.
+          // Broaden the search by temporarily lowering minDist requirements.
+          this.wanderTarget = null;
+          this.wanderRetargetTimer = 0;
+          this.wanderStuckCount = (this.wanderStuckCount ?? 0) + 1;
+          // If persistently failing, try nearest waypoint as fallback
+          if (this.wanderStuckCount >= 2) {
+            this.pickNextWaypointTarget(2, 40, this.config.wanderChunkRadius ?? 3);
+            this.wanderStuckCount = 0;
+          }
           return null;
         }
+        console.warn(`[Enemy:${this.config.id}] pathfinding failed in ${mode} mode.`);
       }
     }
 
@@ -378,15 +569,33 @@ export class Enemy {
   }
 
   tryUnstuck(target) {
-    if (this.state !== "chase") {
-      this.advancePatrolWaypoint();
+    if (this.state === "wander" || this.state === "idle_short") {
+      // Force a new far waypoint immediately instead of just advancing one step
+      this.wanderStuckCount = (this.wanderStuckCount ?? 0) + 1;
+      this.wanderTarget = null;
+      this.wanderRetargetTimer = 0;
       this.patrolPath = [];
       this.patrolPathGoal = null;
-      console.warn(`[Enemy:${this.config.id}] patrol unstuck skipped teleport and advanced waypoint.`);
+
+      if (this.wanderStuckCount >= 3) {
+        // Repeatedly stuck — snap to nearest valid waypoint
+        const waypoints = this.getActivePatrolWaypoints();
+        if (waypoints.length > 0) {
+          const chosen = waypoints[Math.floor(Math.random() * waypoints.length)];
+          const candidate = vectorFromArray(chosen);
+          const surface = this.collisionWorld.getSurfaceAt(candidate, { allowAnyFloor: true });
+          if (surface.walkable) {
+            this.group.position.set(candidate.x, surface.y, candidate.z);
+            this.collisionWorld.snapToValidSurface(this.group.position, { actorId: `${this.config.id}-unstuck` });
+            this.lastUnstuckTarget = this.group.position.clone();
+            this.wanderStuckCount = 0;
+          }
+        }
+      }
       return;
     }
 
-    const path = this.state === "chase" ? this.chasePath : this.patrolPath;
+    const path = (this.state === "chase" || this.state === "flee") ? this.chasePath : this.patrolPath;
     const candidate = path.find((point) => distance2D(this.group.position, point) > 0.55)
       || pointFromWaypoint(this.collisionWorld.findNearestTransitionWaypoint(this.group.position))
       || target;
@@ -399,7 +608,6 @@ export class Enemy {
     this.group.position.set(candidate.x, surface.y, candidate.z);
     this.collisionWorld.snapToValidSurface(this.group.position, { actorId: `${this.config.id}-unstuck` });
     this.lastUnstuckTarget = this.group.position.clone();
-    console.warn(`[Enemy:${this.config.id}] unstuck to x=${this.group.position.x.toFixed(2)}, y=${this.group.position.y.toFixed(2)}, z=${this.group.position.z.toFixed(2)}.`);
   }
 
   beginCabinetInvestigation(cabinet) {
@@ -415,7 +623,7 @@ export class Enemy {
 
   updateCabinetInvestigation(deltaTime) {
     if (!this.cabinetTarget) {
-      this.state = "patrol";
+      this.state = "wander";
       return;
     }
 
@@ -438,7 +646,7 @@ export class Enemy {
   }
 
   endCabinetInvestigation() {
-    this.state = "patrol";
+    this.state = "wander";
     this.cabinetTarget = null;
     this.resumeAnimatedPose();
     this.memoryTimer = 0;
@@ -547,15 +755,31 @@ export class Enemy {
   }
 
   getActivePatrolWaypoints() {
-    const byFloor = this.config.patrolWaypointsByFloor;
-    if (!byFloor) {
-      return this.config.waypoints;
+    const waypoints = [];
+    const mapBuilder = window.__happyToy?.mapBuilder;
+    if (mapBuilder && mapBuilder.loadedChunks) {
+      const ecx = Math.floor((this.group.position.x + 8) / 16);
+      const ecz = Math.floor((this.group.position.z + 8) / 16);
+      const radius = 2;
+      for (let dx = -radius; dx <= radius; dx++) {
+        for (let dz = -radius; dz <= radius; dz++) {
+          const key = `${ecx + dx},${ecz + dz}`;
+          const chunk = mapBuilder.loadedChunks.get(key);
+          if (chunk && chunk.waypoints) {
+            for (const wp of chunk.waypoints) {
+              waypoints.push(wp);
+            }
+          }
+        }
+      }
     }
 
-    const surface = this.collisionWorld.getSurfaceAt(this.group.position, { allowAnyFloor: true });
-    const floorKey = String(surface.floor ?? 1);
-    return byFloor[floorKey] || this.config.waypoints;
+    if (waypoints.length > 0) {
+      return waypoints;
+    }
+    return [[this.group.position.x, this.group.position.y, this.group.position.z]];
   }
+
 
   getNextPatrolWait() {
     const range = this.config.patrolWaitRange || [0.15, 0.75];
@@ -574,6 +798,9 @@ export class Enemy {
 
   getDebugState() {
     const surface = this.collisionWorld.getSurfaceAt(this.group.position, { allowAnyFloor: true });
+    const groundY = this.collisionWorld.getGroundY?.(this.group.position) ?? this.group.position.y;
+    const cx = Math.floor((this.group.position.x + 8) / 16);
+    const cz = Math.floor((this.group.position.z + 8) / 16);
     return {
       id: this.config.id,
       label: this.config.label,
@@ -584,12 +811,29 @@ export class Enemy {
       x: this.group.position.x,
       y: this.group.position.y,
       z: this.group.position.z,
+      groundY,
+      footOffset: this.config.footOffset ?? 0,
+      visualGroundSink: this.config.visualGroundSink ?? 0,
+      currentChunk: `${cx},${cz}`,
+      wanderTarget: this.wanderTarget
+        ? { x: this.wanderTarget.x.toFixed(1), z: this.wanderTarget.z.toFixed(1) }
+        : null,
+      wanderRetargetTimer: this.wanderRetargetTimer?.toFixed(2) ?? null,
+      wanderStuckCount: this.wanderStuckCount ?? 0,
       pathTarget: this.debugPathTarget,
       chasePathLength: this.chasePath.length,
       patrolPathLength: this.patrolPath.length,
       stuckTimer: this.stuckTimer,
       lastUnstuckTarget: this.lastUnstuckTarget,
     };
+  }
+
+  dispose() {
+    this.mixer?.stopAllAction();
+    if (this.mixer && this.modelRoot) {
+      this.mixer.uncacheRoot(this.modelRoot);
+    }
+    this.mixer = null;
   }
 }
 

@@ -1,0 +1,161 @@
+{
+  "initial": {
+    "hasGame": true,
+    "text": "ALLIES 1\nPistol\nKOs 0\nCoins 0\nULTIMATE [SPACE] READY\nLV 1\nDPS 38\n60 fps\nMob Shooter Defense\nStart",
+    "ready": "complete"
+  },
+  "levelCheck": [
+    {
+      "level": 2,
+      "pending": 0,
+      "upgradeVisible": false,
+      "paused": false
+    },
+    {
+      "level": 3,
+      "pending": 0,
+      "upgradeVisible": false,
+      "paused": false
+    },
+    {
+      "level": 4,
+      "pending": 0,
+      "upgradeVisible": false,
+      "paused": false
+    },
+    {
+      "level": 5,
+      "pending": 1,
+      "upgradeVisible": true,
+      "paused": true
+    }
+  ],
+  "state": {
+    "running": true,
+    "paused": false,
+    "elapsed": 6.4,
+    "level": 5,
+    "pendingUpgradeCount": 0,
+    "activeEnemies": 40,
+    "normalEnemies": 39,
+    "activeBullets": 79,
+    "allyCount": 2,
+    "bosses": [
+      {
+        "type": "giantSoldier",
+        "title": "GIANT SOLDIER",
+        "hp": 951,
+        "maxHp": 1066,
+        "scale": 2,
+        "z": 61.5
+      }
+    ],
+    "bossHudClass": "boss-hud show mid-boss",
+    "bossHudText": "GIANT SOLDIER\n6M\nHP 951 / 1066",
+    "bossWarningClass": "boss-warning mid-boss hidden",
+    "levelToast": "",
+    "fps": "46 fps"
+  },
+  "badEvents": [
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "warning",
+        "args": [
+          {
+            "type": "string",
+            "value": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights."
+          }
+        ],
+        "executionContextId": 1,
+        "timestamp": 1779764207073.114,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:8020/vendor/three/examples/jsm/loaders/FBXLoader.js",
+              "lineNumber": 1879,
+              "columnNumber": 14
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "warning",
+        "args": [
+          {
+            "type": "string",
+            "value": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights."
+          }
+        ],
+        "executionContextId": 1,
+        "timestamp": 1779764207266.993,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:8020/vendor/three/examples/jsm/loaders/FBXLoader.js",
+              "lineNumber": 1879,
+              "columnNumber": 14
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "warning",
+        "args": [
+          {
+            "type": "string",
+            "value": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights."
+          }
+        ],
+        "executionContextId": 1,
+        "timestamp": 1779764207346.125,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:8020/vendor/three/examples/jsm/loaders/FBXLoader.js",
+              "lineNumber": 1879,
+              "columnNumber": 14
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "Runtime.consoleAPICalled",
+      "params": {
+        "type": "warning",
+        "args": [
+          {
+            "type": "string",
+            "value": "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights."
+          }
+        ],
+        "executionContextId": 1,
+        "timestamp": 1779764207404.209,
+        "stackTrace": {
+          "callFrames": [
+            {
+              "functionName": "",
+              "scriptId": "12",
+              "url": "http://127.0.0.1:8020/vendor/three/examples/jsm/loaders/FBXLoader.js",
+              "lineNumber": 1879,
+              "columnNumber": 14
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

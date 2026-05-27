@@ -8,7 +8,7 @@ import { acceptWebSocket } from "./ws.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.resolve(__dirname, "../public");
-const assetDir = path.resolve("E:/AI/3d_modeling/game/happy_toy/assets");
+const assetDir = path.resolve(__dirname, "../../../assets");
 const port = Number(process.env.PORT || 8080);
 const world = new GameWorld();
 

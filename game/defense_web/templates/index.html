@@ -36,9 +36,21 @@
           <div id="fps">60</div>
         </div>
       </section>
+      <section id="boss-hud" class="boss-hud hidden" aria-live="polite">
+        <div class="boss-hud-row">
+          <span id="boss-name" class="boss-hud-name">BOSS</span>
+          <span id="boss-phase" class="boss-hud-phase">APPROACHING</span>
+        </div>
+        <div class="boss-hp-track" aria-label="Boss health">
+          <div id="boss-hp-fill" class="boss-hp-fill"></div>
+        </div>
+        <div id="boss-hp-text" class="boss-hp-text"></div>
+      </section>
       <div id="vignette"></div>
+      <div id="boss-warning" class="boss-warning hidden" role="status" aria-live="assertive"></div>
       <div id="event-banner" class="hidden"></div>
       <div id="reward-banner" class="hidden"></div>
+      <div id="level-toast" class="level-toast hidden" role="status" aria-live="polite"></div>
       <div id="buffs-list"></div>
       <section id="upgrade-panel" class="hidden">
         <h1>LEVEL UP</h1>

@@ -40,4 +40,4 @@ python main.py
 
 ## 에셋
 
-기본 에셋 루트는 `E:\AI\3d_modeling\game\happy_toy\assets`입니다. `core/config.py`가 Cyclopse, Hwacat, Uncat, Hwacat_angry 모델과 텍스처, GLB 프롭을 자동 탐색합니다.
+기본 에셋 루트는 `E:\AI\3d_modeling\game\assets`입니다. `core/config.py`가 Cyclopse, Hwacat, Uncat, Hwacat_angry 모델과 텍스처, GLB 프롭을 자동 탐색합니다.

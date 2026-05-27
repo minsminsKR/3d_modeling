@@ -8,9 +8,9 @@ from flask import Flask, abort, jsonify, render_template, send_file
 
 
 APP_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = APP_DIR.parents[1]
-MODEL_ROOT = PROJECT_ROOT / "model_test" / "model"
-CYCLOPSE_ROOT = MODEL_ROOT / "cyclopse"
+GAME_DIR = APP_DIR.parent
+ASSET_ROOT = GAME_DIR / "assets"
+CYCLOPSE_ROOT = ASSET_ROOT / "characters" / "Cyclopse"
 
 mimetypes.add_type("model/vnd.autodesk.fbx", ".fbx")
 mimetypes.add_type("image/jpeg", ".jpg")
@@ -22,11 +22,11 @@ app = Flask(__name__)
 
 
 def model_url(relative_path: str) -> str:
-    return f"/model/{quote(relative_path, safe='/')}"
+    return f"/assets/{quote(relative_path, safe='/')}"
 
 
 def asset_entry(label: str, relative_path: str, asset_type: str) -> dict:
-    path = MODEL_ROOT / relative_path
+    path = ASSET_ROOT / relative_path
     entry = {
         "label": label,
         "path": relative_path,
@@ -54,20 +54,20 @@ def favicon():
 
 @app.get("/api/assets")
 def assets():
-    walk = asset_entry("walking", "cyclopse/mixamo/Walking.fbx", "animation")
-    jump = asset_entry("jump", "cyclopse/mixamo/Jump.fbx", "animation")
+    walk = asset_entry("walking", "characters/Cyclopse/mixamo/Walking.fbx", "animation")
+    jump = asset_entry("jump", "characters/Cyclopse/mixamo/Jump.fbx", "animation")
     cyclopse_assets = [walk, jump]
 
     texture_path = CYCLOPSE_ROOT / "source" / "model_textured.jpg"
     texture = None
     if texture_path.is_file():
-        texture = asset_entry("texture", "cyclopse/source/model_textured.jpg", "texture")
+        texture = asset_entry("texture", "characters/Cyclopse/source/model_textured.jpg", "texture")
         cyclopse_assets.append(texture)
 
     return jsonify(
         {
             "character": "cyclopse",
-            "modelRoot": "/model/",
+            "modelRoot": "/assets/",
             "monster": {
                 "name": "cyclopse",
                 "walk": walk["url"] if walk["exists"] else None,
@@ -79,10 +79,10 @@ def assets():
     )
 
 
-@app.get("/model/<path:relative_path>")
+@app.get("/assets/<path:relative_path>")
 def model_file(relative_path: str):
-    requested_path = (MODEL_ROOT / relative_path).resolve()
-    model_root = MODEL_ROOT.resolve()
+    requested_path = (ASSET_ROOT / relative_path).resolve()
+    model_root = ASSET_ROOT.resolve()
 
     if requested_path != model_root and model_root not in requested_path.parents:
         abort(403)

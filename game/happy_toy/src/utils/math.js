@@ -36,12 +36,20 @@ export function smoothStep(current, target, speed, deltaTime) {
 }
 
 export function makeAabbFromCenter(center, size) {
+  const cx = center.x !== undefined ? center.x : (center[0] ?? 0);
+  const cy = center.y !== undefined ? center.y : (center[1] ?? 0);
+  const cz = center.z !== undefined ? center.z : (center[2] ?? 0);
+
+  const sx = size.x !== undefined ? size.x : (size[0] ?? 0);
+  const sy = size.y !== undefined ? size.y : (size[1] ?? 0);
+  const sz = size.z !== undefined ? size.z : (size[2] ?? 0);
+
   return {
-    minX: center[0] - size[0] / 2,
-    maxX: center[0] + size[0] / 2,
-    minY: (center[1] ?? 0) - (size[1] ?? 0) / 2,
-    maxY: (center[1] ?? 0) + (size[1] ?? 0) / 2,
-    minZ: center[2] - size[2] / 2,
-    maxZ: center[2] + size[2] / 2,
+    minX: cx - sx / 2,
+    maxX: cx + sx / 2,
+    minY: cy - sy / 2,
+    maxY: cy + sy / 2,
+    minZ: cz - sz / 2,
+    maxZ: cz + sz / 2,
   };
 }

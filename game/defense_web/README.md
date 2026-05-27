@@ -37,4 +37,4 @@ Windows Firewall may ask for permission the first time.
 - Three.js runs the actual game in the browser.
 - Ranking and account APIs are intentionally deferred.
 - Bulk allies, bullets, enemies, pickups, and particles use instanced rendering.
-- FBX character assets are reused from `game/happy_toy/assets`.
+- FBX character assets are reused from `game/assets`.

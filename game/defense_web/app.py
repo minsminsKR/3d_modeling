@@ -10,6 +10,7 @@ from flask import Flask, Response, render_template, send_from_directory
 APP_DIR = Path(__file__).resolve().parent
 GAME_DIR = APP_DIR.parent
 HAPPY_TOY_DIR = GAME_DIR / "happy_toy"
+ASSET_DIR = GAME_DIR / "assets"
 
 mimetypes.add_type("text/javascript", ".js")
 mimetypes.add_type("text/css", ".css")
@@ -42,7 +43,7 @@ def vendor(path: str):
 
 @app.get("/assets/<path:path>")
 def assets(path: str):
-    return send_from_directory(HAPPY_TOY_DIR / "assets", path)
+    return send_from_directory(ASSET_DIR, path)
 
 
 @app.after_request

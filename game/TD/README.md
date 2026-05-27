@@ -1,6 +1,6 @@
 # Cyclopse Tower Defense
 
-Flask and Three.js tower defense game using the shared cyclopse assets in `model_test/model/cyclopse`.
+Flask and Three.js tower defense game using the shared Cyclopse assets in `game/assets/characters/Cyclopse`.
 
 ## Run
 
@@ -17,7 +17,7 @@ Open `http://localhost:8123`.
 
 - `/` serves the game page.
 - `/api/assets` returns the cyclopse asset manifest for `Walking.fbx`, `Jump.fbx`, and `model_textured.jpg` when present.
-- `/model/<path>` serves files from `E:\AI\3d_modeling\model_test\model` after resolving the path under that directory.
+- `/assets/<path>` serves files from `E:\AI\3d_modeling\game\assets` after resolving the path under that directory.
 
 ## Gameplay
 

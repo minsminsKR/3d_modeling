@@ -41,7 +41,7 @@ No `npm install` is required for this prototype server. The browser client loads
 - `public/src/input.js`: keyboard/mouse input
 - `public/src/scene.js`: Three.js renderer
 - `public/src/main.js`: UI and game loop glue
-- `/assets/...`: server-mounted source asset folder from `E:\AI\3d_modeling\game\happy_toy\assets`
+- `/assets/...`: server-mounted source asset folder from `E:\AI\3d_modeling\game\assets`
 
 ## Multiplayer Model
 

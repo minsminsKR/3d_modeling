@@ -3,6 +3,19 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 
 const DEBUG_MODEL_LOADING = true;
 
+function stripRootMotion(clip) {
+  if (!clip) return;
+  for (const track of clip.tracks) {
+    if (track.name.endsWith(".position") && (track.name.includes("Hips") || track.name.includes("Root"))) {
+      const values = track.values;
+      for (let i = 0; i < values.length; i += 3) {
+        values[i] = 0;     // Force X to 0
+        values[i + 2] = 0; // Force Z to 0
+      }
+    }
+  }
+}
+
 export class CharacterLoader {
   constructor() {
     THREE.Cache.enabled = true;
@@ -24,6 +37,10 @@ export class CharacterLoader {
       this.loadTexture(config.textureUrl, config),
     ]).then(([rawRoot, texture]) => {
       let root = this.prepareObject(rawRoot, config.height);
+      root.animations = rawRoot.animations || [];
+      for (const clip of root.animations) {
+        stripRootMotion(clip);
+      }
       root.userData.assetLabel = config.label;
       root.userData.isFallback = false;
       this.applyTexture(root, texture);
@@ -197,6 +214,7 @@ export class CharacterLoader {
 
 export function cloneCharacter(root) {
   const clone = cloneSkinned(root);
+  clone.animations = root.animations;
   clone.traverse((child) => {
     if (child.material) {
       child.material = child.material.clone();

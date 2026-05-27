@@ -21,7 +21,7 @@ export class Game {
     this.rootElement = rootElement;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(WORLD_CONFIG.fogColor);
-    this.scene.fog = new THREE.Fog(WORLD_CONFIG.fogColor, 30, 115);
+    this.scene.fog = new THREE.Fog(WORLD_CONFIG.fogColor, 20, 75);
 
     this.camera = new THREE.PerspectiveCamera(
       CAMERA_CONFIG.fov,
@@ -33,8 +33,10 @@ export class Game {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // Shadows disabled globally — enabling shadow maps causes WebGL to bind extra
+    // shadow-map texture units per light, which pushed us past MAX_TEXTURE_IMAGE_UNITS
+    // and forced costly shader recompilation on every new PointLight.
+    this.renderer.shadowMap.enabled = false;
     this.renderer.toneMappingExposure = 1.24;
     this.rootElement.appendChild(this.renderer.domElement);
 
@@ -72,6 +74,14 @@ export class Game {
     this.firstDetectionScareReady = true;
     this.detectionFreezeTimer = 0;
     this.detectionFreezeThreat = 0;
+    // Fixed PointLight pool — pre-allocated so they NEVER leave the scene at runtime.
+    // Moving/resizing a light is free; adding/removing forces WebGL shader recompilation.
+    this._pointLightPool = [];
+    this._POINT_LIGHT_BUDGET = 8;
+    // Throttle state for chunk boundary and flicker updates
+    this._lastPlayerChunkCx = null;
+    this._lastPlayerChunkCz = null;
+    this._flickerAccum = 0;
     this.loop = new Loop((deltaTime) => this.update(deltaTime));
 
     this.handleResize = this.handleResize.bind(this);
@@ -87,10 +97,11 @@ export class Game {
     this.hud.setChapterInfo(this.chapterSession, CHAPTERS);
     this.hud.setStartEnabled(false, "불러오는 중...");
     this.hud.setStatus("복도와 몬스터를 불러오는 중입니다.");
-    const map = new MapBuilder(this.scene, this.collisionWorld, {
+    this.mapBuilder = new MapBuilder(this.scene, this.collisionWorld, {
       debugEnabled: this.debugEnabled,
       mapConfig: this.mapConfig,
-    }).build();
+    });
+    const map = this.mapBuilder.build();
     this.doors = map.doors;
     this.keys = map.keys;
     this.cabinets = map.cabinets;
@@ -112,14 +123,36 @@ export class Game {
     );
 
     this.enemyManager = new EnemyManager(this.scene, this.collisionWorld, this.doors, this.hud, this.enemyConfigs);
-    this.mirrorEvents = (this.mapConfig.mirrorEvents || []).map((eventConfig) => new MirrorHwacatEvent(eventConfig, {
+    const eventChunkCenter = { x: -32, y: 0, z: -32 }; // chunk (-2, -2) center
+    const backroomsHwacatEventConfig = {
+      id: "hwacat-mirror-event",
+      triggerPosition: [eventChunkCenter.x + 4.0, 0, eventChunkCenter.z + 0.1],
+      triggerRadius: 2.2,
+      spawnPosition: [eventChunkCenter.x - 0.7, 0, eventChunkCenter.z - 1.0],
+      spawnYaw: Math.PI,
+      lookAtPosition: [eventChunkCenter.x - 0.7, 1.05, eventChunkCenter.z - 1.0],
+      cameraDuration: 1.25,
+      cameraBackStep: 0.6,
+      cameraLift: 0.05,
+      cameraReturnDuration: 0.25,
+      danceSeconds: 8,
+      idleSeconds: 4,
+      transformOverlapSeconds: 0.1,
+      safePauseSeconds: 0.15,
+      paintingId: "upper-hwa-painting",
+      paintingDropSeconds: 0.75,
+      paintingDropTargetPosition: [eventChunkCenter.x - 5.0, 0.06, eventChunkCenter.z],
+      paintingDropTargetRotation: [-Math.PI / 2, 0, 0.0],
+      rewardKeyId: "key-hwacat",
+    };
+    this.mirrorEvents = [new MirrorHwacatEvent(backroomsHwacatEventConfig, {
       scene: this.scene,
       camera: this.camera,
       player: this.player,
       enemyManager: this.enemyManager,
       hud: this.hud,
       revealKeyById: (keyId, position) => this.revealKeyById(keyId, position),
-    }));
+    })];
     this.input.connect();
     this.connectUi();
     window.addEventListener("resize", this.handleResize);
@@ -138,73 +171,30 @@ export class Game {
   }
 
   setupLighting() {
-    const inspectionAmbient = new THREE.AmbientLight(0x9fb29a, 1.75);
-    this.scene.add(inspectionAmbient);
+    const ambient = new THREE.AmbientLight(0x504b3e, 0.95);
+    this.scene.add(ambient);
 
-    const lowAmbient = new THREE.HemisphereLight(0xa8b99e, 0x342f25, 1.65);
+    const lowAmbient = new THREE.HemisphereLight(0x5c594c, 0x2e2c24, 0.85);
     this.scene.add(lowAmbient);
 
-    const mapInspectionFill = new THREE.DirectionalLight(0xc3d0b6, 0.92);
-    mapInspectionFill.position.set(-8, 12, 18);
-    this.scene.add(mapInspectionFill);
-
-    const exitLamp = new THREE.PointLight(0xd4b24a, 2.25, 18, 1.45);
-    exitLamp.position.set(0, 2.5, 23);
-    this.scene.add(exitLamp);
-    this.horrorLights.push(exitLamp);
-
-    const redRoomLamp = new THREE.PointLight(0xc4332c, 1.45, 12, 1.55);
-    redRoomLamp.position.set(8.5, 2.4, -7);
-    this.scene.add(redRoomLamp);
-    this.horrorLights.push(redRoomLamp);
-
-    const finalLamp = new THREE.PointLight(0xd4b24a, 2.25, 17, 1.45);
-    finalLamp.position.set(0, 2.45, -35.5);
-    this.scene.add(finalLamp);
-    this.horrorLights.push(finalLamp);
-
-    const storageLamp = new THREE.PointLight(0x348f6c, 1.35, 13, 1.55);
-    storageLamp.position.set(-8.6, 2.3, 4.5);
-    this.scene.add(storageLamp);
-    this.horrorLights.push(storageLamp);
-
-    const stairLamp = new THREE.PointLight(0x8a392d, 2.35, 18, 1.55);
-    stairLamp.position.set(-7.2, 2.9, 17.4);
-    this.scene.add(stairLamp);
-    this.horrorLights.push(stairLamp);
-
-    const stairLandingLamp = new THREE.PointLight(0x6d7a58, 1.25, 12, 1.55);
-    stairLandingLamp.position.set(-4.4, 1.9, 22);
-    this.scene.add(stairLandingLamp);
-    this.horrorLights.push(stairLandingLamp);
-
-    const upperLandingLamp = new THREE.PointLight(0x8a392d, 1.45, 13, 1.55);
-    upperLandingLamp.position.set(-4.8, 5.25, 12.4);
-    this.scene.add(upperLandingLamp);
-    this.horrorLights.push(upperLandingLamp);
-
-    const upperHallLamp = new THREE.PointLight(0x6d7a58, 1.9, 22, 1.55);
-    upperHallLamp.position.set(0.2, 5.9, -10);
-    this.scene.add(upperHallLamp);
-    this.horrorLights.push(upperHallLamp);
-
-    const upperNurseryLamp = new THREE.PointLight(0x8a392d, 1.75, 14, 1.55);
-    upperNurseryLamp.position.set(-8.8, 5.55, -4.2);
-    this.scene.add(upperNurseryLamp);
-    this.horrorLights.push(upperNurseryLamp);
-
-    const upperMirrorLamp = new THREE.PointLight(0xc4332c, 1.55, 13, 1.55);
-    upperMirrorLamp.position.set(8.2, 5.8, -16.2);
-    this.scene.add(upperMirrorLamp);
-    this.horrorLights.push(upperMirrorLamp);
-
-    this.flashlight = new THREE.SpotLight(0xfff1bf, 11.5, 24, Math.PI * 0.24, 0.42, 1.05);
+    this.flashlight = new THREE.SpotLight(0xfff5d2, 25.0, 35, Math.PI * 0.28, 0.55, 1.0);
     this.flashlight.position.set(0, 0, 0);
     this.flashlight.target.position.set(0, 0, -1);
+    this.flashlight.castShadow = false;
     this.flashlight.visible = true;
     this.camera.add(this.flashlight);
     this.camera.add(this.flashlight.target);
     this.scene.add(this.camera);
+
+    // Pre-allocate the fixed PointLight pool. All lights live in the scene permanently.
+    // We only update their position/intensity — never add/remove during gameplay.
+    for (let i = 0; i < this._POINT_LIGHT_BUDGET; i++) {
+      const pl = new THREE.PointLight(0xfffee2, 0, 18, 1.0);
+      pl.castShadow = false;
+      pl.position.set(0, -9999, 0); // park far off-screen until assigned
+      this.scene.add(pl);
+      this._pointLightPool.push(pl);
+    }
   }
 
   connectUi() {
@@ -258,42 +248,14 @@ export class Game {
   }
 
   restart() {
-    this.gameOver = false;
-    this.gameCleared = false;
+    this.resetRunState();
     this.isStarted = true;
     this.isPaused = false;
-    this.keyCount = 0;
-    this.cabinetEvent = null;
-    this.cutsceneEvent = null;
-    this.firstDetectionScareReady = true;
-    this.detectionFreezeTimer = 0;
-    this.detectionFreezeThreat = 0;
-    this.collisionWorld.clearDropAttempt();
-    for (const event of this.mirrorEvents) {
-      event.reset();
-    }
-    this.horrorEventManager?.reset();
     this.hud.hideCaught();
     this.hud.hideClear();
     this.hud.hidePause();
     this.hud.hideStart();
     this.input.requestPointerLock();
-    this.player.exitCabinet();
-    this.player.setPosition(new THREE.Vector3(...this.mapConfig.playerStart));
-    this.player.resetLook(0, 0);
-    this.flashlightController.reset();
-    this.enemyManager.reset();
-    this.enemyManager.endCabinetInvestigations();
-    for (const door of this.doors) {
-      door.isOpen = false;
-      door.openAmount = 0;
-    }
-    for (const key of this.keys) {
-      key.reset();
-    }
-    for (const cabinet of this.cabinets) {
-      cabinet.reset();
-    }
     this.hud.setStatus("다시 복도 한가운데에 섰습니다.", 1800);
   }
 
@@ -333,6 +295,7 @@ export class Game {
     this.updateMirrorEvents(deltaTime);
 
     if (this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared && !this.cutsceneEvent) {
+      this.updateBackrooms(deltaTime);
       this.player.update(deltaTime);
       this.flashlightController.update();
       this.horrorEventManager?.update(deltaTime);
@@ -349,6 +312,38 @@ export class Game {
       }
     } else {
       this.glitchController.update(deltaTime, { threat: 0 });
+    }
+
+    if (this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared) {
+      if (!this.lastConsoleDebugTime) this.lastConsoleDebugTime = 0;
+      if (this.elapsedTime - this.lastConsoleDebugTime > 2.0) {
+        this.lastConsoleDebugTime = this.elapsedTime;
+        const cx = Math.floor((this.player.position.x + 8) / 16);
+        const cz = Math.floor((this.player.position.z + 8) / 16);
+        
+        const memory = this.renderer.info.memory;
+        const render = this.renderer.info.render;
+        const fps = Math.round(1 / Math.max(0.001, deltaTime));
+        
+        const metrics = {
+          time: this.elapsedTime.toFixed(1),
+          fps,
+          chunks: this.mapBuilder.loadedChunks.size,
+          geometries: memory.geometries,
+          textures: memory.textures,
+          drawCalls: render.calls,
+          triangles: render.triangles,
+          heap: performance.memory?.usedJSHeapSize ?? 0,
+          colliders: this.collisionWorld.blockers.length,
+          monsters: this.enemyManager.enemies.length
+        };
+        
+        console.log(`[PERF_METRICS] ${JSON.stringify(metrics)}`);
+        
+        if (this.debugEnabled) {
+          console.table(metrics);
+        }
+      }
     }
 
     this.updateDebugHud();
@@ -403,14 +398,30 @@ export class Game {
     const previousPosition = this.camera.position.clone();
     const previousRotation = this.camera.rotation.clone();
 
+    // Warm up with flashlight ON
     this.flashlight.visible = true;
     this.flashlight.intensity = this.flashlightController?.defaultIntensity || previousIntensity || 11.5;
+
+    // Activate all pool lights at full intensity so Three.js compiles the
+    // shader variant with max PointLights ONCE at startup, not on first chunk load.
+    for (const pl of this._pointLightPool) {
+      pl.intensity = 3.5;
+      pl.position.set(0, 2.5, 0);
+    }
+
     this.renderer.compile(this.scene, this.camera);
     this.renderer.render(this.scene, this.camera);
 
+    // Warm up with flashlight OFF
     this.flashlight.intensity = 0;
     this.renderer.compile(this.scene, this.camera);
     this.renderer.render(this.scene, this.camera);
+
+    // Park pool lights off-screen again
+    for (const pl of this._pointLightPool) {
+      pl.intensity = 0;
+      pl.position.set(0, -9999, 0);
+    }
 
     this.flashlight.intensity = previousIntensity;
     this.camera.position.copy(previousPosition);
@@ -521,10 +532,31 @@ export class Game {
     this.glitchController.reset();
     this.testSafeMode = false;
     this.player.exitCabinet();
-    this.player.setPosition(new THREE.Vector3(...this.mapConfig.playerStart));
+
+    if (this.mapBuilder) {
+      for (const chunk of this.mapBuilder.loadedChunks.values()) {
+        this.mapBuilder.generator.destroyChunk(chunk.cx, chunk.cz);
+      }
+      this.mapBuilder.loadedChunks.clear();
+      this.mapBuilder.doors = [];
+      this.mapBuilder.keys = [];
+      this.mapBuilder.cabinets = [];
+      this.mapBuilder.finalExit = null;
+      const map = this.mapBuilder.build();
+      this.doors = map.doors;
+      this.keys = map.keys;
+      this.cabinets = map.cabinets;
+      this.finalExit = map.finalExit;
+    }
+
+    this.player.setPosition(new THREE.Vector3(0, 0, 0));
     this.player.resetLook(0, 0);
+    this.player.setInteractables(
+      [...this.doors, ...this.keys, ...this.cabinets, this.finalExit].filter(Boolean),
+      this.createInteractionContext(),
+    );
     this.flashlightController.reset();
-    this.enemyManager.reset();
+    this.enemyManager.reset(this.doors);
     this.enemyManager.endCabinetInvestigations();
     for (const door of this.doors) {
       door.isOpen = false;
@@ -722,5 +754,144 @@ export class Game {
     }
 
     this.hud.setStatus("테스트 안전 모드 OFF", 1400);
+  }
+
+  updateBackrooms(deltaTime) {
+    if (!this.player || !this.mapBuilder) {
+      return;
+    }
+
+    // 1. Update loaded chunks — throttled to chunk-boundary crossings only.
+    // Chunk coordinate changes when the player crosses a 16m boundary.
+    const px = this.player.position.x;
+    const pz = this.player.position.z;
+    const cx = Math.floor((px + 8) / 16);
+    const cz = Math.floor((pz + 8) / 16);
+    const chunkChanged = cx !== this._lastPlayerChunkCx || cz !== this._lastPlayerChunkCz;
+
+    // Always drive the sliced-loading queue every frame (cheap: processes ≤1 chunk/frame)
+    const changed = this.mapBuilder.updateLoadedChunks(this.player.position, chunkChanged);
+    if (changed) {
+      this.doors = this.mapBuilder.doors;
+      this.keys = this.mapBuilder.keys;
+      this.cabinets = this.mapBuilder.cabinets;
+      this.finalExit = this.mapBuilder.finalExit;
+      this.player.setInteractables(
+        [...this.doors, ...this.keys, ...this.cabinets, this.finalExit].filter(Boolean),
+        this.createInteractionContext(),
+      );
+    }
+    if (chunkChanged) {
+      this._lastPlayerChunkCx = cx;
+      this._lastPlayerChunkCz = cz;
+    }
+
+    // 2. Manage ceiling lights via the fixed PointLight pool.
+    // Collect all panels from loaded chunks, sort by distance, assign pool slots.
+    // Pool lights are NEVER added/removed — only position and intensity change.
+    this._flickerAccum += deltaTime;
+    const doFlicker = this._flickerAccum >= 0.1; // throttle flicker to 10 Hz
+    if (doFlicker) this._flickerAccum = 0;
+
+    const playerPos = this.player.position;
+    const allPanels = [];
+    for (const chunk of this.mapBuilder.loadedChunks.values()) {
+      for (const light of chunk.lights) {
+        const gx = chunk.center.x + light.localPos.x;
+        const gz = chunk.center.z + light.localPos.z;
+        const gy = chunk.center.y + light.localPos.y;
+        const dx = gx - playerPos.x;
+        const dz = gz - playerPos.z;
+        const distSq = dx * dx + dz * dz;
+        allPanels.push({ light, gx, gy, gz, distSq });
+
+        // Flicker logic — update emissive mesh color (throttled)
+        if (doFlicker && light.isFlickering) {
+          light.flickerTimer -= 0.1;
+          if (light.flickerTimer <= 0) {
+            const isOff = Math.random() < 0.25;
+            if (isOff) {
+              light.mesh.material.color.setHex(0x3a3930);
+              light.currentIntensity = 0;
+              light.flickerTimer = 0.05 + Math.random() * 0.2;
+            } else {
+              light.mesh.material.color.setHex(0xfffee4);
+              light.currentIntensity = light.baseIntensity;
+              light.flickerTimer = 1.0 + Math.random() * 5.0;
+            }
+          }
+        }
+      }
+    }
+
+    // Sort panels closest-first and assign pool slots
+    allPanels.sort((a, b) => a.distSq - b.distSq);
+    const budget = this._POINT_LIGHT_BUDGET;
+    for (let i = 0; i < budget; i++) {
+      const pl = this._pointLightPool[i];
+      if (i < allPanels.length) {
+        const { light, gx, gy, gz, distSq } = allPanels[i];
+        const inRange = distSq < 24 * 24;
+        if (inRange) {
+          pl.position.set(gx, gy, gz);
+          const targetIntensity = light.currentIntensity !== undefined
+            ? light.currentIntensity
+            : light.baseIntensity;
+          pl.intensity = targetIntensity || 3.5;
+          // Link panel to pool slot so flicker can update it
+          light.pooledLight = pl;
+        } else {
+          pl.position.set(0, -9999, 0); // park off-screen
+          pl.intensity = 0;
+          light.pooledLight = null;
+        }
+      } else {
+        pl.position.set(0, -9999, 0);
+        pl.intensity = 0;
+      }
+    }
+
+    // 3. Teleport far enemies closer to player (runs every frame but is a simple distance check)
+    if (this.enemyManager && this.elapsedTime > 5) {
+      for (const enemy of this.enemyManager.enemies) {
+        if (enemy.config.id === "hwacat-angry" && !enemy.isDynamic) {
+          continue;
+        }
+
+        const distance = enemy.group.position.distanceTo(playerPos);
+        if (distance > 52) {
+          const ecx = Math.floor((playerPos.x + 8) / 16);
+          const ecz = Math.floor((playerPos.z + 8) / 16);
+          const candidates = [];
+
+          for (let ddx = -2; ddx <= 2; ddx++) {
+            for (let ddz = -2; ddz <= 2; ddz++) {
+              if (ddx === 0 && ddz === 0) continue;
+              const key = `${ecx + ddx},${ecz + ddz}`;
+              const chunk = this.mapBuilder.loadedChunks.get(key);
+              if (chunk) {
+                const spawnPos = chunk.center.clone();
+                const hasLos = this.collisionWorld.hasLineOfSight(playerPos, spawnPos);
+                if (!hasLos) {
+                  candidates.push(spawnPos);
+                }
+              }
+            }
+          }
+
+          if (candidates.length > 0) {
+            const targetSpawn = candidates[Math.floor(Math.random() * candidates.length)];
+            enemy.group.position.copy(targetSpawn);
+            this.collisionWorld.snapToValidSurface(enemy.group.position, { actorId: enemy.config.id });
+            enemy.patrolPath = [];
+            enemy.patrolPathGoal = null;
+            enemy.chasePath = [];
+            enemy.chasePathGoal = null;
+          }
+        }
+      }
+    }
+    // checkInvisibleBlockers() removed — it scanned every blocker via scene.getObjectByName
+    // on every frame (O(n*m) cost), which was a major source of hidden CPU spikes.
   }
 }

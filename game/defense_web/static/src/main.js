@@ -116,8 +116,35 @@ class DefenseGame {
     this.wave = 0;
     this.nextGateTime = 12.0;
     this.enemySpawnTimer = 1.2; // Start at 1.2 to trigger first spawn immediately
-    this.nextMidBossTime = 45.0;
+    this.nextMidBossTime = 15.0;
     this.nextBigBossTime = 90.0;
+    this.midBossSpawnCount = 0;
+    this.bigBossSpawnCount = 0;
+    this.spawnedUpgradeIndex = 0;
+    
+    // Clear/initialize boss HP labels container
+    if (!document.getElementById("boss-labels-container")) {
+      const container = document.createElement("div");
+      container.id = "boss-labels-container";
+      container.style.position = "absolute";
+      container.style.inset = "0";
+      container.style.pointerEvents = "none";
+      container.style.overflow = "hidden";
+      container.style.zIndex = "100";
+      document.body.appendChild(container);
+      this.hpLabelContainer = container;
+    } else {
+      this.hpLabelContainer = document.getElementById("boss-labels-container");
+      this.hpLabelContainer.innerHTML = "";
+    }
+    this.bossLabels = new Map();
+    
+    if (this.weaponUpgradeMeshes) {
+      for (const mesh of this.weaponUpgradeMeshes) {
+        if (mesh) mesh.visible = false;
+      }
+    }
+
     this.lastLoggedDifficulty = -1;
     this.weaponIndex = 0;
     this.activeBuffs = { AttackSpeed: 0, TripleShot: 0, Piercing: 0, Explosive: 0, Shield: 0, Magnet: 0, Freeze: 0 };
@@ -157,6 +184,8 @@ class DefenseGame {
     this.allySerial = 0;
     this.allies = [];
     this.allyModelRoots = [];
+    this.allyMixers = [];
+    this.playerMixer = null;
     this.allyVisualMode = "loading";
     this.bullets = Array.from({ length: LIMITS.bullets }, () => ({ active: false }));
     this.muzzleFlashes = Array.from({ length: LIMITS.muzzleFlashes }, () => ({ active: false }));
@@ -214,6 +243,11 @@ class DefenseGame {
       root = cloneCharacter(this.playerModelTemplate);
       root.userData.baseScale = root.userData.baseScale?.clone?.() ?? new THREE.Vector3(1, 1, 1);
       this.allyVisualMode = "playerModel";
+      if (root.animations && root.animations.length > 0) {
+        const mixer = new THREE.AnimationMixer(root);
+        mixer.clipAction(root.animations[0]).play();
+        this.allyMixers[index] = mixer;
+      }
     } else if (this.allyVisualMode === "fallback") {
       root = this.createAllyFallbackModel();
       this.allyVisualMode = "fallback";
@@ -278,6 +312,10 @@ class DefenseGame {
     for (let i = this.allies.length; i < before; i += 1) {
       this.allyPool?.hide(i);
       if (this.allyModelRoots[i]) this.allyModelRoots[i].visible = false;
+      if (this.allyMixers[i]) {
+        this.allyMixers[i].stopAllAction();
+        delete this.allyMixers[i];
+      }
     }
     this.reflowAllies(0);
     this.updateHudNow?.();
@@ -327,6 +365,10 @@ class DefenseGame {
       this.playerRoot.add(root);
       this.playerModel = root;
       this.playerModelTemplate = root;
+      if (root.animations && root.animations.length > 0) {
+        this.playerMixer = new THREE.AnimationMixer(root);
+        this.playerMixer.clipAction(root.animations[0]).play();
+      }
       this.playerModelReady = true;
       this.allyVisualMode = "playerModel";
       this.playerMesh.visible = false;
@@ -561,7 +603,18 @@ class DefenseGame {
     this.updatePopups(gameplayDt);
     this.updateRoad();
     this.updateCamera(gameplayDt);
-    this.models.update(this.enemies, this.player);
+    this.updateBossHud(gameplayDt);
+    this.updateBossHpLabels();
+    this.models.update(this.enemies, this.player, gameplayDt);
+    if (this.playerModelReady && this.playerMixer) {
+      this.playerMixer.update(gameplayDt);
+    }
+    for (let i = 0; i < this.allies.length; i++) {
+      const mixer = this.allyMixers[i];
+      if (mixer && this.allyModelRoots[i] && this.allyModelRoots[i].visible) {
+        mixer.update(gameplayDt);
+      }
+    }
     this.updateHudThrottled(gameplayDt);
     this.logShootingDebug(gameplayDt);
   }
@@ -1008,7 +1061,7 @@ class DefenseGame {
 
   updateEnemies(dt) {
     const difficultyLevel = Math.floor(this.elapsed / 30);
-    const spawnInterval = Math.max(0.25, 1.2 - difficultyLevel * 0.15);
+    const spawnInterval = Math.max(0.25, 1.6 - difficultyLevel * 0.15);
 
     if (difficultyLevel !== this.lastLoggedDifficulty) {
       this.lastLoggedDifficulty = difficultyLevel;
@@ -1023,12 +1076,21 @@ class DefenseGame {
 
     const bossDistance = GAME_BALANCE.waves.bossSpawnDistance;
     if (this.elapsed >= this.nextMidBossTime) {
-      this.spawnEnemy("midBoss", 0, this.player.z + bossDistance, this.elapsed);
-      this.nextMidBossTime += 90.0;
+      this.midBossSpawnCount += 1;
+      this.spawnEnemy("midBoss", 0, this.player.z + bossDistance, this.elapsed, this.midBossSpawnCount);
+      this.nextMidBossTime += 15.0;
     }
     if (this.elapsed >= this.nextBigBossTime) {
-      this.spawnEnemy("bigBoss", 0, this.player.z + bossDistance + 7, this.elapsed);
+      this.bigBossSpawnCount += 1;
+      this.spawnEnemy("bigBoss", 0, this.player.z + bossDistance + 7, this.elapsed, this.bigBossSpawnCount);
       this.nextBigBossTime += 90.0;
+    }
+
+    // Hide all weapon meshes by default
+    if (this.weaponUpgradeMeshes) {
+      for (const mesh of this.weaponUpgradeMeshes) {
+        if (mesh) mesh.visible = false;
+      }
     }
 
     const bins = new Map();
@@ -1063,6 +1125,10 @@ class DefenseGame {
       if (enemy.z < this.player.z - 12) {
         enemy.active = false;
         this.enemyPool.hide(i);
+        if (enemy.type === "weaponUpgrade") {
+          // Player missed the upgrade, allow it to spawn again
+          this.spawnedUpgradeIndex = this.weaponIndex;
+        }
         continue;
       }
       const key = binKey(enemy.x, enemy.z);
@@ -1072,8 +1138,24 @@ class DefenseGame {
         bins.set(key, list);
       }
       list.push(enemy);
-      const flashColor = enemy.flash > 0 ? 0xffffff : enemy.color;
-      this.enemyPool.set(i, tempVec.set(enemy.x, enemy.height * 0.5, enemy.z), tempScale.set(enemy.scale, enemy.height, enemy.scale), flashColor);
+      
+      if (enemy.type === "weaponUpgrade") {
+        this.enemyPool.hide(i);
+        const mesh = this.getOrCreateWeaponMesh(i);
+        mesh.visible = true;
+        mesh.position.set(enemy.x, 1.2, enemy.z);
+        mesh.rotation.y = this.elapsed * 2.5;
+        mesh.rotation.z = Math.sin(this.elapsed * 1.5) * 0.25;
+      } else if (this.models.isDecorated(enemy)) {
+        this.enemyPool.hide(i);
+      } else {
+        if (!this.models.ready) {
+          const flashColor = enemy.flash > 0 ? 0xffffff : enemy.color;
+          this.enemyPool.set(i, tempVec.set(enemy.x, enemy.height * 0.5, enemy.z), tempScale.set(enemy.scale, enemy.height, enemy.scale), flashColor);
+        } else {
+          this.enemyPool.hide(i);
+        }
+      }
     }
     this.enemyPool.flush();
 
@@ -1127,6 +1209,13 @@ class DefenseGame {
     }
   }
 
+  updateBossHud(dt) {
+    const bossHud = document.getElementById("boss-hud");
+    if (bossHud && !bossHud.classList.contains("hidden")) {
+      bossHud.classList.add("hidden");
+    }
+  }
+
   spawnWave() {
     this.wave += 1;
     for (const spawn of buildWavePlan(this.elapsed, this.player.z)) {
@@ -1134,8 +1223,8 @@ class DefenseGame {
     }
   }
 
-  spawnEnemy(type, x, z, elapsed) {
-    const stats = balancedEnemyStats(type, elapsed);
+  spawnEnemy(type, x, z, elapsed, spawnCount = 0) {
+    const stats = balancedEnemyStats(type, elapsed, spawnCount);
     for (const enemy of this.enemies) {
       if (enemy.active) continue;
       
@@ -1163,6 +1252,22 @@ class DefenseGame {
         speed *= 1.35;
         points *= 10;
         radius *= 1.4;
+      }
+      
+      if (type === "midBoss") {
+        const baseMidBossScale = 1.5;
+        const newScale = 4.5 + spawnCount * 0.15;
+        const ratio = newScale / baseMidBossScale;
+        scale = newScale;
+        height *= ratio;
+        radius *= ratio;
+      } else if (type === "bigBoss") {
+        const baseBigBossScale = 2.12;
+        const newScale = 6.0 + spawnCount * 0.25;
+        const ratio = newScale / baseBigBossScale;
+        scale = newScale;
+        height *= ratio;
+        radius *= ratio;
       }
       
       Object.assign(enemy, stats, {
@@ -1205,6 +1310,16 @@ class DefenseGame {
 
   killEnemy(enemy) {
     if (!enemy.active) return;
+    
+    if (enemy.type === "weaponUpgrade") {
+      enemy.active = false;
+      this.weaponIndex = enemy.targetWeaponIndex;
+      this.showRewardBanner(`WEAPON UPGRADED<br><span style="color:#00ffcc">${WEAPONS[this.weaponIndex].name.toUpperCase()} UNLOCKED</span>`, 3.0);
+      this.audio.play("fire:Laser", 0.3);
+      this.slowMoTimer = 1.2;
+      return;
+    }
+
     enemy.active = false;
     this.kills += enemy.points;
     this.combo += enemy.points;
@@ -1214,8 +1329,8 @@ class DefenseGame {
     const goldMult = this.currentEvent === "GOLD RUSH" ? 2 : 1;
     this.coins += enemy.points * (1 + Math.min(8, Math.floor(this.combo / 12))) * goldMult;
     
-    // Add exp (elites give 5x points value)
-    const expGain = killExp(enemy.points) * (enemy.isElite ? 5 : 1);
+    // Add exp (elites give 5x points value) - scaled down by 3x
+    const expGain = Math.max(1, Math.floor((killExp(enemy.points) * (enemy.isElite ? 5 : 1)) / 3));
     this.addExp(expGain);
 
     // Charge Ultimate gauge
@@ -1334,7 +1449,12 @@ class DefenseGame {
     } else {
       applyProgressionReward(this, spec.key);
       if (spec.key === "random") {
-        this.weaponIndex = Math.max(this.weaponIndex, 2 + Math.floor(Math.random() * Math.max(1, WEAPONS.length - 2)));
+        const nextIndex = Math.max(this.weaponIndex + 1, Math.min(WEAPONS.length - 1, 2 + Math.floor(Math.random() * Math.max(1, WEAPONS.length - 2))));
+        const hasActiveUpgrade = this.enemies.some(e => e.active && e.type === "weaponUpgrade");
+        if (!hasActiveUpgrade) {
+          this.spawnWeaponUpgrade(nextIndex);
+          this.spawnedUpgradeIndex = nextIndex;
+        }
       }
     }
     const after = this.allies.length;
@@ -1365,13 +1485,24 @@ class DefenseGame {
   }
 
   updateWeapon() {
-    this.weaponIndex = weaponIndexForState({
+    const targetWeaponIndex = weaponIndexForState({
       currentIndex: this.weaponIndex,
       kills: this.kills,
       level: this.level,
       wave: this.wave,
       elapsed: this.elapsed,
     });
+    
+    if (targetWeaponIndex > this.weaponIndex) {
+      const nextIndex = this.weaponIndex + 1;
+      if (nextIndex < WEAPONS.length && nextIndex > (this.spawnedUpgradeIndex || 0)) {
+        const hasActiveUpgrade = this.enemies.some(e => e.active && e.type === "weaponUpgrade");
+        if (!hasActiveUpgrade) {
+          this.spawnWeaponUpgrade(nextIndex);
+          this.spawnedUpgradeIndex = nextIndex;
+        }
+      }
+    }
   }
 
   addExp(amount) {
@@ -1380,7 +1511,9 @@ class DefenseGame {
       this.exp -= this.expNeed;
       this.level += 1;
       this.expNeed = nextExpNeed(this.expNeed, this.level);
-      this.pendingUpgradeCount += 1;
+      if (this.level % 5 === 0) {
+        this.pendingUpgradeCount += 1;
+      }
     }
     if (this.pendingUpgradeCount > 0 && !this.pausedForUpgrade) {
       this.showUpgrade();
@@ -1692,6 +1825,125 @@ class DefenseGame {
     this.spawnEnemy("bigBoss", 2.4, this.player.z + 42, Math.max(this.wave, 12));
     return this.getDebugState();
   }
+
+  updateBossHpLabels() {
+    if (!this.hpLabelContainer) return;
+    
+    const activeLabelIds = new Set();
+    const tempV = new THREE.Vector3();
+    const tempCamVec = new THREE.Vector3();
+    
+    for (let i = 0; i < LIMITS.enemies; i += 1) {
+      const enemy = this.enemies[i];
+      const isBoss = enemy.active && (enemy.type === "midBoss" || enemy.type === "bigBoss");
+      const isUpgrade = enemy.active && enemy.type === "weaponUpgrade";
+      
+      if (isBoss || isUpgrade) {
+        activeLabelIds.add(i);
+        let labelEl = this.bossLabels.get(i);
+        if (!labelEl) {
+          labelEl = document.createElement("div");
+          labelEl.className = "boss-hp-label";
+          if (isUpgrade) {
+            labelEl.classList.add("upgrade-label");
+          }
+          this.hpLabelContainer.appendChild(labelEl);
+          this.bossLabels.set(i, labelEl);
+        }
+        
+        // Update content
+        if (isUpgrade) {
+          const weaponName = WEAPONS[enemy.targetWeaponIndex].name.toUpperCase();
+          labelEl.innerHTML = `<span class="wp-name">${weaponName}</span><br>HP ${Math.round(enemy.hp)}`;
+        } else {
+          const prefix = enemy.type === "bigBoss" ? "FINAL BOSS" : "MID BOSS";
+          labelEl.innerHTML = `<span class="boss-prefix">${prefix}</span><br>HP ${Math.round(enemy.hp)}`;
+        }
+        
+        // Position projecting to 2D
+        const heightOffset = enemy.height + 0.8;
+        tempV.set(enemy.x, heightOffset, enemy.z);
+        tempV.project(this.camera);
+        
+        const isBehind = tempV.z > 1;
+        if (isBehind) {
+          labelEl.style.display = "none";
+        } else {
+          labelEl.style.display = "block";
+          const x = (tempV.x * 0.5 + 0.5) * window.innerWidth;
+          const y = (tempV.y * -0.5 + 0.5) * window.innerHeight;
+          
+          // Compute scale based on distance to player/camera
+          const dist = this.camera.position.distanceTo(tempCamVec.set(enemy.x, heightOffset, enemy.z));
+          const scale = Math.max(0.42, Math.min(1.3, 30 / dist));
+          
+          labelEl.style.left = `${x}px`;
+          labelEl.style.top = `${y}px`;
+          labelEl.style.transform = `translate(-50%, -100%) scale(${scale})`;
+        }
+      }
+    }
+    
+    // Remove labels for inactive enemies
+    for (const [i, labelEl] of this.bossLabels.entries()) {
+      if (!activeLabelIds.has(i)) {
+        labelEl.remove();
+        this.bossLabels.delete(i);
+      }
+    }
+  }
+
+  spawnWeaponUpgrade(weaponIndex) {
+    let hp;
+    if (weaponIndex === 1) {
+      hp = 300;
+    } else {
+      hp = Math.floor(300 + (weaponIndex - 1) * 1500 + this.elapsed * 35);
+    }
+    const stats = {
+      hp,
+      speed: 1.2,
+      points: 0,
+      scale: 1.5,
+      height: 2.0,
+      radius: 1.2,
+      color: 0x00ffcc,
+    };
+    
+    const bossDistance = GAME_BALANCE.waves.bossSpawnDistance;
+    for (const enemy of this.enemies) {
+      if (enemy.active) continue;
+      
+      Object.assign(enemy, stats, {
+        active: true,
+        isElite: false,
+        type: "weaponUpgrade",
+        targetWeaponIndex: weaponIndex,
+        modelType: "none",
+        x: (Math.random() - 0.5) * 6,
+        z: this.player.z + bossDistance,
+        seed: Math.random() * 20,
+        flash: 0,
+        knockX: 0,
+        knockZ: 0,
+        diagonalSpeed: 0,
+        freezeTimer: 0,
+      });
+      break;
+    }
+  }
+
+  getOrCreateWeaponMesh(index) {
+    if (!this.weaponUpgradeMeshes) {
+      this.weaponUpgradeMeshes = [];
+    }
+    if (!this.weaponUpgradeMeshes[index]) {
+      const mesh = createGunMesh();
+      this.scene.add(mesh);
+      this.weaponUpgradeMeshes[index] = mesh;
+    }
+    return this.weaponUpgradeMeshes[index];
+  }
 }
 
 function binKey(x, z) {
@@ -1756,6 +2008,64 @@ function shuffle(items) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function createGunMesh() {
+  const group = new THREE.Group();
+  
+  // Barrel
+  const barrelGeom = new THREE.CylinderGeometry(0.18, 0.18, 1.3, 8);
+  barrelGeom.rotateX(Math.PI / 2); // align along Z
+  const barrelMat = new THREE.MeshStandardMaterial({ 
+    color: 0x00ffcc, 
+    emissive: 0x00aa99,
+    metalness: 0.8, 
+    roughness: 0.1 
+  });
+  const barrel = new THREE.Mesh(barrelGeom, barrelMat);
+  group.add(barrel);
+  
+  // Grip
+  const gripGeom = new THREE.CylinderGeometry(0.12, 0.12, 0.6, 8);
+  const gripMat = new THREE.MeshStandardMaterial({ 
+    color: 0xffd700, 
+    metalness: 0.7, 
+    roughness: 0.2 
+  });
+  const grip = new THREE.Mesh(gripGeom, gripMat);
+  grip.position.set(0, -0.4, -0.2);
+  grip.rotateX(Math.PI / 6);
+  group.add(grip);
+  
+  // Scope
+  const scopeGeom = new THREE.CylinderGeometry(0.08, 0.08, 0.5, 8);
+  scopeGeom.rotateX(Math.PI / 2);
+  const scopeMat = new THREE.MeshStandardMaterial({ 
+    color: 0xff3b30, 
+    emissive: 0xff0000, 
+    emissiveIntensity: 1.2 
+  });
+  const scope = new THREE.Mesh(scopeGeom, scopeMat);
+  scope.position.set(0, 0.25, 0.1);
+  group.add(scope);
+  
+  // Floating ring/particles around it to indicate it's an item
+  const ringGeom = new THREE.RingGeometry(0.6, 0.7, 16);
+  ringGeom.rotateX(Math.PI / 2);
+  const ringMat = new THREE.MeshBasicMaterial({ 
+    color: 0xffd700, 
+    side: THREE.DoubleSide,
+    transparent: true,
+    opacity: 0.8
+  });
+  const ring = new THREE.Mesh(ringGeom, ringMat);
+  ring.position.set(0, 0, 0);
+  group.add(ring);
+
+  // Scale group slightly larger
+  group.scale.set(1.4, 1.4, 1.4);
+  
+  return group;
 }
 
 const game = new DefenseGame();
