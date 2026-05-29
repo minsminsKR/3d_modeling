@@ -22,11 +22,13 @@ export class Cabinet {
     this.group.position.copy(this.position);
     this.group.rotation.y = this.yaw;
 
-    const bodyMaterial = materials.bodyMaterial ?? new THREE.MeshStandardMaterial({
+    this.bodyMaterial = materials.bodyMaterial ?? new THREE.MeshStandardMaterial({
       color: WORLD_CONFIG.cabinetColor,
       roughness: 0.82,
       metalness: 0.08,
     });
+    this.isBodyMaterialShared = Boolean(materials.bodyMaterial);
+    const bodyMaterial = this.bodyMaterial;
     const darkMaterial = new THREE.MeshStandardMaterial({ color: 0x15100e, roughness: 0.9 });
     const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x1d1714, roughness: 0.8 });
 
@@ -116,11 +118,15 @@ export class Cabinet {
     this.group.traverse((child) => {
       if (child.isMesh) {
         child.geometry?.dispose();
-        if (child.name !== `${this.id}-body`) {
+        if (child.material) {
           if (Array.isArray(child.material)) {
-            child.material.forEach((m) => m.dispose());
-          } else {
-            child.material?.dispose();
+            child.material.forEach((m) => {
+              if (m !== this.bodyMaterial || !this.isBodyMaterialShared) {
+                m.dispose();
+              }
+            });
+          } else if (child.material !== this.bodyMaterial || !this.isBodyMaterialShared) {
+            child.material.dispose();
           }
         }
       }

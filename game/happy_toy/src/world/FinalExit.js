@@ -21,7 +21,7 @@ export class FinalExit {
     });
     const trimMaterial = new THREE.MeshStandardMaterial({
       color: WORLD_CONFIG.keyColor,
-      emissive: 0x201505,
+      emissive: 0x000000,
       metalness: 0.3,
       roughness: 0.42,
     });
@@ -39,10 +39,13 @@ export class FinalExit {
 
     const lock = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.08), trimMaterial);
     lock.position.set(0, 0.44, -0.51);
+    lock.castShadow = true;
+    lock.receiveShadow = true;
     this.group.add(lock);
 
-    const glow = new THREE.PointLight(WORLD_CONFIG.keyColor, 0.9, 5.5, 1.6);
+    const glow = new THREE.PointLight(WORLD_CONFIG.keyColor, 0.18, 3.2, 1.6);
     glow.position.set(0, 1.1, 0);
+    glow.castShadow = false;
     this.group.add(glow);
   }
 

@@ -31,6 +31,60 @@ export const WORLD_CONFIG = {
   toyColors: [0xc4332c, 0xd4b24a, 0x348f6c, 0x5a7d9a],
 };
 
+export const LOVELY_DOLL_CONFIG = {
+  id: "lovely_doll",
+  label: "Lovely Doll",
+  modelUrl: "/assets/characters/Lovely_doll/mixamo/Chicken Dance.fbx",
+  textureUrl: "/assets/characters/Lovely_doll/source/model_textured.jpg",
+  animationUrls: {
+    dance: "/assets/characters/Lovely_doll/mixamo/Chicken Dance.fbx",
+    walking: "/assets/characters/Lovely_doll/mixamo/Walking.fbx",
+    run: "/assets/characters/Lovely_doll/mixamo/Fast Run.fbx",
+  },
+  height: 1.1,
+  radius: 0.35,
+};
+
+export const LIGHTING_CONFIG = {
+  fogNear: 14,
+  fogFar: 50,
+  rendererExposure: 0.8,
+  ambientColor: 0x504b3e,
+  ambientIntensity: 0.22,
+  hemisphereSkyColor: 0x5c594c,
+  hemisphereGroundColor: 0x1b1a15,
+  hemisphereIntensity: 0.08,
+  flashlightColor: 0xfff5d2,
+  flashlightIntensity: 24.0,
+  flashlightRange: 38,
+  flashlightAngle: Math.PI * 0.28,
+  flashlightPenumbra: 0.55,
+  flashlightShadowMapSize: 512,
+  flashlightShadowNear: 0.5,
+  flashlightShadowFar: 40,
+  ceilingLightColor: 0xffe8b8,
+  ceilingLightIntensity: 0.85,
+  ceilingLightRange: 14,
+  ceilingLightDecay: 1.15,
+  ceilingPanelOnColor: 0x6f674f,
+  ceilingPanelDimColor: 0x333026,
+  ceilingPanelOnEmissiveIntensity: 0.42,
+  ceilingPanelDimEmissiveIntensity: 0.08,
+  flickerDimIntensityScale: 0.24,
+  corridorFlickerChance: 0.08,
+  flickerRoomLightChance: 0.55,
+  };
+
+export const SAFE_LIGHT_CONFIG = {
+  color: 0xffbd73,
+  emissiveColor: 0xffb85f,
+  intensity: 32.0,
+  distance: 26.0,
+  decay: 1.2,
+  activeDistance: 22,
+  maxActiveLights: 8,
+};
+
 export const DEFAULT_MAP_CONFIG = {
   playerStart: [0, 0, 0],
   floorAreas: [

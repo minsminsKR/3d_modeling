@@ -32,10 +32,10 @@ export class Enemy {
     this.memoryTimer = 0;
     this.caughtPlayer = false;
     this.cabinetTarget = null;
-    this.chasePath = [];
+    this.chasePath = null;
     this.chasePathTimer = 0;
     this.chasePathGoal = null;
-    this.patrolPath = [];
+    this.patrolPath = null;
     this.patrolPathTimer = 0;
     this.patrolPathGoal = null;
     this.waitTimer = 0;
@@ -478,7 +478,7 @@ export class Enemy {
     }
 
     const goalMoved = forceRefresh || !this[goalKey] || distance2D(this[goalKey], goal) > 0.9;
-    if (this[timerKey] <= 0 || goalMoved || this[pathKey].length === 0) {
+    if (this[pathKey] === null || this[timerKey] <= 0 || goalMoved) {
       this[pathKey] = this.collisionWorld.findPath(this.group.position, goal, this.config.radius, {
         cellSize: this.config.pathCellSize ?? 0.85,
         allowInterFloor: mode === "chase" || mode === "flee" || (mode === "wander" && Boolean(this.config.allowInterFloorPatrol)),
@@ -503,15 +503,15 @@ export class Enemy {
       }
     }
 
-    while (this[pathKey].length > 1 && distance2D(this.group.position, this[pathKey][1]) < 0.4) {
+    while (this[pathKey] && this[pathKey].length > 1 && distance2D(this.group.position, this[pathKey][1]) < 0.4) {
       this[pathKey].shift();
     }
 
-    const nextTarget = this[pathKey][1] || this[pathKey][0] || goal;
+    const nextTarget = (this[pathKey] && (this[pathKey][1] || this[pathKey][0])) || goal;
     this.debugPathTarget = {
       mode,
-      type: this[pathKey].length > 0 ? "path" : "fallback",
-      pathLength: this[pathKey].length,
+      type: (this[pathKey] && this[pathKey].length > 0) ? "path" : "fallback",
+      pathLength: this[pathKey] ? this[pathKey].length : 0,
       x: nextTarget.x,
       y: nextTarget.y,
       z: nextTarget.z,

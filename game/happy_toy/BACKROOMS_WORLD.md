@@ -7,7 +7,7 @@ The atmosphere of the Backrooms is designed to evoke discomfort, confinement, an
 - **Wallpaper**: Worn, faded yellow wallpaper color (`0xdecb6c`) with a high roughness texture.
 - **Carpet**: Stained, damp brownish carpet color (`0x8d8363`) that squelches underfoot.
 - **Ceiling**: Stained acoustic panels (`0xbfbda6`) with repeating grids.
-- **Fog**: Murky, dusty beige-grey fog (`0x15140f`) extending from $16\text{m}$ (near) to $44\text{m}$ (far), fully obscuring chunk boundaries.
+- **Fog**: Murky, dusty beige-grey fog (`0x15140f`) extending from $14\text{m}$ (near) to $50\text{m}$ (far), causing distant rooms and corridors to fade into darkness.
 
 ## Key & Exit Positions
 To win the game, the player must explore the 4 quadrants to locate and collect the 4 keys, then return to the start room to unlock the Toy Box:

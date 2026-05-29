@@ -159,10 +159,10 @@ export class EnemyManager {
       enemy.lastKnownPlayerPosition = null;
       enemy.caughtPlayer = false;
       enemy.cabinetTarget = null;
-      enemy.chasePath = [];
+      enemy.chasePath = null;
       enemy.chasePathTimer = 0;
       enemy.chasePathGoal = null;
-      enemy.patrolPath = [];
+      enemy.patrolPath = null;
       enemy.patrolPathTimer = 0;
       enemy.patrolPathGoal = null;
       enemy.waitTimer = 0;

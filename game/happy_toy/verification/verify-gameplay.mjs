@@ -51,8 +51,110 @@ try {
       doorCount: game.doors.length,
       keyCount: game.keys.length,
       cabinetCount: game.cabinets.length,
+      safeLightCount: game.safeLights.length,
+      safeLightPrompt: game.safeLights[0]?.getPrompt?.() ?? "",
+      safeLightPoolSize: game._safeLightPool?.length ?? 0,
+      activeSafeLightPoolCount: game._safeLightPool?.filter((light) => light.intensity > 0).length ?? 0,
+      safeLightVariantCount: new Set(game.safeLights.map((light) => light.variant)).size,
+      safeLightBasicMaterialCount: (() => {
+        let count = 0;
+        for (const safeLight of game.safeLights) {
+          safeLight.group.traverse((child) => {
+            if (!child.isMesh) return;
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            count += materials.filter((material) => material?.isMeshBasicMaterial).length;
+          });
+        }
+        return count;
+      })(),
       ambientIntensity: game.scene.children.find(c => c.isAmbientLight)?.intensity ?? 0,
       fogFar: game.scene.fog?.far ?? 0,
+      shadowsEnabled: game.renderer.shadowMap.enabled,
+      flashlightCastsShadow: game.flashlight.castShadow,
+      flashlightShadowSize: game.flashlight.shadow.mapSize.width,
+      toneMappingExposure: game.renderer.toneMappingExposure,
+      basicMaterialCount: (() => {
+        let count = 0;
+        game.scene.traverse((child) => {
+          if (!child.isMesh) return;
+          const materials = Array.isArray(child.material) ? child.material : [child.material];
+          count += materials.filter((material) => material?.isMeshBasicMaterial).length;
+        });
+        return count;
+      })(),
+      enemyMeshStats: game.enemyManager.enemies.map((enemy) => {
+        const stats = {
+          id: enemy.config.id,
+          meshCount: 0,
+          standardMaterialCount: 0,
+          missingNormalCount: 0,
+          shadowCasterCount: 0,
+          shadowReceiverCount: 0,
+          emissiveMaterialCount: 0,
+        };
+        enemy.group.traverse((child) => {
+          if (!child.isMesh && !child.isSkinnedMesh) return;
+          stats.meshCount += 1;
+          const geometry = child.geometry;
+          if (!geometry?.attributes?.normal) {
+            stats.missingNormalCount += 1;
+          }
+          if (child.castShadow) {
+            stats.shadowCasterCount += 1;
+          }
+          if (child.receiveShadow) {
+            stats.shadowReceiverCount += 1;
+          }
+          const materials = Array.isArray(child.material) ? child.material : [child.material];
+          if (materials.every((material) => material?.isMeshStandardMaterial)) {
+            stats.standardMaterialCount += 1;
+          }
+          if (materials.some((material) => material?.emissive?.getHex?.() > 0)) {
+            stats.emissiveMaterialCount += 1;
+          }
+        });
+        return stats;
+      }),
+      horrorPropStats: (() => {
+        const kinds = new Set();
+        let anchorCount = 0;
+        let loadedCount = 0;
+        let meshCount = 0;
+        let basicMaterialCount = 0;
+        game.scene.traverse((child) => {
+          if (child.userData?.horrorProp) {
+            anchorCount += 1;
+            if (child.userData.horrorPropLoaded) {
+              loadedCount += 1;
+            }
+            if (child.userData.propKind) {
+              kinds.add(child.userData.propKind);
+            }
+          }
+          if (!child.isMesh && !child.isSkinnedMesh) return;
+          let belongsToHorrorProp = false;
+          let parent = child.parent;
+          while (parent) {
+            if (parent.userData?.horrorProp) {
+              belongsToHorrorProp = true;
+              break;
+            }
+            parent = parent.parent;
+          }
+          if (!belongsToHorrorProp) return;
+          meshCount += 1;
+          const materials = Array.isArray(child.material) ? child.material : [child.material];
+          basicMaterialCount += materials.filter((material) => material?.isMeshBasicMaterial).length;
+        });
+        return {
+          anchorCount,
+          loadedCount,
+          meshCount,
+          basicMaterialCount,
+          kindCount: kinds.size,
+          kinds: [...kinds].sort(),
+        };
+      })(),
       enemyCount: game.enemyManager.enemies.length,
     };
   });
@@ -63,9 +165,142 @@ try {
   assert(state.hasFinalExit, "Expected final exit toy box to spawn in start chunk");
   assert(state.playerStartPos[0] === 0 && state.playerStartPos[2] === 0, `Expected player spawn at (0, 0), got ${state.playerStartPos}`);
   assert(state.doorCount === 8, `Expected 8 start room and quadrant doors, got ${state.doorCount}`);
-  assert(state.ambientIntensity < 1.0, `Expected low ambient light in Backrooms, got ${state.ambientIntensity}`);
-  assert(state.fogFar === 75, `Expected Backrooms fog far distance 75, got ${state.fogFar}`);
+  assert(state.safeLightCount >= 12, `Expected safe light objects across Backrooms chunks, got ${state.safeLightCount}`);
+  assert(
+    state.safeLightPrompt.includes("Press E to turn on light"),
+    `Expected safe light prompt to advertise E interaction, got "${state.safeLightPrompt}"`,
+  );
+  assert(state.safeLightPoolSize === 8, `Expected fixed safe-light dynamic pool of 8, got ${state.safeLightPoolSize}`);
+  assert(state.activeSafeLightPoolCount === 0, `Expected no safe-light PointLights active before interaction, got ${state.activeSafeLightPoolCount}`);
+  assert(state.safeLightVariantCount >= 3, `Expected at least 3 safe-light variants, got ${state.safeLightVariantCount}`);
+  assert(state.safeLightBasicMaterialCount === 0, `Expected safe lights to use lit materials, got ${state.safeLightBasicMaterialCount} basic materials`);
+  assert(state.ambientIntensity >= 0.12 && state.ambientIntensity <= 0.22, `Expected flashlight-dependent ambient light in Backrooms, got ${state.ambientIntensity}`);
+  assert(state.fogFar === 50, `Expected denser Backrooms fog far distance 50, got ${state.fogFar}`);
+  assert(state.shadowsEnabled, "Expected renderer shadow map to be enabled");
+  assert(state.flashlightCastsShadow, "Expected flashlight to cast shadows");
+  assert(state.flashlightShadowSize === 512, `Expected 512px flashlight shadow map, got ${state.flashlightShadowSize}`);
+  assert(state.toneMappingExposure === 0.8, `Expected ACES exposure 0.8, got ${state.toneMappingExposure}`);
+  assert(state.basicMaterialCount === 0, `Expected no MeshBasicMaterial in lit scene, got ${state.basicMaterialCount}`);
   assert(state.enemyCount === 2, `Expected 2 monsters initialized, got ${state.enemyCount}`);
+  for (const enemyStats of state.enemyMeshStats) {
+    assert(enemyStats.meshCount > 0, `Expected ${enemyStats.id} to have at least one render mesh`);
+    assert(
+      enemyStats.standardMaterialCount === enemyStats.meshCount,
+      `Expected ${enemyStats.id} meshes to use MeshStandardMaterial, got ${enemyStats.standardMaterialCount}/${enemyStats.meshCount}`,
+    );
+    assert(
+      enemyStats.missingNormalCount === 0,
+      `Expected ${enemyStats.id} meshes to include normals for PBR lighting, got ${enemyStats.missingNormalCount} missing`,
+    );
+    assert(
+      enemyStats.shadowCasterCount === enemyStats.meshCount,
+      `Expected ${enemyStats.id} meshes to cast shadows, got ${enemyStats.shadowCasterCount}/${enemyStats.meshCount}`,
+    );
+    assert(
+      enemyStats.shadowReceiverCount === enemyStats.meshCount,
+      `Expected ${enemyStats.id} meshes to receive shadows, got ${enemyStats.shadowReceiverCount}/${enemyStats.meshCount}`,
+    );
+    assert(
+      enemyStats.emissiveMaterialCount === 0,
+      `Expected ${enemyStats.id} meshes to avoid emissive material, got ${enemyStats.emissiveMaterialCount}`,
+    );
+  }
+  assert(state.horrorPropStats.anchorCount >= 20, `Expected many horror prop anchors in loaded chunks, got ${state.horrorPropStats.anchorCount}`);
+  assert(
+    state.horrorPropStats.loadedCount >= 20,
+    `Expected horror prop assets to finish loading, got ${state.horrorPropStats.loadedCount}/${state.horrorPropStats.anchorCount}`,
+  );
+  assert(state.horrorPropStats.meshCount > 0, "Expected loaded horror props to contain render meshes");
+  assert(
+    state.horrorPropStats.basicMaterialCount === 0,
+    `Expected horror props to use lit materials, got ${state.horrorPropStats.basicMaterialCount} basic materials`,
+  );
+  assert(state.horrorPropStats.kindCount >= 5, `Expected varied horror prop kinds, got ${state.horrorPropStats.kinds.join(", ")}`);
+
+  const safeLightState = await page.evaluate(() => {
+    const game = window.__happyToy;
+    const safeLight = game.safeLights.find((light) => light.variant === "wall-switch")
+      || game.safeLights.find(Boolean);
+    if (!safeLight) {
+      return { missing: true };
+    }
+
+    const facingX = -Math.sin(safeLight.yaw);
+    const facingZ = -Math.cos(safeLight.yaw);
+    const approach = {
+      x: safeLight.position.x + facingX * 1.15,
+      y: 0,
+      z: safeLight.position.z + facingZ * 1.15,
+    };
+    game.player.setPosition(approach);
+    game.player.setLookAt({
+      x: safeLight.position.x,
+      y: Math.max(1.0, safeLight.position.y),
+      z: safeLight.position.z,
+    });
+    game.refreshInteractables();
+    game.player.updateInteraction();
+
+    const promptBefore = game.hud.promptElement?.textContent ?? "";
+    const focusedKey = game.player.currentInteractable?.stateKey ?? null;
+    game.input.pressedThisFrame.add("e");
+    game.player.updateInteraction();
+    game.updateSafeLightPool(game.player.position);
+
+    const stateKey = safeLight.stateKey;
+    const [sourceCx, sourceCz] = stateKey.split(":")[0].split(",").map(Number);
+    const sourceChunkKey = `${sourceCx},${sourceCz}`;
+    const poolActiveAfterOn = game._safeLightPool.filter((light) => light.intensity > 0).length;
+    const poolLightRange = game._safeLightPool.find((light) => light.intensity > 0)?.distance ?? 0;
+
+    const pump = (frames) => {
+      for (let i = 0; i < frames; i += 1) {
+        game.updateBackrooms(0.016);
+      }
+    };
+
+    game.player.setPosition({ x: (sourceCx + 7) * 16, y: 0, z: (sourceCz + 7) * 16 });
+    pump(80);
+    const unloaded = !game.mapBuilder.loadedChunks.has(sourceChunkKey);
+
+    game.player.setPosition({ x: sourceCx * 16, y: 0, z: sourceCz * 16 });
+    pump(80);
+    const restored = game.safeLights.find((light) => light.stateKey === stateKey);
+    game.updateSafeLightPool(game.player.position);
+
+    return {
+      missing: false,
+      stateKey,
+      promptBefore,
+      focusedKey,
+      isOnAfterE: safeLight.isOn,
+      activatedSetHas: game.activatedSafeLights.has(stateKey),
+      poolActiveAfterOn,
+      poolSize: game._safeLightPool.length,
+      poolLightRange,
+      unloaded,
+      restoredOn: restored?.isOn ?? false,
+      activeAfterReload: game._safeLightPool.filter((light) => light.intensity > 0).length,
+    };
+  });
+
+  assert(!safeLightState.missing, "Expected at least one safe light to test interaction");
+  assert(
+    safeLightState.promptBefore.includes("Press E to turn on light"),
+    `Expected safe-light prompt before activation, got "${safeLightState.promptBefore}"`,
+  );
+  assert(safeLightState.focusedKey === safeLightState.stateKey, "Expected player focus to target the nearby safe light");
+  assert(safeLightState.isOnAfterE, "Expected pressing E near safe light to switch it on");
+  assert(safeLightState.activatedSetHas, "Expected activatedSafeLights Set to remember switched-on light");
+  assert(
+    safeLightState.poolActiveAfterOn > 0 && safeLightState.poolActiveAfterOn <= safeLightState.poolSize,
+    `Expected bounded active safe lights after activation, got ${safeLightState.poolActiveAfterOn}/${safeLightState.poolSize}`,
+  );
+  assert(safeLightState.poolSize === 8, `Expected safe-light dynamic pool to stay at 8, got ${safeLightState.poolSize}`);
+  assert(safeLightState.poolLightRange <= 8, `Expected local safe light range <= 8, got ${safeLightState.poolLightRange}`);
+  assert(safeLightState.unloaded, "Expected activated safe light chunk to unload when player moves far away");
+  assert(safeLightState.restoredOn, "Expected safe light ON state to restore after chunk reload");
+  assert(safeLightState.activeAfterReload <= 8, `Expected active dynamic safe lights to remain bounded, got ${safeLightState.activeAfterReload}`);
   
   console.log("Initial state passed! Testing chunk generation & key placement...");
 

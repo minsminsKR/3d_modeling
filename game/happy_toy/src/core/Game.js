@@ -52,6 +52,10 @@ export class Game {
     this.doors = [];
     this.keys = [];
     this.cabinets = [];
+    this.lovelyDolls = [];
+    this.spawnedDollIds = new Set();
+    this.dollCountFound = 0;
+    this.collectedKeyIds = new Set();
     this.finalExit = null;
     this.keyCount = 0;
     this.player = null;
@@ -100,7 +104,11 @@ export class Game {
     this.mapBuilder = new MapBuilder(this.scene, this.collisionWorld, {
       debugEnabled: this.debugEnabled,
       mapConfig: this.mapConfig,
+      game: this,
     });
+    if (this.mapBuilder.pendingAssets) {
+      await Promise.allSettled(this.mapBuilder.pendingAssets);
+    }
     const map = this.mapBuilder.build();
     this.doors = map.doors;
     this.keys = map.keys;
@@ -296,6 +304,7 @@ export class Game {
 
     if (this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared && !this.cutsceneEvent) {
       this.updateBackrooms(deltaTime);
+      this.updateLovelyDolls(deltaTime);
       this.player.update(deltaTime);
       this.flashlightController.update();
       this.horrorEventManager?.update(deltaTime);
@@ -533,6 +542,18 @@ export class Game {
     this.testSafeMode = false;
     this.player.exitCabinet();
 
+    // Reset Lovely Doll states
+    if (this.lovelyDolls) {
+      for (const doll of this.lovelyDolls) {
+        this.scene.remove(doll.group);
+        doll.dispose();
+      }
+    }
+    this.lovelyDolls = [];
+    this.spawnedDollIds.clear();
+    this.dollCountFound = 0;
+    this.collectedKeyIds.clear();
+
     if (this.mapBuilder) {
       for (const chunk of this.mapBuilder.loadedChunks.values()) {
         this.mapBuilder.generator.destroyChunk(chunk.cx, chunk.cz);
@@ -576,6 +597,9 @@ export class Game {
     }
 
     key.collect();
+    if (this.collectedKeyIds) {
+      this.collectedKeyIds.add(key.id);
+    }
     this.keyCount += 1;
     this.hud.setStatus(`${key.label}를 얻었습니다. 열쇠 ${this.keyCount}/${this.keys.length}`, 1700);
   }
@@ -893,5 +917,18 @@ export class Game {
     }
     // checkInvisibleBlockers() removed — it scanned every blocker via scene.getObjectByName
     // on every frame (O(n*m) cost), which was a major source of hidden CPU spikes.
+  }
+
+  updateLovelyDolls(deltaTime) {
+    if (!this.lovelyDolls) return;
+    for (let i = this.lovelyDolls.length - 1; i >= 0; i--) {
+      const doll = this.lovelyDolls[i];
+      doll.update(deltaTime);
+    }
+  }
+
+  removeLovelyDoll(doll) {
+    if (!this.lovelyDolls) return;
+    this.lovelyDolls = this.lovelyDolls.filter(d => d !== doll);
   }
 }

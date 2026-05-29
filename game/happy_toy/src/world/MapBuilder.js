@@ -12,12 +12,14 @@ export class MapBuilder {
     this.doors = [];
     this.keys = [];
     this.cabinets = [];
+    this.safeLights = [];
     this.finalExit = null;
+    this.game = options.game;
     this.textures = new TextureLibrary();
-    this.generator = new BackroomsGenerator(scene, collisionWorld, this.textures);
+    this.generator = new BackroomsGenerator(scene, collisionWorld, this.textures, 12345, this.game);
     this.loadedChunks = new Map();
     this.loadQueue = [];
-    this.pendingAssets = [];
+    this.pendingAssets = this.generator.pendingAssets;
   }
 
   build() {
@@ -26,6 +28,7 @@ export class MapBuilder {
     this.doors = [];
     this.keys = [];
     this.cabinets = [];
+    this.safeLights = [];
     this.finalExit = null;
 
     // Initial chunk loading around player spawn
@@ -35,6 +38,7 @@ export class MapBuilder {
       doors: this.doors,
       keys: this.keys,
       cabinets: this.cabinets,
+      safeLights: this.safeLights,
       finalExit: this.finalExit,
       playerStart: new THREE.Vector3(0, 0, 0),
       pendingAssets: this.pendingAssets,
@@ -63,6 +67,7 @@ export class MapBuilder {
           this.doors = this.doors.filter((d) => d.chunkId !== chunk.chunkId);
           this.keys = this.keys.filter((k) => k.chunkId !== chunk.chunkId);
           this.cabinets = this.cabinets.filter((c) => c.chunkId !== chunk.chunkId);
+          this.safeLights = this.safeLights.filter((l) => l.chunkId !== chunk.chunkId);
           if (this.finalExit && this.finalExit.chunkId === chunk.chunkId) {
             this.finalExit = null;
           }
@@ -119,6 +124,7 @@ export class MapBuilder {
           for (const d of chunk.doors) this.doors.push(d);
           for (const k of chunk.keys) this.keys.push(k);
           for (const c of chunk.cabinets) this.cabinets.push(c);
+          for (const l of chunk.safeLights) this.safeLights.push(l);
           if (chunk.finalExit) this.finalExit = chunk.finalExit;
         }
       }
@@ -141,6 +147,7 @@ export class MapBuilder {
         for (const d of chunk.doors) this.doors.push(d);
         for (const k of chunk.keys) this.keys.push(k);
         for (const c of chunk.cabinets) this.cabinets.push(c);
+        for (const l of chunk.safeLights) this.safeLights.push(l);
         if (chunk.finalExit) this.finalExit = chunk.finalExit;
         changed = true;
       }

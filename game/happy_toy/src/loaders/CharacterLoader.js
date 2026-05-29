@@ -89,19 +89,40 @@ export class CharacterLoader {
       if (!child.isMesh && !child.isSkinnedMesh) {
         return;
       }
+      this.prepareCharacterGeometry(child);
       child.castShadow = true;
       child.receiveShadow = true;
-      const material = texture && child.geometry?.attributes?.uv
-        ? new THREE.MeshBasicMaterial({
-            map: texture,
-            color: 0xffffff,
-            side: THREE.DoubleSide,
-          })
-        : new THREE.MeshBasicMaterial({
-            color: 0x8d6a46,
-            side: THREE.DoubleSide,
-          });
-      child.material = material;
+      disposeMaterial(child.material);
+      child.material = this.createLitCharacterMaterial(child, texture);
+    });
+  }
+
+  prepareCharacterGeometry(child) {
+    const geometry = child.geometry;
+    if (!geometry?.attributes?.position) {
+      return;
+    }
+
+    // Some converted FBX character meshes arrive without normals. PBR lighting
+    // then has nothing to shade against, which makes the monster render black.
+    const normal = geometry.attributes.normal;
+    if (!normal || normal.count !== geometry.attributes.position.count) {
+      geometry.computeVertexNormals();
+    }
+    if (geometry.attributes.normal) {
+      geometry.normalizeNormals?.();
+      geometry.attributes.normal.needsUpdate = true;
+    }
+  }
+
+  createLitCharacterMaterial(child, texture) {
+    const canUseTexture = texture && child.geometry?.attributes?.uv;
+    return new THREE.MeshStandardMaterial({
+      map: canUseTexture ? texture : null,
+      color: canUseTexture ? 0xffffff : 0x8d6a46,
+      roughness: 0.88,
+      metalness: 0.0,
+      side: THREE.DoubleSide,
     });
   }
 
@@ -146,17 +167,24 @@ export class CharacterLoader {
     const group = new THREE.Group();
     const body = new THREE.Mesh(
       new THREE.CapsuleGeometry(0.32, config.height * 0.52, 8, 16),
-      new THREE.MeshStandardMaterial({ color: config.id === "uncat" ? 0x93423b : 0x6f7f57, roughness: 0.82 }),
+      new THREE.MeshStandardMaterial({
+        color: config.id === "uncat" ? 0x93423b : 0x6f7f57,
+        roughness: 0.88,
+        metalness: 0.0,
+      }),
     );
     body.position.y = config.height * 0.5;
     body.castShadow = true;
+    body.receiveShadow = true;
     group.add(body);
 
     const eye = new THREE.Mesh(
       new THREE.SphereGeometry(0.09, 12, 12),
-      new THREE.MeshBasicMaterial({ color: 0xffe7a4 }),
+      new THREE.MeshStandardMaterial({ color: 0xffd98a, roughness: 0.7, metalness: 0.0 }),
     );
     eye.position.set(0, config.height * 0.74, -0.3);
+    eye.castShadow = true;
+    eye.receiveShadow = true;
     group.add(eye);
 
     return {
@@ -169,6 +197,14 @@ export class CharacterLoader {
       fallback: true,
     };
   }
+}
+
+function disposeMaterial(material) {
+  if (Array.isArray(material)) {
+    material.forEach((entry) => entry?.dispose?.());
+    return;
+  }
+  material?.dispose?.();
 }
 
 function isRootPositionTrack(track) {

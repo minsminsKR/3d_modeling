@@ -200,6 +200,16 @@ export class CollisionWorld {
     return false;
   }
 
+  isCircleBlockedFast(position, radius, activeBlockers) {
+    for (const blocker of activeBlockers) {
+      const aabb = typeof blocker.aabb === "function" ? blocker.aabb() : blocker.aabb;
+      if (getCircleAabbCollision(position, radius, aabb).collides) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   hasLineOfSight(start, end) {
     for (const blocker of this.getActiveBlockers({ position: start })) {
       const aabb = typeof blocker.aabb === "function" ? blocker.aabb() : blocker.aabb;
@@ -253,6 +263,7 @@ export class CollisionWorld {
     const startSurface = this.getSurfaceAt(start, { preferredFloor: options.floor, allowAnyFloor: true });
     const floor = options.floor ?? startSurface.floor ?? this.getFloorForY(start.y ?? 0);
     const bounds = this.getNavigationBounds(start, goal, radius + cellSize * 2, cellSize, floor);
+    const activeBlockers = this.getActiveBlockers({ position: new THREE.Vector3(start.x, bounds.y, start.z), includeDoors: false });
     const startCell = worldToCell(start, bounds, cellSize);
     const goalCell = worldToCell(goal, bounds, cellSize);
     const open = [createPathNode(startCell.x, startCell.z, 0, heuristic(startCell, goalCell), null)];
@@ -297,7 +308,7 @@ export class CollisionWorld {
         if (
           !(nextX === goalCell.x && nextZ === goalCell.z)
           && (
-            this.isCircleBlocked(world, radius, { includeDoors: false })
+            this.isCircleBlockedFast(world, radius, activeBlockers)
             || !this.getSurfaceAt(world, { preferredFloor: floor }).walkable
           )
         ) {

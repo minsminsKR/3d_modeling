@@ -26,6 +26,7 @@ export class Door {
     this.group.name = this.id;
     this.group.position.copy(this.position);
 
+    this.sharedMaterial = material;
     this.panels = this.createSlidingPanels(material);
     this.createTracks();
   }
@@ -154,10 +155,16 @@ export class Door {
     this.group.traverse((child) => {
       if (child.isMesh) {
         child.geometry?.dispose();
-        if (Array.isArray(child.material)) {
-          child.material.forEach((m) => m.dispose());
-        } else {
-          child.material?.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m) => {
+              if (m !== this.sharedMaterial) {
+                m.dispose();
+              }
+            });
+          } else if (child.material !== this.sharedMaterial) {
+            child.material.dispose();
+          }
         }
       }
     });
