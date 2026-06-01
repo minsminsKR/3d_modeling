@@ -88,16 +88,55 @@ export class LovelyDoll {
     this.currentActionName = name;
   }
 
+  getLowestGroundPoint() {
+    let currentMinY = null;
+    let hasBones = false;
+    this.modelRoot.traverse((child) => {
+      if (child.isBone) hasBones = true;
+    });
+
+    if (hasBones) {
+      let minY = Infinity;
+      this.modelRoot.traverse((child) => {
+        if (child.isBone) {
+          const name = child.name.toLowerCase();
+          if (name.includes("root") || name.includes("hips") || name.includes("pelvis") || 
+              name.includes("spine") || name.includes("chest") || name.includes("neck") || 
+              name.includes("head") || name.includes("clavicle") || name.includes("shoulder")) {
+            return;
+          }
+          child.updateMatrixWorld(true);
+          const worldPos = new THREE.Vector3();
+          child.getWorldPosition(worldPos);
+          if (worldPos.y < minY) {
+            minY = worldPos.y;
+          }
+        }
+      });
+      if (Number.isFinite(minY)) {
+        currentMinY = minY;
+      }
+    }
+
+    if (currentMinY === null) {
+      this.modelRoot.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(this.modelRoot);
+      if (Number.isFinite(bounds.min.y)) {
+        currentMinY = bounds.min.y;
+      }
+    }
+    return currentMinY;
+  }
+
   snapModelToGround() {
     if (!this.modelRoot) return;
-    this.modelRoot.updateMatrixWorld(true);
-    const bounds = new THREE.Box3().setFromObject(this.modelRoot);
-    if (!Number.isFinite(bounds.min.y)) {
+    const currentMinY = this.getLowestGroundPoint();
+    if (currentMinY === null) {
       return;
     }
     const groundY = this.group.position.y;
-    const offset = groundY - bounds.min.y;
-    if (Math.abs(offset) > 0.002) {
+    const offset = groundY - currentMinY;
+    if (Math.abs(offset) > 0.001) {
       this.modelRoot.position.y += offset;
       this.modelRoot.updateMatrixWorld(true);
     }

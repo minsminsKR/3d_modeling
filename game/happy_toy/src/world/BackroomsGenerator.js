@@ -935,6 +935,7 @@ export class BackroomsGenerator {
           path: null,
           pathTimer: 0,
         };
+        anchor.userData.shadowMesh = addShadowBlob(anchor, 0.38);
       }
     }
 
@@ -1146,6 +1147,14 @@ export class BackroomsGenerator {
         } else if (mesh.name === "silent-mannequin-2f" && this.game) {
           this.game.spawnedWeepingAngel2F = false;
         }
+        if (mesh.userData.shadowMesh) {
+          const shadow = mesh.userData.shadowMesh;
+          shadow.geometry?.dispose();
+          if (shadow.material) {
+            shadow.material.map?.dispose();
+            shadow.material.dispose();
+          }
+        }
       }
       if (mesh.userData && mesh.userData.horrorProp) {
         mesh.traverse((child) => {
@@ -1231,4 +1240,33 @@ export class BackroomsGenerator {
 
     this.chunksData.delete(key);
   }
+}
+
+function addShadowBlob(group, radius) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, "rgba(0, 0, 0, 0.72)");
+  gradient.addColorStop(0.4, "rgba(0, 0, 0, 0.45)");
+  gradient.addColorStop(1, "rgba(0, 0, 0, 0.0)");
+  
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 64, 64);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  const geometry = new THREE.PlaneGeometry(radius * 3.6, radius * 3.6);
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    depthWrite: false,
+    color: 0x000000,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = 0.015; // slightly above ground to prevent z-fighting
+  group.add(mesh);
+  return mesh;
 }

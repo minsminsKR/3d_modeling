@@ -209,10 +209,49 @@ export class Enemy {
     return false;
   }
 
+  getLowestGroundPoint() {
+    let currentMinY = null;
+    let hasBones = false;
+    this.modelRoot.traverse((child) => {
+      if (child.isBone) hasBones = true;
+    });
+
+    if (hasBones) {
+      let minY = Infinity;
+      this.modelRoot.traverse((child) => {
+        if (child.isBone) {
+          const name = child.name.toLowerCase();
+          if (name.includes("root") || name.includes("hips") || name.includes("pelvis") || 
+              name.includes("spine") || name.includes("chest") || name.includes("neck") || 
+              name.includes("head") || name.includes("clavicle") || name.includes("shoulder")) {
+            return;
+          }
+          child.updateMatrixWorld(true);
+          const worldPos = new THREE.Vector3();
+          child.getWorldPosition(worldPos);
+          if (worldPos.y < minY) {
+            minY = worldPos.y;
+          }
+        }
+      });
+      if (Number.isFinite(minY)) {
+        currentMinY = minY;
+      }
+    }
+
+    if (currentMinY === null) {
+      this.modelRoot.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(this.modelRoot);
+      if (Number.isFinite(bounds.min.y)) {
+        currentMinY = bounds.min.y;
+      }
+    }
+    return currentMinY;
+  }
+
   snapModelToGround(allowAirborne = false) {
-    this.modelRoot.updateMatrixWorld(true);
-    const bounds = new THREE.Box3().setFromObject(this.modelRoot);
-    if (!Number.isFinite(bounds.min.y)) {
+    const currentMinY = this.getLowestGroundPoint();
+    if (currentMinY === null) {
       return;
     }
 
@@ -222,21 +261,20 @@ export class Enemy {
     const footOffset = this.config.footOffset ?? 0;
     const groundY = this.group.position.y - (this.config.visualGroundSink ?? 0) + footOffset;
 
-    if (allowAirborne && bounds.min.y >= groundY) {
+    if (allowAirborne && currentMinY >= groundY) {
       return;
     }
 
-    const offset = groundY - bounds.min.y;
-    if (Math.abs(offset) > 0.002) {
+    const offset = groundY - currentMinY;
+    if (Math.abs(offset) > 0.001) {
       this.modelRoot.position.y += offset;
       this.modelRoot.updateMatrixWorld(true);
     }
   }
 
   getModelGroundOffset() {
-    this.modelRoot.updateMatrixWorld(true);
-    const bounds = new THREE.Box3().setFromObject(this.modelRoot);
-    return Number.isFinite(bounds.min.y) ? bounds.min.y - this.group.position.y : null;
+    const currentMinY = this.getLowestGroundPoint();
+    return currentMinY !== null ? currentMinY - this.group.position.y : null;
   }
 
   updatePerception(playerPosition, deltaTime, playerState = {}) {
@@ -886,8 +924,8 @@ export class Enemy {
       wanderRetargetTimer: this.wanderRetargetTimer?.toFixed(2) ?? null,
       wanderStuckCount: this.wanderStuckCount ?? 0,
       pathTarget: this.debugPathTarget,
-      chasePathLength: this.chasePath.length,
-      patrolPathLength: this.patrolPath.length,
+      chasePathLength: this.chasePath ? this.chasePath.length : 0,
+      patrolPathLength: this.patrolPath ? this.patrolPath.length : 0,
       stuckTimer: this.stuckTimer,
       lastUnstuckTarget: this.lastUnstuckTarget,
     };
