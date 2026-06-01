@@ -29,16 +29,19 @@ try {
     game.updateBackrooms(0.016);
 
     const baby = game.enemyManager.enemies.find(e => e.config.id === "baby-workshop");
+    const hasShadowMesh = baby && baby.shadowMesh && baby.group.children.includes(baby.shadowMesh);
     return {
       found: Boolean(baby),
       awake: baby ? baby.babyAwake : null,
       state: baby ? baby.state : null,
       initialPos: baby ? [baby.group.position.x, baby.group.position.y, baby.group.position.z] : null,
+      hasShadowMesh: Boolean(hasShadowMesh),
     };
   });
 
   console.log("Baby preparation state:", prepState);
   assert(prepState.found, "Expected baby-workshop to be spawned in the scene");
+  assert(prepState.hasShadowMesh, "Expected Baby to have a drop-shadow blob mesh attached to its group");
   assert(prepState.awake === false, "Expected Baby to be initially asleep (not awake)");
   assert(prepState.state === "crying", "Expected initial Baby state to be 'crying'");
 

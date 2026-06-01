@@ -16,6 +16,7 @@ export class Enemy {
     this.collisionWorld.resolveCircle(this.group.position, config.radius);
     this.modelRoot = loadedAsset.root;
     this.group.add(loadedAsset.root);
+    this.shadowMesh = addShadowBlob(this.group, config.radius);
 
     this.mixer = loadedAsset.animations.length
       ? new THREE.AnimationMixer(loadedAsset.root)
@@ -898,7 +899,43 @@ export class Enemy {
       this.mixer.uncacheRoot(this.modelRoot);
     }
     this.mixer = null;
+    if (this.shadowMesh) {
+      this.shadowMesh.geometry?.dispose();
+      if (this.shadowMesh.material) {
+        this.shadowMesh.material.map?.dispose();
+        this.shadowMesh.material.dispose();
+      }
+    }
   }
+}
+
+function addShadowBlob(group, radius) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext("2d");
+  
+  const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gradient.addColorStop(0, "rgba(0, 0, 0, 0.72)");
+  gradient.addColorStop(0.4, "rgba(0, 0, 0, 0.45)");
+  gradient.addColorStop(1, "rgba(0, 0, 0, 0.0)");
+  
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 64, 64);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  const geometry = new THREE.PlaneGeometry(radius * 3.6, radius * 3.6);
+  const material = new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    depthWrite: false,
+    color: 0x000000,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = 0.015; // slightly above ground to prevent z-fighting
+  group.add(mesh);
+  return mesh;
 }
 
 function pointFromWaypoint(waypoint) {
