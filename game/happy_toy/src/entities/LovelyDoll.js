@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { LOVELY_DOLL_CONFIG } from "../config/gameConfig.js";
 
 export class LovelyDoll {
   constructor(id, loadedAsset, collisionWorld, game) {
@@ -134,7 +135,7 @@ export class LovelyDoll {
     if (currentMinY === null) {
       return;
     }
-    const groundY = this.group.position.y;
+    const groundY = this.group.position.y - (LOVELY_DOLL_CONFIG.visualGroundSink ?? 0.03);
     const offset = groundY - currentMinY;
     if (Math.abs(offset) > 0.001) {
       this.modelRoot.position.y += offset;
@@ -154,6 +155,9 @@ export class LovelyDoll {
     } else if (this.state === "fade") {
       this.updateFade(deltaTime);
     }
+
+    this.group.position.y = this.collisionWorld.getGroundY(this.group.position);
+    this.snapModelToGround();
   }
 
   updateActivation(deltaTime) {
@@ -295,9 +299,6 @@ export class LovelyDoll {
       );
       this.group.rotation.y = Math.atan2(direction.x, direction.z);
     }
-    
-    this.group.position.y = this.collisionWorld.getGroundY(this.group.position);
-    this.snapModelToGround();
   }
 
   openDoorOnPath(direction) {

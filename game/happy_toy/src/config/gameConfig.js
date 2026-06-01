@@ -43,6 +43,7 @@ export const LOVELY_DOLL_CONFIG = {
   },
   height: 1.1,
   radius: 0.35,
+  visualGroundSink: 0.03,
 };
 
 export const LIGHTING_CONFIG = {
@@ -660,7 +661,7 @@ export const ENEMY_CONFIGS = [
     chaseAllowsAirborne: false,
     allowInterFloorPatrol: true,
     cabinetInvestigateSpeed: 3.05,
-    visualGroundSink: 0.2,
+    visualGroundSink: 0.04,
     footOffset: 0.0,
     wanderMinDistance: 10,
     wanderMaxDistance: 40,
@@ -722,7 +723,7 @@ export const ENEMY_CONFIGS = [
     allowInterFloorPatrol: true,
     cabinetInvestigateSpeed: 2.7,
     idlePoseRatio: 0.08,
-    visualGroundSink: 0.55,
+    visualGroundSink: 0.05,
     footOffset: 0.0,
     wanderMinDistance: 10,
     wanderMaxDistance: 40,
@@ -782,7 +783,7 @@ export const ENEMY_CONFIGS = [
     chaseAllowsAirborne: false,
     allowInterFloorPatrol: true,
     cabinetInvestigateSpeed: 3.0,
-    visualGroundSink: 0.1,
+    visualGroundSink: 0.05,
     footOffset: 0.0,
     wanderMinDistance: 10,
     wanderMaxDistance: 40,
@@ -824,7 +825,7 @@ export const ENEMY_CONFIGS = [
     chaseAllowsAirborne: false,
     allowInterFloorPatrol: true,
     cabinetInvestigateSpeed: 3.0,
-    visualGroundSink: 0.1,
+    visualGroundSink: 0.05,
     footOffset: 0.0,
     wanderMinDistance: 10,
     wanderMaxDistance: 40,
@@ -866,7 +867,7 @@ export const ENEMY_CONFIGS = [
     chaseAllowsAirborne: false,
     allowInterFloorPatrol: true,
     cabinetInvestigateSpeed: 3.0,
-    visualGroundSink: 0.1,
+    visualGroundSink: 0.05,
     footOffset: 0.0,
     wanderMinDistance: 10,
     wanderMaxDistance: 40,
@@ -908,7 +909,7 @@ export const ENEMY_CONFIGS = [
     chaseAllowsAirborne: false,
     allowInterFloorPatrol: true,
     cabinetInvestigateSpeed: 3.0,
-    visualGroundSink: 0.1,
+    visualGroundSink: 0.05,
     footOffset: 0.0,
     wanderMinDistance: 10,
     wanderMaxDistance: 40,
@@ -937,6 +938,7 @@ export const HWACAT_EVENT_CONFIG = {
   },
   height: 1.68,
   radius: 0.43,
+  visualGroundSink: 0.05,
 };
 
 export const HWACAT_ANGRY_ENEMY_CONFIG = {
@@ -963,7 +965,7 @@ export const HWACAT_ANGRY_ENEMY_CONFIG = {
   chaseAllowsAirborne: false,
   allowInterFloorPatrol: true,
   cabinetInvestigateSpeed: 3.2,
-  visualGroundSink: 0.24,
+  visualGroundSink: 0.04,
   footOffset: 0.0,
   wanderMinDistance: 10,
   wanderMaxDistance: 40,
