@@ -129,6 +129,28 @@ export class PlayerController {
   }
 
   updateMovement(deltaTime) {
+    const game = window.__happyToy;
+    const isSafeMode = !!(game && game.testSafeMode);
+    
+    // Transition out of safe mode: snap back to the ground Y!
+    if (this.noclip && !isSafeMode) {
+      this.noclip = false;
+      this.position.y = this.collisionWorld.getGroundY(this.position);
+      this.cameraY = this.position.y + PLAYER_CONFIG.height;
+    }
+    this.noclip = isSafeMode;
+
+    // 1. Noclip vertical movement (holding Spacebar to go up, Ctrl or C to go down)
+    if (this.noclip) {
+      const up = this.input.isDown(" ", "space") ? 1 : 0;
+      const down = this.input.isDown("control", "ctrl", "c") ? 1 : 0;
+      const verticalMove = up - down;
+      if (verticalMove !== 0) {
+        const verticalSpeed = this.input.isDown("shift") ? PLAYER_CONFIG.sprintSpeed : PLAYER_CONFIG.walkSpeed;
+        this.position.y += verticalMove * verticalSpeed * deltaTime;
+      }
+    }
+
     const forward = Number(this.input.isDown("w", "arrowup")) - Number(this.input.isDown("s", "arrowdown"));
     const strafe = Number(this.input.isDown("d", "arrowright")) - Number(this.input.isDown("a", "arrowleft"));
     this.isMoving = forward !== 0 || strafe !== 0;
