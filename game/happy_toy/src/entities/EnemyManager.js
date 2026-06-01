@@ -153,7 +153,14 @@ export class EnemyManager {
         enemy.doors = doors;
       }
       enemy.group.position.set(...enemy.config.spawn);
-      enemy.state = "patrol";
+      
+      if (enemy.config.type === "baby") {
+        enemy.state = "crying";
+        enemy.babyAwake = false;
+      } else {
+        enemy.state = "patrol";
+      }
+
       enemy.currentWaypoint = 0;
       enemy.memoryTimer = 0;
       enemy.lastKnownPlayerPosition = null;
@@ -176,7 +183,13 @@ export class EnemyManager {
       enemy.wanderStuckCount = 0;
       enemy.group.position.y = this.collisionWorld.getGroundY(enemy.group.position);
       enemy.resumeAnimatedPose();
-      enemy.playAction("patrol", 0);
+      
+      if (enemy.config.type === "baby") {
+        enemy.playAction("crying", 0);
+      } else {
+        enemy.playAction("patrol", 0);
+      }
+
       enemy.snapModelToGround(false);
     }
   }

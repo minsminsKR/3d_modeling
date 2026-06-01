@@ -23,10 +23,20 @@ export class Enemy {
     this.actions = this.createActions(loadedAsset.actions || {});
     this.currentActionName = null;
     this.isIdlePose = false;
-    this.playAction("patrol", 0);
+    
+    this.isBaby = config.type === "baby";
+    this.babyAwake = false;
+
+    if (this.isBaby) {
+      this.state = "crying";
+      this.playAction("crying", 0);
+    } else {
+      this.state = "wander";
+      this.playAction("patrol", 0);
+    }
+    
     this.snapModelToGround(false);
 
-    this.state = "wander";
     this.currentWaypoint = 0;
     this.lastKnownPlayerPosition = null;
     this.memoryTimer = 0;
@@ -71,6 +81,60 @@ export class Enemy {
       this.mixer?.update(deltaTime);
     }
     this.collisionWorld.snapToValidSurface(this.group.position, { actorId: this.config.id });
+
+    // Baby Crying / Awakening check
+    if (this.isBaby && !this.babyAwake) {
+      const distance = distance2D(this.group.position, playerPosition);
+      
+      const tooClose = distance <= 1.8;
+      const sprintNearby = playerState.isSprinting && distance <= 6.0;
+      
+      let flashlightAlert = false;
+      const game = window.__happyToy;
+      const flashlightOn = game?.flashlightController?.enabled;
+      
+      if (flashlightOn && distance <= 8.0) {
+        const babyPoint = new THREE.Vector3(
+          this.group.position.x,
+          this.group.position.y + this.config.height * 0.5,
+          this.group.position.z
+        );
+        const toBaby = new THREE.Vector3().subVectors(babyPoint, game.camera.position);
+        const distToBaby = toBaby.length();
+        
+        if (distToBaby > 0.001) {
+          toBaby.normalize();
+          
+          const cameraDirection = new THREE.Vector3();
+          game.camera.getWorldDirection(cameraDirection);
+          
+          const dot = cameraDirection.dot(toBaby);
+          const hasLos = this.collisionWorld.hasLineOfSight(game.camera.position, babyPoint);
+          
+          if (dot >= 0.94 && hasLos) {
+            flashlightAlert = true;
+          }
+        }
+      }
+      
+      if (tooClose || sprintNearby || flashlightAlert) {
+        this.babyAwake = true;
+        this.state = "chase";
+        this.memoryTimer = this.config.memorySeconds;
+        this.lastKnownPlayerPosition = playerPosition.clone();
+        this.playAction("chase");
+        
+        if (game?.hud) {
+          game.hud.setStatus("아기가 깨어났습니다! 울음소리가 멈췄습니다!", 2200);
+        }
+      } else {
+        // Remain in crying state
+        this.playAction("crying");
+        this.snapModelToGround(false);
+        this.caughtPlayer = false;
+        return;
+      }
+    }
 
     if (this.state === "investigateCabinet") {
       this.updateCabinetInvestigation(deltaTime);
