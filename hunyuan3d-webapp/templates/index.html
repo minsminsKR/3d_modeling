@@ -9,6 +9,12 @@
   </head>
   <body>
     <main class="shell">
+      <nav class="topbar site-nav">
+        <a href="{{ url_for('saved_jobs_page') }}">
+          저장된 모델{% if saved_job_count %} ({{ saved_job_count }}){% endif %}
+        </a>
+      </nav>
+
       <section class="hero">
         <div>
           <p class="eyebrow">Hunyuan3D 2.1 Web Studio</p>
@@ -130,31 +136,47 @@
         <section class="panel">
           <div class="section-head">
             <h2>최근 작업</h2>
+            <a class="topbar-link" href="{{ url_for('saved_jobs_page') }}">저장된 모델 보기</a>
           </div>
           <div class="jobs">
             {% for job in recent_jobs %}
-              <a class="job-row" href="{{ url_for('job_detail', job_id=job.id) }}">
-                <span class="recent-preview" aria-hidden="true">
-                  {% if job.model_url %}
-                    <model-viewer
-                      class="job-model-preview"
-                      src="{{ job.model_url }}"
-                      auto-rotate
-                      camera-orbit="45deg 70deg auto"
-                      exposure="1"
-                      shadow-intensity="0.45"
-                      interaction-prompt="none">
-                    </model-viewer>
-                  {% else %}
-                    <span class="preview-placeholder">준비 중</span>
-                  {% endif %}
-                </span>
-                <span class="pill {{ job.status }}">{{ job.status }}</span>
-                <span class="job-summary">
-                  <strong>{{ job.id[:8] }}</strong>
-                  <span class="muted">{{ job.message }}</span>
-                </span>
-              </a>
+              <div class="job-row">
+                <a class="job-row-main" href="{{ url_for('job_detail', job_id=job.id) }}">
+                  <span class="recent-preview" aria-hidden="true">
+                    {% if job.model_url %}
+                      <model-viewer
+                        class="job-model-preview"
+                        src="{{ job.model_url }}"
+                        auto-rotate
+                        camera-orbit="45deg 70deg auto"
+                        exposure="1"
+                        shadow-intensity="0.45"
+                        interaction-prompt="none">
+                      </model-viewer>
+                    {% else %}
+                      <span class="preview-placeholder">준비 중</span>
+                    {% endif %}
+                  </span>
+                  <span class="pill {{ job.status }}">{{ job.status }}</span>
+                  <span class="job-summary">
+                    <strong>{{ job.display_name }}</strong>
+                    <span class="muted">{{ job.message }}</span>
+                    {% if job.saved %}
+                      <span class="saved-badge">저장됨</span>
+                    {% endif %}
+                  </span>
+                </a>
+                {% if job.status == 'completed' and job.model_url %}
+                  <button
+                    type="button"
+                    class="save-job-btn {% if job.saved %}is-saved{% endif %}"
+                    data-job-id="{{ job.id }}"
+                    data-saved="{{ 'true' if job.saved else 'false' }}"
+                    aria-pressed="{{ 'true' if job.saved else 'false' }}">
+                    {% if job.saved %}저장됨{% else %}저장하기{% endif %}
+                  </button>
+                {% endif %}
+              </div>
             {% endfor %}
           </div>
         </section>

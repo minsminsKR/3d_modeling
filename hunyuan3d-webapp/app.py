@@ -4,12 +4,14 @@ import argparse
 import json
 import os
 import re
+import shutil
 import sys
 import threading
 import time
 import traceback
 import uuid
 import zipfile
+from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 from importlib.util import find_spec
 from pathlib import Path
@@ -120,6 +122,7 @@ def create_app() -> Flask:
 
     jobs_lock = threading.Lock()
     jobs = load_jobs()
+    cleanup_unsaved_jobs(jobs)
     executor = ThreadPoolExecutor(max_workers=env_int("GENERATION_WORKERS", 1))
     generator = Hunyuan3DGenerator(
         repo_path=os.getenv("HUNYUAN3D_REPO") or None,
@@ -199,6 +202,7 @@ def create_app() -> Flask:
         return render_template(
             "index.html",
             recent_jobs=[public_job(job) for job in visible_recent_jobs],
+            saved_job_count=len(list_saved_jobs(jobs)),
             max_files=env_int("MAX_UPLOAD_FILES", 15),
             gpu_ids=gpu_ids,
             default_gpu_id=default_gpu_id(gpu_ids),
@@ -316,6 +320,11 @@ def create_app() -> Flask:
             }
         )
 
+    @app.get("/saved")
+    def saved_jobs_page():
+        saved = [public_job(job) for job in list_saved_jobs(jobs)]
+        return render_template("saved.html", saved_jobs=saved)
+
     @app.get("/jobs/<job_id>")
     def job_detail(job_id: str):
         job = jobs.get(job_id)
@@ -329,6 +338,30 @@ def create_app() -> Flask:
         if job is None:
             abort(404)
         return jsonify(public_job(job))
+
+    @app.post("/api/jobs/<job_id>/saved")
+    def set_job_saved(job_id: str):
+        job = jobs.get(job_id)
+        if job is None:
+            abort(404)
+        if job.get("status") != "completed":
+            abort(400, "Only completed jobs can be saved.")
+        model_path = Path(job.get("model_path", ""))
+        if not model_path.exists():
+            abort(400, "Model file is missing; this job cannot be saved.")
+
+        payload = request.get_json(silent=True) or {}
+        save_requested = payload.get("saved", True)
+        if isinstance(save_requested, str):
+            save_requested = save_requested.lower() in {"1", "true", "yes", "on"}
+        else:
+            save_requested = bool(save_requested)
+
+        if save_requested:
+            updated = set_job(job_id, saved=True, saved_at=time.time())
+        else:
+            updated = set_job(job_id, saved=False, saved_at=None)
+        return jsonify(public_job(updated))
 
     @app.get("/jobs/<job_id>/download")
     def download_model(job_id: str):
@@ -457,6 +490,11 @@ def create_app() -> Flask:
             ]
         if (OUTPUT_DIR / job["id"] / "processed_inputs" / "01.png").exists():
             result["processed_input_url"] = url_for("processed_input", job_id=job["id"], image_index=1)
+        result["saved"] = bool(job.get("saved"))
+        saved_at = job.get("saved_at")
+        result["saved_at"] = saved_at
+        result["saved_at_label"] = format_timestamp(saved_at)
+        result["created_at_label"] = format_timestamp(job.get("created_at"))
         return result
 
     return app
@@ -467,6 +505,65 @@ def jobs_for_batch(batch_id: str, all_jobs: dict) -> list[dict]:
         [job for job in all_jobs.values() if job.get("batch_id") == batch_id],
         key=lambda item: (item.get("batch_index", 0), item.get("created_at", 0)),
     )
+
+
+def format_timestamp(value: float | None) -> str:
+    if not value:
+        return ""
+    return datetime.fromtimestamp(value).strftime("%Y-%m-%d %H:%M")
+
+
+def is_job_saved(job: dict) -> bool:
+    return bool(job.get("saved"))
+
+
+def list_saved_jobs(all_jobs: dict) -> list[dict]:
+    saved_jobs = [
+        job
+        for job in all_jobs.values()
+        if is_job_saved(job) and job.get("status") == "completed" and job_model_exists(job)
+    ]
+    return sorted(
+        saved_jobs,
+        key=lambda item: item.get("saved_at") or item.get("finished_at") or item.get("created_at", 0),
+        reverse=True,
+    )
+
+
+def job_model_exists(job: dict) -> bool:
+    model_path = job.get("model_path")
+    if not model_path:
+        return False
+    return Path(model_path).exists()
+
+
+def cleanup_unsaved_jobs(all_jobs: dict) -> None:
+    retention_days = env_int("HUNYUAN_UNSAVED_JOB_RETENTION_DAYS", 0)
+    if retention_days <= 0:
+        return
+
+    cutoff = time.time() - retention_days * 86400
+    removed = False
+    for job_id, job in list(all_jobs.items()):
+        if is_job_saved(job):
+            continue
+        if job.get("status") not in {"completed", "failed"}:
+            continue
+        finished_at = job.get("finished_at") or job.get("updated_at") or job.get("created_at", 0)
+        if finished_at >= cutoff:
+            continue
+        delete_job_artifacts(job_id)
+        all_jobs.pop(job_id, None)
+        removed = True
+
+    if removed:
+        save_jobs(all_jobs)
+
+
+def delete_job_artifacts(job_id: str) -> None:
+    for directory in [OUTPUT_DIR / job_id, UPLOAD_DIR / job_id]:
+        if directory.exists():
+            shutil.rmtree(directory, ignore_errors=True)
 
 
 def display_name_for_job(job: dict) -> str:

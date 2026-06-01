@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>저장된 모델 - Hunyuan3D Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="topbar">
+        <a href="{{ url_for('index') }}">새 작업 만들기</a>
+        <a href="{{ url_for('saved_jobs_page') }}">저장된 모델</a>
+      </nav>
+
+      <section class="panel status-card">
+        <p class="eyebrow">Saved Library</p>
+        <h1>저장된 모델</h1>
+        <p class="lead">
+          저장해 둔 GLB 모델은 여기에 계속 남습니다. 언제든 미리보기하고 다시 다운로드할 수 있습니다.
+        </p>
+        <div class="metrics">
+          <div>
+            <span class="metric-label">저장된 모델</span>
+            <strong>{{ saved_jobs | length }}</strong>
+          </div>
+        </div>
+      </section>
+
+      {% if saved_jobs %}
+        <section class="batch-grid">
+          {% for job in saved_jobs %}
+            <article class="panel saved-job-card">
+              <div class="batch-job-head">
+                <div>
+                  <span class="metric-label">저장됨 {{ job.saved_at_label or job.created_at_label }}</span>
+                  <h2>{{ job.display_name }}</h2>
+                </div>
+                <span class="pill completed">saved</span>
+              </div>
+              <p class="batch-job-message muted">{{ job.message }}</p>
+              <div class="saved-model-slot">
+                <model-viewer
+                  src="{{ job.model_url }}"
+                  camera-controls
+                  auto-rotate
+                  exposure="1"
+                  shadow-intensity="0.45"
+                  interaction-prompt="none">
+                </model-viewer>
+              </div>
+              <div class="saved-job-actions">
+                <a class="download" href="{{ job.download_url }}">GLB 다운로드</a>
+                <a class="download secondary" href="{{ url_for('job_detail', job_id=job.id) }}">상세 보기</a>
+                <button
+                  type="button"
+                  class="save-job-btn is-saved"
+                  data-job-id="{{ job.id }}"
+                  data-saved="true"
+                  aria-pressed="true">
+                  저장 해제
+                </button>
+              </div>
+            </article>
+          {% endfor %}
+        </section>
+      {% else %}
+        <section class="panel empty-saved">
+          <h2>아직 저장된 모델이 없습니다</h2>
+          <p class="muted">
+            작업이 완료되면 결과 화면이나 최근 작업 목록에서 <strong>저장하기</strong>를 눌러 보관하세요.
+          </p>
+          <a class="download" href="{{ url_for('index') }}">새 모델 만들기</a>
+        </section>
+      {% endif %}
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

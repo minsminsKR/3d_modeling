@@ -11,6 +11,7 @@
     <main class="shell">
       <nav class="topbar">
         <a href="{{ url_for('index') }}">새 작업 만들기</a>
+        <a href="{{ url_for('saved_jobs_page') }}">저장된 모델</a>
       </nav>
 
       <section class="panel status-card">
@@ -42,7 +43,18 @@
       <section id="result-panel" class="panel result-panel {% if job.status != 'completed' %}hidden{% endif %}">
         <div class="section-head">
           <h2>생성 결과</h2>
-          <a id="download-link" class="download" href="{{ job.download_url if job.download_url else '#' }}">GLB 다운로드</a>
+          <div class="result-actions">
+            <button
+              id="save-job-btn"
+              type="button"
+              class="save-job-btn {% if job.saved %}is-saved{% endif %}"
+              data-job-id="{{ job.id }}"
+              data-saved="{{ 'true' if job.saved else 'false' }}"
+              aria-pressed="{{ 'true' if job.saved else 'false' }}">
+              {% if job.saved %}저장됨{% else %}저장하기{% endif %}
+            </button>
+            <a id="download-link" class="download" href="{{ job.download_url if job.download_url else '#' }}">GLB 다운로드</a>
+          </div>
         </div>
         <div id="warning-list" class="warning-list {% if not job.warnings %}hidden{% endif %}">
           {% for warning in job.warnings %}

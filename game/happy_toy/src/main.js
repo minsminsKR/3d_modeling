@@ -1,7 +1,10 @@
 // 브라우저 진입점입니다.
 // DOM 루트만 찾아 Game을 시작하고, 실제 게임 기능은 core/Game.js가 총괄합니다.
 
+import * as THREE from "three";
 import { Game } from "./core/Game.js";
+
+window.THREE = THREE;
 
 function isWebGLAvailable() {
   try {

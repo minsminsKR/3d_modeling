@@ -11,6 +11,7 @@
     <main class="shell">
       <nav class="topbar">
         <a href="{{ url_for('index') }}">새 작업 만들기</a>
+        <a href="{{ url_for('saved_jobs_page') }}">저장된 모델</a>
       </nav>
 
       <section class="panel status-card">
@@ -75,11 +76,23 @@
                 <span class="preview-placeholder">대기 중</span>
               {% endif %}
             </div>
-            <a
-              class="batch-download download {% if job.status != 'completed' %}hidden{% endif %}"
-              href="{{ job.download_url if job.download_url else '#' }}">
-              GLB 다운로드
-            </a>
+            <div class="saved-job-actions">
+              <a
+                class="batch-download download {% if job.status != 'completed' %}hidden{% endif %}"
+                href="{{ job.download_url if job.download_url else '#' }}">
+                GLB 다운로드
+              </a>
+              {% if job.status == 'completed' %}
+                <button
+                  type="button"
+                  class="save-job-btn {% if job.saved %}is-saved{% endif %}"
+                  data-job-id="{{ job.id }}"
+                  data-saved="{{ 'true' if job.saved else 'false' }}"
+                  aria-pressed="{{ 'true' if job.saved else 'false' }}">
+                  {% if job.saved %}저장됨{% else %}저장하기{% endif %}
+                </button>
+              {% endif %}
+            </div>
           </article>
         {% endfor %}
       </section>

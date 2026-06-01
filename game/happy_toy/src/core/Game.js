@@ -305,6 +305,7 @@ export class Game {
     if (this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared && !this.cutsceneEvent) {
       this.updateBackrooms(deltaTime);
       this.updateLovelyDolls(deltaTime);
+      this.updateWeepingAngels(deltaTime);
       this.player.update(deltaTime);
       this.flashlightController.update();
       this.horrorEventManager?.update(deltaTime);
@@ -930,5 +931,158 @@ export class Game {
   removeLovelyDoll(doll) {
     if (!this.lovelyDolls) return;
     this.lovelyDolls = this.lovelyDolls.filter(d => d !== doll);
+  }
+
+  isPlayerLookingAt(targetPosition) {
+    if (!this.player) return false;
+    
+    const frustum = new THREE.Frustum();
+    const cameraViewProjectionMatrix = new THREE.Matrix4();
+    this.camera.updateMatrixWorld();
+    this.camera.matrixWorldInverse.copy(this.camera.matrixWorld).invert();
+    cameraViewProjectionMatrix.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse);
+    frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+
+    const checkPoint = new THREE.Vector3(targetPosition.x, targetPosition.y + 0.8, targetPosition.z);
+    const inFrustum = frustum.containsPoint(checkPoint);
+    if (!inFrustum) return false;
+    
+    const hasLos = this.collisionWorld.hasLineOfSight(this.camera.position, checkPoint);
+    return hasLos;
+  }
+
+  updateWeepingAngels(deltaTime) {
+    if (!this.player || !this.mapBuilder) return;
+    
+    const flashlightOn = this.flashlightController && this.flashlightController.enabled;
+    const playerPos = this.player.position;
+    const angels = [];
+    
+    // Find all weeping angels in loaded chunks and update them individually
+    for (const chunk of this.mapBuilder.loadedChunks.values()) {
+      for (const mesh of chunk.meshes) {
+        if (mesh.userData && mesh.userData.isWeepingAngel && mesh.userData.weepingAngelState && mesh.userData.weepingAngelState.loaded) {
+          const state = mesh.userData.weepingAngelState;
+          angels.push(mesh);
+          
+          // 1. Gaze check: Is player looking at this angel?
+          const isLooking = this.isPlayerLookingAt(mesh.position);
+          
+          // 2. Activeness check: Only active if flashlight is ON and player is NOT looking
+          const shouldMove = flashlightOn && !isLooking;
+          
+          if (shouldMove) {
+            const goal = playerPos;
+            
+            // Pathfinding
+            state.pathTimer -= deltaTime;
+            const canMoveDirect = this.collisionWorld.hasLineOfSight(mesh.position, goal);
+            let target = goal;
+            
+            if (canMoveDirect) {
+              state.path = [];
+              state.pathTimer = 0.5;
+            } else {
+              if (state.path === null || state.pathTimer <= 0) {
+                state.path = this.collisionWorld.findPath(mesh.position, goal, state.radius, {
+                  cellSize: 0.85,
+                  allowInterFloor: true,
+                });
+                state.pathTimer = 0.4 + Math.random() * 0.2;
+              }
+              
+              while (state.path && state.path.length > 1 && Math.hypot(mesh.position.x - state.path[1].x, mesh.position.z - state.path[1].z) < 0.4) {
+                state.path.shift();
+              }
+              target = (state.path && (state.path[1] || state.path[0])) || goal;
+            }
+            
+            // Move
+            const direction = new THREE.Vector3(target.x - mesh.position.x, 0, target.z - mesh.position.z);
+            if (direction.lengthSq() > 0.0001) {
+              direction.normalize();
+              const previousPosition = mesh.position.clone();
+              mesh.position.addScaledVector(direction, state.speed * deltaTime);
+              this.collisionWorld.resolveCircle(mesh.position, state.radius);
+              this.collisionWorld.resolveActorPosition(
+                previousPosition,
+                mesh.position,
+                state.radius,
+                { actorId: state.id },
+              );
+              mesh.rotation.y = Math.atan2(direction.x, direction.z);
+            }
+            
+            mesh.position.y = this.collisionWorld.getGroundY(mesh.position);
+          }
+          
+          // 3. Collision catch check: Only catches player if flashlight is ON
+          if (flashlightOn) {
+            const distToPlayer = Math.hypot(mesh.position.x - playerPos.x, mesh.position.z - playerPos.z);
+            if (distToPlayer <= state.catchDistance && !this.player.isHidden && !this.gameOver && !this.gameCleared && !this.testSafeMode) {
+              this.handleCaught("마네킹이 바로 뒤에 서 있었습니다.");
+            }
+          }
+        }
+      }
+    }
+    
+    // Separation pass between Weeping Angels to prevent them from merging/overlapping
+    for (let i = 0; i < angels.length; i++) {
+      const meshA = angels[i];
+      const radiusA = meshA.userData.weepingAngelState.radius || 0.38;
+      
+      // Separate from other angels
+      for (let j = i + 1; j < angels.length; j++) {
+        const meshB = angels[j];
+        const radiusB = meshB.userData.weepingAngelState.radius || 0.38;
+        
+        const dx = meshB.position.x - meshA.position.x;
+        const dz = meshB.position.z - meshA.position.z;
+        const dist = Math.hypot(dx, dz);
+        const minDist = radiusA + radiusB + 0.1;
+        
+        if (dist < minDist && dist > 0.001) {
+          const overlap = minDist - dist;
+          const nx = dx / dist;
+          const nz = dz / dist;
+          const pushDistance = overlap * 0.5;
+          
+          meshA.position.x -= nx * pushDistance;
+          meshA.position.z -= nz * pushDistance;
+          meshB.position.x += nx * pushDistance;
+          meshB.position.z += nz * pushDistance;
+          
+          this.collisionWorld.resolveCircle(meshA.position, radiusA);
+          meshA.position.y = this.collisionWorld.getGroundY(meshA.position);
+          
+          this.collisionWorld.resolveCircle(meshB.position, radiusB);
+          meshB.position.y = this.collisionWorld.getGroundY(meshB.position);
+        }
+      }
+      
+      // Separate from other main enemies (Uncat, Cyclopse, etc.)
+      if (this.enemyManager && this.enemyManager.enemies) {
+        for (const enemy of this.enemyManager.enemies) {
+          const radiusB = enemy.config.radius || 0.35;
+          const dx = enemy.group.position.x - meshA.position.x;
+          const dz = enemy.group.position.z - meshA.position.z;
+          const dist = Math.hypot(dx, dz);
+          const minDist = radiusA + radiusB + 0.1;
+          
+          if (dist < minDist && dist > 0.001) {
+            const overlap = minDist - dist;
+            const nx = dx / dist;
+            const nz = dz / dist;
+            
+            meshA.position.x -= nx * overlap;
+            meshA.position.z -= nz * overlap;
+            
+            this.collisionWorld.resolveCircle(meshA.position, radiusA);
+            meshA.position.y = this.collisionWorld.getGroundY(meshA.position);
+          }
+        }
+      }
+    }
   }
 }
