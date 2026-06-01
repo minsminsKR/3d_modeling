@@ -12,7 +12,7 @@ export class LovelyDoll {
     
     // Check if asset loaded correctly
     if (loadedAsset && loadedAsset.root) {
-      this.modelRoot = loadedAsset.root.clone(true);
+      this.modelRoot = cloneSkinnedMeshModel(loadedAsset.root);
       this.group.add(this.modelRoot);
       
       // Set up materials for fading (making sure we can change opacity)
@@ -323,4 +323,36 @@ export class LovelyDoll {
       });
     }
   }
+}
+
+function cloneSkinnedMeshModel(source) {
+  const clone = source.clone(true);
+  
+  const sourceLookup = new Map();
+  const cloneLookup = new Map();
+  
+  source.traverse((child) => {
+    if (child.isBone) {
+      sourceLookup.set(child.name, child);
+    }
+  });
+  
+  clone.traverse((child) => {
+    if (child.isBone) {
+      cloneLookup.set(child.name, child);
+    }
+  });
+  
+  clone.traverse((child) => {
+    if (child.isSkinnedMesh) {
+      const originalBones = child.skeleton.bones;
+      const clonedBones = [];
+      for (const bone of originalBones) {
+        clonedBones.push(cloneLookup.get(bone.name));
+      }
+      child.bind(new THREE.Skeleton(clonedBones, child.skeleton.boneInverses), child.bindMatrix);
+    }
+  });
+  
+  return clone;
 }
