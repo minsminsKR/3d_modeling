@@ -374,19 +374,60 @@ export class MirrorHwacatEvent {
     this.modelRoot = null;
   }
 
+  getLowestGroundPoint(root) {
+    let currentMinY = null;
+    let hasBones = false;
+    root.traverse((child) => {
+      if (child.isBone) hasBones = true;
+    });
+
+    if (hasBones) {
+      let minY = Infinity;
+      root.traverse((child) => {
+        if (child.isBone) {
+          const name = child.name.toLowerCase();
+          if (name.includes("root") || name.includes("hips") || name.includes("pelvis") || 
+              name.includes("spine") || name.includes("chest") || name.includes("neck") || 
+              name.includes("head") || name.includes("clavicle") || name.includes("shoulder")) {
+            return;
+          }
+          child.updateMatrixWorld(true);
+          const worldPos = new THREE.Vector3();
+          child.getWorldPosition(worldPos);
+          if (worldPos.y < minY) {
+            minY = worldPos.y;
+          }
+        }
+      });
+      if (Number.isFinite(minY)) {
+        currentMinY = minY;
+      }
+    }
+
+    if (currentMinY === null) {
+      root.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(root);
+      if (Number.isFinite(bounds.min.y)) {
+        currentMinY = bounds.min.y;
+      }
+    }
+    return currentMinY;
+  }
+
   snapModelToGround(root) {
-    this.group.updateMatrixWorld(true);
-    root.updateMatrixWorld(true);
-    const bounds = new THREE.Box3().setFromObject(root);
-    if (!Number.isFinite(bounds.min.y)) {
+    if (!this.group) return;
+    const currentMinY = this.getLowestGroundPoint(root);
+    if (currentMinY === null) {
       return;
     }
-    const offset = this.group.position.y - bounds.min.y;
-    if (Math.abs(offset) > 0.002) {
+    const sink = HWACAT_EVENT_CONFIG.visualGroundSink ?? 0.04;
+    const groundY = this.group.position.y - sink;
+    const offset = groundY - currentMinY;
+    if (Math.abs(offset) > 0.001) {
       root.position.y += offset;
+      root.updateMatrixWorld(true);
+      this.group.updateMatrixWorld(true);
     }
-    this.group.updateMatrixWorld(true);
-    root.updateMatrixWorld(true);
   }
 
   reset() {
