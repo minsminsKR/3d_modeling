@@ -904,17 +904,38 @@ export class BackroomsGenerator {
 
     // Set weeping angel flags if it's a silent mannequin!
     if (definition.kind === "silent-mannequin") {
-      anchor.userData.isWeepingAngel = true;
-      anchor.userData.weepingAngelState = {
-        id: definition.id,
-        speed: 1.3, // slow pursuit speed (m/s)
-        catchDistance: 1.05,
-        radius: 0.38,
-        size: definition.size,
-        loaded: false,
-        path: null,
-        pathTimer: 0,
-      };
+      let makeWeepingAngel = false;
+      let targetId = definition.id;
+      
+      if (this.game) {
+        if (definition.assetUrl.includes("silent-mannequin-1f") && !this.game.spawnedWeepingAngel1F) {
+          makeWeepingAngel = true;
+          targetId = "silent-mannequin-1f";
+          this.game.spawnedWeepingAngel1F = true;
+        } else if (definition.assetUrl.includes("silent-mannequin-2f") && !this.game.spawnedWeepingAngel2F) {
+          makeWeepingAngel = true;
+          targetId = "silent-mannequin-2f";
+          this.game.spawnedWeepingAngel2F = true;
+        }
+      } else {
+        // Fallback for tests or setups without a game instance reference
+        makeWeepingAngel = true;
+      }
+      
+      if (makeWeepingAngel) {
+        anchor.name = targetId;
+        anchor.userData.isWeepingAngel = true;
+        anchor.userData.weepingAngelState = {
+          id: targetId,
+          speed: 1.3, // slow pursuit speed (m/s)
+          catchDistance: 1.05,
+          radius: 0.38,
+          size: definition.size,
+          loaded: false,
+          path: null,
+          pathTimer: 0,
+        };
+      }
     }
 
     const loadTask = this.loadPropAsset(definition.assetUrl)
@@ -1119,6 +1140,13 @@ export class BackroomsGenerator {
     // 1. Remove meshes from scene and dispose of custom horror prop materials
     for (const mesh of chunk.meshes) {
       this.scene.remove(mesh);
+      if (mesh.userData && mesh.userData.isWeepingAngel) {
+        if (mesh.name === "silent-mannequin-1f" && this.game) {
+          this.game.spawnedWeepingAngel1F = false;
+        } else if (mesh.name === "silent-mannequin-2f" && this.game) {
+          this.game.spawnedWeepingAngel2F = false;
+        }
+      }
       if (mesh.userData && mesh.userData.horrorProp) {
         mesh.traverse((child) => {
           if (child.isMesh || child.isSkinnedMesh) {

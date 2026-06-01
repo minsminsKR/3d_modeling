@@ -68,6 +68,8 @@ export class Game {
     this.flashlight = null;
     this.gameOver = false;
     this.gameCleared = false;
+    this.spawnedWeepingAngel1F = false;
+    this.spawnedWeepingAngel2F = false;
     this.isStarted = false;
     this.isPaused = false;
     this.cabinetEvent = null;
@@ -528,6 +530,8 @@ export class Game {
   resetRunState() {
     this.gameOver = false;
     this.gameCleared = false;
+    this.spawnedWeepingAngel1F = false;
+    this.spawnedWeepingAngel2F = false;
     this.keyCount = 0;
     this.cabinetEvent = null;
     this.cutsceneEvent = null;

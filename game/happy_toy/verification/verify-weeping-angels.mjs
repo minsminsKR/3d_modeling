@@ -33,26 +33,31 @@ try {
       return { found: false, loaded: false, initialPos: null, error: "Chunk 0,0 not loaded" };
     }
     
-    // Create/inject the mannequin into chunk 0,0
-    let mannequin = game.scene.getObjectByName("silent-mannequin-1f");
-    if (!mannequin) {
-      mannequin = new window.THREE.Group();
-      mannequin.name = "silent-mannequin-1f";
-      mannequin.position.set(5, 0, 5);
-      mannequin.userData.isWeepingAngel = true;
-      mannequin.userData.weepingAngelState = {
-        id: "silent-mannequin-1f",
-        speed: 1.3,
-        catchDistance: 1.05,
-        radius: 0.38,
-        size: [0.62, 1.72, 0.36],
-        loaded: true,
-        path: null,
-        pathTimer: 0,
-      };
-      game.scene.add(mannequin);
-      chunk.meshes.push(mannequin);
+    // Remove any conflicting procedurally generated mannequins
+    let existing = game.scene.getObjectByName("silent-mannequin-1f");
+    while (existing) {
+      game.scene.remove(existing);
+      chunk.meshes = chunk.meshes.filter(m => m !== existing);
+      existing = game.scene.getObjectByName("silent-mannequin-1f");
     }
+
+    // Create/inject our mock mannequin into chunk 0,0
+    const mannequin = new window.THREE.Group();
+    mannequin.name = "silent-mannequin-1f";
+    mannequin.position.set(5, 0, 5);
+    mannequin.userData.isWeepingAngel = true;
+    mannequin.userData.weepingAngelState = {
+      id: "silent-mannequin-1f",
+      speed: 1.3,
+      catchDistance: 1.05,
+      radius: 0.38,
+      size: [0.62, 1.72, 0.36],
+      loaded: true,
+      path: null,
+      pathTimer: 0,
+    };
+    game.scene.add(mannequin);
+    chunk.meshes.push(mannequin);
     
     return {
       found: Boolean(mannequin),
@@ -114,23 +119,33 @@ try {
     game.updateBackrooms(0.016);
     
     const chunk = game.mapBuilder.loadedChunks.get("0,0");
-    let mannequin = game.scene.getObjectByName("silent-mannequin-1f");
-    if (!mannequin) {
-      mannequin = new window.THREE.Group();
-      mannequin.name = "silent-mannequin-1f";
-      mannequin.position.set(5, 0, 5);
-      mannequin.userData.isWeepingAngel = true;
-      mannequin.userData.weepingAngelState = {
-        id: "silent-mannequin-1f",
-        speed: 1.3,
-        catchDistance: 1.05,
-        radius: 0.38,
-        size: [0.62, 1.72, 0.36],
-        loaded: true,
-        path: null,
-        pathTimer: 0,
-      };
-      game.scene.add(mannequin);
+    
+    // Remove any conflicting procedurally generated mannequins
+    let existing = game.scene.getObjectByName("silent-mannequin-1f");
+    while (existing) {
+      game.scene.remove(existing);
+      if (chunk) {
+        chunk.meshes = chunk.meshes.filter(m => m !== existing);
+      }
+      existing = game.scene.getObjectByName("silent-mannequin-1f");
+    }
+    
+    const mannequin = new window.THREE.Group();
+    mannequin.name = "silent-mannequin-1f";
+    mannequin.position.set(5, 0, 5);
+    mannequin.userData.isWeepingAngel = true;
+    mannequin.userData.weepingAngelState = {
+      id: "silent-mannequin-1f",
+      speed: 1.3,
+      catchDistance: 1.05,
+      radius: 0.38,
+      size: [0.62, 1.72, 0.36],
+      loaded: true,
+      path: null,
+      pathTimer: 0,
+    };
+    game.scene.add(mannequin);
+    if (chunk) {
       chunk.meshes.push(mannequin);
     }
     
