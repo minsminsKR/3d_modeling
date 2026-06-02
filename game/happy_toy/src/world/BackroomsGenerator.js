@@ -676,13 +676,16 @@ export class BackroomsGenerator {
     const variant = this.pickFrom(variants, rand);
     const placement = this.pickSafeLightPlacement(variant, type, center, rand);
     const localId = `safe_${variant.replaceAll("-", "_")}_main`;
+    const stateKey = `${chunk.cx},${chunk.cz}:${localId}`;
+    const isOn = this.game?.activatedSafeLightKeys?.has(stateKey) || false;
     const safeLight = new SafeLight({
       id: `${chunkId}_${localId}`,
-      stateKey: `${chunk.cx},${chunk.cz}:${localId}`,
+      stateKey,
       label: SAFE_LIGHT_LABELS[variant],
       variant,
       position: placement.position,
       yaw: placement.yaw,
+      isOn,
     });
     safeLight.chunkId = chunkId;
     this.scene.add(safeLight.group);

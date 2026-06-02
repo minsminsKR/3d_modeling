@@ -3,7 +3,7 @@
 
 import * as THREE from "three";
 import { createChapterSession, CHAPTERS } from "../config/chapterConfig.js";
-import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG } from "../config/gameConfig.js";
+import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG } from "../config/gameConfig.js";
 import { CollisionWorld } from "../world/CollisionWorld.js";
 import { EnemyManager } from "../entities/EnemyManager.js";
 import { GlitchController } from "../effects/GlitchController.js";
@@ -52,6 +52,8 @@ export class Game {
     this.doors = [];
     this.keys = [];
     this.cabinets = [];
+    this.safeLights = [];
+    this.activatedSafeLightKeys = new Set();
     this.lovelyDolls = [];
     this.spawnedDollIds = new Set();
     this.dollCountFound = 0;
@@ -115,6 +117,7 @@ export class Game {
     this.doors = map.doors;
     this.keys = map.keys;
     this.cabinets = map.cabinets;
+    this.safeLights = map.safeLights || [];
     this.finalExit = map.finalExit;
     this.player = new PlayerController(this.camera, this.input, this.collisionWorld, this.hud);
     this.player.setPosition(map.playerStart);
@@ -128,7 +131,7 @@ export class Game {
       this.horrorLights,
     );
     this.player.setInteractables(
-      [...this.doors, ...this.keys, ...this.cabinets, this.finalExit].filter(Boolean),
+      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, this.finalExit].filter(Boolean),
       this.createInteractionContext(),
     );
 
@@ -205,6 +208,17 @@ export class Game {
       this.scene.add(pl);
       this._pointLightPool.push(pl);
     }
+
+    // Pre-allocate the fixed SafeLight PointLight pool.
+    this._safeLightPool = [];
+    this._SAFE_LIGHT_BUDGET = SAFE_LIGHT_CONFIG.maxActiveLights || 8;
+    for (let i = 0; i < this._SAFE_LIGHT_BUDGET; i++) {
+      const pl = new THREE.PointLight(SAFE_LIGHT_CONFIG.color, 0, SAFE_LIGHT_CONFIG.distance, SAFE_LIGHT_CONFIG.decay);
+      pl.castShadow = false;
+      pl.position.set(0, -9999, 0); // park far off-screen until assigned
+      this.scene.add(pl);
+      this._safeLightPool.push(pl);
+    }
   }
 
   connectUi() {
@@ -234,7 +248,16 @@ export class Game {
       getHiddenPrompt: () => this.getHiddenPrompt(),
       tryClearFinal: (finalExit) => this.tryClearFinal(finalExit),
       isCleared: () => this.gameCleared,
+      isSafeLightActivated: (key) => this.activatedSafeLightKeys.has(key),
+      activateSafeLight: (safeLight) => this.activateSafeLight(safeLight),
     };
+  }
+
+  activateSafeLight(safeLight) {
+    if (this.activatedSafeLightKeys.has(safeLight.stateKey)) return;
+    safeLight.setActivated(true);
+    this.activatedSafeLightKeys.add(safeLight.stateKey);
+    this.hud.setStatus(`조명을 켰습니다 - ${safeLight.label}`, 1500);
   }
 
   start() {
@@ -420,6 +443,10 @@ export class Game {
       pl.intensity = 3.5;
       pl.position.set(0, 2.5, 0);
     }
+    for (const pl of this._safeLightPool) {
+      pl.intensity = SAFE_LIGHT_CONFIG.intensity;
+      pl.position.set(0, 1.5, 0);
+    }
 
     this.renderer.compile(this.scene, this.camera);
     this.renderer.render(this.scene, this.camera);
@@ -431,6 +458,10 @@ export class Game {
 
     // Park pool lights off-screen again
     for (const pl of this._pointLightPool) {
+      pl.intensity = 0;
+      pl.position.set(0, -9999, 0);
+    }
+    for (const pl of this._safeLightPool) {
       pl.intensity = 0;
       pl.position.set(0, -9999, 0);
     }
@@ -558,6 +589,7 @@ export class Game {
     this.spawnedDollIds.clear();
     this.dollCountFound = 0;
     this.collectedKeyIds.clear();
+    this.activatedSafeLightKeys.clear();
 
     if (this.mapBuilder) {
       for (const chunk of this.mapBuilder.loadedChunks.values()) {
@@ -567,18 +599,20 @@ export class Game {
       this.mapBuilder.doors = [];
       this.mapBuilder.keys = [];
       this.mapBuilder.cabinets = [];
+      this.mapBuilder.safeLights = [];
       this.mapBuilder.finalExit = null;
       const map = this.mapBuilder.build();
       this.doors = map.doors;
       this.keys = map.keys;
       this.cabinets = map.cabinets;
+      this.safeLights = map.safeLights || [];
       this.finalExit = map.finalExit;
     }
 
     this.player.setPosition(new THREE.Vector3(0, 0, 0));
     this.player.resetLook(0, 0);
     this.player.setInteractables(
-      [...this.doors, ...this.keys, ...this.cabinets, this.finalExit].filter(Boolean),
+      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, this.finalExit].filter(Boolean),
       this.createInteractionContext(),
     );
     this.flashlightController.reset();
@@ -804,9 +838,10 @@ export class Game {
       this.doors = this.mapBuilder.doors;
       this.keys = this.mapBuilder.keys;
       this.cabinets = this.mapBuilder.cabinets;
+      this.safeLights = this.mapBuilder.safeLights || [];
       this.finalExit = this.mapBuilder.finalExit;
       this.player.setInteractables(
-        [...this.doors, ...this.keys, ...this.cabinets, this.finalExit].filter(Boolean),
+        [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, this.finalExit].filter(Boolean),
         this.createInteractionContext(),
       );
     }
@@ -873,6 +908,37 @@ export class Game {
           pl.position.set(0, -9999, 0); // park off-screen
           pl.intensity = 0;
           light.pooledLight = null;
+        }
+      } else {
+        pl.position.set(0, -9999, 0);
+        pl.intensity = 0;
+      }
+    }
+
+    // 2.2 Manage SafeLights PointLight pool
+    const allSafePanels = [];
+    for (const safeLight of this.safeLights) {
+      if (!safeLight.isOn) continue;
+      const pos = safeLight.getLightWorldPosition();
+      const dx = pos.x - playerPos.x;
+      const dz = pos.z - playerPos.z;
+      const distSq = dx * dx + dz * dz;
+      allSafePanels.push({ safeLight, pos, distSq });
+    }
+
+    allSafePanels.sort((a, b) => a.distSq - b.distSq);
+    const safeBudget = this._SAFE_LIGHT_BUDGET;
+    for (let i = 0; i < safeBudget; i++) {
+      const pl = this._safeLightPool[i];
+      if (i < allSafePanels.length) {
+        const { safeLight, pos, distSq } = allSafePanels[i];
+        const inRange = distSq < SAFE_LIGHT_CONFIG.activeDistance * SAFE_LIGHT_CONFIG.activeDistance;
+        if (inRange) {
+          pl.position.copy(pos);
+          pl.intensity = SAFE_LIGHT_CONFIG.intensity || 32.0;
+        } else {
+          pl.position.set(0, -9999, 0);
+          pl.intensity = 0;
         }
       } else {
         pl.position.set(0, -9999, 0);
