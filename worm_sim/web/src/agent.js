@@ -3,7 +3,7 @@
 // 운동 출력: 좌/우 근육 누적값 → 전후진 속도와 회전
 import * as THREE from "three";
 import { Brain } from "./connectome.js";
-import { DISH_RADIUS } from "./world.js";
+import { WORLD_RADIUS } from "./world.js";
 
 const BRAIN_HZ = 26; // 초당 커넥톰 스텝 수
 const NOSE_RANGE = 2.6; // 코 촉각 감지 거리
@@ -68,7 +68,7 @@ export class WormAgent {
 
     const ring = new THREE.Mesh(
       new THREE.RingGeometry(1.0, 1.25, 40),
-      new THREE.MeshBasicMaterial({ color: 0x8fd3a6, transparent: true, opacity: 0.9, side: THREE.DoubleSide }),
+      new THREE.MeshBasicMaterial({ color: 0xffe08a, transparent: true, opacity: 0.95, side: THREE.DoubleSide }),
     );
     ring.rotation.x = -Math.PI / 2;
     ring.position.y = 0.03;
@@ -165,7 +165,7 @@ export class WormAgent {
       0,
       this.position.z + Math.cos(this.heading) * NOSE_RANGE,
     );
-    if (ahead.length() > DISH_RADIUS - 0.8) return true;
+    if (ahead.length() > WORLD_RADIUS - 0.8) return true;
     for (const obstacle of this.sim.obstacles) {
       if (ahead.distanceTo(obstacle.position) < obstacle.radius + 0.7) return true;
     }
@@ -194,7 +194,7 @@ export class WormAgent {
 
     // 접시 밖으로 나가지 않게 클램프
     const r = Math.hypot(this.position.x, this.position.z);
-    const maxR = DISH_RADIUS - 1.2;
+    const maxR = WORLD_RADIUS - 1.2;
     if (r > maxR) {
       this.position.x *= maxR / r;
       this.position.z *= maxR / r;

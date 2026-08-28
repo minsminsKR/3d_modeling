@@ -4,7 +4,7 @@ import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import { loadConnectomeData, breedConnections } from "./connectome.js";
-import { createWorld, Food, DISH_RADIUS } from "./world.js";
+import { createWorld, Food, WORLD_RADIUS } from "./world.js";
 import { WormAgent } from "./agent.js";
 
 const MODEL_URL = "/model/Cyclopse/mixamo/Walking.fbx";
@@ -120,12 +120,16 @@ async function loadCharacter() {
   walkClip = walkFbx.animations[0] ?? null;
   jumpClip = jumpFbx?.animations[0] ?? null;
 
+  // model_test에서 검증된 방식: Hunyuan 메시는 노멀이 불안정해 조명 기반 재질에서
+  // 검게 보일 수 있으므로, 텍스처를 그대로 보여주는 MeshBasicMaterial을 사용한다.
   const material = texture
-    ? new THREE.MeshStandardMaterial({ map: texture, roughness: 0.75, side: THREE.DoubleSide })
-    : new THREE.MeshStandardMaterial({ color: 0xb17439, roughness: 0.75, side: THREE.DoubleSide });
+    ? new THREE.MeshBasicMaterial({ map: texture, color: 0xffffff, side: THREE.DoubleSide })
+    : new THREE.MeshBasicMaterial({ color: 0xb17439, side: THREE.DoubleSide });
 
   walkFbx.traverse((child) => {
     if (child.isMesh || child.isSkinnedMesh) {
+      const oldMaterials = Array.isArray(child.material) ? child.material : [child.material];
+      for (const m of oldMaterials) m?.dispose?.();
       child.material = material;
       child.castShadow = true;
       child.frustumCulled = false;
@@ -160,7 +164,7 @@ function visualFactory() {
 }
 
 // --- 개체 / 먹이 생성 ---
-function randomDishPosition(maxR = DISH_RADIUS - 5) {
+function randomWorldPosition(maxR = WORLD_RADIUS - 5) {
   const angle = Math.random() * Math.PI * 2;
   const r = 3 + Math.random() * (maxR - 3);
   return new THREE.Vector3(Math.sin(angle) * r, 0, Math.cos(angle) * r);
@@ -172,7 +176,7 @@ function spawnAgent({ position = null, generation = 0, connections = null } = {}
     return null;
   }
   const agent = new WormAgent(sim, {
-    position: position ?? randomDishPosition(),
+    position: position ?? randomWorldPosition(),
     generation,
     connections,
   });
@@ -183,7 +187,7 @@ function spawnAgent({ position = null, generation = 0, connections = null } = {}
 }
 
 function spawnFood(position = null, amount = 40) {
-  sim.foods.push(new Food(scene, position ?? randomDishPosition(DISH_RADIUS - 4), amount));
+  sim.foods.push(new Food(scene, position ?? randomWorldPosition(WORLD_RADIUS - 4), amount));
 }
 
 // --- 번식 판정 ---
@@ -265,7 +269,7 @@ renderer.domElement.addEventListener("pointerup", (event) => {
   // 2) 바닥 클릭 → 먹이 배치
   const point = new THREE.Vector3();
   if (raycaster.ray.intersectPlane(groundPlane, point)) {
-    if (point.length() < DISH_RADIUS - 1.5) {
+    if (point.length() < WORLD_RADIUS - 1.5) {
       spawnFood(point);
       setStatus("먹이를 놓았습니다. 배고픈 개체가 화학감각으로 찾아갑니다.");
     }

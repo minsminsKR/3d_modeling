@@ -45,7 +45,7 @@ class SimHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def log_message(self, fmt, *args):
-        pass
+        print(fmt % args)
 
 
 def main():
