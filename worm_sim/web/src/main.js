@@ -87,6 +87,7 @@ let characterTemplate = null;
 let walkClip = null;
 let jumpClip = null;
 let templateScale = 1;
+let templateYOffset = 0;
 
 function loadFbx(url) {
   return new Promise((resolve, reject) => {
@@ -117,8 +118,15 @@ async function loadCharacter() {
     loadTexture(TEXTURE_URL),
   ]);
 
-  walkClip = walkFbx.animations[0] ?? null;
-  jumpClip = jumpFbx?.animations[0] ?? null;
+  // Mixamo 클립의 루트 모션(position 트랙) 제거 → 제자리 애니메이션으로 변환.
+  // 이동은 커넥톰 운동 출력이 담당한다.
+  const stripRootMotion = (clip) => {
+    if (!clip) return null;
+    clip.tracks = clip.tracks.filter((track) => !track.name.endsWith(".position"));
+    return clip;
+  };
+  walkClip = stripRootMotion(walkFbx.animations[0] ?? null);
+  jumpClip = stripRootMotion(jumpFbx?.animations[0] ?? null);
 
   // model_test에서 검증된 방식: Hunyuan 메시는 노멀이 불안정해 조명 기반 재질에서
   // 검게 보일 수 있으므로, 텍스처를 그대로 보여주는 MeshBasicMaterial을 사용한다.
@@ -139,6 +147,8 @@ async function loadCharacter() {
   const box = new THREE.Box3().setFromObject(walkFbx);
   const height = Math.max(0.001, box.max.y - box.min.y);
   templateScale = CHARACTER_HEIGHT / height;
+  // 발바닥이 지면(y=0)에 닿도록 피벗 오프셋 보정
+  templateYOffset = -box.min.y * templateScale;
   characterTemplate = walkFbx;
 }
 
@@ -146,6 +156,7 @@ async function loadCharacter() {
 function visualFactory() {
   const model = SkeletonUtils.clone(characterTemplate);
   model.scale.setScalar(templateScale);
+  model.position.y = templateYOffset;
 
   const group = new THREE.Group();
   group.add(model);
@@ -410,3 +421,6 @@ async function boot() {
 
 boot();
 animate();
+
+// 자동화 테스트/디버깅용 훅
+window.__sim = { sim, camera, controls, selectAgent };

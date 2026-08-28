@@ -133,6 +133,10 @@ export class WormAgent {
       brain.stimulateGroup("foodRight", drive * (1 - bias));
       this.stateLabel = this.hunger > 0.55 ? "먹이 추적" : "탐색";
     } else if (!noseTouch) {
+      // 감지된 먹이가 없어도 약한 탐색 자극을 유지 (원본 GoPiGo의 상시 먹이 자극과 동일)
+      // → 자발적 배회 행동이 창발한다
+      brain.stimulateGroup("foodLeft", 0.35);
+      brain.stimulateGroup("foodRight", 0.35);
       this.stateLabel = "탐색";
     }
 
@@ -143,7 +147,7 @@ export class WormAgent {
     const total = Math.abs(left) + Math.abs(right);
     if (total > 0) {
       const direction = left + right >= 0 ? 1 : -1;
-      this.speedSignal = direction * Math.min(1, total / 120);
+      this.speedSignal = direction * Math.min(1, total / 75);
       // 창발적 회전 신호: 좌우 근육 비대칭
       const emergentTurn = THREE.MathUtils.clamp((right - left) / (total + 20), -1, 1);
       // 클리노택시스 반사: 먹이 방향으로의 약한 직접 조향 (근사 보정)
@@ -260,8 +264,10 @@ export class WormAgent {
     if (this.mixer) {
       const walkRate = Math.abs(this.smoothSpeed);
       if (this.walkAction) {
-        this.walkAction.timeScale = Math.sign(this.smoothSpeed || 1) * (0.4 + walkRate * 1.4);
-        this.walkAction.setEffectiveWeight(Math.min(1, walkRate * 3));
+        // 가중치는 항상 1 (부분 블렌딩 시 형태가 뭉개짐), 속도는 timeScale로만 제어
+        this.walkAction.setEffectiveWeight(1);
+        this.walkAction.timeScale =
+          walkRate < 0.03 ? 0 : Math.sign(this.smoothSpeed) * (0.3 + walkRate * 1.5);
       }
       this.mixer.update(dt);
     }
