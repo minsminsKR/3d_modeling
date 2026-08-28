@@ -1,11 +1,11 @@
-// 꼬마선충 커넥톰 시뮬레이션 — 사이클롭스 몸체, 별도 웹 가상공간.
+// 꼬마싸이클롭충 — 꼬마선충 커넥톰 + 사이클롭스 몸체, 별도 웹 가상공간.
 import * as THREE from "three";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import * as SkeletonUtils from "three/addons/utils/SkeletonUtils.js";
 import { loadConnectomeData, breedConnections } from "./connectome.js";
 import { createWorld, Food, WORLD_RADIUS } from "./world.js";
-import { WormAgent } from "./agent.js";
+import { WormAgent, MATE_RANGE, NEWBORN_SIZE } from "./agent.js";
 
 const MODEL_URL = "/model/Cyclopse/mixamo/Walking.fbx";
 const JUMP_URL = "/model/Cyclopse/mixamo/Jump.fbx";
@@ -88,6 +88,8 @@ let walkClip = null;
 let jumpClip = null;
 let templateScale = 1;
 let templateYOffset = 0;
+let hermMaterial = null;
+let maleMaterial = null;
 
 function loadFbx(url) {
   return new Promise((resolve, reject) => {
@@ -111,7 +113,7 @@ function loadTexture(url) {
 }
 
 async function loadCharacter() {
-  setStatus("사이클롭스 모델 로딩 중...");
+  setStatus("꼬마싸이클롭충 모델 로딩 중...");
   const [walkFbx, jumpFbx, texture] = await Promise.all([
     loadFbx(MODEL_URL),
     loadFbx(JUMP_URL).catch(() => null),
@@ -130,15 +132,19 @@ async function loadCharacter() {
 
   // model_test에서 검증된 방식: Hunyuan 메시는 노멀이 불안정해 조명 기반 재질에서
   // 검게 보일 수 있으므로, 텍스처를 그대로 보여주는 MeshBasicMaterial을 사용한다.
-  const material = texture
+  // 자웅동체(⚥)는 원본 색, 수컷(♂)은 푸른 틴트로 구분한다.
+  hermMaterial = texture
     ? new THREE.MeshBasicMaterial({ map: texture, color: 0xffffff, side: THREE.DoubleSide })
     : new THREE.MeshBasicMaterial({ color: 0xb17439, side: THREE.DoubleSide });
+  maleMaterial = texture
+    ? new THREE.MeshBasicMaterial({ map: texture, color: 0x9db8ff, side: THREE.DoubleSide })
+    : new THREE.MeshBasicMaterial({ color: 0x6d84c9, side: THREE.DoubleSide });
 
   walkFbx.traverse((child) => {
     if (child.isMesh || child.isSkinnedMesh) {
       const oldMaterials = Array.isArray(child.material) ? child.material : [child.material];
       for (const m of oldMaterials) m?.dispose?.();
-      child.material = material;
+      child.material = hermMaterial;
       child.castShadow = true;
       child.frustumCulled = false;
     }
@@ -152,11 +158,16 @@ async function loadCharacter() {
   characterTemplate = walkFbx;
 }
 
-// 에이전트 하나 분량의 시각 요소를 복제 생성
-function visualFactory() {
+// 에이전트 하나 분량의 시각 요소를 복제 생성 (성별에 따라 재질 구분)
+function visualFactory(sex) {
   const model = SkeletonUtils.clone(characterTemplate);
   model.scale.setScalar(templateScale);
   model.position.y = templateYOffset;
+  if (sex === "male") {
+    model.traverse((child) => {
+      if (child.isMesh || child.isSkinnedMesh) child.material = maleMaterial;
+    });
+  }
 
   const group = new THREE.Group();
   group.add(model);
@@ -181,7 +192,7 @@ function randomWorldPosition(maxR = WORLD_RADIUS - 5) {
   return new THREE.Vector3(Math.sin(angle) * r, 0, Math.cos(angle) * r);
 }
 
-function spawnAgent({ position = null, generation = 0, connections = null } = {}) {
+function spawnAgent({ position = null, generation = 0, connections = null, sex = null, size = null } = {}) {
   if (sim.agents.length >= MAX_POPULATION) {
     setStatus(`개체 수 상한(${MAX_POPULATION})에 도달했습니다.`);
     return null;
@@ -190,6 +201,8 @@ function spawnAgent({ position = null, generation = 0, connections = null } = {}
     position: position ?? randomWorldPosition(),
     generation,
     connections,
+    sex,
+    size,
   });
   agent.attachVisual(visualFactory, scene);
   sim.agents.push(agent);
@@ -197,11 +210,35 @@ function spawnAgent({ position = null, generation = 0, connections = null } = {}
   return agent;
 }
 
+// 산란/출생 공통 처리: 자가수정(부모 1) 또는 교배(부모 2)
+sim.spawnChild = ({ parents, position, generation }) => {
+  if (sim.agents.length >= MAX_POPULATION) return null;
+  const [a, b] = parents;
+  const connections = breedConnections(a.brain.connections, (b ?? a).brain.connections);
+  const spawnPos = position.clone();
+  spawnPos.x += (Math.random() - 0.5) * 2;
+  spawnPos.z += (Math.random() - 0.5) * 2;
+  const child = spawnAgent({
+    position: spawnPos,
+    generation,
+    connections,
+    size: NEWBORN_SIZE,
+  });
+  if (child) {
+    if (b) {
+      setStatus(`${a.name} × ${b.name} → ${child.name} 출생 (세대 ${generation}, 커넥톰 교차+변이)`);
+    } else {
+      setStatus(`${a.name} 자가수정 → ${child.name} 산란 (세대 ${generation}, 변이 적용)`);
+    }
+  }
+  return child;
+};
+
 function spawnFood(position = null, amount = 40) {
   sim.foods.push(new Food(scene, position ?? randomWorldPosition(WORLD_RADIUS - 4), amount));
 }
 
-// --- 번식 판정 ---
+// --- 교배 판정 (수컷 ♂ × 자웅동체 ⚥) ---
 let breedCheckTimer = 0;
 function checkBreeding(dt) {
   breedCheckTimer -= dt;
@@ -209,24 +246,19 @@ function checkBreeding(dt) {
   breedCheckTimer = 0.5;
 
   const agents = sim.agents;
-  for (let i = 0; i < agents.length; i++) {
-    for (let j = i + 1; j < agents.length; j++) {
-      const a = agents[i];
-      const b = agents[j];
-      if (!a.canBreed || !b.canBreed) continue;
-      if (a.position.distanceTo(b.position) > 2.6) continue;
+  for (const male of agents) {
+    if (male.sex !== "male" || !male.canMate) continue;
+    for (const herm of agents) {
+      if (herm.sex !== "herm" || !herm.canMate) continue;
+      if (male.position.distanceTo(herm.position) > MATE_RANGE) continue;
       if (sim.agents.length >= MAX_POPULATION) return;
 
-      const childConnections = breedConnections(a.brain.connections, b.brain.connections);
-      const mid = a.position.clone().add(b.position).multiplyScalar(0.5);
-      mid.x += (Math.random() - 0.5) * 2;
-      mid.z += (Math.random() - 0.5) * 2;
-      const generation = Math.max(a.generation, b.generation) + 1;
-      a.payBreedCost();
-      b.payBreedCost();
-      const child = spawnAgent({ position: mid, generation, connections: childConnections });
+      const mid = male.position.clone().add(herm.position).multiplyScalar(0.5);
+      const generation = Math.max(male.generation, herm.generation) + 1;
+      const child = sim.spawnChild({ parents: [herm, male], position: mid, generation });
       if (child) {
-        setStatus(`${a.name} × ${b.name} → ${child.name} 출생 (세대 ${generation}, 커넥톰 변이 적용)`);
+        male.payMateCost();
+        herm.payMateCost();
       }
       return;
     }
@@ -319,6 +351,7 @@ const statDead = document.querySelector("#stat-dead");
 const wormName = document.querySelector("#worm-name");
 const wormGen = document.querySelector("#worm-gen");
 const wormAge = document.querySelector("#worm-age");
+const wormSize = document.querySelector("#worm-size");
 const wormState = document.querySelector("#worm-state");
 const wormEnergy = document.querySelector("#worm-energy");
 const firedCountLabel = document.querySelector("#fired-count");
@@ -366,6 +399,7 @@ function updateUi() {
     wormName.textContent = selectedAgent.name;
     wormGen.textContent = `세대 ${selectedAgent.generation}`;
     wormAge.textContent = `${selectedAgent.age.toFixed(0)}초`;
+    wormSize.textContent = selectedAgent.isAdult ? "성체" : `유충 ${(selectedAgent.size * 100).toFixed(0)}%`;
     wormState.textContent = selectedAgent.stateLabel;
     wormEnergy.style.width = `${Math.max(0, selectedAgent.energy).toFixed(0)}%`;
     firedCountLabel.textContent = `${selectedAgent.lastFiredCount} / ${selectedAgent.brain.neuronCount}`;
@@ -406,7 +440,11 @@ async function boot() {
     const data = await loadConnectomeData();
     await loadCharacter();
 
-    for (let i = 0; i < INITIAL_AGENTS; i++) spawnAgent();
+    // 초기 개체: 자웅동체 2 + 수컷 1 (상호작용 관찰 보장)
+    spawnAgent({ sex: "herm" });
+    spawnAgent({ sex: "herm" });
+    spawnAgent({ sex: "male" });
+    for (let i = 3; i < INITIAL_AGENTS; i++) spawnAgent();
     for (let i = 0; i < INITIAL_FOOD; i++) spawnFood();
     if (sim.agents.length > 0) selectAgent(sim.agents[0]);
 

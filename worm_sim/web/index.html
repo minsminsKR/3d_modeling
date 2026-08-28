@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>C. elegans Connectome Sim — Cyclopse</title>
+    <title>꼬마싸이클롭충 — C. elegans Connectome Sim</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="/styles.css" />
     <script type="importmap">
@@ -19,8 +19,8 @@
     <main id="viewport"></main>
 
     <section class="panel panel-left">
-      <h1>꼬마선충 커넥톰 시뮬레이션</h1>
-      <p class="subtitle">C. elegans 뉴런 300개 · 시냅스 3,690개 — 사이클롭스 몸체</p>
+      <h1>꼬마싸이클롭충</h1>
+      <p class="subtitle">C. elegans 뉴런 300개 · 시냅스 3,690개 커넥톰 · 페로몬 상호작용 · ⚥ 자가수정 / ♂ 교배</p>
       <p id="status">불러오는 중...</p>
 
       <div class="stats">
@@ -43,6 +43,8 @@
         <dt>바닥 클릭</dt><dd>먹이 놓기</dd>
         <dt>개체 클릭</dt><dd>선택 (뉴런 활동 보기)</dd>
         <dt>마우스 드래그 / 휠</dt><dd>시점 회전 / 줌</dd>
+        <dt>몸 색</dt><dd>원본색 ⚥ 자웅동체 · 푸른색 ♂ 수컷</dd>
+        <dt>크기</dt><dd>유충은 작게 태어나 먹으며 성장</dd>
       </dl>
     </section>
 
@@ -51,6 +53,7 @@
       <div class="worm-meta">
         <span id="worm-gen">세대 0</span>
         <span id="worm-age">0초</span>
+        <span id="worm-size">성체</span>
         <span id="worm-state">탐색</span>
       </div>
       <div class="bar-wrap">
