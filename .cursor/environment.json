@@ -1,0 +1,17 @@
+{
+  "name": "3d_modeling — worm_sim connectome web sim",
+  "install": "python3 --version",
+  "terminals": [
+    {
+      "name": "worm-sim-server",
+      "command": "python3 worm_sim/server.py --host 0.0.0.0 --port 8090",
+      "description": "C. elegans connectome web simulation (worm_sim). Serves the app plus Cyclopse model/textures on http://localhost:8090. Uses only the Python standard library; Three.js loads from a CDN so internet access is required."
+    }
+  ],
+  "ports": [
+    {
+      "name": "worm-sim web",
+      "port": 8090
+    }
+  ]
+}
