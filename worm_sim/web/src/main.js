@@ -423,4 +423,4 @@ boot();
 animate();
 
 // 자동화 테스트/디버깅용 훅
-window.__sim = { sim, camera, controls, selectAgent };
+window.__sim = { sim, camera, controls, selectAgent, spawnFood, spawnAgent };

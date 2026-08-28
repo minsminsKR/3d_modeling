@@ -8,7 +8,7 @@ import { WORLD_RADIUS } from "./world.js";
 const BRAIN_HZ = 26; // 초당 커넥톰 스텝 수
 const NOSE_RANGE = 2.6; // 코 촉각 감지 거리
 const FOOD_SENSE_RANGE = 22; // 화학감각 최대 거리
-const EAT_RANGE = 1.6;
+const EAT_RANGE = 2.2;
 const MAX_SPEED = 3.2; // m/s
 const MAX_TURN = 2.4; // rad/s
 const ENERGY_MAX = 100;
@@ -42,6 +42,7 @@ export class WormAgent {
     this.brainAccumulator = 0;
     this.speedSignal = 0; // 부호 있음 (음수 = 후진)
     this.turnSignal = 0;
+    this.avoidTurn = 0;
     this.smoothSpeed = 0;
     this.smoothTurn = 0;
     this.lastFiredCount = 0;
@@ -114,10 +115,17 @@ export class WormAgent {
     brain.clearStimulationFlags();
 
     // --- 감각 입력 ---
-    const noseTouch = this.senseObstacleAhead();
+    const obstacle = this.senseObstacle();
+    const noseTouch = obstacle.ahead || obstacle.left || obstacle.right;
     if (noseTouch) {
       brain.stimulateGroup("noseTouch", 1);
       this.stateLabel = "회피";
+      // 막힌 쪽 반대 방향으로 회피 회전 (촉각 반사)
+      if (obstacle.left && !obstacle.right) this.avoidTurn = -1;
+      else if (obstacle.right && !obstacle.left) this.avoidTurn = 1;
+      else if (this.avoidTurn === 0) this.avoidTurn = Math.random() < 0.5 ? -1 : 1;
+    } else {
+      this.avoidTurn = 0;
     }
 
     const food = this.sim.findNearestFood(this.position, FOOD_SENSE_RANGE);
@@ -150,39 +158,47 @@ export class WormAgent {
       this.speedSignal = direction * Math.min(1, total / 75);
       // 창발적 회전 신호: 좌우 근육 비대칭
       const emergentTurn = THREE.MathUtils.clamp((right - left) / (total + 20), -1, 1);
-      // 클리노택시스 반사: 먹이 방향으로의 약한 직접 조향 (근사 보정)
+      // 클리노택시스 반사: 먹이 방향으로의 직접 조향 (허기·근접도에 비례)
       let reflexTurn = 0;
+      let reflexWeight = 0;
       if (this.sensedFood && !noseTouch) {
-        reflexTurn = THREE.MathUtils.clamp(-this.bearingTo(this.sensedFood.position) / Math.PI, -1, 1);
+        const d = this.position.distanceTo(this.sensedFood.position);
+        reflexTurn = THREE.MathUtils.clamp(this.bearingTo(this.sensedFood.position) / Math.PI, -1, 1);
+        reflexWeight = 0.5 + 0.5 * this.hunger + 0.4 * (1 - Math.min(1, d / 6));
       }
-      this.turnSignal = THREE.MathUtils.clamp(emergentTurn * 0.75 + reflexTurn * 0.55, -1, 1);
+      this.turnSignal = THREE.MathUtils.clamp(
+        emergentTurn * 0.6 + reflexTurn * reflexWeight + this.avoidTurn * 1.1,
+        -1,
+        1,
+      );
     } else {
       this.speedSignal *= 0.92;
       this.turnSignal *= 0.9;
     }
   }
 
-  // 진행 방향 전방에 테두리/장애물이 있는지 검사
-  senseObstacleAhead() {
-    const ahead = new THREE.Vector3(
-      this.position.x + Math.sin(this.heading) * NOSE_RANGE,
-      0,
-      this.position.z + Math.cos(this.heading) * NOSE_RANGE,
-    );
-    if (ahead.length() > WORLD_RADIUS - 0.8) return true;
-    for (const obstacle of this.sim.obstacles) {
-      if (ahead.distanceTo(obstacle.position) < obstacle.radius + 0.7) return true;
-    }
-    return false;
+  // 전방(정면/좌/우 더듬이)에 테두리/장애물이 있는지 검사
+  senseObstacle() {
+    const probe = (angleOffset) => {
+      const px = this.position.x + Math.sin(this.heading + angleOffset) * NOSE_RANGE;
+      const pz = this.position.z + Math.cos(this.heading + angleOffset) * NOSE_RANGE;
+      if (Math.hypot(px, pz) > WORLD_RADIUS - 0.8) return true;
+      for (const obstacle of this.sim.obstacles) {
+        const d = Math.hypot(px - obstacle.position.x, pz - obstacle.position.z);
+        if (d < obstacle.radius + 0.7) return true;
+      }
+      return false;
+    };
+    return { ahead: probe(0), left: probe(0.62), right: probe(-0.62) };
   }
 
-  // 표적까지의 상대 방위각. 양수 = 왼쪽, 음수 = 오른쪽
+  // 표적까지의 상대 방위각 (heading 증가 방향이 양수)
   bearingTo(target) {
     const angle = Math.atan2(target.x - this.position.x, target.z - this.position.z);
     let diff = angle - this.heading;
     while (diff > Math.PI) diff -= Math.PI * 2;
     while (diff < -Math.PI) diff += Math.PI * 2;
-    return -diff;
+    return diff;
   }
 
   applyMotion(dt) {
@@ -190,7 +206,7 @@ export class WormAgent {
     this.smoothSpeed = THREE.MathUtils.lerp(this.smoothSpeed, this.speedSignal, 1 - Math.exp(-4 * dt));
     this.smoothTurn = THREE.MathUtils.lerp(this.smoothTurn, this.turnSignal, 1 - Math.exp(-5 * dt));
 
-    this.heading -= this.smoothTurn * MAX_TURN * dt;
+    this.heading += this.smoothTurn * MAX_TURN * dt;
 
     const velocity = this.smoothSpeed * MAX_SPEED;
     this.position.x += Math.sin(this.heading) * velocity * dt;
