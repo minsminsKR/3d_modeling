@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>C. elegans Connectome Sim — Cyclopse</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="viewport"></main>
+
+    <section class="panel panel-left">
+      <h1>꼬마선충 커넥톰 시뮬레이션</h1>
+      <p class="subtitle">C. elegans 뉴런 300개 · 시냅스 3,690개 — 사이클롭스 몸체</p>
+      <p id="status">불러오는 중...</p>
+
+      <div class="stats">
+        <div class="stat"><span class="stat-label">개체 수</span><span class="stat-value" id="stat-pop">0</span></div>
+        <div class="stat"><span class="stat-label">먹이</span><span class="stat-value" id="stat-food">0</span></div>
+        <div class="stat"><span class="stat-label">최고 세대</span><span class="stat-value" id="stat-gen">0</span></div>
+        <div class="stat"><span class="stat-label">사망</span><span class="stat-value" id="stat-dead">0</span></div>
+      </div>
+
+      <div class="button-row">
+        <button id="btn-food" type="button">먹이 뿌리기</button>
+        <button id="btn-worm" type="button">개체 추가</button>
+      </div>
+      <div class="button-row">
+        <button id="btn-pause" type="button">일시정지</button>
+        <button id="btn-speed" type="button">배속 x1</button>
+      </div>
+
+      <dl class="help">
+        <dt>바닥 클릭</dt><dd>먹이 놓기</dd>
+        <dt>개체 클릭</dt><dd>선택 (뉴런 활동 보기)</dd>
+        <dt>마우스 드래그 / 휠</dt><dd>시점 회전 / 줌</dd>
+      </dl>
+    </section>
+
+    <section class="panel panel-right" id="worm-panel" hidden>
+      <h2 id="worm-name">개체</h2>
+      <div class="worm-meta">
+        <span id="worm-gen">세대 0</span>
+        <span id="worm-age">0초</span>
+        <span id="worm-state">탐색</span>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-label">에너지</div>
+        <div class="bar"><div class="bar-fill" id="worm-energy"></div></div>
+      </div>
+      <div class="neuron-header">
+        <h3>뉴런 발화 (실시간)</h3>
+        <span id="fired-count">0 / 300</span>
+      </div>
+      <canvas id="neuron-canvas" width="272" height="200"></canvas>
+      <p class="neuron-note">초록: 발화 · 어두움: 휴지 · 붉은 테두리: 감각 자극</p>
+    </section>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
