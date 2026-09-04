@@ -1,5 +1,4 @@
-// 화면 위 HUD 텍스트와 공포 연출 레이어를 관리하는 모듈입니다.
-// 게임 로직은 DOM을 직접 만지지 않고 Hud 메서드로 상태만 전달합니다.
+// 화면 위 HUD 텍스트와 공포 연출 레이어, 스태미나, 인벤토리, 나침반을 관리하는 모듈입니다.
 
 export class Hud {
   constructor() {
@@ -22,26 +21,100 @@ export class Hud {
     this.quitButton = document.querySelector("#quit-button");
     this.mouseSensitivityInput = document.querySelector("#mouse-sensitivity");
     this.mouseSensitivityValue = document.querySelector("#mouse-sensitivity-value");
+
+    // New HUD elements
+    this.staminaFill = document.querySelector("#stamina-bar-fill");
+    this.keyCountText = document.querySelector("#key-count-text");
+    this.compassWidget = document.querySelector("#compass-widget");
+    this.compassNeedle = document.querySelector("#compass-needle");
+    this.compassText = document.querySelector("#compass-target-text");
+
+    this.qtyBattery = document.querySelector("#qty-battery");
+    this.qtyDrink = document.querySelector("#qty-drink");
+    this.qtyFirecracker = document.querySelector("#qty-firecracker");
+    this.qtyCompass = document.querySelector("#qty-compass");
+
     this.statusTimer = null;
+    this.compassActive = false;
   }
 
   setPrompt(text) {
-    this.promptElement.textContent = text;
+    if (this.promptElement) {
+      this.promptElement.textContent = text;
+    }
   }
 
   setStatus(text, timeout = 0) {
     window.clearTimeout(this.statusTimer);
-    this.statusElement.textContent = text;
-    if (timeout > 0) {
-      this.statusTimer = window.setTimeout(() => {
-        this.statusElement.textContent = "복도 어딘가에서 발소리가 들립니다.";
-      }, timeout);
+    if (this.statusElement) {
+      this.statusElement.textContent = text;
+      if (timeout > 0) {
+        this.statusTimer = window.setTimeout(() => {
+          this.statusElement.textContent = "복도 어딘가에서 발소리가 들립니다.";
+        }, timeout);
+      }
     }
   }
 
   setThreat(amount) {
     const clamped = Math.max(0, Math.min(1, amount));
-    this.threatElement.style.opacity = String(clamped);
+    if (this.threatElement) {
+      this.threatElement.style.opacity = String(clamped);
+    }
+  }
+
+  setStamina(ratio) {
+    if (this.staminaFill) {
+      const pct = Math.max(0, Math.min(100, ratio * 100));
+      this.staminaFill.style.width = `${pct}%`;
+      if (ratio < 0.2) {
+        this.staminaFill.classList.add("low");
+      } else {
+        this.staminaFill.classList.remove("low");
+      }
+    }
+  }
+
+  setKeyCount(collected, total = 4) {
+    if (this.keyCountText) {
+      this.keyCountText.textContent = `${collected} / ${total}`;
+    }
+  }
+
+  updateInventory(inv) {
+    if (!inv) return;
+    if (this.qtyBattery) this.qtyBattery.textContent = `x${inv.battery || 0}`;
+    if (this.qtyDrink) this.qtyDrink.textContent = `x${inv.energy_drink || 0}`;
+    if (this.qtyFirecracker) this.qtyFirecracker.textContent = `x${inv.firecracker || 0}`;
+    if (this.qtyCompass) this.qtyCompass.textContent = `x${inv.compass || 0}`;
+  }
+
+  toggleCompass() {
+    this.compassActive = !this.compassActive;
+    if (this.compassWidget) {
+      if (this.compassActive) {
+        this.compassWidget.classList.remove("hidden");
+      } else {
+        this.compassWidget.classList.add("hidden");
+      }
+    }
+  }
+
+  updateCompass(playerPos, targetPos, playerYaw) {
+    if (!this.compassActive || !this.compassNeedle || !playerPos || !targetPos) return;
+
+    const dx = targetPos.x - playerPos.x;
+    const dz = targetPos.z - playerPos.z;
+    const angleToTarget = Math.atan2(dx, -dz);
+    const relativeAngle = angleToTarget - playerYaw;
+
+    const deg = (relativeAngle * 180) / Math.PI;
+    this.compassNeedle.style.transform = `rotate(${deg}deg)`;
+
+    const dist = Math.hypot(dx, dz);
+    if (this.compassText) {
+      this.compassText.textContent = `열쇠 감지: ${dist.toFixed(0)}m`;
+    }
   }
 
   setStartEnabled(enabled, label = null) {
@@ -59,28 +132,30 @@ export class Hud {
   }
 
   hideStart() {
-    this.startScreen.classList.add("hidden");
+    if (this.startScreen) this.startScreen.classList.add("hidden");
   }
 
   showStart() {
-    this.startScreen.classList.remove("hidden");
+    if (this.startScreen) this.startScreen.classList.remove("hidden");
   }
 
   showCaught(message = "발소리가 바로 뒤에서 멈췄습니다.") {
-    const title = this.caughtScreen.querySelector("h2");
-    if (title) {
-      title.textContent = message;
+    if (this.caughtScreen) {
+      const title = this.caughtScreen.querySelector("h2");
+      if (title) {
+        title.textContent = message;
+      }
+      this.caughtScreen.classList.remove("hidden");
     }
-    this.caughtScreen.classList.remove("hidden");
     this.setThreat(1);
   }
 
   hideCaught() {
-    this.caughtScreen.classList.add("hidden");
+    if (this.caughtScreen) this.caughtScreen.classList.add("hidden");
     this.setThreat(0);
   }
 
-  setChapterInfo(chapter, chapters = []) {
+  setChapterInfo(chapter) {
     if (this.startEyebrow) {
       this.startEyebrow.textContent = chapter.eyebrow || `Chapter ${chapter.id}`;
     }
@@ -96,86 +171,47 @@ export class Hud {
   }
 
   showClear(options = {}) {
-    const title = this.clearScreen.querySelector("h2");
-    const text = this.clearScreen.querySelector("p:not(.eyebrow)");
-    if (title && options.title) {
-      title.textContent = options.title;
+    if (this.clearScreen) {
+      const title = this.clearScreen.querySelector("h2");
+      const text = this.clearScreen.querySelector("p:not(.eyebrow)");
+      if (title && options.title) {
+        title.textContent = options.title;
+      }
+      if (text && options.description) {
+        text.textContent = options.description;
+      }
+      this.clearScreen.classList.remove("hidden");
     }
-    if (text && options.message) {
-      text.textContent = options.message;
-    }
-    if (this.clearRestartButton && options.buttonText) {
-      this.clearRestartButton.textContent = options.buttonText;
-    }
-    this.clearScreen.classList.remove("hidden");
-    this.setThreat(0);
-    this.setStatus(options.message || "장난감 상자가 열리고 복도의 소리가 사라졌습니다.");
   }
 
   hideClear() {
-    this.clearScreen.classList.add("hidden");
+    if (this.clearScreen) this.clearScreen.classList.add("hidden");
   }
 
   showPause() {
-    this.pauseScreen.classList.remove("hidden");
-    this.setPrompt("");
+    if (this.pauseScreen) this.pauseScreen.classList.remove("hidden");
   }
 
   hidePause() {
-    this.pauseScreen.classList.add("hidden");
+    if (this.pauseScreen) this.pauseScreen.classList.add("hidden");
   }
 
   setMouseSensitivityDisplay(value) {
-    this.mouseSensitivityValue.textContent = value.toFixed(2);
+    if (this.mouseSensitivityValue) {
+      this.mouseSensitivityValue.textContent = Number(value).toFixed(2);
+    }
   }
 
   setDebugEnabled(enabled) {
-    if (!this.floorDebugElement) {
-      return;
+
+    if (this.floorDebugElement) {
+      this.floorDebugElement.style.display = enabled ? "block" : "none";
     }
-    this.floorDebugElement.classList.toggle("hidden", !enabled);
-    this.floorDebugElement.setAttribute("aria-hidden", enabled ? "false" : "true");
   }
 
-  setFloorDebug(debug) {
-    if (!this.floorDebugElement || !debug) {
-      return;
+  updateDebug(text) {
+    if (this.floorDebugElement) {
+      this.floorDebugElement.textContent = text;
     }
-
-    const drop = debug.lastDropAttempt;
-    const dropText = drop
-      ? `${drop.status} | ${drop.reason || "none"} | targetFloor=${drop.targetFloor ?? "none"} | landing=${drop.targetLandingId ?? "none"}`
-      : "none";
-    const monsterText = (debug.monsters || [])
-      .map((monster) => {
-        const target = monster.pathTarget
-          ? `${monster.pathTarget.type}:${monster.pathTarget.x.toFixed(1)},${monster.pathTarget.z.toFixed(1)}`
-          : "none";
-        return `${monster.label} f=${monster.floor} ${monster.state} path=${monster.chasePathLength || monster.patrolPathLength} target=${target} stuck=${monster.stuckTimer.toFixed(2)}`;
-      })
-      .join("\n");
-    const waypointText = (debug.transitionWaypoints || [])
-      .map((waypoint) => `${waypoint.id} f=${waypoint.floor}->${waypoint.links.join(",") || "none"}`)
-      .join(" | ");
-    const door = debug.nearestDoor;
-    const doorText = door
-      ? `${door.id} room=${door.connectedRoomId ?? "none"} locked=${door.locked} blocked=${door.blocked} d=${door.distance.toFixed(1)}`
-      : "none";
-    const area = debug.areaCounts;
-    const areaText = area
-      ? `walk=${area.walkable} room=${area.room} blocked=${area.blocked} void=${area.void} stair=${area.stair} door=${area.door}`
-      : "none";
-    this.floorDebugElement.textContent = [
-      `floor: ${debug.floor}`,
-      `x/z: ${debug.x.toFixed(2)} / ${debug.z.toFixed(2)}`,
-      `tile: ${debug.tileType} (${debug.tileId})`,
-      `below valid: ${debug.belowValidLanding} floor=${debug.belowFloor ?? "none"} tile=${debug.belowTileType}`,
-      `test safe: ${debug.testSafeMode ? "ON" : "OFF"}`,
-      `drop: ${dropText}`,
-      `areas: ${areaText}`,
-      `door: ${doorText}`,
-      `stair wp: ${waypointText || "none"}`,
-      `monsters:\n${monsterText || "none"}`,
-    ].join("\n");
   }
 }

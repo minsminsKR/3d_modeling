@@ -1,9 +1,9 @@
-// 1인칭 플레이어 이동과 상호작용을 담당하는 모듈입니다.
-// WASD 이동, 마우스 회전, Shift 달리기, E 상호작용, 캐비넷 내부 시점을 처리합니다.
+// 1인칭 플레이어 이동, 스태미나, 발소리, 아이템 투척/사용, 시점 제어를 담당하는 모듈입니다.
 
 import * as THREE from "three";
 import { PLAYER_CONFIG } from "../config/gameConfig.js";
 import { clamp, direction2D, smoothStep } from "../utils/math.js";
+import { soundManager } from "../audio/SoundManager.js";
 
 export class PlayerController {
   constructor(camera, input, collisionWorld, hud) {
@@ -25,6 +25,18 @@ export class PlayerController {
     this.mouseSensitivity = PLAYER_CONFIG.mouseSensitivity;
     this.stuckTimer = 0;
     this.noclip = false;
+
+    // Stamina & Speed Boost
+    this.stamina = 1.0; // 0.0 ~ 1.0
+    this.staminaExhausted = false;
+    this.speedBoostTimer = 0;
+    this.speedBoostMultiplier = 1.0;
+
+    // View bobbing & Camera tilt
+    this.bobTimer = 0;
+    this.currentBobSpeed = 8;
+    this.currentBobAmount = 0.02;
+    this.tiltAngle = 0;
   }
 
   setPosition(position) {
@@ -59,11 +71,35 @@ export class PlayerController {
     this.mouseSensitivity = value;
   }
 
+  restoreStamina(amount) {
+    this.stamina = Math.min(1.0, this.stamina + amount);
+    if (this.stamina > 0.2) {
+      this.staminaExhausted = false;
+    }
+    if (this.hud) this.hud.setStamina(this.stamina);
+  }
+
+  applySpeedBoost(duration, multiplier) {
+    this.speedBoostTimer = duration;
+    this.speedBoostMultiplier = multiplier;
+  }
+
+  getPosition() {
+    return this.position;
+  }
+
+  getForwardVector() {
+    const dir = new THREE.Vector3(0, 0, -1);
+    dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
+    return dir;
+  }
+
   enterCabinet(cabinet) {
     this.isHidden = true;
     this.hiddenCabinet = cabinet;
     this.input.consumePointerDelta();
     this.applyCabinetView();
+    soundManager.playSFX("cabinet_enter");
   }
 
   exitCabinet() {
@@ -82,22 +118,84 @@ export class PlayerController {
     this.cameraY = this.position.y + PLAYER_CONFIG.height;
     this.camera.position.set(this.position.x, this.cameraY, this.position.z);
     this.camera.rotation.set(this.pitch, this.yaw, 0, "YXZ");
+    soundManager.playSFX("door_open");
   }
 
   update(deltaTime) {
     if (this.isHidden) {
       this.isMoving = false;
       this.isSprinting = false;
+
+      // Resting inside cabinet steadily recovers stamina
+      const regenMult = this.staminaRegenMultiplier || 1.0;
+      this.stamina = Math.min(1.0, this.stamina + 0.25 * deltaTime * regenMult);
+      if (this.stamina > 0.2) {
+        this.staminaExhausted = false;
+      }
+      if (this.hud) {
+        this.hud.setStamina(this.stamina);
+      }
+
       this.updateHiddenInteraction();
       this.applyCabinetView();
       return;
     }
 
     this.updateLook();
+    this.updateStaminaAndItemHotkeys(deltaTime);
     this.updateMovement(deltaTime);
     this.updateInteraction();
     this.updateCamera(deltaTime);
-    this.camera.rotation.set(this.pitch, this.yaw, 0, "YXZ");
+  }
+
+  updateStaminaAndItemHotkeys(deltaTime) {
+    // Speed boost timer count
+    if (this.speedBoostTimer > 0) {
+      this.speedBoostTimer -= deltaTime;
+      if (this.speedBoostTimer <= 0) {
+        this.speedBoostMultiplier = 1.0;
+      }
+    }
+
+    // Item Quick Hotkeys
+    const itemSystem = this.interactionContext?.game?.itemSystem;
+    if (itemSystem) {
+      if (this.input.consumePressed("q")) {
+        itemSystem.useItem("firecracker", this, this.interactionContext?.game?.flashlightController);
+      } else if (this.input.consumePressed("1")) {
+        itemSystem.useItem("battery", this, this.interactionContext?.game?.flashlightController);
+      } else if (this.input.consumePressed("2")) {
+        itemSystem.useItem("energy_drink", this, this.interactionContext?.game?.flashlightController);
+      } else if (this.input.consumePressed("3")) {
+        itemSystem.useItem("firecracker", this, this.interactionContext?.game?.flashlightController);
+      } else if (this.input.consumePressed("4")) {
+        itemSystem.useItem("compass", this, this.interactionContext?.game?.flashlightController);
+      }
+    }
+
+    // Stamina logic
+    const regenMult = this.staminaRegenMultiplier || 1.0;
+    const wantsSprint = this.input.isDown("shift");
+
+    if (this.isSprinting && this.isMoving) {
+      this.stamina = Math.max(0, this.stamina - 0.22 * deltaTime);
+      if (this.stamina <= 0) {
+        this.staminaExhausted = true;
+      }
+    } else {
+      this.stamina = Math.min(1.0, this.stamina + 0.18 * deltaTime * regenMult);
+      // To prevent jittery stutter when holding shift with exhausted stamina,
+      // require either releasing shift or recovering substantial stamina.
+      if (!wantsSprint && this.stamina > 0.15) {
+        this.staminaExhausted = false;
+      } else if (this.stamina > 0.45) {
+        this.staminaExhausted = false;
+      }
+    }
+
+    if (this.hud) {
+      this.hud.setStamina(this.stamina);
+    }
   }
 
   updateCamera(deltaTime) {
@@ -105,7 +203,31 @@ export class PlayerController {
     this.cameraY = deltaTime > 0
       ? smoothStep(this.cameraY, targetY, PLAYER_CONFIG.verticalCameraSmoothness, deltaTime)
       : targetY;
-    this.camera.position.set(this.position.x, this.cameraY, this.position.z);
+
+    // View bobbing effect - smoothly interpolated without jarring speed or amplitude jumps
+    let bobOffset = 0;
+    if (this.isMoving) {
+      const targetBobSpeed = this.isSprinting ? 12 : 8;
+      const targetBobAmount = this.isSprinting ? 0.035 : 0.02;
+      this.currentBobSpeed = smoothStep(this.currentBobSpeed, targetBobSpeed, 8, deltaTime);
+      this.currentBobAmount = smoothStep(this.currentBobAmount, targetBobAmount, 8, deltaTime);
+
+      this.bobTimer += deltaTime * this.currentBobSpeed;
+      bobOffset = Math.sin(this.bobTimer) * this.currentBobAmount;
+    } else {
+      this.bobTimer = 0;
+      this.currentBobSpeed = 8;
+      this.currentBobAmount = 0.02;
+    }
+
+    this.camera.position.set(this.position.x, this.cameraY + bobOffset, this.position.z);
+
+    // Strafe tilt
+    const strafe = Number(this.input.isDown("d", "arrowright")) - Number(this.input.isDown("a", "arrowleft"));
+    const targetTilt = -strafe * 0.025;
+    this.tiltAngle = smoothStep(this.tiltAngle, targetTilt, 12, deltaTime);
+
+    this.camera.rotation.set(this.pitch, this.yaw, this.tiltAngle, "YXZ");
   }
 
   applyCabinetView() {
@@ -131,8 +253,7 @@ export class PlayerController {
   updateMovement(deltaTime) {
     const game = window.__happyToy;
     const isSafeMode = !!(game && game.testSafeMode);
-    
-    // Transition out of safe mode: snap back to the ground Y!
+
     if (this.noclip && !isSafeMode) {
       this.noclip = false;
       this.position.y = this.collisionWorld.getGroundY(this.position);
@@ -140,7 +261,6 @@ export class PlayerController {
     }
     this.noclip = isSafeMode;
 
-    // 1. Noclip vertical movement (holding Spacebar to go up, Ctrl or C to go down)
     if (this.noclip) {
       const up = this.input.isDown(" ", "space") ? 1 : 0;
       const down = this.input.isDown("control", "ctrl", "c") ? 1 : 0;
@@ -154,7 +274,10 @@ export class PlayerController {
     const forward = Number(this.input.isDown("w", "arrowup")) - Number(this.input.isDown("s", "arrowdown"));
     const strafe = Number(this.input.isDown("d", "arrowright")) - Number(this.input.isDown("a", "arrowleft"));
     this.isMoving = forward !== 0 || strafe !== 0;
-    this.isSprinting = this.isMoving && this.input.isDown("shift");
+
+    // Sprinting check with stamina exhaustion
+    const wantsSprint = this.input.isDown("shift");
+    this.isSprinting = this.isMoving && wantsSprint && !this.staminaExhausted && this.stamina > 0.05;
 
     if (!this.isMoving) {
       return;
@@ -164,7 +287,15 @@ export class PlayerController {
     move.normalize();
     move.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
 
-    const speed = this.isSprinting ? PLAYER_CONFIG.sprintSpeed : PLAYER_CONFIG.walkSpeed;
+    let speed = this.isSprinting ? PLAYER_CONFIG.sprintSpeed : PLAYER_CONFIG.walkSpeed;
+    speed *= this.speedBoostMultiplier;
+
+    // Soul Gathering (영혼집합소) flooded canal check (South sector z: [6, 26], x: [-24, 24])
+    const inFloodedCanal = this.position.y <= 0.25 && this.position.z >= 6.0 && this.position.z <= 26.0 && Math.abs(this.position.x) <= 24.0;
+    if (inFloodedCanal) {
+      speed *= 0.88; // subtle water drag
+    }
+
     const previousPosition = this.position.clone();
     this.position.addScaledVector(move, speed * deltaTime);
 
@@ -183,6 +314,14 @@ export class PlayerController {
       }
     }
 
+    // Play footstep audio (Water splash in flooded canals or when Y < -0.5)
+    if (inFloodedCanal || this.position.y < -0.5) {
+      soundManager.playWaterStep(this.isSprinting);
+    } else {
+      soundManager.playFootstep(this.isSprinting);
+    }
+
+
     // Stuck check and unstuck teleport logic
     if (!this.noclip) {
       const movedDist = previousPosition.distanceTo(this.position);
@@ -190,14 +329,16 @@ export class PlayerController {
       if (this.isMoving && movedDist < expectedDist * 0.1) {
         this.stuckTimer += deltaTime;
         if (this.stuckTimer > 1.2) {
-          // Player is stuck! Teleport to center of current chunk
           const cx = Math.floor((this.position.x + 8) / 16);
           const cz = Math.floor((this.position.z + 8) / 16);
-          this.position.set(cx * 16, 0, cz * 16);
+          const groundY = this.collisionWorld.getGroundY(
+            { x: cx * 16, y: this.position.y, z: cz * 16 },
+            { allowAnyFloor: true }
+          );
+          this.position.set(cx * 16, groundY, cz * 16);
           this.collisionWorld.snapToValidSurface(this.position, { actorId: "player-unstuck" });
           this.stuckTimer = 0;
           this.hud.setStatus("끼임 방지: 복도 중앙으로 복귀했습니다.", 1800);
-          console.warn(`[PlayerController] Player stuck detected. Teleported to chunk center (${cx}, ${cz}).`);
         }
       } else {
         this.stuckTimer = 0;

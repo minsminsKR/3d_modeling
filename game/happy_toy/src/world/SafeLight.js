@@ -74,17 +74,21 @@ export class SafeLight {
   createWallSwitch() {
     this.lightAnchor.position.set(0, 0.18, -0.34);
 
+    // Antique dark wood wall-mounting backplate
+    const woodBack = this.addMesh(new THREE.BoxGeometry(0.42, 0.56, 0.03), this.materials.dark);
+    woodBack.position.set(0, 0.18, 0.015);
+
     const plate = this.addMesh(new THREE.BoxGeometry(0.34, 0.46, 0.055), this.materials.body);
-    plate.position.y = 0.18;
+    plate.position.set(0, 0.18, -0.02);
 
     const toggle = this.addMesh(new THREE.BoxGeometry(0.08, 0.23, 0.045), this.materials.brass);
     toggle.name = `${this.id}-toggle`;
-    toggle.position.set(0, 0.18, -0.045);
+    toggle.position.set(0, 0.18, -0.065);
     toggle.rotation.x = -0.18;
 
     const indicator = this.addMesh(new THREE.SphereGeometry(0.065, 12, 12), this.materials.glow);
     indicator.name = `${this.id}-indicator`;
-    indicator.position.set(0, 0.48, -0.055);
+    indicator.position.set(0, 0.48, -0.075);
     this.glowMeshes = [indicator];
   }
 
@@ -181,8 +185,22 @@ export class SafeLight {
     }
   }
 
+  setFlickerState(flickerMult = 1.0) {
+    if (!this.isOn) return;
+    const baseIntensity = 1.05;
+    for (const mesh of this.glowMeshes || []) {
+      if (mesh.material?.emissive) {
+        mesh.material.emissiveIntensity = baseIntensity * Math.max(0.04, flickerMult);
+      }
+    }
+  }
+
   getLightWorldPosition(target = new THREE.Vector3()) {
-    return this.lightAnchor.getWorldPosition(target);
+    if (this.lightAnchor) {
+      this.lightAnchor.updateMatrixWorld(true);
+      return this.lightAnchor.getWorldPosition(target);
+    }
+    return target.copy(this.position);
   }
 
   dispose() {

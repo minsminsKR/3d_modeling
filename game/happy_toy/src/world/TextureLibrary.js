@@ -25,8 +25,9 @@ export class TextureLibrary {
     }
     const mat = new THREE.MeshStandardMaterial({
       map: this.load("wall"),
-      color: 0xe6d78a,
-      roughness: 0.72,
+      color: 0xba9872,
+      roughness: 0.65,
+      metalness: 0.02,
     });
     this.materialsCache.set("wall", mat);
     return mat;
@@ -38,8 +39,8 @@ export class TextureLibrary {
     }
     const mat = new THREE.MeshStandardMaterial({
       map: this.load("stair"),
-      color: 0xcfcaa9,
-      roughness: 0.96,
+      color: 0x8c6d48,
+      roughness: 0.75,
     });
     this.materialsCache.set("stair", mat);
     return mat;
@@ -52,7 +53,7 @@ export class TextureLibrary {
     const mat = new THREE.MeshStandardMaterial({
       map: this.load("door"),
       color: 0xffffff,
-      roughness: 0.82,
+      roughness: 0.72,
       metalness: 0.04,
     });
     this.materialsCache.set("door", mat);
@@ -68,10 +69,12 @@ export class TextureLibrary {
       Math.max(1, width / 4),
       Math.max(1, depth / 4),
     ];
+    // Shadow Corridor polished Japanese cedar floorboards with warm amber sheen
     const mat = new THREE.MeshStandardMaterial({
       map: this.createTexture("floor", { repeat, wrapping: THREE.RepeatWrapping }),
-      color: 0x8d8363,
-      roughness: 0.96,
+      color: 0xa88258,
+      roughness: 0.52,
+      metalness: 0.06,
     });
     this.materialsCache.set(key, mat);
     return mat;
@@ -88,8 +91,8 @@ export class TextureLibrary {
     ];
     const mat = new THREE.MeshStandardMaterial({
       map: this.createTexture("ceiling", { repeat, wrapping: THREE.RepeatWrapping }),
-      color: 0xbfbda6,
-      roughness: 0.98,
+      color: 0x54402e,
+      roughness: 0.85,
     });
     this.materialsCache.set(key, mat);
     return mat;
@@ -139,12 +142,20 @@ export class TextureLibrary {
       url,
       (loadedTexture) => {
         loadedTexture.colorSpace = THREE.SRGBColorSpace;
+        loadedTexture.anisotropy = 16;
+        loadedTexture.generateMipmaps = true;
+        loadedTexture.minFilter = THREE.LinearMipmapLinearFilter;
+        loadedTexture.magFilter = THREE.LinearFilter;
         loadedTexture.needsUpdate = true;
       },
       undefined,
       (error) => console.warn(`[TextureLibrary] Failed to load ${url}`, error),
     );
     texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = 16;
+    texture.generateMipmaps = true;
+    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    texture.magFilter = THREE.LinearFilter;
     texture.wrapS = options.wrapping ?? THREE.ClampToEdgeWrapping;
     texture.wrapT = options.wrapping ?? THREE.ClampToEdgeWrapping;
     if (options.repeat) {

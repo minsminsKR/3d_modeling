@@ -3,7 +3,8 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 
-const url = process.argv[2] || "http://127.0.0.1:8010/";
+const url = process.argv[2] || "http://127.0.0.1:8013/";
+
 
 function assert(condition, message) {
   if (!condition) {

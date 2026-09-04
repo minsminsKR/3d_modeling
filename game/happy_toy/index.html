@@ -21,17 +21,49 @@
       <div id="glitch-overlay" class="glitch-overlay" aria-hidden="true"></div>
       <div id="threat-meter" class="threat-meter" aria-hidden="true"></div>
       <div class="crosshair" aria-hidden="true"></div>
+
+      <!-- Top Key Counter -->
+      <div id="key-counter" class="key-counter">
+        <span class="key-icon">🔑</span>
+        <span id="key-count-text">0 / 4</span>
+      </div>
+
+      <!-- Compass Widget -->
+      <div id="compass-widget" class="compass-widget hidden">
+        <div class="compass-ring">
+          <div id="compass-needle" class="compass-needle"></div>
+        </div>
+        <div id="compass-target-text" class="compass-target-text">목표 감지 중</div>
+      </div>
+
+      <!-- Stamina Bar -->
+      <div class="stamina-container">
+        <div class="stamina-label">STAMINA</div>
+        <div class="stamina-bar-bg">
+          <div id="stamina-bar-fill" class="stamina-bar-fill"></div>
+        </div>
+      </div>
+
+      <!-- Inventory Hotbar -->
+      <div id="item-hotbar" class="item-hotbar">
+        <div class="hotbar-slot" data-slot="1"><span class="key-hint">1</span><span class="item-name">건전지</span><span class="item-qty" id="qty-battery">x0</span></div>
+        <div class="hotbar-slot" data-slot="2"><span class="key-hint">2</span><span class="item-name">드링크</span><span class="item-qty" id="qty-drink">x0</span></div>
+        <div class="hotbar-slot" data-slot="3"><span class="key-hint">Q/3</span><span class="item-name">폭죽</span><span class="item-qty" id="qty-firecracker">x0</span></div>
+        <div class="hotbar-slot" data-slot="4"><span class="key-hint">4</span><span class="item-name">나침반</span><span class="item-qty" id="qty-compass">x0</span></div>
+      </div>
+
       <p id="interaction-prompt" class="interaction-prompt"></p>
       <p id="status-line" class="status-line">화면을 클릭하면 게임이 시작됩니다.</p>
       <pre id="floor-debug" class="floor-debug" aria-hidden="true"></pre>
     </div>
 
-    <section id="start-screen" class="start-screen">
+    <section id="start-screen" class="start-screen hidden">
+
       <div class="start-copy">
-        <p id="start-eyebrow" class="eyebrow">Chapter 1</p>
-        <h1 id="start-title">낡은 여름 복도</h1>
-        <p id="start-description">낡은 실내 복도를 지나 네 개의 열쇠를 찾아 복도 끝 장난감 상자를 여세요.</p>
-        <button id="start-button" type="button">Chapter 1 시작</button>
+        <p id="start-eyebrow" class="eyebrow">Chapter 2</p>
+        <h1 id="start-title">영혼집합소</h1>
+        <p id="start-description">복층 목조 회랑과 침수된 수로에 갇혔습니다. 네 개의 혼(열쇠)을 찾아 중앙 배례전 제단에 바치고 탈출하세요.</p>
+        <button id="start-button" type="button">영혼집합소 시작</button>
       </div>
     </section>
 

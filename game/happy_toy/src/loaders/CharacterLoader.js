@@ -32,6 +32,7 @@ export class CharacterLoader {
     }
   }
 
+
   loadFbx(url) {
     return new Promise((resolve, reject) => {
       this.fbxLoader.load(url, resolve, undefined, reject);
@@ -45,6 +46,10 @@ export class CharacterLoader {
         (texture) => {
           texture.colorSpace = THREE.SRGBColorSpace;
           texture.flipY = true;
+          texture.generateMipmaps = true;
+          texture.minFilter = THREE.LinearMipmapLinearFilter;
+          texture.magFilter = THREE.LinearFilter;
+          texture.anisotropy = 16;
           texture.needsUpdate = true;
           resolve(texture);
         },
@@ -103,26 +108,80 @@ export class CharacterLoader {
       return;
     }
 
-    // Some converted FBX character meshes arrive without normals. PBR lighting
-    // then has nothing to shade against, which makes the monster render black.
-    const normal = geometry.attributes.normal;
-    if (!normal || normal.count !== geometry.attributes.position.count) {
-      geometry.computeVertexNormals();
+    // Mixamo FBX meshes arrive non-indexed without normals. Built-in computeVertexNormals()
+    // on non-indexed geometry creates disjoint face normals for each triangle, causing
+    // harsh flat shading where all 10,000 polygon facets are visible like cracked stone.
+    // We compute continuous area-weighted smooth vertex normals across shared vertex positions.
+    this.computeSmoothVertexNormals(geometry);
+  }
+
+  computeSmoothVertexNormals(geometry) {
+    const position = geometry.attributes.position;
+    if (!position) return;
+
+    const vertexCount = position.count;
+    const pA = new THREE.Vector3();
+    const pB = new THREE.Vector3();
+    const pC = new THREE.Vector3();
+    const cb = new THREE.Vector3();
+    const ab = new THREE.Vector3();
+
+    // Map spatial positions to accumulated area-weighted normal vectors
+    const normalMap = new Map();
+    const precision = 10000; // 0.1mm tolerance
+    const getKey = (x, y, z) => `${Math.round(x * precision)},${Math.round(y * precision)},${Math.round(z * precision)}`;
+
+    for (let i = 0; i < vertexCount; i += 3) {
+      pA.fromBufferAttribute(position, i);
+      pB.fromBufferAttribute(position, i + 1);
+      pC.fromBufferAttribute(position, i + 2);
+
+      cb.subVectors(pC, pB);
+      ab.subVectors(pA, pB);
+      cb.cross(ab); // area-weighted normal
+
+      for (let j = 0; j < 3; j++) {
+        const idx = i + j;
+        const key = getKey(position.getX(idx), position.getY(idx), position.getZ(idx));
+        let acc = normalMap.get(key);
+        if (!acc) {
+          acc = new THREE.Vector3();
+          normalMap.set(key, acc);
+        }
+        acc.add(cb);
+      }
     }
-    if (geometry.attributes.normal) {
-      geometry.normalizeNormals?.();
-      geometry.attributes.normal.needsUpdate = true;
+
+    // Assign normalized smooth normal to every vertex sharing that position
+    const normals = new Float32Array(vertexCount * 3);
+    const tempNormal = new THREE.Vector3();
+
+    for (let i = 0; i < vertexCount; i++) {
+      const key = getKey(position.getX(i), position.getY(i), position.getZ(i));
+      const acc = normalMap.get(key);
+      if (acc && acc.lengthSq() > 1e-10) {
+        tempNormal.copy(acc).normalize();
+      } else {
+        tempNormal.set(0, 1, 0);
+      }
+      normals[i * 3] = tempNormal.x;
+      normals[i * 3 + 1] = tempNormal.y;
+      normals[i * 3 + 2] = tempNormal.z;
     }
+
+    geometry.setAttribute("normal", new THREE.BufferAttribute(normals, 3));
+    geometry.attributes.normal.needsUpdate = true;
   }
 
   createLitCharacterMaterial(child, texture) {
     const canUseTexture = texture && child.geometry?.attributes?.uv;
     return new THREE.MeshStandardMaterial({
       map: canUseTexture ? texture : null,
-      color: canUseTexture ? 0xffffff : 0x8d6a46,
-      roughness: 0.88,
-      metalness: 0.0,
+      color: canUseTexture ? new THREE.Color(0xffffff) : new THREE.Color(0x8d6a46),
+      roughness: 0.52,
+      metalness: 0.02,
       side: THREE.DoubleSide,
+      flatShading: false,
     });
   }
 

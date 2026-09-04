@@ -2,7 +2,8 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 
-const url = "http://127.0.0.1:8010/";
+const url = process.argv[2] || "http://127.0.0.1:8013/";
+
 
 console.log("Launching browser to verify Mirror Hwacat Event...");
 const browser = await chromium.launch({
@@ -33,14 +34,14 @@ try {
     { timeout: 8000 }
   );
 
-  console.log("Game initialized. Teleporting player to Event Room (-32, 0, -32)...");
+  console.log("Game initialized. Teleporting player to 2F Gallery (-19.0, 5.0, -16.0)...");
   
   await page.evaluate(() => {
     const game = window.__happyToy;
     game.start();
-    // Teleport player to (-32, 0, -32) which triggers the Hwacat event
-    // The trigger position is [-28, 0, -31.9] with 2.2m radius, so let's teleport near it.
-    game.player.setPosition({ x: -28, y: 0, z: -32 });
+    // Teleport player to 2F Gallery which triggers the Hwacat event
+    // The trigger position is [-19.0, 5.0, -16.0] with 2.2m radius
+    game.player.setPosition({ x: -19.0, y: 5.0, z: -16.0 });
     game.updateBackrooms(0.016);
   });
 

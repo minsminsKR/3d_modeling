@@ -3,7 +3,8 @@
 
 import * as THREE from "three";
 import { createChapterSession, CHAPTERS } from "../config/chapterConfig.js";
-import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG } from "../config/gameConfig.js";
+import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG, LIGHTING_CONFIG } from "../config/gameConfig.js";
+
 import { CollisionWorld } from "../world/CollisionWorld.js";
 import { EnemyManager } from "../entities/EnemyManager.js";
 import { GlitchController } from "../effects/GlitchController.js";
@@ -15,13 +16,21 @@ import { Loop } from "./Loop.js";
 import { MapBuilder } from "../world/MapBuilder.js";
 import { FlashlightController } from "../player/FlashlightController.js";
 import { PlayerController } from "../player/PlayerController.js";
+import { ItemSystem } from "../world/ItemSystem.js";
+import { ParticleSystem } from "../effects/ParticleSystem.js";
+import { MenuSystem } from "../ui/MenuSystem.js";
+import { soundManager } from "../audio/SoundManager.js";
+import { MonsterIntroManager } from "../events/MonsterIntroManager.js";
+
+
 
 export class Game {
   constructor(rootElement) {
     this.rootElement = rootElement;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(WORLD_CONFIG.fogColor);
-    this.scene.fog = new THREE.Fog(WORLD_CONFIG.fogColor, 20, 75);
+    this.scene.fog = new THREE.Fog(WORLD_CONFIG.fogColor, LIGHTING_CONFIG.fogNear, LIGHTING_CONFIG.fogFar);
+
 
     this.camera = new THREE.PerspectiveCamera(
       CAMERA_CONFIG.fov,
@@ -33,11 +42,10 @@ export class Game {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    // Shadows disabled globally — enabling shadow maps causes WebGL to bind extra
-    // shadow-map texture units per light, which pushed us past MAX_TEXTURE_IMAGE_UNITS
-    // and forced costly shader recompilation on every new PointLight.
-    this.renderer.shadowMap.enabled = false;
-    this.renderer.toneMappingExposure = 1.24;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.toneMappingExposure = 0.8;
+
     this.rootElement.appendChild(this.renderer.domElement);
 
     this.hud = new Hud();
@@ -72,8 +80,12 @@ export class Game {
     this.gameCleared = false;
     this.spawnedWeepingAngel1F = false;
     this.spawnedWeepingAngel2F = false;
+    this.activatedSafeLightKeys = new Set();
+    this.activatedSafeLights = this.activatedSafeLightKeys;
     this.isStarted = false;
+    this.wasPointerLocked = false;
     this.isPaused = false;
+
     this.cabinetEvent = null;
     this.cutsceneEvent = null;
     this.elapsedTime = 0;
@@ -122,7 +134,7 @@ export class Game {
     this.player = new PlayerController(this.camera, this.input, this.collisionWorld, this.hud);
     this.player.setPosition(map.playerStart);
     this.player.resetLook(0, 0);
-    this.flashlightController = new FlashlightController(this.flashlight, this.input, this.hud);
+    this.flashlightController = new FlashlightController(this.flashlight, this.input, this.hud, this);
     this.horrorEventManager = new HorrorEventManager(
       this.scene,
       this.player,
@@ -130,20 +142,33 @@ export class Game {
       this.hud,
       this.horrorLights,
     );
+    this.enemyManager = new EnemyManager(this.scene, this.collisionWorld, this.doors, this.hud, this.enemyConfigs);
+    this.itemSystem = new ItemSystem(this.scene, this.enemyManager, this.hud);
+    this.particleSystem = new ParticleSystem(this.scene);
+    this.menuSystem = new MenuSystem(this);
+    this.monsterIntroManager = new MonsterIntroManager(this);
+
+
+    this.itemSystem.spawnPickups([
+      [-11.0, 0, -17.5],
+      [11.5, 0, -8.5],
+      [-9.5, 0, 5.5],
+      [6.5, 3.4, 7.5],
+      [-12.0, 0, 21.0],
+    ]);
+
     this.player.setInteractables(
-      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, this.finalExit].filter(Boolean),
+      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, ...this.itemSystem.getInteractables(), this.finalExit].filter(Boolean),
       this.createInteractionContext(),
     );
 
-    this.enemyManager = new EnemyManager(this.scene, this.collisionWorld, this.doors, this.hud, this.enemyConfigs);
-    const eventChunkCenter = { x: -32, y: 0, z: -32 }; // chunk (-2, -2) center
-    const backroomsHwacatEventConfig = {
+    const hwacat2FGalleryConfig = {
       id: "hwacat-mirror-event",
-      triggerPosition: [eventChunkCenter.x + 4.0, 0, eventChunkCenter.z + 0.1],
+      triggerPosition: [-19.0, 5.0, -16.0],
       triggerRadius: 2.2,
-      spawnPosition: [eventChunkCenter.x - 0.7, 0, eventChunkCenter.z - 1.0],
-      spawnYaw: Math.PI,
-      lookAtPosition: [eventChunkCenter.x - 0.7, 1.05, eventChunkCenter.z - 1.0],
+      spawnPosition: [-22.5, 5.0, -16.0],
+      spawnYaw: Math.PI / 2,
+      lookAtPosition: [-22.5, 6.2, -16.0],
       cameraDuration: 1.25,
       cameraBackStep: 0.6,
       cameraLift: 0.05,
@@ -154,11 +179,11 @@ export class Game {
       safePauseSeconds: 0.15,
       paintingId: "upper-hwa-painting",
       paintingDropSeconds: 0.75,
-      paintingDropTargetPosition: [eventChunkCenter.x - 5.0, 0.06, eventChunkCenter.z],
-      paintingDropTargetRotation: [-Math.PI / 2, 0, 0.0],
+      paintingDropTargetPosition: [-22.5, 5.08, -16.0],
+      paintingDropTargetRotation: [-Math.PI / 2, 0, 0.08],
       rewardKeyId: "key-hwacat",
     };
-    this.mirrorEvents = [new MirrorHwacatEvent(backroomsHwacatEventConfig, {
+    this.mirrorEvents = [new MirrorHwacatEvent(hwacat2FGalleryConfig, {
       scene: this.scene,
       camera: this.camera,
       player: this.player,
@@ -184,16 +209,20 @@ export class Game {
   }
 
   setupLighting() {
-    const ambient = new THREE.AmbientLight(0x504b3e, 0.95);
+    const ambient = new THREE.AmbientLight(LIGHTING_CONFIG.ambientColor, LIGHTING_CONFIG.ambientIntensity);
     this.scene.add(ambient);
 
-    const lowAmbient = new THREE.HemisphereLight(0x5c594c, 0x2e2c24, 0.85);
+    const lowAmbient = new THREE.HemisphereLight(LIGHTING_CONFIG.hemisphereSkyColor, LIGHTING_CONFIG.hemisphereGroundColor, LIGHTING_CONFIG.hemisphereIntensity);
     this.scene.add(lowAmbient);
 
-    this.flashlight = new THREE.SpotLight(0xfff5d2, 25.0, 35, Math.PI * 0.28, 0.55, 1.0);
-    this.flashlight.position.set(0, 0, 0);
-    this.flashlight.target.position.set(0, 0, -1);
-    this.flashlight.castShadow = false;
+
+    this.flashlight = new THREE.SpotLight(LIGHTING_CONFIG.flashlightColor, LIGHTING_CONFIG.flashlightIntensity, LIGHTING_CONFIG.flashlightRange, LIGHTING_CONFIG.flashlightAngle, LIGHTING_CONFIG.flashlightPenumbra, 2.0);
+    this.flashlight.position.set(0.12, -0.08, 0.1);
+    this.flashlight.target.position.set(0, -0.22, -1);
+    this.flashlight.castShadow = true;
+    this.flashlight.shadow.mapSize.width = LIGHTING_CONFIG.flashlightShadowMapSize || 512;
+    this.flashlight.shadow.mapSize.height = LIGHTING_CONFIG.flashlightShadowMapSize || 512;
+
     this.flashlight.visible = true;
     this.camera.add(this.flashlight);
     this.camera.add(this.flashlight.target);
@@ -202,7 +231,7 @@ export class Game {
     // Pre-allocate the fixed PointLight pool. All lights live in the scene permanently.
     // We only update their position/intensity — never add/remove during gameplay.
     for (let i = 0; i < this._POINT_LIGHT_BUDGET; i++) {
-      const pl = new THREE.PointLight(0xfffee2, 0, 18, 1.0);
+      const pl = new THREE.PointLight(LIGHTING_CONFIG.ceilingLightColor, 0, 14, 1.2);
       pl.castShadow = false;
       pl.position.set(0, -9999, 0); // park far off-screen until assigned
       this.scene.add(pl);
@@ -235,7 +264,16 @@ export class Game {
     this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value));
   }
 
+  refreshInteractables() {
+    if (!this.player) return;
+    this.player.setInteractables(
+      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, ...(this.itemSystem?.getInteractables() || []), this.finalExit].filter(Boolean),
+      this.createInteractionContext(),
+    );
+  }
+
   createInteractionContext() {
+
     return {
       hud: this.hud,
       game: this,
@@ -257,6 +295,7 @@ export class Game {
     if (this.activatedSafeLightKeys.has(safeLight.stateKey)) return;
     safeLight.setActivated(true);
     this.activatedSafeLightKeys.add(safeLight.stateKey);
+    this.updateSafeLightPool();
     this.hud.setStatus(`조명을 켰습니다 - ${safeLight.label}`, 1500);
   }
 
@@ -273,6 +312,8 @@ export class Game {
 
     this.isStarted = true;
     this.isPaused = false;
+    this.wasPointerLocked = false;
+    this.applyDifficultySettings();
     this.glitchController.primeAudio();
     this.hud.hideStart();
     this.hud.hidePause();
@@ -284,6 +325,8 @@ export class Game {
     this.resetRunState();
     this.isStarted = true;
     this.isPaused = false;
+    this.wasPointerLocked = false;
+    this.applyDifficultySettings();
     this.hud.hideCaught();
     this.hud.hideClear();
     this.hud.hidePause();
@@ -291,6 +334,41 @@ export class Game {
     this.input.requestPointerLock();
     this.hud.setStatus("다시 복도 한가운데에 섰습니다.", 1800);
   }
+
+
+  applyDifficultySettings() {
+    const mode = this.menuSystem?.currentMode || "normal";
+    let speedMult = 1.0;
+    let detectionMult = 1.0;
+    let batteryDrainMult = 1.0;
+    let staminaRegenMult = 1.0;
+
+    if (mode === "nightmare") {
+      speedMult = 1.2;
+      detectionMult = 1.25;
+      batteryDrainMult = 1.5;
+      staminaRegenMult = 0.8;
+    } else if (mode === "hardcore") {
+      speedMult = 1.4;
+      detectionMult = 1.5;
+      batteryDrainMult = 2.0;
+      staminaRegenMult = 0.65;
+    }
+
+    if (this.enemyManager) {
+      for (const enemy of this.enemyManager.enemies) {
+        enemy.speedMultiplier = speedMult;
+        enemy.detectionMultiplier = detectionMult;
+      }
+    }
+    if (this.flashlightController) {
+      this.flashlightController.drainMultiplier = batteryDrainMult;
+    }
+    if (this.player) {
+      this.player.staminaRegenMultiplier = staminaRegenMult;
+    }
+  }
+
 
   update(deltaTime) {
     if (this.input.consumePressed("0") || this.input.consumePressed("numpad0")) {
@@ -331,9 +409,33 @@ export class Game {
       this.updateBackrooms(deltaTime);
       this.updateLovelyDolls(deltaTime);
       this.updateWeepingAngels(deltaTime);
-      this.player.update(deltaTime);
-      this.flashlightController.update();
+      this.monsterIntroManager?.update(deltaTime);
+      if (!this.monsterIntroManager?.blocksPlayerControl) {
+        this.player.update(deltaTime);
+      }
+      this.flashlightController.update(deltaTime);
+      this.itemSystem?.update(deltaTime);
+      this.particleSystem?.update(deltaTime, this.player.position);
       this.horrorEventManager?.update(deltaTime);
+
+
+      // Heartbeat audio update based on closest monster
+      let minDist = 999;
+      if (this.enemyManager && this.enemyManager.enemies) {
+        for (const enemy of this.enemyManager.enemies) {
+          const dist = Math.hypot(enemy.group.position.x - this.player.position.x, enemy.group.position.z - this.player.position.z);
+          if (dist < minDist) minDist = dist;
+        }
+      }
+      soundManager.updateHeartbeat(deltaTime, minDist);
+
+      // Compass target
+      const uncollectedKey = this.keys.find((k) => k.isAvailable && !k.isCollected);
+      if (uncollectedKey) {
+        this.hud.updateCompass(this.player.position, uncollectedKey.position, this.player.yaw);
+      }
+      this.hud.setKeyCount(this.keyCount, this.keys.length);
+
       const enemyState = this.enemyManager?.update(deltaTime, {
         position: this.player.position,
         isHidden: this.player.isHidden,
@@ -346,6 +448,7 @@ export class Game {
         this.handleCaught();
       }
     } else {
+
       this.glitchController.update(deltaTime, { threat: 0 });
     }
 
@@ -496,17 +599,22 @@ export class Game {
   }
 
   handlePointerLockChange() {
-    if (
+    const isLocked = document.pointerLockElement === this.renderer.domElement;
+    if (isLocked) {
+      this.wasPointerLocked = true;
+    } else if (
       this.isStarted
       && !this.isPaused
       && !this.gameOver
       && !this.gameCleared
       && !this.cutsceneEvent
-      && document.pointerLockElement !== this.renderer.domElement
+      && this.wasPointerLocked
     ) {
+      this.wasPointerLocked = false;
       this.pause();
     }
   }
+
 
   togglePause() {
     if (this.isPaused) {
@@ -535,10 +643,12 @@ export class Game {
     }
 
     this.isPaused = false;
+    this.wasPointerLocked = false;
     this.hud.hidePause();
     this.input.requestPointerLock();
     this.hud.setStatus("다시 숨을 고릅니다.", 1200);
   }
+
 
   setMouseSensitivityScale(scale) {
     const safeScale = Number.isFinite(scale) ? scale : 1;
@@ -573,7 +683,9 @@ export class Game {
     for (const event of this.mirrorEvents) {
       event.reset();
     }
+    this.monsterIntroManager?.reset();
     this.horrorEventManager?.reset();
+
     this.glitchController.reset();
     this.testSafeMode = false;
     this.player.exitCabinet();
@@ -609,12 +721,18 @@ export class Game {
       this.finalExit = map.finalExit;
     }
 
+    if (this.itemSystem) {
+      this.itemSystem.inventory = { battery: 2, energy_drink: 1, firecracker: 2, compass: 1 };
+      this.hud.updateInventory(this.itemSystem.inventory);
+    }
+
     this.player.setPosition(new THREE.Vector3(0, 0, 0));
     this.player.resetLook(0, 0);
     this.player.setInteractables(
-      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, this.finalExit].filter(Boolean),
+      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, ...(this.itemSystem?.getInteractables() || []), this.finalExit].filter(Boolean),
       this.createInteractionContext(),
     );
+
     this.flashlightController.reset();
     this.enemyManager.reset(this.doors);
     this.enemyManager.endCabinetInvestigations();
@@ -781,11 +899,15 @@ export class Game {
     this.cabinetEvent = null;
     document.exitPointerLock?.();
 
-    this.hud.showClear({
-      title: `${this.chapterSession.title} Clear`,
-      message: "장난감 상자가 열리고 복도의 소리가 사라졌습니다.",
-      buttonText: "다시 시작",
-    });
+    if (this.menuSystem) {
+      this.menuSystem.showVictoryClear(this.elapsedTime);
+    } else {
+      this.hud.showClear({
+        title: `${this.chapterSession.title} Clear`,
+        message: "장난감 상자가 열리고 복도의 소리가 사라졌습니다.",
+        buttonText: "다시 시작",
+      });
+    }
   }
 
   handleCaught(message = "발소리가 바로 뒤에서 멈췄습니다.") {
@@ -802,8 +924,14 @@ export class Game {
     this.cabinetEvent = null;
     document.exitPointerLock?.();
     this.glitchController.trigger({ strength: 1.15, full: true });
-    this.hud.showCaught(message);
+
+    if (this.menuSystem) {
+      this.menuSystem.showGameOverScreamer();
+    } else {
+      this.hud.showCaught(message);
+    }
   }
+
 
   toggleTestSafeMode() {
     this.testSafeMode = !this.testSafeMode;
@@ -860,6 +988,7 @@ export class Game {
     const playerPos = this.player.position;
     const allPanels = [];
     for (const chunk of this.mapBuilder.loadedChunks.values()) {
+      if (!chunk.lights || chunk.lights.length === 0) continue;
       for (const light of chunk.lights) {
         const gx = chunk.center.x + light.localPos.x;
         const gz = chunk.center.z + light.localPos.z;
@@ -875,11 +1004,13 @@ export class Game {
           if (light.flickerTimer <= 0) {
             const isOff = Math.random() < 0.25;
             if (isOff) {
-              light.mesh.material.color.setHex(0x3a3930);
+              light.mesh.material.color.setHex(0x441b08);
+              light.mesh.material.emissive.setHex(0x1a0802);
               light.currentIntensity = 0;
               light.flickerTimer = 0.05 + Math.random() * 0.2;
             } else {
-              light.mesh.material.color.setHex(0xfffee4);
+              light.mesh.material.color.setHex(0xff9944);
+              light.mesh.material.emissive.setHex(0xff6611);
               light.currentIntensity = light.baseIntensity;
               light.flickerTimer = 1.0 + Math.random() * 5.0;
             }
@@ -889,62 +1020,45 @@ export class Game {
     }
 
     // Sort panels closest-first and assign pool slots
-    allPanels.sort((a, b) => a.distSq - b.distSq);
     const budget = this._POINT_LIGHT_BUDGET;
-    for (let i = 0; i < budget; i++) {
-      const pl = this._pointLightPool[i];
-      if (i < allPanels.length) {
-        const { light, gx, gy, gz, distSq } = allPanels[i];
-        const inRange = distSq < 24 * 24;
-        if (inRange) {
-          pl.position.set(gx, gy, gz);
-          const targetIntensity = light.currentIntensity !== undefined
-            ? light.currentIntensity
-            : light.baseIntensity;
-          pl.intensity = targetIntensity || 3.5;
-          // Link panel to pool slot so flicker can update it
-          light.pooledLight = pl;
-        } else {
-          pl.position.set(0, -9999, 0); // park off-screen
+    if (allPanels.length === 0) {
+      for (let i = 0; i < budget; i++) {
+        const pl = this._pointLightPool?.[i];
+        if (pl && (pl.intensity !== 0 || pl.position.y !== -9999)) {
+          pl.position.set(0, -9999, 0);
           pl.intensity = 0;
-          light.pooledLight = null;
         }
-      } else {
-        pl.position.set(0, -9999, 0);
-        pl.intensity = 0;
       }
-    }
-
-    // 2.2 Manage SafeLights PointLight pool
-    const allSafePanels = [];
-    for (const safeLight of this.safeLights) {
-      if (!safeLight.isOn) continue;
-      const pos = safeLight.getLightWorldPosition();
-      const dx = pos.x - playerPos.x;
-      const dz = pos.z - playerPos.z;
-      const distSq = dx * dx + dz * dz;
-      allSafePanels.push({ safeLight, pos, distSq });
-    }
-
-    allSafePanels.sort((a, b) => a.distSq - b.distSq);
-    const safeBudget = this._SAFE_LIGHT_BUDGET;
-    for (let i = 0; i < safeBudget; i++) {
-      const pl = this._safeLightPool[i];
-      if (i < allSafePanels.length) {
-        const { safeLight, pos, distSq } = allSafePanels[i];
-        const inRange = distSq < SAFE_LIGHT_CONFIG.activeDistance * SAFE_LIGHT_CONFIG.activeDistance;
-        if (inRange) {
-          pl.position.copy(pos);
-          pl.intensity = SAFE_LIGHT_CONFIG.intensity || 32.0;
+    } else {
+      allPanels.sort((a, b) => a.distSq - b.distSq);
+      for (let i = 0; i < budget; i++) {
+        const pl = this._pointLightPool[i];
+        if (!pl) continue;
+        if (i < allPanels.length) {
+          const { light, gx, gy, gz, distSq } = allPanels[i];
+          const inRange = distSq < 24 * 24;
+          if (inRange) {
+            pl.position.set(gx, gy, gz);
+            const targetIntensity = light.currentIntensity !== undefined
+              ? light.currentIntensity
+              : light.baseIntensity;
+            pl.intensity = targetIntensity || 3.5;
+            // Link panel to pool slot so flicker can update it
+            light.pooledLight = pl;
+          } else {
+            pl.position.set(0, -9999, 0); // park off-screen
+            pl.intensity = 0;
+            light.pooledLight = null;
+          }
         } else {
           pl.position.set(0, -9999, 0);
           pl.intensity = 0;
         }
-      } else {
-        pl.position.set(0, -9999, 0);
-        pl.intensity = 0;
       }
     }
+
+    // 2.2 Manage SafeLights PointLight pool
+    this.updateSafeLightPool(playerPos);
 
     // 3. Teleport far enemies closer to player (runs every frame but is a simple distance check)
     if (this.enemyManager && this.elapsedTime > 5) {
@@ -986,11 +1100,97 @@ export class Game {
         }
       }
     }
+  }
+
+  getMinMonsterDistance(targetPos) {
+    if (!targetPos) return Infinity;
+    let minDist = Infinity;
+
+    // 1. EnemyManager enemies (Cyclopse, Uncat, Baby, Hwacat-Angry)
+    if (this.enemyManager && this.enemyManager.enemies) {
+      for (const enemy of this.enemyManager.enemies) {
+        if (!enemy.group || enemy.isDormant) continue;
+        const d = targetPos.distanceTo(enemy.group.position);
+        if (d < minDist) minDist = d;
+      }
+    }
+
+    // 2. Active Weeping Angels (Mannequins)
+    if (this.mapBuilder && this.mapBuilder.loadedChunks) {
+      for (const chunk of this.mapBuilder.loadedChunks.values()) {
+        for (const mesh of chunk.meshes) {
+          if (mesh.userData && mesh.userData.isWeepingAngel && mesh.position) {
+            const state = mesh.userData.weepingAngelState;
+            if (state && state.active === false) continue;
+            const d = Math.hypot(targetPos.x - mesh.position.x, targetPos.z - mesh.position.z);
+            if (d < minDist) minDist = d;
+          }
+        }
+      }
+    }
+
+    return minDist;
+  }
+
+  updateSafeLightPool(playerPos = this.player?.position) {
+    if (!playerPos || !this._safeLightPool) return;
+    const allSafePanels = [];
+    for (const safeLight of this.safeLights) {
+      if (!safeLight.isOn) continue;
+      const pos = safeLight.getLightWorldPosition();
+      const dx = pos.x - playerPos.x;
+      const dz = pos.z - playerPos.z;
+      const distSq = dx * dx + dz * dz;
+      allSafePanels.push({ safeLight, pos, distSq });
+    }
+
+    allSafePanels.sort((a, b) => a.distSq - b.distSq);
+    const safeBudget = this._SAFE_LIGHT_BUDGET || 8;
+    for (let i = 0; i < safeBudget; i++) {
+      const pl = this._safeLightPool[i];
+      if (!pl) continue;
+      if (i < allSafePanels.length) {
+        const { safeLight, pos, distSq } = allSafePanels[i];
+        const inRange = distSq < SAFE_LIGHT_CONFIG.activeDistance * SAFE_LIGHT_CONFIG.activeDistance;
+        if (inRange) {
+          const monsterDist = this.getMinMonsterDistance(pos);
+          let flickerMult = 1.0;
+
+          // Subtle natural flame / filament breathing waver
+          const basePhase = (pos.x * 3.1 + pos.z * 5.7) % 6.28;
+          const flameBreath = 0.96 + 0.04 * Math.sin((this.elapsedTime || 0) * 1.8 + basePhase);
+          flickerMult = flameBreath;
+
+          if (monsterDist < 11.0) {
+            // Natural horror tension: subtle flame wavering and gentle voltage sag (1.6Hz ~ 4.0Hz, no 26Hz strobe)
+            const proximity = Math.min(1.0, Math.max(0.0, 1.0 - (monsterDist / 11.0)));
+            const freq = 1.6 + proximity * 2.4;
+            const phase = (pos.x * 7.91 + pos.z * 13.43) % 6.28;
+            const t = (this.elapsedTime || 0) * freq + phase;
+            const wave = Math.sin(t) * 0.5 + Math.sin(t * 1.7 + 0.5) * 0.3 + Math.sin(t * 3.1) * 0.2;
+            const sag = 0.72 - proximity * 0.18; // soft dimming down to ~0.54, no blackout
+            const mix = (wave + 1.0) * 0.5;
+            flickerMult = THREE.MathUtils.lerp(sag, 1.0, mix);
+          }
+          safeLight.setFlickerState(flickerMult);
+          pl.position.copy(pos);
+          pl.intensity = (SAFE_LIGHT_CONFIG.intensity || 8.5) * flickerMult;
+        } else {
+          safeLight.setFlickerState(1.0);
+          pl.position.set(0, -9999, 0);
+          pl.intensity = 0;
+        }
+      } else {
+        pl.position.set(0, -9999, 0);
+        pl.intensity = 0;
+      }
+    }
     // checkInvisibleBlockers() removed — it scanned every blocker via scene.getObjectByName
     // on every frame (O(n*m) cost), which was a major source of hidden CPU spikes.
   }
 
   updateLovelyDolls(deltaTime) {
+
     if (!this.lovelyDolls) return;
     for (let i = this.lovelyDolls.length - 1; i >= 0; i--) {
       const doll = this.lovelyDolls[i];
@@ -1038,8 +1238,8 @@ export class Game {
           // 1. Gaze check: Is player looking at this angel?
           const isLooking = this.isPlayerLookingAt(mesh.position);
           
-          // 2. Activeness check: Only active if flashlight is ON and player is NOT looking
-          const shouldMove = flashlightOn && !isLooking;
+          // 2. Activeness check: Only active if intro triggered/active, flashlight is ON, and player is NOT looking
+          const shouldMove = (state.active !== false) && flashlightOn && !isLooking;
           
           if (shouldMove) {
             const goal = playerPos;
@@ -1081,6 +1281,13 @@ export class Game {
                 { actorId: state.id },
               );
               mesh.rotation.y = Math.atan2(direction.x, direction.z);
+
+              // Play creepy creak SFX while moving behind player's back
+              state.creakTimer = (state.creakTimer || 0) + deltaTime;
+              if (state.creakTimer > 0.8) {
+                state.creakTimer = 0;
+                soundManager.playSFX("mannequin_creak");
+              }
             }
             
             mesh.position.y = this.collisionWorld.getGroundY(mesh.position);
@@ -1096,6 +1303,20 @@ export class Game {
         }
       }
     }
+
+    // 4. Proximity whispering sound calculation
+    let minAngelDist = Infinity;
+    for (const mesh of angels) {
+      const distToPlayer = Math.hypot(mesh.position.x - playerPos.x, mesh.position.z - playerPos.z);
+      if (distToPlayer < minAngelDist) {
+        minAngelDist = distToPlayer;
+      }
+    }
+    const whisperIntensity = Number.isFinite(minAngelDist) && minAngelDist < 14
+      ? Math.max(0, 1 - minAngelDist / 14)
+      : 0;
+    soundManager.setWhisperIntensity(whisperIntensity);
+
     
     // Separation pass between Weeping Angels to prevent them from merging/overlapping
     for (let i = 0; i < angels.length; i++) {

@@ -59,10 +59,81 @@ export class Enemy {
     this.wanderTarget = null;          // current far waypoint goal
     this.wanderRetargetTimer = 0;      // countdown until we pick a new waypoint
     this.wanderStuckCount = 0;         // how many times we got stuck on this waypoint
-    this.wanderDirection = new THREE.Vector3(1, 0, 0); // kept for unstuck fallback
+    // Dormant state: monsters remain hidden & still until their intro cutscene triggers
+    this.isDormant = true;
+    this.group.visible = false;
+  }
+
+  setDormant(dormant = true) {
+    this.isDormant = Boolean(dormant);
+    this.group.visible = !this.isDormant;
+    if (this.isDormant) {
+      this.mixer?.stopAllAction();
+      this.currentActionName = null;
+    } else {
+      if (this.isBaby) {
+        this.playAction("crying", 0.2);
+      } else if (this.state === "chase") {
+        this.playAction("chase", 0.2);
+      } else {
+        this.playAction("patrol", 0.2);
+      }
+    }
   }
 
   update(deltaTime, playerState) {
+    if (this.isDormant) {
+      if (this.isBaby && !this.babyAwake) {
+        const playerPosition = playerState.position || playerState;
+        const distance = distance2D(this.group.position, playerPosition);
+        const verticalDist = Math.abs((this.group.position.y ?? -5.0) - (playerPosition.y ?? 0));
+        const sameFloor = verticalDist <= 2.0;
+        const tooClose = sameFloor && distance <= 1.8;
+        const sprintNearby = sameFloor && playerState.isSprinting && distance <= 6.0;
+        let flashlightAlert = false;
+        const game = window.__happyToy;
+        const flashlightOn = game?.flashlightController?.enabled;
+        if (flashlightOn && distance <= 8.0) {
+          const babyPoint = new THREE.Vector3(
+            this.group.position.x,
+            this.group.position.y + this.config.height * 0.5,
+            this.group.position.z
+          );
+          const eyePos = new THREE.Vector3(
+            playerPosition.x,
+            (playerPosition.y ?? 0) + 1.7,
+            playerPosition.z
+          );
+          const toBaby = new THREE.Vector3().subVectors(babyPoint, eyePos);
+          const distToBaby = toBaby.length();
+          if (distToBaby > 0.001) {
+            toBaby.normalize();
+            const cameraDirection = new THREE.Vector3();
+            game.camera.getWorldDirection(cameraDirection);
+            const dot = cameraDirection.dot(toBaby);
+            const hasLos = this.collisionWorld.hasLineOfSight(eyePos, babyPoint);
+            if (dot >= 0.94 && hasLos) {
+              flashlightAlert = true;
+            }
+          }
+        }
+        if (tooClose || sprintNearby || flashlightAlert) {
+          this.setDormant(false);
+          this.babyAwake = true;
+          this.state = "chase";
+          this.memoryTimer = this.config.memorySeconds;
+          this.lastKnownPlayerPosition = playerPosition.clone();
+          this.playAction("chase");
+          if (game?.hud) {
+            game.hud.setStatus("아기가 깨어났습니다! 울음소리가 멈췄습니다!", 2200);
+          }
+          return;
+        }
+      }
+      this.group.visible = false;
+      return;
+    }
+
     const playerPosition = playerState.position || playerState;
     if (this.state !== "chase" && this.state !== "flee") {
       const distance = distance2D(this.group.position, playerPosition);
@@ -75,6 +146,7 @@ export class Enemy {
     }
     this.group.visible = true;
 
+
     const isPlayerHidden = Boolean(playerState.isHidden || playerState.isUndetectable);
     this.lastDetectionEvent = null;
 
@@ -86,9 +158,11 @@ export class Enemy {
     // Baby Crying / Awakening check
     if (this.isBaby && !this.babyAwake) {
       const distance = distance2D(this.group.position, playerPosition);
+      const verticalDist = Math.abs((this.group.position.y ?? -5.0) - (playerPosition.y ?? 0));
+      const sameFloor = verticalDist <= 2.0;
       
-      const tooClose = distance <= 1.8;
-      const sprintNearby = playerState.isSprinting && distance <= 6.0;
+      const tooClose = sameFloor && distance <= 1.8;
+      const sprintNearby = sameFloor && playerState.isSprinting && distance <= 6.0;
       
       let flashlightAlert = false;
       const game = window.__happyToy;
@@ -100,7 +174,12 @@ export class Enemy {
           this.group.position.y + this.config.height * 0.5,
           this.group.position.z
         );
-        const toBaby = new THREE.Vector3().subVectors(babyPoint, game.camera.position);
+        const eyePos = new THREE.Vector3(
+          playerPosition.x,
+          (playerPosition.y ?? 0) + 1.7,
+          playerPosition.z
+        );
+        const toBaby = new THREE.Vector3().subVectors(babyPoint, eyePos);
         const distToBaby = toBaby.length();
         
         if (distToBaby > 0.001) {
@@ -110,7 +189,7 @@ export class Enemy {
           game.camera.getWorldDirection(cameraDirection);
           
           const dot = cameraDirection.dot(toBaby);
-          const hasLos = this.collisionWorld.hasLineOfSight(game.camera.position, babyPoint);
+          const hasLos = this.collisionWorld.hasLineOfSight(eyePos, babyPoint);
           
           if (dot >= 0.94 && hasLos) {
             flashlightAlert = true;
@@ -137,6 +216,12 @@ export class Enemy {
       }
     }
 
+    if (this.state === "cutscene") {
+      this.caughtPlayer = false;
+      this.snapModelToGround(false);
+      return;
+    }
+
     if (this.state === "investigateCabinet") {
       this.updateCabinetInvestigation(deltaTime);
       this.caughtPlayer = false;
@@ -153,7 +238,9 @@ export class Enemy {
     this.snapModelToGround(this.shouldAllowAirborneMotion());
 
     if (target) {
-      const speed = (this.state === "chase" || this.state === "flee") ? this.config.chaseSpeed : this.config.patrolSpeed;
+      const baseSpeed = (this.state === "chase" || this.state === "flee") ? this.config.chaseSpeed : this.config.patrolSpeed;
+      const speed = baseSpeed * (this.speedMultiplier || 1.0);
+
       const beforeMove = this.group.position.clone();
       this.moveToward(target, speed, deltaTime);
       this.updateStuckState(deltaTime, target, beforeMove);
@@ -277,6 +364,15 @@ export class Enemy {
     return currentMinY !== null ? currentMinY - this.group.position.y : null;
   }
 
+  matchesFloor(y) {
+    const allowed = this.config.allowedFloor;
+    if (allowed === undefined || allowed === null) return true;
+    if (allowed === 1) return Math.abs(y - 0.0) < 2.0;
+    if (allowed === 2) return Math.abs(y - 5.0) < 2.0;
+    if (allowed === -1) return Math.abs(y - (-5.0)) < 2.0;
+    return true;
+  }
+
   updatePerception(playerPosition, deltaTime, playerState = {}) {
     const isPlayerHidden = Boolean(playerState.isHidden || playerState.isUndetectable);
     const isPlayerSprinting = Boolean(playerState.isSprinting);
@@ -290,6 +386,20 @@ export class Enemy {
         }
       }
       return;
+    }
+
+    // Floor Isolation Enforcer: Monsters NEVER cross or react to players outside their assigned floor
+    if (this.config.allowedFloor !== undefined && !this.config.allowInterFloorPatrol) {
+      const playerFloor = (playerPosition.y ?? 0) >= 3.0 ? 2 : ((playerPosition.y ?? 0) <= -3.0 ? -1 : 1);
+      if (playerFloor !== this.config.allowedFloor) {
+        if (this.state === "chase" || this.state === "flee") {
+          this.state = "wander";
+          this.wanderTarget = null;
+        }
+        this.memoryTimer = 0;
+        this.lastKnownPlayerPosition = null;
+        return;
+      }
     }
 
     const distance = distance2D(this.group.position, playerPosition);
@@ -320,10 +430,13 @@ export class Enemy {
       return;
     }
 
-    const canHear = isPlayerSprinting && distance <= this.config.hearingRange;
-    const canSee = distance <= this.config.detectionRange
+    const hearing = this.config.hearingRange * (this.detectionMultiplier || 1.0);
+    const detection = this.config.detectionRange * (this.detectionMultiplier || 1.0);
+    const canHear = isPlayerSprinting && distance <= hearing;
+    const canSee = distance <= detection
       && this.isPlayerInFront(playerPosition)
       && this.collisionWorld.hasLineOfSight(this.group.position, playerPosition);
+
 
     if (canHear || canSee) {
       const wasAlert = this.state === "chase" || this.state === "flee";
@@ -429,8 +542,23 @@ export class Enemy {
     const cx = Math.floor((pos.x + 8) / 16);
     const cz = Math.floor((pos.z + 8) / 16);
 
-    // Collect waypoints from all chunks within chunkRadius
+    // Collect waypoints from all chunks within chunkRadius, plus config waypoints
     const candidates = [];
+    
+    // 1. Check specific config waypoints if configured
+    if (this.config.waypoints && this.config.waypoints.length > 0) {
+      for (const wp of this.config.waypoints) {
+        const wpY = typeof wp[1] === "number" ? wp[1] : (this.group.position.y ?? 0);
+        if (!this.matchesFloor(wpY)) continue;
+        const wpVec = new THREE.Vector3(wp[0], wpY, wp[2]);
+        const dist = distance2D(pos, wpVec);
+        if (dist >= Math.min(minDist, 4) && dist <= maxDist) {
+          candidates.push(wpVec);
+        }
+      }
+    }
+
+    // 2. Collect loaded chunk waypoints matching this floor
     const mapBuilder = window.__happyToy?.mapBuilder;
     if (mapBuilder) {
       for (let dx = -chunkRadius; dx <= chunkRadius; dx++) {
@@ -439,11 +567,12 @@ export class Enemy {
           const chunk = mapBuilder.loadedChunks.get(key);
           if (chunk?.waypoints) {
             for (const wp of chunk.waypoints) {
-              const wpVec = new THREE.Vector3(wp[0], 0, wp[2]);
+              const wpY = typeof wp[1] === "number" ? wp[1] : (this.group.position.y ?? 0);
+              if (!this.matchesFloor(wpY)) continue;
+              const wpVec = new THREE.Vector3(wp[0], wpY, wp[2]);
               const dist = distance2D(pos, wpVec);
               // Only consider waypoints in the desired distance band
               if (dist >= minDist && dist <= maxDist) {
-                // Prefer waypoints that aren't the same as the last stuck target
                 candidates.push(wpVec);
               }
             }
@@ -465,9 +594,18 @@ export class Enemy {
       return;
     }
 
-    // Fallback: if no distant waypoints exist (e.g. first frame, sparse map),
-    // pick any nearby waypoint so the monster still moves
+    // Fallback: if no distant waypoints exist, pick any nearby waypoint on this floor
     const fallbackCandidates = [];
+    if (this.config.waypoints && this.config.waypoints.length > 0) {
+      for (const wp of this.config.waypoints) {
+        const wpY = typeof wp[1] === "number" ? wp[1] : (this.group.position.y ?? 0);
+        if (!this.matchesFloor(wpY)) continue;
+        const wpVec = new THREE.Vector3(wp[0], wpY, wp[2]);
+        if (distance2D(pos, wpVec) > 1.2) {
+          fallbackCandidates.push(wpVec);
+        }
+      }
+    }
     if (mapBuilder) {
       for (let dx = -1; dx <= 1; dx++) {
         for (let dz = -1; dz <= 1; dz++) {
@@ -475,7 +613,9 @@ export class Enemy {
           const chunk = mapBuilder.loadedChunks.get(key);
           if (chunk?.waypoints) {
             for (const wp of chunk.waypoints) {
-              const wpVec = new THREE.Vector3(wp[0], 0, wp[2]);
+              const wpY = typeof wp[1] === "number" ? wp[1] : (this.group.position.y ?? 0);
+              if (!this.matchesFloor(wpY)) continue;
+              const wpVec = new THREE.Vector3(wp[0], wpY, wp[2]);
               if (distance2D(pos, wpVec) > 1.5) {
                 fallbackCandidates.push(wpVec);
               }
@@ -491,11 +631,11 @@ export class Enemy {
       return;
     }
 
-    // Last resort: random direction 5m ahead
+    // Last resort: random direction 5m ahead on same floor level
     const theta = Math.random() * Math.PI * 2;
     this.wanderTarget = new THREE.Vector3(
       pos.x + Math.cos(theta) * 5,
-      0,
+      pos.y,
       pos.z + Math.sin(theta) * 5,
     );
   }
@@ -858,6 +998,9 @@ export class Enemy {
   }
 
   getActivePatrolWaypoints() {
+    if (this.config.waypoints && this.config.waypoints.length > 0) {
+      return this.config.waypoints;
+    }
     const waypoints = [];
     const mapBuilder = window.__happyToy?.mapBuilder;
     if (mapBuilder && mapBuilder.loadedChunks) {
@@ -870,7 +1013,10 @@ export class Enemy {
           const chunk = mapBuilder.loadedChunks.get(key);
           if (chunk && chunk.waypoints) {
             for (const wp of chunk.waypoints) {
-              waypoints.push(wp);
+              const wpY = typeof wp[1] === "number" ? wp[1] : (this.group.position.y ?? 0);
+              if (this.matchesFloor(wpY)) {
+                waypoints.push(wp);
+              }
             }
           }
         }
@@ -899,8 +1045,22 @@ export class Enemy {
     return Math.min(1, Math.max(0, distanceThreat + stateBoost));
   }
 
+  notifyNoise(position, radius) {
+    const dist = distance2D(this.group.position, position);
+    if (dist <= radius) {
+      if (this.isBaby) {
+        this.babyAwake = true;
+      }
+      this.lastKnownPlayerPosition = position.clone();
+      this.memoryTimer = this.config.memorySeconds || 5.0;
+      this.state = "chase";
+      this.playAction("chase");
+    }
+  }
+
   getDebugState() {
     const surface = this.collisionWorld.getSurfaceAt(this.group.position, { allowAnyFloor: true });
+
     const groundY = this.collisionWorld.getGroundY?.(this.group.position) ?? this.group.position.y;
     const cx = Math.floor((this.group.position.x + 8) / 16);
     const cz = Math.floor((this.group.position.z + 8) / 16);
@@ -963,15 +1123,21 @@ function addShadowBlob(group, radius) {
   
   const texture = new THREE.CanvasTexture(canvas);
   const geometry = new THREE.PlaneGeometry(radius * 3.6, radius * 3.6);
-  const material = new THREE.MeshBasicMaterial({
+  const material = new THREE.MeshStandardMaterial({
     map: texture,
     transparent: true,
     depthWrite: false,
     color: 0x000000,
+    roughness: 1.0,
+    metalness: 0.0,
   });
+
   const mesh = new THREE.Mesh(geometry, material);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.y = 0.015; // slightly above ground to prevent z-fighting
+
   group.add(mesh);
   return mesh;
 }

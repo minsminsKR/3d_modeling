@@ -425,15 +425,21 @@ function addShadowBlob(group, radius) {
   
   const texture = new THREE.CanvasTexture(canvas);
   const geometry = new THREE.PlaneGeometry(radius * 3.6, radius * 3.6);
-  const material = new THREE.MeshBasicMaterial({
+  const material = new THREE.MeshStandardMaterial({
     map: texture,
     transparent: true,
     depthWrite: false,
     color: 0x000000,
+    roughness: 1.0,
+    metalness: 0.0,
   });
+
   const mesh = new THREE.Mesh(geometry, material);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.y = 0.015; // slightly above ground to prevent z-fighting
+
   group.add(mesh);
   return mesh;
 }

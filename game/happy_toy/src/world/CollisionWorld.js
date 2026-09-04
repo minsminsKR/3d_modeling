@@ -947,7 +947,9 @@ function surfaceFromArea(area) {
 }
 
 function inferFloorFromY(y) {
-  return (y ?? 0) > 1.5 ? 2 : 1;
+  if ((y ?? 0) > 2.5) return 2;
+  if ((y ?? 0) < -2.5) return -1;
+  return 1;
 }
 
 function sampleRampY(ramp, position) {

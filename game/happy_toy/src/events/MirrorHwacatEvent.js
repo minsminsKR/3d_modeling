@@ -124,7 +124,7 @@ export class MirrorHwacatEvent {
 
     const triggerPosition = new THREE.Vector3(...this.config.triggerPosition);
     const verticalDistance = Math.abs(this.player.position.y - triggerPosition.y);
-    if (verticalDistance > 0.9 || distance2D(this.player.position, triggerPosition) > this.config.triggerRadius) {
+    if (verticalDistance >= 1.5 || distance2D(this.player.position, triggerPosition) > this.config.triggerRadius) {
       return;
     }
 
@@ -338,7 +338,11 @@ export class MirrorHwacatEvent {
       return;
     }
 
-    const spawn = this.group.position.toArray();
+    const spawn = [
+      this.group.position.x,
+      this.config.spawnPosition ? this.config.spawnPosition[1] : 5.0,
+      this.group.position.z,
+    ];
     const yaw = this.group.rotation.y;
 
     this.state = "transformOverlap";

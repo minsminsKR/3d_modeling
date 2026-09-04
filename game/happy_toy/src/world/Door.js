@@ -3,6 +3,7 @@
 
 import * as THREE from "three";
 import { makeAabbFromCenter, smoothStep } from "../utils/math.js";
+import { soundManager } from "../audio/SoundManager.js";
 
 export class Door {
   constructor(config, material) {
@@ -19,14 +20,14 @@ export class Door {
     this.openAmount = 0;
     this.axis = this.size[0] < this.size[2] ? "z" : "x";
     this.panelSpan = this.axis === "z" ? this.size[2] : this.size[0];
-    this.slideDistance = config.slideDistance ?? Math.max(0.72, this.panelSpan * 0.52);
-    this.panelPositions = [];
+    this.slideDistance = (this.panelSpan / 2) * 0.95;
 
     this.group = new THREE.Group();
     this.group.name = this.id;
     this.group.position.copy(this.position);
 
     this.sharedMaterial = material;
+    this.panelPositions = [];
     this.panels = this.createSlidingPanels(material);
     this.createTracks();
   }
@@ -40,26 +41,30 @@ export class Door {
   }
 
   getPrompt() {
-    if (this.isLocked || this.isBlocked) {
-      return `E - ${this.label} 확인`;
+    if (this.isBlocked) {
+      return `[막힘] ${this.label}`;
+    }
+    if (this.isLocked) {
+      return `[잠김] ${this.label}`;
     }
     const action = this.isOpen ? "닫기" : "열기";
     return `E - ${this.label} ${action}`;
   }
 
-  interact(context) {
+  interact(context = {}) {
     if (!this.toggle()) {
-      context.hud?.setStatus(this.blockedReason, 1500);
+      context?.hud?.setStatus(this.blockedReason, 1500);
       console.warn(`[Door] ${this.id} is locked/blocked. connectedRoom=${this.connectedRoomId ?? "none"}`);
       return;
     }
+    soundManager.playSFX(this.isOpen ? "door_open" : "door_close");
     const action = this.isOpen ? "열었습니다" : "닫았습니다";
-    context.hud?.setStatus(`${this.label} 문을 ${action}.`, 1400);
+    context?.hud?.setStatus(`${this.label} 문을 ${action}.`, 1400);
   }
 
   update(deltaTime) {
     const target = this.isOpen ? 1 : 0;
-    this.openAmount = smoothStep(this.openAmount, target, 7.5, deltaTime);
+    this.openAmount = smoothStep(this.openAmount, target, 3.8, deltaTime);
     for (const panelState of this.panelPositions) {
       panelState.mesh.position.copy(panelState.closed);
       panelState.mesh.position[this.axis] += panelState.direction * this.slideDistance * this.openAmount;
@@ -137,18 +142,24 @@ export class Door {
   }
 
   createTracks() {
-    const trackMaterial = new THREE.MeshStandardMaterial({ color: 0x15100d, roughness: 0.86 });
-    const trackSpan = this.panelSpan + this.slideDistance * 2 + 0.22;
+    const trackMaterial = new THREE.MeshStandardMaterial({ color: 0x241910, roughness: 0.72, metalness: 0.02 });
+    const trackSpan = this.panelSpan + this.slideDistance * 2 + 0.12;
     const trackSize = this.axis === "z"
-      ? [this.size[0] + 0.08, 0.08, trackSpan]
-      : [trackSpan, 0.08, this.size[2] + 0.08];
+      ? [this.size[0] + 0.04, 0.04, trackSpan]
+      : [trackSpan, 0.04, this.size[2] + 0.04];
 
-    for (const y of [0.05, this.size[1] + 0.05]) {
-      const track = new THREE.Mesh(new THREE.BoxGeometry(...trackSize), trackMaterial);
-      track.position.set(0, y, 0);
-      track.castShadow = true;
-      this.group.add(track);
-    }
+    // Floor track flush with ground
+    const bottomTrack = new THREE.Mesh(new THREE.BoxGeometry(...trackSize), trackMaterial);
+    bottomTrack.position.set(0, 0.02, 0);
+    bottomTrack.castShadow = true;
+    bottomTrack.receiveShadow = true;
+    this.group.add(bottomTrack);
+
+    // Top lintel guide track
+    const topTrack = new THREE.Mesh(new THREE.BoxGeometry(...trackSize), trackMaterial);
+    topTrack.position.set(0, this.size[1] + 0.02, 0);
+    topTrack.castShadow = true;
+    this.group.add(topTrack);
   }
 
   dispose() {

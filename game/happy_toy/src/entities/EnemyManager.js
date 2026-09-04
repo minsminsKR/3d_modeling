@@ -54,10 +54,12 @@ export class EnemyManager {
     }
     enemy.isDynamic = Boolean(options.dynamic);
     enemy.snapModelToGround(false);
+    enemy.setDormant(false);
     this.enemies.push(enemy);
     this.scene.add(enemy.group);
     return enemy;
   }
+
 
   removeEnemyById(id) {
     const nextEnemies = [];
@@ -193,4 +195,11 @@ export class EnemyManager {
       enemy.snapModelToGround(false);
     }
   }
+
+  notifyNoiseEvent(position, radius = 28.0) {
+    for (const enemy of this.enemies) {
+      enemy.notifyNoise(position, radius);
+    }
+  }
 }
+
