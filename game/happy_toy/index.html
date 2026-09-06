@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080706" />
     <title>Happy Toy</title>
     <link rel="stylesheet" href="./styles.css" />
     <script type="importmap">
@@ -20,12 +21,16 @@
     <div id="hud" class="hud">
       <div id="glitch-overlay" class="glitch-overlay" aria-hidden="true"></div>
       <div id="threat-meter" class="threat-meter" aria-hidden="true"></div>
+      <div class="sensory-overlay" aria-hidden="true"></div>
       <div class="crosshair" aria-hidden="true"></div>
 
-      <!-- Top Key Counter -->
-      <div id="key-counter" class="key-counter">
-        <span class="key-icon">🔑</span>
-        <span id="key-count-text">0 / 4</span>
+      <div id="key-counter" class="key-counter" aria-label="현재 목표">
+        <span class="key-icon" aria-hidden="true">魂</span>
+        <div class="objective-copy">
+          <span id="objective-line">흩어진 혼을 찾으십시오 · 4개 남음</span>
+          <span id="key-count-text">0 / 4</span>
+          <span class="objective-track" aria-hidden="true"><span id="objective-progress"></span></span>
+        </div>
       </div>
 
       <!-- Compass Widget -->
@@ -36,24 +41,30 @@
         <div id="compass-target-text" class="compass-target-text">목표 감지 중</div>
       </div>
 
-      <!-- Stamina Bar -->
-      <div class="stamina-container">
-        <div class="stamina-label">STAMINA</div>
-        <div class="stamina-bar-bg">
-          <div id="stamina-bar-fill" class="stamina-bar-fill"></div>
+      <div class="player-vitals" aria-label="플레이어 상태">
+        <div id="stamina-vital" class="stamina-container">
+          <div class="vital-heading"><span>호흡</span><span class="vital-hint">SHIFT</span></div>
+          <div class="stamina-bar-bg">
+            <div id="stamina-bar-fill" class="stamina-bar-fill" role="meter" aria-label="스태미나" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"></div>
+          </div>
+        </div>
+        <div class="flashlight-vital">
+          <div class="vital-heading"><span>손전등</span><span id="flashlight-state">꺼짐</span></div>
+          <div class="flashlight-bar-bg">
+            <div id="flashlight-bar-fill" class="flashlight-bar-fill" role="meter" aria-label="손전등 배터리" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Inventory Hotbar -->
-      <div id="item-hotbar" class="item-hotbar">
-        <div class="hotbar-slot" data-slot="1"><span class="key-hint">1</span><span class="item-name">건전지</span><span class="item-qty" id="qty-battery">x0</span></div>
-        <div class="hotbar-slot" data-slot="2"><span class="key-hint">2</span><span class="item-name">드링크</span><span class="item-qty" id="qty-drink">x0</span></div>
-        <div class="hotbar-slot" data-slot="3"><span class="key-hint">Q/3</span><span class="item-name">폭죽</span><span class="item-qty" id="qty-firecracker">x0</span></div>
-        <div class="hotbar-slot" data-slot="4"><span class="key-hint">4</span><span class="item-name">나침반</span><span class="item-qty" id="qty-compass">x0</span></div>
+      <div id="item-hotbar" class="item-hotbar" aria-label="소지품 단축키">
+        <div class="hotbar-slot" data-slot="1" data-item="battery"><span class="key-hint">1</span><span class="item-mark" aria-hidden="true">▥</span><span class="item-name">건전지</span><span class="item-qty" id="qty-battery">0</span></div>
+        <div class="hotbar-slot" data-slot="2" data-item="drink"><span class="key-hint">2</span><span class="item-mark" aria-hidden="true">▧</span><span class="item-name">드링크</span><span class="item-qty" id="qty-drink">0</span></div>
+        <div class="hotbar-slot" data-slot="3" data-item="firecracker"><span class="key-hint">Q</span><span class="item-mark" aria-hidden="true">✣</span><span class="item-name">폭죽</span><span class="item-qty" id="qty-firecracker">0</span></div>
+        <div class="hotbar-slot" data-slot="4" data-item="compass"><span class="key-hint">4</span><span class="item-mark" aria-hidden="true">◇</span><span class="item-name">나침반</span><span class="item-qty" id="qty-compass">0</span></div>
       </div>
 
-      <p id="interaction-prompt" class="interaction-prompt"></p>
-      <p id="status-line" class="status-line">화면을 클릭하면 게임이 시작됩니다.</p>
+      <p id="interaction-prompt" class="interaction-prompt" aria-live="polite"></p>
+      <p id="status-line" class="status-line is-visible" role="status" aria-live="polite" aria-atomic="true">화면을 클릭하면 게임이 시작됩니다.</p>
       <pre id="floor-debug" class="floor-debug" aria-hidden="true"></pre>
     </div>
 
@@ -93,6 +104,11 @@
           <span id="mouse-sensitivity-value">0.65</span>
         </label>
         <input id="mouse-sensitivity" type="range" min="0.4" max="2.2" step="0.05" value="0.65" />
+        <fieldset class="accessibility-options">
+          <legend>접근성</legend>
+          <label><input id="reduce-motion" type="checkbox" /> 카메라 흔들림 줄이기</label>
+          <label><input id="high-contrast" type="checkbox" /> HUD 고대비</label>
+        </fieldset>
         <div class="pause-actions">
           <button id="resume-button" type="button">계속하기</button>
           <button id="pause-restart-button" type="button">다시하기</button>

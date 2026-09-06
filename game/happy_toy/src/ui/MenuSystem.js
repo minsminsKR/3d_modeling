@@ -50,22 +50,22 @@ export class MenuSystem {
     this.container.innerHTML = `
       <div class="menu-overlay title-screen-bg">
         <div class="title-box">
-          <div class="title-eyebrow">HORROR SURVIVAL MAZE</div>
+          <div class="title-eyebrow">FIRST-PERSON HORROR</div>
           <h1 class="title-heading">HAPPY TOY</h1>
-          <div class="title-sub">그림자 복도 : 영혼집합소 (The Soul Gathering)</div>
+          <div class="title-sub">그림자 복도 · 낡은 여름 회랑</div>
           
           <div class="menu-buttons">
-            <button id="btn-start-game" class="menu-btn primary-btn">🎮 게임 시작</button>
-            <button id="btn-difficulty" class="menu-btn secondary-btn">⚙️ 난이도: <span id="diff-label">보통 (Normal)</span></button>
-            <button id="btn-settings" class="menu-btn secondary-btn">🔊 환경 설정</button>
-            <button id="btn-records" class="menu-btn secondary-btn">🏆 탈출 기록</button>
+            <button id="btn-start-game" class="menu-btn primary-btn">게임 시작</button>
+            <button id="btn-difficulty" class="menu-btn secondary-btn">난이도 · <span id="diff-label">보통</span></button>
+            <button id="btn-settings" class="menu-btn secondary-btn">환경 설정</button>
+            <button id="btn-records" class="menu-btn secondary-btn">탈출 기록</button>
           </div>
 
           <div class="controls-hint-box">
-            <div class="hint-title">🎮 게임 조작법</div>
+            <div class="hint-title">조작</div>
             <div class="hint-grid">
               <span><b>WASD</b> 이동</span>
-              <span><b>Shift</b> 달리디</span>
+              <span><b>Shift</b> 달리기</span>
               <span><b>Mouse</b> 시점</span>
               <span><b>F</b> 손전등 ON/OFF</span>
               <span><b>E</b> 문/열쇠/캐비넷/아이템 상호작용</span>
@@ -103,10 +103,10 @@ export class MenuSystem {
       if (label) {
         label.innerText =
           this.currentMode === "normal"
-            ? "보통 (Normal)"
+            ? "보통"
             : this.currentMode === "nightmare"
-            ? "악몽 (Nightmare)"
-            : "하드코어 (Hardcore)";
+            ? "악몽"
+            : "하드코어";
       }
     });
 
@@ -123,7 +123,7 @@ export class MenuSystem {
     this.container.innerHTML = `
       <div class="menu-overlay">
         <div class="settings-card">
-          <h2>🔊 환경 설정</h2>
+          <h2>환경 설정</h2>
           <div class="setting-row">
             <label>마스터 음량</label>
             <input type="range" id="vol-master" min="0" max="1" step="0.05" value="${soundManager.volumes.master}">
@@ -184,7 +184,7 @@ export class MenuSystem {
     this.container.innerHTML = `
       <div class="menu-overlay">
         <div class="records-card">
-          <h2>🏆 최단 탈출 기록 (Top 5)</h2>
+          <h2>최단 탈출 기록</h2>
           <div class="records-list">${listHtml}</div>
           <button id="btn-back-records" class="menu-btn primary-btn mt-4">뒤로 가기</button>
         </div>
@@ -204,7 +204,7 @@ export class MenuSystem {
         <div class="screamer-content">
           <h1 class="screamer-title">사망하셨습니다</h1>
           <p class="screamer-sub">복도의 기괴한 존재에게 포획되었습니다...</p>
-          <button id="btn-retry-game" class="menu-btn primary-btn big-btn">🔥 다시 도전하기</button>
+          <button id="btn-retry-game" class="menu-btn primary-btn big-btn">다시 도전하기</button>
         </div>
       </div>
     `;
@@ -245,8 +245,8 @@ export class MenuSystem {
           </div>
 
           <div class="victory-actions">
-            <button id="btn-victory-replay" class="menu-btn primary-btn">🔄 다시 하기</button>
-            <button id="btn-victory-title" class="menu-btn secondary-btn">🏠 타이틀 화면</button>
+            <button id="btn-victory-replay" class="menu-btn primary-btn">다시 하기</button>
+            <button id="btn-victory-title" class="menu-btn secondary-btn">타이틀 화면</button>
           </div>
         </div>
       </div>

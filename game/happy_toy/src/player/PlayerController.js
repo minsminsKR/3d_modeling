@@ -37,6 +37,12 @@ export class PlayerController {
     this.currentBobSpeed = 8;
     this.currentBobAmount = 0.02;
     this.tiltAngle = 0;
+    this.bobBlend = 0;
+    this.breathPhase = 0;
+    this.cameraLateralOffset = 0;
+    this.baseFov = camera.fov;
+    this.currentFov = camera.fov;
+    this.inventoryHudInitialized = false;
   }
 
   setPosition(position) {
@@ -44,6 +50,12 @@ export class PlayerController {
     this.collisionWorld.snapToValidSurface(this.position, { actorId: "player" });
     this.cameraY = this.position.y + PLAYER_CONFIG.height;
     this.camera.position.set(this.position.x, this.position.y + PLAYER_CONFIG.height, this.position.z);
+    this.stamina = 1;
+    this.staminaExhausted = false;
+    this.speedBoostTimer = 0;
+    this.speedBoostMultiplier = 1;
+    this.bobBlend = 0;
+    this.hud?.setStamina(1);
   }
 
   resetLook(yaw = 0, pitch = 0) {
@@ -65,6 +77,11 @@ export class PlayerController {
   setInteractables(interactables, context) {
     this.interactables = interactables;
     this.interactionContext = context;
+    const inventory = context?.game?.itemSystem?.inventory;
+    if (inventory) {
+      this.hud?.updateInventory(inventory);
+      this.inventoryHudInitialized = true;
+    }
   }
 
   setMouseSensitivity(value) {
@@ -118,7 +135,9 @@ export class PlayerController {
     this.cameraY = this.position.y + PLAYER_CONFIG.height;
     this.camera.position.set(this.position.x, this.cameraY, this.position.z);
     this.camera.rotation.set(this.pitch, this.yaw, 0, "YXZ");
-    soundManager.playSFX("door_open");
+    if (cabinet) {
+      soundManager.playSFX("door_open");
+    }
   }
 
   update(deltaTime) {
@@ -135,6 +154,10 @@ export class PlayerController {
       if (this.hud) {
         this.hud.setStamina(this.stamina);
       }
+      soundManager.updatePlayerState(deltaTime, {
+        stamina: this.stamina,
+        isHidden: true,
+      });
 
       this.updateHiddenInteraction();
       this.applyCabinetView();
@@ -146,6 +169,11 @@ export class PlayerController {
     this.updateMovement(deltaTime);
     this.updateInteraction();
     this.updateCamera(deltaTime);
+    soundManager.updatePlayerState(deltaTime, {
+      stamina: this.stamina,
+      isMoving: this.isMoving,
+      isSprinting: this.isSprinting,
+    });
   }
 
   updateStaminaAndItemHotkeys(deltaTime) {
@@ -160,6 +188,10 @@ export class PlayerController {
     // Item Quick Hotkeys
     const itemSystem = this.interactionContext?.game?.itemSystem;
     if (itemSystem) {
+      if (!this.inventoryHudInitialized) {
+        this.hud?.updateInventory(itemSystem.inventory);
+        this.inventoryHudInitialized = true;
+      }
       if (this.input.consumePressed("q")) {
         itemSystem.useItem("firecracker", this, this.interactionContext?.game?.flashlightController);
       } else if (this.input.consumePressed("1")) {
@@ -204,30 +236,45 @@ export class PlayerController {
       ? smoothStep(this.cameraY, targetY, PLAYER_CONFIG.verticalCameraSmoothness, deltaTime)
       : targetY;
 
-    // View bobbing effect - smoothly interpolated without jarring speed or amplitude jumps
-    let bobOffset = 0;
-    if (this.isMoving) {
-      const targetBobSpeed = this.isSprinting ? 12 : 8;
-      const targetBobAmount = this.isSprinting ? 0.035 : 0.02;
-      this.currentBobSpeed = smoothStep(this.currentBobSpeed, targetBobSpeed, 8, deltaTime);
-      this.currentBobAmount = smoothStep(this.currentBobAmount, targetBobAmount, 8, deltaTime);
+    // Weighty but restrained head movement. Fatigue adds breathing sway instead
+    // of a screen shake, keeping the game comfortable over long sessions.
+    const reducedMotion = document.body.classList.contains("reduced-motion");
+    const targetBlend = this.isMoving && !reducedMotion ? 1 : 0;
+    this.bobBlend = smoothStep(this.bobBlend, targetBlend, targetBlend ? 9 : 6, deltaTime);
+    const fatigue = 1 - this.stamina;
+    const targetBobSpeed = this.isSprinting ? 13.2 : 8.6;
+    const targetBobAmount = reducedMotion ? 0 : this.isSprinting ? 0.034 : 0.018;
+    this.currentBobSpeed = smoothStep(this.currentBobSpeed, targetBobSpeed, 7, deltaTime);
+    this.currentBobAmount = smoothStep(this.currentBobAmount, targetBobAmount, 7, deltaTime);
+    this.bobTimer += deltaTime * this.currentBobSpeed * Math.max(0.15, this.bobBlend);
+    this.breathPhase += deltaTime * (1.25 + fatigue * 1.5);
 
-      this.bobTimer += deltaTime * this.currentBobSpeed;
-      bobOffset = Math.sin(this.bobTimer) * this.currentBobAmount;
-    } else {
-      this.bobTimer = 0;
-      this.currentBobSpeed = 8;
-      this.currentBobAmount = 0.02;
-    }
+    const stepLift = Math.abs(Math.sin(this.bobTimer)) * this.currentBobAmount * this.bobBlend;
+    const footDrop = -this.currentBobAmount * 0.38 * this.bobBlend;
+    const breathing = reducedMotion ? 0 : Math.sin(this.breathPhase) * (0.0015 + fatigue * 0.0045);
+    const lateralTarget = reducedMotion ? 0 : Math.sin(this.bobTimer * 0.5) * this.currentBobAmount * 0.42 * this.bobBlend;
+    this.cameraLateralOffset = smoothStep(this.cameraLateralOffset, lateralTarget, 12, deltaTime);
+    const rightX = Math.cos(this.yaw);
+    const rightZ = -Math.sin(this.yaw);
+    this.camera.position.set(
+      this.position.x + rightX * this.cameraLateralOffset,
+      this.cameraY + stepLift + footDrop + breathing,
+      this.position.z + rightZ * this.cameraLateralOffset,
+    );
 
-    this.camera.position.set(this.position.x, this.cameraY + bobOffset, this.position.z);
-
-    // Strafe tilt
+    // Small roll and FOV expansion communicate speed without covering the HUD.
     const strafe = Number(this.input.isDown("d", "arrowright")) - Number(this.input.isDown("a", "arrowleft"));
-    const targetTilt = -strafe * 0.025;
+    const headRoll = reducedMotion ? 0 : Math.sin(this.bobTimer * 0.5) * 0.007 * this.bobBlend;
+    const targetTilt = reducedMotion ? 0 : -strafe * 0.018 + headRoll;
     this.tiltAngle = smoothStep(this.tiltAngle, targetTilt, 12, deltaTime);
-
     this.camera.rotation.set(this.pitch, this.yaw, this.tiltAngle, "YXZ");
+
+    const targetFov = this.baseFov + (this.isSprinting && !reducedMotion ? 2.4 : 0) + (this.speedBoostMultiplier > 1 && !reducedMotion ? 1.2 : 0);
+    this.currentFov = smoothStep(this.currentFov, targetFov, 6, deltaTime);
+    if (Math.abs(this.camera.fov - this.currentFov) > 0.01) {
+      this.camera.fov = this.currentFov;
+      this.camera.updateProjectionMatrix();
+    }
   }
 
   applyCabinetView() {
@@ -256,7 +303,7 @@ export class PlayerController {
 
     if (this.noclip && !isSafeMode) {
       this.noclip = false;
-      this.position.y = this.collisionWorld.getGroundY(this.position);
+      this.position.y = this.collisionWorld.getGroundY(this.position, { allowAnyFloor: true });
       this.cameraY = this.position.y + PLAYER_CONFIG.height;
     }
     this.noclip = isSafeMode;

@@ -28,8 +28,11 @@ export class Game {
   constructor(rootElement) {
     this.rootElement = rootElement;
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(WORLD_CONFIG.fogColor);
-    this.scene.fog = new THREE.Fog(WORLD_CONFIG.fogColor, LIGHTING_CONFIG.fogNear, LIGHTING_CONFIG.fogFar);
+    // Keep the distance void oppressive without crushing every unlit surface
+    // to display black after ACES. This remains much darker than any material.
+    const atmosphericBlack = 0x261a12;
+    this.scene.background = new THREE.Color(atmosphericBlack);
+    this.scene.fog = new THREE.Fog(atmosphericBlack, LIGHTING_CONFIG.fogNear, LIGHTING_CONFIG.fogFar);
 
 
     this.camera = new THREE.PerspectiveCamera(
@@ -39,12 +42,19 @@ export class Game {
       CAMERA_CONFIG.far,
     );
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: false,
+      powerPreference: "high-performance",
+    });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.toneMappingExposure = 0.8;
+    this.renderer.shadowMap.autoUpdate = true;
+    this.renderer.toneMappingExposure = LIGHTING_CONFIG.rendererExposure ?? 0.8;
 
     this.rootElement.appendChild(this.renderer.domElement);
 
@@ -209,19 +219,44 @@ export class Game {
   }
 
   setupLighting() {
-    const ambient = new THREE.AmbientLight(LIGHTING_CONFIG.ambientColor, LIGHTING_CONFIG.ambientIntensity);
+    const ambient = new THREE.AmbientLight(
+      LIGHTING_CONFIG.ambientColor,
+      Math.max(LIGHTING_CONFIG.ambientIntensity, 0.22),
+    );
     this.scene.add(ambient);
 
-    const lowAmbient = new THREE.HemisphereLight(LIGHTING_CONFIG.hemisphereSkyColor, LIGHTING_CONFIG.hemisphereGroundColor, LIGHTING_CONFIG.hemisphereIntensity);
+    // A low, warm visibility floor stands in for indirect bounce light. It
+    // preserves flashlight contrast while keeping floors and nearby silhouettes
+    // readable on ordinary displays with crushed blacks.
+    const visibilityFill = new THREE.AmbientLight(0x503722, 0.26);
+    this.scene.add(visibilityFill);
+
+    const lowAmbient = new THREE.HemisphereLight(
+      new THREE.Color(LIGHTING_CONFIG.hemisphereSkyColor).lerp(new THREE.Color(0x8a6d4d), 0.46),
+      new THREE.Color(LIGHTING_CONFIG.hemisphereGroundColor).lerp(new THREE.Color(0x483225), 0.38),
+      Math.max(LIGHTING_CONFIG.hemisphereIntensity, 0.62),
+    );
     this.scene.add(lowAmbient);
 
 
-    this.flashlight = new THREE.SpotLight(LIGHTING_CONFIG.flashlightColor, LIGHTING_CONFIG.flashlightIntensity, LIGHTING_CONFIG.flashlightRange, LIGHTING_CONFIG.flashlightAngle, LIGHTING_CONFIG.flashlightPenumbra, 2.0);
+    this.flashlight = new THREE.SpotLight(
+      LIGHTING_CONFIG.flashlightColor,
+      LIGHTING_CONFIG.flashlightIntensity * 1.55,
+      Math.max(LIGHTING_CONFIG.flashlightRange, 42),
+      Math.max(LIGHTING_CONFIG.flashlightAngle, Math.PI * 0.36),
+      Math.max(LIGHTING_CONFIG.flashlightPenumbra, 0.7),
+      2.0,
+    );
     this.flashlight.position.set(0.12, -0.08, 0.1);
-    this.flashlight.target.position.set(0, -0.22, -1);
+    this.flashlight.target.position.set(0, -0.32, -1);
     this.flashlight.castShadow = true;
     this.flashlight.shadow.mapSize.width = LIGHTING_CONFIG.flashlightShadowMapSize || 512;
     this.flashlight.shadow.mapSize.height = LIGHTING_CONFIG.flashlightShadowMapSize || 512;
+    this.flashlight.shadow.camera.near = LIGHTING_CONFIG.flashlightShadowNear || 0.5;
+    this.flashlight.shadow.camera.far = LIGHTING_CONFIG.flashlightShadowFar || 40;
+    this.flashlight.shadow.bias = -0.00018;
+    this.flashlight.shadow.normalBias = 0.035;
+    this.flashlight.shadow.radius = 2.1;
 
     this.flashlight.visible = true;
     this.camera.add(this.flashlight);
@@ -230,8 +265,15 @@ export class Game {
 
     // Pre-allocate the fixed PointLight pool. All lights live in the scene permanently.
     // We only update their position/intensity — never add/remove during gameplay.
+    const ceilingLightColor = new THREE.Color(LIGHTING_CONFIG.ceilingLightColor);
+    ceilingLightColor.lerp(new THREE.Color(0xffd7ae), 0.58);
     for (let i = 0; i < this._POINT_LIGHT_BUDGET; i++) {
-      const pl = new THREE.PointLight(LIGHTING_CONFIG.ceilingLightColor, 0, 14, 1.2);
+      const pl = new THREE.PointLight(
+        ceilingLightColor,
+        0,
+        Math.max(LIGHTING_CONFIG.ceilingLightRange || 14, 16),
+        LIGHTING_CONFIG.ceilingLightDecay || 2,
+      );
       pl.castShadow = false;
       pl.position.set(0, -9999, 0); // park far off-screen until assigned
       this.scene.add(pl);
@@ -722,8 +764,7 @@ export class Game {
     }
 
     if (this.itemSystem) {
-      this.itemSystem.inventory = { battery: 2, energy_drink: 1, firecracker: 2, compass: 1 };
-      this.hud.updateInventory(this.itemSystem.inventory);
+      this.itemSystem.reset();
     }
 
     this.player.setPosition(new THREE.Vector3(0, 0, 0));
@@ -1004,13 +1045,15 @@ export class Game {
           if (light.flickerTimer <= 0) {
             const isOff = Math.random() < 0.25;
             if (isOff) {
-              light.mesh.material.color.setHex(0x441b08);
-              light.mesh.material.emissive.setHex(0x1a0802);
+              light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelDimColor || 0x3b2618);
+              light.mesh.material.emissive.setHex(0x140704);
+              light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelDimEmissiveIntensity ?? 0.1;
               light.currentIntensity = 0;
               light.flickerTimer = 0.05 + Math.random() * 0.2;
             } else {
-              light.mesh.material.color.setHex(0xff9944);
-              light.mesh.material.emissive.setHex(0xff6611);
+              light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelOnColor || 0xb47b4c);
+              light.mesh.material.emissive.setHex(0x9a3f12);
+              light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelOnEmissiveIntensity ?? 0.58;
               light.currentIntensity = light.baseIntensity;
               light.flickerTimer = 1.0 + Math.random() * 5.0;
             }
@@ -1039,10 +1082,13 @@ export class Game {
           const inRange = distSq < 24 * 24;
           if (inRange) {
             pl.position.set(gx, gy, gz);
-            const targetIntensity = light.currentIntensity !== undefined
-              ? light.currentIntensity
-              : light.baseIntensity;
-            pl.intensity = targetIntensity || 3.5;
+            const targetIntensity = light.currentIntensity ?? light.baseIntensity ?? 0;
+            // A barely perceptible voltage drift feels organic without becoming
+            // a distracting global strobe. A true flicker-off remains at zero.
+            const voltageBreath = targetIntensity > 0
+              ? 0.96 + 0.04 * Math.sin(this.elapsedTime * 1.35 + (light.voltagePhase || 0))
+              : 0;
+            pl.intensity = targetIntensity * voltageBreath;
             // Link panel to pool slot so flicker can update it
             light.pooledLight = pl;
           } else {

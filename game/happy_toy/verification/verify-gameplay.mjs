@@ -338,24 +338,26 @@ try {
 
   console.log("Procedural generation and culling passed! Testing Hwacat event triggers...");
 
-  // 3. Teleport to Event Room (-2, -2) and test Mirror Hwacat Event
+  // 3. Teleport to the current 2F gallery chunk (-1, -1) and test the
+  // Mirror Hwacat event. The old Backrooms layout placed it at (-2, -2),
+  // which is now the antique archive.
   const eventState = await page.evaluate(() => {
     const game = window.__happyToy;
-    game.player.setPosition({ x: -32, y: 0, z: -32 });
-    game.updateBackrooms(0.016);
+    game.player.setPosition({ x: -16, y: 0, z: -16 });
+    for (let i = 0; i < 80; i += 1) game.updateBackrooms(0.016);
 
     const eventObj = game.mirrorEvents[0];
     const painting = game.scene.getObjectByName("upper-hwa-painting");
 
     return {
-      hasEventChunk: game.mapBuilder.loadedChunks.has("-2,-2"),
+      hasEventChunk: game.mapBuilder.loadedChunks.has("-1,-1"),
       hasPainting: Boolean(painting),
       eventState: eventObj.state,
       eventTriggered: eventObj.hasTriggered,
     };
   });
 
-  assert(eventState.hasEventChunk, "Expected event room chunk (-2,-2) to load");
+  assert(eventState.hasEventChunk, "Expected 2F gallery chunk (-1,-1) to load");
   assert(state.enemyCount >= 2, `Expected at least 2 monsters initialized, got ${state.enemyCount}`);
 
   assert(eventState.hasPainting, "Expected upper-hwa-painting mesh to exist in event room");

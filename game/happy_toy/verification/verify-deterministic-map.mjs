@@ -34,17 +34,19 @@ try {
     const storageType = generator.getChunkType(2, -2);
     const playroomType = generator.getChunkType(-2, 2);
     const workshopType = generator.getChunkType(2, 2);
-    const eventType = generator.getChunkType(-2, -2);
+    const archiveType = generator.getChunkType(-2, -2);
+    const galleryStairType = generator.getChunkType(-1, -1);
     const mannequinType = generator.getChunkType(-1, 0);
 
-    return { startType, storageType, playroomType, workshopType, eventType, mannequinType };
+    return { startType, storageType, playroomType, workshopType, archiveType, galleryStairType, mannequinType };
   });
 
   assert(mapTest.startType === "start", `Expected (0,0) to be start, got ${mapTest.startType}`);
   assert(mapTest.storageType === "storage", `Expected (2,-2) to be storage, got ${mapTest.storageType}`);
   assert(mapTest.playroomType === "playroom", `Expected (-2,2) to be playroom, got ${mapTest.playroomType}`);
   assert(mapTest.workshopType === "workshop", `Expected (2,2) to be workshop, got ${mapTest.workshopType}`);
-  assert(mapTest.eventType === "event", `Expected (-2,-2) to be event, got ${mapTest.eventType}`);
+  assert(mapTest.archiveType === "archive", `Expected (-2,-2) to be archive, got ${mapTest.archiveType}`);
+  assert(mapTest.galleryStairType === "stairs_2f", `Expected (-1,-1) to contain the 2F gallery stairs, got ${mapTest.galleryStairType}`);
   assert(mapTest.mannequinType === "corridor_ew", `Expected (-1,0) to be mannequin corridor, got ${mapTest.mannequinType}`);
   console.log("Deterministic 5x5 Map Layout PASSED!", mapTest);
 

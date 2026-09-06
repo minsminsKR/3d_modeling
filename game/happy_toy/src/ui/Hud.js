@@ -28,6 +28,13 @@ export class Hud {
     this.compassWidget = document.querySelector("#compass-widget");
     this.compassNeedle = document.querySelector("#compass-needle");
     this.compassText = document.querySelector("#compass-target-text");
+    this.objectiveLine = document.querySelector("#objective-line");
+    this.objectiveProgress = document.querySelector("#objective-progress");
+    this.staminaContainer = document.querySelector("#stamina-vital");
+    this.flashlightBatteryFill = document.querySelector("#flashlight-bar-fill");
+    this.flashlightBatteryState = document.querySelector("#flashlight-state");
+    this.reduceMotionInput = document.querySelector("#reduce-motion");
+    this.highContrastInput = document.querySelector("#high-contrast");
 
     this.qtyBattery = document.querySelector("#qty-battery");
     this.qtyDrink = document.querySelector("#qty-drink");
@@ -36,21 +43,27 @@ export class Hud {
 
     this.statusTimer = null;
     this.compassActive = false;
+    this.lastKeyCount = -1;
+    this.setupAccessibilityPreferences();
   }
 
   setPrompt(text) {
     if (this.promptElement) {
       this.promptElement.textContent = text;
+      this.promptElement.classList.toggle("is-visible", Boolean(text));
     }
+    document.body.classList.toggle("interaction-ready", Boolean(text));
   }
 
   setStatus(text, timeout = 0) {
     window.clearTimeout(this.statusTimer);
     if (this.statusElement) {
       this.statusElement.textContent = text;
+      this.statusElement.classList.toggle("is-visible", Boolean(text));
       if (timeout > 0) {
         this.statusTimer = window.setTimeout(() => {
-          this.statusElement.textContent = "복도 어딘가에서 발소리가 들립니다.";
+          this.statusElement.textContent = "";
+          this.statusElement.classList.remove("is-visible");
         }, timeout);
       }
     }
@@ -61,32 +74,60 @@ export class Hud {
     if (this.threatElement) {
       this.threatElement.style.opacity = String(clamped);
     }
+    document.documentElement.style.setProperty("--threat", clamped.toFixed(3));
+    document.body.classList.toggle("danger-close", clamped > 0.46);
   }
 
   setStamina(ratio) {
     if (this.staminaFill) {
       const pct = Math.max(0, Math.min(100, ratio * 100));
       this.staminaFill.style.width = `${pct}%`;
-      if (ratio < 0.2) {
-        this.staminaFill.classList.add("low");
-      } else {
-        this.staminaFill.classList.remove("low");
-      }
+      this.staminaFill.setAttribute("aria-valuenow", String(Math.round(pct)));
+      this.staminaFill.classList.toggle("low", ratio < 0.22);
+      this.staminaContainer?.classList.toggle("is-active", ratio < 0.985);
     }
+    document.documentElement.style.setProperty("--fatigue", String(1 - Math.max(0, Math.min(1, ratio))));
+    document.body.classList.toggle("player-exhausted", ratio < 0.12);
   }
 
   setKeyCount(collected, total = 4) {
     if (this.keyCountText) {
       this.keyCountText.textContent = `${collected} / ${total}`;
     }
+    if (this.objectiveLine) {
+      this.objectiveLine.textContent = collected >= total
+        ? "제단으로 돌아가 혼을 바치십시오"
+        : `흩어진 혼을 찾으십시오 · ${total - collected}개 남음`;
+    }
+    if (this.objectiveProgress) {
+      this.objectiveProgress.style.width = `${total > 0 ? (collected / total) * 100 : 0}%`;
+    }
+    if (collected !== this.lastKeyCount) {
+      document.querySelector("#key-counter")?.classList.add("just-updated");
+      window.setTimeout(() => document.querySelector("#key-counter")?.classList.remove("just-updated"), 900);
+      this.lastKeyCount = collected;
+    }
+    document.body.classList.toggle("objective-complete", total > 0 && collected >= total);
   }
 
   updateInventory(inv) {
     if (!inv) return;
-    if (this.qtyBattery) this.qtyBattery.textContent = `x${inv.battery || 0}`;
-    if (this.qtyDrink) this.qtyDrink.textContent = `x${inv.energy_drink || 0}`;
-    if (this.qtyFirecracker) this.qtyFirecracker.textContent = `x${inv.firecracker || 0}`;
-    if (this.qtyCompass) this.qtyCompass.textContent = `x${inv.compass || 0}`;
+    const values = {
+      battery: inv.battery || 0,
+      drink: inv.energy_drink || 0,
+      firecracker: inv.firecracker || 0,
+      compass: inv.compass || 0,
+    };
+    if (this.qtyBattery) this.qtyBattery.textContent = values.battery;
+    if (this.qtyDrink) this.qtyDrink.textContent = values.drink;
+    if (this.qtyFirecracker) this.qtyFirecracker.textContent = values.firecracker;
+    if (this.qtyCompass) this.qtyCompass.textContent = values.compass;
+    document.querySelectorAll(".hotbar-slot").forEach((slot) => {
+      const item = slot.dataset.item;
+      const count = values[item] || 0;
+      slot.classList.toggle("is-empty", count <= 0);
+      slot.setAttribute("aria-label", `${slot.querySelector(".item-name")?.textContent || item} ${count}개`);
+    });
   }
 
   toggleCompass() {
@@ -129,6 +170,50 @@ export class Hud {
 
   setFlashlightEnabled(enabled) {
     document.body.classList.toggle("flashlight-off", !enabled);
+  }
+
+  setFlashlightBattery(ratio, enabled) {
+    const clamped = Math.max(0, Math.min(1, ratio));
+    if (this.flashlightBatteryFill) {
+      this.flashlightBatteryFill.style.width = `${clamped * 100}%`;
+      this.flashlightBatteryFill.classList.toggle("low", clamped < 0.2);
+      this.flashlightBatteryFill.setAttribute("aria-valuenow", String(Math.round(clamped * 100)));
+    }
+    if (this.flashlightBatteryState) {
+      this.flashlightBatteryState.textContent = enabled ? "켜짐" : "꺼짐";
+    }
+  }
+
+  setupAccessibilityPreferences() {
+    let savedReduceMotion = null;
+    let savedHighContrast = null;
+    try {
+      savedReduceMotion = localStorage.getItem("happy_toy_reduce_motion");
+      savedHighContrast = localStorage.getItem("happy_toy_high_contrast");
+    } catch (_) {}
+    const reduceMotion = savedReduceMotion === null
+      ? window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true
+      : savedReduceMotion === "1";
+    const highContrast = savedHighContrast === "1";
+    const apply = () => {
+      document.body.classList.toggle("reduced-motion", Boolean(this.reduceMotionInput?.checked));
+      document.body.classList.toggle("high-contrast", Boolean(this.highContrastInput?.checked));
+    };
+    if (this.reduceMotionInput) {
+      this.reduceMotionInput.checked = reduceMotion;
+      this.reduceMotionInput.addEventListener("change", () => {
+        apply();
+        try { localStorage.setItem("happy_toy_reduce_motion", this.reduceMotionInput.checked ? "1" : "0"); } catch (_) {}
+      });
+    }
+    if (this.highContrastInput) {
+      this.highContrastInput.checked = highContrast;
+      this.highContrastInput.addEventListener("change", () => {
+        apply();
+        try { localStorage.setItem("happy_toy_high_contrast", this.highContrastInput.checked ? "1" : "0"); } catch (_) {}
+      });
+    }
+    apply();
   }
 
   hideStart() {

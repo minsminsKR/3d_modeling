@@ -14,6 +14,8 @@ export class EnemyManager {
     this.enemyConfigs = enemyConfigs;
     this.loader = new CharacterLoader();
     this.enemies = [];
+    this.directorProgress = 0;
+    this.lastNoiseResponseCount = 0;
   }
 
   async loadEnemies() {
@@ -79,9 +81,33 @@ export class EnemyManager {
     let threat = 0;
     let caught = false;
     const detectionEvents = [];
+    const game = window.__happyToy;
+    const totalKeys = Math.max(1, game?.keys?.length || 4);
+    const targetProgress = Math.min(1, Math.max(0, (game?.keyCount || 0) / totalKeys));
+    this.directorProgress += (targetProgress - this.directorProgress) * Math.min(1, deltaTime * 0.65);
+    const difficulty = game?.menuSystem?.currentMode || "normal";
+    const pursuitBudget = Math.min(
+      this.enemies.length,
+      1 + (this.directorProgress >= 0.45 ? 1 : 0) + (difficulty === "hardcore" ? 1 : 0),
+    );
+    let activePursuers = 0;
 
-    for (const enemy of this.enemies) {
-      enemy.update(deltaTime, playerState);
+    const updateOrder = [...this.enemies].sort((a, b) => {
+      const chasePriority = Number(b.isActivelyChasing()) - Number(a.isActivelyChasing());
+      if (chasePriority !== 0) {
+        return chasePriority;
+      }
+      return distanceToPlayer(a, playerPosition) - distanceToPlayer(b, playerPosition);
+    });
+
+    for (const enemy of updateOrder) {
+      enemy.progressionSpeedMultiplier = 1 + this.directorProgress * (enemy.config.progressionSpeedGain ?? 0.1);
+      enemy.progressionDetectionMultiplier = 1 + this.directorProgress * (enemy.config.progressionDetectionGain ?? 0.08);
+      const canStartChase = enemy.isActivelyChasing() || activePursuers < pursuitBudget;
+      enemy.update(deltaTime, { ...playerState, canStartChase });
+      if (enemy.isActivelyChasing()) {
+        activePursuers += 1;
+      }
       if (enemy.lastDetectionEvent) {
         detectionEvents.push(enemy.lastDetectionEvent);
       }
@@ -90,7 +116,14 @@ export class EnemyManager {
     }
 
     this.hud.setThreat(threat);
-    return { caught, threat, detectionEvents };
+    return {
+      caught,
+      threat,
+      detectionEvents,
+      pursuitBudget,
+      activePursuers,
+      progress: this.directorProgress,
+    };
   }
 
   setTestSafeMode(enabled) {
@@ -99,9 +132,7 @@ export class EnemyManager {
     }
 
     for (const enemy of this.enemies) {
-      enemy.state = "wander";
-      enemy.memoryTimer = 0;
-      enemy.lastKnownPlayerPosition = null;
+      enemy.beginWander();
       enemy.caughtPlayer = false;
       enemy.cabinetTarget = null;
       enemy.chasePath = [];
@@ -180,6 +211,16 @@ export class EnemyManager {
       enemy.lastUnstuckTarget = null;
       enemy.debugPathTarget = null;
       enemy.lastDetectionEvent = null;
+      enemy.sightExposure = 0;
+      enemy.hasVisualContact = false;
+      enemy.lostSightTimer = 0;
+      enemy.searchTimer = 0;
+      enemy.searchTarget = null;
+      enemy.investigationTimer = 0;
+      enemy.investigationTarget = null;
+      enemy.recentWanderTargets = [];
+      enemy.progressionSpeedMultiplier = 1;
+      enemy.progressionDetectionMultiplier = 1;
       enemy.wanderTarget = null;
       enemy.wanderRetargetTimer = 0;
       enemy.wanderStuckCount = 0;
@@ -194,12 +235,44 @@ export class EnemyManager {
 
       enemy.snapModelToGround(false);
     }
+    this.directorProgress = 0;
+    this.lastNoiseResponseCount = 0;
   }
 
-  notifyNoiseEvent(position, radius = 28.0) {
-    for (const enemy of this.enemies) {
-      enemy.notifyNoise(position, radius);
+  notifyNoiseEvent(position, radius = 28.0, options = {}) {
+    let responseCount = 0;
+    const soundPosition = position.clone?.() || { ...position };
+    const playerPosition = window.__happyToy?.player?.position;
+    if (
+      playerPosition
+      && Math.abs((soundPosition.y ?? 0) - (playerPosition.y ?? 0)) > 1.8
+      && Math.hypot(soundPosition.x - playerPosition.x, soundPosition.z - playerPosition.z) <= radius
+    ) {
+      // FirecrackerProjectiles currently settle on y=0; retain the thrower's floor for AI hearing.
+      soundPosition.y = playerPosition.y;
     }
+    for (const enemy of this.enemies) {
+      if (enemy.notifyNoise(soundPosition, radius, options)) {
+        responseCount += 1;
+      }
+    }
+    this.lastNoiseResponseCount = responseCount;
+    if (responseCount > 0 && options.silentFeedback !== true) {
+      this.hud?.setStatus(
+        responseCount === 1
+          ? "폭음이 가라앉자, 발소리 하나가 그쪽으로 꺾입니다."
+          : `폭음 쪽으로 ${responseCount}개의 발소리가 흩어집니다.`,
+        1800,
+      );
+    }
+    return responseCount;
   }
+}
+
+function distanceToPlayer(enemy, position) {
+  return Math.hypot(
+    enemy.group.position.x - position.x,
+    enemy.group.position.z - position.z,
+  );
 }
 

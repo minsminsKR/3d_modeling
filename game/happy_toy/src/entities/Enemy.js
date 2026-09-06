@@ -55,6 +55,16 @@ export class Enemy {
     this.lastUnstuckTarget = null;
     this.debugPathTarget = null;
     this.lastDetectionEvent = null;
+    this.sightExposure = 0;
+    this.hasVisualContact = false;
+    this.lostSightTimer = 0;
+    this.searchTimer = 0;
+    this.searchTarget = null;
+    this.investigationTimer = 0;
+    this.investigationTarget = null;
+    this.recentWanderTargets = [];
+    this.progressionSpeedMultiplier = 1;
+    this.progressionDetectionMultiplier = 1;
     // Waypoint-based long-distance wander state
     this.wanderTarget = null;          // current far waypoint goal
     this.wanderRetargetTimer = 0;      // countdown until we pick a new waypoint
@@ -238,8 +248,15 @@ export class Enemy {
     this.snapModelToGround(this.shouldAllowAirborneMotion());
 
     if (target) {
-      const baseSpeed = (this.state === "chase" || this.state === "flee") ? this.config.chaseSpeed : this.config.patrolSpeed;
-      const speed = baseSpeed * (this.speedMultiplier || 1.0);
+      const isAlertMovement = this.state === "chase" || this.state === "flee";
+      const investigationMultiplier = (this.state === "search" || this.state === "investigateNoise")
+        ? (this.config.investigationSpeedMultiplier ?? 1.12)
+        : 1;
+      const baseSpeed = (isAlertMovement ? this.config.chaseSpeed : this.config.patrolSpeed)
+        * investigationMultiplier;
+      const speed = baseSpeed
+        * (this.speedMultiplier || 1.0)
+        * (this.progressionSpeedMultiplier || 1.0);
 
       const beforeMove = this.group.position.clone();
       this.moveToward(target, speed, deltaTime);
@@ -377,12 +394,26 @@ export class Enemy {
     const isPlayerHidden = Boolean(playerState.isHidden || playerState.isUndetectable);
     const isPlayerSprinting = Boolean(playerState.isSprinting);
     const wasChasing = this.state === "chase" || this.state === "flee";
+    const wasAware = wasChasing || this.state === "search" || this.state === "investigateNoise";
+    const canStartChase = playerState.canStartChase !== false || wasChasing;
+
     if (isPlayerHidden) {
-      if ((this.state === "chase" || this.state === "flee") && this.memoryTimer > 0) {
+      this.hasVisualContact = false;
+      this.sightExposure = 0;
+      if (this.state === "chase" || this.state === "flee") {
         this.memoryTimer -= deltaTime;
         if (this.memoryTimer <= 0) {
-          this.state = "wander";
-          this.lastKnownPlayerPosition = null;
+          this.beginSearch(this.lastKnownPlayerPosition, this.config.hiddenSearchSeconds ?? 2.2);
+        }
+      } else if (this.state === "search") {
+        this.searchTimer -= deltaTime;
+        if (this.searchTimer <= 0) {
+          this.beginWander();
+        }
+      } else if (this.state === "investigateNoise") {
+        this.investigationTimer -= deltaTime;
+        if (this.investigationTimer <= 0) {
+          this.beginSearch(this.investigationTarget, this.config.postNoiseSearchSeconds ?? 2.2);
         }
       }
       return;
@@ -393,11 +424,12 @@ export class Enemy {
       const playerFloor = (playerPosition.y ?? 0) >= 3.0 ? 2 : ((playerPosition.y ?? 0) <= -3.0 ? -1 : 1);
       if (playerFloor !== this.config.allowedFloor) {
         if (this.state === "chase" || this.state === "flee") {
-          this.state = "wander";
-          this.wanderTarget = null;
+          this.beginWander();
         }
         this.memoryTimer = 0;
         this.lastKnownPlayerPosition = null;
+        this.sightExposure = 0;
+        this.hasVisualContact = false;
         return;
       }
     }
@@ -412,9 +444,7 @@ export class Enemy {
       : this.config.giveUpRange;
 
     if ((this.state === "chase" || this.state === "flee") && (distance > giveUpRange || (usesTransitionRoute && !canNavigateAcrossFloors))) {
-      this.state = "wander";
-      this.memoryTimer = 0;
-      this.lastKnownPlayerPosition = null;
+      this.beginWander();
       return;
     }
 
@@ -427,52 +457,120 @@ export class Enemy {
     if (!sameLevel) {
       this.memoryTimer = 0;
       this.lastKnownPlayerPosition = null;
+      this.sightExposure = 0;
+      this.hasVisualContact = false;
       return;
     }
 
-    const hearing = this.config.hearingRange * (this.detectionMultiplier || 1.0);
-    const detection = this.config.detectionRange * (this.detectionMultiplier || 1.0);
+    const directorDetection = this.progressionDetectionMultiplier || 1.0;
+    const hearing = this.config.hearingRange * (this.detectionMultiplier || 1.0) * directorDetection;
+    const detection = this.config.detectionRange * (this.detectionMultiplier || 1.0) * directorDetection;
     const canHear = isPlayerSprinting && distance <= hearing;
     const canSee = distance <= detection
       && this.isPlayerInFront(playerPosition)
       && this.collisionWorld.hasLineOfSight(this.group.position, playerPosition);
+    this.hasVisualContact = canSee;
 
+    const sightConfirmSeconds = Math.max(0.05, this.config.sightConfirmSeconds ?? 0.32);
+    const closeRange = this.config.closeRangeAutoDetect ?? Math.min(2.25, detection * 0.32);
+    if (canSee) {
+      const proximity = 1 - Math.min(1, distance / Math.max(detection, 0.001));
+      const exposureRate = 1 + proximity * 1.6 + (isPlayerSprinting ? 0.9 : 0);
+      this.sightExposure = Math.min(sightConfirmSeconds, this.sightExposure + deltaTime * exposureRate);
+      this.lostSightTimer = 0;
+    } else {
+      this.sightExposure = Math.max(0, this.sightExposure - deltaTime * 1.8);
+    }
 
-    if (canHear || canSee) {
+    const sightConfirmed = canSee
+      && (wasChasing || distance <= closeRange || this.sightExposure >= sightConfirmSeconds);
+
+    if (canHear || sightConfirmed) {
       const wasAlert = this.state === "chase" || this.state === "flee";
-      if (!wasAlert) {
-        const playerKeys = window.__happyToy?.keyCount || 0;
-        // 45% chance to flee if player has >= 2 keys
-        if (playerKeys >= 2 && Math.random() < 0.45) {
-          this.state = "flee";
-        } else {
-          this.state = "chase";
-        }
+      if (canStartChase) {
+        this.state = "chase";
+        this.searchTarget = null;
+        this.investigationTarget = null;
+      } else {
+        this.beginSearch(playerPosition, this.config.blockedPursuitSearchSeconds ?? 3.2);
       }
       this.memoryTimer = this.config.memorySeconds;
-      this.lastKnownPlayerPosition = playerPosition.clone();
-      if (!wasChasing) {
-        const range = Math.max(this.config.detectionRange, 0.001);
+      this.lastKnownPlayerPosition = clonePoint(playerPosition);
+      if (!wasAware) {
+        const range = Math.max(detection, 0.001);
         const proximity = 1 - Math.min(1, distance / range);
         this.lastDetectionEvent = {
           enemyId: this.config.id,
           label: this.config.label,
-          mode: canSee ? "sight" : "hearing",
-          full: canSee,
+          mode: sightConfirmed ? "sight" : "hearing",
+          full: sightConfirmed && canStartChase,
           distance,
-          strength: Math.min(1, (canSee ? 0.78 : 0.55) + proximity * 0.35),
+          strength: Math.min(1, (sightConfirmed ? 0.76 : 0.5) + proximity * 0.3),
         };
       }
       return;
     }
 
-    if (this.memoryTimer > 0) {
+    if (wasChasing) {
+      this.lostSightTimer += deltaTime;
+      const graceSeconds = this.config.lostSightGraceSeconds ?? 0.65;
+      if (this.lostSightTimer <= graceSeconds) {
+        return;
+      }
       this.memoryTimer -= deltaTime;
+      if (this.memoryTimer <= 0) {
+        this.beginSearch(this.lastKnownPlayerPosition, this.config.searchSeconds ?? 5.2);
+      }
       return;
     }
 
-    this.state = "wander";
+    if (this.state === "search") {
+      this.searchTimer -= deltaTime;
+      if (this.searchTimer <= 0) {
+        this.beginWander();
+      }
+      return;
+    }
+
+    if (this.state === "investigateNoise") {
+      this.investigationTimer -= deltaTime;
+      if (this.investigationTimer <= 0) {
+        this.beginSearch(this.investigationTarget, this.config.postNoiseSearchSeconds ?? 2.2);
+      }
+    }
+  }
+
+  beginSearch(position, seconds = 5.2) {
+    this.state = "search";
+    this.searchTarget = position ? clonePoint(position) : this.group.position.clone();
+    this.searchTimer = Math.max(0.1, seconds);
     this.lastKnownPlayerPosition = null;
+    this.memoryTimer = 0;
+    this.lostSightTimer = 0;
+    this.chasePath = [];
+    this.chasePathGoal = null;
+    this.patrolPath = [];
+    this.patrolPathGoal = null;
+    this.waitTurnDirection = Math.random() < 0.5 ? -1 : 1;
+  }
+
+  beginWander() {
+    this.state = "wander";
+    this.memoryTimer = 0;
+    this.lastKnownPlayerPosition = null;
+    this.searchTarget = null;
+    this.searchTimer = 0;
+    this.investigationTarget = null;
+    this.investigationTimer = 0;
+    this.sightExposure = 0;
+    this.hasVisualContact = false;
+    this.lostSightTimer = 0;
+    this.wanderTarget = null;
+    this.wanderRetargetTimer = this.config.postAlertCalmSeconds ?? 0.8;
+    this.chasePath = [];
+    this.chasePathGoal = null;
+    this.patrolPath = [];
+    this.patrolPathGoal = null;
   }
 
   getTarget(playerPosition, deltaTime = 0) {
@@ -482,6 +580,14 @@ export class Enemy {
 
     if (this.state === "flee") {
       return this.getFleeTarget(playerPosition, deltaTime);
+    }
+
+    if (this.state === "search") {
+      return this.getInvestigationTarget(this.searchTarget, deltaTime, "search");
+    }
+
+    if (this.state === "investigateNoise") {
+      return this.getInvestigationTarget(this.investigationTarget, deltaTime, "noise");
     }
 
     if (this.state === "idle_short") {
@@ -498,6 +604,26 @@ export class Enemy {
     }
 
     return this.getWanderTarget(deltaTime);
+  }
+
+  getInvestigationTarget(target, deltaTime, mode) {
+    if (!target) {
+      this.beginWander();
+      return null;
+    }
+
+    const arrivalDistance = this.config.searchArrivalDistance ?? 0.9;
+    if (distance2D(this.group.position, target) > arrivalDistance) {
+      return this.getPathTarget(target, deltaTime, mode);
+    }
+
+    this.patrolPath = [];
+    this.patrolPathGoal = null;
+    this.debugPathTarget = { mode, type: "look-around", x: target.x, y: target.y, z: target.z };
+    const pulse = Math.sin((mode === "noise" ? this.investigationTimer : this.searchTimer) * 1.7);
+    const direction = pulse >= 0 ? this.waitTurnDirection : -this.waitTurnDirection;
+    this.group.rotation.y += deltaTime * (this.config.searchTurnSpeed ?? 0.62) * direction;
+    return null;
   }
 
   getWanderTarget(deltaTime) {
@@ -523,11 +649,15 @@ export class Enemy {
 
       // Arrived — pick a new target next frame
       if (distToTarget < 1.2) {
+        this.rememberWanderTarget(this.wanderTarget);
         this.wanderTarget = null;
-        this.wanderRetargetTimer = 0;
+        this.wanderRetargetTimer = this.getNextPatrolWait();
         this.patrolPath = [];
         this.patrolPathGoal = null;
         this.wanderStuckCount = 0;
+        this.state = "idle_short";
+        this.waitTimer = this.getNextPatrolWait();
+        this.waitTurnDirection = Math.random() < 0.5 ? -1 : 1;
         return null;
       }
 
@@ -581,12 +711,9 @@ export class Enemy {
       }
     }
 
-    // Shuffle and pick the best candidate (farthest first for maximum roaming)
+    // Prefer useful mid/far routes, but retain enough variance that patrols cannot be memorized.
     if (candidates.length > 0) {
-      // Pick randomly among the top half (farthest) for variety
-      candidates.sort((a, b) => distance2D(pos, b) - distance2D(pos, a));
-      const topHalf = candidates.slice(0, Math.max(1, Math.ceil(candidates.length / 2)));
-      const chosen = topHalf[Math.floor(Math.random() * topHalf.length)];
+      const chosen = this.chooseWeightedWanderCandidate(candidates, pos, minDist, maxDist);
       this.wanderTarget = chosen;
       this.wanderStuckCount = 0;
       this.patrolPath = [];
@@ -626,7 +753,7 @@ export class Enemy {
     }
 
     if (fallbackCandidates.length > 0) {
-      const chosen = fallbackCandidates[Math.floor(Math.random() * fallbackCandidates.length)];
+      const chosen = this.chooseWeightedWanderCandidate(fallbackCandidates, pos, 1.5, Math.max(8, maxDist));
       this.wanderTarget = chosen;
       return;
     }
@@ -638,6 +765,47 @@ export class Enemy {
       pos.y,
       pos.z + Math.sin(theta) * 5,
     );
+  }
+
+  chooseWeightedWanderCandidate(candidates, position, minDistance, maxDistance) {
+    const unique = [];
+    const seen = new Set();
+    for (const candidate of candidates) {
+      const key = wanderTargetKey(candidate);
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      unique.push(candidate);
+    }
+
+    const preferredDistance = minDistance + (maxDistance - minDistance) * (0.42 + Math.random() * 0.3);
+    const recent = new Set(this.recentWanderTargets);
+    const weighted = unique.map((candidate) => {
+      const distance = distance2D(position, candidate);
+      const distanceFit = 1 / (1 + Math.abs(distance - preferredDistance) * 0.18);
+      const novelty = recent.has(wanderTargetKey(candidate)) ? 0.08 : 1;
+      return { candidate, weight: Math.max(0.01, distanceFit * novelty) };
+    });
+    let roll = Math.random() * weighted.reduce((sum, entry) => sum + entry.weight, 0);
+    for (const entry of weighted) {
+      roll -= entry.weight;
+      if (roll <= 0) {
+        return entry.candidate.clone();
+      }
+    }
+    return weighted[weighted.length - 1].candidate.clone();
+  }
+
+  rememberWanderTarget(target) {
+    if (!target) {
+      return;
+    }
+    this.recentWanderTargets.push(wanderTargetKey(target));
+    const historySize = this.config.wanderHistorySize ?? 4;
+    if (this.recentWanderTargets.length > historySize) {
+      this.recentWanderTargets.splice(0, this.recentWanderTargets.length - historySize);
+    }
   }
 
   getFleeTarget(playerPosition, deltaTime) {
@@ -889,15 +1057,10 @@ export class Enemy {
   }
 
   endCabinetInvestigation() {
-    this.state = "wander";
+    this.beginWander();
     this.cabinetTarget = null;
     this.resumeAnimatedPose();
-    this.memoryTimer = 0;
-    this.lastKnownPlayerPosition = null;
     this.caughtPlayer = false;
-    this.chasePath = [];
-    this.chasePathTimer = 0;
-    this.chasePathGoal = null;
     this.waitTimer = this.config.postCabinetWaitSeconds ?? 0.5;
     this.waitTurnDirection = Math.random() < 0.5 ? -1 : 1;
     this.chooseNearestWaypoint();
@@ -1041,21 +1204,37 @@ export class Enemy {
     }
     const distance = distance2D(this.group.position, playerPosition);
     const distanceThreat = 1 - Math.min(1, distance / this.config.detectionRange);
-    const stateBoost = this.state === "chase" || this.state === "investigateCabinet" ? 0.35 : 0;
+    const stateBoost = this.state === "chase" || this.state === "investigateCabinet"
+      ? 0.35
+      : (this.state === "search" || this.state === "investigateNoise" ? 0.16 : 0);
     return Math.min(1, Math.max(0, distanceThreat + stateBoost));
   }
 
-  notifyNoise(position, radius) {
-    const dist = distance2D(this.group.position, position);
-    if (dist <= radius) {
-      if (this.isBaby) {
-        this.babyAwake = true;
-      }
-      this.lastKnownPlayerPosition = position.clone();
-      this.memoryTimer = this.config.memorySeconds || 5.0;
-      this.state = "chase";
-      this.playAction("chase");
+  notifyNoise(position, radius, options = {}) {
+    if (this.isDormant || !position || !this.isSameLevelAs(position)) {
+      return false;
     }
+    const dist = distance2D(this.group.position, position);
+    if (dist > radius || (this.state === "chase" && this.hasVisualContact)) {
+      return false;
+    }
+
+    if (this.isBaby) {
+      this.babyAwake = true;
+    }
+    this.investigationTarget = clonePoint(position);
+    this.investigationTimer = options.duration ?? this.config.noiseInvestigationSeconds ?? 6.5;
+    this.searchTarget = null;
+    this.searchTimer = 0;
+    this.lastKnownPlayerPosition = null;
+    this.memoryTimer = 0;
+    this.chasePath = [];
+    this.chasePathGoal = null;
+    this.patrolPath = [];
+    this.patrolPathGoal = null;
+    this.state = "investigateNoise";
+    this.playAction("patrol");
+    return true;
   }
 
   getDebugState() {
@@ -1083,6 +1262,10 @@ export class Enemy {
         : null,
       wanderRetargetTimer: this.wanderRetargetTimer?.toFixed(2) ?? null,
       wanderStuckCount: this.wanderStuckCount ?? 0,
+      hasVisualContact: this.hasVisualContact,
+      sightExposure: this.sightExposure,
+      searchTimer: this.searchTimer,
+      investigationTimer: this.investigationTimer,
       pathTarget: this.debugPathTarget,
       chasePathLength: this.chasePath ? this.chasePath.length : 0,
       patrolPathLength: this.patrolPath ? this.patrolPath.length : 0,
@@ -1147,4 +1330,15 @@ function pointFromWaypoint(waypoint) {
     return null;
   }
   return new THREE.Vector3(waypoint.position[0], waypoint.position[1], waypoint.position[2]);
+}
+
+function clonePoint(position) {
+  if (position?.clone) {
+    return position.clone();
+  }
+  return new THREE.Vector3(position?.x ?? 0, position?.y ?? 0, position?.z ?? 0);
+}
+
+function wanderTargetKey(position) {
+  return `${Math.round(position.x * 2) / 2}:${Math.round((position.y ?? 0) * 2) / 2}:${Math.round(position.z * 2) / 2}`;
 }
