@@ -1228,3 +1228,40 @@ body.reduced-motion *::after {
 body[data-dread-phase="hunt"] #dread-state { color: #dfaa96; }
 body.reduced-motion .dread-overlay { opacity: calc(var(--dread) * 0.3); }
 body.high-contrast .dread-overlay { display: none; }
+
+.ghost-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 7;
+  background:
+    radial-gradient(ellipse at center, rgba(210, 230, 255, 0.08) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(180, 210, 255, 0.07), rgba(8, 12, 20, 0.18));
+  mix-blend-mode: screen;
+}
+#ghost-badge {
+  position: absolute;
+  top: 22px;
+  right: 24px;
+  margin: 0;
+  padding: 4px 10px;
+  border: 1px solid rgba(190, 220, 255, 0.45);
+  color: #d7e7ff;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  pointer-events: none;
+  z-index: 8;
+  background: rgba(8, 14, 24, 0.55);
+}
+body.ghost-mode .ghost-overlay { display: block; }
+body.ghost-mode #game-root canvas {
+  opacity: 0.52;
+  filter:
+    saturate(0.28)
+    brightness(1.18)
+    contrast(0.9)
+    hue-rotate(12deg);
+}
+body.reduced-motion.ghost-mode #game-root canvas { opacity: 0.7; }

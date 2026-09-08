@@ -100,7 +100,7 @@
 
 감지는 층과 방향을 같이 봅니다. `floorAwarenessHeight`보다 Y 차이가 크면 같은 XZ에 있어도 감지/포획/위협도를 만들지 않습니다. 몬스터가 등을 보인 상태에서는 걷는 플레이어를 시야로 잡지 못하고, `Shift`로 달리는 플레이어만 `hearingRange` 안에서 소리로 감지합니다. 정면에서는 `frontAwarenessDot` 기준의 시야각과 `CollisionWorld.hasLineOfSight()`를 통과해야 추격합니다.
 
-테스트 중에는 상단 숫자열 `0` 또는 키패드 `Numpad0`으로 `testSafeMode`를 토글합니다. ON 상태에서는 `Game`이 적에게 `isUndetectable`을 넘기고, `EnemyManager.setTestSafeMode(true)`가 기존 추격 기억과 포획 상태를 끊어 플레이어가 발각되거나 사망하지 않습니다.
+테스트 중에는 상단 숫자열 `0` 또는 키패드 `Numpad0`으로 `testSafeMode`(noclip 비행 포함)를 토글합니다. 백틱 `` ` `` 키는 별도의 무적/투명 모드입니다. ON 상태에서는 `Game`이 적에게 `isUndetectable`을 넘기고 월드 캔버스가 반투명해지며, 접촉해도 포획되지 않습니다. 기존 추격 기억은 `EnemyManager.breakAggro()`가 끊습니다.
 
 플레이어가 캐비넷에 들어간 상태에서는 감지와 포획 판정을 막고, `Game`이 선택한 대표 추격 몬스터 한 마리만 캐비넷 앞 대기 판정을 수행합니다. 몬스터가 캐비넷 앞 대기 위치에 도착하면 `Enemy.playIdlePose()`가 보행/점프 루프를 멈추고 정지 포즈를 유지합니다. 플레이어가 몬스터 접근 중 E로 캐비넷을 나가면 `Game.exitCabinet()`이 `cabinetEvent`를 끊고 `Enemy.resumeChaseFromCabinet()`으로 해당 몬스터를 즉시 추격 상태로 되돌립니다. 플레이어가 캐비넷에서 나오면 `Cabinet.getExitPosition()`과 `PlayerController.exitCabinet()`이 캐비넷 바깥 정면 방향으로 위치와 yaw를 맞춥니다.
 

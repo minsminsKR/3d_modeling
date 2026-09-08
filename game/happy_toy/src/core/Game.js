@@ -102,6 +102,8 @@ export class Game {
     this.elapsedTime = 0;
     this.assetsReady = false;
     this.testSafeMode = false;
+    this.ghostMode = false;
+    this.cinematicLightScale = 1;
     this.firstDetectionScareReady = true;
     this.detectionFreezeTimer = 0;
     this.detectionFreezeThreat = 0;
@@ -418,6 +420,9 @@ export class Game {
     if (this.input.consumePressed("0") || this.input.consumePressed("numpad0")) {
       this.toggleTestSafeMode();
     }
+    if (this.input.consumePressed("`") || this.input.consumePressed("backquote")) {
+      this.toggleGhostMode();
+    }
 
     if (this.isStarted && !this.gameOver && !this.gameCleared && this.input.consumePressed("escape")) {
       this.togglePause();
@@ -489,7 +494,7 @@ export class Game {
       const enemyState = this.enemyManager?.update(deltaTime, {
         position: this.player.position,
         isHidden: this.player.isHidden,
-        isUndetectable: this.testSafeMode,
+        isUndetectable: this.isInvincible,
         isMoving: this.player.isMoving,
         isSprinting: this.player.isSprinting,
       });
@@ -547,6 +552,7 @@ export class Game {
     debug.monsters = this.enemyManager?.enemies.map((enemy) => enemy.getDebugState()) || [];
     debug.nearestDoor = this.getNearestDoorDebug();
     debug.testSafeMode = this.testSafeMode;
+    debug.ghostMode = this.ghostMode;
     this.hud.setFloorDebug(debug);
   }
 
@@ -739,6 +745,9 @@ export class Game {
 
     this.glitchController.reset();
     this.testSafeMode = false;
+    this.ghostMode = false;
+    this.cinematicLightScale = 1;
+    this.hud?.setGhostMode?.(false);
     this.player.exitCabinet();
 
     // Reset Lovely Doll states
@@ -987,9 +996,13 @@ export class Game {
     }
   }
 
+  get isInvincible() {
+    return Boolean(this.testSafeMode || this.ghostMode);
+  }
+
   handleCaught(message = "발소리가 바로 뒤에서 멈췄습니다.") {
-    if (this.testSafeMode) {
-      this.hud.setStatus("테스트 안전 모드라 포획되지 않습니다.", 900);
+    if (this.isInvincible) {
+      this.hud.setStatus(this.ghostMode ? "투명 상태라 포획되지 않습니다." : "테스트 안전 모드라 포획되지 않습니다.", 900);
       return;
     }
 
@@ -1023,6 +1036,20 @@ export class Game {
     }
 
     this.hud.setStatus("테스트 안전 모드 OFF", 1400);
+  }
+
+  toggleGhostMode() {
+    this.ghostMode = !this.ghostMode;
+    this.hud.setGhostMode(this.ghostMode);
+    if (this.ghostMode) {
+      this.cabinetEvent = null;
+      this.enemyManager?.breakAggro();
+      this.hud.setThreat(0);
+      this.glitchController.reset();
+      this.hud.setStatus("무적 모드 ON · 투명화 · 적에게 보이지 않음 (` 로 해제)", 2400);
+      return;
+    }
+    this.hud.setStatus("무적 모드 OFF", 1400);
   }
 
   updateBackrooms(deltaTime) {
@@ -1125,7 +1152,9 @@ export class Game {
             const voltageBreath = targetIntensity > 0
               ? 0.96 + 0.04 * Math.sin(this.elapsedTime * 1.35 + (light.voltagePhase || 0))
               : 0;
-            pl.intensity = targetIntensity * voltageBreath * (this.dreadDirector?.lightScale ?? 1);
+            pl.intensity = targetIntensity * voltageBreath
+              * (this.dreadDirector?.lightScale ?? 1)
+              * (this.cinematicLightScale ?? 1);
             // Link panel to pool slot so flicker can update it
             light.pooledLight = pl;
           } else {
@@ -1379,7 +1408,7 @@ export class Game {
           // 3. Collision catch check: Only catches player if flashlight is ON
           if (flashlightOn) {
             const distToPlayer = Math.hypot(mesh.position.x - playerPos.x, mesh.position.z - playerPos.z);
-            if (distToPlayer <= state.catchDistance && !this.player.isHidden && !this.gameOver && !this.gameCleared && !this.testSafeMode) {
+            if (distToPlayer <= state.catchDistance && !this.player.isHidden && !this.gameOver && !this.gameCleared && !this.isInvincible) {
               this.handleCaught("마네킹이 바로 뒤에 서 있었습니다.");
             }
           }

@@ -40,6 +40,7 @@ export class Hud {
     this.qtyDrink = document.querySelector("#qty-drink");
     this.qtyFirecracker = document.querySelector("#qty-firecracker");
     this.qtyCompass = document.querySelector("#qty-compass");
+    this.ghostBadge = document.querySelector("#ghost-badge");
 
     this.statusTimer = null;
     this.compassActive = false;
@@ -53,6 +54,13 @@ export class Hud {
       this.promptElement.classList.toggle("is-visible", Boolean(text));
     }
     document.body.classList.toggle("interaction-ready", Boolean(text));
+  }
+
+  setGhostMode(enabled) {
+    document.body.classList.toggle("ghost-mode", Boolean(enabled));
+    if (this.ghostBadge) {
+      this.ghostBadge.hidden = !enabled;
+    }
   }
 
   setDread(amount, message, phase) {

@@ -50,7 +50,7 @@ export class FlashlightController {
       const targetIntensity = this.defaultIntensity * batteryOutput * slowWaver * dip;
       const blend = 1 - Math.exp(-deltaTime * (this.voltageDipTimer > 0 ? 20 : 9));
       this.currentIntensity += (targetIntensity - this.currentIntensity) * blend;
-      this.spotLight.intensity = this.currentIntensity;
+      this.spotLight.intensity = this.currentIntensity * (this.game?.cinematicLightScale ?? 1);
 
       if (this.batteryLevel < 0.15 && !this.lowBatteryWarned) {
         this.lowBatteryWarned = true;
@@ -100,7 +100,7 @@ export class FlashlightController {
   applyState(showMessage) {
     this.spotLight.visible = true;
     this.currentIntensity = this.enabled ? this.defaultIntensity * (0.72 + Math.sqrt(this.batteryLevel) * 0.28) : 0;
-    this.spotLight.intensity = this.currentIntensity;
+    this.spotLight.intensity = this.currentIntensity * (this.game?.cinematicLightScale ?? 1);
     this.hud.setFlashlightEnabled(this.enabled);
     this.hud.setFlashlightBattery?.(this.batteryLevel, this.enabled);
 

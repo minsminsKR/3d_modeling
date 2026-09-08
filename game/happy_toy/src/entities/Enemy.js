@@ -93,7 +93,7 @@ export class Enemy {
 
   update(deltaTime, playerState) {
     if (this.isDormant) {
-      if (this.isBaby && !this.babyAwake) {
+      if (this.isBaby && !this.babyAwake && this.state !== "cutscene" && !playerState.isUndetectable) {
         const playerPosition = playerState.position || playerState;
         const distance = distance2D(this.group.position, playerPosition);
         const verticalDist = Math.abs((this.group.position.y ?? -5.0) - (playerPosition.y ?? 0));
@@ -166,7 +166,13 @@ export class Enemy {
     this.collisionWorld.snapToValidSurface(this.group.position, { actorId: this.config.id });
 
     // Baby Crying / Awakening check
-    if (this.isBaby && !this.babyAwake) {
+    if (this.isBaby && !this.babyAwake && this.state !== "cutscene") {
+      if (playerState.isUndetectable) {
+        this.playAction("crying");
+        this.snapModelToGround(false);
+        this.caughtPlayer = false;
+        return;
+      }
       const distance = distance2D(this.group.position, playerPosition);
       const verticalDist = Math.abs((this.group.position.y ?? -5.0) - (playerPosition.y ?? 0));
       const sameFloor = verticalDist <= 2.0;

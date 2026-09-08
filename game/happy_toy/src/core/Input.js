@@ -133,6 +133,7 @@ function keyCodeToAlias(code) {
     Space: " ",
     Escape: "escape",
     Numpad0: "numpad0",
+    Backquote: "`",
   };
 
   return specialKeys[code] || null;

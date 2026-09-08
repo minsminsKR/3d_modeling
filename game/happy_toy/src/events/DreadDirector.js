@@ -52,7 +52,7 @@ export class DreadDirector {
     this.ritualProgress = 0;
     this.game.hud.setStatus("봉인이 시작됩니다. 제단 곁에서 6초를 버티십시오. 멀어지면 중단됩니다.", 5000);
     this.bell(110);
-    if (!this.game.testSafeMode) this.game.enemyManager.notifyNoiseEvent(this.game.finalExit.position, 24,
+    if (!(this.game.isInvincible ?? this.game.testSafeMode)) this.game.enemyManager.notifyNoiseEvent(this.game.finalExit.position, 24,
       { duration: 8, source: "altar", silentFeedback: true });
   }
 
@@ -88,7 +88,7 @@ export class DreadDirector {
       this.phase = "hunt";
       this.timer = this.finalReturn ? 28 : 16 + this.lastCount * 2;
       this.bell(73);
-      if (!g.testSafeMode) g.enemyManager.notifyNoiseEvent(this.anchor, 32, {
+      if (!(g.isInvincible ?? g.testSafeMode)) g.enemyManager.notifyNoiseEvent(this.anchor, 32, {
         duration: 10, source: "ritual", silentFeedback: true,
       });
     } else if (this.phase === "hunt" && this.timer <= 0) {
@@ -102,7 +102,7 @@ export class DreadDirector {
     if (this.phase === "hunt" && player.isSprinting && !player.isHidden && this.noiseCooldown <= 0) {
       this.noiseCooldown = 4;
       this.bell(330);
-      if (!g.testSafeMode) g.enemyManager.notifyNoiseEvent(player.position, 18, {
+      if (!(g.isInvincible ?? g.testSafeMode)) g.enemyManager.notifyNoiseEvent(player.position, 18, {
         duration: 5, source: "relic-rattle", silentFeedback: true,
       });
     }

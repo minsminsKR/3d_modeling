@@ -25,6 +25,7 @@ export class SoundManager {
     this.wasExhausted = false;
     this.noiseBuffers = {};
     this.ambientNodes = [];
+    this.babyCryNodes = null;
   }
 
   init() {
@@ -445,9 +446,96 @@ export class SoundManager {
         tone(980, 58, 0.88, 0.68, "sawtooth", -0.12, 0.15);
         tone(1040, 63, 0.84, 0.48, "square", 0.12, 0.12);
         break;
+      case "baby_cry_cut":
+        tone(740, 90, 0.07, 0.22, "square", -0.2, 0.08);
+        tone(180, 40, 0.12, 0.16, "sine", 0.1, 0.4);
+        break;
+      case "baby_wrong":
+        tone(1240, 70, 0.92, 0.58, "sawtooth", -0.16, 0.2);
+        tone(880, 46, 0.8, 0.42, "square", 0.18, 0.16);
+        tone(190, 28, 0.7, 0.3, "sine", 0, 0.55);
+        break;
       default:
         break;
     }
+  }
+
+  startBabyCry({ gain = 0.1, pan = 0 } = {}) {
+    this.stopBabyCry({ abrupt: true });
+    if (!this.initialized || !this.ctx) return;
+    this.resume();
+    const output = this.createPannedOutput(pan, 0.82);
+    const cryGain = this.ctx.createGain();
+    cryGain.gain.value = Math.max(0.0001, gain);
+
+    const osc = this.ctx.createOscillator();
+    osc.type = "sawtooth";
+    osc.frequency.value = 640;
+    const lfo = this.ctx.createOscillator();
+    lfo.type = "sine";
+    lfo.frequency.value = 4.6;
+    const lfoGain = this.ctx.createGain();
+    lfoGain.gain.value = 92;
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+
+    const wobble = this.ctx.createOscillator();
+    wobble.frequency.value = 0.35;
+    const wobbleGain = this.ctx.createGain();
+    wobbleGain.gain.value = 0.35;
+    const sob = this.ctx.createOscillator();
+    sob.type = "triangle";
+    sob.frequency.value = 1180;
+    wobble.connect(wobbleGain);
+    wobbleGain.connect(sob.frequency);
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = "bandpass";
+    filter.frequency.value = 1480;
+    filter.Q.value = 2.4;
+    const sobGain = this.ctx.createGain();
+    sobGain.gain.value = 0.22;
+
+    osc.connect(filter);
+    filter.connect(cryGain);
+    sob.connect(sobGain);
+    sobGain.connect(cryGain);
+    cryGain.connect(output);
+    osc.start();
+    lfo.start();
+    wobble.start();
+    sob.start();
+    this.babyCryNodes = { osc, lfo, wobble, sob, cryGain };
+  }
+
+  setBabyCryGain(value) {
+    if (!this.babyCryNodes?.cryGain || !this.ctx) return;
+    const next = Math.max(0.0001, value);
+    this.babyCryNodes.cryGain.gain.setTargetAtTime(next, this.ctx.currentTime, 0.06);
+  }
+
+  stopBabyCry({ abrupt = false } = {}) {
+    if (!this.babyCryNodes) return;
+    const { osc, lfo, wobble, sob, cryGain } = this.babyCryNodes;
+    const now = this.ctx?.currentTime ?? 0;
+    try {
+      if (abrupt) {
+        cryGain.gain.setValueAtTime(0.0001, now);
+        osc.stop(now + 0.03);
+        lfo.stop(now + 0.03);
+        wobble.stop(now + 0.03);
+        sob.stop(now + 0.03);
+      } else {
+        cryGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+        osc.stop(now + 0.38);
+        lfo.stop(now + 0.38);
+        wobble.stop(now + 0.38);
+        sob.stop(now + 0.38);
+      }
+    } catch (_error) {
+      // already stopped
+    }
+    this.babyCryNodes = null;
   }
 
   playBell(frequency, pan) {

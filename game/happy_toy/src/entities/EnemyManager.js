@@ -130,15 +130,27 @@ export class EnemyManager {
     if (!enabled) {
       return;
     }
+    this.breakAggro();
+  }
 
+  breakAggro() {
     for (const enemy of this.enemies) {
-      enemy.beginWander();
       enemy.caughtPlayer = false;
       enemy.cabinetTarget = null;
-      enemy.chasePath = [];
-      enemy.chasePathTimer = 0;
-      enemy.chasePathGoal = null;
       enemy.lastDetectionEvent = null;
+      enemy.memoryTimer = 0;
+      enemy.lastKnownPlayerPosition = null;
+      enemy.sightExposure = 0;
+      enemy.hasVisualContact = false;
+      if (enemy.state === "cutscene" || enemy.isDormant) {
+        continue;
+      }
+      if (enemy.isBaby && !enemy.babyAwake) {
+        enemy.state = "crying";
+        enemy.playAction("crying");
+        continue;
+      }
+      enemy.beginWander();
       enemy.playAction("patrol");
     }
   }
