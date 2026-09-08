@@ -20,7 +20,9 @@ try {
     const baby = game.enemyManager.enemies.find((enemy) => enemy.isBaby);
     const intro = game.monsterIntroManager.events.find((event) => event.constructor.name === "BabyIntroEvent");
     const spawn = baby.group.position.toArray();
-    const basementSpawn = Math.abs(spawn[1] + 5) < 0.6 && Math.abs(spawn[0] + 3.5) < 0.35 && Math.abs(spawn[2] - 28.5) < 0.35;
+    const basementSpawn = Math.abs(spawn[1] + 5) < 0.6
+      && Math.abs(spawn[0] + 3.5) < 0.2
+      && Math.abs(spawn[2] - 28.5) < 0.2;
 
     game.flashlightController.enabled = true;
     game.player.position.set(-3.5, 0, 28.5);
@@ -29,7 +31,8 @@ try {
     baby.babyAwake = false;
     baby.state = "crying";
     baby.update(0.1, { position: game.player.position, isSprinting: false, isHidden: false });
-    const upperCannotWake = baby.isDormant && !baby.babyAwake;
+    intro.checkTrigger();
+    const upperCannotWake = baby.isDormant && !baby.babyAwake && intro.hasTriggered === false;
 
     game.player.position.set(14.5, -5, 32);
     intro.checkTrigger();

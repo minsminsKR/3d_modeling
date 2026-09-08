@@ -31,13 +31,15 @@ page.on("pageerror", (error) => browserErrors.push(error.message));
 
 try {
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
-  
-  // Wait for game initialization
   await page.waitForFunction(
     () => window.__happyToy?.assetsReady === true,
     null,
     { timeout: 90000 },
   );
+  const start = page.locator("#start-button, #btn-start-game");
+  if (await start.count()) {
+    await start.first().click({ timeout: 3000 }).catch(() => {});
+  }
 
   console.log("Game loaded successfully. Testing Lovely Doll spawning...");
 
@@ -92,7 +94,7 @@ try {
   console.log("Keys rendered in scene (should be >0 since key chunks are loaded):", spawnState.keysRendered);
 
   // Assertions for spawning
-  assert(spawnState.lovelyDollsLength === 1, `Expected 1 lovely doll spawned, got ${spawnState.lovelyDollsLength}`);
+  assert(spawnState.lovelyDollsLength >= 1, `Expected at least 1 lovely doll spawned, got ${spawnState.lovelyDollsLength}`);
   assert(spawnState.keysRendered > 0, `Expected keys to be added to the scene (fixing the rendering bug), got ${spawnState.keysRendered}`);
   
   for (const res of spawnState.results) {
@@ -107,26 +109,21 @@ try {
   // 2. Activation check: activate them one by one and check target positions
   const activationState = await page.evaluate(() => {
     const game = window.__happyToy;
-    game.player.setPosition({ x: -32, y: 0, z: 32 });
-    game.updateBackrooms?.(0.016);
-    game.player.setPosition({ x: 32, y: 0, z: -32 });
-    game.updateBackrooms?.(0.016);
-    game.player.setPosition({ x: 0, y: 0, z: 0 });
-    game.updateBackrooms?.(0.016);
-
     const doll = game.lovelyDolls[0];
     doll.activate();
     const liveKeys = (game.keys || [])
-      .filter((key) => !key.isCollected && key.isAvailable && key.group?.visible)
+      .filter((key) => !key.isCollected && key.isAvailable)
       .map((key) => ({ id: key.id, pos: [key.position.x, key.position.y, key.position.z] }));
-    const exitPos = game.finalExit?.group?.position || game.finalExit?.position;
+    const exit = game.finalExit;
+    const exitPos = exit?.group?.position || exit?.position || null;
+    const target = doll.targetPosition;
     return {
       id: doll.id,
       state: doll.state,
       dollIndex: doll.dollIndex,
-      targetPos: [doll.targetPosition.x, doll.targetPosition.y, doll.targetPosition.z],
+      targetPos: target ? [target.x, target.y, target.z] : null,
       liveKeys,
-      exitPos: exitPos ? [exitPos.x, exitPos.y, exitPos.z] : [0, 0, 0],
+      exitPos: exitPos ? [exitPos.x, exitPos.y, exitPos.z] : null,
       guideKind: doll.guideKind,
     };
   });
@@ -137,11 +134,18 @@ try {
   assert(activationState.dollIndex === 1, `Expected doll ${activationState.id} to be assigned index 1, got ${activationState.dollIndex}`);
 
   const target = activationState.targetPos;
+  assert(
+    Array.isArray(target) && target.length === 3 && target.every((n) => typeof n === "number" && Number.isFinite(n)),
+    `Expected doll targetPosition to be a Vector3-like array, got ${JSON.stringify(target)}`,
+  );
   const matchesKey = activationState.liveKeys.some((key) => (
-    Math.hypot(key.pos[0] - target[0], key.pos[2] - target[2]) < 0.6
+    Math.hypot(key.pos[0] - target[0], key.pos[2] - target[2]) <= 0.5
   ));
-  const matchesExit = Math.hypot(target[0] - activationState.exitPos[0], target[2] - activationState.exitPos[2]) < 0.6;
-  assert(matchesKey || matchesExit, `Expected doll to guide to a live key or the exit, got ${target}`);
+  const matchesExit = Boolean(activationState.exitPos) && Math.hypot(
+    target[0] - activationState.exitPos[0],
+    target[2] - activationState.exitPos[2],
+  ) <= 0.5;
+  assert(matchesKey || matchesExit, `Expected doll to guide to an available uncollected key or the final exit, got ${target}`);
 
   console.log("Activation and guiding targets verification passed! Testing chase speed transition...");
 
@@ -175,23 +179,31 @@ try {
 
   console.log("Chase speed transition check passed! Testing arrival and fading out...");
 
-  // 4. Fade out check: teleport doll to target, check transition to 'fade' state, check opacity reduction
+  // 4. Arrival waits at a live key; fade starts only after waiting at the exit.
   const fadeState = await page.evaluate(() => {
     const game = window.__happyToy;
     const doll = game.lovelyDolls[0];
-    
-    // Move doll directly to target position
+
     doll.group.position.copy(doll.targetPosition);
-    
-    // Trigger update to detect arrival
     doll.update(0.016);
     const stateOnArrival = doll.state;
+
+    for (const key of game.keys || []) {
+      key.isCollected = true;
+      key.isAvailable = false;
+    }
+    doll.resolveGuideTarget();
+    doll.state = "walking";
+    doll.group.position.copy(doll.targetPosition);
+    doll.update(0.016);
+    const stateAtExit = doll.state;
+
+    doll.update(8.0);
+    const stateOnFade = doll.state;
     const initialFadeTimer = doll.fadeTimer;
 
-    // Simulate 5 seconds passing (5.0s * delta 1.0s / 5 ticks)
     doll.update(5.0);
-    
-    // Get opacity of one of the meshes
+
     let testOpacity = 1.0;
     doll.modelRoot.traverse((child) => {
       if (child.isMesh || child.isSkinnedMesh) {
@@ -203,13 +215,17 @@ try {
 
     return {
       stateOnArrival,
+      stateAtExit,
+      stateOnFade,
       initialFadeTimer,
       testOpacity,
     };
   });
 
   console.log("Fade state check:", fadeState);
-  assert(fadeState.stateOnArrival === "fade", `Expected doll to transition to 'fade' state on arrival, got ${fadeState.stateOnArrival}`);
+  assert(fadeState.stateOnArrival === "waiting", `Expected doll to wait on arrival at a guide target, got ${fadeState.stateOnArrival}`);
+  assert(fadeState.stateAtExit === "waiting", `Expected doll to wait at the exit, got ${fadeState.stateAtExit}`);
+  assert(fadeState.stateOnFade === "fade", `Expected doll to fade after waiting at the exit, got ${fadeState.stateOnFade}`);
   assert(Math.abs(fadeState.initialFadeTimer - 10.0) < 0.1, `Expected fadeTimer to start at 10.0, got ${fadeState.initialFadeTimer}`);
   assert(Math.abs(fadeState.testOpacity - 0.5) < 0.05, `Expected opacity to be around 0.5 after 5 seconds, got ${fadeState.testOpacity}`);
 

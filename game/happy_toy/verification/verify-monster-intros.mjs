@@ -26,6 +26,10 @@ page.on('console', msg => { if (msg.type() === 'error') browserErrors.push(msg.t
 try {
   await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
   await page.waitForFunction(() => window.__happyToy?.assetsReady === true, null, { timeout: 90000 });
+  const start = page.locator("#start-button, #btn-start-game");
+  if (await start.count()) {
+    await start.first().click({ timeout: 3000 }).catch(() => {});
+  }
 
 
   console.log("Game loaded. Testing Cyclopse Intro Event...");
@@ -71,6 +75,10 @@ try {
     const game = window.__happyToy;
     const babyEvent = game.monsterIntroManager.events.find(e => e.constructor.name === "BabyIntroEvent");
 
+    game.player.setPosition({ x: -0.2, y: 0.0, z: 30.0 });
+    babyEvent.update(0.016);
+    const floor1Triggered = babyEvent.hasTriggered;
+
     game.player.setPosition({ x: 14.5, y: -5.0, z: 32.0 });
     babyEvent.update(0.016);
     const stairTriggered = babyEvent.hasTriggered;
@@ -79,6 +87,7 @@ try {
     babyEvent.update(0.016);
 
     return {
+      floor1Triggered,
       stairTriggered,
       triggered: babyEvent.hasTriggered,
       state: babyEvent.state,
@@ -86,7 +95,8 @@ try {
     };
   });
 
-  assert(!babyTest.stairTriggered, "BabyIntroEvent must not trigger on the B1 stair shaft");
+  assert(!babyTest.floor1Triggered, "BabyIntroEvent must not trigger on 1F (Y=0)");
+  assert(!babyTest.stairTriggered, "BabyIntroEvent must not trigger on the B1 stair shaft (14.5, -5, 32)");
   assert(babyTest.triggered, "Expected BabyIntroEvent to trigger inside the crib room near (-0.2, -5.0, 30.0)");
   assert(babyTest.locked, "Expected BabyIntroEvent to lock player control during cutscene");
   console.log("Baby Intro Event PASSED!", babyTest);
