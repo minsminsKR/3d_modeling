@@ -214,11 +214,13 @@ try {
 
     // 1. Directly below the 2F trigger on 1F — must not fire.
     game.player.setPosition({ x: -31.0, y: 0.0, z: -22.0 });
+    game.updateBackrooms?.(0.016);
     hwacatEvent.update(0.016);
     const triggeredOn1F = hwacatEvent.hasTriggered;
 
     // 2. On 2F at the trigger — must fire.
     game.player.setPosition({ x: -31.0, y: 5.0, z: -22.0 });
+    game.updateBackrooms?.(0.016);
     hwacatEvent.update(0.016);
     const triggeredOn2F = hwacatEvent.hasTriggered;
     const stateAfterTrigger = hwacatEvent.state;
@@ -238,7 +240,7 @@ try {
   // Wait and step through painting drop and Hwacat sequence
   console.log("Stepping through Hwacat sequence (painting drop -> stand up -> dance -> transform)...");
   let angryAndKeyReady = false;
-  for (let step = 0; step < 15; step++) {
+  for (let step = 0; step < 28; step++) {
     await page.evaluate(() => {
       const game = window.__happyToy;
       const hwacatEvent = game.mirrorEvents[0];
