@@ -61,11 +61,19 @@ export class LovelyDoll {
     }
     
     this.currentActionName = null;
-    this.state = "dance"; // "dance", "walking", "run", "fade"
+    this.state = "dance"; // "dance", "waiting", "walking", "run", "fade"
     this.isActivated = false;
     this.lookTimer = 0; // Cumulative time player stared at it
     this.fadeTimer = 0;
     this.dollIndex = 0; // Order index when activated (1-5)
+
+    this.guideLight = null;
+    this.hasWoken = false;
+    this.guideTargetKeyId = null;
+    this.waitTimer = 0;
+    this.retargetTimer = 0;
+    this.guideKind = null;
+    this.chaseHintShown = false;
     
     this.path = null;
     this.pathTimer = 0;
@@ -87,6 +95,19 @@ export class LovelyDoll {
       previousAction.fadeOut(fadeSeconds);
     }
     this.currentActionName = name;
+  }
+
+  wakeUp() {
+    if (this.hasWoken) {
+      return;
+    }
+    this.hasWoken = true;
+    this.playAction("dance");
+    this.guideLight = new THREE.PointLight(0xffc89a, 2.4, 7.5, 1.6);
+    this.guideLight.position.set(0, 1.05, 0);
+    this.guideLight.castShadow = false;
+    this.group.add(this.guideLight);
+    this.hud.setStatus("작은 인형이 고개를 끄덕입니다. 눈을 맞추면 함께 길을 찾아줍니다.", 4000);
   }
 
   getLowestGroundPoint() {
@@ -150,6 +171,8 @@ export class LovelyDoll {
 
     if (this.state === "dance" && !this.isActivated) {
       this.updateActivation(deltaTime);
+    } else if (this.state === "waiting") {
+      this.updateWaiting(deltaTime);
     } else if (this.state === "walking" || this.state === "run") {
       this.updateMovement(deltaTime);
     } else if (this.state === "fade") {
@@ -190,15 +213,14 @@ export class LovelyDoll {
     const toDoll = checkPoint.clone().sub(this.game.camera.position).normalize();
     const gazeDot = cameraDir.dot(toDoll);
     
-    const isStaring = inFrustum && hasLos && (gazeDot > 0.85);
+    const isStaring = inFrustum && hasLos && (gazeDot > 0.72);
 
     if (isStaring) {
       this.lookTimer += deltaTime;
-      // Display progress status on the HUD
-      const progress = Math.min(100, Math.floor((this.lookTimer / 5.0) * 100));
-      this.hud.setStatus(`러블리 돌과 반응 중... (${progress}%)`, 200);
+      const progress = Math.min(100, Math.floor((this.lookTimer / 2.0) * 100));
+      this.hud.setStatus(`인형이 길을 기억합니다... (${progress}%)`, 200);
       
-      if (this.lookTimer >= 5.0) {
+      if (this.lookTimer >= 2.0) {
         this.activate();
       }
     } else {
@@ -207,50 +229,98 @@ export class LovelyDoll {
   }
 
   activate() {
+    this.wakeUp();
     this.isActivated = true;
     this.game.dollCountFound += 1;
     this.dollIndex = this.game.dollCountFound;
     this.game.spawnedDollIds.add(this.id);
 
-    // Determine target position based on index
-    // Key 1: (32, 0, 32)
-    // Key 2: (-32, 0, 32)
-    // Key 3: (32, 0, -32)
-    // Key 4: (-32, 0, -32)
-    // Key 5: (0, 0, 0) (Exit)
-    if (this.dollIndex === 1) {
-      this.targetPosition = new THREE.Vector3(32, 0, 32);
-      this.hud.setStatus(`러블리 돌이 깨어났습니다! 첫 번째 열쇠가 있는 곳으로 안내합니다.`, 3000);
-    } else if (this.dollIndex === 2) {
-      this.targetPosition = new THREE.Vector3(-32, 0, 32);
-      this.hud.setStatus(`러블리 돌이 깨어났습니다! 두 번째 열쇠가 있는 곳으로 안내합니다.`, 3000);
-    } else if (this.dollIndex === 3) {
-      this.targetPosition = new THREE.Vector3(32, 0, -32);
-      this.hud.setStatus(`러블리 돌이 깨어났습니다! 세 번째 열쇠가 있는 곳으로 안내합니다.`, 3000);
-    } else if (this.dollIndex === 4) {
-      this.targetPosition = new THREE.Vector3(-32, 0, -32);
-      this.hud.setStatus(`러블리 돌이 깨어났습니다! 네 번째 열쇠가 있는 곳으로 안내합니다.`, 3000);
+    const result = this.resolveGuideTarget();
+    if (result.kind === "key") {
+      this.hud.setStatus(`인형이 ${result.label} 쪽으로 안내하기 시작합니다.`, 3000);
     } else {
-      this.targetPosition = new THREE.Vector3(0, 0, 0);
-      this.hud.setStatus(`러블리 돌이 깨어났습니다! 탈출을 위한 장난감 상자로 안내합니다.`, 3000);
+      this.hud.setStatus("인형이 출구 상자로 안내합니다.", 3000);
     }
 
     this.state = "walking";
     this.playAction("walking", 0.3);
   }
 
+  resolveGuideTarget() {
+    const dollPos = this.group.position;
+    const keys = (this.game.keys || []).filter((key) => (
+      !key.isCollected && key.isAvailable && key.group?.visible
+    ));
+    const sameFloor = keys.filter((key) => Math.abs(key.position.y - dollPos.y) < 2.2);
+    const pool = sameFloor.length > 0 ? sameFloor : keys.slice();
+    pool.sort((a, b) => {
+      const distA = Math.hypot(a.position.x - dollPos.x, a.position.z - dollPos.z);
+      const distB = Math.hypot(b.position.x - dollPos.x, b.position.z - dollPos.z);
+      return distA - distB;
+    });
+
+    let result;
+    if (pool.length > 0) {
+      const key = pool[0];
+      result = {
+        position: key.position.clone(),
+        keyId: key.id,
+        label: key.label,
+        kind: "key",
+      };
+    } else {
+      const exit = this.game.finalExit;
+      const exitPos = exit?.group?.position || exit?.position || new THREE.Vector3(0, 0, 0);
+      result = {
+        position: exitPos.clone ? exitPos.clone() : new THREE.Vector3(exitPos.x, exitPos.y, exitPos.z),
+        keyId: null,
+        label: "장난감 상자",
+        kind: "exit",
+      };
+    }
+
+    this.targetPosition = result.position.clone();
+    this.guideTargetKeyId = result.keyId;
+    this.guideKind = result.kind;
+    this.path = null;
+    this.pathTimer = 0;
+    return result;
+  }
+
+  isGuideKeyPresent() {
+    if (this.guideKind !== "key" || !this.guideTargetKeyId || !this.game.keys) {
+      return false;
+    }
+    const key = this.game.keys.find((item) => item.id === this.guideTargetKeyId);
+    return Boolean(key && !key.isCollected && key.isAvailable && key.group?.visible);
+  }
+
   updateMovement(deltaTime) {
+    this.retargetTimer -= deltaTime;
+    if (this.retargetTimer <= 0) {
+      this.retargetTimer = 1.2;
+      if (this.guideKind === "key" && !this.isGuideKeyPresent()) {
+        this.resolveGuideTarget();
+      }
+    }
+
     if (!this.targetPosition) return;
-    const goal = this.targetPosition;
+    let goal = this.targetPosition;
     
     const distToGoal = Math.hypot(this.group.position.x - goal.x, this.group.position.z - goal.z);
-    if (distToGoal < 1.8) {
-      // Arrived!
-      this.state = "fade";
-      this.playAction("dance", 0.3);
-      this.fadeTimer = 10.0;
-      this.hud.setStatus("러블리 돌이 안내를 마치고 사라집니다.", 3000);
-      return;
+    if (distToGoal < 2.0) {
+      if (this.guideKind === "key" && !this.isGuideKeyPresent()) {
+        this.resolveGuideTarget();
+        goal = this.targetPosition;
+      } else {
+        this.state = "waiting";
+        this.playAction("dance", 0.3);
+        this.waitTimer = 0;
+        if (this.guideKind === "key") {
+          this.hud.setStatus("여기예요. 열쇠를 주우면 다음 곳으로 안내할게요.", 3000);
+        }
+        return;
+      }
     }
 
     this.pathTimer -= deltaTime;
@@ -264,7 +334,7 @@ export class LovelyDoll {
       if (this.path === null || this.pathTimer <= 0) {
         this.path = this.collisionWorld.findPath(this.group.position, goal, 0.35, {
           cellSize: 0.85,
-          allowInterFloor: false,
+          allowInterFloor: true,
         });
         this.pathTimer = 0.4 + Math.random() * 0.2;
       }
@@ -275,11 +345,18 @@ export class LovelyDoll {
       target = (this.path && (this.path[1] || this.path[0])) || goal;
     }
 
-    // Check player chase
     const isChased = this.game.enemyManager && this.game.enemyManager.enemies.some(e => e.state === "chase");
-    const speed = isChased ? 4.2 : 1.8;
+    const speed = isChased ? 4.2 : 1.9;
     this.state = isChased ? "run" : "walking";
     this.playAction(isChased ? "run" : "walking");
+    if (isChased) {
+      if (!this.chaseHintShown) {
+        this.chaseHintShown = true;
+        this.hud.setStatus("같이 뛰어요!", 1800);
+      }
+    } else {
+      this.chaseHintShown = false;
+    }
 
     // Move
     const direction = new THREE.Vector3(target.x - this.group.position.x, 0, target.z - this.group.position.z);
@@ -298,6 +375,46 @@ export class LovelyDoll {
         { actorId: this.id },
       );
       this.group.rotation.y = Math.atan2(direction.x, direction.z);
+    }
+  }
+
+  updateWaiting(deltaTime) {
+    this.playAction("dance");
+    this.waitTimer += deltaTime;
+
+    if (this.guideKind === "key") {
+      if (!this.isGuideKeyPresent()) {
+        const result = this.resolveGuideTarget();
+        this.state = "walking";
+        this.playAction("walking", 0.3);
+        if (result.kind === "key") {
+          this.hud.setStatus(`인형이 ${result.label} 쪽으로 안내하기 시작합니다.`, 3000);
+        } else {
+          this.hud.setStatus("인형이 출구 상자로 안내합니다.", 3000);
+        }
+        return;
+      }
+
+      if (this.game.player) {
+        const playerPos = this.game.player.position;
+        const distToPlayer = Math.hypot(
+          this.group.position.x - playerPos.x,
+          this.group.position.z - playerPos.z,
+        );
+        if (distToPlayer > 14) {
+          this.resolveGuideTarget();
+          this.state = "walking";
+          this.playAction("walking", 0.3);
+        }
+      }
+      return;
+    }
+
+    if (this.guideKind === "exit" && this.waitTimer >= 8) {
+      this.state = "fade";
+      this.playAction("dance", 0.3);
+      this.fadeTimer = 10.0;
+      this.hud.setStatus("안내를 마쳤어요. 조심히 가요.", 3000);
     }
   }
 
@@ -326,6 +443,9 @@ export class LovelyDoll {
   }
 
   setOpacity(opacity) {
+    if (this.guideLight) {
+      this.guideLight.intensity = 2.4 * opacity;
+    }
     if (this.shadowMesh && this.shadowMesh.material) {
       this.shadowMesh.material.opacity = opacity;
       this.shadowMesh.material.needsUpdate = true;
@@ -352,6 +472,11 @@ export class LovelyDoll {
   }
 
   dispose() {
+    if (this.guideLight) {
+      this.group.remove(this.guideLight);
+      this.guideLight.dispose();
+      this.guideLight = null;
+    }
     this.game.scene.remove(this.group);
     if (this.shadowMesh) {
       this.shadowMesh.geometry?.dispose();
