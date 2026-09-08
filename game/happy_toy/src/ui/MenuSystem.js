@@ -70,6 +70,7 @@ export class MenuSystem {
               <span><b>F</b> 손전등 ON/OFF</span>
               <span><b>E</b> 문/열쇠/캐비넷/아이템 상호작용</span>
               <span><b>Q / 1~4</b> 폭죽 투척 & 아이템 사용</span>
+              <span><b>\`</b> 무적/투명 모드</span>
               <span><b>Esc</b> 일시정지 메뉴</span>
             </div>
           </div>
