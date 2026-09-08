@@ -178,11 +178,11 @@ export class Game {
 
     const hwacat2FGalleryConfig = {
       id: "hwacat-mirror-event",
-      triggerPosition: [-19.0, 5.0, -16.0],
-      triggerRadius: 2.2,
-      spawnPosition: [-22.5, 5.0, -16.0],
+      triggerPosition: [-31.0, 5.0, -22.0],
+      triggerRadius: 2.4,
+      spawnPosition: [-35.5, 5.0, -22.0],
       spawnYaw: Math.PI / 2,
-      lookAtPosition: [-22.5, 6.2, -16.0],
+      lookAtPosition: [-35.5, 6.2, -22.0],
       cameraDuration: 1.25,
       cameraBackStep: 0.6,
       cameraLift: 0.05,
@@ -193,7 +193,7 @@ export class Game {
       safePauseSeconds: 0.15,
       paintingId: "upper-hwa-painting",
       paintingDropSeconds: 0.75,
-      paintingDropTargetPosition: [-22.5, 5.08, -16.0],
+      paintingDropTargetPosition: [-35.5, 5.08, -22.0],
       paintingDropTargetRotation: [-Math.PI / 2, 0, 0.08],
       rewardKeyId: "key-hwacat",
     };
@@ -225,31 +225,28 @@ export class Game {
   setupLighting() {
     const ambient = new THREE.AmbientLight(
       LIGHTING_CONFIG.ambientColor,
-      Math.max(LIGHTING_CONFIG.ambientIntensity, 0.22),
+      LIGHTING_CONFIG.ambientIntensity,
     );
     this.scene.add(ambient);
 
-    // A low, warm visibility floor stands in for indirect bounce light. It
-    // preserves flashlight contrast while keeping floors and nearby silhouettes
-    // readable on ordinary displays with crushed blacks.
-    const visibilityFill = new THREE.AmbientLight(0x503722, 0.26);
+    const visibilityFill = new THREE.AmbientLight(0x7a5636, 0.3);
     this.scene.add(visibilityFill);
 
     const lowAmbient = new THREE.HemisphereLight(
-      new THREE.Color(LIGHTING_CONFIG.hemisphereSkyColor).lerp(new THREE.Color(0x8a6d4d), 0.46),
-      new THREE.Color(LIGHTING_CONFIG.hemisphereGroundColor).lerp(new THREE.Color(0x483225), 0.38),
-      Math.max(LIGHTING_CONFIG.hemisphereIntensity, 0.62),
+      new THREE.Color(LIGHTING_CONFIG.hemisphereSkyColor),
+      new THREE.Color(LIGHTING_CONFIG.hemisphereGroundColor),
+      LIGHTING_CONFIG.hemisphereIntensity,
     );
     this.scene.add(lowAmbient);
 
 
     this.flashlight = new THREE.SpotLight(
       LIGHTING_CONFIG.flashlightColor,
-      LIGHTING_CONFIG.flashlightIntensity * 1.55,
-      Math.max(LIGHTING_CONFIG.flashlightRange, 42),
-      Math.max(LIGHTING_CONFIG.flashlightAngle, Math.PI * 0.36),
-      Math.max(LIGHTING_CONFIG.flashlightPenumbra, 0.7),
-      2.0,
+      LIGHTING_CONFIG.flashlightIntensity,
+      LIGHTING_CONFIG.flashlightRange,
+      LIGHTING_CONFIG.flashlightAngle,
+      LIGHTING_CONFIG.flashlightPenumbra,
+      LIGHTING_CONFIG.flashlightDecay ?? 1.15,
     );
     this.flashlight.position.set(0.12, -0.08, 0.1);
     this.flashlight.target.position.set(0, -0.32, -1);
@@ -257,7 +254,7 @@ export class Game {
     this.flashlight.shadow.mapSize.width = LIGHTING_CONFIG.flashlightShadowMapSize || 512;
     this.flashlight.shadow.mapSize.height = LIGHTING_CONFIG.flashlightShadowMapSize || 512;
     this.flashlight.shadow.camera.near = LIGHTING_CONFIG.flashlightShadowNear || 0.5;
-    this.flashlight.shadow.camera.far = LIGHTING_CONFIG.flashlightShadowFar || 40;
+    this.flashlight.shadow.camera.far = LIGHTING_CONFIG.flashlightShadowFar || 62;
     this.flashlight.shadow.bias = -0.00018;
     this.flashlight.shadow.normalBias = 0.035;
     this.flashlight.shadow.radius = 2.1;
@@ -265,6 +262,15 @@ export class Game {
     this.flashlight.visible = true;
     this.camera.add(this.flashlight);
     this.camera.add(this.flashlight.target);
+
+    this.flashlightFill = new THREE.PointLight(
+      LIGHTING_CONFIG.flashlightColor,
+      0,
+      LIGHTING_CONFIG.flashlightFillRange ?? 18,
+      1.05,
+    );
+    this.flashlightFill.position.set(0.05, -0.12, -0.35);
+    this.camera.add(this.flashlightFill);
     this.scene.add(this.camera);
 
     // Pre-allocate the fixed PointLight pool. All lights live in the scene permanently.

@@ -20,11 +20,11 @@ try {
     const baby = game.enemyManager.enemies.find((enemy) => enemy.isBaby);
     const intro = game.monsterIntroManager.events.find((event) => event.constructor.name === "BabyIntroEvent");
     const spawn = baby.group.position.toArray();
-    const basementSpawn = Math.abs(spawn[1] + 5) < 0.6 && Math.abs(spawn[0] - 10.5) < 0.2 && Math.abs(spawn[2] - 30) < 0.2;
+    const basementSpawn = Math.abs(spawn[1] + 5) < 0.6 && Math.abs(spawn[0] + 3.5) < 0.35 && Math.abs(spawn[2] - 28.5) < 0.35;
 
     game.flashlightController.enabled = true;
-    game.player.position.set(10.5, 0, 30);
-    game.camera.lookAt(10.5, -5, 30);
+    game.player.position.set(-3.5, 0, 28.5);
+    game.camera.lookAt(-3.5, -5, 28.5);
     baby.setDormant(true);
     baby.babyAwake = false;
     baby.state = "crying";
@@ -33,8 +33,15 @@ try {
 
     game.player.position.set(14.5, -5, 32);
     intro.checkTrigger();
+    const ignoredStairShaft = intro.hasTriggered === false;
+
+    game.player.position.set(-0.2, -5, 30);
+    intro.checkTrigger();
+    const framedInsideRoom = Math.abs(intro.holdCameraPos.x + 0.4) < 0.05
+      && Math.abs(intro.holdCameraPos.z - 31.0) < 0.05;
     const triggeredInBasement = intro.hasTriggered && intro.state === "cutscene"
-      && !baby.isDormant && Math.abs(baby.group.position.y + 5) < 0.6 && baby.state === "cutscene";
+      && !baby.isDormant && Math.abs(baby.group.position.y + 5) < 0.6 && baby.state === "cutscene"
+      && framedInsideRoom;
 
     intro.timer = 4.2;
     intro.update(0.016);
@@ -50,7 +57,7 @@ try {
 
     intro.timer = 7.6;
     intro.update(0.016);
-    const stingDist = Math.hypot(baby.group.position.x - 10.5, baby.group.position.z - 30);
+    const stingDist = Math.hypot(baby.group.position.x + 3.5, baby.group.position.z - 28.5);
     const sting = intro.getPhase() === "sting" && intro.stingPlayed && stingDist > 0.6 && game.cinematicLightScale < 0.2;
 
     intro.timer = 8.9;
@@ -74,7 +81,7 @@ try {
     const resetIntro = game.monsterIntroManager.events.find((event) => event.constructor.name === "BabyIntroEvent");
     const resetDormant = resetBaby.isDormant && !resetBaby.group.visible && resetIntro.state === "idle";
     return {
-      spawn, basementSpawn, upperCannotWake, triggeredInBasement,
+      spawn, basementSpawn, upperCannotWake, ignoredStairShaft, triggeredInBasement,
       silence, turning, sting, finished, ghostDoesNotWake, resetDormant,
     };
   });

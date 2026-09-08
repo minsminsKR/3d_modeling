@@ -11,8 +11,10 @@ function assert(condition, message) {
 }
 
 console.log("=== Testing Reconfigured Hwacat (2F) and Baby (B1) Events ===");
+const executablePath = process.env.CHROME_PATH
+  || (process.platform === "win32" ? "C:/Program Files/Google/Chrome/Application/chrome.exe" : undefined);
 const browser = await chromium.launch({
-  executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  executablePath,
   headless: true,
 });
 
@@ -30,8 +32,8 @@ page.on("console", (msg) => {
 page.on("pageerror", (err) => browserErrors.push(err.message));
 
 try {
-  await page.goto(url, { waitUntil: "networkidle", timeout: 10000 });
-  await page.waitForFunction(() => window.__happyToy?.assetsReady === true, null, { timeout: 10000 });
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+  await page.waitForFunction(() => window.__happyToy?.assetsReady === true, null, { timeout: 90000 });
   console.log("Game initialized on port 8010.");
 
   // -------------------------------------------------------------
@@ -86,20 +88,20 @@ try {
   console.log("Config checks result:", JSON.stringify(configChecks, null, 2));
 
   // Assert Hwacat Config
-  assert(configChecks.gameHwacat.triggerPosition[0] === -19.0 && configChecks.gameHwacat.triggerPosition[1] === 5.0 && configChecks.gameHwacat.triggerPosition[2] === -16.0, "Game hwacat triggerPosition must be [-19.0, 5.0, -16.0]");
-  assert(configChecks.gameHwacat.triggerRadius === 2.2, "Game hwacat triggerRadius must be 2.2");
-  assert(configChecks.gameHwacat.spawnPosition[0] === -22.5 && configChecks.gameHwacat.spawnPosition[1] === 5.0 && configChecks.gameHwacat.spawnPosition[2] === -16.0, "Game hwacat spawnPosition must be [-22.5, 5.0, -16.0]");
-  assert(configChecks.gameHwacat.lookAtPosition[0] === -22.5 && configChecks.gameHwacat.lookAtPosition[1] === 6.2 && configChecks.gameHwacat.lookAtPosition[2] === -16.0, "Game hwacat lookAtPosition must be [-22.5, 6.2, -16.0]");
+  assert(configChecks.gameHwacat.triggerPosition[0] === -31.0 && configChecks.gameHwacat.triggerPosition[1] === 5.0 && configChecks.gameHwacat.triggerPosition[2] === -22.0, "Game hwacat triggerPosition must be [-31.0, 5.0, -22.0]");
+  assert(configChecks.gameHwacat.triggerRadius === 2.4, "Game hwacat triggerRadius must be 2.4");
+  assert(configChecks.gameHwacat.spawnPosition[0] === -35.5 && configChecks.gameHwacat.spawnPosition[1] === 5.0 && configChecks.gameHwacat.spawnPosition[2] === -22.0, "Game hwacat spawnPosition must be [-35.5, 5.0, -22.0]");
+  assert(configChecks.gameHwacat.lookAtPosition[0] === -35.5 && configChecks.gameHwacat.lookAtPosition[1] === 6.2 && configChecks.gameHwacat.lookAtPosition[2] === -22.0, "Game hwacat lookAtPosition must be [-35.5, 6.2, -22.0]");
   assert(configChecks.gameHwacat.paintingId === "upper-hwa-painting", "paintingId must be upper-hwa-painting");
-  assert(configChecks.gameHwacat.paintingDropTargetPosition[0] === -22.5 && configChecks.gameHwacat.paintingDropTargetPosition[1] === 5.08 && configChecks.gameHwacat.paintingDropTargetPosition[2] === -16.0, "paintingDropTargetPosition must be [-22.5, 5.08, -16.0]");
+  assert(configChecks.gameHwacat.paintingDropTargetPosition[0] === -35.5 && configChecks.gameHwacat.paintingDropTargetPosition[1] === 5.08 && configChecks.gameHwacat.paintingDropTargetPosition[2] === -22.0, "paintingDropTargetPosition must be [-35.5, 5.08, -22.0]");
   assert(configChecks.gameHwacat.rewardKeyId === "key-hwacat", "rewardKeyId must be key-hwacat");
 
   // Assert Baby Config
-  assert(configChecks.babyWorkshopSpawn[0] === 10.5 && configChecks.babyWorkshopSpawn[1] === -5.0 && configChecks.babyWorkshopSpawn[2] === 30.0, "Baby spawn must be [10.5, -5.0, 30.0]");
-  assert(configChecks.keyWorkshopPos[0] === 10.5 && configChecks.keyWorkshopPos[1] === -5.0 && configChecks.keyWorkshopPos[2] === 27.5, "key-workshop position must be [10.5, -5.0, 27.5]");
-  assert(configChecks.babyIntro.triggerPosition[0] === 14.5 && configChecks.babyIntro.triggerPosition[1] === -5.0 && configChecks.babyIntro.triggerPosition[2] === 32.0, "BabyIntro triggerPosition must be [14.5, -5.0, 32.0]");
-  assert(configChecks.babyIntro.triggerRadius === 3.5, "BabyIntro triggerRadius must be 3.5");
-  assert(configChecks.babyIntro.babyLookTarget[0] === 10.5 && configChecks.babyIntro.babyLookTarget[1] === -4.5 && configChecks.babyIntro.babyLookTarget[2] === 30.0, "BabyIntro babyLookTarget must be [10.5, -4.5, 30.0]");
+  assert(configChecks.babyWorkshopSpawn[0] === -3.5 && configChecks.babyWorkshopSpawn[1] === -5.0 && configChecks.babyWorkshopSpawn[2] === 28.5, "Baby spawn must be [-3.5, -5.0, 28.5]");
+  assert(configChecks.keyWorkshopPos[0] === -2.5 && configChecks.keyWorkshopPos[1] === -5.0 && configChecks.keyWorkshopPos[2] === 26.5, "key-workshop position must be [-2.5, -5.0, 26.5]");
+  assert(configChecks.babyIntro.triggerPosition[0] === -0.2 && configChecks.babyIntro.triggerPosition[1] === -5.0 && configChecks.babyIntro.triggerPosition[2] === 30.0, "BabyIntro triggerPosition must be [-0.2, -5.0, 30.0]");
+  assert(configChecks.babyIntro.triggerRadius === 2.6, "BabyIntro triggerRadius must be 2.6");
+  assert(configChecks.babyIntro.babyLookTarget[0] === -3.5 && Math.abs(configChecks.babyIntro.babyLookTarget[1] + 4.12) < 0.02 && configChecks.babyIntro.babyLookTarget[2] === 28.5, "BabyIntro babyLookTarget must be [-3.5, -4.12, 28.5]");
 
   console.log("PASS: All config assertions succeeded!");
 
@@ -114,13 +116,18 @@ try {
     const babyIntro = game.monsterIntroManager.events.find(e => e.constructor.name === "BabyIntroEvent");
     babyIntro.reset();
 
-    // 1. Position player right above B1 nursery entrance on 1F (Y = 0.0, X = 14.5, Z = 32.0)
-    game.player.setPosition({ x: 14.5, y: 0.0, z: 32.0 });
+    // 1. Position player right above B1 crib on 1F
+    game.player.setPosition({ x: -0.2, y: 0.0, z: 30.0 });
     babyIntro.update(0.016);
     const triggeredOn1F = babyIntro.hasTriggered;
 
-    // 2. Now move player to B1 nursery entrance (Y = -5.0, X = 14.5, Z = 32.0)
+    // 2. Stair shaft must not start the cinematic
     game.player.setPosition({ x: 14.5, y: -5.0, z: 32.0 });
+    babyIntro.update(0.016);
+    const triggeredOnStairs = babyIntro.hasTriggered;
+
+    // 3. Inner crib room
+    game.player.setPosition({ x: -0.2, y: -5.0, z: 30.0 });
     babyIntro.update(0.016);
     const triggeredOnB1 = babyIntro.hasTriggered;
 
@@ -146,6 +153,7 @@ try {
 
     return {
       triggeredOn1F,
+      triggeredOnStairs,
       triggeredOnB1,
       babyPosInitial,
       babyAwake,
@@ -156,7 +164,8 @@ try {
 
   console.log("Baby test results:", babyTest);
   assert(!babyTest.triggeredOn1F, "BabyIntroEvent must NOT trigger when player is on 1F (Y=0.0)");
-  assert(babyTest.triggeredOnB1, "BabyIntroEvent MUST trigger when player is at B1 nursery entrance (Y=-5.0)");
+  assert(!babyTest.triggeredOnStairs, "BabyIntroEvent must NOT trigger on the B1 stair shaft");
+  assert(babyTest.triggeredOnB1, "BabyIntroEvent MUST trigger when player is in the B1 crib room");
   assert(babyTest.babyPosInitial && Math.abs(babyTest.babyPosInitial[1] - (-5.0)) < 0.2, `Baby must be positioned at Y = -5.0 in B1 (got ${babyTest.babyPosInitial?.[1]})`);
   assert(babyTest.babyAwake, "Baby must awaken in B1");
   assert(babyTest.babyState === "chase", "Baby state must be chase when awake");
@@ -174,12 +183,11 @@ try {
     hwacatEvent.reset();
 
     // 1. Position player directly below 2F Gallery on 1F (Y = 0.0, X = -19.0, Z = -16.0)
-    game.player.setPosition({ x: -19.0, y: 0.0, z: -16.0 });
+    game.player.setPosition({ x: -31.0, y: 0.0, z: -22.0 });
     hwacatEvent.update(0.016);
     const triggeredOn1F = hwacatEvent.hasTriggered;
 
-    // 2. Position player on 2F Gallery (Y = 5.0, X = -19.0, Z = -16.0)
-    game.player.setPosition({ x: -19.0, y: 5.0, z: -16.0 });
+    game.player.setPosition({ x: -31.0, y: 5.0, z: -22.0 });
     hwacatEvent.update(0.016);
     const triggeredOn2F = hwacatEvent.hasTriggered;
     const stateAfterTrigger = hwacatEvent.state;

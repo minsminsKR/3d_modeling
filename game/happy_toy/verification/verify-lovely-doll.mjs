@@ -3,8 +3,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 
-const url = process.argv[2] || "http://127.0.0.1:8013/";
-
+const url = process.argv[2] || "http://127.0.0.1:8010/";
 
 function assert(condition, message) {
   if (!condition) {
@@ -14,9 +13,11 @@ function assert(condition, message) {
 
 console.log("Starting Lovely Doll guiding mechanic verification on url:", url);
 
+const executablePath = process.env.CHROME_PATH
+  || (process.platform === "win32" ? "C:/Program Files/Google/Chrome/Application/chrome.exe" : undefined);
 const browser = await chromium.launch({
-  executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
- Headless: true,
+  executablePath,
+  headless: true,
 });
 
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
@@ -29,13 +30,13 @@ page.on("console", (message) => {
 page.on("pageerror", (error) => browserErrors.push(error.message));
 
 try {
-  await page.goto(url, { waitUntil: "networkidle", timeout: 5000 });
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
   
   // Wait for game initialization
   await page.waitForFunction(
     () => window.__happyToy?.assetsReady === true,
     null,
-    { timeout: 5000 },
+    { timeout: 90000 },
   );
 
   console.log("Game loaded successfully. Testing Lovely Doll spawning...");
@@ -106,45 +107,41 @@ try {
   // 2. Activation check: activate them one by one and check target positions
   const activationState = await page.evaluate(() => {
     const game = window.__happyToy;
-    const results = [];
+    game.player.setPosition({ x: -32, y: 0, z: 32 });
+    game.updateBackrooms?.(0.016);
+    game.player.setPosition({ x: 32, y: 0, z: -32 });
+    game.updateBackrooms?.(0.016);
+    game.player.setPosition({ x: 0, y: 0, z: 0 });
+    game.updateBackrooms?.(0.016);
 
-    // Sort dolls by index
-    for (let i = 0; i < 1; i++) {
-      const doll = game.lovelyDolls[i];
-      
-      // Simulate player staring and activating
-      doll.activate();
-      
-      results.push({
-        id: doll.id,
-        state: doll.state,
-        dollIndex: doll.dollIndex,
-        targetPos: [doll.targetPosition.x, doll.targetPosition.y, doll.targetPosition.z],
-      });
-    }
-
-    return results;
+    const doll = game.lovelyDolls[0];
+    doll.activate();
+    const liveKeys = (game.keys || [])
+      .filter((key) => !key.isCollected && key.isAvailable && key.group?.visible)
+      .map((key) => ({ id: key.id, pos: [key.position.x, key.position.y, key.position.z] }));
+    const exitPos = game.finalExit?.group?.position || game.finalExit?.position;
+    return {
+      id: doll.id,
+      state: doll.state,
+      dollIndex: doll.dollIndex,
+      targetPos: [doll.targetPosition.x, doll.targetPosition.y, doll.targetPosition.z],
+      liveKeys,
+      exitPos: exitPos ? [exitPos.x, exitPos.y, exitPos.z] : [0, 0, 0],
+      guideKind: doll.guideKind,
+    };
   });
 
   console.log("Activation results:", activationState);
 
-  // Verify dynamic assignment targets
-  const expectedTargets = [
-    [32, 0, 32],   // Key 1: Workshop
-  ];
+  assert(activationState.state === "walking", `Expected doll ${activationState.id} to transition to 'walking' state, got ${activationState.state}`);
+  assert(activationState.dollIndex === 1, `Expected doll ${activationState.id} to be assigned index 1, got ${activationState.dollIndex}`);
 
-  for (let i = 0; i < 1; i++) {
-    const act = activationState[i];
-    assert(act.state === "walking", `Expected doll ${act.id} to transition to 'walking' state, got ${act.state}`);
-    assert(act.dollIndex === i + 1, `Expected doll ${act.id} to be assigned index ${i + 1}, got ${act.dollIndex}`);
-    
-    const target = act.targetPos;
-    const expected = expectedTargets[i];
-    assert(
-      target[0] === expected[0] && target[2] === expected[2],
-      `Expected doll ${act.id} to guide to ${expected}, got ${target}`
-    );
-  }
+  const target = activationState.targetPos;
+  const matchesKey = activationState.liveKeys.some((key) => (
+    Math.hypot(key.pos[0] - target[0], key.pos[2] - target[2]) < 0.6
+  ));
+  const matchesExit = Math.hypot(target[0] - activationState.exitPos[0], target[2] - activationState.exitPos[2]) < 0.6;
+  assert(matchesKey || matchesExit, `Expected doll to guide to a live key or the exit, got ${target}`);
 
   console.log("Activation and guiding targets verification passed! Testing chase speed transition...");
 

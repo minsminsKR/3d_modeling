@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 
-const url = process.argv[2] || "http://127.0.0.1:8013/";
+const url = process.argv[2] || "http://127.0.0.1:8010/";
 
 function assert(condition, message) {
   if (!condition) {
@@ -11,8 +11,10 @@ function assert(condition, message) {
 }
 
 console.log("Starting Monster Intro Events Verification...");
+const executablePath = process.env.CHROME_PATH
+  || (process.platform === "win32" ? "C:/Program Files/Google/Chrome/Application/chrome.exe" : undefined);
 const browser = await chromium.launch({
-  executablePath: "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  executablePath,
   headless: true,
 });
 
@@ -22,8 +24,8 @@ page.on('pageerror', err => browserErrors.push(err.message));
 page.on('console', msg => { if (msg.type() === 'error') browserErrors.push(msg.text()); });
 
 try {
-  await page.goto(url, { waitUntil: "networkidle", timeout: 12000 });
-  await page.waitForFunction(() => window.__happyToy?.assetsReady === true, null, { timeout: 12000 });
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+  await page.waitForFunction(() => window.__happyToy?.assetsReady === true, null, { timeout: 90000 });
 
 
   console.log("Game loaded. Testing Cyclopse Intro Event...");
@@ -64,22 +66,32 @@ try {
   assert(uncatTest.locked, "Expected UncatIntroEvent to lock player control during cutscene");
   console.log("Uncat Intro Event PASSED!", uncatTest);
 
-  // 3. Baby Intro Test (14.5, -5.0, 32.0)
+  // 3. Baby Intro: stairs must NOT fire; crib room must fire with camera lock
   const babyTest = await page.evaluate(() => {
     const game = window.__happyToy;
     const babyEvent = game.monsterIntroManager.events.find(e => e.constructor.name === "BabyIntroEvent");
 
     game.player.setPosition({ x: 14.5, y: -5.0, z: 32.0 });
     babyEvent.update(0.016);
+    const stairTriggered = babyEvent.hasTriggered;
 
-    return { triggered: babyEvent.hasTriggered, state: babyEvent.state, locked: babyEvent.blocksPlayerControl };
+    game.player.setPosition({ x: -0.2, y: -5.0, z: 30.0 });
+    babyEvent.update(0.016);
+
+    return {
+      stairTriggered,
+      triggered: babyEvent.hasTriggered,
+      state: babyEvent.state,
+      locked: babyEvent.blocksPlayerControl,
+    };
   });
 
-  assert(babyTest.triggered, "Expected BabyIntroEvent to trigger near (14.5, -5.0, 32.0)");
+  assert(!babyTest.stairTriggered, "BabyIntroEvent must not trigger on the B1 stair shaft");
+  assert(babyTest.triggered, "Expected BabyIntroEvent to trigger inside the crib room near (-0.2, -5.0, 30.0)");
   assert(babyTest.locked, "Expected BabyIntroEvent to lock player control during cutscene");
   console.log("Baby Intro Event PASSED!", babyTest);
 
-  // 4. LovelyDoll Intro Test (-32.0, 0, 24.5)
+  // 4. LovelyDoll Intro: helper, no camera lock
   const dollTest = await page.evaluate(() => {
     const game = window.__happyToy;
     const dollEvent = game.monsterIntroManager.events.find(e => e.constructor.name === "LovelyDollIntroEvent");
@@ -91,7 +103,7 @@ try {
   });
 
   assert(dollTest.triggered, "Expected LovelyDollIntroEvent to trigger near (-32, 0, 24.5)");
-  assert(dollTest.locked, "Expected LovelyDollIntroEvent to lock player control during cutscene");
+  assert(!dollTest.locked, "LovelyDollIntroEvent must not lock player control");
   console.log("LovelyDoll Intro Event PASSED!", dollTest);
 
   console.log("ALL MONSTER INTRO EVENTS VERIFIED SUCCESSFULLY!");

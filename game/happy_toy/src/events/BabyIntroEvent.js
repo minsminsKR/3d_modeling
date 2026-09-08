@@ -29,10 +29,11 @@ export class BabyIntroEvent {
     this.isControlLocked = false;
     this.duration = PHASES.done;
 
-    this.triggerPosition = new THREE.Vector3(14.5, -5.0, 32.0);
-    this.triggerRadius = 3.5;
-    this.babyHome = new THREE.Vector3(10.5, -5.0, 30.0);
-    this.babyLookTarget = new THREE.Vector3(10.5, -4.15, 30.0);
+    this.triggerPosition = new THREE.Vector3(-0.2, -5.0, 30.0);
+    this.triggerRadius = 2.6;
+    this.babyHome = new THREE.Vector3(-3.5, -5.0, 28.5);
+    this.babyLookTarget = new THREE.Vector3(-3.5, -4.12, 28.5);
+    this.frameCameraPos = new THREE.Vector3(-0.4, -3.38, 31.0);
 
     this.startCameraPos = new THREE.Vector3();
     this.holdCameraPos = new THREE.Vector3();
@@ -114,8 +115,22 @@ export class BabyIntroEvent {
     if (this.hasTriggered || !this.game.player || this.game.player.isHidden) return;
 
     const playerPos = this.game.player.position;
-    const verticalDist = Math.abs(playerPos.y - this.triggerPosition.y);
-    if (verticalDist < 1.5 && distance2D(playerPos, this.triggerPosition) <= this.triggerRadius) {
+    const x = playerPos.x;
+    const y = playerPos.y;
+    const z = playerPos.z;
+
+    // B1 floor only — refuse stair treads / mid-flight height.
+    if (Math.abs(y + 5) >= 1.2) return;
+    // Still in the outer hall or stair approach east of the workshop.
+    if (x > 6) return;
+    // Past the west wall of the workshop.
+    if (x < -7.2) return;
+    // B1 stair shaft (x 14.8–17.2, z 29.5–36.5) plus a little padding.
+    if (x >= 14.4 && x <= 17.6 && z >= 28.8 && z <= 40.5) return;
+    // Stair landing above / north of the shaft.
+    if (x >= 14.4 && x <= 17.6 && z >= 36.2) return;
+
+    if (distance2D(playerPos, this.triggerPosition) <= this.triggerRadius) {
       this.triggerEvent();
     }
   }
@@ -159,11 +174,11 @@ export class BabyIntroEvent {
     this.startYaw = player.yaw;
     this.startPitch = player.pitch;
 
-    const lookDir = this.babyLookTarget.clone().sub(this.startCameraPos).normalize();
+    this.holdCameraPos.copy(this.frameCameraPos);
+    const lookDir = this.babyLookTarget.clone().sub(this.frameCameraPos).normalize();
     const rawTargetYaw = Math.atan2(-lookDir.x, -lookDir.z);
     this.targetYaw = this.startYaw + shortestAngleDelta(this.startYaw, rawTargetYaw);
     this.targetPitch = Math.asin(THREE.MathUtils.clamp(lookDir.y, -1, 1));
-    this.holdCameraPos.copy(this.startCameraPos).addScaledVector(lookDir, 1.15);
   }
 
   updateCutscene(deltaTime) {

@@ -1,6 +1,7 @@
 // 플레이어 손전등의 on/off 상태, 배터리 잔량, 깜빡임 연출을 관리하는 모듈입니다.
 
 import { soundManager } from "../audio/SoundManager.js";
+import { LIGHTING_CONFIG } from "../config/gameConfig.js";
 
 export class FlashlightController {
   constructor(spotLight, input, hud, game = null) {
@@ -51,6 +52,12 @@ export class FlashlightController {
       const blend = 1 - Math.exp(-deltaTime * (this.voltageDipTimer > 0 ? 20 : 9));
       this.currentIntensity += (targetIntensity - this.currentIntensity) * blend;
       this.spotLight.intensity = this.currentIntensity * (this.game?.cinematicLightScale ?? 1);
+      if (this.game?.flashlightFill) {
+        this.game.flashlightFill.intensity = this.enabled
+          ? (LIGHTING_CONFIG.flashlightFillIntensity ?? 12) * (0.72 + Math.sqrt(this.batteryLevel) * 0.28)
+            * (this.game?.cinematicLightScale ?? 1)
+          : 0;
+      }
 
       if (this.batteryLevel < 0.15 && !this.lowBatteryWarned) {
         this.lowBatteryWarned = true;
@@ -101,6 +108,11 @@ export class FlashlightController {
     this.spotLight.visible = true;
     this.currentIntensity = this.enabled ? this.defaultIntensity * (0.72 + Math.sqrt(this.batteryLevel) * 0.28) : 0;
     this.spotLight.intensity = this.currentIntensity * (this.game?.cinematicLightScale ?? 1);
+    if (this.game?.flashlightFill) {
+      this.game.flashlightFill.intensity = this.enabled
+        ? (LIGHTING_CONFIG.flashlightFillIntensity ?? 12) * (this.game?.cinematicLightScale ?? 1)
+        : 0;
+    }
     this.hud.setFlashlightEnabled(this.enabled);
     this.hud.setFlashlightBattery?.(this.batteryLevel, this.enabled);
 

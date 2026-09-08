@@ -573,11 +573,12 @@ export class BackroomsGenerator {
 
       // ====================================================
       // 2F Mirror & Painting Gallery (액자 사당 갤러리)
-      // Spans x from -23.8 to -14.8, z from -23.8 to -8.5 at Y = 5.0
+      // Expanded hall: west shrine room + outer gallery, not a closet.
+      // Spans x from -38.0 to -14.8, z from -36.0 to -8.5 at Y = 5.0
       // ====================================================
-      const galMinX = -23.8;
+      const galMinX = -38.0;
       const galMaxX = -14.8;
-      const galMinZ = -23.8;
+      const galMinZ = -36.0;
       const galMaxZ = -8.5;
       const galWestWingWidth = (f2StartX - rampHalfWidth) - galMinX; // 6.6m
       const galWestWingCenterX = (galMinX + (f2StartX - rampHalfWidth)) / 2; // -20.5
@@ -627,7 +628,40 @@ export class BackroomsGenerator {
       chunk.meshes.push(galWestMesh);
       this.collisionWorld.addStaticBox(galWestMesh.name, galWestMesh.position, new THREE.Vector3(0.4, 2.8, galLength + 0.4), chunkId);
 
-      // South Wall: at z = -8.5 spanning from x = -23.8 to -17.2 (6.6m wide)
+      // Inner shrine partition at x = -27.5 (doorway toward the painting at z ≈ -22)
+      const galInnerX = -27.5;
+      const galDoorMinZ = -23.2;
+      const galDoorMaxZ = -20.8;
+      const galInnerJambNLen = galDoorMinZ - galMinZ;
+      const galInnerJambNCenterZ = (galMinZ + galDoorMinZ) / 2;
+      const galInnerJambNGeo = this.getBoxGeometry(0.3, 2.8, galInnerJambNLen);
+      const galInnerJambN = new THREE.Mesh(galInnerJambNGeo, stairMat);
+      galInnerJambN.position.set(galInnerX, floorY + 6.4, galInnerJambNCenterZ);
+      galInnerJambN.castShadow = true;
+      galInnerJambN.name = `${chunkId}_gallery_2f_inner_jamb_n`;
+      this.scene.add(galInnerJambN);
+      chunk.meshes.push(galInnerJambN);
+      this.collisionWorld.addStaticBox(galInnerJambN.name, galInnerJambN.position, new THREE.Vector3(0.3, 2.8, galInnerJambNLen), chunkId);
+
+      const galInnerJambSLen = galMaxZ - galDoorMaxZ;
+      const galInnerJambSCenterZ = (galDoorMaxZ + galMaxZ) / 2;
+      const galInnerJambSGeo = this.getBoxGeometry(0.3, 2.8, galInnerJambSLen);
+      const galInnerJambS = new THREE.Mesh(galInnerJambSGeo, stairMat);
+      galInnerJambS.position.set(galInnerX, floorY + 6.4, galInnerJambSCenterZ);
+      galInnerJambS.castShadow = true;
+      galInnerJambS.name = `${chunkId}_gallery_2f_inner_jamb_s`;
+      this.scene.add(galInnerJambS);
+      chunk.meshes.push(galInnerJambS);
+      this.collisionWorld.addStaticBox(galInnerJambS.name, galInnerJambS.position, new THREE.Vector3(0.3, 2.8, galInnerJambSLen), chunkId);
+
+      const galInnerLintelGeo = this.getBoxGeometry(0.3, 0.6, 2.4);
+      const galInnerLintel = new THREE.Mesh(galInnerLintelGeo, stairMat);
+      galInnerLintel.position.set(galInnerX, floorY + 7.5, (galDoorMinZ + galDoorMaxZ) / 2);
+      galInnerLintel.name = `${chunkId}_gallery_2f_inner_lintel`;
+      this.scene.add(galInnerLintel);
+      chunk.meshes.push(galInnerLintel);
+
+      // South Wall: at z = -8.5 spanning the west gallery wing
       const galSouthGeo = this.getBoxGeometry(galWestWingWidth + 0.4, 2.8, 0.4);
       const galSouthMesh = new THREE.Mesh(galSouthGeo, stairMat);
       galSouthMesh.position.set(galWestWingCenterX, floorY + 6.4, galMaxZ + 0.15);
@@ -736,11 +770,11 @@ export class BackroomsGenerator {
 
       // ====================================================
       // 2F Hwacat Painting & Shrine Altar Table
-      // West wall at [-23.6, 6.6, -16.0] facing east (+X)
+      // West wall of the inner shrine, facing east (+X)
       // ====================================================
       const paintFrameGeo = this.getBoxGeometry(1.85, 2.15, 0.08);
       const paintFrameMesh = new THREE.Mesh(paintFrameGeo, this.propMaterial);
-      paintFrameMesh.position.set(-23.68, floorY + 6.6, -16.0);
+      paintFrameMesh.position.set(-37.68, floorY + 6.6, -22.0);
       paintFrameMesh.rotation.y = Math.PI / 2;
       paintFrameMesh.castShadow = true;
       paintFrameMesh.name = `${chunkId}_gallery_2f_painting_frame`;
@@ -751,23 +785,41 @@ export class BackroomsGenerator {
       const paintMat = this.textures.createHwaPaintMaterial();
       const painting = new THREE.Mesh(paintGeo, paintMat);
       painting.name = "upper-hwa-painting";
-      painting.position.set(-23.6, floorY + 6.6, -16.0);
+      painting.position.set(-37.6, floorY + 6.6, -22.0);
       painting.rotation.y = Math.PI / 2;
       painting.castShadow = true;
       painting.receiveShadow = true;
       this.scene.add(painting);
       chunk.meshes.push(painting);
 
-      // Shrine Altar Table against the west wall below the painting
       const altarGeo = this.getBoxGeometry(0.7, 0.85, 2.0);
       const altarMesh = new THREE.Mesh(altarGeo, this.propMaterial);
-      altarMesh.position.set(-23.15, floorY + 5.0 + 0.425, -16.0);
+      altarMesh.position.set(-37.15, floorY + 5.0 + 0.425, -22.0);
       altarMesh.castShadow = true;
       altarMesh.receiveShadow = true;
       altarMesh.name = `${chunkId}_gallery_2f_altar`;
       this.scene.add(altarMesh);
       chunk.meshes.push(altarMesh);
       this.collisionWorld.addStaticBox(altarMesh.name, altarMesh.position, new THREE.Vector3(0.7, 0.85, 2.0), chunkId);
+
+      const galleryBenchGeo = this.getBoxGeometry(0.55, 0.46, 2.4);
+      const galleryBench = new THREE.Mesh(galleryBenchGeo, this.propMaterial);
+      galleryBench.position.set(-22.4, floorY + 5.23, -12.2);
+      galleryBench.castShadow = true;
+      galleryBench.receiveShadow = true;
+      galleryBench.name = `${chunkId}_gallery_2f_bench`;
+      this.scene.add(galleryBench);
+      chunk.meshes.push(galleryBench);
+      this.collisionWorld.addStaticBox(galleryBench.name, galleryBench.position, new THREE.Vector3(0.55, 0.46, 2.4), chunkId);
+
+      const sideFrameGeo = this.getBoxGeometry(1.2, 1.45, 0.07);
+      const sideFrame = new THREE.Mesh(sideFrameGeo, this.propMaterial);
+      sideFrame.position.set(-37.72, floorY + 6.35, -30.5);
+      sideFrame.rotation.y = Math.PI / 2;
+      sideFrame.castShadow = true;
+      sideFrame.name = `${chunkId}_gallery_2f_side_frame`;
+      this.scene.add(sideFrame);
+      chunk.meshes.push(sideFrame);
 
       // CollisionWorld Ramp for 2F
       this.collisionWorld.addRamp({
@@ -786,16 +838,25 @@ export class BackroomsGenerator {
         chunkId: chunkId,
       });
 
-      // Register CollisionWorld.addFloorArea for 2F gallery at Y = 5.0 (minX: -23.8, maxX: -14.8, minZ: -23.8, maxZ: -8.5)
       this.collisionWorld.addFloorArea({
         id: "gallery_2f_mirror",
         floor: 2,
         type: "walkable",
         y: floorY + 5.0,
-        minX: -23.8,
-        maxX: -14.8,
-        minZ: -23.8,
+        minX: -38.0,
+        maxX: -17.2,
+        minZ: -36.0,
         maxZ: -8.5,
+      }, chunkId);
+      this.collisionWorld.addFloorArea({
+        id: "landing_2f_gallery",
+        floor: 2,
+        type: "walkable",
+        y: floorY + 5.0,
+        minX: f2StartX - rampHalfWidth,
+        maxX: f2StartX + rampHalfWidth,
+        minZ: Math.min(f2EndZ, center.z - 7.8),
+        maxZ: Math.max(f2EndZ, center.z - 7.8),
       }, chunkId);
 
       // Transition waypoints for 2F
@@ -825,21 +886,33 @@ export class BackroomsGenerator {
       }, chunkId);
       this.collisionWorld.addTransitionWaypoint({
         id: "tw_2f_gallery_center",
-        position: [-20.5, floorY + 5.0, -16.0],
+        position: [-22.5, floorY + 5.0, -22.0],
         floor: 2,
-        links: ["tw_2f_gallery_doorway", "tw_2f_gallery_altar", "tw_2f_gallery_south"],
+        links: ["tw_2f_gallery_doorway", "tw_2f_gallery_inner_door", "tw_2f_gallery_south"],
+      }, chunkId);
+      this.collisionWorld.addTransitionWaypoint({
+        id: "tw_2f_gallery_inner_door",
+        position: [-27.5, floorY + 5.0, -22.0],
+        floor: 2,
+        links: ["tw_2f_gallery_center", "tw_2f_gallery_altar"],
       }, chunkId);
       this.collisionWorld.addTransitionWaypoint({
         id: "tw_2f_gallery_altar",
-        position: [-21.2, floorY + 5.0, -16.0],
+        position: [-35.5, floorY + 5.0, -22.0],
+        floor: 2,
+        links: ["tw_2f_gallery_inner_door", "tw_2f_gallery_north"],
+      }, chunkId);
+      this.collisionWorld.addTransitionWaypoint({
+        id: "tw_2f_gallery_south",
+        position: [-22.5, floorY + 5.0, -12.0],
         floor: 2,
         links: ["tw_2f_gallery_center"],
       }, chunkId);
       this.collisionWorld.addTransitionWaypoint({
-        id: "tw_2f_gallery_south",
-        position: [-20.5, floorY + 5.0, -11.0],
+        id: "tw_2f_gallery_north",
+        position: [-32.5, floorY + 5.0, -31.0],
         floor: 2,
-        links: ["tw_2f_gallery_center"],
+        links: ["tw_2f_gallery_altar"],
       }, chunkId);
     } else if (type === "stairs_b1") {
       // 1F → B1 Staircase (descending from Y = 0.0 to Y = -5.0 towards South, inside chunk (1, 2))
@@ -907,10 +980,11 @@ export class BackroomsGenerator {
 
       // ====================================================
       // B1 Underground Cellar & Nursery (지하 음습한 보육실 & 복도)
-      // Spans x from 8.2 to 23.8, z from 24.2 to 39.8 at Y = -5.0
+      // Expanded west nursery + inner crib room + east storage, not a closet.
+      // Spans x from -8.0 to 26.0, z from 24.2 to 39.8 at Y = -5.0
       // ====================================================
-      const b1MinX = 8.2;
-      const b1MaxX = 23.8;
+      const b1MinX = -8.0;
+      const b1MaxX = 26.0;
       const b1MinZ = 24.2;
       const b1MaxZ = 39.8;
       const b1TotalWidth = b1MaxX - b1MinX; // 15.6m
@@ -1010,7 +1084,38 @@ export class BackroomsGenerator {
       chunk.meshes.push(b1WestMesh);
       this.collisionWorld.addStaticBox(b1WestMesh.name, b1WestMesh.position, new THREE.Vector3(0.4, 2.8, b1TotalLength + 0.4), chunkId);
 
-      // East Wall: at x = 23.8, spanning from z = 24.2 to 39.8 (15.6m)
+      // Inner crib-room partition at x = 1.2 with a 2.4m doorway facing the baby
+      const b1InnerX = 1.2;
+      const b1DoorMinZ = 28.8;
+      const b1DoorMaxZ = 31.2;
+      const b1InnerJambNLen = b1DoorMinZ - b1MinZ;
+      const b1InnerJambNGeo = this.getBoxGeometry(0.3, 2.8, b1InnerJambNLen);
+      const b1InnerJambN = new THREE.Mesh(b1InnerJambNGeo, b1WallMat);
+      b1InnerJambN.position.set(b1InnerX, floorY - 3.6, (b1MinZ + b1DoorMinZ) / 2);
+      b1InnerJambN.castShadow = true;
+      b1InnerJambN.name = `${chunkId}_cellar_b1_inner_jamb_n`;
+      this.scene.add(b1InnerJambN);
+      chunk.meshes.push(b1InnerJambN);
+      this.collisionWorld.addStaticBox(b1InnerJambN.name, b1InnerJambN.position, new THREE.Vector3(0.3, 2.8, b1InnerJambNLen), chunkId);
+
+      const b1InnerJambSLen = b1MaxZ - b1DoorMaxZ;
+      const b1InnerJambSGeo = this.getBoxGeometry(0.3, 2.8, b1InnerJambSLen);
+      const b1InnerJambS = new THREE.Mesh(b1InnerJambSGeo, b1WallMat);
+      b1InnerJambS.position.set(b1InnerX, floorY - 3.6, (b1DoorMaxZ + b1MaxZ) / 2);
+      b1InnerJambS.castShadow = true;
+      b1InnerJambS.name = `${chunkId}_cellar_b1_inner_jamb_s`;
+      this.scene.add(b1InnerJambS);
+      chunk.meshes.push(b1InnerJambS);
+      this.collisionWorld.addStaticBox(b1InnerJambS.name, b1InnerJambS.position, new THREE.Vector3(0.3, 2.8, b1InnerJambSLen), chunkId);
+
+      const b1InnerLintelGeo = this.getBoxGeometry(0.3, 0.6, 2.4);
+      const b1InnerLintel = new THREE.Mesh(b1InnerLintelGeo, b1WallMat);
+      b1InnerLintel.position.set(b1InnerX, floorY - 2.5, (b1DoorMinZ + b1DoorMaxZ) / 2);
+      b1InnerLintel.name = `${chunkId}_cellar_b1_inner_lintel`;
+      this.scene.add(b1InnerLintel);
+      chunk.meshes.push(b1InnerLintel);
+
+      // East Wall: at x = 26.0
       const b1EastGeo = this.getBoxGeometry(0.4, 2.8, b1TotalLength + 0.4);
       const b1EastMesh = new THREE.Mesh(b1EastGeo, b1WallMat);
       b1EastMesh.position.set(b1MaxX + 0.15, floorY - 3.6, b1CenterZ);
@@ -1072,15 +1177,49 @@ export class BackroomsGenerator {
       chunk.meshes.push(doorwayUpperMesh);
       this.collisionWorld.addStaticBox(doorwayUpperMesh.name, doorwayUpperMesh.position, new THREE.Vector3(0.3, 5.0, 3.3), chunkId);
 
-      // Full-height East enclosing wall along x = 17.2: from z = 24.2 to 39.8 (15.6m, height 7.8m, center floorY - 1.1)
-      const eastDivGeo = this.getBoxGeometry(0.3, 7.8, b1TotalLength);
-      const eastDivMesh = new THREE.Mesh(eastDivGeo, b1WallMat);
-      eastDivMesh.position.set(b1StartX + (rampHalfWidth + 0.15), floorY - 1.1, b1CenterZ);
-      eastDivMesh.castShadow = true;
-      eastDivMesh.name = `${chunkId}_cellar_b1_wall_e_div`;
-      this.scene.add(eastDivMesh);
-      chunk.meshes.push(eastDivMesh);
-      this.collisionWorld.addStaticBox(eastDivMesh.name, eastDivMesh.position, new THREE.Vector3(0.3, 7.8, b1TotalLength), chunkId);
+      // East stair enclosure along x = 17.2 (solid beside the ramp, doorway on the landing)
+      const eastRampDivLen = b1EndZ - b1MinZ;
+      const eastRampDivGeo = this.getBoxGeometry(0.3, 7.8, eastRampDivLen);
+      const eastRampDivMesh = new THREE.Mesh(eastRampDivGeo, b1WallMat);
+      eastRampDivMesh.position.set(b1StartX + (rampHalfWidth + 0.15), floorY - 1.1, (b1MinZ + b1EndZ) / 2);
+      eastRampDivMesh.castShadow = true;
+      eastRampDivMesh.name = `${chunkId}_cellar_b1_wall_e_div`;
+      this.scene.add(eastRampDivMesh);
+      chunk.meshes.push(eastRampDivMesh);
+      this.collisionWorld.addStaticBox(eastRampDivMesh.name, eastRampDivMesh.position, new THREE.Vector3(0.3, 7.8, eastRampDivLen), chunkId);
+
+      const b1EastJambNGeo = this.getBoxGeometry(0.3, 2.8, 0.3);
+      const b1EastJambN = new THREE.Mesh(b1EastJambNGeo, b1WallMat);
+      b1EastJambN.position.set(b1StartX + (rampHalfWidth + 0.15), floorY - 3.6, 36.65);
+      b1EastJambN.castShadow = true;
+      b1EastJambN.name = `${chunkId}_cellar_b1_east_jamb_n`;
+      this.scene.add(b1EastJambN);
+      chunk.meshes.push(b1EastJambN);
+      this.collisionWorld.addStaticBox(b1EastJambN.name, b1EastJambN.position, new THREE.Vector3(0.3, 2.8, 0.3), chunkId);
+
+      const b1EastJambSGeo = this.getBoxGeometry(0.3, 2.8, 0.6);
+      const b1EastJambS = new THREE.Mesh(b1EastJambSGeo, b1WallMat);
+      b1EastJambS.position.set(b1StartX + (rampHalfWidth + 0.15), floorY - 3.6, 39.5);
+      b1EastJambS.castShadow = true;
+      b1EastJambS.name = `${chunkId}_cellar_b1_east_jamb_s`;
+      this.scene.add(b1EastJambS);
+      chunk.meshes.push(b1EastJambS);
+      this.collisionWorld.addStaticBox(b1EastJambS.name, b1EastJambS.position, new THREE.Vector3(0.3, 2.8, 0.6), chunkId);
+
+      const b1EastLintelGeo = this.getBoxGeometry(0.3, 0.6, 2.4);
+      const b1EastLintel = new THREE.Mesh(b1EastLintelGeo, b1WallMat);
+      b1EastLintel.position.set(b1StartX + (rampHalfWidth + 0.15), floorY - 2.5, 38.0);
+      b1EastLintel.name = `${chunkId}_cellar_b1_east_door_lintel`;
+      this.scene.add(b1EastLintel);
+      chunk.meshes.push(b1EastLintel);
+
+      const eastDoorUpperGeo = this.getBoxGeometry(0.3, 5.0, 3.3);
+      const eastDoorUpper = new THREE.Mesh(eastDoorUpperGeo, b1WallMat);
+      eastDoorUpper.position.set(b1StartX + (rampHalfWidth + 0.15), floorY + 0.3, 38.15);
+      eastDoorUpper.name = `${chunkId}_cellar_b1_east_door_upper`;
+      this.scene.add(eastDoorUpper);
+      chunk.meshes.push(eastDoorUpper);
+      this.collisionWorld.addStaticBox(eastDoorUpper.name, eastDoorUpper.position, new THREE.Vector3(0.3, 5.0, 3.3), chunkId);
 
       // Vertical header wall under 1F floor at z = 29.5: from Y = -5.0 to Y = 0.0
       const headerGeo = this.getBoxGeometry(rampHalfWidth * 2, 5.0, 0.2);
@@ -1091,34 +1230,31 @@ export class BackroomsGenerator {
       chunk.meshes.push(headerMesh);
 
       // ====================================================
-      // B1 Tatami & Nursery Area in the corner ([10.5, -5.0, 30.0])
-      // Torn mats, blood stains, and broken toys
+      // B1 Tatami & Nursery Area in the inner crib room
+      // Torn mats, blood stains, and broken toys around the baby
       // ====================================================
       const tatamiMat = new THREE.MeshStandardMaterial({
         color: 0x5a5438,
         roughness: 0.9,
         metalness: 0.02,
       });
-      // Tatami mat 1
       const mat1Geo = this.getBoxGeometry(1.8, 0.06, 1.0);
       const mat1Mesh = new THREE.Mesh(mat1Geo, tatamiMat);
-      mat1Mesh.position.set(10.5, floorY - 5.0 + 0.03, 29.3);
+      mat1Mesh.position.set(-3.5, floorY - 5.0 + 0.03, 27.8);
       mat1Mesh.receiveShadow = true;
       mat1Mesh.name = `${chunkId}_b1_tatami_1`;
       this.scene.add(mat1Mesh);
       chunk.meshes.push(mat1Mesh);
 
-      // Tatami mat 2 (torn / askew)
       const mat2Geo = this.getBoxGeometry(1.8, 0.06, 1.0);
       const mat2Mesh = new THREE.Mesh(mat2Geo, tatamiMat);
-      mat2Mesh.position.set(10.6, floorY - 5.0 + 0.035, 30.4);
+      mat2Mesh.position.set(-3.4, floorY - 5.0 + 0.035, 28.9);
       mat2Mesh.rotation.y = 0.06;
       mat2Mesh.receiveShadow = true;
       mat2Mesh.name = `${chunkId}_b1_tatami_2`;
       this.scene.add(mat2Mesh);
       chunk.meshes.push(mat2Mesh);
 
-      // Blood stain decal on mats and floor
       const bloodGeo = this.getPlaneGeometry(1.8, 1.5);
       const bloodMat = new THREE.MeshStandardMaterial({
         color: 0x3b0202,
@@ -1129,22 +1265,20 @@ export class BackroomsGenerator {
       });
       const bloodMesh = new THREE.Mesh(bloodGeo, bloodMat);
       bloodMesh.rotation.x = -Math.PI / 2;
-      bloodMesh.position.set(10.5, floorY - 5.0 + 0.07, 29.9);
+      bloodMesh.position.set(-3.5, floorY - 5.0 + 0.07, 28.4);
       bloodMesh.name = `${chunkId}_b1_blood_stain`;
       this.scene.add(bloodMesh);
       chunk.meshes.push(bloodMesh);
 
-      // Broken doll pile prop
       this.spawnAssetProp(chunk, {
         ...HORROR_PROP_ASSETS.brokenDollPile,
         id: `${chunkId}_b1_nursery_dolls`,
-        position: [10.5, floorY - 5.0, 30.0],
+        position: [-3.5, floorY - 5.0, 28.5],
         rotation: [0, Math.PI / 4, 0],
       });
 
-      // Scattered broken wooden toy blocks
       const toyBlock1 = new THREE.Mesh(this.getBoxGeometry(0.38, 0.3, 0.38), this.propMaterial);
-      toyBlock1.position.set(11.3, floorY - 5.0 + 0.15, 29.2);
+      toyBlock1.position.set(-2.7, floorY - 5.0 + 0.15, 27.7);
       toyBlock1.rotation.y = 0.4;
       toyBlock1.castShadow = true;
       toyBlock1.name = `${chunkId}_b1_toy_1`;
@@ -1152,12 +1286,30 @@ export class BackroomsGenerator {
       chunk.meshes.push(toyBlock1);
 
       const toyBlock2 = new THREE.Mesh(this.getBoxGeometry(0.3, 0.24, 0.3), this.propMaterial);
-      toyBlock2.position.set(9.7, floorY - 5.0 + 0.12, 30.8);
+      toyBlock2.position.set(-4.3, floorY - 5.0 + 0.12, 29.3);
       toyBlock2.rotation.y = -0.3;
       toyBlock2.castShadow = true;
       toyBlock2.name = `${chunkId}_b1_toy_2`;
       this.scene.add(toyBlock2);
       chunk.meshes.push(toyBlock2);
+
+      const hallCrate = new THREE.Mesh(this.getBoxGeometry(0.9, 0.7, 0.9), this.propMaterial);
+      hallCrate.position.set(8.6, floorY - 5.0 + 0.35, 26.4);
+      hallCrate.castShadow = true;
+      hallCrate.receiveShadow = true;
+      hallCrate.name = `${chunkId}_b1_hall_crate`;
+      this.scene.add(hallCrate);
+      chunk.meshes.push(hallCrate);
+      this.collisionWorld.addStaticBox(hallCrate.name, hallCrate.position, new THREE.Vector3(0.9, 0.7, 0.9), chunkId);
+
+      const eastShelf = new THREE.Mesh(this.getBoxGeometry(0.46, 1.4, 2.2), this.propMaterial);
+      eastShelf.position.set(25.2, floorY - 5.0 + 0.7, 32.0);
+      eastShelf.castShadow = true;
+      eastShelf.receiveShadow = true;
+      eastShelf.name = `${chunkId}_b1_east_shelf`;
+      this.scene.add(eastShelf);
+      chunk.meshes.push(eastShelf);
+      this.collisionWorld.addStaticBox(eastShelf.name, eastShelf.position, new THREE.Vector3(0.46, 1.4, 2.2), chunkId);
 
       // CollisionWorld Ramp for B1
       this.collisionWorld.addRamp({
@@ -1176,14 +1328,23 @@ export class BackroomsGenerator {
         chunkId: chunkId,
       });
 
-      // Register CollisionWorld.addFloorArea for B1 cellar/nursery at Y = -5.0 (minX: 8.2, maxX: 23.8, minZ: 24.2, maxZ: 39.8)
       this.collisionWorld.addFloorArea({
-        id: "cellar_b1_nursery",
+        id: "cellar_b1_west",
         floor: -1,
         type: "walkable",
         y: floorY - 5.0,
-        minX: 8.2,
-        maxX: 23.8,
+        minX: -8.0,
+        maxX: b1StartX - rampHalfWidth,
+        minZ: 24.2,
+        maxZ: 39.8,
+      }, chunkId);
+      this.collisionWorld.addFloorArea({
+        id: "cellar_b1_east",
+        floor: -1,
+        type: "walkable",
+        y: floorY - 5.0,
+        minX: b1StartX + rampHalfWidth,
+        maxX: 26.0,
         minZ: 24.2,
         maxZ: 39.8,
       }, chunkId);
@@ -1217,7 +1378,7 @@ export class BackroomsGenerator {
         id: "tw_b1_landing",
         position: [b1StartX, floorY - 5.0, 38.0],
         floor: -1,
-        links: ["tw_b1_bottom_from_1f", "tw_b1_cellar_doorway"],
+        links: ["tw_b1_bottom_from_1f", "tw_b1_cellar_doorway", "tw_b1_east_door"],
       }, chunkId);
       this.collisionWorld.addTransitionWaypoint({
         id: "tw_b1_cellar_doorway",
@@ -1226,28 +1387,46 @@ export class BackroomsGenerator {
         links: ["tw_b1_landing", "tw_b1_cellar_hall"],
       }, chunkId);
       this.collisionWorld.addTransitionWaypoint({
-        id: "tw_b1_cellar_hall",
-        position: [11.5, floorY - 5.0, 38.0],
+        id: "tw_b1_east_door",
+        position: [17.2, floorY - 5.0, 38.0],
         floor: -1,
-        links: ["tw_b1_cellar_doorway", "tw_b1_cabinet", "tw_b1_nursery_center"],
+        links: ["tw_b1_landing", "tw_b1_east_store"],
+      }, chunkId);
+      this.collisionWorld.addTransitionWaypoint({
+        id: "tw_b1_cellar_hall",
+        position: [8.0, floorY - 5.0, 34.0],
+        floor: -1,
+        links: ["tw_b1_cellar_doorway", "tw_b1_inner_door"],
       }, chunkId);
       this.collisionWorld.addTransitionWaypoint({
         id: "tw_b1_cabinet",
-        position: [9.5, floorY - 5.0, 34.0],
+        position: [-6.5, floorY - 5.0, 34.0],
         floor: -1,
-        links: ["tw_b1_cellar_hall", "tw_b1_nursery_center"],
+        links: ["tw_b1_inner_door", "tw_b1_nursery_center"],
+      }, chunkId);
+      this.collisionWorld.addTransitionWaypoint({
+        id: "tw_b1_inner_door",
+        position: [1.2, floorY - 5.0, 30.0],
+        floor: -1,
+        links: ["tw_b1_cellar_hall", "tw_b1_nursery_center", "tw_b1_cabinet"],
       }, chunkId);
       this.collisionWorld.addTransitionWaypoint({
         id: "tw_b1_nursery_center",
-        position: [11.0, floorY - 5.0, 30.0],
+        position: [-3.5, floorY - 5.0, 28.5],
         floor: -1,
-        links: ["tw_b1_cellar_hall", "tw_b1_cabinet", "tw_b1_nursery_corner"],
+        links: ["tw_b1_inner_door", "tw_b1_cabinet", "tw_b1_nursery_corner"],
       }, chunkId);
       this.collisionWorld.addTransitionWaypoint({
         id: "tw_b1_nursery_corner",
-        position: [10.0, floorY - 5.0, 26.5],
+        position: [-2.5, floorY - 5.0, 26.5],
         floor: -1,
         links: ["tw_b1_nursery_center"],
+      }, chunkId);
+      this.collisionWorld.addTransitionWaypoint({
+        id: "tw_b1_east_store",
+        position: [20.5, floorY - 5.0, 32.0],
+        floor: -1,
+        links: ["tw_b1_east_door"],
       }, chunkId);
     }
   }
@@ -1628,9 +1807,9 @@ export class BackroomsGenerator {
     } else if (chunk.cx === 0 && chunk.cz === 1) {
       addDynamicCabinet("cabinet_junction_0_1", "교차로 캐비넷", [-5.0, 0.0, 0.85], 0);
     } else if (type === "stairs_2f") {
-      addDynamicCabinet("cabinet_stairs_2f_attic", "2층 갤러리 벽장", [-7.4, 5.0, 5.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet_stairs_2f_attic", "2층 갤러리 벽장", [-20.2, 5.0, 4.0], -Math.PI / 2);
     } else if (type === "stairs_b1") {
-      addDynamicCabinet("cabinet_b1_cellar", "지하 보육실 벽장", [-7.4, -5.0, 2.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet_b1_cellar", "지하 보육실 벽장", [-22.5, -5.0, 2.0], -Math.PI / 2);
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (!isStart && !isEvent && !isArchive && !type.includes("stairs") && (type.includes("room") || type.includes("storage")) && rand() < 0.4) {
@@ -1652,7 +1831,7 @@ export class BackroomsGenerator {
     };
 
     if (type === "stairs_b1") {
-      addDynamicKey("key-workshop", "녹슨 열쇠", [-5.5, -5.0, -4.5]); // B1 Nursery: [10.5, -5.0, 27.5]
+      addDynamicKey("key-workshop", "녹슨 열쇠", [-18.5, -5.0, -5.5]); // B1 crib: [-2.5, -5.0, 26.5]
     } else if (isWorkshop) {
       // Key moved to B1 nursery
     } else if (isPlayroom) {
@@ -1660,7 +1839,7 @@ export class BackroomsGenerator {
     } else if (isStorage) {
       addDynamicKey("key-storage", "도자기 열쇠", [0.0, 0.0, 0.0]);
     } else if (type === "stairs_2f") {
-      addDynamicKey("key-hwacat", "뒤틀린 열쇠", [-6.5, 5.0, 0.0]); // 2F Gallery: [-22.5, 5.0, -16.0]
+      addDynamicKey("key-hwacat", "뒤틀린 열쇠", [-19.5, 5.0, -6.0]); // 2F shrine: [-35.5, 5.0, -22.0]
       const keyObj = chunk.keys[chunk.keys.length - 1];
       if (keyObj) {
         keyObj.initiallyVisible = false;
@@ -1815,17 +1994,17 @@ export class BackroomsGenerator {
       spawnSafeLight("wall-switch", -1.6, wallH, 7.58, 0, "계단실 입구 스위치");
       spawnSafeLight("wall-switch", 1.18, wallH + 2.5, 0.0, -Math.PI / 2, "2층 계단 스위치");
       spawnSafeLight("wall-switch", 1.18, wallH + 5.0, -6.0, -Math.PI / 2, "2층 착지점 스위치");
-      spawnSafeLight("wall-switch", -7.58, wallH + 5.0, -2.0, Math.PI / 2, "갤러리 벽 스위치");
-      spawnSafeLight("floor-lamp", -5.5, floorH + 5.0, 4.5, Math.PI / 4, "갤러리 낡은 스탠드");
-      spawnSafeLight("toy-lamp", -6.5, floorH + 5.0 + 0.85, 0.0, 0, "사당 제단 촛대");
+      spawnSafeLight("wall-switch", -21.58, wallH + 5.0, -6.0, Math.PI / 2, "사당 벽 스위치");
+      spawnSafeLight("floor-lamp", -18.0, floorH + 5.0, -4.0, Math.PI / 4, "갤러리 낡은 스탠드");
+      spawnSafeLight("toy-lamp", -21.15, floorH + 5.0 + 0.85, -6.0, 0, "사당 제단 촛대");
     } else if (type === "stairs_b1") {
       // B1 Stairwell & Cellar/Nursery: Flush on north entrance wall, stairwell wall, landing, and nursery west wall
       spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "계단실 입구 스위치");
       spawnSafeLight("wall-switch", 1.18, wallH - 2.5, 0.0, -Math.PI / 2, "지하 계단 스위치");
       spawnSafeLight("wall-switch", 1.18, wallH - 5.0, 6.0, -Math.PI / 2, "지하 착지점 스위치");
-      spawnSafeLight("wall-switch", -7.58, wallH - 5.0, -4.5, Math.PI / 2, "지하 보육실 벽 스위치");
-      spawnSafeLight("floor-lamp", -4.0, floorH - 5.0, -1.0, Math.PI / 4, "보육실 낡은 스탠드");
-      spawnSafeLight("floor-lamp", -5.5, floorH - 5.0, 4.5, -Math.PI / 4, "지하 창고 스탠드");
+      spawnSafeLight("wall-switch", -23.58, wallH - 5.0, -3.5, Math.PI / 2, "지하 보육실 벽 스위치");
+      spawnSafeLight("floor-lamp", -19.5, floorH - 5.0, -3.5, Math.PI / 4, "보육실 낡은 스탠드");
+      spawnSafeLight("floor-lamp", -8.0, floorH - 5.0, 6.0, -Math.PI / 4, "지하 복도 스탠드");
     } else if (type === "wide_room") {
       // Wide room: Flush on south entrance wall and west perimeter wall
       spawnSafeLight("wall-switch", -1.6, wallH, 7.58, 0, "출구방 입구 스위치");
@@ -2287,20 +2466,25 @@ export class BackroomsGenerator {
         [cx + 0, 0.0, cz + 5],
         [cx + 0, 2.5, cz + 0],
         [cx + 0, 5.0, cz - 5],
-        [cx - 2.5, 5.0, cz - 5],
-        [cx - 6.5, 5.0, cz + 0],
-        [cx - 5.5, 5.0, cz - 5],
-        [cx - 5.5, 5.0, cz + 5],
+        [-17.2, 5.0, -21.8],
+        [-22.5, 5.0, -22.0],
+        [-27.5, 5.0, -22.0],
+        [-35.5, 5.0, -22.0],
+        [-32.5, 5.0, -31.0],
+        [-22.5, 5.0, -12.0],
       ];
     } else if (type === "stairs_b1") {
       chunk.waypoints = [
         [cx + 0, 0.0, cz - 5],
         [cx + 0, -2.5, cz + 0],
         [cx + 0, -5.0, cz + 5],
-        [cx - 1.5, -5.0, cz + 0],
-        [cx - 5.5, -5.0, cz - 2],
-        [cx - 5.5, -5.0, cz - 4.5],
-        [cx - 5.5, -5.0, cz + 5],
+        [14.8, -5.0, 38.0],
+        [8.0, -5.0, 34.0],
+        [1.2, -5.0, 30.0],
+        [-3.5, -5.0, 28.5],
+        [-2.5, -5.0, 26.5],
+        [-6.5, -5.0, 34.0],
+        [20.5, -5.0, 32.0],
       ];
     } else {
       chunk.waypoints = [wp(0,0), wp(-4,-4), wp(4,-4), wp(-4,4), wp(4,4)];
