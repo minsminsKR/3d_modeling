@@ -71,7 +71,7 @@ export class KeyItem {
   getPrompt(context) {
     const collected = context.getKeyCount?.() ?? 0;
     const total = context.getTotalKeys?.() ?? 3;
-    return `E - ${this.label} 줍기 (${collected}/${total})`;
+    return `E - ${this.label} 줍기 (${collected}/${total}) · 소리가 퍼집니다`;
   }
 
   interact(context) {

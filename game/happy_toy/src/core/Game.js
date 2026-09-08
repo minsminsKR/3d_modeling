@@ -9,6 +9,7 @@ import { CollisionWorld } from "../world/CollisionWorld.js";
 import { EnemyManager } from "../entities/EnemyManager.js";
 import { GlitchController } from "../effects/GlitchController.js";
 import { HorrorEventManager } from "../events/HorrorEventManager.js";
+import { DreadDirector } from "../events/DreadDirector.js";
 import { MirrorHwacatEvent } from "../events/MirrorHwacatEvent.js";
 import { Hud } from "../ui/Hud.js";
 import { Input } from "./Input.js";
@@ -157,6 +158,7 @@ export class Game {
     this.particleSystem = new ParticleSystem(this.scene);
     this.menuSystem = new MenuSystem(this);
     this.monsterIntroManager = new MonsterIntroManager(this);
+    this.dreadDirector = new DreadDirector(this);
 
 
     this.itemSystem.spawnPickups([
@@ -459,12 +461,19 @@ export class Game {
       this.itemSystem?.update(deltaTime);
       this.particleSystem?.update(deltaTime, this.player.position);
       this.horrorEventManager?.update(deltaTime);
+      this.dreadDirector?.update(deltaTime);
+      if (this.gameCleared) {
+        this.renderer.render(this.scene, this.camera);
+        this.input.endFrame();
+        return;
+      }
 
 
       // Heartbeat audio update based on closest monster
       let minDist = 999;
       if (this.enemyManager && this.enemyManager.enemies) {
         for (const enemy of this.enemyManager.enemies) {
+          if (enemy.isDormant || !enemy.isSameLevelAs(this.player.position)) continue;
           const dist = Math.hypot(enemy.group.position.x - this.player.position.x, enemy.group.position.z - this.player.position.z);
           if (dist < minDist) minDist = dist;
         }
@@ -472,10 +481,9 @@ export class Game {
       soundManager.updateHeartbeat(deltaTime, minDist);
 
       // Compass target
-      const uncollectedKey = this.keys.find((k) => k.isAvailable && !k.isCollected);
-      if (uncollectedKey) {
-        this.hud.updateCompass(this.player.position, uncollectedKey.position, this.player.yaw);
-      }
+      const compassTarget = this.getCompassTarget();
+      this.hud.updateCompass(this.player.position, compassTarget?.position, this.player.yaw,
+        compassTarget === this.finalExit ? "제단" : "혼");
       this.hud.setKeyCount(this.keyCount, this.keys.length);
 
       const enemyState = this.enemyManager?.update(deltaTime, {
@@ -727,6 +735,7 @@ export class Game {
     }
     this.monsterIntroManager?.reset();
     this.horrorEventManager?.reset();
+    this.dreadDirector?.reset();
 
     this.glitchController.reset();
     this.testSafeMode = false;
@@ -789,6 +798,16 @@ export class Game {
     }
   }
 
+  getCompassTarget() {
+    if (this.keyCount >= this.keys.length) return this.finalExit;
+    const position = this.player.position;
+    const candidates = this.keys.filter((key) => key.isAvailable && !key.isCollected);
+    // Prefer the current floor; vertical distance alone understates the stair detour.
+    const score = (key) => Math.hypot(key.position.x - position.x, key.position.z - position.z)
+      + (Math.abs(key.position.y - position.y) > 1.8 ? 40 : 0);
+    return candidates.sort((a, b) => score(a) - score(b))[0] || null;
+  }
+
   collectKey(key) {
     if (key.isCollected || key.isAvailable === false || this.gameOver || this.gameCleared) {
       return;
@@ -799,7 +818,11 @@ export class Game {
       this.collectedKeyIds.add(key.id);
     }
     this.keyCount += 1;
-    this.hud.setStatus(`${key.label}를 얻었습니다. 열쇠 ${this.keyCount}/${this.keys.length}`, 1700);
+    this.dreadDirector?.onRelic(key.position, this.keyCount, this.keys.length);
+    soundManager.playSFX("key_pickup");
+    this.hud.setStatus(this.keyCount >= this.keys.length
+      ? "모든 혼을 모았습니다. 나침반 [4]을 따라 제단으로 돌아가십시오."
+      : `혼 ${this.keyCount}/${this.keys.length} · 종이 울리기 전에 퇴로를 확보하십시오.`, 4500);
   }
 
   revealKeyById(keyId, position) {
@@ -816,9 +839,14 @@ export class Game {
       return;
     }
 
+    // Evaluate the entry before the player is moved to the cabinet's interior camera.
+    const chasingEnemy = this.enemyManager.getClosestChasingEnemy(this.player.position);
+    const witnessed = this.enemyManager.enemies.some((enemy) =>
+      !enemy.isDormant && enemy.isActivelyChasing() && enemy.hasVisualContact
+      && enemy.isSameLevelAs(this.player.position)
+      && this.collisionWorld.hasLineOfSight(enemy.group.position, this.player.position));
     cabinet.occupied = true;
     this.player.enterCabinet(cabinet);
-    const chasingEnemy = this.enemyManager.getClosestChasingEnemy(this.player.position);
 
     if (!chasingEnemy) {
       this.hud.setStatus("캐비넷 안으로 몸을 숨겼습니다.", 1600);
@@ -827,7 +855,7 @@ export class Game {
 
     const forcedOutcome = options.forceOutcome;
     const caught = forcedOutcome === "caught"
-      || (forcedOutcome !== "safe" && Math.random() < CABINET_CONFIG.deathChance);
+      || (forcedOutcome !== "safe" && witnessed);
     chasingEnemy.beginCabinetInvestigation(cabinet);
     this.cabinetEvent = {
       cabinet,
@@ -836,7 +864,9 @@ export class Game {
       timer: 0,
       arrived: false,
     };
-    this.hud.setStatus("쫓아오던 발소리가 캐비넷 앞에서 멈춥니다.", 1800);
+    this.hud.setStatus(caught
+      ? "숨는 모습을 들켰습니다! [E]로 나와 시야를 끊으십시오."
+      : "시야를 끊었습니다. 발소리가 멀어질 때까지 기다리십시오.", 3500);
   }
 
   exitCabinet() {
@@ -890,6 +920,10 @@ export class Game {
     if (!this.cabinetEvent.arrived) {
       this.cabinetEvent.arrived = true;
       this.cabinetEvent.timer = 0;
+      soundManager.playSFX("door_open");
+      this.hud.setStatus(this.cabinetEvent.outcome === "caught"
+        ? "문고리가 돌아갑니다! [E] 지금 빠져나오십시오."
+        : "문밖에서 숨소리가 들립니다. 아직 나가지 마십시오.", 2500);
     }
 
     this.cabinetEvent.timer += deltaTime;
@@ -926,17 +960,19 @@ export class Game {
   }
 
   tryClearFinal() {
+    if (this.gameOver || this.gameCleared) return;
     if (this.keyCount < this.keys.length) {
       const remaining = this.keys.length - this.keyCount;
       this.hud.setStatus(`아직 열쇠가 ${remaining}개 부족합니다.`, 1600);
       return;
     }
 
-    this.clearGame();
+    this.dreadDirector.beginRitual();
   }
 
   clearGame() {
     this.gameCleared = true;
+    this.hud.setDread(0, "", "quiet");
     this.cabinetEvent = null;
     document.exitPointerLock?.();
 
@@ -958,6 +994,7 @@ export class Game {
     }
 
     this.gameOver = true;
+    this.hud.setDread(0, "", "quiet");
     this.detectionFreezeTimer = 0;
     if (this.player.hiddenCabinet) {
       this.player.hiddenCabinet.occupied = false;
@@ -1088,7 +1125,7 @@ export class Game {
             const voltageBreath = targetIntensity > 0
               ? 0.96 + 0.04 * Math.sin(this.elapsedTime * 1.35 + (light.voltagePhase || 0))
               : 0;
-            pl.intensity = targetIntensity * voltageBreath;
+            pl.intensity = targetIntensity * voltageBreath * (this.dreadDirector?.lightScale ?? 1);
             // Link panel to pool slot so flicker can update it
             light.pooledLight = pl;
           } else {

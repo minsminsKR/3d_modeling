@@ -103,7 +103,7 @@ export class Enemy {
         let flashlightAlert = false;
         const game = window.__happyToy;
         const flashlightOn = game?.flashlightController?.enabled;
-        if (flashlightOn && distance <= 8.0) {
+        if (sameFloor && flashlightOn && distance <= 8.0) {
           const babyPoint = new THREE.Vector3(
             this.group.position.x,
             this.group.position.y + this.config.height * 0.5,
@@ -178,7 +178,7 @@ export class Enemy {
       const game = window.__happyToy;
       const flashlightOn = game?.flashlightController?.enabled;
       
-      if (flashlightOn && distance <= 8.0) {
+      if (sameFloor && flashlightOn && distance <= 8.0) {
         const babyPoint = new THREE.Vector3(
           this.group.position.x,
           this.group.position.y + this.config.height * 0.5,

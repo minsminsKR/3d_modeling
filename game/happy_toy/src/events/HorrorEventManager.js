@@ -103,7 +103,9 @@ export class HorrorEventManager {
     const totalKeys = Math.max(1, game?.keys?.length || 4);
     const progress = Math.min(1, Math.max(0, (game?.keyCount || 0) / totalKeys));
     const nearSafeLight = (game?.safeLights || []).some((light) => (
-      light.isOn && distance2D(light.position, this.player.position) <= 7.5
+      light.isOn && Math.abs(light.position.y - this.player.position.y) < 1.8
+      && distance2D(light.position, this.player.position) <= 5
+      && game.collisionWorld.hasLineOfSight(light.position, this.player.position)
     ));
     return {
       game,
@@ -146,6 +148,13 @@ export class HorrorEventManager {
   }
 
   updateDirector(deltaTime, tension, context) {
+    if (context.game?.dreadDirector?.phase !== undefined
+      && context.game.dreadDirector.phase !== "quiet") {
+      this.pendingProgressScare = null;
+      this.lastProgress = context.game.keyCount;
+      this.ambientCooldown = Math.max(this.ambientCooldown, 12);
+      return;
+    }
     if (this.flickerBurstTimer > 0) {
       this.flickerBurstTimer = Math.max(0, this.flickerBurstTimer - deltaTime);
     }
@@ -222,6 +231,7 @@ export class HorrorEventManager {
 
   updateScriptedEvents(tension, context = this.getThreatContext()) {
     const position = this.player.position;
+    if (context.game?.dreadDirector && context.game.dreadDirector.phase !== "quiet") return;
 
     if (context.chasingCount > 0) {
       return;

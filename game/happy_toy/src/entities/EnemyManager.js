@@ -148,7 +148,7 @@ export class EnemyManager {
     let closestDistance = Infinity;
 
     for (const enemy of this.enemies) {
-      if (!enemy.isActivelyChasing()) {
+      if (enemy.isDormant || !enemy.isSameLevelAs(position) || !enemy.isActivelyChasing()) {
         continue;
       }
 
@@ -234,6 +234,9 @@ export class EnemyManager {
       }
 
       enemy.snapModelToGround(false);
+      // Intro events own the reveal. A restarted run must never inherit a visible
+      // monster from the previous run, especially Baby in the basement nursery.
+      enemy.setDormant(true);
     }
     this.directorProgress = 0;
     this.lastNoiseResponseCount = 0;
@@ -242,15 +245,6 @@ export class EnemyManager {
   notifyNoiseEvent(position, radius = 28.0, options = {}) {
     let responseCount = 0;
     const soundPosition = position.clone?.() || { ...position };
-    const playerPosition = window.__happyToy?.player?.position;
-    if (
-      playerPosition
-      && Math.abs((soundPosition.y ?? 0) - (playerPosition.y ?? 0)) > 1.8
-      && Math.hypot(soundPosition.x - playerPosition.x, soundPosition.z - playerPosition.z) <= radius
-    ) {
-      // FirecrackerProjectiles currently settle on y=0; retain the thrower's floor for AI hearing.
-      soundPosition.y = playerPosition.y;
-    }
     for (const enemy of this.enemies) {
       if (enemy.notifyNoise(soundPosition, radius, options)) {
         responseCount += 1;

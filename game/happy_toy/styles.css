@@ -1203,3 +1203,28 @@ body.reduced-motion *::after {
 @media (prefers-reduced-motion: reduce) {
   .sensory-overlay::after { animation: none; }
 }
+:root { --dread: 0; }
+.dread-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 48%, rgba(20, 8, 9, 0.5) 100%);
+  opacity: var(--dread);
+}
+#dread-state {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90vw, 600px);
+  margin: 0;
+  text-align: center;
+  color: #d0bca4;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-shadow: 0 2px 8px #000;
+  pointer-events: none;
+}
+body[data-dread-phase="hunt"] #dread-state { color: #dfaa96; }
+body.reduced-motion .dread-overlay { opacity: calc(var(--dread) * 0.3); }
+body.high-contrast .dread-overlay { display: none; }

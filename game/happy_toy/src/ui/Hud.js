@@ -55,6 +55,13 @@ export class Hud {
     document.body.classList.toggle("interaction-ready", Boolean(text));
   }
 
+  setDread(amount, message, phase) {
+    document.documentElement.style.setProperty("--dread", Math.max(0, Math.min(1, amount)).toFixed(3));
+    const label = document.querySelector("#dread-state");
+    if (label && label.textContent !== message) label.textContent = message;
+    document.body.dataset.dreadPhase = phase;
+  }
+
   setStatus(text, timeout = 0) {
     window.clearTimeout(this.statusTimer);
     if (this.statusElement) {
@@ -141,20 +148,27 @@ export class Hud {
     }
   }
 
-  updateCompass(playerPos, targetPos, playerYaw) {
-    if (!this.compassActive || !this.compassNeedle || !playerPos || !targetPos) return;
+  updateCompass(playerPos, targetPos, playerYaw, label = "혼") {
+    if (!this.compassActive || !this.compassNeedle || !playerPos) return;
+    this.compassNeedle.style.visibility = targetPos ? "visible" : "hidden";
+    if (!targetPos) {
+      if (this.compassText) this.compassText.textContent = "기척이 끊겼습니다 · 아직 살피지 않은 방을 탐색하십시오";
+      return;
+    }
 
     const dx = targetPos.x - playerPos.x;
     const dz = targetPos.z - playerPos.z;
     const angleToTarget = Math.atan2(dx, -dz);
-    const relativeAngle = angleToTarget - playerYaw;
+    const relativeAngle = angleToTarget + playerYaw;
 
     const deg = (relativeAngle * 180) / Math.PI;
     this.compassNeedle.style.transform = `rotate(${deg}deg)`;
 
     const dist = Math.hypot(dx, dz);
     if (this.compassText) {
-      this.compassText.textContent = `열쇠 감지: ${dist.toFixed(0)}m`;
+      const height = targetPos.y - playerPos.y;
+      const floor = height > 1.8 ? "위층 ↑ · 계단을 찾으십시오" : height < -1.8 ? "아래층 ↓ · 계단을 찾으십시오" : "같은 층";
+      this.compassText.textContent = `${label} · ${dist.toFixed(0)}m · ${floor}`;
     }
   }
 

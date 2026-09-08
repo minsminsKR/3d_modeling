@@ -633,9 +633,8 @@ export const DEFAULT_MAP_CONFIG = {
 export const MAP_CONFIG = MAP_CONFIG_OVERRIDE ?? DEFAULT_MAP_CONFIG;
 
 export const CABINET_CONFIG = {
-  deathChance: 0.2,
   safeWaitSeconds: 5,
-  caughtDelaySeconds: 1.1,
+  caughtDelaySeconds: 2.5,
 };
 
 export const HORROR_PACING_CONFIG = {
