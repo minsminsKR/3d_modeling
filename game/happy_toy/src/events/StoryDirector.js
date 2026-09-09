@@ -94,6 +94,15 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 28 && x < 40 && z > 1.15 && z < 2.35) {
+      this.fire(
+        "windowHall",
+        "f1maze",
+        "창밖은 복도의 몫입니다. 운동장은 없습니다.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && z > 14 && Math.abs(x) < 1.8) {
       this.fire(
         "boarded",

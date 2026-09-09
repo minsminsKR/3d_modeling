@@ -312,6 +312,46 @@ export class BackroomsGenerator {
     };
   }
 
+  getHallWindowSide(cx, cz) {
+    // Verified chase-hide plus tiles keep four classroom nooks.
+    if ((cx === 0 && cz === 0) || (cx === 1 && cz === 0) || (cx === 0 && cz === 1) || (cx === 0 && cz === -1)) {
+      return null;
+    }
+    const chicanes = this.getHallChicanes(cx, cz);
+    if (chicanes.ew && chicanes.ns) return null;
+    if (chicanes.ew) {
+      if (cx === 2 && cz === 0) return "s";
+      if (cx === -1 && cz === 0) return "s";
+      if (cx === 4 && cz === 0) return "s";
+      if (cx === 5 && cz === 0) return "n";
+      if (cx === 7 && cz === 0) return "n";
+      return (cx + cz) % 2 === 0 ? "s" : "n";
+    }
+    if (chicanes.ns) {
+      return (cx + cz * 2) % 2 === 0 ? "e" : "w";
+    }
+    return null;
+  }
+
+  getHallNookMask(cx, cz) {
+    const chicanes = this.getHallChicanes(cx, cz);
+    const mask = { n: false, s: false, e: false, w: false };
+    if (chicanes.ew) {
+      mask.n = true;
+      mask.s = true;
+    }
+    if (chicanes.ns && !chicanes.ew) {
+      mask.e = true;
+      mask.w = true;
+    }
+    if (chicanes.ew && chicanes.ns) {
+      mask.n = mask.s = mask.e = mask.w = true;
+    }
+    const windowSide = this.getHallWindowSide(cx, cz);
+    if (windowSide) mask[windowSide] = false;
+    return mask;
+  }
+
   getHallNookKind(cx, cz, idx = 0) {
     // (1,0) is the verified classroom wing — keep desk rows there.
     if (cx === 1 && cz === 0) return "class";
@@ -1655,30 +1695,41 @@ export class BackroomsGenerator {
       const half = wide ? 1.7 : 1.2;
       const throughC = axis === "x" ? 6.65 : 6.9;
       const throughW = axis === "x" ? 1.5 : 1.3;
+      const mask = this.getHallNookMask(chunk.cx, chunk.cz);
+      const nmask = axis === "x"
+        ? this.getHallNookMask(chunk.cx + sign, chunk.cz)
+        : this.getHallNookMask(chunk.cx, chunk.cz + sign);
+      const throughNeg = Boolean(wide && (axis === "x" ? mask.n && nmask.n : mask.w && nmask.w));
+      const throughPos = Boolean(wide && (axis === "x" ? mask.s && nmask.s : mask.e && nmask.e));
+      const gaps = [[-half, half]];
+      if (throughNeg) gaps.push([-throughC - throughW / 2, -throughC + throughW / 2]);
+      if (throughPos) gaps.push([throughC - throughW / 2, throughC + throughW / 2]);
+      gaps.sort((a, b) => a[0] - b[0]);
+      const merged = [];
+      for (const gap of gaps) {
+        const last = merged[merged.length - 1];
+        if (last && gap[0] <= last[1] + 0.02) last[1] = Math.max(last[1], gap[1]);
+        else merged.push([...gap]);
+      }
       const ranges = [];
       const pushRange = (a, b, name) => {
         const len = b - a;
         if (len < 0.38) return;
         ranges.push({ mid: (a + b) / 2, len, name });
       };
-      if (wide) {
-        const t0 = -throughC - throughW / 2;
-        const t1 = -throughC + throughW / 2;
-        const t2 = throughC - throughW / 2;
-        const t3 = throughC + throughW / 2;
-        pushRange(-8.0, t0, `${prefix}_a`);
-        pushRange(t1, -half, `${prefix}_b`);
-        pushRange(half, t2, `${prefix}_c`);
-        pushRange(t3, 8.0, `${prefix}_d`);
-      } else {
-        pushRange(-8.0, -half, `${prefix}_left`);
-        pushRange(half, 8.0, `${prefix}_right`);
+      let cursor = -8.0;
+      let part = 0;
+      for (const [g0, g1] of merged) {
+        pushRange(cursor, g0, `${prefix}_${part}`);
+        part += 1;
+        cursor = g1;
       }
-      for (const part of ranges) {
+      pushRange(cursor, 8.0, `${prefix}_${part}`);
+      for (const piece of ranges) {
         if (axis === "z") {
-          addWallSegment(part.mid, wallPos, part.len, thickness, part.name);
+          addWallSegment(piece.mid, wallPos, piece.len, thickness, piece.name);
         } else {
-          addWallSegment(wallPos, part.mid, thickness, part.len, part.name);
+          addWallSegment(wallPos, piece.mid, thickness, piece.len, piece.name);
         }
       }
     };
@@ -2066,17 +2117,26 @@ export class BackroomsGenerator {
         );
       }
     };
+    const mask = this.getHallNookMask(chunk.cx, chunk.cz);
     if (ewChicane) {
-      placeBank("hall_lockers_n_w", -along, -face, bank, depth);
-      placeBank("hall_lockers_n_e", along, -face, bank, depth);
-      placeBank("hall_lockers_s_w", -along, face, bank, depth);
-      placeBank("hall_lockers_s_e", along, face, bank, depth);
+      if (mask.n) {
+        placeBank("hall_lockers_n_w", -along, -face, bank, depth);
+        placeBank("hall_lockers_n_e", along, -face, bank, depth);
+      }
+      if (mask.s) {
+        placeBank("hall_lockers_s_w", -along, face, bank, depth);
+        placeBank("hall_lockers_s_e", along, face, bank, depth);
+      }
     }
     if (nsChicane) {
-      placeBank("hall_lockers_w_n", -face, -along, depth, bank);
-      placeBank("hall_lockers_w_s", -face, along, depth, bank);
-      placeBank("hall_lockers_e_n", face, -along, depth, bank);
-      placeBank("hall_lockers_e_s", face, along, depth, bank);
+      if (mask.w) {
+        placeBank("hall_lockers_w_n", -face, -along, depth, bank);
+        placeBank("hall_lockers_w_s", -face, along, depth, bank);
+      }
+      if (mask.e) {
+        placeBank("hall_lockers_e_n", face, -along, depth, bank);
+        placeBank("hall_lockers_e_s", face, along, depth, bank);
+      }
     }
   }
 
@@ -2595,9 +2655,13 @@ export class BackroomsGenerator {
       );
     };
 
+    const mask = this.getHallNookMask(chunk.cx, chunk.cz);
+
     if (ewChicane) {
-      const nGaps = [{ center: -alcove, width: doorW }, { center: alcove, width: doorW }];
-      const sGaps = [{ center: -alcove, width: doorW }, { center: alcove, width: doorW }];
+      const nGaps = [];
+      const sGaps = [];
+      if (mask.n) nGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
+      if (mask.s) sGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
       if (nsChicane || openings.N) nGaps.push({ center: 0, width: clear * 2 });
       if (nsChicane || openings.S) sGaps.push({ center: 0, width: clear * 2 });
       gapped("hall_class_n", "x", -wallPos, nGaps);
@@ -2623,8 +2687,10 @@ export class BackroomsGenerator {
       const eGaps = [];
       if (ewChicane || openings.W) wGaps.push({ center: 0, width: clear * 2 });
       if (ewChicane || openings.E) eGaps.push({ center: 0, width: clear * 2 });
-      if (!ewChicane) {
+      if (!ewChicane && mask.w) {
         wGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
+      }
+      if (!ewChicane && mask.e) {
         eGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
       }
       gapped("hall_class_w", "z", -wallPos, wGaps);
@@ -2663,14 +2729,18 @@ export class BackroomsGenerator {
     };
     const winZ = wallPos + 0.03;
     if (ewChicane) {
-      panel("hall_class_door_n_w", -alcove, -winZ, 0.9, 0.04);
-      panel("hall_class_door_n_e", alcove, -winZ, 0.9, 0.04);
-      panel("hall_class_door_s_w", -alcove, winZ, 0.9, 0.04);
-      panel("hall_class_door_s_e", alcove, winZ, 0.9, 0.04);
-      glass("hall_window_n_w", -2.9, -winZ, 0.28, 0.32, 0.03);
-      glass("hall_window_n_e", 2.9, -winZ, 0.28, 0.32, 0.03);
-      glass("hall_window_s_w", -2.9, winZ, 0.28, 0.32, 0.03);
-      glass("hall_window_s_e", 2.9, winZ, 0.28, 0.32, 0.03);
+      if (mask.n) {
+        panel("hall_class_door_n_w", -alcove, -winZ, 0.9, 0.04);
+        panel("hall_class_door_n_e", alcove, -winZ, 0.9, 0.04);
+        glass("hall_window_n_w", -2.9, -winZ, 0.28, 0.32, 0.03);
+        glass("hall_window_n_e", 2.9, -winZ, 0.28, 0.32, 0.03);
+      }
+      if (mask.s) {
+        panel("hall_class_door_s_w", -alcove, winZ, 0.9, 0.04);
+        panel("hall_class_door_s_e", alcove, winZ, 0.9, 0.04);
+        glass("hall_window_s_w", -2.9, winZ, 0.28, 0.32, 0.03);
+        glass("hall_window_s_e", 2.9, winZ, 0.28, 0.32, 0.03);
+      }
       this.placeDressedBox(
         chunk, chunkId, "hall_stripe_ew",
         center.x, floorY + 0.012, center.z, 14.6, 0.02, 0.09,
@@ -2704,15 +2774,23 @@ export class BackroomsGenerator {
     if (nsChicane) {
       const winX = wallPos + 0.03;
       if (!ewChicane) {
-        panel("hall_class_door_w_n", -winX, -alcove, 0.04, 0.9);
-        panel("hall_class_door_w_s", -winX, alcove, 0.04, 0.9);
-        panel("hall_class_door_e_n", winX, -alcove, 0.04, 0.9);
-        panel("hall_class_door_e_s", winX, alcove, 0.04, 0.9);
+        if (mask.w) {
+          panel("hall_class_door_w_n", -winX, -alcove, 0.04, 0.9);
+          panel("hall_class_door_w_s", -winX, alcove, 0.04, 0.9);
+        }
+        if (mask.e) {
+          panel("hall_class_door_e_n", winX, -alcove, 0.04, 0.9);
+          panel("hall_class_door_e_s", winX, alcove, 0.04, 0.9);
+        }
       }
-      glass("hall_window_w_n", -winX, -2.9, 0.03, 0.32, 0.28);
-      glass("hall_window_w_s", -winX, 2.9, 0.03, 0.32, 0.28);
-      glass("hall_window_e_n", winX, -2.9, 0.03, 0.32, 0.28);
-      glass("hall_window_e_s", winX, 2.9, 0.03, 0.32, 0.28);
+      if (mask.w) {
+        glass("hall_window_w_n", -winX, -2.9, 0.03, 0.32, 0.28);
+        glass("hall_window_w_s", -winX, 2.9, 0.03, 0.32, 0.28);
+      }
+      if (mask.e) {
+        glass("hall_window_e_n", winX, -2.9, 0.03, 0.32, 0.28);
+        glass("hall_window_e_s", winX, 2.9, 0.03, 0.32, 0.28);
+      }
       this.placeDressedBox(
         chunk, chunkId, "hall_stripe_ns",
         center.x, floorY + 0.012, center.z, 0.09, 0.02, 14.6,
@@ -2738,12 +2816,89 @@ export class BackroomsGenerator {
     }
     this.dressHallThroughDoors(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
     this.dressHallClassroomNooks(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
+    this.dressHallWindowWall(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane, mask);
+  }
+
+  dressHallWindowWall(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane, mask) {
+    if (!ewChicane && !nsChicane) return;
+    this.ensureSchoolCorridorMaterials();
+    const clear = 1.7;
+    const wallPos = clear + 0.14;
+    const fillAlong = 4.72;
+    const fillDepth = 5.72;
+    const pane = (name, x, z, sx, sz, yaw) => {
+      const frame = this.placeDressedBox(
+        chunk, chunkId, `${name}_frame`,
+        center.x + x, floorY + 1.55, center.z + z,
+        Math.max(sx, 0.08), 1.35, Math.max(sz, 0.08),
+        this.schoolMetalMat || this.trimMaterial, false,
+      );
+      const glass = new THREE.Mesh(
+        this.getBoxGeometry(Math.max(sx - 0.12, 0.4), 1.05, Math.max(sz - 0.12, 0.04)),
+        this.schoolGlassMat,
+      );
+      glass.position.set(center.x + x, floorY + 1.58, center.z + z);
+      glass.rotation.y = yaw;
+      glass.name = `${chunkId}_${name}`;
+      this.addSchoolProp(chunk, glass);
+      return frame;
+    };
+    const fill = (name, x, z, sx, sz) => {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        center.x + x, floorY + 1.4, center.z + z, sx, 2.8, sz,
+        this.schoolClassWallMat,
+      );
+    };
+    if (ewChicane && !mask.s) {
+      const xs = openings.S ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
+      for (const [x, sx] of xs) fill(`hall_outer_fill_s_${x < 0 ? "w" : x > 0 ? "e" : "m"}`, x, fillAlong, sx, fillDepth);
+      for (const x of [-5.35, -3.15, 3.15, 5.35]) {
+        pane(`hall_outer_window_s_${x < 0 ? "w" : "e"}_${Math.abs(x) > 4 ? "a" : "b"}`, x, wallPos - 0.08, 1.55, 0.06, 0);
+      }
+      const glow = new THREE.PointLight(0x141820, 0.1, 3.4, 2);
+      glow.position.set(center.x, floorY + 1.55, center.z + 2.4);
+      glow.name = `${chunkId}_hall_outer_glow_s`;
+      this.scene.add(glow);
+      chunk.meshes.push(glow);
+    }
+    if (ewChicane && !mask.n) {
+      const xs = openings.N ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
+      for (const [x, sx] of xs) fill(`hall_outer_fill_n_${x < 0 ? "w" : x > 0 ? "e" : "m"}`, x, -fillAlong, sx, fillDepth);
+      for (const x of [-5.35, -3.15, 3.15, 5.35]) {
+        pane(`hall_outer_window_n_${x < 0 ? "w" : "e"}_${Math.abs(x) > 4 ? "a" : "b"}`, x, -wallPos + 0.08, 1.55, 0.06, Math.PI);
+      }
+      const glow = new THREE.PointLight(0x141820, 0.1, 3.4, 2);
+      glow.position.set(center.x, floorY + 1.55, center.z - 2.4);
+      glow.name = `${chunkId}_hall_outer_glow_n`;
+      this.scene.add(glow);
+      chunk.meshes.push(glow);
+    }
+    if (nsChicane && !ewChicane && !mask.e) {
+      const zs = openings.E ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
+      for (const [z, sz] of zs) fill(`hall_outer_fill_e_${z < 0 ? "n" : z > 0 ? "s" : "m"}`, fillAlong, z, fillDepth, sz);
+      for (const z of [-5.35, -3.15, 3.15, 5.35]) {
+        pane(`hall_outer_window_e_${z < 0 ? "n" : "s"}_${Math.abs(z) > 4 ? "a" : "b"}`, wallPos + 0.04, z, 0.06, 1.55, Math.PI / 2);
+      }
+    }
+    if (nsChicane && !ewChicane && !mask.w) {
+      const zs = openings.W ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
+      for (const [z, sz] of zs) fill(`hall_outer_fill_w_${z < 0 ? "n" : z > 0 ? "s" : "m"}`, -fillAlong, z, fillDepth, sz);
+      for (const z of [-5.35, -3.15, 3.15, 5.35]) {
+        pane(`hall_outer_window_w_${z < 0 ? "n" : "s"}_${Math.abs(z) > 4 ? "a" : "b"}`, -wallPos - 0.04, z, 0.06, 1.55, -Math.PI / 2);
+      }
+    }
   }
 
   dressHallThroughDoors(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
     if (!ewChicane && !nsChicane) return;
     this.ensureSchoolCorridorMaterials();
     const maze = (dx, dz) => this.isMazeHall(chunk.cx + dx, chunk.cz + dz);
+    const selfMask = this.getHallNookMask(chunk.cx, chunk.cz);
+    const eastMask = this.getHallNookMask(chunk.cx + 1, chunk.cz);
+    const westMask = this.getHallNookMask(chunk.cx - 1, chunk.cz);
+    const northMask = this.getHallNookMask(chunk.cx, chunk.cz - 1);
+    const southMask = this.getHallNookMask(chunk.cx, chunk.cz + 1);
     const jamb = (name, x, z, sx, sz) => {
       this.placeDressedBox(
         chunk, chunkId, name,
@@ -2774,52 +2929,68 @@ export class BackroomsGenerator {
       this.addHallNookSign(chunk, chunkId, name, center.x + x, floorY + 2.08, center.z + z, yaw, "뒷문");
     };
     if (ewChicane && openings.E && maze(1, 0)) {
-      jamb("hall_through_e_n_a", 7.72, -7.38, 0.2, 0.16);
-      jamb("hall_through_e_n_b", 7.72, -5.92, 0.2, 0.16);
-      header("hall_through_e_n_head", 7.72, -6.65, 0.2, 1.48);
-      leaf("hall_through_e_n_leaf", 7.42, -5.88, -1.22);
-      plate("hall_through_e_n_sign", 7.58, -6.65, Math.PI / 2);
-      jamb("hall_through_e_s_a", 7.72, 5.92, 0.2, 0.16);
-      jamb("hall_through_e_s_b", 7.72, 7.38, 0.2, 0.16);
-      header("hall_through_e_s_head", 7.72, 6.65, 0.2, 1.48);
-      leaf("hall_through_e_s_leaf", 7.42, 5.88, 1.22);
-      plate("hall_through_e_s_sign", 7.58, 6.65, Math.PI / 2);
+      if (selfMask.n && eastMask.n) {
+        jamb("hall_through_e_n_a", 7.72, -7.38, 0.2, 0.16);
+        jamb("hall_through_e_n_b", 7.72, -5.92, 0.2, 0.16);
+        header("hall_through_e_n_head", 7.72, -6.65, 0.2, 1.48);
+        leaf("hall_through_e_n_leaf", 7.42, -5.88, -1.22);
+        plate("hall_through_e_n_sign", 7.58, -6.65, Math.PI / 2);
+      }
+      if (selfMask.s && eastMask.s) {
+        jamb("hall_through_e_s_a", 7.72, 5.92, 0.2, 0.16);
+        jamb("hall_through_e_s_b", 7.72, 7.38, 0.2, 0.16);
+        header("hall_through_e_s_head", 7.72, 6.65, 0.2, 1.48);
+        leaf("hall_through_e_s_leaf", 7.42, 5.88, 1.22);
+        plate("hall_through_e_s_sign", 7.58, 6.65, Math.PI / 2);
+      }
     }
     if (ewChicane && openings.W && maze(-1, 0)) {
-      jamb("hall_through_w_n_a", -7.72, -7.38, 0.2, 0.16);
-      jamb("hall_through_w_n_b", -7.72, -5.92, 0.2, 0.16);
-      header("hall_through_w_n_head", -7.72, -6.65, 0.2, 1.48);
-      leaf("hall_through_w_n_leaf", -7.42, -5.88, 1.22);
-      plate("hall_through_w_n_sign", -7.58, -6.65, -Math.PI / 2);
-      jamb("hall_through_w_s_a", -7.72, 5.92, 0.2, 0.16);
-      jamb("hall_through_w_s_b", -7.72, 7.38, 0.2, 0.16);
-      header("hall_through_w_s_head", -7.72, 6.65, 0.2, 1.48);
-      leaf("hall_through_w_s_leaf", -7.42, 5.88, -1.22);
-      plate("hall_through_w_s_sign", -7.58, 6.65, -Math.PI / 2);
+      if (selfMask.n && westMask.n) {
+        jamb("hall_through_w_n_a", -7.72, -7.38, 0.2, 0.16);
+        jamb("hall_through_w_n_b", -7.72, -5.92, 0.2, 0.16);
+        header("hall_through_w_n_head", -7.72, -6.65, 0.2, 1.48);
+        leaf("hall_through_w_n_leaf", -7.42, -5.88, 1.22);
+        plate("hall_through_w_n_sign", -7.58, -6.65, -Math.PI / 2);
+      }
+      if (selfMask.s && westMask.s) {
+        jamb("hall_through_w_s_a", -7.72, 5.92, 0.2, 0.16);
+        jamb("hall_through_w_s_b", -7.72, 7.38, 0.2, 0.16);
+        header("hall_through_w_s_head", -7.72, 6.65, 0.2, 1.48);
+        leaf("hall_through_w_s_leaf", -7.42, 5.88, -1.22);
+        plate("hall_through_w_s_sign", -7.58, 6.65, -Math.PI / 2);
+      }
     }
     if (nsChicane && openings.N && maze(0, -1)) {
-      jamb("hall_through_n_w_a", -7.52, -7.72, 0.16, 0.2);
-      jamb("hall_through_n_w_b", -6.28, -7.72, 0.16, 0.2);
-      header("hall_through_n_w_head", -6.9, -7.72, 1.28, 0.2);
-      leaf("hall_through_n_w_leaf", -6.22, -7.42, 0.52);
-      plate("hall_through_n_w_sign", -6.9, -7.58, Math.PI);
-      jamb("hall_through_n_e_a", 6.28, -7.72, 0.16, 0.2);
-      jamb("hall_through_n_e_b", 7.52, -7.72, 0.16, 0.2);
-      header("hall_through_n_e_head", 6.9, -7.72, 1.28, 0.2);
-      leaf("hall_through_n_e_leaf", 6.22, -7.42, -0.52);
-      plate("hall_through_n_e_sign", 6.9, -7.58, Math.PI);
+      if (selfMask.w && northMask.w) {
+        jamb("hall_through_n_w_a", -7.52, -7.72, 0.16, 0.2);
+        jamb("hall_through_n_w_b", -6.28, -7.72, 0.16, 0.2);
+        header("hall_through_n_w_head", -6.9, -7.72, 1.28, 0.2);
+        leaf("hall_through_n_w_leaf", -6.22, -7.42, 0.52);
+        plate("hall_through_n_w_sign", -6.9, -7.58, Math.PI);
+      }
+      if (selfMask.e && northMask.e) {
+        jamb("hall_through_n_e_a", 6.28, -7.72, 0.16, 0.2);
+        jamb("hall_through_n_e_b", 7.52, -7.72, 0.16, 0.2);
+        header("hall_through_n_e_head", 6.9, -7.72, 1.28, 0.2);
+        leaf("hall_through_n_e_leaf", 6.22, -7.42, -0.52);
+        plate("hall_through_n_e_sign", 6.9, -7.58, Math.PI);
+      }
     }
     if (nsChicane && openings.S && maze(0, 1)) {
-      jamb("hall_through_s_w_a", -7.52, 7.72, 0.16, 0.2);
-      jamb("hall_through_s_w_b", -6.28, 7.72, 0.16, 0.2);
-      header("hall_through_s_w_head", -6.9, 7.72, 1.28, 0.2);
-      leaf("hall_through_s_w_leaf", -6.22, 7.42, -0.52);
-      plate("hall_through_s_w_sign", -6.9, 7.58, 0);
-      jamb("hall_through_s_e_a", 6.28, 7.72, 0.16, 0.2);
-      jamb("hall_through_s_e_b", 7.52, 7.72, 0.16, 0.2);
-      header("hall_through_s_e_head", 6.9, 7.72, 1.28, 0.2);
-      leaf("hall_through_s_e_leaf", 6.22, 7.42, 0.52);
-      plate("hall_through_s_e_sign", 6.9, 7.58, 0);
+      if (selfMask.w && southMask.w) {
+        jamb("hall_through_s_w_a", -7.52, 7.72, 0.16, 0.2);
+        jamb("hall_through_s_w_b", -6.28, 7.72, 0.16, 0.2);
+        header("hall_through_s_w_head", -6.9, 7.72, 1.28, 0.2);
+        leaf("hall_through_s_w_leaf", -6.22, 7.42, -0.52);
+        plate("hall_through_s_w_sign", -6.9, 7.58, 0);
+      }
+      if (selfMask.e && southMask.e) {
+        jamb("hall_through_s_e_a", 6.28, 7.72, 0.16, 0.2);
+        jamb("hall_through_s_e_b", 7.52, 7.72, 0.16, 0.2);
+        header("hall_through_s_e_head", 6.9, 7.72, 1.28, 0.2);
+        leaf("hall_through_s_e_leaf", 6.22, 7.42, 0.52);
+        plate("hall_through_s_e_sign", 6.9, 7.58, 0);
+      }
     }
   }
 
@@ -2846,17 +3017,34 @@ export class BackroomsGenerator {
     const alcove = 5.25;
     const wall = 1.84;
     let idx = 0;
+    const mask = this.getHallNookMask(chunk.cx, chunk.cz);
     const southT = Boolean(ewChicane && (nsChicane || openings?.S));
     const northT = Boolean(ewChicane && (nsChicane || openings?.N));
     const westT = Boolean(nsChicane && (ewChicane || openings?.W));
     const eastT = Boolean(nsChicane && (ewChicane || openings?.E));
 
     const mazeN = (dx, dz) => this.isMazeHall(chunk.cx + dx, chunk.cz + dz);
-    const nookHasThrough = (sideX, sideZ) => {
-      if (sideX < -0.5) return Boolean(openings.E && mazeN(1, 0));
-      if (sideX > 0.5) return Boolean(openings.W && mazeN(-1, 0));
-      if (sideZ < -0.5) return Boolean(openings.S && mazeN(0, 1));
-      if (sideZ > 0.5) return Boolean(openings.N && mazeN(0, -1));
+    const nookHasThrough = (sideX, sideZ, inX, inZ) => {
+      if (sideX < -0.5) {
+        const other = this.getHallNookMask(chunk.cx + 1, chunk.cz);
+        const side = inZ < 0 ? "n" : "s";
+        return Boolean(openings.E && mazeN(1, 0) && mask[side] && other[side]);
+      }
+      if (sideX > 0.5) {
+        const other = this.getHallNookMask(chunk.cx - 1, chunk.cz);
+        const side = inZ < 0 ? "n" : "s";
+        return Boolean(openings.W && mazeN(-1, 0) && mask[side] && other[side]);
+      }
+      if (sideZ < -0.5) {
+        const other = this.getHallNookMask(chunk.cx, chunk.cz + 1);
+        const side = inX < 0 ? "w" : "e";
+        return Boolean(openings.S && mazeN(0, 1) && mask[side] && other[side]);
+      }
+      if (sideZ > 0.5) {
+        const other = this.getHallNookMask(chunk.cx, chunk.cz - 1);
+        const side = inX < 0 ? "w" : "e";
+        return Boolean(openings.N && mazeN(0, -1) && mask[side] && other[side]);
+      }
       return false;
     };
 
@@ -3022,7 +3210,7 @@ export class BackroomsGenerator {
         chunk, chunkId, center, floorY,
         doorX, doorZ, inX, inZ, sideX, sideZ, idx, variant, faceYaw,
       );
-      if (nookHasThrough(sideX, sideZ)) {
+      if (nookHasThrough(sideX, sideZ, inX, inZ)) {
         this.dressThroughClassCorner(chunk, chunkId, center, floorY, {
           doorX, doorZ, inX, inZ, sideX, sideZ, idx, faceYaw,
         });
@@ -3031,16 +3219,28 @@ export class BackroomsGenerator {
     };
 
     if (ewChicane) {
-      dressNook(-alcove, -wall, 0, -1, 1, 0);
-      dressNook(alcove, -wall, 0, -1, -1, 0);
-      dressNook(-alcove, wall, 0, 1, 1, 0);
-      dressNook(alcove, wall, 0, 1, -1, 0);
+      if (mask.n) {
+        dressNook(-alcove, -wall, 0, -1, 1, 0);
+        dressNook(alcove, -wall, 0, -1, -1, 0);
+      } else {
+        idx += 2;
+      }
+      if (mask.s) {
+        dressNook(-alcove, wall, 0, 1, 1, 0);
+        dressNook(alcove, wall, 0, 1, -1, 0);
+      }
     }
     if (nsChicane && !ewChicane) {
-      dressNook(-wall, -alcove, -1, 0, 0, 1);
-      dressNook(-wall, alcove, -1, 0, 0, -1);
-      dressNook(wall, -alcove, 1, 0, 0, 1);
-      dressNook(wall, alcove, 1, 0, 0, -1);
+      if (mask.w) {
+        dressNook(-wall, -alcove, -1, 0, 0, 1);
+        dressNook(-wall, alcove, -1, 0, 0, -1);
+      } else {
+        idx += 2;
+      }
+      if (mask.e) {
+        dressNook(wall, -alcove, 1, 0, 0, 1);
+        dressNook(wall, alcove, 1, 0, 0, -1);
+      }
     }
   }
 
@@ -4758,21 +4958,35 @@ export class BackroomsGenerator {
       return lz > 0 ? 0 : Math.PI;
     };
     if (hallLike && chunk.cabinets.length === 0) {
-      const south = (chunk.cx + chunk.cz) % 2 === 0
-        ? [5.25, 0.0, 5.25]
-        : [-5.25, 0.0, 5.25];
+      const nookMask = this.getHallNookMask(chunk.cx, chunk.cz);
+      const along = (chunk.cx + chunk.cz) % 2 === 0 ? 5.25 : -5.25;
+      let south = [along, 0.0, 5.25];
+      if (nookMask.s) south = [along, 0.0, 5.25];
+      else if (nookMask.n) south = [along, 0.0, -5.25];
+      else if (nookMask.e) south = [5.25, 0.0, along];
+      else if (nookMask.w) south = [-5.25, 0.0, along];
       addDynamicCabinet(`cabinet_hall_${chunk.cx}_${chunk.cz}`, "신발장", south, hallFacingYaw(south[0], south[2]));
     }
     if (mazeHall && chunk.cabinets.length === 1) {
       const first = chunk.cabinets[0];
       const lx = first.position.x - center.x;
       const lz = first.position.z - center.z;
-      addDynamicCabinet(
-        `cabinet_hall2_${chunk.cx}_${chunk.cz}`,
-        "반대편 신발장",
+      const nookMask = this.getHallNookMask(chunk.cx, chunk.cz);
+      const candidates = [
         [lx, 0.0, -lz],
-        hallFacingYaw(lx, -lz),
-      );
+        [-lx, 0.0, lz],
+        [-lx, 0.0, -lz],
+      ];
+      const live = (px, pz) => (pz < -2 && nookMask.n) || (pz > 2 && nookMask.s) || (px > 2 && nookMask.e) || (px < -2 && nookMask.w);
+      const next = candidates.find(([px, , pz]) => live(px, pz));
+      if (next) {
+        addDynamicCabinet(
+          `cabinet_hall2_${chunk.cx}_${chunk.cz}`,
+          "반대편 신발장",
+          next,
+          hallFacingYaw(next[0], next[2]),
+        );
+      }
     }
     const addLoreNote = (id, localPos, yaw, body) => {
       const note = new LoreNote({

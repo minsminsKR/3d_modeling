@@ -283,6 +283,19 @@ try {
     console.log("gym", stop, gymWalk.at(-1));
   }
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(2, 0);
+    game.player.setPosition({ x: 32, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const windowBlock = await walkTo({ x: 37.2, z: 5.25 }, 220);
+  console.log("windowBlock", windowBlock);
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -349,7 +362,8 @@ try {
       hallNookSign: names(westHall).some((name) => name.includes("hall_sign_")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       hallThrough: names(hall).some((name) => name.includes("hall_through_")),
-      hallThroughDesk: names(hall).some((name) => name.includes("hall_through_desk_")),
+      hallOuterWindow: names(eastWing).some((name) => name.includes("hall_outer_window_")),
+      hallOuterFill: names(eastWing).some((name) => name.includes("hall_outer_fill_")),
       gymType: gym.type,
       gymCourt: names(gym).some((name) => name.includes("gym_court")),
       gymHoop: names(gym).some((name) => name.includes("gym_hoop_")),
@@ -607,7 +621,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -638,6 +652,12 @@ try {
   assert.equal(rooms.gymHoop, true, "gymnasium must have a hoop");
   assert.equal(rooms.gymBleacher, true, "gymnasium must have bleachers");
   assert.ok(rooms.beats.includes("gymnasium"));
+  assert.equal(rooms.hallOuterWindow, true, "east maze hall must open a window wall instead of a plus classroom");
+  assert.equal(rooms.hallOuterFill, true, "window-wall halls must fill the omitted classroom volume");
+  assert.ok(
+    windowBlock.ok !== true || Math.abs(windowBlock.z) < 2.4,
+    `window wall must block the old south classroom, got ${JSON.stringify(windowBlock)}`,
+  );
   assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
   assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
   assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");
