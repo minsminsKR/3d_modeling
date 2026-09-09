@@ -76,8 +76,12 @@ try {
       f2SouthLab: (f2.meshes || []).some((mesh) => String(mesh.name || "").includes("gallery_2f_floor_south_lab")),
     };
     const hall = game.mapBuilder.generator.generateChunk(1, 0);
+    const northHall = game.mapBuilder.generator.generateChunk(0, -1);
+    const uncatHall = game.mapBuilder.generator.generateChunk(0, 1);
     floors.hallMaze = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_"));
     floors.hallJog = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog"));
+    floors.hallJogNs = (northHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog_ns"));
+    floors.uncatSpineClear = !(uncatHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog"));
     game.player.setPosition({ x: 80, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05);
     const deepWing = {
@@ -185,6 +189,8 @@ try {
   assert.equal(result.floors.f2SouthLab, true, "2F south labyrinth must exist");
   assert.equal(result.floors.hallMaze, true, "1F halls must fold into alcove mazes");
   assert.equal(result.floors.hallJog, true, "east 1F halls must jog off the straight spine");
+  assert.equal(result.floors.hallJogNs, true, "north 1F halls must jog off the x=0 spine");
+  assert.equal(result.floors.uncatSpineClear, true, "Uncat south reveal hall must stay a straight spine");
   assert.equal(result.atWing.totalKeys, 4, "unloading key rooms must not shrink the four-name loop");
   assert.equal(result.atWing.hud, "0 / 4");
   assert.ok(Math.abs(result.floorHunt.uncatY) < 2.5, `Uncat must stay on 1F while the player is in B1, got y=${result.floorHunt.uncatY}`);

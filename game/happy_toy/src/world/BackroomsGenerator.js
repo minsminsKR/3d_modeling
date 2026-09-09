@@ -296,6 +296,19 @@ export class BackroomsGenerator {
     return getGraphOpenings(cx, cz);
   }
 
+  // Intra-tile jogs so plus halls are not highways. Keep Uncat's south
+  // reveal (0,1) and the weeping-angel west tile (-1,0) as straight spines.
+  getHallChicanes(cx, cz) {
+    const openings = this.getOpenings(cx, cz);
+    const skipUncatSouth = cx === 0 && cz === 1;
+    const skipAngelWest = cx === -1 && cz === 0;
+    return {
+      openings,
+      ew: Boolean(openings.E && openings.W && cx !== 0 && !skipAngelWest),
+      ns: Boolean(openings.N && openings.S && cz !== 0 && !skipUncatSouth),
+    };
+  }
+
   generateExteriorHull(cx, cz) {
     const key = this.getChunkKey(cx, cz);
     const center = new THREE.Vector3(cx * 16, 0, cz * 16);
@@ -1629,12 +1642,20 @@ export class BackroomsGenerator {
     }
 
     // Plus-shaped halls with four enterable corner alcoves (1.6m inner gaps).
-    // East of spawn, EW halls get a south jog so the annex is not a straight highway.
+    // Away from spawn, EW halls jog south and NS halls jog west so the
+    // school is not a plus-shaped highway. Uncat's south reveal and the
+    // weeping-angel west tile stay straight.
     const hallLike = type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
       || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";
-    const ewChicane = hallLike && E && W && chunk.cx >= 1;
+    const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
+    const ewChicane = hallLike && chicanes.ew;
+    const nsChicane = hallLike && chicanes.ns;
     if (hallLike) {
-      addWallSegment(-1.4, -5.6, 0.4, 4.8, "alcove_nw_ns");
+      if (nsChicane) {
+        addWallSegment(-1.4, -6.925, 0.4, 2.15, "alcove_nw_ns_n");
+      } else {
+        addWallSegment(-1.4, -5.6, 0.4, 4.8, "alcove_nw_ns");
+      }
       addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
       addWallSegment(1.4, -5.6, 0.4, 4.8, "alcove_ne_ns");
       addWallSegment(5.6, -1.4, 4.8, 0.4, "alcove_ne_ew");
@@ -1748,7 +1769,9 @@ export class BackroomsGenerator {
     const t = 0.32;
     const skipNW = chunk.cx === 0 && chunk.cz === 0;
     const cabinetSE = (chunk.cx + chunk.cz) % 2 === 0;
-    const ewChicane = openings.E && openings.W && chunk.cx >= 1;
+    const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
+    const ewChicane = chicanes.ew;
+    const nsChicane = chicanes.ns;
     const walls = [];
     const add = (name, x, z, sx, sz, skip = false) => {
       if (!skip) walls.push([name, x, z, sx, sz]);
@@ -1765,11 +1788,14 @@ export class BackroomsGenerator {
     if (ewChicane) {
       add("hall_maze_jog", -2.6, 0.0, t, 2.72);
     }
+    if (nsChicane) {
+      add("hall_maze_jog_ns", 0.0, -2.6, 2.72, t);
+    }
     if (openings.E && openings.W && !ewChicane) {
       add("hall_maze_teeth_w", -4.2, 0.92, 1.8, t);
       add("hall_maze_teeth_e", 4.2, -0.92, 1.8, t);
     }
-    if (openings.N && openings.S) {
+    if (openings.N && openings.S && !nsChicane) {
       add("hall_maze_teeth_n", -0.92, -4.2, t, 1.8);
       add("hall_maze_teeth_s", 0.92, 4.2, t, 1.8);
     }
@@ -3906,10 +3932,17 @@ export class BackroomsGenerator {
 
     if (type === "start" || type === "cross_junction" || type === "t_junction"
       || type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew") {
+      const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
       chunk.waypoints = [
         wp(0, 0), wp(0, -5.4), wp(0, 5.4), wp(-5.4, 0), wp(5.4, 0),
         wp(-5.2, -5.2), wp(5.2, -5.2), wp(-5.2, 5.2), wp(5.2, 5.2),
       ];
+      if (chicanes.ew) {
+        chunk.waypoints.push(wp(-4.5, 2.6), wp(0, 2.6), wp(-4.5, 0));
+      }
+      if (chicanes.ns) {
+        chunk.waypoints.push(wp(-2.6, -4.5), wp(-2.6, 0), wp(0, -4.5));
+      }
     } else if (type === "corner") {
       // SE corner — open quadrant only
       chunk.waypoints = [wp(3,3), wp(5,3), wp(3,5), wp(5,0), wp(0,5)];

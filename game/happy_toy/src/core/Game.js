@@ -1737,6 +1737,7 @@ export class Game {
     }
     this.updateFloorAtmosphere(8, true);
     this.floorHuntDirector?.hide?.();
+    this.hud?.setPrompt?.("");
     if (Array.isArray(lookAt) && lookAt.length >= 3) {
       this.player.setLookAt(new THREE.Vector3(lookAt[0], lookAt[1], lookAt[2]));
     } else {

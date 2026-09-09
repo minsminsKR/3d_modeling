@@ -115,6 +115,28 @@ try {
     game.ghostMode = true;
     game.testSafeMode = false;
     game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(0, -1);
+    game.player.setPosition({ x: 0, y: 0, z: -8 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const northNsJog = (centerZ) => ([
+    { x: 0, z: centerZ },
+    { x: -2.6, z: centerZ },
+    { x: -2.6, z: centerZ - 4.5 },
+    { x: 0, z: centerZ - 4.5 },
+  ]);
+  const northWalk = [];
+  for (const stop of northNsJog(-16)) {
+    northWalk.push(await walkTo(stop, 360));
+    console.log("north", stop, northWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
     game.mapBuilder.generator.generateChunk(1, 0);
     game.player.setPosition({ x: 16, y: 0, z: 0 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
@@ -138,6 +160,8 @@ try {
     const science = generator.generateChunk(6, -2);
     const gate = generator.generateChunk(4, 0);
     const hall = generator.generateChunk(1, 0);
+    const northHall = generator.generateChunk(0, -1);
+    const uncatHall = generator.generateChunk(0, 1);
     const b1 = generator.generateChunk(1, 2);
     const f2 = generator.generateChunk(-1, -1);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
@@ -157,6 +181,8 @@ try {
       annexSign: names(gate).some((name) => name.includes("annex_sign")),
       hallMaze: names(hall).filter((name) => name.includes("hall_maze_")).length,
       hallJog: names(hall).some((name) => name.includes("hall_maze_jog")),
+      hallJogNs: names(northHall).some((name) => name.includes("hall_maze_jog_ns")),
+      uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -408,7 +434,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, northWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 1.8), "east school must force a south jog off z=0");
@@ -420,6 +446,11 @@ try {
   assert.ok(f1MazeWalk.at(-1).z < -5, "1F hall maze continues into the north alcove");
   assert.ok(rooms.hallMaze >= 6, `1F hall maze walls missing: ${rooms.hallMaze}`);
   assert.equal(rooms.hallJog, true, "east 1F halls must block the z=0 spine and jog south");
+  assert.equal(rooms.hallJogNs, true, "north 1F halls must block the x=0 spine and jog west");
+  assert.equal(rooms.uncatSpineClear, true, "Uncat south reveal hall must stay a straight spine");
+  assert.ok(northWalk.some((stop) => stop.x < -2.0), "north school must force a west jog off x=0");
+  assert.equal(northWalk.at(-1).ok, true, `must walk the north 1F jog, got ${JSON.stringify(northWalk.at(-1))}`);
+  assert.ok(northWalk.at(-1).z < -19.5, "north jog continues past the baffle");
   assert.equal(b1Walk.at(-1).ok, true, `must walk the B1 maze to the nursery, got ${JSON.stringify(b1Walk.at(-1))}`);
   assert.ok(b1Walk.at(-1).x < 0, "nursery is west of the inner crib door");
   assert.equal(f2Walk.at(-1).ok, true, `must walk the 2F maze to the shrine, got ${JSON.stringify(f2Walk.at(-1))}`);
