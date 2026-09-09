@@ -323,7 +323,7 @@ export class BackroomsGenerator {
       if (cx === 2 && cz === 0) return "s";
       if (cx === -1 && cz === 0) return "s";
       if (cx === 4 && cz === 0) return "s";
-      if (cx === 5 && cz === 0) return "n";
+      if (cx === 5 && cz === 0) return "s";
       if (cx === 7 && cz === 0) return "n";
       return (cx + cz) % 2 === 0 ? "s" : "n";
     }
