@@ -200,6 +200,30 @@ g.player.position = { x: -16, y: 0, z: 16 };
 director.update();
 assert.equal(director.fired.has("teahall"), true);
 
+g.player.position = { x: 32, y: 0, z: 32 };
+director.update();
+assert.equal(director.fired.has("dorm"), true);
+
+g.player.position = { x: -32, y: 0, z: 32 };
+director.update();
+assert.equal(director.fired.has("dollclass"), true);
+
+g.player.position = { x: 32, y: 0, z: -32 };
+director.update();
+assert.equal(director.fired.has("prepstore"), true);
+
+g.player.position = { x: -32, y: 0, z: -32 };
+director.update();
+assert.equal(director.fired.has("closedlib"), true);
+
+g.player.position = { x: -16, y: 0, z: 32 };
+director.update();
+assert.equal(director.fired.has("etiquette"), true);
+
+g.player.position = { x: 4, y: 0, z: 32 };
+director.update();
+assert.equal(director.fired.has("roofhall"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");

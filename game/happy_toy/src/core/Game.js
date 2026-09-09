@@ -1734,6 +1734,22 @@ export class Game {
       this.hud.setStatus("다실 앞 복도입니다. 신발을 신지 마십시오.", 3600);
       return;
     }
+    if (cx === -2 && cz === 0 && !this._storyBeats.has("lostfound")) {
+      this._storyBeats.add("lostfound");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("lostfound", "분실물함입니다. 어제 신발을 찾지 마십시오.");
+      this.hud.setStatus("분실물함입니다. 어제 신발을 찾지 마십시오.", 3600);
+      return;
+    }
+    if (cx === 0 && cz === 2 && !this._storyBeats.has("roofhall")) {
+      this._storyBeats.add("roofhall");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("roofhall", "옥상 복도입니다. 문이 판자로 막혀 있습니다.");
+      this.hud.setStatus("옥상 복도입니다. 문이 판자로 막혀 있습니다.", 3600);
+      return;
+    }
     const roomLines = {
       nurse_office: ["nurse", "보건실입니다. 장부에 끝나지 않은 출석이 남아 있습니다."],
       music_room: ["music", "음악실입니다. 한 음이 모자란 피아노가 열려 있습니다."],
@@ -1754,6 +1770,12 @@ export class Game {
       wide_room: ["supply", "비품실입니다. 철창 안에 어제 출석이 잠겨 있습니다."],
       omen_room: ["counsel", "상담실입니다. 제단이 이름을 듣고 있습니다."],
       static_room: ["staticset", "방송 창고입니다. 화면이 아직 당신을 셉니다."],
+      workshop: ["dorm", "생활관입니다. 요람은 비어 있습니다."],
+      playroom: ["dollclass", "인형 교실입니다. 눈이 마주치면 따라가십시오."],
+      storage: ["prepstore", "준비물 창고입니다. 선반 뒤에 도자기 열쇠가 있습니다."],
+      archive: ["closedlib", "폐관 도서실입니다. 대출 장부를 읽지 마십시오."],
+      tatami_room: ["etiquette", "예절실입니다. 신발을 신지 마십시오."],
+      pillar_room: ["etiquette", "예절실입니다. 신발을 신지 마십시오."],
     };
     const room = roomLines[type];
     if (room && !this._storyBeats.has(type)) {

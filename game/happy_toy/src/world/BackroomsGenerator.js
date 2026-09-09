@@ -256,27 +256,27 @@ export class BackroomsGenerator {
       "1,0": "corridor_ew",   // Cyclopse Intro Corner
       "2,0": "t_junction",
       "2,-1": "corridor_ns",
-      "2,-2": "storage",       // Key 1 Storage Room
+      "2,-2": "storage",       // 준비물 창고 (key at center)
 
       "1,1": "corridor_ew",
       "2,1": "corridor_ns",
-      "2,2": "workshop",       // Key 3 Sleeping Baby Room
+      "2,2": "workshop",       // 생활관 (empty crib)
 
       "0,1": "cross_junction", // Uncat Blackout Reveal
       "-1,1": "corridor_ew",
       "-2,1": "corridor_ns",
-      "-2,2": "playroom",      // Key 2 LovelyDoll Room
+      "-2,2": "playroom",      // 인형교실 (key + doll at center)
 
       "-1,0": "corridor_ew",   // Weeping Angel Mannequin Intro
-      "-2,0": "t_junction",
+      "-2,0": "t_junction",    // 분실물 복도
       "-2,-1": "corridor_ns",
-      "-2,-2": "archive",      // Japanese Antique Archive (고서 보관소)
+      "-2,-2": "archive",      // 폐관 도서실
 
       "1,-1": "flicker_room",
       "1,2": "stairs_b1",
       "-1,-1": "stairs_2f",
-      "-1,2": "tatami_room",
-      "0,2": "corridor_ns",
+      "-1,2": "tatami_room",   // 예절실
+      "0,2": "corridor_ns",    // 옥상 복도 (N+W, not a maze chicane)
       "-1,-2": "omen_room",
       "1,-2": "static_room",
       "5,-1": "nurse_office",
@@ -386,6 +386,26 @@ export class BackroomsGenerator {
 
   isTeaHallChunk(cx, cz) {
     return cx === -1 && cz === 1;
+  }
+
+  isLostFoundChunk(cx, cz) {
+    return cx === -2 && cz === 0;
+  }
+
+  isRoofHallChunk(cx, cz) {
+    return cx === 0 && cz === 2;
+  }
+
+  isEastWashChunk(cx, cz) {
+    return cx === 2 && cz === 0;
+  }
+
+  isAngelHallChunk(cx, cz) {
+    return cx === -1 && cz === 0;
+  }
+
+  isWashFourChunk(cx, cz) {
+    return cx === 5 && cz === 0;
   }
 
   isPracticeChunk(cx, cz) {
@@ -2999,6 +3019,18 @@ export class BackroomsGenerator {
     if (this.isTeaHallChunk(chunk.cx, chunk.cz)) {
       this.dressTeaHall(chunk, center, chunkId, floorY);
     }
+    if (this.isLostFoundChunk(chunk.cx, chunk.cz)) {
+      this.dressLostFoundHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isEastWashChunk(chunk.cx, chunk.cz)) {
+      this.dressEastWashHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isAngelHallChunk(chunk.cx, chunk.cz)) {
+      this.dressAngelHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isWashFourChunk(chunk.cx, chunk.cz)) {
+      this.dressWashFourHall(chunk, center, chunkId, floorY);
+    }
     if (this.isPracticeChunk(chunk.cx, chunk.cz)) {
       this.dressPracticeHall(chunk, center, chunkId, floorY);
     }
@@ -4834,6 +4866,279 @@ export class BackroomsGenerator {
     chunk.meshes.push(glow);
   }
 
+  dressLostFoundHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolLostMat) {
+      this.schoolLostMat = new THREE.MeshStandardMaterial({
+        color: 0x3a3228,
+        roughness: 0.8,
+        metalness: 0.06,
+        emissive: 0x0c0804,
+        emissiveIntensity: 0.05,
+      });
+    }
+    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `lostfound_box_${name}`,
+        center.x - 1.48, floorY + 0.38, center.z + z,
+        0.62, 0.76, 0.72, this.schoolLostMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "lostfound_sign",
+      center.x - 1.72, floorY + 2.12, center.z,
+      Math.PI / 2, "분실물",
+    );
+    const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
+    glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
+    glow.name = `${chunkId}_lostfound_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressRoofHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    this.ensureSpecialNookMaterials();
+    this.placeDressedBox(
+      chunk, chunkId, "roofhall_board",
+      center.x, floorY + 1.35, center.z + 6.55,
+      3.4, 2.5, 0.12, this.schoolPlywoodMat || this.trimMaterial,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "roofhall_cone",
+      center.x + 4.35, floorY + 0.52, center.z + 4.15,
+      0.52, 1.04, 0.52, this.schoolMetalMat || this.trimMaterial,
+    );
+    this.addHallNookSign(
+      chunk, chunkId, "roofhall_sign",
+      center.x, floorY + 2.14, center.z + 6.35,
+      Math.PI, "옥상",
+    );
+    const glow = new THREE.PointLight(0x181410, 0.48, 6.0, 2);
+    glow.position.set(center.x + 2.2, floorY + 2.05, center.z + 3.4);
+    glow.name = `${chunkId}_roofhall_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressDormRoom(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolBunkMat) {
+      this.schoolBunkMat = new THREE.MeshStandardMaterial({
+        color: 0x3a2a22,
+        roughness: 0.84,
+        metalness: 0.04,
+        emissive: 0x100804,
+        emissiveIntensity: 0.04,
+      });
+    }
+    for (const [name, x, z] of [["sw", -5.85, 5.35], ["se", 5.85, 5.35]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `dorm_bunk_${name}`,
+        center.x + x, floorY + 0.55, center.z + z,
+        0.92, 1.1, 1.85, this.schoolBunkMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "dorm_sign",
+      center.x, floorY + 2.14, center.z - 7.52,
+      0, "생활관",
+    );
+    const glow = new THREE.PointLight(0x201410, 0.5, 6.4, 2);
+    glow.position.set(center.x, floorY + 2.1, center.z + 3.4);
+    glow.name = `${chunkId}_dorm_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressDollClass(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolChairMat) {
+      this.schoolChairMat = new THREE.MeshStandardMaterial({
+        color: 0x2a2418,
+        roughness: 0.78,
+        metalness: 0.04,
+        emissive: 0x0c0804,
+        emissiveIntensity: 0.04,
+      });
+    }
+    for (const [name, x, z] of [["nw", -5.45, -5.45], ["se", 5.45, 5.45]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `dollclass_chair_${name}`,
+        center.x + x, floorY + 0.42, center.z + z,
+        0.48, 0.84, 0.48, this.schoolChairMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "dollclass_sign",
+      center.x, floorY + 2.14, center.z - 7.52,
+      0, "인형교실",
+    );
+    const glow = new THREE.PointLight(0x201018, 0.5, 6.4, 2);
+    glow.position.set(center.x, floorY + 2.1, center.z);
+    glow.name = `${chunkId}_dollclass_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressPrepStore(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolPrepMat) {
+      this.schoolPrepMat = new THREE.MeshStandardMaterial({
+        color: 0x4a3828,
+        roughness: 0.86,
+        metalness: 0.02,
+        emissive: 0x100804,
+        emissiveIntensity: 0.04,
+      });
+    }
+    for (const [name, x, z] of [["ne", 5.45, -5.45], ["se", 5.45, 5.45]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `prepstore_crate_${name}`,
+        center.x + x, floorY + 0.48, center.z + z,
+        0.85, 0.96, 0.72, this.schoolPrepMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "prepstore_sign",
+      center.x, floorY + 2.14, center.z + 7.52,
+      Math.PI, "준비물",
+    );
+    const glow = new THREE.PointLight(0x181410, 0.5, 6.4, 2);
+    glow.position.set(center.x, floorY + 2.1, center.z);
+    glow.name = `${chunkId}_prepstore_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressClosedLibrary(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    this.placeDressedBox(
+      chunk, chunkId, "closedlib_table",
+      center.x + 5.15, floorY + 0.38, center.z + 5.15,
+      1.15, 0.76, 0.7, this.schoolDeskDark || this.trimMaterial,
+    );
+    this.addHallNookSign(
+      chunk, chunkId, "closedlib_sign",
+      center.x, floorY + 2.14, center.z + 7.52,
+      Math.PI, "폐관",
+    );
+    const glow = new THREE.PointLight(0x181410, 0.5, 6.2, 2);
+    glow.position.set(center.x + 3.2, floorY + 2.08, center.z + 3.2);
+    glow.name = `${chunkId}_closedlib_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressEtiquetteRoom(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolTatamiMat) {
+      this.schoolTatamiMat = new THREE.MeshStandardMaterial({
+        color: 0x6a5a38,
+        roughness: 0.86,
+        metalness: 0.02,
+        emissive: 0x120c04,
+        emissiveIntensity: 0.04,
+      });
+    }
+    for (const [name, x, z] of [["ne", 2.35, -2.35], ["sw", -2.35, 2.35]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `etiquette_zabuton_${name}`,
+        center.x + x, floorY + 0.08, center.z + z,
+        0.62, 0.12, 0.62, this.schoolTatamiMat, false,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "etiquette_sign",
+      center.x, floorY + 2.14, center.z - 7.52,
+      0, "예절실",
+    );
+    const glow = new THREE.PointLight(0x201808, 0.5, 6.4, 2);
+    glow.position.set(center.x, floorY + 2.1, center.z);
+    glow.name = `${chunkId}_etiquette_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressEastWashHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolBucketMat) {
+      this.schoolBucketMat = new THREE.MeshStandardMaterial({
+        color: 0x3a3a42,
+        roughness: 0.46,
+        metalness: 0.22,
+        emissive: 0x08080c,
+        emissiveIntensity: 0.04,
+      });
+    }
+    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `eastwash_bucket_${name}`,
+        center.x + x, floorY + 0.28, center.z - 1.52,
+        0.42, 0.56, 0.42, this.schoolBucketMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "eastwash_sign",
+      center.x, floorY + 2.12, center.z - 1.72,
+      0, "세면",
+    );
+    const glow = new THREE.PointLight(0x101418, 0.48, 6.0, 2);
+    glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
+    glow.name = `${chunkId}_eastwash_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressAngelHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    this.placeDressedBox(
+      chunk, chunkId, "angelhall_cart",
+      center.x + 4.55, floorY + 0.38, center.z - 1.52,
+      0.72, 0.76, 0.46, this.schoolDeskDark || this.trimMaterial,
+    );
+    this.addHallNookSign(
+      chunk, chunkId, "angelhall_sign",
+      center.x + 4.15, floorY + 2.12, center.z - 1.72,
+      0, "석고",
+    );
+    const glow = new THREE.PointLight(0x181410, 0.48, 6.0, 2);
+    glow.position.set(center.x + 3.2, floorY + 2.05, center.z - 1.15);
+    glow.name = `${chunkId}_angelhall_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressWashFourHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolCubbyMat) {
+      this.schoolCubbyMat = new THREE.MeshStandardMaterial({
+        color: 0x3a3228,
+        roughness: 0.82,
+        metalness: 0.04,
+        emissive: 0x0c0804,
+        emissiveIntensity: 0.04,
+      });
+    }
+    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `washfour_cubby_${name}`,
+        center.x + x, floorY + 0.42, center.z - 1.52,
+        0.92, 0.84, 0.42, this.schoolCubbyMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "washfour_sign",
+      center.x, floorY + 2.12, center.z - 1.72,
+      0, "신발",
+    );
+    const glow = new THREE.PointLight(0x181410, 0.48, 6.0, 2);
+    glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
+    glow.name = `${chunkId}_washfour_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
   dressAvRoom(chunk, center, chunkId, floorY) {
     this.ensureSchoolCorridorMaterials();
     if (!this.schoolAvMat) {
@@ -6433,13 +6738,21 @@ export class BackroomsGenerator {
       addDynamicDoor(`${chunkId}_door_e`, "동쪽 복도문", [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
       addDynamicDoor(`${chunkId}_door_w`, "서쪽 복도문", [-7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
     } else if (isWorkshop) {
-      addDynamicDoor("door-left-workshop", "낡은 작업방", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor("door-left-workshop", "생활관 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      this.dressDormRoom(chunk, center, chunkId, floorY);
     } else if (isPlayroom) {
-      addDynamicDoor("door-right-playroom", "붉은 놀이방", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor("door-right-playroom", "인형 교실 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor(`${chunkId}_dollclass_east`, "인형 교실 동쪽 문", [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
+      this.dressDollClass(chunk, center, chunkId, floorY);
     } else if (isStorage) {
-      addDynamicDoor("door-left-storage", "삐걱대는 보관실", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor("door-left-storage", "준비물 창고 문", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor(`${chunkId}_prepstore_north`, "준비물 창고 북쪽 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor(`${chunkId}_prepstore_west`, "준비물 창고 서쪽 문", [-7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
+      this.dressPrepStore(chunk, center, chunkId, floorY);
     } else if (isArchive) {
-      addDynamicDoor("door-archive", "고서 보관소", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor("door-archive", "폐관 도서실 문", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor(`${chunkId}_closedlib_north`, "폐관 도서실 북쪽 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor(`${chunkId}_closedlib_east`, "폐관 도서실 동쪽 문", [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
 
       const deskGeo = this.getBoxGeometry(2.4, 0.72, 1.2);
       const deskMesh = new THREE.Mesh(deskGeo, this.propMaterial);
@@ -6458,6 +6771,7 @@ export class BackroomsGenerator {
         this.addSchoolProp(chunk, spines);
       }
       this.addLooseBooks(chunk, center.x, floorY + 0.76, center.z + 1.5, 0.15, 4);
+      this.dressClosedLibrary(chunk, center, chunkId, floorY);
     } else if (isEvent) {
       addDynamicDoor("door-upper-mirror", "뒤틀린 거울방", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
 
@@ -6494,7 +6808,9 @@ export class BackroomsGenerator {
     } else if (type === "stairs_b1") {
       addDynamicDoor("door-stairs-b1", "지하 계단실", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
     } else if (type === "tatami_room" || type === "pillar_room") {
-      addDynamicDoor("door-tatami-room", "고풍스러운 다실", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor("door-tatami-room", "예절실 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor(`${chunkId}_etiquette_west`, "예절실 서쪽 문", [-7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
+      addDynamicDoor(`${chunkId}_etiquette_east`, "예절실 동쪽 문", [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
 
       // Tatami Center Mat Platform (7.6m x 7.6m)
       const tatamiGeo = this.getBoxGeometry(7.6, 0.04, 7.6);
@@ -6520,6 +6836,7 @@ export class BackroomsGenerator {
       this.scene.add(tableMesh);
       chunk.meshes.push(tableMesh);
       this.collisionWorld.addStaticBox(tableMesh.name, tableMesh.position, new THREE.Vector3(1.6, 0.42, 1.2), chunkId);
+      this.dressEtiquetteRoom(chunk, center, chunkId, floorY);
     } else if (isClassroomType(type)) {
       const classLabel = type === "nurse_office" ? "보건실 문"
         : type === "music_room" ? "음악실 문"
@@ -6588,13 +6905,13 @@ export class BackroomsGenerator {
     };
 
     if (isWorkshop) {
-      addDynamicCabinet("cabinet-workshop", "작업실 신발장", [-5.0, 0.0, -5.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet-workshop", "생활관 신발장", [-5.0, 0.0, -5.0], -Math.PI / 2);
     } else if (isPlayroom) {
-      addDynamicCabinet("cabinet-playroom", "교실 신발장", [5.0, 0.0, -5.0], Math.PI / 2);
+      addDynamicCabinet("cabinet-playroom", "인형 교실 신발장", [5.0, 0.0, -5.0], Math.PI / 2);
     } else if (isStorage) {
-      addDynamicCabinet("cabinet-storage", "창고 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet-storage", "준비물 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
     } else if (isArchive) {
-      addDynamicCabinet("cabinet-archive", "서고 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet-archive", "폐관 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
     } else if (chunk.cx === 1 && chunk.cz === 0) {
       addDynamicCabinet("cabinet_chokepoint_1_0", "복도 신발장", [-5.25, 0.0, 5.25], 0);
       addDynamicCabinet("cabinet_chokepoint_1_0_n", "복도 신발장", [-5.25, 0.0, -5.25], Math.PI);
@@ -6625,7 +6942,7 @@ export class BackroomsGenerator {
       addDynamicCabinet("cabinet_b1_west_lab", "지하 서미로 벽장", [-37.8, -5.0, -5.4], -Math.PI / 2);
       addDynamicCabinet("cabinet_b1_east_lab", "지하 동미로 벽장", [26.5, -5.0, 16.0], Math.PI);
     } else if (type === "tatami_room" || type === "pillar_room") {
-      addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet-tatami-room", "예절실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (isClassroomType(type)) {
       const cabLabel = type === "nurse_office" ? "보건실 벽장"
         : type === "music_room" ? "음악실 벽장"
@@ -6809,13 +7126,19 @@ export class BackroomsGenerator {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0);
     } else if (isWorkshop) {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
-        "요람은 비어 있다. 젖은 발자국이 남쪽 지하 계단으로 이어진다.");
+        "생활관 요람은 비어 있다. 젖은 발자국이 남쪽 지하 계단으로 이어진다.");
     } else if (isPlayroom) {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
-        "인형이 아직 줍지 않은 이름을 가리킨다. 눈이 마주치면 따라가십시오.");
+        "인형 교실의 눈이 아직 줍지 않은 이름을 가리킨다. 마주치면 따라가십시오.");
     } else if (isStorage) {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
-        "창고 선반 뒤에 도자기 열쇠가 있다. 문을 닫아 추격을 끊으십시오.");
+        "준비물 선반 뒤에 도자기 열쇠가 있다. 문을 닫아 추격을 끊으십시오.");
+    } else if (isArchive) {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
+        "폐관 도서실이다. 대출 장부를 읽지 마십시오.");
+    } else if (type === "tatami_room" || type === "pillar_room") {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
+        "예절실이다. 신발을 신지 마십시오.");
     } else if (hallLike && type !== "start") {
       if (this.isSkybridgeChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.72], 0,
@@ -6859,6 +7182,21 @@ export class BackroomsGenerator {
       } else if (this.isTeaHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
           "다실 앞이다. 신발을 신지 마십시오.");
+      } else if (this.isLostFoundChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
+          "분실물함이다. 어제 신발을 찾지 마십시오.");
+      } else if (this.isRoofHallChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
+          "옥상 문은 판자로 막혀 있다. 위로 가지 마십시오.");
+      } else if (this.isEastWashChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.72], 0,
+          "동쪽 세면 복도다. 물을 틀지 마십시오.");
+      } else if (this.isAngelHallChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [1.82, 1.42, 0.0], -Math.PI / 2,
+          "도서실 앞이다. 석고상을 보지 마십시오.");
+      } else if (this.isWashFourChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.72], 0,
+          "별관 세면 교차로다. 신발장만 북쪽 벽에 있다.");
       } else {
       const kinds = [0, 1, 2, 3].map((slot) => this.getHallNookKind(chunk.cx, chunk.cz, slot));
       let body = "교실 번호가 어제와 같다. 창밖의 운동장은 없다.";
@@ -6965,6 +7303,9 @@ export class BackroomsGenerator {
     if (chunk.cx === 4 && chunk.cz === 0) {
       this.dressAnnexGate(chunk, center, chunkId, floorY);
     }
+    if (this.isRoofHallChunk(chunk.cx, chunk.cz)) {
+      this.dressRoofHall(chunk, center, chunkId, floorY);
+    }
 
     // 5. Lights that the player can turn on as a visited-place marker.
     this.buildSafeLights(chunk, type, center, chunkId, rand, floorY);
@@ -7044,29 +7385,25 @@ export class BackroomsGenerator {
       spawnSafeLight("wall-switch", 0.0, wallH, -7.58, Math.PI, "벽 스위치");
       spawnSafeLight("toy-lamp", -0.6, floorH, -6.5, 0, "장난감 램프");
     } else if (type === "workshop") {
-      // Workshop: Flush on north entrance wall and west perimeter wall
-      spawnSafeLight("wall-switch", 1.6, wallH, -7.58, Math.PI, "작업방 입구 스위치");
-      spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "작업방 입구 스위치");
-      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "작업방 벽 스위치");
-      spawnSafeLight("floor-lamp", 4.0, floorH, 2.5, -Math.PI / 4, "작업방 낡은 스탠드");
+      spawnSafeLight("wall-switch", 1.6, wallH, -7.58, Math.PI, "생활관 입구 스위치");
+      spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "생활관 입구 스위치");
+      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "생활관 벽 스위치");
+      spawnSafeLight("floor-lamp", 4.0, floorH, 2.5, -Math.PI / 4, "생활관 낡은 스탠드");
     } else if (type === "playroom") {
-      // Playroom: Flush on north entrance wall and west perimeter wall
-      spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "놀이방 입구 스위치");
-      spawnSafeLight("wall-switch", 1.6, wallH, -7.58, Math.PI, "놀이방 입구 스위치");
-      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "놀이방 벽 스위치");
-      spawnSafeLight("toy-lamp", 3.2, floorH, 2.8, 0, "놀이방 장난감 램프");
+      spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "인형 교실 입구 스위치");
+      spawnSafeLight("wall-switch", 1.6, wallH, -7.58, Math.PI, "인형 교실 입구 스위치");
+      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "인형 교실 벽 스위치");
+      spawnSafeLight("toy-lamp", 3.2, floorH, 2.8, 0, "인형 교실 장난감 램프");
     } else if (type === "storage" || type === "toy_storage") {
-      // Storage: Flush on south entrance wall and west perimeter wall
-      spawnSafeLight("wall-switch", -1.6, wallH, 7.58, 0, "보관실 입구 스위치");
-      spawnSafeLight("wall-switch", 1.6, wallH, 7.58, 0, "보관실 입구 스위치");
-      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "보관실 벽 스위치");
-      spawnSafeLight("floor-lamp", -3.5, floorH, 3.5, 0, "보관실 낡은 스탠드");
+      spawnSafeLight("wall-switch", -1.6, wallH, 7.58, 0, "준비물 입구 스위치");
+      spawnSafeLight("wall-switch", 1.6, wallH, 7.58, 0, "준비물 입구 스위치");
+      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "준비물 벽 스위치");
+      spawnSafeLight("floor-lamp", -3.5, floorH, 3.5, 0, "준비물 낡은 스탠드");
     } else if (type === "archive") {
-      // Archive: Flush on south entrance wall and west perimeter wall
-      spawnSafeLight("wall-switch", -1.6, wallH, 7.58, 0, "서고 입구 스위치");
-      spawnSafeLight("wall-switch", 1.6, wallH, 7.58, 0, "서고 입구 스위치");
-      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "서고 벽 스위치");
-      spawnSafeLight("floor-lamp", 3.5, floorH, -3.5, 0, "서고 낡은 스탠드");
+      spawnSafeLight("wall-switch", -1.6, wallH, 7.58, 0, "폐관 입구 스위치");
+      spawnSafeLight("wall-switch", 1.6, wallH, 7.58, 0, "폐관 입구 스위치");
+      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "폐관 벽 스위치");
+      spawnSafeLight("floor-lamp", 3.5, floorH, -3.5, 0, "폐관 낡은 스탠드");
     } else if (type === "event") {
       // Mirror event room: Flush on south entrance wall and west perimeter wall
       spawnSafeLight("wall-switch", 1.6, wallH, 7.58, 0, "거울방 입구 스위치");
@@ -7074,10 +7411,9 @@ export class BackroomsGenerator {
       spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "거울방 벽 스위치");
       spawnSafeLight("floor-lamp", 3.5, floorH, -3.5, 0, "거울방 낡은 스탠드");
     } else if (type === "tatami_room" || type === "pillar_room") {
-      // Japanese Tatami Room: Flush on north entrance wall, west perimeter wall, SE floor lamp, and table lamp
-      spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "다실 입구 스위치");
-      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "다실 벽 스위치");
-      spawnSafeLight("floor-lamp", 6.2, floorH, 6.2, -Math.PI / 4, "다실 낡은 스탠드");
+      spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "예절실 입구 스위치");
+      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "예절실 벽 스위치");
+      spawnSafeLight("floor-lamp", 6.2, floorH, 6.2, -Math.PI / 4, "예절실 낡은 스탠드");
       spawnSafeLight("toy-lamp", 0.0, floorH + 0.42, 0.0, 0, "찻상 촛대 램프");
     } else if (type === "stairs_2f") {
       // 2F Stairwell & Gallery: Flush on south entrance wall, stairwell wall, landing, and gallery west wall
@@ -7463,7 +7799,9 @@ export class BackroomsGenerator {
     const skipScatter = type === "foyer" || type === "auditorium" || type === "courtyard"
       || type === "gymnasium" || type === "art_room" || type === "studio" || type === "broadcast"
       || type === "darkroom" || type === "greenroom" || type === "home_ec" || type === "club_room"
-      || type === "flicker_room" || type === "wide_room" || type === "omen_room" || type === "static_room";
+      || type === "flicker_room" || type === "wide_room" || type === "omen_room" || type === "static_room"
+      || type === "workshop" || type === "playroom" || type === "storage" || type === "archive"
+      || type === "tatami_room" || type === "pillar_room";
     if (!isCorridorOrStair && !skipScatter && rand() < 0.25) {
       const toyGeo = this.getBoxGeometry(0.8, 0.5, 0.8);
       const toy = new THREE.Mesh(toyGeo, propMaterial);

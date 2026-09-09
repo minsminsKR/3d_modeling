@@ -909,6 +909,158 @@ try {
     console.log("teahall", stop, teaHallWalk.at(-1));
   }
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(2, 1);
+    game.mapBuilder.generator.generateChunk(2, 2);
+    game.player.setPosition({ x: 32, y: 0, z: 22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const dormWalk = [];
+  for (const stop of [
+    { x: 32, z: 22 },
+    { x: 32, z: 26 },
+    { x: 32, z: 30 },
+  ]) {
+    dormWalk.push(await walkTo(stop, 360));
+    console.log("dorm", stop, dormWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(-2, 1);
+    game.mapBuilder.generator.generateChunk(-2, 2);
+    game.mapBuilder.generator.generateChunk(-1, 2);
+    game.player.setPosition({ x: -32, y: 0, z: 22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const dollClassWalk = [];
+  for (const stop of [
+    { x: -32, z: 22 },
+    { x: -32, z: 32 },
+    { x: -26, z: 32 },
+  ]) {
+    dollClassWalk.push(await walkTo(stop, 360));
+    console.log("dollclass", stop, dollClassWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(2, -1);
+    game.mapBuilder.generator.generateChunk(2, -2);
+    game.mapBuilder.generator.generateChunk(1, -2);
+    game.player.setPosition({ x: 32, y: 0, z: -22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const prepStoreWalk = [];
+  for (const stop of [
+    { x: 32, z: -22 },
+    { x: 32, z: -32 },
+    { x: 26, z: -32 },
+  ]) {
+    prepStoreWalk.push(await walkTo(stop, 360));
+    console.log("prepstore", stop, prepStoreWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(-2, -1);
+    game.mapBuilder.generator.generateChunk(-2, -2);
+    game.mapBuilder.generator.generateChunk(-1, -2);
+    game.player.setPosition({ x: -32, y: 0, z: -22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const closedLibWalk = [];
+  for (const stop of [
+    { x: -32, z: -22 },
+    { x: -32, z: -32 },
+    { x: -26, z: -32 },
+  ]) {
+    closedLibWalk.push(await walkTo(stop, 360));
+    console.log("closedlib", stop, closedLibWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(-1, 1);
+    game.mapBuilder.generator.generateChunk(-1, 2);
+    game.player.setPosition({ x: -16, y: 0, z: 22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const etiquetteWalk = [];
+  for (const stop of [
+    { x: -16, z: 22 },
+    { x: -16, z: 26 },
+    { x: -16, z: 28.5 },
+  ]) {
+    etiquetteWalk.push(await walkTo(stop, 360));
+    console.log("etiquette", stop, etiquetteWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(0, 1);
+    game.mapBuilder.generator.generateChunk(0, 2);
+    game.mapBuilder.generator.generateChunk(-1, 2);
+    game.player.setPosition({ x: 0, y: 0, z: 22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const roofHallWalk = [];
+  for (const stop of [
+    { x: 0, z: 22 },
+    { x: 0, z: 28 },
+    { x: -6, z: 32 },
+  ]) {
+    roofHallWalk.push(await walkTo(stop, 360));
+    console.log("roofhall", stop, roofHallWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(-2, -1);
+    game.mapBuilder.generator.generateChunk(-2, 0);
+    game.mapBuilder.generator.generateChunk(-2, 1);
+    game.player.setPosition({ x: -32, y: 0, z: -6 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const lostFoundWalk = [];
+  for (const stop of [
+    { x: -32, z: -6 },
+    { x: -32, z: 0 },
+    { x: -32, z: 6 },
+  ]) {
+    lostFoundWalk.push(await walkTo(stop, 360));
+    console.log("lostfound", stop, lostFoundWalk.at(-1));
+  }
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -954,6 +1106,14 @@ try {
     const archiveHall = generator.generateChunk(-2, -1);
     const storageHall = generator.generateChunk(2, -1);
     const teaHall = generator.generateChunk(-1, 1);
+    const dorm = generator.generateChunk(2, 2);
+    const dollClass = generator.generateChunk(-2, 2);
+    const prepStore = generator.generateChunk(2, -2);
+    const closedLib = generator.generateChunk(-2, -2);
+    const etiquette = generator.generateChunk(-1, 2);
+    const roofHall = generator.generateChunk(0, 2);
+    const lostFound = generator.generateChunk(-2, 0);
+    const washFour = generator.generateChunk(5, 0);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
     game._lastPlayerChunkCx = 4;
@@ -993,6 +1153,16 @@ try {
     game.onEnterSchoolChunk(-2, -1);
     game.onEnterSchoolChunk(2, -1);
     game.onEnterSchoolChunk(-1, 1);
+    game.onEnterSchoolChunk(2, 2);
+    game.onEnterSchoolChunk(-2, 2);
+    game.onEnterSchoolChunk(2, -2);
+    game.onEnterSchoolChunk(-2, -2);
+    game.onEnterSchoolChunk(-1, 2);
+    game.onEnterSchoolChunk(0, 2);
+    game.onEnterSchoolChunk(-2, 0);
+    game.onEnterSchoolChunk(2, 0);
+    game.onEnterSchoolChunk(-1, 0);
+    game.onEnterSchoolChunk(5, 0);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
     for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
     game.player.setPosition({ x: 32, y: 0, z: 0 });
@@ -1103,6 +1273,19 @@ try {
       archiveHallCase: names(archiveHall).some((name) => name.includes("archivehall_case_")),
       storageHallCrate: names(storageHall).some((name) => name.includes("storagehall_crate_")),
       teaHallBench: names(teaHall).some((name) => name.includes("teahall_bench_")),
+      dormBunk: names(dorm).some((name) => name.includes("dorm_bunk_")),
+      dormCrib: names(dorm).some((name) => name.includes("empty_crib")),
+      dollClassChair: names(dollClass).some((name) => name.includes("dollclass_chair_")),
+      prepStoreCrate: names(prepStore).some((name) => name.includes("prepstore_crate_")),
+      closedLibTable: names(closedLib).some((name) => name.includes("closedlib_table")),
+      closedLibDesk: names(closedLib).some((name) => name.includes("archive_desk")),
+      etiquetteZabuton: names(etiquette).some((name) => name.includes("etiquette_zabuton_")),
+      etiquetteTable: names(etiquette).some((name) => name.includes("tea_table")),
+      roofHallBoard: names(roofHall).some((name) => name.includes("roofhall_board")),
+      lostFoundBox: names(lostFound).some((name) => name.includes("lostfound_box_")),
+      eastWashBucket: names(eastWing).some((name) => name.includes("eastwash_bucket_")),
+      angelHallCart: names(westHall).some((name) => name.includes("angelhall_cart")),
+      washFourCubby: names(washFour).some((name) => name.includes("washfour_cubby_")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -1356,7 +1539,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, dormWalk, dollClassWalk, prepStoreWalk, closedLibWalk, etiquetteWalk, roofHallWalk, lostFoundWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -1562,6 +1745,43 @@ try {
   assert.equal(teaHallWalk.at(-1).ok, true, `must walk the tea hall, got ${JSON.stringify(teaHallWalk.at(-1))}`);
   assert.ok(teaHallWalk.some((stop) => Math.abs(stop.z - 16) < 1.6 && stop.x < -14), "tea hall EW spine must stay open");
   assert.ok(teaHallWalk.at(-1).z > 20 && Math.abs(teaHallWalk.at(-1).x + 16) < 1.4, "tea hall south T-spur to the tea room must stay open");
+  assert.equal(rooms.dormBunk, true, "dorm must show bunks");
+  assert.equal(rooms.dormCrib, true, "dorm must keep the empty crib");
+  assert.ok(rooms.beats.includes("workshop"), "dorm VO beat missing");
+  assert.equal(dormWalk.at(-1).ok, true, `must walk the dorm north aisle, got ${JSON.stringify(dormWalk.at(-1))}`);
+  assert.ok(dormWalk.at(-1).z > 28 && Math.abs(dormWalk.at(-1).x - 32) < 1.4, "dorm north aisle must stay open");
+  assert.equal(rooms.dollClassChair, true, "doll class must show chairs");
+  assert.ok(rooms.beats.includes("playroom"), "doll class VO beat missing");
+  assert.equal(dollClassWalk.at(-1).ok, true, `must walk the doll class, got ${JSON.stringify(dollClassWalk.at(-1))}`);
+  assert.ok(dollClassWalk.some((stop) => Math.abs(stop.x + 32) < 1.6 && Math.abs(stop.z - 32) < 1.6), "doll class center must stay open for the key");
+  assert.ok(dollClassWalk.at(-1).x > -28 && Math.abs(dollClassWalk.at(-1).z - 32) < 1.4, "doll class east aisle must stay open");
+  assert.equal(rooms.prepStoreCrate, true, "prep store must show crates");
+  assert.ok(rooms.beats.includes("storage"), "prep store VO beat missing");
+  assert.equal(prepStoreWalk.at(-1).ok, true, `must walk the prep store, got ${JSON.stringify(prepStoreWalk.at(-1))}`);
+  assert.ok(prepStoreWalk.some((stop) => Math.abs(stop.x - 32) < 1.6 && Math.abs(stop.z + 32) < 1.6), "prep store center must stay open for the key");
+  assert.ok(prepStoreWalk.at(-1).x < 28 && Math.abs(prepStoreWalk.at(-1).z + 32) < 1.4, "prep store west aisle must stay open");
+  assert.equal(rooms.closedLibTable, true, "closed library must show a side table");
+  assert.equal(rooms.closedLibDesk, true, "closed library must keep the archive desk");
+  assert.ok(rooms.beats.includes("archive"), "closed library VO beat missing");
+  assert.equal(closedLibWalk.at(-1).ok, true, `must walk the closed library, got ${JSON.stringify(closedLibWalk.at(-1))}`);
+  assert.ok(closedLibWalk.at(-1).x > -28 && Math.abs(closedLibWalk.at(-1).z + 32) < 1.4, "closed library east aisle must stay open");
+  assert.equal(rooms.etiquetteZabuton, true, "etiquette room must show zabuton");
+  assert.equal(rooms.etiquetteTable, true, "etiquette room must keep the tea table");
+  assert.ok(rooms.beats.includes("tatami_room"), "etiquette VO beat missing");
+  assert.equal(etiquetteWalk.at(-1).ok, true, `must walk north of the tea table, got ${JSON.stringify(etiquetteWalk.at(-1))}`);
+  assert.ok(etiquetteWalk.at(-1).z > 26 && etiquetteWalk.at(-1).z < 31 && Math.abs(etiquetteWalk.at(-1).x + 16) < 1.4, "etiquette north aisle must stay open");
+  assert.equal(rooms.roofHallBoard, true, "roof hall must board the south door");
+  assert.ok(rooms.beats.includes("roofhall"), "roof hall VO beat missing");
+  assert.equal(roofHallWalk.at(-1).ok, true, `must walk the roof hall, got ${JSON.stringify(roofHallWalk.at(-1))}`);
+  assert.ok(roofHallWalk.some((stop) => Math.abs(stop.x) < 1.6 && stop.z > 26), "roof hall north aisle must stay open");
+  assert.ok(roofHallWalk.at(-1).x < -4 && Math.abs(roofHallWalk.at(-1).z - 32) < 1.4, "roof hall west aisle must stay open");
+  assert.equal(rooms.lostFoundBox, true, "lost-and-found hall must show boxes");
+  assert.ok(rooms.beats.includes("lostfound"), "lost-and-found VO beat missing");
+  assert.equal(lostFoundWalk.at(-1).ok, true, `must walk the lost-and-found hall, got ${JSON.stringify(lostFoundWalk.at(-1))}`);
+  assert.ok(lostFoundWalk.at(-1).z > 4 && Math.abs(lostFoundWalk.at(-1).x + 32) < 1.4, "lost-and-found NS spine must stay open");
+  assert.equal(rooms.eastWashBucket, true, "east wash hall must show north buckets");
+  assert.equal(rooms.angelHallCart, true, "angel hall must show an east cart");
+  assert.equal(rooms.washFourCubby, true, "annex wash crossing must show north cubbies");
   assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
   assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
   assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");

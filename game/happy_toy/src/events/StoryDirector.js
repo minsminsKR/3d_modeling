@@ -328,6 +328,60 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 24 && x < 40 && z > 24 && z < 40) {
+      this.fire(
+        "dorm",
+        "dorm",
+        "생활관입니다. 요람은 비어 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x < -24 && x > -40 && z > 24 && z < 40) {
+      this.fire(
+        "dollclass",
+        "dollclass",
+        "인형 교실입니다. 눈이 마주치면 따라가십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 24 && x < 40 && z < -24 && z > -40) {
+      this.fire(
+        "prepstore",
+        "prepstore",
+        "준비물 창고입니다. 선반 뒤에 도자기 열쇠가 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x < -24 && x > -40 && z < -24 && z > -40) {
+      this.fire(
+        "closedlib",
+        "closedlib",
+        "폐관 도서실입니다. 대출 장부를 읽지 마십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x < -8 && x > -24 && z > 24 && z < 40) {
+      this.fire(
+        "etiquette",
+        "etiquette",
+        "예절실입니다. 신발을 신지 마십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && Math.abs(x) > 2 && Math.abs(x) < 8 && z > 24 && z < 40) {
+      this.fire(
+        "roofhall",
+        "roofhall",
+        "옥상 복도입니다. 문이 판자로 막혀 있습니다.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z < -8 && z > -24) {
       this.fire(
         "art",
