@@ -23,7 +23,7 @@ async function poseShot(name, pose) {
     game.player.noclip = true;
     if (Number.isFinite(options.x)) {
       game.player.setPosition({ x: options.x, y: options.y, z: options.z });
-      for (let i = 0; i < 20; i += 1) game.update(0.05);
+      for (let i = 0; i < 12; i += 1) game.update(0.05, { skipRender: true });
     }
     return game.poseForCapture({
       yaw: options.yaw,
@@ -33,7 +33,7 @@ async function poseShot(name, pose) {
       freezeLoop: true,
     });
   }, pose);
-  await page.screenshot({ path: path.join(outDir, name) });
+  await page.screenshot({ path: path.join(outDir, name), timeout: 120000 });
   console.log(name, info);
   return info;
 }

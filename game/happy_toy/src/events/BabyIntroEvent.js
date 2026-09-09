@@ -112,7 +112,7 @@ export class BabyIntroEvent {
   }
 
   checkTrigger() {
-    if (this.hasTriggered || !this.game.player || this.game.player.isHidden) return;
+    if (this.hasTriggered || !this.game.player || this.game.player.isHidden || this.game.ghostMode) return;
 
     const playerPos = this.game.player.position;
     const x = playerPos.x;

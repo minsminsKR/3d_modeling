@@ -15,6 +15,7 @@ export class MirrorHwacatEvent {
     this.enemyManager = dependencies.enemyManager;
     this.hud = dependencies.hud;
     this.revealKeyById = dependencies.revealKeyById;
+    this.isInvincible = dependencies.isInvincible || (() => false);
     this.loader = new CharacterLoader();
     this.group = null;
     this.modelRoot = null;
@@ -118,7 +119,7 @@ export class MirrorHwacatEvent {
   }
 
   tryTrigger() {
-    if (this.hasTriggered || this.player.isHidden) {
+    if (this.hasTriggered || this.player.isHidden || this.isInvincible()) {
       return;
     }
 

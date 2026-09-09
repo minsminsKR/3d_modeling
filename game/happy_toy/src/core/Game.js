@@ -227,6 +227,7 @@ export class Game {
       enemyManager: this.enemyManager,
       hud: this.hud,
       revealKeyById: (keyId, position) => this.revealKeyById(keyId, position),
+      isInvincible: () => this.ghostMode,
     })];
     this.input.connect();
     this.connectUi();

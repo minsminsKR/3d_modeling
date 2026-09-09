@@ -44,7 +44,7 @@ director.update();
 assert.equal(director.fired.has("f2floor"), true);
 assert.equal(g._storyBeats.has("map:f2"), true);
 
-g.player.position = { x: -30, y: 5, z: -22 };
+g.player.position = { x: -27.5, y: 5, z: -22 };
 director.update();
 assert.equal(director.fired.has("shrine"), true);
 

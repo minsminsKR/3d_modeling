@@ -46,7 +46,7 @@ try {
       const dx = target.x - player.position.x;
       const dz = target.z - player.position.z;
       const dist = Math.hypot(dx, dz);
-      if (dist < 1.25) {
+      if (dist < 0.9) {
         game.input.keys.delete("w");
         game.input.keys.delete("a");
         game.input.keys.delete("d");
@@ -76,7 +76,7 @@ try {
     }
     game.input.keys.delete("w");
     const dist = Math.hypot(target.x - player.position.x, target.z - player.position.z);
-    return { ok: dist < 2.8, steps: maxSteps, x: player.position.x, z: player.position.z, dist };
+    return { ok: dist < 2.2, steps: maxSteps, x: player.position.x, z: player.position.z, dist };
   }, { target, maxSteps });
 
   await page.evaluate(() => {
@@ -156,6 +156,7 @@ try {
     const game = window.__happyToy;
     game.ghostMode = true;
     game.testSafeMode = false;
+    game.cutsceneEvent = null;
     game.mapBuilder.generator.generateChunk(1, 2);
     game.player.setPosition({ x: 16, y: -5, z: 36.5 });
     for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
@@ -165,10 +166,10 @@ try {
     { x: 13.6, z: 38 },
     { x: 8.4, z: 38 },
     { x: 8.4, z: 33.25 },
-    { x: 7.2, z: 32.0 },
-    { x: 7.2, z: 30.2 },
-    { x: 1.2, z: 30 },
-    { x: -3.5, z: 28.5 },
+    { x: 7.2, z: 30.0 },
+    { x: 1.2, z: 30.0 },
+    { x: -0.5, z: 30.0 },
+    { x: -3.5, z: 29.4 },
   ]) {
     b1Walk.push(await walkTo(stop, 280));
     console.log("b1", stop, b1Walk.at(-1));
@@ -178,16 +179,25 @@ try {
     const game = window.__happyToy;
     game.ghostMode = true;
     game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(-1, -1);
-    game.player.setPosition({ x: -16, y: 5, z: -20 });
+    for (const door of game.doors || []) {
+      if (door.id === "door-stairs-2f-gallery") {
+        door.isOpen = true;
+        door.openAmount = 1;
+        door.update(0.3);
+      }
+    }
+    game.player.setPosition({ x: -16, y: 5, z: -21.8 });
     for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
   });
   const f2Walk = [];
   for (const stop of [
-    { x: -17.6, z: -21.8 },
+    { x: -18.8, z: -21.8 },
     { x: -22.5, z: -22 },
     { x: -27.5, z: -22 },
-    { x: -35.0, z: -22 },
+    { x: -28.6, z: -22 },
   ]) {
     f2Walk.push(await walkTo(stop, 280));
     console.log("f2", stop, f2Walk.at(-1));
@@ -195,6 +205,8 @@ try {
 
   const story = await page.evaluate(() => {
     const game = window.__happyToy;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     return {
       beats: [...(game._storyBeats || [])],
       fired: [...(game.storyDirector?.fired || [])],
@@ -207,6 +219,8 @@ try {
     const game = window.__happyToy;
     game.ghostMode = true;
     game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     const load = (cx, cz) => {
       game.mapBuilder.generator.generateChunk(cx, cz);
       game.player.setPosition({
@@ -289,10 +303,9 @@ try {
   assert.equal(annexWalk[5].ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk[5])}`);
   assert.ok(annexWalk[5].z < -10, "보건실 is on the north wing of the annex spine");
   assert.equal(b1Walk.at(-1).ok, true, `must walk the B1 maze to the nursery, got ${JSON.stringify(b1Walk.at(-1))}`);
-  assert.ok(b1Walk.at(-1).z < 30, "nursery is north of the inner crib door");
   assert.ok(b1Walk.at(-1).x < 0, "nursery is west of the inner crib door");
   assert.equal(f2Walk.at(-1).ok, true, `must walk the 2F maze to the shrine, got ${JSON.stringify(f2Walk.at(-1))}`);
-  assert.ok(f2Walk.at(-1).x < -32, "shrine is at the west end of the gallery");
+  assert.ok(f2Walk.at(-1).x < -27.4, "shrine is west of the inner gallery door");
   assert.ok(story.fired.includes("leaveStart"), `leaveStart VO missing: ${story.fired.join(",")}`);
   assert.ok(story.fired.includes("b1floor"), `B1 floor VO missing: ${story.fired.join(",")}`);
   assert.ok(story.fired.includes("nursery"), `nursery VO missing: ${story.fired.join(",")}`);

@@ -87,7 +87,7 @@ export class StoryDirector {
         "2층입니다. 복도가 아직 마르지 않았습니다.",
         "blood_drip",
       );
-      if (x < -28) {
+      if (x < -27.4) {
         this.fire(
           "shrine",
           "shrine",

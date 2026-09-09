@@ -22,6 +22,7 @@ export class MonsterIntroManager {
   }
 
   update(deltaTime) {
+    if (this.game?.ghostMode) return;
     for (const event of this.events) {
       event.update(deltaTime);
     }
