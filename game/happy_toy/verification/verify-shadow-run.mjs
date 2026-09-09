@@ -238,6 +238,29 @@ try {
     console.log("f1maze", stop, f1MazeWalk.at(-1));
   }
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(1, 0);
+    game.mapBuilder.generator.generateChunk(2, 0);
+    game.player.setPosition({ x: 16, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const throughWalk = [];
+  for (const stop of [
+    { x: 21.15, z: -2.15 },
+    { x: 22.7, z: -6.45 },
+    { x: 25.3, z: -6.45 },
+    { x: 26.85, z: -2.1 },
+    { x: 32, z: 0 },
+  ]) {
+    throughWalk.push(await walkTo(stop, 420));
+    console.log("through", stop, throughWalk.at(-1));
+  }
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -301,6 +324,7 @@ try {
       hallBoarded: names(uncatHall).some((name) => name.includes("hall_class_") && name.includes("_board_")),
       hallNookSign: names(westHall).some((name) => name.includes("hall_sign_")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
+      hallThrough: names(hall).some((name) => name.includes("hall_through_")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -554,7 +578,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -572,6 +596,10 @@ try {
   assert.ok(annexWalk.at(-1).z < -10, "보건실 is on the north wing of the annex spine");
   assert.equal(f1MazeWalk.at(-1).ok, true, `must walk a 1F hall alcove, got ${JSON.stringify(f1MazeWalk.at(-1))}`);
   assert.ok(f1MazeWalk.at(-1).z > 4, "1F hall continues into the south hide alcove");
+  assert.equal(rooms.hallThrough, true, "maze halls must open classroom cut-throughs into the next hall");
+  assert.equal(throughWalk.at(-1).ok, true, `must cut through a classroom into the next hall, got ${JSON.stringify(throughWalk.at(-1))}`);
+  assert.ok(throughWalk.at(-1).x > 30 && Math.abs(throughWalk.at(-1).z) < 1.2, "classroom cut-through must return to the z=0 spine");
+  assert.ok(throughWalk.some((stop) => stop.z < -5.5 && stop.x > 22 && stop.x < 26), "cut-through must leave the corridor and pass the tile seam");
   assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
   assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
   assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");

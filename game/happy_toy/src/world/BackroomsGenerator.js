@@ -1646,43 +1646,61 @@ export class BackroomsGenerator {
     const hallS = S && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx, chunk.cz + 1);
     const hallW = W && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx - 1, chunk.cz);
     const hallE = E && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx + 1, chunk.cz);
-    const doorSpan = (wide) => {
+
+    const addGappedPerimeter = (axis, sign, wide, prefix) => {
+      const wallPos = sign * 7.8;
+      const thickness = 0.4;
       const half = wide ? 1.7 : 1.2;
-      return {
-        left: (-8.0 - half) / 2,
-        right: (8.0 + half) / 2,
-        size: 8.0 - half,
+      const throughC = axis === "x" ? 6.65 : 6.9;
+      const throughW = axis === "x" ? 1.5 : 1.3;
+      const ranges = [];
+      const pushRange = (a, b, name) => {
+        const len = b - a;
+        if (len < 0.38) return;
+        ranges.push({ mid: (a + b) / 2, len, name });
       };
+      if (wide) {
+        const t0 = -throughC - throughW / 2;
+        const t1 = -throughC + throughW / 2;
+        const t2 = throughC - throughW / 2;
+        const t3 = throughC + throughW / 2;
+        pushRange(-8.0, t0, `${prefix}_a`);
+        pushRange(t1, -half, `${prefix}_b`);
+        pushRange(half, t2, `${prefix}_c`);
+        pushRange(t3, 8.0, `${prefix}_d`);
+      } else {
+        pushRange(-8.0, -half, `${prefix}_left`);
+        pushRange(half, 8.0, `${prefix}_right`);
+      }
+      for (const part of ranges) {
+        if (axis === "z") {
+          addWallSegment(part.mid, wallPos, part.len, thickness, part.name);
+        } else {
+          addWallSegment(wallPos, part.mid, thickness, part.len, part.name);
+        }
+      }
     };
 
     if (N) {
-      const span = doorSpan(hallN);
-      addWallSegment(span.left, -7.8, span.size, 0.4, "n_left");
-      addWallSegment(span.right, -7.8, span.size, 0.4, "n_right");
+      addGappedPerimeter("z", -1, hallN, "n");
     } else {
       addWallSegment(0.0, -7.8, 16.0, 0.4, "n_solid");
     }
 
     if (S) {
-      const span = doorSpan(hallS);
-      addWallSegment(span.left, 7.8, span.size, 0.4, "s_left");
-      addWallSegment(span.right, 7.8, span.size, 0.4, "s_right");
+      addGappedPerimeter("z", 1, hallS, "s");
     } else {
       addWallSegment(0.0, 7.8, 16.0, 0.4, "s_solid");
     }
 
     if (W) {
-      const span = doorSpan(hallW);
-      addWallSegment(-7.8, span.left, 0.4, span.size, "w_top");
-      addWallSegment(-7.8, span.right, 0.4, span.size, "w_bottom");
+      addGappedPerimeter("x", -1, hallW, "w");
     } else {
       addWallSegment(-7.8, 0.0, 0.4, 16.0, "w_solid");
     }
 
     if (E) {
-      const span = doorSpan(hallE);
-      addWallSegment(7.8, span.left, 0.4, span.size, "e_top");
-      addWallSegment(7.8, span.right, 0.4, span.size, "e_bottom");
+      addGappedPerimeter("x", 1, hallE, "e");
     } else {
       addWallSegment(7.8, 0.0, 0.4, 16.0, "e_solid");
     }
@@ -2716,7 +2734,60 @@ export class BackroomsGenerator {
         );
       }
     }
+    this.dressHallThroughDoors(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
     this.dressHallClassroomNooks(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
+  }
+
+  dressHallThroughDoors(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
+    if (!ewChicane && !nsChicane) return;
+    this.ensureSchoolCorridorMaterials();
+    const maze = (dx, dz) => this.isMazeHall(chunk.cx + dx, chunk.cz + dz);
+    const jamb = (name, x, z, sx, sz) => {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        center.x + x, floorY + 1.12, center.z + z, sx, 2.2, sz,
+        this.schoolClassDoorMat, false,
+      );
+    };
+    const leaf = (name, x, z, yaw) => {
+      const door = new THREE.Mesh(this.getBoxGeometry(0.06, 2.05, 0.72), this.schoolClassDoorMat);
+      door.position.set(center.x + x, floorY + 1.08, center.z + z);
+      door.rotation.y = yaw;
+      door.name = `${chunkId}_${name}`;
+      this.addSchoolProp(chunk, door);
+    };
+    if (ewChicane && openings.E && maze(1, 0)) {
+      jamb("hall_through_e_n_a", 7.72, -7.38, 0.12, 0.12);
+      jamb("hall_through_e_n_b", 7.72, -5.92, 0.12, 0.12);
+      leaf("hall_through_e_n_leaf", 7.55, -6.35, -0.85);
+      jamb("hall_through_e_s_a", 7.72, 5.92, 0.12, 0.12);
+      jamb("hall_through_e_s_b", 7.72, 7.38, 0.12, 0.12);
+      leaf("hall_through_e_s_leaf", 7.55, 6.35, 0.85);
+    }
+    if (ewChicane && openings.W && maze(-1, 0)) {
+      jamb("hall_through_w_n_a", -7.72, -7.38, 0.12, 0.12);
+      jamb("hall_through_w_n_b", -7.72, -5.92, 0.12, 0.12);
+      leaf("hall_through_w_n_leaf", -7.55, -6.35, 0.85);
+      jamb("hall_through_w_s_a", -7.72, 5.92, 0.12, 0.12);
+      jamb("hall_through_w_s_b", -7.72, 7.38, 0.12, 0.12);
+      leaf("hall_through_w_s_leaf", -7.55, 6.35, -0.85);
+    }
+    if (nsChicane && openings.N && maze(0, -1)) {
+      jamb("hall_through_n_w_a", -7.52, -7.72, 0.12, 0.12);
+      jamb("hall_through_n_w_b", -6.28, -7.72, 0.12, 0.12);
+      leaf("hall_through_n_w_leaf", -6.9, -7.55, 0.4);
+      jamb("hall_through_n_e_a", 6.28, -7.72, 0.12, 0.12);
+      jamb("hall_through_n_e_b", 7.52, -7.72, 0.12, 0.12);
+      leaf("hall_through_n_e_leaf", 6.9, -7.55, -0.4);
+    }
+    if (nsChicane && openings.S && maze(0, 1)) {
+      jamb("hall_through_s_w_a", -7.52, 7.72, 0.12, 0.12);
+      jamb("hall_through_s_w_b", -6.28, 7.72, 0.12, 0.12);
+      leaf("hall_through_s_w_leaf", -6.9, 7.55, -0.4);
+      jamb("hall_through_s_e_a", 6.28, 7.72, 0.12, 0.12);
+      jamb("hall_through_s_e_b", 7.52, 7.72, 0.12, 0.12);
+      leaf("hall_through_s_e_leaf", 6.9, 7.55, 0.4);
+    }
   }
 
   dressHallClassroomNooks(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
@@ -4548,6 +4619,11 @@ export class BackroomsGenerator {
         body = "폐쇄된 교실의 출석부가 어제 날짜로 멈춰 있다. 칠판을 읽지 마라.";
       } else if (kinds.includes("empty")) {
         body = "책상을 걷어낸 교실이다. 분필 가루만 복도로 샌다.";
+      }
+      const neighborHall = this.isMazeHall(chunk.cx + 1, chunk.cz) || this.isMazeHall(chunk.cx - 1, chunk.cz)
+        || this.isMazeHall(chunk.cx, chunk.cz + 1) || this.isMazeHall(chunk.cx, chunk.cz - 1);
+      if (neighborHall && this.isMazeHall(chunk.cx, chunk.cz)) {
+        body = `${body} 교실 뒷문으로 옆 복도가 열린다.`;
       }
       addLoreNote(`${chunkId}_lore`, [-1.18, 1.38, -5.4], Math.PI / 2, body);
     }

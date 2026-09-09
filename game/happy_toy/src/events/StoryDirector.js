@@ -63,6 +63,19 @@ export class StoryDirector {
       );
     }
 
+    const cx = Math.round(x / 16);
+    const cz = Math.round(z / 16);
+    const lx = x - cx * 16;
+    const lz = z - cz * 16;
+    if (y > -1.2 && y < 2.2 && Math.abs(lx) > 6.35 && Math.abs(lz) > 5.35) {
+      this.fire(
+        "throughClass",
+        "f1maze",
+        "교실 뒷문이 옆 복도로 뚫려 있습니다. 쫓기면 책상 사이로.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x < -18 && Math.abs(z) < 1.8) {
       this.fire(
         "library",
