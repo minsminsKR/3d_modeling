@@ -509,7 +509,7 @@ export class BackroomsGenerator {
     if (cx === 0 && cz === 0) return "class";
     const authored = {
       "-1,0": ["library", "shrine", "boarded", "music"],
-      "2,0": ["washroom", "shoes", "science", "empty"],
+      "2,0": ["class", "washroom", "shoes", "empty"],
       "0,1": ["shoes", "boarded", "music", "library"],
       "0,-1": ["shoes", "class", "washroom", "empty"],
       "4,0": ["library", "shoes", "boarded", "music"],
@@ -2309,7 +2309,7 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.05,
       });
     }
-    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+    for (const [name, x] of [["w", -2.42], ["e", 2.42]]) {
       this.addHallCartUnit(
         chunk, chunkId, `classwing_cart_${name}`,
         center.x + x, floorY + 0.38, center.z - 1.52, 0,
@@ -7757,7 +7757,7 @@ export class BackroomsGenerator {
           "현관 신발장이 동쪽 팔에 붙어 있다. 제단함은 북쪽에 있다.");
       } else if (this.isClassWingChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
-          "교실 날개다. 책상 사이로 숨으십시오.");
+          "교실 날개다. 책상 사이로 숨으십시오. 카트는 북쪽 벽 자물쇠 앞에 있다.");
       } else if (this.isUncatHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
           "교차로다. 칠판의 출석을 읽지 마십시오.");
