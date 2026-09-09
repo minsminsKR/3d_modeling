@@ -345,6 +345,13 @@ export class MapBuilder {
     if (chunk.cx === 6 && chunk.cz === 2) label = "무대";
     if (chunk.cx === 4 && chunk.cz === -1) label = "세탁";
     if (chunk.cx === 5 && chunk.cz === -2) label = "실험";
+    if (chunk.type === "flicker_room") label = "시청각";
+    if (chunk.type === "wide_room") label = "비품";
+    if (chunk.type === "omen_room") label = "상담실";
+    if (chunk.type === "static_room") label = "방송창고";
+    if (chunk.cx === 1 && chunk.cz === 1) label = "지하";
+    if (chunk.cx === 2 && chunk.cz === 1) label = "보육";
+    if (chunk.cx === -2 && chunk.cz === 1) label = "인형";
     if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;

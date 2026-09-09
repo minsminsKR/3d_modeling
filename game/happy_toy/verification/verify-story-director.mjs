@@ -160,6 +160,34 @@ g.player.position = { x: 80, y: 0, z: -32 };
 director.update();
 assert.equal(director.fired.has("lablink"), true);
 
+g.player.position = { x: 16, y: 0, z: -16 };
+director.update();
+assert.equal(director.fired.has("av"), true);
+
+g.player.position = { x: 0, y: 0, z: -32 };
+director.update();
+assert.equal(director.fired.has("supply"), true);
+
+g.player.position = { x: -16, y: 0, z: -32 };
+director.update();
+assert.equal(director.fired.has("counsel"), true);
+
+g.player.position = { x: 16, y: 0, z: -32 };
+director.update();
+assert.equal(director.fired.has("staticset"), true);
+
+g.player.position = { x: 16, y: 0, z: 16 };
+director.update();
+assert.equal(director.fired.has("stairhall"), true);
+
+g.player.position = { x: 32, y: 0, z: 16 };
+director.update();
+assert.equal(director.fired.has("nurseryhall"), true);
+
+g.player.position = { x: -32, y: 0, z: 16 };
+director.update();
+assert.equal(director.fired.has("dollhall"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");

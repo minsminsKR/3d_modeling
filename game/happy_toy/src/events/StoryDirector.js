@@ -238,6 +238,69 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 8 && x < 24 && z < -8 && z > -24) {
+      this.fire(
+        "av",
+        "av",
+        "시청각실입니다. 화면이 꺼져 있어도 교실을 보고 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && Math.abs(x) < 8 && z < -24 && z > -40) {
+      this.fire(
+        "supply",
+        "supply",
+        "비품실입니다. 철창 안에 어제 출석이 잠겨 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x < -8 && x > -24 && z < -24 && z > -40) {
+      this.fire(
+        "counsel",
+        "counsel",
+        "상담실입니다. 제단이 이름을 듣고 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 8 && x < 24 && z < -24 && z > -40) {
+      this.fire(
+        "staticset",
+        "staticset",
+        "방송 창고입니다. 화면이 아직 당신을 셉니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 8 && x < 24 && z > 8 && z < 24) {
+      this.fire(
+        "stairhall",
+        "stairhall",
+        "지하로 가는 복도입니다. 콘 너머로 물이 마릅니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 24 && x < 40 && z > 8 && z < 24) {
+      this.fire(
+        "nurseryhall",
+        "nurseryhall",
+        "보육 복도입니다. 요람이 서쪽 벽에 붙어 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x < -24 && x > -40 && z > 8 && z < 24) {
+      this.fire(
+        "dollhall",
+        "dollhall",
+        "인형 복도입니다. 선반의 눈을 마주치지 마십시오.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z < -8 && z > -24) {
       this.fire(
         "art",

@@ -695,6 +695,156 @@ try {
     console.log("lablink", stop, labLinkWalk.at(-1));
   }
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(1, 0);
+    game.mapBuilder.generator.generateChunk(1, -1);
+    game.mapBuilder.generator.generateChunk(2, -1);
+    game.player.setPosition({ x: 16, y: 0, z: -10 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const avWalk = [];
+  for (const stop of [
+    { x: 16, z: -10 },
+    { x: 16, z: -16 },
+    { x: 22, z: -16 },
+  ]) {
+    avWalk.push(await walkTo(stop, 360));
+    console.log("av", stop, avWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(0, -1);
+    game.mapBuilder.generator.generateChunk(0, -2);
+    game.mapBuilder.generator.generateChunk(1, -2);
+    game.player.setPosition({ x: 0, y: 0, z: -22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const supplyWalk = [];
+  for (const stop of [
+    { x: 0, z: -22 },
+    { x: 0, z: -32 },
+    { x: 6, z: -32 },
+  ]) {
+    supplyWalk.push(await walkTo(stop, 360));
+    console.log("supply", stop, supplyWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(-1, -1);
+    game.mapBuilder.generator.generateChunk(-1, -2);
+    game.player.setPosition({ x: -16, y: 0, z: -22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const counselWalk = [];
+  for (const stop of [
+    { x: -16, z: -22 },
+    { x: -16, z: -28.6 },
+  ]) {
+    counselWalk.push(await walkTo(stop, 360));
+    console.log("counsel", stop, counselWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(1, -1);
+    game.mapBuilder.generator.generateChunk(1, -2);
+    game.player.setPosition({ x: 16, y: 0, z: -22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const staticWalk = [];
+  for (const stop of [
+    { x: 16, z: -22 },
+    { x: 16, z: -28.6 },
+  ]) {
+    staticWalk.push(await walkTo(stop, 360));
+    console.log("staticset", stop, staticWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(0, 1);
+    game.mapBuilder.generator.generateChunk(1, 1);
+    game.mapBuilder.generator.generateChunk(1, 2);
+    game.player.setPosition({ x: 10, y: 0, z: 16 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const stairHallWalk = [];
+  for (const stop of [
+    { x: 10, z: 16 },
+    { x: 16, z: 16 },
+    { x: 16, z: 22 },
+  ]) {
+    stairHallWalk.push(await walkTo(stop, 360));
+    console.log("stairhall", stop, stairHallWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(2, 0);
+    game.mapBuilder.generator.generateChunk(2, 1);
+    game.mapBuilder.generator.generateChunk(1, 1);
+    game.player.setPosition({ x: 32, y: 0, z: 10 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const nurseryHallWalk = [];
+  for (const stop of [
+    { x: 32, z: 10 },
+    { x: 32, z: 16 },
+    { x: 26, z: 16 },
+  ]) {
+    nurseryHallWalk.push(await walkTo(stop, 360));
+    console.log("nurseryhall", stop, nurseryHallWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(-2, 0);
+    game.mapBuilder.generator.generateChunk(-2, 1);
+    game.mapBuilder.generator.generateChunk(-1, 1);
+    game.player.setPosition({ x: -32, y: 0, z: 10 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const dollHallWalk = [];
+  for (const stop of [
+    { x: -32, z: 10 },
+    { x: -32, z: 16 },
+    { x: -26, z: 16 },
+  ]) {
+    dollHallWalk.push(await walkTo(stop, 360));
+    console.log("dollhall", stop, dollHallWalk.at(-1));
+  }
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -730,6 +880,13 @@ try {
     const stageWing = generator.generateChunk(6, 2);
     const laundry = generator.generateChunk(4, -1);
     const labLink = generator.generateChunk(5, -2);
+    const avRoom = generator.generateChunk(1, -1);
+    const supply = generator.generateChunk(0, -2);
+    const counsel = generator.generateChunk(-1, -2);
+    const staticRoom = generator.generateChunk(1, -2);
+    const stairHall = generator.generateChunk(1, 1);
+    const nurseryHall = generator.generateChunk(2, 1);
+    const dollHall = generator.generateChunk(-2, 1);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
     game._lastPlayerChunkCx = 4;
@@ -759,6 +916,13 @@ try {
     game.onEnterSchoolChunk(6, 2);
     game.onEnterSchoolChunk(4, -1);
     game.onEnterSchoolChunk(5, -2);
+    game.onEnterSchoolChunk(1, -1);
+    game.onEnterSchoolChunk(0, -2);
+    game.onEnterSchoolChunk(-1, -2);
+    game.onEnterSchoolChunk(1, -2);
+    game.onEnterSchoolChunk(1, 1);
+    game.onEnterSchoolChunk(2, 1);
+    game.onEnterSchoolChunk(-2, 1);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
     for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
     game.player.setPosition({ x: 32, y: 0, z: 0 });
@@ -854,6 +1018,18 @@ try {
       stageRack: names(stageWing).some((name) => name.includes("stagewing_rack_")),
       laundryCart: names(laundry).some((name) => name.includes("laundry_cart_")),
       labLinkCase: names(labLink).some((name) => name.includes("lablink_case_")),
+      avCart: names(avRoom).some((name) => name.includes("av_cart_")),
+      avType: avRoom.type,
+      supplyCage: names(supply).some((name) => name.includes("supply_cage_")),
+      supplyType: supply.type,
+      counselAltar: names(counsel).some((name) => name.includes("omen_altar")),
+      counselSign: names(counsel).some((name) => name.includes("counsel_sign")),
+      counselType: counsel.type,
+      staticSet: names(staticRoom).some((name) => name.includes("static_set")),
+      staticType: staticRoom.type,
+      stairHallCone: names(stairHall).some((name) => name.includes("stairhall_cone_")),
+      nurseryHallCrib: names(nurseryHall).some((name) => name.includes("nurseryhall_crib_")),
+      dollHallShelf: names(dollHall).some((name) => name.includes("dollhall_shelf_")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -1107,7 +1283,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, labLinkWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -1262,6 +1438,44 @@ try {
   assert.ok(rooms.beats.includes("lablink"), "lab-link VO beat missing");
   assert.equal(labLinkWalk.at(-1).ok, true, `must walk the lab-link hall, got ${JSON.stringify(labLinkWalk.at(-1))}`);
   assert.ok(labLinkWalk.at(-1).x > 84 && Math.abs(labLinkWalk.at(-1).z + 32) < 1.4, "lab-link EW spine must stay open");
+  assert.equal(rooms.avType, "flicker_room");
+  assert.equal(rooms.avCart, true, "AV room must have CRT carts");
+  assert.ok(rooms.beats.includes("flicker_room"), "AV room VO beat missing");
+  assert.equal(avWalk.at(-1).ok, true, `must walk the AV room, got ${JSON.stringify(avWalk.at(-1))}`);
+  assert.ok(avWalk.some((stop) => stop.z < -14 && Math.abs(stop.x - 16) < 1.6), "AV north aisle must stay open");
+  assert.ok(avWalk.at(-1).x > 20 && Math.abs(avWalk.at(-1).z + 16) < 1.4, "AV east aisle must stay open");
+  assert.equal(rooms.supplyType, "wide_room");
+  assert.equal(rooms.supplyCage, true, "supply room must have cages");
+  assert.ok(rooms.beats.includes("wide_room"), "supply room VO beat missing");
+  assert.equal(supplyWalk.at(-1).ok, true, `must walk the supply room, got ${JSON.stringify(supplyWalk.at(-1))}`);
+  assert.ok(supplyWalk.some((stop) => stop.z < -30 && Math.abs(stop.x) < 1.6), "supply south aisle must stay open");
+  assert.ok(supplyWalk.at(-1).x > 4 && Math.abs(supplyWalk.at(-1).z + 32) < 1.4, "supply east aisle must stay open");
+  assert.equal(rooms.counselType, "omen_room");
+  assert.equal(rooms.counselAltar, true, "counseling room must keep the altar");
+  assert.equal(rooms.counselSign, true, "counseling room must hang a school sign");
+  assert.ok(rooms.beats.includes("omen_room"), "counseling room VO beat missing");
+  assert.equal(counselWalk.at(-1).ok, true, `must walk into the counseling room, got ${JSON.stringify(counselWalk.at(-1))}`);
+  assert.ok(counselWalk.at(-1).z < -26 && Math.abs(counselWalk.at(-1).x + 16) < 1.6, "counseling south aisle must stay open");
+  assert.equal(rooms.staticType, "static_room");
+  assert.equal(rooms.staticSet, true, "broadcast closet must keep the TV set");
+  assert.ok(rooms.beats.includes("static_room"), "broadcast closet VO beat missing");
+  assert.equal(staticWalk.at(-1).ok, true, `must walk into the broadcast closet, got ${JSON.stringify(staticWalk.at(-1))}`);
+  assert.ok(staticWalk.at(-1).z < -26 && Math.abs(staticWalk.at(-1).x - 16) < 1.6, "broadcast closet south aisle must stay open");
+  assert.equal(rooms.stairHallCone, true, "stair hall must place caution cones");
+  assert.ok(rooms.beats.includes("stairhall"), "stair hall VO beat missing");
+  assert.equal(stairHallWalk.at(-1).ok, true, `must walk the stair hall, got ${JSON.stringify(stairHallWalk.at(-1))}`);
+  assert.ok(stairHallWalk.some((stop) => Math.abs(stop.z - 16) < 1.6 && stop.x > 14), "stair hall EW spine must stay open");
+  assert.ok(stairHallWalk.at(-1).z > 20 && Math.abs(stairHallWalk.at(-1).x - 16) < 1.4, "stair hall south T-spur to B1 must stay open");
+  assert.equal(rooms.nurseryHallCrib, true, "nursery hall must show cribs");
+  assert.ok(rooms.beats.includes("nurseryhall"), "nursery hall VO beat missing");
+  assert.equal(nurseryHallWalk.at(-1).ok, true, `must walk the nursery hall, got ${JSON.stringify(nurseryHallWalk.at(-1))}`);
+  assert.ok(nurseryHallWalk.some((stop) => stop.z > 14 && Math.abs(stop.x - 32) < 1.6), "nursery hall NS spine must stay open");
+  assert.ok(nurseryHallWalk.at(-1).x < 28 && Math.abs(nurseryHallWalk.at(-1).z - 16) < 1.4, "nursery hall west T-spur must stay open");
+  assert.equal(rooms.dollHallShelf, true, "doll hall must show west shelves");
+  assert.ok(rooms.beats.includes("dollhall"), "doll hall VO beat missing");
+  assert.equal(dollHallWalk.at(-1).ok, true, `must walk the doll hall, got ${JSON.stringify(dollHallWalk.at(-1))}`);
+  assert.ok(dollHallWalk.some((stop) => stop.z > 14 && Math.abs(stop.x + 32) < 1.6), "doll hall NS spine must stay open");
+  assert.ok(dollHallWalk.at(-1).x > -28 && Math.abs(dollHallWalk.at(-1).z - 16) < 1.4, "doll hall east T-spur must stay open");
   assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
   assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
   assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");
