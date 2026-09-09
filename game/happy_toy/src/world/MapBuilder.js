@@ -53,8 +53,8 @@ export class MapBuilder {
   updateLoadedChunks(playerPosition, chunkChanged = true) {
     const cx = Math.floor((playerPosition.x + 8) / 16);
     const cz = Math.floor((playerPosition.z + 8) / 16);
-    const activeRadius = 3;
-    const disableRadius = 5;
+    const activeRadius = 2;
+    const disableRadius = 3;
 
     let changed = false;
 
@@ -165,6 +165,10 @@ export class MapBuilder {
 
   decorateChunk(chunk) {
     if (!chunk || chunk.atmosphereDecorated) return;
+    if (chunk.type === "void") {
+      chunk.atmosphereDecorated = true;
+      return;
+    }
     chunk.atmosphereDecorated = true;
 
     // Deterministic decoration keeps screenshots and gameplay tests reproducible.
@@ -243,12 +247,17 @@ export class MapBuilder {
     if (!isStairVoid && chunk.type !== "start" && random() < 0.27) {
       const decal = new THREE.Mesh(this.wallDecayGeometry, this.wallDecayMaterial);
       const side = random() > 0.5 ? 1 : -1;
-      if (chunk.type === "corridor_ns" || chunk.type === "narrow_ns") {
-        decal.position.set(chunk.center.x + side * 1.19, chunk.floorY + 1.34, chunk.center.z + (random() - 0.5) * 8.5);
-        decal.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
-      } else if (chunk.type === "corridor_ew") {
-        decal.position.set(chunk.center.x + (random() - 0.5) * 8.5, chunk.floorY + 1.34, chunk.center.z + side * 1.19);
-        decal.rotation.y = side < 0 ? 0 : Math.PI;
+      const hallLike = chunk.type === "corridor_ns" || chunk.type === "narrow_ns"
+        || chunk.type === "corridor_ew" || chunk.type === "t_junction" || chunk.type === "cross_junction";
+      if (hallLike) {
+        const along = 4.6 + random() * 1.6;
+        if (random() > 0.5) {
+          decal.position.set(chunk.center.x + side * 1.19, chunk.floorY + 1.34, chunk.center.z + side * along);
+          decal.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+        } else {
+          decal.position.set(chunk.center.x + side * along, chunk.floorY + 1.34, chunk.center.z + side * 1.19);
+          decal.rotation.y = side < 0 ? 0 : Math.PI;
+        }
       } else {
         const useSouthWall = chunk.type === "workshop" || chunk.type === "playroom" || random() > 0.7;
         decal.position.set(

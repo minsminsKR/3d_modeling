@@ -29,6 +29,9 @@ export class DreadDirector {
     this.wasHidden = false;
     this.safeBetrayCooldown = 3.5 + Math.random() * 3;
     this.betrayedLights = [];
+    this.quietScareTimer = 14 + Math.random() * 10;
+    this.huntRadioDelay = 0;
+    this.huntRadioPlayed = true;
     this.game.hud?.setDread?.(0, "", "quiet");
   }
 
@@ -96,6 +99,8 @@ export class DreadDirector {
       this.phase = "hunt";
       this.timer = this.finalReturn ? 28 : 16 + this.lastCount * 2;
       this.bell(73);
+      this.huntRadioDelay = 1.2 + Math.random() * 1.3;
+      this.huntRadioPlayed = false;
       this.triggerHuntBlackout();
       if (!(g.isInvincible ?? g.testSafeMode)) g.enemyManager.notifyNoiseEvent(this.anchor, 32, {
         duration: 10, source: "ritual", silentFeedback: true,
@@ -131,6 +136,8 @@ export class DreadDirector {
     g.hud.setDread(this.fear, message, this.phase);
     this.updateFootsteps(dt, context);
     this.updatePhantomEcho(dt, context);
+    this.updateQuietPhaseScapes(dt, context);
+    this.updateHuntRadio(dt);
     this.updateCabinetDread(dt);
     this.updateSafeLightBetrayal(dt);
   }
@@ -196,6 +203,33 @@ export class DreadDirector {
       });
     }
     this.phantomDelay = 0;
+  }
+
+  updateQuietPhaseScapes(dt, context) {
+    const player = this.game.player;
+    const chasing = (context.chasingCount || 0) > 0;
+    if (this.phase !== "quiet" || player.isHidden || chasing) return;
+
+    this.quietScareTimer -= dt;
+    if (this.quietScareTimer > 0) return;
+    this.quietScareTimer = 22 + Math.random() * 20;
+    if (!soundManager.initialized) return;
+
+    const cry = Math.random() < 0.5;
+    soundManager.playSFX(cry ? "distant_cry" : "radio_static");
+    this.game.hud?.setStatus?.(
+      cry ? "멀리서 짧은 울음이 벽을 타고 옵니다." : "죽은 수신기가 잡음을 토해냅니다.",
+      2200,
+    );
+  }
+
+  updateHuntRadio(dt) {
+    if (this.phase !== "hunt" || this.huntRadioPlayed) return;
+    this.huntRadioDelay -= dt;
+    if (this.huntRadioDelay > 0) return;
+    this.huntRadioPlayed = true;
+    if (soundManager.initialized) soundManager.playSFX("radio_static");
+    this.game.hud?.setStatus?.("수신기에서 숨소리가 새어 나온다", 2600);
   }
 
   updateCabinetDread(dt) {

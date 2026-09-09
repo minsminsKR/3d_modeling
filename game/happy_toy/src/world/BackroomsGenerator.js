@@ -104,6 +104,8 @@ const ROOM_LIKE_CHUNK_TYPES = new Set([
   "tatami_room",
   "wide_room",
   "flicker_room",
+  "omen_room",
+  "static_room",
   "workshop",
   "playroom",
   "storage",
@@ -127,6 +129,42 @@ export function getChunkSeed(baseSeed, cx, cz) {
   let h = baseSeed ^ (cx * 73856093) ^ (cz * 19349663);
   return h >>> 0;
 }
+
+// Undirected 1F mansion graph. If two cells share an edge, both faces open.
+export const MANSION_EDGES = [
+  ["0,0", "0,-1"],
+  ["0,-1", "0,-2"],
+  ["0,0", "0,1"],
+  ["0,1", "0,2"],
+  ["0,0", "-1,0"],
+  ["-1,0", "-2,0"],
+  ["0,0", "1,0"],
+  ["1,0", "2,0"],
+  ["0,1", "-1,1"],
+  ["-1,1", "-2,1"],
+  ["0,1", "1,1"],
+  ["1,1", "2,1"],
+  ["-2,0", "-2,-1"],
+  ["-2,-1", "-2,-2"],
+  ["-2,0", "-2,1"],
+  ["-2,1", "-2,2"],
+  ["2,0", "2,-1"],
+  ["2,-1", "2,-2"],
+  ["2,0", "2,1"],
+  ["2,1", "2,2"],
+  ["-1,0", "-1,-1"],
+  ["-1,-1", "-1,-2"],
+  ["-1,1", "-1,2"],
+  ["1,0", "1,-1"],
+  ["1,-1", "1,-2"],
+  ["1,1", "1,2"],
+  ["-2,-2", "-1,-2"],
+  ["-1,-2", "0,-2"],
+  ["0,-2", "1,-2"],
+  ["1,-2", "2,-2"],
+  ["-2,2", "-1,2"],
+  ["-1,2", "0,2"],
+];
 
 export class BackroomsGenerator {
   constructor(scene, collisionWorld, textureLibrary, baseSeed = 12345, game = null) {
@@ -234,20 +272,78 @@ export class BackroomsGenerator {
       "-1,-1": "stairs_2f",
       "-1,2": "tatami_room",
       "0,2": "corridor_ns",
+      "-1,-2": "omen_room",
+      "1,-2": "static_room",
     };
 
     const key = `${cx},${cz}`;
     if (FIXED_MAP_LAYOUT[key]) {
       return FIXED_MAP_LAYOUT[key];
     }
-
-    const seed = getChunkSeed(this.baseSeed, cx, cz);
-    const rand = createRandom(seed)();
-    if (rand < 0.3) return "corridor_ns";
-    if (rand < 0.6) return "corridor_ew";
-    return "corner";
+    return "void";
   }
 
+  isPlayableChunk(cx, cz) {
+    return Math.abs(cx) <= 2 && Math.abs(cz) <= 2;
+  }
+
+  getOpenings(cx, cz) {
+    const open = { N: false, S: false, E: false, W: false };
+    if (!this.isPlayableChunk(cx, cz)) {
+      return open;
+    }
+    const key = `${cx},${cz}`;
+    const neighbor = {
+      N: `${cx},${cz - 1}`,
+      S: `${cx},${cz + 1}`,
+      E: `${cx + 1},${cz}`,
+      W: `${cx - 1},${cz}`,
+    };
+    for (const [a, b] of MANSION_EDGES) {
+      if (a === key && b === neighbor.N) open.N = true;
+      if (b === key && a === neighbor.N) open.N = true;
+      if (a === key && b === neighbor.S) open.S = true;
+      if (b === key && a === neighbor.S) open.S = true;
+      if (a === key && b === neighbor.E) open.E = true;
+      if (b === key && a === neighbor.E) open.E = true;
+      if (a === key && b === neighbor.W) open.W = true;
+      if (b === key && a === neighbor.W) open.W = true;
+    }
+    return open;
+  }
+
+  generateExteriorHull(cx, cz) {
+    const key = this.getChunkKey(cx, cz);
+    const center = new THREE.Vector3(cx * 16, 0, cz * 16);
+    const chunkId = `chunk_${cx}_${cz}`;
+    const chunk = {
+      cx,
+      cz,
+      cy: 0,
+      floorY: 0,
+      type: "void",
+      center,
+      chunkId,
+      meshes: [],
+      lights: [],
+      doors: [],
+      keys: [],
+      cabinets: [],
+      safeLights: [],
+      finalExit: null,
+      waypoints: [],
+    };
+    this.collisionWorld.addVoidArea({
+      id: `${chunkId}_void`,
+      minX: center.x - 8,
+      maxX: center.x + 8,
+      minZ: center.z - 8,
+      maxZ: center.z + 8,
+      y: 0,
+    }, chunkId);
+    this.chunksData.set(key, chunk);
+    return chunk;
+  }
 
   getChunkElevation(cx, cz) {
     // Seamless Shadow Corridor Labyrinth: all chunks on unified ground plane (Y = 0.0)
@@ -261,6 +357,10 @@ export class BackroomsGenerator {
     }
 
     const tStart = performance.now();
+
+    if (!this.isPlayableChunk(cx, cz)) {
+      return this.generateExteriorHull(cx, cz);
+    }
 
     const type = this.getChunkType(cx, cz);
     const cy = this.getChunkElevation(cx, cz);
@@ -1445,46 +1545,12 @@ export class BackroomsGenerator {
     };
 
 
-    // Connections: N, S, E, W (true = open, false = closed)
-    let N = true, S = true, E = true, W = true;
-
-    if (Math.abs(chunk.cx) > 2 || Math.abs(chunk.cz) > 2) {
-      // Complete solid boundary closure for outer regions
-      N = false; S = false; E = false; W = false;
-    } else {
-      // 5x5 Narrative Maze Outer Borders
-      if (chunk.cz === -2) N = false;
-      if (chunk.cz === 2) S = false;
-      if (chunk.cx === -2) W = false;
-      if (chunk.cx === 2) E = false;
-
-      // Type-specific connection closures
-      if (type === "corridor_ns" || type === "narrow_ns") {
-        E = false; W = false;
-      } else if (type === "corridor_ew") {
-        const connectsStairs2F = (chunk.cx === -1 && chunk.cz === 0);
-        const connectsStairsB1 = (chunk.cx === 1 && chunk.cz === 1);
-        const connectsTatami = (chunk.cx === -1 && chunk.cz === 1);
-        if (!connectsStairs2F) N = false;
-        if (!connectsStairsB1 && !connectsTatami) S = false;
-      } else if (type === "t_junction") {
-        if (chunk.cx === 2) {
-          E = false;
-        } else {
-          W = false;
-        }
-      } else if (type === "corner") {
-        N = false; W = false;
-      } else if (type === "dead_end") {
-        N = false; E = false; W = false;
-      } else if (type === "workshop" || type === "playroom" || type === "tatami_room" || type === "pillar_room") {
-        S = false; E = false; W = false;
-      } else if (type === "storage" || type === "event" || type === "archive" || type === "wide_room" || type === "stairs_2f") {
-        N = false; E = false; W = false;
-      } else if (type === "stairs_b1") {
-        S = false; E = false; W = false;
-      }
-    }
+    // Connections come from the mansion graph so neighboring chunks always agree.
+    const openings = this.getOpenings(chunk.cx, chunk.cz);
+    const N = openings.N;
+    const S = openings.S;
+    const E = openings.E;
+    const W = openings.W;
 
     // Build Single-Tile Boundary Openings (2.4m corridor opening)
     // North Border (z = -7.8)
@@ -1519,32 +1585,19 @@ export class BackroomsGenerator {
       addWallSegment(7.8, 0.0, 0.4, 16.0, "e_solid");
     }
 
-    // Build Single-Tile Corridor Interior Guide Walls (Uniform 2.4m corridor width)
-    if (type === "corridor_ns" || type === "narrow_ns") {
-      addWallSegment(-1.4, 0.0, 0.4, 16.0, "corridor_w_guide");
-      addWallSegment(1.4, 0.0, 0.4, 16.0, "corridor_e_guide");
-    } else if (type === "corridor_ew") {
-      const connectsStairs2F = (chunk.cx === -1 && chunk.cz === 0);
-      const connectsStairsB1 = (chunk.cx === 1 && chunk.cz === 1);
-      const connectsTatami = (chunk.cx === -1 && chunk.cz === 1);
-
-      if (connectsStairs2F) {
-        addWallSegment(-4.6, -1.4, 6.8, 0.4, "corridor_n_guide_w");
-        addWallSegment(4.6, -1.4, 6.8, 0.4, "corridor_n_guide_e");
-        addWallSegment(-1.4, -4.6, 0.4, 6.0, "corridor_branch_w");
-        addWallSegment(1.4, -4.6, 0.4, 6.0, "corridor_branch_e");
-      } else {
-        addWallSegment(0.0, -1.4, 16.0, 0.4, "corridor_n_guide");
-      }
-
-      if (connectsStairsB1 || connectsTatami) {
-        addWallSegment(-4.6, 1.4, 6.8, 0.4, "corridor_s_guide_w");
-        addWallSegment(4.6, 1.4, 6.8, 0.4, "corridor_s_guide_e");
-        addWallSegment(-1.4, 4.6, 0.4, 6.0, "corridor_branch_w");
-        addWallSegment(1.4, 4.6, 0.4, 6.0, "corridor_branch_e");
-      } else {
-        addWallSegment(0.0, 1.4, 16.0, 0.4, "corridor_s_guide");
-      }
+    // Plus-shaped halls with four enterable corner alcoves (1.6m inner gaps).
+    // Every volume that has a floor mesh is reachable; no sealed diorama pockets.
+    const hallLike = type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
+      || type === "t_junction" || type === "cross_junction" || type === "start";
+    if (hallLike) {
+      addWallSegment(-1.4, -5.6, 0.4, 4.8, "alcove_nw_ns");
+      addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
+      addWallSegment(1.4, -5.6, 0.4, 4.8, "alcove_ne_ns");
+      addWallSegment(5.6, -1.4, 4.8, 0.4, "alcove_ne_ew");
+      addWallSegment(-1.4, 5.6, 0.4, 4.8, "alcove_sw_ns");
+      addWallSegment(-5.6, 1.4, 4.8, 0.4, "alcove_sw_ew");
+      addWallSegment(1.4, 5.6, 0.4, 4.8, "alcove_se_ns");
+      addWallSegment(5.6, 1.4, 4.8, 0.4, "alcove_se_ew");
     } else if (type === "tatami_room" || type === "pillar_room") {
       // Traditional Japanese Tatami Room: Architectural corner posts & alcove wall
       addWallSegment(-7.2, -7.2, 0.8, 0.8, "tatami_post_nw");
@@ -1559,29 +1612,6 @@ export class BackroomsGenerator {
       addWallSegment(4.6, 1.4, 6.8, 0.4, "corner_inner_e");
       addWallSegment(-1.4, 3.3, 0.4, 9.4, "corner_outer_w");
       addWallSegment(3.3, -1.4, 9.4, 0.4, "corner_outer_n");
-    } else if (type === "t_junction") {
-      if (chunk.cx === 2) {
-        addWallSegment(-1.4, -4.6, 0.4, 6.8, "tjunc_nw_ns");
-        addWallSegment(-4.6, -1.4, 6.8, 0.4, "tjunc_nw_ew");
-        addWallSegment(-1.4, 4.6, 0.4, 6.8, "tjunc_sw_ns");
-        addWallSegment(-4.6, 1.4, 6.8, 0.4, "tjunc_sw_ew");
-        addWallSegment(1.4, 0.0, 0.4, 16.0, "tjunc_e_guide");
-      } else {
-        addWallSegment(1.4, -4.6, 0.4, 6.8, "tjunc_ne_ns");
-        addWallSegment(4.6, -1.4, 6.8, 0.4, "tjunc_ne_ew");
-        addWallSegment(1.4, 4.6, 0.4, 6.8, "tjunc_se_ns");
-        addWallSegment(4.6, 1.4, 6.8, 0.4, "tjunc_se_ew");
-        addWallSegment(-1.4, 0.0, 0.4, 16.0, "tjunc_w_guide");
-      }
-    } else if (type === "cross_junction") {
-      addWallSegment(-1.4, -4.6, 0.4, 6.8, "cross_nw_ns");
-      addWallSegment(-4.6, -1.4, 6.8, 0.4, "cross_nw_ew");
-      addWallSegment(1.4, -4.6, 0.4, 6.8, "cross_ne_ns");
-      addWallSegment(4.6, -1.4, 6.8, 0.4, "cross_ne_ew");
-      addWallSegment(-1.4, 4.6, 0.4, 6.8, "cross_sw_ns");
-      addWallSegment(-4.6, 1.4, 6.8, 0.4, "cross_sw_ew");
-      addWallSegment(1.4, 4.6, 0.4, 6.8, "cross_se_ns");
-      addWallSegment(4.6, 1.4, 6.8, 0.4, "cross_se_ew");
     } else if (type === "toy_storage" || type === "storage") {
       addWallSegment(-3.5, -2.0, 4.5, 0.4, "shelf_partition_nw");
       addWallSegment(-3.5, 2.0, 4.5, 0.4, "shelf_partition_sw");
@@ -1598,31 +1628,11 @@ export class BackroomsGenerator {
       addWallSegment(4.0, 3.0, 0.4, 4.0, "playroom_divider_e");
     } else if (type === "event") {
       addWallSegment(-4.8, 0.0, 0.4, 8.0, "event_partition");
-    } else if (type === "wide_room" || type === "flicker_room") {
+    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room") {
       addWallSegment(-5.0, -5.0, 1.2, 1.2, "wide_corner_nw");
       addWallSegment(5.0, -5.0, 1.2, 1.2, "wide_corner_ne");
       addWallSegment(-5.0, 5.0, 1.2, 1.2, "wide_corner_sw");
       addWallSegment(5.0, 5.0, 1.2, 1.2, "wide_corner_se");
-    } else if (type === "start") {
-      // Central shrine foyer with 2.4m corridor wings extending cleanly to North, South, East, and West doors
-      addWallSegment(-1.4, -5.4, 0.4, 4.8, "start_nw_corridor");
-      addWallSegment(1.4, -5.4, 0.4, 4.8, "start_ne_corridor");
-      addWallSegment(-1.4, 5.4, 0.4, 4.8, "start_sw_corridor");
-      addWallSegment(1.4, 5.4, 0.4, 4.8, "start_se_corridor");
-      addWallSegment(-5.4, -1.4, 4.8, 0.4, "start_wn_corridor");
-      addWallSegment(-5.4, 1.4, 4.8, 0.4, "start_ws_corridor");
-      addWallSegment(5.4, -1.4, 4.8, 0.4, "start_en_corridor");
-      addWallSegment(5.4, 1.4, 4.8, 0.4, "start_es_corridor");
-
-      // Foyer corner enclosures
-      addWallSegment(-2.2, -3.0, 1.6, 0.4, "start_nw_foyer_n");
-      addWallSegment(-3.0, -2.2, 0.4, 1.6, "start_nw_foyer_w");
-      addWallSegment(2.2, -3.0, 1.6, 0.4, "start_ne_foyer_n");
-      addWallSegment(3.0, -2.2, 0.4, 1.6, "start_ne_foyer_e");
-      addWallSegment(-2.2, 3.0, 1.6, 0.4, "start_sw_foyer_s");
-      addWallSegment(-3.0, 2.2, 0.4, 1.6, "start_sw_foyer_w");
-      addWallSegment(2.2, 3.0, 1.6, 0.4, "start_se_foyer_s");
-      addWallSegment(3.0, 2.2, 0.4, 1.6, "start_se_foyer_e");
     }
 
     // Build Instanced Meshes
@@ -1670,6 +1680,105 @@ export class BackroomsGenerator {
       chunk.meshes.push(wallInst);
       chunk.meshes.push(trimInst);
     }
+  }
+
+  dressOmenRoom(chunk, center, chunkId, floorY) {
+    const altarGeo = this.getBoxGeometry(1.35, 0.82, 1.35);
+    const altar = new THREE.Mesh(altarGeo, this.propMaterial);
+    altar.position.set(center.x, floorY + 0.41, center.z);
+    altar.castShadow = true;
+    altar.receiveShadow = true;
+    altar.name = `${chunkId}_omen_altar`;
+    this.scene.add(altar);
+    chunk.meshes.push(altar);
+    this.collisionWorld.addStaticBox(altar.name, altar.position, new THREE.Vector3(1.35, 0.82, 1.35), chunkId);
+
+    const clothGeo = this.getBoxGeometry(1.5, 0.04, 1.5);
+    const clothMat = new THREE.MeshStandardMaterial({
+      color: 0x1a090c,
+      roughness: 0.92,
+      metalness: 0.02,
+    });
+    const cloth = new THREE.Mesh(clothGeo, clothMat);
+    cloth.position.set(center.x, floorY + 0.84, center.z);
+    cloth.name = `${chunkId}_omen_cloth`;
+    this.scene.add(cloth);
+    chunk.meshes.push(cloth);
+
+    const candleMat = new THREE.MeshStandardMaterial({
+      color: 0x3a2a18,
+      emissive: 0x140804,
+      emissiveIntensity: 0.12,
+      roughness: 0.7,
+    });
+    for (let i = 0; i < 6; i += 1) {
+      const angle = (i / 6) * Math.PI * 2;
+      const candle = new THREE.Mesh(this.getBoxGeometry(0.08, 0.28, 0.08), candleMat);
+      candle.position.set(
+        center.x + Math.cos(angle) * 0.42,
+        floorY + 0.98,
+        center.z + Math.sin(angle) * 0.42,
+      );
+      candle.name = `${chunkId}_omen_candle_${i}`;
+      this.scene.add(candle);
+      chunk.meshes.push(candle);
+    }
+
+    const veilGeo = this.getBoxGeometry(0.06, 2.2, 2.4);
+    const veilMat = new THREE.MeshStandardMaterial({
+      color: 0x12080a,
+      roughness: 0.95,
+      transparent: true,
+      opacity: 0.55,
+    });
+    const veil = new THREE.Mesh(veilGeo, veilMat);
+    veil.position.set(center.x - 3.6, floorY + 1.15, center.z - 2.4);
+    veil.name = `${chunkId}_omen_veil`;
+    this.scene.add(veil);
+    chunk.meshes.push(veil);
+  }
+
+  dressStaticRoom(chunk, center, chunkId, floorY) {
+    const setGeo = this.getBoxGeometry(1.1, 0.72, 0.55);
+    const setMesh = new THREE.Mesh(setGeo, this.propMaterial);
+    setMesh.position.set(center.x, floorY + 0.36, center.z - 4.6);
+    setMesh.castShadow = true;
+    setMesh.receiveShadow = true;
+    setMesh.name = `${chunkId}_static_set`;
+    this.scene.add(setMesh);
+    chunk.meshes.push(setMesh);
+    this.collisionWorld.addStaticBox(setMesh.name, setMesh.position, new THREE.Vector3(1.1, 0.72, 0.55), chunkId);
+
+    const screenMat = new THREE.MeshStandardMaterial({
+      color: 0x0b1014,
+      emissive: 0x3a5a72,
+      emissiveIntensity: 0.55,
+      roughness: 0.35,
+    });
+    const screen = new THREE.Mesh(this.getBoxGeometry(0.82, 0.48, 0.04), screenMat);
+    screen.position.set(center.x, floorY + 0.92, center.z - 4.34);
+    screen.name = `${chunkId}_static_screen`;
+    this.scene.add(screen);
+    chunk.meshes.push(screen);
+    chunk.lights.push({
+      mesh: screen,
+      localPos: new THREE.Vector3(0, 0.92, -4.34),
+      baseIntensity: 2.4,
+      currentIntensity: 2.4,
+      isFlickering: true,
+      flickerTimer: 0.2,
+      voltagePhase: 1.7,
+      pooledLight: null,
+    });
+
+    const chairGeo = this.getBoxGeometry(0.48, 0.62, 0.48);
+    const chair = new THREE.Mesh(chairGeo, this.trimMaterial);
+    chair.position.set(center.x + 0.15, floorY + 0.31, center.z - 1.8);
+    chair.castShadow = true;
+    chair.name = `${chunkId}_static_chair`;
+    this.scene.add(chair);
+    chunk.meshes.push(chair);
+    this.collisionWorld.addStaticBox(chair.name, chair.position, new THREE.Vector3(0.48, 0.62, 0.48), chunkId);
   }
 
   buildCeilingLights(chunk, type, center, chunkId, rand, floorY = 0) {
@@ -1745,8 +1854,17 @@ export class BackroomsGenerator {
       chunk.meshes.push(painting);
     } else if (type === "wide_room") {
       addDynamicDoor("door-final-lock-room", "봉인된 출구방", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+    } else if (type === "flicker_room") {
+      addDynamicDoor("door-flicker-room", "깜빡이는 방", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+    } else if (type === "omen_room") {
+      addDynamicDoor("door-omen-room", "서늘한 북실", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+      this.dressOmenRoom(chunk, center, chunkId, floorY);
+    } else if (type === "static_room") {
+      addDynamicDoor("door-static-room", "노이즈가 남는 방", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+      this.dressStaticRoom(chunk, center, chunkId, floorY);
     } else if (type === "stairs_2f") {
       addDynamicDoor("door-stairs-2f", "2층 계단실", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+      addDynamicDoor("door-stairs-2f-north", "2층 북실 통로", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
       addDynamicDoor("door-stairs-2f-gallery", "2층 액자방", [-1.35, 5.0, -5.8], [0.22, 2.35, 2.4]);
     } else if (type === "stairs_b1") {
       addDynamicDoor("door-stairs-b1", "지하 계단실", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
@@ -1806,6 +1924,10 @@ export class BackroomsGenerator {
       addDynamicCabinet("cabinet_chokepoint_1_0", "복도 입구 캐비넷", [0.0, 0.0, 0.85], 0);
     } else if (chunk.cx === 0 && chunk.cz === 1) {
       addDynamicCabinet("cabinet_junction_0_1", "교차로 캐비넷", [-5.0, 0.0, 0.85], 0);
+    } else if (type === "omen_room") {
+      addDynamicCabinet("cabinet-omen-room", "북실 벽장", [5.4, 0.0, -5.4], Math.PI / 2);
+    } else if (type === "static_room") {
+      addDynamicCabinet("cabinet-static-room", "노이즈방 캐비넷", [-5.4, 0.0, -5.4], -Math.PI / 2);
     } else if (type === "stairs_2f") {
       addDynamicCabinet("cabinet_stairs_2f_attic", "2층 갤러리 벽장", [-20.2, 5.0, 4.0], -Math.PI / 2);
     } else if (type === "stairs_b1") {
@@ -1876,6 +1998,13 @@ export class BackroomsGenerator {
   buildSafeLights(chunk, type, center, chunkId, rand, floorY = 0) {
     let lightIdx = 0;
     const spawnSafeLight = (variant, localX, localY, localZ, yaw, labelOverride = null) => {
+      let facing = yaw;
+      // Wall-switch geometry faces local -Z (backplate +Z into the wall).
+      // East/west call sites historically passed the opposite yaw; flip only
+      // ±90° mounts so north/south sconces (0 and π) stay correct.
+      if (variant === "wall-switch" && Math.abs(Math.abs(yaw) - Math.PI / 2) < 0.02) {
+        facing = -yaw;
+      }
       const localId = `safe_${variant.replaceAll("-", "_")}_${lightIdx++}`;
       const stateKey = `${chunk.cx},${chunk.cz}:${localId}`;
       const isOn = this.game?.activatedSafeLightKeys?.has(stateKey) || false;
@@ -1885,7 +2014,7 @@ export class BackroomsGenerator {
         label: labelOverride || SAFE_LIGHT_LABELS[variant] || "조명",
         variant,
         position: [center.x + localX, floorY + localY, center.z + localZ],
-        yaw,
+        yaw: facing,
         isOn,
       });
       safeLight.chunkId = chunkId;
@@ -1897,41 +2026,17 @@ export class BackroomsGenerator {
     const ceilingH = 2.35;
     const floorH = 0.0;
 
-    if (type === "corridor_ns" || type === "narrow_ns") {
-      // Corridors: Flush against West (x = -1.18) and East (x = 1.18) inner wall faces
+    if (type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
+      || type === "cross_junction" || type === "t_junction" || type === "start") {
+      // Mount on alcove inner faces (x=±1.4 or z=±1.4), never in the 2.4m gap.
       spawnSafeLight("wall-switch", -1.18, wallH, -5.2, Math.PI / 2, "벽 스위치");
-      spawnSafeLight("wall-switch", 1.18, wallH, 0.0, -Math.PI / 2, "벽 스위치");
-      spawnSafeLight("wall-switch", -1.18, wallH, 5.2, Math.PI / 2, "벽 스위치");
+      spawnSafeLight("wall-switch", 1.18, wallH, 5.2, -Math.PI / 2, "벽 스위치");
+      spawnSafeLight("wall-switch", -5.2, wallH, -1.18, Math.PI, "벽 스위치");
+      spawnSafeLight("wall-switch", 5.2, wallH, 1.18, 0, "벽 스위치");
       spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "형광등 스위치");
-    } else if (type === "corridor_ew") {
-      // Corridors EW: Flush against North (z = -1.18) and South (z = 1.18) inner wall faces
-      spawnSafeLight("wall-switch", -4.5, wallH, -1.18, Math.PI, "벽 스위치");
-      spawnSafeLight("wall-switch", -3.5, wallH, 1.18, 0, "벽 스위치");
-      spawnSafeLight("wall-switch", 4.5, wallH, -1.18, Math.PI, "벽 스위치");
-      spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, Math.PI / 2, "형광등 스위치");
-    } else if (type === "cross_junction") {
-      // 4-way cross junction: Flush on corner pillar faces (x = ±1.18)
-      spawnSafeLight("wall-switch", -1.18, wallH, -2.5, Math.PI / 2, "교차로 스위치");
-      spawnSafeLight("wall-switch", 1.18, wallH, -2.5, -Math.PI / 2, "교차로 스위치");
-      spawnSafeLight("wall-switch", -1.18, wallH, 2.5, Math.PI / 2, "교차로 스위치");
-      spawnSafeLight("wall-switch", 1.18, wallH, 2.5, -Math.PI / 2, "교차로 스위치");
-      spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "교차로 천장 스위치");
-    } else if (type === "t_junction") {
-      // T-junction: Flush on guide walls (x = ±1.18)
-      if (chunk.cx === 2) {
-        spawnSafeLight("wall-switch", 1.18, wallH, -4.5, -Math.PI / 2, "갈림길 스위치");
-        spawnSafeLight("wall-switch", 1.18, wallH, 0.0, -Math.PI / 2, "갈림길 스위치");
-        spawnSafeLight("wall-switch", 1.18, wallH, 4.5, -Math.PI / 2, "갈림길 스위치");
-        spawnSafeLight("wall-switch", -1.18, wallH, -2.5, Math.PI / 2, "갈림길 스위치");
-        spawnSafeLight("wall-switch", -1.18, wallH, 2.5, Math.PI / 2, "갈림길 스위치");
-      } else {
-        spawnSafeLight("wall-switch", -1.18, wallH, -4.5, Math.PI / 2, "갈림길 스위치");
-        spawnSafeLight("wall-switch", -1.18, wallH, 0.0, Math.PI / 2, "갈림길 스위치");
-        spawnSafeLight("wall-switch", -1.18, wallH, 4.5, Math.PI / 2, "갈림길 스위치");
-        spawnSafeLight("wall-switch", 1.18, wallH, -2.5, -Math.PI / 2, "갈림길 스위치");
-        spawnSafeLight("wall-switch", 1.18, wallH, 2.5, -Math.PI / 2, "갈림길 스위치");
+      if (type === "start") {
+        spawnSafeLight("floor-lamp", -3.2, floorH, -3.2, Math.PI * 0.25, "신당 낡은 스탠드");
       }
-      spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "갈림길 천장 스위치");
     } else if (type === "corner") {
       // Corners: Flush on outer walls
       spawnSafeLight("wall-switch", -1.18, wallH, 3.5, Math.PI / 2, "모퉁이 스위치");
@@ -1944,15 +2049,6 @@ export class BackroomsGenerator {
       spawnSafeLight("wall-switch", 1.18, wallH, -3.0, -Math.PI / 2, "벽 스위치");
       spawnSafeLight("wall-switch", 0.0, wallH, -7.58, Math.PI, "벽 스위치");
       spawnSafeLight("toy-lamp", -0.6, floorH, -6.5, 0, "장난감 램프");
-    } else if (type === "start") {
-      // Start shrine: Sconces next to exit wings and foyer
-      spawnSafeLight("wall-switch", -1.18, wallH, -5.5, Math.PI / 2, "북쪽 출구 스위치");
-      spawnSafeLight("wall-switch", 1.18, wallH, 5.5, -Math.PI / 2, "남쪽 출구 스위치");
-      spawnSafeLight("wall-switch", 5.5, wallH, 1.18, 0, "동쪽 출구 스위치");
-      spawnSafeLight("wall-switch", -5.5, wallH, -1.18, Math.PI, "서쪽 출구 스위치");
-      spawnSafeLight("wall-switch", 1.18, wallH, -3.5, -Math.PI / 2, "북쪽 복도 스위치");
-      spawnSafeLight("wall-switch", -1.18, wallH, 3.5, Math.PI / 2, "남쪽 복도 스위치");
-      spawnSafeLight("floor-lamp", -3.2, floorH, -3.2, Math.PI * 0.25, "신당 낡은 스탠드");
     } else if (type === "workshop") {
       // Workshop: Flush on north entrance wall and west perimeter wall
       spawnSafeLight("wall-switch", 1.6, wallH, -7.58, Math.PI, "작업방 입구 스위치");
@@ -2005,6 +2101,14 @@ export class BackroomsGenerator {
       spawnSafeLight("wall-switch", -23.58, wallH - 5.0, -3.5, Math.PI / 2, "지하 보육실 벽 스위치");
       spawnSafeLight("floor-lamp", -19.5, floorH - 5.0, -3.5, Math.PI / 4, "보육실 낡은 스탠드");
       spawnSafeLight("floor-lamp", -8.0, floorH - 5.0, 6.0, -Math.PI / 4, "지하 복도 스탠드");
+    } else if (type === "omen_room") {
+      spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "북실 입구 스위치");
+      spawnSafeLight("wall-switch", -7.58, wallH, -2.4, Math.PI / 2, "북실 벽 스위치");
+      spawnSafeLight("toy-lamp", 0.0, floorH + 0.86, 0.0, 0, "꺼진 제단 촛대");
+    } else if (type === "static_room") {
+      spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "노이즈방 입구 스위치");
+      spawnSafeLight("wall-switch", 7.58, wallH, 0.0, -Math.PI / 2, "노이즈방 벽 스위치");
+      spawnSafeLight("ceiling-switch", 0.0, ceilingH, -2.2, 0, "지지직거리는 형광등");
     } else if (type === "wide_room") {
       // Wide room: Flush on south entrance wall and west perimeter wall
       spawnSafeLight("wall-switch", -1.6, wallH, 7.58, 0, "출구방 입구 스위치");
@@ -2143,9 +2247,9 @@ export class BackroomsGenerator {
       return { x: center.x + segmentOffset, z: center.z + 7.52, yaw: 0 };
     }
     if (wall === "east") {
-      return { x: center.x + 7.52, z: center.z + segmentOffset, yaw: -Math.PI / 2 };
+      return { x: center.x + 7.52, z: center.z + segmentOffset, yaw: Math.PI / 2 };
     }
-    return { x: center.x - 7.52, z: center.z + segmentOffset, yaw: Math.PI / 2 };
+    return { x: center.x - 7.52, z: center.z + segmentOffset, yaw: -Math.PI / 2 };
   }
 
   getPreferredWalls(type) {
@@ -2423,16 +2527,12 @@ export class BackroomsGenerator {
     const cz = center.z;
     const wp = (lx, lz) => [cx + lx, floorY, cz + lz];
 
-    if (type === "start") {
-      chunk.waypoints = [wp(0,0), wp(0,-5), wp(0,5), wp(-5,0), wp(5,0)];
-    } else if (type === "corridor_ns" || type === "narrow_ns") {
-      chunk.waypoints = [wp(0,-6), wp(0,-3), wp(0,0), wp(0,3), wp(0,6)];
-    } else if (type === "corridor_ew") {
-      chunk.waypoints = [wp(-6,0), wp(-3,0), wp(0,0), wp(3,0), wp(6,0)];
-    } else if (type === "cross_junction") {
-      chunk.waypoints = [wp(0,0), wp(0,-5), wp(0,5), wp(-5,0), wp(5,0)];
-    } else if (type === "t_junction") {
-      chunk.waypoints = [wp(0,0), wp(0,-5), wp(0,5), wp(5,0)];
+    if (type === "start" || type === "cross_junction" || type === "t_junction"
+      || type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew") {
+      chunk.waypoints = [
+        wp(0, 0), wp(0, -5.4), wp(0, 5.4), wp(-5.4, 0), wp(5.4, 0),
+        wp(-5.2, -5.2), wp(5.2, -5.2), wp(-5.2, 5.2), wp(5.2, 5.2),
+      ];
     } else if (type === "corner") {
       // SE corner — open quadrant only
       chunk.waypoints = [wp(3,3), wp(5,3), wp(3,5), wp(5,0), wp(0,5)];
@@ -2443,7 +2543,7 @@ export class BackroomsGenerator {
         wp(0,0), wp(0,-6), wp(0,6), wp(-6,0), wp(6,0),
         wp(-6,-6), wp(6,-6), wp(-6,6), wp(6,6),
       ];
-    } else if (type === "wide_room" || type === "flicker_room") {
+    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room") {
       chunk.waypoints = [
         wp(0,0),
         wp(-5,-5), wp(0,-5), wp(5,-5),

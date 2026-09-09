@@ -740,6 +740,7 @@ export class Game {
 
     this.glitchController.update(deltaTime, {
       threat: enemyState?.threat || 0,
+      hunt: this.dreadDirector?.phase === "hunt",
     });
   }
 

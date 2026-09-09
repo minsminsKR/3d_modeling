@@ -79,7 +79,7 @@ export class GlitchController {
     this.playImpact(boosted, proximity, firstDetection);
   }
 
-  update(deltaTime, { threat = 0, healthStress = 0 } = {}) {
+  update(deltaTime, { threat = 0, healthStress = 0, hunt = false } = {}) {
     const safeDelta = Math.min(deltaTime, 0.05);
     this.burstTimer = Math.max(0, this.burstTimer - safeDelta);
     this.frameBreakTimer = Math.max(0, this.frameBreakTimer - safeDelta);
@@ -88,7 +88,8 @@ export class GlitchController {
     this.heartbeatPhase += safeDelta * (this.heartbeatTimer > 0 ? 4.8 : 1);
 
     const threatResidual = Math.max(0, threat - 0.22) * 0.58;
-    const targetResidual = Math.min(0.75, threatResidual + healthStress * 0.24);
+    const huntResidual = hunt ? 0.16 : 0;
+    const targetResidual = Math.min(0.82, threatResidual + healthStress * 0.24 + huntResidual);
     this.residual += (targetResidual - this.residual) * Math.min(1, safeDelta * 4.4);
 
     const burstRatio = this.burstDuration > 0 ? this.burstTimer / this.burstDuration : 0;
@@ -101,7 +102,7 @@ export class GlitchController {
     const impact = impactRatio * this.impactStrength;
     const intensity = Math.max(0, Math.min(1.85, this.residual + burst + frameBreak + impact * 0.45 + heartbeat));
     this.applyVisuals(intensity, burstRatio, impactRatio, heartbeat);
-    this.updateHum(intensity);
+    this.updateHum(intensity, hunt);
   }
 
   reset() {
@@ -151,13 +152,13 @@ export class GlitchController {
     this.setVar("--glitch-static", Math.min(1, intensity * 0.42 + impactRatio * 0.76).toFixed(3));
   }
 
-  updateHum(intensity) {
+  updateHum(intensity, hunt = false) {
     if (!this.audioContext || !this.humGain || !this.noiseGain) {
       return;
     }
     const now = this.audioContext.currentTime;
-    const hum = Math.min(0.08, intensity * 0.045);
-    const buzz = Math.min(0.035, Math.max(0, intensity - 0.5) * 0.028);
+    const hum = Math.min(0.09, intensity * 0.045 + (hunt ? 0.014 : 0));
+    const buzz = Math.min(0.042, Math.max(0, intensity - 0.5) * 0.028 + (hunt ? 0.008 : 0));
     this.humOscillator.frequency.setTargetAtTime(43 + intensity * 18, now, 0.04);
     this.noiseOscillator.frequency.setTargetAtTime(18 + intensity * 34, now, 0.025);
     this.humGain.gain.setTargetAtTime(hum, now, 0.035);

@@ -3,6 +3,7 @@
 
 import { HORROR_PACING_CONFIG } from "../config/gameConfig.js";
 import { distance2D } from "../utils/math.js";
+import { soundManager } from "../audio/SoundManager.js";
 
 const AMBIENT_MESSAGES = [
   "한 칸 뒤에서 발소리가 멎었습니다.",
@@ -10,6 +11,20 @@ const AMBIENT_MESSAGES = [
   "복도 끝의 문이 방금보다 가까워 보입니다.",
   "천장 위에서 무언가가 같은 속도로 따라옵니다.",
   "문틈 너머의 그림자가 한 박자 늦게 움직입니다.",
+  "손전등이 닿지 않는 모서리에서 숨이 하나 더 있습니다.",
+  "방금 지나친 모퉁이가 조금 더 좁아진 것 같습니다.",
+];
+
+const NORTH_AMBIENT_MESSAGES = [
+  "북쪽 벽이 주파수를 잃은 라디오처럼 갈라집니다.",
+  "제단 쪽 공기가 지지직거리며 한 박자 멈춥니다.",
+  "북실 문틈에서 누군가의 숨이 잡음으로 새어 나옵니다.",
+];
+
+const CANAL_AMBIENT_MESSAGES = [
+  "남쪽 물속에서 느린 물방울이 떨어집니다.",
+  "발목까지 잠긴 복도가 누군가를 삼킨 듯 출렁입니다.",
+  "물 아래 바닥에서 젖은 발소리가 한 번 끊깁니다.",
 ];
 
 export class HorrorEventManager {
@@ -28,7 +43,7 @@ export class HorrorEventManager {
     this.lastZoneKey = null;
     this.zoneTransitions = 0;
     this.ambientEventIndex = 0;
-    this.recentMessageIndices = [];
+    this.recentMessages = [];
     this.lastProgress = 0;
     this.pendingProgressScare = null;
     this.flickerBurstTimer = 0;
@@ -73,7 +88,7 @@ export class HorrorEventManager {
     this.lastZoneKey = null;
     this.zoneTransitions = 0;
     this.ambientEventIndex = 0;
-    this.recentMessageIndices = [];
+    this.recentMessages = [];
     this.lastProgress = 0;
     this.pendingProgressScare = null;
     this.flickerBurstTimer = 0;
@@ -245,6 +260,30 @@ export class HorrorEventManager {
       );
     }
 
+    if (isNorthOmenZone(position) && position.x <= 2 && !this.triggeredEvents.has("north-omen-room")) {
+      this.triggerEvent(
+        "north-omen-room",
+        "서늘한 북실의 공기가 죽은 주파수처럼 갈라집니다.",
+        { duration: 2600, flicker: true, sfx: "radio_static" },
+      );
+    }
+
+    if (isNorthOmenZone(position) && position.x > 2 && !this.triggeredEvents.has("north-static-room")) {
+      this.triggerEvent(
+        "north-static-room",
+        "노이즈가 남는 방에서 짧은 울음이 한 겹 묻혀 있습니다.",
+        { duration: 2500, flicker: true, sfx: "distant_cry" },
+      );
+    }
+
+    if (isFloodedCanalZone(position) && !this.triggeredEvents.has("south-flooded-canal")) {
+      this.triggerEvent(
+        "south-flooded-canal",
+        "물에 잠긴 남쪽 복도에서 느린 물방울이 떨어집니다.",
+        { duration: 2500, flicker: true, sfx: "wet_drip" },
+      );
+    }
+
     if (position.y > 2.5 && position.z < -18 && !this.triggeredEvents.has("upper-repeat-sign")) {
       this.triggerEvent(
         "upper-repeat-sign",
@@ -263,15 +302,23 @@ export class HorrorEventManager {
   }
 
   triggerAmbientEvent(tension, context) {
-    const messageIndex = this.pickAmbientMessageIndex();
+    const position = this.player.position;
+    const message = this.pickAmbientMessage(position);
     const shouldCloseDoor = context.progress >= 0.25 && Math.random() < 0.34;
+    let sfx;
+    if (isFloodedCanalZone(position) && Math.random() < 0.72) {
+      sfx = "wet_drip";
+    } else if (isNorthOmenZone(position) && Math.random() < 0.72) {
+      sfx = Math.random() < 0.5 ? "radio_static" : "distant_cry";
+    }
     this.triggerEvent(
       `ambient-${this.ambientEventIndex += 1}`,
-      AMBIENT_MESSAGES[messageIndex],
+      message,
       {
         duration: 2100 + Math.round(tension * 500),
         flicker: true,
         closeDoor: shouldCloseDoor,
+        sfx,
       },
     );
   }
@@ -288,6 +335,9 @@ export class HorrorEventManager {
     }
     if (message) {
       this.hud?.setStatus(message, options.duration ?? 2300);
+    }
+    if (options.sfx && soundManager.initialized) {
+      soundManager.playSFX(options.sfx);
     }
     if (options.flicker) {
       this.startFlickerBurst();
@@ -328,15 +378,19 @@ export class HorrorEventManager {
     }
   }
 
-  pickAmbientMessageIndex() {
-    const candidates = AMBIENT_MESSAGES
-      .map((_, index) => index)
-      .filter((index) => !this.recentMessageIndices.includes(index));
-    const pool = candidates.length > 0 ? candidates : AMBIENT_MESSAGES.map((_, index) => index);
-    const chosen = pool[Math.floor(Math.random() * pool.length)];
-    this.recentMessageIndices.push(chosen);
-    if (this.recentMessageIndices.length > 3) {
-      this.recentMessageIndices.shift();
+  pickAmbientMessage(position) {
+    let pool = AMBIENT_MESSAGES;
+    if (isNorthOmenZone(position) && Math.random() < 0.8) {
+      pool = NORTH_AMBIENT_MESSAGES;
+    } else if (isFloodedCanalZone(position) && Math.random() < 0.8) {
+      pool = CANAL_AMBIENT_MESSAGES;
+    }
+    const candidates = pool.filter((message) => !this.recentMessages.includes(message));
+    const source = candidates.length > 0 ? candidates : pool;
+    const chosen = source[Math.floor(Math.random() * source.length)];
+    this.recentMessages.push(chosen);
+    if (this.recentMessages.length > 3) {
+      this.recentMessages.shift();
     }
     return chosen;
   }
@@ -390,4 +444,16 @@ export class HorrorEventManager {
 
 function randomRange(range) {
   return range[0] + Math.random() * (range[1] - range[0]);
+}
+
+function isFirstFloor(position) {
+  return position.y > -1.2 && position.y < 1.8;
+}
+
+function isNorthOmenZone(position) {
+  return isFirstFloor(position) && position.z < -24;
+}
+
+function isFloodedCanalZone(position) {
+  return Math.abs(position.y) < 1.2 && position.z > 12;
 }

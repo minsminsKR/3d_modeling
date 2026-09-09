@@ -47,11 +47,11 @@ export const LOVELY_DOLL_CONFIG = {
 };
 
 export const LIGHTING_CONFIG = {
-  fogNear: 22,
-  fogFar: 96,
+  fogNear: 14,
+  fogFar: 54,
   rendererExposure: 1.16,
   ambientColor: 0x6a4a2c,
-  ambientIntensity: 0.44,
+  ambientIntensity: 0.38,
   hemisphereSkyColor: 0x7a5634,
   hemisphereGroundColor: 0x2c1c12,
   hemisphereIntensity: 0.52,

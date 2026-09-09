@@ -1,0 +1,145 @@
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+
+const { chromium } = createRequire(import.meta.url)("playwright");
+const url = process.argv[2] || "http://127.0.0.1:8010/";
+const executablePath = process.env.CHROME_PATH
+  || (process.platform === "win32" ? "C:/Program Files/Google/Chrome/Application/chrome.exe" : undefined);
+
+const browser = await chromium.launch({ executablePath, headless: true });
+const errors = [];
+try {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+  await page.waitForFunction(() => window.__happyToy?.assetsReady === true, null, { timeout: 90000 });
+  await page.evaluate(() => window.__happyToy.start());
+
+  const result = await page.evaluate(() => {
+    const game = window.__happyToy;
+    const generator = game.mapBuilder.generator;
+    const collision = game.collisionWorld;
+
+    const playableTypes = [];
+    const visited = new Set();
+    const queue = [[0, 0]];
+    visited.add("0,0");
+    const mismatched = [];
+
+    while (queue.length) {
+      const [cx, cz] = queue.shift();
+      const open = generator.getOpenings(cx, cz);
+      const faces = [
+        ["N", 0, -1, "S"],
+        ["S", 0, 1, "N"],
+        ["E", 1, 0, "W"],
+        ["W", -1, 0, "E"],
+      ];
+      for (const [face, dx, dz, opposite] of faces) {
+        if (!open[face]) continue;
+        const nx = cx + dx;
+        const nz = cz + dz;
+        const back = generator.getOpenings(nx, nz);
+        if (!back[opposite]) {
+          mismatched.push(`${cx},${cz} ${face} -> ${nx},${nz}`);
+        }
+        const key = `${nx},${nz}`;
+        if (!visited.has(key) && Math.abs(nx) <= 2 && Math.abs(nz) <= 2) {
+          visited.add(key);
+          queue.push([nx, nz]);
+        }
+      }
+    }
+
+    for (let cx = -2; cx <= 2; cx += 1) {
+      for (let cz = -2; cz <= 2; cz += 1) {
+        const chunk = generator.generateChunk(cx, cz);
+        playableTypes.push({
+          key: `${cx},${cz}`,
+          type: chunk.type,
+          meshCount: chunk.meshes.length,
+        });
+      }
+    }
+
+    const voidChunk = generator.generateChunk(3, 0);
+    const inverted = [];
+    for (const chunk of generator.chunksData.values()) {
+      if (!chunk.safeLights || Math.abs(chunk.cx) > 2 || Math.abs(chunk.cz) > 2) continue;
+      for (const light of chunk.safeLights) {
+        if (light.variant !== "wall-switch") continue;
+        const localX = light.position.x - chunk.center.x;
+        const localZ = light.position.z - chunk.center.z;
+        if (Math.abs(localX) > 8.2 || Math.abs(localZ) > 8.2) continue;
+        const faceX = -Math.sin(light.yaw);
+        const faceZ = -Math.cos(light.yaw);
+        const toCenterX = -localX;
+        const toCenterZ = -localZ;
+        const mag = Math.hypot(toCenterX, toCenterZ) || 1;
+        const dot = (faceX * toCenterX + faceZ * toCenterZ) / mag;
+        if (dot < 0.12) {
+          inverted.push({
+            id: light.id,
+            yaw: light.yaw,
+            localX,
+            localZ,
+            faceX,
+            faceZ,
+            dot,
+          });
+        }
+      }
+    }
+
+    const pathTo = (goal) => collision.findPath(
+      { x: 0, y: 0.9, z: 0 },
+      goal,
+      0.34,
+      { cellSize: 0.55, maxIterations: 8000 },
+    );
+
+    const alcoveStart = pathTo({ x: -5.1, y: 0.9, z: -5.1 });
+    const alcoveCorridor = pathTo({ x: -5.1, y: 0.9, z: -16 });
+    const omenRoom = pathTo({ x: -16, y: 0.9, z: -32 });
+    const staticRoom = pathTo({ x: 16, y: 0.9, z: -32 });
+
+    const sampleBlocked = (x, z) => collision.isCircleBlocked({ x, y: 0.9, z }, 0.34);
+    const sampleWalkable = (x, z) => collision.getSurfaceAt({ x, y: 0.9, z }).walkable;
+
+    return {
+      reachable: visited.size,
+      mismatched,
+      playableVoid: playableTypes.filter((cell) => cell.type === "void").map((cell) => cell.key),
+      voidType: voidChunk.type,
+      voidMeshes: voidChunk.meshes.length,
+      inverted,
+      alcoveStartLen: alcoveStart.length,
+      alcoveCorridorLen: alcoveCorridor.length,
+      omenLen: omenRoom.length,
+      staticLen: staticRoom.length,
+      alcoveStartBlocked: sampleBlocked(-5.1, -5.1),
+      alcoveCorridorBlocked: sampleBlocked(-5.1, -16),
+      omenWalkable: sampleWalkable(-16, -32),
+      staticWalkable: sampleWalkable(16, -32),
+    };
+  });
+
+  assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
+  assert.equal(result.mismatched.length, 0, `unilateral openings: ${result.mismatched.join(", ")}`);
+  assert.equal(result.reachable, 25, `reachable playable cells: ${result.reachable}`);
+  assert.equal(result.playableVoid.length, 0, `playable void cells: ${result.playableVoid.join(", ")}`);
+  assert.equal(result.voidType, "void");
+  assert.equal(result.voidMeshes, 0, "exterior hull must not build fake rooms");
+  assert.equal(result.inverted.length, 0, `wall-switch facing inward failed: ${JSON.stringify(result.inverted, null, 2)}`);
+  assert.equal(result.alcoveStartBlocked, false, "start-room alcove should be enterable");
+  assert.equal(result.alcoveCorridorBlocked, false, "corridor side alcove should be enterable");
+  assert.ok(result.alcoveStartLen > 0, "path from spawn to start alcove");
+  assert.ok(result.alcoveCorridorLen > 0, "path from spawn to corridor alcove");
+  assert.ok(result.omenLen > 0, "path from spawn to omen room");
+  assert.ok(result.staticLen > 0, "path from spawn to static room");
+  assert.equal(result.omenWalkable, true);
+  assert.equal(result.staticWalkable, true);
+  console.log("PASS: wall lamps face inward, alcoves and north rooms are walkable, void chunks stay empty");
+} finally {
+  await browser.close();
+}
