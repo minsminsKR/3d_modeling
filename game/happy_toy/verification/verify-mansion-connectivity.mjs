@@ -142,6 +142,8 @@ try {
     const alcoveCorridor = pathTo({ x: -5.1, y: 0.9, z: -16 });
     const omenRoom = pathTo({ x: -16, y: 0.9, z: -28.6 });
     const staticRoom = pathTo({ x: 16, y: 0.9, z: -28.6 });
+    const westJog = pathTo({ x: -20.5, y: 0.9, z: 16 });
+    const northJog = pathTo({ x: 0, y: 0.9, z: -20.5 });
 
     const sampleBlocked = (x, z) => collision.isCircleBlocked({ x, y: 0.9, z }, 0.34);
     const sampleWalkable = (x, z) => collision.getSurfaceAt({ x, y: 0.9, z }).walkable;
@@ -168,6 +170,8 @@ try {
       alcoveCorridorLen: alcoveCorridor.length,
       omenLen: omenRoom.length,
       staticLen: staticRoom.length,
+      westJogLen: westJog.length,
+      northJogLen: northJog.length,
       alcoveStartBlocked: sampleBlocked(-5.1, -5.1),
       alcoveCorridorBlocked: sampleBlocked(-5.1, -16),
       omenWalkable: sampleWalkable(-16, -28.6),
@@ -199,6 +203,8 @@ try {
   assert.ok(result.alcoveCorridorLen > 0, "path from spawn to corridor alcove");
   assert.ok(result.omenLen > 0, "path from spawn to omen room");
   assert.ok(result.staticLen > 0, "path from spawn to static room");
+  assert.ok(result.westJogLen > 0, "west 1F chicane must stay pathable past the baffle");
+  assert.ok(result.northJogLen > 0, "north 1F chicane must stay pathable past the baffle");
   assert.equal(result.omenWalkable, true);
   assert.equal(result.staticWalkable, true);
   console.log("PASS: wall lamps face inward, alcoves and north rooms are walkable, void chunks stay empty");

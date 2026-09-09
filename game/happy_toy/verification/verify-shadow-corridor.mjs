@@ -47,7 +47,7 @@ try {
       uncat.group.position.z - game.player.position.z,
     );
     for (let i = 0; i < 90; i += 1) {
-      game.update(0.05);
+      game.update(0.05, { skipRender: true });
     }
     const afterChase = {
       startDist,
@@ -83,7 +83,7 @@ try {
     floors.hallJogNs = (northHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog_ns"));
     floors.uncatSpineClear = !(uncatHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog"));
     game.player.setPosition({ x: 80, y: 0, z: 0 });
-    for (let i = 0; i < 16; i += 1) game.update(0.05);
+    for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
     const deepWing = {
       totalKeys: game.getTotalKeys(),
       hud: document.querySelector("#key-count-text")?.textContent,
@@ -92,7 +92,7 @@ try {
       openings: game.mapBuilder.generator.getOpenings(5, 0),
     };
     game.player.setPosition({ x: 96, y: 0, z: 0 });
-    for (let i = 0; i < 12; i += 1) game.update(0.05);
+    for (let i = 0; i < 12; i += 1) game.update(0.05, { skipRender: true });
     const atWing = {
       totalKeys: game.getTotalKeys(),
       hud: document.querySelector("#key-count-text")?.textContent,
@@ -101,7 +101,7 @@ try {
     game.ghostMode = true;
     game.testSafeMode = false;
     game.player.setPosition({ x: 10.5, y: -5, z: 32 });
-    for (let i = 0; i < 50; i += 1) game.update(0.05);
+    for (let i = 0; i < 50; i += 1) game.update(0.05, { skipRender: true });
     const floorHunt = {
       uncatY: uncat.group.position.y,
       b1Cabinets: (b1.cabinets || []).length,
@@ -110,7 +110,7 @@ try {
       huntY: game.floorHuntDirector?.silhouette?.position?.y ?? null,
     };
     game.player.setPosition({ x: 0, y: 0, z: 0 });
-    for (let i = 0; i < 16; i += 1) game.update(0.05);
+    for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
     game.ghostMode = false;
     game.testSafeMode = false;
 
