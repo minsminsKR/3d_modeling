@@ -2118,13 +2118,13 @@ export class BackroomsGenerator {
     });
 
     const dripMat = new THREE.MeshStandardMaterial({
-      color: 0x8a1014,
-      roughness: 0.16,
-      metalness: 0.12,
+      color: 0x6a1014,
+      roughness: 0.28,
+      metalness: 0.08,
       transparent: true,
-      opacity: 0.82,
-      emissive: 0x4a0004,
-      emissiveIntensity: 0.34,
+      opacity: 0.78,
+      emissive: 0x2a0406,
+      emissiveIntensity: 0.14,
     });
     const drips = [
       [-20.4, -14.2], [-24.8, -18.6], [-31.2, -22.4], [-35.6, -28.8],
@@ -2132,11 +2132,27 @@ export class BackroomsGenerator {
       [-23.6, -17.8], [-29.2, -24.6], [-26.4, -19.2],
     ];
     drips.forEach(([x, z], i) => {
-      const drip = new THREE.Mesh(this.getBoxGeometry(0.05, 0.85 + (i % 3) * 0.28, 0.05), dripMat);
-      drip.position.set(x, floorY + 7.28, z);
+      const drip = new THREE.Mesh(this.getBoxGeometry(0.04, 0.42 + (i % 3) * 0.12, 0.04), dripMat);
+      drip.position.set(x, floorY + 7.52, z);
       drip.name = `${chunkId}_blood_drip_${i}`;
       this.scene.add(drip);
       chunk.meshes.push(drip);
+    });
+
+    const visceraMat = new THREE.MeshStandardMaterial({
+      color: 0x5a0c10,
+      roughness: 0.55,
+      metalness: 0.12,
+      emissive: 0x2a0406,
+      emissiveIntensity: 0.28,
+    });
+    [[-24.2, -15.1, 1.6, 0.28, 0.9], [-22.4, -19.6, 1.1, 0.22, 0.7], [-26.8, -17.4, 1.35, 0.24, 0.8]].forEach(([x, z, w, h, d], i) => {
+      const pile = new THREE.Mesh(this.getBoxGeometry(w, h, d), visceraMat);
+      pile.position.set(x, floorY + 5.0 + h / 2, z);
+      pile.rotation.y = i * 0.5;
+      pile.name = `${chunkId}_blood_pile_${i}`;
+      this.scene.add(pile);
+      chunk.meshes.push(pile);
     });
 
     this.spawnAssetProp(chunk, {
