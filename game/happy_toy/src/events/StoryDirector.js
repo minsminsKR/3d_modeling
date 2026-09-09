@@ -97,8 +97,26 @@ export class StoryDirector {
     if (y > -1.2 && y < 2.2 && x > 28 && x < 40 && z > 1.15 && z < 2.35) {
       this.fire(
         "windowHall",
-        "f1maze",
+        "windowHall",
         "창밖은 복도의 몫입니다. 운동장은 없습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 42 && x < 54 && Math.abs(z) < 1.8) {
+      this.fire(
+        "skybridge",
+        "skybridge",
+        "본관과 별관을 잇는 유리복도입니다. 아래는 운동장이 아닙니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 74 && x < 86 && z > 10 && z < 22) {
+      this.fire(
+        "courtyard",
+        "courtyard",
+        "중정입니다. 난간 너머로 내려가지 마십시오.",
         "school_chime",
       );
     }

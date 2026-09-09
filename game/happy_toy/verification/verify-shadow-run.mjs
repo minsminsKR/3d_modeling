@@ -296,6 +296,30 @@ try {
   const windowBlock = await walkTo({ x: 37.2, z: 5.25 }, 220);
   console.log("windowBlock", windowBlock);
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(5, 0);
+    game.mapBuilder.generator.generateChunk(5, 1);
+    game.player.setPosition({ x: 80, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const yardWalk = [];
+  for (const stop of [
+    { x: 80, z: 7.4 },
+    { x: 80, z: 11.2 },
+    { x: 84.4, z: 11.2 },
+    { x: 84.4, z: 16 },
+    { x: 84.4, z: 20.8 },
+    { x: 80, z: 20.8 },
+  ]) {
+    yardWalk.push(await walkTo(stop, 360));
+    console.log("yard", stop, yardWalk.at(-1));
+  }
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -312,6 +336,8 @@ try {
     const westHall = generator.generateChunk(-1, 0);
     const eastWing = generator.generateChunk(2, 0);
     const gym = generator.generateChunk(8, 0);
+    const bridge = generator.generateChunk(3, 0);
+    const yard = generator.generateChunk(5, 1);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
     game._lastPlayerChunkCx = 4;
@@ -322,6 +348,8 @@ try {
     game.onEnterSchoolChunk(6, 1);
     game.onEnterSchoolChunk(6, -2);
     game.onEnterSchoolChunk(8, 0);
+    game.onEnterSchoolChunk(3, 0);
+    game.onEnterSchoolChunk(5, 1);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
     for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
     game.player.setPosition({ x: 32, y: 0, z: 0 });
@@ -369,6 +397,14 @@ try {
       gymCourt: names(gym).some((name) => name.includes("gym_court")),
       gymHoop: names(gym).some((name) => name.includes("gym_hoop_")),
       gymBleacher: names(gym).some((name) => name.includes("gym_bleacher_")),
+      skyGrate: names(bridge).some((name) => name.includes("sky_grate_")),
+      skyRib: names(bridge).some((name) => name.includes("sky_rib_")),
+      skyBothWindows: names(bridge).some((name) => name.includes("hall_outer_window_n_"))
+        && names(bridge).some((name) => name.includes("hall_outer_window_s_")),
+      courtyardType: yard.type,
+      courtyardWell: names(yard).some((name) => name.includes("courtyard_well")),
+      courtyardRail: names(yard).some((name) => name.includes("courtyard_rail_")),
+      courtyardTree: names(yard).some((name) => name.includes("courtyard_tree_")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -622,7 +658,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -659,6 +695,19 @@ try {
     windowBlock.ok !== true || Math.abs(windowBlock.z) < 2.4,
     `window wall must block the old south classroom, got ${JSON.stringify(windowBlock)}`,
   );
+  assert.equal(rooms.skyGrate, true, "skybridge must have a metal grate floor");
+  assert.equal(rooms.skyRib, true, "skybridge must have window ribs");
+  assert.equal(rooms.skyBothWindows, true, "connector hall must open windows on both long walls");
+  assert.ok(rooms.beats.includes("skybridge"), "skybridge VO beat missing");
+  assert.ok(story.fired.includes("skybridge") || annexWalk.some((stop) => stop.x > 44 && stop.x < 52), "skybridge story should fire on the connector");
+  assert.equal(rooms.courtyardType, "courtyard");
+  assert.equal(rooms.courtyardWell, true, "courtyard must keep a blocked light well");
+  assert.equal(rooms.courtyardRail, true, "courtyard must have rails around the well");
+  assert.equal(rooms.courtyardTree, true, "courtyard well must hold a tree");
+  assert.ok(rooms.beats.includes("courtyard"), "courtyard VO beat missing");
+  assert.equal(yardWalk.at(-1).ok, true, `must walk the courtyard ring, got ${JSON.stringify(yardWalk.at(-1))}`);
+  assert.ok(yardWalk.some((stop) => stop.x > 83 && stop.z > 14 && stop.z < 18), "courtyard walk must go around the well, not through it");
+  assert.ok(story.fired.includes("courtyard") || yardWalk.at(-1).ok, "courtyard story should fire on the ring");
   assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
   assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
   assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");

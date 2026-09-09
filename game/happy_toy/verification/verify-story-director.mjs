@@ -76,6 +76,18 @@ g.player.position = { x: -22.5, y: 5, z: 2 };
 director.update();
 assert.equal(director.fired.has("f2south"), true);
 
+g.player.position = { x: 33, y: 0, z: 1.8 };
+director.update();
+assert.equal(director.fired.has("windowHall"), true);
+
+g.player.position = { x: 48, y: 0, z: 0 };
+director.update();
+assert.equal(director.fired.has("skybridge"), true);
+
+g.player.position = { x: 80, y: 0, z: 16 };
+director.update();
+assert.equal(director.fired.has("courtyard"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");

@@ -137,6 +137,7 @@ const ROOM_LIKE_CHUNK_TYPES = new Set([
   "faculty_office",
   "science_lab",
   "gymnasium",
+  "courtyard",
   "stairs_2f",
   "stairs_b1",
 ]);
@@ -274,6 +275,7 @@ export class BackroomsGenerator {
       "6,1": "faculty_office",
       "6,-2": "science_lab",
       "8,0": "gymnasium",
+      "5,1": "courtyard",
     };
 
     const key = `${cx},${cz}`;
@@ -312,11 +314,16 @@ export class BackroomsGenerator {
     };
   }
 
+  isSkybridgeChunk(cx, cz) {
+    return cx === 3 && cz === 0;
+  }
+
   getHallWindowSide(cx, cz) {
     // Verified chase-hide plus tiles keep four classroom nooks.
     if ((cx === 0 && cz === 0) || (cx === 1 && cz === 0) || (cx === 0 && cz === 1) || (cx === 0 && cz === -1)) {
       return null;
     }
+    if (this.isSkybridgeChunk(cx, cz)) return "both";
     const chicanes = this.getHallChicanes(cx, cz);
     if (chicanes.ew && chicanes.ns) return null;
     if (chicanes.ew) {
@@ -348,7 +355,12 @@ export class BackroomsGenerator {
       mask.n = mask.s = mask.e = mask.w = true;
     }
     const windowSide = this.getHallWindowSide(cx, cz);
-    if (windowSide) mask[windowSide] = false;
+    if (windowSide === "both") {
+      mask.n = false;
+      mask.s = false;
+    } else if (windowSide) {
+      mask[windowSide] = false;
+    }
     return mask;
   }
 
@@ -2127,6 +2139,12 @@ export class BackroomsGenerator {
         placeBank("hall_lockers_s_w", -along, face, bank, depth);
         placeBank("hall_lockers_s_e", along, face, bank, depth);
       }
+      if (!mask.n && !mask.s) {
+        placeBank("hall_lockers_n_w", -along, -face, bank, depth);
+        placeBank("hall_lockers_n_e", along, -face, bank, depth);
+        placeBank("hall_lockers_s_w", -along, face, bank, depth);
+        placeBank("hall_lockers_s_e", along, face, bank, depth);
+      }
     }
     if (nsChicane) {
       if (mask.w) {
@@ -2817,6 +2835,9 @@ export class BackroomsGenerator {
     this.dressHallThroughDoors(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
     this.dressHallClassroomNooks(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
     this.dressHallWindowWall(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane, mask);
+    if (this.isSkybridgeChunk(chunk.cx, chunk.cz)) {
+      this.dressSkybridge(chunk, center, chunkId, floorY);
+    }
   }
 
   dressHallWindowWall(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane, mask) {
@@ -3863,6 +3884,193 @@ export class BackroomsGenerator {
     chunk.meshes.push(glow);
   }
 
+  dressSkybridge(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    this.ensureSpecialNookMaterials();
+    if (!this.schoolGrateMat) {
+      this.schoolGrateMat = new THREE.MeshStandardMaterial({
+        color: 0x2a2c30,
+        roughness: 0.42,
+        metalness: 0.55,
+        emissive: 0x08090c,
+        emissiveIntensity: 0.06,
+      });
+    }
+    for (let i = -6; i <= 6; i += 1) {
+      this.placeDressedBox(
+        chunk, chunkId, `sky_grate_x_${i < 0 ? "w" : "e"}_${Math.abs(i)}`,
+        center.x + i * 1.05, floorY + 0.018, center.z,
+        0.06, 0.02, 3.15, this.schoolGrateMat, false,
+      );
+    }
+    for (const [key, z] of [["n", -1.05], ["c", 0], ["s", 1.05]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `sky_grate_z_${key}`,
+        center.x, floorY + 0.02, center.z + z,
+        14.2, 0.02, 0.05, this.schoolGrateMat, false,
+      );
+    }
+    for (const x of [-5.6, -2.8, 2.8, 5.6]) {
+      const tag = x < 0 ? "w" : "e";
+      this.placeDressedBox(
+        chunk, chunkId, `sky_rib_n_${tag}_${Math.abs(x) > 4 ? "a" : "b"}`,
+        center.x + x, floorY + 1.4, center.z - 1.7,
+        0.1, 2.8, 0.08, this.schoolMetalMat, false,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, `sky_rib_s_${tag}_${Math.abs(x) > 4 ? "a" : "b"}`,
+        center.x + x, floorY + 1.4, center.z + 1.7,
+        0.1, 2.8, 0.08, this.schoolMetalMat, false,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "sky_sign",
+      center.x - 6.85, floorY + 2.12, center.z - 1.72,
+      0, "연결복도",
+    );
+    this.addCautionTape(
+      chunk, chunkId, "sky_tape_w",
+      center.x - 4.4, floorY + 1.15, center.z + 1.52, 0,
+    );
+    this.addCautionTape(
+      chunk, chunkId, "sky_tape_e",
+      center.x + 3.6, floorY + 1.22, center.z - 1.52, Math.PI,
+    );
+    const stain = new THREE.Mesh(this.getPlaneGeometry(1.4, 0.55), this.schoolWetMat);
+    stain.rotation.x = -Math.PI / 2;
+    stain.position.set(center.x + 1.8, floorY + 0.03, center.z + 0.35);
+    stain.name = `${chunkId}_sky_wet`;
+    this.addSchoolProp(chunk, stain);
+    for (const [key, z] of [["n", -2.55], ["s", 2.55]]) {
+      const glow = new THREE.PointLight(0x10141c, 0.11, 4.2, 2);
+      glow.position.set(center.x, floorY + 1.15, center.z + z);
+      glow.name = `${chunkId}_sky_glow_${key}`;
+      this.scene.add(glow);
+      chunk.meshes.push(glow);
+    }
+  }
+
+  dressCourtyard(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    this.ensureSpecialNookMaterials();
+    if (!this.schoolYardMat) {
+      this.schoolYardMat = new THREE.MeshStandardMaterial({
+        color: 0x14120e,
+        roughness: 0.92,
+        metalness: 0.04,
+        emissive: 0x080704,
+        emissiveIntensity: 0.05,
+      });
+    }
+    if (!this.schoolHedgeMat) {
+      this.schoolHedgeMat = new THREE.MeshStandardMaterial({
+        color: 0x1a2418,
+        roughness: 0.9,
+        metalness: 0,
+        emissive: 0x081008,
+        emissiveIntensity: 0.04,
+      });
+    }
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_well",
+      center.x, floorY + 0.52, center.z,
+      4.3, 1.04, 4.3, this.schoolYardMat,
+    );
+    const pit = new THREE.Mesh(this.getPlaneGeometry(4.05, 4.05), this.schoolGlassMat);
+    pit.rotation.x = -Math.PI / 2;
+    pit.position.set(center.x, floorY + 1.05, center.z);
+    pit.name = `${chunkId}_courtyard_well_glass`;
+    this.addSchoolProp(chunk, pit);
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_rail_n",
+      center.x, floorY + 0.58, center.z - 2.18, 4.55, 1.16, 0.16, this.schoolMetalMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_rail_s",
+      center.x, floorY + 0.58, center.z + 2.18, 4.55, 1.16, 0.16, this.schoolMetalMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_rail_w",
+      center.x - 2.18, floorY + 0.58, center.z, 0.16, 1.16, 4.2, this.schoolMetalMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_rail_e",
+      center.x + 2.18, floorY + 0.58, center.z, 0.16, 1.16, 4.2, this.schoolMetalMat,
+    );
+    for (const [name, x, z, yaw] of [
+      ["n", 0, -2.18, 0],
+      ["s", 0, 2.18, Math.PI],
+      ["w", -2.18, 0, -Math.PI / 2],
+      ["e", 2.18, 0, Math.PI / 2],
+    ]) {
+      const glass = new THREE.Mesh(this.getBoxGeometry(3.4, 0.72, 0.03), this.schoolGlassMat);
+      glass.position.set(center.x + x, floorY + 0.78, center.z + z);
+      glass.rotation.y = yaw;
+      glass.name = `${chunkId}_courtyard_pane_${name}`;
+      this.addSchoolProp(chunk, glass);
+    }
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_tree_trunk",
+      center.x + 0.35, floorY + 0.85, center.z - 0.2,
+      0.22, 1.7, 0.22, this.schoolDeskDark || this.trimMaterial, false,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_tree_crown",
+      center.x + 0.35, floorY + 1.72, center.z - 0.2,
+      1.35, 0.7, 1.35, this.schoolHedgeMat, false,
+    );
+    for (const [tag, x, z] of [["nw", -6.35, -6.35], ["ne", 6.35, -6.35], ["sw", -6.35, 6.35], ["se", 6.35, 6.35]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `courtyard_planter_${tag}`,
+        center.x + x, floorY + 0.28, center.z + z,
+        0.85, 0.56, 0.85, this.trimMaterial,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, `courtyard_hedge_${tag}`,
+        center.x + x, floorY + 0.72, center.z + z,
+        0.62, 0.38, 0.62, this.schoolHedgeMat, false,
+      );
+    }
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_bench_e",
+      center.x + 5.55, floorY + 0.22, center.z + 3.85,
+      0.42, 0.44, 1.35, this.schoolDeskDark || this.trimMaterial,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_bench_w",
+      center.x - 5.55, floorY + 0.22, center.z - 3.85,
+      0.42, 0.44, 1.35, this.schoolDeskDark || this.trimMaterial,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "courtyard_trophy",
+      center.x + 5.55, floorY + 0.62, center.z - 4.15,
+      0.55, 1.24, 0.42, this.schoolMetalMat,
+    );
+    this.addHallNookSign(
+      chunk, chunkId, "courtyard_sign",
+      center.x, floorY + 2.18, center.z - 7.52,
+      0, "중정",
+    );
+    this.addHallPaGroup(
+      chunk, chunkId, "courtyard_pa",
+      center.x + 7.35, floorY + 2.48, center.z - 4.2, -Math.PI / 2,
+    );
+    this.addHallClockGroup(
+      chunk, chunkId, "courtyard_clock",
+      center.x - 7.35, floorY + 2.18, center.z + 3.4, Math.PI / 2,
+    );
+    const wet = new THREE.Mesh(this.getPlaneGeometry(1.6, 0.7), this.schoolWetMat);
+    wet.rotation.x = -Math.PI / 2;
+    wet.position.set(center.x - 4.6, floorY + 0.03, center.z + 5.1);
+    wet.name = `${chunkId}_courtyard_wet`;
+    this.addSchoolProp(chunk, wet);
+    const moon = new THREE.PointLight(0x1a2430, 0.14, 5.4, 2);
+    moon.position.set(center.x, floorY + 2.35, center.z);
+    moon.name = `${chunkId}_courtyard_moon`;
+    this.scene.add(moon);
+    chunk.meshes.push(moon);
+  }
+
   linkTransitionWaypoint(id, extraId) {
     const waypoint = this.collisionWorld.transitionWaypoints.find((item) => item.id === id);
     if (waypoint && Array.isArray(waypoint.links) && !waypoint.links.includes(extraId)) {
@@ -4879,6 +5087,8 @@ export class BackroomsGenerator {
       else if (open.E) addDynamicDoor(`${chunkId}_class_door`, classLabel, [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
       else addDynamicDoor(`${chunkId}_class_door`, classLabel, [-7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
       this.dressClassroom(chunk, center, chunkId, floorY);
+    } else if (type === "courtyard") {
+      this.dressCourtyard(chunk, center, chunkId, floorY);
     }
 
     // 2. Cabinets
@@ -4940,6 +5150,12 @@ export class BackroomsGenerator {
         : "교실 신발장";
       const cabPos = type === "gymnasium" ? [-5.4, 0.0, 5.4] : [5.4, 0.0, 5.4];
       addDynamicCabinet(`cabinet_class_${chunk.cx}_${chunk.cz}`, cabLabel, cabPos, Math.PI / 2);
+    } else if (type === "courtyard") {
+      addDynamicCabinet(`cabinet_yard_${chunk.cx}_${chunk.cz}`, "중정 신발장", [5.5, 0.0, 6.35], 0);
+      addDynamicCabinet(`cabinet_yard2_${chunk.cx}_${chunk.cz}`, "중정 반대 신발장", [-5.5, 0.0, -6.35], Math.PI);
+    } else if (this.isSkybridgeChunk(chunk.cx, chunk.cz)) {
+      addDynamicCabinet(`cabinet_sky_${chunk.cx}_${chunk.cz}`, "연결복도 신발장", [5.35, 0.0, 1.28], 0);
+      addDynamicCabinet(`cabinet_sky2_${chunk.cx}_${chunk.cz}`, "연결복도 반대 신발장", [-5.35, 0.0, -1.28], Math.PI);
     } else if (!isStart && !isEvent && !isArchive && !type.includes("stairs") && (type.includes("room") || type.includes("storage")) && rand() < 0.4) {
       addDynamicCabinet(`cabinet_${chunk.cx}_${chunk.cz}`, "복도 신발장", [-5.2, 0.0, -5.2], -Math.PI / 2);
     }
@@ -5032,6 +5248,9 @@ export class BackroomsGenerator {
     } else if (type === "gymnasium") {
       addLoreNote(`${chunkId}_lore`, [-7.35, 1.42, 0.0], Math.PI / 2,
         "체육관 줄이 어제와 같다. 창밖의 운동장은 없다. 공이 혼자 굴러간다.");
+    } else if (type === "courtyard") {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.45], 0,
+        "중정 난간 너머는 운동장이 아니다. 아래로 떨어지지 마십시오.");
     } else if (type === "omen_room" || type === "static_room" || type === "flicker_room" || type === "classroom") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0);
     } else if (isWorkshop) {
@@ -5044,6 +5263,10 @@ export class BackroomsGenerator {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
         "창고 선반 뒤에 도자기 열쇠가 있다. 문을 닫아 추격을 끊으십시오.");
     } else if (hallLike && type !== "start") {
+      if (this.isSkybridgeChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.72], 0,
+          "유리 너머는 운동장이 아니다. 별관으로 건너기 전에 신발장을 확인하십시오.");
+      } else {
       const kinds = [0, 1, 2, 3].map((slot) => this.getHallNookKind(chunk.cx, chunk.cz, slot));
       let body = "교실 번호가 어제와 같다. 창밖의 운동장은 없다.";
       if (kinds.includes("library")) {
@@ -5061,6 +5284,7 @@ export class BackroomsGenerator {
         body = `${body} 교실 뒷문으로 옆 복도가 열린다.`;
       }
       addLoreNote(`${chunkId}_lore`, [-1.18, 1.38, -5.4], Math.PI / 2, body);
+      }
     }
 
     if (isWorkshop) {
@@ -5311,6 +5535,10 @@ export class BackroomsGenerator {
     } else if (type === "gymnasium") {
       spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "체육관 입구 스위치");
       spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "체육관 형광등");
+    } else if (type === "courtyard") {
+      spawnSafeLight("wall-switch", 0.0, wallH, -7.58, Math.PI, "중정 입구 스위치");
+      spawnSafeLight("ceiling-switch", 5.2, ceilingH, 5.2, 0, "중정 형광등");
+      spawnSafeLight("floor-lamp", -5.6, floorH, 5.6, 0, "중정 스탠드");
     } else {
       // Generic fallback room (e.g. flicker_room): Flush on perimeter walls
       spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "벽 스위치");
@@ -5748,6 +5976,9 @@ export class BackroomsGenerator {
     } else if (type === "event") {
       localX = 1.0 + rand() * 5.4;
       localZ = (rand() - 0.5) * 6.8;
+    } else if (type === "courtyard") {
+      localX = rand() < 0.5 ? 5.15 : -5.15;
+      localZ = (rand() - 0.5) * 8.2;
     }
 
     return {
@@ -5988,18 +6219,22 @@ export class BackroomsGenerator {
       || type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew") {
       const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
       const hallOpen = this.getOpenings(chunk.cx, chunk.cz);
-      chunk.waypoints = [
-        wp(0, 0),
-        wp(-5.2, -5.2), wp(5.2, -5.2), wp(-5.2, 5.2), wp(5.2, 5.2),
-      ];
+      chunk.waypoints = [wp(0, 0)];
+      if (!this.isSkybridgeChunk(chunk.cx, chunk.cz)) {
+        chunk.waypoints.push(wp(-5.2, -5.2), wp(5.2, -5.2), wp(-5.2, 5.2), wp(5.2, 5.2));
+      }
       if (!chicanes.ew && !chicanes.ns) {
         chunk.waypoints.push(wp(0, -5.4), wp(0, 5.4), wp(-5.4, 0), wp(5.4, 0));
       }
       if (chicanes.ew) {
         chunk.waypoints.push(
           wp(-6.2, 0), wp(-3.2, 0), wp(3.2, 0), wp(6.2, 0),
-          wp(-5.25, 5.2), wp(5.25, 5.2), wp(-5.25, -5.2), wp(5.25, -5.2),
         );
+        if (!this.isSkybridgeChunk(chunk.cx, chunk.cz)) {
+          chunk.waypoints.push(
+            wp(-5.25, 5.2), wp(5.25, 5.2), wp(-5.25, -5.2), wp(5.25, -5.2),
+          );
+        }
         if (chicanes.ns || hallOpen.N) chunk.waypoints.push(wp(0, -5.4), wp(0, -6.5));
         if (chicanes.ns || hallOpen.S) chunk.waypoints.push(wp(0, 5.4), wp(0, 6.5));
       }
@@ -6029,6 +6264,12 @@ export class BackroomsGenerator {
         wp(-5,-5), wp(0,-5), wp(5,-5),
         wp(-5, 0),           wp(5, 0),
         wp(-5, 5), wp(0, 5), wp(5, 5),
+      ];
+    } else if (type === "courtyard") {
+      chunk.waypoints = [
+        wp(0, -6.4), wp(0, -4.6), wp(4.6, -4.6), wp(4.6, 0), wp(4.6, 4.6),
+        wp(0, 4.6), wp(-4.6, 4.6), wp(-4.6, 0), wp(-4.6, -4.6),
+        wp(6.2, 0), wp(-6.2, 0), wp(0, 6.2), wp(0, -6.2),
       ];
     } else if (type === "workshop") {
       chunk.waypoints = [wp(0,0), wp(0,-5), wp(5,0), wp(-3,-3), wp(3,-3), wp(3,3)];

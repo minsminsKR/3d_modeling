@@ -1620,7 +1620,16 @@ export class Game {
       faculty_office: ["faculty", "교무실입니다. 지워진 네 이름을 찾으십시오."],
       science_lab: ["science", "과학실입니다. 가스관이 아직 식지 않았습니다."],
       gymnasium: ["gym", "체육관입니다. 줄은 남아 있는데 운동장은 없습니다."],
+      courtyard: ["courtyard", "중정입니다. 난간 너머로 내려가지 마십시오."],
     };
+    if (cx === 3 && cz === 0 && !this._storyBeats.has("skybridge")) {
+      this._storyBeats.add("skybridge");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("skybridge", "본관과 별관을 잇는 유리복도입니다. 아래는 운동장이 아닙니다.");
+      this.hud.setStatus("본관과 별관을 잇는 유리복도입니다. 아래는 운동장이 아닙니다.", 3600);
+      return;
+    }
     const room = roomLines[type];
     if (room && !this._storyBeats.has(type)) {
       this._storyBeats.add(type);

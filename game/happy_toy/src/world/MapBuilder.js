@@ -326,6 +326,8 @@ export class MapBuilder {
     if (kind === "library") label = annex ? "별 도서실" : "도서실";
     else if (kind === "washroom") label = annex ? "별 화장실" : "화장실";
     else if (kind === "boarded") label = "폐쇄";
+    if (chunk.type === "courtyard") label = "중정";
+    if (chunk.cx === 3 && chunk.cz === 0) label = "연결복도";
     if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;
