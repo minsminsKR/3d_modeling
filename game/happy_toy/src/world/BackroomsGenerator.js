@@ -1653,11 +1653,11 @@ export class BackroomsGenerator {
     if (hallLike) {
       const maze = ewChicane || nsChicane;
       const nsSep = (x, zSign, fullName, midName) => {
-        if (maze) addWallSegment(x, zSign * 5.85, 0.4, 1.5, midName);
+        if (maze) addWallSegment(x, zSign * 5.2, 0.4, 1.2, midName);
         else addWallSegment(x, zSign * 5.6, 0.4, 4.8, fullName);
       };
       const ewSep = (z, xSign, fullName, midName) => {
-        if (maze) addWallSegment(xSign * 5.85, z, 1.5, 0.4, midName);
+        if (maze) addWallSegment(xSign * 5.2, z, 1.2, 0.4, midName);
         else addWallSegment(xSign * 5.6, z, 4.8, 0.4, fullName);
       };
       nsSep(-1.4, -1, "alcove_nw_ns", "alcove_nw_ns_mid");

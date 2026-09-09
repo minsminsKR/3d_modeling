@@ -524,7 +524,7 @@ try {
   assert.ok(loopWalk.some((stop) => stop.z < -1.8 && stop.x < 17), "east tile must loop north around the west baffle");
   assert.ok(loopWalk.some((stop) => stop.z > 1.8 && stop.x > 17), "east tile north loop must return south around the east baffle");
   assert.equal(loopWalk.at(-1).ok, true, `must finish the opposite 1F loop, got ${JSON.stringify(loopWalk.at(-1))}`);
-  assert.ok(ringWalk.some((stop) => stop.z < -5.4 && stop.x > 14), "east tile must open an outer north ring past the inner loop");
+  assert.ok(ringWalk[1]?.ok && ringWalk[1].z < -5.4, `outer north ring must cross the tile at z=-6.4, got ${JSON.stringify(ringWalk[1])}`);
   assert.equal(ringWalk.at(-1).ok, true, `must walk the outer 1F ring, got ${JSON.stringify(ringWalk.at(-1))}`);
   const annexGate = annexWalk.find((stop) => stop.x > 56 && Math.abs(stop.z) < 1.2);
   assert.ok(annexGate?.ok, `must walk to 별관 gate, got ${JSON.stringify(annexGate)}`);
