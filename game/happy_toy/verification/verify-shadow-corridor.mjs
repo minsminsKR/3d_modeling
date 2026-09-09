@@ -57,6 +57,63 @@ try {
       ),
       state: uncat.state,
     };
+
+    game.testSafeMode = true;
+    game.ghostMode = false;
+    game.mapBuilder.generator.generateChunk(0, 0);
+    game.mapBuilder.generator.generateChunk(0, 1);
+    game.mapBuilder.generator.generateChunk(1, 0);
+    game.player.setPosition({ x: 16, y: 0, z: 2.6 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+    uncat.setDormant(false);
+    uncat.group.visible = true;
+    uncat.group.position.set(0, 0, 16);
+    uncat.state = "chase";
+    uncat.caughtPlayer = false;
+    uncat.chasePath = null;
+    uncat.chasePathTimer = 0;
+    uncat.chasePathGoal = null;
+    uncat.lastKnownPlayerPosition = game.player.position.clone();
+    uncat.memoryTimer = 14;
+    const mazeStartDist = Math.hypot(uncat.group.position.x - 16, uncat.group.position.z - 2.6);
+    for (let i = 0; i < 240; i += 1) game.update(0.05, { skipRender: true });
+    const mazeChase = {
+      startDist: mazeStartDist,
+      endDist: Math.hypot(
+        uncat.group.position.x - game.player.position.x,
+        uncat.group.position.z - game.player.position.z,
+      ),
+      x: uncat.group.position.x,
+      z: uncat.group.position.z,
+      pathLen: uncat.chasePath?.length || 0,
+      state: uncat.state,
+    };
+
+    const bendCab = (game.cabinets || []).find((item) => (
+      Math.abs((item.position?.y || 0)) < 1.2
+      && Math.hypot((item.position?.x || 0) - 10.75, (item.position?.z || 0) - 5.25) < 4
+    ));
+    let bendHide = { cabinet: Boolean(bendCab) };
+    if (bendCab) {
+      uncat.group.position.set(16, 0, 2.6);
+      uncat.state = "chase";
+      uncat.hasVisualContact = true;
+      uncat.lastKnownPlayerPosition = bendCab.position.clone();
+      game.player.setPosition({
+        x: bendCab.position.x,
+        y: bendCab.position.y,
+        z: bendCab.position.z + 0.9,
+      });
+      game.enterCabinet(bendCab, { forceOutcome: "safe" });
+      bendHide = {
+        cabinet: true,
+        hidden: game.player.isHidden,
+        investigating: uncat.state === "investigateCabinet",
+        hasEvent: Boolean(game.cabinetEvent),
+      };
+      game.exitCabinet();
+    }
+
     game.testSafeMode = true;
     const b1 = game.mapBuilder.generator.generateChunk(1, 2);
     const f2 = game.mapBuilder.generator.generateChunk(-1, -1);
@@ -141,6 +198,8 @@ try {
       before,
       afterRelease,
       afterChase,
+      mazeChase,
+      bendHide,
       floors,
       deepWing,
       atWing,
@@ -169,6 +228,17 @@ try {
     result.afterChase.endDist < result.afterChase.startDist - 1.5,
     `stalker must close distance ${result.afterChase.startDist} -> ${result.afterChase.endDist}`,
   );
+  assert.ok(
+    result.mazeChase.endDist < result.mazeChase.startDist - 4,
+    `Uncat must hunt through the east S-bend ${result.mazeChase.startDist} -> ${result.mazeChase.endDist} at ${result.mazeChase.x},${result.mazeChase.z}`,
+  );
+  assert.ok(
+    result.mazeChase.x > 6 || result.mazeChase.endDist < 10,
+    `Uncat must leave the south spine into the east maze, got x=${result.mazeChase.x} dist=${result.mazeChase.endDist}`,
+  );
+  assert.equal(result.bendHide.cabinet, true, "east S-bend locker must exist");
+  assert.equal(result.bendHide.hidden, true, "player must hide in the S-bend locker");
+  assert.equal(result.bendHide.investigating, true, "Uncat must check the S-bend locker");
   assert.notEqual(result.deepWing.chunkType, "void", "별관 must continue the 1F school");
   assert.ok(
     result.deepWing.openings.W || result.deepWing.openings.E || result.deepWing.openings.N || result.deepWing.openings.S,

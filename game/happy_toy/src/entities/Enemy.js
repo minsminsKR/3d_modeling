@@ -473,7 +473,11 @@ export class Enemy {
     const directorDetection = this.progressionDetectionMultiplier || 1.0;
     const hearing = this.config.hearingRange * (this.detectionMultiplier || 1.0) * directorDetection;
     const detection = this.config.detectionRange * (this.detectionMultiplier || 1.0) * directorDetection;
-    const canHear = isPlayerSprinting && distance <= hearing;
+    const isPlayerMoving = Boolean(playerState.isMoving);
+    const walkHear = hearing * (this.config.walkHearingScale ?? 0.5);
+    const canHear = distance <= hearing && (
+      isPlayerSprinting || (isPlayerMoving && distance <= walkHear)
+    );
     const canSee = distance <= detection
       && this.isPlayerInFront(playerPosition)
       && this.collisionWorld.hasLineOfSight(this.group.position, playerPosition);
@@ -898,13 +902,26 @@ export class Enemy {
 
     const goalMoved = forceRefresh || !this[goalKey] || distance2D(this[goalKey], goal) > 0.9;
     if (this[pathKey] === null || this[timerKey] <= 0 || goalMoved) {
-      this[pathKey] = this.collisionWorld.findPath(this.group.position, goal, this.config.radius, {
-        cellSize: this.config.pathCellSize ?? 0.85,
-        allowInterFloor: mode === "chase" || mode === "flee" || (mode === "wander" && Boolean(this.config.allowInterFloorPatrol)),
-      });
+      this[pathKey] = this.collisionWorld.findPath(
+        this.group.position,
+        goal,
+        this.config.pathRadius ?? this.config.radius,
+        {
+          cellSize: this.config.pathCellSize ?? 0.85,
+          maxIterations: this.config.pathMaxIterations ?? 5200,
+          allowInterFloor: mode === "chase" || mode === "flee" || (mode === "wander" && Boolean(this.config.allowInterFloorPatrol)),
+        },
+      );
       this[goalKey] = goal.clone?.() || vectorFromArray([goal.x, goal.y, goal.z]);
       this[timerKey] = this.config.pathRefreshSeconds ?? 0.28;
       if (this[pathKey].length === 0) {
+        if (mode === "chase" || mode === "flee") {
+          const detour = this.pickChaseDetour(goal);
+          if (detour) {
+            this.debugPathTarget = { mode, type: "detour", x: detour.x, y: detour.y, z: detour.z };
+            return detour;
+          }
+        }
         if (mode === "wander") {
           // Pathfinding to wanderTarget failed — clear it so the next frame picks a new one.
           // Broaden the search by temporarily lowering minDist requirements.
@@ -1149,6 +1166,26 @@ export class Enemy {
     }
     this.isIdlePose = false;
     this.currentActionName = null;
+  }
+
+  pickChaseDetour(goal) {
+    const waypoints = this.getActivePatrolWaypoints();
+    if (!waypoints.length) return null;
+    const me = this.group.position;
+    let best = null;
+    let bestScore = Infinity;
+    for (const wp of waypoints) {
+      const wx = wp[0];
+      const wz = wp[2] ?? wp[1];
+      const fromMe = Math.hypot(wx - me.x, wz - me.z);
+      if (fromMe < 1.2) continue;
+      const score = fromMe + Math.hypot(wx - goal.x, wz - goal.z);
+      if (score < bestScore) {
+        bestScore = score;
+        best = { x: wx, y: me.y, z: wz };
+      }
+    }
+    return best;
   }
 
   chooseNearestWaypoint() {

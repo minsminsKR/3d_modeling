@@ -50,26 +50,34 @@ async function poseShot(name, pose) {
   return info;
 }
 
-const east = await poseShot("f1_s_bend_east_look.png", {
+const chase = await poseShot("f1_uncat_s_bend_chase.png", {
   x: 12.2,
   y: 0,
   z: 2.55,
-  lookAt: [16.4, 1.15, 2.45],
-  status: "동쪽 복도가 두 번 꺾입니다.",
+  lookAt: [16.2, 1.2, 2.5],
+  status: "꺾인 복도에서 실내화가 따라옵니다. 벽장으로.",
 });
-const north = await poseShot("f1_s_bend_north_look.png", {
-  x: 2.55,
-  y: 0,
-  z: -12.2,
-  lookAt: [2.45, 1.15, -16.4],
-  status: "북쪽 복도가 두 번 꺾입니다.",
+const chaseInfo = await page.evaluate(() => {
+  const game = window.__happyToy;
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(16.05, 0, 2.58);
+  uncat.group.lookAt(12.2, 1.2, 2.55);
+  uncat.state = "chase";
+  game.hud.setPrompt("");
+  game.hud.setStatus("꺾인 복도에서 실내화가 따라옵니다. 벽장으로.", 4200);
+  game.renderer.render(game.scene, game.camera);
+  return { visible: uncat.group.visible === true, x: uncat.group.position.x };
 });
+await page.screenshot({ path: path.join(outDir, "f1_uncat_s_bend_chase.png"), timeout: 120000 });
+console.log("uncat overlay", chaseInfo);
 
-if (!east.flashlight || east.intensity < 8) {
-  throw new Error(`east S-bend capture failed: ${JSON.stringify(east)}`);
+if (!chase.flashlight || chase.intensity < 8) {
+  throw new Error(`east S-bend chase capture failed: ${JSON.stringify(chase)}`);
 }
-if (!north.flashlight || north.intensity < 8) {
-  throw new Error(`north S-bend capture failed: ${JSON.stringify(north)}`);
+if (!chaseInfo.visible) {
+  throw new Error(`Uncat missing in S-bend chase: ${JSON.stringify(chaseInfo)}`);
 }
 
 console.log("ok");
