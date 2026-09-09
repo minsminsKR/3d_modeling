@@ -202,6 +202,42 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 88 && x < 104 && z < -8 && z > -24) {
+      this.fire(
+        "specimen",
+        "specimen",
+        "표본 복도입니다. 유리 너머를 세지 마십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 88 && x < 104 && z > 24 && z < 40) {
+      this.fire(
+        "stagewing",
+        "stagewing",
+        "무대 복도입니다. 의상이 이름을 걸고 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 56 && x < 72 && z < -8 && z > -24) {
+      this.fire(
+        "laundry",
+        "laundry",
+        "세탁 복도입니다. 수레가 어제 출석을 실었습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 72 && x < 88 && z < -24 && z > -40) {
+      this.fire(
+        "lablink",
+        "lablink",
+        "실험 복도입니다. 가스가 아직 식지 않았습니다.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z < -8 && z > -24) {
       this.fire(
         "art",

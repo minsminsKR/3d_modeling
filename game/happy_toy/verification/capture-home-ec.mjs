@@ -28,16 +28,16 @@ const pose = await page.evaluate(() => {
   if (uncat) uncat.group.visible = false;
   game.hud.setStatus("가정실입니다. 재봉틀이 혼자 돌아가고 있습니다.", 2800);
   return game.poseForCapture({
-    x: 64.2,
+    x: 62.15,
     y: 0,
-    z: -30.4,
-    lookAt: [58.2, 1.05, -35.4],
+    z: -32.05,
+    lookAt: [58.15, 0.72, -35.55],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_home_ec.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_home_ec_machines.png"), timeout: 120000 });
 console.log("home_ec", pose);
 await browser.close();
 console.log("ok");

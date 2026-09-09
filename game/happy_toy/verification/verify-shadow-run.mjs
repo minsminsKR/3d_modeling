@@ -609,6 +609,92 @@ try {
     console.log("club", stop, clubWalk.at(-1));
   }
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(6, 0);
+    game.mapBuilder.generator.generateChunk(6, -1);
+    game.mapBuilder.generator.generateChunk(7, -1);
+    game.player.setPosition({ x: 96, y: 0, z: -6 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const specimenWalk = [];
+  for (const stop of [
+    { x: 96, z: -10 },
+    { x: 96, z: -16 },
+    { x: 102, z: -16 },
+  ]) {
+    specimenWalk.push(await walkTo(stop, 360));
+    console.log("specimen", stop, specimenWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(5, 2);
+    game.mapBuilder.generator.generateChunk(6, 2);
+    game.mapBuilder.generator.generateChunk(6, 1);
+    game.player.setPosition({ x: 86, y: 0, z: 32 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const stageWalk = [];
+  for (const stop of [
+    { x: 90, z: 32 },
+    { x: 96, z: 32 },
+    { x: 96, z: 26 },
+  ]) {
+    stageWalk.push(await walkTo(stop, 360));
+    console.log("stagewing", stop, stageWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(4, 0);
+    game.mapBuilder.generator.generateChunk(4, -1);
+    game.mapBuilder.generator.generateChunk(4, -2);
+    game.player.setPosition({ x: 64, y: 0, z: -10 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const laundryWalk = [];
+  for (const stop of [
+    { x: 64, z: -16 },
+    { x: 64, z: -22 },
+  ]) {
+    laundryWalk.push(await walkTo(stop, 360));
+    console.log("laundry", stop, laundryWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(4, -2);
+    game.mapBuilder.generator.generateChunk(5, -2);
+    game.player.setPosition({ x: 70, y: 0, z: -32 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const labLinkWalk = [];
+  for (const stop of [
+    { x: 74, z: -32 },
+    { x: 80, z: -32 },
+    { x: 86, z: -32 },
+  ]) {
+    labLinkWalk.push(await walkTo(stop, 360));
+    console.log("lablink", stop, labLinkWalk.at(-1));
+  }
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -640,6 +726,10 @@ try {
     const greenroom = generator.generateChunk(5, 2);
     const homeEc = generator.generateChunk(4, -2);
     const club = generator.generateChunk(7, -1);
+    const specimen = generator.generateChunk(6, -1);
+    const stageWing = generator.generateChunk(6, 2);
+    const laundry = generator.generateChunk(4, -1);
+    const labLink = generator.generateChunk(5, -2);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
     game._lastPlayerChunkCx = 4;
@@ -665,6 +755,10 @@ try {
     game.onEnterSchoolChunk(5, 2);
     game.onEnterSchoolChunk(4, -2);
     game.onEnterSchoolChunk(7, -1);
+    game.onEnterSchoolChunk(6, -1);
+    game.onEnterSchoolChunk(6, 2);
+    game.onEnterSchoolChunk(4, -1);
+    game.onEnterSchoolChunk(5, -2);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
     for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
     game.player.setPosition({ x: 32, y: 0, z: 0 });
@@ -756,6 +850,10 @@ try {
       homeEcType: homeEc.type,
       clubTable: names(club).some((name) => name.includes("club_table_")),
       clubType: club.type,
+      specimenCase: names(specimen).some((name) => name.includes("specimen_case_")),
+      stageRack: names(stageWing).some((name) => name.includes("stagewing_rack_")),
+      laundryCart: names(laundry).some((name) => name.includes("laundry_cart_")),
+      labLinkCase: names(labLink).some((name) => name.includes("lablink_case_")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -1009,7 +1107,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, labLinkWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -1146,6 +1244,24 @@ try {
   assert.equal(clubWalk.at(-1).ok, true, `must walk the club room, got ${JSON.stringify(clubWalk.at(-1))}`);
   assert.ok(clubWalk.some((stop) => stop.z < -14 && Math.abs(stop.x - 112) < 1.6), "club south aisle from the trophy hall must stay open");
   assert.ok(clubWalk.at(-1).x < 108 && Math.abs(clubWalk.at(-1).z + 16) < 1.4, "club west aisle must stay open");
+  assert.equal(rooms.specimenCase, true, "specimen hall must show west specimen cases");
+  assert.ok(rooms.beats.includes("specimen"), "specimen VO beat missing");
+  assert.equal(specimenWalk.at(-1).ok, true, `must walk the specimen hall, got ${JSON.stringify(specimenWalk.at(-1))}`);
+  assert.ok(specimenWalk.some((stop) => stop.z < -14 && Math.abs(stop.x - 96) < 1.6), "specimen NS spine must stay open");
+  assert.ok(specimenWalk.at(-1).x > 100 && Math.abs(specimenWalk.at(-1).z + 16) < 1.4, "specimen east T-spur to the club must stay open");
+  assert.equal(rooms.stageRack, true, "stage wing must hang costume racks");
+  assert.ok(rooms.beats.includes("stagewing"), "stage wing VO beat missing");
+  assert.equal(stageWalk.at(-1).ok, true, `must walk the stage wing, got ${JSON.stringify(stageWalk.at(-1))}`);
+  assert.ok(stageWalk.some((stop) => stop.x > 94 && Math.abs(stop.z - 32) < 1.6), "stage wing EW spine must stay open");
+  assert.ok(stageWalk.at(-1).z < 28 && Math.abs(stageWalk.at(-1).x - 96) < 1.4, "stage wing north T-spur to faculty must stay open");
+  assert.equal(rooms.laundryCart, true, "laundry hall must have carts");
+  assert.ok(rooms.beats.includes("laundry"), "laundry VO beat missing");
+  assert.equal(laundryWalk.at(-1).ok, true, `must walk the laundry hall, got ${JSON.stringify(laundryWalk.at(-1))}`);
+  assert.ok(laundryWalk.at(-1).z < -20 && Math.abs(laundryWalk.at(-1).x - 64) < 1.4, "laundry NS spine must stay open");
+  assert.equal(rooms.labLinkCase, true, "lab link must show south specimen cases");
+  assert.ok(rooms.beats.includes("lablink"), "lab-link VO beat missing");
+  assert.equal(labLinkWalk.at(-1).ok, true, `must walk the lab-link hall, got ${JSON.stringify(labLinkWalk.at(-1))}`);
+  assert.ok(labLinkWalk.at(-1).x > 84 && Math.abs(labLinkWalk.at(-1).z + 32) < 1.4, "lab-link EW spine must stay open");
   assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
   assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
   assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");

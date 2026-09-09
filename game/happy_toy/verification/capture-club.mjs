@@ -28,16 +28,16 @@ const pose = await page.evaluate(() => {
   if (uncat) uncat.group.visible = false;
   game.hud.setStatus("서도부입니다. 먹물이 아직 마르지 않았습니다.", 2800);
   return game.poseForCapture({
-    x: 112.1,
+    x: 112.05,
     y: 0,
-    z: -13.2,
-    lookAt: [107.6, 1.05, -20.4],
+    z: -16.85,
+    lookAt: [107.5, 0.78, -20.15],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_club_room.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_club_tables.png"), timeout: 120000 });
 console.log("club", pose);
 await browser.close();
 console.log("ok");

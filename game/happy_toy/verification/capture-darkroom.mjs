@@ -28,16 +28,16 @@ const pose = await page.evaluate(() => {
   if (uncat) uncat.group.visible = false;
   game.hud.setStatus("암실입니다. 빨간 불만 남아 있습니다. 물을 흔들지 마십시오.", 2800);
   return game.poseForCapture({
-    x: 112.1,
+    x: 112.05,
     y: 0,
-    z: -29.2,
-    lookAt: [108.6, 1.05, -37.6],
+    z: -34.15,
+    lookAt: [107.7, 0.92, -37.7],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_darkroom.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_darkroom_sinks.png"), timeout: 120000 });
 console.log("darkroom", pose);
 await browser.close();
 console.log("ok");

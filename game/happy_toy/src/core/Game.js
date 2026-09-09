@@ -1654,6 +1654,38 @@ export class Game {
       this.hud.setStatus("연습실입니다. 가운데가 막혀 있습니다. 남쪽으로 돌아가십시오.", 3600);
       return;
     }
+    if (cx === 6 && cz === -1 && !this._storyBeats.has("specimen")) {
+      this._storyBeats.add("specimen");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("specimen", "표본 복도입니다. 유리 너머를 세지 마십시오.");
+      this.hud.setStatus("표본 복도입니다. 유리 너머를 세지 마십시오.", 3600);
+      return;
+    }
+    if (cx === 6 && cz === 2 && !this._storyBeats.has("stagewing")) {
+      this._storyBeats.add("stagewing");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("stagewing", "무대 복도입니다. 의상이 이름을 걸고 있습니다.");
+      this.hud.setStatus("무대 복도입니다. 의상이 이름을 걸고 있습니다.", 3600);
+      return;
+    }
+    if (cx === 4 && cz === -1 && !this._storyBeats.has("laundry")) {
+      this._storyBeats.add("laundry");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("laundry", "세탁 복도입니다. 수레가 어제 출석을 실었습니다.");
+      this.hud.setStatus("세탁 복도입니다. 수레가 어제 출석을 실었습니다.", 3600);
+      return;
+    }
+    if (cx === 5 && cz === -2 && !this._storyBeats.has("lablink")) {
+      this._storyBeats.add("lablink");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("lablink", "실험 복도입니다. 가스가 아직 식지 않았습니다.");
+      this.hud.setStatus("실험 복도입니다. 가스가 아직 식지 않았습니다.", 3600);
+      return;
+    }
     const roomLines = {
       nurse_office: ["nurse", "보건실입니다. 장부에 끝나지 않은 출석이 남아 있습니다."],
       music_room: ["music", "음악실입니다. 한 음이 모자란 피아노가 열려 있습니다."],

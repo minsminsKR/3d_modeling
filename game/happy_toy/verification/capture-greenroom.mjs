@@ -28,16 +28,16 @@ const pose = await page.evaluate(() => {
   if (uncat) uncat.group.visible = false;
   game.hud.setStatus("대기실입니다. 의상이 이름을 입고 있습니다.", 2800);
   return game.poseForCapture({
-    x: 80.1,
+    x: 80.05,
     y: 0,
-    z: 28.4,
-    lookAt: [76.4, 1.05, 36.8],
+    z: 33.85,
+    lookAt: [80.0, 0.72, 37.45],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_greenroom.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_greenroom_sofa.png"), timeout: 120000 });
 console.log("greenroom", pose);
 await browser.close();
 console.log("ok");

@@ -341,6 +341,10 @@ export class MapBuilder {
     if (chunk.cx === 7 && chunk.cz === 0) label = "트로피";
     if (chunk.cx === 4 && chunk.cz === 1) label = "아케이드";
     if (chunk.cx === 7 && chunk.cz === 2) label = "연습실";
+    if (chunk.cx === 6 && chunk.cz === -1) label = "표본";
+    if (chunk.cx === 6 && chunk.cz === 2) label = "무대";
+    if (chunk.cx === 4 && chunk.cz === -1) label = "세탁";
+    if (chunk.cx === 5 && chunk.cz === -2) label = "실험";
     if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;

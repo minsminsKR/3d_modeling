@@ -144,6 +144,22 @@ g.player.position = { x: 112, y: 0, z: -16 };
 director.update();
 assert.equal(director.fired.has("club"), true);
 
+g.player.position = { x: 96, y: 0, z: -16 };
+director.update();
+assert.equal(director.fired.has("specimen"), true);
+
+g.player.position = { x: 96, y: 0, z: 32 };
+director.update();
+assert.equal(director.fired.has("stagewing"), true);
+
+g.player.position = { x: 64, y: 0, z: -16 };
+director.update();
+assert.equal(director.fired.has("laundry"), true);
+
+g.player.position = { x: 80, y: 0, z: -32 };
+director.update();
+assert.equal(director.fired.has("lablink"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");

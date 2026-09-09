@@ -89,6 +89,7 @@ export class SoundManager {
       "windowHall", "skybridge", "courtyard", "memorial", "auditorium", "foyer", "atrium",
       "trophy", "arcade", "art", "practice", "studio", "broadcast",
       "darkroom", "greenroom", "homeec", "club",
+      "specimen", "stagewing", "laundry", "lablink",
     ];
     Promise.all(keys.map(async (key) => {
       try {
