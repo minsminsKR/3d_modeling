@@ -51,6 +51,9 @@ model_test/model/_extracted/
 !game/assets/**/*.fbx
 !game/assets/**/*.glb
 !game/assets/**/*.gltf
+!game/assets/**/*.ogg
+!game/assets/voice/**
+!game/happy_toy/assets/**
 !game/happy_toy/assets/**
 !game/happy_toy/assets/**/*.fbx
 !game/happy_toy/assets/**/*.glb

@@ -26,6 +26,7 @@ mimetypes.add_type("text/css", ".css")
 mimetypes.add_type("application/octet-stream", ".fbx")
 mimetypes.add_type("model/gltf-binary", ".glb")
 mimetypes.add_type("model/gltf+json", ".gltf")
+mimetypes.add_type("audio/ogg", ".ogg")
 
 
 class HappyToyRequestHandler(SimpleHTTPRequestHandler):

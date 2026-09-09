@@ -735,15 +735,18 @@ export class BackroomsGenerator {
       this.scene.add(galInnerLintel);
       chunk.meshes.push(galInnerLintel);
 
-      // South Wall: at z = -8.5 spanning the west gallery wing
-      const galSouthGeo = this.getBoxGeometry(galWestWingWidth + 0.4, 2.8, 0.4);
-      const galSouthMesh = new THREE.Mesh(galSouthGeo, stairMat);
-      galSouthMesh.position.set(galWestWingCenterX, floorY + 6.4, galMaxZ + 0.15);
-      galSouthMesh.castShadow = true;
-      galSouthMesh.name = `${chunkId}_gallery_2f_wall_s`;
-      this.scene.add(galSouthMesh);
-      chunk.meshes.push(galSouthMesh);
-      this.collisionWorld.addStaticBox(galSouthMesh.name, galSouthMesh.position, new THREE.Vector3(galWestWingWidth + 0.4, 2.8, 0.4), chunkId);
+      // South wall opens into the blood-soaked south labyrinth.
+      this.placeGappedWall(chunk, chunkId, "gallery_2f_wall_s", {
+        axis: "x",
+        pos: galMaxZ + 0.15,
+        min: galMinX,
+        max: f2StartX - rampHalfWidth,
+        wallY: floorY + 6.4,
+        height: 2.8,
+        thickness: 0.4,
+        material: stairMat,
+        gaps: [{ center: -22.5, width: 2.7 }, { center: -32.5, width: 2.7 }],
+      });
 
       // Dividing Wall along x = -17.2 between Gallery and Stairs/Vestibule:
       // Doorway: 2.4m opening connecting landing to gallery (z from -23.0 to -20.6)
@@ -1222,15 +1225,17 @@ export class BackroomsGenerator {
       this.scene.add(b1InnerLintel);
       chunk.meshes.push(b1InnerLintel);
 
-      // East Wall: at x = 26.0
-      const b1EastGeo = this.getBoxGeometry(0.4, 2.8, b1TotalLength + 0.4);
-      const b1EastMesh = new THREE.Mesh(b1EastGeo, b1WallMat);
-      b1EastMesh.position.set(b1MaxX + 0.15, floorY - 3.6, b1CenterZ);
-      b1EastMesh.castShadow = true;
-      b1EastMesh.name = `${chunkId}_cellar_b1_wall_e`;
-      this.scene.add(b1EastMesh);
-      chunk.meshes.push(b1EastMesh);
-      this.collisionWorld.addStaticBox(b1EastMesh.name, b1EastMesh.position, new THREE.Vector3(0.4, 2.8, b1TotalLength + 0.4), chunkId);
+      this.placeGappedWall(chunk, chunkId, "cellar_b1_wall_e", {
+        axis: "z",
+        pos: b1MaxX + 0.15,
+        min: b1MinZ,
+        max: b1MaxZ,
+        wallY: floorY - 3.6,
+        height: 2.8,
+        thickness: 0.4,
+        material: b1WallMat,
+        gaps: [{ center: 28.0, width: 2.7 }, { center: 38.0, width: 2.7 }],
+      });
 
       // Dividing Walls around stairs and doorway to landing:
       // Dividing Walls around stairs and doorway to landing:
@@ -2111,6 +2116,7 @@ export class BackroomsGenerator {
     const southMaxZ = 56.4;
     const coreMinZ = 24.2;
     const coreMaxX = 26.0;
+    const eastMaxX = 44.0;
 
     this.addWingPlane(
       chunk, chunkId, "cellar_b1_floor_west_lab",
@@ -2153,11 +2159,43 @@ export class BackroomsGenerator {
       minZ: southMinZ,
       maxZ: southMaxZ,
     }, chunkId);
+    this.addWingPlane(
+      chunk, chunkId, "cellar_b1_floor_east_lab",
+      eastMaxX - coreMaxX, southMaxZ - coreMinZ,
+      (coreMaxX + eastMaxX) / 2, floorY - 5.0, (coreMinZ + southMaxZ) / 2, floorMat,
+    );
+    this.addWingPlane(
+      chunk, chunkId, "cellar_b1_ceil_east_lab",
+      eastMaxX - coreMaxX, southMaxZ - coreMinZ,
+      (coreMaxX + eastMaxX) / 2, floorY - 2.2, (coreMinZ + southMaxZ) / 2, ceilMat, true,
+    );
+    this.collisionWorld.addFloorArea({
+      id: "cellar_b1_east_lab",
+      floor: -1,
+      type: "walkable",
+      y: floorY - 5.0,
+      minX: coreMaxX,
+      maxX: eastMaxX,
+      minZ: coreMinZ,
+      maxZ: southMaxZ,
+    }, chunkId);
 
     this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_w", westMinX - 0.15, y, (coreMinZ + southMaxZ) / 2, 0.4, h, southMaxZ - coreMinZ + 0.4, wallMat);
     this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_n", (westMinX + westMaxX) / 2, y, coreMinZ - 0.15, westMaxX - westMinX + 0.4, h, 0.4, wallMat);
-    this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_s", (westMinX + coreMaxX) / 2, y, southMaxZ + 0.15, coreMaxX - westMinX + 0.4, h, 0.4, wallMat);
-    this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_e", coreMaxX + 0.15, y, (southMinZ + southMaxZ) / 2, 0.4, h, southMaxZ - southMinZ + 0.4, wallMat);
+    this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_n_e", (coreMaxX + eastMaxX) / 2, y, coreMinZ - 0.15, eastMaxX - coreMaxX + 0.4, h, 0.4, wallMat);
+    this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_s", (westMinX + eastMaxX) / 2, y, southMaxZ + 0.15, eastMaxX - westMinX + 0.4, h, 0.4, wallMat);
+    this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_e_outer", eastMaxX + 0.15, y, (coreMinZ + southMaxZ) / 2, 0.4, h, southMaxZ - coreMinZ + 0.4, wallMat);
+    this.placeGappedWall(chunk, chunkId, "cellar_b1_wall_lab_e_gate", {
+      axis: "z",
+      pos: coreMaxX + 0.15,
+      min: southMinZ,
+      max: southMaxZ,
+      wallY: y,
+      height: h,
+      thickness: 0.4,
+      material: wallMat,
+      gaps: [{ center: 48.0, width: 2.7 }],
+    });
 
     const walls = [
       ["b1_maze_s_h1w", -0.2, 45.1, 14.8, t],
@@ -2174,6 +2212,15 @@ export class BackroomsGenerator {
       ["b1_maze_w_h2b", -10.55, 45.1, 4.7, t],
       ["b1_maze_w_south_a", -20.4, 51.4, 6.4, t],
       ["b1_maze_w_south_b", -10.5, 51.4, 5.0, t],
+      ["b1_maze_e_h1a", 28.55, 35.8, 4.3, t],
+      ["b1_maze_e_h1b", 38.7, 35.8, 10.6, t],
+      ["b1_maze_e_h2a", 28.55, 44.6, 4.3, t],
+      ["b1_maze_e_h2b", 38.7, 44.6, 10.6, t],
+      ["b1_maze_e_h3a", 28.55, 50.8, 4.3, t],
+      ["b1_maze_e_h3b", 38.7, 50.8, 10.6, t],
+      ["b1_maze_e_spur", 36.4, 27.2, t, 3.8],
+      ["b1_maze_e_v_loop", 36.4, 40.2, t, 7.6],
+      ["b1_maze_e_v_dead", 40.2, 52.6, t, 5.2],
     ];
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
@@ -2200,6 +2247,11 @@ export class BackroomsGenerator {
       coreMaxX - westMaxX - 0.4, southMaxZ - southMinZ - 0.4,
       (westMaxX + coreMaxX) / 2, waterY, (southMinZ + southMaxZ) / 2, waterMat,
     );
+    this.addWingPlane(
+      chunk, chunkId, "flood_water_east_lab",
+      eastMaxX - coreMaxX - 0.4, southMaxZ - coreMinZ - 0.4,
+      (coreMaxX + eastMaxX) / 2, waterY, (coreMinZ + southMaxZ) / 2, waterMat,
+    );
 
     const gloom = new THREE.PointLight(0x1c4a3c, 2.4, 8.4, 1.7);
     gloom.position.set(8.4, floorY - 4.05, 48.2);
@@ -2211,6 +2263,11 @@ export class BackroomsGenerator {
     gloomWest.name = `${chunkId}_b1_lab_gloom_w`;
     this.scene.add(gloomWest);
     chunk.meshes.push(gloomWest);
+    const gloomEast = new THREE.PointLight(0x1a4034, 2.2, 8.0, 1.7);
+    gloomEast.position.set(32.0, floorY - 4.05, 38.0);
+    gloomEast.name = `${chunkId}_b1_lab_gloom_east`;
+    this.scene.add(gloomEast);
+    chunk.meshes.push(gloomEast);
 
     this.collisionWorld.addTransitionWaypoint({
       id: "tw_b1_south_gate",
@@ -2238,6 +2295,19 @@ export class BackroomsGenerator {
     }, chunkId);
     this.linkTransitionWaypoint("tw_b1_maze_gap", "tw_b1_south_gate");
     this.linkTransitionWaypoint("tw_b1_inner_door", "tw_b1_west_gate");
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_b1_east_gate",
+      position: [26.2, floorY - 5.0, 38.0],
+      floor: -1,
+      links: ["tw_b1_east_door", "tw_b1_east_end"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_b1_east_end",
+      position: [32.0, floorY - 5.0, 48.0],
+      floor: -1,
+      links: ["tw_b1_east_gate", "tw_b1_south_end"],
+    }, chunkId);
+    this.linkTransitionWaypoint("tw_b1_east_door", "tw_b1_east_gate");
   }
 
   dressGalleryMaze(chunk, chunkId, floorY, _bounds) {
@@ -2355,10 +2425,47 @@ export class BackroomsGenerator {
       maxZ: northMaxZ,
     }, chunkId);
 
+    const southMinZ = galMaxZ;
+    const southMaxZ = 8.0;
+
+    this.addWingPlane(
+      chunk, chunkId, "gallery_2f_floor_south_lab",
+      galMaxX - westMinX, southMaxZ - southMinZ,
+      (westMinX + galMaxX) / 2, floorY + 5.0, (southMinZ + southMaxZ) / 2, floorMat,
+    );
+    this.addWingPlane(
+      chunk, chunkId, "gallery_2f_ceil_south_lab",
+      galMaxX - westMinX, southMaxZ - southMinZ,
+      (westMinX + galMaxX) / 2, floorY + 7.8, (southMinZ + southMaxZ) / 2, ceilingMat, true,
+    );
+    this.collisionWorld.addFloorArea({
+      id: "gallery_2f_south_lab",
+      floor: 2,
+      type: "walkable",
+      y: floorY + 5.0,
+      minX: westMinX,
+      maxX: galMaxX,
+      minZ: southMinZ,
+      maxZ: southMaxZ,
+    }, chunkId);
+
     this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_w", westMinX - 0.15, y, (northMinZ + galMaxZ) / 2, 0.4, h, galMaxZ - northMinZ + 0.4, mazeMat);
     this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_n", (westMinX + galMaxX) / 2, y, northMinZ - 0.15, galMaxX - westMinX + 0.4, h, 0.4, mazeMat);
-    this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_s", (westMinX + westMaxX) / 2, y, galMaxZ + 0.15, westMaxX - westMinX + 0.4, h, 0.4, mazeMat);
+    this.placeGappedWall(chunk, chunkId, "gallery_2f_wall_lab_s", {
+      axis: "x",
+      pos: galMaxZ + 0.15,
+      min: westMinX,
+      max: westMaxX,
+      wallY: y,
+      height: h,
+      thickness: 0.4,
+      material: mazeMat,
+      gaps: [{ center: -46.0, width: 2.7 }],
+    });
     this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_e", galMaxX + 0.15, y, (northMinZ + northMaxZ) / 2, 0.4, h, northMaxZ - northMinZ + 0.4, mazeMat);
+    this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_s_outer", (westMinX + galMaxX) / 2, y, southMaxZ + 0.15, galMaxX - westMinX + 0.4, h, 0.4, mazeMat);
+    this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_s_w", westMinX - 0.15, y, (southMinZ + southMaxZ) / 2, 0.4, h, southMaxZ - southMinZ + 0.4, mazeMat);
+    this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_s_e", galMaxX + 0.15, y, (southMinZ + southMaxZ) / 2, 0.4, h, southMaxZ - southMinZ + 0.4, mazeMat);
 
     const walls = [
       ["gallery_maze_n_h1w", -35.7, -40.6, 3.6, t],
@@ -2371,6 +2478,12 @@ export class BackroomsGenerator {
       ["gallery_maze_w_south_dead", -50.6, -10.05, t, 2.6],
       ["gallery_maze_w_v1", -44.15, -26.6, t, 6.4],
       ["gallery_maze_w_v2", -44.15, -16.8, t, 6.4],
+      ["gallery_maze_s_h1w", -40.6, -2.4, 26.0, t],
+      ["gallery_maze_s_h1e", -19.6, -2.4, 4.0, t],
+      ["gallery_maze_s_h2w", -45.0, 4.2, 16.0, t],
+      ["gallery_maze_s_h2e", -27.6, 4.2, 7.5, t],
+      ["gallery_maze_s_h2ee", -19.4, 4.2, 4.0, t],
+      ["gallery_maze_s_v_dead", -46.2, 6.5, t, 2.6],
     ];
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, mazeMat);
@@ -2389,6 +2502,7 @@ export class BackroomsGenerator {
     });
     this.addWingPlane(chunk, chunkId, "blood_north_lab", 12.4, 8.6, -28.4, bloodY, -45.2, poolMat);
     this.addWingPlane(chunk, chunkId, "blood_west_lab", 9.6, 16.4, -46.2, bloodY, -20.4, poolMat);
+    this.addWingPlane(chunk, chunkId, "blood_south_lab", 14.8, 8.4, -32.5, bloodY, 1.6, poolMat);
 
     const gloom = new THREE.PointLight(0x5a1018, 2.6, 8.8, 1.65);
     gloom.position.set(-22.5, floorY + 6.15, -42.0);
@@ -2400,6 +2514,11 @@ export class BackroomsGenerator {
     gloomWest.name = `${chunkId}_f2_lab_gloom_w`;
     this.scene.add(gloomWest);
     chunk.meshes.push(gloomWest);
+    const gloomSouth = new THREE.PointLight(0x521018, 2.3, 8.4, 1.65);
+    gloomSouth.position.set(-22.5, floorY + 6.15, 1.6);
+    gloomSouth.name = `${chunkId}_f2_lab_gloom_s`;
+    this.scene.add(gloomSouth);
+    chunk.meshes.push(gloomSouth);
 
     this.collisionWorld.addTransitionWaypoint({
       id: "tw_2f_north_gate",
@@ -2427,6 +2546,19 @@ export class BackroomsGenerator {
     }, chunkId);
     this.linkTransitionWaypoint("tw_2f_gallery_north", "tw_2f_north_gate");
     this.linkTransitionWaypoint("tw_2f_gallery_south", "tw_2f_west_gate");
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_2f_south_gate",
+      position: [-22.5, floorY + 5.0, -8.2],
+      floor: 2,
+      links: ["tw_2f_gallery_south", "tw_2f_south_end"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_2f_south_end",
+      position: [-22.5, floorY + 5.0, 6.0],
+      floor: 2,
+      links: ["tw_2f_south_gate"],
+    }, chunkId);
+    this.linkTransitionWaypoint("tw_2f_gallery_south", "tw_2f_south_gate");
   }
 
   dressBasementFlood(chunk, chunkId, floorY, bounds) {
@@ -2922,6 +3054,7 @@ export class BackroomsGenerator {
       addDynamicCabinet("cabinet_stairs_2f_south", "2층 별실 벽장", [-16.5, 5.0, 4.8], Math.PI);
       addDynamicCabinet("cabinet_stairs_2f_north_lab", "2층 북미로 벽장", [-16.5, 5.0, -34.0], Math.PI / 2);
       addDynamicCabinet("cabinet_stairs_2f_west_lab", "2층 서미로 벽장", [-35.5, 5.0, 4.2], Math.PI);
+      addDynamicCabinet("cabinet_stairs_2f_south_lab", "2층 남미로 벽장", [-30.2, 5.0, 22.2], Math.PI);
     } else if (type === "stairs_b1") {
       addDynamicCabinet("cabinet_b1_cellar", "지하 보육실 벽장", [-22.5, -5.0, 2.0], -Math.PI / 2);
       addDynamicCabinet("cabinet_b1_flood", "지하 침수복도 벽장", [-7.4, -5.0, -0.4], Math.PI / 2);
@@ -2929,6 +3062,7 @@ export class BackroomsGenerator {
       addDynamicCabinet("cabinet_b1_boiler", "지하 보일러 벽장", [6.4, -5.0, -5.4], Math.PI);
       addDynamicCabinet("cabinet_b1_south_lab", "지하 남미로 벽장", [-7.6, -5.0, 22.2], Math.PI);
       addDynamicCabinet("cabinet_b1_west_lab", "지하 서미로 벽장", [-37.8, -5.0, -5.4], -Math.PI / 2);
+      addDynamicCabinet("cabinet_b1_east_lab", "지하 동미로 벽장", [26.5, -5.0, 16.0], Math.PI);
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (isClassroomType(type)) {

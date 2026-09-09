@@ -135,7 +135,9 @@ try {
       b1Maze: names(b1).filter((name) => name.includes("b1_maze_")).length,
       f2Maze: names(f2).filter((name) => name.includes("gallery_maze_")).length,
       b1Lab: names(b1).some((name) => name.includes("cellar_b1_floor_south_lab")),
+      b1EastLab: names(b1).some((name) => name.includes("cellar_b1_floor_east_lab")),
       f2Lab: names(f2).some((name) => name.includes("gallery_2f_floor_north_lab")),
+      f2SouthLab: names(f2).some((name) => name.includes("gallery_2f_floor_south_lab")),
       b1Cabinets: (b1.cabinets || []).length,
       f2Cabinets: (f2.cabinets || []).length,
       beats: [...(game._storyBeats || [])],
@@ -202,6 +204,25 @@ try {
     game.testSafeMode = false;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
+    game.player.setPosition({ x: 20.5, y: -5, z: 38 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const b1EastWalk = [];
+  for (const stop of [
+    { x: 26.2, z: 38 },
+    { x: 32, z: 38 },
+    { x: 32, z: 48 },
+  ]) {
+    b1EastWalk.push(await walkTo(stop, 320));
+    console.log("b1east", stop, b1EastWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(-1, -1);
     for (const door of game.doors || []) {
       if (door.id === "door-stairs-2f-gallery") {
@@ -242,6 +263,28 @@ try {
   ]) {
     f2DeepWalk.push(await walkTo(stop, 360));
     console.log("f2deep", stop, f2DeepWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.player.setPosition({ x: -22.5, y: 5, z: -22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const f2SouthWalk = [];
+  for (const stop of [
+    { x: -22.5, z: -18.0 },
+    { x: -23.4, z: -12.2 },
+    { x: -22.5, z: -8.8 },
+    { x: -22.5, z: -6.0 },
+    { x: -22.5, z: 2.0 },
+    { x: -22.5, z: 6.0 },
+  ]) {
+    f2SouthWalk.push(await walkTo(stop, 360));
+    console.log("f2south", stop, f2SouthWalk.at(-1));
   }
 
   const story = await page.evaluate(() => {
@@ -336,7 +379,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, rooms, altarStill, b1Walk, b1DeepWalk, f2Walk, f2DeepWalk, story, loop });
+  console.log({ annexWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.equal(annexWalk[3].ok, true, `must walk to 별관 gate, got ${JSON.stringify(annexWalk[3])}`);
@@ -371,13 +414,21 @@ try {
   assert.ok(rooms.b1Maze >= 16, `B1 maze walls missing: ${rooms.b1Maze}`);
   assert.ok(rooms.f2Maze >= 12, `2F maze walls missing: ${rooms.f2Maze}`);
   assert.equal(rooms.b1Lab, true, "B1 south labyrinth floor must exist");
+  assert.equal(rooms.b1EastLab, true, "B1 east labyrinth floor must exist");
   assert.equal(rooms.f2Lab, true, "2F north labyrinth floor must exist");
+  assert.equal(rooms.f2SouthLab, true, "2F south labyrinth floor must exist");
   assert.equal(b1DeepWalk.at(-1).ok, true, `must walk the B1 south labyrinth, got ${JSON.stringify(b1DeepWalk.at(-1))}`);
   assert.ok(b1DeepWalk.at(-1).z > 50, "south labyrinth continues past the old basement wall");
+  assert.equal(b1EastWalk.at(-1).ok, true, `must walk the B1 east labyrinth, got ${JSON.stringify(b1EastWalk.at(-1))}`);
+  assert.ok(b1EastWalk.at(-1).x > 28, "east labyrinth continues past the old basement wall");
   assert.equal(f2DeepWalk.at(-1).ok, true, `must walk the 2F north labyrinth, got ${JSON.stringify(f2DeepWalk.at(-1))}`);
   assert.ok(f2DeepWalk.at(-1).z < -46, "north labyrinth continues past the old gallery wall");
+  assert.equal(f2SouthWalk.at(-1).ok, true, `must walk the 2F south labyrinth, got ${JSON.stringify(f2SouthWalk.at(-1))}`);
+  assert.ok(f2SouthWalk.at(-1).z > 3, "south labyrinth continues past the old gallery wall");
   assert.ok(story.fired.includes("b1deep") || b1DeepWalk.at(-1).z > 42, "B1 deep story beat should fire in the south maze");
+  assert.ok(story.fired.includes("b1east") || b1EastWalk.at(-1).x > 28, "B1 east story beat should fire in the east maze");
   assert.ok(story.fired.includes("f2deep") || f2DeepWalk.at(-1).z < -37, "2F deep story beat should fire in the north maze");
+  assert.ok(story.fired.includes("f2south") || f2SouthWalk.at(-1).z > -6, "2F south story beat should fire in the south maze");
   assert.ok(rooms.b1Cabinets >= 5, "basement needs extra hide spots");
   assert.ok(rooms.f2Cabinets >= 5, "2F gallery needs extra hide spots");
   assert.ok(rooms.altarChildren >= 10, "제단함 must be a shrine, not a single spinning box");

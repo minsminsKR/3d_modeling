@@ -56,6 +56,14 @@ g.player.position = { x: -22.5, y: 5, z: -42 };
 director.update();
 assert.equal(director.fired.has("f2deep"), true);
 
+g.player.position = { x: 32, y: -5, z: 38 };
+director.update();
+assert.equal(director.fired.has("b1east"), true);
+
+g.player.position = { x: -22.5, y: 5, z: 2 };
+director.update();
+assert.equal(director.fired.has("f2south"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");

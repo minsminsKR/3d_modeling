@@ -1,5 +1,5 @@
-// Lightweight, asset-free Web Audio soundscape. The project currently ships no
-// audio files, so every layer is synthesized once and routed through shared buses.
+// Web Audio soundscape. SFX and ambience are synthesized; Korean PA lines
+// load from /assets/voice/*.ogg with speechSynthesis as a fallback.
 
 const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
 
@@ -27,6 +27,9 @@ export class SoundManager {
     this.noiseBuffers = {};
     this.ambientNodes = [];
     this.babyCryNodes = null;
+    this.voiceBuffers = {};
+    this.voiceSource = null;
+    this.voicesLoading = false;
   }
 
   init() {
@@ -68,8 +71,56 @@ export class SoundManager {
       this.noiseBuffers.long = this.createNoiseBuffer(4.2);
       this.initialized = true;
       this.startAmbientDrone();
+      this.preloadVoiceClips();
     } catch (error) {
       console.warn("SoundManager init failed:", error);
+    }
+  }
+
+  preloadVoiceClips() {
+    if (this.voicesLoading || !this.ctx) return;
+    this.voicesLoading = true;
+    const keys = [
+      "start", "hunt", "pa", "f1b", "b1", "f2", "nurse", "music", "faculty", "science",
+      "key", "key2", "key3", "keysDone", "ritual", "ritualFail", "death", "clear",
+      "hide", "stairWait", "leaveStart", "nursery", "shrine", "stairB1", "stairF2",
+      "b1deep", "f2deep", "b1east", "f2south",
+    ];
+    Promise.all(keys.map(async (key) => {
+      try {
+        const response = await fetch(`/assets/voice/${key}.ogg`, { cache: "force-cache" });
+        if (!response.ok) return;
+        const bytes = await response.arrayBuffer();
+        this.voiceBuffers[key] = await this.ctx.decodeAudioData(bytes.slice(0));
+      } catch {
+        // Browser speechSynthesis remains the fallback.
+      }
+    })).catch(() => {});
+  }
+
+  playVoiceLine(key) {
+    if (!this.initialized || !this.ctx) return false;
+    const buffer = this.voiceBuffers[key];
+    if (!buffer) return false;
+    try {
+      if (this.voiceSource) {
+        try { this.voiceSource.stop(); } catch { /* already stopped */ }
+      }
+      const source = this.ctx.createBufferSource();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+      source.buffer = buffer;
+      filter.type = "lowpass";
+      filter.frequency.value = 2800;
+      gain.gain.value = 0.92;
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.sfxGain || this.masterGain);
+      source.start();
+      this.voiceSource = source;
+      return true;
+    } catch {
+      return false;
     }
   }
 

@@ -1,8 +1,8 @@
 import * as THREE from "three";
 import { soundManager } from "../audio/SoundManager.js";
 
-// Floor-bound lurker for B1 / 2F. Uncat stays on 1F; this silhouette hunts the
-// other two maps so hiding is required without breaking floor-separation tests.
+// Floor-bound lurker for B1 / 2F. Uncat stays on 1F; this figure hunts the
+// other two maps along walkable corridors so hiding is required.
 export class FloorHuntDirector {
   constructor(game) {
     this.game = game;
@@ -15,8 +15,11 @@ export class FloorHuntDirector {
     this.lastFloor = 1;
     this.stepTimer = 0.4;
     this.approach = 0;
-    this.angle = Math.PI * 0.28;
+    this.path = [];
+    this.pathIndex = 0;
+    this.repathAt = 0;
     this.firedClose = false;
+    this.frozen = false;
     this.hide();
   }
 
@@ -25,19 +28,29 @@ export class FloorHuntDirector {
     const group = new THREE.Group();
     group.name = "floor-hunt-silhouette";
     const mat = new THREE.MeshStandardMaterial({
-      color: 0x07040a,
+      color: 0x050308,
       roughness: 1,
       metalness: 0,
-      emissive: 0x14060c,
-      emissiveIntensity: 0.16,
+      emissive: 0x12040a,
+      emissiveIntensity: 0.22,
     });
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.92, 0.3), mat);
-    torso.position.y = 0.96;
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.34, 0.26), mat);
-    head.position.y = 1.54;
-    const legs = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.7, 0.24), mat);
-    legs.position.y = 0.36;
-    group.add(torso, head, legs);
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.78, 0.26), mat);
+    torso.position.y = 1.02;
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.3, 0.24), mat);
+    head.position.y = 1.52;
+    const hips = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.28, 0.22), mat);
+    hips.position.y = 0.58;
+    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.52, 0.16), mat);
+    legL.position.set(-0.1, 0.26, 0);
+    const legR = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.52, 0.16), mat);
+    legR.position.set(0.1, 0.26, 0);
+    const armL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.58, 0.12), mat);
+    armL.position.set(-0.28, 0.98, 0.04);
+    armL.rotation.z = 0.18;
+    const armR = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.58, 0.12), mat);
+    armR.position.set(0.28, 0.98, 0.04);
+    armR.rotation.z = -0.18;
+    group.add(torso, head, hips, legL, legR, armL, armR);
     group.visible = false;
     this.game.scene.add(group);
     this.silhouette = group;
@@ -59,7 +72,8 @@ export class FloorHuntDirector {
     if (!player) return;
 
     if (player.isHidden) {
-      this.approach = Math.max(0, this.approach - dt * 0.7);
+      this.approach = Math.max(0, this.approach - dt * 0.8);
+      this.frozen = false;
       this.hide();
       return;
     }
@@ -71,38 +85,43 @@ export class FloorHuntDirector {
       this.floorTime = 0;
       this.approach = 0;
       this.firedClose = false;
+      this.path = [];
+      this.pathIndex = 0;
     }
     this.floorTime += dt;
-    if (floor === 1 || this.floorTime < 2.2) {
+    if (floor === 1 || this.floorTime < 1.8) {
       this.hide();
       return;
     }
 
-    if (player.isSprinting) this.approach = Math.min(1, this.approach + dt * 0.28);
-    this.angle += dt * (0.38 + this.approach * 0.42);
-    const radius = Math.max(0.82, 12.4 - this.approach * 11.5);
-    const hx = x + Math.sin(this.angle) * radius;
-    const hz = z + Math.cos(this.angle) * radius;
-    const hy = floor === -1 ? -5 : 5;
     const sil = this.ensureSilhouette();
-    sil.position.set(hx, hy, hz);
-    sil.lookAt(x, hy + 1.15, z);
-    sil.visible = this.approach > 0.08 || this.floorTime > 4;
+    const hy = floor === -1 ? -5 : 5;
+    if (!sil.visible) {
+      const spawn = this.pickSpawn(x, z, hy);
+      sil.position.set(spawn.x, hy, spawn.z);
+      sil.visible = true;
+    }
 
+    const looking = this.isPlayerLookingAt(sil.position);
+    const los = game.collisionWorld?.hasLineOfSight?.(player.position, sil.position) !== false;
+    this.frozen = Boolean(looking && los && game.flashlightController?.enabled);
+    if (this.frozen) {
+      this.approach = Math.max(0.12, this.approach - dt * 0.85);
+    } else {
+      if (player.isSprinting) this.approach = Math.min(1, this.approach + dt * 0.32);
+      this.approach = Math.min(1, this.approach + dt * 0.13);
+      this.advanceAlongPath(dt, player.position, hy);
+    }
+
+    sil.lookAt(x, hy + 1.1, z);
     this.stepTimer -= dt;
-    if (this.stepTimer <= 0) {
-      this.stepTimer = Math.max(0.28, 0.62 - this.approach * 0.28);
+    if (this.stepTimer <= 0 && !this.frozen) {
+      this.stepTimer = Math.max(0.26, 0.58 - this.approach * 0.26);
       soundManager.playSFX(floor === -1 ? "drip" : "blood_drip");
     }
 
-    if (this.isPlayerLookingAt(sil.position)) {
-      this.approach = Math.max(0, this.approach - dt * 0.62);
-    } else {
-      this.approach = Math.min(1, this.approach + dt * 0.14);
-    }
-
-    const dist = Math.hypot(hx - x, hz - z);
-    if (dist < 6.4 && !this.firedClose) {
+    const dist = Math.hypot(sil.position.x - x, sil.position.z - z);
+    if (dist < 6.5 && !this.firedClose) {
       this.firedClose = true;
       game.storyDirector?.fire(
         floor === -1 ? "b1hunt" : "f2hunt",
@@ -112,8 +131,67 @@ export class FloorHuntDirector {
       );
     }
 
-    if (!game.isInvincible && dist < 1.02 && this.approach > 0.78 && this.floorTime > 9) {
+    if (!game.isInvincible && dist < 1.05 && this.approach > 0.72 && this.floorTime > 8 && !this.frozen) {
       game.handleCaught(floor === -1 ? "basement-lurk" : "gallery-lurk");
+    }
+  }
+
+  pickSpawn(px, pz, hy) {
+    const waypoints = this.game.collisionWorld?.transitionWaypoints || [];
+    const floor = this.lastFloor;
+    let best = null;
+    let bestScore = -Infinity;
+    for (const waypoint of waypoints) {
+      if (waypoint.floor !== floor) continue;
+      const pos = Array.isArray(waypoint.position)
+        ? { x: waypoint.position[0], z: waypoint.position[2] }
+        : waypoint.position;
+      if (!pos) continue;
+      const dist = Math.hypot(pos.x - px, pos.z - pz);
+      if (dist < 7 || dist > 28) continue;
+      const score = dist;
+      if (score > bestScore) {
+        bestScore = score;
+        best = pos;
+      }
+    }
+    if (best) return { x: best.x, z: best.z };
+    return { x: px + 10, z: pz + 8 };
+  }
+
+  advanceAlongPath(dt, playerPos, hy) {
+    const sil = this.silhouette;
+    const world = this.game.collisionWorld;
+    this.repathAt -= dt;
+    if (this.repathAt <= 0 || this.pathIndex >= this.path.length) {
+      this.repathAt = 0.55;
+      const path = world?.findPath?.(
+        sil.position,
+        playerPos,
+        0.38,
+        { allowInterFloor: false, maxIterations: 1400, cellSize: 1.05 },
+      ) || [];
+      this.path = path;
+      this.pathIndex = path.length > 1 ? 1 : 0;
+    }
+    if (!this.path.length) return;
+    const speed = 1.15 + this.approach * 1.55;
+    let remain = speed * dt;
+    while (remain > 0 && this.pathIndex < this.path.length) {
+      const goal = this.path[this.pathIndex];
+      const dx = goal.x - sil.position.x;
+      const dz = goal.z - sil.position.z;
+      const dist = Math.hypot(dx, dz);
+      if (dist <= 0.18) {
+        this.pathIndex += 1;
+        continue;
+      }
+      const step = Math.min(remain, dist);
+      sil.position.x += (dx / dist) * step;
+      sil.position.z += (dz / dist) * step;
+      sil.position.y = hy;
+      remain -= step;
+      if (step === dist) this.pathIndex += 1;
     }
   }
 
@@ -124,6 +202,6 @@ export class FloorHuntDirector {
     const len = Math.hypot(dx, dz) || 1;
     const fx = -Math.sin(player.yaw);
     const fz = -Math.cos(player.yaw);
-    return (fx * dx + fz * dz) / len > 0.52;
+    return (fx * dx + fz * dz) / len > 0.48;
   }
 }

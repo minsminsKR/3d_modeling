@@ -86,6 +86,14 @@ export class StoryDirector {
           "drip",
         );
       }
+      if (x > 28) {
+        this.fire(
+          "b1east",
+          "b1east",
+          "동쪽 물이 이름을 삼킵니다. 꺾인 복도에서 숨으십시오.",
+          "drip",
+        );
+      }
     }
 
     if (y > 3.2) {
@@ -108,6 +116,14 @@ export class StoryDirector {
           "f2deep",
           "f2deep",
           "피 묻은 미로입니다. 손전등을 끄지 말고 벽장으로 꺾으십시오.",
+          "blood_drip",
+        );
+      }
+      if (z > -6) {
+        this.fire(
+          "f2south",
+          "f2south",
+          "남쪽 복도가 아직 피를 말리지 못했습니다. 꺾인 벽장으로.",
           "blood_drip",
         );
       }

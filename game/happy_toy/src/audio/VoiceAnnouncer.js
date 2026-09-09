@@ -28,6 +28,8 @@ const VOICE_LINES = {
   stairF2: "2층 계단입니다. 액자 아래가 아직 젖어 있습니다.",
   b1deep: "물이 복도를 두 번 꺾습니다. 막다른 벽장에 숨으십시오.",
   f2deep: "피 묻은 미로입니다. 손전등을 끄지 말고 벽장으로 꺾으십시오.",
+  b1east: "동쪽 물이 이름을 삼킵니다. 꺾인 복도에서 숨으십시오.",
+  f2south: "남쪽 복도가 아직 피를 말리지 못했습니다. 꺾인 벽장으로.",
 };
 
 export class VoiceAnnouncer {
@@ -55,8 +57,11 @@ export class VoiceAnnouncer {
     this.lastKey = key;
     this.lastSpokenAt = now;
 
-    soundManager.playVoiceCadence?.(line);
-    this.speak(line, options);
+    const playedClip = soundManager.playVoiceLine?.(key);
+    if (!playedClip) {
+      soundManager.playVoiceCadence?.(line);
+      this.speak(line, options);
+    }
     return true;
   }
 
