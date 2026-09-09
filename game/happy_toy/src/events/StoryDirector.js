@@ -112,6 +112,15 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 56 && x < 72 && Math.abs(z) < 1.8) {
+      this.fire(
+        "annexgate",
+        "annexgate",
+        "별관 입구입니다. 실내화를 갈아 신지 마십시오.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 74 && x < 86 && z > 10 && z < 22) {
       this.fire(
         "courtyard",

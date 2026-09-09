@@ -1622,6 +1622,14 @@ export class Game {
       this.hud.setStatus("본관과 별관을 잇는 유리복도입니다. 아래는 운동장이 아닙니다.", 3600);
       return;
     }
+    if (cx === 4 && cz === 0 && !this._storyBeats.has("annexgate")) {
+      this._storyBeats.add("annexgate");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("annexgate", "별관 입구입니다. 실내화를 갈아 신지 마십시오.");
+      this.hud.setStatus("별관 입구입니다. 실내화를 갈아 신지 마십시오.", 3600);
+      return;
+    }
     if (cx === 6 && cz === 0 && !this._storyBeats.has("memorial")) {
       this._storyBeats.add("memorial");
       this._lastPaAt = this.playTime;

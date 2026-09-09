@@ -242,6 +242,26 @@ export class BackroomsGenerator {
     return geo;
   }
 
+  getCylinderGeometry(radius, height, segments = 10) {
+    const key = `cyl_${radius.toFixed(2)}_${height.toFixed(2)}_${segments}`;
+    if (this.geometryCache.has(key)) {
+      return this.geometryCache.get(key);
+    }
+    const geo = new THREE.CylinderGeometry(radius, radius, height, segments);
+    this.geometryCache.set(key, geo);
+    return geo;
+  }
+
+  getConeGeometry(radius, height, segments = 8) {
+    const key = `cone_${radius.toFixed(2)}_${height.toFixed(2)}_${segments}`;
+    if (this.geometryCache.has(key)) {
+      return this.geometryCache.get(key);
+    }
+    const geo = new THREE.ConeGeometry(radius, height, segments);
+    this.geometryCache.set(key, geo);
+    return geo;
+  }
+
   getChunkKey(cx, cz) {
     return `${cx},${cz}`;
   }
@@ -428,6 +448,10 @@ export class BackroomsGenerator {
     return cx === 7 && cz === 2;
   }
 
+  isAnnexGateChunk(cx, cz) {
+    return cx === 4 && cz === 0;
+  }
+
   isGlassHallChunk(cx, cz) {
     return this.isSkybridgeChunk(cx, cz) || this.isMemorialChunk(cx, cz);
   }
@@ -480,21 +504,34 @@ export class BackroomsGenerator {
   }
 
   getHallNookKind(cx, cz, idx = 0) {
-    // (1,0) is the verified classroom wing — keep desk rows there.
+    // (1,0) and (0,0) keep verified classroom desk rows for chase-hide.
     if (cx === 1 && cz === 0) return "class";
     if (cx === 0 && cz === 0) return "class";
     const authored = {
-      "-1,0": ["library", "class", "boarded", "class"],
-      "2,0": ["washroom", "class", "class", "empty"],
-      "0,1": ["class", "boarded", "class", "library"],
-      "0,-1": ["class", "class", "washroom", "empty"],
-      "4,0": ["library", "class", "boarded", "class"],
-      "-2,0": ["empty", "class", "library", "class"],
-      "5,0": ["class", "washroom", "class", "boarded"],
+      "-1,0": ["library", "shrine", "boarded", "music"],
+      "2,0": ["washroom", "shoes", "science", "empty"],
+      "0,1": ["shoes", "boarded", "music", "library"],
+      "0,-1": ["shoes", "class", "washroom", "empty"],
+      "4,0": ["library", "shoes", "boarded", "music"],
+      "-2,0": ["empty", "shoes", "library", "music"],
+      "5,0": ["shoes", "washroom", "science", "boarded"],
+      "1,1": ["washroom", "shoes", "science", "empty"],
+      "2,1": ["shoes", "library", "music", "empty"],
+      "-2,1": ["shrine", "shoes", "library", "empty"],
+      "-1,1": ["music", "shoes", "shrine", "empty"],
+      "-2,-1": ["library", "shrine", "science", "empty"],
+      "2,-1": ["science", "shoes", "empty", "washroom"],
+      "4,1": ["shoes", "music", "empty", "library"],
+      "4,-1": ["washroom", "shoes", "empty", "science"],
+      "6,-1": ["science", "library", "shrine", "empty"],
+      "6,2": ["music", "shoes", "empty", "shrine"],
+      "5,-2": ["science", "empty", "shoes", "library"],
+      "7,0": ["shrine", "library", "music", "empty"],
+      "7,2": ["music", "shoes", "empty", "library"],
     };
     const row = authored[`${cx},${cz}`];
-    if (row) return row[idx] || "class";
-    const kinds = ["class", "class", "library", "boarded", "class", "washroom", "empty", "class"];
+    if (row) return row[idx] || "shoes";
+    const kinds = ["shoes", "library", "music", "boarded", "science", "washroom", "shrine", "empty"];
     return kinds[Math.abs(cx * 19 + cz * 13 + idx * 7) % kinds.length];
   }
 
@@ -2244,10 +2281,9 @@ export class BackroomsGenerator {
       });
     }
     for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
-      this.placeDressedBox(
+      this.addShoeRackUnit(
         chunk, chunkId, `starthall_rack_${name}`,
-        center.x + x, floorY + 0.48, center.z + 1.52,
-        1.12, 0.96, 0.38, this.schoolRackMat,
+        center.x + x, floorY + 0.48, center.z + 1.52, Math.PI,
       );
     }
     this.addHallNookSign(
@@ -2274,10 +2310,9 @@ export class BackroomsGenerator {
       });
     }
     for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
-      this.placeDressedBox(
+      this.addHallCartUnit(
         chunk, chunkId, `classwing_cart_${name}`,
-        center.x + x, floorY + 0.38, center.z - 1.52,
-        0.78, 0.76, 0.42, this.schoolCartMat,
+        center.x + x, floorY + 0.38, center.z - 1.52, 0,
       );
     }
     this.addHallNookSign(
@@ -2316,10 +2351,9 @@ export class BackroomsGenerator {
   dressNorthHall(chunk, center, chunkId, floorY) {
     this.ensureSchoolCorridorMaterials();
     for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
-      this.placeDressedBox(
+      this.addTrafficConeUnit(
         chunk, chunkId, `northhall_cone_${name}`,
         center.x + 1.52, floorY + 0.52, center.z + z,
-        0.52, 1.04, 0.52, this.schoolMetalMat || this.trimMaterial,
       );
     }
     this.addHallNookSign(
@@ -2769,6 +2803,244 @@ export class BackroomsGenerator {
     }
     this.addSchoolProp(chunk, pile);
     return pile;
+  }
+
+  addShoeRackUnit(chunk, chunkId, name, x, y, z, yaw) {
+    this.ensureSchoolCorridorMaterials();
+    this.ensureSpecialNookMaterials();
+    const wood = this.schoolRackMat || this.schoolDeskDark || this.trimMaterial;
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_${name}`;
+    const frame = new THREE.Mesh(this.getBoxGeometry(1.12, 0.96, 0.36), wood);
+    group.add(frame);
+    for (const yy of [-0.28, 0.02, 0.32]) {
+      const shelf = new THREE.Mesh(this.getBoxGeometry(1.02, 0.03, 0.32), wood);
+      shelf.position.y = yy;
+      group.add(shelf);
+    }
+    const shoeColors = [0x1a1410, 0x2a1814, 0x3a2418, 0x221810];
+    for (let row = 0; row < 3; row += 1) {
+      for (let col = 0; col < 4; col += 1) {
+        const shoe = new THREE.Mesh(
+          this.getBoxGeometry(0.2, 0.08, 0.11),
+          new THREE.MeshStandardMaterial({
+            color: shoeColors[(row + col) % shoeColors.length],
+            roughness: 0.86,
+          }),
+        );
+        shoe.position.set(-0.38 + col * 0.25, -0.22 + row * 0.3, 0.14);
+        shoe.name = `${chunkId}_${name}_shoe_${row}${col}`;
+        group.add(shoe);
+      }
+    }
+    this.addSchoolProp(chunk, group);
+    this.collisionWorld.addStaticBox(group.name, group.position, new THREE.Vector3(1.12, 0.96, 0.38), chunkId);
+    return group;
+  }
+
+  addHallCartUnit(chunk, chunkId, name, x, y, z, yaw) {
+    this.ensureSchoolCorridorMaterials();
+    const metal = this.schoolMetalMat || this.trimMaterial;
+    const dark = this.schoolDeskDark || this.trimMaterial;
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_${name}`;
+    const body = new THREE.Mesh(this.getBoxGeometry(0.72, 0.08, 0.48), metal);
+    body.position.y = 0.12;
+    group.add(body);
+    const shelf = new THREE.Mesh(this.getBoxGeometry(0.7, 0.04, 0.46), dark);
+    shelf.position.y = -0.18;
+    group.add(shelf);
+    for (const [lx, lz] of [[-0.28, -0.16], [0.28, -0.16], [-0.28, 0.16], [0.28, 0.16]]) {
+      const post = new THREE.Mesh(this.getBoxGeometry(0.04, 0.62, 0.04), metal);
+      post.position.set(lx, -0.05, lz);
+      group.add(post);
+      const wheel = new THREE.Mesh(this.getCylinderGeometry(0.055, 0.04, 8), metal);
+      wheel.rotation.z = Math.PI / 2;
+      wheel.position.set(lx, -0.34, lz);
+      group.add(wheel);
+    }
+    const crate = new THREE.Mesh(this.getBoxGeometry(0.42, 0.22, 0.28), this.schoolPaperMat || dark);
+    crate.position.set(0.04, 0.28, 0);
+    crate.name = `${chunkId}_${name}_tray`;
+    group.add(crate);
+    this.addSchoolProp(chunk, group);
+    this.collisionWorld.addStaticBox(group.name, group.position, new THREE.Vector3(0.78, 0.76, 0.52), chunkId);
+    return group;
+  }
+
+  addTrafficConeUnit(chunk, chunkId, name, x, y, z) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolConeMat) {
+      this.schoolConeMat = new THREE.MeshStandardMaterial({
+        color: 0xb45a18,
+        roughness: 0.55,
+        metalness: 0.08,
+        emissive: 0x2a1204,
+        emissiveIntensity: 0.08,
+      });
+    }
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.name = `${chunkId}_${name}`;
+    const base = new THREE.Mesh(this.getBoxGeometry(0.42, 0.06, 0.42), this.schoolMetalMat || this.trimMaterial);
+    base.position.y = -0.48;
+    group.add(base);
+    const cone = new THREE.Mesh(this.getConeGeometry(0.16, 0.92, 8), this.schoolConeMat);
+    cone.position.y = 0.02;
+    group.add(cone);
+    const stripe = new THREE.Mesh(this.getBoxGeometry(0.22, 0.06, 0.22), this.schoolPaperMat || this.trimMaterial);
+    stripe.position.y = -0.08;
+    group.add(stripe);
+    this.addSchoolProp(chunk, group);
+    this.collisionWorld.addStaticBox(group.name, group.position, new THREE.Vector3(0.52, 1.04, 0.52), chunkId);
+    return group;
+  }
+
+  addBoilerDrumUnit(chunk, chunkId, name, x, y, z) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolBoilerMat) {
+      this.schoolBoilerMat = new THREE.MeshStandardMaterial({
+        color: 0x2a322c,
+        roughness: 0.62,
+        metalness: 0.28,
+        emissive: 0x081410,
+        emissiveIntensity: 0.06,
+      });
+    }
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.name = `${chunkId}_${name}`;
+    const drum = new THREE.Mesh(this.getCylinderGeometry(0.36, 1.12, 12), this.schoolBoilerMat);
+    group.add(drum);
+    const lid = new THREE.Mesh(this.getCylinderGeometry(0.38, 0.06, 12), this.schoolMetalMat || this.schoolBoilerMat);
+    lid.position.y = 0.56;
+    group.add(lid);
+    const valve = new THREE.Mesh(this.getBoxGeometry(0.18, 0.12, 0.18), this.schoolMetalMat || this.trimMaterial);
+    valve.position.set(0.28, 0.22, 0);
+    group.add(valve);
+    const gauge = new THREE.Mesh(this.getCylinderGeometry(0.07, 0.04, 10), this.schoolGlassMat || this.trimMaterial);
+    gauge.rotation.z = Math.PI / 2;
+    gauge.position.set(0.38, 0.22, 0);
+    group.add(gauge);
+    this.addSchoolProp(chunk, group);
+    this.collisionWorld.addStaticBox(group.name, group.position, new THREE.Vector3(0.78, 1.16, 0.78), chunkId);
+    return group;
+  }
+
+  addPortraitFrameUnit(chunk, chunkId, name, x, y, z, yaw) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolBloodFrameMat) {
+      this.schoolBloodFrameMat = new THREE.MeshStandardMaterial({
+        color: 0x3a1818,
+        roughness: 0.72,
+        metalness: 0.08,
+        emissive: 0x1a0608,
+        emissiveIntensity: 0.08,
+      });
+    }
+    if (!this.schoolPortraitMat) {
+      this.schoolPortraitMat = new THREE.MeshStandardMaterial({
+        color: 0x1a1210,
+        roughness: 0.88,
+        metalness: 0,
+        emissive: 0x100808,
+        emissiveIntensity: 0.06,
+      });
+    }
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_${name}`;
+    const frame = new THREE.Mesh(this.getBoxGeometry(0.92, 1.28, 0.06), this.schoolBloodFrameMat);
+    group.add(frame);
+    const canvas = new THREE.Mesh(this.getBoxGeometry(0.72, 1.02, 0.03), this.schoolPortraitMat);
+    canvas.position.z = 0.03;
+    group.add(canvas);
+    const glass = new THREE.Mesh(this.getBoxGeometry(0.74, 1.04, 0.02), this.schoolGlassMat || this.trimMaterial);
+    glass.position.z = 0.05;
+    group.add(glass);
+    this.addSchoolProp(chunk, group);
+    return group;
+  }
+
+  addShoeCubbyUnit(chunk, chunkId, name, x, y, z, yaw) {
+    this.ensureSpecialNookMaterials();
+    const wood = this.schoolShelfMat || this.schoolDeskDark || this.trimMaterial;
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_${name}`;
+    const back = new THREE.Mesh(this.getBoxGeometry(0.94, 1.55, 0.04), wood);
+    back.position.z = -0.16;
+    group.add(back);
+    for (let row = 0; row < 4; row += 1) {
+      const shelf = new THREE.Mesh(this.getBoxGeometry(0.9, 0.03, 0.32), wood);
+      shelf.position.y = -0.68 + row * 0.44;
+      group.add(shelf);
+      for (let col = 0; col < 3; col += 1) {
+        const shoe = new THREE.Mesh(
+          this.getBoxGeometry(0.2, 0.07, 0.12),
+          this.schoolDeskDark || this.trimMaterial,
+        );
+        shoe.position.set(-0.28 + col * 0.28, -0.58 + row * 0.44, 0.08);
+        shoe.name = `${chunkId}_hall_shoe_${name}_${row}${col}`;
+        group.add(shoe);
+      }
+    }
+    this.addSchoolProp(chunk, group);
+    return group;
+  }
+
+  addMusicStandUnit(chunk, chunkId, name, x, y, z, yaw) {
+    this.ensureSchoolCorridorMaterials();
+    const metal = this.schoolMetalMat || this.trimMaterial;
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_${name}`;
+    const pole = new THREE.Mesh(this.getBoxGeometry(0.04, 1.15, 0.04), metal);
+    pole.position.y = 0.1;
+    group.add(pole);
+    const desk = new THREE.Mesh(this.getBoxGeometry(0.42, 0.02, 0.28), metal);
+    desk.position.set(0, 0.62, 0.06);
+    desk.rotation.x = -0.45;
+    group.add(desk);
+    const sheet = new THREE.Mesh(this.getBoxGeometry(0.28, 0.01, 0.2), this.schoolPaperMat || this.trimMaterial);
+    sheet.position.set(0, 0.64, 0.07);
+    sheet.rotation.x = -0.45;
+    group.add(sheet);
+    this.addSchoolProp(chunk, group);
+    this.collisionWorld.addStaticBox(group.name, group.position, new THREE.Vector3(0.42, 1.2, 0.36), chunkId);
+    return group;
+  }
+
+  addSpecimenJarUnit(chunk, chunkId, name, x, y, z) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolJarMat) {
+      this.schoolJarMat = new THREE.MeshStandardMaterial({
+        color: 0x243830,
+        roughness: 0.22,
+        metalness: 0.12,
+        transparent: true,
+        opacity: 0.55,
+        emissive: 0x081410,
+        emissiveIntensity: 0.08,
+      });
+    }
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.name = `${chunkId}_${name}`;
+    const jar = new THREE.Mesh(this.getCylinderGeometry(0.09, 0.28, 10), this.schoolJarMat);
+    group.add(jar);
+    const lid = new THREE.Mesh(this.getCylinderGeometry(0.1, 0.04, 10), this.schoolMetalMat || this.trimMaterial);
+    lid.position.y = 0.15;
+    group.add(lid);
+    this.addSchoolProp(chunk, group);
+    return group;
   }
 
   addWashStallUnit(chunk, chunkId, name, x, y, z, yaw, index) {
@@ -3644,7 +3916,11 @@ export class BackroomsGenerator {
     const signLabel = kind === "library" ? "도서실"
       : kind === "washroom" ? "화장실"
         : kind === "boarded" ? "폐쇄"
-          : "공실";
+          : kind === "shoes" ? "신발"
+            : kind === "music" ? "음악"
+              : kind === "science" ? "과학"
+                : kind === "shrine" ? "위패"
+                  : "공실";
     const sign = pos(1.55, 0.52, 2.12);
     this.addHallNookSign(chunk, chunkId, `hall_sign_${idx}`, sign.x, sign.y, sign.z, faceDoorYaw, signLabel);
 
@@ -3730,6 +4006,52 @@ export class BackroomsGenerator {
       const label = new THREE.Mesh(this.getPlaneGeometry(1.22, 0.28), this.schoolChalkLabelMat);
       label.position.set(0, 0.12, 0.04);
       board.add(label);
+    } else if (kind === "shoes") {
+      for (const [key, along] of [["a", 1.15], ["b", 2.25], ["c", 3.35]]) {
+        const cubby = pos(along, 3.58, 0.82);
+        this.addShoeCubbyUnit(chunk, chunkId, `hall_cubby_${idx}_${key}`, cubby.x, cubby.y, cubby.z, faceDoorYaw);
+        collideAt(`hall_cubby_${idx}_${key}_col`, cubby, 0.94, 0.32, 1.55);
+      }
+      this.addCautionTape(
+        chunk, chunkId, `hall_cubby_${idx}_tape`,
+        pos(2.15, 1.55, 1.42).x, floorY + 1.42, pos(2.15, 1.55, 1.42).z, faceDoorYaw,
+      );
+    } else if (kind === "music") {
+      for (const [key, along] of [["a", 1.35], ["b", 2.45], ["c", 3.45]]) {
+        const stand = pos(along, 3.35, 0.62);
+        this.addMusicStandUnit(chunk, chunkId, `hall_stand_${idx}_${key}`, stand.x, stand.y, stand.z, faceDoorYaw);
+      }
+      this.addChalkboardGroup(
+        chunk, chunkId, `${chunkId}_hall_board_${idx}`,
+        pos(2.2, 4.5, 1.48).x, pos(2.2, 4.5, 1.48).y, pos(2.2, 4.5, 1.48).z, faceDoorYaw,
+      );
+    } else if (kind === "science") {
+      const bench = pos(2.15, 3.55, 0.42);
+      this.addSchoolDeskGroup(
+        chunk, chunkId, `${chunkId}_hall_labbench_${idx}`,
+        bench.x, bench.y, bench.z, faceYaw, [0.92, 0.74, 0.52], "teacher",
+      );
+      for (const [key, along] of [["a", 1.45], ["b", 2.15], ["c", 2.85]]) {
+        const jar = pos(along, 3.55, 0.92);
+        this.addSpecimenJarUnit(chunk, chunkId, `hall_jar_${idx}_${key}`, jar.x, jar.y, jar.z);
+      }
+      this.addChalkboardGroup(
+        chunk, chunkId, `${chunkId}_hall_board_${idx}`,
+        pos(2.2, 4.5, 1.48).x, pos(2.2, 4.5, 1.48).y, pos(2.2, 4.5, 1.48).z, faceDoorYaw,
+      );
+    } else if (kind === "shrine") {
+      for (const [key, along] of [["a", 1.25], ["b", 2.35], ["c", 3.45]]) {
+        const frame = pos(along, 5.05, 1.38);
+        this.addPortraitFrameUnit(
+          chunk, chunkId, `hall_portrait_${idx}_${key}`,
+          frame.x, frame.y, frame.z, faceDoorYaw,
+        );
+      }
+      const table = pos(2.2, 2.15, 0.28);
+      this.addSchoolDeskGroup(
+        chunk, chunkId, `${chunkId}_hall_shrine_table_${idx}`,
+        table.x, table.y, table.z, faceYaw, [0.72, 0.56, 0.44],
+      );
     } else {
       const piled = pos(2.8, 3.6, 0.38);
       this.addSchoolDeskGroup(
@@ -4034,20 +4356,25 @@ export class BackroomsGenerator {
     }
     this.addSchoolProp(chunk, piano);
     this.collisionWorld.addStaticBox(piano.name, piano.position, new THREE.Vector3(1.55, 0.92, 0.62), chunkId);
-    this.placeDressedBox(chunk, chunkId, "music_stool", center.x + 2.1, floorY + 0.28, center.z, 0.42, 0.56, 0.42, this.trimMaterial);
-    this.placeDressedBox(chunk, chunkId, "music_stand_a", center.x - 2.6, floorY + 0.72, center.z - 2.8, 0.12, 1.44, 0.12, this.trimMaterial);
-    this.placeDressedBox(chunk, chunkId, "music_stand_b", center.x - 3.4, floorY + 0.72, center.z + 1.6, 0.12, 1.44, 0.12, this.trimMaterial);
-    const sheet = new THREE.Mesh(this.getBoxGeometry(0.22, 0.28, 0.02), this.schoolPaperMat);
-    sheet.position.set(center.x - 2.6, floorY + 1.42, center.z - 2.8);
-    sheet.name = `${chunkId}_music_sheet`;
-    this.addSchoolProp(chunk, sheet);
+    this.addSchoolChairGroup(
+      chunk, chunkId, `${chunkId}_music_stool`,
+      center.x + 2.1, floorY + 0.22, center.z, Math.PI / 2,
+    );
+    this.addMusicStandUnit(chunk, chunkId, "music_stand_a", center.x - 2.6, floorY + 0.62, center.z - 2.8, 0.4);
+    this.addMusicStandUnit(chunk, chunkId, "music_stand_b", center.x - 3.4, floorY + 0.62, center.z + 1.6, -0.55);
   }
 
   dressFacultyOffice(chunk, center, chunkId, floorY) {
     this.ensureSpecialNookMaterials();
     const paper = new THREE.MeshStandardMaterial({ color: 0xe4d4b8, roughness: 0.92 });
-    this.placeDressedBox(chunk, chunkId, "faculty_desk", center.x - 3.2, floorY + 0.38, center.z, 1.7, 0.76, 0.86, this.propMaterial);
-    this.placeDressedBox(chunk, chunkId, "faculty_desk_b", center.x + 3.4, floorY + 0.38, center.z + 2.6, 1.55, 0.76, 0.8, this.propMaterial);
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_faculty_desk`,
+      center.x - 3.2, floorY + 0.38, center.z, Math.PI / 2, [1.7, 0.76, 0.86], "teacher",
+    );
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_faculty_desk_b`,
+      center.x + 3.4, floorY + 0.38, center.z + 2.6, -Math.PI / 2, [1.55, 0.76, 0.8], "teacher",
+    );
     this.placeDressedBox(chunk, chunkId, "faculty_file", center.x + 5.8, floorY + 0.7, center.z - 2.2, 0.46, 1.4, 1.6, this.trimMaterial);
     this.placeDressedBox(chunk, chunkId, "faculty_file_b", center.x - 5.8, floorY + 0.7, center.z + 2.4, 0.46, 1.4, 1.6, this.trimMaterial);
     this.placeDressedBox(chunk, chunkId, "faculty_papers", center.x - 3.2, floorY + 0.8, center.z, 0.62, 0.04, 0.42, paper, false);
@@ -4065,23 +4392,19 @@ export class BackroomsGenerator {
 
   dressScienceLab(chunk, center, chunkId, floorY) {
     this.ensureSpecialNookMaterials();
-    const bench = new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.82 });
-    const glass = new THREE.MeshStandardMaterial({
-      color: 0x8ab8a4,
-      roughness: 0.18,
-      metalness: 0.12,
-      transparent: true,
-      opacity: 0.55,
-      emissive: 0x143028,
-      emissiveIntensity: 0.12,
-    });
     const pipe = new THREE.MeshStandardMaterial({ color: 0x2a2420, roughness: 0.55, metalness: 0.4 });
-    this.placeDressedBox(chunk, chunkId, "lab_bench", center.x - 3.4, floorY + 0.46, center.z, 2.4, 0.92, 0.72, bench);
-    this.placeDressedBox(chunk, chunkId, "lab_bench_b", center.x + 3.4, floorY + 0.46, center.z, 2.4, 0.92, 0.72, bench);
-    this.placeDressedBox(chunk, chunkId, "lab_bottle_a", center.x - 3.1, floorY + 1.08, center.z - 0.12, 0.12, 0.28, 0.12, glass, false);
-    this.placeDressedBox(chunk, chunkId, "lab_bottle_b", center.x - 2.7, floorY + 1.12, center.z + 0.16, 0.1, 0.36, 0.1, glass, false);
-    this.placeDressedBox(chunk, chunkId, "lab_bottle_c", center.x + 3.6, floorY + 1.08, center.z, 0.12, 0.28, 0.12, glass, false);
-    this.placeDressedBox(chunk, chunkId, "lab_bottle_d", center.x + 3.2, floorY + 1.16, center.z - 0.18, 0.09, 0.4, 0.09, glass, false);
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_lab_bench`,
+      center.x - 3.4, floorY + 0.46, center.z, Math.PI / 2, [2.4, 0.92, 0.72], "teacher",
+    );
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_lab_bench_b`,
+      center.x + 3.4, floorY + 0.46, center.z, -Math.PI / 2, [2.4, 0.92, 0.72], "teacher",
+    );
+    this.addSpecimenJarUnit(chunk, chunkId, "lab_bottle_a", center.x - 3.1, floorY + 1.08, center.z - 0.12);
+    this.addSpecimenJarUnit(chunk, chunkId, "lab_bottle_b", center.x - 2.7, floorY + 1.12, center.z + 0.16);
+    this.addSpecimenJarUnit(chunk, chunkId, "lab_bottle_c", center.x + 3.6, floorY + 1.08, center.z);
+    this.addSpecimenJarUnit(chunk, chunkId, "lab_bottle_d", center.x + 3.2, floorY + 1.16, center.z - 0.18);
     this.placeDressedBox(chunk, chunkId, "lab_pipe", center.x, floorY + 2.42, center.z, 8.4, 0.1, 0.1, pipe, false);
     const tap = new THREE.Mesh(this.getBoxGeometry(0.08, 0.22, 0.08), this.schoolMetalMat);
     tap.position.set(center.x - 2.4, floorY + 1.08, center.z);
@@ -4595,11 +4918,14 @@ export class BackroomsGenerator {
         center.x + x, floorY + 0.42, center.z + z,
         0.52, 0.84, 0.52, this.schoolDeskDark || this.trimMaterial,
       );
-      this.placeDressedBox(
-        chunk, chunkId, `${name}_cup`,
-        center.x + x, floorY + 1.08, center.z + z,
-        0.22, 0.38, 0.22, this.schoolTrophyMat, false,
-      );
+      const cup = new THREE.Mesh(this.getCylinderGeometry(0.09, 0.38, 10), this.schoolTrophyMat);
+      cup.position.set(center.x + x, floorY + 1.08, center.z + z);
+      cup.name = `${chunkId}_${name}_cup`;
+      this.addSchoolProp(chunk, cup);
+      const handle = new THREE.Mesh(this.getBoxGeometry(0.22, 0.08, 0.03), this.schoolTrophyMat);
+      handle.position.set(center.x + x, floorY + 1.12, center.z + z);
+      handle.name = `${chunkId}_${name}_cup_handle`;
+      this.addSchoolProp(chunk, handle);
     };
     caseAt("trophy_case_sw", -5.05, 1.48);
     caseAt("trophy_case_se", 5.05, 1.48);
@@ -4680,10 +5006,9 @@ export class BackroomsGenerator {
         center.x - 3.85, floorY + 0.95, center.z + z,
         0.42, 1.9, 0.72, this.schoolDeskDark || this.trimMaterial,
       );
-      this.placeDressedBox(
+      this.addSpecimenJarUnit(
         chunk, chunkId, `specimen_jar_${name}`,
-        center.x - 3.85, floorY + 1.55, center.z + z,
-        0.22, 0.38, 0.22, this.schoolJarMat, false,
+        center.x - 3.85, floorY + 1.72, center.z + z,
       );
     }
     this.addHallNookSign(
@@ -6030,20 +6355,18 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.06,
       });
     }
-    this.placeDressedBox(
+    this.addBoilerDrumUnit(
       chunk, chunkId, "b1boiler_drum",
       22.4, floorY - 5.0 + 0.58, 24.8,
-      0.78, 1.16, 0.78, this.schoolBoilerMat,
     );
     this.placeDressedBox(
       chunk, chunkId, "b1boiler_pipe",
       5.95, floorY - 5.0 + 1.15, 26.05,
       0.28, 2.3, 0.28, this.schoolMetalMat || this.schoolBoilerMat,
     );
-    this.placeDressedBox(
+    this.addBoilerDrumUnit(
       chunk, chunkId, "b1boiler_drum_west",
       3.15, floorY - 5.0 + 0.48, 24.6,
-      0.72, 0.96, 0.72, this.schoolBoilerMat,
     );
     const boilerGlow = new THREE.PointLight(0x16382e, 0.42, 5.2, 2);
     boilerGlow.position.set(22.4, floorY - 3.85, 26.2);
@@ -6196,6 +6519,33 @@ export class BackroomsGenerator {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
     }
 
+    this.ensureSchoolCorridorMaterials();
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_b1flood_desk_w`,
+      5.15, floorY - 5.0 + 0.35, 48.2, 0.4, [0.72, 0.7, 0.48],
+    );
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_b1flood_desk_e`,
+      11.35, floorY - 5.0 + 0.35, 48.2, -0.3, [0.72, 0.7, 0.48],
+    );
+    this.addSchoolChairGroup(
+      chunk, chunkId, `${chunkId}_b1flood_chair`,
+      5.55, floorY - 5.0 + 0.12, 47.55, 0.8,
+      { fallen: true, collideH: 0.42 },
+    );
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_b1flood_desk_ww`,
+      -12.4, floorY - 5.0 + 0.35, 48.2, 0.2, [0.72, 0.7, 0.48],
+    );
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_b1flood_desk_ee`,
+      38.6, floorY - 5.0 + 0.35, 40.2, -0.5, [0.72, 0.7, 0.48],
+    );
+    this.addChalkboardGroup(
+      chunk, chunkId, `${chunkId}_b1flood_board`,
+      4.25, floorY - 5.0 + 1.42, 48.2, Math.PI / 2, 1.85, 1.05,
+    );
+
     const waterY = floorY - 5.0 + 0.15;
     const waterMat = new THREE.MeshStandardMaterial({
       color: 0x2d7a68,
@@ -6319,10 +6669,9 @@ export class BackroomsGenerator {
       });
     }
     for (const [name, x] of [["w", -25.6], ["e", -24.4]]) {
-      this.placeDressedBox(
+      this.addPortraitFrameUnit(
         chunk, chunkId, `f2blood_frame_${name}`,
-        x, floorY + 5.0 + 1.38, -15.1,
-        0.92, 1.28, 0.08, this.schoolBloodFrameMat,
+        x, floorY + 5.0 + 1.38, -15.1, 0,
       );
     }
     const bloodGlow = new THREE.PointLight(0x2a080c, 0.42, 5.0, 2);
@@ -6481,6 +6830,24 @@ export class BackroomsGenerator {
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, mazeMat);
     }
+
+    this.ensureSchoolCorridorMaterials();
+    this.addPortraitFrameUnit(
+      chunk, chunkId, "f2blood_portrait_n",
+      -28.4, floorY + 5.0 + 1.38, -45.2, 0,
+    );
+    this.addPortraitFrameUnit(
+      chunk, chunkId, "f2blood_portrait_s",
+      -32.5, floorY + 5.0 + 1.38, 1.55, Math.PI,
+    );
+    this.addPortraitFrameUnit(
+      chunk, chunkId, "f2blood_portrait_w",
+      -46.2, floorY + 5.0 + 1.38, -16.8, Math.PI / 2,
+    );
+    this.addPortraitFrameUnit(
+      chunk, chunkId, "f2blood_portrait_e",
+      -19.8, floorY + 5.0 + 1.38, -10.4, 0,
+    );
 
     const bloodY = floorY + 5.04;
     const poolMat = new THREE.MeshStandardMaterial({
@@ -7382,6 +7749,9 @@ export class BackroomsGenerator {
       } else if (this.isWashFourChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.72], 0,
           "별관 세면 교차로다. 신발장만 북쪽 벽에 있다.");
+      } else if (this.isAnnexGateChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
+          "별관 입구다. 실내화를 갈아 신지 마십시오.");
       } else if (this.isStartHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, 1.82], Math.PI,
           "현관 신발장이 동쪽 팔에 붙어 있다. 제단함은 북쪽에 있다.");
@@ -7405,6 +7775,14 @@ export class BackroomsGenerator {
         body = "폐쇄된 교실의 출석부가 어제 날짜로 멈춰 있다. 칠판을 읽지 마라.";
       } else if (kinds.includes("empty")) {
         body = "책상을 걷어낸 교실이다. 분필 가루만 복도로 샌다.";
+      } else if (kinds.includes("shoes")) {
+        body = "실내화 칸이다. 어제 신발을 신지 마십시오.";
+      } else if (kinds.includes("music")) {
+        body = "보면대가 혼자 서 있다. 악보를 넘기지 마십시오.";
+      } else if (kinds.includes("science")) {
+        body = "표본 병이 아직 따뜻하다. 뚜껑을 열지 마십시오.";
+      } else if (kinds.includes("shrine")) {
+        body = "위패 액자의 얼굴이 비어 있다. 이름을 읽지 마십시오.";
       }
       const neighborHall = this.isMazeHall(chunk.cx + 1, chunk.cz) || this.isMazeHall(chunk.cx - 1, chunk.cz)
         || this.isMazeHall(chunk.cx, chunk.cz + 1) || this.isMazeHall(chunk.cx, chunk.cz - 1);
@@ -7932,6 +8310,16 @@ export class BackroomsGenerator {
   }
 
   dressAnnexGate(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolRackMat) {
+      this.schoolRackMat = new THREE.MeshStandardMaterial({
+        color: 0x3a3228,
+        roughness: 0.78,
+        metalness: 0.08,
+        emissive: 0x0c0804,
+        emissiveIntensity: 0.05,
+      });
+    }
     const frame = this.placeDressedBox(
       chunk, chunkId, "annex_sign_frame",
       center.x - 0.02, floorY + 2.28, center.z,
@@ -7961,6 +8349,24 @@ export class BackroomsGenerator {
     paper.name = `${chunkId}_annex_notice`;
     this.scene.add(paper);
     chunk.meshes.push(paper);
+
+    // North corridor face, east/west of the T-spur. Keep |x|<1.7 and z=0 spine clear.
+    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+      this.addShoeRackUnit(
+        chunk, chunkId, `annexgate_rack_${name}`,
+        center.x + x, floorY + 0.48, center.z - 1.52, 0,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "annexgate_sign",
+      center.x, floorY + 2.12, center.z - 1.72,
+      0, "별관",
+    );
+    const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
+    glow.position.set(center.x + 3.4, floorY + 2.05, center.z - 1.15);
+    glow.name = `${chunkId}_annexgate_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
   }
 
   pickSafeLightPlacement(variant, type, center, rand, floorY = 0) {

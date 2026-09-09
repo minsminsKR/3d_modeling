@@ -1179,6 +1179,7 @@ try {
       facultyType: faculty.type,
       scienceType: science.type,
       annexSign: names(gate).some((name) => name.includes("annex_sign")),
+      annexGateRack: names(gate).some((name) => name.includes("annexgate_rack_")),
       hallMaze: names(hall).filter((name) => name.includes("hall_maze_")).length,
       hallJog: names(hall).some((name) => name.includes("hall_maze_jog")),
       hallJogE: names(hall).some((name) => name.includes("hall_maze_jog_e")),
@@ -1291,8 +1292,11 @@ try {
       classWingCart: names(hall).some((name) => name.includes("classwing_cart_")),
       uncatHallTape: names(uncatHall).some((name) => name.includes("uncathall_tape_")),
       northHallCone: names(northHall).some((name) => name.includes("northhall_cone_")),
+      northHallCubby: names(northHall).some((name) => name.includes("hall_cubby_")),
       b1BoilerDrum: names(b1).some((name) => name.includes("b1boiler_drum")),
+      b1FloodDesk: names(b1).some((name) => name.includes("b1flood_desk_")),
       f2BloodFrame: names(f2).some((name) => name.includes("f2blood_frame_")),
+      f2BloodPortrait: names(f2).some((name) => name.includes("f2blood_portrait_")),
       eastWashBucket: names(eastWing).some((name) => name.includes("eastwash_bucket_")),
       angelHallCart: names(westHall).some((name) => name.includes("angelhall_cart")),
       washFourCubby: names(washFour).some((name) => name.includes("washfour_cubby_")),
@@ -1794,8 +1798,13 @@ try {
   assert.ok(rooms.beats.includes("uncathall"), "Uncat hall VO beat missing");
   assert.equal(rooms.northHallCone, true, "north hall must show east cones");
   assert.ok(rooms.beats.includes("northhall"), "north hall VO beat missing");
+  assert.equal(rooms.northHallCubby, true, "north hall must open a shoe cubby nook");
   assert.equal(rooms.b1BoilerDrum, true, "B1 maze must show a boiler drum");
+  assert.equal(rooms.b1FloodDesk, true, "B1 south labyrinth must show flooded desks");
   assert.equal(rooms.f2BloodFrame, true, "2F maze must show blood frames");
+  assert.equal(rooms.f2BloodPortrait, true, "2F labyrinth must show extra portraits");
+  assert.equal(rooms.annexGateRack, true, "annex gate must show shoe racks");
+  assert.ok(rooms.beats.includes("annexgate"), "annex gate VO beat missing");
   assert.equal(lostFoundWalk.at(-1).ok, true, `must walk the lost-and-found hall, got ${JSON.stringify(lostFoundWalk.at(-1))}`);
   assert.ok(lostFoundWalk.at(-1).z > 4 && Math.abs(lostFoundWalk.at(-1).x + 32) < 1.4, "lost-and-found NS spine must stay open");
   assert.equal(rooms.eastWashBucket, true, "east wash hall must show north buckets");

@@ -244,6 +244,10 @@ g.player.position = { x: -25, y: 5, z: -15 };
 director.update();
 assert.equal(director.fired.has("f2bloodhall"), true);
 
+g.player.position = { x: 64, y: 0, z: 0 };
+director.update();
+assert.equal(director.fired.has("annexgate"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");
