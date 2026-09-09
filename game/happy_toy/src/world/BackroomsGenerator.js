@@ -140,6 +140,7 @@ const ROOM_LIKE_CHUNK_TYPES = new Set([
   "courtyard",
   "auditorium",
   "foyer",
+  "art_room",
   "stairs_2f",
   "stairs_b1",
 ]);
@@ -280,6 +281,7 @@ export class BackroomsGenerator {
       "5,1": "courtyard",
       "8,1": "auditorium",
       "7,1": "foyer",
+      "8,-1": "art_room",
     };
 
     const key = `${cx},${cz}`;
@@ -324,6 +326,14 @@ export class BackroomsGenerator {
 
   isMemorialChunk(cx, cz) {
     return cx === 6 && cz === 0;
+  }
+
+  isTrophyChunk(cx, cz) {
+    return cx === 7 && cz === 0;
+  }
+
+  isArcadeChunk(cx, cz) {
+    return cx === 4 && cz === 1;
   }
 
   isGlassHallChunk(cx, cz) {
@@ -2873,6 +2883,12 @@ export class BackroomsGenerator {
     if (this.isMemorialChunk(chunk.cx, chunk.cz)) {
       this.dressMemorialHall(chunk, center, chunkId, floorY);
     }
+    if (this.isTrophyChunk(chunk.cx, chunk.cz)) {
+      this.dressTrophyHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isArcadeChunk(chunk.cx, chunk.cz)) {
+      this.dressArcadeHall(chunk, center, chunkId, floorY);
+    }
   }
 
   dressHallWindowWall(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane, mask) {
@@ -4276,6 +4292,170 @@ export class BackroomsGenerator {
     chunk.meshes.push(glow);
   }
 
+  dressTrophyHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    this.ensureSpecialNookMaterials();
+    if (!this.schoolTrophyMat) {
+      this.schoolTrophyMat = new THREE.MeshStandardMaterial({
+        color: 0x8a6a28,
+        roughness: 0.38,
+        metalness: 0.55,
+        emissive: 0x2a1806,
+        emissiveIntensity: 0.08,
+      });
+    }
+    if (!this.schoolBannerMat) {
+      this.schoolBannerMat = new THREE.MeshStandardMaterial({
+        color: 0x3a1420,
+        roughness: 0.86,
+        metalness: 0,
+        emissive: 0x120408,
+        emissiveIntensity: 0.05,
+      });
+    }
+    const caseAt = (name, x, z) => {
+      this.placeDressedBox(
+        chunk, chunkId, `${name}_plinth`,
+        center.x + x, floorY + 0.42, center.z + z,
+        0.52, 0.84, 0.52, this.schoolDeskDark || this.trimMaterial,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, `${name}_cup`,
+        center.x + x, floorY + 1.08, center.z + z,
+        0.22, 0.38, 0.22, this.schoolTrophyMat, false,
+      );
+    };
+    caseAt("trophy_case_sw", -5.05, 1.48);
+    caseAt("trophy_case_se", 5.05, 1.48);
+    caseAt("trophy_case_nw", -5.05, -1.48);
+    caseAt("trophy_case_ne", 5.05, -1.48);
+    for (const [name, x] of [["w", -3.35], ["e", 3.35]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `trophy_banner_${name}`,
+        center.x + x, floorY + 1.85, center.z + 1.72,
+        0.82, 1.15, 0.04, this.schoolBannerMat, false,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "trophy_sign",
+      center.x - 6.85, floorY + 2.12, center.z + 1.72,
+      0, "트로피",
+    );
+    const glow = new THREE.PointLight(0x3a2810, 0.14, 4.4, 2);
+    glow.position.set(center.x, floorY + 2.15, center.z);
+    glow.name = `${chunkId}_trophy_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressArcadeHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolArcadeMat) {
+      this.schoolArcadeMat = new THREE.MeshStandardMaterial({
+        color: 0x2a241c,
+        roughness: 0.72,
+        metalness: 0.08,
+        emissive: 0x0c0a08,
+        emissiveIntensity: 0.05,
+      });
+    }
+    for (const [name, z] of [["n_a", -5.35], ["n_b", -3.15], ["s_a", 3.15], ["s_b", 5.35]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `arcade_col_${name}`,
+        center.x + 3.85, floorY + 1.35, center.z + z,
+        0.42, 2.7, 0.42, this.schoolArcadeMat,
+      );
+    }
+    for (const [name, z] of [["n", -3.45], ["s", 3.45]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `arcade_bench_${name}`,
+        center.x + 3.15, floorY + 0.28, center.z + z,
+        0.46, 0.56, 1.15, this.schoolDeskDark || this.trimMaterial,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "arcade_sign",
+      center.x + 1.82, floorY + 2.12, center.z,
+      -Math.PI / 2, "아케이드",
+    );
+    const glow = new THREE.PointLight(0x181410, 0.12, 4.2, 2);
+    glow.position.set(center.x + 2.4, floorY + 2.05, center.z);
+    glow.name = `${chunkId}_arcade_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressArtRoom(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    this.ensureSpecialNookMaterials();
+    if (!this.schoolCanvasMat) {
+      this.schoolCanvasMat = new THREE.MeshStandardMaterial({
+        color: 0xc8b898,
+        roughness: 0.88,
+        metalness: 0,
+        emissive: 0x1a1008,
+        emissiveIntensity: 0.06,
+      });
+    }
+    if (!this.schoolPaintMat) {
+      this.schoolPaintMat = new THREE.MeshStandardMaterial({
+        color: 0x4a1828,
+        roughness: 0.7,
+        metalness: 0.04,
+        emissive: 0x140408,
+        emissiveIntensity: 0.08,
+      });
+    }
+    this.placeDressedBox(
+      chunk, chunkId, "art_table",
+      center.x + 2.35, floorY + 0.42, center.z + 1.15,
+      1.85, 0.84, 0.92, this.schoolDeskDark || this.trimMaterial,
+    );
+    for (const [name, x, z, yaw] of [
+      ["w", -3.4, -1.8, Math.PI / 2],
+      ["e", 3.6, -2.4, -Math.PI / 2],
+      ["s", -2.2, 3.35, Math.PI],
+    ]) {
+      const easel = new THREE.Group();
+      easel.position.set(center.x + x, floorY + 0.95, center.z + z);
+      easel.rotation.y = yaw;
+      easel.name = `${chunkId}_art_easel_${name}`;
+      const leg = new THREE.Mesh(this.getBoxGeometry(0.08, 1.7, 0.08), this.schoolDeskDark || this.trimMaterial);
+      easel.add(leg);
+      const canvas = new THREE.Mesh(this.getBoxGeometry(0.72, 0.92, 0.04), this.schoolCanvasMat);
+      canvas.position.set(0, 0.22, 0.06);
+      canvas.name = `${chunkId}_art_canvas_${name}`;
+      easel.add(canvas);
+      this.addSchoolProp(chunk, easel);
+      this.collisionWorld.addStaticBox(
+        easel.name,
+        easel.position,
+        new THREE.Vector3(0.55, 1.7, 0.55),
+        chunkId,
+      );
+    }
+    this.placeDressedBox(
+      chunk, chunkId, "art_jar",
+      center.x + 2.15, floorY + 0.95, center.z + 1.15,
+      0.16, 0.22, 0.16, this.schoolPaintMat, false,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "art_drip",
+      center.x, floorY + 0.02, center.z + 2.4,
+      1.8, 0.03, 2.4, this.schoolPaintMat, false,
+    );
+    this.addHallNookSign(
+      chunk, chunkId, "art_sign",
+      center.x, floorY + 2.14, center.z - 7.52,
+      0, "미술실",
+    );
+    const glow = new THREE.PointLight(0x2a1810, 0.14, 5.0, 2);
+    glow.position.set(center.x, floorY + 2.15, center.z);
+    glow.name = `${chunkId}_art_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
   dressCourtyard(chunk, center, chunkId, floorY) {
     this.ensureSchoolCorridorMaterials();
     this.ensureSpecialNookMaterials();
@@ -5422,6 +5602,9 @@ export class BackroomsGenerator {
       addDynamicDoor(`${chunkId}_foyer_east`, "강당 로비 문", [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
       addDynamicDoor(`${chunkId}_foyer_north`, "체육관 쪽 로비 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
       this.dressFoyer(chunk, center, chunkId, floorY);
+    } else if (type === "art_room") {
+      addDynamicDoor(`${chunkId}_art_door`, "미술실 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      this.dressArtRoom(chunk, center, chunkId, floorY);
     }
 
     // 2. Cabinets
@@ -5490,6 +5673,11 @@ export class BackroomsGenerator {
       addDynamicCabinet(`cabinet_aud_${chunk.cx}_${chunk.cz}`, "강당 신발장", [-5.2, 0.0, 5.85], 0);
     } else if (type === "foyer") {
       addDynamicCabinet(`cabinet_foyer_${chunk.cx}_${chunk.cz}`, "로비 신발장", [5.35, 0.0, 5.65], Math.PI);
+    } else if (type === "art_room") {
+      addDynamicCabinet(`cabinet_art_${chunk.cx}_${chunk.cz}`, "미술실 벽장", [5.4, 0.0, 5.4], Math.PI / 2);
+    } else if (this.isTrophyChunk(chunk.cx, chunk.cz)) {
+      addDynamicCabinet(`cabinet_trophy_${chunk.cx}_${chunk.cz}`, "트로피 신발장", [6.35, 0.0, 1.28], 0);
+      addDynamicCabinet(`cabinet_trophy2_${chunk.cx}_${chunk.cz}`, "트로피 반대 신발장", [-6.35, 0.0, -1.28], Math.PI);
     } else if (this.isMemorialChunk(chunk.cx, chunk.cz)) {
       addDynamicCabinet(`cabinet_mem_${chunk.cx}_${chunk.cz}`, "기념관 신발장", [6.35, 0.0, 1.28], 0);
       addDynamicCabinet(`cabinet_mem2_${chunk.cx}_${chunk.cz}`, "기념관 반대 신발장", [-6.35, 0.0, -1.28], Math.PI);
@@ -5597,6 +5785,9 @@ export class BackroomsGenerator {
     } else if (type === "foyer") {
       addLoreNote(`${chunkId}_lore`, [-7.35, 1.42, 0.0], Math.PI / 2,
         "로비 창구는 닫혀 있다. 표 없이 강당 문만 열린다.");
+    } else if (type === "art_room") {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.45], 0,
+        "물감이 마르지 않았다. 이젤의 얼굴은 어제 출석과 같다.");
     } else if (type === "omen_room" || type === "static_room" || type === "flicker_room" || type === "classroom") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0);
     } else if (isWorkshop) {
@@ -5615,6 +5806,12 @@ export class BackroomsGenerator {
       } else if (this.isMemorialChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.72], 0,
           "졸업 액자가 비어 있다. 이름이 넷이면 제단이 열린다.");
+      } else if (this.isTrophyChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [0.0, 1.42, 1.72], Math.PI,
+          "트로피 이름이 지워져 있다. 컵만 복도를 지킨다.");
+      } else if (this.isArcadeChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [1.82, 1.42, 0.0], -Math.PI / 2,
+          "아케이드 너머는 중정이다. 기둥 사이로 난간만 보인다.");
       } else {
       const kinds = [0, 1, 2, 3].map((slot) => this.getHallNookKind(chunk.cx, chunk.cz, slot));
       let body = "교실 번호가 어제와 같다. 창밖의 운동장은 없다.";
@@ -5894,6 +6091,9 @@ export class BackroomsGenerator {
     } else if (type === "foyer") {
       spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "로비 입구 스위치");
       spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "로비 형광등");
+    } else if (type === "art_room") {
+      spawnSafeLight("wall-switch", 0.0, wallH, -7.58, Math.PI, "미술실 입구 스위치");
+      spawnSafeLight("ceiling-switch", 2.2, ceilingH, 1.4, 0, "미술실 형광등");
     } else {
       // Generic fallback room (e.g. flicker_room): Flush on perimeter walls
       spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "벽 스위치");
@@ -6196,7 +6396,7 @@ export class BackroomsGenerator {
 
     // Antique chest prop spawn only in rooms with small chance
     const skipScatter = type === "foyer" || type === "auditorium" || type === "courtyard"
-      || type === "gymnasium" || type === "memorial";
+      || type === "gymnasium" || type === "art_room";
     if (!isCorridorOrStair && !skipScatter && rand() < 0.25) {
       const toyGeo = this.getBoxGeometry(0.8, 0.5, 0.8);
       const toy = new THREE.Mesh(toyGeo, propMaterial);
@@ -6342,6 +6542,9 @@ export class BackroomsGenerator {
     } else if (type === "foyer") {
       localX = rand() < 0.5 ? 5.2 : -5.2;
       localZ = rand() < 0.5 ? 5.4 : -5.4;
+    } else if (type === "art_room") {
+      localX = rand() < 0.5 ? 5.1 : -5.1;
+      localZ = rand() < 0.5 ? 5.2 : -3.4;
     }
 
     return {
@@ -6606,9 +6809,9 @@ export class BackroomsGenerator {
         if (chicanes.ew || hallOpen.W) chunk.waypoints.push(wp(-5.4, 0), wp(-6.5, 0));
         if (chicanes.ew || hallOpen.E) chunk.waypoints.push(wp(5.4, 0), wp(6.5, 0));
         if (!chicanes.ew) {
-          chunk.waypoints.push(
-            wp(-5.25, 5.2), wp(5.25, 5.2), wp(-5.25, -5.2), wp(5.25, -5.2),
-          );
+          const mask = this.getHallNookMask(chunk.cx, chunk.cz);
+          if (mask.w) chunk.waypoints.push(wp(-5.25, 5.2), wp(-5.25, -5.2));
+          if (mask.e) chunk.waypoints.push(wp(5.25, 5.2), wp(5.25, -5.2));
         }
       }
     } else if (type === "corner") {
@@ -6644,6 +6847,11 @@ export class BackroomsGenerator {
         wp(-6.2, 0), wp(-3.2, 0), wp(0, 0), wp(3.2, 0), wp(6.2, 0),
         wp(0, -5.4), wp(0, -6.5),
         wp(5.4, 5.4), wp(-5.4, 5.4),
+      ];
+    } else if (type === "art_room") {
+      chunk.waypoints = [
+        wp(0, -6.2), wp(0, -3.2), wp(0, 0),
+        wp(-4.6, 3.2), wp(4.6, 3.2),
       ];
     } else if (type === "workshop") {
       chunk.waypoints = [wp(0,0), wp(0,-5), wp(5,0), wp(-3,-3), wp(3,-3), wp(3,3)];

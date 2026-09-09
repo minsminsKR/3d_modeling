@@ -130,6 +130,33 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 104 && x < 120 && Math.abs(z) < 1.8) {
+      this.fire(
+        "trophy",
+        "trophy",
+        "트로피 복도입니다. 컵은 있는데 이름이 지워져 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 56 && x < 72 && z > 8 && z < 24) {
+      this.fire(
+        "arcade",
+        "arcade",
+        "중정 아케이드입니다. 기둥 너머로 난간만 보입니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z < -8 && z > -24) {
+      this.fire(
+        "art",
+        "art",
+        "미술실입니다. 물감이 아직 마르지 않았습니다.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 104 && x < 120 && z > 12 && z < 20) {
       this.fire(
         "foyer",

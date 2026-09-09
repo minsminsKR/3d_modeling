@@ -96,6 +96,18 @@ g.player.position = { x: 96, y: 0, z: 0 };
 director.update();
 assert.equal(director.fired.has("memorial"), true);
 
+g.player.position = { x: 112, y: 0, z: 0 };
+director.update();
+assert.equal(director.fired.has("trophy"), true);
+
+g.player.position = { x: 64, y: 0, z: 16 };
+director.update();
+assert.equal(director.fired.has("arcade"), true);
+
+g.player.position = { x: 128, y: 0, z: -16 };
+director.update();
+assert.equal(director.fired.has("art"), true);
+
 g.player.position = { x: 112, y: 0, z: 16 };
 director.update();
 assert.equal(director.fired.has("foyer"), true);

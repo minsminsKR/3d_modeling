@@ -1630,6 +1630,22 @@ export class Game {
       this.hud.setStatus("기념관입니다. 액자 속 얼굴이 비어 있습니다.", 3600);
       return;
     }
+    if (cx === 7 && cz === 0 && !this._storyBeats.has("trophy")) {
+      this._storyBeats.add("trophy");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("trophy", "트로피 복도입니다. 컵은 있는데 이름이 지워져 있습니다.");
+      this.hud.setStatus("트로피 복도입니다. 컵은 있는데 이름이 지워져 있습니다.", 3600);
+      return;
+    }
+    if (cx === 4 && cz === 1 && !this._storyBeats.has("arcade")) {
+      this._storyBeats.add("arcade");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("arcade", "중정 아케이드입니다. 기둥 너머로 난간만 보입니다.");
+      this.hud.setStatus("중정 아케이드입니다. 기둥 너머로 난간만 보입니다.", 3600);
+      return;
+    }
     const roomLines = {
       nurse_office: ["nurse", "보건실입니다. 장부에 끝나지 않은 출석이 남아 있습니다."],
       music_room: ["music", "음악실입니다. 한 음이 모자란 피아노가 열려 있습니다."],
@@ -1638,6 +1654,7 @@ export class Game {
       gymnasium: ["gym", "체육관입니다. 줄은 남아 있는데 운동장은 없습니다."],
       courtyard: ["courtyard", "중정입니다. 난간 너머로 내려가지 마십시오."],
       foyer: ["foyer", "로비입니다. 표는 팔지 않습니다. 강당 문만 열려 있습니다."],
+      art_room: ["art", "미술실입니다. 물감이 아직 마르지 않았습니다."],
       auditorium: ["auditorium", "강당입니다. 막이 내려와 있고 객석이 당신을 셉니다."],
     };
     const room = roomLines[type];

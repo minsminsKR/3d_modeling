@@ -275,6 +275,8 @@ try {
   });
   const gymWalk = [];
   for (const stop of [
+    { x: 112, z: 6.5 },
+    { x: 112, z: 0 },
     { x: 118.5, z: 0 },
     { x: 122.4, z: 0 },
     { x: 128, z: 0 },
@@ -318,6 +320,50 @@ try {
   ]) {
     yardWalk.push(await walkTo(stop, 360));
     console.log("yard", stop, yardWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(4, 0);
+    game.mapBuilder.generator.generateChunk(4, 1);
+    game.mapBuilder.generator.generateChunk(5, 1);
+    game.player.setPosition({ x: 64, y: 0, z: 16 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const arcadeWalk = [];
+  for (const stop of [
+    { x: 64, z: 10 },
+    { x: 64, z: 16 },
+    { x: 70, z: 16 },
+    { x: 64, z: 16 },
+    { x: 64, z: 22 },
+  ]) {
+    arcadeWalk.push(await walkTo(stop, 360));
+    console.log("arcade", stop, arcadeWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(8, -2);
+    game.mapBuilder.generator.generateChunk(8, -1);
+    game.player.setPosition({ x: 128, y: 0, z: -32 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const artWalk = [];
+  for (const stop of [
+    { x: 128, z: -26 },
+    { x: 128, z: -16 },
+  ]) {
+    artWalk.push(await walkTo(stop, 420));
+    console.log("art", stop, artWalk.at(-1));
   }
 
   await page.evaluate(() => {
@@ -390,6 +436,9 @@ try {
     const bridge = generator.generateChunk(3, 0);
     const yard = generator.generateChunk(5, 1);
     const memorial = generator.generateChunk(6, 0);
+    const trophy = generator.generateChunk(7, 0);
+    const arcade = generator.generateChunk(4, 1);
+    const art = generator.generateChunk(8, -1);
     const foyer = generator.generateChunk(7, 1);
     const aud = generator.generateChunk(8, 1);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
@@ -405,6 +454,9 @@ try {
     game.onEnterSchoolChunk(3, 0);
     game.onEnterSchoolChunk(5, 1);
     game.onEnterSchoolChunk(6, 0);
+    game.onEnterSchoolChunk(7, 0);
+    game.onEnterSchoolChunk(4, 1);
+    game.onEnterSchoolChunk(8, -1);
     game.onEnterSchoolChunk(7, 1);
     game.onEnterSchoolChunk(8, 1);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
@@ -466,6 +518,13 @@ try {
       memorialPortrait: names(memorial).some((name) => name.includes("memorial_portrait_")),
       memorialBothWindows: names(memorial).some((name) => name.includes("hall_outer_window_n_"))
         && names(memorial).some((name) => name.includes("hall_outer_window_s_")),
+      trophyCup: names(trophy).some((name) => name.includes("trophy_case_") && name.includes("_cup")),
+      trophyBanner: names(trophy).some((name) => name.includes("trophy_banner_")),
+      arcadeCol: names(arcade).some((name) => name.includes("arcade_col_")),
+      arcadeBench: names(arcade).some((name) => name.includes("arcade_bench_")),
+      artType: art.type,
+      artEasel: names(art).some((name) => name.includes("art_easel_")),
+      artTable: names(art).some((name) => name.includes("art_table")),
       foyerType: foyer.type,
       foyerBooth: names(foyer).some((name) => name.includes("foyer_booth_")),
       foyerCoat: names(foyer).some((name) => name.includes("foyer_coat_")),
@@ -728,7 +787,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, memorialWalk, foyerWalk, audWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -754,6 +813,21 @@ try {
   assert.ok(story.fired.includes("throughClass"), `throughClass VO missing: ${story.fired.join(",")}`);
   assert.equal(gymWalk.at(-1).ok, true, `must walk into the annex gymnasium, got ${JSON.stringify(gymWalk.at(-1))}`);
   assert.ok(gymWalk.at(-1).x > 126 && Math.abs(gymWalk.at(-1).z) < 1.4, "gymnasium court center must stay walkable");
+  assert.ok(gymWalk.some((stop) => stop.z > 5 && Math.abs(stop.x - 112) < 1.6), "trophy hall T-spur south to the foyer must stay open");
+  assert.equal(rooms.trophyCup, true, "trophy hall must show cups");
+  assert.equal(rooms.trophyBanner, true, "trophy hall must hang banners");
+  assert.ok(rooms.beats.includes("trophy"), "trophy VO beat missing");
+  assert.equal(rooms.arcadeCol, true, "courtyard arcade must have columns");
+  assert.equal(rooms.arcadeBench, true, "courtyard arcade must have benches");
+  assert.ok(rooms.beats.includes("arcade"), "arcade VO beat missing");
+  assert.equal(arcadeWalk.at(-1).ok, true, `must walk the arcade, got ${JSON.stringify(arcadeWalk.at(-1))}`);
+  assert.ok(arcadeWalk.some((stop) => stop.x > 68 && Math.abs(stop.z - 16) < 1.6), "arcade east T-spur to the courtyard must stay open");
+  assert.equal(rooms.artType, "art_room");
+  assert.equal(rooms.artEasel, true, "art room must have easels");
+  assert.equal(rooms.artTable, true, "art room must have a paint table");
+  assert.ok(rooms.beats.includes("art_room"), "art room VO beat missing");
+  assert.equal(artWalk.at(-1).ok, true, `must walk into the art room, got ${JSON.stringify(artWalk.at(-1))}`);
+  assert.ok(artWalk.at(-1).z > -18 && Math.abs(artWalk.at(-1).x - 128) < 1.4, "art room interior must stay walkable");
   assert.equal(rooms.gymType, "gymnasium");
   assert.equal(rooms.gymCourt, true, "gymnasium must have a marked court");
   assert.equal(rooms.gymHoop, true, "gymnasium must have a hoop");
