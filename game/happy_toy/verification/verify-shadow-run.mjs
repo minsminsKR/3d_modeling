@@ -352,9 +352,18 @@ try {
     game.player.setPosition({ x: 112, y: 0, z: 16 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
   });
+  const foyerWalk = [];
+  for (const stop of [
+    { x: 112, z: 16 },
+    { x: 112, z: 10 },
+    { x: 112, z: 16 },
+    { x: 118, z: 16 },
+  ]) {
+    foyerWalk.push(await walkTo(stop, 360));
+    console.log("foyer", stop, foyerWalk.at(-1));
+  }
   const audWalk = [];
   for (const stop of [
-    { x: 118, z: 16 },
     { x: 122, z: 16 },
     { x: 128, z: 16 },
   ]) {
@@ -381,6 +390,7 @@ try {
     const bridge = generator.generateChunk(3, 0);
     const yard = generator.generateChunk(5, 1);
     const memorial = generator.generateChunk(6, 0);
+    const foyer = generator.generateChunk(7, 1);
     const aud = generator.generateChunk(8, 1);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
@@ -395,6 +405,7 @@ try {
     game.onEnterSchoolChunk(3, 0);
     game.onEnterSchoolChunk(5, 1);
     game.onEnterSchoolChunk(6, 0);
+    game.onEnterSchoolChunk(7, 1);
     game.onEnterSchoolChunk(8, 1);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
     for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
@@ -455,6 +466,11 @@ try {
       memorialPortrait: names(memorial).some((name) => name.includes("memorial_portrait_")),
       memorialBothWindows: names(memorial).some((name) => name.includes("hall_outer_window_n_"))
         && names(memorial).some((name) => name.includes("hall_outer_window_s_")),
+      foyerType: foyer.type,
+      foyerBooth: names(foyer).some((name) => name.includes("foyer_booth_")),
+      foyerCoat: names(foyer).some((name) => name.includes("foyer_coat_")),
+      atriumRail: names(f2).some((name) => name.includes("atrium_rail_")),
+      atriumWell: names(f2).some((name) => name.includes("atrium_well")),
       audType: aud.type,
       audStage: names(aud).some((name) => name.includes("auditorium_stage")),
       audSeat: names(aud).some((name) => name.includes("auditorium_seat_")),
@@ -712,7 +728,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, memorialWalk, audWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, memorialWalk, foyerWalk, audWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -769,6 +785,15 @@ try {
   assert.equal(memorialWalk.at(-1).ok, true, `must walk the memorial spine, got ${JSON.stringify(memorialWalk.at(-1))}`);
   assert.ok(memorialWalk.some((stop) => stop.z > 5 && Math.abs(stop.x - 96) < 1.6), "memorial T-spur south must stay open");
   assert.ok(memorialWalk.at(-1).x > 100 && Math.abs(memorialWalk.at(-1).z) < 1.2, "memorial spine must continue east");
+  assert.equal(rooms.foyerType, "foyer");
+  assert.equal(rooms.foyerBooth, true, "foyer must have ticket booths");
+  assert.equal(rooms.foyerCoat, true, "foyer must have coat racks");
+  assert.ok(rooms.beats.includes("foyer"), "foyer VO beat missing");
+  assert.equal(foyerWalk.at(-1).ok, true, `must walk the foyer aisle, got ${JSON.stringify(foyerWalk.at(-1))}`);
+  assert.ok(foyerWalk.some((stop) => stop.z < 12 && Math.abs(stop.x - 112) < 1.6), "foyer north T-spur to the gym hall must stay open");
+  assert.ok(foyerWalk.at(-1).x > 116 && Math.abs(foyerWalk.at(-1).z - 16) < 1.2, "foyer aisle must continue east to the auditorium");
+  assert.equal(rooms.atriumRail, true, "2F stair well must have look-down rails");
+  assert.equal(rooms.atriumWell, true, "2F stair well must keep a visible drop");
   assert.equal(rooms.audType, "auditorium");
   assert.equal(rooms.audStage, true, "auditorium must have a stage");
   assert.equal(rooms.audSeat, true, "auditorium must have raked seats");

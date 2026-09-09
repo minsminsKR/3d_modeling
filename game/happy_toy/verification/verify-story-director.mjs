@@ -56,6 +56,10 @@ director.update();
 assert.equal(director.fired.has("f2floor"), true);
 assert.equal(g._storyBeats.has("map:f2"), true);
 
+g.player.position = { x: -16.6, y: 5, z: -18.2 };
+director.update();
+assert.equal(director.fired.has("atrium"), true);
+
 g.player.position = { x: -27.5, y: 5, z: -22 };
 director.update();
 assert.equal(director.fired.has("shrine"), true);
@@ -91,6 +95,10 @@ assert.equal(director.fired.has("courtyard"), true);
 g.player.position = { x: 96, y: 0, z: 0 };
 director.update();
 assert.equal(director.fired.has("memorial"), true);
+
+g.player.position = { x: 112, y: 0, z: 16 };
+director.update();
+assert.equal(director.fired.has("foyer"), true);
 
 g.player.position = { x: 128, y: 0, z: 16 };
 director.update();

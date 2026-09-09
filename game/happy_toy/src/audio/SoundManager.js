@@ -86,7 +86,7 @@ export class SoundManager {
       "hide", "stairWait", "leaveStart", "nursery", "shrine", "stairB1", "stairF2",
       "b1deep", "f2deep", "b1east", "f2south", "f1maze", "f1ring",
       "library", "washroom", "boarded", "throughClass", "gym",
-      "windowHall", "skybridge", "courtyard", "memorial", "auditorium",
+      "windowHall", "skybridge", "courtyard", "memorial", "auditorium", "foyer", "atrium",
     ];
     Promise.all(keys.map(async (key) => {
       try {

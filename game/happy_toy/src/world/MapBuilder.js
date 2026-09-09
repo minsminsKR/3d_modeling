@@ -328,6 +328,7 @@ export class MapBuilder {
     else if (kind === "boarded") label = "폐쇄";
     if (chunk.type === "courtyard") label = "중정";
     if (chunk.type === "auditorium") label = "강당";
+    if (chunk.type === "foyer") label = "로비";
     if (chunk.cx === 3 && chunk.cz === 0) label = "연결복도";
     if (chunk.cx === 6 && chunk.cz === 0) label = "기념관";
     if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);

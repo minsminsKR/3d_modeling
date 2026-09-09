@@ -1637,6 +1637,7 @@ export class Game {
       science_lab: ["science", "과학실입니다. 가스관이 아직 식지 않았습니다."],
       gymnasium: ["gym", "체육관입니다. 줄은 남아 있는데 운동장은 없습니다."],
       courtyard: ["courtyard", "중정입니다. 난간 너머로 내려가지 마십시오."],
+      foyer: ["foyer", "로비입니다. 표는 팔지 않습니다. 강당 문만 열려 있습니다."],
       auditorium: ["auditorium", "강당입니다. 막이 내려와 있고 객석이 당신을 셉니다."],
     };
     const room = roomLines[type];

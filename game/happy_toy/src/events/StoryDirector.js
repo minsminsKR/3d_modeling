@@ -130,6 +130,15 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 104 && x < 120 && z > 12 && z < 20) {
+      this.fire(
+        "foyer",
+        "foyer",
+        "로비입니다. 표는 팔지 않습니다. 강당 문만 열려 있습니다.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z > 12 && z < 20) {
       this.fire(
         "auditorium",
@@ -206,6 +215,14 @@ export class StoryDirector {
         "2층입니다. 복도가 아직 마르지 않았습니다.",
         "blood_drip",
       );
+      if (x > -18.6 && x < -14.2 && z > -22.4 && z < -12.4) {
+        this.fire(
+          "atrium",
+          "atrium",
+          "계단 우물입니다. 아래 복도가 당신을 올려다봅니다.",
+          "blood_drip",
+        );
+      }
       if (x < -27.4) {
         this.fire(
           "shrine",
