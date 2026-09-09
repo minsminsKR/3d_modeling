@@ -44,7 +44,7 @@ const b1 = await poseShot("b1_labyrinth_south.png", {
   x: 8.4, y: -5, z: 48.2, lookAt: [8.4, -3.6, 53.4],
 });
 const f2 = await poseShot("f2_labyrinth_north.png", {
-  x: -22.5, y: 5, z: -38.2, lookAt: [-32.5, 6.3, -42.0],
+  x: -32.5, y: 5, z: -42.2, lookAt: [-32.5, 6.25, -50.0],
 });
 const hunt = await page.evaluate(() => {
   const game = window.__happyToy;
@@ -52,22 +52,20 @@ const hunt = await page.evaluate(() => {
   game.ghostMode = false;
   game.player.noclip = true;
   game.player.setPosition({ x: 8.4, y: -5, z: 48.2 });
-  game.floorHuntDirector.reset();
-  game.floorHuntDirector.lastFloor = -1;
-  game.floorHuntDirector.floorTime = 6;
-  game.floorHuntDirector.approach = 0.55;
-  for (let i = 0; i < 20; i += 1) game.update(0.05, { skipRender: true });
-  const sil = game.floorHuntDirector.silhouette;
   game.poseForCapture({
-    lookAt: sil ? [sil.position.x, sil.position.y + 1.2, sil.position.z] : [10, -3.6, 50],
+    lookAt: [8.4, -3.55, 52.6],
     flashlight: true,
     freezeLoop: true,
   });
-  if (sil) sil.visible = true;
+  const sil = game.floorHuntDirector.ensureSilhouette();
+  sil.position.set(8.55, -5, 51.35);
+  sil.lookAt(8.4, -3.7, 48.2);
+  sil.visible = true;
+  game.hud.setStatus("발소리가 꺾인 복도에서 돌아옵니다. 벽장으로.", 4200);
   game.renderer.render(game.scene, game.camera);
   return {
-    visible: Boolean(sil?.visible),
-    y: sil?.position.y ?? null,
+    visible: sil.visible === true,
+    z: sil.position.z,
     intensity: game.flashlight?.intensity ?? 0,
   };
 });
