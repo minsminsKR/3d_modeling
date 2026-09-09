@@ -2283,12 +2283,13 @@ export class BackroomsGenerator {
         );
       }
     }
-    this.dressHallClassroomNooks(chunk, center, chunkId, floorY, ewChicane, nsChicane);
+    this.dressHallClassroomNooks(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
   }
 
-  dressHallClassroomNooks(chunk, center, chunkId, floorY, ewChicane, nsChicane) {
-    // Desks and a chalkboard sit behind each hide-alcove door so a flashlight
-    // peek reads as a classroom, not an empty tile corner.
+  dressHallClassroomNooks(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
+    // Each hide-alcove is a classroom: linoleum, desk rows, a board on the
+    // inner wall, windows on the outer wall. The ±5.25 door-to-locker aisle
+    // stays open so chase-hide still walks.
     if (!ewChicane && !nsChicane) return;
     this.ensureSchoolCorridorMaterials();
     if (!this.schoolBoardMat) {
@@ -2298,62 +2299,125 @@ export class BackroomsGenerator {
         metalness: 0.04,
       });
     }
+    if (!this.schoolLinoMat) {
+      this.schoolLinoMat = new THREE.MeshStandardMaterial({
+        color: 0x2a2218,
+        roughness: 0.94,
+        metalness: 0,
+      });
+    }
     const alcove = 5.25;
+    const wall = 1.84;
     const deskGeo = this.getBoxGeometry(0.58, 0.7, 0.44);
     const chairGeo = this.getBoxGeometry(0.32, 0.42, 0.32);
     const boardGeo = this.getBoxGeometry(1.65, 0.95, 0.06);
+    const teacherGeo = this.getBoxGeometry(0.92, 0.74, 0.52);
     let idx = 0;
-    const place = (lx, lz, yaw, boardLx, boardLz) => {
-      const desk = new THREE.Mesh(deskGeo, this.propMaterial);
-      desk.position.set(center.x + lx, floorY + 0.35, center.z + lz);
-      desk.rotation.y = yaw;
-      desk.castShadow = true;
-      desk.receiveShadow = true;
-      desk.name = `${chunkId}_hall_desk_${idx}`;
-      this.scene.add(desk);
-      chunk.meshes.push(desk);
-      this.collisionWorld.addStaticBox(desk.name, desk.position, new THREE.Vector3(0.58, 0.7, 0.44), chunkId);
+    const southT = Boolean(ewChicane && (nsChicane || openings?.S));
+    const northT = Boolean(ewChicane && (nsChicane || openings?.N));
+    const westT = Boolean(nsChicane && (ewChicane || openings?.W));
+    const eastT = Boolean(nsChicane && (ewChicane || openings?.E));
 
-      const chair = new THREE.Mesh(chairGeo, this.trimMaterial);
-      const awayX = lx - boardLx;
-      const awayZ = lz - boardLz;
-      const awayLen = Math.hypot(awayX, awayZ) || 1;
-      chair.position.set(
-        center.x + lx + (awayX / awayLen) * 0.42,
-        floorY + 0.21,
-        center.z + lz + (awayZ / awayLen) * 0.42,
+    const dressNook = (doorX, doorZ, inX, inZ, sideX, sideZ) => {
+      const faceYaw = Math.atan2(sideX, sideZ);
+      const variant = Math.abs((chunk.cx * 13 + chunk.cz * 7 + idx) % 3);
+      const rows = variant === 2 ? 1 : 2;
+      const aisle = 1.7;
+      const firstDeskX = doorX + sideX * aisle + inX * 1.51;
+      const firstDeskZ = doorZ + sideZ * aisle + inZ * 1.51;
+
+      const alongSide = 3.15;
+      const alongIn = 4.35;
+      const floor = new THREE.Mesh(
+        this.getBoxGeometry(
+          Math.abs(sideX) * alongSide + Math.abs(inX) * alongIn,
+          0.02,
+          Math.abs(sideZ) * alongSide + Math.abs(inZ) * alongIn,
+        ),
+        this.schoolLinoMat,
       );
-      chair.name = `${chunkId}_hall_chair_${idx}`;
-      this.scene.add(chair);
-      chunk.meshes.push(chair);
+      floor.position.set(
+        center.x + doorX + sideX * 1.85 + inX * 2.85,
+        floorY + 0.008,
+        center.z + doorZ + sideZ * 1.85 + inZ * 2.85,
+      );
+      floor.name = `${chunkId}_hall_lino_${idx}`;
+      floor.receiveShadow = true;
+      this.scene.add(floor);
+      chunk.meshes.push(floor);
+
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < 2; col += 1) {
+          const lx = doorX + sideX * (aisle + col * 1.12) + inX * (1.51 + row * 1.18);
+          const lz = doorZ + sideZ * (aisle + col * 1.12) + inZ * (1.51 + row * 1.18);
+          const desk = new THREE.Mesh(deskGeo, this.propMaterial);
+          desk.position.set(center.x + lx, floorY + 0.35, center.z + lz);
+          desk.rotation.y = faceYaw;
+          desk.castShadow = true;
+          desk.receiveShadow = true;
+          desk.name = row === 0 && col === 0
+            ? `${chunkId}_hall_desk_${idx}`
+            : `${chunkId}_hall_desk_${idx}_${row}${col}`;
+          this.scene.add(desk);
+          chunk.meshes.push(desk);
+          this.collisionWorld.addStaticBox(desk.name, desk.position, new THREE.Vector3(0.58, 0.7, 0.44), chunkId);
+
+          const chair = new THREE.Mesh(chairGeo, this.trimMaterial);
+          chair.position.set(
+            center.x + lx + sideX * 0.42,
+            floorY + 0.21,
+            center.z + lz + sideZ * 0.42,
+          );
+          chair.name = `${chunkId}_hall_chair_${idx}_${row}${col}`;
+          this.scene.add(chair);
+          chunk.meshes.push(chair);
+        }
+      }
+
+      const teacher = new THREE.Mesh(teacherGeo, this.propMaterial);
+      teacher.position.set(
+        center.x + doorX + sideX * 2.15 + inX * 4.52,
+        floorY + 0.37,
+        center.z + doorZ + sideZ * 2.15 + inZ * 4.52,
+      );
+      teacher.rotation.y = faceYaw;
+      teacher.name = `${chunkId}_hall_teacher_${idx}`;
+      teacher.castShadow = true;
+      this.scene.add(teacher);
+      chunk.meshes.push(teacher);
+      this.collisionWorld.addStaticBox(teacher.name, teacher.position, new THREE.Vector3(0.92, 0.74, 0.52), chunkId);
 
       const board = new THREE.Mesh(boardGeo, this.schoolBoardMat);
-      board.position.set(center.x + boardLx, floorY + 1.48, center.z + boardLz);
-      board.rotation.y = yaw;
+      const pinched = (southT && inZ > 0) || (northT && inZ < 0) || (westT && inX < 0) || (eastT && inX > 0);
+      const inner = pinched ? 3.35 : 4.85;
+      board.position.set(
+        center.x + doorX + sideX * inner + inX * 2.35,
+        floorY + 1.48,
+        center.z + doorZ + sideZ * inner + inZ * 2.35,
+      );
+      board.rotation.y = faceYaw;
       board.name = `${chunkId}_hall_board_${idx}`;
       this.scene.add(board);
       chunk.meshes.push(board);
 
-      const towardX = boardLx - lx;
-      const towardZ = boardLz - lz;
-      const towardLen = Math.hypot(towardX, towardZ) || 1;
-      const desk2 = new THREE.Mesh(deskGeo, this.propMaterial);
-      desk2.position.set(
-        center.x + lx + (towardX / towardLen) * 0.92,
-        floorY + 0.35,
-        center.z + lz + (towardZ / towardLen) * 0.92,
-      );
-      desk2.rotation.y = yaw;
-      desk2.name = `${chunkId}_hall_desk_${idx}_b`;
-      this.scene.add(desk2);
-      chunk.meshes.push(desk2);
-      this.collisionWorld.addStaticBox(desk2.name, desk2.position, new THREE.Vector3(0.58, 0.7, 0.44), chunkId);
+      for (const along of [-1.15, 1.35]) {
+        const glass = new THREE.Mesh(this.getBoxGeometry(0.72, 0.7, 0.04), this.schoolGlassMat);
+        glass.position.set(
+          center.x + doorX + sideX * (1.1 + along) + inX * 5.58,
+          floorY + 1.62,
+          center.z + doorZ + sideZ * (1.1 + along) + inZ * 5.58,
+        );
+        glass.rotation.y = faceYaw;
+        glass.name = `${chunkId}_hall_class_glass_${idx}_${along < 0 ? "a" : "b"}`;
+        this.scene.add(glass);
+        chunk.meshes.push(glass);
+      }
 
       const bag = new THREE.Mesh(this.getBoxGeometry(0.26, 0.2, 0.16), this.trimMaterial);
       bag.position.set(
-        center.x + lx + (awayX / awayLen) * 0.18 + (towardZ / towardLen) * 0.32,
+        center.x + firstDeskX + inX * 0.22 + sideX * -0.55,
         floorY + 0.1,
-        center.z + lz + (awayZ / awayLen) * 0.18 - (towardX / towardLen) * 0.32,
+        center.z + firstDeskZ + inZ * 0.22 + sideZ * -0.55,
       );
       bag.name = `${chunkId}_hall_bag_${idx}`;
       this.scene.add(bag);
@@ -2361,34 +2425,62 @@ export class BackroomsGenerator {
 
       const paper = new THREE.Mesh(this.getBoxGeometry(0.22, 0.012, 0.16), this.schoolPaperMat);
       paper.position.set(
-        center.x + lx + (towardZ / towardLen) * 0.48,
+        center.x + firstDeskX + sideX * 0.55,
         floorY + 0.01,
-        center.z + lz - (towardX / towardLen) * 0.48,
+        center.z + firstDeskZ + sideZ * 0.55,
       );
-      paper.rotation.y = yaw + 0.35;
+      paper.rotation.y = faceYaw + 0.35;
       paper.name = `${chunkId}_hall_paper_${idx}`;
       this.scene.add(paper);
       chunk.meshes.push(paper);
 
-      const glow = new THREE.PointLight(0x2a2018, 0.42, 3.4, 2.0);
-      glow.position.set(center.x + lx, floorY + 1.7, center.z + lz);
+      if (variant === 1) {
+        const fallen = new THREE.Mesh(chairGeo, this.trimMaterial);
+        fallen.position.set(
+          center.x + doorX + sideX * 3.1 + inX * 3.4,
+          floorY + 0.12,
+          center.z + doorZ + sideZ * 3.1 + inZ * 3.4,
+        );
+        fallen.rotation.set(1.15, faceYaw, 0.2);
+        fallen.name = `${chunkId}_hall_chair_fallen_${idx}`;
+        this.scene.add(fallen);
+        chunk.meshes.push(fallen);
+      }
+
+      const glow = new THREE.PointLight(0x3a2c1c, 0.58, 4.2, 2.0);
+      glow.position.set(
+        center.x + doorX + sideX * 1.8 + inX * 2.2,
+        floorY + 1.78,
+        center.z + doorZ + sideZ * 1.8 + inZ * 2.2,
+      );
       glow.name = `${chunkId}_hall_class_glow_${idx}`;
       this.scene.add(glow);
       chunk.meshes.push(glow);
+
+      const fluoro = new THREE.Mesh(this.getBoxGeometry(1.85, 0.04, 0.12), this.schoolFluoroMat);
+      fluoro.position.set(
+        center.x + doorX + sideX * 1.8 + inX * 2.2,
+        floorY + 2.64,
+        center.z + doorZ + sideZ * 1.8 + inZ * 2.2,
+      );
+      fluoro.rotation.y = faceYaw;
+      fluoro.name = `${chunkId}_hall_class_fluoro_${idx}`;
+      this.scene.add(fluoro);
+      chunk.meshes.push(fluoro);
       idx += 1;
     };
 
     if (ewChicane) {
-      place(-alcove + 1.7, -3.35, Math.PI, -alcove, -7.42);
-      place(alcove - 1.7, -3.35, Math.PI, alcove, -7.42);
-      place(-alcove + 1.7, 3.35, 0, -alcove, 7.42);
-      place(alcove - 1.7, 3.35, 0, alcove, 7.42);
+      dressNook(-alcove, -wall, 0, -1, 1, 0);
+      dressNook(alcove, -wall, 0, -1, -1, 0);
+      dressNook(-alcove, wall, 0, 1, 1, 0);
+      dressNook(alcove, wall, 0, 1, -1, 0);
     }
     if (nsChicane && !ewChicane) {
-      place(-3.35, -alcove + 1.7, Math.PI / 2, -7.42, -alcove);
-      place(-3.35, alcove - 1.7, Math.PI / 2, -7.42, alcove);
-      place(3.35, -alcove + 1.7, -Math.PI / 2, 7.42, -alcove);
-      place(3.35, alcove - 1.7, -Math.PI / 2, 7.42, alcove);
+      dressNook(-wall, -alcove, -1, 0, 0, 1);
+      dressNook(-wall, alcove, -1, 0, 0, -1);
+      dressNook(wall, -alcove, 1, 0, 0, 1);
+      dressNook(wall, alcove, 1, 0, 0, -1);
     }
   }
 
@@ -3605,10 +3697,10 @@ export class BackroomsGenerator {
     } else if (isArchive) {
       addDynamicCabinet("cabinet-archive", "서고 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
     } else if (chunk.cx === 1 && chunk.cz === 0) {
-      addDynamicCabinet("cabinet_chokepoint_1_0", "복도 신발장", [-5.25, 0.0, 5.25], -Math.PI / 2);
+      addDynamicCabinet("cabinet_chokepoint_1_0", "복도 신발장", [-5.25, 0.0, 5.25], 0);
       addDynamicCabinet("cabinet_chokepoint_1_0_n", "복도 신발장", [-5.25, 0.0, -5.25], Math.PI);
     } else if (chunk.cx === 0 && chunk.cz === 1) {
-      addDynamicCabinet("cabinet_junction_0_1", "교차로 신발장", [-5.25, 0.0, 5.25], -Math.PI / 2);
+      addDynamicCabinet("cabinet_junction_0_1", "교차로 신발장", [-5.25, 0.0, 5.25], 0);
     } else if (type === "omen_room") {
       addDynamicCabinet("cabinet-omen-room", "북실 신발장", [5.4, 0.0, -5.4], Math.PI / 2);
     } else if (type === "static_room") {
@@ -3639,13 +3731,23 @@ export class BackroomsGenerator {
 
     const hallLike = type === "start" || type === "corridor_ns" || type === "corridor_ew"
       || type === "t_junction" || type === "cross_junction" || type === "narrow_ns" || type === "dead_end";
+    const mazeChicanes = this.getHallChicanes(chunk.cx, chunk.cz);
+    const mazeHall = hallLike && (mazeChicanes.ew || mazeChicanes.ns);
+    const hallFacingYaw = (lx, lz) => {
+      if (mazeChicanes.ew && Math.abs(lz) >= Math.abs(lx) - 0.2) {
+        return lz > 0 ? 0 : Math.PI;
+      }
+      if (mazeChicanes.ns) {
+        return lx > 0 ? Math.PI / 2 : -Math.PI / 2;
+      }
+      return lz > 0 ? 0 : Math.PI;
+    };
     if (hallLike && chunk.cabinets.length === 0) {
-      const alcove = (chunk.cx + chunk.cz) % 2 === 0
-        ? { pos: [5.25, 0.0, 5.25], yaw: Math.PI / 2 }
-        : { pos: [-5.25, 0.0, 5.25], yaw: -Math.PI / 2 };
-      addDynamicCabinet(`cabinet_hall_${chunk.cx}_${chunk.cz}`, "신발장", alcove.pos, alcove.yaw);
+      const south = (chunk.cx + chunk.cz) % 2 === 0
+        ? [5.25, 0.0, 5.25]
+        : [-5.25, 0.0, 5.25];
+      addDynamicCabinet(`cabinet_hall_${chunk.cx}_${chunk.cz}`, "신발장", south, hallFacingYaw(south[0], south[2]));
     }
-    const mazeHall = hallLike && (this.getHallChicanes(chunk.cx, chunk.cz).ew || this.getHallChicanes(chunk.cx, chunk.cz).ns);
     if (mazeHall && chunk.cabinets.length === 1) {
       const first = chunk.cabinets[0];
       const lx = first.position.x - center.x;
@@ -3654,7 +3756,7 @@ export class BackroomsGenerator {
         `cabinet_hall2_${chunk.cx}_${chunk.cz}`,
         "반대편 신발장",
         [lx, 0.0, -lz],
-        lz > 0 ? Math.PI : 0,
+        hallFacingYaw(lx, -lz),
       );
     }
     const addLoreNote = (id, localPos, yaw, body) => {

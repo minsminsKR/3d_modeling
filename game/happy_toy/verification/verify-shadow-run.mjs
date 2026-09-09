@@ -281,6 +281,9 @@ try {
       hallStripe: names(hall).some((name) => name.includes("hall_stripe_")),
       hallWindow: names(hall).some((name) => name.includes("hall_window_")),
       hallDesk: names(hall).some((name) => name.includes("hall_desk_")),
+      hallDeskCount: names(hall).filter((name) => name.includes("hall_desk_")).length,
+      hallLino: names(hall).some((name) => name.includes("hall_lino_")),
+      hallTeacher: names(hall).some((name) => name.includes("hall_teacher_")),
       hallPa: names(hall).some((name) => name.includes("hall_pa_")),
       hallClock: names(hall).some((name) => name.includes("hall_clock")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
@@ -563,6 +566,9 @@ try {
   assert.equal(rooms.hallStripe, true, "school hallway stripe must run the center corridor");
   assert.equal(rooms.hallWindow, true, "classroom doors must have dark windows");
   assert.equal(rooms.hallDesk, true, "classroom desks must be visible through hall doors");
+  assert.ok(rooms.hallDeskCount >= 8, `classroom desk rows missing: ${rooms.hallDeskCount}`);
+  assert.equal(rooms.hallLino, true, "classrooms must have a linoleum floor");
+  assert.equal(rooms.hallTeacher, true, "classrooms must have a teacher desk");
   assert.equal(rooms.hallPa, true, "school halls must hang a PA speaker");
   assert.equal(rooms.hallClock, true, "school halls must have a stopped clock");
   assert.equal(rooms.hallJog, false, "east 1F halls must keep the z=0 spine open");
