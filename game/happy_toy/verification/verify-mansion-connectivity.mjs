@@ -100,8 +100,8 @@ try {
 
     const alcoveStart = pathTo({ x: -5.1, y: 0.9, z: -5.1 });
     const alcoveCorridor = pathTo({ x: -5.1, y: 0.9, z: -16 });
-    const omenRoom = pathTo({ x: -16, y: 0.9, z: -32 });
-    const staticRoom = pathTo({ x: 16, y: 0.9, z: -32 });
+    const omenRoom = pathTo({ x: -16, y: 0.9, z: -28.6 });
+    const staticRoom = pathTo({ x: 16, y: 0.9, z: -28.6 });
 
     const sampleBlocked = (x, z) => collision.isCircleBlocked({ x, y: 0.9, z }, 0.34);
     const sampleWalkable = (x, z) => collision.getSurfaceAt({ x, y: 0.9, z }).walkable;
@@ -119,11 +119,12 @@ try {
       staticLen: staticRoom.length,
       alcoveStartBlocked: sampleBlocked(-5.1, -5.1),
       alcoveCorridorBlocked: sampleBlocked(-5.1, -16),
-      omenWalkable: sampleWalkable(-16, -32),
-      staticWalkable: sampleWalkable(16, -32),
+      omenWalkable: sampleWalkable(-16, -28.6),
+      staticWalkable: sampleWalkable(16, -28.6),
     };
   });
 
+  console.log(result);
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.equal(result.mismatched.length, 0, `unilateral openings: ${result.mismatched.join(", ")}`);
   assert.equal(result.reachable, 25, `reachable playable cells: ${result.reachable}`);

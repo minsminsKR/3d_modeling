@@ -25,7 +25,7 @@ try {
     game.flashlightController.setEnabled(true, false);
     game.flashlightController.batteryLevel = 1;
 
-    const sample = (distance, frames = 180) => {
+    const sample = (distance, frames = 420) => {
       game.getMinMonsterDistance = () => distance;
       const values = [];
       for (let i = 0; i < frames; i += 1) {
@@ -49,7 +49,7 @@ try {
     const far = sample(40);
     const close = sample(1.35);
     document.body.classList.add("reduced-motion");
-    const reduced = sample(1.35, 90);
+    const reduced = sample(1.35, 180);
     document.body.classList.remove("reduced-motion");
 
     return {
