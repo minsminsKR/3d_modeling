@@ -317,10 +317,15 @@ export class MapBuilder {
 
   getRoomPlateMaterial(chunk, slot = 0) {
     if (!this.roomPlateCache) this.roomPlateCache = new Map();
+    const kind = this.generator?.getHallNookKind?.(chunk.cx, chunk.cz, slot) || "class";
     const n = Math.abs(chunk.cx) * 12 + Math.abs(chunk.cz) * 5 + slot + (chunk.cx >= 4 ? 40 : 0);
     const grade = (n % 3) + 1;
     const klass = (n % 9) + 1;
-    const label = chunk.cx >= 4 ? `별 ${grade}-${klass}` : `${grade}-${klass} 교실`;
+    const annex = chunk.cx >= 4;
+    let label = annex ? `별 ${grade}-${klass}` : `${grade}-${klass} 교실`;
+    if (kind === "library") label = annex ? "별 도서실" : "도서실";
+    else if (kind === "washroom") label = annex ? "별 화장실" : "화장실";
+    else if (kind === "boarded") label = "폐쇄";
     if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;
@@ -330,8 +335,8 @@ export class MapBuilder {
     ctx.fillRect(0, 0, 256, 96);
     ctx.fillStyle = "#3a2a18";
     ctx.fillRect(6, 6, 244, 84);
-    ctx.fillStyle = "#c4b089";
-    ctx.font = "28px serif";
+    ctx.fillStyle = kind === "boarded" ? "#8a4030" : "#c4b089";
+    ctx.font = label.length > 6 ? "24px serif" : "28px serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(label, 128, 48);

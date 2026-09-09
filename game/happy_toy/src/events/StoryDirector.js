@@ -63,6 +63,33 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x < -18 && Math.abs(z) < 1.8) {
+      this.fire(
+        "library",
+        "library",
+        "도서실입니다. 창이 판자로 막혀 있습니다. 책을 믿지 마십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 26 && x < 40 && Math.abs(z) < 1.8) {
+      this.fire(
+        "washroom",
+        "washroom",
+        "화장실 문이 안쪽에서 잠겨 있습니다. 물을 틀지 마십시오.",
+        "drip",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && z > 14 && Math.abs(x) < 1.8) {
+      this.fire(
+        "boarded",
+        "boarded",
+        "폐쇄된 교실입니다. 칠판의 출석을 읽지 마십시오.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && Math.hypot(x - 16, z - 24.8) < 5.2) {
       this.fire(
         "stairB1",

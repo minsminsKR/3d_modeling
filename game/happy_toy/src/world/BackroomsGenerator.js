@@ -310,6 +310,25 @@ export class BackroomsGenerator {
     };
   }
 
+  getHallNookKind(cx, cz, idx = 0) {
+    // (1,0) is the verified classroom wing — keep desk rows there.
+    if (cx === 1 && cz === 0) return "class";
+    if (cx === 0 && cz === 0) return "class";
+    const authored = {
+      "-1,0": ["library", "class", "boarded", "class"],
+      "2,0": ["washroom", "class", "class", "empty"],
+      "0,1": ["class", "boarded", "class", "library"],
+      "0,-1": ["class", "class", "washroom", "empty"],
+      "4,0": ["library", "class", "boarded", "class"],
+      "-2,0": ["empty", "class", "library", "class"],
+      "5,0": ["class", "washroom", "class", "boarded"],
+    };
+    const row = authored[`${cx},${cz}`];
+    if (row) return row[idx] || "class";
+    const kinds = ["class", "class", "library", "boarded", "class", "washroom", "empty", "class"];
+    return kinds[Math.abs(cx * 19 + cz * 13 + idx * 7) % kinds.length];
+  }
+
   isHallChunk(cx, cz) {
     const type = this.getChunkType(cx, cz);
     return type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
@@ -2499,6 +2518,14 @@ export class BackroomsGenerator {
 
     const dressNook = (doorX, doorZ, inX, inZ, sideX, sideZ) => {
       const faceYaw = Math.atan2(sideX, sideZ);
+      const kind = this.getHallNookKind(chunk.cx, chunk.cz, idx);
+      if (kind !== "class") {
+        this.dressSpecialHallNook(chunk, chunkId, center, floorY, {
+          doorX, doorZ, inX, inZ, sideX, sideZ, idx, kind, faceYaw,
+        });
+        idx += 1;
+        return;
+      }
       const variant = Math.abs((chunk.cx * 13 + chunk.cz * 7 + idx) % 3);
       const rows = variant === 2 ? 1 : 2;
       const aisle = 1.7;
@@ -2666,6 +2693,155 @@ export class BackroomsGenerator {
       dressNook(wall, -alcove, 1, 0, 0, 1);
       dressNook(wall, alcove, 1, 0, 0, -1);
     }
+  }
+
+  dressSpecialHallNook(chunk, chunkId, center, floorY, spec) {
+    const { doorX, doorZ, inX, inZ, sideX, sideZ, idx, kind, faceYaw } = spec;
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolLinoMat) {
+      this.schoolLinoMat = new THREE.MeshStandardMaterial({
+        color: 0x2a2218,
+        roughness: 0.94,
+        metalness: 0,
+      });
+    }
+    if (!this.schoolWashMat) {
+      this.schoolWashMat = new THREE.MeshStandardMaterial({
+        color: 0x2a3230,
+        roughness: 0.82,
+        metalness: 0.04,
+      });
+    }
+    if (!this.schoolShelfMat) {
+      this.schoolShelfMat = (this.schoolDeskDark || this.trimMaterial).clone();
+      this.schoolShelfMat.color.setHex(0x2c1c12);
+    }
+    if (!this.schoolPlywoodMat) {
+      this.schoolPlywoodMat = new THREE.MeshStandardMaterial({
+        color: 0x4a3824,
+        roughness: 0.92,
+        metalness: 0,
+      });
+    }
+    const alongSide = 3.15;
+    const alongIn = 4.35;
+    const floor = new THREE.Mesh(
+      this.getBoxGeometry(
+        Math.abs(sideX) * alongSide + Math.abs(inX) * alongIn,
+        0.02,
+        Math.abs(sideZ) * alongSide + Math.abs(inZ) * alongIn,
+      ),
+      kind === "washroom" ? this.schoolWashMat : this.schoolLinoMat,
+    );
+    floor.position.set(
+      center.x + doorX + sideX * 1.85 + inX * 2.85,
+      floorY + 0.008,
+      center.z + doorZ + sideZ * 1.85 + inZ * 2.85,
+    );
+    floor.name = `${chunkId}_hall_lino_${idx}`;
+    floor.receiveShadow = true;
+    this.scene.add(floor);
+    chunk.meshes.push(floor);
+
+    const pos = (along, inward, y = 0) => ({
+      x: center.x + doorX + sideX * along + inX * inward,
+      y: floorY + y,
+      z: center.z + doorZ + sideZ * along + inZ * inward,
+    });
+    const boxSize = (sideLen, inLen) => ([
+      Math.abs(sideX) * sideLen + Math.abs(inX) * inLen,
+      Math.abs(sideZ) * sideLen + Math.abs(inZ) * inLen,
+    ]);
+
+    if (kind === "library") {
+      for (const along of [1.15, 2.35, 3.45]) {
+        const shelf = pos(along, 3.55, 0.85);
+        const [shelfX, shelfZ] = boxSize(0.92, 0.28);
+        this.placeDressedBox(
+          chunk, chunkId, `hall_shelf_${idx}_${along < 2 ? "a" : along < 3 ? "b" : "c"}`,
+          shelf.x, shelf.y, shelf.z, shelfX, 1.62, shelfZ, this.schoolShelfMat,
+        );
+        const books = new THREE.Mesh(this.getBoxGeometry(0.84, 0.12, 0.18), this.schoolPaperMat);
+        books.position.set(shelf.x + inX * 0.08, floorY + 1.12, shelf.z + inZ * 0.08);
+        books.rotation.y = faceYaw;
+        books.name = `${chunkId}_hall_books_${idx}_${along}`;
+        this.addSchoolProp(chunk, books);
+      }
+      const table = pos(2.2, 1.85, 0.37);
+      this.addSchoolDeskGroup(
+        chunk, chunkId, `${chunkId}_hall_read_${idx}`,
+        table.x, table.y, table.z, faceYaw, [0.92, 0.74, 0.52], "teacher",
+      );
+    } else if (kind === "washroom") {
+      for (let i = 0; i < 3; i += 1) {
+        const stall = pos(1.35 + i * 0.92, 3.05, 0.78);
+        const [stallX, stallZ] = boxSize(0.04, 0.82);
+        this.placeDressedBox(
+          chunk, chunkId, `hall_stall_${idx}_${i}`,
+          stall.x, stall.y, stall.z, stallX, 1.48, stallZ, this.trimMaterial,
+        );
+      }
+      for (const along of [1.45, 2.35, 3.25]) {
+        const sink = pos(along, 4.35, 0.42);
+        const [sinkX, sinkZ] = boxSize(0.42, 0.32);
+        this.placeDressedBox(
+          chunk, chunkId, `hall_sink_${idx}_${along < 2 ? "a" : along < 3 ? "b" : "c"}`,
+          sink.x, sink.y, sink.z, sinkX, 0.18, sinkZ, this.schoolWashMat,
+        );
+      }
+      const mirror = new THREE.Mesh(this.getBoxGeometry(1.55, 0.55, 0.03), this.schoolGlassMat);
+      const mirrorPos = pos(2.35, 5.15, 1.48);
+      mirror.position.set(mirrorPos.x, mirrorPos.y, mirrorPos.z);
+      mirror.rotation.y = faceYaw;
+      mirror.name = `${chunkId}_hall_class_glass_${idx}_a`;
+      this.scene.add(mirror);
+      chunk.meshes.push(mirror);
+    } else if (kind === "boarded") {
+      for (const along of [-1.15, 1.35]) {
+        const board = new THREE.Mesh(this.getBoxGeometry(0.78, 0.78, 0.05), this.schoolPlywoodMat);
+        board.position.set(
+          center.x + doorX + sideX * (1.1 + along) + inX * 5.58,
+          floorY + 1.62,
+          center.z + doorZ + sideZ * (1.1 + along) + inZ * 5.58,
+        );
+        board.rotation.y = faceYaw;
+        board.name = `${chunkId}_hall_class_${idx}_board_${along < 0 ? "a" : "b"}`;
+        this.scene.add(board);
+        chunk.meshes.push(board);
+      }
+      const stack = pos(2.4, 3.2, 0.28);
+      this.placeDressedBox(
+        chunk, chunkId, `hall_boarded_stack_${idx}`,
+        stack.x, stack.y, stack.z, 0.62, 0.48, 0.48, this.schoolDeskDark || this.trimMaterial,
+      );
+      this.addSchoolChairGroup(
+        chunk, chunkId, `${chunkId}_hall_chair_fallen_${idx}`,
+        stack.x + sideX * 0.55, floorY + 0.12, stack.z + sideZ * 0.55, faceYaw,
+        { fallen: true, collideH: 0.42 },
+      );
+      this.addChalkboardGroup(
+        chunk, chunkId, `${chunkId}_hall_board_${idx}`,
+        pos(2.2, 4.4, 1.48).x, pos(2.2, 4.4, 1.48).y, pos(2.2, 4.4, 1.48).z, faceYaw,
+      );
+    } else {
+      const piled = pos(2.8, 3.6, 0.38);
+      this.addSchoolDeskGroup(
+        chunk, chunkId, `${chunkId}_hall_empty_desk_${idx}`,
+        piled.x, piled.y, piled.z, faceYaw, [0.58, 0.7, 0.44],
+      );
+      this.addSchoolChairGroup(
+        chunk, chunkId, `${chunkId}_hall_chair_fallen_${idx}`,
+        piled.x + inX * 0.7, floorY + 0.12, piled.z + inZ * 0.7, faceYaw,
+        { fallen: true, collideH: 0.42 },
+      );
+    }
+
+    const glow = new THREE.PointLight(kind === "washroom" ? 0x1c2a28 : 0x3a2c1c, 0.12, 2.6, 2.2);
+    const glowPos = pos(1.8, 2.2, 1.78);
+    glow.position.set(glowPos.x, glowPos.y, glowPos.z);
+    glow.name = `${chunkId}_hall_class_glow_${idx}`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
   }
 
   dressClassroomNookClutter(chunk, chunkId, center, floorY, doorX, doorZ, inX, inZ, sideX, sideZ, idx, variant, faceYaw) {
@@ -4013,7 +4189,7 @@ export class BackroomsGenerator {
         "북쪽 미로에서 그림자가 손전등을 보면 멈춘다. 보지 않으면 다가온다.");
     } else if (type === "nurse_office") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
-        "보건실 장부에 출석이 끝나지 않은 이름이 넷이다. 별관에서 같은 신발을 두 번 보지 마십시오.");
+        "보건실 장부에 출석이 끝나지 않은 이름이 넷이다. 별관에서 문이 다르면 길을 외우십시오.");
     } else if (type === "music_room") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
         "피아노 뚜껑이 열린 채로 녹슬어 있다. 한 음이 모자라면 복도가 당신의 이름을 외운다.");
@@ -4034,8 +4210,19 @@ export class BackroomsGenerator {
     } else if (isStorage) {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
         "창고 선반 뒤에 도자기 열쇠가 있다. 문을 닫아 추격을 끊으십시오.");
-    } else if (hallLike && (Math.abs(chunk.cx) + Math.abs(chunk.cz)) % 2 === 1) {
-      addLoreNote(`${chunkId}_lore`, [-1.18, 1.38, -5.4], Math.PI / 2);
+    } else if (hallLike && type !== "start") {
+      const kinds = [0, 1, 2, 3].map((slot) => this.getHallNookKind(chunk.cx, chunk.cz, slot));
+      let body = "교실 번호가 어제와 같다. 창밖의 운동장은 없다.";
+      if (kinds.includes("library")) {
+        body = "도서실 창이 판자로 막혀 있다. 대출 장부에 같은 이름이 네 번 적혀 있다.";
+      } else if (kinds.includes("washroom")) {
+        body = "화장실 수도가 혼자 열린다. 거울에 손전등을 대지 마라.";
+      } else if (kinds.includes("boarded")) {
+        body = "폐쇄된 교실의 출석부가 어제 날짜로 멈춰 있다. 칠판을 읽지 마라.";
+      } else if (kinds.includes("empty")) {
+        body = "책상을 걷어낸 교실이다. 분필 가루만 복도로 샌다.";
+      }
+      addLoreNote(`${chunkId}_lore`, [-1.18, 1.38, -5.4], Math.PI / 2, body);
     }
 
     if (isWorkshop) {

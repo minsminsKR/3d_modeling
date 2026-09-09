@@ -251,6 +251,8 @@ try {
     const uncatHall = generator.generateChunk(0, 1);
     const b1 = generator.generateChunk(1, 2);
     const f2 = generator.generateChunk(-1, -1);
+    const westHall = generator.generateChunk(-1, 0);
+    const eastWing = generator.generateChunk(2, 0);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
     game._lastPlayerChunkCx = 4;
@@ -260,6 +262,12 @@ try {
     game.onEnterSchoolChunk(8, 2);
     game.onEnterSchoolChunk(6, 1);
     game.onEnterSchoolChunk(6, -2);
+    game.player.setPosition({ x: -20, y: 0, z: 0 });
+    for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
+    game.player.setPosition({ x: 32, y: 0, z: 0 });
+    for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
+    game.player.setPosition({ x: 0, y: 0, z: 16 });
+    for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
     return {
       nurseType: nurse.type,
       musicType: music.type,
@@ -286,6 +294,9 @@ try {
       hallTeacher: names(hall).some((name) => name.includes("hall_teacher_")),
       hallPa: names(hall).some((name) => name.includes("hall_pa_")),
       hallClock: names(hall).some((name) => name.includes("hall_clock")),
+      hallLibrary: names(westHall).some((name) => name.includes("hall_shelf_")),
+      hallWash: names(eastWing).some((name) => name.includes("hall_stall_") || name.includes("hall_sink_")),
+      hallBoarded: names(uncatHall).some((name) => name.includes("hall_class_") && name.includes("_board_")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
@@ -571,6 +582,9 @@ try {
   assert.equal(rooms.hallTeacher, true, "classrooms must have a teacher desk");
   assert.equal(rooms.hallPa, true, "school halls must hang a PA speaker");
   assert.equal(rooms.hallClock, true, "school halls must have a stopped clock");
+  assert.equal(rooms.hallLibrary, true, "west school hall must open a library nook");
+  assert.equal(rooms.hallWash, true, "east school hall must open a washroom nook");
+  assert.equal(rooms.hallBoarded, true, "Uncat south hall must have a boarded classroom");
   assert.equal(rooms.hallJog, false, "east 1F halls must keep the z=0 spine open");
   assert.equal(rooms.hallJogE, false, "east 1F halls must not block the east arm with a jog");
   assert.equal(rooms.hallJogNs, false, "north 1F halls must keep the x=0 spine open");
