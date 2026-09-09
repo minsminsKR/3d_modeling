@@ -89,11 +89,15 @@ try {
       state: uncat.state,
     };
 
-    const bendCab = (game.cabinets || []).find((item) => (
+    const hallCabinets = game.mapBuilder.generator.generateChunk(1, 0).cabinets || [];
+    const bendCab = [...(game.cabinets || []), ...hallCabinets].find((item) => (
       Math.abs((item.position?.y || 0)) < 1.2
       && Math.hypot((item.position?.x || 0) - 10.75, (item.position?.z || 0) - 5.25) < 4
     ));
-    let bendHide = { cabinet: Boolean(bendCab) };
+    if (bendCab && !(game.cabinets || []).includes(bendCab)) {
+      game.cabinets.push(bendCab);
+    }
+    let bendHide = { cabinet: Boolean(bendCab), x: bendCab?.position?.x ?? null, z: bendCab?.position?.z ?? null };
     if (bendCab) {
       uncat.group.position.set(16, 0, 2.6);
       uncat.state = "chase";

@@ -73,11 +73,50 @@ const chaseInfo = await page.evaluate(() => {
 await page.screenshot({ path: path.join(outDir, "f1_uncat_s_bend_chase.png"), timeout: 120000 });
 console.log("uncat overlay", chaseInfo);
 
+const hideInfo = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  const cab = (game.cabinets || []).find((item) => (
+    Math.abs((item.position?.y || 0)) < 1.2
+    && Math.hypot((item.position?.x || 0) - 10.75, (item.position?.z || 0) - 5.25) < 2.4
+  )) || game.mapBuilder.generator.generateChunk(1, 0).cabinets?.[0];
+  if (!cab) return { hidden: false };
+  if (!(game.cabinets || []).includes(cab)) game.cabinets.push(cab);
+  game.player.setPosition({ x: cab.position.x, y: 0, z: cab.position.z + 0.9 });
+  for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  game.enterCabinet(cab, { forceOutcome: "safe" });
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(12.35, 0, 4.85);
+  uncat.group.lookAt(cab.position.x, 1.2, cab.position.z);
+  uncat.state = "investigateCabinet";
+  uncat.cabinetTarget = cab;
+  game.hud.setPrompt("");
+  game.hud.setStatus("신발장 안에서. 꺾인 복도의 발소리가 문을 두드립니다.", 4200);
+  game.player.applyCabinetView?.();
+  game.renderer.render(game.scene, game.camera);
+  return {
+    hidden: game.player.isHidden === true,
+    cabX: cab.position.x,
+    cabZ: cab.position.z,
+    uncatVisible: uncat.group.visible === true,
+  };
+});
+await page.screenshot({ path: path.join(outDir, "f1_s_bend_locker_hide.png"), timeout: 120000 });
+console.log("locker hide", hideInfo);
+
 if (!chase.flashlight || chase.intensity < 8) {
   throw new Error(`east S-bend chase capture failed: ${JSON.stringify(chase)}`);
 }
 if (!chaseInfo.visible) {
   throw new Error(`Uncat missing in S-bend chase: ${JSON.stringify(chaseInfo)}`);
+}
+if (!hideInfo.hidden) {
+  throw new Error(`S-bend locker hide capture failed: ${JSON.stringify(hideInfo)}`);
 }
 
 console.log("ok");

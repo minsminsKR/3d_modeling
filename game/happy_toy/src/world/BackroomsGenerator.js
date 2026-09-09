@@ -3135,7 +3135,8 @@ export class BackroomsGenerator {
     } else if (isArchive) {
       addDynamicCabinet("cabinet-archive", "서고 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
     } else if (chunk.cx === 1 && chunk.cz === 0) {
-      addDynamicCabinet("cabinet_chokepoint_1_0", "복도 신발장", [5.2, 0.0, -5.2], Math.PI / 2);
+      // Odd EW S-bend: SW alcove off the south jog, not the boxed NE corner.
+      addDynamicCabinet("cabinet_chokepoint_1_0", "복도 신발장", [-5.25, 0.0, 5.25], -Math.PI / 2);
     } else if (chunk.cx === 0 && chunk.cz === 1) {
       addDynamicCabinet("cabinet_junction_0_1", "교차로 신발장", [-5.2, 0.0, 5.2], -Math.PI / 2);
     } else if (type === "omen_room") {

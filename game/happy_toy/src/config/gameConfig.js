@@ -751,7 +751,9 @@ export const ENEMY_CONFIGS = [
     postCabinetWaitSeconds: 0.8,
     lookAroundTurnSpeed: 0.36,
     waypoints: [
+      [10.8, 0, 5.2],
       [11.5, 0, 2.6],
+      [12.2, 0, 2.55],
       [16.0, 0, 2.6],
       [20.5, 0, -2.6],
       [27.5, 0, 2.6],
