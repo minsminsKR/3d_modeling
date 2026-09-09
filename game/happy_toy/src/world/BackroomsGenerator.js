@@ -1891,6 +1891,7 @@ export class BackroomsGenerator {
     }
     if (maze) {
       this.dressHallLockerBanks(chunk, center, chunkId, floorY, openings);
+      this.dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
     }
     const gloom = new THREE.PointLight(0x4a3020, 1.15, 5.4, 2.0);
     gloom.position.set(
@@ -2084,6 +2085,160 @@ export class BackroomsGenerator {
     const ez = along(ringE);
     placeBank("hall_lockers_e_n", inset, -ez, depth, bank);
     placeBank("hall_lockers_e_s", inset, ez, depth, bank);
+  }
+
+  dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
+    // Turn the leftover outer ring into a school hallway: classroom
+    // inner walls with door gaps at the plus arm and the S-bend
+    // connections, a floor stripe, dead fluorescents, and dark windows.
+    if (!this.schoolClassWallMat) {
+      this.schoolClassWallMat = this.textures.createWallMaterial().clone();
+      this.schoolClassWallMat.color.setHex(0x2a221c);
+      this.schoolClassDoorMat = this.textures.createClassroomDoorMaterial();
+      this.schoolGlassMat = new THREE.MeshStandardMaterial({
+        color: 0x07080a,
+        roughness: 0.22,
+        metalness: 0.18,
+        emissive: 0x04060a,
+        emissiveIntensity: 0.08,
+      });
+      this.schoolStripeMat = new THREE.MeshStandardMaterial({
+        color: 0x1a120e,
+        roughness: 0.95,
+        metalness: 0,
+      });
+      this.schoolFluoroMat = new THREE.MeshStandardMaterial({
+        color: 0x3a4038,
+        roughness: 0.45,
+        metalness: 0.12,
+        emissive: 0x1a1810,
+        emissiveIntensity: 0.06,
+      });
+      this.schoolPaperMat = new THREE.MeshStandardMaterial({
+        color: 0xc4b090,
+        roughness: 0.92,
+        metalness: 0,
+      });
+    }
+    const t = 0.28;
+    const inner = 5.52;
+    const y = floorY + 1.4;
+    const h = 2.8;
+    const walls = [];
+    const add = (name, x, z, sx, sz) => walls.push([name, x, z, sx, sz]);
+    if (ewChicane) {
+      add("hall_class_n_far_w", -6.5, -inner, 1.8, t);
+      add("hall_class_n_mid_w", -2.35, -inner, 2.1, t);
+      add("hall_class_n_mid_e", 2.35, -inner, 2.1, t);
+      add("hall_class_n_far_e", 6.5, -inner, 1.8, t);
+      add("hall_class_s_far_w", -6.5, inner, 1.8, t);
+      add("hall_class_s_mid_w", -2.35, inner, 2.1, t);
+      add("hall_class_s_mid_e", 2.35, inner, 2.1, t);
+      add("hall_class_s_far_e", 6.5, inner, 1.8, t);
+    }
+    if (nsChicane) {
+      add("hall_class_w_far_n", -inner, -6.5, t, 1.8);
+      add("hall_class_w_mid_n", -inner, -2.35, t, 2.1);
+      add("hall_class_w_mid_s", -inner, 2.35, t, 2.1);
+      add("hall_class_w_far_s", -inner, 6.5, t, 1.8);
+      add("hall_class_e_far_n", inner, -6.5, t, 1.8);
+      add("hall_class_e_mid_n", inner, -2.35, t, 2.1);
+      add("hall_class_e_mid_s", inner, 2.35, t, 2.1);
+      add("hall_class_e_far_s", inner, 6.5, t, 1.8);
+    }
+    for (const [name, x, z, sx, sz] of walls) {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        center.x + x, y, center.z + z, sx, h, sz,
+        this.schoolClassWallMat,
+      );
+    }
+
+    const doorH = 2.15;
+    const doorY = floorY + 1.12;
+    const panel = (name, x, z, sx, sz) => {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        center.x + x, doorY, center.z + z, sx, doorH, sz,
+        this.schoolClassDoorMat, false,
+      );
+    };
+    const glass = (name, x, z, sx, sy, sz) => {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        center.x + x, floorY + 1.72, center.z + z, sx, sy, sz,
+        this.schoolGlassMat, false,
+      );
+    };
+    if (ewChicane) {
+      panel("hall_class_door_n_w", -2.35, -inner - 0.16, 1.05, 0.04);
+      panel("hall_class_door_n_e", 2.35, -inner - 0.16, 1.05, 0.04);
+      panel("hall_class_door_s_w", -2.35, inner + 0.16, 1.05, 0.04);
+      panel("hall_class_door_s_e", 2.35, inner + 0.16, 1.05, 0.04);
+      glass("hall_window_n_w", -2.35, -inner - 0.19, 0.28, 0.32, 0.03);
+      glass("hall_window_n_e", 2.35, -inner - 0.19, 0.28, 0.32, 0.03);
+      glass("hall_window_s_w", -2.35, inner + 0.19, 0.28, 0.32, 0.03);
+      glass("hall_window_s_e", 2.35, inner + 0.19, 0.28, 0.32, 0.03);
+      this.placeDressedBox(
+        chunk, chunkId, "hall_window_n_transom",
+        center.x, floorY + 2.42, center.z - 7.55, 1.2, 0.36, 0.05,
+        this.schoolGlassMat, false,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, "hall_window_s_transom",
+        center.x, floorY + 2.42, center.z + 7.55, 1.2, 0.36, 0.05,
+        this.schoolGlassMat, false,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, "hall_stripe_n",
+        center.x, floorY + 0.012, center.z - 6.4, 14.6, 0.02, 0.09,
+        this.schoolStripeMat, false,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, "hall_stripe_s",
+        center.x, floorY + 0.012, center.z + 6.4, 14.6, 0.02, 0.09,
+        this.schoolStripeMat, false,
+      );
+      for (const [name, x] of [["hall_fluoro_n_w", -4.2], ["hall_fluoro_n_e", 4.2]]) {
+        this.placeDressedBox(
+          chunk, chunkId, name,
+          center.x + x, floorY + 2.68, center.z - 6.4, 2.35, 0.05, 0.14,
+          this.schoolFluoroMat, false,
+        );
+      }
+      this.placeDressedBox(
+        chunk, chunkId, "hall_paper_n",
+        center.x + 2.35, floorY + 1.55, center.z - inner - 0.18,
+        0.42, 0.55, 0.02, this.schoolPaperMat, false,
+      );
+    }
+    if (nsChicane) {
+      panel("hall_class_door_w_n", -inner - 0.16, -2.35, 0.04, 1.05);
+      panel("hall_class_door_w_s", -inner - 0.16, 2.35, 0.04, 1.05);
+      panel("hall_class_door_e_n", inner + 0.16, -2.35, 0.04, 1.05);
+      panel("hall_class_door_e_s", inner + 0.16, 2.35, 0.04, 1.05);
+      glass("hall_window_w_n", -inner - 0.19, -2.35, 0.03, 0.32, 0.28);
+      glass("hall_window_w_s", -inner - 0.19, 2.35, 0.03, 0.32, 0.28);
+      glass("hall_window_e_n", inner + 0.19, -2.35, 0.03, 0.32, 0.28);
+      glass("hall_window_e_s", inner + 0.19, 2.35, 0.03, 0.32, 0.28);
+      this.placeDressedBox(
+        chunk, chunkId, "hall_stripe_w",
+        center.x - 6.4, floorY + 0.012, center.z, 0.09, 0.02, 14.6,
+        this.schoolStripeMat, false,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, "hall_stripe_e",
+        center.x + 6.4, floorY + 0.012, center.z, 0.09, 0.02, 14.6,
+        this.schoolStripeMat, false,
+      );
+      for (const [name, z] of [["hall_fluoro_w_n", -4.2], ["hall_fluoro_w_s", 4.2]]) {
+        this.placeDressedBox(
+          chunk, chunkId, name,
+          center.x - 6.4, floorY + 2.68, center.z + z, 0.14, 0.05, 2.35,
+          this.schoolFluoroMat, false,
+        );
+      }
+    }
   }
 
   dressClassroom(chunk, center, chunkId, floorY) {

@@ -54,7 +54,7 @@ export class StoryDirector {
       );
     }
 
-    if (y > -1.2 && y < 2.2 && x > 24 && Math.abs(z + 6.4) < 1.7) {
+    if (y > -1.2 && y < 2.2 && x > 16 && Math.abs(z + 6.4) < 1.7) {
       this.fire(
         "f1ring",
         "f1ring",

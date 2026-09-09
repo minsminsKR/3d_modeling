@@ -235,6 +235,8 @@ try {
     floors.hallRib = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_rib") || String(mesh.name || "").includes("hall_maze_pocket"));
     floors.northRib = (northHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_rib") || String(mesh.name || "").includes("hall_maze_pocket"));
     floors.hallLockers = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_lockers_"));
+    floors.hallClass = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_class_"));
+    floors.hallStripe = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_stripe_"));
     floors.uncatSpineClear = !(uncatHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog"));
     game.player.setPosition({ x: 80, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
@@ -364,6 +366,8 @@ try {
   assert.equal(result.ringHide.hidden, true, "player must hide from the outer ring");
   assert.equal(result.ringHide.investigating, true, "Uncat must check the outer-ring locker");
   assert.equal(result.floors.hallLockers, true, "maze halls must have locker banks along the outer walls");
+  assert.equal(result.floors.hallClass, true, "outer ring must be a school hallway with classroom walls");
+  assert.equal(result.floors.hallStripe, true, "school hallway stripe must exist");
   assert.notEqual(result.deepWing.chunkType, "void", "별관 must continue the 1F school");
   assert.ok(
     result.deepWing.openings.W || result.deepWing.openings.E || result.deepWing.openings.N || result.deepWing.openings.S,

@@ -151,6 +151,40 @@ await page.evaluate(() => {
 await page.screenshot({ path: path.join(outDir, "f1_outer_ring_lockers_uncat.png"), timeout: 120000 });
 console.log("lockers", lockers);
 
+const schoolHall = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  game.mapBuilder.generator.generateChunk(1, 0);
+  game.mapBuilder.generator.generateChunk(2, 0);
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(19.8, 0, -6.35);
+  uncat.group.lookAt(12.6, 1.2, -6.35);
+  uncat.state = "chase";
+  game.hud.setStatus("바깥 복도가 이어집니다. 안개 끝의 발소리를 다른 고리로 빼십시오.", 4200);
+  return game.poseForCapture({
+    x: 12.6,
+    y: 0,
+    z: -6.35,
+    lookAt: [19.4, 1.15, -5.55],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.group.visible = true;
+  uncat.group.position.set(19.8, 0, -6.35);
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_school_hall_class_uncat.png"), timeout: 120000 });
+console.log("schoolHall", schoolHall);
+
 const hunt = await page.evaluate(async () => {
   const game = window.__happyToy;
   game.testSafeMode = true;

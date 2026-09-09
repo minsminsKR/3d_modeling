@@ -243,6 +243,7 @@ try {
     { x: 16, z: -2.4 },
     { x: 20, z: -2.4 },
     { x: 20, z: -6.2 },
+    { x: 16, z: -6.4 },
   ]) {
     f1MazeWalk.push(await walkTo(stop, 280));
     console.log("f1maze", stop, f1MazeWalk.at(-1));
@@ -286,6 +287,9 @@ try {
       hallRib: names(hall).some((name) => name.includes("hall_maze_rib") || name.includes("hall_maze_pocket")),
       northRib: names(northHall).some((name) => name.includes("hall_maze_rib") || name.includes("hall_maze_pocket")),
       hallLockers: names(hall).filter((name) => name.includes("hall_lockers_")).length,
+      hallClass: names(hall).some((name) => name.includes("hall_class_")),
+      hallStripe: names(hall).some((name) => name.includes("hall_stripe_")),
+      hallWindow: names(hall).some((name) => name.includes("hall_window_")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
@@ -561,6 +565,9 @@ try {
   assert.equal(rooms.hallRib, true, "east 1F halls must keep inner ribs off the S-bend");
   assert.equal(rooms.northRib, true, "north 1F halls must keep inner ribs off the west loop");
   assert.ok(rooms.hallLockers >= 8, `1F maze halls must dress the outer walls with locker banks: ${rooms.hallLockers}`);
+  assert.equal(rooms.hallClass, true, "outer ring must be enclosed by classroom walls");
+  assert.equal(rooms.hallStripe, true, "school hallway stripe must run the outer ring");
+  assert.equal(rooms.hallWindow, true, "classroom doors must have dark windows");
   assert.equal(rooms.hallJog, true, "east 1F halls must block the z=0 spine and jog south");
   assert.equal(rooms.hallJogE, true, "east 1F halls must block the east arm so the spine cannot reopen");
   assert.equal(rooms.hallJogNs, true, "north 1F halls must block the x=0 spine and jog west");
