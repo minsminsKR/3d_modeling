@@ -431,22 +431,30 @@ try {
   });
   const practiceBlock = await page.evaluate(() => {
     const game = window.__happyToy;
-    const player = game.player;
-    game.ghostMode = true;
-    game.testSafeMode = false;
-    game.cutsceneEvent = null;
-    game.monsterIntroManager?.reset?.();
-    for (let i = 0; i < 90; i += 1) {
-      const dx = 118 - player.position.x;
-      const dz = 32 - player.position.z;
-      player.yaw = Math.atan2(-dx, -dz);
-      player.pitch = 0;
+    const start = { x: 106, y: 0.9, z: 32 };
+    const end = { x: 118, y: 0.9, z: 32 };
+    const center = { x: 112, y: 0.9, z: 32 };
+    const los = game.collisionWorld.hasLineOfSight(start, end);
+    const blocked = game.collisionWorld.isCircleBlocked(center, 0.34);
+    game.player.setPosition({ x: 106, y: 0, z: 32 });
+    for (let i = 0; i < 22; i += 1) {
+      const dx = 118 - game.player.position.x;
+      const dz = 32 - game.player.position.z;
+      game.player.yaw = Math.atan2(-dx, -dz);
+      game.player.pitch = 0;
       game.input.keys.add("w");
       game.update(0.05, { skipRender: true });
     }
     game.input.keys.delete("w");
-    const dist = Math.hypot(118 - player.position.x, 32 - player.position.z);
-    return { ok: dist < 2.2, x: player.position.x, z: player.position.z, dist };
+    const dist = Math.hypot(118 - game.player.position.x, 32 - game.player.position.z);
+    return {
+      los,
+      blocked,
+      ok: dist < 2.2,
+      x: game.player.position.x,
+      z: game.player.position.z,
+      dist,
+    };
   });
   console.log("practiceBlock", practiceBlock);
   await page.evaluate(() => {
@@ -989,9 +997,11 @@ try {
   assert.equal(rooms.practiceBaffle, true, "practice hall must block the tile center");
   assert.equal(rooms.practiceStand, true, "practice hall must show music stands");
   assert.ok(rooms.beats.includes("practice"), "practice VO beat missing");
+  assert.ok(practiceBlock.blocked === true, `practice baffle must occupy tile center, got ${JSON.stringify(practiceBlock)}`);
+  assert.ok(practiceBlock.los === false, `practice baffle must break the z=0 sightline, got ${JSON.stringify(practiceBlock)}`);
   assert.ok(
-    practiceBlock.ok !== true || practiceBlock.x < 110,
-    `practice baffle must block the z=0 spine, got ${JSON.stringify(practiceBlock)}`,
+    practiceBlock.ok !== true && practiceBlock.x < 110,
+    `practice baffle must stop a short east walk, got ${JSON.stringify(practiceBlock)}`,
   );
   assert.equal(practiceWalk.at(-1).ok, true, `must walk the practice dogleg into the music room, got ${JSON.stringify(practiceWalk.at(-1))}`);
   assert.ok(practiceWalk.some((stop) => stop.z > 34 && Math.abs(stop.x - 112) < 1.6), "practice bypass must leave the blocked spine");
