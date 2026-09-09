@@ -72,24 +72,30 @@ export class SafeLight {
   }
 
   createWallSwitch() {
-    this.lightAnchor.position.set(0, 0.18, -0.34);
+    this.lightAnchor.position.set(0, 0.22, -0.42);
 
-    // Antique dark wood wall-mounting backplate
-    const woodBack = this.addMesh(new THREE.BoxGeometry(0.42, 0.56, 0.03), this.materials.dark);
-    woodBack.position.set(0, 0.18, 0.015);
+    const woodBack = this.addMesh(new THREE.BoxGeometry(0.46, 0.62, 0.05), this.materials.dark);
+    woodBack.position.set(0, 0.2, 0.04);
 
-    const plate = this.addMesh(new THREE.BoxGeometry(0.34, 0.46, 0.055), this.materials.body);
-    plate.position.set(0, 0.18, -0.02);
+    const plate = this.addMesh(new THREE.BoxGeometry(0.34, 0.48, 0.06), this.materials.body);
+    plate.position.set(0, 0.2, -0.01);
 
-    const toggle = this.addMesh(new THREE.BoxGeometry(0.08, 0.23, 0.045), this.materials.brass);
+    const arm = this.addMesh(new THREE.BoxGeometry(0.045, 0.045, 0.22), this.materials.brass);
+    arm.position.set(0, 0.28, -0.16);
+
+    const hood = this.addMesh(new THREE.CylinderGeometry(0.13, 0.16, 0.1, 12, 1, true), this.materials.shade);
+    hood.position.set(0, 0.34, -0.3);
+    hood.rotation.x = Math.PI;
+
+    const toggle = this.addMesh(new THREE.BoxGeometry(0.07, 0.2, 0.04), this.materials.brass);
     toggle.name = `${this.id}-toggle`;
-    toggle.position.set(0, 0.18, -0.065);
-    toggle.rotation.x = -0.18;
+    toggle.position.set(0, 0.12, -0.06);
+    toggle.rotation.x = -0.22;
 
-    const indicator = this.addMesh(new THREE.SphereGeometry(0.065, 12, 12), this.materials.glow);
-    indicator.name = `${this.id}-indicator`;
-    indicator.position.set(0, 0.48, -0.075);
-    this.glowMeshes = [indicator];
+    const bulb = this.addMesh(new THREE.SphereGeometry(0.07, 12, 12), this.materials.glow);
+    bulb.name = `${this.id}-indicator`;
+    bulb.position.set(0, 0.28, -0.3);
+    this.glowMeshes = [bulb, hood];
   }
 
   createFloorLamp() {

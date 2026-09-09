@@ -73,11 +73,21 @@ try {
         if (Math.abs(localX) > 8.2 || Math.abs(localZ) > 8.2) continue;
         const faceX = -Math.sin(light.yaw);
         const faceZ = -Math.cos(light.yaw);
-        const toCenterX = -localX;
-        const toCenterZ = -localZ;
-        const mag = Math.hypot(toCenterX, toCenterZ) || 1;
-        const dot = (faceX * toCenterX + faceZ * toCenterZ) / mag;
-        if (dot < 0.12) {
+        let expectedX = 0;
+        let expectedZ = 0;
+        if (Math.abs(localZ) > 6 && Math.abs(localZ) > Math.abs(localX) + 2.5) {
+          expectedZ = localZ > 0 ? -1 : 1;
+        } else if (Math.abs(localX) > 6 && Math.abs(localX) > Math.abs(localZ) + 2.5) {
+          expectedX = localX > 0 ? -1 : 1;
+        } else if (Math.abs(Math.abs(localX) - 1.2) < 0.55 && Math.abs(localZ) > 2.8) {
+          expectedX = localX > 0 ? -1 : 1;
+        } else if (Math.abs(Math.abs(localZ) - 1.2) < 0.55 && Math.abs(localX) > 2.8) {
+          expectedZ = localZ > 0 ? -1 : 1;
+        } else {
+          continue;
+        }
+        const dot = faceX * expectedX + faceZ * expectedZ;
+        if (dot < 0.7) {
           inverted.push({
             id: light.id,
             yaw: light.yaw,

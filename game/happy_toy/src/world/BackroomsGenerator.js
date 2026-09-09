@@ -1999,11 +1999,16 @@ export class BackroomsGenerator {
     let lightIdx = 0;
     const spawnSafeLight = (variant, localX, localY, localZ, yaw, labelOverride = null) => {
       let facing = yaw;
-      // Wall-switch geometry faces local -Z (backplate +Z into the wall).
-      // East/west call sites historically passed the opposite yaw; flip only
-      // ±90° mounts so north/south sconces (0 and π) stay correct.
-      if (variant === "wall-switch" && Math.abs(Math.abs(yaw) - Math.PI / 2) < 0.02) {
-        facing = -yaw;
+      let x = localX;
+      let z = localZ;
+      if (variant === "wall-switch") {
+        // Mesh faces local -Z. Historical E/W call sites used the opposite yaw.
+        if (Math.abs(Math.abs(yaw) - Math.PI / 2) < 0.02) {
+          facing = -yaw;
+        }
+        const inset = 0.16;
+        x += -Math.sin(facing) * inset;
+        z += -Math.cos(facing) * inset;
       }
       const localId = `safe_${variant.replaceAll("-", "_")}_${lightIdx++}`;
       const stateKey = `${chunk.cx},${chunk.cz}:${localId}`;
@@ -2013,7 +2018,7 @@ export class BackroomsGenerator {
         stateKey,
         label: labelOverride || SAFE_LIGHT_LABELS[variant] || "조명",
         variant,
-        position: [center.x + localX, floorY + localY, center.z + localZ],
+        position: [center.x + x, floorY + localY, center.z + z],
         yaw: facing,
         isOn,
       });
