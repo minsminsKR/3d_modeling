@@ -254,7 +254,8 @@ export class MapBuilder {
       const decal = new THREE.Mesh(this.wallDecayGeometry, this.wallDecayMaterial);
       const side = random() > 0.5 ? 1 : -1;
       const hallLike = chunk.type === "corridor_ns" || chunk.type === "narrow_ns"
-        || chunk.type === "corridor_ew" || chunk.type === "t_junction" || chunk.type === "cross_junction";
+        || chunk.type === "corridor_ew" || chunk.type === "t_junction" || chunk.type === "cross_junction"
+        || chunk.type === "dead_end";
       if (hallLike) {
         const along = 4.6 + random() * 1.6;
         if (random() > 0.5) {
@@ -333,7 +334,8 @@ export class MapBuilder {
     chunk.meshes.push(plate);
 
     const hallLike = chunk.type === "start" || chunk.type === "corridor_ns" || chunk.type === "corridor_ew"
-      || chunk.type === "t_junction" || chunk.type === "cross_junction" || chunk.type === "narrow_ns";
+      || chunk.type === "t_junction" || chunk.type === "cross_junction" || chunk.type === "narrow_ns"
+      || chunk.type === "dead_end";
     if (hallLike) {
       const doorMat = this.getClassroomDoorMaterial();
       const doorOffsets = [-3.35, 3.35];

@@ -1176,7 +1176,9 @@ export class Game {
     }
     this.stalkerReleased = true;
     const released = this.enemyManager?.releaseStalker(STALKER_CONFIG.id || "uncat", {
-      spawn: [0, 0, 22],
+      spawn: STALKER_CONFIG.spawn || [0, 0, 16],
+      hunt: true,
+      playerPosition: this.player.position,
     });
     if (released) {
       soundManager.playSFX("school_chime");
@@ -1193,7 +1195,7 @@ export class Game {
     if (!cabinet) {
       return;
     }
-    const hunt = this.dreadDirector?.phase === "hunt" || this.playTime > 42;
+    const hunt = this.dreadDirector?.phase === "hunt" || this.stalkerReleased || this.playTime > 24;
     if (!hunt) {
       return;
     }

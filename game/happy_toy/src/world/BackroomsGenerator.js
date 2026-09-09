@@ -131,8 +131,11 @@ export function getChunkSeed(baseSeed, cx, cz) {
   return h >>> 0;
 }
 
-// Undirected 1F mansion graph. If two cells share an edge, both faces open.
-export const MANSION_EDGES = [
+export const CORE_RADIUS = 2;
+export const PLAYABLE_RADIUS = 3;
+
+// Undirected 1F graph. Core 5×5 keeps the four-name loop; |c|==3 is a repeating school ring.
+export const CORE_EDGES = [
   ["0,0", "0,-1"],
   ["0,-1", "0,-2"],
   ["0,0", "0,1"],
@@ -166,6 +169,32 @@ export const MANSION_EDGES = [
   ["-2,2", "-1,2"],
   ["-1,2", "0,2"],
 ];
+
+export function buildSchoolRingEdges() {
+  const edges = [];
+  const add = (a, b) => edges.push([a, b]);
+  for (const cz of [-3, 3]) {
+    for (let cx = -3; cx < 3; cx += 1) {
+      add(`${cx},${cz}`, `${cx + 1},${cz}`);
+    }
+  }
+  for (const cx of [-3, 3]) {
+    for (let cz = -3; cz < 3; cz += 1) {
+      add(`${cx},${cz}`, `${cx},${cz + 1}`);
+    }
+  }
+  add("0,2", "0,3");
+  add("2,0", "3,0");
+  add("-2,0", "-3,0");
+  add("2,1", "3,1");
+  add("2,-1", "3,-1");
+  add("-2,1", "-3,1");
+  add("-2,-1", "-3,-1");
+  return edges;
+}
+
+export const SCHOOL_RING_EDGES = buildSchoolRingEdges();
+export const MANSION_EDGES = [...CORE_EDGES, ...SCHOOL_RING_EDGES];
 
 export class BackroomsGenerator {
   constructor(scene, collisionWorld, textureLibrary, baseSeed = 12345, game = null) {
@@ -281,11 +310,25 @@ export class BackroomsGenerator {
     if (FIXED_MAP_LAYOUT[key]) {
       return FIXED_MAP_LAYOUT[key];
     }
-    return "void";
+    if (!this.isPlayableChunk(cx, cz)) {
+      return "void";
+    }
+    return this.getRingHallType(cx, cz);
+  }
+
+  getRingHallType(cx, cz) {
+    const open = this.getOpenings(cx, cz);
+    const count = Number(open.N) + Number(open.S) + Number(open.E) + Number(open.W);
+    if (count >= 4) return "cross_junction";
+    if (count === 3) return "t_junction";
+    if (open.N && open.S && !open.E && !open.W) return "corridor_ns";
+    if (open.E && open.W && !open.N && !open.S) return "corridor_ew";
+    if (count === 2) return "t_junction";
+    return "dead_end";
   }
 
   isPlayableChunk(cx, cz) {
-    return Math.abs(cx) <= 2 && Math.abs(cz) <= 2;
+    return Math.abs(cx) <= PLAYABLE_RADIUS && Math.abs(cz) <= PLAYABLE_RADIUS;
   }
 
   getOpenings(cx, cz) {
@@ -1591,7 +1634,7 @@ export class BackroomsGenerator {
     // Plus-shaped halls with four enterable corner alcoves (1.6m inner gaps).
     // Every volume that has a floor mesh is reachable; no sealed diorama pockets.
     const hallLike = type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
-      || type === "t_junction" || type === "cross_junction" || type === "start";
+      || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";
     if (hallLike) {
       addWallSegment(-1.4, -5.6, 0.4, 4.8, "alcove_nw_ns");
       addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
@@ -1942,7 +1985,7 @@ export class BackroomsGenerator {
     }
 
     const hallLike = type === "start" || type === "corridor_ns" || type === "corridor_ew"
-      || type === "t_junction" || type === "cross_junction" || type === "narrow_ns";
+      || type === "t_junction" || type === "cross_junction" || type === "narrow_ns" || type === "dead_end";
     if (hallLike && chunk.cabinets.length === 0) {
       const alcove = (chunk.cx + chunk.cz) % 2 === 0
         ? { pos: [5.25, 0.0, 5.25], yaw: Math.PI / 2 }

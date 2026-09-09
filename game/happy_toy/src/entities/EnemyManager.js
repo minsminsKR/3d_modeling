@@ -51,9 +51,17 @@ export class EnemyManager {
     if (enemy.state === "cutscene") {
       return true;
     }
-    enemy.state = "wander";
-    enemy.beginWander();
-    enemy.playAction("patrol", 0.2);
+    if (options.hunt && options.playerPosition) {
+      enemy.state = "chase";
+      enemy.lastKnownPlayerPosition = options.playerPosition.clone?.()
+        || { x: options.playerPosition.x, y: options.playerPosition.y, z: options.playerPosition.z };
+      enemy.memoryTimer = Math.max(enemy.config.memorySeconds ?? 6, 8);
+      enemy.playAction("chase", 0.2);
+    } else {
+      enemy.state = "wander";
+      enemy.beginWander();
+      enemy.playAction("patrol", 0.2);
+    }
     if (!options.silent) {
       this.hud?.setStatus?.("복도 끝에서 실내화가 한 켤레 끌립니다.", 2800);
     }

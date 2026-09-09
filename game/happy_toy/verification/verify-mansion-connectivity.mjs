@@ -62,7 +62,9 @@ try {
       }
     }
 
-    const voidChunk = generator.generateChunk(3, 0);
+    const voidChunk = generator.generateChunk(4, 0);
+    const ringChunk = generator.generateChunk(3, 0);
+    const ringOpen = generator.getOpenings(3, 0);
     const inverted = [];
     for (const chunk of generator.chunksData.values()) {
       if (!chunk.safeLights || Math.abs(chunk.cx) > 2 || Math.abs(chunk.cz) > 2) continue;
@@ -122,6 +124,9 @@ try {
       playableVoid: playableTypes.filter((cell) => cell.type === "void").map((cell) => cell.key),
       voidType: voidChunk.type,
       voidMeshes: voidChunk.meshes.length,
+      ringType: ringChunk.type,
+      ringMeshes: ringChunk.meshes.length,
+      ringWest: ringOpen.W,
       inverted,
       alcoveStartLen: alcoveStart.length,
       alcoveCorridorLen: alcoveCorridor.length,
@@ -141,6 +146,9 @@ try {
   assert.equal(result.playableVoid.length, 0, `playable void cells: ${result.playableVoid.join(", ")}`);
   assert.equal(result.voidType, "void");
   assert.equal(result.voidMeshes, 0, "exterior hull must not build fake rooms");
+  assert.notEqual(result.ringType, "void", "school ring east of the core must be a walkable hall");
+  assert.ok(result.ringMeshes > 0, "school ring must build geometry");
+  assert.equal(result.ringWest, true, "school ring must open into the core");
   assert.equal(result.inverted.length, 0, `wall-switch facing inward failed: ${JSON.stringify(result.inverted, null, 2)}`);
   assert.equal(result.alcoveStartBlocked, false, "start-room alcove should be enterable");
   assert.equal(result.alcoveCorridorBlocked, false, "corridor side alcove should be enterable");

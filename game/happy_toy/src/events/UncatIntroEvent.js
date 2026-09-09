@@ -83,6 +83,13 @@ export class UncatIntroEvent {
   checkTrigger() {
     if (this.hasTriggered || !this.game.player || this.game.player.isHidden) return;
 
+    const uncat = this.getEnemy();
+    if (uncat && !uncat.isDormant) {
+      this.hasTriggered = true;
+      this.state = "done";
+      return;
+    }
+
     const playerPos = this.game.player.position;
     if (distance2D(playerPos, this.triggerPosition) <= this.triggerRadius) {
       this.triggerEvent();

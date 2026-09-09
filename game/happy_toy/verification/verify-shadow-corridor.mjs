@@ -10,7 +10,7 @@ const executablePath = process.env.CHROME_PATH
 assert.ok(LIGHTING_CONFIG.fogFar <= 12, "fog must collapse to flashlight range");
 assert.ok(LIGHTING_CONFIG.ambientIntensity <= 0.03, "ambient must leave unlit space nearly black");
 assert.ok(LIGHTING_CONFIG.flashlightFillIntensity <= 2, "fill light must not wash the corridor");
-assert.ok(STALKER_CONFIG.graceSeconds <= 16, "stalker should enter after a short grace");
+assert.ok(STALKER_CONFIG.graceSeconds <= 10, "stalker should enter after a short grace");
 assert.ok(CABINET_CONFIG.caughtDelaySeconds >= 3, "locker checks must linger");
 
 const browser = await chromium.launch({ executablePath, headless: true });
@@ -32,13 +32,32 @@ try {
       cabinetCount: (game.cabinets || []).length,
     };
 
-    game.playTime = 14;
+    game.playTime = 8;
     game.tryReleaseCorridorStalker();
     const afterRelease = {
       dormant: uncat.isDormant,
       visible: uncat.group.visible,
       stalkerFlag: game.stalkerReleased,
+      state: uncat.state,
     };
+
+    game.testSafeMode = true;
+    const startDist = Math.hypot(
+      uncat.group.position.x - game.player.position.x,
+      uncat.group.position.z - game.player.position.z,
+    );
+    for (let i = 0; i < 90; i += 1) {
+      game.update(0.05);
+    }
+    const afterChase = {
+      startDist,
+      endDist: Math.hypot(
+        uncat.group.position.x - game.player.position.x,
+        uncat.group.position.z - game.player.position.z,
+      ),
+      state: uncat.state,
+    };
+    game.testSafeMode = false;
 
     const cabinet = game.cabinets[0];
     uncat.group.position.set(cabinet.position.x, cabinet.position.y, cabinet.position.z + 1.6);
@@ -64,6 +83,7 @@ try {
     return {
       before,
       afterRelease,
+      afterChase,
       hiding,
       death: {
         gameOver: game.gameOver,
@@ -82,6 +102,12 @@ try {
   assert.equal(result.afterRelease.dormant, false, "grace release must wake Uncat");
   assert.equal(result.afterRelease.visible, true);
   assert.equal(result.afterRelease.stalkerFlag, true);
+  assert.equal(result.afterRelease.state, "chase", "released stalker must hunt immediately");
+  assert.ok(result.afterChase.startDist > 8, `stalker should spawn down the hall, got ${result.afterChase.startDist}`);
+  assert.ok(
+    result.afterChase.endDist < result.afterChase.startDist - 1.5,
+    `stalker must close distance ${result.afterChase.startDist} -> ${result.afterChase.endDist}`,
+  );
   assert.equal(result.hiding.hidden, true);
   assert.equal(result.hiding.investigating, true);
   assert.equal(result.hiding.hasEvent, true);

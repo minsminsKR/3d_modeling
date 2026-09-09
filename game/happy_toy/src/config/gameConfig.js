@@ -645,7 +645,8 @@ export const CABINET_CONFIG = {
 
 export const STALKER_CONFIG = {
   id: "uncat",
-  graceSeconds: 14,
+  graceSeconds: 8,
+  spawn: [0, 0, 16],
 };
 
 export const HORROR_PACING_CONFIG = {
@@ -698,8 +699,8 @@ export const ENEMY_CONFIGS = [
     visualGroundSink: 0.04,
     footOffset: 0.0,
     wanderMinDistance: 10,
-    wanderMaxDistance: 40,
-    wanderChunkRadius: 3,
+    wanderMaxDistance: 52,
+    wanderChunkRadius: 4,
     wanderRetargetSeconds: [6, 12],
     patrolWaitRange: [0.25, 1.25],
     postCabinetWaitSeconds: 0.8,
