@@ -67,6 +67,7 @@ try {
     };
     game.player.setPosition({ x: 0, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05);
+    game.testSafeMode = false;
 
     const cabinet = game.cabinets[0];
     uncat.group.position.set(cabinet.position.x, cabinet.position.y, cabinet.position.z + 1.6);
