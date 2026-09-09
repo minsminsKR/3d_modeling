@@ -187,6 +187,7 @@ export class Game {
     this.dreadDirector = new DreadDirector(this);
     this.storyDirector = new StoryDirector(this);
     this.floorHuntDirector = new FloorHuntDirector(this);
+    this.floorHuntDirector.ensureSilhouette();
     this.voiceAnnouncer = new VoiceAnnouncer();
 
 

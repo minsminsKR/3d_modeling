@@ -134,6 +134,22 @@ export class TextureLibrary {
     return mat;
   }
 
+  createLockerMaterial() {
+    if (this.materialsCache.has("locker")) {
+      return this.materialsCache.get("locker");
+    }
+    const mat = new THREE.MeshStandardMaterial({
+      map: this.load("cabinet"),
+      bumpMap: this.createDetailTexture("cabinet-wear", { repeat: [2, 3] }),
+      bumpScale: 0.03,
+      color: 0x8a8680,
+      roughness: 0.44,
+      metalness: 0.46,
+    });
+    this.materialsCache.set("locker", mat);
+    return mat;
+  }
+
   createCabinetMaterial() {
     if (this.materialsCache.has("cabinet")) {
       return this.materialsCache.get("cabinet");

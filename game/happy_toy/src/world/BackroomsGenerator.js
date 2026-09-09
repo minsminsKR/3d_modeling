@@ -583,7 +583,7 @@ export class BackroomsGenerator {
         });
         
         // Spotlight right above the mannequin so it stands clearly under the light
-        const spotLight = new THREE.PointLight(0xffdfaa, 28.0, 16.0, 1.0);
+        const spotLight = new THREE.PointLight(0xffdfaa, 0.55, 3.6, 2.0);
         spotLight.position.set(mannequinPos.x, floorY + 2.5, mannequinPos.z);
         this.scene.add(spotLight);
         chunk.meshes.push(spotLight);
@@ -597,7 +597,7 @@ export class BackroomsGenerator {
         const bulbMat = new THREE.MeshStandardMaterial({
           color: 0xffffff,
           emissive: 0xffaa44,
-          emissiveIntensity: 3.5,
+          emissiveIntensity: 0.35,
           roughness: 0.2,
         });
         const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), bulbMat);
@@ -1823,7 +1823,7 @@ export class BackroomsGenerator {
     } else if (isStart) {
       this.dressStartFoyer(chunk, center, chunkId, floorY);
     }
-    const gloom = new THREE.PointLight(0x4a3020, 1.15, 5.4, 2.0);
+    const gloom = new THREE.PointLight(0x4a3020, 0.12, 2.8, 2.2);
     gloom.position.set(
       center.x + (cabinetSE ? -5.4 : 5.4),
       floorY + 2.05,
@@ -1833,7 +1833,7 @@ export class BackroomsGenerator {
     this.scene.add(gloom);
     chunk.meshes.push(gloom);
     if (maze) {
-      const gloom2 = new THREE.PointLight(0x2a1814, 0.82, 4.6, 2.0);
+      const gloom2 = new THREE.PointLight(0x2a1814, 0.08, 2.4, 2.2);
       gloom2.position.set(
         center.x + (cabinetSE ? 5.1 : -5.1),
         floorY + 2.05,
@@ -1915,7 +1915,7 @@ export class BackroomsGenerator {
     const screenMat = new THREE.MeshStandardMaterial({
       color: 0x0b1014,
       emissive: 0x3a5a72,
-      emissiveIntensity: 0.55,
+      emissiveIntensity: 0.08,
       roughness: 0.35,
     });
     const screen = new THREE.Mesh(this.getBoxGeometry(0.82, 0.48, 0.04), screenMat);
@@ -1975,7 +1975,7 @@ export class BackroomsGenerator {
   dressHallLockerBanks(chunk, center, chunkId, floorY, _openings, ewChicane, nsChicane) {
     // Locker rows sit on the inner faces of the 3.4m school corridor.
     // Keep the T-spur (center ±1.7) and alcove doors (x/z ±5.25) clear.
-    const cabinetMat = this.textures.createCabinetMaterial();
+    const cabinetMat = this.textures.createLockerMaterial();
     if (!this.lockerSlitMaterial) {
       this.lockerSlitMaterial = new THREE.MeshStandardMaterial({
         color: 0x1a1410,
@@ -2627,7 +2627,7 @@ export class BackroomsGenerator {
         );
       }
 
-      const glow = new THREE.PointLight(0x3a2c1c, 0.58, 4.2, 2.0);
+      const glow = new THREE.PointLight(0x3a2c1c, 0.14, 2.8, 2.2);
       glow.position.set(
         center.x + doorX + sideX * 1.8 + inX * 2.2,
         floorY + 1.78,
@@ -2647,6 +2647,10 @@ export class BackroomsGenerator {
       fluoro.name = `${chunkId}_hall_class_fluoro_${idx}`;
       this.scene.add(fluoro);
       chunk.meshes.push(fluoro);
+      this.dressClassroomNookClutter(
+        chunk, chunkId, center, floorY,
+        doorX, doorZ, inX, inZ, sideX, sideZ, idx, variant, faceYaw,
+      );
       idx += 1;
     };
 
@@ -2661,6 +2665,53 @@ export class BackroomsGenerator {
       dressNook(-wall, alcove, -1, 0, 0, -1);
       dressNook(wall, -alcove, 1, 0, 0, 1);
       dressNook(wall, alcove, 1, 0, 0, -1);
+    }
+  }
+
+  dressClassroomNookClutter(chunk, chunkId, center, floorY, doorX, doorZ, inX, inZ, sideX, sideZ, idx, variant, faceYaw) {
+    // Landmarks live in the classroom, never on the ±5.25 locker aisle.
+    const kit = Math.abs(chunk.cx * 19 + chunk.cz * 11 + idx * 7) % 4;
+    const deepX = doorX + sideX * 2.95 + inX * 3.25;
+    const deepZ = doorZ + sideZ * 2.95 + inZ * 3.25;
+    if (kit === 0 || kit === 2) {
+      for (let i = 0; i < 3; i += 1) {
+        const shoe = new THREE.Mesh(this.getBoxGeometry(0.22, 0.08, 0.12), this.trimMaterial);
+        shoe.position.set(
+          center.x + deepX + sideX * (i * 0.18 - 0.12) + inX * 0.08,
+          floorY + 0.05,
+          center.z + deepZ + sideZ * (i * 0.18 - 0.12) + inZ * 0.08,
+        );
+        shoe.rotation.y = faceYaw + i * 0.4;
+        shoe.name = `${chunkId}_hall_shoes_${idx}_${i}`;
+        this.addSchoolProp(chunk, shoe);
+      }
+    }
+    if (kit === 1 || kit === 3) {
+      const satchel = new THREE.Group();
+      satchel.position.set(
+        center.x + doorX + sideX * 2.4 + inX * 4.1,
+        floorY + 1.15,
+        center.z + doorZ + sideZ * 2.4 + inZ * 4.1,
+      );
+      satchel.rotation.y = faceYaw;
+      satchel.name = `${chunkId}_hall_satchel_${idx}`;
+      const body = new THREE.Mesh(this.getBoxGeometry(0.2, 0.28, 0.12), this.schoolDeskDark || this.trimMaterial);
+      satchel.add(body);
+      const strap = new THREE.Mesh(this.getBoxGeometry(0.04, 0.55, 0.02), this.trimMaterial);
+      strap.position.set(0, 0.32, -0.02);
+      satchel.add(strap);
+      this.addSchoolProp(chunk, satchel);
+    }
+    if (variant === 2) {
+      const stack = new THREE.Mesh(this.getBoxGeometry(0.28, 0.16, 0.22), this.schoolPaperMat);
+      stack.position.set(
+        center.x + doorX + sideX * 2.2 + inX * 2.4,
+        floorY + 0.09,
+        center.z + doorZ + sideZ * 2.2 + inZ * 2.4,
+      );
+      stack.rotation.y = faceYaw + 0.25;
+      stack.name = `${chunkId}_hall_books_${idx}`;
+      this.addSchoolProp(chunk, stack);
     }
   }
 
@@ -3063,7 +3114,7 @@ export class BackroomsGenerator {
       transparent: true,
       opacity: 0.82,
       emissive: 0x145a48,
-      emissiveIntensity: 0.55,
+      emissiveIntensity: 0.08,
       depthWrite: false,
     });
     this.addWingPlane(
@@ -3082,17 +3133,17 @@ export class BackroomsGenerator {
       (coreMaxX + eastMaxX) / 2, waterY, (coreMinZ + southMaxZ) / 2, waterMat,
     );
 
-    const gloom = new THREE.PointLight(0x1c4a3c, 2.4, 8.4, 1.7);
+    const gloom = new THREE.PointLight(0x1c4a3c, 0.28, 4.2, 2.0);
     gloom.position.set(8.4, floorY - 4.05, 48.2);
     gloom.name = `${chunkId}_b1_lab_gloom`;
     this.scene.add(gloom);
     chunk.meshes.push(gloom);
-    const gloomWest = new THREE.PointLight(0x16382e, 2.1, 7.6, 1.7);
+    const gloomWest = new THREE.PointLight(0x16382e, 0.22, 3.8, 2.0);
     gloomWest.position.set(-16.2, floorY - 4.05, 30.2);
     gloomWest.name = `${chunkId}_b1_lab_gloom_w`;
     this.scene.add(gloomWest);
     chunk.meshes.push(gloomWest);
-    const gloomEast = new THREE.PointLight(0x1a4034, 2.2, 8.0, 1.7);
+    const gloomEast = new THREE.PointLight(0x1a4034, 0.24, 4.0, 2.0);
     gloomEast.position.set(32.0, floorY - 4.05, 38.0);
     gloomEast.name = `${chunkId}_b1_lab_gloom_east`;
     this.scene.add(gloomEast);
@@ -3326,24 +3377,24 @@ export class BackroomsGenerator {
       transparent: true,
       opacity: 0.9,
       emissive: 0x5a080c,
-      emissiveIntensity: 0.42,
+      emissiveIntensity: 0.07,
       depthWrite: false,
     });
     this.addWingPlane(chunk, chunkId, "blood_north_lab", 12.4, 8.6, -28.4, bloodY, -45.2, poolMat);
     this.addWingPlane(chunk, chunkId, "blood_west_lab", 9.6, 16.4, -46.2, bloodY, -20.4, poolMat);
     this.addWingPlane(chunk, chunkId, "blood_south_lab", 14.8, 8.4, -32.5, bloodY, 1.6, poolMat);
 
-    const gloom = new THREE.PointLight(0x5a1018, 2.6, 8.8, 1.65);
+    const gloom = new THREE.PointLight(0x5a1018, 0.32, 4.4, 2.0);
     gloom.position.set(-22.5, floorY + 6.15, -42.0);
     gloom.name = `${chunkId}_f2_lab_gloom`;
     this.scene.add(gloom);
     chunk.meshes.push(gloom);
-    const gloomWest = new THREE.PointLight(0x4a0c14, 2.2, 8.2, 1.65);
+    const gloomWest = new THREE.PointLight(0x4a0c14, 0.26, 4.0, 2.0);
     gloomWest.position.set(-48.0, floorY + 6.15, -12.0);
     gloomWest.name = `${chunkId}_f2_lab_gloom_w`;
     this.scene.add(gloomWest);
     chunk.meshes.push(gloomWest);
-    const gloomSouth = new THREE.PointLight(0x521018, 2.3, 8.4, 1.65);
+    const gloomSouth = new THREE.PointLight(0x521018, 0.28, 4.2, 2.0);
     gloomSouth.position.set(-22.5, floorY + 6.15, 1.6);
     gloomSouth.name = `${chunkId}_f2_lab_gloom_s`;
     this.scene.add(gloomSouth);
@@ -3399,7 +3450,7 @@ export class BackroomsGenerator {
       transparent: true,
       opacity: 0.82,
       emissive: 0x145a48,
-      emissiveIntensity: 0.55,
+      emissiveIntensity: 0.08,
       depthWrite: false,
     });
     const addWater = (name, width, length, x, z) => {
@@ -3553,12 +3604,12 @@ export class BackroomsGenerator {
     this.scene.add(mold);
     chunk.meshes.push(mold);
 
-    const gloom = new THREE.PointLight(0x1c4a3c, 4.8, 10.5, 1.6);
+    const gloom = new THREE.PointLight(0x1c4a3c, 0.32, 4.6, 2.0);
     gloom.position.set(10.4, floorY - 4.05, 31.6);
     gloom.name = `${chunkId}_b1_flood_gloom`;
     this.scene.add(gloom);
     chunk.meshes.push(gloom);
-    const gloomEast = new THREE.PointLight(0x16382e, 3.6, 9.2, 1.65);
+    const gloomEast = new THREE.PointLight(0x16382e, 0.26, 4.2, 2.0);
     gloomEast.position.set(20.6, floorY - 4.05, 32.2);
     gloomEast.name = `${chunkId}_b1_flood_gloom_e`;
     this.scene.add(gloomEast);
@@ -3574,7 +3625,7 @@ export class BackroomsGenerator {
       transparent: true,
       opacity: 0.94,
       emissive: 0x5a080c,
-      emissiveIntensity: 0.48,
+      emissiveIntensity: 0.08,
       depthWrite: false,
     });
     const smearMat = new THREE.MeshStandardMaterial({
@@ -3705,12 +3756,12 @@ export class BackroomsGenerator {
       rotation: [0, -0.55, 0],
     });
 
-    const shrineGlow = new THREE.PointLight(0x6a1018, 4.6, 10.2, 1.55);
+    const shrineGlow = new THREE.PointLight(0x6a1018, 0.38, 4.8, 2.0);
     shrineGlow.position.set(-34.0, floorY + 6.1, -22.0);
     shrineGlow.name = `${chunkId}_2f_blood_glow`;
     this.scene.add(shrineGlow);
     chunk.meshes.push(shrineGlow);
-    const poolGlow = new THREE.PointLight(0x4a0a10, 3.8, 9.0, 1.6);
+    const poolGlow = new THREE.PointLight(0x4a0a10, 0.3, 4.2, 2.0);
     poolGlow.position.set(-23.6, floorY + 5.95, -18.2);
     poolGlow.name = `${chunkId}_2f_blood_glow_near`;
     this.scene.add(poolGlow);
@@ -3846,7 +3897,7 @@ export class BackroomsGenerator {
     }
 
     // 2. Cabinets
-    const cabinetMaterial = this.textures.createCabinetMaterial();
+    const cabinetMaterial = this.textures.createLockerMaterial();
     const addDynamicCabinet = (id, label, localPos, yaw) => {
       const globalPos = [center.x + localPos[0], floorY + localPos[1], center.z + localPos[2]];
       const cabinet = new Cabinet({

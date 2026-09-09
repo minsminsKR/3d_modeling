@@ -9,7 +9,7 @@ const executablePath = process.env.CHROME_PATH
 
 assert.ok(LIGHTING_CONFIG.fogFar <= 12, "fog must collapse to flashlight range");
 assert.ok(LIGHTING_CONFIG.ambientIntensity <= 0.03, "ambient must leave unlit space nearly black");
-assert.ok(LIGHTING_CONFIG.flashlightFillIntensity <= 2, "fill light must not wash the corridor");
+assert.ok(LIGHTING_CONFIG.flashlightFillIntensity <= 0.45, "fill light must not wash the corridor");
 assert.ok(STALKER_CONFIG.graceSeconds <= 10, "stalker should enter after a short grace");
 assert.ok(CABINET_CONFIG.caughtDelaySeconds >= 3, "locker checks must linger");
 

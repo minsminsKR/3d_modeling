@@ -377,13 +377,14 @@ export class DreadDirector {
     const pan = (dx * Math.cos(g.player.yaw) - dz * Math.sin(g.player.yaw)) / Math.max(1, distance);
     const visible = g.collisionWorld.hasLineOfSight(closestPos, p);
     const chasing = closestState === "chase";
+    const closeness = 1 - distance / 28;
     soundManager.playStepTransient({
       pan,
-      bodyFrequency: chasing ? 42 : 52,
-      gritFrequency: visible ? 520 : 170,
-      gain: (1 - distance / 28) * (visible ? 0.24 : 0.15),
+      bodyFrequency: chasing ? 34 : 50,
+      gritFrequency: visible ? 480 : 150,
+      gain: closeness * (chasing ? (visible ? 0.62 : 0.42) : (visible ? 0.26 : 0.18)),
       water: p.y < -2.2,
     });
-    this.stepTimer = chasing ? 0.28 : 0.62;
+    this.stepTimer = chasing ? 0.2 : 0.54;
   }
 }

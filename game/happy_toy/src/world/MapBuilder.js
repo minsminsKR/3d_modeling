@@ -315,11 +315,12 @@ export class MapBuilder {
     return this.classroomDoorMaterial;
   }
 
-  getRoomPlateMaterial(chunk) {
+  getRoomPlateMaterial(chunk, slot = 0) {
     if (!this.roomPlateCache) this.roomPlateCache = new Map();
-    const grade = (Math.abs(chunk.cx) % 3) + 1;
-    const klass = (Math.abs(chunk.cz) % 8) + 1;
-    const label = `${grade} - ${klass} 교실`;
+    const n = Math.abs(chunk.cx) * 12 + Math.abs(chunk.cz) * 5 + slot + (chunk.cx >= 4 ? 40 : 0);
+    const grade = (n % 3) + 1;
+    const klass = (n % 9) + 1;
+    const label = chunk.cx >= 4 ? `별 ${grade}-${klass}` : `${grade}-${klass} 교실`;
     if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;
@@ -449,9 +450,8 @@ export class MapBuilder {
     const y = chunk.floorY;
     const wall = 1.78;
     const alcove = 5.25;
-    const plateMat = this.getRoomPlateMaterial(chunk);
-    const addPlate = (lx, lz, yaw, name) => {
-      const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.18), plateMat);
+    const addPlate = (lx, lz, yaw, name, slot) => {
+      const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.55, 0.2), this.getRoomPlateMaterial(chunk, slot));
       plate.position.set(c.x + lx, y + 2.08, c.z + lz);
       plate.rotation.y = yaw;
       plate.name = `${chunk.chunkId}_${name}`;
@@ -460,15 +460,15 @@ export class MapBuilder {
       chunk.meshes.push(plate);
     };
     if (chicanes.ew) {
-      addPlate(-alcove + 1.32, -wall, 0, "room_plate_nw");
-      addPlate(alcove - 1.32, -wall, 0, "room_plate_ne");
-      addPlate(-alcove + 1.32, wall, Math.PI, "room_plate_sw");
-      addPlate(alcove - 1.32, wall, Math.PI, "room_plate_se");
+      addPlate(-alcove + 1.32, -wall, 0, "room_plate_nw", 0);
+      addPlate(alcove - 1.32, -wall, 0, "room_plate_ne", 1);
+      addPlate(-alcove + 1.32, wall, Math.PI, "room_plate_sw", 2);
+      addPlate(alcove - 1.32, wall, Math.PI, "room_plate_se", 3);
     } else if (chicanes.ns) {
-      addPlate(-wall, -alcove + 1.32, Math.PI / 2, "room_plate_wn");
-      addPlate(-wall, alcove - 1.32, Math.PI / 2, "room_plate_ws");
-      addPlate(wall, -alcove + 1.32, -Math.PI / 2, "room_plate_en");
-      addPlate(wall, alcove - 1.32, -Math.PI / 2, "room_plate_es");
+      addPlate(-wall, -alcove + 1.32, Math.PI / 2, "room_plate_wn", 0);
+      addPlate(-wall, alcove - 1.32, Math.PI / 2, "room_plate_ws", 1);
+      addPlate(wall, -alcove + 1.32, -Math.PI / 2, "room_plate_en", 2);
+      addPlate(wall, alcove - 1.32, -Math.PI / 2, "room_plate_es", 3);
     }
 
     if (random() < 0.8) {

@@ -2,7 +2,6 @@
 // 외형, 충돌 크기, 내부 카메라 시점, 몬스터가 대기할 위치를 제공합니다.
 
 import * as THREE from "three";
-import { WORLD_CONFIG } from "../config/gameConfig.js";
 
 const UP = new THREE.Vector3(0, 1, 0);
 
@@ -24,23 +23,23 @@ export class Cabinet {
     this.group.rotation.y = this.yaw;
 
     this.bodyMaterial = materials.bodyMaterial ?? new THREE.MeshStandardMaterial({
-      color: WORLD_CONFIG.cabinetColor,
-      roughness: 0.82,
-      metalness: 0.08,
+      color: 0x7a7670,
+      roughness: 0.46,
+      metalness: 0.44,
     });
     this.isBodyMaterialShared = Boolean(materials.bodyMaterial);
     const bodyMaterial = this.bodyMaterial;
-    const darkMaterial = new THREE.MeshStandardMaterial({ color: 0x15100e, roughness: 0.9 });
-    const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x1d1714, roughness: 0.8 });
+    const darkMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1816, roughness: 0.55, metalness: 0.28 });
+    const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2622, roughness: 0.48, metalness: 0.4 });
     const innerMaterial = new THREE.MeshStandardMaterial({
-      color: 0x1a1410,
+      color: 0x161310,
       roughness: 0.92,
-      metalness: 0.04,
+      metalness: 0.08,
     });
     const slatMaterial = new THREE.MeshStandardMaterial({
-      color: 0x0c0907,
-      roughness: 0.62,
-      metalness: 0.18,
+      color: 0x0c0b0a,
+      roughness: 0.5,
+      metalness: 0.28,
     });
 
     this.bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(...this.size), bodyMaterial);
@@ -52,22 +51,32 @@ export class Cabinet {
 
     this.exteriorGroup = new THREE.Group();
     this.exteriorGroup.name = `${this.id}-exterior`;
-    const doorGap = new THREE.Mesh(new THREE.BoxGeometry(0.035, this.size[1] * 0.92, 0.03), darkMaterial);
-    doorGap.position.set(0, this.size[1] / 2, -this.size[2] / 2 - 0.02);
-    this.exteriorGroup.add(doorGap);
+    const doorW = this.size[0] * 0.46;
+    const doorH = this.size[1] * 0.92;
+    const doorZ = -this.size[2] / 2 - 0.018;
+    const leftDoor = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.04), bodyMaterial);
+    leftDoor.position.set(-doorW * 0.52, this.size[1] / 2, doorZ);
+    this.exteriorGroup.add(leftDoor);
+    const rightDoor = leftDoor.clone();
+    rightDoor.position.x = doorW * 0.52;
+    this.exteriorGroup.add(rightDoor);
+    const seam = new THREE.Mesh(new THREE.BoxGeometry(0.03, doorH, 0.05), darkMaterial);
+    seam.position.set(0, this.size[1] / 2, doorZ - 0.01);
+    this.exteriorGroup.add(seam);
 
-    for (let i = 0; i < 4; i += 1) {
-      const slit = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.035, 0.035), darkMaterial);
-      slit.position.set(0, 1.15 + i * 0.13, -this.size[2] / 2 - 0.035);
-      this.exteriorGroup.add(slit);
+    for (let col = -1; col <= 1; col += 2) {
+      for (let i = 0; i < 5; i += 1) {
+        const slit = new THREE.Mesh(new THREE.BoxGeometry(doorW * 0.62, 0.028, 0.03), darkMaterial);
+        slit.position.set(col * doorW * 0.52, 1.55 + i * 0.09, doorZ - 0.028);
+        this.exteriorGroup.add(slit);
+      }
     }
 
-    const handleLeft = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.24, 0.04), trimMaterial);
-    handleLeft.position.set(-0.11, 1.05, -this.size[2] / 2 - 0.055);
+    const handleLeft = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.22, 0.05), trimMaterial);
+    handleLeft.position.set(-0.08, 1.05, doorZ - 0.04);
     this.exteriorGroup.add(handleLeft);
-
     const handleRight = handleLeft.clone();
-    handleRight.position.x = 0.11;
+    handleRight.position.x = 0.08;
     this.exteriorGroup.add(handleRight);
     this.group.add(this.exteriorGroup);
 
