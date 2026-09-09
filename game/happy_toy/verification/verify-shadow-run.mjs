@@ -178,7 +178,7 @@ try {
   const nsLoopWalk = [];
   for (const stop of [
     { x: 0, z: -11.5 },
-    { x: -2.6, z: -11.5 },
+    { x: -4.5, z: -11.5 },
     { x: -2.6, z: -16 },
     { x: 0, z: -16 },
     { x: 2.6, z: -16 },
@@ -520,8 +520,8 @@ try {
   assert.ok(northWalk.some((stop) => stop.x < -2.0), "north school must force a west jog off x=0");
   assert.equal(northWalk.at(-1).ok, true, `must walk the north 1F jog, got ${JSON.stringify(northWalk.at(-1))}`);
   assert.ok(northWalk.at(-1).z < -19.5, "north jog continues past the baffle");
-  assert.ok(nsLoopWalk.some((stop) => stop.x < -2.0 && stop.z > -13), "north tile must also loop west around the south baffle");
-  assert.ok(nsLoopWalk.some((stop) => stop.x > 2.0 && stop.z < -18), "north tile west loop must return east around the north baffle");
+  assert.ok(nsLoopWalk.some((stop) => stop.x < -3.2 && stop.z > -13), "north tile must also loop west around the south baffle");
+  assert.ok(nsLoopWalk.some((stop) => stop.x > 1.8 && stop.z < -18), "north tile west loop must return east around the north baffle");
   assert.equal(nsLoopWalk.at(-1).ok, true, `must finish the opposite north 1F loop, got ${JSON.stringify(nsLoopWalk.at(-1))}`);
   assert.equal(rooms.hallLoopN, true, "east 1F loops must pinch the north plus arm");
   assert.equal(rooms.hallLoopW, true, "north 1F loops must pinch the west plus arm");
