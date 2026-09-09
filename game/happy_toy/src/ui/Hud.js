@@ -42,6 +42,7 @@ export class Hud {
     this.qtyCompass = document.querySelector("#qty-compass");
     this.ghostBadge = document.querySelector("#ghost-badge");
     this.clickToPlayButton = document.querySelector("#click-to-play");
+    this.lockerSlats = document.querySelector("#locker-slats");
 
     this.statusTimer = null;
     this.compassActive = false;
@@ -61,6 +62,13 @@ export class Hud {
     document.body.classList.toggle("ghost-mode", Boolean(enabled));
     if (this.ghostBadge) {
       this.ghostBadge.hidden = !enabled;
+    }
+  }
+
+  setHidden(hidden) {
+    document.body.classList.toggle("is-hidden", Boolean(hidden));
+    if (this.lockerSlats) {
+      this.lockerSlats.setAttribute("aria-hidden", hidden ? "false" : "true");
     }
   }
 

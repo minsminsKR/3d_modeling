@@ -280,6 +280,7 @@ try {
       hallClassCount: names(hall).filter((name) => name.includes("hall_class_")).length,
       hallStripe: names(hall).some((name) => name.includes("hall_stripe_")),
       hallWindow: names(hall).some((name) => name.includes("hall_window_")),
+      hallDesk: names(hall).some((name) => name.includes("hall_desk_")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
@@ -513,10 +514,11 @@ try {
     const hiding = {
       hidden: game.player.isHidden,
       cameraY: game.camera.position.y,
+      slats: document.body.classList.contains("is-hidden"),
     };
     game.exitCabinet();
 
-    game.player.setPosition({ x: 0.15, y: 0, z: -0.7 });
+    game.player.setPosition({ x: 0.15, y: 0, z: 0.55 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
     game.tryClearFinal();
     for (let i = 0; i < 130; i += 1) game.update(0.05, { skipRender: true });
@@ -557,6 +559,7 @@ try {
   assert.equal(rooms.hallClass, true, "school halls must be enclosed by classroom walls");
   assert.equal(rooms.hallStripe, true, "school hallway stripe must run the center corridor");
   assert.equal(rooms.hallWindow, true, "classroom doors must have dark windows");
+  assert.equal(rooms.hallDesk, true, "classroom desks must be visible through hall doors");
   assert.equal(rooms.hallJog, false, "east 1F halls must keep the z=0 spine open");
   assert.equal(rooms.hallJogE, false, "east 1F halls must not block the east arm with a jog");
   assert.equal(rooms.hallJogNs, false, "north 1F halls must keep the x=0 spine open");
@@ -627,6 +630,7 @@ try {
   assert.equal(loop.keyCount, 4);
   assert.equal(loop.total, 4);
   assert.equal(loop.hiding.hidden, true);
+  assert.equal(loop.hiding.slats, true, "hiding must show locker slats");
   assert.equal(loop.cleared, true, "ritual must clear the run");
   console.log("SHADOW RUN PASSED");
 } catch (error) {

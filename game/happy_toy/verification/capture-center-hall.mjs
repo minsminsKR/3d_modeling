@@ -163,7 +163,7 @@ const foyer = await page.evaluate(() => {
     x: 0.2,
     y: 0,
     z: 3.4,
-    lookAt: [0, 1.05, -2.1],
+    lookAt: [0, 1.05, -1.12],
     flashlight: true,
     freezeLoop: true,
   });
@@ -174,6 +174,33 @@ await page.evaluate(() => {
 });
 await page.screenshot({ path: path.join(outDir, "f1_start_foyer_altar.png"), timeout: 120000 });
 console.log("foyer", foyer);
+
+const nook = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  game.mapBuilder.generator.generateChunk(1, 0);
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(true);
+  uncat.group.visible = false;
+  game.hud.setStatus("교실 문이 반쯤 열려 있습니다. 책상 너머로 숨으십시오.", 4200);
+  return game.poseForCapture({
+    x: 16.0,
+    y: 0,
+    z: 0.15,
+    lookAt: [10.75, 1.05, 5.25],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_classroom_nook_desks.png"), timeout: 120000 });
+console.log("nook", nook);
 
 const south = await page.evaluate(() => {
   const game = window.__happyToy;

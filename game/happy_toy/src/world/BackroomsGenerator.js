@@ -297,15 +297,16 @@ export class BackroomsGenerator {
   }
 
     // Long school-hall tiles: EW through-halls off the start meridian, and
-    // NS through-halls off the start parallel. Start (0,0) stays a plus
-    // foyer so the 제단함 at z=-2.05 remains in the north arm. Uncat south
-    // (0,1) and the weeping-angel west tile (-1,0) are school corridors.
+    // NS through-halls off the start parallel. Start (0,0) is a 3.4m school
+    // cross so the first step east/south/west is the same corridor. The
+    // 제단함 sits in the intersection (z=-1.12), inside the plus clear.
   getHallChicanes(cx, cz) {
     const openings = this.getOpenings(cx, cz);
+    const isStart = cx === 0 && cz === 0;
     return {
       openings,
-      ew: Boolean(openings.E && openings.W && cx !== 0),
-      ns: Boolean(openings.N && openings.S && cz !== 0),
+      ew: Boolean(openings.E && openings.W && (cx !== 0 || isStart)),
+      ns: Boolean(openings.N && openings.S && (cz !== 0 || isStart)),
     };
   }
 
@@ -2243,6 +2244,77 @@ export class BackroomsGenerator {
         );
       }
     }
+    this.dressHallClassroomNooks(chunk, center, chunkId, floorY, ewChicane, nsChicane);
+  }
+
+  dressHallClassroomNooks(chunk, center, chunkId, floorY, ewChicane, nsChicane) {
+    // Desks and a chalkboard sit behind each hide-alcove door so a flashlight
+    // peek reads as a classroom, not an empty tile corner.
+    if (!ewChicane && !nsChicane) return;
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolBoardMat) {
+      this.schoolBoardMat = new THREE.MeshStandardMaterial({
+        color: 0x1a2a1c,
+        roughness: 0.88,
+        metalness: 0.04,
+      });
+    }
+    const alcove = 5.25;
+    const deskGeo = this.getBoxGeometry(0.58, 0.7, 0.44);
+    const chairGeo = this.getBoxGeometry(0.32, 0.42, 0.32);
+    const boardGeo = this.getBoxGeometry(1.65, 0.95, 0.06);
+    let idx = 0;
+    const place = (lx, lz, yaw, boardLx, boardLz) => {
+      const desk = new THREE.Mesh(deskGeo, this.propMaterial);
+      desk.position.set(center.x + lx, floorY + 0.35, center.z + lz);
+      desk.rotation.y = yaw;
+      desk.castShadow = true;
+      desk.receiveShadow = true;
+      desk.name = `${chunkId}_hall_desk_${idx}`;
+      this.scene.add(desk);
+      chunk.meshes.push(desk);
+      this.collisionWorld.addStaticBox(desk.name, desk.position, new THREE.Vector3(0.58, 0.7, 0.44), chunkId);
+
+      const chair = new THREE.Mesh(chairGeo, this.trimMaterial);
+      const awayX = lx - boardLx;
+      const awayZ = lz - boardLz;
+      const awayLen = Math.hypot(awayX, awayZ) || 1;
+      chair.position.set(
+        center.x + lx + (awayX / awayLen) * 0.42,
+        floorY + 0.21,
+        center.z + lz + (awayZ / awayLen) * 0.42,
+      );
+      chair.name = `${chunkId}_hall_chair_${idx}`;
+      this.scene.add(chair);
+      chunk.meshes.push(chair);
+
+      const board = new THREE.Mesh(boardGeo, this.schoolBoardMat);
+      board.position.set(center.x + boardLx, floorY + 1.48, center.z + boardLz);
+      board.rotation.y = yaw;
+      board.name = `${chunkId}_hall_board_${idx}`;
+      this.scene.add(board);
+      chunk.meshes.push(board);
+
+      const glow = new THREE.PointLight(0x2a2018, 0.42, 3.4, 2.0);
+      glow.position.set(center.x + lx, floorY + 1.7, center.z + lz);
+      glow.name = `${chunkId}_hall_class_glow_${idx}`;
+      this.scene.add(glow);
+      chunk.meshes.push(glow);
+      idx += 1;
+    };
+
+    if (ewChicane) {
+      place(-alcove + 1.7, -3.35, Math.PI, -alcove, -7.42);
+      place(alcove - 1.7, -3.35, Math.PI, alcove, -7.42);
+      place(-alcove + 1.7, 3.35, 0, -alcove, 7.42);
+      place(alcove - 1.7, 3.35, 0, alcove, 7.42);
+    }
+    if (nsChicane && !ewChicane) {
+      place(-3.35, -alcove + 1.7, Math.PI / 2, -7.42, -alcove);
+      place(-3.35, alcove - 1.7, Math.PI / 2, -7.42, alcove);
+      place(3.35, -alcove + 1.7, -Math.PI / 2, 7.42, -alcove);
+      place(3.35, alcove - 1.7, -Math.PI / 2, 7.42, alcove);
+    }
   }
 
   dressClassroom(chunk, center, chunkId, floorY) {
@@ -3499,7 +3571,7 @@ export class BackroomsGenerator {
       addDynamicCabinet(`cabinet_hall_${chunk.cx}_${chunk.cz}`, "신발장", alcove.pos, alcove.yaw);
     }
     const mazeHall = hallLike && (this.getHallChicanes(chunk.cx, chunk.cz).ew || this.getHallChicanes(chunk.cx, chunk.cz).ns);
-    if (mazeHall && chunk.cabinets.length === 1 && !(chunk.cx === 0 && chunk.cz === 0)) {
+    if (mazeHall && chunk.cabinets.length === 1) {
       const first = chunk.cabinets[0];
       const lx = first.position.x - center.x;
       const lz = first.position.z - center.z;
@@ -3635,14 +3707,14 @@ export class BackroomsGenerator {
       const exit = new FinalExit({
         id: "final-offering",
         label: "제단함",
-        position: [center.x, floorY, center.z - 2.05],
+        position: [center.x, floorY, center.z - 1.12],
       }, this.scene);
       exit.chunkId = chunkId;
       this.scene.add(exit.group);
       chunk.finalExit = exit;
       this.collisionWorld.addStaticBox(
         `${chunkId}_altar_block`,
-        new THREE.Vector3(center.x, floorY + 0.4, center.z - 2.05),
+        new THREE.Vector3(center.x, floorY + 0.4, center.z - 1.12),
         new THREE.Vector3(1.72, 0.8, 0.98),
         chunkId,
       );
@@ -3697,14 +3769,25 @@ export class BackroomsGenerator {
 
     if (type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
       || type === "cross_junction" || type === "t_junction" || type === "start") {
-      // Mount on alcove inner faces (x=±1.4 or z=±1.4), never in the 2.4m gap.
-      spawnSafeLight("wall-switch", -1.18, wallH, -5.2, Math.PI / 2, "벽 스위치");
-      spawnSafeLight("wall-switch", 1.18, wallH, 5.2, -Math.PI / 2, "벽 스위치");
-      spawnSafeLight("wall-switch", -5.2, wallH, -1.18, Math.PI, "벽 스위치");
-      spawnSafeLight("wall-switch", 5.2, wallH, 1.18, 0, "벽 스위치");
       spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "형광등 스위치");
+      if (this.isMazeHall(chunk.cx, chunk.cz)) {
+        const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
+        if (chicanes.ew) {
+          spawnSafeLight("wall-switch", -4.4, wallH, -1.55, Math.PI, "복도 스위치");
+          spawnSafeLight("wall-switch", 4.4, wallH, 1.55, 0, "복도 스위치");
+        }
+        if (chicanes.ns) {
+          spawnSafeLight("wall-switch", -1.55, wallH, -4.4, -Math.PI / 2, "복도 스위치");
+          spawnSafeLight("wall-switch", 1.55, wallH, 4.4, Math.PI / 2, "복도 스위치");
+        }
+      } else {
+        spawnSafeLight("wall-switch", -1.18, wallH, -5.2, Math.PI / 2, "벽 스위치");
+        spawnSafeLight("wall-switch", 1.18, wallH, 5.2, -Math.PI / 2, "벽 스위치");
+        spawnSafeLight("wall-switch", -5.2, wallH, -1.18, Math.PI, "벽 스위치");
+        spawnSafeLight("wall-switch", 5.2, wallH, 1.18, 0, "벽 스위치");
+      }
       if (type === "start") {
-        spawnSafeLight("floor-lamp", -3.2, floorH, -3.2, Math.PI * 0.25, "신당 낡은 스탠드");
+        spawnSafeLight("floor-lamp", -6.1, floorH, -6.1, Math.PI * 0.25, "신당 낡은 스탠드");
       }
     } else if (type === "corner") {
       // Corners: Flush on outer walls

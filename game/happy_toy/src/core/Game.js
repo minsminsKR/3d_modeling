@@ -907,6 +907,7 @@ export class Game {
     this.cinematicLightScale = 1;
     this.hud?.setGhostMode?.(false);
     this.player.exitCabinet();
+    this.hud?.setHidden(false);
 
     // Reset Lovely Doll states
     if (this.lovelyDolls) {
@@ -1076,6 +1077,7 @@ export class Game {
       && this.collisionWorld.hasLineOfSight(enemy.group.position, this.player.position));
     cabinet.occupied = true;
     this.player.enterCabinet(cabinet);
+    this.hud?.setHidden(true);
     this.voiceAnnouncer?.announce("hide", "신발장 안으로. 호흡을 끊으십시오.");
 
     if (!nearby || dist > (CABINET_CONFIG.huntHidePullDistance ?? 20)) {
@@ -1113,6 +1115,7 @@ export class Game {
       this.player.hiddenCabinet.occupied = false;
     }
     this.player.exitCabinet();
+    this.hud?.setHidden(false);
 
     if (interruptedEvent?.enemy) {
       interruptedEvent.enemy.resumeChaseFromCabinet(this.player.position);
