@@ -58,6 +58,15 @@ try {
       state: uncat.state,
     };
     game.testSafeMode = true;
+    game.player.setPosition({ x: 208, y: 0, z: 0 });
+    for (let i = 0; i < 16; i += 1) game.update(0.05);
+    const deepWing = {
+      totalKeys: game.getTotalKeys(),
+      hud: document.querySelector("#key-count-text")?.textContent,
+      liveKeys: game.keys.length,
+      chunkType: game.mapBuilder.generator.getChunkType(13, 0),
+      openings: game.mapBuilder.generator.getOpenings(13, 0),
+    };
     game.player.setPosition({ x: 96, y: 0, z: 0 });
     for (let i = 0; i < 12; i += 1) game.update(0.05);
     const atWing = {
@@ -94,6 +103,7 @@ try {
       before,
       afterRelease,
       afterChase,
+      deepWing,
       atWing,
       hiding,
       death: {
@@ -119,6 +129,10 @@ try {
     result.afterChase.endDist < result.afterChase.startDist - 1.5,
     `stalker must close distance ${result.afterChase.startDist} -> ${result.afterChase.endDist}`,
   );
+  assert.notEqual(result.deepWing.chunkType, "void", "chunk 13 must continue the school");
+  assert.equal(result.deepWing.openings.W, true, "endless east wing must open back toward the authored ring");
+  assert.equal(result.deepWing.totalKeys, 4);
+  assert.equal(result.deepWing.hud, "0 / 4");
   assert.equal(result.atWing.totalKeys, 4, "unloading key rooms must not shrink the four-name loop");
   assert.equal(result.atWing.hud, "0 / 4");
   assert.equal(result.hiding.hidden, true);

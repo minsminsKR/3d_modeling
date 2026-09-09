@@ -1497,12 +1497,16 @@ export class Game {
     const now = this.playTime;
     if (now - (this._lastPaAt || 0) < 16) return;
     this._lastPaAt = now;
-    const wing = Math.abs(cx) > 2 || Math.abs(cz) > 2;
-    const line = wing
-      ? "방송입니다. 같은 복도를 걷고 있습니다. 교실 번호를 믿지 마십시오."
-      : "방송입니다. 하교하지 않습니다. 복도에서 기다리십시오.";
+    const radius = Math.max(Math.abs(cx), Math.abs(cz));
+    const wing = radius > 2;
+    const deep = radius > 12;
+    const line = deep
+      ? "방송입니다. 이 복도는 끝이 없습니다. 교실 번호를 믿지 마십시오."
+      : wing
+        ? "방송입니다. 같은 복도를 걷고 있습니다. 교실 번호를 믿지 마십시오."
+        : "방송입니다. 하교하지 않습니다. 복도에서 기다리십시오.";
     soundManager.playSFX(Math.random() < 0.5 ? "school_chime" : "radio_static");
-    this.voiceAnnouncer?.announce("pa", line);
+    this.voiceAnnouncer?.announce(deep ? "deep" : "pa", line);
     this.hud.setStatus(line, 3200);
   }
 

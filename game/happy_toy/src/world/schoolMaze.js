@@ -4,6 +4,7 @@
 
 export const CORE_RADIUS = 2;
 export const PLAYABLE_RADIUS = 12;
+export const WORLD_RADIUS = 48;
 
 export const CORE_EDGES = [
   ["0,0", "0,-1"],
@@ -57,6 +58,14 @@ export function isCoreCell(cx, cz) {
 
 export function isPlayableCell(cx, cz) {
   return Math.abs(cx) <= PLAYABLE_RADIUS && Math.abs(cz) <= PLAYABLE_RADIUS;
+}
+
+export function isAuthoredCell(cx, cz) {
+  return isPlayableCell(cx, cz);
+}
+
+export function isWorldCell(cx, cz) {
+  return Math.abs(cx) <= WORLD_RADIUS && Math.abs(cz) <= WORLD_RADIUS;
 }
 
 export function playableCellCount() {
@@ -282,15 +291,109 @@ for (const [a, b] of MANSION_EDGES) {
   ADJACENCY.get(b).add(a);
 }
 
+function hash01(x, z, salt = 0) {
+  let h = 0x9e3779b9
+    ^ Math.imul(x | 0, 0x85ebca6b)
+    ^ Math.imul(z | 0, 0xc2b2ae35)
+    ^ Math.imul(salt | 0, 0x27d4eb2d);
+  h = Math.imul(h ^ (h >>> 16), 0x7feb352d);
+  h = Math.imul(h ^ (h >>> 15), 0x846ca68b);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+
+function edgeUnit(cx1, cz1, cx2, cz2, salt = 1) {
+  const ordered = cx1 < cx2 || (cx1 === cx2 && cz1 < cz2);
+  const x1 = ordered ? cx1 : cx2;
+  const z1 = ordered ? cz1 : cz2;
+  const x2 = ordered ? cx2 : cx1;
+  const z2 = ordered ? cz2 : cz1;
+  return hash01(x1 * 131 + z1, x2 * 131 + z2, salt);
+}
+
+function chebyshevRadius(cx, cz) {
+  return Math.max(Math.abs(cx), Math.abs(cz));
+}
+
+function sameRingAdjacent(cx1, cz1, cx2, cz2) {
+  if (chebyshevRadius(cx1, cz1) !== chebyshevRadius(cx2, cz2)) return false;
+  return Math.abs(cx1 - cx2) + Math.abs(cz1 - cz2) === 1;
+}
+
+function isAuthoredClassroomCell(cx, cz) {
+  if (!isAuthoredCell(cx, cz) || isCoreCell(cx, cz)) return false;
+  return (ADJACENCY.get(cellKey(cx, cz))?.size || 0) === 1;
+}
+
+function classroomHash(cx, cz) {
+  if (cx === 0 || cz === 0) return false;
+  const radius = chebyshevRadius(cx, cz);
+  if (Math.abs(cx) === radius && Math.abs(cz) === radius) return false;
+  if (!inwardNeighbor(cx, cz)) return false;
+  return hash01(cx, cz, 77) < 0.07;
+}
+
+function isInfiniteClassroomCell(cx, cz) {
+  if (isAuthoredCell(cx, cz) || !isWorldCell(cx, cz)) return false;
+  if (!classroomHash(cx, cz)) return false;
+  const inward = inwardNeighbor(cx, cz);
+  if (!inward || !isWorldCell(inward[0], inward[1])) return false;
+  if (isAuthoredCell(inward[0], inward[1])) {
+    return !isAuthoredClassroomCell(inward[0], inward[1]);
+  }
+  return !classroomHash(inward[0], inward[1]);
+}
+
+function infiniteEdgeOpen(cx1, cz1, cx2, cz2) {
+  if (!isWorldCell(cx1, cz1) || !isWorldCell(cx2, cz2)) return false;
+  if (Math.abs(cx1 - cx2) + Math.abs(cz1 - cz2) !== 1) return false;
+
+  const aAuth = isAuthoredCell(cx1, cz1);
+  const bAuth = isAuthoredCell(cx2, cz2);
+  if (aAuth && bAuth) return false;
+
+  const classroomA = aAuth ? isAuthoredClassroomCell(cx1, cz1) : isInfiniteClassroomCell(cx1, cz1);
+  const classroomB = bAuth ? isAuthoredClassroomCell(cx2, cz2) : isInfiniteClassroomCell(cx2, cz2);
+  if (classroomA && classroomB) return false;
+
+  const connectClassroom = (cx, cz, nx, nz) => {
+    const inward = inwardNeighbor(cx, cz);
+    return Boolean(inward) && inward[0] === nx && inward[1] === nz;
+  };
+
+  if (classroomA) return connectClassroom(cx1, cz1, cx2, cz2);
+  if (classroomB) return connectClassroom(cx2, cz2, cx1, cz1);
+
+  if (sameRingAdjacent(cx1, cz1, cx2, cz2)) return true;
+
+  const radiusA = chebyshevRadius(cx1, cz1);
+  const radiusB = chebyshevRadius(cx2, cz2);
+  if (Math.abs(radiusA - radiusB) !== 1) return false;
+
+  const outer = radiusA > radiusB ? [cx1, cz1] : [cx2, cz2];
+  const inner = radiusA > radiusB ? [cx2, cz2] : [cx1, cz1];
+  const inward = inwardNeighbor(outer[0], outer[1]);
+  if (!inward || inward[0] !== inner[0] || inward[1] !== inner[1]) return false;
+  if (isAuthoredCell(inner[0], inner[1]) && isAuthoredClassroomCell(inner[0], inner[1])) return false;
+  if (isInfiniteClassroomCell(inner[0], inner[1])) return false;
+  if (outer[0] === 0 || outer[1] === 0) return true;
+  return edgeUnit(cx1, cz1, cx2, cz2, 34) < 0.34;
+}
+
+export function hasMazeEdge(cx1, cz1, cx2, cz2) {
+  if (!isWorldCell(cx1, cz1) || !isWorldCell(cx2, cz2)) return false;
+  if (isAuthoredCell(cx1, cz1) && isAuthoredCell(cx2, cz2)) {
+    return ADJACENCY.get(cellKey(cx1, cz1))?.has(cellKey(cx2, cz2)) === true;
+  }
+  return infiniteEdgeOpen(cx1, cz1, cx2, cz2);
+}
+
 export function getGraphOpenings(cx, cz) {
   const open = { N: false, S: false, E: false, W: false };
-  if (!isPlayableCell(cx, cz)) return open;
-  const neighbors = ADJACENCY.get(cellKey(cx, cz));
-  if (!neighbors) return open;
-  if (neighbors.has(cellKey(cx, cz - 1))) open.N = true;
-  if (neighbors.has(cellKey(cx, cz + 1))) open.S = true;
-  if (neighbors.has(cellKey(cx + 1, cz))) open.E = true;
-  if (neighbors.has(cellKey(cx - 1, cz))) open.W = true;
+  if (!isWorldCell(cx, cz)) return open;
+  if (hasMazeEdge(cx, cz, cx, cz - 1)) open.N = true;
+  if (hasMazeEdge(cx, cz, cx, cz + 1)) open.S = true;
+  if (hasMazeEdge(cx, cz, cx + 1, cz)) open.E = true;
+  if (hasMazeEdge(cx, cz, cx - 1, cz)) open.W = true;
   return open;
 }
 

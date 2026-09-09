@@ -4,6 +4,7 @@ const VOICE_LINES = {
   start: "오늘은 하교하지 않습니다. 복도에서 기다리십시오.",
   hunt: "누군가 복도를 걷고 있습니다.",
   pa: "방송입니다. 하교하지 않습니다. 복도에서 기다리십시오.",
+  deep: "방송입니다. 이 복도는 끝이 없습니다. 교실 번호를 믿지 마십시오.",
 };
 
 export class VoiceAnnouncer {

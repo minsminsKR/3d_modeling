@@ -15,9 +15,10 @@ import {
   MANSION_EDGES,
   PLAYABLE_RADIUS,
   SCHOOL_RING_EDGES,
+  WORLD_RADIUS,
   getGraphOpenings,
   getRingHallType,
-  isPlayableCell,
+  isWorldCell,
 } from "./schoolMaze.js";
 
 export {
@@ -26,6 +27,7 @@ export {
   MANSION_EDGES,
   PLAYABLE_RADIUS,
   SCHOOL_RING_EDGES,
+  WORLD_RADIUS,
   getRingHallType,
 };
 
@@ -276,7 +278,7 @@ export class BackroomsGenerator {
   }
 
   isPlayableChunk(cx, cz) {
-    return isPlayableCell(cx, cz);
+    return isWorldCell(cx, cz);
   }
 
   getOpenings(cx, cz) {
@@ -1759,27 +1761,90 @@ export class BackroomsGenerator {
   }
 
   dressClassroom(chunk, center, chunkId, floorY) {
-    const board = new THREE.Mesh(
-      this.getBoxGeometry(3.6, 1.15, 0.08),
-      new THREE.MeshStandardMaterial({
-        color: 0x1a2a1c,
-        roughness: 0.88,
-        metalness: 0.04,
-      }),
-    );
-    board.position.set(center.x, floorY + 1.55, center.z - 7.52);
+    const open = this.getOpenings(chunk.cx, chunk.cz);
+    const doorFace = open.N ? "N" : open.S ? "S" : open.E ? "E" : "W";
+    const boardMat = new THREE.MeshStandardMaterial({
+      color: 0x1a2a1c,
+      roughness: 0.88,
+      metalness: 0.04,
+    });
+    const board = new THREE.Mesh(this.getBoxGeometry(3.6, 1.15, 0.08), boardMat);
+    const podium = new THREE.Mesh(this.getBoxGeometry(0.9, 0.78, 0.55), this.propMaterial);
+    if (doorFace === "S") {
+      board.position.set(center.x, floorY + 1.55, center.z - 7.52);
+      podium.position.set(center.x - 2.2, floorY + 0.39, center.z - 5.1);
+    } else if (doorFace === "N") {
+      board.position.set(center.x, floorY + 1.55, center.z + 7.52);
+      podium.position.set(center.x + 2.2, floorY + 0.39, center.z + 5.1);
+    } else if (doorFace === "E") {
+      board.rotation.y = Math.PI / 2;
+      board.position.set(center.x - 7.52, floorY + 1.55, center.z);
+      podium.position.set(center.x - 5.1, floorY + 0.39, center.z - 2.2);
+    } else {
+      board.rotation.y = Math.PI / 2;
+      board.position.set(center.x + 7.52, floorY + 1.55, center.z);
+      podium.position.set(center.x + 5.1, floorY + 0.39, center.z + 2.2);
+    }
     board.name = `${chunkId}_chalkboard`;
     this.scene.add(board);
     chunk.meshes.push(board);
 
-    const podium = new THREE.Mesh(this.getBoxGeometry(0.9, 0.78, 0.55), this.propMaterial);
-    podium.position.set(center.x - 2.2, floorY + 0.39, center.z - 5.1);
     podium.castShadow = true;
     podium.receiveShadow = true;
     podium.name = `${chunkId}_podium`;
     this.scene.add(podium);
     chunk.meshes.push(podium);
     this.collisionWorld.addStaticBox(podium.name, podium.position, new THREE.Vector3(0.9, 0.78, 0.55), chunkId);
+
+    const deskGeo = this.getBoxGeometry(0.62, 0.72, 0.48);
+    const chairGeo = this.getBoxGeometry(0.36, 0.46, 0.36);
+    let deskIndex = 0;
+    for (let row = 0; row < 3; row += 1) {
+      for (let col = 0; col < 3; col += 1) {
+        const u = (col - 1) * 1.7;
+        const v = (row - 0.35) * 1.55;
+        let x = center.x + u;
+        let z = center.z + v;
+        if (doorFace === "N" || doorFace === "S") {
+          z = doorFace === "S" ? center.z - 0.4 + row * 1.55 : center.z + 0.4 - row * 1.55;
+          x = center.x + u;
+        } else {
+          x = doorFace === "E" ? center.x - 0.4 + row * 1.55 : center.x + 0.4 - row * 1.55;
+          z = center.z + u;
+        }
+        const desk = new THREE.Mesh(deskGeo, this.propMaterial);
+        desk.position.set(x, floorY + 0.36, z);
+        desk.castShadow = true;
+        desk.receiveShadow = true;
+        desk.name = `${chunkId}_desk_${deskIndex}`;
+        this.scene.add(desk);
+        chunk.meshes.push(desk);
+        this.collisionWorld.addStaticBox(desk.name, desk.position, new THREE.Vector3(0.62, 0.72, 0.48), chunkId);
+
+        const chair = new THREE.Mesh(chairGeo, this.trimMaterial);
+        const chairBack = doorFace === "S" ? 0.42 : doorFace === "N" ? -0.42 : 0;
+        const chairSide = doorFace === "E" ? 0.42 : doorFace === "W" ? -0.42 : 0;
+        chair.position.set(x + chairSide, floorY + 0.23, z + chairBack);
+        chair.name = `${chunkId}_chair_${deskIndex}`;
+        this.scene.add(chair);
+        chunk.meshes.push(chair);
+        this.collisionWorld.addStaticBox(chair.name, chair.position, new THREE.Vector3(0.36, 0.46, 0.36), chunkId);
+        deskIndex += 1;
+      }
+    }
+
+    const cubby = new THREE.Mesh(this.getBoxGeometry(2.4, 1.15, 0.42), this.trimMaterial);
+    cubby.name = `${chunkId}_shoe_cubby`;
+    if (doorFace === "S" || doorFace === "N") {
+      cubby.position.set(center.x + 6.4, floorY + 0.58, center.z);
+      this.collisionWorld.addStaticBox(cubby.name, cubby.position, new THREE.Vector3(2.4, 1.15, 0.42), chunkId);
+    } else {
+      cubby.rotation.y = Math.PI / 2;
+      cubby.position.set(center.x, floorY + 0.58, center.z + 6.4);
+      this.collisionWorld.addStaticBox(cubby.name, cubby.position, new THREE.Vector3(0.42, 1.15, 2.4), chunkId);
+    }
+    this.scene.add(cubby);
+    chunk.meshes.push(cubby);
   }
 
   buildCeilingLights(chunk, type, center, chunkId, rand, floorY = 0) {
@@ -2224,9 +2289,10 @@ export class BackroomsGenerator {
 
   buildHorrorAtmosphereProps(chunk, type, center, chunkId, rand, floorY = 0) {
     const isRoomLike = ROOM_LIKE_CHUNK_TYPES.has(type);
-    const wallChance = isRoomLike ? 0.72 : 0.46;
-    const floorChance = isRoomLike ? 0.82 : 0.28;
-    const ceilingChance = type === "flicker_room" ? 0.82 : 0.38;
+    const repeatingWing = Math.abs(chunk.cx) > 2 || Math.abs(chunk.cz) > 2;
+    const wallChance = isRoomLike ? 0.72 : repeatingWing ? 0.58 : 0.46;
+    const floorChance = isRoomLike ? 0.82 : repeatingWing ? 0.42 : 0.28;
+    const ceilingChance = type === "flicker_room" ? 0.82 : repeatingWing ? 0.48 : 0.38;
 
     if (rand() < wallChance) {
       const definition = this.pickFrom(WALL_HORROR_PROPS, rand);

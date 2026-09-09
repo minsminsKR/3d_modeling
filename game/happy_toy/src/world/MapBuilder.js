@@ -304,7 +304,9 @@ export class MapBuilder {
 
   getRoomPlateMaterial(chunk) {
     if (!this.roomPlateCache) this.roomPlateCache = new Map();
-    const label = `${Math.abs(chunk.cx) + 1} - ${Math.abs(chunk.cz) + 2} 교실`;
+    const grade = (Math.abs(chunk.cx) % 3) + 1;
+    const klass = (Math.abs(chunk.cz) % 8) + 1;
+    const label = `${grade} - ${klass} 교실`;
     if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;
@@ -364,7 +366,7 @@ export class MapBuilder {
       }
     }
 
-    if (random() < 0.55) {
+    if (random() < 0.72) {
       const ofuda = new THREE.Mesh(
         new THREE.PlaneGeometry(0.12, 0.28),
         new THREE.MeshStandardMaterial({
@@ -381,7 +383,7 @@ export class MapBuilder {
       chunk.meshes.push(ofuda);
     }
 
-    if (random() < 0.62) {
+    if (random() < 0.78) {
       const clock = new THREE.Mesh(
         new THREE.CircleGeometry(0.16, 20),
         new THREE.MeshStandardMaterial({
@@ -398,7 +400,7 @@ export class MapBuilder {
       chunk.meshes.push(clock);
     }
 
-    if (random() < 0.4) {
+    if (hallLike || random() < 0.55) {
       const arrow = new THREE.Mesh(
         new THREE.PlaneGeometry(0.55, 0.18),
         new THREE.MeshStandardMaterial({
