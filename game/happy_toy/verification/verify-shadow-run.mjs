@@ -111,6 +111,8 @@ try {
     const faculty = generator.generateChunk(6, 1);
     const science = generator.generateChunk(6, -2);
     const gate = generator.generateChunk(4, 0);
+    const b1 = generator.generateChunk(1, 2);
+    const f2 = generator.generateChunk(-1, -1);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
     game._lastPlayerChunkCx = 4;
@@ -130,6 +132,10 @@ try {
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
       labBench: names(science).some((name) => name.includes("lab_bench")),
+      b1Maze: names(b1).filter((name) => name.includes("b1_maze_")).length,
+      f2Maze: names(f2).filter((name) => name.includes("gallery_maze_")).length,
+      b1Cabinets: (b1.cabinets || []).length,
+      f2Cabinets: (f2.cabinets || []).length,
       beats: [...(game._storyBeats || [])],
       altarChildren: game.finalExit?.group?.children?.length || 0,
     };
@@ -143,6 +149,57 @@ try {
       before,
       after: game.finalExit.group.rotation.y,
       label: game.finalExit.label,
+    };
+  });
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.mapBuilder.generator.generateChunk(1, 2);
+    game.player.setPosition({ x: 16, y: -5, z: 36.5 });
+    for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const b1Walk = [];
+  for (const stop of [
+    { x: 13.6, z: 38 },
+    { x: 8.4, z: 38 },
+    { x: 8.4, z: 33.25 },
+    { x: 7.2, z: 32.0 },
+    { x: 7.2, z: 30.2 },
+    { x: 1.2, z: 30 },
+    { x: -3.5, z: 28.5 },
+  ]) {
+    b1Walk.push(await walkTo(stop, 280));
+    console.log("b1", stop, b1Walk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.mapBuilder.generator.generateChunk(-1, -1);
+    game.player.setPosition({ x: -16, y: 5, z: -20 });
+    for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const f2Walk = [];
+  for (const stop of [
+    { x: -17.6, z: -21.8 },
+    { x: -22.5, z: -22 },
+    { x: -27.5, z: -22 },
+    { x: -35.0, z: -22 },
+  ]) {
+    f2Walk.push(await walkTo(stop, 280));
+    console.log("f2", stop, f2Walk.at(-1));
+  }
+
+  const story = await page.evaluate(() => {
+    const game = window.__happyToy;
+    return {
+      beats: [...(game._storyBeats || [])],
+      fired: [...(game.storyDirector?.fired || [])],
+      y: game.player.position.y,
+      x: game.player.position.x,
     };
   });
 
@@ -224,13 +281,25 @@ try {
     };
   });
 
-  console.log({ annexWalk, rooms, altarStill, loop });
+  console.log({ annexWalk, rooms, altarStill, b1Walk, f2Walk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.equal(annexWalk[3].ok, true, `must walk to 별관 gate, got ${JSON.stringify(annexWalk[3])}`);
   assert.ok(annexWalk[3].x > 56, "별관 gate is east of the core");
   assert.equal(annexWalk[5].ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk[5])}`);
   assert.ok(annexWalk[5].z < -10, "보건실 is on the north wing of the annex spine");
+  assert.equal(b1Walk.at(-1).ok, true, `must walk the B1 maze to the nursery, got ${JSON.stringify(b1Walk.at(-1))}`);
+  assert.ok(b1Walk.at(-1).z < 30, "nursery is north of the inner crib door");
+  assert.ok(b1Walk.at(-1).x < 0, "nursery is west of the inner crib door");
+  assert.equal(f2Walk.at(-1).ok, true, `must walk the 2F maze to the shrine, got ${JSON.stringify(f2Walk.at(-1))}`);
+  assert.ok(f2Walk.at(-1).x < -32, "shrine is at the west end of the gallery");
+  assert.ok(story.fired.includes("leaveStart"), `leaveStart VO missing: ${story.fired.join(",")}`);
+  assert.ok(story.fired.includes("b1floor"), `B1 floor VO missing: ${story.fired.join(",")}`);
+  assert.ok(story.fired.includes("nursery"), `nursery VO missing: ${story.fired.join(",")}`);
+  assert.ok(story.fired.includes("f2floor"), `2F floor VO missing: ${story.fired.join(",")}`);
+  assert.ok(story.fired.includes("shrine"), `shrine VO missing: ${story.fired.join(",")}`);
+  assert.ok(story.beats.includes("map:b1"));
+  assert.ok(story.beats.includes("map:f2"));
   assert.equal(rooms.nurseType, "nurse_office");
   assert.equal(rooms.musicType, "music_room");
   assert.equal(rooms.facultyType, "faculty_office");
@@ -245,6 +314,10 @@ try {
   assert.ok(rooms.beats.includes("faculty_office"));
   assert.ok(rooms.beats.includes("science_lab"));
   assert.ok(rooms.beats.includes("map:f1b"));
+  assert.ok(rooms.b1Maze >= 6, `B1 maze walls missing: ${rooms.b1Maze}`);
+  assert.ok(rooms.f2Maze >= 5, `2F maze walls missing: ${rooms.f2Maze}`);
+  assert.ok(rooms.b1Cabinets >= 4, "basement needs extra hide spots");
+  assert.ok(rooms.f2Cabinets >= 4, "2F gallery needs extra hide spots");
   assert.ok(rooms.altarChildren >= 10, "제단함 must be a shrine, not a single spinning box");
   assert.equal(altarStill.before, altarStill.after);
   assert.equal(altarStill.label, "제단함");

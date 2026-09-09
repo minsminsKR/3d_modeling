@@ -11,6 +11,7 @@ import { EnemyManager } from "../entities/EnemyManager.js";
 import { GlitchController } from "../effects/GlitchController.js";
 import { HorrorEventManager } from "../events/HorrorEventManager.js";
 import { DreadDirector } from "../events/DreadDirector.js";
+import { StoryDirector } from "../events/StoryDirector.js";
 import { MirrorHwacatEvent } from "../events/MirrorHwacatEvent.js";
 import { Hud } from "../ui/Hud.js";
 import { Input } from "./Input.js";
@@ -183,6 +184,7 @@ export class Game {
     this.menuSystem = new MenuSystem(this);
     this.monsterIntroManager = new MonsterIntroManager(this);
     this.dreadDirector = new DreadDirector(this);
+    this.storyDirector = new StoryDirector(this);
     this.voiceAnnouncer = new VoiceAnnouncer();
 
 
@@ -592,6 +594,7 @@ export class Game {
       this.particleSystem?.update(deltaTime, this.player.position);
       this.horrorEventManager?.update(deltaTime);
       this.dreadDirector?.update(deltaTime);
+      this.storyDirector?.update();
       if (this.gameCleared) {
         this.renderer.render(this.scene, this.camera);
         this.input.endFrame();
@@ -890,6 +893,7 @@ export class Game {
     this.monsterIntroManager?.reset();
     this.horrorEventManager?.reset();
     this.dreadDirector?.reset();
+    this.storyDirector?.reset();
 
     this.glitchController.reset();
     this.testSafeMode = false;

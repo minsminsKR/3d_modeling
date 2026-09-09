@@ -1000,6 +1000,13 @@ export class BackroomsGenerator {
         floor: 2,
         links: ["tw_2f_gallery_altar"],
       }, chunkId);
+
+      this.dressGalleryMaze(chunk, chunkId, floorY, {
+        galMinX,
+        galMaxX,
+        galMinZ,
+        galMaxZ,
+      });
     } else if (type === "stairs_b1") {
       // 1F → B1 Staircase (descending from Y = 0.0 to Y = -5.0 towards South, inside chunk (1, 2))
       // Entrance is from North (z = -7.8)
@@ -1540,6 +1547,15 @@ export class BackroomsGenerator {
         floor: -1,
         links: ["tw_b1_east_door"],
       }, chunkId);
+
+      this.dressBasementMaze(chunk, chunkId, floorY, {
+        b1MinX,
+        b1MaxX,
+        b1MinZ,
+        b1MaxZ,
+        b1StartX,
+        rampHalfWidth,
+      });
     }
   }
 
@@ -1975,6 +1991,118 @@ export class BackroomsGenerator {
     this.placeDressedBox(chunk, chunkId, "lab_bottle_b", center.x - 2.7, floorY + 1.12, center.z + 0.16, 0.1, 0.36, 0.1, glass, false);
     this.placeDressedBox(chunk, chunkId, "lab_bottle_c", center.x + 3.6, floorY + 1.08, center.z, 0.12, 0.28, 0.12, glass, false);
     this.placeDressedBox(chunk, chunkId, "lab_pipe", center.x, floorY + 2.42, center.z, 8.4, 0.1, 0.1, pipe, false);
+  }
+
+  linkTransitionWaypoint(id, extraId) {
+    const waypoint = this.collisionWorld.transitionWaypoints.find((item) => item.id === id);
+    if (waypoint && Array.isArray(waypoint.links) && !waypoint.links.includes(extraId)) {
+      waypoint.links.push(extraId);
+    }
+  }
+
+  dressBasementMaze(chunk, chunkId, floorY, _bounds) {
+    const wallMat = new THREE.MeshStandardMaterial({
+      map: this.textures.load("wall"),
+      color: 0x24352e,
+      roughness: 0.92,
+      metalness: 0.05,
+      emissive: 0x071410,
+      emissiveIntensity: 0.1,
+    });
+    const y = floorY - 3.6;
+    const h = 2.8;
+    const t = 0.32;
+    // Keep landing door (x≈14.8, z 36.8–39.2), inner crib door (x=1.2, z 28.8–31.2),
+    // nursery/key, and existing hide spots clear. Gaps are 2.6m+ for the player radius.
+    const walls = [
+      ["b1_maze_west_a", 4.55, 33.2, 4.7, t],
+      ["b1_maze_west_b", 11.75, 33.2, 4.1, t],
+      ["b1_maze_west_spur", 5.4, 26.05, t, 3.1],
+      ["b1_maze_west_n", 11.35, 28.2, 4.3, t],
+      ["b1_maze_nursery_a", -5.8, 32.4, 3.2, t],
+      ["b1_maze_nursery_b", -5.8, 25.65, t, 2.3],
+      ["b1_maze_east_a", 18.6, 34.0, 1.2, t],
+      ["b1_maze_east_b", 23.5, 34.0, 3.4, t],
+      ["b1_maze_east_spur", 21.2, 26.4, t, 3.6],
+    ];
+    for (const [name, x, z, sx, sz] of walls) {
+      this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
+    }
+
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_b1_maze_gap",
+      position: [8.4, floorY - 5.0, 33.2],
+      floor: -1,
+      links: ["tw_b1_cellar_hall", "tw_b1_inner_door"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_b1_east_gap",
+      position: [20.5, floorY - 5.0, 34.0],
+      floor: -1,
+      links: ["tw_b1_east_door", "tw_b1_east_store"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_b1_east_boiler",
+      position: [22.4, floorY - 5.0, 26.8],
+      floor: -1,
+      links: ["tw_b1_east_store"],
+    }, chunkId);
+    this.linkTransitionWaypoint("tw_b1_cellar_hall", "tw_b1_maze_gap");
+    this.linkTransitionWaypoint("tw_b1_inner_door", "tw_b1_maze_gap");
+    this.linkTransitionWaypoint("tw_b1_east_door", "tw_b1_east_gap");
+    this.linkTransitionWaypoint("tw_b1_east_store", "tw_b1_east_gap");
+    this.linkTransitionWaypoint("tw_b1_east_store", "tw_b1_east_boiler");
+  }
+
+  dressGalleryMaze(chunk, chunkId, floorY, _bounds) {
+    const wallMat = new THREE.MeshStandardMaterial({
+      map: this.textures.load("wall"),
+      color: 0x3a1012,
+      roughness: 0.86,
+      metalness: 0.04,
+      emissive: 0x1a0406,
+      emissiveIntensity: 0.12,
+    });
+    const y = floorY + 6.4;
+    const h = 2.8;
+    const t = 0.32;
+    // Keep landing door (x≈-17.2, z -23.0–-20.6), shrine door (x=-27.5, z -23.2–-20.8),
+    // shrine path at z≈-22, key, and hide spots clear.
+    const walls = [
+      ["gallery_maze_south_a", -25.0, -16.2, 2.4, t],
+      ["gallery_maze_south_b", -19.8, -16.2, 2.8, t],
+      ["gallery_maze_north_spur", -23.6, -32.2, t, 6.8],
+      ["gallery_maze_shrine_a", -35.7, -26.6, 3.4, t],
+      ["gallery_maze_shrine_b", -29.6, -26.6, 2.8, t],
+      ["gallery_maze_shrine_south", -31.6, -15.7, t, 4.6],
+    ];
+    for (const [name, x, z, sx, sz] of walls) {
+      this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
+    }
+
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_2f_maze_south_gap",
+      position: [-22.5, floorY + 5.0, -16.2],
+      floor: 2,
+      links: ["tw_2f_gallery_center", "tw_2f_gallery_south"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_2f_maze_north_gap",
+      position: [-32.5, floorY + 5.0, -26.6],
+      floor: 2,
+      links: ["tw_2f_gallery_altar", "tw_2f_gallery_north"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_2f_shrine_south",
+      position: [-32.5, floorY + 5.0, -11.2],
+      floor: 2,
+      links: ["tw_2f_gallery_inner_door"],
+    }, chunkId);
+    this.linkTransitionWaypoint("tw_2f_gallery_center", "tw_2f_maze_south_gap");
+    this.linkTransitionWaypoint("tw_2f_gallery_south", "tw_2f_maze_south_gap");
+    this.linkTransitionWaypoint("tw_2f_gallery_altar", "tw_2f_maze_north_gap");
+    this.linkTransitionWaypoint("tw_2f_gallery_north", "tw_2f_maze_north_gap");
+    this.linkTransitionWaypoint("tw_2f_gallery_inner_door", "tw_2f_shrine_south");
   }
 
   dressBasementFlood(chunk, chunkId, floorY, bounds) {
@@ -2467,10 +2595,12 @@ export class BackroomsGenerator {
       addDynamicCabinet("cabinet_stairs_2f_attic", "2층 갤러리 벽장", [-6.0, 5.0, 4.0], Math.PI / 2);
       addDynamicCabinet("cabinet_stairs_2f_shrine", "2층 사당 벽장", [-18.4, 5.0, -4.2], Math.PI / 2);
       addDynamicCabinet("cabinet_stairs_2f_landing", "2층 계단참 벽장", [0.0, 5.0, -6.2], 0);
+      addDynamicCabinet("cabinet_stairs_2f_south", "2층 별실 벽장", [-16.5, 5.0, 4.8], Math.PI);
     } else if (type === "stairs_b1") {
       addDynamicCabinet("cabinet_b1_cellar", "지하 보육실 벽장", [-22.5, -5.0, 2.0], -Math.PI / 2);
       addDynamicCabinet("cabinet_b1_flood", "지하 침수복도 벽장", [-7.4, -5.0, -0.4], Math.PI / 2);
       addDynamicCabinet("cabinet_b1_east", "지하 동쪽 벽장", [8.2, -5.0, 0.2], -Math.PI / 2);
+      addDynamicCabinet("cabinet_b1_boiler", "지하 보일러 벽장", [6.4, -5.0, -5.4], Math.PI);
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (isClassroomType(type)) {
@@ -2506,9 +2636,13 @@ export class BackroomsGenerator {
     } else if (type === "stairs_b1") {
       addLoreNote(`${chunkId}_lore_flood`, [-7.4, -3.55, -2.2], Math.PI / 2,
         "물이 이름을 적고 있다. 요람 쪽 열쇠를 집고 신발장에 숨어서 나오십시오.");
+      addLoreNote(`${chunkId}_lore_maze`, [6.2, -3.55, -5.0], Math.PI,
+        "보일러실 너머로 요람이 운다. 물이 차도 이름을 집고 벽장에 숨으십시오.");
     } else if (type === "stairs_2f") {
       addLoreNote(`${chunkId}_lore_blood`, [-8.2, 6.35, 1.6], Math.PI / 2,
         "액자 아래는 아직 젖어 있다. 그림이 떨어지면 네 번째 이름이 드러난다.");
+      addLoreNote(`${chunkId}_lore_maze`, [-16.2, 6.35, 4.4], Math.PI,
+        "피 묻은 꺾인 복도는 액자로 끝난다. 그림이 떨어질 때까지 호흡을 끊으십시오.");
     } else if (type === "nurse_office") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
         "보건실 장부에 출석이 끝나지 않은 이름이 넷이다. 별관에서 같은 신발을 두 번 보지 마십시오.");
