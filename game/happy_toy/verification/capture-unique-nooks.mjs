@@ -65,16 +65,16 @@ const boarded = await page.evaluate(() => {
   game.mapBuilder.generator.generateChunk(0, 1);
   game.hud.setStatus("폐쇄된 교실입니다.", 2800);
   return game.poseForCapture({
-    x: 4.85,
+    x: -2.35,
     y: 0,
-    z: 13.7,
-    lookAt: [3.45, 1.15, 10.35],
+    z: 20.45,
+    lookAt: [-5.35, 1.42, 18.75],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_boarded_plywood.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_boarded_planks.png"), timeout: 120000 });
 console.log("boarded", boarded);
 await browser.close();
 console.log("ok");

@@ -2999,7 +2999,7 @@ export class BackroomsGenerator {
       );
       this.addLooseBooks(chunk, table.x, floorY + 0.76, table.z, faceDoorYaw, idx);
       for (const along of [-1.15, 1.35]) {
-        const win = pos(1.1 + along, 5.58, 1.62);
+        const win = pos(1.1 + along, 5.22, 1.62);
         this.addBoardedWindowUnit(
           chunk, chunkId, `hall_class_${idx}_lib_board_${along < 0 ? "a" : "b"}`,
           win.x, win.y, win.z, faceDoorYaw,
@@ -3038,7 +3038,7 @@ export class BackroomsGenerator {
       chunk.meshes.push(puddle);
     } else if (kind === "boarded") {
       for (const along of [-1.15, 1.35]) {
-        const win = pos(1.1 + along, 5.58, 1.62);
+        const win = pos(1.1 + along, 5.22, 1.62);
         this.addBoardedWindowUnit(
           chunk, chunkId, `hall_class_${idx}_board_${along < 0 ? "a" : "b"}`,
           win.x, win.y, win.z, faceDoorYaw,
@@ -4887,10 +4887,10 @@ export class BackroomsGenerator {
     return new THREE.MeshStandardMaterial({
       map: texture,
       color: texture ? 0xffffff : 0x4a3824,
-      roughness: 0.9,
+      roughness: 0.88,
       metalness: 0,
-      emissive: 0x1a1008,
-      emissiveIntensity: 0.08,
+      emissive: 0x2a1810,
+      emissiveIntensity: 0.16,
     });
   }
 
