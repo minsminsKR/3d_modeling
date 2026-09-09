@@ -376,6 +376,18 @@ export class BackroomsGenerator {
     return cx === -2 && cz === 1;
   }
 
+  isArchiveHallChunk(cx, cz) {
+    return cx === -2 && cz === -1;
+  }
+
+  isStorageHallChunk(cx, cz) {
+    return cx === 2 && cz === -1;
+  }
+
+  isTeaHallChunk(cx, cz) {
+    return cx === -1 && cz === 1;
+  }
+
   isPracticeChunk(cx, cz) {
     return cx === 7 && cz === 2;
   }
@@ -2978,6 +2990,15 @@ export class BackroomsGenerator {
     if (this.isDollHallChunk(chunk.cx, chunk.cz)) {
       this.dressDollHall(chunk, center, chunkId, floorY);
     }
+    if (this.isArchiveHallChunk(chunk.cx, chunk.cz)) {
+      this.dressArchiveHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isStorageHallChunk(chunk.cx, chunk.cz)) {
+      this.dressStorageHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isTeaHallChunk(chunk.cx, chunk.cz)) {
+      this.dressTeaHall(chunk, center, chunkId, floorY);
+    }
     if (this.isPracticeChunk(chunk.cx, chunk.cz)) {
       this.dressPracticeHall(chunk, center, chunkId, floorY);
     }
@@ -4719,6 +4740,96 @@ export class BackroomsGenerator {
     const glow = new THREE.PointLight(0x201010, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_dollhall_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressArchiveHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolArchiveMat) {
+      this.schoolArchiveMat = new THREE.MeshStandardMaterial({
+        color: 0x3a3428,
+        roughness: 0.82,
+        metalness: 0.04,
+        emissive: 0x100c08,
+        emissiveIntensity: 0.05,
+      });
+    }
+    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `archivehall_case_${name}`,
+        center.x - 1.48, floorY + 0.72, center.z + z,
+        0.55, 1.44, 0.92, this.schoolArchiveMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "archivehall_sign",
+      center.x - 1.72, floorY + 2.12, center.z,
+      Math.PI / 2, "서고",
+    );
+    const glow = new THREE.PointLight(0x201810, 0.48, 6.0, 2);
+    glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
+    glow.name = `${chunkId}_archivehall_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressStorageHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolCrateMat) {
+      this.schoolCrateMat = new THREE.MeshStandardMaterial({
+        color: 0x4a3a28,
+        roughness: 0.88,
+        metalness: 0.02,
+        emissive: 0x100804,
+        emissiveIntensity: 0.04,
+      });
+    }
+    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `storagehall_crate_${name}`,
+        center.x - 1.48, floorY + 0.42, center.z + z,
+        0.72, 0.84, 0.78, this.schoolCrateMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "storagehall_sign",
+      center.x - 1.72, floorY + 2.12, center.z,
+      Math.PI / 2, "창고",
+    );
+    const glow = new THREE.PointLight(0x201410, 0.48, 6.0, 2);
+    glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
+    glow.name = `${chunkId}_storagehall_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressTeaHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolTatamiMat) {
+      this.schoolTatamiMat = new THREE.MeshStandardMaterial({
+        color: 0x6a5a38,
+        roughness: 0.86,
+        metalness: 0.02,
+        emissive: 0x120c04,
+        emissiveIntensity: 0.04,
+      });
+    }
+    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `teahall_bench_${name}`,
+        center.x + x, floorY + 0.22, center.z - 1.52,
+        1.15, 0.44, 0.42, this.schoolTatamiMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "teahall_sign",
+      center.x, floorY + 2.12, center.z - 1.72,
+      0, "다실",
+    );
+    const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
+    glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
+    glow.name = `${chunkId}_teahall_glow`;
     this.scene.add(glow);
     chunk.meshes.push(glow);
   }
@@ -6739,6 +6850,15 @@ export class BackroomsGenerator {
       } else if (this.isDollHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
           "인형 선반이 복도를 본다. 눈을 마주치지 마십시오.");
+      } else if (this.isArchiveHallChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
+          "서고 앞 철 상자가 잠겨 있다. 열지 마십시오.");
+      } else if (this.isStorageHallChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
+          "창고 상자가 어제 출석을 담고 있다.");
+      } else if (this.isTeaHallChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
+          "다실 앞이다. 신발을 신지 마십시오.");
       } else {
       const kinds = [0, 1, 2, 3].map((slot) => this.getHallNookKind(chunk.cx, chunk.cz, slot));
       let body = "교실 번호가 어제와 같다. 창밖의 운동장은 없다.";

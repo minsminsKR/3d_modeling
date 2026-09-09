@@ -15,6 +15,7 @@ const required = [
   "darkroom", "greenroom", "homeec", "club",
   "specimen", "stagewing", "laundry", "lablink",
   "av", "supply", "counsel", "staticset", "stairhall", "nurseryhall", "dollhall",
+  "archivehall", "storagehall", "teahall",
 ];
 
 assert.equal(fs.existsSync(root), true, `voice directory missing: ${root}`);

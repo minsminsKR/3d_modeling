@@ -1710,6 +1710,30 @@ export class Game {
       this.hud.setStatus("인형 복도입니다. 선반의 눈을 마주치지 마십시오.", 3600);
       return;
     }
+    if (cx === -2 && cz === -1 && !this._storyBeats.has("archivehall")) {
+      this._storyBeats.add("archivehall");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("archivehall", "서고 앞 복도입니다. 철 상자를 열지 마십시오.");
+      this.hud.setStatus("서고 앞 복도입니다. 철 상자를 열지 마십시오.", 3600);
+      return;
+    }
+    if (cx === 2 && cz === -1 && !this._storyBeats.has("storagehall")) {
+      this._storyBeats.add("storagehall");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("storagehall", "창고 앞 복도입니다. 상자가 어제 출석을 담고 있습니다.");
+      this.hud.setStatus("창고 앞 복도입니다. 상자가 어제 출석을 담고 있습니다.", 3600);
+      return;
+    }
+    if (cx === -1 && cz === 1 && !this._storyBeats.has("teahall")) {
+      this._storyBeats.add("teahall");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("teahall", "다실 앞 복도입니다. 신발을 신지 마십시오.");
+      this.hud.setStatus("다실 앞 복도입니다. 신발을 신지 마십시오.", 3600);
+      return;
+    }
     const roomLines = {
       nurse_office: ["nurse", "보건실입니다. 장부에 끝나지 않은 출석이 남아 있습니다."],
       music_room: ["music", "음악실입니다. 한 음이 모자란 피아노가 열려 있습니다."],

@@ -188,6 +188,18 @@ g.player.position = { x: -32, y: 0, z: 16 };
 director.update();
 assert.equal(director.fired.has("dollhall"), true);
 
+g.player.position = { x: -32, y: 0, z: -16 };
+director.update();
+assert.equal(director.fired.has("archivehall"), true);
+
+g.player.position = { x: 32, y: 0, z: -16 };
+director.update();
+assert.equal(director.fired.has("storagehall"), true);
+
+g.player.position = { x: -16, y: 0, z: 16 };
+director.update();
+assert.equal(director.fired.has("teahall"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");

@@ -352,6 +352,9 @@ export class MapBuilder {
     if (chunk.cx === 1 && chunk.cz === 1) label = "지하";
     if (chunk.cx === 2 && chunk.cz === 1) label = "보육";
     if (chunk.cx === -2 && chunk.cz === 1) label = "인형";
+    if (chunk.cx === -2 && chunk.cz === -1) label = "서고";
+    if (chunk.cx === 2 && chunk.cz === -1) label = "창고";
+    if (chunk.cx === -1 && chunk.cz === 1) label = "다실";
     if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;

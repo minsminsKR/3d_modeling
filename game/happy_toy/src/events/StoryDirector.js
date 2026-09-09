@@ -301,6 +301,33 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x < -24 && x > -40 && z < -8 && z > -24) {
+      this.fire(
+        "archivehall",
+        "archivehall",
+        "서고 앞 복도입니다. 철 상자를 열지 마십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 24 && x < 40 && z < -8 && z > -24) {
+      this.fire(
+        "storagehall",
+        "storagehall",
+        "창고 앞 복도입니다. 상자가 어제 출석을 담고 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x < -8 && x > -24 && z > 8 && z < 24) {
+      this.fire(
+        "teahall",
+        "teahall",
+        "다실 앞 복도입니다. 신발을 신지 마십시오.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z < -8 && z > -24) {
       this.fire(
         "art",

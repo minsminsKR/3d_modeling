@@ -91,6 +91,7 @@ export class SoundManager {
       "darkroom", "greenroom", "homeec", "club",
       "specimen", "stagewing", "laundry", "lablink",
       "av", "supply", "counsel", "staticset", "stairhall", "nurseryhall", "dollhall",
+      "archivehall", "storagehall", "teahall",
     ];
     Promise.all(keys.map(async (key) => {
       try {
