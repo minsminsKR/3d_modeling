@@ -23,6 +23,9 @@ async function poseShot(name, pose) {
     game.player.noclip = true;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
+    game.enemyManager?.enemies?.forEach((enemy) => {
+      if (enemy.group) enemy.group.visible = false;
+    });
     game.floorHuntDirector?.hide?.();
     game.hud?.setPrompt?.("");
     if (Number.isFinite(options.x)) {
@@ -44,26 +47,26 @@ async function poseShot(name, pose) {
   return info;
 }
 
-const east = await poseShot("f1_east_jog_baffle.png", {
-  x: 11.4,
+const east = await poseShot("f1_east_s_bend.png", {
+  x: 12.2,
   y: 0,
-  z: 0.15,
-  lookAt: [13.5, 1.2, 0.1],
-  status: "동쪽 복도가 남쪽으로 꺾입니다.",
+  z: 2.55,
+  lookAt: [16.4, 1.15, 2.45],
+  status: "동쪽 복도가 두 번 꺾입니다.",
 });
-const north = await poseShot("f1_north_jog_baffle.png", {
-  x: 0.15,
+const north = await poseShot("f1_north_s_bend.png", {
+  x: 2.55,
   y: 0,
-  z: -16.2,
-  lookAt: [0.1, 1.2, -18.6],
-  status: "북쪽 복도가 서쪽으로 꺾입니다.",
+  z: -12.2,
+  lookAt: [2.45, 1.15, -16.4],
+  status: "북쪽 복도가 두 번 꺾입니다.",
 });
 
 if (!east.flashlight || east.intensity < 8) {
-  throw new Error(`east jog capture failed: ${JSON.stringify(east)}`);
+  throw new Error(`east S-bend capture failed: ${JSON.stringify(east)}`);
 }
 if (!north.flashlight || north.intensity < 8) {
-  throw new Error(`north jog capture failed: ${JSON.stringify(north)}`);
+  throw new Error(`north S-bend capture failed: ${JSON.stringify(north)}`);
 }
 
 console.log("ok");

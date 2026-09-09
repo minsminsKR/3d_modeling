@@ -135,7 +135,7 @@ try {
       { x: 0, y: 0.9, z: 0 },
       goal,
       0.34,
-      { cellSize: 0.55, maxIterations: 8000 },
+      { cellSize: 0.55, maxIterations: 12000 },
     );
 
     const alcoveStart = pathTo({ x: -5.1, y: 0.9, z: -5.1 });

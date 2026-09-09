@@ -90,20 +90,23 @@ try {
     }
   });
 
-  const ewJog = (centerX) => ([
+  const ewS = (centerX) => ([
     { x: centerX - 4.5, z: 0 },
     { x: centerX - 4.5, z: 2.6 },
     { x: centerX, z: 2.6 },
     { x: centerX, z: 0 },
+    { x: centerX, z: -2.6 },
+    { x: centerX + 4.5, z: -2.6 },
+    { x: centerX + 4.5, z: 0 },
   ]);
   const annexWalk = [];
   for (const stop of [
     { x: 10.2, z: 0 },
-    ...ewJog(16),
-    ...ewJog(32),
-    ...ewJog(48),
-    ...ewJog(64),
-    ...ewJog(80),
+    ...ewS(16),
+    ...ewS(32),
+    ...ewS(48),
+    ...ewS(64),
+    ...ewS(80),
     { x: 80, z: -16 },
   ]) {
     annexWalk.push(await walkTo(stop, 400));
@@ -120,14 +123,17 @@ try {
     game.player.setPosition({ x: 0, y: 0, z: -8 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
   });
-  const northNsJog = (centerZ) => ([
+  const northNsS = (centerZ) => ([
+    { x: 0, z: centerZ + 4.5 },
+    { x: 2.6, z: centerZ + 4.5 },
+    { x: 2.6, z: centerZ },
     { x: 0, z: centerZ },
     { x: -2.6, z: centerZ },
     { x: -2.6, z: centerZ - 4.5 },
     { x: 0, z: centerZ - 4.5 },
   ]);
   const northWalk = [];
-  for (const stop of northNsJog(-16)) {
+  for (const stop of northNsS(-16)) {
     northWalk.push(await walkTo(stop, 360));
     console.log("north", stop, northWalk.at(-1));
   }
@@ -181,7 +187,9 @@ try {
       annexSign: names(gate).some((name) => name.includes("annex_sign")),
       hallMaze: names(hall).filter((name) => name.includes("hall_maze_")).length,
       hallJog: names(hall).some((name) => name.includes("hall_maze_jog")),
+      hallJogE: names(hall).some((name) => name.includes("hall_maze_jog_e")),
       hallJogNs: names(northHall).some((name) => name.includes("hall_maze_jog_ns")),
+      hallJogNsS: names(northHall).some((name) => name.includes("hall_maze_jog_ns_s")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
@@ -438,6 +446,7 @@ try {
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 1.8), "east school must force a south jog off z=0");
+  assert.ok(annexWalk.some((stop) => stop.z < -1.8), "east school must S-bend north off z=0 before the next tile");
   const annexGate = annexWalk.find((stop) => stop.x > 56 && Math.abs(stop.z) < 1.2);
   assert.ok(annexGate?.ok, `must walk to 별관 gate, got ${JSON.stringify(annexGate)}`);
   assert.equal(annexWalk.at(-1).ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk.at(-1))}`);
@@ -446,8 +455,11 @@ try {
   assert.ok(f1MazeWalk.at(-1).z < -5, "1F hall maze continues into the north alcove");
   assert.ok(rooms.hallMaze >= 6, `1F hall maze walls missing: ${rooms.hallMaze}`);
   assert.equal(rooms.hallJog, true, "east 1F halls must block the z=0 spine and jog south");
+  assert.equal(rooms.hallJogE, true, "east 1F halls must block the east arm so the spine cannot reopen");
   assert.equal(rooms.hallJogNs, true, "north 1F halls must block the x=0 spine and jog west");
+  assert.equal(rooms.hallJogNsS, true, "north 1F halls must block the south arm so the spine cannot reopen");
   assert.equal(rooms.uncatSpineClear, true, "Uncat south reveal hall must stay a straight spine");
+  assert.ok(northWalk.some((stop) => stop.x > 2.0), "north school must S-bend east off x=0");
   assert.ok(northWalk.some((stop) => stop.x < -2.0), "north school must force a west jog off x=0");
   assert.equal(northWalk.at(-1).ok, true, `must walk the north 1F jog, got ${JSON.stringify(northWalk.at(-1))}`);
   assert.ok(northWalk.at(-1).z < -19.5, "north jog continues past the baffle");

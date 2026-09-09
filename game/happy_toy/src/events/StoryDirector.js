@@ -49,7 +49,7 @@ export class StoryDirector {
       this.fire(
         "f1maze",
         "f1maze",
-        "복도가 꺾입니다. 알코브로 숨고, 남북 척추만 곧게 가지 마십시오.",
+        "복도가 두 번 꺾입니다. 알코브로 숨고, 척추만 곧게 가지 마십시오.",
         "school_chime",
       );
     }

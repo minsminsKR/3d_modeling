@@ -296,7 +296,7 @@ export class BackroomsGenerator {
     return getGraphOpenings(cx, cz);
   }
 
-  // Intra-tile jogs so plus halls are not highways. Keep Uncat's south
+  // Intra-tile S-bends so plus halls are not highways. Keep Uncat's south
   // reveal (0,1) and the weeping-angel west tile (-1,0) as straight spines.
   getHallChicanes(cx, cz) {
     const openings = this.getOpenings(cx, cz);
@@ -1642,9 +1642,9 @@ export class BackroomsGenerator {
     }
 
     // Plus-shaped halls with four enterable corner alcoves (1.6m inner gaps).
-    // Away from spawn, EW halls jog south and NS halls jog west so the
-    // school is not a plus-shaped highway. Uncat's south reveal and the
-    // weeping-angel west tile stay straight.
+    // Away from spawn, EW halls S-bend south then north, and NS halls S-bend
+    // west then east, so the spine does not reopen after one jog. Uncat's
+    // south reveal and the weeping-angel west tile stay straight.
     const hallLike = type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
       || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";
     const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
@@ -1658,14 +1658,22 @@ export class BackroomsGenerator {
       }
       addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
       addWallSegment(1.4, -5.6, 0.4, 4.8, "alcove_ne_ns");
-      addWallSegment(5.6, -1.4, 4.8, 0.4, "alcove_ne_ew");
+      if (ewChicane) {
+        addWallSegment(6.925, -1.4, 2.15, 0.4, "alcove_ne_ew_e");
+      } else {
+        addWallSegment(5.6, -1.4, 4.8, 0.4, "alcove_ne_ew");
+      }
       addWallSegment(-1.4, 5.6, 0.4, 4.8, "alcove_sw_ns");
       if (ewChicane) {
         addWallSegment(-6.925, 1.4, 2.15, 0.4, "alcove_sw_ew_w");
       } else {
         addWallSegment(-5.6, 1.4, 4.8, 0.4, "alcove_sw_ew");
       }
-      addWallSegment(1.4, 5.6, 0.4, 4.8, "alcove_se_ns");
+      if (nsChicane) {
+        addWallSegment(1.4, 6.925, 0.4, 2.15, "alcove_se_ns_s");
+      } else {
+        addWallSegment(1.4, 5.6, 0.4, 4.8, "alcove_se_ns");
+      }
       addWallSegment(5.6, 1.4, 4.8, 0.4, "alcove_se_ew");
     } else if (type === "tatami_room" || type === "pillar_room") {
       // Traditional Japanese Tatami Room: Architectural corner posts & alcove wall
@@ -1787,9 +1795,11 @@ export class BackroomsGenerator {
     add("hall_maze_se_v", 6.2, 6.2, t, 1.8, cabinetSE);
     if (ewChicane) {
       add("hall_maze_jog", -2.6, 0.0, t, 2.72);
+      add("hall_maze_jog_e", 2.6, 0.0, t, 2.72);
     }
     if (nsChicane) {
       add("hall_maze_jog_ns", 0.0, -2.6, 2.72, t);
+      add("hall_maze_jog_ns_s", 0.0, 2.6, 2.72, t);
     }
     if (openings.E && openings.W && !ewChicane) {
       add("hall_maze_teeth_w", -4.2, 0.92, 1.8, t);
@@ -3938,10 +3948,16 @@ export class BackroomsGenerator {
         wp(-5.2, -5.2), wp(5.2, -5.2), wp(-5.2, 5.2), wp(5.2, 5.2),
       ];
       if (chicanes.ew) {
-        chunk.waypoints.push(wp(-4.5, 2.6), wp(0, 2.6), wp(-4.5, 0));
+        chunk.waypoints.push(
+          wp(-4.5, 2.6), wp(0, 2.6), wp(-4.5, 0),
+          wp(4.5, -2.6), wp(0, -2.6), wp(4.5, 0),
+        );
       }
       if (chicanes.ns) {
-        chunk.waypoints.push(wp(-2.6, -4.5), wp(-2.6, 0), wp(0, -4.5));
+        chunk.waypoints.push(
+          wp(-2.6, -4.5), wp(-2.6, 0), wp(0, -4.5),
+          wp(2.6, 4.5), wp(2.6, 0), wp(0, 4.5),
+        );
       }
     } else if (type === "corner") {
       // SE corner — open quadrant only
