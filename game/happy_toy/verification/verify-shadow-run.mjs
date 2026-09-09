@@ -362,6 +362,7 @@ try {
       hallNookSign: names(westHall).some((name) => name.includes("hall_sign_")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       hallThrough: names(hall).some((name) => name.includes("hall_through_")),
+      hallThroughDesk: names(hall).some((name) => name.includes("hall_through_desk_")),
       hallOuterWindow: names(eastWing).some((name) => name.includes("hall_outer_window_")),
       hallOuterFill: names(eastWing).some((name) => name.includes("hall_outer_fill_")),
       gymType: gym.type,
