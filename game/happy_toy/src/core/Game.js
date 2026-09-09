@@ -3,6 +3,7 @@
 
 import * as THREE from "three";
 import { createChapterSession, CHAPTERS } from "../config/chapterConfig.js";
+import { getMapId } from "../world/schoolMaze.js";
 import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG, LIGHTING_CONFIG, STALKER_CONFIG } from "../config/gameConfig.js";
 
 import { CollisionWorld } from "../world/CollisionWorld.js";
@@ -247,18 +248,18 @@ export class Game {
   }
 
   setupLighting() {
-    const ambient = new THREE.AmbientLight(
+    this.ambientLight = new THREE.AmbientLight(
       LIGHTING_CONFIG.ambientColor,
       LIGHTING_CONFIG.ambientIntensity,
     );
-    this.scene.add(ambient);
+    this.scene.add(this.ambientLight);
 
-    const lowAmbient = new THREE.HemisphereLight(
+    this.hemisphereLight = new THREE.HemisphereLight(
       new THREE.Color(LIGHTING_CONFIG.hemisphereSkyColor),
       new THREE.Color(LIGHTING_CONFIG.hemisphereGroundColor),
       LIGHTING_CONFIG.hemisphereIntensity,
     );
-    this.scene.add(lowAmbient);
+    this.scene.add(this.hemisphereLight);
 
 
     this.flashlight = new THREE.SpotLight(
@@ -582,6 +583,7 @@ export class Game {
       if (!this.monsterIntroManager?.blocksPlayerControl) {
         this.player.update(deltaTime);
       }
+      this.updateFloorAtmosphere(deltaTime);
       this.flashlightController.update(deltaTime);
       this.itemSystem?.update(deltaTime);
       this.particleSystem?.update(deltaTime, this.player.position);
@@ -1497,17 +1499,113 @@ export class Game {
     const now = this.playTime;
     if (now - (this._lastPaAt || 0) < 16) return;
     this._lastPaAt = now;
-    const radius = Math.max(Math.abs(cx), Math.abs(cz));
-    const wing = radius > 2;
-    const deep = radius > 12;
-    const line = deep
-      ? "방송입니다. 이 복도는 끝이 없습니다. 교실 번호를 믿지 마십시오."
-      : wing
-        ? "방송입니다. 같은 복도를 걷고 있습니다. 교실 번호를 믿지 마십시오."
-        : "방송입니다. 하교하지 않습니다. 복도에서 기다리십시오.";
-    soundManager.playSFX(Math.random() < 0.5 ? "school_chime" : "radio_static");
-    this.voiceAnnouncer?.announce(deep ? "deep" : "pa", line);
+    const mapId = getMapId(cx, cz, this.player?.position?.y || 0);
+    const line = mapId === "b1"
+      ? "방송이 끊깁니다. 지하의 물이 이름을 적고 있습니다."
+      : mapId === "f2"
+        ? "2층입니다. 복도가 아직 마르지 않았습니다."
+        : mapId === "f1b"
+          ? "별관입니다. 같은 교실을 두 번 지나치지 마십시오."
+          : "방송입니다. 하교하지 않습니다. 복도에서 기다리십시오.";
+    soundManager.playSFX(mapId === "b1" ? "drip" : mapId === "f2" ? "blood_drip" : (Math.random() < 0.5 ? "school_chime" : "radio_static"));
+    this.voiceAnnouncer?.announce(mapId || "pa", line);
     this.hud.setStatus(line, 3200);
+  }
+
+  updateFloorAtmosphere(deltaTime, snap = false) {
+    const y = this.player?.position?.y ?? 0;
+    const mapId = y < -2.2 ? "b1" : y > 3.2 ? "f2" : "f1a";
+    if (this._floorMapId !== mapId) {
+      this._floorMapId = mapId;
+      snap = true;
+    }
+    const profile = mapId === "b1"
+      ? LIGHTING_CONFIG.basement
+      : mapId === "f2"
+        ? LIGHTING_CONFIG.upper
+        : LIGHTING_CONFIG;
+    const colorBlend = snap ? 1 : Math.min(1, deltaTime * 2.4);
+    const distBlend = snap ? 1 : Math.min(1, deltaTime * 3);
+    const fog = this.scene.fog;
+    if (fog) {
+      fog.color.lerp(new THREE.Color(profile.fogColor ?? LIGHTING_CONFIG.fogColor), colorBlend);
+      this.scene.background?.lerp?.(fog.color, colorBlend);
+      fog.near += ((profile.fogNear ?? LIGHTING_CONFIG.fogNear) - fog.near) * distBlend;
+      fog.far += ((profile.fogFar ?? LIGHTING_CONFIG.fogFar) - fog.far) * distBlend;
+    }
+    const exposure = profile.exposure ?? LIGHTING_CONFIG.rendererExposure;
+    this.renderer.toneMappingExposure += (exposure - this.renderer.toneMappingExposure) * distBlend;
+    if (this.ambientLight) {
+      if (profile.ambientColor) {
+        this.ambientLight.color.lerp(new THREE.Color(profile.ambientColor), colorBlend);
+      }
+      const ambientIntensity = profile.ambientIntensity ?? LIGHTING_CONFIG.ambientIntensity;
+      this.ambientLight.intensity += (ambientIntensity - this.ambientLight.intensity) * distBlend;
+    }
+    if (this.hemisphereLight) {
+      if (profile.hemisphereSkyColor) {
+        this.hemisphereLight.color.lerp(new THREE.Color(profile.hemisphereSkyColor), colorBlend);
+        this.hemisphereLight.groundColor.lerp(new THREE.Color(profile.hemisphereGroundColor), colorBlend);
+      }
+      const hemiIntensity = profile.hemisphereIntensity ?? LIGHTING_CONFIG.hemisphereIntensity;
+      this.hemisphereLight.intensity += (hemiIntensity - this.hemisphereLight.intensity) * distBlend;
+    }
+    const beamColor = profile.flashlightColor ?? LIGHTING_CONFIG.flashlightColor;
+    if (this.flashlightController?.healthyColor) {
+      this.flashlightController.healthyColor.lerp(new THREE.Color(beamColor), colorBlend);
+    }
+    if (this.flashlight && profile.flashlightColor) {
+      this.flashlight.color.lerp(new THREE.Color(profile.flashlightColor), colorBlend);
+      this.flashlightFill?.color.lerp(this.flashlight.color, 1);
+    }
+    this._floorAmbienceAt = (this._floorAmbienceAt || 0) + deltaTime;
+    const interval = mapId === "b1" ? 1.15 : mapId === "f2" ? 1.45 : 8;
+    if (this._floorAmbienceAt >= interval) {
+      this._floorAmbienceAt = 0;
+      if (mapId === "b1") soundManager.playSFX("drip");
+      else if (mapId === "f2") soundManager.playSFX("blood_drip");
+    }
+  }
+
+  poseForCapture({
+    x,
+    y,
+    z,
+    yaw = 0,
+    pitch = -0.42,
+    flashlight = true,
+    freezeLoop = true,
+  } = {}) {
+    this.testSafeMode = true;
+    if (freezeLoop) this.loop?.stop();
+    if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)) {
+      this.player.noclip = true;
+      this.player.setPosition({ x, y, z });
+      this.updateBackrooms(0);
+    }
+    this.updateFloorAtmosphere(8, true);
+    this.player.resetLook(yaw, pitch);
+    const fl = this.flashlightController;
+    if (fl) {
+      fl.batteryLevel = 1;
+      fl.eventTimer = 0;
+      fl.eventKind = "none";
+      fl.smoothThreat = 0;
+      fl.toggleLock = 1;
+      this.input?.clearKey?.("f");
+      fl.setEnabled(Boolean(flashlight), false);
+      fl.applyOutput(flashlight ? 1 : 0);
+    }
+    this.renderer.render(this.scene, this.camera);
+    return {
+      flashlight: fl?.enabled === true,
+      hud: document.querySelector("#flashlight-state")?.textContent || "",
+      intensity: this.flashlight?.intensity ?? 0,
+      y: this.player.position.y,
+      pitch: this.player.pitch,
+      yaw: this.player.yaw,
+      fogFar: this.scene.fog?.far ?? 0,
+    };
   }
 
   getMinMonsterDistance(targetPos, options = {}) {

@@ -768,6 +768,55 @@ export class SoundManager {
     gust.stop(now + duration + 0.02);
   }
 
+  playDrip() {
+    if (!this.initialized || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    const output = this.createPannedOutput((Math.random() - 0.5) * 0.8, 0.9);
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const lp = this.ctx.createBiquadFilter();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(1180 + Math.random() * 220, now);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.16);
+    lp.type = "lowpass";
+    lp.frequency.value = 2400;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.07, now + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
+    osc.connect(lp);
+    lp.connect(gain);
+    gain.connect(output);
+    osc.start(now);
+    osc.stop(now + 0.24);
+  }
+
+  playBloodDrip() {
+    if (!this.initialized || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    const output = this.createPannedOutput((Math.random() - 0.5) * 0.7, 0.86);
+    const osc = this.ctx.createOscillator();
+    const noise = this.ctx.createBufferSource();
+    const gain = this.ctx.createGain();
+    const lp = this.ctx.createBiquadFilter();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(220 + Math.random() * 40, now);
+    osc.frequency.exponentialRampToValueAtTime(70, now + 0.28);
+    noise.buffer = this.noiseBuffers.short;
+    lp.type = "lowpass";
+    lp.frequency.value = 520;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.06, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.34);
+    osc.connect(lp);
+    noise.connect(lp);
+    lp.connect(gain);
+    gain.connect(output);
+    osc.start(now);
+    noise.start(now);
+    osc.stop(now + 0.36);
+    noise.stop(now + 0.36);
+  }
+
   playSFX(type) {
     if (!this.initialized || !this.ctx) return;
     this.resume();
@@ -1023,6 +1072,12 @@ export class SoundManager {
         break;
       case "corridor_wind":
         this.playCorridorWind();
+        break;
+      case "drip":
+        this.playDrip();
+        break;
+      case "blood_drip":
+        this.playBloodDrip();
         break;
       default:
         break;

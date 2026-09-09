@@ -21,10 +21,16 @@ const NORTH_AMBIENT_MESSAGES = [
   "출석부 빈칸에 분필 가루만 남아 있습니다.",
 ];
 
-const CANAL_AMBIENT_MESSAGES = [
-  "급수대 물이 발목을 적시며 교실 쪽으로 흐릅니다.",
-  "화장실 불이 복도보다 먼저 꺼집니다.",
-  "젖은 실내화가 급수대 앞에 한 켤레 더 있습니다.",
+const BASEMENT_AMBIENT_MESSAGES = [
+  "지하수가 발목에서 이름을 적고 있습니다.",
+  "파이프 안에서 누군가 숨을 참고 있습니다.",
+  "물이 찬 보육실에서 장난감이 천천히 떠다닙니다.",
+];
+
+const BLOOD_AMBIENT_MESSAGES = [
+  "2층 바닥이 아직 마르지 않았습니다.",
+  "액자 아래 피가 손전등 빛을 삼킵니다.",
+  "복도가 당신의 발자국을 피로 따라 적습니다.",
 ];
 
 export class HorrorEventManager {
@@ -276,11 +282,19 @@ export class HorrorEventManager {
       );
     }
 
-    if (isFloodedCanalZone(position) && !this.triggeredEvents.has("south-flooded-canal")) {
+    if (isBasementZone(position) && !this.triggeredEvents.has("basement-flood")) {
       this.triggerEvent(
-        "south-flooded-canal",
-        "물에 잠긴 남쪽 복도에서 느린 물방울이 떨어집니다.",
-        { duration: 2500, flicker: true, sfx: "wet_drip" },
+        "basement-flood",
+        "지하수가 발목까지 차 있습니다. 이름을 물에 적지 마십시오.",
+        { duration: 2800, flicker: true, sfx: "drip" },
+      );
+    }
+
+    if (isUpperBloodZone(position) && !this.triggeredEvents.has("upper-blood-gallery")) {
+      this.triggerEvent(
+        "upper-blood-gallery",
+        "2층입니다. 복도가 아직 마르지 않았습니다.",
+        { duration: 2800, flicker: true, sfx: "blood_drip" },
       );
     }
 
@@ -306,8 +320,10 @@ export class HorrorEventManager {
     const message = this.pickAmbientMessage(position);
     const shouldCloseDoor = context.progress >= 0.25 && Math.random() < 0.34;
     let sfx;
-    if (isFloodedCanalZone(position) && Math.random() < 0.72) {
-      sfx = "wet_drip";
+    if (isBasementZone(position) && Math.random() < 0.72) {
+      sfx = "drip";
+    } else if (isUpperBloodZone(position) && Math.random() < 0.72) {
+      sfx = "blood_drip";
     } else if (isNorthOmenZone(position) && Math.random() < 0.72) {
       sfx = Math.random() < 0.5 ? "radio_static" : "distant_cry";
     }
@@ -382,8 +398,10 @@ export class HorrorEventManager {
     let pool = AMBIENT_MESSAGES;
     if (isNorthOmenZone(position) && Math.random() < 0.8) {
       pool = NORTH_AMBIENT_MESSAGES;
-    } else if (isFloodedCanalZone(position) && Math.random() < 0.8) {
-      pool = CANAL_AMBIENT_MESSAGES;
+    } else if (isBasementZone(position) && Math.random() < 0.8) {
+      pool = BASEMENT_AMBIENT_MESSAGES;
+    } else if (isUpperBloodZone(position) && Math.random() < 0.8) {
+      pool = BLOOD_AMBIENT_MESSAGES;
     }
     const candidates = pool.filter((message) => !this.recentMessages.includes(message));
     const source = candidates.length > 0 ? candidates : pool;
@@ -454,6 +472,10 @@ function isNorthOmenZone(position) {
   return isFirstFloor(position) && position.z < -24;
 }
 
-function isFloodedCanalZone(position) {
-  return Math.abs(position.y) < 1.2 && position.z > 12;
+function isBasementZone(position) {
+  return position.y < -2.2;
+}
+
+function isUpperBloodZone(position) {
+  return position.y > 3.2;
 }

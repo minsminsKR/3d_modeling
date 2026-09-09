@@ -339,10 +339,10 @@ export class PlayerController {
     let speed = this.isSprinting ? PLAYER_CONFIG.sprintSpeed : PLAYER_CONFIG.walkSpeed;
     speed *= this.speedBoostMultiplier;
 
-    // Soul Gathering (영혼집합소) flooded canal check (South sector z: [6, 26], x: [-24, 24])
-    const inFloodedCanal = this.position.y <= 0.25 && this.position.z >= 6.0 && this.position.z <= 26.0 && Math.abs(this.position.x) <= 24.0;
-    if (inFloodedCanal) {
-      speed *= 0.88; // subtle water drag
+    // Ankle-deep water on the B1 cellar map.
+    const inBasement = this.position.y < -1.6;
+    if (inBasement) {
+      speed *= 0.76;
     }
 
     const previousPosition = this.position.clone();
@@ -364,7 +364,7 @@ export class PlayerController {
     }
 
     // Play footstep audio (Water splash in flooded canals or when Y < -0.5)
-    if (inFloodedCanal || this.position.y < -0.5) {
+    if (inBasement) {
       soundManager.playWaterStep(this.isSprinting);
     } else {
       soundManager.playFootstep(this.isSprinting);

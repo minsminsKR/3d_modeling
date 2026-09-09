@@ -15,10 +15,9 @@ import {
   MANSION_EDGES,
   PLAYABLE_RADIUS,
   SCHOOL_RING_EDGES,
-  WORLD_RADIUS,
   getGraphOpenings,
   getRingHallType,
-  isWorldCell,
+  isPlayableCell,
 } from "./schoolMaze.js";
 
 export {
@@ -27,7 +26,6 @@ export {
   MANSION_EDGES,
   PLAYABLE_RADIUS,
   SCHOOL_RING_EDGES,
-  WORLD_RADIUS,
   getRingHallType,
 };
 
@@ -278,7 +276,7 @@ export class BackroomsGenerator {
   }
 
   isPlayableChunk(cx, cz) {
-    return isWorldCell(cx, cz);
+    return isPlayableCell(cx, cz);
   }
 
   getOpenings(cx, cz) {
@@ -474,24 +472,7 @@ export class BackroomsGenerator {
       maxZ: center.z + 8,
     }, chunkId);
 
-    // Soul Gathering (영혼집합소) Flooded Canals: Add shallow dark reflective water plane in South canal corridor
-    const isFlooded = cz === 1 && (cx === 0 || cx === -1 || cx === 1);
-    if (isFlooded) {
-      const waterGeo = this.getPlaneGeometry(16, 16);
-      const waterMat = new THREE.MeshStandardMaterial({
-        color: 0x061e27,
-        roughness: 0.1,
-        metalness: 0.85,
-        transparent: true,
-        opacity: 0.82,
-      });
-      const waterMesh = new THREE.Mesh(waterGeo, waterMat);
-      waterMesh.rotation.x = -Math.PI / 2;
-      waterMesh.position.set(center.x, floorY + 0.08, center.z);
-      waterMesh.name = `${chunkId}_water_surface`;
-      this.scene.add(waterMesh);
-      chunk.meshes.push(waterMesh);
-    }
+    // 1F stays a dry school. Standing water belongs to the B1 cellar map.
 
     const dtFloor = performance.now() - tFloor0;
 
@@ -667,6 +648,10 @@ export class BackroomsGenerator {
       galFloorMesh.position.set(galWestWingCenterX, floorY + 5.0, galCenterZ);
       galFloorMesh.receiveShadow = true;
       galFloorMesh.name = `${chunkId}_gallery_2f_floor`;
+      galFloorMesh.material.color.setHex(0x3a1012);
+      galFloorMesh.material.emissive = new THREE.Color(0x220306);
+      galFloorMesh.material.emissiveIntensity = 0.1;
+      galFloorMesh.material.roughness = 0.38;
       this.scene.add(galFloorMesh);
       chunk.meshes.push(galFloorMesh);
 
@@ -896,6 +881,19 @@ export class BackroomsGenerator {
       this.scene.add(sideFrame);
       chunk.meshes.push(sideFrame);
 
+      this.dressBloodGallery(chunk, chunkId, floorY, {
+        galMinX,
+        galMaxX,
+        galMinZ,
+        galMaxZ,
+        galWestWingCenterX,
+        galWestWingWidth,
+        galLength,
+        galCenterZ,
+        f2StartX,
+        rampHalfWidth,
+      });
+
       // CollisionWorld Ramp for 2F
       this.collisionWorld.addRamp({
         id: "stairs_1f_to_2f",
@@ -1004,20 +1002,26 @@ export class BackroomsGenerator {
       // Weathered stone and damp wood materials for B1
       const b1WallMat = new THREE.MeshStandardMaterial({
         map: this.textures.load("wall"),
-        color: 0x5c5042,
-        roughness: 0.88,
-        metalness: 0.04,
+        color: 0x151c18,
+        roughness: 0.96,
+        metalness: 0.12,
+        emissive: 0x04140f,
+        emissiveIntensity: 0.06,
       });
       const b1FloorMat = new THREE.MeshStandardMaterial({
         map: this.textures.load("floor"),
-        color: 0x483e34,
-        roughness: 0.92,
-        metalness: 0.02,
+        color: 0x0c1210,
+        roughness: 0.42,
+        metalness: 0.22,
+        emissive: 0x03100c,
+        emissiveIntensity: 0.05,
       });
       const b1CeilMat = new THREE.MeshStandardMaterial({
         map: this.textures.load("ceiling"),
-        color: 0x362c22,
-        roughness: 0.96,
+        color: 0x0a100e,
+        roughness: 0.98,
+        emissive: 0x020806,
+        emissiveIntensity: 0.04,
       });
 
       // Visual stair steps
@@ -1330,18 +1334,19 @@ export class BackroomsGenerator {
       this.scene.add(mat2Mesh);
       chunk.meshes.push(mat2Mesh);
 
-      const bloodGeo = this.getPlaneGeometry(1.8, 1.5);
+      const bloodGeo = this.getPlaneGeometry(2.2, 1.8);
       const bloodMat = new THREE.MeshStandardMaterial({
-        color: 0x3b0202,
-        roughness: 0.35,
+        color: 0x14241c,
+        roughness: 0.18,
+        metalness: 0.35,
         transparent: true,
-        opacity: 0.88,
+        opacity: 0.7,
         depthWrite: false,
       });
       const bloodMesh = new THREE.Mesh(bloodGeo, bloodMat);
       bloodMesh.rotation.x = -Math.PI / 2;
-      bloodMesh.position.set(-3.5, floorY - 5.0 + 0.07, 28.4);
-      bloodMesh.name = `${chunkId}_b1_blood_stain`;
+      bloodMesh.position.set(-3.5, floorY - 5.0 + 0.19, 28.4);
+      bloodMesh.name = `${chunkId}_b1_scum_slick`;
       this.scene.add(bloodMesh);
       chunk.meshes.push(bloodMesh);
 
@@ -1385,6 +1390,25 @@ export class BackroomsGenerator {
       this.scene.add(eastShelf);
       chunk.meshes.push(eastShelf);
       this.collisionWorld.addStaticBox(eastShelf.name, eastShelf.position, new THREE.Vector3(0.46, 1.4, 2.2), chunkId);
+
+      this.dressBasementFlood(chunk, chunkId, floorY, {
+        westWingWidth,
+        westWingCenterX,
+        eastWingWidth,
+        eastWingCenterX,
+        b1TotalLength,
+        b1CenterX,
+        b1CenterZ,
+        b1StartX,
+        rampHalfWidth,
+        landingLength,
+        landingMinZ,
+        landingMaxZ,
+        b1MinX,
+        b1MaxX,
+        b1MinZ,
+        b1MaxZ,
+      });
 
       // CollisionWorld Ramp for B1
       this.collisionWorld.addRamp({
@@ -1847,6 +1871,317 @@ export class BackroomsGenerator {
     chunk.meshes.push(cubby);
   }
 
+  dressBasementFlood(chunk, chunkId, floorY, bounds) {
+    const waterY = floorY - 5.0 + 0.15;
+    const waterMat = new THREE.MeshStandardMaterial({
+      color: 0x1c5a4c,
+      roughness: 0.06,
+      metalness: 0.72,
+      transparent: true,
+      opacity: 0.78,
+      emissive: 0x0c3a30,
+      emissiveIntensity: 0.42,
+      depthWrite: false,
+    });
+    const addWater = (name, width, length, x, z) => {
+      const mesh = new THREE.Mesh(this.getPlaneGeometry(width, length), waterMat);
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.position.set(x, waterY, z);
+      mesh.name = `${chunkId}_${name}`;
+      mesh.renderOrder = 2;
+      this.scene.add(mesh);
+      chunk.meshes.push(mesh);
+    };
+    addWater("flood_water_west", bounds.westWingWidth, bounds.b1TotalLength, bounds.westWingCenterX, bounds.b1CenterZ);
+    addWater("flood_water_east", bounds.eastWingWidth, bounds.b1TotalLength, bounds.eastWingCenterX, bounds.b1CenterZ);
+    addWater(
+      "flood_water_landing",
+      bounds.rampHalfWidth * 2,
+      bounds.landingLength,
+      bounds.b1StartX,
+      (bounds.landingMinZ + bounds.landingMaxZ) / 2,
+    );
+
+    const foamMat = new THREE.MeshStandardMaterial({
+      color: 0x6a8f7e,
+      roughness: 0.85,
+      transparent: true,
+      opacity: 0.48,
+      emissive: 0x1a3c30,
+      emissiveIntensity: 0.22,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    });
+    const foamSpots = [
+      [10.4, 31.6, 1.8, 1.1], [8.6, 28.4, 1.4, 0.9], [12.2, 34.2, 1.6, 1.0],
+      [19.6, 32.4, 1.5, 1.0], [22.4, 29.8, 1.3, 0.8], [-3.2, 30.6, 1.2, 0.9],
+      [9.4, 36.2, 1.1, 0.7], [16.8, 27.6, 1.4, 0.85],
+    ];
+    foamSpots.forEach(([x, z, w, l], i) => {
+      const foam = new THREE.Mesh(this.getPlaneGeometry(w, l), foamMat);
+      foam.rotation.x = -Math.PI / 2;
+      foam.rotation.z = i * 0.41;
+      foam.position.set(x, waterY + 0.02, z);
+      foam.name = `${chunkId}_flood_foam_${i}`;
+      foam.renderOrder = 3;
+      this.scene.add(foam);
+      chunk.meshes.push(foam);
+    });
+
+    const lineMat = new THREE.MeshStandardMaterial({
+      color: 0x0a1814,
+      roughness: 0.35,
+      metalness: 0.28,
+      emissive: 0x06241c,
+      emissiveIntensity: 0.18,
+      transparent: true,
+      opacity: 0.78,
+      side: THREE.DoubleSide,
+    });
+    const waterline = [
+      { x: bounds.b1MinX + 0.21, z: bounds.b1CenterZ, rotY: Math.PI / 2, w: bounds.b1TotalLength * 0.92, h: 0.38 },
+      { x: bounds.b1MaxX - 0.21, z: bounds.b1CenterZ, rotY: -Math.PI / 2, w: bounds.b1TotalLength * 0.92, h: 0.38 },
+      { x: bounds.b1CenterX, z: bounds.b1MinZ + 0.21, rotY: 0, w: (bounds.b1MaxX - bounds.b1MinX) * 0.9, h: 0.38 },
+      { x: bounds.b1CenterX, z: bounds.b1MaxZ - 0.21, rotY: Math.PI, w: (bounds.b1MaxX - bounds.b1MinX) * 0.9, h: 0.38 },
+    ];
+    waterline.forEach((band, i) => {
+      const mesh = new THREE.Mesh(this.getPlaneGeometry(band.w, band.h), lineMat);
+      mesh.position.set(band.x, waterY + 0.12, band.z);
+      mesh.rotation.y = band.rotY;
+      mesh.name = `${chunkId}_flood_waterline_${i}`;
+      this.scene.add(mesh);
+      chunk.meshes.push(mesh);
+    });
+
+    const dripMat = new THREE.MeshStandardMaterial({
+      color: 0xa8e0d0,
+      roughness: 0.08,
+      metalness: 0.25,
+      transparent: true,
+      opacity: 0.7,
+      emissive: 0x1a5a44,
+      emissiveIntensity: 0.38,
+    });
+    const dripSpots = [
+      [8.2, 30.4], [12.4, 34.8], [18.6, 27.6], [22.8, 33.2],
+      [-2.4, 28.8], [-5.1, 32.6], [4.8, 36.4], [15.8, 38.2],
+      [10.6, 26.8], [20.4, 29.5], [1.8, 31.2], [-6.4, 35.0],
+      [9.8, 32.0], [14.2, 30.8], [21.2, 36.4],
+    ];
+    dripSpots.forEach(([x, z], i) => {
+      const drip = new THREE.Mesh(this.getBoxGeometry(0.04, 0.7 + (i % 3) * 0.22, 0.04), dripMat);
+      drip.position.set(x, floorY - 2.45, z);
+      drip.name = `${chunkId}_drip_${i}`;
+      this.scene.add(drip);
+      chunk.meshes.push(drip);
+    });
+
+    const pipeMat = new THREE.MeshStandardMaterial({
+      color: 0x1a2420,
+      roughness: 0.7,
+      metalness: 0.45,
+    });
+    const pipe = new THREE.Mesh(this.getBoxGeometry(18.5, 0.16, 0.16), pipeMat);
+    pipe.position.set(9.0, floorY - 2.38, 33.4);
+    pipe.name = `${chunkId}_b1_pipe`;
+    this.scene.add(pipe);
+    chunk.meshes.push(pipe);
+    const pipe2 = new THREE.Mesh(this.getBoxGeometry(0.14, 0.14, 9.4), pipeMat);
+    pipe2.position.set(21.6, floorY - 2.42, 31.8);
+    pipe2.name = `${chunkId}_b1_pipe_e`;
+    this.scene.add(pipe2);
+    chunk.meshes.push(pipe2);
+
+    const debrisMat = new THREE.MeshStandardMaterial({ color: 0x2a241c, roughness: 0.9 });
+    [[10.1, 31.2, 1.15, 0.08, 0.34], [8.4, 29.6, 0.7, 0.06, 0.22], [12.8, 33.8, 0.85, 0.07, 0.28]].forEach(([x, z, w, h, d], i) => {
+      const plank = new THREE.Mesh(this.getBoxGeometry(w, h, d), debrisMat);
+      plank.position.set(x, waterY + 0.04, z);
+      plank.rotation.y = i * 0.7;
+      plank.name = `${chunkId}_flood_debris_${i}`;
+      this.scene.add(plank);
+      chunk.meshes.push(plank);
+    });
+
+    const sheetMat = new THREE.MeshStandardMaterial({
+      color: 0x1c2a24,
+      roughness: 0.9,
+      transparent: true,
+      opacity: 0.48,
+      side: THREE.DoubleSide,
+    });
+    [[6.4, 29.2], [19.8, 35.6], [-4.2, 33.8], [11.2, 36.8]].forEach(([x, z], i) => {
+      const sheet = new THREE.Mesh(this.getBoxGeometry(0.04, 1.85, 0.85), sheetMat);
+      sheet.position.set(x, floorY - 3.85, z);
+      sheet.rotation.y = i * 0.7;
+      sheet.name = `${chunkId}_b1_sheet_${i}`;
+      this.scene.add(sheet);
+      chunk.meshes.push(sheet);
+    });
+
+    const moldMat = new THREE.MeshStandardMaterial({
+      color: 0x0c1812,
+      roughness: 1,
+      transparent: true,
+      opacity: 0.7,
+      emissive: 0x05140e,
+      emissiveIntensity: 0.16,
+      side: THREE.DoubleSide,
+    });
+    const mold = new THREE.Mesh(this.getPlaneGeometry(3.4, 1.6), moldMat);
+    mold.position.set(bounds.b1MinX + 0.22, floorY - 3.4, 31.2);
+    mold.rotation.y = Math.PI / 2;
+    mold.name = `${chunkId}_b1_mold`;
+    this.scene.add(mold);
+    chunk.meshes.push(mold);
+
+    const gloom = new THREE.PointLight(0x173a30, 0.72, 7.2, 2.0);
+    gloom.position.set(10.4, floorY - 4.2, 31.6);
+    gloom.name = `${chunkId}_b1_flood_gloom`;
+    this.scene.add(gloom);
+    chunk.meshes.push(gloom);
+    const gloomEast = new THREE.PointLight(0x14342c, 0.55, 6.4, 2.0);
+    gloomEast.position.set(20.6, floorY - 4.15, 32.2);
+    gloomEast.name = `${chunkId}_b1_flood_gloom_e`;
+    this.scene.add(gloomEast);
+    chunk.meshes.push(gloomEast);
+  }
+
+  dressBloodGallery(chunk, chunkId, floorY, bounds) {
+    const bloodY = floorY + 5.04;
+    const poolMat = new THREE.MeshStandardMaterial({
+      color: 0x7a0c12,
+      roughness: 0.14,
+      metalness: 0.28,
+      transparent: true,
+      opacity: 0.92,
+      emissive: 0x4a0408,
+      emissiveIntensity: 0.38,
+      depthWrite: false,
+    });
+    const smearMat = new THREE.MeshStandardMaterial({
+      color: 0x5a080c,
+      roughness: 0.48,
+      transparent: true,
+      opacity: 0.88,
+      emissive: 0x2a0204,
+      emissiveIntensity: 0.28,
+      side: THREE.DoubleSide,
+    });
+    const addPool = (name, w, l, x, z, rot = 0) => {
+      const mesh = new THREE.Mesh(this.getPlaneGeometry(w, l), poolMat);
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.rotation.z = rot;
+      mesh.position.set(x, bloodY, z);
+      mesh.name = `${chunkId}_${name}`;
+      mesh.renderOrder = 2;
+      this.scene.add(mesh);
+      chunk.meshes.push(mesh);
+    };
+    addPool("blood_carpet", bounds.galWestWingWidth * 0.94, bounds.galLength * 0.92, bounds.galWestWingCenterX, bounds.galCenterZ);
+    addPool("blood_shrine", 5.2, 3.8, -34.2, -22.0, 0.12);
+    addPool("blood_landing", 3.4, 5.0, bounds.f2StartX - 1.1, -21.6, -0.08);
+    addPool("blood_south", 5.8, 2.6, -24.6, -11.4, 0.2);
+    addPool("blood_trail", 1.4, 8.4, -27.8, -20.2, 0.18);
+    addPool("blood_near", 2.6, 2.2, -23.4, -18.2, -0.22);
+
+    const wallStreaks = [
+      { x: bounds.galMinX + 0.22, y: floorY + 6.15, z: -22.0, rotY: Math.PI / 2, w: 3.2, h: 2.2 },
+      { x: bounds.galMinX + 0.22, y: floorY + 6.05, z: -30.4, rotY: Math.PI / 2, w: 2.6, h: 2.0 },
+      { x: -22.6, y: floorY + 6.2, z: bounds.galMinZ + 0.22, rotY: 0, w: 3.8, h: 2.1 },
+      { x: -28.8, y: floorY + 6.1, z: bounds.galMaxZ - 0.22, rotY: Math.PI, w: 3.0, h: 1.9 },
+      { x: -24.2, y: floorY + 6.05, z: bounds.galMaxZ - 0.22, rotY: Math.PI, w: 2.4, h: 1.7 },
+      { x: -20.4, y: floorY + 6.25, z: bounds.galMinZ + 0.22, rotY: 0, w: 2.2, h: 1.8 },
+    ];
+    wallStreaks.forEach((streak, i) => {
+      const mesh = new THREE.Mesh(this.getPlaneGeometry(streak.w, streak.h), smearMat);
+      mesh.position.set(streak.x, streak.y, streak.z);
+      mesh.rotation.y = streak.rotY;
+      mesh.name = `${chunkId}_blood_wall_${i}`;
+      this.scene.add(mesh);
+      chunk.meshes.push(mesh);
+    });
+
+    const handMat = new THREE.MeshStandardMaterial({
+      color: 0x6a0a10,
+      roughness: 0.7,
+      emissive: 0x2a0204,
+      emissiveIntensity: 0.22,
+      side: THREE.DoubleSide,
+    });
+    [[-37.72, 6.05, -18.6, Math.PI / 2], [-37.72, 5.85, -25.4, Math.PI / 2], [-21.2, 5.9, -8.72, Math.PI]].forEach(([x, y, z, rotY], i) => {
+      const hand = new THREE.Mesh(this.getPlaneGeometry(0.38, 0.48), handMat);
+      hand.position.set(x, floorY + y, z);
+      hand.rotation.y = rotY;
+      hand.name = `${chunkId}_blood_hand_${i}`;
+      this.scene.add(hand);
+      chunk.meshes.push(hand);
+    });
+
+    const dripMat = new THREE.MeshStandardMaterial({
+      color: 0x8a1014,
+      roughness: 0.16,
+      metalness: 0.12,
+      transparent: true,
+      opacity: 0.82,
+      emissive: 0x4a0004,
+      emissiveIntensity: 0.34,
+    });
+    const drips = [
+      [-20.4, -14.2], [-24.8, -18.6], [-31.2, -22.4], [-35.6, -28.8],
+      [-27.4, -12.8], [-22.0, -32.4], [-33.8, -16.2], [-18.6, -21.8],
+      [-23.6, -17.8], [-29.2, -24.6], [-26.4, -19.2],
+    ];
+    drips.forEach(([x, z], i) => {
+      const drip = new THREE.Mesh(this.getBoxGeometry(0.05, 0.85 + (i % 3) * 0.28, 0.05), dripMat);
+      drip.position.set(x, floorY + 7.28, z);
+      drip.name = `${chunkId}_blood_drip_${i}`;
+      this.scene.add(drip);
+      chunk.meshes.push(drip);
+    });
+
+    this.spawnAssetProp(chunk, {
+      ...HORROR_PROP_ASSETS.wrappedBody,
+      id: `${chunkId}_2f_body_a`,
+      position: [-24.8, floorY + 5.0, -14.6],
+      rotation: [0, 1.1, 0],
+    });
+    this.spawnAssetProp(chunk, {
+      ...HORROR_PROP_ASSETS.wrappedBody,
+      id: `${chunkId}_2f_body_b`,
+      position: [-32.4, floorY + 5.0, -29.2],
+      rotation: [0, -0.6, 0],
+    });
+    this.spawnAssetProp(chunk, {
+      ...HORROR_PROP_ASSETS.wrappedBody,
+      id: `${chunkId}_2f_body_c`,
+      position: [-21.8, floorY + 5.0, -20.4],
+      rotation: [0, 0.35, 0],
+    });
+    this.spawnAssetProp(chunk, {
+      ...HORROR_PROP_ASSETS.hangingBundle,
+      id: `${chunkId}_2f_hang`,
+      position: [-26.6, floorY + 7.55, -19.4],
+      rotation: [0, 0.4, 0],
+    });
+    this.spawnAssetProp(chunk, {
+      ...HORROR_PROP_ASSETS.hangingBundle,
+      id: `${chunkId}_2f_hang_b`,
+      position: [-30.8, floorY + 7.5, -26.2],
+      rotation: [0, -0.55, 0],
+    });
+
+    const shrineGlow = new THREE.PointLight(0x5a0a12, 0.9, 7.4, 2.0);
+    shrineGlow.position.set(-34.0, floorY + 6.05, -22.0);
+    shrineGlow.name = `${chunkId}_2f_blood_glow`;
+    this.scene.add(shrineGlow);
+    chunk.meshes.push(shrineGlow);
+    const poolGlow = new THREE.PointLight(0x3a060a, 0.62, 6.0, 2.0);
+    poolGlow.position.set(-23.6, floorY + 5.85, -18.2);
+    poolGlow.name = `${chunkId}_2f_blood_glow_near`;
+    this.scene.add(poolGlow);
+    chunk.meshes.push(poolGlow);
+  }
+
   buildCeilingLights(chunk, type, center, chunkId, rand, floorY = 0) {
     // Dark corridor overhaul: No automatic ceiling or wall lights are spawned.
     // The labyrinth remains dark by default, requiring the player's flashlight (F)
@@ -2002,9 +2337,10 @@ export class BackroomsGenerator {
     } else if (type === "static_room") {
       addDynamicCabinet("cabinet-static-room", "방송실 신발장", [-5.4, 0.0, -5.4], -Math.PI / 2);
     } else if (type === "stairs_2f") {
-      addDynamicCabinet("cabinet_stairs_2f_attic", "2층 갤러리 벽장", [-20.2, 5.0, 4.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet_stairs_2f_attic", "2층 갤러리 벽장", [-6.0, 5.0, 4.0], Math.PI / 2);
     } else if (type === "stairs_b1") {
       addDynamicCabinet("cabinet_b1_cellar", "지하 보육실 벽장", [-22.5, -5.0, 2.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet_b1_flood", "지하 침수복도 벽장", [-7.4, -5.0, -0.4], Math.PI / 2);
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (type === "classroom") {
@@ -2035,6 +2371,10 @@ export class BackroomsGenerator {
     };
     if (type === "start") {
       addLoreNote(`${chunkId}_lore`, [-7.55, 1.35, -3.2], Math.PI / 2);
+    } else if (type === "stairs_b1") {
+      addLoreNote(`${chunkId}_lore_flood`, [-7.4, -3.55, -2.2], Math.PI / 2);
+    } else if (type === "stairs_2f") {
+      addLoreNote(`${chunkId}_lore_blood`, [-8.2, 6.35, 1.6], Math.PI / 2);
     } else if (type === "omen_room" || type === "static_room" || type === "flicker_room" || type === "classroom") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0);
     } else if (isWorkshop || isPlayroom || isStorage) {

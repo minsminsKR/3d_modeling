@@ -67,7 +67,7 @@ try {
         const nx = cx + dx;
         const nz = cz + dz;
         const key = `${nx},${nz}`;
-        if (!allVisited.has(key) && Math.abs(nx) <= 12 && Math.abs(nz) <= 12) {
+        if (!allVisited.has(key) && generator.isPlayableChunk(nx, nz)) {
           allVisited.add(key);
           allQueue.push([nx, nz]);
         }
@@ -86,14 +86,13 @@ try {
     }
 
     let radius = 0;
-    while (radius < 80 && generator.isPlayableChunk(radius, 0)) radius += 1;
+    while (radius < 20 && generator.isPlayableChunk(radius, 0)) radius += 1;
     const voidChunk = generator.generateChunk(radius, 0);
     const ringChunk = generator.generateChunk(3, 0);
-    const farChunk = generator.generateChunk(20, 0);
-    const beyondChunk = generator.generateChunk(13, 0);
+    const farChunk = generator.generateChunk(8, 0);
+    const beyondChunk = generator.generateChunk(9, 0);
     const ringOpen = generator.getOpenings(3, 0);
-    const beyondOpen = generator.getOpenings(13, 0);
-    const authoredOuterOpen = generator.getOpenings(12, 0);
+    const annexOpen = generator.getOpenings(4, 0);
     const inverted = [];
     for (const chunk of generator.chunksData.values()) {
       if (!chunk.safeLights || Math.abs(chunk.cx) > 2 || Math.abs(chunk.cz) > 2) continue;
@@ -160,10 +159,9 @@ try {
       farMeshes: farChunk.meshes.length,
       beyondType: beyondChunk.type,
       beyondMeshes: beyondChunk.meshes.length,
-      beyondWest: beyondOpen.W,
-      outerEast: authoredOuterOpen.E,
+      annexWest: annexOpen.W,
       allReachable: allVisited.size,
-      expectedCells: 25 * 25,
+      expectedCells: 51,
       worldExtent: radius,
       inverted,
       alcoveStartLen: alcoveStart.length,
@@ -184,17 +182,16 @@ try {
   assert.equal(result.playableVoid.length, 0, `playable void cells: ${result.playableVoid.join(", ")}`);
   assert.equal(result.voidType, "void");
   assert.equal(result.voidMeshes, 0, "exterior hull must not build fake rooms");
-  assert.notEqual(result.ringType, "void", "school ring east of the core must be a walkable hall");
-  assert.ok(result.ringMeshes > 0, "school ring must build geometry");
-  assert.equal(result.ringWest, true, "school ring must open into the core");
-  assert.notEqual(result.farType, "void", "deep school wing must remain walkable");
-  assert.ok(result.farMeshes > 0, "deep school wing must build geometry");
-  assert.notEqual(result.beyondType, "void", "school must continue past the authored ring");
-  assert.ok(result.beyondMeshes > 0, "endless wing must build geometry");
-  assert.equal(result.beyondWest, result.outerEast, "authored ring and endless wing must agree");
-  assert.equal(result.beyondWest, true, "east highway must leave the authored school");
-  assert.ok(result.worldExtent > 20, `world should extend well past the old void wall, got ${result.worldExtent}`);
-  assert.equal(result.allReachable, result.expectedCells, `full school graph should be ${result.expectedCells}, got ${result.allReachable}`);
+  assert.notEqual(result.ringType, "void", "annex corridor east of the core must be a walkable hall");
+  assert.ok(result.ringMeshes > 0, "annex corridor must build geometry");
+  assert.equal(result.ringWest, true, "annex corridor must open into the core");
+  assert.notEqual(result.farType, "void", "별관 must remain walkable");
+  assert.ok(result.farMeshes > 0, "별관 must build geometry");
+  assert.equal(result.beyondType, "void", "school must stop after the east annex");
+  assert.equal(result.beyondMeshes, 0, "outside the four maps must stay empty");
+  assert.equal(result.annexWest, true, "별관 must connect back toward the core");
+  assert.ok(result.worldExtent <= 9, `1F should end at the annex, got ${result.worldExtent}`);
+  assert.equal(result.allReachable, result.expectedCells, `full 1F graph should be ${result.expectedCells}, got ${result.allReachable}`);
   assert.equal(result.inverted.length, 0, `wall-switch facing inward failed: ${JSON.stringify(result.inverted, null, 2)}`);
   assert.equal(result.alcoveStartBlocked, false, "start-room alcove should be enterable");
   assert.equal(result.alcoveCorridorBlocked, false, "corridor side alcove should be enterable");

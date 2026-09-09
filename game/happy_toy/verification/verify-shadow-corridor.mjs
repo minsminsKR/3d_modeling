@@ -58,14 +58,25 @@ try {
       state: uncat.state,
     };
     game.testSafeMode = true;
-    game.player.setPosition({ x: 208, y: 0, z: 0 });
+    const b1 = game.mapBuilder.generator.generateChunk(1, 2);
+    const f2 = game.mapBuilder.generator.generateChunk(-1, -1);
+    const floors = {
+      b1Type: b1.type,
+      f2Type: f2.type,
+      flood: (b1.meshes || []).some((mesh) => String(mesh.name || "").includes("flood_water")),
+      drip: (b1.meshes || []).some((mesh) => String(mesh.name || "").includes("drip")),
+      foam: (b1.meshes || []).some((mesh) => String(mesh.name || "").includes("flood_foam")),
+      blood: (f2.meshes || []).some((mesh) => String(mesh.name || "").includes("blood")),
+      bloodWall: (f2.meshes || []).some((mesh) => String(mesh.name || "").includes("blood_wall")),
+    };
+    game.player.setPosition({ x: 80, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05);
     const deepWing = {
       totalKeys: game.getTotalKeys(),
       hud: document.querySelector("#key-count-text")?.textContent,
       liveKeys: game.keys.length,
-      chunkType: game.mapBuilder.generator.getChunkType(13, 0),
-      openings: game.mapBuilder.generator.getOpenings(13, 0),
+      chunkType: game.mapBuilder.generator.getChunkType(5, 0),
+      openings: game.mapBuilder.generator.getOpenings(5, 0),
     };
     game.player.setPosition({ x: 96, y: 0, z: 0 });
     for (let i = 0; i < 12; i += 1) game.update(0.05);
@@ -103,6 +114,7 @@ try {
       before,
       afterRelease,
       afterChase,
+      floors,
       deepWing,
       atWing,
       hiding,
@@ -129,10 +141,20 @@ try {
     result.afterChase.endDist < result.afterChase.startDist - 1.5,
     `stalker must close distance ${result.afterChase.startDist} -> ${result.afterChase.endDist}`,
   );
-  assert.notEqual(result.deepWing.chunkType, "void", "chunk 13 must continue the school");
-  assert.equal(result.deepWing.openings.W, true, "endless east wing must open back toward the authored ring");
+  assert.notEqual(result.deepWing.chunkType, "void", "별관 must continue the 1F school");
+  assert.ok(
+    result.deepWing.openings.W || result.deepWing.openings.E || result.deepWing.openings.N || result.deepWing.openings.S,
+    "별관 must stay open",
+  );
   assert.equal(result.deepWing.totalKeys, 4);
   assert.equal(result.deepWing.hud, "0 / 4");
+  assert.equal(result.floors.b1Type, "stairs_b1");
+  assert.equal(result.floors.f2Type, "stairs_2f");
+  assert.equal(result.floors.flood, true, "basement must hold standing water");
+  assert.equal(result.floors.drip, true, "basement must drip");
+  assert.equal(result.floors.foam, true, "basement water must show scum");
+  assert.equal(result.floors.blood, true, "2F gallery must be blood-soaked");
+  assert.equal(result.floors.bloodWall, true, "2F walls must carry blood");
   assert.equal(result.atWing.totalKeys, 4, "unloading key rooms must not shrink the four-name loop");
   assert.equal(result.atWing.hud, "0 / 4");
   assert.equal(result.hiding.hidden, true);
