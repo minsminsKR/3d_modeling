@@ -286,43 +286,38 @@ export function createStalkerFigure(config = {}) {
   const group = new THREE.Group();
   group.name = `${config.id || "stalker"}-silhouette`;
 
-  const mat = new THREE.MeshStandardMaterial({
-    color: 0x050308,
-    roughness: 1,
-    metalness: 0,
-    emissive: 0x0a0408,
-    emissiveIntensity: 0.04,
-    side: THREE.DoubleSide,
+  const mat = new THREE.MeshBasicMaterial({
+    color: 0x07060a,
+    side: THREE.FrontSide,
   });
-  const cloakMat = mat.clone();
-  cloakMat.side = THREE.DoubleSide;
 
   const cloak = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.13, 0.44, height * 0.9, 12, 1, true),
-    cloakMat,
+    new THREE.CylinderGeometry(0.11, 0.34, height * 0.86, 10),
+    mat,
   );
   cloak.name = "stalker-cloak";
-  cloak.position.y = height * 0.46;
+  cloak.position.y = height * 0.45;
+  cloak.rotation.x = 0.06;
   cloak.castShadow = true;
 
   const torso = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.11, 0.16, height * 0.38, 8),
+    new THREE.CapsuleGeometry(0.13, height * 0.34, 4, 8),
     mat,
   );
-  torso.position.y = height * 0.68;
+  torso.position.y = height * 0.66;
   torso.castShadow = true;
 
   const head = new THREE.Group();
   head.name = "stalker-head";
-  head.position.y = height * 0.94;
-  const hood = new THREE.Mesh(new THREE.SphereGeometry(0.17, 10, 8), mat);
-  hood.scale.set(1.08, 1.32, 1.12);
+  head.position.y = height * 0.93;
+  const hood = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), mat);
+  hood.scale.set(1.04, 1.22, 1.08);
   hood.castShadow = true;
-  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x6a1218 });
-  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.016, 6, 6), eyeMat);
-  eyeL.position.set(-0.042, 0.016, 0.13);
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x5a1016 });
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.018, 6, 6), eyeMat);
+  eyeL.position.set(-0.04, 0.012, 0.132);
   const eyeR = eyeL.clone();
-  eyeR.position.x = 0.042;
+  eyeR.position.x = 0.04;
   head.add(hood, eyeL, eyeR);
 
   const makeLimb = (name, length, radius) => {
@@ -335,16 +330,16 @@ export function createStalkerFigure(config = {}) {
     return pivot;
   };
 
-  const legL = makeLimb("stalker-leg-l", height * 0.46, 0.055);
-  legL.position.set(-0.09, height * 0.46, 0.01);
-  const legR = makeLimb("stalker-leg-r", height * 0.46, 0.055);
-  legR.position.set(0.09, height * 0.46, -0.01);
-  const armL = makeLimb("stalker-arm-l", height * 0.54, 0.038);
-  armL.position.set(-0.2, height * 0.8, 0.03);
-  armL.rotation.z = 0.16;
-  const armR = makeLimb("stalker-arm-r", height * 0.54, 0.038);
-  armR.position.set(0.2, height * 0.8, 0.03);
-  armR.rotation.z = -0.16;
+  const legL = makeLimb("stalker-leg-l", height * 0.46, 0.05);
+  legL.position.set(-0.08, height * 0.46, 0.02);
+  const legR = makeLimb("stalker-leg-r", height * 0.46, 0.05);
+  legR.position.set(0.08, height * 0.46, -0.01);
+  const armL = makeLimb("stalker-arm-l", height * 0.52, 0.036);
+  armL.position.set(-0.18, height * 0.78, 0.04);
+  armL.rotation.z = 0.14;
+  const armR = makeLimb("stalker-arm-r", height * 0.52, 0.036);
+  armR.position.set(0.18, height * 0.78, 0.04);
+  armR.rotation.z = -0.14;
 
   group.add(cloak, torso, head, legL, legR, armL, armR);
   group.userData.rig = { legL, legR, armL, armR, head, phase: 0 };
