@@ -2059,18 +2059,32 @@ export class BackroomsGenerator {
     const stemLen = stemEnd - stemStart;
     const stemMid = (stemStart + stemEnd) / 2;
 
-    const gapped = (name, axis, pos, gaps) => {
-      this.placeGappedWall(chunk, chunkId, name, {
-        axis,
-        pos,
-        min: spanMin,
-        max: spanMax,
-        wallY: y,
-        height: h,
-        thickness: t,
-        material: this.schoolClassWallMat,
-        gaps,
-      });
+    const gapped = (name, axis, localPos, localGaps) => {
+      if (axis === "x") {
+        this.placeGappedWall(chunk, chunkId, name, {
+          axis,
+          pos: center.z + localPos,
+          min: center.x + spanMin,
+          max: center.x + spanMax,
+          wallY: y,
+          height: h,
+          thickness: t,
+          material: this.schoolClassWallMat,
+          gaps: localGaps.map((gap) => ({ center: center.x + gap.center, width: gap.width })),
+        });
+      } else {
+        this.placeGappedWall(chunk, chunkId, name, {
+          axis,
+          pos: center.x + localPos,
+          min: center.z + spanMin,
+          max: center.z + spanMax,
+          wallY: y,
+          height: h,
+          thickness: t,
+          material: this.schoolClassWallMat,
+          gaps: localGaps.map((gap) => ({ center: center.z + gap.center, width: gap.width })),
+        });
+      }
     };
     const stem = (name, x, z, sx, sz) => {
       this.placeDressedBox(
