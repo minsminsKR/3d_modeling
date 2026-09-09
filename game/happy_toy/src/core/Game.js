@@ -864,6 +864,7 @@ export class Game {
     this.keyCount = 0;
     this.playTime = 0;
     this.stalkerReleased = false;
+    this._stairWaitAnnounced = false;
     this.deathSequence = null;
     document.body.classList.remove("death-veil");
     this.cabinetEvent = null;
@@ -990,12 +991,18 @@ export class Game {
     const total = this.getTotalKeys();
     this.dreadDirector?.onRelic(key.position, this.keyCount, total);
     soundManager.playSFX("key_pickup");
-    this.voiceAnnouncer?.announce("key", this.keyCount >= total
+    const remaining = total - this.keyCount;
+    const line = this.keyCount >= total
       ? "모든 이름을 모았습니다. 제단으로 돌아가십시오."
-      : `이름을 찾았습니다. ${total - this.keyCount}개가 남았습니다.`);
+      : this.keyCount === 2
+        ? "이름이 둘입니다. 복도가 당신을 세기 시작합니다."
+        : `이름을 찾았습니다. ${remaining}개가 남았습니다.`;
+    this.voiceAnnouncer?.announce(this.keyCount >= total ? "keysDone" : this.keyCount === 2 ? "key2" : "key", line);
     this.hud.setStatus(this.keyCount >= total
       ? "모든 혼을 모았습니다. 나침반 [4]을 따라 제단으로 돌아가십시오."
-      : `혼 ${this.keyCount}/${total} · 종이 울리기 전에 퇴로를 확보하십시오.`, 4500);
+      : this.keyCount === 2
+        ? "혼 2/4 · 별관과 지하, 2층이 당신을 세기 시작합니다."
+        : `혼 ${this.keyCount}/${total} · 종이 울리기 전에 퇴로를 확보하십시오.`, 4500);
   }
 
   revealKeyById(keyId, position) {
@@ -1154,6 +1161,7 @@ export class Game {
     this.hud.setDread(0, "", "quiet");
     this.cabinetEvent = null;
     document.exitPointerLock?.();
+    this.voiceAnnouncer?.announce("clear", "제단이 문을 삼켰습니다.");
 
     if (this.menuSystem) {
       this.menuSystem.showVictoryClear(this.elapsedTime);
@@ -1177,6 +1185,7 @@ export class Game {
 
     this.gameOver = true;
     this.hud.setDread(0.92, "출석이 끝났습니다", "hunt");
+    this.voiceAnnouncer?.announce("death", "복도가 당신의 이름을 외웠습니다.");
     this.detectionFreezeTimer = 0;
     if (this.player.hiddenCabinet) {
       this.player.hiddenCabinet.occupied = false;
@@ -1216,6 +1225,10 @@ export class Game {
 
   tryReleaseCorridorStalker() {
     if (this.stalkerReleased || this.isInvincible) {
+      return false;
+    }
+    const intro = this.monsterIntroManager?.events?.find((event) => event.constructor?.name === "UncatIntroEvent");
+    if (intro?.state === "cutscene" || intro?.isControlLocked) {
       return false;
     }
     const grace = STALKER_CONFIG.graceSeconds ?? 14;
@@ -1448,46 +1461,97 @@ export class Game {
     // 2.2 Manage SafeLights PointLight pool
     this.updateSafeLightPool(playerPos);
 
-    // 3. Teleport far enemies closer to player (runs every frame but is a simple distance check)
-    if (this.enemyManager && this.elapsedTime > 5) {
-      for (const enemy of this.enemyManager.enemies) {
-        if (enemy.config.id === "hwacat-angry" && !enemy.isDynamic) {
-          continue;
-        }
+    // 3. Keep floor hunters on their own map instead of yanking Baby onto 1F.
+    this.repositionHunters(playerPos);
+  }
 
-        const distance = enemy.group.position.distanceTo(playerPos);
-        if (distance > 52) {
-          const ecx = Math.floor((playerPos.x + 8) / 16);
-          const ecz = Math.floor((playerPos.z + 8) / 16);
-          const candidates = [];
+  playerFloorIndex(y = 0) {
+    if (y >= 3.2) return 2;
+    if (y <= -2.2) return -1;
+    return 1;
+  }
 
-          for (let ddx = -2; ddx <= 2; ddx++) {
-            for (let ddz = -2; ddz <= 2; ddz++) {
-              if (ddx === 0 && ddz === 0) continue;
-              const key = `${ecx + ddx},${ecz + ddz}`;
-              const chunk = this.mapBuilder.loadedChunks.get(key);
-              if (chunk) {
-                const spawnPos = chunk.center.clone();
-                const hasLos = this.collisionWorld.hasLineOfSight(playerPos, spawnPos);
-                if (!hasLos) {
-                  candidates.push(spawnPos);
-                }
-              }
-            }
-          }
+  repositionHunters(playerPos) {
+    if (!this.enemyManager || this.elapsedTime < 5) return;
+    const playerFloor = this.playerFloorIndex(playerPos.y);
+    for (const enemy of this.enemyManager.enemies) {
+      if (enemy.isDormant || enemy.state === "cutscene") continue;
+      if (enemy.isBaby && !enemy.babyAwake) continue;
+      if (enemy.config.id === "hwacat-angry" && !enemy.isDynamic) continue;
 
-          if (candidates.length > 0) {
-            const targetSpawn = candidates[Math.floor(Math.random() * candidates.length)];
-            enemy.group.position.copy(targetSpawn);
-            this.collisionWorld.snapToValidSurface(enemy.group.position, { actorId: enemy.config.id });
-            enemy.patrolPath = [];
-            enemy.patrolPathGoal = null;
-            enemy.chasePath = [];
-            enemy.chasePathGoal = null;
-          }
-        }
+      const allowed = enemy.config.allowedFloor;
+      if (allowed !== undefined && allowed !== playerFloor) {
+        this.holdHunterAtStairMouth(enemy, allowed, playerFloor);
+        continue;
+      }
+
+      const distance = Math.hypot(
+        enemy.group.position.x - playerPos.x,
+        enemy.group.position.z - playerPos.z,
+      );
+      if (distance <= 42) continue;
+      this.relocateHunterNearPlayer(enemy, playerPos);
+    }
+  }
+
+  holdHunterAtStairMouth(enemy, hunterFloor, playerFloor) {
+    if (hunterFloor !== 1) return;
+    const target = playerFloor === -1
+      ? { x: 16, y: 0, z: 22.4 }
+      : playerFloor === 2
+        ? { x: -16, y: 0, z: -6.2 }
+        : null;
+    if (!target) return;
+    const dist = Math.hypot(enemy.group.position.x - target.x, enemy.group.position.z - target.z);
+    if (dist > 14) {
+      enemy.group.position.set(target.x, target.y, target.z);
+      this.collisionWorld.snapToValidSurface(enemy.group.position, { actorId: enemy.config.id, floor: 1 });
+      enemy.patrolPath = [];
+      enemy.patrolPathGoal = null;
+      enemy.chasePath = [];
+      enemy.chasePathGoal = null;
+    }
+    if (enemy.state === "chase" || enemy.state === "flee") {
+      enemy.beginSearch?.(enemy.group.position.clone(), 3.2);
+    }
+    if (!this._stairWaitAnnounced) {
+      this._stairWaitAnnounced = true;
+      this.voiceAnnouncer?.announce("stairWait", "계단 입구에서 실내화가 멈추고 기다립니다.");
+    }
+  }
+
+  relocateHunterNearPlayer(enemy, playerPos) {
+    const ecx = Math.floor((playerPos.x + 8) / 16);
+    const ecz = Math.floor((playerPos.z + 8) / 16);
+    const candidates = [];
+    for (let ddx = -2; ddx <= 2; ddx += 1) {
+      for (let ddz = -2; ddz <= 2; ddz += 1) {
+        if (ddx === 0 && ddz === 0) continue;
+        const chunk = this.mapBuilder.loadedChunks.get(`${ecx + ddx},${ecz + ddz}`);
+        if (!chunk) continue;
+        const spawnPos = chunk.center.clone();
+        spawnPos.y = playerPos.y;
+        if (typeof enemy.matchesFloor === "function" && !enemy.matchesFloor(spawnPos.y)) continue;
+        const hasLos = this.collisionWorld.hasLineOfSight(playerPos, spawnPos);
+        if (!hasLos) candidates.push(spawnPos);
       }
     }
+    if (candidates.length === 0) return;
+    const previous = enemy.group.position.clone();
+    const targetSpawn = candidates[Math.floor(Math.random() * candidates.length)];
+    enemy.group.position.copy(targetSpawn);
+    this.collisionWorld.snapToValidSurface(enemy.group.position, {
+      actorId: enemy.config.id,
+      floor: enemy.config.allowedFloor,
+    });
+    if (typeof enemy.matchesFloor === "function" && !enemy.matchesFloor(enemy.group.position.y)) {
+      enemy.group.position.copy(previous);
+      return;
+    }
+    enemy.patrolPath = [];
+    enemy.patrolPathGoal = null;
+    enemy.chasePath = [];
+    enemy.chasePathGoal = null;
   }
 
   onEnterSchoolChunk(cx, cz) {
@@ -1513,8 +1577,11 @@ export class Game {
   }
 
   updateFloorAtmosphere(deltaTime, snap = false) {
-    const y = this.player?.position?.y ?? 0;
-    const mapId = y < -2.2 ? "b1" : y > 3.2 ? "f2" : "f1a";
+    const pos = this.player?.position;
+    const y = pos?.y ?? 0;
+    const cx = Math.floor(((pos?.x ?? 0) + 8) / 16);
+    const cz = Math.floor(((pos?.z ?? 0) + 8) / 16);
+    const mapId = getMapId(cx, cz, y) || (y < -2.2 ? "b1" : y > 3.2 ? "f2" : "f1a");
     if (this._floorMapId !== mapId) {
       this._floorMapId = mapId;
       snap = true;
@@ -1523,7 +1590,9 @@ export class Game {
       ? LIGHTING_CONFIG.basement
       : mapId === "f2"
         ? LIGHTING_CONFIG.upper
-        : LIGHTING_CONFIG;
+        : mapId === "f1b"
+          ? (LIGHTING_CONFIG.annex || LIGHTING_CONFIG)
+          : LIGHTING_CONFIG;
     const colorBlend = snap ? 1 : Math.min(1, deltaTime * 2.4);
     const distBlend = snap ? 1 : Math.min(1, deltaTime * 3);
     const fog = this.scene.fog;
@@ -1557,6 +1626,10 @@ export class Game {
     if (this.flashlight && profile.flashlightColor) {
       this.flashlight.color.lerp(new THREE.Color(profile.flashlightColor), colorBlend);
       this.flashlightFill?.color.lerp(this.flashlight.color, 1);
+    }
+    if (this.flashlight) {
+      const range = profile.flashlightRange ?? LIGHTING_CONFIG.flashlightRange;
+      this.flashlight.distance += (range - this.flashlight.distance) * distBlend;
     }
     this._floorAmbienceAt = (this._floorAmbienceAt || 0) + deltaTime;
     const interval = mapId === "b1" ? 1.15 : mapId === "f2" ? 1.45 : 8;

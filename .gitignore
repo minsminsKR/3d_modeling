@@ -47,8 +47,14 @@ model_test/model/
 !model_test/model/Uncat/
 !model_test/model/Uncat/**
 model_test/model/_extracted/
-!game/happy_toy/assets/characters/**/*.fbx
-!game/happy_toy/vendor/three/build/
+!game/assets/**
+!game/assets/**/*.fbx
+!game/assets/**/*.glb
+!game/assets/**/*.gltf
+!game/happy_toy/assets/**
+!game/happy_toy/assets/**/*.fbx
+!game/happy_toy/assets/**/*.glb
+!game/happy_toy/vendor/three/**
 !game/happy_toy/vendor/three/build/three.module.js
 
 # Logs and temporary files

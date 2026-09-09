@@ -297,8 +297,12 @@ export class UncatIntroEvent {
 
     const uncat = this.getEnemy();
     if (uncat) {
-      uncat.state = "wander";
-      uncat.playAction("patrol", 0.2);
+      uncat.setDormant(false);
+      uncat.group.visible = true;
+      uncat.state = "chase";
+      uncat.lastKnownPlayerPosition = this.game.player.position.clone();
+      uncat.memoryTimer = Math.max(uncat.config.memorySeconds ?? 6, 8);
+      uncat.playAction("chase", 0.2);
       if (uncat.modelRoot) {
         uncat.modelRoot.rotation.set(0, 0, 0);
       }
@@ -306,6 +310,7 @@ export class UncatIntroEvent {
         uncat.mixer.timeScale = 1.0;
       }
     }
+    this.game.stalkerReleased = true;
 
     this.game.player.input.consumePointerDelta();
     // Cleanly re-align camera with player eye position

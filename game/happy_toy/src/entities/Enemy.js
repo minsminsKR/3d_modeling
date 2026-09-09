@@ -426,12 +426,13 @@ export class Enemy {
       return;
     }
 
-    // Floor Isolation Enforcer: Monsters NEVER cross or react to players outside their assigned floor
+    // Floor Isolation Enforcer: assigned-floor hunters stop chasing across stairs,
+    // then hold the stair mouth instead of resetting wander every frame.
     if (this.config.allowedFloor !== undefined && !this.config.allowInterFloorPatrol) {
       const playerFloor = (playerPosition.y ?? 0) >= 3.0 ? 2 : ((playerPosition.y ?? 0) <= -3.0 ? -1 : 1);
       if (playerFloor !== this.config.allowedFloor) {
         if (this.state === "chase" || this.state === "flee") {
-          this.beginWander();
+          this.beginSearch(this.group.position.clone(), this.config.hiddenSearchSeconds ?? 2.2);
         }
         this.memoryTimer = 0;
         this.lastKnownPlayerPosition = null;

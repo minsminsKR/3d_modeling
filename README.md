@@ -2,6 +2,19 @@
 
 이미지 기반 3D 모델링·모션 관련 실험 저장소입니다.
 
+## 그림자복도 플레이
+
+캐릭터 FBX, 소품 GLB, 텍스처는 `game/assets`에 포함되어 있습니다. clone 후 Python만으로 실행합니다.
+
+```bash
+git clone https://github.com/minsminsKR/3d_modeling.git
+cd 3d_modeling/game/happy_toy
+python3 web_server.py --host 127.0.0.1 --port 8010
+```
+
+브라우저: http://127.0.0.1:8010  
+조작과 한 판 규칙은 [game/happy_toy/README.md](game/happy_toy/README.md)를 봅니다.
+
 ## Hunyuan3D 웹앱 (`hunyuan3d-webapp`) 실행용 모델 원본 링크
 
 가중치는 용량이 커서 GitHub에는 포함하지 않습니다. 다른 PC에서 실행할 때는 아래 원본에서 받거나, 저장소의 스크립트로 한 번에 받을 수 있습니다.
@@ -18,6 +31,7 @@
 
 ## 하위 프로젝트
 
+- **game/happy_toy** — 그림자복도 1인칭 공포 게임. 에셋은 `game/assets`에 포함.
 - **hunyuan3d-webapp** — Hunyuan3D 2.1 Flask 웹앱 ([상세 README](hunyuan3d-webapp/README.md))
 - **Hunyuan3D-2.1**, **Hunyuan3D-Omni** — 업스트림/실험용 서브모듈성 디렉터리
-- **game**, **model_test** — 게임·에셋 테스트
+- **model_test** — 에셋 테스트

@@ -2354,9 +2354,12 @@ export class BackroomsGenerator {
       addDynamicCabinet("cabinet-static-room", "방송실 신발장", [-5.4, 0.0, -5.4], -Math.PI / 2);
     } else if (type === "stairs_2f") {
       addDynamicCabinet("cabinet_stairs_2f_attic", "2층 갤러리 벽장", [-6.0, 5.0, 4.0], Math.PI / 2);
+      addDynamicCabinet("cabinet_stairs_2f_shrine", "2층 사당 벽장", [-18.4, 5.0, -4.2], Math.PI / 2);
+      addDynamicCabinet("cabinet_stairs_2f_landing", "2층 계단참 벽장", [0.0, 5.0, -6.2], 0);
     } else if (type === "stairs_b1") {
       addDynamicCabinet("cabinet_b1_cellar", "지하 보육실 벽장", [-22.5, -5.0, 2.0], -Math.PI / 2);
       addDynamicCabinet("cabinet_b1_flood", "지하 침수복도 벽장", [-7.4, -5.0, -0.4], Math.PI / 2);
+      addDynamicCabinet("cabinet_b1_east", "지하 동쪽 벽장", [8.2, -5.0, 0.2], -Math.PI / 2);
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (type === "classroom") {

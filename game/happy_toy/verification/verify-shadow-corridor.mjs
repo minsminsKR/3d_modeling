@@ -85,6 +85,13 @@ try {
       hud: document.querySelector("#key-count-text")?.textContent,
       liveKeys: game.keys.length,
     };
+    game.player.setPosition({ x: 10.5, y: -5, z: 32 });
+    for (let i = 0; i < 24; i += 1) game.update(0.05);
+    const floorHunt = {
+      uncatY: uncat.group.position.y,
+      b1Cabinets: (b1.cabinets || []).length,
+      f2Cabinets: (f2.cabinets || []).length,
+    };
     game.player.setPosition({ x: 0, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05);
     game.testSafeMode = false;
@@ -117,6 +124,7 @@ try {
       floors,
       deepWing,
       atWing,
+      floorHunt,
       hiding,
       death: {
         gameOver: game.gameOver,
@@ -157,6 +165,9 @@ try {
   assert.equal(result.floors.bloodWall, true, "2F walls must carry blood");
   assert.equal(result.atWing.totalKeys, 4, "unloading key rooms must not shrink the four-name loop");
   assert.equal(result.atWing.hud, "0 / 4");
+  assert.ok(Math.abs(result.floorHunt.uncatY) < 2.5, `Uncat must stay on 1F while the player is in B1, got y=${result.floorHunt.uncatY}`);
+  assert.ok(result.floorHunt.b1Cabinets >= 3, "basement needs multiple hide spots");
+  assert.ok(result.floorHunt.f2Cabinets >= 3, "2F gallery needs multiple hide spots");
   assert.equal(result.hiding.hidden, true);
   assert.equal(result.hiding.investigating, true);
   assert.equal(result.hiding.hasEvent, true);

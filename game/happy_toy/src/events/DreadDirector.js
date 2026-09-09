@@ -62,6 +62,7 @@ export class DreadDirector {
     this.ritualActive = true;
     this.ritualProgress = 0;
     this.game.hud.setStatus("봉인이 시작됩니다. 제단 곁에서 6초를 버티십시오. 멀어지면 중단됩니다.", 5000);
+    this.game.voiceAnnouncer?.announce("ritual", "제단이 문을 삼키려 합니다. 여섯을 세십시오.");
     this.bell(110);
     if (!(this.game.isInvincible ?? this.game.testSafeMode)) this.game.enemyManager.notifyNoiseEvent(this.game.finalExit.position, 24,
       { duration: 8, source: "altar", silentFeedback: true });
@@ -81,6 +82,7 @@ export class DreadDirector {
         this.ritualActive = false;
         this.ritualProgress = 0;
         g.hud.setStatus("봉인이 끊겼습니다. 준비가 되면 제단에서 [E]로 다시 시작하십시오.", 3000);
+        g.voiceAnnouncer?.announce("ritualFail", "봉인이 끊겼습니다. 제단을 떠나지 마십시오.");
       } else {
         this.ritualProgress += dt;
         if (this.ritualProgress >= 6) {
