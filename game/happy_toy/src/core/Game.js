@@ -1573,6 +1573,7 @@ export class Game {
     z,
     yaw = 0,
     pitch = -0.42,
+    lookAt = null,
     flashlight = true,
     freezeLoop = true,
   } = {}) {
@@ -1584,7 +1585,11 @@ export class Game {
       this.updateBackrooms(0);
     }
     this.updateFloorAtmosphere(8, true);
-    this.player.resetLook(yaw, pitch);
+    if (Array.isArray(lookAt) && lookAt.length >= 3) {
+      this.player.setLookAt(new THREE.Vector3(lookAt[0], lookAt[1], lookAt[2]));
+    } else {
+      this.player.resetLook(yaw, pitch);
+    }
     const fl = this.flashlightController;
     if (fl) {
       fl.batteryLevel = 1;

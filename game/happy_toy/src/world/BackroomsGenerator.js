@@ -2034,13 +2034,13 @@ export class BackroomsGenerator {
     this.scene.add(mold);
     chunk.meshes.push(mold);
 
-    const gloom = new THREE.PointLight(0x173a30, 0.72, 7.2, 2.0);
-    gloom.position.set(10.4, floorY - 4.2, 31.6);
+    const gloom = new THREE.PointLight(0x1c4a3c, 1.45, 8.4, 1.85);
+    gloom.position.set(10.4, floorY - 4.05, 31.6);
     gloom.name = `${chunkId}_b1_flood_gloom`;
     this.scene.add(gloom);
     chunk.meshes.push(gloom);
-    const gloomEast = new THREE.PointLight(0x14342c, 0.55, 6.4, 2.0);
-    gloomEast.position.set(20.6, floorY - 4.15, 32.2);
+    const gloomEast = new THREE.PointLight(0x16382e, 1.05, 7.2, 1.9);
+    gloomEast.position.set(20.6, floorY - 4.05, 32.2);
     gloomEast.name = `${chunkId}_b1_flood_gloom_e`;
     this.scene.add(gloomEast);
     chunk.meshes.push(gloomEast);
@@ -2170,13 +2170,13 @@ export class BackroomsGenerator {
       rotation: [0, -0.55, 0],
     });
 
-    const shrineGlow = new THREE.PointLight(0x5a0a12, 0.9, 7.4, 2.0);
-    shrineGlow.position.set(-34.0, floorY + 6.05, -22.0);
+    const shrineGlow = new THREE.PointLight(0x6a1018, 1.55, 8.2, 1.8);
+    shrineGlow.position.set(-34.0, floorY + 6.1, -22.0);
     shrineGlow.name = `${chunkId}_2f_blood_glow`;
     this.scene.add(shrineGlow);
     chunk.meshes.push(shrineGlow);
-    const poolGlow = new THREE.PointLight(0x3a060a, 0.62, 6.0, 2.0);
-    poolGlow.position.set(-23.6, floorY + 5.85, -18.2);
+    const poolGlow = new THREE.PointLight(0x4a0a10, 1.25, 7.0, 1.85);
+    poolGlow.position.set(-23.6, floorY + 5.95, -18.2);
     poolGlow.name = `${chunkId}_2f_blood_glow_near`;
     this.scene.add(poolGlow);
     chunk.meshes.push(poolGlow);

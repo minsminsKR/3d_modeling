@@ -32,6 +32,7 @@ async function poseShot(name, pose) {
     return game.poseForCapture({
       yaw: options.yaw,
       pitch: options.pitch,
+      lookAt: options.lookAt,
       flashlight: true,
       freezeLoop: true,
     });
