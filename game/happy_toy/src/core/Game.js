@@ -3,7 +3,7 @@
 
 import * as THREE from "three";
 import { createChapterSession, CHAPTERS } from "../config/chapterConfig.js";
-import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG, LIGHTING_CONFIG } from "../config/gameConfig.js";
+import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG, LIGHTING_CONFIG, STALKER_CONFIG } from "../config/gameConfig.js";
 
 import { CollisionWorld } from "../world/CollisionWorld.js";
 import { EnemyManager } from "../entities/EnemyManager.js";
@@ -31,7 +31,7 @@ export class Game {
     this.scene = new THREE.Scene();
     // Keep the distance void oppressive without crushing every unlit surface
     // to display black after ACES. This remains much darker than any material.
-    const atmosphericBlack = 0x261a12;
+    const atmosphericBlack = LIGHTING_CONFIG.fogColor ?? 0x040201;
     this.scene.background = new THREE.Color(atmosphericBlack);
     this.scene.fog = new THREE.Fog(atmosphericBlack, LIGHTING_CONFIG.fogNear, LIGHTING_CONFIG.fogFar);
 
@@ -72,6 +72,7 @@ export class Game {
     this.keys = [];
     this.cabinets = [];
     this.safeLights = [];
+    this.loreNotes = [];
     this.activatedSafeLightKeys = new Set();
     this.lovelyDolls = [];
     this.spawnedDollIds = new Set();
@@ -101,6 +102,9 @@ export class Game {
     this.cabinetEvent = null;
     this.cutsceneEvent = null;
     this.elapsedTime = 0;
+    this.playTime = 0;
+    this.stalkerReleased = false;
+    this.deathSequence = null;
     this.assetsReady = false;
     this.testSafeMode = false;
     this.ghostMode = false;
@@ -145,6 +149,7 @@ export class Game {
     this.keys = map.keys;
     this.cabinets = map.cabinets;
     this.safeLights = map.safeLights || [];
+    this.loreNotes = map.loreNotes || [];
     this.finalExit = map.finalExit;
     this.player = new PlayerController(this.camera, this.input, this.collisionWorld, this.hud);
     this.player.setPosition(map.playerStart);
@@ -173,10 +178,7 @@ export class Game {
       [-12.0, 0, 21.0],
     ]);
 
-    this.player.setInteractables(
-      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, ...this.itemSystem.getInteractables(), this.finalExit].filter(Boolean),
-      this.createInteractionContext(),
-    );
+    this.refreshInteractables();
 
     const hwacat2FGalleryConfig = {
       id: "hwacat-mirror-event",
@@ -237,9 +239,6 @@ export class Game {
       LIGHTING_CONFIG.ambientIntensity,
     );
     this.scene.add(ambient);
-
-    const visibilityFill = new THREE.AmbientLight(0x7a5636, 0.3);
-    this.scene.add(visibilityFill);
 
     const lowAmbient = new THREE.HemisphereLight(
       new THREE.Color(LIGHTING_CONFIG.hemisphereSkyColor),
@@ -348,9 +347,22 @@ export class Game {
   refreshInteractables() {
     if (!this.player) return;
     this.player.setInteractables(
-      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, ...(this.itemSystem?.getInteractables() || []), this.finalExit].filter(Boolean),
+      [
+        ...this.doors,
+        ...this.keys,
+        ...this.cabinets,
+        ...this.safeLights,
+        ...(this.loreNotes || []),
+        ...(this.itemSystem?.getInteractables() || []),
+        this.finalExit,
+      ].filter(Boolean),
       this.createInteractionContext(),
     );
+  }
+
+  onLoreRead(note) {
+    if (!note?.read) return;
+    soundManager.playSFX("whisper");
   }
 
   createInteractionContext() {
@@ -410,7 +422,7 @@ export class Game {
     this.flashlightController?.setEnabled(true, false);
     this.syncWorldPreview();
     this.tryPointerLock(false);
-    this.hud.setStatus("WASD 이동 · F 손전등 · 화면 클릭 시 마우스 잠금", 3500);
+    this.hud.setStatus("손전등이 유일한 길입니다. 발소리가 나면 신발장에 숨으십시오.", 4200);
   }
 
   tryPointerLock(notifyOnFail = false) {
@@ -544,6 +556,8 @@ export class Game {
     }
 
     if (this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared && !this.cutsceneEvent) {
+      this.playTime += deltaTime;
+      this.tryReleaseCorridorStalker();
       this.updateBackrooms(deltaTime);
       this.updateLovelyDolls(deltaTime);
       this.updateWeepingAngels(deltaTime);
@@ -591,6 +605,7 @@ export class Game {
       if (enemyState?.caught) {
         this.handleCaught();
       }
+      this.maybePullLockerHunt();
     } else {
 
       this.glitchController.update(deltaTime, { threat: 0 });
@@ -629,6 +644,9 @@ export class Game {
     }
 
     this.updateDebugHud();
+    if (this.gameOver && this.deathSequence && !this.deathSequence.shown) {
+      this.updateDeathSequence(deltaTime);
+    }
     this.renderer.render(this.scene, this.camera);
     this.input.endFrame();
   }
@@ -825,6 +843,10 @@ export class Game {
     this.spawnedWeepingAngel1F = false;
     this.spawnedWeepingAngel2F = false;
     this.keyCount = 0;
+    this.playTime = 0;
+    this.stalkerReleased = false;
+    this.deathSequence = null;
+    document.body.classList.remove("death-veil");
     this.cabinetEvent = null;
     this.cutsceneEvent = null;
     this.firstDetectionScareReady = true;
@@ -867,12 +889,14 @@ export class Game {
       this.mapBuilder.keys = [];
       this.mapBuilder.cabinets = [];
       this.mapBuilder.safeLights = [];
+      this.mapBuilder.loreNotes = [];
       this.mapBuilder.finalExit = null;
       const map = this.mapBuilder.build();
       this.doors = map.doors;
       this.keys = map.keys;
       this.cabinets = map.cabinets;
       this.safeLights = map.safeLights || [];
+      this.loreNotes = map.loreNotes || [];
       this.finalExit = map.finalExit;
     }
 
@@ -882,10 +906,7 @@ export class Game {
 
     this.player.setPosition(new THREE.Vector3(0, 0, 0));
     this.player.resetLook(0, 0);
-    this.player.setInteractables(
-      [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, ...(this.itemSystem?.getInteractables() || []), this.finalExit].filter(Boolean),
-      this.createInteractionContext(),
-    );
+    this.refreshInteractables();
 
     this.flashlightController.reset();
     this.enemyManager.reset(this.doors);
@@ -943,8 +964,12 @@ export class Game {
       return;
     }
 
-    // Evaluate the entry before the player is moved to the cabinet's interior camera.
     const chasingEnemy = this.enemyManager.getClosestChasingEnemy(this.player.position);
+    const hunt = this.dreadDirector?.phase === "hunt";
+    const nearby = chasingEnemy || (hunt ? this.enemyManager.getClosestAwakeEnemy(this.player.position) : null);
+    const dist = nearby
+      ? Math.hypot(nearby.group.position.x - this.player.position.x, nearby.group.position.z - this.player.position.z)
+      : Infinity;
     const witnessed = this.enemyManager.enemies.some((enemy) =>
       !enemy.isDormant && enemy.isActivelyChasing() && enemy.hasVisualContact
       && enemy.isSameLevelAs(this.player.position)
@@ -952,25 +977,27 @@ export class Game {
     cabinet.occupied = true;
     this.player.enterCabinet(cabinet);
 
-    if (!chasingEnemy) {
-      this.hud.setStatus("캐비넷 안으로 몸을 숨겼습니다.", 1600);
+    if (!nearby || dist > (CABINET_CONFIG.huntHidePullDistance ?? 20)) {
+      this.hud.setStatus("신발장 안으로 몸을 숨겼습니다. 숨이 들리지 않게 하십시오.", 1800);
       return;
     }
 
     const forcedOutcome = options.forceOutcome;
+    const heard = dist < 16;
+    const huntCatch = hunt && heard && Math.random() < (CABINET_CONFIG.huntHideCatchChance ?? 0.38);
     const caught = forcedOutcome === "caught"
-      || (forcedOutcome !== "safe" && witnessed);
-    chasingEnemy.beginCabinetInvestigation(cabinet);
+      || (forcedOutcome !== "safe" && (witnessed || huntCatch));
+    nearby.beginCabinetInvestigation(cabinet);
     this.cabinetEvent = {
       cabinet,
-      enemy: chasingEnemy,
+      enemy: nearby,
       outcome: caught ? "caught" : "safe",
       timer: 0,
       arrived: false,
     };
     this.hud.setStatus(caught
-      ? "숨는 모습을 들켰습니다! [E]로 나와 시야를 끊으십시오."
-      : "시야를 끊었습니다. 발소리가 멀어질 때까지 기다리십시오.", 3500);
+      ? "신발장 문이 들켰습니다. [E]로 뛰쳐나와 시야를 끊으십시오."
+      : "문이 닫혔습니다. 앞의 발소리가 멀어질 때까지 숨죽이십시오.", 3500);
   }
 
   exitCabinet() {
@@ -1091,18 +1118,17 @@ export class Game {
     }
   }
 
-  get isInvincible() {
-    return Boolean(this.testSafeMode || this.ghostMode);
-  }
-
   handleCaught(message = "발소리가 바로 뒤에서 멈췄습니다.") {
     if (this.isInvincible) {
       this.hud.setStatus(this.ghostMode ? "투명 상태라 포획되지 않습니다." : "테스트 안전 모드라 포획되지 않습니다.", 900);
       return;
     }
+    if (this.gameOver || this.gameCleared) {
+      return;
+    }
 
     this.gameOver = true;
-    this.hud.setDread(0, "", "quiet");
+    this.hud.setDread(0.92, "출석이 끝났습니다", "hunt");
     this.detectionFreezeTimer = 0;
     if (this.player.hiddenCabinet) {
       this.player.hiddenCabinet.occupied = false;
@@ -1110,14 +1136,96 @@ export class Game {
     this.cabinetEvent = null;
     document.exitPointerLock?.();
     this.glitchController.trigger({ strength: 1.15, full: true });
+    this.flashlightController?.setEnabled(false, false);
+    soundManager.playSFX("death_breath");
+    this.deathSequence = { t: 0, shown: false, message };
+    document.body.classList.add("death-veil");
+  }
 
-    if (this.menuSystem) {
-      this.menuSystem.showGameOverScreamer();
-    } else {
-      this.hud.showCaught(message);
+  updateDeathSequence(deltaTime) {
+    const seq = this.deathSequence;
+    if (!seq || seq.shown) {
+      return;
+    }
+    seq.t += Math.min(deltaTime, 0.08);
+    const enemy = this.enemyManager?.getClosestAwakeEnemy?.(this.player.position)
+      || this.enemyManager?.getClosestChasingEnemy?.(this.player.position);
+    if (enemy && this.camera) {
+      const target = enemy.group.position.clone();
+      target.y += Math.max(1.15, (enemy.config?.height ?? 1.7) * 0.62);
+      this.camera.lookAt(target);
+    }
+    this.glitchController.update(deltaTime, { threat: 1 });
+    if (seq.t >= 1.55) {
+      seq.shown = true;
+      if (this.menuSystem) {
+        this.menuSystem.showGameOverScreamer();
+      } else {
+        this.hud.showCaught(seq.message);
+      }
     }
   }
 
+  tryReleaseCorridorStalker() {
+    if (this.stalkerReleased || this.isInvincible) {
+      return false;
+    }
+    const grace = STALKER_CONFIG.graceSeconds ?? 14;
+    if (this.playTime < grace) {
+      return false;
+    }
+    this.stalkerReleased = true;
+    const released = this.enemyManager?.releaseStalker(STALKER_CONFIG.id || "uncat", {
+      spawn: [0, 0, 22],
+    });
+    if (released) {
+      soundManager.playSFX("school_chime");
+      soundManager.playSFX("corridor_wind");
+    }
+    return released;
+  }
+
+  maybePullLockerHunt() {
+    if (this.cabinetEvent || !this.player?.isHidden || this.isInvincible) {
+      return;
+    }
+    const cabinet = this.player.hiddenCabinet;
+    if (!cabinet) {
+      return;
+    }
+    const hunt = this.dreadDirector?.phase === "hunt" || this.playTime > 42;
+    if (!hunt) {
+      return;
+    }
+    const enemy = this.enemyManager?.getClosestAwakeEnemy(this.player.position);
+    if (!enemy) {
+      return;
+    }
+    const dist = Math.hypot(
+      enemy.group.position.x - this.player.position.x,
+      enemy.group.position.z - this.player.position.z,
+    );
+    if (dist > (CABINET_CONFIG.huntHidePullDistance ?? 20)) {
+      return;
+    }
+    enemy.beginCabinetInvestigation(cabinet);
+    const caught = this.dreadDirector?.phase === "hunt" && dist < 9 && Math.random() < 0.22;
+    this.cabinetEvent = {
+      cabinet,
+      enemy,
+      outcome: caught ? "caught" : "safe",
+      timer: 0,
+      arrived: false,
+    };
+    this.hud.setStatus(
+      caught ? "신발장 앞에서 숨이 멈췄습니다." : "문 너머에서 손잡이를 더듬는 소리가 납니다.",
+      2800,
+    );
+  }
+
+  get isInvincible() {
+    return Boolean(this.testSafeMode || this.ghostMode);
+  }
 
   toggleTestSafeMode() {
     this.testSafeMode = !this.testSafeMode;
@@ -1167,11 +1275,9 @@ export class Game {
       this.keys = this.mapBuilder.keys;
       this.cabinets = this.mapBuilder.cabinets;
       this.safeLights = this.mapBuilder.safeLights || [];
+      this.loreNotes = this.mapBuilder.loreNotes || [];
       this.finalExit = this.mapBuilder.finalExit;
-      this.player.setInteractables(
-        [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, this.finalExit].filter(Boolean),
-        this.createInteractionContext(),
-      );
+      this.refreshInteractables();
     }
     if (chunkChanged) {
       this._lastPlayerChunkCx = cx;

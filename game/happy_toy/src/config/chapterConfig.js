@@ -3,9 +3,10 @@ import { ENEMY_CONFIGS, MAP_CONFIG } from "./gameConfig.js";
 export const CHAPTERS = [
   {
     id: 1,
-    eyebrow: "Chapter 1",
-    title: "낡은 여름 복도",
-    description: "고정된 1층/2층 실내 복도를 지나 네 개의 열쇠를 찾습니다.",
+    eyebrow: "SHADOW CORRIDOR",
+    title: "그림자복도",
+    description:
+      "폐교의 여름. 출석부가 아직 열려 있습니다. 흩어진 네 개의 이름(혼)을 첫 홀의 제단함에 돌려놓기 전에는 하교할 수 없습니다. 손전등 밖은 복도의 몫입니다.",
   },
 ];
 

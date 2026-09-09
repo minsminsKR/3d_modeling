@@ -10,6 +10,8 @@ const executablePath = process.env.CHROME_PATH
 assert.ok(LIGHTING_CONFIG.flashlightIntensity <= 40, "flashlight should not flood the corridor");
 assert.ok(LIGHTING_CONFIG.flashlightFillIntensity <= 6, "fill light should stay secondary");
 assert.ok(LIGHTING_CONFIG.rendererExposure <= 1.22, "exposure should stay in a horror range");
+assert.ok(LIGHTING_CONFIG.fogFar <= 18, "fog should hide anything beyond the cone");
+assert.ok(LIGHTING_CONFIG.ambientIntensity <= 0.08, "corridors must be flashlight-dark");
 
 const browser = await chromium.launch({ executablePath, headless: true });
 const errors = [];

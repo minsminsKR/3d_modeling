@@ -38,6 +38,47 @@ export class EnemyManager {
     return new Enemy(config, asset, this.collisionWorld, this.doors);
   }
 
+  releaseStalker(id = "uncat", options = {}) {
+    const enemy = this.enemies.find((entry) => entry.config.id === id);
+    if (!enemy || !enemy.isDormant) {
+      return false;
+    }
+    enemy.setDormant(false);
+    if (options.spawn) {
+      enemy.group.position.set(...options.spawn);
+      this.collisionWorld.snapToValidSurface(enemy.group.position, { actorId: enemy.config.id });
+    }
+    if (enemy.state === "cutscene") {
+      return true;
+    }
+    enemy.state = "wander";
+    enemy.beginWander();
+    enemy.playAction("patrol", 0.2);
+    if (!options.silent) {
+      this.hud?.setStatus?.("복도 끝에서 실내화가 한 켤레 끌립니다.", 2800);
+    }
+    return true;
+  }
+
+  getClosestAwakeEnemy(position) {
+    let closestEnemy = null;
+    let closestDistance = Infinity;
+    for (const enemy of this.enemies) {
+      if (enemy.isDormant || !enemy.isSameLevelAs(position)) {
+        continue;
+      }
+      if (enemy.isBaby && !enemy.babyAwake) {
+        continue;
+      }
+      const distance = distanceToPlayer(enemy, position);
+      if (distance < closestDistance) {
+        closestEnemy = enemy;
+        closestDistance = distance;
+      }
+    }
+    return closestEnemy;
+  }
+
   async addEnemy(config, options = {}) {
     const enemy = await this.createEnemy(config);
     if (options.spawn) {
@@ -86,9 +127,13 @@ export class EnemyManager {
     const targetProgress = Math.min(1, Math.max(0, (game?.keyCount || 0) / totalKeys));
     this.directorProgress += (targetProgress - this.directorProgress) * Math.min(1, deltaTime * 0.65);
     const difficulty = game?.menuSystem?.currentMode || "normal";
+    const stalkerLoose = this.enemies.some((enemy) => !enemy.isDormant && enemy.config.id === "uncat");
     const pursuitBudget = Math.min(
       this.enemies.length,
-      1 + (this.directorProgress >= 0.45 ? 1 : 0) + (difficulty === "hardcore" ? 1 : 0),
+      (stalkerLoose ? 1 : 1)
+        + (this.directorProgress >= 0.35 ? 1 : 0)
+        + (difficulty === "nightmare" ? 1 : 0)
+        + (difficulty === "hardcore" ? 1 : 0),
     );
     let activePursuers = 0;
 

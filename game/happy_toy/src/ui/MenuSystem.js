@@ -37,45 +37,44 @@ export class MenuSystem {
     } catch (e) {}
   }
 
-  showTitleScreen() {
+  markMenuOpen() {
+    document.body.classList.add("menu-open");
     this.container.style.display = "block";
     this.container.style.pointerEvents = "auto";
+  }
+
+  showTitleScreen() {
+    this.markMenuOpen();
     this.renderTitleScreen();
   }
 
   hideMenu() {
+    document.body.classList.remove("menu-open");
     this.container.style.display = "none";
     this.container.style.pointerEvents = "none";
   }
 
   renderTitleScreen() {
+    this.markMenuOpen();
+    const modeLabel =
+      this.currentMode === "nightmare" ? "악몽" : this.currentMode === "hardcore" ? "하드코어" : "보통";
     this.container.innerHTML = `
       <div class="menu-overlay title-screen-bg">
         <div class="title-box">
-          <div class="title-eyebrow">FIRST-PERSON HORROR</div>
-          <h1 class="title-heading">HAPPY TOY</h1>
-          <div class="title-sub">그림자 복도 · 낡은 여름 회랑</div>
-          
+          <p class="title-eyebrow">SHADOW CORRIDOR</p>
+          <h1 class="title-heading">그림자복도</h1>
+          <p class="title-kana" lang="ja">廃校の夏 · 影の廊下</p>
+          <p class="title-sub">손전등을 끄면 복도만 남습니다. 신발장에 숨고, 이름을 제단함에 돌려놓으십시오.<br>출석이 끝나기 전에.</p>
+
           <div class="menu-buttons">
-            <button id="btn-start-game" class="menu-btn primary-btn">게임 시작</button>
-            <button id="btn-difficulty" class="menu-btn secondary-btn">난이도 · <span id="diff-label">보통</span></button>
+            <button id="btn-start-game" class="menu-btn primary-btn">복도로 들어가기</button>
+            <button id="btn-difficulty" class="menu-btn secondary-btn">난이도 · <span id="diff-label">${modeLabel}</span></button>
             <button id="btn-settings" class="menu-btn secondary-btn">환경 설정</button>
             <button id="btn-records" class="menu-btn secondary-btn">탈출 기록</button>
           </div>
 
-          <div class="controls-hint-box">
-            <div class="hint-title">조작</div>
-            <div class="hint-grid">
-              <span><b>WASD</b> 이동</span>
-              <span><b>Shift</b> 달리기</span>
-              <span><b>Mouse</b> 시점</span>
-              <span><b>F</b> 손전등 ON/OFF</span>
-              <span><b>E</b> 문/열쇠/캐비넷/아이템 상호작용</span>
-              <span><b>Q / 1~4</b> 폭죽 투척 & 아이템 사용</span>
-              <span><b>\`</b> 무적/투명 모드</span>
-              <span><b>Esc</b> 일시정지 메뉴</span>
-            </div>
-          </div>
+          <p class="controls-quiet">WASD 이동 · SHIFT 질주 · F 손전등 · E 열기·숨기 · Q 유인 · ESC 멈춤</p>
+          <p class="title-footnote"><kbd>\`</kbd> 유령</p>
         </div>
       </div>
     `;
@@ -127,9 +126,11 @@ export class MenuSystem {
   }
 
   renderSettingsScreen() {
+    this.markMenuOpen();
     this.container.innerHTML = `
       <div class="menu-overlay">
         <div class="settings-card">
+          <p class="title-eyebrow">SHADOW CORRIDOR</p>
           <h2>환경 설정</h2>
           <div class="setting-row">
             <label>마스터 음량</label>
@@ -175,23 +176,25 @@ export class MenuSystem {
   }
 
   renderRecordsScreen() {
+    this.markMenuOpen();
     const listHtml = this.highScores.length
       ? this.highScores
           .map(
             (r, i) => `
         <div class="record-row">
           <span>#${i + 1} [${r.mode.toUpperCase()}] ${r.date}</span>
-          <span><b>${r.time}초</b> (열쇠 ${r.keys}개)</span>
+          <span><b>${r.time}초</b> (이름 ${r.keys})</span>
         </div>
       `,
           )
           .join("")
-      : '<div class="no-records">아직 탈출 기록이 없습니다.</div>';
+      : '<div class="no-records">아직 봉인 기록이 없습니다.</div>';
 
     this.container.innerHTML = `
       <div class="menu-overlay">
         <div class="records-card">
-          <h2>최단 탈출 기록</h2>
+          <p class="title-eyebrow">SHADOW CORRIDOR</p>
+          <h2>최단 봉인 기록</h2>
           <div class="records-list">${listHtml}</div>
           <button id="btn-back-records" class="menu-btn primary-btn mt-4">뒤로 가기</button>
         </div>
@@ -205,13 +208,14 @@ export class MenuSystem {
 
   showGameOverScreamer() {
     soundManager.playSFX("screamer_jumpscare");
-    this.container.style.display = "block";
+    this.markMenuOpen();
     this.container.innerHTML = `
       <div class="screamer-overlay">
         <div class="screamer-content">
-          <h1 class="screamer-title">사망하셨습니다</h1>
-          <p class="screamer-sub">복도의 기괴한 존재에게 포획되었습니다...</p>
-          <button id="btn-retry-game" class="menu-btn primary-btn big-btn">다시 도전하기</button>
+          <p class="title-eyebrow">출석</p>
+          <h1 class="screamer-title">복도가 당신의 이름을 외웠습니다.</h1>
+          <p class="screamer-sub">신발장 너머에서 출석이 끝났습니다. 복도는 당신의 이름을 잊지 않습니다.</p>
+          <button id="btn-retry-game" class="menu-btn primary-btn big-btn">다시 걷기</button>
         </div>
       </div>
     `;
@@ -233,26 +237,27 @@ export class MenuSystem {
     else if (timeSeconds < 180) rank = "A";
     else if (timeSeconds < 300) rank = "B";
 
-    this.container.style.display = "block";
+    this.markMenuOpen();
     this.container.innerHTML = `
       <div class="victory-overlay">
         <div class="victory-card">
-          <div class="victory-banner">ESCAPE SUCCESS!</div>
-          <h1 class="victory-title">무사히 탈출했습니다!</h1>
-          
+          <div class="victory-banner">봉인</div>
+          <h1 class="victory-title">제단이 문을 삼켰습니다.</h1>
+          <p class="victory-linger">손전등이 꺼져도 복도는 남습니다.</p>
+
           <div class="victory-stats">
             <div class="stat-item">
-              <span class="label">탈출 시간</span>
+              <span class="label">봉인까지</span>
               <span class="value">${timeSeconds.toFixed(1)}초</span>
             </div>
             <div class="stat-item">
               <span class="label">최종 랭크</span>
-              <span class="value rank-${rank}">${rank} 랭크</span>
+              <span class="value rank-${rank}">${rank}</span>
             </div>
           </div>
 
           <div class="victory-actions">
-            <button id="btn-victory-replay" class="menu-btn primary-btn">다시 하기</button>
+            <button id="btn-victory-replay" class="menu-btn primary-btn">다시 걷기</button>
             <button id="btn-victory-title" class="menu-btn secondary-btn">타이틀 화면</button>
           </div>
         </div>

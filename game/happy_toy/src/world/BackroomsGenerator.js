@@ -5,6 +5,7 @@ import { Cabinet } from "./Cabinet.js";
 import { KeyItem } from "./KeyItem.js";
 import { FinalExit } from "./FinalExit.js";
 import { SafeLight } from "./SafeLight.js";
+import { LoreNote } from "./LoreNote.js";
 import { LIGHTING_CONFIG, LOVELY_DOLL_CONFIG } from "../config/gameConfig.js";
 import { LovelyDoll } from "../entities/LovelyDoll.js";
 import { CharacterLoader } from "../loaders/CharacterLoader.js";
@@ -330,6 +331,7 @@ export class BackroomsGenerator {
       keys: [],
       cabinets: [],
       safeLights: [],
+      loreNotes: [],
       finalExit: null,
       waypoints: [],
     };
@@ -384,6 +386,7 @@ export class BackroomsGenerator {
       keys: [],
       cabinets: [],
       safeLights: [],
+      loreNotes: [],
       finalExit: null,
       waypoints: [],
     };
@@ -1913,21 +1916,21 @@ export class BackroomsGenerator {
     };
 
     if (isWorkshop) {
-      addDynamicCabinet("cabinet-workshop", "작업방 캐비넷", [-5.0, 0.0, -5.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet-workshop", "작업실 신발장", [-5.0, 0.0, -5.0], -Math.PI / 2);
     } else if (isPlayroom) {
-      addDynamicCabinet("cabinet-playroom", "놀이방 캐비넷", [5.0, 0.0, -5.0], Math.PI / 2);
+      addDynamicCabinet("cabinet-playroom", "교실 신발장", [5.0, 0.0, -5.0], Math.PI / 2);
     } else if (isStorage) {
-      addDynamicCabinet("cabinet-storage", "보관실 캐비넷", [-5.0, 0.0, 5.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet-storage", "창고 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
     } else if (isArchive) {
-      addDynamicCabinet("cabinet-archive", "서고 벽장", [-5.0, 0.0, 5.0], -Math.PI / 2);
+      addDynamicCabinet("cabinet-archive", "서고 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
     } else if (chunk.cx === 1 && chunk.cz === 0) {
-      addDynamicCabinet("cabinet_chokepoint_1_0", "복도 입구 캐비넷", [0.0, 0.0, 0.85], 0);
+      addDynamicCabinet("cabinet_chokepoint_1_0", "복도 신발장", [5.2, 0.0, -5.2], Math.PI / 2);
     } else if (chunk.cx === 0 && chunk.cz === 1) {
-      addDynamicCabinet("cabinet_junction_0_1", "교차로 캐비넷", [-5.0, 0.0, 0.85], 0);
+      addDynamicCabinet("cabinet_junction_0_1", "교차로 신발장", [-5.2, 0.0, 5.2], -Math.PI / 2);
     } else if (type === "omen_room") {
-      addDynamicCabinet("cabinet-omen-room", "북실 벽장", [5.4, 0.0, -5.4], Math.PI / 2);
+      addDynamicCabinet("cabinet-omen-room", "북실 신발장", [5.4, 0.0, -5.4], Math.PI / 2);
     } else if (type === "static_room") {
-      addDynamicCabinet("cabinet-static-room", "노이즈방 캐비넷", [-5.4, 0.0, -5.4], -Math.PI / 2);
+      addDynamicCabinet("cabinet-static-room", "방송실 신발장", [-5.4, 0.0, -5.4], -Math.PI / 2);
     } else if (type === "stairs_2f") {
       addDynamicCabinet("cabinet_stairs_2f_attic", "2층 갤러리 벽장", [-20.2, 5.0, 4.0], -Math.PI / 2);
     } else if (type === "stairs_b1") {
@@ -1935,9 +1938,38 @@ export class BackroomsGenerator {
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (!isStart && !isEvent && !isArchive && !type.includes("stairs") && (type.includes("room") || type.includes("storage")) && rand() < 0.4) {
-      addDynamicCabinet(`cabinet_${chunk.cx}_${chunk.cz}`, "복도 구석 캐비넷", [-5.0, 0.0, 0.0], -Math.PI / 2);
+      addDynamicCabinet(`cabinet_${chunk.cx}_${chunk.cz}`, "복도 신발장", [-5.2, 0.0, -5.2], -Math.PI / 2);
     }
 
+    const hallLike = type === "start" || type === "corridor_ns" || type === "corridor_ew"
+      || type === "t_junction" || type === "cross_junction" || type === "narrow_ns";
+    if (hallLike && chunk.cabinets.length === 0) {
+      const alcove = (chunk.cx + chunk.cz) % 2 === 0
+        ? { pos: [5.25, 0.0, 5.25], yaw: Math.PI / 2 }
+        : { pos: [-5.25, 0.0, 5.25], yaw: -Math.PI / 2 };
+      addDynamicCabinet(`cabinet_hall_${chunk.cx}_${chunk.cz}`, "신발장", alcove.pos, alcove.yaw);
+    }
+
+    const addLoreNote = (id, localPos, yaw) => {
+      const note = new LoreNote({
+        id,
+        label: "벽에 꽂힌 종이",
+        position: [center.x + localPos[0], floorY + localPos[1], center.z + localPos[2]],
+        yaw,
+      });
+      note.chunkId = chunkId;
+      this.scene.add(note.group);
+      chunk.loreNotes.push(note);
+    };
+    if (type === "start") {
+      addLoreNote(`${chunkId}_lore`, [-7.55, 1.35, -3.2], Math.PI / 2);
+    } else if (type === "omen_room" || type === "static_room" || type === "flicker_room") {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0);
+    } else if (isWorkshop || isPlayroom || isStorage) {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI);
+    } else if (hallLike && (Math.abs(chunk.cx) + Math.abs(chunk.cz)) % 2 === 1) {
+      addLoreNote(`${chunkId}_lore`, [-1.18, 1.38, -5.4], Math.PI / 2);
+    }
 
     // 3. Keys
     const addDynamicKey = (id, label, localPos) => {
@@ -1980,7 +2012,7 @@ export class BackroomsGenerator {
     if (isStart) {
       const exit = new FinalExit({
         id: "final-offering",
-        label: "장난감 상자",
+        label: "제단함",
         position: [center.x, floorY, center.z],
       }, this.scene);
       exit.chunkId = chunkId;
@@ -2675,7 +2707,11 @@ export class BackroomsGenerator {
     // 6. Remove player-activated safe lights
     for (const safeLight of chunk.safeLights || []) {
       this.scene.remove(safeLight.group);
-      safeLight.dispose();
+      safeLight.dispose?.();
+    }
+
+    for (const note of chunk.loreNotes || []) {
+      this.scene.remove(note.group);
     }
 
     // 7. Remove final exit

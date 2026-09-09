@@ -13,6 +13,7 @@ export class MapBuilder {
     this.keys = [];
     this.cabinets = [];
     this.safeLights = [];
+    this.loreNotes = [];
     this.finalExit = null;
     this.game = options.game;
     this.textures = new TextureLibrary();
@@ -34,6 +35,7 @@ export class MapBuilder {
     this.keys = [];
     this.cabinets = [];
     this.safeLights = [];
+    this.loreNotes = [];
     this.finalExit = null;
 
     // Initial chunk loading around player spawn
@@ -44,6 +46,7 @@ export class MapBuilder {
       keys: this.keys,
       cabinets: this.cabinets,
       safeLights: this.safeLights,
+      loreNotes: this.loreNotes,
       finalExit: this.finalExit,
       playerStart: new THREE.Vector3(0, 0, 0),
       pendingAssets: this.pendingAssets,
@@ -73,6 +76,7 @@ export class MapBuilder {
           this.keys = this.keys.filter((k) => k.chunkId !== chunk.chunkId);
           this.cabinets = this.cabinets.filter((c) => c.chunkId !== chunk.chunkId);
           this.safeLights = this.safeLights.filter((l) => l.chunkId !== chunk.chunkId);
+          this.loreNotes = this.loreNotes.filter((n) => n.chunkId !== chunk.chunkId);
           if (this.finalExit && this.finalExit.chunkId === chunk.chunkId) {
             this.finalExit = null;
           }
@@ -131,6 +135,7 @@ export class MapBuilder {
           for (const k of chunk.keys) this.keys.push(k);
           for (const c of chunk.cabinets) this.cabinets.push(c);
           for (const l of chunk.safeLights) this.safeLights.push(l);
+          for (const n of chunk.loreNotes || []) this.loreNotes.push(n);
           if (chunk.finalExit) this.finalExit = chunk.finalExit;
         }
       }
@@ -155,6 +160,7 @@ export class MapBuilder {
         for (const k of chunk.keys) this.keys.push(k);
         for (const c of chunk.cabinets) this.cabinets.push(c);
         for (const l of chunk.safeLights) this.safeLights.push(l);
+        for (const n of chunk.loreNotes || []) this.loreNotes.push(n);
         if (chunk.finalExit) this.finalExit = chunk.finalExit;
         changed = true;
       }
@@ -184,11 +190,11 @@ export class MapBuilder {
     if (hasFixture) {
       const isUnstable = chunk.type === "flicker_room" || random() < 0.14;
       const fixtureMaterial = new THREE.MeshStandardMaterial({
-        color: isUnstable ? 0x7a4c2c : 0xa8794f,
-        emissive: isUnstable ? 0x4d1907 : 0x8a4218,
-        emissiveIntensity: isUnstable ? 0.46 : 0.78,
-        roughness: 0.54,
-        metalness: 0.08,
+        color: isUnstable ? 0x2a1810 : 0x3a2a1c,
+        emissive: isUnstable ? 0x3a1408 : 0x1a1008,
+        emissiveIntensity: isUnstable ? 0.18 : 0.04,
+        roughness: 0.72,
+        metalness: 0.12,
       });
       const fixture = new THREE.Mesh(this.fixtureGeometry, fixtureMaterial);
       const offsetX = (random() - 0.5) * 1.2;
@@ -201,7 +207,7 @@ export class MapBuilder {
       this.scene.add(fixture);
       chunk.meshes.push(fixture);
 
-      const baseIntensity = isUnstable ? 5.6 : 8.4 + random() * 1.1;
+      const baseIntensity = isUnstable ? 0.7 : 0.22 + random() * 0.2;
       chunk.lights.push({
         mesh: fixture,
         localPos: new THREE.Vector3(offsetX, 2.42, offsetZ),
@@ -275,6 +281,117 @@ export class MapBuilder {
       decal.renderOrder = 1;
       this.scene.add(decal);
       chunk.meshes.push(decal);
+    }
+
+    this.dressSchoolCorridor(chunk, random);
+  }
+
+  getClassroomDoorMaterial() {
+    if (!this.classroomDoorMaterial) {
+      this.classroomDoorMaterial = this.textures.createClassroomDoorMaterial();
+    }
+    return this.classroomDoorMaterial;
+  }
+
+  getRoomPlateMaterial(chunk) {
+    if (!this.roomPlateCache) this.roomPlateCache = new Map();
+    const label = `${Math.abs(chunk.cx) + 1} - ${Math.abs(chunk.cz) + 2} 교실`;
+    if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 96;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#1a120c";
+    ctx.fillRect(0, 0, 256, 96);
+    ctx.fillStyle = "#3a2a18";
+    ctx.fillRect(6, 6, 244, 84);
+    ctx.fillStyle = "#c4b089";
+    ctx.font = "28px serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(label, 128, 48);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    const mat = new THREE.MeshStandardMaterial({
+      map: texture,
+      roughness: 0.85,
+      metalness: 0.05,
+    });
+    this.roomPlateCache.set(label, mat);
+    return mat;
+  }
+
+  dressSchoolCorridor(chunk, random) {
+    if (chunk.type === "void" || chunk.type === "stairs_2f" || chunk.type === "stairs_b1") return;
+
+    const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.18), this.getRoomPlateMaterial(chunk));
+    plate.position.set(chunk.center.x - 1.18, chunk.floorY + 2.08, chunk.center.z - 4.6);
+    plate.rotation.y = Math.PI / 2;
+    plate.name = `${chunk.chunkId}_room_plate`;
+    plate.renderOrder = 2;
+    this.scene.add(plate);
+    chunk.meshes.push(plate);
+
+    const hallLike = chunk.type === "start" || chunk.type === "corridor_ns" || chunk.type === "corridor_ew"
+      || chunk.type === "t_junction" || chunk.type === "cross_junction" || chunk.type === "narrow_ns";
+    if (hallLike) {
+      const doorMat = this.getClassroomDoorMaterial();
+      const doorOffsets = [-3.35, 3.35];
+      for (let i = 0; i < doorOffsets.length; i += 1) {
+        const side = i === 0 ? -1 : 1;
+        const door = new THREE.Mesh(new THREE.PlaneGeometry(0.92, 2.08), doorMat);
+        door.position.set(
+          chunk.center.x + side * 1.185,
+          chunk.floorY + 1.08,
+          chunk.center.z + doorOffsets[i],
+        );
+        door.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+        door.name = `${chunk.chunkId}_class_door_${i}`;
+        door.castShadow = false;
+        door.receiveShadow = true;
+        this.scene.add(door);
+        chunk.meshes.push(door);
+      }
+    }
+
+    if (random() < 0.55) {
+      const ofuda = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.12, 0.28),
+        new THREE.MeshStandardMaterial({
+          color: 0xd8c49a,
+          roughness: 0.9,
+          side: THREE.DoubleSide,
+        }),
+      );
+      ofuda.position.set(chunk.center.x + 1.18, chunk.floorY + 1.85, chunk.center.z + (random() - 0.5) * 6);
+      ofuda.rotation.y = -Math.PI / 2;
+      ofuda.rotation.z = (random() - 0.5) * 0.18;
+      ofuda.name = `${chunk.chunkId}_ofuda`;
+      this.scene.add(ofuda);
+      chunk.meshes.push(ofuda);
+    }
+
+    if (random() < 0.4) {
+      const arrow = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.55, 0.18),
+        new THREE.MeshStandardMaterial({
+          color: 0x6a1810,
+          emissive: 0x2a0808,
+          emissiveIntensity: 0.15,
+          roughness: 0.8,
+          side: THREE.DoubleSide,
+        }),
+      );
+      arrow.rotation.x = -Math.PI / 2;
+      arrow.rotation.z = random() > 0.5 ? Math.PI / 2 : 0;
+      arrow.position.set(
+        chunk.center.x + (random() - 0.5) * 1.2,
+        chunk.floorY + 0.012,
+        chunk.center.z + (random() - 0.5) * 4,
+      );
+      arrow.name = `${chunk.chunkId}_false_arrow`;
+      this.scene.add(arrow);
+      chunk.meshes.push(arrow);
     }
   }
 

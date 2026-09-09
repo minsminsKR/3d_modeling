@@ -215,10 +215,15 @@ export class DreadDirector {
     this.quietScareTimer = 22 + Math.random() * 20;
     if (!soundManager.initialized) return;
 
-    const cry = Math.random() < 0.5;
-    soundManager.playSFX(cry ? "distant_cry" : "radio_static");
+    const cry = Math.random();
+    const sfx = cry < 0.34 ? "distant_cry" : cry < 0.67 ? "radio_static" : "school_chime";
+    soundManager.playSFX(sfx);
     this.game.hud?.setStatus?.(
-      cry ? "멀리서 짧은 울음이 벽을 타고 옵니다." : "죽은 수신기가 잡음을 토해냅니다.",
+      sfx === "distant_cry"
+        ? "멀리서 짧은 울음이 벽을 타고 옵니다."
+        : sfx === "radio_static"
+          ? "죽은 수신기가 잡음을 토해냅니다."
+          : "종소리가 한 음 모자란 채로 복도를 지나갑니다.",
       2200,
     );
   }
@@ -228,8 +233,11 @@ export class DreadDirector {
     this.huntRadioDelay -= dt;
     if (this.huntRadioDelay > 0) return;
     this.huntRadioPlayed = true;
-    if (soundManager.initialized) soundManager.playSFX("radio_static");
-    this.game.hud?.setStatus?.("수신기에서 숨소리가 새어 나온다", 2600);
+    if (soundManager.initialized) {
+      soundManager.playSFX("radio_static");
+      soundManager.playSFX("school_chime");
+    }
+    this.game.hud?.setStatus?.("방송: 복도에서 기다리십시오. 하교하지 않습니다.", 3200);
   }
 
   updateCabinetDread(dt) {
@@ -244,9 +252,9 @@ export class DreadDirector {
     }
     this.cabinetScrapeTimer -= dt;
     if (this.cabinetScrapeTimer > 0) return;
-    this.cabinetScrapeTimer = 5.5 + Math.random() * 5.5;
+    this.cabinetScrapeTimer = 2.2 + Math.random() * 2.4;
     if (!soundManager.initialized) return;
-    soundManager.playSFX("cabinet_scrape");
+    soundManager.playSFX(Math.random() < 0.55 ? "locker_knock" : "cabinet_scrape");
     soundManager.playStepTransient({
       pan: (Math.random() < 0.5 ? -1 : 1) * (0.42 + Math.random() * 0.28),
       bodyFrequency: 40,

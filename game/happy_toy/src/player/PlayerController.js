@@ -118,6 +118,7 @@ export class PlayerController {
     this.input.consumePointerDelta();
     this.applyCabinetView();
     soundManager.playSFX("cabinet_enter");
+    soundManager.playSFX("locker_creak");
   }
 
   exitCabinet() {

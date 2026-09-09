@@ -65,8 +65,8 @@ export class FinalExit {
     const collected = context.getKeyCount?.() ?? 0;
     const total = context.getTotalKeys?.() ?? 3;
     return collected >= total
-      ? "E - 봉인 시작 · 제단 곁에서 6초 버티기"
-      : `E - ${this.label}에 혼 건네기 (${collected}/${total})`;
+      ? "E - 봉인 시작 · 제단함 곁에서 6초 버티기"
+      : `E - ${this.label}에 이름을 건네기 (${collected}/${total})`;
   }
 
   interact(context) {

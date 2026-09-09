@@ -3,6 +3,7 @@
 
 import * as THREE from "three";
 import { direction2D, distance2D, vectorFromArray, yawFromDirection } from "../utils/math.js";
+import { soundManager } from "../audio/SoundManager.js";
 
 export class Enemy {
   constructor(config, loadedAsset, collisionWorld, doors) {
@@ -1036,6 +1037,7 @@ export class Enemy {
     this.chasePathTimer = 0;
     this.chasePathGoal = null;
     this.playAction("chase");
+    this.cabinetKnockTimer = 0.35;
   }
 
   updateCabinetInvestigation(deltaTime) {
@@ -1059,6 +1061,11 @@ export class Enemy {
     const faceDirection = direction2D(this.group.position, this.cabinetTarget.position);
     if (faceDirection.lengthSq() > 0.0001) {
       this.group.rotation.y = yawFromDirection(faceDirection);
+    }
+    this.cabinetKnockTimer = (this.cabinetKnockTimer ?? 0) - deltaTime;
+    if (this.cabinetKnockTimer <= 0) {
+      this.cabinetKnockTimer = 0.85 + Math.random() * 0.7;
+      soundManager.playSFX("locker_knock");
     }
   }
 

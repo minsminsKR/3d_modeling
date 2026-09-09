@@ -38,7 +38,7 @@ export class FlashlightController {
 
     if (this.enabled) {
       const drainMult = this.drainMultiplier || 1.0;
-      this.batteryLevel = Math.max(0, this.batteryLevel - 0.003 * dt * drainMult);
+      this.batteryLevel = Math.max(0, this.batteryLevel - 0.0044 * dt * drainMult);
 
       const playerPos = this.game?.player?.position;
       const rawThreat = this.game?.getMonsterThreat?.(playerPos) ?? 0;

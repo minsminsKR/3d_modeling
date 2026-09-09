@@ -8,7 +8,9 @@ const TEXTURE_URLS = {
   ceiling: "/assets/textures/ceilings/ceiling.png",
   stair: "/assets/textures/stairs/stair.png",
   door: "/assets/textures/doors/doors.png",
+  classroomDoor: "/assets/textures/doors/classroom-door.png",
   cabinet: "/assets/textures/cabinets/cabinet.png",
+  loreNote: "/assets/textures/props/lore-note/basecolor.png",
   hwaPaint: "/assets/textures/hwa_paint/hwa_paint.png",
   wallDecay: "/assets/textures/props/wall_decay_decal/wall-decay-decal.png",
 };
@@ -28,12 +30,12 @@ export class TextureLibrary {
     const wallTexture = this.createTexture("wall", { repeat: [3, 1], wrapping: THREE.RepeatWrapping });
     const mat = new THREE.MeshStandardMaterial({
       map: wallTexture,
-      emissive: 0x160c07,
-      emissiveIntensity: 1.65,
+      emissive: 0x080604,
+      emissiveIntensity: 0.06,
       bumpMap: this.createDetailTexture("wall-plaster", { repeat: [3, 1] }),
-      bumpScale: 0.018,
-      color: 0xd8c6aa,
-      roughness: 0.82,
+      bumpScale: 0.022,
+      color: 0x6e5c48,
+      roughness: 0.92,
       metalness: 0.0,
     });
     this.materialsCache.set("wall", mat);
@@ -72,6 +74,20 @@ export class TextureLibrary {
     return mat;
   }
 
+  createClassroomDoorMaterial() {
+    if (this.materialsCache.has("classroomDoor")) {
+      return this.materialsCache.get("classroomDoor");
+    }
+    const mat = new THREE.MeshStandardMaterial({
+      map: this.load("classroomDoor"),
+      color: 0x8a7360,
+      roughness: 0.9,
+      metalness: 0.03,
+    });
+    this.materialsCache.set("classroomDoor", mat);
+    return mat;
+  }
+
   createFloorMaterial(width = 4, depth = 4) {
     const key = `floor_${width}_${depth}`;
     if (this.materialsCache.has(key)) {
@@ -85,13 +101,13 @@ export class TextureLibrary {
     const floorTexture = this.createTexture("floor", { repeat, wrapping: THREE.RepeatWrapping });
     const mat = new THREE.MeshStandardMaterial({
       map: floorTexture,
-      emissive: 0x120a06,
-      emissiveIntensity: 2.0,
+      emissive: 0x060403,
+      emissiveIntensity: 0.05,
       bumpMap: this.createDetailTexture("floor-grain", { repeat }),
-      bumpScale: 0.025,
-      color: 0xd6c4aa,
-      roughness: 0.68,
-      metalness: 0.025,
+      bumpScale: 0.028,
+      color: 0x5a4a38,
+      roughness: 0.86,
+      metalness: 0.02,
     });
     this.materialsCache.set(key, mat);
     return mat;
@@ -109,9 +125,9 @@ export class TextureLibrary {
     const mat = new THREE.MeshStandardMaterial({
       map: this.createTexture("ceiling", { repeat, wrapping: THREE.RepeatWrapping }),
       bumpMap: this.createDetailTexture("ceiling-stain", { repeat }),
-      bumpScale: 0.025,
-      color: 0x66513b,
-      roughness: 0.93,
+      bumpScale: 0.03,
+      color: 0x2a2218,
+      roughness: 0.97,
       metalness: 0.0,
     });
     this.materialsCache.set(key, mat);

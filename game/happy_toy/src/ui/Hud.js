@@ -112,8 +112,8 @@ export class Hud {
     }
     if (this.objectiveLine) {
       this.objectiveLine.textContent = collected >= total
-        ? "제단으로 돌아가 혼을 바치십시오"
-        : `흩어진 혼을 찾으십시오 · ${total - collected}개 남음`;
+        ? "첫 복도의 제단함에 이름을 바치십시오"
+        : `흩어진 이름을 찾으십시오 · ${total - collected}개 남음`;
     }
     if (this.objectiveProgress) {
       this.objectiveProgress.style.width = `${total > 0 ? (collected / total) * 100 : 0}%`;
@@ -124,6 +124,7 @@ export class Hud {
       this.lastKeyCount = collected;
     }
     document.body.classList.toggle("objective-complete", total > 0 && collected >= total);
+    document.body.classList.toggle("names-returning", total > 0 && collected >= total);
   }
 
   updateInventory(inv) {
@@ -157,11 +158,11 @@ export class Hud {
     }
   }
 
-  updateCompass(playerPos, targetPos, playerYaw, label = "혼") {
+  updateCompass(playerPos, targetPos, playerYaw, label = "이름") {
     if (!this.compassActive || !this.compassNeedle || !playerPos) return;
     this.compassNeedle.style.visibility = targetPos ? "visible" : "hidden";
     if (!targetPos) {
-      if (this.compassText) this.compassText.textContent = "기척이 끊겼습니다 · 아직 살피지 않은 방을 탐색하십시오";
+      if (this.compassText) this.compassText.textContent = "기척이 끊겼습니다 · 아직 열지 않은 교실을 살피십시오";
       return;
     }
 
@@ -176,7 +177,7 @@ export class Hud {
     const dist = Math.hypot(dx, dz);
     if (this.compassText) {
       const height = targetPos.y - playerPos.y;
-      const floor = height > 1.8 ? "위층 ↑ · 계단을 찾으십시오" : height < -1.8 ? "아래층 ↓ · 계단을 찾으십시오" : "같은 층";
+      const floor = height > 1.8 ? "위층 ↑ · 계단참을 찾으십시오" : height < -1.8 ? "아래층 ↓ · 계단참을 찾으십시오" : "같은 층";
       this.compassText.textContent = `${label} · ${dist.toFixed(0)}m · ${floor}`;
     }
   }
@@ -243,7 +244,7 @@ export class Hud {
     if (this.startScreen) this.startScreen.classList.add("hidden");
   }
 
-  showClickToPlay(label = "화면을 클릭하면 게임이 시작됩니다.") {
+  showClickToPlay(label = "클릭하면 손전등이 켜집니다.") {
     if (!this.clickToPlayButton) {
       return;
     }
@@ -261,19 +262,25 @@ export class Hud {
     if (this.startScreen) this.startScreen.classList.remove("hidden");
   }
 
-  showCaught(message = "발소리가 바로 뒤에서 멈췄습니다.") {
+  showCaught(message = "복도가 당신의 이름을 외웠습니다.") {
     if (this.caughtScreen) {
       const title = this.caughtScreen.querySelector("h2");
       if (title) {
         title.textContent = message;
       }
+      this.caughtScreen.classList.add("is-caught");
       this.caughtScreen.classList.remove("hidden");
     }
+    document.body.classList.add("caught-open");
     this.setThreat(1);
   }
 
   hideCaught() {
-    if (this.caughtScreen) this.caughtScreen.classList.add("hidden");
+    if (this.caughtScreen) {
+      this.caughtScreen.classList.add("hidden");
+      this.caughtScreen.classList.remove("is-caught");
+    }
+    document.body.classList.remove("caught-open");
     this.setThreat(0);
   }
 
@@ -288,7 +295,7 @@ export class Hud {
       this.startDescription.textContent = chapter.description || "";
     }
     if (this.startButton) {
-      this.startButton.textContent = `${chapter.eyebrow || `Chapter ${chapter.id}`} 시작`;
+      this.startButton.textContent = `${chapter.title || "그림자복도"} 시작`;
     }
   }
 
@@ -296,18 +303,24 @@ export class Hud {
     if (this.clearScreen) {
       const title = this.clearScreen.querySelector("h2");
       const text = this.clearScreen.querySelector("p:not(.eyebrow)");
-      if (title && options.title) {
-        title.textContent = options.title;
+      if (title) {
+        title.textContent = options.title || "제단이 문을 삼켰습니다.";
       }
-      if (text && options.description) {
-        text.textContent = options.description;
+      if (text) {
+        text.textContent = options.description || options.message || "손전등이 꺼져도 복도는 남습니다.";
       }
+      this.clearScreen.classList.add("is-clear");
       this.clearScreen.classList.remove("hidden");
     }
+    document.body.classList.add("clear-open");
   }
 
   hideClear() {
-    if (this.clearScreen) this.clearScreen.classList.add("hidden");
+    if (this.clearScreen) {
+      this.clearScreen.classList.add("hidden");
+      this.clearScreen.classList.remove("is-clear");
+    }
+    document.body.classList.remove("clear-open");
   }
 
   showPause() {
