@@ -58,5 +58,18 @@ if (!f2.flashlight || f2.hud !== "켜짐" || f2.intensity < 8) {
   throw new Error(`2F flashlight capture failed: ${JSON.stringify(f2)}`);
 }
 
+const b1Room = await poseShot("shadow_b1_flood_room.png", {
+  x: 10.5, y: -5, z: 31.6, lookAt: [8.8, -4.55, 27.0],
+});
+const f2Room = await poseShot("shadow_f2_blood_room.png", {
+  x: -23.2, y: 5, z: -18.8, lookAt: [-24.6, 5.35, -14.4],
+});
+if (!b1Room.flashlight || b1Room.intensity < 8) {
+  throw new Error(`B1 room capture failed: ${JSON.stringify(b1Room)}`);
+}
+if (!f2Room.flashlight || f2Room.intensity < 8) {
+  throw new Error(`2F room capture failed: ${JSON.stringify(f2Room)}`);
+}
+
 console.log("ok");
 await browser.close();
