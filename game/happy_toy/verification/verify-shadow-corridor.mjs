@@ -63,11 +63,11 @@ try {
     game.mapBuilder.generator.generateChunk(0, 0);
     game.mapBuilder.generator.generateChunk(0, 1);
     game.mapBuilder.generator.generateChunk(1, 0);
-    game.player.setPosition({ x: 16, y: 0, z: 2.6 });
+    game.player.setPosition({ x: 16, y: 0, z: 0 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
     uncat.setDormant(false);
     uncat.group.visible = true;
-    uncat.group.position.set(0, 0, 16);
+    uncat.group.position.set(4.5, 0, 0);
     uncat.state = "chase";
     uncat.caughtPlayer = false;
     uncat.chasePath = null;
@@ -75,7 +75,7 @@ try {
     uncat.chasePathGoal = null;
     uncat.lastKnownPlayerPosition = game.player.position.clone();
     uncat.memoryTimer = 14;
-    const mazeStartDist = Math.hypot(uncat.group.position.x - 16, uncat.group.position.z - 2.6);
+    const mazeStartDist = Math.hypot(uncat.group.position.x - 16, uncat.group.position.z - 0);
     for (let i = 0; i < 240; i += 1) game.update(0.05, { skipRender: true });
     const mazeChase = {
       startDist: mazeStartDist,
@@ -89,8 +89,8 @@ try {
       state: uncat.state,
     };
 
-    game.player.setPosition({ x: 16, y: 0, z: -2.6 });
-    uncat.group.position.set(11.5, 0, -2.6);
+    game.player.setPosition({ x: 16, y: 0, z: -5.8 });
+    uncat.group.position.set(16, 0, 0);
     uncat.state = "chase";
     uncat.caughtPlayer = false;
     uncat.chasePath = null;
@@ -98,7 +98,7 @@ try {
     uncat.chasePathGoal = null;
     uncat.lastKnownPlayerPosition = game.player.position.clone();
     uncat.memoryTimer = 14;
-    const loopStartDist = Math.hypot(uncat.group.position.x - 16, uncat.group.position.z + 2.6);
+    const loopStartDist = Math.hypot(uncat.group.position.x - 16, uncat.group.position.z + 5.8);
     let loopMaxZ = -9;
     let loopMinZ = 9;
     for (let i = 0; i < 180; i += 1) {
@@ -119,9 +119,9 @@ try {
       state: uncat.state,
     };
 
-    game.player.setPosition({ x: 32, y: 0, z: -6.4 });
+    game.player.setPosition({ x: 32, y: 0, z: 0 });
     game.mapBuilder.generator.generateChunk(2, 0);
-    uncat.group.position.set(11.6, 0, -6.4);
+    uncat.group.position.set(11.6, 0, 0);
     uncat.state = "chase";
     uncat.caughtPlayer = false;
     uncat.chasePath = null;
@@ -129,7 +129,7 @@ try {
     uncat.chasePathGoal = null;
     uncat.lastKnownPlayerPosition = game.player.position.clone();
     uncat.memoryTimer = 14;
-    const ringStartDist = Math.hypot(uncat.group.position.x - 32, uncat.group.position.z + 6.4);
+    const ringStartDist = Math.hypot(uncat.group.position.x - 32, uncat.group.position.z - 0);
     let ringMaxZ = -9;
     let ringMinZ = 9;
     for (let i = 0; i < 280; i += 1) {
@@ -160,7 +160,7 @@ try {
     }
     let bendHide = { cabinet: Boolean(bendCab), x: bendCab?.position?.x ?? null, z: bendCab?.position?.z ?? null };
     if (bendCab) {
-      uncat.group.position.set(16, 0, 2.6);
+      uncat.group.position.set(16, 0, 0);
       uncat.state = "chase";
       uncat.hasVisualContact = true;
       uncat.lastKnownPlayerPosition = bendCab.position.clone();
@@ -185,7 +185,7 @@ try {
     ));
     let ringHide = { cabinet: Boolean(ringCab), x: ringCab?.position?.x ?? null, z: ringCab?.position?.z ?? null };
     if (ringCab) {
-      uncat.group.position.set(16.2, 0, -6.4);
+      uncat.group.position.set(16.2, 0, 0);
       uncat.state = "chase";
       uncat.hasVisualContact = true;
       uncat.lastKnownPlayerPosition = ringCab.position.clone();
@@ -331,42 +331,42 @@ try {
   );
   assert.ok(
     result.mazeChase.endDist < result.mazeChase.startDist - 4,
-    `Uncat must hunt through the east S-bend ${result.mazeChase.startDist} -> ${result.mazeChase.endDist} at ${result.mazeChase.x},${result.mazeChase.z}`,
+    `Uncat must hunt the east school hall ${result.mazeChase.startDist} -> ${result.mazeChase.endDist} at ${result.mazeChase.x},${result.mazeChase.z}`,
   );
   assert.ok(
     result.mazeChase.x > 6 || result.mazeChase.endDist < 10,
-    `Uncat must leave the south spine into the east maze, got x=${result.mazeChase.x} dist=${result.mazeChase.endDist}`,
+    `Uncat must leave the start hall into the east corridor, got x=${result.mazeChase.x} dist=${result.mazeChase.endDist}`,
   );
   assert.ok(
     result.mazeChaseLoop.endDist < result.mazeChaseLoop.startDist - 2,
-    `Uncat must hunt the north loop ${result.mazeChaseLoop.startDist} -> ${result.mazeChaseLoop.endDist} at ${result.mazeChaseLoop.x},${result.mazeChaseLoop.z}`,
+    `Uncat must hunt the north T-spur ${result.mazeChaseLoop.startDist} -> ${result.mazeChaseLoop.endDist} at ${result.mazeChaseLoop.x},${result.mazeChaseLoop.z}`,
   );
   assert.ok(
     result.mazeChaseLoop.maxZ < 1.2,
-    `north-loop chase must stay off the south jog, maxZ=${result.mazeChaseLoop.maxZ}`,
+    `T-spur chase must stay off the south alcove, maxZ=${result.mazeChaseLoop.maxZ}`,
   );
   assert.ok(
     result.mazeChaseRing.endDist < result.mazeChaseRing.startDist - 6,
-    `Uncat must hunt the long outer ring ${result.mazeChaseRing.startDist} -> ${result.mazeChaseRing.endDist} at ${result.mazeChaseRing.x},${result.mazeChaseRing.z}`,
+    `Uncat must hunt the long school hall ${result.mazeChaseRing.startDist} -> ${result.mazeChaseRing.endDist} at ${result.mazeChaseRing.x},${result.mazeChaseRing.z}`,
   );
   assert.ok(
     result.mazeChaseRing.x > 22,
-    `outer-ring chase must cross into the next tile, x=${result.mazeChaseRing.x}`,
+    `center-hall chase must cross into the next tile, x=${result.mazeChaseRing.x}`,
   );
   assert.ok(
-    result.mazeChaseRing.z < -4.8,
-    `outer-ring chase must stay on the north border, z=${result.mazeChaseRing.z}`,
+    Math.abs(result.mazeChaseRing.z) < 1.8,
+    `center-hall chase must stay on z=0, z=${result.mazeChaseRing.z}`,
   );
-  assert.equal(result.floors.hallRib, true, "east 1F halls must keep inner maze ribs");
-  assert.equal(result.floors.northRib, true, "north 1F halls must keep inner maze ribs");
-  assert.equal(result.bendHide.cabinet, true, "east S-bend locker must exist");
-  assert.equal(result.bendHide.hidden, true, "player must hide in the S-bend locker");
-  assert.equal(result.bendHide.investigating, true, "Uncat must check the S-bend locker");
-  assert.equal(result.ringHide.cabinet, true, "outer-ring locker must exist");
-  assert.equal(result.ringHide.hidden, true, "player must hide from the outer ring");
-  assert.equal(result.ringHide.investigating, true, "Uncat must check the outer-ring locker");
-  assert.equal(result.floors.hallLockers, true, "maze halls must have locker banks along the outer walls");
-  assert.equal(result.floors.hallClass, true, "outer ring must be a school hallway with classroom walls");
+  assert.equal(result.floors.hallRib, false, "east 1F halls must not keep inner maze ribs");
+  assert.equal(result.floors.northRib, false, "north 1F halls must not keep inner maze ribs");
+  assert.equal(result.bendHide.cabinet, true, "east hall locker must exist");
+  assert.equal(result.bendHide.hidden, true, "player must hide in the hall locker");
+  assert.equal(result.bendHide.investigating, true, "Uncat must check the hall locker");
+  assert.equal(result.ringHide.cabinet, true, "north alcove locker must exist");
+  assert.equal(result.ringHide.hidden, true, "player must hide from the school hall");
+  assert.equal(result.ringHide.investigating, true, "Uncat must check the alcove locker");
+  assert.equal(result.floors.hallLockers, true, "maze halls must have locker banks along the corridor");
+  assert.equal(result.floors.hallClass, true, "school halls must have classroom walls");
   assert.equal(result.floors.hallStripe, true, "school hallway stripe must exist");
   assert.notEqual(result.deepWing.chunkType, "void", "별관 must continue the 1F school");
   assert.ok(
@@ -388,13 +388,13 @@ try {
   assert.equal(result.floors.f2Maze, true, "2F gallery must be a maze, not an open hall");
   assert.equal(result.floors.f2Lab, true, "2F north labyrinth must exist");
   assert.equal(result.floors.f2SouthLab, true, "2F south labyrinth must exist");
-  assert.equal(result.floors.hallMaze, true, "1F halls must fold into alcove mazes");
-  assert.equal(result.floors.hallJog, true, "east 1F halls must jog off the straight spine");
-  assert.equal(result.floors.hallJogE, true, "east 1F halls must S-bend through both arms");
-  assert.equal(result.floors.hallJogNs, true, "north 1F halls must jog off the x=0 spine");
-  assert.equal(result.floors.hallJogNsS, true, "north 1F halls must S-bend through both arms");
-  assert.equal(result.floors.hallLoopN, true, "east 1F loops must pinch the north plus arm");
-  assert.equal(result.floors.hallLoopW, true, "north 1F loops must pinch the west plus arm");
+  assert.equal(result.floors.hallMaze, false, "1F halls must not fold into alcove mazes");
+  assert.equal(result.floors.hallJog, false, "east 1F halls must keep the straight spine");
+  assert.equal(result.floors.hallJogE, false, "east 1F halls must not S-bend through both arms");
+  assert.equal(result.floors.hallJogNs, false, "north 1F halls must keep the x=0 spine");
+  assert.equal(result.floors.hallJogNsS, false, "north 1F halls must not S-bend through both arms");
+  assert.equal(result.floors.hallLoopN, false, "east 1F halls must not pinch the north plus arm");
+  assert.equal(result.floors.hallLoopW, false, "north 1F halls must not pinch the west plus arm");
   assert.equal(result.floors.uncatSpineClear, true, "Uncat south reveal hall must stay a straight spine");
   assert.equal(result.atWing.totalKeys, 4, "unloading key rooms must not shrink the four-name loop");
   assert.equal(result.atWing.hud, "0 / 4");

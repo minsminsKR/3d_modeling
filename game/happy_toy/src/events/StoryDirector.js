@@ -54,11 +54,11 @@ export class StoryDirector {
       );
     }
 
-    if (y > -1.2 && y < 2.2 && x > 16 && Math.abs(z + 6.4) < 1.7) {
+    if (y > -1.2 && y < 2.2 && x > 16 && Math.abs(z) < 1.8) {
       this.fire(
         "f1ring",
         "f1ring",
-        "바깥 복도가 이어집니다. 안개 끝의 발소리를 다른 고리로 빼십시오.",
+        "복도가 끝없이 이어집니다. 안개 끝의 발소리를 신발장으로 빼십시오.",
         "school_chime",
       );
     }

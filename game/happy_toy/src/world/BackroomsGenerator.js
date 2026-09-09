@@ -296,11 +296,9 @@ export class BackroomsGenerator {
     return getGraphOpenings(cx, cz);
   }
 
-    // Intra-tile baffle loops so plus halls are not highways. Keep Uncat's
-    // south reveal (0,1) and the weeping-angel west tile (-1,0) as spines.
-    // Maze tiles add inner ribs/pockets while leaving the S-bend, opposite
-    // loop, and outer ring walkable. Adjacent maze halls also punch ring
-    // gates so the outer border becomes a building-length corridor.
+    // Long school-hall tiles: EW through-halls off the start meridian, and
+    // NS through-halls off the start parallel. Start (0,0), Uncat south
+    // (0,1), and the weeping-angel west tile (-1,0) stay plus spines.
   getHallChicanes(cx, cz) {
     const openings = this.getOpenings(cx, cz);
     const skipUncatSouth = cx === 0 && cz === 1;
@@ -1623,96 +1621,70 @@ export class BackroomsGenerator {
     const E = openings.E;
     const W = openings.W;
 
-    // Cardinal 2.4m doors. Maze-to-maze faces also open 1.8m ring gates at
-    // |offset|≈6.4 so the outer border is a continuous school corridor.
-    const ringN = N && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx, chunk.cz - 1);
-    const ringS = S && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx, chunk.cz + 1);
-    const ringW = W && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx - 1, chunk.cz);
-    const ringE = E && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx + 1, chunk.cz);
+    // Cardinal doors: 2.4m into special plus tiles, 3.4m maze-to-maze so the
+    // school corridor can run through tile centers without ring gates.
+    const hallN = N && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx, chunk.cz - 1);
+    const hallS = S && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx, chunk.cz + 1);
+    const hallW = W && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx - 1, chunk.cz);
+    const hallE = E && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx + 1, chunk.cz);
+    const doorSpan = (wide) => {
+      const half = wide ? 1.7 : 1.2;
+      return {
+        left: (-8.0 - half) / 2,
+        right: (8.0 + half) / 2,
+        size: 8.0 - half,
+      };
+    };
 
     if (N) {
-      if (ringN) {
-        addWallSegment(-7.65, -7.8, 0.7, 0.4, "n_far_w");
-        addWallSegment(-3.35, -7.8, 4.3, 0.4, "n_span_w");
-        addWallSegment(3.35, -7.8, 4.3, 0.4, "n_span_e");
-        addWallSegment(7.65, -7.8, 0.7, 0.4, "n_far_e");
-      } else {
-        addWallSegment(-4.6, -7.8, 6.8, 0.4, "n_left");
-        addWallSegment(4.6, -7.8, 6.8, 0.4, "n_right");
-      }
+      const span = doorSpan(hallN);
+      addWallSegment(span.left, -7.8, span.size, 0.4, "n_left");
+      addWallSegment(span.right, -7.8, span.size, 0.4, "n_right");
     } else {
       addWallSegment(0.0, -7.8, 16.0, 0.4, "n_solid");
     }
 
     if (S) {
-      if (ringS) {
-        addWallSegment(-7.65, 7.8, 0.7, 0.4, "s_far_w");
-        addWallSegment(-3.35, 7.8, 4.3, 0.4, "s_span_w");
-        addWallSegment(3.35, 7.8, 4.3, 0.4, "s_span_e");
-        addWallSegment(7.65, 7.8, 0.7, 0.4, "s_far_e");
-      } else {
-        addWallSegment(-4.6, 7.8, 6.8, 0.4, "s_left");
-        addWallSegment(4.6, 7.8, 6.8, 0.4, "s_right");
-      }
+      const span = doorSpan(hallS);
+      addWallSegment(span.left, 7.8, span.size, 0.4, "s_left");
+      addWallSegment(span.right, 7.8, span.size, 0.4, "s_right");
     } else {
       addWallSegment(0.0, 7.8, 16.0, 0.4, "s_solid");
     }
 
     if (W) {
-      if (ringW) {
-        addWallSegment(-7.8, -7.65, 0.4, 0.7, "w_far_n");
-        addWallSegment(-7.8, -3.35, 0.4, 4.3, "w_span_n");
-        addWallSegment(-7.8, 3.35, 0.4, 4.3, "w_span_s");
-        addWallSegment(-7.8, 7.65, 0.4, 0.7, "w_far_s");
-      } else {
-        addWallSegment(-7.8, -4.6, 0.4, 6.8, "w_top");
-        addWallSegment(-7.8, 4.6, 0.4, 6.8, "w_bottom");
-      }
+      const span = doorSpan(hallW);
+      addWallSegment(-7.8, span.left, 0.4, span.size, "w_top");
+      addWallSegment(-7.8, span.right, 0.4, span.size, "w_bottom");
     } else {
       addWallSegment(-7.8, 0.0, 0.4, 16.0, "w_solid");
     }
 
     if (E) {
-      if (ringE) {
-        addWallSegment(7.8, -7.65, 0.4, 0.7, "e_far_n");
-        addWallSegment(7.8, -3.35, 0.4, 4.3, "e_span_n");
-        addWallSegment(7.8, 3.35, 0.4, 4.3, "e_span_s");
-        addWallSegment(7.8, 7.65, 0.4, 0.7, "e_far_s");
-      } else {
-        addWallSegment(7.8, -4.6, 0.4, 6.8, "e_top");
-        addWallSegment(7.8, 4.6, 0.4, 6.8, "e_bottom");
-      }
+      const span = doorSpan(hallE);
+      addWallSegment(7.8, span.left, 0.4, span.size, "e_top");
+      addWallSegment(7.8, span.right, 0.4, span.size, "e_bottom");
     } else {
       addWallSegment(7.8, 0.0, 0.4, 16.0, "e_solid");
     }
 
-    // Plus-shaped halls with four enterable corner alcoves (1.6m inner gaps).
-    // Chicane tiles keep the spine blocked and use mid-stubs so BOTH inner
-    // baffle loops AND an outer border ring stay open. Uncat's south reveal
-    // and the weeping-angel west tile stay straight plus halls.
+    // Plus-shaped halls keep four enterable corner alcoves. Maze halls skip
+    // these separators so a 3.4m school corridor can run through the center.
     const hallLike = type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
       || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";
     const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
     const ewChicane = hallLike && chicanes.ew;
     const nsChicane = hallLike && chicanes.ns;
-    if (hallLike) {
-      const maze = ewChicane || nsChicane;
-      const nsSep = (x, zSign, fullName, midName) => {
-        if (maze) addWallSegment(x, zSign * 5.0, 0.4, 1.0, midName);
-        else addWallSegment(x, zSign * 5.6, 0.4, 4.8, fullName);
-      };
-      const ewSep = (z, xSign, fullName, midName) => {
-        if (maze) addWallSegment(xSign * 5.0, z, 1.0, 0.4, midName);
-        else addWallSegment(xSign * 5.6, z, 4.8, 0.4, fullName);
-      };
-      nsSep(-1.4, -1, "alcove_nw_ns", "alcove_nw_ns_mid");
-      ewSep(-1.4, -1, "alcove_nw_ew", "alcove_nw_ew_mid");
-      nsSep(1.4, -1, "alcove_ne_ns", "alcove_ne_ns_mid");
-      ewSep(-1.4, 1, "alcove_ne_ew", "alcove_ne_ew_mid");
-      nsSep(-1.4, 1, "alcove_sw_ns", "alcove_sw_ns_mid");
-      ewSep(1.4, -1, "alcove_sw_ew", "alcove_sw_ew_mid");
-      nsSep(1.4, 1, "alcove_se_ns", "alcove_se_ns_mid");
-      ewSep(1.4, 1, "alcove_se_ew", "alcove_se_ew_mid");
+    const maze = ewChicane || nsChicane;
+    if (hallLike && !maze) {
+      addWallSegment(-1.4, -5.6, 0.4, 4.8, "alcove_nw_ns");
+      addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
+      addWallSegment(1.4, -5.6, 0.4, 4.8, "alcove_ne_ns");
+      addWallSegment(5.6, -1.4, 4.8, 0.4, "alcove_ne_ew");
+      addWallSegment(-1.4, 5.6, 0.4, 4.8, "alcove_sw_ns");
+      addWallSegment(-5.6, 1.4, 4.8, 0.4, "alcove_sw_ew");
+      addWallSegment(1.4, 5.6, 0.4, 4.8, "alcove_se_ns");
+      addWallSegment(5.6, 1.4, 4.8, 0.4, "alcove_se_ew");
     } else if (type === "tatami_room" || type === "pillar_room") {
       // Traditional Japanese Tatami Room: Architectural corner posts & alcove wall
       addWallSegment(-7.2, -7.2, 0.8, 0.8, "tatami_post_nw");
@@ -1806,7 +1778,7 @@ export class BackroomsGenerator {
       || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";
     if (!hallLike) return;
     const openings = this.getOpenings(chunk.cx, chunk.cz);
-    const wallMat = this.textures.createWallMaterial();
+    const wallMat = this.textures.createWallMaterial().clone();
     wallMat.color.setHex(0x2a221c);
     wallMat.emissive = new THREE.Color(0x080604);
     wallMat.emissiveIntensity = 0.04;
@@ -1818,79 +1790,34 @@ export class BackroomsGenerator {
     const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
     const ewChicane = chicanes.ew;
     const nsChicane = chicanes.ns;
+    const maze = ewChicane || nsChicane;
     const walls = [];
     const add = (name, x, z, sx, sz, skip = false) => {
       if (!skip) walls.push([name, x, z, sx, sz]);
     };
-    // Outer-alcove C walls. Keep the start NW hide and hall lockers clear.
-    // EW loops also open the north cubbies so a second hide sits off the north jog.
-    const maze = ewChicane || nsChicane;
-    add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW || maze);
-    add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW || maze);
-    add("hall_maze_ne_h", 6.0, -4.6, 1.8, t, maze);
-    add("hall_maze_ne_v", 6.2, -6.2, t, 1.8, maze);
-    add("hall_maze_sw_h", -6.0, 4.6, 1.8, t, maze || !cabinetSE);
-    add("hall_maze_sw_v", -6.2, 6.2, t, 1.8, maze || !cabinetSE);
-    add("hall_maze_se_h", 6.0, 4.6, 1.8, t, maze || cabinetSE);
-    add("hall_maze_se_v", 6.2, 6.2, t, 1.8, maze || cabinetSE);
-    if (ewChicane) {
-      add("hall_maze_jog", -2.6, 0.0, t, 2.72);
-      add("hall_maze_jog_e", 2.6, 0.0, t, 2.72);
-      add("hall_maze_loop_n", 0.0, -4.9, 1.15, t);
-      add("hall_maze_loop_s", 0.0, 4.9, 1.15, t);
-      add("hall_maze_rib_w_n", -3.55, -1.4, 0.55, t);
-      add("hall_maze_rib_w_s", -3.55, 1.4, 0.55, t);
-      add("hall_maze_rib_e_n", 3.55, -1.4, 0.55, t);
-      add("hall_maze_rib_e_s", 3.55, 1.4, 0.55, t);
-      if (!nsChicane) {
-        add("hall_maze_rib_n_w", -1.4, -3.7, t, 1.15);
-        add("hall_maze_rib_n_e", 1.4, -3.7, t, 1.15);
-        add("hall_maze_rib_s_w", -1.4, 3.7, t, 1.15);
-        add("hall_maze_rib_s_e", 1.4, 3.7, t, 1.15);
-        const odd = ((chunk.cx + chunk.cz) & 1) === 1;
-        const px = odd ? 2.28 : 2.42;
-        const pz = odd ? 4.12 : 3.98;
-        add("hall_maze_pocket_ne", px, -pz, t, 1.35);
-        add("hall_maze_pocket_nw", -px, -pz, t, 1.35);
-        add("hall_maze_pocket_se", px, pz, t, 1.35);
-        add("hall_maze_pocket_sw", -px, pz, t, 1.35);
+    if (!maze) {
+      add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW);
+      add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW);
+      add("hall_maze_ne_h", 6.0, -4.6, 1.8, t);
+      add("hall_maze_ne_v", 6.2, -6.2, t, 1.8);
+      add("hall_maze_sw_h", -6.0, 4.6, 1.8, t, !cabinetSE);
+      add("hall_maze_sw_v", -6.2, 6.2, t, 1.8, !cabinetSE);
+      add("hall_maze_se_h", 6.0, 4.6, 1.8, t, cabinetSE);
+      add("hall_maze_se_v", 6.2, 6.2, t, 1.8, cabinetSE);
+      if (openings.E && openings.W && !ewChicane) {
+        add("hall_maze_teeth_w", -4.2, 0.92, 1.8, t);
+        add("hall_maze_teeth_e", 4.2, -0.92, 1.8, t);
       }
-    }
-    if (nsChicane) {
-      add("hall_maze_jog_ns", 0.0, -2.6, 2.72, t);
-      add("hall_maze_jog_ns_s", 0.0, 2.6, 2.72, t);
-      add("hall_maze_loop_w", -4.9, 0.0, t, 1.15);
-      add("hall_maze_loop_e", 4.9, 0.0, t, 1.15);
-      add("hall_maze_rib_n_w2", -1.4, -3.55, t, 0.55);
-      add("hall_maze_rib_n_e2", 1.4, -3.55, t, 0.55);
-      add("hall_maze_rib_s_w2", -1.4, 3.55, t, 0.55);
-      add("hall_maze_rib_s_e2", 1.4, 3.55, t, 0.55);
-      if (!ewChicane) {
-        add("hall_maze_pocket_ne", 5.15, -3.25, t, 1.1);
-        add("hall_maze_pocket_se", 5.15, 3.25, t, 1.1);
-        add("hall_maze_pocket_nw", -5.15, -3.25, t, 1.1);
-        add("hall_maze_pocket_sw", -5.15, 3.25, t, 1.1);
+      if (openings.N && openings.S && !nsChicane) {
+        add("hall_maze_teeth_n", -0.92, -4.2, t, 1.8);
+        add("hall_maze_teeth_s", 0.92, 4.2, t, 1.8);
       }
-    }
-    if (ewChicane && nsChicane) {
-      add("hall_maze_diag_ne", 3.5, -3.5, t, 0.7);
-      add("hall_maze_diag_nw", -3.5, -3.5, t, 0.7);
-      add("hall_maze_diag_se", 3.5, 3.5, t, 0.7);
-      add("hall_maze_diag_sw", -3.5, 3.5, t, 0.7);
-    }
-    if (openings.E && openings.W && !ewChicane) {
-      add("hall_maze_teeth_w", -4.2, 0.92, 1.8, t);
-      add("hall_maze_teeth_e", 4.2, -0.92, 1.8, t);
-    }
-    if (openings.N && openings.S && !nsChicane) {
-      add("hall_maze_teeth_n", -0.92, -4.2, t, 1.8);
-      add("hall_maze_teeth_s", 0.92, 4.2, t, 1.8);
     }
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, center.x + x, y, center.z + z, sx, h, sz, wallMat);
     }
     if (maze) {
-      this.dressHallLockerBanks(chunk, center, chunkId, floorY, openings);
+      this.dressHallLockerBanks(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
       this.dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
     }
     const gloom = new THREE.PointLight(0x4a3020, 1.15, 5.4, 2.0);
@@ -1899,17 +1826,17 @@ export class BackroomsGenerator {
       floorY + 2.05,
       center.z + (skipNW ? 5.2 : -5.2),
     );
-    gloom.name = `${chunkId}_hall_maze_gloom`;
+    gloom.name = `${chunkId}_hall_school_gloom`;
     this.scene.add(gloom);
     chunk.meshes.push(gloom);
-    if (ewChicane || nsChicane) {
+    if (maze) {
       const gloom2 = new THREE.PointLight(0x2a1814, 0.82, 4.6, 2.0);
       gloom2.position.set(
         center.x + (cabinetSE ? 5.1 : -5.1),
         floorY + 2.05,
         center.z + (skipNW ? -5.1 : 5.1),
       );
-      gloom2.name = `${chunkId}_hall_maze_gloom2`;
+      gloom2.name = `${chunkId}_hall_school_gloom2`;
       this.scene.add(gloom2);
       chunk.meshes.push(gloom2);
     }
@@ -2014,10 +1941,9 @@ export class BackroomsGenerator {
     this.collisionWorld.addStaticBox(chair.name, chair.position, new THREE.Vector3(0.48, 0.62, 0.48), chunkId);
   }
 
-  dressHallLockerBanks(chunk, center, chunkId, floorY, openings) {
-    // School locker rows sit on the outer wall spans. Keep the 2.4m center
-    // doors, 1.8m ring gates at |offset|≈6.4, inner S-bends, and the
-    // z=-6.4 / x=±6.4 chase ring clear.
+  dressHallLockerBanks(chunk, center, chunkId, floorY, _openings, ewChicane, nsChicane) {
+    // Locker rows sit on the inner faces of the 3.4m school corridor.
+    // Keep the T-spur (center ±1.7) and alcove doors (x/z ±5.25) clear.
     const cabinetMat = this.textures.createCabinetMaterial();
     if (!this.lockerSlitMaterial) {
       this.lockerSlitMaterial = new THREE.MeshStandardMaterial({
@@ -2029,14 +1955,11 @@ export class BackroomsGenerator {
     const slitMat = this.lockerSlitMaterial;
     const y = floorY + 1.08;
     const h = 2.16;
-    const depth = 0.24;
-    const bank = 3.15;
-    const inset = 7.48;
-    const ringN = openings.N && this.isMazeHall(chunk.cx, chunk.cz - 1);
-    const ringS = openings.S && this.isMazeHall(chunk.cx, chunk.cz + 1);
-    const ringW = openings.W && this.isMazeHall(chunk.cx - 1, chunk.cz);
-    const ringE = openings.E && this.isMazeHall(chunk.cx + 1, chunk.cz);
-    const along = (hasRing) => (hasRing ? 3.35 : 4.55);
+    const depth = 0.22;
+    const bank = 1.7;
+    const clear = 1.7;
+    const face = clear - depth / 2;
+    const along = 2.9;
     const placeBank = (name, lx, lz, sx, sz) => {
       this.placeDressedBox(
         chunk,
@@ -2073,85 +1996,138 @@ export class BackroomsGenerator {
         );
       }
     };
-    const ox = along(ringN);
-    placeBank("hall_lockers_n_w", -ox, -inset, bank, depth);
-    placeBank("hall_lockers_n_e", ox, -inset, bank, depth);
-    const sx = along(ringS);
-    placeBank("hall_lockers_s_w", -sx, inset, bank, depth);
-    placeBank("hall_lockers_s_e", sx, inset, bank, depth);
-    const wz = along(ringW);
-    placeBank("hall_lockers_w_n", -inset, -wz, depth, bank);
-    placeBank("hall_lockers_w_s", -inset, wz, depth, bank);
-    const ez = along(ringE);
-    placeBank("hall_lockers_e_n", inset, -ez, depth, bank);
-    placeBank("hall_lockers_e_s", inset, ez, depth, bank);
+    if (ewChicane) {
+      placeBank("hall_lockers_n_w", -along, -face, bank, depth);
+      placeBank("hall_lockers_n_e", along, -face, bank, depth);
+      placeBank("hall_lockers_s_w", -along, face, bank, depth);
+      placeBank("hall_lockers_s_e", along, face, bank, depth);
+    }
+    if (nsChicane) {
+      placeBank("hall_lockers_w_n", -face, -along, depth, bank);
+      placeBank("hall_lockers_w_s", -face, along, depth, bank);
+      placeBank("hall_lockers_e_n", face, -along, depth, bank);
+      placeBank("hall_lockers_e_s", face, along, depth, bank);
+    }
+  }
+
+  ensureSchoolCorridorMaterials() {
+    if (this.schoolClassWallMat) return;
+    this.schoolClassWallMat = this.textures.createWallMaterial().clone();
+    this.schoolClassWallMat.color.setHex(0x2a221c);
+    this.schoolClassDoorMat = this.textures.createClassroomDoorMaterial();
+    this.schoolGlassMat = new THREE.MeshStandardMaterial({
+      color: 0x07080a,
+      roughness: 0.22,
+      metalness: 0.18,
+      emissive: 0x04060a,
+      emissiveIntensity: 0.08,
+    });
+    this.schoolStripeMat = new THREE.MeshStandardMaterial({
+      color: 0x1a120e,
+      roughness: 0.95,
+      metalness: 0,
+    });
+    this.schoolFluoroMat = new THREE.MeshStandardMaterial({
+      color: 0x3a4038,
+      roughness: 0.45,
+      metalness: 0.12,
+      emissive: 0x1a1810,
+      emissiveIntensity: 0.06,
+    });
+    this.schoolPaperMat = new THREE.MeshStandardMaterial({
+      color: 0xc4b090,
+      roughness: 0.92,
+      metalness: 0,
+    });
   }
 
   dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
-    // Turn the leftover outer ring into a school hallway: classroom
-    // inner walls with door gaps at the plus arm and the S-bend
-    // connections, a floor stripe, dead fluorescents, and dark windows.
-    if (!this.schoolClassWallMat) {
-      this.schoolClassWallMat = this.textures.createWallMaterial().clone();
-      this.schoolClassWallMat.color.setHex(0x2a221c);
-      this.schoolClassDoorMat = this.textures.createClassroomDoorMaterial();
-      this.schoolGlassMat = new THREE.MeshStandardMaterial({
-        color: 0x07080a,
-        roughness: 0.22,
-        metalness: 0.18,
-        emissive: 0x04060a,
-        emissiveIntensity: 0.08,
-      });
-      this.schoolStripeMat = new THREE.MeshStandardMaterial({
-        color: 0x1a120e,
-        roughness: 0.95,
-        metalness: 0,
-      });
-      this.schoolFluoroMat = new THREE.MeshStandardMaterial({
-        color: 0x3a4038,
-        roughness: 0.45,
-        metalness: 0.12,
-        emissive: 0x1a1810,
-        emissiveIntensity: 0.06,
-      });
-      this.schoolPaperMat = new THREE.MeshStandardMaterial({
-        color: 0xc4b090,
-        roughness: 0.92,
-        metalness: 0,
-      });
-    }
+    // 3.4m school corridor through the tile center. Classroom walls at the
+    // clear edge, hide-alcove doors at ±5.25, T-spurs when the graph turns.
+    this.ensureSchoolCorridorMaterials();
+    const clear = 1.7;
     const t = 0.28;
-    const inner = 5.52;
+    const wallPos = clear + t / 2;
     const y = floorY + 1.4;
     const h = 2.8;
-    const walls = [];
-    const add = (name, x, z, sx, sz) => walls.push([name, x, z, sx, sz]);
-    if (ewChicane) {
-      add("hall_class_n_far_w", -6.5, -inner, 1.8, t);
-      add("hall_class_n_mid_w", -2.35, -inner, 2.1, t);
-      add("hall_class_n_mid_e", 2.35, -inner, 2.1, t);
-      add("hall_class_n_far_e", 6.5, -inner, 1.8, t);
-      add("hall_class_s_far_w", -6.5, inner, 1.8, t);
-      add("hall_class_s_mid_w", -2.35, inner, 2.1, t);
-      add("hall_class_s_mid_e", 2.35, inner, 2.1, t);
-      add("hall_class_s_far_e", 6.5, inner, 1.8, t);
-    }
-    if (nsChicane) {
-      add("hall_class_w_far_n", -inner, -6.5, t, 1.8);
-      add("hall_class_w_mid_n", -inner, -2.35, t, 2.1);
-      add("hall_class_w_mid_s", -inner, 2.35, t, 2.1);
-      add("hall_class_w_far_s", -inner, 6.5, t, 1.8);
-      add("hall_class_e_far_n", inner, -6.5, t, 1.8);
-      add("hall_class_e_mid_n", inner, -2.35, t, 2.1);
-      add("hall_class_e_mid_s", inner, 2.35, t, 2.1);
-      add("hall_class_e_far_s", inner, 6.5, t, 1.8);
-    }
-    for (const [name, x, z, sx, sz] of walls) {
+    const alcove = 5.25;
+    const doorW = 2.2;
+    const spanMin = -7.45;
+    const spanMax = 7.45;
+    const stemEnd = 7.52;
+    const stemStart = wallPos;
+    const stemLen = stemEnd - stemStart;
+    const stemMid = (stemStart + stemEnd) / 2;
+
+    const gapped = (name, axis, pos, gaps) => {
+      this.placeGappedWall(chunk, chunkId, name, {
+        axis,
+        pos,
+        min: spanMin,
+        max: spanMax,
+        wallY: y,
+        height: h,
+        thickness: t,
+        material: this.schoolClassWallMat,
+        gaps,
+      });
+    };
+    const stem = (name, x, z, sx, sz) => {
       this.placeDressedBox(
         chunk, chunkId, name,
         center.x + x, y, center.z + z, sx, h, sz,
         this.schoolClassWallMat,
       );
+    };
+
+    if (ewChicane) {
+      const nGaps = [{ center: -alcove, width: doorW }, { center: alcove, width: doorW }];
+      const sGaps = [{ center: -alcove, width: doorW }, { center: alcove, width: doorW }];
+      if (nsChicane || openings.N) nGaps.push({ center: 0, width: clear * 2 });
+      if (nsChicane || openings.S) sGaps.push({ center: 0, width: clear * 2 });
+      gapped("hall_class_n", "x", -wallPos, nGaps);
+      gapped("hall_class_s", "x", wallPos, sGaps);
+      if (!nsChicane && openings.N) {
+        stem("hall_class_stem_n_w", -wallPos, -stemMid, t, stemLen);
+        stem("hall_class_stem_n_e", wallPos, -stemMid, t, stemLen);
+      }
+      if (!nsChicane && openings.S) {
+        stem("hall_class_stem_s_w", -wallPos, stemMid, t, stemLen);
+        stem("hall_class_stem_s_e", wallPos, stemMid, t, stemLen);
+      }
+      if (!nsChicane && !openings.N) {
+        stem("hall_class_split_n", 0, -stemMid, t, stemLen);
+      }
+      if (!nsChicane && !openings.S) {
+        stem("hall_class_split_s", 0, stemMid, t, stemLen);
+      }
+    }
+
+    if (nsChicane) {
+      const wGaps = [];
+      const eGaps = [];
+      if (ewChicane || openings.W) wGaps.push({ center: 0, width: clear * 2 });
+      if (ewChicane || openings.E) eGaps.push({ center: 0, width: clear * 2 });
+      if (!ewChicane) {
+        wGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
+        eGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
+      }
+      gapped("hall_class_w", "z", -wallPos, wGaps);
+      gapped("hall_class_e", "z", wallPos, eGaps);
+      if (!ewChicane && openings.W) {
+        stem("hall_class_stem_w_n", -stemMid, -wallPos, stemLen, t);
+        stem("hall_class_stem_w_s", -stemMid, wallPos, stemLen, t);
+      }
+      if (!ewChicane && openings.E) {
+        stem("hall_class_stem_e_n", stemMid, -wallPos, stemLen, t);
+        stem("hall_class_stem_e_s", stemMid, wallPos, stemLen, t);
+      }
+      if (!ewChicane && !openings.W) {
+        stem("hall_class_split_w", -stemMid, 0, stemLen, t);
+      }
+      if (!ewChicane && !openings.E) {
+        stem("hall_class_split_e", stemMid, 0, stemLen, t);
+      }
     }
 
     const doorH = 2.15;
@@ -2170,71 +2146,55 @@ export class BackroomsGenerator {
         this.schoolGlassMat, false,
       );
     };
+    const winZ = wallPos + 0.03;
     if (ewChicane) {
-      panel("hall_class_door_n_w", -2.35, -inner - 0.16, 1.05, 0.04);
-      panel("hall_class_door_n_e", 2.35, -inner - 0.16, 1.05, 0.04);
-      panel("hall_class_door_s_w", -2.35, inner + 0.16, 1.05, 0.04);
-      panel("hall_class_door_s_e", 2.35, inner + 0.16, 1.05, 0.04);
-      glass("hall_window_n_w", -2.35, -inner - 0.19, 0.28, 0.32, 0.03);
-      glass("hall_window_n_e", 2.35, -inner - 0.19, 0.28, 0.32, 0.03);
-      glass("hall_window_s_w", -2.35, inner + 0.19, 0.28, 0.32, 0.03);
-      glass("hall_window_s_e", 2.35, inner + 0.19, 0.28, 0.32, 0.03);
+      panel("hall_class_door_n_w", -alcove, -winZ, 0.9, 0.04);
+      panel("hall_class_door_n_e", alcove, -winZ, 0.9, 0.04);
+      panel("hall_class_door_s_w", -alcove, winZ, 0.9, 0.04);
+      panel("hall_class_door_s_e", alcove, winZ, 0.9, 0.04);
+      glass("hall_window_n_w", -2.9, -winZ, 0.28, 0.32, 0.03);
+      glass("hall_window_n_e", 2.9, -winZ, 0.28, 0.32, 0.03);
+      glass("hall_window_s_w", -2.9, winZ, 0.28, 0.32, 0.03);
+      glass("hall_window_s_e", 2.9, winZ, 0.28, 0.32, 0.03);
       this.placeDressedBox(
-        chunk, chunkId, "hall_window_n_transom",
-        center.x, floorY + 2.42, center.z - 7.55, 1.2, 0.36, 0.05,
-        this.schoolGlassMat, false,
-      );
-      this.placeDressedBox(
-        chunk, chunkId, "hall_window_s_transom",
-        center.x, floorY + 2.42, center.z + 7.55, 1.2, 0.36, 0.05,
-        this.schoolGlassMat, false,
-      );
-      this.placeDressedBox(
-        chunk, chunkId, "hall_stripe_n",
-        center.x, floorY + 0.012, center.z - 6.4, 14.6, 0.02, 0.09,
+        chunk, chunkId, "hall_stripe",
+        center.x, floorY + 0.012, center.z, 14.6, 0.02, 0.09,
         this.schoolStripeMat, false,
       );
-      this.placeDressedBox(
-        chunk, chunkId, "hall_stripe_s",
-        center.x, floorY + 0.012, center.z + 6.4, 14.6, 0.02, 0.09,
-        this.schoolStripeMat, false,
-      );
-      for (const [name, x] of [["hall_fluoro_n_w", -4.2], ["hall_fluoro_n_e", 4.2]]) {
+      for (const [name, x] of [["hall_fluoro_w", -4.2], ["hall_fluoro_e", 4.2]]) {
         this.placeDressedBox(
           chunk, chunkId, name,
-          center.x + x, floorY + 2.68, center.z - 6.4, 2.35, 0.05, 0.14,
+          center.x + x, floorY + 2.68, center.z, 2.35, 0.05, 0.14,
           this.schoolFluoroMat, false,
         );
       }
       this.placeDressedBox(
         chunk, chunkId, "hall_paper_n",
-        center.x + 2.35, floorY + 1.55, center.z - inner - 0.18,
+        center.x + 2.9, floorY + 1.55, center.z - winZ,
         0.42, 0.55, 0.02, this.schoolPaperMat, false,
       );
     }
     if (nsChicane) {
-      panel("hall_class_door_w_n", -inner - 0.16, -2.35, 0.04, 1.05);
-      panel("hall_class_door_w_s", -inner - 0.16, 2.35, 0.04, 1.05);
-      panel("hall_class_door_e_n", inner + 0.16, -2.35, 0.04, 1.05);
-      panel("hall_class_door_e_s", inner + 0.16, 2.35, 0.04, 1.05);
-      glass("hall_window_w_n", -inner - 0.19, -2.35, 0.03, 0.32, 0.28);
-      glass("hall_window_w_s", -inner - 0.19, 2.35, 0.03, 0.32, 0.28);
-      glass("hall_window_e_n", inner + 0.19, -2.35, 0.03, 0.32, 0.28);
-      glass("hall_window_e_s", inner + 0.19, 2.35, 0.03, 0.32, 0.28);
+      const winX = wallPos + 0.03;
+      if (!ewChicane) {
+        panel("hall_class_door_w_n", -winX, -alcove, 0.04, 0.9);
+        panel("hall_class_door_w_s", -winX, alcove, 0.04, 0.9);
+        panel("hall_class_door_e_n", winX, -alcove, 0.04, 0.9);
+        panel("hall_class_door_e_s", winX, alcove, 0.04, 0.9);
+      }
+      glass("hall_window_w_n", -winX, -2.9, 0.03, 0.32, 0.28);
+      glass("hall_window_w_s", -winX, 2.9, 0.03, 0.32, 0.28);
+      glass("hall_window_e_n", winX, -2.9, 0.03, 0.32, 0.28);
+      glass("hall_window_e_s", winX, 2.9, 0.03, 0.32, 0.28);
       this.placeDressedBox(
-        chunk, chunkId, "hall_stripe_w",
-        center.x - 6.4, floorY + 0.012, center.z, 0.09, 0.02, 14.6,
+        chunk, chunkId, "hall_stripe_ns",
+        center.x, floorY + 0.012, center.z, 0.09, 0.02, 14.6,
         this.schoolStripeMat, false,
       );
-      this.placeDressedBox(
-        chunk, chunkId, "hall_stripe_e",
-        center.x + 6.4, floorY + 0.012, center.z, 0.09, 0.02, 14.6,
-        this.schoolStripeMat, false,
-      );
-      for (const [name, z] of [["hall_fluoro_w_n", -4.2], ["hall_fluoro_w_s", 4.2]]) {
+      for (const [name, z] of [["hall_fluoro_n", -4.2], ["hall_fluoro_s", 4.2]]) {
         this.placeDressedBox(
           chunk, chunkId, name,
-          center.x - 6.4, floorY + 2.68, center.z + z, 0.14, 0.05, 2.35,
+          center.x, floorY + 2.68, center.z + z, 0.14, 0.05, 2.35,
           this.schoolFluoroMat, false,
         );
       }
@@ -3456,7 +3416,7 @@ export class BackroomsGenerator {
     } else if (chunk.cx === 1 && chunk.cz === 0) {
       // Odd EW loops: SW hide off the south jog, NW hide off the north jog.
       addDynamicCabinet("cabinet_chokepoint_1_0", "복도 신발장", [-5.25, 0.0, 5.25], -Math.PI / 2);
-      addDynamicCabinet("cabinet_chokepoint_1_0_n", "꺾인 복도 신발장", [-5.25, 0.0, -5.25], Math.PI);
+      addDynamicCabinet("cabinet_chokepoint_1_0_n", "복도 신발장", [-5.25, 0.0, -5.25], Math.PI);
     } else if (chunk.cx === 0 && chunk.cz === 1) {
       addDynamicCabinet("cabinet_junction_0_1", "교차로 신발장", [-5.2, 0.0, 5.2], -Math.PI / 2);
     } else if (type === "omen_room") {
@@ -3507,30 +3467,6 @@ export class BackroomsGenerator {
         lz > 0 ? Math.PI : 0,
       );
     }
-    if (mazeHall && !(chunk.cx === 0 && chunk.cz === 0)) {
-      const hallOpen = this.getOpenings(chunk.cx, chunk.cz);
-      const ringN = hallOpen.N && this.isMazeHall(chunk.cx, chunk.cz - 1);
-      const ringS = hallOpen.S && this.isMazeHall(chunk.cx, chunk.cz + 1);
-      const ringSpots = [];
-      if (ringN) ringSpots.push({ pos: [-5.25, 0.0, -5.25], yaw: 0, id: "n" });
-      if (ringS) ringSpots.push({ pos: [5.25, 0.0, 5.25], yaw: Math.PI, id: "s" });
-      for (const spot of ringSpots) {
-        const taken = chunk.cabinets.some((cabinet) => (
-          Math.hypot(
-            cabinet.position.x - (center.x + spot.pos[0]),
-            cabinet.position.z - (center.z + spot.pos[2]),
-          ) < 1.8
-        ));
-        if (taken) continue;
-        addDynamicCabinet(
-          `cabinet_ring_${spot.id}_${chunk.cx}_${chunk.cz}`,
-          "바깥 복도 신발장",
-          spot.pos,
-          spot.yaw,
-        );
-      }
-    }
-
     const addLoreNote = (id, localPos, yaw, body) => {
       const note = new LoreNote({
         id,
@@ -4299,33 +4235,31 @@ export class BackroomsGenerator {
     if (type === "start" || type === "cross_junction" || type === "t_junction"
       || type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew") {
       const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
+      const hallOpen = this.getOpenings(chunk.cx, chunk.cz);
       chunk.waypoints = [
-        wp(0, 0), wp(0, -5.4), wp(0, 5.4), wp(-5.4, 0), wp(5.4, 0),
+        wp(0, 0),
         wp(-5.2, -5.2), wp(5.2, -5.2), wp(-5.2, 5.2), wp(5.2, 5.2),
       ];
+      if (!chicanes.ew && !chicanes.ns) {
+        chunk.waypoints.push(wp(0, -5.4), wp(0, 5.4), wp(-5.4, 0), wp(5.4, 0));
+      }
       if (chicanes.ew) {
         chunk.waypoints.push(
-          wp(-4.5, 2.6), wp(0, 2.6), wp(-4.5, 0),
-          wp(4.5, -2.6), wp(0, -2.6), wp(4.5, 0),
-          wp(-4.5, -2.6), wp(4.5, 2.6),
-          wp(-6.4, -6.4), wp(0, -6.4), wp(6.4, -6.4),
-          wp(-6.4, 6.4), wp(0, 6.4), wp(6.4, 6.4),
+          wp(-6.2, 0), wp(-3.2, 0), wp(3.2, 0), wp(6.2, 0),
+          wp(-5.25, 5.2), wp(5.25, 5.2), wp(-5.25, -5.2), wp(5.25, -5.2),
         );
+        if (chicanes.ns || hallOpen.N) chunk.waypoints.push(wp(0, -5.4), wp(0, -6.5));
+        if (chicanes.ns || hallOpen.S) chunk.waypoints.push(wp(0, 5.4), wp(0, 6.5));
       }
       if (chicanes.ns) {
-        chunk.waypoints.push(
-          wp(-2.6, -4.5), wp(-2.6, 0), wp(0, -4.5),
-          wp(2.6, 4.5), wp(2.6, 0), wp(0, 4.5),
-          wp(2.6, -4.5), wp(-2.6, 4.5),
-          wp(-6.4, -6.4), wp(-6.4, 0), wp(-6.4, 6.4),
-          wp(6.4, -6.4), wp(6.4, 0), wp(6.4, 6.4),
-        );
-      }
-      if (chicanes.ew || chicanes.ns) {
-        chunk.waypoints.push(
-          wp(-3.5, -3.5), wp(3.5, -3.5), wp(-3.5, 3.5), wp(3.5, 3.5),
-          wp(-2.4, -4.1), wp(2.4, 4.1), wp(-2.4, 4.1), wp(2.4, -4.1),
-        );
+        chunk.waypoints.push(wp(0, -6.2), wp(0, -3.2), wp(0, 3.2), wp(0, 6.2));
+        if (chicanes.ew || hallOpen.W) chunk.waypoints.push(wp(-5.4, 0), wp(-6.5, 0));
+        if (chicanes.ew || hallOpen.E) chunk.waypoints.push(wp(5.4, 0), wp(6.5, 0));
+        if (!chicanes.ew) {
+          chunk.waypoints.push(
+            wp(-5.25, 5.2), wp(5.25, 5.2), wp(-5.25, -5.2), wp(5.25, -5.2),
+          );
+        }
       }
     } else if (type === "corner") {
       // SE corner — open quadrant only

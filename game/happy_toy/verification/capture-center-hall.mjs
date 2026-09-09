@@ -1,0 +1,153 @@
+import { createRequire } from "node:module";
+import path from "node:path";
+
+const { chromium } = createRequire(import.meta.url)("playwright");
+const url = process.argv[2] || "http://127.0.0.1:8010/";
+const outDir = process.argv[3] || "/opt/cursor/artifacts";
+const executablePath = process.env.CHROME_PATH
+  || (process.platform === "win32" ? "C:/Program Files/Google/Chrome/Application/chrome.exe" : undefined);
+
+const browser = await chromium.launch({ executablePath, headless: true });
+const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+page.on("pageerror", (error) => console.error("pageerror", error.message));
+
+await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+await page.waitForFunction(() => window.__happyToy?.assetsReady === true, null, { timeout: 90000 });
+await page.evaluate(() => window.__happyToy.start());
+await page.waitForTimeout(400);
+
+const hall = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  game.mapBuilder.generator.generateChunk(1, 0);
+  game.mapBuilder.generator.generateChunk(2, 0);
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(22.4, 0, 0);
+  uncat.group.lookAt(12.2, 1.2, 0);
+  uncat.state = "chase";
+  game.hud.setStatus("복도가 끝없이 이어집니다. 안개 끝의 발소리를 신발장으로 빼십시오.", 4200);
+  return game.poseForCapture({
+    x: 12.2,
+    y: 0,
+    z: 0,
+    lookAt: [22.6, 1.15, 0],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.group.visible = true;
+  uncat.group.position.set(22.4, 0, 0);
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_center_hall_uncat.png"), timeout: 120000 });
+console.log("hall", hall);
+
+const fog = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  game.mapBuilder.generator.generateChunk(2, 0);
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(28.4, 0, 0);
+  uncat.group.lookAt(18.2, 1.2, 0);
+  uncat.state = "chase";
+  game.hud.setStatus("복도가 끝없이 이어집니다. 안개 끝의 발소리를 신발장으로 빼십시오.", 4200);
+  return game.poseForCapture({
+    x: 18.2,
+    y: 0,
+    z: 0,
+    lookAt: [28.6, 1.15, 0],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.group.visible = true;
+  uncat.group.position.set(28.4, 0, 0);
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_center_hall_long_fog.png"), timeout: 120000 });
+console.log("fog", fog);
+
+const hide = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  game.mapBuilder.generator.generateChunk(1, 0);
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(16.0, 0, 0);
+  uncat.group.lookAt(10.75, 1.1, 5.2);
+  uncat.state = "chase";
+  game.hud.setStatus("신발장 안으로. 호흡을 끊으십시오.", 4200);
+  return game.poseForCapture({
+    x: 10.75,
+    y: 0,
+    z: 3.4,
+    lookAt: [10.75, 1.05, 5.4],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.group.visible = true;
+  uncat.group.position.set(16.0, 0, 0);
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_center_alcove_hide.png"), timeout: 120000 });
+console.log("hide", hide);
+
+const spur = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  game.mapBuilder.generator.generateChunk(1, 0);
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(16.0, 0, -5.4);
+  uncat.group.lookAt(16.0, 1.2, 0);
+  uncat.state = "chase";
+  game.hud.setStatus("복도가 갈라집니다. 한 길로 쫓기면 다른 길로, 아니면 신발장으로.", 4200);
+  return game.poseForCapture({
+    x: 16.0,
+    y: 0,
+    z: 0.2,
+    lookAt: [16.0, 1.15, -6.2],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.group.visible = true;
+  uncat.group.position.set(16.0, 0, -5.4);
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_center_tspur.png"), timeout: 120000 });
+console.log("spur", spur);
+
+await browser.close();
+console.log("CENTER HALL CAPTURES WRITTEN");

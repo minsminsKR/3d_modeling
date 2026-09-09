@@ -90,29 +90,17 @@ try {
     }
   });
 
-  const ewS = (centerX) => ([
-    { x: centerX - 4.5, z: 0 },
-    { x: centerX - 4.5, z: 2.6 },
-    { x: centerX, z: 2.6 },
-    { x: centerX, z: 0 },
-    { x: centerX, z: -2.6 },
-    { x: centerX + 4.5, z: -2.6 },
-    { x: centerX + 4.5, z: 0 },
-  ]);
   const annexWalk = [];
   for (const stop of [
     { x: 10.2, z: 0 },
-    { x: 11.5, z: 0 },
-    { x: 11.5, z: 2.6 },
-    { x: 12.05, z: 5.15 },
-    { x: 11.5, z: 2.6 },
-    ...ewS(16).slice(2),
-    ...ewS(32),
-    ...ewS(48),
-    ...ewS(64),
-    ...ewS(80),
-    { x: 84.5, z: -2.6 },
-    { x: 80, z: -2.6 },
+    { x: 10.75, z: 0 },
+    { x: 10.75, z: 5.15 },
+    { x: 10.75, z: 0 },
+    { x: 16, z: 0 },
+    { x: 32, z: 0 },
+    { x: 48, z: 0 },
+    { x: 64, z: 0 },
+    { x: 80, z: 0 },
     { x: 80, z: -16 },
   ]) {
     annexWalk.push(await walkTo(stop, 400));
@@ -130,12 +118,14 @@ try {
   });
   const loopWalk = [];
   for (const stop of [
-    { x: 11.5, z: -2.6 },
-    { x: 16, z: -2.6 },
     { x: 16, z: 0 },
-    { x: 16, z: 2.6 },
-    { x: 20.5, z: 2.6 },
-    { x: 20.5, z: 0 },
+    { x: 16, z: -5.5 },
+    { x: 16, z: 0 },
+    { x: 10.75, z: 0 },
+    { x: 10.75, z: -5.25 },
+    { x: 16, z: 0 },
+    { x: 21.25, z: 0 },
+    { x: 21.25, z: 5.25 },
   ]) {
     loopWalk.push(await walkTo(stop, 360));
     console.log("loop", stop, loopWalk.at(-1));
@@ -147,15 +137,15 @@ try {
     game.testSafeMode = false;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
-    game.player.setPosition({ x: 11.5, y: 0, z: -2.6 });
+    game.player.setPosition({ x: 11.5, y: 0, z: 0 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
   });
   const ringWalk = [];
   for (const stop of [
-    { x: 11.5, z: -6.4 },
-    { x: 16, z: -6.4 },
-    { x: 20.5, z: -6.4 },
-    { x: 20.5, z: -2.6 },
+    { x: 11.5, z: 0 },
+    { x: 16, z: 0 },
+    { x: 20.5, z: 0 },
+    { x: 21.25, z: 5.25 },
   ]) {
     ringWalk.push(await walkTo(stop, 360));
     console.log("ring", stop, ringWalk.at(-1));
@@ -168,14 +158,14 @@ try {
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(2, 0);
-    game.player.setPosition({ x: 20.5, y: 0, z: -6.4 });
+    game.player.setPosition({ x: 20.5, y: 0, z: 0 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
   });
   const longRingWalk = [];
   for (const stop of [
-    { x: 24.2, z: -6.4 },
-    { x: 27.5, z: -6.4 },
-    { x: 32, z: -6.4 },
+    { x: 24.2, z: 0 },
+    { x: 27.5, z: 0 },
+    { x: 32, z: 0 },
   ]) {
     longRingWalk.push(await walkTo(stop, 360));
     console.log("longring", stop, longRingWalk.at(-1));
@@ -191,17 +181,16 @@ try {
     game.player.setPosition({ x: 0, y: 0, z: -8 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
   });
-  const northNsS = (centerZ) => ([
-    { x: 0, z: centerZ + 4.5 },
-    { x: 2.6, z: centerZ + 4.5 },
-    { x: 2.6, z: centerZ },
-    { x: 0, z: centerZ },
-    { x: -2.6, z: centerZ },
-    { x: -2.6, z: centerZ - 4.5 },
-    { x: 0, z: centerZ - 4.5 },
-  ]);
   const northWalk = [];
-  for (const stop of northNsS(-16)) {
+  for (const stop of [
+    { x: 0, z: -11.5 },
+    { x: -5.25, z: -10.75 },
+    { x: 0, z: -11.5 },
+    { x: 0, z: -16 },
+    { x: 5.2, z: -16 },
+    { x: 0, z: -16 },
+    { x: 0, z: -20.5 },
+  ]) {
     northWalk.push(await walkTo(stop, 360));
     console.log("north", stop, northWalk.at(-1));
   }
@@ -218,11 +207,11 @@ try {
   const nsLoopWalk = [];
   for (const stop of [
     { x: 0, z: -11.5 },
-    { x: -4.5, z: -11.5 },
-    { x: -2.6, z: -16 },
+    { x: -5.25, z: -10.75 },
+    { x: 0, z: -11.5 },
     { x: 0, z: -16 },
-    { x: 2.6, z: -16 },
-    { x: 2.6, z: -20.5 },
+    { x: 5.2, z: -16 },
+    { x: 0, z: -16 },
     { x: 0, z: -20.5 },
   ]) {
     nsLoopWalk.push(await walkTo(stop, 360));
@@ -240,10 +229,9 @@ try {
   });
   const f1MazeWalk = [];
   for (const stop of [
-    { x: 16, z: -2.4 },
-    { x: 20, z: -2.4 },
-    { x: 20, z: -6.2 },
-    { x: 16, z: -6.4 },
+    { x: 16, z: 0 },
+    { x: 10.75, z: 0 },
+    { x: 10.75, z: 5.25 },
   ]) {
     f1MazeWalk.push(await walkTo(stop, 280));
     console.log("f1maze", stop, f1MazeWalk.at(-1));
@@ -288,6 +276,7 @@ try {
       northRib: names(northHall).some((name) => name.includes("hall_maze_rib") || name.includes("hall_maze_pocket")),
       hallLockers: names(hall).filter((name) => name.includes("hall_lockers_")).length,
       hallClass: names(hall).some((name) => name.includes("hall_class_")),
+      hallClassCount: names(hall).filter((name) => name.includes("hall_class_")).length,
       hallStripe: names(hall).some((name) => name.includes("hall_stripe_")),
       hallWindow: names(hall).some((name) => name.includes("hall_window_")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
@@ -545,43 +534,42 @@ try {
   console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
-  assert.ok(annexWalk.some((stop) => stop.z > 1.8), "east school must force a south jog off z=0");
-  assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east S-bend south alcove locker must be walkable");
-  assert.ok(annexWalk.some((stop) => stop.z < -1.8), "east school must S-bend north off z=0 before the next tile");
-  assert.ok(loopWalk.some((stop) => stop.z < -1.8 && stop.x < 17), "east tile must loop north around the west baffle");
-  assert.ok(loopWalk.some((stop) => stop.z > 1.8 && stop.x > 17), "east tile north loop must return south around the east baffle");
-  assert.equal(loopWalk.at(-1).ok, true, `must finish the opposite 1F loop, got ${JSON.stringify(loopWalk.at(-1))}`);
-  assert.ok(ringWalk[1]?.ok && ringWalk[1].z < -5.4, `outer north ring must cross the tile at z=-6.4, got ${JSON.stringify(ringWalk[1])}`);
-  assert.equal(ringWalk.at(-1).ok, true, `must walk the outer 1F ring, got ${JSON.stringify(ringWalk.at(-1))}`);
-  assert.equal(longRingWalk.at(-1).ok, true, `outer ring must continue into the next maze tile, got ${JSON.stringify(longRingWalk.at(-1))}`);
-  assert.ok(longRingWalk.at(-1).x > 30 && longRingWalk.at(-1).z < -5.4, "long ring must stay on z=-6.4 into chunk (2,0)");
+  assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
+  assert.ok(annexWalk.some((stop) => Math.abs(stop.z) < 1.2 && stop.x > 30), "east school must keep a z=0 spine through the next tile");
+  assert.ok(loopWalk.some((stop) => stop.z < -4.8 && stop.x < 17), "east tile north T-spur must be walkable");
+  assert.ok(loopWalk.some((stop) => stop.z > 4.0 && stop.x > 17), "east tile south alcove must be walkable");
+  assert.equal(loopWalk.at(-1).ok, true, `must finish the 1F hall alcoves, got ${JSON.stringify(loopWalk.at(-1))}`);
+  assert.ok(ringWalk[1]?.ok && Math.abs(ringWalk[1].z) < 1.2, `center hall must cross the tile at z=0, got ${JSON.stringify(ringWalk[1])}`);
+  assert.equal(ringWalk.at(-1).ok, true, `must walk the 1F school hall, got ${JSON.stringify(ringWalk.at(-1))}`);
+  assert.equal(longRingWalk.at(-1).ok, true, `center hall must continue into the next maze tile, got ${JSON.stringify(longRingWalk.at(-1))}`);
+  assert.ok(longRingWalk.at(-1).x > 30 && Math.abs(longRingWalk.at(-1).z) < 1.2, "long hall must stay on z=0 into chunk (2,0)");
   const annexGate = annexWalk.find((stop) => stop.x > 56 && Math.abs(stop.z) < 1.2);
   assert.ok(annexGate?.ok, `must walk to 별관 gate, got ${JSON.stringify(annexGate)}`);
   assert.equal(annexWalk.at(-1).ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk.at(-1))}`);
   assert.ok(annexWalk.at(-1).z < -10, "보건실 is on the north wing of the annex spine");
-  assert.equal(f1MazeWalk.at(-1).ok, true, `must walk a 1F hall alcove maze, got ${JSON.stringify(f1MazeWalk.at(-1))}`);
-  assert.ok(f1MazeWalk.at(-1).z < -5, "1F hall maze continues into the north alcove");
-  assert.ok(rooms.hallMaze >= 12, `1F hall maze walls missing: ${rooms.hallMaze}`);
-  assert.equal(rooms.hallRib, true, "east 1F halls must keep inner ribs off the S-bend");
-  assert.equal(rooms.northRib, true, "north 1F halls must keep inner ribs off the west loop");
-  assert.ok(rooms.hallLockers >= 8, `1F maze halls must dress the outer walls with locker banks: ${rooms.hallLockers}`);
-  assert.equal(rooms.hallClass, true, "outer ring must be enclosed by classroom walls");
-  assert.equal(rooms.hallStripe, true, "school hallway stripe must run the outer ring");
+  assert.equal(f1MazeWalk.at(-1).ok, true, `must walk a 1F hall alcove, got ${JSON.stringify(f1MazeWalk.at(-1))}`);
+  assert.ok(f1MazeWalk.at(-1).z > 4, "1F hall continues into the south hide alcove");
+  assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
+  assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
+  assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");
+  assert.ok(rooms.hallLockers >= 8, `1F maze halls must dress the corridor with locker banks: ${rooms.hallLockers}`);
+  assert.equal(rooms.hallClass, true, "school halls must be enclosed by classroom walls");
+  assert.equal(rooms.hallStripe, true, "school hallway stripe must run the center corridor");
   assert.equal(rooms.hallWindow, true, "classroom doors must have dark windows");
-  assert.equal(rooms.hallJog, true, "east 1F halls must block the z=0 spine and jog south");
-  assert.equal(rooms.hallJogE, true, "east 1F halls must block the east arm so the spine cannot reopen");
-  assert.equal(rooms.hallJogNs, true, "north 1F halls must block the x=0 spine and jog west");
-  assert.equal(rooms.hallJogNsS, true, "north 1F halls must block the south arm so the spine cannot reopen");
+  assert.equal(rooms.hallJog, false, "east 1F halls must keep the z=0 spine open");
+  assert.equal(rooms.hallJogE, false, "east 1F halls must not block the east arm with a jog");
+  assert.equal(rooms.hallJogNs, false, "north 1F halls must keep the x=0 spine open");
+  assert.equal(rooms.hallJogNsS, false, "north 1F halls must not block the south arm with a jog");
   assert.equal(rooms.uncatSpineClear, true, "Uncat south reveal hall must stay a straight spine");
-  assert.ok(northWalk.some((stop) => stop.x > 2.0), "north school must S-bend east off x=0");
-  assert.ok(northWalk.some((stop) => stop.x < -2.0), "north school must force a west jog off x=0");
-  assert.equal(northWalk.at(-1).ok, true, `must walk the north 1F jog, got ${JSON.stringify(northWalk.at(-1))}`);
-  assert.ok(northWalk.at(-1).z < -19.5, "north jog continues past the baffle");
-  assert.ok(nsLoopWalk.some((stop) => stop.x < -3.2 && stop.z > -13), "north tile must also loop west around the south baffle");
-  assert.ok(nsLoopWalk.some((stop) => stop.x > 1.8 && stop.z < -18), "north tile west loop must return east around the north baffle");
-  assert.equal(nsLoopWalk.at(-1).ok, true, `must finish the opposite north 1F loop, got ${JSON.stringify(nsLoopWalk.at(-1))}`);
-  assert.equal(rooms.hallLoopN, true, "east 1F loops must pinch the north plus arm");
-  assert.equal(rooms.hallLoopW, true, "north 1F loops must pinch the west plus arm");
+  assert.ok(northWalk.some((stop) => stop.x > 2.0), "north school T-spur must open east off x=0");
+  assert.ok(northWalk.some((stop) => stop.x < -2.0), "north school west alcove must be walkable");
+  assert.equal(northWalk.at(-1).ok, true, `must walk the north 1F hall, got ${JSON.stringify(northWalk.at(-1))}`);
+  assert.ok(northWalk.at(-1).z < -19.5, "north hall continues past the tile center");
+  assert.ok(nsLoopWalk.some((stop) => stop.x < -3.2 && stop.z > -13), "north tile west alcove must be enterable");
+  assert.ok(nsLoopWalk.some((stop) => stop.x > 1.8 && Math.abs(stop.z + 16) < 1.5), "north tile east T-spur must be walkable");
+  assert.equal(nsLoopWalk.at(-1).ok, true, `must finish the north 1F hall, got ${JSON.stringify(nsLoopWalk.at(-1))}`);
+  assert.equal(rooms.hallLoopN, false, "east 1F halls must not pinch the north arm with a loop baffle");
+  assert.equal(rooms.hallLoopW, false, "north 1F halls must not pinch the west arm with a loop baffle");
   assert.equal(b1Walk.at(-1).ok, true, `must walk the B1 maze to the nursery, got ${JSON.stringify(b1Walk.at(-1))}`);
   assert.ok(b1Walk.at(-1).x < 0, "nursery is west of the inner crib door");
   assert.equal(f2Walk.at(-1).ok, true, `must walk the 2F maze to the shrine, got ${JSON.stringify(f2Walk.at(-1))}`);
