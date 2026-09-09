@@ -28,16 +28,16 @@ const pose = await page.evaluate(() => {
   if (uncat) uncat.group.visible = false;
   game.hud.setStatus("교실 뒷문이 옆 복도로 뚫려 있습니다.", 2800);
   return game.poseForCapture({
-    x: 20.85,
+    x: 21.45,
     y: 0,
-    z: -3.55,
-    lookAt: [23.45, 1.05, -6.45],
+    z: -3.35,
+    lookAt: [22.55, 0.52, -6.35],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_classroom_cutthrough.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_classroom_backdoor_aisle.png"), timeout: 120000 });
 console.log("through", pose);
 await browser.close();
 console.log("ok");

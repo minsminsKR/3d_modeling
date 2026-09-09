@@ -28,16 +28,16 @@ const pose = await page.evaluate(() => {
   if (uncat) uncat.group.visible = false;
   game.hud.setStatus("체육관입니다. 줄은 남아 있는데 운동장은 없습니다.", 2800);
   return game.poseForCapture({
-    x: 122.35,
+    x: 129.35,
     y: 0,
-    z: 0.15,
-    lookAt: [129.2, 1.15, 0.35],
+    z: -1.55,
+    lookAt: [134.15, 1.72, 0.12],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_gymnasium_court.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_gymnasium_hoop.png"), timeout: 120000 });
 console.log("gym", pose);
 await browser.close();
 console.log("ok");
