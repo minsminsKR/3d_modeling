@@ -29,10 +29,10 @@ const pose = await page.evaluate(() => {
   if (uncat) uncat.group.visible = false;
   game.hud.setStatus("로비입니다. 표는 팔지 않습니다.", 2800);
   return game.poseForCapture({
-    x: 108.6,
+    x: 111.85,
     y: 0,
-    z: 16.08,
-    lookAt: [113.4, 1.12, 18.35],
+    z: 16.05,
+    lookAt: [107.7, 1.05, 18.25],
     flashlight: true,
     freezeLoop: true,
   });

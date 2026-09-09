@@ -27,10 +27,10 @@ const pose = await page.evaluate(() => {
   if (uncat) uncat.group.visible = false;
   game.hud.setStatus("계단 우물입니다. 아래 복도가 당신을 올려다봅니다.", 2800);
   return game.poseForCapture({
-    x: -18.35,
+    x: -17.55,
     y: 5,
-    z: -17.8,
-    lookAt: [-16.05, 2.15, -16.4],
+    z: -16.6,
+    lookAt: [-16.05, 1.35, -17.2],
     flashlight: true,
     freezeLoop: true,
   });
