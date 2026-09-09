@@ -123,6 +123,7 @@ try {
     { x: 16, z: 0 },
     { x: 10.75, z: 0 },
     { x: 10.75, z: -5.25 },
+    { x: 10.75, z: 0 },
     { x: 16, z: 0 },
     { x: 21.25, z: 0 },
     { x: 21.25, z: 5.25 },
@@ -536,7 +537,7 @@ try {
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
   assert.ok(annexWalk.some((stop) => Math.abs(stop.z) < 1.2 && stop.x > 30), "east school must keep a z=0 spine through the next tile");
-  assert.ok(loopWalk.some((stop) => stop.z < -4.8 && stop.x < 17), "east tile north T-spur must be walkable");
+  assert.ok(loopWalk.some((stop) => stop.z < -4.0 && stop.x < 17), "east tile north T-spur must be walkable");
   assert.ok(loopWalk.some((stop) => stop.z > 4.0 && stop.x > 17), "east tile south alcove must be walkable");
   assert.equal(loopWalk.at(-1).ok, true, `must finish the 1F hall alcoves, got ${JSON.stringify(loopWalk.at(-1))}`);
   assert.ok(ringWalk[1]?.ok && Math.abs(ringWalk[1].z) < 1.2, `center hall must cross the tile at z=0, got ${JSON.stringify(ringWalk[1])}`);

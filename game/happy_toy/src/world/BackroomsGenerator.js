@@ -2171,7 +2171,7 @@ export class BackroomsGenerator {
       glass("hall_window_s_w", -2.9, winZ, 0.28, 0.32, 0.03);
       glass("hall_window_s_e", 2.9, winZ, 0.28, 0.32, 0.03);
       this.placeDressedBox(
-        chunk, chunkId, "hall_stripe",
+        chunk, chunkId, "hall_stripe_ew",
         center.x, floorY + 0.012, center.z, 14.6, 0.02, 0.09,
         this.schoolStripeMat, false,
       );
