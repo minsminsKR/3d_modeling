@@ -4634,25 +4634,25 @@ export class BackroomsGenerator {
         opacity: 0.55,
       });
     }
-    for (const [name, x] of [["w", -5.35], ["e", 5.35]]) {
+    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
       this.placeDressedBox(
         chunk, chunkId, `stairhall_cone_${name}`,
-        center.x + x, floorY + 0.42, center.z - 3.85,
-        0.38, 0.84, 0.38, this.schoolMetalMat || this.trimMaterial,
+        center.x + x, floorY + 0.52, center.z - 1.52,
+        0.52, 1.04, 0.52, this.schoolMetalMat || this.trimMaterial,
       );
     }
     this.placeDressedBox(
       chunk, chunkId, "stairhall_wet",
-      center.x, floorY + 0.02, center.z - 3.15,
-      3.4, 0.03, 1.15, this.schoolWetMat, false,
+      center.x, floorY + 0.02, center.z - 1.22,
+      4.6, 0.03, 0.85, this.schoolWetMat, false,
     );
     this.addHallNookSign(
       chunk, chunkId, "stairhall_sign",
-      center.x, floorY + 2.12, center.z - 1.82,
+      center.x, floorY + 2.12, center.z - 1.72,
       0, "지하",
     );
-    const glow = new THREE.PointLight(0x142018, 0.42, 6.2, 2);
-    glow.position.set(center.x, floorY + 2.05, center.z - 2.2);
+    const glow = new THREE.PointLight(0x142018, 0.48, 6.2, 2);
+    glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_stairhall_glow`;
     this.scene.add(glow);
     chunk.meshes.push(glow);
@@ -4669,20 +4669,20 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.05,
       });
     }
-    for (const [name, z] of [["n_a", -5.35], ["n_b", -3.15], ["s_a", 3.15], ["s_b", 5.35]]) {
+    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
       this.placeDressedBox(
         chunk, chunkId, `nurseryhall_crib_${name}`,
-        center.x - 3.85, floorY + 0.42, center.z + z,
+        center.x - 1.48, floorY + 0.42, center.z + z,
         0.72, 0.84, 0.85, this.schoolCribMat,
       );
     }
     this.addHallNookSign(
       chunk, chunkId, "nurseryhall_sign",
-      center.x - 1.82, floorY + 2.12, center.z,
+      center.x - 1.72, floorY + 2.12, center.z,
       Math.PI / 2, "보육",
     );
-    const glow = new THREE.PointLight(0x201410, 0.42, 6.0, 2);
-    glow.position.set(center.x - 2.2, floorY + 2.05, center.z);
+    const glow = new THREE.PointLight(0x201410, 0.48, 6.0, 2);
+    glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_nurseryhall_glow`;
     this.scene.add(glow);
     chunk.meshes.push(glow);
@@ -4699,25 +4699,25 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.06,
       });
     }
-    for (const [name, z] of [["n", -3.45], ["s", 3.45]]) {
+    for (const [name, z] of [["n", -5.05], ["s", 5.05]]) {
       this.placeDressedBox(
         chunk, chunkId, `dollhall_shelf_${name}`,
-        center.x - 3.85, floorY + 0.95, center.z + z,
+        center.x - 1.52, floorY + 0.95, center.z + z,
         0.42, 1.9, 1.15, this.schoolDeskDark || this.trimMaterial,
       );
       this.placeDressedBox(
         chunk, chunkId, `dollhall_figure_${name}`,
-        center.x - 3.85, floorY + 0.55, center.z + z,
+        center.x - 1.52, floorY + 0.55, center.z + z,
         0.22, 0.72, 0.18, this.schoolDollMat, false,
       );
     }
     this.addHallNookSign(
       chunk, chunkId, "dollhall_sign",
-      center.x - 1.82, floorY + 2.12, center.z,
+      center.x - 1.72, floorY + 2.12, center.z,
       Math.PI / 2, "인형",
     );
-    const glow = new THREE.PointLight(0x201010, 0.42, 6.0, 2);
-    glow.position.set(center.x - 2.2, floorY + 2.05, center.z);
+    const glow = new THREE.PointLight(0x201010, 0.48, 6.0, 2);
+    glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_dollhall_glow`;
     this.scene.add(glow);
     chunk.meshes.push(glow);
@@ -4727,18 +4727,18 @@ export class BackroomsGenerator {
     this.ensureSchoolCorridorMaterials();
     if (!this.schoolAvMat) {
       this.schoolAvMat = new THREE.MeshStandardMaterial({
-        color: 0x1c1a16,
-        roughness: 0.48,
-        metalness: 0.22,
-        emissive: 0x0c1014,
-        emissiveIntensity: 0.12,
+        color: 0x0c1418,
+        roughness: 0.32,
+        metalness: 0.18,
+        emissive: 0x3a5a72,
+        emissiveIntensity: 0.22,
       });
     }
     for (const [name, x, z] of [
-      ["nw", -5.35, -5.35],
-      ["ne", 5.35, -5.35],
-      ["sw", -5.35, 5.35],
-      ["se", 5.35, 5.35],
+      ["nw", -3.75, -3.75],
+      ["ne", 3.75, -3.75],
+      ["sw", -3.75, 3.75],
+      ["se", 3.75, 3.75],
     ]) {
       this.placeDressedBox(
         chunk, chunkId, `av_cart_${name}`,
@@ -4747,8 +4747,8 @@ export class BackroomsGenerator {
       );
       this.placeDressedBox(
         chunk, chunkId, `av_crt_${name}`,
-        center.x + x, floorY + 1.12, center.z + z,
-        0.52, 0.38, 0.42, this.schoolAvMat, false,
+        center.x + x, floorY + 1.18, center.z + z,
+        0.72, 0.52, 0.12, this.schoolAvMat, false,
       );
     }
     this.addHallNookSign(
@@ -4775,16 +4775,29 @@ export class BackroomsGenerator {
       });
     }
     for (const [name, x, z] of [
-      ["nw", -5.45, -5.45],
-      ["ne", 5.45, -5.45],
-      ["sw", -5.45, 5.45],
-      ["se", 5.45, 5.45],
+      ["nw", -3.75, -3.75],
+      ["ne", 3.75, -3.75],
+      ["sw", -3.75, 3.75],
+      ["se", 3.75, 3.75],
     ]) {
       this.placeDressedBox(
         chunk, chunkId, `supply_cage_${name}`,
         center.x + x, floorY + 1.05, center.z + z,
-        1.35, 2.1, 1.35, this.schoolCageMat,
+        1.15, 2.1, 1.15, this.schoolCageMat,
       );
+      const inwardX = x > 0 ? x - 0.58 : x + 0.58;
+      const inwardZ = z > 0 ? z - 0.58 : z + 0.58;
+      for (const [axis, offset] of [["x", -0.36], ["x", 0], ["x", 0.36], ["z", -0.36], ["z", 0], ["z", 0.36]]) {
+        this.placeDressedBox(
+          chunk, chunkId, `supply_bar_${name}_${axis}_${offset < 0 ? "a" : offset > 0 ? "b" : "m"}`,
+          center.x + (axis === "x" ? inwardX : x + offset),
+          floorY + 1.05,
+          center.z + (axis === "z" ? inwardZ : z + offset),
+          0.05, 1.95, 0.05,
+          this.schoolMetalMat || this.trimMaterial,
+          false,
+        );
+      }
     }
     this.addHallNookSign(
       chunk, chunkId, "supply_sign",
