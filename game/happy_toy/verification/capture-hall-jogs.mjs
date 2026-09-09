@@ -35,6 +35,9 @@ async function poseShot(name, pose) {
     game.hud?.setPrompt?.("");
     game.hud?.setStatus(options.status || "", 4200);
     return game.poseForCapture({
+      x: options.x,
+      y: options.y,
+      z: options.z,
       yaw: options.yaw,
       pitch: options.pitch,
       lookAt: options.lookAt,
@@ -47,14 +50,14 @@ async function poseShot(name, pose) {
   return info;
 }
 
-const east = await poseShot("f1_east_s_bend.png", {
+const east = await poseShot("f1_s_bend_east_look.png", {
   x: 12.2,
   y: 0,
   z: 2.55,
   lookAt: [16.4, 1.15, 2.45],
   status: "동쪽 복도가 두 번 꺾입니다.",
 });
-const north = await poseShot("f1_north_s_bend.png", {
+const north = await poseShot("f1_s_bend_north_look.png", {
   x: 2.55,
   y: 0,
   z: -12.2,

@@ -107,6 +107,8 @@ try {
     ...ewS(48),
     ...ewS(64),
     ...ewS(80),
+    { x: 84.5, z: -2.6 },
+    { x: 80, z: -2.6 },
     { x: 80, z: -16 },
   ]) {
     annexWalk.push(await walkTo(stop, 400));
