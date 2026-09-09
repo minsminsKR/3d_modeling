@@ -68,6 +68,7 @@ export class MapBuilder {
     });
     const activeRadius = 2;
     const disableRadius = 3;
+    const PINNED_CHUNKS = new Set(["0,0", "1,2", "-1,-1", "-2,2", "2,-2"]);
 
     let changed = false;
 
@@ -75,6 +76,7 @@ export class MapBuilder {
     if (chunkChanged) {
       // 1. Unload chunks beyond disable radius
       for (const [key, chunk] of this.loadedChunks.entries()) {
+        if (PINNED_CHUNKS.has(key)) continue;
         if (!inRange(chunk.cx, chunk.cz, disableRadius)) {
           this.generator.destroyChunk(chunk.cx, chunk.cz);
           this.loadedChunks.delete(key);
@@ -85,9 +87,6 @@ export class MapBuilder {
           this.cabinets = this.cabinets.filter((c) => c.chunkId !== chunk.chunkId);
           this.safeLights = this.safeLights.filter((l) => l.chunkId !== chunk.chunkId);
           this.loreNotes = this.loreNotes.filter((n) => n.chunkId !== chunk.chunkId);
-          if (this.finalExit && this.finalExit.chunkId === chunk.chunkId) {
-            this.finalExit = null;
-          }
           changed = true;
         }
       }
@@ -194,7 +193,7 @@ export class MapBuilder {
 
     const isStairVoid = chunk.type === "stairs_2f" || chunk.type === "stairs_b1";
     const isNarrowCorridor = chunk.type === "corridor_ns" || chunk.type === "corridor_ew" || chunk.type === "narrow_ns";
-    const hasFixture = !isStairVoid && (chunk.type === "start" || isNarrowCorridor || chunk.type === "classroom" || random() < 0.52);
+    const hasFixture = !isStairVoid && (chunk.type === "start" || isNarrowCorridor || chunk.type === "classroom" || chunk.type === "nurse_office" || chunk.type === "music_room" || random() < 0.52);
     if (hasFixture) {
       const isUnstable = chunk.type === "flicker_room" || random() < 0.14;
       const fixtureMaterial = new THREE.MeshStandardMaterial({
@@ -215,7 +214,9 @@ export class MapBuilder {
       this.scene.add(fixture);
       chunk.meshes.push(fixture);
 
-      const baseIntensity = isUnstable ? 0.7 : 0.22 + random() * 0.2;
+      const baseIntensity = isUnstable
+        ? 1.15
+        : 0.55 + random() * 0.35;
       chunk.lights.push({
         mesh: fixture,
         localPos: new THREE.Vector3(offsetX, 2.42, offsetZ),

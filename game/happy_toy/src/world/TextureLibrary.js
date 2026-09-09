@@ -31,10 +31,10 @@ export class TextureLibrary {
     const mat = new THREE.MeshStandardMaterial({
       map: wallTexture,
       emissive: 0x080604,
-      emissiveIntensity: 0.06,
+      emissiveIntensity: 0.09,
       bumpMap: this.createDetailTexture("wall-plaster", { repeat: [3, 1] }),
       bumpScale: 0.022,
-      color: 0x6e5c48,
+      color: 0x8a735c,
       roughness: 0.92,
       metalness: 0.0,
     });
@@ -50,7 +50,7 @@ export class TextureLibrary {
       map: this.load("stair"),
       bumpMap: this.createDetailTexture("worn-wood", { repeat: [2, 2] }),
       bumpScale: 0.045,
-      color: 0x8c6d48,
+      color: 0xa07a52,
       roughness: 0.82,
       metalness: 0.0,
     });
@@ -102,10 +102,10 @@ export class TextureLibrary {
     const mat = new THREE.MeshStandardMaterial({
       map: floorTexture,
       emissive: 0x060403,
-      emissiveIntensity: 0.05,
+      emissiveIntensity: 0.08,
       bumpMap: this.createDetailTexture("floor-grain", { repeat }),
       bumpScale: 0.028,
-      color: 0x5a4a38,
+      color: 0x6e5844,
       roughness: 0.86,
       metalness: 0.02,
     });

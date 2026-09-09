@@ -291,6 +291,43 @@ export class SoundManager {
     this.rampParam(this.whisperGain?.gain, clamp01(intensity) * 0.17, 0.12);
   }
 
+  setChaseActive(active) {
+    if (!this.initialized || !this.ctx) return;
+    if (active) this.startChaseBed();
+    else this.stopChaseBed();
+  }
+
+  startChaseBed() {
+    if (!this.ctx || this.chaseBedOn) return;
+    this.chaseBedOn = true;
+    if (!this.chaseGain) {
+      this.chaseGain = this.ctx.createGain();
+      this.chaseGain.gain.value = 0;
+      const low = this.ctx.createOscillator();
+      low.type = "triangle";
+      low.frequency.value = 46;
+      const high = this.ctx.createOscillator();
+      high.type = "sine";
+      high.frequency.value = 93;
+      const highGain = this.ctx.createGain();
+      highGain.gain.value = 0.32;
+      low.connect(this.chaseGain);
+      high.connect(highGain);
+      highGain.connect(this.chaseGain);
+      this.chaseGain.connect(this.bgmGain);
+      const now = this.ctx.currentTime;
+      low.start(now);
+      high.start(now);
+      this.chaseNodes = [low, high];
+    }
+    this.rampParam(this.chaseGain.gain, 0.058, 0.16);
+  }
+
+  stopChaseBed() {
+    this.chaseBedOn = false;
+    this.rampParam(this.chaseGain?.gain, 0.0001, 0.32);
+  }
+
   updateHeartbeat(deltaTime, nearestMonsterDistance) {
     if (!this.initialized || !this.ctx) return;
     const distance = Number.isFinite(nearestMonsterDistance) ? nearestMonsterDistance : 999;

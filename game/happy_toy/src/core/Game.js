@@ -185,11 +185,12 @@ export class Game {
 
 
     this.itemSystem.spawnPickups([
-      [-11.0, 0, -17.5],
-      [11.5, 0, -8.5],
-      [-9.5, 0, 5.5],
-      [6.5, 3.4, 7.5],
-      [-12.0, 0, 21.0],
+      [2.4, 0, 3.6],
+      [-2.6, 0, 4.2],
+      [32.0, 0, 0.0],
+      [96.0, 0, 0.0],
+      [10.5, -5, 30.4],
+      [-24.2, 5, -18.6],
     ]);
 
     this.refreshInteractables();
@@ -606,6 +607,10 @@ export class Game {
         }
       }
       soundManager.updateHeartbeat(deltaTime, minDist);
+      const chasing = (this.enemyManager?.enemies || []).some((enemy) => (
+        !enemy.isDormant && (enemy.state === "chase" || enemy.state === "flee")
+      ));
+      soundManager.setChaseActive(chasing);
 
       // Compass target
       const compassTarget = this.getCompassTarget();
@@ -1627,9 +1632,17 @@ export class Game {
       this.flashlight.color.lerp(new THREE.Color(profile.flashlightColor), colorBlend);
       this.flashlightFill?.color.lerp(this.flashlight.color, 1);
     }
+    const intensity = profile.flashlightIntensity ?? LIGHTING_CONFIG.flashlightIntensity;
+    if (this.flashlightController) {
+      this.flashlightController.defaultIntensity += (intensity - this.flashlightController.defaultIntensity) * distBlend;
+    }
     if (this.flashlight) {
       const range = profile.flashlightRange ?? LIGHTING_CONFIG.flashlightRange;
       this.flashlight.distance += (range - this.flashlight.distance) * distBlend;
+    }
+    if (this.flashlightFill) {
+      const fillRange = profile.flashlightFillRange ?? LIGHTING_CONFIG.flashlightFillRange;
+      this.flashlightFill.distance += (fillRange - this.flashlightFill.distance) * distBlend;
     }
     this._floorAmbienceAt = (this._floorAmbienceAt || 0) + deltaTime;
     const interval = mapId === "b1" ? 1.15 : mapId === "f2" ? 1.45 : 8;

@@ -132,9 +132,15 @@ const ROOM_LIKE_CHUNK_TYPES = new Set([
   "event",
   "archive",
   "classroom",
+  "nurse_office",
+  "music_room",
   "stairs_2f",
   "stairs_b1",
 ]);
+
+function isClassroomType(type) {
+  return type === "classroom" || type === "nurse_office" || type === "music_room";
+}
 
 // Deterministic seed-based random generator (Mulberry32)
 export function createRandom(seed) {
@@ -259,6 +265,8 @@ export class BackroomsGenerator {
       "0,2": "corridor_ns",
       "-1,-2": "omen_room",
       "1,-2": "static_room",
+      "5,-1": "nurse_office",
+      "8,2": "music_room",
     };
 
     const key = `${cx},${cz}`;
@@ -1002,26 +1010,26 @@ export class BackroomsGenerator {
       // Weathered stone and damp wood materials for B1
       const b1WallMat = new THREE.MeshStandardMaterial({
         map: this.textures.load("wall"),
-        color: 0x151c18,
-        roughness: 0.96,
-        metalness: 0.12,
-        emissive: 0x04140f,
-        emissiveIntensity: 0.06,
+        color: 0x4a5a52,
+        roughness: 0.88,
+        metalness: 0.04,
+        emissive: 0x0a2218,
+        emissiveIntensity: 0.1,
       });
       const b1FloorMat = new THREE.MeshStandardMaterial({
         map: this.textures.load("floor"),
-        color: 0x0c1210,
-        roughness: 0.42,
-        metalness: 0.22,
-        emissive: 0x03100c,
-        emissiveIntensity: 0.05,
+        color: 0x3a4840,
+        roughness: 0.55,
+        metalness: 0.06,
+        emissive: 0x081810,
+        emissiveIntensity: 0.08,
       });
       const b1CeilMat = new THREE.MeshStandardMaterial({
         map: this.textures.load("ceiling"),
-        color: 0x0a100e,
-        roughness: 0.98,
-        emissive: 0x020806,
-        emissiveIntensity: 0.04,
+        color: 0x24322c,
+        roughness: 0.94,
+        emissive: 0x061410,
+        emissiveIntensity: 0.06,
       });
 
       // Visual stair steps
@@ -1627,12 +1635,12 @@ export class BackroomsGenerator {
       addWallSegment(4.0, 3.0, 0.4, 4.0, "playroom_divider_e");
     } else if (type === "event") {
       addWallSegment(-4.8, 0.0, 0.4, 8.0, "event_partition");
-    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room" || type === "classroom") {
+    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room" || isClassroomType(type)) {
       addWallSegment(-5.0, -5.0, 1.2, 1.2, "wide_corner_nw");
       addWallSegment(5.0, -5.0, 1.2, 1.2, "wide_corner_ne");
       addWallSegment(-5.0, 5.0, 1.2, 1.2, "wide_corner_sw");
       addWallSegment(5.0, 5.0, 1.2, 1.2, "wide_corner_se");
-      if (type === "classroom") {
+      if (isClassroomType(type)) {
         addWallSegment(-3.4, -1.8, 2.4, 0.7, "desk_row_w");
         addWallSegment(3.4, 1.6, 2.4, 0.7, "desk_row_e");
       }
@@ -1874,13 +1882,13 @@ export class BackroomsGenerator {
   dressBasementFlood(chunk, chunkId, floorY, bounds) {
     const waterY = floorY - 5.0 + 0.15;
     const waterMat = new THREE.MeshStandardMaterial({
-      color: 0x1c5a4c,
-      roughness: 0.06,
-      metalness: 0.72,
+      color: 0x2d7a68,
+      roughness: 0.32,
+      metalness: 0.12,
       transparent: true,
-      opacity: 0.78,
-      emissive: 0x0c3a30,
-      emissiveIntensity: 0.42,
+      opacity: 0.82,
+      emissive: 0x145a48,
+      emissiveIntensity: 0.55,
       depthWrite: false,
     });
     const addWater = (name, width, length, x, z) => {
@@ -2034,12 +2042,12 @@ export class BackroomsGenerator {
     this.scene.add(mold);
     chunk.meshes.push(mold);
 
-    const gloom = new THREE.PointLight(0x1c4a3c, 1.45, 8.4, 1.85);
+    const gloom = new THREE.PointLight(0x1c4a3c, 4.8, 10.5, 1.6);
     gloom.position.set(10.4, floorY - 4.05, 31.6);
     gloom.name = `${chunkId}_b1_flood_gloom`;
     this.scene.add(gloom);
     chunk.meshes.push(gloom);
-    const gloomEast = new THREE.PointLight(0x16382e, 1.05, 7.2, 1.9);
+    const gloomEast = new THREE.PointLight(0x16382e, 3.6, 9.2, 1.65);
     gloomEast.position.set(20.6, floorY - 4.05, 32.2);
     gloomEast.name = `${chunkId}_b1_flood_gloom_e`;
     this.scene.add(gloomEast);
@@ -2049,13 +2057,13 @@ export class BackroomsGenerator {
   dressBloodGallery(chunk, chunkId, floorY, bounds) {
     const bloodY = floorY + 5.04;
     const poolMat = new THREE.MeshStandardMaterial({
-      color: 0x7a0c12,
-      roughness: 0.14,
-      metalness: 0.28,
+      color: 0x9a1418,
+      roughness: 0.38,
+      metalness: 0.06,
       transparent: true,
-      opacity: 0.92,
-      emissive: 0x4a0408,
-      emissiveIntensity: 0.38,
+      opacity: 0.94,
+      emissive: 0x5a080c,
+      emissiveIntensity: 0.48,
       depthWrite: false,
     });
     const smearMat = new THREE.MeshStandardMaterial({
@@ -2186,12 +2194,12 @@ export class BackroomsGenerator {
       rotation: [0, -0.55, 0],
     });
 
-    const shrineGlow = new THREE.PointLight(0x6a1018, 1.55, 8.2, 1.8);
+    const shrineGlow = new THREE.PointLight(0x6a1018, 4.6, 10.2, 1.55);
     shrineGlow.position.set(-34.0, floorY + 6.1, -22.0);
     shrineGlow.name = `${chunkId}_2f_blood_glow`;
     this.scene.add(shrineGlow);
     chunk.meshes.push(shrineGlow);
-    const poolGlow = new THREE.PointLight(0x4a0a10, 1.25, 7.0, 1.85);
+    const poolGlow = new THREE.PointLight(0x4a0a10, 3.8, 9.0, 1.6);
     poolGlow.position.set(-23.6, floorY + 5.95, -18.2);
     poolGlow.name = `${chunkId}_2f_blood_glow_near`;
     this.scene.add(poolGlow);
@@ -2312,12 +2320,13 @@ export class BackroomsGenerator {
       this.scene.add(tableMesh);
       chunk.meshes.push(tableMesh);
       this.collisionWorld.addStaticBox(tableMesh.name, tableMesh.position, new THREE.Vector3(1.6, 0.42, 1.2), chunkId);
-    } else if (type === "classroom") {
+    } else if (isClassroomType(type)) {
+      const classLabel = type === "nurse_office" ? "보건실 문" : type === "music_room" ? "음악실 문" : "교실 문";
       const open = this.getOpenings(chunk.cx, chunk.cz);
-      if (open.N) addDynamicDoor(`${chunkId}_class_door`, "교실 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
-      else if (open.S) addDynamicDoor(`${chunkId}_class_door`, "교실 문", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
-      else if (open.E) addDynamicDoor(`${chunkId}_class_door`, "교실 문", [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
-      else addDynamicDoor(`${chunkId}_class_door`, "교실 문", [-7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
+      if (open.N) addDynamicDoor(`${chunkId}_class_door`, classLabel, [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      else if (open.S) addDynamicDoor(`${chunkId}_class_door`, classLabel, [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+      else if (open.E) addDynamicDoor(`${chunkId}_class_door`, classLabel, [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
+      else addDynamicDoor(`${chunkId}_class_door`, classLabel, [-7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
       this.dressClassroom(chunk, center, chunkId, floorY);
     }
 
@@ -2362,8 +2371,8 @@ export class BackroomsGenerator {
       addDynamicCabinet("cabinet_b1_east", "지하 동쪽 벽장", [8.2, -5.0, 0.2], -Math.PI / 2);
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
-    } else if (type === "classroom") {
-      addDynamicCabinet(`cabinet_class_${chunk.cx}_${chunk.cz}`, "교실 신발장", [5.4, 0.0, 5.4], Math.PI / 2);
+    } else if (isClassroomType(type)) {
+      addDynamicCabinet(`cabinet_class_${chunk.cx}_${chunk.cz}`, type === "nurse_office" ? "보건실 벽장" : type === "music_room" ? "음악실 벽장" : "교실 신발장", [5.4, 0.0, 5.4], Math.PI / 2);
     } else if (!isStart && !isEvent && !isArchive && !type.includes("stairs") && (type.includes("room") || type.includes("storage")) && rand() < 0.4) {
       addDynamicCabinet(`cabinet_${chunk.cx}_${chunk.cz}`, "복도 신발장", [-5.2, 0.0, -5.2], -Math.PI / 2);
     }
@@ -2377,29 +2386,72 @@ export class BackroomsGenerator {
       addDynamicCabinet(`cabinet_hall_${chunk.cx}_${chunk.cz}`, "신발장", alcove.pos, alcove.yaw);
     }
 
-    const addLoreNote = (id, localPos, yaw) => {
+    const addLoreNote = (id, localPos, yaw, body) => {
       const note = new LoreNote({
         id,
         label: "벽에 꽂힌 종이",
         position: [center.x + localPos[0], floorY + localPos[1], center.z + localPos[2]],
         yaw,
+        body,
       });
       note.chunkId = chunkId;
       this.scene.add(note.group);
       chunk.loreNotes.push(note);
     };
     if (type === "start") {
-      addLoreNote(`${chunkId}_lore`, [-7.55, 1.35, -3.2], Math.PI / 2);
+      addLoreNote(`${chunkId}_lore`, [-7.55, 1.35, -3.2], Math.PI / 2,
+        "제단함은 이 홀에 있다. 이름을 넷 모으기 전에는 열리지 않는다.");
     } else if (type === "stairs_b1") {
-      addLoreNote(`${chunkId}_lore_flood`, [-7.4, -3.55, -2.2], Math.PI / 2);
+      addLoreNote(`${chunkId}_lore_flood`, [-7.4, -3.55, -2.2], Math.PI / 2,
+        "물이 이름을 적고 있다. 요람 쪽 열쇠를 집고 신발장에 숨어서 나오십시오.");
     } else if (type === "stairs_2f") {
-      addLoreNote(`${chunkId}_lore_blood`, [-8.2, 6.35, 1.6], Math.PI / 2);
+      addLoreNote(`${chunkId}_lore_blood`, [-8.2, 6.35, 1.6], Math.PI / 2,
+        "액자 아래는 아직 젖어 있다. 그림이 떨어지면 네 번째 이름이 드러난다.");
+    } else if (type === "nurse_office") {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
+        "보건실 장부에 출석이 끝나지 않은 이름이 넷이다. 별관에서 같은 신발을 두 번 보지 마십시오.");
+    } else if (type === "music_room") {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
+        "피아노 뚜껑이 열린 채로 녹슬어 있다. 한 음이 모자라면 복도가 당신의 이름을 외운다.");
     } else if (type === "omen_room" || type === "static_room" || type === "flicker_room" || type === "classroom") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0);
-    } else if (isWorkshop || isPlayroom || isStorage) {
-      addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI);
+    } else if (isWorkshop) {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
+        "요람은 비어 있다. 젖은 발자국이 남쪽 지하 계단으로 이어진다.");
+    } else if (isPlayroom) {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
+        "인형이 아직 줍지 않은 이름을 가리킨다. 눈이 마주치면 따라가십시오.");
+    } else if (isStorage) {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
+        "창고 선반 뒤에 도자기 열쇠가 있다. 문을 닫아 추격을 끊으십시오.");
     } else if (hallLike && (Math.abs(chunk.cx) + Math.abs(chunk.cz)) % 2 === 1) {
       addLoreNote(`${chunkId}_lore`, [-1.18, 1.38, -5.4], Math.PI / 2);
+    }
+
+    if (isWorkshop) {
+      const crib = new THREE.Mesh(this.getBoxGeometry(1.35, 0.72, 0.78), this.trimMaterial);
+      crib.position.set(center.x - 4.2, floorY + 0.36, center.z + 3.4);
+      crib.name = `${chunkId}_empty_crib`;
+      this.scene.add(crib);
+      chunk.meshes.push(crib);
+      this.collisionWorld.addStaticBox(crib.name, crib.position, new THREE.Vector3(1.35, 0.72, 0.78), chunkId);
+      const stain = new THREE.Mesh(
+        this.getPlaneGeometry(1.8, 4.2),
+        new THREE.MeshStandardMaterial({
+          color: 0x1a3a32,
+          roughness: 0.55,
+          transparent: true,
+          opacity: 0.55,
+          emissive: 0x0a241c,
+          emissiveIntensity: 0.18,
+          depthWrite: false,
+        }),
+      );
+      stain.rotation.x = -Math.PI / 2;
+      stain.position.set(center.x - 2.4, floorY + 0.02, center.z + 1.4);
+      stain.name = `${chunkId}_crib_wet_trail`;
+      this.scene.add(stain);
+      chunk.meshes.push(stain);
     }
 
     // 3. Keys
@@ -2587,6 +2639,12 @@ export class BackroomsGenerator {
       spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "교실 입구 스위치");
       spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "교실 벽 스위치");
       spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "꺼진 형광등");
+    } else if (type === "nurse_office") {
+      spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "보건실 입구 스위치");
+      spawnSafeLight("floor-lamp", 4.2, floorH, -3.4, -Math.PI / 5, "보건실 스탠드");
+    } else if (type === "music_room") {
+      spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "음악실 입구 스위치");
+      spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "음악실 형광등");
     } else {
       // Generic fallback room (e.g. flicker_room): Flush on perimeter walls
       spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "벽 스위치");
@@ -2738,7 +2796,7 @@ export class BackroomsGenerator {
     if (type === "corridor_ew") return new Set(["north", "south"]);
     if (type === "t_junction") return new Set(["west"]);
     if (type === "corner") return new Set(["north", "west"]);
-    if (type === "dead_end" || type === "classroom") return new Set(["north", "east", "west"]);
+    if (type === "dead_end" || isClassroomType(type)) return new Set(["north", "east", "west"]);
     if (type === "workshop" || type === "playroom") return new Set(["south", "east", "west"]);
     if (type === "storage" || type === "event" || type === "wide_room" || type === "stairs_2f") return new Set(["north", "east", "west"]);
     if (type === "stairs_b1") return new Set(["south", "east", "west"]);
@@ -3016,7 +3074,7 @@ export class BackroomsGenerator {
         wp(0,0), wp(0,-6), wp(0,6), wp(-6,0), wp(6,0),
         wp(-6,-6), wp(6,-6), wp(-6,6), wp(6,6),
       ];
-    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room" || type === "classroom") {
+    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room" || isClassroomType(type)) {
       chunk.waypoints = [
         wp(0,0),
         wp(-5,-5), wp(0,-5), wp(5,-5),
