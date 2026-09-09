@@ -1629,16 +1629,21 @@ export class BackroomsGenerator {
     }
 
     // Plus-shaped halls with four enterable corner alcoves (1.6m inner gaps).
-    // Every volume that has a floor mesh is reachable; no sealed diorama pockets.
+    // East of spawn, EW halls get a south jog so the annex is not a straight highway.
     const hallLike = type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
       || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";
+    const ewChicane = hallLike && E && W && chunk.cx >= 1;
     if (hallLike) {
       addWallSegment(-1.4, -5.6, 0.4, 4.8, "alcove_nw_ns");
       addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
       addWallSegment(1.4, -5.6, 0.4, 4.8, "alcove_ne_ns");
       addWallSegment(5.6, -1.4, 4.8, 0.4, "alcove_ne_ew");
       addWallSegment(-1.4, 5.6, 0.4, 4.8, "alcove_sw_ns");
-      addWallSegment(-5.6, 1.4, 4.8, 0.4, "alcove_sw_ew");
+      if (ewChicane) {
+        addWallSegment(-6.925, 1.4, 2.15, 0.4, "alcove_sw_ew_w");
+      } else {
+        addWallSegment(-5.6, 1.4, 4.8, 0.4, "alcove_sw_ew");
+      }
       addWallSegment(1.4, 5.6, 0.4, 4.8, "alcove_se_ns");
       addWallSegment(5.6, 1.4, 4.8, 0.4, "alcove_se_ew");
     } else if (type === "tatami_room" || type === "pillar_room") {
@@ -1743,11 +1748,12 @@ export class BackroomsGenerator {
     const t = 0.32;
     const skipNW = chunk.cx === 0 && chunk.cz === 0;
     const cabinetSE = (chunk.cx + chunk.cz) % 2 === 0;
+    const ewChicane = openings.E && openings.W && chunk.cx >= 1;
     const walls = [];
     const add = (name, x, z, sx, sz, skip = false) => {
       if (!skip) walls.push([name, x, z, sx, sz]);
     };
-    // Outer-alcove C walls. Keep the 2.4m plus spine, start NW hide, and hall lockers clear.
+    // Outer-alcove C walls. Keep the start NW hide and hall lockers clear.
     add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW);
     add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW);
     add("hall_maze_ne_h", 6.0, -4.6, 1.8, t);
@@ -1756,7 +1762,10 @@ export class BackroomsGenerator {
     add("hall_maze_sw_v", -6.2, 6.2, t, 1.8, !cabinetSE);
     add("hall_maze_se_h", 6.0, 4.6, 1.8, t, cabinetSE);
     add("hall_maze_se_v", 6.2, 6.2, t, 1.8, cabinetSE);
-    if (openings.E && openings.W) {
+    if (ewChicane) {
+      add("hall_maze_jog", -2.6, 0.0, t, 2.72);
+    }
+    if (openings.E && openings.W && !ewChicane) {
       add("hall_maze_teeth_w", -4.2, 0.92, 1.8, t);
       add("hall_maze_teeth_e", 4.2, -0.92, 1.8, t);
     }

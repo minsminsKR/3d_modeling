@@ -90,16 +90,23 @@ try {
     }
   });
 
+  const ewJog = (centerX) => ([
+    { x: centerX - 4.5, z: 0 },
+    { x: centerX - 4.5, z: 2.6 },
+    { x: centerX, z: 2.6 },
+    { x: centerX, z: 0 },
+  ]);
   const annexWalk = [];
   for (const stop of [
     { x: 10.2, z: 0 },
-    { x: 32, z: 0 },
-    { x: 48, z: 0 },
-    { x: 64, z: 0 },
-    { x: 80, z: 0 },
+    ...ewJog(16),
+    ...ewJog(32),
+    ...ewJog(48),
+    ...ewJog(64),
+    ...ewJog(80),
     { x: 80, z: -16 },
   ]) {
-    annexWalk.push(await walkTo(stop));
+    annexWalk.push(await walkTo(stop, 400));
     console.log("walk", stop, annexWalk.at(-1));
   }
 
@@ -149,6 +156,7 @@ try {
       scienceType: science.type,
       annexSign: names(gate).some((name) => name.includes("annex_sign")),
       hallMaze: names(hall).filter((name) => name.includes("hall_maze_")).length,
+      hallJog: names(hall).some((name) => name.includes("hall_maze_jog")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -403,13 +411,15 @@ try {
   console.log({ annexWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
-  assert.equal(annexWalk[3].ok, true, `must walk to 별관 gate, got ${JSON.stringify(annexWalk[3])}`);
-  assert.ok(annexWalk[3].x > 56, "별관 gate is east of the core");
-  assert.equal(annexWalk[5].ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk[5])}`);
-  assert.ok(annexWalk[5].z < -10, "보건실 is on the north wing of the annex spine");
+  assert.ok(annexWalk.some((stop) => stop.z > 1.8), "east school must force a south jog off z=0");
+  const annexGate = annexWalk.find((stop) => stop.x > 56 && Math.abs(stop.z) < 1.2);
+  assert.ok(annexGate?.ok, `must walk to 별관 gate, got ${JSON.stringify(annexGate)}`);
+  assert.equal(annexWalk.at(-1).ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk.at(-1))}`);
+  assert.ok(annexWalk.at(-1).z < -10, "보건실 is on the north wing of the annex spine");
   assert.equal(f1MazeWalk.at(-1).ok, true, `must walk a 1F hall alcove maze, got ${JSON.stringify(f1MazeWalk.at(-1))}`);
   assert.ok(f1MazeWalk.at(-1).z < -5, "1F hall maze continues into the north alcove");
   assert.ok(rooms.hallMaze >= 6, `1F hall maze walls missing: ${rooms.hallMaze}`);
+  assert.equal(rooms.hallJog, true, "east 1F halls must block the z=0 spine and jog south");
   assert.equal(b1Walk.at(-1).ok, true, `must walk the B1 maze to the nursery, got ${JSON.stringify(b1Walk.at(-1))}`);
   assert.ok(b1Walk.at(-1).x < 0, "nursery is west of the inner crib door");
   assert.equal(f2Walk.at(-1).ok, true, `must walk the 2F maze to the shrine, got ${JSON.stringify(f2Walk.at(-1))}`);
