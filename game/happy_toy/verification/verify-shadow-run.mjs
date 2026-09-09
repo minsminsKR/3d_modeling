@@ -147,6 +147,26 @@ try {
     game.testSafeMode = false;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
+    game.player.setPosition({ x: 11.5, y: 0, z: -2.6 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const ringWalk = [];
+  for (const stop of [
+    { x: 11.5, z: -6.4 },
+    { x: 16, z: -6.4 },
+    { x: 20.5, z: -6.4 },
+    { x: 20.5, z: -2.6 },
+  ]) {
+    ringWalk.push(await walkTo(stop, 360));
+    console.log("ring", stop, ringWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(0, -1);
     game.player.setPosition({ x: 0, y: 0, z: -8 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
@@ -495,7 +515,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, northWalk, nsLoopWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, northWalk, nsLoopWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 1.8), "east school must force a south jog off z=0");
@@ -504,6 +524,8 @@ try {
   assert.ok(loopWalk.some((stop) => stop.z < -1.8 && stop.x < 17), "east tile must loop north around the west baffle");
   assert.ok(loopWalk.some((stop) => stop.z > 1.8 && stop.x > 17), "east tile north loop must return south around the east baffle");
   assert.equal(loopWalk.at(-1).ok, true, `must finish the opposite 1F loop, got ${JSON.stringify(loopWalk.at(-1))}`);
+  assert.ok(ringWalk.some((stop) => stop.z < -5.4 && stop.x > 14), "east tile must open an outer north ring past the inner loop");
+  assert.equal(ringWalk.at(-1).ok, true, `must walk the outer 1F ring, got ${JSON.stringify(ringWalk.at(-1))}`);
   const annexGate = annexWalk.find((stop) => stop.x > 56 && Math.abs(stop.z) < 1.2);
   assert.ok(annexGate?.ok, `must walk to 별관 gate, got ${JSON.stringify(annexGate)}`);
   assert.equal(annexWalk.at(-1).ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk.at(-1))}`);

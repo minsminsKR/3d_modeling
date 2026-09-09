@@ -1,5 +1,7 @@
 import * as THREE from "three";
 import { soundManager } from "../audio/SoundManager.js";
+import { CharacterLoader } from "../loaders/CharacterLoader.js";
+import { ENEMY_CONFIGS } from "../config/gameConfig.js";
 
 // Floor-bound lurker for B1 / 2F. Uncat stays on 1F; this figure hunts the
 // other two maps along walkable corridors so hiding is required.
@@ -7,6 +9,9 @@ export class FloorHuntDirector {
   constructor(game) {
     this.game = game;
     this.silhouette = null;
+    this.mixer = null;
+    this.modelReady = false;
+    this.loadStarted = false;
     this.reset();
   }
 
@@ -23,8 +28,7 @@ export class FloorHuntDirector {
     this.hide();
   }
 
-  ensureSilhouette() {
-    if (this.silhouette) return this.silhouette;
+  makeBoxFigure() {
     const group = new THREE.Group();
     group.name = "floor-hunt-silhouette";
     const mat = new THREE.MeshStandardMaterial({
@@ -52,9 +56,64 @@ export class FloorHuntDirector {
     armR.rotation.z = -0.18;
     group.add(torso, head, hips, legL, legR, armL, armR);
     group.visible = false;
-    this.game.scene.add(group);
-    this.silhouette = group;
     return group;
+  }
+
+  ensureSilhouette() {
+    if (this.silhouette) {
+      this.loadModel();
+      return this.silhouette;
+    }
+    this.silhouette = this.makeBoxFigure();
+    this.game.scene.add(this.silhouette);
+    this.loadModel();
+    return this.silhouette;
+  }
+
+  loadModel() {
+    if (this.loadStarted || this.modelReady) return;
+    this.loadStarted = true;
+    const config = ENEMY_CONFIGS.find((item) => item.id === "uncat") || ENEMY_CONFIGS[0];
+    const loader = new CharacterLoader();
+    loader.load({ ...config, height: 1.72 }).then((loaded) => {
+      if (!loaded?.root || loaded.fallback) return;
+      const root = loaded.root;
+      root.traverse((child) => {
+        if (!child.isMesh) return;
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        for (const material of materials) {
+          if (!material) continue;
+          material.color?.setHex(0x060308);
+          if (material.emissive) {
+            material.emissive.setHex(0x14060c);
+            material.emissiveIntensity = 0.2;
+          }
+          material.map = null;
+          material.roughness = 1;
+          material.metalness = 0;
+          material.needsUpdate = true;
+        }
+      });
+      const group = new THREE.Group();
+      group.name = "floor-hunt-silhouette";
+      group.add(root);
+      if (this.silhouette) {
+        group.position.copy(this.silhouette.position);
+        group.visible = this.silhouette.visible;
+        this.game.scene.remove(this.silhouette);
+      }
+      this.game.scene.add(group);
+      this.silhouette = group;
+      this.modelReady = true;
+      const clip = loaded.actions?.chase || loaded.actions?.patrol || loaded.animations?.[0];
+      if (clip) {
+        this.mixer = new THREE.AnimationMixer(root);
+        const action = this.mixer.clipAction(clip);
+        action.play();
+      }
+    }).catch(() => {
+      this.loadStarted = false;
+    });
   }
 
   hide() {
@@ -105,6 +164,7 @@ export class FloorHuntDirector {
     const looking = this.isPlayerLookingAt(sil.position);
     const los = game.collisionWorld?.hasLineOfSight?.(player.position, sil.position) !== false;
     this.frozen = Boolean(looking && los && game.flashlightController?.enabled);
+    if (this.mixer) this.mixer.timeScale = this.frozen ? 0 : 1;
     if (this.frozen) {
       this.approach = Math.max(0.12, this.approach - dt * 0.85);
     } else {
@@ -114,6 +174,7 @@ export class FloorHuntDirector {
     }
 
     sil.lookAt(x, hy + 1.1, z);
+    this.mixer?.update(dt);
     this.stepTimer -= dt;
     if (this.stepTimer <= 0 && !this.frozen) {
       this.stepTimer = Math.max(0.26, 0.58 - this.approach * 0.26);

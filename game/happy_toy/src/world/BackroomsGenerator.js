@@ -1651,46 +1651,23 @@ export class BackroomsGenerator {
     const ewChicane = hallLike && chicanes.ew;
     const nsChicane = hallLike && chicanes.ns;
     if (hallLike) {
-      if (nsChicane) {
-        addWallSegment(-1.4, -6.925, 0.4, 2.15, "alcove_nw_ns_n");
-      } else {
-        addWallSegment(-1.4, -5.6, 0.4, 4.8, "alcove_nw_ns");
-      }
-      if (ewChicane) {
-        addWallSegment(-6.925, -1.4, 2.15, 0.4, "alcove_nw_ew_w");
-      } else {
-        addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
-      }
-      if (nsChicane) {
-        addWallSegment(1.4, -6.925, 0.4, 2.15, "alcove_ne_ns_n");
-      } else {
-        addWallSegment(1.4, -5.6, 0.4, 4.8, "alcove_ne_ns");
-      }
-      if (ewChicane) {
-        addWallSegment(6.925, -1.4, 2.15, 0.4, "alcove_ne_ew_e");
-      } else {
-        addWallSegment(5.6, -1.4, 4.8, 0.4, "alcove_ne_ew");
-      }
-      if (nsChicane) {
-        addWallSegment(-1.4, 6.925, 0.4, 2.15, "alcove_sw_ns_s");
-      } else {
-        addWallSegment(-1.4, 5.6, 0.4, 4.8, "alcove_sw_ns");
-      }
-      if (ewChicane) {
-        addWallSegment(-6.925, 1.4, 2.15, 0.4, "alcove_sw_ew_w");
-      } else {
-        addWallSegment(-5.6, 1.4, 4.8, 0.4, "alcove_sw_ew");
-      }
-      if (nsChicane) {
-        addWallSegment(1.4, 6.925, 0.4, 2.15, "alcove_se_ns_s");
-      } else {
-        addWallSegment(1.4, 5.6, 0.4, 4.8, "alcove_se_ns");
-      }
-      if (ewChicane) {
-        addWallSegment(6.925, 1.4, 2.15, 0.4, "alcove_se_ew_e");
-      } else {
-        addWallSegment(5.6, 1.4, 4.8, 0.4, "alcove_se_ew");
-      }
+      const maze = ewChicane || nsChicane;
+      const nsSep = (x, zSign, fullName, midName) => {
+        if (maze) addWallSegment(x, zSign * 5.85, 0.4, 1.5, midName);
+        else addWallSegment(x, zSign * 5.6, 0.4, 4.8, fullName);
+      };
+      const ewSep = (z, xSign, fullName, midName) => {
+        if (maze) addWallSegment(xSign * 5.85, z, 1.5, 0.4, midName);
+        else addWallSegment(xSign * 5.6, z, 4.8, 0.4, fullName);
+      };
+      nsSep(-1.4, -1, "alcove_nw_ns", "alcove_nw_ns_mid");
+      ewSep(-1.4, -1, "alcove_nw_ew", "alcove_nw_ew_mid");
+      nsSep(1.4, -1, "alcove_ne_ns", "alcove_ne_ns_mid");
+      ewSep(-1.4, 1, "alcove_ne_ew", "alcove_ne_ew_mid");
+      nsSep(-1.4, 1, "alcove_sw_ns", "alcove_sw_ns_mid");
+      ewSep(1.4, -1, "alcove_sw_ew", "alcove_sw_ew_mid");
+      nsSep(1.4, 1, "alcove_se_ns", "alcove_se_ns_mid");
+      ewSep(1.4, 1, "alcove_se_ew", "alcove_se_ew_mid");
     } else if (type === "tatami_room" || type === "pillar_room") {
       // Traditional Japanese Tatami Room: Architectural corner posts & alcove wall
       addWallSegment(-7.2, -7.2, 0.8, 0.8, "tatami_post_nw");
@@ -3975,6 +3952,8 @@ export class BackroomsGenerator {
           wp(-4.5, 2.6), wp(0, 2.6), wp(-4.5, 0),
           wp(4.5, -2.6), wp(0, -2.6), wp(4.5, 0),
           wp(-4.5, -2.6), wp(4.5, 2.6),
+          wp(-6.4, -6.4), wp(0, -6.4), wp(6.4, -6.4),
+          wp(-6.4, 6.4), wp(0, 6.4), wp(6.4, 6.4),
         );
       }
       if (chicanes.ns) {
@@ -3982,6 +3961,8 @@ export class BackroomsGenerator {
           wp(-2.6, -4.5), wp(-2.6, 0), wp(0, -4.5),
           wp(2.6, 4.5), wp(2.6, 0), wp(0, 4.5),
           wp(2.6, -4.5), wp(-2.6, 4.5),
+          wp(-6.4, -6.4), wp(-6.4, 0), wp(-6.4, 6.4),
+          wp(6.4, -6.4), wp(6.4, 0), wp(6.4, 6.4),
         );
       }
     } else if (type === "corner") {
