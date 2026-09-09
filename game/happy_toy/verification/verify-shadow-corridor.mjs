@@ -119,7 +119,8 @@ try {
       state: uncat.state,
     };
 
-    game.player.setPosition({ x: 20.5, y: 0, z: -6.4 });
+    game.player.setPosition({ x: 32, y: 0, z: -6.4 });
+    game.mapBuilder.generator.generateChunk(2, 0);
     uncat.group.position.set(11.6, 0, -6.4);
     uncat.state = "chase";
     uncat.caughtPlayer = false;
@@ -128,10 +129,10 @@ try {
     uncat.chasePathGoal = null;
     uncat.lastKnownPlayerPosition = game.player.position.clone();
     uncat.memoryTimer = 14;
-    const ringStartDist = Math.hypot(uncat.group.position.x - 20.5, uncat.group.position.z + 6.4);
+    const ringStartDist = Math.hypot(uncat.group.position.x - 32, uncat.group.position.z + 6.4);
     let ringMaxZ = -9;
     let ringMinZ = 9;
-    for (let i = 0; i < 200; i += 1) {
+    for (let i = 0; i < 280; i += 1) {
       game.update(0.05, { skipRender: true });
       ringMaxZ = Math.max(ringMaxZ, uncat.group.position.z);
       ringMinZ = Math.min(ringMinZ, uncat.group.position.z);
@@ -316,8 +317,12 @@ try {
     `north-loop chase must stay off the south jog, maxZ=${result.mazeChaseLoop.maxZ}`,
   );
   assert.ok(
-    result.mazeChaseRing.endDist < result.mazeChaseRing.startDist - 2,
-    `Uncat must hunt the outer ring ${result.mazeChaseRing.startDist} -> ${result.mazeChaseRing.endDist} at ${result.mazeChaseRing.x},${result.mazeChaseRing.z}`,
+    result.mazeChaseRing.endDist < result.mazeChaseRing.startDist - 6,
+    `Uncat must hunt the long outer ring ${result.mazeChaseRing.startDist} -> ${result.mazeChaseRing.endDist} at ${result.mazeChaseRing.x},${result.mazeChaseRing.z}`,
+  );
+  assert.ok(
+    result.mazeChaseRing.x > 22,
+    `outer-ring chase must cross into the next tile, x=${result.mazeChaseRing.x}`,
   );
   assert.ok(
     result.mazeChaseRing.z < -4.8,

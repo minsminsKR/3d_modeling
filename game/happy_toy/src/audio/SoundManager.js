@@ -84,7 +84,7 @@ export class SoundManager {
       "start", "hunt", "pa", "f1b", "b1", "f2", "nurse", "music", "faculty", "science",
       "key", "key2", "key3", "keysDone", "ritual", "ritualFail", "death", "clear",
       "hide", "stairWait", "leaveStart", "nursery", "shrine", "stairB1", "stairF2",
-      "b1deep", "f2deep", "b1east", "f2south", "f1maze",
+      "b1deep", "f2deep", "b1east", "f2south", "f1maze", "f1ring",
     ];
     Promise.all(keys.map(async (key) => {
       try {

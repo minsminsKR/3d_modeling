@@ -144,6 +144,8 @@ try {
     const staticRoom = pathTo({ x: 16, y: 0.9, z: -28.6 });
     const westJog = pathTo({ x: -20.5, y: 0.9, z: 16 });
     const northJog = pathTo({ x: 0, y: 0.9, z: -20.5 });
+    const longRing = pathTo({ x: 32, y: 0.9, z: -6.4 });
+    const flickerSide = pathTo({ x: 16, y: 0.9, z: -16 });
 
     const sampleBlocked = (x, z) => collision.isCircleBlocked({ x, y: 0.9, z }, 0.34);
     const sampleWalkable = (x, z) => collision.getSurfaceAt({ x, y: 0.9, z }).walkable;
@@ -172,6 +174,8 @@ try {
       staticLen: staticRoom.length,
       westJogLen: westJog.length,
       northJogLen: northJog.length,
+      longRingLen: longRing.length,
+      flickerSideLen: flickerSide.length,
       alcoveStartBlocked: sampleBlocked(-5.1, -5.1),
       alcoveCorridorBlocked: sampleBlocked(-4.5, -11.5),
       omenWalkable: sampleWalkable(-16, -28.6),
@@ -205,6 +209,8 @@ try {
   assert.ok(result.staticLen > 0, "path from spawn to static room");
   assert.ok(result.westJogLen > 0, "west 1F chicane must stay pathable past the baffle");
   assert.ok(result.northJogLen > 0, "north 1F chicane must stay pathable past the baffle");
+  assert.ok(result.longRingLen > 0, "outer ring must continue into the next maze tile");
+  assert.ok(result.flickerSideLen > 0, "flicker room must be reachable as a side loop");
   assert.equal(result.omenWalkable, true);
   assert.equal(result.staticWalkable, true);
   console.log("PASS: wall lamps face inward, alcoves and north rooms are walkable, void chunks stay empty");

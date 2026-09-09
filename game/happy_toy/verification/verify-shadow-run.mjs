@@ -167,6 +167,26 @@ try {
     game.testSafeMode = false;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(2, 0);
+    game.player.setPosition({ x: 20.5, y: 0, z: -6.4 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const longRingWalk = [];
+  for (const stop of [
+    { x: 24.2, z: -6.4 },
+    { x: 27.5, z: -6.4 },
+    { x: 32, z: -6.4 },
+  ]) {
+    longRingWalk.push(await walkTo(stop, 360));
+    console.log("longring", stop, longRingWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(0, -1);
     game.player.setPosition({ x: 0, y: 0, z: -8 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
@@ -517,7 +537,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, northWalk, nsLoopWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 1.8), "east school must force a south jog off z=0");
@@ -528,6 +548,8 @@ try {
   assert.equal(loopWalk.at(-1).ok, true, `must finish the opposite 1F loop, got ${JSON.stringify(loopWalk.at(-1))}`);
   assert.ok(ringWalk[1]?.ok && ringWalk[1].z < -5.4, `outer north ring must cross the tile at z=-6.4, got ${JSON.stringify(ringWalk[1])}`);
   assert.equal(ringWalk.at(-1).ok, true, `must walk the outer 1F ring, got ${JSON.stringify(ringWalk.at(-1))}`);
+  assert.equal(longRingWalk.at(-1).ok, true, `outer ring must continue into the next maze tile, got ${JSON.stringify(longRingWalk.at(-1))}`);
+  assert.ok(longRingWalk.at(-1).x > 30 && longRingWalk.at(-1).z < -5.4, "long ring must stay on z=-6.4 into chunk (2,0)");
   const annexGate = annexWalk.find((stop) => stop.x > 56 && Math.abs(stop.z) < 1.2);
   assert.ok(annexGate?.ok, `must walk to 별관 gate, got ${JSON.stringify(annexGate)}`);
   assert.equal(annexWalk.at(-1).ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk.at(-1))}`);
@@ -557,6 +579,7 @@ try {
   assert.ok(f2Walk.at(-1).x < -27.4, "shrine is west of the inner gallery door");
   assert.ok(story.fired.includes("leaveStart"), `leaveStart VO missing: ${story.fired.join(",")}`);
   assert.ok(story.fired.includes("f1maze"), `1F maze VO missing: ${story.fired.join(",")}`);
+  assert.ok(story.fired.includes("f1ring") || longRingWalk.at(-1).x > 30, "long outer-ring story beat should fire");
   assert.ok(story.fired.includes("b1floor"), `B1 floor VO missing: ${story.fired.join(",")}`);
   assert.ok(story.fired.includes("nursery"), `nursery VO missing: ${story.fired.join(",")}`);
   assert.ok(story.fired.includes("f2floor"), `2F floor VO missing: ${story.fired.join(",")}`);

@@ -26,6 +26,10 @@ g.player.position = { x: 20, y: 0, z: 0 };
 director.update();
 assert.equal(director.fired.has("f1maze"), true);
 
+g.player.position = { x: 28, y: 0, z: -6.4 };
+director.update();
+assert.equal(director.fired.has("f1ring"), true);
+
 g.player.position = { x: 16, y: 0, z: 24.8 };
 director.update();
 assert.equal(director.fired.has("stairB1"), true);

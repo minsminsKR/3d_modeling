@@ -54,6 +54,15 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 24 && Math.abs(z + 6.4) < 1.7) {
+      this.fire(
+        "f1ring",
+        "f1ring",
+        "바깥 복도가 이어집니다. 안개 끝의 발소리를 다른 고리로 빼십시오.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && Math.hypot(x - 16, z - 24.8) < 5.2) {
       this.fire(
         "stairB1",

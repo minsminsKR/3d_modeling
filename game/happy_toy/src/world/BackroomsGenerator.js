@@ -299,7 +299,8 @@ export class BackroomsGenerator {
     // Intra-tile baffle loops so plus halls are not highways. Keep Uncat's
     // south reveal (0,1) and the weeping-angel west tile (-1,0) as spines.
     // Maze tiles add inner ribs/pockets while leaving the S-bend, opposite
-    // loop, and outer ring walkable.
+    // loop, and outer ring walkable. Adjacent maze halls also punch ring
+    // gates so the outer border becomes a building-length corridor.
   getHallChicanes(cx, cz) {
     const openings = this.getOpenings(cx, cz);
     const skipUncatSouth = cx === 0 && cz === 1;
@@ -309,6 +310,18 @@ export class BackroomsGenerator {
       ew: Boolean(openings.E && openings.W && cx !== 0 && !skipAngelWest),
       ns: Boolean(openings.N && openings.S && cz !== 0 && !skipUncatSouth),
     };
+  }
+
+  isHallChunk(cx, cz) {
+    const type = this.getChunkType(cx, cz);
+    return type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
+      || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";
+  }
+
+  isMazeHall(cx, cz) {
+    if (!this.isPlayableChunk(cx, cz) || !this.isHallChunk(cx, cz)) return false;
+    const chicanes = this.getHallChicanes(cx, cz);
+    return Boolean(chicanes.ew || chicanes.ns);
   }
 
   generateExteriorHull(cx, cz) {
@@ -1610,35 +1623,65 @@ export class BackroomsGenerator {
     const E = openings.E;
     const W = openings.W;
 
-    // Build Single-Tile Boundary Openings (2.4m corridor opening)
-    // North Border (z = -7.8)
+    // Cardinal 2.4m doors. Maze-to-maze faces also open 1.8m ring gates at
+    // |offset|≈6.4 so the outer border is a continuous school corridor.
+    const ringN = N && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx, chunk.cz - 1);
+    const ringS = S && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx, chunk.cz + 1);
+    const ringW = W && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx - 1, chunk.cz);
+    const ringE = E && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx + 1, chunk.cz);
+
     if (N) {
-      addWallSegment(-4.6, -7.8, 6.8, 0.4, "n_left");
-      addWallSegment(4.6, -7.8, 6.8, 0.4, "n_right");
+      if (ringN) {
+        addWallSegment(-7.65, -7.8, 0.7, 0.4, "n_far_w");
+        addWallSegment(-3.35, -7.8, 4.3, 0.4, "n_span_w");
+        addWallSegment(3.35, -7.8, 4.3, 0.4, "n_span_e");
+        addWallSegment(7.65, -7.8, 0.7, 0.4, "n_far_e");
+      } else {
+        addWallSegment(-4.6, -7.8, 6.8, 0.4, "n_left");
+        addWallSegment(4.6, -7.8, 6.8, 0.4, "n_right");
+      }
     } else {
       addWallSegment(0.0, -7.8, 16.0, 0.4, "n_solid");
     }
 
-    // South Border (z = 7.8)
     if (S) {
-      addWallSegment(-4.6, 7.8, 6.8, 0.4, "s_left");
-      addWallSegment(4.6, 7.8, 6.8, 0.4, "s_right");
+      if (ringS) {
+        addWallSegment(-7.65, 7.8, 0.7, 0.4, "s_far_w");
+        addWallSegment(-3.35, 7.8, 4.3, 0.4, "s_span_w");
+        addWallSegment(3.35, 7.8, 4.3, 0.4, "s_span_e");
+        addWallSegment(7.65, 7.8, 0.7, 0.4, "s_far_e");
+      } else {
+        addWallSegment(-4.6, 7.8, 6.8, 0.4, "s_left");
+        addWallSegment(4.6, 7.8, 6.8, 0.4, "s_right");
+      }
     } else {
       addWallSegment(0.0, 7.8, 16.0, 0.4, "s_solid");
     }
 
-    // West Border (x = -7.8)
     if (W) {
-      addWallSegment(-7.8, -4.6, 0.4, 6.8, "w_top");
-      addWallSegment(-7.8, 4.6, 0.4, 6.8, "w_bottom");
+      if (ringW) {
+        addWallSegment(-7.8, -7.65, 0.4, 0.7, "w_far_n");
+        addWallSegment(-7.8, -3.35, 0.4, 4.3, "w_span_n");
+        addWallSegment(-7.8, 3.35, 0.4, 4.3, "w_span_s");
+        addWallSegment(-7.8, 7.65, 0.4, 0.7, "w_far_s");
+      } else {
+        addWallSegment(-7.8, -4.6, 0.4, 6.8, "w_top");
+        addWallSegment(-7.8, 4.6, 0.4, 6.8, "w_bottom");
+      }
     } else {
       addWallSegment(-7.8, 0.0, 0.4, 16.0, "w_solid");
     }
 
-    // East Border (x = 7.8)
     if (E) {
-      addWallSegment(7.8, -4.6, 0.4, 6.8, "e_top");
-      addWallSegment(7.8, 4.6, 0.4, 6.8, "e_bottom");
+      if (ringE) {
+        addWallSegment(7.8, -7.65, 0.4, 0.7, "e_far_n");
+        addWallSegment(7.8, -3.35, 0.4, 4.3, "e_span_n");
+        addWallSegment(7.8, 3.35, 0.4, 4.3, "e_span_s");
+        addWallSegment(7.8, 7.65, 0.4, 0.7, "e_far_s");
+      } else {
+        addWallSegment(7.8, -4.6, 0.4, 6.8, "e_top");
+        addWallSegment(7.8, 4.6, 0.4, 6.8, "e_bottom");
+      }
     } else {
       addWallSegment(7.8, 0.0, 0.4, 16.0, "e_solid");
     }
@@ -1781,14 +1824,15 @@ export class BackroomsGenerator {
     };
     // Outer-alcove C walls. Keep the start NW hide and hall lockers clear.
     // EW loops also open the north cubbies so a second hide sits off the north jog.
-    add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW || ewChicane);
-    add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW || ewChicane);
-    add("hall_maze_ne_h", 6.0, -4.6, 1.8, t, ewChicane);
-    add("hall_maze_ne_v", 6.2, -6.2, t, 1.8, ewChicane);
-    add("hall_maze_sw_h", -6.0, 4.6, 1.8, t, !cabinetSE);
-    add("hall_maze_sw_v", -6.2, 6.2, t, 1.8, !cabinetSE);
-    add("hall_maze_se_h", 6.0, 4.6, 1.8, t, cabinetSE);
-    add("hall_maze_se_v", 6.2, 6.2, t, 1.8, cabinetSE);
+    const maze = ewChicane || nsChicane;
+    add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW || maze);
+    add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW || maze);
+    add("hall_maze_ne_h", 6.0, -4.6, 1.8, t, maze);
+    add("hall_maze_ne_v", 6.2, -6.2, t, 1.8, maze);
+    add("hall_maze_sw_h", -6.0, 4.6, 1.8, t, maze || !cabinetSE);
+    add("hall_maze_sw_v", -6.2, 6.2, t, 1.8, maze || !cabinetSE);
+    add("hall_maze_se_h", 6.0, 4.6, 1.8, t, maze || cabinetSE);
+    add("hall_maze_se_v", 6.2, 6.2, t, 1.8, maze || cabinetSE);
     if (ewChicane) {
       add("hall_maze_jog", -2.6, 0.0, t, 2.72);
       add("hall_maze_jog_e", 2.6, 0.0, t, 2.72);
