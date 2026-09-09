@@ -157,6 +157,42 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 104 && x < 120 && z < -24 && z > -40) {
+      this.fire(
+        "darkroom",
+        "darkroom",
+        "암실입니다. 빨간 불만 남아 있습니다. 물을 흔들지 마십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 72 && x < 88 && z > 24 && z < 40) {
+      this.fire(
+        "greenroom",
+        "greenroom",
+        "대기실입니다. 의상이 이름을 입고 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 56 && x < 72 && z < -24 && z > -40) {
+      this.fire(
+        "homeec",
+        "homeec",
+        "가정실입니다. 재봉틀이 혼자 돌아가고 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 104 && x < 120 && z < -8 && z > -24) {
+      this.fire(
+        "club",
+        "club",
+        "서도부입니다. 먹물이 아직 마르지 않았습니다.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 104 && x < 120 && z > 24 && z < 40) {
       this.fire(
         "practice",

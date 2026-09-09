@@ -1665,6 +1665,10 @@ export class Game {
       art_room: ["art", "미술실입니다. 물감이 아직 마르지 않았습니다."],
       studio: ["studio", "촬영실입니다. 조명이 꺼져 있습니다. 얼굴을 카메라에 대지 마십시오."],
       broadcast: ["broadcast", "방송실입니다. 마이크가 아직 뜨겁습니다. 이름을 대지 마십시오."],
+      darkroom: ["darkroom", "암실입니다. 빨간 불만 남아 있습니다. 물을 흔들지 마십시오."],
+      greenroom: ["greenroom", "대기실입니다. 의상이 이름을 입고 있습니다."],
+      home_ec: ["homeec", "가정실입니다. 재봉틀이 혼자 돌아가고 있습니다."],
+      club_room: ["club", "서도부입니다. 먹물이 아직 마르지 않았습니다."],
       auditorium: ["auditorium", "강당입니다. 막이 내려와 있고 객석이 당신을 셉니다."],
     };
     const room = roomLines[type];

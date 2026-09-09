@@ -332,6 +332,10 @@ export class MapBuilder {
     if (chunk.type === "art_room") label = "미술실";
     if (chunk.type === "studio") label = "촬영실";
     if (chunk.type === "broadcast") label = "방송실";
+    if (chunk.type === "darkroom") label = "암실";
+    if (chunk.type === "greenroom") label = "대기실";
+    if (chunk.type === "home_ec") label = "가정실";
+    if (chunk.type === "club_room") label = "서도부";
     if (chunk.cx === 3 && chunk.cz === 0) label = "연결복도";
     if (chunk.cx === 6 && chunk.cz === 0) label = "기념관";
     if (chunk.cx === 7 && chunk.cz === 0) label = "트로피";

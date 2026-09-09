@@ -522,6 +522,93 @@ try {
     console.log("studio", stop, studioWalk.at(-1));
   }
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(8, -2);
+    game.mapBuilder.generator.generateChunk(7, -2);
+    game.player.setPosition({ x: 122, y: 0, z: -32 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const darkroomWalk = [];
+  for (const stop of [
+    { x: 118, z: -32 },
+    { x: 112, z: -32 },
+    { x: 106, z: -32 },
+  ]) {
+    darkroomWalk.push(await walkTo(stop, 360));
+    console.log("darkroom", stop, darkroomWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(4, 2);
+    game.mapBuilder.generator.generateChunk(5, 2);
+    game.mapBuilder.generator.generateChunk(5, 1);
+    game.player.setPosition({ x: 70, y: 0, z: 32 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const greenroomWalk = [];
+  for (const stop of [
+    { x: 74, z: 32 },
+    { x: 80, z: 32 },
+    { x: 80, z: 26 },
+  ]) {
+    greenroomWalk.push(await walkTo(stop, 360));
+    console.log("greenroom", stop, greenroomWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(4, -1);
+    game.mapBuilder.generator.generateChunk(4, -2);
+    game.mapBuilder.generator.generateChunk(5, -2);
+    game.player.setPosition({ x: 64, y: 0, z: -22 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const homeEcWalk = [];
+  for (const stop of [
+    { x: 64, z: -28 },
+    { x: 64, z: -32 },
+    { x: 70, z: -32 },
+  ]) {
+    homeEcWalk.push(await walkTo(stop, 360));
+    console.log("home_ec", stop, homeEcWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(7, 0);
+    game.mapBuilder.generator.generateChunk(7, -1);
+    game.mapBuilder.generator.generateChunk(6, -1);
+    game.player.setPosition({ x: 112, y: 0, z: -6 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const clubWalk = [];
+  for (const stop of [
+    { x: 112, z: -10 },
+    { x: 112, z: -16 },
+    { x: 106, z: -16 },
+  ]) {
+    clubWalk.push(await walkTo(stop, 360));
+    console.log("club", stop, clubWalk.at(-1));
+  }
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -549,6 +636,10 @@ try {
     const practice = generator.generateChunk(7, 2);
     const studio = generator.generateChunk(8, -2);
     const broadcast = generator.generateChunk(4, 2);
+    const darkroom = generator.generateChunk(7, -2);
+    const greenroom = generator.generateChunk(5, 2);
+    const homeEc = generator.generateChunk(4, -2);
+    const club = generator.generateChunk(7, -1);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
     game._lastPlayerChunkCx = 4;
@@ -570,6 +661,10 @@ try {
     game.onEnterSchoolChunk(7, 2);
     game.onEnterSchoolChunk(8, -2);
     game.onEnterSchoolChunk(4, 2);
+    game.onEnterSchoolChunk(7, -2);
+    game.onEnterSchoolChunk(5, 2);
+    game.onEnterSchoolChunk(4, -2);
+    game.onEnterSchoolChunk(7, -1);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
     for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
     game.player.setPosition({ x: 32, y: 0, z: 0 });
@@ -653,6 +748,14 @@ try {
       broadcastDesk: names(broadcast).some((name) => name.includes("broadcast_desk")),
       broadcastCrt: names(broadcast).some((name) => name.includes("broadcast_crt_")),
       broadcastType: broadcast.type,
+      darkroomSink: names(darkroom).some((name) => name.includes("darkroom_sink_")),
+      darkroomType: darkroom.type,
+      greenroomSofa: names(greenroom).some((name) => name.includes("greenroom_sofa")),
+      greenroomType: greenroom.type,
+      homeEcMachine: names(homeEc).some((name) => name.includes("home_ec_machine_")),
+      homeEcType: homeEc.type,
+      clubTable: names(club).some((name) => name.includes("club_table_")),
+      clubType: club.type,
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -906,7 +1009,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -1020,6 +1123,29 @@ try {
   assert.equal(broadcastWalk.at(-1).ok, true, `must walk the broadcast room, got ${JSON.stringify(broadcastWalk.at(-1))}`);
   assert.ok(broadcastWalk.some((stop) => stop.z > 30 && Math.abs(stop.x - 64) < 1.6), "broadcast north aisle from the arcade must stay open");
   assert.ok(broadcastWalk.at(-1).x > 68 && Math.abs(broadcastWalk.at(-1).z - 32) < 1.4, "broadcast east aisle must stay open");
+  assert.equal(rooms.darkroomType, "darkroom");
+  assert.equal(rooms.darkroomSink, true, "darkroom must have developing sinks");
+  assert.ok(rooms.beats.includes("darkroom"), "darkroom VO beat missing");
+  assert.equal(darkroomWalk.at(-1).ok, true, `must walk the darkroom aisle, got ${JSON.stringify(darkroomWalk.at(-1))}`);
+  assert.ok(darkroomWalk.at(-1).x < 108 && Math.abs(darkroomWalk.at(-1).z + 32) < 1.4, "darkroom west aisle must stay open");
+  assert.equal(rooms.greenroomType, "greenroom");
+  assert.equal(rooms.greenroomSofa, true, "greenroom must have a sofa");
+  assert.ok(rooms.beats.includes("greenroom"), "greenroom VO beat missing");
+  assert.equal(greenroomWalk.at(-1).ok, true, `must walk the greenroom aisle, got ${JSON.stringify(greenroomWalk.at(-1))}`);
+  assert.ok(greenroomWalk.some((stop) => stop.x > 78 && Math.abs(stop.z - 32) < 1.6), "greenroom east aisle from broadcast must stay open");
+  assert.ok(greenroomWalk.at(-1).z < 28 && Math.abs(greenroomWalk.at(-1).x - 80) < 1.4, "greenroom north aisle to the courtyard must stay open");
+  assert.equal(rooms.homeEcType, "home_ec");
+  assert.equal(rooms.homeEcMachine, true, "home-ec room must have sewing machines");
+  assert.ok(rooms.beats.includes("home_ec"), "home-ec VO beat missing");
+  assert.equal(homeEcWalk.at(-1).ok, true, `must walk the home-ec room, got ${JSON.stringify(homeEcWalk.at(-1))}`);
+  assert.ok(homeEcWalk.some((stop) => stop.z < -30 && Math.abs(stop.x - 64) < 1.6), "home-ec north aisle must stay open");
+  assert.ok(homeEcWalk.at(-1).x > 68 && Math.abs(homeEcWalk.at(-1).z + 32) < 1.4, "home-ec east aisle must stay open");
+  assert.equal(rooms.clubType, "club_room");
+  assert.equal(rooms.clubTable, true, "club room must have calligraphy tables");
+  assert.ok(rooms.beats.includes("club_room"), "club room VO beat missing");
+  assert.equal(clubWalk.at(-1).ok, true, `must walk the club room, got ${JSON.stringify(clubWalk.at(-1))}`);
+  assert.ok(clubWalk.some((stop) => stop.z < -14 && Math.abs(stop.x - 112) < 1.6), "club south aisle from the trophy hall must stay open");
+  assert.ok(clubWalk.at(-1).x < 108 && Math.abs(clubWalk.at(-1).z + 16) < 1.4, "club west aisle must stay open");
   assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
   assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
   assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");
