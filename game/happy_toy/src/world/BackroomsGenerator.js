@@ -328,7 +328,7 @@ export class BackroomsGenerator {
     return {
       openings,
       ew: Boolean(openings.E && openings.W && (cx !== 0 || isStart)),
-      ns: Boolean(openings.N && openings.S && (cz !== 0 || isStart)),
+      ns: Boolean(openings.N && openings.S && (cz !== 0 || isStart || this.isLostFoundChunk(cx, cz))),
     };
   }
 
