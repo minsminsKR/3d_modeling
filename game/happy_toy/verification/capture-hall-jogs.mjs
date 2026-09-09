@@ -109,6 +109,34 @@ const hideInfo = await page.evaluate(() => {
 await page.screenshot({ path: path.join(outDir, "f1_s_bend_locker_hide.png"), timeout: 120000 });
 console.log("locker hide", hideInfo);
 
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  if (game.player.isHidden) game.exitCabinet();
+});
+const northLoop = await poseShot("f1_uncat_north_loop_chase.png", {
+  x: 12.2,
+  y: 0,
+  z: -2.55,
+  lookAt: [16.2, 1.2, -2.5],
+  status: "복도가 갈라집니다. 다른 길로.",
+});
+const northLoopInfo = await page.evaluate(() => {
+  const game = window.__happyToy;
+  if (game.player.isHidden) game.exitCabinet();
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(16.05, 0, -2.58);
+  uncat.group.lookAt(12.2, 1.2, -2.55);
+  uncat.state = "chase";
+  game.hud.setPrompt("");
+  game.hud.setStatus("복도가 갈라집니다. 다른 길로.", 4200);
+  game.renderer.render(game.scene, game.camera);
+  return { visible: uncat.group.visible === true, x: uncat.group.position.x, z: uncat.group.position.z };
+});
+await page.screenshot({ path: path.join(outDir, "f1_uncat_north_loop_chase.png"), timeout: 120000 });
+console.log("north loop", northLoop, northLoopInfo);
+
 if (!chase.flashlight || chase.intensity < 8) {
   throw new Error(`east S-bend chase capture failed: ${JSON.stringify(chase)}`);
 }
@@ -117,6 +145,9 @@ if (!chaseInfo.visible) {
 }
 if (!hideInfo.hidden) {
   throw new Error(`S-bend locker hide capture failed: ${JSON.stringify(hideInfo)}`);
+}
+if (!northLoop.flashlight || !northLoopInfo.visible) {
+  throw new Error(`north loop chase capture failed: ${JSON.stringify({ northLoop, northLoopInfo })}`);
 }
 
 console.log("ok");

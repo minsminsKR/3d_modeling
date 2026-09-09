@@ -49,7 +49,7 @@ export class StoryDirector {
       this.fire(
         "f1maze",
         "f1maze",
-        "복도가 두 번 꺾입니다. 알코브로 숨고, 척추만 곧게 가지 마십시오.",
+        "복도가 갈라집니다. 한 길로 쫓기면 다른 길로, 아니면 신발장으로.",
         "school_chime",
       );
     }

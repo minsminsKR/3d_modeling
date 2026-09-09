@@ -296,8 +296,8 @@ export class BackroomsGenerator {
     return getGraphOpenings(cx, cz);
   }
 
-  // Intra-tile S-bends so plus halls are not highways. Keep Uncat's south
-  // reveal (0,1) and the weeping-angel west tile (-1,0) as straight spines.
+    // Intra-tile baffle loops so plus halls are not highways. Keep Uncat's
+    // south reveal (0,1) and the weeping-angel west tile (-1,0) as spines.
   getHallChicanes(cx, cz) {
     const openings = this.getOpenings(cx, cz);
     const skipUncatSouth = cx === 0 && cz === 1;
@@ -1642,9 +1642,9 @@ export class BackroomsGenerator {
     }
 
     // Plus-shaped halls with four enterable corner alcoves (1.6m inner gaps).
-    // Away from spawn, EW halls S-bend south then north, and NS halls S-bend
-    // west then east, so the spine does not reopen after one jog. Uncat's
-    // south reveal and the weeping-angel west tile stay straight.
+    // Chicane tiles keep the spine blocked, but open BOTH sides of each baffle
+    // so a chase can be lost by taking the other loop. Uncat's south reveal
+    // and the weeping-angel west tile stay straight plus halls.
     const hallLike = type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
       || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";
     const chicanes = this.getHallChicanes(chunk.cx, chunk.cz);
@@ -1656,14 +1656,26 @@ export class BackroomsGenerator {
       } else {
         addWallSegment(-1.4, -5.6, 0.4, 4.8, "alcove_nw_ns");
       }
-      addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
-      addWallSegment(1.4, -5.6, 0.4, 4.8, "alcove_ne_ns");
+      if (ewChicane) {
+        addWallSegment(-6.925, -1.4, 2.15, 0.4, "alcove_nw_ew_w");
+      } else {
+        addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
+      }
+      if (nsChicane) {
+        addWallSegment(1.4, -6.925, 0.4, 2.15, "alcove_ne_ns_n");
+      } else {
+        addWallSegment(1.4, -5.6, 0.4, 4.8, "alcove_ne_ns");
+      }
       if (ewChicane) {
         addWallSegment(6.925, -1.4, 2.15, 0.4, "alcove_ne_ew_e");
       } else {
         addWallSegment(5.6, -1.4, 4.8, 0.4, "alcove_ne_ew");
       }
-      addWallSegment(-1.4, 5.6, 0.4, 4.8, "alcove_sw_ns");
+      if (nsChicane) {
+        addWallSegment(-1.4, 6.925, 0.4, 2.15, "alcove_sw_ns_s");
+      } else {
+        addWallSegment(-1.4, 5.6, 0.4, 4.8, "alcove_sw_ns");
+      }
       if (ewChicane) {
         addWallSegment(-6.925, 1.4, 2.15, 0.4, "alcove_sw_ew_w");
       } else {
@@ -1674,7 +1686,11 @@ export class BackroomsGenerator {
       } else {
         addWallSegment(1.4, 5.6, 0.4, 4.8, "alcove_se_ns");
       }
-      addWallSegment(5.6, 1.4, 4.8, 0.4, "alcove_se_ew");
+      if (ewChicane) {
+        addWallSegment(6.925, 1.4, 2.15, 0.4, "alcove_se_ew_e");
+      } else {
+        addWallSegment(5.6, 1.4, 4.8, 0.4, "alcove_se_ew");
+      }
     } else if (type === "tatami_room" || type === "pillar_room") {
       // Traditional Japanese Tatami Room: Architectural corner posts & alcove wall
       addWallSegment(-7.2, -7.2, 0.8, 0.8, "tatami_post_nw");
@@ -1785,10 +1801,11 @@ export class BackroomsGenerator {
       if (!skip) walls.push([name, x, z, sx, sz]);
     };
     // Outer-alcove C walls. Keep the start NW hide and hall lockers clear.
-    add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW);
-    add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW);
-    add("hall_maze_ne_h", 6.0, -4.6, 1.8, t);
-    add("hall_maze_ne_v", 6.2, -6.2, t, 1.8);
+    // EW loops also open the north cubbies so a second hide sits off the north jog.
+    add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW || ewChicane);
+    add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW || ewChicane);
+    add("hall_maze_ne_h", 6.0, -4.6, 1.8, t, ewChicane);
+    add("hall_maze_ne_v", 6.2, -6.2, t, 1.8, ewChicane);
     add("hall_maze_sw_h", -6.0, 4.6, 1.8, t, !cabinetSE);
     add("hall_maze_sw_v", -6.2, 6.2, t, 1.8, !cabinetSE);
     add("hall_maze_se_h", 6.0, 4.6, 1.8, t, cabinetSE);
@@ -1796,10 +1813,14 @@ export class BackroomsGenerator {
     if (ewChicane) {
       add("hall_maze_jog", -2.6, 0.0, t, 2.72);
       add("hall_maze_jog_e", 2.6, 0.0, t, 2.72);
+      add("hall_maze_loop_n", 0.0, -4.9, 1.15, t);
+      add("hall_maze_loop_s", 0.0, 4.9, 1.15, t);
     }
     if (nsChicane) {
       add("hall_maze_jog_ns", 0.0, -2.6, 2.72, t);
       add("hall_maze_jog_ns_s", 0.0, 2.6, 2.72, t);
+      add("hall_maze_loop_w", -4.9, 0.0, t, 1.15);
+      add("hall_maze_loop_e", 4.9, 0.0, t, 1.15);
     }
     if (openings.E && openings.W && !ewChicane) {
       add("hall_maze_teeth_w", -4.2, 0.92, 1.8, t);
@@ -3135,8 +3156,9 @@ export class BackroomsGenerator {
     } else if (isArchive) {
       addDynamicCabinet("cabinet-archive", "서고 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
     } else if (chunk.cx === 1 && chunk.cz === 0) {
-      // Odd EW S-bend: SW alcove off the south jog, not the boxed NE corner.
+      // Odd EW loops: SW hide off the south jog, NW hide off the north jog.
       addDynamicCabinet("cabinet_chokepoint_1_0", "복도 신발장", [-5.25, 0.0, 5.25], -Math.PI / 2);
+      addDynamicCabinet("cabinet_chokepoint_1_0_n", "꺾인 복도 신발장", [-5.25, 0.0, -5.25], Math.PI);
     } else if (chunk.cx === 0 && chunk.cz === 1) {
       addDynamicCabinet("cabinet_junction_0_1", "교차로 신발장", [-5.2, 0.0, 5.2], -Math.PI / 2);
     } else if (type === "omen_room") {
@@ -3952,12 +3974,14 @@ export class BackroomsGenerator {
         chunk.waypoints.push(
           wp(-4.5, 2.6), wp(0, 2.6), wp(-4.5, 0),
           wp(4.5, -2.6), wp(0, -2.6), wp(4.5, 0),
+          wp(-4.5, -2.6), wp(4.5, 2.6),
         );
       }
       if (chicanes.ns) {
         chunk.waypoints.push(
           wp(-2.6, -4.5), wp(-2.6, 0), wp(0, -4.5),
           wp(2.6, 4.5), wp(2.6, 0), wp(0, 4.5),
+          wp(2.6, -4.5), wp(-2.6, 4.5),
         );
       }
     } else if (type === "corner") {

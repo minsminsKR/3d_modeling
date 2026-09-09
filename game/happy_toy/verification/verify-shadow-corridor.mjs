@@ -89,6 +89,36 @@ try {
       state: uncat.state,
     };
 
+    game.player.setPosition({ x: 16, y: 0, z: -2.6 });
+    uncat.group.position.set(11.5, 0, -2.6);
+    uncat.state = "chase";
+    uncat.caughtPlayer = false;
+    uncat.chasePath = null;
+    uncat.chasePathTimer = 0;
+    uncat.chasePathGoal = null;
+    uncat.lastKnownPlayerPosition = game.player.position.clone();
+    uncat.memoryTimer = 14;
+    const loopStartDist = Math.hypot(uncat.group.position.x - 16, uncat.group.position.z + 2.6);
+    let loopMaxZ = -9;
+    let loopMinZ = 9;
+    for (let i = 0; i < 180; i += 1) {
+      game.update(0.05, { skipRender: true });
+      loopMaxZ = Math.max(loopMaxZ, uncat.group.position.z);
+      loopMinZ = Math.min(loopMinZ, uncat.group.position.z);
+    }
+    const mazeChaseLoop = {
+      startDist: loopStartDist,
+      endDist: Math.hypot(
+        uncat.group.position.x - game.player.position.x,
+        uncat.group.position.z - game.player.position.z,
+      ),
+      x: uncat.group.position.x,
+      z: uncat.group.position.z,
+      maxZ: loopMaxZ,
+      minZ: loopMinZ,
+      state: uncat.state,
+    };
+
     const hallCabinets = game.mapBuilder.generator.generateChunk(1, 0).cabinets || [];
     const bendCab = [...(game.cabinets || []), ...hallCabinets].find((item) => (
       Math.abs((item.position?.y || 0)) < 1.2
@@ -144,6 +174,8 @@ try {
     floors.hallJogE = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog_e"));
     floors.hallJogNs = (northHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog_ns"));
     floors.hallJogNsS = (northHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog_ns_s"));
+    floors.hallLoopN = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_loop_n"));
+    floors.hallLoopW = (northHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_loop_w"));
     floors.uncatSpineClear = !(uncatHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog"));
     game.player.setPosition({ x: 80, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
@@ -203,6 +235,7 @@ try {
       afterRelease,
       afterChase,
       mazeChase,
+      mazeChaseLoop,
       bendHide,
       floors,
       deepWing,
@@ -240,6 +273,14 @@ try {
     result.mazeChase.x > 6 || result.mazeChase.endDist < 10,
     `Uncat must leave the south spine into the east maze, got x=${result.mazeChase.x} dist=${result.mazeChase.endDist}`,
   );
+  assert.ok(
+    result.mazeChaseLoop.endDist < result.mazeChaseLoop.startDist - 2,
+    `Uncat must hunt the north loop ${result.mazeChaseLoop.startDist} -> ${result.mazeChaseLoop.endDist} at ${result.mazeChaseLoop.x},${result.mazeChaseLoop.z}`,
+  );
+  assert.ok(
+    result.mazeChaseLoop.maxZ < 1.2,
+    `north-loop chase must stay off the south jog, maxZ=${result.mazeChaseLoop.maxZ}`,
+  );
   assert.equal(result.bendHide.cabinet, true, "east S-bend locker must exist");
   assert.equal(result.bendHide.hidden, true, "player must hide in the S-bend locker");
   assert.equal(result.bendHide.investigating, true, "Uncat must check the S-bend locker");
@@ -268,6 +309,8 @@ try {
   assert.equal(result.floors.hallJogE, true, "east 1F halls must S-bend through both arms");
   assert.equal(result.floors.hallJogNs, true, "north 1F halls must jog off the x=0 spine");
   assert.equal(result.floors.hallJogNsS, true, "north 1F halls must S-bend through both arms");
+  assert.equal(result.floors.hallLoopN, true, "east 1F loops must pinch the north plus arm");
+  assert.equal(result.floors.hallLoopW, true, "north 1F loops must pinch the west plus arm");
   assert.equal(result.floors.uncatSpineClear, true, "Uncat south reveal hall must stay a straight spine");
   assert.equal(result.atWing.totalKeys, 4, "unloading key rooms must not shrink the four-name loop");
   assert.equal(result.atWing.hud, "0 / 4");
