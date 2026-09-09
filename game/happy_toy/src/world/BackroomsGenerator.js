@@ -9,6 +9,25 @@ import { LoreNote } from "./LoreNote.js";
 import { LIGHTING_CONFIG, LOVELY_DOLL_CONFIG } from "../config/gameConfig.js";
 import { LovelyDoll } from "../entities/LovelyDoll.js";
 import { CharacterLoader } from "../loaders/CharacterLoader.js";
+import {
+  CORE_EDGES,
+  CORE_RADIUS,
+  MANSION_EDGES,
+  PLAYABLE_RADIUS,
+  SCHOOL_RING_EDGES,
+  getGraphOpenings,
+  getRingHallType,
+  isPlayableCell,
+} from "./schoolMaze.js";
+
+export {
+  CORE_EDGES,
+  CORE_RADIUS,
+  MANSION_EDGES,
+  PLAYABLE_RADIUS,
+  SCHOOL_RING_EDGES,
+  getRingHallType,
+};
 
 const HORROR_PROP_ASSETS = {
   wrappedBody: {
@@ -112,6 +131,7 @@ const ROOM_LIKE_CHUNK_TYPES = new Set([
   "storage",
   "event",
   "archive",
+  "classroom",
   "stairs_2f",
   "stairs_b1",
 ]);
@@ -130,71 +150,6 @@ export function getChunkSeed(baseSeed, cx, cz) {
   let h = baseSeed ^ (cx * 73856093) ^ (cz * 19349663);
   return h >>> 0;
 }
-
-export const CORE_RADIUS = 2;
-export const PLAYABLE_RADIUS = 3;
-
-// Undirected 1F graph. Core 5×5 keeps the four-name loop; |c|==3 is a repeating school ring.
-export const CORE_EDGES = [
-  ["0,0", "0,-1"],
-  ["0,-1", "0,-2"],
-  ["0,0", "0,1"],
-  ["0,1", "0,2"],
-  ["0,0", "-1,0"],
-  ["-1,0", "-2,0"],
-  ["0,0", "1,0"],
-  ["1,0", "2,0"],
-  ["0,1", "-1,1"],
-  ["-1,1", "-2,1"],
-  ["0,1", "1,1"],
-  ["1,1", "2,1"],
-  ["-2,0", "-2,-1"],
-  ["-2,-1", "-2,-2"],
-  ["-2,0", "-2,1"],
-  ["-2,1", "-2,2"],
-  ["2,0", "2,-1"],
-  ["2,-1", "2,-2"],
-  ["2,0", "2,1"],
-  ["2,1", "2,2"],
-  ["-1,0", "-1,-1"],
-  ["-1,-1", "-1,-2"],
-  ["-1,1", "-1,2"],
-  ["1,0", "1,-1"],
-  ["1,-1", "1,-2"],
-  ["1,1", "1,2"],
-  ["-2,-2", "-1,-2"],
-  ["-1,-2", "0,-2"],
-  ["0,-2", "1,-2"],
-  ["1,-2", "2,-2"],
-  ["-2,2", "-1,2"],
-  ["-1,2", "0,2"],
-];
-
-export function buildSchoolRingEdges() {
-  const edges = [];
-  const add = (a, b) => edges.push([a, b]);
-  for (const cz of [-3, 3]) {
-    for (let cx = -3; cx < 3; cx += 1) {
-      add(`${cx},${cz}`, `${cx + 1},${cz}`);
-    }
-  }
-  for (const cx of [-3, 3]) {
-    for (let cz = -3; cz < 3; cz += 1) {
-      add(`${cx},${cz}`, `${cx},${cz + 1}`);
-    }
-  }
-  add("0,2", "0,3");
-  add("2,0", "3,0");
-  add("-2,0", "-3,0");
-  add("2,1", "3,1");
-  add("2,-1", "3,-1");
-  add("-2,1", "-3,1");
-  add("-2,-1", "-3,-1");
-  return edges;
-}
-
-export const SCHOOL_RING_EDGES = buildSchoolRingEdges();
-export const MANSION_EDGES = [...CORE_EDGES, ...SCHOOL_RING_EDGES];
 
 export class BackroomsGenerator {
   constructor(scene, collisionWorld, textureLibrary, baseSeed = 12345, game = null) {
@@ -313,47 +268,19 @@ export class BackroomsGenerator {
     if (!this.isPlayableChunk(cx, cz)) {
       return "void";
     }
-    return this.getRingHallType(cx, cz);
+    return getRingHallType(cx, cz);
   }
 
   getRingHallType(cx, cz) {
-    const open = this.getOpenings(cx, cz);
-    const count = Number(open.N) + Number(open.S) + Number(open.E) + Number(open.W);
-    if (count >= 4) return "cross_junction";
-    if (count === 3) return "t_junction";
-    if (open.N && open.S && !open.E && !open.W) return "corridor_ns";
-    if (open.E && open.W && !open.N && !open.S) return "corridor_ew";
-    if (count === 2) return "t_junction";
-    return "dead_end";
+    return getRingHallType(cx, cz);
   }
 
   isPlayableChunk(cx, cz) {
-    return Math.abs(cx) <= PLAYABLE_RADIUS && Math.abs(cz) <= PLAYABLE_RADIUS;
+    return isPlayableCell(cx, cz);
   }
 
   getOpenings(cx, cz) {
-    const open = { N: false, S: false, E: false, W: false };
-    if (!this.isPlayableChunk(cx, cz)) {
-      return open;
-    }
-    const key = `${cx},${cz}`;
-    const neighbor = {
-      N: `${cx},${cz - 1}`,
-      S: `${cx},${cz + 1}`,
-      E: `${cx + 1},${cz}`,
-      W: `${cx - 1},${cz}`,
-    };
-    for (const [a, b] of MANSION_EDGES) {
-      if (a === key && b === neighbor.N) open.N = true;
-      if (b === key && a === neighbor.N) open.N = true;
-      if (a === key && b === neighbor.S) open.S = true;
-      if (b === key && a === neighbor.S) open.S = true;
-      if (a === key && b === neighbor.E) open.E = true;
-      if (b === key && a === neighbor.E) open.E = true;
-      if (a === key && b === neighbor.W) open.W = true;
-      if (b === key && a === neighbor.W) open.W = true;
-    }
-    return open;
+    return getGraphOpenings(cx, cz);
   }
 
   generateExteriorHull(cx, cz) {
@@ -1674,11 +1601,15 @@ export class BackroomsGenerator {
       addWallSegment(4.0, 3.0, 0.4, 4.0, "playroom_divider_e");
     } else if (type === "event") {
       addWallSegment(-4.8, 0.0, 0.4, 8.0, "event_partition");
-    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room") {
+    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room" || type === "classroom") {
       addWallSegment(-5.0, -5.0, 1.2, 1.2, "wide_corner_nw");
       addWallSegment(5.0, -5.0, 1.2, 1.2, "wide_corner_ne");
       addWallSegment(-5.0, 5.0, 1.2, 1.2, "wide_corner_sw");
       addWallSegment(5.0, 5.0, 1.2, 1.2, "wide_corner_se");
+      if (type === "classroom") {
+        addWallSegment(-3.4, -1.8, 2.4, 0.7, "desk_row_w");
+        addWallSegment(3.4, 1.6, 2.4, 0.7, "desk_row_e");
+      }
     }
 
     // Build Instanced Meshes
@@ -1827,6 +1758,30 @@ export class BackroomsGenerator {
     this.collisionWorld.addStaticBox(chair.name, chair.position, new THREE.Vector3(0.48, 0.62, 0.48), chunkId);
   }
 
+  dressClassroom(chunk, center, chunkId, floorY) {
+    const board = new THREE.Mesh(
+      this.getBoxGeometry(3.6, 1.15, 0.08),
+      new THREE.MeshStandardMaterial({
+        color: 0x1a2a1c,
+        roughness: 0.88,
+        metalness: 0.04,
+      }),
+    );
+    board.position.set(center.x, floorY + 1.55, center.z - 7.52);
+    board.name = `${chunkId}_chalkboard`;
+    this.scene.add(board);
+    chunk.meshes.push(board);
+
+    const podium = new THREE.Mesh(this.getBoxGeometry(0.9, 0.78, 0.55), this.propMaterial);
+    podium.position.set(center.x - 2.2, floorY + 0.39, center.z - 5.1);
+    podium.castShadow = true;
+    podium.receiveShadow = true;
+    podium.name = `${chunkId}_podium`;
+    this.scene.add(podium);
+    chunk.meshes.push(podium);
+    this.collisionWorld.addStaticBox(podium.name, podium.position, new THREE.Vector3(0.9, 0.78, 0.55), chunkId);
+  }
+
   buildCeilingLights(chunk, type, center, chunkId, rand, floorY = 0) {
     // Dark corridor overhaul: No automatic ceiling or wall lights are spawned.
     // The labyrinth remains dark by default, requiring the player's flashlight (F)
@@ -1941,6 +1896,13 @@ export class BackroomsGenerator {
       this.scene.add(tableMesh);
       chunk.meshes.push(tableMesh);
       this.collisionWorld.addStaticBox(tableMesh.name, tableMesh.position, new THREE.Vector3(1.6, 0.42, 1.2), chunkId);
+    } else if (type === "classroom") {
+      const open = this.getOpenings(chunk.cx, chunk.cz);
+      if (open.N) addDynamicDoor(`${chunkId}_class_door`, "교실 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
+      else if (open.S) addDynamicDoor(`${chunkId}_class_door`, "교실 문", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
+      else if (open.E) addDynamicDoor(`${chunkId}_class_door`, "교실 문", [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
+      else addDynamicDoor(`${chunkId}_class_door`, "교실 문", [-7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
+      this.dressClassroom(chunk, center, chunkId, floorY);
     }
 
     // 2. Cabinets
@@ -1980,6 +1942,8 @@ export class BackroomsGenerator {
       addDynamicCabinet("cabinet_b1_cellar", "지하 보육실 벽장", [-22.5, -5.0, 2.0], -Math.PI / 2);
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
+    } else if (type === "classroom") {
+      addDynamicCabinet(`cabinet_class_${chunk.cx}_${chunk.cz}`, "교실 신발장", [5.4, 0.0, 5.4], Math.PI / 2);
     } else if (!isStart && !isEvent && !isArchive && !type.includes("stairs") && (type.includes("room") || type.includes("storage")) && rand() < 0.4) {
       addDynamicCabinet(`cabinet_${chunk.cx}_${chunk.cz}`, "복도 신발장", [-5.2, 0.0, -5.2], -Math.PI / 2);
     }
@@ -2006,7 +1970,7 @@ export class BackroomsGenerator {
     };
     if (type === "start") {
       addLoreNote(`${chunkId}_lore`, [-7.55, 1.35, -3.2], Math.PI / 2);
-    } else if (type === "omen_room" || type === "static_room" || type === "flicker_room") {
+    } else if (type === "omen_room" || type === "static_room" || type === "flicker_room" || type === "classroom") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0);
     } else if (isWorkshop || isPlayroom || isStorage) {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI);
@@ -2195,6 +2159,10 @@ export class BackroomsGenerator {
       spawnSafeLight("wall-switch", 1.6, wallH, 7.58, 0, "출구방 입구 스위치");
       spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "출구방 벽 스위치");
       spawnSafeLight("floor-lamp", 4.0, floorH, -4.0, -Math.PI / 4, "출구방 낡은 스탠드");
+    } else if (type === "classroom") {
+      spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "교실 입구 스위치");
+      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "교실 벽 스위치");
+      spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "꺼진 형광등");
     } else {
       // Generic fallback room (e.g. flicker_room): Flush on perimeter walls
       spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "벽 스위치");
@@ -2345,7 +2313,7 @@ export class BackroomsGenerator {
     if (type === "corridor_ew") return new Set(["north", "south"]);
     if (type === "t_junction") return new Set(["west"]);
     if (type === "corner") return new Set(["north", "west"]);
-    if (type === "dead_end") return new Set(["north", "east", "west"]);
+    if (type === "dead_end" || type === "classroom") return new Set(["north", "east", "west"]);
     if (type === "workshop" || type === "playroom") return new Set(["south", "east", "west"]);
     if (type === "storage" || type === "event" || type === "wide_room" || type === "stairs_2f") return new Set(["north", "east", "west"]);
     if (type === "stairs_b1") return new Set(["south", "east", "west"]);
@@ -2623,7 +2591,7 @@ export class BackroomsGenerator {
         wp(0,0), wp(0,-6), wp(0,6), wp(-6,0), wp(6,0),
         wp(-6,-6), wp(6,-6), wp(-6,6), wp(6,6),
       ];
-    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room") {
+    } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room" || type === "classroom") {
       chunk.waypoints = [
         wp(0,0),
         wp(-5,-5), wp(0,-5), wp(5,-5),

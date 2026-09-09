@@ -1107,6 +1107,47 @@ export class SoundManager {
     this.babyCryNodes = null;
   }
 
+  playVoiceCadence(text) {
+    if (!this.initialized || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    const syllables = Math.max(4, Math.min(18, String(text || "").replace(/\s+/g, "").length / 2));
+    const pan = (Math.random() < 0.5 ? -1 : 1) * 0.18;
+    const output = this.createPannedOutput(pan, 0.7);
+    for (let i = 0; i < syllables; i += 1) {
+      const t = now + i * 0.11;
+      const formant = this.ctx.createOscillator();
+      const band = this.ctx.createBiquadFilter();
+      const gain = this.ctx.createGain();
+      formant.type = "sawtooth";
+      formant.frequency.value = 118 + (i % 5) * 16 + Math.random() * 8;
+      band.type = "bandpass";
+      band.frequency.value = 620 + (i % 3) * 140;
+      band.Q.value = 4.2;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.045, t + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+      formant.connect(band);
+      band.connect(gain);
+      gain.connect(output);
+      formant.start(t);
+      formant.stop(t + 0.1);
+    }
+    const breath = this.ctx.createBufferSource();
+    const breathGain = this.ctx.createGain();
+    const breathBand = this.ctx.createBiquadFilter();
+    breath.buffer = this.noiseBuffers.short;
+    breathBand.type = "bandpass";
+    breathBand.frequency.value = 1700;
+    breathBand.Q.value = 2.4;
+    breathGain.gain.setValueAtTime(0.04, now);
+    breathGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7);
+    breath.connect(breathBand);
+    breathBand.connect(breathGain);
+    breathGain.connect(output);
+    breath.start(now);
+    breath.stop(now + 0.72);
+  }
+
   playBell(frequency, pan) {
     if (!this.ctx || this.ctx.state === "closed") return;
     const now = this.ctx.currentTime;

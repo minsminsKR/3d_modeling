@@ -25,6 +25,8 @@ try {
     const queue = [[0, 0]];
     visited.add("0,0");
     const mismatched = [];
+    const allVisited = new Set(["0,0"]);
+    const allQueue = [[0, 0]];
 
     while (queue.length) {
       const [cx, cz] = queue.shift();
@@ -51,6 +53,27 @@ try {
       }
     }
 
+    while (allQueue.length) {
+      const [cx, cz] = allQueue.shift();
+      const open = generator.getOpenings(cx, cz);
+      const faces = [
+        ["N", 0, -1, "S"],
+        ["S", 0, 1, "N"],
+        ["E", 1, 0, "W"],
+        ["W", -1, 0, "E"],
+      ];
+      for (const [face, dx, dz, opposite] of faces) {
+        if (!open[face]) continue;
+        const nx = cx + dx;
+        const nz = cz + dz;
+        const key = `${nx},${nz}`;
+        if (!allVisited.has(key) && generator.isPlayableChunk(nx, nz)) {
+          allVisited.add(key);
+          allQueue.push([nx, nz]);
+        }
+      }
+    }
+
     for (let cx = -2; cx <= 2; cx += 1) {
       for (let cz = -2; cz <= 2; cz += 1) {
         const chunk = generator.generateChunk(cx, cz);
@@ -62,8 +85,9 @@ try {
       }
     }
 
-    const voidChunk = generator.generateChunk(4, 0);
+    const voidChunk = generator.generateChunk(8, 0);
     const ringChunk = generator.generateChunk(3, 0);
+    const farChunk = generator.generateChunk(7, 0);
     const ringOpen = generator.getOpenings(3, 0);
     const inverted = [];
     for (const chunk of generator.chunksData.values()) {
@@ -127,6 +151,9 @@ try {
       ringType: ringChunk.type,
       ringMeshes: ringChunk.meshes.length,
       ringWest: ringOpen.W,
+      farType: farChunk.type,
+      farMeshes: farChunk.meshes.length,
+      allReachable: allVisited.size,
       inverted,
       alcoveStartLen: alcoveStart.length,
       alcoveCorridorLen: alcoveCorridor.length,
@@ -149,6 +176,9 @@ try {
   assert.notEqual(result.ringType, "void", "school ring east of the core must be a walkable hall");
   assert.ok(result.ringMeshes > 0, "school ring must build geometry");
   assert.equal(result.ringWest, true, "school ring must open into the core");
+  assert.notEqual(result.farType, "void", "outer school wing must remain walkable");
+  assert.ok(result.farMeshes > 0, "outer school wing must build geometry");
+  assert.equal(result.allReachable, 225, `full school graph should be 15x15, got ${result.allReachable}`);
   assert.equal(result.inverted.length, 0, `wall-switch facing inward failed: ${JSON.stringify(result.inverted, null, 2)}`);
   assert.equal(result.alcoveStartBlocked, false, "start-room alcove should be enterable");
   assert.equal(result.alcoveCorridorBlocked, false, "corridor side alcove should be enterable");

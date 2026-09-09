@@ -238,6 +238,7 @@ export class DreadDirector {
       soundManager.playSFX("school_chime");
     }
     this.game.hud?.setStatus?.("방송: 복도에서 기다리십시오. 하교하지 않습니다.", 3200);
+    this.game.voiceAnnouncer?.announce("pa", "방송입니다. 하교하지 않습니다. 복도에서 기다리십시오.");
   }
 
   updateCabinetDread(dt) {

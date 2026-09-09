@@ -57,7 +57,16 @@ try {
       ),
       state: uncat.state,
     };
-    game.testSafeMode = false;
+    game.testSafeMode = true;
+    game.player.setPosition({ x: 96, y: 0, z: 0 });
+    for (let i = 0; i < 12; i += 1) game.update(0.05);
+    const atWing = {
+      totalKeys: game.getTotalKeys(),
+      hud: document.querySelector("#key-count-text")?.textContent,
+      liveKeys: game.keys.length,
+    };
+    game.player.setPosition({ x: 0, y: 0, z: 0 });
+    for (let i = 0; i < 16; i += 1) game.update(0.05);
 
     const cabinet = game.cabinets[0];
     uncat.group.position.set(cabinet.position.x, cabinet.position.y, cabinet.position.z + 1.6);
@@ -84,6 +93,7 @@ try {
       before,
       afterRelease,
       afterChase,
+      atWing,
       hiding,
       death: {
         gameOver: game.gameOver,
@@ -108,6 +118,8 @@ try {
     result.afterChase.endDist < result.afterChase.startDist - 1.5,
     `stalker must close distance ${result.afterChase.startDist} -> ${result.afterChase.endDist}`,
   );
+  assert.equal(result.atWing.totalKeys, 4, "unloading key rooms must not shrink the four-name loop");
+  assert.equal(result.atWing.hud, "0 / 4");
   assert.equal(result.hiding.hidden, true);
   assert.equal(result.hiding.investigating, true);
   assert.equal(result.hiding.hasEvent, true);

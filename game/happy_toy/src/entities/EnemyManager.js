@@ -131,7 +131,7 @@ export class EnemyManager {
     let caught = false;
     const detectionEvents = [];
     const game = window.__happyToy;
-    const totalKeys = Math.max(1, game?.keys?.length || 4);
+      const totalKeys = Math.max(1, game?.requiredKeyCount || 4);
     const targetProgress = Math.min(1, Math.max(0, (game?.keyCount || 0) / totalKeys));
     this.directorProgress += (targetProgress - this.directorProgress) * Math.min(1, deltaTime * 0.65);
     const difficulty = game?.menuSystem?.currentMode || "normal";

@@ -21,6 +21,7 @@ import { ItemSystem } from "../world/ItemSystem.js";
 import { ParticleSystem } from "../effects/ParticleSystem.js";
 import { MenuSystem } from "../ui/MenuSystem.js";
 import { soundManager } from "../audio/SoundManager.js";
+import { VoiceAnnouncer } from "../audio/VoiceAnnouncer.js";
 import { MonsterIntroManager } from "../events/MonsterIntroManager.js";
 
 
@@ -65,6 +66,16 @@ export class Game {
     this.chapterSession = createChapterSession();
     this.mapConfig = this.chapterSession.mapConfig;
     this.enemyConfigs = this.chapterSession.enemyConfigs;
+    this.requiredKeyCount = Math.max(1, this.mapConfig?.keys?.length || 4);
+    this.keyHomes = new Map();
+    for (const key of this.mapConfig?.keys || []) {
+      this.keyHomes.set(key.id, {
+        id: key.id,
+        label: key.label,
+        position: new THREE.Vector3(...key.position),
+        isAvailable: key.initiallyVisible !== false,
+      });
+    }
     this.hud.setDebugEnabled(this.debugEnabled);
     this.input = new Input(this.renderer.domElement);
     this.collisionWorld = new CollisionWorld();
@@ -151,6 +162,7 @@ export class Game {
     this.safeLights = map.safeLights || [];
     this.loreNotes = map.loreNotes || [];
     this.finalExit = map.finalExit;
+    this.syncKeyHomes();
     this.player = new PlayerController(this.camera, this.input, this.collisionWorld, this.hud);
     this.player.setPosition(map.playerStart);
     this.player.resetLook(0, 0);
@@ -168,6 +180,7 @@ export class Game {
     this.menuSystem = new MenuSystem(this);
     this.monsterIntroManager = new MonsterIntroManager(this);
     this.dreadDirector = new DreadDirector(this);
+    this.voiceAnnouncer = new VoiceAnnouncer();
 
 
     this.itemSystem.spawnPickups([
@@ -363,6 +376,7 @@ export class Game {
   onLoreRead(note) {
     if (!note?.read) return;
     soundManager.playSFX("whisper");
+    this.voiceAnnouncer?.announce("lore", note.body);
   }
 
   createInteractionContext() {
@@ -371,7 +385,7 @@ export class Game {
       hud: this.hud,
       game: this,
       getKeyCount: () => this.keyCount,
-      getTotalKeys: () => this.keys.length,
+      getTotalKeys: () => this.getTotalKeys(),
       collectKey: (key) => this.collectKey(key),
       enterCabinet: (cabinet) => this.enterCabinet(cabinet),
       exitCabinet: () => this.exitCabinet(),
@@ -423,6 +437,7 @@ export class Game {
     this.syncWorldPreview();
     this.tryPointerLock(false);
     this.hud.setStatus("손전등이 유일한 길입니다. 발소리가 나면 신발장에 숨으십시오.", 4200);
+    this.voiceAnnouncer?.announce("start", "오늘은 하교하지 않습니다. 복도에서 기다리십시오.");
   }
 
   tryPointerLock(notifyOnFail = false) {
@@ -592,7 +607,7 @@ export class Game {
       const compassTarget = this.getCompassTarget();
       this.hud.updateCompass(this.player.position, compassTarget?.position, this.player.yaw,
         compassTarget === this.finalExit ? "제단" : "혼");
-      this.hud.setKeyCount(this.keyCount, this.keys.length);
+      this.hud.setKeyCount(this.keyCount, this.getTotalKeys());
 
       const enemyState = this.enemyManager?.update(deltaTime, {
         position: this.player.position,
@@ -898,6 +913,7 @@ export class Game {
       this.safeLights = map.safeLights || [];
       this.loreNotes = map.loreNotes || [];
       this.finalExit = map.finalExit;
+      this.syncKeyHomes();
     }
 
     if (this.itemSystem) {
@@ -923,14 +939,38 @@ export class Game {
     }
   }
 
+  getTotalKeys() {
+    return this.requiredKeyCount || Math.max(1, this.mapConfig?.keys?.length || 4);
+  }
+
+  syncKeyHomes() {
+    if (!this.keyHomes) this.keyHomes = new Map();
+    for (const key of this.keys || []) {
+      this.keyHomes.set(key.id, {
+        id: key.id,
+        label: key.label,
+        position: key.position.clone(),
+        isAvailable: key.isAvailable,
+      });
+    }
+  }
+
   getCompassTarget() {
-    if (this.keyCount >= this.keys.length) return this.finalExit;
+    if (this.keyCount >= this.getTotalKeys()) return this.finalExit;
     const position = this.player.position;
-    const candidates = this.keys.filter((key) => key.isAvailable && !key.isCollected);
-    // Prefer the current floor; vertical distance alone understates the stair detour.
-    const score = (key) => Math.hypot(key.position.x - position.x, key.position.z - position.z)
-      + (Math.abs(key.position.y - position.y) > 1.8 ? 40 : 0);
-    return candidates.sort((a, b) => score(a) - score(b))[0] || null;
+    const score = (point) => Math.hypot(point.x - position.x, point.z - position.z)
+      + (Math.abs(point.y - position.y) > 1.8 ? 40 : 0);
+    const live = this.keys.filter((key) => key.isAvailable && !key.isCollected);
+    if (live.length > 0) {
+      return live.sort((a, b) => score(a.position) - score(b.position))[0];
+    }
+    const ghosts = [];
+    for (const home of this.keyHomes?.values() || []) {
+      if (this.collectedKeyIds?.has(home.id)) continue;
+      if (!home.isAvailable) continue;
+      ghosts.push({ position: home.position, id: home.id });
+    }
+    return ghosts.sort((a, b) => score(a.position) - score(b.position))[0] || this.finalExit;
   }
 
   collectKey(key) {
@@ -943,11 +983,15 @@ export class Game {
       this.collectedKeyIds.add(key.id);
     }
     this.keyCount += 1;
-    this.dreadDirector?.onRelic(key.position, this.keyCount, this.keys.length);
+    const total = this.getTotalKeys();
+    this.dreadDirector?.onRelic(key.position, this.keyCount, total);
     soundManager.playSFX("key_pickup");
-    this.hud.setStatus(this.keyCount >= this.keys.length
+    this.voiceAnnouncer?.announce("key", this.keyCount >= total
+      ? "모든 이름을 모았습니다. 제단으로 돌아가십시오."
+      : `이름을 찾았습니다. ${total - this.keyCount}개가 남았습니다.`);
+    this.hud.setStatus(this.keyCount >= total
       ? "모든 혼을 모았습니다. 나침반 [4]을 따라 제단으로 돌아가십시오."
-      : `혼 ${this.keyCount}/${this.keys.length} · 종이 울리기 전에 퇴로를 확보하십시오.`, 4500);
+      : `혼 ${this.keyCount}/${total} · 종이 울리기 전에 퇴로를 확보하십시오.`, 4500);
   }
 
   revealKeyById(keyId, position) {
@@ -1092,9 +1136,9 @@ export class Game {
 
   tryClearFinal() {
     if (this.gameOver || this.gameCleared) return;
-    if (this.keyCount < this.keys.length) {
-      const remaining = this.keys.length - this.keyCount;
-      this.hud.setStatus(`아직 열쇠가 ${remaining}개 부족합니다.`, 1600);
+    if (this.keyCount < this.getTotalKeys()) {
+      const remaining = this.getTotalKeys() - this.keyCount;
+      this.hud.setStatus(`아직 혼이 ${remaining}개 부족합니다.`, 1600);
       return;
     }
 
@@ -1183,6 +1227,7 @@ export class Game {
     if (released) {
       soundManager.playSFX("school_chime");
       soundManager.playSFX("corridor_wind");
+      this.voiceAnnouncer?.announce("hunt", "누군가 복도를 걷고 있습니다.");
     }
     return released;
   }
@@ -1271,7 +1316,21 @@ export class Game {
     const chunkChanged = cx !== this._lastPlayerChunkCx || cz !== this._lastPlayerChunkCz;
 
     // Always drive the sliced-loading queue every frame (cheap: processes ≤1 chunk/frame)
-    const changed = this.mapBuilder.updateLoadedChunks(this.player.position, chunkChanged);
+    const extraCenters = [];
+    const enemyChunks = [];
+    for (const enemy of this.enemyManager?.enemies || []) {
+      if (enemy.isDormant) continue;
+      extraCenters.push({ x: enemy.group.position.x, z: enemy.group.position.z });
+      enemyChunks.push(`${Math.floor((enemy.group.position.x + 8) / 16)},${Math.floor((enemy.group.position.z + 8) / 16)}`);
+    }
+    const extraChanged = enemyChunks.join("|") !== (this._lastEnemyChunks || []).join("|");
+    this._lastEnemyChunks = enemyChunks;
+
+    const changed = this.mapBuilder.updateLoadedChunks(
+      this.player.position,
+      chunkChanged || extraChanged,
+      extraCenters,
+    );
     if (changed) {
       this.doors = this.mapBuilder.doors;
       this.keys = this.mapBuilder.keys;
@@ -1279,6 +1338,7 @@ export class Game {
       this.safeLights = this.mapBuilder.safeLights || [];
       this.loreNotes = this.mapBuilder.loreNotes || [];
       this.finalExit = this.mapBuilder.finalExit;
+      this.syncKeyHomes();
       this.refreshInteractables();
     }
     if (chunkChanged) {

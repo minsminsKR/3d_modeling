@@ -53,9 +53,19 @@ export class MapBuilder {
     };
   }
 
-  updateLoadedChunks(playerPosition, chunkChanged = true) {
-    const cx = Math.floor((playerPosition.x + 8) / 16);
-    const cz = Math.floor((playerPosition.z + 8) / 16);
+  updateLoadedChunks(playerPosition, chunkChanged = true, extraCenters = []) {
+    const centers = [
+      { x: playerPosition.x, z: playerPosition.z },
+      ...extraCenters.filter((center) => Number.isFinite(center?.x) && Number.isFinite(center?.z)),
+    ];
+    const chunkOf = (x, z) => [
+      Math.floor((x + 8) / 16),
+      Math.floor((z + 8) / 16),
+    ];
+    const inRange = (cellX, cellZ, radius) => centers.some((center) => {
+      const [pcx, pcz] = chunkOf(center.x, center.z);
+      return Math.abs(cellX - pcx) <= radius && Math.abs(cellZ - pcz) <= radius;
+    });
     const activeRadius = 2;
     const disableRadius = 3;
 
@@ -65,9 +75,7 @@ export class MapBuilder {
     if (chunkChanged) {
       // 1. Unload chunks beyond disable radius
       for (const [key, chunk] of this.loadedChunks.entries()) {
-        const dx = Math.abs(chunk.cx - cx);
-        const dz = Math.abs(chunk.cz - cz);
-        if (dx > disableRadius || dz > disableRadius) {
+        if (!inRange(chunk.cx, chunk.cz, disableRadius)) {
           this.generator.destroyChunk(chunk.cx, chunk.cz);
           this.loadedChunks.delete(key);
 
@@ -85,26 +93,26 @@ export class MapBuilder {
       }
 
       // 2. Filter out pending chunks in queue that are beyond disable radius
-      this.loadQueue = this.loadQueue.filter((q) => {
-        const dx = Math.abs(q.cx - cx);
-        const dz = Math.abs(q.cz - cz);
-        return dx <= disableRadius && dz <= disableRadius;
-      });
+      this.loadQueue = this.loadQueue.filter((q) => inRange(q.cx, q.cz, disableRadius));
 
       // 3. Find missing chunks in active radius and enqueue them
       let anyNewMissing = false;
-      for (let dx = -activeRadius; dx <= activeRadius; dx++) {
-        for (let dz = -activeRadius; dz <= activeRadius; dz++) {
-          const ncx = cx + dx;
-          const ncz = cz + dz;
-          const key = `${ncx},${ncz}`;
-
-          if (!this.loadedChunks.has(key)) {
-            const inQueue = this.loadQueue.some((q) => q.cx === ncx && q.cz === ncz);
-            if (!inQueue) {
-              this.loadQueue.push({ cx: ncx, cz: ncz });
-              anyNewMissing = true;
-            }
+      const wanted = new Set();
+      for (const center of centers) {
+        const [pcx, pcz] = chunkOf(center.x, center.z);
+        for (let dx = -activeRadius; dx <= activeRadius; dx++) {
+          for (let dz = -activeRadius; dz <= activeRadius; dz++) {
+            wanted.add(`${pcx + dx},${pcz + dz}`);
+          }
+        }
+      }
+      for (const key of wanted) {
+        const [ncx, ncz] = key.split(",").map(Number);
+        if (!this.loadedChunks.has(key)) {
+          const inQueue = this.loadQueue.some((q) => q.cx === ncx && q.cz === ncz);
+          if (!inQueue) {
+            this.loadQueue.push({ cx: ncx, cz: ncz });
+            anyNewMissing = true;
           }
         }
       }
@@ -186,7 +194,7 @@ export class MapBuilder {
 
     const isStairVoid = chunk.type === "stairs_2f" || chunk.type === "stairs_b1";
     const isNarrowCorridor = chunk.type === "corridor_ns" || chunk.type === "corridor_ew" || chunk.type === "narrow_ns";
-    const hasFixture = !isStairVoid && (chunk.type === "start" || isNarrowCorridor || random() < 0.52);
+    const hasFixture = !isStairVoid && (chunk.type === "start" || isNarrowCorridor || chunk.type === "classroom" || random() < 0.52);
     if (hasFixture) {
       const isUnstable = chunk.type === "flicker_room" || random() < 0.14;
       const fixtureMaterial = new THREE.MeshStandardMaterial({
