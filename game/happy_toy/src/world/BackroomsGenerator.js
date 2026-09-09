@@ -1642,8 +1642,8 @@ export class BackroomsGenerator {
     }
 
     // Plus-shaped halls with four enterable corner alcoves (1.6m inner gaps).
-    // Chicane tiles keep the spine blocked, but open BOTH sides of each baffle
-    // so a chase can be lost by taking the other loop. Uncat's south reveal
+    // Chicane tiles keep the spine blocked and use mid-stubs so BOTH inner
+    // baffle loops AND an outer border ring stay open. Uncat's south reveal
     // and the weeping-angel west tile stay straight plus halls.
     const hallLike = type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
       || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";

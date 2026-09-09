@@ -203,6 +203,7 @@ try {
       f2Cabinets: (f2.cabinets || []).length,
       huntVisible: game.floorHuntDirector?.silhouette?.visible === true,
       huntY: game.floorHuntDirector?.silhouette?.position?.y ?? null,
+      huntModel: game.floorHuntDirector?.modelReady === true,
     };
     game.player.setPosition({ x: 0, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
