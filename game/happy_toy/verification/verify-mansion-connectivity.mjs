@@ -139,7 +139,7 @@ try {
     );
 
     const alcoveStart = pathTo({ x: -5.1, y: 0.9, z: -5.1 });
-    const alcoveCorridor = pathTo({ x: -5.1, y: 0.9, z: -16 });
+    const alcoveCorridor = pathTo({ x: -4.5, y: 0.9, z: -11.5 });
     const omenRoom = pathTo({ x: -16, y: 0.9, z: -28.6 });
     const staticRoom = pathTo({ x: 16, y: 0.9, z: -28.6 });
     const westJog = pathTo({ x: -20.5, y: 0.9, z: 16 });
@@ -173,7 +173,7 @@ try {
       westJogLen: westJog.length,
       northJogLen: northJog.length,
       alcoveStartBlocked: sampleBlocked(-5.1, -5.1),
-      alcoveCorridorBlocked: sampleBlocked(-5.1, -16),
+      alcoveCorridorBlocked: sampleBlocked(-4.5, -11.5),
       omenWalkable: sampleWalkable(-16, -28.6),
       staticWalkable: sampleWalkable(16, -28.6),
     };
