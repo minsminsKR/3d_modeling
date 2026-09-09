@@ -148,11 +148,38 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 56 && x < 72 && z > 24 && z < 40) {
+      this.fire(
+        "broadcast",
+        "broadcast",
+        "방송실입니다. 마이크가 아직 뜨겁습니다. 이름을 대지 마십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 104 && x < 120 && z > 24 && z < 40) {
+      this.fire(
+        "practice",
+        "practice",
+        "연습실입니다. 가운데가 막혀 있습니다. 남쪽으로 돌아가십시오.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z < -8 && z > -24) {
       this.fire(
         "art",
         "art",
         "미술실입니다. 물감이 아직 마르지 않았습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z < -24 && z > -40) {
+      this.fire(
+        "studio",
+        "studio",
+        "촬영실입니다. 조명이 꺼져 있습니다. 얼굴을 카메라에 대지 마십시오.",
         "school_chime",
       );
     }

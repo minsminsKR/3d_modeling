@@ -330,10 +330,13 @@ export class MapBuilder {
     if (chunk.type === "auditorium") label = "강당";
     if (chunk.type === "foyer") label = "로비";
     if (chunk.type === "art_room") label = "미술실";
+    if (chunk.type === "studio") label = "촬영실";
+    if (chunk.type === "broadcast") label = "방송실";
     if (chunk.cx === 3 && chunk.cz === 0) label = "연결복도";
     if (chunk.cx === 6 && chunk.cz === 0) label = "기념관";
     if (chunk.cx === 7 && chunk.cz === 0) label = "트로피";
     if (chunk.cx === 4 && chunk.cz === 1) label = "아케이드";
+    if (chunk.cx === 7 && chunk.cz === 2) label = "연습실";
     if (this.roomPlateCache.has(label)) return this.roomPlateCache.get(label);
     const canvas = document.createElement("canvas");
     canvas.width = 256;

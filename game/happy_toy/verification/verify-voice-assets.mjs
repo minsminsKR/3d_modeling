@@ -11,7 +11,7 @@ const required = [
   "b1deep", "f2deep", "b1east", "f2south", "f1maze", "f1ring",
   "library", "washroom", "boarded", "throughClass", "gym",
   "windowHall", "skybridge", "courtyard", "memorial", "auditorium", "foyer", "atrium",
-  "trophy", "arcade", "art",
+  "trophy", "arcade", "art", "practice", "studio", "broadcast",
 ];
 
 assert.equal(fs.existsSync(root), true, `voice directory missing: ${root}`);

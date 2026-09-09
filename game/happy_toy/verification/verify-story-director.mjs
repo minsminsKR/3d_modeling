@@ -116,6 +116,18 @@ g.player.position = { x: 128, y: 0, z: 16 };
 director.update();
 assert.equal(director.fired.has("auditorium"), true);
 
+g.player.position = { x: 112, y: 0, z: 35.5 };
+director.update();
+assert.equal(director.fired.has("practice"), true);
+
+g.player.position = { x: 128, y: 0, z: -32 };
+director.update();
+assert.equal(director.fired.has("studio"), true);
+
+g.player.position = { x: 64, y: 0, z: 32 };
+director.update();
+assert.equal(director.fired.has("broadcast"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");

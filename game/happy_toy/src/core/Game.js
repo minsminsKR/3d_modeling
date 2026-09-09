@@ -1646,6 +1646,14 @@ export class Game {
       this.hud.setStatus("중정 아케이드입니다. 기둥 너머로 난간만 보입니다.", 3600);
       return;
     }
+    if (cx === 7 && cz === 2 && !this._storyBeats.has("practice")) {
+      this._storyBeats.add("practice");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("practice", "연습실입니다. 가운데가 막혀 있습니다. 남쪽으로 돌아가십시오.");
+      this.hud.setStatus("연습실입니다. 가운데가 막혀 있습니다. 남쪽으로 돌아가십시오.", 3600);
+      return;
+    }
     const roomLines = {
       nurse_office: ["nurse", "보건실입니다. 장부에 끝나지 않은 출석이 남아 있습니다."],
       music_room: ["music", "음악실입니다. 한 음이 모자란 피아노가 열려 있습니다."],
@@ -1655,6 +1663,8 @@ export class Game {
       courtyard: ["courtyard", "중정입니다. 난간 너머로 내려가지 마십시오."],
       foyer: ["foyer", "로비입니다. 표는 팔지 않습니다. 강당 문만 열려 있습니다."],
       art_room: ["art", "미술실입니다. 물감이 아직 마르지 않았습니다."],
+      studio: ["studio", "촬영실입니다. 조명이 꺼져 있습니다. 얼굴을 카메라에 대지 마십시오."],
+      broadcast: ["broadcast", "방송실입니다. 마이크가 아직 뜨겁습니다. 이름을 대지 마십시오."],
       auditorium: ["auditorium", "강당입니다. 막이 내려와 있고 객석이 당신을 셉니다."],
     };
     const room = roomLines[type];
