@@ -149,5 +149,31 @@ await page.evaluate(() => {
 await page.screenshot({ path: path.join(outDir, "f1_center_tspur.png"), timeout: 120000 });
 console.log("spur", spur);
 
+const foyer = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(true);
+  uncat.group.visible = false;
+  game.hud.setStatus("제단함은 이 홀에 있다. 이름을 넷 모으기 전에는 열리지 않는다.", 4200);
+  return game.poseForCapture({
+    x: 0.2,
+    y: 0,
+    z: 3.4,
+    lookAt: [0, 1.05, -2.1],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_start_foyer_altar.png"), timeout: 120000 });
+console.log("foyer", foyer);
+
 await browser.close();
 console.log("CENTER HALL CAPTURES WRITTEN");

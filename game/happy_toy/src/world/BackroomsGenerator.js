@@ -297,16 +297,15 @@ export class BackroomsGenerator {
   }
 
     // Long school-hall tiles: EW through-halls off the start meridian, and
-    // NS through-halls off the start parallel. Start (0,0), Uncat south
-    // (0,1), and the weeping-angel west tile (-1,0) stay plus spines.
+    // NS through-halls off the start parallel. Start (0,0) stays a plus
+    // foyer so the 제단함 at z=-2.05 remains in the north arm. Uncat south
+    // (0,1) and the weeping-angel west tile (-1,0) are school corridors.
   getHallChicanes(cx, cz) {
     const openings = this.getOpenings(cx, cz);
-    const skipUncatSouth = cx === 0 && cz === 1;
-    const skipAngelWest = cx === -1 && cz === 0;
     return {
       openings,
-      ew: Boolean(openings.E && openings.W && cx !== 0 && !skipAngelWest),
-      ns: Boolean(openings.N && openings.S && cz !== 0 && !skipUncatSouth),
+      ew: Boolean(openings.E && openings.W && cx !== 0),
+      ns: Boolean(openings.N && openings.S && cz !== 0),
     };
   }
 
@@ -1791,11 +1790,12 @@ export class BackroomsGenerator {
     const ewChicane = chicanes.ew;
     const nsChicane = chicanes.ns;
     const maze = ewChicane || nsChicane;
+    const isStart = chunk.cx === 0 && chunk.cz === 0;
     const walls = [];
     const add = (name, x, z, sx, sz, skip = false) => {
       if (!skip) walls.push([name, x, z, sx, sz]);
     };
-    if (!maze) {
+    if (!maze && !isStart) {
       add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW);
       add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW);
       add("hall_maze_ne_h", 6.0, -4.6, 1.8, t);
@@ -1819,6 +1819,8 @@ export class BackroomsGenerator {
     if (maze) {
       this.dressHallLockerBanks(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
       this.dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane);
+    } else if (isStart) {
+      this.dressStartFoyer(chunk, center, chunkId, floorY);
     }
     const gloom = new THREE.PointLight(0x4a3020, 1.15, 5.4, 2.0);
     gloom.position.set(
@@ -1939,6 +1941,34 @@ export class BackroomsGenerator {
     this.scene.add(chair);
     chunk.meshes.push(chair);
     this.collisionWorld.addStaticBox(chair.name, chair.position, new THREE.Vector3(0.48, 0.62, 0.48), chunkId);
+  }
+
+  dressStartFoyer(chunk, center, chunkId, floorY) {
+    // Plus foyer: keep the 제단함 in the north arm, but read as a school
+    // crossing — floor stripe, dead fluorescents, no classroom walls.
+    this.ensureSchoolCorridorMaterials();
+    this.placeDressedBox(
+      chunk, chunkId, "hall_stripe_ew",
+      center.x, floorY + 0.012, center.z, 14.6, 0.02, 0.09,
+      this.schoolStripeMat, false,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "hall_stripe_ns",
+      center.x, floorY + 0.012, center.z, 0.09, 0.02, 14.6,
+      this.schoolStripeMat, false,
+    );
+    for (const [name, x, z, sx, sz] of [
+      ["hall_fluoro_e", 4.2, 0, 2.35, 0.14],
+      ["hall_fluoro_w", -4.2, 0, 2.35, 0.14],
+      ["hall_fluoro_s", 0, 4.2, 0.14, 2.35],
+      ["hall_fluoro_n", 0, -4.2, 0.14, 2.35],
+    ]) {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        center.x + x, floorY + 2.68, center.z + z, sx, 0.05, sz,
+        this.schoolFluoroMat, false,
+      );
+    }
   }
 
   dressHallLockerBanks(chunk, center, chunkId, floorY, _openings, ewChicane, nsChicane) {
@@ -3428,11 +3458,10 @@ export class BackroomsGenerator {
     } else if (isArchive) {
       addDynamicCabinet("cabinet-archive", "서고 신발장", [-5.0, 0.0, 5.0], -Math.PI / 2);
     } else if (chunk.cx === 1 && chunk.cz === 0) {
-      // Odd EW loops: SW hide off the south jog, NW hide off the north jog.
       addDynamicCabinet("cabinet_chokepoint_1_0", "복도 신발장", [-5.25, 0.0, 5.25], -Math.PI / 2);
       addDynamicCabinet("cabinet_chokepoint_1_0_n", "복도 신발장", [-5.25, 0.0, -5.25], Math.PI);
     } else if (chunk.cx === 0 && chunk.cz === 1) {
-      addDynamicCabinet("cabinet_junction_0_1", "교차로 신발장", [-5.2, 0.0, 5.2], -Math.PI / 2);
+      addDynamicCabinet("cabinet_junction_0_1", "교차로 신발장", [-5.25, 0.0, 5.25], -Math.PI / 2);
     } else if (type === "omen_room") {
       addDynamicCabinet("cabinet-omen-room", "북실 신발장", [5.4, 0.0, -5.4], Math.PI / 2);
     } else if (type === "static_room") {
