@@ -2082,6 +2082,10 @@ export class BackroomsGenerator {
       emissive: 0x1a120c,
       emissiveIntensity: 0.08,
     });
+    if (this.textures?.createDoorMaterial) {
+      this.schoolDeskMat = this.textures.createDoorMaterial().clone();
+      this.schoolDeskMat.color.setHex(0x8a6844);
+    }
   }
 
   dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
@@ -2350,7 +2354,7 @@ export class BackroomsGenerator {
         for (let col = 0; col < 2; col += 1) {
           const lx = doorX + sideX * (aisle + col * 1.12) + inX * (1.51 + row * 1.18);
           const lz = doorZ + sideZ * (aisle + col * 1.12) + inZ * (1.51 + row * 1.18);
-          const desk = new THREE.Mesh(deskGeo, this.propMaterial);
+          const desk = new THREE.Mesh(deskGeo, this.schoolDeskMat || this.propMaterial);
           desk.position.set(center.x + lx, floorY + 0.35, center.z + lz);
           desk.rotation.y = faceYaw;
           desk.castShadow = true;
@@ -2374,7 +2378,7 @@ export class BackroomsGenerator {
         }
       }
 
-      const teacher = new THREE.Mesh(teacherGeo, this.propMaterial);
+      const teacher = new THREE.Mesh(teacherGeo, this.schoolDeskMat || this.propMaterial);
       teacher.position.set(
         center.x + doorX + sideX * 2.15 + inX * 4.52,
         floorY + 0.37,
