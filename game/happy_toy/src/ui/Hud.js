@@ -197,6 +197,7 @@ export class Hud {
   }
 
   setFlashlightBattery(ratio, enabled) {
+    this.setFlashlightEnabled(enabled);
     const clamped = Math.max(0, Math.min(1, ratio));
     if (this.flashlightBatteryFill) {
       this.flashlightBatteryFill.style.width = `${clamped * 100}%`;

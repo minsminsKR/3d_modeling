@@ -118,7 +118,7 @@ export class HorrorEventManager {
       }
     }
 
-    const totalKeys = Math.max(1, game?.keys?.length || 4);
+    const totalKeys = Math.max(1, game?.requiredKeyCount || 4);
     const progress = Math.min(1, Math.max(0, (game?.keyCount || 0) / totalKeys));
     const nearSafeLight = (game?.safeLights || []).some((light) => (
       light.isOn && Math.abs(light.position.y - this.player.position.y) < 1.8

@@ -381,6 +381,23 @@ export class MapBuilder {
       chunk.meshes.push(ofuda);
     }
 
+    if (random() < 0.62) {
+      const clock = new THREE.Mesh(
+        new THREE.CircleGeometry(0.16, 20),
+        new THREE.MeshStandardMaterial({
+          color: 0xcfc6b0,
+          emissive: 0x1a120c,
+          emissiveIntensity: 0.06,
+          roughness: 0.55,
+        }),
+      );
+      clock.position.set(chunk.center.x - 1.18, chunk.floorY + 2.22, chunk.center.z + (random() - 0.5) * 3.5);
+      clock.rotation.y = Math.PI / 2;
+      clock.name = `${chunk.chunkId}_stopped_clock`;
+      this.scene.add(clock);
+      chunk.meshes.push(clock);
+    }
+
     if (random() < 0.4) {
       const arrow = new THREE.Mesh(
         new THREE.PlaneGeometry(0.55, 0.18),

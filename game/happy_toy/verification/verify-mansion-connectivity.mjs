@@ -85,9 +85,12 @@ try {
       }
     }
 
-    const voidChunk = generator.generateChunk(8, 0);
+    let radius = 0;
+    while (generator.isPlayableChunk(radius, 0)) radius += 1;
+    radius -= 1;
+    const voidChunk = generator.generateChunk(radius + 1, 0);
     const ringChunk = generator.generateChunk(3, 0);
-    const farChunk = generator.generateChunk(7, 0);
+    const farChunk = generator.generateChunk(radius, 0);
     const ringOpen = generator.getOpenings(3, 0);
     const inverted = [];
     for (const chunk of generator.chunksData.values()) {
@@ -154,6 +157,8 @@ try {
       farType: farChunk.type,
       farMeshes: farChunk.meshes.length,
       allReachable: allVisited.size,
+      expectedCells: (radius * 2 + 1) * (radius * 2 + 1),
+      radius,
       inverted,
       alcoveStartLen: alcoveStart.length,
       alcoveCorridorLen: alcoveCorridor.length,
@@ -178,7 +183,7 @@ try {
   assert.equal(result.ringWest, true, "school ring must open into the core");
   assert.notEqual(result.farType, "void", "outer school wing must remain walkable");
   assert.ok(result.farMeshes > 0, "outer school wing must build geometry");
-  assert.equal(result.allReachable, 225, `full school graph should be 15x15, got ${result.allReachable}`);
+  assert.equal(result.allReachable, result.expectedCells, `full school graph should be ${result.expectedCells}, got ${result.allReachable}`);
   assert.equal(result.inverted.length, 0, `wall-switch facing inward failed: ${JSON.stringify(result.inverted, null, 2)}`);
   assert.equal(result.alcoveStartBlocked, false, "start-room alcove should be enterable");
   assert.equal(result.alcoveCorridorBlocked, false, "corridor side alcove should be enterable");

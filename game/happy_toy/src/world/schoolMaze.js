@@ -3,7 +3,7 @@
 // abandoned school rather than a single looping hallway.
 
 export const CORE_RADIUS = 2;
-export const PLAYABLE_RADIUS = 7;
+export const PLAYABLE_RADIUS = 12;
 
 export const CORE_EDGES = [
   ["0,0", "0,-1"],
@@ -178,7 +178,7 @@ export function buildSchoolWingEdges(seed = 0x5C0001) {
       const inward = inwardNeighbor(cx, cz);
       if (!inward) continue;
       const cardinal = cx === 0 || cz === 0;
-      if (cardinal || random() < 0.6) {
+      if (cardinal || random() < 0.34) {
         tryAdd(cx, cz, inward[0], inward[1]);
       }
     }
@@ -251,7 +251,7 @@ export function buildSchoolWingEdges(seed = 0x5C0001) {
   }
 
   let classrooms = 0;
-  const classroomTarget = 24;
+  const classroomTarget = Math.max(24, Math.floor(playableCellCount() * 0.045));
   for (const key of candidates) {
     if (classrooms >= classroomTarget) break;
     const neighbors = [...(adjacency.get(key) || [])];

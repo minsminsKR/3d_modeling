@@ -25,15 +25,18 @@ export class FlashlightController {
     this.lowBatteryWarned = false;
     this.healthyColor = new THREE.Color(LIGHTING_CONFIG.flashlightColor);
     this.dyingColor = new THREE.Color(0xff7a32);
+    this.toggleLock = 0;
     this.applyState(false);
   }
 
   update(deltaTime = 0.016) {
-    if (this.input.consumePressed("f")) {
+    const dt = Math.min(deltaTime, 0.05);
+    this.toggleLock = Math.max(0, this.toggleLock - dt);
+    if (this.toggleLock > 0) {
+      this.input.clearKey?.("f");
+    } else if (this.input.consumePressed("f")) {
       this.toggle();
     }
-
-    const dt = Math.min(deltaTime, 0.05);
     this.soundCooldown = Math.max(0, this.soundCooldown - dt);
 
     if (this.enabled) {
@@ -178,6 +181,8 @@ export class FlashlightController {
       return false;
     }
     this.enabled = Boolean(enabled);
+    this.toggleLock = Math.max(this.toggleLock, 0.55);
+    this.input?.clearKey?.("f");
     this.applyState(showMessage);
     return this.enabled;
   }

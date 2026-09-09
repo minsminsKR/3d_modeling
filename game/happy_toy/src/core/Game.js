@@ -434,6 +434,7 @@ export class Game {
     this.menuSystem?.hideMenu();
     this.handleResize();
     this.flashlightController?.setEnabled(true, false);
+    this.input?.clearKey?.("f");
     this.syncWorldPreview();
     this.tryPointerLock(false);
     this.hud.setStatus("손전등이 유일한 길입니다. 발소리가 나면 신발장에 숨으십시오.", 4200);
@@ -475,6 +476,7 @@ export class Game {
     this.menuSystem?.hideMenu();
     this.handleResize();
     this.flashlightController?.setEnabled(true, false);
+    this.input?.clearKey?.("f");
     this.syncWorldPreview();
     this.tryPointerLock(false);
     this.hud.setStatus("다시 복도 한가운데에 섰습니다.", 1800);
@@ -1344,6 +1346,7 @@ export class Game {
     if (chunkChanged) {
       this._lastPlayerChunkCx = cx;
       this._lastPlayerChunkCz = cz;
+      this.onEnterSchoolChunk(cx, cz);
     }
 
     // 2. Manage ceiling lights via the fixed PointLight pool.
@@ -1483,6 +1486,24 @@ export class Game {
         }
       }
     }
+  }
+
+  onEnterSchoolChunk(cx, cz) {
+    const generator = this.mapBuilder?.generator;
+    if (!generator || !this.isStarted || this.gameOver || this.gameCleared) return;
+    const type = generator.getChunkType(cx, cz);
+    if (!type || type === "void" || type === "start") return;
+    if (this.playTime < 9) return;
+    const now = this.playTime;
+    if (now - (this._lastPaAt || 0) < 16) return;
+    this._lastPaAt = now;
+    const wing = Math.abs(cx) > 2 || Math.abs(cz) > 2;
+    const line = wing
+      ? "방송입니다. 같은 복도를 걷고 있습니다. 교실 번호를 믿지 마십시오."
+      : "방송입니다. 하교하지 않습니다. 복도에서 기다리십시오.";
+    soundManager.playSFX(Math.random() < 0.5 ? "school_chime" : "radio_static");
+    this.voiceAnnouncer?.announce("pa", line);
+    this.hud.setStatus(line, 3200);
   }
 
   getMinMonsterDistance(targetPos, options = {}) {
