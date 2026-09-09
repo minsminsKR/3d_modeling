@@ -1075,6 +1075,7 @@ export class Game {
       !enemy.isDormant && enemy.isActivelyChasing() && enemy.hasVisualContact
       && enemy.isSameLevelAs(this.player.position)
       && this.collisionWorld.hasLineOfSight(enemy.group.position, this.player.position));
+    cabinet.setOccupied?.(true);
     cabinet.occupied = true;
     this.player.enterCabinet(cabinet);
     this.hud?.setHidden(true);
@@ -1112,6 +1113,7 @@ export class Game {
     this.cabinetEvent = null;
 
     if (this.player.hiddenCabinet) {
+      this.player.hiddenCabinet.setOccupied?.(false);
       this.player.hiddenCabinet.occupied = false;
     }
     this.player.exitCabinet();
@@ -1237,6 +1239,7 @@ export class Game {
     this.voiceAnnouncer?.announce("death", "복도가 당신의 이름을 외웠습니다.");
     this.detectionFreezeTimer = 0;
     if (this.player.hiddenCabinet) {
+      this.player.hiddenCabinet.setOccupied?.(false);
       this.player.hiddenCabinet.occupied = false;
     }
     this.cabinetEvent = null;

@@ -19,6 +19,8 @@ export class PlayerController {
     this.currentInteractable = null;
     this.isHidden = false;
     this.hiddenCabinet = null;
+    this.hidePeekYaw = 0;
+    this.hidePeekPitch = 0;
     this.isMoving = false;
     this.isSprinting = false;
     this.cameraY = PLAYER_CONFIG.height;
@@ -115,6 +117,8 @@ export class PlayerController {
   enterCabinet(cabinet) {
     this.isHidden = true;
     this.hiddenCabinet = cabinet;
+    this.hidePeekYaw = 0;
+    this.hidePeekPitch = 0;
     this.input.consumePointerDelta();
     this.applyCabinetView();
     soundManager.playSFX("cabinet_enter");
@@ -125,6 +129,8 @@ export class PlayerController {
     const cabinet = this.hiddenCabinet;
     this.isHidden = false;
     this.hiddenCabinet = null;
+    this.hidePeekYaw = 0;
+    this.hidePeekPitch = 0;
 
     if (cabinet) {
       const forward = cabinet.getForwardDirection();
@@ -161,6 +167,7 @@ export class PlayerController {
         isHidden: true,
       });
 
+      this.updateHiddenLook();
       this.updateHiddenInteraction();
       this.applyCabinetView();
       return;
@@ -279,13 +286,28 @@ export class PlayerController {
     }
   }
 
+  updateHiddenLook() {
+    const delta = this.input.consumePointerDelta();
+    this.hidePeekYaw = clamp(
+      this.hidePeekYaw - delta.x * this.mouseSensitivity,
+      -0.46,
+      0.46,
+    );
+    this.hidePeekPitch = clamp(
+      this.hidePeekPitch - delta.y * this.mouseSensitivity,
+      -0.22,
+      0.28,
+    );
+  }
+
   applyCabinetView() {
     if (!this.hiddenCabinet) {
       return;
     }
 
-    const view = this.hiddenCabinet.getInsideView();
+    const view = this.hiddenCabinet.getInsideView(this.hidePeekYaw || 0, this.hidePeekPitch || 0);
     this.camera.position.copy(view.position);
+    this.cameraY = view.position.y;
     this.camera.lookAt(view.lookAt);
   }
 

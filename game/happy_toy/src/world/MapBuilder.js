@@ -266,13 +266,25 @@ export class MapBuilder {
         || chunk.type === "corridor_ew" || chunk.type === "t_junction" || chunk.type === "cross_junction"
         || chunk.type === "dead_end";
       if (hallLike) {
-        const along = 4.6 + random() * 1.6;
-        if (random() > 0.5) {
-          decal.position.set(chunk.center.x + side * 1.19, chunk.floorY + 1.34, chunk.center.z + side * along);
-          decal.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+        const maze = this.generator?.isMazeHall?.(chunk.cx, chunk.cz);
+        if (maze) {
+          const along = 2.7 + random() * 1.5;
+          if (random() > 0.5) {
+            decal.position.set(chunk.center.x + side * along, chunk.floorY + 1.34, chunk.center.z + side * 1.82);
+            decal.rotation.y = side < 0 ? 0 : Math.PI;
+          } else {
+            decal.position.set(chunk.center.x + side * 1.82, chunk.floorY + 1.34, chunk.center.z + side * along);
+            decal.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+          }
         } else {
-          decal.position.set(chunk.center.x + side * along, chunk.floorY + 1.34, chunk.center.z + side * 1.19);
-          decal.rotation.y = side < 0 ? 0 : Math.PI;
+          const along = 4.6 + random() * 1.6;
+          if (random() > 0.5) {
+            decal.position.set(chunk.center.x + side * 1.19, chunk.floorY + 1.34, chunk.center.z + side * along);
+            decal.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
+          } else {
+            decal.position.set(chunk.center.x + side * along, chunk.floorY + 1.34, chunk.center.z + side * 1.19);
+            decal.rotation.y = side < 0 ? 0 : Math.PI;
+          }
         }
       } else {
         const useSouthWall = chunk.type === "workshop" || chunk.type === "playroom" || random() > 0.7;
@@ -335,6 +347,13 @@ export class MapBuilder {
 
   dressSchoolCorridor(chunk, random) {
     if (chunk.type === "void" || chunk.type === "stairs_2f" || chunk.type === "stairs_b1") return;
+
+    const maze = this.generator?.isMazeHall?.(chunk.cx, chunk.cz);
+    const chicanes = this.generator?.getHallChicanes?.(chunk.cx, chunk.cz) || {};
+    if (maze) {
+      this.dressMazeHallProps(chunk, random, chicanes);
+      return;
+    }
 
     const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.18), this.getRoomPlateMaterial(chunk));
     plate.position.set(chunk.center.x - 1.18, chunk.floorY + 2.08, chunk.center.z - 4.6);
@@ -423,6 +442,73 @@ export class MapBuilder {
       this.scene.add(arrow);
       chunk.meshes.push(arrow);
     }
+  }
+
+  dressMazeHallProps(chunk, random, chicanes) {
+    const c = chunk.center;
+    const y = chunk.floorY;
+    const wall = 1.78;
+    const alcove = 5.25;
+    const plateMat = this.getRoomPlateMaterial(chunk);
+    const addPlate = (lx, lz, yaw, name) => {
+      const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.18), plateMat);
+      plate.position.set(c.x + lx, y + 2.08, c.z + lz);
+      plate.rotation.y = yaw;
+      plate.name = `${chunk.chunkId}_${name}`;
+      plate.renderOrder = 2;
+      this.scene.add(plate);
+      chunk.meshes.push(plate);
+    };
+    if (chicanes.ew) {
+      addPlate(-alcove + 1.32, -wall, 0, "room_plate_nw");
+      addPlate(alcove - 1.32, -wall, 0, "room_plate_ne");
+      addPlate(-alcove + 1.32, wall, Math.PI, "room_plate_sw");
+      addPlate(alcove - 1.32, wall, Math.PI, "room_plate_se");
+    } else if (chicanes.ns) {
+      addPlate(-wall, -alcove + 1.32, Math.PI / 2, "room_plate_wn");
+      addPlate(-wall, alcove - 1.32, Math.PI / 2, "room_plate_ws");
+      addPlate(wall, -alcove + 1.32, -Math.PI / 2, "room_plate_en");
+      addPlate(wall, alcove - 1.32, -Math.PI / 2, "room_plate_es");
+    }
+
+    if (random() < 0.8) {
+      const ofuda = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.12, 0.28),
+        new THREE.MeshStandardMaterial({
+          color: 0xd8c49a,
+          roughness: 0.9,
+          side: THREE.DoubleSide,
+        }),
+      );
+      if (chicanes.ew) {
+        ofuda.position.set(c.x + 3.35, y + 1.85, c.z - wall);
+        ofuda.rotation.y = 0;
+      } else {
+        ofuda.position.set(c.x - wall, y + 1.85, c.z + 3.35);
+        ofuda.rotation.y = Math.PI / 2;
+      }
+      ofuda.rotation.z = (random() - 0.5) * 0.18;
+      ofuda.name = `${chunk.chunkId}_ofuda`;
+      this.scene.add(ofuda);
+      chunk.meshes.push(ofuda);
+    }
+
+    const arrow = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.55, 0.18),
+      new THREE.MeshStandardMaterial({
+        color: 0x6a1810,
+        emissive: 0x2a0808,
+        emissiveIntensity: 0.15,
+        roughness: 0.8,
+        side: THREE.DoubleSide,
+      }),
+    );
+    arrow.rotation.x = -Math.PI / 2;
+    arrow.rotation.z = chicanes.ns && !chicanes.ew ? Math.PI / 2 : 0;
+    arrow.position.set(c.x, y + 0.012, c.z);
+    arrow.name = `${chunk.chunkId}_false_arrow`;
+    this.scene.add(arrow);
+    chunk.meshes.push(arrow);
   }
 
   createGrimeMaterial() {

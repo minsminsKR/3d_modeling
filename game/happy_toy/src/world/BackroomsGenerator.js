@@ -2070,6 +2070,18 @@ export class BackroomsGenerator {
       roughness: 0.92,
       metalness: 0,
     });
+    this.schoolPaMat = new THREE.MeshStandardMaterial({
+      color: 0x2a2620,
+      roughness: 0.68,
+      metalness: 0.28,
+    });
+    this.schoolClockMat = new THREE.MeshStandardMaterial({
+      color: 0xcfc6b0,
+      roughness: 0.55,
+      metalness: 0.08,
+      emissive: 0x1a120c,
+      emissiveIntensity: 0.08,
+    });
   }
 
   dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
@@ -2214,6 +2226,21 @@ export class BackroomsGenerator {
         );
       }
       this.placeDressedBox(
+        chunk, chunkId, "hall_pa_n",
+        center.x - 4.15, floorY + 2.48, center.z - winZ, 0.28, 0.16, 0.1,
+        this.schoolPaMat, false,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, "hall_pa_s",
+        center.x + 4.15, floorY + 2.48, center.z + winZ, 0.28, 0.16, 0.1,
+        this.schoolPaMat, false,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, "hall_clock",
+        center.x + 3.15, floorY + 2.18, center.z - winZ, 0.3, 0.3, 0.04,
+        this.schoolClockMat, false,
+      );
+      this.placeDressedBox(
         chunk, chunkId, "hall_paper_n",
         center.x + 2.9, floorY + 1.55, center.z - winZ,
         0.42, 0.55, 0.02, this.schoolPaperMat, false,
@@ -2241,6 +2268,18 @@ export class BackroomsGenerator {
           chunk, chunkId, name,
           center.x, floorY + 2.68, center.z + z, 0.14, 0.05, 2.35,
           this.schoolFluoroMat, false,
+        );
+      }
+      if (!ewChicane) {
+        this.placeDressedBox(
+          chunk, chunkId, "hall_pa_w",
+          center.x - winX, floorY + 2.48, center.z - 4.15, 0.1, 0.16, 0.28,
+          this.schoolPaMat, false,
+        );
+        this.placeDressedBox(
+          chunk, chunkId, "hall_clock_ns",
+          center.x - winX, floorY + 2.18, center.z + 3.15, 0.04, 0.3, 0.3,
+          this.schoolClockMat, false,
         );
       }
     }
@@ -2294,6 +2333,42 @@ export class BackroomsGenerator {
       board.name = `${chunkId}_hall_board_${idx}`;
       this.scene.add(board);
       chunk.meshes.push(board);
+
+      const towardX = boardLx - lx;
+      const towardZ = boardLz - lz;
+      const towardLen = Math.hypot(towardX, towardZ) || 1;
+      const desk2 = new THREE.Mesh(deskGeo, this.propMaterial);
+      desk2.position.set(
+        center.x + lx + (towardX / towardLen) * 0.92,
+        floorY + 0.35,
+        center.z + lz + (towardZ / towardLen) * 0.92,
+      );
+      desk2.rotation.y = yaw;
+      desk2.name = `${chunkId}_hall_desk_${idx}_b`;
+      this.scene.add(desk2);
+      chunk.meshes.push(desk2);
+      this.collisionWorld.addStaticBox(desk2.name, desk2.position, new THREE.Vector3(0.58, 0.7, 0.44), chunkId);
+
+      const bag = new THREE.Mesh(this.getBoxGeometry(0.26, 0.2, 0.16), this.trimMaterial);
+      bag.position.set(
+        center.x + lx + (awayX / awayLen) * 0.18 + (towardZ / towardLen) * 0.32,
+        floorY + 0.1,
+        center.z + lz + (awayZ / awayLen) * 0.18 - (towardX / towardLen) * 0.32,
+      );
+      bag.name = `${chunkId}_hall_bag_${idx}`;
+      this.scene.add(bag);
+      chunk.meshes.push(bag);
+
+      const paper = new THREE.Mesh(this.getBoxGeometry(0.22, 0.012, 0.16), this.schoolPaperMat);
+      paper.position.set(
+        center.x + lx + (towardZ / towardLen) * 0.48,
+        floorY + 0.01,
+        center.z + lz - (towardX / towardLen) * 0.48,
+      );
+      paper.rotation.y = yaw + 0.35;
+      paper.name = `${chunkId}_hall_paper_${idx}`;
+      this.scene.add(paper);
+      chunk.meshes.push(paper);
 
       const glow = new THREE.PointLight(0x2a2018, 0.42, 3.4, 2.0);
       glow.position.set(center.x + lx, floorY + 1.7, center.z + lz);

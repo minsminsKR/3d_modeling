@@ -281,6 +281,8 @@ try {
       hallStripe: names(hall).some((name) => name.includes("hall_stripe_")),
       hallWindow: names(hall).some((name) => name.includes("hall_window_")),
       hallDesk: names(hall).some((name) => name.includes("hall_desk_")),
+      hallPa: names(hall).some((name) => name.includes("hall_pa_")),
+      hallClock: names(hall).some((name) => name.includes("hall_clock")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
@@ -515,6 +517,7 @@ try {
       hidden: game.player.isHidden,
       cameraY: game.camera.position.y,
       slats: document.body.classList.contains("is-hidden"),
+      interior: cabinet.interiorActive === true || cabinet.interiorGroup?.visible === true,
     };
     game.exitCabinet();
 
@@ -560,6 +563,8 @@ try {
   assert.equal(rooms.hallStripe, true, "school hallway stripe must run the center corridor");
   assert.equal(rooms.hallWindow, true, "classroom doors must have dark windows");
   assert.equal(rooms.hallDesk, true, "classroom desks must be visible through hall doors");
+  assert.equal(rooms.hallPa, true, "school halls must hang a PA speaker");
+  assert.equal(rooms.hallClock, true, "school halls must have a stopped clock");
   assert.equal(rooms.hallJog, false, "east 1F halls must keep the z=0 spine open");
   assert.equal(rooms.hallJogE, false, "east 1F halls must not block the east arm with a jog");
   assert.equal(rooms.hallJogNs, false, "north 1F halls must keep the x=0 spine open");
@@ -631,6 +636,7 @@ try {
   assert.equal(loop.total, 4);
   assert.equal(loop.hiding.hidden, true);
   assert.equal(loop.hiding.slats, true, "hiding must show locker slats");
+  assert.equal(loop.hiding.interior, true, "hiding must look out through a 3D locker interior");
   assert.equal(loop.cleared, true, "ritual must clear the run");
   console.log("SHADOW RUN PASSED");
 } catch (error) {

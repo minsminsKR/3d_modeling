@@ -172,7 +172,7 @@ await page.evaluate(() => {
   const game = window.__happyToy;
   game.renderer.render(game.scene, game.camera);
 });
-await page.screenshot({ path: path.join(outDir, "f1_start_foyer_altar.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_start_school_cross_altar.png"), timeout: 120000 });
 console.log("foyer", foyer);
 
 const nook = await page.evaluate(() => {
