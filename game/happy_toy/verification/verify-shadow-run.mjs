@@ -255,6 +255,7 @@ try {
     { x: 22.7, z: -6.45 },
     { x: 25.3, z: -6.45 },
     { x: 26.85, z: -2.1 },
+    { x: 26.75, z: 0 },
     { x: 32, z: 0 },
   ]) {
     throughWalk.push(await walkTo(stop, 420));
