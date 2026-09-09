@@ -75,6 +75,8 @@ try {
       f2Lab: (f2.meshes || []).some((mesh) => String(mesh.name || "").includes("gallery_2f_floor_north_lab")),
       f2SouthLab: (f2.meshes || []).some((mesh) => String(mesh.name || "").includes("gallery_2f_floor_south_lab")),
     };
+    const hall = game.mapBuilder.generator.generateChunk(1, 0);
+    floors.hallMaze = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_"));
     game.player.setPosition({ x: 80, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05);
     const deepWing = {
@@ -180,6 +182,7 @@ try {
   assert.equal(result.floors.f2Maze, true, "2F gallery must be a maze, not an open hall");
   assert.equal(result.floors.f2Lab, true, "2F north labyrinth must exist");
   assert.equal(result.floors.f2SouthLab, true, "2F south labyrinth must exist");
+  assert.equal(result.floors.hallMaze, true, "1F halls must fold into alcove mazes");
   assert.equal(result.atWing.totalKeys, 4, "unloading key rooms must not shrink the four-name loop");
   assert.equal(result.atWing.hud, "0 / 4");
   assert.ok(Math.abs(result.floorHunt.uncatY) < 2.5, `Uncat must stay on 1F while the player is in B1, got y=${result.floorHunt.uncatY}`);

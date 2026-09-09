@@ -492,6 +492,7 @@ export class BackroomsGenerator {
     // 2. Build Walls based on template
     const tWalls0 = performance.now();
     this.buildTemplateWalls(chunk, type, center, chunkId, rand, floorY);
+    this.dressHallLabyrinth(chunk, type, center, chunkId, floorY);
     const dtWalls = performance.now() - tWalls0;
 
     // 2b. Build Staircases if chunk is a stairwell
@@ -1726,6 +1727,55 @@ export class BackroomsGenerator {
       chunk.meshes.push(wallInst);
       chunk.meshes.push(trimInst);
     }
+  }
+
+  dressHallLabyrinth(chunk, type, center, chunkId, floorY = 0) {
+    const hallLike = type === "corridor_ns" || type === "narrow_ns" || type === "corridor_ew"
+      || type === "t_junction" || type === "cross_junction" || type === "start" || type === "dead_end";
+    if (!hallLike) return;
+    const openings = this.getOpenings(chunk.cx, chunk.cz);
+    const wallMat = this.textures.createWallMaterial();
+    wallMat.color.setHex(0x2a221c);
+    wallMat.emissive = new THREE.Color(0x080604);
+    wallMat.emissiveIntensity = 0.04;
+    const y = floorY + 1.4;
+    const h = 2.8;
+    const t = 0.32;
+    const skipNW = chunk.cx === 0 && chunk.cz === 0;
+    const cabinetSE = (chunk.cx + chunk.cz) % 2 === 0;
+    const walls = [];
+    const add = (name, x, z, sx, sz, skip = false) => {
+      if (!skip) walls.push([name, x, z, sx, sz]);
+    };
+    // Outer-alcove C walls. Keep the 2.4m plus spine, start NW hide, and hall lockers clear.
+    add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW);
+    add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW);
+    add("hall_maze_ne_h", 6.0, -4.6, 1.8, t);
+    add("hall_maze_ne_v", 6.2, -6.2, t, 1.8);
+    add("hall_maze_sw_h", -6.0, 4.6, 1.8, t, !cabinetSE);
+    add("hall_maze_sw_v", -6.2, 6.2, t, 1.8, !cabinetSE);
+    add("hall_maze_se_h", 6.0, 4.6, 1.8, t, cabinetSE);
+    add("hall_maze_se_v", 6.2, 6.2, t, 1.8, cabinetSE);
+    if (openings.E && openings.W) {
+      add("hall_maze_teeth_w", -4.2, 0.92, 1.8, t);
+      add("hall_maze_teeth_e", 4.2, -0.92, 1.8, t);
+    }
+    if (openings.N && openings.S) {
+      add("hall_maze_teeth_n", -0.92, -4.2, t, 1.8);
+      add("hall_maze_teeth_s", 0.92, 4.2, t, 1.8);
+    }
+    for (const [name, x, z, sx, sz] of walls) {
+      this.placeDressedBox(chunk, chunkId, name, center.x + x, y, center.z + z, sx, h, sz, wallMat);
+    }
+    const gloom = new THREE.PointLight(0x4a3020, 1.15, 5.4, 2.0);
+    gloom.position.set(
+      center.x + (cabinetSE ? -5.4 : 5.4),
+      floorY + 2.05,
+      center.z + (skipNW ? 5.2 : -5.2),
+    );
+    gloom.name = `${chunkId}_hall_maze_gloom`;
+    this.scene.add(gloom);
+    chunk.meshes.push(gloom);
   }
 
   dressOmenRoom(chunk, center, chunkId, floorY) {

@@ -45,6 +45,15 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && planar > 18) {
+      this.fire(
+        "f1maze",
+        "f1maze",
+        "복도가 한 번 접힙니다. 알코브에서 숨고, 척추만 곧게 가지 마십시오.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && Math.hypot(x - 16, z - 24.8) < 5.2) {
       this.fire(
         "stairB1",

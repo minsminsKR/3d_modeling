@@ -22,6 +22,10 @@ g.player.position = { x: 12, y: 0, z: 0 };
 director.update();
 assert.equal(director.fired.has("leaveStart"), true);
 
+g.player.position = { x: 20, y: 0, z: 0 };
+director.update();
+assert.equal(director.fired.has("f1maze"), true);
+
 g.player.position = { x: 16, y: 0, z: 24.8 };
 director.update();
 assert.equal(director.fired.has("stairB1"), true);

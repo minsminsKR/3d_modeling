@@ -103,6 +103,25 @@ try {
     console.log("walk", stop, annexWalk.at(-1));
   }
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.mapBuilder.generator.generateChunk(1, 0);
+    game.player.setPosition({ x: 16, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const f1MazeWalk = [];
+  for (const stop of [
+    { x: 16, z: -2.4 },
+    { x: 20, z: -2.4 },
+    { x: 20, z: -6.2 },
+  ]) {
+    f1MazeWalk.push(await walkTo(stop, 280));
+    console.log("f1maze", stop, f1MazeWalk.at(-1));
+  }
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -111,6 +130,7 @@ try {
     const faculty = generator.generateChunk(6, 1);
     const science = generator.generateChunk(6, -2);
     const gate = generator.generateChunk(4, 0);
+    const hall = generator.generateChunk(1, 0);
     const b1 = generator.generateChunk(1, 2);
     const f2 = generator.generateChunk(-1, -1);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
@@ -128,6 +148,7 @@ try {
       facultyType: faculty.type,
       scienceType: science.type,
       annexSign: names(gate).some((name) => name.includes("annex_sign")),
+      hallMaze: names(hall).filter((name) => name.includes("hall_maze_")).length,
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -379,18 +400,22 @@ try {
     };
   });
 
-  console.log({ annexWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, f1MazeWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.equal(annexWalk[3].ok, true, `must walk to 별관 gate, got ${JSON.stringify(annexWalk[3])}`);
   assert.ok(annexWalk[3].x > 56, "별관 gate is east of the core");
   assert.equal(annexWalk[5].ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk[5])}`);
   assert.ok(annexWalk[5].z < -10, "보건실 is on the north wing of the annex spine");
+  assert.equal(f1MazeWalk.at(-1).ok, true, `must walk a 1F hall alcove maze, got ${JSON.stringify(f1MazeWalk.at(-1))}`);
+  assert.ok(f1MazeWalk.at(-1).z < -5, "1F hall maze continues into the north alcove");
+  assert.ok(rooms.hallMaze >= 6, `1F hall maze walls missing: ${rooms.hallMaze}`);
   assert.equal(b1Walk.at(-1).ok, true, `must walk the B1 maze to the nursery, got ${JSON.stringify(b1Walk.at(-1))}`);
   assert.ok(b1Walk.at(-1).x < 0, "nursery is west of the inner crib door");
   assert.equal(f2Walk.at(-1).ok, true, `must walk the 2F maze to the shrine, got ${JSON.stringify(f2Walk.at(-1))}`);
   assert.ok(f2Walk.at(-1).x < -27.4, "shrine is west of the inner gallery door");
   assert.ok(story.fired.includes("leaveStart"), `leaveStart VO missing: ${story.fired.join(",")}`);
+  assert.ok(story.fired.includes("f1maze"), `1F maze VO missing: ${story.fired.join(",")}`);
   assert.ok(story.fired.includes("b1floor"), `B1 floor VO missing: ${story.fired.join(",")}`);
   assert.ok(story.fired.includes("nursery"), `nursery VO missing: ${story.fired.join(",")}`);
   assert.ok(story.fired.includes("f2floor"), `2F floor VO missing: ${story.fired.join(",")}`);
