@@ -121,6 +121,24 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 88 && x < 104 && Math.abs(z) < 1.8) {
+      this.fire(
+        "memorial",
+        "memorial",
+        "기념관입니다. 액자 속 얼굴이 비어 있습니다.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z > 12 && z < 20) {
+      this.fire(
+        "auditorium",
+        "auditorium",
+        "강당입니다. 막이 내려와 있고 객석이 당신을 셉니다.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && z > 14 && Math.abs(x) < 1.8) {
       this.fire(
         "boarded",

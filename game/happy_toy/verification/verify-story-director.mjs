@@ -88,6 +88,14 @@ g.player.position = { x: 80, y: 0, z: 16 };
 director.update();
 assert.equal(director.fired.has("courtyard"), true);
 
+g.player.position = { x: 96, y: 0, z: 0 };
+director.update();
+assert.equal(director.fired.has("memorial"), true);
+
+g.player.position = { x: 128, y: 0, z: 16 };
+director.update();
+assert.equal(director.fired.has("auditorium"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");

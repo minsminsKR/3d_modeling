@@ -320,6 +320,48 @@ try {
     console.log("yard", stop, yardWalk.at(-1));
   }
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(6, 0);
+    game.player.setPosition({ x: 96, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const memorialWalk = [];
+  for (const stop of [
+    { x: 96, z: 0 },
+    { x: 96, z: 6.5 },
+    { x: 96, z: 0 },
+    { x: 102, z: 0 },
+  ]) {
+    memorialWalk.push(await walkTo(stop, 360));
+    console.log("memorial", stop, memorialWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(7, 1);
+    game.mapBuilder.generator.generateChunk(8, 1);
+    game.player.setPosition({ x: 112, y: 0, z: 16 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const audWalk = [];
+  for (const stop of [
+    { x: 118, z: 16 },
+    { x: 122, z: 16 },
+    { x: 128, z: 16 },
+  ]) {
+    audWalk.push(await walkTo(stop, 420));
+    console.log("aud", stop, audWalk.at(-1));
+  }
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -338,6 +380,8 @@ try {
     const gym = generator.generateChunk(8, 0);
     const bridge = generator.generateChunk(3, 0);
     const yard = generator.generateChunk(5, 1);
+    const memorial = generator.generateChunk(6, 0);
+    const aud = generator.generateChunk(8, 1);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
     game._lastPlayerChunkCx = 4;
@@ -350,6 +394,8 @@ try {
     game.onEnterSchoolChunk(8, 0);
     game.onEnterSchoolChunk(3, 0);
     game.onEnterSchoolChunk(5, 1);
+    game.onEnterSchoolChunk(6, 0);
+    game.onEnterSchoolChunk(8, 1);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
     for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
     game.player.setPosition({ x: 32, y: 0, z: 0 });
@@ -405,6 +451,14 @@ try {
       courtyardWell: names(yard).some((name) => name.includes("courtyard_well")),
       courtyardRail: names(yard).some((name) => name.includes("courtyard_rail_")),
       courtyardTree: names(yard).some((name) => name.includes("courtyard_tree_")),
+      memorialCase: names(memorial).some((name) => name.includes("memorial_case_")),
+      memorialPortrait: names(memorial).some((name) => name.includes("memorial_portrait_")),
+      memorialBothWindows: names(memorial).some((name) => name.includes("hall_outer_window_n_"))
+        && names(memorial).some((name) => name.includes("hall_outer_window_s_")),
+      audType: aud.type,
+      audStage: names(aud).some((name) => name.includes("auditorium_stage")),
+      audSeat: names(aud).some((name) => name.includes("auditorium_seat_")),
+      audCurtain: names(aud).some((name) => name.includes("auditorium_curtain")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -658,7 +712,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, memorialWalk, audWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -708,6 +762,20 @@ try {
   assert.equal(yardWalk.at(-1).ok, true, `must walk the courtyard ring, got ${JSON.stringify(yardWalk.at(-1))}`);
   assert.ok(yardWalk.some((stop) => stop.x > 83 && stop.z > 14 && stop.z < 18), "courtyard walk must go around the well, not through it");
   assert.ok(story.fired.includes("courtyard") || yardWalk.at(-1).ok, "courtyard story should fire on the ring");
+  assert.equal(rooms.memorialCase, true, "memorial hall must show trophy cases");
+  assert.equal(rooms.memorialPortrait, true, "memorial hall must hang empty portraits");
+  assert.equal(rooms.memorialBothWindows, true, "memorial hall must keep windows on both long walls");
+  assert.ok(rooms.beats.includes("memorial"), "memorial VO beat missing");
+  assert.equal(memorialWalk.at(-1).ok, true, `must walk the memorial spine, got ${JSON.stringify(memorialWalk.at(-1))}`);
+  assert.ok(memorialWalk.some((stop) => stop.z > 5 && Math.abs(stop.x - 96) < 1.6), "memorial T-spur south must stay open");
+  assert.ok(memorialWalk.at(-1).x > 100 && Math.abs(memorialWalk.at(-1).z) < 1.2, "memorial spine must continue east");
+  assert.equal(rooms.audType, "auditorium");
+  assert.equal(rooms.audStage, true, "auditorium must have a stage");
+  assert.equal(rooms.audSeat, true, "auditorium must have raked seats");
+  assert.equal(rooms.audCurtain, true, "auditorium must have a dropped curtain");
+  assert.ok(rooms.beats.includes("auditorium"), "auditorium VO beat missing");
+  assert.equal(audWalk.at(-1).ok, true, `must walk the auditorium aisle, got ${JSON.stringify(audWalk.at(-1))}`);
+  assert.ok(audWalk.at(-1).x > 126 && Math.abs(audWalk.at(-1).z - 16) < 1.4, "auditorium center aisle must stay walkable");
   assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
   assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
   assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");

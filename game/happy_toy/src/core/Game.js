@@ -1614,14 +1614,6 @@ export class Game {
     if (!type || type === "void") return;
     if (!this._storyBeats) this._storyBeats = new Set();
     const mapId = getMapId(cx, cz, this.player?.position?.y || 0);
-    const roomLines = {
-      nurse_office: ["nurse", "보건실입니다. 장부에 끝나지 않은 출석이 남아 있습니다."],
-      music_room: ["music", "음악실입니다. 한 음이 모자란 피아노가 열려 있습니다."],
-      faculty_office: ["faculty", "교무실입니다. 지워진 네 이름을 찾으십시오."],
-      science_lab: ["science", "과학실입니다. 가스관이 아직 식지 않았습니다."],
-      gymnasium: ["gym", "체육관입니다. 줄은 남아 있는데 운동장은 없습니다."],
-      courtyard: ["courtyard", "중정입니다. 난간 너머로 내려가지 마십시오."],
-    };
     if (cx === 3 && cz === 0 && !this._storyBeats.has("skybridge")) {
       this._storyBeats.add("skybridge");
       this._lastPaAt = this.playTime;
@@ -1630,6 +1622,23 @@ export class Game {
       this.hud.setStatus("본관과 별관을 잇는 유리복도입니다. 아래는 운동장이 아닙니다.", 3600);
       return;
     }
+    if (cx === 6 && cz === 0 && !this._storyBeats.has("memorial")) {
+      this._storyBeats.add("memorial");
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("school_chime");
+      this.voiceAnnouncer?.announce("memorial", "기념관입니다. 액자 속 얼굴이 비어 있습니다.");
+      this.hud.setStatus("기념관입니다. 액자 속 얼굴이 비어 있습니다.", 3600);
+      return;
+    }
+    const roomLines = {
+      nurse_office: ["nurse", "보건실입니다. 장부에 끝나지 않은 출석이 남아 있습니다."],
+      music_room: ["music", "음악실입니다. 한 음이 모자란 피아노가 열려 있습니다."],
+      faculty_office: ["faculty", "교무실입니다. 지워진 네 이름을 찾으십시오."],
+      science_lab: ["science", "과학실입니다. 가스관이 아직 식지 않았습니다."],
+      gymnasium: ["gym", "체육관입니다. 줄은 남아 있는데 운동장은 없습니다."],
+      courtyard: ["courtyard", "중정입니다. 난간 너머로 내려가지 마십시오."],
+      auditorium: ["auditorium", "강당입니다. 막이 내려와 있고 객석이 당신을 셉니다."],
+    };
     const room = roomLines[type];
     if (room && !this._storyBeats.has(type)) {
       this._storyBeats.add(type);
