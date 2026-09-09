@@ -234,8 +234,26 @@ export function buildRectMaze(minX, maxX, minZ, maxZ, seed, extraEdges = []) {
 export const SCHOOL_RING_EDGES = [
   ["2,0", "3,0"],
   ["3,0", "4,0"],
-  ...buildRectMaze(4, 8, -2, 2, 0x51F1B0, [[4, 0, 5, 0]]),
+  ...buildAnnexSchool(),
 ];
+
+function buildAnnexSchool() {
+  // Authored 별관: east-west spine, south nurse wing, north music wing, east classrooms.
+  const pairs = [
+    ["4,0", "5,0"], ["5,0", "6,0"], ["6,0", "7,0"], ["7,0", "8,0"],
+    ["4,0", "4,1"], ["4,1", "4,2"], ["4,0", "4,-1"], ["4,-1", "4,-2"],
+    ["5,0", "5,-1"], ["4,-2", "5,-2"],
+    ["6,-2", "6,-1"], ["6,-1", "6,0"], ["6,0", "6,1"], ["6,1", "6,2"],
+    ["5,-2", "6,-2"], ["6,-2", "7,-2"], ["7,-2", "8,-2"],
+    ["4,1", "5,1"], ["5,0", "5,1"], ["5,1", "5,2"], ["4,2", "5,2"],
+    ["5,2", "6,2"], ["6,2", "7,2"], ["7,2", "8,2"],
+    ["6,1", "7,1"], ["7,1", "8,1"],
+    ["8,-2", "8,-1"],
+    ["7,-1", "7,0"], ["7,0", "7,1"],
+    ["6,-1", "7,-1"],
+  ];
+  return pairs;
+}
 
 export const MANSION_EDGES = [...CORE_EDGES, ...SCHOOL_RING_EDGES];
 

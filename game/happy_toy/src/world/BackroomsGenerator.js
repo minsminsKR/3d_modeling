@@ -134,12 +134,15 @@ const ROOM_LIKE_CHUNK_TYPES = new Set([
   "classroom",
   "nurse_office",
   "music_room",
+  "faculty_office",
+  "science_lab",
   "stairs_2f",
   "stairs_b1",
 ]);
 
 function isClassroomType(type) {
-  return type === "classroom" || type === "nurse_office" || type === "music_room";
+  return type === "classroom" || type === "nurse_office" || type === "music_room"
+    || type === "faculty_office" || type === "science_lab";
 }
 
 // Deterministic seed-based random generator (Mulberry32)
@@ -267,6 +270,8 @@ export class BackroomsGenerator {
       "1,-2": "static_room",
       "5,-1": "nurse_office",
       "8,2": "music_room",
+      "6,1": "faculty_office",
+      "6,-2": "science_lab",
     };
 
     const key = `${cx},${cz}`;
@@ -1793,6 +1798,23 @@ export class BackroomsGenerator {
   }
 
   dressClassroom(chunk, center, chunkId, floorY) {
+    const type = this.getChunkType(chunk.cx, chunk.cz);
+    if (type === "nurse_office") {
+      this.dressNurseOffice(chunk, center, chunkId, floorY);
+      return;
+    }
+    if (type === "music_room") {
+      this.dressMusicRoom(chunk, center, chunkId, floorY);
+      return;
+    }
+    if (type === "faculty_office") {
+      this.dressFacultyOffice(chunk, center, chunkId, floorY);
+      return;
+    }
+    if (type === "science_lab") {
+      this.dressScienceLab(chunk, center, chunkId, floorY);
+      return;
+    }
     const open = this.getOpenings(chunk.cx, chunk.cz);
     const doorFace = open.N ? "N" : open.S ? "S" : open.E ? "E" : "W";
     const boardMat = new THREE.MeshStandardMaterial({
@@ -1877,6 +1899,82 @@ export class BackroomsGenerator {
     }
     this.scene.add(cubby);
     chunk.meshes.push(cubby);
+  }
+
+  placeDressedBox(chunk, chunkId, name, x, y, z, sx, sy, sz, material, collide = true) {
+    const mesh = new THREE.Mesh(this.getBoxGeometry(sx, sy, sz), material);
+    mesh.position.set(x, y, z);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    mesh.name = `${chunkId}_${name}`;
+    this.scene.add(mesh);
+    chunk.meshes.push(mesh);
+    if (collide) {
+      this.collisionWorld.addStaticBox(mesh.name, mesh.position, new THREE.Vector3(sx, sy, sz), chunkId);
+    }
+    return mesh;
+  }
+
+  dressNurseOffice(chunk, center, chunkId, floorY) {
+    const linen = new THREE.MeshStandardMaterial({ color: 0xd8c8b0, roughness: 0.9 });
+    const steel = new THREE.MeshStandardMaterial({ color: 0x6a7674, roughness: 0.42, metalness: 0.35 });
+    const curtain = new THREE.MeshStandardMaterial({
+      color: 0x5a3040,
+      roughness: 0.92,
+      transparent: true,
+      opacity: 0.72,
+    });
+    this.placeDressedBox(chunk, chunkId, "nurse_bed", center.x + 2.1, floorY + 0.32, center.z + 2.4, 1.9, 0.64, 0.86, this.propMaterial);
+    this.placeDressedBox(chunk, chunkId, "nurse_sheet", center.x + 2.1, floorY + 0.66, center.z + 2.4, 1.82, 0.06, 0.8, linen, false);
+    this.placeDressedBox(chunk, chunkId, "nurse_cabinet", center.x - 5.6, floorY + 0.7, center.z, 0.42, 1.4, 2.2, steel);
+    this.placeDressedBox(chunk, chunkId, "nurse_desk", center.x - 2.4, floorY + 0.38, center.z - 4.4, 1.35, 0.76, 0.7, this.propMaterial);
+    this.placeDressedBox(chunk, chunkId, "nurse_curtain", center.x + 0.4, floorY + 1.15, center.z + 1.1, 0.06, 2.2, 2.4, curtain, false);
+  }
+
+  dressMusicRoom(chunk, center, chunkId, floorY) {
+    const lacquer = new THREE.MeshStandardMaterial({
+      color: 0x1a120e,
+      roughness: 0.38,
+      metalness: 0.08,
+      emissive: 0x120806,
+      emissiveIntensity: 0.08,
+    });
+    const ivory = new THREE.MeshStandardMaterial({ color: 0xe8dcc4, roughness: 0.55 });
+    this.placeDressedBox(chunk, chunkId, "piano", center.x + 3.4, floorY + 0.46, center.z, 1.55, 0.92, 0.62, lacquer);
+    this.placeDressedBox(chunk, chunkId, "piano_lid", center.x + 3.4, floorY + 0.98, center.z - 0.08, 1.48, 0.06, 0.52, lacquer, false);
+    this.placeDressedBox(chunk, chunkId, "piano_keys", center.x + 2.72, floorY + 0.72, center.z, 0.22, 0.04, 0.5, ivory, false);
+    this.placeDressedBox(chunk, chunkId, "music_stool", center.x + 2.1, floorY + 0.28, center.z, 0.42, 0.56, 0.42, this.trimMaterial);
+    this.placeDressedBox(chunk, chunkId, "music_stand_a", center.x - 2.6, floorY + 0.72, center.z - 2.8, 0.12, 1.44, 0.12, this.trimMaterial);
+    this.placeDressedBox(chunk, chunkId, "music_stand_b", center.x - 3.4, floorY + 0.72, center.z + 1.6, 0.12, 1.44, 0.12, this.trimMaterial);
+  }
+
+  dressFacultyOffice(chunk, center, chunkId, floorY) {
+    const paper = new THREE.MeshStandardMaterial({ color: 0xe4d4b8, roughness: 0.92 });
+    this.placeDressedBox(chunk, chunkId, "faculty_desk", center.x - 3.2, floorY + 0.38, center.z, 1.7, 0.76, 0.86, this.propMaterial);
+    this.placeDressedBox(chunk, chunkId, "faculty_desk_b", center.x + 3.4, floorY + 0.38, center.z + 2.6, 1.55, 0.76, 0.8, this.propMaterial);
+    this.placeDressedBox(chunk, chunkId, "faculty_file", center.x + 5.8, floorY + 0.7, center.z - 2.2, 0.46, 1.4, 1.6, this.trimMaterial);
+    this.placeDressedBox(chunk, chunkId, "faculty_file_b", center.x - 5.8, floorY + 0.7, center.z + 2.4, 0.46, 1.4, 1.6, this.trimMaterial);
+    this.placeDressedBox(chunk, chunkId, "faculty_papers", center.x - 3.2, floorY + 0.8, center.z, 0.62, 0.04, 0.42, paper, false);
+  }
+
+  dressScienceLab(chunk, center, chunkId, floorY) {
+    const bench = new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.82 });
+    const glass = new THREE.MeshStandardMaterial({
+      color: 0x8ab8a4,
+      roughness: 0.18,
+      metalness: 0.12,
+      transparent: true,
+      opacity: 0.55,
+      emissive: 0x143028,
+      emissiveIntensity: 0.12,
+    });
+    const pipe = new THREE.MeshStandardMaterial({ color: 0x2a2420, roughness: 0.55, metalness: 0.4 });
+    this.placeDressedBox(chunk, chunkId, "lab_bench", center.x - 3.4, floorY + 0.46, center.z, 2.4, 0.92, 0.72, bench);
+    this.placeDressedBox(chunk, chunkId, "lab_bench_b", center.x + 3.4, floorY + 0.46, center.z, 2.4, 0.92, 0.72, bench);
+    this.placeDressedBox(chunk, chunkId, "lab_bottle_a", center.x - 3.1, floorY + 1.08, center.z - 0.12, 0.12, 0.28, 0.12, glass, false);
+    this.placeDressedBox(chunk, chunkId, "lab_bottle_b", center.x - 2.7, floorY + 1.12, center.z + 0.16, 0.1, 0.36, 0.1, glass, false);
+    this.placeDressedBox(chunk, chunkId, "lab_bottle_c", center.x + 3.6, floorY + 1.08, center.z, 0.12, 0.28, 0.12, glass, false);
+    this.placeDressedBox(chunk, chunkId, "lab_pipe", center.x, floorY + 2.42, center.z, 8.4, 0.1, 0.1, pipe, false);
   }
 
   dressBasementFlood(chunk, chunkId, floorY, bounds) {
@@ -2321,7 +2419,11 @@ export class BackroomsGenerator {
       chunk.meshes.push(tableMesh);
       this.collisionWorld.addStaticBox(tableMesh.name, tableMesh.position, new THREE.Vector3(1.6, 0.42, 1.2), chunkId);
     } else if (isClassroomType(type)) {
-      const classLabel = type === "nurse_office" ? "보건실 문" : type === "music_room" ? "음악실 문" : "교실 문";
+      const classLabel = type === "nurse_office" ? "보건실 문"
+        : type === "music_room" ? "음악실 문"
+        : type === "faculty_office" ? "교무실 문"
+        : type === "science_lab" ? "과학실 문"
+        : "교실 문";
       const open = this.getOpenings(chunk.cx, chunk.cz);
       if (open.N) addDynamicDoor(`${chunkId}_class_door`, classLabel, [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
       else if (open.S) addDynamicDoor(`${chunkId}_class_door`, classLabel, [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
@@ -2372,7 +2474,7 @@ export class BackroomsGenerator {
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (isClassroomType(type)) {
-      addDynamicCabinet(`cabinet_class_${chunk.cx}_${chunk.cz}`, type === "nurse_office" ? "보건실 벽장" : type === "music_room" ? "음악실 벽장" : "교실 신발장", [5.4, 0.0, 5.4], Math.PI / 2);
+      addDynamicCabinet(`cabinet_class_${chunk.cx}_${chunk.cz}`, type === "nurse_office" ? "보건실 벽장" : type === "music_room" ? "음악실 벽장" : type === "faculty_office" ? "교무실 벽장" : type === "science_lab" ? "과학실 벽장" : "교실 신발장", [5.4, 0.0, 5.4], Math.PI / 2);
     } else if (!isStart && !isEvent && !isArchive && !type.includes("stairs") && (type.includes("room") || type.includes("storage")) && rand() < 0.4) {
       addDynamicCabinet(`cabinet_${chunk.cx}_${chunk.cz}`, "복도 신발장", [-5.2, 0.0, -5.2], -Math.PI / 2);
     }
@@ -2413,6 +2515,12 @@ export class BackroomsGenerator {
     } else if (type === "music_room") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
         "피아노 뚜껑이 열린 채로 녹슬어 있다. 한 음이 모자라면 복도가 당신의 이름을 외운다.");
+    } else if (type === "faculty_office") {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
+        "교무실 출석부에 네 이름이 지워져 있다. 별관 끝 교실은 한 번만 들어가십시오.");
+    } else if (type === "science_lab") {
+      addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
+        "약품 냄새가 복도까지 샌다. 가스관이 아직 식지 않았다.");
     } else if (type === "omen_room" || type === "static_room" || type === "flicker_room" || type === "classroom") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0);
     } else if (isWorkshop) {
@@ -2480,6 +2588,7 @@ export class BackroomsGenerator {
       const keyObj = chunk.keys[chunk.keys.length - 1];
       if (keyObj) {
         keyObj.initiallyVisible = false;
+        keyObj.isAvailable = false;
         if (keyObj.group) keyObj.group.visible = false;
       }
     }
@@ -2501,6 +2610,16 @@ export class BackroomsGenerator {
       exit.chunkId = chunkId;
       this.scene.add(exit.group);
       chunk.finalExit = exit;
+      this.collisionWorld.addStaticBox(
+        `${chunkId}_altar_block`,
+        new THREE.Vector3(center.x, floorY + 0.4, center.z),
+        new THREE.Vector3(1.72, 0.8, 0.98),
+        chunkId,
+      );
+    }
+
+    if (chunk.cx === 4 && chunk.cz === 0) {
+      this.dressAnnexGate(chunk, center, chunkId, floorY);
     }
 
     // 5. Lights that the player can turn on as a visited-place marker.
@@ -2645,6 +2764,12 @@ export class BackroomsGenerator {
     } else if (type === "music_room") {
       spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "음악실 입구 스위치");
       spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "음악실 형광등");
+    } else if (type === "faculty_office") {
+      spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "교무실 입구 스위치");
+      spawnSafeLight("floor-lamp", -4.0, floorH, 3.2, Math.PI / 5, "교무실 스탠드");
+    } else if (type === "science_lab") {
+      spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "과학실 입구 스위치");
+      spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "과학실 형광등");
     } else {
       // Generic fallback room (e.g. flicker_room): Flush on perimeter walls
       spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "벽 스위치");
@@ -2654,6 +2779,68 @@ export class BackroomsGenerator {
         spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "형광등 스위치");
       }
     }
+  }
+
+  createSignMaterial(text) {
+    const canvas = typeof document !== "undefined" ? document.createElement("canvas") : null;
+    if (!canvas) {
+      return new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.86 });
+    }
+    canvas.width = 768;
+    canvas.height = 192;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#24160e";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#8a6a38";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+    ctx.fillStyle = "#e2d2b4";
+    ctx.font = "700 92px 'Noto Serif KR', serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 4);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return new THREE.MeshStandardMaterial({
+      map: texture,
+      roughness: 0.78,
+      metalness: 0.04,
+      emissive: 0x1a1208,
+      emissiveIntensity: 0.16,
+      side: THREE.DoubleSide,
+    });
+  }
+
+  dressAnnexGate(chunk, center, chunkId, floorY) {
+    const frame = this.placeDressedBox(
+      chunk, chunkId, "annex_sign_frame",
+      center.x - 0.02, floorY + 2.28, center.z,
+      0.08, 0.72, 2.72,
+      new THREE.MeshStandardMaterial({ color: 0x3a2418, roughness: 0.86 }),
+      false,
+    );
+    frame.rotation.y = 0;
+    const sign = new THREE.Mesh(this.getPlaneGeometry(2.6, 0.62), this.createSignMaterial("별관"));
+    sign.position.set(center.x - 0.08, floorY + 2.28, center.z);
+    sign.rotation.y = -Math.PI / 2;
+    sign.name = `${chunkId}_annex_sign`;
+    this.scene.add(sign);
+    chunk.meshes.push(sign);
+
+    const paper = new THREE.Mesh(
+      this.getPlaneGeometry(0.42, 0.58),
+      new THREE.MeshStandardMaterial({
+        map: this.textures.load("loreNote"),
+        color: 0xe8dcc4,
+        roughness: 0.9,
+        side: THREE.DoubleSide,
+      }),
+    );
+    paper.position.set(center.x - 1.16, floorY + 1.42, center.z - 4.6);
+    paper.rotation.y = -Math.PI / 2;
+    paper.name = `${chunkId}_annex_notice`;
+    this.scene.add(paper);
+    chunk.meshes.push(paper);
   }
 
   pickSafeLightPlacement(variant, type, center, rand, floorY = 0) {

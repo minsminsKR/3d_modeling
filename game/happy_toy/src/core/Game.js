@@ -116,6 +116,8 @@ export class Game {
     this.elapsedTime = 0;
     this.playTime = 0;
     this.stalkerReleased = false;
+    this._storyBeats = new Set();
+    this._lastPaAt = 0;
     this.deathSequence = null;
     this.assetsReady = false;
     this.testSafeMode = false;
@@ -870,6 +872,8 @@ export class Game {
     this.playTime = 0;
     this.stalkerReleased = false;
     this._stairWaitAnnounced = false;
+    this._storyBeats = new Set();
+    this._lastPaAt = 0;
     this.deathSequence = null;
     document.body.classList.remove("death-veil");
     this.cabinetEvent = null;
@@ -997,17 +1001,28 @@ export class Game {
     this.dreadDirector?.onRelic(key.position, this.keyCount, total);
     soundManager.playSFX("key_pickup");
     const remaining = total - this.keyCount;
+    const voiceKey = this.keyCount >= total
+      ? "keysDone"
+      : this.keyCount === 3
+        ? "key3"
+        : this.keyCount === 2
+          ? "key2"
+          : "key";
     const line = this.keyCount >= total
       ? "모든 이름을 모았습니다. 제단으로 돌아가십시오."
-      : this.keyCount === 2
-        ? "이름이 둘입니다. 복도가 당신을 세기 시작합니다."
-        : `이름을 찾았습니다. ${remaining}개가 남았습니다.`;
-    this.voiceAnnouncer?.announce(this.keyCount >= total ? "keysDone" : this.keyCount === 2 ? "key2" : "key", line);
+      : this.keyCount === 3
+        ? "이름이 셋입니다. 마지막 혼은 아직 액자 뒤에 있습니다."
+        : this.keyCount === 2
+          ? "이름이 둘입니다. 복도가 당신을 세기 시작합니다."
+          : `이름을 찾았습니다. ${remaining}개가 남았습니다.`;
+    this.voiceAnnouncer?.announce(voiceKey, line);
     this.hud.setStatus(this.keyCount >= total
       ? "모든 혼을 모았습니다. 나침반 [4]을 따라 제단으로 돌아가십시오."
-      : this.keyCount === 2
-        ? "혼 2/4 · 별관과 지하, 2층이 당신을 세기 시작합니다."
-        : `혼 ${this.keyCount}/${total} · 종이 울리기 전에 퇴로를 확보하십시오.`, 4500);
+      : this.keyCount === 3
+        ? "혼 3/4 · 2층 액자 사건이 마지막 이름을 숨기고 있습니다."
+        : this.keyCount === 2
+          ? "혼 2/4 · 별관과 지하, 2층이 당신을 세기 시작합니다."
+          : `혼 ${this.keyCount}/${total} · 종이 울리기 전에 퇴로를 확보하십시오.`, 4500);
   }
 
   revealKeyById(keyId, position) {
@@ -1016,7 +1031,20 @@ export class Game {
       console.warn(`[Game] revealKeyById failed: missing key ${keyId}`);
       return;
     }
-    key.revealAt(position);
+    let point;
+    if (Array.isArray(position) && position.length >= 3) {
+      point = position;
+    } else if (position && Number.isFinite(position.x)) {
+      point = [position.x, position.y, position.z];
+    } else {
+      point = [key.position.x, key.position.y, key.position.z];
+    }
+    key.revealAt(point);
+    if (this.keyHomes?.has(keyId)) {
+      const home = this.keyHomes.get(keyId);
+      home.isAvailable = true;
+      home.position.set(point[0], point[1], point[2]);
+    }
   }
 
   enterCabinet(cabinet, options = {}) {
@@ -1036,6 +1064,7 @@ export class Game {
       && this.collisionWorld.hasLineOfSight(enemy.group.position, this.player.position));
     cabinet.occupied = true;
     this.player.enterCabinet(cabinet);
+    this.voiceAnnouncer?.announce("hide", "신발장 안으로. 호흡을 끊으십시오.");
 
     if (!nearby || dist > (CABINET_CONFIG.huntHidePullDistance ?? 20)) {
       this.hud.setStatus("신발장 안으로 몸을 숨겼습니다. 숨이 들리지 않게 하십시오.", 1800);
@@ -1563,21 +1592,46 @@ export class Game {
     const generator = this.mapBuilder?.generator;
     if (!generator || !this.isStarted || this.gameOver || this.gameCleared) return;
     const type = generator.getChunkType(cx, cz);
-    if (!type || type === "void" || type === "start") return;
+    if (!type || type === "void") return;
+    if (!this._storyBeats) this._storyBeats = new Set();
+    const mapId = getMapId(cx, cz, this.player?.position?.y || 0);
+    const roomLines = {
+      nurse_office: ["nurse", "보건실입니다. 장부에 끝나지 않은 출석이 남아 있습니다."],
+      music_room: ["music", "음악실입니다. 한 음이 모자란 피아노가 열려 있습니다."],
+      faculty_office: ["faculty", "교무실입니다. 지워진 네 이름을 찾으십시오."],
+      science_lab: ["science", "과학실입니다. 가스관이 아직 식지 않았습니다."],
+    };
+    const room = roomLines[type];
+    if (room && !this._storyBeats.has(type)) {
+      this._storyBeats.add(type);
+      this._lastPaAt = this.playTime;
+      soundManager.playSFX("radio_static");
+      this.voiceAnnouncer?.announce(room[0], room[1]);
+      this.hud.setStatus(room[1], 3600);
+      return;
+    }
+    if (type === "start") return;
     if (this.playTime < 9) return;
+    const mapBeat = mapId ? `map:${mapId}` : "";
+    if ((mapId === "f1b" || mapId === "b1" || mapId === "f2") && mapBeat && !this._storyBeats.has(mapBeat)) {
+      this._storyBeats.add(mapBeat);
+      this._lastPaAt = this.playTime;
+      const line = mapId === "b1"
+        ? "방송이 끊깁니다. 지하의 물이 이름을 적고 있습니다."
+        : mapId === "f2"
+          ? "2층입니다. 복도가 아직 마르지 않았습니다."
+          : "별관입니다. 같은 교실을 두 번 지나치지 마십시오.";
+      soundManager.playSFX(mapId === "b1" ? "drip" : mapId === "f2" ? "blood_drip" : "school_chime");
+      this.voiceAnnouncer?.announce(mapId, line);
+      this.hud.setStatus(line, 3200);
+      return;
+    }
     const now = this.playTime;
     if (now - (this._lastPaAt || 0) < 16) return;
     this._lastPaAt = now;
-    const mapId = getMapId(cx, cz, this.player?.position?.y || 0);
-    const line = mapId === "b1"
-      ? "방송이 끊깁니다. 지하의 물이 이름을 적고 있습니다."
-      : mapId === "f2"
-        ? "2층입니다. 복도가 아직 마르지 않았습니다."
-        : mapId === "f1b"
-          ? "별관입니다. 같은 교실을 두 번 지나치지 마십시오."
-          : "방송입니다. 하교하지 않습니다. 복도에서 기다리십시오.";
-    soundManager.playSFX(mapId === "b1" ? "drip" : mapId === "f2" ? "blood_drip" : (Math.random() < 0.5 ? "school_chime" : "radio_static"));
-    this.voiceAnnouncer?.announce(mapId || "pa", line);
+    const line = "방송입니다. 하교하지 않습니다. 복도에서 기다리십시오.";
+    soundManager.playSFX(Math.random() < 0.5 ? "school_chime" : "radio_static");
+    this.voiceAnnouncer?.announce("pa", line);
     this.hud.setStatus(line, 3200);
   }
 

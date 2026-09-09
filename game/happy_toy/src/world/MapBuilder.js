@@ -193,7 +193,7 @@ export class MapBuilder {
 
     const isStairVoid = chunk.type === "stairs_2f" || chunk.type === "stairs_b1";
     const isNarrowCorridor = chunk.type === "corridor_ns" || chunk.type === "corridor_ew" || chunk.type === "narrow_ns";
-    const hasFixture = !isStairVoid && (chunk.type === "start" || isNarrowCorridor || chunk.type === "classroom" || chunk.type === "nurse_office" || chunk.type === "music_room" || random() < 0.52);
+    const hasFixture = !isStairVoid && (chunk.type === "start" || isNarrowCorridor || chunk.type === "classroom" || chunk.type === "nurse_office" || chunk.type === "music_room" || chunk.type === "faculty_office" || chunk.type === "science_lab" || random() < 0.52);
     if (hasFixture) {
       const isUnstable = chunk.type === "flicker_room" || random() < 0.14;
       const fixtureMaterial = new THREE.MeshStandardMaterial({

@@ -1,8 +1,6 @@
-// 최종 방의 클리어 장치를 표현하는 모듈입니다.
-// 필요한 열쇠를 모두 모은 뒤 E키로 상호작용하면 Game이 클리어 처리를 합니다.
+// 시작 홀의 제단함. 네 이름을 돌려놓는 봉인 장치입니다.
 
 import * as THREE from "three";
-import { WORLD_CONFIG } from "../config/gameConfig.js";
 
 export class FinalExit {
   constructor(config) {
@@ -14,43 +12,108 @@ export class FinalExit {
     this.group.name = config.id;
     this.group.position.copy(this.position);
 
-    const chestMaterial = new THREE.MeshStandardMaterial({
-      color: WORLD_CONFIG.finalColor,
-      roughness: 0.72,
+    const loader = new THREE.TextureLoader();
+    const woodMap = loader.load("/assets/textures/doors/doors.png");
+    woodMap.colorSpace = THREE.SRGBColorSpace;
+    woodMap.wrapS = THREE.RepeatWrapping;
+    woodMap.wrapT = THREE.RepeatWrapping;
+    woodMap.repeat.set(1.4, 0.8);
+
+    const paperMap = loader.load("/assets/textures/props/hanging-paper/basecolor.png");
+    paperMap.colorSpace = THREE.SRGBColorSpace;
+
+    const wood = new THREE.MeshStandardMaterial({
+      map: woodMap,
+      color: 0x5a4030,
+      roughness: 0.82,
+      metalness: 0.04,
+      emissive: 0x1a0c08,
+      emissiveIntensity: 0.08,
+    });
+    const lacquer = new THREE.MeshStandardMaterial({
+      color: 0x3a120e,
+      roughness: 0.45,
       metalness: 0.08,
+      emissive: 0x220806,
+      emissiveIntensity: 0.12,
     });
-    const trimMaterial = new THREE.MeshStandardMaterial({
-      color: WORLD_CONFIG.keyColor,
-      emissive: 0x000000,
-      metalness: 0.3,
-      roughness: 0.42,
+    const brass = new THREE.MeshStandardMaterial({
+      color: 0x8a6a38,
+      roughness: 0.48,
+      metalness: 0.35,
+      emissive: 0x2a1c08,
+      emissiveIntensity: 0.1,
+    });
+    const paper = new THREE.MeshStandardMaterial({
+      map: paperMap,
+      color: 0xe8dcc4,
+      roughness: 0.9,
+      side: THREE.DoubleSide,
+      emissive: 0x2a1810,
+      emissiveIntensity: 0.08,
+    });
+    const flame = new THREE.MeshStandardMaterial({
+      color: 0xffc878,
+      emissive: 0xff8a3a,
+      emissiveIntensity: 1.4,
     });
 
-    const base = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.58, 0.92), chestMaterial);
-    base.position.y = 0.29;
-    base.castShadow = true;
-    base.receiveShadow = true;
-    this.group.add(base);
+    const table = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.62, 0.98), wood);
+    table.position.y = 0.31;
+    table.castShadow = true;
+    table.receiveShadow = true;
+    this.group.add(table);
 
-    const lid = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.18, 0.98), chestMaterial);
-    lid.position.y = 0.69;
-    lid.castShadow = true;
-    this.group.add(lid);
+    const apron = new THREE.Mesh(new THREE.BoxGeometry(1.78, 0.08, 1.04), lacquer);
+    apron.position.y = 0.64;
+    this.group.add(apron);
 
-    const lock = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, 0.08), trimMaterial);
-    lock.position.set(0, 0.44, -0.51);
-    lock.castShadow = true;
-    lock.receiveShadow = true;
-    this.group.add(lock);
+    for (const x of [-0.72, 0.72]) {
+      for (const z of [-0.36, 0.36]) {
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.3, 0.1), wood);
+        leg.position.set(x, 0.15, z);
+        this.group.add(leg);
+      }
+    }
 
-    const glow = new THREE.PointLight(WORLD_CONFIG.keyColor, 0.18, 3.2, 1.6);
-    glow.position.set(0, 1.1, 0);
-    glow.castShadow = false;
-    this.group.add(glow);
+    for (let i = 0; i < 4; i += 1) {
+      const slot = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.04, 0.36), lacquer);
+      slot.position.set(-0.54 + i * 0.36, 0.7, 0.08);
+      this.group.add(slot);
+      const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.3), paper);
+      plate.position.set(-0.54 + i * 0.36, 0.78, 0.08);
+      plate.rotation.x = -Math.PI / 2.6;
+      this.group.add(plate);
+    }
+
+    const seal = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.28, 0.06), brass);
+    seal.position.set(0, 0.52, -0.52);
+    this.group.add(seal);
+
+    const strip = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 0.7), paper);
+    strip.position.set(0.62, 1.12, 0.02);
+    this.group.add(strip);
+
+    for (const x of [-0.58, 0.58]) {
+      const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.02, 0.28, 8), wood);
+      stick.position.set(x, 0.86, -0.28);
+      this.group.add(stick);
+      const wick = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), flame);
+      wick.position.set(x, 1.02, -0.28);
+      this.group.add(wick);
+    }
+
+    this.glow = new THREE.PointLight(0xffb068, 1.35, 4.8, 1.7);
+    this.glow.position.set(0, 1.15, 0);
+    this.group.add(this.glow);
+    this.flicker = 0;
   }
 
   update(deltaTime) {
-    this.group.rotation.y += deltaTime * 0.12;
+    this.flicker += deltaTime * 2.4;
+    if (this.glow) {
+      this.glow.intensity = 1.15 + Math.sin(this.flicker) * 0.18 + Math.sin(this.flicker * 3.1) * 0.08;
+    }
   }
 
   distanceTo(point) {
