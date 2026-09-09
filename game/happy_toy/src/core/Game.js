@@ -1619,6 +1619,7 @@ export class Game {
       music_room: ["music", "음악실입니다. 한 음이 모자란 피아노가 열려 있습니다."],
       faculty_office: ["faculty", "교무실입니다. 지워진 네 이름을 찾으십시오."],
       science_lab: ["science", "과학실입니다. 가스관이 아직 식지 않았습니다."],
+      gymnasium: ["gym", "체육관입니다. 줄은 남아 있는데 운동장은 없습니다."],
     };
     const room = roomLines[type];
     if (room && !this._storyBeats.has(type)) {

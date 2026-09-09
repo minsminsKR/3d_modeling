@@ -70,7 +70,7 @@ export class StoryDirector {
     if (y > -1.2 && y < 2.2 && Math.abs(lx) > 6.35 && Math.abs(lz) > 5.35) {
       this.fire(
         "throughClass",
-        "f1maze",
+        "throughClass",
         "교실 뒷문이 옆 복도로 뚫려 있습니다. 쫓기면 책상 사이로.",
         "school_chime",
       );

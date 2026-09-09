@@ -262,6 +262,27 @@ try {
     console.log("through", stop, throughWalk.at(-1));
   }
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(7, 0);
+    game.mapBuilder.generator.generateChunk(8, 0);
+    game.player.setPosition({ x: 112, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const gymWalk = [];
+  for (const stop of [
+    { x: 118.5, z: 0 },
+    { x: 122.4, z: 0 },
+    { x: 128, z: 0 },
+  ]) {
+    gymWalk.push(await walkTo(stop, 420));
+    console.log("gym", stop, gymWalk.at(-1));
+  }
+
   const rooms = await page.evaluate(() => {
     const game = window.__happyToy;
     const generator = game.mapBuilder.generator;
@@ -277,6 +298,7 @@ try {
     const f2 = generator.generateChunk(-1, -1);
     const westHall = generator.generateChunk(-1, 0);
     const eastWing = generator.generateChunk(2, 0);
+    const gym = generator.generateChunk(8, 0);
     const names = (chunk) => (chunk.meshes || []).map((mesh) => String(mesh.name || ""));
     game.playTime = 12;
     game._lastPlayerChunkCx = 4;
@@ -286,6 +308,7 @@ try {
     game.onEnterSchoolChunk(8, 2);
     game.onEnterSchoolChunk(6, 1);
     game.onEnterSchoolChunk(6, -2);
+    game.onEnterSchoolChunk(8, 0);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
     for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
     game.player.setPosition({ x: 32, y: 0, z: 0 });
@@ -326,6 +349,11 @@ try {
       hallNookSign: names(westHall).some((name) => name.includes("hall_sign_")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       hallThrough: names(hall).some((name) => name.includes("hall_through_")),
+      hallThroughDesk: names(hall).some((name) => name.includes("hall_through_desk_")),
+      gymType: gym.type,
+      gymCourt: names(gym).some((name) => name.includes("gym_court")),
+      gymHoop: names(gym).some((name) => name.includes("gym_hoop_")),
+      gymBleacher: names(gym).some((name) => name.includes("gym_bleacher_")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
       facultyDesk: names(faculty).some((name) => name.includes("faculty_desk")),
@@ -579,7 +607,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -601,6 +629,15 @@ try {
   assert.equal(throughWalk.at(-1).ok, true, `must cut through a classroom into the next hall, got ${JSON.stringify(throughWalk.at(-1))}`);
   assert.ok(throughWalk.at(-1).x > 30 && Math.abs(throughWalk.at(-1).z) < 1.2, "classroom cut-through must return to the z=0 spine");
   assert.ok(throughWalk.some((stop) => stop.z < -5.5 && stop.x > 22 && stop.x < 26), "cut-through must leave the corridor and pass the tile seam");
+  assert.equal(rooms.hallThroughDesk, true, "classroom cut-throughs must keep desks beside the back door");
+  assert.ok(story.fired.includes("throughClass"), `throughClass VO missing: ${story.fired.join(",")}`);
+  assert.equal(gymWalk.at(-1).ok, true, `must walk into the annex gymnasium, got ${JSON.stringify(gymWalk.at(-1))}`);
+  assert.ok(gymWalk.at(-1).x > 126 && Math.abs(gymWalk.at(-1).z) < 1.4, "gymnasium court center must stay walkable");
+  assert.equal(rooms.gymType, "gymnasium");
+  assert.equal(rooms.gymCourt, true, "gymnasium must have a marked court");
+  assert.equal(rooms.gymHoop, true, "gymnasium must have a hoop");
+  assert.equal(rooms.gymBleacher, true, "gymnasium must have bleachers");
+  assert.ok(rooms.beats.includes("gymnasium"));
   assert.ok(rooms.hallClassCount >= 8, `1F school classroom walls missing: ${rooms.hallClassCount}`);
   assert.equal(rooms.hallRib, false, "east 1F halls must not keep S-bend ribs");
   assert.equal(rooms.northRib, false, "north 1F halls must not keep west-loop ribs");

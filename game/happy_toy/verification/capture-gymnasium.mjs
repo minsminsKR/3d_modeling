@@ -21,23 +21,23 @@ const pose = await page.evaluate(() => {
   game.testSafeMode = true;
   game.cutsceneEvent = null;
   game.monsterIntroManager?.reset?.();
-  game.mapBuilder.generator.generateChunk(1, 0);
-  game.mapBuilder.generator.generateChunk(2, 0);
+  game.mapBuilder.generator.generateChunk(7, 0);
+  game.mapBuilder.generator.generateChunk(8, 0);
   const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
   uncat?.setDormant?.(true);
   if (uncat) uncat.group.visible = false;
-  game.hud.setStatus("교실 뒷문이 옆 복도로 뚫려 있습니다.", 2800);
+  game.hud.setStatus("체육관입니다. 줄은 남아 있는데 운동장은 없습니다.", 2800);
   return game.poseForCapture({
-    x: 20.85,
+    x: 122.35,
     y: 0,
-    z: -3.55,
-    lookAt: [23.45, 1.05, -6.45],
+    z: 0.15,
+    lookAt: [129.2, 1.15, 0.35],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_classroom_cutthrough.png"), timeout: 120000 });
-console.log("through", pose);
+await page.screenshot({ path: path.join(outDir, "f1_gymnasium_court.png"), timeout: 120000 });
+console.log("gym", pose);
 await browser.close();
 console.log("ok");

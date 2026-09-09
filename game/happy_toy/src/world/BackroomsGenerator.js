@@ -136,13 +136,14 @@ const ROOM_LIKE_CHUNK_TYPES = new Set([
   "music_room",
   "faculty_office",
   "science_lab",
+  "gymnasium",
   "stairs_2f",
   "stairs_b1",
 ]);
 
 function isClassroomType(type) {
   return type === "classroom" || type === "nurse_office" || type === "music_room"
-    || type === "faculty_office" || type === "science_lab";
+    || type === "faculty_office" || type === "science_lab" || type === "gymnasium";
 }
 
 // Deterministic seed-based random generator (Mulberry32)
@@ -272,6 +273,7 @@ export class BackroomsGenerator {
       "8,2": "music_room",
       "6,1": "faculty_office",
       "6,-2": "science_lab",
+      "8,0": "gymnasium",
     };
 
     const key = `${cx},${cz}`;
@@ -1757,7 +1759,7 @@ export class BackroomsGenerator {
       addWallSegment(5.0, -5.0, 1.2, 1.2, "wide_corner_ne");
       addWallSegment(-5.0, 5.0, 1.2, 1.2, "wide_corner_sw");
       addWallSegment(5.0, 5.0, 1.2, 1.2, "wide_corner_se");
-      if (isClassroomType(type)) {
+      if (isClassroomType(type) && type !== "gymnasium") {
         addWallSegment(-3.4, -1.8, 2.4, 0.7, "desk_row_w");
         addWallSegment(3.4, 1.6, 2.4, 0.7, "desk_row_e");
       }
@@ -2745,48 +2747,79 @@ export class BackroomsGenerator {
     const jamb = (name, x, z, sx, sz) => {
       this.placeDressedBox(
         chunk, chunkId, name,
-        center.x + x, floorY + 1.12, center.z + z, sx, 2.2, sz,
+        center.x + x, floorY + 1.18, center.z + z, sx, 2.32, sz,
         this.schoolClassDoorMat, false,
       );
     };
+    const header = (name, x, z, sx, sz) => {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        center.x + x, floorY + 2.28, center.z + z, sx, 0.18, sz,
+        this.schoolDeskDark || this.trimMaterial, false,
+      );
+    };
     const leaf = (name, x, z, yaw) => {
-      const door = new THREE.Mesh(this.getBoxGeometry(0.06, 2.05, 0.72), this.schoolClassDoorMat);
-      door.position.set(center.x + x, floorY + 1.08, center.z + z);
-      door.rotation.y = yaw;
-      door.name = `${chunkId}_${name}`;
-      this.addSchoolProp(chunk, door);
+      const group = new THREE.Group();
+      group.position.set(center.x + x, floorY + 1.08, center.z + z);
+      group.rotation.y = yaw;
+      group.name = `${chunkId}_${name}`;
+      const door = new THREE.Mesh(this.getBoxGeometry(0.05, 2.08, 0.78), this.schoolClassDoorMat);
+      group.add(door);
+      const glass = new THREE.Mesh(this.getBoxGeometry(0.02, 0.38, 0.26), this.schoolGlassMat);
+      glass.position.set(0.028, 0.46, 0);
+      group.add(glass);
+      this.addSchoolProp(chunk, group);
+    };
+    const plate = (name, x, z, yaw) => {
+      this.addHallNookSign(chunk, chunkId, name, center.x + x, floorY + 2.08, center.z + z, yaw, "뒷문");
     };
     if (ewChicane && openings.E && maze(1, 0)) {
-      jamb("hall_through_e_n_a", 7.72, -7.38, 0.12, 0.12);
-      jamb("hall_through_e_n_b", 7.72, -5.92, 0.12, 0.12);
-      leaf("hall_through_e_n_leaf", 7.55, -6.35, -0.85);
-      jamb("hall_through_e_s_a", 7.72, 5.92, 0.12, 0.12);
-      jamb("hall_through_e_s_b", 7.72, 7.38, 0.12, 0.12);
-      leaf("hall_through_e_s_leaf", 7.55, 6.35, 0.85);
+      jamb("hall_through_e_n_a", 7.72, -7.38, 0.2, 0.16);
+      jamb("hall_through_e_n_b", 7.72, -5.92, 0.2, 0.16);
+      header("hall_through_e_n_head", 7.72, -6.65, 0.2, 1.48);
+      leaf("hall_through_e_n_leaf", 7.42, -5.88, -1.22);
+      plate("hall_through_e_n_sign", 7.58, -6.65, Math.PI / 2);
+      jamb("hall_through_e_s_a", 7.72, 5.92, 0.2, 0.16);
+      jamb("hall_through_e_s_b", 7.72, 7.38, 0.2, 0.16);
+      header("hall_through_e_s_head", 7.72, 6.65, 0.2, 1.48);
+      leaf("hall_through_e_s_leaf", 7.42, 5.88, 1.22);
+      plate("hall_through_e_s_sign", 7.58, 6.65, Math.PI / 2);
     }
     if (ewChicane && openings.W && maze(-1, 0)) {
-      jamb("hall_through_w_n_a", -7.72, -7.38, 0.12, 0.12);
-      jamb("hall_through_w_n_b", -7.72, -5.92, 0.12, 0.12);
-      leaf("hall_through_w_n_leaf", -7.55, -6.35, 0.85);
-      jamb("hall_through_w_s_a", -7.72, 5.92, 0.12, 0.12);
-      jamb("hall_through_w_s_b", -7.72, 7.38, 0.12, 0.12);
-      leaf("hall_through_w_s_leaf", -7.55, 6.35, -0.85);
+      jamb("hall_through_w_n_a", -7.72, -7.38, 0.2, 0.16);
+      jamb("hall_through_w_n_b", -7.72, -5.92, 0.2, 0.16);
+      header("hall_through_w_n_head", -7.72, -6.65, 0.2, 1.48);
+      leaf("hall_through_w_n_leaf", -7.42, -5.88, 1.22);
+      plate("hall_through_w_n_sign", -7.58, -6.65, -Math.PI / 2);
+      jamb("hall_through_w_s_a", -7.72, 5.92, 0.2, 0.16);
+      jamb("hall_through_w_s_b", -7.72, 7.38, 0.2, 0.16);
+      header("hall_through_w_s_head", -7.72, 6.65, 0.2, 1.48);
+      leaf("hall_through_w_s_leaf", -7.42, 5.88, -1.22);
+      plate("hall_through_w_s_sign", -7.58, 6.65, -Math.PI / 2);
     }
     if (nsChicane && openings.N && maze(0, -1)) {
-      jamb("hall_through_n_w_a", -7.52, -7.72, 0.12, 0.12);
-      jamb("hall_through_n_w_b", -6.28, -7.72, 0.12, 0.12);
-      leaf("hall_through_n_w_leaf", -6.9, -7.55, 0.4);
-      jamb("hall_through_n_e_a", 6.28, -7.72, 0.12, 0.12);
-      jamb("hall_through_n_e_b", 7.52, -7.72, 0.12, 0.12);
-      leaf("hall_through_n_e_leaf", 6.9, -7.55, -0.4);
+      jamb("hall_through_n_w_a", -7.52, -7.72, 0.16, 0.2);
+      jamb("hall_through_n_w_b", -6.28, -7.72, 0.16, 0.2);
+      header("hall_through_n_w_head", -6.9, -7.72, 1.28, 0.2);
+      leaf("hall_through_n_w_leaf", -6.22, -7.42, 0.52);
+      plate("hall_through_n_w_sign", -6.9, -7.58, Math.PI);
+      jamb("hall_through_n_e_a", 6.28, -7.72, 0.16, 0.2);
+      jamb("hall_through_n_e_b", 7.52, -7.72, 0.16, 0.2);
+      header("hall_through_n_e_head", 6.9, -7.72, 1.28, 0.2);
+      leaf("hall_through_n_e_leaf", 6.22, -7.42, -0.52);
+      plate("hall_through_n_e_sign", 6.9, -7.58, Math.PI);
     }
     if (nsChicane && openings.S && maze(0, 1)) {
-      jamb("hall_through_s_w_a", -7.52, 7.72, 0.12, 0.12);
-      jamb("hall_through_s_w_b", -6.28, 7.72, 0.12, 0.12);
-      leaf("hall_through_s_w_leaf", -6.9, 7.55, -0.4);
-      jamb("hall_through_s_e_a", 6.28, 7.72, 0.12, 0.12);
-      jamb("hall_through_s_e_b", 7.52, 7.72, 0.12, 0.12);
-      leaf("hall_through_s_e_leaf", 6.9, 7.55, 0.4);
+      jamb("hall_through_s_w_a", -7.52, 7.72, 0.16, 0.2);
+      jamb("hall_through_s_w_b", -6.28, 7.72, 0.16, 0.2);
+      header("hall_through_s_w_head", -6.9, 7.72, 1.28, 0.2);
+      leaf("hall_through_s_w_leaf", -6.22, 7.42, -0.52);
+      plate("hall_through_s_w_sign", -6.9, 7.58, 0);
+      jamb("hall_through_s_e_a", 6.28, 7.72, 0.16, 0.2);
+      jamb("hall_through_s_e_b", 7.52, 7.72, 0.16, 0.2);
+      header("hall_through_s_e_head", 6.9, 7.72, 1.28, 0.2);
+      leaf("hall_through_s_e_leaf", 6.22, 7.42, 0.52);
+      plate("hall_through_s_e_sign", 6.9, 7.58, 0);
     }
   }
 
@@ -2817,6 +2850,15 @@ export class BackroomsGenerator {
     const northT = Boolean(ewChicane && (nsChicane || openings?.N));
     const westT = Boolean(nsChicane && (ewChicane || openings?.W));
     const eastT = Boolean(nsChicane && (ewChicane || openings?.E));
+
+    const mazeN = (dx, dz) => this.isMazeHall(chunk.cx + dx, chunk.cz + dz);
+    const nookHasThrough = (sideX, sideZ) => {
+      if (sideX < -0.5) return Boolean(openings.E && mazeN(1, 0));
+      if (sideX > 0.5) return Boolean(openings.W && mazeN(-1, 0));
+      if (sideZ < -0.5) return Boolean(openings.S && mazeN(0, 1));
+      if (sideZ > 0.5) return Boolean(openings.N && mazeN(0, -1));
+      return false;
+    };
 
     const dressNook = (doorX, doorZ, inX, inZ, sideX, sideZ) => {
       const faceYaw = Math.atan2(sideX, sideZ);
@@ -2980,6 +3022,11 @@ export class BackroomsGenerator {
         chunk, chunkId, center, floorY,
         doorX, doorZ, inX, inZ, sideX, sideZ, idx, variant, faceYaw,
       );
+      if (nookHasThrough(sideX, sideZ)) {
+        this.dressThroughClassCorner(chunk, chunkId, center, floorY, {
+          doorX, doorZ, inX, inZ, sideX, sideZ, idx, faceYaw,
+        });
+      }
       idx += 1;
     };
 
@@ -3207,6 +3254,48 @@ export class BackroomsGenerator {
     }
   }
 
+  dressThroughClassCorner(chunk, chunkId, center, floorY, spec) {
+    // Desks sit beside the back-door run, never in the 1.5m seam gap
+    // (along ≈ -2.55, inward ≈ 4.8) or the ±5.25 locker aisle.
+    const { doorX, doorZ, inX, inZ, sideX, sideZ, idx, faceYaw } = spec;
+    const put = (along, inward, y = 0) => ({
+      x: center.x + doorX + sideX * along + inX * inward,
+      y: floorY + y,
+      z: center.z + doorZ + sideZ * along + inZ * inward,
+    });
+    const a = put(0.55, 3.85);
+    const b = put(1.35, 4.95);
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_hall_through_desk_${idx}`,
+      a.x, floorY + 0.35, a.z, faceYaw, [0.58, 0.7, 0.44],
+    );
+    this.addSchoolChairGroup(
+      chunk, chunkId, `${chunkId}_hall_through_chair_${idx}`,
+      a.x + sideX * 0.42, floorY + 0.21, a.z + sideZ * 0.42, faceYaw,
+      { collideH: 0.42 },
+    );
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_hall_through_desk_${idx}_b`,
+      b.x, floorY + 0.35, b.z, faceYaw, [0.58, 0.7, 0.44],
+    );
+    const board = put(-0.15, 5.52, 1.48);
+    this.addChalkboardGroup(
+      chunk, chunkId, `${chunkId}_hall_through_board_${idx}`,
+      board.x, board.y, board.z, Math.atan2(-inX, -inZ),
+    );
+    const fallen = put(0.95, 3.15);
+    this.addSchoolChairGroup(
+      chunk, chunkId, `${chunkId}_hall_through_chair_fallen_${idx}`,
+      fallen.x, floorY + 0.12, fallen.z, faceYaw,
+      { fallen: true, collideH: 0.42 },
+    );
+    const book = new THREE.Mesh(this.getBoxGeometry(0.16, 0.03, 0.22), this.schoolPaperMat);
+    book.position.set(a.x + sideX * 0.08, floorY + 0.74, a.z + inZ * 0.06);
+    book.rotation.y = faceYaw + 0.2;
+    book.name = `${chunkId}_hall_through_book_${idx}`;
+    this.addSchoolProp(chunk, book);
+  }
+
   dressClassroom(chunk, center, chunkId, floorY) {
     const type = this.getChunkType(chunk.cx, chunk.cz);
     if (type === "nurse_office") {
@@ -3223,6 +3312,10 @@ export class BackroomsGenerator {
     }
     if (type === "science_lab") {
       this.dressScienceLab(chunk, center, chunkId, floorY);
+      return;
+    }
+    if (type === "gymnasium") {
+      this.dressGymnasium(chunk, center, chunkId, floorY);
       return;
     }
     const open = this.getOpenings(chunk.cx, chunk.cz);
@@ -3451,6 +3544,123 @@ export class BackroomsGenerator {
     stain.position.set(center.x - 3.1, floorY + 0.93, center.z);
     stain.name = `${chunkId}_lab_stain`;
     this.addSchoolProp(chunk, stain);
+  }
+
+  dressGymnasium(chunk, center, chunkId, floorY) {
+    this.ensureSpecialNookMaterials();
+    if (!this.schoolGymFloorMat) this.schoolGymFloorMat = this.createGymFloorMaterial();
+    if (!this.schoolGymWoodMat) {
+      this.schoolGymWoodMat = new THREE.MeshStandardMaterial({
+        color: 0x5a3a22,
+        roughness: 0.78,
+        metalness: 0.04,
+      });
+    }
+    if (!this.schoolGymLineMat) {
+      this.schoolGymLineMat = new THREE.MeshStandardMaterial({
+        color: 0xc8b090,
+        roughness: 0.62,
+        metalness: 0.02,
+        emissive: 0x2a2010,
+        emissiveIntensity: 0.08,
+      });
+    }
+    if (!this.schoolGymBallGeo) {
+      this.schoolGymBallGeo = new THREE.SphereGeometry(0.13, 10, 8);
+    }
+    const court = new THREE.Mesh(this.getPlaneGeometry(14.6, 14.6), this.schoolGymFloorMat);
+    court.rotation.x = -Math.PI / 2;
+    court.position.set(center.x, floorY + 0.012, center.z);
+    court.receiveShadow = true;
+    court.name = `${chunkId}_gym_court`;
+    this.addSchoolProp(chunk, court);
+
+    for (let step = 0; step < 3; step += 1) {
+      const depth = 0.52;
+      const rise = 0.28 + step * 0.26;
+      const zOff = 4.55 + step * 0.52;
+      this.placeDressedBox(
+        chunk, chunkId, `gym_bleacher_n_${step}`,
+        center.x + 1.15, floorY + rise / 2, center.z - zOff,
+        9.2, rise, depth, this.schoolGymWoodMat,
+      );
+      this.placeDressedBox(
+        chunk, chunkId, `gym_bleacher_s_${step}`,
+        center.x + 1.15, floorY + rise / 2, center.z + zOff,
+        9.2, rise, depth, this.schoolGymWoodMat,
+      );
+    }
+
+    this.placeDressedBox(
+      chunk, chunkId, "gym_hoop_pole",
+      center.x + 6.55, floorY + 1.35, center.z,
+      0.12, 2.7, 0.12, this.schoolMetalMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "gym_hoop_board",
+      center.x + 6.72, floorY + 2.35, center.z,
+      0.06, 1.05, 1.55, this.schoolPaperMat, false,
+    );
+    const rim = new THREE.Mesh(this.getBoxGeometry(0.42, 0.04, 0.42), this.schoolMetalMat);
+    rim.position.set(center.x + 6.28, floorY + 2.05, center.z);
+    rim.name = `${chunkId}_gym_hoop_rim`;
+    this.addSchoolProp(chunk, rim);
+
+    this.placeDressedBox(
+      chunk, chunkId, "gym_mat_stack",
+      center.x + 4.85, floorY + 0.28, center.z + 3.15,
+      1.15, 0.56, 0.72, this.trimMaterial,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "gym_cone_a",
+      center.x + 3.4, floorY + 0.16, center.z - 2.85,
+      0.18, 0.32, 0.18, this.schoolCautionMat || this.trimMaterial, false,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "gym_cone_b",
+      center.x + 2.6, floorY + 0.16, center.z - 3.05,
+      0.18, 0.32, 0.18, this.schoolCautionMat || this.trimMaterial, false,
+    );
+
+    const ballMat = new THREE.MeshStandardMaterial({
+      color: 0x6a2418,
+      roughness: 0.72,
+      metalness: 0.08,
+    });
+    for (const [key, lx, lz] of [["a", 5.35, -3.15], ["b", 4.55, 3.45], ["c", 5.9, 2.55]]) {
+      const ball = new THREE.Mesh(this.schoolGymBallGeo, ballMat);
+      ball.position.set(center.x + lx, floorY + 0.14, center.z + lz);
+      ball.name = `${chunkId}_gym_ball_${key}`;
+      this.addSchoolProp(chunk, ball);
+    }
+
+    for (const along of [-3.4, 0, 3.4]) {
+      const glass = new THREE.Mesh(this.getBoxGeometry(0.04, 1.15, 1.85), this.schoolGlassMat);
+      glass.position.set(center.x + 7.55, floorY + 1.72, center.z + along);
+      glass.name = `${chunkId}_gym_window_${along === 0 ? "c" : along < 0 ? "n" : "s"}`;
+      this.addSchoolProp(chunk, glass);
+    }
+
+    this.addHallNookSign(
+      chunk, chunkId, "gym_sign",
+      center.x - 7.52, floorY + 2.18, center.z,
+      Math.PI / 2, "체육관",
+    );
+    this.addHallPaGroup(chunk, chunkId, "gym_pa", center.x - 7.35, floorY + 2.48, center.z + 2.4, Math.PI / 2);
+    this.addHallClockGroup(chunk, chunkId, "gym_clock", center.x + 7.35, floorY + 2.22, center.z - 4.2, -Math.PI / 2);
+
+    for (const [name, x, z] of [["gym_fluoro_w", -3.2, 0], ["gym_fluoro_e", 3.2, 0]]) {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        center.x + x, floorY + 2.66, center.z + z, 2.6, 0.05, 0.14,
+        this.schoolFluoroMat, false,
+      );
+    }
+    const glow = new THREE.PointLight(0x3a2c1c, 0.16, 6.5, 2);
+    glow.position.set(center.x, floorY + 2.2, center.z);
+    glow.name = `${chunkId}_gym_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
   }
 
   linkTransitionWaypoint(id, extraId) {
@@ -4461,6 +4671,7 @@ export class BackroomsGenerator {
         : type === "music_room" ? "음악실 문"
         : type === "faculty_office" ? "교무실 문"
         : type === "science_lab" ? "과학실 문"
+        : type === "gymnasium" ? "체육관 문"
         : "교실 문";
       const open = this.getOpenings(chunk.cx, chunk.cz);
       if (open.N) addDynamicDoor(`${chunkId}_class_door`, classLabel, [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
@@ -4521,7 +4732,14 @@ export class BackroomsGenerator {
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (isClassroomType(type)) {
-      addDynamicCabinet(`cabinet_class_${chunk.cx}_${chunk.cz}`, type === "nurse_office" ? "보건실 벽장" : type === "music_room" ? "음악실 벽장" : type === "faculty_office" ? "교무실 벽장" : type === "science_lab" ? "과학실 벽장" : "교실 신발장", [5.4, 0.0, 5.4], Math.PI / 2);
+      const cabLabel = type === "nurse_office" ? "보건실 벽장"
+        : type === "music_room" ? "음악실 벽장"
+        : type === "faculty_office" ? "교무실 벽장"
+        : type === "science_lab" ? "과학실 벽장"
+        : type === "gymnasium" ? "체육관 벽장"
+        : "교실 신발장";
+      const cabPos = type === "gymnasium" ? [-5.4, 0.0, 5.4] : [5.4, 0.0, 5.4];
+      addDynamicCabinet(`cabinet_class_${chunk.cx}_${chunk.cz}`, cabLabel, cabPos, Math.PI / 2);
     } else if (!isStart && !isEvent && !isArchive && !type.includes("stairs") && (type.includes("room") || type.includes("storage")) && rand() < 0.4) {
       addDynamicCabinet(`cabinet_${chunk.cx}_${chunk.cz}`, "복도 신발장", [-5.2, 0.0, -5.2], -Math.PI / 2);
     }
@@ -4597,6 +4815,9 @@ export class BackroomsGenerator {
     } else if (type === "science_lab") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
         "약품 냄새가 복도까지 샌다. 가스관이 아직 식지 않았다.");
+    } else if (type === "gymnasium") {
+      addLoreNote(`${chunkId}_lore`, [-7.35, 1.42, 0.0], Math.PI / 2,
+        "체육관 줄이 어제와 같다. 창밖의 운동장은 없다. 공이 혼자 굴러간다.");
     } else if (type === "omen_room" || type === "static_room" || type === "flicker_room" || type === "classroom") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0);
     } else if (isWorkshop) {
@@ -4873,6 +5094,9 @@ export class BackroomsGenerator {
     } else if (type === "science_lab") {
       spawnSafeLight("wall-switch", 0.0, wallH, 7.58, 0, "과학실 입구 스위치");
       spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "과학실 형광등");
+    } else if (type === "gymnasium") {
+      spawnSafeLight("wall-switch", -7.58, wallH, 0.0, Math.PI / 2, "체육관 입구 스위치");
+      spawnSafeLight("ceiling-switch", 0.0, ceilingH, 0.0, 0, "체육관 형광등");
     } else {
       // Generic fallback room (e.g. flicker_room): Flush on perimeter walls
       spawnSafeLight("wall-switch", -1.6, wallH, -7.58, Math.PI, "벽 스위치");
@@ -4991,6 +5215,39 @@ export class BackroomsGenerator {
       color: texture ? 0xffffff : 0x2a3230,
       roughness: 0.52,
       metalness: 0.08,
+    });
+  }
+
+  createGymFloorMaterial() {
+    const texture = this.createCanvasTexture(512, 512, (ctx, width, height) => {
+      ctx.fillStyle = "#3a2818";
+      ctx.fillRect(0, 0, width, height);
+      ctx.strokeStyle = "#2a1c10";
+      ctx.lineWidth = 6;
+      for (let i = 0; i < 18; i += 1) {
+        ctx.beginPath();
+        ctx.moveTo(0, i * 30);
+        ctx.lineTo(width, i * 30);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = "#d2c09a";
+      ctx.lineWidth = 5;
+      ctx.strokeRect(36, 36, width - 72, height - 72);
+      ctx.beginPath();
+      ctx.moveTo(width / 2, 36);
+      ctx.lineTo(width / 2, height - 36);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(width / 2, height / 2, 58, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeRect(36, height / 2 - 70, 90, 140);
+      ctx.strokeRect(width - 126, height / 2 - 70, 90, 140);
+    });
+    return new THREE.MeshStandardMaterial({
+      map: texture,
+      color: texture ? 0xffffff : 0x3a2818,
+      roughness: 0.86,
+      metalness: 0.02,
     });
   }
 
