@@ -48,6 +48,14 @@ g.player.position = { x: -27.5, y: 5, z: -22 };
 director.update();
 assert.equal(director.fired.has("shrine"), true);
 
+g.player.position = { x: 8.4, y: -5, z: 48 };
+director.update();
+assert.equal(director.fired.has("b1deep"), true);
+
+g.player.position = { x: -22.5, y: 5, z: -42 };
+director.update();
+assert.equal(director.fired.has("f2deep"), true);
+
 const before = lines.length;
 director.update();
 assert.equal(lines.length, before, "already-fired beats must stay silent");

@@ -78,6 +78,14 @@ export class StoryDirector {
           "drip",
         );
       }
+      if (z > 42) {
+        this.fire(
+          "b1deep",
+          "b1deep",
+          "물이 복도를 두 번 꺾습니다. 막다른 벽장에 숨으십시오.",
+          "drip",
+        );
+      }
     }
 
     if (y > 3.2) {
@@ -92,6 +100,14 @@ export class StoryDirector {
           "shrine",
           "shrine",
           "그림이 떨어지면 마지막 이름이 드러납니다.",
+          "blood_drip",
+        );
+      }
+      if (z < -37 || x < -40) {
+        this.fire(
+          "f2deep",
+          "f2deep",
+          "피 묻은 미로입니다. 손전등을 끄지 말고 벽장으로 꺾으십시오.",
           "blood_drip",
         );
       }

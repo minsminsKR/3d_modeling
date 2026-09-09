@@ -67,9 +67,11 @@ try {
       drip: (b1.meshes || []).some((mesh) => String(mesh.name || "").includes("drip")),
       foam: (b1.meshes || []).some((mesh) => String(mesh.name || "").includes("flood_foam")),
       b1Maze: (b1.meshes || []).some((mesh) => String(mesh.name || "").includes("b1_maze_")),
+      b1Lab: (b1.meshes || []).some((mesh) => String(mesh.name || "").includes("cellar_b1_south_lab") || String(mesh.name || "").includes("cellar_b1_floor_south_lab")),
       blood: (f2.meshes || []).some((mesh) => String(mesh.name || "").includes("blood")),
       bloodWall: (f2.meshes || []).some((mesh) => String(mesh.name || "").includes("blood_wall")),
       f2Maze: (f2.meshes || []).some((mesh) => String(mesh.name || "").includes("gallery_maze_")),
+      f2Lab: (f2.meshes || []).some((mesh) => String(mesh.name || "").includes("gallery_2f_floor_north_lab")),
     };
     game.player.setPosition({ x: 80, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05);
@@ -164,9 +166,11 @@ try {
   assert.equal(result.floors.drip, true, "basement must drip");
   assert.equal(result.floors.foam, true, "basement water must show scum");
   assert.equal(result.floors.b1Maze, true, "basement must be a maze, not an open hall");
+  assert.equal(result.floors.b1Lab, true, "basement south labyrinth must exist");
   assert.equal(result.floors.blood, true, "2F gallery must be blood-soaked");
   assert.equal(result.floors.bloodWall, true, "2F walls must carry blood");
   assert.equal(result.floors.f2Maze, true, "2F gallery must be a maze, not an open hall");
+  assert.equal(result.floors.f2Lab, true, "2F north labyrinth must exist");
   assert.equal(result.atWing.totalKeys, 4, "unloading key rooms must not shrink the four-name loop");
   assert.equal(result.atWing.hud, "0 / 4");
   assert.ok(Math.abs(result.floorHunt.uncatY) < 2.5, `Uncat must stay on 1F while the player is in B1, got y=${result.floorHunt.uncatY}`);

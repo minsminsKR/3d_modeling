@@ -661,9 +661,9 @@ export class BackroomsGenerator {
       galFloorMesh.position.set(galWestWingCenterX, floorY + 5.0, galCenterZ);
       galFloorMesh.receiveShadow = true;
       galFloorMesh.name = `${chunkId}_gallery_2f_floor`;
-      galFloorMesh.material.color.setHex(0x3a1012);
-      galFloorMesh.material.emissive = new THREE.Color(0x220306);
-      galFloorMesh.material.emissiveIntensity = 0.1;
+      galFloorMesh.material.color.setHex(0x4a181c);
+      galFloorMesh.material.emissive = new THREE.Color(0x28060a);
+      galFloorMesh.material.emissiveIntensity = 0.14;
       galFloorMesh.material.roughness = 0.38;
       this.scene.add(galFloorMesh);
       chunk.meshes.push(galFloorMesh);
@@ -678,28 +678,29 @@ export class BackroomsGenerator {
       this.scene.add(galCeilMesh);
       chunk.meshes.push(galCeilMesh);
 
-      // Perimeter enclosing walls:
-      // North Wall: at z = -23.8 spanning full width from x = -23.8 to -14.8 (9.0m wide)
-      const northWallWidth = galMaxX - galMinX;
-      const northWallCenterX = (galMinX + galMaxX) / 2;
-      const galNorthGeo = this.getBoxGeometry(northWallWidth + 0.4, 2.8, 0.4);
-      const galNorthMesh = new THREE.Mesh(galNorthGeo, stairMat);
-      galNorthMesh.position.set(northWallCenterX, floorY + 6.4, galMinZ - 0.15);
-      galNorthMesh.castShadow = true;
-      galNorthMesh.name = `${chunkId}_gallery_2f_wall_n`;
-      this.scene.add(galNorthMesh);
-      chunk.meshes.push(galNorthMesh);
-      this.collisionWorld.addStaticBox(galNorthMesh.name, galNorthMesh.position, new THREE.Vector3(northWallWidth + 0.4, 2.8, 0.4), chunkId);
-
-      // West Wall: at x = -23.8 spanning from z = -23.8 to -8.5 (15.3m long)
-      const galWestGeo = this.getBoxGeometry(0.4, 2.8, galLength + 0.4);
-      const galWestMesh = new THREE.Mesh(galWestGeo, stairMat);
-      galWestMesh.position.set(galMinX - 0.15, floorY + 6.4, galCenterZ);
-      galWestMesh.castShadow = true;
-      galWestMesh.name = `${chunkId}_gallery_2f_wall_w`;
-      this.scene.add(galWestMesh);
-      chunk.meshes.push(galWestMesh);
-      this.collisionWorld.addStaticBox(galWestMesh.name, galWestMesh.position, new THREE.Vector3(0.4, 2.8, galLength + 0.4), chunkId);
+      // North / west walls keep the painting wall solid at z≈-22 and open maze gates.
+      this.placeGappedWall(chunk, chunkId, "gallery_2f_wall_n", {
+        axis: "x",
+        pos: galMinZ - 0.15,
+        min: galMinX,
+        max: galMaxX,
+        wallY: floorY + 6.4,
+        height: 2.8,
+        thickness: 0.4,
+        material: stairMat,
+        gaps: [{ center: -32.5, width: 2.7 }, { center: -22.5, width: 2.7 }],
+      });
+      this.placeGappedWall(chunk, chunkId, "gallery_2f_wall_w", {
+        axis: "z",
+        pos: galMinX - 0.15,
+        min: galMinZ,
+        max: galMaxZ,
+        wallY: floorY + 6.4,
+        height: 2.8,
+        thickness: 0.4,
+        material: stairMat,
+        gaps: [{ center: -12.0, width: 2.7 }, { center: -32.0, width: 2.7 }],
+      });
 
       // Inner shrine partition at x = -27.5 (doorway toward the painting at z ≈ -22)
       const galInnerX = -27.5;
@@ -1007,6 +1008,7 @@ export class BackroomsGenerator {
         galMinZ,
         galMaxZ,
       });
+      this.dressGalleryLabyrinth(chunk, chunkId, floorY, stairMat, ceilingMat);
     } else if (type === "stairs_b1") {
       // 1F → B1 Staircase (descending from Y = 0.0 to Y = -5.0 towards South, inside chunk (1, 2))
       // Entrance is from North (z = -7.8)
@@ -1163,25 +1165,31 @@ export class BackroomsGenerator {
       chunk.meshes.push(b1NorthMesh);
       this.collisionWorld.addStaticBox(b1NorthMesh.name, b1NorthMesh.position, new THREE.Vector3(b1TotalWidth + 0.4, 2.8, 0.4), chunkId);
 
-      // South Wall: at z = 39.8, spanning full width from x = 8.2 to 23.8 (15.6m)
-      const b1SouthGeo = this.getBoxGeometry(b1TotalWidth + 0.4, 2.8, 0.4);
-      const b1SouthMesh = new THREE.Mesh(b1SouthGeo, b1WallMat);
-      b1SouthMesh.position.set(b1CenterX, floorY - 3.6, b1MaxZ + 0.15);
-      b1SouthMesh.castShadow = true;
-      b1SouthMesh.name = `${chunkId}_cellar_b1_wall_s`;
-      this.scene.add(b1SouthMesh);
-      chunk.meshes.push(b1SouthMesh);
-      this.collisionWorld.addStaticBox(b1SouthMesh.name, b1SouthMesh.position, new THREE.Vector3(b1TotalWidth + 0.4, 2.8, 0.4), chunkId);
+      // South wall keeps the stair landing boxed in, with maze gates at x=8.4 and x=20.5.
+      this.placeGappedWall(chunk, chunkId, "cellar_b1_wall_s", {
+        axis: "x",
+        pos: b1MaxZ + 0.15,
+        min: b1MinX,
+        max: b1MaxX,
+        wallY: floorY - 3.6,
+        height: 2.8,
+        thickness: 0.4,
+        material: b1WallMat,
+        gaps: [{ center: 8.4, width: 2.7 }, { center: 20.5, width: 2.7 }],
+      });
 
-      // West Wall: at x = 8.2, spanning from z = 24.2 to 39.8 (15.6m)
-      const b1WestGeo = this.getBoxGeometry(0.4, 2.8, b1TotalLength + 0.4);
-      const b1WestMesh = new THREE.Mesh(b1WestGeo, b1WallMat);
-      b1WestMesh.position.set(b1MinX - 0.15, floorY - 3.6, b1CenterZ);
-      b1WestMesh.castShadow = true;
-      b1WestMesh.name = `${chunkId}_cellar_b1_wall_w`;
-      this.scene.add(b1WestMesh);
-      chunk.meshes.push(b1WestMesh);
-      this.collisionWorld.addStaticBox(b1WestMesh.name, b1WestMesh.position, new THREE.Vector3(0.4, 2.8, b1TotalLength + 0.4), chunkId);
+      // West wall opens into the flooded west labyrinth at the crib hall and north hall.
+      this.placeGappedWall(chunk, chunkId, "cellar_b1_wall_w", {
+        axis: "z",
+        pos: b1MinX - 0.15,
+        min: b1MinZ,
+        max: b1MaxZ,
+        wallY: floorY - 3.6,
+        height: 2.8,
+        thickness: 0.4,
+        material: b1WallMat,
+        gaps: [{ center: 30.0, width: 2.7 }, { center: 38.0, width: 2.7 }],
+      });
 
       // Inner crib-room partition at x = 1.2 with a 2.4m doorway facing the baby
       const b1InnerX = 1.2;
@@ -1556,6 +1564,7 @@ export class BackroomsGenerator {
         b1StartX,
         rampHalfWidth,
       });
+      this.dressBasementLabyrinth(chunk, chunkId, floorY, b1WallMat, b1FloorMat, b1CeilMat);
     }
   }
 
@@ -2000,6 +2009,41 @@ export class BackroomsGenerator {
     }
   }
 
+  placeGappedWall(chunk, chunkId, name, spec) {
+    const { axis, pos, min, max, wallY, height, thickness, material, gaps = [] } = spec;
+    const sorted = [...gaps].sort((a, b) => a.center - b.center);
+    const segments = [];
+    let cursor = min;
+    for (const gap of sorted) {
+      const g0 = gap.center - gap.width / 2;
+      const g1 = gap.center + gap.width / 2;
+      if (g0 > cursor + 0.28) segments.push([cursor, Math.min(g0, max)]);
+      cursor = Math.max(cursor, g1);
+    }
+    if (cursor < max - 0.28) segments.push([cursor, max]);
+    segments.forEach(([start, end], index) => {
+      const len = end - start;
+      if (len < 0.34) return;
+      const mid = (start + end) / 2;
+      if (axis === "x") {
+        this.placeDressedBox(chunk, chunkId, `${name}_${index}`, mid, wallY, pos, len, height, thickness, material);
+      } else {
+        this.placeDressedBox(chunk, chunkId, `${name}_${index}`, pos, wallY, mid, thickness, height, len, material);
+      }
+    });
+  }
+
+  addWingPlane(chunk, chunkId, name, width, length, x, y, z, material, flipCeiling = false) {
+    const mesh = new THREE.Mesh(this.getPlaneGeometry(width, length), material);
+    mesh.rotation.x = flipCeiling ? Math.PI / 2 : -Math.PI / 2;
+    mesh.position.set(x, y, z);
+    mesh.receiveShadow = true;
+    mesh.name = `${chunkId}_${name}`;
+    this.scene.add(mesh);
+    chunk.meshes.push(mesh);
+    return mesh;
+  }
+
   dressBasementMaze(chunk, chunkId, floorY, _bounds) {
     const wallMat = new THREE.MeshStandardMaterial({
       map: this.textures.load("wall"),
@@ -2024,6 +2068,9 @@ export class BackroomsGenerator {
       ["b1_maze_east_a", 18.6, 34.0, 1.2, t],
       ["b1_maze_east_b", 23.5, 34.0, 3.4, t],
       ["b1_maze_east_spur", 21.2, 26.4, t, 3.6],
+      ["b1_maze_mid_n", 5.55, 36.05, 2.3, t],
+      ["b1_maze_nook", 3.15, 25.35, 1.9, t],
+      ["b1_maze_east_nook", 18.35, 27.15, t, 2.2],
     ];
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
@@ -2054,14 +2101,153 @@ export class BackroomsGenerator {
     this.linkTransitionWaypoint("tw_b1_east_store", "tw_b1_east_boiler");
   }
 
+  dressBasementLabyrinth(chunk, chunkId, floorY, wallMat, floorMat, ceilMat) {
+    const y = floorY - 3.6;
+    const h = 2.8;
+    const t = 0.32;
+    const westMinX = -24.2;
+    const westMaxX = -8.0;
+    const southMinZ = 39.8;
+    const southMaxZ = 56.4;
+    const coreMinZ = 24.2;
+    const coreMaxX = 26.0;
+
+    this.addWingPlane(
+      chunk, chunkId, "cellar_b1_floor_west_lab",
+      westMaxX - westMinX, southMaxZ - coreMinZ,
+      (westMinX + westMaxX) / 2, floorY - 5.0, (coreMinZ + southMaxZ) / 2, floorMat,
+    );
+    this.addWingPlane(
+      chunk, chunkId, "cellar_b1_ceil_west_lab",
+      westMaxX - westMinX, southMaxZ - coreMinZ,
+      (westMinX + westMaxX) / 2, floorY - 2.2, (coreMinZ + southMaxZ) / 2, ceilMat, true,
+    );
+    this.addWingPlane(
+      chunk, chunkId, "cellar_b1_floor_south_lab",
+      coreMaxX - westMaxX, southMaxZ - southMinZ,
+      (westMaxX + coreMaxX) / 2, floorY - 5.0, (southMinZ + southMaxZ) / 2, floorMat,
+    );
+    this.addWingPlane(
+      chunk, chunkId, "cellar_b1_ceil_south_lab",
+      coreMaxX - westMaxX, southMaxZ - southMinZ,
+      (westMaxX + coreMaxX) / 2, floorY - 2.2, (southMinZ + southMaxZ) / 2, ceilMat, true,
+    );
+
+    this.collisionWorld.addFloorArea({
+      id: "cellar_b1_west_lab",
+      floor: -1,
+      type: "walkable",
+      y: floorY - 5.0,
+      minX: westMinX,
+      maxX: westMaxX,
+      minZ: coreMinZ,
+      maxZ: southMaxZ,
+    }, chunkId);
+    this.collisionWorld.addFloorArea({
+      id: "cellar_b1_south_lab",
+      floor: -1,
+      type: "walkable",
+      y: floorY - 5.0,
+      minX: westMaxX,
+      maxX: coreMaxX,
+      minZ: southMinZ,
+      maxZ: southMaxZ,
+    }, chunkId);
+
+    this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_w", westMinX - 0.15, y, (coreMinZ + southMaxZ) / 2, 0.4, h, southMaxZ - coreMinZ + 0.4, wallMat);
+    this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_n", (westMinX + westMaxX) / 2, y, coreMinZ - 0.15, westMaxX - westMinX + 0.4, h, 0.4, wallMat);
+    this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_s", (westMinX + coreMaxX) / 2, y, southMaxZ + 0.15, coreMaxX - westMinX + 0.4, h, 0.4, wallMat);
+    this.placeDressedBox(chunk, chunkId, "cellar_b1_wall_lab_e", coreMaxX + 0.15, y, (southMinZ + southMaxZ) / 2, 0.4, h, southMaxZ - southMinZ + 0.4, wallMat);
+
+    const walls = [
+      ["b1_maze_s_h1w", -0.2, 45.1, 14.8, t],
+      ["b1_maze_s_h1e", 14.55, 45.1, 10.3, t],
+      ["b1_maze_s_h1ee", 23.55, 45.1, 4.1, t],
+      ["b1_maze_s_h2w", -0.2, 51.4, 14.8, t],
+      ["b1_maze_s_h2e", 15.85, 51.4, 12.7, t],
+      ["b1_maze_s_v_dead", 4.15, 54.4, t, 3.4],
+      ["b1_maze_s_v_mid", 12.35, 48.25, t, 5.6],
+      ["b1_maze_w_h1a", -19.85, 33.6, 7.9, t],
+      ["b1_maze_w_h1b", -10.55, 33.6, 4.7, t],
+      ["b1_maze_w_spur", -18.85, 27.05, t, 4.5],
+      ["b1_maze_w_h2a", -19.85, 45.1, 7.9, t],
+      ["b1_maze_w_h2b", -10.55, 45.1, 4.7, t],
+      ["b1_maze_w_south_a", -20.4, 51.4, 6.4, t],
+      ["b1_maze_w_south_b", -10.5, 51.4, 5.0, t],
+    ];
+    for (const [name, x, z, sx, sz] of walls) {
+      this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
+    }
+
+    const waterY = floorY - 5.0 + 0.15;
+    const waterMat = new THREE.MeshStandardMaterial({
+      color: 0x2d7a68,
+      roughness: 0.32,
+      metalness: 0.12,
+      transparent: true,
+      opacity: 0.82,
+      emissive: 0x145a48,
+      emissiveIntensity: 0.55,
+      depthWrite: false,
+    });
+    this.addWingPlane(
+      chunk, chunkId, "flood_water_west_lab",
+      westMaxX - westMinX - 0.4, southMaxZ - coreMinZ - 0.4,
+      (westMinX + westMaxX) / 2, waterY, (coreMinZ + southMaxZ) / 2, waterMat,
+    );
+    this.addWingPlane(
+      chunk, chunkId, "flood_water_south_lab",
+      coreMaxX - westMaxX - 0.4, southMaxZ - southMinZ - 0.4,
+      (westMaxX + coreMaxX) / 2, waterY, (southMinZ + southMaxZ) / 2, waterMat,
+    );
+
+    const gloom = new THREE.PointLight(0x1c4a3c, 2.4, 8.4, 1.7);
+    gloom.position.set(8.4, floorY - 4.05, 48.2);
+    gloom.name = `${chunkId}_b1_lab_gloom`;
+    this.scene.add(gloom);
+    chunk.meshes.push(gloom);
+    const gloomWest = new THREE.PointLight(0x16382e, 2.1, 7.6, 1.7);
+    gloomWest.position.set(-16.2, floorY - 4.05, 30.2);
+    gloomWest.name = `${chunkId}_b1_lab_gloom_w`;
+    this.scene.add(gloomWest);
+    chunk.meshes.push(gloomWest);
+
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_b1_south_gate",
+      position: [8.4, floorY - 5.0, 40.4],
+      floor: -1,
+      links: ["tw_b1_maze_gap", "tw_b1_south_end"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_b1_south_end",
+      position: [8.4, floorY - 5.0, 54.0],
+      floor: -1,
+      links: ["tw_b1_south_gate"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_b1_west_gate",
+      position: [-8.0, floorY - 5.0, 30.0],
+      floor: -1,
+      links: ["tw_b1_inner_door", "tw_b1_west_end"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_b1_west_end",
+      position: [-20.5, floorY - 5.0, 26.8],
+      floor: -1,
+      links: ["tw_b1_west_gate"],
+    }, chunkId);
+    this.linkTransitionWaypoint("tw_b1_maze_gap", "tw_b1_south_gate");
+    this.linkTransitionWaypoint("tw_b1_inner_door", "tw_b1_west_gate");
+  }
+
   dressGalleryMaze(chunk, chunkId, floorY, _bounds) {
     const wallMat = new THREE.MeshStandardMaterial({
       map: this.textures.load("wall"),
-      color: 0x3a1012,
-      roughness: 0.86,
+      color: 0x6a2024,
+      roughness: 0.82,
       metalness: 0.04,
-      emissive: 0x1a0406,
-      emissiveIntensity: 0.12,
+      emissive: 0x2a0608,
+      emissiveIntensity: 0.2,
     });
     const y = floorY + 6.4;
     const h = 2.8;
@@ -2075,6 +2261,8 @@ export class BackroomsGenerator {
       ["gallery_maze_shrine_a", -35.7, -26.6, 3.4, t],
       ["gallery_maze_shrine_b", -29.6, -26.6, 2.8, t],
       ["gallery_maze_shrine_south", -31.6, -15.7, t, 4.6],
+      ["gallery_maze_mid_nook", -20.4, -28.4, 2.2, t],
+      ["gallery_maze_south_nook", -26.8, -11.2, t, 2.4],
     ];
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
@@ -2103,6 +2291,142 @@ export class BackroomsGenerator {
     this.linkTransitionWaypoint("tw_2f_gallery_altar", "tw_2f_maze_north_gap");
     this.linkTransitionWaypoint("tw_2f_gallery_north", "tw_2f_maze_north_gap");
     this.linkTransitionWaypoint("tw_2f_gallery_inner_door", "tw_2f_shrine_south");
+  }
+
+  dressGalleryLabyrinth(chunk, chunkId, floorY, wallMat, ceilingMat) {
+    const y = floorY + 6.4;
+    const h = 2.8;
+    const t = 0.32;
+    const westMinX = -54.0;
+    const westMaxX = -38.0;
+    const northMinZ = -54.0;
+    const northMaxZ = -36.0;
+    const galMaxZ = -8.5;
+    const galMaxX = -17.2;
+    const floorMat = this.textures.createFloorMaterial(16, 16);
+    floorMat.color.setHex(0x4a181c);
+    floorMat.emissive = new THREE.Color(0x28060a);
+    floorMat.emissiveIntensity = 0.14;
+    floorMat.roughness = 0.36;
+    const mazeMat = wallMat.clone();
+    mazeMat.color.setHex(0x6a2024);
+    mazeMat.emissive = new THREE.Color(0x2a0608);
+    mazeMat.emissiveIntensity = 0.2;
+
+    this.addWingPlane(
+      chunk, chunkId, "gallery_2f_floor_west_lab",
+      westMaxX - westMinX, galMaxZ - northMinZ,
+      (westMinX + westMaxX) / 2, floorY + 5.0, (northMinZ + galMaxZ) / 2, floorMat,
+    );
+    this.addWingPlane(
+      chunk, chunkId, "gallery_2f_ceil_west_lab",
+      westMaxX - westMinX, galMaxZ - northMinZ,
+      (westMinX + westMaxX) / 2, floorY + 7.8, (northMinZ + galMaxZ) / 2, ceilingMat, true,
+    );
+    this.addWingPlane(
+      chunk, chunkId, "gallery_2f_floor_north_lab",
+      galMaxX - westMaxX, northMaxZ - northMinZ,
+      (westMaxX + galMaxX) / 2, floorY + 5.0, (northMinZ + northMaxZ) / 2, floorMat,
+    );
+    this.addWingPlane(
+      chunk, chunkId, "gallery_2f_ceil_north_lab",
+      galMaxX - westMaxX, northMaxZ - northMinZ,
+      (westMaxX + galMaxX) / 2, floorY + 7.8, (northMinZ + northMaxZ) / 2, ceilingMat, true,
+    );
+
+    this.collisionWorld.addFloorArea({
+      id: "gallery_2f_west_lab",
+      floor: 2,
+      type: "walkable",
+      y: floorY + 5.0,
+      minX: westMinX,
+      maxX: westMaxX,
+      minZ: northMinZ,
+      maxZ: galMaxZ,
+    }, chunkId);
+    this.collisionWorld.addFloorArea({
+      id: "gallery_2f_north_lab",
+      floor: 2,
+      type: "walkable",
+      y: floorY + 5.0,
+      minX: westMaxX,
+      maxX: galMaxX,
+      minZ: northMinZ,
+      maxZ: northMaxZ,
+    }, chunkId);
+
+    this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_w", westMinX - 0.15, y, (northMinZ + galMaxZ) / 2, 0.4, h, galMaxZ - northMinZ + 0.4, mazeMat);
+    this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_n", (westMinX + galMaxX) / 2, y, northMinZ - 0.15, galMaxX - westMinX + 0.4, h, 0.4, mazeMat);
+    this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_s", (westMinX + westMaxX) / 2, y, galMaxZ + 0.15, westMaxX - westMinX + 0.4, h, 0.4, mazeMat);
+    this.placeDressedBox(chunk, chunkId, "gallery_2f_wall_lab_e", galMaxX + 0.15, y, (northMinZ + northMaxZ) / 2, 0.4, h, northMaxZ - northMinZ + 0.4, mazeMat);
+
+    const walls = [
+      ["gallery_maze_n_h1w", -35.7, -40.6, 3.6, t],
+      ["gallery_maze_n_h1e", -27.6, -40.6, 7.5, t],
+      ["gallery_maze_n_h2w", -35.7, -47.2, 3.6, t],
+      ["gallery_maze_n_h2e", -25.15, -47.2, 12.1, t],
+      ["gallery_maze_n_v_dead", -28.4, -51.2, t, 4.0],
+      ["gallery_maze_w_h1a", -51.65, -22.0, 4.1, t],
+      ["gallery_maze_w_h1b", -43.35, -22.0, 6.5, t],
+      ["gallery_maze_w_south_dead", -50.6, -10.05, t, 2.6],
+      ["gallery_maze_w_v1", -44.15, -26.6, t, 6.4],
+      ["gallery_maze_w_v2", -44.15, -16.8, t, 6.4],
+    ];
+    for (const [name, x, z, sx, sz] of walls) {
+      this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, mazeMat);
+    }
+
+    const bloodY = floorY + 5.04;
+    const poolMat = new THREE.MeshStandardMaterial({
+      color: 0x9a1418,
+      roughness: 0.38,
+      metalness: 0.06,
+      transparent: true,
+      opacity: 0.9,
+      emissive: 0x5a080c,
+      emissiveIntensity: 0.42,
+      depthWrite: false,
+    });
+    this.addWingPlane(chunk, chunkId, "blood_north_lab", 12.4, 8.6, -28.4, bloodY, -45.2, poolMat);
+    this.addWingPlane(chunk, chunkId, "blood_west_lab", 9.6, 16.4, -46.2, bloodY, -20.4, poolMat);
+
+    const gloom = new THREE.PointLight(0x5a1018, 2.6, 8.8, 1.65);
+    gloom.position.set(-22.5, floorY + 6.15, -42.0);
+    gloom.name = `${chunkId}_f2_lab_gloom`;
+    this.scene.add(gloom);
+    chunk.meshes.push(gloom);
+    const gloomWest = new THREE.PointLight(0x4a0c14, 2.2, 8.2, 1.65);
+    gloomWest.position.set(-48.0, floorY + 6.15, -12.0);
+    gloomWest.name = `${chunkId}_f2_lab_gloom_w`;
+    this.scene.add(gloomWest);
+    chunk.meshes.push(gloomWest);
+
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_2f_north_gate",
+      position: [-22.5, floorY + 5.0, -36.4],
+      floor: 2,
+      links: ["tw_2f_gallery_north", "tw_2f_north_end"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_2f_north_end",
+      position: [-32.5, floorY + 5.0, -50.0],
+      floor: 2,
+      links: ["tw_2f_north_gate"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_2f_west_gate",
+      position: [-38.4, floorY + 5.0, -12.0],
+      floor: 2,
+      links: ["tw_2f_gallery_south", "tw_2f_west_end"],
+    }, chunkId);
+    this.collisionWorld.addTransitionWaypoint({
+      id: "tw_2f_west_end",
+      position: [-50.0, floorY + 5.0, -12.0],
+      floor: 2,
+      links: ["tw_2f_west_gate"],
+    }, chunkId);
+    this.linkTransitionWaypoint("tw_2f_gallery_north", "tw_2f_north_gate");
+    this.linkTransitionWaypoint("tw_2f_gallery_south", "tw_2f_west_gate");
   }
 
   dressBasementFlood(chunk, chunkId, floorY, bounds) {
@@ -2596,11 +2920,15 @@ export class BackroomsGenerator {
       addDynamicCabinet("cabinet_stairs_2f_shrine", "2층 사당 벽장", [-18.4, 5.0, -4.2], Math.PI / 2);
       addDynamicCabinet("cabinet_stairs_2f_landing", "2층 계단참 벽장", [0.0, 5.0, -6.2], 0);
       addDynamicCabinet("cabinet_stairs_2f_south", "2층 별실 벽장", [-16.5, 5.0, 4.8], Math.PI);
+      addDynamicCabinet("cabinet_stairs_2f_north_lab", "2층 북미로 벽장", [-16.5, 5.0, -34.0], Math.PI / 2);
+      addDynamicCabinet("cabinet_stairs_2f_west_lab", "2층 서미로 벽장", [-35.5, 5.0, 4.2], Math.PI);
     } else if (type === "stairs_b1") {
       addDynamicCabinet("cabinet_b1_cellar", "지하 보육실 벽장", [-22.5, -5.0, 2.0], -Math.PI / 2);
       addDynamicCabinet("cabinet_b1_flood", "지하 침수복도 벽장", [-7.4, -5.0, -0.4], Math.PI / 2);
       addDynamicCabinet("cabinet_b1_east", "지하 동쪽 벽장", [8.2, -5.0, 0.2], -Math.PI / 2);
       addDynamicCabinet("cabinet_b1_boiler", "지하 보일러 벽장", [6.4, -5.0, -5.4], Math.PI);
+      addDynamicCabinet("cabinet_b1_south_lab", "지하 남미로 벽장", [-7.6, -5.0, 22.2], Math.PI);
+      addDynamicCabinet("cabinet_b1_west_lab", "지하 서미로 벽장", [-37.8, -5.0, -5.4], -Math.PI / 2);
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicCabinet("cabinet-tatami-room", "다실 벽장", [7.1, 0.0, 0.0], -Math.PI / 2);
     } else if (isClassroomType(type)) {
@@ -2638,11 +2966,15 @@ export class BackroomsGenerator {
         "물이 이름을 적고 있다. 요람 쪽 열쇠를 집고 신발장에 숨어서 나오십시오.");
       addLoreNote(`${chunkId}_lore_maze`, [6.2, -3.55, -5.0], Math.PI,
         "보일러실 너머로 요람이 운다. 물이 차도 이름을 집고 벽장에 숨으십시오.");
+      addLoreNote(`${chunkId}_lore_south`, [-7.4, -3.55, 16.4], 0,
+        "남쪽 물이 두 번 꺾인다. 막다른 벽장 앞에서 호흡을 끊으십시오.");
     } else if (type === "stairs_2f") {
       addLoreNote(`${chunkId}_lore_blood`, [-8.2, 6.35, 1.6], Math.PI / 2,
         "액자 아래는 아직 젖어 있다. 그림이 떨어지면 네 번째 이름이 드러난다.");
       addLoreNote(`${chunkId}_lore_maze`, [-16.2, 6.35, 4.4], Math.PI,
         "피 묻은 꺾인 복도는 액자로 끝난다. 그림이 떨어질 때까지 호흡을 끊으십시오.");
+      addLoreNote(`${chunkId}_lore_north`, [-16.4, 6.35, -33.2], 0,
+        "북쪽 미로에서 그림자가 손전등을 보면 멈춘다. 보지 않으면 다가온다.");
     } else if (type === "nurse_office") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
         "보건실 장부에 출석이 끝나지 않은 이름이 넷이다. 별관에서 같은 신발을 두 번 보지 마십시오.");

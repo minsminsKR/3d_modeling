@@ -12,6 +12,7 @@ import { GlitchController } from "../effects/GlitchController.js";
 import { HorrorEventManager } from "../events/HorrorEventManager.js";
 import { DreadDirector } from "../events/DreadDirector.js";
 import { StoryDirector } from "../events/StoryDirector.js";
+import { FloorHuntDirector } from "../events/FloorHuntDirector.js";
 import { MirrorHwacatEvent } from "../events/MirrorHwacatEvent.js";
 import { Hud } from "../ui/Hud.js";
 import { Input } from "./Input.js";
@@ -185,6 +186,7 @@ export class Game {
     this.monsterIntroManager = new MonsterIntroManager(this);
     this.dreadDirector = new DreadDirector(this);
     this.storyDirector = new StoryDirector(this);
+    this.floorHuntDirector = new FloorHuntDirector(this);
     this.voiceAnnouncer = new VoiceAnnouncer();
 
 
@@ -596,6 +598,7 @@ export class Game {
       this.horrorEventManager?.update(deltaTime);
       this.dreadDirector?.update(deltaTime);
       this.storyDirector?.update();
+      this.floorHuntDirector?.update(deltaTime);
       if (this.gameCleared) {
         this.renderer.render(this.scene, this.camera);
         this.input.endFrame();
@@ -895,6 +898,7 @@ export class Game {
     this.horrorEventManager?.reset();
     this.dreadDirector?.reset();
     this.storyDirector?.reset();
+    this.floorHuntDirector?.reset();
 
     this.glitchController.reset();
     this.testSafeMode = false;
@@ -1732,6 +1736,7 @@ export class Game {
       this.updateBackrooms(0);
     }
     this.updateFloorAtmosphere(8, true);
+    this.floorHuntDirector?.hide?.();
     if (Array.isArray(lookAt) && lookAt.length >= 3) {
       this.player.setLookAt(new THREE.Vector3(lookAt[0], lookAt[1], lookAt[2]));
     } else {
