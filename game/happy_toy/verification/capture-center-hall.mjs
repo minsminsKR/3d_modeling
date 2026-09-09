@@ -175,5 +175,65 @@ await page.evaluate(() => {
 await page.screenshot({ path: path.join(outDir, "f1_start_foyer_altar.png"), timeout: 120000 });
 console.log("foyer", foyer);
 
+const south = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  game.mapBuilder.generator.generateChunk(0, 1);
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(0, 0, 21.2);
+  uncat.group.lookAt(0, 1.2, 12.4);
+  uncat.state = "chase";
+  game.hud.setStatus("기괴한 고양이 괴물이 복도의 조명을 삼키며 나타났습니다!", 4200);
+  return game.poseForCapture({
+    x: 0,
+    y: 0,
+    z: 12.4,
+    lookAt: [0, 1.15, 21.4],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.group.visible = true;
+  uncat.group.position.set(0, 0, 21.2);
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_uncat_south_school_hall.png"), timeout: 120000 });
+console.log("south", south);
+
+const west = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  game.mapBuilder.generator.generateChunk(-1, 0);
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(true);
+  uncat.group.visible = false;
+  game.hud.setStatus("액자가 아니라 사람이 서 있습니다. 손전등을 끄지 마십시오.", 4200);
+  return game.poseForCapture({
+    x: -10.8,
+    y: 0,
+    z: 0,
+    lookAt: [-21.6, 1.15, 0],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_angel_west_school_hall.png"), timeout: 120000 });
+console.log("west", west);
+
 await browser.close();
 console.log("CENTER HALL CAPTURES WRITTEN");
