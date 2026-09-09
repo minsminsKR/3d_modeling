@@ -41,6 +41,7 @@ export class Hud {
     this.qtyFirecracker = document.querySelector("#qty-firecracker");
     this.qtyCompass = document.querySelector("#qty-compass");
     this.ghostBadge = document.querySelector("#ghost-badge");
+    this.clickToPlayButton = document.querySelector("#click-to-play");
 
     this.statusTimer = null;
     this.compassActive = false;
@@ -240,6 +241,20 @@ export class Hud {
 
   hideStart() {
     if (this.startScreen) this.startScreen.classList.add("hidden");
+  }
+
+  showClickToPlay(label = "화면을 클릭하면 게임이 시작됩니다.") {
+    if (!this.clickToPlayButton) {
+      return;
+    }
+    this.clickToPlayButton.hidden = false;
+    this.clickToPlayButton.textContent = label;
+  }
+
+  hideClickToPlay() {
+    if (this.clickToPlayButton) {
+      this.clickToPlayButton.hidden = true;
+    }
   }
 
   showStart() {

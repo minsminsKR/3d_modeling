@@ -108,6 +108,7 @@ class HappyToyRequestHandler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store, max-age=0")
         self.send_header("Pragma", "no-cache")
         self.send_header("Expires", "0")
+        self.send_header("Permissions-Policy", "pointer-lock=(self), fullscreen=(self)")
         super().end_headers()
 
 

@@ -39,11 +39,13 @@ export class MenuSystem {
 
   showTitleScreen() {
     this.container.style.display = "block";
+    this.container.style.pointerEvents = "auto";
     this.renderTitleScreen();
   }
 
   hideMenu() {
     this.container.style.display = "none";
+    this.container.style.pointerEvents = "none";
   }
 
   renderTitleScreen() {
@@ -81,14 +83,18 @@ export class MenuSystem {
     document.getElementById("btn-start-game")?.addEventListener("click", () => {
       soundManager.init();
       soundManager.resume();
-      if (this.game && !this.game.assetsReady) {
-        this.game.hud?.setStatus("아직 3D 모델 및 복도를 불러오는 중입니다. 잠시만 기다려주세요.", 2000);
+      this.hideMenu();
+      this.game?.start();
+    });
+
+    this.container.querySelector(".menu-overlay")?.addEventListener("pointerdown", (event) => {
+      if (event.target instanceof Element && event.target.closest("button, a, input, select")) {
         return;
       }
+      soundManager.init();
+      soundManager.resume();
       this.hideMenu();
-      if (this.game) {
-        this.game.start();
-      }
+      this.game?.start();
     });
 
 

@@ -61,6 +61,7 @@ export class PlayerController {
   resetLook(yaw = 0, pitch = 0) {
     this.yaw = yaw;
     this.pitch = pitch;
+    this.camera.rotation.set(this.pitch, this.yaw, 0, "YXZ");
   }
 
   setLookAt(target) {

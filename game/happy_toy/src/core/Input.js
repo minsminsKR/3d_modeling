@@ -8,11 +8,15 @@ export class Input {
     this.pressedThisFrame = new Set();
     this.pointerDelta = { x: 0, y: 0 };
     this.pointerLocked = false;
+    this.lookHeld = false;
+    this.pointerLockBlocked = false;
 
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handlePointerLockChange = this.handlePointerLockChange.bind(this);
+    this.handlePointerDown = this.handlePointerDown.bind(this);
+    this.handlePointerUp = this.handlePointerUp.bind(this);
   }
 
   connect() {
@@ -20,11 +24,49 @@ export class Input {
     window.addEventListener("keyup", this.handleKeyUp);
     document.addEventListener("mousemove", this.handleMouseMove);
     document.addEventListener("pointerlockchange", this.handlePointerLockChange);
+    window.addEventListener("pointerdown", this.handlePointerDown);
+    window.addEventListener("pointerup", this.handlePointerUp);
+    window.addEventListener("pointercancel", this.handlePointerUp);
   }
 
   requestPointerLock() {
-    const request = this.targetElement.requestPointerLock?.();
-    request?.catch?.(() => {});
+    const element = this.targetElement;
+    if (!element?.requestPointerLock) {
+      this.pointerLockBlocked = true;
+      return Promise.resolve(false);
+    }
+
+    const attempt = (options) => {
+      try {
+        return Promise.resolve(options ? element.requestPointerLock(options) : element.requestPointerLock());
+      } catch (_error) {
+        return options ? attempt() : Promise.resolve(false);
+      }
+    };
+
+    return attempt({ unadjustedMovement: true })
+      .catch(() => attempt())
+      .then(() => {
+        const locked = document.pointerLockElement === element;
+        this.pointerLockBlocked = !locked;
+        return locked;
+      })
+      .catch(() => {
+        this.pointerLockBlocked = true;
+        return false;
+      });
+  }
+
+  handlePointerDown(event) {
+    if (event.button === 0) {
+      this.lookHeld = true;
+    }
+  }
+
+  handlePointerUp(event) {
+    if (event.button === 0 || event.type === "pointercancel") {
+      this.lookHeld = false;
+    }
   }
 
   handleKeyDown(event) {
@@ -49,7 +91,7 @@ export class Input {
   }
 
   handleMouseMove(event) {
-    if (!this.pointerLocked) {
+    if (!this.pointerLocked && !this.lookHeld) {
       return;
     }
     this.pointerDelta.x += event.movementX;

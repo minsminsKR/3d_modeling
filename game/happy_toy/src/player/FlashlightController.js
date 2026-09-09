@@ -84,6 +84,15 @@ export class FlashlightController {
     this.applyState(true);
   }
 
+  setEnabled(enabled, showMessage = false) {
+    if (enabled && this.batteryLevel <= 0) {
+      return false;
+    }
+    this.enabled = Boolean(enabled);
+    this.applyState(showMessage);
+    return this.enabled;
+  }
+
   toggle() {
     if (this.batteryLevel <= 0 && !this.enabled) {
       this.hud.setStatus("배터리가 없어 손전등을 켤 수 없습니다. (건전지 필요)", 1500);

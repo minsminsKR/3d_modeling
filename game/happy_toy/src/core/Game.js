@@ -94,6 +94,7 @@ export class Game {
     this.activatedSafeLightKeys = new Set();
     this.activatedSafeLights = this.activatedSafeLightKeys;
     this.isStarted = false;
+    this.pendingStart = false;
     this.wasPointerLocked = false;
     this.isPaused = false;
 
@@ -119,6 +120,7 @@ export class Game {
 
     this.handleResize = this.handleResize.bind(this);
     this.handlePointerLockChange = this.handlePointerLockChange.bind(this);
+    this.handlePlayGesture = this.handlePlayGesture.bind(this);
     this.start = this.start.bind(this);
     this.restart = this.restart.bind(this);
     this.resume = this.resume.bind(this);
@@ -218,7 +220,14 @@ export class Game {
     this.assetsReady = true;
     this.hud.setChapterInfo(this.chapterSession, CHAPTERS);
     this.hud.setStartEnabled(true);
-    this.hud.setStatus("화면을 클릭하면 게임이 시작됩니다.");
+    this.handleResize();
+    this.syncWorldPreview();
+    if (this.pendingStart || this.isStarted) {
+      this.start();
+    } else {
+      this.hud.showClickToPlay();
+      this.hud.setStatus("화면을 클릭하면 게임이 시작됩니다.");
+    }
     this.loop.start();
   }
 
@@ -304,7 +313,10 @@ export class Game {
 
   connectUi() {
     this.hud.startButton.addEventListener("click", this.start);
-    this.renderer.domElement.addEventListener("click", this.start);
+    this.hud.clickToPlayButton?.addEventListener("click", this.start);
+    this.renderer.domElement.addEventListener("pointerdown", this.handlePlayGesture);
+    this.rootElement.addEventListener("pointerdown", this.handlePlayGesture);
+    document.addEventListener("pointerdown", this.handlePlayGesture);
     this.hud.restartButton.addEventListener("click", this.restart);
     this.hud.clearRestartButton.addEventListener("click", this.restart);
     this.hud.resumeButton.addEventListener("click", this.resume);
@@ -314,6 +326,23 @@ export class Game {
       this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value));
     });
     this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value));
+  }
+
+  handlePlayGesture(event) {
+    const target = event.target;
+    if (!(target instanceof Element)) {
+      this.start();
+      return;
+    }
+    if (target.closest(".pause-screen, .caught-screen, .clear-screen, input, select, textarea, a")) {
+      return;
+    }
+    if (target.closest("#menu-system-root")) {
+      if (target.closest("button") && !target.closest("#btn-start-game, #btn-retry-game, #btn-victory-replay")) {
+        return;
+      }
+    }
+    this.start();
   }
 
   refreshInteractables() {
@@ -353,29 +382,61 @@ export class Game {
 
   start() {
     if (!this.assetsReady) {
-      this.hud.setStatus("아직 복도를 불러오는 중입니다.", 900);
+      this.pendingStart = true;
+      this.menuSystem?.hideMenu();
+      this.hud.showClickToPlay("불러오는 중...");
+      this.hud.setStatus("복도를 불러오는 중입니다. 끝나면 바로 시작합니다.");
       return;
     }
 
     if (this.isStarted && !this.isPaused) {
-      this.input.requestPointerLock();
+      this.tryPointerLock(true);
       return;
     }
 
     this.isStarted = true;
+    this.pendingStart = false;
     this.isPaused = false;
     this.wasPointerLocked = false;
     this.applyDifficultySettings();
+    soundManager.init();
+    soundManager.resume();
     this.glitchController.primeAudio();
     this.hud.hideStart();
     this.hud.hidePause();
-    this.input.requestPointerLock();
-    this.hud.setStatus(`${this.chapterSession.title}에 들어섰습니다.`, 1800);
+    this.hud.hideClickToPlay();
+    this.menuSystem?.hideMenu();
+    this.handleResize();
+    this.flashlightController?.setEnabled(true, false);
+    this.syncWorldPreview();
+    this.tryPointerLock(false);
+    this.hud.setStatus("WASD 이동 · F 손전등 · 화면 클릭 시 마우스 잠금", 3500);
+  }
+
+  tryPointerLock(notifyOnFail = false) {
+    const request = this.input.requestPointerLock();
+    request?.then?.((locked) => {
+      if (locked || this.input.pointerLocked) {
+        return;
+      }
+      if (notifyOnFail) {
+        this.hud.setStatus("마우스 잠금을 쓸 수 없습니다. 클릭한 채로 시선을 돌리고 WASD로 이동하세요.", 2800);
+      }
+    });
+  }
+
+  syncWorldPreview() {
+    if (!this.player || !this.mapBuilder) {
+      return;
+    }
+    this.updateBackrooms(0);
+    this.player.resetLook(this.player.yaw, this.player.pitch);
   }
 
   restart() {
     this.resetRunState();
     this.isStarted = true;
+    this.pendingStart = false;
     this.isPaused = false;
     this.wasPointerLocked = false;
     this.applyDifficultySettings();
@@ -383,7 +444,12 @@ export class Game {
     this.hud.hideClear();
     this.hud.hidePause();
     this.hud.hideStart();
-    this.input.requestPointerLock();
+    this.hud.hideClickToPlay();
+    this.menuSystem?.hideMenu();
+    this.handleResize();
+    this.flashlightController?.setEnabled(true, false);
+    this.syncWorldPreview();
+    this.tryPointerLock(false);
     this.hud.setStatus("다시 복도 한가운데에 섰습니다.", 1800);
   }
 
@@ -430,6 +496,19 @@ export class Game {
       this.toggleGhostMode();
     }
 
+    if (!this.isStarted && this.assetsReady) {
+      if (
+        this.input.consumePressed("w")
+        || this.input.consumePressed("a")
+        || this.input.consumePressed("s")
+        || this.input.consumePressed("d")
+        || this.input.consumePressed("f")
+        || this.input.consumePressed(" ")
+      ) {
+        this.start();
+      }
+    }
+
     if (this.isStarted && !this.gameOver && !this.gameCleared && this.input.consumePressed("escape")) {
       this.togglePause();
     }
@@ -459,6 +538,10 @@ export class Game {
     this.finalExit?.update(deltaTime);
     this.updateCabinetEvent(deltaTime);
     this.updateMirrorEvents(deltaTime);
+
+    if (!this.isStarted && !this.isPaused) {
+      this.syncWorldPreview();
+    }
 
     if (this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared && !this.cutsceneEvent) {
       this.updateBackrooms(deltaTime);
@@ -664,7 +747,10 @@ export class Game {
     const isLocked = document.pointerLockElement === this.renderer.domElement;
     if (isLocked) {
       this.wasPointerLocked = true;
-    } else if (
+      this.input.pointerLockBlocked = false;
+      return;
+    }
+    if (
       this.isStarted
       && !this.isPaused
       && !this.gameOver
@@ -727,6 +813,8 @@ export class Game {
     this.hud.hideCaught();
     this.hud.hideClear();
     this.hud.showStart();
+    this.hud.showClickToPlay();
+    this.menuSystem?.showTitleScreen();
     this.hud.setStatus("화면을 클릭하면 게임이 시작됩니다.");
   }
 

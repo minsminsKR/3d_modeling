@@ -562,11 +562,13 @@ h2 {
 
 /* Menu System Styling */
 #menu-system-root {
+  pointer-events: none;
   position: fixed;
   inset: 0;
   z-index: 99;
 }
 .menu-overlay {
+  pointer-events: auto;
   position: absolute;
   inset: 0;
   display: grid;
@@ -1099,6 +1101,30 @@ body.flashlight-off .flashlight-vital {
 .status-line.is-visible {
   opacity: 1;
   transform: translate(-50%, 0);
+}
+
+#click-to-play {
+  pointer-events: auto;
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  z-index: 20;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 14px 28px;
+  border: 1px solid rgba(212, 178, 74, 0.55);
+  border-radius: 8px;
+  background: rgba(196, 51, 44, 0.92);
+  color: #fff7df;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+}
+
+#click-to-play[hidden] {
+  display: none !important;
 }
 
 .compass-widget {
