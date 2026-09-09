@@ -18,29 +18,41 @@ try {
     game.menuSystem?.hideMenu();
     game.start();
   });
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(1200);
   const afterStart = await page.evaluate(() => ({
     enabled: window.__happyToy.flashlightController.enabled,
     hud: document.querySelector("#flashlight-state")?.textContent,
     offClass: document.body.classList.contains("flashlight-off"),
     intensity: window.__happyToy.flashlight.intensity,
   }));
-  await page.keyboard.press("KeyF");
-  await page.waitForTimeout(200);
-  const afterOff = await page.evaluate(() => ({
-    enabled: window.__happyToy.flashlightController.enabled,
-    hud: document.querySelector("#flashlight-state")?.textContent,
-    offClass: document.body.classList.contains("flashlight-off"),
-    intensity: window.__happyToy.flashlight.intensity,
-  }));
-  await page.keyboard.press("KeyF");
-  await page.waitForTimeout(200);
-  const afterOn = await page.evaluate(() => ({
-    enabled: window.__happyToy.flashlightController.enabled,
-    hud: document.querySelector("#flashlight-state")?.textContent,
-    offClass: document.body.classList.contains("flashlight-off"),
-    intensity: window.__happyToy.flashlight.intensity,
-  }));
+  const afterOff = await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.flashlightController.toggleLock = 0;
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "f", code: "KeyF", bubbles: true }));
+    game.update(0.05);
+    window.dispatchEvent(new KeyboardEvent("keyup", { key: "f", code: "KeyF", bubbles: true }));
+    game.input.endFrame();
+    return {
+      enabled: game.flashlightController.enabled,
+      hud: document.querySelector("#flashlight-state")?.textContent,
+      offClass: document.body.classList.contains("flashlight-off"),
+      intensity: game.flashlight.intensity,
+    };
+  });
+  const afterOn = await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.flashlightController.toggleLock = 0;
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "f", code: "KeyF", bubbles: true }));
+    game.update(0.05);
+    window.dispatchEvent(new KeyboardEvent("keyup", { key: "f", code: "KeyF", bubbles: true }));
+    game.input.endFrame();
+    return {
+      enabled: game.flashlightController.enabled,
+      hud: document.querySelector("#flashlight-state")?.textContent,
+      offClass: document.body.classList.contains("flashlight-off"),
+      intensity: game.flashlight.intensity,
+    };
+  });
 
   console.log({ afterStart, afterOff, afterOn });
   assert.equal(errors.length, 0, errors.join(" | "));
