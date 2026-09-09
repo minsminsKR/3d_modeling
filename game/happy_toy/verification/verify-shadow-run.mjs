@@ -192,7 +192,7 @@ try {
     };
     game.exitCabinet();
 
-    game.player.setPosition({ x: 0.4, y: 0, z: 0.6 });
+    game.player.setPosition({ x: 0.15, y: 0, z: -0.7 });
     for (let i = 0; i < 8; i += 1) game.update(0.05);
     game.tryClearFinal();
     for (let i = 0; i < 130; i += 1) game.update(0.05);
@@ -213,7 +213,7 @@ try {
   assert.equal(annexWalk[3].ok, true, `must walk to 별관 gate, got ${JSON.stringify(annexWalk[3])}`);
   assert.ok(annexWalk[3].x > 56, "별관 gate is east of the core");
   assert.equal(annexWalk[5].ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk[5])}`);
-  assert.ok(annexWalk[5].z < -10, "보건실 is south of the annex spine");
+  assert.ok(annexWalk[5].z < -10, "보건실 is on the north wing of the annex spine");
   assert.equal(rooms.nurseType, "nurse_office");
   assert.equal(rooms.musicType, "music_room");
   assert.equal(rooms.facultyType, "faculty_office");

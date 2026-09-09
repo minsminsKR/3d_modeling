@@ -2605,14 +2605,14 @@ export class BackroomsGenerator {
       const exit = new FinalExit({
         id: "final-offering",
         label: "제단함",
-        position: [center.x, floorY, center.z],
+        position: [center.x, floorY, center.z - 2.05],
       }, this.scene);
       exit.chunkId = chunkId;
       this.scene.add(exit.group);
       chunk.finalExit = exit;
       this.collisionWorld.addStaticBox(
         `${chunkId}_altar_block`,
-        new THREE.Vector3(center.x, floorY + 0.4, center.z),
+        new THREE.Vector3(center.x, floorY + 0.4, center.z - 2.05),
         new THREE.Vector3(1.72, 0.8, 0.98),
         chunkId,
       );

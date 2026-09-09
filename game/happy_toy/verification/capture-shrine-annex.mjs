@@ -39,7 +39,7 @@ async function poseShot(name, pose) {
 }
 
 const altar = await poseShot("shrine_altar_names.png", {
-  x: 0, y: 0, z: 2.55, lookAt: [0, 0.78, 0],
+  x: 0, y: 0, z: 1.15, lookAt: [0, 0.82, -2.05],
 });
 const annex = await poseShot("annex_gate_sign.png", {
   x: 58.4, y: 0, z: 0.15, lookAt: [64, 2.28, 0],
