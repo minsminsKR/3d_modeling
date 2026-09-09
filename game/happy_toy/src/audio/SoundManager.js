@@ -420,6 +420,46 @@ export class SoundManager {
       case "cabinet_enter":
         tone(96, 42, 0.28, 0.2, "triangle", 0, 0.3);
         break;
+      case "cabinet_scrape": {
+        const scrapePan = (Math.random() < 0.5 ? -1 : 1) * (0.38 + Math.random() * 0.4);
+        const scrapeNoise = this.ctx.createBufferSource();
+        const scrapeBand = this.ctx.createBiquadFilter();
+        const scrapeGain = this.ctx.createGain();
+        scrapeNoise.buffer = this.noiseBuffers.short;
+        scrapeBand.type = "bandpass";
+        scrapeBand.frequency.value = 260;
+        scrapeBand.Q.value = 1.05;
+        scrapeGain.gain.setValueAtTime(0.1, now);
+        scrapeGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.44);
+        scrapeNoise.connect(scrapeBand);
+        scrapeBand.connect(scrapeGain);
+        scrapeGain.connect(this.createPannedOutput(scrapePan, 0.2));
+        scrapeNoise.start(now);
+        scrapeNoise.stop(now + 0.46);
+        tone(148, 46, 0.36, 0.13, "sawtooth", scrapePan, 0.28);
+        tone(72, 28, 0.22, 0.09, "sine", scrapePan * 0.55, 0.16);
+        break;
+      }
+      case "whisper": {
+        const whisperPan = (Math.random() < 0.5 ? -1 : 1) * (0.48 + Math.random() * 0.38);
+        const whisperNoise = this.ctx.createBufferSource();
+        const whisperBand = this.ctx.createBiquadFilter();
+        const whisperBurst = this.ctx.createGain();
+        whisperNoise.buffer = this.noiseBuffers.short;
+        whisperBand.type = "bandpass";
+        whisperBand.frequency.value = 1680;
+        whisperBand.Q.value = 4.8;
+        whisperBurst.gain.setValueAtTime(0.0001, now);
+        whisperBurst.gain.exponentialRampToValueAtTime(0.085, now + 0.07);
+        whisperBurst.gain.exponentialRampToValueAtTime(0.0001, now + 0.52);
+        whisperNoise.connect(whisperBand);
+        whisperBand.connect(whisperBurst);
+        whisperBurst.connect(this.createPannedOutput(whisperPan, 0.68));
+        whisperNoise.start(now);
+        whisperNoise.stop(now + 0.54);
+        tone(920, 240, 0.42, 0.028, "triangle", whisperPan * 0.7, 0.55);
+        break;
+      }
       case "item_use":
         tone(290, 560, 0.2, 0.12, "sine", 0, 0.24);
         break;

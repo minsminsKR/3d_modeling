@@ -48,6 +48,9 @@ export class HorrorEventManager {
     this.elapsed += deltaTime;
     this.flickerTimer += deltaTime;
     this.ambientCooldown -= deltaTime;
+    if (this.flickerBurstTimer > 0) {
+      this.flickerBurstTimer = Math.max(0, this.flickerBurstTimer - deltaTime);
+    }
     this.trackPlayerZone();
 
     const context = this.getThreatContext();
@@ -154,9 +157,6 @@ export class HorrorEventManager {
       this.lastProgress = context.game.keyCount;
       this.ambientCooldown = Math.max(this.ambientCooldown, 12);
       return;
-    }
-    if (this.flickerBurstTimer > 0) {
-      this.flickerBurstTimer = Math.max(0, this.flickerBurstTimer - deltaTime);
     }
 
     const keyCount = context.game?.keyCount || 0;

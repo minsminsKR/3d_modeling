@@ -8,6 +8,7 @@ export class DreadDirector {
   }
 
   reset() {
+    this.restoreBetrayedLights();
     this.phase = "quiet";
     this.timer = 0;
     this.fear = 0;
@@ -22,6 +23,12 @@ export class DreadDirector {
     this.lastCount = 0;
     this.ritualActive = false;
     this.ritualProgress = 0;
+    this.phantomQueue = [];
+    this.phantomDelay = 0;
+    this.cabinetScrapeTimer = 5 + Math.random() * 4;
+    this.wasHidden = false;
+    this.safeBetrayCooldown = 3.5 + Math.random() * 3;
+    this.betrayedLights = [];
     this.game.hud?.setDread?.(0, "", "quiet");
   }
 
@@ -39,6 +46,7 @@ export class DreadDirector {
     this.pending = null;
     this.phase = "warning";
     this.timer = 6;
+    this.phantomQueue.length = 0;
     this.bell(146);
   }
 
@@ -88,6 +96,7 @@ export class DreadDirector {
       this.phase = "hunt";
       this.timer = this.finalReturn ? 28 : 16 + this.lastCount * 2;
       this.bell(73);
+      this.triggerHuntBlackout();
       if (!(g.isInvincible ?? g.testSafeMode)) g.enemyManager.notifyNoiseEvent(this.anchor, 32, {
         duration: 10, source: "ritual", silentFeedback: true,
       });
@@ -121,17 +130,173 @@ export class DreadDirector {
       : this.phase === "recovery" ? "울림이 잦아듭니다 · 실제 발소리를 확인하십시오" : "";
     g.hud.setDread(this.fear, message, this.phase);
     this.updateFootsteps(dt, context);
+    this.updatePhantomEcho(dt, context);
+    this.updateCabinetDread(dt);
+    this.updateSafeLightBetrayal(dt);
+  }
 
-    // A rare answering step after a quiet interval. No repeated pop-up exposition.
-    this.echoTimer -= dt;
-    if (this.echoTimer <= 0 && this.phase === "quiet" && !refuge && context.nearestDistance > 20) {
-      if (player.isMoving && soundManager.initialized) {
-        soundManager.playStepTransient({ pan: this.stepSide * 0.65, bodyFrequency: 54,
-          gritFrequency: 420, gain: 0.045, water: false });
-        this.stepSide *= -1;
-      }
-      this.echoTimer = 28 + Math.random() * 22;
+  triggerHuntBlackout() {
+    const horror = this.game.horrorEventManager;
+    horror?.startFlickerBurst?.();
+    const closed = Boolean(horror?.closeNearbyDoor?.());
+    if (soundManager.initialized) {
+      soundManager.playSFX("whisper");
+      soundManager.playSFX("heavy_thud");
+      if (closed) soundManager.playSFX("door_close");
     }
+    this.game.hud?.setStatus?.(
+      closed ? "뒤에서 문이 닫혔습니다." : "복도의 불이 한꺼번에 꺼집니다.",
+      2400,
+    );
+  }
+
+  updatePhantomEcho(dt, context) {
+    const player = this.game.player;
+    const chasing = (context.chasingCount || 0) > 0;
+    const blocked = this.phase !== "quiet" || player.isHidden || chasing;
+    if (blocked) {
+      this.phantomQueue.length = 0;
+      this.phantomDelay = 0;
+      if (this.phase !== "quiet") this.echoTimer = Math.max(this.echoTimer, 8);
+      return;
+    }
+
+    if (this.phantomQueue.length > 0) {
+      this.phantomDelay -= dt;
+      if (this.phantomDelay > 0) return;
+      const step = this.phantomQueue.shift();
+      if (soundManager.initialized) {
+        soundManager.playStepTransient({
+          pan: step.pan,
+          bodyFrequency: step.bodyFrequency,
+          gritFrequency: step.gritFrequency,
+          gain: step.gain,
+          water: false,
+        });
+      }
+      this.phantomDelay = this.phantomQueue.length > 0 ? step.nextDelay : 0;
+      return;
+    }
+
+    this.echoTimer -= dt;
+    if (this.echoTimer > 0) return;
+    this.echoTimer = 28 + Math.random() * 22;
+    if (context.nearestDistance <= 20) return;
+
+    const count = 2 + Math.floor(Math.random() * 2);
+    this.phantomQueue = [];
+    for (let i = 0; i < count; i += 1) {
+      const closer = i / Math.max(1, count - 1);
+      this.phantomQueue.push({
+        pan: -(0.78 - closer * 0.58),
+        bodyFrequency: 50 + closer * 14,
+        gritFrequency: 280 + closer * 220,
+        gain: 0.028 + closer * 0.038,
+        nextDelay: 0.38 + Math.random() * 0.16,
+      });
+    }
+    this.phantomDelay = 0;
+  }
+
+  updateCabinetDread(dt) {
+    const hidden = Boolean(this.game.player?.isHidden);
+    if (!hidden) {
+      this.wasHidden = false;
+      return;
+    }
+    if (!this.wasHidden) {
+      this.wasHidden = true;
+      this.cabinetScrapeTimer = 3.6 + Math.random() * 3.2;
+    }
+    this.cabinetScrapeTimer -= dt;
+    if (this.cabinetScrapeTimer > 0) return;
+    this.cabinetScrapeTimer = 5.5 + Math.random() * 5.5;
+    if (!soundManager.initialized) return;
+    soundManager.playSFX("cabinet_scrape");
+    soundManager.playStepTransient({
+      pan: (Math.random() < 0.5 ? -1 : 1) * (0.42 + Math.random() * 0.28),
+      bodyFrequency: 40,
+      gritFrequency: 150,
+      gain: 0.03,
+      water: false,
+    });
+  }
+
+  updateSafeLightBetrayal(dt) {
+    for (let i = this.betrayedLights.length - 1; i >= 0; i -= 1) {
+      const entry = this.betrayedLights[i];
+      entry.timer -= dt;
+      if (entry.timer <= 0) {
+        this.restoreBetrayedLight(entry.light);
+        this.betrayedLights.splice(i, 1);
+      } else {
+        this.holdBetrayedLight(entry.light);
+      }
+    }
+
+    if (this.phase !== "hunt" && this.phase !== "warning") {
+      this.safeBetrayCooldown = Math.max(this.safeBetrayCooldown, 2.5);
+      return;
+    }
+
+    this.safeBetrayCooldown -= dt;
+    if (this.safeBetrayCooldown > 0) return;
+    this.safeBetrayCooldown = 7 + Math.random() * 8;
+    this.betrayNearbySafeLight();
+  }
+
+  betrayNearbySafeLight() {
+    const player = this.game.player;
+    const betrayedIds = new Set(this.betrayedLights.map((entry) => entry.light));
+    const candidates = (this.game.safeLights || []).filter((light) => {
+      if (!light?.isOn || betrayedIds.has(light)) return false;
+      if (Math.abs((light.position?.y ?? 0) - (player.position?.y ?? 0)) > 2.4) return false;
+      return true;
+    });
+    if (!candidates.length) return;
+
+    candidates.sort((a, b) => {
+      const da = Math.hypot(a.position.x - player.position.x, a.position.z - player.position.z);
+      const db = Math.hypot(b.position.x - player.position.x, b.position.z - player.position.z);
+      return da - db;
+    });
+    const pool = candidates.slice(0, Math.min(3, candidates.length));
+    const light = pool[Math.floor(Math.random() * pool.length)];
+    light.setFlickerState?.(0.05);
+    light.isOn = false;
+    this.killSafeLightPool(light);
+    this.betrayedLights.push({ light, timer: 2 + Math.random() * 2 });
+  }
+
+  holdBetrayedLight(light) {
+    if (!light) return;
+    if (light.isOn) light.setFlickerState?.(0.05);
+    light.isOn = false;
+    this.killSafeLightPool(light);
+  }
+
+  killSafeLightPool(light) {
+    const pos = light.getLightWorldPosition?.() || light.position;
+    if (!pos) return;
+    for (const pointLight of this.game._safeLightPool || []) {
+      if (!pointLight || pointLight.position.y < -9000) continue;
+      const dx = pointLight.position.x - pos.x;
+      const dz = pointLight.position.z - pos.z;
+      if (dx * dx + dz * dz < 0.64) pointLight.intensity = 0;
+    }
+  }
+
+  restoreBetrayedLight(light) {
+    if (!light) return;
+    light.isOn = true;
+    light.setFlickerState?.(1);
+  }
+
+  restoreBetrayedLights() {
+    for (const entry of this.betrayedLights || []) {
+      this.restoreBetrayedLight(entry.light);
+    }
+    this.betrayedLights = [];
   }
 
   updateFootsteps(dt, context) {
