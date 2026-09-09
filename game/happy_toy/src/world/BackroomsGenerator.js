@@ -6625,6 +6625,27 @@ export class BackroomsGenerator {
       chunk, chunkId, "b1flood_sign",
       6.05, fy + 2.08, 45.32, 0, "침수",
     );
+    this.ensureSchoolCorridorMaterials();
+    const floodJamb = (name, x, z, sx, sz) => {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        x, fy + 1.18, z, sx, 2.32, sz,
+        this.schoolClassDoorMat, false,
+      );
+    };
+    const floodHeader = (name, x, z, sx, sz) => {
+      this.placeDressedBox(
+        chunk, chunkId, name,
+        x, fy + 2.28, z, sx, 0.18, sz,
+        this.schoolDeskDark || this.trimMaterial, false,
+      );
+    };
+    floodJamb("b1flood_door_w_a", 7.08, 46.82, 0.16, 0.18);
+    floodJamb("b1flood_door_w_b", 7.08, 49.58, 0.16, 0.18);
+    floodHeader("b1flood_door_w_head", 7.08, 48.2, 0.16, 2.58);
+    floodJamb("b1flood_door_e_a", 9.72, 46.82, 0.16, 0.18);
+    floodJamb("b1flood_door_e_b", 9.72, 49.58, 0.16, 0.18);
+    floodHeader("b1flood_door_e_head", 9.72, 48.2, 0.16, 2.58);
 
     const waterY = floorY - 5.0 + 0.15;
     const waterMat = new THREE.MeshStandardMaterial({
@@ -6916,7 +6937,7 @@ export class BackroomsGenerator {
     const gy = floorY + 5.0;
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2blood_portrait_n",
-      -28.4, gy + 1.38, -45.2, 0,
+      -28.4, gy + 1.38, -45.2, -Math.PI / 2,
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2blood_portrait_s",
@@ -6928,23 +6949,23 @@ export class BackroomsGenerator {
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2blood_portrait_e",
-      -19.8, gy + 1.38, -10.4, 0,
+      -19.8, gy + 1.38, -10.4, -Math.PI / 2,
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2gallery_frame_s0",
-      -28.8, gy + 1.38, -2.12, 0,
+      -28.8, gy + 1.38, -2.12, Math.PI / 2,
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2gallery_frame_s1",
-      -19.4, gy + 1.38, 1.15, Math.PI,
+      -19.4, gy + 1.38, 1.15, -Math.PI / 2,
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2gallery_frame_n0",
-      -36.4, gy + 1.38, -45.2, 0,
+      -36.4, gy + 1.38, -45.2, Math.PI / 2,
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2gallery_frame_n1",
-      -24.8, gy + 1.38, -45.2, Math.PI,
+      -24.8, gy + 1.38, -45.2, -Math.PI / 2,
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2gallery_frame_w0",

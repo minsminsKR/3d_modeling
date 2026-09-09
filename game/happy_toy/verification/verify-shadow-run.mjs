@@ -1296,6 +1296,7 @@ try {
       b1BoilerDrum: names(b1).some((name) => name.includes("b1boiler_drum")),
       b1FloodDesk: names(b1).some((name) => name.includes("b1flood_desk_")),
       b1FloodBoard: names(b1).some((name) => name.includes("b1flood_board")),
+      b1FloodDoor: names(b1).some((name) => name.includes("b1flood_door_")),
       f2BloodFrame: names(f2).some((name) => name.includes("f2blood_frame_")),
       f2BloodPortrait: names(f2).some((name) => name.includes("f2blood_portrait_")),
       f2GalleryFrame: names(f2).some((name) => name.includes("f2gallery_frame_")),
@@ -1804,6 +1805,7 @@ try {
   assert.equal(rooms.b1BoilerDrum, true, "B1 maze must show a boiler drum");
   assert.equal(rooms.b1FloodDesk, true, "B1 south labyrinth must show flooded desks");
   assert.equal(rooms.b1FloodBoard, true, "B1 flooded classroom must show chalkboards");
+  assert.equal(rooms.b1FloodDoor, true, "B1 flooded classroom must show door frames");
   assert.equal(rooms.f2BloodFrame, true, "2F maze must show blood frames");
   assert.equal(rooms.f2BloodPortrait, true, "2F labyrinth must show extra portraits");
   assert.equal(rooms.f2GalleryFrame, true, "2F gallery must show extra portrait frames");
