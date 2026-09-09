@@ -285,6 +285,7 @@ try {
       hallLoopW: names(northHall).some((name) => name.includes("hall_maze_loop_w")),
       hallRib: names(hall).some((name) => name.includes("hall_maze_rib") || name.includes("hall_maze_pocket")),
       northRib: names(northHall).some((name) => name.includes("hall_maze_rib") || name.includes("hall_maze_pocket")),
+      hallLockers: names(hall).filter((name) => name.includes("hall_lockers_")).length,
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
@@ -559,6 +560,7 @@ try {
   assert.ok(rooms.hallMaze >= 12, `1F hall maze walls missing: ${rooms.hallMaze}`);
   assert.equal(rooms.hallRib, true, "east 1F halls must keep inner ribs off the S-bend");
   assert.equal(rooms.northRib, true, "north 1F halls must keep inner ribs off the west loop");
+  assert.ok(rooms.hallLockers >= 8, `1F maze halls must dress the outer walls with locker banks: ${rooms.hallLockers}`);
   assert.equal(rooms.hallJog, true, "east 1F halls must block the z=0 spine and jog south");
   assert.equal(rooms.hallJogE, true, "east 1F halls must block the east arm so the spine cannot reopen");
   assert.equal(rooms.hallJogNs, true, "north 1F halls must block the x=0 spine and jog west");

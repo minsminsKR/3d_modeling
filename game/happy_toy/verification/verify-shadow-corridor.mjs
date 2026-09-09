@@ -179,6 +179,31 @@ try {
       game.exitCabinet();
     }
 
+    const ringCab = [...(game.cabinets || []), ...hallCabinets].find((item) => (
+      Math.abs((item.position?.y || 0)) < 1.2
+      && Math.hypot((item.position?.x || 0) - 10.75, (item.position?.z || 0) + 5.25) < 1.6
+    ));
+    let ringHide = { cabinet: Boolean(ringCab), x: ringCab?.position?.x ?? null, z: ringCab?.position?.z ?? null };
+    if (ringCab) {
+      uncat.group.position.set(16.2, 0, -6.4);
+      uncat.state = "chase";
+      uncat.hasVisualContact = true;
+      uncat.lastKnownPlayerPosition = ringCab.position.clone();
+      game.player.setPosition({
+        x: ringCab.position.x,
+        y: ringCab.position.y,
+        z: ringCab.position.z - 0.9,
+      });
+      game.enterCabinet(ringCab, { forceOutcome: "safe" });
+      ringHide = {
+        cabinet: true,
+        hidden: game.player.isHidden,
+        investigating: uncat.state === "investigateCabinet",
+        hasEvent: Boolean(game.cabinetEvent),
+      };
+      game.exitCabinet();
+    }
+
     game.testSafeMode = true;
     const b1 = game.mapBuilder.generator.generateChunk(1, 2);
     const f2 = game.mapBuilder.generator.generateChunk(-1, -1);
@@ -209,6 +234,7 @@ try {
     floors.hallLoopW = (northHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_loop_w"));
     floors.hallRib = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_rib") || String(mesh.name || "").includes("hall_maze_pocket"));
     floors.northRib = (northHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_rib") || String(mesh.name || "").includes("hall_maze_pocket"));
+    floors.hallLockers = (hall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_lockers_"));
     floors.uncatSpineClear = !(uncatHall.meshes || []).some((mesh) => String(mesh.name || "").includes("hall_maze_jog"));
     game.player.setPosition({ x: 80, y: 0, z: 0 });
     for (let i = 0; i < 16; i += 1) game.update(0.05, { skipRender: true });
@@ -272,6 +298,7 @@ try {
       mazeChaseLoop,
       mazeChaseRing,
       bendHide,
+      ringHide,
       floors,
       deepWing,
       atWing,
@@ -333,6 +360,10 @@ try {
   assert.equal(result.bendHide.cabinet, true, "east S-bend locker must exist");
   assert.equal(result.bendHide.hidden, true, "player must hide in the S-bend locker");
   assert.equal(result.bendHide.investigating, true, "Uncat must check the S-bend locker");
+  assert.equal(result.ringHide.cabinet, true, "outer-ring locker must exist");
+  assert.equal(result.ringHide.hidden, true, "player must hide from the outer ring");
+  assert.equal(result.ringHide.investigating, true, "Uncat must check the outer-ring locker");
+  assert.equal(result.floors.hallLockers, true, "maze halls must have locker banks along the outer walls");
   assert.notEqual(result.deepWing.chunkType, "void", "별관 must continue the 1F school");
   assert.ok(
     result.deepWing.openings.W || result.deepWing.openings.E || result.deepWing.openings.N || result.deepWing.openings.S,

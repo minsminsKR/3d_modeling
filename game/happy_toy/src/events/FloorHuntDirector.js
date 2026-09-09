@@ -189,8 +189,18 @@ export class FloorHuntDirector {
     this.mixer?.update(dt);
     this.stepTimer -= dt;
     if (this.stepTimer <= 0 && !this.frozen) {
-      this.stepTimer = Math.max(0.26, 0.58 - this.approach * 0.26);
-      soundManager.playSFX(floor === -1 ? "drip" : "blood_drip");
+      this.stepTimer = Math.max(0.24, 0.52 - this.approach * 0.24);
+      if (soundManager.initialized) {
+        const pan = Math.max(-1, Math.min(1, (sil.position.x - x) * 0.08));
+        soundManager.playStepTransient({
+          pan,
+          bodyFrequency: 38,
+          gritFrequency: floor === -1 ? 160 : 210,
+          gain: 0.12 + this.approach * 0.1,
+          water: floor === -1,
+        });
+        soundManager.playSFX(floor === -1 ? "drip" : "blood_drip");
+      }
     }
 
     const dist = Math.hypot(sil.position.x - x, sil.position.z - z);

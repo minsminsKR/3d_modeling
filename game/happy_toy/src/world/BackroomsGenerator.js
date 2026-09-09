@@ -1889,6 +1889,9 @@ export class BackroomsGenerator {
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, center.x + x, y, center.z + z, sx, h, sz, wallMat);
     }
+    if (maze) {
+      this.dressHallLockerBanks(chunk, center, chunkId, floorY, openings);
+    }
     const gloom = new THREE.PointLight(0x4a3020, 1.15, 5.4, 2.0);
     gloom.position.set(
       center.x + (cabinetSE ? -5.4 : 5.4),
@@ -2008,6 +2011,79 @@ export class BackroomsGenerator {
     this.scene.add(chair);
     chunk.meshes.push(chair);
     this.collisionWorld.addStaticBox(chair.name, chair.position, new THREE.Vector3(0.48, 0.62, 0.48), chunkId);
+  }
+
+  dressHallLockerBanks(chunk, center, chunkId, floorY, openings) {
+    // School locker rows sit on the outer wall spans. Keep the 2.4m center
+    // doors, 1.8m ring gates at |offset|≈6.4, inner S-bends, and the
+    // z=-6.4 / x=±6.4 chase ring clear.
+    const cabinetMat = this.textures.createCabinetMaterial();
+    if (!this.lockerSlitMaterial) {
+      this.lockerSlitMaterial = new THREE.MeshStandardMaterial({
+        color: 0x1a1410,
+        roughness: 0.92,
+        metalness: 0.04,
+      });
+    }
+    const slitMat = this.lockerSlitMaterial;
+    const y = floorY + 1.08;
+    const h = 2.16;
+    const depth = 0.24;
+    const bank = 3.15;
+    const inset = 7.48;
+    const ringN = openings.N && this.isMazeHall(chunk.cx, chunk.cz - 1);
+    const ringS = openings.S && this.isMazeHall(chunk.cx, chunk.cz + 1);
+    const ringW = openings.W && this.isMazeHall(chunk.cx - 1, chunk.cz);
+    const ringE = openings.E && this.isMazeHall(chunk.cx + 1, chunk.cz);
+    const along = (hasRing) => (hasRing ? 3.35 : 4.55);
+    const placeBank = (name, lx, lz, sx, sz) => {
+      this.placeDressedBox(
+        chunk,
+        chunkId,
+        name,
+        center.x + lx,
+        y,
+        center.z + lz,
+        sx,
+        h,
+        sz,
+        cabinetMat,
+      );
+      const alongWall = sx >= sz ? sx : sz;
+      const slits = 4;
+      for (let i = 0; i < slits; i += 1) {
+        const t = (i + 1) / (slits + 1) - 0.5;
+        const slitX = sx >= sz ? lx + t * alongWall : lx;
+        const slitZ = sx >= sz ? lz : lz + t * alongWall;
+        const slitSx = sx >= sz ? 0.03 : depth + 0.02;
+        const slitSz = sx >= sz ? depth + 0.02 : 0.03;
+        this.placeDressedBox(
+          chunk,
+          chunkId,
+          `${name}_slit_${i}`,
+          center.x + slitX,
+          y,
+          center.z + slitZ,
+          slitSx,
+          h * 0.92,
+          slitSz,
+          slitMat,
+          false,
+        );
+      }
+    };
+    const ox = along(ringN);
+    placeBank("hall_lockers_n_w", -ox, -inset, bank, depth);
+    placeBank("hall_lockers_n_e", ox, -inset, bank, depth);
+    const sx = along(ringS);
+    placeBank("hall_lockers_s_w", -sx, inset, bank, depth);
+    placeBank("hall_lockers_s_e", sx, inset, bank, depth);
+    const wz = along(ringW);
+    placeBank("hall_lockers_w_n", -inset, -wz, depth, bank);
+    placeBank("hall_lockers_w_s", -inset, wz, depth, bank);
+    const ez = along(ringE);
+    placeBank("hall_lockers_e_n", inset, -ez, depth, bank);
+    placeBank("hall_lockers_e_s", inset, ez, depth, bank);
   }
 
   dressClassroom(chunk, center, chunkId, floorY) {
@@ -3275,6 +3351,29 @@ export class BackroomsGenerator {
         [lx, 0.0, -lz],
         lz > 0 ? Math.PI : 0,
       );
+    }
+    if (mazeHall && !(chunk.cx === 0 && chunk.cz === 0)) {
+      const hallOpen = this.getOpenings(chunk.cx, chunk.cz);
+      const ringN = hallOpen.N && this.isMazeHall(chunk.cx, chunk.cz - 1);
+      const ringS = hallOpen.S && this.isMazeHall(chunk.cx, chunk.cz + 1);
+      const ringSpots = [];
+      if (ringN) ringSpots.push({ pos: [-5.25, 0.0, -5.25], yaw: 0, id: "n" });
+      if (ringS) ringSpots.push({ pos: [5.25, 0.0, 5.25], yaw: Math.PI, id: "s" });
+      for (const spot of ringSpots) {
+        const taken = chunk.cabinets.some((cabinet) => (
+          Math.hypot(
+            cabinet.position.x - (center.x + spot.pos[0]),
+            cabinet.position.z - (center.z + spot.pos[2]),
+          ) < 1.8
+        ));
+        if (taken) continue;
+        addDynamicCabinet(
+          `cabinet_ring_${spot.id}_${chunk.cx}_${chunk.cz}`,
+          "바깥 복도 신발장",
+          spot.pos,
+          spot.yaw,
+        );
+      }
     }
 
     const addLoreNote = (id, localPos, yaw, body) => {

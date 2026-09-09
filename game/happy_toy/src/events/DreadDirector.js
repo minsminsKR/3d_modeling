@@ -349,22 +349,41 @@ export class DreadDirector {
     if (this.stepTimer > 0 || !soundManager.initialized) return;
     const g = this.game;
     const p = g.player.position;
-    let closest = null;
-    let distance = 19;
+    let closestPos = null;
+    let closestState = "patrol";
+    let distance = 28;
     for (const enemy of g.enemyManager.enemies) {
       if (enemy.isDormant || !enemy.group.visible || !enemy.isSameLevelAs(p)) continue;
       if (!["chase", "patrol", "wander", "investigateNoise", "search"].includes(enemy.state)) continue;
       const d = Math.hypot(enemy.group.position.x - p.x, enemy.group.position.z - p.z);
-      if (d < distance) { closest = enemy; distance = d; }
+      if (d < distance) {
+        closestPos = enemy.group.position;
+        closestState = enemy.state;
+        distance = d;
+      }
     }
-    if (!closest) { this.stepTimer = 0.2; return; }
-    const dx = closest.group.position.x - p.x;
-    const dz = closest.group.position.z - p.z;
+    const hunt = g.floorHuntDirector?.silhouette;
+    if (hunt?.visible && Math.abs((hunt.position?.y || 0) - p.y) < 2.4) {
+      const d = Math.hypot(hunt.position.x - p.x, hunt.position.z - p.z);
+      if (d < distance) {
+        closestPos = hunt.position;
+        closestState = "chase";
+        distance = d;
+      }
+    }
+    if (!closestPos) { this.stepTimer = 0.2; return; }
+    const dx = closestPos.x - p.x;
+    const dz = closestPos.z - p.z;
     const pan = (dx * Math.cos(g.player.yaw) - dz * Math.sin(g.player.yaw)) / Math.max(1, distance);
-    const visible = g.collisionWorld.hasLineOfSight(closest.group.position, p);
-    soundManager.playStepTransient({ pan, bodyFrequency: 48,
-      gritFrequency: visible ? 560 : 190,
-      gain: (1 - distance / 20) * (visible ? 0.16 : 0.07), water: false });
-    this.stepTimer = closest.state === "chase" ? 0.34 : 0.68;
+    const visible = g.collisionWorld.hasLineOfSight(closestPos, p);
+    const chasing = closestState === "chase";
+    soundManager.playStepTransient({
+      pan,
+      bodyFrequency: chasing ? 42 : 52,
+      gritFrequency: visible ? 520 : 170,
+      gain: (1 - distance / 28) * (visible ? 0.24 : 0.15),
+      water: p.y < -2.2,
+    });
+    this.stepTimer = chasing ? 0.28 : 0.62;
   }
 }
