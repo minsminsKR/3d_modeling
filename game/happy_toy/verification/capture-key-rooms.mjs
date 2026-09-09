@@ -78,6 +78,48 @@ const shots = [
     x: 80.0, y: 0, z: 0.4,
     lookAt: [84.55, 0.5, -1.52],
   },
+  {
+    file: "f1_starthall_racks.png",
+    chunks: [[0, 0], [1, 0]],
+    status: "손전등이 유일한 창입니다. 발소리가 나면 신발장에 숨으십시오.",
+    x: 2.15, y: 0, z: 0.25,
+    lookAt: [4.55, 0.5, 1.52],
+  },
+  {
+    file: "f1_classwing_carts.png",
+    chunks: [[1, 0], [0, 0]],
+    status: "교실 날개입니다. 책상 사이로 숨으십시오.",
+    x: 18.2, y: 0, z: 0.2,
+    lookAt: [20.55, 0.45, -1.52],
+  },
+  {
+    file: "f1_uncathall_tape.png",
+    chunks: [[0, 1], [0, 0]],
+    status: "교차로입니다. 칠판의 출석을 읽지 마십시오.",
+    x: 0.35, y: 0, z: 20.15,
+    lookAt: [-1.72, 1.42, 21.35],
+  },
+  {
+    file: "f1_northhall_cones.png",
+    chunks: [[0, -1], [0, 0]],
+    status: "북쪽 복도입니다. 알코브 신발장으로.",
+    x: -0.25, y: 0, z: -11.2,
+    lookAt: [1.52, 0.52, -10.65],
+  },
+  {
+    file: "b1_boiler_drum.png",
+    chunks: [[1, 2], [1, 1]],
+    status: "보일러실입니다. 물이 이름을 적고 있습니다.",
+    x: 22.4, y: -5, z: 27.4,
+    lookAt: [22.4, -4.42, 24.8],
+  },
+  {
+    file: "f2_blood_frames.png",
+    chunks: [[-1, -1], [-2, -1]],
+    status: "피 묻은 복도입니다. 액자를 보지 마십시오.",
+    x: -25.0, y: 5, z: -18.2,
+    lookAt: [-25.0, 6.38, -15.1],
+  },
 ];
 
 const browser = await chromium.launch({ executablePath, headless: true });

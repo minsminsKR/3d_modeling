@@ -392,6 +392,22 @@ export class BackroomsGenerator {
     return cx === -2 && cz === 0;
   }
 
+  isStartHallChunk(cx, cz) {
+    return cx === 0 && cz === 0;
+  }
+
+  isClassWingChunk(cx, cz) {
+    return cx === 1 && cz === 0;
+  }
+
+  isUncatHallChunk(cx, cz) {
+    return cx === 0 && cz === 1;
+  }
+
+  isNorthHallChunk(cx, cz) {
+    return cx === 0 && cz === -1;
+  }
+
   isRoofHallChunk(cx, cz) {
     return cx === 0 && cz === 2;
   }
@@ -2213,6 +2229,109 @@ export class BackroomsGenerator {
         this.schoolFluoroMat, false,
       );
     }
+    this.dressStartHall(chunk, center, chunkId, floorY);
+  }
+
+  dressStartHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolRackMat) {
+      this.schoolRackMat = new THREE.MeshStandardMaterial({
+        color: 0x3a3228,
+        roughness: 0.78,
+        metalness: 0.08,
+        emissive: 0x0c0804,
+        emissiveIntensity: 0.05,
+      });
+    }
+    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `starthall_rack_${name}`,
+        center.x + x, floorY + 0.48, center.z + 1.52,
+        1.12, 0.96, 0.38, this.schoolRackMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "starthall_sign",
+      center.x, floorY + 2.12, center.z + 1.72,
+      Math.PI, "현관",
+    );
+    const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
+    glow.position.set(center.x + 3.4, floorY + 2.05, center.z + 1.15);
+    glow.name = `${chunkId}_starthall_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressClassWingHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolCartMat) {
+      this.schoolCartMat = new THREE.MeshStandardMaterial({
+        color: 0x3a342c,
+        roughness: 0.74,
+        metalness: 0.12,
+        emissive: 0x0c0804,
+        emissiveIntensity: 0.05,
+      });
+    }
+    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `classwing_cart_${name}`,
+        center.x + x, floorY + 0.38, center.z - 1.52,
+        0.78, 0.76, 0.42, this.schoolCartMat,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "classwing_sign",
+      center.x, floorY + 2.12, center.z - 1.72,
+      0, "교실",
+    );
+    const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
+    glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
+    glow.name = `${chunkId}_classwing_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressUncatHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    this.ensureSpecialNookMaterials();
+    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+      this.addCautionTape(
+        chunk, chunkId, `uncathall_tape_${name}`,
+        center.x - 1.72, floorY + 1.42, center.z + z, Math.PI / 2,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "uncathall_sign",
+      center.x - 1.72, floorY + 2.12, center.z,
+      Math.PI / 2, "교차",
+    );
+    const glow = new THREE.PointLight(0x201410, 0.48, 6.0, 2);
+    glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
+    glow.name = `${chunkId}_uncathall_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
+  }
+
+  dressNorthHall(chunk, center, chunkId, floorY) {
+    this.ensureSchoolCorridorMaterials();
+    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `northhall_cone_${name}`,
+        center.x + 1.52, floorY + 0.52, center.z + z,
+        0.52, 1.04, 0.52, this.schoolMetalMat || this.trimMaterial,
+      );
+    }
+    this.addHallNookSign(
+      chunk, chunkId, "northhall_sign",
+      center.x + 1.72, floorY + 2.12, center.z,
+      -Math.PI / 2, "북관",
+    );
+    const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
+    glow.position.set(center.x + 1.15, floorY + 2.05, center.z);
+    glow.name = `${chunkId}_northhall_glow`;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
   }
 
   dressHallLockerBanks(chunk, center, chunkId, floorY, _openings, ewChicane, nsChicane) {
@@ -3033,6 +3152,18 @@ export class BackroomsGenerator {
     }
     if (this.isPracticeChunk(chunk.cx, chunk.cz)) {
       this.dressPracticeHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isStartHallChunk(chunk.cx, chunk.cz)) {
+      this.dressStartHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isClassWingChunk(chunk.cx, chunk.cz)) {
+      this.dressClassWingHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isUncatHallChunk(chunk.cx, chunk.cz)) {
+      this.dressUncatHall(chunk, center, chunkId, floorY);
+    }
+    if (this.isNorthHallChunk(chunk.cx, chunk.cz)) {
+      this.dressNorthHall(chunk, center, chunkId, floorY);
     }
   }
 
@@ -5889,6 +6020,37 @@ export class BackroomsGenerator {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
     }
 
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolBoilerMat) {
+      this.schoolBoilerMat = new THREE.MeshStandardMaterial({
+        color: 0x2a322c,
+        roughness: 0.62,
+        metalness: 0.28,
+        emissive: 0x081410,
+        emissiveIntensity: 0.06,
+      });
+    }
+    this.placeDressedBox(
+      chunk, chunkId, "b1boiler_drum",
+      22.4, floorY - 5.0 + 0.58, 24.8,
+      0.78, 1.16, 0.78, this.schoolBoilerMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "b1boiler_pipe",
+      5.95, floorY - 5.0 + 1.15, 26.05,
+      0.28, 2.3, 0.28, this.schoolMetalMat || this.schoolBoilerMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "b1boiler_drum_west",
+      3.15, floorY - 5.0 + 0.48, 24.6,
+      0.72, 0.96, 0.72, this.schoolBoilerMat,
+    );
+    const boilerGlow = new THREE.PointLight(0x16382e, 0.42, 5.2, 2);
+    boilerGlow.position.set(22.4, floorY - 3.85, 26.2);
+    boilerGlow.name = `${chunkId}_b1boiler_glow`;
+    this.scene.add(boilerGlow);
+    chunk.meshes.push(boilerGlow);
+
     this.collisionWorld.addTransitionWaypoint({
       id: "tw_b1_maze_gap",
       position: [8.4, floorY - 5.0, 33.2],
@@ -6145,6 +6307,29 @@ export class BackroomsGenerator {
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
     }
+
+    this.ensureSchoolCorridorMaterials();
+    if (!this.schoolBloodFrameMat) {
+      this.schoolBloodFrameMat = new THREE.MeshStandardMaterial({
+        color: 0x3a1818,
+        roughness: 0.72,
+        metalness: 0.08,
+        emissive: 0x1a0608,
+        emissiveIntensity: 0.08,
+      });
+    }
+    for (const [name, x] of [["w", -25.6], ["e", -24.4]]) {
+      this.placeDressedBox(
+        chunk, chunkId, `f2blood_frame_${name}`,
+        x, floorY + 5.0 + 1.38, -15.1,
+        0.92, 1.28, 0.08, this.schoolBloodFrameMat,
+      );
+    }
+    const bloodGlow = new THREE.PointLight(0x2a080c, 0.42, 5.0, 2);
+    bloodGlow.position.set(-25.0, floorY + 6.35, -14.4);
+    bloodGlow.name = `${chunkId}_f2blood_glow`;
+    this.scene.add(bloodGlow);
+    chunk.meshes.push(bloodGlow);
 
     this.collisionWorld.addTransitionWaypoint({
       id: "tw_2f_maze_south_gap",
@@ -7197,6 +7382,18 @@ export class BackroomsGenerator {
       } else if (this.isWashFourChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.72], 0,
           "별관 세면 교차로다. 신발장만 북쪽 벽에 있다.");
+      } else if (this.isStartHallChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [0.0, 1.42, 1.82], Math.PI,
+          "현관 신발장이 동쪽 팔에 붙어 있다. 제단함은 북쪽에 있다.");
+      } else if (this.isClassWingChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
+          "교실 날개다. 책상 사이로 숨으십시오.");
+      } else if (this.isUncatHallChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
+          "교차로다. 칠판의 출석을 읽지 마십시오.");
+      } else if (this.isNorthHallChunk(chunk.cx, chunk.cz)) {
+        addLoreNote(`${chunkId}_lore`, [1.82, 1.42, 0.0], -Math.PI / 2,
+          "북쪽 복도다. 알코브 신발장으로.");
       } else {
       const kinds = [0, 1, 2, 3].map((slot) => this.getHallNookKind(chunk.cx, chunk.cz, slot));
       let body = "교실 번호가 어제와 같다. 창밖의 운동장은 없다.";

@@ -1072,6 +1072,7 @@ try {
     const hall = generator.generateChunk(1, 0);
     const northHall = generator.generateChunk(0, -1);
     const uncatHall = generator.generateChunk(0, 1);
+    const startHall = generator.generateChunk(0, 0);
     const b1 = generator.generateChunk(1, 2);
     const f2 = generator.generateChunk(-1, -1);
     const westHall = generator.generateChunk(-1, 0);
@@ -1163,6 +1164,9 @@ try {
     game.onEnterSchoolChunk(2, 0);
     game.onEnterSchoolChunk(-1, 0);
     game.onEnterSchoolChunk(5, 0);
+    game.onEnterSchoolChunk(1, 0);
+    game.onEnterSchoolChunk(0, 1);
+    game.onEnterSchoolChunk(0, -1);
     game.player.setPosition({ x: -20, y: 0, z: 0 });
     for (let i = 0; i < 6; i += 1) game.update(0.05, { skipRender: true });
     game.player.setPosition({ x: 32, y: 0, z: 0 });
@@ -1283,6 +1287,12 @@ try {
       etiquetteTable: names(etiquette).some((name) => name.includes("tea_table")),
       roofHallBoard: names(roofHall).some((name) => name.includes("roofhall_board")),
       lostFoundBox: names(lostFound).some((name) => name.includes("lostfound_box_")),
+      startHallRack: names(startHall).some((name) => name.includes("starthall_rack_")),
+      classWingCart: names(hall).some((name) => name.includes("classwing_cart_")),
+      uncatHallTape: names(uncatHall).some((name) => name.includes("uncathall_tape_")),
+      northHallCone: names(northHall).some((name) => name.includes("northhall_cone_")),
+      b1BoilerDrum: names(b1).some((name) => name.includes("b1boiler_drum")),
+      f2BloodFrame: names(f2).some((name) => name.includes("f2blood_frame_")),
       eastWashBucket: names(eastWing).some((name) => name.includes("eastwash_bucket_")),
       angelHallCart: names(westHall).some((name) => name.includes("angelhall_cart")),
       washFourCubby: names(washFour).some((name) => name.includes("washfour_cubby_")),
@@ -1777,6 +1787,15 @@ try {
   assert.ok(roofHallWalk.at(-1).x < -4 && Math.abs(roofHallWalk.at(-1).z - 32) < 1.4, "roof hall west aisle must stay open");
   assert.equal(rooms.lostFoundBox, true, "lost-and-found hall must show boxes");
   assert.ok(rooms.beats.includes("lostfound"), "lost-and-found VO beat missing");
+  assert.equal(rooms.startHallRack, true, "start hall must show shoe racks");
+  assert.equal(rooms.classWingCart, true, "class wing must show north carts");
+  assert.ok(rooms.beats.includes("classwing"), "class wing VO beat missing");
+  assert.equal(rooms.uncatHallTape, true, "Uncat crossing must show caution tape");
+  assert.ok(rooms.beats.includes("uncathall"), "Uncat hall VO beat missing");
+  assert.equal(rooms.northHallCone, true, "north hall must show east cones");
+  assert.ok(rooms.beats.includes("northhall"), "north hall VO beat missing");
+  assert.equal(rooms.b1BoilerDrum, true, "B1 maze must show a boiler drum");
+  assert.equal(rooms.f2BloodFrame, true, "2F maze must show blood frames");
   assert.equal(lostFoundWalk.at(-1).ok, true, `must walk the lost-and-found hall, got ${JSON.stringify(lostFoundWalk.at(-1))}`);
   assert.ok(lostFoundWalk.at(-1).z > 4 && Math.abs(lostFoundWalk.at(-1).x + 32) < 1.4, "lost-and-found NS spine must stay open");
   assert.equal(rooms.eastWashBucket, true, "east wash hall must show north buckets");

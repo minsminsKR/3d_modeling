@@ -382,6 +382,33 @@ export class StoryDirector {
       );
     }
 
+    if (y > -1.2 && y < 2.2 && x > 8 && x < 24 && z > 2 && z < 7.5) {
+      this.fire(
+        "classwing",
+        "classwing",
+        "교실 날개입니다. 책상 사이로 숨으십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && Math.abs(x) > 2 && Math.abs(x) < 8 && z > 8 && z < 24) {
+      this.fire(
+        "uncathall",
+        "uncathall",
+        "교차로입니다. 칠판의 출석을 읽지 마십시오.",
+        "school_chime",
+      );
+    }
+
+    if (y > -1.2 && y < 2.2 && Math.abs(x) > 2 && Math.abs(x) < 8 && z < -8 && z > -24) {
+      this.fire(
+        "northhall",
+        "northhall",
+        "북쪽 복도입니다. 알코브 신발장으로.",
+        "school_chime",
+      );
+    }
+
     if (y > -1.2 && y < 2.2 && x > 120 && x < 136 && z < -8 && z > -24) {
       this.fire(
         "art",
@@ -460,6 +487,14 @@ export class StoryDirector {
           "drip",
         );
       }
+      if (x > 16 && x < 26 && z > 24 && z < 32) {
+        this.fire(
+          "b1boiler",
+          "b1boiler",
+          "보일러실입니다. 물이 이름을 적고 있습니다.",
+          "drip",
+        );
+      }
       if (z > 42) {
         this.fire(
           "b1deep",
@@ -490,6 +525,14 @@ export class StoryDirector {
           "atrium",
           "atrium",
           "계단 우물입니다. 아래 복도가 당신을 올려다봅니다.",
+          "blood_drip",
+        );
+      }
+      if (x < -20 && x > -28 && z > -18 && z < -12) {
+        this.fire(
+          "f2bloodhall",
+          "f2bloodhall",
+          "피 묻은 복도입니다. 액자를 보지 마십시오.",
           "blood_drip",
         );
       }

@@ -93,6 +93,7 @@ export class SoundManager {
       "av", "supply", "counsel", "staticset", "stairhall", "nurseryhall", "dollhall",
       "archivehall", "storagehall", "teahall",
       "dorm", "dollclass", "prepstore", "closedlib", "etiquette", "roofhall", "lostfound",
+      "classwing", "uncathall", "northhall", "b1boiler", "f2bloodhall",
     ];
     Promise.all(keys.map(async (key) => {
       try {
