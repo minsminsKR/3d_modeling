@@ -295,8 +295,11 @@ try {
       hallPa: names(hall).some((name) => name.includes("hall_pa_")),
       hallClock: names(hall).some((name) => name.includes("hall_clock")),
       hallLibrary: names(westHall).some((name) => name.includes("hall_shelf_")),
+      hallLibrarySpines: names(westHall).some((name) => name.includes("hall_books_")),
       hallWash: names(eastWing).some((name) => name.includes("hall_stall_") || name.includes("hall_sink_")),
+      hallWashDoors: names(eastWing).some((name) => name.includes("hall_stall_door_")),
       hallBoarded: names(uncatHall).some((name) => name.includes("hall_class_") && name.includes("_board_")),
+      hallNookSign: names(westHall).some((name) => name.includes("hall_sign_")),
       uncatSpineClear: !names(uncatHall).some((name) => name.includes("hall_maze_jog")),
       nurseBed: names(nurse).some((name) => name.includes("nurse_bed")),
       piano: names(music).some((name) => name.includes("piano")),
@@ -583,8 +586,11 @@ try {
   assert.equal(rooms.hallPa, true, "school halls must hang a PA speaker");
   assert.equal(rooms.hallClock, true, "school halls must have a stopped clock");
   assert.equal(rooms.hallLibrary, true, "west school hall must open a library nook");
+  assert.equal(rooms.hallLibrarySpines, true, "library shelves must show book spines");
   assert.equal(rooms.hallWash, true, "east school hall must open a washroom nook");
+  assert.equal(rooms.hallWashDoors, true, "washroom stalls must have doors");
   assert.equal(rooms.hallBoarded, true, "Uncat south hall must have a boarded classroom");
+  assert.equal(rooms.hallNookSign, true, "unique nooks must hang a room sign");
   assert.equal(rooms.hallJog, false, "east 1F halls must keep the z=0 spine open");
   assert.equal(rooms.hallJogE, false, "east 1F halls must not block the east arm with a jog");
   assert.equal(rooms.hallJogNs, false, "north 1F halls must keep the x=0 spine open");

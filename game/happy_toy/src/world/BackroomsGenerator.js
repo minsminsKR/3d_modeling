@@ -2127,6 +2127,45 @@ export class BackroomsGenerator {
     });
   }
 
+  ensureSpecialNookMaterials() {
+    this.ensureSchoolCorridorMaterials();
+    if (this.schoolBookSpineMat) return;
+    this.schoolShelfMat = (this.schoolDeskDark || this.trimMaterial).clone();
+    this.schoolShelfMat.color.setHex(0x2c1c12);
+    this.schoolBookSpineMat = this.createBookSpineMaterial(1);
+    this.schoolPlywoodMat = this.createPlywoodMaterial();
+    this.schoolTileMat = this.createWashTileMaterial();
+    this.schoolPorcelainMat = new THREE.MeshStandardMaterial({
+      color: 0xb8c0bc,
+      roughness: 0.38,
+      metalness: 0.08,
+    });
+    this.schoolStallDoorMat = new THREE.MeshStandardMaterial({
+      color: 0x3a4238,
+      roughness: 0.62,
+      metalness: 0.18,
+    });
+    this.schoolCautionMat = this.createCautionTapeMaterial();
+    this.schoolBookMats = [0x4a2018, 0x1a3048, 0x3a2a10, 0x5a3020, 0x243028, 0x2c2438].map((hex) => (
+      new THREE.MeshStandardMaterial({
+        color: hex,
+        roughness: 0.72,
+        metalness: 0.04,
+        emissive: hex,
+        emissiveIntensity: 0.07,
+      })
+    ));
+    this.schoolWetMat = new THREE.MeshStandardMaterial({
+      color: 0x1a2422,
+      roughness: 0.22,
+      metalness: 0.18,
+      transparent: true,
+      opacity: 0.48,
+      depthWrite: false,
+    });
+    this.schoolChalkLabelMat = this.createChalkLabelMaterial("출석 금지");
+  }
+
   addSchoolProp(chunk, object) {
     this.scene.add(object);
     chunk.meshes.push(object);
@@ -2289,6 +2328,198 @@ export class BackroomsGenerator {
     group.add(mount);
     this.addSchoolProp(chunk, group);
     return group;
+  }
+
+  addHallNookSign(chunk, chunkId, name, x, y, z, yaw, label) {
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_${name}`;
+    const back = new THREE.Mesh(
+      this.getBoxGeometry(0.66, 0.22, 0.03),
+      this.schoolDeskDark || this.trimMaterial,
+    );
+    group.add(back);
+    const plate = new THREE.Mesh(this.getPlaneGeometry(0.62, 0.18), this.createSignMaterial(label));
+    plate.position.z = 0.02;
+    group.add(plate);
+    this.addSchoolProp(chunk, group);
+    return group;
+  }
+
+  addLibraryShelfUnit(chunk, chunkId, name, x, y, z, yaw) {
+    this.ensureSpecialNookMaterials();
+    const width = 0.94;
+    const height = 1.66;
+    const depth = 0.3;
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_hall_books_${name}`;
+    const wood = this.schoolShelfMat;
+    const back = new THREE.Mesh(this.getBoxGeometry(width, height, 0.035), wood);
+    back.position.z = -depth / 2 + 0.018;
+    group.add(back);
+    for (const sx of [-1, 1]) {
+      const side = new THREE.Mesh(this.getBoxGeometry(0.035, height, depth), wood);
+      side.position.x = sx * (width / 2 - 0.018);
+      group.add(side);
+    }
+    for (const yy of [height / 2 - 0.018, -height / 2 + 0.018]) {
+      const cap = new THREE.Mesh(this.getBoxGeometry(width, 0.035, depth), wood);
+      cap.position.y = yy;
+      group.add(cap);
+    }
+    for (let i = 1; i <= 3; i += 1) {
+      const board = new THREE.Mesh(this.getBoxGeometry(width - 0.06, 0.028, depth - 0.04), wood);
+      board.position.y = -height / 2 + i * (height / 4);
+      group.add(board);
+    }
+    const spines = new THREE.Mesh(
+      this.getBoxGeometry(width - 0.1, height - 0.14, 0.05),
+      this.schoolBookSpineMat,
+    );
+    spines.position.z = depth / 2 - 0.04;
+    spines.name = `${chunkId}_hall_books_${name}`;
+    group.add(spines);
+    for (let i = 0; i < 4; i += 1) {
+      const book = new THREE.Mesh(
+        this.getBoxGeometry(0.04, 0.16 + (i % 3) * 0.03, 0.15),
+        this.schoolBookMats[i % this.schoolBookMats.length],
+      );
+      book.position.set(-0.32 + i * 0.2, -0.18 + (i % 4) * 0.26, depth / 2 + 0.02);
+      group.add(book);
+    }
+    this.addSchoolProp(chunk, group);
+    return group;
+  }
+
+  addLooseBooks(chunk, x, y, z, yaw, seed = 0) {
+    this.ensureSpecialNookMaterials();
+    const pile = new THREE.Group();
+    pile.position.set(x, y, z);
+    pile.rotation.y = yaw;
+    pile.name = `${chunk.chunkId}_hall_books_loose_${seed}`;
+    for (let i = 0; i < 5; i += 1) {
+      const book = new THREE.Mesh(
+        this.getBoxGeometry(0.15 + (i % 2) * 0.04, 0.028, 0.21),
+        this.schoolBookMats[(i + seed) % this.schoolBookMats.length],
+      );
+      book.position.set((i % 3) * 0.04 - 0.04, i * 0.03, (i % 2) * 0.03);
+      book.rotation.y = 0.08 * i;
+      pile.add(book);
+    }
+    this.addSchoolProp(chunk, pile);
+    return pile;
+  }
+
+  addWashStallUnit(chunk, chunkId, name, x, y, z, yaw, index) {
+    this.ensureSpecialNookMaterials();
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_hall_stall_door_${name}`;
+    const divider = new THREE.Mesh(this.getBoxGeometry(0.04, 1.48, 0.84), this.trimMaterial);
+    divider.position.x = 0.36;
+    group.add(divider);
+    if (index === 0) {
+      const start = new THREE.Mesh(this.getBoxGeometry(0.04, 1.48, 0.84), this.trimMaterial);
+      start.position.x = -0.36;
+      group.add(start);
+    }
+    const door = new THREE.Mesh(this.getBoxGeometry(0.64, 1.22, 0.03), this.schoolStallDoorMat);
+    door.position.set(0, -0.02, 0.41);
+    door.name = `${chunkId}_hall_stall_door_${name}`;
+    group.add(door);
+    const gap = new THREE.Mesh(this.getBoxGeometry(0.62, 0.04, 0.02), this.schoolMetalMat);
+    gap.position.set(0, -0.66, 0.41);
+    group.add(gap);
+    const handle = new THREE.Mesh(this.getBoxGeometry(0.04, 0.08, 0.05), this.schoolMetalMat);
+    handle.position.set(0.22, 0.04, 0.45);
+    group.add(handle);
+    const plate = new THREE.Mesh(
+      this.getBoxGeometry(0.08, 0.08, 0.02),
+      new THREE.MeshStandardMaterial({
+        color: index === 1 ? 0x6a1818 : 0x2a4a28,
+        roughness: 0.55,
+        emissive: index === 1 ? 0x3a0808 : 0x081808,
+        emissiveIntensity: 0.2,
+      }),
+    );
+    plate.position.set(-0.18, 0.38, 0.44);
+    group.add(plate);
+    const tank = new THREE.Mesh(this.getBoxGeometry(0.32, 0.28, 0.16), this.schoolPorcelainMat);
+    tank.position.set(0, 0.12, -0.28);
+    group.add(tank);
+    const bowl = new THREE.Mesh(this.getBoxGeometry(0.28, 0.16, 0.34), this.schoolPorcelainMat);
+    bowl.position.set(0, -0.42, -0.12);
+    group.add(bowl);
+    this.addSchoolProp(chunk, group);
+    return group;
+  }
+
+  addWashSinkUnit(chunk, chunkId, name, x, y, z, yaw) {
+    this.ensureSpecialNookMaterials();
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_${name}`;
+    const basin = new THREE.Mesh(this.getBoxGeometry(0.46, 0.08, 0.32), this.schoolPorcelainMat);
+    group.add(basin);
+    const bowl = new THREE.Mesh(this.getBoxGeometry(0.28, 0.06, 0.18), this.schoolWetMat);
+    bowl.position.y = 0.05;
+    group.add(bowl);
+    const pedestal = new THREE.Mesh(this.getBoxGeometry(0.12, 0.42, 0.12), this.schoolPorcelainMat);
+    pedestal.position.y = -0.25;
+    group.add(pedestal);
+    const faucet = new THREE.Mesh(this.getBoxGeometry(0.04, 0.16, 0.04), this.schoolMetalMat);
+    faucet.position.set(0, 0.14, -0.08);
+    group.add(faucet);
+    const spout = new THREE.Mesh(this.getBoxGeometry(0.04, 0.03, 0.12), this.schoolMetalMat);
+    spout.position.set(0, 0.2, -0.02);
+    group.add(spout);
+    this.addSchoolProp(chunk, group);
+    return group;
+  }
+
+  addBoardedWindowUnit(chunk, chunkId, name, x, y, z, yaw) {
+    this.ensureSpecialNookMaterials();
+    const group = new THREE.Group();
+    group.position.set(x, y, z);
+    group.rotation.y = yaw;
+    group.name = `${chunkId}_${name}`;
+    const glass = new THREE.Mesh(this.getBoxGeometry(0.78, 0.78, 0.03), this.schoolGlassMat);
+    glass.position.z = -0.02;
+    group.add(glass);
+    const planks = [
+      [0.82, 0.2, 0.05, 0, 0.22, 0.08],
+      [0.82, 0.2, 0.05, 0, -0.06, -0.06],
+      [0.82, 0.2, 0.05, 0, -0.28, 0.1],
+      [0.22, 0.82, 0.04, -0.12, 0, 0.55],
+    ];
+    for (const [sx, sy, sz, px, py, rotZ] of planks) {
+      const plank = new THREE.Mesh(this.getBoxGeometry(sx, sy, sz), this.schoolPlywoodMat);
+      plank.position.set(px, py, 0.03);
+      plank.rotation.z = rotZ;
+      group.add(plank);
+    }
+    for (const [nx, ny] of [[-0.28, 0.28], [0.26, -0.22], [0.08, 0.02], [-0.18, -0.3]]) {
+      const nail = new THREE.Mesh(this.getBoxGeometry(0.03, 0.03, 0.04), this.schoolMetalMat);
+      nail.position.set(nx, ny, 0.06);
+      group.add(nail);
+    }
+    this.addSchoolProp(chunk, group);
+    return group;
+  }
+
+  addCautionTape(chunk, chunkId, name, x, y, z, yaw) {
+    this.ensureSpecialNookMaterials();
+    const tape = new THREE.Mesh(this.getBoxGeometry(1.55, 0.07, 0.02), this.schoolCautionMat);
+    tape.position.set(x, y, z);
+    tape.rotation.set(0.12, yaw, 0.38);
+    tape.name = `${chunkId}_${name}`;
+    this.addSchoolProp(chunk, tape);
+    return tape;
   }
 
   dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
@@ -2697,29 +2928,11 @@ export class BackroomsGenerator {
 
   dressSpecialHallNook(chunk, chunkId, center, floorY, spec) {
     const { doorX, doorZ, inX, inZ, sideX, sideZ, idx, kind, faceYaw } = spec;
-    this.ensureSchoolCorridorMaterials();
+    this.ensureSpecialNookMaterials();
     if (!this.schoolLinoMat) {
       this.schoolLinoMat = new THREE.MeshStandardMaterial({
         color: 0x2a2218,
         roughness: 0.94,
-        metalness: 0,
-      });
-    }
-    if (!this.schoolWashMat) {
-      this.schoolWashMat = new THREE.MeshStandardMaterial({
-        color: 0x2a3230,
-        roughness: 0.82,
-        metalness: 0.04,
-      });
-    }
-    if (!this.schoolShelfMat) {
-      this.schoolShelfMat = (this.schoolDeskDark || this.trimMaterial).clone();
-      this.schoolShelfMat.color.setHex(0x2c1c12);
-    }
-    if (!this.schoolPlywoodMat) {
-      this.schoolPlywoodMat = new THREE.MeshStandardMaterial({
-        color: 0x4a3824,
-        roughness: 0.92,
         metalness: 0,
       });
     }
@@ -2731,7 +2944,7 @@ export class BackroomsGenerator {
         0.02,
         Math.abs(sideZ) * alongSide + Math.abs(inZ) * alongIn,
       ),
-      kind === "washroom" ? this.schoolWashMat : this.schoolLinoMat,
+      kind === "washroom" ? this.schoolTileMat : this.schoolLinoMat,
     );
     floor.position.set(
       center.x + doorX + sideX * 1.85 + inX * 2.85,
@@ -2752,64 +2965,89 @@ export class BackroomsGenerator {
       Math.abs(sideX) * sideLen + Math.abs(inX) * inLen,
       Math.abs(sideZ) * sideLen + Math.abs(inZ) * inLen,
     ]);
+    const collideAt = (name, point, sideLen, inLen, h) => {
+      const [sx, sz] = boxSize(sideLen, inLen);
+      this.collisionWorld.addStaticBox(
+        `${chunkId}_${name}`,
+        new THREE.Vector3(point.x, point.y, point.z),
+        new THREE.Vector3(sx, h, sz),
+        chunkId,
+      );
+    };
+    const faceDoorYaw = Math.atan2(-inX, -inZ);
+    const signLabel = kind === "library" ? "도서실"
+      : kind === "washroom" ? "화장실"
+        : kind === "boarded" ? "폐쇄"
+          : "공실";
+    const sign = pos(1.55, 0.52, 2.12);
+    this.addHallNookSign(chunk, chunkId, `hall_sign_${idx}`, sign.x, sign.y, sign.z, faceDoorYaw, signLabel);
 
     if (kind === "library") {
-      for (const along of [1.15, 2.35, 3.45]) {
-        const shelf = pos(along, 3.55, 0.85);
-        const [shelfX, shelfZ] = boxSize(0.92, 0.28);
-        this.placeDressedBox(
-          chunk, chunkId, `hall_shelf_${idx}_${along < 2 ? "a" : along < 3 ? "b" : "c"}`,
-          shelf.x, shelf.y, shelf.z, shelfX, 1.62, shelfZ, this.schoolShelfMat,
-        );
-        const books = new THREE.Mesh(this.getBoxGeometry(0.84, 0.12, 0.18), this.schoolPaperMat);
-        books.position.set(shelf.x + inX * 0.08, floorY + 1.12, shelf.z + inZ * 0.08);
-        books.rotation.y = faceYaw;
-        books.name = `${chunkId}_hall_books_${idx}_${along}`;
-        this.addSchoolProp(chunk, books);
+      const shelfKeys = [["a", 1.25], ["b", 2.4], ["c", 3.52]];
+      for (const [key, along] of shelfKeys) {
+        const shelf = pos(along, 3.62, 0.86);
+        this.addLibraryShelfUnit(chunk, chunkId, `hall_shelf_${idx}_${key}`, shelf.x, shelf.y, shelf.z, faceDoorYaw);
+        collideAt(`hall_shelf_${idx}_${key}_col`, shelf, 0.94, 0.3, 1.68);
       }
-      const table = pos(2.2, 1.85, 0.37);
+      const back = pos(2.35, 5.08, 0.86);
+      this.addLibraryShelfUnit(chunk, chunkId, `hall_shelf_${idx}_d`, back.x, back.y, back.z, faceDoorYaw);
+      collideAt(`hall_shelf_${idx}_d_col`, back, 0.94, 0.3, 1.68);
+      const table = pos(2.15, 1.88, 0.37);
       this.addSchoolDeskGroup(
         chunk, chunkId, `${chunkId}_hall_read_${idx}`,
         table.x, table.y, table.z, faceYaw, [0.92, 0.74, 0.52], "teacher",
       );
+      this.addLooseBooks(chunk, table.x, floorY + 0.76, table.z, faceDoorYaw, idx);
+      for (const along of [-1.15, 1.35]) {
+        const win = pos(1.1 + along, 5.58, 1.62);
+        this.addBoardedWindowUnit(
+          chunk, chunkId, `hall_class_${idx}_lib_board_${along < 0 ? "a" : "b"}`,
+          win.x, win.y, win.z, faceDoorYaw,
+        );
+      }
+      const lamp = new THREE.PointLight(0xffc898, 0.28, 3.4, 2);
+      lamp.position.set(table.x, floorY + 1.35, table.z);
+      lamp.name = `${chunkId}_hall_lib_lamp_${idx}`;
+      this.scene.add(lamp);
+      chunk.meshes.push(lamp);
     } else if (kind === "washroom") {
       for (let i = 0; i < 3; i += 1) {
-        const stall = pos(1.35 + i * 0.92, 3.05, 0.78);
-        const [stallX, stallZ] = boxSize(0.04, 0.82);
-        this.placeDressedBox(
-          chunk, chunkId, `hall_stall_${idx}_${i}`,
-          stall.x, stall.y, stall.z, stallX, 1.48, stallZ, this.trimMaterial,
-        );
+        const stall = pos(1.28 + i * 0.94, 3.12, 0.82);
+        this.addWashStallUnit(chunk, chunkId, `hall_stall_${idx}_${i}`, stall.x, stall.y, stall.z, faceDoorYaw, i);
+        collideAt(`hall_stall_${idx}_${i}_col`, stall, 0.74, 0.88, 1.52);
       }
-      for (const along of [1.45, 2.35, 3.25]) {
-        const sink = pos(along, 4.35, 0.42);
-        const [sinkX, sinkZ] = boxSize(0.42, 0.32);
-        this.placeDressedBox(
-          chunk, chunkId, `hall_sink_${idx}_${along < 2 ? "a" : along < 3 ? "b" : "c"}`,
-          sink.x, sink.y, sink.z, sinkX, 0.18, sinkZ, this.schoolWashMat,
-        );
+      const sinkKeys = [["a", 1.4], ["b", 2.35], ["c", 3.28]];
+      for (const [key, along] of sinkKeys) {
+        const sink = pos(along, 4.42, 0.46);
+        this.addWashSinkUnit(chunk, chunkId, `hall_sink_${idx}_${key}`, sink.x, sink.y, sink.z, faceDoorYaw);
+        collideAt(`hall_sink_${idx}_${key}_col`, sink, 0.46, 0.36, 0.5);
       }
       const mirror = new THREE.Mesh(this.getBoxGeometry(1.55, 0.55, 0.03), this.schoolGlassMat);
-      const mirrorPos = pos(2.35, 5.15, 1.48);
+      const mirrorPos = pos(2.35, 5.18, 1.48);
       mirror.position.set(mirrorPos.x, mirrorPos.y, mirrorPos.z);
-      mirror.rotation.y = faceYaw;
+      mirror.rotation.y = faceDoorYaw;
       mirror.name = `${chunkId}_hall_class_glass_${idx}_a`;
       this.scene.add(mirror);
       chunk.meshes.push(mirror);
+      const puddle = new THREE.Mesh(this.getPlaneGeometry(1.45, 0.95), this.schoolWetMat);
+      puddle.rotation.x = -Math.PI / 2;
+      const wet = pos(2.3, 4.05, 0.02);
+      puddle.position.set(wet.x, wet.y, wet.z);
+      puddle.name = `${chunkId}_hall_wash_wet_${idx}`;
+      this.scene.add(puddle);
+      chunk.meshes.push(puddle);
     } else if (kind === "boarded") {
       for (const along of [-1.15, 1.35]) {
-        const board = new THREE.Mesh(this.getBoxGeometry(0.78, 0.78, 0.05), this.schoolPlywoodMat);
-        board.position.set(
-          center.x + doorX + sideX * (1.1 + along) + inX * 5.58,
-          floorY + 1.62,
-          center.z + doorZ + sideZ * (1.1 + along) + inZ * 5.58,
+        const win = pos(1.1 + along, 5.58, 1.62);
+        this.addBoardedWindowUnit(
+          chunk, chunkId, `hall_class_${idx}_board_${along < 0 ? "a" : "b"}`,
+          win.x, win.y, win.z, faceDoorYaw,
         );
-        board.rotation.y = faceYaw;
-        board.name = `${chunkId}_hall_class_${idx}_board_${along < 0 ? "a" : "b"}`;
-        this.scene.add(board);
-        chunk.meshes.push(board);
       }
-      const stack = pos(2.4, 3.2, 0.28);
+      const lean = pos(3.05, 4.15, 0.82);
+      this.addBoardedWindowUnit(chunk, chunkId, `hall_class_${idx}_board_lean`, lean.x, lean.y, lean.z, faceDoorYaw + 0.35);
+      this.addCautionTape(chunk, chunkId, `hall_class_${idx}_board_tape`, pos(2.15, 3.55, 1.42).x, floorY + 1.42, pos(2.15, 3.55, 1.42).z, faceDoorYaw);
+      const stack = pos(2.4, 3.15, 0.28);
       this.placeDressedBox(
         chunk, chunkId, `hall_boarded_stack_${idx}`,
         stack.x, stack.y, stack.z, 0.62, 0.48, 0.48, this.schoolDeskDark || this.trimMaterial,
@@ -2819,10 +3057,13 @@ export class BackroomsGenerator {
         stack.x + sideX * 0.55, floorY + 0.12, stack.z + sideZ * 0.55, faceYaw,
         { fallen: true, collideH: 0.42 },
       );
-      this.addChalkboardGroup(
+      const board = this.addChalkboardGroup(
         chunk, chunkId, `${chunkId}_hall_board_${idx}`,
-        pos(2.2, 4.4, 1.48).x, pos(2.2, 4.4, 1.48).y, pos(2.2, 4.4, 1.48).z, faceYaw,
+        pos(2.2, 4.4, 1.48).x, pos(2.2, 4.4, 1.48).y, pos(2.2, 4.4, 1.48).z, faceDoorYaw,
       );
+      const label = new THREE.Mesh(this.getPlaneGeometry(1.22, 0.28), this.schoolChalkLabelMat);
+      label.position.set(0, 0.12, 0.04);
+      board.add(label);
     } else {
       const piled = pos(2.8, 3.6, 0.38);
       this.addSchoolDeskGroup(
@@ -2834,9 +3075,13 @@ export class BackroomsGenerator {
         piled.x + inX * 0.7, floorY + 0.12, piled.z + inZ * 0.7, faceYaw,
         { fallen: true, collideH: 0.42 },
       );
+      this.addChalkboardGroup(
+        chunk, chunkId, `${chunkId}_hall_board_${idx}`,
+        pos(2.2, 4.5, 1.48).x, pos(2.2, 4.5, 1.48).y, pos(2.2, 4.5, 1.48).z, faceDoorYaw,
+      );
     }
 
-    const glow = new THREE.PointLight(kind === "washroom" ? 0x1c2a28 : 0x3a2c1c, 0.12, 2.6, 2.2);
+    const glow = new THREE.PointLight(kind === "washroom" ? 0x1c2a28 : 0x3a2c1c, kind === "library" ? 0.18 : 0.12, 2.8, 2.2);
     const glowPos = pos(1.8, 2.2, 1.78);
     glow.position.set(glowPos.x, glowPos.y, glowPos.z);
     glow.name = `${chunkId}_hall_class_glow_${idx}`;
@@ -3002,6 +3247,7 @@ export class BackroomsGenerator {
   }
 
   dressNurseOffice(chunk, center, chunkId, floorY) {
+    this.ensureSpecialNookMaterials();
     const linen = new THREE.MeshStandardMaterial({ color: 0xd8c8b0, roughness: 0.9 });
     const steel = new THREE.MeshStandardMaterial({ color: 0x6a7674, roughness: 0.42, metalness: 0.35 });
     const curtain = new THREE.MeshStandardMaterial({
@@ -3010,14 +3256,36 @@ export class BackroomsGenerator {
       transparent: true,
       opacity: 0.72,
     });
-    this.placeDressedBox(chunk, chunkId, "nurse_bed", center.x + 2.1, floorY + 0.32, center.z + 2.4, 1.9, 0.64, 0.86, this.propMaterial);
-    this.placeDressedBox(chunk, chunkId, "nurse_sheet", center.x + 2.1, floorY + 0.66, center.z + 2.4, 1.82, 0.06, 0.8, linen, false);
+    const bed = new THREE.Group();
+    bed.position.set(center.x + 2.1, floorY + 0.32, center.z + 2.4);
+    bed.name = `${chunkId}_nurse_bed`;
+    const frame = new THREE.Mesh(this.getBoxGeometry(1.92, 0.12, 0.88), this.schoolMetalMat);
+    bed.add(frame);
+    const mattress = new THREE.Mesh(this.getBoxGeometry(1.82, 0.16, 0.8), linen);
+    mattress.position.y = 0.14;
+    mattress.name = `${chunkId}_nurse_sheet`;
+    bed.add(mattress);
+    const pillow = new THREE.Mesh(this.getBoxGeometry(0.42, 0.1, 0.36), linen);
+    pillow.position.set(-0.62, 0.26, 0);
+    bed.add(pillow);
+    for (const [lx, lz] of [[-0.82, -0.34], [0.82, -0.34], [-0.82, 0.34], [0.82, 0.34]]) {
+      const leg = new THREE.Mesh(this.getBoxGeometry(0.06, 0.32, 0.06), this.schoolMetalMat);
+      leg.position.set(lx, -0.22, lz);
+      bed.add(leg);
+    }
+    this.addSchoolProp(chunk, bed);
+    this.collisionWorld.addStaticBox(bed.name, bed.position, new THREE.Vector3(1.9, 0.64, 0.86), chunkId);
     this.placeDressedBox(chunk, chunkId, "nurse_cabinet", center.x - 5.6, floorY + 0.7, center.z, 0.42, 1.4, 2.2, steel);
     this.placeDressedBox(chunk, chunkId, "nurse_desk", center.x - 2.4, floorY + 0.38, center.z - 4.4, 1.35, 0.76, 0.7, this.propMaterial);
+    const rail = new THREE.Mesh(this.getBoxGeometry(0.04, 0.04, 2.4), steel);
+    rail.position.set(center.x + 0.4, floorY + 2.28, center.z + 1.1);
+    rail.name = `${chunkId}_nurse_rail`;
+    this.addSchoolProp(chunk, rail);
     this.placeDressedBox(chunk, chunkId, "nurse_curtain", center.x + 0.4, floorY + 1.15, center.z + 1.1, 0.06, 2.2, 2.4, curtain, false);
   }
 
   dressMusicRoom(chunk, center, chunkId, floorY) {
+    this.ensureSpecialNookMaterials();
     const lacquer = new THREE.MeshStandardMaterial({
       color: 0x1a120e,
       roughness: 0.38,
@@ -3026,24 +3294,65 @@ export class BackroomsGenerator {
       emissiveIntensity: 0.08,
     });
     const ivory = new THREE.MeshStandardMaterial({ color: 0xe8dcc4, roughness: 0.55 });
-    this.placeDressedBox(chunk, chunkId, "piano", center.x + 3.4, floorY + 0.46, center.z, 1.55, 0.92, 0.62, lacquer);
-    this.placeDressedBox(chunk, chunkId, "piano_lid", center.x + 3.4, floorY + 0.98, center.z - 0.08, 1.48, 0.06, 0.52, lacquer, false);
-    this.placeDressedBox(chunk, chunkId, "piano_keys", center.x + 2.72, floorY + 0.72, center.z, 0.22, 0.04, 0.5, ivory, false);
+    const ebony = new THREE.MeshStandardMaterial({ color: 0x12100e, roughness: 0.45 });
+    const piano = new THREE.Group();
+    piano.position.set(center.x + 3.4, floorY + 0.46, center.z);
+    piano.name = `${chunkId}_piano`;
+    const body = new THREE.Mesh(this.getBoxGeometry(1.55, 0.62, 0.62), lacquer);
+    piano.add(body);
+    const lid = new THREE.Mesh(this.getBoxGeometry(1.48, 0.05, 0.52), lacquer);
+    lid.position.set(0, 0.52, -0.06);
+    lid.rotation.x = -0.35;
+    lid.name = `${chunkId}_piano_lid`;
+    piano.add(lid);
+    for (let i = 0; i < 14; i += 1) {
+      const black = i % 7 === 1 || i % 7 === 4;
+      const key = new THREE.Mesh(
+        this.getBoxGeometry(black ? 0.06 : 0.08, 0.03, black ? 0.28 : 0.42),
+        black ? ebony : ivory,
+      );
+      key.position.set(-0.62 + i * 0.09, 0.33, 0.04);
+      if (i === 0) key.name = `${chunkId}_piano_keys`;
+      piano.add(key);
+    }
+    for (const lx of [-0.62, 0.62]) {
+      const leg = new THREE.Mesh(this.getBoxGeometry(0.08, 0.42, 0.08), lacquer);
+      leg.position.set(lx, -0.5, 0.18);
+      piano.add(leg);
+    }
+    this.addSchoolProp(chunk, piano);
+    this.collisionWorld.addStaticBox(piano.name, piano.position, new THREE.Vector3(1.55, 0.92, 0.62), chunkId);
     this.placeDressedBox(chunk, chunkId, "music_stool", center.x + 2.1, floorY + 0.28, center.z, 0.42, 0.56, 0.42, this.trimMaterial);
     this.placeDressedBox(chunk, chunkId, "music_stand_a", center.x - 2.6, floorY + 0.72, center.z - 2.8, 0.12, 1.44, 0.12, this.trimMaterial);
     this.placeDressedBox(chunk, chunkId, "music_stand_b", center.x - 3.4, floorY + 0.72, center.z + 1.6, 0.12, 1.44, 0.12, this.trimMaterial);
+    const sheet = new THREE.Mesh(this.getBoxGeometry(0.22, 0.28, 0.02), this.schoolPaperMat);
+    sheet.position.set(center.x - 2.6, floorY + 1.42, center.z - 2.8);
+    sheet.name = `${chunkId}_music_sheet`;
+    this.addSchoolProp(chunk, sheet);
   }
 
   dressFacultyOffice(chunk, center, chunkId, floorY) {
+    this.ensureSpecialNookMaterials();
     const paper = new THREE.MeshStandardMaterial({ color: 0xe4d4b8, roughness: 0.92 });
     this.placeDressedBox(chunk, chunkId, "faculty_desk", center.x - 3.2, floorY + 0.38, center.z, 1.7, 0.76, 0.86, this.propMaterial);
     this.placeDressedBox(chunk, chunkId, "faculty_desk_b", center.x + 3.4, floorY + 0.38, center.z + 2.6, 1.55, 0.76, 0.8, this.propMaterial);
     this.placeDressedBox(chunk, chunkId, "faculty_file", center.x + 5.8, floorY + 0.7, center.z - 2.2, 0.46, 1.4, 1.6, this.trimMaterial);
     this.placeDressedBox(chunk, chunkId, "faculty_file_b", center.x - 5.8, floorY + 0.7, center.z + 2.4, 0.46, 1.4, 1.6, this.trimMaterial);
     this.placeDressedBox(chunk, chunkId, "faculty_papers", center.x - 3.2, floorY + 0.8, center.z, 0.62, 0.04, 0.42, paper, false);
+    this.addLooseBooks(chunk, center.x + 3.4, floorY + 0.8, center.z + 2.6, 0.2, 9);
+    const lamp = new THREE.Mesh(this.getBoxGeometry(0.12, 0.28, 0.12), this.schoolMetalMat);
+    lamp.position.set(center.x - 2.55, floorY + 0.96, center.z - 0.18);
+    lamp.name = `${chunkId}_faculty_lamp`;
+    this.addSchoolProp(chunk, lamp);
+    const glow = new THREE.PointLight(0xffc898, 0.2, 2.6, 2);
+    glow.position.copy(lamp.position);
+    glow.position.y += 0.12;
+    this.scene.add(glow);
+    chunk.meshes.push(glow);
   }
 
   dressScienceLab(chunk, center, chunkId, floorY) {
+    this.ensureSpecialNookMaterials();
     const bench = new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.82 });
     const glass = new THREE.MeshStandardMaterial({
       color: 0x8ab8a4,
@@ -3060,7 +3369,17 @@ export class BackroomsGenerator {
     this.placeDressedBox(chunk, chunkId, "lab_bottle_a", center.x - 3.1, floorY + 1.08, center.z - 0.12, 0.12, 0.28, 0.12, glass, false);
     this.placeDressedBox(chunk, chunkId, "lab_bottle_b", center.x - 2.7, floorY + 1.12, center.z + 0.16, 0.1, 0.36, 0.1, glass, false);
     this.placeDressedBox(chunk, chunkId, "lab_bottle_c", center.x + 3.6, floorY + 1.08, center.z, 0.12, 0.28, 0.12, glass, false);
+    this.placeDressedBox(chunk, chunkId, "lab_bottle_d", center.x + 3.2, floorY + 1.16, center.z - 0.18, 0.09, 0.4, 0.09, glass, false);
     this.placeDressedBox(chunk, chunkId, "lab_pipe", center.x, floorY + 2.42, center.z, 8.4, 0.1, 0.1, pipe, false);
+    const tap = new THREE.Mesh(this.getBoxGeometry(0.08, 0.22, 0.08), this.schoolMetalMat);
+    tap.position.set(center.x - 2.4, floorY + 1.08, center.z);
+    tap.name = `${chunkId}_lab_tap`;
+    this.addSchoolProp(chunk, tap);
+    const stain = new THREE.Mesh(this.getPlaneGeometry(0.8, 0.5), this.schoolWetMat);
+    stain.rotation.x = -Math.PI / 2;
+    stain.position.set(center.x - 3.1, floorY + 0.93, center.z);
+    stain.name = `${chunkId}_lab_stain`;
+    this.addSchoolProp(chunk, stain);
   }
 
   linkTransitionWaypoint(id, extraId) {
@@ -4003,6 +4322,14 @@ export class BackroomsGenerator {
       this.scene.add(deskMesh);
       chunk.meshes.push(deskMesh);
       this.collisionWorld.addStaticBox(deskMesh.name, deskMesh.position, new THREE.Vector3(2.4, 0.72, 1.2), chunkId);
+      this.ensureSpecialNookMaterials();
+      for (const side of [-1, 1]) {
+        const spines = new THREE.Mesh(this.getBoxGeometry(0.06, 2.15, 4.7), this.schoolBookSpineMat);
+        spines.position.set(center.x + side * 3.28, floorY + 1.2, center.z - 2.2);
+        spines.name = `${chunkId}_archive_spines_${side < 0 ? "w" : "e"}`;
+        this.addSchoolProp(chunk, spines);
+      }
+      this.addLooseBooks(chunk, center.x, floorY + 0.76, center.z + 1.5, 0.15, 4);
     } else if (isEvent) {
       addDynamicDoor("door-upper-mirror", "뒤틀린 거울방", [0.0, 0.0, 7.8], [3.7, 2.35, 0.22]);
 
@@ -4481,7 +4808,170 @@ export class BackroomsGenerator {
     }
   }
 
+  createCanvasTexture(width, height, draw) {
+    const canvas = typeof document !== "undefined" ? document.createElement("canvas") : null;
+    if (!canvas) return null;
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    draw(ctx, width, height);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = 8;
+    texture.needsUpdate = true;
+    return texture;
+  }
+
+  createBookSpineMaterial(seed = 1) {
+    if (!this.bookSpineCache) this.bookSpineCache = new Map();
+    if (this.bookSpineCache.has(seed)) return this.bookSpineCache.get(seed);
+    const colors = ["#4a2018", "#1a3048", "#3a2a10", "#2a1810", "#5a3020", "#243028", "#4a3828", "#1a1a22", "#6a2420", "#2c2438"];
+    const texture = this.createCanvasTexture(256, 512, (ctx, width, height) => {
+      ctx.fillStyle = "#1a100c";
+      ctx.fillRect(0, 0, width, height);
+      const rows = 4;
+      for (let row = 0; row < rows; row += 1) {
+        const y0 = 10 + row * 126;
+        let x = 6;
+        let i = 0;
+        while (x < width - 6) {
+          const w = 7 + ((seed * 13 + row * 11 + i * 7) % 10);
+          const h = 86 + ((seed + i * 11) % 24);
+          ctx.fillStyle = colors[(seed + row * 5 + i) % colors.length];
+          ctx.fillRect(x, y0 + (112 - h), w - 1, h);
+          ctx.fillStyle = "#c4a060";
+          ctx.fillRect(x + 1, y0 + (112 - h) + 10, Math.max(2, w - 3), 2);
+          x += w;
+          i += 1;
+        }
+      }
+    });
+    const mat = new THREE.MeshStandardMaterial({
+      map: texture,
+      color: texture ? 0xffffff : 0x3a2418,
+      roughness: 0.74,
+      metalness: 0.04,
+      emissive: 0x120a06,
+      emissiveIntensity: 0.14,
+    });
+    this.bookSpineCache.set(seed, mat);
+    return mat;
+  }
+
+  createPlywoodMaterial() {
+    const texture = this.createCanvasTexture(256, 256, (ctx, width, height) => {
+      ctx.fillStyle = "#3a2818";
+      ctx.fillRect(0, 0, width, height);
+      const bands = ["#5a4030", "#4a3424", "#6a4a32", "#523826"];
+      for (let i = 0; i < 6; i += 1) {
+        ctx.fillStyle = bands[i % bands.length];
+        ctx.fillRect(0, i * 42, width, 38);
+        ctx.fillStyle = "#2a1a10";
+        ctx.fillRect(0, i * 42 + 38, width, 4);
+        ctx.strokeStyle = "rgba(90,70,40,0.35)";
+        ctx.lineWidth = 1;
+        for (let g = 0; g < 8; g += 1) {
+          ctx.beginPath();
+          ctx.moveTo(0, i * 42 + 6 + g * 4);
+          ctx.lineTo(width, i * 42 + 8 + g * 4);
+          ctx.stroke();
+        }
+      }
+      ctx.fillStyle = "#2a2420";
+      for (const [x, y] of [[28, 18], [90, 60], [150, 24], [210, 96], [48, 140], [188, 168], [120, 210]]) {
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+    return new THREE.MeshStandardMaterial({
+      map: texture,
+      color: texture ? 0xffffff : 0x4a3824,
+      roughness: 0.9,
+      metalness: 0,
+      emissive: 0x1a1008,
+      emissiveIntensity: 0.08,
+    });
+  }
+
+  createWashTileMaterial() {
+    const texture = this.createCanvasTexture(256, 256, (ctx, width, height) => {
+      ctx.fillStyle = "#1a2220";
+      ctx.fillRect(0, 0, width, height);
+      for (let y = 0; y < 8; y += 1) {
+        for (let x = 0; x < 8; x += 1) {
+          ctx.fillStyle = (x + y) % 2 === 0 ? "#2e3836" : "#26322f";
+          ctx.fillRect(x * 32 + 2, y * 32 + 2, 28, 28);
+        }
+      }
+    });
+    if (texture) {
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(2.4, 2.4);
+    }
+    return new THREE.MeshStandardMaterial({
+      map: texture,
+      color: texture ? 0xffffff : 0x2a3230,
+      roughness: 0.52,
+      metalness: 0.08,
+    });
+  }
+
+  createCautionTapeMaterial() {
+    const texture = this.createCanvasTexture(256, 64, (ctx, width, height) => {
+      ctx.fillStyle = "#c9a227";
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = "#16120c";
+      for (let i = -height; i < width; i += 28) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i + 14, 0);
+        ctx.lineTo(i + 14 + height, height);
+        ctx.lineTo(i + height, height);
+        ctx.closePath();
+        ctx.fill();
+      }
+    });
+    if (texture) {
+      texture.wrapS = THREE.RepeatWrapping;
+      texture.repeat.set(3, 1);
+    }
+    return new THREE.MeshStandardMaterial({
+      map: texture,
+      color: texture ? 0xffffff : 0xc9a227,
+      roughness: 0.7,
+      metalness: 0.04,
+      emissive: 0x3a2a08,
+      emissiveIntensity: 0.16,
+    });
+  }
+
+  createChalkLabelMaterial(text) {
+    const texture = this.createCanvasTexture(512, 128, (ctx, width, height) => {
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = "#d8d0c0";
+      ctx.font = "600 52px 'Noto Serif KR', serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, width / 2, height / 2);
+    });
+    return new THREE.MeshStandardMaterial({
+      map: texture,
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.92,
+      roughness: 0.95,
+      metalness: 0,
+      emissive: 0x2a2818,
+      emissiveIntensity: 0.12,
+      side: THREE.DoubleSide,
+    });
+  }
+
   createSignMaterial(text) {
+    if (!this.signMatCache) this.signMatCache = new Map();
+    if (this.signMatCache.has(text)) return this.signMatCache.get(text);
     const canvas = typeof document !== "undefined" ? document.createElement("canvas") : null;
     if (!canvas) {
       return new THREE.MeshStandardMaterial({ color: 0x3a2a1c, roughness: 0.86 });
@@ -4501,7 +4991,7 @@ export class BackroomsGenerator {
     ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 4);
     const texture = new THREE.CanvasTexture(canvas);
     texture.colorSpace = THREE.SRGBColorSpace;
-    return new THREE.MeshStandardMaterial({
+    const mat = new THREE.MeshStandardMaterial({
       map: texture,
       roughness: 0.78,
       metalness: 0.04,
@@ -4509,6 +4999,8 @@ export class BackroomsGenerator {
       emissiveIntensity: 0.16,
       side: THREE.DoubleSide,
     });
+    this.signMatCache.set(text, mat);
+    return mat;
   }
 
   dressAnnexGate(chunk, center, chunkId, floorY) {

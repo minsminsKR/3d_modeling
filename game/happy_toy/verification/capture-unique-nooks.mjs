@@ -27,16 +27,16 @@ const library = await page.evaluate(() => {
   if (uncat) uncat.group.visible = false;
   game.hud.setStatus("도서실입니다. 창이 판자로 막혀 있습니다.", 2800);
   return game.poseForCapture({
-    x: -21.25,
+    x: -20.55,
     y: 0,
-    z: 0.2,
-    lookAt: [-21.25, 1.15, -4.2],
+    z: -2.35,
+    lookAt: [-19.05, 1.12, -4.55],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_library_nook.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_library_bookspines.png"), timeout: 120000 });
 console.log("library", library);
 
 const wash = await page.evaluate(() => {
@@ -46,16 +46,16 @@ const wash = await page.evaluate(() => {
   game.mapBuilder.generator.generateChunk(2, 0);
   game.hud.setStatus("화장실 문이 안쪽에서 잠겨 있습니다.", 2800);
   return game.poseForCapture({
-    x: 26.75,
+    x: 27.15,
     y: 0,
-    z: 0.2,
-    lookAt: [26.75, 1.15, -4.2],
+    z: -2.35,
+    lookAt: [28.7, 1.05, -4.55],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_washroom_nook.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_washroom_cubicles.png"), timeout: 120000 });
 console.log("wash", wash);
 
 const boarded = await page.evaluate(() => {
@@ -65,16 +65,16 @@ const boarded = await page.evaluate(() => {
   game.mapBuilder.generator.generateChunk(0, 1);
   game.hud.setStatus("폐쇄된 교실입니다.", 2800);
   return game.poseForCapture({
-    x: 5.25,
+    x: 4.85,
     y: 0,
-    z: 16.2,
-    lookAt: [5.25, 1.15, 12.0],
+    z: 13.7,
+    lookAt: [3.45, 1.15, 10.35],
     flashlight: true,
     freezeLoop: true,
   });
 });
 await page.evaluate(() => window.__happyToy.renderer.render(window.__happyToy.scene, window.__happyToy.camera));
-await page.screenshot({ path: path.join(outDir, "f1_boarded_classroom.png"), timeout: 120000 });
+await page.screenshot({ path: path.join(outDir, "f1_boarded_plywood.png"), timeout: 120000 });
 console.log("boarded", boarded);
 await browser.close();
 console.log("ok");
