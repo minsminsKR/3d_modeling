@@ -2967,6 +2967,36 @@ export class BackroomsGenerator {
     return group;
   }
 
+  dressMazePartitionTrim(chunk, chunkId, name, x, y, z, sx, sz, height) {
+    this.ensureSchoolCorridorMaterials();
+    const longX = sx >= sz;
+    const span = longX ? sx : sz;
+    if (span < 2.6) return;
+    const paneCount = Math.min(5, Math.max(2, Math.floor(span / 2.15)));
+    const paneW = Math.min(0.62, span / (paneCount + 1.15));
+    const glass = this.schoolGlassMat || this.trimMaterial;
+    const rail = this.schoolDeskDark || this.trimMaterial;
+    const railMesh = new THREE.Mesh(
+      this.getBoxGeometry(longX ? span * 0.96 : 0.06, 0.08, longX ? 0.06 : span * 0.96),
+      rail,
+    );
+    railMesh.position.set(x, y - height * 0.18, z);
+    railMesh.name = `${chunkId}_${name}_rail`;
+    this.addSchoolProp(chunk, railMesh);
+    for (let i = 0; i < paneCount; i += 1) {
+      const t = (i + 1) / (paneCount + 1) - 0.5;
+      const px = longX ? x + t * span * 0.86 : x;
+      const pz = longX ? z : z + t * span * 0.86;
+      const pane = new THREE.Mesh(
+        this.getBoxGeometry(longX ? paneW : 0.04, 0.42, longX ? 0.04 : paneW),
+        glass,
+      );
+      pane.position.set(px, y + 0.22, pz);
+      pane.name = `${chunkId}_${name}_pane_${i}`;
+      this.addSchoolProp(chunk, pane);
+    }
+  }
+
   addShoeCubbyUnit(chunk, chunkId, name, x, y, z, yaw) {
     this.ensureSpecialNookMaterials();
     const wood = this.schoolShelfMat || this.schoolDeskDark || this.trimMaterial;
@@ -6517,33 +6547,83 @@ export class BackroomsGenerator {
     ];
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
+      this.dressMazePartitionTrim(chunk, chunkId, name, x, y, z, sx, sz, h);
     }
 
     this.ensureSchoolCorridorMaterials();
+    if (!this.schoolLinoMat) {
+      this.schoolLinoMat = new THREE.MeshStandardMaterial({
+        color: 0x2a2218,
+        roughness: 0.94,
+        metalness: 0,
+      });
+    }
+    const fy = floorY - 5.0;
+    this.placeDressedBox(
+      chunk, chunkId, "b1flood_lino_w",
+      5.15, fy + 0.012, 48.2, 2.35, 0.02, 5.35, this.schoolLinoMat, false,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "b1flood_lino_e",
+      11.35, fy + 0.012, 48.2, 2.35, 0.02, 5.35, this.schoolLinoMat, false,
+    );
     this.addSchoolDeskGroup(
       chunk, chunkId, `${chunkId}_b1flood_desk_w`,
-      5.15, floorY - 5.0 + 0.35, 48.2, 0.4, [0.72, 0.7, 0.48],
+      5.15, fy + 0.35, 48.2, 0.4, [0.72, 0.7, 0.48],
     );
     this.addSchoolDeskGroup(
       chunk, chunkId, `${chunkId}_b1flood_desk_e`,
-      11.35, floorY - 5.0 + 0.35, 48.2, -0.3, [0.72, 0.7, 0.48],
+      11.35, fy + 0.35, 48.2, -0.3, [0.72, 0.7, 0.48],
+    );
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_b1flood_desk_w2`,
+      5.15, fy + 0.35, 46.55, 0.18, [0.72, 0.7, 0.48],
+    );
+    this.addSchoolDeskGroup(
+      chunk, chunkId, `${chunkId}_b1flood_desk_e2`,
+      11.35, fy + 0.35, 49.75, -0.22, [0.72, 0.7, 0.48],
     );
     this.addSchoolChairGroup(
       chunk, chunkId, `${chunkId}_b1flood_chair`,
-      5.55, floorY - 5.0 + 0.12, 47.55, 0.8,
+      5.55, fy + 0.12, 47.55, 0.8,
+      { fallen: true, collideH: 0.42 },
+    );
+    this.addSchoolChairGroup(
+      chunk, chunkId, `${chunkId}_b1flood_chair_e`,
+      11.05, fy + 0.12, 46.85, -0.4,
       { fallen: true, collideH: 0.42 },
     );
     this.addSchoolDeskGroup(
       chunk, chunkId, `${chunkId}_b1flood_desk_ww`,
-      -12.4, floorY - 5.0 + 0.35, 48.2, 0.2, [0.72, 0.7, 0.48],
+      -12.4, fy + 0.35, 48.2, 0.2, [0.72, 0.7, 0.48],
+    );
+    this.addLibraryShelfUnit(
+      chunk, chunkId, "b1flood_shelf_w",
+      -16.15, fy + 0.86, 48.15, Math.PI / 2,
+    );
+    this.collisionWorld.addStaticBox(
+      `${chunkId}_b1flood_shelf_w_col`,
+      new THREE.Vector3(-16.15, fy + 0.86, 48.15),
+      new THREE.Vector3(0.36, 1.68, 0.94),
+      chunkId,
     );
     this.addSchoolDeskGroup(
       chunk, chunkId, `${chunkId}_b1flood_desk_ee`,
-      38.6, floorY - 5.0 + 0.35, 40.2, -0.5, [0.72, 0.7, 0.48],
+      38.6, fy + 0.35, 40.2, -0.5, [0.72, 0.7, 0.48],
     );
+    this.addSpecimenJarUnit(chunk, chunkId, "b1flood_jar_a", 38.45, fy + 0.92, 40.05);
+    this.addSpecimenJarUnit(chunk, chunkId, "b1flood_jar_b", 38.85, fy + 0.92, 40.35);
     this.addChalkboardGroup(
       chunk, chunkId, `${chunkId}_b1flood_board`,
-      4.25, floorY - 5.0 + 1.42, 48.2, Math.PI / 2, 1.85, 1.05,
+      4.25, fy + 1.42, 48.2, Math.PI / 2, 1.85, 1.05,
+    );
+    this.addChalkboardGroup(
+      chunk, chunkId, `${chunkId}_b1flood_board_e`,
+      12.08, fy + 1.42, 50.15, -Math.PI / 2, 1.55, 0.95,
+    );
+    this.addHallNookSign(
+      chunk, chunkId, "b1flood_sign",
+      6.05, fy + 2.08, 45.32, 0, "침수",
     );
 
     const waterY = floorY - 5.0 + 0.15;
@@ -6829,24 +6909,50 @@ export class BackroomsGenerator {
     ];
     for (const [name, x, z, sx, sz] of walls) {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, mazeMat);
+      this.dressMazePartitionTrim(chunk, chunkId, name, x, y, z, sx, sz, h);
     }
 
     this.ensureSchoolCorridorMaterials();
+    const gy = floorY + 5.0;
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2blood_portrait_n",
-      -28.4, floorY + 5.0 + 1.38, -45.2, 0,
+      -28.4, gy + 1.38, -45.2, 0,
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2blood_portrait_s",
-      -32.5, floorY + 5.0 + 1.38, 1.55, Math.PI,
+      -32.5, gy + 1.38, 1.55, Math.PI,
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2blood_portrait_w",
-      -46.2, floorY + 5.0 + 1.38, -16.8, Math.PI / 2,
+      -46.2, gy + 1.38, -16.8, Math.PI / 2,
     );
     this.addPortraitFrameUnit(
       chunk, chunkId, "f2blood_portrait_e",
-      -19.8, floorY + 5.0 + 1.38, -10.4, 0,
+      -19.8, gy + 1.38, -10.4, 0,
+    );
+    this.addPortraitFrameUnit(
+      chunk, chunkId, "f2gallery_frame_s0",
+      -28.8, gy + 1.38, -2.12, 0,
+    );
+    this.addPortraitFrameUnit(
+      chunk, chunkId, "f2gallery_frame_s1",
+      -19.4, gy + 1.38, 1.15, Math.PI,
+    );
+    this.addPortraitFrameUnit(
+      chunk, chunkId, "f2gallery_frame_n0",
+      -36.4, gy + 1.38, -45.2, 0,
+    );
+    this.addPortraitFrameUnit(
+      chunk, chunkId, "f2gallery_frame_n1",
+      -24.8, gy + 1.38, -45.2, Math.PI,
+    );
+    this.addPortraitFrameUnit(
+      chunk, chunkId, "f2gallery_frame_w0",
+      -46.2, gy + 1.38, -12.6, Math.PI / 2,
+    );
+    this.addHallNookSign(
+      chunk, chunkId, "f2gallery_sign",
+      -20.35, gy + 2.08, -10.55, -Math.PI / 2, "액자",
     );
 
     const bloodY = floorY + 5.04;

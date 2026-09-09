@@ -18,6 +18,7 @@ const required = [
   "archivehall", "storagehall", "teahall",
   "dorm", "dollclass", "prepstore", "closedlib", "etiquette", "roofhall", "lostfound",
   "classwing", "uncathall", "northhall", "b1boiler", "f2bloodhall", "annexgate",
+  "b1floodclass", "f2gallery",
 ];
 
 assert.equal(fs.existsSync(root), true, `voice directory missing: ${root}`);

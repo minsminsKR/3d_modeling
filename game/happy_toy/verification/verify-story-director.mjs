@@ -67,10 +67,15 @@ assert.equal(director.fired.has("shrine"), true);
 g.player.position = { x: 8.4, y: -5, z: 48 };
 director.update();
 assert.equal(director.fired.has("b1deep"), true);
+assert.equal(director.fired.has("b1floodclass"), true);
 
 g.player.position = { x: -22.5, y: 5, z: -42 };
 director.update();
 assert.equal(director.fired.has("f2deep"), true);
+
+g.player.position = { x: -32.5, y: 5, z: -45 };
+director.update();
+assert.equal(director.fired.has("f2gallery"), true);
 
 g.player.position = { x: 32, y: -5, z: 38 };
 director.update();
@@ -247,6 +252,16 @@ assert.equal(director.fired.has("f2bloodhall"), true);
 g.player.position = { x: 64, y: 0, z: 0 };
 director.update();
 assert.equal(director.fired.has("annexgate"), true);
+
+g.player.position = { x: 8.4, y: -5, z: 48 };
+director.update();
+assert.equal(director.fired.has("b1deep"), true);
+assert.equal(director.fired.has("b1floodclass"), true);
+
+g.player.position = { x: -32.5, y: 5, z: -45 };
+director.update();
+assert.equal(director.fired.has("f2deep"), true);
+assert.equal(director.fired.has("f2gallery"), true);
 
 const before = lines.length;
 director.update();

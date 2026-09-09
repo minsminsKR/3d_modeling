@@ -512,6 +512,14 @@ export class StoryDirector {
           "drip",
         );
       }
+      if (z > 46 && z < 52 && x > 6 && x < 11) {
+        this.fire(
+          "b1floodclass",
+          "b1floodclass",
+          "침수 교실입니다. 책상 밑으로 숨지 마십시오.",
+          "drip",
+        );
+      }
       if (x > 28) {
         this.fire(
           "b1east",
@@ -558,6 +566,14 @@ export class StoryDirector {
           "f2deep",
           "f2deep",
           "피 묻은 미로입니다. 손전등을 끄지 말고 벽장으로 꺾으십시오.",
+          "blood_drip",
+        );
+      }
+      if (z < -43 && z > -48 && x < -30 && x > -35) {
+        this.fire(
+          "f2gallery",
+          "f2gallery",
+          "졸업 액자입니다. 빈 얼굴을 세지 마십시오.",
           "blood_drip",
         );
       }

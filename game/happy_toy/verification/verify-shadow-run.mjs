@@ -1295,8 +1295,10 @@ try {
       northHallCubby: names(northHall).some((name) => name.includes("hall_cubby_")),
       b1BoilerDrum: names(b1).some((name) => name.includes("b1boiler_drum")),
       b1FloodDesk: names(b1).some((name) => name.includes("b1flood_desk_")),
+      b1FloodBoard: names(b1).some((name) => name.includes("b1flood_board")),
       f2BloodFrame: names(f2).some((name) => name.includes("f2blood_frame_")),
       f2BloodPortrait: names(f2).some((name) => name.includes("f2blood_portrait_")),
+      f2GalleryFrame: names(f2).some((name) => name.includes("f2gallery_frame_")),
       eastWashBucket: names(eastWing).some((name) => name.includes("eastwash_bucket_")),
       angelHallCart: names(westHall).some((name) => name.includes("angelhall_cart")),
       washFourCubby: names(washFour).some((name) => name.includes("washfour_cubby_")),
@@ -1801,8 +1803,10 @@ try {
   assert.equal(rooms.northHallCubby, true, "north hall must open a shoe cubby nook");
   assert.equal(rooms.b1BoilerDrum, true, "B1 maze must show a boiler drum");
   assert.equal(rooms.b1FloodDesk, true, "B1 south labyrinth must show flooded desks");
+  assert.equal(rooms.b1FloodBoard, true, "B1 flooded classroom must show chalkboards");
   assert.equal(rooms.f2BloodFrame, true, "2F maze must show blood frames");
   assert.equal(rooms.f2BloodPortrait, true, "2F labyrinth must show extra portraits");
+  assert.equal(rooms.f2GalleryFrame, true, "2F gallery must show extra portrait frames");
   assert.equal(rooms.annexGateRack, true, "annex gate must show shoe racks");
   assert.ok(rooms.beats.includes("annexgate"), "annex gate VO beat missing");
   assert.equal(lostFoundWalk.at(-1).ok, true, `must walk the lost-and-found hall, got ${JSON.stringify(lostFoundWalk.at(-1))}`);
@@ -1885,8 +1889,10 @@ try {
   assert.equal(f2SouthWalk.at(-1).ok, true, `must walk the 2F south labyrinth, got ${JSON.stringify(f2SouthWalk.at(-1))}`);
   assert.ok(f2SouthWalk.at(-1).z > 3, "south labyrinth continues past the old gallery wall");
   assert.ok(story.fired.includes("b1deep") || b1DeepWalk.at(-1).z > 42, "B1 deep story beat should fire in the south maze");
+  assert.ok(story.fired.includes("b1floodclass"), "B1 flood classroom VO beat missing");
   assert.ok(story.fired.includes("b1east") || b1EastWalk.at(-1).x > 28, "B1 east story beat should fire in the east maze");
   assert.ok(story.fired.includes("f2deep") || f2DeepWalk.at(-1).z < -37, "2F deep story beat should fire in the north maze");
+  assert.ok(story.fired.includes("f2gallery"), "2F gallery VO beat missing");
   assert.ok(story.fired.includes("f2south") || f2SouthWalk.at(-1).z > -6, "2F south story beat should fire in the south maze");
   assert.ok(rooms.b1Cabinets >= 5, "basement needs extra hide spots");
   assert.ok(rooms.f2Cabinets >= 5, "2F gallery needs extra hide spots");
