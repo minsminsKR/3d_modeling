@@ -1185,6 +1185,7 @@ export class Game {
     if (doFlicker) this._flickerAccum = 0;
 
     const playerPos = this.player.position;
+    const playerThreat = this.getMonsterThreat(playerPos);
     const allPanels = [];
     for (const chunk of this.mapBuilder.loadedChunks.values()) {
       if (!chunk.lights || chunk.lights.length === 0) continue;
@@ -1197,23 +1198,30 @@ export class Game {
         const distSq = dx * dx + dz * dz;
         allPanels.push({ light, gx, gy, gz, distSq });
 
-        // Flicker logic — update emissive mesh color (throttled)
-        if (doFlicker && light.isFlickering) {
-          light.flickerTimer -= 0.1;
-          if (light.flickerTimer <= 0) {
-            const isOff = Math.random() < 0.25;
-            if (isOff) {
-              light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelDimColor || 0x3b2618);
-              light.mesh.material.emissive.setHex(0x140704);
-              light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelDimEmissiveIntensity ?? 0.1;
-              light.currentIntensity = 0;
-              light.flickerTimer = 0.05 + Math.random() * 0.2;
-            } else {
-              light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelOnColor || 0xb47b4c);
-              light.mesh.material.emissive.setHex(0x9a3f12);
-              light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelOnEmissiveIntensity ?? 0.58;
-              light.currentIntensity = light.baseIntensity;
-              light.flickerTimer = 1.0 + Math.random() * 5.0;
+        // Flicker logic — nearby ceiling lamps die harder as monsters close in.
+        if (doFlicker) {
+          const nearPlayer = distSq < 12 * 12;
+          const localThreat = nearPlayer ? playerThreat : playerThreat * 0.2;
+          const canThreatFlicker = localThreat > 0.22;
+          if (light.isFlickering || canThreatFlicker) {
+            const tick = 0.1 * (1 + localThreat * 5.5);
+            light.flickerTimer = (light.flickerTimer ?? 0.4) - tick;
+            if (light.flickerTimer <= 0) {
+              const offChance = (light.isFlickering ? 0.25 : 0) + localThreat * 0.62;
+              const isOff = Math.random() < Math.min(0.92, offChance);
+              if (isOff) {
+                light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelDimColor || 0x3b2618);
+                light.mesh.material.emissive.setHex(0x140704);
+                light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelDimEmissiveIntensity ?? 0.1;
+                light.currentIntensity = 0;
+                light.flickerTimer = 0.04 + Math.random() * (0.12 + localThreat * 0.55);
+              } else {
+                light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelOnColor || 0xb47b4c);
+                light.mesh.material.emissive.setHex(0x9a3f12);
+                light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelOnEmissiveIntensity ?? 0.58;
+                light.currentIntensity = light.baseIntensity;
+                light.flickerTimer = (0.18 + Math.random() * 4.2) * (1 - localThreat * 0.78);
+              }
             }
           }
         }
@@ -1308,15 +1316,24 @@ export class Game {
     }
   }
 
-  getMinMonsterDistance(targetPos) {
+  getMinMonsterDistance(targetPos, options = {}) {
     if (!targetPos) return Infinity;
+    const sameFloor = Boolean(options.sameFloor);
+    const floorSlack = options.floorSlack ?? 2.2;
     let minDist = Infinity;
 
     // 1. EnemyManager enemies (Cyclopse, Uncat, Baby, Hwacat-Angry)
     if (this.enemyManager && this.enemyManager.enemies) {
       for (const enemy of this.enemyManager.enemies) {
         if (!enemy.group || enemy.isDormant) continue;
-        const d = targetPos.distanceTo(enemy.group.position);
+        if (sameFloor && typeof enemy.isSameLevelAs === "function") {
+          if (!enemy.isSameLevelAs(targetPos)) continue;
+        } else if (sameFloor && Math.abs((enemy.group.position.y ?? 0) - (targetPos.y ?? 0)) > floorSlack) {
+          continue;
+        }
+        const d = sameFloor
+          ? Math.hypot(targetPos.x - enemy.group.position.x, targetPos.z - enemy.group.position.z)
+          : targetPos.distanceTo(enemy.group.position);
         if (d < minDist) minDist = d;
       }
     }
@@ -1328,7 +1345,10 @@ export class Game {
           if (mesh.userData && mesh.userData.isWeepingAngel && mesh.position) {
             const state = mesh.userData.weepingAngelState;
             if (state && state.active === false) continue;
-            const d = Math.hypot(targetPos.x - mesh.position.x, targetPos.z - mesh.position.z);
+            if (sameFloor && Math.abs((mesh.position.y ?? 0) - (targetPos.y ?? 0)) > floorSlack) continue;
+            const d = sameFloor
+              ? Math.hypot(targetPos.x - mesh.position.x, targetPos.z - mesh.position.z)
+              : Math.hypot(targetPos.x - mesh.position.x, targetPos.z - mesh.position.z);
             if (d < minDist) minDist = d;
           }
         }
@@ -1336,6 +1356,15 @@ export class Game {
     }
 
     return minDist;
+  }
+
+  getMonsterThreat(targetPos = this.player?.position, maxDistance = 15) {
+    const dist = this.getMinMonsterDistance(targetPos, { sameFloor: true });
+    if (!Number.isFinite(dist)) return 0;
+    const inner = 1.15;
+    const span = Math.max(0.01, maxDistance - inner);
+    const linear = 1 - Math.max(0, Math.min(1, (dist - inner) / span));
+    return linear * linear;
   }
 
   updateSafeLightPool(playerPos = this.player?.position) {
@@ -1367,16 +1396,20 @@ export class Game {
           const flameBreath = 0.96 + 0.04 * Math.sin((this.elapsedTime || 0) * 1.8 + basePhase);
           flickerMult = flameBreath;
 
-          if (monsterDist < 11.0) {
-            // Natural horror tension: subtle flame wavering and gentle voltage sag (1.6Hz ~ 4.0Hz, no 26Hz strobe)
-            const proximity = Math.min(1.0, Math.max(0.0, 1.0 - (monsterDist / 11.0)));
-            const freq = 1.6 + proximity * 2.4;
+          if (monsterDist < 14.0) {
+            const proximity = Math.min(1.0, Math.max(0.0, 1.0 - (monsterDist / 14.0)));
+            const p2 = proximity * proximity;
+            const freq = 2.0 + p2 * 16;
             const phase = (pos.x * 7.91 + pos.z * 13.43) % 6.28;
             const t = (this.elapsedTime || 0) * freq + phase;
-            const wave = Math.sin(t) * 0.5 + Math.sin(t * 1.7 + 0.5) * 0.3 + Math.sin(t * 3.1) * 0.2;
-            const sag = 0.72 - proximity * 0.18; // soft dimming down to ~0.54, no blackout
-            const mix = (wave + 1.0) * 0.5;
-            flickerMult = THREE.MathUtils.lerp(sag, 1.0, mix);
+            const wave = Math.sin(t) * 0.45 + Math.sin(t * 2.6 + 0.7) * 0.3 + Math.sin(t * 7.4) * 0.25;
+            const dying = 1 - p2 * 0.62;
+            let strobe = 1;
+            if (p2 > 0.45) {
+              const cut = 0.35 - p2 * 0.55;
+              strobe = Math.sin(t * (14 + p2 * 22)) > cut ? 1 : 0.05 + Math.random() * 0.06;
+            }
+            flickerMult = Math.max(0.03, (0.52 + 0.48 * wave) * dying * strobe);
           }
           safeLight.setFlickerState(flickerMult);
           pl.position.copy(pos);

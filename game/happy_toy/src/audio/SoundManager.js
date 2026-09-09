@@ -413,6 +413,10 @@ export class SoundManager {
       case "flashlight_toggle":
         tone(780, 390, 0.035, 0.075, "square", 0.16, 0.03);
         break;
+      case "flashlight_flicker":
+        tone(68, 22, 0.07, 0.14, "square", 0, 0.05);
+        tone(1480, 220, 0.03, 0.04, "square", 0.18, 0.02);
+        break;
       case "cabinet_enter":
         tone(96, 42, 0.28, 0.2, "triangle", 0, 0.3);
         break;

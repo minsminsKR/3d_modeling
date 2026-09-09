@@ -1,5 +1,6 @@
-// 플레이어 손전등의 on/off 상태, 배터리 잔량, 깜빡임 연출을 관리하는 모듈입니다.
+// 플레이어 손전등의 on/off 상태, 배터리 잔량, 위협 기반 깜빡임 연출을 관리하는 모듈입니다.
 
+import * as THREE from "three";
 import { soundManager } from "../audio/SoundManager.js";
 import { LIGHTING_CONFIG } from "../config/gameConfig.js";
 
@@ -12,12 +13,18 @@ export class FlashlightController {
     this.enabled = false;
     this.defaultIntensity = spotLight.intensity;
     this.currentIntensity = 0;
-    this.batteryLevel = 1.0; // 0.0 ~ 1.0
-    this.flickerTimer = 0;
-    this.voltageNoise = 0;
-    this.nextVoltageDip = 2.4 + Math.random() * 4;
-    this.voltageDipTimer = 0;
+    this.batteryLevel = 1.0;
+    this.flickerPhase = 0;
+    this.strobePhase = 0;
+    this.nextEventAt = 1.6 + Math.random() * 2.2;
+    this.eventTimer = 0;
+    this.eventKind = "none";
+    this.outputScale = 0;
+    this.smoothThreat = 0;
+    this.soundCooldown = 0;
     this.lowBatteryWarned = false;
+    this.healthyColor = new THREE.Color(LIGHTING_CONFIG.flashlightColor);
+    this.dyingColor = new THREE.Color(0xff7a32);
     this.applyState(false);
   }
 
@@ -26,38 +33,23 @@ export class FlashlightController {
       this.toggle();
     }
 
-    if (this.enabled) {
-      // Slow battery drain
-      const drainMult = this.drainMultiplier || 1.0;
-      this.batteryLevel = Math.max(0, this.batteryLevel - 0.003 * deltaTime * drainMult);
+    const dt = Math.min(deltaTime, 0.05);
+    this.soundCooldown = Math.max(0, this.soundCooldown - dt);
 
-      // Low battery and nearby danger create slow voltage instability. This is
-      // intentionally a sag, not a high-frequency strobe.
+    if (this.enabled) {
+      const drainMult = this.drainMultiplier || 1.0;
+      this.batteryLevel = Math.max(0, this.batteryLevel - 0.003 * dt * drainMult);
+
       const playerPos = this.game?.player?.position;
-      const monsterDist = this.game ? this.game.getMinMonsterDistance(playerPos) : Infinity;
-      const proximity = Math.max(0, Math.min(1, 1 - monsterDist / 10));
+      const rawThreat = this.game?.getMonsterThreat?.(playerPos) ?? 0;
+      this.smoothThreat += (rawThreat - this.smoothThreat) * (1 - Math.exp(-dt * 7));
       const lowBattery = Math.max(0, Math.min(1, (0.24 - this.batteryLevel) / 0.24));
+      const threat = Math.max(this.smoothThreat, lowBattery * 0.42);
       const reducedMotion = document.body.classList.contains("reduced-motion");
-      this.flickerTimer += deltaTime * (1.35 + proximity * 1.4);
-      this.nextVoltageDip -= deltaTime;
-      if (!reducedMotion && this.nextVoltageDip <= 0 && (lowBattery > 0.05 || proximity > 0.15)) {
-        this.voltageDipTimer = 0.08 + Math.random() * 0.11;
-        this.nextVoltageDip = 2.1 + Math.random() * 4.8 - proximity * 1.2;
-      }
-      this.voltageDipTimer = Math.max(0, this.voltageDipTimer - deltaTime);
-      const slowWaver = reducedMotion ? 1 : 0.965 + Math.sin(this.flickerTimer) * (0.012 + proximity * 0.025 + lowBattery * 0.03);
-      const dip = this.voltageDipTimer > 0 ? 0.68 - proximity * 0.08 : 1;
-      const batteryOutput = 0.72 + Math.sqrt(this.batteryLevel) * 0.28;
-      const targetIntensity = this.defaultIntensity * batteryOutput * slowWaver * dip;
-      const blend = 1 - Math.exp(-deltaTime * (this.voltageDipTimer > 0 ? 20 : 9));
-      this.currentIntensity += (targetIntensity - this.currentIntensity) * blend;
-      this.spotLight.intensity = this.currentIntensity * (this.game?.cinematicLightScale ?? 1);
-      if (this.game?.flashlightFill) {
-        this.game.flashlightFill.intensity = this.enabled
-          ? (LIGHTING_CONFIG.flashlightFillIntensity ?? 12) * (0.72 + Math.sqrt(this.batteryLevel) * 0.28)
-            * (this.game?.cinematicLightScale ?? 1)
-          : 0;
-      }
+      const scale = reducedMotion
+        ? this.computeReducedMotionScale(threat)
+        : this.computeHorrorScale(dt, threat);
+      this.applyOutput(scale);
 
       if (this.batteryLevel < 0.15 && !this.lowBatteryWarned) {
         this.lowBatteryWarned = true;
@@ -71,8 +63,105 @@ export class FlashlightController {
         this.applyState(true);
         this.hud.setStatus("손전등 배터리가 방전되었습니다!", 1800);
       }
+    } else {
+      this.smoothThreat = 0;
+      this.applyOutput(0);
     }
     this.hud.setFlashlightBattery?.(this.batteryLevel, this.enabled);
+  }
+
+  computeReducedMotionScale(threat) {
+    return 1 - threat * 0.18;
+  }
+
+  computeHorrorScale(dt, threat) {
+    this.flickerPhase += dt * (2.4 + threat * 22);
+    this.strobePhase += dt * (9 + threat * 38);
+    this.nextEventAt -= dt;
+    this.eventTimer = Math.max(0, this.eventTimer - dt);
+
+    if (this.nextEventAt <= 0) {
+      this.beginThreatEvent(threat);
+    }
+
+    const grain = Math.sin(this.flickerPhase) * 0.55
+      + Math.sin(this.flickerPhase * 2.73 + 1.1) * 0.3
+      + Math.sin(this.flickerPhase * 6.1 + 0.4) * 0.15;
+    const jitter = 1
+      - threat * 0.1
+      - threat * 0.22 * (0.5 + 0.5 * grain)
+      - threat * threat * 0.16 * Math.abs(Math.sin(this.flickerPhase * 3.4));
+
+    let eventScale = 1;
+    if (this.eventTimer > 0) {
+      if (this.eventKind === "blackout") {
+        eventScale = 0.02 + Math.random() * 0.05;
+      } else if (this.eventKind === "strobe") {
+        const cutoff = 0.18 - threat * 0.22;
+        const pulse = Math.sin(this.strobePhase * (1.6 + threat * 2.4));
+        eventScale = pulse > cutoff ? 1.08 : (0.04 + Math.random() * 0.07);
+      } else if (this.eventKind === "dip") {
+        eventScale = 0.38 - threat * 0.18;
+      }
+    }
+
+    return Math.max(0, jitter * eventScale);
+  }
+
+  beginThreatEvent(threat) {
+    const roll = Math.random();
+    if (threat < 0.12) {
+      this.eventKind = "none";
+      this.eventTimer = 0;
+      this.nextEventAt = 1.8 + Math.random() * 3.2;
+      return;
+    }
+
+    if (threat > 0.78) {
+      this.eventKind = roll < 0.42 ? "blackout" : roll < 0.82 ? "strobe" : "dip";
+    } else if (threat > 0.42) {
+      this.eventKind = roll < 0.22 ? "blackout" : roll < 0.72 ? "strobe" : "dip";
+    } else {
+      this.eventKind = roll < 0.18 ? "strobe" : "dip";
+    }
+
+    if (this.eventKind === "blackout") {
+      this.eventTimer = 0.07 + Math.random() * (0.08 + threat * 0.18);
+    } else if (this.eventKind === "strobe") {
+      this.eventTimer = 0.16 + Math.random() * (0.18 + threat * 0.38);
+    } else {
+      this.eventTimer = 0.09 + Math.random() * 0.14;
+    }
+
+    const gap = (1.7 - threat * 1.45) + Math.random() * (1.1 - threat * 0.95);
+    this.nextEventAt = this.eventTimer + Math.max(0.05, gap);
+    this.playFlickerSound(threat);
+  }
+
+  playFlickerSound(threat) {
+    if (this.soundCooldown > 0 || this.eventKind === "none") {
+      return;
+    }
+    this.soundCooldown = Math.max(0.05, 0.28 - threat * 0.22);
+    soundManager.playSFX("flashlight_flicker");
+  }
+
+  applyOutput(scale) {
+    this.outputScale = scale;
+    const batteryOutput = 0.72 + Math.sqrt(this.batteryLevel) * 0.28;
+    const cinematic = this.game?.cinematicLightScale ?? 1;
+    this.currentIntensity = this.enabled
+      ? this.defaultIntensity * batteryOutput * scale
+      : 0;
+    this.spotLight.intensity = this.currentIntensity * cinematic;
+    if (this.game?.flashlightFill) {
+      const fillBase = LIGHTING_CONFIG.flashlightFillIntensity ?? 4.6;
+      this.game.flashlightFill.intensity = this.enabled
+        ? fillBase * batteryOutput * scale * cinematic
+        : 0;
+    }
+    const dying = this.enabled ? Math.max(0, 1 - scale) : 0;
+    this.spotLight.color.copy(this.healthyColor).lerp(this.dyingColor, Math.min(1, dying * 1.35));
   }
 
   rechargeBattery(amount = 1.0) {
@@ -109,19 +198,17 @@ export class FlashlightController {
     this.enabled = false;
     this.batteryLevel = 1.0;
     this.currentIntensity = 0;
+    this.outputScale = 0;
+    this.smoothThreat = 0;
+    this.eventTimer = 0;
+    this.eventKind = "none";
     this.lowBatteryWarned = false;
     this.applyState(false);
   }
 
   applyState(showMessage) {
     this.spotLight.visible = true;
-    this.currentIntensity = this.enabled ? this.defaultIntensity * (0.72 + Math.sqrt(this.batteryLevel) * 0.28) : 0;
-    this.spotLight.intensity = this.currentIntensity * (this.game?.cinematicLightScale ?? 1);
-    if (this.game?.flashlightFill) {
-      this.game.flashlightFill.intensity = this.enabled
-        ? (LIGHTING_CONFIG.flashlightFillIntensity ?? 12) * (this.game?.cinematicLightScale ?? 1)
-        : 0;
-    }
+    this.applyOutput(this.enabled ? 1 : 0);
     this.hud.setFlashlightEnabled(this.enabled);
     this.hud.setFlashlightBattery?.(this.batteryLevel, this.enabled);
 
