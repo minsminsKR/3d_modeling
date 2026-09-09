@@ -3777,8 +3777,8 @@ export class BackroomsGenerator {
           spawnSafeLight("wall-switch", 4.4, wallH, 1.55, 0, "복도 스위치");
         }
         if (chicanes.ns) {
-          spawnSafeLight("wall-switch", -1.55, wallH, -4.4, -Math.PI / 2, "복도 스위치");
-          spawnSafeLight("wall-switch", 1.55, wallH, 4.4, Math.PI / 2, "복도 스위치");
+          spawnSafeLight("wall-switch", -1.55, wallH, -4.4, Math.PI / 2, "복도 스위치");
+          spawnSafeLight("wall-switch", 1.55, wallH, 4.4, -Math.PI / 2, "복도 스위치");
         }
       } else {
         spawnSafeLight("wall-switch", -1.18, wallH, -5.2, Math.PI / 2, "벽 스위치");
