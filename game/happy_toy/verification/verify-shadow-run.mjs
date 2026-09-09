@@ -17,21 +17,25 @@ try {
     const game = window.__happyToy;
     game.menuSystem?.hideMenu();
     game.start();
+    game.loop?.stop();
     game.ghostMode = true;
     game.testSafeMode = false;
   });
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(200);
 
-  const walkTo = (target, maxSteps = 780) => page.evaluate(({ target, maxSteps }) => {
+  const walkTo = (target, maxSteps = 360) => page.evaluate(({ target, maxSteps }) => {
     const game = window.__happyToy;
     const player = game.player;
     game.ghostMode = true;
     game.testSafeMode = false;
+    game.loop?.stop();
     const openDoors = () => {
       for (const door of game.doors || []) {
         if (Math.abs((door.position.y || 0) - player.position.y) > 2.4) continue;
-        if (door.distanceTo(player.position) < 2.95 && !door.isOpen && !door.isLocked && !door.isBlocked) {
-          door.interact(game);
+        if (door.distanceTo(player.position) < 3.2 && !door.isLocked && !door.isBlocked) {
+          if (!door.isOpen) door.interact(game);
+          door.openAmount = 1;
+          door.update(0.2);
         }
       }
     };
@@ -52,18 +56,18 @@ try {
       player.pitch = 0;
       openDoors();
       game.input.keys.add("w");
-      game.update(0.05);
+      game.update(0.05, { skipRender: true });
       const moved = Math.hypot(player.position.x - lastX, player.position.z - lastZ);
       if (moved < 0.016) {
         stuck += 1;
-        if (stuck % 10 === 0) {
+        if (stuck % 8 === 0) {
           game.input.keys.delete("w");
-          game.input.keys.add(stuck % 20 === 0 ? "a" : "d");
-          game.update(0.05);
+          game.input.keys.add(stuck % 16 === 0 ? "a" : "d");
+          game.update(0.05, { skipRender: true });
           game.input.keys.delete("a");
           game.input.keys.delete("d");
         }
-        if (stuck > 48) break;
+        if (stuck > 36) break;
       } else {
         stuck = 0;
         lastX = player.position.x;
@@ -85,6 +89,7 @@ try {
     { x: 80, z: -16 },
   ]) {
     annexWalk.push(await walkTo(stop));
+    console.log("walk", stop, annexWalk.at(-1));
   }
 
   const rooms = await page.evaluate(() => {
@@ -141,7 +146,7 @@ try {
         y: cx === 1 && cz === 2 ? -5 : cx === -1 && cz === -1 ? 5 : 0,
         z: cz * 16,
       });
-      for (let i = 0; i < 12; i += 1) game.update(0.05);
+      for (let i = 0; i < 12; i += 1) game.update(0.05, { skipRender: true });
     };
     load(2, -2);
     load(-2, 2);
@@ -172,7 +177,7 @@ try {
         const dz = key.position.z - game.player.position.z;
         game.player.yaw = Math.atan2(-dx, -dz);
         game.input.keys.add("w");
-        game.update(0.05);
+        game.update(0.05, { skipRender: true });
       }
       game.input.keys.delete("w");
       if (!key.isCollected) game.collectKey(key);
@@ -193,9 +198,9 @@ try {
     game.exitCabinet();
 
     game.player.setPosition({ x: 0.15, y: 0, z: -0.7 });
-    for (let i = 0; i < 8; i += 1) game.update(0.05);
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
     game.tryClearFinal();
-    for (let i = 0; i < 130; i += 1) game.update(0.05);
+    for (let i = 0; i < 130; i += 1) game.update(0.05, { skipRender: true });
     return {
       collected,
       keyCount: game.keyCount,

@@ -521,7 +521,7 @@ export class Game {
   }
 
 
-  update(deltaTime) {
+  update(deltaTime, options = {}) {
     if (this.input.consumePressed("0") || this.input.consumePressed("numpad0")) {
       this.toggleTestSafeMode();
     }
@@ -673,7 +673,9 @@ export class Game {
     if (this.gameOver && this.deathSequence && !this.deathSequence.shown) {
       this.updateDeathSequence(deltaTime);
     }
-    this.renderer.render(this.scene, this.camera);
+    if (!options.skipRender) {
+      this.renderer.render(this.scene, this.camera);
+    }
     this.input.endFrame();
   }
 
