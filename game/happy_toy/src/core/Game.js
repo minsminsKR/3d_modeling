@@ -448,6 +448,7 @@ export class Game {
     this.tryPointerLock(false);
     this.hud.setStatus("손전등이 유일한 길입니다. 발소리가 나면 신발장에 숨으십시오.", 4200);
     this.voiceAnnouncer?.announce("start", "오늘은 하교하지 않습니다. 복도에서 기다리십시오.");
+    this.floorHuntDirector?.ensureSilhouette?.();
   }
 
   tryPointerLock(notifyOnFail = false) {

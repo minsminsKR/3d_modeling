@@ -715,7 +715,7 @@ export const ENEMY_CONFIGS = [
     height: 1.75,
     radius: 0.42,
     pathRadius: 0.34,
-    pathCellSize: 0.52,
+    pathCellSize: 0.4,
     pathMaxIterations: 9000,
     pathRefreshSeconds: 0.2,
     patrolSpeed: 1.28,

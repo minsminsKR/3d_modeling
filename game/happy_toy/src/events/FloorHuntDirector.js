@@ -32,85 +32,97 @@ export class FloorHuntDirector {
     const group = new THREE.Group();
     group.name = "floor-hunt-silhouette";
     const mat = new THREE.MeshStandardMaterial({
-      color: 0x050308,
+      color: 0x040208,
       roughness: 1,
       metalness: 0,
-      emissive: 0x12040a,
-      emissiveIntensity: 0.22,
+      emissive: 0x18060c,
+      emissiveIntensity: 0.28,
     });
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.78, 0.26), mat);
-    torso.position.y = 1.02;
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.3, 0.24), mat);
-    head.position.y = 1.52;
-    const hips = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.28, 0.22), mat);
-    hips.position.y = 0.58;
-    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.52, 0.16), mat);
-    legL.position.set(-0.1, 0.26, 0);
-    const legR = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.52, 0.16), mat);
-    legR.position.set(0.1, 0.26, 0);
-    const armL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.58, 0.12), mat);
-    armL.position.set(-0.28, 0.98, 0.04);
-    armL.rotation.z = 0.18;
-    const armR = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.58, 0.12), mat);
-    armR.position.set(0.28, 0.98, 0.04);
-    armR.rotation.z = -0.18;
-    group.add(torso, head, hips, legL, legR, armL, armR);
+    const cloak = new THREE.Mesh(new THREE.BoxGeometry(0.62, 1.55, 0.38), mat);
+    cloak.position.y = 0.92;
+    cloak.rotation.x = 0.08;
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.72, 0.24), mat);
+    torso.position.set(0, 1.12, 0.04);
+    const head = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.28, 0.22), mat);
+    head.position.set(0, 1.68, 0.06);
+    const hips = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.26, 0.2), mat);
+    hips.position.y = 0.52;
+    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.58, 0.15), mat);
+    legL.position.set(-0.11, 0.28, 0.02);
+    const legR = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.58, 0.15), mat);
+    legR.position.set(0.11, 0.28, -0.02);
+    const armL = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.72, 0.11), mat);
+    armL.position.set(-0.34, 1.05, 0.08);
+    armL.rotation.z = 0.28;
+    const armR = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.72, 0.11), mat);
+    armR.position.set(0.34, 1.05, 0.08);
+    armR.rotation.z = -0.28;
+    group.add(cloak, torso, head, hips, legL, legR, armL, armR);
     group.visible = false;
     return group;
   }
 
   ensureSilhouette() {
-    if (this.silhouette) {
-      this.loadModel();
-      return this.silhouette;
+    if (!this.silhouette) {
+      this.silhouette = this.makeBoxFigure();
+      this.game.scene.add(this.silhouette);
     }
-    this.silhouette = this.makeBoxFigure();
-    this.game.scene.add(this.silhouette);
     this.loadModel();
     return this.silhouette;
   }
 
+  blacken(root) {
+    root.traverse((child) => {
+      if (!child.isMesh) return;
+      const materials = Array.isArray(child.material) ? child.material : [child.material];
+      for (const material of materials) {
+        if (!material) continue;
+        if (material.color) material.color.setHex(0x060308);
+        if (material.emissive) {
+          material.emissive.setHex(0x14060c);
+          material.emissiveIntensity = 0.22;
+        }
+        material.map = null;
+        material.roughness = 1;
+        material.metalness = 0;
+        material.needsUpdate = true;
+      }
+    });
+  }
+
+  installRoot(root, clip) {
+    const group = new THREE.Group();
+    group.name = "floor-hunt-silhouette";
+    group.add(root);
+    if (this.silhouette) {
+      group.position.copy(this.silhouette.position);
+      group.visible = this.silhouette.visible;
+      this.game.scene.remove(this.silhouette);
+    }
+    this.game.scene.add(group);
+    this.silhouette = group;
+    this.modelReady = true;
+    if (clip) {
+      this.mixer = new THREE.AnimationMixer(root);
+      const action = this.mixer.clipAction(clip);
+      action.play();
+    }
+  }
+
   loadModel() {
-    if (this.loadStarted || this.modelReady) return;
+    if (this.modelReady) return;
+    if (this.loadStarted) return;
     this.loadStarted = true;
     const config = ENEMY_CONFIGS.find((item) => item.id === "uncat") || ENEMY_CONFIGS[0];
     const loader = new CharacterLoader();
-    loader.load({ ...config, height: 1.72 }).then((loaded) => {
-      if (!loaded?.root || loaded.fallback) return;
-      const root = loaded.root;
-      root.traverse((child) => {
-        if (!child.isMesh) return;
-        const materials = Array.isArray(child.material) ? child.material : [child.material];
-        for (const material of materials) {
-          if (!material) continue;
-          material.color?.setHex(0x060308);
-          if (material.emissive) {
-            material.emissive.setHex(0x14060c);
-            material.emissiveIntensity = 0.2;
-          }
-          material.map = null;
-          material.roughness = 1;
-          material.metalness = 0;
-          material.needsUpdate = true;
-        }
-      });
-      const group = new THREE.Group();
-      group.name = "floor-hunt-silhouette";
-      group.add(root);
-      if (this.silhouette) {
-        group.position.copy(this.silhouette.position);
-        group.visible = this.silhouette.visible;
-        this.game.scene.remove(this.silhouette);
+    loader.load({ ...config, height: 1.78 }).then((loaded) => {
+      if (!loaded?.root) {
+        this.loadStarted = false;
+        return;
       }
-      this.game.scene.add(group);
-      this.silhouette = group;
-      this.modelReady = true;
+      this.blacken(loaded.root);
       const clip = loaded.actions?.chase || loaded.actions?.patrol || loaded.animations?.[0];
-      if (clip) {
-        this.mixer = new THREE.AnimationMixer(root);
-        const action = this.mixer.clipAction(clip);
-        action.play();
-      }
+      this.installRoot(loaded.root, clip);
     }).catch(() => {
       this.loadStarted = false;
     });
@@ -225,18 +237,18 @@ export class FloorHuntDirector {
     const world = this.game.collisionWorld;
     this.repathAt -= dt;
     if (this.repathAt <= 0 || this.pathIndex >= this.path.length) {
-      this.repathAt = 0.55;
+      this.repathAt = 0.45;
       const path = world?.findPath?.(
         sil.position,
         playerPos,
-        0.38,
-        { allowInterFloor: false, maxIterations: 1400, cellSize: 1.05 },
+        0.34,
+        { allowInterFloor: false, maxIterations: 5000, cellSize: 0.55 },
       ) || [];
       this.path = path;
       this.pathIndex = path.length > 1 ? 1 : 0;
     }
     if (!this.path.length) return;
-    const speed = 1.15 + this.approach * 1.55;
+    const speed = 1.22 + this.approach * 1.65;
     let remain = speed * dt;
     while (remain > 0 && this.pathIndex < this.path.length) {
       const goal = this.path[this.pathIndex];

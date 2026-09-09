@@ -298,6 +298,8 @@ export class BackroomsGenerator {
 
     // Intra-tile baffle loops so plus halls are not highways. Keep Uncat's
     // south reveal (0,1) and the weeping-angel west tile (-1,0) as spines.
+    // Maze tiles add inner ribs/pockets while leaving the S-bend, opposite
+    // loop, and outer ring walkable.
   getHallChicanes(cx, cz) {
     const openings = this.getOpenings(cx, cz);
     const skipUncatSouth = cx === 0 && cz === 1;
@@ -1653,11 +1655,11 @@ export class BackroomsGenerator {
     if (hallLike) {
       const maze = ewChicane || nsChicane;
       const nsSep = (x, zSign, fullName, midName) => {
-        if (maze) addWallSegment(x, zSign * 5.2, 0.4, 1.2, midName);
+        if (maze) addWallSegment(x, zSign * 5.0, 0.4, 1.0, midName);
         else addWallSegment(x, zSign * 5.6, 0.4, 4.8, fullName);
       };
       const ewSep = (z, xSign, fullName, midName) => {
-        if (maze) addWallSegment(xSign * 5.2, z, 1.2, 0.4, midName);
+        if (maze) addWallSegment(xSign * 5.0, z, 1.0, 0.4, midName);
         else addWallSegment(xSign * 5.6, z, 4.8, 0.4, fullName);
       };
       nsSep(-1.4, -1, "alcove_nw_ns", "alcove_nw_ns_mid");
@@ -1792,12 +1794,45 @@ export class BackroomsGenerator {
       add("hall_maze_jog_e", 2.6, 0.0, t, 2.72);
       add("hall_maze_loop_n", 0.0, -4.9, 1.15, t);
       add("hall_maze_loop_s", 0.0, 4.9, 1.15, t);
+      add("hall_maze_rib_w_n", -3.55, -1.4, 0.55, t);
+      add("hall_maze_rib_w_s", -3.55, 1.4, 0.55, t);
+      add("hall_maze_rib_e_n", 3.55, -1.4, 0.55, t);
+      add("hall_maze_rib_e_s", 3.55, 1.4, 0.55, t);
+      if (!nsChicane) {
+        add("hall_maze_rib_n_w", -1.4, -3.7, t, 1.15);
+        add("hall_maze_rib_n_e", 1.4, -3.7, t, 1.15);
+        add("hall_maze_rib_s_w", -1.4, 3.7, t, 1.15);
+        add("hall_maze_rib_s_e", 1.4, 3.7, t, 1.15);
+        const odd = ((chunk.cx + chunk.cz) & 1) === 1;
+        const px = odd ? 2.28 : 2.42;
+        const pz = odd ? 4.12 : 3.98;
+        add("hall_maze_pocket_ne", px, -pz, t, 1.35);
+        add("hall_maze_pocket_nw", -px, -pz, t, 1.35);
+        add("hall_maze_pocket_se", px, pz, t, 1.35);
+        add("hall_maze_pocket_sw", -px, pz, t, 1.35);
+      }
     }
     if (nsChicane) {
       add("hall_maze_jog_ns", 0.0, -2.6, 2.72, t);
       add("hall_maze_jog_ns_s", 0.0, 2.6, 2.72, t);
       add("hall_maze_loop_w", -4.9, 0.0, t, 1.15);
       add("hall_maze_loop_e", 4.9, 0.0, t, 1.15);
+      add("hall_maze_rib_n_w2", -1.4, -3.55, t, 0.55);
+      add("hall_maze_rib_n_e2", 1.4, -3.55, t, 0.55);
+      add("hall_maze_rib_s_w2", -1.4, 3.55, t, 0.55);
+      add("hall_maze_rib_s_e2", 1.4, 3.55, t, 0.55);
+      if (!ewChicane) {
+        add("hall_maze_pocket_ne", 5.15, -3.25, t, 1.1);
+        add("hall_maze_pocket_se", 5.15, 3.25, t, 1.1);
+        add("hall_maze_pocket_nw", -5.15, -3.25, t, 1.1);
+        add("hall_maze_pocket_sw", -5.15, 3.25, t, 1.1);
+      }
+    }
+    if (ewChicane && nsChicane) {
+      add("hall_maze_diag_ne", 3.5, -3.5, t, 0.7);
+      add("hall_maze_diag_nw", -3.5, -3.5, t, 0.7);
+      add("hall_maze_diag_se", 3.5, 3.5, t, 0.7);
+      add("hall_maze_diag_sw", -3.5, 3.5, t, 0.7);
     }
     if (openings.E && openings.W && !ewChicane) {
       add("hall_maze_teeth_w", -4.2, 0.92, 1.8, t);
@@ -1819,6 +1854,17 @@ export class BackroomsGenerator {
     gloom.name = `${chunkId}_hall_maze_gloom`;
     this.scene.add(gloom);
     chunk.meshes.push(gloom);
+    if (ewChicane || nsChicane) {
+      const gloom2 = new THREE.PointLight(0x2a1814, 0.82, 4.6, 2.0);
+      gloom2.position.set(
+        center.x + (cabinetSE ? 5.1 : -5.1),
+        floorY + 2.05,
+        center.z + (skipNW ? -5.1 : 5.1),
+      );
+      gloom2.name = `${chunkId}_hall_maze_gloom2`;
+      this.scene.add(gloom2);
+      chunk.meshes.push(gloom2);
+    }
   }
 
   dressOmenRoom(chunk, center, chunkId, floorY) {
@@ -3174,6 +3220,18 @@ export class BackroomsGenerator {
         : { pos: [-5.25, 0.0, 5.25], yaw: -Math.PI / 2 };
       addDynamicCabinet(`cabinet_hall_${chunk.cx}_${chunk.cz}`, "신발장", alcove.pos, alcove.yaw);
     }
+    const mazeHall = hallLike && (this.getHallChicanes(chunk.cx, chunk.cz).ew || this.getHallChicanes(chunk.cx, chunk.cz).ns);
+    if (mazeHall && chunk.cabinets.length === 1 && !(chunk.cx === 0 && chunk.cz === 0)) {
+      const first = chunk.cabinets[0];
+      const lx = first.position.x - center.x;
+      const lz = first.position.z - center.z;
+      addDynamicCabinet(
+        `cabinet_hall2_${chunk.cx}_${chunk.cz}`,
+        "반대편 신발장",
+        [lx, 0.0, -lz],
+        lz > 0 ? Math.PI : 0,
+      );
+    }
 
     const addLoreNote = (id, localPos, yaw, body) => {
       const note = new LoreNote({
@@ -3963,6 +4021,12 @@ export class BackroomsGenerator {
           wp(2.6, -4.5), wp(-2.6, 4.5),
           wp(-6.4, -6.4), wp(-6.4, 0), wp(-6.4, 6.4),
           wp(6.4, -6.4), wp(6.4, 0), wp(6.4, 6.4),
+        );
+      }
+      if (chicanes.ew || chicanes.ns) {
+        chunk.waypoints.push(
+          wp(-3.5, -3.5), wp(3.5, -3.5), wp(-3.5, 3.5), wp(3.5, 3.5),
+          wp(-2.4, -4.1), wp(2.4, 4.1), wp(-2.4, 4.1), wp(2.4, -4.1),
         );
       }
     } else if (type === "corner") {

@@ -50,6 +50,39 @@ await page.evaluate(() => {
 await page.screenshot({ path: path.join(outDir, "f1_outer_ring_uncat.png"), timeout: 120000 });
 console.log("ring", ring);
 
+const ribs = await page.evaluate(() => {
+  const game = window.__happyToy;
+  game.testSafeMode = true;
+  game.cutsceneEvent = null;
+  game.monsterIntroManager?.reset?.();
+  game.hud?.setPrompt?.("");
+  game.mapBuilder.generator.generateChunk(1, 0);
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.setDormant(false);
+  uncat.group.visible = true;
+  uncat.group.position.set(16.0, 0, 2.55);
+  uncat.group.lookAt(11.6, 1.2, 2.55);
+  uncat.state = "chase";
+  game.hud.setStatus("복도가 갈라집니다. 한 길로 쫓기면 다른 길로, 아니면 신발장으로.", 4200);
+  return game.poseForCapture({
+    x: 11.55,
+    y: 0,
+    z: 2.55,
+    lookAt: [16.1, 1.15, 2.5],
+    flashlight: true,
+    freezeLoop: true,
+  });
+});
+await page.evaluate(() => {
+  const game = window.__happyToy;
+  const uncat = game.enemyManager.enemies.find((enemy) => enemy.config.id === "uncat");
+  uncat.group.visible = true;
+  uncat.group.position.set(16.0, 0, 2.55);
+  game.renderer.render(game.scene, game.camera);
+});
+await page.screenshot({ path: path.join(outDir, "f1_maze_ribs_chase.png"), timeout: 120000 });
+console.log("ribs", ribs);
+
 const hunt = await page.evaluate(async () => {
   const game = window.__happyToy;
   game.testSafeMode = true;
@@ -59,6 +92,15 @@ const hunt = await page.evaluate(async () => {
   game.player.setPosition({ x: 10.5, y: -5, z: 32 });
   game.floorHuntDirector?.ensureSilhouette?.();
   for (let i = 0; i < 80; i += 1) game.update(0.05, { skipRender: true });
+  return true;
+});
+await page.waitForFunction(
+  () => window.__happyToy?.floorHuntDirector?.modelReady === true,
+  null,
+  { timeout: 12000 },
+).catch(() => {});
+const huntShot = await page.evaluate(() => {
+  const game = window.__happyToy;
   const sil = game.floorHuntDirector?.ensureSilhouette?.();
   if (sil) {
     sil.visible = true;
@@ -69,6 +111,7 @@ const hunt = await page.evaluate(async () => {
   const look = sil.position.clone();
   look.y += 1.2;
   game.player.setLookAt(look);
+  game.flashlightController?.setEnabled(true, false);
   game.renderer.render(game.scene, game.camera);
   return {
     visible: sil?.visible === true,
@@ -77,11 +120,11 @@ const hunt = await page.evaluate(async () => {
     flashlight: game.flashlightController?.enabled === true,
   };
 });
-if (!hunt.visible) {
-  throw new Error(`B1 hunt missing: ${JSON.stringify(hunt)}`);
+if (!huntShot.visible) {
+  throw new Error(`B1 hunt missing: ${JSON.stringify(huntShot)}`);
 }
 await page.screenshot({ path: path.join(outDir, "b1_hunt_uncat_shadow.png"), timeout: 120000 });
-console.log("hunt", hunt);
+console.log("hunt", hunt, huntShot);
 
 if (!ring.flashlight || ring.intensity < 8) {
   throw new Error(`outer ring capture failed: ${JSON.stringify(ring)}`);
