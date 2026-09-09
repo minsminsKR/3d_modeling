@@ -1,7 +1,5 @@
-import * as THREE from "three";
 import { soundManager } from "../audio/SoundManager.js";
-import { CharacterLoader } from "../loaders/CharacterLoader.js";
-import { ENEMY_CONFIGS } from "../config/gameConfig.js";
+import { createStalkerFigure, updateStalkerGait } from "../loaders/CharacterLoader.js";
 
 // Floor-bound lurker for B1 / 2F. Uncat stays on 1F; this figure hunts the
 // other two maps along walkable corridors so hiding is required.
@@ -29,35 +27,8 @@ export class FloorHuntDirector {
   }
 
   makeBoxFigure() {
-    const group = new THREE.Group();
+    const group = createStalkerFigure({ id: "floor-hunt", height: 1.78 });
     group.name = "floor-hunt-silhouette";
-    const mat = new THREE.MeshStandardMaterial({
-      color: 0x040208,
-      roughness: 1,
-      metalness: 0,
-      emissive: 0x18060c,
-      emissiveIntensity: 0.28,
-    });
-    const cloak = new THREE.Mesh(new THREE.BoxGeometry(0.62, 1.55, 0.38), mat);
-    cloak.position.y = 0.92;
-    cloak.rotation.x = 0.08;
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.72, 0.24), mat);
-    torso.position.set(0, 1.12, 0.04);
-    const head = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.28, 0.22), mat);
-    head.position.set(0, 1.68, 0.06);
-    const hips = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.26, 0.2), mat);
-    hips.position.y = 0.52;
-    const legL = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.58, 0.15), mat);
-    legL.position.set(-0.11, 0.28, 0.02);
-    const legR = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.58, 0.15), mat);
-    legR.position.set(0.11, 0.28, -0.02);
-    const armL = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.72, 0.11), mat);
-    armL.position.set(-0.34, 1.05, 0.08);
-    armL.rotation.z = 0.28;
-    const armR = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.72, 0.11), mat);
-    armR.position.set(0.34, 1.05, 0.08);
-    armR.rotation.z = -0.28;
-    group.add(cloak, torso, head, hips, legL, legR, armL, armR);
     group.visible = false;
     return group;
   }
@@ -66,66 +37,15 @@ export class FloorHuntDirector {
     if (!this.silhouette) {
       this.silhouette = this.makeBoxFigure();
       this.game.scene.add(this.silhouette);
+      this.modelReady = true;
     }
     this.loadModel();
     return this.silhouette;
   }
 
-  blacken(root) {
-    root.traverse((child) => {
-      if (!child.isMesh) return;
-      const materials = Array.isArray(child.material) ? child.material : [child.material];
-      for (const material of materials) {
-        if (!material) continue;
-        if (material.color) material.color.setHex(0x060308);
-        if (material.emissive) {
-          material.emissive.setHex(0x14060c);
-          material.emissiveIntensity = 0.22;
-        }
-        material.map = null;
-        material.roughness = 1;
-        material.metalness = 0;
-        material.needsUpdate = true;
-      }
-    });
-  }
-
-  installRoot(root, clip) {
-    const group = new THREE.Group();
-    group.name = "floor-hunt-silhouette";
-    group.add(root);
-    if (this.silhouette) {
-      group.position.copy(this.silhouette.position);
-      group.visible = this.silhouette.visible;
-      this.game.scene.remove(this.silhouette);
-    }
-    this.game.scene.add(group);
-    this.silhouette = group;
-    this.modelReady = true;
-    if (clip) {
-      this.mixer = new THREE.AnimationMixer(root);
-      const action = this.mixer.clipAction(clip);
-      action.play();
-    }
-  }
-
   loadModel() {
-    if (this.modelReady) return;
-    if (this.loadStarted) return;
+    this.modelReady = true;
     this.loadStarted = true;
-    const config = ENEMY_CONFIGS.find((item) => item.id === "uncat") || ENEMY_CONFIGS[0];
-    const loader = new CharacterLoader();
-    loader.load({ ...config, height: 1.78 }).then((loaded) => {
-      if (!loaded?.root) {
-        this.loadStarted = false;
-        return;
-      }
-      this.blacken(loaded.root);
-      const clip = loaded.actions?.chase || loaded.actions?.patrol || loaded.animations?.[0];
-      this.installRoot(loaded.root, clip);
-    }).catch(() => {
-      this.loadStarted = false;
-    });
   }
 
   hide() {
@@ -185,8 +105,13 @@ export class FloorHuntDirector {
       this.advanceAlongPath(dt, player.position, hy);
     }
 
-    sil.lookAt(x, hy + 1.1, z);
+    const dx = x - sil.position.x;
+    const dz = z - sil.position.z;
+    if (dx * dx + dz * dz > 0.0001) {
+      sil.rotation.y = Math.atan2(dx, dz);
+    }
     this.mixer?.update(dt);
+    updateStalkerGait(sil, dt, this.frozen ? 0.08 : 0.38 + this.approach);
     this.stepTimer -= dt;
     if (this.stepTimer <= 0 && !this.frozen) {
       this.stepTimer = Math.max(0.24, 0.52 - this.approach * 0.24);

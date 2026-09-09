@@ -7,7 +7,7 @@ const url = process.argv[2] || "http://127.0.0.1:8010/";
 const executablePath = process.env.CHROME_PATH
   || (process.platform === "win32" ? "C:/Program Files/Google/Chrome/Application/chrome.exe" : undefined);
 
-assert.ok(LIGHTING_CONFIG.fogFar <= 12, "fog must collapse to flashlight range");
+assert.ok(LIGHTING_CONFIG.fogFar <= 9, "fog must collapse to flashlight range");
 assert.ok(LIGHTING_CONFIG.ambientIntensity <= 0.03, "ambient must leave unlit space nearly black");
 assert.ok(LIGHTING_CONFIG.flashlightFillIntensity <= 0.45, "fill light must not wash the corridor");
 assert.ok(STALKER_CONFIG.graceSeconds <= 10, "stalker should enter after a short grace");
@@ -39,6 +39,9 @@ try {
       visible: uncat.group.visible,
       stalkerFlag: game.stalkerReleased,
       state: uncat.state,
+      silhouette: uncat.config.silhouette === true,
+      figure: uncat.group.getObjectByName("uncat-silhouette") != null,
+      textured: Boolean(uncat.modelRoot?.children?.some?.((child) => child.material?.map)),
     };
 
     game.testSafeMode = true;
@@ -324,6 +327,9 @@ try {
   assert.equal(result.afterRelease.visible, true);
   assert.equal(result.afterRelease.stalkerFlag, true);
   assert.equal(result.afterRelease.state, "chase", "released stalker must hunt immediately");
+  assert.equal(result.afterRelease.silhouette, true, "1F hunter must be a fog silhouette");
+  assert.equal(result.afterRelease.figure, true, "1F hunter must use the cloaked stalker figure");
+  assert.equal(result.afterRelease.textured, false, "silhouette hunter must not keep the cat texture");
   assert.ok(result.afterChase.startDist > 8, `stalker should spawn down the hall, got ${result.afterChase.startDist}`);
   assert.ok(
     result.afterChase.endDist < result.afterChase.startDist - 1.5,
@@ -400,6 +406,7 @@ try {
   assert.equal(result.atWing.hud, "0 / 4");
   assert.ok(Math.abs(result.floorHunt.uncatY) < 2.5, `Uncat must stay on 1F while the player is in B1, got y=${result.floorHunt.uncatY}`);
   assert.equal(result.floorHunt.huntVisible, true, "B1 floor hunt silhouette must appear after a short linger");
+  assert.equal(result.floorHunt.huntModel, true, "B1/2F hunt silhouette must be ready at start");
   assert.ok(result.floorHunt.huntY < -2, `floor hunt must stay in B1, got y=${result.floorHunt.huntY}`);
   assert.ok(result.floorHunt.b1Cabinets >= 3, "basement needs multiple hide spots");
   assert.ok(result.floorHunt.f2Cabinets >= 3, "2F gallery needs multiple hide spots");

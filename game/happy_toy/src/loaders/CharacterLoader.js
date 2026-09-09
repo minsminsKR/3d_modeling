@@ -1,5 +1,6 @@
 // FBX 캐릭터와 원본 텍스처를 읽어 Three.js 장면에 올릴 수 있게 정리하는 모듈입니다.
 // Mixamo에서 받은 Walking/Run FBX를 캐릭터 애니메이션으로 쓰고, 실패하면 임시 형상으로 대체합니다.
+// 그림자복도형 추격자는 Mixamo 고양이 대신 검은 인간형 실루엣을 씁니다.
 
 import * as THREE from "three";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
@@ -11,6 +12,9 @@ export class CharacterLoader {
   }
 
   async load(config) {
+    if (config.silhouette) {
+      return this.createStalkerAsset(config);
+    }
     try {
       const [object, texture] = await Promise.all([
         this.loadFbx(config.modelUrl),
@@ -30,6 +34,18 @@ export class CharacterLoader {
       console.warn(`Failed to load ${config.label}:`, error);
       return this.createFallback(config);
     }
+  }
+
+  createStalkerAsset(config) {
+    return {
+      root: createStalkerFigure(config),
+      animations: [],
+      actions: {
+        patrol: null,
+        chase: null,
+      },
+      fallback: false,
+    };
   }
 
 
@@ -223,11 +239,18 @@ export class CharacterLoader {
   }
 
   createFallback(config) {
+    if (config.silhouette || config.id === "uncat") {
+      return {
+        ...this.createStalkerAsset(config),
+        fallback: true,
+      };
+    }
+
     const group = new THREE.Group();
     const body = new THREE.Mesh(
       new THREE.CapsuleGeometry(0.32, config.height * 0.52, 8, 16),
       new THREE.MeshStandardMaterial({
-        color: config.id === "uncat" ? 0x93423b : 0x6f7f57,
+        color: 0x6f7f57,
         roughness: 0.88,
         metalness: 0.0,
       }),
@@ -255,6 +278,97 @@ export class CharacterLoader {
       },
       fallback: true,
     };
+  }
+}
+
+export function createStalkerFigure(config = {}) {
+  const height = config.height || 1.88;
+  const group = new THREE.Group();
+  group.name = `${config.id || "stalker"}-silhouette`;
+
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x050308,
+    roughness: 1,
+    metalness: 0,
+    emissive: 0x0a0408,
+    emissiveIntensity: 0.04,
+    side: THREE.DoubleSide,
+  });
+  const cloakMat = mat.clone();
+  cloakMat.side = THREE.DoubleSide;
+
+  const cloak = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.13, 0.44, height * 0.9, 12, 1, true),
+    cloakMat,
+  );
+  cloak.name = "stalker-cloak";
+  cloak.position.y = height * 0.46;
+  cloak.castShadow = true;
+
+  const torso = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.11, 0.16, height * 0.38, 8),
+    mat,
+  );
+  torso.position.y = height * 0.68;
+  torso.castShadow = true;
+
+  const head = new THREE.Group();
+  head.name = "stalker-head";
+  head.position.y = height * 0.94;
+  const hood = new THREE.Mesh(new THREE.SphereGeometry(0.17, 10, 8), mat);
+  hood.scale.set(1.08, 1.32, 1.12);
+  hood.castShadow = true;
+  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x6a1218 });
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.016, 6, 6), eyeMat);
+  eyeL.position.set(-0.042, 0.016, 0.13);
+  const eyeR = eyeL.clone();
+  eyeR.position.x = 0.042;
+  head.add(hood, eyeL, eyeR);
+
+  const makeLimb = (name, length, radius) => {
+    const pivot = new THREE.Group();
+    pivot.name = name;
+    const bone = new THREE.Mesh(new THREE.CylinderGeometry(radius * 0.62, radius, length, 6), mat);
+    bone.position.y = -length * 0.5;
+    bone.castShadow = true;
+    pivot.add(bone);
+    return pivot;
+  };
+
+  const legL = makeLimb("stalker-leg-l", height * 0.46, 0.055);
+  legL.position.set(-0.09, height * 0.46, 0.01);
+  const legR = makeLimb("stalker-leg-r", height * 0.46, 0.055);
+  legR.position.set(0.09, height * 0.46, -0.01);
+  const armL = makeLimb("stalker-arm-l", height * 0.54, 0.038);
+  armL.position.set(-0.2, height * 0.8, 0.03);
+  armL.rotation.z = 0.16;
+  const armR = makeLimb("stalker-arm-r", height * 0.54, 0.038);
+  armR.position.set(0.2, height * 0.8, 0.03);
+  armR.rotation.z = -0.16;
+
+  group.add(cloak, torso, head, legL, legR, armL, armR);
+  group.userData.rig = { legL, legR, armL, armR, head, phase: 0 };
+  group.frustumCulled = false;
+  return group;
+}
+
+export function updateStalkerGait(root, dt, intensity = 1) {
+  const rig = root?.userData?.rig;
+  if (!rig) {
+    return;
+  }
+  const gait = Math.max(0, intensity);
+  rig.phase += dt * (5.4 + gait * 7.2);
+  const swing = 0.14 + gait * 0.42;
+  const left = Math.sin(rig.phase);
+  const right = Math.sin(rig.phase + Math.PI);
+  rig.legL.rotation.x = left * swing;
+  rig.legR.rotation.x = right * swing;
+  rig.armL.rotation.x = right * swing * 0.78;
+  rig.armR.rotation.x = left * swing * 0.78;
+  if (rig.head) {
+    rig.head.rotation.y = Math.sin(rig.phase * 0.32) * 0.1;
+    rig.head.rotation.x = Math.sin(rig.phase * 0.18) * 0.04;
   }
 }
 

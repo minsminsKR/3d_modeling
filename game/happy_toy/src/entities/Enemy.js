@@ -4,6 +4,7 @@
 import * as THREE from "three";
 import { direction2D, distance2D, vectorFromArray, yawFromDirection } from "../utils/math.js";
 import { soundManager } from "../audio/SoundManager.js";
+import { updateStalkerGait } from "../loaders/CharacterLoader.js";
 
 export class Enemy {
   constructor(config, loadedAsset, collisionWorld, doors) {
@@ -163,6 +164,15 @@ export class Enemy {
 
     if (!this.isIdlePose) {
       this.mixer?.update(deltaTime);
+    }
+    if (this.config.silhouette) {
+      const chasing = this.state === "chase" || this.state === "flee";
+      const moving = chasing
+        || this.state === "wander"
+        || this.state === "search"
+        || this.state === "investigateNoise"
+        || this.state === "investigateCabinet";
+      updateStalkerGait(this.modelRoot, deltaTime, chasing ? 1 : moving ? 0.42 : 0.12);
     }
     this.collisionWorld.snapToValidSurface(this.group.position, { actorId: this.config.id });
 
@@ -500,6 +510,9 @@ export class Enemy {
     if (canHear || sightConfirmed) {
       const wasAlert = this.state === "chase" || this.state === "flee";
       if (canStartChase) {
+        if (!wasAlert && this.config.silhouette) {
+          soundManager.playMonsterRoar(this.config.id);
+        }
         this.state = "chase";
         this.searchTarget = null;
         this.investigationTarget = null;

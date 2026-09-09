@@ -48,8 +48,8 @@ export const LOVELY_DOLL_CONFIG = {
 
 export const LIGHTING_CONFIG = {
   fogColor: 0x030201,
-  fogNear: 2.15,
-  fogFar: 12,
+  fogNear: 1.45,
+  fogFar: 8.8,
   rendererExposure: 1.04,
   ambientColor: 0x0c0806,
   ambientIntensity: 0.01,
@@ -81,7 +81,7 @@ export const LIGHTING_CONFIG = {
   basement: {
     fogColor: 0x020605,
     fogNear: 1.35,
-    fogFar: 11.2,
+    fogFar: 8.4,
     exposure: 0.88,
     ambientColor: 0x04120e,
     ambientIntensity: 0.012,
@@ -96,7 +96,7 @@ export const LIGHTING_CONFIG = {
   annex: {
     fogColor: 0x040302,
     fogNear: 2.0,
-    fogFar: 12,
+    fogFar: 8.8,
     exposure: 1.08,
     ambientColor: 0x120e0a,
     flashlightColor: 0xf0dcc0,
@@ -106,7 +106,7 @@ export const LIGHTING_CONFIG = {
   upper: {
     fogColor: 0x140103,
     fogNear: 1.45,
-    fogFar: 11.4,
+    fogFar: 8.2,
     exposure: 1.02,
     ambientColor: 0x140506,
     ambientIntensity: 0.014,
@@ -712,7 +712,7 @@ export const ENEMY_CONFIGS = [
       chase: "/assets/characters/Uncat/mixamo/Run.fbx",
     },
     spawn: [4.5, 0, 25.0],
-    height: 1.75,
+    height: 1.88,
     radius: 0.42,
     pathRadius: 0.34,
     pathCellSize: 0.4,
@@ -739,6 +739,7 @@ export const ENEMY_CONFIGS = [
     investigationSpeedMultiplier: 1.14,
     chaseAllowsAirborne: false,
     allowedFloor: 1,
+    silhouette: true,
     allowInterFloorPatrol: false,
     cabinetInvestigateSpeed: 3.05,
     visualGroundSink: 0.04,
