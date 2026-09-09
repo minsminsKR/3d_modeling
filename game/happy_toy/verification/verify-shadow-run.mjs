@@ -104,7 +104,7 @@ try {
     { x: 10.2, z: 0 },
     { x: 11.5, z: 0 },
     { x: 11.5, z: 2.6 },
-    { x: 11.85, z: 4.35 },
+    { x: 12.05, z: 5.15 },
     { x: 11.5, z: 2.6 },
     ...ewS(16).slice(2),
     ...ewS(32),
@@ -452,7 +452,7 @@ try {
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 1.8), "east school must force a south jog off z=0");
-  assert.ok(annexWalk.some((stop) => stop.z > 3.6 && stop.x < 13), "east S-bend south alcove locker must be walkable");
+  assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east S-bend south alcove locker must be walkable");
   assert.ok(annexWalk.some((stop) => stop.z < -1.8), "east school must S-bend north off z=0 before the next tile");
   const annexGate = annexWalk.find((stop) => stop.x > 56 && Math.abs(stop.z) < 1.2);
   assert.ok(annexGate?.ok, `must walk to 별관 gate, got ${JSON.stringify(annexGate)}`);
