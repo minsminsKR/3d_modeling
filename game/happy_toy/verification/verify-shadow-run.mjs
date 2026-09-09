@@ -79,9 +79,20 @@ try {
     return { ok: dist < 2.8, steps: maxSteps, x: player.position.x, z: player.position.z, dist };
   }, { target, maxSteps });
 
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    for (const door of game.doors || []) {
+      if (Math.abs(door.position.x) < 9 && Math.abs(door.position.z) < 9 && !door.isLocked && !door.isBlocked) {
+        door.isOpen = true;
+        door.openAmount = 1;
+        door.update(0.3);
+      }
+    }
+  });
+
   const annexWalk = [];
   for (const stop of [
-    { x: 16, z: 0 },
+    { x: 10.2, z: 0 },
     { x: 32, z: 0 },
     { x: 48, z: 0 },
     { x: 64, z: 0 },
@@ -215,6 +226,7 @@ try {
 
   console.log({ annexWalk, rooms, altarStill, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
+  assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.equal(annexWalk[3].ok, true, `must walk to 별관 gate, got ${JSON.stringify(annexWalk[3])}`);
   assert.ok(annexWalk[3].x > 56, "별관 gate is east of the core");
   assert.equal(annexWalk[5].ok, true, `must walk into 보건실, got ${JSON.stringify(annexWalk[5])}`);

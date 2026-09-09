@@ -60,8 +60,17 @@ if (!altar.flashlight || altar.intensity < 8) {
 if (!annex.flashlight || annex.intensity < 8) {
   throw new Error(`annex capture failed: ${JSON.stringify(annex)}`);
 }
-if (!nurse.flashlight || faculty.intensity < 8 || science.intensity < 8) {
-  throw new Error("annex room captures lost the beam");
+const nurseWide = await poseShot("annex_nurse_ward.png", {
+  x: 80, y: 0, z: -9.6, lookAt: [80.4, 0.85, -16],
+});
+const facultyWide = await poseShot("annex_faculty_desks.png", {
+  x: 96, y: 0, z: 10.4, lookAt: [96, 0.8, 16.2],
+});
+const scienceWide = await poseShot("annex_lab_benches.png", {
+  x: 96, y: 0, z: -26.2, lookAt: [96, 0.95, -32],
+});
+if (!nurseWide.flashlight || facultyWide.intensity < 8 || scienceWide.intensity < 8) {
+  throw new Error("wide annex room captures lost the beam");
 }
 
 console.log("ok");
