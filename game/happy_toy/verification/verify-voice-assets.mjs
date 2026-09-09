@@ -20,11 +20,15 @@ for (const key of required) {
   assert.ok(stat.size > 4000, `${key}.ogg too small (${stat.size})`);
 }
 
-const served = await fetch(process.argv[2] || "http://127.0.0.1:8010/assets/voice/f2south.ogg");
-assert.equal(served.ok, true, `voice clip not served: ${served.status}`);
+const arg = process.argv[2] || "http://127.0.0.1:8010/";
+const servedUrl = String(arg).includes(".ogg")
+  ? arg
+  : new URL("assets/voice/skybridge.ogg", arg.endsWith("/") ? arg : `${arg}/`).href;
+const served = await fetch(servedUrl);
+assert.equal(served.ok, true, `voice clip not served: ${served.status} ${servedUrl}`);
 const type = String(served.headers.get("content-type") || "");
 assert.ok(type.includes("ogg") || type.includes("audio"), `unexpected voice mime: ${type}`);
 const bytes = Buffer.from(await served.arrayBuffer());
 assert.ok(bytes.length > 4000, `served voice clip too small: ${bytes.length}`);
 
-console.log(`PASS: ${required.length} Korean PA clips on disk and /assets/voice/f2south.ogg served as ${type}`);
+console.log(`PASS: ${required.length} Korean PA clips on disk and ${servedUrl} served as ${type}`);
