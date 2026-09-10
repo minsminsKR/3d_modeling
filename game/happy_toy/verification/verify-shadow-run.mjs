@@ -1394,6 +1394,7 @@ try {
   for (const stop of [
     { x: 0, z: 22 },
     { x: 0, z: 28 },
+    { x: 0, z: 32 },
     { x: -6, z: 32 },
   ]) {
     roofHallWalk.push(await walkTo(stop, 360));
