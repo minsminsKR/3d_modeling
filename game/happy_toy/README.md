@@ -49,3 +49,4 @@ python web_server.py --host 127.0.0.1 --port 8010
 - `src/` 게임 로직
 - `../assets/` 캐릭터, 소품, 텍스처, `voice/*.ogg` 한국어 방송 (저장소에 포함)
 - `vendor/three/` 로컬 Three.js. CDN 없이 실행됩니다.
+- `PATCHNOTES.md` 패치 이력, 회귀 금지 좌표, 다음 세션 인수인계
