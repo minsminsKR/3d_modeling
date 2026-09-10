@@ -1595,6 +1595,9 @@ try {
       trophyRoomL: names(trophy).some((name) => name.includes("trophy_room_sw_l_")),
       annexRoom: names(gate).some((name) => name.includes("annex_room_")),
       annexRoomL: names(gate).some((name) => name.includes("annex_room_ne_l_")),
+      laundryRoomL: names(laundry).some((name) => name.includes("laundry_room_nw_l_")),
+      specimenRoomL: names(specimen).some((name) => name.includes("specimen_room_nw_l_")),
+      dollRoomL: names(dollHall).some((name) => name.includes("doll_room_sw_l_")),
       eastwashRoom: names(eastWing).some((name) => name.includes("eastwash_room_")),
       angelRoom: names(westHall).some((name) => name.includes("angel_room_")),
       washfourRoom: names(washFour).some((name) => name.includes("washfour_room_")),
@@ -1715,7 +1718,9 @@ try {
       etiquetteTable: names(etiquette).some((name) => name.includes("tea_table")),
       roofHallBoard: names(roofHall).some((name) => name.includes("roofhall_board")),
       roofHallUnique: names(roofHall).some((name) => name.includes("roofhall_run_n"))
-        && names(roofHall).some((name) => name.includes("roofhall_run_w")),
+        && names(roofHall).some((name) => name.includes("roofhall_run_w"))
+        && names(roofHall).some((name) => name.includes("roofhall_run_west"))
+        && names(roofHall).some((name) => name.includes("roofhall_run_north")),
       lostFoundBox: names(lostFound).some((name) => name.includes("lostfound_box_")),
       startHallRack: names(startHall).some((name) => name.includes("starthall_rack_")),
       classWingCart: names(hall).some((name) => name.includes("classwing_cart_")),
@@ -2072,6 +2077,9 @@ try {
   assert.notEqual(rooms.hallSides.roof.e, 1.7, "roof hall east wall must leave the copied ±1.7 plus");
   assert.equal(rooms.annexRoomL, true, "annex NE classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.trophyRoomL, true, "trophy SW classroom must break the copied rectangle with an L jog");
+  assert.equal(rooms.laundryRoomL, true, "laundry NW classroom must break the copied rectangle with an L jog");
+  assert.equal(rooms.specimenRoomL, true, "specimen NW classroom must break the copied rectangle with an L jog");
+  assert.equal(rooms.dollRoomL, true, "doll SW classroom must break the copied rectangle with an L jog");
   assert.equal(annexOffsetWalk.at(-1).ok, true, `annex north offset must walk past the old 1.22m wall, got ${JSON.stringify(annexOffsetWalk.at(-1))}`);
   assert.ok(annexOffsetWalk.at(-1).z < -0.95 && annexOffsetWalk.at(-1).z > -1.45, "annex offset north wall must reach z≈-1 where the old pinch would stop");
   assert.equal(memorialOffsetWalk.at(-1).ok, true, `memorial south offset must walk past a 3.4m wall, got ${JSON.stringify(memorialOffsetWalk.at(-1))}`);

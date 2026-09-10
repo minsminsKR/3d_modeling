@@ -276,6 +276,10 @@ export class MapBuilder {
             decal.position.set(chunk.center.x + side * 1.82, chunk.floorY + 1.34, chunk.center.z + side * along);
             decal.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2;
           }
+        } else if (this.generator?.isRoofHallChunk?.(chunk.cx, chunk.cz)) {
+          const along = 4.6 + random() * 1.6;
+          decal.position.set(chunk.center.x + side * along, chunk.floorY + 1.34, chunk.center.z + side * 2.05);
+          decal.rotation.y = side < 0 ? 0 : Math.PI;
         } else {
           const along = 4.6 + random() * 1.6;
           if (random() > 0.5) {
@@ -390,18 +394,23 @@ export class MapBuilder {
       return;
     }
 
-    const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.18), this.getRoomPlateMaterial(chunk));
-    plate.position.set(chunk.center.x - 1.18, chunk.floorY + 2.08, chunk.center.z - 4.6);
-    plate.rotation.y = Math.PI / 2;
-    plate.name = `${chunk.chunkId}_room_plate`;
-    plate.renderOrder = 2;
-    this.scene.add(plate);
-    chunk.meshes.push(plate);
-
+    const roofHall = this.generator?.isRoofHallChunk?.(chunk.cx, chunk.cz);
     const hallLike = chunk.type === "start" || chunk.type === "corridor_ns" || chunk.type === "corridor_ew"
       || chunk.type === "t_junction" || chunk.type === "cross_junction" || chunk.type === "narrow_ns"
       || chunk.type === "dead_end";
-    if (hallLike) {
+
+    // Roof is an L-run, not a plus. Skip the copied ±1.18 classroom kit.
+    if (!roofHall) {
+      const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.18), this.getRoomPlateMaterial(chunk));
+      plate.position.set(chunk.center.x - 1.18, chunk.floorY + 2.08, chunk.center.z - 4.6);
+      plate.rotation.y = Math.PI / 2;
+      plate.name = `${chunk.chunkId}_room_plate`;
+      plate.renderOrder = 2;
+      this.scene.add(plate);
+      chunk.meshes.push(plate);
+    }
+
+    if (hallLike && !roofHall) {
       const doorMat = this.getClassroomDoorMaterial();
       const doorOffsets = [-3.35, 3.35];
       for (let i = 0; i < doorOffsets.length; i += 1) {
@@ -421,7 +430,7 @@ export class MapBuilder {
       }
     }
 
-    if (random() < 0.72) {
+    if (!roofHall && random() < 0.72) {
       const ofuda = new THREE.Mesh(
         new THREE.PlaneGeometry(0.12, 0.28),
         new THREE.MeshStandardMaterial({
@@ -438,7 +447,7 @@ export class MapBuilder {
       chunk.meshes.push(ofuda);
     }
 
-    if (random() < 0.78) {
+    if (!roofHall && random() < 0.78) {
       const clock = new THREE.Mesh(
         new THREE.CircleGeometry(0.16, 20),
         new THREE.MeshStandardMaterial({
