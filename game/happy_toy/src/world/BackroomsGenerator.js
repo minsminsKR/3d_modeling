@@ -8616,8 +8616,9 @@ export class BackroomsGenerator {
     this.scene.add(paper);
     chunk.meshes.push(paper);
 
-    // North corridor face, east/west of the T-spur. Keep |x|<1.7 and z=0 spine clear.
-    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+    // North corridor face, between the T-spur (|x|<1.7) and the classroom
+    // doors at ±5.25. A 1.12m rack at ±4.55 sat in the door gap.
+    for (const [name, x] of [["w", -2.88], ["e", 2.88]]) {
       this.addShoeRackUnit(
         chunk, chunkId, `annexgate_rack_${name}`,
         center.x + x, floorY + 0.48, center.z - 1.52, 0,
