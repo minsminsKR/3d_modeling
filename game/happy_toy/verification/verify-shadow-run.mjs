@@ -402,7 +402,7 @@ try {
   });
   const annexOffsetWalk = [];
   for (const stop of [
-    { x: 68.2, z: -1.12 },
+    { x: 68.2, z: -2.5 },
   ]) {
     annexOffsetWalk.push(await walkTo(stop, 220));
     console.log("annex_offset", stop, annexOffsetWalk.at(-1));
@@ -579,7 +579,7 @@ try {
   });
   const memorialOffsetWalk = [];
   for (const stop of [
-    { x: 99.4, z: 1.78 },
+    { x: 99.4, z: 3.2 },
   ]) {
     memorialOffsetWalk.push(await walkTo(stop, 220));
     console.log("memorial_offset", stop, memorialOffsetWalk.at(-1));
@@ -1044,12 +1044,12 @@ try {
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(1, 1);
-    game.player.setPosition({ x: 20, y: 0, z: 16 });
+    game.player.setPosition({ x: 18.4, y: 0, z: 16 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
   });
   const stairOffsetWalk = [];
   for (const stop of [
-    { x: 20, z: 17.65 },
+    { x: 18.4, z: 19.4 },
   ]) {
     stairOffsetWalk.push(await walkTo(stop, 220));
     console.log("stair_offset", stop, stairOffsetWalk.at(-1));
@@ -1207,7 +1207,7 @@ try {
   });
   const nurseryOffsetWalk = [];
   for (const stop of [
-    { x: 30.88, z: 19.4 },
+    { x: 29.2, z: 19.4 },
   ]) {
     nurseryOffsetWalk.push(await walkTo(stop, 220));
     console.log("nursery_offset", stop, nurseryOffsetWalk.at(-1));
@@ -2060,13 +2060,13 @@ try {
   assert.notEqual(rooms.hallSides.stair.n, rooms.hallSides.stair.s, "stair plus must offset north vs south");
   assert.notEqual(rooms.hallSides.stair.e, rooms.hallSides.stair.w, "stair plus must offset east vs west");
   assert.equal(annexOffsetWalk.at(-1).ok, true, `annex north offset must walk past the old 1.22m wall, got ${JSON.stringify(annexOffsetWalk.at(-1))}`);
-  assert.ok(annexOffsetWalk.at(-1).z < -0.95, "annex offset north wall must reach z≈-1 where the old pinch would stop");
+  assert.ok(annexOffsetWalk.at(-1).z < -0.95 && annexOffsetWalk.at(-1).z > -1.45, "annex offset north wall must reach z≈-1 where the old pinch would stop");
   assert.equal(memorialOffsetWalk.at(-1).ok, true, `memorial south offset must walk past a 3.4m wall, got ${JSON.stringify(memorialOffsetWalk.at(-1))}`);
-  assert.ok(memorialOffsetWalk.at(-1).z > 1.5, "memorial offset south wall must reach z≈1.7 where a copied 3.4m wall would stop");
+  assert.ok(memorialOffsetWalk.at(-1).z > 1.5 && memorialOffsetWalk.at(-1).z < 2.05, "memorial offset south wall must reach z≈1.7 where a copied 3.4m wall would stop");
   assert.equal(stairOffsetWalk.at(-1).ok, true, `stair plus south offset must walk past a 3.4m wall, got ${JSON.stringify(stairOffsetWalk.at(-1))}`);
-  assert.ok(stairOffsetWalk.at(-1).z > 17.42, "stair offset south wall must reach z≈17.5 where a copied plus would stop");
+  assert.ok(stairOffsetWalk.at(-1).z > 17.42 && stairOffsetWalk.at(-1).z < 18.2, "stair offset south wall must reach z≈17.5 where a copied plus would stop");
   assert.equal(nurseryOffsetWalk.at(-1).ok, true, `nursery west offset must walk past the old 1.28m wall, got ${JSON.stringify(nurseryOffsetWalk.at(-1))}`);
-  assert.ok(nurseryOffsetWalk.at(-1).x < 31.05, "nursery offset west wall must reach x≈30.9 where the old pinch would stop");
+  assert.ok(nurseryOffsetWalk.at(-1).x < 31.05 && nurseryOffsetWalk.at(-1).x > 30.35, "nursery offset west wall must reach x≈30.9 where the old pinch would stop");
   assert.equal(rooms.arcadeRoom, true, "arcade must close west classroom volumes");
   assert.equal(trophyWideWalk.at(-1).ok, true, `trophy hall must walk off-spine inside the wide clear, got ${JSON.stringify(trophyWideWalk.at(-1))}`);
   assert.ok(trophyWideWalk.at(-1).z > 1.65 && trophyWideWalk.at(-1).x > 113.8, "trophy wide clear must reach z≈2 where a 3.4m wall would stop");
