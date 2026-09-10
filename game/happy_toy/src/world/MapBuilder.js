@@ -32,6 +32,7 @@ export class MapBuilder {
       roughness: 0.54,
       metalness: 0.08,
     });
+    this.fixtureMaterialStable.userData.happyToyShared = true;
     this.fixtureMaterialUnstable = new THREE.MeshStandardMaterial({
       color: 0x7a4c2c,
       emissive: 0x4d1907,
@@ -39,6 +40,7 @@ export class MapBuilder {
       roughness: 0.54,
       metalness: 0.08,
     });
+    this.fixtureMaterialUnstable.userData.happyToyShared = true;
     this._lastChunkGenWarn = 0;
   }
 
@@ -200,6 +202,9 @@ export class MapBuilder {
       const fixtureMaterial = isUnstable
         ? this.fixtureMaterialUnstable.clone()
         : this.fixtureMaterialStable;
+      if (isUnstable) {
+        fixtureMaterial.userData.happyToyShared = false;
+      }
       const fixture = new THREE.Mesh(this.fixtureGeometry, fixtureMaterial);
       const offsetX = (random() - 0.5) * 1.2;
       const offsetZ = (random() - 0.5) * 1.2;

@@ -2379,7 +2379,10 @@ export class BackroomsGenerator {
         light.pointLight.dispose();
       }
       this.scene.remove(light.mesh);
-      light.mesh.material?.dispose();
+      const mat = light.mesh?.material;
+      if (mat && !mat.userData?.happyToyShared && typeof mat.dispose === "function") {
+        mat.dispose();
+      }
     }
 
     // 3. Remove doors
