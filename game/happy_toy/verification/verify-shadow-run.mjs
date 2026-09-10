@@ -336,7 +336,7 @@ try {
   const trophyWideWalk = [];
   for (const stop of [
     { x: 114.8, z: 0 },
-    { x: 114.8, z: 2.05 },
+    { x: 114.8, z: 2.85 },
   ]) {
     trophyWideWalk.push(await walkTo(stop, 280));
     console.log("trophy_wide", stop, trophyWideWalk.at(-1));
@@ -384,7 +384,7 @@ try {
   const annexPinchWalk = [];
   for (const stop of [
     { x: 66.9, z: 0 },
-    { x: 66.9, z: 1.55 },
+    { x: 66.9, z: 2.5 },
   ]) {
     annexPinchWalk.push(await walkTo(stop, 220));
     console.log("annex_pinch", stop, annexPinchWalk.at(-1));
