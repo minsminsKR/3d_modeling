@@ -21,6 +21,18 @@ const shots = [
     name: "f1_doll_sw_l_jog.png",
     cx: -2, cz: 1, x: -37.2, y: 0, z: 20.85, lookAt: [-35.5, 1.1, 20.15],
   },
+  {
+    name: "f1_annex_nw_l_jog.png",
+    cx: 4, cz: 0, x: 57.8, y: 0, z: -3.2, lookAt: [61.8, 1.1, -5.8],
+  },
+  {
+    name: "f1_nursery_sw_l_jog.png",
+    cx: 2, cz: 1, x: 26.6, y: 0, z: 21.5, lookAt: [28.7, 1.1, 20.3],
+  },
+  {
+    name: "f1_storage_sw_l_jog.png",
+    cx: 2, cz: -1, x: 26.6, y: 0, z: -9.0, lookAt: [28.4, 1.1, -12.9],
+  },
 ];
 
 for (const shot of shots) {
