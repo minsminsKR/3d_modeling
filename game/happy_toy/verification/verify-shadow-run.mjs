@@ -1582,6 +1582,7 @@ try {
       skyBothWindows: names(bridge).some((name) => name.includes("hall_outer_window_n_"))
         && names(bridge).some((name) => name.includes("hall_outer_window_s_")),
       skyCheek: names(bridge).some((name) => name.includes("skybridge_cheek_s")),
+      skyStep: names(bridge).some((name) => name.includes("hall_class_n_step") || name.includes("hall_class_s_step")),
       courtyardType: yard.type,
       courtyardWell: names(yard).some((name) => name.includes("courtyard_well")),
       courtyardRail: names(yard).some((name) => name.includes("courtyard_rail_")),
@@ -1696,6 +1697,15 @@ try {
         arcade: generator.getHallHull(4, 1),
         specimen: generator.getHallHull(6, -1),
         angel: generator.getHallHull(-1, 0),
+      },
+      hallSteps: {
+        chase: generator.getHallWallSteps(1, 0),
+        cut: generator.getHallWallSteps(2, 0),
+        sky: generator.getHallWallSteps(3, 0),
+        angel: generator.getHallWallSteps(-1, 0),
+        laundry: generator.getHallWallSteps(4, -1),
+        nursery: generator.getHallWallSteps(2, 1),
+        stage: generator.getHallWallSteps(6, 2),
       },
       windowAlongs: {
         chase: generator.getHallWindowAlongs(1, 0),
@@ -2164,6 +2174,16 @@ try {
   assert.equal(rooms.hallHull.specimen.e, 7.8, "specimen east opening must keep the 7.8 meeting face");
   assert.ok(rooms.hallHull.angel.s < 7.3, "angel closed south hull must pull inward");
   assert.equal(rooms.hallHull.angel.n, 7.8, "angel north opening must keep the 7.8 meeting face");
+  assert.ok(!rooms.hallSteps.chase.n && !rooms.hallSteps.chase.s, "chase halls must not step the 3.4m inner walls");
+  assert.ok(!rooms.hallSteps.cut.n && !rooms.hallSteps.cut.s, "east-wash cut-through must not step its inner walls");
+  assert.notEqual(rooms.hallSteps.sky.n.w, rooms.hallSteps.sky.n.e, "skybridge north window must step west vs east");
+  assert.notEqual(rooms.hallSteps.sky.s.w, rooms.hallSteps.sky.s.e, "skybridge south window must step west vs east");
+  assert.equal(rooms.hallSteps.sky.n.w, rooms.hallSides.sky.n, "skybridge north-west step must keep the authored north clear");
+  assert.equal(rooms.hallSteps.sky.s.e, rooms.hallSides.sky.s, "skybridge south-east step must keep the authored south clear");
+  assert.notEqual(rooms.hallSteps.angel.s.w, rooms.hallSteps.angel.s.e, "angel south window must step west vs east");
+  assert.equal(rooms.hallSteps.laundry.e.n, 1.05, "laundry east-north step must keep the pinched window clear");
+  assert.equal(rooms.hallSteps.nursery.e.n, 1.18, "nursery east-north step must keep the pinched window clear");
+  assert.notEqual(rooms.hallSteps.stage.s.w, rooms.hallSteps.stage.s.e, "stage south window must step west vs east");
   assert.equal(rooms.annexRoomL, true, "annex NE classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.annexRoomNwL, true, "annex NW classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.trophyRoomL, true, "trophy SW classroom must break the copied rectangle with an L jog");
@@ -2250,6 +2270,7 @@ try {
   assert.equal(rooms.skyRib, true, "skybridge must have window ribs");
   assert.equal(rooms.skyBothWindows, true, "connector hall must open windows on both long walls");
   assert.equal(rooms.skyCheek, true, "skybridge south glass must get a west cheek off the copied plane");
+  assert.equal(rooms.skyStep, true, "skybridge inner window walls must step instead of one copied plane");
   assert.ok(rooms.beats.includes("skybridge"), "skybridge VO beat missing");
   assert.ok(story.fired.includes("skybridge") || annexWalk.some((stop) => stop.x > 44 && stop.x < 52), "skybridge story should fire on the connector");
   assert.equal(rooms.courtyardType, "courtyard");
