@@ -1595,6 +1595,7 @@ try {
       trophyRoom: names(trophy).some((name) => name.includes("trophy_room_")),
       trophyRoomSw: names(trophy).some((name) => name.includes("trophy_room_sw")),
       trophyRoomL: names(trophy).some((name) => name.includes("trophy_room_sw_l_")),
+      trophyHallCheek: names(trophy).some((name) => name.includes("trophyhall_cheek_n")),
       annexRoom: names(gate).some((name) => name.includes("annex_room_")),
       annexRoomL: names(gate).some((name) => name.includes("annex_room_ne_l_")),
       annexRoomNwL: names(gate).some((name) => name.includes("annex_room_nw_l_")),
@@ -1603,16 +1604,20 @@ try {
       laundryRoomSwL: names(laundry).some((name) => name.includes("laundry_room_sw_l_")),
       specimenRoomL: names(specimen).some((name) => name.includes("specimen_room_nw_l_")),
       specimenRoomSwL: names(specimen).some((name) => name.includes("specimen_room_sw_l_")),
+      specimenHallBaffle: names(specimen).some((name) => name.includes("specimenhall_baffle_")),
       dollRoomL: names(dollHall).some((name) => name.includes("doll_room_sw_l_")),
       dollRoomNwL: names(dollHall).some((name) => name.includes("doll_room_nw_l_")),
+      dollHallBaffle: names(dollHall).some((name) => name.includes("dollhall_baffle_")),
       arcadeRoomL: names(arcade).some((name) => name.includes("arcade_room_sw_l_")),
       arcadeRoomNwL: names(arcade).some((name) => name.includes("arcade_room_nw_l_")),
       eastwashRoomL: names(eastWing).some((name) => name.includes("eastwash_room_ne_l_")),
       washfourRoomL: names(washFour).some((name) => name.includes("washfour_room_ne_l_")),
       angelRoomL: names(westHall).some((name) => name.includes("angel_room_ne_l_")),
       labLinkRoomL: names(labLink).some((name) => name.includes("lablink_room_sw_l_")),
+      labLinkCheek: names(labLink).some((name) => name.includes("lablink_cheek_n")),
       stageWingRoom: names(stageWing).some((name) => name.includes("stagewing_room_")),
       stageWingRoomL: names(stageWing).some((name) => name.includes("stagewing_room_ne_l_")),
+      stageWingCheek: names(stageWing).some((name) => name.includes("stagewing_cheek_s")),
       nurseryRoomL: names(nurseryHall).some((name) => name.includes("nursery_room_sw_l_")),
       nurseryRoomNwL: names(nurseryHall).some((name) => name.includes("nursery_room_nw_l_")),
       nurseryHallDogleg: names(nurseryHall).some((name) => name.includes("nurseryhall_dogleg_e")),
@@ -1739,6 +1744,7 @@ try {
       archiveRoom: names(archiveHall).some((name) => name.includes("archive_room_")),
       archiveRoomNwL: names(archiveHall).some((name) => name.includes("archive_room_nw_l_")),
       archiveRoomSwL: names(archiveHall).some((name) => name.includes("archive_room_sw_l_")),
+      archiveHallDogleg: names(archiveHall).some((name) => name.includes("archivehall_dogleg_e")),
       storageHallCrate: names(storageHall).some((name) => name.includes("storagehall_crate_")),
       storageRoom: names(storageHall).some((name) => name.includes("storage_room_")),
       teaHallBench: names(teaHall).some((name) => name.includes("teahall_bench_")),
@@ -2141,6 +2147,12 @@ try {
   assert.equal(rooms.memorialGlassJog, true, "memorial north glass must jog off the copied plane");
   assert.equal(rooms.nurseryHallDogleg, true, "nursery east wall must dogleg mid-run");
   assert.equal(rooms.laundryHallBaffle, true, "laundry spine must stagger unique baffles");
+  assert.equal(rooms.trophyHallCheek, true, "trophy north wall must carry a unique cheek pier");
+  assert.equal(rooms.specimenHallBaffle, true, "specimen spine must stagger unique baffles");
+  assert.equal(rooms.stageWingCheek, true, "stage south wall must carry a unique cheek pier");
+  assert.equal(rooms.labLinkCheek, true, "lab-link north wall must carry a unique cheek pier");
+  assert.equal(rooms.dollHallBaffle, true, "doll spine must stagger unique baffles");
+  assert.equal(rooms.archiveHallDogleg, true, "archive east wall must dogleg mid-run");
   assert.equal(rooms.identityNoDoorGlass, true, "closed identity halls must not reuse ±2.9 door glass");
   assert.deepEqual(rooms.windowAlongs.cut, [-5.35, -3.15, 3.15, 5.35], "east-wash window rhythm must stay for the cut-through");
   assert.notDeepEqual(rooms.windowAlongs.annex, rooms.windowAlongs.cut, "annex window panes must leave the copied ±5.35 rhythm");

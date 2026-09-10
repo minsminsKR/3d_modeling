@@ -5256,6 +5256,11 @@ export class BackroomsGenerator {
       center.x - 3.29, floorY + 1.4, center.z + 4.55,
       1.72, 2.8, 0.22, this.schoolClassWallMat,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "trophyhall_cheek_n",
+      center.x + 0.88, floorY + 1.4, center.z - (sides.n - 0.20),
+      1.45, 2.8, 0.36, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x3a2810, 0.14, 4.4, 2);
     glow.position.set(center.x, floorY + 2.15, center.z);
     glow.name = `${chunkId}_trophy_glow`;
@@ -5374,6 +5379,16 @@ export class BackroomsGenerator {
       center.x - 3.48, floorY + 1.4, center.z + 2.52,
       0.22, 2.8, 2.12, this.schoolClassWallMat,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "specimenhall_baffle_n",
+      center.x - 0.92, floorY + 1.4, center.z - 2.95,
+      0.48, 2.8, 1.28, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "specimenhall_baffle_s",
+      center.x + 0.92, floorY + 1.4, center.z + 2.65,
+      0.48, 2.8, 1.28, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x182014, 0.12, 4.0, 2);
     glow.position.set(center.x - 2.4, floorY + 2.05, center.z);
     glow.name = `${chunkId}_specimen_glow`;
@@ -5421,6 +5436,12 @@ export class BackroomsGenerator {
       chunk, chunkId, "stagewing_room_ne_l_x",
       center.x + 2.28, floorY + 1.4, center.z - 3.48,
       1.74, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    const stageSides = this.getHallSides(chunk.cx, chunk.cz);
+    this.placeDressedBox(
+      chunk, chunkId, "stagewing_cheek_s",
+      center.x + 4.55, floorY + 1.4, center.z + (stageSides.s - 0.20),
+      1.35, 2.8, 0.36, this.schoolClassWallMat,
     );
     const glow = new THREE.PointLight(0x201418, 0.12, 4.0, 2);
     glow.position.set(center.x, floorY + 2.05, center.z - 2.4);
@@ -5537,6 +5558,12 @@ export class BackroomsGenerator {
       chunk, chunkId, "lablink_room_sw_l_z",
       center.x - 4.35, floorY + 1.4, center.z + 2.65,
       0.22, 2.8, 1.80, this.schoolClassWallMat,
+    );
+    const labSides = this.getHallSides(chunk.cx, chunk.cz);
+    this.placeDressedBox(
+      chunk, chunkId, "lablink_cheek_n",
+      center.x + 3.15, floorY + 1.4, center.z - (labSides.n - 0.20),
+      1.42, 2.8, 0.36, this.schoolClassWallMat,
     );
     const glow = new THREE.PointLight(0x101820, 0.11, 3.8, 2);
     glow.position.set(center.x, floorY + 2.0, center.z + 2.2);
@@ -5693,6 +5720,16 @@ export class BackroomsGenerator {
       center.x - 4.55, floorY + 1.4, center.z - 3.29,
       0.22, 2.8, 1.72, this.schoolClassWallMat,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "dollhall_baffle_n",
+      center.x - 0.88, floorY + 1.4, center.z - 3.25,
+      0.46, 2.8, 1.32, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "dollhall_baffle_s",
+      center.x + 0.88, floorY + 1.4, center.z + 3.05,
+      0.46, 2.8, 1.32, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x201010, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_dollhall_glow`;
@@ -5745,6 +5782,12 @@ export class BackroomsGenerator {
       chunk, chunkId, "archive_room_sw_l_z",
       center.x - 3.38, floorY + 1.4, center.z + 2.62,
       0.22, 2.8, 1.95, this.schoolClassWallMat,
+    );
+    const archiveSides = this.getHallSides(chunk.cx, chunk.cz);
+    this.placeDressedBox(
+      chunk, chunkId, "archivehall_dogleg_e",
+      center.x + (archiveSides.e - 0.18), floorY + 1.4, center.z - 4.15,
+      0.34, 2.8, 1.72, this.schoolClassWallMat,
     );
     const glow = new THREE.PointLight(0x201810, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
