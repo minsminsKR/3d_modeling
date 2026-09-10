@@ -534,7 +534,9 @@ export class MapBuilder {
       }
     }
 
-    if (random() < 0.8) {
+    const skipCloneKit = gen.isClosedIdentityHall?.(chunk.cx, chunk.cz)
+      || gen.isGlassHallChunk?.(chunk.cx, chunk.cz);
+    if (!skipCloneKit && random() < 0.8) {
       const ofuda = new THREE.Mesh(
         new THREE.PlaneGeometry(0.12, 0.28),
         new THREE.MeshStandardMaterial({
@@ -556,6 +558,7 @@ export class MapBuilder {
       chunk.meshes.push(ofuda);
     }
 
+    if (skipCloneKit) return;
     const arrow = new THREE.Mesh(
       new THREE.PlaneGeometry(0.55, 0.18),
       new THREE.MeshStandardMaterial({

@@ -439,6 +439,33 @@ export class BackroomsGenerator {
     return authored[`${cx},${cz}`] || [-4.2, 4.2];
   }
 
+  // Outer window pane centers along the window wall. East-wash keeps the
+  // copied ±5.35 / ±3.15 rhythm so the cut-through classroom still reads.
+  // Identity and glass halls shift the set so two neighboring tiles do not
+  // share one four-pane cadence. T-spur window walls stay |along| >= 3.
+  getHallWindowAlongs(cx, cz) {
+    const authored = {
+      "4,0": [-4.88, -1.62, 2.55],
+      "7,0": [-6.12, -2.55, 0.85, 5.42],
+      "5,0": [-4.68, 1.05, 5.28],
+      "-1,0": [-5.82, -0.45, 4.15],
+      "4,-1": [-5.05, 1.28, 4.72],
+      "6,-1": [-4.42, 0.55, 5.18],
+      "2,1": [-4.95, -1.22, 2.08],
+      "2,-1": [-5.22, 0.92, 4.38],
+      "-2,1": [-4.15, 1.55, 5.02],
+      "-2,-1": [-5.55, -0.72, 3.65],
+      "5,-2": [-3.88, 2.15, 5.55],
+      "6,2": [-5.45, -1.05, 3.28],
+      "3,0": [-6.05, -2.22, 1.48, 4.92],
+      "6,0": [-5.72, -1.85, 2.08, 5.55],
+      "7,2": [-4.25, 0.72, 5.85],
+      "-1,1": [-5.12, 4.62],
+      "4,1": [-4.28, 5.08],
+    };
+    return authored[`${cx},${cz}`] || [-5.35, -3.15, 3.15, 5.35];
+  }
+
   // Classroom door centers along a wall. Chase tiles keep ±5.25 so hide and
   // the (1,0)→(2,0) cut-through stay on the verified aisle. Identity halls
   // shift the pair so the 16m shell stops using one copied door rhythm.
@@ -3488,20 +3515,25 @@ export class BackroomsGenerator {
     const winE = ePos + 0.03;
     const fluoroAlong = this.getHallFluoroAlong(chunk.cx, chunk.cz);
     const fluoroName = (index, pair) => (fluoroAlong.length <= 2 ? pair[index] : `hall_fluoro_${index}`);
+    const skipDoorGlass = this.isClosedIdentityHall(chunk.cx, chunk.cz);
     if (ewChicane) {
       if (mask.n) {
         doorsOf("n").forEach((along, i) => {
           panel(`hall_class_door_n_${i}`, along, -winN, 0.9, 0.04);
         });
-        glass("hall_window_n_w", -2.9, -winN, 0.28, 0.32, 0.03);
-        glass("hall_window_n_e", 2.9, -winN, 0.28, 0.32, 0.03);
+        if (!skipDoorGlass) {
+          glass("hall_window_n_w", -2.9, -winN, 0.28, 0.32, 0.03);
+          glass("hall_window_n_e", 2.9, -winN, 0.28, 0.32, 0.03);
+        }
       }
       if (mask.s && !this.isPracticeChunk(chunk.cx, chunk.cz)) {
         doorsOf("s").forEach((along, i) => {
           panel(`hall_class_door_s_${i}`, along, winS, 0.9, 0.04);
         });
-        glass("hall_window_s_w", -2.9, winS, 0.28, 0.32, 0.03);
-        glass("hall_window_s_e", 2.9, winS, 0.28, 0.32, 0.03);
+        if (!skipDoorGlass) {
+          glass("hall_window_s_w", -2.9, winS, 0.28, 0.32, 0.03);
+          glass("hall_window_s_e", 2.9, winS, 0.28, 0.32, 0.03);
+        }
       }
       const stripeZ = (sides.s - sides.n) / 2;
       const skipCloneKit = this.isClosedIdentityHall(chunk.cx, chunk.cz)
@@ -3555,11 +3587,11 @@ export class BackroomsGenerator {
           });
         }
       }
-      if (mask.w) {
+      if (mask.w && !skipDoorGlass) {
         glass("hall_window_w_n", -winW, -2.9, 0.03, 0.32, 0.28);
         glass("hall_window_w_s", -winW, 2.9, 0.03, 0.32, 0.28);
       }
-      if (mask.e) {
+      if (mask.e && !skipDoorGlass) {
         glass("hall_window_e_n", winE, -2.9, 0.03, 0.32, 0.28);
         glass("hall_window_e_s", winE, 2.9, 0.03, 0.32, 0.28);
       }
@@ -3674,6 +3706,7 @@ export class BackroomsGenerator {
     const ePos = sides.e + 0.14;
     const wPos = sides.w + 0.14;
     const fillEnd = 7.58;
+    const windowAlongs = this.getHallWindowAlongs(chunk.cx, chunk.cz);
     const pane = (name, x, z, sx, sz, yaw) => {
       const frame = this.placeDressedBox(
         chunk, chunkId, `${name}_frame`,
@@ -3703,9 +3736,9 @@ export class BackroomsGenerator {
       const fillAlong = (sPos + fillEnd) / 2;
       const xs = openings.S ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
       for (const [x, sx] of xs) fill(`hall_outer_fill_s_${x < 0 ? "w" : x > 0 ? "e" : "m"}`, x, fillAlong, sx, fillDepth);
-      for (const x of [-5.35, -3.15, 3.15, 5.35]) {
-        pane(`hall_outer_window_s_${x < 0 ? "w" : "e"}_${Math.abs(x) > 4 ? "a" : "b"}`, x, sPos - 0.08, 1.55, 0.06, 0);
-      }
+      windowAlongs.forEach((x, i) => {
+        pane(`hall_outer_window_s_${x < 0 ? "w" : "e"}_${i}`, x, sPos - 0.08, 1.55, 0.06, 0);
+      });
       const glow = new THREE.PointLight(0x141820, 0.1, 3.4, 2);
       glow.position.set(center.x, floorY + 1.55, center.z + 2.4);
       glow.name = `${chunkId}_hall_outer_glow_s`;
@@ -3717,9 +3750,9 @@ export class BackroomsGenerator {
       const fillAlong = (nPos + fillEnd) / 2;
       const xs = openings.N ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
       for (const [x, sx] of xs) fill(`hall_outer_fill_n_${x < 0 ? "w" : x > 0 ? "e" : "m"}`, x, -fillAlong, sx, fillDepth);
-      for (const x of [-5.35, -3.15, 3.15, 5.35]) {
-        pane(`hall_outer_window_n_${x < 0 ? "w" : "e"}_${Math.abs(x) > 4 ? "a" : "b"}`, x, -nPos + 0.08, 1.55, 0.06, Math.PI);
-      }
+      windowAlongs.forEach((x, i) => {
+        pane(`hall_outer_window_n_${x < 0 ? "w" : "e"}_${i}`, x, -nPos + 0.08, 1.55, 0.06, Math.PI);
+      });
       const glow = new THREE.PointLight(0x141820, 0.1, 3.4, 2);
       glow.position.set(center.x, floorY + 1.55, center.z - 2.4);
       glow.name = `${chunkId}_hall_outer_glow_n`;
@@ -3731,18 +3764,18 @@ export class BackroomsGenerator {
       const fillAlong = (ePos + fillEnd) / 2;
       const zs = openings.E ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
       for (const [z, sz] of zs) fill(`hall_outer_fill_e_${z < 0 ? "n" : z > 0 ? "s" : "m"}`, fillAlong, z, fillDepth, sz);
-      for (const z of [-5.35, -3.15, 3.15, 5.35]) {
-        pane(`hall_outer_window_e_${z < 0 ? "n" : "s"}_${Math.abs(z) > 4 ? "a" : "b"}`, ePos + 0.04, z, 0.06, 1.55, Math.PI / 2);
-      }
+      windowAlongs.forEach((z, i) => {
+        pane(`hall_outer_window_e_${z < 0 ? "n" : "s"}_${i}`, ePos + 0.04, z, 0.06, 1.55, Math.PI / 2);
+      });
     }
     if (nsChicane && !ewChicane && !mask.w) {
       const fillDepth = fillEnd - wPos;
       const fillAlong = (wPos + fillEnd) / 2;
       const zs = openings.W ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
       for (const [z, sz] of zs) fill(`hall_outer_fill_w_${z < 0 ? "n" : z > 0 ? "s" : "m"}`, -fillAlong, z, fillDepth, sz);
-      for (const z of [-5.35, -3.15, 3.15, 5.35]) {
-        pane(`hall_outer_window_w_${z < 0 ? "n" : "s"}_${Math.abs(z) > 4 ? "a" : "b"}`, -wPos - 0.04, z, 0.06, 1.55, -Math.PI / 2);
-      }
+      windowAlongs.forEach((z, i) => {
+        pane(`hall_outer_window_w_${z < 0 ? "n" : "s"}_${i}`, -wPos - 0.04, z, 0.06, 1.55, -Math.PI / 2);
+      });
     }
   }
 
@@ -4984,6 +5017,11 @@ export class BackroomsGenerator {
       chunk, chunkId, "memorial_tape",
       center.x + 2.4, floorY + 1.18, center.z + sides.s - 0.6, 0.2,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "memorial_glass_jog_n",
+      center.x - 2.85, floorY + 1.4, center.z - (sides.n - 0.18),
+      1.55, 2.8, 0.34, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x2a2018, 0.14, 4.6, 2);
     glow.position.set(center.x, floorY + 2.15, center.z);
     glow.name = `${chunkId}_memorial_glow`;
@@ -5267,6 +5305,16 @@ export class BackroomsGenerator {
       center.x - 4.55, floorY + 1.4, center.z + 3.29,
       0.22, 2.8, 1.72, this.schoolClassWallMat,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "arcade_room_nw_l_x",
+      center.x - 3.68, floorY + 1.4, center.z - 4.28,
+      2.22, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "arcade_room_nw_l_z",
+      center.x - 4.72, floorY + 1.4, center.z - 3.18,
+      0.22, 2.8, 1.88, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x181410, 0.12, 4.2, 2);
     glow.position.set(center.x + 2.4, floorY + 2.05, center.z);
     glow.name = `${chunkId}_arcade_glow`;
@@ -5431,6 +5479,16 @@ export class BackroomsGenerator {
       center.x - 3.55, floorY + 1.4, center.z + 2.435,
       0.22, 2.8, 1.93, this.schoolClassWallMat,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "laundryhall_baffle_n",
+      center.x - 0.95, floorY + 1.4, center.z - 3.85,
+      0.48, 2.8, 1.40, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "laundryhall_baffle_s",
+      center.x + 0.95, floorY + 1.4, center.z + 3.55,
+      0.48, 2.8, 1.40, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x1c1410, 0.11, 3.8, 2);
     glow.position.set(center.x - 2.2, floorY + 2.0, center.z);
     glow.name = `${chunkId}_laundry_glow`;
@@ -5561,6 +5619,22 @@ export class BackroomsGenerator {
       center.x - 4.28, floorY + 1.4, center.z + 3.42,
       0.22, 2.8, 1.55, this.schoolClassWallMat,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "nursery_room_nw_l_x",
+      center.x - 3.42, floorY + 1.4, center.z - 4.05,
+      1.95, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "nursery_room_nw_l_z",
+      center.x - 4.38, floorY + 1.4, center.z - 3.22,
+      0.22, 2.8, 1.62, this.schoolClassWallMat,
+    );
+    const nurserySides = this.getHallSides(chunk.cx, chunk.cz);
+    this.placeDressedBox(
+      chunk, chunkId, "nurseryhall_dogleg_e",
+      center.x + (nurserySides.e - 0.18), floorY + 1.4, center.z + 4.55,
+      0.34, 2.8, 1.85, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x201410, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_nurseryhall_glow`;
@@ -5652,6 +5726,26 @@ export class BackroomsGenerator {
     );
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "archive_room_nw", "nw", "ns");
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "archive_room_sw", "sw", "ns");
+    this.placeDressedBox(
+      chunk, chunkId, "archive_room_nw_l_x",
+      center.x - 5.05, floorY + 1.4, center.z - 3.72,
+      3.28, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "archive_room_nw_l_z",
+      center.x - 3.38, floorY + 1.4, center.z - 2.62,
+      0.22, 2.8, 1.95, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "archive_room_sw_l_x",
+      center.x - 5.05, floorY + 1.4, center.z + 3.72,
+      3.28, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "archive_room_sw_l_z",
+      center.x - 3.38, floorY + 1.4, center.z + 2.62,
+      0.22, 2.8, 1.95, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x201810, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_archivehall_glow`;
@@ -5695,6 +5789,16 @@ export class BackroomsGenerator {
       center.x - 4.68, floorY + 1.4, center.z + 3.12,
       0.22, 2.8, 1.88, this.schoolClassWallMat,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "storage_room_nw_l_x",
+      center.x - 3.85, floorY + 1.4, center.z - 4.22,
+      2.35, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "storage_room_nw_l_z",
+      center.x - 4.92, floorY + 1.4, center.z - 3.05,
+      0.22, 2.8, 2.02, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x201410, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_storagehall_glow`;
@@ -5728,6 +5832,26 @@ export class BackroomsGenerator {
     );
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "tea_room_nw", "nw");
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "tea_room_ne", "ne");
+    this.placeDressedBox(
+      chunk, chunkId, "tea_room_nw_l_z",
+      center.x - 3.22, floorY + 1.4, center.z - 5.28,
+      0.22, 2.8, 3.48, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "tea_room_nw_l_x",
+      center.x - 2.28, floorY + 1.4, center.z - 3.48,
+      1.72, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "tea_room_ne_l_z",
+      center.x + 3.55, floorY + 1.4, center.z - 5.12,
+      0.22, 2.8, 3.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "tea_room_ne_l_x",
+      center.x + 2.58, floorY + 1.4, center.z - 3.42,
+      1.85, 2.8, 0.22, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
     glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_teahall_glow`;
@@ -9134,6 +9258,14 @@ export class BackroomsGenerator {
       chunk, chunkId, "annex_room_ne_l_x",
       center.x + 2.435, floorY + 1.4, center.z - 3.55,
       1.93, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    // South cheek pier: unique mid-run so the 16m tube is not a straight
+    // offset rectangle. Stays west of the x=70 pinch proof.
+    const annexSides = this.getHallSides(chunk.cx, chunk.cz);
+    this.placeDressedBox(
+      chunk, chunkId, "annexhall_cheek_s",
+      center.x + 4.15, floorY + 1.4, center.z + (annexSides.s - 0.20),
+      1.25, 2.8, 0.38, this.schoolClassWallMat,
     );
     const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
     glow.position.set(center.x + 3.4, floorY + 2.05, center.z - 1.15);
