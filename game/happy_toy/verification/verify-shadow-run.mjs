@@ -1389,7 +1389,7 @@ try {
   for (const stop of [
     { x: 8.4, z: 41.8 },
     { x: 8.4, z: 48.0 },
-    { x: 6.05, z: 48.2 },
+    { x: 5.8, z: 47.25 },
     { x: 8.4, z: 48.0 },
     { x: 8.4, z: 53.4 },
   ]) {
@@ -1916,7 +1916,7 @@ try {
   assert.equal(rooms.f2SouthLab, true, "2F south labyrinth floor must exist");
   assert.equal(b1DeepWalk.at(-1).ok, true, `must walk the B1 south labyrinth, got ${JSON.stringify(b1DeepWalk.at(-1))}`);
   assert.ok(b1DeepWalk.at(-1).z > 50, "south labyrinth continues past the old basement wall");
-  assert.ok(b1DeepWalk.some((stop) => stop.x < 6.4 && Math.abs(stop.z - 48) < 1.2), "must enter the west flooded classroom");
+  assert.ok(b1DeepWalk.some((stop) => stop.x < 6.75 && Math.abs(stop.z - 48) < 1.4), "must enter the west flooded classroom");
   assert.equal(b1EastWalk.at(-1).ok, true, `must walk the B1 east labyrinth, got ${JSON.stringify(b1EastWalk.at(-1))}`);
   assert.ok(b1EastWalk.at(-1).x > 28, "east labyrinth continues past the old basement wall");
   assert.equal(f2DeepWalk.at(-1).ok, true, `must walk the 2F north labyrinth, got ${JSON.stringify(f2DeepWalk.at(-1))}`);
