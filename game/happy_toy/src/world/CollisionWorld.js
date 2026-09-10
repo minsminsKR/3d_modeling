@@ -307,7 +307,8 @@ export class CollisionWorld {
     const cellSize = options.cellSize ?? 0.85;
     const startSurface = this.getSurfaceAt(start, { preferredFloor: options.floor, allowAnyFloor: true });
     const floor = options.floor ?? startSurface.floor ?? this.getFloorForY(start.y ?? 0);
-    const bounds = this.getNavigationBounds(start, goal, radius + cellSize * 2, cellSize, floor);
+    const pad = options.paddingOverride ?? (radius + cellSize * 2);
+    const bounds = this.getNavigationBounds(start, goal, pad, cellSize, floor);
     const searchBounds = {
       minX: bounds.minX - radius,
       maxX: bounds.minX + bounds.cellsX * cellSize + radius,
@@ -393,6 +394,15 @@ export class CollisionWorld {
           current,
         ));
       }
+    }
+
+    if (!options.expandedSearch) {
+      return this.findFloorPath(start, goal, radius, {
+        ...options,
+        expandedSearch: true,
+        paddingOverride: 36,
+        maxIterations: Math.max(options.maxIterations ?? 0, 2400),
+      });
     }
 
     this.warnOnce(

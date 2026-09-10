@@ -486,6 +486,22 @@ export class BackroomsGenerator {
           rotation: [0, -Math.PI / 2, 0], // Initially facing west (showing back to player approaching from east)
         });
         
+        const fixtureMesh = new THREE.Mesh(this.getBoxGeometry(0.35, 0.12, 0.35), this.trimMaterial);
+        fixtureMesh.position.set(mannequinPos.x, floorY + 2.74, mannequinPos.z);
+        this.scene.add(fixtureMesh);
+        chunk.meshes.push(fixtureMesh);
+
+        const bulbMat = new THREE.MeshStandardMaterial({
+          color: 0xffffff,
+          emissive: 0xffaa44,
+          emissiveIntensity: 3.5,
+          roughness: 0.2,
+        });
+        const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), bulbMat);
+        bulbMesh.position.set(mannequinPos.x, floorY + 2.6, mannequinPos.z);
+        this.scene.add(bulbMesh);
+        chunk.meshes.push(bulbMesh);
+
         // Drive the intro spotlight from the pooled ceiling lights so the
         // shader program stays compiled with a fixed PointLight count.
         chunk.lights.push({
@@ -502,23 +518,6 @@ export class BackroomsGenerator {
           voltagePhase: 0,
           pooledLight: null,
         });
-
-        // Glowing ceiling lamp fixture directly above the mannequin
-        const fixtureMesh = new THREE.Mesh(this.getBoxGeometry(0.35, 0.12, 0.35), this.trimMaterial);
-        fixtureMesh.position.set(mannequinPos.x, floorY + 2.74, mannequinPos.z);
-        this.scene.add(fixtureMesh);
-        chunk.meshes.push(fixtureMesh);
-
-        const bulbMat = new THREE.MeshStandardMaterial({
-          color: 0xffffff,
-          emissive: 0xffaa44,
-          emissiveIntensity: 3.5,
-          roughness: 0.2,
-        });
-        const bulbMesh = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), bulbMat);
-        bulbMesh.position.set(mannequinPos.x, floorY + 2.6, mannequinPos.z);
-        this.scene.add(bulbMesh);
-        chunk.meshes.push(bulbMesh);
       }
     }
 

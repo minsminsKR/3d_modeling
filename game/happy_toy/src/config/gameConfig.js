@@ -51,7 +51,7 @@ export const PERF_CONFIG = {
   anisotropy: 4,
   maxPathSearchesPerFrame: 3,
   pathMaxIterations: 1800,
-  pathLocalPadding: 14,
+  pathLocalPadding: 24,
   lightBindInterval: 0.12,
   teleportInterval: 0.75,
   shadowUpdateInterval: 2,
