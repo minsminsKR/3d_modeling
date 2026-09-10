@@ -414,6 +414,41 @@ export class BackroomsGenerator {
     return sides;
   }
 
+  // Outer wall distance from the tile center. Opening sides stay 7.8 so
+  // neighboring tiles still meet. Closed sides of identity / glass / roof
+  // halls pull inward so the school silhouette is not one 16m AABB.
+  getHallHull(cx, cz) {
+    const h = { n: 7.8, s: 7.8, e: 7.8, w: 7.8 };
+    if ((cx === 0 && cz === 0) || (cx === 1 && cz === 0) || (cx === 0 && cz === 1) || (cx === 0 && cz === -1)) {
+      return h;
+    }
+    if (this.isEastWashChunk(cx, cz)) return h;
+    const authored = {
+      "4,-1": { e: 6.72 },
+      "2,1": { e: 6.95 },
+      "2,-1": { e: 6.58 },
+      "-2,-1": { e: 6.42 },
+      "5,-2": { n: 6.65 },
+      "6,2": { s: 6.98 },
+      "-1,1": { n: 7.45 },
+      "4,1": { w: 6.75 },
+      "6,-1": { w: 7.40 },
+      "3,0": { n: 6.48, s: 7.12 },
+      "7,2": { n: 6.78 },
+      "-2,0": { w: 6.62 },
+      "0,2": { e: 6.70, s: 6.85 },
+      "-1,0": { s: 6.92 },
+      "-2,1": { w: 6.88 },
+    };
+    Object.assign(h, authored[`${cx},${cz}`] || {});
+    const open = this.getOpenings(cx, cz);
+    if (open.N) h.n = 7.8;
+    if (open.S) h.s = 7.8;
+    if (open.E) h.e = 7.8;
+    if (open.W) h.w = 7.8;
+    return h;
+  }
+
   getHallFluoroAlong(cx, cz) {
     const authored = {
       "4,0": [-5.15, 3.55],
@@ -795,10 +830,20 @@ export class BackroomsGenerator {
       waypoints: [],
     };
 
-    // 1. Create floor and ceiling
+    // 1. Create floor and ceiling. Pulled hulls shrink the slab so the
+    // school silhouette is not a copied 16m plane past the outer walls.
     const tFloor0 = performance.now();
-    const floorMat = this.textures.createFloorMaterial(16, 16);
-    const ceilingMat = this.textures.createCeilingMaterial(16, 16);
+    const hullSlab = this.getHallHull(cx, cz);
+    const extN = hullSlab.n + 0.2;
+    const extS = hullSlab.s + 0.2;
+    const extE = hullSlab.e + 0.2;
+    const extW = hullSlab.w + 0.2;
+    const slabW = extW + extE;
+    const slabD = extN + extS;
+    const slabX = center.x + (extE - extW) / 2;
+    const slabZ = center.z + (extS - extN) / 2;
+    const floorMat = this.textures.createFloorMaterial(slabW, slabD);
+    const ceilingMat = this.textures.createCeilingMaterial(slabW, slabD);
 
     if (type === "stairs_b1") {
       // For B1 stairwell: leave opening for descending stairs (x in [-1.2, 1.2], z in [-2.5, 8])
@@ -875,19 +920,19 @@ export class BackroomsGenerator {
       this.scene.add(rightCeilMesh);
       chunk.meshes.push(rightCeilMesh);
     } else {
-      const floorGeo = this.getPlaneGeometry(16, 16);
+      const floorGeo = this.getPlaneGeometry(slabW, slabD);
       const floor = new THREE.Mesh(floorGeo, floorMat);
       floor.rotation.x = -Math.PI / 2;
-      floor.position.set(center.x, floorY, center.z);
+      floor.position.set(slabX, floorY, slabZ);
       floor.receiveShadow = true;
       floor.name = `${chunkId}_floor`;
       this.scene.add(floor);
       chunk.meshes.push(floor);
 
-      const ceilingGeo = this.getPlaneGeometry(16, 16);
+      const ceilingGeo = this.getPlaneGeometry(slabW, slabD);
       const ceiling = new THREE.Mesh(ceilingGeo, ceilingMat);
       ceiling.rotation.x = Math.PI / 2;
-      ceiling.position.set(center.x, floorY + 2.8, center.z);
+      ceiling.position.set(slabX, floorY + 2.8, slabZ);
       ceiling.receiveShadow = true;
       ceiling.name = `${chunkId}_ceiling`;
       this.scene.add(ceiling);
@@ -900,10 +945,10 @@ export class BackroomsGenerator {
       floor: 1,
       type: "walkable",
       y: floorY,
-      minX: center.x - 8,
-      maxX: center.x + 8,
-      minZ: center.z - 8,
-      maxZ: center.z + 8,
+      minX: type === "stairs_b1" || type === "stairs_2f" ? center.x - 8 : center.x - extW,
+      maxX: type === "stairs_b1" || type === "stairs_2f" ? center.x + 8 : center.x + extE,
+      minZ: type === "stairs_b1" || type === "stairs_2f" ? center.z - 8 : center.z - extN,
+      maxZ: type === "stairs_b1" || type === "stairs_2f" ? center.z + 8 : center.z + extS,
     }, chunkId);
 
     // 1F stays a dry school. Standing water belongs to the B1 cellar map.
@@ -2043,8 +2088,11 @@ export class BackroomsGenerator {
     const hallW = W && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx - 1, chunk.cz);
     const hallE = E && this.isMazeHall(chunk.cx, chunk.cz) && this.isMazeHall(chunk.cx + 1, chunk.cz);
 
+    const hull = this.getHallHull(chunk.cx, chunk.cz);
     const addGappedPerimeter = (axis, sign, wide, prefix) => {
-      const wallPos = sign * 7.8;
+      const wallPos = axis === "z"
+        ? sign * (sign < 0 ? hull.n : hull.s)
+        : sign * (sign < 0 ? hull.w : hull.e);
       const thickness = 0.4;
       const half = wide ? 1.7 : 1.2;
       const throughC = axis === "x" ? 6.65 : 6.9;
@@ -2071,14 +2119,16 @@ export class BackroomsGenerator {
         if (len < 0.38) return;
         ranges.push({ mid: (a + b) / 2, len, name });
       };
-      let cursor = -8.0;
+      const alongMin = axis === "z" ? -hull.w : -hull.n;
+      const alongMax = axis === "z" ? hull.e : hull.s;
+      let cursor = alongMin;
       let part = 0;
       for (const [g0, g1] of merged) {
         pushRange(cursor, g0, `${prefix}_${part}`);
         part += 1;
         cursor = g1;
       }
-      pushRange(cursor, 8.0, `${prefix}_${part}`);
+      pushRange(cursor, alongMax, `${prefix}_${part}`);
       for (const piece of ranges) {
         if (axis === "z") {
           addWallSegment(piece.mid, wallPos, piece.len, thickness, piece.name);
@@ -2091,25 +2141,25 @@ export class BackroomsGenerator {
     if (N) {
       addGappedPerimeter("z", -1, hallN, "n");
     } else {
-      addWallSegment(0.0, -7.8, 16.0, 0.4, "n_solid");
+      addWallSegment((hull.e - hull.w) / 2, -hull.n, hull.w + hull.e, 0.4, "n_solid");
     }
 
     if (S) {
       addGappedPerimeter("z", 1, hallS, "s");
     } else {
-      addWallSegment(0.0, 7.8, 16.0, 0.4, "s_solid");
+      addWallSegment((hull.e - hull.w) / 2, hull.s, hull.w + hull.e, 0.4, "s_solid");
     }
 
     if (W) {
       addGappedPerimeter("x", -1, hallW, "w");
     } else {
-      addWallSegment(-7.8, 0.0, 0.4, 16.0, "w_solid");
+      addWallSegment(-hull.w, (hull.s - hull.n) / 2, 0.4, hull.n + hull.s, "w_solid");
     }
 
     if (E) {
       addGappedPerimeter("x", 1, hallE, "e");
     } else {
-      addWallSegment(7.8, 0.0, 0.4, 16.0, "e_solid");
+      addWallSegment(hull.e, (hull.s - hull.n) / 2, 0.4, hull.n + hull.s, "e_solid");
     }
 
     // Plus-shaped halls keep four enterable corner alcoves. Maze halls skip
@@ -3365,6 +3415,7 @@ export class BackroomsGenerator {
     this.ensureSchoolCorridorMaterials();
     const clear = this.getHallClear(chunk.cx, chunk.cz);
     const sides = this.getHallSides(chunk.cx, chunk.cz);
+    const hull = this.getHallHull(chunk.cx, chunk.cz);
     const t = 0.28;
     const nPos = sides.n + t / 2;
     const sPos = sides.s + t / 2;
@@ -3375,9 +3426,10 @@ export class BackroomsGenerator {
     const h = 2.8;
     const doorW = 2.2;
     const doorsOf = (side) => this.getHallDoorAlong(chunk.cx, chunk.cz, side);
-    const spanMin = -7.45;
-    const spanMax = 7.45;
-    const stemEnd = 7.52;
+    const spanMinX = -hull.w + 0.35;
+    const spanMaxX = hull.e - 0.35;
+    const spanMinZ = -hull.n + 0.35;
+    const spanMaxZ = hull.s - 0.35;
     const nsThrough = nsChicane
       ? { center: (sides.e - sides.w) / 2, width: sides.e + sides.w }
       : { center: 0, width: clear * 2 };
@@ -3390,8 +3442,8 @@ export class BackroomsGenerator {
         this.placeGappedWall(chunk, chunkId, name, {
           axis,
           pos: center.z + localPos,
-          min: center.x + spanMin,
-          max: center.x + spanMax,
+          min: center.x + spanMinX,
+          max: center.x + spanMaxX,
           wallY: y,
           height: h,
           thickness: t,
@@ -3402,8 +3454,8 @@ export class BackroomsGenerator {
         this.placeGappedWall(chunk, chunkId, name, {
           axis,
           pos: center.x + localPos,
-          min: center.z + spanMin,
-          max: center.z + spanMax,
+          min: center.z + spanMinZ,
+          max: center.z + spanMaxZ,
           wallY: y,
           height: h,
           thickness: t,
@@ -3419,9 +3471,9 @@ export class BackroomsGenerator {
         this.schoolClassWallMat,
       );
     };
-    const stemRun = (startPos) => {
-      const len = stemEnd - startPos;
-      return { len, mid: (startPos + stemEnd) / 2 };
+    const stemRun = (startPos, endPos) => {
+      const len = endPos - startPos;
+      return { len, mid: (startPos + endPos) / 2 };
     };
 
     const mask = this.getHallNookMask(chunk.cx, chunk.cz);
@@ -3441,21 +3493,21 @@ export class BackroomsGenerator {
       gapped("hall_class_n", "x", -nPos, nGaps);
       if (!practice) gapped("hall_class_s", "x", sPos, sGaps);
       if (!nsChicane && openings.N) {
-        const run = stemRun(nPos);
+        const run = stemRun(nPos, hull.n - 0.28);
         stem("hall_class_stem_n_w", -stemHalf, -run.mid, t, run.len);
         stem("hall_class_stem_n_e", stemHalf, -run.mid, t, run.len);
       }
       if (!nsChicane && openings.S) {
-        const run = stemRun(sPos);
+        const run = stemRun(sPos, hull.s - 0.28);
         stem("hall_class_stem_s_w", -stemHalf, run.mid, t, run.len);
         stem("hall_class_stem_s_e", stemHalf, run.mid, t, run.len);
       }
       if (!nsChicane && !openings.N) {
-        const run = stemRun(nPos);
+        const run = stemRun(nPos, hull.n - 0.28);
         stem("hall_class_split_n", 0, -run.mid, t, run.len);
       }
       if (!nsChicane && !openings.S && !practice) {
-        const run = stemRun(sPos);
+        const run = stemRun(sPos, hull.s - 0.28);
         stem("hall_class_split_s", 0, run.mid, t, run.len);
       }
     }
@@ -3474,21 +3526,21 @@ export class BackroomsGenerator {
       gapped("hall_class_w", "z", -wPos, wGaps);
       gapped("hall_class_e", "z", ePos, eGaps);
       if (!ewChicane && openings.W) {
-        const run = stemRun(wPos);
+        const run = stemRun(wPos, hull.w - 0.28);
         stem("hall_class_stem_w_n", -run.mid, -stemHalf, run.len, t);
         stem("hall_class_stem_w_s", -run.mid, stemHalf, run.len, t);
       }
       if (!ewChicane && openings.E) {
-        const run = stemRun(ePos);
+        const run = stemRun(ePos, hull.e - 0.28);
         stem("hall_class_stem_e_n", run.mid, -stemHalf, run.len, t);
         stem("hall_class_stem_e_s", run.mid, stemHalf, run.len, t);
       }
       if (!ewChicane && !openings.W) {
-        const run = stemRun(wPos);
+        const run = stemRun(wPos, hull.w - 0.28);
         stem("hall_class_split_w", -run.mid, 0, run.len, t);
       }
       if (!ewChicane && !openings.E) {
-        const run = stemRun(ePos);
+        const run = stemRun(ePos, hull.e - 0.28);
         stem("hall_class_split_e", run.mid, 0, run.len, t);
       }
     }
@@ -3701,11 +3753,11 @@ export class BackroomsGenerator {
     if (!ewChicane && !nsChicane) return;
     this.ensureSchoolCorridorMaterials();
     const sides = this.getHallSides(chunk.cx, chunk.cz);
+    const hull = this.getHallHull(chunk.cx, chunk.cz);
     const nPos = sides.n + 0.14;
     const sPos = sides.s + 0.14;
     const ePos = sides.e + 0.14;
     const wPos = sides.w + 0.14;
-    const fillEnd = 7.58;
     const windowAlongs = this.getHallWindowAlongs(chunk.cx, chunk.cz);
     const pane = (name, x, z, sx, sz, yaw) => {
       const frame = this.placeDressedBox(
@@ -3732,9 +3784,12 @@ export class BackroomsGenerator {
       );
     };
     if (ewChicane && !mask.s) {
+      const fillEnd = hull.s - 0.22;
       const fillDepth = fillEnd - sPos;
       const fillAlong = (sPos + fillEnd) / 2;
-      const xs = openings.S ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
+      const xs = openings.S
+        ? [[-4.85, 5.5], [4.85, 5.5]]
+        : [[(hull.e - hull.w) / 2, hull.w + hull.e - 0.5]];
       for (const [x, sx] of xs) fill(`hall_outer_fill_s_${x < 0 ? "w" : x > 0 ? "e" : "m"}`, x, fillAlong, sx, fillDepth);
       windowAlongs.forEach((x, i) => {
         pane(`hall_outer_window_s_${x < 0 ? "w" : "e"}_${i}`, x, sPos - 0.08, 1.55, 0.06, 0);
@@ -3746,9 +3801,12 @@ export class BackroomsGenerator {
       chunk.meshes.push(glow);
     }
     if (ewChicane && !mask.n) {
+      const fillEnd = hull.n - 0.22;
       const fillDepth = fillEnd - nPos;
       const fillAlong = (nPos + fillEnd) / 2;
-      const xs = openings.N ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
+      const xs = openings.N
+        ? [[-4.85, 5.5], [4.85, 5.5]]
+        : [[(hull.e - hull.w) / 2, hull.w + hull.e - 0.5]];
       for (const [x, sx] of xs) fill(`hall_outer_fill_n_${x < 0 ? "w" : x > 0 ? "e" : "m"}`, x, -fillAlong, sx, fillDepth);
       windowAlongs.forEach((x, i) => {
         pane(`hall_outer_window_n_${x < 0 ? "w" : "e"}_${i}`, x, -nPos + 0.08, 1.55, 0.06, Math.PI);
@@ -3760,18 +3818,24 @@ export class BackroomsGenerator {
       chunk.meshes.push(glow);
     }
     if (nsChicane && !ewChicane && !mask.e) {
+      const fillEnd = hull.e - 0.22;
       const fillDepth = fillEnd - ePos;
       const fillAlong = (ePos + fillEnd) / 2;
-      const zs = openings.E ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
+      const zs = openings.E
+        ? [[-4.85, 5.5], [4.85, 5.5]]
+        : [[(hull.s - hull.n) / 2, hull.n + hull.s - 0.5]];
       for (const [z, sz] of zs) fill(`hall_outer_fill_e_${z < 0 ? "n" : z > 0 ? "s" : "m"}`, fillAlong, z, fillDepth, sz);
       windowAlongs.forEach((z, i) => {
         pane(`hall_outer_window_e_${z < 0 ? "n" : "s"}_${i}`, ePos + 0.04, z, 0.06, 1.55, Math.PI / 2);
       });
     }
     if (nsChicane && !ewChicane && !mask.w) {
+      const fillEnd = hull.w - 0.22;
       const fillDepth = fillEnd - wPos;
       const fillAlong = (wPos + fillEnd) / 2;
-      const zs = openings.W ? [[-4.85, 5.5], [4.85, 5.5]] : [[0, 15.1]];
+      const zs = openings.W
+        ? [[-4.85, 5.5], [4.85, 5.5]]
+        : [[(hull.s - hull.n) / 2, hull.n + hull.s - 0.5]];
       for (const [z, sz] of zs) fill(`hall_outer_fill_w_${z < 0 ? "n" : z > 0 ? "s" : "m"}`, -fillAlong, z, fillDepth, sz);
       windowAlongs.forEach((z, i) => {
         pane(`hall_outer_window_w_${z < 0 ? "n" : "s"}_${i}`, -wPos - 0.04, z, 0.06, 1.55, -Math.PI / 2);
@@ -7009,23 +7073,28 @@ export class BackroomsGenerator {
     const south = corner.includes("s");
     const clear = this.getHallClear(chunk.cx, chunk.cz);
     const sides = this.getHallSides(chunk.cx, chunk.cz);
+    const hull = this.getHallHull(chunk.cx, chunk.cz);
+    const outerN = Math.min(7.38, hull.n - 0.42);
+    const outerS = Math.min(7.38, hull.s - 0.42);
+    const outerE = Math.min(7.38, hull.e - 0.42);
+    const outerW = Math.min(7.38, hull.w - 0.42);
     const inner = (along === "ns"
       ? (east ? sides.e : sides.w)
       : (south ? sides.s : sides.n)) + 0.32;
     const spine = clear + 0.25;
     const spec = along === "ns"
       ? {
-        minX: center.x + (east ? inner : -7.38),
-        maxX: center.x + (east ? 7.38 : -inner),
-        minZ: center.z + (south ? spine : -7.28),
-        maxZ: center.z + (south ? 7.28 : -spine),
+        minX: center.x + (east ? inner : -outerW),
+        maxX: center.x + (east ? outerE : -inner),
+        minZ: center.z + (south ? spine : -outerN),
+        maxZ: center.z + (south ? outerS : -spine),
         skip: east ? { w: true } : { e: true },
       }
       : {
-        minX: center.x + (east ? spine : -7.28),
-        maxX: center.x + (east ? 7.28 : -spine),
-        minZ: center.z + (south ? inner : -7.38),
-        maxZ: center.z + (south ? 7.38 : -inner),
+        minX: center.x + (east ? spine : -outerW),
+        maxX: center.x + (east ? outerE : -spine),
+        minZ: center.z + (south ? inner : -outerN),
+        maxZ: center.z + (south ? outerS : -inner),
         skip: south ? { n: true } : { s: true },
       };
     this.placeRoomShell(chunk, chunkId, name, {
@@ -9434,20 +9503,26 @@ export class BackroomsGenerator {
     const wall = this.pickFrom(preferredWalls, rand);
     const closedWalls = this.getClosedWalls(type);
     const alongClosedWall = closedWalls.has(wall);
-    const segmentOffset = alongClosedWall
+    const cx = Math.round(center.x / 16);
+    const cz = Math.round(center.z / 16);
+    const hull = this.getHallHull(cx, cz);
+    const alongMin = (wall === "north" || wall === "south") ? -hull.w + 0.28 : -hull.n + 0.28;
+    const alongMax = (wall === "north" || wall === "south") ? hull.e - 0.28 : hull.s - 0.28;
+    let segmentOffset = alongClosedWall
       ? (rand() - 0.5) * 10.6
       : (rand() < 0.5 ? -5 : 5) + (rand() - 0.5) * 2.1;
+    segmentOffset = Math.max(alongMin, Math.min(alongMax, segmentOffset));
 
     if (wall === "north") {
-      return { x: center.x + segmentOffset, z: center.z - 7.52, yaw: Math.PI };
+      return { x: center.x + segmentOffset, z: center.z - (hull.n - 0.28), yaw: Math.PI };
     }
     if (wall === "south") {
-      return { x: center.x + segmentOffset, z: center.z + 7.52, yaw: 0 };
+      return { x: center.x + segmentOffset, z: center.z + (hull.s - 0.28), yaw: 0 };
     }
     if (wall === "east") {
-      return { x: center.x + 7.52, z: center.z + segmentOffset, yaw: Math.PI / 2 };
+      return { x: center.x + (hull.e - 0.28), z: center.z + segmentOffset, yaw: Math.PI / 2 };
     }
-    return { x: center.x - 7.52, z: center.z + segmentOffset, yaw: -Math.PI / 2 };
+    return { x: center.x - (hull.w - 0.28), z: center.z + segmentOffset, yaw: -Math.PI / 2 };
   }
 
   getPreferredWalls(type) {

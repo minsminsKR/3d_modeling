@@ -1680,6 +1680,20 @@ try {
         practice: generator.getHallSides(7, 2),
         roof: generator.getHallSides(0, 2),
       },
+      hallHull: {
+        chase: generator.getHallHull(1, 0),
+        cut: generator.getHallHull(2, 0),
+        trophy: generator.getHallHull(7, 0),
+        annex: generator.getHallHull(4, 0),
+        laundry: generator.getHallHull(4, -1),
+        sky: generator.getHallHull(3, 0),
+        stage: generator.getHallHull(6, 2),
+        roof: generator.getHallHull(0, 2),
+        tea: generator.getHallHull(-1, 1),
+        arcade: generator.getHallHull(4, 1),
+        specimen: generator.getHallHull(6, -1),
+        angel: generator.getHallHull(-1, 0),
+      },
       windowAlongs: {
         chase: generator.getHallWindowAlongs(1, 0),
         cut: generator.getHallWindowAlongs(2, 0),
@@ -2118,6 +2132,35 @@ try {
   assert.notEqual(rooms.hallSides.roof.e, rooms.hallSides.roof.w, "roof hall must offset east vs west walls");
   assert.notEqual(rooms.hallSides.roof.n, 1.7, "roof hall north wall must leave the copied ±1.7 plus");
   assert.notEqual(rooms.hallSides.roof.e, 1.7, "roof hall east wall must leave the copied ±1.7 plus");
+  assert.equal(rooms.hallHull.chase.n, 7.8, "chase outer hull must stay a 16m meeting face");
+  assert.equal(rooms.hallHull.chase.s, 7.8, "chase outer hull must stay a 16m meeting face");
+  assert.equal(rooms.hallHull.chase.e, 7.8, "chase outer hull must stay a 16m meeting face");
+  assert.equal(rooms.hallHull.chase.w, 7.8, "chase outer hull must stay a 16m meeting face");
+  assert.equal(rooms.hallHull.cut.n, 7.8, "east-wash cut-through hull must stay 7.8");
+  assert.equal(rooms.hallHull.cut.e, 7.8, "east-wash cut-through hull must stay 7.8");
+  assert.equal(rooms.hallHull.trophy.n, 7.8, "trophy plus openings must keep the 7.8 meeting face");
+  assert.equal(rooms.hallHull.trophy.s, 7.8, "trophy plus openings must keep the 7.8 meeting face");
+  assert.equal(rooms.hallHull.annex.n, 7.8, "annex plus openings must keep the 7.8 meeting face");
+  assert.ok(rooms.hallHull.laundry.e < 7.2, "laundry closed east hull must pull inward");
+  assert.equal(rooms.hallHull.laundry.w, 7.8, "laundry west opening/room hull must keep the meeting face");
+  assert.ok(rooms.hallHull.sky.n < 7.2, "skybridge closed north hull must pull inward");
+  assert.ok(rooms.hallHull.sky.s < 7.4, "skybridge closed south hull must pull inward");
+  assert.notEqual(rooms.hallHull.sky.n, rooms.hallHull.sky.s, "skybridge north vs south hull must not copy");
+  assert.equal(rooms.hallHull.sky.e, 7.8, "skybridge east opening must keep the 7.8 meeting face");
+  assert.ok(rooms.hallHull.stage.s < 7.4, "stage closed south hull must pull inward");
+  assert.equal(rooms.hallHull.stage.n, 7.8, "stage north opening must keep the 7.8 meeting face");
+  assert.ok(rooms.hallHull.roof.e < 7.2, "roof closed east hull must pull inward");
+  assert.ok(rooms.hallHull.roof.s < 7.2, "roof closed south hull must pull inward");
+  assert.equal(rooms.hallHull.roof.n, 7.8, "roof north opening must keep the 7.8 meeting face");
+  assert.equal(rooms.hallHull.roof.w, 7.8, "roof west opening must keep the 7.8 meeting face");
+  assert.ok(rooms.hallHull.tea.n < 7.6, "tea closed north hull must pull inward");
+  assert.equal(rooms.hallHull.tea.s, 7.8, "tea south opening must keep the 7.8 meeting face");
+  assert.ok(rooms.hallHull.arcade.w < 7.2, "arcade closed west hull must pull inward");
+  assert.equal(rooms.hallHull.arcade.e, 7.8, "arcade east opening must keep the 7.8 meeting face");
+  assert.ok(rooms.hallHull.specimen.w < 7.55, "specimen closed west hull must pull inward");
+  assert.equal(rooms.hallHull.specimen.e, 7.8, "specimen east opening must keep the 7.8 meeting face");
+  assert.ok(rooms.hallHull.angel.s < 7.3, "angel closed south hull must pull inward");
+  assert.equal(rooms.hallHull.angel.n, 7.8, "angel north opening must keep the 7.8 meeting face");
   assert.equal(rooms.annexRoomL, true, "annex NE classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.annexRoomNwL, true, "annex NW classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.trophyRoomL, true, "trophy SW classroom must break the copied rectangle with an L jog");
