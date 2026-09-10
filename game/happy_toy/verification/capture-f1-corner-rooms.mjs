@@ -40,20 +40,17 @@ async function poseShot(name, pose) {
 }
 
 // Unique stills only — never reuse prior artifact filenames.
-await poseShot("f1_annex_ne_bare.png", {
+await poseShot("f1_annex_narrow_spine.png", {
+  cx: 4, cz: 0, x: 64.0, y: 0, z: 0.0, lookAt: [71.2, 1.25, 0.0],
+});
+await poseShot("f1_trophy_wide_spine.png", {
+  cx: 7, cz: 0, x: 112.0, y: 0, z: 0.0, lookAt: [119.4, 1.25, 0.0],
+});
+await poseShot("f1_laundry_narrow_spine.png", {
+  cx: 4, cz: -1, x: 64.0, y: 0, z: -16.0, lookAt: [64.0, 1.25, -23.2],
+});
+await poseShot("f1_annex_ne_after_pinch.png", {
   cx: 4, cz: 0, x: 69.15, y: 0, z: -2.55, lookAt: [72.35, 1.32, -5.85],
-});
-await poseShot("f1_trophy_sw_bare.png", {
-  cx: 7, cz: 0, x: 106.85, y: 0, z: 2.55, lookAt: [103.65, 1.32, 5.85],
-});
-await poseShot("f1_laundry_nw_bare.png", {
-  cx: 4, cz: -1, x: 61.45, y: 0, z: -21.25, lookAt: [58.2, 1.32, -24.4],
-});
-await poseShot("f1_specimen_nw_bare.png", {
-  cx: 6, cz: -1, x: 93.45, y: 0, z: -21.25, lookAt: [90.2, 1.32, -24.4],
-});
-await poseShot("f1_eastwash_ne_bare.png", {
-  cx: 2, cz: 0, x: 37.15, y: 0, z: -2.55, lookAt: [40.35, 1.32, -5.85],
 });
 
 await browser.close();

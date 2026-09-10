@@ -352,6 +352,22 @@ export class BackroomsGenerator {
     };
   }
 
+  // Chase-hide tiles stay a 3.4m school hall. Identity halls get their own
+  // half-width so the 16m tile stops reading as one copied corridor shell.
+  getHallClear(cx, cz) {
+    if ((cx === 0 && cz === 0) || (cx === 1 && cz === 0) || (cx === 0 && cz === 1) || (cx === 0 && cz === -1)) {
+      return 1.7;
+    }
+    if (this.isEastWashChunk(cx, cz)) return 1.7;
+    if (this.isTrophyChunk(cx, cz)) return 2.18;
+    if (this.isAnnexGateChunk(cx, cz)) return 1.22;
+    if (this.isWashFourChunk(cx, cz)) return 1.42;
+    if (this.isAngelHallChunk(cx, cz)) return 1.48;
+    if (this.isLaundryChunk(cx, cz)) return 1.22;
+    if (this.isSpecimenChunk(cx, cz)) return 1.48;
+    return 1.7;
+  }
+
   isSkybridgeChunk(cx, cz) {
     return cx === 3 && cz === 0;
   }
@@ -3196,10 +3212,10 @@ export class BackroomsGenerator {
   }
 
   dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
-    // 3.4m school corridor through the tile center. Classroom walls at the
-    // clear edge, hide-alcove doors at ±5.25, T-spurs when the graph turns.
+    // Authored-width school corridor through the tile center. Classroom walls
+    // at the clear edge, hide-alcove doors at ±5.25, T-spurs on graph turns.
     this.ensureSchoolCorridorMaterials();
-    const clear = 1.7;
+    const clear = this.getHallClear(chunk.cx, chunk.cz);
     const t = 0.28;
     const wallPos = clear + t / 2;
     const y = floorY + 1.4;
@@ -3485,10 +3501,11 @@ export class BackroomsGenerator {
   dressHallWindowWall(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane, mask) {
     if (!ewChicane && !nsChicane) return;
     this.ensureSchoolCorridorMaterials();
-    const clear = 1.7;
+    const clear = this.getHallClear(chunk.cx, chunk.cz);
     const wallPos = clear + 0.14;
-    const fillAlong = 4.72;
-    const fillDepth = 5.72;
+    const fillEnd = 7.58;
+    const fillDepth = fillEnd - wallPos;
+    const fillAlong = (wallPos + fillEnd) / 2;
     const pane = (name, x, z, sx, sz, yaw) => {
       const frame = this.placeDressedBox(
         chunk, chunkId, `${name}_frame`,
@@ -3678,7 +3695,7 @@ export class BackroomsGenerator {
       });
     }
     const alcove = 5.25;
-    const wall = 1.84;
+    const wall = this.getHallClear(chunk.cx, chunk.cz) + 0.14;
     let idx = 0;
     const mask = this.getHallNookMask(chunk.cx, chunk.cz);
     const southT = Boolean(ewChicane && (nsChicane || openings?.S));
@@ -5602,7 +5619,7 @@ export class BackroomsGenerator {
     this.ensureSchoolCorridorMaterials();
     this.placeDressedBox(
       chunk, chunkId, "angelhall_cart",
-      center.x + 4.55, floorY + 0.38, center.z - 1.52,
+      center.x + 2.95, floorY + 0.38, center.z - (this.getHallClear(chunk.cx, chunk.cz) - 0.23),
       0.72, 0.76, 0.46, this.schoolDeskDark || this.trimMaterial,
     );
     this.addHallNookSign(
@@ -5629,10 +5646,11 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.04,
       });
     }
-    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+    const cubbyZ = center.z - (this.getHallClear(chunk.cx, chunk.cz) - 0.21);
+    for (const [name, x] of [["w", -2.88], ["e", 2.88]]) {
       this.placeDressedBox(
         chunk, chunkId, `washfour_cubby_${name}`,
-        center.x + x, floorY + 0.42, center.z - 1.52,
+        center.x + x, floorY + 0.42, cubbyZ,
         0.92, 0.84, 0.42, this.schoolCubbyMat,
       );
     }
@@ -6399,25 +6417,28 @@ export class BackroomsGenerator {
   }
 
   // Close one classroom corner into a real room. The hall_class_* door
-  // already punches the inner face, so that face is skipped. Keep the 3.4m
-  // spine clear: EW rooms sit at |x|>=1.95 and |z|>=2.02; NS rooms swap axes.
+  // already punches the inner face, so that face is skipped. Keep the
+  // authored corridor spine clear.
   dressClosedCornerRoom(chunk, center, chunkId, floorY, name, corner, along = "ew") {
     this.ensureSchoolCorridorMaterials();
     const east = corner.includes("e");
     const south = corner.includes("s");
+    const clear = this.getHallClear(chunk.cx, chunk.cz);
+    const inner = clear + 0.32;
+    const spine = clear + 0.25;
     const spec = along === "ns"
       ? {
-        minX: center.x + (east ? 2.02 : -7.38),
-        maxX: center.x + (east ? 7.38 : -2.02),
-        minZ: center.z + (south ? 1.95 : -7.28),
-        maxZ: center.z + (south ? 7.28 : -1.95),
+        minX: center.x + (east ? inner : -7.38),
+        maxX: center.x + (east ? 7.38 : -inner),
+        minZ: center.z + (south ? spine : -7.28),
+        maxZ: center.z + (south ? 7.28 : -spine),
         skip: east ? { w: true } : { e: true },
       }
       : {
-        minX: center.x + (east ? 1.95 : -7.28),
-        maxX: center.x + (east ? 7.28 : -1.95),
-        minZ: center.z + (south ? 2.02 : -7.38),
-        maxZ: center.z + (south ? 7.38 : -2.02),
+        minX: center.x + (east ? spine : -7.28),
+        maxX: center.x + (east ? 7.28 : -spine),
+        minZ: center.z + (south ? inner : -7.38),
+        maxZ: center.z + (south ? 7.38 : -inner),
         skip: south ? { n: true } : { s: true },
       };
     this.placeRoomShell(chunk, chunkId, name, {
@@ -8645,12 +8666,12 @@ export class BackroomsGenerator {
     this.scene.add(paper);
     chunk.meshes.push(paper);
 
-    // North corridor face, between the T-spur (|x|<1.7) and the classroom
-    // doors at ±5.25. A 1.12m rack at ±4.55 sat in the door gap.
+    // North corridor face, between the T-spur and the classroom doors at ±5.25.
+    const rackZ = center.z - (this.getHallClear(chunk.cx, chunk.cz) - 0.19);
     for (const [name, x] of [["w", -2.88], ["e", 2.88]]) {
       this.addShoeRackUnit(
         chunk, chunkId, `annexgate_rack_${name}`,
-        center.x + x, floorY + 0.48, center.z - 1.52, 0,
+        center.x + x, floorY + 0.48, rackZ, 0,
       );
     }
     this.addHallNookSign(

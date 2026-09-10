@@ -329,6 +329,25 @@ try {
     game.testSafeMode = false;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(7, 0);
+    game.player.setPosition({ x: 112, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const trophyWideWalk = [];
+  for (const stop of [
+    { x: 114.8, z: 0 },
+    { x: 114.8, z: 2.05 },
+  ]) {
+    trophyWideWalk.push(await walkTo(stop, 280));
+    console.log("trophy_wide", stop, trophyWideWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(4, 0);
     game.player.setPosition({ x: 64, y: 0, z: 0 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
@@ -350,6 +369,25 @@ try {
   ]) {
     annexRoomWalk.push(await walkTo(stop, 320));
     console.log("annex_room", stop, annexRoomWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(4, 0);
+    game.player.setPosition({ x: 64, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const annexPinchWalk = [];
+  for (const stop of [
+    { x: 66.9, z: 0 },
+    { x: 66.9, z: 1.55 },
+  ]) {
+    annexPinchWalk.push(await walkTo(stop, 220));
+    console.log("annex_pinch", stop, annexPinchWalk.at(-1));
   }
 
   await page.evaluate(() => {
@@ -1402,6 +1440,13 @@ try {
         && !names(eastWing).some((name) => name.includes("hall_lockers_"))
         && !names(laundry).some((name) => name.includes("hall_lockers_"))
         && !names(specimen).some((name) => name.includes("hall_lockers_")),
+      hallClear: {
+        chase: generator.getHallClear(1, 0),
+        cut: generator.getHallClear(2, 0),
+        annex: generator.getHallClear(4, 0),
+        trophy: generator.getHallClear(7, 0),
+        laundry: generator.getHallClear(4, -1),
+      },
       arcadeCol: names(arcade).some((name) => name.includes("arcade_col_")),
       arcadeBench: names(arcade).some((name) => name.includes("arcade_bench_")),
       artType: art.type,
@@ -1738,7 +1783,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, trophyWalk, trophySwWalk, annexNorthWalk, annexRoomWalk, eastwashRoomWalk, washfourRoomWalk, angelRoomWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, laundryRoomWalk, specimenRoomWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, dormWalk, dollClassWalk, prepStoreWalk, closedLibWalk, etiquetteWalk, roofHallWalk, lostFoundWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, trophyWalk, trophySwWalk, trophyWideWalk, annexNorthWalk, annexRoomWalk, annexPinchWalk, eastwashRoomWalk, washfourRoomWalk, angelRoomWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, laundryRoomWalk, specimenRoomWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, dormWalk, dollClassWalk, prepStoreWalk, closedLibWalk, etiquetteWalk, roofHallWalk, lostFoundWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -1789,6 +1834,17 @@ try {
   assert.equal(angelRoomWalk.at(-1).ok, true, `must walk into the angel NE room, got ${JSON.stringify(angelRoomWalk.at(-1))}`);
   assert.ok(angelRoomWalk.at(-1).x > -12.2 && angelRoomWalk.at(-1).z < -2.4, "angel NE room must be enterable off the spine");
   assert.equal(rooms.identityHallBare, true, "closed-room identity halls must not reuse the shared locker banks");
+  assert.equal(rooms.hallClear.chase, 1.7, "chase halls must stay 3.4m");
+  assert.equal(rooms.hallClear.cut, 1.7, "east-wash cut-through hall must stay 3.4m");
+  assert.ok(rooms.hallClear.annex < 1.35, "annex gate must pinch narrower than a 3.4m copy");
+  assert.ok(rooms.hallClear.trophy > 2.05, "trophy hall must open wider than a 3.4m copy");
+  assert.ok(rooms.hallClear.laundry < 1.35, "laundry hall must pinch narrower than a 3.4m copy");
+  assert.equal(trophyWideWalk.at(-1).ok, true, `trophy hall must walk off-spine inside the wide clear, got ${JSON.stringify(trophyWideWalk.at(-1))}`);
+  assert.ok(trophyWideWalk.at(-1).z > 1.72 && trophyWideWalk.at(-1).x > 113.8, "trophy wide clear must reach z≈2 where a 3.4m wall would stop");
+  assert.ok(
+    annexPinchWalk.at(-1).ok !== true || Math.abs(annexPinchWalk.at(-1).z) < 1.28,
+    `annex pinch must block the old 3.4m south classroom, got ${JSON.stringify(annexPinchWalk.at(-1))}`,
+  );
   assert.equal(rooms.arcadeCol, true, "courtyard arcade must have columns");
   assert.equal(rooms.arcadeBench, true, "courtyard arcade must have benches");
   assert.ok(rooms.beats.includes("arcade"), "arcade VO beat missing");
