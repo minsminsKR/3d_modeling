@@ -1706,8 +1706,8 @@ export class Game {
       this._storyBeats.add("nurseryhall");
       this._lastPaAt = this.playTime;
       soundManager.playSFX("school_chime");
-      this.voiceAnnouncer?.announce("nurseryhall", "보육 복도입니다. 요람이 동쪽 벽에 붙어 있습니다.");
-      this.hud.setStatus("보육 복도입니다. 요람이 동쪽 벽에 붙어 있습니다.", 3600);
+      this.voiceAnnouncer?.announce("nurseryhall", "보육 복도입니다. 요람이 서쪽 교실에 있습니다.");
+      this.hud.setStatus("보육 복도입니다. 요람이 서쪽 교실에 있습니다.", 3600);
       return;
     }
     if (cx === -2 && cz === 1 && !this._storyBeats.has("dollhall")) {

@@ -1122,7 +1122,7 @@ try {
   const nurseryRoomWalk = [];
   for (const stop of [
     { x: 32, z: 21.5 },
-    { x: 37.4, z: 21.5 },
+    { x: 26.6, z: 21.5 },
   ]) {
     nurseryRoomWalk.push(await walkTo(stop, 320));
     console.log("nursery_room", stop, nurseryRoomWalk.at(-1));
@@ -1173,7 +1173,7 @@ try {
   const storageRoomWalk = [];
   for (const stop of [
     { x: 32, z: -9.0 },
-    { x: 37.4, z: -9.0 },
+    { x: 26.6, z: -9.0 },
   ]) {
     storageRoomWalk.push(await walkTo(stop, 320));
     console.log("storage_room", stop, storageRoomWalk.at(-1));
@@ -1556,7 +1556,7 @@ try {
         chase: generator.getHallDoorAlong(1, 0, "s"),
         cutWest: generator.getHallDoorAlong(2, 0, "n")[0],
         annex: generator.getHallDoorAlong(4, 0, "n"),
-        nursery: generator.getHallDoorAlong(2, 1, "e"),
+        nursery: generator.getHallDoorAlong(2, 1, "w"),
         doll: generator.getHallDoorAlong(-2, 1, "w"),
       },
       arcadeCol: names(arcade).some((name) => name.includes("arcade_col_")),
@@ -1963,7 +1963,7 @@ try {
   assert.ok(rooms.hallClear.stage > 1.8, "stage wing must open wider than a 3.4m copy");
   assert.deepEqual(rooms.hallDoor.chase, [-5.25, 5.25], "chase hide aisles must stay at ±5.25");
   assert.equal(rooms.hallDoor.cutWest, -5.25, "east-wash n-west door must stay on the cut-through aisle");
-  assert.notDeepEqual(rooms.hallDoor.nursery, [-5.25, 5.25], "nursery east doors must leave the copied ±5.25 rhythm");
+  assert.notDeepEqual(rooms.hallDoor.nursery, [-5.25, 5.25], "nursery west doors must leave the copied ±5.25 rhythm");
   assert.notDeepEqual(rooms.hallDoor.annex, [-5.25, 5.25], "annex north doors must leave the copied ±5.25 rhythm");
   assert.equal(rooms.arcadeRoom, true, "arcade must close west classroom volumes");
   assert.equal(trophyWideWalk.at(-1).ok, true, `trophy hall must walk off-spine inside the wide clear, got ${JSON.stringify(trophyWideWalk.at(-1))}`);
@@ -2135,13 +2135,13 @@ try {
   assert.ok(stairHallWalk.some((stop) => Math.abs(stop.z - 16) < 1.6 && stop.x > 14), "stair hall EW spine must stay open");
   assert.ok(stairHallWalk.at(-1).z > 20 && Math.abs(stairHallWalk.at(-1).x - 16) < 1.4, "stair hall south T-spur to B1 must stay open");
   assert.equal(rooms.nurseryHallCrib, true, "nursery hall must show cribs");
-  assert.equal(rooms.nurseryRoom, true, "nursery hall must close east classroom volumes");
+  assert.equal(rooms.nurseryRoom, true, "nursery hall must close west classroom volumes");
   assert.ok(rooms.beats.includes("nurseryhall"), "nursery hall VO beat missing");
   assert.equal(nurseryHallWalk.at(-1).ok, true, `must walk the nursery hall, got ${JSON.stringify(nurseryHallWalk.at(-1))}`);
   assert.ok(nurseryHallWalk.some((stop) => stop.z > 14 && Math.abs(stop.x - 32) < 1.6), "nursery hall NS spine must stay open");
   assert.ok(nurseryHallWalk.at(-1).x < 28 && Math.abs(nurseryHallWalk.at(-1).z - 16) < 1.4, "nursery hall west T-spur must stay open");
-  assert.equal(nurseryRoomWalk.at(-1).ok, true, `must walk into the nursery SE room, got ${JSON.stringify(nurseryRoomWalk.at(-1))}`);
-  assert.ok(nurseryRoomWalk.at(-1).x > 35.8 && nurseryRoomWalk.at(-1).z > 18.8, "nursery SE room must be enterable off the spine");
+  assert.equal(nurseryRoomWalk.at(-1).ok, true, `must walk into the nursery SW room, got ${JSON.stringify(nurseryRoomWalk.at(-1))}`);
+  assert.ok(nurseryRoomWalk.at(-1).x < 28.2 && nurseryRoomWalk.at(-1).z > 18.8, "nursery SW room must be enterable off the spine");
   assert.ok(
     nurseryPinchWalk.at(-1).ok !== true || Math.abs(nurseryPinchWalk.at(-1).x - 32) < 1.38,
     `nursery pinch must block the old 3.4m east classroom, got ${JSON.stringify(nurseryPinchWalk.at(-1))}`,
@@ -2159,13 +2159,13 @@ try {
   assert.ok(rooms.beats.includes("archivehall"), "archive hall VO beat missing");
   assert.equal(archiveHallWalk.at(-1).ok, true, `must walk the archive hall, got ${JSON.stringify(archiveHallWalk.at(-1))}`);
   assert.ok(archiveHallWalk.at(-1).z < -20 && Math.abs(archiveHallWalk.at(-1).x + 32) < 1.4, "archive hall NS spine must stay open");
-  assert.equal(rooms.storageHallCrate, true, "storage hall must show east crates");
-  assert.equal(rooms.storageRoom, true, "storage hall must close east classroom volumes");
+  assert.equal(rooms.storageHallCrate, true, "storage hall must show west crates");
+  assert.equal(rooms.storageRoom, true, "storage hall must close west classroom volumes");
   assert.ok(rooms.beats.includes("storagehall"), "storage hall VO beat missing");
   assert.equal(storageHallWalk.at(-1).ok, true, `must walk the storage hall, got ${JSON.stringify(storageHallWalk.at(-1))}`);
   assert.ok(storageHallWalk.at(-1).z < -20 && Math.abs(storageHallWalk.at(-1).x - 32) < 1.4, "storage hall NS spine must stay open");
-  assert.equal(storageRoomWalk.at(-1).ok, true, `must walk into the storage SE room, got ${JSON.stringify(storageRoomWalk.at(-1))}`);
-  assert.ok(storageRoomWalk.at(-1).x > 35.8 && storageRoomWalk.at(-1).z > -10.6, "storage SE room must be enterable off the spine");
+  assert.equal(storageRoomWalk.at(-1).ok, true, `must walk into the storage SW room, got ${JSON.stringify(storageRoomWalk.at(-1))}`);
+  assert.ok(storageRoomWalk.at(-1).x < 28.2 && storageRoomWalk.at(-1).z > -10.6, "storage SW room must be enterable off the spine");
   assert.equal(rooms.teaHallBench, true, "tea hall must show north benches");
   assert.equal(rooms.teaRoom, true, "tea hall must close north classroom volumes");
   assert.ok(rooms.beats.includes("teahall"), "tea hall VO beat missing");

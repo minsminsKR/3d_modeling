@@ -385,8 +385,8 @@ export class BackroomsGenerator {
       "7,0": { s: [-6.45, 4.95] },
       "4,-1": { w: [-6.25, 4.95] },
       "6,-1": { w: [-6.35, 4.85] },
-      "2,1": { e: [-6.35, 4.95] },
-      "2,-1": { e: [-4.95, 6.35] },
+      "2,1": { w: [-6.35, 4.95] },
+      "2,-1": { w: [-4.95, 6.35] },
       "-2,1": { w: [-6.45, 4.85] },
       "-2,-1": { w: [-4.85, 6.45] },
       "5,-2": { s: [-6.25, 4.95] },
@@ -5319,7 +5319,7 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.05,
       });
     }
-    const cribX = center.x + 5.95;
+    const cribX = center.x - 5.95;
     for (const [name, z] of [["n", -5.15], ["s", 6.55]]) {
       this.placeDressedBox(
         chunk, chunkId, `nurseryhall_crib_${name}`,
@@ -5332,8 +5332,8 @@ export class BackroomsGenerator {
       center.x - 1.72, floorY + 2.12, center.z,
       Math.PI / 2, "보육",
     );
-    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "nursery_room_ne", "ne", "ns");
-    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "nursery_room_se", "se", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "nursery_room_nw", "nw", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "nursery_room_sw", "sw", "ns");
     const glow = new THREE.PointLight(0x201410, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_nurseryhall_glow`;
@@ -5423,7 +5423,7 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.04,
       });
     }
-    const crateX = center.x + 5.95;
+    const crateX = center.x - 5.95;
     for (const [name, z] of [["n", -5.15], ["s", 5.15]]) {
       this.placeDressedBox(
         chunk, chunkId, `storagehall_crate_${name}`,
@@ -5436,8 +5436,8 @@ export class BackroomsGenerator {
       center.x - 1.72, floorY + 2.12, center.z,
       Math.PI / 2, "창고",
     );
-    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "storage_room_ne", "ne", "ns");
-    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "storage_room_se", "se", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "storage_room_nw", "nw", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "storage_room_sw", "sw", "ns");
     const glow = new THREE.PointLight(0x201410, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_storagehall_glow`;
@@ -8130,7 +8130,7 @@ export class BackroomsGenerator {
           "지하로 가는 복도다. 콘 너머로 물이 마른다.");
       } else if (this.isNurseryHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
-          "요람이 동쪽 벽에 붙어 있다. 서쪽 교실은 막혀 있다.");
+          "요람이 서쪽 교실에 있다. 동쪽은 창이다.");
       } else if (this.isDollHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
           "인형 선반이 서쪽 벽에 붙어 있다. 눈을 마주치지 마십시오.");
@@ -8139,7 +8139,7 @@ export class BackroomsGenerator {
           "서고 철 상자가 서쪽 벽에 잠겨 있다. 열지 마십시오.");
       } else if (this.isStorageHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
-          "창고 상자가 동쪽 벽에 쌓여 있다. 어제 출석을 담고 있다.");
+          "창고 상자가 서쪽 교실에 쌓여 있다. 어제 출석을 담고 있다.");
       } else if (this.isTeaHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
           "다실 앞이다. 북쪽 교실이 닫혀 있다. 신발을 신지 마십시오.");

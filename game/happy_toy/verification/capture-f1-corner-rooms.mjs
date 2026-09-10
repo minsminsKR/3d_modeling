@@ -40,14 +40,14 @@ async function poseShot(name, pose) {
 }
 
 // Unique stills only — never reuse prior artifact filenames.
-await poseShot("f1_nursery_east_room.png", {
-  cx: 2, cz: 1, x: 36.8, y: 0, z: 20.6, lookAt: [40.4, 1.28, 23.4],
+await poseShot("f1_nursery_west_room.png", {
+  cx: 2, cz: 1, x: 27.2, y: 0, z: 21.2, lookAt: [23.4, 1.28, 23.6],
 });
 await poseShot("f1_doll_west_room.png", {
   cx: -2, cz: 1, x: -36.8, y: 0, z: 20.5, lookAt: [-40.2, 1.28, 23.3],
 });
-await poseShot("f1_storage_east_room.png", {
-  cx: 2, cz: -1, x: 36.8, y: 0, z: -9.9, lookAt: [40.4, 1.28, -7.2],
+await poseShot("f1_storage_west_room.png", {
+  cx: 2, cz: -1, x: 27.2, y: 0, z: -9.4, lookAt: [23.4, 1.28, -6.8],
 });
 await poseShot("f1_lab_south_room.png", {
   cx: 5, cz: -2, x: 84.6, y: 0, z: -27.6, lookAt: [87.8, 1.28, -24.8],
