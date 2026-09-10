@@ -4973,6 +4973,17 @@ export class BackroomsGenerator {
       center.x - 6.85, floorY + 2.12, center.z + 1.72,
       0, "트로피",
     );
+    this.placeRoomShell(chunk, chunkId, "trophy_room_se", {
+      minX: center.x + 1.95,
+      maxX: center.x + 7.28,
+      minZ: center.z + 2.02,
+      maxZ: center.z + 7.38,
+      wallY: floorY + 1.4,
+      height: 2.8,
+      thickness: 0.22,
+      material: this.schoolClassWallMat,
+      skip: { n: true },
+    });
     const glow = new THREE.PointLight(0x3a2810, 0.14, 4.4, 2);
     glow.position.set(center.x, floorY + 2.15, center.z);
     glow.name = `${chunkId}_trophy_glow`;
@@ -6332,6 +6343,48 @@ export class BackroomsGenerator {
     });
   }
 
+  placeRoomShell(chunk, chunkId, name, spec) {
+    const {
+      minX, maxX, minZ, maxZ,
+      wallY, height, thickness, material,
+      doors = [],
+      skip = {},
+    } = spec;
+    const gaps = (wall) => doors
+      .filter((door) => door.wall === wall)
+      .map((door) => ({ center: door.center, width: door.width }));
+    const faces = [
+      ["n", !skip.n, "x", minZ, minX, maxX],
+      ["s", !skip.s, "x", maxZ, minX, maxX],
+      ["w", !skip.w, "z", minX, minZ, maxZ],
+      ["e", !skip.e, "z", maxX, minZ, maxZ],
+    ];
+    for (const [suffix, enabled, axis, pos, min, max] of faces) {
+      if (!enabled) continue;
+      const wallGaps = gaps(suffix);
+      this.placeGappedWall(chunk, chunkId, `${name}_${suffix}`, {
+        axis,
+        pos,
+        min,
+        max,
+        wallY,
+        height,
+        thickness,
+        material,
+        gaps: wallGaps,
+      });
+      if (wallGaps.length === 0) {
+        const span = max - min;
+        const mid = (min + max) / 2;
+        if (axis === "x") {
+          this.dressMazePartitionTrim(chunk, chunkId, `${name}_${suffix}`, mid, wallY, pos, span, thickness, height);
+        } else {
+          this.dressMazePartitionTrim(chunk, chunkId, `${name}_${suffix}`, pos, wallY, mid, thickness, span, height);
+        }
+      }
+    }
+  }
+
   addWingPlane(chunk, chunkId, name, width, length, x, y, z, material, flipCeiling = false) {
     const mesh = new THREE.Mesh(this.getPlaneGeometry(width, length), material);
     mesh.rotation.x = flipCeiling ? Math.PI / 2 : -Math.PI / 2;
@@ -6521,13 +6574,12 @@ export class BackroomsGenerator {
     });
 
     const walls = [
-      ["b1_maze_s_h1w", -0.2, 45.1, 14.8, t],
-      ["b1_maze_s_h1e", 14.55, 45.1, 10.3, t],
+      ["b1_maze_s_h1w", -2.1, 45.1, 11.0, t],
+      ["b1_maze_s_h1e", 16.45, 45.1, 6.5, t],
       ["b1_maze_s_h1ee", 23.55, 45.1, 4.1, t],
-      ["b1_maze_s_h2w", -0.2, 51.4, 14.8, t],
-      ["b1_maze_s_h2e", 15.85, 51.4, 12.7, t],
+      ["b1_maze_s_h2w", -2.1, 51.4, 11.0, t],
+      ["b1_maze_s_h2e", 17.7, 51.4, 9.0, t],
       ["b1_maze_s_v_dead", 4.15, 54.4, t, 3.4],
-      ["b1_maze_s_v_mid", 12.35, 48.25, t, 5.6],
       ["b1_maze_w_h1a", -19.85, 33.6, 7.9, t],
       ["b1_maze_w_h1b", -10.55, 33.6, 4.7, t],
       ["b1_maze_w_spur", -18.85, 27.05, t, 4.5],
@@ -6549,6 +6601,29 @@ export class BackroomsGenerator {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, wallMat);
       this.dressMazePartitionTrim(chunk, chunkId, name, x, y, z, sx, sz, h);
     }
+
+    this.placeRoomShell(chunk, chunkId, "b1_maze_class_w", {
+      minX: 3.4,
+      maxX: 7.08,
+      minZ: 45.1,
+      maxZ: 51.4,
+      wallY: y,
+      height: h,
+      thickness: t,
+      material: wallMat,
+      doors: [{ wall: "e", center: 48.2, width: 2.55 }],
+    });
+    this.placeRoomShell(chunk, chunkId, "b1_maze_class_e", {
+      minX: 9.72,
+      maxX: 13.2,
+      minZ: 45.1,
+      maxZ: 51.4,
+      wallY: y,
+      height: h,
+      thickness: t,
+      material: wallMat,
+      doors: [{ wall: "w", center: 48.2, width: 2.55 }],
+    });
 
     this.ensureSchoolCorridorMaterials();
     if (!this.schoolLinoMat) {
@@ -6623,7 +6698,7 @@ export class BackroomsGenerator {
     );
     this.addHallNookSign(
       chunk, chunkId, "b1flood_sign",
-      6.05, fy + 2.08, 45.32, 0, "침수",
+      5.15, fy + 2.08, 45.32, 0, "침수",
     );
     this.ensureSchoolCorridorMaterials();
     const floodJamb = (name, x, z, sx, sz) => {
@@ -6932,6 +7007,55 @@ export class BackroomsGenerator {
       this.placeDressedBox(chunk, chunkId, name, x, y, z, sx, h, sz, mazeMat);
       this.dressMazePartitionTrim(chunk, chunkId, name, x, y, z, sx, sz, h);
     }
+
+    this.placeRoomShell(chunk, chunkId, "gallery_maze_room_nw", {
+      minX: -37.5,
+      maxX: -33.72,
+      minZ: -47.2,
+      maxZ: -40.6,
+      wallY: y,
+      height: h,
+      thickness: t,
+      material: mazeMat,
+      skip: { n: true, s: true },
+      doors: [{ wall: "e", center: -45.2, width: 2.4 }],
+    });
+    this.placeRoomShell(chunk, chunkId, "gallery_maze_room_ne", {
+      minX: -31.28,
+      maxX: -24.6,
+      minZ: -47.2,
+      maxZ: -40.6,
+      wallY: y,
+      height: h,
+      thickness: t,
+      material: mazeMat,
+      skip: { n: true, s: true },
+      doors: [{ wall: "w", center: -45.2, width: 2.4 }],
+    });
+    this.placeRoomShell(chunk, chunkId, "gallery_maze_room_sw", {
+      minX: -31.2,
+      maxX: -23.72,
+      minZ: -2.4,
+      maxZ: 4.2,
+      wallY: y,
+      height: h,
+      thickness: t,
+      material: mazeMat,
+      skip: { n: true, s: true },
+      doors: [{ wall: "e", center: 1.2, width: 2.4 }],
+    });
+    this.placeRoomShell(chunk, chunkId, "gallery_maze_room_se", {
+      minX: -21.28,
+      maxX: -17.5,
+      minZ: -2.4,
+      maxZ: 4.2,
+      wallY: y,
+      height: h,
+      thickness: t,
+      material: mazeMat,
+      skip: { n: true, s: true },
+      doors: [{ wall: "w", center: 1.2, width: 2.4 }],
+    });
 
     this.ensureSchoolCorridorMaterials();
     const gy = floorY + 5.0;

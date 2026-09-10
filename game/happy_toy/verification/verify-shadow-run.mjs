@@ -291,6 +291,25 @@ try {
     game.testSafeMode = false;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(7, 0);
+    game.player.setPosition({ x: 112, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const trophyWalk = [];
+  for (const stop of [
+    { x: 117.2, z: 0 },
+    { x: 117.2, z: 4.2 },
+  ]) {
+    trophyWalk.push(await walkTo(stop, 320));
+    console.log("trophy_room", stop, trophyWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(2, 0);
     game.player.setPosition({ x: 32, y: 0, z: 0 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
@@ -1229,6 +1248,7 @@ try {
         && names(memorial).some((name) => name.includes("hall_outer_window_s_")),
       trophyCup: names(trophy).some((name) => name.includes("trophy_case_") && name.includes("_cup")),
       trophyBanner: names(trophy).some((name) => name.includes("trophy_banner_")),
+      trophyRoom: names(trophy).some((name) => name.includes("trophy_room_")),
       arcadeCol: names(arcade).some((name) => name.includes("arcade_col_")),
       arcadeBench: names(arcade).some((name) => name.includes("arcade_bench_")),
       artType: art.type,
@@ -1297,9 +1317,11 @@ try {
       b1FloodDesk: names(b1).some((name) => name.includes("b1flood_desk_")),
       b1FloodBoard: names(b1).some((name) => name.includes("b1flood_board")),
       b1FloodDoor: names(b1).some((name) => name.includes("b1flood_door_")),
+      b1FloodRoom: names(b1).some((name) => name.includes("b1_maze_class_")),
       f2BloodFrame: names(f2).some((name) => name.includes("f2blood_frame_")),
       f2BloodPortrait: names(f2).some((name) => name.includes("f2blood_portrait_")),
       f2GalleryFrame: names(f2).some((name) => name.includes("f2gallery_frame_")),
+      f2GalleryRoom: names(f2).some((name) => name.includes("gallery_maze_room_")),
       eastWashBucket: names(eastWing).some((name) => name.includes("eastwash_bucket_")),
       angelHallCart: names(westHall).some((name) => name.includes("angelhall_cart")),
       washFourCubby: names(washFour).some((name) => name.includes("washfour_cubby_")),
@@ -1366,6 +1388,8 @@ try {
   const b1DeepWalk = [];
   for (const stop of [
     { x: 8.4, z: 41.8 },
+    { x: 8.4, z: 48.0 },
+    { x: 6.05, z: 48.2 },
     { x: 8.4, z: 48.0 },
     { x: 8.4, z: 53.4 },
   ]) {
@@ -1434,6 +1458,9 @@ try {
     { x: -22.5, z: -34.0 },
     { x: -22.5, z: -38.4 },
     { x: -32.5, z: -42.0 },
+    { x: -32.5, z: -45.0 },
+    { x: -35.2, z: -45.2 },
+    { x: -32.5, z: -45.0 },
     { x: -32.5, z: -50.0 },
   ]) {
     f2DeepWalk.push(await walkTo(stop, 360));
@@ -1556,7 +1583,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, dormWalk, dollClassWalk, prepStoreWalk, closedLibWalk, etiquetteWalk, roofHallWalk, lostFoundWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, trophyWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, dormWalk, dollClassWalk, prepStoreWalk, closedLibWalk, etiquetteWalk, roofHallWalk, lostFoundWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -1585,7 +1612,10 @@ try {
   assert.ok(gymWalk.some((stop) => stop.z > 5 && Math.abs(stop.x - 112) < 1.6), "trophy hall T-spur south to the foyer must stay open");
   assert.equal(rooms.trophyCup, true, "trophy hall must show cups");
   assert.equal(rooms.trophyBanner, true, "trophy hall must hang banners");
+  assert.equal(rooms.trophyRoom, true, "trophy hall must close a SE classroom volume");
   assert.ok(rooms.beats.includes("trophy"), "trophy VO beat missing");
+  assert.equal(trophyWalk.at(-1).ok, true, `must walk into the trophy SE room, got ${JSON.stringify(trophyWalk.at(-1))}`);
+  assert.ok(trophyWalk.at(-1).z > 3 && trophyWalk.at(-1).x > 115, "trophy SE room must be enterable off the spine");
   assert.equal(rooms.arcadeCol, true, "courtyard arcade must have columns");
   assert.equal(rooms.arcadeBench, true, "courtyard arcade must have benches");
   assert.ok(rooms.beats.includes("arcade"), "arcade VO beat missing");
@@ -1806,9 +1836,11 @@ try {
   assert.equal(rooms.b1FloodDesk, true, "B1 south labyrinth must show flooded desks");
   assert.equal(rooms.b1FloodBoard, true, "B1 flooded classroom must show chalkboards");
   assert.equal(rooms.b1FloodDoor, true, "B1 flooded classroom must show door frames");
+  assert.equal(rooms.b1FloodRoom, true, "B1 flooded bays must be closed classroom rooms");
   assert.equal(rooms.f2BloodFrame, true, "2F maze must show blood frames");
   assert.equal(rooms.f2BloodPortrait, true, "2F labyrinth must show extra portraits");
   assert.equal(rooms.f2GalleryFrame, true, "2F gallery must show extra portrait frames");
+  assert.equal(rooms.f2GalleryRoom, true, "2F gallery bays must be closed portrait rooms");
   assert.equal(rooms.annexGateRack, true, "annex gate must show shoe racks");
   assert.ok(rooms.beats.includes("annexgate"), "annex gate VO beat missing");
   assert.equal(lostFoundWalk.at(-1).ok, true, `must walk the lost-and-found hall, got ${JSON.stringify(lostFoundWalk.at(-1))}`);
@@ -1884,10 +1916,12 @@ try {
   assert.equal(rooms.f2SouthLab, true, "2F south labyrinth floor must exist");
   assert.equal(b1DeepWalk.at(-1).ok, true, `must walk the B1 south labyrinth, got ${JSON.stringify(b1DeepWalk.at(-1))}`);
   assert.ok(b1DeepWalk.at(-1).z > 50, "south labyrinth continues past the old basement wall");
+  assert.ok(b1DeepWalk.some((stop) => stop.x < 6.4 && Math.abs(stop.z - 48) < 1.2), "must enter the west flooded classroom");
   assert.equal(b1EastWalk.at(-1).ok, true, `must walk the B1 east labyrinth, got ${JSON.stringify(b1EastWalk.at(-1))}`);
   assert.ok(b1EastWalk.at(-1).x > 28, "east labyrinth continues past the old basement wall");
   assert.equal(f2DeepWalk.at(-1).ok, true, `must walk the 2F north labyrinth, got ${JSON.stringify(f2DeepWalk.at(-1))}`);
   assert.ok(f2DeepWalk.at(-1).z < -46, "north labyrinth continues past the old gallery wall");
+  assert.ok(f2DeepWalk.some((stop) => stop.x < -34.4 && Math.abs(stop.z + 45) < 1.2), "must enter the west portrait room");
   assert.equal(f2SouthWalk.at(-1).ok, true, `must walk the 2F south labyrinth, got ${JSON.stringify(f2SouthWalk.at(-1))}`);
   assert.ok(f2SouthWalk.at(-1).z > 3, "south labyrinth continues past the old gallery wall");
   assert.ok(story.fired.includes("b1deep") || b1DeepWalk.at(-1).z > 42, "B1 deep story beat should fire in the south maze");
