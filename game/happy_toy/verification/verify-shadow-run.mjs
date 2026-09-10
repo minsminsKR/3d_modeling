@@ -1581,6 +1581,7 @@ try {
       skyRib: names(bridge).some((name) => name.includes("sky_rib_")),
       skyBothWindows: names(bridge).some((name) => name.includes("hall_outer_window_n_"))
         && names(bridge).some((name) => name.includes("hall_outer_window_s_")),
+      skyCheek: names(bridge).some((name) => name.includes("skybridge_cheek_s")),
       courtyardType: yard.type,
       courtyardWell: names(yard).some((name) => name.includes("courtyard_well")),
       courtyardRail: names(yard).some((name) => name.includes("courtyard_rail_")),
@@ -1590,6 +1591,7 @@ try {
       memorialBothWindows: names(memorial).some((name) => name.includes("hall_outer_window_n_"))
         && names(memorial).some((name) => name.includes("hall_outer_window_s_")),
       memorialGlassJog: names(memorial).some((name) => name.includes("memorial_glass_jog_n")),
+      memorialCheekS: names(memorial).some((name) => name.includes("memorial_cheek_s")),
       trophyCup: names(trophy).some((name) => name.includes("trophy_case_") && name.includes("_cup")),
       trophyBanner: names(trophy).some((name) => name.includes("trophy_banner_")),
       trophyRoom: names(trophy).some((name) => name.includes("trophy_room_")),
@@ -1613,6 +1615,7 @@ try {
       eastwashRoomL: names(eastWing).some((name) => name.includes("eastwash_room_ne_l_")),
       washfourRoomL: names(washFour).some((name) => name.includes("washfour_room_ne_l_")),
       angelRoomL: names(westHall).some((name) => name.includes("angel_room_ne_l_")),
+      angelHallCheek: names(westHall).some((name) => name.includes("angelhall_cheek_s")),
       labLinkRoomL: names(labLink).some((name) => name.includes("lablink_room_sw_l_")),
       labLinkCheek: names(labLink).some((name) => name.includes("lablink_cheek_n")),
       stageWingRoom: names(stageWing).some((name) => name.includes("stagewing_room_")),
@@ -2174,6 +2177,7 @@ try {
   assert.equal(rooms.eastwashRoomL, true, "east-wash NE classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.washfourRoomL, true, "wash-four NE classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.angelRoomL, true, "angel NE classroom must break the copied rectangle with an L jog");
+  assert.equal(rooms.angelHallCheek, true, "angel south glass must get a west cheek off the copied plane");
   assert.equal(rooms.labLinkRoomL, true, "lab-link SW classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.stageWingRoom, true, "stage wing must close north classroom volumes");
   assert.equal(rooms.stageWingRoomL, true, "stage wing NE classroom must break the copied rectangle with an L jog");
@@ -2188,6 +2192,7 @@ try {
   assert.equal(rooms.archiveRoomSwL, true, "archive SW classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.annexHallCheek, true, "annex south wall must carry a unique cheek pier");
   assert.equal(rooms.memorialGlassJog, true, "memorial north glass must jog off the copied plane");
+  assert.equal(rooms.memorialCheekS, true, "memorial south glass must get a west cheek off the copied plane");
   assert.equal(rooms.nurseryHallDogleg, true, "nursery east wall must dogleg mid-run");
   assert.equal(rooms.laundryHallBaffle, true, "laundry spine must stagger unique baffles");
   assert.equal(rooms.trophyHallCheek, true, "trophy north wall must carry a unique cheek pier");
@@ -2244,6 +2249,7 @@ try {
   assert.equal(rooms.skyGrate, true, "skybridge must have a metal grate floor");
   assert.equal(rooms.skyRib, true, "skybridge must have window ribs");
   assert.equal(rooms.skyBothWindows, true, "connector hall must open windows on both long walls");
+  assert.equal(rooms.skyCheek, true, "skybridge south glass must get a west cheek off the copied plane");
   assert.ok(rooms.beats.includes("skybridge"), "skybridge VO beat missing");
   assert.ok(story.fired.includes("skybridge") || annexWalk.some((stop) => stop.x > 44 && stop.x < 52), "skybridge story should fire on the connector");
   assert.equal(rooms.courtyardType, "courtyard");

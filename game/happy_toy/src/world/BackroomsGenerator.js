@@ -4943,6 +4943,11 @@ export class BackroomsGenerator {
       chunk, chunkId, "sky_tape_e",
       center.x + 3.6, floorY + 1.22, center.z - sides.n + 0.2, Math.PI,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "skybridge_cheek_s",
+      center.x - 3.15, floorY + 1.4, center.z + (sides.s - 0.20),
+      1.28, 2.8, 0.36, this.schoolClassWallMat,
+    );
     const stain = new THREE.Mesh(this.getPlaneGeometry(1.4, 0.55), this.schoolWetMat);
     stain.rotation.x = -Math.PI / 2;
     stain.position.set(center.x + 1.8, floorY + 0.03, center.z + 0.35);
@@ -5085,6 +5090,11 @@ export class BackroomsGenerator {
       chunk, chunkId, "memorial_glass_jog_n",
       center.x - 2.85, floorY + 1.4, center.z - (sides.n - 0.18),
       1.55, 2.8, 0.34, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "memorial_cheek_s",
+      center.x - 4.05, floorY + 1.4, center.z + (sides.s - 0.20),
+      1.32, 2.8, 0.36, this.schoolClassWallMat,
     );
     const glow = new THREE.PointLight(0x2a2018, 0.14, 4.6, 2);
     glow.position.set(center.x, floorY + 2.15, center.z);
@@ -6260,6 +6270,12 @@ export class BackroomsGenerator {
       chunk, chunkId, "angel_room_ne_l_x",
       center.x + 2.28, floorY + 1.4, center.z - 3.58,
       1.88, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    const angelSides = this.getHallSides(chunk.cx, chunk.cz);
+    this.placeDressedBox(
+      chunk, chunkId, "angelhall_cheek_s",
+      center.x - 4.05, floorY + 1.4, center.z + (angelSides.s - 0.20),
+      1.28, 2.8, 0.36, this.schoolClassWallMat,
     );
     const glow = new THREE.PointLight(0x181410, 0.48, 6.0, 2);
     glow.position.set(center.x + 3.2, floorY + 2.05, center.z - 1.15);
