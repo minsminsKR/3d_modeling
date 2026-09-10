@@ -40,17 +40,17 @@ async function poseShot(name, pose) {
 }
 
 // Unique stills only — never reuse prior artifact filenames.
-await poseShot("f1_annex_narrow_spine.png", {
-  cx: 4, cz: 0, x: 64.0, y: 0, z: 0.0, lookAt: [71.2, 1.25, 0.0],
+await poseShot("f1_nursery_east_room.png", {
+  cx: 2, cz: 1, x: 36.8, y: 0, z: 20.6, lookAt: [40.4, 1.28, 23.4],
 });
-await poseShot("f1_trophy_wide_spine.png", {
-  cx: 7, cz: 0, x: 112.0, y: 0, z: 0.0, lookAt: [119.4, 1.25, 0.0],
+await poseShot("f1_doll_west_room.png", {
+  cx: -2, cz: 1, x: -36.8, y: 0, z: 20.5, lookAt: [-40.2, 1.28, 23.3],
 });
-await poseShot("f1_laundry_narrow_spine.png", {
-  cx: 4, cz: -1, x: 64.0, y: 0, z: -16.0, lookAt: [64.0, 1.25, -23.2],
+await poseShot("f1_storage_east_room.png", {
+  cx: 2, cz: -1, x: 36.8, y: 0, z: -9.9, lookAt: [40.4, 1.28, -7.2],
 });
-await poseShot("f1_annex_ne_after_pinch.png", {
-  cx: 4, cz: 0, x: 69.15, y: 0, z: -2.55, lookAt: [72.35, 1.32, -5.85],
+await poseShot("f1_lab_south_room.png", {
+  cx: 5, cz: -2, x: 84.6, y: 0, z: -27.6, lookAt: [87.8, 1.28, -24.8],
 });
 
 await browser.close();

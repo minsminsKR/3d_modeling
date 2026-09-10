@@ -296,7 +296,7 @@ export class StoryDirector {
       this.fire(
         "nurseryhall",
         "nurseryhall",
-        "보육 복도입니다. 요람이 서쪽 벽에 붙어 있습니다.",
+        "보육 복도입니다. 요람이 동쪽 벽에 붙어 있습니다.",
         "school_chime",
       );
     }

@@ -482,8 +482,12 @@ export class MapBuilder {
   dressMazeHallProps(chunk, random, chicanes) {
     const c = chunk.center;
     const y = chunk.floorY;
-    const wall = 1.78;
-    const alcove = 5.25;
+    const gen = this.generator;
+    const wall = (gen.getHallClear?.(chunk.cx, chunk.cz) ?? 1.7) + 0.08;
+    const mask = gen.getHallNookMask?.(chunk.cx, chunk.cz) || { n: true, s: true, e: true, w: true };
+    const doorsOf = (side) => gen.getHallDoorAlong?.(chunk.cx, chunk.cz, side) || [-5.25, 5.25];
+    const sideSign = (alongs, i) => gen.hallDoorSideSign?.(alongs, i)
+      ?? (alongs.length <= 1 ? ((alongs[0] || 0) < 0 ? 1 : -1) : (i === 0 ? 1 : -1));
     const addPlate = (lx, lz, yaw, name, slot) => {
       const plate = new THREE.Mesh(new THREE.PlaneGeometry(0.55, 0.2), this.getRoomPlateMaterial(chunk, slot));
       plate.position.set(c.x + lx, y + 2.08, c.z + lz);
@@ -494,15 +498,31 @@ export class MapBuilder {
       chunk.meshes.push(plate);
     };
     if (chicanes.ew) {
-      addPlate(-alcove + 1.32, -wall, 0, "room_plate_nw", 0);
-      addPlate(alcove - 1.32, -wall, 0, "room_plate_ne", 1);
-      addPlate(-alcove + 1.32, wall, Math.PI, "room_plate_sw", 2);
-      addPlate(alcove - 1.32, wall, Math.PI, "room_plate_se", 3);
+      if (mask.n) {
+        const doors = doorsOf("n");
+        doors.forEach((along, i) => {
+          addPlate(along + sideSign(doors, i) * 1.32, -wall, 0, `room_plate_n_${i}`, i);
+        });
+      }
+      if (mask.s) {
+        const doors = doorsOf("s");
+        doors.forEach((along, i) => {
+          addPlate(along + sideSign(doors, i) * 1.32, wall, Math.PI, `room_plate_s_${i}`, 2 + i);
+        });
+      }
     } else if (chicanes.ns) {
-      addPlate(-wall, -alcove + 1.32, Math.PI / 2, "room_plate_wn", 0);
-      addPlate(-wall, alcove - 1.32, Math.PI / 2, "room_plate_ws", 1);
-      addPlate(wall, -alcove + 1.32, -Math.PI / 2, "room_plate_en", 2);
-      addPlate(wall, alcove - 1.32, -Math.PI / 2, "room_plate_es", 3);
+      if (mask.w) {
+        const doors = doorsOf("w");
+        doors.forEach((along, i) => {
+          addPlate(-wall, along + sideSign(doors, i) * 1.32, Math.PI / 2, `room_plate_w_${i}`, i);
+        });
+      }
+      if (mask.e) {
+        const doors = doorsOf("e");
+        doors.forEach((along, i) => {
+          addPlate(wall, along + sideSign(doors, i) * 1.32, -Math.PI / 2, `room_plate_e_${i}`, 2 + i);
+        });
+      }
     }
 
     if (random() < 0.8) {

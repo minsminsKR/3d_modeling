@@ -365,7 +365,64 @@ export class BackroomsGenerator {
     if (this.isAngelHallChunk(cx, cz)) return 1.48;
     if (this.isLaundryChunk(cx, cz)) return 1.22;
     if (this.isSpecimenChunk(cx, cz)) return 1.48;
+    if (this.isNurseryHallChunk(cx, cz)) return 1.28;
+    if (this.isStorageHallChunk(cx, cz)) return 1.38;
+    if (this.isDollHallChunk(cx, cz)) return 1.52;
+    if (this.isArchiveHallChunk(cx, cz)) return 1.18;
+    if (this.isLabLinkChunk(cx, cz)) return 1.32;
+    if (this.isTeaHallChunk(cx, cz)) return 1.45;
+    if (this.isArcadeChunk(cx, cz)) return 1.58;
+    if (this.isStageWingChunk(cx, cz)) return 1.92;
     return 1.7;
+  }
+
+  // Classroom door centers along a wall. Chase tiles keep ±5.25 so hide and
+  // the (1,0)→(2,0) cut-through stay on the verified aisle. Identity halls
+  // shift the pair so the 16m shell stops using one copied door rhythm.
+  getHallDoorAlong(cx, cz, side) {
+    const authored = {
+      "4,0": { n: [-4.95, 6.35] },
+      "7,0": { s: [-6.45, 4.95] },
+      "4,-1": { w: [-6.25, 4.95] },
+      "6,-1": { w: [-6.35, 4.85] },
+      "2,1": { e: [-6.35, 4.95] },
+      "2,-1": { e: [-4.95, 6.35] },
+      "-2,1": { w: [-6.45, 4.85] },
+      "-2,-1": { w: [-4.85, 6.45] },
+      "5,-2": { s: [-6.25, 4.95] },
+      "-1,1": { n: [-6.15, 4.95] },
+      "4,1": { w: [-4.95, 6.35] },
+      "6,2": { n: [-6.45, 4.85] },
+      "5,0": { n: [-4.95, 6.25] },
+      "-1,0": { n: [-6.35, 4.95] },
+      "2,0": { n: [-5.25, 6.35] },
+    };
+    const row = authored[`${cx},${cz}`];
+    if (row && row[side] && row[side].length) return row[side];
+    return [-5.25, 5.25];
+  }
+
+  hallDoorSideSign(alongs, index) {
+    if (!alongs || alongs.length <= 1) return (alongs?.[0] || 0) < 0 ? 1 : -1;
+    return index === 0 ? 1 : -1;
+  }
+
+  isClosedIdentityHall(cx, cz) {
+    return this.isAnnexGateChunk(cx, cz)
+      || this.isTrophyChunk(cx, cz)
+      || this.isEastWashChunk(cx, cz)
+      || this.isWashFourChunk(cx, cz)
+      || this.isAngelHallChunk(cx, cz)
+      || this.isLaundryChunk(cx, cz)
+      || this.isSpecimenChunk(cx, cz)
+      || this.isNurseryHallChunk(cx, cz)
+      || this.isStorageHallChunk(cx, cz)
+      || this.isDollHallChunk(cx, cz)
+      || this.isArchiveHallChunk(cx, cz)
+      || this.isLabLinkChunk(cx, cz)
+      || this.isTeaHallChunk(cx, cz)
+      || this.isArcadeChunk(cx, cz)
+      || this.isStageWingChunk(cx, cz);
   }
 
   isSkybridgeChunk(cx, cz) {
@@ -2387,15 +2444,7 @@ export class BackroomsGenerator {
   dressHallLockerBanks(chunk, center, chunkId, floorY, _openings, ewChicane, nsChicane) {
     // Identity halls with closed corner rooms keep their own props instead of
     // the shared 3.4m locker banks. Chase tiles (0,0)/(1,0) still dress lockers.
-    if (
-      this.isAnnexGateChunk(chunk.cx, chunk.cz)
-      || this.isTrophyChunk(chunk.cx, chunk.cz)
-      || this.isEastWashChunk(chunk.cx, chunk.cz)
-      || this.isWashFourChunk(chunk.cx, chunk.cz)
-      || this.isAngelHallChunk(chunk.cx, chunk.cz)
-      || this.isLaundryChunk(chunk.cx, chunk.cz)
-      || this.isSpecimenChunk(chunk.cx, chunk.cz)
-    ) {
+    if (this.isClosedIdentityHall(chunk.cx, chunk.cz)) {
       return;
     }
     // Locker rows sit on the inner faces of the 3.4m school corridor.
@@ -3213,15 +3262,16 @@ export class BackroomsGenerator {
 
   dressSchoolCorridor(chunk, center, chunkId, floorY, openings, ewChicane, nsChicane) {
     // Authored-width school corridor through the tile center. Classroom walls
-    // at the clear edge, hide-alcove doors at ±5.25, T-spurs on graph turns.
+    // at the clear edge, hide-alcove doors from getHallDoorAlong, T-spurs on
+    // graph turns.
     this.ensureSchoolCorridorMaterials();
     const clear = this.getHallClear(chunk.cx, chunk.cz);
     const t = 0.28;
     const wallPos = clear + t / 2;
     const y = floorY + 1.4;
     const h = 2.8;
-    const alcove = 5.25;
     const doorW = 2.2;
+    const doorsOf = (side) => this.getHallDoorAlong(chunk.cx, chunk.cz, side);
     const spanMin = -7.45;
     const spanMax = 7.45;
     const stemEnd = 7.52;
@@ -3270,8 +3320,12 @@ export class BackroomsGenerator {
     if (ewChicane) {
       const nGaps = [];
       const sGaps = [];
-      if (mask.n) nGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
-      if (mask.s && !practice) sGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
+      if (mask.n) {
+        for (const along of doorsOf("n")) nGaps.push({ center: along, width: doorW });
+      }
+      if (mask.s && !practice) {
+        for (const along of doorsOf("s")) sGaps.push({ center: along, width: doorW });
+      }
       if (nsChicane || openings.N) nGaps.push({ center: 0, width: clear * 2 });
       if ((nsChicane || openings.S) && !practice) sGaps.push({ center: 0, width: clear * 2 });
       gapped("hall_class_n", "x", -wallPos, nGaps);
@@ -3298,10 +3352,10 @@ export class BackroomsGenerator {
       if (ewChicane || openings.W) wGaps.push({ center: 0, width: clear * 2 });
       if (ewChicane || openings.E) eGaps.push({ center: 0, width: clear * 2 });
       if (!ewChicane && mask.w) {
-        wGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
+        for (const along of doorsOf("w")) wGaps.push({ center: along, width: doorW });
       }
       if (!ewChicane && mask.e) {
-        eGaps.push({ center: -alcove, width: doorW }, { center: alcove, width: doorW });
+        for (const along of doorsOf("e")) eGaps.push({ center: along, width: doorW });
       }
       gapped("hall_class_w", "z", -wallPos, wGaps);
       gapped("hall_class_e", "z", wallPos, eGaps);
@@ -3340,14 +3394,16 @@ export class BackroomsGenerator {
     const winZ = wallPos + 0.03;
     if (ewChicane) {
       if (mask.n) {
-        panel("hall_class_door_n_w", -alcove, -winZ, 0.9, 0.04);
-        panel("hall_class_door_n_e", alcove, -winZ, 0.9, 0.04);
+        doorsOf("n").forEach((along, i) => {
+          panel(`hall_class_door_n_${i}`, along, -winZ, 0.9, 0.04);
+        });
         glass("hall_window_n_w", -2.9, -winZ, 0.28, 0.32, 0.03);
         glass("hall_window_n_e", 2.9, -winZ, 0.28, 0.32, 0.03);
       }
       if (mask.s && !this.isPracticeChunk(chunk.cx, chunk.cz)) {
-        panel("hall_class_door_s_w", -alcove, winZ, 0.9, 0.04);
-        panel("hall_class_door_s_e", alcove, winZ, 0.9, 0.04);
+        doorsOf("s").forEach((along, i) => {
+          panel(`hall_class_door_s_${i}`, along, winZ, 0.9, 0.04);
+        });
         glass("hall_window_s_w", -2.9, winZ, 0.28, 0.32, 0.03);
         glass("hall_window_s_e", 2.9, winZ, 0.28, 0.32, 0.03);
       }
@@ -3385,12 +3441,14 @@ export class BackroomsGenerator {
       const winX = wallPos + 0.03;
       if (!ewChicane) {
         if (mask.w) {
-          panel("hall_class_door_w_n", -winX, -alcove, 0.04, 0.9);
-          panel("hall_class_door_w_s", -winX, alcove, 0.04, 0.9);
+          doorsOf("w").forEach((along, i) => {
+            panel(`hall_class_door_w_${i}`, -winX, along, 0.04, 0.9);
+          });
         }
         if (mask.e) {
-          panel("hall_class_door_e_n", winX, -alcove, 0.04, 0.9);
-          panel("hall_class_door_e_s", winX, alcove, 0.04, 0.9);
+          doorsOf("e").forEach((along, i) => {
+            panel(`hall_class_door_e_${i}`, winX, along, 0.04, 0.9);
+          });
         }
       }
       if (mask.w) {
@@ -3694,10 +3752,10 @@ export class BackroomsGenerator {
         metalness: 0,
       });
     }
-    const alcove = 5.25;
     const wall = this.getHallClear(chunk.cx, chunk.cz) + 0.14;
     let idx = 0;
     const mask = this.getHallNookMask(chunk.cx, chunk.cz);
+    const doorsOf = (side) => this.getHallDoorAlong(chunk.cx, chunk.cz, side);
     const southT = Boolean(ewChicane && (nsChicane || openings?.S));
     const northT = Boolean(ewChicane && (nsChicane || openings?.N));
     const westT = Boolean(nsChicane && (ewChicane || openings?.W));
@@ -3900,26 +3958,36 @@ export class BackroomsGenerator {
 
     if (ewChicane) {
       if (mask.n) {
-        dressNook(-alcove, -wall, 0, -1, 1, 0);
-        dressNook(alcove, -wall, 0, -1, -1, 0);
+        const doors = doorsOf("n");
+        doors.forEach((along, i) => {
+          dressNook(along, -wall, 0, -1, this.hallDoorSideSign(doors, i), 0);
+        });
+        idx += Math.max(0, 2 - doors.length);
       } else {
         idx += 2;
       }
       if (mask.s && !this.isPracticeChunk(chunk.cx, chunk.cz)) {
-        dressNook(-alcove, wall, 0, 1, 1, 0);
-        dressNook(alcove, wall, 0, 1, -1, 0);
+        const doors = doorsOf("s");
+        doors.forEach((along, i) => {
+          dressNook(along, wall, 0, 1, this.hallDoorSideSign(doors, i), 0);
+        });
       }
     }
     if (nsChicane && !ewChicane) {
       if (mask.w) {
-        dressNook(-wall, -alcove, -1, 0, 0, 1);
-        dressNook(-wall, alcove, -1, 0, 0, -1);
+        const doors = doorsOf("w");
+        doors.forEach((along, i) => {
+          dressNook(-wall, along, -1, 0, 0, this.hallDoorSideSign(doors, i));
+        });
+        idx += Math.max(0, 2 - doors.length);
       } else {
         idx += 2;
       }
       if (mask.e) {
-        dressNook(wall, -alcove, 1, 0, 0, 1);
-        dressNook(wall, alcove, 1, 0, 0, -1);
+        const doors = doorsOf("e");
+        doors.forEach((along, i) => {
+          dressNook(wall, along, 1, 0, 0, this.hallDoorSideSign(doors, i));
+        });
       }
     }
   }
@@ -4987,10 +5055,10 @@ export class BackroomsGenerator {
       handle.name = `${chunkId}_${name}_cup_handle`;
       this.addSchoolProp(chunk, handle);
     };
-    caseAt("trophy_case_sw", -5.05, 1.48);
-    caseAt("trophy_case_se", 5.05, 1.48);
-    caseAt("trophy_case_nw", -5.05, -1.48);
-    caseAt("trophy_case_ne", 5.05, -1.48);
+    caseAt("trophy_case_sw", -3.55, 5.15);
+    caseAt("trophy_case_se", 3.55, 5.15);
+    caseAt("trophy_case_nw", -3.05, -1.48);
+    caseAt("trophy_case_ne", 3.05, -1.48);
     const southFace = this.getHallClear(chunk.cx, chunk.cz) + 0.08;
     for (const [name, x] of [["w", -3.35], ["e", 3.35]]) {
       this.placeDressedBox(
@@ -5043,6 +5111,8 @@ export class BackroomsGenerator {
       center.x + 1.82, floorY + 2.12, center.z,
       -Math.PI / 2, "아케이드",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "arcade_room_nw", "nw", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "arcade_room_sw", "sw", "ns");
     const glow = new THREE.PointLight(0x181410, 0.12, 4.2, 2);
     glow.position.set(center.x + 2.4, floorY + 2.05, center.z);
     glow.name = `${chunkId}_arcade_glow`;
@@ -5063,16 +5133,16 @@ export class BackroomsGenerator {
         opacity: 0.72,
       });
     }
-    // Keep cases inside the west rooms, off the ±5.25 classroom doors.
-    for (const [name, z] of [["n_a", -3.6], ["n_b", -2.45], ["s_a", 2.45], ["s_b", 3.6]]) {
+    // Keep cases inside the west rooms, off the classroom doors.
+    for (const [name, z] of [["n", -4.65], ["s", 4.65]]) {
       this.placeDressedBox(
         chunk, chunkId, `specimen_case_${name}`,
-        center.x - 3.85, floorY + 0.95, center.z + z,
+        center.x - 4.55, floorY + 0.95, center.z + z,
         0.42, 1.9, 0.72, this.schoolDeskDark || this.trimMaterial,
       );
       this.addSpecimenJarUnit(
         chunk, chunkId, `specimen_jar_${name}`,
-        center.x - 3.85, floorY + 1.72, center.z + z,
+        center.x - 4.55, floorY + 1.72, center.z + z,
       );
     }
     this.addHallNookSign(
@@ -5100,15 +5170,16 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.05,
       });
     }
-    for (const [name, x] of [["w_a", -5.35], ["w_b", -3.15], ["e_a", 3.15], ["e_b", 5.35]]) {
+    const rackZ = center.z + (this.getHallClear(chunk.cx, chunk.cz) - 0.19);
+    for (const [name, x] of [["w", -2.88], ["e", 2.88]]) {
       this.placeDressedBox(
         chunk, chunkId, `stagewing_rack_${name}`,
-        center.x + x, floorY + 1.15, center.z - 3.85,
+        center.x + x, floorY + 1.15, rackZ,
         0.72, 2.3, 0.18, this.schoolMetalMat || this.trimMaterial,
       );
       this.placeDressedBox(
         chunk, chunkId, `stagewing_cloth_${name}`,
-        center.x + x, floorY + 1.35, center.z - 3.85,
+        center.x + x, floorY + 1.35, rackZ,
         0.62, 1.55, 0.28, this.schoolCostumeMat, false,
       );
     }
@@ -5135,15 +5206,15 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.04,
       });
     }
-    for (const [name, z] of [["n", -3.45], ["s", 3.45]]) {
+    for (const [name, z] of [["n", -4.65], ["s", 4.65]]) {
       this.placeDressedBox(
         chunk, chunkId, `laundry_cart_${name}`,
-        center.x - 3.85, floorY + 0.38, center.z + z,
+        center.x - 4.55, floorY + 0.38, center.z + z,
         0.72, 0.76, 0.92, this.schoolBasketMat,
       );
       this.placeDressedBox(
         chunk, chunkId, `laundry_pile_${name}`,
-        center.x - 3.85, floorY + 0.82, center.z + z,
+        center.x - 4.55, floorY + 0.82, center.z + z,
         0.55, 0.22, 0.62, this.schoolHomeEcMat || this.schoolBasketMat, false,
       );
     }
@@ -5174,15 +5245,15 @@ export class BackroomsGenerator {
         opacity: 0.55,
       });
     }
-    for (const [name, x] of [["w", -3.45], ["e", 3.45]]) {
+    for (const [name, x] of [["w", -2.45], ["e", 2.45]]) {
       this.placeDressedBox(
         chunk, chunkId, `lablink_case_${name}`,
-        center.x + x, floorY + 0.95, center.z + 3.85,
+        center.x + x, floorY + 0.95, center.z + 4.65,
         1.15, 1.9, 0.42, this.schoolDeskDark || this.trimMaterial,
       );
       this.placeDressedBox(
         chunk, chunkId, `lablink_glass_${name}`,
-        center.x + x, floorY + 1.15, center.z + 3.72,
+        center.x + x, floorY + 1.15, center.z + 4.52,
         0.95, 1.15, 0.04, this.schoolLinkGlass, false,
       );
     }
@@ -5191,6 +5262,8 @@ export class BackroomsGenerator {
       center.x, floorY + 2.12, center.z + 1.82,
       Math.PI, "실험",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "lablink_room_se", "se");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "lablink_room_sw", "sw");
     const glow = new THREE.PointLight(0x101820, 0.11, 3.8, 2);
     glow.position.set(center.x, floorY + 2.0, center.z + 2.2);
     glow.name = `${chunkId}_lablink_glow`;
@@ -5246,11 +5319,12 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.05,
       });
     }
-    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+    const cribX = center.x + (this.getHallClear(chunk.cx, chunk.cz) - 0.22);
+    for (const [name, z] of [["n", -2.88], ["s", 2.88]]) {
       this.placeDressedBox(
         chunk, chunkId, `nurseryhall_crib_${name}`,
-        center.x - 1.48, floorY + 0.42, center.z + z,
-        0.72, 0.84, 0.85, this.schoolCribMat,
+        cribX, floorY + 0.42, center.z + z,
+        0.42, 0.84, 0.85, this.schoolCribMat,
       );
     }
     this.addHallNookSign(
@@ -5258,6 +5332,8 @@ export class BackroomsGenerator {
       center.x - 1.72, floorY + 2.12, center.z,
       Math.PI / 2, "보육",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "nursery_room_ne", "ne", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "nursery_room_se", "se", "ns");
     const glow = new THREE.PointLight(0x201410, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_nurseryhall_glow`;
@@ -5276,15 +5352,16 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.06,
       });
     }
-    for (const [name, z] of [["n", -5.05], ["s", 5.05]]) {
+    const shelfX = center.x - (this.getHallClear(chunk.cx, chunk.cz) - 0.19);
+    for (const [name, z] of [["n", -2.88], ["s", 2.88]]) {
       this.placeDressedBox(
         chunk, chunkId, `dollhall_shelf_${name}`,
-        center.x - 1.52, floorY + 0.95, center.z + z,
+        shelfX, floorY + 0.95, center.z + z,
         0.42, 1.9, 1.15, this.schoolDeskDark || this.trimMaterial,
       );
       this.placeDressedBox(
         chunk, chunkId, `dollhall_figure_${name}`,
-        center.x - 1.52, floorY + 0.55, center.z + z,
+        shelfX, floorY + 0.55, center.z + z,
         0.22, 0.72, 0.18, this.schoolDollMat, false,
       );
     }
@@ -5293,6 +5370,8 @@ export class BackroomsGenerator {
       center.x - 1.72, floorY + 2.12, center.z,
       Math.PI / 2, "인형",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "doll_room_nw", "nw", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "doll_room_sw", "sw", "ns");
     const glow = new THREE.PointLight(0x201010, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_dollhall_glow`;
@@ -5311,10 +5390,11 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.05,
       });
     }
-    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+    const caseX = center.x - (this.getHallClear(chunk.cx, chunk.cz) - 0.19);
+    for (const [name, z] of [["n", -2.88], ["s", 2.88]]) {
       this.placeDressedBox(
         chunk, chunkId, `archivehall_case_${name}`,
-        center.x - 1.48, floorY + 0.72, center.z + z,
+        caseX, floorY + 0.72, center.z + z,
         0.55, 1.44, 0.92, this.schoolArchiveMat,
       );
     }
@@ -5323,6 +5403,8 @@ export class BackroomsGenerator {
       center.x - 1.72, floorY + 2.12, center.z,
       Math.PI / 2, "서고",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "archive_room_nw", "nw", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "archive_room_sw", "sw", "ns");
     const glow = new THREE.PointLight(0x201810, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_archivehall_glow`;
@@ -5341,11 +5423,12 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.04,
       });
     }
-    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+    const crateX = center.x + (this.getHallClear(chunk.cx, chunk.cz) - 0.22);
+    for (const [name, z] of [["n", -2.88], ["s", 2.88]]) {
       this.placeDressedBox(
         chunk, chunkId, `storagehall_crate_${name}`,
-        center.x - 1.48, floorY + 0.42, center.z + z,
-        0.72, 0.84, 0.78, this.schoolCrateMat,
+        crateX, floorY + 0.42, center.z + z,
+        0.42, 0.84, 0.78, this.schoolCrateMat,
       );
     }
     this.addHallNookSign(
@@ -5353,6 +5436,8 @@ export class BackroomsGenerator {
       center.x - 1.72, floorY + 2.12, center.z,
       Math.PI / 2, "창고",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "storage_room_ne", "ne", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "storage_room_se", "se", "ns");
     const glow = new THREE.PointLight(0x201410, 0.48, 6.0, 2);
     glow.position.set(center.x - 1.15, floorY + 2.05, center.z);
     glow.name = `${chunkId}_storagehall_glow`;
@@ -5371,10 +5456,11 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.04,
       });
     }
-    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+    const benchZ = center.z - (this.getHallClear(chunk.cx, chunk.cz) - 0.21);
+    for (const [name, x] of [["w", -2.88], ["e", 2.88]]) {
       this.placeDressedBox(
         chunk, chunkId, `teahall_bench_${name}`,
-        center.x + x, floorY + 0.22, center.z - 1.52,
+        center.x + x, floorY + 0.22, benchZ,
         1.15, 0.44, 0.42, this.schoolTatamiMat,
       );
     }
@@ -5383,6 +5469,8 @@ export class BackroomsGenerator {
       center.x, floorY + 2.12, center.z - 1.72,
       0, "다실",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "tea_room_nw", "nw");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "tea_room_ne", "ne");
     const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
     glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_teahall_glow`;
@@ -7873,12 +7961,16 @@ export class BackroomsGenerator {
     };
     if (hallLike && chunk.cabinets.length === 0) {
       const nookMask = this.getHallNookMask(chunk.cx, chunk.cz);
-      const along = (chunk.cx + chunk.cz) % 2 === 0 ? 5.25 : -5.25;
-      let south = [along, 0.0, 5.25];
-      if (nookMask.s) south = [along, 0.0, 5.25];
-      else if (nookMask.n) south = [along, 0.0, -5.25];
-      else if (nookMask.e) south = [5.25, 0.0, along];
-      else if (nookMask.w) south = [-5.25, 0.0, along];
+      const pickAlong = (side) => {
+        const doors = this.getHallDoorAlong(chunk.cx, chunk.cz, side);
+        const prefer = (chunk.cx + chunk.cz) % 2 === 0 ? doors.length - 1 : 0;
+        return doors[Math.max(0, prefer)] ?? 5.25;
+      };
+      let south = [pickAlong("s"), 0.0, 5.25];
+      if (nookMask.s) south = [pickAlong("s"), 0.0, 5.25];
+      else if (nookMask.n) south = [pickAlong("n"), 0.0, -5.25];
+      else if (nookMask.e) south = [5.25, 0.0, pickAlong("e")];
+      else if (nookMask.w) south = [-5.25, 0.0, pickAlong("w")];
       addDynamicCabinet(`cabinet_hall_${chunk.cx}_${chunk.cz}`, "신발장", south, hallFacingYaw(south[0], south[2]));
     }
     if (mazeHall && chunk.cabinets.length === 1) {
@@ -8020,37 +8112,37 @@ export class BackroomsGenerator {
           "트로피 이름이 지워져 있다. 컵만 복도를 지킨다.");
       } else if (this.isArcadeChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [1.82, 1.42, 0.0], -Math.PI / 2,
-          "아케이드 너머는 중정이다. 기둥 사이로 난간만 보인다.");
+          "아케이드 너머는 중정이다. 서쪽 교실이 닫혀 있다. 기둥 사이로 난간만 보인다.");
       } else if (this.isSpecimenChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
           "표본이 아직 떠 있다. 유리 너머를 세지 마십시오.");
       } else if (this.isStageWingChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
-          "의상이 무대 쪽을 본다. 이름을 걸지 마십시오.");
+          "의상이 남쪽 벽에 걸려 있다. 이름을 걸지 마십시오.");
       } else if (this.isLaundryChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
           "세탁 수레가 어제 출석을 실었다. 옷을 뒤지지 마십시오.");
       } else if (this.isLabLinkChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, 1.82], Math.PI,
-          "실험 복도입니다. 가스가 아직 식지 않았습니다.");
+          "실험 복도입니다. 남쪽 교실이 닫혀 있다. 가스가 아직 식지 않았습니다.");
       } else if (this.isStairHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
           "지하로 가는 복도다. 콘 너머로 물이 마른다.");
       } else if (this.isNurseryHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
-          "보육 복도다. 요람이 서쪽 벽에 붙어 있다.");
+          "요람이 동쪽 벽에 붙어 있다. 서쪽 교실은 막혀 있다.");
       } else if (this.isDollHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
-          "인형 선반이 복도를 본다. 눈을 마주치지 마십시오.");
+          "인형 선반이 서쪽 벽에 붙어 있다. 눈을 마주치지 마십시오.");
       } else if (this.isArchiveHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
-          "서고 앞 철 상자가 잠겨 있다. 열지 마십시오.");
+          "서고 철 상자가 서쪽 벽에 잠겨 있다. 열지 마십시오.");
       } else if (this.isStorageHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
-          "창고 상자가 어제 출석을 담고 있다.");
+          "창고 상자가 동쪽 벽에 쌓여 있다. 어제 출석을 담고 있다.");
       } else if (this.isTeaHallChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -1.82], 0,
-          "다실 앞이다. 신발을 신지 마십시오.");
+          "다실 앞이다. 북쪽 교실이 닫혀 있다. 신발을 신지 마십시오.");
       } else if (this.isLostFoundChunk(chunk.cx, chunk.cz)) {
         addLoreNote(`${chunkId}_lore`, [-1.82, 1.42, 0.0], Math.PI / 2,
           "분실물함이다. 어제 신발을 찾지 마십시오.");
