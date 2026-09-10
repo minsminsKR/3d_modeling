@@ -105,7 +105,7 @@ export class TextureLibrary {
       emissiveIntensity: 0.08,
       bumpMap: this.createDetailTexture("floor-grain", { repeat }),
       bumpScale: 0.028,
-      color: 0x6e5844,
+      color: 0xb8a487,
       roughness: 0.86,
       metalness: 0.02,
     });
@@ -126,7 +126,7 @@ export class TextureLibrary {
       map: this.createTexture("ceiling", { repeat, wrapping: THREE.RepeatWrapping }),
       bumpMap: this.createDetailTexture("ceiling-stain", { repeat }),
       bumpScale: 0.03,
-      color: 0x2a2218,
+      color: 0x878174,
       roughness: 0.97,
       metalness: 0.0,
     });

@@ -20,6 +20,10 @@ export class Input {
   }
 
   connect() {
+    window.addEventListener('blur', () => {
+      this.keys.clear(); this.pressedThisFrame.clear();
+      this.pointerDelta.x = 0; this.pointerDelta.y = 0; this.lookHeld = false;
+    });
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("keyup", this.handleKeyUp);
     document.addEventListener("mousemove", this.handleMouseMove);

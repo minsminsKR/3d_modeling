@@ -30,6 +30,7 @@ export class Door {
     this.panelPositions = [];
     this.panels = this.createSlidingPanels(material);
     this.createTracks();
+    this.createFrame();
   }
 
   toggle() {
@@ -38,6 +39,29 @@ export class Door {
     }
     this.isOpen = !this.isOpen;
     return true;
+  }
+
+  createFrame() {
+    const frame = new THREE.MeshStandardMaterial({color:0x514737,roughness:0.76,metalness:0.12});
+    const along = this.axis;
+    const across = along === 'x' ? 'z' : 'x';
+    const box = (width,height,depth,x,y) => {
+      const size=along==='x'?[width,height,depth]:[depth,height,width];
+      const mesh=new THREE.Mesh(new THREE.BoxGeometry(...size),frame);
+      mesh.position[along]=x;mesh.position.y=y;
+      mesh.castShadow=true;mesh.receiveShadow=true;
+      mesh.name=`${this.id}-casing`;this.group.add(mesh);
+    };
+    for(const side of [-1,1]) box(0.09,this.size[1]+0.06,0.46,side*(this.panelSpan/2+0.045),(this.size[1]+0.06)/2);
+    box(this.panelSpan+0.18,0.13,0.46,0,this.size[1]+0.065);
+    box(this.panelSpan,0.014,0.44,0,0.007);
+    // Solid wood rails articulate the sliding panels on both sides.
+    for(const panel of this.panels) for(const side of [-1,1]) {
+      const rail=new THREE.Mesh(new THREE.BoxGeometry(...(along==='x'?[this.panelSpan/2-0.05,0.065,0.018]:[0.018,0.065,this.panelSpan/2-0.05])),frame);
+      rail.position.y=0.22;
+      rail.position[across]=side*(this.size[across==='x'?0:2]/2+0.012);
+      panel.add(rail);
+    }
   }
 
   getPrompt() {

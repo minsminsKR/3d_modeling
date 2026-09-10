@@ -1,6 +1,6 @@
 // FBX 캐릭터와 원본 텍스처를 읽어 Three.js 장면에 올릴 수 있게 정리하는 모듈입니다.
-// Mixamo에서 받은 Walking/Run FBX를 캐릭터 애니메이션으로 쓰고, 실패하면 임시 형상으로 대체합니다.
-// 그림자복도형 추격자는 Mixamo 고양이 대신 검은 인간형 실루엣을 씁니다.
+// 원본 모델과 동작은 캐시하고 인스턴스마다 뼈/재질을 분리합니다.
+// 필수 모델, 텍스처, 동작 누락은 호출자에게 전달해 입장을 차단합니다.
 
 import * as THREE from "three";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
@@ -9,9 +9,21 @@ export class CharacterLoader {
   constructor() {
     this.fbxLoader = new FBXLoader();
     this.textureLoader = new THREE.TextureLoader();
+    this.fbxPromises = new Map();
+    this.assetPromises = new Map();
   }
 
   async load(config) {
+    const key = JSON.stringify([config.modelUrl, config.textureUrl, config.height, config.animationUrls, config.lockRootVerticalActions, config.silhouette]);
+    if (!this.assetPromises.has(key)) {
+      const pending = this.loadSource(config);
+      this.assetPromises.set(key, pending);
+      pending.catch(() => this.assetPromises.delete(key));
+    }
+    return cloneCharacterAsset(await this.assetPromises.get(key));
+  }
+
+  async loadSource(config) {
     if (config.silhouette) {
       return this.createStalkerAsset(config);
     }
@@ -24,6 +36,8 @@ export class CharacterLoader {
       this.prepareObject(object, config.height);
       object.animations = this.prepareLoopingAnimations(object.animations || []);
       const actions = await this.loadActionClips(config.animationUrls || {}, object.animations, config);
+      object.userData.assetUrl = config.modelUrl;
+      object.userData.assetVerified = true;
       return {
         root: object,
         animations: object.animations || [],
@@ -31,8 +45,7 @@ export class CharacterLoader {
         fallback: false,
       };
     } catch (error) {
-      console.warn(`Failed to load ${config.label}:`, error);
-      return this.createFallback(config);
+      throw new Error(`${config.label || config.id} 모델을 불러오지 못했습니다: ${error.message}`, { cause: error });
     }
   }
 
@@ -50,13 +63,18 @@ export class CharacterLoader {
 
 
   loadFbx(url) {
-    return new Promise((resolve, reject) => {
-      this.fbxLoader.load(url, resolve, undefined, reject);
-    });
+    if (!this.fbxPromises.has(url)) {
+      const pending = new Promise((resolve, reject) => {
+        this.fbxLoader.load(url, resolve, undefined, () => reject(new Error(url)));
+      });
+      this.fbxPromises.set(url, pending);
+      pending.catch(() => this.fbxPromises.delete(url));
+    }
+    return this.fbxPromises.get(url);
   }
 
   loadTexture(url) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       this.textureLoader.load(
         url,
         (texture) => {
@@ -70,7 +88,7 @@ export class CharacterLoader {
           resolve(texture);
         },
         undefined,
-        () => resolve(null),
+        () => reject(new Error(`텍스처 누락: ${url}`)),
       );
     });
   }
@@ -96,13 +114,10 @@ export class CharacterLoader {
   }
 
   async loadFirstClip(url) {
-    try {
-      const object = await this.loadFbx(url);
-      return object.animations?.[0] || null;
-    } catch (error) {
-      console.warn(`Failed to load animation clip: ${url}`, error);
-      return null;
-    }
+    const object = await this.loadFbx(url);
+    const clip = object.animations?.[0];
+    if (!clip) throw new Error(`애니메이션 누락: ${url}`);
+    return clip;
   }
 
   applyTexture(object, texture) {
@@ -128,7 +143,13 @@ export class CharacterLoader {
     // on non-indexed geometry creates disjoint face normals for each triangle, causing
     // harsh flat shading where all 10,000 polygon facets are visible like cracked stone.
     // We compute continuous area-weighted smooth vertex normals across shared vertex positions.
-    this.computeSmoothVertexNormals(geometry);
+    if (geometry.index) geometry.computeVertexNormals();
+    else this.computeSmoothVertexNormals(geometry);
+    if (child.isSkinnedMesh) {
+      child.normalizeSkinWeights();
+      // Animated limbs can move outside the FBX bind-pose bounds.
+      child.frustumCulled = false;
+    }
   }
 
   computeSmoothVertexNormals(geometry) {
@@ -279,6 +300,31 @@ export class CharacterLoader {
       fallback: true,
     };
   }
+}
+
+// Clone bones by object identity, not names: duplicate bone names are legal in FBX.
+// Geometry and textures belong to the loader; per-instance materials and bones do not.
+export function cloneCharacterAsset(asset) {
+  const root = asset.root.clone(true);
+  const lookup = new Map();
+  const pair = (source, target) => {
+    lookup.set(source, target);
+    source.children.forEach((child, i) => pair(child, target.children[i]));
+  };
+  pair(asset.root, root);
+  asset.root.traverse(source => {
+    const target = lookup.get(source);
+    if (source.isMesh) {
+      target.material = Array.isArray(source.material)
+        ? source.material.map(m => m.clone()) : source.material.clone();
+    }
+    if (source.isSkinnedMesh) {
+      target.skeleton = source.skeleton.clone();
+      target.skeleton.bones = source.skeleton.bones.map(bone => lookup.get(bone));
+      target.bind(target.skeleton, source.bindMatrix);
+    }
+  });
+  return { ...asset, root };
 }
 
 export function createStalkerFigure(config = {}) {

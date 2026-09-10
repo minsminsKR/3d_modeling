@@ -17,6 +17,7 @@ export class MirrorHwacatEvent {
     this.revealKeyById = dependencies.revealKeyById;
     this.isInvincible = dependencies.isInvincible || (() => false);
     this.loader = new CharacterLoader();
+    this.generation = 0;
     this.group = null;
     this.modelRoot = null;
     this.paintingObject = null;
@@ -49,6 +50,13 @@ export class MirrorHwacatEvent {
 
   get isActive() {
     return this.state !== "idle" && this.state !== "done";
+  }
+
+  async preload() {
+    await Promise.all([
+      this.loader.load(HWACAT_EVENT_CONFIG),
+      this.enemyManager.loader.load(HWACAT_ANGRY_ENEMY_CONFIG),
+    ]);
   }
 
   get blocksPlayerControl() {
@@ -189,15 +197,18 @@ export class MirrorHwacatEvent {
     this.state = "loading";
     this.timer = 0;
     this.hud.setStatus("액자 뒤에서 붉은 기척이 번집니다.", 1800);
-    await this.spawnHwacat();
+    const generation = this.generation;
+    await this.spawnHwacat(generation);
+    if (generation !== this.generation) return;
     this.lockControl();
     this.playAction("standUp", 0);
     this.state = "standUp";
     this.timer = 0;
   }
 
-  async spawnHwacat() {
+  async spawnHwacat(generation = this.generation) {
     const asset = await this.loader.load(HWACAT_EVENT_CONFIG);
+    if (generation !== this.generation) return;
     this.group = new THREE.Group();
     this.group.name = "Hwacat Mirror Event";
     this.group.position.set(...this.config.spawnPosition);
@@ -355,13 +366,16 @@ export class MirrorHwacatEvent {
       ...HWACAT_ANGRY_ENEMY_CONFIG,
       spawn,
     };
+    const generation = this.generation;
     const enemy = await this.enemyManager.addEnemy(enemyConfig, {
+      isCurrent: () => generation === this.generation,
       spawn,
       yaw,
       state: "chase",
       dynamic: true,
       lastKnownPlayerPosition: this.player.position,
     });
+    if (!enemy || generation !== this.generation) return;
     if (this.config.rewardKeyId) {
       this.revealKeyById?.(this.config.rewardKeyId, spawn);
     }
@@ -436,6 +450,7 @@ export class MirrorHwacatEvent {
   }
 
   reset() {
+    this.generation += 1;
     this.releaseControl();
     if (this.group) {
       this.scene.remove(this.group);

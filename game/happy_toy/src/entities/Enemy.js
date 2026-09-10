@@ -1101,13 +1101,32 @@ export class Enemy {
   }
 
   endCabinetInvestigation() {
+    const cabinet = this.cabinetTarget;
     this.beginWander();
     this.cabinetTarget = null;
     this.resumeAnimatedPose();
     this.caughtPlayer = false;
     this.waitTimer = this.config.postCabinetWaitSeconds ?? 0.5;
     this.waitTurnDirection = Math.random() < 0.5 ? -1 : 1;
-    this.chooseNearestWaypoint();
+    // Leave the searched cabinet instead of idling on its nearest waypoint.
+    const origin = cabinet?.position || this.group.position;
+    const candidates = this.getActivePatrolWaypoints()
+      .map(wp => vectorFromArray(wp))
+      .filter(wp => this.isSameLevelAs(wp) && distance2D(wp, origin) >= 7
+        && distance2D(wp, this.group.position) < 30);
+    candidates.sort((a,b) => distance2D(a,this.group.position)-distance2D(b,this.group.position));
+    for (const target of candidates.slice(0, 8)) {
+      const path = this.collisionWorld.findPath(this.group.position,target,this.config.pathRadius ?? this.config.radius,
+        {allowInterFloor:false,maxIterations:1800});
+      if (!path.length) continue;
+      this.wanderTarget = target;
+      this.wanderRetargetTimer = 14;
+      this.patrolPath = path;
+      this.patrolPathGoal = target.clone();
+      this.patrolPathTimer = 1;
+      break;
+    }
+    if (!this.wanderTarget) this.pickNextWaypointTarget(7, 30, 2);
   }
 
   resumeChaseFromCabinet(playerPosition) {

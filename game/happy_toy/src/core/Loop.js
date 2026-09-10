@@ -37,14 +37,15 @@ export class Loop {
     this.update(deltaTime);
     const dt = performance.now() - t0;
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && window.__happyToy?.debugEnabled) {
       if (!window.__happyToyFrameTimes) {
         window.__happyToyFrameTimes = [];
       }
       window.__happyToyFrameTimes.push(dt);
+      if (window.__happyToyFrameTimes.length > 3600) window.__happyToyFrameTimes.splice(0, 600);
     }
 
-    if (dt > 16.7) {
+    if (dt > 100 && window.__happyToy?.debugEnabled) {
       console.warn(`[PERF] Frame took ${dt.toFixed(2)}ms (Spike!)`);
     }
 

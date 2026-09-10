@@ -5,6 +5,12 @@
   "type": "module",
   "scripts": {
     "serve": "python web_server.py --host 127.0.0.1 --port 8010",
-    "check": "node --check src/main.js"
+    "check": "node verification/check-syntax.mjs",
+    "verify:stalls": "node verification/verify-interaction-stalls.mjs",
+    "verify:architecture": "node verification/verify-architecture.mjs",
+    "verify:gameplay": "node verification/verify-gameplay-polish.mjs",
+    "verify:release": "node verification/verify-release.mjs",
+    "verify:movement": "node verification/verify-shadow-run.mjs",
+    "verify:chase": "node verification/verify-shadow-corridor.mjs"
   }
 }

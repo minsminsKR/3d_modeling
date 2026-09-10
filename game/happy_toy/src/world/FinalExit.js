@@ -19,7 +19,14 @@ export class FinalExit {
     woodMap.wrapT = THREE.RepeatWrapping;
     woodMap.repeat.set(1.4, 0.8);
 
-    const paperMap = loader.load("/assets/textures/props/hanging-paper/basecolor.png");
+    const canvas = document.createElement('canvas');
+    canvas.width = 128; canvas.height = 256;
+    const ink = canvas.getContext('2d');
+    ink.fillStyle = '#cbb88d'; ink.fillRect(0, 0, 128, 256);
+    ink.strokeStyle = '#853e31'; ink.lineWidth = 3; ink.strokeRect(12, 12, 104, 232);
+    ink.fillStyle = '#553a2d'; ink.font = '28px Batang, serif'; ink.textAlign = 'center';
+    ['귀', '환', '봉', '인'].forEach((letter, i) => ink.fillText(letter, 64, 58 + i * 48));
+    const paperMap = new THREE.CanvasTexture(canvas);
     paperMap.colorSpace = THREE.SRGBColorSpace;
 
     const wood = new THREE.MeshStandardMaterial({
@@ -58,8 +65,8 @@ export class FinalExit {
       emissiveIntensity: 1.4,
     });
 
-    const table = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.62, 0.98), wood);
-    table.position.y = 0.31;
+    const table = new THREE.Mesh(new THREE.BoxGeometry(1.72, 0.12, 0.98), wood);
+    table.position.y = 0.58;
     table.castShadow = true;
     table.receiveShadow = true;
     this.group.add(table);
@@ -70,12 +77,13 @@ export class FinalExit {
 
     for (const x of [-0.72, 0.72]) {
       for (const z of [-0.36, 0.36]) {
-        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.3, 0.1), wood);
-        leg.position.set(x, 0.15, z);
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.58, 0.1), wood);
+        leg.position.set(x, 0.29, z);
         this.group.add(leg);
       }
     }
 
+    this.soulSeals = [];
     for (let i = 0; i < 4; i += 1) {
       const slot = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.04, 0.36), lacquer);
       slot.position.set(-0.54 + i * 0.36, 0.7, 0.08);
@@ -84,6 +92,9 @@ export class FinalExit {
       plate.position.set(-0.54 + i * 0.36, 0.78, 0.08);
       plate.rotation.x = -Math.PI / 2.6;
       this.group.add(plate);
+      const token = new THREE.Mesh(new THREE.SphereGeometry(0.04, 12, 8), new THREE.MeshStandardMaterial({color:0x514837, emissive:0xe7b563, emissiveIntensity:0}));
+      token.position.set(-0.54 + i * 0.36, 0.8, -0.13);
+      this.group.add(token); this.soulSeals.push(token);
     }
 
     const seal = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.28, 0.06), brass);
@@ -118,6 +129,12 @@ export class FinalExit {
 
   distanceTo(point) {
     return Math.hypot(this.position.x - point.x, this.position.y - point.y, this.position.z - point.z);
+  }
+
+  setProgress(count) {
+    this.soulSeals.forEach((token, index) => {
+      token.material.emissiveIntensity = index < count ? 1.6 : 0;
+    });
   }
 
   isInteractable(context) {

@@ -488,7 +488,7 @@ export class LovelyDoll {
     if (this.modelRoot) {
       this.modelRoot.traverse((child) => {
         if (child.isMesh || child.isSkinnedMesh) {
-          child.geometry?.dispose();
+          // Geometry is shared with the cached model and other dolls.
           if (child.material) {
             if (Array.isArray(child.material)) {
               child.material.forEach(m => m.dispose());

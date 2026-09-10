@@ -1,4 +1,5 @@
 import * as THREE from "three";
+let sharedPaperTexture;
 
 const NOTES = [
   "급훈이 뒤집혀 있다. ‘뛰지 마세요’가 ‘뛰면 들립니다’로 고쳐져 있다.",
@@ -30,7 +31,7 @@ export class LoreNote {
     this.group.position.copy(this.position);
     this.group.rotation.y = this.yaw;
 
-    const paperMap = new THREE.TextureLoader().load("/assets/textures/props/lore-note/basecolor.png");
+    const paperMap = sharedPaperTexture ||= createPaperTexture();
     paperMap.colorSpace = THREE.SRGBColorSpace;
     const paper = new THREE.Mesh(
       new THREE.PlaneGeometry(0.28, 0.38),
@@ -71,6 +72,12 @@ export class LoreNote {
     context.hud?.setStatus?.(this.body, 5200);
     context.game?.onLoreRead?.(this);
   }
+
+  dispose() {
+    this.group.traverse(mesh => {
+      if (mesh.isMesh) { mesh.geometry.dispose(); mesh.material.dispose(); }
+    });
+  }
 }
 
 function hashString(value) {
@@ -80,4 +87,19 @@ function hashString(value) {
     hash = Math.imul(hash, 31) + text.charCodeAt(i);
   }
   return hash | 0;
+}
+
+function createPaperTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256; canvas.height = 384;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#c9bfa3'; ctx.fillRect(0, 0, 256, 384);
+  ctx.strokeStyle = '#a89e88'; ctx.lineWidth = 1;
+  for(let y=108;y<350;y+=27){ctx.beginPath();ctx.moveTo(24,y);ctx.lineTo(234,y);ctx.stroke();}
+  ctx.fillStyle = '#473c31';ctx.textAlign = 'center';ctx.font = '24px Batang, serif';ctx.fillText('당직 기록',128,72);
+  ctx.textAlign = 'left';ctx.font = '15px Batang, serif';
+  ['출석은 끝나지 않았다.','문을 닫고 기다릴 것.','이름을 잊지 말 것.'].forEach((line,i)=>ctx.fillText(line,28,130+i*54));
+  ctx.strokeStyle = '#744039';ctx.lineWidth = 3;ctx.strokeRect(179,291,45,45);
+  const texture = new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
+  return texture;
 }

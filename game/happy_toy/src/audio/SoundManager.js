@@ -14,6 +14,12 @@ export class SoundManager {
     this.ambientFilter = null;
     this.whisperGain = null;
     this.volumes = { master: 0.72, bgm: 0.48, sfx: 0.82 };
+    try {
+      const saved = JSON.parse(localStorage.getItem('happy_toy_audio') || '{}');
+      for (const name of Object.keys(this.volumes)) {
+        if (typeof saved?.[name] === 'number' && Number.isFinite(saved[name])) this.volumes[name] = clamp01(saved[name]);
+      }
+    } catch {}
     this.initialized = false;
     this.isMuted = false;
     this.lastFootstepTime = 0;
@@ -166,16 +172,19 @@ export class SoundManager {
 
   setMasterVolume(value) {
     this.volumes.master = clamp01(value);
+    this.saveVolumes();
     this.rampParam(this.masterGain?.gain, this.isMuted ? 0 : this.volumes.master, 0.04);
   }
 
   setBGMVolume(value) {
     this.volumes.bgm = clamp01(value);
+    this.saveVolumes();
     this.rampParam(this.bgmGain?.gain, this.volumes.bgm, 0.06);
   }
 
   setSFXVolume(value) {
     this.volumes.sfx = clamp01(value);
+    this.saveVolumes();
     this.rampParam(this.sfxGain?.gain, this.volumes.sfx, 0.04);
   }
 
@@ -183,6 +192,10 @@ export class SoundManager {
     if (!param || !this.ctx) return;
     param.cancelScheduledValues(this.ctx.currentTime);
     param.setTargetAtTime(value, this.ctx.currentTime, timeConstant);
+  }
+
+  saveVolumes() {
+    try { localStorage.setItem('happy_toy_audio', JSON.stringify(this.volumes)); } catch {}
   }
 
   startAmbientDrone() {

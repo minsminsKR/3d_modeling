@@ -1,0 +1,122 @@
+{
+  "models": [
+    {
+      "id": "uncat",
+      "meshes": 1,
+      "skinned": 1,
+      "textured": 1,
+      "badWeights": 0,
+      "animated": true,
+      "actions": [
+        "patrol",
+        "chase"
+      ],
+      "verified": true
+    },
+    {
+      "id": "cyclopse",
+      "meshes": 1,
+      "skinned": 1,
+      "textured": 1,
+      "badWeights": 0,
+      "animated": true,
+      "actions": [
+        "patrol",
+        "chase"
+      ],
+      "verified": true
+    },
+    {
+      "id": "baby-workshop",
+      "meshes": 1,
+      "skinned": 1,
+      "textured": 1,
+      "badWeights": 0,
+      "animated": true,
+      "actions": [
+        "patrol",
+        "chase",
+        "crying"
+      ],
+      "verified": true
+    },
+    {
+      "id": "hwacat",
+      "meshes": 1,
+      "skinned": 1,
+      "textured": 1,
+      "badWeights": 0,
+      "animated": true,
+      "actions": [
+        "patrol",
+        "chase",
+        "dance",
+        "standUp"
+      ],
+      "verified": true
+    },
+    {
+      "id": "hwacat-angry",
+      "meshes": 1,
+      "skinned": 1,
+      "textured": 1,
+      "badWeights": 0,
+      "animated": true,
+      "actions": [
+        "patrol",
+        "chase"
+      ],
+      "verified": true
+    },
+    {
+      "id": "lovely_doll",
+      "meshes": 1,
+      "skinned": 1,
+      "textured": 1,
+      "badWeights": 0,
+      "animated": true,
+      "actions": [
+        "patrol",
+        "chase",
+        "dance",
+        "run",
+        "walking"
+      ],
+      "verified": true
+    }
+  ],
+  "props": [
+    {
+      "name": "silent-mannequin-1f",
+      "vertices": 6870,
+      "textured": 1
+    },
+    {
+      "name": "silent-mannequin-2f",
+      "vertices": 7792,
+      "textured": 1
+    }
+  ],
+  "state": {
+    "transform": {
+      "model": true,
+      "key": true
+    },
+    "cancelled": true,
+    "collected": 4,
+    "clear": true,
+    "reset": {
+      "started": false,
+      "count": 0,
+      "over": false,
+      "cleared": false,
+      "journal": 0,
+      "dynamic": 0
+    }
+  },
+  "errors": [],
+  "failed": [],
+  "warnings": [
+    "THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex. Deleting additional weights."
+  ]
+}

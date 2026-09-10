@@ -95,7 +95,7 @@ export class ItemPickup {
 }
 
 export class FirecrackerProjectile {
-  constructor(scene, startPos, direction, enemyManager) {
+  constructor(scene, startPos, direction, enemyManager, lightPool = []) {
     this.scene = scene;
     this.position = new THREE.Vector3().copy(startPos);
     this.velocity = new THREE.Vector3().copy(direction).multiplyScalar(14);
@@ -111,15 +111,21 @@ export class FirecrackerProjectile {
 
     // Visual Mesh
     const geom = new THREE.CylinderGeometry(0.04, 0.04, 0.2, 8);
-    const mat = new THREE.MeshStandardMaterial({ color: 0xff2222, emissive: 0x880000, roughness: 0.4 });
+    const mat = new THREE.MeshBasicMaterial({ color: 0xff4422 });
     this.mesh = new THREE.Mesh(geom, mat);
 
     this.mesh.position.copy(this.position);
     this.scene.add(this.mesh);
 
     // Fuse Sparks Light
-    this.light = new THREE.PointLight(0xffaa00, 1.4, 3.2, 2);
-    this.mesh.add(this.light);
+    this.light = lightPool.find(light => !light.userData.inUse) || null;
+    if (this.light) {
+      this.light.userData.inUse = true;
+      this.light.color.setHex(0xffaa00);
+      this.light.distance = 3.2;
+      this.light.intensity = 1.4;
+      this.light.position.copy(this.position);
+    }
 
     soundManager.playSFX("firecracker_fuse");
   }
@@ -129,7 +135,7 @@ export class FirecrackerProjectile {
     if (this.exploded) {
       this.postTimer += deltaTime;
       const progress = Math.min(1, this.postTimer / 0.32);
-      this.flashLight.intensity = 18 * Math.pow(1 - progress, 2);
+      if (this.light) this.light.intensity = 18 * Math.pow(1 - progress, 2);
       this.shockwave.scale.setScalar(1 + progress * 8);
       this.shockwave.material.opacity = 0.38 * (1 - progress);
       if (progress >= 1) {
@@ -159,7 +165,10 @@ export class FirecrackerProjectile {
 
     this.mesh.position.copy(this.position);
     this.mesh.rotation.x += deltaTime * 8;
-    this.light.intensity = 0.65 + Math.random() * 1.25;
+    if (this.light) {
+      this.light.position.copy(this.position);
+      this.light.intensity = 0.65 + Math.random() * 1.25;
+    }
 
     if (this.lifeTimer >= this.fuseTime) {
       this.explode();
@@ -172,20 +181,19 @@ export class FirecrackerProjectile {
     this.mesh.visible = false;
     soundManager.playSFX("firecracker_explode");
 
-    this.flashLight = new THREE.PointLight(0xff6a20, 18, 18, 2);
-    this.flashLight.position.copy(this.position).add(new THREE.Vector3(0, 0.25, 0));
-    this.scene.add(this.flashLight);
+    if (this.light) {
+      this.light.color.setHex(0xff6a20);
+      this.light.intensity = 18;
+      this.light.distance = 18;
+      this.light.position.copy(this.position).y += 0.25;
+    }
 
     this.shockwave = new THREE.Mesh(
       new THREE.RingGeometry(0.12, 0.2, 28),
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color: 0xffc06a,
-        emissive: 0xff6a20,
-        emissiveIntensity: 0.7,
         transparent: true,
         opacity: 0.38,
-        roughness: 0.8,
-        metalness: 0,
         depthWrite: false,
         blending: THREE.AdditiveBlending,
       }),
@@ -204,7 +212,15 @@ export class FirecrackerProjectile {
   }
 
   dispose() {
-    this.scene.remove(this.mesh, this.flashLight, this.shockwave);
+    if (!this.alive) return;
+    this.alive = false;
+    this.scene.remove(this.mesh);
+    if (this.shockwave) this.scene.remove(this.shockwave);
+    if (this.light) {
+      this.light.intensity = 0;
+      this.light.userData.inUse = false;
+      this.light = null;
+    }
     this.mesh.traverse((child) => {
       child.geometry?.dispose();
       if (Array.isArray(child.material)) child.material.forEach((material) => material.dispose?.());
@@ -222,6 +238,14 @@ export class ItemSystem {
     this.hud = hud;
     this.pickups = [];
     this.projectiles = [];
+    // Always attached, including at zero intensity: no new light-count shader
+    // variants when a fuse starts, explodes, expires, or the run restarts.
+    this.effectLights = Array.from({ length: 2 }, () => {
+      const light = new THREE.PointLight(0xffaa00, 0, 3.2, 2);
+      light.name = 'firecracker-effect-pool';
+      scene.add(light);
+      return light;
+    });
     this.inventory = {
       battery: 2,
       energy_drink: 1,
@@ -315,7 +339,7 @@ export class ItemSystem {
   throwFirecracker(player) {
     const eyePos = player.getPosition().clone().add(new THREE.Vector3(0, 1.45, 0));
     const dir = player.getForwardVector();
-    const proj = new FirecrackerProjectile(this.scene, eyePos, dir, this.enemyManager);
+    const proj = new FirecrackerProjectile(this.scene, eyePos, dir, this.enemyManager, this.effectLights);
     this.projectiles.push(proj);
   }
 

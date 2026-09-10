@@ -1144,7 +1144,7 @@ export class BackroomsGenerator {
     }
 
     const dtTotal = performance.now() - tStart;
-    if (dtTotal > 1.0) {
+    if (dtTotal > 30 && this.game?.debugEnabled) {
       console.warn(`[PERF] generateChunk (${type} at ${cx},${cz}) took ${dtTotal.toFixed(2)}ms: floor=${dtFloor.toFixed(2)}ms, walls=${dtWalls.toFixed(2)}ms, lights=${dtLights.toFixed(2)}ms, interactables=${dtInteract.toFixed(2)}ms, waypoints=${dtWaypoints.toFixed(2)}ms`);
     }
 
@@ -1600,7 +1600,7 @@ export class BackroomsGenerator {
       // Weathered stone and damp wood materials for B1
       const b1WallMat = new THREE.MeshStandardMaterial({
         map: this.textures.load("wall"),
-        color: 0x4a5a52,
+        color: 0x819c8e,
         roughness: 0.88,
         metalness: 0.04,
         emissive: 0x0a2218,
@@ -1608,7 +1608,7 @@ export class BackroomsGenerator {
       });
       const b1FloorMat = new THREE.MeshStandardMaterial({
         map: this.textures.load("floor"),
-        color: 0x3a4840,
+        color: 0x778a7d,
         roughness: 0.55,
         metalness: 0.06,
         emissive: 0x081810,
@@ -1616,7 +1616,7 @@ export class BackroomsGenerator {
       });
       const b1CeilMat = new THREE.MeshStandardMaterial({
         map: this.textures.load("ceiling"),
-        color: 0x24322c,
+        color: 0x66796c,
         roughness: 0.94,
         emissive: 0x061410,
         emissiveIntensity: 0.06,
@@ -2212,7 +2212,7 @@ export class BackroomsGenerator {
       const ranges = [];
       const pushRange = (a, b, name) => {
         const len = b - a;
-        if (len < 0.38) return;
+        if (len < 0.01) return;
         ranges.push({ mid: (a + b) / 2, len, name });
       };
       const alongMin = axis === "z" ? -hull.w : -hull.n;
@@ -2283,8 +2283,10 @@ export class BackroomsGenerator {
       addWallSegment(7.2, -7.2, 0.8, 0.8, "tatami_post_ne");
       addWallSegment(-7.2, 7.2, 0.8, 0.8, "tatami_post_sw");
       addWallSegment(7.2, 7.2, 0.8, 0.8, "tatami_post_se");
-      addWallSegment(-7.3, 0.0, 0.6, 0.8, "tatami_post_w");
-      addWallSegment(7.3, 0.0, 0.6, 0.8, "tatami_post_e");
+      for (const side of [-1,1]) {
+        addWallSegment(side*7.3, -1.6, 0.6, 0.4, `tatami_post_${side}_n`);
+        addWallSegment(side*7.3, 1.6, 0.6, 0.4, `tatami_post_${side}_s`);
+      }
       addWallSegment(0.0, 6.8, 4.0, 0.4, "tatami_tokonoma_wall");
     } else if (type === "corner") {
       addWallSegment(1.4, 4.6, 0.4, 6.8, "corner_inner_s");
@@ -2776,7 +2778,7 @@ export class BackroomsGenerator {
   ensureSchoolCorridorMaterials() {
     if (this.schoolClassWallMat) return;
     this.schoolClassWallMat = this.textures.createWallMaterial().clone();
-    this.schoolClassWallMat.color.setHex(0x2a221c);
+    this.schoolClassWallMat.color.setHex(0xa79c87);
     this.schoolClassDoorMat = this.textures.createClassroomDoorMaterial();
     this.schoolGlassMat = new THREE.MeshStandardMaterial({
       color: 0x07080a,
@@ -7229,25 +7231,41 @@ export class BackroomsGenerator {
 
   placeGappedWall(chunk, chunkId, name, spec) {
     const { axis, pos, min, max, wallY, height, thickness, material, gaps = [] } = spec;
-    const sorted = [...gaps].sort((a, b) => a.center - b.center);
+    const sorted = gaps.map(gap => ({start: Math.max(min, gap.center-gap.width/2), end: Math.min(max,gap.center+gap.width/2)}))
+      .filter(gap => gap.end > gap.start).sort((a,b)=>a.start-b.start);
+    const merged = [];
+    for (const gap of sorted) {
+      const last = merged.at(-1);
+      if (last && gap.start <= last.end) last.end = Math.max(last.end,gap.end);
+      else merged.push({...gap});
+    }
     const segments = [];
     let cursor = min;
-    for (const gap of sorted) {
-      const g0 = gap.center - gap.width / 2;
-      const g1 = gap.center + gap.width / 2;
-      if (g0 > cursor + 0.28) segments.push([cursor, Math.min(g0, max)]);
+    for (const gap of merged) {
+      const g0 = gap.start;
+      const g1 = gap.end;
+      if (g0 > cursor + 0.005) segments.push([cursor, g0]);
       cursor = Math.max(cursor, g1);
     }
-    if (cursor < max - 0.28) segments.push([cursor, max]);
+    if (cursor < max - 0.005) segments.push([cursor, max]);
     segments.forEach(([start, end], index) => {
       const len = end - start;
-      if (len < 0.34) return;
+      if (len < 0.005) return;
       const mid = (start + end) / 2;
       if (axis === "x") {
         this.placeDressedBox(chunk, chunkId, `${name}_${index}`, mid, wallY, pos, len, height, thickness, material);
       } else {
         this.placeDressedBox(chunk, chunkId, `${name}_${index}`, pos, wallY, mid, thickness, height, len, material);
       }
+    });
+    // Openings retain full head clearance but now have continuous masonry
+    // above the doorway instead of a floor-to-ceiling slice of missing wall.
+    const lintelHeight = Math.min(0.35, height - 2.4);
+    if (lintelHeight > 0) merged.forEach((gap,index) => {
+      const span = gap.end-gap.start, mid=(gap.start+gap.end)/2;
+      this.placeDressedBox(chunk,chunkId,`${name}_lintel_${index}`,
+        axis==='x'?mid:pos,wallY+height/2-lintelHeight/2,axis==='x'?pos:mid,
+        axis==='x'?span:thickness,lintelHeight,axis==='x'?thickness:span,material,false);
     });
   }
 
@@ -8299,8 +8317,21 @@ export class BackroomsGenerator {
 
   dressBloodGallery(chunk, chunkId, floorY, bounds) {
     const bloodY = floorY + 5.04;
+    if (!this.bloodMask) {
+      const canvas = document.createElement('canvas'); canvas.width=256; canvas.height=256;
+      const ctx=canvas.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,256,256);
+      const random=createRandom(73491);
+      for(let i=0;i<60;i++) {
+        const x=16+random()*224,y=16+random()*224,r=8+random()*30;
+        const gradient=ctx.createRadialGradient(x,y,0,x,y,r);
+        gradient.addColorStop(0,'#ddd');gradient.addColorStop(.55,'#aaa');gradient.addColorStop(1,'#000');
+        ctx.fillStyle=gradient;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+      }
+      this.bloodMask=new THREE.CanvasTexture(canvas);
+    }
     const poolMat = new THREE.MeshStandardMaterial({
-      color: 0x9a1418,
+      color: 0x4a1118,
+      alphaMap: this.bloodMask,
       roughness: 0.38,
       metalness: 0.06,
       transparent: true,
@@ -8467,6 +8498,14 @@ export class BackroomsGenerator {
     // 1. Spawning doors
     const doorMaterial = this.textures.createDoorMaterial();
     const addDynamicDoor = (id, label, localPos, size, isLocked = false, isBlocked = false, reason = "") => {
+      const side = Math.abs(localPos[1])<.01
+        ? localPos[2]===-7.8?'N':localPos[2]===7.8?'S':localPos[0]===7.8?'E':localPos[0]===-7.8?'W':null
+        : null;
+      // A graph-closed boundary is a solid wall, never an operable fake door.
+      if(side && !this.getOpenings(chunk.cx,chunk.cz)[side])return;
+      // This shared opening is owned by the adjacent doll classroom.
+      if(side==='W' && (type==='tatami_room'||type==='pillar_room')
+        && this.getChunkType(chunk.cx-1,chunk.cz)==='workshop')return;
       const globalPos = [center.x + localPos[0], floorY + localPos[1], center.z + localPos[2]];
       const door = new Door({
         id,
@@ -8562,7 +8601,7 @@ export class BackroomsGenerator {
       addDynamicDoor("door-stairs-b1", "지하 계단실", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
     } else if (type === "tatami_room" || type === "pillar_room") {
       addDynamicDoor("door-tatami-room", "예절실 문", [0.0, 0.0, -7.8], [3.7, 2.35, 0.22]);
-      addDynamicDoor(`${chunkId}_etiquette_west`, "예절실 서쪽 문", [-7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
+      // West connection uses the neighboring doll classroom's single door.
       addDynamicDoor(`${chunkId}_etiquette_east`, "예절실 동쪽 문", [7.8, 0.0, 0.0], [0.22, 2.35, 3.7]);
 
       // Tatami Center Mat Platform (7.6m x 7.6m)
@@ -8809,10 +8848,10 @@ export class BackroomsGenerator {
     };
     if (type === "start") {
       addLoreNote(`${chunkId}_lore`, [-7.55, 1.35, -3.2], Math.PI / 2,
-        "제단함은 이 홀에 있다. 이름을 넷 모으기 전에는 열리지 않는다.");
+        "당직 일지. 비가 오던 날 네 명이 결석했다. 그런데 빈 교실에서 네 번 대답이 들렸다. 출석부에서 지워진 이름은 지하 요람, 남서쪽 놀이방, 북동쪽 창고, 2층 액자에 남아 있다. 모두 찾아 이 홀의 제단에 돌려놓아야 한다. J로 수첩을 펼칠 수 있다.");
     } else if (type === "stairs_b1") {
       addLoreNote(`${chunkId}_lore_flood`, [-7.4, -3.55, -2.2], Math.PI / 2,
-        "물이 이름을 적고 있다. 요람 쪽 열쇠를 집고 신발장에 숨어서 나오십시오.");
+        "보육 담당자의 메모. 수도를 잠근 뒤에도 물이 불어났다. 요람에서 울던 것은 아이가 아니었다. 그 눈에 빛을 오래 비추지 말 것. 남은 이름을 집으면 가까운 신발장으로 피할 것.");
       addLoreNote(`${chunkId}_lore_maze`, [6.2, -3.55, -5.0], Math.PI,
         "보일러실 너머로 요람이 운다. 물이 차도 이름을 집고 벽장에 숨으십시오.");
       addLoreNote(`${chunkId}_lore_south`, [-7.4, -3.55, 16.4], 0,
@@ -8894,10 +8933,10 @@ export class BackroomsGenerator {
         "인형 교실의 눈이 아직 줍지 않은 이름을 가리킨다. 마주치면 따라가십시오.");
     } else if (isStorage) {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
-        "준비물 선반 뒤에 도자기 열쇠가 있다. 문을 닫아 추격을 끊으십시오.");
+        "반납 장부. 주인을 잃은 준비물마다 같은 이름이 적혀 있었다. 마지막 상자는 열지 않고 선반에 두었다. 여기 남은 혼을 찾으면 문을 닫아 발소리를 끊어야 한다.");
     } else if (isArchive) {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.4, 7.45], Math.PI,
-        "폐관 도서실이다. 대출 장부를 읽지 마십시오.");
+        "폐관 공지. 반납되지 않은 책은 네 권, 돌아오지 않은 이름도 넷. 제단은 문을 여는 장치가 아니라 이름을 돌려주는 자리였다. 모든 혼을 모은 뒤 처음 홀로 돌아가야 한다.");
     } else if (type === "tatami_room" || type === "pillar_room") {
       addLoreNote(`${chunkId}_lore`, [0.0, 1.42, -7.55], 0,
         "예절실이다. 신발을 신지 마십시오.");
@@ -9670,6 +9709,9 @@ export class BackroomsGenerator {
   }
 
   buildHorrorAtmosphereProps(chunk, type, center, chunkId, rand, floorY = 0) {
+    // The arrival hall is deliberately clear: the altar and exits are its landmarks.
+    // Random hanging image-based props previously intersected the player's first view.
+    if (type === "start") return;
     const isRoomLike = ROOM_LIKE_CHUNK_TYPES.has(type);
     const repeatingWing = Math.abs(chunk.cx) > 2 || Math.abs(chunk.cz) > 2;
     const wallChance = isRoomLike ? 0.72 : repeatingWing ? 0.58 : 0.46;
@@ -10228,6 +10270,7 @@ export class BackroomsGenerator {
     // 1. Remove meshes from scene and dispose of custom horror prop materials
     for (const mesh of chunk.meshes) {
       this.scene.remove(mesh);
+      if (mesh.userData.releaseInstanceOnUnload) mesh.dispose();
       if (mesh.userData && mesh.userData.isWeepingAngel) {
         if (mesh.name === "silent-mannequin-1f" && this.game) {
           this.game.spawnedWeepingAngel1F = false;
@@ -10302,6 +10345,7 @@ export class BackroomsGenerator {
 
     for (const note of chunk.loreNotes || []) {
       this.scene.remove(note.group);
+      note.dispose();
     }
 
     // 7. Remove final exit
@@ -10325,7 +10369,7 @@ export class BackroomsGenerator {
     this.collisionWorld.clearChunkData(chunk.chunkId);
 
     const dtTotal = performance.now() - tStart;
-    if (dtTotal > 1.0) {
+    if (dtTotal > 30 && this.game?.debugEnabled) {
       console.warn(`[PERF] destroyChunk (${chunk.type} at ${cx},${cz}) took ${dtTotal.toFixed(2)}ms`);
     }
 

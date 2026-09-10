@@ -2,6 +2,8 @@ import * as THREE from "three";
 import { MAP_CONFIG } from "../config/gameConfig.js";
 import { TextureLibrary } from "./TextureLibrary.js";
 import { BackroomsGenerator } from "./BackroomsGenerator.js";
+import { SchoolWayfinding } from "./SchoolWayfinding.js";
+import { SchoolArchitecture } from "./SchoolArchitecture.js";
 
 export class MapBuilder {
   constructor(scene, collisionWorld, options = {}) {
@@ -26,6 +28,8 @@ export class MapBuilder {
     this.grimeMaterial = this.createGrimeMaterial();
     this.wallDecayGeometry = new THREE.PlaneGeometry(2.1, 2.5);
     this.wallDecayMaterial = this.textures.createWallDecayDecalMaterial();
+    this.wayfinding = new SchoolWayfinding(this);
+    this.architecture = new SchoolArchitecture(this);
   }
 
   build() {
@@ -159,7 +163,7 @@ export class MapBuilder {
         const chunk = this.generator.generateChunk(next.cx, next.cz);
         this.decorateChunk(chunk);
         const dt = performance.now() - t0;
-        if (dt > 4) {
+        if (dt > 30 && this.debugEnabled) {
           console.warn(`[PERF] MapBuilder: generateChunk ${next.cx},${next.cz} took ${dt.toFixed(2)}ms`);
         }
         this.loadedChunks.set(key, chunk);
@@ -183,6 +187,8 @@ export class MapBuilder {
       return;
     }
     chunk.atmosphereDecorated = true;
+
+    this.architecture.decorate(chunk);
 
     // Deterministic decoration keeps screenshots and gameplay tests reproducible.
     let seed = ((chunk.cx * 73856093) ^ (chunk.cz * 19349663) ^ 0x5f3759df) >>> 0;
@@ -310,6 +316,7 @@ export class MapBuilder {
     }
 
     this.dressSchoolCorridor(chunk, random);
+    this.wayfinding.decorate(chunk);
   }
 
   getClassroomDoorMaterial() {

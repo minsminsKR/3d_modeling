@@ -19,7 +19,7 @@ export class EnemyManager {
   }
 
   async loadEnemies() {
-    this.hud.setStatus("Uncat과 Cyclopse가 맵 어딘가에 배치되는 중입니다.");
+    this.hud.setStatus("몬스터 모델과 움직임을 준비하고 있습니다.");
     const loadedEnemies = await Promise.all(
       this.enemyConfigs.map(async (config) => {
         return this.createEnemy(config);
@@ -89,6 +89,13 @@ export class EnemyManager {
 
   async addEnemy(config, options = {}) {
     const enemy = await this.createEnemy(config);
+    if (options.isCurrent && !options.isCurrent()) {
+      enemy.dispose();
+      return null;
+    }
+    const reference = this.enemies.find(entry => !entry.isDynamic);
+    enemy.speedMultiplier = reference?.speedMultiplier ?? 1;
+    enemy.detectionMultiplier = reference?.detectionMultiplier ?? 1;
     if (options.spawn) {
       enemy.group.position.set(...options.spawn);
       this.collisionWorld.snapToValidSurface(enemy.group.position, { actorId: config.id });

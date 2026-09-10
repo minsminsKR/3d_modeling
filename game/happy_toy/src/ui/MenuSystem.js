@@ -1,4 +1,5 @@
 import { soundManager } from "../audio/SoundManager.js";
+import { PLAYER_CONFIG } from "../config/gameConfig.js";
 
 export class MenuSystem {
   constructor(game) {
@@ -16,7 +17,9 @@ export class MenuSystem {
   loadHighScores() {
     try {
       const data = localStorage.getItem("happy_toy_high_scores");
-      return data ? JSON.parse(data) : [];
+      const rows = data ? JSON.parse(data) : [];
+      return Array.isArray(rows) ? rows.filter(r => r && Number.isFinite(Number(r.time)) && ['normal', 'nightmare', 'hardcore'].includes(r.mode))
+        .slice(0, 5).map(r => ({time:Number(r.time).toFixed(1), keys:Math.max(0, Math.min(4, Number(r.keys)||0)), mode:r.mode, date:String(r.date).replace(/[<>&"']/g, '')})) : [];
     } catch (e) {
       return [];
     }
@@ -61,9 +64,9 @@ export class MenuSystem {
     this.container.innerHTML = `
       <div class="menu-overlay title-screen-bg">
         <div class="title-box">
-          <p class="title-eyebrow">SHADOW CORRIDOR</p>
+          <p class="title-eyebrow">HAPPY TOY / 폐교의 마지막 출석</p>
           <h1 class="title-heading">그림자복도</h1>
-          <p class="title-kana" lang="ja">廃校の夏 · 影の廊下</p>
+          <p class="title-kana">폐교의 여름 · 돌아오지 않은 네 이름</p>
           <p class="title-sub">손전등을 끄면 복도만 남습니다. 신발장에 숨고, 이름을 제단함에 돌려놓으십시오.<br>출석이 끝나기 전에.</p>
 
           <div class="menu-buttons">
@@ -74,7 +77,8 @@ export class MenuSystem {
           </div>
 
           <p class="controls-quiet">WASD 이동 · SHIFT 질주 · F 손전등 · E 열기·숨기 · Q 유인 · ESC 멈춤</p>
-          <p class="title-footnote"><kbd>\`</kbd> 유령</p>
+          <p class="title-footnote"><kbd>J</kbd> 출석 수첩 · 단서와 목표 확인</p>
+          <p class="loading-caption" role="status">${this.game?.assetsReady ? '입장 준비 완료' : '교실과 몬스터의 움직임을 준비하고 있습니다…'}</p>
         </div>
       </div>
     `;
@@ -86,15 +90,8 @@ export class MenuSystem {
       this.game?.start();
     });
 
-    this.container.querySelector(".menu-overlay")?.addEventListener("pointerdown", (event) => {
-      if (event.target instanceof Element && event.target.closest("button, a, input, select")) {
-        return;
-      }
-      soundManager.init();
-      soundManager.resume();
-      this.hideMenu();
-      this.game?.start();
-    });
+    const startButton = this.container.querySelector('#btn-start-game');
+    startButton.disabled = !this.game?.assetsReady;
 
 
     document.getElementById("btn-difficulty")?.addEventListener("click", () => {
@@ -133,23 +130,32 @@ export class MenuSystem {
           <p class="title-eyebrow">SHADOW CORRIDOR</p>
           <h2>환경 설정</h2>
           <div class="setting-row">
-            <label>마스터 음량</label>
+            <label for="vol-master">마스터 음량</label>
             <input type="range" id="vol-master" min="0" max="1" step="0.05" value="${soundManager.volumes.master}">
           </div>
           <div class="setting-row">
-            <label>배경음 음량</label>
+            <label for="vol-bgm">배경음 음량</label>
             <input type="range" id="vol-bgm" min="0" max="1" step="0.05" value="${soundManager.volumes.bgm}">
           </div>
           <div class="setting-row">
-            <label>효과음 음량</label>
+            <label for="vol-sfx">효과음 음량</label>
             <input type="range" id="vol-sfx" min="0" max="1" step="0.05" value="${soundManager.volumes.sfx}">
           </div>
           <div class="setting-row">
-            <label>마우스 감도</label>
-            <input type="range" id="mouse-sens" min="0.0005" max="0.005" step="0.0005" value="${
-              this.game?.player?.mouseSensitivity || 0.0022
+            <label for="mouse-sens">마우스 감도</label>
+            <input type="range" id="mouse-sens" min="0.4" max="2.2" step="0.05" value="${
+              (this.game?.player?.mouseSensitivity || PLAYER_CONFIG.mouseSensitivity) / PLAYER_CONFIG.mouseSensitivity
             }">
           </div>
+          <div class="setting-row">
+            <label for="render-quality">화면 품질</label>
+            <select id="render-quality">
+              <option value="balanced">균형 · 권장</option>
+              <option value="high">높음 · 선명한 그림자</option>
+              <option value="performance">성능 · 가벼운 렌더링</option>
+            </select>
+          </div>
+          <p class="settings-help">카메라 흔들림과 HUD 고대비는 게임 중 ESC 메뉴에서 조절할 수 있습니다.</p>
           <button id="btn-back-settings" class="menu-btn primary-btn mt-4">뒤로 가기</button>
         </div>
       </div>
@@ -166,9 +172,13 @@ export class MenuSystem {
     });
     document.getElementById("mouse-sens")?.addEventListener("input", (e) => {
       if (this.game?.player) {
-        this.game.player.setMouseSensitivity(parseFloat(e.target.value));
+        this.game.setMouseSensitivityScale(parseFloat(e.target.value));
       }
     });
+
+    const quality = document.getElementById('render-quality');
+    quality.value = this.game.renderQuality || 'balanced';
+    quality.addEventListener('change', () => this.game.setRenderQuality(quality.value));
 
     document.getElementById("btn-back-settings")?.addEventListener("click", () => {
       this.renderTitleScreen();
@@ -272,7 +282,7 @@ export class MenuSystem {
     });
 
     document.getElementById("btn-victory-title")?.addEventListener("click", () => {
-      this.renderTitleScreen();
+      this.game.quitToTitle();
     });
   }
 }

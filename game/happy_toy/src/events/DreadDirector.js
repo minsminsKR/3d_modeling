@@ -244,7 +244,8 @@ export class DreadDirector {
   }
 
   updateCabinetDread(dt) {
-    const hidden = Boolean(this.game.player?.isHidden);
+    const hidden = Boolean(this.game.player?.isHidden && this.game.cabinetEvent
+      && !this.game.player.hiddenCabinet?.searchedThisHide);
     if (!hidden) {
       this.wasHidden = false;
       return;

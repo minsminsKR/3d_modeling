@@ -4,7 +4,7 @@
 import * as THREE from "three";
 import { createChapterSession, CHAPTERS } from "../config/chapterConfig.js";
 import { getMapId } from "../world/schoolMaze.js";
-import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG, LIGHTING_CONFIG, STALKER_CONFIG } from "../config/gameConfig.js";
+import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG, LIGHTING_CONFIG } from "../config/gameConfig.js";
 
 import { CollisionWorld } from "../world/CollisionWorld.js";
 import { EnemyManager } from "../entities/EnemyManager.js";
@@ -22,7 +22,9 @@ import { FlashlightController } from "../player/FlashlightController.js";
 import { PlayerController } from "../player/PlayerController.js";
 import { ItemSystem } from "../world/ItemSystem.js";
 import { ParticleSystem } from "../effects/ParticleSystem.js";
+import { StablePointLights } from "../effects/StablePointLights.js";
 import { MenuSystem } from "../ui/MenuSystem.js";
+import { FieldJournal } from "../ui/FieldJournal.js";
 import { soundManager } from "../audio/SoundManager.js";
 import { VoiceAnnouncer } from "../audio/VoiceAnnouncer.js";
 import { MonsterIntroManager } from "../events/MonsterIntroManager.js";
@@ -60,6 +62,15 @@ export class Game {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.shadowMap.autoUpdate = true;
     this.renderer.toneMappingExposure = LIGHTING_CONFIG.rendererExposure ?? 0.8;
+    this.stablePointLights = new StablePointLights(this.scene);
+    // Cover every rendering branch, including pause, cutscenes and warm-up.
+    for (const method of ['render', 'compile']) {
+      const original = this.renderer[method].bind(this.renderer);
+      this.renderer[method] = (scene, camera, ...args) => {
+        if (scene === this.scene) this.stablePointLights.update(camera);
+        return original(scene, camera, ...args);
+      };
+    }
 
     this.rootElement.appendChild(this.renderer.domElement);
 
@@ -183,11 +194,11 @@ export class Game {
     this.itemSystem = new ItemSystem(this.scene, this.enemyManager, this.hud);
     this.particleSystem = new ParticleSystem(this.scene);
     this.menuSystem = new MenuSystem(this);
+    this.journal = new FieldJournal(this);
     this.monsterIntroManager = new MonsterIntroManager(this);
     this.dreadDirector = new DreadDirector(this);
     this.storyDirector = new StoryDirector(this);
     this.floorHuntDirector = new FloorHuntDirector(this);
-    this.floorHuntDirector.ensureSilhouette();
     this.voiceAnnouncer = new VoiceAnnouncer();
 
 
@@ -237,12 +248,29 @@ export class Game {
     window.addEventListener("resize", this.handleResize);
     document.addEventListener("pointerlockchange", this.handlePointerLockChange);
 
-    await Promise.allSettled([
+    await Promise.all([
       ...(map.pendingAssets || []),
       this.enemyManager.loadEnemies(),
+      ...this.mirrorEvents.map(event => event.preload()),
+      this.floorHuntDirector.preload(),
     ]);
+    if (!this.mapBuilder.generator.lovelyDollAsset?.root?.userData?.assetVerified) {
+      throw new Error("Lovely Doll 모델을 불러오지 못했습니다. 페이지를 새로고침해 주세요.");
+    }
     await this.warmUpRenderer();
     this.assetsReady = true;
+    this.menuSystem?.renderTitleScreen();
+    let sensitivity = 0.65;
+    let quality = 'balanced';
+    try {
+      sensitivity = Number(localStorage.getItem('happy_toy_sensitivity')) || 0.65;
+      quality = localStorage.getItem('happy_toy_quality') || quality;
+    } catch {}
+    this.setMouseSensitivityScale(sensitivity);
+    this.setRenderQuality(quality);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) this.pause();
+    });
     this.hud.setChapterInfo(this.chapterSession, CHAPTERS);
     this.hud.setStartEnabled(true);
     this.handleResize();
@@ -347,7 +375,7 @@ export class Game {
     this.hud.mouseSensitivityInput.addEventListener("input", () => {
       this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value));
     });
-    this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value));
+    this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value), false);
   }
 
   handlePlayGesture(event) {
@@ -356,13 +384,11 @@ export class Game {
       this.start();
       return;
     }
-    if (target.closest(".pause-screen, .caught-screen, .clear-screen, input, select, textarea, a")) {
+    if (target.closest(".field-journal, .pause-screen, .caught-screen, .clear-screen, input, select, textarea, a")) {
       return;
     }
     if (target.closest("#menu-system-root")) {
-      if (target.closest("button") && !target.closest("#btn-start-game, #btn-retry-game, #btn-victory-replay")) {
-        return;
-      }
+      return;
     }
     this.start();
   }
@@ -385,6 +411,7 @@ export class Game {
 
   onLoreRead(note) {
     if (!note?.read) return;
+    this.journal?.record(note);
     soundManager.playSFX("whisper");
     this.voiceAnnouncer?.announce("lore", note.body);
   }
@@ -529,6 +556,11 @@ export class Game {
 
 
   update(deltaTime, options = {}) {
+    if (this.input.consumePressed("j")) {
+      if (this.journal?.opened) this.journal.close();
+      else this.journal?.open();
+    }
+    if (this.journal?.opened && this.input.consumePressed("escape")) this.journal.close();
     if (this.input.consumePressed("0") || this.input.consumePressed("numpad0")) {
       this.toggleTestSafeMode();
     }
@@ -536,7 +568,7 @@ export class Game {
       this.toggleGhostMode();
     }
 
-    if (!this.isStarted && this.assetsReady) {
+    if (!this.isStarted && this.assetsReady && this.menuSystem?.container.style.display === 'none') {
       if (
         this.input.consumePressed("w")
         || this.input.consumePressed("a")
@@ -576,6 +608,7 @@ export class Game {
       key.update(deltaTime, this.elapsedTime);
     }
     this.finalExit?.update(deltaTime);
+    this.finalExit?.setProgress(this.keyCount);
     this.updateCabinetEvent(deltaTime);
     this.updateMirrorEvents(deltaTime);
 
@@ -834,6 +867,9 @@ export class Game {
     }
 
     this.isPaused = true;
+    this.input.keys.clear();
+    this.input.pressedThisFrame.clear();
+    soundManager.ctx?.suspend().catch(() => {});
     document.exitPointerLock?.();
     this.input.clearKey("escape");
     this.input.consumePointerDelta();
@@ -847,6 +883,7 @@ export class Game {
     }
 
     this.isPaused = false;
+    soundManager.resume();
     this.wasPointerLocked = false;
     this.hud.hidePause();
     this.input.requestPointerLock();
@@ -854,10 +891,26 @@ export class Game {
   }
 
 
-  setMouseSensitivityScale(scale) {
-    const safeScale = Number.isFinite(scale) ? scale : 1;
+  setMouseSensitivityScale(scale, persist = true) {
+    const safeScale = Math.max(0.4, Math.min(2.2, Number.isFinite(scale) ? scale : 0.65));
     this.player.setMouseSensitivity(PLAYER_CONFIG.mouseSensitivity * safeScale);
     this.hud.setMouseSensitivityDisplay(safeScale);
+    if (persist) { try { localStorage.setItem('happy_toy_sensitivity', String(safeScale)); } catch {} }
+  }
+
+  setRenderQuality(value) {
+    const profiles = {performance: {ratio:1, shadow:512}, balanced:{ratio:1.5, shadow:1024}, high:{ratio:2, shadow:2048}};
+    this.renderQuality = profiles[value] ? value : 'balanced';
+    const profile = profiles[this.renderQuality];
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, profile.ratio));
+    if (this.flashlight?.shadow) {
+      this.flashlight.shadow.mapSize.set(profile.shadow, profile.shadow);
+      this.flashlight.shadow.map?.dispose();
+      this.flashlight.shadow.map = null;
+      this.flashlight.shadow.needsUpdate = true;
+    }
+    this.handleResize();
+    try { localStorage.setItem('happy_toy_quality', this.renderQuality); } catch {}
   }
 
   quitToTitle() {
@@ -875,6 +928,7 @@ export class Game {
   }
 
   resetRunState() {
+    this.journal?.reset();
     this.gameOver = false;
     this.gameCleared = false;
     this.spawnedWeepingAngel1F = false;
@@ -1077,6 +1131,7 @@ export class Game {
       && enemy.isSameLevelAs(this.player.position)
       && this.collisionWorld.hasLineOfSight(enemy.group.position, this.player.position));
     cabinet.setOccupied?.(true);
+    cabinet.searchedThisHide = false;
     cabinet.occupied = true;
     this.player.enterCabinet(cabinet);
     this.hud?.setHidden(true);
@@ -1088,10 +1143,8 @@ export class Game {
     }
 
     const forcedOutcome = options.forceOutcome;
-    const heard = dist < 16;
-    const huntCatch = hunt && heard && Math.random() < (CABINET_CONFIG.huntHideCatchChance ?? 0.38);
     const caught = forcedOutcome === "caught"
-      || (forcedOutcome !== "safe" && (witnessed || huntCatch));
+      || (forcedOutcome !== "safe" && witnessed);
     nearby.beginCabinetInvestigation(cabinet);
     this.cabinetEvent = {
       cabinet,
@@ -1149,9 +1202,16 @@ export class Game {
     }
 
     const { cabinet, enemy } = this.cabinetEvent;
+    this.cabinetEvent.approachTime = (this.cabinetEvent.approachTime || 0) + deltaTime;
     const guardPosition = cabinet.getGuardPosition();
     const enemyDistance = Math.hypot(enemy.group.position.x - guardPosition.x, enemy.group.position.z - guardPosition.z);
     if (enemyDistance > 0.7) {
+      if (this.cabinetEvent.approachTime > 10) {
+        cabinet.searchedThisHide = true;
+        enemy.endCabinetInvestigation();
+        this.cabinetEvent = null;
+        this.hud.setStatus("수색하던 발소리가 다른 복도로 향합니다.", 1800);
+      }
       return;
     }
 
@@ -1177,6 +1237,7 @@ export class Game {
       this.cabinetEvent.outcome === "safe"
       && this.cabinetEvent.timer >= CABINET_CONFIG.safeWaitSeconds
     ) {
+      cabinet.searchedThisHide = true;
       enemy.endCabinetInvestigation();
       this.cabinetEvent = null;
       this.hud.setStatus("발소리가 멀어졌습니다.", 1600);
@@ -1209,6 +1270,7 @@ export class Game {
   }
 
   clearGame() {
+    if (this.gameCleared || this.gameOver) return;
     this.gameCleared = true;
     this.hud.setDread(0, "", "quiet");
     this.cabinetEvent = null;
@@ -1216,7 +1278,7 @@ export class Game {
     this.voiceAnnouncer?.announce("clear", "제단이 문을 삼켰습니다.");
 
     if (this.menuSystem) {
-      this.menuSystem.showVictoryClear(this.elapsedTime);
+      this.menuSystem.showVictoryClear(this.playTime);
     } else {
       this.hud.showClear({
         title: `${this.chapterSession.title} Clear`,
@@ -1277,29 +1339,9 @@ export class Game {
   }
 
   tryReleaseCorridorStalker() {
-    if (this.stalkerReleased || this.isInvincible) {
-      return false;
-    }
-    const intro = this.monsterIntroManager?.events?.find((event) => event.constructor?.name === "UncatIntroEvent");
-    if (intro?.state === "cutscene" || intro?.isControlLocked) {
-      return false;
-    }
-    const grace = STALKER_CONFIG.graceSeconds ?? 14;
-    if (this.playTime < grace) {
-      return false;
-    }
-    this.stalkerReleased = true;
-    const released = this.enemyManager?.releaseStalker(STALKER_CONFIG.id || "uncat", {
-      spawn: STALKER_CONFIG.spawn || [0, 0, 16],
-      hunt: true,
-      playerPosition: this.player.position,
-    });
-    if (released) {
-      soundManager.playSFX("school_chime");
-      soundManager.playSFX("corridor_wind");
-      this.voiceAnnouncer?.announce("hunt", "누군가 복도를 걷고 있습니다.");
-    }
-    return released;
+    // UncatIntroEvent.releaseControl is the sole normal-game release point.
+    // Elapsed time must never awaken the monster or skip its introduction.
+    return false;
   }
 
   maybePullLockerHunt() {
@@ -1307,7 +1349,7 @@ export class Game {
       return;
     }
     const cabinet = this.player.hiddenCabinet;
-    if (!cabinet) {
+    if (!cabinet || cabinet.searchedThisHide) {
       return;
     }
     const hunt = this.dreadDirector?.phase === "hunt" || this.stalkerReleased || this.playTime > 24;
@@ -1318,6 +1360,9 @@ export class Game {
     if (!enemy) {
       return;
     }
+    // A hunter needs evidence of this hiding attempt; proximity alone is not
+    // omniscient knowledge of an occupied locker.
+    if (!enemy.isActivelyChasing() && enemy.state !== 'search') return;
     const dist = Math.hypot(
       enemy.group.position.x - this.player.position.x,
       enemy.group.position.z - this.player.position.z,
@@ -1326,7 +1371,7 @@ export class Game {
       return;
     }
     enemy.beginCabinetInvestigation(cabinet);
-    const caught = this.dreadDirector?.phase === "hunt" && dist < 9 && Math.random() < 0.22;
+    const caught = false; // No witnessed entry: investigate, then leave.
     this.cabinetEvent = {
       cabinet,
       enemy,
@@ -2119,13 +2164,20 @@ export class Game {
       for (const mesh of chunk.meshes) {
         if (mesh.userData && mesh.userData.isWeepingAngel && mesh.userData.weepingAngelState && mesh.userData.weepingAngelState.loaded) {
           const state = mesh.userData.weepingAngelState;
+          // Floor-bound statues must neither search through the entire stair graph
+          // nor catch somebody directly above/below them at the same X/Z.
+          if (Math.abs(mesh.position.y - playerPos.y) > 1.6 || Math.hypot(mesh.position.x-playerPos.x,mesh.position.z-playerPos.z)>30) {
+            state.path = null;
+            state.pathTimer = 0;
+            continue;
+          }
           angels.push(mesh);
           
           // 1. Gaze check: Is player looking at this angel?
           const isLooking = this.isPlayerLookingAt(mesh.position);
           
           // 2. Activeness check: Only active if intro triggered/active, flashlight is ON, and player is NOT looking
-          const shouldMove = (state.active !== false) && flashlightOn && !isLooking;
+          const shouldMove = (state.active !== false) && flashlightOn && !isLooking && !this.player.isHidden;
           
           if (shouldMove) {
             const goal = playerPos;
@@ -2142,7 +2194,8 @@ export class Game {
               if (state.path === null || state.pathTimer <= 0) {
                 state.path = this.collisionWorld.findPath(mesh.position, goal, state.radius, {
                   cellSize: 0.85,
-                  allowInterFloor: true,
+                  allowInterFloor: false,
+                  maxIterations: 1800,
                 });
                 state.pathTimer = 0.4 + Math.random() * 0.2;
               }
@@ -2182,7 +2235,7 @@ export class Game {
           // 3. Collision catch check: Only catches player if flashlight is ON
           if (flashlightOn) {
             const distToPlayer = Math.hypot(mesh.position.x - playerPos.x, mesh.position.z - playerPos.z);
-            if (distToPlayer <= state.catchDistance && !this.player.isHidden && !this.gameOver && !this.gameCleared && !this.isInvincible) {
+            if (distToPlayer <= state.catchDistance && this.collisionWorld.hasLineOfSight(mesh.position, playerPos) && !this.player.isHidden && !this.gameOver && !this.gameCleared && !this.isInvincible) {
               this.handleCaught("마네킹이 바로 뒤에 서 있었습니다.");
             }
           }

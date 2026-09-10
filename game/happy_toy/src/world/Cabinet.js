@@ -33,6 +33,8 @@ export class Cabinet {
     const trimMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2622, roughness: 0.48, metalness: 0.4 });
     const innerMaterial = new THREE.MeshStandardMaterial({
       color: 0x161310,
+      emissive: 0x16100b,
+      emissiveIntensity: 0.18,
       roughness: 0.92,
       metalness: 0.08,
     });
@@ -139,10 +141,8 @@ export class Cabinet {
       group.add(slat);
     }
 
-    this.interiorLight = new THREE.PointLight(0x1c120c, 0, 1.35, 2.0);
-    this.interiorLight.position.set(0, 1.55, 0.08);
-    this.interiorLight.name = `${this.id}-interior-light`;
-    group.add(this.interiorLight);
+    // A tiny material glow keeps the interior readable without changing the
+    // scene light count (which recompiles every lit material on entry/exit).
     return group;
   }
 

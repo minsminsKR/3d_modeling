@@ -38,6 +38,24 @@ try {
   await game.init();
 } catch (error) {
   console.error(error);
+  const menu = document.querySelector('#menu-system-root');
+  if (menu) {
+    menu.replaceChildren();
+    menu.style.display = 'block';
+    const panel = document.createElement('div');
+    panel.className = 'menu-overlay';
+    const card = document.createElement('div');
+    card.className = 'settings-card';
+    const title = document.createElement('h2');
+    title.textContent = '복도를 준비하지 못했습니다';
+    const detail = document.createElement('p');
+    detail.textContent = error.message;
+    const retry = document.createElement('button');
+    retry.className = 'menu-btn primary-btn';
+    retry.textContent = '다시 불러오기';
+    retry.addEventListener('click', () => window.location.reload());
+    card.append(title, detail, retry); panel.append(card); menu.append(panel);
+  }
   const status = document.querySelector("#status-line");
   const startButton = document.querySelector("#start-button");
   if (status) {
@@ -69,4 +87,3 @@ try {
     errDiv.textContent = `[초기화 오류]\n메시지: ${error.message}\n\n스택:\n${error.stack || ""}`;
   }
 }
-

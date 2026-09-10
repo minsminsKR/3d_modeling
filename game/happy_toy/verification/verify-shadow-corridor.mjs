@@ -7,9 +7,9 @@ const url = process.argv[2] || "http://127.0.0.1:8010/";
 const executablePath = process.env.CHROME_PATH
   || (process.platform === "win32" ? "C:/Program Files/Google/Chrome/Application/chrome.exe" : undefined);
 
-assert.ok(LIGHTING_CONFIG.fogFar <= 9, "fog must collapse to flashlight range");
-assert.ok(LIGHTING_CONFIG.ambientIntensity <= 0.03, "ambient must leave unlit space nearly black");
-assert.ok(LIGHTING_CONFIG.flashlightFillIntensity <= 0.45, "fill light must not wash the corridor");
+assert.ok(LIGHTING_CONFIG.fogFar >= 17, "corridor geometry must remain readable beyond the immediate flashlight cone");
+assert.ok(LIGHTING_CONFIG.ambientIntensity >= 0.25, "unlit space must retain navigation cues");
+assert.ok(LIGHTING_CONFIG.flashlightFillIntensity <= 0.8, "fill light must preserve contrast");
 assert.ok(STALKER_CONFIG.graceSeconds <= 10, "stalker should enter after a short grace");
 assert.ok(CABINET_CONFIG.caughtDelaySeconds >= 3, "locker checks must linger");
 
@@ -33,7 +33,10 @@ try {
     };
 
     game.playTime = 8;
-    game.tryReleaseCorridorStalker();
+    const intro = game.monsterIntroManager.events.find(e=>e.constructor.name==='UncatIntroEvent');
+    if(game.tryReleaseCorridorStalker() || !uncat.isDormant) throw new Error('Uncat released before intro');
+    intro.triggerEvent(); intro.releaseControl(); intro.state='done';
+    uncat.group.position.set(0,0,16);
     const afterRelease = {
       dormant: uncat.isDormant,
       visible: uncat.group.visible,
@@ -327,9 +330,9 @@ try {
   assert.equal(result.afterRelease.visible, true);
   assert.equal(result.afterRelease.stalkerFlag, true);
   assert.equal(result.afterRelease.state, "chase", "released stalker must hunt immediately");
-  assert.equal(result.afterRelease.silhouette, true, "1F hunter must be a fog silhouette");
-  assert.equal(result.afterRelease.figure, true, "1F hunter must use the cloaked stalker figure");
-  assert.equal(result.afterRelease.textured, false, "silhouette hunter must not keep the cat texture");
+  assert.equal(result.afterRelease.silhouette, false, "Uncat must use its authored FBX model");
+  assert.equal(result.afterRelease.figure, false, "Uncat must not silently substitute primitive geometry");
+  assert.equal(result.afterRelease.textured, true, "Uncat must retain its original texture");
   assert.ok(result.afterChase.startDist > 8, `stalker should spawn down the hall, got ${result.afterChase.startDist}`);
   assert.ok(
     result.afterChase.endDist < result.afterChase.startDist - 1.5,

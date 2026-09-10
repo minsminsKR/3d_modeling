@@ -91,6 +91,7 @@ export class UncatIntroEvent {
     }
 
     const playerPos = this.game.player.position;
+    if (Math.abs(playerPos.y - this.triggerPosition.y) > 1.6) return;
     if (distance2D(playerPos, this.triggerPosition) <= this.triggerRadius) {
       this.triggerEvent();
     }

@@ -1,5 +1,5 @@
 import { soundManager } from "../audio/SoundManager.js";
-import { createStalkerFigure, updateStalkerGait } from "../loaders/CharacterLoader.js";
+import * as THREE from "three";
 
 // Floor-bound lurker for B1 / 2F. Uncat stays on 1F; this figure hunts the
 // other two maps along walkable corridors so hiding is required.
@@ -27,7 +27,20 @@ export class FloorHuntDirector {
   }
 
   makeBoxFigure() {
-    const group = createStalkerFigure({ id: "floor-hunt", height: 1.78 });
+    if (!this.modelSource) throw new Error("복도 마네킹 모델이 준비되지 않았습니다.");
+    const group = new THREE.Group();
+    const content = this.modelSource.clone(true);
+    this.game.mapBuilder.generator.prepareHorrorPropInstance(content);
+    content.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(content);
+    const height = box.max.y - box.min.y;
+    content.scale.multiplyScalar(1.78 / Math.max(height, 0.001));
+    content.updateMatrixWorld(true);
+    box.setFromObject(content);
+    const center = box.getCenter(new THREE.Vector3());
+    content.position.set(-center.x, -box.min.y, -center.z);
+    group.add(content);
+    group.userData.assetUrl = '/assets/props/silent-mannequin-2f/model.glb';
     group.name = "floor-hunt-silhouette";
     group.visible = false;
     return group;
@@ -48,6 +61,11 @@ export class FloorHuntDirector {
     this.loadStarted = true;
   }
 
+  async preload() {
+    this.modelSource = await this.game.mapBuilder.generator.loadPropAsset('/assets/props/silent-mannequin-2f/model.glb');
+    this.ensureSilhouette();
+  }
+
   hide() {
     if (this.silhouette) this.silhouette.visible = false;
   }
@@ -55,7 +73,7 @@ export class FloorHuntDirector {
   update(dt) {
     const game = this.game;
     if (!game?.isStarted || game.gameOver || game.gameCleared || game.isPaused) return;
-    if (game.cutsceneEvent || game.monsterIntroManager?.blocksPlayerControl) {
+    if (game.cutsceneEvent || game.monsterIntroManager?.blocksPlayerControl || game.mirrorEvents?.some(event => event.blocksPlayerControl)) {
       this.hide();
       return;
     }
@@ -111,7 +129,6 @@ export class FloorHuntDirector {
       sil.rotation.y = Math.atan2(dx, dz);
     }
     this.mixer?.update(dt);
-    updateStalkerGait(sil, dt, this.frozen ? 0.08 : 0.38 + this.approach);
     this.stepTimer -= dt;
     if (this.stepTimer <= 0 && !this.frozen) {
       this.stepTimer = Math.max(0.24, 0.52 - this.approach * 0.24);
@@ -139,7 +156,7 @@ export class FloorHuntDirector {
       );
     }
 
-    if (!game.isInvincible && dist < 1.05 && this.approach > 0.72 && this.floorTime > 8 && !this.frozen) {
+    if (!game.isInvincible && los && dist < 1.05 && this.approach > 0.72 && this.floorTime > 8 && !this.frozen) {
       game.handleCaught(floor === -1 ? "basement-lurk" : "gallery-lurk");
     }
   }
@@ -171,7 +188,7 @@ export class FloorHuntDirector {
     const sil = this.silhouette;
     const world = this.game.collisionWorld;
     this.repathAt -= dt;
-    if (this.repathAt <= 0 || this.pathIndex >= this.path.length) {
+    if (this.repathAt <= 0) {
       this.repathAt = 0.45;
       const path = world?.findPath?.(
         sil.position,
@@ -195,9 +212,12 @@ export class FloorHuntDirector {
         continue;
       }
       const step = Math.min(remain, dist);
+      const previous = sil.position.clone();
       sil.position.x += (dx / dist) * step;
       sil.position.z += (dz / dist) * step;
       sil.position.y = hy;
+      world?.resolveCircle?.(sil.position, 0.34);
+      world?.resolveActorPosition?.(previous, sil.position, 0.34, {actorId:'floor-hunt'});
       remain -= step;
       if (step === dist) this.pathIndex += 1;
     }

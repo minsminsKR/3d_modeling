@@ -7,7 +7,10 @@ import { WORLD_CONFIG } from "../config/gameConfig.js";
 export class KeyItem {
   constructor(config) {
     this.id = config.id;
-    this.label = config.label;
+    this.label = {
+      'key-workshop': '요람에 남은 혼', 'key-playroom': '인형이 지키던 혼',
+      'key-storage': '선반에 갇힌 혼', 'key-hwacat': '액자 뒤의 혼',
+    }[config.id] || config.label;
     this.position = new THREE.Vector3(...config.position);
     this.initiallyVisible = config.initiallyVisible ?? true;
     this.isAvailable = this.initiallyVisible;
@@ -49,6 +52,19 @@ export class KeyItem {
     toothB.castShadow = true;
     toothB.receiveShadow = true;
     this.group.add(toothB);
+    // The old key remains as the physical keepsake inside a restrained soul glow.
+    this.soulMaterial = new THREE.MeshStandardMaterial({
+      color: 0xc8e3d3, emissive: 0x9dbda7, emissiveIntensity: 1.1,
+      transparent: true, opacity: .28, roughness: .25, depthWrite: false,
+    });
+    this.soul = new THREE.Mesh(new THREE.SphereGeometry(.13, 16, 12), this.soulMaterial);
+    this.soul.position.set(0,.15,.18); this.soul.scale.set(.75,1.35,.75);this.group.add(this.soul);
+    this.orbit = new THREE.Group();this.group.add(this.orbit);
+    for(let i=0;i<5;i++) {
+      const mote = new THREE.Mesh(new THREE.SphereGeometry(.012,5,4),new THREE.MeshStandardMaterial({color:0xe3ce96,emissive:0xc2a16a,emissiveIntensity:1.3}));
+      mote.position.set(Math.cos(i*1.256)*.27, i*.065-.05, .18+Math.sin(i*1.256)*.27);
+      this.orbit.add(mote);
+    }
   }
 
   update(deltaTime, elapsedTime) {
@@ -56,7 +72,9 @@ export class KeyItem {
       return;
     }
 
-    this.group.rotation.y += deltaTime * 1.6;
+    this.group.rotation.y += deltaTime * .45;
+    this.orbit.rotation.y -= deltaTime * .8;
+    this.soulMaterial.opacity = .26 + Math.sin(elapsedTime*1.7 + this.floatOffset)*.06;
     this.group.position.y = this.position.y + 0.72 + Math.sin(elapsedTime * 2.2 + this.floatOffset) * 0.06;
   }
 
