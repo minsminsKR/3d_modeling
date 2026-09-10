@@ -383,8 +383,8 @@ try {
   });
   const annexPinchWalk = [];
   for (const stop of [
-    { x: 66.9, z: 0 },
-    { x: 66.9, z: 2.5 },
+    { x: 70.0, z: 0 },
+    { x: 70.0, z: 2.5 },
   ]) {
     annexPinchWalk.push(await walkTo(stop, 220));
     console.log("annex_pinch", stop, annexPinchWalk.at(-1));
@@ -1592,7 +1592,9 @@ try {
       trophyBanner: names(trophy).some((name) => name.includes("trophy_banner_")),
       trophyRoom: names(trophy).some((name) => name.includes("trophy_room_")),
       trophyRoomSw: names(trophy).some((name) => name.includes("trophy_room_sw")),
+      trophyRoomL: names(trophy).some((name) => name.includes("trophy_room_sw_l_")),
       annexRoom: names(gate).some((name) => name.includes("annex_room_")),
+      annexRoomL: names(gate).some((name) => name.includes("annex_room_ne_l_")),
       eastwashRoom: names(eastWing).some((name) => name.includes("eastwash_room_")),
       angelRoom: names(westHall).some((name) => name.includes("angel_room_")),
       washfourRoom: names(washFour).some((name) => name.includes("washfour_room_")),
@@ -1642,6 +1644,7 @@ try {
         sky: generator.getHallSides(3, 0),
         stair: generator.getHallSides(1, 1),
         lost: generator.getHallSides(-2, 0),
+        practice: generator.getHallSides(7, 2),
       },
       arcadeCol: names(arcade).some((name) => name.includes("arcade_col_")),
       arcadeBench: names(arcade).some((name) => name.includes("arcade_bench_")),
@@ -2059,6 +2062,9 @@ try {
   assert.notEqual(rooms.hallSides.sky.n, rooms.hallSides.sky.s, "skybridge must offset the glass walls");
   assert.notEqual(rooms.hallSides.stair.n, rooms.hallSides.stair.s, "stair plus must offset north vs south");
   assert.notEqual(rooms.hallSides.stair.e, rooms.hallSides.stair.w, "stair plus must offset east vs west");
+  assert.notEqual(rooms.hallSides.practice.n, rooms.hallSides.practice.s, "practice hall must offset north vs south walls");
+  assert.equal(rooms.annexRoomL, true, "annex NE classroom must break the copied rectangle with an L jog");
+  assert.equal(rooms.trophyRoomL, true, "trophy SW classroom must break the copied rectangle with an L jog");
   assert.equal(annexOffsetWalk.at(-1).ok, true, `annex north offset must walk past the old 1.22m wall, got ${JSON.stringify(annexOffsetWalk.at(-1))}`);
   assert.ok(annexOffsetWalk.at(-1).z < -0.95 && annexOffsetWalk.at(-1).z > -1.45, "annex offset north wall must reach z≈-1 where the old pinch would stop");
   assert.equal(memorialOffsetWalk.at(-1).ok, true, `memorial south offset must walk past a 3.4m wall, got ${JSON.stringify(memorialOffsetWalk.at(-1))}`);

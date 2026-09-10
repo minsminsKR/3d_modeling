@@ -39,22 +39,14 @@ async function poseShot(name, pose) {
   console.log(name, info);
 }
 
-await poseShot("f1_memorial_offset_spine.png", {
-  cx: 6, cz: 0, x: 99.4, y: 0, z: 0.2, lookAt: [99.4, 1.22, 6.4],
+await poseShot("f1_annex_ne_l_jog.png", {
+  cx: 4, cz: 0, x: 70.2, y: 0, z: -3.2, lookAt: [66.2, 1.1, -5.8],
 });
-await poseShot("f1_stair_offset_plus.png", {
-  cx: 1, cz: 1, x: 20.0, y: 0, z: 16.15, lookAt: [20.0, 1.22, 22.6],
+await poseShot("f1_trophy_sw_l_jog.png", {
+  cx: 7, cz: 0, x: 105.6, y: 0, z: 4.2, lookAt: [108.4, 1.1, 6.4],
 });
-await poseShot("f1_skybridge_offset_grate.png", {
-  cx: 3, cz: 0, x: 48.0, y: 0, z: 0.35, lookAt: [55.4, 1.15, 1.6],
+await poseShot("f1_practice_offset_south.png", {
+  cx: 7, cz: 2, x: 112.0, y: 0, z: 34.6, lookAt: [118.4, 1.15, 34.6],
 });
-await poseShot("f1_annex_offset_north.png", {
-  cx: 4, cz: 0, x: 68.2, y: 0, z: 0.15, lookAt: [68.2, 1.22, -6.2],
-});
-await poseShot("f1_lostfound_offset_west.png", {
-  cx: -2, cz: 0, x: -32.0, y: 0, z: 0.2, lookAt: [-38.4, 1.22, 0.2],
-});
-
-await browser.close();
 
 await browser.close();
