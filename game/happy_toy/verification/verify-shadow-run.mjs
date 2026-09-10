@@ -1683,6 +1683,9 @@ try {
         lost: generator.getHallSides(-2, 0),
         practice: generator.getHallSides(7, 2),
         roof: generator.getHallSides(0, 2),
+        laundry: generator.getHallSides(4, -1),
+        tea: generator.getHallSides(-1, 1),
+        lab: generator.getHallSides(5, -2),
       },
       hallHull: {
         chase: generator.getHallHull(1, 0),
@@ -1706,6 +1709,23 @@ try {
         laundry: generator.getHallWallSteps(4, -1),
         nursery: generator.getHallWallSteps(2, 1),
         stage: generator.getHallWallSteps(6, 2),
+        doll: generator.getHallWallSteps(-2, 1),
+        archive: generator.getHallWallSteps(-2, -1),
+        specimen: generator.getHallWallSteps(6, -1),
+        arcade: generator.getHallWallSteps(4, 1),
+        lost: generator.getHallWallSteps(-2, 0),
+        tea: generator.getHallWallSteps(-1, 1),
+        lab: generator.getHallWallSteps(5, -2),
+        stair: generator.getHallWallSteps(1, 1),
+        practice: generator.getHallWallSteps(7, 2),
+      },
+      classFace: {
+        laundryDoor: generator.getHallFaceClear(4, -1, "w", -6.25),
+        laundryMid: generator.getHallFaceClear(4, -1, "w", 0),
+        teaDoor: generator.getHallFaceClear(-1, 1, "n", -6.15),
+        teaMid: generator.getHallFaceClear(-1, 1, "n", 0),
+        labDoor: generator.getHallFaceClear(5, -2, "s", 4.95),
+        labMid: generator.getHallFaceClear(5, -2, "s", 0),
       },
       windowAlongs: {
         chase: generator.getHallWindowAlongs(1, 0),
@@ -1750,6 +1770,15 @@ try {
       laundryCart: names(laundry).some((name) => name.includes("laundry_cart_")),
       laundryRoom: names(laundry).some((name) => name.includes("laundry_room_")),
       laundryHallBaffle: names(laundry).some((name) => name.includes("laundryhall_baffle_")),
+      laundryClassStep: names(laundry).some((name) => name.includes("hall_class_w_step")),
+      teaClassStep: names(teaHall).some((name) => name.includes("hall_class_n_step")),
+      labClassStep: names(labLink).some((name) => name.includes("hall_class_s_step")),
+      dollClassStep: names(dollHall).some((name) => name.includes("hall_class_w_step")),
+      archiveClassStep: names(archiveHall).some((name) => name.includes("hall_class_w_step")),
+      specimenClassStep: names(specimen).some((name) => name.includes("hall_class_w_step")),
+      arcadeClassStep: names(arcade).some((name) => name.includes("hall_class_w_step")),
+      lostClassStep: names(lostFound).some((name) => name.includes("hall_class_w_step")),
+      stairClassStep: names(stairHall).some((name) => name.includes("hall_class_n_step")),
       stageRack: names(stageWing).some((name) => name.includes("stagewing_rack_")),
       labLinkCase: names(labLink).some((name) => name.includes("lablink_case_")),
       labLinkRoom: names(labLink).some((name) => name.includes("lablink_room_")),
@@ -2184,6 +2213,29 @@ try {
   assert.equal(rooms.hallSteps.laundry.e.n, 1.05, "laundry east-north step must keep the pinched window clear");
   assert.equal(rooms.hallSteps.nursery.e.n, 1.18, "nursery east-north step must keep the pinched window clear");
   assert.notEqual(rooms.hallSteps.stage.s.w, rooms.hallSteps.stage.s.e, "stage south window must step west vs east");
+  assert.ok(!rooms.hallSteps.practice.n && !rooms.hallSteps.practice.s, "practice north baffle wall must not step");
+  assert.ok(rooms.hallSteps.laundry.w?.bands?.length, "laundry west classroom must mid-step off the door plane");
+  assert.equal(rooms.classFace.laundryDoor, rooms.hallSides.laundry.w, "laundry classroom doors must stay on the authored west clear");
+  assert.notEqual(rooms.classFace.laundryMid, rooms.hallSides.laundry.w, "laundry classroom mid-band must leave the copied west plane");
+  assert.equal(rooms.classFace.teaDoor, rooms.hallSides.tea.n, "tea classroom doors must stay on the authored north clear");
+  assert.notEqual(rooms.classFace.teaMid, rooms.hallSides.tea.n, "tea classroom mid-band must leave the copied north plane");
+  assert.equal(rooms.classFace.labDoor, rooms.hallSides.lab.s, "lab classroom doors must stay on the authored south clear");
+  assert.notEqual(rooms.classFace.labMid, rooms.hallSides.lab.s, "lab classroom mid-band must leave the copied south plane");
+  assert.ok(rooms.hallSteps.doll.w?.bands, "doll west classroom must mid-step");
+  assert.ok(rooms.hallSteps.archive.w?.bands, "archive west classroom must mid-step");
+  assert.ok(rooms.hallSteps.specimen.w?.bands, "specimen west classroom must mid-step");
+  assert.ok(rooms.hallSteps.arcade.w?.bands, "arcade west classroom must mid-step");
+  assert.ok(rooms.hallSteps.lost.w?.bands, "lost-found west classroom must mid-step");
+  assert.ok(rooms.hallSteps.stair.n?.bands, "stair north classroom must mid-step");
+  assert.ok(rooms.laundryClassStep, "laundry must emit a west classroom step mesh");
+  assert.ok(rooms.teaClassStep, "tea must emit a north classroom step mesh");
+  assert.ok(rooms.labClassStep, "lab-link must emit a south classroom step mesh");
+  assert.ok(rooms.dollClassStep, "doll must emit a west classroom step mesh");
+  assert.ok(rooms.archiveClassStep, "archive must emit a west classroom step mesh");
+  assert.ok(rooms.specimenClassStep, "specimen must emit a west classroom step mesh");
+  assert.ok(rooms.arcadeClassStep, "arcade must emit a west classroom step mesh");
+  assert.ok(rooms.lostClassStep, "lost-found must emit a west classroom step mesh");
+  assert.ok(rooms.stairClassStep, "stair hall must emit a north classroom step mesh");
   assert.equal(rooms.annexRoomL, true, "annex NE classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.annexRoomNwL, true, "annex NW classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.trophyRoomL, true, "trophy SW classroom must break the copied rectangle with an L jog");
