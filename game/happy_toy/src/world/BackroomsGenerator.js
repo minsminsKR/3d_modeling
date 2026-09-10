@@ -4973,17 +4973,8 @@ export class BackroomsGenerator {
       center.x - 6.85, floorY + 2.12, center.z + 1.72,
       0, "트로피",
     );
-    this.placeRoomShell(chunk, chunkId, "trophy_room_se", {
-      minX: center.x + 1.95,
-      maxX: center.x + 7.28,
-      minZ: center.z + 2.02,
-      maxZ: center.z + 7.38,
-      wallY: floorY + 1.4,
-      height: 2.8,
-      thickness: 0.22,
-      material: this.schoolClassWallMat,
-      skip: { n: true },
-    });
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "trophy_room_se", "se");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "trophy_room_sw", "sw");
     const glow = new THREE.PointLight(0x3a2810, 0.14, 4.4, 2);
     glow.position.set(center.x, floorY + 2.15, center.z);
     glow.name = `${chunkId}_trophy_glow`;
@@ -5580,6 +5571,8 @@ export class BackroomsGenerator {
       center.x, floorY + 2.12, center.z - 1.72,
       0, "세면",
     );
+    // Keep n-west CLASS open for the (1,0)→(2,0) cut-through.
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "eastwash_room_ne", "ne");
     const glow = new THREE.PointLight(0x101418, 0.48, 6.0, 2);
     glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_eastwash_glow`;
@@ -5599,6 +5592,7 @@ export class BackroomsGenerator {
       center.x + 4.15, floorY + 2.12, center.z - 1.72,
       0, "석고",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "angel_room_ne", "ne");
     const glow = new THREE.PointLight(0x181410, 0.48, 6.0, 2);
     glow.position.set(center.x + 3.2, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_angelhall_glow`;
@@ -5629,6 +5623,7 @@ export class BackroomsGenerator {
       center.x, floorY + 2.12, center.z - 1.72,
       0, "신발",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "washfour_room_ne", "ne");
     const glow = new THREE.PointLight(0x181410, 0.48, 6.0, 2);
     glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_washfour_glow`;
@@ -6383,6 +6378,26 @@ export class BackroomsGenerator {
         }
       }
     }
+  }
+
+  // Close one plus-tile classroom corner into a real room. The hall_class_*
+  // door already punches the inner face, so that face is skipped. Keep the
+  // 3.4m spine clear: |x|>=1.95 and |z|>=2.02 from the tile center.
+  dressClosedCornerRoom(chunk, center, chunkId, floorY, name, corner) {
+    this.ensureSchoolCorridorMaterials();
+    const east = corner.includes("e");
+    const south = corner.includes("s");
+    this.placeRoomShell(chunk, chunkId, name, {
+      minX: center.x + (east ? 1.95 : -7.28),
+      maxX: center.x + (east ? 7.28 : -1.95),
+      minZ: center.z + (south ? 2.02 : -7.38),
+      maxZ: center.z + (south ? 7.38 : -2.02),
+      wallY: floorY + 1.4,
+      height: 2.8,
+      thickness: 0.22,
+      material: this.schoolClassWallMat,
+      skip: south ? { n: true } : { s: true },
+    });
   }
 
   addWingPlane(chunk, chunkId, name, width, length, x, y, z, material, flipCeiling = false) {
@@ -8613,6 +8628,8 @@ export class BackroomsGenerator {
       center.x, floorY + 2.12, center.z - 1.72,
       0, "별관",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "annex_room_nw", "nw");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "annex_room_ne", "ne");
     const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
     glow.position.set(center.x + 3.4, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_annexgate_glow`;
