@@ -170,6 +170,7 @@ export class Game {
     ItemSystem.borrowExplosionLight(this.scene);
     this.particleSystem = new ParticleSystem(this.scene);
     this.menuSystem = new MenuSystem(this);
+    this.menuSystem.setAssetsReady(false);
     this.monsterIntroManager = new MonsterIntroManager(this);
     this.dreadDirector = new DreadDirector(this);
 
@@ -229,7 +230,8 @@ export class Game {
     this.assetsReady = true;
     this.hud.setChapterInfo(this.chapterSession, CHAPTERS);
     this.hud.setStartEnabled(true);
-    this.hud.setStatus("화면을 클릭하면 게임이 시작됩니다.");
+    this.hud.setStatus("화면을 클릭하거나 아무 키나 누르면 시작합니다.");
+    this.menuSystem?.setAssetsReady(true);
     this.loop.start();
   }
 
@@ -359,11 +361,13 @@ export class Game {
 
   start() {
     if (!this.assetsReady) {
+      this.menuSystem?.tryStart();
       this.hud.setStatus("아직 복도를 불러오는 중입니다.", 900);
       return;
     }
 
     if (this.isStarted && !this.isPaused) {
+      this.menuSystem?.hideMenu();
       this.input.requestPointerLock();
       return;
     }
@@ -372,7 +376,10 @@ export class Game {
     this.isPaused = false;
     this.wasPointerLocked = false;
     this.applyDifficultySettings();
-    this.glitchController.primeAudio();
+    try {
+      this.glitchController.primeAudio();
+    } catch (_) {}
+    this.menuSystem?.hideMenu();
     this.hud.hideStart();
     this.hud.hidePause();
     this.input.requestPointerLock();
@@ -389,6 +396,7 @@ export class Game {
     this.hud.hideClear();
     this.hud.hidePause();
     this.hud.hideStart();
+    this.menuSystem?.hideMenu();
     this.input.requestPointerLock();
     this.hud.setStatus("다시 복도 한가운데에 섰습니다.", 1800);
   }
@@ -732,8 +740,9 @@ export class Game {
     this.hud.hidePause();
     this.hud.hideCaught();
     this.hud.hideClear();
-    this.hud.showStart();
-    this.hud.setStatus("화면을 클릭하면 게임이 시작됩니다.");
+    this.hud.hideStart();
+    this.menuSystem?.showTitleScreen();
+    this.hud.setStatus("화면을 클릭하거나 아무 키나 누르면 시작합니다.");
   }
 
   resetRunState() {

@@ -23,8 +23,10 @@ export class Input {
   }
 
   requestPointerLock() {
-    const request = this.targetElement.requestPointerLock?.();
-    request?.catch?.(() => {});
+    try {
+      const request = this.targetElement.requestPointerLock?.();
+      request?.catch?.(() => {});
+    } catch (_) {}
   }
 
   handleKeyDown(event) {
