@@ -466,6 +466,16 @@ export class BackroomsGenerator {
       },
       "-1,0": {
         s: { split: -0.88, w: 1.62, e: 1.22 },
+        n: { bands: [{ from: -5.02, to: -2.18, clear: 1.42 }] },
+      },
+      "4,0": {
+        n: { bands: [{ from: -3.52, to: -1.58, clear: 1.22 }] },
+      },
+      "7,0": {
+        s: { bands: [{ from: -5.12, to: -2.58, clear: 1.82 }] },
+      },
+      "5,0": {
+        n: { bands: [{ from: -3.48, to: -1.78, clear: 1.38 }] },
       },
       "4,-1": {
         e: { split: 1.05, n: 1.05, s: 1.42 },
@@ -473,6 +483,7 @@ export class BackroomsGenerator {
       },
       "2,1": {
         e: { split: 1.45, n: 1.18, s: 1.52 },
+        w: { bands: [{ from: -5.05, to: -1.72, clear: 1.28 }] },
       },
       "2,-1": {
         e: { split: -1.25, n: 1.15, s: 1.48 },
@@ -487,6 +498,7 @@ export class BackroomsGenerator {
       },
       "6,2": {
         s: { split: -1.15, w: 1.68, e: 2.15 },
+        n: { bands: [{ from: 2.28, to: 3.58, clear: 1.28 }] },
       },
       "-2,1": {
         w: { bands: [{ from: -1.48, to: 1.22, clear: 1.38 }] },
@@ -510,10 +522,12 @@ export class BackroomsGenerator {
     const raw = authored[`${cx},${cz}`] || {};
     const open = this.getOpenings(cx, cz);
     const out = {};
-    if (raw.n && !open.N) out.n = raw.n;
-    if (raw.s && !open.S) out.s = raw.s;
-    if (raw.e && !open.E) out.e = raw.e;
-    if (raw.w && !open.W) out.w = raw.w;
+    // Full-span window splits stay off graph openings (T-gap fills).
+    // Classroom mid-bands may sit on an opening face if they stay off the T.
+    if (raw.n && (!open.N || raw.n.bands)) out.n = raw.n;
+    if (raw.s && (!open.S || raw.s.bands)) out.s = raw.s;
+    if (raw.e && (!open.E || raw.e.bands)) out.e = raw.e;
+    if (raw.w && (!open.W || raw.w.bands)) out.w = raw.w;
     return out;
   }
 

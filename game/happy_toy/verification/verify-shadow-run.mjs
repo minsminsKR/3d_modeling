@@ -1686,6 +1686,10 @@ try {
         laundry: generator.getHallSides(4, -1),
         tea: generator.getHallSides(-1, 1),
         lab: generator.getHallSides(5, -2),
+        trophy: generator.getHallSides(7, 0),
+        washfour: generator.getHallSides(5, 0),
+        angel: generator.getHallSides(-1, 0),
+        stage: generator.getHallSides(6, 2),
       },
       hallHull: {
         chase: generator.getHallHull(1, 0),
@@ -1718,6 +1722,9 @@ try {
         lab: generator.getHallWallSteps(5, -2),
         stair: generator.getHallWallSteps(1, 1),
         practice: generator.getHallWallSteps(7, 2),
+        annex: generator.getHallWallSteps(4, 0),
+        trophy: generator.getHallWallSteps(7, 0),
+        washfour: generator.getHallWallSteps(5, 0),
       },
       classFace: {
         laundryDoor: generator.getHallFaceClear(4, -1, "w", -6.25),
@@ -1726,6 +1733,15 @@ try {
         teaMid: generator.getHallFaceClear(-1, 1, "n", 0),
         labDoor: generator.getHallFaceClear(5, -2, "s", 4.95),
         labMid: generator.getHallFaceClear(5, -2, "s", 0),
+        annexDoor: generator.getHallFaceClear(4, 0, "n", 6.35),
+        annexUnused: generator.getHallFaceClear(4, 0, "n", -2.4),
+        annexOffset: generator.getHallFaceClear(4, 0, "n", 4.2),
+        trophyDoor: generator.getHallFaceClear(7, 0, "s", 4.95),
+        trophyUnused: generator.getHallFaceClear(7, 0, "s", -3.8),
+        trophyWide: generator.getHallFaceClear(7, 0, "s", 2.8),
+        nurseryDoor: generator.getHallFaceClear(2, 1, "w", 4.95),
+        nurseryUnused: generator.getHallFaceClear(2, 1, "w", -3.2),
+        nurseryOffset: generator.getHallFaceClear(2, 1, "w", 3.4),
       },
       windowAlongs: {
         chase: generator.getHallWindowAlongs(1, 0),
@@ -1779,6 +1795,12 @@ try {
       arcadeClassStep: names(arcade).some((name) => name.includes("hall_class_w_step")),
       lostClassStep: names(lostFound).some((name) => name.includes("hall_class_w_step")),
       stairClassStep: names(stairHall).some((name) => name.includes("hall_class_n_step")),
+      annexClassStep: names(gate).some((name) => name.includes("hall_class_n_step")),
+      trophyClassStep: names(trophy).some((name) => name.includes("hall_class_s_step")),
+      washfourClassStep: names(washFour).some((name) => name.includes("hall_class_n_step")),
+      angelClassStep: names(westHall).some((name) => name.includes("hall_class_n_step")),
+      stageClassStep: names(stageWing).some((name) => name.includes("hall_class_n_step")),
+      nurseryClassStep: names(nurseryHall).some((name) => name.includes("hall_class_w_step")),
       stageRack: names(stageWing).some((name) => name.includes("stagewing_rack_")),
       labLinkCase: names(labLink).some((name) => name.includes("lablink_case_")),
       labLinkRoom: names(labLink).some((name) => name.includes("lablink_room_")),
@@ -2236,6 +2258,24 @@ try {
   assert.ok(rooms.arcadeClassStep, "arcade must emit a west classroom step mesh");
   assert.ok(rooms.lostClassStep, "lost-found must emit a west classroom step mesh");
   assert.ok(rooms.stairClassStep, "stair hall must emit a north classroom step mesh");
+  assert.ok(rooms.hallSteps.annex.n?.bands, "annex north unused half must mid-step off the T");
+  assert.equal(rooms.classFace.annexDoor, rooms.hallSides.annex.n, "annex NE door band must stay on the authored north clear");
+  assert.equal(rooms.classFace.annexOffset, rooms.hallSides.annex.n, "annex verified north offset must stay on the authored north clear");
+  assert.notEqual(rooms.classFace.annexUnused, rooms.hallSides.annex.n, "annex unused north half must leave the copied plane");
+  assert.ok(rooms.hallSteps.trophy.s?.bands, "trophy south unused half must mid-step off the T");
+  assert.equal(rooms.classFace.trophyWide, rooms.hallSides.trophy.s, "trophy verified wide walk must stay on the authored south clear");
+  assert.notEqual(rooms.classFace.trophyUnused, rooms.hallSides.trophy.s, "trophy unused south half must leave the copied plane");
+  assert.ok(rooms.hallSteps.washfour.n?.bands, "wash-four north unused half must mid-step");
+  assert.ok(rooms.hallSteps.angel.n?.bands, "angel north unused half must mid-step off the T");
+  assert.ok(rooms.hallSteps.stage.n?.bands, "stage north unused half must mid-step off the T");
+  assert.equal(rooms.classFace.nurseryOffset, rooms.hallSides.nursery.w, "nursery verified west offset must stay on the authored west clear");
+  assert.notEqual(rooms.classFace.nurseryUnused, rooms.hallSides.nursery.w, "nursery unused west half must leave the copied plane");
+  assert.ok(rooms.annexClassStep, "annex must emit a north classroom step mesh");
+  assert.ok(rooms.trophyClassStep, "trophy must emit a south classroom step mesh");
+  assert.ok(rooms.washfourClassStep, "wash-four must emit a north classroom step mesh");
+  assert.ok(rooms.angelClassStep, "angel must emit a north classroom step mesh");
+  assert.ok(rooms.stageClassStep, "stage must emit a north classroom step mesh");
+  assert.ok(rooms.nurseryClassStep, "nursery must emit a west classroom step mesh");
   assert.equal(rooms.annexRoomL, true, "annex NE classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.annexRoomNwL, true, "annex NW classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.trophyRoomL, true, "trophy SW classroom must break the copied rectangle with an L jog");
