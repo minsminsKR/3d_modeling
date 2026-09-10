@@ -1044,12 +1044,12 @@ try {
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(1, 1);
-    game.player.setPosition({ x: 18.4, y: 0, z: 16 });
+    game.player.setPosition({ x: 12.5, y: 0, z: 16 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
   });
   const stairOffsetWalk = [];
   for (const stop of [
-    { x: 18.4, z: 19.4 },
+    { x: 12.5, z: 19.4 },
   ]) {
     stairOffsetWalk.push(await walkTo(stop, 220));
     console.log("stair_offset", stop, stairOffsetWalk.at(-1));
@@ -2064,7 +2064,10 @@ try {
   assert.equal(memorialOffsetWalk.at(-1).ok, true, `memorial south offset must walk past a 3.4m wall, got ${JSON.stringify(memorialOffsetWalk.at(-1))}`);
   assert.ok(memorialOffsetWalk.at(-1).z > 1.5 && memorialOffsetWalk.at(-1).z < 2.05, "memorial offset south wall must reach z≈1.7 where a copied 3.4m wall would stop");
   assert.equal(stairOffsetWalk.at(-1).ok, true, `stair plus south offset must walk past a 3.4m wall, got ${JSON.stringify(stairOffsetWalk.at(-1))}`);
-  assert.ok(stairOffsetWalk.at(-1).z > 17.42 && stairOffsetWalk.at(-1).z < 18.2, "stair offset south wall must reach z≈17.5 where a copied plus would stop");
+  assert.ok(
+    stairOffsetWalk.at(-1).z > 17.42 && stairOffsetWalk.at(-1).z < 18.2 && Math.abs(stairOffsetWalk.at(-1).x - 12.5) < 0.9,
+    "stair offset south wall must reach z≈17.5 where a copied plus would stop",
+  );
   assert.equal(nurseryOffsetWalk.at(-1).ok, true, `nursery west offset must walk past the old 1.28m wall, got ${JSON.stringify(nurseryOffsetWalk.at(-1))}`);
   assert.ok(nurseryOffsetWalk.at(-1).x < 31.05 && nurseryOffsetWalk.at(-1).x > 30.35, "nursery offset west wall must reach x≈30.9 where the old pinch would stop");
   assert.equal(rooms.arcadeRoom, true, "arcade must close west classroom volumes");
