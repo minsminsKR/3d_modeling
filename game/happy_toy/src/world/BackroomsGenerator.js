@@ -2369,6 +2369,19 @@ export class BackroomsGenerator {
   }
 
   dressHallLockerBanks(chunk, center, chunkId, floorY, _openings, ewChicane, nsChicane) {
+    // Identity halls with closed corner rooms keep their own props instead of
+    // the shared 3.4m locker banks. Chase tiles (0,0)/(1,0) still dress lockers.
+    if (
+      this.isAnnexGateChunk(chunk.cx, chunk.cz)
+      || this.isTrophyChunk(chunk.cx, chunk.cz)
+      || this.isEastWashChunk(chunk.cx, chunk.cz)
+      || this.isWashFourChunk(chunk.cx, chunk.cz)
+      || this.isAngelHallChunk(chunk.cx, chunk.cz)
+      || this.isLaundryChunk(chunk.cx, chunk.cz)
+      || this.isSpecimenChunk(chunk.cx, chunk.cz)
+    ) {
+      return;
+    }
     // Locker rows sit on the inner faces of the 3.4m school corridor.
     // Keep the T-spur (center ±1.7) and alcove doors (x/z ±5.25) clear.
     const cabinetMat = this.textures.createLockerMaterial();

@@ -1397,6 +1397,11 @@ try {
       eastwashRoom: names(eastWing).some((name) => name.includes("eastwash_room_")),
       angelRoom: names(westHall).some((name) => name.includes("angel_room_")),
       washfourRoom: names(washFour).some((name) => name.includes("washfour_room_")),
+      identityHallBare: !names(gate).some((name) => name.includes("hall_lockers_"))
+        && !names(trophy).some((name) => name.includes("hall_lockers_"))
+        && !names(eastWing).some((name) => name.includes("hall_lockers_"))
+        && !names(laundry).some((name) => name.includes("hall_lockers_"))
+        && !names(specimen).some((name) => name.includes("hall_lockers_")),
       arcadeCol: names(arcade).some((name) => name.includes("arcade_col_")),
       arcadeBench: names(arcade).some((name) => name.includes("arcade_bench_")),
       artType: art.type,
@@ -1783,6 +1788,7 @@ try {
   assert.equal(rooms.angelRoom, true, "angel hall must close the NE classroom volume");
   assert.equal(angelRoomWalk.at(-1).ok, true, `must walk into the angel NE room, got ${JSON.stringify(angelRoomWalk.at(-1))}`);
   assert.ok(angelRoomWalk.at(-1).x > -12.2 && angelRoomWalk.at(-1).z < -2.4, "angel NE room must be enterable off the spine");
+  assert.equal(rooms.identityHallBare, true, "closed-room identity halls must not reuse the shared locker banks");
   assert.equal(rooms.arcadeCol, true, "courtyard arcade must have columns");
   assert.equal(rooms.arcadeBench, true, "courtyard arcade must have benches");
   assert.ok(rooms.beats.includes("arcade"), "arcade VO beat missing");
