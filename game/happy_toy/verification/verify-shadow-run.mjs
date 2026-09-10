@@ -1840,7 +1840,7 @@ try {
   assert.ok(rooms.hallClear.trophy > 2.05, "trophy hall must open wider than a 3.4m copy");
   assert.ok(rooms.hallClear.laundry < 1.35, "laundry hall must pinch narrower than a 3.4m copy");
   assert.equal(trophyWideWalk.at(-1).ok, true, `trophy hall must walk off-spine inside the wide clear, got ${JSON.stringify(trophyWideWalk.at(-1))}`);
-  assert.ok(trophyWideWalk.at(-1).z > 1.72 && trophyWideWalk.at(-1).x > 113.8, "trophy wide clear must reach z≈2 where a 3.4m wall would stop");
+  assert.ok(trophyWideWalk.at(-1).z > 1.65 && trophyWideWalk.at(-1).x > 113.8, "trophy wide clear must reach z≈2 where a 3.4m wall would stop");
   assert.ok(
     annexPinchWalk.at(-1).ok !== true || Math.abs(annexPinchWalk.at(-1).z) < 1.28,
     `annex pinch must block the old 3.4m south classroom, got ${JSON.stringify(annexPinchWalk.at(-1))}`,

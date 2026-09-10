@@ -4991,16 +4991,17 @@ export class BackroomsGenerator {
     caseAt("trophy_case_se", 5.05, 1.48);
     caseAt("trophy_case_nw", -5.05, -1.48);
     caseAt("trophy_case_ne", 5.05, -1.48);
+    const southFace = this.getHallClear(chunk.cx, chunk.cz) + 0.08;
     for (const [name, x] of [["w", -3.35], ["e", 3.35]]) {
       this.placeDressedBox(
         chunk, chunkId, `trophy_banner_${name}`,
-        center.x + x, floorY + 1.85, center.z + 1.72,
+        center.x + x, floorY + 1.85, center.z + southFace,
         0.82, 1.15, 0.04, this.schoolBannerMat, false,
       );
     }
     this.addHallNookSign(
       chunk, chunkId, "trophy_sign",
-      center.x - 6.85, floorY + 2.12, center.z + 1.72,
+      center.x - 6.85, floorY + 2.12, center.z + southFace,
       0, "트로피",
     );
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "trophy_room_se", "se");
