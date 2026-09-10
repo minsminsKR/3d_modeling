@@ -44,10 +44,6 @@ export class ItemPickup {
 
     // A very small locator glow keeps supplies readable without turning them
     // into arcade pickups or consuming a meaningful part of the light budget.
-    this.light = new THREE.PointLight(info.color, 0.28, 1.45, 2);
-    this.light.position.y = 0.28;
-    this.group.add(this.light);
-
     const haloMaterial = new THREE.MeshStandardMaterial({
       color: info.color,
       emissive: info.color,
@@ -117,10 +113,6 @@ export class FirecrackerProjectile {
     this.mesh.position.copy(this.position);
     this.scene.add(this.mesh);
 
-    // Fuse Sparks Light
-    this.light = new THREE.PointLight(0xffaa00, 1.4, 3.2, 2);
-    this.mesh.add(this.light);
-
     soundManager.playSFX("firecracker_fuse");
   }
 
@@ -159,7 +151,9 @@ export class FirecrackerProjectile {
 
     this.mesh.position.copy(this.position);
     this.mesh.rotation.x += deltaTime * 8;
-    this.light.intensity = 0.65 + Math.random() * 1.25;
+    if (this.mesh.material) {
+      this.mesh.material.emissiveIntensity = 0.55 + Math.random() * 0.9;
+    }
 
     if (this.lifeTimer >= this.fuseTime) {
       this.explode();
@@ -172,9 +166,9 @@ export class FirecrackerProjectile {
     this.mesh.visible = false;
     soundManager.playSFX("firecracker_explode");
 
-    this.flashLight = new THREE.PointLight(0xff6a20, 18, 18, 2);
+    this.flashLight = ItemSystem.borrowExplosionLight(this.scene);
     this.flashLight.position.copy(this.position).add(new THREE.Vector3(0, 0.25, 0));
-    this.scene.add(this.flashLight);
+    this.flashLight.intensity = 18;
 
     this.shockwave = new THREE.Mesh(
       new THREE.RingGeometry(0.12, 0.2, 28),
@@ -204,7 +198,8 @@ export class FirecrackerProjectile {
   }
 
   dispose() {
-    this.scene.remove(this.mesh, this.flashLight, this.shockwave);
+    this.scene.remove(this.mesh, this.shockwave);
+    ItemSystem.releaseExplosionLight(this.flashLight);
     this.mesh.traverse((child) => {
       child.geometry?.dispose();
       if (Array.isArray(child.material)) child.material.forEach((material) => material.dispose?.());
@@ -229,6 +224,26 @@ export class ItemSystem {
       compass: 1,
     };
     this.activeBoostTimer = 0;
+  }
+
+  static borrowExplosionLight(scene) {
+    if (!ItemSystem._explosionLight) {
+      ItemSystem._explosionLight = new THREE.PointLight(0xff6a20, 0, 18, 2);
+      ItemSystem._explosionLight.position.set(0, -9999, 0);
+      ItemSystem._explosionLight.castShadow = false;
+      scene.add(ItemSystem._explosionLight);
+    } else if (ItemSystem._explosionLight.parent !== scene) {
+      scene.add(ItemSystem._explosionLight);
+    }
+    return ItemSystem._explosionLight;
+  }
+
+  static releaseExplosionLight(light) {
+    if (!light) {
+      return;
+    }
+    light.intensity = 0;
+    light.position.set(0, -9999, 0);
   }
 
   spawnPickups(spawnPoints) {
@@ -407,7 +422,7 @@ function createPickupVisual(type, info) {
   }
   group.traverse((child) => {
     if (child.isMesh) {
-      child.castShadow = true;
+      child.castShadow = false;
       child.receiveShadow = true;
     }
   });

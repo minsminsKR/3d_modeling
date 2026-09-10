@@ -43,6 +43,10 @@ export class PlayerController {
     this.baseFov = camera.fov;
     this.currentFov = camera.fov;
     this.inventoryHudInitialized = false;
+    this._move = new THREE.Vector3();
+    this._moveAxis = new THREE.Vector3(0, 1, 0);
+    this._prevPos = new THREE.Vector3();
+    this._forward = new THREE.Vector3();
   }
 
   setPosition(position) {
@@ -106,9 +110,9 @@ export class PlayerController {
   }
 
   getForwardVector() {
-    const dir = new THREE.Vector3(0, 0, -1);
-    dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
-    return dir;
+    this._forward.set(0, 0, -1);
+    this._forward.applyAxisAngle(this._moveAxis, this.yaw);
+    return this._forward;
   }
 
   enterCabinet(cabinet) {
@@ -330,9 +334,9 @@ export class PlayerController {
       return;
     }
 
-    const move = new THREE.Vector3(strafe, 0, -forward);
+    const move = this._move.set(strafe, 0, -forward);
     move.normalize();
-    move.applyAxisAngle(new THREE.Vector3(0, 1, 0), this.yaw);
+    move.applyAxisAngle(this._moveAxis, this.yaw);
 
     let speed = this.isSprinting ? PLAYER_CONFIG.sprintSpeed : PLAYER_CONFIG.walkSpeed;
     speed *= this.speedBoostMultiplier;
@@ -343,7 +347,7 @@ export class PlayerController {
       speed *= 0.88; // subtle water drag
     }
 
-    const previousPosition = this.position.clone();
+    const previousPosition = this._prevPos.copy(this.position);
     this.position.addScaledVector(move, speed * deltaTime);
 
     if (this.noclip) {

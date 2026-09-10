@@ -5,10 +5,17 @@ export class MenuSystem {
     this.game = game;
     this.container = document.createElement("div");
     this.container.id = "menu-system-root";
+    this.container.style.pointerEvents = "auto";
     document.body.appendChild(this.container);
 
     this.currentMode = "normal"; // normal, nightmare, hardcore
     this.highScores = this.loadHighScores();
+    this.screen = "title";
+    this.assetsReady = Boolean(game?.assetsReady);
+    this.pendingStart = false;
+
+    this.onTitleKeyDown = (event) => this.handleTitleKeyDown(event);
+    window.addEventListener("keydown", this.onTitleKeyDown);
 
     this.renderTitleScreen();
   }
@@ -43,10 +50,86 @@ export class MenuSystem {
   }
 
   hideMenu() {
+    this.screen = "hidden";
+    this.pendingStart = false;
     this.container.style.display = "none";
   }
 
+  isTitleVisible() {
+    return this.screen === "title" && this.container.style.display !== "none";
+  }
+
+  setAssetsReady(ready) {
+    this.assetsReady = Boolean(ready);
+    this.syncStartButton();
+    if (this.assetsReady && this.pendingStart && this.isTitleVisible()) {
+      this.pendingStart = false;
+      this.tryStart();
+    }
+  }
+
+  syncStartButton() {
+    const btn = document.getElementById("btn-start-game");
+    const status = document.getElementById("menu-status");
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.toggle("is-loading", !this.assetsReady);
+      btn.textContent = this.assetsReady ? "게임 시작" : "불러오는 중...";
+    }
+    if (status) {
+      if (this.pendingStart && !this.assetsReady) {
+        status.textContent = "불러오는 대로 바로 시작합니다...";
+      } else if (this.assetsReady) {
+        status.textContent = "클릭하거나 아무 키나 누르면 시작합니다.";
+      } else {
+        status.textContent = "복도와 몬스터를 불러오는 중입니다.";
+      }
+    }
+  }
+
+  tryStart() {
+    if (!this.game) return false;
+    if (this.game.isStarted && !this.game.isPaused) {
+      this.hideMenu();
+      this.game.input?.requestPointerLock();
+      return true;
+    }
+    if (!this.game.assetsReady) {
+      this.pendingStart = true;
+      this.syncStartButton();
+      return false;
+    }
+
+    try {
+      soundManager.init();
+      soundManager.resume();
+    } catch (_) {}
+
+    this.hideMenu();
+    this.game.start();
+    return true;
+  }
+
+  handleTitleKeyDown(event) {
+    if (!this.isTitleVisible()) return;
+    if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (event.target && typeof event.target.closest === "function" && event.target.closest("input, textarea")) {
+      return;
+    }
+    const ignore = new Set(["Escape", "Tab", "F5", "F12", "Shift", "Control", "Alt", "Meta"]);
+    if (ignore.has(event.key) || ignore.has(event.code)) return;
+    event.preventDefault();
+    this.tryStart();
+  }
+
   renderTitleScreen() {
+    this.screen = "title";
+    this.container.style.display = "block";
+    const diffLabel = this.currentMode === "normal"
+      ? "보통"
+      : this.currentMode === "nightmare"
+        ? "악몽"
+        : "하드코어";
     this.container.innerHTML = `
       <div class="menu-overlay title-screen-bg">
         <div class="title-box">
@@ -55,11 +138,12 @@ export class MenuSystem {
           <div class="title-sub">그림자 복도 · 낡은 여름 회랑</div>
           
           <div class="menu-buttons">
-            <button id="btn-start-game" class="menu-btn primary-btn">게임 시작</button>
-            <button id="btn-difficulty" class="menu-btn secondary-btn">난이도 · <span id="diff-label">보통</span></button>
-            <button id="btn-settings" class="menu-btn secondary-btn">환경 설정</button>
-            <button id="btn-records" class="menu-btn secondary-btn">탈출 기록</button>
+            <button id="btn-start-game" class="menu-btn primary-btn" type="button">게임 시작</button>
+            <button id="btn-difficulty" class="menu-btn secondary-btn" type="button">난이도 · <span id="diff-label">${diffLabel}</span></button>
+            <button id="btn-settings" class="menu-btn secondary-btn" type="button">환경 설정</button>
+            <button id="btn-records" class="menu-btn secondary-btn" type="button">탈출 기록</button>
           </div>
+          <p id="menu-status" class="menu-status" role="status"></p>
 
           <div class="controls-hint-box">
             <div class="hint-title">조작</div>
@@ -77,17 +161,20 @@ export class MenuSystem {
       </div>
     `;
 
-    document.getElementById("btn-start-game")?.addEventListener("click", () => {
-      soundManager.init();
-      soundManager.resume();
-      if (this.game && !this.game.assetsReady) {
-        this.game.hud?.setStatus("아직 3D 모델 및 복도를 불러오는 중입니다. 잠시만 기다려주세요.", 2000);
+    this.syncStartButton();
+
+    document.getElementById("btn-start-game")?.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.tryStart();
+    });
+
+    this.container.querySelector(".menu-overlay")?.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      if (button && button.id !== "btn-start-game") {
         return;
       }
-      this.hideMenu();
-      if (this.game) {
-        this.game.start();
-      }
+      this.tryStart();
     });
 
 
@@ -120,6 +207,7 @@ export class MenuSystem {
   }
 
   renderSettingsScreen() {
+    this.screen = "settings";
     this.container.innerHTML = `
       <div class="menu-overlay">
         <div class="settings-card">
@@ -168,6 +256,7 @@ export class MenuSystem {
   }
 
   renderRecordsScreen() {
+    this.screen = "records";
     const listHtml = this.highScores.length
       ? this.highScores
           .map(

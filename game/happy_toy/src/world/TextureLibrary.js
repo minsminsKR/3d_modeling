@@ -1,6 +1,7 @@
 // 환경 텍스처를 한 곳에서 로드하고, 맵 메시가 같은 재질 규칙을 쓰도록 돕습니다.
 
 import * as THREE from "three";
+import { PERF_CONFIG } from "../config/gameConfig.js";
 
 const TEXTURE_URLS = {
   wall: "/assets/textures/walls/wall.png",
@@ -185,7 +186,7 @@ export class TextureLibrary {
       url,
       (loadedTexture) => {
         loadedTexture.colorSpace = THREE.SRGBColorSpace;
-        loadedTexture.anisotropy = 16;
+        loadedTexture.anisotropy = PERF_CONFIG.anisotropy ?? 4;
         loadedTexture.generateMipmaps = true;
         loadedTexture.minFilter = THREE.LinearMipmapLinearFilter;
         loadedTexture.magFilter = THREE.LinearFilter;
@@ -195,7 +196,7 @@ export class TextureLibrary {
       (error) => console.warn(`[TextureLibrary] Failed to load ${url}`, error),
     );
     texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 16;
+    texture.anisotropy = PERF_CONFIG.anisotropy ?? 4;
     texture.generateMipmaps = true;
     texture.minFilter = THREE.LinearMipmapLinearFilter;
     texture.magFilter = THREE.LinearFilter;

@@ -3,8 +3,12 @@
 
 import * as THREE from "three";
 import { clamp, makeAabbFromCenter } from "../utils/math.js";
+import { MinHeap } from "../utils/minHeap.js";
+import { PERF_CONFIG } from "../config/gameConfig.js";
 
 const FLOOR_EPSILON = 0.18;
+
+export const PATH_DEFERRED = Symbol("path-deferred");
 
 export class CollisionWorld {
   constructor() {
@@ -19,6 +23,27 @@ export class CollisionWorld {
     this.transitionWaypoints = [];
     this.lastDropAttempt = null;
     this.warningCache = new Set();
+    this._pathHeap = new MinHeap();
+    this._pathBlockers = [];
+    this._scratchBlockersResolve = [];
+    this._scratchBlockersLos = [];
+    this._scratchWorld = { x: 0, y: 0, z: 0 };
+    this._gScore = new Map();
+    this._closed = new Set();
+    this.pathSearchesThisFrame = 0;
+    this.maxPathSearchesPerFrame = PERF_CONFIG.maxPathSearchesPerFrame ?? 3;
+  }
+
+  beginFrame() {
+    this.pathSearchesThisFrame = 0;
+  }
+
+  findPathBudgeted(start, goal, radius, options = {}) {
+    if (this.pathSearchesThisFrame >= this.maxPathSearchesPerFrame) {
+      return PATH_DEFERRED;
+    }
+    this.pathSearchesThisFrame += 1;
+    return this.findPath(start, goal, radius, options);
   }
 
   addFloorArea(area, chunkId = null) {
@@ -114,15 +139,15 @@ export class CollisionWorld {
   }
 
   clearChunkData(chunkId) {
-    this.blockers = this.blockers.filter((b) => b.chunkId !== chunkId);
-    this.floorAreas = this.floorAreas.filter((a) => a.chunkId !== chunkId);
-    this.roomAreas = this.roomAreas.filter((a) => a.chunkId !== chunkId);
-    this.blockedAreas = this.blockedAreas.filter((a) => a.chunkId !== chunkId);
-    this.voidAreas = this.voidAreas.filter((a) => a.chunkId !== chunkId);
-    this.landingAreas = this.landingAreas.filter((l) => l.chunkId !== chunkId);
-    this.dropZones = this.dropZones.filter((z) => z.chunkId !== chunkId);
-    this.ramps = this.ramps.filter((r) => r.chunkId !== chunkId);
-    this.transitionWaypoints = this.transitionWaypoints.filter((w) => w.chunkId !== chunkId);
+    removeByChunkId(this.blockers, chunkId);
+    removeByChunkId(this.floorAreas, chunkId);
+    removeByChunkId(this.roomAreas, chunkId);
+    removeByChunkId(this.blockedAreas, chunkId);
+    removeByChunkId(this.voidAreas, chunkId);
+    removeByChunkId(this.landingAreas, chunkId);
+    removeByChunkId(this.dropZones, chunkId);
+    removeByChunkId(this.ramps, chunkId);
+    removeByChunkId(this.transitionWaypoints, chunkId);
   }
 
   resolveCameraPosition(playerPosition, cameraPosition, wallPadding = 0.25) {
@@ -147,22 +172,37 @@ export class CollisionWorld {
   getActiveBlockers(options = {}) {
     const includeDoors = options.includeDoors ?? true;
     const position = options.position || null;
-    return this.blockers.filter((blocker) => {
-      if (!blocker.active() || (!includeDoors && blocker.type === "door")) {
-        return false;
-      }
+    const bounds = options.bounds || null;
+    const out = options.out;
+    const result = out || [];
+    if (out) {
+      result.length = 0;
+    }
 
-      if (!position) {
-        return true;
+    for (const blocker of this.blockers) {
+      if (!blocker.active() || (!includeDoors && blocker.type === "door")) {
+        continue;
       }
 
       const aabb = typeof blocker.aabb === "function" ? blocker.aabb() : blocker.aabb;
-      return verticalRangeOverlaps(position.y, aabb);
-    });
+      if (position && !verticalRangeOverlaps(position.y, aabb)) {
+        continue;
+      }
+      if (
+        bounds
+        && (aabb.maxX < bounds.minX || aabb.minX > bounds.maxX || aabb.maxZ < bounds.minZ || aabb.minZ > bounds.maxZ)
+      ) {
+        continue;
+      }
+
+      result.push(blocker);
+    }
+
+    return result;
   }
 
   resolveCircle(position, radius) {
-    for (const blocker of this.getActiveBlockers({ position })) {
+    for (const blocker of this.getActiveBlockers({ position, out: this._scratchBlockersResolve })) {
       const aabb = typeof blocker.aabb === "function" ? blocker.aabb() : blocker.aabb;
       const collision = getCircleAabbCollision(position, radius, aabb);
 
@@ -191,7 +231,12 @@ export class CollisionWorld {
   }
 
   isCircleBlocked(position, radius, options = {}) {
-    for (const blocker of this.getActiveBlockers({ ...options, position })) {
+    const blockers = this.getActiveBlockers({
+      ...options,
+      position,
+      out: options.out || this._scratchBlockersResolve,
+    });
+    for (const blocker of blockers) {
       const aabb = typeof blocker.aabb === "function" ? blocker.aabb() : blocker.aabb;
       if (getCircleAabbCollision(position, radius, aabb).collides) {
         return true;
@@ -211,7 +256,7 @@ export class CollisionWorld {
   }
 
   hasLineOfSight(start, end) {
-    for (const blocker of this.getActiveBlockers({ position: start })) {
+    for (const blocker of this.getActiveBlockers({ position: start, out: this._scratchBlockersLos })) {
       const aabb = typeof blocker.aabb === "function" ? blocker.aabb() : blocker.aabb;
       if (!verticalRangeOverlaps(end.y ?? start.y, aabb)) {
         continue;
@@ -262,37 +307,56 @@ export class CollisionWorld {
     const cellSize = options.cellSize ?? 0.85;
     const startSurface = this.getSurfaceAt(start, { preferredFloor: options.floor, allowAnyFloor: true });
     const floor = options.floor ?? startSurface.floor ?? this.getFloorForY(start.y ?? 0);
-    const bounds = this.getNavigationBounds(start, goal, radius + cellSize * 2, cellSize, floor);
-    const activeBlockers = this.getActiveBlockers({ position: new THREE.Vector3(start.x, bounds.y, start.z), includeDoors: false });
+    const pad = options.paddingOverride ?? (radius + cellSize * 2);
+    const bounds = this.getNavigationBounds(start, goal, pad, cellSize, floor);
+    const searchBounds = {
+      minX: bounds.minX - radius,
+      maxX: bounds.minX + bounds.cellsX * cellSize + radius,
+      minZ: bounds.minZ - radius,
+      maxZ: bounds.minZ + bounds.cellsZ * cellSize + radius,
+    };
+    this._scratchWorld.x = start.x;
+    this._scratchWorld.y = bounds.y;
+    this._scratchWorld.z = start.z;
+    const activeBlockers = this.getActiveBlockers({
+      position: this._scratchWorld,
+      includeDoors: false,
+      bounds: searchBounds,
+      out: this._pathBlockers,
+    });
     const startCell = worldToCell(start, bounds, cellSize);
     const goalCell = worldToCell(goal, bounds, cellSize);
-    const open = [createPathNode(startCell.x, startCell.z, 0, heuristic(startCell, goalCell), null)];
-    const openByKey = new Map([[cellKey(startCell.x, startCell.z), open[0]]]);
-    const closed = new Set();
-    const nodes = new Map(openByKey);
-    const directions = [
-      [1, 0],
-      [-1, 0],
-      [0, 1],
-      [0, -1],
-    ];
-    const maxIterations = options.maxIterations ?? 5200;
+    const heap = this._pathHeap;
+    heap.clear();
+    const gScore = this._gScore;
+    gScore.clear();
+    const closed = this._closed;
+    closed.clear();
+    const startKey = cellKey(startCell.x, startCell.z);
+    const startNode = createPathNode(startCell.x, startCell.z, 0, heuristic(startCell, goalCell), null);
+    heap.push(startNode);
+    gScore.set(startKey, 0);
+    const directions = PATH_DIRECTIONS;
+    const maxIterations = options.maxIterations ?? PERF_CONFIG.pathMaxIterations ?? 1800;
     let iterations = 0;
+    const world = this._scratchWorld;
 
-    while (open.length > 0 && iterations < maxIterations) {
+    while (heap.size > 0 && iterations < maxIterations) {
       iterations += 1;
-      open.sort((a, b) => a.f - b.f);
-      const current = open.shift();
+      const current = heap.pop();
       const currentKey = cellKey(current.x, current.z);
-      openByKey.delete(currentKey);
+      if (closed.has(currentKey)) {
+        continue;
+      }
+      closed.add(currentKey);
 
       if (current.x === goalCell.x && current.z === goalCell.z) {
         return rebuildPath(current, bounds, cellSize);
       }
 
-      closed.add(currentKey);
-
-      for (const [dx, dz] of directions) {
+      for (let d = 0; d < directions.length; d++) {
+        const dx = directions[d][0];
+        const dz = directions[d][1];
         const nextX = current.x + dx;
         const nextZ = current.z + dz;
         if (nextX < 0 || nextZ < 0 || nextX > bounds.cellsX || nextZ > bounds.cellsZ) {
@@ -304,36 +368,41 @@ export class CollisionWorld {
           continue;
         }
 
-        const world = cellToWorld(nextX, nextZ, bounds, cellSize);
+        fillCellWorld(world, nextX, nextZ, bounds, cellSize);
         if (
           !(nextX === goalCell.x && nextZ === goalCell.z)
           && (
             this.isCircleBlockedFast(world, radius, activeBlockers)
-            || !this.getSurfaceAt(world, { preferredFloor: floor }).walkable
+            || !this.isPathCellWalkable(world, floor)
           )
         ) {
           continue;
         }
 
         const nextCost = current.g + 1;
-        const existing = nodes.get(nextKey);
-        if (existing && nextCost >= existing.g) {
+        const existingG = gScore.get(nextKey);
+        if (existingG !== undefined && nextCost >= existingG) {
           continue;
         }
 
-        const nextNode = createPathNode(
+        gScore.set(nextKey, nextCost);
+        heap.push(createPathNode(
           nextX,
           nextZ,
           nextCost,
           nextCost + heuristic({ x: nextX, z: nextZ }, goalCell),
           current,
-        );
-        nodes.set(nextKey, nextNode);
-        if (!openByKey.has(nextKey)) {
-          open.push(nextNode);
-          openByKey.set(nextKey, nextNode);
-        }
+        ));
       }
+    }
+
+    if (!options.expandedSearch) {
+      return this.findFloorPath(start, goal, radius, {
+        ...options,
+        expandedSearch: true,
+        paddingOverride: 36,
+        maxIterations: Math.max(options.maxIterations ?? 0, 2400),
+      });
     }
 
     this.warnOnce(
@@ -341,6 +410,19 @@ export class CollisionWorld {
       `[CollisionWorld] Pathfinding failed on floor ${floor}: start x=${start.x.toFixed(2)}, z=${start.z.toFixed(2)} -> goal x=${goal.x.toFixed(2)}, z=${goal.z.toFixed(2)}.`,
     );
     return [];
+  }
+
+  isPathCellWalkable(world, floor) {
+    if (this.findRampAt(world)) {
+      return true;
+    }
+    if (this.findTypedAreaAt(this.blockedAreas, world, floor)) {
+      return false;
+    }
+    if (this.findTypedAreaAt(this.voidAreas, world, floor)) {
+      return false;
+    }
+    return Boolean(this.findWalkableAreaAt(world, floor));
   }
 
   findInterFloorPath(start, goal, radius, options, startFloor, goalFloor) {
@@ -502,31 +584,19 @@ export class CollisionWorld {
   }
 
   getNavigationBounds(start, goal, padding, cellSize, floor = null) {
-    let minX = Math.min(start.x, goal.x);
-    let maxX = Math.max(start.x, goal.x);
-    let minZ = Math.min(start.z, goal.z);
-    let maxZ = Math.max(start.z, goal.z);
-
-    for (const blocker of this.blockers) {
-      const aabb = typeof blocker.aabb === "function" ? blocker.aabb() : blocker.aabb;
-      minX = Math.min(minX, aabb.minX);
-      maxX = Math.max(maxX, aabb.maxX);
-      minZ = Math.min(minZ, aabb.minZ);
-      maxZ = Math.max(maxZ, aabb.maxZ);
-    }
-
-    minX -= padding;
-    maxX += padding;
-    minZ -= padding;
-    maxZ += padding;
+    const extra = Math.max(padding, PERF_CONFIG.pathLocalPadding ?? 14);
+    const minX = Math.min(start.x, goal.x) - extra;
+    const maxX = Math.max(start.x, goal.x) + extra;
+    const minZ = Math.min(start.z, goal.z) - extra;
+    const maxZ = Math.max(start.z, goal.z) + extra;
 
     return {
       minX,
       minZ,
       y: this.getFloorY(floor) ?? start.y ?? 0,
       floor,
-      cellsX: Math.ceil((maxX - minX) / cellSize),
-      cellsZ: Math.ceil((maxZ - minZ) / cellSize),
+      cellsX: Math.max(1, Math.ceil((maxX - minX) / cellSize)),
+      cellsZ: Math.max(1, Math.ceil((maxZ - minZ) / cellSize)),
     };
   }
 
@@ -936,6 +1006,17 @@ export class CollisionWorld {
   }
 }
 
+function removeByChunkId(list, chunkId) {
+  let write = 0;
+  for (let i = 0; i < list.length; i++) {
+    if (list[i].chunkId !== chunkId) {
+      list[write] = list[i];
+      write += 1;
+    }
+  }
+  list.length = write;
+}
+
 function surfaceFromArea(area) {
   return {
     id: area.id,
@@ -1039,6 +1120,13 @@ function getCircleAabbCollision(position, radius, aabb) {
   };
 }
 
+const PATH_DIRECTIONS = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+];
+
 function createPathNode(x, z, g, f, parent) {
   return { x, z, g, f, parent };
 }
@@ -1048,7 +1136,7 @@ function heuristic(a, b) {
 }
 
 function cellKey(x, z) {
-  return `${x},${z}`;
+  return (x << 16) | (z & 0xffff);
 }
 
 function worldToCell(point, bounds, cellSize) {
@@ -1056,6 +1144,13 @@ function worldToCell(point, bounds, cellSize) {
     x: clamp(Math.round((point.x - bounds.minX) / cellSize), 0, bounds.cellsX),
     z: clamp(Math.round((point.z - bounds.minZ) / cellSize), 0, bounds.cellsZ),
   };
+}
+
+function fillCellWorld(out, x, z, bounds, cellSize) {
+  out.x = bounds.minX + x * cellSize;
+  out.y = bounds.y;
+  out.z = bounds.minZ + z * cellSize;
+  return out;
 }
 
 function cellToWorld(x, z, bounds, cellSize) {

@@ -35,6 +35,7 @@ try {
   const rootElement = document.querySelector("#game-root");
   const game = new Game(rootElement);
   window.__happyToy = game;
+  window.__HAPPY_TOY_GAME__ = game;
   await game.init();
 } catch (error) {
   console.error(error);

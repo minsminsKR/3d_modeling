@@ -2,6 +2,9 @@
 // 렌더링과 업데이트 타이밍을 Game 클래스 밖으로 분리해 테스트와 교체를 쉽게 합니다.
 
 import * as THREE from "three";
+import { PERF_CONFIG } from "../config/gameConfig.js";
+
+const FRAME_RING_SIZE = PERF_CONFIG.frameTimeRingSize ?? 7200;
 
 export class Loop {
   constructor(update) {
@@ -9,6 +12,7 @@ export class Loop {
     this.update = update;
     this.running = false;
     this.frameId = null;
+    this._lastPerfWarn = 0;
   }
 
   start() {
@@ -17,7 +21,8 @@ export class Loop {
     }
     this.running = true;
     this.clock.start();
-    this.tick();
+    // Defer the first tick so Game.init() can finish even if a frame throws.
+    this.frameId = requestAnimationFrame(() => this.tick());
   }
 
   stop() {
@@ -34,17 +39,29 @@ export class Loop {
     }
     const t0 = performance.now();
     const deltaTime = Math.min(this.clock.getDelta(), 0.05);
-    this.update(deltaTime);
+    try {
+      this.update(deltaTime);
+    } catch (error) {
+      if (t0 - this._lastPerfWarn > 1000) {
+        this._lastPerfWarn = t0;
+        console.error("[Loop] frame error — continuing so the game does not freeze", error);
+      }
+    }
     const dt = performance.now() - t0;
 
     if (typeof window !== "undefined") {
       if (!window.__happyToyFrameTimes) {
         window.__happyToyFrameTimes = [];
       }
-      window.__happyToyFrameTimes.push(dt);
+      const times = window.__happyToyFrameTimes;
+      times.push(dt);
+      if (times.length > FRAME_RING_SIZE) {
+        times.splice(0, times.length - Math.floor(FRAME_RING_SIZE * 0.75));
+      }
     }
 
-    if (dt > 16.7) {
+    if (dt > 33.3 && t0 - this._lastPerfWarn > 1000) {
+      this._lastPerfWarn = t0;
       console.warn(`[PERF] Frame took ${dt.toFixed(2)}ms (Spike!)`);
     }
 

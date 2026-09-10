@@ -302,7 +302,6 @@ export class Hud {
   }
 
   setDebugEnabled(enabled) {
-
     if (this.floorDebugElement) {
       this.floorDebugElement.style.display = enabled ? "block" : "none";
     }
@@ -312,5 +311,47 @@ export class Hud {
     if (this.floorDebugElement) {
       this.floorDebugElement.textContent = text;
     }
+  }
+
+  setFloorDebug(debug) {
+    if (!this.floorDebugElement || !debug) {
+      return;
+    }
+
+    const drop = debug.lastDropAttempt;
+    const dropText = drop
+      ? `${drop.status} | ${drop.reason || "none"} | targetFloor=${drop.targetFloor ?? "none"} | landing=${drop.targetLandingId ?? "none"}`
+      : "none";
+    const monsterText = (debug.monsters || [])
+      .map((monster) => {
+        const target = monster.pathTarget
+          ? `${monster.pathTarget.type}:${monster.pathTarget.x.toFixed(1)},${monster.pathTarget.z.toFixed(1)}`
+          : "none";
+        return `${monster.label} f=${monster.floor} ${monster.state} path=${monster.chasePathLength || monster.patrolPathLength} target=${target} stuck=${Number(monster.stuckTimer || 0).toFixed(2)}`;
+      })
+      .join("\n");
+    const waypointText = (debug.transitionWaypoints || [])
+      .map((waypoint) => `${waypoint.id} f=${waypoint.floor}->${waypoint.links.join(",") || "none"}`)
+      .join(" | ");
+    const door = debug.nearestDoor;
+    const doorText = door
+      ? `${door.id} room=${door.connectedRoomId ?? "none"} locked=${door.locked} blocked=${door.blocked} d=${door.distance.toFixed(1)}`
+      : "none";
+    const area = debug.areaCounts;
+    const areaText = area
+      ? `walk=${area.walkable} room=${area.room} blocked=${area.blocked} void=${area.void} stair=${area.stair} door=${area.door}`
+      : "none";
+    this.floorDebugElement.textContent = [
+      `floor: ${debug.floor}`,
+      `x/z: ${Number(debug.x).toFixed(2)} / ${Number(debug.z).toFixed(2)}`,
+      `tile: ${debug.tileType} (${debug.tileId})`,
+      `below valid: ${debug.belowValidLanding} floor=${debug.belowFloor ?? "none"} tile=${debug.belowTileType}`,
+      `drop: ${dropText}`,
+      `areas: ${areaText}`,
+      `door: ${doorText}`,
+      `stair wp: ${waypointText || "none"}`,
+      `safe: ${debug.testSafeMode ? "on" : "off"}`,
+      `monsters:\n${monsterText || "none"}`,
+    ].join("\n");
   }
 }

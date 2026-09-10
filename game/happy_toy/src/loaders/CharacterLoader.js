@@ -3,6 +3,7 @@
 
 import * as THREE from "three";
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
+import { PERF_CONFIG } from "../config/gameConfig.js";
 
 export class CharacterLoader {
   constructor() {
@@ -49,7 +50,7 @@ export class CharacterLoader {
           texture.generateMipmaps = true;
           texture.minFilter = THREE.LinearMipmapLinearFilter;
           texture.magFilter = THREE.LinearFilter;
-          texture.anisotropy = 16;
+          texture.anisotropy = PERF_CONFIG.anisotropy ?? 4;
           texture.needsUpdate = true;
           resolve(texture);
         },
@@ -95,7 +96,7 @@ export class CharacterLoader {
         return;
       }
       this.prepareCharacterGeometry(child);
-      child.castShadow = true;
+      child.castShadow = false;
       child.receiveShadow = true;
       disposeMaterial(child.material);
       child.material = this.createLitCharacterMaterial(child, texture);
@@ -108,11 +109,12 @@ export class CharacterLoader {
       return;
     }
 
-    // Mixamo FBX meshes arrive non-indexed without normals. Built-in computeVertexNormals()
-    // on non-indexed geometry creates disjoint face normals for each triangle, causing
-    // harsh flat shading where all 10,000 polygon facets are visible like cracked stone.
-    // We compute continuous area-weighted smooth vertex normals across shared vertex positions.
+    // Mixamo FBX meshes arrive non-indexed without usable smooth normals.
+    if (geometry.userData.happyToySmoothNormals) {
+      return;
+    }
     this.computeSmoothVertexNormals(geometry);
+    geometry.userData.happyToySmoothNormals = true;
   }
 
   computeSmoothVertexNormals(geometry) {
@@ -233,7 +235,7 @@ export class CharacterLoader {
       }),
     );
     body.position.y = config.height * 0.5;
-    body.castShadow = true;
+    body.castShadow = false;
     body.receiveShadow = true;
     group.add(body);
 
@@ -242,7 +244,7 @@ export class CharacterLoader {
       new THREE.MeshStandardMaterial({ color: 0xffd98a, roughness: 0.7, metalness: 0.0 }),
     );
     eye.position.set(0, config.height * 0.74, -0.3);
-    eye.castShadow = true;
+    eye.castShadow = false;
     eye.receiveShadow = true;
     group.add(eye);
 

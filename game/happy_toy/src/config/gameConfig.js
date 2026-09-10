@@ -46,6 +46,20 @@ export const LOVELY_DOLL_CONFIG = {
   visualGroundSink: 0.03,
 };
 
+export const PERF_CONFIG = {
+  maxPixelRatio: 1.5,
+  anisotropy: 4,
+  maxPathSearchesPerFrame: 3,
+  pathMaxIterations: 1800,
+  pathLocalPadding: 24,
+  lightBindInterval: 0.12,
+  teleportInterval: 0.75,
+  shadowUpdateInterval: 2,
+  frameTimeRingSize: 7200,
+  pathRefreshChaseSeconds: 0.55,
+  pathRefreshPatrolSeconds: 0.9,
+};
+
 export const LIGHTING_CONFIG = {
   fogNear: 8,
   fogFar: 50,
@@ -60,9 +74,9 @@ export const LIGHTING_CONFIG = {
   flashlightRange: 36,
   flashlightAngle: Math.PI * 0.30,
   flashlightPenumbra: 0.65,
-  flashlightShadowMapSize: 512,
+  flashlightShadowMapSize: 256,
   flashlightShadowNear: 0.5,
-  flashlightShadowFar: 40,
+  flashlightShadowFar: 28,
   ceilingLightColor: 0xff8838,
   ceilingLightIntensity: 2.0,
   ceilingLightRange: 14,

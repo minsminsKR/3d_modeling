@@ -160,6 +160,8 @@ export class BackroomsGenerator {
       }
     });
 
+    this._lastGenWarn = 0;
+
     this.lightPanelGeo = new THREE.BoxGeometry(0.14, 0.24, 0.14);
     this.unitBoxGeo = new THREE.BoxGeometry(1, 1, 1);
     this.lightPanelMat = new THREE.MeshStandardMaterial({
@@ -286,6 +288,7 @@ export class BackroomsGenerator {
       safeLights: [],
       finalExit: null,
       waypoints: [],
+      weepingAngels: [],
     };
 
     // 1. Create floor and ceiling
@@ -486,13 +489,6 @@ export class BackroomsGenerator {
           rotation: [0, -Math.PI / 2, 0], // Initially facing west (showing back to player approaching from east)
         });
         
-        // Spotlight right above the mannequin so it stands clearly under the light
-        const spotLight = new THREE.PointLight(0xffdfaa, 28.0, 16.0, 1.0);
-        spotLight.position.set(mannequinPos.x, floorY + 2.5, mannequinPos.z);
-        this.scene.add(spotLight);
-        chunk.meshes.push(spotLight);
-
-        // Glowing ceiling lamp fixture directly above the mannequin
         const fixtureMesh = new THREE.Mesh(this.getBoxGeometry(0.35, 0.12, 0.35), this.trimMaterial);
         fixtureMesh.position.set(mannequinPos.x, floorY + 2.74, mannequinPos.z);
         this.scene.add(fixtureMesh);
@@ -508,12 +504,33 @@ export class BackroomsGenerator {
         bulbMesh.position.set(mannequinPos.x, floorY + 2.6, mannequinPos.z);
         this.scene.add(bulbMesh);
         chunk.meshes.push(bulbMesh);
+
+        // Drive the intro spotlight from the pooled ceiling lights so the
+        // shader program stays compiled with a fixed PointLight count.
+        chunk.lights.push({
+          mesh: bulbMesh,
+          localPos: new THREE.Vector3(
+            mannequinPos.x - center.x,
+            2.5,
+            mannequinPos.z - center.z,
+          ),
+          baseIntensity: 11.5,
+          currentIntensity: 11.5,
+          isFlickering: false,
+          flickerTimer: 0,
+          voltagePhase: 0,
+          pooledLight: null,
+        });
       }
     }
 
     const dtTotal = performance.now() - tStart;
-    if (dtTotal > 1.0) {
-      console.warn(`[PERF] generateChunk (${type} at ${cx},${cz}) took ${dtTotal.toFixed(2)}ms: floor=${dtFloor.toFixed(2)}ms, walls=${dtWalls.toFixed(2)}ms, lights=${dtLights.toFixed(2)}ms, interactables=${dtInteract.toFixed(2)}ms, waypoints=${dtWaypoints.toFixed(2)}ms`);
+    if (dtTotal > 16.0) {
+      const now = performance.now();
+      if (now - this._lastGenWarn > 1000) {
+        this._lastGenWarn = now;
+        console.warn(`[PERF] generateChunk (${type} at ${cx},${cz}) took ${dtTotal.toFixed(2)}ms: floor=${dtFloor.toFixed(2)}ms, walls=${dtWalls.toFixed(2)}ms, lights=${dtLights.toFixed(2)}ms, interactables=${dtInteract.toFixed(2)}ms, waypoints=${dtWaypoints.toFixed(2)}ms`);
+      }
     }
 
     this.chunksData.set(key, chunk);
@@ -1457,7 +1474,7 @@ export class BackroomsGenerator {
 
       const trimInst = new THREE.InstancedMesh(this.unitBoxGeo, trimMaterial, count);
       trimInst.name = `${chunkId}_trims_inst`;
-      trimInst.castShadow = true;
+      trimInst.castShadow = false;
       trimInst.receiveShadow = true;
 
       const matrix = new THREE.Matrix4();
@@ -2089,6 +2106,8 @@ export class BackroomsGenerator {
           pathTimer: 0,
         };
         anchor.userData.shadowMesh = addShadowBlob(anchor, 0.38);
+        if (!chunk.weepingAngels) chunk.weepingAngels = [];
+        chunk.weepingAngels.push(anchor);
       }
     }
 
@@ -2162,7 +2181,7 @@ export class BackroomsGenerator {
       if (geometry?.attributes?.normal) {
         geometry.attributes.normal.needsUpdate = true;
       }
-      child.castShadow = true;
+      child.castShadow = false;
       child.receiveShadow = true;
       child.material = this.createLitPropMaterial(child.material);
     });
@@ -2360,7 +2379,10 @@ export class BackroomsGenerator {
         light.pointLight.dispose();
       }
       this.scene.remove(light.mesh);
-      light.mesh.material?.dispose();
+      const mat = light.mesh?.material;
+      if (mat && !mat.userData?.happyToyShared && typeof mat.dispose === "function") {
+        mat.dispose();
+      }
     }
 
     // 3. Remove doors

@@ -16,6 +16,8 @@ export class EnemyManager {
     this.enemies = [];
     this.directorProgress = 0;
     this.lastNoiseResponseCount = 0;
+    this._updateOrder = [];
+    this._playerStateScratch = {};
   }
 
   async loadEnemies() {
@@ -92,7 +94,12 @@ export class EnemyManager {
     );
     let activePursuers = 0;
 
-    const updateOrder = [...this.enemies].sort((a, b) => {
+    const updateOrder = this._updateOrder;
+    updateOrder.length = 0;
+    for (const enemy of this.enemies) {
+      updateOrder.push(enemy);
+    }
+    updateOrder.sort((a, b) => {
       const chasePriority = Number(b.isActivelyChasing()) - Number(a.isActivelyChasing());
       if (chasePriority !== 0) {
         return chasePriority;
@@ -100,11 +107,18 @@ export class EnemyManager {
       return distanceToPlayer(a, playerPosition) - distanceToPlayer(b, playerPosition);
     });
 
+    const scratch = this._playerStateScratch;
+    scratch.position = playerPosition;
+    scratch.isHidden = playerState.isHidden;
+    scratch.isUndetectable = playerState.isUndetectable;
+    scratch.isMoving = playerState.isMoving;
+    scratch.isSprinting = playerState.isSprinting;
+
     for (const enemy of updateOrder) {
       enemy.progressionSpeedMultiplier = 1 + this.directorProgress * (enemy.config.progressionSpeedGain ?? 0.1);
       enemy.progressionDetectionMultiplier = 1 + this.directorProgress * (enemy.config.progressionDetectionGain ?? 0.08);
-      const canStartChase = enemy.isActivelyChasing() || activePursuers < pursuitBudget;
-      enemy.update(deltaTime, { ...playerState, canStartChase });
+      scratch.canStartChase = enemy.isActivelyChasing() || activePursuers < pursuitBudget;
+      enemy.update(deltaTime, scratch);
       if (enemy.isActivelyChasing()) {
         activePursuers += 1;
       }

@@ -3,9 +3,9 @@
 
 import * as THREE from "three";
 import { createChapterSession, CHAPTERS } from "../config/chapterConfig.js";
-import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG, LIGHTING_CONFIG } from "../config/gameConfig.js";
+import { CABINET_CONFIG, CAMERA_CONFIG, PLAYER_CONFIG, WORLD_CONFIG, SAFE_LIGHT_CONFIG, LIGHTING_CONFIG, PERF_CONFIG } from "../config/gameConfig.js";
 
-import { CollisionWorld } from "../world/CollisionWorld.js";
+import { CollisionWorld, PATH_DEFERRED } from "../world/CollisionWorld.js";
 import { EnemyManager } from "../entities/EnemyManager.js";
 import { GlitchController } from "../effects/GlitchController.js";
 import { HorrorEventManager } from "../events/HorrorEventManager.js";
@@ -44,17 +44,17 @@ export class Game {
     );
 
     this.renderer = new THREE.WebGLRenderer({
-      antialias: true,
+      antialias: false,
       alpha: false,
       powerPreference: "high-performance",
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PERF_CONFIG.maxPixelRatio ?? 1.5));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.shadowMap.autoUpdate = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.shadowMap.autoUpdate = false;
     this.renderer.toneMappingExposure = LIGHTING_CONFIG.rendererExposure ?? 0.8;
 
     this.rootElement.appendChild(this.renderer.domElement);
@@ -113,6 +113,18 @@ export class Game {
     this._lastPlayerChunkCx = null;
     this._lastPlayerChunkCz = null;
     this._flickerAccum = 0;
+    this._lightBindAccum = 0;
+    this._teleportAccum = 0;
+    this._shadowFrame = 0;
+    this._panelScratch = [];
+    this._safePanelScratch = [];
+    this._angelCache = [];
+    this._lookFrustum = new THREE.Frustum();
+    this._lookMatrix = new THREE.Matrix4();
+    this._lookPoint = new THREE.Vector3();
+    this._angelMoveDir = new THREE.Vector3();
+    this._angelPrevPos = new THREE.Vector3();
+    this._safeLightPos = new THREE.Vector3();
     this.loop = new Loop((deltaTime) => this.update(deltaTime));
 
     this.handleResize = this.handleResize.bind(this);
@@ -155,8 +167,10 @@ export class Game {
     );
     this.enemyManager = new EnemyManager(this.scene, this.collisionWorld, this.doors, this.hud, this.enemyConfigs);
     this.itemSystem = new ItemSystem(this.scene, this.enemyManager, this.hud);
+    ItemSystem.borrowExplosionLight(this.scene);
     this.particleSystem = new ParticleSystem(this.scene);
     this.menuSystem = new MenuSystem(this);
+    this.menuSystem.setAssetsReady(false);
     this.monsterIntroManager = new MonsterIntroManager(this);
     this.dreadDirector = new DreadDirector(this);
 
@@ -216,7 +230,8 @@ export class Game {
     this.assetsReady = true;
     this.hud.setChapterInfo(this.chapterSession, CHAPTERS);
     this.hud.setStartEnabled(true);
-    this.hud.setStatus("화면을 클릭하면 게임이 시작됩니다.");
+    this.hud.setStatus("화면을 클릭하거나 아무 키나 누르면 시작합니다.");
+    this.menuSystem?.setAssetsReady(true);
     this.loop.start();
   }
 
@@ -258,7 +273,8 @@ export class Game {
     this.flashlight.shadow.camera.far = LIGHTING_CONFIG.flashlightShadowFar || 40;
     this.flashlight.shadow.bias = -0.00018;
     this.flashlight.shadow.normalBias = 0.035;
-    this.flashlight.shadow.radius = 2.1;
+    this.flashlight.shadow.radius = 1;
+    this.flashlight.shadow.blurSamples = 4;
 
     this.flashlight.visible = true;
     this.camera.add(this.flashlight);
@@ -295,17 +311,17 @@ export class Game {
   }
 
   connectUi() {
-    this.hud.startButton.addEventListener("click", this.start);
+    this.hud.startButton?.addEventListener("click", this.start);
     this.renderer.domElement.addEventListener("click", this.start);
-    this.hud.restartButton.addEventListener("click", this.restart);
-    this.hud.clearRestartButton.addEventListener("click", this.restart);
-    this.hud.resumeButton.addEventListener("click", this.resume);
-    this.hud.pauseRestartButton.addEventListener("click", this.restart);
-    this.hud.quitButton.addEventListener("click", this.quitToTitle);
-    this.hud.mouseSensitivityInput.addEventListener("input", () => {
+    this.hud.restartButton?.addEventListener("click", this.restart);
+    this.hud.clearRestartButton?.addEventListener("click", this.restart);
+    this.hud.resumeButton?.addEventListener("click", this.resume);
+    this.hud.pauseRestartButton?.addEventListener("click", this.restart);
+    this.hud.quitButton?.addEventListener("click", this.quitToTitle);
+    this.hud.mouseSensitivityInput?.addEventListener("input", () => {
       this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value));
     });
-    this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value));
+    this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput?.value));
   }
 
   refreshInteractables() {
@@ -345,11 +361,13 @@ export class Game {
 
   start() {
     if (!this.assetsReady) {
+      this.menuSystem?.tryStart();
       this.hud.setStatus("아직 복도를 불러오는 중입니다.", 900);
       return;
     }
 
     if (this.isStarted && !this.isPaused) {
+      this.menuSystem?.hideMenu();
       this.input.requestPointerLock();
       return;
     }
@@ -358,7 +376,10 @@ export class Game {
     this.isPaused = false;
     this.wasPointerLocked = false;
     this.applyDifficultySettings();
-    this.glitchController.primeAudio();
+    try {
+      this.glitchController.primeAudio();
+    } catch (_) {}
+    this.menuSystem?.hideMenu();
     this.hud.hideStart();
     this.hud.hidePause();
     this.input.requestPointerLock();
@@ -375,6 +396,7 @@ export class Game {
     this.hud.hideClear();
     this.hud.hidePause();
     this.hud.hideStart();
+    this.menuSystem?.hideMenu();
     this.input.requestPointerLock();
     this.hud.setStatus("다시 복도 한가운데에 섰습니다.", 1800);
   }
@@ -450,6 +472,8 @@ export class Game {
     this.updateMirrorEvents(deltaTime);
 
     if (this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared && !this.cutsceneEvent) {
+      this.collisionWorld.beginFrame();
+      this.collectWeepingAngels();
       this.updateBackrooms(deltaTime);
       this.updateLovelyDolls(deltaTime);
       this.updateWeepingAngels(deltaTime);
@@ -502,18 +526,14 @@ export class Game {
       this.glitchController.update(deltaTime, { threat: 0 });
     }
 
-    if (this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared) {
+    if (this.debugEnabled && this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared) {
       if (!this.lastConsoleDebugTime) this.lastConsoleDebugTime = 0;
       if (this.elapsedTime - this.lastConsoleDebugTime > 2.0) {
         this.lastConsoleDebugTime = this.elapsedTime;
-        const cx = Math.floor((this.player.position.x + 8) / 16);
-        const cz = Math.floor((this.player.position.z + 8) / 16);
-        
         const memory = this.renderer.info.memory;
         const render = this.renderer.info.render;
         const fps = Math.round(1 / Math.max(0.001, deltaTime));
-        
-        const metrics = {
+        console.log(`[PERF_METRICS] ${JSON.stringify({
           time: this.elapsedTime.toFixed(1),
           fps,
           chunks: this.mapBuilder.loadedChunks.size,
@@ -523,20 +543,26 @@ export class Game {
           triangles: render.triangles,
           heap: performance.memory?.usedJSHeapSize ?? 0,
           colliders: this.collisionWorld.blockers.length,
-          monsters: this.enemyManager.enemies.length
-        };
-        
-        console.log(`[PERF_METRICS] ${JSON.stringify(metrics)}`);
-        
-        if (this.debugEnabled) {
-          console.table(metrics);
-        }
+          monsters: this.enemyManager.enemies.length,
+        })}`);
       }
     }
 
     this.updateDebugHud();
+    this.updateShadowMap();
     this.renderer.render(this.scene, this.camera);
     this.input.endFrame();
+  }
+
+  updateShadowMap() {
+    const flashlightOn = Boolean(this.flashlight?.visible && this.flashlight.intensity > 0 && this.flashlight.castShadow);
+    if (!flashlightOn) {
+      this.renderer.shadowMap.needsUpdate = false;
+      return;
+    }
+    const interval = PERF_CONFIG.shadowUpdateInterval ?? 2;
+    this._shadowFrame = (this._shadowFrame + 1) % interval;
+    this.renderer.shadowMap.needsUpdate = this._shadowFrame === 0;
   }
 
   updateDebugHud() {
@@ -578,6 +604,7 @@ export class Game {
   handleResize() {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PERF_CONFIG.maxPixelRatio ?? 1.5));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
@@ -601,10 +628,9 @@ export class Game {
       pl.position.set(0, 1.5, 0);
     }
 
+    this.renderer.shadowMap.needsUpdate = true;
     this.renderer.compile(this.scene, this.camera);
     this.renderer.render(this.scene, this.camera);
-
-    // Warm up with flashlight OFF
     this.flashlight.intensity = 0;
     this.renderer.compile(this.scene, this.camera);
     this.renderer.render(this.scene, this.camera);
@@ -714,8 +740,9 @@ export class Game {
     this.hud.hidePause();
     this.hud.hideCaught();
     this.hud.hideClear();
-    this.hud.showStart();
-    this.hud.setStatus("화면을 클릭하면 게임이 시작됩니다.");
+    this.hud.hideStart();
+    this.menuSystem?.showTitleScreen();
+    this.hud.setStatus("화면을 클릭하거나 아무 키나 누르면 시작합니다.");
   }
 
   resetRunState() {
@@ -801,11 +828,18 @@ export class Game {
   getCompassTarget() {
     if (this.keyCount >= this.keys.length) return this.finalExit;
     const position = this.player.position;
-    const candidates = this.keys.filter((key) => key.isAvailable && !key.isCollected);
-    // Prefer the current floor; vertical distance alone understates the stair detour.
-    const score = (key) => Math.hypot(key.position.x - position.x, key.position.z - position.z)
-      + (Math.abs(key.position.y - position.y) > 1.8 ? 40 : 0);
-    return candidates.sort((a, b) => score(a) - score(b))[0] || null;
+    let best = null;
+    let bestScore = Infinity;
+    for (const key of this.keys) {
+      if (!key.isAvailable || key.isCollected) continue;
+      const score = Math.hypot(key.position.x - position.x, key.position.z - position.z)
+        + (Math.abs(key.position.y - position.y) > 1.8 ? 40 : 0);
+      if (score < bestScore) {
+        bestScore = score;
+        best = key;
+      }
+    }
+    return best;
   }
 
   collectKey(key) {
@@ -1046,10 +1080,7 @@ export class Game {
       this.cabinets = this.mapBuilder.cabinets;
       this.safeLights = this.mapBuilder.safeLights || [];
       this.finalExit = this.mapBuilder.finalExit;
-      this.player.setInteractables(
-        [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, this.finalExit].filter(Boolean),
-        this.createInteractionContext(),
-      );
+      this.refreshInteractables();
     }
     if (chunkChanged) {
       this._lastPlayerChunkCx = cx;
@@ -1063,34 +1094,54 @@ export class Game {
     const doFlicker = this._flickerAccum >= 0.1; // throttle flicker to 10 Hz
     if (doFlicker) this._flickerAccum = 0;
 
+    this._lightBindAccum += deltaTime;
+    const doBind = this._lightBindAccum >= (PERF_CONFIG.lightBindInterval ?? 0.12) || chunkChanged;
+    if (doBind) this._lightBindAccum = 0;
+
     const playerPos = this.player.position;
-    const allPanels = [];
+    const allPanels = this._panelScratch;
+    let panelCount = 0;
     for (const chunk of this.mapBuilder.loadedChunks.values()) {
       if (!chunk.lights || chunk.lights.length === 0) continue;
       for (const light of chunk.lights) {
+        if (!light?.localPos) continue;
         const gx = chunk.center.x + light.localPos.x;
         const gz = chunk.center.z + light.localPos.z;
         const gy = chunk.center.y + light.localPos.y;
         const dx = gx - playerPos.x;
         const dz = gz - playerPos.z;
         const distSq = dx * dx + dz * dz;
-        allPanels.push({ light, gx, gy, gz, distSq });
 
-        // Flicker logic — update emissive mesh color (throttled)
+        if (doBind) {
+          let rec = allPanels[panelCount];
+          if (!rec) {
+            rec = { light: null, gx: 0, gy: 0, gz: 0, distSq: 0 };
+            allPanels[panelCount] = rec;
+          }
+          rec.light = light;
+          rec.gx = gx;
+          rec.gy = gy;
+          rec.gz = gz;
+          rec.distSq = distSq;
+          panelCount += 1;
+        }
+
         if (doFlicker && light.isFlickering) {
+          const mat = light.mesh?.material;
+          if (!mat?.color || !mat.emissive) continue;
           light.flickerTimer -= 0.1;
           if (light.flickerTimer <= 0) {
             const isOff = Math.random() < 0.25;
             if (isOff) {
-              light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelDimColor || 0x3b2618);
-              light.mesh.material.emissive.setHex(0x140704);
-              light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelDimEmissiveIntensity ?? 0.1;
+              mat.color.setHex(LIGHTING_CONFIG.ceilingPanelDimColor || 0x3b2618);
+              mat.emissive.setHex(0x140704);
+              mat.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelDimEmissiveIntensity ?? 0.1;
               light.currentIntensity = 0;
               light.flickerTimer = 0.05 + Math.random() * 0.2;
             } else {
-              light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelOnColor || 0xb47b4c);
-              light.mesh.material.emissive.setHex(0x9a3f12);
-              light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelOnEmissiveIntensity ?? 0.58;
+              mat.color.setHex(LIGHTING_CONFIG.ceilingPanelOnColor || 0xb47b4c);
+              mat.emissive.setHex(0x9a3f12);
+              mat.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelOnEmissiveIntensity ?? 0.58;
               light.currentIntensity = light.baseIntensity;
               light.flickerTimer = 1.0 + Math.random() * 5.0;
             }
@@ -1098,53 +1149,64 @@ export class Game {
         }
       }
     }
+    if (doBind) {
+      allPanels.length = panelCount;
+    }
 
-    // Sort panels closest-first and assign pool slots
     const budget = this._POINT_LIGHT_BUDGET;
-    if (allPanels.length === 0) {
-      for (let i = 0; i < budget; i++) {
-        const pl = this._pointLightPool?.[i];
-        if (pl && (pl.intensity !== 0 || pl.position.y !== -9999)) {
-          pl.position.set(0, -9999, 0);
-          pl.intensity = 0;
+    if (doBind) {
+      if (allPanels.length === 0) {
+        for (let i = 0; i < budget; i++) {
+          const pl = this._pointLightPool?.[i];
+          if (pl) {
+            pl.userData.boundPanel = null;
+            if (pl.intensity !== 0 || pl.position.y !== -9999) {
+              pl.position.set(0, -9999, 0);
+              pl.intensity = 0;
+            }
+          }
+        }
+      } else {
+        allPanels.sort((a, b) => a.distSq - b.distSq);
+        for (let i = 0; i < budget; i++) {
+          const pl = this._pointLightPool[i];
+          if (!pl) continue;
+          if (i < allPanels.length) {
+            const { light, gx, gy, gz, distSq } = allPanels[i];
+            const inRange = distSq < 24 * 24;
+            if (inRange) {
+              pl.position.set(gx, gy, gz);
+              pl.userData.boundPanel = light;
+              light.pooledLight = pl;
+              this.applyCeilingLightIntensity(pl, light);
+            } else {
+              pl.position.set(0, -9999, 0);
+              pl.intensity = 0;
+              pl.userData.boundPanel = null;
+              light.pooledLight = null;
+            }
+          } else {
+            pl.position.set(0, -9999, 0);
+            pl.intensity = 0;
+            pl.userData.boundPanel = null;
+          }
         }
       }
     } else {
-      allPanels.sort((a, b) => a.distSq - b.distSq);
       for (let i = 0; i < budget; i++) {
         const pl = this._pointLightPool[i];
-        if (!pl) continue;
-        if (i < allPanels.length) {
-          const { light, gx, gy, gz, distSq } = allPanels[i];
-          const inRange = distSq < 24 * 24;
-          if (inRange) {
-            pl.position.set(gx, gy, gz);
-            const targetIntensity = light.currentIntensity ?? light.baseIntensity ?? 0;
-            // A barely perceptible voltage drift feels organic without becoming
-            // a distracting global strobe. A true flicker-off remains at zero.
-            const voltageBreath = targetIntensity > 0
-              ? 0.96 + 0.04 * Math.sin(this.elapsedTime * 1.35 + (light.voltagePhase || 0))
-              : 0;
-            pl.intensity = targetIntensity * voltageBreath * (this.dreadDirector?.lightScale ?? 1);
-            // Link panel to pool slot so flicker can update it
-            light.pooledLight = pl;
-          } else {
-            pl.position.set(0, -9999, 0); // park off-screen
-            pl.intensity = 0;
-            light.pooledLight = null;
-          }
-        } else {
-          pl.position.set(0, -9999, 0);
-          pl.intensity = 0;
+        const light = pl?.userData?.boundPanel;
+        if (pl && light) {
+          this.applyCeilingLightIntensity(pl, light);
         }
       }
     }
 
-    // 2.2 Manage SafeLights PointLight pool
-    this.updateSafeLightPool(playerPos);
+    this.updateSafeLightPool(playerPos, doBind);
 
-    // 3. Teleport far enemies closer to player (runs every frame but is a simple distance check)
-    if (this.enemyManager && this.elapsedTime > 5) {
+    this._teleportAccum += deltaTime;
+    if (this.enemyManager && this.elapsedTime > 5 && this._teleportAccum >= (PERF_CONFIG.teleportInterval ?? 0.75)) {
+      this._teleportAccum = 0;
       for (const enemy of this.enemyManager.enemies) {
         if (enemy.config.id === "hwacat-angry" && !enemy.isDynamic) {
           continue;
@@ -1185,91 +1247,132 @@ export class Game {
     }
   }
 
+  applyCeilingLightIntensity(pl, light) {
+    const targetIntensity = light.currentIntensity ?? light.baseIntensity ?? 0;
+    const voltageBreath = targetIntensity > 0
+      ? 0.96 + 0.04 * Math.sin(this.elapsedTime * 1.35 + (light.voltagePhase || 0))
+      : 0;
+    pl.intensity = targetIntensity * voltageBreath * (this.dreadDirector?.lightScale ?? 1);
+  }
+
   getMinMonsterDistance(targetPos) {
     if (!targetPos) return Infinity;
     let minDist = Infinity;
 
-    // 1. EnemyManager enemies (Cyclopse, Uncat, Baby, Hwacat-Angry)
     if (this.enemyManager && this.enemyManager.enemies) {
       for (const enemy of this.enemyManager.enemies) {
         if (!enemy.group || enemy.isDormant) continue;
-        const d = targetPos.distanceTo(enemy.group.position);
+        const dx = targetPos.x - enemy.group.position.x;
+        const dz = targetPos.z - enemy.group.position.z;
+        const d = Math.hypot(dx, dz);
         if (d < minDist) minDist = d;
       }
     }
 
-    // 2. Active Weeping Angels (Mannequins)
-    if (this.mapBuilder && this.mapBuilder.loadedChunks) {
-      for (const chunk of this.mapBuilder.loadedChunks.values()) {
-        for (const mesh of chunk.meshes) {
-          if (mesh.userData && mesh.userData.isWeepingAngel && mesh.position) {
-            const state = mesh.userData.weepingAngelState;
-            if (state && state.active === false) continue;
-            const d = Math.hypot(targetPos.x - mesh.position.x, targetPos.z - mesh.position.z);
-            if (d < minDist) minDist = d;
-          }
-        }
-      }
+    for (const mesh of this._angelCache) {
+      const state = mesh.userData?.weepingAngelState;
+      if (state && state.active === false) continue;
+      const d = Math.hypot(targetPos.x - mesh.position.x, targetPos.z - mesh.position.z);
+      if (d < minDist) minDist = d;
     }
 
     return minDist;
   }
 
-  updateSafeLightPool(playerPos = this.player?.position) {
+  collectWeepingAngels() {
+    const angels = this._angelCache;
+    angels.length = 0;
+    if (!this.mapBuilder?.loadedChunks) {
+      return angels;
+    }
+    for (const chunk of this.mapBuilder.loadedChunks.values()) {
+      const listed = chunk.weepingAngels;
+      if (listed && listed.length) {
+        for (let i = 0; i < listed.length; i++) {
+          const mesh = listed[i];
+          if (mesh.userData?.weepingAngelState?.loaded) {
+            angels.push(mesh);
+          }
+        }
+        continue;
+      }
+      for (const mesh of chunk.meshes) {
+        if (mesh.userData?.isWeepingAngel && mesh.userData.weepingAngelState?.loaded) {
+          angels.push(mesh);
+        }
+      }
+    }
+    return angels;
+  }
+
+  updateSafeLightPool(playerPos = this.player?.position, doBind = true) {
     if (!playerPos || !this._safeLightPool) return;
-    const allSafePanels = [];
-    for (const safeLight of this.safeLights) {
-      if (!safeLight.isOn) continue;
-      const pos = safeLight.getLightWorldPosition();
-      const dx = pos.x - playerPos.x;
-      const dz = pos.z - playerPos.z;
-      const distSq = dx * dx + dz * dz;
-      allSafePanels.push({ safeLight, pos, distSq });
+    const allSafePanels = this._safePanelScratch;
+    if (doBind) {
+      let count = 0;
+      for (const safeLight of this.safeLights) {
+        if (!safeLight.isOn) continue;
+        const world = safeLight.getLightWorldPosition(this._safeLightPos);
+        const dx = world.x - playerPos.x;
+        const dz = world.z - playerPos.z;
+        let rec = allSafePanels[count];
+        if (!rec) {
+          rec = { safeLight: null, x: 0, y: 0, z: 0, distSq: 0 };
+          allSafePanels[count] = rec;
+        }
+        rec.safeLight = safeLight;
+        rec.x = world.x;
+        rec.y = world.y;
+        rec.z = world.z;
+        rec.distSq = dx * dx + dz * dz;
+        count += 1;
+      }
+      allSafePanels.length = count;
+      allSafePanels.sort((a, b) => a.distSq - b.distSq);
     }
 
-    allSafePanels.sort((a, b) => a.distSq - b.distSq);
     const safeBudget = this._SAFE_LIGHT_BUDGET || 8;
     for (let i = 0; i < safeBudget; i++) {
       const pl = this._safeLightPool[i];
       if (!pl) continue;
-      if (i < allSafePanels.length) {
-        const { safeLight, pos, distSq } = allSafePanels[i];
-        const inRange = distSq < SAFE_LIGHT_CONFIG.activeDistance * SAFE_LIGHT_CONFIG.activeDistance;
-        if (inRange) {
-          const monsterDist = this.getMinMonsterDistance(pos);
-          let flickerMult = 1.0;
+      const bound = doBind
+        ? (i < allSafePanels.length ? allSafePanels[i] : null)
+        : pl.userData.boundSafe;
+      if (doBind) {
+        pl.userData.boundSafe = bound && bound.distSq < SAFE_LIGHT_CONFIG.activeDistance * SAFE_LIGHT_CONFIG.activeDistance
+          ? bound
+          : null;
+      }
+      const active = pl.userData.boundSafe;
+      if (active) {
+        const { safeLight } = active;
+        const monsterDist = this.getMinMonsterDistance(active);
+        let flickerMult = 1.0;
+        const basePhase = (active.x * 3.1 + active.z * 5.7) % 6.28;
+        const flameBreath = 0.96 + 0.04 * Math.sin((this.elapsedTime || 0) * 1.8 + basePhase);
+        flickerMult = flameBreath;
 
-          // Subtle natural flame / filament breathing waver
-          const basePhase = (pos.x * 3.1 + pos.z * 5.7) % 6.28;
-          const flameBreath = 0.96 + 0.04 * Math.sin((this.elapsedTime || 0) * 1.8 + basePhase);
-          flickerMult = flameBreath;
-
-          if (monsterDist < 11.0) {
-            // Natural horror tension: subtle flame wavering and gentle voltage sag (1.6Hz ~ 4.0Hz, no 26Hz strobe)
-            const proximity = Math.min(1.0, Math.max(0.0, 1.0 - (monsterDist / 11.0)));
-            const freq = 1.6 + proximity * 2.4;
-            const phase = (pos.x * 7.91 + pos.z * 13.43) % 6.28;
-            const t = (this.elapsedTime || 0) * freq + phase;
-            const wave = Math.sin(t) * 0.5 + Math.sin(t * 1.7 + 0.5) * 0.3 + Math.sin(t * 3.1) * 0.2;
-            const sag = 0.72 - proximity * 0.18; // soft dimming down to ~0.54, no blackout
-            const mix = (wave + 1.0) * 0.5;
-            flickerMult = THREE.MathUtils.lerp(sag, 1.0, mix);
-          }
-          safeLight.setFlickerState(flickerMult);
-          pl.position.copy(pos);
-          pl.intensity = (SAFE_LIGHT_CONFIG.intensity || 8.5) * flickerMult;
-        } else {
-          safeLight.setFlickerState(1.0);
-          pl.position.set(0, -9999, 0);
-          pl.intensity = 0;
+        if (monsterDist < 11.0) {
+          const proximity = Math.min(1.0, Math.max(0.0, 1.0 - (monsterDist / 11.0)));
+          const freq = 1.6 + proximity * 2.4;
+          const phase = (active.x * 7.91 + active.z * 13.43) % 6.28;
+          const t = (this.elapsedTime || 0) * freq + phase;
+          const wave = Math.sin(t) * 0.5 + Math.sin(t * 1.7 + 0.5) * 0.3 + Math.sin(t * 3.1) * 0.2;
+          const sag = 0.72 - proximity * 0.18;
+          const mix = (wave + 1.0) * 0.5;
+          flickerMult = THREE.MathUtils.lerp(sag, 1.0, mix);
         }
+        safeLight.setFlickerState(flickerMult);
+        pl.position.set(active.x, active.y, active.z);
+        pl.intensity = (SAFE_LIGHT_CONFIG.intensity || 8.5) * flickerMult;
       } else {
+        if (doBind && i < allSafePanels.length) {
+          allSafePanels[i].safeLight.setFlickerState(1.0);
+        }
         pl.position.set(0, -9999, 0);
         pl.intensity = 0;
       }
     }
-    // checkInvisibleBlockers() removed — it scanned every blocker via scene.getObjectByName
-    // on every frame (O(n*m) cost), which was a major source of hidden CPU spikes.
   }
 
   updateLovelyDolls(deltaTime) {
@@ -1288,101 +1391,96 @@ export class Game {
 
   isPlayerLookingAt(targetPosition) {
     if (!this.player) return false;
-    
-    const frustum = new THREE.Frustum();
-    const cameraViewProjectionMatrix = new THREE.Matrix4();
+
     this.camera.updateMatrixWorld();
     this.camera.matrixWorldInverse.copy(this.camera.matrixWorld).invert();
-    cameraViewProjectionMatrix.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse);
-    frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+    this._lookMatrix.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse);
+    this._lookFrustum.setFromProjectionMatrix(this._lookMatrix);
 
-    const checkPoint = new THREE.Vector3(targetPosition.x, targetPosition.y + 0.8, targetPosition.z);
-    const inFrustum = frustum.containsPoint(checkPoint);
-    if (!inFrustum) return false;
-    
-    const hasLos = this.collisionWorld.hasLineOfSight(this.camera.position, checkPoint);
-    return hasLos;
+    this._lookPoint.set(targetPosition.x, targetPosition.y + 0.8, targetPosition.z);
+    if (!this._lookFrustum.containsPoint(this._lookPoint)) return false;
+
+    return this.collisionWorld.hasLineOfSight(this.camera.position, this._lookPoint);
   }
 
   updateWeepingAngels(deltaTime) {
     if (!this.player || !this.mapBuilder) return;
-    
+
     const flashlightOn = this.flashlightController && this.flashlightController.enabled;
     const playerPos = this.player.position;
-    const angels = [];
-    
-    // Find all weeping angels in loaded chunks and update them individually
-    for (const chunk of this.mapBuilder.loadedChunks.values()) {
-      for (const mesh of chunk.meshes) {
-        if (mesh.userData && mesh.userData.isWeepingAngel && mesh.userData.weepingAngelState && mesh.userData.weepingAngelState.loaded) {
-          const state = mesh.userData.weepingAngelState;
-          angels.push(mesh);
-          
-          // 1. Gaze check: Is player looking at this angel?
-          const isLooking = this.isPlayerLookingAt(mesh.position);
-          
-          // 2. Activeness check: Only active if intro triggered/active, flashlight is ON, and player is NOT looking
-          const shouldMove = (state.active !== false) && flashlightOn && !isLooking;
-          
-          if (shouldMove) {
-            const goal = playerPos;
-            
-            // Pathfinding
-            state.pathTimer -= deltaTime;
-            const canMoveDirect = this.collisionWorld.hasLineOfSight(mesh.position, goal);
-            let target = goal;
-            
-            if (canMoveDirect) {
-              state.path = [];
-              state.pathTimer = 0.5;
-            } else {
-              if (state.path === null || state.pathTimer <= 0) {
-                state.path = this.collisionWorld.findPath(mesh.position, goal, state.radius, {
-                  cellSize: 0.85,
-                  allowInterFloor: true,
-                });
-                state.pathTimer = 0.4 + Math.random() * 0.2;
-              }
-              
-              while (state.path && state.path.length > 1 && Math.hypot(mesh.position.x - state.path[1].x, mesh.position.z - state.path[1].z) < 0.4) {
-                state.path.shift();
-              }
-              target = (state.path && (state.path[1] || state.path[0])) || goal;
-            }
-            
-            // Move
-            const direction = new THREE.Vector3(target.x - mesh.position.x, 0, target.z - mesh.position.z);
-            if (direction.lengthSq() > 0.0001) {
-              direction.normalize();
-              const previousPosition = mesh.position.clone();
-              mesh.position.addScaledVector(direction, state.speed * deltaTime);
-              this.collisionWorld.resolveCircle(mesh.position, state.radius);
-              this.collisionWorld.resolveActorPosition(
-                previousPosition,
-                mesh.position,
-                state.radius,
-                { actorId: state.id },
-              );
-              mesh.rotation.y = Math.atan2(direction.x, direction.z);
+    const angels = this._angelCache;
+    const direction = this._angelMoveDir;
+    const previousPosition = this._angelPrevPos;
 
-              // Play creepy creak SFX while moving behind player's back
-              state.creakTimer = (state.creakTimer || 0) + deltaTime;
-              if (state.creakTimer > 0.8) {
-                state.creakTimer = 0;
-                soundManager.playSFX("mannequin_creak");
-              }
-            }
-            
-            mesh.position.y = this.collisionWorld.getGroundY(mesh.position);
+    for (const mesh of angels) {
+      const state = mesh.userData.weepingAngelState;
+      const dx = mesh.position.x - playerPos.x;
+      const dz = mesh.position.z - playerPos.z;
+      const distSq = dx * dx + dz * dz;
+      if (distSq > 30 * 30) {
+        continue;
+      }
+
+      const isLooking = this.isPlayerLookingAt(mesh.position);
+      const shouldMove = (state.active !== false) && flashlightOn && !isLooking;
+
+      if (shouldMove) {
+        const goal = playerPos;
+        state.pathTimer -= deltaTime;
+        const canMoveDirect = this.collisionWorld.hasLineOfSight(mesh.position, goal);
+        let target = goal;
+
+        if (canMoveDirect) {
+          state.path = [];
+          state.pathTimer = 0.5;
+        } else if (state.path === null || state.pathTimer <= 0) {
+          const path = this.collisionWorld.findPathBudgeted(mesh.position, goal, state.radius, {
+            cellSize: 0.85,
+            allowInterFloor: true,
+          });
+          if (path !== PATH_DEFERRED) {
+            state.path = path;
+            state.pathTimer = 0.55 + Math.random() * 0.25;
+          } else {
+            state.pathTimer = 0.08;
           }
-          
-          // 3. Collision catch check: Only catches player if flashlight is ON
-          if (flashlightOn) {
-            const distToPlayer = Math.hypot(mesh.position.x - playerPos.x, mesh.position.z - playerPos.z);
-            if (distToPlayer <= state.catchDistance && !this.player.isHidden && !this.gameOver && !this.gameCleared && !this.testSafeMode) {
-              this.handleCaught("마네킹이 바로 뒤에 서 있었습니다.");
-            }
+        }
+
+        if (!canMoveDirect) {
+          while (state.path && state.path.length > 1 && Math.hypot(mesh.position.x - state.path[1].x, mesh.position.z - state.path[1].z) < 0.4) {
+            state.path.shift();
           }
+          target = (state.path && (state.path[1] || state.path[0])) || goal;
+        }
+
+        direction.set(target.x - mesh.position.x, 0, target.z - mesh.position.z);
+        if (direction.lengthSq() > 0.0001) {
+          direction.normalize();
+          previousPosition.copy(mesh.position);
+          mesh.position.addScaledVector(direction, state.speed * deltaTime);
+          this.collisionWorld.resolveCircle(mesh.position, state.radius);
+          this.collisionWorld.resolveActorPosition(
+            previousPosition,
+            mesh.position,
+            state.radius,
+            { actorId: state.id },
+          );
+          mesh.rotation.y = Math.atan2(direction.x, direction.z);
+
+          state.creakTimer = (state.creakTimer || 0) + deltaTime;
+          if (state.creakTimer > 0.8) {
+            state.creakTimer = 0;
+            soundManager.playSFX("mannequin_creak");
+          }
+        }
+
+        mesh.position.y = this.collisionWorld.getGroundY(mesh.position);
+      }
+
+      if (flashlightOn) {
+        const distToPlayer = Math.hypot(mesh.position.x - playerPos.x, mesh.position.z - playerPos.z);
+        if (distToPlayer <= state.catchDistance && !this.player.isHidden && !this.gameOver && !this.gameCleared && !this.testSafeMode) {
+          this.handleCaught("마네킹이 바로 뒤에 서 있었습니다.");
         }
       }
     }
