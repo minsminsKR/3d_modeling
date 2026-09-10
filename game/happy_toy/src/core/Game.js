@@ -2101,7 +2101,7 @@ export class Game {
               const cut = 0.35 - p2 * 0.55;
               strobe = Math.sin(t * (14 + p2 * 22)) > cut ? 1 : 0.05 + Math.random() * 0.06;
             }
-            flickerMult = Math.max(0.03, (0.52 + 0.48 * wave) * dying * strobe);
+            flickerMult = Math.max(0.55, (0.52 + 0.48 * wave) * dying * strobe);
           }
           safeLight.setFlickerState(flickerMult);
           pl.position.copy(pos);

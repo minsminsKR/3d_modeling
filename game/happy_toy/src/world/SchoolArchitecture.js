@@ -28,7 +28,8 @@ export class SchoolArchitecture {
     if(!walls.length) return;
     // Old notes used nominal tile edges even when those edges were doorways.
     // Project each note onto an actual wall face with a reachable reading spot.
-    for(const note of chunk.loreNotes || []) {
+    const wallFixtures=(chunk.safeLights||[]).filter(light=>['wall-switch','ceiling-switch'].includes(light.variant));
+    for(const note of [...(chunk.loreNotes || []),...wallFixtures]) {
       let best=null;
       for(const {aabb:a} of walls) {
         if(note.position.y<a.minY+.3 || note.position.y>a.maxY-.3) continue;
@@ -46,7 +47,7 @@ export class SchoolArchitecture {
         }
       }
       if(best) {
-        note.position.x=best.x;note.position.z=best.z;note.yaw=best.yaw;
+        note.position.x=best.x;note.position.z=best.z;note.yaw=best.yaw+(note.variant?Math.PI:0);
         note.group.position.copy(note.position);note.group.rotation.y=note.yaw;
         note.group.userData.wallMounted=true;
       }

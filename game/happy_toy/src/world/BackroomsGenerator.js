@@ -2600,7 +2600,7 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.05,
       });
     }
-    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+    for (const [name, x] of [["w", -3.1], ["e", 3.1]]) {
       this.addShoeRackUnit(
         chunk, chunkId, `starthall_rack_${name}`,
         center.x + x, floorY + 0.48, center.z + 1.52, Math.PI,
@@ -2670,7 +2670,7 @@ export class BackroomsGenerator {
 
   dressNorthHall(chunk, center, chunkId, floorY) {
     this.ensureSchoolCorridorMaterials();
-    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+    for (const [name, z] of [["n", -3.4], ["s", 3.4]]) {
       this.addTrafficConeUnit(
         chunk, chunkId, `northhall_cone_${name}`,
         center.x + 1.52, floorY + 0.52, center.z + z,
@@ -3689,14 +3689,14 @@ export class BackroomsGenerator {
       }
     }
 
-    const doorH = 2.15;
-    const doorY = floorY + 1.12;
     const panel = (name, x, z, sx, sz) => {
-      this.placeDressedBox(
-        chunk, chunkId, name,
-        center.x + x, doorY, center.z + z, sx, doorH, sz,
-        this.schoolClassDoorMat, false,
-      );
+      const alongX = sx > sz;
+      const door = new Door({id:`${chunkId}_${name}`,label:'교실',
+        position:[center.x+x,floorY,center.z+z],
+        size:alongX?[doorW,2.35,0.28]:[0.28,2.35,doorW]},this.schoolClassDoorMat);
+      door.group.userData.fittedOpeningWidth=doorW;
+      door.chunkId=chunkId;this.scene.add(door.group);chunk.doors.push(door);
+      this.collisionWorld.addDoor(door,chunkId);
     };
     const glass = (name, x, z, sx, sy, sz) => {
       this.placeDressedBox(
@@ -5876,7 +5876,7 @@ export class BackroomsGenerator {
       });
     }
     const sides = this.getHallSides(chunk.cx, chunk.cz);
-    for (const [name, x] of [["w", -4.55], ["e", 4.55]]) {
+    for (const [name, x] of [["w", -2.9], ["e", 2.9]]) {
       this.placeDressedBox(
         chunk, chunkId, `stairhall_cone_${name}`,
         center.x + x, floorY + 0.52, center.z - (this.getHallFaceClear(chunk.cx, chunk.cz, "n", x) - 0.28),
@@ -6204,7 +6204,7 @@ export class BackroomsGenerator {
       });
     }
     const sides = this.getHallSides(chunk.cx, chunk.cz);
-    for (const [name, z] of [["n", -5.35], ["s", 5.35]]) {
+    for (const [name, z] of [["n", -3.4], ["s", 3.4]]) {
       this.placeDressedBox(
         chunk, chunkId, `lostfound_box_${name}`,
         center.x - (sides.w - 0.36), floorY + 0.38, center.z + z,

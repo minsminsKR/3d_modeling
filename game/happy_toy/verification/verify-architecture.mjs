@@ -20,6 +20,9 @@ try {
         if(d.isLocked||d.isBlocked)continue;
         const center=d.position.clone();d.isOpen=false;d.openAmount=0;
         const closed=g.collisionWorld.isCircleBlocked(center,.25);
+        const across=new window.THREE.Vector3(d.axis==='x'?1:0,0,d.axis==='z'?1:0);
+        const fitted=d.group.userData.fittedOpeningWidth;
+        const sealed=!fitted||[-.9,-.6,0,.6,.9].every(offset=>g.collisionWorld.isCircleBlocked(center.clone().addScaledVector(across,offset),.08));
         d.isOpen=true;d.openAmount=1;d.update(0);
         const open=!g.collisionWorld.isCircleBlocked(center,.25);
         const normal=new window.THREE.Vector3(d.axis==='z'?1:0,0,d.axis==='x'?1:0);
@@ -31,7 +34,7 @@ try {
           const a=typeof b.aabb==='function'?b.aabb():b.aabb;
           return center.x>=a.minX-.9&&center.x<=a.maxX+.9&&center.z>=a.minZ-.9&&center.z<=a.maxZ+.9;
         }).map(b=>({id:b.id,type:b.type}));
-        doors.set(d.id,{id:d.id,closed,open,faces,position:center.toArray(),obstacles});
+        doors.set(d.id,{id:d.id,closed,open,faces,sealed,position:center.toArray(),obstacles});
         d.isOpen=false;d.openAmount=0;d.update(0);
       }
       const gen=g.mapBuilder.generator;
@@ -49,6 +52,6 @@ try {
   console.log(JSON.stringify({...report,doors:report.doors.length,failures:report.doors.filter(d=>!d.closed||!d.open||!d.faces.every(Boolean)),errors},null,2));
   assert.deepEqual(errors,[]);assert.deepEqual(report.asymmetric,[]);
   assert.ok(report.stations>0&&report.trim>0&&report.mounted>0);
-  assert.ok(report.doors.every(d=>d.closed&&d.open&&d.faces.every(Boolean)),'every unlocked doorway must connect two accessible spaces');
+  assert.ok(report.doors.every(d=>d.closed&&d.open&&d.sealed&&d.faces.every(Boolean)),'every unlocked doorway must fit its opening and connect two accessible spaces');
   console.log('ARCHITECTURE PASSED');
 } finally {await browser.close();}
