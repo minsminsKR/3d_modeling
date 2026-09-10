@@ -804,6 +804,44 @@ try {
     game.testSafeMode = false;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(4, -1);
+    game.player.setPosition({ x: 64, y: 0, z: -16 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const laundryRoomWalk = [];
+  for (const stop of [
+    { x: 64, z: -21.2 },
+    { x: 59.8, z: -21.2 },
+  ]) {
+    laundryRoomWalk.push(await walkTo(stop, 320));
+    console.log("laundry_room", stop, laundryRoomWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(6, -1);
+    game.player.setPosition({ x: 96, y: 0, z: -16 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const specimenRoomWalk = [];
+  for (const stop of [
+    { x: 96, z: -21.2 },
+    { x: 91.8, z: -21.2 },
+  ]) {
+    specimenRoomWalk.push(await walkTo(stop, 320));
+    console.log("specimen_room", stop, specimenRoomWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(4, -2);
     game.mapBuilder.generator.generateChunk(5, -2);
     game.player.setPosition({ x: 70, y: 0, z: -32 });
@@ -1390,8 +1428,10 @@ try {
       clubTable: names(club).some((name) => name.includes("club_table_")),
       clubType: club.type,
       specimenCase: names(specimen).some((name) => name.includes("specimen_case_")),
-      stageRack: names(stageWing).some((name) => name.includes("stagewing_rack_")),
+      specimenRoom: names(specimen).some((name) => name.includes("specimen_room_")),
       laundryCart: names(laundry).some((name) => name.includes("laundry_cart_")),
+      laundryRoom: names(laundry).some((name) => name.includes("laundry_room_")),
+      stageRack: names(stageWing).some((name) => name.includes("stagewing_rack_")),
       labLinkCase: names(labLink).some((name) => name.includes("lablink_case_")),
       avCart: names(avRoom).some((name) => name.includes("av_cart_")),
       avType: avRoom.type,
@@ -1693,7 +1733,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, trophyWalk, trophySwWalk, annexNorthWalk, annexRoomWalk, eastwashRoomWalk, washfourRoomWalk, angelRoomWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, dormWalk, dollClassWalk, prepStoreWalk, closedLibWalk, etiquetteWalk, roofHallWalk, lostFoundWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, trophyWalk, trophySwWalk, annexNorthWalk, annexRoomWalk, eastwashRoomWalk, washfourRoomWalk, angelRoomWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, laundryRoomWalk, specimenRoomWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, dormWalk, dollClassWalk, prepStoreWalk, closedLibWalk, etiquetteWalk, roofHallWalk, lostFoundWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -1851,19 +1891,25 @@ try {
   assert.ok(clubWalk.some((stop) => stop.z < -14 && Math.abs(stop.x - 112) < 1.6), "club south aisle from the trophy hall must stay open");
   assert.ok(clubWalk.at(-1).x < 108 && Math.abs(clubWalk.at(-1).z + 16) < 1.4, "club west aisle must stay open");
   assert.equal(rooms.specimenCase, true, "specimen hall must show west specimen cases");
+  assert.equal(rooms.specimenRoom, true, "specimen hall must close west classroom volumes");
   assert.ok(rooms.beats.includes("specimen"), "specimen VO beat missing");
   assert.equal(specimenWalk.at(-1).ok, true, `must walk the specimen hall, got ${JSON.stringify(specimenWalk.at(-1))}`);
   assert.ok(specimenWalk.some((stop) => stop.z < -14 && Math.abs(stop.x - 96) < 1.6), "specimen NS spine must stay open");
   assert.ok(specimenWalk.at(-1).x > 100 && Math.abs(specimenWalk.at(-1).z + 16) < 1.4, "specimen east T-spur to the club must stay open");
+  assert.equal(specimenRoomWalk.at(-1).ok, true, `must walk into the specimen NW room, got ${JSON.stringify(specimenRoomWalk.at(-1))}`);
+  assert.ok(specimenRoomWalk.at(-1).x < 93.2 && specimenRoomWalk.at(-1).z < -19.4, "specimen NW room must be enterable off the spine");
   assert.equal(rooms.stageRack, true, "stage wing must hang costume racks");
   assert.ok(rooms.beats.includes("stagewing"), "stage wing VO beat missing");
   assert.equal(stageWalk.at(-1).ok, true, `must walk the stage wing, got ${JSON.stringify(stageWalk.at(-1))}`);
   assert.ok(stageWalk.some((stop) => stop.x > 94 && Math.abs(stop.z - 32) < 1.6), "stage wing EW spine must stay open");
   assert.ok(stageWalk.at(-1).z < 28 && Math.abs(stageWalk.at(-1).x - 96) < 1.4, "stage wing north T-spur to faculty must stay open");
   assert.equal(rooms.laundryCart, true, "laundry hall must have carts");
+  assert.equal(rooms.laundryRoom, true, "laundry hall must close west classroom volumes");
   assert.ok(rooms.beats.includes("laundry"), "laundry VO beat missing");
   assert.equal(laundryWalk.at(-1).ok, true, `must walk the laundry hall, got ${JSON.stringify(laundryWalk.at(-1))}`);
   assert.ok(laundryWalk.at(-1).z < -20 && Math.abs(laundryWalk.at(-1).x - 64) < 1.4, "laundry NS spine must stay open");
+  assert.equal(laundryRoomWalk.at(-1).ok, true, `must walk into the laundry NW room, got ${JSON.stringify(laundryRoomWalk.at(-1))}`);
+  assert.ok(laundryRoomWalk.at(-1).x < 61.2 && laundryRoomWalk.at(-1).z < -19.4, "laundry NW room must be enterable off the spine");
   assert.equal(rooms.labLinkCase, true, "lab link must show south specimen cases");
   assert.ok(rooms.beats.includes("lablink"), "lab-link VO beat missing");
   assert.equal(labLinkWalk.at(-1).ok, true, `must walk the lab-link hall, got ${JSON.stringify(labLinkWalk.at(-1))}`);

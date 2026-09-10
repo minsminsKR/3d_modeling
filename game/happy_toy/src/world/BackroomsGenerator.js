@@ -5032,7 +5032,8 @@ export class BackroomsGenerator {
         opacity: 0.72,
       });
     }
-    for (const [name, z] of [["n_a", -5.35], ["n_b", -3.15], ["s_a", 3.15], ["s_b", 5.35]]) {
+    // Keep cases inside the west rooms, off the ±5.25 classroom doors.
+    for (const [name, z] of [["n_a", -3.6], ["n_b", -2.45], ["s_a", 2.45], ["s_b", 3.6]]) {
       this.placeDressedBox(
         chunk, chunkId, `specimen_case_${name}`,
         center.x - 3.85, floorY + 0.95, center.z + z,
@@ -5048,6 +5049,8 @@ export class BackroomsGenerator {
       center.x - 1.82, floorY + 2.12, center.z,
       Math.PI / 2, "표본",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "specimen_room_nw", "nw", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "specimen_room_sw", "sw", "ns");
     const glow = new THREE.PointLight(0x182014, 0.12, 4.0, 2);
     glow.position.set(center.x - 2.4, floorY + 2.05, center.z);
     glow.name = `${chunkId}_specimen_glow`;
@@ -5118,6 +5121,8 @@ export class BackroomsGenerator {
       center.x - 1.82, floorY + 2.12, center.z,
       Math.PI / 2, "세탁",
     );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "laundry_room_nw", "nw", "ns");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "laundry_room_sw", "sw", "ns");
     const glow = new THREE.PointLight(0x1c1410, 0.11, 3.8, 2);
     glow.position.set(center.x - 2.2, floorY + 2.0, center.z);
     glow.name = `${chunkId}_laundry_glow`;
@@ -6380,23 +6385,34 @@ export class BackroomsGenerator {
     }
   }
 
-  // Close one plus-tile classroom corner into a real room. The hall_class_*
-  // door already punches the inner face, so that face is skipped. Keep the
-  // 3.4m spine clear: |x|>=1.95 and |z|>=2.02 from the tile center.
-  dressClosedCornerRoom(chunk, center, chunkId, floorY, name, corner) {
+  // Close one classroom corner into a real room. The hall_class_* door
+  // already punches the inner face, so that face is skipped. Keep the 3.4m
+  // spine clear: EW rooms sit at |x|>=1.95 and |z|>=2.02; NS rooms swap axes.
+  dressClosedCornerRoom(chunk, center, chunkId, floorY, name, corner, along = "ew") {
     this.ensureSchoolCorridorMaterials();
     const east = corner.includes("e");
     const south = corner.includes("s");
+    const spec = along === "ns"
+      ? {
+        minX: center.x + (east ? 2.02 : -7.38),
+        maxX: center.x + (east ? 7.38 : -2.02),
+        minZ: center.z + (south ? 1.95 : -7.28),
+        maxZ: center.z + (south ? 7.28 : -1.95),
+        skip: east ? { w: true } : { e: true },
+      }
+      : {
+        minX: center.x + (east ? 1.95 : -7.28),
+        maxX: center.x + (east ? 7.28 : -1.95),
+        minZ: center.z + (south ? 2.02 : -7.38),
+        maxZ: center.z + (south ? 7.38 : -2.02),
+        skip: south ? { n: true } : { s: true },
+      };
     this.placeRoomShell(chunk, chunkId, name, {
-      minX: center.x + (east ? 1.95 : -7.28),
-      maxX: center.x + (east ? 7.28 : -1.95),
-      minZ: center.z + (south ? 2.02 : -7.38),
-      maxZ: center.z + (south ? 7.38 : -2.02),
+      ...spec,
       wallY: floorY + 1.4,
       height: 2.8,
       thickness: 0.22,
       material: this.schoolClassWallMat,
-      skip: south ? { n: true } : { s: true },
     });
   }
 

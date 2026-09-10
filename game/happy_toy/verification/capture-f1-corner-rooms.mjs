@@ -59,5 +59,11 @@ await poseShot("f1_angel_ne_from_door.png", {
 await poseShot("f1_trophy_sw_from_door.png", {
   cx: 7, cz: 0, x: 106.85, y: 0, z: 2.55, lookAt: [103.65, 1.32, 5.85],
 });
+await poseShot("f1_laundry_nw_from_door.png", {
+  cx: 4, cz: -1, x: 61.45, y: 0, z: -21.25, lookAt: [58.2, 1.32, -24.4],
+});
+await poseShot("f1_specimen_nw_from_door.png", {
+  cx: 6, cz: -1, x: 93.45, y: 0, z: -21.25, lookAt: [90.2, 1.32, -24.4],
+});
 
 await browser.close();
