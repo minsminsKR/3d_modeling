@@ -405,6 +405,10 @@ export class BackroomsGenerator {
       "-2,0": { e: 1.22, w: 1.88 },
       "1,1": { n: 1.58, s: 2.02, e: 1.42, w: 1.88 },
       "7,2": { n: 1.48, s: 2.02 },
+      // Roof L (N+W): offset inner faces, not a copied ±1.7 plus.
+      // North aisle |x|<1.6 and west aisle |z|<1.4 stay inside the open band
+      // with player radius 0.34 (1.6+0.34 < e, 1.4+0.34 < s).
+      "0,2": { n: 1.25, s: 2.18, e: 2.08, w: 1.32 },
     };
     Object.assign(sides, authored[`${cx},${cz}`] || {});
     return sides;
@@ -2089,7 +2093,9 @@ export class BackroomsGenerator {
     const ewChicane = hallLike && chicanes.ew;
     const nsChicane = hallLike && chicanes.ns;
     const maze = ewChicane || nsChicane;
-    if (hallLike && !maze) {
+    // Roof hall is an L (N+W), not a leftover plus-alcove tile. Authored
+    // roofhall_run_* walls in dressRoofHall replace these eight separators.
+    if (hallLike && !maze && !this.isRoofHallChunk(chunk.cx, chunk.cz)) {
       addWallSegment(-1.4, -5.6, 0.4, 4.8, "alcove_nw_ns");
       addWallSegment(-5.6, -1.4, 4.8, 0.4, "alcove_nw_ew");
       addWallSegment(1.4, -5.6, 0.4, 4.8, "alcove_ne_ns");
@@ -2209,7 +2215,7 @@ export class BackroomsGenerator {
     const add = (name, x, z, sx, sz, skip = false) => {
       if (!skip) walls.push([name, x, z, sx, sz]);
     };
-    if (!maze && !isStart) {
+    if (!maze && !isStart && !this.isRoofHallChunk(chunk.cx, chunk.cz)) {
       add("hall_maze_nw_h", -6.0, -4.6, 1.8, t, skipNW);
       add("hall_maze_nw_v", -6.2, -6.2, t, 1.8, skipNW);
       add("hall_maze_ne_h", 6.0, -4.6, 1.8, t);
@@ -5633,6 +5639,27 @@ export class BackroomsGenerator {
   dressRoofHall(chunk, center, chunkId, floorY) {
     this.ensureSchoolCorridorMaterials();
     this.ensureSpecialNookMaterials();
+    const sides = this.getHallSides(chunk.cx, chunk.cz);
+    const t = 0.32;
+    const y = floorY + 1.4;
+    const h = 2.8;
+    const ePos = sides.e + t / 2;
+    const sPos = sides.s + t / 2;
+    const runStart = -7.45;
+    // Inner L: east face of the north aisle + south face of the west aisle.
+    // Open band keeps graph spines at x=0 (north) and z=0 (west).
+    this.placeDressedBox(
+      chunk, chunkId, "roofhall_run_n",
+      center.x + ePos, y, center.z + (runStart + sPos) / 2,
+      t, h, sPos - runStart,
+      this.schoolClassWallMat || this.trimMaterial,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "roofhall_run_w",
+      center.x + (runStart + ePos) / 2, y, center.z + sPos,
+      ePos - runStart, h, t,
+      this.schoolClassWallMat || this.trimMaterial,
+    );
     this.placeDressedBox(
       chunk, chunkId, "roofhall_board",
       center.x, floorY + 1.35, center.z + 6.55,

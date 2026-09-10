@@ -1645,6 +1645,7 @@ try {
         stair: generator.getHallSides(1, 1),
         lost: generator.getHallSides(-2, 0),
         practice: generator.getHallSides(7, 2),
+        roof: generator.getHallSides(0, 2),
       },
       arcadeCol: names(arcade).some((name) => name.includes("arcade_col_")),
       arcadeBench: names(arcade).some((name) => name.includes("arcade_bench_")),
@@ -1713,6 +1714,8 @@ try {
       etiquetteZabuton: names(etiquette).some((name) => name.includes("etiquette_zabuton_")),
       etiquetteTable: names(etiquette).some((name) => name.includes("tea_table")),
       roofHallBoard: names(roofHall).some((name) => name.includes("roofhall_board")),
+      roofHallUnique: names(roofHall).some((name) => name.includes("roofhall_run_n"))
+        && names(roofHall).some((name) => name.includes("roofhall_run_w")),
       lostFoundBox: names(lostFound).some((name) => name.includes("lostfound_box_")),
       startHallRack: names(startHall).some((name) => name.includes("starthall_rack_")),
       classWingCart: names(hall).some((name) => name.includes("classwing_cart_")),
@@ -2063,6 +2066,10 @@ try {
   assert.notEqual(rooms.hallSides.stair.n, rooms.hallSides.stair.s, "stair plus must offset north vs south");
   assert.notEqual(rooms.hallSides.stair.e, rooms.hallSides.stair.w, "stair plus must offset east vs west");
   assert.notEqual(rooms.hallSides.practice.n, rooms.hallSides.practice.s, "practice hall must offset north vs south walls");
+  assert.notEqual(rooms.hallSides.roof.n, rooms.hallSides.roof.s, "roof hall must offset north vs south walls");
+  assert.notEqual(rooms.hallSides.roof.e, rooms.hallSides.roof.w, "roof hall must offset east vs west walls");
+  assert.notEqual(rooms.hallSides.roof.n, 1.7, "roof hall north wall must leave the copied ±1.7 plus");
+  assert.notEqual(rooms.hallSides.roof.e, 1.7, "roof hall east wall must leave the copied ±1.7 plus");
   assert.equal(rooms.annexRoomL, true, "annex NE classroom must break the copied rectangle with an L jog");
   assert.equal(rooms.trophyRoomL, true, "trophy SW classroom must break the copied rectangle with an L jog");
   assert.equal(annexOffsetWalk.at(-1).ok, true, `annex north offset must walk past the old 1.22m wall, got ${JSON.stringify(annexOffsetWalk.at(-1))}`);
@@ -2309,6 +2316,7 @@ try {
   assert.equal(etiquetteWalk.at(-1).ok, true, `must walk north of the tea table, got ${JSON.stringify(etiquetteWalk.at(-1))}`);
   assert.ok(etiquetteWalk.at(-1).z > 26 && etiquetteWalk.at(-1).z < 31 && Math.abs(etiquetteWalk.at(-1).x + 16) < 1.4, "etiquette north aisle must stay open");
   assert.equal(rooms.roofHallBoard, true, "roof hall must board the south door");
+  assert.equal(rooms.roofHallUnique, true, "roof hall must use a unique L-run footprint");
   assert.ok(rooms.beats.includes("roofhall"), "roof hall VO beat missing");
   assert.equal(roofHallWalk.at(-1).ok, true, `must walk the roof hall, got ${JSON.stringify(roofHallWalk.at(-1))}`);
   assert.ok(roofHallWalk.some((stop) => Math.abs(stop.x) < 1.6 && stop.z > 26), "roof hall north aisle must stay open");
