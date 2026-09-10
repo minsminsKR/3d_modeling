@@ -38,6 +38,16 @@ export class Enemy {
     this._losTimer = 0;
     this._cachedLos = true;
     this._losGoal = new THREE.Vector3();
+    this._beforeMove = new THREE.Vector3();
+    this._staticGroundY = null;
+    this._staticGroundGroupY = 0;
+    this._babyPoint = new THREE.Vector3();
+    this._eyePos = new THREE.Vector3();
+    this._toBaby = new THREE.Vector3();
+    this._cameraDir = new THREE.Vector3();
+    this._facingDir = new THREE.Vector3();
+    this._fleeDir = new THREE.Vector3();
+    this._fleeGoal = new THREE.Vector3();
 
     if (this.isBaby) {
       this.state = "crying";
@@ -114,28 +124,7 @@ export class Enemy {
         const game = window.__happyToy;
         const flashlightOn = game?.flashlightController?.enabled;
         if (sameFloor && flashlightOn && distance <= 8.0) {
-          const babyPoint = new THREE.Vector3(
-            this.group.position.x,
-            this.group.position.y + this.config.height * 0.5,
-            this.group.position.z
-          );
-          const eyePos = new THREE.Vector3(
-            playerPosition.x,
-            (playerPosition.y ?? 0) + 1.7,
-            playerPosition.z
-          );
-          const toBaby = new THREE.Vector3().subVectors(babyPoint, eyePos);
-          const distToBaby = toBaby.length();
-          if (distToBaby > 0.001) {
-            toBaby.normalize();
-            const cameraDirection = new THREE.Vector3();
-            game.camera.getWorldDirection(cameraDirection);
-            const dot = cameraDirection.dot(toBaby);
-            const hasLos = this.collisionWorld.hasLineOfSight(eyePos, babyPoint);
-            if (dot >= 0.94 && hasLos) {
-              flashlightAlert = true;
-            }
-          }
+          flashlightAlert = this.isBabyFlashlightAlert(playerPosition, game);
         }
         if (tooClose || sprintNearby || flashlightAlert) {
           this.setDormant(false);
@@ -189,32 +178,7 @@ export class Enemy {
       const flashlightOn = game?.flashlightController?.enabled;
       
       if (sameFloor && flashlightOn && distance <= 8.0) {
-        const babyPoint = new THREE.Vector3(
-          this.group.position.x,
-          this.group.position.y + this.config.height * 0.5,
-          this.group.position.z
-        );
-        const eyePos = new THREE.Vector3(
-          playerPosition.x,
-          (playerPosition.y ?? 0) + 1.7,
-          playerPosition.z
-        );
-        const toBaby = new THREE.Vector3().subVectors(babyPoint, eyePos);
-        const distToBaby = toBaby.length();
-        
-        if (distToBaby > 0.001) {
-          toBaby.normalize();
-          
-          const cameraDirection = new THREE.Vector3();
-          game.camera.getWorldDirection(cameraDirection);
-          
-          const dot = cameraDirection.dot(toBaby);
-          const hasLos = this.collisionWorld.hasLineOfSight(eyePos, babyPoint);
-          
-          if (dot >= 0.94 && hasLos) {
-            flashlightAlert = true;
-          }
-        }
+        flashlightAlert = this.isBabyFlashlightAlert(playerPosition, game);
       }
       
       if (tooClose || sprintNearby || flashlightAlert) {
@@ -268,7 +232,7 @@ export class Enemy {
         * (this.speedMultiplier || 1.0)
         * (this.progressionSpeedMultiplier || 1.0);
 
-      const beforeMove = this.group.position.clone();
+      const beforeMove = this._beforeMove.copy(this.group.position);
       this.moveToward(target, speed, deltaTime);
       this.updateStuckState(deltaTime, target, beforeMove);
     } else {
@@ -348,9 +312,16 @@ export class Enemy {
       return Number.isFinite(minY) ? minY : null;
     }
 
-    this.modelRoot.updateMatrixWorld(true);
-    const bounds = new THREE.Box3().setFromObject(this.modelRoot);
-    return Number.isFinite(bounds.min.y) ? bounds.min.y : null;
+    if (this._staticGroundY == null) {
+      this.modelRoot.updateMatrixWorld(true);
+      const bounds = new THREE.Box3().setFromObject(this.modelRoot);
+      this._staticGroundY = Number.isFinite(bounds.min.y) ? bounds.min.y : null;
+      this._staticGroundGroupY = this.group.position.y;
+    }
+    if (this._staticGroundY == null) {
+      return null;
+    }
+    return this._staticGroundY + (this.group.position.y - this._staticGroundGroupY);
   }
 
   snapModelToGround(allowAirborne = false) {
@@ -1099,6 +1070,22 @@ export class Enemy {
     this.playAction("chase");
   }
 
+  isBabyFlashlightAlert(playerPosition, game) {
+    if (!game?.camera) return false;
+    this._babyPoint.set(
+      this.group.position.x,
+      this.group.position.y + this.config.height * 0.5,
+      this.group.position.z,
+    );
+    this._eyePos.set(playerPosition.x, (playerPosition.y ?? 0) + 1.7, playerPosition.z);
+    this._toBaby.subVectors(this._babyPoint, this._eyePos);
+    if (this._toBaby.lengthSq() <= 0.000001) return false;
+    this._toBaby.normalize();
+    game.camera.getWorldDirection(this._cameraDir);
+    if (this._cameraDir.dot(this._toBaby) < 0.94) return false;
+    return this.collisionWorld.hasLineOfSight(this._eyePos, this._babyPoint);
+  }
+
   isActivelyChasing() {
     return this.state === "chase";
   }
@@ -1108,16 +1095,16 @@ export class Enemy {
   }
 
   isPlayerInFront(playerPosition) {
-    const directionToPlayer = direction2D(this.group.position, playerPosition);
-    if (directionToPlayer.lengthSq() <= 0.0001) {
+    direction2DInto(this.group.position, playerPosition, this._moveDir);
+    if (this._moveDir.lengthSq() <= 0.0001) {
       return true;
     }
-    const facingDirection = new THREE.Vector3(
+    this._facingDir.set(
       Math.sin(this.group.rotation.y),
       0,
       Math.cos(this.group.rotation.y),
     );
-    return facingDirection.dot(directionToPlayer) >= (this.config.frontAwarenessDot ?? 0.08);
+    return this._facingDir.dot(this._moveDir) >= (this.config.frontAwarenessDot ?? 0.08);
   }
 
   playIdlePose() {

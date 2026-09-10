@@ -124,6 +124,7 @@ export class Game {
     this._lookPoint = new THREE.Vector3();
     this._angelMoveDir = new THREE.Vector3();
     this._angelPrevPos = new THREE.Vector3();
+    this._safeLightPos = new THREE.Vector3();
     this.loop = new Loop((deltaTime) => this.update(deltaTime));
 
     this.handleResize = this.handleResize.bind(this);
@@ -308,17 +309,17 @@ export class Game {
   }
 
   connectUi() {
-    this.hud.startButton.addEventListener("click", this.start);
+    this.hud.startButton?.addEventListener("click", this.start);
     this.renderer.domElement.addEventListener("click", this.start);
-    this.hud.restartButton.addEventListener("click", this.restart);
-    this.hud.clearRestartButton.addEventListener("click", this.restart);
-    this.hud.resumeButton.addEventListener("click", this.resume);
-    this.hud.pauseRestartButton.addEventListener("click", this.restart);
-    this.hud.quitButton.addEventListener("click", this.quitToTitle);
-    this.hud.mouseSensitivityInput.addEventListener("input", () => {
+    this.hud.restartButton?.addEventListener("click", this.restart);
+    this.hud.clearRestartButton?.addEventListener("click", this.restart);
+    this.hud.resumeButton?.addEventListener("click", this.resume);
+    this.hud.pauseRestartButton?.addEventListener("click", this.restart);
+    this.hud.quitButton?.addEventListener("click", this.quitToTitle);
+    this.hud.mouseSensitivityInput?.addEventListener("input", () => {
       this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value));
     });
-    this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput.value));
+    this.setMouseSensitivityScale(Number(this.hud.mouseSensitivityInput?.value));
   }
 
   refreshInteractables() {
@@ -818,11 +819,18 @@ export class Game {
   getCompassTarget() {
     if (this.keyCount >= this.keys.length) return this.finalExit;
     const position = this.player.position;
-    const candidates = this.keys.filter((key) => key.isAvailable && !key.isCollected);
-    // Prefer the current floor; vertical distance alone understates the stair detour.
-    const score = (key) => Math.hypot(key.position.x - position.x, key.position.z - position.z)
-      + (Math.abs(key.position.y - position.y) > 1.8 ? 40 : 0);
-    return candidates.sort((a, b) => score(a) - score(b))[0] || null;
+    let best = null;
+    let bestScore = Infinity;
+    for (const key of this.keys) {
+      if (!key.isAvailable || key.isCollected) continue;
+      const score = Math.hypot(key.position.x - position.x, key.position.z - position.z)
+        + (Math.abs(key.position.y - position.y) > 1.8 ? 40 : 0);
+      if (score < bestScore) {
+        bestScore = score;
+        best = key;
+      }
+    }
+    return best;
   }
 
   collectKey(key) {
@@ -1063,10 +1071,7 @@ export class Game {
       this.cabinets = this.mapBuilder.cabinets;
       this.safeLights = this.mapBuilder.safeLights || [];
       this.finalExit = this.mapBuilder.finalExit;
-      this.player.setInteractables(
-        [...this.doors, ...this.keys, ...this.cabinets, ...this.safeLights, this.finalExit].filter(Boolean),
-        this.createInteractionContext(),
-      );
+      this.refreshInteractables();
     }
     if (chunkChanged) {
       this._lastPlayerChunkCx = cx;
@@ -1086,38 +1091,57 @@ export class Game {
 
     const playerPos = this.player.position;
     const allPanels = this._panelScratch;
-    allPanels.length = 0;
+    let panelCount = 0;
     for (const chunk of this.mapBuilder.loadedChunks.values()) {
       if (!chunk.lights || chunk.lights.length === 0) continue;
       for (const light of chunk.lights) {
+        if (!light?.localPos) continue;
         const gx = chunk.center.x + light.localPos.x;
         const gz = chunk.center.z + light.localPos.z;
         const gy = chunk.center.y + light.localPos.y;
         const dx = gx - playerPos.x;
         const dz = gz - playerPos.z;
         const distSq = dx * dx + dz * dz;
-        allPanels.push({ light, gx, gy, gz, distSq });
+
+        if (doBind) {
+          let rec = allPanels[panelCount];
+          if (!rec) {
+            rec = { light: null, gx: 0, gy: 0, gz: 0, distSq: 0 };
+            allPanels[panelCount] = rec;
+          }
+          rec.light = light;
+          rec.gx = gx;
+          rec.gy = gy;
+          rec.gz = gz;
+          rec.distSq = distSq;
+          panelCount += 1;
+        }
 
         if (doFlicker && light.isFlickering) {
+          const mat = light.mesh?.material;
+          if (!mat?.color || !mat.emissive) continue;
           light.flickerTimer -= 0.1;
           if (light.flickerTimer <= 0) {
             const isOff = Math.random() < 0.25;
             if (isOff) {
-              light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelDimColor || 0x3b2618);
-              light.mesh.material.emissive.setHex(0x140704);
-              light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelDimEmissiveIntensity ?? 0.1;
+              mat.color.setHex(LIGHTING_CONFIG.ceilingPanelDimColor || 0x3b2618);
+              mat.emissive.setHex(0x140704);
+              mat.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelDimEmissiveIntensity ?? 0.1;
               light.currentIntensity = 0;
               light.flickerTimer = 0.05 + Math.random() * 0.2;
             } else {
-              light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelOnColor || 0xb47b4c);
-              light.mesh.material.emissive.setHex(0x9a3f12);
-              light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelOnEmissiveIntensity ?? 0.58;
+              mat.color.setHex(LIGHTING_CONFIG.ceilingPanelOnColor || 0xb47b4c);
+              mat.emissive.setHex(0x9a3f12);
+              mat.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelOnEmissiveIntensity ?? 0.58;
               light.currentIntensity = light.baseIntensity;
               light.flickerTimer = 1.0 + Math.random() * 5.0;
             }
           }
         }
       }
+    }
+    if (doBind) {
+      allPanels.length = panelCount;
     }
 
     const budget = this._POINT_LIGHT_BUDGET;
@@ -1253,6 +1277,16 @@ export class Game {
       return angels;
     }
     for (const chunk of this.mapBuilder.loadedChunks.values()) {
+      const listed = chunk.weepingAngels;
+      if (listed && listed.length) {
+        for (let i = 0; i < listed.length; i++) {
+          const mesh = listed[i];
+          if (mesh.userData?.weepingAngelState?.loaded) {
+            angels.push(mesh);
+          }
+        }
+        continue;
+      }
       for (const mesh of chunk.meshes) {
         if (mesh.userData?.isWeepingAngel && mesh.userData.weepingAngelState?.loaded) {
           angels.push(mesh);
@@ -1266,15 +1300,25 @@ export class Game {
     if (!playerPos || !this._safeLightPool) return;
     const allSafePanels = this._safePanelScratch;
     if (doBind) {
-      allSafePanels.length = 0;
+      let count = 0;
       for (const safeLight of this.safeLights) {
         if (!safeLight.isOn) continue;
-        const pos = safeLight.getLightWorldPosition();
-        const dx = pos.x - playerPos.x;
-        const dz = pos.z - playerPos.z;
-        const distSq = dx * dx + dz * dz;
-        allSafePanels.push({ safeLight, pos, distSq });
+        const world = safeLight.getLightWorldPosition(this._safeLightPos);
+        const dx = world.x - playerPos.x;
+        const dz = world.z - playerPos.z;
+        let rec = allSafePanels[count];
+        if (!rec) {
+          rec = { safeLight: null, x: 0, y: 0, z: 0, distSq: 0 };
+          allSafePanels[count] = rec;
+        }
+        rec.safeLight = safeLight;
+        rec.x = world.x;
+        rec.y = world.y;
+        rec.z = world.z;
+        rec.distSq = dx * dx + dz * dz;
+        count += 1;
       }
+      allSafePanels.length = count;
       allSafePanels.sort((a, b) => a.distSq - b.distSq);
     }
 
@@ -1292,17 +1336,17 @@ export class Game {
       }
       const active = pl.userData.boundSafe;
       if (active) {
-        const { safeLight, pos } = active;
-        const monsterDist = this.getMinMonsterDistance(pos);
+        const { safeLight } = active;
+        const monsterDist = this.getMinMonsterDistance(active);
         let flickerMult = 1.0;
-        const basePhase = (pos.x * 3.1 + pos.z * 5.7) % 6.28;
+        const basePhase = (active.x * 3.1 + active.z * 5.7) % 6.28;
         const flameBreath = 0.96 + 0.04 * Math.sin((this.elapsedTime || 0) * 1.8 + basePhase);
         flickerMult = flameBreath;
 
         if (monsterDist < 11.0) {
           const proximity = Math.min(1.0, Math.max(0.0, 1.0 - (monsterDist / 11.0)));
           const freq = 1.6 + proximity * 2.4;
-          const phase = (pos.x * 7.91 + pos.z * 13.43) % 6.28;
+          const phase = (active.x * 7.91 + active.z * 13.43) % 6.28;
           const t = (this.elapsedTime || 0) * freq + phase;
           const wave = Math.sin(t) * 0.5 + Math.sin(t * 1.7 + 0.5) * 0.3 + Math.sin(t * 3.1) * 0.2;
           const sag = 0.72 - proximity * 0.18;
@@ -1310,7 +1354,7 @@ export class Game {
           flickerMult = THREE.MathUtils.lerp(sag, 1.0, mix);
         }
         safeLight.setFlickerState(flickerMult);
-        pl.position.copy(pos);
+        pl.position.set(active.x, active.y, active.z);
         pl.intensity = (SAFE_LIGHT_CONFIG.intensity || 8.5) * flickerMult;
       } else {
         if (doBind && i < allSafePanels.length) {

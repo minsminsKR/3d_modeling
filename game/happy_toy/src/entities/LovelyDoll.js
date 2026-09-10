@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { LOVELY_DOLL_CONFIG } from "../config/gameConfig.js";
+import { PATH_DEFERRED } from "../world/CollisionWorld.js";
 
 export class LovelyDoll {
   constructor(id, loadedAsset, collisionWorld, game) {
@@ -7,6 +8,20 @@ export class LovelyDoll {
     this.collisionWorld = collisionWorld;
     this.game = game;
     this.hud = game.hud;
+    this._frustum = new THREE.Frustum();
+    this._viewProj = new THREE.Matrix4();
+    this._checkPoint = new THREE.Vector3();
+    this._cameraDir = new THREE.Vector3();
+    this._toDoll = new THREE.Vector3();
+    this._moveDir = new THREE.Vector3();
+    this._doorDir = new THREE.Vector3();
+    this._prevPos = new THREE.Vector3();
+    this._scratchWorldPos = new THREE.Vector3();
+    this._footBones = null;
+    this._snapFrame = 0;
+    this._didInitialSnap = false;
+    this._staticGroundY = null;
+    this._staticGroundGroupY = 0;
     
     this.group = new THREE.Group();
     this.group.name = id;
@@ -20,7 +35,7 @@ export class LovelyDoll {
       // Set up materials for fading (making sure we can change opacity)
       this.modelRoot.traverse((child) => {
         if (child.isMesh || child.isSkinnedMesh) {
-          child.castShadow = true;
+          child.castShadow = false;
           child.receiveShadow = true;
           if (child.material) {
             if (Array.isArray(child.material)) {
@@ -90,47 +105,43 @@ export class LovelyDoll {
   }
 
   getLowestGroundPoint() {
-    let currentMinY = null;
-    let hasBones = false;
-    this.modelRoot.traverse((child) => {
-      if (child.isBone) hasBones = true;
-    });
-
-    if (hasBones) {
-      let minY = Infinity;
+    if (!this.modelRoot) return null;
+    if (this._footBones === null) {
+      this._footBones = [];
       this.modelRoot.traverse((child) => {
-        if (child.isBone) {
-          const name = child.name.toLowerCase();
-          if (name.includes("root") || name.includes("hips") || name.includes("pelvis") || 
-              name.includes("spine") || name.includes("chest") || name.includes("neck") || 
-              name.includes("head") || name.includes("clavicle") || name.includes("shoulder")) {
-            return;
-          }
-          child.updateMatrixWorld(true);
-          const worldPos = new THREE.Vector3();
-          child.getWorldPosition(worldPos);
-          if (worldPos.y < minY) {
-            minY = worldPos.y;
-          }
+        if (!child.isBone) return;
+        const name = child.name.toLowerCase();
+        if (name.includes("foot") || name.includes("toe") || name.includes("ankle") || name.includes("ball")) {
+          this._footBones.push(child);
         }
       });
-      if (Number.isFinite(minY)) {
-        currentMinY = minY;
-      }
     }
 
-    if (currentMinY === null) {
+    if (this._footBones.length > 0) {
+      let minY = Infinity;
+      for (const bone of this._footBones) {
+        bone.getWorldPosition(this._scratchWorldPos);
+        if (this._scratchWorldPos.y < minY) minY = this._scratchWorldPos.y;
+      }
+      return Number.isFinite(minY) ? minY : null;
+    }
+
+    if (this._staticGroundY == null) {
       this.modelRoot.updateMatrixWorld(true);
       const bounds = new THREE.Box3().setFromObject(this.modelRoot);
-      if (Number.isFinite(bounds.min.y)) {
-        currentMinY = bounds.min.y;
-      }
+      this._staticGroundY = Number.isFinite(bounds.min.y) ? bounds.min.y : null;
+      this._staticGroundGroupY = this.group.position.y;
     }
-    return currentMinY;
+    if (this._staticGroundY == null) return null;
+    return this._staticGroundY + (this.group.position.y - this._staticGroundGroupY);
   }
 
   snapModelToGround() {
     if (!this.modelRoot) return;
+    this._snapFrame = (this._snapFrame + 1) % 3;
+    if (this._didInitialSnap && this._snapFrame !== 0) {
+      return;
+    }
     const currentMinY = this.getLowestGroundPoint();
     if (currentMinY === null) {
       return;
@@ -141,6 +152,7 @@ export class LovelyDoll {
       this.modelRoot.position.y += offset;
       this.modelRoot.updateMatrixWorld(true);
     }
+    this._didInitialSnap = true;
   }
 
   update(deltaTime) {
@@ -174,20 +186,19 @@ export class LovelyDoll {
     }
 
     // Check player gaze
-    const frustum = new THREE.Frustum();
-    const cameraViewProjectionMatrix = new THREE.Matrix4();
+    const frustum = this._frustum;
+    const cameraViewProjectionMatrix = this._viewProj;
     this.game.camera.updateMatrixWorld();
     this.game.camera.matrixWorldInverse.copy(this.game.camera.matrixWorld).invert();
     cameraViewProjectionMatrix.multiplyMatrices(this.game.camera.projectionMatrix, this.game.camera.matrixWorldInverse);
     frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
 
-    const checkPoint = new THREE.Vector3(dollPos.x, dollPos.y + 0.8, dollPos.z);
+    const checkPoint = this._checkPoint.set(dollPos.x, dollPos.y + 0.8, dollPos.z);
     const inFrustum = frustum.containsPoint(checkPoint);
     const hasLos = inFrustum && this.collisionWorld.hasLineOfSight(this.game.camera.position, checkPoint);
-    
-    // Check if directly looking (yaw alignment)
-    const cameraDir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.game.camera.quaternion).normalize();
-    const toDoll = checkPoint.clone().sub(this.game.camera.position).normalize();
+
+    const cameraDir = this._cameraDir.set(0, 0, -1).applyQuaternion(this.game.camera.quaternion).normalize();
+    const toDoll = this._toDoll.copy(checkPoint).sub(this.game.camera.position).normalize();
     const gazeDot = cameraDir.dot(toDoll);
     
     const isStaring = inFrustum && hasLos && (gazeDot > 0.85);
@@ -262,11 +273,16 @@ export class LovelyDoll {
       this.pathTimer = 0.5;
     } else {
       if (this.path === null || this.pathTimer <= 0) {
-        this.path = this.collisionWorld.findPath(this.group.position, goal, 0.35, {
+        const path = this.collisionWorld.findPathBudgeted(this.group.position, goal, 0.35, {
           cellSize: 0.85,
           allowInterFloor: false,
         });
-        this.pathTimer = 0.4 + Math.random() * 0.2;
+        if (path === PATH_DEFERRED) {
+          this.pathTimer = 0.08;
+        } else {
+          this.path = path;
+          this.pathTimer = 0.4 + Math.random() * 0.2;
+        }
       }
 
       while (this.path && this.path.length > 1 && Math.hypot(this.group.position.x - this.path[1].x, this.group.position.z - this.path[1].z) < 0.4) {
@@ -282,13 +298,13 @@ export class LovelyDoll {
     this.playAction(isChased ? "run" : "walking");
 
     // Move
-    const direction = new THREE.Vector3(target.x - this.group.position.x, 0, target.z - this.group.position.z);
+    const direction = this._moveDir.set(target.x - this.group.position.x, 0, target.z - this.group.position.z);
     if (direction.lengthSq() > 0.0001) {
       direction.normalize();
       
       this.openDoorOnPath(direction);
 
-      const previousPosition = this.group.position.clone();
+      const previousPosition = this._prevPos.copy(this.group.position);
       this.group.position.addScaledVector(direction, speed * deltaTime);
       this.collisionWorld.resolveCircle(this.group.position, 0.35);
       this.collisionWorld.resolveActorPosition(
@@ -307,7 +323,8 @@ export class LovelyDoll {
       if (door.isOpen || door.isLocked || door.isBlocked || door.distanceTo(this.group.position) > 2.0) {
         continue;
       }
-      const doorDirection = new THREE.Vector3(door.position.x - this.group.position.x, 0, door.position.z - this.group.position.z).normalize();
+      const doorDirection = this._doorDir.set(door.position.x - this.group.position.x, 0, door.position.z - this.group.position.z);
+      if (doorDirection.lengthSq() > 0.0001) doorDirection.normalize();
       if (direction.dot(doorDirection) > 0.05) {
         door.isOpen = true;
       }

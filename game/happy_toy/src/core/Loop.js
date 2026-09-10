@@ -21,7 +21,8 @@ export class Loop {
     }
     this.running = true;
     this.clock.start();
-    this.tick();
+    // Defer the first tick so Game.init() can finish even if a frame throws.
+    this.frameId = requestAnimationFrame(() => this.tick());
   }
 
   stop() {
@@ -38,7 +39,14 @@ export class Loop {
     }
     const t0 = performance.now();
     const deltaTime = Math.min(this.clock.getDelta(), 0.05);
-    this.update(deltaTime);
+    try {
+      this.update(deltaTime);
+    } catch (error) {
+      if (t0 - this._lastPerfWarn > 1000) {
+        this._lastPerfWarn = t0;
+        console.error("[Loop] frame error — continuing so the game does not freeze", error);
+      }
+    }
     const dt = performance.now() - t0;
 
     if (typeof window !== "undefined") {

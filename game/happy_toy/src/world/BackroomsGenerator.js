@@ -160,6 +160,8 @@ export class BackroomsGenerator {
       }
     });
 
+    this._lastGenWarn = 0;
+
     this.lightPanelGeo = new THREE.BoxGeometry(0.14, 0.24, 0.14);
     this.unitBoxGeo = new THREE.BoxGeometry(1, 1, 1);
     this.lightPanelMat = new THREE.MeshStandardMaterial({
@@ -286,6 +288,7 @@ export class BackroomsGenerator {
       safeLights: [],
       finalExit: null,
       waypoints: [],
+      weepingAngels: [],
     };
 
     // 1. Create floor and ceiling
@@ -523,7 +526,11 @@ export class BackroomsGenerator {
 
     const dtTotal = performance.now() - tStart;
     if (dtTotal > 16.0) {
-      console.warn(`[PERF] generateChunk (${type} at ${cx},${cz}) took ${dtTotal.toFixed(2)}ms: floor=${dtFloor.toFixed(2)}ms, walls=${dtWalls.toFixed(2)}ms, lights=${dtLights.toFixed(2)}ms, interactables=${dtInteract.toFixed(2)}ms, waypoints=${dtWaypoints.toFixed(2)}ms`);
+      const now = performance.now();
+      if (now - this._lastGenWarn > 1000) {
+        this._lastGenWarn = now;
+        console.warn(`[PERF] generateChunk (${type} at ${cx},${cz}) took ${dtTotal.toFixed(2)}ms: floor=${dtFloor.toFixed(2)}ms, walls=${dtWalls.toFixed(2)}ms, lights=${dtLights.toFixed(2)}ms, interactables=${dtInteract.toFixed(2)}ms, waypoints=${dtWaypoints.toFixed(2)}ms`);
+      }
     }
 
     this.chunksData.set(key, chunk);
@@ -2099,6 +2106,8 @@ export class BackroomsGenerator {
           pathTimer: 0,
         };
         anchor.userData.shadowMesh = addShadowBlob(anchor, 0.38);
+        if (!chunk.weepingAngels) chunk.weepingAngels = [];
+        chunk.weepingAngels.push(anchor);
       }
     }
 
