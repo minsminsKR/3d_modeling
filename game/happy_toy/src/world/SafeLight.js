@@ -149,7 +149,7 @@ export class SafeLight {
 
   addMesh(geometry, material) {
     const mesh = new THREE.Mesh(geometry, material);
-    mesh.castShadow = true;
+    mesh.castShadow = false;
     mesh.receiveShadow = true;
     this.group.add(mesh);
     return mesh;

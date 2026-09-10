@@ -2,6 +2,9 @@
 // 렌더링과 업데이트 타이밍을 Game 클래스 밖으로 분리해 테스트와 교체를 쉽게 합니다.
 
 import * as THREE from "three";
+import { PERF_CONFIG } from "../config/gameConfig.js";
+
+const FRAME_RING_SIZE = PERF_CONFIG.frameTimeRingSize ?? 7200;
 
 export class Loop {
   constructor(update) {
@@ -9,6 +12,7 @@ export class Loop {
     this.update = update;
     this.running = false;
     this.frameId = null;
+    this._lastPerfWarn = 0;
   }
 
   start() {
@@ -41,10 +45,15 @@ export class Loop {
       if (!window.__happyToyFrameTimes) {
         window.__happyToyFrameTimes = [];
       }
-      window.__happyToyFrameTimes.push(dt);
+      const times = window.__happyToyFrameTimes;
+      times.push(dt);
+      if (times.length > FRAME_RING_SIZE) {
+        times.splice(0, times.length - Math.floor(FRAME_RING_SIZE * 0.75));
+      }
     }
 
-    if (dt > 16.7) {
+    if (dt > 33.3 && t0 - this._lastPerfWarn > 1000) {
+      this._lastPerfWarn = t0;
       console.warn(`[PERF] Frame took ${dt.toFixed(2)}ms (Spike!)`);
     }
 

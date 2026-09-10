@@ -25,6 +25,21 @@ export class MapBuilder {
     this.grimeMaterial = this.createGrimeMaterial();
     this.wallDecayGeometry = new THREE.PlaneGeometry(2.1, 2.5);
     this.wallDecayMaterial = this.textures.createWallDecayDecalMaterial();
+    this.fixtureMaterialStable = new THREE.MeshStandardMaterial({
+      color: 0xa8794f,
+      emissive: 0x8a4218,
+      emissiveIntensity: 0.78,
+      roughness: 0.54,
+      metalness: 0.08,
+    });
+    this.fixtureMaterialUnstable = new THREE.MeshStandardMaterial({
+      color: 0x7a4c2c,
+      emissive: 0x4d1907,
+      emissiveIntensity: 0.46,
+      roughness: 0.54,
+      metalness: 0.08,
+    });
+    this._lastChunkGenWarn = 0;
   }
 
   build() {
@@ -58,36 +73,38 @@ export class MapBuilder {
 
     let changed = false;
 
-    // Heavy operations only when crossing chunk boundaries
-    if (chunkChanged) {
-      // 1. Unload chunks beyond disable radius
-      for (const [key, chunk] of this.loadedChunks.entries()) {
-        const dx = Math.abs(chunk.cx - cx);
-        const dz = Math.abs(chunk.cz - cz);
-        if (dx > disableRadius || dz > disableRadius) {
-          this.generator.destroyChunk(chunk.cx, chunk.cz);
-          this.loadedChunks.delete(key);
+    // Unload at most one far chunk per frame, even after the player has settled
+    // in a new cell, so a long teleport cannot leave dozens of chunks resident.
+    let unloaded = 0;
+    for (const [key, chunk] of this.loadedChunks.entries()) {
+      const dx = Math.abs(chunk.cx - cx);
+      const dz = Math.abs(chunk.cz - cz);
+      if (dx > disableRadius || dz > disableRadius) {
+        this.generator.destroyChunk(chunk.cx, chunk.cz);
+        this.loadedChunks.delete(key);
 
-          // Remove unloaded items
-          this.doors = this.doors.filter((d) => d.chunkId !== chunk.chunkId);
-          this.keys = this.keys.filter((k) => k.chunkId !== chunk.chunkId);
-          this.cabinets = this.cabinets.filter((c) => c.chunkId !== chunk.chunkId);
-          this.safeLights = this.safeLights.filter((l) => l.chunkId !== chunk.chunkId);
-          if (this.finalExit && this.finalExit.chunkId === chunk.chunkId) {
-            this.finalExit = null;
-          }
-          changed = true;
+        this.doors = this.doors.filter((d) => d.chunkId !== chunk.chunkId);
+        this.keys = this.keys.filter((k) => k.chunkId !== chunk.chunkId);
+        this.cabinets = this.cabinets.filter((c) => c.chunkId !== chunk.chunkId);
+        this.safeLights = this.safeLights.filter((l) => l.chunkId !== chunk.chunkId);
+        if (this.finalExit && this.finalExit.chunkId === chunk.chunkId) {
+          this.finalExit = null;
+        }
+        changed = true;
+        unloaded += 1;
+        if (unloaded >= 1) {
+          break;
         }
       }
+    }
 
-      // 2. Filter out pending chunks in queue that are beyond disable radius
+    if (chunkChanged) {
       this.loadQueue = this.loadQueue.filter((q) => {
         const dx = Math.abs(q.cx - cx);
         const dz = Math.abs(q.cz - cz);
         return dx <= disableRadius && dz <= disableRadius;
       });
 
-      // 3. Find missing chunks in active radius and enqueue them
       let anyNewMissing = false;
       for (let dx = -activeRadius; dx <= activeRadius; dx++) {
         for (let dz = -activeRadius; dz <= activeRadius; dz++) {
@@ -147,7 +164,8 @@ export class MapBuilder {
         const chunk = this.generator.generateChunk(next.cx, next.cz);
         this.decorateChunk(chunk);
         const dt = performance.now() - t0;
-        if (dt > 4) {
+        if (dt > 16 && performance.now() - this._lastChunkGenWarn > 1000) {
+          this._lastChunkGenWarn = performance.now();
           console.warn(`[PERF] MapBuilder: generateChunk ${next.cx},${next.cz} took ${dt.toFixed(2)}ms`);
         }
         this.loadedChunks.set(key, chunk);
@@ -179,13 +197,9 @@ export class MapBuilder {
     const hasFixture = !isStairVoid && (chunk.type === "start" || isNarrowCorridor || random() < 0.52);
     if (hasFixture) {
       const isUnstable = chunk.type === "flicker_room" || random() < 0.14;
-      const fixtureMaterial = new THREE.MeshStandardMaterial({
-        color: isUnstable ? 0x7a4c2c : 0xa8794f,
-        emissive: isUnstable ? 0x4d1907 : 0x8a4218,
-        emissiveIntensity: isUnstable ? 0.46 : 0.78,
-        roughness: 0.54,
-        metalness: 0.08,
-      });
+      const fixtureMaterial = isUnstable
+        ? this.fixtureMaterialUnstable.clone()
+        : this.fixtureMaterialStable;
       const fixture = new THREE.Mesh(this.fixtureGeometry, fixtureMaterial);
       const offsetX = (random() - 0.5) * 1.2;
       const offsetZ = (random() - 0.5) * 1.2;

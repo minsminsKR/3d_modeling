@@ -2,7 +2,9 @@
 // 순찰, 플레이어 발견, 추적, 캐비넷 앞 대기, 포획 거리 판정을 처리합니다.
 
 import * as THREE from "three";
-import { direction2D, distance2D, vectorFromArray, yawFromDirection } from "../utils/math.js";
+import { direction2D, direction2DInto, distance2D, vectorFromArray, yawFromDirection } from "../utils/math.js";
+import { PATH_DEFERRED } from "../world/CollisionWorld.js";
+import { PERF_CONFIG } from "../config/gameConfig.js";
 
 export class Enemy {
   constructor(config, loadedAsset, collisionWorld, doors) {
@@ -27,6 +29,15 @@ export class Enemy {
     
     this.isBaby = config.type === "baby";
     this.babyAwake = false;
+    this._footBones = null;
+    this._scratchWorldPos = new THREE.Vector3();
+    this._movePrevPos = new THREE.Vector3();
+    this._moveDir = new THREE.Vector3();
+    this._snapFrame = 0;
+    this._didInitialSnap = false;
+    this._losTimer = 0;
+    this._cachedLos = true;
+    this._losGoal = new THREE.Vector3();
 
     if (this.isBaby) {
       this.state = "crying";
@@ -68,8 +79,7 @@ export class Enemy {
     // Waypoint-based long-distance wander state
     this.wanderTarget = null;          // current far waypoint goal
     this.wanderRetargetTimer = 0;      // countdown until we pick a new waypoint
-    this.wanderStuckCount = 0;         // how many times we got stuck on this waypoint
-    // Dormant state: monsters remain hidden & still until their intro cutscene triggers
+    this.wanderStuckCount = 0;
     this.isDormant = true;
     this.group.visible = false;
   }
@@ -314,58 +324,50 @@ export class Enemy {
   }
 
   getLowestGroundPoint() {
-    let currentMinY = null;
-    let hasBones = false;
-    this.modelRoot.traverse((child) => {
-      if (child.isBone) hasBones = true;
-    });
-
-    if (hasBones) {
-      let minY = Infinity;
+    if (this._footBones === null) {
+      this._footBones = [];
       this.modelRoot.traverse((child) => {
-        if (child.isBone) {
-          const name = child.name.toLowerCase();
-          if (name.includes("root") || name.includes("hips") || name.includes("pelvis") || 
-              name.includes("spine") || name.includes("chest") || name.includes("neck") || 
-              name.includes("head") || name.includes("clavicle") || name.includes("shoulder")) {
-            return;
-          }
-          child.updateMatrixWorld(true);
-          const worldPos = new THREE.Vector3();
-          child.getWorldPosition(worldPos);
-          if (worldPos.y < minY) {
-            minY = worldPos.y;
-          }
+        if (!child.isBone) {
+          return;
+        }
+        const name = child.name.toLowerCase();
+        if (name.includes("foot") || name.includes("toe") || name.includes("ankle") || name.includes("ball")) {
+          this._footBones.push(child);
         }
       });
-      if (Number.isFinite(minY)) {
-        currentMinY = minY;
-      }
     }
 
-    if (currentMinY === null) {
-      this.modelRoot.updateMatrixWorld(true);
-      const bounds = new THREE.Box3().setFromObject(this.modelRoot);
-      if (Number.isFinite(bounds.min.y)) {
-        currentMinY = bounds.min.y;
+    if (this._footBones.length > 0) {
+      let minY = Infinity;
+      for (const bone of this._footBones) {
+        bone.getWorldPosition(this._scratchWorldPos);
+        if (this._scratchWorldPos.y < minY) {
+          minY = this._scratchWorldPos.y;
+        }
       }
+      return Number.isFinite(minY) ? minY : null;
     }
-    return currentMinY;
+
+    this.modelRoot.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(this.modelRoot);
+    return Number.isFinite(bounds.min.y) ? bounds.min.y : null;
   }
 
   snapModelToGround(allowAirborne = false) {
+    this._snapFrame = (this._snapFrame + 1) % 3;
+    if (this._didInitialSnap && this._snapFrame !== 0) {
+      return;
+    }
     const currentMinY = this.getLowestGroundPoint();
     if (currentMinY === null) {
       return;
     }
 
-    // Target ground level: group.position.y (set by collisionWorld)
-    // minus visualGroundSink (sinks model slightly into floor for realism)
-    // plus footOffset (per-model correction for models whose pivot ≠ foot sole)
     const footOffset = this.config.footOffset ?? 0;
     const groundY = this.group.position.y - (this.config.visualGroundSink ?? 0) + footOffset;
 
     if (allowAirborne && currentMinY >= groundY) {
+      this._didInitialSnap = true;
       return;
     }
 
@@ -374,6 +376,7 @@ export class Enemy {
       this.modelRoot.position.y += offset;
       this.modelRoot.updateMatrixWorld(true);
     }
+    this._didInitialSnap = true;
   }
 
   getModelGroundOffset() {
@@ -856,7 +859,7 @@ export class Enemy {
     this.chasePathTimer -= deltaTime;
     const goalMoved = !this.chasePathGoal || distance2D(this.chasePathGoal, playerPosition) > 0.9;
     const canMoveDirect = this.isSameLevelAs(playerPosition)
-      && this.collisionWorld.hasLineOfSight(this.group.position, playerPosition);
+      && this.hasLineOfSightThrottled(playerPosition, deltaTime);
 
     if (canMoveDirect) {
       this.chasePath = [];
@@ -879,7 +882,7 @@ export class Enemy {
     this[timerKey] -= deltaTime;
 
     const canMoveDirect = this.isSameLevelAs(goal)
-      && this.collisionWorld.hasLineOfSight(this.group.position, goal);
+      && this.hasLineOfSightThrottled(goal, deltaTime);
     if (canMoveDirect) {
       this[pathKey] = [];
       this[goalKey] = goal.clone?.() || vectorFromArray([goal.x, goal.y, goal.z]);
@@ -888,29 +891,32 @@ export class Enemy {
       return goal;
     }
 
-    const goalMoved = forceRefresh || !this[goalKey] || distance2D(this[goalKey], goal) > 0.9;
+    const goalMoved = forceRefresh || !this[goalKey] || distance2D(this[goalKey], goal) > 1.5;
     if (this[pathKey] === null || this[timerKey] <= 0 || goalMoved) {
-      this[pathKey] = this.collisionWorld.findPath(this.group.position, goal, this.config.radius, {
+      const path = this.collisionWorld.findPathBudgeted(this.group.position, goal, this.config.radius, {
         cellSize: this.config.pathCellSize ?? 0.85,
         allowInterFloor: mode === "chase" || mode === "flee" || (mode === "wander" && Boolean(this.config.allowInterFloorPatrol)),
       });
-      this[goalKey] = goal.clone?.() || vectorFromArray([goal.x, goal.y, goal.z]);
-      this[timerKey] = this.config.pathRefreshSeconds ?? 0.28;
-      if (this[pathKey].length === 0) {
-        if (mode === "wander") {
-          // Pathfinding to wanderTarget failed — clear it so the next frame picks a new one.
-          // Broaden the search by temporarily lowering minDist requirements.
-          this.wanderTarget = null;
-          this.wanderRetargetTimer = 0;
-          this.wanderStuckCount = (this.wanderStuckCount ?? 0) + 1;
-          // If persistently failing, try nearest waypoint as fallback
-          if (this.wanderStuckCount >= 2) {
-            this.pickNextWaypointTarget(2, 40, this.config.wanderChunkRadius ?? 3);
-            this.wanderStuckCount = 0;
+      if (path === PATH_DEFERRED) {
+        this[timerKey] = 0.05;
+      } else {
+        this[pathKey] = path;
+        this[goalKey] = goal.clone?.() || vectorFromArray([goal.x, goal.y, goal.z]);
+        this[timerKey] = isAlert
+          ? (this.config.pathRefreshSeconds ?? PERF_CONFIG.pathRefreshChaseSeconds ?? 0.55)
+          : (this.config.patrolPathRefreshSeconds ?? PERF_CONFIG.pathRefreshPatrolSeconds ?? 0.9);
+        if (this[pathKey].length === 0) {
+          if (mode === "wander") {
+            this.wanderTarget = null;
+            this.wanderRetargetTimer = 0;
+            this.wanderStuckCount = (this.wanderStuckCount ?? 0) + 1;
+            if (this.wanderStuckCount >= 2) {
+              this.pickNextWaypointTarget(2, 40, this.config.wanderChunkRadius ?? 3);
+              this.wanderStuckCount = 0;
+            }
+            return null;
           }
-          return null;
         }
-        console.warn(`[Enemy:${this.config.id}] pathfinding failed in ${mode} mode.`);
       }
     }
 
@@ -930,14 +936,25 @@ export class Enemy {
     return nextTarget;
   }
 
+  hasLineOfSightThrottled(goal, deltaTime) {
+    this._losTimer -= deltaTime;
+    const goalMoved = distance2D(this._losGoal, goal) > 0.6;
+    if (this._losTimer <= 0 || goalMoved) {
+      this._cachedLos = this.collisionWorld.hasLineOfSight(this.group.position, goal);
+      this._losGoal.set(goal.x, goal.y ?? 0, goal.z);
+      this._losTimer = 0.12;
+    }
+    return this._cachedLos;
+  }
+
   moveToward(target, speed, deltaTime) {
-    const direction = direction2D(this.group.position, target);
+    const direction = direction2DInto(this.group.position, target, this._moveDir);
     if (direction.lengthSq() <= 0.0001) {
       return;
     }
 
     this.openDoorOnPath(direction);
-    const previousPosition = this.group.position.clone();
+    const previousPosition = this._movePrevPos.copy(this.group.position);
     this.group.position.addScaledVector(direction, speed * deltaTime);
     this.collisionWorld.resolveCircle(this.group.position, this.config.radius);
     this.collisionWorld.resolveActorPosition(
@@ -1316,7 +1333,7 @@ function addShadowBlob(group, radius) {
   });
 
   const mesh = new THREE.Mesh(geometry, material);
-  mesh.castShadow = true;
+  mesh.castShadow = false;
   mesh.receiveShadow = true;
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.y = 0.015; // slightly above ground to prevent z-fighting

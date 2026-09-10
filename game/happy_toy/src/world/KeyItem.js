@@ -28,25 +28,25 @@ export class KeyItem {
 
     const ring = new THREE.Mesh(new THREE.TorusGeometry(0.18, 0.035, 12, 22), material);
     ring.rotation.x = Math.PI / 2;
-    ring.castShadow = true;
+    ring.castShadow = false;
     ring.receiveShadow = true;
     this.group.add(ring);
 
     const shaft = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.06, 0.48), material);
     shaft.position.z = 0.34;
-    shaft.castShadow = true;
+    shaft.castShadow = false;
     shaft.receiveShadow = true;
     this.group.add(shaft);
 
     const toothA = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.06, 0.08), material);
     toothA.position.set(0.03, 0, 0.58);
-    toothA.castShadow = true;
+    toothA.castShadow = false;
     toothA.receiveShadow = true;
     this.group.add(toothA);
 
     const toothB = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.06, 0.08), material);
     toothB.position.set(-0.05, 0, 0.46);
-    toothB.castShadow = true;
+    toothB.castShadow = false;
     toothB.receiveShadow = true;
     this.group.add(toothB);
   }

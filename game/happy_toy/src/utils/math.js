@@ -26,6 +26,16 @@ export function direction2D(from, to) {
   return direction.divideScalar(length);
 }
 
+export function direction2DInto(from, to, out) {
+  out.set(to.x - from.x, 0, to.z - from.z);
+  const length = Math.hypot(out.x, out.z);
+  if (length <= 0.0001) {
+    out.set(0, 0, 0);
+    return out;
+  }
+  return out.divideScalar(length);
+}
+
 export function yawFromDirection(direction) {
   return Math.atan2(direction.x, direction.z);
 }
