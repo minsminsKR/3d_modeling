@@ -5319,12 +5319,12 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.05,
       });
     }
-    const cribX = center.x + (this.getHallClear(chunk.cx, chunk.cz) - 0.22);
-    for (const [name, z] of [["n", -2.88], ["s", 2.88]]) {
+    const cribX = center.x + 5.95;
+    for (const [name, z] of [["n", -5.15], ["s", 6.55]]) {
       this.placeDressedBox(
         chunk, chunkId, `nurseryhall_crib_${name}`,
         cribX, floorY + 0.42, center.z + z,
-        0.42, 0.84, 0.85, this.schoolCribMat,
+        0.72, 0.84, 0.85, this.schoolCribMat,
       );
     }
     this.addHallNookSign(
@@ -5423,12 +5423,12 @@ export class BackroomsGenerator {
         emissiveIntensity: 0.04,
       });
     }
-    const crateX = center.x + (this.getHallClear(chunk.cx, chunk.cz) - 0.22);
-    for (const [name, z] of [["n", -2.88], ["s", 2.88]]) {
+    const crateX = center.x + 5.95;
+    for (const [name, z] of [["n", -5.15], ["s", 5.15]]) {
       this.placeDressedBox(
         chunk, chunkId, `storagehall_crate_${name}`,
         crateX, floorY + 0.42, center.z + z,
-        0.42, 0.84, 0.78, this.schoolCrateMat,
+        0.72, 0.84, 0.78, this.schoolCrateMat,
       );
     }
     this.addHallNookSign(

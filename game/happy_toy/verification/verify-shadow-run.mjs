@@ -1121,8 +1121,8 @@ try {
   });
   const nurseryRoomWalk = [];
   for (const stop of [
-    { x: 32, z: 20.95 },
-    { x: 37.2, z: 20.95 },
+    { x: 32, z: 21.5 },
+    { x: 37.4, z: 21.5 },
   ]) {
     nurseryRoomWalk.push(await walkTo(stop, 320));
     console.log("nursery_room", stop, nurseryRoomWalk.at(-1));
@@ -1172,8 +1172,8 @@ try {
   });
   const storageRoomWalk = [];
   for (const stop of [
-    { x: 32, z: -9.65 },
-    { x: 37.2, z: -9.65 },
+    { x: 32, z: -9.0 },
+    { x: 37.4, z: -9.0 },
   ]) {
     storageRoomWalk.push(await walkTo(stop, 320));
     console.log("storage_room", stop, storageRoomWalk.at(-1));
@@ -2165,7 +2165,7 @@ try {
   assert.equal(storageHallWalk.at(-1).ok, true, `must walk the storage hall, got ${JSON.stringify(storageHallWalk.at(-1))}`);
   assert.ok(storageHallWalk.at(-1).z < -20 && Math.abs(storageHallWalk.at(-1).x - 32) < 1.4, "storage hall NS spine must stay open");
   assert.equal(storageRoomWalk.at(-1).ok, true, `must walk into the storage SE room, got ${JSON.stringify(storageRoomWalk.at(-1))}`);
-  assert.ok(storageRoomWalk.at(-1).x > 35.8 && storageRoomWalk.at(-1).z > -11.2, "storage SE room must be enterable off the spine");
+  assert.ok(storageRoomWalk.at(-1).x > 35.8 && storageRoomWalk.at(-1).z > -10.6, "storage SE room must be enterable off the spine");
   assert.equal(rooms.teaHallBench, true, "tea hall must show north benches");
   assert.equal(rooms.teaRoom, true, "tea hall must close north classroom volumes");
   assert.ok(rooms.beats.includes("teahall"), "tea hall VO beat missing");
