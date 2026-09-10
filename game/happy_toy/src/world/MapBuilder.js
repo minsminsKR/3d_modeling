@@ -483,7 +483,7 @@ export class MapBuilder {
     const c = chunk.center;
     const y = chunk.floorY;
     const gen = this.generator;
-    const wall = (gen.getHallClear?.(chunk.cx, chunk.cz) ?? 1.7) + 0.08;
+    const sides = gen.getHallSides?.(chunk.cx, chunk.cz) || { n: 1.7, s: 1.7, e: 1.7, w: 1.7 };
     const mask = gen.getHallNookMask?.(chunk.cx, chunk.cz) || { n: true, s: true, e: true, w: true };
     const doorsOf = (side) => gen.getHallDoorAlong?.(chunk.cx, chunk.cz, side) || [-5.25, 5.25];
     const sideSign = (alongs, i) => gen.hallDoorSideSign?.(alongs, i)
@@ -501,26 +501,26 @@ export class MapBuilder {
       if (mask.n) {
         const doors = doorsOf("n");
         doors.forEach((along, i) => {
-          addPlate(along + sideSign(doors, i) * 1.32, -wall, 0, `room_plate_n_${i}`, i);
+          addPlate(along + sideSign(doors, i) * 1.32, -(sides.n + 0.08), 0, `room_plate_n_${i}`, i);
         });
       }
       if (mask.s) {
         const doors = doorsOf("s");
         doors.forEach((along, i) => {
-          addPlate(along + sideSign(doors, i) * 1.32, wall, Math.PI, `room_plate_s_${i}`, 2 + i);
+          addPlate(along + sideSign(doors, i) * 1.32, sides.s + 0.08, Math.PI, `room_plate_s_${i}`, 2 + i);
         });
       }
     } else if (chicanes.ns) {
       if (mask.w) {
         const doors = doorsOf("w");
         doors.forEach((along, i) => {
-          addPlate(-wall, along + sideSign(doors, i) * 1.32, Math.PI / 2, `room_plate_w_${i}`, i);
+          addPlate(-(sides.w + 0.08), along + sideSign(doors, i) * 1.32, Math.PI / 2, `room_plate_w_${i}`, i);
         });
       }
       if (mask.e) {
         const doors = doorsOf("e");
         doors.forEach((along, i) => {
-          addPlate(wall, along + sideSign(doors, i) * 1.32, -Math.PI / 2, `room_plate_e_${i}`, 2 + i);
+          addPlate(sides.e + 0.08, along + sideSign(doors, i) * 1.32, -Math.PI / 2, `room_plate_e_${i}`, 2 + i);
         });
       }
     }
@@ -535,10 +535,10 @@ export class MapBuilder {
         }),
       );
       if (chicanes.ew) {
-        ofuda.position.set(c.x + 3.35, y + 1.85, c.z - wall);
+        ofuda.position.set(c.x + 3.35, y + 1.85, c.z - (sides.n + 0.08));
         ofuda.rotation.y = 0;
       } else {
-        ofuda.position.set(c.x - wall, y + 1.85, c.z + 3.35);
+        ofuda.position.set(c.x - (sides.w + 0.08), y + 1.85, c.z + 3.35);
         ofuda.rotation.y = Math.PI / 2;
       }
       ofuda.rotation.z = (random() - 0.5) * 0.18;

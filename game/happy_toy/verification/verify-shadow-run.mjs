@@ -396,6 +396,24 @@ try {
     game.testSafeMode = false;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(4, 0);
+    game.player.setPosition({ x: 68.2, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const annexOffsetWalk = [];
+  for (const stop of [
+    { x: 68.2, z: -1.12 },
+  ]) {
+    annexOffsetWalk.push(await walkTo(stop, 220));
+    console.log("annex_offset", stop, annexOffsetWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(2, 0);
     game.player.setPosition({ x: 32, y: 0, z: 0 });
     for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
@@ -547,6 +565,24 @@ try {
   ]) {
     memorialWalk.push(await walkTo(stop, 360));
     console.log("memorial", stop, memorialWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(6, 0);
+    game.player.setPosition({ x: 99.4, y: 0, z: 0 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const memorialOffsetWalk = [];
+  for (const stop of [
+    { x: 99.4, z: 1.78 },
+  ]) {
+    memorialOffsetWalk.push(await walkTo(stop, 220));
+    console.log("memorial_offset", stop, memorialOffsetWalk.at(-1));
   }
 
   await page.evaluate(() => {
@@ -1007,6 +1043,24 @@ try {
     game.testSafeMode = false;
     game.cutsceneEvent = null;
     game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(1, 1);
+    game.player.setPosition({ x: 20, y: 0, z: 16 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const stairOffsetWalk = [];
+  for (const stop of [
+    { x: 20, z: 17.65 },
+  ]) {
+    stairOffsetWalk.push(await walkTo(stop, 220));
+    console.log("stair_offset", stop, stairOffsetWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
     game.mapBuilder.generator.generateChunk(2, 0);
     game.mapBuilder.generator.generateChunk(2, 1);
     game.mapBuilder.generator.generateChunk(1, 1);
@@ -1139,6 +1193,24 @@ try {
   ]) {
     nurseryPinchWalk.push(await walkTo(stop, 220));
     console.log("nursery_pinch", stop, nurseryPinchWalk.at(-1));
+  }
+
+  await page.evaluate(() => {
+    const game = window.__happyToy;
+    game.ghostMode = true;
+    game.testSafeMode = false;
+    game.cutsceneEvent = null;
+    game.monsterIntroManager?.reset?.();
+    game.mapBuilder.generator.generateChunk(2, 1);
+    game.player.setPosition({ x: 32, y: 0, z: 19.4 });
+    for (let i = 0; i < 8; i += 1) game.update(0.05, { skipRender: true });
+  });
+  const nurseryOffsetWalk = [];
+  for (const stop of [
+    { x: 30.88, z: 19.4 },
+  ]) {
+    nurseryOffsetWalk.push(await walkTo(stop, 220));
+    console.log("nursery_offset", stop, nurseryOffsetWalk.at(-1));
   }
 
   await page.evaluate(() => {
@@ -1558,6 +1630,18 @@ try {
         annex: generator.getHallDoorAlong(4, 0, "n"),
         nursery: generator.getHallDoorAlong(2, 1, "w"),
         doll: generator.getHallDoorAlong(-2, 1, "w"),
+        lost: generator.getHallDoorAlong(-2, 0, "w"),
+        stairN: generator.getHallDoorAlong(1, 1, "n"),
+      },
+      hallSides: {
+        chase: generator.getHallSides(1, 0),
+        cut: generator.getHallSides(2, 0),
+        annex: generator.getHallSides(4, 0),
+        nursery: generator.getHallSides(2, 1),
+        memorial: generator.getHallSides(6, 0),
+        sky: generator.getHallSides(3, 0),
+        stair: generator.getHallSides(1, 1),
+        lost: generator.getHallSides(-2, 0),
       },
       arcadeCol: names(arcade).some((name) => name.includes("arcade_col_")),
       arcadeBench: names(arcade).some((name) => name.includes("arcade_bench_")),
@@ -1902,7 +1986,7 @@ try {
     };
   });
 
-  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, trophyWalk, trophySwWalk, trophyWideWalk, annexNorthWalk, annexRoomWalk, annexPinchWalk, eastwashRoomWalk, washfourRoomWalk, angelRoomWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, laundryRoomWalk, specimenRoomWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, nurseryRoomWalk, nurseryPinchWalk, dollRoomWalk, storageRoomWalk, labLinkRoomWalk, dormWalk, dollClassWalk, prepStoreWalk, closedLibWalk, etiquetteWalk, roofHallWalk, lostFoundWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
+  console.log({ annexWalk, loopWalk, ringWalk, longRingWalk, northWalk, nsLoopWalk, f1MazeWalk, throughWalk, gymWalk, trophyWalk, trophySwWalk, trophyWideWalk, annexNorthWalk, annexRoomWalk, annexPinchWalk, annexOffsetWalk, eastwashRoomWalk, washfourRoomWalk, angelRoomWalk, windowBlock, yardWalk, arcadeWalk, artWalk, memorialWalk, memorialOffsetWalk, foyerWalk, audWalk, practiceBlock, practiceWalk, studioWalk, broadcastWalk, darkroomWalk, greenroomWalk, homeEcWalk, clubWalk, specimenWalk, stageWalk, laundryWalk, laundryRoomWalk, specimenRoomWalk, labLinkWalk, avWalk, supplyWalk, counselWalk, staticWalk, stairHallWalk, stairOffsetWalk, nurseryHallWalk, dollHallWalk, archiveHallWalk, storageHallWalk, teaHallWalk, nurseryRoomWalk, nurseryPinchWalk, nurseryOffsetWalk, dollRoomWalk, storageRoomWalk, labLinkRoomWalk, dormWalk, dollClassWalk, prepStoreWalk, closedLibWalk, etiquetteWalk, roofHallWalk, lostFoundWalk, rooms, altarStill, b1Walk, b1DeepWalk, b1EastWalk, f2Walk, f2DeepWalk, f2SouthWalk, story, loop });
   assert.equal(errors.length, 0, `page errors: ${errors.join(" | ")}`);
   assert.ok(annexWalk[0].x > 8, `must leave the start hall east, got ${JSON.stringify(annexWalk[0])}`);
   assert.ok(annexWalk.some((stop) => stop.z > 4.0 && stop.x < 13), "east hall south alcove locker must be walkable");
@@ -1965,6 +2049,24 @@ try {
   assert.equal(rooms.hallDoor.cutWest, -5.25, "east-wash n-west door must stay on the cut-through aisle");
   assert.notDeepEqual(rooms.hallDoor.nursery, [-5.25, 5.25], "nursery west doors must leave the copied ±5.25 rhythm");
   assert.notDeepEqual(rooms.hallDoor.annex, [-5.25, 5.25], "annex north doors must leave the copied ±5.25 rhythm");
+  assert.notDeepEqual(rooms.hallDoor.lost, [-5.25, 5.25], "lost-and-found west doors must leave the copied ±5.25 rhythm");
+  assert.notDeepEqual(rooms.hallDoor.stairN, [-5.25, 5.25], "stair hall north doors must leave the copied ±5.25 rhythm");
+  assert.equal(rooms.hallSides.chase.n, rooms.hallSides.chase.s, "chase halls stay a centered 3.4m");
+  assert.equal(rooms.hallSides.cut.n, rooms.hallSides.cut.s, "east-wash cut-through stays a centered 3.4m");
+  assert.notEqual(rooms.hallSides.annex.n, rooms.hallSides.annex.s, "annex gate must offset north vs south walls");
+  assert.notEqual(rooms.hallSides.nursery.e, rooms.hallSides.nursery.w, "nursery hall must offset east vs west walls");
+  assert.notEqual(rooms.hallSides.memorial.n, rooms.hallSides.memorial.s, "memorial hall must offset the glass walls");
+  assert.notEqual(rooms.hallSides.sky.n, rooms.hallSides.sky.s, "skybridge must offset the glass walls");
+  assert.notEqual(rooms.hallSides.stair.n, rooms.hallSides.stair.s, "stair plus must offset north vs south");
+  assert.notEqual(rooms.hallSides.stair.e, rooms.hallSides.stair.w, "stair plus must offset east vs west");
+  assert.equal(annexOffsetWalk.at(-1).ok, true, `annex north offset must walk past the old 1.22m wall, got ${JSON.stringify(annexOffsetWalk.at(-1))}`);
+  assert.ok(annexOffsetWalk.at(-1).z < -0.95, "annex offset north wall must reach z≈-1 where the old pinch would stop");
+  assert.equal(memorialOffsetWalk.at(-1).ok, true, `memorial south offset must walk past a 3.4m wall, got ${JSON.stringify(memorialOffsetWalk.at(-1))}`);
+  assert.ok(memorialOffsetWalk.at(-1).z > 1.5, "memorial offset south wall must reach z≈1.7 where a copied 3.4m wall would stop");
+  assert.equal(stairOffsetWalk.at(-1).ok, true, `stair plus south offset must walk past a 3.4m wall, got ${JSON.stringify(stairOffsetWalk.at(-1))}`);
+  assert.ok(stairOffsetWalk.at(-1).z > 17.42, "stair offset south wall must reach z≈17.5 where a copied plus would stop");
+  assert.equal(nurseryOffsetWalk.at(-1).ok, true, `nursery west offset must walk past the old 1.28m wall, got ${JSON.stringify(nurseryOffsetWalk.at(-1))}`);
+  assert.ok(nurseryOffsetWalk.at(-1).x < 31.05, "nursery offset west wall must reach x≈30.9 where the old pinch would stop");
   assert.equal(rooms.arcadeRoom, true, "arcade must close west classroom volumes");
   assert.equal(trophyWideWalk.at(-1).ok, true, `trophy hall must walk off-spine inside the wide clear, got ${JSON.stringify(trophyWideWalk.at(-1))}`);
   assert.ok(trophyWideWalk.at(-1).z > 1.65 && trophyWideWalk.at(-1).x > 113.8, "trophy wide clear must reach z≈2 where a 3.4m wall would stop");
