@@ -5257,6 +5257,16 @@ export class BackroomsGenerator {
     );
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "arcade_room_nw", "nw", "ns");
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "arcade_room_sw", "sw", "ns");
+    this.placeDressedBox(
+      chunk, chunkId, "arcade_room_sw_l_x",
+      center.x - 3.525, floorY + 1.4, center.z + 4.15,
+      2.05, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "arcade_room_sw_l_z",
+      center.x - 4.55, floorY + 1.4, center.z + 3.29,
+      0.22, 2.8, 1.72, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x181410, 0.12, 4.2, 2);
     glow.position.set(center.x + 2.4, floorY + 2.05, center.z);
     glow.name = `${chunkId}_arcade_glow`;
@@ -5306,6 +5316,16 @@ export class BackroomsGenerator {
       center.x - 3.48, floorY + 1.4, center.z - 2.52,
       0.22, 2.8, 2.12, this.schoolClassWallMat,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "specimen_room_sw_l_x",
+      center.x - 5.22, floorY + 1.4, center.z + 3.58,
+      3.52, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "specimen_room_sw_l_z",
+      center.x - 3.48, floorY + 1.4, center.z + 2.52,
+      0.22, 2.8, 2.12, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x182014, 0.12, 4.0, 2);
     glow.position.set(center.x - 2.4, floorY + 2.05, center.z);
     glow.name = `${chunkId}_specimen_glow`;
@@ -5341,6 +5361,18 @@ export class BackroomsGenerator {
       chunk, chunkId, "stagewing_sign",
       center.x, floorY + 2.12, center.z - 1.82,
       0, "무대",
+    );
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "stagewing_room_nw", "nw");
+    this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "stagewing_room_ne", "ne");
+    this.placeDressedBox(
+      chunk, chunkId, "stagewing_room_ne_l_z",
+      center.x + 3.15, floorY + 1.4, center.z - 5.25,
+      0.22, 2.8, 3.55, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "stagewing_room_ne_l_x",
+      center.x + 2.28, floorY + 1.4, center.z - 3.48,
+      1.74, 2.8, 0.22, this.schoolClassWallMat,
     );
     const glow = new THREE.PointLight(0x201418, 0.12, 4.0, 2);
     glow.position.set(center.x, floorY + 2.05, center.z - 2.4);
@@ -5389,6 +5421,16 @@ export class BackroomsGenerator {
       center.x - 3.55, floorY + 1.4, center.z - 2.435,
       0.22, 2.8, 1.93, this.schoolClassWallMat,
     );
+    this.placeDressedBox(
+      chunk, chunkId, "laundry_room_sw_l_x",
+      center.x - 5.465, floorY + 1.4, center.z + 3.40,
+      3.83, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "laundry_room_sw_l_z",
+      center.x - 3.55, floorY + 1.4, center.z + 2.435,
+      0.22, 2.8, 1.93, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x1c1410, 0.11, 3.8, 2);
     glow.position.set(center.x - 2.2, floorY + 2.0, center.z);
     glow.name = `${chunkId}_laundry_glow`;
@@ -5428,6 +5470,16 @@ export class BackroomsGenerator {
     );
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "lablink_room_se", "se");
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "lablink_room_sw", "sw");
+    this.placeDressedBox(
+      chunk, chunkId, "lablink_room_sw_l_x",
+      center.x - 5.55, floorY + 1.4, center.z + 3.55,
+      2.40, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "lablink_room_sw_l_z",
+      center.x - 4.35, floorY + 1.4, center.z + 2.65,
+      0.22, 2.8, 1.80, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x101820, 0.11, 3.8, 2);
     glow.position.set(center.x, floorY + 2.0, center.z + 2.2);
     glow.name = `${chunkId}_lablink_glow`;
@@ -5555,6 +5607,16 @@ export class BackroomsGenerator {
     this.placeDressedBox(
       chunk, chunkId, "doll_room_sw_l_z",
       center.x - 4.55, floorY + 1.4, center.z + 3.29,
+      0.22, 2.8, 1.72, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "doll_room_nw_l_x",
+      center.x - 3.525, floorY + 1.4, center.z - 4.15,
+      2.05, 2.8, 0.22, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "doll_room_nw_l_z",
+      center.x - 4.55, floorY + 1.4, center.z - 3.29,
       0.22, 2.8, 1.72, this.schoolClassWallMat,
     );
     const glow = new THREE.PointLight(0x201010, 0.48, 6.0, 2);
@@ -5928,6 +5990,16 @@ export class BackroomsGenerator {
     );
     // Keep n-west CLASS open for the (1,0)→(2,0) cut-through.
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "eastwash_room_ne", "ne");
+    this.placeDressedBox(
+      chunk, chunkId, "eastwash_room_ne_l_z",
+      center.x + 3.40, floorY + 1.4, center.z - 5.465,
+      0.22, 2.8, 3.83, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "eastwash_room_ne_l_x",
+      center.x + 2.435, floorY + 1.4, center.z - 3.55,
+      1.93, 2.8, 0.22, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x101418, 0.48, 6.0, 2);
     glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_eastwash_glow`;
@@ -5948,6 +6020,16 @@ export class BackroomsGenerator {
       0, "석고",
     );
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "angel_room_ne", "ne");
+    this.placeDressedBox(
+      chunk, chunkId, "angel_room_ne_l_z",
+      center.x + 3.22, floorY + 1.4, center.z - 5.38,
+      0.22, 2.8, 3.62, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "angel_room_ne_l_x",
+      center.x + 2.28, floorY + 1.4, center.z - 3.58,
+      1.88, 2.8, 0.22, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x181410, 0.48, 6.0, 2);
     glow.position.set(center.x + 3.2, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_angelhall_glow`;
@@ -5980,6 +6062,16 @@ export class BackroomsGenerator {
       0, "신발",
     );
     this.dressClosedCornerRoom(chunk, center, chunkId, floorY, "washfour_room_ne", "ne");
+    this.placeDressedBox(
+      chunk, chunkId, "washfour_room_ne_l_z",
+      center.x + 3.55, floorY + 1.4, center.z - 5.52,
+      0.22, 2.8, 3.70, this.schoolClassWallMat,
+    );
+    this.placeDressedBox(
+      chunk, chunkId, "washfour_room_ne_l_x",
+      center.x + 2.58, floorY + 1.4, center.z - 3.68,
+      1.94, 2.8, 0.22, this.schoolClassWallMat,
+    );
     const glow = new THREE.PointLight(0x181410, 0.48, 6.0, 2);
     glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
     glow.name = `${chunkId}_washfour_glow`;
