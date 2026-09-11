@@ -5,7 +5,7 @@ export const ITEM_TYPES = {
   BATTERY: {
     id: "battery",
     name: "건전지",
-    description: "손전등의 배터리를 100% 충전합니다.",
+    description: "획득 즉시 손전등 배터리를 100% 충전합니다.",
     color: 0x33cc33,
   },
   ENERGY_DRINK: {
@@ -17,7 +17,7 @@ export const ITEM_TYPES = {
   FIRECRACKER: {
     id: "firecracker",
     name: "폭죽",
-    description: "던지면 폭발 소리로 근처 몬스터의 시선을 끕니다. (Q 키로 즉시 투척)",
+    description: "10초간 타닥거리며 배회 중인 몬스터를 유인합니다. 도착한 몬스터는 10초간 머뭅니다. 추격 중에는 효과가 없습니다. (Q)",
     color: 0xff3333,
   },
   COMPASS: {
@@ -77,19 +77,27 @@ export class ItemPickup {
   }
 
   getPrompt() {
+    if(this.type==='battery')return '[E] 건전지 획득 · 즉시 완전 충전';
     const info = ITEM_TYPES[this.type.toUpperCase()];
     return `[E] ${info ? info.name : "아이템"} 획득`;
   }
 
   interact(context) {
     if (this.collected) return false;
+    if(this.type==='battery') {
+      const flashlight=context?.game?.flashlightController;
+      if(!flashlight)return false;
+      flashlight.rechargeBattery(1);
+      this.collected=true;this.group.visible=false;
+      soundManager.playSFX('item_use');
+      context.hud?.setStatus('건전지를 주워 손전등을 완전히 충전했습니다.',2200);
+      return true;
+    }
     this.collected = true;
     this.group.visible = false;
     soundManager.playSFX("key_pickup");
 
-    if (context && context.itemSystem) {
-      context.itemSystem.addItemToInventory(this.type);
-    }
+    (context?.itemSystem||context?.game?.itemSystem)?.addItemToInventory(this.type);
     return true;
   }
 }
@@ -107,6 +115,9 @@ export class FirecrackerProjectile {
     this.lifeTimer = 0;
     this.fuseTime = 1.2; // 1.2초 후 폭발
     this.postTimer = 0;
+    this.noiseId=`firecracker-${FirecrackerProjectile.nextId=(FirecrackerProjectile.nextId||0)+1}`;
+    this.crackleTimer=0;
+    this.noiseTimer=0;
     this.bounceCount = 0;
 
     // Visual Mesh
@@ -134,11 +145,27 @@ export class FirecrackerProjectile {
     if (!this.alive) return;
     if (this.exploded) {
       this.postTimer += deltaTime;
-      const progress = Math.min(1, this.postTimer / 0.32);
-      if (this.light) this.light.intensity = 18 * Math.pow(1 - progress, 2);
-      this.shockwave.scale.setScalar(1 + progress * 8);
-      this.shockwave.material.opacity = 0.38 * (1 - progress);
-      if (progress >= 1) {
+      this.crackleTimer-=deltaTime;this.noiseTimer-=deltaTime;
+      if(this.crackleTimer<=0&&this.postTimer<10) {
+        this.crackleTimer=.07+Math.random()*.13;
+        const listener=window.__happyToy?.player?.position;
+        const volume=listener&&Math.abs(listener.y-this.floorY)<2?Math.max(0,1-listener.distanceTo(this.position)/30):0;
+        soundManager.playSFX('firecracker_crackle',volume);
+        if(this.light)this.light.intensity=2+Math.random()*3;
+        this.shockwave.scale.setScalar(.6+Math.random()*1.5);
+      }
+      if(this.noiseTimer<=0&&this.postTimer<10){this.noiseTimer=.5;this.notifyNoise();}
+      if(this.light)this.light.intensity*=Math.exp(-deltaTime*12);
+      this.shockwave.material.opacity=.12+.15*Math.random();
+      if(this.sparks) {
+        const positions=this.sparks.geometry.attributes.position;
+        for(let i=0;i<positions.count;i++) {
+          const phase=(this.postTimer*2.7+i*.173)%1,angle=i*2.4+this.postTimer*.3;
+          positions.setXYZ(i,Math.cos(angle)*phase*.35,Math.sin(phase*Math.PI)*.38,Math.sin(angle)*phase*.35);
+        }
+        positions.needsUpdate=true;
+      }
+      if (this.postTimer >= 10) {
         this.dispose();
         this.alive = false;
       }
@@ -148,7 +175,12 @@ export class FirecrackerProjectile {
 
     // Gravity & Translation
     this.velocity.y -= 9.8 * deltaTime;
+    const previous=this.position.clone();
     this.position.addScaledVector(this.velocity, deltaTime);
+    const world=this.enemyManager?.collisionWorld;
+    if(world&&(world.isCircleBlocked(this.position,.08)||!world.hasLineOfSight(previous,this.position))) {
+      this.position.copy(previous);this.velocity.x=0;this.velocity.z=0;
+    }
 
     // Floor collision
     if (this.position.y <= this.floorY) {
@@ -183,8 +215,8 @@ export class FirecrackerProjectile {
 
     if (this.light) {
       this.light.color.setHex(0xff6a20);
-      this.light.intensity = 18;
-      this.light.distance = 18;
+      this.light.intensity = 5;
+      this.light.distance = 4;
       this.light.position.copy(this.position).y += 0.25;
     }
 
@@ -201,14 +233,22 @@ export class FirecrackerProjectile {
     this.shockwave.rotation.x = -Math.PI / 2;
     this.shockwave.position.copy(this.position).add(new THREE.Vector3(0, 0.018, 0));
     this.scene.add(this.shockwave);
+    const sparkGeometry=new THREE.BufferGeometry();
+    sparkGeometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(36),3));
+    this.sparks=new THREE.Points(sparkGeometry,new THREE.PointsMaterial({color:0xffb34e,size:.035,transparent:true,opacity:.85,depthWrite:false}));
+    this.sparks.frustumCulled=false;
+    this.sparks.position.copy(this.position);this.scene.add(this.sparks);
 
     // Distract nearby enemies
     if (this.enemyManager) {
-      this.enemyManager.notifyNoiseEvent(this.position, 28.0, {
-        duration: 7.5,
-        source: "firecracker",
-      });
+      this.notifyNoise();
     }
+  }
+
+  notifyNoise() {
+    this.enemyManager?.notifyNoiseEvent(this.position,28,{
+      duration:10,holdOnArrival:true,source:'firecracker',noiseId:this.noiseId,silentFeedback:this.postTimer>0,
+    });
   }
 
   dispose() {
@@ -216,6 +256,7 @@ export class FirecrackerProjectile {
     this.alive = false;
     this.scene.remove(this.mesh);
     if (this.shockwave) this.scene.remove(this.shockwave);
+    if(this.sparks){this.scene.remove(this.sparks);this.sparks.geometry.dispose();this.sparks.material.dispose();}
     if (this.light) {
       this.light.intensity = 0;
       this.light.userData.inUse = false;
@@ -247,7 +288,7 @@ export class ItemSystem {
       return light;
     });
     this.inventory = {
-      battery: 2,
+      battery: 0,
       energy_drink: 1,
       firecracker: 2,
       compass: 1,
@@ -289,7 +330,7 @@ export class ItemSystem {
     switch (key) {
       case "battery": {
         if (flashlight) {
-          if (flashlight.batteryLevel >= 0.92) {
+          if (flashlight.batteryLevel >= 0.999) {
             this.hud?.setStatus("아직 건전지를 교체할 필요가 없습니다.", 1400);
             return false;
           }
@@ -351,7 +392,7 @@ export class ItemSystem {
   reset() {
     for (const projectile of this.projectiles) projectile.dispose();
     this.projectiles.length = 0;
-    this.inventory = { battery: 2, energy_drink: 1, firecracker: 2, compass: 1 };
+    this.inventory = { battery: 0, energy_drink: 1, firecracker: 2, compass: 1 };
     for (const pickup of this.pickups) {
       pickup.collected = false;
       pickup.group.visible = true;

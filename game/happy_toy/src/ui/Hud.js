@@ -79,6 +79,17 @@ export class Hud {
     document.body.dataset.dreadPhase = phase;
   }
 
+  setSlowStatus(seconds) {
+    if(!this.slowStatus) {
+      this.slowStatus=document.createElement('div');this.slowStatus.className='curse-status';
+      this.slowStatus.hidden=true;document.body.append(this.slowStatus);
+    }
+    const remaining=Math.ceil(seconds);
+    if(this.slowStatusSeconds===remaining)return;
+    this.slowStatusSeconds=remaining;this.slowStatus.hidden=remaining<=0;
+    this.slowStatus.textContent=remaining>0?`초록불의 저주 · 이동속도 50% · ${remaining}초`:'';
+  }
+
   setStatus(text, timeout = 0) {
     window.clearTimeout(this.statusTimer);
     if (this.statusElement) {

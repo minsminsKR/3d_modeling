@@ -408,6 +408,7 @@ export class Enemy {
   }
 
   updatePerception(playerPosition, deltaTime, playerState = {}) {
+    this.departureAvoidSeconds = Math.max(0, (this.departureAvoidSeconds || 0) - deltaTime);
     const isPlayerHidden = Boolean(playerState.isHidden || playerState.isUndetectable);
     const isPlayerSprinting = Boolean(playerState.isSprinting);
     const wasChasing = this.state === "chase" || this.state === "flee";
@@ -425,13 +426,10 @@ export class Enemy {
       } else if (this.state === "search") {
         this.searchTimer -= deltaTime;
         if (this.searchTimer <= 0) {
-          this.beginWander();
+          this.beginDeparture(this.searchTarget || playerPosition);
         }
       } else if (this.state === "investigateNoise") {
-        this.investigationTimer -= deltaTime;
-        if (this.investigationTimer <= 0) {
-          this.beginSearch(this.investigationTarget, this.config.postNoiseSearchSeconds ?? 2.2);
-        }
+        this.updateNoiseInvestigation(deltaTime);
       }
       return;
     }
@@ -552,16 +550,13 @@ export class Enemy {
     if (this.state === "search") {
       this.searchTimer -= deltaTime;
       if (this.searchTimer <= 0) {
-        this.beginWander();
+        this.beginDeparture(this.searchTarget || this.group.position);
       }
       return;
     }
 
     if (this.state === "investigateNoise") {
-      this.investigationTimer -= deltaTime;
-      if (this.investigationTimer <= 0) {
-        this.beginSearch(this.investigationTarget, this.config.postNoiseSearchSeconds ?? 2.2);
-      }
+      this.updateNoiseInvestigation(deltaTime);
     }
   }
 
@@ -580,6 +575,7 @@ export class Enemy {
   }
 
   beginWander() {
+    this.departureTarget = null;
     this.state = "wander";
     this.memoryTimer = 0;
     this.lastKnownPlayerPosition = null;
@@ -598,7 +594,46 @@ export class Enemy {
     this.patrolPathGoal = null;
   }
 
+  // Commit to a reachable corridor destination before resuming random patrol.
+  beginDeparture(origin) {
+    const avoid = clonePoint(origin || this.group.position);
+    this.beginWander();
+    this.departureOrigin = avoid;
+    this.departureAvoidSeconds = 45;
+    const candidates = this.getActivePatrolWaypoints().map(vectorFromArray)
+      .filter(wp => this.isSameLevelAs(wp) && this.matchesFloor(wp.y)
+        && distance2D(wp, avoid) >= 16 && distance2D(wp, this.group.position) <= 48);
+    // Prefer a straight visible corridor; otherwise follow a route around walls.
+    candidates.sort((a, b) => {
+      const score = wp => (this.collisionWorld.hasLineOfSight(this.group.position, wp) ? 50 : 0)
+        + Math.min(28, distance2D(wp, avoid));
+      return score(b) - score(a);
+    });
+    for (const target of candidates.slice(0, 16)) {
+      const path = this.collisionWorld.findPath(this.group.position, target,
+        this.config.pathRadius ?? this.config.radius, { allowInterFloor: false, maxIterations: 5200 });
+      if (!path.length) continue;
+      this.state = "depart";
+      this.departureTarget = target;
+      this.departureTimer = 40;
+      this.patrolPath = path;
+      this.patrolPathGoal = target.clone();
+      this.patrolPathTimer = 1;
+      return;
+    }
+    this.pickNextWaypointTarget(16, 48, 3);
+  }
+
   getTarget(playerPosition, deltaTime = 0) {
+    if (this.state === "depart") {
+      this.departureTimer -= deltaTime;
+      if (!this.departureTarget || distance2D(this.group.position, this.departureTarget) < 1.2
+        || this.departureTimer <= 0) {
+        this.beginWander();
+        return null;
+      }
+      return this.getPathTarget(this.departureTarget, deltaTime, "depart");
+    }
     if (this.state === "chase") {
       return this.getChaseTarget(this.lastKnownPlayerPosition || playerPosition, deltaTime);
     }
@@ -796,6 +831,9 @@ export class Enemy {
     const unique = [];
     const seen = new Set();
     for (const candidate of candidates) {
+      if (this.departureAvoidSeconds > 0 && this.departureOrigin
+        && this.isSameLevelAs(this.departureOrigin)
+        && distance2D(candidate, this.departureOrigin) < 12) continue;
       const key = wanderTargetKey(candidate);
       if (seen.has(key)) {
         continue;
@@ -803,6 +841,8 @@ export class Enemy {
       seen.add(key);
       unique.push(candidate);
     }
+
+    if (!unique.length) return null;
 
     const preferredDistance = minDistance + (maxDistance - minDistance) * (0.42 + Math.random() * 0.3);
     const recent = new Set(this.recentWanderTargets);
@@ -1018,6 +1058,13 @@ export class Enemy {
   }
 
   tryUnstuck(target) {
+    if (this.state === "depart") {
+      // Rebuild the route without teleporting or switching to local wandering.
+      this.patrolPath = null;
+      this.patrolPathTimer = 0;
+      this.patrolPathGoal = null;
+      return;
+    }
     if (this.state === "wander" || this.state === "idle_short") {
       // Force a new far waypoint immediately instead of just advancing one step
       this.wanderStuckCount = (this.wanderStuckCount ?? 0) + 1;
@@ -1102,31 +1149,11 @@ export class Enemy {
 
   endCabinetInvestigation() {
     const cabinet = this.cabinetTarget;
-    this.beginWander();
+    this.beginDeparture(cabinet?.position || this.group.position);
     this.cabinetTarget = null;
     this.resumeAnimatedPose();
     this.caughtPlayer = false;
-    this.waitTimer = this.config.postCabinetWaitSeconds ?? 0.5;
-    this.waitTurnDirection = Math.random() < 0.5 ? -1 : 1;
-    // Leave the searched cabinet instead of idling on its nearest waypoint.
-    const origin = cabinet?.position || this.group.position;
-    const candidates = this.getActivePatrolWaypoints()
-      .map(wp => vectorFromArray(wp))
-      .filter(wp => this.isSameLevelAs(wp) && distance2D(wp, origin) >= 7
-        && distance2D(wp, this.group.position) < 30);
-    candidates.sort((a,b) => distance2D(a,this.group.position)-distance2D(b,this.group.position));
-    for (const target of candidates.slice(0, 8)) {
-      const path = this.collisionWorld.findPath(this.group.position,target,this.config.pathRadius ?? this.config.radius,
-        {allowInterFloor:false,maxIterations:1800});
-      if (!path.length) continue;
-      this.wanderTarget = target;
-      this.wanderRetargetTimer = 14;
-      this.patrolPath = path;
-      this.patrolPathGoal = target.clone();
-      this.patrolPathTimer = 1;
-      break;
-    }
-    if (!this.wanderTarget) this.pickNextWaypointTarget(7, 30, 2);
+    this.waitTimer = 0;
   }
 
   resumeChaseFromCabinet(playerPosition) {
@@ -1298,7 +1325,8 @@ export class Enemy {
       return false;
     }
     const dist = distance2D(this.group.position, position);
-    if (dist > radius || (this.state === "chase" && this.hasVisualContact)) {
+    if (this.state === "depart" || this.state === 'chase' || this.state === 'investigateCabinet' || dist > radius
+        || (options.noiseId && this.noiseSourceId===options.noiseId)) {
       return false;
     }
 
@@ -1306,6 +1334,9 @@ export class Enemy {
       this.babyAwake = true;
     }
     this.investigationTarget = clonePoint(position);
+    this.noiseSourceId=options.noiseId;
+    this.noiseHoldOnArrival=options.holdOnArrival===true;
+    this.noiseTravelTimer=35;
     this.investigationTimer = options.duration ?? this.config.noiseInvestigationSeconds ?? 6.5;
     this.searchTarget = null;
     this.searchTimer = 0;
@@ -1318,6 +1349,14 @@ export class Enemy {
     this.state = "investigateNoise";
     this.playAction("patrol");
     return true;
+  }
+
+  updateNoiseInvestigation(deltaTime) {
+    const arrived=this.investigationTarget&&this.isSameLevelAs(this.investigationTarget)
+      &&distance2D(this.group.position,this.investigationTarget)<(this.config.searchArrivalDistance??.9);
+    if(!this.noiseHoldOnArrival||arrived)this.investigationTimer-=deltaTime;
+    else this.noiseTravelTimer-=deltaTime;
+    if(this.investigationTimer<=0||this.noiseTravelTimer<=0)this.beginWander();
   }
 
   getDebugState() {

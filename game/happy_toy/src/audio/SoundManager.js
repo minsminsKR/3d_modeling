@@ -928,7 +928,7 @@ export class SoundManager {
     noise.stop(now + 0.36);
   }
 
-  playSFX(type) {
+  playSFX(type, volumeScale = 1) {
     if (!this.initialized || !this.ctx) return;
     this.resume();
     const now = this.ctx.currentTime;
@@ -1029,6 +1029,17 @@ export class SoundManager {
       case "firecracker_explode":
         tone(165, 24, 0.5, 0.62, "sawtooth", 0, 0.62);
         break;
+      case 'firecracker_crackle': {
+        if(volumeScale<=0)break;
+        const source=this.ctx.createBufferSource(),filter=this.ctx.createBiquadFilter(),gain=this.ctx.createGain();
+        source.buffer=this.noiseBuffers.short;filter.type='highpass';filter.frequency.value=1200;
+        gain.gain.setValueAtTime(.22*Math.min(1,volumeScale),now);
+        gain.gain.exponentialRampToValueAtTime(.0001,now+.055);
+        source.connect(filter);filter.connect(gain);gain.connect(this.sfxGain);
+        source.start(now,Math.random()*.2,.065);
+        source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();};
+        break;
+      }
       case "heavy_thud":
         tone(88, 23, 0.42, 0.48, "sine", (Math.random() - 0.5) * 0.8, 0.62);
         break;

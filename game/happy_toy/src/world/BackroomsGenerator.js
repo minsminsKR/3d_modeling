@@ -307,7 +307,7 @@ export class BackroomsGenerator {
       "5,1": "courtyard",
       "8,1": "auditorium",
       "7,1": "foyer",
-      "8,-1": "art_room",
+      "8,-1": "classroom",
       "8,-2": "studio",
       "4,2": "broadcast",
       "7,-2": "darkroom",
@@ -1229,7 +1229,7 @@ export class BackroomsGenerator {
 
       // Solid 2F Gallery Floor (Y = 5.0)
       const galFloorGeo = this.getPlaneGeometry(galWestWingWidth, galLength);
-      const galFloorMesh = new THREE.Mesh(galFloorGeo, this.textures.createFloorMaterial(galWestWingWidth, galLength));
+      const galFloorMesh = new THREE.Mesh(galFloorGeo, this.textures.createFloorMaterial(galWestWingWidth, galLength).clone());
       galFloorMesh.rotation.x = -Math.PI / 2;
       galFloorMesh.position.set(galWestWingCenterX, floorY + 5.0, galCenterZ);
       galFloorMesh.receiveShadow = true;
@@ -2310,13 +2310,11 @@ export class BackroomsGenerator {
     } else if (type === "event") {
       addWallSegment(-4.8, 0.0, 0.4, 8.0, "event_partition");
     } else if (type === "wide_room" || type === "flicker_room" || type === "omen_room" || type === "static_room" || isClassroomType(type)) {
+      if(!isClassroomType(type)) {
       addWallSegment(-5.0, -5.0, 1.2, 1.2, "wide_corner_nw");
       addWallSegment(5.0, -5.0, 1.2, 1.2, "wide_corner_ne");
       addWallSegment(-5.0, 5.0, 1.2, 1.2, "wide_corner_sw");
       addWallSegment(5.0, 5.0, 1.2, 1.2, "wide_corner_se");
-      if (isClassroomType(type) && type !== "gymnasium") {
-        addWallSegment(-3.4, -1.8, 2.4, 0.7, "desk_row_w");
-        addWallSegment(3.4, 1.6, 2.4, 0.7, "desk_row_e");
       }
     }
 
@@ -2638,7 +2636,7 @@ export class BackroomsGenerator {
     this.addHallNookSign(
       chunk, chunkId, "classwing_sign",
       center.x, floorY + 2.12, center.z - 1.72,
-      0, "교실",
+      0, "학습실",
     );
     const glow = new THREE.PointLight(0x201808, 0.48, 6.0, 2);
     glow.position.set(center.x, floorY + 2.05, center.z - 1.15);
@@ -3691,7 +3689,7 @@ export class BackroomsGenerator {
 
     const panel = (name, x, z, sx, sz) => {
       const alongX = sx > sz;
-      const door = new Door({id:`${chunkId}_${name}`,label:'교실',
+      const door = new Door({id:`${chunkId}_${name}`,label:'학습실',
         position:[center.x+x,floorY,center.z+z],
         size:alongX?[doorW,2.35,0.28]:[0.28,2.35,doorW]},this.schoolClassDoorMat);
       door.group.userData.fittedOpeningWidth=doorW;
@@ -4224,6 +4222,12 @@ export class BackroomsGenerator {
     const dressNook = (doorX, doorZ, inX, inZ, sideX, sideZ) => {
       const faceYaw = Math.atan2(sideX, sideZ);
       const kind = this.getHallNookKind(chunk.cx, chunk.cz, idx);
+      const roomLabel={class:'보충학습실',library:'자료실',washroom:'화장실',boarded:'폐쇄실',shoes:'탈의실',music:'개인 연습실',science:'실험 준비실',shrine:'추모실'}[kind]||'비품실';
+      const roomDoor=(chunk.doors||[]).filter(d=>d.id.includes('hall_class_door'))
+        .sort((a,b)=>Math.hypot(a.position.x-center.x-doorX,a.position.z-center.z-doorZ)-Math.hypot(b.position.x-center.x-doorX,b.position.z-center.z-doorZ))[0];
+      if(roomDoor&&Math.hypot(roomDoor.position.x-center.x-doorX,roomDoor.position.z-center.z-doorZ)<1) {
+        roomDoor.label=roomLabel;roomDoor.group.userData.roomPurpose=roomLabel;
+      }
       if (kind !== "class") {
         this.dressSpecialHallNook(chunk, chunkId, center, floorY, {
           doorX, doorZ, inX, inZ, sideX, sideZ, idx, kind, faceYaw,
@@ -4239,7 +4243,10 @@ export class BackroomsGenerator {
         return;
       }
       const variant = Math.abs((chunk.cx * 13 + chunk.cz * 7 + idx) % 3);
-      const rows = variant === 2 ? 1 : 2;
+      const rows = 2;
+      this.addHallNookSign(chunk,chunkId,`study_sign_${idx}`,
+        center.x+doorX+sideX*1.5-inX*.05,floorY+2.15,center.z+doorZ+sideZ*1.5-inZ*.05,
+        Math.atan2(-inX,-inZ),'보충학습실');
       const aisle = 1.7;
       const firstDeskX = doorX + sideX * aisle + inX * 1.51;
       const firstDeskZ = doorZ + sideZ * aisle + inZ * 1.51;
@@ -4483,14 +4490,14 @@ export class BackroomsGenerator {
       );
     };
     const faceDoorYaw = Math.atan2(-inX, -inZ);
-    const signLabel = kind === "library" ? "도서실"
+    const signLabel = kind === "library" ? "자료실"
       : kind === "washroom" ? "화장실"
         : kind === "boarded" ? "폐쇄"
-          : kind === "shoes" ? "신발"
-            : kind === "music" ? "음악"
-              : kind === "science" ? "과학"
-                : kind === "shrine" ? "위패"
-                  : "공실";
+          : kind === "shoes" ? "탈의실"
+            : kind === "music" ? "연습실"
+              : kind === "science" ? "준비실"
+                : kind === "shrine" ? "추모실"
+                  : "비품실";
     const sign = pos(1.55, 0.52, 2.12);
     this.addHallNookSign(chunk, chunkId, `hall_sign_${idx}`, sign.x, sign.y, sign.z, faceDoorYaw, signLabel);
 
@@ -4582,10 +4589,6 @@ export class BackroomsGenerator {
         this.addShoeCubbyUnit(chunk, chunkId, `hall_cubby_${idx}_${key}`, cubby.x, cubby.y, cubby.z, faceDoorYaw);
         collideAt(`hall_cubby_${idx}_${key}_col`, cubby, 0.94, 0.32, 1.55);
       }
-      this.addCautionTape(
-        chunk, chunkId, `hall_cubby_${idx}_tape`,
-        pos(2.15, 1.55, 1.42).x, floorY + 1.42, pos(2.15, 1.55, 1.42).z, faceDoorYaw,
-      );
     } else if (kind === "music") {
       for (const [key, along] of [["a", 1.35], ["b", 2.45], ["c", 3.45]]) {
         const stand = pos(along, 3.35, 0.62);
@@ -4794,16 +4797,17 @@ export class BackroomsGenerator {
     );
 
     let deskIndex = 0;
-    for (let row = 0; row < 3; row += 1) {
-      for (let col = 0; col < 3; col += 1) {
-        const u = (col - 1) * 1.7;
+    for (let row = 0; row < 5; row += 1) {
+      for (let col = 0; col < 4; col += 1) {
+        // Two banks flank a clear central aisle, with space behind each chair.
+        const u = [-3,-1.6,1.6,3][col];
         let x = center.x + u;
         let z = center.z;
         if (doorFace === "N" || doorFace === "S") {
-          z = doorFace === "S" ? center.z - 0.4 + row * 1.55 : center.z + 0.4 - row * 1.55;
+          z = center.z + (doorFace === 'S'?1:-1)*(-3.2+row*1.6);
           x = center.x + u;
         } else {
-          x = doorFace === "E" ? center.x - 0.4 + row * 1.55 : center.x + 0.4 - row * 1.55;
+          x = center.x + (doorFace === 'E'?1:-1)*(-3.2+row*1.6);
           z = center.z + u;
         }
         this.addSchoolDeskGroup(
@@ -4825,12 +4829,12 @@ export class BackroomsGenerator {
     const cubby = new THREE.Mesh(this.getBoxGeometry(2.4, 1.15, 0.42), this.trimMaterial);
     cubby.name = `${chunkId}_shoe_cubby`;
     if (doorFace === "S" || doorFace === "N") {
-      cubby.position.set(center.x + 6.4, floorY + 0.58, center.z);
-      this.collisionWorld.addStaticBox(cubby.name, cubby.position, new THREE.Vector3(2.4, 1.15, 0.42), chunkId);
-    } else {
       cubby.rotation.y = Math.PI / 2;
-      cubby.position.set(center.x, floorY + 0.58, center.z + 6.4);
+      cubby.position.set(center.x + 7.45, floorY + 0.58, center.z);
       this.collisionWorld.addStaticBox(cubby.name, cubby.position, new THREE.Vector3(0.42, 1.15, 2.4), chunkId);
+    } else {
+      cubby.position.set(center.x, floorY + 0.58, center.z + 7.45);
+      this.collisionWorld.addStaticBox(cubby.name, cubby.position, new THREE.Vector3(2.4, 1.15, 0.42), chunkId);
     }
     this.scene.add(cubby);
     chunk.meshes.push(cubby);
@@ -7859,7 +7863,7 @@ export class BackroomsGenerator {
     const northMaxZ = -36.0;
     const galMaxZ = -8.5;
     const galMaxX = -17.2;
-    const floorMat = this.textures.createFloorMaterial(16, 16);
+    const floorMat = this.textures.createFloorMaterial(16, 16).clone();
     floorMat.color.setHex(0x4a181c);
     floorMat.emissive = new THREE.Color(0x28060a);
     floorMat.emissiveIntensity = 0.14;
@@ -8068,7 +8072,7 @@ export class BackroomsGenerator {
       -20.35, gy + 2.08, -10.55, -Math.PI / 2, "액자",
     );
 
-    const bloodY = floorY + 5.04;
+    const bloodY = floorY + 5.008;
     const poolMat = new THREE.MeshStandardMaterial({
       color: 0x9a1418,
       roughness: 0.38,
@@ -8316,7 +8320,7 @@ export class BackroomsGenerator {
   }
 
   dressBloodGallery(chunk, chunkId, floorY, bounds) {
-    const bloodY = floorY + 5.04;
+    const bloodY = floorY + 5.008;
     if (!this.bloodMask) {
       const canvas = document.createElement('canvas'); canvas.width=256; canvas.height=256;
       const ctx=canvas.getContext('2d');ctx.fillStyle='#000';ctx.fillRect(0,0,256,256);
@@ -8324,7 +8328,7 @@ export class BackroomsGenerator {
       for(let i=0;i<60;i++) {
         const x=16+random()*224,y=16+random()*224,r=8+random()*30;
         const gradient=ctx.createRadialGradient(x,y,0,x,y,r);
-        gradient.addColorStop(0,'#ddd');gradient.addColorStop(.55,'#aaa');gradient.addColorStop(1,'#000');
+        gradient.addColorStop(0,'#bbb');gradient.addColorStop(.84,'#aaa');gradient.addColorStop(1,'#000');
         ctx.fillStyle=gradient;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
       }
       this.bloodMask=new THREE.CanvasTexture(canvas);
@@ -8353,6 +8357,7 @@ export class BackroomsGenerator {
       const mesh = new THREE.Mesh(this.getPlaneGeometry(w, l), poolMat);
       mesh.rotation.x = -Math.PI / 2;
       mesh.rotation.z = rot;
+      mesh.scale.set(0.42, 0.42, 1);
       mesh.position.set(x, bloodY, z);
       mesh.name = `${chunkId}_${name}`;
       mesh.renderOrder = 2;
@@ -10271,6 +10276,7 @@ export class BackroomsGenerator {
     for (const mesh of chunk.meshes) {
       this.scene.remove(mesh);
       if (mesh.userData.releaseInstanceOnUnload) mesh.dispose();
+      if (mesh.userData.ownsSurfaceGeometry) mesh.geometry.dispose();
       if (mesh.userData && mesh.userData.isWeepingAngel) {
         if (mesh.name === "silent-mannequin-1f" && this.game) {
           this.game.spawnedWeepingAngel1F = false;

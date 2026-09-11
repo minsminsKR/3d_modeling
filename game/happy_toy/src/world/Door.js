@@ -34,6 +34,7 @@ export class Door {
   }
 
   toggle() {
+    if(this.isDuplicate)return false;
     if (this.isLocked || this.isBlocked) {
       return false;
     }
@@ -87,6 +88,7 @@ export class Door {
   }
 
   update(deltaTime) {
+    if(this.isDuplicate&&this.canonicalDoor){this.isOpen=this.canonicalDoor.isOpen;return;}
     const target = this.isOpen ? 1 : 0;
     this.openAmount = smoothStep(this.openAmount, target, 3.8, deltaTime);
     for (const panelState of this.panelPositions) {
@@ -100,6 +102,7 @@ export class Door {
   }
 
   isBlocking() {
+    if(this.isDuplicate)return false;
     return this.isLocked || this.isBlocked || (!this.isOpen && this.openAmount < 0.72);
   }
 

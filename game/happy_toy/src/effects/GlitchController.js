@@ -143,8 +143,8 @@ export class GlitchController {
     this.setVar("--glitch-x", `${(jitter * (16 + impactRatio * 24)).toFixed(2)}px`);
     this.setVar("--glitch-y", `${((Math.random() - 0.5) * intensity * (5 + impactRatio * 10)).toFixed(2)}px`);
     this.setVar("--glitch-rgb", `${Math.min(16, intensity * 7.2 + impactRatio * 7).toFixed(2)}px`);
-    this.setVar("--glitch-brightness", (1.2 + burstRatio * 0.36 - impactRatio * 0.34 + intensity * 0.04).toFixed(3));
-    this.setVar("--glitch-contrast", (1.08 + intensity * 0.48 + impactRatio * 0.52).toFixed(3));
+    this.setVar("--glitch-brightness", (1 - Math.min(1, intensity) * 0.1 - impactRatio * 0.18 - burstRatio * 0.06).toFixed(3));
+    this.setVar("--glitch-contrast", (1.08 + impactRatio * 0.12).toFixed(3));
     this.setVar("--glitch-tear", `${tear}px`);
     this.setVar("--glitch-scan-speed", `${Math.max(0.055, 0.42 - intensity * 0.18 - impactRatio * 0.12).toFixed(2)}s`);
     this.setVar("--glitch-darkness", Math.min(0.64, impactRatio * 0.55 + intensity * 0.08).toFixed(3));

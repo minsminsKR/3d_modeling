@@ -4,6 +4,7 @@ import { TextureLibrary } from "./TextureLibrary.js";
 import { BackroomsGenerator } from "./BackroomsGenerator.js";
 import { SchoolWayfinding } from "./SchoolWayfinding.js";
 import { SchoolArchitecture } from "./SchoolArchitecture.js";
+import { reconcileDoorSeams } from './DoorSeams.js';
 
 export class MapBuilder {
   constructor(scene, collisionWorld, options = {}) {
@@ -150,6 +151,7 @@ export class MapBuilder {
           if (chunk.finalExit) this.finalExit = chunk.finalExit;
         }
       }
+      reconcileDoorSeams(this.doors);
       return true;
     }
 
@@ -177,6 +179,7 @@ export class MapBuilder {
       }
     }
 
+    if(changed)reconcileDoorSeams(this.doors);
     return changed;
   }
 
@@ -188,7 +191,7 @@ export class MapBuilder {
     }
     chunk.atmosphereDecorated = true;
 
-    this.architecture.decorate(chunk);
+
 
     // Deterministic decoration keeps screenshots and gameplay tests reproducible.
     let seed = ((chunk.cx * 73856093) ^ (chunk.cz * 19349663) ^ 0x5f3759df) >>> 0;
@@ -198,43 +201,6 @@ export class MapBuilder {
     };
 
     const isStairVoid = chunk.type === "stairs_2f" || chunk.type === "stairs_b1";
-    const isNarrowCorridor = chunk.type === "corridor_ns" || chunk.type === "corridor_ew" || chunk.type === "narrow_ns";
-        const hasFixture = !isStairVoid && (chunk.type === "start" || isNarrowCorridor || chunk.type === "classroom" || chunk.type === "nurse_office" || chunk.type === "music_room" || chunk.type === "faculty_office" || chunk.type === "science_lab" || chunk.type === "gymnasium" || random() < 0.52);
-    if (hasFixture) {
-      const isUnstable = chunk.type === "flicker_room" || random() < 0.14;
-      const fixtureMaterial = new THREE.MeshStandardMaterial({
-        color: isUnstable ? 0x2a1810 : 0x3a2a1c,
-        emissive: isUnstable ? 0x3a1408 : 0x1a1008,
-        emissiveIntensity: isUnstable ? 0.18 : 0.04,
-        roughness: 0.72,
-        metalness: 0.12,
-      });
-      const fixture = new THREE.Mesh(this.fixtureGeometry, fixtureMaterial);
-      const offsetX = (random() - 0.5) * 1.2;
-      const offsetZ = (random() - 0.5) * 1.2;
-      fixture.position.set(chunk.center.x + offsetX, chunk.floorY + 2.745, chunk.center.z + offsetZ);
-      fixture.rotation.y = random() > 0.5 ? 0 : Math.PI / 2;
-      fixture.name = `${chunk.chunkId}_ambient_fixture`;
-      fixture.castShadow = false;
-      fixture.receiveShadow = false;
-      this.scene.add(fixture);
-      chunk.meshes.push(fixture);
-
-      const baseIntensity = isUnstable
-        ? 1.15
-        : 0.55 + random() * 0.35;
-      chunk.lights.push({
-        mesh: fixture,
-        localPos: new THREE.Vector3(offsetX, 2.42, offsetZ),
-        baseIntensity,
-        currentIntensity: baseIntensity,
-        isFlickering: isUnstable,
-        flickerTimer: 0.6 + random() * 4.0,
-        voltagePhase: random() * Math.PI * 2,
-        pooledLight: null,
-      });
-    }
-
     // Soft, irregular floor grime breaks up repeated 16m tiles without geometry
     // collisions. One instanced draw call per chunk keeps this dressing cheap.
     const flooded = chunk.cz === 1 && (chunk.cx === -1 || chunk.cx === 0 || chunk.cx === 1);
@@ -317,6 +283,7 @@ export class MapBuilder {
 
     this.dressSchoolCorridor(chunk, random);
     this.wayfinding.decorate(chunk);
+    this.architecture.decorate(chunk);
   }
 
   getClassroomDoorMaterial() {

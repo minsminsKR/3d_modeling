@@ -21,6 +21,21 @@
 }
 
 html,
+.curse-status {
+  position: fixed;
+  left: 24px;
+  bottom: 112px;
+  z-index: 35;
+  padding: 7px 10px;
+  border-left: 2px solid #84b982;
+  background: rgba(10, 20, 12, .8);
+  color: #c0dab3;
+  font-size: 12px;
+  letter-spacing: .03em;
+  pointer-events: none;
+}
+.curse-status[hidden] { display: none; }
+
 body {
   width: 100%;
   height: 100%;
@@ -67,9 +82,7 @@ input[type="range"] {
   will-change: transform, filter;
 }
 
-body.flashlight-off #game-root canvas {
-  filter: brightness(0.42) contrast(1.22) saturate(0.72);
-}
+/* Flashlight state only changes its actual light, never global scene exposure. */
 
 body.death-veil #game-root canvas {
   filter: brightness(0.12) contrast(1.45) saturate(0.35);
@@ -121,7 +134,7 @@ body.glitch-no-signal #game-root canvas {
 }
 
 body.glitch-no-signal .glitch-overlay {
-  mix-blend-mode: hard-light;
+  mix-blend-mode: multiply;
   animation:
     no-signal-snap 170ms steps(2, end),
     analog-static 60ms steps(2, end) infinite;
@@ -156,35 +169,36 @@ body.reduced-motion .locker-slats {
   position: fixed;
   inset: -4%;
   z-index: 8;
+  isolation: isolate;
   opacity: var(--glitch-opacity);
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
   background:
     linear-gradient(
       180deg,
       transparent 0 12%,
-      rgba(255, 255, 255, var(--glitch-static)) 12.4% 13.2%,
+      rgba(0, 0, 0, var(--glitch-static)) 12.4% 13.2%,
       rgba(0, 0, 0, var(--glitch-static)) 13.4% 14.8%,
       transparent 15.1% 43%,
-      rgba(255, 255, 255, var(--glitch-static)) 43.4% 44%,
+      rgba(0, 0, 0, var(--glitch-static)) 43.4% 44%,
       transparent 44.5% 100%
     ),
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.12) 0 1px,
+      rgba(0, 0, 0, 0.12) 0 1px,
       rgba(0, 0, 0, 0.14) 1px 3px,
       transparent 3px 7px
     ),
     repeating-linear-gradient(
       90deg,
-      rgba(255, 0, 0, 0.08) 0 2px,
-      rgba(0, 255, 210, 0.05) 2px 4px,
+      rgba(0, 0, 0, 0.08) 0 2px,
+      rgba(0, 0, 0, 0.05) 2px 4px,
       transparent 4px 11px
     ),
     radial-gradient(
       circle at 50% 50%,
       rgba(0, 0, 0, var(--glitch-darkness)) 0 28%,
       transparent 39%,
-      rgba(255, 255, 255, 0.1) 62%,
+      rgba(0, 0, 0, 0.1) 62%,
       rgba(0, 0, 0, var(--glitch-vignette)) 100%
     ),
     linear-gradient(rgba(0, 0, 0, var(--glitch-darkness)), rgba(0, 0, 0, var(--glitch-darkness)));
@@ -202,18 +216,18 @@ body.reduced-motion .locker-slats {
 
 .glitch-overlay::before {
   background:
-    linear-gradient(180deg, transparent 0 28%, rgba(255, 255, 255, 0.18) 29%, transparent 31% 62%, rgba(0, 0, 0, 0.22) 63%, transparent 66%),
-    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 4px);
+    linear-gradient(180deg, transparent 0 28%, rgba(0, 0, 0, 0.18) 29%, transparent 31% 62%, rgba(0, 0, 0, 0.22) 63%, transparent 66%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.08) 0 1px, transparent 1px 4px);
   transform: translateX(calc(0px - var(--glitch-rgb)));
-  mix-blend-mode: difference;
+  mix-blend-mode: multiply;
 }
 
 .glitch-overlay::after {
   background:
-    linear-gradient(90deg, rgba(255, 0, 0, 0.26), transparent 18% 82%, rgba(0, 210, 255, 0.22)),
-    repeating-linear-gradient(180deg, transparent 0 13px, rgba(255, 255, 255, 0.22) 13px 14px, transparent 14px 28px);
+    linear-gradient(90deg, rgba(0, 0, 0, 0.26), transparent 18% 82%, rgba(0, 0, 0, 0.22)),
+    repeating-linear-gradient(180deg, transparent 0 13px, rgba(0, 0, 0, 0.22) 13px 14px, transparent 14px 28px);
   transform: translateX(var(--glitch-rgb));
-  mix-blend-mode: color-dodge;
+  mix-blend-mode: multiply;
 }
 
 @keyframes analog-static {
@@ -1323,7 +1337,7 @@ body.flashlight-off .flashlight-vital {
   background:
     radial-gradient(circle at center, transparent 0 47%, rgba(93, 13, 12, 0.12) 73%, rgba(75, 5, 5, 0.72) 112%),
     linear-gradient(180deg, rgba(62, 6, 8, 0.06), rgba(0, 0, 0, 0.05));
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
 }
 
 .accessibility-options {
@@ -1465,8 +1479,8 @@ body::after {
   inset: 0;
   z-index: 4;
   background:
-    radial-gradient(ellipse at center, transparent 22%, rgba(0, 0, 0, 0.42) 62%, rgba(0, 0, 0, 0.9) 100%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.28), transparent 18% 82%, rgba(0, 0, 0, 0.42));
+    radial-gradient(ellipse at center, transparent 42%, rgba(0, 0, 0, 0.12) 74%, rgba(0, 0, 0, 0.38) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), transparent 18% 82%, rgba(0, 0, 0, 0.14));
   content: "";
   mix-blend-mode: multiply;
 }

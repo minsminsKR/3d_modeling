@@ -199,13 +199,16 @@ export class Cabinet {
   }
 
   getAabb() {
+    const c=Math.abs(Math.cos(this.yaw)),s=Math.abs(Math.sin(this.yaw));
+    const halfX=(this.size[0]*c+this.size[2]*s)/2;
+    const halfZ=(this.size[0]*s+this.size[2]*c)/2;
     return {
-      minX: this.position.x - this.size[0] / 2,
-      maxX: this.position.x + this.size[0] / 2,
+      minX: this.position.x - halfX,
+      maxX: this.position.x + halfX,
       minY: this.position.y,
       maxY: this.position.y + this.size[1],
-      minZ: this.position.z - this.size[2] / 2,
-      maxZ: this.position.z + this.size[2] / 2,
+      minZ: this.position.z - halfZ,
+      maxZ: this.position.z + halfZ,
     };
   }
 

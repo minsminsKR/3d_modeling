@@ -1,10 +1,13 @@
 import * as THREE from 'three';
+import { ArchitecturalFinish } from './ArchitecturalFinish.js';
+import { placeCabinets, clearDoorFurniture, doorClearance, overlaps } from './FurniturePlacement.js';
 
 // Finish the actual collision walls, rather than scattering floating trim.
 // All trim stays on the wall footprint; door and corridor openings stay clear.
 export class SchoolArchitecture {
   constructor(builder) {
     this.builder=builder;
+    this.finish=new ArchitecturalFinish(builder);
     this.box=new THREE.BoxGeometry(1,1,1);
     this.trim=new THREE.MeshStandardMaterial({color:0x665b49,roughness:0.86});
     this.metal=new THREE.MeshStandardMaterial({color:0x706d60,roughness:0.55,metalness:0.4});
@@ -25,6 +28,23 @@ export class SchoolArchitecture {
       && typeof b.aabb!=='function'
       && b.aabb.maxY-b.aabb.minY>2.3
       && Math.min(b.aabb.maxX-b.aabb.minX,b.aabb.maxZ-b.aabb.minZ)<0.8);
+    clearDoorFurniture(this.builder,chunk);
+    placeCabinets(this.builder,chunk,walls);
+    // A later streamed room can introduce a doorway on an older tile edge.
+    const openings=(chunk.doors||[]).map(doorClearance);
+    for(const older of this.builder.loadedChunks.values()) {
+      if(older===chunk)continue;
+      if((older.cabinets||[]).some(c=>!c.occupied&&openings.some(d=>overlaps(c.getAabb(),d,.15)))) {
+        const olderWalls=this.builder.collisionWorld.blockers.filter(b=>b.chunkId===older.chunkId
+          &&b.type==='static'&&/wall|hall_class|stem/.test(b.id)&&typeof b.aabb!=='function'
+          &&b.aabb.maxY-b.aabb.minY>2.3&&Math.min(b.aabb.maxX-b.aabb.minX,b.aabb.maxZ-b.aabb.minZ)<.8);
+        placeCabinets(this.builder,older,olderWalls,chunk.doors||[]);
+      }
+      clearDoorFurniture(this.builder,older,chunk.doors||[]);
+    }
+    this.finish.finishSurfaces(chunk,walls);
+    this.finish.mountDecorations(chunk,walls);
+    this.finish.addLighting(chunk);
     if(!walls.length) return;
     // Old notes used nominal tile edges even when those edges were doorways.
     // Project each note onto an actual wall face with a reachable reading spot.

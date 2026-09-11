@@ -315,7 +315,7 @@ export class EnemyManager {
   }
 
   notifyNoiseEvent(position, radius = 28.0, options = {}) {
-    let responseCount = 0;
+    let responseCount = this.lanternMasks?.notifyNoise(position,radius,options)||0;
     const soundPosition = position.clone?.() || { ...position };
     for (const enemy of this.enemies) {
       if (enemy.notifyNoise(soundPosition, radius, options)) {

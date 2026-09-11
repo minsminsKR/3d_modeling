@@ -10,6 +10,8 @@ export class LovelyDoll {
     
     this.group = new THREE.Group();
     this.group.name = id;
+    this.isFriendly = true;
+    this.group.userData.isFriendly = true;
     this.shadowMesh = addShadowBlob(this.group, 0.35);
     
     // Check if asset loaded correctly
@@ -77,6 +79,7 @@ export class LovelyDoll {
     
     this.path = null;
     this.pathTimer = 0;
+    this.directCheckTimer = 0;
     this.targetPosition = null;
     
     this.playAction("dance", 0);
@@ -280,6 +283,7 @@ export class LovelyDoll {
     }
 
     this.targetPosition = result.position.clone();
+    this.directCheckTimer = 0;
     this.guideTargetKeyId = result.keyId;
     this.guideKind = result.kind;
     this.path = null;
@@ -308,7 +312,8 @@ export class LovelyDoll {
     let goal = this.targetPosition;
     
     const distToGoal = Math.hypot(this.group.position.x - goal.x, this.group.position.z - goal.z);
-    if (distToGoal < 2.0) {
+    if (distToGoal < 2.0 && Math.abs(this.group.position.y-goal.y)<0.6
+        && this.collisionWorld.hasLineOfSight(this.group.position, goal)) {
       if (this.guideKind === "key" && !this.isGuideKeyPresent()) {
         this.resolveGuideTarget();
         goal = this.targetPosition;
@@ -324,7 +329,12 @@ export class LovelyDoll {
     }
 
     this.pathTimer -= deltaTime;
-    const canMoveDirect = this.collisionWorld.hasLineOfSight(this.group.position, goal);
+    this.directCheckTimer -= deltaTime;
+    if(this.directCheckTimer<=0) {
+      this.directPathClear=this.canWalkDirect(this.group.position,goal);
+      this.directCheckTimer=.25;
+    }
+    const canMoveDirect = this.directPathClear;
     let target = goal;
 
     if (canMoveDirect) {
@@ -333,16 +343,23 @@ export class LovelyDoll {
     } else {
       if (this.path === null || this.pathTimer <= 0) {
         this.path = this.collisionWorld.findPath(this.group.position, goal, 0.35, {
-          cellSize: 0.85,
+          cellSize: 0.5,
           allowInterFloor: true,
+          maxIterations: 14000,
         });
-        this.pathTimer = 0.4 + Math.random() * 0.2;
+        this.pathTimer = 3;
+        // The grid's first cell is an approximation of our current position.
+        if (this.path.length > 1) this.path.shift();
       }
 
-      while (this.path && this.path.length > 1 && Math.hypot(this.group.position.x - this.path[1].x, this.group.position.z - this.path[1].z) < 0.4) {
+      while (this.path && this.path.length > 1 && this.group.position.distanceTo(this.path[0]) < 0.12) {
         this.path.shift();
       }
-      target = (this.path && (this.path[1] || this.path[0])) || goal;
+      target = this.path?.[0];
+      if (!target) {
+        this.playAction('dance');
+        return; // Never steer into a wall when no route exists; retry later.
+      }
     }
 
     const isChased = this.game.enemyManager && this.game.enemyManager.enemies.some(e => e.state === "chase");
@@ -361,12 +378,13 @@ export class LovelyDoll {
     // Move
     const direction = new THREE.Vector3(target.x - this.group.position.x, 0, target.z - this.group.position.z);
     if (direction.lengthSq() > 0.0001) {
+      const remainingDistance = direction.length();
       direction.normalize();
       
       this.openDoorOnPath(direction);
 
       const previousPosition = this.group.position.clone();
-      this.group.position.addScaledVector(direction, speed * deltaTime);
+      this.group.position.addScaledVector(direction, Math.min(speed * deltaTime, remainingDistance));
       this.collisionWorld.resolveCircle(this.group.position, 0.35);
       this.collisionWorld.resolveActorPosition(
         previousPosition,
@@ -375,7 +393,23 @@ export class LovelyDoll {
         { actorId: this.id },
       );
       this.group.rotation.y = Math.atan2(direction.x, direction.z);
+      this.stuckTime = this.group.position.distanceToSquared(previousPosition)<0.000001
+        ? (this.stuckTime || 0)+deltaTime : 0;
+      if (this.stuckTime>0.6) { this.pathTimer=0; this.stuckTime=0; }
     }
+  }
+
+  canWalkDirect(start, goal) {
+    if (Math.abs(start.y-goal.y)>0.35) return false;
+    const steps=Math.ceil(start.distanceTo(goal)/0.2);
+    const point=new THREE.Vector3();
+    for(let i=1;i<=steps;i++) {
+      point.lerpVectors(start,goal,i/steps);
+      const surface=this.collisionWorld.getSurfaceAt(point);
+      if (!surface.walkable || surface.type==='stair/transition'
+          || this.collisionWorld.isCircleBlocked(point,.35)) return false;
+    }
+    return true;
   }
 
   updateWaiting(deltaTime) {
@@ -395,18 +429,7 @@ export class LovelyDoll {
         return;
       }
 
-      if (this.game.player) {
-        const playerPos = this.game.player.position;
-        const distToPlayer = Math.hypot(
-          this.group.position.x - playerPos.x,
-          this.group.position.z - playerPos.z,
-        );
-        if (distToPlayer > 14) {
-          this.resolveGuideTarget();
-          this.state = "walking";
-          this.playAction("walking", 0.3);
-        }
-      }
+      // Keep waiting at the objective while the player catches up.
       return;
     }
 

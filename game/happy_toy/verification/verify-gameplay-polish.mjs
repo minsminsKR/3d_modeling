@@ -1,6 +1,10 @@
-import {chromium} from 'playwright';
+import {createRequire} from 'node:module';
+const require = createRequire(import.meta.url);
+const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
+const outputDir=new URL('./cabinet-departure-qa/',import.meta.url);
+require('node:fs').mkdirSync(outputDir,{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe'});
 const page=await browser.newPage({viewport:{width:1280,height:720}}),errors=[];
 page.on('pageerror',e=>errors.push(e.message));
@@ -19,19 +23,36 @@ try {
     const cabinet=g.cabinets.find(c=>Math.abs(c.position.y)<.1);
     g.player.setPosition(cabinet.getExitPosition());
     enemy.group.position.copy(cabinet.getGuardPosition());enemy.hasVisualContact=false;enemy.state='chase';
+    const voiceKeys=[];g.voiceAnnouncer.announce=(key)=>voiceKeys.push(key);
     g.enterCabinet(cabinet,{forceOutcome:'safe'});
     let searches=0; const begin=enemy.beginCabinetInvestigation.bind(enemy);
     enemy.beginCabinetInvestigation=(...args)=>{searches++;return begin(...args);};
-    const positions=[];
+    const positions=[];let departureGoal=null;let departureStable=true;let departureSeen=false;
     for(let i=0;i<600;i++) {
       g.updateCabinetEvent(.05);
       for(const door of g.doors)door.update(.05);
       enemy.update(.05,{position:g.player.position,isHidden:true});
       g.maybePullLockerHunt();
+      if(enemy.state==='depart') {
+        departureSeen=true;
+        const goal=enemy.departureTarget.toArray().join(',');
+        if(departureGoal && departureGoal!==goal)departureStable=false;
+        departureGoal=goal;
+      }
       if(i%100===0)positions.push(enemy.group.position.distanceTo(cabinet.position));
     }
     const hidden={hidden:g.player.isHidden,event:g.cabinetEvent!==null,state:enemy.state,searches,
       checked:cabinet.searchedThisHide,distance:enemy.group.position.distanceTo(cabinet.position),positions};
+    const committed=enemy.departureTarget.clone();
+    enemy.group.position.copy(committed);
+    enemy.getTarget(g.player.position,.05);
+    const resumed=enemy.state==='wander';
+    enemy.getTarget(g.player.position,.05);
+    const avoidsCabinet=!enemy.wanderTarget || enemy.wanderTarget.distanceTo(cabinet.position)>=12;
+    enemy.group.position.copy(cabinet.getGuardPosition());
+    enemy.beginSearch(cabinet.position,.01);
+    enemy.updatePerception(g.player.position,.2,{isHidden:true});
+    const hiddenSearchDeparts=enemy.state==='depart';
     g.exitCabinet();
     enemy.state='chase';enemy.group.position.set(0,0,0);
     g.enterCabinet(cabinet,{forceOutcome:'safe'});
@@ -39,13 +60,18 @@ try {
     for(let i=0;i<220;i++)g.updateCabinetEvent(.05);
     const timeout=g.cabinetEvent===null;
     g.exitCabinet();g.ghostMode=true;g.testSafeMode=true;
-    return {before,during,after,hidden,timeout};
+    return {before,during,after,hidden,timeout,departureSeen,departureStable,voiceKeys,resumed,avoidsCabinet,hiddenSearchDeparts};
   });
   console.log('GAMEPLAY',JSON.stringify(gameplay));
   assert.ok(gameplay.before&&gameplay.during&&gameplay.after);
   assert.equal(gameplay.hidden.event,false);assert.equal(gameplay.hidden.searches,0);
   assert.ok(Math.max(...gameplay.hidden.positions)>5,'hunter must actually leave the searched cabinet');
   assert.ok(gameplay.timeout);
+  assert.ok(gameplay.resumed && gameplay.avoidsCabinet && gameplay.hiddenSearchDeparts);
+  assert.ok(gameplay.departureSeen && gameplay.departureStable,'departure must retain its destination');
+  assert.ok(!gameplay.voiceKeys.includes('hide'),'repeated cabinet interactions must be silent');
+  assert.ok(Math.max(...gameplay.hidden.positions)>=14,'hunter must clear the cabinet corridor');
+  await page.evaluate(()=>window.__happyToy.safeLights.forEach(l=>l.setActivated(true)));
   const captures=[];
   for(const [name,x,y,z,yaw] of [['hall',16,0,0,Math.PI/2],['annex',80,0,0,0],['basement',10.5,-5,31.6,0],['upper',-23.5,5,-18.4,.42]]) {
     for(const enabled of [true,false]) {
@@ -54,6 +80,9 @@ try {
         g.mapBuilder.updateLoadedChunks(p,true);
         for(let i=0;i<100&&g.mapBuilder.loadQueue.length;i++)g.mapBuilder.updateLoadedChunks(p,false);
         g.player.setPosition(p);
+        g.safeLights=g.mapBuilder.safeLights;
+        g.safeLights.forEach(l=>l.setActivated(true));
+        g.updateBackrooms(.016);
         for(let i=0;i<60;i++)g.updateFloorAtmosphere(.05);
         g.poseForCapture({yaw,pitch:-.1,flashlight:enabled,freezeLoop:true});
         g.renderer.render(g.scene,g.camera);
@@ -63,7 +92,7 @@ try {
         return {mean:sum/(160*90),readable:readable/(160*90)};
       },{x,y,z,yaw,enabled});
       captures.push({name,enabled,...stats});
-      await page.screenshot({path:fileURLToPath(new URL(`./release-qa/${name}-${enabled?'on':'off'}.png`,import.meta.url))});
+      await page.screenshot({path:fileURLToPath(new URL(`./cabinet-departure-qa/${name}-${enabled?'on':'off'}.png`,import.meta.url))});
     }
   }
   console.log('VISIBILITY',JSON.stringify(captures));
@@ -75,8 +104,8 @@ try {
     g.camera.position.copy(station.position).addScaledVector(direction,1.6);
     g.camera.lookAt(station.position);g.renderer.render(g.scene,g.camera);
   });
-  await page.screenshot({path:fileURLToPath(new URL('./release-qa/safety-station.png',import.meta.url))});
-  assert.ok(captures.filter(c=>!c.enabled).every(c=>c.readable>.4),'flashlight-off environment must retain visible geometry');
+  await page.screenshot({path:fileURLToPath(new URL('./cabinet-departure-qa/safety-station.png',import.meta.url))});
+  assert.ok(captures.filter(c=>!c.enabled).every(c=>c.readable>.4),'activated lamps must retain visible geometry without the flashlight');
   assert.deepEqual(errors,[]);
   console.log('GAMEPLAY POLISH PASSED');
 } finally {await browser.close();}

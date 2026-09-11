@@ -32,6 +32,7 @@ export class PlayerController {
     this.stamina = 1.0; // 0.0 ~ 1.0
     this.staminaExhausted = false;
     this.speedBoostTimer = 0;
+    this.slowTimer = 0;
     this.speedBoostMultiplier = 1.0;
 
     // View bobbing & Camera tilt
@@ -55,7 +56,9 @@ export class PlayerController {
     this.stamina = 1;
     this.staminaExhausted = false;
     this.speedBoostTimer = 0;
+    this.slowTimer = 0;
     this.speedBoostMultiplier = 1;
+    this.hud?.setSlowStatus?.(0);
     this.bobBlend = 0;
     this.hud?.setStamina(1);
   }
@@ -186,6 +189,8 @@ export class PlayerController {
   }
 
   updateStaminaAndItemHotkeys(deltaTime) {
+    this.slowTimer=Math.max(0,(this.slowTimer||0)-deltaTime);
+    this.hud?.setSlowStatus?.(this.slowTimer);
     // Speed boost timer count
     if (this.speedBoostTimer > 0) {
       this.speedBoostTimer -= deltaTime;
@@ -203,8 +208,6 @@ export class PlayerController {
       }
       if (this.input.consumePressed("q")) {
         itemSystem.useItem("firecracker", this, this.interactionContext?.game?.flashlightController);
-      } else if (this.input.consumePressed("1")) {
-        itemSystem.useItem("battery", this, this.interactionContext?.game?.flashlightController);
       } else if (this.input.consumePressed("2")) {
         itemSystem.useItem("energy_drink", this, this.interactionContext?.game?.flashlightController);
       } else if (this.input.consumePressed("3")) {
@@ -360,6 +363,7 @@ export class PlayerController {
 
     let speed = this.isSprinting ? PLAYER_CONFIG.sprintSpeed : PLAYER_CONFIG.walkSpeed;
     speed *= this.speedBoostMultiplier;
+    if(this.slowTimer>0)speed*=0.5;
 
     // Ankle-deep water on the B1 cellar map.
     const inBasement = this.position.y < -1.6;

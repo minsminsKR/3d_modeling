@@ -74,6 +74,7 @@ export class Input {
   }
 
   handleKeyDown(event) {
+    if (event.code === 'Escape') this.escapeKeyDownSeen = true;
     const keyAliases = this.getKeyAliases(event);
     const wasAlreadyDown = keyAliases.some((key) => this.keys.has(key));
 
@@ -89,6 +90,12 @@ export class Input {
   }
 
   handleKeyUp(event) {
+    // Chrome can consume Escape keydown when releasing pointer lock. Its keyup
+    // still represents an explicit Escape, unlike blur/pointerlockchange.
+    if (event.code === 'Escape') {
+      if (!this.escapeKeyDownSeen) this.pressedThisFrame.add('escape');
+      this.escapeKeyDownSeen = false;
+    }
     for (const key of this.getKeyAliases(event)) {
       this.keys.delete(key);
     }

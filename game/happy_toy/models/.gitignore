@@ -1,0 +1,3 @@
+# Keep authored runtime models and their editable Blender source.
+!*.glb
+!*.blend

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const LABELS = { start:'중앙 홀 · 제단', stairs_b1:'지하 보육실 ↓', stairs_2f:'2층 액자실 ↑', playroom:'놀이방', storage:'준비물 창고', archive:'폐관 도서실', workshop:'보육실', nurse_office:'보건실', music_room:'음악실', faculty_office:'교무실', science_lab:'과학실', gymnasium:'체육관', courtyard:'중정', auditorium:'강당', foyer:'강당 로비', art_room:'미술실', studio:'촬영실', broadcast:'방송실', darkroom:'암실', greenroom:'대기실', home_ec:'가정실', club_room:'서도부', tatami_room:'예절실' };
+const LABELS = { classroom:'교실', start:'중앙 홀 · 제단', stairs_b1:'지하 보육실 ↓', stairs_2f:'2층 액자실 ↑', playroom:'놀이방', storage:'준비물 창고', archive:'폐관 도서실', workshop:'보육실', nurse_office:'보건실', music_room:'음악실', faculty_office:'교무실', science_lab:'과학실', gymnasium:'체육관', courtyard:'중정', auditorium:'강당', foyer:'강당 로비', art_room:'미술실', studio:'촬영실', broadcast:'방송실', darkroom:'암실', greenroom:'대기실', home_ec:'가정실', club_room:'서도부', tatami_room:'예절실' };
 
 // Physical hanging plates mark actual graph connections. No colliders or invented exits.
 export class SchoolWayfinding {

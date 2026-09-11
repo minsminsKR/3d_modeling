@@ -1,5 +1,30 @@
 # Happy Toy Project Map
 
+## Lantern masks, distractions and shared doors (2026-09-11)
+
+- DoorSeams.js reconciles matching portals on adjacent chunk boundaries. Only one door group and collider remain active, with the surviving door restored on neighbor unload; distinct room doors remain separate. Duplicate doors are excluded from interaction prompts.
+- LanternMasks.js gives the existing mask a floating green-fire form and a lethal transformed form. First contact slows the player for 10 seconds and begins a stationary 5-second transformation; subsequent transformed contact within 0.75 m kills a visible same-floor player. Hidden/invincible players remain protected. The death camera faces the mask.
+- MaskWraithModel.js loads the Blender-authored `models/mask-wraith/mask-wraith.glb`: four asymmetrical arms, dorsal growths, a slit-like thoracic maw, hooked fingers, tilted mask and a continuous skinned body. The robe is removed. The run combines a brief hesitation with a burst, using the same timing for actual travel and the skeletal clip. One skinned mesh/material minimizes draw calls.
+- `tools/build_mask_wraith.py` and `tools/bake_wraith_materials.py` reproduce the editable .blend and GLB. Neck, hands and chest have localized dried/fresh blood, with 2048px base color and 1024px roughness/normal maps baked and embedded in GLB. Textures and .blend are also retained separately for editing.
+- `verification/verify-mask-wraith.mjs` verifies five-second transformation, imported animation, UV/PBR material integrity, actual path-following, lethal contact and hiding/invincibility/floor exclusions. It captures the actual in-game model and running poses.
+- Firecrackers burn/crackle for 10 seconds after the fuse, with nearby sparks and distance-attenuated sound. Non-chasing enemies investigate and hold for 10 seconds after arrival (35-second travel timeout). Repeated pulses share a source ID and never restart the same enemy's timer. Every chase state ignores the lure, including lost visual contact. Throw trajectories check wall segments.
+- Battery pickups recharge the flashlight to 100% immediately on E interaction and disappear without entering inventory. The battery hotbar slot and key 1 action are removed. A depleted flashlight switches back on through rechargeBattery.
+- `verification/verify-lantern-items.mjs` verifies shared-door reloads, 15%/95% battery recharge, actual noise approach and stationary hold, 10-second projectile lifetime, mask patrol collision, pursuit, nonlethal contact, and measured 0.5 movement ratio. `audit-portals.mjs` audits neighboring doors and captures the open north corridor.
+
+## Guardian and furniture circulation (2026-09-11)
+
+- LovelyDoll is explicitly friendly. Monster-distance effects exclude friendly entities; its own guide light and music-box introduction remain. Guardian-only proximity is checked against both enemy threat and glitch state.
+- LovelyDoll uses radius-checked direct routes, a 0.5m navigation grid, and the current waypoint without cutting corners. Failed paths wait/retry instead of falling back to direct steering. Arrival requires the same floor and line of sight, and the doll waits at the objective until it is collected. Direct-route checks run at 4Hz.
+- FurniturePlacement.js mounts cabinets against actual walls with clear exit/guard positions and door approach space. Cabinet bounds now account for rotation and are registered as collision furniture. Nearby cabinets are rechecked when a streamed neighbor introduces a door. Movable desks, chairs, shelves and similar furniture in door approaches are repositioned together with their collision bounds.
+- `verification/verify-guardian-layout.mjs` covers guardian navigation, failed-route behavior, friendly proximity, doorway screenshots and 86 cabinets across streamed main/annex/B1/2F areas. Cabinet gameplay and real stair movement are also checked by the existing verification scripts.
+
+## Focus and frame pacing (2026-09-11)
+
+- Losing focus/pointer lock no longer pauses the game. Esc input pauses; Input also handles Escape keyup when Chrome consumes the keydown to release pointer lock. Clicking the canvas captures the mouse again.
+- Loop uses BackgroundTick.js (a worker) when hidden or unfocused. Simulation continues in <=50ms steps without rendering; OS-sleep recovery is bounded to 5 seconds. Explicit pause still stops game time.
+- StablePointLights already updates scene world matrices, so renderer-side automatic scene matrix updates are disabled to avoid a duplicate pass. Balanced quality caps pixel ratio at 1; high remains 2.
+- `verification/verify-focus-pause.mjs` checks focus loss, worker simulation, Esc pause/time freeze/resume. `verification/profile-frames.mjs` measures actual local GPU frame timing. RTX 3090 Ti, 1920x1080: before ~13.4ms CPU/frame, after ~11.6ms; average ~60fps in the sampled starting scene. These are sampled measurements, not a whole-map 60fps guarantee.
+
 이 문서는 `game/happy_toy` 전체 구조를 총괄합니다. 나중에 게임이 커졌을 때는 먼저 이 파일을 보고 어떤 모듈을 수정할지 정하면 됩니다.
 
 ## 실행 파일
@@ -188,3 +213,7 @@ index.html
 | 더 똑똑한 추적/3층 확장 | `src/world/CollisionWorld.js`, `src/entities/Enemy.js`, `src/config/gameConfig.js`의 `transitionWaypoints` |
 | 공격/사망 연출 | `src/entities/Enemy.js`, `src/ui/Hud.js`, `src/core/Game.js` |
 | 사운드 | 실제 음원 파일 준비 후 파일 기반 사운드 모듈, `src/core/Game.js` |
+
+## 2026-09-11 공간 마감 및 조명
+
+`src/world/ArchitecturalFinish.js`는 실제 벽과 바닥을 기준으로 연속된 재질 UV, 벽 장식 부착, 천장 형광등 배치를 처리합니다. `SchoolArchitecture.decorate()`에서 호출하며 메시 장식이 끝난 뒤 실행합니다. 조명과 검증 세부 사항은 `LIGHTING_SYSTEM.md`를 참조하세요. 마네킹 회전 이벤트는 `WeepingAngelIntroEvent.js`에서 같은 층·복도 범위·시야 방향·벽 가림을 확인하고 카메라 위치를 고정합니다.

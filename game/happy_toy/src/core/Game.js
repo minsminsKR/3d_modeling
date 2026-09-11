@@ -28,6 +28,7 @@ import { FieldJournal } from "../ui/FieldJournal.js";
 import { soundManager } from "../audio/SoundManager.js";
 import { VoiceAnnouncer } from "../audio/VoiceAnnouncer.js";
 import { MonsterIntroManager } from "../events/MonsterIntroManager.js";
+import { LanternMasks } from '../entities/LanternMasks.js';
 
 
 
@@ -63,6 +64,8 @@ export class Game {
     this.renderer.shadowMap.autoUpdate = true;
     this.renderer.toneMappingExposure = LIGHTING_CONFIG.rendererExposure ?? 0.8;
     this.stablePointLights = new StablePointLights(this.scene);
+    // StablePointLights already updates world matrices before rendering.
+    this.scene.matrixWorldAutoUpdate = false;
     // Cover every rendering branch, including pause, cutscenes and warm-up.
     for (const method of ['render', 'compile']) {
       const original = this.renderer[method].bind(this.renderer);
@@ -147,7 +150,7 @@ export class Game {
     this._lastPlayerChunkCx = null;
     this._lastPlayerChunkCz = null;
     this._flickerAccum = 0;
-    this.loop = new Loop((deltaTime) => this.update(deltaTime));
+    this.loop = new Loop((deltaTime, options) => this.update(deltaTime, options));
 
     this.handleResize = this.handleResize.bind(this);
     this.handlePointerLockChange = this.handlePointerLockChange.bind(this);
@@ -192,6 +195,8 @@ export class Game {
     );
     this.enemyManager = new EnemyManager(this.scene, this.collisionWorld, this.doors, this.hud, this.enemyConfigs);
     this.itemSystem = new ItemSystem(this.scene, this.enemyManager, this.hud);
+    this.lanternMasks=new LanternMasks(this);
+    this.enemyManager.lanternMasks=this.lanternMasks;
     this.particleSystem = new ParticleSystem(this.scene);
     this.menuSystem = new MenuSystem(this);
     this.journal = new FieldJournal(this);
@@ -268,8 +273,9 @@ export class Game {
     } catch {}
     this.setMouseSensitivityScale(sensitivity);
     this.setRenderQuality(quality);
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) this.pause();
+    this.renderer.domElement.addEventListener('click', () => {
+      if (this.isStarted && !this.isPaused && !this.gameOver && !this.gameCleared
+          && !this.input.pointerLocked) this.input.requestPointerLock();
     });
     this.hud.setChapterInfo(this.chapterSession, CHAPTERS);
     this.hud.setStartEnabled(true);
@@ -397,7 +403,7 @@ export class Game {
     if (!this.player) return;
     this.player.setInteractables(
       [
-        ...this.doors,
+        ...this.doors.filter(d=>!d.isDuplicate),
         ...this.keys,
         ...this.cabinets,
         ...this.safeLights,
@@ -586,7 +592,7 @@ export class Game {
     }
 
     if (this.isPaused) {
-      this.renderer.render(this.scene, this.camera);
+      if (!options.skipRender) this.renderer.render(this.scene, this.camera);
       this.input.endFrame();
       return;
     }
@@ -594,7 +600,7 @@ export class Game {
     if (this.detectionFreezeTimer > 0 && this.isStarted && !this.gameOver && !this.gameCleared) {
       this.detectionFreezeTimer = Math.max(0, this.detectionFreezeTimer - Math.min(deltaTime, 0.05));
       this.glitchController.update(deltaTime, { threat: this.detectionFreezeThreat });
-      this.renderer.render(this.scene, this.camera);
+      if (!options.skipRender) this.renderer.render(this.scene, this.camera);
       this.input.endFrame();
       return;
     }
@@ -621,6 +627,7 @@ export class Game {
       this.tryReleaseCorridorStalker();
       this.updateBackrooms(deltaTime);
       this.updateLovelyDolls(deltaTime);
+      this.lanternMasks?.update(deltaTime);
       this.updateWeepingAngels(deltaTime);
       this.monsterIntroManager?.update(deltaTime);
       if (!this.monsterIntroManager?.blocksPlayerControl) {
@@ -635,7 +642,7 @@ export class Game {
       this.storyDirector?.update();
       this.floorHuntDirector?.update(deltaTime);
       if (this.gameCleared) {
-        this.renderer.render(this.scene, this.camera);
+        if (!options.skipRender) this.renderer.render(this.scene, this.camera);
         this.input.endFrame();
         return;
       }
@@ -839,17 +846,7 @@ export class Game {
       this.input.pointerLockBlocked = false;
       return;
     }
-    if (
-      this.isStarted
-      && !this.isPaused
-      && !this.gameOver
-      && !this.gameCleared
-      && !this.cutsceneEvent
-      && this.wasPointerLocked
-    ) {
-      this.wasPointerLocked = false;
-      this.pause();
-    }
+    this.wasPointerLocked = false;
   }
 
 
@@ -899,7 +896,7 @@ export class Game {
   }
 
   setRenderQuality(value) {
-    const profiles = {performance: {ratio:1, shadow:512}, balanced:{ratio:1.5, shadow:1024}, high:{ratio:2, shadow:2048}};
+    const profiles = {performance: {ratio:1, shadow:512}, balanced:{ratio:1, shadow:1024}, high:{ratio:2, shadow:2048}};
     this.renderQuality = profiles[value] ? value : 'balanced';
     const profile = profiles[this.renderQuality];
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, profile.ratio));
@@ -1008,6 +1005,7 @@ export class Game {
 
     this.flashlightController.reset();
     this.enemyManager.reset(this.doors);
+    this.lanternMasks?.reset();
     this.enemyManager.endCabinetInvestigations();
     for (const door of this.doors) {
       door.isOpen = false;
@@ -1135,7 +1133,6 @@ export class Game {
     cabinet.occupied = true;
     this.player.enterCabinet(cabinet);
     this.hud?.setHidden(true);
-    this.voiceAnnouncer?.announce("hide", "신발장 안으로. 호흡을 끊으십시오.");
 
     if (!nearby || dist > (CABINET_CONFIG.huntHidePullDistance ?? 20)) {
       this.hud.setStatus("신발장 안으로 몸을 숨겼습니다. 숨이 들리지 않게 하십시오.", 1800);
@@ -1288,7 +1285,7 @@ export class Game {
     }
   }
 
-  handleCaught(message = "발소리가 바로 뒤에서 멈췄습니다.") {
+  handleCaught(message = "발소리가 바로 뒤에서 멈췄습니다.", lookTarget = null) {
     if (this.isInvincible) {
       this.hud.setStatus(this.ghostMode ? "투명 상태라 포획되지 않습니다." : "테스트 안전 모드라 포획되지 않습니다.", 900);
       return;
@@ -1310,7 +1307,7 @@ export class Game {
     this.glitchController.trigger({ strength: 1.15, full: true });
     this.flashlightController?.setEnabled(false, false);
     soundManager.playSFX("death_breath");
-    this.deathSequence = { t: 0, shown: false, message };
+    this.deathSequence = { t: 0, shown: false, message, lookTarget };
     document.body.classList.add("death-veil");
   }
 
@@ -1322,7 +1319,9 @@ export class Game {
     seq.t += Math.min(deltaTime, 0.08);
     const enemy = this.enemyManager?.getClosestAwakeEnemy?.(this.player.position)
       || this.enemyManager?.getClosestChasingEnemy?.(this.player.position);
-    if (enemy && this.camera) {
+    if (seq.lookTarget && this.camera) {
+      this.camera.lookAt(seq.lookTarget);
+    } else if (enemy && this.camera) {
       const target = enemy.group.position.clone();
       target.y += Math.max(1.15, (enemy.config?.height ?? 1.7) * 0.62);
       this.camera.lookAt(target);
@@ -1462,101 +1461,23 @@ export class Game {
       this.onEnterSchoolChunk(cx, cz);
     }
 
-    // 2. Manage ceiling lights via the fixed PointLight pool.
-    // Collect all panels from loaded chunks, sort by distance, assign pool slots.
-    // Pool lights are NEVER added/removed — only position and intensity change.
-    this._flickerAccum += deltaTime;
-    const doFlicker = this._flickerAccum >= 0.1; // throttle flicker to 10 Hz
-    if (doFlicker) this._flickerAccum = 0;
-
+    // Physical fixtures retain their own positions. StablePointLights performs
+    // the only budget selection, with hysteresis and fade-out before reassignment.
     const playerPos = this.player.position;
-    const playerThreat = this.getMonsterThreat(playerPos);
-    const allPanels = [];
     for (const chunk of this.mapBuilder.loadedChunks.values()) {
-      if (!chunk.lights || chunk.lights.length === 0) continue;
-      for (const light of chunk.lights) {
-        const gx = chunk.center.x + light.localPos.x;
-        const gz = chunk.center.z + light.localPos.z;
-        const gy = chunk.center.y + light.localPos.y;
-        const dx = gx - playerPos.x;
-        const dz = gz - playerPos.z;
-        const distSq = dx * dx + dz * dz;
-        allPanels.push({ light, gx, gy, gz, distSq });
-
-        // Flicker logic — nearby ceiling lamps die harder as monsters close in.
-        if (doFlicker) {
-          const nearPlayer = distSq < 12 * 12;
-          const localThreat = nearPlayer ? playerThreat : playerThreat * 0.2;
-          const canThreatFlicker = localThreat > 0.22;
-          if (light.isFlickering || canThreatFlicker) {
-            const tick = 0.1 * (1 + localThreat * 5.5);
-            light.flickerTimer = (light.flickerTimer ?? 0.4) - tick;
-            if (light.flickerTimer <= 0) {
-              const offChance = (light.isFlickering ? 0.25 : 0) + localThreat * 0.62;
-              const isOff = Math.random() < Math.min(0.92, offChance);
-              if (isOff) {
-                light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelDimColor || 0x3b2618);
-                light.mesh.material.emissive.setHex(0x140704);
-                light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelDimEmissiveIntensity ?? 0.1;
-                light.currentIntensity = 0;
-                light.flickerTimer = 0.04 + Math.random() * (0.12 + localThreat * 0.55);
-              } else {
-                light.mesh.material.color.setHex(LIGHTING_CONFIG.ceilingPanelOnColor || 0xb47b4c);
-                light.mesh.material.emissive.setHex(0x9a3f12);
-                light.mesh.material.emissiveIntensity = LIGHTING_CONFIG.ceilingPanelOnEmissiveIntensity ?? 0.58;
-                light.currentIntensity = light.baseIntensity;
-                light.flickerTimer = (0.18 + Math.random() * 4.2) * (1 - localThreat * 0.78);
-              }
-            }
-          }
+      for (const light of chunk.lights || []) {
+        if (!light.renderSource) {
+          const source = this._pointLightPool[0].clone();
+          source.layers.set(31);
+          source.userData = { fixedFixture: true };
+          source.position.set(chunk.center.x + light.localPos.x,
+            chunk.center.y + light.localPos.y, chunk.center.z + light.localPos.z);
+          this.scene.add(source);chunk.meshes.push(source);light.renderSource=source;
         }
+        light.renderSource.intensity=(light.baseIntensity || 0)*(this.cinematicLightScale ?? 1);
       }
     }
-
-    // Sort panels closest-first and assign pool slots
-    const budget = this._POINT_LIGHT_BUDGET;
-    if (allPanels.length === 0) {
-      for (let i = 0; i < budget; i++) {
-        const pl = this._pointLightPool?.[i];
-        if (pl && (pl.intensity !== 0 || pl.position.y !== -9999)) {
-          pl.position.set(0, -9999, 0);
-          pl.intensity = 0;
-        }
-      }
-    } else {
-      allPanels.sort((a, b) => a.distSq - b.distSq);
-      for (let i = 0; i < budget; i++) {
-        const pl = this._pointLightPool[i];
-        if (!pl) continue;
-        if (i < allPanels.length) {
-          const { light, gx, gy, gz, distSq } = allPanels[i];
-          const inRange = distSq < 24 * 24;
-          if (inRange) {
-            pl.position.set(gx, gy, gz);
-            const targetIntensity = light.currentIntensity ?? light.baseIntensity ?? 0;
-            // A barely perceptible voltage drift feels organic without becoming
-            // a distracting global strobe. A true flicker-off remains at zero.
-            const voltageBreath = targetIntensity > 0
-              ? 0.96 + 0.04 * Math.sin(this.elapsedTime * 1.35 + (light.voltagePhase || 0))
-              : 0;
-            pl.intensity = targetIntensity * voltageBreath
-              * (this.dreadDirector?.lightScale ?? 1)
-              * (this.cinematicLightScale ?? 1);
-            // Link panel to pool slot so flicker can update it
-            light.pooledLight = pl;
-          } else {
-            pl.position.set(0, -9999, 0); // park off-screen
-            pl.intensity = 0;
-            light.pooledLight = null;
-          }
-        } else {
-          pl.position.set(0, -9999, 0);
-          pl.intensity = 0;
-        }
-      }
-    }
-
-    // 2.2 Manage SafeLights PointLight pool
+    for (const light of this._pointLightPool) light.intensity=0;
     this.updateSafeLightPool(playerPos);
 
     // 3. Keep floor hunters on their own map instead of yanking Baby onto 1F.
@@ -2017,7 +1938,7 @@ export class Game {
     // 1. EnemyManager enemies (Cyclopse, Uncat, Baby, Hwacat-Angry)
     if (this.enemyManager && this.enemyManager.enemies) {
       for (const enemy of this.enemyManager.enemies) {
-        if (!enemy.group || enemy.isDormant) continue;
+        if (!enemy.group || enemy.isDormant || enemy.isFriendly || enemy.group.userData.isFriendly) continue;
         if (sameFloor && typeof enemy.isSameLevelAs === "function") {
           if (!enemy.isSameLevelAs(targetPos)) continue;
         } else if (sameFloor && Math.abs((enemy.group.position.y ?? 0) - (targetPos.y ?? 0)) > floorSlack) {
@@ -2034,7 +1955,7 @@ export class Game {
     if (this.mapBuilder && this.mapBuilder.loadedChunks) {
       for (const chunk of this.mapBuilder.loadedChunks.values()) {
         for (const mesh of chunk.meshes) {
-          if (mesh.userData && mesh.userData.isWeepingAngel && mesh.position) {
+          if (mesh.userData && mesh.userData.isWeepingAngel && !mesh.userData.isFriendly && mesh.position) {
             const state = mesh.userData.weepingAngelState;
             if (state && state.active === false) continue;
             if (sameFloor && Math.abs((mesh.position.y ?? 0) - (targetPos.y ?? 0)) > floorSlack) continue;
@@ -2061,63 +1982,15 @@ export class Game {
 
   updateSafeLightPool(playerPos = this.player?.position) {
     if (!playerPos || !this._safeLightPool) return;
-    const allSafePanels = [];
+    for (const light of this._safeLightPool) light.intensity=0;
     for (const safeLight of this.safeLights) {
-      if (!safeLight.isOn) continue;
-      const pos = safeLight.getLightWorldPosition();
-      const dx = pos.x - playerPos.x;
-      const dz = pos.z - playerPos.z;
-      const distSq = dx * dx + dz * dz;
-      allSafePanels.push({ safeLight, pos, distSq });
+      const source=safeLight.renderSource;
+      if (!source) continue;
+      // Switched electric lights are steady. Threat no longer adds a random
+      // high-frequency strobe to fixtures the player relies on for navigation.
+      source.intensity=safeLight.isOn ? SAFE_LIGHT_CONFIG.intensity*(this.cinematicLightScale ?? 1) : 0;
+      if(safeLight.isOn)safeLight.setFlickerState(1);
     }
-
-    allSafePanels.sort((a, b) => a.distSq - b.distSq);
-    const safeBudget = this._SAFE_LIGHT_BUDGET || 8;
-    for (let i = 0; i < safeBudget; i++) {
-      const pl = this._safeLightPool[i];
-      if (!pl) continue;
-      if (i < allSafePanels.length) {
-        const { safeLight, pos, distSq } = allSafePanels[i];
-        const inRange = distSq < SAFE_LIGHT_CONFIG.activeDistance * SAFE_LIGHT_CONFIG.activeDistance;
-        if (inRange) {
-          const monsterDist = this.getMinMonsterDistance(pos);
-          let flickerMult = 1.0;
-
-          // Subtle natural flame / filament breathing waver
-          const basePhase = (pos.x * 3.1 + pos.z * 5.7) % 6.28;
-          const flameBreath = 0.96 + 0.04 * Math.sin((this.elapsedTime || 0) * 1.8 + basePhase);
-          flickerMult = flameBreath;
-
-          if (monsterDist < 14.0) {
-            const proximity = Math.min(1.0, Math.max(0.0, 1.0 - (monsterDist / 14.0)));
-            const p2 = proximity * proximity;
-            const freq = 2.0 + p2 * 16;
-            const phase = (pos.x * 7.91 + pos.z * 13.43) % 6.28;
-            const t = (this.elapsedTime || 0) * freq + phase;
-            const wave = Math.sin(t) * 0.45 + Math.sin(t * 2.6 + 0.7) * 0.3 + Math.sin(t * 7.4) * 0.25;
-            const dying = 1 - p2 * 0.62;
-            let strobe = 1;
-            if (p2 > 0.45) {
-              const cut = 0.35 - p2 * 0.55;
-              strobe = Math.sin(t * (14 + p2 * 22)) > cut ? 1 : 0.05 + Math.random() * 0.06;
-            }
-            flickerMult = Math.max(0.55, (0.52 + 0.48 * wave) * dying * strobe);
-          }
-          safeLight.setFlickerState(flickerMult);
-          pl.position.copy(pos);
-          pl.intensity = (SAFE_LIGHT_CONFIG.intensity || 8.5) * flickerMult;
-        } else {
-          safeLight.setFlickerState(1.0);
-          pl.position.set(0, -9999, 0);
-          pl.intensity = 0;
-        }
-      } else {
-        pl.position.set(0, -9999, 0);
-        pl.intensity = 0;
-      }
-    }
-    // checkInvisibleBlockers() removed — it scanned every blocker via scene.getObjectByName
-    // on every frame (O(n*m) cost), which was a major source of hidden CPU spikes.
   }
 
   updateLovelyDolls(deltaTime) {

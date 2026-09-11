@@ -83,9 +83,18 @@ export class WeepingAngelIntroEvent {
     if (this.hasTriggered || !this.game.player || this.game.player.isHidden) return;
 
     const playerPos = this.game.player.position;
-    if (distance2D(playerPos, this.triggerPosition) <= this.triggerRadius) {
-      this.triggerEvent();
-    }
+    // The encounter belongs to the west corridor, never an adjacent classroom
+    // or the upstairs room occupying the same X/Z coordinates.
+    if (Math.abs(playerPos.y - this.triggerPosition.y) > 0.6
+      || Math.abs(playerPos.z) > 1.25
+      || distance2D(playerPos, this.triggerPosition) > this.triggerRadius) return;
+    const mannequin = this.getMannequinMesh();
+    if (!mannequin || !this.game.collisionWorld.hasLineOfSight(playerPos, mannequin.position)) return;
+    const facing = new THREE.Vector3();
+    this.game.camera.getWorldDirection(facing);
+    const toward = this.mannequinLookTarget.clone().sub(this.game.camera.position).normalize();
+    if (facing.dot(toward) < 0.55) return;
+    this.triggerEvent();
   }
 
   triggerEvent() {
@@ -107,6 +116,7 @@ export class WeepingAngelIntroEvent {
 
     player.input.consumePointerDelta();
     this.startCameraPos.copy(camera.position);
+    this.glideEndCameraPos.copy(camera.position);
     this.startYaw = player.yaw;
     this.startPitch = player.pitch;
 

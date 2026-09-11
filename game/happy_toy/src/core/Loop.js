@@ -9,6 +9,20 @@ export class Loop {
     this.update = update;
     this.running = false;
     this.frameId = null;
+    this.backgroundTimer = new Worker(new URL('./BackgroundTick.js', import.meta.url));
+    this.backgroundTimer.onmessage = () => {
+      if (this.running && (document.hidden || !document.hasFocus())) this.tick();
+    };
+    const reschedule = () => {
+      if (!this.running) return;
+      if (this.frameId !== null) cancelAnimationFrame(this.frameId);
+      this.frameId = null;
+      this.backgroundTimer.postMessage((document.hidden || !document.hasFocus()));
+      this.tick();
+    };
+    document.addEventListener('visibilitychange', reschedule);
+    window.addEventListener('blur', reschedule);
+    window.addEventListener('focus', reschedule);
   }
 
   start() {
@@ -17,11 +31,13 @@ export class Loop {
     }
     this.running = true;
     this.clock.start();
+    this.backgroundTimer.postMessage((document.hidden || !document.hasFocus()));
     this.tick();
   }
 
   stop() {
     this.running = false;
+    this.backgroundTimer.postMessage(false);
     if (this.frameId !== null) {
       cancelAnimationFrame(this.frameId);
       this.frameId = null;
@@ -33,8 +49,19 @@ export class Loop {
       return;
     }
     const t0 = performance.now();
-    const deltaTime = Math.min(this.clock.getDelta(), 0.05);
-    this.update(deltaTime);
+    const elapsed = this.clock.getDelta();
+    if ((document.hidden || !document.hasFocus())) {
+      // Keep AI/timers moving with small collision-safe steps, without drawing
+      // an invisible frame. Bound recovery after OS sleep to avoid a long stall.
+      let remaining = Math.min(elapsed, 5);
+      while (remaining > 0.00001) {
+        const step = Math.min(remaining, 0.05);
+        this.update(step, {skipRender: true});
+        remaining -= step;
+      }
+    } else {
+      this.update(Math.min(elapsed, 0.05));
+    }
     const dt = performance.now() - t0;
 
     if (typeof window !== "undefined" && window.__happyToy?.debugEnabled) {
@@ -49,6 +76,6 @@ export class Loop {
       console.warn(`[PERF] Frame took ${dt.toFixed(2)}ms (Spike!)`);
     }
 
-    this.frameId = requestAnimationFrame(() => this.tick());
+    this.frameId = (document.hidden || !document.hasFocus()) ? null : requestAnimationFrame(() => this.tick());
   }
 }

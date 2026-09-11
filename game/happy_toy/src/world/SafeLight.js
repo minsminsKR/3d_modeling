@@ -1,5 +1,5 @@
 // 플레이어가 E키로 한 번 켜 둘 수 있는 방문 표시용 고정 조명입니다.
-// 실제 PointLight는 Game의 제한된 풀에서 가까운 조명에만 할당합니다.
+// 광원 위치는 고정하고 StablePointLights가 렌더링 풀을 부드럽게 전환합니다.
 
 import * as THREE from "three";
 import { SAFE_LIGHT_CONFIG } from "../config/gameConfig.js";
@@ -33,6 +33,9 @@ export class SafeLight {
     this.lightAnchor = new THREE.Object3D();
     this.group.add(this.lightAnchor);
     this.createVariantMesh();
+    this.renderSource=new THREE.PointLight(SAFE_LIGHT_CONFIG.color,0,SAFE_LIGHT_CONFIG.distance,SAFE_LIGHT_CONFIG.decay);
+    this.renderSource.layers.set(31);this.renderSource.userData.fixedFixture=true;
+    this.lightAnchor.add(this.renderSource);
     this.setActivated(this.isOn);
   }
 
@@ -179,6 +182,7 @@ export class SafeLight {
 
   setActivated(isOn) {
     this.isOn = Boolean(isOn);
+    this.renderSource.intensity=this.isOn?SAFE_LIGHT_CONFIG.intensity:0;
     this.group.userData.safeLightOn = this.isOn;
     const color = this.isOn ? SAFE_LIGHT_CONFIG.emissiveColor : 0x8a4c18;
     const intensity = this.isOn ? 1.05 : 0.35;
