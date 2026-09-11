@@ -1,0 +1,38 @@
+{
+  "name": "3d_modeling",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "happy_toy (shadow-corridor game)",
+      "command": ". .venv/bin/activate && python game/happy_toy/web_server.py --host 0.0.0.0 --port 8010"
+    },
+    {
+      "name": "model_test (3D asset viewer)",
+      "command": ". .venv/bin/activate && python model_test/web_server.py --host 0.0.0.0 --port 8000"
+    },
+    {
+      "name": "TD (tower defense)",
+      "command": ". .venv/bin/activate && python game/TD/app.py"
+    },
+    {
+      "name": "defense_web",
+      "command": ". .venv/bin/activate && python game/defense_web/app.py --host 0.0.0.0 --port 8020"
+    },
+    {
+      "name": "cyclopse_io (.io server)",
+      "command": "PORT=8080 node game/hungry_cyclopse/happy_toy_cyclopse_io/server/index.js"
+    },
+    {
+      "name": "hunyuan3d-webapp (web UI; generation needs GPU)",
+      "command": ". .venv/bin/activate && python hunyuan3d-webapp/app.py --host 0.0.0.0 --port 5001"
+    }
+  ],
+  "ports": [
+    { "name": "happy_toy", "port": 8010 },
+    { "name": "model_test", "port": 8000 },
+    { "name": "TD", "port": 8123 },
+    { "name": "defense_web", "port": 8020 },
+    { "name": "cyclopse_io", "port": 8080 },
+    { "name": "hunyuan3d-webapp", "port": 5001 }
+  ]
+}
