@@ -1,0 +1,196 @@
+{
+  "assets": [
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/anatomy-model.glb",
+      "asset": "Assets/Art/Finished/anatomy-model.fbx",
+      "sha256": "ec8aded959fb171f116665858f188d250924326913d925e2041c758944f3a03a",
+      "bytes": 312316,
+      "meshCount": 35,
+      "materials": 4
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/archive-crate.glb",
+      "asset": "Assets/Art/Finished/archive-crate.fbx",
+      "sha256": "6afdc7791a564ba8692b22c0b45de27a1daa695a17eadc85bb0f923dbff3865d",
+      "bytes": 83228,
+      "meshCount": 11,
+      "materials": 3
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/barred-window.glb",
+      "asset": "Assets/Art/Finished/barred-window.fbx",
+      "sha256": "ac1d9be373ff2d174c10658cc7a4b472e5f880e15c0e13a7a892728a6711f582",
+      "bytes": 534492,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/barricade.glb",
+      "asset": "Assets/Art/Finished/barricade.fbx",
+      "sha256": "511ce4455ba13ca62cdf84f35a7a8c382a8fab55e30d14b7b059b67cdd5c5b54",
+      "bytes": 608188,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/broadcast-console.glb",
+      "asset": "Assets/Art/Finished/broadcast-console.fbx",
+      "sha256": "9f589e94b81e2306c4fb117cbc692e0b749932f90ed8d34f3eab0571e6fa6615",
+      "bytes": 342556,
+      "meshCount": 55,
+      "materials": 6
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/cicada-shells.glb",
+      "asset": "Assets/Art/Finished/cicada-shells.fbx",
+      "sha256": "d89c6b4725dfff00066f0cd0c67914b3a35f4c3f0b260ae5ed4739693d20aaf9",
+      "bytes": 652156,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/corridor-wire.glb",
+      "asset": "Assets/Art/Finished/corridor-wire.fbx",
+      "sha256": "790b3a70252725fb28835a1605b69f69390bfa6e2e38a76b5bc30f32b837bcc6",
+      "bytes": 590764,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/dress-form.glb",
+      "asset": "Assets/Art/Finished/dress-form.fbx",
+      "sha256": "66b52a74baf9f8a9e447de7005109699059ad703f8e45768b89bef0eb9213a06",
+      "bytes": 109196,
+      "meshCount": 9,
+      "materials": 4
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/medical-cart.glb",
+      "asset": "Assets/Art/Finished/medical-cart.fbx",
+      "sha256": "547dd595ae67875031f389257483c7d5af9ac5a59ae47cbda61ced9fe408d7d1",
+      "bytes": 270940,
+      "meshCount": 36,
+      "materials": 5
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/placeholder-broken-doll-pile-2f.glb",
+      "asset": "Assets/Art/Finished/placeholder-broken-doll-pile-2f.fbx",
+      "sha256": "78a2642de347dd61e771eff071bb4e28817d00ff5abaae103b3cabf137713da2",
+      "bytes": 612476,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/placeholder-hanging-bundle-stair.glb",
+      "asset": "Assets/Art/Finished/placeholder-hanging-bundle-stair.fbx",
+      "sha256": "a8671286f26a52e3b011ea147300fc4a4d0b11b3ee3a22fda24f0ab9e03f9221",
+      "bytes": 541132,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/placeholder-watching-mask-1f.glb",
+      "asset": "Assets/Art/Finished/placeholder-watching-mask-1f.fbx",
+      "sha256": "41671222cd59acc457cdfd927b9c65522a1f05a834acfd7c3d572c5c6b63dabf",
+      "bytes": 552092,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/placeholder-wrapped-body-1f.glb",
+      "asset": "Assets/Art/Finished/placeholder-wrapped-body-1f.fbx",
+      "sha256": "10cc03c0537372e24904a794e1a0367c5acfe1493396b33a5e09890661708576",
+      "bytes": 551772,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/school-bench.glb",
+      "asset": "Assets/Art/Finished/school-bench.fbx",
+      "sha256": "db83795c0c926ab2a003dfe7faeae18cd44048bc9253b29cb0b8056c5ac4a11c",
+      "bytes": 69804,
+      "meshCount": 9,
+      "materials": 2
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/school-sink.glb",
+      "asset": "Assets/Art/Finished/school-sink.fbx",
+      "sha256": "a57f06fc638ee3bcd327418b24a4b605b6c9f0c4a697c2eee1df81939729b373",
+      "bytes": 90300,
+      "meshCount": 7,
+      "materials": 3
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/school-toilet.glb",
+      "asset": "Assets/Art/Finished/school-toilet.fbx",
+      "sha256": "b41b5830c5089394819c77172f2e416f116caa4bdeb034b0c2f5dd915cf3d57a",
+      "bytes": 155564,
+      "meshCount": 9,
+      "materials": 3
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/service-shelf.glb",
+      "asset": "Assets/Art/Finished/service-shelf.fbx",
+      "sha256": "80f530619a685c6c0b156910ebb5c2becfd99ea169f33897648460dc5be401de",
+      "bytes": 87308,
+      "meshCount": 12,
+      "materials": 3
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/sewing-station.glb",
+      "asset": "Assets/Art/Finished/sewing-station.fbx",
+      "sha256": "67abca3c897bdc0d98c61ba83fbfd69f5a225ce83db5efb2226624a176a337dc",
+      "bytes": 145100,
+      "meshCount": 22,
+      "materials": 6
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/shrine-table.glb",
+      "asset": "Assets/Art/Finished/shrine-table.fbx",
+      "sha256": "d67c28255fd807f09331f311b8971f3e92952a35c1c180b8aa5093094a20b189",
+      "bytes": 70268,
+      "meshCount": 9,
+      "materials": 2
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/silent-mannequin-1f.glb",
+      "asset": "Assets/Art/Finished/silent-mannequin-1f.fbx",
+      "sha256": "8783598124c122575371f9534571af0dc95e66628cc834ce159f3ad7016cdefb",
+      "bytes": 531052,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/silent-mannequin-2f.glb",
+      "asset": "Assets/Art/Finished/silent-mannequin-2f.fbx",
+      "sha256": "8baa562e1b2b86c05ef39f5e84b4e73fbe24b83cb13419ecdfbc05b43f910abc",
+      "bytes": 551196,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/toy-blocks.glb",
+      "asset": "Assets/Art/Finished/toy-blocks.fbx",
+      "sha256": "30ed07c335e76b56a07da7c51684a822226e5acac3214a8bfd11e1a97b779ff8",
+      "bytes": 40604,
+      "meshCount": 4,
+      "materials": 3
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/upper-doll-circle.glb",
+      "asset": "Assets/Art/Finished/upper-doll-circle.fbx",
+      "sha256": "1c2424425590869cc737e4b69867c24f2ecbe289f7264a9afbb631eb86bcbc19",
+      "bytes": 573996,
+      "meshCount": 1,
+      "materials": 1
+    },
+    {
+      "source": "work/latest-snapshot/3d_modeling-main/game/assets/props/finished/upper-mirror-shards.glb",
+      "asset": "Assets/Art/Finished/upper-mirror-shards.fbx",
+      "sha256": "f3e69bc26db396a45970abccb530c1c2340a7dd7d292dd544f9501681b837635",
+      "bytes": 498124,
+      "meshCount": 1,
+      "materials": 1
+    }
+  ]
+}

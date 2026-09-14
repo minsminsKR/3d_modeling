@@ -1,0 +1,13 @@
+/Library/
+/Temp/
+/Obj/
+/Logs/
+/UserSettings/
+/Builds/
+*.csproj
+*.sln
+*.blend1
+*.blend2
+# Override parent repository's model-download exclusions for required Unity sources.
+!/Assets/**/*.fbx
+!/SourceArt/*.blend

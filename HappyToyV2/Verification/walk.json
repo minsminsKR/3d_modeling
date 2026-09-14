@@ -1,0 +1,32 @@
+{
+    "failure": "",
+    "actions": [
+        "E INFIRMARY sliding door",
+        "E CLASSROOM sliding door",
+        "E story-register",
+        "Investigated register",
+        "E WASHROOM sliding door",
+        "E story-ribbon",
+        "Investigated ribbon",
+        "E INFIRMARY sliding door",
+        "Recovered stamina before medical record",
+        "E story-medical-record",
+        "Investigated record",
+        "E INFIRMARY sliding door",
+        "Sidestepped and waited for strike to miss",
+        "E story-preparation-box",
+        "Investigated restore",
+        "E Return the names"
+    ],
+    "storyStep": 4,
+    "escaped": true,
+    "hwacatCompleted": true,
+    "position": {
+        "x": -7.976030349731445,
+        "y": 0.07999992370605469,
+        "z": 0.0029586339369416237
+    },
+    "movementUpdates": 2390,
+    "attacks": 1,
+    "maximumActiveEnemies": 2
+}

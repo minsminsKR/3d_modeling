@@ -1,0 +1,17 @@
+{
+    "titleFrozen": true,
+    "started": true,
+    "journalPaused": true,
+    "journalGated": true,
+    "journalFrozen": true,
+    "resumed": true,
+    "pauseOpened": true,
+    "resultOpened": true,
+    "restartClean": true,
+    "pointerSettings": true,
+    "pointerVolume": true,
+    "pointerSensitivity": true,
+    "settingsPersisted": true,
+    "compactLayout": true,
+    "uiFramesRendered": 7
+}
