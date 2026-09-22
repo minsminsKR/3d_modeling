@@ -8,12 +8,17 @@ namespace HappyToy.V2.Editor
 {
     public static class V1CharacterBuilder
     {
-        static string ModelPath(string key,string file)=>"Assets/Art/"+(key=="Cyclopse"?"Refined/":"V1/")+key+"/"+file+".fbx";
+        public static bool UseCyclopseCandidate { get; set; }
+        public static bool UseCyclopseNormalsCandidate { get; set; }
+        public static bool UseCyclopseShapeCandidate { get; set; }
+        public static bool UseCyclopseShapeSkinCandidate { get; set; }
+        static string ModelPath(string key,string file)=>"Assets/Art/"+(key=="Cyclopse"?(UseCyclopseShapeSkinCandidate?"CandidateShapeSkin/":UseCyclopseShapeCandidate?"CandidateShape/":UseCyclopseNormalsCandidate?"CandidateNormals/":UseCyclopseCandidate?"Candidate/":"Refined/"):"V1/")+key+"/"+file+".fbx";
         static AnimationClip ImportClip(string key,string file,string name,bool lockY)
         {
             var path=ModelPath(key,file);var importer=(ModelImporter)AssetImporter.GetAtPath(path);
             importer.animationType=ModelImporterAnimationType.Legacy;importer.importAnimation=true;
             importer.importNormals=ModelImporterNormals.Calculate;importer.normalSmoothingAngle=75;
+            if(key=="Cyclopse"&&UseCyclopseNormalsCandidate)importer.importNormals=ModelImporterNormals.Import;
             if(key=="Cyclopse"){importer.skinWeights=ModelImporterSkinWeights.Custom;importer.maxBonesPerVertex=32;importer.minBoneWeight=.000001f;}
             importer.animationCompression=ModelImporterAnimationCompression.Off;importer.SaveAndReimport();
             var source=AssetDatabase.LoadAllAssetsAtPath(path).OfType<AnimationClip>().First(c=>!c.name.StartsWith("__preview__"));

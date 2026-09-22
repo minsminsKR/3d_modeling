@@ -1,0 +1,46 @@
+{
+    "device": "NVIDIA GeForce RTX 5060 Ti",
+    "cpu": "AMD Ryzen 5 9600X 6-Core Processor ",
+    "graphicsApi": "Direct3D12",
+    "unity": "6000.6.0f1",
+    "measurement": "1280x720 offscreen render plus synchronous one-pixel GPU readback, sampled at most 10Hz; not presented-frame FPS; beforeThreat also includes post-restoration frames",
+    "width": 1280,
+    "height": 720,
+    "targetFrameRate": 120,
+    "vSync": 1,
+    "managedBytes": 4390912,
+    "developmentBuild": true,
+    "escaped": true,
+    "beforeThreat": {
+        "frames": 300,
+        "over33ms": 1,
+        "over50ms": 1,
+        "p50ms": 2.575000047683716,
+        "p95ms": 3.3410000801086426,
+        "p99ms": 3.5209999084472656,
+        "maxMs": 142.04519653320313
+    },
+    "duringThreat": {
+        "frames": 196,
+        "over33ms": 0,
+        "over50ms": 0,
+        "p50ms": 2.5046000480651855,
+        "p95ms": 3.6856000423431396,
+        "p99ms": 4.148200035095215,
+        "maxMs": 6.365699768066406
+    },
+    "slowSamples": [
+        {
+            "index": 0,
+            "storyStep": 0,
+            "milliseconds": 142.04519653320313,
+            "realtime": 3.584636688232422,
+            "playerPosition": {
+                "x": -7.800000190734863,
+                "y": 0.07999992370605469,
+                "z": 0.0
+            },
+            "firstRender": true
+        }
+    ]
+}

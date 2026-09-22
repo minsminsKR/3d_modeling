@@ -1,0 +1,847 @@
+{
+    "scene": "Assets/ClassroomReview/SchoolTeacherDesk.unity",
+    "unityVersion": "6000.6.0f1",
+    "files": [
+        {
+            "path": "Assets/Art/CandidateShapeSkin/Cyclopse/Walking.fbx",
+            "guid": "6eec6d98440fe0e499ab73dc37036391",
+            "sha256": "e1504945b8483bccf2372e96416097c82b29cbada2b00c74a9b7bd817c4c71b2"
+        },
+        {
+            "path": "Assets/Art/Finished/anatomy-model.fbx",
+            "guid": "d4c9754005a52934090c7b18ce1ca6c2",
+            "sha256": "1ec6c714a35c65ed202ddae4ff2e2b2524cb05b6303747dfbd4db65641802998"
+        },
+        {
+            "path": "Assets/Art/Finished/archive-crate.fbx",
+            "guid": "103bcadfe9407c744a95932ad40210bc",
+            "sha256": "b27f6b5c8c1f68ec07ecbd9e74bf61b91cf94814733190e4a017d9a0607ecacb"
+        },
+        {
+            "path": "Assets/Art/Finished/classroom-chair.fbx",
+            "guid": "1a9a133d19fe7e140ba26a4f65be33f9",
+            "sha256": "4136ba1a2071bfea66f2c5924bbe4598228bed483c8ab5fc8b8db3a46979fd2d"
+        },
+        {
+            "path": "Assets/Art/Finished/classroom-desk.fbx",
+            "guid": "07b284ef8ee40944591c5962c345c287",
+            "sha256": "4fea9a01a4d0e75615fe8f9376d415629f2c69c8da914fb31262f6a053ebfd53"
+        },
+        {
+            "path": "Assets/Art/Finished/hiding-cabinet.fbx",
+            "guid": "b3f567cd8e12a2b4c82dbb1385e2fd84",
+            "sha256": "adf62129fdf684c77f4fb72f8324e1d083a6dffe2e6ead1da5bf5897dc083002"
+        },
+        {
+            "path": "Assets/Art/Finished/infirmary-bed.fbx",
+            "guid": "22a256192198a1d41bc6e051942bfa2e",
+            "sha256": "02f88e7fbf525c287ea8a5da566582e0a1fc34a496498c9ea8ad5c54e83810de"
+        },
+        {
+            "path": "Assets/Art/Finished/medical-cart.fbx",
+            "guid": "a2c33f411133fea44bdc1cd25f725a9f",
+            "sha256": "8edd9f5352075c7af563159313bccf09e98808a3d6b9d39626cf9da405db3bab"
+        },
+        {
+            "path": "Assets/Art/Finished/school-bench.fbx",
+            "guid": "57b405b1b9b6d2446b6e52e7a11390c5",
+            "sha256": "0ab49fb617da616c0d45ff59fd301f3a03af882fe2d802fe566ce181c9b60458"
+        },
+        {
+            "path": "Assets/Art/Finished/school-sink.fbx",
+            "guid": "ffaffc604edc80c41b07388991d2a8ae",
+            "sha256": "2223c893c8503323c35eb4a819353245e0e762cad26c1ff8d87a4a5546682567"
+        },
+        {
+            "path": "Assets/Art/Finished/school-toilet.fbx",
+            "guid": "0350f0ef0d4a5b741a81bff8e3de12ce",
+            "sha256": "e6063d963025f405af6b439288bd8d971f20fb63e201545839528cf0e132ba8c"
+        },
+        {
+            "path": "Assets/Art/Finished/service-shelf.fbx",
+            "guid": "2b90f96242056b94997867b42b8de4bc",
+            "sha256": "8578248e5b994972b8ca799048be1afccdaa66e877838853d83d307cb9b04372"
+        },
+        {
+            "path": "Assets/Art/Finished/story-medical-record.fbx",
+            "guid": "6fd24f3279af3f0469234054b8274c58",
+            "sha256": "98927068e27b0cb7d0fd6547d3f5ecee3779aea9f93b6e6bdd7834bfbdc0891a"
+        },
+        {
+            "path": "Assets/Art/Finished/story-preparation-box.fbx",
+            "guid": "87c6f06320ae5d746848574735b414df",
+            "sha256": "207cd8005051acc20353eed5590c1bfcde20d6463580ebaa904b3cab0185f801"
+        },
+        {
+            "path": "Assets/Art/Finished/story-register.fbx",
+            "guid": "a166e32484f71df4fb29ed742aae360e",
+            "sha256": "45564506c940b1afb158cf8d23ed031684612929c563e28430af662b2e89cc43"
+        },
+        {
+            "path": "Assets/Art/Finished/story-ribbon.fbx",
+            "guid": "dc1d0e2ae6c313d48ba972c4f0ec5be9",
+            "sha256": "5b7b5b53e346ee0a649f9da5608c605e12e297baa77c4ded4805040fc6fc8062"
+        },
+        {
+            "path": "Assets/Art/Finished/teacher-desk.fbx",
+            "guid": "53fabfce2bfebdc44863096181bd200e",
+            "sha256": "3f5732829e0683c32b8e4f2ccae41cb2d4ce82cfc90544f65140453d8f0a4059"
+        },
+        {
+            "path": "Assets/Art/Surfaces/ceiling.png",
+            "guid": "1d5f7f85e1b49cd4b9fd581295be6db7",
+            "sha256": "01e1344228e6aedbfee7a17e3bb5a045b7257c748339c719853c5794936662ed"
+        },
+        {
+            "path": "Assets/Art/Surfaces/classroom-door.png",
+            "guid": "ae778ff2299f3e2488b0cce211988cc9",
+            "sha256": "dec4e8c7ff7afb7d73f9a35cb1ab08160330dac34234ec1b36b96583e5c4ba4b"
+        },
+        {
+            "path": "Assets/Art/Surfaces/floor.png",
+            "guid": "c1a6b478d7fd2b44baa6b4c8c671b010",
+            "sha256": "e34cb969e44ae830e18ca00c6a69bb263396368a2ed7b6a241e694aafcac987b"
+        },
+        {
+            "path": "Assets/Art/Surfaces/wall.png",
+            "guid": "1ddfa5baec37421419af763a29e81680",
+            "sha256": "702bed3f5afcaefd9f9749d8acddc915e7798e79a8d349c253dd7220d30de469"
+        },
+        {
+            "path": "Assets/Art/V1/Cyclopse/model_textured.jpg",
+            "guid": "1f08741b4d4e2b84c98e471f04621162",
+            "sha256": "239679412a0afe2de7a43739cceb0b709ba3c6a5a6c618f514687ad7f9ad2bb7"
+        },
+        {
+            "path": "Assets/Art/V1/Hwacat/hwa_paint.png",
+            "guid": "fc025e92809970e4bbb71ebf6eea5d02",
+            "sha256": "fba1f57cef4f030103fa43cf3ffc44f64573ccc7e00f7a52cf77cd8729ea6514"
+        },
+        {
+            "path": "Assets/Art/V1/Hwacat/model_textured.jpg",
+            "guid": "4a489dc0787dec04ea2da047f588f705",
+            "sha256": "4b0256f628b66d91985d90129553a8d8dc229e33f8146730c356c857f1d7de39"
+        },
+        {
+            "path": "Assets/Art/V1/Hwacat/Normal_standing.fbx",
+            "guid": "9ec08d0399b044d42a9194b55ddf2adc",
+            "sha256": "9a5abb8b2ffd9ddd2a04a1687e8e6b0545faee471573a5ffbbbb01c412d7e82b"
+        },
+        {
+            "path": "Assets/Art/V1/Hwacat_angry/model_textured.jpg",
+            "guid": "08f021c6e660b6a48aace6483c848250",
+            "sha256": "25dfea7bec6ed903a7d554bd009314a2af3f3bcb78e729ef1cd010ae4f6a83f3"
+        },
+        {
+            "path": "Assets/Art/V1/Hwacat_angry/Zombie Run.fbx",
+            "guid": "5d07ab96751993d489588ac9a98fb328",
+            "sha256": "8dad6275da262ea376bff9f37596b036d295d3997e12ee3f4e9fc39f4731476b"
+        },
+        {
+            "path": "Assets/ClassroomReview/Chalkboard green 6.mat",
+            "guid": "f91bb24445fe47e4a8ea58cdd345dd58",
+            "sha256": "32d7ad5f4cd4d567c6f3f34e59213e121affdf3ca0e32794c145819a7e4b5327"
+        },
+        {
+            "path": "Assets/ClassroomReview/classroom-chair Dark rubber feet 39.mat",
+            "guid": "1b3cb5f89d83a504481506a97c758103",
+            "sha256": "0c964e6eb4007fa66eae52823e94cbe1aef5023a9988575631b2dde7a8d6297e"
+        },
+        {
+            "path": "Assets/ClassroomReview/classroom-chair Desaturated school enamel 39.mat",
+            "guid": "d3d74c20562a1414c99eddee1830652f",
+            "sha256": "d16fb8fbf24ed5abfc89c5420d7a62dd1c37c2d6a0841a8345ac454b35a58831"
+        },
+        {
+            "path": "Assets/ClassroomReview/classroom-chair Exposed plywood edge 39.mat",
+            "guid": "0d2a1df73c4c27b42a777fd4f409ba5a",
+            "sha256": "fde69fa8a5a4bb6a14edda5af9a27211f62cfa37d1a2a819f6fb8ddb0e96ef02"
+        },
+        {
+            "path": "Assets/ClassroomReview/classroom-chair Warm aged plywood 39.mat",
+            "guid": "6607d46a5a0125e43b934d7058fc0daa",
+            "sha256": "1e4f11008d5e88f56feb7bfad2a6e5beaf07a28a99e83318a9048f95c634fcb6"
+        },
+        {
+            "path": "Assets/ClassroomReview/classroom-desk Dark rubber feet 39.mat",
+            "guid": "43d8bb3115e35cf4890e77aae7492309",
+            "sha256": "a4468bd1adae6a77680a1264780d5d1fa6f83a282bd5667cb3b7063df849e9c7"
+        },
+        {
+            "path": "Assets/ClassroomReview/classroom-desk Desaturated school enamel 39.mat",
+            "guid": "d2388df16e685ea438ab5f3d2de84d63",
+            "sha256": "eaf48da90f59c018d3e43863b0ace3d59ec5e031d030c8b893f9d443b8c711f9"
+        },
+        {
+            "path": "Assets/ClassroomReview/classroom-desk Exposed plywood edge 39.mat",
+            "guid": "4c50eca17f4732c43bb7c373a19effbf",
+            "sha256": "2453a73fe133791187985cdbebf502568b23467f147106940fa7a99f21d8d579"
+        },
+        {
+            "path": "Assets/ClassroomReview/classroom-desk Warm aged plywood 39.mat",
+            "guid": "48f8c35ca5c75fe45875500501004eaa",
+            "sha256": "bace35862394fcc04eddff2068708e4756053e7a880204cf2c954d252b5b0f35"
+        },
+        {
+            "path": "Assets/ClassroomReview/Fixture diffuser 1.mat",
+            "guid": "4532b45dd9a21e6478e990c2e433f275",
+            "sha256": "d33b98dfd8bacfd2cc897571bf4861c6ecbefe72b0807c353c736ae9e1f618ef"
+        },
+        {
+            "path": "Assets/ClassroomReview/hiding-cabinet Dark rubber feet 1.mat",
+            "guid": "99f6cbf9c99ee664a89dcd6a84a7e4ed",
+            "sha256": "2bdd262ae8022af3ea1403a470a34644993a2c74a82e9323019f880c2adafeec"
+        },
+        {
+            "path": "Assets/ClassroomReview/hiding-cabinet Dull cabinet handles 1.mat",
+            "guid": "b14f6c026ec369e4b87a8966d20ab7d6",
+            "sha256": "28f92eb63c6724d93ce928613ebf74b75d4da502ff66b57d4415a30fa13c710f"
+        },
+        {
+            "path": "Assets/ClassroomReview/hiding-cabinet Exposed plywood edge 1.mat",
+            "guid": "967f119e212fb8346b0acba112bab8a5",
+            "sha256": "a7224bcf521450f393e8e81bdd169f22b99a88daacd6d8ee3ecd04b8a2a08368"
+        },
+        {
+            "path": "Assets/ClassroomReview/hiding-cabinet Faded cabinet enamel 1.mat",
+            "guid": "d38129c8f915392429bdf5f8a54fe638",
+            "sha256": "d75058a2ac01b86fa40e4428e4ebd0a5014daf4805ce7c5ef5e954902909bb10"
+        },
+        {
+            "path": "Assets/ClassroomReview/hiding-cabinet Recessed cabinet panels 1.mat",
+            "guid": "50f6727f1deaed740a3648f021f36978",
+            "sha256": "644a84d7d17912354420ba7a04493a81b5e63667fb1d0187219440144a0e8981"
+        },
+        {
+            "path": "Assets/ClassroomReview/infirmary-bed Dark rubber feet 2.mat",
+            "guid": "e3b882bff54719c4e93ba2c70e90742e",
+            "sha256": "8c90348abff799d198cac2990a70d468a3b777b20e1f6a706e9792609fb022b2"
+        },
+        {
+            "path": "Assets/ClassroomReview/infirmary-bed Desaturated school enamel 2.mat",
+            "guid": "19b26834fce2a6841992ffac06b89e4b",
+            "sha256": "cb7eb9019857568d39f7b8689ae5cfa872b28a064b3d6a9ee6d01c1b2c612399"
+        },
+        {
+            "path": "Assets/ClassroomReview/infirmary-bed Faded ivory cotton 2.mat",
+            "guid": "f394cda77e1e11b4ca58e6eadbc8cf9d",
+            "sha256": "441b48e17a0cb930357b4984c0bf8fc9ad5ee8c2dfca9a0071eef6fedeb27940"
+        },
+        {
+            "path": "Assets/ClassroomReview/infirmary-bed Muted infirmary blanket 2.mat",
+            "guid": "f75818be7dcc4c04eba460e50a29e003",
+            "sha256": "8da311f8409506002cd0592223484af38167f40db25d47896d6d4e1b7051e4a2"
+        },
+        {
+            "path": "Assets/ClassroomReview/Ivory enamel 6.mat",
+            "guid": "e34437ee7ea4aeb4392f8576cb4195ba",
+            "sha256": "8741cea82029f1d7fc3d313e805738a51c26bb82ef7a3194f3d38f412fe31c1a"
+        },
+        {
+            "path": "Assets/ClassroomReview/Night window glass 5.mat",
+            "guid": "12ce37e0bb0e55e44ad59d0a08d05010",
+            "sha256": "ab5e035f7a53654e88da798359858383d7f534f16c50f4327f3dbd28952289da"
+        },
+        {
+            "path": "Assets/ClassroomReview/Notice faded ink 1.mat",
+            "guid": "106623ed6f1f5704d8a6834ab07c3d5a",
+            "sha256": "50a71d35df90fd21b2fbee33dd71e2c386d2c32d76f047949538fef68a5ab860"
+        },
+        {
+            "path": "Assets/ClassroomReview/Notice paper 1.mat",
+            "guid": "b50e3fa3b39d0c243967ac1335357620",
+            "sha256": "1e2ed96d3a840b85e23b465d9382685981a585cce30dbc5fec6fc4e48e52ad7c"
+        },
+        {
+            "path": "Assets/ClassroomReview/Oak trim 6.mat",
+            "guid": "cfe700ec132b94d4eb559bf279231954",
+            "sha256": "73145bdae009b801b741b04e7649a2b292d989e756a0f96c32f02d0967617825"
+        },
+        {
+            "path": "Assets/ClassroomReview/School lower wall paint 5.mat",
+            "guid": "3ce6759dfa8aa5a4397197a02b557f0e",
+            "sha256": "e7fc2394054925867cd0ee142b98f771b84c6a553985961ab3cbaae6e4f11f42"
+        },
+        {
+            "path": "Assets/ClassroomReview/SchoolTeacherDesk.unity",
+            "guid": "8e723784ced2cbe49a48cb07440b1955",
+            "sha256": "25f93e25e79f18f81472bc1a868b7df8eb0149f41ab336a32f6334ff33b5d507"
+        },
+        {
+            "path": "Assets/ClassroomReview/teacher-desk Dark rubber feet.mat",
+            "guid": "005db1addf82a9146b2235ce583603c1",
+            "sha256": "3f5d27a13da49a300fcb7ae59a4a6811c3480cdcab93e33d4555c66c2e94e255"
+        },
+        {
+            "path": "Assets/ClassroomReview/teacher-desk Desaturated school enamel.mat",
+            "guid": "23c763c6f23ca914a9412ecd8b8e3f83",
+            "sha256": "c71f25eac768a164ac646ae96a2d4d950ff8e1a6a8b4494a79c3c9b48f7d2a0d"
+        },
+        {
+            "path": "Assets/ClassroomReview/teacher-desk Exposed plywood edge.mat",
+            "guid": "115c957d4b951124b9007f4b2d2fea87",
+            "sha256": "0076d1bcee57a11c8b9c7827721fdd0df52acdbbd0b6b9347bc747e42888a4e3"
+        },
+        {
+            "path": "Assets/ClassroomReview/teacher-desk Warm aged plywood.mat",
+            "guid": "616289ec5573a354f8f9d39b975eeb54",
+            "sha256": "d09ca762d688dec0c6a6b7318d61aa0da98b3dd9d1945be75cd192bffc790488"
+        },
+        {
+            "path": "Assets/ClassroomReview/Washroom glazed splashback.asset",
+            "guid": "5880d66ce1ffab643bf83d31a42848cf",
+            "sha256": "fc66459ea78e92ba3fd7c233cc8f3993aafced527ce2389c936de720702591d8"
+        },
+        {
+            "path": "Assets/ClassroomReview/Washroom glazed splashback.mat",
+            "guid": "fe08b31a88770d84a8fc301e31ea6474",
+            "sha256": "95640adea6eda927c3b41ad4f31db533252af8d19f884f87cc787152e8d56c3d"
+        },
+        {
+            "path": "Assets/ClassroomReview/Washroom grouted floor 1.asset",
+            "guid": "82d761bcbaac3e6458e6d65d3874bf01",
+            "sha256": "a2ac962144e17b52aa505b92db47325ff3d96f947937c604d879d7aa45b15db9"
+        },
+        {
+            "path": "Assets/ClassroomReview/Washroom grouted floor 1.mat",
+            "guid": "a1bd9e98c569a924ebb217ac6b51d9c1",
+            "sha256": "a8d1b0d2a88dd1b7181dd51cc142e8b79a7925295037351fd77a01cbd10f5f6e"
+        },
+        {
+            "path": "Assets/ClassroomReview/Washroom partition enamel 3.mat",
+            "guid": "0da72fda48c47a644a91e7b606d49926",
+            "sha256": "6074da37ac8826c860e89a74f9d582c21e16107f3e7c5cc35aece9b0d4283619"
+        },
+        {
+            "path": "Assets/Editor/CabinetReview.cs",
+            "guid": "00e4a36daeae39748971987b9c1c17c3",
+            "sha256": "0aa54ff9be5116b02067ebeb05f9268387244cec0bca1c179f95ca31a72ddee2"
+        },
+        {
+            "path": "Assets/Editor/ClassroomReview.cs",
+            "guid": "2eb79abf39be1cf438111f35753b17d8",
+            "sha256": "64779c65c0c4387df53c218d1fc28e1b9188f62cb2ff64b313df7bc2cb0308d6"
+        },
+        {
+            "path": "Assets/Editor/ClassroomUpgrade.cs",
+            "guid": "be6842a4610962a48a5b33d6f322b391",
+            "sha256": "08ba47df3902eb3fd2bfe364506a2dc742cc97cfa3b6c306a62aac411665ac29"
+        },
+        {
+            "path": "Assets/Editor/CurrentReviewAudit.cs",
+            "guid": "c0f5e8472e78f544aa7420dca02e9b6b",
+            "sha256": "cfe8beb3cb62367a6c2d7df30a24b670e90be4fbbc7177009e31de43be7e8027"
+        },
+        {
+            "path": "Assets/Editor/CyclopseCandidateReview.cs",
+            "guid": "1229f6a06d671a44a9bb61c7b3f2a079",
+            "sha256": "d0aab5a603f59786ab9d6e2d7a4000758f7d9e232c9d471e009d8631b60226cf"
+        },
+        {
+            "path": "Assets/Editor/LightingReview.cs",
+            "guid": "bbbabb20ce7ee0d4d948eb062a62347e",
+            "sha256": "a6cd9c39577b1892efb4d0b22fbd3d4f648060f4d99d938cf6b4914947f5e10f"
+        },
+        {
+            "path": "Assets/Editor/ShellAssetBuilder.cs",
+            "guid": "a3d4c416027a2d84f88d242327adb1ab",
+            "sha256": "72a8dd7be1eab8c74ba2e8396b248f5711bbbe45738528cfda8b05530cc1d358"
+        },
+        {
+            "path": "Assets/Editor/TeacherDeskReview.cs",
+            "guid": "abf32c61da2898242a0a1e38a0d21689",
+            "sha256": "940b05392747a5b1e72d5ae28ad88ddbe5a7913514a5dc3852d6753601898c6e"
+        },
+        {
+            "path": "Assets/Editor/V1CharacterBuilder.cs",
+            "guid": "9c019769176b8fa40bc79ac07322ed96",
+            "sha256": "951993aa8451137ea6b1ae9815a284b6a179190876e0b35f379f0de6a7a95c4e"
+        },
+        {
+            "path": "Assets/Editor/V2SceneBuilder.cs",
+            "guid": "25212c1c40e5dab4f9eb29731fd32526",
+            "sha256": "5301d97629df8bf27b82721362304a5b3d037ec3cf34cf59fda87d4a5280e8cc"
+        },
+        {
+            "path": "Assets/Editor/WashroomFinishReview.cs",
+            "guid": "5cf179427c9d60644a8d0f86e767fd11",
+            "sha256": "666becee85d9df4d3b1aa788c7f9e9a20bf17789c09862bff1dda15840c421cc"
+        },
+        {
+            "path": "Assets/Generated/anatomy-model_Faded anatomical pigment 17.mat",
+            "guid": "6365b35ba2474ef46b054fdfde8b175a",
+            "sha256": "536895ee4a3269023f2382d7afa37e1ab903ccc9fb706ce2a9a0d4b7de0e63da"
+        },
+        {
+            "path": "Assets/Generated/anatomy-model_Hollow charcoal interior 61.mat",
+            "guid": "19e478ac93010ee439db3d36065c2629",
+            "sha256": "cca39901ff9a1b5ec55c04d8c91b7e5225ad57fc6707ac8b5c7997e6c821a263"
+        },
+        {
+            "path": "Assets/Generated/anatomy-model_Oxidized stand 50.mat",
+            "guid": "bde9e8a07c90328478e230842ae05165",
+            "sha256": "7590866d63738f9eba86ff03c2bc2b894adf5aa7968f1183a6761e6e986656cb"
+        },
+        {
+            "path": "Assets/Generated/anatomy-model_Yellowed plaster 281.mat",
+            "guid": "fc23fe724885a744caef1ca377f62dfc",
+            "sha256": "b673e5fa3fca39ad82f01e3a4d577d4e6b2bcc95f05f73356289ae0433c9dfec"
+        },
+        {
+            "path": "Assets/Generated/archive-crate_Archive cardboard 17.mat",
+            "guid": "4ef67e597de9c364d8a9ff73ba72aa65",
+            "sha256": "91938c7b0ccf04a345663f235a466a46ce943111406d6d3144f40065eddd8bd0"
+        },
+        {
+            "path": "Assets/Generated/archive-crate_Oxidised iron 50.mat",
+            "guid": "9e594a02201038b49a5aeb109f87185b",
+            "sha256": "c1ae67a263ed62f922438af782945315c22323c0ab440dea8d80993ceff5b84b"
+        },
+        {
+            "path": "Assets/Generated/archive-crate_Worn honey oak 72.mat",
+            "guid": "0c24799b60cd7eb479c62d2faf9b45c0",
+            "sha256": "1c47dfabbbc7bd4367a8bee32f685c61f731ccc812c26ce87bd96b634a5179b4"
+        },
+        {
+            "path": "Assets/Generated/Ceramic 17.mat",
+            "guid": "edd1d3f0a05a55c4ca76bf08fe3473f0",
+            "sha256": "13e609fa254dcb22c0b5342108c9d7fbd140fbad70b641944b8b68a754d0a389"
+        },
+        {
+            "path": "Assets/Generated/CLASSROOM leaf_image_mesh 2.asset",
+            "guid": "3bab113d6a5d76f4ab951cc56b9aae25",
+            "sha256": "d86495164233657ca8e97a245ab1ebf95a7182446a9ebc64c53746866994d685"
+        },
+        {
+            "path": "Assets/Generated/CLASSROOM left leaf_image_mesh 2.asset",
+            "guid": "0601e1cd17739d84ebb69a0f2d029b9e",
+            "sha256": "8af4bc257b2479b62ab6732bda5430a1627ccea3f98b9e5914fc145447306efd"
+        },
+        {
+            "path": "Assets/Generated/Cyclopse_patrol 3.anim",
+            "guid": "74b321a97261e3f49ae64032d5cfc0da",
+            "sha256": "d784128ef7e51fca3d1f6e49191a51c4eb654c435c5fd54659f99fbc3ab5acff"
+        },
+        {
+            "path": "Assets/Generated/Cyclopse_skin 3.mat",
+            "guid": "14d8168d8c7726d4983e0faa77a571bf",
+            "sha256": "db0198cfea4ace9df1e4d1ab86ef2a2f8748749bbd1c9b2ea44a0c30a8ebdbc8"
+        },
+        {
+            "path": "Assets/Generated/Damp plaster 17.mat",
+            "guid": "ae8f112dc36b8a047aaf7b2b045b5111",
+            "sha256": "8ae3aa444fd38677851b5a0db66b8156e3231df34e153359b23cdb6a645fd460"
+        },
+        {
+            "path": "Assets/Generated/Dark lacquer 17.mat",
+            "guid": "afb4238c65413f1419d2109f7c0d1850",
+            "sha256": "d16d61da88bba485fe55c3d3a0219a0926df678c251a705ca580dcb63fe91abb"
+        },
+        {
+            "path": "Assets/Generated/Hwacat_angry_patrol 5.anim",
+            "guid": "d85c6e186f5164d4bb22e2fe811410bd",
+            "sha256": "800cb506b1e6cd73f0e60d57e15db17a6351b74386ed5199b0a8ddaee55ea031"
+        },
+        {
+            "path": "Assets/Generated/Hwacat_angry_skin 5.mat",
+            "guid": "a9da590fd4ed02a4aaa03ef794177e5f",
+            "sha256": "c8e79b7d1898e4f52a38d450468af6dc9591669428d36ecd426f96b9c32fb33c"
+        },
+        {
+            "path": "Assets/Generated/Hwacat_patrol 5.anim",
+            "guid": "b5aca3661ad645a49bc6db6a0ce05e7d",
+            "sha256": "11408b2b7fadeb1195a303ea64068d6278355c228a7bec6ecfe25a2d43166be1"
+        },
+        {
+            "path": "Assets/Generated/Hwacat_skin 5.mat",
+            "guid": "e2cbe40aa787a7d4fa2cae14906edd87",
+            "sha256": "da2605b4aa26f5c0736e08650cd0ab0c3c5d60acd604ac6aadab3d6fc30018ca"
+        },
+        {
+            "path": "Assets/Generated/HwacatPortrait 5.mat",
+            "guid": "9d060a8ffb1198e4eb4d30590ff381ee",
+            "sha256": "2be606d8aa73b1b61fdc2fc269566d6372632a924726fc3c801b1b1f2f06d3f6"
+        },
+        {
+            "path": "Assets/Generated/INFIRMARY leaf_image_mesh 2.asset",
+            "guid": "da0a2ef9c5f8f604897fe17b6b810713",
+            "sha256": "f491838ed1bff4618cfa7200396e507d61435390aa5cd60fee86f8128ef2acc1"
+        },
+        {
+            "path": "Assets/Generated/INFIRMARY left leaf_image_mesh 2.asset",
+            "guid": "ca5e8cdea8cd5604ebdd9ce3c35c02b9",
+            "sha256": "36c0541a35d0d550d7a1db9f87ea6bcf6f9f7dda521404dfe2e7700dfa5921ca"
+        },
+        {
+            "path": "Assets/Generated/medical-cart_Aged rubber 72.mat",
+            "guid": "3ee6ade11603a764a8f4294b87e82ef3",
+            "sha256": "c86071681ba4c5749fa3b910114becb8026a263e37fcf2729f6e1cfb29890347"
+        },
+        {
+            "path": "Assets/Generated/medical-cart_Amber medicine glass 28.mat",
+            "guid": "80aabe7220cd370439547545ceab3c11",
+            "sha256": "cce8cfd3610a17af287a903710a979b54f0b3effc69c8e6c122ef390e35ec4ac"
+        },
+        {
+            "path": "Assets/Generated/medical-cart_Chipped ivory enamel 28.mat",
+            "guid": "57218cdc683b0214a851b62016a77245",
+            "sha256": "4ed336ea462ef1b4b8ab92327a6accce0caea01a2331c443299ee24e5898f268"
+        },
+        {
+            "path": "Assets/Generated/medical-cart_Dull surgical steel 259.mat",
+            "guid": "6c519df40c03cd845a14a42d185a8d2a",
+            "sha256": "494d6fb66cb01fcb76603676c2637abe9d1523559c54c9660c76f11194fb7133"
+        },
+        {
+            "path": "Assets/Generated/medical-cart_Faded paper labels 39.mat",
+            "guid": "611f803a6c1ca1547b590f8a75901c25",
+            "sha256": "31fa65c1a361fe40d769f448ef8e70ded64f05b4322e21f939f29c35d9f4393a"
+        },
+        {
+            "path": "Assets/Generated/Old oak 17.mat",
+            "guid": "d756e5853ca99af43bcc367fc7af17ac",
+            "sha256": "34bc53bbae2a1b7a4841de514cb7533aa90062bd03ae66e2b5238e4bfb2cb082"
+        },
+        {
+            "path": "Assets/Generated/Oxidized iron 17.mat",
+            "guid": "aa0387a902303e24b87f15501a410187",
+            "sha256": "09e2666ee2fcf72c7718b4d9db6f68f21c6b9a063c9b1f3055deac9d7106d7d6"
+        },
+        {
+            "path": "Assets/Generated/Parquet floor 12.mat",
+            "guid": "22ef3fe19dee01b458836c3b6cc1a709",
+            "sha256": "b3cac4dde10a2c3413fbdd4a74b2402590737cff6e7b7c0ac49fd2ada3b3a52e"
+        },
+        {
+            "path": "Assets/Generated/Portrait inset_image_mesh 2.asset",
+            "guid": "b28fbf606cd295d48ba7b74fd2b1e367",
+            "sha256": "9533d7d36fa19f969101be28080e591ca75eb6f0fecae6ed49e212be6b2617bf"
+        },
+        {
+            "path": "Assets/Generated/School sliding door 14.mat",
+            "guid": "0a9884ba211e82b4faf55f96c5d70241",
+            "sha256": "df87d92ced3a9d20e6f456571ca632e27c7169e5b713a72d386ef7e9aeb3273e"
+        },
+        {
+            "path": "Assets/Generated/SchoolAtmosphere 17.asset",
+            "guid": "235bb17ab795c0e4fb53924f701b1a19",
+            "sha256": "d36ee891ce6a30f74c33b74088b4c55e721ea996304347ad75a07322718d93e0"
+        },
+        {
+            "path": "Assets/Generated/school-bench_Oxidised iron 138.mat",
+            "guid": "c25ffd16f321a034cb1278e70878dfef",
+            "sha256": "e86516d964d052240dff679eb9d101746c9c1e631392c333193372964f2b1fb9"
+        },
+        {
+            "path": "Assets/Generated/school-bench_Worn honey oak 72.mat",
+            "guid": "a786c98f33aa2be4695d9b346576a3c2",
+            "sha256": "ededb63ba59c214ca0407e3a0831d6e651ab8dd094061bfe70dba9458383cbe2"
+        },
+        {
+            "path": "Assets/Generated/SchoolPipeline 17.asset",
+            "guid": "0b6b382238e994d449ca171db0139efd",
+            "sha256": "cb82f5bc5faf3ac3cbae723d877c77a9ee8ed8ac85567744e368b503923ddae5"
+        },
+        {
+            "path": "Assets/Generated/SchoolRenderer 17.asset",
+            "guid": "a75d64208cc89f648a23b0d77c6a7441",
+            "sha256": "4844ec45d4cf8121d260f46ad40441e0c7d71604816270a2f0d0d5bd1ea2f4d2"
+        },
+        {
+            "path": "Assets/Generated/school-sink_Aged ivory ceramic 72.mat",
+            "guid": "b20ee0a8b80e395429b39bc98f2defb0",
+            "sha256": "b7c9b46546b581b719f42faeef701cbe952820a6c678c1e78e46497daf594fa8"
+        },
+        {
+            "path": "Assets/Generated/school-sink_Brushed chrome 72.mat",
+            "guid": "ace5f04b21446af4fb785cdf9d9028b1",
+            "sha256": "d8cbe3a6123f50db3561cd2a272857651884e3755144565bad5cc8b12af38885"
+        },
+        {
+            "path": "Assets/Generated/school-sink_Drain interior 28.mat",
+            "guid": "33b1a9110acf687469148dde63c1a731",
+            "sha256": "89f2a7a239097cd5385c6333429f6a1cd87b16e026001462a0443af9d9498f5e"
+        },
+        {
+            "path": "Assets/Generated/school-toilet_Aged ivory ceramic 121.mat",
+            "guid": "3ceb3e9d58025204eb5734abbbbe7c1b",
+            "sha256": "f0d47dd7e2a62888cc65b1ba341b5e8633264f0736ceee269dbd077668dfe654"
+        },
+        {
+            "path": "Assets/Generated/school-toilet_Bakelite seat 29.mat",
+            "guid": "b94a2b705ce69084ebd3d0025234dd75",
+            "sha256": "11b9cd779944383362fcfc3916cbf0f36a4c03fd44529b8cdd45852bc58a71f9"
+        },
+        {
+            "path": "Assets/Generated/school-toilet_Brushed chrome 75.mat",
+            "guid": "4925b8de055ce1e4d8bb50a5610ae35f",
+            "sha256": "5decd0b709052fd46f601868b0cd359e439e2684c5e7ae62144962d276c3b41e"
+        },
+        {
+            "path": "Assets/Generated/service-shelf_Archive cardboard 58.mat",
+            "guid": "52327581f6b2b10489f4a68f38ac2ed0",
+            "sha256": "f6341de02efd54f0f7af61eb359c84866a5d7901bdcfb42729869feaae99f231"
+        },
+        {
+            "path": "Assets/Generated/service-shelf_Oxidised iron 58.mat",
+            "guid": "1e20187d29c24bd4686a00e73ec5287f",
+            "sha256": "20ea469e30b067cea24774e51488937581b536071953fc4638c8bb3d7722a39f"
+        },
+        {
+            "path": "Assets/Generated/service-shelf_Worn honey oak 58.mat",
+            "guid": "6acdf2ceb45fbe049a8a10f6bcc09174",
+            "sha256": "2b8b36648b5388e378983b6bbeb1b62a65d99d68576aa9b3ad6e641821c7ef35"
+        },
+        {
+            "path": "Assets/Generated/Stained acoustic ceiling 14.mat",
+            "guid": "3b419dd9b52591042bf693ae90feaa1b",
+            "sha256": "d6b3e845b0d4b3ac2948f8f75bc06b53da3bea735171bbdb4359ddfc1fbb2e95"
+        },
+        {
+            "path": "Assets/Generated/story-medical-record_Faded crimson 16.mat",
+            "guid": "d3bf0fb7562376747842522627b6e9f4",
+            "sha256": "8ba210553e9447998323a17174a5b9fbf38352bb36ca39681afadb533a9ba97e"
+        },
+        {
+            "path": "Assets/Generated/story-medical-record_Faded dark green 16.mat",
+            "guid": "0d9b777ed4fbbd44a979fd1e8ea272eb",
+            "sha256": "1523fd8e2fea3b681cf2cf402ff5f255bc3042e3c6ebc1ac3dff47c3c09613ab"
+        },
+        {
+            "path": "Assets/Generated/story-medical-record_Graphite 206.mat",
+            "guid": "fbe36ed76b267fa41ade3cd1efc2dda6",
+            "sha256": "c3954df12a0d13bbc5afc89656ee1ef5f03e0070f039660b94842e079922f5d8"
+        },
+        {
+            "path": "Assets/Generated/story-medical-record_Yellowed paper 16.mat",
+            "guid": "5b9291b8edba695499ea9e162d5d6513",
+            "sha256": "dac5033de742216ff52f233bfa507016d03449c65e13b91726b20555ec7819f0"
+        },
+        {
+            "path": "Assets/Generated/story-preparation-box_Faded dark green 66.mat",
+            "guid": "394a8cbcbc19eaa439b682c614ee4cb1",
+            "sha256": "ee08f7ee2e3600e4f602fb26f7d6da75331430a59baa721366b09693d7481f4a"
+        },
+        {
+            "path": "Assets/Generated/story-preparation-box_Yellowed paper 16.mat",
+            "guid": "513a79cc7601c41488117c66b63f33fe",
+            "sha256": "c1ca00210180583713b06a30e015124c4a7cafdb37bfc9798750b819cafa7d10"
+        },
+        {
+            "path": "Assets/Generated/story-register_Faded dark green 16.mat",
+            "guid": "6d07273bd2ce87c44870a30183c65e74",
+            "sha256": "ded58d7b0341cf0734f96945835cec35bb2ba0279dbe0cf771cd10e51cda034f"
+        },
+        {
+            "path": "Assets/Generated/story-register_Graphite 206.mat",
+            "guid": "f6fd2c5bd5f079d42be9ad307bd159e5",
+            "sha256": "1c7391afcfb6150e076aa6d114d1cf5229fc8824bcaf3338ab246f2679f2f1ed"
+        },
+        {
+            "path": "Assets/Generated/story-register_Yellowed paper 16.mat",
+            "guid": "65ea3a9fe717a0340a23c85823627c2d",
+            "sha256": "45fcd561291f46168420831d63dbb0addba4c615d8b8210483b6444e54058d41"
+        },
+        {
+            "path": "Assets/Generated/story-ribbon_Faded crimson 56.mat",
+            "guid": "d354087d7c198284ab9bb1c2f51ef073",
+            "sha256": "1da66be93f45d9766cb525b0ce74634e1a6ae83f1c6308abd30a27898713ec07"
+        },
+        {
+            "path": "Assets/Generated/WASHROOM leaf_image_mesh 2.asset",
+            "guid": "416a6ae8d02322842af26de7f7be680f",
+            "sha256": "e00c332e84a70ec44c7180baac3d7a9d53b24ca48fc55568c9e517a04d017048"
+        },
+        {
+            "path": "Assets/Generated/WASHROOM left leaf_image_mesh 2.asset",
+            "guid": "87ecc1e1b424f2d4a8f1b27cef1bccd5",
+            "sha256": "b13dcbae00342d6344e54fd51faf95525dc7277ca1f7dd5f964e6457157decf0"
+        },
+        {
+            "path": "Assets/Resources/GamePanel.asset",
+            "guid": "a963f4123c9376f46a0775d14062135d",
+            "sha256": "2612808250f6bcc8ee981e04881e45006e8d74fb5d431abd695652bf43f29974"
+        },
+        {
+            "path": "Assets/Resources/SurfaceAudit.mat",
+            "guid": "d06d78f97a293704f930085792be211c",
+            "sha256": "2052dece6b185097214f3c708986b430b8ff855fe37d24111d1f04d3c9972d67"
+        },
+        {
+            "path": "Assets/Scripts/AccessAudit.cs",
+            "guid": "c4a13e9343163774abbb594009c26076",
+            "sha256": "a3fa33649e99da2fc1766875b097f18d4a7387df562b2d6895c1749edbfd1df2"
+        },
+        {
+            "path": "Assets/Scripts/AmbienceAudit.cs",
+            "guid": "c872a21c9c731254d8f14caee32f243e",
+            "sha256": "1688cbf5a884d4aa3f0dd6bb2972cf985a14dcd0b12c0dee72bfc89e55613c2a"
+        },
+        {
+            "path": "Assets/Scripts/AttackAudit.cs",
+            "guid": "c14cf8b345b57e4468a48d53ffb8c1f1",
+            "sha256": "f346263bfcbac79f49f0d168be07e998a889995e11535b12e78e9c30b202d953"
+        },
+        {
+            "path": "Assets/Scripts/AttackPoseAudit.cs",
+            "guid": "1cdfb5032eebcc148a61f1b5eadf1f31",
+            "sha256": "dff2fb6b9c2199644ab12defce7271d20a35fa438a627511acefe23a8c756b00"
+        },
+        {
+            "path": "Assets/Scripts/DevelopmentSmoke.cs",
+            "guid": "6e8690880f2d50f42a9e5fa3e47105ca",
+            "sha256": "f36bdbfbb24464f54e71839adb54051a89590939047367ac11337018166173d0"
+        },
+        {
+            "path": "Assets/Scripts/DoorClearanceAudit.cs",
+            "guid": "6547437564cb30542af517c437bb33b7",
+            "sha256": "825d4fe9717c23f95a0466e4a27a847d8b6c94c7ebb9e58820c2c5631d7c24fc"
+        },
+        {
+            "path": "Assets/Scripts/EventTransitionAudit.cs",
+            "guid": "bff13ed640dc13a4fa3e783ceef2e723",
+            "sha256": "a2f9184b0a5ed6fa8fbf26dab4efff9f698bf8f0cb231a946844714c6b7453d0"
+        },
+        {
+            "path": "Assets/Scripts/FixtureLightLink.cs",
+            "guid": "a73d58c16b3d43a48a7f7aa0ca8cfb3a",
+            "sha256": "76dcf81d913b66389ad2ae48014ecf6f52f47cc834b9b569f7720e417ddae17e"
+        },
+        {
+            "path": "Assets/Scripts/FlowAudit.cs",
+            "guid": "9b34587924d2e254fa1a9a176eb358fe",
+            "sha256": "e0507d137fd1f3a518782a8869e469504b1081406ceca3ec726c4ee1dd8455e4"
+        },
+        {
+            "path": "Assets/Scripts/GameSession.cs",
+            "guid": "9a1b73ad8ff94e14692c385e27a0e5f8",
+            "sha256": "2809cb91f351bf45c57feaaabd0a4fdcaa47748297d5cf25a1cce52e84aa4181"
+        },
+        {
+            "path": "Assets/Scripts/GameShell.cs",
+            "guid": "c6c83cb7ccb4a4843a0d07490bd3a6a8",
+            "sha256": "c44243dc7f78f102c465be2ccb135507442196fa1ae4f34265871c6f44d9a14d"
+        },
+        {
+            "path": "Assets/Scripts/GameShellView.cs",
+            "guid": "eca62da01295ab24cba398c8cc5044b2",
+            "sha256": "d163ec06b40630880fe264e1071120b987eced7af1a5938dc0cf150afb0c0896"
+        },
+        {
+            "path": "Assets/Scripts/HidingAudit.cs",
+            "guid": "ca908c76b4738ac478b7c6904971692e",
+            "sha256": "10b2716b43b0d2ae4d65cbb8ccf99b63f66dfa47347f1680bc2b73e4845f9c53"
+        },
+        {
+            "path": "Assets/Scripts/HwacatAudit.cs",
+            "guid": "79c54fab1daa81f4c898e14a047e1a26",
+            "sha256": "7a0c08d46ab181dbf77994f757d41738f7614e70e69b19012a50e9c2d5eb7d7d"
+        },
+        {
+            "path": "Assets/Scripts/Interactable.cs",
+            "guid": "dc5da8e5d8870de44b1effbdf8183634",
+            "sha256": "f5758b34b08ef9afa73be007ed59585806a990ada9f725c0966db63cf596c0c8"
+        },
+        {
+            "path": "Assets/Scripts/PlayerMotor.cs",
+            "guid": "4825debd9b8f4534fad6849888189902",
+            "sha256": "161ffd6a17049543f2272ec6b19c3703b925a5701575028e7fab3816740eee57"
+        },
+        {
+            "path": "Assets/Scripts/PlayReviewTiming.cs",
+            "guid": "69c14a78c1d7569489c42e1b26adfeed",
+            "sha256": "f906601dd5ad699bf1a2287832b2be0da747d9a375dcfcc016d977853c1548ee"
+        },
+        {
+            "path": "Assets/Scripts/RoomAmbience.cs",
+            "guid": "3a71aa92d73d5d44aa1b770f3bfd42ab",
+            "sha256": "c9c70fc9e7b92d89907a482799d4784caf5879550ce6559d3de98d7706b9a1d0"
+        },
+        {
+            "path": "Assets/Scripts/RouteAudioCapture.cs",
+            "guid": "ba50c8e14c9ebcb4ab37060ea0882c3c",
+            "sha256": "1257202629b9149a6245560e988acfac5919f95fe621a204dde8eafb6a6e1000"
+        },
+        {
+            "path": "Assets/Scripts/RoutePerformance.cs",
+            "guid": "4da64d339ff2f3440aceb6bee15dd11b",
+            "sha256": "86f18681744c7453be512aa498edb60205b80bb5d3afb925c04d7d73c19ecdbe"
+        },
+        {
+            "path": "Assets/Scripts/StalkerBrain.cs",
+            "guid": "8e7dd180c40c0574d829719d0166de56",
+            "sha256": "4685aa95549f9e8c6a48e7fb3691945af365e51a82d4cedf19a1501d7dc42f2a"
+        },
+        {
+            "path": "Assets/Scripts/StalkerFootsteps.cs",
+            "guid": "f22af6c3af56ed245bdc143f4a862830",
+            "sha256": "8eedae31ab5789c525121e9f4012af3767d5b0529a3b82fd2b204a8df66402c8"
+        },
+        {
+            "path": "Assets/Scripts/StaminaAudit.cs",
+            "guid": "673adcf366594e24ea707374f731f77b",
+            "sha256": "baae62503ce20468ceb54f8bc2e8edebceeced3af5ae4e0f4b20ad53b7d1944a"
+        },
+        {
+            "path": "Assets/Scripts/StoryDirector.cs",
+            "guid": "90d567316c9b3d94f9dac7946fcf20b5",
+            "sha256": "561a458eff2d16c45fdbd991c005b77edc1fe0bf76f5ffa3bfac39a98f4a10ff"
+        },
+        {
+            "path": "Assets/Scripts/SurfaceAudit.cs",
+            "guid": "952d2b16632fc6c4f90602c5581eb993",
+            "sha256": "343f800d980d1f0a8290bf2df0f55bc6b235f5ba3a10de1200574fc979be22b6"
+        },
+        {
+            "path": "Assets/Scripts/V1AttackPose.cs",
+            "guid": "25fd53beda0b21c4d94eb90b779c365c",
+            "sha256": "9be53472427a8dd84bf1fb50149bd78547efcd576edd951e04d020924cee8fc1"
+        },
+        {
+            "path": "Assets/Scripts/V1CyclopseIntro.cs",
+            "guid": "3ad8ec696d310954784d7cb35aede898",
+            "sha256": "ca04b4870f5d7e454a1fbe2b8cda7478507d635812f6a06f401e5f7c76b75f62"
+        },
+        {
+            "path": "Assets/Scripts/V1HwacatEvent.cs",
+            "guid": "8699f042644800c44acc59c6a7738916",
+            "sha256": "4c0e24576510dd4d884a65c9d91333c267a7ea940ff37f1cb884a29806803cce"
+        },
+        {
+            "path": "Assets/Scripts/V1IntroAudit.cs",
+            "guid": "af713dc1978f4b14bb4aec5c990dcfd1",
+            "sha256": "0f2e6578393b5dae6b0b451e0b2fd8abcc42cbecc0a4da5dbbe17385cc4f334d"
+        },
+        {
+            "path": "Assets/Scripts/V1MonsterAudit.cs",
+            "guid": "97e90bbf841c27941a4d48955489a754",
+            "sha256": "bc4708506693bc28a0b0f9ffb3301912c128beab3d4a94027ebd13b69c767cc7"
+        },
+        {
+            "path": "Assets/Scripts/V1MonsterMotion.cs",
+            "guid": "33b8621ca6e065848a22232826267461",
+            "sha256": "295a3f8d7fd75cbbc5ab27c8e8e89fb9a732a716aad302f73415914e308a2721"
+        },
+        {
+            "path": "Assets/Scripts/V1RevealGrounding.cs",
+            "guid": "cddc6ce63f1886942a35c1914c6b66c4",
+            "sha256": "8fd7950196a6e1d0023809d214b77b9260289163fc2af6e47b7ee26e7ba680a1"
+        },
+        {
+            "path": "Assets/Scripts/WalkAudit.cs",
+            "guid": "ee5e541242d6cc04bbd8bf14daed3ef3",
+            "sha256": "565719c0c39d9a1aa5a6197f3800f6d1515a8c1180409de48a3c0ba910fe5e3f"
+        },
+        {
+            "path": "Assets/Scripts/WardenAudit.cs",
+            "guid": "83df6366e2d70c744917ab1b98ad2980",
+            "sha256": "699a8234a251a43e44f0b423acc45c59eb452caf4f772bccc8077812d836745e"
+        },
+        {
+            "path": "Assets/Scripts/WardenMotion.cs",
+            "guid": "d76659f62745b2c4c88097e6dd79dcad",
+            "sha256": "5ea14df53b1c4bbec69064ea055c145a5c96f31155cd517d66cc480a4f46d32f"
+        }
+    ],
+    "missingMetadata": []
+}

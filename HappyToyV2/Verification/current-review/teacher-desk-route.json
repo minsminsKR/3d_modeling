@@ -1,0 +1,37 @@
+{
+  "failure": "",
+  "actions": [
+    "E Corridor dismissal board",
+    "Optional inspection preserved story and stored journal entry: Corridor dismissal board",
+    "E INFIRMARY sliding door",
+    "E CLASSROOM sliding door",
+    "E Classroom seating record",
+    "Optional inspection preserved story and stored journal entry: Classroom seating record",
+    "E story-register",
+    "Investigated register",
+    "E WASHROOM sliding door",
+    "E story-ribbon",
+    "Investigated ribbon",
+    "E INFIRMARY sliding door",
+    "Recovered stamina before medical record",
+    "E story-medical-record",
+    "Investigated record",
+    "E INFIRMARY sliding door",
+    "Sidestepped and waited for strike to miss",
+    "E story-preparation-box",
+    "Restoration chair moved once at the correct story step",
+    "Investigated restore",
+    "E Return the names"
+  ],
+  "storyStep": 4,
+  "escaped": true,
+  "hwacatCompleted": true,
+  "position": {
+    "x": -7.9760308265686035,
+    "y": 0.07999992370605469,
+    "z": 0.0029586071614176035
+  },
+  "movementUpdates": 2558,
+  "attacks": 1,
+  "maximumActiveEnemies": 2
+}

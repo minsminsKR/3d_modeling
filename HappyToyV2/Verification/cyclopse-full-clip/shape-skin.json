@@ -1,0 +1,20 @@
+{
+  "Walking": {
+    "vertices": 8123,
+    "uv_preserved": true,
+    "cleaned_geometry_preserved": true,
+    "frames": [
+      3.0,
+      32.0
+    ]
+  },
+  "Run": {
+    "vertices": 8123,
+    "uv_preserved": true,
+    "cleaned_geometry_preserved": true,
+    "frames": [
+      3.0,
+      68.0
+    ]
+  }
+}

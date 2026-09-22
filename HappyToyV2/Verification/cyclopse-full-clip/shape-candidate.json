@@ -1,0 +1,16 @@
+{
+  "Walking": {
+    "vertices": 8123,
+    "changed": 2487,
+    "maximum_displacement": 0.0350000168902792,
+    "uv_preserved": true,
+    "weights_preserved": true
+  },
+  "Run": {
+    "vertices": 8123,
+    "changed": 2487,
+    "maximum_displacement": 0.0350000168902792,
+    "uv_preserved": true,
+    "weights_preserved": true
+  }
+}

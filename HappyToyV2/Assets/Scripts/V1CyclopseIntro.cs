@@ -20,7 +20,8 @@ namespace HappyToy.V2
             var destination=brain.transform.position+Vector3.right*(brain.transform.position.x>0?-1.35f:1.35f);
             agent.SetDestination(destination);
             yield return new WaitForSeconds(1.3f);
-            if(GameSession.Current.Finished||GameSession.Current.StoryStep>=4){brain.enabled=true;yield break;}
+            if(GameSession.Current.Finished||GameSession.Current.StoryStep>=4||!brain.gameObject.activeInHierarchy)
+            {Phase="resolved";yield break;}
             Phase="roar";agent.isStopped=true;
             var facing=GameSession.Current.player.transform.position-brain.transform.position;facing.y=0;
             if(facing.sqrMagnitude>.01f)brain.transform.rotation=Quaternion.LookRotation(facing);
@@ -38,6 +39,8 @@ namespace HappyToy.V2
             }
             roar=AudioClip.Create("V1 Cyclopse descending roar",samples.Length,1,rate,false);roar.SetData(samples,0);voice.PlayOneShot(roar);RoarPlayed=true;
             yield return new WaitForSeconds(1.3f);
+            if(GameSession.Current.Finished||GameSession.Current.StoryStep>=4||!brain.gameObject.activeInHierarchy)
+            {Phase="resolved";yield break;}
             agent.isStopped=false;brain.enabled=true;Phase="done";Completed=true;
         }
         void OnDestroy(){if(roar)Destroy(roar);if(voice)Destroy(voice);}

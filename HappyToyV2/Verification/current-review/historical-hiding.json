@@ -1,0 +1,16 @@
+{
+  "occludedBeforeHiding": true,
+  "unseenEntrySafe": true,
+  "exitWorks": true,
+  "visibleBeforeHiding": true,
+  "witnessRecorded": true,
+  "witnessedEntryCaught": true,
+  "spatialAudio": true,
+  "footsteps": 1,
+  "enemyPosition": {
+    "x": 4.548924446105957,
+    "y": 0.04999995231628418,
+    "z": 3.5999999046325684
+  },
+  "visibilityHit": "Player"
+}

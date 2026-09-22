@@ -1,12 +1,17 @@
 """Refine V1 skin-weight discontinuities geometrically; preserve topology, UVs and source files."""
-import bpy, json, math
+import bpy, json, math, sys, argparse
 from mathutils.kdtree import KDTree
 from pathlib import Path
 
 root=Path(__file__).resolve().parent.parent
+parser=argparse.ArgumentParser()
+parser.add_argument('--candidate',action='store_true')
+parser.add_argument('--sigma',type=float,default=.055)
+options=parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
+if not .01<=options.sigma<=.15:raise ValueError('Smoothing radius out of bounds')
 source=root/'Assets/Art/V1/Cyclopse'
-out=root/'Assets/Art/Refined/Cyclopse';out.mkdir(parents=True,exist_ok=True)
-reports=root/'Verification/cyclopse-skin-refinement';reports.mkdir(parents=True,exist_ok=True)
+out=root/('Assets/Art/Candidate/Cyclopse' if options.candidate else 'Assets/Art/Refined/Cyclopse');out.mkdir(parents=True,exist_ok=True)
+reports=root/('Verification/cyclopse-candidate' if options.candidate else 'Verification/cyclopse-skin-refinement');reports.mkdir(parents=True,exist_ok=True)
 stored_weights=None;report={}
 
 def key(v):return tuple(round(c,6) for c in v.co)
@@ -34,7 +39,7 @@ for clip in ('Walking','Run'):
         # Geometric Gaussian smoothing avoids topology-density bias and discontinuities at tiny edges.
         tree=KDTree(len(mesh.vertices))
         for v in mesh.vertices:tree.insert(v.co,v.index)
-        tree.balance();sigma=.055;updated=[]
+        tree.balance();sigma=options.sigma;updated=[]
         for v in mesh.vertices:
             avg={};total=0
             for co,j,distance in tree.find_range(v.co,sigma*3):
@@ -60,7 +65,7 @@ for clip in ('Walking','Run'):
     report[clip]['export_frame_range']=[start,end];report[clip]['fps']=bpy.context.scene.render.fps
     bpy.context.scene.frame_set(math.floor(start))
     if clip=='Walking':
-        bpy.ops.wm.save_as_mainfile(filepath=str(root/'SourceArt/Cyclopse_refined.blend'))
+        bpy.ops.wm.save_as_mainfile(filepath=str(root/('SourceArt/Cyclopse_candidate.blend' if options.candidate else 'SourceArt/Cyclopse_refined.blend')))
     bpy.ops.export_scene.fbx(filepath=str(out/(clip+'.fbx')),use_selection=False,object_types={'ARMATURE','MESH'},add_leaf_bones=False,
         bake_anim=True,bake_anim_use_all_actions=False,bake_anim_use_nla_strips=False,bake_anim_simplify_factor=0,axis_forward='-Z',axis_up='Y')
 (reports/'weights.json').write_text(json.dumps(report,indent=2),encoding='utf-8');print(json.dumps(report,indent=2))

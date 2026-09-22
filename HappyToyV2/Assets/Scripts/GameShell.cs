@@ -90,8 +90,12 @@ namespace HappyToy.V2
             }
             else if(Screen==Page.Journal)
             {
-                for(int i=0;i<4;i++)
-                {var rect=new Rect(160+(i%2)*650,275+(i/2)*190,610,160);Fill(rect,new Color(.065f,.08f,.075f));GUI.Label(new Rect(rect.x+20,rect.y+14,565,130),session.JournalEntry(i)??$"기록 0{i+1}\n아직 발견하지 못했습니다.",session.JournalEntry(i)==null?muted:body);}
+                for(int i=0;i<6;i++)
+                {
+                    var entry=i<4?session.JournalEntry(i):session.ExplorationEntry(i-4);
+                    var rect=new Rect(160+(i%2)*650,260+(i/2)*140,610,125);Fill(rect,new Color(.065f,.08f,.075f));
+                    GUI.Label(new Rect(rect.x+20,rect.y+14,565,100),entry??(i<4?$"기록 0{i+1}\n아직 발견하지 못했습니다.":"주변 기록\n게시물을 조사하면 이곳에 남습니다."),entry==null?muted:small);
+                }
                 if(Button(704,"돌아가기  [J / Esc]"))Back();
             }
             else if(Screen==Page.Settings)
@@ -116,7 +120,7 @@ namespace HappyToy.V2
             Fill(new Rect(45,811,190,5),new Color(.2f,.24f,.21f));Fill(new Rect(45,811,190*player.Stamina,5),gold);
             GUI.Label(new Rect(45,835,600,40),"숨  "+Mathf.RoundToInt(player.Stamina*100)+"%     [J] 조사 기록    [Esc] 메뉴",small);
             Fill(new Rect(798,448,4,4),player.Focus?gold:paper);
-            if(player.Focus){Fill(new Rect(470,766,660,46),ink);GUI.Label(new Rect(490,773,630,36),player.Hidden?"[E] 숨은 곳에서 나오기":"[E] "+player.Focus.label,body);}
+            if(player.Hidden||player.Focus){Fill(new Rect(470,766,660,46),ink);GUI.Label(new Rect(490,773,630,36),player.Hidden?"[E] 숨은 곳에서 나오기":"[E] "+player.Focus.DisplayLabel,body);}
         }
     }
 }

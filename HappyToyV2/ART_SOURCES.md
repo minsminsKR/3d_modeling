@@ -39,6 +39,32 @@ The supplied Cyclopse and angry Hwacat folders contain locomotion but no separat
 
 `RoomAmbience.cs` adapts the existing V1 `SoundManager.js` wiring drone (beating low tones, mains and fluorescent harmonics) and `wet_drip` (descending sine/envelope) into bounded mono Unity clips. Frequencies/timing/mix are adjusted for looping spatial room emitters, not claimed as byte-identical audio. Classroom filtered-noise draft is newly synthesized here. No external recording, music or voice was downloaded. Original V1 sound code remains unchanged. Room occlusion, chase ducking and post-restoration quiet are new compact-map mixing behavior.
 
+## Classroom furniture — 2026-09-23
+
+`Tools/build_classroom_furniture.py` authors the original metric desk and chair meshes in Blender. `SourceArt/classroom-{desk,chair}.blend` retains editable geometry; matching FBX and material JSON exports are under `Assets/Art/Finished`. Beveled plywood, enameled steel framing, a book shelf and rubber feet use newly authored geometry and constant-color materials. No external asset, texture, scan or motion capture was used. These exports still require scene placement and rendered review; export success is not art acceptance.
+
 ## External download policy
+
+### Infirmary furniture and room fixtures — 2026-09-23
+
+The same Blender furniture script now authors `infirmary-bed`: metric steel framing, rounded mattress, pillow and folded blanket. Source and exports use the same directories as the desk/chair; all geometry and solid-color materials are original. `ClassroomUpgrade.cs` authors window frames, wall protection bands, chalkboard trim, opaque sign backing and washroom stall frames/open doors. No third-party material was added. These fixtures retain the existing compact map footprint and V1 character/event sources.
+
+### Hiding cabinet — 2026-09-23
+
+`Tools/build_classroom_furniture.py -- hiding-cabinet` authors the original beveled enamel cabinet shell, recessed doors, ventilation slots, label holders and handles. Editable source is `SourceArt/hiding-cabinet.blend`; FBX/material JSON exports are in `Assets/Art/Finished`. No external textures or assets were used. `CabinetReview.cs` replaces only visible geometry, retains the four existing wall colliders and the inside/exit transforms, and aligns handles toward the exit to account for FBX coordinate conversion. Doors are visual panels, not newly animated mechanisms.
+
+### Washroom tile finish — 2026-09-23
+
+`WashroomFinishReview.cs` authors deterministic 128×128 repeating grout/ceramic textures using original pixel arithmetic and Perlin variation, saved as native Unity texture assets. Floor and sink splashback use separate color palettes. The splashback is a wall-mounted visual mesh with no additional collider; existing fixture models, clue transforms and navigation are unchanged. No external image or material was downloaded.
+
+### Restoration chair cue — 2026-09-23
+
+`StoryDirector.cs` authors a bounded 0.72-second movement of the existing empty-chair transform (0.16m and 22 degrees) when the preparation-box restoration occurs. Its spatial wood-scrape cue is newly synthesized from seeded noise and a rising low tone, not a downloaded recording. The earlier silent instant rotation at the medical-record step is removed so the event matches the restoration journal text.
+
+### Teacher desk — 2026-09-23
+
+`teacher-desk` is an additional original Blender model from `Tools/build_classroom_furniture.py`: layered top, steel legs, modesty panel and three drawer fronts with pulls. Source: `SourceArt/teacher-desk.blend`; exported FBX/material JSON: `Assets/Art/Finished`. Its 1.4×0.7m footprint and 0.76m height match the replaced primitive. `TeacherDeskReview.cs` retains the original collider and register position. Drawers are visual details, not interactive storage. No downloaded assets were used.
+
+### External asset licensing requirements
 
 The user permits external assets. Before adding one, record its exact download/source page, creator, license/version, redistribution and attribution requirements, local destination and modifications. A publicly downloadable file alone is not proof of permission. Preserve supplied license files. No new external assets were downloaded for the attendance-warden update.

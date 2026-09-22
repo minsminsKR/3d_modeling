@@ -31,10 +31,15 @@ namespace HappyToy.V2
             Directory.CreateDirectory(output);keyboard=InputSystem.AddDevice<Keyboard>();mouse=InputSystem.AddDevice<Mouse>();
             yield return new WaitForSecondsRealtime(1);player=GameSession.Current.player;
             var items=FindObjectsByType<Interactable>(FindObjectsSortMode.None);
+            var storyDirector=FindFirstObjectByType<StoryDirector>();
+            var originalChairPosition=storyDirector.emptyChair.localPosition;
+            var originalChairRotation=storyDirector.emptyChair.localRotation;
             var roomNames=new[]{"CLASSROOM","WASHROOM","INFIRMARY","CLASSROOM"};
             var ids=new[]{"register","ribbon","record","restore"};
             var centers=new[]{new Vector3(-4.5f,0,0),new Vector3(-4.5f,0,0),new Vector3(5.5f,0,0),new Vector3(-4.5f,0,0)};
             var opened=new HashSet<string>();
+            var optional=items.Where(i=>i.kind==Interactable.Kind.Inspect).ToArray();
+            foreach(var note in optional.Where(i=>i.name=="Corridor dismissal board"))yield return InspectNote(note);
             // Prepare the retreat route before disturbing the ribbon; this uses the same E input.
             yield return Walk(new Vector3(5.5f,0,0));
             if(failure=="")
@@ -50,6 +55,12 @@ namespace HappyToy.V2
                 if(opened.Add(roomNames[stage]))
                 {yield return PressE(door,door.movingLeaf.GetComponent<Collider>().bounds.center);yield return new WaitForSecondsRealtime(1.4f);}
                 if(failure!="")break;
+                if(stage==0)
+                {
+                    yield return Walk(new Vector3(-4.5f,0,3.0f));
+                    foreach(var note in optional.Where(i=>i.name=="Classroom seating record"))yield return InspectNote(note);
+                    if(failure!="")break;
+                }
                 if(stage==2)
                 {
                     yield return Walk(new Vector3(5.5f,0,2.9f));
@@ -66,6 +77,19 @@ namespace HappyToy.V2
                 yield return PressE(item,aim);
                 if(failure!="")break;
                 if(GameSession.Current.StoryStep!=stage+1){failure="Story did not advance: "+ids[stage];break;}
+                var director=FindFirstObjectByType<StoryDirector>();
+                if(stage<3&&director.RestorationChairCues!=0){failure="Restoration chair moved before restoration";break;}
+                if(stage<3&&(Vector3.Distance(director.emptyChair.localPosition,originalChairPosition)>.001f||Quaternion.Angle(director.emptyChair.localRotation,originalChairRotation)>.1f))
+                {failure="Chair pose changed before restoration";break;}
+                if(stage==3)
+                {
+                    yield return new WaitForSecondsRealtime(.85f);
+                    if(!director.RestorationChairCompleted||director.RestorationChairCues!=1)
+                    {failure="Restoration chair cue failed";break;}
+                    if(Mathf.Abs(Vector3.Distance(director.emptyChair.localPosition,originalChairPosition)-.16f)>.005f||Mathf.Abs(Quaternion.Angle(director.emptyChair.localRotation,originalChairRotation)-22)>.1f)
+                    {failure="Restoration chair pose did not reach authored endpoint";break;}
+                    actions.Add("Restoration chair moved once at the correct story step");
+                }
                 actions.Add("Investigated "+ids[stage]);Save();
                 if(stage==2)
                 {
@@ -90,6 +114,20 @@ namespace HappyToy.V2
             Save();Application.Quit(failure==""&&GameSession.Current.Escaped?0:1);
         }
         void Save()=>File.WriteAllText(Path.Combine(output,"walk.json"),JsonUtility.ToJson(new Result{failure=failure,actions=actions.ToArray(),storyStep=GameSession.Current.StoryStep,escaped=GameSession.Current.Escaped,position=player.transform.position,movementUpdates=player.MovementUpdates,attacks=FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include,FindObjectsSortMode.None).Sum(e=>e.AttacksStarted),maximumActiveEnemies=maximumActiveEnemies,hwacatCompleted=FindFirstObjectByType<V1HwacatEvent>()?.Completed??false},true));
+        IEnumerator InspectNote(Interactable note)
+        {
+            int before=GameSession.Current.StoryStep;
+            int recordsBefore=GameSession.Current.ExplorationCount;
+            if(!Approach(note,out var position,out var aim)){failure="No inspection approach: "+note.name;yield break;}
+            yield return Walk(position);if(failure!="")yield break;
+            yield return PressE(note,aim);if(failure!="")yield break;
+            if(GameSession.Current.Notice!=note.inspectionText||GameSession.Current.StoryStep!=before||!note.gameObject.activeSelf)
+                failure="Optional inspection changed progression or failed to display: "+note.name;
+            else if(GameSession.Current.ExplorationCount!=recordsBefore+1||GameSession.Current.ExplorationEntry(recordsBefore)!=note.inspectionText)
+                failure="Optional inspection was not stored in journal: "+note.name;
+            else actions.Add("Optional inspection preserved story and stored journal entry: "+note.name);
+            Save();
+        }
         IEnumerator Walk(Vector3 destination)
         {
             if(GameSession.Current.Finished){failure="Caught during movement";yield break;}
@@ -123,8 +161,13 @@ namespace HappyToy.V2
             InputSystem.QueueDeltaStateEvent(mouse.delta,new Vector2(0,-Mathf.DeltaAngle(current,desired)/player.sensitivity));
             yield return new WaitForSecondsRealtime(.1f);
             if(player.Focus!=item){Physics.Raycast(player.eyes.transform.position,player.eyes.transform.forward,out var obstruction,2.2f);failure="Actual interaction ray missed "+item.name+"; hit="+(obstruction.collider?obstruction.collider.name:"none")+"; angle="+Vector3.Angle(player.eyes.transform.forward,aim-player.eyes.transform.position)+"; aim="+aim+"; camera="+player.eyes.transform.position;yield break;}
+            string prompt=item.DisplayLabel;
+            if(item.kind==Interactable.Kind.Door&&!(prompt.EndsWith("열기")||prompt.EndsWith("닫기")))
+            {failure="Door prompt not localized: "+prompt;yield break;}
             InputSystem.QueueStateEvent(keyboard,new KeyboardState(Key.E));yield return new WaitForSecondsRealtime(.06f);
             InputSystem.QueueStateEvent(keyboard,new KeyboardState());yield return new WaitForSecondsRealtime(.06f);
+            if(item.kind==Interactable.Kind.Door&&item.DisplayLabel==prompt)
+            {failure="Door state prompt did not update after successful route interaction: "+item.name;yield break;}
             actions.Add("E "+item.name);
         }
         bool Approach(Interactable item,out Vector3 approach,out Vector3 aim)

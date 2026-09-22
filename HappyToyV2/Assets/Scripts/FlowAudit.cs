@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -11,7 +12,7 @@ namespace HappyToy.V2
     public sealed class FlowAudit:MonoBehaviour
     {
         string output;Keyboard keys;int renderedFrames;float deadline;bool preferencesCaptured,hadVolume,hadSensitivity;float savedVolume,savedSensitivity;
-        [Serializable]class Result{public bool titleFrozen,started,journalPaused,journalGated,journalFrozen,resumed,pauseOpened,resultOpened,restartClean,pointerSettings,pointerVolume,pointerSensitivity,settingsPersisted,compactLayout;public int uiFramesRendered;}
+        [Serializable]class Result{public bool titleFrozen,started,journalPaused,journalGated,journalFrozen,resumed,pauseOpened,resultOpened,restartClean,pointerSettings,pointerVolume,pointerSensitivity,settingsPersisted,compactLayout,inspectionStored,inspectionDeduplicated,inspectionDisplayed,inspectionReset;public int uiFramesRendered;}
         void Update(){if(deadline>0&&Time.realtimeSinceStartup>deadline){Debug.LogError("Flow audit timed out");RestorePreferences();Application.Quit(2);}}
         void RestorePreferences()
         {
@@ -72,9 +73,28 @@ namespace HappyToy.V2
             yield return Click(originalSensitivity<.17f?"mouse-up":"mouse-down");result.pointerSensitivity=Mathf.Abs(shell.Sensitivity-originalSensitivity)>.008f;
             float changedVolume=shell.Volume,changedSensitivity=shell.Sensitivity;
             yield return Capture("settings");yield return Click("back");
-            GameSession.Current.GetComponent<GameShellView>().Root.Q<Button>("begin").Focus();
+            var titleRoot=session.GetComponent<GameShellView>().Root;
+            var begin=titleRoot.Q<Button>("begin");begin.Focus();
+            // Allow a panel-processing frame before submitting; log focus to diagnose intermittent input failures.
+            yield return null;yield return new WaitForEndOfFrame();
+            Debug.Log("Flow audit start input: page="+shell.Screen+", focused="+(titleRoot.focusController.focusedElement as VisualElement)?.name+", keyboard="+keys.deviceId);
             yield return Key(UnityEngine.InputSystem.Key.Enter);result.started=session.InputAllowed&&Time.timeScale==1;
+            if(!result.started)
+            {
+                yield return Capture("start-input-failed");
+                result.uiFramesRendered=renderedFrames;
+                File.WriteAllText(Path.Combine(output,"flow.json"),JsonUtility.ToJson(result,true));
+                Debug.LogError("Flow audit stopped: Enter did not begin play; downstream checks were not run.");
+                RestorePreferences();Application.Quit(1);yield break;
+            }
+            var notes=FindObjectsByType<Interactable>(FindObjectsSortMode.None).Where(item=>item.kind==Interactable.Kind.Inspect).OrderBy(item=>item.name).ToArray();
+            foreach(var note in notes)note.Use(player);
+            result.inspectionStored=notes.Length==2&&session.ExplorationCount==2&&session.StoryStep==0;
+            foreach(var note in notes)note.Use(player);
+            result.inspectionDeduplicated=session.ExplorationCount==2;
             session.Collect("register");yield return Key(UnityEngine.InputSystem.Key.J);
+            var journalRoot=session.GetComponent<GameShellView>().Root;
+            result.inspectionDisplayed=notes.Length==2&&journalRoot.Q<Label>("inspection-0")?.text==notes[0].inspectionText&&journalRoot.Q<Label>("inspection-1")?.text==notes[1].inspectionText;
             result.journalPaused=shell.Screen==GameShell.Page.Journal&&Time.timeScale==0&&AudioListener.pause;
             result.journalGated=session.JournalEntry(0)!=null&&session.JournalEntry(1)==null;
             var position=player.transform.position;int movements=player.MovementUpdates;float stamina=player.Stamina;
@@ -88,12 +108,13 @@ namespace HappyToy.V2
             shell.Resume();session.Finish(false);result.resultOpened=shell.Screen==GameShell.Page.Result&&Time.timeScale==0;yield return Capture("result");
             shell.Restart(true);yield return null;yield return new WaitForSecondsRealtime(.5f);
             result.restartClean=GameSession.Current!=session&&GameSession.Current.InputAllowed&&GameSession.Current.StoryStep==0&&!GameSession.Current.Finished&&!GameSession.Current.player.Hidden;
+            result.inspectionReset=GameSession.Current.ExplorationCount==0;
             var restarted=GameSession.Current.Shell;
             result.settingsPersisted=Mathf.Approximately(restarted.Volume,changedVolume)&&Mathf.Approximately(restarted.Sensitivity,changedSensitivity)&&Mathf.Approximately(GameSession.Current.player.sensitivity,changedSensitivity);
             result.uiFramesRendered=renderedFrames;
             File.WriteAllText(Path.Combine(output,"flow.json"),JsonUtility.ToJson(result,true));
             RestorePreferences();
-            Application.Quit(result.titleFrozen&&result.started&&result.journalPaused&&result.journalGated&&result.journalFrozen&&result.resumed&&result.pauseOpened&&result.resultOpened&&result.restartClean&&result.pointerSettings&&result.pointerVolume&&result.pointerSensitivity&&result.settingsPersisted&&result.compactLayout&&renderedFrames==7?0:1);
+            Application.Quit(result.titleFrozen&&result.started&&result.journalPaused&&result.journalGated&&result.journalFrozen&&result.resumed&&result.pauseOpened&&result.resultOpened&&result.restartClean&&result.pointerSettings&&result.pointerVolume&&result.pointerSensitivity&&result.settingsPersisted&&result.compactLayout&&result.inspectionStored&&result.inspectionDeduplicated&&result.inspectionDisplayed&&result.inspectionReset&&renderedFrames==7?0:1);
         }
     }
 }

@@ -17,6 +17,16 @@ namespace HappyToy.V2
         public string Objective => objectives[Mathf.Min(StoryStep,4)];
         public string Notice => notice;
         public string JournalEntry(int index)=>index>=0&&index<StoryStep?clues[index]:null;
+        public string ExplorationEntry(int index)=>index>=0&&index<exploration.Count?exploration[index]:null;
+        public int ExplorationCount=>exploration.Count;
+        readonly List<string> exploration=new List<string>();
+        readonly HashSet<string> inspected=new HashSet<string>();
+        public void Inspect(string id,string text)
+        {
+            if(!InputAllowed||string.IsNullOrWhiteSpace(text))return;
+            if(inspected.Add(id))exploration.Add(text);
+            Notify(text);
+        }
         public event System.Action<int> StoryChanged;
         readonly string[] sequence = { "register", "ribbon", "record", "restore" };
         readonly string[] objectives = {

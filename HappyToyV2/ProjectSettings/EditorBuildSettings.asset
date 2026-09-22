@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Generated/SchoolV2 17.unity
-    guid: f7a76677f77f0eb47947e7025a73aa45
+    path: Assets/ClassroomReview/SchoolTeacherDesk.unity
+    guid: 8e723784ced2cbe49a48cb07440b1955
   m_configObjects: {}

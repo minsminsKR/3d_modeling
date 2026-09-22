@@ -74,7 +74,15 @@ namespace HappyToy.V2
             }
             else if(shown==GameShell.Page.Journal)
             {
-                for(int i=0;i<4;i++){float x=160+i%2*650,y=275+i/2*190;Panel(x,y,610,160,new Color(.06f,.08f,.07f));var label=Text(session.JournalEntry(i)??$"기록 0{i+1}\n아직 발견하지 못했습니다.",x+20,y+18,565,125);label.name="record-"+i;if(session.JournalEntry(i)==null)label.style.color=new Color(.49f,.56f,.52f);}
+                for(int i=0;i<6;i++)
+                {
+                    float x=160+i%2*650,y=260+i/2*140;
+                    string entry=i<4?session.JournalEntry(i):session.ExplorationEntry(i-4);
+                    string placeholder=i<4?$"기록 0{i+1}\n아직 발견하지 못했습니다.":"주변 기록\n게시물을 조사하면 이곳에 남습니다.";
+                    Panel(x,y,610,125,new Color(.06f,.08f,.07f));
+                    var label=Text(entry??placeholder,x+20,y+14,565,100,20);label.name=i<4?"record-"+i:"inspection-"+(i-4);
+                    if(entry==null)label.style.color=new Color(.49f,.56f,.52f);
+                }
                 Button("back","돌아가기  [J / Esc]",704,shell.Back);
             }
             else if(shown==GameShell.Page.Settings)
@@ -101,7 +109,7 @@ namespace HappyToy.V2
             stamina.style.width=190*player.Stamina;meter.text=$"숨  {Mathf.RoundToInt(player.Stamina*100)}%     [J] 조사 기록     [Esc] 메뉴";
             stamina.style.backgroundColor=player.SprintExhausted?new Color(.72f,.37f,.23f):gold;
             if(player.SprintExhausted)meter.text=player.Stamina<.25f?"숨이 찼습니다 — 걸으며 숨을 회복하세요. [J] 기록  [Esc] 메뉴":"숨이 돌아왔습니다 — Shift를 놓았다가 다시 눌러 달리세요.";
-            focus.text=player.Hidden?"[E] 숨은 곳에서 나오기":player.Focus?"[E] "+player.Focus.label:"";focus.style.display=player.Focus?DisplayStyle.Flex:DisplayStyle.None;
+            focus.text=player.Hidden?"[E] 숨은 곳에서 나오기":player.Focus?"[E] "+player.Focus.DisplayLabel:"";focus.style.display=player.Hidden||player.Focus?DisplayStyle.Flex:DisplayStyle.None;
             stage.Q("crosshair").style.backgroundColor=player.Focus?gold:paper;
         }
         void OnDestroy(){if(settings)settings.targetTexture=null;if(CaptureTarget){CaptureTarget.Release();Destroy(CaptureTarget);}if(settings)Destroy(settings);}

@@ -1,0 +1,54 @@
+{
+  "affected_vertices": 8123,
+  "total_vertices": 8123,
+  "Walking": {
+    "before": {
+      "max_edge_stretch": 43.02214661971423,
+      "edges_over_3x_by_frame": [
+        391,
+        270,
+        313,
+        442
+      ]
+    },
+    "after": {
+      "max_edge_stretch": 4.685845242157645,
+      "edges_over_3x_by_frame": [
+        32,
+        6,
+        26,
+        53
+      ]
+    },
+    "export_frame_range": [
+      1.0,
+      30.0
+    ],
+    "fps": 30
+  },
+  "Run": {
+    "before": {
+      "max_edge_stretch": 42.978141763454104,
+      "edges_over_3x_by_frame": [
+        346,
+        347,
+        695,
+        362
+      ]
+    },
+    "after": {
+      "max_edge_stretch": 5.176869345068276,
+      "edges_over_3x_by_frame": [
+        16,
+        21,
+        96,
+        0
+      ]
+    },
+    "export_frame_range": [
+      1.0,
+      66.0
+    ],
+    "fps": 30
+  }
+}

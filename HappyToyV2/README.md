@@ -1,6 +1,28 @@
 # Happy Toy — Unity V2 development
 
-## GitHub project handoff
+## Current local review — 2026-09-23
+
+Current build scene: **`Assets/ClassroomReview/SchoolTeacherDesk.unity`**. Improvements continue from user-selected commit `57ad81d` and are included in this handoff. The latest visual addition is an original Blender teacher desk with drawers, steel legs and handles, preserving the register location and collision footprint.
+
+### Continue on another Windows PC
+
+1. Clone `https://github.com/minsminsKR/3d_modeling.git` (branch `main`), or fast-forward an existing clean checkout with `git pull --ff-only origin main`.
+2. Install Unity **6000.6.0f1** with Windows build support through Unity Hub; add the repository's `HappyToyV2` directory as the project. Allow package restore and asset import to finish.
+3. Open `Assets/ClassroomReview/SchoolTeacherDesk.unity` and press Play. Do not regenerate the scene or open a historical scene variant as the current game.
+4. For a standalone executable use **Happy Toy V2 → Build Windows development player**. The resulting `Builds/Windows` folder must be kept together. Builds and Unity caches are excluded from Git; rebuild them on the new PC.
+5. Editable Blender files are in `SourceArt`, with export/refinement scripts in `Tools`. Blender **4.5.9** was used locally. Required imported models, textures, materials and Unity `.meta` files are included in the repository.
+
+The focused visible-window route review passed, including threat-stage timing and escape; see `Verification/current-review/visible-review-retry`. This is a development handoff, not a finished V2 release. Further work remains in character-surface polish, audio listening/mix review and event staging.
+
+This scene includes compact room improvements, Blender desk/chair/bed/cabinet models, washroom tile finishes, optional investigation boards and journal entries, directional room lighting and story-linked fixture glow. Cyclopse uses `CandidateShapeSkin`, preserving the V1 texture and animation while reducing rear-surface protrusions without the earlier shape-only deformation regression. The restoration-stage chair movement now matches the journal text. Earlier scene variants remain for comparison, not as launch targets.
+
+Open the selected scene and press Play, or use **Happy Toy V2 → Build Windows development player**. Use this project's `Builds/Windows/HappyToyV2.exe`, not the older separate `UnityV2` project's build. The original `Assets/Generated/SchoolV2 17.unity` remains as a preserved baseline. Do not use the original Generate menu to reproduce the upgrades; `ClassroomUpgrade` is the separate room-upgrade tool, and the selected scene also includes the subsequently validated Cyclopse replacement.
+
+The latest route passed optional E-key inspections, all four story steps, the corrected chair event and escape. Eleven interaction targets passed accessibility checks on the preceding material-only build. Menu and monster checks have their exact build scope recorded in `Verification/ART_REVIEW_PLAN.md`; historical results are not blanket certification of every later change. These are automated checks and selected-view reviews, not a complete human playtest or final art acceptance.
+
+The handoff and development history below describe earlier stages and are retained for context.
+
+## Historical GitHub project handoff — original upload, not current launch instructions
 
 Open this `HappyToyV2` directory in Unity Hub with Unity **6000.6.0f1**. Open `Assets/Generated/SchoolV2 17.unity` and press Play, or choose **Happy Toy V2 → Build Windows development player**. The build appears at `Builds/Windows/HappyToyV2.exe`; distribute the entire Windows build folder together.
 

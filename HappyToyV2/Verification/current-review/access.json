@@ -1,0 +1,115 @@
+{
+  "entries": [
+    {
+      "name": "Classroom seating record",
+      "reachable": true,
+      "approach": {
+        "x": -2.1666669845581055,
+        "y": 0.04999999701976776,
+        "z": 8
+      },
+      "distance": 1.7144203186035156
+    },
+    {
+      "name": "CLASSROOM sliding door",
+      "reachable": true,
+      "approach": {
+        "x": -5.12999963760376,
+        "y": 0.04999999701976776,
+        "z": 1.5999999046325684
+      },
+      "distance": 0.8200610280036926
+    },
+    {
+      "name": "INFIRMARY sliding door",
+      "reachable": true,
+      "approach": {
+        "x": 4.87000036239624,
+        "y": 0.04999999701976776,
+        "z": 1.5999999046325684
+      },
+      "distance": 0.8200610280036926
+    },
+    {
+      "name": "Corridor dismissal board",
+      "reachable": true,
+      "approach": {
+        "x": -7.309544563293457,
+        "y": 0.04999999701976776,
+        "z": -0.8333334922790527
+      },
+      "distance": 0.8485249280929565
+    },
+    {
+      "name": "Hiding cabinet",
+      "reachable": true,
+      "approach": {
+        "x": 3.6666667461395264,
+        "y": 0.04999999701976776,
+        "z": 3.62113618850708
+      },
+      "distance": 1.3432142734527588
+    },
+    {
+      "name": "Return the names",
+      "reachable": true,
+      "approach": {
+        "x": -8.209545135498047,
+        "y": 0.04999999701976776,
+        "z": 0.36112064123153687
+      },
+      "distance": 0.8514690399169922
+    },
+    {
+      "name": "register",
+      "reachable": true,
+      "approach": {
+        "x": -5.6666669845581055,
+        "y": 0.04999999701976776,
+        "z": 7.833333492279053
+      },
+      "distance": 1.5894725322723389
+    },
+    {
+      "name": "restore",
+      "reachable": true,
+      "approach": {
+        "x": -2.1666669845581055,
+        "y": 0.04999999701976776,
+        "z": 8
+      },
+      "distance": 1.172694206237793
+    },
+    {
+      "name": "record",
+      "reachable": true,
+      "approach": {
+        "x": 7.08381986618042,
+        "y": 0.04999999701976776,
+        "z": 4.866472244262695
+      },
+      "distance": 0.7214063405990601
+    },
+    {
+      "name": "WASHROOM sliding door",
+      "reachable": true,
+      "approach": {
+        "x": -5.12999963760376,
+        "y": 0.04999999701976776,
+        "z": -1.5999999046325684
+      },
+      "distance": 0.8200610280036926
+    },
+    {
+      "name": "ribbon",
+      "reachable": true,
+      "approach": {
+        "x": -3.5,
+        "y": 0.04999999701976776,
+        "z": -3.4003803730010986
+      },
+      "distance": 1.1330881118774414
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,28 @@
+{
+    "measurement": "Focused main-camera render callback intervals during manual gameplay; not GPU time or hardware-presented FPS",
+    "device": "NVIDIA GeForce RTX 5060 Ti",
+    "cpu": "AMD Ryzen 5 9600X 6-Core Processor ",
+    "width": 1280,
+    "height": 720,
+    "resolutionChanges": 0,
+    "unfocusedCallbacks": 0,
+    "menuCallbacks": 20,
+    "targetFrameRate": 120,
+    "vSync": 1,
+    "enoughSamples": true,
+    "developmentBuild": true,
+    "calm": {
+        "samples": 5632,
+        "p50ms": 5.555200099945068,
+        "p95ms": 5.907800197601318,
+        "p99ms": 6.11460018157959,
+        "maxMs": 29.712900161743164
+    },
+    "threat": {
+        "samples": 3560,
+        "p50ms": 5.556000232696533,
+        "p95ms": 5.869500160217285,
+        "p99ms": 6.146500110626221,
+        "maxMs": 11.337699890136719
+    }
+}

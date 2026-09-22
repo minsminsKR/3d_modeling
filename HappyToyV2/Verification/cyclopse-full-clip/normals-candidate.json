@@ -1,0 +1,18 @@
+{
+  "Walking": {
+    "vertices": 8123,
+    "unique_positions": 4982,
+    "frames": [
+      2.0,
+      31.0
+    ]
+  },
+  "Run": {
+    "vertices": 8123,
+    "unique_positions": 4982,
+    "frames": [
+      2.0,
+      67.0
+    ]
+  }
+}

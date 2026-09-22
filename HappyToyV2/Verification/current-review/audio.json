@@ -1,0 +1,45 @@
+{
+  "capture": "Unity listener DSP tap, pre-device; no subjective listening certification",
+  "sampleRate": 48000,
+  "channels": 2,
+  "seconds": 51.456,
+  "truncated": false,
+  "nonSilent": true,
+  "stages": [
+    {
+      "storyStep": 0,
+      "samples": 1828864,
+      "clipped": 0,
+      "peak": 0.02302997000515461,
+      "rms": 0.0027730997068367985
+    },
+    {
+      "storyStep": 1,
+      "samples": 626688,
+      "clipped": 0,
+      "peak": 0.06342379003763199,
+      "rms": 0.0032312408300847356
+    },
+    {
+      "storyStep": 2,
+      "samples": 1017856,
+      "clipped": 0,
+      "peak": 0.07547199726104736,
+      "rms": 0.010406670102112853
+    },
+    {
+      "storyStep": 3,
+      "samples": 874496,
+      "clipped": 0,
+      "peak": 0.3948014974594116,
+      "rms": 0.02575382654255125
+    },
+    {
+      "storyStep": 4,
+      "samples": 591872,
+      "clipped": 0,
+      "peak": 0.06536368280649185,
+      "rms": 0.003574345921267742
+    }
+  ]
+}
