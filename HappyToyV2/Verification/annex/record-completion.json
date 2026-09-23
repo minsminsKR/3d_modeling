@@ -1,0 +1,13 @@
+{
+  "blocked": true,
+  "deduplicated": true,
+  "restored": true,
+  "objectives": [
+    "music-roster",
+    "archive-record",
+    "nursery-tag"
+  ],
+  "AnnexRecordsComplete": true,
+  "StoryStep": 4,
+  "ExplorationCount": 3
+}

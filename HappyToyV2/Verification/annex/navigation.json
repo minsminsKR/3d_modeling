@@ -1,0 +1,8 @@
+{
+    "scene": "Assets/Annex/SchoolAnnex.unity",
+    "cells": 59,
+    "reachableCells": 59,
+    "mainToAnnex": true,
+    "roomsReachable": true,
+    "inspectionTargets": 7
+}

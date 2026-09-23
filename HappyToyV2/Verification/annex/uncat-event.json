@@ -1,0 +1,8 @@
+{
+  "Triggered": true,
+  "Released": true,
+  "position": "(24.14, 0.03, -11.29)",
+  "onNavMesh": true,
+  "state": "Chase",
+  "attacks": 1
+}

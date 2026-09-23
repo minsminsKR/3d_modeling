@@ -15,6 +15,7 @@ namespace HappyToy.V2
     {
         string output, failure="";PlayerMotor player;Keyboard keyboard;Mouse mouse;
         int maximumActiveEnemies;
+        bool sprintReady=true;
         void Update(){maximumActiveEnemies=Mathf.Max(maximumActiveEnemies,FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None).Count(e=>e.enabled));}
         readonly List<string> actions=new List<string>();
         [Serializable] class Result {public string failure;public string[] actions;public int storyStep;public bool escaped,hwacatCompleted;public Vector3 position;public int movementUpdates,attacks,maximumActiveEnemies;}
@@ -31,6 +32,10 @@ namespace HappyToy.V2
             Directory.CreateDirectory(output);keyboard=InputSystem.AddDevice<Keyboard>();mouse=InputSystem.AddDevice<Mouse>();
             yield return new WaitForSecondsRealtime(1);player=GameSession.Current.player;
             var items=FindObjectsByType<Interactable>(FindObjectsSortMode.None);
+            if(GameSession.Current.requireAnnexRecords)
+            {
+                yield return AnnexRoute(items);Save();Application.Quit(failure==""&&GameSession.Current.Escaped?0:1);yield break;
+            }
             var storyDirector=FindFirstObjectByType<StoryDirector>();
             var originalChairPosition=storyDirector.emptyChair.localPosition;
             var originalChairRotation=storyDirector.emptyChair.localRotation;
@@ -113,6 +118,28 @@ namespace HappyToy.V2
             }
             Save();Application.Quit(failure==""&&GameSession.Current.Escaped?0:1);
         }
+        IEnumerator AnnexRoute(Interactable[] items)
+        {
+            foreach(var room in new[]{"CLASSROOM","WASHROOM"})
+            {
+                yield return Walk(new Vector3(-4.5f,0,0));if(failure!="")yield break;
+                var door=items.First(i=>i.kind==Interactable.Kind.Door&&i.name.StartsWith(room));
+                yield return PressE(door,door.movingLeaf.GetComponent<Collider>().bounds.center);
+                yield return new WaitForSecondsRealtime(1.4f);if(failure!="")yield break;
+            }
+            foreach(var id in new[]{"register","ribbon","record","music-roster","archive-record","nursery-tag","restore","exit"})
+            {
+                var item=items.First(i=>id=="exit"?i.kind==Interactable.Kind.Exit:i.stableId==id);
+                actions.Add("Heading to "+id);Save();
+                if(!Approach(item,out var approach,out var aim)){failure="No multi-floor approach: "+id;yield break;}
+                yield return Walk(approach);if(failure!="")yield break;
+                int step=GameSession.Current.StoryStep,records=GameSession.Current.ExplorationCount;
+                yield return PressE(item,aim);if(failure!="")yield break;
+                bool changed=id=="exit"?GameSession.Current.Escaped:item.kind==Interactable.Kind.Inspect?GameSession.Current.ExplorationCount==records+1:GameSession.Current.StoryStep==step+1;
+                if(!changed){failure="Interaction did not progress: "+id;yield break;}
+                actions.Add("Completed "+id);Save();
+            }
+        }
         void Save()=>File.WriteAllText(Path.Combine(output,"walk.json"),JsonUtility.ToJson(new Result{failure=failure,actions=actions.ToArray(),storyStep=GameSession.Current.StoryStep,escaped=GameSession.Current.Escaped,position=player.transform.position,movementUpdates=player.MovementUpdates,attacks=FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include,FindObjectsSortMode.None).Sum(e=>e.AttacksStarted),maximumActiveEnemies=maximumActiveEnemies,hwacatCompleted=FindFirstObjectByType<V1HwacatEvent>()?.Completed??false},true));
         IEnumerator InspectNote(Interactable note)
         {
@@ -140,11 +167,12 @@ namespace HappyToy.V2
                 while(true)
                 {
                     var delta=corner-player.transform.position;delta.y=0;
-                    if(delta.magnitude<.13f)break;
+                    if(delta.magnitude<.13f&&Mathf.Abs(corner.y-player.transform.position.y)<.4f)break;
                     if(GameSession.Current.Finished){failure="Caught during movement";break;}
                     if(Time.realtimeSinceStartup>until){failure="Movement blocked at "+player.transform.position+" toward "+corner;break;}
                     player.transform.rotation=Quaternion.LookRotation(delta);
-                    bool sprint=GameSession.Current.StoryStep>=2&&GameSession.Current.StoryStep<4;
+                    if(player.Stamina<.12f)sprintReady=false;else if(player.Stamina>.8f)sprintReady=true;
+                    bool sprint=GameSession.Current.StoryStep>=2&&GameSession.Current.StoryStep<4&&sprintReady&&!player.SprintExhausted;
                     InputSystem.QueueStateEvent(keyboard,sprint?new KeyboardState(Key.W,Key.LeftShift):new KeyboardState(Key.W));
                     yield return null;
                 }
@@ -178,9 +206,10 @@ namespace HappyToy.V2
                 for(int i=0;i<96;i++)
                 {
                     float a=i%32*Mathf.PI/16,r=.65f+i/32*.45f;
-                    var test=new Vector3(aim.x+Mathf.Cos(a)*r,.1f,aim.z+Mathf.Sin(a)*r);
-                    if(!NavMesh.SamplePosition(test,out var sample,.3f,NavMesh.AllAreas))continue;
+                    var test=new Vector3(aim.x+Mathf.Cos(a)*r,aim.y,aim.z+Mathf.Sin(a)*r);
+                    if(!NavMesh.SamplePosition(test,out var sample,2.2f,NavMesh.AllAreas))continue;
                     var q=sample.position;
+                    if(aim.y-q.y<-.25f||aim.y-q.y>2.1f)continue;
                     if(Physics.CheckCapsule(q+Vector3.up*.4f,q+Vector3.up*1.4f,.3f,~0,QueryTriggerInteraction.Ignore))continue;
                     var delta=aim-(q+Vector3.up*1.6f);
                     if(delta.magnitude>2.2f||!Physics.Raycast(q+Vector3.up*1.6f,delta.normalized,out var hit,2.2f)||hit.collider.GetComponentInParent<Interactable>()!=item)continue;

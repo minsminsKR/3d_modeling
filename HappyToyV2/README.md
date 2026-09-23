@@ -1,6 +1,20 @@
+# Happy Toy V2 — 현재 개발판
+
+현재 씬은 **Assets/Annex/SchoolAnnex.unity**입니다. 이 씬은 Git LFS로 저장하므로 새 PC에서 Git LFS를 설치하고 `git lfs pull`을 실행한 뒤 여세요. Unity 6000.6.0f1에서 이 씬을 열고 Play로 실행합니다. 기존 Generate/Expand 메뉴로 다시 생성하지 마세요. 현재 저장 씬에는 이후 수동 보정이 포함되어 있습니다.
+
+- 1층: 교실·화장실·보건실, 순환 미로 복도, 음악실·자료실. 안내 인형, Uncat, 시선 기반 마네킹, 가면 망령 이벤트.
+- 2층: 붉은 혈흔 테마의 화캣 액자실. 북쪽 계단으로 연결.
+- 지하: 물이 고인 베이비 공간. 서쪽 남단 계단으로 연결.
+- WASD 이동, 마우스 시선, Shift 달리기, E 조사·문·은신, F 손전등, Q 폭죽(처음 2개), J 기록, Esc 메뉴.
+
+Windows 실행 파일은 **Builds/Windows/HappyToyV2.exe**입니다. 실행 파일과 HappyToyV2_Data 등 같은 폴더의 모든 파일을 함께 유지하세요. 새 빌드는 Unity 메뉴 **Happy Toy V2 → Build Windows development player**로 생성합니다. Builds/Windows는 Git에 포함되지 않습니다.
+
+현재 개발판은 다층 별관과 몬스터 이벤트가 포함된 중간 저장본입니다. 전체 입력 검사는 지하 이름표까지 진행했지만 복원으로 돌아오는 중 붙잡혀 완주하지 못했습니다. 실행 빌드는 Git에 포함하지 않으므로 다른 PC에서는 Unity에서 다시 빌드하세요. 진행 상황과 검증 범위는 **DEVELOPMENT_PROGRESS.md**, 최신 다층 버전 검사는 **Verification/annex/**를 확인하세요. 기능별 검사와 경로 연결 검사가 전체 일반 플레이 완주를 보증하지 않습니다. 아래 내용은 확장 전 개발 이력입니다.
+
+---
 # Happy Toy — Unity V2 development
 
-## Current local review — 2026-09-23
+## Historical review — before the multi-floor annex
 
 Current build scene: **`Assets/ClassroomReview/SchoolTeacherDesk.unity`**. Improvements continue from user-selected commit `57ad81d` and are included in this handoff. The latest visual addition is an original Blender teacher desk with drawers, steel legs and handles, preserving the register location and collision footprint.
 

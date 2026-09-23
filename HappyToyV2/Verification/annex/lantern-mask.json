@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": {
+    "dormantBeforeStory": true,
+    "wakesAfterRibbon": true,
+    "noiseAccepted": true,
+    "noiseOtherFloorIgnored": true,
+    "contactCursesNotKills": true,
+    "transformIgnoresNoise": true,
+    "pauseFreezesCurseAndGrowth": true,
+    "fiveSecondTransformation": true,
+    "differentFloorStops": true,
+    "wraithActuallyPursues": true,
+    "chaseIgnoresNoise": true,
+    "curseExpires": true,
+    "transformedContactKills": true,
+    "resultStopsEncounter": true
+  }
+}

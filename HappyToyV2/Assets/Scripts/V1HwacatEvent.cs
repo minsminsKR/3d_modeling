@@ -29,9 +29,9 @@ namespace HappyToy.V2
         IEnumerator Reveal()
         {
             Phase="paintingDrop";var start=painting.position;var rotation=painting.rotation;float t=0;
-            GameSession.Current.Notify("보건실 액자가 떨어졌다. 그 뒤에서 익숙한 인형이 일어난다.");
+            GameSession.Current.Notify("붉은 방의 액자가 떨어졌다. 그 뒤에서 익숙한 인형이 일어난다.");
             while(t<.7f)
-            {t+=Time.deltaTime;float q=Mathf.Clamp01(t/.7f);painting.position=Vector3.Lerp(start,new Vector3(start.x,.10f,start.z-.35f),q*q);painting.rotation=rotation*Quaternion.Euler(85*q,0,0);yield return null;}
+            {t+=Time.deltaTime;float q=Mathf.Clamp01(t/.7f);painting.position=Vector3.Lerp(start,new Vector3(start.x,spawn.y+.10f,start.z-.35f),q*q);painting.rotation=rotation*Quaternion.Euler(85*q,0,0);yield return null;}
             normal.SetActive(true);var anim=normal.GetComponentInChildren<Animation>();anim["patrol"].wrapMode=WrapMode.ClampForever;anim.Play("patrol");
             Phase="standUp";yield return new WaitForSeconds(Mathf.Clamp(anim["patrol"].length,1.5f,3));
             Phase="dance";anim.CrossFade("chase",.15f);yield return new WaitForSeconds(2.2f);

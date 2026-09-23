@@ -1,0 +1,10 @@
+{
+  "Awakened": true,
+  "Following": true,
+  "TargetId": "ribbon",
+  "RouteBlocked": false,
+  "WaitingForPlayer": true,
+  "position": "(2.25, 0.03, -0.14)",
+  "stopped": true,
+  "path": "PathComplete"
+}

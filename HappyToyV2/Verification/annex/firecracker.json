@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "checks": {
+    "titleDoesNotConsume": true,
+    "chaseIgnoresNoise": true,
+    "otherFloorIgnored": true,
+    "qConsumesOne": true,
+    "pauseFreezesFlight": true,
+    "pauseDoesNotConsume": true,
+    "fuseExplodes": true,
+    "wallStopsProjectile": true,
+    "noiseMovesEnemy": true,
+    "hiddenDoesNotConsume": true,
+    "secondThrow": true,
+    "emptyDoesNotThrow": true,
+    "expiredObjectsCleaned": true
+  }
+}

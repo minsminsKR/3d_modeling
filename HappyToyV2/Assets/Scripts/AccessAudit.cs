@@ -44,16 +44,18 @@ namespace HappyToy.V2
                     for(int i=0;i<96&&!record.reachable;i++)
                     {
                         float angle=(i%32)*Mathf.PI/16, radius=.65f+(i/32)*.45f;
-                        var test=new Vector3(aim.x+Mathf.Cos(angle)*radius,.1f,aim.z+Mathf.Sin(angle)*radius);
-                        if(!NavMesh.SamplePosition(test,out var sample,.3f,NavMesh.AllAreas))continue;
+                        // Search around the target's own floor, including floor/table notes.
+                        var test=new Vector3(aim.x+Mathf.Cos(angle)*radius,aim.y,aim.z+Mathf.Sin(angle)*radius);
+                        if(!NavMesh.SamplePosition(test,out var sample,2.2f,NavMesh.AllAreas))continue;
                         var q=sample.position;
+                        if(aim.y-q.y<-.25f||aim.y-q.y>2.1f)continue;
                         if(Physics.CheckCapsule(q+Vector3.up*.4f,q+Vector3.up*1.4f,.3f,~0,QueryTriggerInteraction.Ignore))continue;
                         var eye=q+Vector3.up*1.6f;var delta=aim-eye;
                         if(delta.magnitude>2.2f||!Physics.Raycast(eye,delta.normalized,out var hit,2.2f,~0,QueryTriggerInteraction.Ignore)||hit.collider.GetComponentInParent<Interactable>()!=item)continue;
                         var path=new NavMeshPath();
                         if(!NavMesh.CalculatePath(player.transform.position,q,NavMesh.AllAreas,path)||path.status!=NavMeshPathStatus.PathComplete)continue;
                         record.reachable=true;record.approach=q;record.distance=delta.magnitude;
-                        if(item.kind==Interactable.Kind.NameSlip)Capture(player.eyes,eye,aim,record.name);
+                        if(item.kind==Interactable.Kind.NameSlip&&SystemInfo.graphicsDeviceType!=GraphicsDeviceType.Null)Capture(player.eyes,eye,aim,record.name);
                     }
                     if(record.reachable)break;
                 }

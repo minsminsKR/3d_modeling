@@ -17,19 +17,24 @@ namespace HappyToy.V2
         public Interactable Focus { get; private set; }
         public int MovementUpdates { get; private set; }
         public CollisionFlags LastCollision { get; private set; }
+        public FirecrackerInventory Firecrackers {get;private set;}
+        public float SlowRemaining {get;private set;}
+        public float MovementMultiplier=>SlowRemaining>0?.5f:1;
+        public void ApplyCurse(float duration){SlowRemaining=Mathf.Max(SlowRemaining,duration);}
         CharacterController controller;
         Interactable hidingPlace;
         Vector3 hideExit;
         Vector3 moveVelocity;
         float pitch, fallSpeed;
 
-        void Awake() { controller = GetComponent<CharacterController>(); gameObject.layer=2; Lock(GameSession.Current&&GameSession.Current.InputAllowed); }
+        void Awake() { controller = GetComponent<CharacterController>(); gameObject.layer=2; Firecrackers=gameObject.AddComponent<FirecrackerInventory>(); Lock(GameSession.Current&&GameSession.Current.InputAllowed); }
         void Lock(bool locked) { Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None; Cursor.visible = !locked; }
         void OnDisable() { Lock(false); }
         void Update()
         {
             var keys = Keyboard.current; var mouse = Mouse.current;
             if (Paused || GameSession.Current.Finished) { Running = false; moveVelocity=Vector3.zero; Focus=null; return; }
+            SlowRemaining=GameSession.Current.StoryStep>=4?0:Mathf.Max(0,SlowRemaining-Time.deltaTime);
             var delta = (mouse != null ? mouse.delta.ReadValue() : Vector2.zero) * sensitivity;
             transform.Rotate(0, delta.x, 0);
             pitch = Mathf.Clamp(pitch - delta.y, -78, 78);
@@ -47,7 +52,7 @@ namespace HappyToy.V2
             Stamina = Mathf.Clamp01(Stamina + Time.deltaTime * (Running ? -.18f : .12f));
             if (!Hidden)
             {
-                moveVelocity = (transform.right * move.x + transform.forward * move.y) * (Running ? runSpeed : walkSpeed);
+                moveVelocity = (transform.right * move.x + transform.forward * move.y) * (Running ? runSpeed : walkSpeed)*MovementMultiplier;
             }
             Focus = null;
             if (Hidden) Focus = hidingPlace;

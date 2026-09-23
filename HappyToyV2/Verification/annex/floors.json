@@ -1,0 +1,6 @@
+{
+  "upperReachable": true,
+  "basementReachable": true,
+  "hwacatFloor": 5.0,
+  "babyFloor": -5.0
+}

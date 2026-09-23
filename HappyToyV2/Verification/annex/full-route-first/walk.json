@@ -1,0 +1,37 @@
+{
+    "failure": "Caught during movement",
+    "actions": [
+        "E CLASSROOM sliding door",
+        "E WASHROOM sliding door",
+        "Heading to register",
+        "E story-register",
+        "Completed register",
+        "Heading to ribbon",
+        "E story-ribbon",
+        "Completed ribbon",
+        "Heading to record",
+        "E story-medical-record",
+        "Completed record",
+        "Heading to music-roster",
+        "E 합창 명단 조사",
+        "Completed music-roster",
+        "Heading to archive-record",
+        "E 폐쇄 기록 조사",
+        "Completed archive-record",
+        "Heading to nursery-tag",
+        "E 인형방 이름표",
+        "Completed nursery-tag",
+        "Heading to restore"
+    ],
+    "storyStep": 3,
+    "escaped": false,
+    "hwacatCompleted": true,
+    "position": {
+        "x": 16.56526756286621,
+        "y": -4.920000076293945,
+        "z": -22.518354415893555
+    },
+    "movementUpdates": 3095,
+    "attacks": 2,
+    "maximumActiveEnemies": 3
+}

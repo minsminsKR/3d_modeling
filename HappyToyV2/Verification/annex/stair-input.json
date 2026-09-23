@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "failure": "",
+  "legs": [
+    "upper ascent",
+    "upper descent",
+    "basement descent",
+    "basement ascent"
+  ],
+  "position": "(13.80, 0.08, -10.26)",
+  "MovementUpdates": 895
+}

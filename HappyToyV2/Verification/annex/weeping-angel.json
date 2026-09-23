@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "checks": {
+    "introReleased": true,
+    "gazeFreezes": true,
+    "lookAwayMoves": true,
+    "lightOffStops": true,
+    "otherFloorStops": true,
+    "wallOccludesGaze": true,
+    "pauseStops": true,
+    "restorationStops": true
+  },
+  "PathRequests": 4
+}

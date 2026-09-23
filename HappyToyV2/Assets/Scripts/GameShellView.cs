@@ -11,6 +11,7 @@ namespace HappyToy.V2
         GameShell shell;GameSession session;UIDocument document;PanelSettings settings;
         VisualElement root,stage,stamina;Label objective,notice,focus,meter,volume,sensitivity;
         GameShell.Page shown=(GameShell.Page)(-1);int journalStep=-1;
+        int journalPage, journalExploration=-1;
         public RenderTexture CaptureTarget {get;private set;}
         public VisualElement Root=>root;
         readonly Color paper=new Color(.86f,.85f,.78f),gold=new Color(.77f,.65f,.42f),dark=new Color(.035f,.052f,.048f);
@@ -46,7 +47,8 @@ namespace HappyToy.V2
         }
         void Rebuild()
         {
-            root.Clear();shown=shell.Screen;journalStep=session.StoryStep;objective=notice=focus=meter=volume=sensitivity=null;
+            if(shown!=GameShell.Page.Journal)journalPage=0;
+            root.Clear();shown=shell.Screen;journalStep=session.StoryStep;journalExploration=session.ExplorationCount;objective=notice=focus=meter=volume=sensitivity=null;
             stage=new VisualElement();stage.style.width=1600;stage.style.height=900;stage.style.flexShrink=0;stage.pickingMode=PickingMode.Ignore;root.Add(stage);
             root.style.backgroundColor=shown==GameShell.Page.Playing?Color.clear:new Color(.012f,.022f,.021f,.96f);
             root.pickingMode=shown==GameShell.Page.Playing?PickingMode.Ignore:PickingMode.Position;
@@ -65,7 +67,7 @@ namespace HappyToy.V2
             {
                 Text("지워진 이름 하나.\n아직 끝나지 않은 하교 시간.",164,270,740,90);
                 Button("begin","학교에 들어가기  [Enter]",420,shell.Begin);Button("settings","환경 설정",486,shell.Settings);Button("quit","종료",552,()=>Application.Quit());
-                Text("WASD  이동     마우스  시선\nShift  달리기     E  조사·문·은신\nF  손전등     J  조사 기록\nEsc  일시정지",900,430,500,190);
+                Text("WASD  이동     마우스  시선\nShift  달리기     E  조사·문·은신\nF  손전등     Q  폭죽 던지기\nJ  조사 기록     Esc  일시정지",900,430,500,190);
             }
             else if(shown==GameShell.Page.Pause)
             {
@@ -74,9 +76,12 @@ namespace HappyToy.V2
             }
             else if(shown==GameShell.Page.Journal)
             {
-                for(int i=0;i<6;i++)
+                int pages=Mathf.Max(1,Mathf.CeilToInt((4+session.ExplorationCount)/6f));
+                journalPage=Mathf.Clamp(journalPage,0,pages-1);
+                for(int slot=0;slot<6;slot++)
                 {
-                    float x=160+i%2*650,y=260+i/2*140;
+                    int i=journalPage*6+slot;
+                    float x=160+slot%2*650,y=260+slot/2*140;
                     string entry=i<4?session.JournalEntry(i):session.ExplorationEntry(i-4);
                     string placeholder=i<4?$"기록 0{i+1}\n아직 발견하지 못했습니다.":"주변 기록\n게시물을 조사하면 이곳에 남습니다.";
                     Panel(x,y,610,125,new Color(.06f,.08f,.07f));
@@ -84,6 +89,14 @@ namespace HappyToy.V2
                     if(entry==null)label.style.color=new Color(.49f,.56f,.52f);
                 }
                 Button("back","돌아가기  [J / Esc]",704,shell.Back);
+                if(pages>1)
+                {
+                    var previous=Button("journal-previous","이전",704,()=>{journalPage--;Rebuild();},810,170);
+                    previous.SetEnabled(journalPage>0);
+                    Text($"{journalPage+1} / {pages}",1005,713,150,40,21);
+                    var next=Button("journal-next","다음",704,()=>{journalPage++;Rebuild();},1190,170);
+                    next.SetEnabled(journalPage<pages-1);
+                }
             }
             else if(shown==GameShell.Page.Settings)
             {
@@ -102,13 +115,14 @@ namespace HappyToy.V2
         }
         void LateUpdate()
         {
-            if(root==null)return;if(shown!=shell.Screen||journalStep!=session.StoryStep)Rebuild();
+            if(root==null)return;if(shown!=shell.Screen||journalStep!=session.StoryStep||journalExploration!=session.ExplorationCount)Rebuild();
             if(volume!=null){volume.text=$"전체 음량   {Mathf.RoundToInt(shell.Volume*100)}%";sensitivity.text=$"마우스 감도   {shell.Sensitivity/.09f:0.00}×";}
             if(shown!=GameShell.Page.Playing)return;var player=session.player;
             objective.text=session.Objective;notice.text=session.Notice;notice.style.display=shell.NoticeVisible?DisplayStyle.Flex:DisplayStyle.None;
-            stamina.style.width=190*player.Stamina;meter.text=$"숨  {Mathf.RoundToInt(player.Stamina*100)}%     [J] 조사 기록     [Esc] 메뉴";
+            stamina.style.width=190*player.Stamina;meter.text=$"숨  {Mathf.RoundToInt(player.Stamina*100)}%     [Q] 폭죽 {player.Firecrackers.Count}개     [J] 조사 기록     [Esc] 메뉴";
             stamina.style.backgroundColor=player.SprintExhausted?new Color(.72f,.37f,.23f):gold;
             if(player.SprintExhausted)meter.text=player.Stamina<.25f?"숨이 찼습니다 — 걸으며 숨을 회복하세요. [J] 기록  [Esc] 메뉴":"숨이 돌아왔습니다 — Shift를 놓았다가 다시 눌러 달리세요.";
+            if(player.SlowRemaining>0)meter.text+=$"   저주 {Mathf.CeilToInt(player.SlowRemaining)}초 · 속도 50%";
             focus.text=player.Hidden?"[E] 숨은 곳에서 나오기":player.Focus?"[E] "+player.Focus.DisplayLabel:"";focus.style.display=player.Hidden||player.Focus?DisplayStyle.Flex:DisplayStyle.None;
             stage.Q("crosshair").style.backgroundColor=player.Focus?gold:paper;
         }

@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/ClassroomReview/SchoolTeacherDesk.unity
-    guid: 8e723784ced2cbe49a48cb07440b1955
+    path: Assets/Annex/SchoolAnnex.unity
+    guid: d8ad5eb908405ba4d8b034a946738720
   m_configObjects: {}

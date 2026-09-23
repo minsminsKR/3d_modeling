@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "음악실 은신함",
+      "approach": true,
+      "entered": true,
+      "blockedExitSafe": true,
+      "exited": true
+    },
+    {
+      "name": "Hiding cabinet",
+      "approach": true,
+      "entered": true,
+      "blockedExitSafe": true,
+      "exited": true
+    },
+    {
+      "name": "자료실 은신함",
+      "approach": true,
+      "entered": true,
+      "blockedExitSafe": true,
+      "exited": true
+    }
+  ]
+}

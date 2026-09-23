@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "checks": {
+    "restoreTriggered": true,
+    "restoreCleanup": true,
+    "restoreRemainsStopped": true,
+    "finishTriggered": true,
+    "finishCleanup": true,
+    "finishRemainsStopped": true,
+    "disableTriggered": true,
+    "disableCleanup": true,
+    "disableRemainsStopped": true,
+    "normalTriggered": true,
+    "pausePreservesWarning": true,
+    "normalRelease": true,
+    "normalCleanup": true,
+    "normalRemainsStopped": true
+  }
+}

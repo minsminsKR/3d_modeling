@@ -7,6 +7,7 @@ namespace HappyToy.V2
     public sealed class StalkerBrain : MonoBehaviour
     {
         public Transform[] patrol;
+        public float patrolSpeed = 1.45f, chaseSpeed = 3.5f;
         public PlayerMotor player;
         public enum State { Patrol, Investigate, Chase, Search }
         public State state;
@@ -22,6 +23,20 @@ namespace HappyToy.V2
         public float AttackRecovery => Mathf.Clamp01(recovery/.9f);
         public bool AttackActive => attackTimer>0||recovery>0;
         public int AttacksStarted { get; private set; }
+        public int NoisesAccepted { get; private set; }
+        public bool HearNoise(Vector3 point,float duration)
+        {
+            if(!isActiveAndEnabled||!agent||!agent.enabled||!agent.isOnNavMesh||duration<=0||
+                state==State.Chase||AttackActive||CanSeePlayer()||
+                Mathf.Abs(point.y-transform.position.y)>1.6f||Vector3.Distance(point,transform.position)>28)return false;
+            var path=new NavMeshPath();
+            if(!NavMesh.SamplePosition(point,out var hit,2,NavMesh.AllAreas)||
+                Mathf.Abs(hit.position.y-transform.position.y)>1.6f||
+                !agent.CalculatePath(hit.position,path)||path.status!=NavMeshPathStatus.PathComplete)return false;
+            foreach(var corner in path.corners)if(Mathf.Abs(corner.y-transform.position.y)>1.6f)return false;
+            lastKnown=hit.position;memory=duration;state=State.Investigate;repath=0;NoisesAccepted++;
+            return true;
+        }
         void Awake() { agent = GetComponent<NavMeshAgent>(); if(!GetComponent<StalkerFootsteps>())gameObject.AddComponent<StalkerFootsteps>(); }
         public bool CanSeePlayer()
         {
@@ -86,7 +101,7 @@ namespace HappyToy.V2
                 attackTimer=.75f;agent.isStopped=true;AttacksStarted++;
                 GetComponent<StalkerFootsteps>().PlayAttackCue();return;
             }
-            agent.speed = state == State.Chase ? 3.5f : 1.45f;
+            agent.speed = state == State.Chase ? chaseSpeed : patrolSpeed;
             repath -= Time.deltaTime;
             if (repath > 0) return;
             repath = .25f;

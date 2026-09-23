@@ -1,0 +1,8 @@
+{
+  "Triggered": true,
+  "Released": true,
+  "monsterY": -4.9666667,
+  "onNavMesh": true,
+  "state": "Chase",
+  "attacks": 1
+}
