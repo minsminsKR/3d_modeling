@@ -64,8 +64,7 @@ namespace HappyToy.V2
         void Update()
         {
             var session=GameSession.Current;if(!session||!session.InputAllowed)return;
-            MixUpdates++;bool chasing=false;
-            foreach(var enemy in enemies)if(enemy&&enemy.isActiveAndEnabled&&enemy.state==StalkerBrain.State.Chase)chasing=true;
+            MixUpdates++;bool chasing=HasNearbyChase(session.player,enemies);
             StoryGain=Mathf.MoveTowards(StoryGain,session.StoryStep>=4?.25f:chasing?.5f:1,Time.deltaTime*.7f);
             bool trace=Time.time>=nextTrace;if(trace)nextTrace=Time.time+.2f;
             foreach(var voice in voices)
@@ -74,6 +73,16 @@ namespace HappyToy.V2
                 voice.source.volume=Mathf.MoveTowards(voice.source.volume,voice.gain*StoryGain*(voice.occluded?.28f:1),Time.deltaTime*.5f);
                 voice.filter.cutoffFrequency=Mathf.MoveTowards(voice.filter.cutoffFrequency,voice.occluded?850:6000,Time.deltaTime*9000);
             }
+        }
+        // Distant actors on another floor must not mute the listener's local room bed.
+        public static bool HasNearbyChase(PlayerMotor player, StalkerBrain[] candidates)
+        {
+            if (!player || candidates == null) return false;
+            foreach (var enemy in candidates)
+                if (enemy && enemy.isActiveAndEnabled && enemy.state == StalkerBrain.State.Chase &&
+                    Mathf.Abs(enemy.transform.position.y - player.transform.position.y) <= 1.6f &&
+                    (enemy.transform.position - player.transform.position).sqrMagnitude < 196) return true;
+            return false;
         }
         void OnDestroy(){foreach(var voice in voices)if(voice.source&&voice.source.clip)Destroy(voice.source.clip);}
     }

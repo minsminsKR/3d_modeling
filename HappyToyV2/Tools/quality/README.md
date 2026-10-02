@@ -27,7 +27,7 @@ These checks do not compile C#, resolve Unity APIs, exercise physics/NavMesh, im
 
 ## 2. Pure C# attack-clock checks
 
-`EnemyAttackClockChecks.Run()` contains 29 assertions against the actual shared C# helper, including pause, recovery, long frames, invalid inputs, repeated attack requests, reset, and minimum durations. It runs automatically in the safe Unity editor validation command below. With an already installed .NET 8 SDK, it can also run independently:
+`EnemyAttackClockChecks.Run()` contains 29 assertions against the actual shared C# helper, including pause, recovery, long frames, invalid inputs, repeated attack requests, reset, and minimum durations. It runs automatically in the safe Unity editor validation command below. The same harness now runs 20 SurfaceRippleBuffer assertions covering contact bounds, expiry, pause, malformed input and comfort-mode clearing. With an already installed .NET 8 SDK, it can also run independently:
 
 ```sh
 dotnet run --project Tools/quality/ClockTests.csproj
@@ -83,3 +83,19 @@ Do not add `-nographics` or run the UI audit in a headless player. `flow` captur
 ## Recorded cloud result
 
 On 2026-10-02, all **24 validator tests**, parser-required source/static checks, and **29 actual pure C# clock assertions** passed locally. The C# harness used .NET SDK 8.0.425; its build had 0 warnings and 0 errors. Workflow YAML, security/scope invariants and embedded shell syntax were checked locally. GitHub-hosted execution is a separate result and must be checked for the published commit. Unity editor compilation, Windows build, runtime audits, PowerShell runner execution, rendered UI inspection, survival balance and performance remain **NOT RUN** in this environment. Review each stage independently on the target machine.
+
+
+## Optional genuine-API and shader checks without opening the project
+
+The cloud surface pass also used the already installed official Unity 6000.6.0f1 editor files. It compiled all 82 project C# files against genuine Unity/package references in four configurations, and compiled 96 DXIL plus 8 Vulkan SPIR-V shader variants. These are **external compiler checks**, not Unity import/serialization, ShaderLab processing, actual player builds or rendering. The C# checks report existing obsolete-API/serialized-field/reference-compatibility warnings; no clean-warning claim is made for that stage.
+
+Two read-only reproduction tools are included. Neither downloads software or activates Unity. Supply your installed SDK/compiler and exact matching editor packages; keep outputs outside the project:
+
+```sh
+python Tools/quality/compile_unity_api.py --editor-data "$UNITY_EDITOR_DATA" --template-assemblies "$MATCHING_TEMPLATE_SCRIPT_ASSEMBLIES" --dotnet-root "$DOTNET_ROOT" --sdk-version 8.0.425 --output "$OUTPUT/api"
+python Tools/quality/compile_surface_shaders.py --dxc "$DXC" --include-root "$UNITY_INCLUDE_ROOT" --output "$OUTPUT/shaders"
+```
+
+For Unity's Linux editor, the reference assemblies are in Data/Managed, Data/NetStandard and its matching URP blank template ScriptAssemblies cache. The include root must contain a Packages directory mapped to Data/Resources/PackageManager/BuiltInPackages, whose Core and Universal manifests must both read 17.6.0. Use the official Microsoft DirectXShaderCompiler distribution. The recorded compiler was 1.9.2609.5. The script extracts the single HLSLPROGRAM, exercises Forward/Forward+ and lighting/shadow/fog/instancing variants, writes source hashes and individual logs, and returns nonzero on a failed compile.
+
+Final evidence is in Verification/quality-surface/. Do not interpret the shader's analytical alpha range as proof of visibility or appearance: its actual font/material import and scene rendering still require Unity execution.

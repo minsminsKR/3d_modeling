@@ -1,0 +1,29 @@
+{
+  "ShallowWater": {
+    "shader_sha256": "9cc04b65aa18388f122671ce172328348ec275e60e11ad55792c8f00c13e5225",
+    "compiled_hlsl_matches_current_shader": true,
+    "single_pass": true,
+    "camera_texture_symbols_in_compiled_forward_screen_shadow_variant": [],
+    "properties_cbuffer_declared": true
+  },
+  "BloodFilm": {
+    "shader_sha256": "707b83e09824595e62547fb6db72884fcaa2251805846749e1b0b13d04e6538c",
+    "compiled_hlsl_matches_current_shader": true,
+    "single_pass": true,
+    "camera_texture_symbols_in_compiled_forward_screen_shadow_variant": [],
+    "properties_cbuffer_declared": true
+  },
+  "water_alpha": {
+    "minimum": 0.29,
+    "maximum": 0.59,
+    "background_fraction_range": [
+      0.41,
+      0.71
+    ],
+    "scope": "Analytical alpha-blend weights, not a rendered visibility test"
+  },
+  "metadata_unchanged": {
+    "ShallowWater": true,
+    "BloodFilm": true
+  }
+}

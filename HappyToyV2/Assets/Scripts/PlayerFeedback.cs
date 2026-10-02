@@ -14,6 +14,7 @@ namespace HappyToy.V2
         int stepIndex;
         bool initialized;
         public int FootstepsPlayed { get; private set; }
+        public event System.Action<Vector3, bool, float> Footstep;
 
         void Start()
         {
@@ -89,16 +90,19 @@ namespace HappyToy.V2
                 if (stride >= interval)
                 {
                     stride %= interval;
+                    int strideIndex = stepIndex++;
+                    var contact = transform.position + transform.right * (strideIndex % 2 == 0 ? .11f : -.11f);
                     bool wet = false;
-                    if (Physics.Raycast(transform.position + Vector3.up * .15f, Vector3.down, out var floor,
+                    if (Physics.Raycast(contact + Vector3.up * .15f, Vector3.down, out var floor,
                         .6f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
                     {
                         string surface = floor.collider.name.ToLowerInvariant();
-                        wet = surface.Contains("water") || surface.Contains("wet") || transform.position.y < -2;
+                        wet = surface.Contains("water") || surface.Contains("wet") || WaterSurfaceFeedback.IsSubmerged(contact);
                     }
-                    steps.pitch = 1 + ((stepIndex++ % 5) - 2) * .025f;
+                    steps.pitch = 1 + ((strideIndex % 5) - 2) * .025f;
                     steps.PlayOneShot(wet ? wetStep : dryStep, player.Running ? .95f : .58f);
                     FootstepsPlayed++;
+                    Footstep?.Invoke(contact, wet, player.Running ? 1 : .55f);
                 }
             }
             else stride = Mathf.MoveTowards(stride, 0, Time.deltaTime * 2);

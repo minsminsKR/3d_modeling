@@ -193,6 +193,19 @@
       "Begin",
       "Tick",
       "Reset"
+    ],
+    "SurfaceRippleBuffer": [
+      "Capacity",
+      "Lifetime",
+      "Clock",
+      "Tick",
+      "Add",
+      "Clear"
+    ],
+    "WaterSurfaceFeedback": [
+      "ContainsFoot",
+      "IsSubmerged",
+      "ContactsRendered"
     ]
   }
 }

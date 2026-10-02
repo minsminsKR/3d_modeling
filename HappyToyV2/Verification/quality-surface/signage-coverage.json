@@ -1,0 +1,19 @@
+{
+  "signCount": 9,
+  "distinctVisibleCharacters": 44,
+  "missingGlyphs": [],
+  "authoredTexts": [
+    "인계 기록\n________\n________",
+    "지하 · 침수된 인형방",
+    "방과 후 합창\n1  소프라노\n2  알토\n3  테너\n4  ______",
+    "인계 기록\n________\n________",
+    "2층 · 액자실",
+    "동쪽 별관",
+    "폐쇄 준비실",
+    "음악실",
+    "자료실"
+  ],
+  "sceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "fontSha256": "b9605a45a4811dc98c5005819fbc60b2ba581c835f087608cbe151a527624af5",
+  "validation": "Font cmap/source only; NOT Unity import, engine compilation, atlas or rendered QA"
+}

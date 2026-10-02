@@ -1,0 +1,1413 @@
+{
+  "scope": "Offline HLSL compilation with exact shipped URP/Core 17.6 headers. DXIL SM6 and Vulkan SPIR-V targets, not Unity ShaderLab import, variant stripping, render or performance validation.",
+  "compiler": "libdxcompiler.so: 1.9(5512-01b62ad4)(1.9.2609.5)",
+  "unityVersion": "6000.6.0f1",
+  "urp": "17.6.0",
+  "shaders": {
+    "ShallowWater": {
+      "sourceSha256": "9cc04b65aa18388f122671ce172328348ec275e60e11ad55792c8f00c13e5225",
+      "hlslSha256": "e8762cb5ae669cdeeb88a792e5dcdf57bdd86070052a512904d51dab51567bba"
+    },
+    "BloodFilm": {
+      "sourceSha256": "707b83e09824595e62547fb6db72884fcaa2251805846749e1b0b13d04e6538c",
+      "hlslSha256": "6c66f75b84b3b5b2ecb1b44ddee6f827a7b65ddf3791d4ae5a5d243553dd42b1"
+    }
+  },
+  "dxilCount": 96,
+  "spirvCount": 8,
+  "results": [
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "main-only",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": []
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "main-only",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": []
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "vertex-lights",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS_VERTEX"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "vertex-lights",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS_VERTEX"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-main-shadow",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-main-shadow",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-shadow-cascade",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-shadow-cascade",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-shadow-screen-transparent",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_SCREEN",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-shadow-screen-transparent",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_SCREEN",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-linear",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_LINEAR"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-linear",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_LINEAR"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-exp",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_EXP"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-exp",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_EXP"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-exp2",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-exp2",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-instancing",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-instancing",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-soft-low",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_LOW",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-soft-low",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_LOW",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-soft-medium",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_MEDIUM",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-soft-medium",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_MEDIUM",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-soft-high",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "forward-soft-high",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-main-shadow",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-main-shadow",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-shadow-cascade",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-shadow-cascade",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-shadow-screen-transparent",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_SCREEN",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-shadow-screen-transparent",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_SCREEN",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-linear",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_LINEAR"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-linear",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_LINEAR"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-exp",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_EXP"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-exp",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_EXP"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-exp2",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-exp2",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-instancing",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-instancing",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-soft-low",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_LOW",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-soft-low",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_LOW",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-soft-medium",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_MEDIUM",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-soft-medium",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_MEDIUM",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-soft-high",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "dxil",
+      "variant": "cluster-soft-high",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "spirv",
+      "variant": "forward",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "spirv",
+      "variant": "forward",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "spirv",
+      "variant": "cluster",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "ShallowWater",
+      "backend": "spirv",
+      "variant": "cluster",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "main-only",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": []
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "main-only",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": []
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "vertex-lights",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS_VERTEX"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "vertex-lights",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS_VERTEX"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-main-shadow",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-main-shadow",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-shadow-cascade",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-shadow-cascade",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-shadow-screen-transparent",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_SCREEN",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-shadow-screen-transparent",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_SCREEN",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-linear",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_LINEAR"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-linear",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_LINEAR"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-exp",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_EXP"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-exp",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_EXP"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-exp2",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-cookies-fog-exp2",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-instancing",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-instancing",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-soft-low",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_LOW",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-soft-low",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_LOW",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-soft-medium",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_MEDIUM",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-soft-medium",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_MEDIUM",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-soft-high",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "forward-soft-high",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-main-shadow",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-main-shadow",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-shadow-cascade",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-shadow-cascade",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-shadow-screen-transparent",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_SCREEN",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-shadow-screen-transparent",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_SCREEN",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-linear",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_LINEAR"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-linear",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_LINEAR"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-exp",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_EXP"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-exp",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_EXP"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-exp2",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-cookies-fog-exp2",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-instancing",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-instancing",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-soft-low",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_LOW",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-soft-low",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_LOW",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-soft-medium",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_MEDIUM",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-soft-medium",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_MEDIUM",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-soft-high",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "dxil",
+      "variant": "cluster-soft-high",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "spirv",
+      "variant": "forward",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "spirv",
+      "variant": "forward",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_ADDITIONAL_LIGHTS",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "spirv",
+      "variant": "cluster",
+      "entry": "vert",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2",
+        "INSTANCING_ON"
+      ]
+    },
+    {
+      "shader": "BloodFilm",
+      "backend": "spirv",
+      "variant": "cluster",
+      "entry": "frag",
+      "exitCode": 0,
+      "diagnosticsEmpty": true,
+      "keywords": [
+        "_CLUSTER_LIGHT_LOOP",
+        "_MAIN_LIGHT_SHADOWS_CASCADE",
+        "_ADDITIONAL_LIGHT_SHADOWS",
+        "_SHADOWS_SOFT_HIGH",
+        "_LIGHT_COOKIES",
+        "FOG_EXP2",
+        "INSTANCING_ON"
+      ]
+    }
+  ],
+  "status": "PASS"
+}
