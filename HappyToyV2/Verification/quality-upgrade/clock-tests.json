@@ -1,0 +1,31 @@
+{
+  "scope": "Actual pure C# helper compilation and assertion execution; not Unity compilation or gameplay testing",
+  "date": "2026-10-02",
+  "status": "PASS",
+  "sdk_version": "8.0.425",
+  "configuration": "Release",
+  "build_warnings": 0,
+  "build_errors": 0,
+  "assertions_passed": 29,
+  "output": "EnemyAttackClock: 29 assertions passed against the actual C# helper.",
+  "sources": [
+    {
+      "path": "HappyToyV2/Assets/Scripts/EnemyAttackClock.cs",
+      "sha256": "06d8053bf7eba3b01cbc7a43c3917bcf058a415ad5eafa32821c6233e4a91172"
+    },
+    {
+      "path": "HappyToyV2/Assets/Editor/EnemyAttackClockChecks.cs",
+      "sha256": "0680a3bc7c2fe498b6d6c2a49ae78c74fe75e5bccf085c0ee19d2b43f848833d"
+    },
+    {
+      "path": "HappyToyV2/Tools/quality/ClockTestProgram.cs",
+      "sha256": "fb9628fe93434f9be8aeebd1daef4f83c4884328c1d872e805841c9b4461b4a6"
+    },
+    {
+      "path": "HappyToyV2/Tools/quality/ClockTests.csproj",
+      "sha256": "3069cdadd2760a10633bd3429613e294f17fafdda0c4139dd6e912c96def14a2"
+    }
+  ],
+  "unity_editor_compilation": "NOT RUN",
+  "unity_runtime_and_visual_review": "NOT RUN"
+}

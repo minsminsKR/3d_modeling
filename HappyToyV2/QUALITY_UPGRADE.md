@@ -57,25 +57,26 @@ Unity: **6000.6.0f1**, URP **17.6.0**
 
 기존 URP, Input System, AI Navigation, UI Toolkit을 활용했다. 패키지 버전은 바꾸지 않았다. 기능과 관계없는 플러그인을 추가하거나 Unity 버전을 올리는 대신 현재 코드의 상호작용·공격·화면·검사 기반을 고쳤다.
 
-새 도구는 로컬 정적 검증기, 명시적으로 실행하는 Unity 검증/빌드 명령, Windows 회귀 검사 실행기다. 자동 로그인, 자격 증명 생성, 외부 서비스 업로드, 원격 푸시·배포 기능은 없다.
+새 도구는 로컬 정적 검증기, 명시적으로 실행하는 Unity 검증/빌드 명령, Windows 회귀 검사 실행기다. 후속 커밋은 HappyToyV2 변경에 한정된 읽기 전용 GitHub Actions 검사를 추가한다. 정적 검사와 순수 C# 검사를 자동 실행하지만 Unity 실행 검증을 대신하지 않는다. 자동 로그인, 자격 증명 생성, 외부 서비스 업로드, 원격 푸시·배포 기능은 없다.
 
 ## 지금 확인한 것과 아직 확인하지 못한 것
 
 실행한 검사:
 
 - 정적 검증 도구의 단위 테스트 24개
-- C# 문법 트리 파싱과 공개 API 이름 연결 검사. 타입 검사/컴파일은 아님
+- C# 문법 트리 파싱과 공개 API 이름 연결 검사. Unity 타입 검사/컴파일은 아님
+- 후속 검증에서 공식 .NET SDK 8.0.425로 실제 공격 시계 C# 헬퍼/하네스를 빌드하고 29개 검증 통과. 경고/오류 0개이며 Unity 어셈블리는 컴파일하지 않음
 - Assets 메타·GUID 중복, LFS 파일 실체, 저장 씬·빌드 선택 보존 검사
 - 저장 씬의 스크립트 참조 목록 확인. 기존 패키지 GUID 4개는 Unity PackageCache/AssetDatabase가 있어야 최종 확인 가능
 - 한국어 폰트 정적 구조·글리프 범위 검사
 - 패치 공백/적용 가능성 검사
 
-증거: `Verification/quality-static/source-validation.json`, `Verification/quality-upgrade/font-coverage.json`
+증거: `Verification/quality-static/source-validation.json`, `Verification/quality-upgrade/font-coverage.json`, `Verification/quality-upgrade/clock-tests.json`
 
 실행하지 못한 검사:
 
 - Unity C# 컴파일, 새 글꼴 임포트, 실제 UI 렌더·조작
-- 추가한 순수 C# 공격 시계 29개 검증 및 적 공정성 통합 검사
+- 추가한 적 공정성 Unity 통합 검사
 - 물리·NavMesh·공격/은신/폭죽 실제 회귀 검사
 - 수정 버전의 전체 동선 완주, 음향 청취, FPS/메모리 프로파일, 새 Windows 빌드
 - PowerShell 실행기 자체 실행

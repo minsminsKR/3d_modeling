@@ -33,7 +33,22 @@ These checks do not compile C#, resolve Unity APIs, exercise physics/NavMesh, im
 dotnet run --project Tools/quality/ClockTests.csproj
 ```
 
-No .NET/C# compiler was installed in the cloud environment, so these assertions are provided but **NOT RUN** there. The Python tests do not substitute a Python reimplementation of game logic.
+The initial cloud review did not execute these assertions. On 2026-10-02, the CI command was executed locally with Microsoft .NET SDK **8.0.425** installed in temporary storage: the actual C# project built with **0 warnings / 0 errors**, and all **29 assertions passed**. This compiles only the shared helper and its console harness, not Unity scripts or Unity APIs. The Python tests do not substitute a Python reimplementation of game logic.
+
+## Read-only GitHub CI
+
+`.github/workflows/happytoy-quality.yml` checks pull requests targeting `main`, and pushes to `main` or `quality/happytoy-v2-**`, when HappyToyV2, the workflow, or root LFS attributes change. The single Ubuntu job has a 15-minute timeout and cancels superseded runs.
+
+It runs the 24 Python regression tests, the parser-required static validator, and the actual shared C# attack-clock assertions using .NET 8. A temporary `global.json` selects the SDK returned by the setup action, even if the runner also has newer SDKs installed. Generated reports and .NET build products go to runner temporary storage. Each stage has its own step log and summary status; a failure is not masked by log capture. Historical files under `Verification` are never overwritten or counted as new evidence.
+
+The workflow uses only `contents: read`, does not retain checkout credentials, and needs no repository secrets or Unity license. Sparse checkout is limited to HappyToyV2 (plus Git's cone-mode root files), automatic LFS download is disabled, and the only explicitly hydrated LFS object is `HappyToyV2/Assets/Annex/SchoolAnnex.unity`. It never downloads the monorepo's entire LFS collection, edits authored scenes, deploys, or changes repository settings.
+
+Official Actions are pinned to verified release commit SHAs:
+- [checkout v7.0.1](https://github.com/actions/checkout/commit/3d3c42e5aac5ba805825da76410c181273ba90b1)
+- [setup-python v7.0.0](https://github.com/actions/setup-python/commit/5fda3b95a4ea91299a34e894583c3862153e4b97)
+- [setup-dotnet v6.0.0](https://github.com/actions/setup-dotnet/commit/a98b56852c35b8e3190ac28c8c2271da59106c68)
+
+**A green source-quality job does not verify Unity compilation, package/API resolution, Windows builds, runtime gameplay, rendered UI, survival balance, or performance.** Those remain separate opt-in checks below.
 
 ## 3. Opt-in Unity validation/build/runtime audits
 
@@ -67,4 +82,4 @@ Do not add `-nographics` or run the UI audit in a headless player. `flow` captur
 
 ## Recorded cloud result
 
-24 validator tests passed and final source/static checks passed. Unity editor compilation, Windows build, runtime audits, PowerShell runner execution, C# clock execution, rendered UI inspection, survival balance and performance remain **NOT RUN** in this environment. Review each stage independently on the target machine.
+On 2026-10-02, all **24 validator tests**, parser-required source/static checks, and **29 actual pure C# clock assertions** passed locally. The C# harness used .NET SDK 8.0.425; its build had 0 warnings and 0 errors. Workflow YAML, security/scope invariants and embedded shell syntax were checked locally. GitHub-hosted execution is a separate result and must be checked for the published commit. Unity editor compilation, Windows build, runtime audits, PowerShell runner execution, rendered UI inspection, survival balance and performance remain **NOT RUN** in this environment. Review each stage independently on the target machine.

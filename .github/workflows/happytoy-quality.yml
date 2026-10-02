@@ -1,0 +1,130 @@
+name: HappyToyV2 source quality
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'HappyToyV2/**'
+      - '.github/workflows/happytoy-quality.yml'
+      - '.gitattributes'
+  push:
+    branches:
+      - main
+      - 'quality/happytoy-v2-**'
+    paths:
+      - 'HappyToyV2/**'
+      - '.github/workflows/happytoy-quality.yml'
+      - '.gitattributes'
+
+# No write permissions, repository secrets, deployment, or Unity license required.
+permissions:
+  contents: read
+
+concurrency:
+  group: happytoy-quality-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  source-quality:
+    name: Static validation and pure C# checks (not Unity)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+        working-directory: HappyToyV2
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: '1'
+      DOTNET_GENERATE_ASPNET_CERTIFICATE: 'false'
+      PYTHONDONTWRITEBYTECODE: '1'
+
+    steps:
+      - name: Check out only HappyToyV2 without automatic LFS downloads
+        # actions/checkout v7.0.1, verified against the official release commit.
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          lfs: false
+          sparse-checkout: HappyToyV2
+        env:
+          GIT_LFS_SKIP_SMUDGE: '1'
+
+      - name: Hydrate only the protected authored scene
+        working-directory: .
+        run: |
+          git lfs install --local --skip-smudge
+          git lfs pull --include='HappyToyV2/Assets/Annex/SchoolAnnex.unity' --exclude=''
+
+      - name: Set up Python 3.12
+        # actions/setup-python v7.0.0, official immutable release commit.
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned syntax-parser dependencies
+        run: python -m pip install --disable-pip-version-check -r Tools/quality/requirements.txt
+
+      - name: Run validator regression tests
+        id: validator-tests
+        run: |
+          mkdir -p "$RUNNER_TEMP/happytoy-quality"
+          python -m unittest discover -s Tools/quality -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/happytoy-quality/validator-tests.txt"
+
+      - name: Validate source, references, and preserved scene
+        id: source-validation
+        run: |
+          python Tools/quality/validate_project.py --require-parser --output "$RUNNER_TEMP/happytoy-quality/source-validation.json"
+
+      - name: Set up .NET 8 SDK
+        # actions/setup-dotnet v6.0.0, official immutable release commit.
+        id: dotnet
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: '8.0.x'
+          dotnet-quality: ga
+
+      - name: Run the actual pure C# attack-clock assertions
+        id: clock-tests
+        env:
+          SDK_VERSION: ${{ steps.dotnet.outputs.dotnet-version }}
+        run: |
+          # Keep SDK selection and build products outside the repository. Running
+          # from this directory makes global.json select the installed .NET 8 SDK.
+          mkdir -p "$RUNNER_TEMP/happytoy-quality/clock"
+          cd "$RUNNER_TEMP/happytoy-quality/clock"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          version = os.environ["SDK_VERSION"]
+          if not version.startswith("8.0."):
+              raise SystemExit("Expected a .NET 8 SDK, received: " + version)
+          Path("global.json").write_text(json.dumps({"sdk": {
+              "version": version, "rollForward": "disable", "allowPrerelease": False
+          }}), encoding="utf-8")
+          PY
+          dotnet --version
+          dotnet build "$GITHUB_WORKSPACE/HappyToyV2/Tools/quality/ClockTests.csproj" --configuration Release --output "$RUNNER_TEMP/happytoy-quality/clock/bin" --property:BaseIntermediateOutputPath="$RUNNER_TEMP/happytoy-quality/clock/obj/" 2>&1 | tee "$RUNNER_TEMP/happytoy-quality/clock-build.txt"
+          dotnet "$RUNNER_TEMP/happytoy-quality/clock/bin/ClockTests.dll" 2>&1 | tee "$RUNNER_TEMP/happytoy-quality/clock-tests.txt"
+
+      - name: Report each verification scope separately
+        if: always()
+        working-directory: .
+        env:
+          VALIDATOR_TEST_STATUS: ${{ steps.validator-tests.outcome }}
+          SOURCE_VALIDATION_STATUS: ${{ steps.source-validation.outcome }}
+          CLOCK_TEST_STATUS: ${{ steps.clock-tests.outcome }}
+        run: |
+          {
+            echo '## HappyToyV2 source quality'
+            echo
+            printf -- '- Validator regression tests: %s\n' "$VALIDATOR_TEST_STATUS"
+            printf -- '- Static source and scene-preservation checks: %s\n' "$SOURCE_VALIDATION_STATUS"
+            printf -- '- Actual pure C# attack-clock assertions on .NET 8: %s\n' "$CLOCK_TEST_STATUS"
+            echo '- Unity editor compilation and package/API resolution: NOT RUN'
+            echo '- Windows player build, gameplay/runtime audits, rendered UI and performance: NOT RUN'
+            echo
+            echo 'Detailed output is in the individual step logs. Generated reports stay in runner temporary storage; committed historical reports are never overwritten or treated as current results.'
+          } >> "$GITHUB_STEP_SUMMARY"
