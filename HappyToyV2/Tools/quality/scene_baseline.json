@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "source_revision": "482f3789b2633139b68805a27324587de2228914",
+  "selected_scene": "Assets/Annex/SchoolAnnex.unity",
+  "protected_files": {
+    "Assets/Annex/SchoolAnnex.unity": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+    "Assets/Annex/SchoolAnnex.unity.meta": "cced22a74976e0f4ebaa80138bda97d0bf5b1103a776613a31b2f1279a0ed77b",
+    "ProjectSettings/EditorBuildSettings.asset": "bba9b21dd739d2451b44faa463225a94be4ea90b6c6ff284b27a14b06de2ef21"
+  },
+  "preexisting_external_script_guids": [
+    "1e3fdca004f2d45fe8abbed571a8abd5",
+    "a79441f348de89743a2939f4d699eac1",
+    "7a5ac11cc976e418e8d13136b07e1f52",
+    "172515602e62fb746b5d573b38a5fe58"
+  ],
+  "note": "Captured from the unchanged authored review scene. Never regenerate/expand the scene or update these hashes merely to silence a validation failure. External package references are inventoried, not resolved without Unity."
+}

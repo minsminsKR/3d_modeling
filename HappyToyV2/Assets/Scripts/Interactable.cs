@@ -43,6 +43,7 @@ namespace HappyToy.V2
         }
         public void Use(PlayerMotor player)
         {
+            if (!player || !GameSession.Current || !GameSession.Current.InputAllowed) return;
             switch (kind)
             {
                 case Kind.Door:
@@ -51,7 +52,11 @@ namespace HappyToy.V2
                     float halfWidth=obstacle?obstacle.size.x*.5f:1.2f;
                     if (open && Mathf.Abs(local.x)<halfWidth+.35f && Mathf.Abs(local.z)<.5f && local.y>-.5f && local.y<2.5f)
                     {GameSession.Current.Notify("문 사이에 서 있습니다. 조금 물러난 뒤 닫으세요.");return;}
-                    open = !open; break;
+                    open = !open;
+                    var audio = GetComponent<InteractionAudio>();
+                    if (!audio) audio = gameObject.AddComponent<InteractionAudio>();
+                    audio.PlayDoor(open);
+                    break;
                 case Kind.NameSlip:
                     if (GameSession.Current.Collect(stableId)) gameObject.SetActive(false);
                     break;

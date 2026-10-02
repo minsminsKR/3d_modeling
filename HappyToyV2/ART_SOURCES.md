@@ -1,3 +1,9 @@
+## 2026-10-02 bundled Korean UI font
+
+- `Assets/Resources/Fonts/Korean.ttf`: HappyToy Sans KR Regular, a static weight-400 instance of Noto Sans KR from [Google Fonts](https://github.com/google/fonts/tree/main/ofl/notosanskr), processed with fontTools 4.61.1 and renamed to distinguish the generated static build. Glyphs were not subsetted.
+- Original font source SHA-256 and transformation are recorded in `Assets/Resources/Fonts/SOURCE.txt`. Adobe copyright and SIL Open Font License 1.1 are retained in `OFL.txt` and the font itself. The reserved name `Source` is not used by the derived family.
+- Static glyph-table checks cover every modern Hangul syllable, printable ASCII and UI symbols. Unity import and in-game text rendering remain unverified. This addition does not resolve the inherited art provenance limitations below.
+
 # Art provenance
 
 ## Newly authored for this project

@@ -1,0 +1,7 @@
+HappyToy Sans KR Regular is a static weight-400 instance of Noto Sans KR.
+Original: https://github.com/google/fonts/tree/main/ofl/notosanskr
+Original font: https://raw.githubusercontent.com/google/fonts/main/ofl/notosanskr/NotoSansKR%5Bwght%5D.ttf
+Source SHA256: 194018e6b2b293a7964f037b25c0249ce1418bc9ab3c971060a03aa57861e252
+Processed with fontTools 4.61.1 on 2026-10-02.
+Family renamed to distinguish this generated static build. Glyphs were not removed.
+SIL OFL 1.1; copyright and license retained in OFL.txt and inside the font.

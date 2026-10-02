@@ -1,0 +1,198 @@
+{
+  "schema": 1,
+  "unity_version": "6000.6.0f1",
+  "scene": "Assets/Annex/SchoolAnnex.unity",
+  "status": "NOT RUN",
+  "audits": [
+    {
+      "name": "flow",
+      "source": "Assets/Scripts/FlowAudit.cs",
+      "flag": "-v2-flow-output",
+      "argument_kind": "directory",
+      "result": "flow.json",
+      "timeout_seconds": 150,
+      "status": "NOT RUN",
+      "purpose": "Rendered menu/input/pause/restart integration, every discovered inspection and journal page, settings persistence and 720p/4:3 layout bounds. Synthetic inputs, not a survival playthrough."
+    },
+    {
+      "name": "smoke",
+      "source": "Assets/Scripts/DevelopmentSmoke.cs",
+      "flag": "-v2-smoke-output",
+      "argument_kind": "directory",
+      "result": "smoke.json",
+      "timeout_seconds": 150,
+      "status": "NOT RUN",
+      "purpose": "Controlled annex-aware progression plumbing, camera render, grounding/materials and door motion; directly invokes interactions, so not a survival playthrough."
+    },
+    {
+      "name": "enemy-fairness",
+      "source": "Assets/Scripts/EnemyFairnessAudit.cs",
+      "flag": "-v2-enemy-fairness-output",
+      "argument_kind": "directory",
+      "result": "enemy-fairness.json",
+      "timeout_seconds": 180,
+      "status": "NOT RUN",
+      "purpose": "Shared warning/recovery timing, floor/line-of-sight impact gating, dodge, pause, disable and lethal stationary contact diagnostics."
+    },
+    {
+      "name": "access",
+      "source": "Assets/Scripts/AccessAudit.cs",
+      "flag": "-v2-access-output",
+      "argument_kind": "directory",
+      "result": "access.json",
+      "timeout_seconds": 180,
+      "status": "NOT RUN",
+      "purpose": "NavMesh/raycast approach inventory for active authored interactions. Does not walk each route."
+    },
+    {
+      "name": "stamina",
+      "source": "Assets/Scripts/StaminaAudit.cs",
+      "flag": "-v2-stamina-output",
+      "argument_kind": "directory",
+      "result": "stamina.json",
+      "timeout_seconds": 120,
+      "status": "NOT RUN",
+      "purpose": "Synthetic movement tests for exhaustion, held-sprint latch, pause freeze, release/rearm."
+    },
+    {
+      "name": "cabinets",
+      "source": "Assets/Scripts/CabinetAccessAudit.cs",
+      "flag": "-v2-cabinets-output",
+      "argument_kind": "file",
+      "result": "cabinets.json",
+      "timeout_seconds": 120,
+      "status": "NOT RUN",
+      "purpose": "All active cabinets: approach, entry, blocked exit and successful exit. Teleports for setup."
+    },
+    {
+      "name": "rooms",
+      "source": "Assets/Scripts/RoomTraversalProbe.cs",
+      "flag": "-v2-rooms-output",
+      "argument_kind": "file",
+      "result": "rooms.json",
+      "timeout_seconds": 300,
+      "status": "NOT RUN",
+      "purpose": "CharacterController/NavMesh music-room to archive route and interactable reach."
+    },
+    {
+      "name": "walk",
+      "source": "Assets/Scripts/WalkAudit.cs",
+      "flag": "-v2-walk-output",
+      "argument_kind": "directory",
+      "result": "walk.json",
+      "timeout_seconds": 900,
+      "status": "NOT RUN",
+      "purpose": "Full deterministic existing annex route with real movement/E input; a failure is a diagnostic, not proof human completion is impossible."
+    },
+    {
+      "name": "attack",
+      "source": "Assets/Scripts/AttackAudit.cs",
+      "flag": "-v2-attack-output",
+      "argument_kind": "directory",
+      "result": "attack.json",
+      "timeout_seconds": 120,
+      "status": "NOT RUN",
+      "purpose": "Legacy fixed-position telegraph/catch check. Requires authored startup positioning to remain applicable."
+    },
+    {
+      "name": "hiding",
+      "source": "Assets/Scripts/HidingAudit.cs",
+      "flag": "-v2-hiding-output",
+      "argument_kind": "directory",
+      "result": "hiding.json",
+      "timeout_seconds": 180,
+      "status": "NOT RUN",
+      "purpose": "Occluded/unseen versus witnessed hiding and spatial footstep regression."
+    },
+    {
+      "name": "doorclearance",
+      "source": "Assets/Scripts/DoorClearanceAudit.cs",
+      "flag": "-v2-doorclearance-output",
+      "argument_kind": "directory",
+      "result": "clearance.json",
+      "timeout_seconds": 180,
+      "status": "NOT RUN",
+      "purpose": "Current three authored doors: collider, paired leaf travel, edge-close protection."
+    }
+  ],
+  "public_api_names": {
+    "GameSession": [
+      "Current",
+      "InputAllowed",
+      "ExplorationCount",
+      "ExplorationEntry",
+      "JournalEntry",
+      "Inspect",
+      "Collect",
+      "TryEscape",
+      "Finish",
+      "TryDefeat",
+      "WarnThreat",
+      "CurrentObjectiveId",
+      "RecordsRecovered",
+      "TotalRecords",
+      "DefeatSource",
+      "DefeatHint",
+      "ElapsedPlayTime"
+    ],
+    "GameShell": [
+      "Screen",
+      "Volume",
+      "Sensitivity",
+      "FieldOfView",
+      "ReducedMotion",
+      "Subtitles",
+      "HighContrast",
+      "LargeText",
+      "AdjustFieldOfView",
+      "ToggleReducedMotion",
+      "ToggleSubtitles",
+      "ToggleHighContrast",
+      "ToggleLargeText",
+      "RestoreDefaultSettings",
+      "ShowCaption",
+      "Begin",
+      "Pause",
+      "Resume",
+      "Journal",
+      "Back",
+      "Restart"
+    ],
+    "GameShellView": [
+      "Root",
+      "CaptureTarget",
+      "SetCaptureSize"
+    ],
+    "PlayerMotor": [
+      "Stamina",
+      "MovementUpdates",
+      "SprintExhausted",
+      "Hidden",
+      "Focus",
+      "SlowRemaining",
+      "eyes",
+      "sensitivity",
+      "Hide",
+      "LeaveHiding"
+    ],
+    "Interactable": [
+      "Use",
+      "kind",
+      "stableId",
+      "inspectionText"
+    ],
+    "StalkerBrain": [
+      "AttacksStarted"
+    ],
+    "EnemyAttackClock": [
+      "WindingUp",
+      "Recovering",
+      "Active",
+      "Windup",
+      "Recovery",
+      "Begin",
+      "Tick",
+      "Reset"
+    ]
+  }
+}

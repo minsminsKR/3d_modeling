@@ -38,6 +38,8 @@ namespace HappyToy.V2
                 float y=b0*x+b2*x2-a1*y1-a2*y2;samples[i]=y;x2=x1;x1=x;y2=y1;y1=y;
             }
             roar=AudioClip.Create("V1 Cyclopse descending roar",samples.Length,1,rate,false);roar.SetData(samples,0);voice.PlayOneShot(roar);RoarPlayed=true;
+            if(Vector3.Distance(GameSession.Current.player.eyes.transform.position,voice.transform.position)<=voice.maxDistance)
+                GameSession.Current.Shell.ShowCaption("[복도 끝 · 낮게 가라앉는 포효]", 2.6f, 1);
             yield return new WaitForSeconds(1.3f);
             if(GameSession.Current.Finished||GameSession.Current.StoryStep>=4||!brain.gameObject.activeInHierarchy)
             {Phase="resolved";yield break;}

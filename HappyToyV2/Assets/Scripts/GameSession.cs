@@ -20,6 +20,20 @@ namespace HappyToy.V2
         public event System.Action<string> RecordInspected;
         public bool Finished { get; private set; }
         public bool Escaped { get; private set; }
+        public string DefeatSource { get; private set; } = "";
+        public string DefeatHint { get; private set; } = "문을 닫아 시선을 끊고, 숨을 회복한 뒤 이동하세요.";
+        public float ElapsedPlayTime { get; private set; }
+        public int RecordsRecovered
+        {
+            get
+            {
+                int count = StoryStep;
+                if (requireAnnexRecords) foreach (var id in annexIds) if (inspected.Contains(id)) count++;
+                return count;
+            }
+        }
+        public int TotalRecords => requireAnnexRecords ? 7 : 4;
+        public bool HasInspected(string id) => !string.IsNullOrEmpty(id) && inspected.Contains(id);
         public int StoryStep => names.Count;
         public bool InputAllowed => Shell && Shell.Screen==GameShell.Page.Playing && !Finished;
         public GameShell Shell { get; private set; }
@@ -44,6 +58,7 @@ namespace HappyToy.V2
             }
         }
         public string Notice => notice;
+        public int NoticeRevision { get; private set; }
         public string JournalEntry(int index)=>index>=0&&index<StoryStep?clues[index]:null;
         public string ExplorationEntry(int index)=>index>=0&&index<exploration.Count?exploration[index]:null;
         public int ExplorationCount=>exploration.Count;
@@ -52,7 +67,7 @@ namespace HappyToy.V2
         public void Inspect(string id,string text)
         {
             if(!InputAllowed||string.IsNullOrWhiteSpace(text))return;
-            if(inspected.Add(id)){exploration.Add(text);RecordInspected?.Invoke(id);}
+            if(inspected.Add(id)){exploration.Add(text);RecordInspected?.Invoke(id);if(player&&player.Feedback)player.Feedback.PlayDiscovery();}
             Notify(text);
         }
         public event System.Action<int> StoryChanged;
@@ -73,23 +88,46 @@ namespace HappyToy.V2
         readonly HashSet<string> names = new HashSet<string>();
         string notice = "마지막 출석 — 지워진 아이의 하교 기록을 복원하세요.";
         void Awake() { Current = this; Application.targetFrameRate=120; Shell=gameObject.AddComponent<GameShell>();gameObject.AddComponent<RoomAmbience>(); }
+        void Update()
+        {
+            if (InputAllowed) ElapsedPlayTime += Time.deltaTime;
+        }
+        void OnDestroy()
+        {
+            if (Current == this) Current = null;
+        }
+        public void WarnThreat(string cue, float duration = 2.5f)
+        {
+            if (InputAllowed && Shell) Shell.ShowCaption(cue, duration, 2);
+        }
+        public bool TryDefeat(string source, string hint)
+        {
+            if (!InputAllowed || Finished) return false;
+            DefeatSource = string.IsNullOrWhiteSpace(source) ? "알 수 없는 기척" : source;
+            if (!string.IsNullOrWhiteSpace(hint)) DefeatHint = hint;
+            Debug.Log("HappyToy defeat: " + DefeatSource + " | objective=" + CurrentObjectiveId +
+                " | position=" + (player ? player.transform.position.ToString("F2") : "unknown"), this);
+            Finish(false);
+            return true;
+        }
         public bool Collect(string id)
         {
             if(!InputAllowed)return false;
             if (names.Contains(id)) return false;
             if(id=="restore" && StoryStep==3 && !AnnexRecordsComplete)
-            {notice="이름을 복원할 증거가 부족합니다. "+Objective;return false;}
+            {Notify("이름을 복원할 증거가 부족합니다. "+Objective);return false;}
             if (StoryStep >= sequence.Length || id != sequence[StoryStep])
-            { notice = Objective; return false; }
-            names.Add(id);notice=clues[StoryStep-1];StoryChanged?.Invoke(StoryStep);return true;
+            { Notify(Objective); return false; }
+            names.Add(id);Notify(clues[StoryStep-1]);StoryChanged?.Invoke(StoryStep);
+            if(player&&player.Feedback)player.Feedback.PlayDiscovery();return true;
         }
         public void TryEscape()
         {
             if(!InputAllowed)return;
-            if (names.Count < requiredNames) { notice = objectives[StoryStep]; return; }
+            if (names.Count < requiredNames || StoryStep < sequence.Length || !AnnexRecordsComplete) { Notify(Objective); return; }
             Finish(true);
         }
-        public void Notify(string text){if(!Finished)notice=text;}
+        public void Notify(string text){if(!Finished&&!string.IsNullOrWhiteSpace(text)){notice=text;NoticeRevision++;}}
         public void Finish(bool escaped)
         {
             if (Finished) return;

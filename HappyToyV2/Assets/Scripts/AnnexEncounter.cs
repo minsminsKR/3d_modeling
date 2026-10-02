@@ -25,7 +25,7 @@ namespace HappyToy.V2
             if(warningLight)originalIntensity=warningLight.intensity;
             initialized=true;
             if(session)session.StoryChanged+=OnStory;
-            monster.gameObject.SetActive(false);
+            if(monster)monster.gameObject.SetActive(false);
             source = gameObject.AddComponent<AudioSource>();
             source.playOnAwake = false; source.spatialBlend = 1;
             source.minDistance = 2; source.maxDistance = 20;
@@ -44,7 +44,7 @@ namespace HappyToy.V2
             if (!session) return;
             // Result screens pause time/input; cancellation must run before that gate.
             if(session.Finished||session.StoryStep>=4){if(!Cancelled)CancelEncounter();return;}
-            if(Cancelled||!session.InputAllowed||session.player.Hidden)return;
+            if(Cancelled||!monster||!session.InputAllowed||!session.player||session.player.Hidden)return;
             var delta = session.player.transform.position - roomCenter;
             if (Mathf.Abs(delta.y)>2) return; delta.y = 0;
             if (!Triggered && session.StoryStep >= 1 && delta.magnitude < triggerRadius)
@@ -55,24 +55,31 @@ namespace HappyToy.V2
             Triggered = true;
             GameSession.Current.Notify("지하의 물 너머에서 울음이 들립니다. 움직이기 전에 출구를 확인하세요.");
             source.PlayOneShot(cue);
+            session.WarnThreat("지하에서 울음이 들립니다 · 움직이기까지 5초, 출구를 확인하세요.", 4);
             var agent = monster.GetComponent<NavMeshAgent>();
             var motion = monster.GetComponent<V1MonsterMotion>();
-            motion.enabled = false;
+            if(motion)motion.enabled = false;
             monster.enabled = false; agent.enabled = false;
             monster.gameObject.SetActive(true);
             var animation = monster.GetComponentInChildren<Animation>();
             if (animation && animation.GetClip("cry")) animation.Play("cry");
-            for (float t = 0; t < 5; t += Time.deltaTime)
+            for (float t = 0; t < 5;)
             {
-                if (GameSession.Current.Finished || GameSession.Current.StoryStep >= 4)
+                if (!session || session.Finished || session.StoryStep >= 4 || !monster)
                 { CancelEncounter(); yield break; }
-                if (warningLight) warningLight.intensity = originalIntensity * (.45f + .55f * Mathf.Abs(Mathf.Sin(t * 9)));
+                if (session.InputAllowed)
+                {
+                    if (warningLight) warningLight.intensity = session.Shell && session.Shell.ReducedMotion ? originalIntensity :
+                        originalIntensity * (.65f + .35f * Mathf.Abs(Mathf.Sin(t * 3)));
+                    t += Time.deltaTime;
+                }
                 yield return null;
             }
             RestoreLight();
-            if (!NavMesh.SamplePosition(monster.transform.position, out var hit, 2, NavMesh.AllAreas))
+            if (!NavMesh.SamplePosition(monster.transform.position, out var hit, 1.5f, agent.areaMask) ||
+                !EnemyNavigation.SameFloor(hit.position, roomCenter.y))
             { Debug.LogError("Nursery actor has no reachable floor"); CancelEncounter(); yield break; }
-            monster.transform.position = hit.position; agent.enabled = true; monster.enabled = true; motion.enabled = true;
+            monster.transform.position = hit.position; agent.enabled = true; monster.enabled = true; if(motion)motion.enabled = true;
             Released = true;
         }
         void RestoreLight(){if(initialized&&warningLight)warningLight.intensity=originalIntensity;}

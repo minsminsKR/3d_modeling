@@ -1,0 +1,3 @@
+# Optional syntax-parser dependencies. Static checks and unittest use only the stdlib otherwise.
+tree-sitter==0.25.2
+tree-sitter-c-sharp==0.23.1

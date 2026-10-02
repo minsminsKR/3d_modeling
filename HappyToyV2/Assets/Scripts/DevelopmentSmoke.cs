@@ -14,7 +14,7 @@ namespace HappyToy.V2
     {
         string output;
         [Serializable] class Result
-        { public bool grounded, navMeshReady, missingMaterials, doorMoved, fourNames, escaped, paused, controllerEnabled; public int propRenderers,movementUpdates; public Vector3 playerPosition; public string collision; public string[] errors; }
+        { public string scope = "Controlled progression plumbing only; not a survival playthrough"; public bool grounded, navMeshReady, missingMaterials, doorMoved, fourNames, annexRecords, escaped, paused, controllerEnabled; public int propRenderers,movementUpdates; public Vector3 playerPosition; public string collision; public string[] errors; }
         readonly System.Collections.Generic.List<string> errors = new System.Collections.Generic.List<string>();
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Install()
@@ -55,12 +55,19 @@ namespace HappyToy.V2
             result.doorMoved=Vector3.Distance(start,door.movingLeaf.localPosition)>1;
             // This only validates collection/exit plumbing, not a survival playthrough.
             var names=items.Where(i=>i.kind==Interactable.Kind.NameSlip).ToArray();
-            foreach(var id in new[]{"register","ribbon","record","restore"})names.First(n=>n.stableId==id).Use(player);
+            foreach(var id in new[]{"register","ribbon","record"})names.First(n=>n.stableId==id).Use(player);
+            // The saved annex gates restoration on three additional authored records.
+            // Exercise their normal interaction callbacks; this deliberately bypasses travel/survival.
+            if(session.requireAnnexRecords)
+                foreach(var id in new[]{"music-roster","archive-record","nursery-tag"})
+                    items.First(n=>n.kind==Interactable.Kind.Inspect&&n.stableId==id).Use(player);
+            result.annexRecords=session.AnnexRecordsComplete;
+            names.First(n=>n.stableId=="restore").Use(player);
             result.fourNames=names.Length==4&&names.All(n=>!n.gameObject.activeSelf);
             session.TryEscape();result.escaped=session.Escaped;
             yield return null;
             result.errors=errors.ToArray();File.WriteAllText(Path.Combine(output,"smoke.json"),JsonUtility.ToJson(result,true));
-            Application.Quit(result.grounded&&result.navMeshReady&&!result.missingMaterials&&result.doorMoved&&result.fourNames&&result.escaped&&errors.Count==0?0:1);
+            Application.Quit(result.grounded&&result.navMeshReady&&!result.missingMaterials&&result.doorMoved&&result.fourNames&&result.annexRecords&&result.escaped&&errors.Count==0?0:1);
         }
     }
 }

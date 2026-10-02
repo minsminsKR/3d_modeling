@@ -1,0 +1,16 @@
+{
+  "scope": "Font file and glyph table inspection, not Unity import/render validation",
+  "font": "Assets/Resources/Fonts/Korean.ttf",
+  "family": "HappyToy Sans KR",
+  "source": "https://github.com/google/fonts/tree/main/ofl/notosanskr",
+  "license": "SIL OFL 1.1 (bundled)",
+  "sha256": "b9605a45a4811dc98c5005819fbc60b2ba581c835f087608cbe151a527624af5",
+  "bytes": 6224892,
+  "checks": {
+    "static_font_no_variable_axis": true,
+    "all_11172_hangul_syllables": true,
+    "printable_ascii": true,
+    "ui_symbols": true
+  },
+  "unity_font_import": "NOT RUN"
+}

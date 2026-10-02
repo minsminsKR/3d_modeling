@@ -21,6 +21,8 @@ namespace HappyToy.V2
             p.enabled=false;p.GetComponent<CharacterController>().enabled=false;
             p.transform.position=new Vector3(39.4f,.03f,2);p.transform.rotation=Quaternion.identity;p.eyes.transform.localRotation=Quaternion.identity;
             var actor=new GameObject("Noise probe stalker");actor.transform.position=new Vector3(39.4f,.03f,-6);
+            // Distraction requires an unseen player; a disabled test collider is not invisibility.
+            actor.transform.rotation=Quaternion.Euler(0,180,0);
             var agent=actor.AddComponent<NavMeshAgent>();var brain=actor.AddComponent<StalkerBrain>();brain.player=p;brain.patrol=new Transform[0];
             yield return null;
             brain.state=StalkerBrain.State.Chase;checks["chaseIgnoresNoise"]=!brain.HearNoise(new Vector3(39.4f,0,0),10);
@@ -31,6 +33,9 @@ namespace HappyToy.V2
             checks["qConsumesOne"]=inventory.Count==1&&inventory.LastThrown;
             var fire=inventory.LastThrown;
             if(!fire){Finish();yield break;}
+            // The thrown fuse keeps its real trajectory. Move the controlled observer out of
+            // sight before it burns, so this case tests hearing rather than chase priority.
+            p.transform.position=new Vector3(29.8f,5.03f,27.6f);
             yield return new WaitForSeconds(.3f);s.Shell.Pause();var paused=fire.transform.position;
             yield return new WaitForSecondsRealtime(.5f);
             checks["pauseFreezesFlight"]=Vector3.Distance(paused,fire.transform.position)<.001f;

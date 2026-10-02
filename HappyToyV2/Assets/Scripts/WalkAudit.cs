@@ -18,7 +18,7 @@ namespace HappyToy.V2
         bool sprintReady=true;
         void Update(){maximumActiveEnemies=Mathf.Max(maximumActiveEnemies,FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None).Count(e=>e.enabled));}
         readonly List<string> actions=new List<string>();
-        [Serializable] class Result {public string failure;public string[] actions;public int storyStep;public bool escaped,hwacatCompleted;public Vector3 position;public int movementUpdates,attacks,maximumActiveEnemies;}
+        [Serializable] class Result {public string failure;public string defeatSource,defeatHint;public string[] actions;public int storyStep;public bool escaped,hwacatCompleted;public Vector3 position;public int movementUpdates,attacks,maximumActiveEnemies;}
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Install()
         {
@@ -140,7 +140,7 @@ namespace HappyToy.V2
                 actions.Add("Completed "+id);Save();
             }
         }
-        void Save()=>File.WriteAllText(Path.Combine(output,"walk.json"),JsonUtility.ToJson(new Result{failure=failure,actions=actions.ToArray(),storyStep=GameSession.Current.StoryStep,escaped=GameSession.Current.Escaped,position=player.transform.position,movementUpdates=player.MovementUpdates,attacks=FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include,FindObjectsSortMode.None).Sum(e=>e.AttacksStarted),maximumActiveEnemies=maximumActiveEnemies,hwacatCompleted=FindFirstObjectByType<V1HwacatEvent>()?.Completed??false},true));
+        void Save()=>File.WriteAllText(Path.Combine(output,"walk.json"),JsonUtility.ToJson(new Result{failure=failure,defeatSource=GameSession.Current.DefeatSource,defeatHint=GameSession.Current.DefeatHint,actions=actions.ToArray(),storyStep=GameSession.Current.StoryStep,escaped=GameSession.Current.Escaped,position=player.transform.position,movementUpdates=player.MovementUpdates,attacks=FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include,FindObjectsSortMode.None).Sum(e=>e.AttacksStarted),maximumActiveEnemies=maximumActiveEnemies,hwacatCompleted=FindFirstObjectByType<V1HwacatEvent>()?.Completed??false},true));
         IEnumerator InspectNote(Interactable note)
         {
             int before=GameSession.Current.StoryStep;

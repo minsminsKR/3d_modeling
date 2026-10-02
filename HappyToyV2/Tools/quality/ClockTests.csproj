@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Assets/Scripts/EnemyAttackClock.cs" Link="EnemyAttackClock.cs" />
+    <Compile Include="../../Assets/Editor/EnemyAttackClockChecks.cs" Link="EnemyAttackClockChecks.cs" />
+    <Compile Include="ClockTestProgram.cs" />
+  </ItemGroup>
+</Project>

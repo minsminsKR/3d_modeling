@@ -12,10 +12,17 @@ namespace HappyToy.V2
         AudioSource source;
         AudioClip bell;
         AudioClip chairScrape;
+        Coroutine wakeRoutine;
+        GameSession session;
+        bool[] originalLightStates;
         public bool RestorationChairCompleted { get; private set; }
         public int RestorationChairCues { get; private set; }
         void Start()
         {
+            session = GameSession.Current;
+            originalLightStates = new bool[corridorLights.Length];
+            for (int i = 0; i < corridorLights.Length; i++)
+                originalLightStates[i] = corridorLights[i] && corridorLights[i].enabled;
             stalker.gameObject.SetActive(false);
             source=gameObject.AddComponent<AudioSource>();source.spatialBlend=1;source.minDistance=2;source.maxDistance=22;
             // Original synthesized cracked-school-bell cue; no borrowed soundtrack.
@@ -32,25 +39,52 @@ namespace HappyToy.V2
                 scrape[i]=envelope*(rasp*.12f+Mathf.Sin(2*Mathf.PI*(190*t+35*t*t))*.055f);
             }
             chairScrape=AudioClip.Create("Empty chair wood scrape",scrape.Length,1,rate,false);chairScrape.SetData(scrape,0);
-            GameSession.Current.StoryChanged+=OnStory;
+            if(session)session.StoryChanged+=OnStory;
         }
         void OnDestroy()
         {
-            if(GameSession.Current)GameSession.Current.StoryChanged-=OnStory;
+            if(session)session.StoryChanged-=OnStory;
             if(bell)Destroy(bell);
             if(chairScrape)Destroy(chairScrape);
         }
         void OnStory(int step)
         {
-            if(step!=4)source.PlayOneShot(bell,.7f);
-            if(step==2)StartCoroutine(Wake());
+            if(step!=4)
+            {
+                source.PlayOneShot(bell,.7f);
+                CaptionIfNearby(source, "[멀리서 울리는 금 간 하교 종]", 2.5f);
+            }
+            if(step==2)wakeRoutine=StartCoroutine(Wake());
             if(step==4)
             {
+                CancelWake();
                 if(emptyChair)StartCoroutine(RestoreChair());
                 stalker.gameObject.SetActive(false);
                 foreach(var light in corridorLights)if(light){light.enabled=true;light.color=new Color(.86f,.73f,.5f);light.intensity=2.8f;}
             }
         }
+        void CaptionIfNearby(AudioSource emitter, string text, float duration)
+        {
+            if (session && session.player && session.player.eyes && session.Shell && emitter &&
+                Vector3.Distance(session.player.eyes.transform.position, emitter.transform.position) <= emitter.maxDistance)
+                session.Shell.ShowCaption(text, duration, 1);
+        }
+        void Update()
+        {
+            if (session && session.Finished)
+            {
+                CancelWake();
+                if (source && source.isPlaying) source.Stop();
+            }
+        }
+        void CancelWake()
+        {
+            if (wakeRoutine == null) return;
+            StopCoroutine(wakeRoutine); wakeRoutine = null;
+            for (int i = 0; i < corridorLights.Length; i++)
+                if (corridorLights[i]) corridorLights[i].enabled = originalLightStates[i];
+        }
+        void OnDisable() { CancelWake(); if(source)source.Stop(); }
         IEnumerator RestoreChair()
         {
             if(RestorationChairCues>0)yield break;
@@ -60,6 +94,7 @@ namespace HappyToy.V2
             var sound=emptyChair.gameObject.AddComponent<AudioSource>();sound.playOnAwake=false;
             sound.spatialBlend=1;sound.minDistance=2;sound.maxDistance=14;sound.rolloffMode=AudioRolloffMode.Linear;
             sound.PlayOneShot(chairScrape,.65f);
+            CaptionIfNearby(sound, "[빈자리에서 의자가 한 번 끌리는 소리]", 3);
             for(float elapsed=0;elapsed<.72f;elapsed+=Time.deltaTime)
             {
                 float blend=Mathf.SmoothStep(0,1,elapsed/.72f);
@@ -73,16 +108,21 @@ namespace HappyToy.V2
         IEnumerator Wake()
         {
             for(int i=0;i<6;i++)
-            {foreach(var light in corridorLights)if(light)light.enabled=i%2==1;yield return new WaitForSeconds(.18f);}
+            {
+                bool soften = session && session.Shell && session.Shell.ReducedMotion;
+                foreach(var light in corridorLights)if(light)light.enabled=soften||i%2==1;
+                yield return new WaitForSeconds(.18f);
+            }
             // Telegraph the threat; never spawn it right on the player.
             yield return new WaitForSeconds(2);
-            if(GameSession.Current.StoryStep>=4)yield break;
+            if(!session||session.Finished||session.StoryStep>=4){CancelWake();yield break;}
             var player=GameSession.Current.player.transform.position;
             var spawn=new Vector3(player.x<0?7.5f:-7.5f,0,0);
             if(NavMesh.SamplePosition(spawn,out var hit,1,NavMesh.AllAreas))stalker.transform.position=hit.position;
             stalker.gameObject.SetActive(true);
             var intro=GetComponent<V1CyclopseIntro>();if(!intro)intro=gameObject.AddComponent<V1CyclopseIntro>();
             yield return intro.Play(stalker);
+            wakeRoutine = null;
         }
     }
 }

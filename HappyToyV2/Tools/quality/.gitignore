@@ -1,0 +1,7 @@
+__pycache__/
+bin/
+obj/
+.venv/
+
+# Keep the standalone pure-C# regression harness despite Unity project-file ignores.
+!ClockTests.csproj
