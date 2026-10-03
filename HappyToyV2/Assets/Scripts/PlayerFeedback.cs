@@ -86,7 +86,7 @@ namespace HappyToy.V2
             if (player.Grounded && player.ActualSpeed > .12f)
             {
                 stride += displacement.magnitude;
-                float interval = player.Running ? 1.6f : 1.15f;
+                float interval = player.Crouching ? .85f : player.Running ? 1.6f : 1.15f;
                 if (stride >= interval)
                 {
                     stride %= interval;
@@ -100,9 +100,11 @@ namespace HappyToy.V2
                         wet = surface.Contains("water") || surface.Contains("wet") || WaterSurfaceFeedback.IsSubmerged(contact);
                     }
                     steps.pitch = 1 + ((strideIndex % 5) - 2) * .025f;
-                    steps.PlayOneShot(wet ? wetStep : dryStep, player.Running ? .95f : .58f);
+                    float strength = player.Crouching ? .24f : player.Running ? 1 : .55f;
+                    steps.PlayOneShot(wet ? wetStep : dryStep, strength * .95f);
                     FootstepsPlayed++;
-                    Footstep?.Invoke(contact, wet, player.Running ? 1 : .55f);
+                    player.ReportFootstep(contact, wet);
+                    Footstep?.Invoke(contact, wet, strength);
                 }
             }
             else stride = Mathf.MoveTowards(stride, 0, Time.deltaTime * 2);
@@ -118,8 +120,9 @@ namespace HappyToy.V2
             // Position only: mouse rotation and scripted camera direction remain authoritative.
             var bob = speed > .12f ? new Vector3(Mathf.Sin(phase * .5f) * .009f,
                 Mathf.Abs(Mathf.Sin(phase)) * .015f, 0) : Vector3.zero;
-            player.eyes.transform.localPosition = Vector3.Lerp(player.eyes.transform.localPosition,
-                cameraHome + bob, 1 - Mathf.Exp(-14 * Time.unscaledDeltaTime));
+            var stanceHome = cameraHome - Vector3.up * player.CameraHeightOffset;
+            player.eyes.transform.localPosition = session.Shell.ReducedMotion ? stanceHome : Vector3.Lerp(player.eyes.transform.localPosition,
+                stanceHome + bob, 1 - Mathf.Exp(-14 * Time.deltaTime));
             float targetFov = session.Shell.FieldOfView + (motion && player.Running && speed > .5f ? 2.5f : 0);
             player.eyes.fieldOfView = Mathf.Lerp(player.eyes.fieldOfView, targetFov, 1 - Mathf.Exp(-5 * Time.unscaledDeltaTime));
         }

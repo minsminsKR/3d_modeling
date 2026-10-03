@@ -35,6 +35,16 @@
       "purpose": "Shared warning/recovery timing, floor/line-of-sight impact gating, dodge, pause, disable and lethal stationary contact diagnostics."
     },
     {
+      "name": "stealth",
+      "source": "Assets/Scripts/StealthAudit.cs",
+      "flag": "-v2-stealth-output",
+      "argument_kind": "directory",
+      "result": "stealth.json",
+      "timeout_seconds": 60,
+      "status": "NOT RUN",
+      "purpose": "Controlled real-input/physics stance, overhead obstruction, camera height, silent blocked movement, footstep hearing radius and pause regression; not enemy balance or survival completion."
+    },
+    {
       "name": "access",
       "source": "Assets/Scripts/AccessAudit.cs",
       "flag": "-v2-access-output",
@@ -173,7 +183,16 @@
       "eyes",
       "sensitivity",
       "Hide",
-      "LeaveHiding"
+      "LeaveHiding",
+      "Crouching",
+      "StandingBlocked",
+      "CameraHeightOffset",
+      "SightTargetHeight",
+      "FootstepNoiseRadius",
+      "FootstepNoiseRemaining",
+      "FootstepNoiseEmitted",
+      "TrySetCrouching",
+      "ReportFootstep"
     ],
     "Interactable": [
       "Use",
@@ -182,7 +201,9 @@
       "inspectionText"
     ],
     "StalkerBrain": [
-      "AttacksStarted"
+      "AttacksStarted",
+      "Awareness",
+      "FootstepNoisesAccepted"
     ],
     "EnemyAttackClock": [
       "WindingUp",
@@ -206,6 +227,17 @@
       "ContainsFoot",
       "IsSubmerged",
       "ContactsRendered"
+    ],
+    "LanternMaskEncounter": [
+      "Awareness",
+      "FootstepNoisesAccepted",
+      "CanSeePlayer"
+    ],
+    "StealthRules": [
+      "Finite",
+      "FootstepRadius",
+      "SightRange",
+      "AcquisitionSeconds"
     ]
   }
 }

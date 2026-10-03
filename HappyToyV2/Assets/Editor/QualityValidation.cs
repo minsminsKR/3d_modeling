@@ -18,7 +18,7 @@ namespace HappyToy.V2.Editor
         [Serializable] class ValidationReport
         {
             public string status, unityVersion, scene, sceneSha256;
-            public int pureClockAssertions, pureRippleAssertions, worldSigns, gameObjects, missingScripts, interactables, inspections;
+            public int pureClockAssertions, pureRippleAssertions, pureStealthAssertions, worldSigns, gameObjects, missingScripts, interactables, inspections;
         }
         [Serializable] class FingerprintEntry { public string path, sha256; }
         [Serializable] class BuildManifest
@@ -35,6 +35,7 @@ namespace HappyToy.V2.Editor
             string before = Hash(ScenePath);
             int clockAssertions = EnemyAttackClockChecks.Run();
             int rippleAssertions = SurfaceRippleChecks.Run();
+            int stealthAssertions = StealthRulesChecks.Run();
             var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
             int worldSignCount = AnnexSignFontValidation.Run(scene);
             var transforms = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Transform>(true)).ToArray();
@@ -57,7 +58,7 @@ namespace HappyToy.V2.Editor
             File.WriteAllText(Path.Combine(Output, "editor-validation.json"), JsonUtility.ToJson(new ValidationReport
             {
                 status = "PASS", unityVersion = Application.unityVersion, scene = ScenePath, sceneSha256 = before,
-                pureClockAssertions = clockAssertions, pureRippleAssertions = rippleAssertions, worldSigns = worldSignCount, gameObjects = transforms.Length, missingScripts = missing,
+                pureClockAssertions = clockAssertions, pureRippleAssertions = rippleAssertions, pureStealthAssertions = stealthAssertions, worldSigns = worldSignCount, gameObjects = transforms.Length, missingScripts = missing,
                 interactables = items.Length, inspections = inspections.Length
             }, true));
             Debug.Log("HAPPYTOY_QUALITY_VALIDATION_PASS clockAssertions=" + clockAssertions + " scene=" + ScenePath);

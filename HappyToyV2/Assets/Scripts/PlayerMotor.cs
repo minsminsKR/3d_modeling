@@ -12,6 +12,13 @@ namespace HappyToy.V2
         public float Stamina { get; private set; } = 1;
         public bool Hidden { get; private set; }
         public bool Running { get; private set; }
+        public bool Crouching { get; private set; }
+        public bool StandingBlocked { get; private set; }
+        public float CameraHeightOffset => Crouching ? standingHeight - crouchedHeight : 0;
+        public float SightTargetHeight => Crouching ? crouchedHeight * .63f : standingHeight * .63f;
+        public float FootstepNoiseRadius { get; private set; }
+        public float FootstepNoiseRemaining { get; private set; }
+        public event System.Action<Vector3, float> FootstepNoiseEmitted;
         public bool SprintExhausted { get; private set; }
         public bool Paused => !GameSession.Current || !GameSession.Current.InputAllowed;
         public Interactable Focus { get; private set; }
@@ -27,12 +34,17 @@ namespace HappyToy.V2
         CharacterController controller;
         Interactable hidingPlace;
         Vector3 hideExit, moveVelocity;
-        float pitch, fallSpeed;
+        float pitch, fallSpeed, standingHeight, crouchedHeight;
+        Vector3 standingCenter;
+        readonly Collider[] stanceOverlaps = new Collider[32];
         bool flashlightBeforeHiding;
 
         void Awake()
         {
             controller = GetComponent<CharacterController>();
+            standingHeight = controller.height;
+            standingCenter = controller.center;
+            crouchedHeight = Mathf.Min(standingHeight, Mathf.Max(controller.radius * 2 + .1f, standingHeight * .63f));
             gameObject.layer = 2;
             Firecrackers = GetComponent<FirecrackerInventory>();
             if (!Firecrackers) Firecrackers = gameObject.AddComponent<FirecrackerInventory>();
@@ -56,6 +68,10 @@ namespace HappyToy.V2
             var keys = Keyboard.current;
             var mouse = Mouse.current;
             SlowRemaining = session.StoryStep >= 4 ? 0 : Mathf.Max(0, SlowRemaining - Time.deltaTime);
+            FootstepNoiseRemaining = Mathf.Max(0, FootstepNoiseRemaining - Time.deltaTime);
+            if (FootstepNoiseRemaining <= 0) FootstepNoiseRadius = 0;
+            if (keys != null && (keys.cKey.wasPressedThisFrame || keys.leftCtrlKey.wasPressedThisFrame || keys.rightCtrlKey.wasPressedThisFrame))
+                TrySetCrouching(!Crouching);
             var delta = (mouse != null ? mouse.delta.ReadValue() : Vector2.zero) * sensitivity;
             transform.Rotate(0, delta.x, 0);
             pitch = Mathf.Clamp(pitch - delta.y, -78, 78);
@@ -73,12 +89,53 @@ namespace HappyToy.V2
             // Recover, then release Shift: no low-stamina sprint pulsing.
             if (SprintExhausted && Stamina >= .25f && !sprintHeld) SprintExhausted = false;
             if (Stamina <= .05f) SprintExhausted = true;
-            Running = !Hidden && sprintHeld && move.sqrMagnitude > .01f && !SprintExhausted;
+            Running = !Hidden && !Crouching && sprintHeld && move.sqrMagnitude > .01f && !SprintExhausted;
             Stamina = Mathf.Clamp01(Stamina + Time.deltaTime * (Running ? -.18f : .12f));
             moveVelocity = Hidden ? Vector3.zero :
-                (transform.right * move.x + transform.forward * move.y) * (Running ? runSpeed : walkSpeed) * MovementMultiplier;
+                (transform.right * move.x + transform.forward * move.y) * (Crouching ? walkSpeed * .55f : Running ? runSpeed : walkSpeed) * MovementMultiplier;
             Focus = FindFocus();
             if (keys != null && keys.eKey.wasPressedThisFrame && Focus) Focus.Use(this);
+        }
+        /// <summary>Toggle stance without moving the feet or standing through a ceiling.</summary>
+        public bool TrySetCrouching(bool crouched)
+        {
+            if (Paused || Hidden || !controller || !controller.enabled) return false;
+            if (crouched == Crouching) return true;
+            if (!crouched && CapsuleBlocked(transform.position, standingHeight, standingCenter))
+            {
+                StandingBlocked = true;
+                GameSession.Current.Notify("머리 위가 막혀 있습니다. 낮은 자세로 이동한 뒤 다시 일어나세요.");
+                return false;
+            }
+            Crouching = crouched; StandingBlocked = false; Running = false;
+            controller.height = crouched ? crouchedHeight : standingHeight;
+            controller.center = standingCenter - Vector3.up * (standingHeight - controller.height) * .5f;
+            // Do not retain a sprint velocity for the fixed step immediately after crouching.
+            moveVelocity = Vector3.zero;
+            return true;
+        }
+        bool CapsuleBlocked(Vector3 feet, float height, Vector3 center)
+        {
+            // Inset the query slightly so existing floor/doorway contact is not an obstruction.
+            float radius = Mathf.Max(.01f, controller.radius - .02f);
+            Vector3 worldCenter = feet + transform.TransformVector(center);
+            Vector3 up = transform.up;
+            float half = Mathf.Max(0, height * .5f - controller.radius);
+            int count = Physics.OverlapCapsuleNonAlloc(worldCenter - up * half, worldCenter + up * half,
+                radius, stanceOverlaps, ~0, QueryTriggerInteraction.Ignore);
+            // A full buffer cannot prove that all remaining colliders belong to the player.
+            if (count >= stanceOverlaps.Length) return true;
+            for (int i = 0; i < count; i++)
+                if (stanceOverlaps[i] && !stanceOverlaps[i].transform.IsChildOf(transform)) return true;
+            return false;
+        }
+        /// <summary>Called only when a real distance-driven foot contact plays its sound.</summary>
+        public void ReportFootstep(Vector3 point, bool wet)
+        {
+            if (Paused || Hidden || !Grounded || ActualSpeed <= .12f) return;
+            FootstepNoiseRadius = StealthRules.FootstepRadius(Crouching, Running, wet);
+            FootstepNoiseRemaining = .8f;
+            FootstepNoiseEmitted?.Invoke(point, FootstepNoiseRadius);
         }
         Interactable FindFocus()
         {
@@ -115,6 +172,7 @@ namespace HappyToy.V2
             if (Hidden || !place || Paused) return;
             foreach (var stalker in FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None)) stalker.ObserveHiding(exit);
             hidingPlace = place; hideExit = exit; Hidden = true; Running = false;
+            FootstepNoiseRemaining = FootstepNoiseRadius = 0;
             moveVelocity = Vector3.zero; ActualSpeed = 0;
             flashlightBeforeHiding = flashlight && flashlight.enabled;
             controller.enabled = false; transform.position = inside;
@@ -125,7 +183,7 @@ namespace HappyToy.V2
         {
             if (!Hidden || Paused) return;
             // Stay inside if another collider currently blocks the real exit capsule.
-            if (Physics.CheckCapsule(hideExit + Vector3.up * .4f, hideExit + Vector3.up * 1.4f, .3f, ~0, QueryTriggerInteraction.Ignore))
+            if (CapsuleBlocked(hideExit, controller.height, controller.center))
             {
                 GameSession.Current.Notify("캐비닛 앞이 막혀 있습니다. 발소리가 멀어진 뒤 다시 시도하세요."); return;
             }

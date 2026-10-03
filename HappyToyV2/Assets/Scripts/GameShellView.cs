@@ -15,7 +15,7 @@ namespace HappyToy.V2
         UIDocument document;
         PanelSettings settings;
         VisualElement root, stage, stamina, crosshair, noticePanel, noticeAccent, focusPanel, captionPanel;
-        Label objective, objectiveCount, notice, focus, meter, status, caption, volume, sensitivity, fieldOfView;
+        Label objective, objectiveCount, notice, focus, meter, status, noise, caption, volume, sensitivity, fieldOfView;
         Button reducedMotionButton, subtitlesButton, contrastButton, textSizeButton;
         GameShell.Page shown = (GameShell.Page)(-1);
         int journalStep = -1, journalExploration = -1, journalPage;
@@ -165,7 +165,7 @@ namespace HappyToy.V2
             journalStep = session.StoryStep;
             journalExploration = session.ExplorationCount;
             root.Clear();
-            objective = objectiveCount = notice = focus = meter = status = caption = volume = sensitivity = fieldOfView = null;
+            objective = objectiveCount = notice = focus = meter = status = noise = caption = volume = sensitivity = fieldOfView = null;
             reducedMotionButton = subtitlesButton = contrastButton = textSizeButton = null;
             stamina = crosshair = noticePanel = noticeAccent = focusPanel = captionPanel = null;
             root.style.color = Paper;
@@ -241,7 +241,7 @@ namespace HappyToy.V2
                 Panel(x + 27, lineY + 33, 486, 1, Edge);
             }
             Panel(x + 26, y + 333, 487, 1, Edge);
-            Text("WASD  이동      마우스  시선\nShift  달리기      E  조사·문·은신\nF  손전등           Q  폭죽 던지기\nJ  조사 기록       Esc  일시정지", x + 30, y + 356, 485, 137, shell.LargeText ? 23 : 21);
+            Text("WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신\nF  손전등          Q  폭죽 던지기\nJ  조사 기록      Esc  일시정지", x + 30, y + 345, 485, 155, shell.LargeText ? 23 : 21);
         }
         void BuildPause()
         {
@@ -358,7 +358,10 @@ namespace HappyToy.V2
             status = Text("", 753, 189, 802, 44, shell.LargeText ? 24 : 20);
             status.style.unityTextAlign = TextAnchor.UpperRight;
             status.style.color = Gold;
-            Small("F  손전등    Q  폭죽    J  기록    Esc  메뉴", 992, 840, 560).style.unityTextAlign = TextAnchor.UpperRight;
+            noise = Text("", 753, 230, 802, 34, shell.LargeText ? 22 : 19);
+            noise.style.unityTextAlign = TextAnchor.UpperRight;
+            noise.style.color = Muted;
+            Small("C  낮은 자세    F  빛    Q  폭죽    J  기록    Esc  메뉴", 942, 840, 610).style.unityTextAlign = TextAnchor.UpperRight;
             UpdateHud();
         }
         void UpdateSettingsLabels()
@@ -409,7 +412,10 @@ namespace HappyToy.V2
             crosshair.style.width = crosshair.style.height = player.Focus ? 9 : 6;
             crosshair.style.left = player.Focus ? 795.5f : 797;
             crosshair.style.top = player.Focus ? 445.5f : 447;
-            status.text = player.Hidden ? "은신 중 · 들키지 않도록 기다리세요" : player.SlowRemaining > 0 ? $"이동 속도 감소  ·  {Mathf.CeilToInt(player.SlowRemaining)}초" : player.Running ? "달리는 중 · 발소리가 멀리 퍼집니다" : string.Empty;
+            status.text = player.Hidden ? "은신 중 · 들키지 않도록 기다리세요" : player.SlowRemaining > 0 ? $"이동 속도 감소  ·  {Mathf.CeilToInt(player.SlowRemaining)}초" : player.Crouching ? "낮은 자세 · 천천히 조용하게 이동합니다" : player.Running ? "달리는 중 · 발소리가 멀리 퍼집니다" : "걷는 중 · 물에서는 발소리가 더 멀리 퍼집니다";
+            string sound = player.FootstepNoiseRadius <= 0 ? "없음" : player.FootstepNoiseRadius <= 3.5f ? "작음" : player.FootstepNoiseRadius <= 7 ? "보통" : "큼";
+            noise.text = "내 발소리  " + sound + (player.Hidden ? "" : player.flashlight && player.flashlight.enabled ? "    ·    손전등 켜짐" : "    ·    손전등 꺼짐");
+            noise.style.color = player.FootstepNoiseRadius > 7 ? Rust : Muted;
         }
         void LateUpdate()
         {

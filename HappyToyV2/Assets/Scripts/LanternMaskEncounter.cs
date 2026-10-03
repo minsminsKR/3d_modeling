@@ -19,11 +19,15 @@ namespace HappyToy.V2
         public bool AttackActive => attack.Active;
         public float AttackWindup => attack.Windup;
         public float AttackRecovery => attack.Recovery;
+        public float Awareness => awareness.Value;
+        public int FootstepNoisesAccepted { get; private set; }
         NavMeshAgent agent;
         NavMeshPath path;
         Vector3 target;
         float floorY, age, transformTime, memory, repath;
         int waypoint;
+        PlayerMotor noisePlayer;
+        readonly StealthRules.Awareness awareness = new StealthRules.Awareness();
         readonly EnemyAttackClock attack = new EnemyAttackClock();
         AudioSource sound;
         AudioClip warning;
@@ -45,6 +49,32 @@ namespace HappyToy.V2
             warning = AudioClip.Create("Lantern warning rattle", data.Length, 1, rate, false); warning.SetData(data, 0);
         }
         void Start() { SetVisible(false); }
+        void OnEnable()
+        {
+            floorY = transform.position.y; repath = 0; awareness.Reset();
+            BindFootsteps(GameSession.Current ? GameSession.Current.player : null);
+        }
+        void BindFootsteps(PlayerMotor next)
+        {
+            if (ReferenceEquals(noisePlayer, next)) return;
+            if (!ReferenceEquals(noisePlayer, null)) noisePlayer.FootstepNoiseEmitted -= HearFootstep;
+            noisePlayer = next;
+            if (noisePlayer) noisePlayer.FootstepNoiseEmitted += HearFootstep;
+        }
+        void HearFootstep(Vector3 point, float radius)
+        {
+            var session = GameSession.Current;
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.Finished || session.StoryStep >= 4 ||
+                !noisePlayer || noisePlayer != session.player || noisePlayer.Hidden ||
+                State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
+                attack.Active || !StealthRules.Finite(radius) || radius <= 0 || !StealthRules.Finite(point.x) ||
+                !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z) ||
+                Vector3.Distance(point, transform.position) > radius ||
+                !EnemyNavigation.TryRoute(agent, point, floorY, path, radius)) return;
+            var corners = path.corners;
+            target = corners.Length > 0 ? corners[corners.Length - 1] : point;
+            State = Phase.Investigate; memory = 3; repath = 0; FootstepNoisesAccepted++;
+        }
         void SetVisible(bool show)
         {
             if (mask) mask.gameObject.SetActive(show);
@@ -56,27 +86,35 @@ namespace HappyToy.V2
         bool Route(Vector3 point) => EnemyNavigation.TryRoute(agent, point, floorY, path);
         bool Sees(PlayerMotor player)
         {
+            // The lantern keeps its omnidirectional identity. This is physical LOS,
+            // separate from the slower, stance-dependent recognition below.
             return player && !player.Hidden && EnemyNavigation.SameFloor(player.transform.position, floorY) &&
                 Vector3.Distance(player.transform.position, transform.position) < 12 &&
-                EnemyNavigation.ClearSight(transform.position + Vector3.up, player.transform.position + Vector3.up * 1.1f, player);
+                EnemyNavigation.ClearSight(transform.position + Vector3.up,
+                    player.transform.position + Vector3.up * player.SightTargetHeight, player);
         }
+        public bool CanSeePlayer() => GameSession.Current && Sees(GameSession.Current.player);
         public bool HearNoise(Vector3 point, float duration)
         {
             var session = GameSession.Current;
-            if (!isActiveAndEnabled || !session || !session.InputAllowed || !EnemyNavigation.Ready(agent) ||
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.Finished || session.StoryStep >= 4 ||
+                !EnemyNavigation.Ready(agent) ||
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
-                attack.Active || duration <= 0 || Vector3.Distance(point, transform.position) > 28 || Sees(session.player) ||
+                attack.Active || !StealthRules.Finite(duration) || duration <= 0 ||
+                !StealthRules.Finite(point.x) || !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z) ||
+                Vector3.Distance(point, transform.position) > 28 || awareness.Acquired ||
                 !EnemyNavigation.TryRoute(agent, point, floorY, path, 38)) return false;
             State = Phase.Investigate; target = point; memory = duration; repath = 0; return true;
         }
         void Resolve()
         {
-            State = Phase.Resolved; attack.Reset(); EnemyNavigation.Stop(agent, true); SetVisible(false);
+            State = Phase.Resolved; awareness.Reset(); attack.Reset(); EnemyNavigation.Stop(agent, true); SetVisible(false);
             if (sound) sound.Stop();
         }
         void Update()
         {
             var session = GameSession.Current;
+            BindFootsteps(session ? session.player : null);
             if (!session) return;
             if (session.Finished || session.StoryStep >= 4) { Resolve(); return; }
             if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { Stop(); repath = 0; return; }
@@ -95,7 +133,9 @@ namespace HappyToy.V2
                 Stop(); transformTime = Mathf.Min(5, transformTime + Time.deltaTime);
                 if (transformTime >= 5)
                 {
-                    Transformed = true; State = Phase.Chase; memory = 8; target = player.transform.position; repath = 0;
+                    // Keep the position seen at the curse. Transformation is not permission
+                    // to track a player who escaped behind geometry or onto another floor.
+                    Transformed = true; State = Phase.Chase; memory = 8; repath = 0;
                     sound.pitch = .6f; sound.PlayOneShot(warning);
                     if (EnemyNavigation.SameFloor(player.transform.position, floorY) &&
                         Vector3.Distance(player.transform.position, transform.position) <= sound.maxDistance)
@@ -116,6 +156,7 @@ namespace HappyToy.V2
                         session.TryDefeat("Lantern mask", "가면이 기울며 소리를 내면 즉시 거리를 벌리세요. 변신한 가면의 공격도 피할 수 있습니다.");
                         Visual(); return;
                     }
+                    target = player.transform.position;
                     player.ApplyCurse(10); CursesApplied++; State = Phase.Transforming; transformTime = 0; attack.Reset();
                     session.Notify("가면의 저주 · 10초간 속도 50%. 몸이 자라기 전에 다른 복도로 피하세요.");
                     session.WarnThreat("저주에 걸렸습니다 · 가면이 자라는 5초 동안 출구로 이동하세요.", 4);
@@ -123,15 +164,39 @@ namespace HappyToy.V2
                 if (!attack.Active) repath = 0;
                 Visual(); return;
             }
-            if (sees) { State = Phase.Chase; target = player.transform.position; memory = Transformed ? 8 : 3; }
+            bool acquiring = false;
+            if (State != Phase.Chase)
+            {
+                bool lightOn = player.flashlight && player.flashlight.isActiveAndEnabled;
+                acquiring = sees && distance < StealthRules.SightRange(player.Crouching, lightOn, false, 12);
+                awareness.Tick(acquiring,
+                    StealthRules.AcquisitionSeconds(player.Crouching, lightOn, player.Running, distance), Time.deltaTime);
+            }
+            if (sees && (State == Phase.Chase || acquiring && awareness.Acquired))
+            { State = Phase.Chase; target = player.transform.position; memory = Transformed ? 8 : 3; }
             else if (State == Phase.Chase || State == Phase.Investigate)
-            { memory -= Time.deltaTime; if (memory <= 0) { State = Phase.Wander; repath = 0; } }
-            if (sees && distance < (Transformed ? .75f : .85f))
+            {
+                memory -= Time.deltaTime;
+                if (memory <= 0)
+                {
+                    if (State == Phase.Chase) awareness.Reset();
+                    State = Phase.Wander; repath = 0;
+                }
+            }
+            if (sees && State == Phase.Chase && distance < (Transformed ? .75f : .85f))
             {
                 attack.Begin(Transformed ? .75f : .6f, .9f); AttacksStarted++; Stop();
                 sound.pitch = Transformed ? .7f : 1; sound.PlayOneShot(warning);
                 session.WarnThreat(Transformed ? "가면이 공격을 준비합니다 · 즉시 거리를 벌리세요." :
                     "녹색 가면이 저주를 준비합니다 · 뒤로 물러나세요.", 1.6f);
+                Visual(); return;
+            }
+            if (acquiring && State != Phase.Chase)
+            {
+                Stop(); repath = 0;
+                var facing = player.transform.position - transform.position; facing.y = 0;
+                if (facing.sqrMagnitude > .001f)
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(facing), 180 * Time.deltaTime);
                 Visual(); return;
             }
             if (!EnemyNavigation.SameFloor(player.transform.position, floorY)) { Stop(); repath = 0; Visual(); return; }
@@ -193,7 +258,11 @@ namespace HappyToy.V2
             var attached = new Vector3(bounds.center.x, bounds.max.y + .15f, bounds.center.z) + transform.forward * .03f;
             mask.position = Vector3.Lerp(mask.position, attached, TransformProgress);
         }
-        void OnDisable() { attack.Reset(); EnemyNavigation.Stop(agent, true); if (sound) sound.Stop(); SetVisible(false); }
-        void OnDestroy() { if (warning) Destroy(warning); }
+        void OnDisable()
+        {
+            BindFootsteps(null); awareness.Reset(); attack.Reset(); EnemyNavigation.Stop(agent, true);
+            if (sound) sound.Stop(); SetVisible(false);
+        }
+        void OnDestroy() { BindFootsteps(null); if (warning) Destroy(warning); }
     }
 }

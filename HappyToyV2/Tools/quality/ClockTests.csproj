@@ -10,6 +10,8 @@
     <Compile Include="../../Assets/Editor/EnemyAttackClockChecks.cs" Link="EnemyAttackClockChecks.cs" />
     <Compile Include="../../Assets/Scripts/SurfaceRippleBuffer.cs" Link="SurfaceRippleBuffer.cs" />
     <Compile Include="../../Assets/Editor/SurfaceRippleChecks.cs" Link="SurfaceRippleChecks.cs" />
+    <Compile Include="../../Assets/Scripts/StealthRules.cs" Link="StealthRules.cs" />
+    <Compile Include="../../Assets/Editor/StealthRulesChecks.cs" Link="StealthRulesChecks.cs" />
     <Compile Include="ClockTestProgram.cs" />
   </ItemGroup>
 </Project>

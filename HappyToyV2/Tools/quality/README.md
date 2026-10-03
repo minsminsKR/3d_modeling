@@ -1,5 +1,13 @@
 # Happy Toy V2 quality checks
 
+## Current stealth milestone (2026-10-03)
+
+The console harness now executes **117 actual C# assertions**: 29 attack-clock, 20 ripple and 68 stealth-rule/awareness checks. The safe Editor validation command also runs all three groups. Source CI automatically includes the new helpers through `ClockTests.csproj`.
+
+The new opt-in `stealth` runtime audit checks real-input crouch, capsule/eye height, overhead stand blocking, pause, actual emitted walking/crouch contacts, and silence while stationary or blocked by a wall. Select it with `-Audit stealth`. It is **NOT RUN**; it does not test enemy reception/routing, wet surfaces, cabinet exits, balance or survival completion. Those require dedicated runtime scenarios. Current source evidence is in `Verification/quality-stealth`; all older results below retain their original historical scope.
+
+Final external Unity API compilation covers 85 C# files in four configurations, with zero errors and existing obsolete-API/reference/serialized-field warnings. This is not Unity import, rendering or a player build. `RELEASE_READINESS.md` records those remaining gates.
+
 These tools never regenerate or expand the authored school. `scene_baseline.json` protects the exact selected scene, its metadata and build selection. A mismatch needs review; do not replace the hash just to get a green check.
 
 ## 1. Checks runnable without Unity
