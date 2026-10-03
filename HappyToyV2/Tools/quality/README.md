@@ -2,7 +2,7 @@
 
 ## Real cloud Unity test suite (2026-10-03)
 
-See `CLOUD_QA.md` for the 6 EditMode + 6 PlayMode tests and exact UBA toggles/discovery contract. These are isolated UTF assemblies exercising the preserved imported scene and engine state/physics/NavMesh, not the standalone C# harness. The first Windows cloud build passed on `02e6107`; the new test-enabled run must separately prove all 12 tests ran with zero failures/skips.
+See `CLOUD_QA.md` for the 6 EditMode + 6 PlayMode tests and exact UBA toggles/discovery contract. These are isolated UTF assemblies exercising the preserved imported scene and engine state/physics/NavMesh, not the standalone C# harness. UBA build #4 on `58f5cf949380d28574ab4a809c0c903ef9a27811` passed all 12 actual tests (6 EditMode + 6 PlayMode, zero failures/skips/inconclusive) and exported the Windows player successfully. `Verification/cloud-tests/build-4-results.json` preserves exact artifact counts and hashes; later documentation-only updates do not change that tested source. Manual survival, rendering/audio and target-hardware QA remain separate.
 
 For external compiler validation with tests, also supply `--test-framework-assemblies` containing genuine `nunit.framework.dll`, `UnityEngine.TestRunner.dll` and `UnityEditor.TestRunner.dll` from the matching Unity 6000.6 template/UTF 1.8.0. The compiler now runs four production stages and three isolated test stages. It fails rather than silently excluding test code.
 

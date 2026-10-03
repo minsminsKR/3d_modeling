@@ -1,0 +1,106 @@
+{
+  "build": 4,
+  "commit": "58f5cf949380d28574ab4a809c0c903ef9a27811",
+  "unityVersion": "6000.6.0f1",
+  "status": "SUCCESS",
+  "billableSeconds": 581,
+  "scope": "Real UTF execution and Windows player export on UBA Windows Micro; not manual gameplay, rendered quality or target hardware performance",
+  "freshSourceCheckout": true,
+  "libraryCacheRestored": true,
+  "modes": {
+    "editmode": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "inconclusive": 0,
+      "skipped": 0,
+      "xmlSha256": "ba9ea5023ba0788fe444728dd69a9e2f8b82d6380b86ea08d8d5a7fbecf98412",
+      "tests": [
+        {
+          "name": "ActualEnemyAttackClockPassesAll29Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ActualSceneRestartGatePassesAll26Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ActualStealthRulesPassAll68Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ActualSurfaceRippleBufferPassesAll20Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles",
+          "result": "Passed"
+        },
+        {
+          "name": "TargetEditorAndGameplayAssemblyIdentitiesArePreserved",
+          "result": "Passed"
+        }
+      ]
+    },
+    "playmode": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "inconclusive": 0,
+      "skipped": 0,
+      "xmlSha256": "462b615f849bcfa9bfb0e0bd7de426fce3e30034241ec9ac964039f75826736a",
+      "tests": [
+        {
+          "name": "AttackWarningPausesAndDodgeWorksBeforeLethalContact",
+          "result": "Passed"
+        },
+        {
+          "name": "AuthoredNavigationReachesAllMandatoryRecords",
+          "result": "Passed"
+        },
+        {
+          "name": "CrouchUsesActualCapsuleAndOnlyMovingFeetMakeNoise",
+          "result": "Passed"
+        },
+        {
+          "name": "PauseJournalAndMixedRestartRequestsKeepTheirDestination",
+          "result": "Passed"
+        },
+        {
+          "name": "RealFootstepsDriveHearingAndRecognitionRespectsCover",
+          "result": "Passed"
+        },
+        {
+          "name": "TitleAndRequiredRecordsGateRealEscape",
+          "result": "Passed"
+        }
+      ]
+    }
+  },
+  "finalLog": {
+    "bytes": 2028356,
+    "sha256": "319e0e3abb1453c4e38144457ce926d1168cdba901a03f6124a20ffb0c398f60",
+    "lines": 14651
+  },
+  "artifact": {
+    "filename": "HappyToyV2-TEST-Windows64-build4.zip",
+    "bytes": 73163952,
+    "sha256": "1bcf7687acdc65706cf4cb1c877bce132130c680b6551feb3fcc1b5b75230307",
+    "entries": 186,
+    "crc_bad_entry": null,
+    "key_entries": [
+      "HappyToyV2.exe",
+      "HappyToyV2_BackUpThisFolder_ButDontShipItWithYourGame/x86_64/lib_burst_generated.txt",
+      "HappyToyV2_Data/Managed/Assembly-CSharp.dll",
+      "HappyToyV2_Data/level0",
+      "UnityPlayer.dll"
+    ],
+    "testAssembliesIncluded": false,
+    "releasePackagingApproved": false
+  },
+  "logScan": {
+    "csharpErrorLines": 0,
+    "shaderErrorLines": 0,
+    "warningFree": false
+  }
+}

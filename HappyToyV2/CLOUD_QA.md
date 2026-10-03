@@ -1,5 +1,15 @@
 # Unity Build Automation: real scene tests
 
+## Latest verified result
+
+**UBA build #4: SUCCESS**, on exact tested commit `58f5cf949380d28574ab4a809c0c903ef9a27811`, Unity **6000.6.0f1**, Windows Micro. Both NUnit artifacts were independently parsed: **6/6 EditMode + 6/6 PlayMode passed, 0 failed/inconclusive/skipped**. The previously failing real-footstep hearing/recognition case passes with the interior, physically validated fixture. The Windows player export and final status also succeeded.
+
+The test ZIP has **73,163,952 bytes**, all **186 entries** pass CRC, and SHA-256 `1bcf7687acdc65706cf4cb1c877bce132130c680b6551feb3fcc1b5b75230307`. It contains the executable, production assembly and scene; no UTF/NUnit test assemblies are included. It still contains Unity's `BackUpThisFolder_ButDontShipItWithYourGame` folder and is a development/testing artifact, not an approved release package. Final logs have no C# compiler-error or Shader-error lines; existing warnings remain. Billable time was 9m41s.
+
+Sanitized evidence: `Verification/cloud-tests/build-4-results.json`, including hashes of both original XML artifacts and the complete terminal log. This documentation-only follow-up does not change the tested Assets, Packages, ProjectSettings or source tools. The source-quality CI for the tested code also passed: https://github.com/minsminsKR/3d_modeling/actions/runs/37153309430.
+
+This is a controlled automated scene/physics/state milestone. Manual survival completion, rendered UI/art quality, audio listening, all encounters, long-run stability and target hardware performance remain open. Prior failures below are retained as history.
+
 ## Scope
 
 UBA Windows build #1 succeeded on Unity **6000.6.0f1** for commit `02e6107dffcb21f1748ceb49ef8cabd68b8c50bd`. LFS checkout and the authored SchoolAnnex scene import succeeded. That run built a Windows player; it did not execute gameplay tests. The downloaded 73,163,991-byte ZIP passed CRC verification (SHA-256 `76beddb023a909e80b53cadda9dca15c7d35206ec670f4c08b501604931cc291`). The build used the Microsoft Basic Render Driver, so it is not a visual quality or target-GPU performance sign-off.
@@ -55,7 +65,7 @@ Three failures are not being relabeled as passes:
 - The strict protected metadata hash failed. Converting the original LF `.meta` file to CRLF reproduces the exact UBA failure hash. `.gitattributes` now pins LF for that file and EditorBuildSettings.asset. A fresh checkout with `core.autocrlf=true` retains both original hashes; no expected hash or preservation assertion changed
 - Both keyboard-driven tests failed before their expected stance/hearing state. The fixture omitted Input System's Editor game-input routing setting. Versioned 1.19 source requires both `IgnoreFocus` and `AllDeviceInputAlwaysGoesToGameView` for unfocused batch-Editor input. The fixture now temporarily sets/restores both, directly observes queued key delivery, and records dynamic input/motor state on failure. There is no manual input update, direct substitute for the tested keypress, ignored test, or weakened gameplay assertion
 
-This identifies a definite missing harness configuration, not a proven production input bug. The subsequent run below confirms the metadata and crouch fixes, while exposing a separate invalid hearing-fixture placement. The full 12-test gate remains **FAILED / RETEST REQUIRED**. The new external compiler preflight is in `Verification/cloud-tests/build-3-preflight`; it is not a Unity rerun.
+This identifies a definite missing harness configuration, not a proven production input bug. The subsequent run below confirms the metadata and crouch fixes, while exposing a separate invalid hearing-fixture placement. At that stage the full 12-test gate remained **FAILED / RETEST REQUIRED**; build #4 above now passes it. The new external compiler preflight is in `Verification/cloud-tests/build-3-preflight`; it is not a Unity rerun.
 
 Input routing reference: https://raw.githubusercontent.com/Unity-Technologies/InputSystem/1.19.0/Packages/com.unity.inputsystem/InputSystem/InputManager.cs (gameShouldGetInputRegardlessOfFocus and unfocused Editor event routing).
 
@@ -67,4 +77,4 @@ The remaining hearing case observed W input and movement, but the player fell to
 
 Only that hearing fixture now uses an interior anchor at x=-4.5. Before testing sound, it verifies the real authored floor and standing-capsule clearance across the lane, a clear baked-NavMesh segment, at least three fresh motor physics updates, grounding and floor height. Input must produce horizontal grounded progress; real footstep count, enemy reception and post-step grounding must all pass. No synthetic floor/noise, direct footstep call, skip, relaxed timeout or production change was added. The passing attack case retains its original anchor.
 
-The corrected fixture still needs a pinned UBA rerun. Its seven-stage genuine-API compilation and source checks in `Verification/cloud-tests/build-4-preflight` do not establish runtime success.
+The corrected fixture was subsequently exercised successfully by pinned build #4, as recorded above. The seven-stage genuine-API compilation and source checks in `Verification/cloud-tests/build-4-preflight` remain separate preflight evidence; the actual NUnit artifacts establish runtime success for these 12 controlled tests.
