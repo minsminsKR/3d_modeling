@@ -21,6 +21,7 @@ namespace HappyToy.V2.CloudTests
         Component session, player, shell;
         Keyboard keyboard, previousKeyboard;
         InputSettings.BackgroundBehavior oldBackground;
+        InputSettings.EditorInputBehaviorInPlayMode oldEditorInputBehavior;
         readonly Dictionary<string, float> floats = new Dictionary<string, float>();
         readonly Dictionary<string, int> ints = new Dictionary<string, int>();
         readonly HashSet<string> existing = new HashSet<string>();
@@ -30,6 +31,8 @@ namespace HappyToy.V2.CloudTests
         CursorLockMode oldCursorLock;
         bool oldCursorVisible;
         Scene cleanupScene;
+        int dynamicInputUpdates;
+        bool observedCPress, observedWHeld;
         static readonly string[] FloatKeys = { "v2.volume", "v2.sensitivity", "v2.fov" };
         static readonly string[] IntKeys = { "v2.reducedMotion", "v2.subtitles", "v2.highContrast", "v2.largeText" };
 
@@ -40,11 +43,19 @@ namespace HappyToy.V2.CloudTests
             oldBackgroundRun = Application.runInBackground; oldFrameRate = Application.targetFrameRate;
             oldCursorLock = UnityEngine.Cursor.lockState; oldCursorVisible = UnityEngine.Cursor.visible;
             oldBackground = InputSystem.settings.backgroundBehavior; previousKeyboard = Keyboard.current;
+            oldEditorInputBehavior = InputSystem.settings.editorInputBehaviorInPlayMode;
             existing.Clear(); floats.Clear(); ints.Clear();
+            dynamicInputUpdates = 0; observedCPress = observedWHeld = false;
+            InputSystem.onAfterUpdate += ObserveInput;
             foreach (string key in FloatKeys) { if (PlayerPrefs.HasKey(key)) existing.Add(key); floats[key] = PlayerPrefs.GetFloat(key); }
             foreach (string key in IntKeys) { if (PlayerPrefs.HasKey(key)) existing.Add(key); ints[key] = PlayerPrefs.GetInt(key); }
             Application.runInBackground = true;
             InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            // IgnoreFocus alone does not route keyboards into the game's state buffer
+            // when the batch Editor has no focused Game View (Input System 1.19).
+            InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            Assert.That(InputSystem.settings.editorInputBehaviorInPlayMode,
+                Is.EqualTo(InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView));
             Assert.That(Application.unityVersion, Is.EqualTo("6000.6.0f1"));
             Assert.That(Application.CanStreamedLevelBeLoaded(ScenePath), Is.True, "The protected scene must be in build settings");
             var load = SceneManager.LoadSceneAsync(ScenePath, LoadSceneMode.Single);
@@ -64,6 +75,7 @@ namespace HappyToy.V2.CloudTests
         {
             try
             {
+                InputSystem.onAfterUpdate -= ObserveInput;
                 if (keyboard != null && keyboard.added) InputSystem.RemoveDevice(keyboard);
                 keyboard = null;
                 if (previousKeyboard != null && previousKeyboard.added) previousKeyboard.MakeCurrent();
@@ -95,6 +107,7 @@ namespace HappyToy.V2.CloudTests
                     foreach (string key in IntKeys) if (existing.Contains(key)) PlayerPrefs.SetInt(key, ints[key]); else PlayerPrefs.DeleteKey(key);
                     PlayerPrefs.Save();
                     InputSystem.settings.backgroundBehavior = oldBackground;
+                    InputSystem.settings.editorInputBehaviorInPlayMode = oldEditorInputBehavior;
                     Time.timeScale = oldTimeScale; AudioListener.pause = oldAudioPause; AudioListener.volume = oldVolume;
                     Application.runInBackground = oldBackgroundRun; Application.targetFrameRate = oldFrameRate;
                     UnityEngine.Cursor.lockState = oldCursorLock; UnityEngine.Cursor.visible = oldCursorVisible;
@@ -107,7 +120,32 @@ namespace HappyToy.V2.CloudTests
         void Keys(params Key[] held)
         {
             if (keyboard == null) keyboard = InputSystem.AddDevice<Keyboard>();
+            Assert.That(keyboard.added && keyboard.enabled, Is.True, "Fixture keyboard is not active");
+            Assert.That(Keyboard.current, Is.SameAs(keyboard), "Fixture keyboard is not current");
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(held));
+        }
+        IEnumerator KeysObserved(params Key[] held)
+        {
+            Keys(held);
+            yield return Wait(() => Keyboard.current == keyboard && held.All(key => keyboard[key].isPressed), 2,
+                "Queued keyboard state never reached the game input buffer; editorMode=" + InputSystem.settings.editorInputBehaviorInPlayMode +
+                ", background=" + InputSystem.settings.backgroundBehavior + ", focused=" + Application.isFocused, InputDiagnostics);
+            Assert.That(Get<bool>(session, "InputAllowed"), Is.True, "Keyboard reached the device but gameplay input is paused");
+        }
+        void ObserveInput()
+        {
+            if (keyboard == null || InputState.currentUpdateType != InputUpdateType.Dynamic) return;
+            dynamicInputUpdates++;
+            observedCPress |= keyboard.cKey.wasPressedThisFrame;
+            observedWHeld |= keyboard.wKey.isPressed;
+        }
+        string InputDiagnostics()
+        {
+            return "dynamicUpdates=" + dynamicInputUpdates + ", CPress=" + observedCPress + ", WHeld=" + observedWHeld +
+                ", inputAllowed=" + Get<bool>(session, "InputAllowed") + ", crouching=" + Get<bool>(player, "Crouching") +
+                ", eyeY=" + Get<Camera>(player, "eyes").transform.localPosition.y + ", grounded=" + Get<bool>(player, "Grounded") +
+                ", speed=" + Get<float>(player, "ActualSpeed") + ", position=" + player.transform.position +
+                ", footsteps=" + Get<int>(Get<Component>(player, "Feedback"), "FootstepsPlayed");
         }
         Component Record(string id)
         {
@@ -218,7 +256,7 @@ namespace HappyToy.V2.CloudTests
             PlacePlayer(origin + Vector3.up * .02f);
             yield return Wait(() => Get<bool>(player, "Grounded"), 3, "Controller did not ground on the test floor");
             var controller = player.GetComponent<CharacterController>(); float height = controller.height, feet = player.transform.position.y;
-            Keys(Key.C); yield return Wait(() => Get<bool>(player, "Crouching") && Get<Camera>(player, "eyes").transform.localPosition.y < 1.2f, 3, "Crouch input or eye-height transition did not finish"); Keys();
+            yield return KeysObserved(Key.C); yield return Wait(() => Get<bool>(player, "Crouching") && Get<Camera>(player, "eyes").transform.localPosition.y < 1.2f, 3, "Crouch input or eye-height transition did not finish", InputDiagnostics); Keys();
             Assert.That(Get<bool>(player, "Crouching"), Is.True); Assert.That(controller.height, Is.LessThan(height * .7f));
             Assert.That(player.transform.position.y, Is.EqualTo(feet).Within(.06f));
             Assert.That(Get<Camera>(player, "eyes").transform.localPosition.y, Is.LessThan(1.2f));
@@ -227,19 +265,19 @@ namespace HappyToy.V2.CloudTests
             ceiling.SetActive(false); Physics.SyncTransforms();
             Assert.That((bool)Call(player, "TrySetCrouching", false), Is.True); Assert.That(controller.height, Is.EqualTo(height).Within(.001f));
             var feedback = Get<Component>(player, "Feedback"); int steps = Get<int>(feedback, "FootstepsPlayed");
-            Keys(Key.LeftShift); yield return Delay(.4f); Keys();
+            yield return KeysObserved(Key.LeftShift); yield return Delay(.4f); Keys();
             Assert.That(Get<int>(feedback, "FootstepsPlayed"), Is.EqualTo(steps));
-            Keys(Key.W); yield return Wait(() => Get<int>(feedback, "FootstepsPlayed") > steps, 2, "Real walking emitted no foot contact"); Keys();
+            yield return KeysObserved(Key.W); yield return Wait(() => Get<int>(feedback, "FootstepsPlayed") > steps, 2, "Real walking emitted no foot contact"); Keys();
             Assert.That(Get<float>(player, "FootstepNoiseRadius"), Is.EqualTo(4f));
             Call(player, "TrySetCrouching", true); steps = Get<int>(feedback, "FootstepsPlayed");
-            Keys(Key.W, Key.LeftShift); yield return Wait(() => Get<int>(feedback, "FootstepsPlayed") > steps, 2, "Crouched movement emitted no foot contact"); Keys();
+            yield return KeysObserved(Key.W, Key.LeftShift); yield return Wait(() => Get<int>(feedback, "FootstepsPlayed") > steps, 2, "Crouched movement emitted no foot contact"); Keys();
             Assert.That(Get<bool>(player, "Running"), Is.False); Assert.That(Get<float>(player, "FootstepNoiseRadius"), Is.EqualTo(1.75f));
             Call(shell, "Pause"); float remaining = Get<float>(player, "FootstepNoiseRemaining");
             yield return Delay(.2f); Assert.That(Get<float>(player, "FootstepNoiseRemaining"), Is.EqualTo(remaining));
             Call(shell, "Resume"); Call(player, "TrySetCrouching", false);
             float beforeWall = player.transform.position.z;
             Cube("CloudQA blocking wall", player.transform.position + Vector3.forward * .65f + Vector3.up * 1.5f, new Vector3(3, 3, .2f)); Physics.SyncTransforms();
-            Keys(Key.W, Key.LeftShift);
+            yield return KeysObserved(Key.W, Key.LeftShift);
             yield return Wait(() => player.transform.position.z > beforeWall + .05f && Get<float>(player, "ActualSpeed") < .12f, 3, "Player never reached the blocking wall");
             steps = Get<int>(feedback, "FootstepsPlayed");
             yield return Delay(.5f); Keys(); Assert.That(Get<int>(feedback, "FootstepsPlayed"), Is.EqualTo(steps), "Blocked sprint invented footsteps");
@@ -302,8 +340,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(enemy, "CanSeePlayer"), Is.False, "Hearing setup must place player behind enemy");
             Assert.That((bool)Call(enemy, "HearNoise", origin + Vector3.up * 5, 2f), Is.False);
             Call(shell, "Pause"); Assert.That((bool)Call(enemy, "HearNoise", origin + Vector3.right, 2f), Is.False); Call(shell, "Resume");
-            int accepted = Get<int>(enemy, "FootstepNoisesAccepted"); Keys(Key.W);
-            yield return Wait(() => Get<int>(enemy, "FootstepNoisesAccepted") > accepted, 2, "Actual player foot contact never reached enemy hearing"); Keys();
+            int accepted = Get<int>(enemy, "FootstepNoisesAccepted");
+            Vector3 beforeStep = player.transform.position;
+            yield return KeysObserved(Key.W);
+            yield return Wait(() => Vector3.Distance(player.transform.position, beforeStep) > .1f, 2, "W reached the keyboard but the real motor did not move", InputDiagnostics);
+            yield return Wait(() => Get<int>(enemy, "FootstepNoisesAccepted") > accepted, 2, "Actual player foot contact never reached enemy hearing", () => InputDiagnostics() + ", accepted=" + Get<int>(enemy, "FootstepNoisesAccepted") + ", enemyState=" + Get<object>(enemy, "state")); Keys();
             Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Investigate"));
             ((Behaviour)player).enabled = false; PlacePlayer(origin + Vector3.right * 4, false);
             Get<Light>(player, "flashlight").enabled = true;

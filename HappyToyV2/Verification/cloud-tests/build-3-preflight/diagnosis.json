@@ -1,0 +1,11 @@
+{
+  "scope": "Reproduced line-ending cause and fresh-checkout test; not a new Unity run",
+  "sourceMetaLF": "cced22a74976e0f4ebaa80138bda97d0bf5b1103a776613a31b2f1279a0ed77b",
+  "sourceMetaConvertedToCRLF": "7dcad2202a3b59ae08f0e90641e2e30e6037c15e7af8db2e9e0645524ff56b72",
+  "matchesBuild2Failure": true,
+  "gitCoreAutocrlfTrueWithPinnedLFRestoresBothOriginalHashes": true,
+  "inputRoutingSource": "https://raw.githubusercontent.com/Unity-Technologies/InputSystem/1.19.0/Packages/com.unity.inputsystem/InputSystem/InputManager.cs",
+  "assertionsWeakened": false,
+  "productionGameplayChanged": false,
+  "nextUnityRun": "NOT RUN"
+}

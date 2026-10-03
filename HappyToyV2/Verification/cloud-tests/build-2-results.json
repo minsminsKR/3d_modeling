@@ -1,0 +1,83 @@
+{
+  "build": 2,
+  "commit": "33f7b14534a5fdf1d4b9311906a64674b8468807",
+  "unityVersion": "6000.6.0f1",
+  "status": "FAILED",
+  "billableSeconds": 361,
+  "scope": "Real UTF execution on UBA Windows Micro; not manual gameplay or visual review",
+  "modes": {
+    "editmode": {
+      "total": 6,
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0,
+      "xmlSha256": "7095976d6306d23aa3befc98bc030f0f796585d82e6ac44fe7785904e0c2f541",
+      "tests": [
+        {
+          "name": "ActualEnemyAttackClockPassesAll29Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ActualSceneRestartGatePassesAll26Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ActualStealthRulesPassAll68Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ActualSurfaceRippleBufferPassesAll20Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles",
+          "result": "Failed",
+          "failure": "  Protected authored input changed: Assets/Annex/SchoolAnnex.unity.meta\n  String lengths are both 64. Strings differ at index 0.\n  Expected: \"cced22a74976e0f4ebaa80138bda97d0bf5b1103a776613a31b2f1279a0ed77b\"\n  But was:  \"7dcad2202a3b59ae08f0e90641e2e30e6037c15e7af8db2e9e0645524ff56b72\"\n  -----------^\n"
+        },
+        {
+          "name": "TargetEditorAndGameplayAssemblyIdentitiesArePreserved",
+          "result": "Passed"
+        }
+      ]
+    },
+    "playmode": {
+      "total": 6,
+      "passed": 4,
+      "failed": 2,
+      "skipped": 0,
+      "xmlSha256": "ae3da9200d5fca68a86741ce6a33db9f9ddf4ff0a2dfacfb5d06b935ae9ebb8d",
+      "tests": [
+        {
+          "name": "AttackWarningPausesAndDodgeWorksBeforeLethalContact",
+          "result": "Passed"
+        },
+        {
+          "name": "AuthoredNavigationReachesAllMandatoryRecords",
+          "result": "Passed"
+        },
+        {
+          "name": "CrouchUsesActualCapsuleAndOnlyMovingFeetMakeNoise",
+          "result": "Failed",
+          "failure": "  Crouch input or eye-height transition did not finish\n  Expected: True\n  But was:  False\n"
+        },
+        {
+          "name": "PauseJournalAndMixedRestartRequestsKeepTheirDestination",
+          "result": "Passed"
+        },
+        {
+          "name": "RealFootstepsDriveHearingAndRecognitionRespectsCover",
+          "result": "Failed",
+          "failure": "  Actual player foot contact never reached enemy hearing\n  Expected: True\n  But was:  False\n"
+        },
+        {
+          "name": "TitleAndRequiredRecordsGateRealEscape",
+          "result": "Passed"
+        }
+      ]
+    }
+  },
+  "diagnosis": {
+    "metadata": "Windows CRLF conversion of the unmodified scene .meta reproduces the exact failed SHA-256. Fix pins LF checkout for the two protected text files; original hashes/assertions are unchanged.",
+    "input": "Both failures involve queued keyboard input. Versioned Input System 1.19 source requires AllDeviceInputAlwaysGoesToGameView as well as IgnoreFocus for unfocused Editor game input. Fixture omitted that setting. Fix restores this routing temporarily and adds direct input observations; real rerun is required to establish resolution. No production input bug has yet been proved."
+  }
+}

@@ -63,11 +63,11 @@ namespace HappyToy.V2.CloudTests
                 throw;
             }
         }
-        public static IEnumerator Wait(Func<bool> condition, float seconds, string failure)
+        public static IEnumerator Wait(Func<bool> condition, float seconds, string failure, Func<string> diagnostics = null)
         {
             float end = Time.realtimeSinceStartup + seconds;
             while (!condition() && Time.realtimeSinceStartup < end) yield return null;
-            Assert.That(condition(), Is.True, failure);
+            if (!condition()) Assert.Fail(failure + (diagnostics == null ? string.Empty : "\n" + diagnostics()));
         }
         public static IEnumerator Delay(float seconds)
         {

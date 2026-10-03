@@ -47,4 +47,14 @@ Official references:
 
 The existing 143 pure C# checks and Python source validation remain separate. `Tools/quality/compile_unity_api.py` now models all three test asmdefs as separate compiler stages, uses the real UTF/NUnit references, validates their declared boundaries, and fails when a test source/asmdef/reference is unsupported. It never treats a syntax or external API compile as UTF execution.
 
-The first test-enabled UBA result has not yet been recorded at this source revision. A later report must state the actual commit, run URL, mode-specific counts and failures/skips; until then the new runtime suite is **NOT RUN**.
+## First test-enabled run and diagnosed harness fixes
+
+UBA build #2 executed all 12 tests at `33f7b14534a5fdf1d4b9311906a64674b8468807`: EditMode **5/6 passed**, PlayMode **4/6 passed**, **0 skipped**. The fail-on-test gate correctly stopped the build. The real attack/pause/dodge, eight mandatory navigation approaches, journal/restart and record/escape cases passed. Results and original NUnit XML hashes are retained in `Verification/cloud-tests/build-2-results.json`.
+
+Three failures are not being relabeled as passes:
+- The strict protected metadata hash failed. Converting the original LF `.meta` file to CRLF reproduces the exact UBA failure hash. `.gitattributes` now pins LF for that file and EditorBuildSettings.asset. A fresh checkout with `core.autocrlf=true` retains both original hashes; no expected hash or preservation assertion changed
+- Both keyboard-driven tests failed before their expected stance/hearing state. The fixture omitted Input System's Editor game-input routing setting. Versioned 1.19 source requires both `IgnoreFocus` and `AllDeviceInputAlwaysGoesToGameView` for unfocused batch-Editor input. The fixture now temporarily sets/restores both, directly observes queued key delivery, and records dynamic input/motor state on failure. There is no manual input update, direct substitute for the tested keypress, ignored test, or weakened gameplay assertion
+
+This identifies a definite missing harness configuration, not a proven production input bug. The next pinned UBA run must confirm that these changes resolve the failures. Until then the full 12-test gate remains **FAILED / RETEST REQUIRED**. The new external compiler preflight is in `Verification/cloud-tests/build-3-preflight`; it is not a Unity rerun.
+
+Input routing reference: https://raw.githubusercontent.com/Unity-Technologies/InputSystem/1.19.0/Packages/com.unity.inputsystem/InputSystem/InputManager.cs (gameShouldGetInputRegardlessOfFocus and unfocused Editor event routing).

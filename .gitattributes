@@ -1,1 +1,4 @@
 HappyToyV2/Assets/Annex/SchoolAnnex.unity filter=lfs diff=lfs merge=lfs -text
+# The authored preservation contract must stay byte-identical on Windows builders.
+HappyToyV2/Assets/Annex/SchoolAnnex.unity.meta text eol=lf
+HappyToyV2/ProjectSettings/EditorBuildSettings.asset text eol=lf
