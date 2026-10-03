@@ -1,0 +1,25 @@
+{
+  "scope": "Preflight only; new UTF test execution NOT RUN",
+  "date": "2026-10-03",
+  "unityVersion": "6000.6.0f1",
+  "pureChecksPassed": 143,
+  "pureSDK": "8.0.414",
+  "expectedEditModeTests": 6,
+  "expectedPlayModeTests": 6,
+  "actualUtfEditModeResult": "NOT RUN",
+  "actualUtfPlayModeResult": "NOT RUN",
+  "inputs": [
+    {
+      "file": "Packages/manifest.json",
+      "sha256": "114bb08b081b823f1311e2ef7008297ff8ef02d9aa46aa42d9db87beeec31b45"
+    },
+    {
+      "file": "Packages/packages-lock.json",
+      "sha256": "cb963ec99666810ec978db70e48b3a17816393e4457ddfeaab070b87169cb2dd"
+    },
+    {
+      "file": "Tools/quality/compile_unity_api.py",
+      "sha256": "78ddd8b9c3698eebbb75e4955cca4eeb2744b96d11decb190be855f30b911771"
+    }
+  ]
+}

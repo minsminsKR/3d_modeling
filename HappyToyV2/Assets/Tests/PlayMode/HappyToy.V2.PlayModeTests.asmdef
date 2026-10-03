@@ -1,0 +1,9 @@
+{
+  "name": "HappyToy.V2.PlayModeTests",
+  "rootNamespace": "HappyToy.V2.CloudTests",
+  "references": ["HappyToy.V2.TestSupport", "Unity.InputSystem"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "autoReferenced": false,
+  "optionalUnityReferences": ["TestAssemblies"]
+}

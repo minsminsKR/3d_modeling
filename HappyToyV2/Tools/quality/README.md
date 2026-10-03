@@ -1,5 +1,11 @@
 # Happy Toy V2 quality checks
 
+## Real cloud Unity test suite (2026-10-03)
+
+See `CLOUD_QA.md` for the 6 EditMode + 6 PlayMode tests and exact UBA toggles/discovery contract. These are isolated UTF assemblies exercising the preserved imported scene and engine state/physics/NavMesh, not the standalone C# harness. The first Windows cloud build passed on `02e6107`; the new test-enabled run must separately prove all 12 tests ran with zero failures/skips.
+
+For external compiler validation with tests, also supply `--test-framework-assemblies` containing genuine `nunit.framework.dll`, `UnityEngine.TestRunner.dll` and `UnityEditor.TestRunner.dll` from the matching Unity 6000.6 template/UTF 1.8.0. The compiler now runs four production stages and three isolated test stages. It fails rather than silently excluding test code.
+
 ## Latest lifecycle milestone (2026-10-03)
 
 The actual shared C# harness now has **143 assertions**, adding 26 SceneRestartGate checks to the 117 below. The `flow` audit adds mixed duplicate restart requests, explicit Title return and reset resources. The `transitions` audit now respects all annex prerequisites and checks controlled interruption/cleanup. Both runtime audits remain **NOT RUN**; pure gate tests do not execute Unity SceneManager or inject engine I/O failures. Select prepared runtime cases with `-Audit flow,transitions`; fresh source evidence is in `Verification/quality-lifecycle`.

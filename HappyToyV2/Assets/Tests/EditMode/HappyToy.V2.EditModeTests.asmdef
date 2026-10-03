@@ -1,0 +1,21 @@
+{
+  "name": "HappyToy.V2.EditModeTests",
+  "rootNamespace": "HappyToy.V2.Tests.EditMode",
+  "references": [
+    "HappyToy.V2.TestSupport"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

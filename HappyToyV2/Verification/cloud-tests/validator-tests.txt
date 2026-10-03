@@ -1,0 +1,29 @@
+test_baseline_preserves_bytes (test_validate_project.FixtureTest.test_baseline_preserves_bytes) ... ok
+test_contract_member_missing_fails (test_validate_project.FixtureTest.test_contract_member_missing_fails) ... ok
+test_contract_type_missing_fails (test_validate_project.FixtureTest.test_contract_type_missing_fails) ... ok
+test_duplicate_guid_fails (test_validate_project.FixtureTest.test_duplicate_guid_fails) ... ok
+test_hidden_editor_files_do_not_require_metadata (test_validate_project.FixtureTest.test_hidden_editor_files_do_not_require_metadata) ... ok
+test_invalid_guid_fails (test_validate_project.FixtureTest.test_invalid_guid_fails) ... ok
+test_lfs_pointer_is_not_an_asset (test_validate_project.FixtureTest.test_lfs_pointer_is_not_an_asset) ... ok
+test_manifest_catches_missing_flag (test_validate_project.FixtureTest.test_manifest_catches_missing_flag) ... ok
+test_manifest_catches_wrong_output_filename (test_validate_project.FixtureTest.test_manifest_catches_wrong_output_filename) ... ok
+test_manifest_duplicate_entry_fails (test_validate_project.FixtureTest.test_manifest_duplicate_entry_fails) ... ok
+test_manifest_matches_opt_in_contract (test_validate_project.FixtureTest.test_manifest_matches_opt_in_contract) ... ok
+test_manifest_refuses_runtime_pass_claim (test_validate_project.FixtureTest.test_manifest_refuses_runtime_pass_claim) ... ok
+test_missing_folder_metadata_fails (test_validate_project.FixtureTest.test_missing_folder_metadata_fails) ... ok
+test_missing_protected_file_fails (test_validate_project.FixtureTest.test_missing_protected_file_fails) ... ok
+test_missing_script_metadata_fails (test_validate_project.FixtureTest.test_missing_script_metadata_fails) ... ok
+test_multiple_guid_lines_fail (test_validate_project.FixtureTest.test_multiple_guid_lines_fail) ... ok
+test_orphaned_metadata_fails (test_validate_project.FixtureTest.test_orphaned_metadata_fails) ... ok
+test_valid_asset_is_indexed (test_validate_project.FixtureTest.test_valid_asset_is_indexed) ... ok
+test_comments_and_strings_cannot_satisfy_api (test_validate_project.ParserTest.test_comments_and_strings_cannot_satisfy_api) ... ok
+test_multiple_fields_and_events (test_validate_project.ParserTest.test_multiple_fields_and_events) ... ok
+test_nested_type_member_does_not_leak (test_validate_project.ParserTest.test_nested_type_member_does_not_leak) ... ok
+test_private_members_cannot_satisfy_public_api (test_validate_project.ParserTest.test_private_members_cannot_satisfy_public_api) ... ok
+test_syntax_error_detected (test_validate_project.ParserTest.test_syntax_error_detected) ... ok
+test_valid_csharp_and_public_members (test_validate_project.ParserTest.test_valid_csharp_and_public_members) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.007s
+
+OK

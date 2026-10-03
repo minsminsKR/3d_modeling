@@ -1,0 +1,9 @@
+{
+  "name": "HappyToy.V2.TestSupport",
+  "rootNamespace": "HappyToy.V2.CloudTests",
+  "references": [],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "autoReferenced": false,
+  "optionalUnityReferences": ["TestAssemblies"]
+}
