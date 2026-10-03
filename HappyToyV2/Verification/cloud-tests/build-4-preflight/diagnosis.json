@@ -1,0 +1,56 @@
+{
+  "scope": "Source and serialized geometry diagnosis for the only remaining UBA build #3 failure; corrected runtime rerun required",
+  "failingTest": "RealFootstepsDriveHearingAndRecognitionRespectsCover",
+  "authoredFloorBounds": {
+    "x": [
+      -9,
+      9
+    ],
+    "y": [
+      -0.2,
+      0
+    ],
+    "z": [
+      -1.6,
+      1.6
+    ]
+  },
+  "westWallBounds": {
+    "x": [
+      -9.1,
+      -8.9
+    ],
+    "y": [
+      0,
+      3.2
+    ],
+    "z": [
+      -1.6,
+      1.6
+    ]
+  },
+  "exitPlaqueBounds": {
+    "x": [
+      -8.81,
+      -8.69
+    ],
+    "y": [
+      0.8,
+      1.4
+    ],
+    "z": [
+      -0.4,
+      0.4
+    ]
+  },
+  "controller": {
+    "radius": 0.3,
+    "height": 1.75,
+    "centerY": 0.875,
+    "skinWidth": 0.08
+  },
+  "unsafeFixture": "Nominal NavMesh anchor x=-6.5 minus 2.4 places the capsule at x=-8.9, intersecting the west wall and exit plaque and overhanging the floor. Only the enemy anchor was sampled, not the offset player start. Immediate Grounded accepted previous/transient collision state, and 3D displacement could be satisfied by falling.",
+  "correction": "Hearing-only anchor x=-4.5; validate actual floor support and capsule clearance at 33 points across the corridor lane, require a clear NavMesh segment, require three fresh MovementUpdates plus grounded floor height, then actual grounded forward movement and real footsteps delivered to the enemy.",
+  "unchanged": "All production scripts, protected scene/meta/build-selection bytes, test counts, timeouts and original hearing/sight/state assertions. No synthesized noise or automatic pass.",
+  "uncertainty": "Exact depenetration/fall mechanics and stale versus transient grounding are not proven by static inspection. The next pinned UBA run must validate the corrected fixture and remaining hearing/recognition assertions."
+}

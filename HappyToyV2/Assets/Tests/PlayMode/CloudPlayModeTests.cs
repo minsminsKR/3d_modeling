@@ -333,18 +333,60 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator RealFootstepsDriveHearingAndRecognitionRespectsCover()
         {
             IsolateThreats(); Begin(); yield return Wait(() => NavMesh.CalculateTriangulation().vertices.Length > 0, 5, "Missing baked navigation");
-            Vector3 origin = MainCorridorPoint(); PlacePlayer(origin - Vector3.right * 2.4f + Vector3.up * .02f);
-            player.transform.rotation = Quaternion.Euler(0, 90, 0);
+            // The old -6.5 anchor minus 2.4 put the capsule inside the west wall
+            // and exit plaque at the floor edge. NavMesh sampling only validated the
+            // enemy anchor, not that offset player placement. Use the real interior
+            // corridor and prove floor support/body clearance across the entire lane.
+            Assert.That(NavMesh.SamplePosition(new Vector3(-4.5f, 0, 0), out var anchor, .25f, NavMesh.AllAreas), Is.True,
+                "Hearing lane has no authored NavMesh anchor");
+            Vector3 origin = anchor.position, start = origin - Vector3.right * 2.4f, supportedStart = start;
+            var floors = SceneManager.GetActiveScene().GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<BoxCollider>())
+                .Where(collider => collider.name == "Corridor floor").ToArray();
+            Assert.That(floors.Length, Is.EqualTo(1), "Expected one real authored corridor floor");
+            var floor = floors[0]; var controller = player.GetComponent<CharacterController>();
+            Assert.That(floor.enabled && !floor.isTrigger, Is.True);
+            Physics.SyncTransforms();
+            for (int i = 0; i <= 32; i++)
+            {
+                Vector3 point = Vector3.Lerp(start, origin + Vector3.right * 4, i / 32f);
+                Assert.That(Physics.Raycast(point + Vector3.up, Vector3.down, out var support, 2f,
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore), Is.True, "Hearing lane has no physical support at " + point);
+                Assert.That(support.collider, Is.SameAs(floor), "Hearing lane is not supported by the authored floor at " + point);
+                Assert.That(support.normal.y, Is.GreaterThan(.99f));
+                Vector3 feet = support.point + Vector3.up * .02f;
+                float margin = controller.radius + controller.skinWidth;
+                Assert.That(feet.x, Is.InRange(floor.bounds.min.x + margin, floor.bounds.max.x - margin));
+                Assert.That(feet.z, Is.InRange(floor.bounds.min.z + margin, floor.bounds.max.z - margin));
+                Vector3 center = feet + controller.center;
+                float half = controller.height * .5f - controller.radius;
+                Assert.That(Physics.CheckCapsule(center - Vector3.up * half, center + Vector3.up * half,
+                    controller.radius - .02f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore), Is.False,
+                    "Hearing lane overlaps authored geometry at " + feet);
+                if (i == 0) supportedStart = feet;
+            }
+            Assert.That(NavMesh.Raycast(origin, supportedStart, out _, NavMesh.AllAreas), Is.False,
+                "Hearing lane crosses an authored navigation boundary");
+            int movementBeforePlacement = Get<int>(player, "MovementUpdates");
+            PlacePlayer(supportedStart); player.transform.rotation = Quaternion.Euler(0, 90, 0);
             var enemy = StalkerAt(origin); enemy.transform.rotation = Quaternion.LookRotation(Vector3.right);
-            yield return Wait(() => Get<bool>(player, "Grounded"), 3, "Authored corridor did not ground the player");
+            // isGrounded describes the previous Move. Require fresh real physics
+            // moves and the expected floor height instead of accepting stale contact.
+            yield return Wait(() => Get<int>(player, "MovementUpdates") >= movementBeforePlacement + 3 &&
+                Get<bool>(player, "Grounded") && Mathf.Abs(player.transform.position.y - floor.bounds.max.y) < .12f,
+                3, "Authored corridor did not freshly ground the player", InputDiagnostics);
             Assert.That((bool)Call(enemy, "CanSeePlayer"), Is.False, "Hearing setup must place player behind enemy");
             Assert.That((bool)Call(enemy, "HearNoise", origin + Vector3.up * 5, 2f), Is.False);
             Call(shell, "Pause"); Assert.That((bool)Call(enemy, "HearNoise", origin + Vector3.right, 2f), Is.False); Call(shell, "Resume");
             int accepted = Get<int>(enemy, "FootstepNoisesAccepted");
             Vector3 beforeStep = player.transform.position;
+            int footstepsBefore = Get<int>(Get<Component>(player, "Feedback"), "FootstepsPlayed");
             yield return KeysObserved(Key.W);
-            yield return Wait(() => Vector3.Distance(player.transform.position, beforeStep) > .1f, 2, "W reached the keyboard but the real motor did not move", InputDiagnostics);
+            yield return Wait(() => player.transform.position.x > beforeStep.x + .1f && Get<bool>(player, "Grounded"), 2, "W reached the keyboard but the grounded motor did not move forward", InputDiagnostics);
             yield return Wait(() => Get<int>(enemy, "FootstepNoisesAccepted") > accepted, 2, "Actual player foot contact never reached enemy hearing", () => InputDiagnostics() + ", accepted=" + Get<int>(enemy, "FootstepNoisesAccepted") + ", enemyState=" + Get<object>(enemy, "state")); Keys();
+            Assert.That(Get<int>(Get<Component>(player, "Feedback"), "FootstepsPlayed"), Is.GreaterThan(footstepsBefore));
+            Assert.That(Get<bool>(player, "Grounded"), Is.True);
+            Assert.That(player.transform.position.y, Is.EqualTo(floor.bounds.max.y).Within(.12f));
             Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Investigate"));
             ((Behaviour)player).enabled = false; PlacePlayer(origin + Vector3.right * 4, false);
             Get<Light>(player, "flashlight").enabled = true;

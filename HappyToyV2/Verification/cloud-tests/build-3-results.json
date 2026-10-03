@@ -1,0 +1,78 @@
+{
+  "build": 3,
+  "commit": "46ea8e1661decbb8b44f30ee89c8eb95e969c249",
+  "unityVersion": "6000.6.0f1",
+  "status": "FAILED",
+  "billableSeconds": 453,
+  "scope": "Real UTF execution on UBA Windows Micro; not manual gameplay or visual review",
+  "freshSourceCheckout": true,
+  "modes": {
+    "editmode": {
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "xmlSha256": "9214e124f310bdb07d8dc4fd1fa39d3b55bb9328b85e7fd6146572ffbd313642",
+      "tests": [
+        {
+          "name": "ActualEnemyAttackClockPassesAll29Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ActualSceneRestartGatePassesAll26Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ActualStealthRulesPassAll68Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ActualSurfaceRippleBufferPassesAll20Checks",
+          "result": "Passed"
+        },
+        {
+          "name": "ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles",
+          "result": "Passed"
+        },
+        {
+          "name": "TargetEditorAndGameplayAssemblyIdentitiesArePreserved",
+          "result": "Passed"
+        }
+      ]
+    },
+    "playmode": {
+      "total": 6,
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0,
+      "xmlSha256": "ac12d7de06c2773b1a0b30b24aa4ce83a1c7cd7535f7b067bd6ea84ac1d83b48",
+      "tests": [
+        {
+          "name": "AttackWarningPausesAndDodgeWorksBeforeLethalContact",
+          "result": "Passed"
+        },
+        {
+          "name": "AuthoredNavigationReachesAllMandatoryRecords",
+          "result": "Passed"
+        },
+        {
+          "name": "CrouchUsesActualCapsuleAndOnlyMovingFeetMakeNoise",
+          "result": "Passed"
+        },
+        {
+          "name": "PauseJournalAndMixedRestartRequestsKeepTheirDestination",
+          "result": "Passed"
+        },
+        {
+          "name": "RealFootstepsDriveHearingAndRecognitionRespectsCover",
+          "result": "Failed",
+          "failure": "Actual player foot contact never reached enemy hearing\ndynamicUpdates=242, CPress=False, WHeld=True, inputAllowed=True, crouching=False, eyeY=1.6, grounded=False, speed=2.599979, position=(-5.22, -42.37, 0.00), footsteps=0, accepted=0, enemyState=Patrol"
+        },
+        {
+          "name": "TitleAndRequiredRecordsGateRealEscape",
+          "result": "Passed"
+        }
+      ]
+    }
+  }
+}
