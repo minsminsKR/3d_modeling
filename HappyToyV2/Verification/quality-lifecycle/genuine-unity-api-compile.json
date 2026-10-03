@@ -1,0 +1,410 @@
+{
+  "scope": "External C# compilation against genuine Unity 6000.6 and matching package APIs. Not Unity import, serialization, ShaderLab compilation, player build or runtime testing.",
+  "unityVersion": "6000.6.0f1",
+  "expectedPackageVersions": {
+    "com.unity.render-pipelines.universal": "17.6.0",
+    "com.unity.inputsystem": "1.19.0",
+    "com.unity.ai.navigation": "2.0.12"
+  },
+  "runtimeSources": 62,
+  "editorSources": 25,
+  "sourceManifest": [
+    {
+      "file": "Assets/Editor/AnnexDevelopmentBuild.cs",
+      "sha256": "d15f14ad2021bf7b64507d134a377337bd709b81256385254e815f1402faf5e1"
+    },
+    {
+      "file": "Assets/Editor/AnnexRoomDetailing.cs",
+      "sha256": "2b5bb588d251dd7898134ff6e0123e50898c9725fdfc3eb0f83d8e806d5b2139"
+    },
+    {
+      "file": "Assets/Editor/AnnexSchoolBuilder.cs",
+      "sha256": "9bc113d8acca2abaeac457f8d13ca8f54b796a47e9c7a5709fda50cef18a489b"
+    },
+    {
+      "file": "Assets/Editor/AnnexSignFontValidation.cs",
+      "sha256": "f9273ff2180d469772562cc9eac8574dd16a944c3a04e0ba8f4f6c2733ba3e2c"
+    },
+    {
+      "file": "Assets/Editor/AnnexStoryAuthoring.cs",
+      "sha256": "57a030aa74b38c657bfa074deb886fbaf387a6d8861840c32d0cd6c0a1a35ae0"
+    },
+    {
+      "file": "Assets/Editor/CabinetReview.cs",
+      "sha256": "0aa54ff9be5116b02067ebeb05f9268387244cec0bca1c179f95ca31a72ddee2"
+    },
+    {
+      "file": "Assets/Editor/ClassroomReview.cs",
+      "sha256": "64779c65c0c4387df53c218d1fc28e1b9188f62cb2ff64b313df7bc2cb0308d6"
+    },
+    {
+      "file": "Assets/Editor/ClassroomUpgrade.cs",
+      "sha256": "08ba47df3902eb3fd2bfe364506a2dc742cc97cfa3b6c306a62aac411665ac29"
+    },
+    {
+      "file": "Assets/Editor/CurrentReviewAudit.cs",
+      "sha256": "cfe8beb3cb62367a6c2d7df30a24b670e90be4fbbc7177009e31de43be7e8027"
+    },
+    {
+      "file": "Assets/Editor/CyclopseCandidateReview.cs",
+      "sha256": "d0aab5a603f59786ab9d6e2d7a4000758f7d9e232c9d471e009d8631b60226cf"
+    },
+    {
+      "file": "Assets/Editor/EnemyAttackClockChecks.cs",
+      "sha256": "0680a3bc7c2fe498b6d6c2a49ae78c74fe75e5bccf085c0ee19d2b43f848833d"
+    },
+    {
+      "file": "Assets/Editor/LanternMaskAuthoring.cs",
+      "sha256": "b57bca9905d4ac64de904b2ab664c7ad61824c7cb29010878e5167faaa734090"
+    },
+    {
+      "file": "Assets/Editor/LightingReview.cs",
+      "sha256": "a6cd9c39577b1892efb4d0b22fbd3d4f648060f4d99d938cf6b4914947f5e10f"
+    },
+    {
+      "file": "Assets/Editor/LovelyDollAuthoring.cs",
+      "sha256": "7b5921126e512a8590553065cecce308171eada3fd629e06b9446bea8d2756a9"
+    },
+    {
+      "file": "Assets/Editor/MultiFloorAuthoring.cs",
+      "sha256": "0471cdb78bbed8b61698d7436437b434a2767ad2ced1fa6df3f3355b67e9cb7d"
+    },
+    {
+      "file": "Assets/Editor/QualityValidation.cs",
+      "sha256": "025c845b2cd8ce7fbd13bc35e1b74a7e2da55de5bbd5cc47ca9e24076265fb68"
+    },
+    {
+      "file": "Assets/Editor/SceneRestartGateChecks.cs",
+      "sha256": "99e850d56e5373aeba5ed27f2f355877648b9f491bf88514287bc81112c03f83"
+    },
+    {
+      "file": "Assets/Editor/ShellAssetBuilder.cs",
+      "sha256": "72a8dd7be1eab8c74ba2e8396b248f5711bbbe45738528cfda8b05530cc1d358"
+    },
+    {
+      "file": "Assets/Editor/StealthRulesChecks.cs",
+      "sha256": "08b43f5ca4058566e4bc7c75eba1d44a8e501ff0d6136fd49916f649f05ffb45"
+    },
+    {
+      "file": "Assets/Editor/SurfaceRippleChecks.cs",
+      "sha256": "a97d53b7c7ceeb10d351e5c5773e49a3e44d3afb25e0655c211d002bb2b8c2a6"
+    },
+    {
+      "file": "Assets/Editor/TeacherDeskReview.cs",
+      "sha256": "940b05392747a5b1e72d5ae28ad88ddbe5a7913514a5dc3852d6753601898c6e"
+    },
+    {
+      "file": "Assets/Editor/V1CharacterBuilder.cs",
+      "sha256": "951993aa8451137ea6b1ae9815a284b6a179190876e0b35f379f0de6a7a95c4e"
+    },
+    {
+      "file": "Assets/Editor/V2SceneBuilder.cs",
+      "sha256": "5301d97629df8bf27b82721362304a5b3d037ec3cf34cf59fda87d4a5280e8cc"
+    },
+    {
+      "file": "Assets/Editor/WashroomFinishReview.cs",
+      "sha256": "666becee85d9df4d3b1aa788c7f9e9a20bf17789c09862bff1dda15840c421cc"
+    },
+    {
+      "file": "Assets/Editor/WeepingAngelAuthoring.cs",
+      "sha256": "44fd0e2a66cb03dc1f747969f343c38b00df5e2ef77089a5b814725d322babec"
+    },
+    {
+      "file": "Assets/Scripts/AccessAudit.cs",
+      "sha256": "297758f93bb3140b6708b14203c08ee12a4f3d9d1e1411dc0ecd8d23a2d94661"
+    },
+    {
+      "file": "Assets/Scripts/AmbienceAudit.cs",
+      "sha256": "1688cbf5a884d4aa3f0dd6bb2972cf985a14dcd0b12c0dee72bfc89e55613c2a"
+    },
+    {
+      "file": "Assets/Scripts/AnnexEncounter.cs",
+      "sha256": "9833b215006923c003c380ba0932b75c432577430b82b6b7d1e17b9ae22b2efd"
+    },
+    {
+      "file": "Assets/Scripts/AnnexSignFont.cs",
+      "sha256": "f0bb9b6b123d2f82c12e2da9675c14094df5fb5eec71a2fc49f83eb2b7fbd7fa"
+    },
+    {
+      "file": "Assets/Scripts/AttackAudit.cs",
+      "sha256": "f346263bfcbac79f49f0d168be07e998a889995e11535b12e78e9c30b202d953"
+    },
+    {
+      "file": "Assets/Scripts/AttackPoseAudit.cs",
+      "sha256": "dff2fb6b9c2199644ab12defce7271d20a35fa438a627511acefe23a8c756b00"
+    },
+    {
+      "file": "Assets/Scripts/BabyLifecycleProbe.cs",
+      "sha256": "a9edeb03c0adf2bcb25573ee5dc4c1fe6d663ec19da86f6923b21d4e1d1f9043"
+    },
+    {
+      "file": "Assets/Scripts/CabinetAccessAudit.cs",
+      "sha256": "3b325ff113089c0f59073298a0a10d207add3d336b3e707448dd8f7a2f16783d"
+    },
+    {
+      "file": "Assets/Scripts/DevelopmentSmoke.cs",
+      "sha256": "145aabe0c7a1cc1773a02fb4cce228af5469c95c66b96357561672170c744658"
+    },
+    {
+      "file": "Assets/Scripts/DoorClearanceAudit.cs",
+      "sha256": "825d4fe9717c23f95a0466e4a27a847d8b6c94c7ebb9e58820c2c5631d7c24fc"
+    },
+    {
+      "file": "Assets/Scripts/EnemyAttackClock.cs",
+      "sha256": "06d8053bf7eba3b01cbc7a43c3917bcf058a415ad5eafa32821c6233e4a91172"
+    },
+    {
+      "file": "Assets/Scripts/EnemyFairnessAudit.cs",
+      "sha256": "99edcac39e821f3a29d18c40bfb254268097919966ab97432e50f859f41d4fb4"
+    },
+    {
+      "file": "Assets/Scripts/EnemyNavigation.cs",
+      "sha256": "44fdf1de7650ba80717ff2b8bb9d90b78dbab1aa499c6058e3b3e81949cb3110"
+    },
+    {
+      "file": "Assets/Scripts/EventTransitionAudit.cs",
+      "sha256": "fe2a2ad7a96cd95b418fc3f25fa45154eb0d048a722147c02916c44059ba477f"
+    },
+    {
+      "file": "Assets/Scripts/FirecrackerInventory.cs",
+      "sha256": "ea9a82395a27fc16f57ddfabb704be2b0970dfc01e7e5dc2c4709cfe79b7d04b"
+    },
+    {
+      "file": "Assets/Scripts/FirecrackerProbe.cs",
+      "sha256": "5706ea01a8f3faf14af97183d7271e139b6fdf63112bb4813ec5652ff4425980"
+    },
+    {
+      "file": "Assets/Scripts/FirecrackerProjectile.cs",
+      "sha256": "2f83126aa682b0f53016bff40d8e0b2b6101fe5e2c815d75cee666a718dccfbf"
+    },
+    {
+      "file": "Assets/Scripts/FixtureLightLink.cs",
+      "sha256": "76dcf81d913b66389ad2ae48014ecf6f52f47cc834b9b569f7720e417ddae17e"
+    },
+    {
+      "file": "Assets/Scripts/FloorAtmosphere.cs",
+      "sha256": "68f3908c986b0b8c411cd8ecae496d8587b1894754f2169c459896d729cfcf4d"
+    },
+    {
+      "file": "Assets/Scripts/FlowAudit.cs",
+      "sha256": "caab4edce00de1f81bdf24d5403f9933fb39b83482d90849b81e2d21d331efb4"
+    },
+    {
+      "file": "Assets/Scripts/GameSession.cs",
+      "sha256": "53f5e78caa3ff8921306654b4b3e2d5946578e866368807f5c2855d77f9b1cc3"
+    },
+    {
+      "file": "Assets/Scripts/GameShell.cs",
+      "sha256": "0f87264fff80cab17f6157b5e6238a83b6459f00adcbda95550f88343ee86eef"
+    },
+    {
+      "file": "Assets/Scripts/GameShellView.cs",
+      "sha256": "0a38258942817a6ba797707fd05f3f14cc9776a04227a923437de1c0c24e1cdc"
+    },
+    {
+      "file": "Assets/Scripts/HidingAudit.cs",
+      "sha256": "10b2716b43b0d2ae4d65cbb8ccf99b63f66dfa47347f1680bc2b73e4845f9c53"
+    },
+    {
+      "file": "Assets/Scripts/HwacatAudit.cs",
+      "sha256": "7a0c08d46ab181dbf77994f757d41738f7614e70e69b19012a50e9c2d5eb7d7d"
+    },
+    {
+      "file": "Assets/Scripts/Interactable.cs",
+      "sha256": "caea9e50d1949a9273ce9b896faa8fa60c91d4616c02a7aa6c5bace671cb08c4"
+    },
+    {
+      "file": "Assets/Scripts/InteractionAudio.cs",
+      "sha256": "6a9f9a41560e75ec789f74f77c8419fc74ccbfb7161c6815b2587b6e5a1925b9"
+    },
+    {
+      "file": "Assets/Scripts/LanternMaskEncounter.cs",
+      "sha256": "f6c20f02762943e627d75e39106399263881c2fd659d33a366020151b0c672b2"
+    },
+    {
+      "file": "Assets/Scripts/LanternMaskProbe.cs",
+      "sha256": "b0ad9b15e55c3db116c6a84cc830fc038f63d6a02abe8c4a3b06af52ca270827"
+    },
+    {
+      "file": "Assets/Scripts/LovelyDollGuide.cs",
+      "sha256": "b23b3e84b51f6cd7a76a69368739cdf29980ff55f6ae76810bac0a2347f17ada"
+    },
+    {
+      "file": "Assets/Scripts/MultiFloorWalkProbe.cs",
+      "sha256": "ffd6364eb33ef23de1eab82f7c8ff6481def36c49b3beffec4be33b3d998530b"
+    },
+    {
+      "file": "Assets/Scripts/NavMeshStartup.cs",
+      "sha256": "2c2e80adce2a047053c3c4b037c022c9aece34c16742ff6dc995df711cd1c3ee"
+    },
+    {
+      "file": "Assets/Scripts/PlayReviewTiming.cs",
+      "sha256": "f906601dd5ad699bf1a2287832b2be0da747d9a375dcfcc016d977853c1548ee"
+    },
+    {
+      "file": "Assets/Scripts/PlayerFeedback.cs",
+      "sha256": "3769c09320cdfb3c361875ce0d14f594774f4deee79a8c02a7be754ad245e15d"
+    },
+    {
+      "file": "Assets/Scripts/PlayerMotor.cs",
+      "sha256": "c17d8b18d5b58cbc48ca447b5af231575324f2cdb95c9eba94bdd52bbb74f904"
+    },
+    {
+      "file": "Assets/Scripts/RoomAmbience.cs",
+      "sha256": "53f8c84e5aa79d0509114844ca6f952fa33de568bf4ba06514ea49c8190bc665"
+    },
+    {
+      "file": "Assets/Scripts/RoomTraversalProbe.cs",
+      "sha256": "b57fc8c340a9423ed316fccfb5c54f860dcf8e53223700c4b2259ce160a7b107"
+    },
+    {
+      "file": "Assets/Scripts/RouteAudioCapture.cs",
+      "sha256": "1257202629b9149a6245560e988acfac5919f95fe621a204dde8eafb6a6e1000"
+    },
+    {
+      "file": "Assets/Scripts/RoutePerformance.cs",
+      "sha256": "86f18681744c7453be512aa498edb60205b80bb5d3afb925c04d7d73c19ecdbe"
+    },
+    {
+      "file": "Assets/Scripts/SceneRestartGate.cs",
+      "sha256": "9c5e617aaf81d4c0c38205605cd928a1e14bf50416a8571ebc3d8fdedb6ddefe"
+    },
+    {
+      "file": "Assets/Scripts/StalkerBrain.cs",
+      "sha256": "50a62f641297e0bfc3e0492dae9bfb93d0368d92376efae39543b9c083fc968c"
+    },
+    {
+      "file": "Assets/Scripts/StalkerFootsteps.cs",
+      "sha256": "8eedae31ab5789c525121e9f4012af3767d5b0529a3b82fd2b204a8df66402c8"
+    },
+    {
+      "file": "Assets/Scripts/StaminaAudit.cs",
+      "sha256": "baae62503ce20468ceb54f8bc2e8edebceeced3af5ae4e0f4b20ad53b7d1944a"
+    },
+    {
+      "file": "Assets/Scripts/StealthAudit.cs",
+      "sha256": "46e8b875c2379e9b45ce68c803b0f59d8c1091188c8b5ec4fb89bff6eef235bd"
+    },
+    {
+      "file": "Assets/Scripts/StealthRules.cs",
+      "sha256": "3e293627b74beb766a1931e7e8ea018badb75c7c4a0d9e43947b3a3d9a0e203e"
+    },
+    {
+      "file": "Assets/Scripts/StoryDirector.cs",
+      "sha256": "615dffac135cc9391b3c671f66e8921793121ff7d2e96898d903ea20e40f33e6"
+    },
+    {
+      "file": "Assets/Scripts/SurfaceAudit.cs",
+      "sha256": "343f800d980d1f0a8290bf2df0f55bc6b235f5ba3a10de1200574fc979be22b6"
+    },
+    {
+      "file": "Assets/Scripts/SurfaceRippleBuffer.cs",
+      "sha256": "ff2f39f287ad8b47bbe389a8300e979d37be3c926e7660f1226d8d856a2bc544"
+    },
+    {
+      "file": "Assets/Scripts/UncatAnnexEvent.cs",
+      "sha256": "9785a1cc53d188b76ede42a51c180b2ef30c13ae109848e4171372fd40e817a3"
+    },
+    {
+      "file": "Assets/Scripts/V1AttackPose.cs",
+      "sha256": "9be53472427a8dd84bf1fb50149bd78547efcd576edd951e04d020924cee8fc1"
+    },
+    {
+      "file": "Assets/Scripts/V1CyclopseIntro.cs",
+      "sha256": "ac72c80b126fbb98dafadcc3626f08b3772372b89f0acc8ce382877ab860e4af"
+    },
+    {
+      "file": "Assets/Scripts/V1HwacatEvent.cs",
+      "sha256": "7c915a87a7772d473c97cb6937c6bebb00f4b9e5fd8cc40f12085f4803a29c9b"
+    },
+    {
+      "file": "Assets/Scripts/V1IntroAudit.cs",
+      "sha256": "0f2e6578393b5dae6b0b451e0b2fd8abcc42cbecc0a4da5dbbe17385cc4f334d"
+    },
+    {
+      "file": "Assets/Scripts/V1MonsterAudit.cs",
+      "sha256": "bc4708506693bc28a0b0f9ffb3301912c128beab3d4a94027ebd13b69c767cc7"
+    },
+    {
+      "file": "Assets/Scripts/V1MonsterMotion.cs",
+      "sha256": "295a3f8d7fd75cbbc5ab27c8e8e89fb9a732a716aad302f73415914e308a2721"
+    },
+    {
+      "file": "Assets/Scripts/V1RevealGrounding.cs",
+      "sha256": "8fd7950196a6e1d0023809d214b77b9260289163fc2af6e47b7ee26e7ba680a1"
+    },
+    {
+      "file": "Assets/Scripts/WalkAudit.cs",
+      "sha256": "bba43575bfcbfbff21060e1c707d3a285dded3828f39ce5df5e92d6773a092a2"
+    },
+    {
+      "file": "Assets/Scripts/WardenAudit.cs",
+      "sha256": "699a8234a251a43e44f0b423acc45c59eb452caf4f772bccc8077812d836745e"
+    },
+    {
+      "file": "Assets/Scripts/WardenMotion.cs",
+      "sha256": "5ea14df53b1c4bbec69064ea055c145a5c96f31155cd517d66cc480a4f46d32f"
+    },
+    {
+      "file": "Assets/Scripts/WaterSurfaceFeedback.cs",
+      "sha256": "413f4cd917b8ac59a5e1eed01b91b7de743c86c36b34f89c186a3c37a31f061d"
+    },
+    {
+      "file": "Assets/Scripts/WeepingAngelEncounter.cs",
+      "sha256": "f4b777af6abf55c9155730318e447a73a72cd46d9c725dfff50d7d6b958f243a"
+    },
+    {
+      "file": "Assets/Scripts/WeepingAngelProbe.cs",
+      "sha256": "769134d7128acddb27081fcf619540d9d2302b0b83ec9826ea025e93e98f08bd"
+    }
+  ],
+  "results": [
+    {
+      "stage": "editor-runtime",
+      "exitCode": 0,
+      "sourceCount": 62,
+      "referenceCount": 256,
+      "log": "editor-runtime/compile.log",
+      "warningCounts": {
+        "CS0618": 69,
+        "CS1701": 1
+      }
+    },
+    {
+      "stage": "editor-scripts",
+      "exitCode": 0,
+      "sourceCount": 25,
+      "referenceCount": 257,
+      "log": "editor-scripts/compile.log",
+      "warningCounts": {
+        "CS0618": 44,
+        "CS1701": 1,
+        "CS0649": 10
+      }
+    },
+    {
+      "stage": "linux-player-runtime",
+      "exitCode": 0,
+      "sourceCount": 62,
+      "referenceCount": 153,
+      "log": "linux-player-runtime/compile.log",
+      "warningCounts": {
+        "CS0618": 69,
+        "CS1701": 1
+      }
+    },
+    {
+      "stage": "windows-player-runtime",
+      "exitCode": 0,
+      "sourceCount": 62,
+      "referenceCount": 153,
+      "log": "windows-player-runtime/compile.log",
+      "warningCounts": {
+        "CS0618": 69,
+        "CS1701": 1
+      }
+    }
+  ],
+  "generatedAtUtc": "2026-10-03T03:46:27.929466+00:00",
+  "sourceStillMatches": true
+}

@@ -35,7 +35,7 @@ namespace HappyToy.V2
         public int TotalRecords => requireAnnexRecords ? 7 : 4;
         public bool HasInspected(string id) => !string.IsNullOrEmpty(id) && inspected.Contains(id);
         public int StoryStep => names.Count;
-        public bool InputAllowed => Shell && Shell.Screen==GameShell.Page.Playing && !Finished;
+        public bool InputAllowed => Shell && Shell.Screen==GameShell.Page.Playing && !Shell.IsReloading && !Finished;
         public GameShell Shell { get; private set; }
         public string Objective
         {

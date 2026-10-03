@@ -12,6 +12,8 @@
     <Compile Include="../../Assets/Editor/SurfaceRippleChecks.cs" Link="SurfaceRippleChecks.cs" />
     <Compile Include="../../Assets/Scripts/StealthRules.cs" Link="StealthRules.cs" />
     <Compile Include="../../Assets/Editor/StealthRulesChecks.cs" Link="StealthRulesChecks.cs" />
+    <Compile Include="../../Assets/Scripts/SceneRestartGate.cs" Link="SceneRestartGate.cs" />
+    <Compile Include="../../Assets/Editor/SceneRestartGateChecks.cs" Link="SceneRestartGateChecks.cs" />
     <Compile Include="ClockTestProgram.cs" />
   </ItemGroup>
 </Project>

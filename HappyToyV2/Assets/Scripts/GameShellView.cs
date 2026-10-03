@@ -20,6 +20,8 @@ namespace HappyToy.V2
         GameShell.Page shown = (GameShell.Page)(-1);
         int journalStep = -1, journalExploration = -1, journalPage;
         bool shownContrast, shownLargeText, settingsLabelsDirty;
+        bool shownReloading;
+        string shownReloadError;
         readonly VisualElement[] objectiveSegments = new VisualElement[7];
 
         public RenderTexture CaptureTarget { get; private set; }
@@ -162,6 +164,8 @@ namespace HappyToy.V2
             shown = shell.Screen;
             shownContrast = shell.HighContrast;
             shownLargeText = shell.LargeText;
+            shownReloading = shell.IsReloading;
+            shownReloadError = shell.ReloadError;
             journalStep = session.StoryStep;
             journalExploration = session.ExplorationCount;
             root.Clear();
@@ -176,7 +180,18 @@ namespace HappyToy.V2
             stage.style.height = 900;
             stage.style.flexShrink = 0;
             root.Add(stage);
-            if (shown == GameShell.Page.Playing) { BuildHud(); return; }
+            if (shown == GameShell.Page.Playing)
+            {
+                BuildHud();
+                // Scripted restarts can also originate in play; never hide a recovery error.
+                if (shell.IsReloading || !string.IsNullOrWhiteSpace(shell.ReloadError))
+                {
+                    Panel(355, 414, 890, 96, Surface);
+                    Text(shell.IsReloading ? "새 탐색을 준비하고 있습니다…" : shell.ReloadError,
+                        379, 428, 842, 70, shell.LargeText ? 24 : 21).style.color = shell.IsReloading ? Gold : Rust;
+                }
+                return;
+            }
             BuildFrame();
             switch (shown)
             {
@@ -186,6 +201,13 @@ namespace HappyToy.V2
                 case GameShell.Page.Settings: BuildSettings(); break;
                 case GameShell.Page.Result: BuildResult(); break;
             }
+            if (shell.IsReloading)
+            {
+                Small("새 탐색을 준비하고 있습니다…", 150, 793, 1300, 35).style.color = Gold;
+                stage.Query<Button>().ForEach(button => button.SetEnabled(false));
+            }
+            else if (!string.IsNullOrWhiteSpace(shell.ReloadError))
+                Small(shell.ReloadError, 150, 786, 1300, 48).style.color = Rust;
             Small("HAPPY TOY  /  LAST ATTENDANCE", 150, 837, 580);
             var navigation = Small("Tab / 방향키  선택      Enter  확인      Esc  뒤로", 820, 837, 630);
             navigation.style.unityTextAlign = TextAnchor.UpperRight;
@@ -421,7 +443,8 @@ namespace HappyToy.V2
         {
             if (root == null || !shell || !session) return;
             bool changedRecords = journalStep != session.StoryStep || journalExploration != session.ExplorationCount;
-            if (shown != shell.Screen || shownContrast != shell.HighContrast || shownLargeText != shell.LargeText || changedRecords && shown != GameShell.Page.Playing)
+            if (shown != shell.Screen || shownContrast != shell.HighContrast || shownLargeText != shell.LargeText ||
+                shownReloading != shell.IsReloading || shownReloadError != shell.ReloadError || changedRecords && shown != GameShell.Page.Playing)
                 Rebuild();
             if (shown == GameShell.Page.Settings && settingsLabelsDirty) UpdateSettingsLabels();
             if (shown == GameShell.Page.Playing) UpdateHud();

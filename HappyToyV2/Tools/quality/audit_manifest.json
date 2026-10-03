@@ -45,6 +45,16 @@
       "purpose": "Controlled real-input/physics stance, overhead obstruction, camera height, silent blocked movement, footstep hearing radius and pause regression; not enemy balance or survival completion."
     },
     {
+      "name": "transitions",
+      "source": "Assets/Scripts/EventTransitionAudit.cs",
+      "flag": "-v2-transitions-output",
+      "argument_kind": "directory",
+      "result": "transitions.json",
+      "timeout_seconds": 120,
+      "status": "NOT RUN",
+      "purpose": "Controlled event interruption, annex-gated restoration, intro cancellation, comfort lighting, repeated reload destination and clean scene state; not a survival playthrough."
+    },
+    {
       "name": "access",
       "source": "Assets/Scripts/AccessAudit.cs",
       "flag": "-v2-access-output",
@@ -166,7 +176,9 @@
       "Resume",
       "Journal",
       "Back",
-      "Restart"
+      "Restart",
+      "IsReloading",
+      "ReloadError"
     ],
     "GameShellView": [
       "Root",
@@ -238,6 +250,13 @@
       "FootstepRadius",
       "SightRange",
       "AcquisitionSeconds"
+    ],
+    "SceneRestartGate": [
+      "Pending",
+      "ScenePath",
+      "TryRequest",
+      "TryConsume",
+      "Cancel"
     ]
   }
 }

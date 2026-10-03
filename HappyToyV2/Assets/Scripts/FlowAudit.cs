@@ -33,7 +33,8 @@ namespace HappyToy.V2
                 pauseOpened, pauseJournalReturns, pauseSettingsReturns, resultOpened, restartClean,
                 pointerSettings, pointerVolume, pointerSensitivity, pointerFieldOfView, pointerToggles,
                 settingsDefaults, settingsPersisted, compactLayout, inspectionStored,
-                inspectionDeduplicated, inspectionDisplayed, journalPaging, inspectionReset;
+                inspectionDeduplicated, inspectionDisplayed, journalPaging, inspectionReset,
+                restartRequestsDeduplicated, restartResourcesClean, restartTitleDestination;
             public int discoveredInspections, expectedInspections, journalPagesVisited, uiFramesRendered, captureAttempts;
             public string[] errors;
         }
@@ -241,16 +242,27 @@ namespace HappyToy.V2
             result.pauseJournalReturns = shell.Screen == GameShell.Page.Pause && Time.timeScale == 0;
             yield return Click("settings"); yield return Key(UnityEngine.InputSystem.Key.Escape);
             result.pauseSettingsReturns = shell.Screen == GameShell.Page.Pause && Time.timeScale == 0;
-            shell.Resume(); session.Finish(false); result.resultOpened = shell.Screen == GameShell.Page.Result && Time.timeScale == 0; yield return Capture("result");
-            shell.Restart(true); yield return null; yield return new WaitForSecondsRealtime(.5f);
+            shell.Resume(); player.TrySetCrouching(true); player.ApplyCurse(10);
+            session.Finish(false); result.resultOpened = shell.Screen == GameShell.Page.Result && Time.timeScale == 0; yield return Capture("result");
+            shell.Restart(true);
+            bool pending = shell.IsReloading && !session.InputAllowed;
+            shell.Restart(false); // Same-frame stale callback must not replace the first intent.
+            yield return null; yield return new WaitForSecondsRealtime(.5f);
             var current = GameSession.Current;
             result.restartClean = current != session && current.InputAllowed && current.StoryStep == 0 && !current.Finished && !current.player.Hidden;
             result.inspectionReset = current.ExplorationCount == 0;
+            result.restartRequestsDeduplicated = pending && current.InputAllowed && !current.Shell.IsReloading;
+            result.restartResourcesClean = !current.player.Crouching && current.player.SlowRemaining == 0 &&
+                current.player.Stamina > .95f && current.player.Firecrackers.Count == 2 && current.player.FootstepNoiseRadius == 0;
             var restarted = current.Shell;
             result.settingsPersisted = Mathf.Approximately(restarted.Volume, changedVolume) && Mathf.Approximately(restarted.Sensitivity, changedSensitivity) &&
                 Mathf.Approximately(current.player.sensitivity, changedSensitivity) && Mathf.Approximately(restarted.FieldOfView, changedFov) &&
                 Mathf.Approximately(current.player.eyes.fieldOfView, changedFov) &&
                 restarted.ReducedMotion && !restarted.Subtitles && restarted.HighContrast && restarted.LargeText;
+            restarted.Restart(false); restarted.Restart(true);
+            yield return null; yield return new WaitForSecondsRealtime(.5f);
+            result.restartTitleDestination = GameSession.Current != current && GameSession.Current.Shell.Screen == GameShell.Page.Title &&
+                !GameSession.Current.InputAllowed && Time.timeScale == 0 && AudioListener.pause && UnityEngine.Cursor.visible;
             Save(result); RestorePreferences(); deadline = 0;
             // Every boolean is a required assertion, including new assertions added in future.
             bool passed = typeof(Result).GetFields().Where(field => field.FieldType == typeof(bool)).All(field => (bool)field.GetValue(result));

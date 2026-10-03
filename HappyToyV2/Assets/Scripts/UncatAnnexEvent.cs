@@ -12,41 +12,60 @@ namespace HappyToy.V2
         public Vector3 revealPoint;
         public bool Triggered {get;private set;}
         public bool Released {get;private set;}
+        public bool Cancelled {get;private set;}
         float originalIntensity;
+        GameSession session;
+        bool initialized;
         void Start()
         {
+            session=GameSession.Current;
             monster.gameObject.SetActive(false);
             if(corridorLight)originalIntensity=corridorLight.intensity;
-            GameSession.Current.RecordInspected+=OnRecord;
-            GameSession.Current.StoryChanged+=OnStory;
+            initialized=true;
+            if(session){session.RecordInspected+=OnRecord;session.StoryChanged+=OnStory;}
         }
         void OnRecord(string id)
-        {if(id=="archive-record"&&!Triggered&&GameSession.Current.StoryStep<4)StartCoroutine(Reveal());}
+        {if(id=="archive-record"&&!Triggered&&!Cancelled&&session&&session.InputAllowed&&session.StoryStep<4)StartCoroutine(Reveal());}
         void OnStory(int step)
         {
-            if(step!=4)return;
-            StopAllCoroutines();monster.gameObject.SetActive(false);RestoreLight();
+            if(step>=4)CancelEncounter();
         }
-        void RestoreLight(){if(corridorLight)corridorLight.intensity=originalIntensity;}
+        void Update()
+        {
+            // A finished session freezes scaled time; settle the encounter before
+            // waiting for its reveal iterator or a later scene unload.
+            if(!Cancelled&&session&&(session.Finished||session.StoryStep>=4))CancelEncounter();
+        }
+        void RestoreLight(){if(initialized&&corridorLight)corridorLight.intensity=originalIntensity;}
+        void CancelEncounter()
+        {
+            Cancelled=true;StopAllCoroutines();
+            if(monster){EnemyNavigation.Stop(monster.GetComponent<NavMeshAgent>(),true);monster.gameObject.SetActive(false);}
+            RestoreLight();
+        }
         IEnumerator Reveal()
         {
             Triggered=true;
             var agent=monster.GetComponent<NavMeshAgent>();
             monster.enabled=false;monster.gameObject.SetActive(true);
-            if(!agent.isOnNavMesh){Debug.LogError("Uncat emergence has no NavMesh");monster.gameObject.SetActive(false);yield break;}
+            if(!agent.isOnNavMesh){Debug.LogError("Uncat emergence has no NavMesh");CancelEncounter();yield break;}
             agent.speed=1.5f;agent.SetDestination(revealPoint);
-            GameSession.Current.Notify("책장 너머에서 무언가 돌아봅니다. 다른 복도로 돌아가세요.");
-            for(float t=0;t<3.55f;t+=Time.deltaTime)
+            session.Notify("책장 너머에서 무언가 돌아봅니다. 다른 복도로 돌아가세요.");
+            for(float t=0;t<3.55f;)
             {
-                if(GameSession.Current.Finished){monster.gameObject.SetActive(false);RestoreLight();yield break;}
-                if(corridorLight)corridorLight.intensity=originalIntensity*(.45f+.55f*Mathf.Abs(Mathf.Sin(t*5)));
+                if(!session||session.Finished||session.StoryStep>=4||!monster){CancelEncounter();yield break;}
+                bool soften=session.Shell&&session.Shell.ReducedMotion;
+                if(corridorLight&&(session.InputAllowed||soften))
+                    corridorLight.intensity=soften?originalIntensity:originalIntensity*(.45f+.55f*Mathf.Abs(Mathf.Sin(t*5)));
+                if(session.InputAllowed)t+=Time.deltaTime;
                 yield return null;
             }
             RestoreLight();monster.enabled=true;Released=true;
         }
+        void OnDisable(){if(initialized)CancelEncounter();}
         void OnDestroy()
         {
-            if(GameSession.Current){GameSession.Current.RecordInspected-=OnRecord;GameSession.Current.StoryChanged-=OnStory;}
+            if(!ReferenceEquals(session,null)){session.RecordInspected-=OnRecord;session.StoryChanged-=OnStory;}
             RestoreLight();
         }
     }

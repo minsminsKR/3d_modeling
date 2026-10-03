@@ -25,16 +25,21 @@ namespace HappyToy.V2
         public string Caption { get; private set; } = string.Empty;
         public bool CaptionVisible => Subtitles && captionTime > 0 && !string.IsNullOrWhiteSpace(Caption);
         public event Action SettingsChanged;
+        public bool IsReloading { get; private set; }
+        public string ReloadError { get; private set; } = string.Empty;
 
         Page returnPage = Page.Title;
         GameSession session;
         Font font;
-        static bool beginAfterLoad;
+        static readonly SceneRestartGate restartGate = new SceneRestartGate();
         float volume = .8f, sensitivity = .09f, fieldOfView = 72f;
         float noticeTime, captionTime;
         int lastNoticeRevision = -1, captionPriority;
         string lastNotice;
         bool preferencesDirty, auditMode, ownsFont;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStartupRequest() { restartGate.Cancel(); }
 
         void Awake()
         {
@@ -59,16 +64,25 @@ namespace HappyToy.V2
             auditMode = args.Any(a => a.StartsWith("-v2-", StringComparison.Ordinal) && a.EndsWith("-output", StringComparison.Ordinal));
             // Existing standalone audits enter through Begin; the flow audit retains the title.
             bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output");
-            if (beginAfterLoad || autoStartAudit) { beginAfterLoad = false; Begin(); }
+            // A requested return to Title takes precedence over audit auto-start.
+            if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
+            { if (playAfterLoad) Begin(); else Set(Page.Title); }
+            else if (autoStartAudit) Begin();
             else Set(Page.Title);
             if (!GetComponent<GameShellView>()) gameObject.AddComponent<GameShellView>();
         }
 
         void Set(Page page)
         {
+            if (IsReloading) return;
             if (page == Page.Playing && (!session || session.Finished)) return;
             Screen = page;
-            bool playing = page == Page.Playing;
+            ReloadError = string.Empty;
+            ApplyScreenState();
+        }
+        void ApplyScreenState()
+        {
+            bool playing = Screen == Page.Playing && !IsReloading;
             Time.timeScale = playing ? 1 : 0;
             AudioListener.pause = !playing;
             Cursor.lockState = playing ? CursorLockMode.Locked : CursorLockMode.None;
@@ -104,13 +118,30 @@ namespace HappyToy.V2
         }
         public void Restart(bool play)
         {
-            SaveSettings();
-            beginAfterLoad = play;
-            var scene = SceneManager.GetActiveScene();
-            // Scene paths also support an authored scene opened directly in the editor.
-            if (scene.buildIndex >= 0) SceneManager.LoadScene(scene.buildIndex);
-            else if (!string.IsNullOrEmpty(scene.path)) SceneManager.LoadScene(scene.path);
-            else Debug.LogWarning("HappyToy: save the active scene before restarting.", this);
+            if (IsReloading || restartGate.Pending) return;
+            var scene = gameObject.scene;
+            bool loadable = !string.IsNullOrWhiteSpace(scene.path) &&
+                (scene.buildIndex >= 0 ? Application.CanStreamedLevelBeLoaded(scene.buildIndex) : Application.CanStreamedLevelBeLoaded(scene.path));
+            if (!loadable)
+            {
+                ReloadError = "현재 장면을 다시 열 수 없습니다. 저장된 씬과 빌드 장면 목록을 확인하세요. 탐색 기록은 유지됩니다.";
+                return;
+            }
+            try
+            {
+                SaveSettings();
+                if (!restartGate.TryRequest(scene.path, play)) return;
+                IsReloading = true; ReloadError = string.Empty; ApplyScreenState();
+                if (scene.buildIndex >= 0) SceneManager.LoadScene(scene.buildIndex);
+                else SceneManager.LoadScene(scene.path);
+            }
+            catch (Exception error)
+            {
+                restartGate.Cancel(); IsReloading = false;
+                ReloadError = "다시 시작하지 못했습니다. 탐색 기록은 유지됩니다. 잠시 후 다시 시도하세요.";
+                ApplyScreenState();
+                Debug.LogWarning("HappyToy restart failed: " + error.Message, this);
+            }
         }
 
         public void AdjustSettings(float sound, float mouse)
@@ -189,7 +220,7 @@ namespace HappyToy.V2
 
         void Update()
         {
-            if (!session) return;
+            if (!session || IsReloading) return;
             if (lastNotice != session.Notice || lastNoticeRevision != session.NoticeRevision)
             {
                 lastNotice = session.Notice;

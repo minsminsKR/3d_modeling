@@ -1,5 +1,9 @@
 # Happy Toy V2 quality checks
 
+## Latest lifecycle milestone (2026-10-03)
+
+The actual shared C# harness now has **143 assertions**, adding 26 SceneRestartGate checks to the 117 below. The `flow` audit adds mixed duplicate restart requests, explicit Title return and reset resources. The `transitions` audit now respects all annex prerequisites and checks controlled interruption/cleanup. Both runtime audits remain **NOT RUN**; pure gate tests do not execute Unity SceneManager or inject engine I/O failures. Select prepared runtime cases with `-Audit flow,transitions`; fresh source evidence is in `Verification/quality-lifecycle`.
+
 ## Current stealth milestone (2026-10-03)
 
 The console harness now executes **117 actual C# assertions**: 29 attack-clock, 20 ripple and 68 stealth-rule/awareness checks. The safe Editor validation command also runs all three groups. Source CI automatically includes the new helpers through `ClockTests.csproj`.

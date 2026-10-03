@@ -12,18 +12,27 @@ namespace HappyToy.V2
         public bool RoarPlayed { get; private set; }
         public string Phase { get; private set; }="idle";
         AudioClip roar;AudioSource voice;
+        GameSession session;
+        StalkerBrain actor;
+        NavMeshAgent agent;
         public IEnumerator Play(StalkerBrain brain)
         {
             if(Phase!="idle")yield break;
-            var agent=brain.GetComponent<NavMeshAgent>();brain.enabled=false;brain.state=StalkerBrain.State.Patrol;
+            session=GameSession.Current;actor=brain;
+            if(!session||session.Finished||session.StoryStep>=4||!actor){Cancel();yield break;}
+            agent=brain.GetComponent<NavMeshAgent>();
+            if(!EnemyNavigation.Ready(agent))
+            {Debug.LogError("Cyclopse intro has no ready NavMesh agent",this);Cancel();yield break;}
+            brain.enabled=false;brain.state=StalkerBrain.State.Patrol;
             Phase="emerge";agent.isStopped=false;agent.speed=1.05f;
             var destination=brain.transform.position+Vector3.right*(brain.transform.position.x>0?-1.35f:1.35f);
             agent.SetDestination(destination);
             yield return new WaitForSeconds(1.3f);
-            if(GameSession.Current.Finished||GameSession.Current.StoryStep>=4||!brain.gameObject.activeInHierarchy)
-            {Phase="resolved";yield break;}
+            if(Phase=="resolved"||!session||session.Finished||session.StoryStep>=4||!brain||
+                !brain.gameObject.activeInHierarchy||!EnemyNavigation.Ready(agent))
+            {Cancel();yield break;}
             Phase="roar";agent.isStopped=true;
-            var facing=GameSession.Current.player.transform.position-brain.transform.position;facing.y=0;
+            var facing=session.player.transform.position-brain.transform.position;facing.y=0;
             if(facing.sqrMagnitude>.01f)brain.transform.rotation=Quaternion.LookRotation(facing);
             voice=brain.gameObject.AddComponent<AudioSource>();voice.spatialBlend=1;voice.minDistance=2;voice.maxDistance=18;voice.volume=.6f;
             // V1's two descending sawtooth voices, bandpass at 245 Hz (Q .85).
@@ -38,13 +47,24 @@ namespace HappyToy.V2
                 float y=b0*x+b2*x2-a1*y1-a2*y2;samples[i]=y;x2=x1;x1=x;y2=y1;y1=y;
             }
             roar=AudioClip.Create("V1 Cyclopse descending roar",samples.Length,1,rate,false);roar.SetData(samples,0);voice.PlayOneShot(roar);RoarPlayed=true;
-            if(Vector3.Distance(GameSession.Current.player.eyes.transform.position,voice.transform.position)<=voice.maxDistance)
-                GameSession.Current.Shell.ShowCaption("[복도 끝 · 낮게 가라앉는 포효]", 2.6f, 1);
+            if(Vector3.Distance(session.player.eyes.transform.position,voice.transform.position)<=voice.maxDistance)
+                session.Shell.ShowCaption("[복도 끝 · 낮게 가라앉는 포효]", 2.6f, 1);
             yield return new WaitForSeconds(1.3f);
-            if(GameSession.Current.Finished||GameSession.Current.StoryStep>=4||!brain.gameObject.activeInHierarchy)
-            {Phase="resolved";yield break;}
+            if(Phase=="resolved"||!session||session.Finished||session.StoryStep>=4||!brain||
+                !brain.gameObject.activeInHierarchy||!EnemyNavigation.Ready(agent))
+            {Cancel();yield break;}
             agent.isStopped=false;brain.enabled=true;Phase="done";Completed=true;
         }
-        void OnDestroy(){if(roar)Destroy(roar);if(voice)Destroy(voice);}
+        // The iterator is driven by StoryDirector. Stopping its parent coroutine never
+        // reaches the guards above, so cancellation must explicitly settle owned state.
+        public void Cancel()
+        {
+            Phase="resolved";
+            if(voice)voice.Stop();
+            EnemyNavigation.Stop(agent,true);
+            if(actor){actor.enabled=false;actor.gameObject.SetActive(false);}
+        }
+        void OnDisable(){Cancel();}
+        void OnDestroy(){Cancel();if(roar)Destroy(roar);if(voice)Destroy(voice);}
     }
 }

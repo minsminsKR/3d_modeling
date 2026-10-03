@@ -43,12 +43,13 @@ namespace HappyToy.V2
         }
         void OnDestroy()
         {
-            if(session)session.StoryChanged-=OnStory;
+            if(!ReferenceEquals(session,null))session.StoryChanged-=OnStory;
             if(bell)Destroy(bell);
             if(chairScrape)Destroy(chairScrape);
         }
         void OnStory(int step)
         {
+            if(!isActiveAndEnabled)return;
             if(step!=4)
             {
                 source.PlayOneShot(bell,.7f);
@@ -79,6 +80,8 @@ namespace HappyToy.V2
         }
         void CancelWake()
         {
+            var intro=GetComponent<V1CyclopseIntro>();
+            if(intro)intro.Cancel();
             if (wakeRoutine == null) return;
             StopCoroutine(wakeRoutine); wakeRoutine = null;
             for (int i = 0; i < corridorLights.Length; i++)
@@ -116,7 +119,7 @@ namespace HappyToy.V2
             // Telegraph the threat; never spawn it right on the player.
             yield return new WaitForSeconds(2);
             if(!session||session.Finished||session.StoryStep>=4){CancelWake();yield break;}
-            var player=GameSession.Current.player.transform.position;
+            var player=session.player.transform.position;
             var spawn=new Vector3(player.x<0?7.5f:-7.5f,0,0);
             if(NavMesh.SamplePosition(spawn,out var hit,1,NavMesh.AllAreas))stalker.transform.position=hit.position;
             stalker.gameObject.SetActive(true);

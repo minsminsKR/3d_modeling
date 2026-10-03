@@ -1,0 +1,58 @@
+{
+  "scope": "Actual C# helper execution; not Unity SceneManager, physics, input, render or event runtime",
+  "date": "2026-10-03",
+  "sdk": "8.0.425",
+  "status": "PASS",
+  "buildWarnings": 0,
+  "buildErrors": 0,
+  "assertions": {
+    "attackClock": 29,
+    "surfaceRipple": 20,
+    "stealth": 68,
+    "restartGate": 26,
+    "total": 143
+  },
+  "inputs": [
+    {
+      "path": "Assets/Scripts/EnemyAttackClock.cs",
+      "sha256": "06d8053bf7eba3b01cbc7a43c3917bcf058a415ad5eafa32821c6233e4a91172"
+    },
+    {
+      "path": "Assets/Editor/EnemyAttackClockChecks.cs",
+      "sha256": "0680a3bc7c2fe498b6d6c2a49ae78c74fe75e5bccf085c0ee19d2b43f848833d"
+    },
+    {
+      "path": "Assets/Scripts/SurfaceRippleBuffer.cs",
+      "sha256": "ff2f39f287ad8b47bbe389a8300e979d37be3c926e7660f1226d8d856a2bc544"
+    },
+    {
+      "path": "Assets/Editor/SurfaceRippleChecks.cs",
+      "sha256": "a97d53b7c7ceeb10d351e5c5773e49a3e44d3afb25e0655c211d002bb2b8c2a6"
+    },
+    {
+      "path": "Assets/Scripts/StealthRules.cs",
+      "sha256": "3e293627b74beb766a1931e7e8ea018badb75c7c4a0d9e43947b3a3d9a0e203e"
+    },
+    {
+      "path": "Assets/Editor/StealthRulesChecks.cs",
+      "sha256": "08b43f5ca4058566e4bc7c75eba1d44a8e501ff0d6136fd49916f649f05ffb45"
+    },
+    {
+      "path": "Assets/Scripts/SceneRestartGate.cs",
+      "sha256": "9c5e617aaf81d4c0c38205605cd928a1e14bf50416a8571ebc3d8fdedb6ddefe"
+    },
+    {
+      "path": "Assets/Editor/SceneRestartGateChecks.cs",
+      "sha256": "99e850d56e5373aeba5ed27f2f355877648b9f491bf88514287bc81112c03f83"
+    },
+    {
+      "path": "Tools/quality/ClockTests.csproj",
+      "sha256": "5119cabcc8a4ed008396580fd8c31f8b95a47a1edf240bf7a2a3ff57e5e65671"
+    },
+    {
+      "path": "Tools/quality/ClockTestProgram.cs",
+      "sha256": "ba781c5f6c90e8d2aa21769fdbaa56bd67359fe757677e6a8ca70c3c5de9990c"
+    }
+  ],
+  "unityRuntime": "NOT RUN"
+}
