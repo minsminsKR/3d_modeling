@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -27,6 +28,9 @@ namespace HappyToy.V2
         public float AttackRecovery => attack.Recovery;
         public float Awareness => awareness.Value;
         public int FootstepNoisesAccepted { get; private set; }
+        public Bounds LastBodyBounds { get; private set; }
+        public Bounds LastMaskBounds { get; private set; }
+        public int AttachmentSamples { get; private set; }
         NavMeshAgent agent;
         NavMeshPath path;
         Vector3 target;
@@ -45,6 +49,10 @@ namespace HappyToy.V2
         Quaternion originalMaskRotation;
         float originalFlameIntensity;
         bool visualDefaultsCaptured, originalFlameEnabled;
+        const float AttachmentOverlap = .035f; // Small inset for the tilted static mask's conservative bounds.
+        Renderer[] bodyRenderers, maskRenderers;
+        Mesh attachmentMesh;
+        readonly List<Vector3> attachmentVertices = new List<Vector3>();
         bool IntroActive => IntroStarted && !IntroCompleted;
         bool ReducedMotion => GameSession.Current && GameSession.Current.Shell && GameSession.Current.Shell.ReducedMotion;
 
@@ -378,16 +386,57 @@ namespace HappyToy.V2
                 }
             }
         }
+        bool VisibleBounds(Renderer[] renderers, out Bounds bounds)
+        {
+            bounds = new Bounds(); bool found = false;
+            foreach (var renderer in renderers)
+            {
+                // In particular, the imported disabled Icosphere is not the body.
+                // Do not use isVisible: looking away must not change the attachment.
+                if (!renderer || !renderer.enabled || !renderer.gameObject.activeInHierarchy) continue;
+                if (renderer is SkinnedMeshRenderer skin)
+                {
+                    if (!skin.sharedMesh) continue;
+                    if (!attachmentMesh) attachmentMesh = new Mesh { name = "Wraith attachment geometry sample" };
+                    // Default false matches the authored fitting convention. Apply
+                    // the renderer hierarchy once, rather than scaling the bake twice.
+                    skin.BakeMesh(attachmentMesh); attachmentMesh.GetVertices(attachmentVertices);
+                    var toWorld = skin.transform.localToWorldMatrix;
+                    for (int i = 0; i < attachmentVertices.Count; i++)
+                    {
+                        var point = toWorld.MultiplyPoint3x4(attachmentVertices[i]);
+                        if (!found) { bounds = new Bounds(point, Vector3.zero); found = true; }
+                        else bounds.Encapsulate(point);
+                    }
+                }
+                else if (renderer is MeshRenderer)
+                {
+                    // The authored static mask is intentionally non-readable. Its
+                    // ordinary world bounds are conservative after tilt, not a loose
+                    // skinned animation envelope. Never read its unavailable vertices.
+                    var visible = renderer.bounds;
+                    if (!found) { bounds = visible; found = true; }
+                    else bounds.Encapsulate(visible);
+                }
+            }
+            return found;
+        }
         void LateUpdate()
         {
             var session = GameSession.Current;
-            if (!session || !session.InputAllowed || TransformProgress <= 0 || State == Phase.Resolved || !body || !mask) return;
-            var skin = body.GetComponentInChildren<SkinnedMeshRenderer>();
-            if (!skin) return;
-            var bounds = skin.bounds;
-            var attached = new Vector3(bounds.center.x, bounds.max.y + .15f, bounds.center.z) + transform.forward * .03f;
-            mask.position = Vector3.Lerp(mask.position, attached,
-                Mathf.SmoothStep(0, 1, Mathf.InverseLerp(4.15f, 5, transformTime)));
+            if (!session || !session.InputAllowed || Time.timeScale <= 0 || transformTime <= 4.15f ||
+                State == Phase.Resolved || !body || !mask) return;
+            if (bodyRenderers == null) bodyRenderers = body.GetComponentsInChildren<Renderer>(true);
+            if (maskRenderers == null) maskRenderers = mask.GetComponentsInChildren<Renderer>(true);
+            if (!VisibleBounds(bodyRenderers, out var bodyBounds) || !VisibleBounds(maskRenderers, out var maskBounds)) return;
+            var forwardOffset = transform.forward * .03f;
+            var correction = new Vector3(bodyBounds.center.x + forwardOffset.x - maskBounds.center.x,
+                bodyBounds.max.y - AttachmentOverlap - maskBounds.min.y,
+                bodyBounds.center.z + forwardOffset.z - maskBounds.center.z);
+            var applied = correction * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(4.15f, 5, transformTime));
+            mask.position += applied;
+            maskBounds.center += applied;
+            LastBodyBounds = bodyBounds; LastMaskBounds = maskBounds; AttachmentSamples++;
         }
         void OnDisable()
         {
@@ -396,6 +445,10 @@ namespace HappyToy.V2
             if (revealAudio) revealAudio.Stop();
             SetVisible(false); RestoreVisualDefaults();
         }
-        void OnDestroy() { BindFootsteps(null); if (warning) Destroy(warning); }
+        void OnDestroy()
+        {
+            BindFootsteps(null); if (warning) Destroy(warning);
+            if (attachmentMesh) Destroy(attachmentMesh);
+        }
     }
 }

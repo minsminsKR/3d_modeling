@@ -1,18 +1,37 @@
 # Unity Build Automation: real scene tests
 
-## New first-appearance source: combined engine verification pending
+## Actual build #15: 53/54, no player export; narrow fixes pending
+
+At ac3aa14a, original XML confirms 6/6 EditMode and 47/48 PlayMode, no skips.
+All 10 new aim/intro cases passed, including genuine events and the full existing
+survival route. The only failure was the old left/right PCM comparison after the
+new lantern contact fixture left the listener camera rotated. Direction/gain
+assertions are retained while fixture basis restoration/assertions are added.
+No ZIP was exported; build14 remains the latest playable verified build.
+
+All 51 artifact hashes were checked. Actual total 16,637,012 bytes exceeded the
+previous 16 MB decoder cap; the explicitly revised 18 MB aggregate retains 1.5 MB
+individual,51-file,chunk/hash/type safety bounds. New 4.85s PCM has 19 segments,
+12 distinct helper clips, five exact-zero controls and no clipping. Real aiming
+first-contact errors are 0 in all 6 controlled floor/wall/ceiling conditions.
+Actual image review found a near-eye aim wedge and completed-mask gap; narrow
+visual corrections plus a later genuine Baby preparation frame are being verified.
+See `Verification/cloud-tests/build-15-*`; these partial results are not 54/54.
+
+
+## Historical first-appearance preflight (before build #15)
 
 Distinct original portrait/nursery/archive/lantern/mannequin beats and a short
 Cyclopse anticipation are implemented alongside optional aim. Current target is
 54 cases (6 Edit + 48 Play), preserving all previous cases and assertions with one
 explicit camera-orientation adaptation for the lantern contact fixture. Ten
 keyframes and one actual-event PCM/JSON pair bring the bounded artifact cap to 51;
-16 MB aggregate and 1.5 MB single-file limits remain. No new engine run has started.
+18 MB aggregate and 1.5 MB single-file limits remain. At that preflight no engine run had started; the actual #15 result above supersedes that status.
 Build #14 remains the last actually verified player. See
 [monster introduction scope](Verification/monster-intros/README.md).
 
 
-## Next source: optional firecracker first-contact aiming (not yet run)
+## Historical optional-aim preflight (before build #15)
 
 Q retains immediate throwing. Held right mouse adds a temporary, depth-tested
 first-contact preview with no enemy/success display and no consumption on cancel.

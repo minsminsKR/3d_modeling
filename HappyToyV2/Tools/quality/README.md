@@ -1,17 +1,17 @@
-# New intro + aim source: combined engine verification pending
+# Final intro + aim correction: exact-source engine verification pending
 
 Current target is 54 actual cases, retaining prior 44 plus 4 aim and 6 intro cases.
 One old lantern contact fixture now faces its legitimate mask anchor; its original
 curse/timing/waveform assertions are unchanged. Transport allows 51 files with the
-same 16 MB total / 1.5 MB per-file bound. Ten keyframes and a native event-audio WAV/JSON
+same 18 MB total / 1.5 MB per-file bound. Ten keyframes and a native event-audio WAV/JSON
 are planned. Actual execution/render/export remain pending; build #14 is verified.
 
-# Next optional aim source: actual engine verification pending
+# Historical optional-aim source preflight (before build #15)
 
 Four focused cases are being added to the previous 44: held-input lifecycle,
 physical first-contact parity, real distraction/chase immunity, and actual camera
 preview images. Transport allows 39 files (previous 36 + 2 PNGs + 1 JSON) with the same
-16 MB total / 1.5 MB single-file cap. All existing cases remain unchanged. See
+18 MB total / 1.5 MB single-file cap. All existing cases remain unchanged. See
 `Verification/firecracker-aim/README.md` for scope; build #14 remains verified.
 
 # Current perceived-tension verification: build #14 SUCCESS, 44/44

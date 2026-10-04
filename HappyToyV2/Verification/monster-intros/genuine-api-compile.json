@@ -187,7 +187,7 @@
     },
     {
       "file": "Assets/Scripts/FirecrackerAim.cs",
-      "sha256": "3c21bd63dce417b8dac204ee85be302e62893da8b4021b2fa18f50d745e29e9a"
+      "sha256": "3e1ff3a0732ae7ba86bec4696c849fe6ae6ce0bfd7f296120f237790daba2dd7"
     },
     {
       "file": "Assets/Scripts/FirecrackerInventory.cs",
@@ -247,7 +247,7 @@
     },
     {
       "file": "Assets/Scripts/LanternMaskEncounter.cs",
-      "sha256": "d4b7157887b15cf2f590cd6eed8104a18730bb75b6d893c160cb816304d1d81e"
+      "sha256": "b02d2926ba6a5f84ab8fc42d98d75f3d92ca3406b1726b594e61c2c3f6151d0f"
     },
     {
       "file": "Assets/Scripts/LanternMaskProbe.cs",
@@ -399,7 +399,7 @@
     },
     {
       "file": "Assets/Tests/PlayMode/CloudEnemyAudioTests.cs",
-      "sha256": "def73782e446add978b54ce435b56d7657c2f37c4466dd51aaa02b8e9d5b7b43"
+      "sha256": "a86816af820f25a0eef9875e47a5aa5e45e5f7e202247c6ee3cf32be00949323"
     },
     {
       "file": "Assets/Tests/PlayMode/CloudExperienceTests.cs",
@@ -407,7 +407,7 @@
     },
     {
       "file": "Assets/Tests/PlayMode/CloudFirecrackerAimTests.cs",
-      "sha256": "bf27b4ac2e901fc5f1c281abbbc64cfaef29609fe229ee7144f3a66e24058f61"
+      "sha256": "bcfe6939a760e53ebaa3e2f922e783c31f1ec409cb07d347ac09a79ee9419a6c"
     },
     {
       "file": "Assets/Tests/PlayMode/CloudFirecrackerFeedbackTests.cs",
@@ -423,7 +423,7 @@
     },
     {
       "file": "Assets/Tests/PlayMode/CloudMonsterIntroTests.cs",
-      "sha256": "7ff08e8f97709d7f0c7912d3f6eb9d02581801b1cf4d2bd05add0a9bf5a2b73e"
+      "sha256": "a174b1d4d6f485f96b8c799d68b81cfcd2c65cf5e5c1abb5fcfe74e099a9ff04"
     },
     {
       "file": "Assets/Tests/PlayMode/CloudPerceivedTensionTests.cs",
@@ -580,6 +580,6 @@
       }
     }
   ],
-  "generatedAtUtc": "2026-10-04T17:10:57.294421+00:00",
+  "generatedAtUtc": "2026-10-04T18:05:03.022275+00:00",
   "sourceStillMatches": true
 }

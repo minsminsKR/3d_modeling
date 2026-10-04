@@ -380,7 +380,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(line.positionCount, Is.EqualTo(Get<int>(aim, "ForecastPointCount")));
             Assert.That(line.positionCount, Is.InRange(2, 61));
             Assert.That(line.startColor.a, Is.InRange(.5f, 1f));
-            Assert.That(line.startWidth, Is.InRange(.01f, .03f));
+            Assert.That(line.startWidth, Is.InRange(.003f, .006f));
+            Assert.That(line.endWidth, Is.InRange(.015f, .026f));
+            Assert.That(line.endWidth, Is.GreaterThan(line.startWidth * 3), "Near-eye line must taper to avoid a perspective wedge");
             Assert.That(ring.enabled && ring.gameObject.activeInHierarchy && ring.useWorldSpace, Is.True);
             Assert.That(line.sharedMaterial.GetInt("_ZTest"), Is.EqualTo((int)CompareFunction.LessEqual));
             var target = new RenderTexture(960, 540, 24); target.Create();

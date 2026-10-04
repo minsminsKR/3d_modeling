@@ -1,0 +1,570 @@
+{
+  "scope": "Original Unity signed16 PCM/JSON consistency and contact-report bounds. Selected-source disjoint actual-event excerpts, not continuous gameplay, target-device listening, hardware FPS or subjective fear certification. Build15 overall failed one pre-existing directional-audio fixture; new intro and aim cases passed.",
+  "wave": "monster-first-appearances.wav",
+  "bytes": 931244,
+  "sha256": "d92bf8cb58abd436d818066b5ae11440952891833462d141f6d111f5f9da5314",
+  "sampleRate": 48000,
+  "channels": 2,
+  "frames": 232800,
+  "durationSeconds": 4.85,
+  "segments": [
+    {
+      "name": "quiet-baseline",
+      "startSeconds": 0.0,
+      "durationSeconds": 0.15,
+      "pcmPeak": 0.0,
+      "pcmRms": 0.0,
+      "nonzeroValues": 0,
+      "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+      "owner": "V1HwacatEvent",
+      "phaseStart": "idle",
+      "phaseEnd": "idle",
+      "elapsedStart": 0.0,
+      "elapsedEnd": 0.0,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": ""
+    },
+    {
+      "name": "mannequin-joint-tension",
+      "startSeconds": 0.15,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.06872768333994568,
+      "pcmRms": 0.017217622547133354,
+      "nonzeroValues": 28254,
+      "sha256": "ef1088770838f967cc7158da4681d240174a647f5624b8c1f3d0f133d6ab0113",
+      "owner": "WeepingAngelEncounter",
+      "phaseStart": "Tension",
+      "phaseEnd": "Tension",
+      "elapsedStart": 0.00999999325722456,
+      "elapsedEnd": 0.329999715089798,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "37089363e1446570c809ae25307cacd62762af7c0ad29b7b8b03c7bd88cb452f"
+    },
+    {
+      "name": "mannequin-moving-joint",
+      "startSeconds": 0.45,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.029877620777001252,
+      "pcmRms": 0.005577923445939763,
+      "nonzeroValues": 27954,
+      "sha256": "ea7385acd1dc6c954d800ff467a19d350f7d026d0805ab7d2ba99c91d92293de",
+      "owner": "WeepingAngelEncounter",
+      "phaseStart": "PartialTurn",
+      "phaseEnd": "PartialTurn",
+      "elapsedStart": 0.659999430179596,
+      "elapsedEnd": 0.9799991250038147,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "69306dab2000ad2a9fd836b07177fe551f380bc4a761ba7ee6cb1ca0ebe05ac9"
+    },
+    {
+      "name": "nursery-cry",
+      "startSeconds": 0.75,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.010315256202887051,
+      "pcmRms": 0.0031733395145170807,
+      "nonzeroValues": 28346,
+      "sha256": "4639aed07e147fe33847425196002b49c788171dbf809283ab958161baf972f0",
+      "owner": "AnnexEncounter",
+      "phaseStart": "cry",
+      "phaseEnd": "cry",
+      "elapsedStart": 0.26999977231025696,
+      "elapsedEnd": 0.5899994969367981,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": ""
+    },
+    {
+      "name": "paused-live-cry",
+      "startSeconds": 1.05,
+      "durationSeconds": 0.15,
+      "pcmPeak": 0.0,
+      "pcmRms": 0.0,
+      "nonzeroValues": 0,
+      "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+      "owner": "AnnexEncounter",
+      "phaseStart": "cry",
+      "phaseEnd": "cry",
+      "elapsedStart": 0.5899994969367981,
+      "elapsedEnd": 0.5899994969367981,
+      "paused": true,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": ""
+    },
+    {
+      "name": "same-cry-resumed",
+      "startSeconds": 1.2,
+      "durationSeconds": 0.25,
+      "pcmPeak": 0.008667256691183203,
+      "pcmRms": 0.003194275635560281,
+      "nonzeroValues": 23676,
+      "sha256": "4dee18a081f769373b3e48d91b8d8da38daaf594611e02afbd9bd820a14f7a2b",
+      "owner": "AnnexEncounter",
+      "phaseStart": "cry",
+      "phaseEnd": "cry",
+      "elapsedStart": 0.5899994969367981,
+      "elapsedEnd": 0.8499992489814758,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": ""
+    },
+    {
+      "name": "master-zero-live-cry",
+      "startSeconds": 1.45,
+      "durationSeconds": 0.15,
+      "pcmPeak": 0.0,
+      "pcmRms": 0.0,
+      "nonzeroValues": 0,
+      "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+      "owner": "AnnexEncounter",
+      "phaseStart": "cry",
+      "phaseEnd": "cry",
+      "elapsedStart": 1.0599991083145142,
+      "elapsedEnd": 1.2299989461898804,
+      "paused": false,
+      "master": 0.0,
+      "reducedMotion": false,
+      "authoredClipSha256": ""
+    },
+    {
+      "name": "nursery-stillness-quiet",
+      "startSeconds": 1.6,
+      "durationSeconds": 0.15,
+      "pcmPeak": 0.0,
+      "pcmRms": 0.0,
+      "nonzeroValues": 0,
+      "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+      "owner": "AnnexEncounter",
+      "phaseStart": "stillness",
+      "phaseEnd": "stillness",
+      "elapsedStart": 2.939997434616089,
+      "elapsedEnd": 3.109997272491455,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": true,
+      "authoredClipSha256": ""
+    },
+    {
+      "name": "comfort-nursery-preparation",
+      "startSeconds": 1.75,
+      "durationSeconds": 0.25,
+      "pcmPeak": 0.04376354258857997,
+      "pcmRms": 0.0055818765137496595,
+      "nonzeroValues": 23070,
+      "sha256": "5d30611baaf03d84df73ec2f3ee2332fa304dfbe030830ff020843a05faf1a43",
+      "owner": "AnnexEncounter",
+      "phaseStart": "crawlReady",
+      "phaseEnd": "crawlReady",
+      "elapsedStart": 4.119998931884766,
+      "elapsedEnd": 4.370004653930664,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": true,
+      "authoredClipSha256": "5ca4a1c2ab25e0535f7d932bf6a3de988c6f1e7bdedcc70e59d104d2f4a2fbbe"
+    },
+    {
+      "name": "archive-shelf-scrape",
+      "startSeconds": 2.0,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.06497390667439802,
+      "pcmRms": 0.011989449147459452,
+      "nonzeroValues": 28216,
+      "sha256": "92e247b80ebd9d0eeaf4f398ad0558edb4312ae65b5ea56e19fce5b5c2a115c4",
+      "owner": "UncatAnnexEvent",
+      "phaseStart": "shelfScrape",
+      "phaseEnd": "shelfScrape",
+      "elapsedStart": 0.00999999325722456,
+      "elapsedEnd": 0.329999715089798,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "b5824567a728ce0ead800d865d51faeca5b0324174f2ce71fb9120b2929650cf"
+    },
+    {
+      "name": "lantern-first-metal-ticks",
+      "startSeconds": 2.3,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.05526902066103091,
+      "pcmRms": 0.006758071119495311,
+      "nonzeroValues": 19492,
+      "sha256": "56a17b015c25ac58045b801d1cb1a68ba1125e870fe2da6c3dce070ec80bbd93",
+      "owner": "LanternMaskEncounter",
+      "phaseStart": "LanternTicks",
+      "phaseEnd": "LanternTicks",
+      "elapsedStart": 0.00999999325722456,
+      "elapsedEnd": 0.329999715089798,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "6bafd5fbb8af4aa72059809e3bad2dc50ada84ac0a605b50f262cddb6d5ee8f9"
+    },
+    {
+      "name": "lantern-mask-rise",
+      "startSeconds": 2.6,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.03842280343028046,
+      "pcmRms": 0.010591875754829729,
+      "nonzeroValues": 28220,
+      "sha256": "0b836b63c2303d7102bba7f0869dbfcb9c2967724134827080e064b3300a4fdf",
+      "owner": "LanternMaskEncounter",
+      "phaseStart": "MaskRise",
+      "phaseEnd": "MaskRise",
+      "elapsedStart": 0.659999430179596,
+      "elapsedEnd": 0.9799991250038147,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "05902cb340988d882d86bdc836dec16df061e93c28624bf3a174ab6dc56a56c8"
+    },
+    {
+      "name": "cyclopse-hidden-breath",
+      "startSeconds": 2.9,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.003204443494979705,
+      "pcmRms": 0.0005722727168093701,
+      "nonzeroValues": 22052,
+      "sha256": "f09a8efd341a6f5b1d9a0f718ba3a13745786456874ec8c71661d70fcdc21e4e",
+      "owner": "V1CyclopseIntro",
+      "phaseStart": "anticipation",
+      "phaseEnd": "anticipation",
+      "elapsedStart": 0.00999999325722456,
+      "elapsedEnd": 0.329999715089798,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "b946e5b35d54894d91092d5cd342257a5505f610cf0e07dfb82eca23ad98d79d"
+    },
+    {
+      "name": "optional-wraith-growth",
+      "startSeconds": 3.2,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.013550218207342753,
+      "pcmRms": 0.0019576765171348443,
+      "nonzeroValues": 26854,
+      "sha256": "1f494712dc538aa99ad781146db8019ede9a2b84fa10242de25db70564007978",
+      "owner": "LanternMaskEncounter",
+      "phaseStart": "Complete",
+      "phaseEnd": "Complete",
+      "elapsedStart": 2.200000047683716,
+      "elapsedEnd": 2.200000047683716,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "728016eb6d511aac1df5fed27c294a5f214af6eb2dffcd8e51d1a3240ab1b0f7"
+    },
+    {
+      "name": "portrait-frame-strain",
+      "startSeconds": 3.5,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.07513657032990509,
+      "pcmRms": 0.015881243818441942,
+      "nonzeroValues": 24542,
+      "sha256": "5fdbc8c478c39caa2ca33aa1c0dfd30b41168179670a84451803c3caf460711d",
+      "owner": "V1HwacatEvent",
+      "phaseStart": "frameStrain",
+      "phaseEnd": "frameStrain",
+      "elapsedStart": 0.0,
+      "elapsedEnd": 0.31999972462654114,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "7f92bc4f226301a1642ebbff9f3bab6049107bab4a86840000d48e554fa0f0c9"
+    },
+    {
+      "name": "portrait-frame-impact",
+      "startSeconds": 3.8,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.09161656544694358,
+      "pcmRms": 0.017733658282262334,
+      "nonzeroValues": 28494,
+      "sha256": "abf17da3a691781ca5806c8934eb72dd7ef8dcbe910a14a1e9f7d9b043470f14",
+      "owner": "V1HwacatEvent",
+      "phaseStart": "standUp",
+      "phaseEnd": "standUp",
+      "elapsedStart": 1.709999918937683,
+      "elapsedEnd": 2.0299997329711914,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "58ef52b35b07bfc0e5e1fd3c4a23f8e8102dde8cf1a1b367b8bc57616b0a8e7d"
+    },
+    {
+      "name": "portrait-toy-mechanism",
+      "startSeconds": 4.1,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.05026398510696738,
+      "pcmRms": 0.008438062744653432,
+      "nonzeroValues": 28564,
+      "sha256": "683b8330e1a632a0a886bf60ff7fae660d6919e6a7e4c421a6c29b36cea903b3",
+      "owner": "V1HwacatEvent",
+      "phaseStart": "dance",
+      "phaseEnd": "dance",
+      "elapsedStart": 4.710016250610352,
+      "elapsedEnd": 5.030023574829102,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "bc1d955ce13a8929af71201ea90727d03cf069352654b1e1692a0c9ae0d3fe78"
+    },
+    {
+      "name": "portrait-angry-jaw",
+      "startSeconds": 4.4,
+      "durationSeconds": 0.3,
+      "pcmPeak": 0.03469954527420881,
+      "pcmRms": 0.009312647647193355,
+      "nonzeroValues": 27228,
+      "sha256": "80229f34626583b18bb875710ac23878a794b7df53e440f726980f9df8c06656",
+      "owner": "V1HwacatEvent",
+      "phaseStart": "transform",
+      "phaseEnd": "transform",
+      "elapsedStart": 6.310054302215576,
+      "elapsedEnd": 6.630061626434326,
+      "paused": false,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": "1ae883cc29d08b68afbb7c8af291e2eba1cefce70541648287a3a4651938f1e8"
+    },
+    {
+      "name": "result-silence",
+      "startSeconds": 4.7,
+      "durationSeconds": 0.15,
+      "pcmPeak": 0.0,
+      "pcmRms": 0.0,
+      "nonzeroValues": 0,
+      "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+      "owner": "V1HwacatEvent",
+      "phaseStart": "resolved",
+      "phaseEnd": "resolved",
+      "elapsedStart": 6.630061626434326,
+      "elapsedEnd": 6.630061626434326,
+      "paused": true,
+      "master": 0.800000011920929,
+      "reducedMotion": false,
+      "authoredClipSha256": ""
+    }
+  ],
+  "uniqueHelperClipHashes": 12,
+  "imageFiles": [
+    "intro-portrait-before.png",
+    "intro-portrait-angry.png",
+    "intro-archive-emergence.png",
+    "intro-lantern-light.png",
+    "intro-lantern-mask.png",
+    "intro-mannequin-turn.png",
+    "intro-nursery-cry.png",
+    "intro-nursery-prepare.png",
+    "intro-wraith-half-grown.png",
+    "intro-wraith-attached.png"
+  ],
+  "firstContactMaxCenterError": 0.0,
+  "firstContactMaxPointError": 0.0,
+  "physicalCases": [
+    {
+      "surface": "floor",
+      "requestedFrameSeconds": 0.10000000149011612,
+      "observedFrameSeconds": 0.10000000149011612,
+      "predictedTime": 0.26373180747032166,
+      "actualTime": 0.26373180747032166,
+      "centerError": 0.0,
+      "pointError": 0.0,
+      "normalError": 0.0,
+      "predictedCenter": {
+        "x": 500.0,
+        "y": 0.08252739906311035,
+        "z": 503.3430480957031
+      },
+      "actualCenter": {
+        "x": 500.0,
+        "y": 0.08252739906311035,
+        "z": 503.3430480957031
+      },
+      "predictedContact": {
+        "x": 500.0,
+        "y": 1.862645149230957e-09,
+        "z": 503.34735107421875
+      },
+      "actualContact": {
+        "x": 500.0,
+        "y": 1.862645149230957e-09,
+        "z": 503.34735107421875
+      }
+    },
+    {
+      "surface": "wall",
+      "requestedFrameSeconds": 0.10000000149011612,
+      "observedFrameSeconds": 0.10000000149011612,
+      "predictedTime": 0.31928789615631104,
+      "actualTime": 0.31928789615631104,
+      "centerError": 0.0,
+      "pointError": 0.0,
+      "normalError": 0.0,
+      "predictedCenter": {
+        "x": 500.0,
+        "y": 2.2859506607055664,
+        "z": 504.7650146484375
+      },
+      "actualCenter": {
+        "x": 500.0,
+        "y": 2.2859506607055664,
+        "z": 504.7650146484375
+      },
+      "predictedContact": {
+        "x": 500.0,
+        "y": 2.2860796451568604,
+        "z": 504.8499755859375
+      },
+      "actualContact": {
+        "x": 500.0,
+        "y": 2.2860796451568604,
+        "z": 504.8499755859375
+      }
+    },
+    {
+      "surface": "ceiling",
+      "requestedFrameSeconds": 0.10000000149011612,
+      "observedFrameSeconds": 0.10000000149011612,
+      "predictedTime": 0.14608757197856903,
+      "actualTime": 0.14608757197856903,
+      "centerError": 0.0,
+      "pointError": 0.0,
+      "normalError": 0.0,
+      "predictedCenter": {
+        "x": 500.0,
+        "y": 3.366842269897461,
+        "z": 501.9624938964844
+      },
+      "actualCenter": {
+        "x": 500.0,
+        "y": 3.366842269897461,
+        "z": 501.9624938964844
+      },
+      "predictedContact": {
+        "x": 500.0,
+        "y": 3.4499998092651367,
+        "z": 501.9664001464844
+      },
+      "actualContact": {
+        "x": 500.0,
+        "y": 3.4499998092651367,
+        "z": 501.9664001464844
+      }
+    },
+    {
+      "surface": "floor",
+      "requestedFrameSeconds": 0.008333333767950535,
+      "observedFrameSeconds": 0.008333333767950535,
+      "predictedTime": 0.26373180747032166,
+      "actualTime": 0.26373180747032166,
+      "centerError": 0.0,
+      "pointError": 0.0,
+      "normalError": 0.0,
+      "predictedCenter": {
+        "x": 500.0,
+        "y": 0.08252739906311035,
+        "z": 503.3430480957031
+      },
+      "actualCenter": {
+        "x": 500.0,
+        "y": 0.08252739906311035,
+        "z": 503.3430480957031
+      },
+      "predictedContact": {
+        "x": 500.0,
+        "y": 1.862645149230957e-09,
+        "z": 503.34735107421875
+      },
+      "actualContact": {
+        "x": 500.0,
+        "y": 1.862645149230957e-09,
+        "z": 503.34735107421875
+      }
+    },
+    {
+      "surface": "wall",
+      "requestedFrameSeconds": 0.008333333767950535,
+      "observedFrameSeconds": 0.008333333767950535,
+      "predictedTime": 0.31928789615631104,
+      "actualTime": 0.31928789615631104,
+      "centerError": 0.0,
+      "pointError": 0.0,
+      "normalError": 0.0,
+      "predictedCenter": {
+        "x": 500.0,
+        "y": 2.2859506607055664,
+        "z": 504.7650146484375
+      },
+      "actualCenter": {
+        "x": 500.0,
+        "y": 2.2859506607055664,
+        "z": 504.7650146484375
+      },
+      "predictedContact": {
+        "x": 500.0,
+        "y": 2.2860796451568604,
+        "z": 504.8499755859375
+      },
+      "actualContact": {
+        "x": 500.0,
+        "y": 2.2860796451568604,
+        "z": 504.8499755859375
+      }
+    },
+    {
+      "surface": "ceiling",
+      "requestedFrameSeconds": 0.008333333767950535,
+      "observedFrameSeconds": 0.008333333767950535,
+      "predictedTime": 0.14608757197856903,
+      "actualTime": 0.14608757197856903,
+      "centerError": 0.0,
+      "pointError": 0.0,
+      "normalError": 0.0,
+      "predictedCenter": {
+        "x": 500.0,
+        "y": 3.366842269897461,
+        "z": 501.9624938964844
+      },
+      "actualCenter": {
+        "x": 500.0,
+        "y": 3.366842269897461,
+        "z": 501.9624938964844
+      },
+      "predictedContact": {
+        "x": 500.0,
+        "y": 3.4499998092651367,
+        "z": 501.9664001464844
+      },
+      "actualContact": {
+        "x": 500.0,
+        "y": 3.4499998092651367,
+        "z": 501.9664001464844
+      }
+    }
+  ],
+  "visualReview": {
+    "reviewedNewWorldPngs": 12,
+    "observedChanges": [
+      "portrait then angry model",
+      "archive corner body",
+      "lantern then mask",
+      "mannequin turn"
+    ],
+    "findings": [
+      "Near-eye constant-width aim line renders as a thick wedge; taper is pending verification.",
+      "Full Wraith still shows a mask/body gap despite loose imported-bounds attachment; current visible-geometry anchoring is pending verification.",
+      "Nursery preparation captured at4.11158s, about12ms into250ms crossfade; later actual-pose frame is required."
+    ],
+    "priorUiReview": [
+      "title-large-720p readable six-line controls",
+      "pause-large-4x3 readable six-line controls"
+    ],
+    "notClaimed": "Human fear/fun, device listening, hardware performance, complete final visual acceptance"
+  }
+}

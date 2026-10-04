@@ -1,4 +1,19 @@
-# Distinct first appearances: source implementation, engine run pending
+# Build15 partial result and final corrections
+
+The first exact-source engine run passed 53/54 (6 Edit + 47 Play), all 10 new cases,
+and the full route. The strict export gate held on the existing stereo comparison:
+its camera retained the new first-sight fixture orientation. No new player exists
+from #15. The final correction restores/asserts the listener basis without changing
+any audio thresholds. Real PNG review also identified an overly thick near-eye
+line and a loose-bounds Wraith attachment gap; these are narrowly corrected.
+Baby's preparation image moves later into the unchanged actual crawl transition.
+
+Original 51 artifacts total 16,637,012 bytes. The documented aggregate bound is now
+18 MB to accommodate their measured size; individual 1.5 MB, file count 51, chunk/hash and
+decoding/type validation remain. Actual results and image findings are recorded
+in `../cloud-tests/build-15-*`. A final exact-source run remains pending.
+
+## Historical implementation/preflight scope (before build #15)
 
 The existing authored school, routes and original monster assets are retained.
 This iteration gives each first encounter a different physical rhythm rather than
@@ -56,7 +71,7 @@ The original curse timing, five-second transformation, waveform and fairness
 assertions are unchanged. No existing test is removed or silently skipped.
 
 Together with the four pending aim cases, the combined target is 54 tests
-(6 EditMode + 48 PlayMode). Evidence transport allows 51 files with unchanged 16 MB total
+(6 EditMode + 48 PlayMode). Evidence transport allows 51 files with 18 MB total
 and 1.5 MB single-file limits. Actual import, execution, render inspection, PCM checks
 and Windows export remain PENDING until one exact-source cloud run completes.
 
@@ -71,4 +86,11 @@ with new timing but are not claimed executed.
 Preflight: 113 C# sources, 886 GUIDs, all 80 Python cases (no skips), 143 existing
 pure C# assertions, protected authored-scene hashes and seven genuine Unity API
 compiler configurations pass. Source fingerprints match the frozen implementation.
-These reports are distinct from the still-pending actual 54-case engine run.
+The exact reports below now cover the final correction source. Build #15 completed 53/54; the corrected 54-case engine run remains pending.
+
+Final correction scope after actual image inspection: taper only the near-eye aim
+line width; sample the one settled Wraith's live skinned body bounds with a reusable
+Mesh/list and align the conservative static-mask extent with .035m overlap; restore
+the stereo fixture camera basis; and capture Baby at 4.65s after verifying its genuine
+crawl clip blend/hip pose. No AI timing, damage, resource count or audio threshold
+changes. The additional settled-actor geometry cost is not target-hardware profiled.

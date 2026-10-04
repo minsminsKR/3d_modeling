@@ -57,7 +57,10 @@ namespace HappyToy.V2
             Color color = contrast ? new Color(1f, .86f, .48f, .96f) : new Color(.84f, .74f, .51f, .72f);
             trajectory.startColor = trajectory.endColor = color;
             contact.startColor = contact.endColor = color;
-            trajectory.startWidth = trajectory.endWidth = contrast ? .025f : .018f;
+            // Perspective magnifies the near-eye segment: taper its world width
+            // so it stays a fine line rather than an opaque wedge across the view.
+            trajectory.startWidth = contrast ? .005f : .0035f;
+            trajectory.endWidth = contrast ? .025f : .018f;
             contact.startWidth = contact.endWidth = contrast ? .021f : .014f;
             trajectory.enabled = !forecast.InitialOverlap && forecast.PointCount > 1;
             trajectory.positionCount = forecast.PointCount;

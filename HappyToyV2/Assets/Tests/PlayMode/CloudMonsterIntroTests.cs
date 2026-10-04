@@ -114,6 +114,42 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Vector3.Distance(at, owner.transform.position), Is.LessThan(.015f));
             Assert.That(AudioListener.pause, Is.True); extra?.Invoke(); Call(shell, "Resume");
         }
+        static Bounds IntroTightVisibleBodyBounds(Transform root)
+        {
+            // Independently sample the rendered pose. Renderer.bounds is an animation
+            // culling envelope and must not establish the visible body's top edge.
+            var mesh = new Mesh(); var vertices = new List<Vector3>();
+            var bounds = new Bounds(); int count = 0;
+            try
+            {
+                foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                {
+                    if (!skin.enabled || !skin.gameObject.activeInHierarchy) continue; // Includes disabled Icosphere.
+                    mesh.Clear(); skin.BakeMesh(mesh); // Default useScale=false, matching authored fit convention.
+                    vertices.Clear(); mesh.GetVertices(vertices);
+                    foreach (var vertex in vertices)
+                    {
+                        Vector3 world = skin.transform.TransformPoint(vertex);
+                        if (count++ == 0) bounds = new Bounds(world, Vector3.zero); else bounds.Encapsulate(world);
+                    }
+                }
+                Assert.That(count, Is.GreaterThan(0), "Completed wraith has no enabled visible skin vertices");
+                return bounds;
+            }
+            finally { Object.Destroy(mesh); }
+        }
+        static Bounds IntroVisibleStaticMaskBounds(Transform root)
+        {
+            // The static imported mask mesh is unreadable at runtime. Its enabled
+            // MeshRenderer world bounds are a conservative envelope under tilt,
+            // explicitly not an exact sculpt-vertex measurement.
+            var renderers = root.GetComponentsInChildren<MeshRenderer>(true)
+                .Where(item => item.enabled && item.gameObject.activeInHierarchy).ToArray();
+            Assert.That(renderers.Length, Is.GreaterThan(0), "Completed wraith has no visible static mask renderers");
+            var bounds = renderers[0].bounds;
+            foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+            return bounds;
+        }
         IEnumerator IntroLanternPause(Component owner, bool toggleComfort, bool afterAttachedLateUpdate = false)
         {
             var mask = Get<Transform>(owner, "mask"); var body = Get<Transform>(owner, "body");
@@ -136,12 +172,17 @@ namespace HappyToy.V2.CloudTests
                     observer.ObserveOnce = () => {
                         Assert.That(Get<bool>(owner, "Transformed"), Is.True);
                         Assert.That(Get<float>(owner, "TransformProgress"), Is.EqualTo(1));
-                        var skin = body.GetComponentInChildren<SkinnedMeshRenderer>();
-                        Assert.That(skin, Is.Not.Null, "Completed wraith has no rendered skin for its attachment");
-                        var bounds = skin.bounds;
-                        Vector3 attached = new Vector3(bounds.center.x, bounds.max.y + .15f, bounds.center.z) + owner.transform.forward * .03f;
-                        Assert.That(Vector3.Distance(mask.position, attached), Is.LessThan(.0001f),
-                            "Post-LateUpdate mask was not attached to the actual rendered wraith bounds");
+                        Bounds bodyBounds = IntroTightVisibleBodyBounds(body);
+                        Bounds maskBounds = IntroVisibleStaticMaskBounds(mask);
+                        float edgeSeparation = maskBounds.min.y - bodyBounds.max.y;
+                        // Small inset accounts for the static tilted-mask envelope's conservatism.
+                        Assert.That(edgeSeparation, Is.EqualTo(-.035f).Within(.003f),
+                            "Visible mask lower edge did not meet the actual baked body's top edge");
+                        Vector3 lateral = bodyBounds.center + owner.transform.forward * .03f;
+                        Assert.That(maskBounds.center.x, Is.EqualTo(lateral.x).Within(.003f));
+                        Assert.That(maskBounds.center.z, Is.EqualTo(lateral.z).Within(.003f));
+                        TestContext.Out.WriteLine("HAPPYTOY_WRAITH_VISIBLE_JOIN tightBodyTop=" + bodyBounds.max.y +
+                            "; conservativeStaticMaskBottom=" + maskBounds.min.y + "; edgeSeparation=" + edgeSeparation);
                         pauseAndSnapshot();
                     };
                     yield return Wait(() => observer.Completed, 2, "Post-LateUpdate attachment observation never ran");
@@ -349,11 +390,25 @@ namespace HappyToy.V2.CloudTests
             IntroBrainSafe(brain); Assert.That(brain.GetComponent<NavMeshAgent>().enabled, Is.False);
             yield return Wait(() => IntroClock(owner) >= .6f, 2, "Nursery clock did not advance");
             Assert.That(IntroPhase(owner), Is.EqualTo("cry")); IntroFrame(owner, "intro-nursery-cry.png");
+            var animation = brain.GetComponentInChildren<Animation>();
+            Assert.That(animation, Is.Not.Null);
+            var hips = brain.GetComponentsInChildren<Transform>().Single(item => item.name == "mixamorig:Hips");
+            Quaternion cryHips = hips.localRotation;
             yield return IntroPause(owner, () => IntroBrainSafe(brain));
-            yield return Wait(() => IntroPhase(owner) == "crawlReady", 6, "Nursery never prepared its real crawl animation");
+            yield return Wait(() => IntroPhase(owner) == "crawlReady" && IntroClock(owner) >= 4.65f, 6,
+                "Nursery never reached its settled pre-release crawl pose");
+            Assert.That(IntroPhase(owner), Is.EqualTo("crawlReady"));
+            Assert.That(IntroClock(owner), Is.LessThan(5));
             IntroBrainSafe(brain); Assert.That(brain.GetComponent<NavMeshAgent>().enabled, Is.False);
+            Assert.That(animation.IsPlaying("patrol"), Is.True);
+            Assert.That(animation["patrol"].weight, Is.GreaterThan(.95f));
+            Assert.That(animation["patrol"].time, Is.GreaterThan(.1f));
+            float hipPoseChange = Quaternion.Angle(cryHips, hips.localRotation);
+            Assert.That(hipPoseChange, Is.GreaterThanOrEqualTo(25), "Patrol state did not produce an actual crawl-pose change");
             Assert.That(Get<int>(owner, "PreparationContacts"), Is.EqualTo(1));
             IntroFrame(owner, "intro-nursery-prepare.png");
+            TestContext.Out.WriteLine("HAPPYTOY_NURSERY_POSE elapsed=" + IntroClock(owner) + "; patrolTime=" + animation["patrol"].time +
+                "; patrolWeight=" + animation["patrol"].weight + "; hipPoseChangeDegrees=" + hipPoseChange);
             Assert.That(Vector3.Distance(start, brain.transform.position), Is.LessThan(.015f));
             PlacePlayer(room + Vector3.up * 5, false);
             yield return Wait(() => Get<bool>(owner, "Released"), 3, "Retreat deadlocked nursery release");

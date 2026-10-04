@@ -30,8 +30,9 @@ PlayMode 38/38 검사와 Windows 빌드가 모두 성공**했고 실패/건너�
 기존 실행본도 보존했고, 상업 배포 준비 변경은 포함하지 않았습니다.
 
 다음 소스에는 몬스터별 첫 등장 연출과 선택적 우클릭 폭죽 조준을 추가하고 있습니다. Q 즉시 투척과
-2개 제한을 유지하며 첫 충돌만 예측합니다. 이 변경의 실제 Unity 검증과
-새 실행본은 아직 대기 중입니다. [조준 검증 계획](Verification/firecracker-aim/README.md) · [등장 연출 검증 계획](Verification/monster-intros/README.md)
+2개 제한을 유지하며 첫 충돌만 예측합니다. #15에서는 새 10개 사례가 실제
+통과했지만 전체 53/54로 출력이 중단됐습니다. 좁은 검사/시각 수정의 최종
+검증과 새 실행본은 아직 대기 중입니다. [조준 검증 계획](Verification/firecracker-aim/README.md) · [등장 연출 검증 계획](Verification/monster-intros/README.md)
 
 - [이번 개인용 플레이 개선](PERSONAL_PLAY.md)
 - [실제 엔진 검사와 소스별 증거](CLOUD_QA.md)

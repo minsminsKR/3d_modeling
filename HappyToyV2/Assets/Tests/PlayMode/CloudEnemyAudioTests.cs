@@ -24,7 +24,7 @@ namespace HappyToy.V2.CloudTests
             public string[] playbackProfiles;
             public Vector3[] playbackPositions;
             public bool paused, occluded, floorOccluded, inRange, physicalCaptionAudibility, simultaneous;
-            public Vector3 listenerPosition, sourcePosition;
+            public Vector3 listenerPosition, sourcePosition, listenerForward, listenerRight, listenerUp;
             public double peak, rms, leftRms, rightRms;
         }
         [Serializable] internal sealed class Report
@@ -54,6 +54,7 @@ namespace HappyToy.V2.CloudTests
                 floorOccluded = Get<bool>(acoustics, "FloorOccluded"), inRange = Get<bool>(acoustics, "InAudibleRange"),
                 physicalCaptionAudibility = (bool)Call(acoustics, "IsAudible", source),
                 listenerPosition = camera.transform.position, sourcePosition = source.transform.position,
+                listenerForward = camera.transform.forward, listenerRight = camera.transform.right, listenerUp = camera.transform.up,
                 sourceDistance = Vector3.Distance(camera.transform.position, source.transform.position), simultaneous = simultaneous,
                 peak = values.Max(value => Math.Abs(value)), rms = Math.Sqrt(values.Average(value => value * (double)value)),
                 leftRms = Math.Sqrt(left / (values.Count / 2)), rightRms = Math.Sqrt(right / (values.Count / 2)),
@@ -365,7 +366,13 @@ namespace HappyToy.V2.CloudTests
                 yield return Wait(() => Get<object>(lanternSteps, "Profile").ToString() == "Wraith", 1, "Natural transformation did not update the movement profile");
                 ((Behaviour)lantern).enabled = false;
                 PositionAudioFixture(lanternSteps, fixture + Vector3.forward * 3); PlacePlayer(fixture, false);
-                yield return null;
+                // The genuine first-sight contact fixture turns the listener. Restore
+                // the isolated world's declared basis before its directional samples.
+                camera.transform.localRotation = Quaternion.identity;
+                Physics.SyncTransforms(); yield return null;
+                Assert.That(Vector3.Angle(camera.transform.forward, Vector3.forward), Is.LessThan(.001f));
+                Assert.That(Vector3.Angle(camera.transform.right, Vector3.right), Is.LessThan(.001f));
+                Assert.That(Vector3.Angle(camera.transform.up, Vector3.up), Is.LessThan(.001f));
                 Assert.That(Get<object>(lanternSteps, "Profile").ToString(), Is.EqualTo("Wraith"));
                 yield return CaptureEnemySegment("identity-Wraith", lanternSteps, rate, montage, segments);
                 var primary = stalkers[0];
@@ -418,6 +425,14 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(floor.occluded && floor.floorOccluded, Is.True);
                 Assert.That(floor.sourceGain, Is.LessThan(blocked.sourceGain), "A blocked different floor needs stronger separation");
                 Assert.That(floor.rms, Is.LessThan(vertical.rms * .65), "Solid floor failed to reduce the real engine mix");
+                foreach (string side in new[] { "left", "right" })
+                {
+                    var sample = byName[side];
+                    Assert.That(Vector3.Angle(sample.listenerForward, Vector3.forward), Is.LessThan(.001f));
+                    Assert.That(Vector3.Angle(sample.listenerRight, Vector3.right), Is.LessThan(.001f));
+                    float lateral = Vector3.Dot(sample.sourcePosition - sample.listenerPosition, sample.listenerRight);
+                    Assert.That(side == "left" ? lateral < 0 : lateral > 0, Is.True, "Stereo fixture mislabeled listener-relative side");
+                }
                 Assert.That(byName["left"].leftRms, Is.GreaterThan(byName["left"].rightRms * 1.1));
                 Assert.That(byName["right"].rightRms, Is.GreaterThan(byName["right"].leftRms * 1.1));
                 Assert.That(byName["master-zero"].listenerVolume, Is.Zero);
