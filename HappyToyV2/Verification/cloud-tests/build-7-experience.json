@@ -1,0 +1,163 @@
+{
+  "build": 7,
+  "source": "b4a454e6fcf30d4716972101fafa2350f2b0d0e7",
+  "scope": "Actual PlayMode evidence and diagnostic listener PCM; EditMode unverified, strict audio failed, no new player export. Not human balance, device listening or target-hardware certification.",
+  "transport": {
+    "scope": "Hash-verified real-engine output transport; not manual, hardware-performance or device-listening certification",
+    "build": 7,
+    "commit": "b4a454e6fcf30d4716972101fafa2350f2b0d0e7",
+    "provenanceNote": "Build and commit supplied from independently inspected UBA checkout; envelope alone does not prove the revision",
+    "input": "build-7-playmode.xml",
+    "inputSha256": "2b46f8de7db3b2cb314f14a4ed4fd3747d9dedac3cc8686b4bd531a47708539c",
+    "artifacts": [
+      {
+        "filename": "title-720p.png",
+        "bytes": 95138,
+        "sha256": "6051bbf91931bb6a2c9dbc50cfb995a6e4bdefa6036f07ba23e180a77ab2db78"
+      },
+      {
+        "filename": "settings-large-1280x720.png",
+        "bytes": 86864,
+        "sha256": "ebe99171a73c55a9ef2e73045c98cc5420d4091f5dc013b4c58ea72cbe515ce9"
+      },
+      {
+        "filename": "settings-large-1024x768.png",
+        "bytes": 69532,
+        "sha256": "f2687b008ea7bfda269009c684e3ed809ad4f8acf96b32aa878d9f963db24a70"
+      },
+      {
+        "filename": "settings-large-2560x1080.png",
+        "bytes": 156845,
+        "sha256": "fcf94ffe4143bceac13859e8f6b2c3dadc0934d9eb0698f2873bf1fe28d7e29f"
+      },
+      {
+        "filename": "title-large-720p.png",
+        "bytes": 104804,
+        "sha256": "a3914aed6a497b607ce1df44e95c506b6e931f01411783fb52c5043b0e62dc81"
+      },
+      {
+        "filename": "pause-large-4x3.png",
+        "bytes": 78441,
+        "sha256": "67dacfe2f4a0adbd763f91c874f9441e55fb4c14453f736cc83a389d603ead30"
+      },
+      {
+        "filename": "hud-large-720p.png",
+        "bytes": 53373,
+        "sha256": "20696879aeaaafe900c4e19f0dea5057335974738927e81dacd88e252bf00bdb"
+      },
+      {
+        "filename": "journal-1080p.png",
+        "bytes": 134330,
+        "sha256": "06fe6c4deea3e8f2903775a4a5baef0314203c0aece9d612d0d3ed55e5c7fc4b"
+      },
+      {
+        "filename": "authored-start-camera.png",
+        "bytes": 650870,
+        "sha256": "32902c8a8458968ff5f29f742409b0081b7be530f58a596089fa152f804d40b4"
+      },
+      {
+        "filename": "diagnostic-listener-before-render.json",
+        "bytes": 13184,
+        "sha256": "4688f37f383620b4cbf6f88761b5df69acb56a864b162e6adbf761b0a7d0fdd3"
+      },
+      {
+        "filename": "diagnostic-listener-before-render.wav",
+        "bytes": 192044,
+        "sha256": "588c723400a3dd539fe2d77a29095e1c5a0b4cd6c7f77261ae30a1b595d0a667"
+      }
+    ],
+    "metrics": [
+      "HAPPYTOY_RENDER_METRICS device=Microsoft Basic Render Driver; api=Direct3D12; cpu=INTEL(R) XEON(R) PLATINUM 8573C; resolution=960x540; offscreenRenderAndFullReadbackMs=658.150,160.467,160.731,161.610,153.707,154.945; firstSampleIncludesWarmup=true; presentedFps=false; targetHardwareCertification=false; managedBytes=42803200"
+    ]
+  },
+  "survival": {
+    "passed": true,
+    "stage": "exit",
+    "destination": "(-7.32, 0.03, 0.59)",
+    "diagnostic": "stage=exit, destination=(-7.32, 0.03, 0.59), game=80.13, wall=80.15, records=7, defeat=, hint=문을 닫아 시선을 끊고, 숨을 회복한 뒤 이동하세요., stamina=0.98, hidden=False, focus=none, collision=Below, dynamicUpdates=9445, CPress=False, WHeld=True, inputAllowed=False, crouching=False, eyeY=1.60718, grounded=True, speed=0, position=(-7.19, 0.08, 0.63), footsteps=169, nursery=True/True, upper=resolved, uncat=True/True, lantern=Resolved, mannequin=False; V1 Cyclopse active=False state=Patrol at=(22.77, 0.03, 7.83) attacks=1 awareness=0.00; V1 Hwacat_angry active=False state=Patrol at=(29.80, 5.03, 32.40) attacks=0 awareness=0.00; V1 Baby — nursery encounter active=False state=Patrol at=(13.99, -4.97, -26.65) attacks=0 awareness=0.00; V1 Uncat — archive emergence active=False state=Patrol at=(13.87, 0.03, -2.64) attacks=0 awareness=0.00",
+    "milestones": [
+      "0.05s Started at the authored spawn with every encounter enabled at (-7.80, 0.08, 0.00)",
+      "2.06s CLASSROOM opened by E at (-4.63, 0.08, 0.00)",
+      "2.78s WASHROOM opened by E at (-4.63, 0.08, 0.00)",
+      "5.87s Recovered register at (-5.44, 0.08, 7.42)",
+      "8.89s Flashlight off through F at (-4.51, 0.08, 0.16)",
+      "9.96s Recovered ribbon at (-3.60, 0.08, -2.19)",
+      "26.46s upper ascent physically completed at (29.80, 5.08, 21.85)",
+      "30.50s Recovered record at (30.98, 5.08, 32.14)",
+      "37.57s upper descent physically completed at (29.80, 0.08, 10.11)",
+      "39.07s Recovered music-roster at (24.62, 0.08, 11.79)",
+      "40.16s Entered music cabinet through E at (20.20, 0.00, 13.85)",
+      "41.25s Left music cabinet through E at (20.20, 0.00, 12.75)",
+      "49.89s archive diversion thrown through Q at (20.85, 0.08, -12.82)",
+      "49.93s Recovered archive-record at (20.85, 0.08, -12.82)",
+      "57.64s basement descent physically completed at (13.80, -4.92, -21.82)",
+      "57.68s nursery diversion thrown through Q at (13.80, -4.92, -21.82)",
+      "58.34s Nursery warning triggered by actual entry at (14.93, -4.92, -23.86)",
+      "59.77s Recovered nursery-tag at (18.40, -4.92, -26.92)",
+      "65.00s basement ascent physically completed at (13.80, 0.08, -10.15)",
+      "75.73s Recovered restore at (-2.98, 0.08, 7.64)",
+      "80.13s Escaped with all seven records through real input at (-7.19, 0.08, 0.63)"
+    ],
+    "gameSeconds": 80.13211059570312,
+    "wallSeconds": 80.14509582519531,
+    "physicalMeters": 237.72959899902344,
+    "minY": -4.920000076293945,
+    "maxY": 5.080000400543213,
+    "records": 7,
+    "movementUpdates": 3952,
+    "groundedFrames": 9049,
+    "stairLegs": 4,
+    "hidingEntries": 1,
+    "firecrackersThrown": 2,
+    "maximumLiveStalkers": 4
+  },
+  "wave_pcm_validation": {
+    "channels": 2,
+    "sampleWidth": 2,
+    "rate": 48000,
+    "frames": 48000,
+    "compression": "NONE",
+    "bytes": 192044,
+    "sha256": "588c723400a3dd539fe2d77a29095e1c5a0b4cd6c7f77261ae30a1b595d0a667",
+    "interleavedSamples": 96000,
+    "nonzeroSamples": 49525,
+    "peak": 0.013733329264198737,
+    "rms": 0.0010425337920588601,
+    "minimum": -426,
+    "maximum": 450,
+    "durationSeconds": 1.0
+  },
+  "visual_review": {
+    "png_count": 9,
+    "known_identical_to_build6": [
+      "title-720p.png",
+      "settings-large-1280x720.png",
+      "settings-large-1024x768.png",
+      "title-large-720p.png",
+      "hud-large-720p.png",
+      "journal-1080p.png",
+      "authored-start-camera.png"
+    ],
+    "changed_and_viewed": [
+      "pause-large-4x3.png",
+      "settings-large-2560x1080.png"
+    ],
+    "finding": "Pause caption now says 주요 단계 0 / 4 and fits. Changed ultrawide settings has no obvious clipping. Seven other PNGs are byte-identical to previously viewed build6 evidence. The camera remains one starting view; no new continuous pursuit animation footage."
+  },
+  "editmode_diagnosis": {
+    "observed": "Process stops during first MonoManager ReloadAssembly after module registration. No NUnit XML, test-completion marker, C# compiler error or specific crash cause is present. Actual command does not include -quit. Later PlayMode process imports and runs successfully.",
+    "inference": "Cause unresolved; do not infer pass or add six old passes to the current result."
+  },
+  "audio_interpretation": {
+    "verified": "Before AudioRenderer.Start the actual listener captured 96000 finite non-clipping stereo samples and DSP advanced 1.0026667s. After Start, 961 capture-count polls all returned0 and no Render call occurred; DSP stayed fixed for8.0029179wall seconds.",
+    "inference": "The ordinary game mix/DSP ran in this environment. Failure is localized to the recording-mode/polling path, not proved absent game audio. Exact renderer bootstrap cause is unverified.",
+    "not_verified": [
+      "AudioRenderer acceptance",
+      "flashlight isolated audibility",
+      "pause/resume mix",
+      "footstep/firecracker mixed audibility",
+      "spatial attenuation",
+      "speaker/headphone output"
+    ]
+  }
+}

@@ -1,8 +1,23 @@
 # Unity Build Automation: real scene tests
 
-## New pursuit iteration: source implemented, engine rerun pending
+## Latest engine result: #7 pursuit cases passed, audio gate failed; EditMode unverified
 
-The current suite has **6 EditMode + 15 PlayMode tests (21 total)**. Five new controlled fixtures are pending actual Unity execution; the last engine-tested revision remains `e3122fb` / build #6 below. No new successful Windows export or audio acceptance is claimed.
+Pinned source `b4a454e6fcf30d4716972101fafa2350f2b0d0e7`, Unity6000.6.0f1 / Windows Micro. **PlayMode14/15 passed,1 failed,0 skipped/inconclusive. Six EditMode tests are unverified in this run**: that process shut down during its first assembly reload after9.667seconds, without an XML artifact or test-completion marker. No specific crash cause appears in the available log. The later PlayMode process compiled and ran the same source. This is **not20/21 passed**. Terminal build status is FAILURE; no player was exported.
+
+Actual new outcomes:
+- All five pursuit fixtures passed: occlusion-preserved evidence, arrival look-around and local movement, pause/reacquisition/bounded search, rejected-route fallback, actual cabinet witness versus unseen hiding, blocked exit, repeated-entry vulnerability, real Q/fuse/finite inventory/decoy expiry, and lantern own-floor sound investigation with the player at another floor height
+- The unchanged all-encounters-enabled real-input seven-record strategy passed in **80.132gameplay seconds /237.730meters**, four stairs, one cabinet, two firecrackers and3952motor updates. The final route diagnostic records one stalker attack started. This remains one map-aware automated strategy, not human balance or every encounter
+- All listed camera/sign/UI tests passed again. Nine PNGs were hash verified. Seven are byte-identical to build#6; the changed pause and ultrawide settings images were viewed. The clarified pause caption **주요 단계0/4** is now engine-rendered and fits
+
+Audio diagnosis made a real distinction: before recording mode, the actual listener callback captured **96,000real samples at48kHz stereo (one second)** in47callbacks, with0nonfinite/0clipped, float peak0.0137448/RMS0.00104616 and DSP advancing1.002667seconds. The original192,044-byte PCM WAV was recovered from XML and independently validated (48,000frames,49,525nonzero16-bit samples, SHA256`588c723400a3dd539fe2d77a29095e1c5a0b4cd6c7f77261ae30a1b595d0a667`). This is actual pre-device game-mix evidence, not a synthetic waveform or listening certification.
+
+After `AudioRenderer.Start`, all961sample-count polls returned0 over8.0029wall seconds; no Render call occurred and DSP stayed178.112→178.112. The strict96,000-sample gate failed. This localizes the failure to the recording/polling path; it does not prove the exact cause or satisfy flashlight/pause/device acceptance. A subsequent narrow experiment follows [official Recorder5.1.7](https://download.packages.unity.com/com.unity.recorder/-/com.unity.recorder-5.1.7.tgz), package/Editor/Sources/Recorders/_Inputs/Audio/AudioInput.cs, `AudioInput.NewFrameReady` (registry SHA1 verified `0b23bb7a1fb4a062b8640ef5b1d174ca9b070467`): call Render even when the allocated capture-frame buffer has zero length, add no samples for such a call, and keep all existing positive-buffer, completeness, nonzero, clipping and pause assertions. No guessed positive buffer or test exclusion is permitted. This subsequent change is **not covered by #7**.
+
+Exact case/log hashes are in `Verification/cloud-tests/build-7-results.json`; survival, WAV validation, image hashes and interpretation boundaries are in `build-7-experience.json`. Last successful player export remains#4. Fresh EditMode XML and the complete strict audio result are required from a later pinned run.
+
+## Pursuit implementation and fixture scope
+
+The current suite has **6 EditMode + 15 PlayMode tests (21 total)**. Build#7 passed all five new controlled fixtures; its exact partial-suite outcome and remaining gates are above. No new successful Windows export or AudioRenderer acceptance is claimed.
 
 Two concrete runtime gaps were found in the source:
 - `StalkerBrain.Search` repeatedly routed to one stale point, with no local movement or look-around. It now preserves the last confirmed evidence as an anchor, first reaches/attempts that point, then scans and chooses bounded reachable same-floor branches. Transit is capped at four seconds and actual local inspection at 6.5 seconds. Route rejection starts a bounded fallback scan; it cannot trap the state forever or count an unreachable point as visited. Only renewed sight or an accepted real sound updates confirmed evidence
@@ -12,7 +27,7 @@ New `CloudPursuitTests` cases cover actual brain/NavMesh state loops, sight barr
 
 The audio gate remains strict and unchanged. A new **diagnostic-only** listener `OnAudioFilterRead` probe observes up to one second of the authored game's genuine pre-device mix before `AudioRenderer.Start`, with a three-second wall watchdog. It copies incoming data without altering it or generating samples, reports missing/partial/complete data plus DSP/source progress, and emits a WAV only for real nonempty finite stereo samples. It does not substitute for the renderer/nonzero/clipping/pause assertions or certify device listening. Renderer polling now reports DSP deltas, capture-frame counts and actual Render-call count, so zero returned counts can be distinguished from silent rendered samples. The original #6 zero-sample failure remains recorded.
 
-Source preflight is recorded under `Verification/cloud-tests/pursuit-preflight/`; these reports are external compilation/static/pure-C# checks, **not Unity execution**. A new pinned UBA run must evaluate all 21 tests, the existing full route and strict audio gate before any runtime improvement is called verified.
+Source preflight is recorded under `Verification/cloud-tests/pursuit-preflight/`; these reports are external compilation/static/pure-C# checks, **not Unity execution**. Build#7 subsequently exercised all15PlayMode tests as above. The missing six EditMode results and strict audio failure still require a later pinned run.
 
 ## Latest engine result: build #6 failed only on audio capture, 15/16 passed
 

@@ -1,6 +1,8 @@
-# Pursuit iteration preflight
+# Current pursuit and audio evidence
 
-The current source defines **21 actual Unity tests (6 EditMode + 15 PlayMode)**, including five new controlled pursuit/hiding/item cases. They are engine-rerun pending. The evidence-anchored local search, lantern own-floor investigation fix and separate listener PCM diagnostics are described in `CLOUD_QA.md`; the strict audio acceptance criteria remain unchanged. `Verification/cloud-tests/pursuit-preflight/` is source/API evidence only. Latest completed engine evidence is still build #6 at `e3122fb`, 15/16 passed with audio capture failed and no player export.
+The source defines **21 Unity tests (6 EditMode +15 PlayMode)**. Actual build#7 at `b4a454e` passed14/15PlayMode, including all five new pursuit fixtures and the real-input full route. AudioRenderer failed. The EditMode process ended before producing results, so its6tests are **unverified**, not old passes to add to the total. No new player export.
+
+A hash-verified genuine one-second listener PCM diagnostic establishes ordinary game mixing before recording mode; it does not replace the failed renderer/pause/device gates. A subsequent official-Recorder-style zero-length Render pump is a targeted pending experiment with all strict assertions retained. See `CLOUD_QA.md` and `Verification/cloud-tests/build-7-{results,experience}.json` for exact scope. `pursuit-preflight/` remains source/API evidence tied to its own source manifest.
 
 # Build #6 experience and packaging tools
 

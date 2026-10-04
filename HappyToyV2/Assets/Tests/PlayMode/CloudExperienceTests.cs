@@ -274,6 +274,8 @@ namespace HappyToy.V2.CloudTests
             double dspStart = AudioSettings.dspTime;
             var elapsed = System.Diagnostics.Stopwatch.StartNew();
             int polls = 0, maxReported = 0, renderCalls = 0;
+            const int maxEmptyRenderCalls = 1024;
+            int emptyRenderCalls = 0, emptyRenderTrue = 0, emptyRenderFalse = 0;
             float until = Time.realtimeSinceStartup + timeout;
             while (samples.Count < target && Time.realtimeSinceStartup < until)
             {
@@ -281,7 +283,33 @@ namespace HappyToy.V2.CloudTests
                 int count = AudioRenderer.GetSampleCountForCaptureFrame();
                 polls++; maxReported = Math.Max(maxReported, count);
                 Assert.That(count, Is.InRange(0, AudioSettings.outputSampleRate * 2), "Unbounded capture-frame sample count");
-                if (count == 0) continue;
+                if (count == 0)
+                {
+                    // Recorder 5.1.7 AudioInput.NewFrameReady also calls Render
+                    // with sampleFrameCount * channels when sampleFrameCount is zero.
+                    // A bounded diagnostic pump, never a fabricated positive buffer.
+                    if (emptyRenderCalls < maxEmptyRenderCalls)
+                    {
+                        double before = AudioSettings.dspTime;
+                        bool rendered;
+                        using (var empty = new NativeArray<float>(0, Allocator.Temp))
+                        {
+                            renderCalls++; emptyRenderCalls++;
+                            rendered = AudioRenderer.Render(empty);
+                        }
+                        if (rendered) emptyRenderTrue++; else emptyRenderFalse++;
+                        double after = AudioSettings.dspTime;
+                        int countAfter = AudioRenderer.GetSampleCountForCaptureFrame();
+                        maxReported = Math.Max(maxReported, countAfter);
+                        if (emptyRenderCalls <= 4 || emptyRenderCalls == maxEmptyRenderCalls || countAfter != 0 || after != before)
+                            TestContext.Out.WriteLine("HAPPYTOY_AUDIO_EMPTY_RENDER_DIAGNOSTIC " + JsonUtility.ToJson(new EmptyAudioRenderDiagnostic
+                            {
+                                attempt = emptyRenderCalls, countBefore = count, countAfter = countAfter,
+                                returned = rendered, dspBefore = before, dspAfter = after, dspDelta = after - before
+                            }));
+                    }
+                    continue; // An empty Render contributes zero samples, regardless of return value.
+                }
                 using (var buffer = new NativeArray<float>(count * 2, Allocator.Temp))
                 {
                     renderCalls++;
@@ -299,6 +327,8 @@ namespace HappyToy.V2.CloudTests
             {
                 targetSamples = target, actualSamples = samples.Count, polls = polls, maxReported = maxReported,
                 renderCalls = renderCalls, wallSeconds = elapsed.Elapsed.TotalSeconds,
+                emptyRenderCalls = emptyRenderCalls, emptyRenderTrue = emptyRenderTrue, emptyRenderFalse = emptyRenderFalse,
+                maxEmptyRenderCalls = maxEmptyRenderCalls, positiveRenderCalls = renderCalls - emptyRenderCalls,
                 dspStart = dspStart, dspEnd = dspEnd, dspDelta = dspEnd - dspStart,
                 listenerPause = AudioListener.pause, timeScale = Time.timeScale
             }));
@@ -313,9 +343,18 @@ namespace HappyToy.V2.CloudTests
         sealed class AudioRendererDiagnostic
         {
             public int targetSamples, actualSamples, polls, maxReported, renderCalls;
+            public int emptyRenderCalls, emptyRenderTrue, emptyRenderFalse, maxEmptyRenderCalls, positiveRenderCalls;
             public double wallSeconds, dspStart, dspEnd, dspDelta;
             public bool listenerPause;
             public float timeScale;
+        }
+
+        [Serializable]
+        sealed class EmptyAudioRenderDiagnostic
+        {
+            public int attempt, countBefore, countAfter;
+            public bool returned;
+            public double dspBefore, dspAfter, dspDelta;
         }
 
         [Serializable]
@@ -323,7 +362,7 @@ namespace HappyToy.V2.CloudTests
         {
             public string name, entityId, clip, loadState;
             public int timeSamples;
-            public bool enabled, active, playing, virtualVoice, mute, ignoreListenerPause;
+            public bool enabled, active, playing, virtualVoice, mute, ignoreListenerPause, timeSamplesAvailable;
             public float volume, pitch, spatialBlend;
         }
 
@@ -355,7 +394,8 @@ namespace HappyToy.V2.CloudTests
                 enabled = source.enabled, active = source.gameObject.activeInHierarchy,
                 playing = source.isPlaying, virtualVoice = source.isVirtual, mute = source.mute,
                 ignoreListenerPause = source.ignoreListenerPause, volume = source.volume,
-                pitch = source.pitch, spatialBlend = source.spatialBlend, timeSamples = source.timeSamples,
+                pitch = source.pitch, spatialBlend = source.spatialBlend,
+                timeSamplesAvailable = source.clip != null, timeSamples = source.clip ? source.timeSamples : -1,
                 clip = source.clip ? source.clip.name : "", loadState = source.clip ? source.clip.loadState.ToString() : "no assigned clip"
             }).ToArray();
         }
