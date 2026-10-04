@@ -222,13 +222,16 @@ namespace HappyToy.V2.CloudTests
             Assert.That(AudioSettings.speakerMode, Is.EqualTo(AudioSpeakerMode.Stereo), "Capture channel contract requires the configured stereo mix");
             int rate = AudioSettings.outputSampleRate;
             Assert.That(rate, Is.InRange(8000, 192000));
+            // Independent observation before recording mode can affect the mixer.
+            // It never supplies samples or a passing result to the strict gate below.
+            yield return ObserveRealListenerBeforeRecording(rate);
             float oldCaptureDeltaTime = Time.captureDeltaTime;
             bool started = false;
             var active = new List<float>(); var paused = new List<float>();
             try
             {
                 // Follow Unity Recorder's constant-rate capture path before starting
-                // AudioRenderer. This isolated DSP fixture tests that supported path;
+                // AudioRenderer. This fixture tests whether it works on this worker;
                 // it does not change the survival route or claim realtime performance.
                 Time.captureDeltaTime = 1f / 60f;
                 yield return null;
@@ -268,15 +271,20 @@ namespace HappyToy.V2.CloudTests
         }
         static IEnumerator CaptureAudio(List<float> samples, int target, float timeout)
         {
+            double dspStart = AudioSettings.dspTime;
+            var elapsed = System.Diagnostics.Stopwatch.StartNew();
+            int polls = 0, maxReported = 0, renderCalls = 0;
             float until = Time.realtimeSinceStartup + timeout;
             while (samples.Count < target && Time.realtimeSinceStartup < until)
             {
                 yield return null;
                 int count = AudioRenderer.GetSampleCountForCaptureFrame();
+                polls++; maxReported = Math.Max(maxReported, count);
                 Assert.That(count, Is.InRange(0, AudioSettings.outputSampleRate * 2), "Unbounded capture-frame sample count");
                 if (count == 0) continue;
                 using (var buffer = new NativeArray<float>(count * 2, Allocator.Temp))
                 {
+                    renderCalls++;
                     Assert.That(AudioRenderer.Render(buffer), Is.True, "Actual Unity audio rendering failed");
                     for (int i = 0; i < buffer.Length && samples.Count < target; i++)
                     {
@@ -286,11 +294,138 @@ namespace HappyToy.V2.CloudTests
                     }
                 }
             }
+            double dspEnd = AudioSettings.dspTime;
+            TestContext.Out.WriteLine("HAPPYTOY_AUDIO_RENDER_DIAGNOSTIC " + JsonUtility.ToJson(new AudioRendererDiagnostic
+            {
+                targetSamples = target, actualSamples = samples.Count, polls = polls, maxReported = maxReported,
+                renderCalls = renderCalls, wallSeconds = elapsed.Elapsed.TotalSeconds,
+                dspStart = dspStart, dspEnd = dspEnd, dspDelta = dspEnd - dspStart,
+                listenerPause = AudioListener.pause, timeScale = Time.timeScale
+            }));
             Assert.That(samples.Count, Is.EqualTo(target), "No complete actual audio capture before cloud watchdog; " +
                 "captureDeltaTime=" + Time.captureDeltaTime + ", captureFramerate=" + Time.captureFramerate +
                 ", deltaTime=" + Time.deltaTime + ", unscaledDeltaTime=" + Time.unscaledDeltaTime +
                 ", dspTime=" + AudioSettings.dspTime + ", listenerPause=" + AudioListener.pause +
                 ", timeScale=" + Time.timeScale + ", driverCapabilities=" + AudioSettings.driverCapabilities);
+        }
+
+        [Serializable]
+        sealed class AudioRendererDiagnostic
+        {
+            public int targetSamples, actualSamples, polls, maxReported, renderCalls;
+            public double wallSeconds, dspStart, dspEnd, dspDelta;
+            public bool listenerPause;
+            public float timeScale;
+        }
+
+        [Serializable]
+        sealed class AudioSourceDiagnostic
+        {
+            public string name, entityId, clip, loadState;
+            public int timeSamples;
+            public bool enabled, active, playing, virtualVoice, mute, ignoreListenerPause;
+            public float volume, pitch, spatialBlend;
+        }
+
+        [Serializable]
+        sealed class ListenerAudioDiagnostic
+        {
+            public string capture = "Unity listener DSP callback; pre-device; diagnostic only";
+            public string phase = "before AudioRenderer.Start";
+            public bool substitutesForRendererAcceptance = false, deviceListeningCertification = false;
+            public string status = "missing", waveArtifact = "";
+            public int rate, targetSamples, capturedSamples, callbacks, channels, nonfiniteSamples, clippedSamples;
+            public int dspBufferLength, dspBufferCount, sourceCountBefore, sourceCountAfter;
+            public long observedSamples;
+            public bool complete, channelChanged, batchMode, focused, runInBackground, listenerPauseBefore, listenerPauseAfter;
+            public float listenerVolumeBefore, listenerVolumeAfter, timeScaleBefore, timeScaleAfter;
+            public double wallSeconds, dspStart, dspEnd, dspDelta, peak, rms;
+            public string[] activeListeners;
+            public AudioSourceDiagnostic[] sourcesBefore, sourcesAfter;
+        }
+
+        static AudioSourceDiagnostic[] AudioSourceDiagnostics(out int total)
+        {
+            var sources = Object.FindObjectsByType<AudioSource>(FindObjectsSortMode.None);
+            total = sources.Length;
+            // Bounded evidence, with the full source count reported separately.
+            return sources.OrderBy(source => source.GetEntityId().ToString()).Take(64).Select(source => new AudioSourceDiagnostic
+            {
+                name = source.gameObject.name, entityId = source.GetEntityId().ToString(),
+                enabled = source.enabled, active = source.gameObject.activeInHierarchy,
+                playing = source.isPlaying, virtualVoice = source.isVirtual, mute = source.mute,
+                ignoreListenerPause = source.ignoreListenerPause, volume = source.volume,
+                pitch = source.pitch, spatialBlend = source.spatialBlend, timeSamples = source.timeSamples,
+                clip = source.clip ? source.clip.name : "", loadState = source.clip ? source.clip.loadState.ToString() : "no assigned clip"
+            }).ToArray();
+        }
+
+        static IEnumerator ObserveRealListenerBeforeRecording(int rate)
+        {
+            var listeners = Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None)
+                .Where(listener => listener.enabled && listener.gameObject.activeInHierarchy).ToArray();
+            var report = new ListenerAudioDiagnostic
+            {
+                rate = rate, targetSamples = rate * 2, batchMode = Application.isBatchMode,
+                focused = Application.isFocused, runInBackground = Application.runInBackground,
+                activeListeners = listeners.Select(listener => listener.gameObject.name + "#" + listener.GetEntityId()).ToArray(),
+                listenerPauseBefore = AudioListener.pause, listenerVolumeBefore = AudioListener.volume,
+                timeScaleBefore = Time.timeScale
+            };
+            AudioSettings.GetDSPBufferSize(out report.dspBufferLength, out report.dspBufferCount);
+            report.sourcesBefore = AudioSourceDiagnostics(out report.sourceCountBefore);
+            if (listeners.Length != 1)
+            {
+                report.status = "missing: expected exactly one active listener for unambiguous attachment";
+                TestContext.Out.WriteLine("HAPPYTOY_LISTENER_AUDIO_DIAGNOSTIC " + JsonUtility.ToJson(report));
+                yield break;
+            }
+
+            float previousCaptureDeltaTime = Time.captureDeltaTime;
+            CloudListenerAudioProbe probe = null;
+            try
+            {
+                Time.captureDeltaTime = 0;
+                probe = listeners[0].gameObject.AddComponent<CloudListenerAudioProbe>();
+                report.dspStart = AudioSettings.dspTime;
+                var elapsed = System.Diagnostics.Stopwatch.StartNew();
+                probe.Arm(report.targetSamples);
+                while (probe.CapturedCount < report.targetSamples && elapsed.Elapsed.TotalSeconds < 3)
+                    yield return null;
+                float[] captured = probe.Finish(out report.channels, out report.callbacks, out report.observedSamples, out report.channelChanged);
+                report.wallSeconds = elapsed.Elapsed.TotalSeconds;
+                report.dspEnd = AudioSettings.dspTime; report.dspDelta = report.dspEnd - report.dspStart;
+                report.capturedSamples = captured.Length;
+                report.complete = captured.Length == report.targetSamples && report.channels == 2 && !report.channelChanged;
+                report.status = captured.Length == 0 ? "missing" : report.complete ? "complete actual callback capture" : "partial or incompatible callback capture";
+                report.listenerPauseAfter = AudioListener.pause; report.listenerVolumeAfter = AudioListener.volume;
+                report.timeScaleAfter = Time.timeScale;
+                report.sourcesAfter = AudioSourceDiagnostics(out report.sourceCountAfter);
+                double sumSquares = 0;
+                foreach (float value in captured)
+                {
+                    if (float.IsNaN(value) || float.IsInfinity(value)) { report.nonfiniteSamples++; continue; }
+                    double amplitude = Math.Abs(value);
+                    report.peak = Math.Max(report.peak, amplitude); sumSquares += (double)value * value;
+                    if (amplitude >= 1) report.clippedSamples++;
+                }
+                int finite = captured.Length - report.nonfiniteSamples;
+                report.rms = finite > 0 ? Math.Sqrt(sumSquares / finite) : 0;
+                // Never pad a short capture or turn absent samples into a silence WAV.
+                // Do not conceal nonfinite input by replacing it for serialization.
+                if (captured.Length > 0 && report.channels == 2 && !report.channelChanged && report.nonfiniteSamples == 0)
+                    report.waveArtifact = "diagnostic-listener-before-render.wav";
+                string json = JsonUtility.ToJson(report, true);
+                TestContext.Out.WriteLine("HAPPYTOY_LISTENER_AUDIO_DIAGNOSTIC " + JsonUtility.ToJson(report));
+                CloudExperienceTests.Artifact("diagnostic-listener-before-render.json", System.Text.Encoding.UTF8.GetBytes(json));
+                if (report.waveArtifact.Length > 0)
+                    CloudExperienceTests.Artifact(report.waveArtifact, CloudExperienceTests.Wave(new List<float>(captured), rate, 2));
+            }
+            finally
+            {
+                if (probe) { probe.Disarm(); Object.Destroy(probe); }
+                Time.captureDeltaTime = previousCaptureDeltaTime;
+            }
         }
     }
 }

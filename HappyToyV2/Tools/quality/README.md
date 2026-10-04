@@ -1,6 +1,10 @@
-# Current cloud experience and packaging tools
+# Pursuit iteration preflight
 
-The runtime suite has **6 EditMode + 10 PlayMode**. UBA #6 at `e3122fb` passed 15/16: the real-input full route, corrected UI layouts and world-sign/camera render passed. Audio capture still returned zero samples, so the strict build failed and no player was exported. The later pause-card caption clarification is source-tested only; actual engine evidence stays pinned to `e3122fb`. See `CLOUD_QA.md` for the true survival strategy, actual camera/UI/audio evidence, and remaining human/hardware limits.
+The current source defines **21 actual Unity tests (6 EditMode + 15 PlayMode)**, including five new controlled pursuit/hiding/item cases. They are engine-rerun pending. The evidence-anchored local search, lantern own-floor investigation fix and separate listener PCM diagnostics are described in `CLOUD_QA.md`; the strict audio acceptance criteria remain unchanged. `Verification/cloud-tests/pursuit-preflight/` is source/API evidence only. Latest completed engine evidence is still build #6 at `e3122fb`, 15/16 passed with audio capture failed and no player export.
+
+# Build #6 experience and packaging tools
+
+The build #6 runtime suite had **6 EditMode + 10 PlayMode**. UBA #6 at `e3122fb` passed 15/16: the real-input full route, corrected UI layouts and world-sign/camera render passed. Audio capture still returned zero samples, so the strict build failed and no player was exported. The later pause-card caption clarification is source-tested only; actual engine evidence stays pinned to `e3122fb`. See `CLOUD_QA.md` for the true survival strategy, actual camera/UI/audio evidence, and remaining human/hardware limits.
 
 Decode verified output from a downloaded NUnit XML (use the independently verified full checkout commit):
 

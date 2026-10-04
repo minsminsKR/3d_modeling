@@ -1,5 +1,19 @@
 # Unity Build Automation: real scene tests
 
+## New pursuit iteration: source implemented, engine rerun pending
+
+The current suite has **6 EditMode + 15 PlayMode tests (21 total)**. Five new controlled fixtures are pending actual Unity execution; the last engine-tested revision remains `e3122fb` / build #6 below. No new successful Windows export or audio acceptance is claimed.
+
+Two concrete runtime gaps were found in the source:
+- `StalkerBrain.Search` repeatedly routed to one stale point, with no local movement or look-around. It now preserves the last confirmed evidence as an anchor, first reaches/attempts that point, then scans and chooses bounded reachable same-floor branches. Transit is capped at four seconds and actual local inspection at 6.5 seconds. Route rejection starts a bounded fallback scan; it cannot trap the state forever or count an unreachable point as visited. Only renewed sight or an accepted real sound updates confirmed evidence
+- `LanternMaskEncounter` accepted same-floor sounds but then froze its investigation whenever the player was on another floor. Investigation and ordinary wandering now continue on valid own-floor paths; direct cross-floor chase still stops, and the shared path/sight/floor restrictions remain
+
+New `CloudPursuitTests` cases cover actual brain/NavMesh state loops, sight barriers, local movement/look-around, pause, reacquisition, finite search when all routes reject, authored music-cabinet witness versus unseen entry, blocked exits, repeated entry during a warned attack, real Q input and physical firecracker fuse/attraction/expiry, finite inventory, and a lantern following accepted own-floor noise while the player is at another floor height. These are explicitly controlled fixtures: threats are isolated and actors are placed; the unreachable case injects initial stale evidence, and cabinet setup uses its public interaction API. They are separate from the unchanged real-input, all-encounters-enabled seven-record survival strategy. No fixture pass establishes human difficulty or every enemy interaction.
+
+The audio gate remains strict and unchanged. A new **diagnostic-only** listener `OnAudioFilterRead` probe observes up to one second of the authored game's genuine pre-device mix before `AudioRenderer.Start`, with a three-second wall watchdog. It copies incoming data without altering it or generating samples, reports missing/partial/complete data plus DSP/source progress, and emits a WAV only for real nonempty finite stereo samples. It does not substitute for the renderer/nonzero/clipping/pause assertions or certify device listening. Renderer polling now reports DSP deltas, capture-frame counts and actual Render-call count, so zero returned counts can be distinguished from silent rendered samples. The original #6 zero-sample failure remains recorded.
+
+Source preflight is recorded under `Verification/cloud-tests/pursuit-preflight/`; these reports are external compilation/static/pure-C# checks, **not Unity execution**. A new pinned UBA run must evaluate all 21 tests, the existing full route and strict audio gate before any runtime improvement is called verified.
+
 ## Latest engine result: build #6 failed only on audio capture, 15/16 passed
 
 Pinned source `e3122fb0c83659100904e93d486f5d97093f721d`, Unity 6000.6.0f1 / Windows Micro: **6/6 EditMode + 9/10 PlayMode passed; 1 failed; 0 skipped/inconclusive**. The terminal log ends FAILURE and the unchanged strict gate prevented player export. Exact XML/log hashes and the remaining free allocation are in `Verification/cloud-tests/build-6-results.json`. Source CI [37174240095](https://github.com/minsminsKR/3d_modeling/actions/runs/37174240095) passed.
@@ -30,7 +44,7 @@ Artifact transport hashes, complete survival report and visual findings are reta
 
 ## Expanded gate scope
 
-The expanded suite contains **6 EditMode + 10 PlayMode tests (16 total)**. Build #6 established the route, camera/sign and listed UI cases above; audio remains a failed/unverified gate:
+At build #6, the expanded suite contained **6 EditMode + 10 PlayMode tests (16 total)**. Build #6 established the route, camera/sign and listed UI cases above; audio remains a failed/unverified gate:
 
 - `AuthoredSevenRecordRouteSurvivesWithRealMovementAndInteraction`: begins at the preserved authored spawn, then uses injected keyboard/mouse controls through the real motor and focus/E path; all encounter owners remain enabled and authored stalker speeds remain unchanged. The route must climb and descend both staircases continuously, recover all seven records and escape. Actual hiding and two finite firecrackers form a single deterministic survival strategy. No direct collection, actor disabling, fixture relocation or invulnerability is used. A defeat or blocked route fails; this is not a first-time-player difficulty or all-encounter certification
 - `KoreanMenusRenderAcrossSupportedAspectRatios`: actual UI Toolkit render targets at 720p, 1080p, 4:3 and ultrawide, large-text/high-contrast settings, text/button bounds and Korean sample-glyph checks. Every target is cleared before capture to reject stale/undefined output. PNGs still require visual inspection; automated content checks do not certify complete art or all text

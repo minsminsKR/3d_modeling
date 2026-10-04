@@ -15,6 +15,11 @@ namespace HappyToy.V2
         NavMeshPath path;
         StalkerFootsteps footsteps;
         Vector3 lastKnown, hidingApproach, attackHidingApproach, attackFacing;
+        Vector3 searchOrigin, searchTarget;
+        Quaternion searchFacing;
+        float searchDwell, searchTransit;
+        int searchCandidate;
+        bool searchArrived, searchStarted;
         float memory, repath, floorY;
         int waypoint;
         bool witnessedHiding, attackingHiding;
@@ -30,6 +35,9 @@ namespace HappyToy.V2
         public int FootstepNoisesAccepted { get; private set; }
         public float Awareness => awareness.Value;
         public float HomeFloorY => floorY;
+        public Vector3 LastKnownPosition => lastKnown;
+        public Vector3 SearchOrigin => searchOrigin;
+        public int SearchPointsVisited { get; private set; }
 
         public bool HearNoise(Vector3 point, float duration)
         {
@@ -131,6 +139,64 @@ namespace HappyToy.V2
                 "가까운 적이 공격을 준비합니다 · 즉시 거리를 벌리세요.", 1.5f);
         }
 
+        static float HorizontalDistance(Vector3 a, Vector3 b)
+        { a.y = b.y = 0; return Vector3.Distance(a, b); }
+
+        void BeginSearch()
+        {
+            state = State.Search; memory = 6.5f; witnessedHiding = false; awareness.Reset();
+            // This anchor is observed evidence, never the current unseen player.
+            searchOrigin = searchTarget = lastKnown;
+            searchCandidate = 0; searchArrived = searchStarted = false; searchDwell = 0; searchTransit = 4;
+            SearchPointsVisited = 0; repath = 0;
+            searchFacing = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+        }
+
+        void SearchArea()
+        {
+            if (!searchArrived && HorizontalDistance(transform.position, searchTarget) < .65f)
+            {
+                searchArrived = searchStarted = true; searchDwell = 0; SearchPointsVisited++;
+                searchFacing = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+            }
+            if (searchArrived)
+            {
+                EnemyNavigation.Stop(agent, true);
+                searchDwell += Time.deltaTime;
+                // A visible, bounded look-around gives cover a purpose: a player
+                // behind the searching enemy can move, but can also be rediscovered.
+                float sweep = Mathf.Lerp(-80, 100, Mathf.Clamp01(searchDwell / 1.4f));
+                transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                    searchFacing * Quaternion.Euler(0, sweep, 0), 160 * Time.deltaTime);
+                if (searchDwell < 1.4f) return;
+                bool found = false;
+                while (searchCandidate < 8)
+                {
+                    int index = searchCandidate++;
+                    float angle = (index % 2 == 0 ? 1 : -1) * (55 + index / 2 * 45);
+                    Vector3 candidate = searchOrigin + searchFacing * Quaternion.Euler(0, angle, 0) *
+                        Vector3.forward * (index < 4 ? 2.2f : 3.2f);
+                    if (!NavMesh.SamplePosition(candidate, out var hit, .6f, agent.areaMask) ||
+                        !EnemyNavigation.SameFloor(hit.position, floorY) ||
+                        HorizontalDistance(hit.position, searchOrigin) > 3.8f ||
+                        HorizontalDistance(hit.position, transform.position) < 1 ||
+                        !EnemyNavigation.TryRoute(agent, hit.position, floorY, path, 8)) continue;
+                    searchTarget = hit.position; searchArrived = false; repath = .25f;
+                    agent.SetPath(path); agent.isStopped = false; found = true; break;
+                }
+                // No valid local branch is a normal dead end, not permission to
+                // route through walls or another floor. Keep looking until timeout.
+                if (!found) searchDwell = 0;
+                return;
+            }
+            repath -= Time.deltaTime;
+            if (repath > 0) return;
+            repath = .25f;
+            if (EnemyNavigation.TryRoute(agent, searchTarget, floorY, path, 8))
+            { agent.SetPath(path); agent.isStopped = false; }
+            else { EnemyNavigation.Stop(agent, true); searchArrived = searchStarted = true; searchDwell = 0; }
+        }
+
         void Update()
         {
             var session = GameSession.Current;
@@ -174,12 +240,33 @@ namespace HappyToy.V2
             else if (state == State.Chase)
             {
                 memory -= Time.deltaTime;
-                if (memory <= 0) { state = State.Search; memory = 4; witnessedHiding = false; awareness.Reset(); }
+                // Once the last confirmed location is reached, actually inspect the
+                // area instead of standing at one stale destination for nine seconds.
+                if (memory <= 0 || !witnessedHiding && HorizontalDistance(transform.position, lastKnown) < .65f)
+                    BeginSearch();
             }
             else
             {
-                if (state == State.Search || state == State.Investigate)
-                { memory -= Time.deltaTime; if (memory <= 0) { state = State.Patrol; repath = 0; } }
+                if (state == State.Search)
+                {
+                    // Give the arrival scan its own budget, with bounded travel to
+                    // stale evidence if a door has made that point unreachable.
+                    if (!searchStarted)
+                    {
+                        searchTransit -= Time.deltaTime;
+                        if (searchTransit <= 0)
+                        {
+                            // Travel timed out: inspect the current area without
+                            // falsely counting the unreachable evidence as visited.
+                            searchArrived = searchStarted = true; searchDwell = 0;
+                            searchFacing = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+                        }
+                    }
+                    else memory -= Time.deltaTime;
+                }
+                else if (state == State.Investigate) memory -= Time.deltaTime;
+                if ((state == State.Search || state == State.Investigate) && memory <= 0)
+                { state = State.Patrol; repath = 0; }
             }
             if (AtWitnessedHidingPlace()) { BeginAttack(true, session); return; }
             if (visible && state == State.Chase && offset.magnitude < 1.5f) { BeginAttack(false, session); return; }
@@ -196,6 +283,7 @@ namespace HappyToy.V2
             }
 
             agent.speed = state == State.Chase ? chaseSpeed : patrolSpeed;
+            if (state == State.Search) { SearchArea(); return; }
             repath -= Time.deltaTime;
             if (repath > 0) return;
             repath = .25f;

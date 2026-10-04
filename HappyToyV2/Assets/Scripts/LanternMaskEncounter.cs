@@ -199,7 +199,10 @@ namespace HappyToy.V2
                     transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(facing), 180 * Time.deltaTime);
                 Visual(); return;
             }
-            if (!EnemyNavigation.SameFloor(player.transform.position, floorY)) { Stop(); repath = 0; Visual(); return; }
+            // Crossing floors ends direct pursuit, not a valid investigation of
+            // a sound on this floor. Route() still rejects every cross-floor path.
+            if (State == Phase.Chase && !EnemyNavigation.SameFloor(player.transform.position, floorY))
+            { Stop(); repath = 0; Visual(); return; }
             if (State == Phase.Wander && patrol != null && patrol.Length > 0)
             {
                 waypoint %= patrol.Length;
