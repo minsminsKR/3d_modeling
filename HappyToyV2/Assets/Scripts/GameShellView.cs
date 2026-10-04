@@ -459,7 +459,7 @@ namespace HappyToy.V2
             crosshair.style.width = crosshair.style.height = player.Focus ? 9 : 6;
             crosshair.style.left = player.Focus ? 795.5f : 797;
             crosshair.style.top = player.Focus ? 445.5f : 447;
-            status.text = player.Hidden ? (player.HidingThreatCueActive ? "문 앞에서 공격 준비 · [E] 지금 나오세요" : "캐비닛 안 · 발소리를 듣고 움직이세요") : player.SlowRemaining > 0 ? $"이동 속도 감소  ·  {Mathf.CeilToInt(player.SlowRemaining)}초" : player.Crouching ? "낮은 자세 · 천천히 조용하게 이동합니다" : player.Running ? "달리는 중 · 발소리가 멀리 퍼집니다" : "걷는 중 · 물에서는 발소리가 더 멀리 퍼집니다";
+            status.text = player.Hidden ? (player.HidingThreatCueActive ? "문 앞에서 공격 준비 · [E] 지금 나오세요" : "캐비닛 안 · 발소리를 듣고 움직이세요") : player.SlowRemaining > 0 ? $"이동 속도 감소  ·  {Mathf.CeilToInt(player.SlowRemaining)}초" : player.ActualSpeed <= .12f ? (player.Crouching ? "낮은 자세 · 멈춰서 숨을 고릅니다" : "멈춰서 숨을 고릅니다") : player.Crouching ? "낮은 자세 · 천천히 조용하게 이동합니다" : player.Running ? "달리는 중 · 발소리가 멀리 퍼집니다" : "걷는 중 · 물에서는 발소리가 더 멀리 퍼집니다";
             status.style.color = player.HidingThreatCueActive ? Rust : Gold;
             var inventory = player.Firecrackers;
             bool showItemFeedback = inventory && inventory.FeedbackVisible;

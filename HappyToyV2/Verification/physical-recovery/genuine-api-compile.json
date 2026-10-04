@@ -1,0 +1,553 @@
+{
+  "scope": "External C# compilation against genuine Unity 6000.6 and matching package APIs. Test asmdefs compile separately without a reference to Assembly-CSharp. Not Unity import, serialization, ShaderLab compilation, player build, UTF execution or runtime testing.",
+  "unityVersion": "6000.6.0f1",
+  "expectedPackageVersions": {
+    "com.unity.render-pipelines.universal": "17.6.0",
+    "com.unity.inputsystem": "1.19.0",
+    "com.unity.ai.navigation": "2.0.12"
+  },
+  "runtimeSources": 66,
+  "editorSources": 25,
+  "sourceManifest": [
+    {
+      "file": "Assets/Editor/AnnexDevelopmentBuild.cs",
+      "sha256": "d15f14ad2021bf7b64507d134a377337bd709b81256385254e815f1402faf5e1"
+    },
+    {
+      "file": "Assets/Editor/AnnexRoomDetailing.cs",
+      "sha256": "2b5bb588d251dd7898134ff6e0123e50898c9725fdfc3eb0f83d8e806d5b2139"
+    },
+    {
+      "file": "Assets/Editor/AnnexSchoolBuilder.cs",
+      "sha256": "9bc113d8acca2abaeac457f8d13ca8f54b796a47e9c7a5709fda50cef18a489b"
+    },
+    {
+      "file": "Assets/Editor/AnnexSignFontValidation.cs",
+      "sha256": "f9273ff2180d469772562cc9eac8574dd16a944c3a04e0ba8f4f6c2733ba3e2c"
+    },
+    {
+      "file": "Assets/Editor/AnnexStoryAuthoring.cs",
+      "sha256": "57a030aa74b38c657bfa074deb886fbaf387a6d8861840c32d0cd6c0a1a35ae0"
+    },
+    {
+      "file": "Assets/Editor/CabinetReview.cs",
+      "sha256": "0aa54ff9be5116b02067ebeb05f9268387244cec0bca1c179f95ca31a72ddee2"
+    },
+    {
+      "file": "Assets/Editor/ClassroomReview.cs",
+      "sha256": "64779c65c0c4387df53c218d1fc28e1b9188f62cb2ff64b313df7bc2cb0308d6"
+    },
+    {
+      "file": "Assets/Editor/ClassroomUpgrade.cs",
+      "sha256": "08ba47df3902eb3fd2bfe364506a2dc742cc97cfa3b6c306a62aac411665ac29"
+    },
+    {
+      "file": "Assets/Editor/CurrentReviewAudit.cs",
+      "sha256": "cfe8beb3cb62367a6c2d7df30a24b670e90be4fbbc7177009e31de43be7e8027"
+    },
+    {
+      "file": "Assets/Editor/CyclopseCandidateReview.cs",
+      "sha256": "d0aab5a603f59786ab9d6e2d7a4000758f7d9e232c9d471e009d8631b60226cf"
+    },
+    {
+      "file": "Assets/Editor/EnemyAttackClockChecks.cs",
+      "sha256": "0680a3bc7c2fe498b6d6c2a49ae78c74fe75e5bccf085c0ee19d2b43f848833d"
+    },
+    {
+      "file": "Assets/Editor/LanternMaskAuthoring.cs",
+      "sha256": "b57bca9905d4ac64de904b2ab664c7ad61824c7cb29010878e5167faaa734090"
+    },
+    {
+      "file": "Assets/Editor/LightingReview.cs",
+      "sha256": "a6cd9c39577b1892efb4d0b22fbd3d4f648060f4d99d938cf6b4914947f5e10f"
+    },
+    {
+      "file": "Assets/Editor/LovelyDollAuthoring.cs",
+      "sha256": "7b5921126e512a8590553065cecce308171eada3fd629e06b9446bea8d2756a9"
+    },
+    {
+      "file": "Assets/Editor/MultiFloorAuthoring.cs",
+      "sha256": "0471cdb78bbed8b61698d7436437b434a2767ad2ced1fa6df3f3355b67e9cb7d"
+    },
+    {
+      "file": "Assets/Editor/QualityValidation.cs",
+      "sha256": "025c845b2cd8ce7fbd13bc35e1b74a7e2da55de5bbd5cc47ca9e24076265fb68"
+    },
+    {
+      "file": "Assets/Editor/SceneRestartGateChecks.cs",
+      "sha256": "99e850d56e5373aeba5ed27f2f355877648b9f491bf88514287bc81112c03f83"
+    },
+    {
+      "file": "Assets/Editor/ShellAssetBuilder.cs",
+      "sha256": "72a8dd7be1eab8c74ba2e8396b248f5711bbbe45738528cfda8b05530cc1d358"
+    },
+    {
+      "file": "Assets/Editor/StealthRulesChecks.cs",
+      "sha256": "08b43f5ca4058566e4bc7c75eba1d44a8e501ff0d6136fd49916f649f05ffb45"
+    },
+    {
+      "file": "Assets/Editor/SurfaceRippleChecks.cs",
+      "sha256": "a97d53b7c7ceeb10d351e5c5773e49a3e44d3afb25e0655c211d002bb2b8c2a6"
+    },
+    {
+      "file": "Assets/Editor/TeacherDeskReview.cs",
+      "sha256": "940b05392747a5b1e72d5ae28ad88ddbe5a7913514a5dc3852d6753601898c6e"
+    },
+    {
+      "file": "Assets/Editor/V1CharacterBuilder.cs",
+      "sha256": "951993aa8451137ea6b1ae9815a284b6a179190876e0b35f379f0de6a7a95c4e"
+    },
+    {
+      "file": "Assets/Editor/V2SceneBuilder.cs",
+      "sha256": "5301d97629df8bf27b82721362304a5b3d037ec3cf34cf59fda87d4a5280e8cc"
+    },
+    {
+      "file": "Assets/Editor/WashroomFinishReview.cs",
+      "sha256": "666becee85d9df4d3b1aa788c7f9e9a20bf17789c09862bff1dda15840c421cc"
+    },
+    {
+      "file": "Assets/Editor/WeepingAngelAuthoring.cs",
+      "sha256": "44fd0e2a66cb03dc1f747969f343c38b00df5e2ef77089a5b814725d322babec"
+    },
+    {
+      "file": "Assets/Scripts/AccessAudit.cs",
+      "sha256": "297758f93bb3140b6708b14203c08ee12a4f3d9d1e1411dc0ecd8d23a2d94661"
+    },
+    {
+      "file": "Assets/Scripts/AmbienceAudit.cs",
+      "sha256": "1688cbf5a884d4aa3f0dd6bb2972cf985a14dcd0b12c0dee72bfc89e55613c2a"
+    },
+    {
+      "file": "Assets/Scripts/AnnexEncounter.cs",
+      "sha256": "5f750f80ef1e25954b4dc4b7a4a0f5d3a4bd341664fd6b10523f8113727baeab"
+    },
+    {
+      "file": "Assets/Scripts/AnnexRoomPresentation.cs",
+      "sha256": "41df0ae68f3db385150bd0914ba58365248fd2280e20a04a80a27cf23710e6e9"
+    },
+    {
+      "file": "Assets/Scripts/AnnexSignFont.cs",
+      "sha256": "a103468670afb2b4e2487d9f4d3576303db53c080f82cc6858ade2a0c325b67a"
+    },
+    {
+      "file": "Assets/Scripts/AttackAudit.cs",
+      "sha256": "f346263bfcbac79f49f0d168be07e998a889995e11535b12e78e9c30b202d953"
+    },
+    {
+      "file": "Assets/Scripts/AttackPoseAudit.cs",
+      "sha256": "dff2fb6b9c2199644ab12defce7271d20a35fa438a627511acefe23a8c756b00"
+    },
+    {
+      "file": "Assets/Scripts/BabyLifecycleProbe.cs",
+      "sha256": "a9edeb03c0adf2bcb25573ee5dc4c1fe6d663ec19da86f6923b21d4e1d1f9043"
+    },
+    {
+      "file": "Assets/Scripts/CabinetAccessAudit.cs",
+      "sha256": "3b325ff113089c0f59073298a0a10d207add3d336b3e707448dd8f7a2f16783d"
+    },
+    {
+      "file": "Assets/Scripts/DetectionFeedback.cs",
+      "sha256": "be33f7ace5403865321bf78ff0e5a6899c305bfc08074430c1f6832675965940"
+    },
+    {
+      "file": "Assets/Scripts/DevelopmentSmoke.cs",
+      "sha256": "145aabe0c7a1cc1773a02fb4cce228af5469c95c66b96357561672170c744658"
+    },
+    {
+      "file": "Assets/Scripts/DoorClearanceAudit.cs",
+      "sha256": "825d4fe9717c23f95a0466e4a27a847d8b6c94c7ebb9e58820c2c5631d7c24fc"
+    },
+    {
+      "file": "Assets/Scripts/EnemyAcoustics.cs",
+      "sha256": "3f254caf2b1a4d9a377263bc8d73652dcba0e299559335c80bdf1fe3f66fdb5e"
+    },
+    {
+      "file": "Assets/Scripts/EnemyAttackClock.cs",
+      "sha256": "06d8053bf7eba3b01cbc7a43c3917bcf058a415ad5eafa32821c6233e4a91172"
+    },
+    {
+      "file": "Assets/Scripts/EnemyFairnessAudit.cs",
+      "sha256": "99edcac39e821f3a29d18c40bfb254268097919966ab97432e50f859f41d4fb4"
+    },
+    {
+      "file": "Assets/Scripts/EnemyNavigation.cs",
+      "sha256": "44fdf1de7650ba80717ff2b8bb9d90b78dbab1aa499c6058e3b3e81949cb3110"
+    },
+    {
+      "file": "Assets/Scripts/EnemySoundProfile.cs",
+      "sha256": "dae44f18d9d9b02bdfa5f2d05604706476d3ba678d64c5a4f5a1b79a73d7fb37"
+    },
+    {
+      "file": "Assets/Scripts/EventTransitionAudit.cs",
+      "sha256": "3b3be9adaf96e5f71c3658d448165d4acfc665a623963128020de3e19b7e9ba2"
+    },
+    {
+      "file": "Assets/Scripts/FirecrackerInventory.cs",
+      "sha256": "890be980a9370e110e2c69bdb2e977ff6cd6e54388d49056179600eb684927d8"
+    },
+    {
+      "file": "Assets/Scripts/FirecrackerProbe.cs",
+      "sha256": "5706ea01a8f3faf14af97183d7271e139b6fdf63112bb4813ec5652ff4425980"
+    },
+    {
+      "file": "Assets/Scripts/FirecrackerProjectile.cs",
+      "sha256": "e4df40b26d8959d1581e1b8d9b8e0208c0b361d5b0e11d82904edfeb46ff38f7"
+    },
+    {
+      "file": "Assets/Scripts/FixtureLightLink.cs",
+      "sha256": "76dcf81d913b66389ad2ae48014ecf6f52f47cc834b9b569f7720e417ddae17e"
+    },
+    {
+      "file": "Assets/Scripts/FloorAtmosphere.cs",
+      "sha256": "68f3908c986b0b8c411cd8ecae496d8587b1894754f2169c459896d729cfcf4d"
+    },
+    {
+      "file": "Assets/Scripts/FlowAudit.cs",
+      "sha256": "caab4edce00de1f81bdf24d5403f9933fb39b83482d90849b81e2d21d331efb4"
+    },
+    {
+      "file": "Assets/Scripts/GameSession.cs",
+      "sha256": "f4deac4b73a299a085817ac90914ae710a710c622ae548b88d7f36ed9ca1cc72"
+    },
+    {
+      "file": "Assets/Scripts/GameShell.cs",
+      "sha256": "0f87264fff80cab17f6157b5e6238a83b6459f00adcbda95550f88343ee86eef"
+    },
+    {
+      "file": "Assets/Scripts/GameShellView.cs",
+      "sha256": "95a8a8310e969240a4015f34ec6c82c52f209e299c7eeb3e17e9fe5bbeacb344"
+    },
+    {
+      "file": "Assets/Scripts/HidingAudit.cs",
+      "sha256": "10b2716b43b0d2ae4d65cbb8ccf99b63f66dfa47347f1680bc2b73e4845f9c53"
+    },
+    {
+      "file": "Assets/Scripts/HwacatAudit.cs",
+      "sha256": "7a0c08d46ab181dbf77994f757d41738f7614e70e69b19012a50e9c2d5eb7d7d"
+    },
+    {
+      "file": "Assets/Scripts/Interactable.cs",
+      "sha256": "caea9e50d1949a9273ce9b896faa8fa60c91d4616c02a7aa6c5bace671cb08c4"
+    },
+    {
+      "file": "Assets/Scripts/InteractionAudio.cs",
+      "sha256": "6a9f9a41560e75ec789f74f77c8419fc74ccbfb7161c6815b2587b6e5a1925b9"
+    },
+    {
+      "file": "Assets/Scripts/LanternMaskEncounter.cs",
+      "sha256": "b31c4f283964bf94aeec35c3a50200d77f9c6cb18174221e1a75a2032cceac11"
+    },
+    {
+      "file": "Assets/Scripts/LanternMaskProbe.cs",
+      "sha256": "b0ad9b15e55c3db116c6a84cc830fc038f63d6a02abe8c4a3b06af52ca270827"
+    },
+    {
+      "file": "Assets/Scripts/LovelyDollGuide.cs",
+      "sha256": "b23b3e84b51f6cd7a76a69368739cdf29980ff55f6ae76810bac0a2347f17ada"
+    },
+    {
+      "file": "Assets/Scripts/MultiFloorWalkProbe.cs",
+      "sha256": "ffd6364eb33ef23de1eab82f7c8ff6481def36c49b3beffec4be33b3d998530b"
+    },
+    {
+      "file": "Assets/Scripts/NavMeshStartup.cs",
+      "sha256": "2c2e80adce2a047053c3c4b037c022c9aece34c16742ff6dc995df711cd1c3ee"
+    },
+    {
+      "file": "Assets/Scripts/PlayReviewTiming.cs",
+      "sha256": "f906601dd5ad699bf1a2287832b2be0da747d9a375dcfcc016d977853c1548ee"
+    },
+    {
+      "file": "Assets/Scripts/PlayerFeedback.cs",
+      "sha256": "ccbddd58f5ad1de96c140f1d4cfa54c88b7c487963138d37f48f8e81e0ac807d"
+    },
+    {
+      "file": "Assets/Scripts/PlayerMotor.cs",
+      "sha256": "a8ef46e493e707c7d13b4a5baf251457fb8a5db1f211b2badb6059645292e27f"
+    },
+    {
+      "file": "Assets/Scripts/RoomAmbience.cs",
+      "sha256": "53f8c84e5aa79d0509114844ca6f952fa33de568bf4ba06514ea49c8190bc665"
+    },
+    {
+      "file": "Assets/Scripts/RoomTraversalProbe.cs",
+      "sha256": "b57fc8c340a9423ed316fccfb5c54f860dcf8e53223700c4b2259ce160a7b107"
+    },
+    {
+      "file": "Assets/Scripts/RouteAudioCapture.cs",
+      "sha256": "1257202629b9149a6245560e988acfac5919f95fe621a204dde8eafb6a6e1000"
+    },
+    {
+      "file": "Assets/Scripts/RoutePerformance.cs",
+      "sha256": "86f18681744c7453be512aa498edb60205b80bb5d3afb925c04d7d73c19ecdbe"
+    },
+    {
+      "file": "Assets/Scripts/SceneRestartGate.cs",
+      "sha256": "9c5e617aaf81d4c0c38205605cd928a1e14bf50416a8571ebc3d8fdedb6ddefe"
+    },
+    {
+      "file": "Assets/Scripts/StalkerBrain.cs",
+      "sha256": "bc8c89437d9f2ee0d059552c10e18e3bf5365d4ee3d2f59f9d3f8a42ddde00c2"
+    },
+    {
+      "file": "Assets/Scripts/StalkerFootsteps.cs",
+      "sha256": "95ca8e61c4c1f6b70176a7fbe6b10f49261729187148097d31302b20d95ca99a"
+    },
+    {
+      "file": "Assets/Scripts/StaminaAudit.cs",
+      "sha256": "43cf26b6238d5b70b0d2672cb50aadd436b6f9509a8968376f8f7c20a063a19d"
+    },
+    {
+      "file": "Assets/Scripts/StealthAudit.cs",
+      "sha256": "46e8b875c2379e9b45ce68c803b0f59d8c1091188c8b5ec4fb89bff6eef235bd"
+    },
+    {
+      "file": "Assets/Scripts/StealthRules.cs",
+      "sha256": "3e293627b74beb766a1931e7e8ea018badb75c7c4a0d9e43947b3a3d9a0e203e"
+    },
+    {
+      "file": "Assets/Scripts/StoryDirector.cs",
+      "sha256": "4acafc14b9b39b9e599a3e53de158e720790d0ed32b4b38dbb9caf58ef13bcd6"
+    },
+    {
+      "file": "Assets/Scripts/SurfaceAudit.cs",
+      "sha256": "343f800d980d1f0a8290bf2df0f55bc6b235f5ba3a10de1200574fc979be22b6"
+    },
+    {
+      "file": "Assets/Scripts/SurfaceRippleBuffer.cs",
+      "sha256": "ff2f39f287ad8b47bbe389a8300e979d37be3c926e7660f1226d8d856a2bc544"
+    },
+    {
+      "file": "Assets/Scripts/UncatAnnexEvent.cs",
+      "sha256": "9785a1cc53d188b76ede42a51c180b2ef30c13ae109848e4171372fd40e817a3"
+    },
+    {
+      "file": "Assets/Scripts/V1AttackPose.cs",
+      "sha256": "9be53472427a8dd84bf1fb50149bd78547efcd576edd951e04d020924cee8fc1"
+    },
+    {
+      "file": "Assets/Scripts/V1CyclopseIntro.cs",
+      "sha256": "5f2f2fa157a7bbb7304814d92cb68553c344127e0520668f87148472eee987a6"
+    },
+    {
+      "file": "Assets/Scripts/V1HwacatEvent.cs",
+      "sha256": "7c915a87a7772d473c97cb6937c6bebb00f4b9e5fd8cc40f12085f4803a29c9b"
+    },
+    {
+      "file": "Assets/Scripts/V1IntroAudit.cs",
+      "sha256": "ab5720f2595e19783f1588dad681f0b116ae24aa91443de006279296346d5bea"
+    },
+    {
+      "file": "Assets/Scripts/V1MonsterAudit.cs",
+      "sha256": "bc4708506693bc28a0b0f9ffb3301912c128beab3d4a94027ebd13b69c767cc7"
+    },
+    {
+      "file": "Assets/Scripts/V1MonsterMotion.cs",
+      "sha256": "295a3f8d7fd75cbbc5ab27c8e8e89fb9a732a716aad302f73415914e308a2721"
+    },
+    {
+      "file": "Assets/Scripts/V1RevealGrounding.cs",
+      "sha256": "8fd7950196a6e1d0023809d214b77b9260289163fc2af6e47b7ee26e7ba680a1"
+    },
+    {
+      "file": "Assets/Scripts/WalkAudit.cs",
+      "sha256": "bba43575bfcbfbff21060e1c707d3a285dded3828f39ce5df5e92d6773a092a2"
+    },
+    {
+      "file": "Assets/Scripts/WardenAudit.cs",
+      "sha256": "699a8234a251a43e44f0b423acc45c59eb452caf4f772bccc8077812d836745e"
+    },
+    {
+      "file": "Assets/Scripts/WardenMotion.cs",
+      "sha256": "5ea14df53b1c4bbec69064ea055c145a5c96f31155cd517d66cc480a4f46d32f"
+    },
+    {
+      "file": "Assets/Scripts/WaterSurfaceFeedback.cs",
+      "sha256": "413f4cd917b8ac59a5e1eed01b91b7de743c86c36b34f89c186a3c37a31f061d"
+    },
+    {
+      "file": "Assets/Scripts/WeepingAngelEncounter.cs",
+      "sha256": "4e994c3721409e8eca42608bda8c4035905a1efc7ae70c300de3f505b64d61ce"
+    },
+    {
+      "file": "Assets/Scripts/WeepingAngelProbe.cs",
+      "sha256": "769134d7128acddb27081fcf619540d9d2302b0b83ec9826ea025e93e98f08bd"
+    },
+    {
+      "file": "Assets/Tests/EditMode/CloudEditModeTests.cs",
+      "sha256": "a06108105fbfc5c8184a60e251aa28ae0cc84bda6778f45addf5105fcfca0ac9"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudDetectionFeedbackTests.cs",
+      "sha256": "ba056a174d68faaaa348fdbd7d7e9b948d868a60e278def40a76026290e08872"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudEnemyAudioTests.cs",
+      "sha256": "34a8c51ea829a1dac265d720a5b6926fe60016b11536d83228d37ec2205cc560"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudExperienceTests.cs",
+      "sha256": "ee12772e4a982eac8db92ad10b8285a994bbb47859d3cc794ffb86aadf21e457"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudFirecrackerFeedbackTests.cs",
+      "sha256": "76f58eeffff6d91092b60054b12fb89898d209b0f396cfec3c9af371bded80a8"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudListenerAudioProbe.cs",
+      "sha256": "a86363c840d1f13a7468bec0c025905c92e648d2feb7b7b087837071b760b585"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudPlayModeTests.cs",
+      "sha256": "94042b74ad036ccee1bb3d26594ac03b7282bcd767e11119730f05a0e77a3e05"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudPresentationMovementTests.cs",
+      "sha256": "3939c48ae61dc8b711966fc323c3612334207c1e0fc6775fc8b17286f2295662"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudPursuitTests.cs",
+      "sha256": "aa76c660fe381745a6685623ca10c65f9677bdfe981aa8bb5bad98143c4da3be"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudRecoveryFlowTests.cs",
+      "sha256": "bfb8adf1b5b94c9ff839f1be9e5bb810c3e7cf3795991beb2d7c8ab1243d5ece"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudRoomPresentationTests.cs",
+      "sha256": "850dc85f15c1807272f8fecba0f1e5b98b58bb2a11f356bccc081ddb931467cf"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudSignRenderingTests.cs",
+      "sha256": "4919996038fabdb1040e5acb8a2d85bf902e57bc95b09cc31c22dcb62b85ab84"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/CloudSurvivalTests.cs",
+      "sha256": "88ff0faa91656fe8220ed77a7e67515538f7e51061c1dfc098425ebaac1b27a7"
+    },
+    {
+      "file": "Assets/Tests/Support/RuntimeAccess.cs",
+      "sha256": "f7e013bc47cde57a58d2979894876eef2df630df87608f2bcf8600ddcbf199c4"
+    }
+  ],
+  "testSources": {
+    "HappyToy.V2.TestSupport": 1,
+    "HappyToy.V2.EditModeTests": 1,
+    "HappyToy.V2.PlayModeTests": 12
+  },
+  "assemblyDefinitions": [
+    {
+      "file": "Assets/Tests/EditMode/HappyToy.V2.EditModeTests.asmdef",
+      "name": "HappyToy.V2.EditModeTests",
+      "sha256": "9ce220bcb8da55bdbf4b26e823bac1a1e718127e28d0ba265cfc91089a065be2"
+    },
+    {
+      "file": "Assets/Tests/PlayMode/HappyToy.V2.PlayModeTests.asmdef",
+      "name": "HappyToy.V2.PlayModeTests",
+      "sha256": "05cf557e284c6d602f97d137d09fd5f08ee7102865dc5adbbd0e3c7908d22e15"
+    },
+    {
+      "file": "Assets/Tests/Support/HappyToy.V2.TestSupport.asmdef",
+      "name": "HappyToy.V2.TestSupport",
+      "sha256": "146f90126ab695c34c53f8b9bb6f7bb708aa7c6683cafa77014a405b70015618"
+    }
+  ],
+  "testFrameworkReferences": [
+    {
+      "name": "nunit.framework.dll",
+      "sha256": "a607364879b5f5c337b979e9de23654459df45ba1a7324d54aa9df93540dc7a2"
+    },
+    {
+      "name": "UnityEngine.TestRunner.dll",
+      "sha256": "bf42aa4e014fc5e936dd467a8d909fd5edb6a5f501fde0c0536912ce38cbc4f0"
+    },
+    {
+      "name": "UnityEditor.TestRunner.dll",
+      "sha256": "c2624b5d5a963c48310fbc084cd2ab4f7702a68c97c137dc39862425feab9b56"
+    }
+  ],
+  "results": [
+    {
+      "stage": "editor-runtime",
+      "assembly": "Assembly-CSharp",
+      "exitCode": 0,
+      "sourceCount": 66,
+      "referenceCount": 271,
+      "log": "editor-runtime/compile.log",
+      "warningCounts": {
+        "CS0618": 69,
+        "CS1701": 1
+      }
+    },
+    {
+      "stage": "editor-scripts",
+      "assembly": "Assembly-CSharp-Editor",
+      "exitCode": 0,
+      "sourceCount": 25,
+      "referenceCount": 272,
+      "log": "editor-scripts/compile.log",
+      "warningCounts": {
+        "CS0618": 44,
+        "CS1701": 1,
+        "CS0649": 10
+      }
+    },
+    {
+      "stage": "linux-player-runtime",
+      "assembly": "Assembly-CSharp",
+      "exitCode": 0,
+      "sourceCount": 66,
+      "referenceCount": 169,
+      "log": "linux-player-runtime/compile.log",
+      "warningCounts": {
+        "CS0618": 69,
+        "CS1701": 1
+      }
+    },
+    {
+      "stage": "windows-player-runtime",
+      "assembly": "Assembly-CSharp",
+      "exitCode": 0,
+      "sourceCount": 66,
+      "referenceCount": 169,
+      "log": "windows-player-runtime/compile.log",
+      "warningCounts": {
+        "CS0618": 69,
+        "CS1701": 1
+      }
+    },
+    {
+      "stage": "test-support",
+      "assembly": "HappyToy.V2.TestSupport",
+      "exitCode": 0,
+      "sourceCount": 1,
+      "referenceCount": 229,
+      "log": "test-support/compile.log",
+      "warningCounts": {}
+    },
+    {
+      "stage": "test-editor",
+      "assembly": "HappyToy.V2.EditModeTests",
+      "exitCode": 0,
+      "sourceCount": 1,
+      "referenceCount": 230,
+      "log": "test-editor/compile.log",
+      "warningCounts": {
+        "CS0649": 15
+      }
+    },
+    {
+      "stage": "test-playmode",
+      "assembly": "HappyToy.V2.PlayModeTests",
+      "exitCode": 0,
+      "sourceCount": 12,
+      "referenceCount": 234,
+      "log": "test-playmode/compile.log",
+      "warningCounts": {
+        "CS0618": 4
+      }
+    }
+  ],
+  "generatedAtUtc": "2026-10-04T14:03:20.523605+00:00",
+  "sourceStillMatches": true
+}

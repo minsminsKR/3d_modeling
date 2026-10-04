@@ -1,5 +1,20 @@
 # Unity Build Automation: real scene tests
 
+## Next source: physical sprint/recovery and interrupted UI flow (engine run pending)
+
+The next patch separates sprint input from the result of each real CharacterController
+move. A fully blocked player recovers instead of spending stamina; diagonal wall
+slides and curse-slowed movement still spend the original rate. Fixed-step exhaustion
+prevents additional sprint steps during catch-up, with the original release-to-rearm
+rule. Stationary HUD text describes resting without claiming safety or erased noise.
+Nursery comfort settings now restore the warning light while paused without advancing
+the five-second release clock. Existing door recovery and encounter balance remain.
+
+Three added PlayMode cases cover physical movement/resources, the authored nursery
+interruption, and repeated real UI death/retry/settings/journal/title flows. Their
+runtime result is PENDING; the most recent verified player remains build #12 below.
+The same 34-envelope transport cap and all prior 37 cases stay intact.
+
 ## Latest result: build #12 SUCCESS, 37/37 tests and no empty-source warnings
 
 Tested/exported source: `f0ed764973c8b831d236299452077d50946a6bee`.

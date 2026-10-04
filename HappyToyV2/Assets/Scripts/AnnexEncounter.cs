@@ -67,12 +67,13 @@ namespace HappyToy.V2
             {
                 if (!session || session.Finished || session.StoryStep >= 4 || !monster)
                 { CancelEncounter(); yield break; }
-                if (session.InputAllowed)
-                {
-                    if (warningLight) warningLight.intensity = session.Shell && session.Shell.ReducedMotion ? originalIntensity :
+                // Settings pauses the reveal clock, but comfort changes must still
+                // remove a frozen flicker frame immediately, as in the other reveals.
+                bool soften = session.Shell && session.Shell.ReducedMotion;
+                if (warningLight && (session.InputAllowed || soften))
+                    warningLight.intensity = soften ? originalIntensity :
                         originalIntensity * (.65f + .35f * Mathf.Abs(Mathf.Sin(t * 3)));
-                    t += Time.deltaTime;
-                }
+                if (session.InputAllowed) t += Time.deltaTime;
                 yield return null;
             }
             RestoreLight();

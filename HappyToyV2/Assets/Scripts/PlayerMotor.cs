@@ -41,7 +41,8 @@ namespace HappyToy.V2
         CharacterController controller;
         Interactable hidingPlace, warnedHidingPlace;
         float hidingThreatUntil;
-        Vector3 hideExit, moveVelocity;
+        Vector3 hideExit, moveDirection;
+        bool sprintRequested;
         float pitch, fallSpeed, standingHeight, crouchedHeight;
         Vector3 standingCenter;
         readonly Collider[] stanceOverlaps = new Collider[32];
@@ -65,13 +66,13 @@ namespace HappyToy.V2
             Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !locked;
         }
-        void OnDisable() { moveVelocity = Vector3.zero; ActualSpeed = 0; Lock(false); }
+        void OnDisable() { moveDirection = Vector3.zero; sprintRequested = Running = false; ActualSpeed = 0; Lock(false); }
         void Update()
         {
             var session = GameSession.Current;
             if (Paused || !eyes)
             {
-                Running = false; moveVelocity = Vector3.zero; ActualSpeed = 0; Focus = null; return;
+                sprintRequested = Running = false; moveDirection = Vector3.zero; ActualSpeed = 0; Focus = null; return;
             }
             var keys = Keyboard.current;
             var mouse = Mouse.current;
@@ -97,10 +98,10 @@ namespace HappyToy.V2
             // Recover, then release Shift: no low-stamina sprint pulsing.
             if (SprintExhausted && Stamina >= .25f && !sprintHeld) SprintExhausted = false;
             if (Stamina <= .05f) SprintExhausted = true;
-            Running = !Hidden && !Crouching && sprintHeld && move.sqrMagnitude > .01f && !SprintExhausted;
-            Stamina = Mathf.Clamp01(Stamina + Time.deltaTime * (Running ? -.18f : .12f));
-            moveVelocity = Hidden ? Vector3.zero :
-                (transform.right * move.x + transform.forward * move.y) * (Crouching ? walkSpeed * .55f : Running ? runSpeed : walkSpeed) * MovementMultiplier;
+            // Input requests speed; only the subsequent physical move proves exertion.
+            // Keeping these separate also lets held input escape a wall immediately.
+            sprintRequested = !Hidden && !Crouching && sprintHeld && move.sqrMagnitude > .01f && !SprintExhausted;
+            moveDirection = Hidden ? Vector3.zero : transform.right * move.x + transform.forward * move.y;
             Focus = FindFocus();
             if (keys != null && keys.eKey.wasPressedThisFrame && Focus) Focus.Use(this);
         }
@@ -119,7 +120,7 @@ namespace HappyToy.V2
             controller.height = crouched ? crouchedHeight : standingHeight;
             controller.center = standingCenter - Vector3.up * (standingHeight - controller.height) * .5f;
             // Do not retain a sprint velocity for the fixed step immediately after crouching.
-            moveVelocity = Vector3.zero;
+            moveDirection = Vector3.zero; sprintRequested = false;
             return true;
         }
         bool CapsuleBlocked(Vector3 feet, float height, Vector3 center)
@@ -167,12 +168,28 @@ namespace HappyToy.V2
         }
         void FixedUpdate()
         {
-            if (Paused || Hidden || !controller.enabled) { ActualSpeed = 0; return; }
+            if (Paused) { sprintRequested = Running = false; moveDirection = Vector3.zero; ActualSpeed = 0; return; }
+            if (Hidden || !controller.enabled)
+            {
+                Running = false; ActualSpeed = 0;
+                Stamina = Mathf.Clamp01(Stamina + .12f * Time.fixedDeltaTime);
+                return;
+            }
+            // Re-evaluate exhaustion for every physics step, including catch-up steps
+            // with no intervening Update. Never retain an exhausted sprint velocity.
+            bool sprintStep = sprintRequested && !SprintExhausted && !Crouching;
+            float speed = Crouching ? walkSpeed * .55f : sprintStep ? runSpeed : walkSpeed;
             fallSpeed = controller.isGrounded ? -2 : Mathf.Max(fallSpeed - 20 * Time.fixedDeltaTime, -35);
             var previous = transform.position;
-            LastCollision = controller.Move((moveVelocity + Vector3.up * fallSpeed) * Time.fixedDeltaTime);
+            LastCollision = controller.Move((moveDirection * speed * MovementMultiplier + Vector3.up * fallSpeed) * Time.fixedDeltaTime);
             var displacement = transform.position - previous; displacement.y = 0;
             ActualSpeed = displacement.magnitude / Time.fixedDeltaTime;
+            // Match the foot-contact threshold. Wall slides still cost normal effort;
+            // only a physically blocked/resting player recovers. Stairs need no new
+            // grounded gate, and curse-slowed sprinting still spends stamina.
+            Running = sprintStep && ActualSpeed > .12f;
+            Stamina = Mathf.Clamp01(Stamina + Time.fixedDeltaTime * (Running ? -.18f : .12f));
+            if (Stamina <= .05f) SprintExhausted = true;
             MovementUpdates++;
         }
         public void ReportHidingDoorAttack(float duration)
@@ -188,7 +205,7 @@ namespace HappyToy.V2
             if (warnedHidingPlace != place) { warnedHidingPlace = null; hidingThreatUntil = 0; }
             hidingPlace = place; hideExit = exit; Hidden = true; Running = false;
             FootstepNoiseRemaining = FootstepNoiseRadius = 0;
-            moveVelocity = Vector3.zero; ActualSpeed = 0;
+            moveDirection = Vector3.zero; sprintRequested = false; ActualSpeed = 0;
             flashlightBeforeHiding = flashlight && flashlight.enabled;
             controller.enabled = false; transform.position = inside;
             var outward = exit - inside; outward.y = 0;
