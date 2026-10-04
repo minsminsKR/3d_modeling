@@ -16,7 +16,7 @@ namespace HappyToy.V2.CloudTests
 {
     // Real loaded scene, engine physics and NavMesh. Controlled setup is explicit;
     // these tests do not claim manual survival balance, rendered quality or audio mixing.
-    public sealed class CloudPlayModeTests
+    public sealed partial class CloudPlayModeTests
     {
         Component session, player, shell;
         Keyboard keyboard, previousKeyboard;

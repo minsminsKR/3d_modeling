@@ -1,3 +1,19 @@
+# Current cloud experience and packaging tools
+
+The next runtime suite adds four PlayMode gates to the previously passing twelve tests, for **6 EditMode + 10 PlayMode**. They remain **NOT RUN** until the next exact-source UBA XML is inspected. See `CLOUD_QA.md` for the true survival strategy, actual camera/UI/audio evidence, and remaining human/hardware limits.
+
+Decode verified output from a downloaded NUnit XML (use the independently verified full checkout commit):
+
+```sh
+python Tools/quality/extract_cloud_evidence.py /external/build-playmode.xml --output /external/new-evidence --build NUMBER --commit FULL40CHARACTERSHA
+```
+
+The extractor verifies transport hashes and rejects missing/conflicting chunks, unsafe names and existing output directories. A decoded image is real engine output to inspect, not automatic visual acceptance. UBA software-renderer/readback timings and nosound mixer WAVs do not certify target-device performance or listening quality.
+
+`package_windows_candidate.py` makes a separate, deterministic Windows candidate ZIP from an existing verified artifact. It preserves the original, verifies all CRCs and retained bytes, rejects unsafe archive paths and missing player/runtime files, and writes a per-file hash manifest with exact exclusions. It does not change development flags or branding, smoke-test the player, clear third-party licenses or authorize publishing. Run `--help` for its required destination options. The old build #4 source artifact remains development/test evidence even when its backup folder is removed.
+
+---
+
 # Happy Toy V2 quality checks
 
 ## Real cloud Unity test suite (2026-10-03)

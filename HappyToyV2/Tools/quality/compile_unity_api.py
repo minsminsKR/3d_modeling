@@ -51,7 +51,8 @@ def main():
                   'HappyToy.V2.PlayModeTests': 'test-playmode'}
     expected_test_references = {'HappyToy.V2.TestSupport': set(),
                                 'HappyToy.V2.EditModeTests': {'HappyToy.V2.TestSupport'},
-                                'HappyToy.V2.PlayModeTests': {'HappyToy.V2.TestSupport', 'Unity.InputSystem'}}
+                                'HappyToy.V2.PlayModeTests': {'HappyToy.V2.TestSupport', 'Unity.InputSystem', 'Unity.Collections',
+                                                              'Unity.RenderPipelines.Core.Runtime', 'Unity.RenderPipelines.Universal.Runtime'}}
     assembly_roots, assembly_records, assembly_definitions = {}, [], {}
     for path in sorted((project / 'Assets').rglob('*.asmdef')):
         data = path.read_bytes()

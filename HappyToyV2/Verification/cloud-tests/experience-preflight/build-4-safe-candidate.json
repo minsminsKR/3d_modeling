@@ -1,0 +1,129 @@
+{
+  "caveats": [
+    "NOT RELEASE READY: target Windows runtime/visual/audio/survival smoke tests have not been run by this tool.",
+    "Licensing and redistribution clearance remain open; this tool does not grant or verify rights.",
+    "Repackaging never changes development-build flags, debug instrumentation, audit code, app identity, or compiled assets.",
+    "All non-excluded file payloads are preserved byte-for-byte, including referenced assemblies whose names contain Tests.",
+    "Presence, CRC, hashes and native PE x64 headers are structural evidence, not proof that the game runs correctly."
+  ],
+  "derivative": {
+    "all_entry_crc_and_payload_hashes_verified": true,
+    "bytes": 67571519,
+    "entries": 185,
+    "filename": "HappyToyV2-Windows64-build4-safe-candidate.zip",
+    "sha256": "41d21ce6f1a3d79d8fea81fe2da7a3f4bd74901d0b5564e9739a000e57d9fba2"
+  },
+  "excluded_file_count": 1,
+  "excluded_uncompressed_bytes": 228583,
+  "exclusion_policy": {
+    "burst-debug-directory": "Top-level *_BurstDebugInformation_DoNotShip tree",
+    "debug-symbol": "Files with .pdb, .mdb, or .dbg suffix (case-insensitive)",
+    "development-log-report": "Root Player.log, Player-prev.log, output_log.txt, BuildReport.json, or TestResults.xml",
+    "directory-entry": "Empty directory records; file parent directories remain implicit",
+    "unity-backup-directory": "Top-level *_BackUpThisFolder_ButDontShipItWithYourGame tree"
+  },
+  "policy_version": 1,
+  "purpose": "safe derivative candidate packaging only",
+  "reproducibility": {
+    "compression": "DEFLATE level 9",
+    "entry_time": [
+      1980,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    "order": "Unicode path sort",
+    "python": "3.12.14",
+    "same_toolchain_required": true,
+    "zlib": "1.3.2"
+  },
+  "schema_version": 1,
+  "source": {
+    "all_entry_crc_validated": true,
+    "bytes": 73163952,
+    "entries": 186,
+    "filename": "HappyToyV2-TEST-Windows64-build4.zip",
+    "sha256": "1bcf7687acdc65706cf4cb1c877bce132130c680b6551feb3fcc1b5b75230307",
+    "unchanged_after_packaging": true
+  },
+  "status": "NOT_RELEASE_READY",
+  "validation": {
+    "app_info": "Happy Toy\nHappy Toy V2 — Development",
+    "boot_config": "gfx-enable-gfx-jobs=1\ngfx-threading-mode=6\nwait-for-native-debugger=0\nhdr-display-enabled=0\ngc-max-time-slice=3\nbuild-guid=ce52c33a69d14b6bb95a7d750d7043c1\n",
+    "compiled_scene_files": [
+      "HappyToyV2_Data/level0"
+    ],
+    "development_build_flag": "NOT DETERMINED; inspect build settings/log and rebuild if necessary",
+    "development_name_marker_present": true,
+    "native_pe_x64_headers": [
+      "HappyToyV2.exe",
+      "UnityPlayer.dll",
+      "UnityCrashHandler64.exe",
+      "D3D12/D3D12Core.dll",
+      "dstorage.dll",
+      "dstoragecore.dll",
+      "MonoBleedingEdge/EmbedRuntime/mono-2.0-bdwgc.dll",
+      "MonoBleedingEdge/EmbedRuntime/MonoPosixHelper.dll",
+      "HappyToyV2_Data/Plugins/x86_64/lib_burst_generated.dll"
+    ],
+    "preserved_test_named_assemblies": [
+      "Unity.Collections.Tests.CoreCLR.InternalJobNestedPrivate.dll",
+      "Unity.Collections.Tests.CoreCLR.PrivateJobNested.dll",
+      "Unity.Collections.Tests.CoreCLR.ProtectedJobNested.dll",
+      "Unity.Collections.Tests.CoreCLR.PublicJobPrivateGeneric.dll"
+    ],
+    "referenced_managed_assemblies_present": 118,
+    "required_files": [
+      "HappyToyV2.exe",
+      "UnityPlayer.dll",
+      "UnityCrashHandler64.exe",
+      "D3D12/D3D12Core.dll",
+      "dstorage.dll",
+      "dstoragecore.dll",
+      "MonoBleedingEdge/EmbedRuntime/mono-2.0-bdwgc.dll",
+      "MonoBleedingEdge/EmbedRuntime/MonoPosixHelper.dll",
+      "MonoBleedingEdge/etc/mono/config",
+      "HappyToyV2_Data/Managed/Assembly-CSharp.dll",
+      "HappyToyV2_Data/Managed/mscorlib.dll",
+      "HappyToyV2_Data/Managed/netstandard.dll",
+      "HappyToyV2_Data/Plugins/x86_64/lib_burst_generated.dll",
+      "HappyToyV2_Data/Resources/unity default resources",
+      "HappyToyV2_Data/Resources/unity_builtin_extra",
+      "HappyToyV2_Data/RuntimeInitializeOnLoads.json",
+      "HappyToyV2_Data/ScriptingAssemblies.json",
+      "HappyToyV2_Data/app.info",
+      "HappyToyV2_Data/boot.config",
+      "HappyToyV2_Data/globalgamemanagers",
+      "HappyToyV2_Data/globalgamemanagers.assets",
+      "HappyToyV2_Data/globalgamemanagers.assets.resS",
+      "HappyToyV2_Data/level0",
+      "HappyToyV2_Data/resources.assets",
+      "HappyToyV2_Data/resources.assets.resS",
+      "HappyToyV2_Data/sharedassets0.assets",
+      "HappyToyV2_Data/sharedassets0.assets.resS"
+    ],
+    "required_files_present_nonempty": true
+  },
+  "excludedFiles": [
+    {
+      "action": "exclude",
+      "bytes": 228583,
+      "crc32": "37ec11dd",
+      "path": "HappyToyV2_BackUpThisFolder_ButDontShipItWithYourGame/x86_64/lib_burst_generated.txt",
+      "reason": "unity-backup-directory",
+      "sha256": "298ab9cf9c5408976b925d8389cc4c20702f1b75ab703c18471c1969ad0170c5"
+    }
+  ],
+  "fullManifestSha256": "75f00e975dac9681372e2a69e621e63290c4335f37e15123b9ef2a1c1f9d410a",
+  "independentPackagingRerun": {
+    "status": "PASS",
+    "actual_zip_sha256_identical": true,
+    "actual_manifest_bytes_identical": true,
+    "source_sha256_unchanged": true,
+    "zip_sha256": "41d21ce6f1a3d79d8fea81fe2da7a3f4bd74901d0b5564e9739a000e57d9fba2",
+    "manifest_sha256": "75f00e975dac9681372e2a69e621e63290c4335f37e15123b9ef2a1c1f9d410a",
+    "scope": "Two independent packagings of the original Windows build4 ZIP; no runtime execution"
+  }
+}

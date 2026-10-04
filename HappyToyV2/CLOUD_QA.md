@@ -1,5 +1,18 @@
 # Unity Build Automation: real scene tests
 
+## Next gate: full-route and observable engine output (not yet run)
+
+The next pinned UBA run must discover **6 EditMode + 10 PlayMode tests (16 total)**. The four added PlayMode gates are not certified by build #4:
+
+- `AuthoredSevenRecordRouteSurvivesWithRealMovementAndInteraction`: begins at the preserved authored spawn, then uses injected keyboard/mouse controls through the real motor and focus/E path; all encounter owners remain enabled and authored stalker speeds remain unchanged. The route must climb and descend both staircases continuously, recover all seven records and escape. Actual hiding and two finite firecrackers form a single deterministic survival strategy. No direct collection, actor disabling, fixture relocation or invulnerability is used. A defeat or blocked route fails; this is not a first-time-player difficulty or all-encounter certification
+- `KoreanMenusRenderAcrossSupportedAspectRatios`: actual UI Toolkit render targets at 720p, 1080p, 4:3 and ultrawide, large-text/high-contrast settings, text/button bounds and Korean sample-glyph checks. Every target is cleared before capture to reject stale/undefined output. PNGs still require visual inspection; automated content checks do not certify complete art or all text
+- `RealAuthoredCameraProducesRenderAndTimingEvidence`: actual starting camera, authored geometry/materials and Unity URP rendering. Six 960×540 offscreen render plus full-readback timings are reported, including the first warmup. These are not presented-frame FPS or target-hardware benchmarks
+- `RealListenerMixCapturesDuringFlashlightInputAndPauseSilence`: Unity AudioRenderer records the actual main output while F toggles the real flashlight, then checks the paused mix. It checks finite/non-silent/unclipped active samples and near-silent paused samples. Ambient sound and flashlight are a combined mix, not an isolated flashlight audibility assertion; FMOD nosound on UBA cannot certify headset/speaker playback or subjective mixing
+
+PNG/WAV evidence is written outside Assets and also embedded in bounded `HAPPYTOY_ARTIFACT_*` envelopes in NUnit output so a failed build still retains it. No UBA hook, upload endpoint or new credential is needed. `Tools/quality/extract_cloud_evidence.py` validates every chunk, declared length, SHA-256, safe filename and total-size bound before extracting into a fresh external directory. The build number and full source commit must be verified separately from the UBA checkout log; envelopes alone do not authenticate the source revision. Original NUnit/log files must be retained.
+
+The historical `Verification/annex/full-route-first/walk.json` recovered six prerequisite records but died on its basement return. The earlier successful compact-room route is not the authored seven-record Annex scene. This new gate exists to find and correct genuine route, encounter or driver problems without relabeling that failure as a pass. Authored scene bytes and build selection remain protected.
+
 ## Latest verified result
 
 **UBA build #4: SUCCESS**, on exact tested commit `58f5cf949380d28574ab4a809c0c903ef9a27811`, Unity **6000.6.0f1**, Windows Micro. Both NUnit artifacts were independently parsed: **6/6 EditMode + 6/6 PlayMode passed, 0 failed/inconclusive/skipped**. The previously failing real-footstep hearing/recognition case passes with the interior, physically validated fixture. The Windows player export and final status also succeeded.

@@ -1,7 +1,7 @@
 {
   "name": "HappyToy.V2.PlayModeTests",
   "rootNamespace": "HappyToy.V2.CloudTests",
-  "references": ["HappyToy.V2.TestSupport", "Unity.InputSystem"],
+  "references": ["HappyToy.V2.TestSupport", "Unity.InputSystem", "Unity.Collections", "Unity.RenderPipelines.Core.Runtime", "Unity.RenderPipelines.Universal.Runtime"],
   "includePlatforms": [],
   "excludePlatforms": [],
   "autoReferenced": false,
