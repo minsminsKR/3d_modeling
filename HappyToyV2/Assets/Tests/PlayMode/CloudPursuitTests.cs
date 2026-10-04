@@ -1,11 +1,13 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
+using UnityEngine.UIElements;
 using static HappyToy.V2.CloudTests.RuntimeAccess;
 using static HappyToy.V2.CloudTests.CloudPursuitTests;
 
@@ -119,6 +121,8 @@ namespace HappyToy.V2.CloudTests
         {
             IsolateThreats(); Begin();
             yield return Wait(() => NavMesh.CalculateTriangulation().vertices.Length > 0, 5, "Missing authored navigation");
+            Call(shell, "RestoreDefaultSettings"); Call(shell, "ToggleLargeText"); Call(shell, "ToggleHighContrast");
+            var view = One("GameShellView"); var layoutErrors = new List<string>();
             var cabinet = Components("Interactable").Single(item => item.name == "음악실 은신함");
             Vector3 inside = Get<Transform>(cabinet, "inside").position, outside = Get<Transform>(cabinet, "outside").position;
             Vector3 outward = outside - inside; outward.y = 0; outward.Normalize();
@@ -137,6 +141,10 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(enemy, "SawHiding"), Is.False, "Old chase memory invented a witness through cover");
             var inventory = Get<Component>(player, "Firecrackers");
             Assert.That((bool)Call(inventory, "TryThrow"), Is.False); Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(2));
+            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False, "Unseen hiding must not invent perceived danger");
+            yield return CaptureFrozenHud(view, "hiding-unseen-item-feedback-large-720p.png", layoutErrors);
+            Assert.That(Get<VisualElement>(view, "Root").Q<Label>("player-status").text, Does.Contain("발소리를 듣고"));
+            Assert.That(Get<VisualElement>(view, "Root").Q<Label>("item-action-feedback").text, Is.Not.Empty);
             cover.SetActive(false); Physics.SyncTransforms();
             Set(enemy, "patrolSpeed", 1.45f); Set(enemy, "chaseSpeed", 3.5f);
             yield return Wait(() => Get<object>(enemy, "state").ToString() == "Search", 10, "Unseen entry did not lead to local search");
@@ -156,10 +164,36 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(() => Get<object>(enemy, "state").ToString() == "Chase", 3, "Visible exit was not reacquired");
             Call(cabinet, "Use", player);
             Assert.That(Get<bool>(enemy, "SawHiding"), Is.True, "Clearly witnessed entry was forgotten");
+            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False,
+                "Witness flag alone must not expose a distant enemy's internal state to the HUD");
+            var footsteps = enemy.GetComponent(RequireType("StalkerFootsteps"));
+            var source = enemy.GetComponent<AudioSource>();
+            Assert.That(source.spatialBlend, Is.EqualTo(1)); Assert.That(source.ignoreListenerPause, Is.False);
+            Assert.That(source.ignoreListenerVolume, Is.False);
+            var clipField = footsteps.GetType().GetField("cabinetRattle", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.That(clipField, Is.Not.Null);
+            var doorClip = (AudioClip)clipField.GetValue(footsteps);
+            var clipSamples = new float[doorClip.samples * doorClip.channels];
+            Assert.That(doorClip.GetData(clipSamples, 0), Is.True);
+            Assert.That(clipSamples.All(value => !float.IsNaN(value) && !float.IsInfinity(value) && Mathf.Abs(value) < .4f), Is.True);
+            Assert.That(clipSamples.Any(value => Mathf.Abs(value) > .01f), Is.True, "Door cue has no actual waveform");
             Set(enemy, "chaseSpeed", 3.5f);
             yield return Wait(() => Get<bool>(enemy, "AttackActive"), 5, "Witnessed entry never produced a warned cabinet attack");
             Assert.That(Get<bool>(session, "Finished"), Is.False);
             Assert.That((bool)Call(enemy, "HearNoise", anchor.position, 8f), Is.False);
+            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.True);
+            Assert.That(Get<int>(footsteps, "AttackCuesPlayed"), Is.EqualTo(1));
+            Assert.That(Get<int>(footsteps, "CabinetAttackCuesPlayed"), Is.EqualTo(1));
+            yield return CaptureFrozenHud(view, "hiding-door-warning-large-720p.png", layoutErrors);
+            Assert.That(Get<VisualElement>(view, "Root").Q<Label>("player-status").text, Does.Contain("문 앞에서 공격 준비"));
+            float cueRemaining = Get<float>(player, "HidingThreatCueRemaining");
+            Call(shell, "Pause");
+            Call(footsteps, "PlayAttackCue", true); // Deliberate paused misuse must not emit a second cue.
+            Call(player, "ReportHidingDoorAttack", 2f);
+            yield return Delay(.3f);
+            Assert.That(Get<float>(player, "HidingThreatCueRemaining"), Is.EqualTo(cueRemaining).Within(.001f));
+            Assert.That(Get<int>(footsteps, "CabinetAttackCuesPlayed"), Is.EqualTo(1));
+            Call(shell, "Resume");
             // Leaving and immediately re-entering a witnessed cabinet cannot reset
             // the active windup. Use the real cabinet API and real attack clock.
             Call(cabinet, "Use", player); Assert.That(Get<bool>(player, "Hidden"), Is.False);
@@ -168,7 +202,30 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(enemy, "AttackActive"), Is.True);
             yield return Wait(() => Get<bool>(session, "Finished"), 2, "Repeated entry granted immunity to a witnessed attack");
             Assert.That(Get<bool>(session, "Escaped"), Is.False);
-            Debug.Log("HAPPYTOY_PURSUIT_PASS cabinet: unseen entry safe, blocked exit safe, visible entry witnessed, repeated entry still vulnerable");
+            Assert.That(Get<int>(footsteps, "CabinetAttackCuesPlayed"), Is.EqualTo(1), "One actual attack replayed its door cue");
+            Assert.That(layoutErrors, Is.Empty, string.Join("\n", layoutErrors));
+            var previousSession = session;
+            Call(shell, "Restart", true);
+            yield return Wait(() => Components("GameSession").Length == 1 && One("GameSession") != previousSession, 20,
+                "Retry did not replace the old cabinet/attack session");
+            yield return null; yield return null;
+            session = One("GameSession"); player = Get<Component>(session, "player"); shell = Get<Component>(session, "Shell");
+            Assert.That(Get<bool>(player, "Hidden"), Is.False); Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False);
+            Assert.That(source == null && doorClip == null && footsteps == null, Is.True, "Old threat audio/clip leaked into retry");
+            Debug.Log("HAPPYTOY_PURSUIT_PASS cabinet: unseen entry safe, blocked exit safe, visible entry witnessed, repeated entry still vulnerable; actual door cue once, truthful HUD, pause and retry cleanup");
+        }
+
+        IEnumerator CaptureFrozenHud(Component view, string name, List<string> errors)
+        {
+            float scale = Time.timeScale; bool audioPause = AudioListener.pause;
+            try
+            {
+                // Controlled screenshot only: hold the genuine observed moment for
+                // software-driver readback, then resume the unchanged attack clock.
+                Time.timeScale = 0; AudioListener.pause = true;
+                yield return CaptureMenu(view, name, 1280, 720, errors);
+            }
+            finally { Time.timeScale = scale; AudioListener.pause = audioPause; }
         }
 
         [UnityTest, Timeout(45000)]

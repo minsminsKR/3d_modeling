@@ -134,7 +134,8 @@ namespace HappyToy.V2
             attackFacing.y = 0;
             if (attackFacing.sqrMagnitude > .001f) transform.rotation = Quaternion.LookRotation(attackFacing);
             EnemyNavigation.Stop(agent); AttacksStarted++;
-            if (footsteps) footsteps.PlayAttackCue();
+            if (footsteps) footsteps.PlayAttackCue(hiding);
+            if (hiding) player.ReportHidingDoorAttack(1.5f);
             session.WarnThreat(hiding ? "은신처를 들켰습니다 · 문 앞에서 공격을 준비합니다. 지금 빠져나오세요." :
                 "가까운 적이 공격을 준비합니다 · 즉시 거리를 벌리세요.", 1.5f);
         }

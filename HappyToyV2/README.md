@@ -1,10 +1,25 @@
 # Happy Toy V2 — 현재 개발판
 
-## 2026-10-03 실제 클라우드 빌드와 Unity 테스트 연결
+## 현재 목표: 개인적으로 즐기는 학교 공포 게임
 
-Unity Build Automation #4가 `58f5cf9`에서 **실제 EditMode 6/6·PlayMode 6/6 검사와 Windows 플레이어 빌드를 모두 통과**했습니다(실패·건너뜀 0). 씬 보존, 기록/탈출, 재시작, 실제 낮은 자세·발소리·적 청각/인식, 경로, 공격 예고/회피의 통제된 사례가 확인됐습니다. 테스트 ZIP의 전체 CRC도 통과했습니다. 전체 일반 입력 생존 완주나 화면·음향·성능의 출시 검수를 대신하지 않습니다. 정확한 커밋과 결과는 **CLOUD_QA.md**, 증거는 `Verification/cloud-tests/build-4-results.json`에 있습니다.
+상업 출시가 아니라 직접 즐길 게임의 추격·은신·아이템 사용감과 공포 분위기를
+다듬습니다. 출시용 서류나 제품 이름 결정을 개인 플레이의 조건으로 두지 않습니다.
+현재 장면은 `Assets/Annex/SchoolAnnex.unity`이며 원본 장면을 재생성하지 않습니다.
 
-아래 날짜별 문단의 검증 수치와 미실행 표기는 각 개발 단계 당시의 이력입니다. 현재 자동 검사의 최신 상태는 위 결과를 기준으로 확인하세요.
+마지막 실제 검증은 UBA #8의 소스 `9230608`입니다. **EditMode 6/6 + PlayMode
+15/15 검사와 Windows 내보내기가 모두 성공**했고, 일반 입력 7기록 경로와
+지정 화면/실제 엔진 믹스·일시정지 무음을 확인했습니다. 한 가지 사전 계획
+전략과 통제된 사례의 결과이며 사람의 재미/모든 상황을 보증하는 수치는 아닙니다.
+
+이번 후속 소스는 폭죽 첫 중복음·사용 실패 안내와 은신처 문 앞 경고를 개선합니다.
+기존 실행본은 유지하며 새 24개 Unity 검사 결과는 아직 기다리고 있습니다.
+상업 배포 준비 변경은 이 패치에 포함하지 않습니다.
+
+- [이번 개인용 플레이 개선](PERSONAL_PLAY.md)
+- [실제 엔진 검사와 소스별 증거](CLOUD_QA.md)
+
+아래 날짜별 문단은 당시의 개발 이력입니다. 이전 빌드 번호·장면·NOT RUN 표기를
+현재 상태로 해석하지 마세요.
 
 ## 2026-10-03 재시작·중단 안정성
 
@@ -38,7 +53,7 @@ Windows 실행 파일은 **Builds/Windows/HappyToyV2.exe**입니다. 실행 파�
 
 ## Historical review — before the multi-floor annex
 
-Current build scene: **`Assets/ClassroomReview/SchoolTeacherDesk.unity`**. Improvements continue from user-selected commit `57ad81d` and are included in this handoff. The latest visual addition is an original Blender teacher desk with drawers, steel legs and handles, preserving the register location and collision footprint.
+Build scene at that historical stage: **`Assets/ClassroomReview/SchoolTeacherDesk.unity`**. Improvements continue from user-selected commit `57ad81d` and are included in this handoff. The latest visual addition is an original Blender teacher desk with drawers, steel legs and handles, preserving the register location and collision footprint.
 
 ### Continue on another Windows PC
 

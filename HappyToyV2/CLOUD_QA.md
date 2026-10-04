@@ -1,5 +1,25 @@
 # Unity Build Automation: real scene tests
 
+## Current personal-play update: source checked, new engine run pending
+
+The goal is personal enjoyment and better chase/hiding/item feedback, not a
+commercial release. This source fixes the first double firecracker pop, provides
+brief item-denial feedback without replacing story text, honors comfort settings,
+and adds a door-specific spatial cue/HUD warning only after a real nearby cabinet
+attack begins. It never reveals unseen enemy awareness or distraction success.
+
+The suite now defines **6 EditMode + 18 PlayMode tests (24 total)**. Three new item
+fixtures cover feedback, single first pulse, finite spending, pause/comfort and
+retry cleanup. The existing cabinet fixture adds truthful HUD captures, one cue
+per actual attack, paused clock behavior and old-source/clip destruction on retry.
+The real-input seven-record strategy and all previous tests remain. Actual Unity
+execution of this change is pending; latest completed engine evidence remains
+build #8 at `9230608` below. Source preflight is in
+`Verification/personal-play-feedback/`. See `PERSONAL_PLAY.md` for player-facing
+scope. Optional commercial preparation was kept separate and is not a gate for
+this personal-use work.
+
+
 ## Latest engine result: build #8 SUCCESS, all21actual tests passed
 
 Pinned source **`923060837b0cb8585d16d9bfffb961434a850504`**, Unity6000.6.0f1 / Windows Micro. Both original NUnit artifacts were independently parsed: **6/6EditMode +15/15PlayMode,0failures,0skips,0inconclusive**. The final log ends **SUCCESS** and the Windows player export completed. This run closes the prior missing EditMode result and strict AudioRenderer capture gate; #7's early process exit remains unexplained historical evidence, not a retroactive pass.
@@ -15,7 +35,7 @@ The missing call on zero-count frames was a capture-harness issue: official Reco
 
 Original Windows ZIP: **73,166,499bytes /186entries**, SHA256`fde361d88b69e4c2ee48bdbf5d71c631bcea9bf2bae2658ab4fb315d0be3b67f`. CRCs, required player/runtime/scene and absent UTF/NUnit test assemblies were checked. A separate verified candidate excludes only one228,583-byte Burst backup report, retaining all185other payloads unchanged; it is67,573,893bytes, SHA256`7b5eb902952c3328bbe3b536a10b4ca8246624042cc64fbba8f411e0fca2c8be`. Two packaging runs produced identical ZIPs. App development identity/instrumentation and asset-rights/runtime-smoke limitations remain; removing the backup is not a release-mode conversion.
 
-Exact records: `Verification/cloud-tests/build-8-results.json`, `build-8-experience.json`, `build-8-candidate.manifest.json` and `build-8-packaging.md`. The following final evidence/docs update changes no tested game code or test code; engine evidence stays pinned to9230608. **Commercial release remains blocked** by the separate criteria in `RELEASE_READINESS.md`.
+Exact records: `Verification/cloud-tests/build-8-results.json`, `build-8-experience.json`, `build-8-candidate.manifest.json` and `build-8-packaging.md`. The historical evidence/docs update at `0ec7588` changed no tested game or test code; its engine evidence stays pinned to `9230608`. The newer personal-play source update above changes gameplay and is awaiting its own engine run. `RELEASE_READINESS.md` is a historical optional distribution checklist, not a prerequisite for personal play.
 
 ## Previous engine result: #7 pursuit cases passed, audio gate failed; EditMode unverified
 

@@ -11,6 +11,10 @@ namespace HappyToy.V2
         public float walkSpeed = 2.6f, runSpeed = 4.4f, sensitivity = .09f;
         public float Stamina { get; private set; } = 1;
         public bool Hidden { get; private set; }
+        // A short remembered cue from an actual attack at this cabinet door.
+        // This is not a query of unseen enemy awareness or general hiding safety.
+        public bool HidingThreatCueActive => Hidden && hidingPlace && warnedHidingPlace == hidingPlace && Time.time < hidingThreatUntil;
+        public float HidingThreatCueRemaining => HidingThreatCueActive ? Mathf.Max(0, hidingThreatUntil - Time.time) : 0;
         public bool Running { get; private set; }
         public bool Crouching { get; private set; }
         public bool StandingBlocked { get; private set; }
@@ -32,7 +36,8 @@ namespace HappyToy.V2
         public bool Grounded => controller && controller.enabled && controller.isGrounded;
         public void ApplyCurse(float duration) { SlowRemaining = Mathf.Max(SlowRemaining, duration); }
         CharacterController controller;
-        Interactable hidingPlace;
+        Interactable hidingPlace, warnedHidingPlace;
+        float hidingThreatUntil;
         Vector3 hideExit, moveVelocity;
         float pitch, fallSpeed, standingHeight, crouchedHeight;
         Vector3 standingCenter;
@@ -167,10 +172,17 @@ namespace HappyToy.V2
             ActualSpeed = displacement.magnitude / Time.fixedDeltaTime;
             MovementUpdates++;
         }
+        public void ReportHidingDoorAttack(float duration)
+        {
+            if (Paused || !Hidden || !hidingPlace || !StealthRules.Finite(duration) || duration <= 0) return;
+            warnedHidingPlace = hidingPlace;
+            hidingThreatUntil = Mathf.Max(hidingThreatUntil, Time.time + Mathf.Min(duration, 2));
+        }
         public void Hide(Interactable place, Vector3 inside, Vector3 exit)
         {
             if (Hidden || !place || Paused) return;
             foreach (var stalker in FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None)) stalker.ObserveHiding(exit);
+            if (warnedHidingPlace != place) { warnedHidingPlace = null; hidingThreatUntil = 0; }
             hidingPlace = place; hideExit = exit; Hidden = true; Running = false;
             FootstepNoiseRemaining = FootstepNoiseRadius = 0;
             moveVelocity = Vector3.zero; ActualSpeed = 0;
