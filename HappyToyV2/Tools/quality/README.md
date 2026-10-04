@@ -1,17 +1,18 @@
-# Enemy-audio build #11 passed; startup correction pending
+# Current enemy-audio verification: build #12 SUCCESS, 37/37
 
-Exact source a7c68b1 passed all 37 actual cases (6 EditMode + 31 PlayMode), Windows
-export and the 17-segment native 48 kHz stereo PCM fixture. All 34 evidence envelopes
-were hash-decoded; original baseline32 are retained. The strict transport limit is
-34 files / 16 MB total / 1.5 MB each; empty Render calls add zero samples.
-See Verification/cloud-tests/build-11-* for exact hashes/PCM inspection.
+Exact source f0ed7649 passed 6 EditMode + 31 PlayMode and Windows export. The
+empty-source startup warning fell from 40 in #11 to 0, with an explicit scene-load/
+intro/retry/unload regression. Temporary roar source/filter ownership and destruction
+also pass. No PCM or gameplay gate was relaxed.
 
-The same run exposed 40 empty-source initialization warnings. A narrow source-order/
-owned-emitter cleanup correction and warning regression are now source-tested;
-Verification/enemy-audio-startup records that separate preflight. Its actual 37-case
-engine rerun remains pending. No old passing result is reused as a new runtime pass.
+All 34 envelopes hash-verify; the native 48 kHz stereo 17-segment WAV (7.26 s) and JSON
+are byte-identical to #11. Independent PCM checks confirm identities, wall/slab
+attenuation, stereo, finite range, mute, in-flight pause/resume and overlap headroom.
+See Verification/cloud-tests/build-12-* for exact source/log/ZIP/audio evidence.
+The evidence/docs completion does not need another engine run. Captured output is
+not a speaker/headphone, long-session or target-hardware performance verdict.
 
-# Current personal-play verification: build #10
+# Previous player-feedback verification: build #10
 
 Exact source `705c0639f1bb892a92057481f93381050c3626c8` passed **33 actual Unity tests**
 (6 EditMode + 27 PlayMode, zero failed/skipped) and exported the Windows player.

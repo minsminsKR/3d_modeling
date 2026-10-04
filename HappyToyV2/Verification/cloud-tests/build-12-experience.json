@@ -1,0 +1,526 @@
+{
+  "build": 12,
+  "testedSource": "f0ed764973c8b831d236299452077d50946a6bee",
+  "scope": "Hash-verified actual engine transport plus independent signed16 PCM. Positioned isolated audio fixtures are separate from one map-aware survival strategy and device listening.",
+  "envelopeCount": 34,
+  "totalBytes": 10567444,
+  "artifacts": [
+    {
+      "filename": "recognition-static-ui.png",
+      "bytes": 161411,
+      "sha256": "0d4b7de187ee834b9d50c7b45df1ebc53f71b286fd12d9986bfaaf8903719451"
+    },
+    {
+      "filename": "recognition-softened-ui.png",
+      "bytes": 45872,
+      "sha256": "35e324d32dc64e46bd73260654de1efab80e29eeaad00d4c576ba9f4c8e6d498"
+    },
+    {
+      "filename": "cabinet-0-standing-world-camera.png",
+      "bytes": 62735,
+      "sha256": "e55d3ea9c29b8a59fb82b6e55ac47f7a0db85a76a9ce31c25ce2d3a9686b03b8"
+    },
+    {
+      "filename": "cabinet-0-crouched-wide-world-camera.png",
+      "bytes": 83325,
+      "sha256": "a969a4e4c6c3dc244f13a040c3d45e5cecffc2a70aaae438220e4e2bc32012a4"
+    },
+    {
+      "filename": "cabinet-1-standing-world-camera.png",
+      "bytes": 68705,
+      "sha256": "9b34330e9c91175efd931e9858de41f34e682c4c7360e7e4add4bbe80a2ce38a"
+    },
+    {
+      "filename": "cabinet-1-crouched-wide-world-camera.png",
+      "bytes": 86627,
+      "sha256": "16ab76546247e64fdb7e1db273c56bed73864e46d6f09c81ed78cc143abec3c3"
+    },
+    {
+      "filename": "cabinet-2-standing-world-camera.png",
+      "bytes": 75059,
+      "sha256": "ea149534214ce2f03f5c27d9220ad8c5be99be52d0fa5a58f51b426095615b46"
+    },
+    {
+      "filename": "cabinet-2-crouched-wide-world-camera.png",
+      "bytes": 88376,
+      "sha256": "51be9c61ad848e8c6517b2627215d09931b61124b0373f3c329b6130f06985bc"
+    },
+    {
+      "filename": "annex-music-entry.png",
+      "bytes": 935233,
+      "sha256": "b623f4632fa1ac8a069012cb3dd06b779337070a5687ac3130c69ee710e55c30"
+    },
+    {
+      "filename": "annex-piano-board.png",
+      "bytes": 750579,
+      "sha256": "27292b54408f5fe654ccd43d8112e62da9e8969bfdc2b60cd1e3be84749d3b9a"
+    },
+    {
+      "filename": "annex-upper-stair-approach.png",
+      "bytes": 1044016,
+      "sha256": "b1c054b1aaa84eccae8c15df115816622dc5958fcd18dbaba9496fae358fe6b8"
+    },
+    {
+      "filename": "annex-upper-reverse.png",
+      "bytes": 691720,
+      "sha256": "d0d629b3fb99a2d9a590201f084fe69db3d1e25f4ca1403385a12657fc591da4"
+    },
+    {
+      "filename": "annex-music-rows-reverse.png",
+      "bytes": 891136,
+      "sha256": "b76b61ed4fd0df1ebea228b67840c1f83e97a0c4161d9456ce80b09c89bd9a17"
+    },
+    {
+      "filename": "hiding-unseen-item-feedback-large-720p.png",
+      "bytes": 66479,
+      "sha256": "322fb3bb82d904eb4200ab07ce6f4adaf1349203c551c9df695ba8075a3d220a"
+    },
+    {
+      "filename": "hiding-door-warning-large-720p.png",
+      "bytes": 66595,
+      "sha256": "cfc05af8779b54d5978be2e241cddfdfb5fc95eb9c531032574a66b56c4a13ea"
+    },
+    {
+      "filename": "cyclopse-01-occluded-activation.png",
+      "bytes": 535030,
+      "sha256": "0748e06f9015cd53713f1400b39cd3f82145249f7a69c496681b2b3ba8e1164b"
+    },
+    {
+      "filename": "cyclopse-02-first-visible-walk.png",
+      "bytes": 535856,
+      "sha256": "f9ca16108c06bd1c64462dd4eb707316af16eb9099cca54fcd925f9cace0cf58"
+    },
+    {
+      "filename": "cyclopse-03-corner-turn.png",
+      "bytes": 536490,
+      "sha256": "76f87379671244ba9a5b41f79ea2298d05181fb496a4d659c8400051ee784283"
+    },
+    {
+      "filename": "cyclopse-04-arrived-roar.png",
+      "bytes": 537680,
+      "sha256": "11e654dc208ea2bcff63b2949399f03c41b52b902f0924750cd038f792467b7a"
+    },
+    {
+      "filename": "title-720p.png",
+      "bytes": 96197,
+      "sha256": "a9356de6476086362d46b9f13ebafdcd62f3daac8caebb629534602413320da4"
+    },
+    {
+      "filename": "settings-large-1280x720.png",
+      "bytes": 86861,
+      "sha256": "e8e2c58377c5d3da3022ffc7d2adc3330342e244e341c3f017c6f169d684864b"
+    },
+    {
+      "filename": "settings-large-1024x768.png",
+      "bytes": 69524,
+      "sha256": "b74446b4943b973a5f49f56fa4bda1cbc5b859cd3c9940fa95e6f2702d8cfbad"
+    },
+    {
+      "filename": "settings-large-2560x1080.png",
+      "bytes": 156834,
+      "sha256": "e564dde507a9bf3f37215f3fc0711694e3702b6fd5d2a6bbe574a4654ded5020"
+    },
+    {
+      "filename": "title-large-720p.png",
+      "bytes": 105926,
+      "sha256": "92e62060a2f80d317dac09852813c5dc25ba49e2b38e3a8304ea21716aed7247"
+    },
+    {
+      "filename": "pause-large-4x3.png",
+      "bytes": 79415,
+      "sha256": "ac1ee026a8fb5b86b3983f3105a053fb022d7a95fc652d574fcf59dea06ca369"
+    },
+    {
+      "filename": "hud-large-720p.png",
+      "bytes": 51673,
+      "sha256": "917714f02a2fc791d80bb15c4e17d339ffde13b994bc6f76cd51bd6afc62a494"
+    },
+    {
+      "filename": "journal-1080p.png",
+      "bytes": 134332,
+      "sha256": "368daf69523323250841bdfaf4232d9b43b649200ddaa97b6f937d63fb5fa3e3"
+    },
+    {
+      "filename": "authored-start-camera.png",
+      "bytes": 650842,
+      "sha256": "a8b82f0d2398d705e1afd3fcbfb7fda5cd94357766322818627f329a8d3bab5b"
+    },
+    {
+      "filename": "enemy-movement-acoustics.wav",
+      "bytes": 1393964,
+      "sha256": "efdf6dc7a9ed5d4c32c621693f165e2d6df8104561d3b000445e0abcb091a582"
+    },
+    {
+      "filename": "enemy-movement-acoustics.json",
+      "bytes": 29459,
+      "sha256": "7cac95affd7332a8ee2b7f804262cd841bcb1d7344ebbce19fc4fc60a08d4175"
+    },
+    {
+      "filename": "diagnostic-listener-before-render.json",
+      "bytes": 17361,
+      "sha256": "4699fb2b89917e691188b3b41c8081735c35d0e70e093fc9bd39811658791396"
+    },
+    {
+      "filename": "diagnostic-listener-before-render.wav",
+      "bytes": 192044,
+      "sha256": "4b10a6470cf825d1e4c75c676718136ec6adf2ec99e822e3eaa73799040de855"
+    },
+    {
+      "filename": "listener-flashlight-ambience.wav",
+      "bytes": 192044,
+      "sha256": "1e25a299130b5c5e11a331f11c11ccd7cad038f48868b488614c5fb530bcfeff"
+    },
+    {
+      "filename": "listener-paused.wav",
+      "bytes": 48044,
+      "sha256": "c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b"
+    }
+  ],
+  "audioInspection": {
+    "scope": "Independent inspection of preserved signed16 stereo PCM and transport/report consistency; no device listening or subjective quality certification",
+    "wave": "enemy-movement-acoustics.wav",
+    "bytes": 1393964,
+    "sha256": "efdf6dc7a9ed5d4c32c621693f165e2d6df8104561d3b000445e0abcb091a582",
+    "sampleRate": 48000,
+    "channels": 2,
+    "frames": 348480,
+    "duration": 7.26,
+    "segments": [
+      {
+        "name": "identity-Lantern",
+        "frames": 21600,
+        "startSeconds": 0.0,
+        "duration": 0.45,
+        "pcmPeak": 0.047883541367839594,
+        "pcmRms": 0.008802513125127451,
+        "leftRms": 0.008802513125127451,
+        "rightRms": 0.008802513125127451,
+        "pcmSha256": "56e6090f6e41512addacbf0dcb879a926ad86f5801dd804d2bf9dc8deda828c0",
+        "nonzeroValues": 30966,
+        "reportedProfile": "Lantern",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Cyclopse",
+        "frames": 21600,
+        "startSeconds": 0.45,
+        "duration": 0.45,
+        "pcmPeak": 0.10748619037446211,
+        "pcmRms": 0.0202006513061548,
+        "leftRms": 0.0202006513061548,
+        "rightRms": 0.0202006513061548,
+        "pcmSha256": "d78176e578db510c81502136333e94de98566e5b20ecd06e669c80f2179f972b",
+        "nonzeroValues": 31198,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Hwacat",
+        "frames": 21600,
+        "startSeconds": 0.9,
+        "duration": 0.45,
+        "pcmPeak": 0.07007049775688956,
+        "pcmRms": 0.008669425319064193,
+        "leftRms": 0.008669425319064193,
+        "rightRms": 0.008669425319064193,
+        "pcmSha256": "35bfb45b9cd16628cc99535cbea3c9c8c157802169faeab52ec56770b2430582",
+        "nonzeroValues": 18242,
+        "reportedProfile": "Hwacat",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Uncat",
+        "frames": 21600,
+        "startSeconds": 1.35,
+        "duration": 0.45,
+        "pcmPeak": 0.07913449507126072,
+        "pcmRms": 0.012020744852963512,
+        "leftRms": 0.012020744852963512,
+        "rightRms": 0.012020744852963512,
+        "pcmSha256": "d85306afe324d7e660d1d8f50c55817239d9205dfea06fe249294edc9ac35116",
+        "nonzeroValues": 22716,
+        "reportedProfile": "Uncat",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Baby",
+        "frames": 21600,
+        "startSeconds": 1.8,
+        "duration": 0.45,
+        "pcmPeak": 0.0738853114413892,
+        "pcmRms": 0.012605409817262672,
+        "leftRms": 0.012605409817262672,
+        "rightRms": 0.012605409817262672,
+        "pcmSha256": "c1ecaf35d859e9ee40765a0219b4b136c07f7fb411b4153d8eb5aae12e8ca7d7",
+        "nonzeroValues": 28986,
+        "reportedProfile": "Baby",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Wraith",
+        "frames": 21600,
+        "startSeconds": 2.25,
+        "duration": 0.45,
+        "pcmPeak": 0.07205420087282938,
+        "pcmRms": 0.011902366735211122,
+        "leftRms": 0.011902366735211122,
+        "rightRms": 0.011902366735211122,
+        "pcmSha256": "c2004f8920a9e2af2aec78bc6c5f16af47e48415811cd2136ea5c6c2a0e9d584",
+        "nonzeroValues": 31080,
+        "reportedProfile": "Wraith",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "beyond-range",
+        "frames": 21600,
+        "startSeconds": 2.7,
+        "duration": 0.45,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "leftRms": 0.0,
+        "rightRms": 0.0,
+        "pcmSha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1",
+        "nonzeroValues": 0,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "wall-blocked",
+        "frames": 21600,
+        "startSeconds": 3.15,
+        "duration": 0.45,
+        "pcmPeak": 0.04016235847041231,
+        "pcmRms": 0.0076432946341142005,
+        "leftRms": 0.0076432946341142005,
+        "rightRms": 0.0076432946341142005,
+        "pcmSha256": "f1d28440196fa72ed96ec74dc312ec790ba0c9fa6e2d5dfdf6dff3b4a720568f",
+        "nonzeroValues": 29594,
+        "reportedProfile": "Cyclopse",
+        "occluded": true,
+        "floorOccluded": false,
+        "gain": 0.3799999952316284,
+        "cutoffHz": 1200.0
+      },
+      {
+        "name": "vertical-open",
+        "frames": 21600,
+        "startSeconds": 3.6,
+        "duration": 0.45,
+        "pcmPeak": 0.10748619037446211,
+        "pcmRms": 0.020197233907016488,
+        "leftRms": 0.020197233907016488,
+        "rightRms": 0.020197233907016488,
+        "pcmSha256": "562f0aadb8b7e650683e15cbb283e362e9c234ea29dcb3c018273aa869beaadb",
+        "nonzeroValues": 31180,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "floor-blocked",
+        "frames": 21600,
+        "startSeconds": 4.05,
+        "duration": 0.45,
+        "pcmPeak": 0.01489303262428663,
+        "pcmRms": 0.002808588555179358,
+        "leftRms": 0.002808588555179358,
+        "rightRms": 0.002808588555179358,
+        "pcmSha256": "ff862514d251ea297a6e3e9adcd6e9c553418b96525bd0bc9e8548dce55b9fb3",
+        "nonzeroValues": 26246,
+        "reportedProfile": "Cyclopse",
+        "occluded": true,
+        "floorOccluded": true,
+        "gain": 0.14000000059604645,
+        "cutoffHz": 650.0
+      },
+      {
+        "name": "left",
+        "frames": 21600,
+        "startSeconds": 4.5,
+        "duration": 0.45,
+        "pcmPeak": 0.12665181432538836,
+        "pcmRms": 0.01722643983614748,
+        "leftRms": 0.02379694197260144,
+        "rightRms": 0.005215938229068437,
+        "pcmSha256": "98a62a796dc41e9d352d300a8018c10a08efd4d2df20cefd686f934c3d7a7c07",
+        "nonzeroValues": 29836,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "right",
+        "frames": 21600,
+        "startSeconds": 4.95,
+        "duration": 0.45,
+        "pcmPeak": 0.12665181432538836,
+        "pcmRms": 0.017235312355741318,
+        "leftRms": 0.005218612082896118,
+        "rightRms": 0.02380920141307115,
+        "pcmSha256": "94e7860ae70bddbe50e54fed4d13254713a3866bfe466083a4f9ac7652d33d33",
+        "nonzeroValues": 29864,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "master-zero",
+        "frames": 21600,
+        "startSeconds": 5.4,
+        "duration": 0.45,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "leftRms": 0.0,
+        "rightRms": 0.0,
+        "pcmSha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1",
+        "nonzeroValues": 0,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "before-pause",
+        "frames": 2880,
+        "startSeconds": 5.85,
+        "duration": 0.06,
+        "pcmPeak": 0.10748619037446211,
+        "pcmRms": 0.0505080984025218,
+        "leftRms": 0.0505080984025218,
+        "rightRms": 0.0505080984025218,
+        "pcmSha256": "d51e05f9e2f499cd988db9ccc8b400f750a541d074336edc6961893d0951f90f",
+        "nonzeroValues": 5716,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "paused",
+        "frames": 21600,
+        "startSeconds": 5.91,
+        "duration": 0.45,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "leftRms": 0.0,
+        "rightRms": 0.0,
+        "pcmSha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1",
+        "nonzeroValues": 0,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "resumed",
+        "frames": 21600,
+        "startSeconds": 6.36,
+        "duration": 0.45,
+        "pcmPeak": 0.057954649494918666,
+        "pcmRms": 0.0075365512445579475,
+        "leftRms": 0.0075365512445579475,
+        "rightRms": 0.0075365512445579475,
+        "pcmSha256": "1e7471cbf4b40cf9d7b34c9ecc24ccc0a624ce58d6d4210d177467a88f0f8573",
+        "nonzeroValues": 25100,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "four-nearby-stalkers",
+        "frames": 21600,
+        "startSeconds": 6.81,
+        "duration": 0.45,
+        "pcmPeak": 0.22562334055604724,
+        "pcmRms": 0.028295691230516826,
+        "leftRms": 0.0302463905783759,
+        "rightRms": 0.026200155369879526,
+        "pcmSha256": "8368000a006c38275ac5d274da04c06a8bf4a0207125ff7a190a854d602d5ebc",
+        "nonzeroValues": 31075,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      }
+    ],
+    "wallVsClearRms": 0.37836872278397365,
+    "floorVsOpenVerticalRms": 0.13905807934440265
+  },
+  "audioWaveAndJsonByteIdenticalToBuild11": true,
+  "initializationWarnings": 0,
+  "survival": {
+    "passed": true,
+    "stage": "exit",
+    "destination": "(-7.32, 0.03, 0.59)",
+    "diagnostic": "stage=exit, destination=(-7.32, 0.03, 0.59), game=79.66, wall=79.67, records=7, defeat=, hint=문을 닫아 시선을 끊고, 숨을 회복한 뒤 이동하세요., stamina=0.98, hidden=False, focus=none, collision=Below, dynamicUpdates=9423, CPress=False, WHeld=True, inputAllowed=False, crouching=False, eyeY=1.609498, grounded=True, speed=0, position=(-7.19, 0.08, 0.63), footsteps=169, nursery=True/True, upper=resolved, uncat=True/True, lantern=Resolved, mannequin=False; V1 Cyclopse active=False state=Chase at=(-4.20, 0.03, 2.44) attacks=4 awareness=0.00; V1 Hwacat_angry active=False state=Patrol at=(29.80, 5.03, 32.40) attacks=0 awareness=0.00; V1 Baby — nursery encounter active=False state=Patrol at=(14.02, -4.97, -26.65) attacks=0 awareness=0.00; V1 Uncat — archive emergence active=False state=Patrol at=(13.87, 0.03, -2.57) attacks=0 awareness=0.00",
+    "milestones": [
+      "0.05s Started at the authored spawn with every encounter enabled at (-7.80, 0.08, 0.00)",
+      "2.04s CLASSROOM opened by E at (-4.63, 0.08, 0.00)",
+      "2.76s WASHROOM opened by E at (-4.63, 0.08, 0.00)",
+      "5.84s Recovered register at (-5.44, 0.08, 7.42)",
+      "8.85s Flashlight off through F at (-4.51, 0.08, 0.16)",
+      "9.87s Recovered ribbon at (-3.60, 0.08, -2.19)",
+      "26.44s upper ascent physically completed at (29.80, 5.08, 21.84)",
+      "30.48s Recovered record at (30.98, 5.08, 32.17)",
+      "37.56s upper descent physically completed at (29.80, 0.08, 10.15)",
+      "39.15s Recovered music-roster at (24.66, 0.08, 11.77)",
+      "40.25s Entered music cabinet through E at (20.20, 0.00, 13.85)",
+      "40.82s Left music cabinet through E at (20.20, 0.00, 12.75)",
+      "49.41s archive diversion thrown through Q at (20.86, 0.08, -12.83)",
+      "49.45s Recovered archive-record at (20.86, 0.08, -12.83)",
+      "57.16s basement descent physically completed at (13.80, -4.92, -21.82)",
+      "57.20s nursery diversion thrown through Q at (13.80, -4.92, -21.82)",
+      "57.85s Nursery warning triggered by actual entry at (14.93, -4.92, -23.86)",
+      "59.26s Recovered nursery-tag at (18.40, -4.92, -26.92)",
+      "64.50s basement ascent physically completed at (13.80, 0.08, -10.15)",
+      "75.27s Recovered restore at (-2.98, 0.08, 7.64)",
+      "79.66s Escaped with all seven records through real input at (-7.19, 0.08, 0.63)"
+    ],
+    "gameSeconds": 79.65798950195312,
+    "wallSeconds": 79.66903686523438,
+    "physicalMeters": 237.8735809326172,
+    "minY": -4.920000076293945,
+    "maxY": 5.080000400543213,
+    "records": 7,
+    "movementUpdates": 3955,
+    "groundedFrames": 9047,
+    "stairLegs": 4,
+    "hidingEntries": 1,
+    "firecrackersThrown": 2,
+    "maximumLiveStalkers": 4
+  },
+  "runtimeAssemblySha256": "a2ec87f1d181718a50d37df08df9c6727c1a87acaf80b3d20b5d2973400a687c"
+}

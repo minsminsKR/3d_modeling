@@ -1,5 +1,10 @@
 # Empty filtered-source startup correction preflight
 
+Subsequent actual result: UBA #12 at `f0ed7649` passed all 37 tests and Windows
+export, with zero targeted warnings. Original XML, final log and PCM/ZIP hashes
+are in `../cloud-tests/build-12-results.json` and `build-12-experience.json`.
+The source-preflight report below is retained separately from runtime evidence.
+
 UBA #11 at a7c68b1 passed all 37 Unity tests and exported Windows. Its new enemy
 PCM passed, but 40 startup warnings identified AddComponent<AudioSource> on roots
 that already had built-in filters (38 Lantern, 2 Cyclopse). Original ZIP/XML/WAV and
@@ -20,4 +25,5 @@ protected scene hashes, 143 existing pure C# assertions and 7 genuine Unity API 
 compiler stages pass. Compiler warnings remain at baseline. Exact source hashes
 are recorded in genuine-api-compile.json. Waveforms, gameplay parameters and the
 17-segment strict PCM fixture are unchanged. Actual engine warning elimination and
-Windows export remain PENDING until the next pinned 37-case run (6 EditMode + 31 PlayMode).
+Windows export were pending at preflight and then passed in build #12
+(6 EditMode + 31 PlayMode).

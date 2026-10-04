@@ -1,6 +1,42 @@
 # Unity Build Automation: real scene tests
 
-## Latest enemy-audio result: build #11 SUCCESS, 37/37 actual tests
+## Latest result: build #12 SUCCESS, 37/37 tests and no empty-source warnings
+
+Tested/exported source: `f0ed764973c8b831d236299452077d50946a6bee`.
+[Exact-source CI 37204689253](https://github.com/minsminsKR/3d_modeling/actions/runs/37204689253)
+passed. Original XML independently confirms 6 EditMode + 31 PlayMode passed,
+zero failures/skips/inconclusive. The warning guard, temporary roar-emitter
+ownership/destruction and restart cleanup passed. Final log confirms successful
+player export and terminal SUCCESS, zero C# errors and **zero** instances of the
+empty-filter source warning observed 40 times in #11. Existing compiler warnings
+are not presented as eliminated.
+
+All 34 envelopes verify (10,567,444 bytes). The 17-segment 7.26-second acoustic WAV
+and JSON are byte-identical to #11, preserving its six identities, physical wall/
+floor attenuation, stereo direction, zero controls, uninterrupted pause/resume
+and unclipped four-enemy overlap. Independent signed16 PCM recomputation agrees
+with the engine metrics. The existing strict general mix gate also still passes.
+
+The map-aware, real-input seven-record route passed in 79.657990 gameplay seconds,
+237.873581 physical meters, four stair legs, one hiding entry and two firecrackers,
+with all encounter owners retained. This is one automated strategy, not manual
+balance, subjective fear or target-hardware performance certification.
+
+Original Windows ZIP: **73,179,152 bytes / 186 CRC-valid entries**, root
+`HappyToyV2.exe`; runtime and scene present, no project test/NUnit assemblies.
+ZIP SHA256: `d4cbf2ff59725817ff65f010932dd1051469906cbe792c7006eaed9e2fc26b17`.
+Production assembly SHA256: `a2ec87f1d181718a50d37df08df9c6727c1a87acaf80b3d20b5d2973400a687c`.
+Expected profile/acoustic/owned-voice code is present. The original backup report
+is retained; no derivative or commercial-release profile is claimed.
+
+Final log: 2,300,444 bytes, SHA256
+`92e529ad7b2d2a62a1a9a1d4369c13ebc5aadd60892aa2bcb997eb76576d2698`.
+Evidence: `Verification/cloud-tests/build-12-results.json` and
+`build-12-experience.json`. Original #11 and its identical Library WAV are preserved.
+This completion update changes only evidence/docs; no further engine run is needed
+for it. Device/headphone listening and long-session human feedback remain distinct.
+
+## Previous enemy-audio result: build #11 SUCCESS, 37/37 actual tests
 
 Tested/exported source: `a7c68b149ecb570b7a2d8dd47b7e6a9bfca276e5`.
 Both original XMLs confirm 6 EditMode + 31 PlayMode passed, zero failed/skipped/
@@ -26,7 +62,7 @@ Final log ends SUCCESS, zero C# errors. Original backup report remains; no deriv
 Evidence and inspection: `Verification/cloud-tests/build-11-results.json` and
 `build-11-experience.json`. Original ZIP/XML/WAV are preserved separately.
 
-### Narrow initialization correction: engine verification pending
+### Narrow initialization correction: subsequently verified in #12
 
 Build #11 also emitted 40 new empty filtered-source startup warnings (38 Lantern,
 2 Cyclopse). Stack traces originate at AddComponent<AudioSource>, before explicit
@@ -37,11 +73,11 @@ completion/cancel/blocked release. No waveform, gameplay or acoustic tuning chan
 Common PlayMode setup now fails on that exact warning through scene load/retry/unload;
 the existing intro case also checks native object destruction after handoff.
 Independent review and exact-source preflight are in `Verification/enemy-audio-startup/`.
-All 37 cases and strict mixer assertions remain; warning elimination and the revised
-Windows player require their own pinned engine run. #11 success is not retroactive
-runtime verification of this follow-up.
+All 37 cases and strict mixer assertions remained; build #12 above independently
+verified warning elimination and the revised Windows player. #11 remains its own
+historical runtime result rather than evidence retroactively assigned to new source.
 
-## Latest verified player-feedback result: build #10 SUCCESS, 33/33 actual tests
+## Previous player-feedback result: build #10 SUCCESS, 33/33 actual tests
 
 Tested/exported source: `705c0639f1bb892a92057481f93381050c3626c8`.
 Both original XML suites independently confirm **6/6 EditMode + 27/27 PlayMode**,

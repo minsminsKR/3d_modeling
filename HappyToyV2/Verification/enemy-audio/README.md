@@ -4,7 +4,7 @@ Historical preflight for `a7c68b1`, subsequently executed in UBA #11: all37actua
 Unity tests and Windows export passed. See `../cloud-tests/build-11-results.json`
 and `build-11-experience.json` for original hashes and independently checked PCM.
 Forty empty-source startup warnings were observed; their narrow initialization
-correction has a separate preflight and must receive its own engine verification.
+correction has a separate preflight and subsequently passed its own #12 engine run.
 
 Purpose: distinguish the four authored Stalker movement families, Lantern and its
 transformed form; separate Stalker attack anticipation from walking; make existing
