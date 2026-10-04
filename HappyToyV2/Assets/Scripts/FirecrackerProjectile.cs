@@ -7,23 +7,46 @@ namespace HappyToy.V2
         public bool Exploded { get; private set; }
         public int Attracted { get; private set; }
         public int PopsPlayed { get; private set; }
+        public bool InitialOverlap { get; private set; }
+        public bool HasFirstContact { get; private set; }
+        public Vector3 FirstContactPosition { get; private set; }
+        public Vector3 FirstContactPoint { get; private set; }
+        public Vector3 FirstContactNormal { get; private set; }
+        public float FirstContactTime { get; private set; }
         Vector3 velocity;
         float life, pulse;
         bool grounded;
+        double movementRemainder;
+        int movementSteps;
+        const int MaximumMovementStepsPerFrame = 32;
         Light glow;
         AudioSource source;
         AudioClip crack;
         Material material;
         GameObject body;
 
-        public void Launch(Vector3 initialVelocity) { velocity = initialVelocity; }
+        public void Launch(Vector3 initialVelocity)
+        {
+            velocity = initialVelocity;
+            movementRemainder = 0;
+            movementSteps = 0;
+            HasFirstContact = false;
+            FirstContactPosition = FirstContactPoint = FirstContactNormal = Vector3.zero;
+            FirstContactTime = 0;
+            InitialOverlap = FirecrackerTrajectory.IsInitialOverlap(transform.position);
+            // Inventory rejects an invalid origin before consuming an item. Keep this
+            // final safety for direct/controlled launches too, without a fake normal.
+            grounded = InitialOverlap;
+        }
         void Awake()
         {
             body = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
             body.name = "Red paper firecracker";
             body.transform.SetParent(transform, false);
             body.transform.localScale = new Vector3(.08f, .1f, .08f);
-            Destroy(body.GetComponent<Collider>());
+            var bodyCollider = body.GetComponent<Collider>();
+            bodyCollider.enabled = false;
+            Destroy(bodyCollider);
             material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
             material.SetColor("_BaseColor", new Color(.85f, .07f, .025f));
             body.GetComponent<Renderer>().sharedMaterial = material;
@@ -55,26 +78,42 @@ namespace HappyToy.V2
             life += Time.deltaTime;
             if (!grounded)
             {
-                velocity += Physics.gravity * Time.deltaTime;
-                var step = velocity * Time.deltaTime;
-                if (step.sqrMagnitude > 0 && Physics.SphereCast(transform.position, .08f, step.normalized,
-                    out var hit, step.magnitude, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+                movementRemainder += Time.deltaTime;
+                Vector3 position = transform.position;
+                int stepsThisFrame = 0;
+                // Carry any remainder rather than changing the step with frame rate.
+                // The cap bounds work after a stall and never changes engine timing.
+                while (movementRemainder >= FirecrackerTrajectory.StepSeconds &&
+                    stepsThisFrame++ < MaximumMovementStepsPerFrame && !grounded)
                 {
-                    transform.position += step.normalized * Mathf.Max(0, hit.distance - .005f);
-                    velocity = Vector3.ProjectOnPlane(velocity, hit.normal) * .45f;
-                    grounded = hit.normal.y > .6f;
+                    bool contact = FirecrackerTrajectory.Step(ref position, ref velocity,
+                        out var hit, out float fraction);
+                    if (contact)
+                    {
+                        if (!HasFirstContact)
+                        {
+                            HasFirstContact = true;
+                            FirstContactPosition = position;
+                            FirstContactPoint = hit.point;
+                            FirstContactNormal = hit.normal;
+                            FirstContactTime = (movementSteps + fraction) * FirecrackerTrajectory.StepSeconds;
+                        }
+                        grounded = hit.normal.y > .6f;
+                    }
+                    movementRemainder -= FirecrackerTrajectory.StepSeconds;
+                    movementSteps++;
                 }
-                else transform.position += step;
+                transform.position = position;
                 if (!Exploded && !reducedMotion) body.transform.Rotate(420 * Time.deltaTime, 0, 0);
             }
             if (!Exploded)
             {
-                if (life < 1.2f) return;
+                if (life < FirecrackerTrajectory.FuseSeconds) return;
                 Exploded = true;
                 body.SetActive(false);
                 pulse = 0;
             }
-            if (life >= 11.2f) { Destroy(gameObject); return; }
+            if (life >= FirecrackerTrajectory.BurnSeconds) { Destroy(gameObject); return; }
             pulse -= Time.deltaTime;
             if (!reducedMotion) glow.intensity = Mathf.MoveTowards(glow.intensity, 0, Time.deltaTime * 18);
             if (pulse > 0) return;
@@ -82,9 +121,9 @@ namespace HappyToy.V2
             glow.intensity = reducedMotion ? .45f : 4;
             PlayPop(session);
             foreach (var brain in FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None))
-                if (brain.HearNoise(transform.position, 11.2f - life)) Attracted++;
+                if (brain.HearNoise(transform.position, FirecrackerTrajectory.BurnSeconds - life)) Attracted++;
             foreach (var mask in FindObjectsByType<LanternMaskEncounter>(FindObjectsSortMode.None))
-                if (mask.HearNoise(transform.position, 11.2f - life)) Attracted++;
+                if (mask.HearNoise(transform.position, FirecrackerTrajectory.BurnSeconds - life)) Attracted++;
         }
         void PlayPop(GameSession session)
         {

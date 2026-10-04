@@ -3,10 +3,12 @@ using UnityEngine.InputSystem;
 
 namespace HappyToy.V2
 {
+    [DefaultExecutionOrder(50)]
     public sealed class FirecrackerInventory : MonoBehaviour
     {
         public int Count { get; private set; } = 2;
         public FirecrackerProjectile LastThrown { get; private set; }
+        public FirecrackerAim Aim { get; private set; }
         public string ActionFeedback { get; private set; } = string.Empty;
         public float FeedbackRemaining { get; private set; }
         public bool FeedbackVisible => FeedbackRemaining > 0 && !string.IsNullOrEmpty(ActionFeedback) &&
@@ -14,10 +16,20 @@ namespace HappyToy.V2
 
         PlayerMotor player;
         float cooldown;
+        bool throwRequested;
 
-        void Awake() { player = GetComponent<PlayerMotor>(); }
+        public bool CanAim => isActiveAndEnabled && player && player.eyes && !player.Hidden && Count > 0 && cooldown <= 0 &&
+            GameSession.Current && GameSession.Current.player == player && GameSession.Current.InputAllowed && GameSession.Current.StoryStep < 4;
+
+        void Awake()
+        {
+            player = GetComponent<PlayerMotor>();
+            Aim = GetComponent<FirecrackerAim>();
+            if (!Aim) Aim = gameObject.AddComponent<FirecrackerAim>();
+        }
         void Update()
         {
+            throwRequested = false;
             var session = GameSession.Current;
             if (!session || session.Finished) { ClearFeedback(); return; }
             // Menus freeze the cooldown and feedback, and Q there has no effect.
@@ -25,8 +37,11 @@ namespace HappyToy.V2
             cooldown = Mathf.Max(0, cooldown - Time.deltaTime);
             FeedbackRemaining = Mathf.Max(0, FeedbackRemaining - Time.deltaTime);
             if (FeedbackRemaining <= 0) ActionFeedback = string.Empty;
-            if (Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame) TryThrow();
+            throwRequested = Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame;
         }
+        // The same rendered-frame Q press uses the final player/camera pose,
+        // after PlayerFeedback's stance/bob, just like the held preview.
+        void LateUpdate() { if (throwRequested) { throwRequested = false; TryThrow(); } }
         public bool TryThrow()
         {
             var session = GameSession.Current;
@@ -36,15 +51,15 @@ namespace HappyToy.V2
             if (Count <= 0) return Deny("폭죽을 모두 사용했습니다.");
             if (cooldown > 0) return Deny("다음 폭죽을 준비 중입니다. 잠시 기다리세요.");
             var eye = player.eyes.transform;
-            Vector3 point = eye.position;
-            if (!Physics.SphereCast(point, .08f, eye.forward, out var hit, .35f,
-                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) point += eye.forward * .3f;
+            FirecrackerTrajectory.GetLaunch(eye.position, eye.forward, out var point, out var velocity);
+            if (FirecrackerTrajectory.IsInitialOverlap(point)) return Deny("던질 공간이 없습니다. 벽에서 조금 물러나세요.");
             var root = new GameObject("Thrown firecracker");
             root.transform.position = point;
             LastThrown = root.AddComponent<FirecrackerProjectile>();
-            LastThrown.Launch(eye.forward * 14 + Vector3.up * 3.5f);
+            LastThrown.Launch(velocity);
             Count--;
             cooldown = .5f;
+            if (Aim) Aim.Cancel();
             ShowFeedback("폭죽을 던졌습니다 · 남은 " + Count + "개", 2.5f);
             return true;
         }
@@ -56,6 +71,6 @@ namespace HappyToy.V2
             FeedbackRemaining = seconds;
         }
         void ClearFeedback() { ActionFeedback = string.Empty; FeedbackRemaining = 0; }
-        void OnDisable() { ClearFeedback(); }
+        void OnDisable() { throwRequested = false; ClearFeedback(); if (Aim) Aim.Cancel(); }
     }
 }

@@ -18,12 +18,12 @@ def envelope(data=b'{"real":true}', name='sample.json'):
 
 
 class CloudEvidenceTests(unittest.TestCase):
-    def test_camera_and_tension_audio_batch_at_file_cap_round_trips(self):
-        text = '\n'.join(envelope(name=f'frame-{i}.json') for i in range(36))
-        self.assertEqual(len(decode(text)), 36)
+    def test_camera_audio_and_aim_batch_at_file_cap_round_trips(self):
+        text = '\n'.join(envelope(name=f'frame-{i}.json') for i in range(39))
+        self.assertEqual(len(decode(text)), 39)
 
-    def test_camera_and_tension_audio_batch_over_file_cap_fails(self):
-        text = '\n'.join(envelope(name=f'frame-{i}.json') for i in range(37))
+    def test_camera_audio_and_aim_batch_over_file_cap_fails(self):
+        text = '\n'.join(envelope(name=f'frame-{i}.json') for i in range(40))
         with self.assertRaisesRegex(ValueError, 'Too many artifacts'): decode(text)
 
     def test_aggregate_byte_cap_is_enforced(self):

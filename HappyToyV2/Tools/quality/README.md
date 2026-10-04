@@ -1,3 +1,11 @@
+# Next optional aim source: actual engine verification pending
+
+Four focused cases are being added to the previous 44: held-input lifecycle,
+physical first-contact parity, real distraction/chase immunity, and actual camera
+preview images. Transport allows 39 files (previous 36 + 2 PNGs + 1 JSON) with the same
+16 MB total / 1.5 MB single-file cap. All existing cases remain unchanged. See
+`Verification/firecracker-aim/README.md` for scope; build #14 remains verified.
+
 # Current perceived-tension verification: build #14 SUCCESS, 44/44
 
 Exact source c6b0c1a3 passed 6 EditMode + 38 PlayMode and Windows export. Four new

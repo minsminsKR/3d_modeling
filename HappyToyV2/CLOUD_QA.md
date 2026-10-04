@@ -1,5 +1,16 @@
 # Unity Build Automation: real scene tests
 
+## Next source: optional firecracker first-contact aiming (not yet run)
+
+Q retains immediate throwing. Held right mouse adds a temporary, depth-tested
+first-contact preview with no enemy/success display and no consumption on cancel.
+Shared .02s physical steps replace variable-frame projectile integration. Four
+new cases are planned on top of all prior 44; two world PNGs and one JSON raise
+the bounded evidence count to 39. Actual import/render/48-case execution/export
+are pending. Build #14 remains the latest verified player.
+See [implementation and verification scope](Verification/firecracker-aim/README.md).
+
+
 ## Latest result: build #14 SUCCESS, 44/44 tests
 
 Tested/exported source: `c6b0c1a308b7c797ff4d7216b62b9e2bbfd87288`.

@@ -8,6 +8,7 @@ namespace HappyToy.V2
 {
     /// <summary>Scene-independent, keyboard-accessible UI. All measurements use a letterboxed safe area.</summary>
     [DisallowMultipleComponent]
+    [DefaultExecutionOrder(200)]
     public sealed class GameShellView : MonoBehaviour
     {
         GameShell shell;
@@ -281,8 +282,8 @@ namespace HappyToy.V2
                 Small(progress && session.StoryStep > i ? "확인" : "미확인", x + 419, lineY, 95).style.color = progress && session.StoryStep > i ? Gold : Muted;
                 Panel(x + 27, lineY + 33, 486, 1, Edge);
             }
-            Panel(x + 26, y + 333, 487, 1, Edge);
-            Text("WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신\nF  손전등          Q  폭죽 (추격 전 유인)\nJ  조사 기록      Esc  일시정지", x + 30, y + 345, 485, 180, shell.LargeText ? 23 : 21);
+            Panel(x + 26, y + 311, 487, 1, Edge);
+            Text("WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신\nF  손전등          Q  폭죽 (추격 전 유인)\n우클릭 누르기  폭죽 첫 충돌 조준\nJ  조사 기록      Esc  일시정지", x + 30, y + 323, 485, 200, shell.LargeText ? 23 : 21);
         }
         void BuildPause()
         {
@@ -462,8 +463,9 @@ namespace HappyToy.V2
             status.text = player.Hidden ? (player.HidingThreatCueActive ? "문 앞에서 공격 준비 · [E] 지금 나오세요" : "캐비닛 안 · 발소리를 듣고 움직이세요") : player.SlowRemaining > 0 ? $"이동 속도 감소  ·  {Mathf.CeilToInt(player.SlowRemaining)}초" : player.ActualSpeed <= .12f ? (player.Crouching ? "낮은 자세 · 멈춰서 숨을 고릅니다" : "멈춰서 숨을 고릅니다") : player.Crouching ? "낮은 자세 · 천천히 조용하게 이동합니다" : player.Running ? "달리는 중 · 발소리가 멀리 퍼집니다" : "걷는 중 · 물에서는 발소리가 더 멀리 퍼집니다";
             status.style.color = player.HidingThreatCueActive ? Rust : Gold;
             var inventory = player.Firecrackers;
-            bool showItemFeedback = inventory && inventory.FeedbackVisible;
-            itemFeedback.text = showItemFeedback ? inventory.ActionFeedback : string.Empty;
+            bool showAim = inventory && inventory.Aim && inventory.Aim.Visible;
+            bool showItemFeedback = inventory && (inventory.FeedbackVisible || showAim);
+            itemFeedback.text = showAim ? inventory.Aim.Hint : showItemFeedback ? inventory.ActionFeedback : string.Empty;
             Visible(itemFeedback, showItemFeedback); Visible(itemFeedbackPanel, showItemFeedback);
             string sound = player.FootstepNoiseRadius <= 0 ? "없음" : player.FootstepNoiseRadius <= 3.5f ? "작음" : player.FootstepNoiseRadius <= 7 ? "보통" : "큼";
             noise.text = "내 발소리  " + sound;
