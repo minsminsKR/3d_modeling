@@ -1,4 +1,15 @@
-# Current enemy-audio verification: build #12 SUCCESS, 37/37
+# Current recovery/flow verification: build #13 SUCCESS, 40/40
+
+Exact source b1ca9e86 passed 6 EditMode + 34 PlayMode and Windows export. Three new
+cases verify real physical sprint/stamina, paused nursery comfort changes and
+repeated actual death/retry UI/resource flows. All previous 37 cases remain.
+34 envelopes hash-verify, the 17-segment acoustic WAV/JSON match #12 byte-for-byte,
+and final targeted initialization warnings/C# errors are 0. The original Windows
+ZIP has 186 CRC-valid entries. See Verification/cloud-tests/build-13-* and
+Verification/physical-recovery/. Source/API preflight and actual engine evidence
+remain distinct; evidence/docs-only follow-up needs no further UBA run.
+
+# Previous enemy-audio verification: build #12 SUCCESS, 37/37
 
 Exact source f0ed7649 passed 6 EditMode + 31 PlayMode and Windows export. The
 empty-source startup warning fell from 40 in #11 to 0, with an explicit scene-load/

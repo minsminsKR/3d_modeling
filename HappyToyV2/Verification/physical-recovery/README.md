@@ -1,5 +1,10 @@
 # Physical sprint recovery and interruption preflight
 
+Subsequent actual result: UBA #13 at b1ca9e86 passed all 40 cases (6 EditMode + 34 PlayMode)
+and Windows export, with zero targeted initialization warnings. All three new cases
+and the previous 37 passed; build-13 evidence preserves exact XML/log/ZIP/PCM hashes.
+The preflight below remains a separate source record.
+
 Observed source defect: held sprint input drained stamina at a fully blocked
 CharacterController and advertised running in the HUD, despite zero actual
 movement/footsteps. Sprint intent now requests velocity; the real horizontal
@@ -37,5 +42,5 @@ Source checks: 80 Python cases, 143 existing pure C# assertions, 105 C# syntax/
 metadata checks (878 GUIDs) and protected-scene checks pass. Seven external
 compiler configurations use genuine Unity 6000.6/package/UTF APIs with zero errors
 and baseline warnings. These reports do not execute the Unity tests or export a
-player. Actual 40-case runtime/build verification is PENDING; build #12 at f0ed7649
-remains the latest verified Windows player until that run completes.
+player. Actual 40-case runtime/build verification was PENDING at preflight and subsequently
+passed in build #13. The standalone opt-in StaminaAudit was not separately run.

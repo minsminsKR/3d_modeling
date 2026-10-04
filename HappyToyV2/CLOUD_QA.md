@@ -1,21 +1,41 @@
 # Unity Build Automation: real scene tests
 
-## Next source: physical sprint/recovery and interrupted UI flow (engine run pending)
+## Latest result: build #13 SUCCESS, 40/40 tests
 
-The next patch separates sprint input from the result of each real CharacterController
-move. A fully blocked player recovers instead of spending stamina; diagonal wall
-slides and curse-slowed movement still spend the original rate. Fixed-step exhaustion
-prevents additional sprint steps during catch-up, with the original release-to-rearm
-rule. Stationary HUD text describes resting without claiming safety or erased noise.
-Nursery comfort settings now restore the warning light while paused without advancing
-the five-second release clock. Existing door recovery and encounter balance remain.
+Tested/exported source: `b1ca9e86efa60c0159e03556b91c95228b896644`.
+[Exact-source CI 37208046390](https://github.com/minsminsKR/3d_modeling/actions/runs/37208046390)
+passed. Original XML confirms **6 EditMode + 34 PlayMode**, zero failures/skips/
+inconclusive. All 37 previous cases plus the three new recovery cases passed:
 
-Three added PlayMode cases cover physical movement/resources, the authored nursery
-interruption, and repeated real UI death/retry/settings/journal/title flows. Their
-runtime result is PENDING; the most recent verified player remains build #12 below.
-The same 34-envelope transport cap and all prior 37 cases stay intact.
+- Real CharacterController sprint cost, settled wall-contact recovery and truthful HUD,
+  diagonal slide cost, obstacle removal with held input, a physical slope at 20 Hz,
+  curse-slowed sprint, actual multiple fixed steps, exhaustion/Shift release and cabinet rest
+- Actual authored nursery trigger and paused Settings buttons: immediate comfort lighting,
+  >5s wall wait with a frozen game clock, normal reveal release and result/retry cleanup
+- Two actual enemy deaths and retry-button flows, settings/back/journal/title navigation,
+  preference persistence with reset game resources, destroyed old owners and bounded
+  native UI panels/render targets/recognition textures
 
-## Latest result: build #12 SUCCESS, 37/37 tests and no empty-source warnings
+The unchanged map-aware real-input seven-record route passed in 79.439751 game seconds,
+237.701294 physical meters, four stair legs, one hiding entry and two firecrackers.
+All encounter owners were retained. These cases are not human fun or hardware-FPS tests.
+
+All 34 envelopes hash-verify (10,562,700 bytes). Independent PCM recomputation passes;
+the 17-segment 7.26 s acoustic WAV/JSON are byte-identical to #12. Both original XML and
+final log contain zero targeted audio initialization warnings. Selected stationary-HUD,
+settings and music-room images were visually checked; UI targets are not world composites.
+
+Terminal SUCCESS and Windows export are confirmed. Original ZIP is 73,179,663 bytes,
+186 CRC-valid entries, root `HappyToyV2.exe`, production scene/runtime present and no
+project test/NUnit assemblies. SHA256:
+`048345ffc5673ffa072bf778a26ff306c1b583599653ed49bd4c99c45bf13fa3`.
+Original archive retained unchanged, including its original Burst backup text; no derivative
+or new release-profile build. Final log is 2,338,849 bytes, SHA256
+`928bf82b459b2e4b43a891eeeb0cbea20571a9312dab0932b2f708a0f8911ec0`,
+with zero C# errors. See `Verification/cloud-tests/build-13-*` for exact evidence.
+Subsequent documentation-only changes do not change this tested/exported source.
+
+## Previous result: build #12 SUCCESS, 37/37 tests and no empty-source warnings
 
 Tested/exported source: `f0ed764973c8b831d236299452077d50946a6bee`.
 [Exact-source CI 37204689253](https://github.com/minsminsKR/3d_modeling/actions/runs/37204689253)
