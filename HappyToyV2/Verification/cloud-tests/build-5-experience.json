@@ -1,0 +1,69 @@
+{
+  "scope": "Actual #5 engine evidence: passed deterministic real-input survival and authored camera; failed UI line-box fit and audio zero-sample capture. Not release approval.",
+  "build": 5,
+  "commit": "db36acf3939fbec39a5bcb9228e09668975ad6eb",
+  "provenanceNote": "Build and commit supplied from independently inspected UBA checkout; envelope alone does not prove the revision",
+  "input": "build-5-playmode.xml",
+  "inputSha256": "a2eac411002c1c64cf81cf75dbe6a076a815db578923e7966b637c953b67217d",
+  "artifacts": [
+    {
+      "filename": "title-720p.png",
+      "bytes": 95185,
+      "sha256": "194338446e8cf8cf9d8996acec6c024e99b260000e1258c0dfd165aa9275e9de"
+    },
+    {
+      "filename": "authored-start-camera.png",
+      "bytes": 453664,
+      "sha256": "563e61d5fa49b7a2ec7f7dbb21d77b72c08acba5ac6576b1f3090e8853f82a0e"
+    }
+  ],
+  "metrics": [
+    "HAPPYTOY_RENDER_METRICS device=Microsoft Basic Render Driver; api=Direct3D12; cpu=INTEL(R) XEON(R) PLATINUM 8573C; resolution=960x540; offscreenRenderAndFullReadbackMs=595.750,164.612,147.080,147.958,149.269,145.952; firstSampleIncludesWarmup=true; presentedFps=false; targetHardwareCertification=false; managedBytes=38772736"
+  ],
+  "survival": {
+    "passed": true,
+    "stage": "exit",
+    "destination": "(-7.32, 0.03, 0.59)",
+    "diagnostic": "stage=exit, destination=(-7.32, 0.03, 0.59), game=79.38, wall=79.39, records=7, defeat=, hint=문을 닫아 시선을 끊고, 숨을 회복한 뒤 이동하세요., stamina=0.99, hidden=False, focus=none, collision=Below, dynamicUpdates=9505, CPress=False, WHeld=True, inputAllowed=False, crouching=False, eyeY=1.606182, grounded=True, speed=0, position=(-7.19, 0.08, 0.63), footsteps=169, nursery=True/True, upper=resolved, uncat=True/True, lantern=Resolved, mannequin=False; V1 Cyclopse active=False state=Patrol at=(23.41, 0.03, 7.30) attacks=1 awareness=0.00; V1 Hwacat_angry active=False state=Patrol at=(29.80, 5.03, 32.40) attacks=0 awareness=0.00; V1 Baby — nursery encounter active=False state=Patrol at=(13.98, -4.97, -26.66) attacks=0 awareness=0.00; V1 Uncat — archive emergence active=False state=Patrol at=(13.93, 0.03, -7.41) attacks=0 awareness=0.00",
+    "milestones": [
+      "0.05s Started at the authored spawn with every encounter enabled at (-7.80, 0.08, 0.00)",
+      "2.06s CLASSROOM opened by E at (-4.63, 0.08, 0.00)",
+      "2.78s WASHROOM opened by E at (-4.63, 0.08, 0.00)",
+      "5.86s Recovered register at (-5.44, 0.08, 7.42)",
+      "8.89s Flashlight off through F at (-4.51, 0.08, 0.16)",
+      "9.92s Recovered ribbon at (-3.60, 0.08, -2.19)",
+      "26.42s upper ascent physically completed at (29.80, 5.08, 21.85)",
+      "30.46s Recovered record at (30.98, 5.08, 32.14)",
+      "37.52s upper descent physically completed at (29.80, 0.08, 10.17)",
+      "39.09s Recovered music-roster at (24.66, 0.08, 11.77)",
+      "40.13s Entered music cabinet through E at (20.20, 0.00, 13.85)",
+      "40.63s Left music cabinet through E at (20.20, 0.00, 12.75)",
+      "49.21s archive diversion thrown through Q at (20.83, 0.08, -12.79)",
+      "49.26s Recovered archive-record at (20.83, 0.08, -12.79)",
+      "56.92s basement descent physically completed at (13.80, -4.92, -21.82)",
+      "56.96s nursery diversion thrown through Q at (13.80, -4.92, -21.82)",
+      "57.61s Nursery warning triggered by actual entry at (14.93, -4.92, -23.87)",
+      "59.04s Recovered nursery-tag at (18.40, -4.92, -26.92)",
+      "64.26s basement ascent physically completed at (13.80, 0.08, -10.15)",
+      "74.99s Recovered restore at (-2.98, 0.08, 7.64)",
+      "79.38s Escaped with all seven records through real input at (-7.19, 0.08, 0.63)"
+    ],
+    "gameSeconds": 79.38033294677734,
+    "wallSeconds": 79.39247131347656,
+    "physicalMeters": 237.54165649414062,
+    "minY": -4.920000076293945,
+    "maxY": 5.080000400543213,
+    "records": 7,
+    "movementUpdates": 3944,
+    "groundedFrames": 9143,
+    "stairLegs": 4,
+    "hidingEntries": 1,
+    "firecrackersThrown": 2,
+    "maximumLiveStalkers": 4
+  },
+  "visualReview": [
+    "Actual starting-camera image shows reversed/overlaid legacy room text, requiring depth/culling correction.",
+    "Title Korean glyphs are visually present; measured title/button line boxes are too tight.",
+    "Environment art remains unfinished; software renderer images do not establish target hardware performance."
+  ]
+}

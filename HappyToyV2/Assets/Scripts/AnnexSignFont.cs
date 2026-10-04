@@ -1,18 +1,49 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace HappyToy.V2
 {
-    /// <summary>Uses the bundled Korean font without changing authored sign layout.</summary>
+    /// <summary>Uses the bundled font and physical world-text rendering without changing authored layout.</summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(TextMesh))]
     public sealed class AnnexSignFont : MonoBehaviour
     {
         public const string ResourcePath = "Fonts/Korean";
+        public const string ShaderResourcePath = "WorldSignText";
 
         TextMesh label;
         MeshRenderer meshRenderer;
         Font appliedFont;
+        Material worldMaterial;
         bool reportedMissingFont, reportedMissingMaterial;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        static void RegisterRoomSigns()
+        {
+            SceneManager.sceneLoaded -= ApplyRoomSigns;
+            SceneManager.sceneLoaded += ApplyRoomSigns;
+        }
+
+        static void ApplyRoomSigns(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.path != "Assets/Annex/SchoolAnnex.unity") return;
+            // The preserved first floor has three exterior/interior pairs predating
+            // AnnexSignFont. Both faces are intentional; GUI text was making their
+            // mirrored backs show through the existing opaque lintel/backing.
+            foreach (var root in scene.GetRootGameObjects())
+                foreach (var text in root.GetComponentsInChildren<TextMesh>(true))
+                {
+                    if (!IsRoomSign(text.name) || text.GetComponent<AnnexSignFont>()) continue;
+                    text.gameObject.AddComponent<AnnexSignFont>();
+                }
+        }
+
+        static bool IsRoomSign(string name)
+        {
+            return name == "CLASSROOM sign" || name == "CLASSROOM sign interior" ||
+                name == "WASHROOM sign" || name == "WASHROOM sign interior" ||
+                name == "INFIRMARY sign" || name == "INFIRMARY sign interior";
+        }
 
         void Awake() { Apply(); }
 
@@ -26,7 +57,11 @@ namespace HappyToy.V2
         }
 
         void OnDisable() { Font.textureRebuilt -= OnFontTextureRebuilt; }
-        void OnDestroy() { Font.textureRebuilt -= OnFontTextureRebuilt; }
+        void OnDestroy()
+        {
+            Font.textureRebuilt -= OnFontTextureRebuilt;
+            if (worldMaterial) Destroy(worldMaterial);
+        }
 
         public void Apply()
         {
@@ -60,9 +95,27 @@ namespace HappyToy.V2
         Material GetFontMaterial(Font font)
         {
             var material = font ? font.material : null;
-            if (material && material.shader && material.shader.isSupported) return material;
+            if (material && material.shader && material.shader.isSupported)
+            {
+                // Authoring helpers may call Apply outside Play mode. Never serialize
+                // a transient runtime material into the protected authored scene.
+                if (!Application.isPlaying) return material;
+                if (!worldMaterial)
+                {
+                    var shader = Resources.Load<Shader>(ShaderResourcePath);
+                    if (shader && shader.isSupported)
+                        worldMaterial = new Material(shader) { name = "World sign font", hideFlags = HideFlags.HideAndDontSave };
+                }
+                if (worldMaterial)
+                {
+                    // Use the live atlas, not a copied texture. The font's own GUI
+                    // material remains untouched for shell/UI text consumers.
+                    worldMaterial.mainTexture = material.mainTexture;
+                    return worldMaterial;
+                }
+            }
             if (!reportedMissingMaterial)
-                Debug.LogError("HappyToy: bundled world-sign font has no supported material. Check font import and render support.", this);
+                Debug.LogError("HappyToy: bundled world-sign font or depth-tested world-text shader is unavailable. Check font/shader import and render support.", this);
             reportedMissingMaterial = true;
             return null;
         }
@@ -72,10 +125,8 @@ namespace HappyToy.V2
             if (!this || !isActiveAndEnabled || !font || font != appliedFont ||
                 !label || label.font != font || !meshRenderer) return;
 
-            // Keep Unity's live font material, never a copied texture/material. Its
-            // GUI/Text Shader supports URP and preserves text vertex colors + alpha.
-            // Rebind if Unity replaces the material while rebuilding its atlas; leave
-            // glyph/UV regeneration to TextMesh, and never mutate the shell's font.
+            // Follow atlas replacements while retaining physical depth/back-face
+            // behavior. Leave glyph/UV regeneration to TextMesh and the shell alone.
             var material = GetFontMaterial(font);
             if (material && meshRenderer.sharedMaterial != material)
                 meshRenderer.sharedMaterial = material;

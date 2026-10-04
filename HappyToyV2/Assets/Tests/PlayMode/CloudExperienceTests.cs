@@ -76,7 +76,7 @@ namespace HappyToy.V2.CloudTests
             }
             finally { Object.Destroy(frame); }
         }
-        internal static void Layout(VisualElement root)
+        internal static string[] Layout(VisualElement root)
         {
             Rect bounds = root.worldBound;
             Assert.That(bounds.width, Is.GreaterThan(0)); Assert.That(bounds.height, Is.GreaterThan(0));
@@ -104,7 +104,7 @@ namespace HappyToy.V2.CloudTests
             };
             root.Query<Button>().ForEach(button => check(button));
             root.Query<Label>().ForEach(label => check(label));
-            Assert.That(failures, Is.Empty, string.Join("\n", failures));
+            return failures.ToArray();
         }
         internal static byte[] Wave(List<float> values, int rate, int channels)
         {
@@ -128,15 +128,22 @@ namespace HappyToy.V2.CloudTests
         {
             Assert.That(SystemInfo.graphicsDeviceType, Is.Not.EqualTo(GraphicsDeviceType.Null), "UBA graphics device is required for rendered evidence");
             var view = One("GameShellView");
+            var layoutErrors = new List<string>();
             Call(shell, "RestoreDefaultSettings");
-            yield return CaptureMenu(view, "title-720p.png", 1280, 720);
+            yield return CaptureMenu(view, "title-720p.png", 1280, 720, layoutErrors);
             Call(shell, "Settings"); Call(shell, "ToggleLargeText"); Call(shell, "ToggleHighContrast");
             foreach (var size in new[] { new Vector2Int(1280, 720), new Vector2Int(1024, 768), new Vector2Int(2560, 1080) })
-                yield return CaptureMenu(view, "settings-large-" + size.x + "x" + size.y + ".png", size.x, size.y);
-            Call(shell, "Back"); Begin();
-            Call(shell, "Journal");
-            yield return CaptureMenu(view, "journal-1080p.png", 1920, 1080);
+                yield return CaptureMenu(view, "settings-large-" + size.x + "x" + size.y + ".png", size.x, size.y, layoutErrors);
             Call(shell, "Back");
+            yield return CaptureMenu(view, "title-large-720p.png", 1280, 720, layoutErrors);
+            Begin(); Call(shell, "Pause");
+            yield return CaptureMenu(view, "pause-large-4x3.png", 1024, 768, layoutErrors);
+            Call(shell, "Resume");
+            yield return CaptureMenu(view, "hud-large-720p.png", 1280, 720, layoutErrors);
+            Call(shell, "Journal");
+            yield return CaptureMenu(view, "journal-1080p.png", 1920, 1080, layoutErrors);
+            Call(shell, "Back");
+            Assert.That(layoutErrors, Is.Empty, string.Join("\n", layoutErrors));
         }
 
         [UnityTest]
@@ -170,10 +177,12 @@ namespace HappyToy.V2.CloudTests
                     "; api=" + SystemInfo.graphicsDeviceType + "; cpu=" + SystemInfo.processorType +
                     "; resolution=960x540; offscreenRenderAndFullReadbackMs=" + string.Join(",", samples.Select(value => value.ToString("F3", System.Globalization.CultureInfo.InvariantCulture))) +
                     "; firstSampleIncludesWarmup=true; presentedFps=false; targetHardwareCertification=false; managedBytes=" + GC.GetTotalMemory(false));
+                // Preserve the real diagnostic image even if a sign contract fails.
+                CloudSignRenderingTests.AssertPhysicalWorldSigns();
             }
             finally { target.Release(); Object.Destroy(target); }
         }
-        IEnumerator CaptureMenu(Component view, string name, int width, int height)
+        IEnumerator CaptureMenu(Component view, string name, int width, int height, List<string> layoutErrors)
         {
             Call(view, "SetCaptureSize", width, height);
             // Prove a new paint, not the old page or undefined new-target memory.
@@ -197,7 +206,7 @@ namespace HappyToy.V2.CloudTests
             }
             CloudExperienceTests.SaveFrame(name, Get<RenderTexture>(view, "CaptureTarget"));
             Assert.That(visible, Is.True, "UI Toolkit failed to render in this cloud graphics environment");
-            CloudExperienceTests.Layout(Get<VisualElement>(view, "Root"));
+            layoutErrors.AddRange(CloudExperienceTests.Layout(Get<VisualElement>(view, "Root")).Select(error => name + ": " + error));
             var font = Get<Font>(shell, "ShellFont");
             Assert.That(font, Is.Not.Null, "Korean font must be loaded");
             font.RequestCharactersInTexture("마지막출석환경설정조사기록낮은자세손전등", 24);
@@ -213,11 +222,18 @@ namespace HappyToy.V2.CloudTests
             Assert.That(AudioSettings.speakerMode, Is.EqualTo(AudioSpeakerMode.Stereo), "Capture channel contract requires the configured stereo mix");
             int rate = AudioSettings.outputSampleRate;
             Assert.That(rate, Is.InRange(8000, 192000));
-            bool started = AudioRenderer.Start();
-            Assert.That(started, Is.True, "Cloud worker cannot start Unity's actual main-output audio recorder");
+            float oldCaptureDeltaTime = Time.captureDeltaTime;
+            bool started = false;
             var active = new List<float>(); var paused = new List<float>();
             try
             {
+                // Follow Unity Recorder's constant-rate capture path before starting
+                // AudioRenderer. This isolated DSP fixture tests that supported path;
+                // it does not change the survival route or claim realtime performance.
+                Time.captureDeltaTime = 1f / 60f;
+                yield return null;
+                started = AudioRenderer.Start();
+                Assert.That(started, Is.True, "Cloud worker cannot start Unity's actual main-output audio recorder");
                 var flashlight = Get<Light>(player, "flashlight"); bool wasOn = flashlight.enabled;
                 Keys(Key.F);
                 yield return CaptureAudio(active, rate * 2, 8);
@@ -234,13 +250,21 @@ namespace HappyToy.V2.CloudTests
                 double pausePeak = paused.Max(value => Math.Abs(value));
                 int clipped = active.Count(value => Math.Abs(value) >= 1);
                 TestContext.Out.WriteLine("HAPPYTOY_AUDIO_METRICS capture=UnityAudioRendererMainOutput; rate=" + rate +
-                    "; channels=2; activeSamples=" + active.Count + "; peak=" + peak + "; rms=" + rms +
+                    "; channels=2; fixedCaptureRate=60; activeSamples=" + active.Count + "; peak=" + peak + "; rms=" + rms +
                     "; clippedSamples=" + clipped + "; pausePeak=" + pausePeak + "; deviceListeningCertification=false");
                 Assert.That(peak, Is.GreaterThan(.0001), "Real engine audio mix was silent");
                 Assert.That(clipped, Is.Zero, "Actual mixed sample clips");
                 Assert.That(pausePeak, Is.LessThan(.00001), "Paused game leaks audible mixer output");
             }
-            finally { try { Keys(); } finally { AudioRenderer.Stop(); } }
+            finally
+            {
+                try { Keys(); }
+                finally
+                {
+                    try { if (started) AudioRenderer.Stop(); }
+                    finally { Time.captureDeltaTime = oldCaptureDeltaTime; }
+                }
+            }
         }
         static IEnumerator CaptureAudio(List<float> samples, int target, float timeout)
         {
@@ -262,7 +286,11 @@ namespace HappyToy.V2.CloudTests
                     }
                 }
             }
-            Assert.That(samples.Count, Is.EqualTo(target), "No complete actual audio capture before cloud watchdog");
+            Assert.That(samples.Count, Is.EqualTo(target), "No complete actual audio capture before cloud watchdog; " +
+                "captureDeltaTime=" + Time.captureDeltaTime + ", captureFramerate=" + Time.captureFramerate +
+                ", deltaTime=" + Time.deltaTime + ", unscaledDeltaTime=" + Time.unscaledDeltaTime +
+                ", dspTime=" + AudioSettings.dspTime + ", listenerPause=" + AudioListener.pause +
+                ", timeScale=" + Time.timeScale + ", driverCapabilities=" + AudioSettings.driverCapabilities);
         }
     }
 }

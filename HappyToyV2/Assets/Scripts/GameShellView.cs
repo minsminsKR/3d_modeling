@@ -129,6 +129,9 @@ namespace HappyToy.V2
             button.style.unityTextAlign = TextAnchor.MiddleLeft;
             button.style.paddingLeft = 20;
             button.style.paddingRight = 12;
+            // Default theme vertical padding can clip the bundled Korean font
+            // at 720p. The fixed-height button keeps its full line box available.
+            button.style.paddingTop = button.style.paddingBottom = 0;
             button.style.color = primary ? new Color(.04f, .06f, .05f) : Paper;
             button.style.backgroundColor = primary ? Gold : Surface;
             button.style.borderTopLeftRadius = button.style.borderTopRightRadius = 2;
@@ -150,7 +153,9 @@ namespace HappyToy.V2
         }
         Label Small(string text, float x, float y, float width, float height = 28)
         {
-            var label = Text(text, x, y, width, height, shell.LargeText ? 20 : 17);
+            // The bundled Korean font has a taller line box than Latin defaults.
+            // Preserve the large-text size and reserve the measured single-line space.
+            var label = Text(text, x, y, width, shell.LargeText ? Mathf.Max(height, 32) : height, shell.LargeText ? 20 : 17);
             label.style.color = Muted;
             return label;
         }
@@ -235,7 +240,7 @@ namespace HappyToy.V2
             string title = shown == GameShell.Page.Title ? "마지막 출석" : shown == GameShell.Page.Pause ? "숨을 고르다" :
                 shown == GameShell.Page.Journal ? "조사 기록" : shown == GameShell.Page.Settings ? "환경 설정" :
                 session.Escaped ? "마지막 아이가 하교했습니다" : "발소리가 멈췄습니다";
-            Text(title, 150, 145, 1300, 82, shown == GameShell.Page.Title ? 66 : 48).style.unityFontStyleAndWeight = FontStyle.Bold;
+            Text(title, 150, 145, 1300, shown == GameShell.Page.Title ? 110 : 82, shown == GameShell.Page.Title ? 66 : 48).style.unityFontStyleAndWeight = FontStyle.Bold;
         }
         void BuildTitle()
         {
@@ -249,7 +254,7 @@ namespace HappyToy.V2
         }
         void BuildAttendanceCard(float x, float y, bool progress)
         {
-            var card = Panel(x, y, 540, 510, Surface);
+            var card = Panel(x, y, 540, 535, Surface);
             Outline(card, Edge);
             Panel(x + 26, y + 27, 3, 70, Gold);
             Small("SCHOOL ARCHIVE  /  출석 확인", x + 46, y + 28, 450);
@@ -263,7 +268,7 @@ namespace HappyToy.V2
                 Panel(x + 27, lineY + 33, 486, 1, Edge);
             }
             Panel(x + 26, y + 333, 487, 1, Edge);
-            Text("WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신\nF  손전등          Q  폭죽 던지기\nJ  조사 기록      Esc  일시정지", x + 30, y + 345, 485, 155, shell.LargeText ? 23 : 21);
+            Text("WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신\nF  손전등          Q  폭죽 던지기\nJ  조사 기록      Esc  일시정지", x + 30, y + 345, 485, 180, shell.LargeText ? 23 : 21);
         }
         void BuildPause()
         {
@@ -275,7 +280,7 @@ namespace HappyToy.V2
             Button("restart", "처음부터 다시 시작", 591, () => shell.Restart(true));
             Button("title", "시작 화면으로 (진행 초기화)", 659, () => shell.Restart(false));
             BuildAttendanceCard(895, 245, true);
-            Small("다시 시작하거나 시작 화면으로 가면 이번 탐색 기록이 사라집니다.", 153, 762, 1270);
+            Small("다시 시작하거나 시작 화면으로 가면 이번 탐색 기록이 사라집니다.", 153, 787, 1270);
         }
         void BuildJournal()
         {
@@ -312,13 +317,13 @@ namespace HappyToy.V2
             Small("변경 사항은 즉시 적용되며, 돌아가면 이 PC에 저장됩니다.", 153, 229, 1290);
             Panel(150, 278, 630, 426, Surface);
             Panel(810, 278, 640, 426, Surface);
-            volume = Text("", 174, 295, 580, 38, ReadingSize);
+            volume = Text("", 174, 295, 580, 42, ReadingSize);
             Button("volume-down", "− 5%", 343, () => shell.AdjustSettings(-.05f, 0), 174, 270);
             Button("volume-up", "+ 5%", 343, () => shell.AdjustSettings(.05f, 0), 466, 290);
-            sensitivity = Text("", 174, 425, 580, 38, ReadingSize);
+            sensitivity = Text("", 174, 425, 580, 42, ReadingSize);
             Button("mouse-down", "감도 낮추기", 473, () => shell.AdjustSettings(0, -.009f), 174, 270);
             Button("mouse-up", "감도 높이기", 473, () => shell.AdjustSettings(0, .009f), 466, 290);
-            fieldOfView = Text("", 174, 555, 580, 38, ReadingSize);
+            fieldOfView = Text("", 174, 555, 580, 42, ReadingSize);
             Button("fov-down", "− 5°", 603, () => shell.AdjustFieldOfView(-5), 174, 270);
             Button("fov-up", "+ 5°", 603, () => shell.AdjustFieldOfView(5), 466, 290);
             Small("움직임 · 깜빡임 · 소리 안내 · 가독성", 836, 295, 590);
@@ -371,12 +376,12 @@ namespace HappyToy.V2
             caption.style.color = Gold;
             focusPanel = Panel(460, 753, 680, 54, new Color(.017f, .026f, .022f, .95f));
             Outline(focusPanel, Edge);
-            focus = Text("", 481, 764, 638, 37, shell.LargeText ? 27 : 23);
+            focus = Text("", 481, 764, 638, 42, shell.LargeText ? 27 : 23);
             focus.style.unityTextAlign = TextAnchor.UpperCenter;
             Small("호흡", 47, 781, 170);
             Panel(47, 817, 265, 6, Edge);
             stamina = Panel(47, 817, 265, 6, Gold);
-            meter = Text("", 47, 837, 860, 32, shell.LargeText ? 23 : 19);
+            meter = Text("", 47, 837, 860, 36, shell.LargeText ? 23 : 19);
             status = Text("", 753, 189, 802, 44, shell.LargeText ? 24 : 20);
             status.style.unityTextAlign = TextAnchor.UpperRight;
             status.style.color = Gold;

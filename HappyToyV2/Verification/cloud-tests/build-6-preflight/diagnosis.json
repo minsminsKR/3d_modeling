@@ -1,0 +1,25 @@
+{
+  "status": "PREFLIGHT_PASS_RUNTIME_RETEST_REQUIRED",
+  "priorHead": "db36acf3939fbec39a5bcb9228e09668975ad6eb",
+  "expectedRuntimeTests": {
+    "editMode": 6,
+    "playMode": 10,
+    "total": 16
+  },
+  "pythonTests": 77,
+  "pythonSkipped": 0,
+  "pureCSharpAssertions": 143,
+  "genuineApiConfigurationsPassed": 7,
+  "protectedScenePreserved": true,
+  "changes": [
+    "Reserve actual Korean font line boxes without reducing text size; collect all menu layout failures and retain all captures.",
+    "Depth-tested single-sided runtime world-sign material and six legacy-room registrations; preserve authored words/transforms/scene bytes.",
+    "Strict actual AudioRenderer constant-capture-clock experiment with clock restoration and failure diagnostics. No samples still fails."
+  ],
+  "limits": [
+    "No real Unity shader/runtime retest for this source yet.",
+    "Software-renderer timing is not target-hardware FPS.",
+    "Recorder constant-rate source is not a guarantee of batch/nosound audio support.",
+    "#5 completed one deterministic map-aware survival strategy; no first-time human balance or all-encounter certification."
+  ]
+}

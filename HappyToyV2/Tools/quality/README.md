@@ -1,6 +1,6 @@
 # Current cloud experience and packaging tools
 
-The next runtime suite adds four PlayMode gates to the previously passing twelve tests, for **6 EditMode + 10 PlayMode**. They remain **NOT RUN** until the next exact-source UBA XML is inspected. See `CLOUD_QA.md` for the true survival strategy, actual camera/UI/audio evidence, and remaining human/hardware limits.
+The runtime suite has **6 EditMode + 10 PlayMode**. UBA #5 passed14/16: the real-input full survival route and authored camera passed; Korean UI line boxes and zero-sample audio capture failed. Current UI/sign corrections and the fixed-clock audio experiment remain **RETEST REQUIRED**. See `CLOUD_QA.md` for the true survival strategy, actual camera/UI/audio evidence, and remaining human/hardware limits.
 
 Decode verified output from a downloaded NUnit XML (use the independently verified full checkout commit):
 

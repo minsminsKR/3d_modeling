@@ -1,8 +1,22 @@
 # Unity Build Automation: real scene tests
 
-## Next gate: full-route and observable engine output (not yet run)
+## Latest expanded result: build #5 failed, 14/16 checks passed
 
-The next pinned UBA run must discover **6 EditMode + 10 PlayMode tests (16 total)**. The four added PlayMode gates are not certified by build #4:
+At exact commit `db36acf3939fbec39a5bcb9228e09668975ad6eb`, UBA #5 ran **6/6 EditMode + 8/10 PlayMode**, with **0 skipped/inconclusive**. The strict gate correctly prevented player export after two failures. Original XML and terminal log hashes are in `Verification/cloud-tests/build-5-results.json`.
+
+New verified evidence:
+- The full authored seven-record route **passed**: 79.38 gameplay seconds, 237.54 physical meters, both stair round-trips, real cupboard entry/exit and two finite firecrackers. All encounter owners stayed enabled and authored stalker speeds stayed unchanged. This is a deterministic, map-aware survival strategy, not first-time-player balance or every optional encounter
+- The real starting camera **rendered successfully**. The exact PNG was recovered from NUnit output and SHA-256 verified. Microsoft Basic Render Driver / D3D12 offscreen-render plus full-readback samples were 595.750 ms (first warmup), then 164.612/147.080/147.958/149.269/145.952 ms. These values are not presented FPS or target-hardware certification
+- The actual title PNG contains rendered Korean glyphs. Its layout test detected the title line needing 96.25 units within 82.5, and the start button needing 31.25 within 28.75. The next source increases the title-only line box and removes inherited button vertical padding without shrinking the font. The test now collects all menu layout errors before failing, preserving subsequent captures
+- Visual inspection of the camera PNG found backward/overlaid legacy room signs. This is a player-facing rendering defect distinct from the nine managed Korean signs; the targeted correction is being verified with unchanged scene bytes
+
+Audio **did not capture any samples** (0 of 96,000); this is not evidence of silent game audio. UBA initializes FMOD on nosound output. A bounded next experiment follows Unity Recorder's established constant-rate path: save/restore `Time.captureDeltaTime`, use 1/60 before AudioRenderer starts, keep actual Render/nonzero/clipping/pause assertions and log clock/DSP diagnostics. The [official Recorder package](https://download.packages.unity.com/com.unity.recorder/-/com.unity.recorder-5.1.7.tgz) also supports variable playback, so this clock is not claimed as a universal API prerequisite. Recorder itself [does not support batch Editor](https://docs.unity3d.com/Packages/com.unity.recorder@5.1/manual/KnownIssues.html#recorder-doesnt-work-when-running-the-editor-in-batch-mode); no guarantee of batch/nosound capture is made. Missing data will remain a failure, not a synthetic waveform or inferred listening pass.
+
+Artifact transport hashes, complete survival report and visual findings are retained in `Verification/cloud-tests/build-5-experience.json`. The original PNG/XML/log files remain separate evidence. Production UI/sign corrections and the revised audio harness require a new pinned run. Last successful player export remains #4.
+
+## Expanded gate scope (current corrections require a new run)
+
+The next pinned UBA run must discover **6 EditMode + 10 PlayMode tests (16 total)**. Build #5 established the route and camera cases above; the UI/audio corrections still need runtime retesting:
 
 - `AuthoredSevenRecordRouteSurvivesWithRealMovementAndInteraction`: begins at the preserved authored spawn, then uses injected keyboard/mouse controls through the real motor and focus/E path; all encounter owners remain enabled and authored stalker speeds remain unchanged. The route must climb and descend both staircases continuously, recover all seven records and escape. Actual hiding and two finite firecrackers form a single deterministic survival strategy. No direct collection, actor disabling, fixture relocation or invulnerability is used. A defeat or blocked route fails; this is not a first-time-player difficulty or all-encounter certification
 - `KoreanMenusRenderAcrossSupportedAspectRatios`: actual UI Toolkit render targets at 720p, 1080p, 4:3 and ultrawide, large-text/high-contrast settings, text/button bounds and Korean sample-glyph checks. Every target is cleared before capture to reject stale/undefined output. PNGs still require visual inspection; automated content checks do not certify complete art or all text
