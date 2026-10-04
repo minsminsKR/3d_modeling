@@ -28,8 +28,16 @@ not proven cleanup-only. Do not claim unconditional whole-provider success. XML,
 export and ZIP checks remain independently established. No new run is requested.
 See Verification/cloud-tests/build-16-results.json and build-16-experience.json.
 
-The user asked to finish this work and stop for personal play. Only factual docs/PR
-CI follow-up remains; no next features, profiling, paid work, release or main merge.
+Development is paused at this snapshot. Only documentation publication and exact
+source-CI status verification remain. No further player build is requested.
+
+**Experience acceptance remains unmet:** play feedback reports insufficient spatial
+atmosphere, monster pursuit and overall flow. The 54 cases validate implemented
+regressions, not holistic horror quality. Fixed sequential objectives, sparse and
+repetitive environments, floor-bounded threat routes, threat removal after restoration
+and two initial firecrackers leave exploration/resource decisions limited. A proposed
+exploration-slice redesign was only researched; no new scene, runtime changes or
+prototype were implemented. Build16 remains the available verified player.
 
 
 ## Actual build #15: 53/54, no player export; narrow fixes pending
