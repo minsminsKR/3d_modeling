@@ -1,12 +1,13 @@
-# Current personal-play feedback checks
+# Current personal-play verification: build #9
 
-Current source retains all prior tests and adds three item-feedback cases:
-6 EditMode + 18 PlayMode = 24 actual Unity test definitions. New engine execution
-is pending; source/API checks are in `Verification/personal-play-feedback/`.
-Existing build #8 remains the verified playable baseline. Personal enjoyment,
-clear feedback and atmosphere are the goal; commercial preparation is separate.
+Source `7c13e7f98e40d5e2d89c43f71b41c073eb1ec5d3` passed all **24 actual Unity tests**
+(6 EditMode + 18 PlayMode, zero failures/skips) and exported the Windows player.
+Three item fixtures and the extended cabinet HUD/cue/pause/retry case passed.
+The existing route/audio gates stayed strict. The original ZIP is preserved;
+see `Verification/cloud-tests/build-9-results.json` and `build-9-experience.json`.
+Source preflight remains in `Verification/personal-play-feedback/`.
 
-# Current verified milestone: build8
+# Previous verified milestone: build #8
 
 Exact source923060837b0cb8585d16d9bfffb961434a850504 passed **all21Unity tests (6EditMode+15PlayMode,0failed/skipped/inconclusive)** and exported the Windows player. The five pursuit cases and real-input seven-record route passed. The existing strict AudioRenderer gate now records actual nonzero/unclipped active PCM and zero paused PCM using official-Recorder-style empty Render calls; empty buffers add no samples. This is offline engine mixing, not headset/speaker or complete sound-design acceptance.
 

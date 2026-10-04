@@ -1,0 +1,169 @@
+{
+  "build": 9,
+  "source": "7c13e7f98e40d5e2d89c43f71b41c073eb1ec5d3",
+  "scope": "Personal-play patch: actual 24-case engine verification; no manual enjoyment or device-performance claim.",
+  "transport": {
+    "scope": "Hash-verified real-engine output transport; not manual, hardware-performance or device-listening certification",
+    "build": 9,
+    "commit": "7c13e7f98e40d5e2d89c43f71b41c073eb1ec5d3",
+    "provenanceNote": "Build and commit supplied from independently inspected UBA checkout; envelope alone does not prove the revision",
+    "input": "build-9-playmode.xml",
+    "inputSha256": "52802c5f9fb4b5096962cdf0c6d4630c9479404b122935e6bb6cd50f0949867b",
+    "artifacts": [
+      {
+        "filename": "hiding-unseen-item-feedback-large-720p.png",
+        "bytes": 66479,
+        "sha256": "322fb3bb82d904eb4200ab07ce6f4adaf1349203c551c9df695ba8075a3d220a"
+      },
+      {
+        "filename": "hiding-door-warning-large-720p.png",
+        "bytes": 66595,
+        "sha256": "ff49d6ab3012aad377cd6be3d3a76e23e691e193895a1c1fa42160df46d3c57c"
+      },
+      {
+        "filename": "title-720p.png",
+        "bytes": 96197,
+        "sha256": "a9356de6476086362d46b9f13ebafdcd62f3daac8caebb629534602413320da4"
+      },
+      {
+        "filename": "settings-large-1280x720.png",
+        "bytes": 86861,
+        "sha256": "e8e2c58377c5d3da3022ffc7d2adc3330342e244e341c3f017c6f169d684864b"
+      },
+      {
+        "filename": "settings-large-1024x768.png",
+        "bytes": 69528,
+        "sha256": "3ab4657261b64326cdc5c8e1e31be47ada0991c6d48b3e19e069c5d87f43e0b6"
+      },
+      {
+        "filename": "settings-large-2560x1080.png",
+        "bytes": 156845,
+        "sha256": "d3723240e10aa1473c112cf3aff9d02536c8bdaeb9effdaf03cc2b6ccf2e5a2f"
+      },
+      {
+        "filename": "title-large-720p.png",
+        "bytes": 105926,
+        "sha256": "92e62060a2f80d317dac09852813c5dc25ba49e2b38e3a8304ea21716aed7247"
+      },
+      {
+        "filename": "pause-large-4x3.png",
+        "bytes": 79415,
+        "sha256": "b283f05ed95c6574f20ab9793fc7aa1f3cc37aa714316e6edde3648f4ce2c823"
+      },
+      {
+        "filename": "hud-large-720p.png",
+        "bytes": 53373,
+        "sha256": "20696879aeaaafe900c4e19f0dea5057335974738927e81dacd88e252bf00bdb"
+      },
+      {
+        "filename": "journal-1080p.png",
+        "bytes": 134332,
+        "sha256": "368daf69523323250841bdfaf4232d9b43b649200ddaa97b6f937d63fb5fa3e3"
+      },
+      {
+        "filename": "authored-start-camera.png",
+        "bytes": 650870,
+        "sha256": "32902c8a8458968ff5f29f742409b0081b7be530f58a596089fa152f804d40b4"
+      },
+      {
+        "filename": "diagnostic-listener-before-render.json",
+        "bytes": 14207,
+        "sha256": "3341ea6a8edb15f5c92035153566be2d6b7ddedf905a64909e0379d7b1c7e756"
+      },
+      {
+        "filename": "diagnostic-listener-before-render.wav",
+        "bytes": 192044,
+        "sha256": "9785d19b03051a1316107e8afcbfbcce21ba4c5f66f0d2abda3157f305eca989"
+      },
+      {
+        "filename": "listener-flashlight-ambience.wav",
+        "bytes": 192044,
+        "sha256": "f3ca42a8e6774bb787ca88a690a66f7650622857bb273319c639d17305e8944b"
+      },
+      {
+        "filename": "listener-paused.wav",
+        "bytes": 48044,
+        "sha256": "c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b"
+      }
+    ],
+    "metrics": [
+      "HAPPYTOY_RENDER_METRICS device=Microsoft Basic Render Driver; api=Direct3D12; cpu=INTEL(R) XEON(R) PLATINUM 8573C; resolution=960x540; offscreenRenderAndFullReadbackMs=684.271,172.639,172.362,166.163,164.902,165.843; firstSampleIncludesWarmup=true; presentedFps=false; targetHardwareCertification=false; managedBytes=42778624",
+      "HAPPYTOY_AUDIO_METRICS capture=UnityAudioRendererMainOutput; rate=48000; channels=2; fixedCaptureRate=60; activeSamples=96000; peak=0.036346435546875; rms=0.00190503257005811; clippedSamples=0; pausePeak=0; deviceListeningCertification=false"
+    ]
+  },
+  "survival": {
+    "passed": true,
+    "stage": "exit",
+    "destination": "(-7.32, 0.03, 0.59)",
+    "diagnostic": "stage=exit, destination=(-7.32, 0.03, 0.59), game=79.71, wall=79.71, records=7, defeat=, hint=문을 닫아 시선을 끊고, 숨을 회복한 뒤 이동하세요., stamina=0.99, hidden=False, focus=none, collision=Below, dynamicUpdates=9513, CPress=False, WHeld=True, inputAllowed=False, crouching=False, eyeY=1.607874, grounded=True, speed=0, position=(-7.19, 0.08, 0.63), footsteps=169, nursery=True/True, upper=resolved, uncat=True/True, lantern=Resolved, mannequin=False; V1 Cyclopse active=False state=Patrol at=(24.21, 0.03, 6.63) attacks=1 awareness=0.00; V1 Hwacat_angry active=False state=Patrol at=(29.80, 5.03, 32.40) attacks=0 awareness=0.00; V1 Baby — nursery encounter active=False state=Patrol at=(13.95, -4.97, -26.66) attacks=0 awareness=0.00; V1 Uncat — archive emergence active=False state=Patrol at=(13.87, 0.03, -2.66) attacks=0 awareness=0.00",
+    "milestones": [
+      "0.10s Started at the authored spawn with every encounter enabled at (-7.80, 0.08, 0.00)",
+      "2.22s CLASSROOM opened by E at (-4.63, 0.08, 0.00)",
+      "2.94s WASHROOM opened by E at (-4.63, 0.08, 0.00)",
+      "6.03s Recovered register at (-5.44, 0.08, 7.42)",
+      "9.04s Flashlight off through F at (-4.51, 0.08, 0.16)",
+      "10.09s Recovered ribbon at (-3.60, 0.08, -2.19)",
+      "26.62s upper ascent physically completed at (29.80, 5.08, 21.85)",
+      "30.66s Recovered record at (30.98, 5.08, 32.14)",
+      "37.72s upper descent physically completed at (29.80, 0.08, 10.17)",
+      "39.29s Recovered music-roster at (24.66, 0.08, 11.77)",
+      "40.36s Entered music cabinet through E at (20.20, 0.00, 13.85)",
+      "40.90s Left music cabinet through E at (20.20, 0.00, 12.75)",
+      "49.48s archive diversion thrown through Q at (20.85, 0.08, -12.82)",
+      "49.52s Recovered archive-record at (20.85, 0.08, -12.82)",
+      "57.24s basement descent physically completed at (13.80, -4.92, -21.82)",
+      "57.28s nursery diversion thrown through Q at (13.80, -4.92, -21.82)",
+      "57.95s Nursery warning triggered by actual entry at (14.93, -4.92, -23.86)",
+      "59.37s Recovered nursery-tag at (18.40, -4.92, -26.92)",
+      "64.60s basement ascent physically completed at (13.80, 0.08, -10.15)",
+      "75.31s Recovered restore at (-2.98, 0.08, 7.64)",
+      "79.71s Escaped with all seven records through real input at (-7.19, 0.08, 0.63)"
+    ],
+    "gameSeconds": 79.71161651611328,
+    "wallSeconds": 79.70896911621094,
+    "physicalMeters": 237.62965393066406,
+    "minY": -4.920000076293945,
+    "maxY": 5.080000400543213,
+    "records": 7,
+    "movementUpdates": 3959,
+    "groundedFrames": 9143,
+    "stairLegs": 4,
+    "hidingEntries": 1,
+    "firecrackersThrown": 2,
+    "maximumLiveStalkers": 4
+  },
+  "audioPcm": [
+    {
+      "file": "listener-flashlight-ambience.wav",
+      "channels": 2,
+      "sampleRate": 48000,
+      "frames": 48000,
+      "sampleWidthBytes": 2,
+      "peakPcm16": 1190,
+      "rmsPcm16": 62.226251745143706,
+      "sha256": "f3ca42a8e6774bb787ca88a690a66f7650622857bb273319c639d17305e8944b"
+    },
+    {
+      "file": "listener-paused.wav",
+      "channels": 2,
+      "sampleRate": 48000,
+      "frames": 12000,
+      "sampleWidthBytes": 2,
+      "peakPcm16": 0,
+      "rmsPcm16": 0.0,
+      "sha256": "c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b"
+    }
+  ],
+  "viewReview": {
+    "newHud": "Two UI-only 1280x720 large-text/high-contrast captures inspected. New neutral hiding/item-denial and actual door-warning labels are readable and not clipped. These are not world-camera screenshots.",
+    "fixtureCaveat": "The door-warning screenshot also retains the preceding deliberately blocked-exit fixture notice. It is not presented as a pristine scene or proof of a clear exit.",
+    "controlCard": "Title-large and pause-large inspected: chase-before-distraction hint fits.",
+    "authoredCamera": "Byte-identical to the previously reviewed build8 authored-start image."
+  },
+  "newCases": [
+    "FirecrackerDenialsStayLocalAndNeverOverwriteRecords",
+    "FirecrackerFirstPopIsSingleAndComfortSettingsApplyWhilePaused",
+    "FirecrackerRestartDestroysEffectsAndResetsItsFeedback"
+  ],
+  "independentReview": "Both XML suites, 15 envelopes, source/assertions, four changed UI captures and original ZIP CRC/exe path independently reviewed."
+}

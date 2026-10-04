@@ -1,26 +1,38 @@
 # Unity Build Automation: real scene tests
 
-## Current personal-play update: source checked, new engine run pending
+## Latest personal-play result: build #9 SUCCESS, 24/24 actual tests
 
-The goal is personal enjoyment and better chase/hiding/item feedback, not a
-commercial release. This source fixes the first double firecracker pop, provides
-brief item-denial feedback without replacing story text, honors comfort settings,
-and adds a door-specific spatial cue/HUD warning only after a real nearby cabinet
-attack begins. It never reveals unseen enemy awareness or distraction success.
+Exact tested/exported source: `7c13e7f98e40d5e2d89c43f71b41c073eb1ec5d3`.
+Both original XML suites independently confirm **6/6 EditMode + 18/18 PlayMode**,
+zero failed/skipped/inconclusive. The final log ends SUCCESS. Source CI
+[37186371244](https://github.com/minsminsKR/3d_modeling/actions/runs/37186371244)
+also passed. This evidence-only follow-up changes no tested gameplay or tests.
 
-The suite now defines **6 EditMode + 18 PlayMode tests (24 total)**. Three new item
-fixtures cover feedback, single first pulse, finite spending, pause/comfort and
-retry cleanup. The existing cabinet fixture adds truthful HUD captures, one cue
-per actual attack, paused clock behavior and old-source/clip destruction on retry.
-The real-input seven-record strategy and all previous tests remain. Actual Unity
-execution of this change is pending; latest completed engine evidence remains
-build #8 at `9230608` below. Source preflight is in
-`Verification/personal-play-feedback/`. See `PERSONAL_PLAY.md` for player-facing
-scope. Optional commercial preparation was kept separate and is not a gate for
-this personal-use work.
+- All three new firecracker fixtures passed: first pop emitted once, separate
+  denial feedback preserves story notices, finite inventory, frozen pause/cooldown,
+  comfort/subtitle/mute settings, result and restart cleanup
+- The cabinet fixture passed unseen/witnessed fairness, one cue per actual door
+  attack, event-based HUD, paused time and old-source/clip cleanup after retry
+- Both new HUD captures were inspected and readable. They are UI-only black-background
+  fixture images. The door-warning image retains the preceding blocked-exit notice;
+  it is not a pristine gameplay view or proof the exit is clear
+- The original route survived with all seven records in 79.712 seconds / 237.630 m,
+  four stair legs, one cabinet and two items. This remains one map-aware strategy
+- The existing strict active/pause audio gate passes: 96,000 real active samples,
+  zero clipping, and 24,000 paused zero samples. These WAVs match #8 byte-for-byte;
+  this does not isolate the new door/pop effects or certify device listening
+- Original ZIP: 73,167,963 bytes / 186 entries, all CRCs valid, SHA256
+  `453cd8d7888b7439a4b6637b1d06a1b302cc511c8d40f959904690420b59fb3f`.
+  Root executable: `HappyToyV2.exe`. New runtime methods are in the production DLL;
+  scene/runtime dependencies are present and UTF/NUnit test assemblies are absent.
+  The original backup text remains; no derivative or release-profile build is claimed
 
+Exact records: `Verification/cloud-tests/build-9-results.json` and
+`build-9-experience.json`. Preflight: `Verification/personal-play-feedback/`.
+The goal is personal enjoyment. A passing test suite does not replace the user's
+actual play feedback. Previous build #8 remains preserved.
 
-## Latest engine result: build #8 SUCCESS, all21actual tests passed
+## Previous engine result: build #8 SUCCESS, all 21 actual tests passed
 
 Pinned source **`923060837b0cb8585d16d9bfffb961434a850504`**, Unity6000.6.0f1 / Windows Micro. Both original NUnit artifacts were independently parsed: **6/6EditMode +15/15PlayMode,0failures,0skips,0inconclusive**. The final log ends **SUCCESS** and the Windows player export completed. This run closes the prior missing EditMode result and strict AudioRenderer capture gate; #7's early process exit remains unexplained historical evidence, not a retroactive pass.
 

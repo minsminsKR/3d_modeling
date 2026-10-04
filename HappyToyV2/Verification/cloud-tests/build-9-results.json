@@ -1,0 +1,254 @@
+{
+  "build": 9,
+  "commit": "7c13e7f98e40d5e2d89c43f71b41c073eb1ec5d3",
+  "source_ci": {
+    "id": 37186371244,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "expected_tests": {
+    "editmode": 6,
+    "playmode": 18
+  },
+  "prelaunch_budget": {
+    "windows_used": 70,
+    "windows_included": 200,
+    "windows_remaining": 130
+  },
+  "target": "happytoyv2-windows64-pr7",
+  "unity_version": "6000.6.0f1",
+  "machine": "Windows Micro",
+  "status": "Success",
+  "purpose": "Personal enjoyment and gameplay verification",
+  "tests": {
+    "editmode": {
+      "testcasecount": "6",
+      "result": "Passed",
+      "total": "6",
+      "passed": "6",
+      "failed": "0",
+      "skipped": "0",
+      "inconclusive": "0",
+      "duration": "7.8184076",
+      "start-time": "2026-10-04 07:55:52Z",
+      "end-time": "2026-10-04 07:56:00Z",
+      "path": "build-9-editmode.xml",
+      "bytes": 7802,
+      "sha256": "7fc9b8289c7e803f3702c945740ba017c96729a11c9a4ea6128fb35fa7aee803",
+      "cases": [
+        {
+          "name": "ActualEnemyAttackClockPassesAll29Checks",
+          "result": "Passed",
+          "duration": "0.020141"
+        },
+        {
+          "name": "ActualSceneRestartGatePassesAll26Checks",
+          "result": "Passed",
+          "duration": "0.001118"
+        },
+        {
+          "name": "ActualStealthRulesPassAll68Checks",
+          "result": "Passed",
+          "duration": "0.002821"
+        },
+        {
+          "name": "ActualSurfaceRippleBufferPassesAll20Checks",
+          "result": "Passed",
+          "duration": "0.001555"
+        },
+        {
+          "name": "ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles",
+          "result": "Passed",
+          "duration": "7.764905"
+        },
+        {
+          "name": "TargetEditorAndGameplayAssemblyIdentitiesArePreserved",
+          "result": "Passed",
+          "duration": "0.000926"
+        }
+      ]
+    },
+    "playmode": {
+      "testcasecount": "18",
+      "result": "Passed",
+      "total": "18",
+      "passed": "18",
+      "failed": "0",
+      "skipped": "0",
+      "inconclusive": "0",
+      "duration": "174.0723472",
+      "start-time": "2026-10-04 07:56:56Z",
+      "end-time": "2026-10-04 07:59:50Z",
+      "path": "build-9-playmode.xml",
+      "bytes": 2765601,
+      "sha256": "52802c5f9fb4b5096962cdf0c6d4630c9479404b122935e6bb6cd50f0949867b",
+      "cases": [
+        {
+          "name": "AttackWarningPausesAndDodgeWorksBeforeLethalContact",
+          "result": "Passed",
+          "duration": "5.418686"
+        },
+        {
+          "name": "AuthoredNavigationReachesAllMandatoryRecords",
+          "result": "Passed",
+          "duration": "2.386980"
+        },
+        {
+          "name": "AuthoredSevenRecordRouteSurvivesWithRealMovementAndInteraction",
+          "result": "Passed",
+          "duration": "82.177289"
+        },
+        {
+          "name": "CabinetWitnessCannotBeInventedOrErasedByRepeatedEntry",
+          "result": "Passed",
+          "duration": "15.320159"
+        },
+        {
+          "name": "CrouchUsesActualCapsuleAndOnlyMovingFeetMakeNoise",
+          "result": "Passed",
+          "duration": "3.734278"
+        },
+        {
+          "name": "FirecrackerDenialsStayLocalAndNeverOverwriteRecords",
+          "result": "Passed",
+          "duration": "4.516070"
+        },
+        {
+          "name": "FirecrackerFirstPopIsSingleAndComfortSettingsApplyWhilePaused",
+          "result": "Passed",
+          "duration": "4.317135"
+        },
+        {
+          "name": "FirecrackerRestartDestroysEffectsAndResetsItsFeedback",
+          "result": "Passed",
+          "duration": "2.747334"
+        },
+        {
+          "name": "KoreanMenusRenderAcrossSupportedAspectRatios",
+          "result": "Passed",
+          "duration": "2.503221"
+        },
+        {
+          "name": "LanternInvestigatesItsOwnFloorWhilePlayerIsUpstairs",
+          "result": "Passed",
+          "duration": "1.780862"
+        },
+        {
+          "name": "LostSightSearchScansLocallyWithoutTrackingThroughCover",
+          "result": "Passed",
+          "duration": "11.270983"
+        },
+        {
+          "name": "PauseJournalAndMixedRestartRequestsKeepTheirDestination",
+          "result": "Passed",
+          "duration": "4.429533"
+        },
+        {
+          "name": "RealAuthoredCameraProducesRenderAndTimingEvidence",
+          "result": "Passed",
+          "duration": "3.057439"
+        },
+        {
+          "name": "RealFirecrackerInputDistractsAndExpiresWithoutInfiniteInventory",
+          "result": "Passed",
+          "duration": "14.567491"
+        },
+        {
+          "name": "RealFootstepsDriveHearingAndRecognitionRespectsCover",
+          "result": "Passed",
+          "duration": "2.924006"
+        },
+        {
+          "name": "RealListenerMixCapturesDuringFlashlightInputAndPauseSilence",
+          "result": "Passed",
+          "duration": "3.264243"
+        },
+        {
+          "name": "TitleAndRequiredRecordsGateRealEscape",
+          "result": "Passed",
+          "duration": "1.516309"
+        },
+        {
+          "name": "UnreachableSearchEvidenceTimesOutWithoutInventingTarget",
+          "result": "Passed",
+          "duration": "8.105690"
+        }
+      ]
+    }
+  },
+  "zip": {
+    "path": "HappyToyV2-Windows64-build9.zip",
+    "bytes": 73167963,
+    "sha256": "453cd8d7888b7439a4b6637b1d06a1b302cc511c8d40f959904690420b59fb3f",
+    "entries": 186,
+    "crc_error": null,
+    "executables": [
+      "HappyToyV2.exe",
+      "UnityCrashHandler64.exe"
+    ],
+    "root_entries": [
+      "HappyToyV2.exe",
+      "UnityCrashHandler64.exe",
+      "UnityPlayer.dll",
+      "dstorage.dll",
+      "dstoragecore.dll"
+    ],
+    "runtime_dll": [
+      "HappyToyV2_Data/Managed/Assembly-CSharp.dll",
+      "UnityPlayer.dll"
+    ],
+    "scene_files": [
+      "HappyToyV2_Data/level0"
+    ],
+    "test_assemblies": [],
+    "debug_backup": [
+      "HappyToyV2_BackUpThisFolder_ButDontShipItWithYourGame/x86_64/lib_burst_generated.txt"
+    ],
+    "productionAssemblySha256": "a553eeb8f9a7fb177a69268ead489fe1a07f8dcc10ecfcae80b7e9b14d4050d2",
+    "newRuntimeMethodsPresent": [
+      "get_PopsPlayed",
+      "get_ActionFeedback",
+      "get_HidingThreatCueActive",
+      "ReportHidingDoorAttack",
+      "get_CabinetAttackCuesPlayed"
+    ]
+  },
+  "timing": {
+    "total": "00:20:54",
+    "queue": "00:09:41",
+    "checkout": "00:02:18",
+    "billable": "00:11:13",
+    "unit_tests": "00:05:12"
+  },
+  "final_log": {
+    "path": "build-9-final.log",
+    "bytes": 2272581,
+    "sha256": "06b3d0d81a076574bc0a75566e8451997acc6c62ef4996ca1e1a6e5b211050dd",
+    "success_marker": true,
+    "csharp_error_count": 0
+  },
+  "final_budget": {
+    "verified_utc": "2026-10-04T08:10:06Z",
+    "windows_used": 81,
+    "windows_included": 200,
+    "windows_remaining": 119,
+    "mac_used": 0,
+    "linux_used": 0,
+    "egress_gb": 0.3,
+    "egress_included_gb": 100
+  },
+  "library": {
+    "library_file_id": "libfile_88ae668aab0c8191bcfcc7ebd95c2e5d",
+    "file_id": "file_00000000089c81fdb831c6dfc47d6a9a",
+    "current_version_number": 0,
+    "file_name": "HappyToyV2-Windows64-build9.zip",
+    "path": "HappyToyV2-Windows64-build9.zip",
+    "local_metadata_applied": true
+  },
+  "scope": "Actual Unity test and exported personal-play build; not a manual target-device playthrough.",
+  "finalBudget": {
+    "windowsUsed": 81,
+    "windowsIncluded": 200,
+    "windowsRemaining": 119
+  }
+}

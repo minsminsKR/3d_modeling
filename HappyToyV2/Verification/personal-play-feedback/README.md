@@ -1,9 +1,10 @@
 # Personal-play feedback preflight
 
-Source checks only; the new actual Unity run is pending. The last completed
-engine/export source remains `9230608` (build #8, 21/21 passed). The current suite
-defines 24 tests, retaining the 21 and adding three item cases. The existing
-cabinet test gains HUD/cue/pause/retry checks.
+Historical source preflight before UBA #9. The subsequent actual engine run at
+`7c13e7f` passed all 24 tests and exported the Windows player; see
+`../cloud-tests/build-9-results.json`. These files remain the source-only checks,
+not substitutes for that later engine evidence. The suite retains the original
+21 tests and adds three item cases; the cabinet case adds HUD/cue/pause/retry checks.
 
 - 77 Python tests passed, no skips
 - 143 existing shared C# assertions passed; pure build had 0 warnings/errors
