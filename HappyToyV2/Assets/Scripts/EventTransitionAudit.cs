@@ -120,7 +120,8 @@ namespace HappyToy.V2
             var chairPosition = story.emptyChair.localPosition;
             var paintingRotation = FindAnyObjectByType<V1HwacatEvent>().painting.rotation;
             session.Collect("register"); session.Collect("ribbon");
-            float until = Time.realtimeSinceStartup + 8; V1CyclopseIntro intro = null;
+            // The actor now walks a real occluded corner path before the roar.
+            float until = Time.realtimeSinceStartup + 22; V1CyclopseIntro intro = null;
             while (Time.realtimeSinceStartup < until)
             {
                 intro = story.GetComponent<V1CyclopseIntro>();

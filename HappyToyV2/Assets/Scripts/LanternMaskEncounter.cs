@@ -27,6 +27,7 @@ namespace HappyToy.V2
         float floorY, age, transformTime, memory, repath;
         int waypoint;
         PlayerMotor noisePlayer;
+        bool recognitionCueIssued;
         readonly StealthRules.Awareness awareness = new StealthRules.Awareness();
         readonly EnemyAttackClock attack = new EnemyAttackClock();
         AudioSource sound;
@@ -51,7 +52,7 @@ namespace HappyToy.V2
         void Start() { SetVisible(false); }
         void OnEnable()
         {
-            floorY = transform.position.y; repath = 0; awareness.Reset();
+            floorY = transform.position.y; repath = 0; recognitionCueIssued = false; awareness.Reset();
             BindFootsteps(GameSession.Current ? GameSession.Current.player : null);
         }
         void BindFootsteps(PlayerMotor next)
@@ -135,7 +136,7 @@ namespace HappyToy.V2
                 {
                     // Keep the position seen at the curse. Transformation is not permission
                     // to track a player who escaped behind geometry or onto another floor.
-                    Transformed = true; State = Phase.Chase; memory = 8; repath = 0;
+                    Transformed = true; State = Phase.Chase; memory = 8; repath = 0; recognitionCueIssued = false;
                     sound.pitch = .6f; sound.PlayOneShot(warning);
                     if (EnemyNavigation.SameFloor(player.transform.position, floorY) &&
                         Vector3.Distance(player.transform.position, transform.position) <= sound.maxDistance)
@@ -143,6 +144,7 @@ namespace HappyToy.V2
                 }
                 Visual(); return;
             }
+            if (State != Phase.Chase) recognitionCueIssued = false;
             bool sees = Sees(player);
             float distance = Vector3.Distance(player.transform.position, transform.position);
             float strikeRange = Transformed ? .85f : .95f;
@@ -173,7 +175,10 @@ namespace HappyToy.V2
                     StealthRules.AcquisitionSeconds(player.Crouching, lightOn, player.Running, distance), Time.deltaTime);
             }
             if (sees && (State == Phase.Chase || acquiring && awareness.Acquired))
-            { State = Phase.Chase; target = player.transform.position; memory = Transformed ? 8 : 3; }
+            {
+                if (!recognitionCueIssued) { DetectionFeedback.Signal(session, transform); recognitionCueIssued = true; }
+                State = Phase.Chase; target = player.transform.position; memory = Transformed ? 8 : 3;
+            }
             else if (State == Phase.Chase || State == Phase.Investigate)
             {
                 memory -= Time.deltaTime;
@@ -186,6 +191,7 @@ namespace HappyToy.V2
             if (sees && State == Phase.Chase && distance < (Transformed ? .75f : .85f))
             {
                 attack.Begin(Transformed ? .75f : .6f, .9f); AttacksStarted++; Stop();
+                DetectionFeedback.Signal(session, transform);
                 sound.pitch = Transformed ? .7f : 1; sound.PlayOneShot(warning);
                 session.WarnThreat(Transformed ? "가면이 공격을 준비합니다 · 즉시 거리를 벌리세요." :
                     "녹색 가면이 저주를 준비합니다 · 뒤로 물러나세요.", 1.6f);

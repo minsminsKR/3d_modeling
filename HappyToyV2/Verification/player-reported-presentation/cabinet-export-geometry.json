@@ -1,0 +1,69 @@
+{
+  "scope": "Blender geometry and exported FBX reimport rays only; not Unity asset import, subasset binding, rendering or gameplay verification",
+  "asset": "Assets/Art/Finished/hiding-cabinet.fbx",
+  "sha256": "61fe223cfe35824149c45d75212f8d24dc4bd34dc047822bab356cbcc9c04053",
+  "originalMeshCount": 31,
+  "currentMeshCount": 31,
+  "namesMeshNamesAndOriginsPreserved": true,
+  "dimensionChanges": [
+    "Dark ventilation slot.003",
+    "Dark ventilation slot.004",
+    "Dark ventilation slot.005",
+    "Dark ventilation slot.009",
+    "Dark ventilation slot.010",
+    "Dark ventilation slot.011"
+  ],
+  "exportedFbxRays": [
+    {
+      "x": -0.272,
+      "height": 1.59,
+      "blocked": false
+    },
+    {
+      "x": -0.272,
+      "height": 1.645,
+      "blocked": false
+    },
+    {
+      "x": -0.272,
+      "height": 1.7,
+      "blocked": false
+    },
+    {
+      "x": -0.272,
+      "height": 1.672,
+      "blocked": true
+    },
+    {
+      "x": -0.272,
+      "height": 1.52,
+      "blocked": true
+    },
+    {
+      "x": 0.272,
+      "height": 1.59,
+      "blocked": false
+    },
+    {
+      "x": 0.272,
+      "height": 1.645,
+      "blocked": false
+    },
+    {
+      "x": 0.272,
+      "height": 1.7,
+      "blocked": false
+    },
+    {
+      "x": 0.272,
+      "height": 1.672,
+      "blocked": true
+    },
+    {
+      "x": 0.272,
+      "height": 1.52,
+      "blocked": true
+    }
+  ],
+  "sceneNotWritten": true
+}

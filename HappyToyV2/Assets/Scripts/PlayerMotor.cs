@@ -11,6 +11,9 @@ namespace HappyToy.V2
         public float walkSpeed = 2.6f, runSpeed = 4.4f, sensitivity = .09f;
         public float Stamina { get; private set; } = 1;
         public bool Hidden { get; private set; }
+        // Authored upper ventilation slit. The capsule/stance stays unchanged;
+        // while hidden only the eye occupies this outward-facing peek position.
+        public Vector3 HiddenCameraLocalPosition => new Vector3(.272f, 1.645f, 0);
         // A short remembered cue from an actual attack at this cabinet door.
         // This is not a query of unseen enemy awareness or general hiding safety.
         public bool HidingThreatCueActive => Hidden && hidingPlace && warnedHidingPlace == hidingPlace && Time.time < hidingThreatUntil;
@@ -188,6 +191,14 @@ namespace HappyToy.V2
             moveVelocity = Vector3.zero; ActualSpeed = 0;
             flashlightBeforeHiding = flashlight && flashlight.enabled;
             controller.enabled = false; transform.position = inside;
+            var outward = exit - inside; outward.y = 0;
+            if (outward.sqrMagnitude > .001f) transform.rotation = Quaternion.LookRotation(outward);
+            pitch = 0;
+            if (eyes)
+            {
+                eyes.transform.localRotation = Quaternion.identity;
+                eyes.transform.localPosition = HiddenCameraLocalPosition;
+            }
             if (flashlight) flashlight.enabled = false;
             Feedback.PlayHide(true);
         }

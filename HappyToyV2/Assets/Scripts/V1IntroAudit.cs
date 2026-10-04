@@ -17,7 +17,8 @@ namespace HappyToy.V2
             var result=new Result();var links=FindObjectsByType<FixtureLightLink>(FindObjectsSortMode.None);
             var block=new MaterialPropertyBlock();
             GameSession.Current.Collect("register");GameSession.Current.Collect("ribbon");
-            float deadline=Time.realtimeSinceStartup+6;
+            // Includes the slow physical corner approach, not only a stationary reveal.
+            float deadline=Time.realtimeSinceStartup+22;
             while(Time.realtimeSinceStartup<deadline)
             {
                 yield return new WaitForEndOfFrame();
@@ -30,6 +31,10 @@ namespace HappyToy.V2
                     var emission=block.GetColor("_EmissionColor");
                     result.fixtureLinked&=on?emission.maxColorComponent>0:emission.maxColorComponent<.001f;
                 }
+                // The deadline bounds staging; this audit observes the handoff,
+                // not many seconds of an unattended player after AI is released.
+                var currentIntro=FindAnyObjectByType<V1CyclopseIntro>();
+                if(currentIntro&&currentIntro.Completed)break;
             }
             var intro=FindFirstObjectByType<V1CyclopseIntro>();var brain=FindFirstObjectByType<StoryDirector>().stalker;
             result.completed=intro&&intro.Completed;result.roar=intro&&intro.RoarPlayed;result.phase=intro?intro.Phase:"missing";

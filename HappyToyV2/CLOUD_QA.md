@@ -1,5 +1,24 @@
 # Unity Build Automation: real scene tests
 
+## Player feedback follow-up: implementation checked, next engine run pending
+
+The user played #9 and requested real cabinet slit visibility, a slow physical
+Cyclopse corner entrance, a strong but comfort-aware recognition cue, a recognizable
+music classroom, naturally mounted room/stair text, and removal of flashlight state
+UI. The follow-up source implements all six; see `PERSONAL_PLAY.md` for boundaries.
+It intentionally changes only the cabinet asset and scoped runtime presentation,
+not the authored scene bytes or existing interaction IDs. Two new music seats/stands
+add six physical colliders and four bounded NavMesh carvers, which need a fresh
+navigation/access and full survival check.
+
+The current suite defines **6 EditMode + 27 PlayMode tests (33 total)**, retaining all
+prior tests. New camera evidence uses real meshes/cameras; rendered acceptance is
+still pending. The transport limit was bounded at 32 files / 16 MB to hold the new
+camera sequence, with new cap/overflow regressions. This is evidence transport
+capacity, not relaxation of gameplay/audio assertions. Independent review caught
+and corrected a recognition-ray mismatch above low cover and a fixed-wait intro
+audit; final source/API checks are recorded separately from the next engine result.
+
 ## Latest personal-play result: build #9 SUCCESS, 24/24 actual tests
 
 Exact tested/exported source: `7c13e7f98e40d5e2d89c43f71b41c073eb1ec5d3`.

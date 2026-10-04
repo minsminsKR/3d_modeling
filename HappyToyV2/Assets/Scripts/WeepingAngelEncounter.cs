@@ -119,6 +119,7 @@ namespace HappyToy.V2
             if (contact)
             {
                 attack.Begin(.65f, .9f); AttacksStarted++; Stop();
+                DetectionFeedback.Signal(session, transform);
                 sound.PlayOneShot(creak, 1.3f);
                 session.WarnThreat("마네킹의 관절 소리가 가까이 납니다 · 돌아보거나 손전등을 끄세요.", 1.6f);
                 return;

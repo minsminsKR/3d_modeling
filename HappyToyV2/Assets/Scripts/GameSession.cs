@@ -87,7 +87,7 @@ namespace HappyToy.V2
         };
         readonly HashSet<string> names = new HashSet<string>();
         string notice = "마지막 출석 — 지워진 아이의 하교 기록을 복원하세요.";
-        void Awake() { Current = this; Application.targetFrameRate=120; Shell=gameObject.AddComponent<GameShell>();gameObject.AddComponent<RoomAmbience>(); }
+        void Awake() { Current = this; Application.targetFrameRate=120; Shell=gameObject.AddComponent<GameShell>();gameObject.AddComponent<RoomAmbience>();gameObject.AddComponent<AnnexRoomPresentation>(); }
         void Update()
         {
             if (InputAllowed) ElapsedPlayTime += Time.deltaTime;

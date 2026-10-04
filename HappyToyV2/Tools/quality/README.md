@@ -1,3 +1,11 @@
+# Player-reported presentation follow-up (engine execution pending)
+
+Current definitions: 6 EditMode + 27 PlayMode = 33. Existing gates remain intact.
+New cabinet/intro/room/detection fixtures cover the six user play reports; actual
+rendered outcomes must be inspected after the next run. Extractor capacity is
+bounded at 32 files / 16 MB for this additional real-camera evidence, with explicit
+file-count and aggregate-size regression tests.
+
 # Current personal-play verification: build #9
 
 Source `7c13e7f98e40d5e2d89c43f71b41c073eb1ec5d3` passed all **24 actual Unity tests**

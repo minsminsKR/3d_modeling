@@ -14,8 +14,10 @@ import xml.etree.ElementTree as ET
 
 NAME = re.compile(r"^[A-Za-z0-9_-]+\.(?:png|wav|json)$")
 MAX_FILE = 1_500_000
-MAX_TOTAL = 12_000_000
-MAX_FILES = 24
+# The six player-feedback fixes add real cabinet, corner and room camera views.
+# Keep a hard aggregate cap; this is transport capacity, never a test pass gate.
+MAX_TOTAL = 16_000_000
+MAX_FILES = 32
 
 
 def decode(text):

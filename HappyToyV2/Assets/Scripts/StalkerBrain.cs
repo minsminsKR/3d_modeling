@@ -22,7 +22,7 @@ namespace HappyToy.V2
         bool searchArrived, searchStarted;
         float memory, repath, floorY;
         int waypoint;
-        bool witnessedHiding, attackingHiding;
+        bool witnessedHiding, attackingHiding, recognitionCueIssued;
         PlayerMotor noisePlayer;
         readonly StealthRules.Awareness awareness = new StealthRules.Awareness();
         readonly EnemyAttackClock attack = new EnemyAttackClock();
@@ -63,7 +63,7 @@ namespace HappyToy.V2
         }
         void OnEnable()
         {
-            floorY = transform.position.y; repath = 0; awareness.Reset(); BindFootsteps(player);
+            floorY = transform.position.y; repath = 0; recognitionCueIssued = false; awareness.Reset(); BindFootsteps(player);
         }
         void OnDisable()
         {
@@ -209,6 +209,7 @@ namespace HappyToy.V2
             if (!EnemyNavigation.Ready(agent)) { attack.Reset(); repath = 0; return; }
             if (!session.InputAllowed) { EnemyNavigation.Stop(agent); repath = 0; return; }
 
+            if (state != State.Chase) recognitionCueIssued = false;
             bool visible = CanSeePlayer();
             var offset = player.transform.position - transform.position;
             if (attack.Active)
@@ -237,7 +238,12 @@ namespace HappyToy.V2
                     StealthRules.AcquisitionSeconds(player.Crouching, lightOn, player.Running, offset.magnitude), Time.deltaTime);
             }
             if (visible && (state == State.Chase || acquiring && awareness.Acquired))
-            { state = State.Chase; memory = 5; lastKnown = player.transform.position; witnessedHiding = false; }
+            {
+                // Scripted encounters can enable an actor already in Chase.
+                // Its first actual sight, not that scripted flag alone, earns the cue.
+                if (!recognitionCueIssued) { DetectionFeedback.Signal(session, transform); recognitionCueIssued = true; }
+                state = State.Chase; memory = 5; lastKnown = player.transform.position; witnessedHiding = false;
+            }
             else if (state == State.Chase)
             {
                 memory -= Time.deltaTime;

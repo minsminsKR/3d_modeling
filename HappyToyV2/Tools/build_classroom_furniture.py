@@ -37,6 +37,23 @@ def box(name, position, size, mat, radius=.006):
     return obj
 
 
+def cabinet_aperture(obj, x, height):
+    """Cut the complete door thickness; keep original object/mesh identities."""
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(x, -.425, height))
+    cutter = bpy.context.object
+    cutter.scale = (.28, .24, .035)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    bpy.context.view_layer.objects.active = obj
+    cut = obj.modifiers.new('Actual cabinet viewing slit', 'BOOLEAN')
+    cut.operation = 'DIFFERENCE'
+    cut.solver = 'EXACT'
+    cut.object = cutter
+    bpy.ops.object.modifier_apply(modifier=cut.name)
+    mesh = cutter.data
+    bpy.data.objects.remove(cutter, do_unlink=True)
+    bpy.data.meshes.remove(mesh)
+
+
 def build(kind):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     oak = material('Warm aged plywood', (.27, .16, .075))
@@ -68,10 +85,19 @@ def build(kind):
         for z in [.045, 1.955]:
             box('Cabinet end panel', (0, 0, z), (1.1, .8, .09), paint)
         for x in [-.272, .272]:
-            box('Cabinet door', (x, -.402, 1), (.535, .07, 1.91), paint, .009)
-            box('Recessed door field', (x, -.441, 1), (.44, .009, 1.62), inset)
+            door = box('Cabinet door', (x, -.402, 1), (.535, .07, 1.91), paint, .009)
+            field = box('Recessed door field', (x, -.441, 1), (.44, .009, 1.62), inset)
+            for height in [1.59, 1.645, 1.70]:
+                cabinet_aperture(door, x, height)
+                cabinet_aperture(field, x, height)
             for z in [.30, .355, .41, 1.59, 1.645, 1.70]:
-                box('Dark ventilation slot', (x, -.448, z), (.28, .006, .015), rubber, .002)
+                # Retain every imported subasset name and origin. Upper slots
+                # become narrow frames around real holes, rather than black paint.
+                upper = z > 1
+                slot = box('Dark ventilation slot', (x, -.448, z),
+                           (.29, .006, .043) if upper else (.28, .006, .015), rubber, .002)
+                if upper:
+                    cabinet_aperture(slot, x, z)
             gripx=x+(.17 if x<0 else -.17)
             for z in [.88, 1.03]:
                 box('Handle bracket', (gripx, -.465, z), (.025, .05, .025), handle)

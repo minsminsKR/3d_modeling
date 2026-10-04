@@ -20,6 +20,7 @@ namespace HappyToy.V2
         {
             player = GetComponent<PlayerMotor>();
             if (!player || !player.eyes) { enabled = false; return; }
+            if (!GetComponent<DetectionFeedback>()) gameObject.AddComponent<DetectionFeedback>();
             previousPosition = transform.position;
             cameraHome = player.eyes.transform.localPosition;
             steps = Source("Player footsteps", .36f, 120);
@@ -48,7 +49,6 @@ namespace HappyToy.V2
         {
             if (!initialized) return;
             foley.pitch = on ? 1 : .86f; foley.PlayOneShot(click, .75f);
-            Caption(on ? "[찰칵 · 손전등 켜짐]" : "[찰칵 · 손전등 꺼짐]", 1.2f);
         }
         public void PlayHide(bool entering)
         {
@@ -120,8 +120,8 @@ namespace HappyToy.V2
             // Position only: mouse rotation and scripted camera direction remain authoritative.
             var bob = speed > .12f ? new Vector3(Mathf.Sin(phase * .5f) * .009f,
                 Mathf.Abs(Mathf.Sin(phase)) * .015f, 0) : Vector3.zero;
-            var stanceHome = cameraHome - Vector3.up * player.CameraHeightOffset;
-            player.eyes.transform.localPosition = session.Shell.ReducedMotion ? stanceHome : Vector3.Lerp(player.eyes.transform.localPosition,
+            var stanceHome = player.Hidden ? player.HiddenCameraLocalPosition : cameraHome - Vector3.up * player.CameraHeightOffset;
+            player.eyes.transform.localPosition = player.Hidden || session.Shell.ReducedMotion ? stanceHome : Vector3.Lerp(player.eyes.transform.localPosition,
                 stanceHome + bob, 1 - Mathf.Exp(-14 * Time.deltaTime));
             float targetFov = session.Shell.FieldOfView + (motion && player.Running && speed > .5f ? 2.5f : 0);
             player.eyes.fieldOfView = Mathf.Lerp(player.eyes.fieldOfView, targetFov, 1 - Mathf.Exp(-5 * Time.unscaledDeltaTime));

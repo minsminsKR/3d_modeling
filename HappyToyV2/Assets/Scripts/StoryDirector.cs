@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace HappyToy.V2
 {
@@ -13,6 +12,7 @@ namespace HappyToy.V2
         AudioClip bell;
         AudioClip chairScrape;
         Coroutine wakeRoutine;
+        bool wakeTriggered;
         GameSession session;
         bool[] originalLightStates;
         public bool RestorationChairCompleted { get; private set; }
@@ -55,7 +55,8 @@ namespace HappyToy.V2
                 source.PlayOneShot(bell,.7f);
                 CaptionIfNearby(source, "[멀리서 울리는 금 간 하교 종]", 2.5f);
             }
-            if(step==2)wakeRoutine=StartCoroutine(Wake());
+            if(step==2&&!wakeTriggered)
+            {wakeTriggered=true;wakeRoutine=StartCoroutine(Wake());}
             if(step==4)
             {
                 CancelWake();
@@ -119,10 +120,8 @@ namespace HappyToy.V2
             // Telegraph the threat; never spawn it right on the player.
             yield return new WaitForSeconds(2);
             if(!session||session.Finished||session.StoryStep>=4){CancelWake();yield break;}
-            var player=session.player.transform.position;
-            var spawn=new Vector3(player.x<0?7.5f:-7.5f,0,0);
-            if(NavMesh.SamplePosition(spawn,out var hit,1,NavMesh.AllAreas))stalker.transform.position=hit.position;
-            stalker.gameObject.SetActive(true);
+            // Intro owns safe hidden staging and actual corner traversal. There is
+            // deliberately no fallback activation in the player's visible corridor.
             var intro=GetComponent<V1CyclopseIntro>();if(!intro)intro=gameObject.AddComponent<V1CyclopseIntro>();
             yield return intro.Play(stalker);
             wakeRoutine = null;
