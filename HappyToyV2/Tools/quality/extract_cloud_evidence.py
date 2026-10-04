@@ -17,7 +17,7 @@ MAX_FILE = 1_500_000
 # Preserve the 34 prior presentation/audio artifacts and allow one bounded
 # perceived-tension montage plus its report. Capacity is not a gameplay pass gate.
 MAX_TOTAL = 16_000_000
-MAX_FILES = 39
+MAX_FILES = 51
 
 
 def decode(text):

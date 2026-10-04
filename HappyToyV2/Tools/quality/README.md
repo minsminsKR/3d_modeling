@@ -1,3 +1,11 @@
+# New intro + aim source: combined engine verification pending
+
+Current target is 54 actual cases, retaining prior 44 plus 4 aim and 6 intro cases.
+One old lantern contact fixture now faces its legitimate mask anchor; its original
+curse/timing/waveform assertions are unchanged. Transport allows 51 files with the
+same 16 MB total / 1.5 MB per-file bound. Ten keyframes and a native event-audio WAV/JSON
+are planned. Actual execution/render/export remain pending; build #14 is verified.
+
 # Next optional aim source: actual engine verification pending
 
 Four focused cases are being added to the previous 44: held-input lifecycle,

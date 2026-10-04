@@ -1,5 +1,17 @@
 # Unity Build Automation: real scene tests
 
+## New first-appearance source: combined engine verification pending
+
+Distinct original portrait/nursery/archive/lantern/mannequin beats and a short
+Cyclopse anticipation are implemented alongside optional aim. Current target is
+54 cases (6 Edit + 48 Play), preserving all previous cases and assertions with one
+explicit camera-orientation adaptation for the lantern contact fixture. Ten
+keyframes and one actual-event PCM/JSON pair bring the bounded artifact cap to 51;
+16 MB aggregate and 1.5 MB single-file limits remain. No new engine run has started.
+Build #14 remains the last actually verified player. See
+[monster introduction scope](Verification/monster-intros/README.md).
+
+
 ## Next source: optional firecracker first-contact aiming (not yet run)
 
 Q retains immediate throwing. Held right mouse adds a temporary, depth-tested

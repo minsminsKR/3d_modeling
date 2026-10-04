@@ -7,6 +7,11 @@ namespace HappyToy.V2
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed class WeepingAngelEncounter : MonoBehaviour
     {
+        public enum IntroStage { WaitingForSight, Tension, PartialTurn, RigidHold, FinishTurn, FinalStill, Complete }
+        public float IntroElapsed => intro;
+        public IntroStage IntroPhase => !Triggered ? IntroStage.WaitingForSight : Released ? IntroStage.Complete :
+            intro < .65f ? IntroStage.Tension : intro < 1.35f ? IntroStage.PartialTurn :
+            intro < 1.7f ? IntroStage.RigidHold : intro < 2.4f ? IntroStage.FinishTurn : IntroStage.FinalStill;
         public Transform visual;
         public Light displayLight;
         public bool Triggered { get; private set; }
@@ -27,8 +32,13 @@ namespace HappyToy.V2
         NavMeshPath path;
         AudioSource sound;
         AudioClip creak;
+        EncounterRevealAudio revealAudio;
+        bool lightCaptured, originalLightEnabled, partialCueIssued, settleCueIssued;
+        float originalLightIntensity;
+        bool ReducedMotion => GameSession.Current && GameSession.Current.Shell && GameSession.Current.Shell.ReducedMotion;
         float intro, repath, soundTimer, floorY, unobservedFor;
-        Quaternion startTurn, endTurn;
+        Quaternion startTurn, endTurn, originalVisualRotation;
+        bool visualPoseCaptured;
         readonly EnemyAttackClock attack = new EnemyAttackClock();
 
         void Awake()
@@ -44,7 +54,11 @@ namespace HappyToy.V2
                 data[i] = Mathf.Sin(Mathf.PI * t) * (.28f * Mathf.Sin(720 * t + 18 * Mathf.Sin(31 * t)) + .12f * Mathf.Sin(1190 * t));
             }
             creak = AudioClip.Create("Mannequin joint creak", rate, 1, rate, false); creak.SetData(data, 0);
+            revealAudio = EncounterRevealAudio.Ensure(transform);
+            if (visual) { originalVisualRotation = visual.localRotation; visualPoseCaptured = true; }
         }
+        void RestoreVisualPose()
+        { if (visualPoseCaptured && visual) visual.localRotation = originalVisualRotation; }
         void Stop()
         {
             Moving = false; EnemyNavigation.Stop(agent, true);
@@ -66,10 +80,59 @@ namespace HappyToy.V2
             }
             return false;
         }
+        void CaptureDisplayLight()
+        {
+            if (lightCaptured || !displayLight) return;
+            lightCaptured = true; originalLightEnabled = displayLight.enabled;
+            originalLightIntensity = displayLight.intensity;
+        }
+        void RestoreDisplayLight()
+        {
+            if (!lightCaptured || !displayLight) return;
+            displayLight.enabled = originalLightEnabled; displayLight.intensity = originalLightIntensity;
+        }
+        void IntroLight()
+        {
+            if (!lightCaptured || !displayLight) return;
+            // A single shallow, smooth dip during the first turn; never flicker.
+            // Changing comfort settings while paused also restores a steady lamp.
+            float dip = ReducedMotion ? 0 : .12f * Mathf.Sin(Mathf.PI * Mathf.InverseLerp(.65f, 1.35f, intro));
+            displayLight.intensity = originalLightIntensity * (1 - dip);
+        }
+        void IntroPose()
+        {
+            if (!visual) return;
+            // Both variants keep the rigid hold and use eased, jitter-free visual-only
+            // turns. No root translation or player camera manipulation is involved.
+            float first = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.65f, 1.35f, intro));
+            float finish = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(1.7f, 2.4f, intro));
+            visual.localRotation = Quaternion.Slerp(startTurn, endTurn, .38f * first + .62f * finish);
+        }
+        void AdvanceIntro()
+        {
+            Stop(); attack.Reset(); repath = 0; unobservedFor = 0;
+            intro = Mathf.Min(2.8f, intro + Time.deltaTime);
+            IntroPose();
+            if (!partialCueIssued && intro >= .65f)
+            {
+                partialCueIssued = true;
+                revealAudio.Play(EncounterRevealAudio.Cue.MannequinSettle, transform.position + Vector3.up * 1.4f,
+                    "마네킹의 관절이 한 번 꺾입니다.", .7f);
+            }
+            if (!settleCueIssued && intro >= 2.4f)
+            {
+                settleCueIssued = true;
+                revealAudio.Play(EncounterRevealAudio.Cue.MannequinSettle, transform.position + Vector3.up * 1.4f,
+                    "마네킹이 돌아본 채 굳어 섭니다.");
+            }
+            IntroLight();
+            if (intro >= 2.8f) { Released = true; RestoreDisplayLight(); }
+        }
         void Resolve()
         {
             Resolved = true; Observed = false; attack.Reset(); Stop(); if (sound) sound.Stop();
-            if (displayLight) displayLight.enabled = false;
+            RestoreDisplayLight(); RestoreVisualPose();
+            if (revealAudio) revealAudio.Stop();
             if (visual) visual.gameObject.SetActive(false);
         }
         void Update()
@@ -78,6 +141,7 @@ namespace HappyToy.V2
             if (!session) return;
             if (session.Finished || session.StoryStep >= 4) { Resolve(); return; }
             if (Resolved) return;
+            if (Triggered && !Released) { IntroLight(); IntroPose(); }
             if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { Stop(); repath = 0; return; }
             var player = session.player;
             if (!player || !player.eyes || !visual) { Stop(); return; }
@@ -88,19 +152,17 @@ namespace HappyToy.V2
             {
                 Stop();
                 if (session.StoryStep < 1 || player.Hidden || !sameFloor || delta.magnitude > 8 || !Observed) return;
-                Triggered = true; startTurn = visual.localRotation;
+                Triggered = true; startTurn = visual.localRotation; CaptureDisplayLight();
+                if (!visualPoseCaptured) { originalVisualRotation = startTurn; visualPoseCaptured = true; }
                 var toward = delta; toward.y = 0;
                 endTurn = toward.sqrMagnitude > .001f ? Quaternion.Inverse(transform.rotation) * Quaternion.LookRotation(toward) : startTurn;
                 session.Notify("등을 돌린 마네킹이 돌아봅니다. 눈을 떼지 마세요. 손전등을 끄면 멈춥니다.");
-                sound.PlayOneShot(creak);
+                revealAudio.Play(EncounterRevealAudio.Cue.MannequinTension, transform.position + Vector3.up * 1.3f,
+                    "움직이지 않는 마네킹 안에서 관절이 조입니다.");
             }
-            if (!Released)
-            {
-                Stop(); intro += Time.deltaTime;
-                visual.localRotation = Quaternion.Slerp(startTurn, endTurn, Mathf.SmoothStep(0, 1, Mathf.Clamp01((intro - .65f) / .85f)));
-                if (intro >= 2.2f) Released = true;
-                return;
-            }
+            // First sight starts a bounded harmless sequence. It does not need the
+            // player to keep looking, stay nearby, or remain on the same floor.
+            if (!Released) { AdvanceIntro(); return; }
             if (!sameFloor || delta.magnitude > 30 || player.Hidden || !player.flashlight || !player.flashlight.enabled || Observed)
             {
                 Stop(); repath = 0; unobservedFor = 0; attack.Reset(); return;
@@ -141,7 +203,11 @@ namespace HappyToy.V2
                 if (soundTimer <= 0) { soundTimer = .8f; sound.PlayOneShot(creak); }
             }
         }
-        void OnDisable() { attack.Reset(); unobservedFor = 0; Stop(); if (sound) sound.Stop(); }
+        void OnDisable()
+        {
+            attack.Reset(); unobservedFor = 0; Stop(); if (sound) sound.Stop();
+            if (revealAudio) revealAudio.Stop(); RestoreDisplayLight(); RestoreVisualPose();
+        }
         void OnDestroy() { if (creak) Destroy(creak); }
     }
 }

@@ -200,6 +200,11 @@ namespace HappyToy.V2.CloudTests
                 if (!NavMesh.SamplePosition(candidate, out var hit, .2f, NavMesh.AllAreas) ||
                     Mathf.Abs(hit.position.y - lantern.transform.position.y) > .2f) continue;
                 PlacePlayer(candidate, false);
+                // First appearance now requires an actual camera-visible encounter.
+                // Orient this existing contact fixture without bypassing that gate;
+                // the original curse, timing and waveform assertions remain intact.
+                var eyes = Get<Camera>(player, "eyes");
+                eyes.transform.rotation = Quaternion.LookRotation(lantern.transform.TransformPoint(new Vector3(0, 1.25f, 0)) - eyes.transform.position);
                 if ((bool)Call(lantern, "CanSeePlayer")) return;
             }
             Assert.Fail("No real same-floor contact-range NavMesh/LOS fixture at the authored lantern start");

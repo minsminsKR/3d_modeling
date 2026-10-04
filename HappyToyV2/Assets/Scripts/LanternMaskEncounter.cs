@@ -7,6 +7,12 @@ namespace HappyToy.V2
     public sealed class LanternMaskEncounter : MonoBehaviour
     {
         public enum Phase { Dormant, Wander, Investigate, Chase, Transforming, Resolved }
+        public enum IntroStage { WaitingForSight, LanternTicks, MaskRise, StillBeat, Complete }
+        public bool IntroStarted { get; private set; }
+        public bool IntroCompleted { get; private set; }
+        public float IntroElapsed { get; private set; }
+        public IntroStage IntroPhase => !IntroStarted ? IntroStage.WaitingForSight : IntroCompleted ? IntroStage.Complete :
+            IntroElapsed < .65f ? IntroStage.LanternTicks : IntroElapsed < 1.5f ? IntroStage.MaskRise : IntroStage.StillBeat;
         public Phase State { get; private set; } = Phase.Dormant;
         public Transform mask, body, lantern;
         public Animation motion;
@@ -33,6 +39,14 @@ namespace HappyToy.V2
         AudioSource sound;
         AudioClip warning;
         EnemyAcoustics acoustics;
+        EncounterRevealAudio revealAudio;
+        bool riseCueIssued;
+        Vector3 originalMaskPosition, originalBodyScale, originalLanternScale;
+        Quaternion originalMaskRotation;
+        float originalFlameIntensity;
+        bool visualDefaultsCaptured, originalFlameEnabled;
+        bool IntroActive => IntroStarted && !IntroCompleted;
+        bool ReducedMotion => GameSession.Current && GameSession.Current.Shell && GameSession.Current.Shell.ReducedMotion;
 
         void Awake()
         {
@@ -53,8 +67,27 @@ namespace HappyToy.V2
                     .08f * Mathf.Sin(2 * Mathf.PI * 570 * t));
             }
             warning = AudioClip.Create("Lantern warning rattle", data.Length, 1, rate, false); warning.SetData(data, 0);
+            revealAudio = EncounterRevealAudio.Ensure(transform);
+            CaptureVisualDefaults();
         }
-        void Start() { SetVisible(false); }
+        void Start() { CaptureVisualDefaults(); SetVisible(false); }
+        void CaptureVisualDefaults()
+        {
+            if (visualDefaultsCaptured || (!mask && !body && !lantern && !flameLight)) return;
+            visualDefaultsCaptured = true;
+            if (mask) { originalMaskPosition = mask.localPosition; originalMaskRotation = mask.localRotation; }
+            if (body) originalBodyScale = body.localScale;
+            if (lantern) originalLanternScale = lantern.localScale;
+            if (flameLight) { originalFlameIntensity = flameLight.intensity; originalFlameEnabled = flameLight.enabled; }
+        }
+        void RestoreVisualDefaults()
+        {
+            if (!visualDefaultsCaptured) return;
+            if (mask) { mask.localPosition = originalMaskPosition; mask.localRotation = originalMaskRotation; }
+            if (body) body.localScale = originalBodyScale;
+            if (lantern) lantern.localScale = originalLanternScale;
+            if (flameLight) { flameLight.intensity = originalFlameIntensity; flameLight.enabled = originalFlameEnabled; }
+        }
         void OnEnable()
         {
             floorY = transform.position.y; repath = 0; recognitionCueIssued = false; awareness.Reset();
@@ -73,7 +106,7 @@ namespace HappyToy.V2
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.Finished || session.StoryStep >= 4 ||
                 !noisePlayer || noisePlayer != session.player || noisePlayer.Hidden ||
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
-                attack.Active || !StealthRules.Finite(radius) || radius <= 0 || !StealthRules.Finite(point.x) ||
+                IntroActive || attack.Active || !StealthRules.Finite(radius) || radius <= 0 || !StealthRules.Finite(point.x) ||
                 !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z) ||
                 Vector3.Distance(point, transform.position) > radius ||
                 !EnemyNavigation.TryRoute(agent, point, floorY, path, radius)) return;
@@ -83,9 +116,9 @@ namespace HappyToy.V2
         }
         void SetVisible(bool show)
         {
-            if (mask) mask.gameObject.SetActive(show);
+            if (mask) mask.gameObject.SetActive(show && (IntroCompleted || IntroStarted && IntroElapsed >= .65f));
             if (lantern) lantern.gameObject.SetActive(show && !Transformed);
-            if (body) body.gameObject.SetActive(show && TransformProgress > 0);
+            if (body) body.gameObject.SetActive(show && transformTime > .85f);
             if (flameLight) flameLight.enabled = show;
         }
         void Stop() { EnemyNavigation.Stop(agent); }
@@ -106,16 +139,49 @@ namespace HappyToy.V2
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.Finished || session.StoryStep >= 4 ||
                 !EnemyNavigation.Ready(agent) ||
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
-                attack.Active || !StealthRules.Finite(duration) || duration <= 0 ||
+                IntroActive || attack.Active || !StealthRules.Finite(duration) || duration <= 0 ||
                 !StealthRules.Finite(point.x) || !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z) ||
                 Vector3.Distance(point, transform.position) > 28 || awareness.Acquired ||
                 !EnemyNavigation.TryRoute(agent, point, floorY, path, 38)) return false;
             State = Phase.Investigate; target = point; memory = duration; repath = 0; return true;
         }
+        bool FirstSight(PlayerMotor player)
+        {
+            if (!player || player.Hidden || !player.eyes || !player.eyes.isActiveAndEnabled || !mask ||
+                !EnemyNavigation.SameFloor(player.transform.position, floorY) ||
+                Vector3.Distance(player.transform.position, transform.position) > 12) return false;
+            var camera = player.eyes;
+            var viewport = camera.WorldToViewportPoint(mask.position);
+            return viewport.z > 0 && viewport.x >= 0 && viewport.x <= 1 && viewport.y >= 0 && viewport.y <= 1 &&
+                EnemyNavigation.ClearSight(camera.transform.position, mask.position, player);
+        }
+        void BeginIntro()
+        {
+            IntroStarted = true; IntroElapsed = 0; age = 0; riseCueIssued = false;
+            awareness.Reset(); attack.Reset(); recognitionCueIssued = false; repath = 0;
+            EnemyNavigation.Stop(agent, true);
+            revealAudio.Play(EncounterRevealAudio.Cue.LanternTicks, lantern ? lantern.position : transform.position,
+                "초록 등불 안에서 작은 금속 소리가 이어집니다.");
+        }
+        void AdvanceIntro()
+        {
+            EnemyNavigation.Stop(agent, true); awareness.Reset(); attack.Reset(); repath = 0;
+            IntroElapsed = Mathf.Min(2.2f, IntroElapsed + Time.deltaTime);
+            if (!riseCueIssued && IntroElapsed >= .65f)
+            {
+                riseCueIssued = true;
+                revealAudio.Play(EncounterRevealAudio.Cue.LanternRise, transform.position + Vector3.up * 1.1f,
+                    "등불 위로 녹색 가면이 떠오릅니다.");
+            }
+            if (IntroElapsed >= 2.2f) { IntroCompleted = true; age = 0; }
+            SetVisible(true); Visual();
+        }
         void Resolve()
         {
             State = Phase.Resolved; awareness.Reset(); attack.Reset(); EnemyNavigation.Stop(agent, true); SetVisible(false);
+            RestoreVisualDefaults();
             if (sound) sound.Stop();
+            if (revealAudio) revealAudio.Stop();
         }
         void Update()
         {
@@ -123,7 +189,14 @@ namespace HappyToy.V2
             BindFootsteps(session ? session.player : null);
             if (!session) return;
             if (session.Finished || session.StoryStep >= 4) { Resolve(); return; }
-            if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { Stop(); repath = 0; return; }
+            if (ReducedMotion && flameLight) flameLight.intensity = 1.2f + attack.Windup * .7f;
+            if (!session.InputAllowed || !EnemyNavigation.Ready(agent))
+            {
+                Stop(); repath = 0;
+                // The steady-light comfort refresh above is safe while paused. Do
+                // not reset mask attachment or resample a frozen locomotion pose.
+                return;
+            }
             if (State == Phase.Resolved) return;
             if (State == Phase.Dormant)
             {
@@ -134,6 +207,16 @@ namespace HappyToy.V2
             age += Time.deltaTime;
             var player = session.player;
             if (!player) { Stop(); return; }
+            if (!IntroStarted)
+            {
+                // The lamp can still patrol/investigate unseen. Its mask stays at a
+                // stable hidden anchor so a genuine camera/geometry check gates the reveal.
+                Visual();
+                if (FirstSight(player)) BeginIntro();
+            }
+            // Once seen, the harmless sequence ends on its own scaled-time clock.
+            // Looking away, hiding or leaving the floor never traps either actor.
+            if (IntroActive) { AdvanceIntro(); return; }
             if (State == Phase.Transforming)
             {
                 Stop(); transformTime = Mathf.Min(5, transformTime + Time.deltaTime);
@@ -150,7 +233,7 @@ namespace HappyToy.V2
                 Visual(); return;
             }
             if (State != Phase.Chase) recognitionCueIssued = false;
-            bool sees = Sees(player);
+            bool sees = IntroCompleted && Sees(player);
             float distance = Vector3.Distance(player.transform.position, transform.position);
             float strikeRange = Transformed ? .85f : .95f;
             if (attack.Active)
@@ -165,6 +248,8 @@ namespace HappyToy.V2
                     }
                     target = player.transform.position;
                     player.ApplyCurse(10); CursesApplied++; State = Phase.Transforming; transformTime = 0; attack.Reset();
+                    revealAudio.Play(EncounterRevealAudio.Cue.WraithGrowth, transform.position + Vector3.up,
+                        "등불이 오그라들고 긴 몸이 자라납니다.");
                     session.Notify("가면의 저주 · 10초간 속도 50%. 몸이 자라기 전에 다른 복도로 피하세요.");
                     session.WarnThreat("저주에 걸렸습니다 · 가면이 자라는 5초 동안 출구로 이동하세요.", 4);
                 }
@@ -235,22 +320,53 @@ namespace HappyToy.V2
         void Visual()
         {
             float progress = TransformProgress;
-            var session = GameSession.Current;
-            bool reducedMotion = session && session.Shell && session.Shell.ReducedMotion;
+            bool reducedMotion = ReducedMotion;
+            if (!IntroCompleted)
+            {
+                float rise = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.65f, 1.5f, IntroElapsed));
+                if (mask)
+                {
+                    mask.gameObject.SetActive(IntroStarted && IntroElapsed >= .65f);
+                    mask.localPosition = new Vector3(0, IntroStarted ? Mathf.Lerp(.78f, 1.25f, rise) : 1.25f, 0);
+                    mask.localRotation = Quaternion.Euler(IntroStarted ? Mathf.Lerp(-14, 0, rise) : 0, 0, 0);
+                }
+                if (body) body.gameObject.SetActive(false);
+                if (lantern) { lantern.gameObject.SetActive(true); lantern.localScale = Vector3.one; }
+                if (flameLight)
+                {
+                    // Comfort mode has a completely steady lamp, including the first beat.
+                    float lightBeat = IntroActive && IntroElapsed < .65f ?
+                        .10f * Mathf.Sin(Mathf.PI * IntroElapsed / .65f) : 0;
+                    flameLight.intensity = 1.2f + (reducedMotion ? 0 : lightBeat);
+                }
+                return;
+            }
+            // Five real seconds, with readable silhouettes rather than a uniform scale:
+            // contracting lantern, narrow rising body, late shoulders, then mask attachment.
+            float contraction = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(0, .9f, transformTime));
+            float height = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.85f, 3.45f, transformTime));
+            float shoulders = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(3.0f, 4.5f, transformTime));
+            float maskRise = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.85f, 3.9f, transformTime));
+            float settle = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(4.15f, 5, transformTime));
             if (mask)
             {
-                mask.localPosition = new Vector3(0, 1.25f + progress * .82f + (reducedMotion ? 0 : .2f * (1 - progress) * Mathf.Sin(age * 2.3f)), 0);
-                mask.localRotation = Quaternion.Euler(-18 * attack.Windup, 0, progress * (-16 + (reducedMotion ? 0 : Mathf.Sin(age * 31) * 2.5f)));
+                float bob = transformTime <= 0 && !reducedMotion ? .2f * Mathf.Sin(age * 2.3f) : 0;
+                mask.localPosition = new Vector3(0, 1.25f + maskRise * .82f + bob, 0);
+                mask.localRotation = Quaternion.Euler(-18 * attack.Windup, 0,
+                    settle * (-16 + (reducedMotion || !Transformed ? 0 : Mathf.Sin(age * 31) * 2.5f)));
             }
             if (body)
             {
-                body.gameObject.SetActive(progress > 0);
-                body.localScale = new Vector3(.3f + .7f * progress, Mathf.Max(.001f, progress), .45f + .55f * progress);
+                body.gameObject.SetActive(transformTime > .85f);
+                body.localScale = new Vector3(.22f + .78f * shoulders, Mathf.Max(.001f, height), .32f + .68f * shoulders);
             }
             if (lantern)
-            { lantern.gameObject.SetActive(progress < 1); lantern.localScale = Vector3.one * Mathf.Max(.001f, 1 - progress); }
+            {
+                lantern.gameObject.SetActive(progress < 1);
+                lantern.localScale = Vector3.one * Mathf.Max(.001f, 1 - contraction);
+            }
             if (flameLight) flameLight.intensity = 1.2f + (reducedMotion ? 0 : Mathf.Sin(age * 9) * .18f) + attack.Windup * .7f;
-            if (motion && progress > 0)
+            if (motion && body && body.gameObject.activeInHierarchy && progress > 0)
             {
                 bool moving = EnemyNavigation.Ready(agent) && !agent.isStopped && agent.velocity.sqrMagnitude > .01f;
                 var clip = motion["run"];
@@ -270,12 +386,15 @@ namespace HappyToy.V2
             if (!skin) return;
             var bounds = skin.bounds;
             var attached = new Vector3(bounds.center.x, bounds.max.y + .15f, bounds.center.z) + transform.forward * .03f;
-            mask.position = Vector3.Lerp(mask.position, attached, TransformProgress);
+            mask.position = Vector3.Lerp(mask.position, attached,
+                Mathf.SmoothStep(0, 1, Mathf.InverseLerp(4.15f, 5, transformTime)));
         }
         void OnDisable()
         {
             BindFootsteps(null); awareness.Reset(); attack.Reset(); EnemyNavigation.Stop(agent, true);
-            if (sound) sound.Stop(); SetVisible(false);
+            if (sound) sound.Stop();
+            if (revealAudio) revealAudio.Stop();
+            SetVisible(false); RestoreVisualDefaults();
         }
         void OnDestroy() { BindFootsteps(null); if (warning) Destroy(warning); }
     }

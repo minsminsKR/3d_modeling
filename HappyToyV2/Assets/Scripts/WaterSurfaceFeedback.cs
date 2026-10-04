@@ -54,6 +54,13 @@ namespace HappyToy.V2
             for (int i = 0; i < active.Count; i++) if (active[i] && active[i].ContainsFoot(position)) return true;
             return false;
         }
+        // Authored visible contact events share the real water surface and comfort
+        // gate; this neither invents footstep noise nor changes enemy perception.
+        public static void ReportEventContact(Vector3 position, float strength)
+        {
+            for (int i = 0; i < active.Count; i++)
+                if (active[i]) active[i].OnFootstep(position, true, strength);
+        }
         void OnFootstep(Vector3 position, bool wet, float strength)
         {
             if (!wet || !session || !session.InputAllowed || !ContainsFoot(position)) return;

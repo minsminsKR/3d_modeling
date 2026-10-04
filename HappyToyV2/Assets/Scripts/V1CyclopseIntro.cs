@@ -29,6 +29,9 @@ namespace HappyToy.V2
         public float EmergenceDistance { get; private set; }
         public float EmergenceElapsed { get; private set; }
         public bool StagingWasOccluded { get; private set; }
+        public int BreathCues { get; private set; }
+        public float AnticipationElapsed { get; private set; }
+        EncounterRevealAudio anticipation;
         AudioClip roar;
         AudioSource voice;
         GameObject voiceEmitter;
@@ -171,6 +174,20 @@ namespace HappyToy.V2
             { ReleaseBlocked("Staged agent did not bind to NavMesh"); yield break; }
             previousSpeed = agent.speed; previousStoppingDistance = agent.stoppingDistance; settingsOwned = true;
             agent.speed = EmergenceSpeed; agent.stoppingDistance = .08f;
+            EnemyNavigation.Stop(agent, true);
+            Phase = "anticipation";
+            anticipation = EncounterRevealAudio.Ensure(transform);
+            anticipation.Play(EncounterRevealAudio.Cue.CyclopseBreath, brain.transform.position + Vector3.up * 1.1f,
+                "[모퉁이 뒤 · 거친 숨과 옷 스침]"); BreathCues++;
+            while (AnticipationElapsed < 1.05f)
+            {
+                if (!SessionValid || !brain.gameObject.activeInHierarchy) { Cancel(); yield break; }
+                if (!EnemyNavigation.Ready(agent)) { ReleaseBlocked("Anticipation agent lost NavMesh"); yield break; }
+                EnemyNavigation.Stop(agent, true);
+                if (session.InputAllowed) AnticipationElapsed += Time.deltaTime;
+                yield return null;
+            }
+            anticipation.Stop();
             Phase = "emerge";
             foreach (var destination in new[] { SelectedCornerPosition, SelectedRevealPosition })
             {
@@ -261,7 +278,7 @@ namespace HappyToy.V2
         }
         void ReleaseBlocked(string reason)
         {
-            FailureReason = reason; ReleaseVoice();
+            FailureReason = reason; ReleaseVoice(); if (anticipation) anticipation.Stop();
             if (!SessionValid || !actor.gameObject.activeInHierarchy) { Cancel(); return; }
             // A newly blocked door/agent must not cause a visible teleport or a
             // false arrival/roar. Let ordinary AI recover from this exact position.
@@ -273,7 +290,7 @@ namespace HappyToy.V2
         public void Cancel()
         {
             Phase = "resolved";
-            ReleaseVoice();
+            ReleaseVoice(); if (anticipation) anticipation.Stop();
             EnemyNavigation.Stop(agent, true); RestoreAgentSettings();
             if (actor) { actor.enabled = false; actor.gameObject.SetActive(false); }
         }

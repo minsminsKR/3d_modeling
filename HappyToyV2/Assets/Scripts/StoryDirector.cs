@@ -15,14 +15,19 @@ namespace HappyToy.V2
         bool wakeTriggered;
         GameSession session;
         bool[] originalLightStates;
+        float[] originalLightIntensities;
         public bool RestorationChairCompleted { get; private set; }
         public int RestorationChairCues { get; private set; }
         void Start()
         {
             session = GameSession.Current;
             originalLightStates = new bool[corridorLights.Length];
+            originalLightIntensities = new float[corridorLights.Length];
             for (int i = 0; i < corridorLights.Length; i++)
+            {
                 originalLightStates[i] = corridorLights[i] && corridorLights[i].enabled;
+                originalLightIntensities[i] = corridorLights[i] ? corridorLights[i].intensity : 0;
+            }
             stalker.gameObject.SetActive(false);
             source=gameObject.AddComponent<AudioSource>();source.spatialBlend=1;source.minDistance=2;source.maxDistance=22;
             // Original synthesized cracked-school-bell cue; no borrowed soundtrack.
@@ -85,8 +90,13 @@ namespace HappyToy.V2
             if(intro)intro.Cancel();
             if (wakeRoutine == null) return;
             StopCoroutine(wakeRoutine); wakeRoutine = null;
-            for (int i = 0; i < corridorLights.Length; i++)
-                if (corridorLights[i]) corridorLights[i].enabled = originalLightStates[i];
+            RestoreWakeLights();
+        }
+        void RestoreWakeLights()
+        {
+            if (originalLightStates == null) return;
+            for (int i = 0; i < corridorLights.Length; i++) if (corridorLights[i])
+            { corridorLights[i].enabled = originalLightStates[i]; corridorLights[i].intensity = originalLightIntensities[i]; }
         }
         void OnDisable() { CancelWake(); if(source)source.Stop(); }
         IEnumerator RestoreChair()
@@ -111,12 +121,22 @@ namespace HappyToy.V2
         }
         IEnumerator Wake()
         {
-            for(int i=0;i<6;i++)
+            // A single shallow voltage sag anticipates the corner reveal. No
+            // repeated blackout; settings can restore steady light even while paused.
+            for (float elapsed = 0; elapsed < 1.08f || (session && !session.InputAllowed);)
             {
-                bool soften = session && session.Shell && session.Shell.ReducedMotion;
-                foreach(var light in corridorLights)if(light)light.enabled=soften||i%2==1;
-                yield return new WaitForSeconds(.18f);
+                if (!session || session.Finished || session.StoryStep >= 4) { CancelWake(); yield break; }
+                bool soften = session.Shell && session.Shell.ReducedMotion;
+                for (int i = 0; i < corridorLights.Length; i++) if (corridorLights[i])
+                {
+                    corridorLights[i].enabled = originalLightStates[i];
+                    corridorLights[i].intensity = originalLightIntensities[i] *
+                        (soften ? 1 : 1 - .35f * Mathf.Sin(Mathf.PI * Mathf.Clamp01(elapsed / 1.08f)));
+                }
+                if (session.InputAllowed) elapsed += Time.deltaTime;
+                yield return null;
             }
+            RestoreWakeLights();
             // Telegraph the threat; never spawn it right on the player.
             yield return new WaitForSeconds(2);
             if(!session||session.Finished||session.StoryStep>=4){CancelWake();yield break;}

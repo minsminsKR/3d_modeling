@@ -23,7 +23,7 @@ namespace HappyToy.V2
             var session=GameSession.Current;player=session.player;angel=FindFirstObjectByType<WeepingAngelEncounter>();
             session.Shell.Begin();yield return null;session.Collect("register");
             player.enabled=false;Place(new Vector3(39.4f,.03f,2),0);player.flashlight.enabled=true;
-            yield return new WaitForSeconds(2.6f);
+            yield return new WaitForSeconds(3.1f);
             checks["introReleased"]=angel.Triggered&&angel.Released;
             var start=angel.transform.position;yield return new WaitForSeconds(1);
             checks["gazeFreezes"]=angel.Observed&&Vector3.Distance(start,angel.transform.position)<.02f;
