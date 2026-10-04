@@ -1,0 +1,433 @@
+{
+  "build": 8,
+  "source": "923060837b0cb8585d16d9bfffb961434a850504",
+  "scope": "Actual21-test engine gate and exported Windows candidate. Not commercial release acceptance, manual difficulty, device listening or target-hardware performance.",
+  "transport": {
+    "scope": "Hash-verified real-engine output transport; not manual, hardware-performance or device-listening certification",
+    "build": 8,
+    "commit": "923060837b0cb8585d16d9bfffb961434a850504",
+    "provenanceNote": "Build and commit supplied from independently inspected UBA checkout; envelope alone does not prove the revision",
+    "input": "build-8-playmode.xml",
+    "inputSha256": "605ee8400d42438b3350b260381df665e9a1d75ad327f27b4805fd6c7622fa6c",
+    "artifacts": [
+      {
+        "filename": "title-720p.png",
+        "bytes": 95138,
+        "sha256": "6051bbf91931bb6a2c9dbc50cfb995a6e4bdefa6036f07ba23e180a77ab2db78"
+      },
+      {
+        "filename": "settings-large-1280x720.png",
+        "bytes": 86864,
+        "sha256": "ebe99171a73c55a9ef2e73045c98cc5420d4091f5dc013b4c58ea72cbe515ce9"
+      },
+      {
+        "filename": "settings-large-1024x768.png",
+        "bytes": 69532,
+        "sha256": "f2687b008ea7bfda269009c684e3ed809ad4f8acf96b32aa878d9f963db24a70"
+      },
+      {
+        "filename": "settings-large-2560x1080.png",
+        "bytes": 156845,
+        "sha256": "fcf94ffe4143bceac13859e8f6b2c3dadc0934d9eb0698f2873bf1fe28d7e29f"
+      },
+      {
+        "filename": "title-large-720p.png",
+        "bytes": 104804,
+        "sha256": "a3914aed6a497b607ce1df44e95c506b6e931f01411783fb52c5043b0e62dc81"
+      },
+      {
+        "filename": "pause-large-4x3.png",
+        "bytes": 78441,
+        "sha256": "67dacfe2f4a0adbd763f91c874f9441e55fb4c14453f736cc83a389d603ead30"
+      },
+      {
+        "filename": "hud-large-720p.png",
+        "bytes": 53373,
+        "sha256": "20696879aeaaafe900c4e19f0dea5057335974738927e81dacd88e252bf00bdb"
+      },
+      {
+        "filename": "journal-1080p.png",
+        "bytes": 134330,
+        "sha256": "06fe6c4deea3e8f2903775a4a5baef0314203c0aece9d612d0d3ed55e5c7fc4b"
+      },
+      {
+        "filename": "authored-start-camera.png",
+        "bytes": 650870,
+        "sha256": "32902c8a8458968ff5f29f742409b0081b7be530f58a596089fa152f804d40b4"
+      },
+      {
+        "filename": "diagnostic-listener-before-render.json",
+        "bytes": 14230,
+        "sha256": "623c5ee2a35fc880d445d29cb3740aa6eec86bf56468d7a7ab81768b4f44fa24"
+      },
+      {
+        "filename": "diagnostic-listener-before-render.wav",
+        "bytes": 192044,
+        "sha256": "4c43c3f9889809b810a69230ca2090f0508e4fc27f7087b782d27718d42a56c6"
+      },
+      {
+        "filename": "listener-flashlight-ambience.wav",
+        "bytes": 192044,
+        "sha256": "f3ca42a8e6774bb787ca88a690a66f7650622857bb273319c639d17305e8944b"
+      },
+      {
+        "filename": "listener-paused.wav",
+        "bytes": 48044,
+        "sha256": "c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b"
+      }
+    ],
+    "metrics": [
+      "HAPPYTOY_RENDER_METRICS device=Microsoft Basic Render Driver; api=Direct3D12; cpu=INTEL(R) XEON(R) PLATINUM 8573C; resolution=960x540; offscreenRenderAndFullReadbackMs=704.954,160.894,169.685,173.174,168.922,185.884; firstSampleIncludesWarmup=true; presentedFps=false; targetHardwareCertification=false; managedBytes=42053632",
+      "HAPPYTOY_AUDIO_METRICS capture=UnityAudioRendererMainOutput; rate=48000; channels=2; fixedCaptureRate=60; activeSamples=96000; peak=0.036346435546875; rms=0.00190503257005811; clippedSamples=0; pausePeak=0; deviceListeningCertification=false"
+    ]
+  },
+  "survival": {
+    "passed": true,
+    "stage": "exit",
+    "destination": "(-7.32, 0.03, 0.59)",
+    "diagnostic": "stage=exit, destination=(-7.32, 0.03, 0.59), game=79.41, wall=79.42, records=7, defeat=, hint=문을 닫아 시선을 끊고, 숨을 회복한 뒤 이동하세요., stamina=0.99, hidden=False, focus=none, collision=Below, dynamicUpdates=9513, CPress=False, WHeld=True, inputAllowed=False, crouching=False, eyeY=1.608786, grounded=True, speed=0, position=(-7.19, 0.08, 0.63), footsteps=169, nursery=True/True, upper=resolved, uncat=True/True, lantern=Resolved, mannequin=False; V1 Cyclopse active=False state=Patrol at=(24.46, 0.03, 6.42) attacks=1 awareness=0.00; V1 Hwacat_angry active=False state=Patrol at=(29.80, 5.03, 32.40) attacks=0 awareness=0.00; V1 Baby — nursery encounter active=False state=Patrol at=(13.91, -4.97, -26.68) attacks=0 awareness=0.00; V1 Uncat — archive emergence active=False state=Patrol at=(13.88, 0.03, -2.73) attacks=0 awareness=0.00",
+    "milestones": [
+      "0.05s Started at the authored spawn with every encounter enabled at (-7.80, 0.08, 0.00)",
+      "2.05s CLASSROOM opened by E at (-4.63, 0.08, 0.00)",
+      "2.77s WASHROOM opened by E at (-4.63, 0.08, 0.00)",
+      "5.85s Recovered register at (-5.44, 0.08, 7.42)",
+      "8.88s Flashlight off through F at (-4.51, 0.08, 0.16)",
+      "9.91s Recovered ribbon at (-3.60, 0.08, -2.19)",
+      "26.42s upper ascent physically completed at (29.80, 5.08, 21.85)",
+      "30.46s Recovered record at (30.98, 5.08, 32.14)",
+      "37.52s upper descent physically completed at (29.80, 0.08, 10.17)",
+      "39.11s Recovered music-roster at (24.66, 0.08, 11.77)",
+      "40.14s Entered music cabinet through E at (20.20, 0.00, 13.85)",
+      "40.68s Left music cabinet through E at (20.20, 0.00, 12.75)",
+      "49.30s archive diversion thrown through Q at (20.83, 0.08, -12.79)",
+      "49.34s Recovered archive-record at (20.83, 0.08, -12.79)",
+      "57.03s basement descent physically completed at (13.80, -4.92, -21.82)",
+      "57.08s nursery diversion thrown through Q at (13.80, -4.92, -21.82)",
+      "57.73s Nursery warning triggered by actual entry at (14.93, -4.92, -23.87)",
+      "59.13s Recovered nursery-tag at (18.40, -4.92, -26.92)",
+      "64.34s basement ascent physically completed at (13.80, 0.08, -10.15)",
+      "75.05s Recovered restore at (-2.98, 0.08, 7.64)",
+      "79.41s Escaped with all seven records through real input at (-7.19, 0.08, 0.63)"
+    ],
+    "gameSeconds": 79.40719604492188,
+    "wallSeconds": 79.42124938964844,
+    "physicalMeters": 237.5416717529297,
+    "minY": -4.9200005531311035,
+    "maxY": 5.080000400543213,
+    "records": 7,
+    "movementUpdates": 3944,
+    "groundedFrames": 9145,
+    "stairLegs": 4,
+    "hidingEntries": 1,
+    "firecrackersThrown": 2,
+    "maximumLiveStalkers": 4
+  },
+  "wave_pcm_validation": [
+    {
+      "filename": "diagnostic-listener-before-render.wav",
+      "rate": 48000,
+      "channels": 2,
+      "sampleWidthBytes": 2,
+      "frames": 48000,
+      "compression": "NONE",
+      "bytes": 192044,
+      "sha256": "4c43c3f9889809b810a69230ca2090f0508e4fc27f7087b782d27718d42a56c6",
+      "durationSeconds": 1.0,
+      "interleavedSamples": 96000,
+      "nonzeroSamples": 48114,
+      "peak": 0.013733329264198737,
+      "rms": 0.0010424018425675657,
+      "minimum": -426,
+      "maximum": 450
+    },
+    {
+      "filename": "listener-flashlight-ambience.wav",
+      "rate": 48000,
+      "channels": 2,
+      "sampleWidthBytes": 2,
+      "frames": 48000,
+      "compression": "NONE",
+      "bytes": 192044,
+      "sha256": "f3ca42a8e6774bb787ca88a690a66f7650622857bb273319c639d17305e8944b",
+      "durationSeconds": 1.0,
+      "interleavedSamples": 96000,
+      "nonzeroSamples": 42765,
+      "peak": 0.03631702627643666,
+      "rms": 0.001899052453539955,
+      "minimum": -1190,
+      "maximum": 1190
+    },
+    {
+      "filename": "listener-paused.wav",
+      "rate": 48000,
+      "channels": 2,
+      "sampleWidthBytes": 2,
+      "frames": 12000,
+      "compression": "NONE",
+      "bytes": 48044,
+      "sha256": "c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b",
+      "durationSeconds": 0.25,
+      "interleavedSamples": 24000,
+      "nonzeroSamples": 0,
+      "peak": 0.0,
+      "rms": 0.0,
+      "minimum": 0,
+      "maximum": 0
+    }
+  ],
+  "audio_renderer_phases": [
+    {
+      "targetSamples": 96000,
+      "actualSamples": 96000,
+      "polls": 61,
+      "maxReported": 1024,
+      "renderCalls": 61,
+      "emptyRenderCalls": 14,
+      "emptyRenderTrue": 14,
+      "emptyRenderFalse": 0,
+      "maxEmptyRenderCalls": 1024,
+      "positiveRenderCalls": 47,
+      "wallSeconds": 0.5045936,
+      "dspStart": 160.17066666666668,
+      "dspEnd": 161.17333333333335,
+      "dspDelta": 1.00266666666667,
+      "listenerPause": false,
+      "timeScale": 1.0
+    },
+    {
+      "targetSamples": 19200,
+      "actualSamples": 19200,
+      "polls": 12,
+      "maxReported": 1024,
+      "renderCalls": 12,
+      "emptyRenderCalls": 2,
+      "emptyRenderTrue": 2,
+      "emptyRenderFalse": 0,
+      "maxEmptyRenderCalls": 1024,
+      "positiveRenderCalls": 10,
+      "wallSeconds": 0.09543059999999999,
+      "dspStart": 161.17333333333335,
+      "dspEnd": 161.17333333333335,
+      "dspDelta": 0.0,
+      "listenerPause": true,
+      "timeScale": 0.0
+    },
+    {
+      "targetSamples": 24000,
+      "actualSamples": 24000,
+      "polls": 16,
+      "maxReported": 1024,
+      "renderCalls": 16,
+      "emptyRenderCalls": 4,
+      "emptyRenderTrue": 4,
+      "emptyRenderFalse": 0,
+      "maxEmptyRenderCalls": 1024,
+      "positiveRenderCalls": 12,
+      "wallSeconds": 0.1332509,
+      "dspStart": 161.17333333333335,
+      "dspEnd": 161.17333333333335,
+      "dspDelta": 0.0,
+      "listenerPause": true,
+      "timeScale": 0.0
+    }
+  ],
+  "empty_render_events": [
+    {
+      "attempt": 1,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.17066666666668,
+      "dspAfter": 160.17066666666668,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 2,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.23466666666667,
+      "dspAfter": 160.23466666666667,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 3,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.32,
+      "dspAfter": 160.32,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 4,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.384,
+      "dspAfter": 160.384,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 5,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.46933333333334,
+      "dspAfter": 160.46933333333334,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 6,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.53333333333333,
+      "dspAfter": 160.53333333333333,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 7,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.61866666666666,
+      "dspAfter": 160.61866666666666,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 8,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.704,
+      "dspAfter": 160.704,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 9,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.768,
+      "dspAfter": 160.768,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 10,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.85333333333332,
+      "dspAfter": 160.85333333333332,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 11,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 160.91733333333335,
+      "dspAfter": 160.91733333333335,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 12,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 161.00266666666667,
+      "dspAfter": 161.00266666666667,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 13,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 161.06666666666666,
+      "dspAfter": 161.06666666666666,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 14,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 161.152,
+      "dspAfter": 161.152,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 1,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 161.17333333333335,
+      "dspAfter": 161.17333333333335,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 2,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 161.17333333333335,
+      "dspAfter": 161.17333333333335,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 1,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 161.17333333333335,
+      "dspAfter": 161.17333333333335,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 2,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 161.17333333333335,
+      "dspAfter": 161.17333333333335,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 3,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 161.17333333333335,
+      "dspAfter": 161.17333333333335,
+      "dspDelta": 0.0
+    },
+    {
+      "attempt": 4,
+      "countBefore": 0,
+      "countAfter": 1024,
+      "returned": true,
+      "dspBefore": 161.17333333333335,
+      "dspAfter": 161.17333333333335,
+      "dspDelta": 0.0
+    }
+  ],
+  "float_audio_metrics": "HAPPYTOY_AUDIO_METRICS capture=UnityAudioRendererMainOutput; rate=48000; channels=2; fixedCaptureRate=60; activeSamples=96000; peak=0.036346435546875; rms=0.00190503257005811; clippedSamples=0; pausePeak=0; deviceListeningCertification=false",
+  "visual_review": {
+    "png_count": 9,
+    "all_png_bytes_identical_to_reviewed_build7": true,
+    "no_new_visual_claim": "Same starting camera and listed menu states, not continuous pursuit animation footage."
+  },
+  "audio_interpretation": {
+    "verified": "Empty renders supply0samples and were bounded.14empty calls each opened1024available frames;47positive renders yielded96000real values. Paused capture yielded24000real zero values after flush. All original strict gates passed.",
+    "inference": "Together with #7 baseline/dsp evidence this strongly supports capture-cycle starvation from the previous count0 early-continue. This is harness compatibility, not an absence of game mixing.",
+    "limits": [
+      "Offline fixed-clock mix, not real-time scheduling or hardware output",
+      "Combined ambience and F input; no isolated flashlight audibility claim",
+      "Footstep/firecracker mixed audibility and spatial attenuation not yet directly measured",
+      "No long-session or subjective mix approval"
+    ]
+  },
+  "prior_editmode_issue": "#8 has6actual passed EditMode results; #7 early shutdown remains unexplained and is not retroactively relabeled passed."
+}

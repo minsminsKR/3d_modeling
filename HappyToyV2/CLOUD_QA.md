@@ -1,6 +1,23 @@
 # Unity Build Automation: real scene tests
 
-## Latest engine result: #7 pursuit cases passed, audio gate failed; EditMode unverified
+## Latest engine result: build #8 SUCCESS, all21actual tests passed
+
+Pinned source **`923060837b0cb8585d16d9bfffb961434a850504`**, Unity6000.6.0f1 / Windows Micro. Both original NUnit artifacts were independently parsed: **6/6EditMode +15/15PlayMode,0failures,0skips,0inconclusive**. The final log ends **SUCCESS** and the Windows player export completed. This run closes the prior missing EditMode result and strict AudioRenderer capture gate; #7's early process exit remains unexplained historical evidence, not a retroactive pass.
+
+Verified:
+- All five new pursuit/hiding/item cases pass again, with local evidence-only search, bounded unreachable-route handling, witnessed versus unseen cabinet entry, repeated-entry vulnerability, finite real-Q firecracker behavior and lantern own-floor investigation
+- The real-input, all-encounters-enabled seven-record route survives in **79.407seconds /237.542meters**, four stair legs, one cabinet and two firecrackers, with original actor speeds intact. This remains one map-aware automated strategy
+- The original strict audio gate passes. **14empty Render calls add zero samples** and each opens1024available frames; **47positive renders provide96,000actual samples**. Float peak0.0363464/RMS0.00190503,0clipping/nonfinite; after the pause flush,24,000real captured samples have peak0
+- Active and paused PCM files were independently validated: stereo48kHz/16bit, respectively1.0second with nonzero content and0.25second of zero samples. This is offline-clock engine-mix evidence, not subjective or hardware listening approval. Combined ambience+F input does not isolate flashlight audibility, footsteps/firecracker completeness or spatial attenuation
+- All nine PNGs are byte-identical to reviewed#7 images; no duplicate/new visual-quality claim is needed. The prior caption correction is included
+
+The missing call on zero-count frames was a capture-harness issue: official Recorder-style per-frame Render now advances the capture cycle. It is not merely one-time priming;14empty calls occurred throughout the active capture. All original completeness, positive-buffer Render, finite/nonzero/unclipped and pause assertions remained unchanged. Source CI37179959322 passed on the exact tested commit.
+
+Original Windows ZIP: **73,166,499bytes /186entries**, SHA256`fde361d88b69e4c2ee48bdbf5d71c631bcea9bf2bae2658ab4fb315d0be3b67f`. CRCs, required player/runtime/scene and absent UTF/NUnit test assemblies were checked. A separate verified candidate excludes only one228,583-byte Burst backup report, retaining all185other payloads unchanged; it is67,573,893bytes, SHA256`7b5eb902952c3328bbe3b536a10b4ca8246624042cc64fbba8f411e0fca2c8be`. Two packaging runs produced identical ZIPs. App development identity/instrumentation and asset-rights/runtime-smoke limitations remain; removing the backup is not a release-mode conversion.
+
+Exact records: `Verification/cloud-tests/build-8-results.json`, `build-8-experience.json`, `build-8-candidate.manifest.json` and `build-8-packaging.md`. The following final evidence/docs update changes no tested game code or test code; engine evidence stays pinned to9230608. **Commercial release remains blocked** by the separate criteria in `RELEASE_READINESS.md`.
+
+## Previous engine result: #7 pursuit cases passed, audio gate failed; EditMode unverified
 
 Pinned source `b4a454e6fcf30d4716972101fafa2350f2b0d0e7`, Unity6000.6.0f1 / Windows Micro. **PlayMode14/15 passed,1 failed,0 skipped/inconclusive. Six EditMode tests are unverified in this run**: that process shut down during its first assembly reload after9.667seconds, without an XML artifact or test-completion marker. No specific crash cause appears in the available log. The later PlayMode process compiled and ran the same source. This is **not20/21 passed**. Terminal build status is FAILURE; no player was exported.
 
@@ -29,7 +46,7 @@ The audio gate remains strict and unchanged. A new **diagnostic-only** listener 
 
 Source preflight is recorded under `Verification/cloud-tests/pursuit-preflight/`; these reports are external compilation/static/pure-C# checks, **not Unity execution**. Build#7 subsequently exercised all15PlayMode tests as above. The missing six EditMode results and strict audio failure still require a later pinned run.
 
-## Latest engine result: build #6 failed only on audio capture, 15/16 passed
+## Previous engine result: build #6 failed only on audio capture, 15/16 passed
 
 Pinned source `e3122fb0c83659100904e93d486f5d97093f721d`, Unity 6000.6.0f1 / Windows Micro: **6/6 EditMode + 9/10 PlayMode passed; 1 failed; 0 skipped/inconclusive**. The terminal log ends FAILURE and the unchanged strict gate prevented player export. Exact XML/log hashes and the remaining free allocation are in `Verification/cloud-tests/build-6-results.json`. Source CI [37174240095](https://github.com/minsminsKR/3d_modeling/actions/runs/37174240095) passed.
 

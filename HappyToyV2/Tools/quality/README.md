@@ -1,8 +1,8 @@
-# Current pursuit and audio evidence
+# Current verified milestone: build8
 
-The source defines **21 Unity tests (6 EditMode +15 PlayMode)**. Actual build#7 at `b4a454e` passed14/15PlayMode, including all five new pursuit fixtures and the real-input full route. AudioRenderer failed. The EditMode process ended before producing results, so its6tests are **unverified**, not old passes to add to the total. No new player export.
+Exact source923060837b0cb8585d16d9bfffb961434a850504 passed **all21Unity tests (6EditMode+15PlayMode,0failed/skipped/inconclusive)** and exported the Windows player. The five pursuit cases and real-input seven-record route passed. The existing strict AudioRenderer gate now records actual nonzero/unclipped active PCM and zero paused PCM using official-Recorder-style empty Render calls; empty buffers add no samples. This is offline engine mixing, not headset/speaker or complete sound-design acceptance.
 
-A hash-verified genuine one-second listener PCM diagnostic establishes ordinary game mixing before recording mode; it does not replace the failed renderer/pause/device gates. A subsequent official-Recorder-style zero-length Render pump is a targeted pending experiment with all strict assertions retained. See `CLOUD_QA.md` and `Verification/cloud-tests/build-7-{results,experience}.json` for exact scope. `pursuit-preflight/` remains source/API evidence tied to its own source manifest.
+Both XMLs, finalSUCCESS log,13artifact envelopes, originalZIP186CRCs and safe derivative185unchanged payloads were verified. Source, audio, route and packaging boundaries/hashes are in `CLOUD_QA.md` and `Verification/cloud-tests/build-8-*`. All9PNGs match reviewed#7. The safe derivative preserves development identity/instrumentation and does not clear asset rights or targetWindows smoke tests. No commercial release readiness is implied.
 
 # Build #6 experience and packaging tools
 

@@ -1,0 +1,1599 @@
+{
+  "caveats": [
+    "NOT RELEASE READY: target Windows runtime/visual/audio/survival smoke tests have not been run by this tool.",
+    "Licensing and redistribution clearance remain open; this tool does not grant or verify rights.",
+    "Repackaging never changes development-build flags, debug instrumentation, audit code, app identity, or compiled assets.",
+    "All non-excluded file payloads are preserved byte-for-byte, including referenced assemblies whose names contain Tests.",
+    "Presence, CRC, hashes and native PE x64 headers are structural evidence, not proof that the game runs correctly."
+  ],
+  "derivative": {
+    "all_entry_crc_and_payload_hashes_verified": true,
+    "bytes": 67573893,
+    "entries": 185,
+    "filename": "HappyToyV2-Windows64-build8-safe-candidate.zip",
+    "sha256": "7b5eb902952c3328bbe3b536a10b4ca8246624042cc64fbba8f411e0fca2c8be"
+  },
+  "excluded_file_count": 1,
+  "excluded_uncompressed_bytes": 228583,
+  "exclusion_policy": {
+    "burst-debug-directory": "Top-level *_BurstDebugInformation_DoNotShip tree",
+    "debug-symbol": "Files with .pdb, .mdb, or .dbg suffix (case-insensitive)",
+    "development-log-report": "Root Player.log, Player-prev.log, output_log.txt, BuildReport.json, or TestResults.xml",
+    "directory-entry": "Empty directory records; file parent directories remain implicit",
+    "unity-backup-directory": "Top-level *_BackUpThisFolder_ButDontShipItWithYourGame tree"
+  },
+  "files": [
+    {
+      "action": "retain",
+      "bytes": 4725304,
+      "crc32": "857c6a8c",
+      "path": "D3D12/D3D12Core.dll",
+      "reason": null,
+      "sha256": "625bd40005b1c3708695d5256ecf230d278e6b8edba5a88af70f3d91324f3052"
+    },
+    {
+      "action": "retain",
+      "bytes": 667136,
+      "crc32": "9262d166",
+      "path": "HappyToyV2.exe",
+      "reason": null,
+      "sha256": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d"
+    },
+    {
+      "action": "exclude",
+      "bytes": 228583,
+      "crc32": "37ec11dd",
+      "path": "HappyToyV2_BackUpThisFolder_ButDontShipItWithYourGame/x86_64/lib_burst_generated.txt",
+      "reason": "unity-backup-directory",
+      "sha256": "298ab9cf9c5408976b925d8389cc4c20702f1b75ab703c18471c1969ad0170c5"
+    },
+    {
+      "action": "retain",
+      "bytes": 246784,
+      "crc32": "ecd74895",
+      "path": "HappyToyV2_Data/Managed/Assembly-CSharp.dll",
+      "reason": null,
+      "sha256": "9bc94f3b6aeed0e5b8429c50a892bf67dea2acbb4156e6b472b72118e44d98fa"
+    },
+    {
+      "action": "retain",
+      "bytes": 241152,
+      "crc32": "ef9be700",
+      "path": "HappyToyV2_Data/Managed/Mono.Security.dll",
+      "reason": null,
+      "sha256": "a7128a85c5ce748cfcc64be97b7fab4119f4636c917a0303bfa2582f86282ed8"
+    },
+    {
+      "action": "retain",
+      "bytes": 691712,
+      "crc32": "8cef25d0",
+      "path": "HappyToyV2_Data/Managed/Newtonsoft.Json.dll",
+      "reason": null,
+      "sha256": "a56146202232958f46bd6a28b5a7da166aea123ee0d646735a46e5c341dfbf1f"
+    },
+    {
+      "action": "retain",
+      "bytes": 4608,
+      "crc32": "73e8774c",
+      "path": "HappyToyV2_Data/Managed/System.Buffers.dll",
+      "reason": null,
+      "sha256": "762f8fdbe975e05b76be5fe996c53ce7c75e4a2830f2f50b02a5948ef6ba0aeb"
+    },
+    {
+      "action": "retain",
+      "bytes": 252680,
+      "crc32": "3fdc7b35",
+      "path": "HappyToyV2_Data/Managed/System.Collections.Immutable.dll",
+      "reason": null,
+      "sha256": "5b1b1c83ba3d135c2fdfe425842fbe9c7432878b7e468623acb554c69b4c130f"
+    },
+    {
+      "action": "retain",
+      "bytes": 257024,
+      "crc32": "334dbb61",
+      "path": "HappyToyV2_Data/Managed/System.ComponentModel.Composition.dll",
+      "reason": null,
+      "sha256": "d949bd6214c26b38a190e66fe976038e3845aea6c6980d3eb58e78b75edf98a5"
+    },
+    {
+      "action": "retain",
+      "bytes": 124928,
+      "crc32": "fa7c1a48",
+      "path": "HappyToyV2_Data/Managed/System.Configuration.dll",
+      "reason": null,
+      "sha256": "7170a8fa3363a8ebd59e8b9931509f595df009f11e1885707a3c3bc0a3ff5648"
+    },
+    {
+      "action": "retain",
+      "bytes": 1113088,
+      "crc32": "01ef839e",
+      "path": "HappyToyV2_Data/Managed/System.Core.dll",
+      "reason": null,
+      "sha256": "15081eac9f71fd7817a7d42a963651c89c666a4c21499f2076fb3ab7aacd9b9a"
+    },
+    {
+      "action": "retain",
+      "bytes": 29696,
+      "crc32": "1620ce12",
+      "path": "HappyToyV2_Data/Managed/System.Data.DataSetExtensions.dll",
+      "reason": null,
+      "sha256": "da75ceebbef879968aaa721090df162e7a6fe1c7ba32f4bb5d05523385c53e8c"
+    },
+    {
+      "action": "retain",
+      "bytes": 2125312,
+      "crc32": "af277c40",
+      "path": "HappyToyV2_Data/Managed/System.Data.dll",
+      "reason": null,
+      "sha256": "557bd378caa400c4de52bd73225a948f1a1e41586c52e307aaa042f77b33d648"
+    },
+    {
+      "action": "retain",
+      "bytes": 489984,
+      "crc32": "c691a98e",
+      "path": "HappyToyV2_Data/Managed/System.Drawing.dll",
+      "reason": null,
+      "sha256": "1657e6eb247364cd232fc6c80df1ab6804732b6644639f18c80e48af1174fd63"
+    },
+    {
+      "action": "retain",
+      "bytes": 44544,
+      "crc32": "e5085e00",
+      "path": "HappyToyV2_Data/Managed/System.EnterpriseServices.dll",
+      "reason": null,
+      "sha256": "7fcc7078f244ab3a5e8549a8acd2905b71aa8a31dda917ab60817c5b13924d64"
+    },
+    {
+      "action": "retain",
+      "bytes": 18432,
+      "crc32": "730c3e90",
+      "path": "HappyToyV2_Data/Managed/System.IO.Compression.FileSystem.dll",
+      "reason": null,
+      "sha256": "e7f2784c57088326f8de52a79426102a2250c2f31922030e9fed0cb64740e242"
+    },
+    {
+      "action": "retain",
+      "bytes": 114688,
+      "crc32": "27589779",
+      "path": "HappyToyV2_Data/Managed/System.IO.Compression.dll",
+      "reason": null,
+      "sha256": "35242ddc40f673d10767e3ab3381718864170cffbc710501374e911df700fda0"
+    },
+    {
+      "action": "retain",
+      "bytes": 4608,
+      "crc32": "f0bbffdf",
+      "path": "HappyToyV2_Data/Managed/System.Memory.dll",
+      "reason": null,
+      "sha256": "c4f030a2cba7da7cdcf493257c24560e203d355904aee490d645a935842f834a"
+    },
+    {
+      "action": "retain",
+      "bytes": 122880,
+      "crc32": "73e4c78a",
+      "path": "HappyToyV2_Data/Managed/System.Net.Http.dll",
+      "reason": null,
+      "sha256": "a6227de2834bc7019a10e69a7ca0bb0908d5092b8bc279ed428b27ecf583a681"
+    },
+    {
+      "action": "retain",
+      "bytes": 119296,
+      "crc32": "7e4bc8d6",
+      "path": "HappyToyV2_Data/Managed/System.Numerics.dll",
+      "reason": null,
+      "sha256": "711616207139cfbf471f4f344a32ade842077314f03c19a0846a98ecace3fc5d"
+    },
+    {
+      "action": "retain",
+      "bytes": 487584,
+      "crc32": "81871155",
+      "path": "HappyToyV2_Data/Managed/System.Reflection.Metadata.dll",
+      "reason": null,
+      "sha256": "afcfd6c166fe0d59f45cc6363082806f6a7ea8ceed9dc6c75eec9fd79ccb5717"
+    },
+    {
+      "action": "retain",
+      "bytes": 19256,
+      "crc32": "568ac893",
+      "path": "HappyToyV2_Data/Managed/System.Runtime.CompilerServices.Unsafe.dll",
+      "reason": null,
+      "sha256": "fd67abc4c4af10affbcd42fd68a2a7bc361b26714afe6965d4d0d139459d8297"
+    },
+    {
+      "action": "retain",
+      "bytes": 934400,
+      "crc32": "c6a08450",
+      "path": "HappyToyV2_Data/Managed/System.Runtime.Serialization.dll",
+      "reason": null,
+      "sha256": "aa96283b3009b39c4ed8dfcde146b0e0bcafa09f9be24a959d0c16dd6f54ae8a"
+    },
+    {
+      "action": "retain",
+      "bytes": 320000,
+      "crc32": "a0f72e1d",
+      "path": "HappyToyV2_Data/Managed/System.Security.dll",
+      "reason": null,
+      "sha256": "21c2cc73f1cecc8b5bfc42171a22412dfd8e04ac42978de90c00ecb507583d62"
+    },
+    {
+      "action": "retain",
+      "bytes": 215040,
+      "crc32": "b3ca649a",
+      "path": "HappyToyV2_Data/Managed/System.ServiceModel.Internals.dll",
+      "reason": null,
+      "sha256": "c90168f6f28b2355c6c11d38ee39fa18f44ea839c877ccce8934bee50e7fb479"
+    },
+    {
+      "action": "retain",
+      "bytes": 35328,
+      "crc32": "393b0901",
+      "path": "HappyToyV2_Data/Managed/System.Transactions.dll",
+      "reason": null,
+      "sha256": "e5ff61cc9163810aa4c1fd9a00e929070e6733eca6d6669b7ece5169ec3739ef"
+    },
+    {
+      "action": "retain",
+      "bytes": 136704,
+      "crc32": "6ce67a3a",
+      "path": "HappyToyV2_Data/Managed/System.Xml.Linq.dll",
+      "reason": null,
+      "sha256": "638f8c5f44aab1fd5755fdf2873683f3ca0f0fb0a3aaecfdbf1d2c2280c5983e"
+    },
+    {
+      "action": "retain",
+      "bytes": 3160064,
+      "crc32": "1e005f37",
+      "path": "HappyToyV2_Data/Managed/System.Xml.dll",
+      "reason": null,
+      "sha256": "ee620f038a3a2589a118f0e7a030fe398b082015fbf83ac1474fb55b521d0bd7"
+    },
+    {
+      "action": "retain",
+      "bytes": 2641920,
+      "crc32": "27200a59",
+      "path": "HappyToyV2_Data/Managed/System.dll",
+      "reason": null,
+      "sha256": "0c49d192fc91f2eade9c12c3960d8b90161560507d96ebcc9d878a2390a2cac6"
+    },
+    {
+      "action": "retain",
+      "bytes": 23040,
+      "crc32": "49b79df8",
+      "path": "HappyToyV2_Data/Managed/Unity.AI.Navigation.dll",
+      "reason": null,
+      "sha256": "0d020cc91cd9649def1708cb96d4ea7c6b4e763df8ac84889975d552012902b3"
+    },
+    {
+      "action": "retain",
+      "bytes": 5120,
+      "crc32": "758cfc6b",
+      "path": "HappyToyV2_Data/Managed/Unity.Burst.dll",
+      "reason": null,
+      "sha256": "e25da50747d2b3ab3a9efabf43417bd02ed1955a40ba70d2365074e12579a5b3"
+    },
+    {
+      "action": "retain",
+      "bytes": 5120,
+      "crc32": "254b34ea",
+      "path": "HappyToyV2_Data/Managed/Unity.Collections.LowLevel.ILSupport.dll",
+      "reason": null,
+      "sha256": "ff50383f807f9692e4913b97e47d86fefcb8faa33d6d48cd3e3fd6fc7ffb448d"
+    },
+    {
+      "action": "retain",
+      "bytes": 4608,
+      "crc32": "717a7ee9",
+      "path": "HappyToyV2_Data/Managed/Unity.Collections.Tests.CoreCLR.InternalJobNestedPrivate.dll",
+      "reason": null,
+      "sha256": "113e2f751e22223792cf9859040bedb85debfa961fa417c536a716369433004d"
+    },
+    {
+      "action": "retain",
+      "bytes": 4096,
+      "crc32": "83a04e78",
+      "path": "HappyToyV2_Data/Managed/Unity.Collections.Tests.CoreCLR.PrivateJobNested.dll",
+      "reason": null,
+      "sha256": "80343812e2069ec46cd5ad37e541fd21addf55922550004c9b36af06aeb6e40f"
+    },
+    {
+      "action": "retain",
+      "bytes": 4096,
+      "crc32": "22a995d1",
+      "path": "HappyToyV2_Data/Managed/Unity.Collections.Tests.CoreCLR.ProtectedJobNested.dll",
+      "reason": null,
+      "sha256": "116b6c7bea30e656e1d36f95835f67750d5b1efd48da3b13537c6aeefa1e918b"
+    },
+    {
+      "action": "retain",
+      "bytes": 4608,
+      "crc32": "efddfdf6",
+      "path": "HappyToyV2_Data/Managed/Unity.Collections.Tests.CoreCLR.PublicJobPrivateGeneric.dll",
+      "reason": null,
+      "sha256": "0684ced2dc160a09070ecb141963365f43f22e2ecbc3b6398ad985b969802fcb"
+    },
+    {
+      "action": "retain",
+      "bytes": 442368,
+      "crc32": "3c9acff5",
+      "path": "HappyToyV2_Data/Managed/Unity.Collections.dll",
+      "reason": null,
+      "sha256": "e4df44410692cc2e79f97fa77e45b0f9f1c5cd9f447c71047990486324dcd1a8"
+    },
+    {
+      "action": "retain",
+      "bytes": 14848,
+      "crc32": "bb7b5cc5",
+      "path": "HappyToyV2_Data/Managed/Unity.InputSystem.ForUI.dll",
+      "reason": null,
+      "sha256": "eb90f2d0d0d3e279bf7097c803d07f05a371c4d20e751b24c156de0fbdb381d2"
+    },
+    {
+      "action": "retain",
+      "bytes": 1023488,
+      "crc32": "30188020",
+      "path": "HappyToyV2_Data/Managed/Unity.InputSystem.dll",
+      "reason": null,
+      "sha256": "839c6ac040f492dd5e814f50731d6bf3b39afded5a16ea4e0d41691860762367"
+    },
+    {
+      "action": "retain",
+      "bytes": 5632,
+      "crc32": "3bb4730e",
+      "path": "HappyToyV2_Data/Managed/Unity.InternalAPIEngineBridge.ObjectDispatcher.Runtime.dll",
+      "reason": null,
+      "sha256": "f832a7f785580e3d9ee00633b6daa5449789c1568f7df2ceac3f63513e1b6f93"
+    },
+    {
+      "action": "retain",
+      "bytes": 3584,
+      "crc32": "bb55bf09",
+      "path": "HappyToyV2_Data/Managed/Unity.InternalAPIEngineBridge.RenderPipelines.Core.Runtime.Shared.dll",
+      "reason": null,
+      "sha256": "1be56383f8c5649cbe90d4c0f22aebd9066d329c736c57b3a2b681b82aa6599e"
+    },
+    {
+      "action": "retain",
+      "bytes": 152576,
+      "crc32": "ecdb4e9a",
+      "path": "HappyToyV2_Data/Managed/Unity.PathTracing.Runtime.dll",
+      "reason": null,
+      "sha256": "ecc5ad8a0b96e5080c15c57ac7b58d1d67e4ed4d5147b038719fb35bd9824232"
+    },
+    {
+      "action": "retain",
+      "bytes": 4608,
+      "crc32": "f5bc2fc7",
+      "path": "HappyToyV2_Data/Managed/Unity.Pipeline.Attributes.dll",
+      "reason": null,
+      "sha256": "33f642770071e6077c2ef870c91723405fc05376c7a2476df0b1ba670c1f6114"
+    },
+    {
+      "action": "retain",
+      "bytes": 8192,
+      "crc32": "62b3a3e2",
+      "path": "HappyToyV2_Data/Managed/Unity.Profiling.Core.dll",
+      "reason": null,
+      "sha256": "94e31aed0cdb816f6bf904613365e4c916c68292632d31c710770b297603691c"
+    },
+    {
+      "action": "retain",
+      "bytes": 7680,
+      "crc32": "28a9824d",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipeline.Universal.ShaderLibrary.dll",
+      "reason": null,
+      "sha256": "7bc87b13b219b95f5a86b4e4a0ad935977cb3f71f561f690680c6d8ea7413c6e"
+    },
+    {
+      "action": "retain",
+      "bytes": 11264,
+      "crc32": "6a5b1303",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipelines.Core.Runtime.Shared.dll",
+      "reason": null,
+      "sha256": "49a317b3d9043ac5b936796a36b28762ed1baabedc1c43f844f613886cc440ca"
+    },
+    {
+      "action": "retain",
+      "bytes": 1075200,
+      "crc32": "48f8147c",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipelines.Core.Runtime.dll",
+      "reason": null,
+      "sha256": "ba827a036620b79f94626c237ccd3b740f8df2f08ff3cb5f9eea3a05b538f0ff"
+    },
+    {
+      "action": "retain",
+      "bytes": 3584,
+      "crc32": "2dd8c658",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipelines.Core.ShaderLibrary.dll",
+      "reason": null,
+      "sha256": "c948f3d791656891ecf2e2759edb9e61a4b3bfd5304f749933b7bd7b396281fe"
+    },
+    {
+      "action": "retain",
+      "bytes": 272896,
+      "crc32": "52fa3e5f",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipelines.GPUDriven.Runtime.dll",
+      "reason": null,
+      "sha256": "a295531fa9d001d8078d5efc4d5ec536f64ef95c7f57508b46d084e8f925c5e1"
+    },
+    {
+      "action": "retain",
+      "bytes": 3584,
+      "crc32": "b732fe93",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipelines.ShaderGraph.ShaderGraphLibrary.dll",
+      "reason": null,
+      "sha256": "236a2e4658461952018cd4e7eedb8e97f163b3f39b84d1be5059dfd9b27fe642"
+    },
+    {
+      "action": "retain",
+      "bytes": 209920,
+      "crc32": "fe124047",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipelines.Universal.2D.Runtime.dll",
+      "reason": null,
+      "sha256": "ff8579aa4e5211693699c56096ac23054655ae880128f6a52c80eef3d18aff38"
+    },
+    {
+      "action": "retain",
+      "bytes": 4096,
+      "crc32": "613c42bd",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipelines.Universal.Config.Runtime.dll",
+      "reason": null,
+      "sha256": "6d1295a3544995ab4362e88bc2fd4c75a5426254b15dbff445d70528663a77fb"
+    },
+    {
+      "action": "retain",
+      "bytes": 733696,
+      "crc32": "9bb3130b",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipelines.Universal.Runtime.dll",
+      "reason": null,
+      "sha256": "06257b4be26a82faea3fc6e1568634347972fc8cb1bd95409d6f7a75974e8513"
+    },
+    {
+      "action": "retain",
+      "bytes": 3584,
+      "crc32": "be86196d",
+      "path": "HappyToyV2_Data/Managed/Unity.RenderPipelines.Universal.Shaders.dll",
+      "reason": null,
+      "sha256": "7fb5c963d133f002bd87e762ed57813b489b1f33a6418a047f18119bb153cc74"
+    },
+    {
+      "action": "retain",
+      "bytes": 70568,
+      "crc32": "d9da5c08",
+      "path": "HappyToyV2_Data/Managed/Unity.Scripting.dll",
+      "reason": null,
+      "sha256": "6a90cc4da53072255f93d1e74916891cdb8d70551eaa61b3552e92975241489e"
+    },
+    {
+      "action": "retain",
+      "bytes": 35328,
+      "crc32": "905564e4",
+      "path": "HappyToyV2_Data/Managed/Unity.SurfaceCache.Runtime.dll",
+      "reason": null,
+      "sha256": "feb8a702accd516bad24f39961a837ca01e98a98b0af62f3789096ead692bf01"
+    },
+    {
+      "action": "retain",
+      "bytes": 96768,
+      "crc32": "dc6a654e",
+      "path": "HappyToyV2_Data/Managed/Unity.UnifiedRayTracing.Runtime.dll",
+      "reason": null,
+      "sha256": "26b4e9f472a758b6088e12827d9932511ce2d1bb3e7d20d5bfc1012c39e1288e"
+    },
+    {
+      "action": "retain",
+      "bytes": 87464,
+      "crc32": "aa4a28d6",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.AIModule.dll",
+      "reason": null,
+      "sha256": "f6d970d722eeb22b101fa32cdf759267fe0618f9b2f72ab38c09cf04264d6b2c"
+    },
+    {
+      "action": "retain",
+      "bytes": 21928,
+      "crc32": "a35b3a78",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.AMDModule.dll",
+      "reason": null,
+      "sha256": "0328c3bff08dad328b2f5d52940b5e1f5aa8f4f1b30960e5e100f85a3e0d9d90"
+    },
+    {
+      "action": "retain",
+      "bytes": 27560,
+      "crc32": "f4ba2f88",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ARModule.dll",
+      "reason": null,
+      "sha256": "732112f8178a424a28f17f84d062ae79184ab04b09148b5b60108f60570aca85"
+    },
+    {
+      "action": "retain",
+      "bytes": 49576,
+      "crc32": "05022423",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.AccessibilityModule.dll",
+      "reason": null,
+      "sha256": "96921280a974f86e8006f610c0a8e2fb0cd43783f7d61d859da5fe154fd9a6d5"
+    },
+    {
+      "action": "retain",
+      "bytes": 122280,
+      "crc32": "60833db2",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.AdaptivePerformanceModule.dll",
+      "reason": null,
+      "sha256": "0d771374fa7bf1380dd108d3fd0ebc666bc82b4741854098cf99542181cd998c"
+    },
+    {
+      "action": "retain",
+      "bytes": 121256,
+      "crc32": "29aa2fa3",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.AndroidJNIModule.dll",
+      "reason": null,
+      "sha256": "4a95f9f9d0a2dcc7ebd6679e7c1280adef4168420dbbd15685f16d72a07b9837"
+    },
+    {
+      "action": "retain",
+      "bytes": 218032,
+      "crc32": "67096a0f",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.AnimationModule.dll",
+      "reason": null,
+      "sha256": "9827d4457348f65e5a62b5d74731efd94fd9dabb9e43b28953e331cdc6c0d451"
+    },
+    {
+      "action": "retain",
+      "bytes": 42928,
+      "crc32": "baf07a42",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.AssetBundleModule.dll",
+      "reason": null,
+      "sha256": "a715d565bc1c57dc76e4b2c462ec285ce6255b17701acade6139b5c9483e4aa7"
+    },
+    {
+      "action": "retain",
+      "bytes": 142248,
+      "crc32": "1b4646f2",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.AudioModule.dll",
+      "reason": null,
+      "sha256": "f2b638820b93e92270754c36d061a8475cfb20d5ecbcc2adb9c750daa966aebb"
+    },
+    {
+      "action": "retain",
+      "bytes": 337840,
+      "crc32": "c2db7c8e",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.BurstModule.dll",
+      "reason": null,
+      "sha256": "e82bbf216e1bfa63bf977766558e3e7c2b35dc52de0b2031606a9a1d0721f067"
+    },
+    {
+      "action": "retain",
+      "bytes": 38320,
+      "crc32": "3b8be77b",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ClothModule.dll",
+      "reason": null,
+      "sha256": "e29a55f21a62492ed3572ac7b7874706bb966c56e51e7e3d5bb7c530f8343d55"
+    },
+    {
+      "action": "retain",
+      "bytes": 12288,
+      "crc32": "cd816fb2",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.CloudBuild.dll",
+      "reason": null,
+      "sha256": "7e0c528155f7f8aec84c8a128cb3fcd4500a3064b820a5f1072b8aa2cac871f1"
+    },
+    {
+      "action": "retain",
+      "bytes": 30128,
+      "crc32": "e623cdc9",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ClusterInputModule.dll",
+      "reason": null,
+      "sha256": "1cdb1e82cc310f2557f8a4756c5555004af2c4e98340265936aa81b2e26b2037"
+    },
+    {
+      "action": "retain",
+      "bytes": 28592,
+      "crc32": "fb9e0a22",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ClusterRendererModule.dll",
+      "reason": null,
+      "sha256": "4ddb4594a48347eb020dda68252fd3a3b81ff283bd28453bd7f649b91575d97a"
+    },
+    {
+      "action": "retain",
+      "bytes": 56240,
+      "crc32": "3d6855d0",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ContentLoadModule.dll",
+      "reason": null,
+      "sha256": "9bd21275803a00aeeb699bdc459409af11a3bed4a95111286ab7ba3a3bba916b"
+    },
+    {
+      "action": "retain",
+      "bytes": 2026920,
+      "crc32": "024605f3",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.CoreModule.dll",
+      "reason": null,
+      "sha256": "dd4d95cc071b5665c979fc2a7f829b622280fcc2da0c7a3793728b8391f2faa8"
+    },
+    {
+      "action": "retain",
+      "bytes": 28592,
+      "crc32": "bd039c7e",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.CrashReportingModule.dll",
+      "reason": null,
+      "sha256": "53059e48d0b6365123dee6a9e9bbbc470e39e0968a019f5d584c6853c06e41cf"
+    },
+    {
+      "action": "retain",
+      "bytes": 33200,
+      "crc32": "8d29679e",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.DSPGraphModule.dll",
+      "reason": null,
+      "sha256": "be33c1b4d99ecb718b217c17c9eecd2590696c9a51a1eb6acd94a5bb6095ac44"
+    },
+    {
+      "action": "retain",
+      "bytes": 42928,
+      "crc32": "c96a799e",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.DirectorModule.dll",
+      "reason": null,
+      "sha256": "6b1c8cbd2b1d1598a0e03a6b2737c96f4fb92a11ea9e48dc7e403069db805163"
+    },
+    {
+      "action": "retain",
+      "bytes": 26032,
+      "crc32": "0af078c6",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.GIModule.dll",
+      "reason": null,
+      "sha256": "74024ccfe358de386babb1c36e48b1affa65530000f7af83e1fc46eb4980061e"
+    },
+    {
+      "action": "retain",
+      "bytes": 46504,
+      "crc32": "8e2c7666",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.GameCenterModule.dll",
+      "reason": null,
+      "sha256": "d479215bce2cd22d6205bd81f3c601c994250030f7d89a556b9ea94f92482681"
+    },
+    {
+      "action": "retain",
+      "bytes": 14256,
+      "crc32": "25fbaf96",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.GraphicsStateCollectionSerializerModule.dll",
+      "reason": null,
+      "sha256": "b0c36ed104ae6b7c766ba4843b9aeaa9a37dc0608acc78bd6a53906c92a0f16f"
+    },
+    {
+      "action": "retain",
+      "bytes": 32680,
+      "crc32": "9ceeec67",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.GridModule.dll",
+      "reason": null,
+      "sha256": "9a42666ea8f057fd91ac8bdb39340f00d622e2b057e18662b202df597ea7b8c0"
+    },
+    {
+      "action": "retain",
+      "bytes": 111536,
+      "crc32": "b98aecdf",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.HierarchyCoreModule.dll",
+      "reason": null,
+      "sha256": "9934f50218af420f55d073a2e9b91906207730dd3dc39f3d6646e577748e74ed"
+    },
+    {
+      "action": "retain",
+      "bytes": 113584,
+      "crc32": "a8d4122f",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.HierarchyModule.dll",
+      "reason": null,
+      "sha256": "b07784fb8f4943be1225c78656df031fa35f7af739ba2de99bab426460ad3ad1"
+    },
+    {
+      "action": "retain",
+      "bytes": 26032,
+      "crc32": "db5ebae5",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.HotReloadModule.dll",
+      "reason": null,
+      "sha256": "35f996043e5296d863a9f85bbad204abd320cabd4b4271d682355c2aaee3ae4d"
+    },
+    {
+      "action": "retain",
+      "bytes": 190896,
+      "crc32": "f2b6145c",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.IMGUIModule.dll",
+      "reason": null,
+      "sha256": "bcb2213f58e61a3c9d8ffb4d2df2d022766ff7bbe3be8e73cae468295124c71f"
+    },
+    {
+      "action": "retain",
+      "bytes": 16816,
+      "crc32": "47e70bb6",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.IdentifiersModule.dll",
+      "reason": null,
+      "sha256": "d5f5aefd7ffce420430cda0b442aa0b7b8eac9830d18193ac24476142b649c34"
+    },
+    {
+      "action": "retain",
+      "bytes": 34224,
+      "crc32": "3833e083",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ImageConversionModule.dll",
+      "reason": null,
+      "sha256": "4b694ae6d16c24ad6704ddcc9962259422f0b0cfe8480c78a39b537d44ac36b7"
+    },
+    {
+      "action": "retain",
+      "bytes": 56744,
+      "crc32": "4a8ec975",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.InputForUIModule.dll",
+      "reason": null,
+      "sha256": "dcba6b066152c14b4b2b12bfbb8239e63783566999c4ff50738347b914a374c5"
+    },
+    {
+      "action": "retain",
+      "bytes": 42928,
+      "crc32": "47e014fc",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.InputLegacyModule.dll",
+      "reason": null,
+      "sha256": "d2330bab8dcbc90b72aff6b56d46e2ce79271b1d9cea8e9cce2920ca6e417be7"
+    },
+    {
+      "action": "retain",
+      "bytes": 32688,
+      "crc32": "fd1e5980",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.InputModule.dll",
+      "reason": null,
+      "sha256": "7900cd40bb5013b3efd04e7ad5e9b879abb30962e9949ec357ff015ea189d376"
+    },
+    {
+      "action": "retain",
+      "bytes": 15784,
+      "crc32": "0a4a9cc1",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.InsightsModule.dll",
+      "reason": null,
+      "sha256": "7598a3f76c6d2f5dfcd3eaa99f2dd57614c4d94e3a2eb7ff831646525ac1f567"
+    },
+    {
+      "action": "retain",
+      "bytes": 29104,
+      "crc32": "7c02ddb2",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.JSONSerializeModule.dll",
+      "reason": null,
+      "sha256": "f4e46936570140748fa0fba93e6ede71b1708324836c62a9c665117f615d3d46"
+    },
+    {
+      "action": "retain",
+      "bytes": 29096,
+      "crc32": "72b21f38",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.LocalizationModule.dll",
+      "reason": null,
+      "sha256": "dce40cb8738e38f621fb4eaf0c57c1b4ef607b31d9dcf9609a652a08e7b7e9b1"
+    },
+    {
+      "action": "retain",
+      "bytes": 14256,
+      "crc32": "c6620658",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ManagedKernelModule.dll",
+      "reason": null,
+      "sha256": "131c416883a2a014cb4b98b841a823b98ae0e6363f1114ac3a45f4594f89b4f5"
+    },
+    {
+      "action": "retain",
+      "bytes": 100776,
+      "crc32": "811f8927",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.MarshallingModule.dll",
+      "reason": null,
+      "sha256": "48fc52799e7884ffbb0eeb318d1922845ccb1ae9e10a5b79511eb19b1a61e058"
+    },
+    {
+      "action": "retain",
+      "bytes": 740784,
+      "crc32": "54d1f7f9",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.MathematicsModule.dll",
+      "reason": null,
+      "sha256": "8585f797c63a294194723100a88cf631b71864e300dc641904d194fe3e14a051"
+    },
+    {
+      "action": "retain",
+      "bytes": 18352,
+      "crc32": "277ffd9c",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.MultiplayerModule.dll",
+      "reason": null,
+      "sha256": "8a00c9c234af7074db44bf0a6bff6e781c14fe92c3f46d6fef37ba97ebbc867c"
+    },
+    {
+      "action": "retain",
+      "bytes": 41392,
+      "crc32": "c56e5441",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.NVIDIAModule.dll",
+      "reason": null,
+      "sha256": "9d64dd66ca2df1aaedfbe16dc701e3ffe1fcc4d991b2dbc8071b5e1c1d3a77b4"
+    },
+    {
+      "action": "retain",
+      "bytes": 169392,
+      "crc32": "8d46fe0f",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ParticleSystemModule.dll",
+      "reason": null,
+      "sha256": "af2dcf43813bb6f628c8ef0638c07407aad29bfd24e5184c2f911333bfd86de9"
+    },
+    {
+      "action": "retain",
+      "bytes": 27048,
+      "crc32": "69afff8e",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.PerformanceReportingModule.dll",
+      "reason": null,
+      "sha256": "c9c66581bf5710de134c53c181d61075b7d23a3d561cb20bd18efdf7c01d6b0e"
+    },
+    {
+      "action": "retain",
+      "bytes": 222632,
+      "crc32": "ab3e5cae",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.Physics2DModule.dll",
+      "reason": null,
+      "sha256": "1d8a07d4571037637c049b9c9ab7e0b577ab547be931ba68bf9745131928ed3f"
+    },
+    {
+      "action": "retain",
+      "bytes": 14248,
+      "crc32": "d35b66dd",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.PhysicsBackendPhysXModule.dll",
+      "reason": null,
+      "sha256": "a0eae35ea5d13decbe4ac670eb68b686af4a2a0426f2a2f33cddc7191ee58cd2"
+    },
+    {
+      "action": "retain",
+      "bytes": 482728,
+      "crc32": "59a4b20a",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.PhysicsCore2DModule.dll",
+      "reason": null,
+      "sha256": "8fbdf589fbf1468aaef68ebbf596a1e035829326715a1baeadb852aceb2fa07f"
+    },
+    {
+      "action": "retain",
+      "bytes": 181672,
+      "crc32": "48509fc9",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.PhysicsModule.dll",
+      "reason": null,
+      "sha256": "507150ae4f4cad916c189ff3f2c6cabe98998e4202ef4d07096715cc120aaae5"
+    },
+    {
+      "action": "retain",
+      "bytes": 124840,
+      "crc32": "9ce8635a",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.PropertiesModule.dll",
+      "reason": null,
+      "sha256": "cbb1f93c9ad2974bdeb2e1552045f94d09791af9217385a4360503702c7647af"
+    },
+    {
+      "action": "retain",
+      "bytes": 27568,
+      "crc32": "e40d81c9",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.RenderAs2DModule.dll",
+      "reason": null,
+      "sha256": "7b748b785d80851d8235786b10bc2f446a94bca638f23b39bfdb9198d8dd583d"
+    },
+    {
+      "action": "retain",
+      "bytes": 26032,
+      "crc32": "d906ea5d",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.RuntimeInitializeOnLoadManagerInitializerModule.dll",
+      "reason": null,
+      "sha256": "5f5300027dd267da90fd5c0e127571c54a1f24caa52e5380abf46d24b1b3218e"
+    },
+    {
+      "action": "retain",
+      "bytes": 28072,
+      "crc32": "1520aaf4",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ScreenCaptureModule.dll",
+      "reason": null,
+      "sha256": "868c9880d142cb39c822ff10ae35d0caa059f2d0913d6339737d32a0ecdba448"
+    },
+    {
+      "action": "retain",
+      "bytes": 65960,
+      "crc32": "b994e671",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ScriptingModule.dll",
+      "reason": null,
+      "sha256": "8e402b3daaf4e2eec647b4865620cc699bec8b683b1c2f8d1c1246cb58ac7f18"
+    },
+    {
+      "action": "retain",
+      "bytes": 26024,
+      "crc32": "4d06fe75",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.ShaderVariantAnalyticsModule.dll",
+      "reason": null,
+      "sha256": "558f317ee850147b12e795b830ca585c29fd9b935c482de6fcf0ad3dbb69cfb8"
+    },
+    {
+      "action": "retain",
+      "bytes": 30632,
+      "crc32": "46fd48a7",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.SpriteMaskModule.dll",
+      "reason": null,
+      "sha256": "41a20a5c992b890aef375bb377d8133ace7f084420704ddf9e333905b966d5b9"
+    },
+    {
+      "action": "retain",
+      "bytes": 34224,
+      "crc32": "aa2d8ec2",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.SpriteShapeModule.dll",
+      "reason": null,
+      "sha256": "b49a399ec0fd1fab9b7dfbd8d0d6a3961074faf361bec1f0112cc02d3cc47c22"
+    },
+    {
+      "action": "retain",
+      "bytes": 28080,
+      "crc32": "412d4f8e",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.StreamingModule.dll",
+      "reason": null,
+      "sha256": "636cf5f6a228813597ad6ff5b08fe9a5b25fc43cb141f0b1a00087561e73c09b"
+    },
+    {
+      "action": "retain",
+      "bytes": 31144,
+      "crc32": "fa794c19",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.SubstanceModule.dll",
+      "reason": null,
+      "sha256": "fbd28468c4dbda79602e0869b95742bf199c370bf84c8642e8f6c265e706ede1"
+    },
+    {
+      "action": "retain",
+      "bytes": 42920,
+      "crc32": "e703f2d1",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.SubsystemsModule.dll",
+      "reason": null,
+      "sha256": "dc72d4c6f8de7d9d79a35539c0ab61e45a75676d9f70cb306d7d3d7849b00ed9"
+    },
+    {
+      "action": "retain",
+      "bytes": 34224,
+      "crc32": "4cf93939",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.TLSModule.dll",
+      "reason": null,
+      "sha256": "c1f7c45318ec0ea49069967631b757f616e8fa06cf574678ce72e4ac02b704f7"
+    },
+    {
+      "action": "retain",
+      "bytes": 132528,
+      "crc32": "3cf1605d",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.TerrainModule.dll",
+      "reason": null,
+      "sha256": "a1bfaf8c9e4452ba89e94b442a7fb547075ea8e7dfdb0d280a154a61b633692b"
+    },
+    {
+      "action": "retain",
+      "bytes": 27568,
+      "crc32": "5d57e2ae",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.TerrainPhysicsModule.dll",
+      "reason": null,
+      "sha256": "0c9eafa4861f13cc11b35818cccd15594960b5bcde03cd511ea09e42f615fe3c"
+    },
+    {
+      "action": "retain",
+      "bytes": 26024,
+      "crc32": "6f4af2f3",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.TetgenModule.dll",
+      "reason": null,
+      "sha256": "c4deca980c363828fe27c5b3270ec5aac99570e60d4374406b064cb971da8658"
+    },
+    {
+      "action": "retain",
+      "bytes": 86448,
+      "crc32": "02a40e9a",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.TextCoreFontEngineModule.dll",
+      "reason": null,
+      "sha256": "b63bb6a92fb524401bdc858d9a7c076fcf59adfe35a7ef15d6853a67b45f1617"
+    },
+    {
+      "action": "retain",
+      "bytes": 313768,
+      "crc32": "2c7856eb",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.TextCoreTextEngineModule.dll",
+      "reason": null,
+      "sha256": "c819257b34b665e54609d301cd486daf222de893f77fbbc1308a33580d879841"
+    },
+    {
+      "action": "retain",
+      "bytes": 39344,
+      "crc32": "abc775d9",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.TextRenderingModule.dll",
+      "reason": null,
+      "sha256": "b46e8c6d2b6092fb360a11f1287a963d16904bfaaaf3f357242d0678f1cb785b"
+    },
+    {
+      "action": "retain",
+      "bytes": 75696,
+      "crc32": "5a5da6cb",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.TilemapModule.dll",
+      "reason": null,
+      "sha256": "a745b9df3992caf25ed97b19097342777c06b5611711fbbe6c0ca2706b94dd80"
+    },
+    {
+      "action": "retain",
+      "bytes": 167336,
+      "crc32": "2a0eb2d2",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.TimelineFoundationModule.dll",
+      "reason": null,
+      "sha256": "39ad053224105e6263214853c99702927c19682da11168813377a68de92b205a"
+    },
+    {
+      "action": "retain",
+      "bytes": 73648,
+      "crc32": "8765ae71",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.U2DRuntimeModule.dll",
+      "reason": null,
+      "sha256": "3481e20e60a0fe129bcceb2b68684971919e377ccdb56c62b10a5f589aa2047b"
+    },
+    {
+      "action": "retain",
+      "bytes": 2532272,
+      "crc32": "44f26992",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UIElementsModule.dll",
+      "reason": null,
+      "sha256": "54c33cc1163f36279e62806794075e995242534a20eaa373ca2dd77c35229b5e"
+    },
+    {
+      "action": "retain",
+      "bytes": 56752,
+      "crc32": "5b09bd94",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UIModule.dll",
+      "reason": null,
+      "sha256": "9b7018e3efc1d6732e8ce22638244394e18ad22102eb4900e36a8739f897f513"
+    },
+    {
+      "action": "retain",
+      "bytes": 26032,
+      "crc32": "54df0626",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UmbraModule.dll",
+      "reason": null,
+      "sha256": "3dbad8eb0b79b798587f8d4f43414a8cece0dbb71f0e8b8bf5f95a83f2e35d23"
+    },
+    {
+      "action": "retain",
+      "bytes": 36784,
+      "crc32": "1c6c5a2c",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityAnalyticsCommonModule.dll",
+      "reason": null,
+      "sha256": "d4f1809e993d26764761b0430ccde80844d811dc681b4dbeb056de6b248a9b32"
+    },
+    {
+      "action": "retain",
+      "bytes": 61864,
+      "crc32": "52087419",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityAnalyticsModule.dll",
+      "reason": null,
+      "sha256": "51739c9524df601e432efe5681c6a67cd0a6abd635a711ccdbff5a2f578cec7d"
+    },
+    {
+      "action": "retain",
+      "bytes": 29616,
+      "crc32": "09f91421",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityConnectModule.dll",
+      "reason": null,
+      "sha256": "b92e1ac675458c138546a3db5d6abc98317e203036b76d469451a9fb1eed9b72"
+    },
+    {
+      "action": "retain",
+      "bytes": 16296,
+      "crc32": "feee5ef0",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityConsentModule.dll",
+      "reason": null,
+      "sha256": "8328584f46c056feea50c4e7d64cc3845705feaf8b9f62f0569bbb65a559b881"
+    },
+    {
+      "action": "retain",
+      "bytes": 28072,
+      "crc32": "0787dbb0",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityCurlModule.dll",
+      "reason": null,
+      "sha256": "237322c505bd72e4745cd898fdaf6a1d2ee6e55e61e5a27cbdb4fcfaab8ca68e"
+    },
+    {
+      "action": "retain",
+      "bytes": 30632,
+      "crc32": "00dbe5f7",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityWebRequestAssetBundleModule.dll",
+      "reason": null,
+      "sha256": "23a297145e1c0ba34b850d85de9ec8235e05032e9a3df5508b4ba91e07c8cb5f"
+    },
+    {
+      "action": "retain",
+      "bytes": 30632,
+      "crc32": "eeffda4e",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityWebRequestAudioModule.dll",
+      "reason": null,
+      "sha256": "5f312693fdd54b862086f68d7a45d5eea0f9765bfa3fda773a0be4aa8d2ae6de"
+    },
+    {
+      "action": "retain",
+      "bytes": 80816,
+      "crc32": "7d44a036",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityWebRequestModule.dll",
+      "reason": null,
+      "sha256": "8e01ea6170deaac0d8a363a8c784d2033a4aff9f1007e63a5d7de917589bccd1"
+    },
+    {
+      "action": "retain",
+      "bytes": 29608,
+      "crc32": "4c270b93",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityWebRequestTextureModule.dll",
+      "reason": null,
+      "sha256": "c2423b46f31b0250a0f3bf6496770ccad59484657f3e80d5b566addc00d36380"
+    },
+    {
+      "action": "retain",
+      "bytes": 35248,
+      "crc32": "8bad1dde",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.UnityWebRequestWWWModule.dll",
+      "reason": null,
+      "sha256": "aa2c5327185f830110f82f8c7d7dbca84b904035816162eca1859ccd48393fa6"
+    },
+    {
+      "action": "retain",
+      "bytes": 82344,
+      "crc32": "ca4c9006",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.VFXModule.dll",
+      "reason": null,
+      "sha256": "04a33bf2e9183219514d094bee647737526417fecd3e839f1f727f6e6f9804fc"
+    },
+    {
+      "action": "retain",
+      "bytes": 229288,
+      "crc32": "faf5b787",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.VectorGraphicsModule.dll",
+      "reason": null,
+      "sha256": "1b5e07b18c6e30891c812f7ad474d3f7691c4742d9381f956c9e1f70284411f4"
+    },
+    {
+      "action": "retain",
+      "bytes": 33192,
+      "crc32": "ffc29b62",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.VehiclesModule.dll",
+      "reason": null,
+      "sha256": "65173f5c5261631acfd620458633e86d1d08955d0af803ffa52eda7290103bd4"
+    },
+    {
+      "action": "retain",
+      "bytes": 48560,
+      "crc32": "11cb7e4c",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.VideoModule.dll",
+      "reason": null,
+      "sha256": "0e390e3c1e0fa8b1d38191e1b99691b7cb3f24b24765adcd2ef1d260ef601469"
+    },
+    {
+      "action": "retain",
+      "bytes": 43952,
+      "crc32": "0b2275f2",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.VirtualTexturingModule.dll",
+      "reason": null,
+      "sha256": "91187eed24077b5cc7e63d7b65b9d3f96b63082d11a0eeb4d4b09fcaf4df05d2"
+    },
+    {
+      "action": "retain",
+      "bytes": 28592,
+      "crc32": "875caba2",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.WindModule.dll",
+      "reason": null,
+      "sha256": "ccbe0caf771a309e814a46238bb1423ac960e47b7a376e2d0618692e2750e6de"
+    },
+    {
+      "action": "retain",
+      "bytes": 96168,
+      "crc32": "7069d6d8",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.XRModule.dll",
+      "reason": null,
+      "sha256": "9bac4a0c63d90c7151155ba704067deb26657ca1569853e1d135cb6410b3db66"
+    },
+    {
+      "action": "retain",
+      "bytes": 225704,
+      "crc32": "048c0410",
+      "path": "HappyToyV2_Data/Managed/UnityEngine.dll",
+      "reason": null,
+      "sha256": "657bcdefc106148c9e6b4694f3853b0b4a568156f79966c70b4b140263ca336a"
+    },
+    {
+      "action": "retain",
+      "bytes": 4632064,
+      "crc32": "ef2fa88f",
+      "path": "HappyToyV2_Data/Managed/mscorlib.dll",
+      "reason": null,
+      "sha256": "acbfa8295da5b5e5a2c68c7b2dbc9cd7a5829c0ae031af22be4f6a49fd626f8f"
+    },
+    {
+      "action": "retain",
+      "bytes": 90112,
+      "crc32": "975ffbbe",
+      "path": "HappyToyV2_Data/Managed/netstandard.dll",
+      "reason": null,
+      "sha256": "6ae62e082dc494a2433984177f60ca4db5fae69b1f360a8b33754172b310b8c5"
+    },
+    {
+      "action": "retain",
+      "bytes": 530944,
+      "crc32": "49ecccf7",
+      "path": "HappyToyV2_Data/Plugins/x86_64/lib_burst_generated.dll",
+      "reason": null,
+      "sha256": "391537b7a95d9ecc193e25201160133dd1579371979c8d1e6599d3893eceac5d"
+    },
+    {
+      "action": "retain",
+      "bytes": 5919584,
+      "crc32": "8f9af0b6",
+      "path": "HappyToyV2_Data/Resources/unity default resources",
+      "reason": null,
+      "sha256": "696b9afaee02b5d45978634f1450ef18423c19177933b997fd8ee364d70cdd61"
+    },
+    {
+      "action": "retain",
+      "bytes": 534548,
+      "crc32": "e6e70958",
+      "path": "HappyToyV2_Data/Resources/unity_builtin_extra",
+      "reason": null,
+      "sha256": "8b4a8865ce65382468d408152c3a71d2d29143e0815a8016e1ef7120542c5d14"
+    },
+    {
+      "action": "retain",
+      "bytes": 7611,
+      "crc32": "3594df35",
+      "path": "HappyToyV2_Data/RuntimeInitializeOnLoads.json",
+      "reason": null,
+      "sha256": "a423321f0453e086dedaab9e777bc547204f1d8eb9c724d3d1253780c56fe5e4"
+    },
+    {
+      "action": "retain",
+      "bytes": 4698,
+      "crc32": "a8748e56",
+      "path": "HappyToyV2_Data/ScriptingAssemblies.json",
+      "reason": null,
+      "sha256": "f47008e049d337db3eaaf2d5da343ca1f8bc2926bdd8e24734c5815d1575b2de"
+    },
+    {
+      "action": "retain",
+      "bytes": 38,
+      "crc32": "6f7fcc3d",
+      "path": "HappyToyV2_Data/app.info",
+      "reason": null,
+      "sha256": "d6a3e89ba34ee360c58b2f335867e710a4e3890a58178b614694969d53999ad0"
+    },
+    {
+      "action": "retain",
+      "bytes": 156,
+      "crc32": "b697835a",
+      "path": "HappyToyV2_Data/boot.config",
+      "reason": null,
+      "sha256": "5d78530327b3e26be33b62ded23e1851ec53efc9373e65da5a45f5e4da353bef"
+    },
+    {
+      "action": "retain",
+      "bytes": 81076,
+      "crc32": "df66068a",
+      "path": "HappyToyV2_Data/globalgamemanagers",
+      "reason": null,
+      "sha256": "0bcc228695c340dc1b222cda35130b643e772593301fe0cbcdcdb7517ac3aefd"
+    },
+    {
+      "action": "retain",
+      "bytes": 524032,
+      "crc32": "bc1d09ca",
+      "path": "HappyToyV2_Data/globalgamemanagers.assets",
+      "reason": null,
+      "sha256": "32fa66926a78c1d677d919f2a477ea1f8e61641106e8db7aa3d864579725ed92"
+    },
+    {
+      "action": "retain",
+      "bytes": 5438176,
+      "crc32": "e201884b",
+      "path": "HappyToyV2_Data/globalgamemanagers.assets.resS",
+      "reason": null,
+      "sha256": "735fe70099bbdba97d7d99b50e9bf09d20be9bf30838b369082f5687bed74973"
+    },
+    {
+      "action": "retain",
+      "bytes": 7216248,
+      "crc32": "143c9218",
+      "path": "HappyToyV2_Data/level0",
+      "reason": null,
+      "sha256": "1e38f1a5a4f2354897d15cd7e3554f3d0d2c5e93344e403a84721b9549bec99d"
+    },
+    {
+      "action": "retain",
+      "bytes": 6784120,
+      "crc32": "e1e292f6",
+      "path": "HappyToyV2_Data/resources.assets",
+      "reason": null,
+      "sha256": "20a53ea07b7b10b89e2519c99a9a71e27f3a0a33ddddccb26c5e2525efca2bcb"
+    },
+    {
+      "action": "retain",
+      "bytes": 158736,
+      "crc32": "d0f6b4af",
+      "path": "HappyToyV2_Data/resources.assets.resS",
+      "reason": null,
+      "sha256": "c1126abe839e40838159776767fbafda7cdf4446db70d2282e95f490c8eb0725"
+    },
+    {
+      "action": "retain",
+      "bytes": 13631928,
+      "crc32": "d7893e9e",
+      "path": "HappyToyV2_Data/sharedassets0.assets",
+      "reason": null,
+      "sha256": "e9623f6b05e2d1ff42215b4f2b3786065c5a7b9c635a98054acf38f79d7f5458"
+    },
+    {
+      "action": "retain",
+      "bytes": 33617312,
+      "crc32": "8aab24f0",
+      "path": "HappyToyV2_Data/sharedassets0.assets.resS",
+      "reason": null,
+      "sha256": "f888611bf0f0633f73814e3a6d593fed1fecd95ad6fe90e509b8514b9036d89e"
+    },
+    {
+      "action": "retain",
+      "bytes": 611240,
+      "crc32": "a0b165fa",
+      "path": "MonoBleedingEdge/EmbedRuntime/MonoPosixHelper.dll",
+      "reason": null,
+      "sha256": "7021cf00974c68a4fcd3146d58a048921cb1783544d6d3288d29accf8092c6ea"
+    },
+    {
+      "action": "retain",
+      "bytes": 7834544,
+      "crc32": "95f12d83",
+      "path": "MonoBleedingEdge/EmbedRuntime/mono-2.0-bdwgc.dll",
+      "reason": null,
+      "sha256": "6c40c0c2c257bdf5338d1b08f7c520ac1454ce07afe9fe0325f5af593bb6dfb2"
+    },
+    {
+      "action": "retain",
+      "bytes": 1605,
+      "crc32": "2e178a0b",
+      "path": "MonoBleedingEdge/etc/mono/2.0/Browsers/Compat.browser",
+      "reason": null,
+      "sha256": "8a1082057ac5681dcd4e9c227ed7fb8eb42ac1618963b5de3b65739dd77e2741"
+    },
+    {
+      "action": "retain",
+      "bytes": 60575,
+      "crc32": "95f9d0b4",
+      "path": "MonoBleedingEdge/etc/mono/2.0/DefaultWsdlHelpGenerator.aspx",
+      "reason": null,
+      "sha256": "751861040b69ea63a3827507b7c8da9c7f549dc181c1c8af4b7ca78cc97d710a"
+    },
+    {
+      "action": "retain",
+      "bytes": 29066,
+      "crc32": "42543b8b",
+      "path": "MonoBleedingEdge/etc/mono/2.0/machine.config",
+      "reason": null,
+      "sha256": "e91782a27fa39fc6c1d6ee8b08529f5d35052310d0006034b878eb04b8f2af30"
+    },
+    {
+      "action": "retain",
+      "bytes": 2622,
+      "crc32": "ad5340f9",
+      "path": "MonoBleedingEdge/etc/mono/2.0/settings.map",
+      "reason": null,
+      "sha256": "49c6160f9d54af4270a3b4e997fc4a8301f79b9e2070118fa46ddbcbbc44f9a2"
+    },
+    {
+      "action": "retain",
+      "bytes": 11635,
+      "crc32": "1a75ebad",
+      "path": "MonoBleedingEdge/etc/mono/2.0/web.config",
+      "reason": null,
+      "sha256": "cf2b54339e069b9e42f7d6795eecbf562c50c1011f4ca8f65f578fe52d97ff92"
+    },
+    {
+      "action": "retain",
+      "bytes": 1605,
+      "crc32": "2e178a0b",
+      "path": "MonoBleedingEdge/etc/mono/4.0/Browsers/Compat.browser",
+      "reason": null,
+      "sha256": "8a1082057ac5681dcd4e9c227ed7fb8eb42ac1618963b5de3b65739dd77e2741"
+    },
+    {
+      "action": "retain",
+      "bytes": 60575,
+      "crc32": "95f9d0b4",
+      "path": "MonoBleedingEdge/etc/mono/4.0/DefaultWsdlHelpGenerator.aspx",
+      "reason": null,
+      "sha256": "751861040b69ea63a3827507b7c8da9c7f549dc181c1c8af4b7ca78cc97d710a"
+    },
+    {
+      "action": "retain",
+      "bytes": 33598,
+      "crc32": "86f603c4",
+      "path": "MonoBleedingEdge/etc/mono/4.0/machine.config",
+      "reason": null,
+      "sha256": "e60aec2c5115d65b3acb3c55ea21576dbd770f579166c017125571e46ae560ed"
+    },
+    {
+      "action": "retain",
+      "bytes": 2622,
+      "crc32": "dc24a240",
+      "path": "MonoBleedingEdge/etc/mono/4.0/settings.map",
+      "reason": null,
+      "sha256": "ce1db1ad8a9512073164e3eccdc193f7eda036e1a9733caec4635de21b2865c8"
+    },
+    {
+      "action": "retain",
+      "bytes": 18802,
+      "crc32": "36d8ba3e",
+      "path": "MonoBleedingEdge/etc/mono/4.0/web.config",
+      "reason": null,
+      "sha256": "e38bb8cc68fe5b4edecdfd288d094b9e8ced7629039b2a347682aba0d8bd7492"
+    },
+    {
+      "action": "retain",
+      "bytes": 1605,
+      "crc32": "2e178a0b",
+      "path": "MonoBleedingEdge/etc/mono/4.5/Browsers/Compat.browser",
+      "reason": null,
+      "sha256": "8a1082057ac5681dcd4e9c227ed7fb8eb42ac1618963b5de3b65739dd77e2741"
+    },
+    {
+      "action": "retain",
+      "bytes": 60575,
+      "crc32": "95f9d0b4",
+      "path": "MonoBleedingEdge/etc/mono/4.5/DefaultWsdlHelpGenerator.aspx",
+      "reason": null,
+      "sha256": "751861040b69ea63a3827507b7c8da9c7f549dc181c1c8af4b7ca78cc97d710a"
+    },
+    {
+      "action": "retain",
+      "bytes": 34056,
+      "crc32": "c446a9eb",
+      "path": "MonoBleedingEdge/etc/mono/4.5/machine.config",
+      "reason": null,
+      "sha256": "ee950004b576fb28dc85f4b0435ed04bf96612de2e8b53be84d07afe85a0de6c"
+    },
+    {
+      "action": "retain",
+      "bytes": 2622,
+      "crc32": "dc24a240",
+      "path": "MonoBleedingEdge/etc/mono/4.5/settings.map",
+      "reason": null,
+      "sha256": "ce1db1ad8a9512073164e3eccdc193f7eda036e1a9733caec4635de21b2865c8"
+    },
+    {
+      "action": "retain",
+      "bytes": 18811,
+      "crc32": "4f48bc13",
+      "path": "MonoBleedingEdge/etc/mono/4.5/web.config",
+      "reason": null,
+      "sha256": "c4cbddd4fd9347b58cc5a72b36dc4ba1ad2bb699e65869d05cd3fb9865f0d824"
+    },
+    {
+      "action": "retain",
+      "bytes": 311984,
+      "crc32": "ce6c0ab3",
+      "path": "MonoBleedingEdge/etc/mono/browscap.ini",
+      "reason": null,
+      "sha256": "4ddd50f31fb968f30bedefc253a46dc3f2890192d05cdaa9e0a64a056eee807e"
+    },
+    {
+      "action": "retain",
+      "bytes": 3815,
+      "crc32": "88fa6d93",
+      "path": "MonoBleedingEdge/etc/mono/config",
+      "reason": null,
+      "sha256": "5776169973a26a387b8b3e5c0f2301a7ab9a6dd7c7d3efa22a96abc47fbf8662"
+    },
+    {
+      "action": "retain",
+      "bytes": 25817,
+      "crc32": "80b2033a",
+      "path": "MonoBleedingEdge/etc/mono/mconfig/config.xml",
+      "reason": null,
+      "sha256": "0c56e34c69124510fa8c19e7b4c2ca6c1c4ff460ae19f798dd0ca035809e396d"
+    },
+    {
+      "action": "retain",
+      "bytes": 1772976,
+      "crc32": "960ef198",
+      "path": "UnityCrashHandler64.exe",
+      "reason": null,
+      "sha256": "43083969db7c0093b63a7f5bb3bd7b1777cdb727c8456adbd46fe7bad2e45158"
+    },
+    {
+      "action": "retain",
+      "bytes": 38669232,
+      "crc32": "df7b399d",
+      "path": "UnityPlayer.dll",
+      "reason": null,
+      "sha256": "8698332fa0d299291b58e71a505db6f20a8f291a2b7349421f93a4f9838ed895"
+    },
+    {
+      "action": "retain",
+      "bytes": 206904,
+      "crc32": "9db0db97",
+      "path": "dstorage.dll",
+      "reason": null,
+      "sha256": "cae65787f61514bec6f012f44546e68b19e39d8854a9ab52af813370d44b272a"
+    },
+    {
+      "action": "retain",
+      "bytes": 1482784,
+      "crc32": "8466a159",
+      "path": "dstoragecore.dll",
+      "reason": null,
+      "sha256": "cf85b19a92a8276f8baca0db9bbcd60735bad50768deb303d310e84d5f4fdd11"
+    }
+  ],
+  "policy_version": 1,
+  "purpose": "safe derivative candidate packaging only",
+  "reproducibility": {
+    "compression": "DEFLATE level 9",
+    "entry_time": [
+      1980,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    "order": "Unicode path sort",
+    "python": "3.12.14",
+    "same_toolchain_required": true,
+    "zlib": "1.3.2"
+  },
+  "schema_version": 1,
+  "source": {
+    "all_entry_crc_validated": true,
+    "bytes": 73166499,
+    "entries": 186,
+    "filename": "HappyToyV2-TEST-Windows64-build8.zip",
+    "sha256": "fde361d88b69e4c2ee48bdbf5d71c631bcea9bf2bae2658ab4fb315d0be3b67f",
+    "unchanged_after_packaging": true
+  },
+  "status": "NOT_RELEASE_READY",
+  "validation": {
+    "app_info": "Happy Toy\nHappy Toy V2 — Development",
+    "boot_config": "gfx-enable-gfx-jobs=1\ngfx-threading-mode=6\nwait-for-native-debugger=0\nhdr-display-enabled=0\ngc-max-time-slice=3\nbuild-guid=adaef4368bf044c4b3c75bd615a1993c\n",
+    "compiled_scene_files": [
+      "HappyToyV2_Data/level0"
+    ],
+    "development_build_flag": "NOT DETERMINED; inspect build settings/log and rebuild if necessary",
+    "development_name_marker_present": true,
+    "native_pe_x64_headers": [
+      "HappyToyV2.exe",
+      "UnityPlayer.dll",
+      "UnityCrashHandler64.exe",
+      "D3D12/D3D12Core.dll",
+      "dstorage.dll",
+      "dstoragecore.dll",
+      "MonoBleedingEdge/EmbedRuntime/mono-2.0-bdwgc.dll",
+      "MonoBleedingEdge/EmbedRuntime/MonoPosixHelper.dll",
+      "HappyToyV2_Data/Plugins/x86_64/lib_burst_generated.dll"
+    ],
+    "preserved_test_named_assemblies": [
+      "Unity.Collections.Tests.CoreCLR.InternalJobNestedPrivate.dll",
+      "Unity.Collections.Tests.CoreCLR.PrivateJobNested.dll",
+      "Unity.Collections.Tests.CoreCLR.ProtectedJobNested.dll",
+      "Unity.Collections.Tests.CoreCLR.PublicJobPrivateGeneric.dll"
+    ],
+    "referenced_managed_assemblies_present": 118,
+    "required_files": [
+      "HappyToyV2.exe",
+      "UnityPlayer.dll",
+      "UnityCrashHandler64.exe",
+      "D3D12/D3D12Core.dll",
+      "dstorage.dll",
+      "dstoragecore.dll",
+      "MonoBleedingEdge/EmbedRuntime/mono-2.0-bdwgc.dll",
+      "MonoBleedingEdge/EmbedRuntime/MonoPosixHelper.dll",
+      "MonoBleedingEdge/etc/mono/config",
+      "HappyToyV2_Data/Managed/Assembly-CSharp.dll",
+      "HappyToyV2_Data/Managed/mscorlib.dll",
+      "HappyToyV2_Data/Managed/netstandard.dll",
+      "HappyToyV2_Data/Plugins/x86_64/lib_burst_generated.dll",
+      "HappyToyV2_Data/Resources/unity default resources",
+      "HappyToyV2_Data/Resources/unity_builtin_extra",
+      "HappyToyV2_Data/RuntimeInitializeOnLoads.json",
+      "HappyToyV2_Data/ScriptingAssemblies.json",
+      "HappyToyV2_Data/app.info",
+      "HappyToyV2_Data/boot.config",
+      "HappyToyV2_Data/globalgamemanagers",
+      "HappyToyV2_Data/globalgamemanagers.assets",
+      "HappyToyV2_Data/globalgamemanagers.assets.resS",
+      "HappyToyV2_Data/level0",
+      "HappyToyV2_Data/resources.assets",
+      "HappyToyV2_Data/resources.assets.resS",
+      "HappyToyV2_Data/sharedassets0.assets",
+      "HappyToyV2_Data/sharedassets0.assets.resS"
+    ],
+    "required_files_present_nonempty": true
+  }
+}
