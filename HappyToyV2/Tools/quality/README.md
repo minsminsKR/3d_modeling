@@ -1,4 +1,14 @@
-# Current recovery/flow verification: build #13 SUCCESS, 40/40
+# Current perceived-tension verification: build #14 SUCCESS, 44/44
+
+Exact source c6b0c1a3 passed 6 EditMode + 38 PlayMode and Windows export. Four new
+cases prove sensory-only integration, hearing/deferred rejection, bounded aftermath/
+cleanup and actual PCM. All prior 40 tests stay intact. All 36 artifacts hash-verify;
+new 7.3 s stereo output has five exact-silence controls, nonzero intended phases,
+zero clipping and bed-to-nearby-contact RMS .12678. Existing enemy WAV/JSON match #13.
+Source/API preflight remains separate from the original XML/log/ZIP/PCM evidence in
+Verification/cloud-tests/build-14-*. Factual docs need no additional Unity run.
+
+# Previous recovery/flow verification: build #13 SUCCESS, 40/40
 
 Exact source b1ca9e86 passed 6 EditMode + 34 PlayMode and Windows export. Three new
 cases verify real physical sprint/stamina, paused nursery comfort changes and

@@ -1,20 +1,50 @@
 # Unity Build Automation: real scene tests
 
-## Next source: perceived tension (44-case engine verification pending)
+## Latest result: build #14 SUCCESS, 44/44 tests
 
-A new player-local pulse/air layer responds only to accepted actual recognition
-and genuinely audible emitted enemy contacts/attacks. It settles after evidence
-stops, ducks beneath useful cues, respects mute/pause/comfort, and clears on terminal
-transitions. Existing room/floor beds now read this sensory history instead of
-unseen Chase flags. Movement, AI rules, item resources, authored scene and visual effects remain unchanged.
+Tested/exported source: `c6b0c1a308b7c797ff4d7216b62b9e2bbfd87288`.
+[Exact-source CI 37213684330](https://github.com/minsminsKR/3d_modeling/actions/runs/37213684330)
+passed. Original XML confirms **6 EditMode + 38 PlayMode**, zero failures/skips/
+inconclusive. Every prior 40 case remains, plus four new perceived-tension cases:
 
-Four new PlayMode fixtures preserve all 40 existing cases; expected total is
-6 EditMode + 38 PlayMode. A bounded 12-segment 7.3 s real-output WAV+JSON extends the
-transport from 34 to 36 files, retaining the 16 MB aggregate / 1.5 MB per-file limits.
-Source compilation is separate from pending engine/PCM/export verification.
-See `Verification/perceived-tension/`; the latest verified player is #13 below.
+- Genuine unheard/static Chase and silent other-floor negative controls; actual
+  unseen NavMesh foot contacts and true attack emission integrate with the new layer
+- Physical wall/floor attenuation, finite distance, stopped/muted/disabled/paused
+  sources, master zero and invalidation after queuing reject unearned/latent cues
+- True visual recognition, original four-second coalescing, bounded weaker-contact
+  aftermath, frozen pause, peaceful restoration and native retry cleanup
+- Actual main-output PCM for quiet, onset, aftermath, eventual quiet, useful contact
+  alone/new bed alone/combined, master zero, pause/resume, comfort and result silence
 
-## Latest result: build #13 SUCCESS, 40/40 tests
+All **36** envelopes hash-verify (11,986,056 bytes). The new indexed stereo WAV is
+48 kHz, 350,400 frames / 7.3 s / 1,401,644 bytes, SHA256
+`6aef9286757b356f799058a337d287e4c39704d453ff213ff48e32a9e3350cde`.
+Independent signed16 recomputation matches all twelve segment metrics. Five silence
+controls are exactly zero; all intended audible segments are nonzero and unclipped.
+Bed-only/nearby Hwacat-contact RMS is **0.12678062**, below the .3 gate; the combined
+segment preserves the real contact volume and observes only the new bed duck.
+Pulse cadence follows stress; comfort uses steady pitch 1 and lower gain.
+These are disjoint controlled excerpts with declared waits/flushes, not continuous
+survival audio, subjective masking/fear, or device-listening certification.
+
+The old 17-segment enemy-acoustics WAV/JSON remain byte-identical to #13. Existing
+real camera/UI tests pass; representative corridor/HUD images were read and are
+byte-identical to #13. The new layer adds no visual effect. The unchanged real-input
+seven-record strategy passed in 79.441368 s / 237.841583 m with all encounter owners,
+four stair legs, one hiding entry and two firecrackers.
+
+Terminal SUCCESS and Windows export are confirmed. Original ZIP is **73,182,740
+bytes / 186 CRC-valid entries**, root `HappyToyV2.exe`, new production tension code,
+scene/runtime present and no project test/NUnit assemblies. SHA256:
+`f4eda8910f3f69b59c28a5e086fbdcd6a0829fcd5097552495eba79e602aa198`.
+Original archive retained unchanged, including its original Burst backup text.
+Final log is 2,339,373 bytes, SHA256
+`a16de63b3737e6427726bc10831f0421755255957a6e0de97a2a296adfbbe27b`,
+with zero C# errors and zero targeted initialization warnings. See
+`Verification/cloud-tests/build-14-*` for hashes, XML cases and scope. Subsequent
+factual documentation changes do not change the tested/exported source.
+
+## Previous result: build #13 SUCCESS, 40/40 tests
 
 Tested/exported source: `b1ca9e86efa60c0159e03556b91c95228b896644`.
 [Exact-source CI 37208046390](https://github.com/minsminsKR/3d_modeling/actions/runs/37208046390)

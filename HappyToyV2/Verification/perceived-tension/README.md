@@ -1,5 +1,11 @@
 # Perceived tension soundscape: source preflight
 
+Subsequent actual result: UBA #14 at c6b0c1a3 passed all 44 tests (6 EditMode +
+38 PlayMode) and Windows export. New 7.3 s stereo PCM passes the quiet/aftermath/
+headroom/control gates; independently measured bed/contact RMS is .12678. All
+36 artifacts verify. Exact results are in ../cloud-tests/build-14-*; preflight
+below remains distinct from runtime evidence.
+
 This is an original player-local horror-pacing layer. Quiet exploration can become
 uneasy after genuinely audible enemy contacts; accepted real recognition raises a
 stronger subjective pulse/air bed. The aftermath settles instead of instantly
@@ -50,6 +56,5 @@ Independent review found no remaining must-fix. 80 Python cases, 143 existing
 pure C# assertions, 107 C# syntax/metadata checks (880 GUIDs), protected-scene
 hashes and seven genuine Unity API compiler configurations pass. Existing compiler
 warnings remain; no engine execution is implied by compilation. Exact source
-fingerprints and reports are recorded here. Actual 44-case engine
-verification (6 EditMode + 38 PlayMode), new PCM and Windows export are PENDING until
-one pinned UBA run completes. Existing verified build #13 remains available.
+fingerprints and reports are recorded here. Actual 44-case engine verification, new PCM and Windows export were PENDING at
+preflight and subsequently passed in build #14. Both original players are retained.
