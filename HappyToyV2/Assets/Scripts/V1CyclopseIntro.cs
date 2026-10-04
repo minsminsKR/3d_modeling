@@ -31,6 +31,7 @@ namespace HappyToy.V2
         public bool StagingWasOccluded { get; private set; }
         AudioClip roar;
         AudioSource voice;
+        GameObject voiceEmitter;
         GameSession session;
         StalkerBrain actor;
         NavMeshAgent agent;
@@ -208,7 +209,11 @@ namespace HappyToy.V2
             Phase = "roar"; EnemyNavigation.Stop(agent, true);
             var facing = session.player.transform.position - brain.transform.position; facing.y = 0;
             if (facing.sqrMagnitude > .01f) brain.transform.rotation = Quaternion.LookRotation(facing);
-            voice = brain.gameObject.AddComponent<AudioSource>(); voice.playOnAwake = false;
+            // The actor already has its movement filter. Configure a fresh inactive
+            // emitter before activation rather than auto-playing an empty root source.
+            voiceEmitter = new GameObject("Cyclopse intro voice"); voiceEmitter.SetActive(false);
+            voiceEmitter.transform.SetParent(brain.transform, false);
+            voice = voiceEmitter.AddComponent<AudioSource>(); voice.playOnAwake = false;
             voice.spatialBlend = 1; voice.minDistance = 2; voice.maxDistance = 18; voice.volume = .6f;
             var acoustics = EnemyAcoustics.Bind(voice, brain.transform, .6f);
             // V1's two descending sawtooth voices, bandpass at 245 Hz (Q .85).
@@ -222,7 +227,8 @@ namespace HappyToy.V2
                 float x=(.23f*(2*(float)(phaseA%1)-1)+.15f*(2*(float)(phaseB%1)-1))*Mathf.Exp(-10*t);
                 float y=b0*x+b2*x2-a1*y1-a2*y2;samples[i]=y;x2=x1;x1=x;y2=y1;y1=y;
             }
-            roar=AudioClip.Create("V1 Cyclopse descending roar",samples.Length,1,rate,false);roar.SetData(samples,0);voice.PlayOneShot(roar);RoarPlayed=true;RoarCount++;
+            roar=AudioClip.Create("V1 Cyclopse descending roar",samples.Length,1,rate,false);roar.SetData(samples,0);
+            voiceEmitter.SetActive(true);voice.PlayOneShot(roar);RoarPlayed=true;RoarCount++;
             if(session.player.eyes&&session.Shell&&
                 Vector3.Distance(session.player.eyes.transform.position,voice.transform.position)<=voice.maxDistance&&acoustics.IsAudible(voice))
                 session.Shell.ShowCaption("[복도 끝 · 낮게 가라앉는 포효]", 2.6f, 1);
@@ -238,7 +244,7 @@ namespace HappyToy.V2
             if (!SessionValid || !brain.gameObject.activeInHierarchy || !EnemyNavigation.Ready(agent))
             { Cancel(); yield break; }
             RestoreAgentSettings(); agent.isStopped = false; brain.enabled = true;
-            Phase = "done"; Completed = true;
+            Phase = "done"; Completed = true; ReleaseVoice();
         }
         static bool ValidLivePath(NavMeshPath path, Vector3 destination)
         {
@@ -255,7 +261,7 @@ namespace HappyToy.V2
         }
         void ReleaseBlocked(string reason)
         {
-            FailureReason = reason;
+            FailureReason = reason; ReleaseVoice();
             if (!SessionValid || !actor.gameObject.activeInHierarchy) { Cancel(); return; }
             // A newly blocked door/agent must not cause a visible teleport or a
             // false arrival/roar. Let ordinary AI recover from this exact position.
@@ -267,11 +273,21 @@ namespace HappyToy.V2
         public void Cancel()
         {
             Phase = "resolved";
-            if (voice) voice.Stop();
+            ReleaseVoice();
             EnemyNavigation.Stop(agent, true); RestoreAgentSettings();
             if (actor) { actor.enabled = false; actor.gameObject.SetActive(false); }
         }
+        void ReleaseVoice()
+        {
+            if (voice) voice.Stop();
+            // Stop/deactivate immediately; deferred destruction must not leave a
+            // cancelled cue or its source/filter ticking through the rest of a frame.
+            if (voiceEmitter) { voiceEmitter.SetActive(false); Destroy(voiceEmitter); }
+            voice = null; voiceEmitter = null;
+            if (roar) Destroy(roar);
+            roar = null;
+        }
         void OnDisable() { Cancel(); }
-        void OnDestroy() { Cancel(); if (roar) Destroy(roar); if (voice) Destroy(voice); }
+        void OnDestroy() { Cancel(); }
     }
 }

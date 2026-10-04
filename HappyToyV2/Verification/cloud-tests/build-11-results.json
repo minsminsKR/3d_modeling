@@ -1,0 +1,314 @@
+{
+  "build": 11,
+  "commit": "a7c68b149ecb570b7a2d8dd47b7e6a9bfca276e5",
+  "source_ci": {
+    "id": 37202392630,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "expected_tests": {
+    "editmode": 6,
+    "playmode": 31
+  },
+  "expected_evidence_envelopes": 34,
+  "target": "happytoyv2-windows64-pr7",
+  "unity_version": "6000.6.0f1",
+  "machine": "Windows Micro",
+  "status": "SUCCESS",
+  "purpose": "Personal-use monster timbre and acoustic geometry verification",
+  "tests": {
+    "editmode": {
+      "testcasecount": "6",
+      "result": "Passed",
+      "total": "6",
+      "passed": "6",
+      "failed": "0",
+      "skipped": "0",
+      "inconclusive": "0",
+      "duration": "7.6305075",
+      "start-time": "2026-10-04 12:44:15Z",
+      "end-time": "2026-10-04 12:44:22Z",
+      "path": "build-11-editmode.xml",
+      "bytes": 7801,
+      "sha256": "f4710b7006388a151d85bf870f6521d1153480ddb8e48cc16fb9cfc1e24548f1",
+      "cases": [
+        {
+          "name": "ActualEnemyAttackClockPassesAll29Checks",
+          "result": "Passed",
+          "duration": "0.020927"
+        },
+        {
+          "name": "ActualSceneRestartGatePassesAll26Checks",
+          "result": "Passed",
+          "duration": "0.001107"
+        },
+        {
+          "name": "ActualStealthRulesPassAll68Checks",
+          "result": "Passed",
+          "duration": "0.003117"
+        },
+        {
+          "name": "ActualSurfaceRippleBufferPassesAll20Checks",
+          "result": "Passed",
+          "duration": "0.001684"
+        },
+        {
+          "name": "ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles",
+          "result": "Passed",
+          "duration": "7.575590"
+        },
+        {
+          "name": "TargetEditorAndGameplayAssemblyIdentitiesArePreserved",
+          "result": "Passed",
+          "duration": "0.000898"
+        }
+      ]
+    },
+    "playmode": {
+      "testcasecount": "31",
+      "result": "Passed",
+      "total": "31",
+      "passed": "31",
+      "failed": "0",
+      "skipped": "0",
+      "inconclusive": "0",
+      "duration": "275.1451982",
+      "start-time": "2026-10-04 12:45:15Z",
+      "end-time": "2026-10-04 12:49:50Z",
+      "path": "build-11-playmode.xml",
+      "bytes": 14414856,
+      "sha256": "6d3503d2dc047e2f20cd8a84c4c6b1488d7a9d8eb8f4c48b7345099d3e1b010b",
+      "cases": [
+        {
+          "name": "ActualRecognitionStaticIsOcclusionBoundedAndPauseSafe",
+          "result": "Passed",
+          "duration": "11.256665"
+        },
+        {
+          "name": "AllCabinetsHaveActualSlitsAndOutwardViewsAfterCrouchedEntry",
+          "result": "Passed",
+          "duration": "4.896500"
+        },
+        {
+          "name": "AnnexPresentationPreservesOriginalInteractionAndCrossingAccess",
+          "result": "Passed",
+          "duration": "2.165505"
+        },
+        {
+          "name": "AnnexPresentationProducesActualPlayerEyeRoomFrames",
+          "result": "Passed",
+          "duration": "9.517174"
+        },
+        {
+          "name": "AnnexPresentationStaysBoundedAcrossEnableAndReload",
+          "result": "Passed",
+          "duration": "3.072857"
+        },
+        {
+          "name": "AttackWarningPausesAndDodgeWorksBeforeLethalContact",
+          "result": "Passed",
+          "duration": "4.116637"
+        },
+        {
+          "name": "AuthoredEnemyFamiliesBindDistinctCuesAndLanternChangesNaturally",
+          "result": "Passed",
+          "duration": "7.629588"
+        },
+        {
+          "name": "AuthoredNavigationReachesAllMandatoryRecords",
+          "result": "Passed",
+          "duration": "2.175905"
+        },
+        {
+          "name": "AuthoredSevenRecordRouteSurvivesWithRealMovementAndInteraction",
+          "result": "Passed",
+          "duration": "81.447678"
+        },
+        {
+          "name": "CabinetWitnessCannotBeInventedOrErasedByRepeatedEntry",
+          "result": "Passed",
+          "duration": "16.947048"
+        },
+        {
+          "name": "CrouchUsesActualCapsuleAndOnlyMovingFeetMakeNoise",
+          "result": "Passed",
+          "duration": "3.801071"
+        },
+        {
+          "name": "CyclopseCornerWalkCancelsOnRestorationWithoutReactivation",
+          "result": "Passed",
+          "duration": "5.065273"
+        },
+        {
+          "name": "CyclopseUnsafeStagingDefersAndRetriesAfterThePlayerMoves",
+          "result": "Passed",
+          "duration": "14.542930"
+        },
+        {
+          "name": "CyclopseWalksAnOccludedCornerWithPauseAndSingleRoar",
+          "result": "Passed",
+          "duration": "14.908849"
+        },
+        {
+          "name": "EnemyAttackUsesDistinctCueOnceAndReloadDestroysOwnedAudio",
+          "result": "Passed",
+          "duration": "5.730479"
+        },
+        {
+          "name": "EnemyMovementAudioFollowsTravelAndSurvivesPauseAndWarp",
+          "result": "Passed",
+          "duration": "6.368114"
+        },
+        {
+          "name": "FirecrackerDenialsStayLocalAndNeverOverwriteRecords",
+          "result": "Passed",
+          "duration": "4.691817"
+        },
+        {
+          "name": "FirecrackerFirstPopIsSingleAndComfortSettingsApplyWhilePaused",
+          "result": "Passed",
+          "duration": "4.635751"
+        },
+        {
+          "name": "FirecrackerRestartDestroysEffectsAndResetsItsFeedback",
+          "result": "Passed",
+          "duration": "3.134119"
+        },
+        {
+          "name": "FlashlightSwitchKeepsSoundAndControlWithoutStateText",
+          "result": "Passed",
+          "duration": "1.581065"
+        },
+        {
+          "name": "KoreanMenusRenderAcrossSupportedAspectRatios",
+          "result": "Passed",
+          "duration": "2.789620"
+        },
+        {
+          "name": "LanternInvestigatesItsOwnFloorWhilePlayerIsUpstairs",
+          "result": "Passed",
+          "duration": "1.915058"
+        },
+        {
+          "name": "LostSightSearchScansLocallyWithoutTrackingThroughCover",
+          "result": "Passed",
+          "duration": "11.369296"
+        },
+        {
+          "name": "PauseJournalAndMixedRestartRequestsKeepTheirDestination",
+          "result": "Passed",
+          "duration": "4.559913"
+        },
+        {
+          "name": "RealAuthoredCameraProducesRenderAndTimingEvidence",
+          "result": "Passed",
+          "duration": "2.621889"
+        },
+        {
+          "name": "RealEnemyMixProvesIdentitySpatialAttenuationAndControls",
+          "result": "Passed",
+          "duration": "13.871565"
+        },
+        {
+          "name": "RealFirecrackerInputDistractsAndExpiresWithoutInfiniteInventory",
+          "result": "Passed",
+          "duration": "14.573082"
+        },
+        {
+          "name": "RealFootstepsDriveHearingAndRecognitionRespectsCover",
+          "result": "Passed",
+          "duration": "2.900738"
+        },
+        {
+          "name": "RealListenerMixCapturesDuringFlashlightInputAndPauseSilence",
+          "result": "Passed",
+          "duration": "3.284410"
+        },
+        {
+          "name": "TitleAndRequiredRecordsGateRealEscape",
+          "result": "Passed",
+          "duration": "1.498777"
+        },
+        {
+          "name": "UnreachableSearchEvidenceTimesOutWithoutInventingTarget",
+          "result": "Passed",
+          "duration": "8.018871"
+        }
+      ]
+    }
+  },
+  "evidence_envelopes": [
+    "HAPPYTOY_ARTIFACT_BEGIN recognition-static-ui.png 161897 8bbc3998f987b652ae74a889635a3687a77fb71f0535fb3b9ebb4456c12600ba 53",
+    "HAPPYTOY_ARTIFACT_BEGIN recognition-softened-ui.png 45531 78f7b3852ab78dbf9071461b792f2dbf18f451d99ea86e21a874e25fe03439b5 15",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-0-standing-world-camera.png 62735 e55d3ea9c29b8a59fb82b6e55ac47f7a0db85a76a9ce31c25ce2d3a9686b03b8 21",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-0-crouched-wide-world-camera.png 83325 a969a4e4c6c3dc244f13a040c3d45e5cecffc2a70aaae438220e4e2bc32012a4 28",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-1-standing-world-camera.png 68705 9b34330e9c91175efd931e9858de41f34e682c4c7360e7e4add4bbe80a2ce38a 23",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-1-crouched-wide-world-camera.png 86627 16ab76546247e64fdb7e1db273c56bed73864e46d6f09c81ed78cc143abec3c3 29",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-2-standing-world-camera.png 75059 ea149534214ce2f03f5c27d9220ad8c5be99be52d0fa5a58f51b426095615b46 25",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-2-crouched-wide-world-camera.png 88376 51be9c61ad848e8c6517b2627215d09931b61124b0373f3c329b6130f06985bc 29",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-music-entry.png 935233 b623f4632fa1ac8a069012cb3dd06b779337070a5687ac3130c69ee710e55c30 305",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-piano-board.png 750579 27292b54408f5fe654ccd43d8112e62da9e8969bfdc2b60cd1e3be84749d3b9a 245",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-upper-stair-approach.png 1044016 b1c054b1aaa84eccae8c15df115816622dc5958fcd18dbaba9496fae358fe6b8 340",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-upper-reverse.png 691718 f582ddd4002024f21bba7443c7c0290c02ab342e8aaa5327f4e7e72ddf4794bb 226",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-music-rows-reverse.png 891145 a1f6e0c6d7be15f9799315d67a5f40aca0b6e5866306f4e41edaf4459ca7d22f 291",
+    "HAPPYTOY_ARTIFACT_BEGIN hiding-unseen-item-feedback-large-720p.png 66479 322fb3bb82d904eb4200ab07ce6f4adaf1349203c551c9df695ba8075a3d220a 22",
+    "HAPPYTOY_ARTIFACT_BEGIN hiding-door-warning-large-720p.png 66595 cfc05af8779b54d5978be2e241cddfdfb5fc95eb9c531032574a66b56c4a13ea 22",
+    "HAPPYTOY_ARTIFACT_BEGIN cyclopse-01-occluded-activation.png 535030 0748e06f9015cd53713f1400b39cd3f82145249f7a69c496681b2b3ba8e1164b 175",
+    "HAPPYTOY_ARTIFACT_BEGIN cyclopse-02-first-visible-walk.png 535849 adfcdb90388c6fe924c52ce15c06ac4a837a72919c0bd978cff8395ee8bc9457 175",
+    "HAPPYTOY_ARTIFACT_BEGIN cyclopse-03-corner-turn.png 536436 ffe3d85d296583671ff170e4b8a3c4bc087a58b4ad30ad13ddf7c98800382566 175",
+    "HAPPYTOY_ARTIFACT_BEGIN cyclopse-04-arrived-roar.png 537555 aff401629c5a7ecb1b9de2d383397de0d8e4801a1c96e13e2c4a643b7b79c9bd 175",
+    "HAPPYTOY_ARTIFACT_BEGIN title-720p.png 96197 a9356de6476086362d46b9f13ebafdcd62f3daac8caebb629534602413320da4 32",
+    "HAPPYTOY_ARTIFACT_BEGIN settings-large-1280x720.png 86861 e8e2c58377c5d3da3022ffc7d2adc3330342e244e341c3f017c6f169d684864b 29",
+    "HAPPYTOY_ARTIFACT_BEGIN settings-large-1024x768.png 69524 b74446b4943b973a5f49f56fa4bda1cbc5b859cd3c9940fa95e6f2702d8cfbad 23",
+    "HAPPYTOY_ARTIFACT_BEGIN settings-large-2560x1080.png 156834 e564dde507a9bf3f37215f3fc0711694e3702b6fd5d2a6bbe574a4654ded5020 52",
+    "HAPPYTOY_ARTIFACT_BEGIN title-large-720p.png 105926 92e62060a2f80d317dac09852813c5dc25ba49e2b38e3a8304ea21716aed7247 35",
+    "HAPPYTOY_ARTIFACT_BEGIN pause-large-4x3.png 79415 ac1ee026a8fb5b86b3983f3105a053fb022d7a95fc652d574fcf59dea06ca369 26",
+    "HAPPYTOY_ARTIFACT_BEGIN hud-large-720p.png 51673 917714f02a2fc791d80bb15c4e17d339ffde13b994bc6f76cd51bd6afc62a494 17",
+    "HAPPYTOY_ARTIFACT_BEGIN journal-1080p.png 134332 368daf69523323250841bdfaf4232d9b43b649200ddaa97b6f937d63fb5fa3e3 44",
+    "HAPPYTOY_ARTIFACT_BEGIN authored-start-camera.png 650842 a8b82f0d2398d705e1afd3fcbfb7fda5cd94357766322818627f329a8d3bab5b 212",
+    "HAPPYTOY_ARTIFACT_BEGIN enemy-movement-acoustics.wav 1393964 efdf6dc7a9ed5d4c32c621693f165e2d6df8104561d3b000445e0abcb091a582 454",
+    "HAPPYTOY_ARTIFACT_BEGIN enemy-movement-acoustics.json 29459 7cac95affd7332a8ee2b7f804262cd841bcb1d7344ebbce19fc4fc60a08d4175 10",
+    "HAPPYTOY_ARTIFACT_BEGIN diagnostic-listener-before-render.json 17372 d492a5d87fb44452f2d29e685d4e4b29f309d26567c32ad37a97f16fffad12f3 6",
+    "HAPPYTOY_ARTIFACT_BEGIN diagnostic-listener-before-render.wav 192044 bb766f7d426529760dd2ef67fb1d2c257ae161825c260dbfeb87390f2d477829 63",
+    "HAPPYTOY_ARTIFACT_BEGIN listener-flashlight-ambience.wav 192044 f3ca42a8e6774bb787ca88a690a66f7650622857bb273319c639d17305e8944b 63",
+    "HAPPYTOY_ARTIFACT_BEGIN listener-paused.wav 48044 c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b 16"
+  ],
+  "zip": {
+    "path": "HappyToyV2-Windows64-build11.zip",
+    "bytes": 73179181,
+    "sha256": "b2c4edeac361de696d14f5003651b9a12dd0acaa3c55056f3ff126881650778d",
+    "entries": 186,
+    "crc_error": null,
+    "executables": [
+      "HappyToyV2.exe",
+      "UnityCrashHandler64.exe"
+    ],
+    "runtime_dll": [
+      "HappyToyV2_Data/Managed/Assembly-CSharp.dll",
+      "UnityPlayer.dll"
+    ],
+    "scene_files": [
+      "HappyToyV2_Data/level0"
+    ],
+    "test_assemblies": [],
+    "debug_backup": [
+      "HappyToyV2_BackUpThisFolder_ButDontShipItWithYourGame/x86_64/lib_burst_generated.txt"
+    ]
+  },
+  "timing": {
+    "total": "00:20:22",
+    "queue": "00:06:45",
+    "checkout": "00:02:10",
+    "billable": "00:13:36",
+    "unit_tests": "00:06:55"
+  },
+  "final_log": {
+    "path": "build-11-final.log",
+    "bytes": 2390928,
+    "sha256": "96f859dcd0180ec936903c3f067c1e60cf69476ae39974e4bd4fda36fe412b49",
+    "success_marker": true,
+    "csharp_error_count": 0,
+    "audio_initialization_warning_count": 40
+  },
+  "interpretation": "Actual Unity37/37 and Windows player pass at a7c68b1.40empty-filter startup warnings remain in this build; follow-up correction requires separate engine verification."
+}

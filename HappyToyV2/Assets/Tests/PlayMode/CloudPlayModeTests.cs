@@ -25,6 +25,7 @@ namespace HappyToy.V2.CloudTests
         readonly Dictionary<string, float> floats = new Dictionary<string, float>();
         readonly Dictionary<string, int> ints = new Dictionary<string, int>();
         readonly HashSet<string> existing = new HashSet<string>();
+        readonly List<string> audioInitializationWarnings = new List<string>();
         float oldTimeScale, oldVolume;
         bool oldAudioPause, oldBackgroundRun;
         int oldFrameRate;
@@ -39,6 +40,8 @@ namespace HappyToy.V2.CloudTests
         [UnitySetUp]
         public IEnumerator LoadRealAuthoredScene()
         {
+            audioInitializationWarnings.Clear();
+            Application.logMessageReceived += ObserveAudioInitialization;
             oldTimeScale = Time.timeScale; oldVolume = AudioListener.volume; oldAudioPause = AudioListener.pause;
             oldBackgroundRun = Application.runInBackground; oldFrameRate = Application.targetFrameRate;
             oldCursorLock = UnityEngine.Cursor.lockState; oldCursorVisible = UnityEngine.Cursor.visible;
@@ -93,6 +96,7 @@ namespace HappyToy.V2.CloudTests
             }
             finally
             {
+                Application.logMessageReceived -= ObserveAudioInitialization;
                 // Cleanup only: don't let a failed reload assertion poison another
                 // fixture. All behavior assertions above use real public game APIs.
                 try
@@ -114,6 +118,15 @@ namespace HappyToy.V2.CloudTests
                     session = player = shell = null;
                 }
             }
+            Assert.That(audioInitializationWarnings, Is.Empty,
+                "Empty filtered AudioSource attempted automatic playback during scene load, intro or retry: " +
+                string.Join("\n", audioInitializationWarnings));
+        }
+
+        void ObserveAudioInitialization(string message, string stack, LogType type)
+        {
+            if (message.StartsWith("Only custom filters can be played.", StringComparison.Ordinal))
+                audioInitializationWarnings.Add(message);
         }
 
         void Begin() { Call(shell, "Begin"); Assert.That(Get<bool>(session, "InputAllowed"), Is.True); }

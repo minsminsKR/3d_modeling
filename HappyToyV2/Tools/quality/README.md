@@ -1,14 +1,15 @@
-# Enemy-audio source follow-up: engine execution pending
+# Enemy-audio build #11 passed; startup correction pending
 
-Four new fixtures preserve the previous 33 cases, bringing the suite to 37
-(6 EditMode + 31 PlayMode). They cover actual movement/attack lifecycle and
-positioned, isolated production-source PCM with physical wall/slab fixtures.
-Seventeen indexed segments form one native 48 kHz stereo WAV (7.26 s) plus JSON;
-the strict extractor now permits 34 files, still bounded by 16 MB aggregate and
-1.5 MB each. The original 32 build-10 envelopes decode unchanged. Empty Render
-pumps still contribute zero samples; existing strict capture gates are unchanged.
-See `Verification/enemy-audio/` for source/external-API checks. No new engine or
-Windows export pass is implied before the next exact-source UBA result.
+Exact source a7c68b1 passed all 37 actual cases (6 EditMode + 31 PlayMode), Windows
+export and the 17-segment native 48 kHz stereo PCM fixture. All 34 evidence envelopes
+were hash-decoded; original baseline32 are retained. The strict transport limit is
+34 files / 16 MB total / 1.5 MB each; empty Render calls add zero samples.
+See Verification/cloud-tests/build-11-* for exact hashes/PCM inspection.
+
+The same run exposed 40 empty-source initialization warnings. A narrow source-order/
+owned-emitter cleanup correction and warning regression are now source-tested;
+Verification/enemy-audio-startup records that separate preflight. Its actual 37-case
+engine rerun remains pending. No old passing result is reused as a new runtime pass.
 
 # Current personal-play verification: build #10
 

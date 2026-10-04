@@ -1,17 +1,45 @@
 # Unity Build Automation: real scene tests
 
-## Enemy-audio follow-up: source reviewed, actual engine verification pending
+## Latest enemy-audio result: build #11 SUCCESS, 37/37 actual tests
 
-The new follow-up distinguishes real movement/attack sounds by enemy family and
-adds bounded physical wall/floor muffling. Existing AI rules, scene bytes, resource
-limits and all 33 build-10 tests are retained. Four dedicated movement/lifecycle and actual main-output mixer fixtures have
-been added: 6 EditMode + 31 PlayMode = 37 cases. The original 33 are unchanged.
-The audio fixture exports 17 indexed segments (7.26 seconds at the actual 48 kHz
-stereo output), including an in-flight cue paused and resumed without replay.
-Direct-source acoustic replay is a controlled fixture, not a survival playthrough.
-Independent source review is complete; exact-source/API preflight is recorded in
-`Verification/enemy-audio/`. No new engine execution or Windows export is claimed
-yet. Build #10 remains the latest verified player.
+Tested/exported source: `a7c68b149ecb570b7a2d8dd47b7e6a9bfca276e5`.
+Both original XMLs confirm 6 EditMode + 31 PlayMode passed, zero failed/skipped/
+inconclusive. Exact-source CI37202392630 passed. All original 33 cases remain.
+Four new cases pass real NavMesh cadence, stationary/warp/pause and scripted walk,
+true attack/dodge/retry cleanup, authored profile binding and natural Lantern
+transformation, plus isolated main-output acoustic comparisons.
+
+All 34 envelopes hash-decode (10,567,421 bytes). The new WAV is 1,393,964 bytes,
+native 48 kHz signed16 stereo, 348,480 frames / 7.26 seconds in 17 indexed segments.
+Its SHA256 is `efdf6dc7a9ed5d4c32c621693f165e2d6df8104561d3b000445e0abcb091a582`.
+Independent PCM recomputation agrees with every reported peak/RMS/channel metric
+within one quantization step. Six identity segments are nonzero and distinct.
+Wall/clear RMS ratio is 0.378369; blocked-floor/open-vertical ratio is 0.139058.
+Left/right cues separate channels. Beyond-range, master-zero and paused segments
+contain only zero values. The same in-flight cue resumes without replay; four
+nearby Stalker sounds overlap without clipping (peak 0.225623). These are positioned,
+isolated production-source fixtures, not a device-listening or full-game balance verdict.
+
+Original Windows ZIP: 73,179,181 bytes / 186 CRC-valid entries, root `HappyToyV2.exe`,
+SHA256 `b2c4edeac361de696d14f5003651b9a12dd0acaa3c55056f3ff126881650778d`.
+Final log ends SUCCESS, zero C# errors. Original backup report remains; no derivative.
+Evidence and inspection: `Verification/cloud-tests/build-11-results.json` and
+`build-11-experience.json`. Original ZIP/XML/WAV are preserved separately.
+
+### Narrow initialization correction: engine verification pending
+
+Build #11 also emitted 40 new empty filtered-source startup warnings (38 Lantern,
+2 Cyclopse). Stack traces originate at AddComponent<AudioSource>, before explicit
+PlayOneShot; the later actual PCM tests passed. The follow-up orders Lantern's
+source creation before filter binding and configures Cyclopse's owned inactive
+emitter before activation. Temporary voice/filter/clip cleanup is explicit on
+completion/cancel/blocked release. No waveform, gameplay or acoustic tuning changes.
+Common PlayMode setup now fails on that exact warning through scene load/retry/unload;
+the existing intro case also checks native object destruction after handoff.
+Independent review and exact-source preflight are in `Verification/enemy-audio-startup/`.
+All 37 cases and strict mixer assertions remain; warning elimination and the revised
+Windows player require their own pinned engine run. #11 success is not retroactive
+runtime verification of this follow-up.
 
 ## Latest verified player-feedback result: build #10 SUCCESS, 33/33 actual tests
 

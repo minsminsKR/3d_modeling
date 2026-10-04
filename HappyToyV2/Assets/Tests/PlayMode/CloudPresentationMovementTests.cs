@@ -226,6 +226,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(actor.GetComponent(RequireType("StalkerFootsteps")), "StepsPlayed"), Is.GreaterThan(0));
             Assert.That(Vector3.Distance(actor.transform.position, Get<Vector3>(intro, "SelectedRevealPosition")), Is.LessThan(.3f));
             Assert.That(Get<int>(intro, "RoarCount"), Is.EqualTo(1));
+            var roarEmitter = actor.transform.Find("Cyclopse intro voice");
+            Assert.That(roarEmitter, Is.Not.Null, "Roar must own its configured emitter");
+            var roarSource = roarEmitter.GetComponent<AudioSource>();
+            Assert.That(roarSource, Is.Not.Null);
+            Assert.That(roarSource.playOnAwake, Is.False);
+            Assert.That(roarEmitter.localPosition, Is.EqualTo(Vector3.zero));
+            Assert.That(roarEmitter.GetComponents<AudioLowPassFilter>().Length, Is.EqualTo(1));
             CloudPresentationMovementTests.Capture(camera, "cyclopse-04-arrived-roar.png");
             position = actor.transform.position;
             Call(shell, "Pause"); yield return Delay(.25f);
@@ -234,6 +241,10 @@ namespace HappyToy.V2.CloudTests
             Call(shell, "Resume");
             yield return Wait(() => Get<bool>(intro, "Completed"), 3, "No AI handoff after roar", IntroDiagnostics);
             Assert.That(((Behaviour)actor).enabled, Is.True);
+            yield return null;
+            Assert.That(roarEmitter == null && roarSource == null, Is.True,
+                "Completed introduction left its temporary voice/filter object alive");
+            Assert.That(actor.transform.Find("Cyclopse intro voice"), Is.Null);
             Assert.That(Get<float>(actor, "patrolSpeed"), Is.EqualTo(patrolSpeed));
             Assert.That(Get<float>(actor, "chaseSpeed"), Is.EqualTo(chaseSpeed));
             Assert.That((bool)Call(session, "Collect", "ribbon"), Is.False);

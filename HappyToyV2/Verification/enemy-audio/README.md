@@ -1,5 +1,11 @@
 # Enemy identity and spatial audio source preflight
 
+Historical preflight for `a7c68b1`, subsequently executed in UBA #11: all37actual
+Unity tests and Windows export passed. See `../cloud-tests/build-11-results.json`
+and `build-11-experience.json` for original hashes and independently checked PCM.
+Forty empty-source startup warnings were observed; their narrow initialization
+correction has a separate preflight and must receive its own engine verification.
+
 Purpose: distinguish the four authored Stalker movement families, Lantern and its
 transformed form; separate Stalker attack anticipation from walking; make existing
 enemy cues respect bounded distance and actual obstruction. No AI speed, perception,
@@ -21,7 +27,8 @@ and actual-main-output PCM in explicitly positioned isolated fixtures. Seventeen
 segments preserve six identity cues, finite range, wall/slab/open vertical paths,
 stereo, master mute, an in-flight pause/resume and four-enemy overlap.
 
-PCM capture remains NOT RUN at this source-preflight stage. Intended output is one
+PCM capture was NOT RUN when this source preflight was created; the subsequent
+actual #11capture passed all17segments. Intended output is one
 7.26-second native 48 kHz stereo WAV and a segment/geometry/metric JSON. No synthetic
 PCM replaces mixer output. Physically audible event captions remain available under
 master mute; subtitles still follow their separate setting.

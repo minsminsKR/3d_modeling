@@ -39,8 +39,10 @@ namespace HappyToy.V2
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath(); floorY = transform.position.y;
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 16; sound.dopplerLevel = 0; sound.volume = .5f;
-            acoustics = EnemyAcoustics.Bind(sound, transform, .5f);
+            // Create both root sources before the first built-in filter. Adding an
+            // empty default-playOnAwake source to an already-filtered root warns.
             if (!GetComponent<StalkerFootsteps>()) gameObject.AddComponent<StalkerFootsteps>();
+            acoustics = EnemyAcoustics.Bind(sound, transform, .5f);
             const int rate = 24000;
             var data = new float[(int)(rate * .55f)];
             for (int i = 0; i < data.Length; i++)
