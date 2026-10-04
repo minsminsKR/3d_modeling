@@ -210,6 +210,7 @@ namespace HappyToy.V2
             if (facing.sqrMagnitude > .01f) brain.transform.rotation = Quaternion.LookRotation(facing);
             voice = brain.gameObject.AddComponent<AudioSource>(); voice.playOnAwake = false;
             voice.spatialBlend = 1; voice.minDistance = 2; voice.maxDistance = 18; voice.volume = .6f;
+            var acoustics = EnemyAcoustics.Bind(voice, brain.transform, .6f);
             // V1's two descending sawtooth voices, bandpass at 245 Hz (Q .85).
             const int rate=24000;var samples=new float[(int)(rate*.78f)];
             float omega=2*Mathf.PI*245/rate,alpha=Mathf.Sin(omega)/(2*.85f),a0=1+alpha;
@@ -223,7 +224,7 @@ namespace HappyToy.V2
             }
             roar=AudioClip.Create("V1 Cyclopse descending roar",samples.Length,1,rate,false);roar.SetData(samples,0);voice.PlayOneShot(roar);RoarPlayed=true;RoarCount++;
             if(session.player.eyes&&session.Shell&&
-                Vector3.Distance(session.player.eyes.transform.position,voice.transform.position)<=voice.maxDistance)
+                Vector3.Distance(session.player.eyes.transform.position,voice.transform.position)<=voice.maxDistance&&acoustics.IsAudible(voice))
                 session.Shell.ShowCaption("[복도 끝 · 낮게 가라앉는 포효]", 2.6f, 1);
             for (float elapsed = 0; elapsed < 1.3f || (session && !session.InputAllowed);)
             {

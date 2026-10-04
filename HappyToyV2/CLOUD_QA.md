@@ -1,12 +1,26 @@
 # Unity Build Automation: real scene tests
 
-## Latest player-feedback result: build #10 SUCCESS, 33/33 actual tests
+## Enemy-audio follow-up: source reviewed, actual engine verification pending
+
+The new follow-up distinguishes real movement/attack sounds by enemy family and
+adds bounded physical wall/floor muffling. Existing AI rules, scene bytes, resource
+limits and all 33 build-10 tests are retained. Four dedicated movement/lifecycle and actual main-output mixer fixtures have
+been added: 6 EditMode + 31 PlayMode = 37 cases. The original 33 are unchanged.
+The audio fixture exports 17 indexed segments (7.26 seconds at the actual 48 kHz
+stereo output), including an in-flight cue paused and resumed without replay.
+Direct-source acoustic replay is a controlled fixture, not a survival playthrough.
+Independent source review is complete; exact-source/API preflight is recorded in
+`Verification/enemy-audio/`. No new engine execution or Windows export is claimed
+yet. Build #10 remains the latest verified player.
+
+## Latest verified player-feedback result: build #10 SUCCESS, 33/33 actual tests
 
 Tested/exported source: `705c0639f1bb892a92057481f93381050c3626c8`.
 Both original XML suites independently confirm **6/6 EditMode + 27/27 PlayMode**,
 zero failed/skipped/inconclusive. Final log ends SUCCESS at 09:08:16 UTC on
 2026-10-04. Source CI [37189833520](https://github.com/minsminsKR/3d_modeling/actions/runs/37189833520)
-passed on that exact source. This follow-up changes only evidence/docs.
+passed on that exact source. Its completed result update changed only evidence/docs;
+the subsequent enemy-audio implementation above requires its own verification.
 
 Verified on the real engine:
 - Three cabinets keep their original imported mesh bindings and four collision
@@ -43,8 +57,8 @@ remains; no derivative or release-profile build was made. Earlier #9 is preserve
 
 Exact records: `Verification/cloud-tests/build-10-results.json` and
 `build-10-experience.json`. Source preflight is retained in
-`Verification/player-reported-presentation/`. The next step is personal play
-feedback, not another automatic feature iteration.
+`Verification/player-reported-presentation/`. Those results remain pinned to build #10. The owner subsequently requested
+continued personal-play improvements; the next bounded scope is recorded above.
 
 ## Previous personal-play result: build #9 SUCCESS, 24/24 actual tests
 

@@ -14,10 +14,10 @@ import xml.etree.ElementTree as ET
 
 NAME = re.compile(r"^[A-Za-z0-9_-]+\.(?:png|wav|json)$")
 MAX_FILE = 1_500_000
-# The six player-feedback fixes add real cabinet, corner and room camera views.
-# Keep a hard aggregate cap; this is transport capacity, never a test pass gate.
+# Preserve the 32 presentation artifacts and allow one bounded enemy-audio
+# montage plus its segment report. Capacity is not a gameplay pass gate.
 MAX_TOTAL = 16_000_000
-MAX_FILES = 32
+MAX_FILES = 34
 
 
 def decode(text):

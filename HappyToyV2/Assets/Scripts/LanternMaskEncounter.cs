@@ -32,12 +32,15 @@ namespace HappyToy.V2
         readonly EnemyAttackClock attack = new EnemyAttackClock();
         AudioSource sound;
         AudioClip warning;
+        EnemyAcoustics acoustics;
 
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath(); floorY = transform.position.y;
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 16; sound.dopplerLevel = 0; sound.volume = .5f;
+            acoustics = EnemyAcoustics.Bind(sound, transform, .5f);
+            if (!GetComponent<StalkerFootsteps>()) gameObject.AddComponent<StalkerFootsteps>();
             const int rate = 24000;
             var data = new float[(int)(rate * .55f)];
             for (int i = 0; i < data.Length; i++)
@@ -139,7 +142,7 @@ namespace HappyToy.V2
                     Transformed = true; State = Phase.Chase; memory = 8; repath = 0; recognitionCueIssued = false;
                     sound.pitch = .6f; sound.PlayOneShot(warning);
                     if (EnemyNavigation.SameFloor(player.transform.position, floorY) &&
-                        Vector3.Distance(player.transform.position, transform.position) <= sound.maxDistance)
+                        Vector3.Distance(player.transform.position, transform.position) <= sound.maxDistance && acoustics.IsAudible(sound))
                         session.WarnThreat("가면의 몸이 완성됐습니다 · 녹색 가면을 피해 다른 복도로 이동하세요.", 3);
                 }
                 Visual(); return;

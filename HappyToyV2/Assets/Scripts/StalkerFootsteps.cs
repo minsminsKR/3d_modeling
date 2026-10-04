@@ -1,31 +1,46 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 namespace HappyToy.V2
 {
-    [RequireComponent(typeof(NavMeshAgent))]
+    [DisallowMultipleComponent, RequireComponent(typeof(NavMeshAgent))]
     public sealed class StalkerFootsteps : MonoBehaviour
     {
         public int StepsPlayed { get; private set; }
         public int AttackCuesPlayed { get; private set; }
         public int CabinetAttackCuesPlayed { get; private set; }
-        AudioSource source;AudioClip clip, cabinetRattle;NavMeshAgent agent;Vector3 previous;float distance;
+        public int TeleportsSuppressed { get; private set; }
+        public EnemySoundKind Profile { get; private set; }
+        public AudioSource MovementSource => source;
+        public AudioSource AttackSource => attackSource;
+        public AudioClip MovementClip => clip;
+        public AudioClip AttackClip => attackClip;
+        public float StepDistance => EnemySoundProfile.Stride(Profile, StepsPlayed);
+        public float TravelRemainder => distance;
+        public EnemyAcoustics MovementAcoustics { get; private set; }
+        public EnemyAcoustics AttackAcoustics { get; private set; }
+        AudioSource source, attackSource;
+        AudioClip clip, attackClip, cabinetRattle;
+        readonly Dictionary<EnemySoundKind, AudioClip[]> clips = new Dictionary<EnemySoundKind, AudioClip[]>();
+        NavMeshAgent agent;
+        LanternMaskEncounter lantern;
+        Vector3 previous;
+        float distance;
+
         void Awake()
         {
-            agent=GetComponent<NavMeshAgent>();source=gameObject.AddComponent<AudioSource>();
-            source.spatialBlend=1;source.rolloffMode=AudioRolloffMode.Logarithmic;
-            source.minDistance=2;source.maxDistance=16;source.dopplerLevel=0;source.volume=.7f;
-            source.playOnAwake=false;source.ignoreListenerPause=false;source.ignoreListenerVolume=false;
-            const int rate=24000;var samples=new float[4800];var noise=new System.Random(114);
-            for(int i=0;i<samples.Length;i++)
-            {
-                float t=i/(float)rate;
-                samples[i]=.55f*Mathf.Exp(-25*t)*Mathf.Sin(2*Mathf.PI*(85-80*t)*t)
-                    +(float)(noise.NextDouble()*2-1)*.16f*Mathf.Exp(-65*t);
-            }
-            clip=AudioClip.Create("Dragging wooden footstep",samples.Length,1,rate,false);clip.SetData(samples,0);
-            // Original restrained wood/handle impacts, distinct from a walking step.
-            // No visual shake or flash is added; master volume and listener pause apply.
+            agent = GetComponent<NavMeshAgent>(); lantern = GetComponent<LanternMaskEncounter>();
+            source = gameObject.AddComponent<AudioSource>();
+            source.minDistance = 2; source.maxDistance = 16; source.priority = 70;
+            MovementAcoustics = EnemyAcoustics.Bind(source, transform, .7f);
+            var emitter = new GameObject("Enemy attack voice"); emitter.transform.SetParent(transform, false);
+            attackSource = emitter.AddComponent<AudioSource>();
+            attackSource.minDistance = 2; attackSource.maxDistance = 16; attackSource.priority = 35;
+            AttackAcoustics = EnemyAcoustics.Bind(attackSource, transform, .7f);
+            SetProfile(lantern ? EnemySoundKind.Lantern : EnemySoundProfile.Identify(transform));
+            // Keep the established cabinet impact independent from creature identity.
+            const int rate = 24000;
             var door = new float[(int)(rate * .42f)]; var grain = new System.Random(731);
             for (int i = 0; i < door.Length; i++)
             {
@@ -43,27 +58,64 @@ namespace HappyToy.V2
             cabinetRattle = AudioClip.Create("Cabinet door attack rattle", door.Length, 1, rate, false);
             cabinetRattle.SetData(door, 0);
         }
-        void OnEnable(){previous=transform.position;distance=0;}
+        void SetProfile(EnemySoundKind kind)
+        {
+            Profile = kind; distance = 0;
+            if (!clips.TryGetValue(kind, out var pair))
+            {
+                pair = new[] { EnemySoundProfile.Create(kind, false), EnemySoundProfile.Create(kind, true) };
+                clips.Add(kind, pair);
+            }
+            clip = pair[0]; attackClip = pair[1];
+        }
+        void OnEnable() { previous = transform.position; distance = 0; }
         public void PlayAttackCue() => PlayAttackCue(false);
         public void PlayAttackCue(bool atCabinet)
         {
             var session = GameSession.Current;
-            if (!isActiveAndEnabled || !source || !session || !session.InputAllowed) return;
-            source.pitch = atCabinet ? 1 : .45f;
-            source.PlayOneShot(atCabinet ? cabinetRattle : clip, atCabinet ? .95f : 1.4f);
+            // Lantern already owns its curse/strike warning. Never double it.
+            if (!isActiveAndEnabled || !attackSource || lantern || !session || !session.InputAllowed || session.StoryStep >= 4) return;
+            attackSource.pitch = 1;
+            attackSource.PlayOneShot(atCabinet ? cabinetRattle : attackClip, atCabinet ? .95f : 1);
             AttackCuesPlayed++;
             if (atCabinet) CabinetAttackCuesPlayed++;
         }
         void Update()
         {
-            var delta=transform.position-previous;delta.y=0;previous=transform.position;
-            if(!agent.isOnNavMesh||GameSession.Current.Finished||delta.magnitude>1)return;
-            distance+=delta.magnitude;
-            if(distance<.85f)return;
-            distance%=.85f;source.pitch=StepsPlayed%2==0?.85f:1.03f;
-            source.PlayOneShot(clip);StepsPlayed++;
+            Vector3 delta = transform.position - previous; previous = transform.position;
+            float vertical = Mathf.Abs(delta.y); delta.y = 0;
+            var session = GameSession.Current;
+            if (!session || session.Finished || session.StoryStep >= 4 ||
+                lantern && (!lantern.isActiveAndEnabled || lantern.State == LanternMaskEncounter.Phase.Dormant ||
+                    lantern.State == LanternMaskEncounter.Phase.Resolved))
+            { distance = 0; source.Stop(); attackSource.Stop(); return; }
+            if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { distance = 0; return; }
+            if (lantern)
+            {
+                var next = lantern.Transformed ? EnemySoundKind.Wraith : EnemySoundKind.Lantern;
+                if (next != Profile) SetProfile(next);
+            }
+            float travelled = delta.magnitude;
+            // A warp/relocation is not a foot contact. Live NavMesh movement keeps
+            // brain-disabled corner emergence audible without inventing stationary steps.
+            float maximumTravel = Mathf.Max(.45f, agent.velocity.magnitude * Time.deltaTime * 2.5f + .08f);
+            if (vertical > .65f || travelled > maximumTravel)
+            { distance = 0; TeleportsSuppressed++; return; }
+            if (agent.isStopped || !agent.hasPath || agent.velocity.sqrMagnitude < .0036f || travelled < .001f) return;
+            distance += travelled;
+            if (distance < StepDistance) return;
+            distance -= StepDistance;
+            source.pitch = EnemySoundProfile.Pitch(Profile, StepsPlayed);
+            source.PlayOneShot(clip); StepsPlayed++;
         }
-        void OnDisable() { if (source) source.Stop(); }
-        void OnDestroy(){if(clip)Destroy(clip);if(cabinetRattle)Destroy(cabinetRattle);}
+        void OnDisable()
+        { distance = 0; if (source) source.Stop(); if (attackSource) attackSource.Stop(); }
+        void OnDestroy()
+        {
+            foreach (var pair in clips.Values) foreach (var ownedClip in pair) if (ownedClip) Destroy(ownedClip);
+            if (cabinetRattle) Destroy(cabinetRattle);
+            if (attackSource) Destroy(attackSource.gameObject);
+            if (source) Destroy(source);
+        }
     }
 }

@@ -36,6 +36,7 @@ namespace HappyToy.V2
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath(); floorY = transform.position.y;
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 15; sound.volume = .3f; sound.dopplerLevel = 0;
+            EnemyAcoustics.Bind(sound, transform, .3f);
             const int rate = 24000; var data = new float[rate];
             for (int i = 0; i < data.Length; i++)
             {

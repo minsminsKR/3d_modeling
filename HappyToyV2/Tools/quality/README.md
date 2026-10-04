@@ -1,3 +1,15 @@
+# Enemy-audio source follow-up: engine execution pending
+
+Four new fixtures preserve the previous 33 cases, bringing the suite to 37
+(6 EditMode + 31 PlayMode). They cover actual movement/attack lifecycle and
+positioned, isolated production-source PCM with physical wall/slab fixtures.
+Seventeen indexed segments form one native 48 kHz stereo WAV (7.26 s) plus JSON;
+the strict extractor now permits 34 files, still bounded by 16 MB aggregate and
+1.5 MB each. The original 32 build-10 envelopes decode unchanged. Empty Render
+pumps still contribute zero samples; existing strict capture gates are unchanged.
+See `Verification/enemy-audio/` for source/external-API checks. No new engine or
+Windows export pass is implied before the next exact-source UBA result.
+
 # Current personal-play verification: build #10
 
 Exact source `705c0639f1bb892a92057481f93381050c3626c8` passed **33 actual Unity tests**
