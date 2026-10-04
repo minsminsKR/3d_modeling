@@ -1,5 +1,37 @@
 # Unity Build Automation: real scene tests
 
+## Final current handover: #16 actual 54/54 and verified Windows player
+
+Exact source 1f0b646919f0f93582c48012924e411d0b201ea4 passed 6 EditMode + 48 PlayMode,
+zero failed/skipped/inconclusive. All prior cases plus 4 aim / 6 intro cases pass.
+The old stereo fixture now restores/records/asserts its listener basis; original
+thresholds pass. First-contact error is 0 for all 6 controlled floor/wall/ceiling
+cases. Actual 7-record route completes 79.44963s / 237.84158m with all threats retained.
+
+All 51 evidence files (16,638,802 bytes) hash-verify under the explicit 18 MB aggregate.
+Actual new 12 world frames were reviewed. Thin aiming lines, closed Wraith mask/body
+gap and later true Baby crawl pose are visible. Native 4.85s / 19-segment intro WAV
+is byte-identical to #15, with 12 distinct helper cues, five exact-zero controls and
+no clipping. Existing enemy 7.26s WAV is byte-identical to #14; stereo sides and
+wall/slab attenuation pass. Existing tension PCM passes as well.
+
+Unity explicitly logged player export Success and return 0. Original
+HappyToyV2-Windows64-build16.zip is 73,195,528 bytes, 186 CRC-valid entries, root
+HappyToyV2.exe, new production code/scene/runtime, no project test assemblies.
+SHA256 f843b9c7e315cb1c5e5c8f8891d8600bc5c8089e6edee85a45ed70bd5624eb18.
+No repacked derivative was made; original backup text remains.
+
+**Provider-status discrepancy:** freshly rechecked dashboard says Success, but the
+original exact-build #16 log ends Execute scripts failure / Finished: FAILURE after
+successful player export, artifact check-in and cache publication. Cause unresolved;
+not proven cleanup-only. Do not claim unconditional whole-provider success. XML,
+export and ZIP checks remain independently established. No new run is requested.
+See Verification/cloud-tests/build-16-results.json and build-16-experience.json.
+
+The user asked to finish this work and stop for personal play. Only factual docs/PR
+CI follow-up remains; no next features, profiling, paid work, release or main merge.
+
+
 ## Actual build #15: 53/54, no player export; narrow fixes pending
 
 At ac3aa14a, original XML confirms 6/6 EditMode and 47/48 PlayMode, no skips.

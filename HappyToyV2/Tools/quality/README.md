@@ -1,3 +1,12 @@
+# Final result: 54/54, player exported; provider footer mismatch retained
+
+Build #16 at 1f0b6469 passes 6 Edit + 48 Play, zero failures/skips, and Unity Windows
+export returns0. Original ZIP 186 entries CRC-pass.51 artifacts (16,638,802 bytes)
+verify; corrected real aim/mask/Baby frames and strict audio metrics were reviewed.
+Dashboard Success disagrees with the post-publication log footer FAILURE; cause
+unresolved. See Verification/cloud-tests/build-16-*. No new engine run or feature
+work follows this user-requested handover. Sections below are historical preflight.
+
 # Final intro + aim correction: exact-source engine verification pending
 
 Current target is 54 actual cases, retaining prior 44 plus 4 aim and 6 intro cases.
@@ -71,7 +80,7 @@ Source preflight remains in `Verification/personal-play-feedback/`.
 
 Exact source923060837b0cb8585d16d9bfffb961434a850504 passed **all21Unity tests (6EditMode+15PlayMode,0failed/skipped/inconclusive)** and exported the Windows player. The five pursuit cases and real-input seven-record route passed. The existing strict AudioRenderer gate now records actual nonzero/unclipped active PCM and zero paused PCM using official-Recorder-style empty Render calls; empty buffers add no samples. This is offline engine mixing, not headset/speaker or complete sound-design acceptance.
 
-Both XMLs, finalSUCCESS log,13artifact envelopes, originalZIP186CRCs and safe derivative185unchanged payloads were verified. Source, audio, route and packaging boundaries/hashes are in `CLOUD_QA.md` and `Verification/cloud-tests/build-8-*`. All9PNGs match reviewed#7. The safe derivative preserves development identity/instrumentation and does not clear asset rights or targetWindows smoke tests. No commercial release readiness is implied.
+Both XMLs, finalSUCCESS log,13artifact envelopes, originalZIP 186 CRCs and safe derivative185unchanged payloads were verified. Source, audio, route and packaging boundaries/hashes are in `CLOUD_QA.md` and `Verification/cloud-tests/build-8-*`. All9PNGs match reviewed#7. The safe derivative preserves development identity/instrumentation and does not clear asset rights or targetWindows smoke tests. No commercial release readiness is implied.
 
 # Build #6 experience and packaging tools
 

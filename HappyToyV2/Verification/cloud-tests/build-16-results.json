@@ -1,0 +1,398 @@
+{
+  "build": 16,
+  "testedCommit": "1f0b646919f0f93582c48012924e411d0b201ea4",
+  "unityVersion": "6000.6.0f1",
+  "sourceCI": {
+    "run": 37223308695,
+    "status": "SUCCESS"
+  },
+  "status": "TESTS_AND_PLAYER_VERIFIED_PROVIDER_STATUS_MISMATCH",
+  "dashboardStatus": "Success",
+  "dashboardRecheckedAtUtc": "2026-10-04T18:46:00Z",
+  "unityTestStatus": "PASS",
+  "unityPlayerExportStatus": "Success",
+  "unityPlayerExitCode": 0,
+  "finalLogFooter": "Finished: FAILURE",
+  "statusDiscrepancy": {
+    "observedStage": "After successful Unity player export and artifact check-in, following cache archive publication; generic Execute scripts failure",
+    "exactCause": "Unresolved. Do not describe as guaranteed cleanup-only failure or as total provider success.",
+    "logIdentityVerified": "BuildNumber16 and exact source1f0b646919f0f93582c48012924e411d0b201ea4 occur inside original log; this is not stale build15.",
+    "handoverBasis": "Both original test XML suites pass, Unity logs player export Success and return0, and published original Windows ZIP passes full CRC/payload checks. No further run requested."
+  },
+  "counts": {
+    "total": 54,
+    "passed": 54,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0
+  },
+  "suites": [
+    {
+      "suite": "editmode",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "inconclusive": 0,
+      "cases": [
+        {
+          "name": "ActualEnemyAttackClockPassesAll29Checks",
+          "result": "Passed",
+          "seconds": 0.018727
+        },
+        {
+          "name": "ActualSceneRestartGatePassesAll26Checks",
+          "result": "Passed",
+          "seconds": 0.001048
+        },
+        {
+          "name": "ActualStealthRulesPassAll68Checks",
+          "result": "Passed",
+          "seconds": 0.003014
+        },
+        {
+          "name": "ActualSurfaceRippleBufferPassesAll20Checks",
+          "result": "Passed",
+          "seconds": 0.001483
+        },
+        {
+          "name": "ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles",
+          "result": "Passed",
+          "seconds": 7.647665
+        },
+        {
+          "name": "TargetEditorAndGameplayAssemblyIdentitiesArePreserved",
+          "result": "Passed",
+          "seconds": 0.000946
+        }
+      ]
+    },
+    {
+      "suite": "playmode",
+      "total": 48,
+      "passed": 48,
+      "failed": 0,
+      "skipped": 0,
+      "inconclusive": 0,
+      "cases": [
+        {
+          "name": "ActualDeathRetryAndRepeatedUiNavigationKeepOwnedResourcesBounded",
+          "result": "Passed",
+          "seconds": 28.271816
+        },
+        {
+          "name": "ActualRecognitionStaticIsOcclusionBoundedAndPauseSafe",
+          "result": "Passed",
+          "seconds": 9.788288
+        },
+        {
+          "name": "AimedQStillDistractsNaturallyAndCannotEraseGenuineChase",
+          "result": "Passed",
+          "seconds": 5.666176
+        },
+        {
+          "name": "AllCabinetsHaveActualSlitsAndOutwardViewsAfterCrouchedEntry",
+          "result": "Passed",
+          "seconds": 4.865934
+        },
+        {
+          "name": "AnnexPresentationPreservesOriginalInteractionAndCrossingAccess",
+          "result": "Passed",
+          "seconds": 2.136423
+        },
+        {
+          "name": "AnnexPresentationProducesActualPlayerEyeRoomFrames",
+          "result": "Passed",
+          "seconds": 9.470391
+        },
+        {
+          "name": "AnnexPresentationStaysBoundedAcrossEnableAndReload",
+          "result": "Passed",
+          "seconds": 3.018414
+        },
+        {
+          "name": "ArchiveScrapePrecedesRealEmergenceAndRetryResetsItsOwner",
+          "result": "Passed",
+          "seconds": 8.647303
+        },
+        {
+          "name": "AttackWarningPausesAndDodgeWorksBeforeLethalContact",
+          "result": "Passed",
+          "seconds": 4.116777
+        },
+        {
+          "name": "AuthoredCameraRendersWorldAimAndStopsAtPhysicalWall",
+          "result": "Passed",
+          "seconds": 3.812659
+        },
+        {
+          "name": "AuthoredEnemyFamiliesBindDistinctCuesAndLanternChangesNaturally",
+          "result": "Passed",
+          "seconds": 10.40911
+        },
+        {
+          "name": "AuthoredNavigationReachesAllMandatoryRecords",
+          "result": "Passed",
+          "seconds": 2.24395
+        },
+        {
+          "name": "AuthoredSevenRecordRouteSurvivesWithRealMovementAndInteraction",
+          "result": "Passed",
+          "seconds": 81.005678
+        },
+        {
+          "name": "CabinetWitnessCannotBeInventedOrErasedByRepeatedEntry",
+          "result": "Passed",
+          "seconds": 17.757192
+        },
+        {
+          "name": "CrouchUsesActualCapsuleAndOnlyMovingFeetMakeNoise",
+          "result": "Passed",
+          "seconds": 3.854867
+        },
+        {
+          "name": "CyclopseCornerWalkCancelsOnRestorationWithoutReactivation",
+          "result": "Passed",
+          "seconds": 6.080109
+        },
+        {
+          "name": "CyclopseUnsafeStagingDefersAndRetriesAfterThePlayerMoves",
+          "result": "Passed",
+          "seconds": 15.513985
+        },
+        {
+          "name": "CyclopseWalksAnOccludedCornerWithPauseAndSingleRoar",
+          "result": "Passed",
+          "seconds": 15.847062
+        },
+        {
+          "name": "EnemyAttackUsesDistinctCueOnceAndReloadDestroysOwnedAudio",
+          "result": "Passed",
+          "seconds": 5.439326
+        },
+        {
+          "name": "EnemyMovementAudioFollowsTravelAndSurvivesPauseAndWarp",
+          "result": "Passed",
+          "seconds": 6.205144
+        },
+        {
+          "name": "FirecrackerDenialsStayLocalAndNeverOverwriteRecords",
+          "result": "Passed",
+          "seconds": 4.56749
+        },
+        {
+          "name": "FirecrackerFirstPopIsSingleAndComfortSettingsApplyWhilePaused",
+          "result": "Passed",
+          "seconds": 4.439934
+        },
+        {
+          "name": "FirecrackerRestartDestroysEffectsAndResetsItsFeedback",
+          "result": "Passed",
+          "seconds": 2.921767
+        },
+        {
+          "name": "FirstAppearanceAudioComesFromRealEventsWithQuietPauseMuteAndComfortControls",
+          "result": "Passed",
+          "seconds": 22.434842
+        },
+        {
+          "name": "FlashlightSwitchKeepsSoundAndControlWithoutStateText",
+          "result": "Passed",
+          "seconds": 1.511944
+        },
+        {
+          "name": "ForecastMatchesPhysicalFirstContactAtLowAndHighSimulatedFrameRates",
+          "result": "Passed",
+          "seconds": 2.423831
+        },
+        {
+          "name": "HeldAimCancelsAcrossRealInputMenusHidingDeathAndRetryWithoutSpending",
+          "result": "Passed",
+          "seconds": 17.020798
+        },
+        {
+          "name": "KoreanMenusRenderAcrossSupportedAspectRatios",
+          "result": "Passed",
+          "seconds": 2.605801
+        },
+        {
+          "name": "LanternFirstSightRequiresFloorViewportAndLosBeforeSafeLightThenMask",
+          "result": "Passed",
+          "seconds": 4.832159
+        },
+        {
+          "name": "LanternInvestigatesItsOwnFloorWhilePlayerIsUpstairs",
+          "result": "Passed",
+          "seconds": 1.842249
+        },
+        {
+          "name": "LostSightSearchScansLocallyWithoutTrackingThroughCover",
+          "result": "Passed",
+          "seconds": 11.343032
+        },
+        {
+          "name": "MannequinFirstTurnRemainsStationaryAndReleasesWithoutGazeDeadlock",
+          "result": "Passed",
+          "seconds": 4.7613
+        },
+        {
+          "name": "NurseryComfortRestoresLightDuringPausedSettingsWithoutAdvancingReveal",
+          "result": "Passed",
+          "seconds": 16.567006
+        },
+        {
+          "name": "NurseryFirstCryAndCrawlPreparationKeepFullFiveSecondSafetyWindow",
+          "result": "Passed",
+          "seconds": 8.26299
+        },
+        {
+          "name": "PauseJournalAndMixedRestartRequestsKeepTheirDestination",
+          "result": "Passed",
+          "seconds": 4.499924
+        },
+        {
+          "name": "PerceivedHearingUsesCurrentTransmissionAndRejectsUnheardOrInactiveCues",
+          "result": "Passed",
+          "seconds": 6.286163
+        },
+        {
+          "name": "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",
+          "result": "Passed",
+          "seconds": 6.050516
+        },
+        {
+          "name": "PortraitFirstAppearanceUsesPhysicalFrameThenProtectedAngryGrace",
+          "result": "Passed",
+          "seconds": 11.223263
+        },
+        {
+          "name": "RealAuthoredCameraProducesRenderAndTimingEvidence",
+          "result": "Passed",
+          "seconds": 2.514834
+        },
+        {
+          "name": "RealEnemyMixProvesIdentitySpatialAttenuationAndControls",
+          "result": "Passed",
+          "seconds": 14.940546
+        },
+        {
+          "name": "RealFirecrackerInputDistractsAndExpiresWithoutInfiniteInventory",
+          "result": "Passed",
+          "seconds": 14.516352
+        },
+        {
+          "name": "RealFootstepsDriveHearingAndRecognitionRespectsCover",
+          "result": "Passed",
+          "seconds": 2.847636
+        },
+        {
+          "name": "RealListenerMixCapturesDuringFlashlightInputAndPauseSilence",
+          "result": "Passed",
+          "seconds": 3.211611
+        },
+        {
+          "name": "RealPerceivedTensionMixHasQuietBoundsAndLeavesFootstepHeadroom",
+          "result": "Passed",
+          "seconds": 9.11338
+        },
+        {
+          "name": "SilentEnemyStateCannotInventTensionButActualUnseenFootstepsCanAnticipate",
+          "result": "Passed",
+          "seconds": 7.430273
+        },
+        {
+          "name": "TitleAndRequiredRecordsGateRealEscape",
+          "result": "Passed",
+          "seconds": 1.470311
+        },
+        {
+          "name": "TrueRecognitionHasBoundedAftermathAndClearsOnRestorationAndRetry",
+          "result": "Passed",
+          "seconds": 12.028895
+        },
+        {
+          "name": "UnreachableSearchEvidenceTimesOutWithoutInventingTarget",
+          "result": "Passed",
+          "seconds": 7.957232
+        }
+      ]
+    }
+  ],
+  "newAimAndIntroCasesPassed": 10,
+  "originalFiles": [
+    {
+      "name": "build-16-editmode.xml",
+      "bytes": 7802,
+      "sha256": "7763133d14868a2b5b782208de46c38570ea280706e401a7daf73f7def501d6a"
+    },
+    {
+      "name": "build-16-playmode.xml",
+      "bytes": 22749235,
+      "sha256": "732a626ba33984463a3e45d09886cb23417a25aed4d42d5bf183ff641cd99654"
+    },
+    {
+      "name": "build-16-final.log",
+      "bytes": 2442488,
+      "sha256": "f4c22e601ca236812d3e5a7f4f98d22038258be0080f73d60ae6a1c783bd0186"
+    },
+    {
+      "name": "HappyToyV2-Windows64-build16.zip",
+      "bytes": 73195528,
+      "sha256": "f843b9c7e315cb1c5e5c8f8891d8600bc5c8089e6edee85a45ed70bd5624eb18"
+    }
+  ],
+  "csharpCompilerErrors": 0,
+  "exactAudioInitializationWarnings": 0,
+  "timings": {
+    "total": "28m39s",
+    "queue": "10m43s",
+    "checkout": "2m39s",
+    "billable": "17m55s",
+    "testStage": "10m05s"
+  },
+  "survival": {
+    "passed": true,
+    "gameSeconds": 79.44963073730469,
+    "physicalMeters": 237.84158325195312,
+    "minY": -4.920000076293945,
+    "maxY": 5.080000400543213,
+    "records": 7,
+    "movementUpdates": 3947,
+    "stairLegs": 4,
+    "hidingEntries": 1,
+    "firecrackersThrown": 2,
+    "maximumLiveStalkers": 4
+  },
+  "zip": {
+    "original": true,
+    "derivedArchiveCreated": false,
+    "entries": 186,
+    "allCrcValid": true,
+    "executable": "HappyToyV2.exe",
+    "productionAssembly": "HappyToyV2_Data/Managed/Assembly-CSharp.dll",
+    "productionAssemblyBytes": 320512,
+    "productionAssemblySha256": "15f6f27672ec06893242e3e44083e28e46bd9a78d05c5fd9090ea66a487bbcc6",
+    "newRuntimeTypesVerified": [
+      "FirecrackerAim",
+      "EncounterRevealAudio",
+      "get_LastBodyBounds",
+      "VisibleBounds"
+    ],
+    "projectTestAssembliesPresent": false,
+    "originalBurstBackupTextRetained": true
+  },
+  "evidence": {
+    "files": 51,
+    "bytes": 16638802,
+    "aggregateLimit": 18000000,
+    "individualLimit": 1500000,
+    "artifactHashesVerified": true
+  },
+  "stoppingCondition": "Current work complete for personal play; no next feature, performance investigation, build, public release or main merge is part of this handover.",
+  "limitations": [
+    "Automated fixtures and one map-aware route do not certify human fun or all possible survival strategies.",
+    "Offline/native PCM and software-rendered cloud frames do not certify device listening or target-hardware performance.",
+    "One transformed actor now samples cached visible skinned geometry for correct attachment; target-device cost is unprofiled.",
+    "Provider dashboard/footer status discrepancy remains unresolved after verified export."
+  ]
+}

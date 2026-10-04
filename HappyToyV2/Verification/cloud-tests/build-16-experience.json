@@ -1,0 +1,1383 @@
+{
+  "build": 16,
+  "testedCommit": "1f0b646919f0f93582c48012924e411d0b201ea4",
+  "scope": "Actual original Unity outputs with independent hash/PCM/geometry report checks and direct visual review. Positioned fixtures and disjoint selected-source excerpts remain separate from the ordinary full survival route.",
+  "artifactCount": 51,
+  "artifactBytes": 16638802,
+  "artifacts": [
+    {
+      "filename": "recognition-static-ui.png",
+      "bytes": 161445,
+      "sha256": "0a885485c2be96d2dfd72457fa7a1fb468bbfecbe97bc3e13849b0554f31c480"
+    },
+    {
+      "filename": "recognition-softened-ui.png",
+      "bytes": 48900,
+      "sha256": "7bdcf32cff6b13a8fb894ff25ae623bd6af34df7161955691bd4450a7dcf28f1"
+    },
+    {
+      "filename": "cabinet-0-standing-world-camera.png",
+      "bytes": 62735,
+      "sha256": "e55d3ea9c29b8a59fb82b6e55ac47f7a0db85a76a9ce31c25ce2d3a9686b03b8"
+    },
+    {
+      "filename": "cabinet-0-crouched-wide-world-camera.png",
+      "bytes": 83325,
+      "sha256": "a969a4e4c6c3dc244f13a040c3d45e5cecffc2a70aaae438220e4e2bc32012a4"
+    },
+    {
+      "filename": "cabinet-1-standing-world-camera.png",
+      "bytes": 68705,
+      "sha256": "9b34330e9c91175efd931e9858de41f34e682c4c7360e7e4add4bbe80a2ce38a"
+    },
+    {
+      "filename": "cabinet-1-crouched-wide-world-camera.png",
+      "bytes": 86627,
+      "sha256": "16ab76546247e64fdb7e1db273c56bed73864e46d6f09c81ed78cc143abec3c3"
+    },
+    {
+      "filename": "cabinet-2-standing-world-camera.png",
+      "bytes": 75059,
+      "sha256": "ea149534214ce2f03f5c27d9220ad8c5be99be52d0fa5a58f51b426095615b46"
+    },
+    {
+      "filename": "cabinet-2-crouched-wide-world-camera.png",
+      "bytes": 88376,
+      "sha256": "51be9c61ad848e8c6517b2627215d09931b61124b0373f3c329b6130f06985bc"
+    },
+    {
+      "filename": "annex-music-entry.png",
+      "bytes": 935233,
+      "sha256": "b623f4632fa1ac8a069012cb3dd06b779337070a5687ac3130c69ee710e55c30"
+    },
+    {
+      "filename": "annex-piano-board.png",
+      "bytes": 750579,
+      "sha256": "27292b54408f5fe654ccd43d8112e62da9e8969bfdc2b60cd1e3be84749d3b9a"
+    },
+    {
+      "filename": "annex-upper-stair-approach.png",
+      "bytes": 1044016,
+      "sha256": "b1c054b1aaa84eccae8c15df115816622dc5958fcd18dbaba9496fae358fe6b8"
+    },
+    {
+      "filename": "annex-upper-reverse.png",
+      "bytes": 691720,
+      "sha256": "506b76b6019a6f68fbd991aa510c3e799de4585753d80bce947c903e86617b63"
+    },
+    {
+      "filename": "annex-music-rows-reverse.png",
+      "bytes": 891302,
+      "sha256": "88215687ef154717f96d2c2fec3adaa05be3d058e4a4274fca5529731b77525e"
+    },
+    {
+      "filename": "intro-archive-emergence.png",
+      "bytes": 172809,
+      "sha256": "f60853e682e8c75d996f4efcacce6d157ca67a4a3d5ba3cf0eadea18b7031e21"
+    },
+    {
+      "filename": "firecracker-aim-downward-world.png",
+      "bytes": 622704,
+      "sha256": "8a95a82455b83bf636cef933dc749add5de45c939d546d515d4e799cc5562e10"
+    },
+    {
+      "filename": "firecracker-aim-blocked-wall-world.png",
+      "bytes": 528690,
+      "sha256": "13fa4212429a4640adfe72fc3639a15eee67c342ee00cc7bc616f65ddab91f30"
+    },
+    {
+      "filename": "hiding-unseen-item-feedback-large-720p.png",
+      "bytes": 66479,
+      "sha256": "b3ffc9da9005cd90518cacab8e10e4cf487567b31a2b4560b87398390d6538b5"
+    },
+    {
+      "filename": "hiding-door-warning-large-720p.png",
+      "bytes": 66592,
+      "sha256": "e971077f758058462bd044cfc2405b5acdfc691ada9dea2bc4be9da12a64cf79"
+    },
+    {
+      "filename": "cyclopse-01-occluded-activation.png",
+      "bytes": 535030,
+      "sha256": "0748e06f9015cd53713f1400b39cd3f82145249f7a69c496681b2b3ba8e1164b"
+    },
+    {
+      "filename": "cyclopse-02-first-visible-walk.png",
+      "bytes": 535851,
+      "sha256": "483ccc9f77470b969de88b8b8a367190c53f6546a73e64b9cc90b1ff1efafc36"
+    },
+    {
+      "filename": "cyclopse-03-corner-turn.png",
+      "bytes": 536445,
+      "sha256": "996760ba31bae9d79d2d7f14a48f2f8f69c67da3b7d01eac5ed1c37c429fe690"
+    },
+    {
+      "filename": "cyclopse-04-arrived-roar.png",
+      "bytes": 537635,
+      "sha256": "b2fcb47d9ca503d3738c9172909e1790c277c0e4b1f8e81ac17931402bd5db3b"
+    },
+    {
+      "filename": "intro-wraith-half-grown.png",
+      "bytes": 313828,
+      "sha256": "c523c95a7933084a019023c6da04bb4e8fd6961f2ff48ac059edec5438d82d0f"
+    },
+    {
+      "filename": "intro-wraith-attached.png",
+      "bytes": 281781,
+      "sha256": "817c03fc6da3640a046148e4fb635f30e1e7d777291e238fef0e12be5a98a5e9"
+    },
+    {
+      "filename": "monster-first-appearances.wav",
+      "bytes": 931244,
+      "sha256": "d92bf8cb58abd436d818066b5ae11440952891833462d141f6d111f5f9da5314"
+    },
+    {
+      "filename": "monster-first-appearances.json",
+      "bytes": 21917,
+      "sha256": "07c3f913f631f6ee9c821159a1bb978a43361fea9a352c7f65462375cf40d054"
+    },
+    {
+      "filename": "firecracker-first-contact-physics.json",
+      "bytes": 6252,
+      "sha256": "b7f4c96e417b81b7bff117b91666aa64abea6ac770f49f32f9862555a26d81cd"
+    },
+    {
+      "filename": "title-720p.png",
+      "bytes": 100222,
+      "sha256": "2957b50874b31f274b1cc7c79137d342ee2109af43c2247b7a27fcd0637fec35"
+    },
+    {
+      "filename": "settings-large-1280x720.png",
+      "bytes": 86869,
+      "sha256": "4de54e480714b32da24ffd89e5687bb6abb49f3de078004bb75d8339f66a3c22"
+    },
+    {
+      "filename": "settings-large-1024x768.png",
+      "bytes": 69528,
+      "sha256": "e12fe4e5cb9fe99b8cc7c2e4019f0703fed9fdb8f2aee9524d9c2f60553483fd"
+    },
+    {
+      "filename": "settings-large-2560x1080.png",
+      "bytes": 156820,
+      "sha256": "9da68f04dac8346ce6642b1ae31fcb3095635fc4f3e014d726ff05068651f825"
+    },
+    {
+      "filename": "title-large-720p.png",
+      "bytes": 109742,
+      "sha256": "a965e8b0220e5ba4d579b86a9a590ff399847d58cc2306d1b89f9bcb8c15d28b"
+    },
+    {
+      "filename": "pause-large-4x3.png",
+      "bytes": 82773,
+      "sha256": "7a1507f185c8114c9d608aecdbd8abb4f9fdfd6446a2e23d0f24101f7e2a0124"
+    },
+    {
+      "filename": "hud-large-720p.png",
+      "bytes": 49338,
+      "sha256": "a5752518fdb5e16ff425821dbcc0f61ed004ea588492320fd1f7e2658c564c75"
+    },
+    {
+      "filename": "journal-1080p.png",
+      "bytes": 134325,
+      "sha256": "ab2bb15f26d5fe713388ec1067402598b96753a06a1d0625bf04050c8e99b700"
+    },
+    {
+      "filename": "intro-lantern-light.png",
+      "bytes": 312749,
+      "sha256": "ac5eb0bd69f4c3621f92368c8935c33d43f67a1516afa9f514437232ba5cbfd0"
+    },
+    {
+      "filename": "intro-lantern-mask.png",
+      "bytes": 315509,
+      "sha256": "92f11e120e623d49153b2993c170fefeaff2e5d5c586c80a4bb0735ad5b9a61b"
+    },
+    {
+      "filename": "intro-mannequin-turn.png",
+      "bytes": 328867,
+      "sha256": "d47256fa154a67a3458f93eb05d90f94f79bd6dc49b68f9e4243ed0bf3223efe"
+    },
+    {
+      "filename": "intro-nursery-cry.png",
+      "bytes": 81516,
+      "sha256": "69c7437c5bd5fc76b3811f0d41e332178660af298b91d9fbf5415672c1f5d9ba"
+    },
+    {
+      "filename": "intro-nursery-prepare.png",
+      "bytes": 75021,
+      "sha256": "f04aa88cff05d74f82614de3cd67c2e5d15e13393ef1bab6a629da9f1b27649f"
+    },
+    {
+      "filename": "intro-portrait-before.png",
+      "bytes": 315488,
+      "sha256": "7b0b8ed76c792b77ecaf6bb467e3c034a386b0a73b6bafaeed2a6683544bf9b6"
+    },
+    {
+      "filename": "intro-portrait-angry.png",
+      "bytes": 321512,
+      "sha256": "49b469af1056d5a725767a247d45513795e881ba1da306ea3481c5482f21af2a"
+    },
+    {
+      "filename": "authored-start-camera.png",
+      "bytes": 650842,
+      "sha256": "a8b82f0d2398d705e1afd3fcbfb7fda5cd94357766322818627f329a8d3bab5b"
+    },
+    {
+      "filename": "enemy-movement-acoustics.wav",
+      "bytes": 1393964,
+      "sha256": "efdf6dc7a9ed5d4c32c621693f165e2d6df8104561d3b000445e0abcb091a582"
+    },
+    {
+      "filename": "enemy-movement-acoustics.json",
+      "bytes": 35715,
+      "sha256": "38e4c1ff0919ba428e10ac5cb3979e72822cabf14e87d5b241be0430fa20039a"
+    },
+    {
+      "filename": "diagnostic-listener-before-render.json",
+      "bytes": 23875,
+      "sha256": "2663a4af4ec26a37c8c608d3cf80439846d41aa33c7b332abe6b954535199ce5"
+    },
+    {
+      "filename": "diagnostic-listener-before-render.wav",
+      "bytes": 192044,
+      "sha256": "5969a20ea28168cd5f6e23ca576a49190cd3fd7488fc581f5d45957575c60f55"
+    },
+    {
+      "filename": "listener-flashlight-ambience.wav",
+      "bytes": 192044,
+      "sha256": "dfc0d6d57b70a39d526116e7fc68a5df629323dd1650ad9d33ff552df84749c2"
+    },
+    {
+      "filename": "listener-paused.wav",
+      "bytes": 48044,
+      "sha256": "c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b"
+    },
+    {
+      "filename": "perceived-tension-mix.wav",
+      "bytes": 1401644,
+      "sha256": "6aef9286757b356f799058a337d287e4c39704d453ff213ff48e32a9e3350cde"
+    },
+    {
+      "filename": "perceived-tension-mix.json",
+      "bytes": 15072,
+      "sha256": "e65d7104ebd1597fe72f7e73f98c944b3d32314b327dd8bb9f5f2d577a45582a"
+    }
+  ],
+  "intro": {
+    "scope": "Original Unity signed16 PCM/JSON consistency and contact-report bounds. Selected-source disjoint actual-event excerpts, not continuous gameplay, target-device listening, hardware FPS or subjective fear certification.",
+    "wave": "monster-first-appearances.wav",
+    "bytes": 931244,
+    "sha256": "d92bf8cb58abd436d818066b5ae11440952891833462d141f6d111f5f9da5314",
+    "sampleRate": 48000,
+    "channels": 2,
+    "frames": 232800,
+    "durationSeconds": 4.85,
+    "segments": [
+      {
+        "name": "quiet-baseline",
+        "startSeconds": 0.0,
+        "durationSeconds": 0.15,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+        "owner": "V1HwacatEvent",
+        "phaseStart": "idle",
+        "phaseEnd": "idle",
+        "elapsedStart": 0.0,
+        "elapsedEnd": 0.0,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": ""
+      },
+      {
+        "name": "mannequin-joint-tension",
+        "startSeconds": 0.15,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.06872768333994568,
+        "pcmRms": 0.017217622547133354,
+        "nonzeroValues": 28254,
+        "sha256": "ef1088770838f967cc7158da4681d240174a647f5624b8c1f3d0f133d6ab0113",
+        "owner": "WeepingAngelEncounter",
+        "phaseStart": "Tension",
+        "phaseEnd": "Tension",
+        "elapsedStart": 0.00999999325722456,
+        "elapsedEnd": 0.329999715089798,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "37089363e1446570c809ae25307cacd62762af7c0ad29b7b8b03c7bd88cb452f"
+      },
+      {
+        "name": "mannequin-moving-joint",
+        "startSeconds": 0.45,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.029877620777001252,
+        "pcmRms": 0.005577923445939763,
+        "nonzeroValues": 27954,
+        "sha256": "ea7385acd1dc6c954d800ff467a19d350f7d026d0805ab7d2ba99c91d92293de",
+        "owner": "WeepingAngelEncounter",
+        "phaseStart": "PartialTurn",
+        "phaseEnd": "PartialTurn",
+        "elapsedStart": 0.659999430179596,
+        "elapsedEnd": 0.9799991250038147,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "69306dab2000ad2a9fd836b07177fe551f380bc4a761ba7ee6cb1ca0ebe05ac9"
+      },
+      {
+        "name": "nursery-cry",
+        "startSeconds": 0.75,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.010315256202887051,
+        "pcmRms": 0.0031733395145170807,
+        "nonzeroValues": 28346,
+        "sha256": "4639aed07e147fe33847425196002b49c788171dbf809283ab958161baf972f0",
+        "owner": "AnnexEncounter",
+        "phaseStart": "cry",
+        "phaseEnd": "cry",
+        "elapsedStart": 0.26999977231025696,
+        "elapsedEnd": 0.5899994969367981,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": ""
+      },
+      {
+        "name": "paused-live-cry",
+        "startSeconds": 1.05,
+        "durationSeconds": 0.15,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+        "owner": "AnnexEncounter",
+        "phaseStart": "cry",
+        "phaseEnd": "cry",
+        "elapsedStart": 0.5899994969367981,
+        "elapsedEnd": 0.5899994969367981,
+        "paused": true,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": ""
+      },
+      {
+        "name": "same-cry-resumed",
+        "startSeconds": 1.2,
+        "durationSeconds": 0.25,
+        "pcmPeak": 0.008667256691183203,
+        "pcmRms": 0.003194275635560281,
+        "nonzeroValues": 23676,
+        "sha256": "4dee18a081f769373b3e48d91b8d8da38daaf594611e02afbd9bd820a14f7a2b",
+        "owner": "AnnexEncounter",
+        "phaseStart": "cry",
+        "phaseEnd": "cry",
+        "elapsedStart": 0.5899994969367981,
+        "elapsedEnd": 0.8499992489814758,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": ""
+      },
+      {
+        "name": "master-zero-live-cry",
+        "startSeconds": 1.45,
+        "durationSeconds": 0.15,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+        "owner": "AnnexEncounter",
+        "phaseStart": "cry",
+        "phaseEnd": "cry",
+        "elapsedStart": 1.0599991083145142,
+        "elapsedEnd": 1.2299989461898804,
+        "paused": false,
+        "master": 0.0,
+        "reducedMotion": false,
+        "authoredClipSha256": ""
+      },
+      {
+        "name": "nursery-stillness-quiet",
+        "startSeconds": 1.6,
+        "durationSeconds": 0.15,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+        "owner": "AnnexEncounter",
+        "phaseStart": "stillness",
+        "phaseEnd": "stillness",
+        "elapsedStart": 2.939997434616089,
+        "elapsedEnd": 3.109997272491455,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": true,
+        "authoredClipSha256": ""
+      },
+      {
+        "name": "comfort-nursery-preparation",
+        "startSeconds": 1.75,
+        "durationSeconds": 0.25,
+        "pcmPeak": 0.04376354258857997,
+        "pcmRms": 0.0055818765137496595,
+        "nonzeroValues": 23070,
+        "sha256": "5d30611baaf03d84df73ec2f3ee2332fa304dfbe030830ff020843a05faf1a43",
+        "owner": "AnnexEncounter",
+        "phaseStart": "crawlReady",
+        "phaseEnd": "crawlReady",
+        "elapsedStart": 4.119998931884766,
+        "elapsedEnd": 4.370004653930664,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": true,
+        "authoredClipSha256": "5ca4a1c2ab25e0535f7d932bf6a3de988c6f1e7bdedcc70e59d104d2f4a2fbbe"
+      },
+      {
+        "name": "archive-shelf-scrape",
+        "startSeconds": 2.0,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.06497390667439802,
+        "pcmRms": 0.011989449147459452,
+        "nonzeroValues": 28216,
+        "sha256": "92e247b80ebd9d0eeaf4f398ad0558edb4312ae65b5ea56e19fce5b5c2a115c4",
+        "owner": "UncatAnnexEvent",
+        "phaseStart": "shelfScrape",
+        "phaseEnd": "shelfScrape",
+        "elapsedStart": 0.00999999325722456,
+        "elapsedEnd": 0.329999715089798,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "b5824567a728ce0ead800d865d51faeca5b0324174f2ce71fb9120b2929650cf"
+      },
+      {
+        "name": "lantern-first-metal-ticks",
+        "startSeconds": 2.3,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.05526902066103091,
+        "pcmRms": 0.006758071119495311,
+        "nonzeroValues": 19492,
+        "sha256": "56a17b015c25ac58045b801d1cb1a68ba1125e870fe2da6c3dce070ec80bbd93",
+        "owner": "LanternMaskEncounter",
+        "phaseStart": "LanternTicks",
+        "phaseEnd": "LanternTicks",
+        "elapsedStart": 0.00999999325722456,
+        "elapsedEnd": 0.329999715089798,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "6bafd5fbb8af4aa72059809e3bad2dc50ada84ac0a605b50f262cddb6d5ee8f9"
+      },
+      {
+        "name": "lantern-mask-rise",
+        "startSeconds": 2.6,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.03842280343028046,
+        "pcmRms": 0.010591875754829729,
+        "nonzeroValues": 28220,
+        "sha256": "0b836b63c2303d7102bba7f0869dbfcb9c2967724134827080e064b3300a4fdf",
+        "owner": "LanternMaskEncounter",
+        "phaseStart": "MaskRise",
+        "phaseEnd": "MaskRise",
+        "elapsedStart": 0.659999430179596,
+        "elapsedEnd": 0.9799991250038147,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "05902cb340988d882d86bdc836dec16df061e93c28624bf3a174ab6dc56a56c8"
+      },
+      {
+        "name": "cyclopse-hidden-breath",
+        "startSeconds": 2.9,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.003204443494979705,
+        "pcmRms": 0.0005722727168093701,
+        "nonzeroValues": 22052,
+        "sha256": "f09a8efd341a6f5b1d9a0f718ba3a13745786456874ec8c71661d70fcdc21e4e",
+        "owner": "V1CyclopseIntro",
+        "phaseStart": "anticipation",
+        "phaseEnd": "anticipation",
+        "elapsedStart": 0.00999999325722456,
+        "elapsedEnd": 0.329999715089798,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "b946e5b35d54894d91092d5cd342257a5505f610cf0e07dfb82eca23ad98d79d"
+      },
+      {
+        "name": "optional-wraith-growth",
+        "startSeconds": 3.2,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.013550218207342753,
+        "pcmRms": 0.0019576765171348443,
+        "nonzeroValues": 26854,
+        "sha256": "1f494712dc538aa99ad781146db8019ede9a2b84fa10242de25db70564007978",
+        "owner": "LanternMaskEncounter",
+        "phaseStart": "Complete",
+        "phaseEnd": "Complete",
+        "elapsedStart": 2.200000047683716,
+        "elapsedEnd": 2.200000047683716,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "728016eb6d511aac1df5fed27c294a5f214af6eb2dffcd8e51d1a3240ab1b0f7"
+      },
+      {
+        "name": "portrait-frame-strain",
+        "startSeconds": 3.5,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.07513657032990509,
+        "pcmRms": 0.015881243818441942,
+        "nonzeroValues": 24542,
+        "sha256": "5fdbc8c478c39caa2ca33aa1c0dfd30b41168179670a84451803c3caf460711d",
+        "owner": "V1HwacatEvent",
+        "phaseStart": "frameStrain",
+        "phaseEnd": "frameStrain",
+        "elapsedStart": 0.0,
+        "elapsedEnd": 0.31999972462654114,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "7f92bc4f226301a1642ebbff9f3bab6049107bab4a86840000d48e554fa0f0c9"
+      },
+      {
+        "name": "portrait-frame-impact",
+        "startSeconds": 3.8,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.09161656544694358,
+        "pcmRms": 0.017733658282262334,
+        "nonzeroValues": 28494,
+        "sha256": "abf17da3a691781ca5806c8934eb72dd7ef8dcbe910a14a1e9f7d9b043470f14",
+        "owner": "V1HwacatEvent",
+        "phaseStart": "standUp",
+        "phaseEnd": "standUp",
+        "elapsedStart": 1.709999918937683,
+        "elapsedEnd": 2.0299997329711914,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "58ef52b35b07bfc0e5e1fd3c4a23f8e8102dde8cf1a1b367b8bc57616b0a8e7d"
+      },
+      {
+        "name": "portrait-toy-mechanism",
+        "startSeconds": 4.1,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.05026398510696738,
+        "pcmRms": 0.008438062744653432,
+        "nonzeroValues": 28564,
+        "sha256": "683b8330e1a632a0a886bf60ff7fae660d6919e6a7e4c421a6c29b36cea903b3",
+        "owner": "V1HwacatEvent",
+        "phaseStart": "dance",
+        "phaseEnd": "dance",
+        "elapsedStart": 4.710016250610352,
+        "elapsedEnd": 5.030023574829102,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "bc1d955ce13a8929af71201ea90727d03cf069352654b1e1692a0c9ae0d3fe78"
+      },
+      {
+        "name": "portrait-angry-jaw",
+        "startSeconds": 4.4,
+        "durationSeconds": 0.3,
+        "pcmPeak": 0.03469954527420881,
+        "pcmRms": 0.009312647647193355,
+        "nonzeroValues": 27228,
+        "sha256": "80229f34626583b18bb875710ac23878a794b7df53e440f726980f9df8c06656",
+        "owner": "V1HwacatEvent",
+        "phaseStart": "transform",
+        "phaseEnd": "transform",
+        "elapsedStart": 6.310054302215576,
+        "elapsedEnd": 6.630061626434326,
+        "paused": false,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": "1ae883cc29d08b68afbb7c8af291e2eba1cefce70541648287a3a4651938f1e8"
+      },
+      {
+        "name": "result-silence",
+        "startSeconds": 4.7,
+        "durationSeconds": 0.15,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "19a9b0eb3572bcbee480f15089a756416b5ec8619f8f95fc78658f727be4fbf9",
+        "owner": "V1HwacatEvent",
+        "phaseStart": "resolved",
+        "phaseEnd": "resolved",
+        "elapsedStart": 6.630061626434326,
+        "elapsedEnd": 6.630061626434326,
+        "paused": true,
+        "master": 0.800000011920929,
+        "reducedMotion": false,
+        "authoredClipSha256": ""
+      }
+    ],
+    "uniqueHelperClipHashes": 12,
+    "imageFiles": [
+      "intro-portrait-before.png",
+      "intro-portrait-angry.png",
+      "intro-archive-emergence.png",
+      "intro-lantern-light.png",
+      "intro-lantern-mask.png",
+      "intro-mannequin-turn.png",
+      "intro-nursery-cry.png",
+      "intro-nursery-prepare.png",
+      "intro-wraith-half-grown.png",
+      "intro-wraith-attached.png"
+    ],
+    "firstContactMaxCenterError": 0.0,
+    "firstContactMaxPointError": 0.0,
+    "physicalCases": [
+      {
+        "surface": "floor",
+        "requestedFrameSeconds": 0.10000000149011612,
+        "observedFrameSeconds": 0.10000000149011612,
+        "predictedTime": 0.26373180747032166,
+        "actualTime": 0.26373180747032166,
+        "centerError": 0.0,
+        "pointError": 0.0,
+        "normalError": 0.0,
+        "predictedCenter": {
+          "x": 500.0,
+          "y": 0.08252739906311035,
+          "z": 503.3430480957031
+        },
+        "actualCenter": {
+          "x": 500.0,
+          "y": 0.08252739906311035,
+          "z": 503.3430480957031
+        },
+        "predictedContact": {
+          "x": 500.0,
+          "y": 1.862645149230957e-09,
+          "z": 503.34735107421875
+        },
+        "actualContact": {
+          "x": 500.0,
+          "y": 1.862645149230957e-09,
+          "z": 503.34735107421875
+        }
+      },
+      {
+        "surface": "wall",
+        "requestedFrameSeconds": 0.10000000149011612,
+        "observedFrameSeconds": 0.10000000149011612,
+        "predictedTime": 0.31928789615631104,
+        "actualTime": 0.31928789615631104,
+        "centerError": 0.0,
+        "pointError": 0.0,
+        "normalError": 0.0,
+        "predictedCenter": {
+          "x": 500.0,
+          "y": 2.2859506607055664,
+          "z": 504.7650146484375
+        },
+        "actualCenter": {
+          "x": 500.0,
+          "y": 2.2859506607055664,
+          "z": 504.7650146484375
+        },
+        "predictedContact": {
+          "x": 500.0,
+          "y": 2.2860796451568604,
+          "z": 504.8499755859375
+        },
+        "actualContact": {
+          "x": 500.0,
+          "y": 2.2860796451568604,
+          "z": 504.8499755859375
+        }
+      },
+      {
+        "surface": "ceiling",
+        "requestedFrameSeconds": 0.10000000149011612,
+        "observedFrameSeconds": 0.10000000149011612,
+        "predictedTime": 0.14608757197856903,
+        "actualTime": 0.14608757197856903,
+        "centerError": 0.0,
+        "pointError": 0.0,
+        "normalError": 0.0,
+        "predictedCenter": {
+          "x": 500.0,
+          "y": 3.366842269897461,
+          "z": 501.9624938964844
+        },
+        "actualCenter": {
+          "x": 500.0,
+          "y": 3.366842269897461,
+          "z": 501.9624938964844
+        },
+        "predictedContact": {
+          "x": 500.0,
+          "y": 3.4499998092651367,
+          "z": 501.9664001464844
+        },
+        "actualContact": {
+          "x": 500.0,
+          "y": 3.4499998092651367,
+          "z": 501.9664001464844
+        }
+      },
+      {
+        "surface": "floor",
+        "requestedFrameSeconds": 0.008333333767950535,
+        "observedFrameSeconds": 0.008333333767950535,
+        "predictedTime": 0.26373180747032166,
+        "actualTime": 0.26373180747032166,
+        "centerError": 0.0,
+        "pointError": 0.0,
+        "normalError": 0.0,
+        "predictedCenter": {
+          "x": 500.0,
+          "y": 0.08252739906311035,
+          "z": 503.3430480957031
+        },
+        "actualCenter": {
+          "x": 500.0,
+          "y": 0.08252739906311035,
+          "z": 503.3430480957031
+        },
+        "predictedContact": {
+          "x": 500.0,
+          "y": 1.862645149230957e-09,
+          "z": 503.34735107421875
+        },
+        "actualContact": {
+          "x": 500.0,
+          "y": 1.862645149230957e-09,
+          "z": 503.34735107421875
+        }
+      },
+      {
+        "surface": "wall",
+        "requestedFrameSeconds": 0.008333333767950535,
+        "observedFrameSeconds": 0.008333333767950535,
+        "predictedTime": 0.31928789615631104,
+        "actualTime": 0.31928789615631104,
+        "centerError": 0.0,
+        "pointError": 0.0,
+        "normalError": 0.0,
+        "predictedCenter": {
+          "x": 500.0,
+          "y": 2.2859506607055664,
+          "z": 504.7650146484375
+        },
+        "actualCenter": {
+          "x": 500.0,
+          "y": 2.2859506607055664,
+          "z": 504.7650146484375
+        },
+        "predictedContact": {
+          "x": 500.0,
+          "y": 2.2860796451568604,
+          "z": 504.8499755859375
+        },
+        "actualContact": {
+          "x": 500.0,
+          "y": 2.2860796451568604,
+          "z": 504.8499755859375
+        }
+      },
+      {
+        "surface": "ceiling",
+        "requestedFrameSeconds": 0.008333333767950535,
+        "observedFrameSeconds": 0.008333333767950535,
+        "predictedTime": 0.14608757197856903,
+        "actualTime": 0.14608757197856903,
+        "centerError": 0.0,
+        "pointError": 0.0,
+        "normalError": 0.0,
+        "predictedCenter": {
+          "x": 500.0,
+          "y": 3.366842269897461,
+          "z": 501.9624938964844
+        },
+        "actualCenter": {
+          "x": 500.0,
+          "y": 3.366842269897461,
+          "z": 501.9624938964844
+        },
+        "predictedContact": {
+          "x": 500.0,
+          "y": 3.4499998092651367,
+          "z": 501.9664001464844
+        },
+        "actualContact": {
+          "x": 500.0,
+          "y": 3.4499998092651367,
+          "z": 501.9664001464844
+        }
+      }
+    ]
+  },
+  "existingEnemyAudio": {
+    "scope": "Independent inspection of preserved signed16 stereo PCM and transport/report consistency; no device listening or subjective quality certification",
+    "wave": "enemy-movement-acoustics.wav",
+    "bytes": 1393964,
+    "sha256": "efdf6dc7a9ed5d4c32c621693f165e2d6df8104561d3b000445e0abcb091a582",
+    "sampleRate": 48000,
+    "channels": 2,
+    "frames": 348480,
+    "duration": 7.26,
+    "segments": [
+      {
+        "name": "identity-Lantern",
+        "frames": 21600,
+        "startSeconds": 0.0,
+        "duration": 0.45,
+        "pcmPeak": 0.047883541367839594,
+        "pcmRms": 0.008802513125127451,
+        "leftRms": 0.008802513125127451,
+        "rightRms": 0.008802513125127451,
+        "pcmSha256": "56e6090f6e41512addacbf0dcb879a926ad86f5801dd804d2bf9dc8deda828c0",
+        "nonzeroValues": 30966,
+        "reportedProfile": "Lantern",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Cyclopse",
+        "frames": 21600,
+        "startSeconds": 0.45,
+        "duration": 0.45,
+        "pcmPeak": 0.10748619037446211,
+        "pcmRms": 0.0202006513061548,
+        "leftRms": 0.0202006513061548,
+        "rightRms": 0.0202006513061548,
+        "pcmSha256": "d78176e578db510c81502136333e94de98566e5b20ecd06e669c80f2179f972b",
+        "nonzeroValues": 31198,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Hwacat",
+        "frames": 21600,
+        "startSeconds": 0.9,
+        "duration": 0.45,
+        "pcmPeak": 0.07007049775688956,
+        "pcmRms": 0.008669425319064193,
+        "leftRms": 0.008669425319064193,
+        "rightRms": 0.008669425319064193,
+        "pcmSha256": "35bfb45b9cd16628cc99535cbea3c9c8c157802169faeab52ec56770b2430582",
+        "nonzeroValues": 18242,
+        "reportedProfile": "Hwacat",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Uncat",
+        "frames": 21600,
+        "startSeconds": 1.35,
+        "duration": 0.45,
+        "pcmPeak": 0.07913449507126072,
+        "pcmRms": 0.012020744852963512,
+        "leftRms": 0.012020744852963512,
+        "rightRms": 0.012020744852963512,
+        "pcmSha256": "d85306afe324d7e660d1d8f50c55817239d9205dfea06fe249294edc9ac35116",
+        "nonzeroValues": 22716,
+        "reportedProfile": "Uncat",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Baby",
+        "frames": 21600,
+        "startSeconds": 1.8,
+        "duration": 0.45,
+        "pcmPeak": 0.0738853114413892,
+        "pcmRms": 0.012605409817262672,
+        "leftRms": 0.012605409817262672,
+        "rightRms": 0.012605409817262672,
+        "pcmSha256": "c1ecaf35d859e9ee40765a0219b4b136c07f7fb411b4153d8eb5aae12e8ca7d7",
+        "nonzeroValues": 28986,
+        "reportedProfile": "Baby",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "identity-Wraith",
+        "frames": 21600,
+        "startSeconds": 2.25,
+        "duration": 0.45,
+        "pcmPeak": 0.07205420087282938,
+        "pcmRms": 0.011902366735211122,
+        "leftRms": 0.011902366735211122,
+        "rightRms": 0.011902366735211122,
+        "pcmSha256": "c2004f8920a9e2af2aec78bc6c5f16af47e48415811cd2136ea5c6c2a0e9d584",
+        "nonzeroValues": 31080,
+        "reportedProfile": "Wraith",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "beyond-range",
+        "frames": 21600,
+        "startSeconds": 2.7,
+        "duration": 0.45,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "leftRms": 0.0,
+        "rightRms": 0.0,
+        "pcmSha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1",
+        "nonzeroValues": 0,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "wall-blocked",
+        "frames": 21600,
+        "startSeconds": 3.15,
+        "duration": 0.45,
+        "pcmPeak": 0.04016235847041231,
+        "pcmRms": 0.0076432946341142005,
+        "leftRms": 0.0076432946341142005,
+        "rightRms": 0.0076432946341142005,
+        "pcmSha256": "f1d28440196fa72ed96ec74dc312ec790ba0c9fa6e2d5dfdf6dff3b4a720568f",
+        "nonzeroValues": 29594,
+        "reportedProfile": "Cyclopse",
+        "occluded": true,
+        "floorOccluded": false,
+        "gain": 0.3799999952316284,
+        "cutoffHz": 1200.0
+      },
+      {
+        "name": "vertical-open",
+        "frames": 21600,
+        "startSeconds": 3.6,
+        "duration": 0.45,
+        "pcmPeak": 0.10748619037446211,
+        "pcmRms": 0.020197233907016488,
+        "leftRms": 0.020197233907016488,
+        "rightRms": 0.020197233907016488,
+        "pcmSha256": "562f0aadb8b7e650683e15cbb283e362e9c234ea29dcb3c018273aa869beaadb",
+        "nonzeroValues": 31180,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "floor-blocked",
+        "frames": 21600,
+        "startSeconds": 4.05,
+        "duration": 0.45,
+        "pcmPeak": 0.01489303262428663,
+        "pcmRms": 0.002808588555179358,
+        "leftRms": 0.002808588555179358,
+        "rightRms": 0.002808588555179358,
+        "pcmSha256": "ff862514d251ea297a6e3e9adcd6e9c553418b96525bd0bc9e8548dce55b9fb3",
+        "nonzeroValues": 26246,
+        "reportedProfile": "Cyclopse",
+        "occluded": true,
+        "floorOccluded": true,
+        "gain": 0.14000000059604645,
+        "cutoffHz": 650.0
+      },
+      {
+        "name": "left",
+        "frames": 21600,
+        "startSeconds": 4.5,
+        "duration": 0.45,
+        "pcmPeak": 0.12665181432538836,
+        "pcmRms": 0.01722643983614748,
+        "leftRms": 0.02379694197260144,
+        "rightRms": 0.005215938229068437,
+        "pcmSha256": "98a62a796dc41e9d352d300a8018c10a08efd4d2df20cefd686f934c3d7a7c07",
+        "nonzeroValues": 29836,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "right",
+        "frames": 21600,
+        "startSeconds": 4.95,
+        "duration": 0.45,
+        "pcmPeak": 0.12665181432538836,
+        "pcmRms": 0.017235312355741318,
+        "leftRms": 0.005218612082896118,
+        "rightRms": 0.02380920141307115,
+        "pcmSha256": "94e7860ae70bddbe50e54fed4d13254713a3866bfe466083a4f9ac7652d33d33",
+        "nonzeroValues": 29864,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "master-zero",
+        "frames": 21600,
+        "startSeconds": 5.4,
+        "duration": 0.45,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "leftRms": 0.0,
+        "rightRms": 0.0,
+        "pcmSha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1",
+        "nonzeroValues": 0,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "before-pause",
+        "frames": 2880,
+        "startSeconds": 5.85,
+        "duration": 0.06,
+        "pcmPeak": 0.10748619037446211,
+        "pcmRms": 0.0505080984025218,
+        "leftRms": 0.0505080984025218,
+        "rightRms": 0.0505080984025218,
+        "pcmSha256": "d51e05f9e2f499cd988db9ccc8b400f750a541d074336edc6961893d0951f90f",
+        "nonzeroValues": 5716,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "paused",
+        "frames": 21600,
+        "startSeconds": 5.91,
+        "duration": 0.45,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "leftRms": 0.0,
+        "rightRms": 0.0,
+        "pcmSha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1",
+        "nonzeroValues": 0,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "resumed",
+        "frames": 21600,
+        "startSeconds": 6.36,
+        "duration": 0.45,
+        "pcmPeak": 0.057954649494918666,
+        "pcmRms": 0.0075365512445579475,
+        "leftRms": 0.0075365512445579475,
+        "rightRms": 0.0075365512445579475,
+        "pcmSha256": "1e7471cbf4b40cf9d7b34c9ecc24ccc0a624ce58d6d4210d177467a88f0f8573",
+        "nonzeroValues": 25100,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      },
+      {
+        "name": "four-nearby-stalkers",
+        "frames": 21600,
+        "startSeconds": 6.81,
+        "duration": 0.45,
+        "pcmPeak": 0.22562334055604724,
+        "pcmRms": 0.028295691230516826,
+        "leftRms": 0.0302463905783759,
+        "rightRms": 0.026200155369879526,
+        "pcmSha256": "8368000a006c38275ac5d274da04c06a8bf4a0207125ff7a190a854d602d5ebc",
+        "nonzeroValues": 31075,
+        "reportedProfile": "Cyclopse",
+        "occluded": false,
+        "floorOccluded": false,
+        "gain": 1.0,
+        "cutoffHz": 9000.0
+      }
+    ],
+    "wallVsClearRms": 0.37836872278397365,
+    "floorVsOpenVerticalRms": 0.13905807934440265
+  },
+  "existingTensionAudio": {
+    "scope": "Independent real signed16 PCM/metadata/transport consistency checks. Discontinuous indexed excerpts with declared gaps/flushes; not target-device listening, subjective fear or psychoacoustic masking certification.",
+    "wave": "perceived-tension-mix.wav",
+    "bytes": 1401644,
+    "sha256": "6aef9286757b356f799058a337d287e4c39704d453ff213ff48e32a9e3350cde",
+    "sampleRate": 48000,
+    "channels": 2,
+    "frames": 350400,
+    "durationSeconds": 7.3,
+    "segments": [
+      {
+        "name": "quiet-baseline",
+        "startSeconds": 0.0,
+        "durationSeconds": 0.4,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "e2cc2a1fa6131cf4d86faa3baf78851f35a36853e2467c257b3df9d89e85cce5",
+        "stressStart": 0.0,
+        "stressEnd": 0.0,
+        "bedGainStart": 0.0,
+        "bedGainEnd": 0.0,
+        "pulsePitch": 0.8999999761581421,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": false,
+        "softened": false
+      },
+      {
+        "name": "recognition-onset",
+        "startSeconds": 0.4,
+        "durationSeconds": 0.9,
+        "pcmPeak": 0.004943998535111545,
+        "pcmRms": 0.0007704143890230717,
+        "nonzeroValues": 63362,
+        "sha256": "668a14349680a50f0c78bf2f226e15a50a38a36d1b90b572e73665aaa9dc02d1",
+        "stressStart": 0.0,
+        "stressEnd": 0.8313334584236145,
+        "bedGainStart": 0.0,
+        "bedGainEnd": 0.8313334584236145,
+        "pulsePitch": 1.1494001150131226,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": false,
+        "softened": false
+      },
+      {
+        "name": "after-evidence-stops",
+        "startSeconds": 1.3,
+        "durationSeconds": 0.9,
+        "pcmPeak": 0.004272591326639607,
+        "pcmRms": 0.0007157523704552943,
+        "nonzeroValues": 69686,
+        "sha256": "effad10a3803c733c04cd137339ed23ff1b255d6b9f9e4faf70f0d08fdfbab5b",
+        "stressStart": 0.8313334584236145,
+        "stressEnd": 0.6846675872802734,
+        "bedGainStart": 0.8313334584236145,
+        "bedGainEnd": 0.6846675872802734,
+        "pulsePitch": 1.1054003238677979,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": false,
+        "softened": false
+      },
+      {
+        "name": "eventual-quiet",
+        "startSeconds": 2.2,
+        "durationSeconds": 0.4,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "e2cc2a1fa6131cf4d86faa3baf78851f35a36853e2467c257b3df9d89e85cce5",
+        "stressStart": 0.0,
+        "stressEnd": 0.0,
+        "bedGainStart": 0.0,
+        "bedGainEnd": 0.0,
+        "pulsePitch": 0.8999999761581421,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": false,
+        "softened": false
+      },
+      {
+        "name": "footstep-only",
+        "startSeconds": 2.6,
+        "durationSeconds": 0.75,
+        "pcmPeak": 0.07007049775688956,
+        "pcmRms": 0.006715307976384908,
+        "nonzeroValues": 18242,
+        "sha256": "0c56f5a7b2cf6a80006bab4d5a22494f8fb2d33d66a4f949e7b0ba9d5bff5855",
+        "stressStart": 0.0,
+        "stressEnd": 0.0,
+        "bedGainStart": 0.0,
+        "bedGainEnd": 0.0,
+        "pulsePitch": 0.8999999761581421,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": false,
+        "softened": false
+      },
+      {
+        "name": "bed-only",
+        "startSeconds": 3.35,
+        "durationSeconds": 0.75,
+        "pcmPeak": 0.004852443006683554,
+        "pcmRms": 0.0008513709095465844,
+        "nonzeroValues": 59298,
+        "sha256": "90fc9f263a512ce3ed59bd68227bee6fa34ab39fb56e661f359570164e5b0a09",
+        "stressStart": 0.8500000238418579,
+        "stressEnd": 0.7966669797897339,
+        "bedGainStart": 0.4930000901222229,
+        "bedGainEnd": 0.7966669797897339,
+        "pulsePitch": 1.1390001773834229,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": false,
+        "softened": false
+      },
+      {
+        "name": "bed-with-contact",
+        "startSeconds": 4.1,
+        "durationSeconds": 0.75,
+        "pcmPeak": 0.07022309030426954,
+        "pcmRms": 0.006758098841780273,
+        "nonzeroValues": 53342,
+        "sha256": "4f45f724e1d83107d35892fa552593b851be3b39c5b2c6c42d46b2d3e6b6a0fc",
+        "stressStart": 0.8500000238418579,
+        "stressEnd": 0.7966669797897339,
+        "bedGainStart": 0.45050010085105896,
+        "bedGainEnd": 0.7966669797897339,
+        "pulsePitch": 1.1390001773834229,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": false,
+        "softened": false
+      },
+      {
+        "name": "master-zero",
+        "startSeconds": 4.85,
+        "durationSeconds": 0.4,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "e2cc2a1fa6131cf4d86faa3baf78851f35a36853e2467c257b3df9d89e85cce5",
+        "stressStart": 0.7646671533584595,
+        "stressEnd": 0.6980008482933044,
+        "bedGainStart": 0.7646671533584595,
+        "bedGainEnd": 0.6980008482933044,
+        "pulsePitch": 1.1094002723693848,
+        "airPitch": 1.0,
+        "masterVolume": 0.0,
+        "paused": false,
+        "softened": false
+      },
+      {
+        "name": "paused",
+        "startSeconds": 5.25,
+        "durationSeconds": 0.4,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "e2cc2a1fa6131cf4d86faa3baf78851f35a36853e2467c257b3df9d89e85cce5",
+        "stressStart": 0.8500000238418579,
+        "stressEnd": 0.8500000238418579,
+        "bedGainStart": 0.3655000627040863,
+        "bedGainEnd": 0.3655000627040863,
+        "pulsePitch": 1.15500009059906,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": true,
+        "softened": false
+      },
+      {
+        "name": "resumed",
+        "startSeconds": 5.65,
+        "durationSeconds": 0.65,
+        "pcmPeak": 0.004882961516159551,
+        "pcmRms": 0.0007167069939458763,
+        "nonzeroValues": 52974,
+        "sha256": "4d281c5e4bd27a65e35bf3739a6be9be461c7b8578850bec10fe75849d151ad7",
+        "stressStart": 0.8500000238418579,
+        "stressEnd": 0.8206668496131897,
+        "bedGainStart": 0.3655000627040863,
+        "bedGainEnd": 0.8206668496131897,
+        "pulsePitch": 1.1462000608444214,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": false,
+        "softened": false
+      },
+      {
+        "name": "softened",
+        "startSeconds": 6.3,
+        "durationSeconds": 0.6,
+        "pcmPeak": 0.0019531846064638203,
+        "pcmRms": 0.0003523624270610679,
+        "nonzeroValues": 31860,
+        "sha256": "3025909716fe728cab41a6a5c0455432b00ab3347366a3b395dad47a54e0a430",
+        "stressStart": 0.8446667194366455,
+        "stressEnd": 0.7460005879402161,
+        "bedGainStart": 0.3801000118255615,
+        "bedGainEnd": 0.33570024371147156,
+        "pulsePitch": 1.0,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": false,
+        "softened": true
+      },
+      {
+        "name": "result-silence",
+        "startSeconds": 6.9,
+        "durationSeconds": 0.4,
+        "pcmPeak": 0.0,
+        "pcmRms": 0.0,
+        "nonzeroValues": 0,
+        "sha256": "e2cc2a1fa6131cf4d86faa3baf78851f35a36853e2467c257b3df9d89e85cce5",
+        "stressStart": 0.0,
+        "stressEnd": 0.0,
+        "bedGainStart": 0.0,
+        "bedGainEnd": 0.0,
+        "pulsePitch": 1.0,
+        "airPitch": 1.0,
+        "masterVolume": 0.800000011920929,
+        "paused": true,
+        "softened": true
+      }
+    ],
+    "bedToFootstepRms": 0.12678062012055447,
+    "quietWaitGameSeconds": 4.2833251953125,
+    "discardedCaptureSamples": 316800,
+    "discardedCaptureBatches": [
+      28800,
+      28800,
+      28800,
+      33600,
+      33600,
+      19200,
+      28800,
+      19200,
+      57600,
+      19200,
+      19200
+    ]
+  },
+  "visualReview": {
+    "newWorldFramesReviewed": 12,
+    "confirmed": [
+      "Near-eye aim wedge is now a thin line in both downward and wall views.",
+      "Completed mask/body air gap is closed in the actual frame.",
+      "Later Baby frame shows a low crawl pose rather than the early upright blend.",
+      "Portrait/angry, archive corner, lantern-only/mask and stationary mannequin transitions are visible."
+    ],
+    "unchangedByteReviewedFrames": [
+      "intro-mannequin-turn.png",
+      "intro-wraith-half-grown.png"
+    ],
+    "independentReview": "Final read-only review confirmed four corrected images, XML54/54, stereo direction, identical intro WAV and ZIP186CRC.",
+    "notClaimed": "Continuous cinematic recording, human fear/fun, target-device listening or hardware performance."
+  },
+  "providerStatusCaveat": {
+    "observedStage": "After successful Unity player export and artifact check-in, following cache archive publication; generic Execute scripts failure",
+    "exactCause": "Unresolved. Do not describe as guaranteed cleanup-only failure or as total provider success.",
+    "logIdentityVerified": "BuildNumber16 and exact source1f0b646919f0f93582c48012924e411d0b201ea4 occur inside original log; this is not stale build15.",
+    "handoverBasis": "Both original test XML suites pass, Unity logs player export Success and return0, and published original Windows ZIP passes full CRC/payload checks. No further run requested."
+  }
+}

@@ -1,3 +1,18 @@
+# Actual final result: build #16
+
+At source 1f0b646919f0f93582c48012924e411d0b201ea4 all 54 actual tests passed
+(6 Edit + 48 Play), no failures/skips. Windows player export succeeded and original
+ZIP 186 CRC checks pass. New real images confirm the thin aim line, closed mask/body
+gap and later Baby crawl pose. Native intro PCM, stereo sides and existing mix
+criteria pass.51 artifacts hash-verify under 18 MB; all individual bounds remain.
+
+Dashboard Success conflicts with the exact final log's generic post-publication
+FAILURE footer. The cause is unresolved; do not label the entire provider pipeline
+unconditionally successful. Verified XML/player/ZIP facts are recorded separately
+in ../cloud-tests/build-16-*. Current work is complete; no new build/feature planned.
+
+The following implementation, failed-first-run and preflight text is historical.
+
 # Deliberate firecracker aiming: implementation awaiting engine verification
 
 Optional held right mouse previews the existing throw up to its first physical
