@@ -1,5 +1,19 @@
 # Unity Build Automation: real scene tests
 
+## Next source: perceived tension (44-case engine verification pending)
+
+A new player-local pulse/air layer responds only to accepted actual recognition
+and genuinely audible emitted enemy contacts/attacks. It settles after evidence
+stops, ducks beneath useful cues, respects mute/pause/comfort, and clears on terminal
+transitions. Existing room/floor beds now read this sensory history instead of
+unseen Chase flags. Movement, AI rules, item resources, authored scene and visual effects remain unchanged.
+
+Four new PlayMode fixtures preserve all 40 existing cases; expected total is
+6 EditMode + 38 PlayMode. A bounded 12-segment 7.3 s real-output WAV+JSON extends the
+transport from 34 to 36 files, retaining the 16 MB aggregate / 1.5 MB per-file limits.
+Source compilation is separate from pending engine/PCM/export verification.
+See `Verification/perceived-tension/`; the latest verified player is #13 below.
+
 ## Latest result: build #13 SUCCESS, 40/40 tests
 
 Tested/exported source: `b1ca9e86efa60c0159e03556b91c95228b896644`.

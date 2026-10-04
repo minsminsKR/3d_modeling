@@ -14,10 +14,10 @@ import xml.etree.ElementTree as ET
 
 NAME = re.compile(r"^[A-Za-z0-9_-]+\.(?:png|wav|json)$")
 MAX_FILE = 1_500_000
-# Preserve the 32 presentation artifacts and allow one bounded enemy-audio
-# montage plus its segment report. Capacity is not a gameplay pass gate.
+# Preserve the 34 prior presentation/audio artifacts and allow one bounded
+# perceived-tension montage plus its report. Capacity is not a gameplay pass gate.
 MAX_TOTAL = 16_000_000
-MAX_FILES = 34
+MAX_FILES = 36
 
 
 def decode(text):

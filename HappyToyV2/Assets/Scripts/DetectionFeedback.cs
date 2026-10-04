@@ -77,6 +77,11 @@ namespace HappyToy.V2
         {
             if (cooldown > 0 || !isActiveAndEnabled) return;
             remaining = Duration; cooldown = Cooldown; CuesPlayed++;
+            // Keep tension on the same accepted, four-second-coalesced recognition
+            // event as the actual visual/sting, rather than suppressed Signal calls.
+            var session = GameSession.Current;
+            if (session && session.player && session.player.gameObject == gameObject)
+                PerceivedTension.ReportRecognition(session);
             source.volume = Softened ? .29f : .52f;
             source.PlayOneShot(sting);
         }

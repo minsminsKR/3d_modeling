@@ -12,7 +12,6 @@ namespace HappyToy.V2
         AudioSource waterSound;
         AudioLowPassFilter waterFilter;
         GameSession session;
-        StalkerBrain[] enemies;
         bool initialized, waterOccluded;
 
         void Start()
@@ -25,7 +24,6 @@ namespace HappyToy.V2
                 if (surface.sharedMaterial && surface.sharedMaterial.shader &&
                     surface.sharedMaterial.shader.name == "HappyToy/ShallowWater" && !surface.GetComponent<WaterSurfaceFeedback>())
                     surface.gameObject.AddComponent<WaterSurfaceFeedback>();
-            enemies = FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             var emitter = new GameObject("Basement distant water drops");
             emitter.transform.SetParent(transform); emitter.transform.position = new Vector3(13.8f, -3, -29);
             waterSound = emitter.AddComponent<AudioSource>(); waterSound.playOnAwake = false;
@@ -72,9 +70,9 @@ namespace HappyToy.V2
                 waterOccluded = Physics.Linecast(player.eyes.transform.position, waterSound.transform.position,
                     Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
             }
-            bool danger = RoomAmbience.HasNearbyChase(player, enemies);
+            var tension = player.GetComponent<PerceivedTension>();
             float floorGain = Mathf.Lerp(.05f, 1, Mathf.InverseLerp(-1.5f, -4.1f, y));
-            float storyGain = session.StoryStep >= 4 ? .25f : danger ? .45f : 1;
+            float storyGain = session.StoryStep >= 4 ? .25f : tension ? tension.AmbienceGain : 1;
             float target = .35f * floorGain * storyGain * (waterOccluded ? .28f : 1);
             waterSound.volume = Mathf.MoveTowards(waterSound.volume, target, Time.deltaTime * .4f);
             float cutoff = waterOccluded || floorGain < .5f ? 850 : 4800;

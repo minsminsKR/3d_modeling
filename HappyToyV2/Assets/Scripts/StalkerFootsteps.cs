@@ -77,6 +77,7 @@ namespace HappyToy.V2
             if (!isActiveAndEnabled || !attackSource || lantern || !session || !session.InputAllowed || session.StoryStep >= 4) return;
             attackSource.pitch = 1;
             attackSource.PlayOneShot(atCabinet ? cabinetRattle : attackClip, atCabinet ? .95f : 1);
+            PerceivedTension.ReportSound(session, attackSource, AttackAcoustics, true, atCabinet ? .95f : 1);
             AttackCuesPlayed++;
             if (atCabinet) CabinetAttackCuesPlayed++;
         }
@@ -107,6 +108,7 @@ namespace HappyToy.V2
             distance -= StepDistance;
             source.pitch = EnemySoundProfile.Pitch(Profile, StepsPlayed);
             source.PlayOneShot(clip); StepsPlayed++;
+            PerceivedTension.ReportSound(session, source, MovementAcoustics, false);
         }
         void OnDisable()
         { distance = 0; if (source) source.Stop(); if (attackSource) attackSource.Stop(); }

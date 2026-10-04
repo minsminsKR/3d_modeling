@@ -21,6 +21,7 @@ namespace HappyToy.V2
             player = GetComponent<PlayerMotor>();
             if (!player || !player.eyes) { enabled = false; return; }
             if (!GetComponent<DetectionFeedback>()) gameObject.AddComponent<DetectionFeedback>();
+            if (!GetComponent<PerceivedTension>()) gameObject.AddComponent<PerceivedTension>();
             previousPosition = transform.position;
             cameraHome = player.eyes.transform.localPosition;
             steps = Source("Player footsteps", .36f, 120);

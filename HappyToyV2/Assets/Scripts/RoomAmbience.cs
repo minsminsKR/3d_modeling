@@ -16,13 +16,11 @@ namespace HappyToy.V2
         public int MixUpdates {get;private set;}
         public float StoryGain {get;private set;}=1;
         float nextTrace;
-        StalkerBrain[] enemies;
         void Start()
         {
             Add("washroom-drip",new Vector3(-5.7f,1.1f,-5.1f),MakeClip("V1 wet drip adaptation",6,0),.42f);
             Add("infirmary-wiring",new Vector3(5.7f,2.6f,5.5f),MakeClip("V1 wiring adaptation",4,1),.32f);
             Add("classroom-draft",new Vector3(-6.4f,1.8f,7.8f),MakeClip("Classroom paper air",6,2),.28f);
-            enemies=FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include,FindObjectsSortMode.None);
         }
         void Add(string name,Vector3 position,AudioClip clip,float gain)
         {
@@ -64,8 +62,12 @@ namespace HappyToy.V2
         void Update()
         {
             var session=GameSession.Current;if(!session||!session.InputAllowed)return;
-            MixUpdates++;bool chasing=HasNearbyChase(session.player,enemies);
-            StoryGain=Mathf.MoveTowards(StoryGain,session.StoryStep>=4?.25f:chasing?.5f:1,Time.deltaTime*.7f);
+            MixUpdates++;
+            // Mix from the player's actual sensory history, never an unseen actor's
+            // Chase flag. The short aftermath can persist after the threat moves away.
+            var tension=session.player?session.player.GetComponent<PerceivedTension>():null;
+            float perceivedGain=tension?tension.AmbienceGain:1;
+            StoryGain=Mathf.MoveTowards(StoryGain,session.StoryStep>=4?.25f:perceivedGain,Time.deltaTime*.7f);
             bool trace=Time.time>=nextTrace;if(trace)nextTrace=Time.time+.2f;
             foreach(var voice in voices)
             {
@@ -73,16 +75,6 @@ namespace HappyToy.V2
                 voice.source.volume=Mathf.MoveTowards(voice.source.volume,voice.gain*StoryGain*(voice.occluded?.28f:1),Time.deltaTime*.5f);
                 voice.filter.cutoffFrequency=Mathf.MoveTowards(voice.filter.cutoffFrequency,voice.occluded?850:6000,Time.deltaTime*9000);
             }
-        }
-        // Distant actors on another floor must not mute the listener's local room bed.
-        public static bool HasNearbyChase(PlayerMotor player, StalkerBrain[] candidates)
-        {
-            if (!player || candidates == null) return false;
-            foreach (var enemy in candidates)
-                if (enemy && enemy.isActiveAndEnabled && enemy.state == StalkerBrain.State.Chase &&
-                    Mathf.Abs(enemy.transform.position.y - player.transform.position.y) <= 1.6f &&
-                    (enemy.transform.position - player.transform.position).sqrMagnitude < 196) return true;
-            return false;
         }
         void OnDestroy(){foreach(var voice in voices)if(voice.source&&voice.source.clip)Destroy(voice.source.clip);}
     }
