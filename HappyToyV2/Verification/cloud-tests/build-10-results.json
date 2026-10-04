@@ -1,0 +1,314 @@
+{
+  "build": 10,
+  "commit": "705c0639f1bb892a92057481f93381050c3626c8",
+  "source_ci": {
+    "id": 37189833520,
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "expected_tests": {
+    "editmode": 6,
+    "playmode": 27
+  },
+  "expected_evidence_envelopes": 32,
+  "prelaunch_budget": {
+    "windows_used": 81,
+    "windows_included": 200,
+    "windows_remaining": 119
+  },
+  "target": "happytoyv2-windows64-pr7",
+  "unity_version": "6000.6.0f1",
+  "machine": "Windows Micro",
+  "status": "SUCCESS",
+  "purpose": "Verify six actual personal-play feedback fixes",
+  "tests": {
+    "editmode": {
+      "testcasecount": "6",
+      "result": "Passed",
+      "total": "6",
+      "passed": "6",
+      "failed": "0",
+      "skipped": "0",
+      "inconclusive": "0",
+      "duration": "10.1126513",
+      "start-time": "2026-10-04 08:58:19Z",
+      "end-time": "2026-10-04 08:58:29Z",
+      "path": "build-10-editmode.xml",
+      "bytes": 7813,
+      "sha256": "a613796e0e376f4d8023939012ddbd7477fa77095f2d020d9f0c70f8215c8210",
+      "cases": [
+        {
+          "name": "ActualEnemyAttackClockPassesAll29Checks",
+          "result": "Passed",
+          "duration": "0.042632"
+        },
+        {
+          "name": "ActualSceneRestartGatePassesAll26Checks",
+          "result": "Passed",
+          "duration": "0.001654"
+        },
+        {
+          "name": "ActualStealthRulesPassAll68Checks",
+          "result": "Passed",
+          "duration": "0.003011"
+        },
+        {
+          "name": "ActualSurfaceRippleBufferPassesAll20Checks",
+          "result": "Passed",
+          "duration": "0.001484"
+        },
+        {
+          "name": "ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles",
+          "result": "Passed",
+          "duration": "10.026480"
+        },
+        {
+          "name": "TargetEditorAndGameplayAssemblyIdentitiesArePreserved",
+          "result": "Passed",
+          "duration": "0.000946"
+        }
+      ]
+    },
+    "playmode": {
+      "testcasecount": "27",
+      "result": "Passed",
+      "total": "27",
+      "passed": "27",
+      "failed": "0",
+      "skipped": "0",
+      "inconclusive": "0",
+      "duration": "240.4459928",
+      "start-time": "2026-10-04 08:59:18Z",
+      "end-time": "2026-10-04 09:03:19Z",
+      "path": "build-10-playmode.xml",
+      "bytes": 12421464,
+      "sha256": "74ad227e1dd0da9eb29e0bbb99cfa96e48082528161e459c204e0becde396e69",
+      "cases": [
+        {
+          "name": "ActualRecognitionStaticIsOcclusionBoundedAndPauseSafe",
+          "result": "Passed",
+          "duration": "10.970127"
+        },
+        {
+          "name": "AllCabinetsHaveActualSlitsAndOutwardViewsAfterCrouchedEntry",
+          "result": "Passed",
+          "duration": "4.826975"
+        },
+        {
+          "name": "AnnexPresentationPreservesOriginalInteractionAndCrossingAccess",
+          "result": "Passed",
+          "duration": "2.126792"
+        },
+        {
+          "name": "AnnexPresentationProducesActualPlayerEyeRoomFrames",
+          "result": "Passed",
+          "duration": "9.447325"
+        },
+        {
+          "name": "AnnexPresentationStaysBoundedAcrossEnableAndReload",
+          "result": "Passed",
+          "duration": "2.979637"
+        },
+        {
+          "name": "AttackWarningPausesAndDodgeWorksBeforeLethalContact",
+          "result": "Passed",
+          "duration": "4.077128"
+        },
+        {
+          "name": "AuthoredNavigationReachesAllMandatoryRecords",
+          "result": "Passed",
+          "duration": "2.109532"
+        },
+        {
+          "name": "AuthoredSevenRecordRouteSurvivesWithRealMovementAndInteraction",
+          "result": "Passed",
+          "duration": "80.823083"
+        },
+        {
+          "name": "CabinetWitnessCannotBeInventedOrErasedByRepeatedEntry",
+          "result": "Passed",
+          "duration": "17.318143"
+        },
+        {
+          "name": "CrouchUsesActualCapsuleAndOnlyMovingFeetMakeNoise",
+          "result": "Passed",
+          "duration": "3.925632"
+        },
+        {
+          "name": "CyclopseCornerWalkCancelsOnRestorationWithoutReactivation",
+          "result": "Passed",
+          "duration": "5.039520"
+        },
+        {
+          "name": "CyclopseUnsafeStagingDefersAndRetriesAfterThePlayerMoves",
+          "result": "Passed",
+          "duration": "14.466271"
+        },
+        {
+          "name": "CyclopseWalksAnOccludedCornerWithPauseAndSingleRoar",
+          "result": "Passed",
+          "duration": "14.949147"
+        },
+        {
+          "name": "FirecrackerDenialsStayLocalAndNeverOverwriteRecords",
+          "result": "Passed",
+          "duration": "4.693101"
+        },
+        {
+          "name": "FirecrackerFirstPopIsSingleAndComfortSettingsApplyWhilePaused",
+          "result": "Passed",
+          "duration": "4.530822"
+        },
+        {
+          "name": "FirecrackerRestartDestroysEffectsAndResetsItsFeedback",
+          "result": "Passed",
+          "duration": "3.211140"
+        },
+        {
+          "name": "FlashlightSwitchKeepsSoundAndControlWithoutStateText",
+          "result": "Passed",
+          "duration": "1.556399"
+        },
+        {
+          "name": "KoreanMenusRenderAcrossSupportedAspectRatios",
+          "result": "Passed",
+          "duration": "2.740802"
+        },
+        {
+          "name": "LanternInvestigatesItsOwnFloorWhilePlayerIsUpstairs",
+          "result": "Passed",
+          "duration": "1.933918"
+        },
+        {
+          "name": "LostSightSearchScansLocallyWithoutTrackingThroughCover",
+          "result": "Passed",
+          "duration": "11.415387"
+        },
+        {
+          "name": "PauseJournalAndMixedRestartRequestsKeepTheirDestination",
+          "result": "Passed",
+          "duration": "4.476592"
+        },
+        {
+          "name": "RealAuthoredCameraProducesRenderAndTimingEvidence",
+          "result": "Passed",
+          "duration": "2.574973"
+        },
+        {
+          "name": "RealFirecrackerInputDistractsAndExpiresWithoutInfiniteInventory",
+          "result": "Passed",
+          "duration": "14.507598"
+        },
+        {
+          "name": "RealFootstepsDriveHearingAndRecognitionRespectsCover",
+          "result": "Passed",
+          "duration": "2.877206"
+        },
+        {
+          "name": "RealListenerMixCapturesDuringFlashlightInputAndPauseSilence",
+          "result": "Passed",
+          "duration": "3.312549"
+        },
+        {
+          "name": "TitleAndRequiredRecordsGateRealEscape",
+          "result": "Passed",
+          "duration": "1.494644"
+        },
+        {
+          "name": "UnreachableSearchEvidenceTimesOutWithoutInventingTarget",
+          "result": "Passed",
+          "duration": "7.999755"
+        }
+      ]
+    }
+  },
+  "evidence_envelopes": [
+    "HAPPYTOY_ARTIFACT_BEGIN recognition-static-ui.png 162069 8a40bf14a3d1401cbc00ac5eb7ae021bdf041f0545406584a5ac17cc7517f771 53",
+    "HAPPYTOY_ARTIFACT_BEGIN recognition-softened-ui.png 45509 420b3f25ad56a86a08d57649eaf40791200e3c2c433a09c62b4f778417d641c8 15",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-0-standing-world-camera.png 62735 e55d3ea9c29b8a59fb82b6e55ac47f7a0db85a76a9ce31c25ce2d3a9686b03b8 21",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-0-crouched-wide-world-camera.png 83325 a969a4e4c6c3dc244f13a040c3d45e5cecffc2a70aaae438220e4e2bc32012a4 28",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-1-standing-world-camera.png 68705 9b34330e9c91175efd931e9858de41f34e682c4c7360e7e4add4bbe80a2ce38a 23",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-1-crouched-wide-world-camera.png 86627 16ab76546247e64fdb7e1db273c56bed73864e46d6f09c81ed78cc143abec3c3 29",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-2-standing-world-camera.png 75059 ea149534214ce2f03f5c27d9220ad8c5be99be52d0fa5a58f51b426095615b46 25",
+    "HAPPYTOY_ARTIFACT_BEGIN cabinet-2-crouched-wide-world-camera.png 88376 51be9c61ad848e8c6517b2627215d09931b61124b0373f3c329b6130f06985bc 29",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-music-entry.png 935233 b623f4632fa1ac8a069012cb3dd06b779337070a5687ac3130c69ee710e55c30 305",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-piano-board.png 750579 27292b54408f5fe654ccd43d8112e62da9e8969bfdc2b60cd1e3be84749d3b9a 245",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-upper-stair-approach.png 1044016 b1c054b1aaa84eccae8c15df115816622dc5958fcd18dbaba9496fae358fe6b8 340",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-upper-reverse.png 691720 d0d629b3fb99a2d9a590201f084fe69db3d1e25f4ca1403385a12657fc591da4 226",
+    "HAPPYTOY_ARTIFACT_BEGIN annex-music-rows-reverse.png 891373 37a98106f93b26a18119c22fcab2a632e490cd79b3e548242189fe2cdbda6cd5 291",
+    "HAPPYTOY_ARTIFACT_BEGIN hiding-unseen-item-feedback-large-720p.png 66479 322fb3bb82d904eb4200ab07ce6f4adaf1349203c551c9df695ba8075a3d220a 22",
+    "HAPPYTOY_ARTIFACT_BEGIN hiding-door-warning-large-720p.png 66595 ff49d6ab3012aad377cd6be3d3a76e23e691e193895a1c1fa42160df46d3c57c 22",
+    "HAPPYTOY_ARTIFACT_BEGIN cyclopse-01-occluded-activation.png 535030 0748e06f9015cd53713f1400b39cd3f82145249f7a69c496681b2b3ba8e1164b 175",
+    "HAPPYTOY_ARTIFACT_BEGIN cyclopse-02-first-visible-walk.png 535853 0a9545ba874066a594d06e8a54a47ee208ee7daa34a3b19b0f582c1d5d53a962 175",
+    "HAPPYTOY_ARTIFACT_BEGIN cyclopse-03-corner-turn.png 536461 35d180d8ddea2742af4bd80dafe74909157d77ee30d75ee7d0ebed7b9cbaf37b 175",
+    "HAPPYTOY_ARTIFACT_BEGIN cyclopse-04-arrived-roar.png 537563 1ff56811005d662206eb19e24227184b952283db79da253689cd0a49f9ad45ba 175",
+    "HAPPYTOY_ARTIFACT_BEGIN title-720p.png 96197 a9356de6476086362d46b9f13ebafdcd62f3daac8caebb629534602413320da4 32",
+    "HAPPYTOY_ARTIFACT_BEGIN settings-large-1280x720.png 86863 dbba7458a28b822cb43c584be3b4abb0f97ab06d4d9befdfc5628baf94a4b08b 29",
+    "HAPPYTOY_ARTIFACT_BEGIN settings-large-1024x768.png 69524 b74446b4943b973a5f49f56fa4bda1cbc5b859cd3c9940fa95e6f2702d8cfbad 23",
+    "HAPPYTOY_ARTIFACT_BEGIN settings-large-2560x1080.png 156834 e564dde507a9bf3f37215f3fc0711694e3702b6fd5d2a6bbe574a4654ded5020 52",
+    "HAPPYTOY_ARTIFACT_BEGIN title-large-720p.png 105926 92e62060a2f80d317dac09852813c5dc25ba49e2b38e3a8304ea21716aed7247 35",
+    "HAPPYTOY_ARTIFACT_BEGIN pause-large-4x3.png 79415 ac1ee026a8fb5b86b3983f3105a053fb022d7a95fc652d574fcf59dea06ca369 26",
+    "HAPPYTOY_ARTIFACT_BEGIN hud-large-720p.png 51673 917714f02a2fc791d80bb15c4e17d339ffde13b994bc6f76cd51bd6afc62a494 17",
+    "HAPPYTOY_ARTIFACT_BEGIN journal-1080p.png 134332 368daf69523323250841bdfaf4232d9b43b649200ddaa97b6f937d63fb5fa3e3 44",
+    "HAPPYTOY_ARTIFACT_BEGIN authored-start-camera.png 650842 a8b82f0d2398d705e1afd3fcbfb7fda5cd94357766322818627f329a8d3bab5b 212",
+    "HAPPYTOY_ARTIFACT_BEGIN diagnostic-listener-before-render.json 15280 e22a4da83427d78c99871f56b65a4d5736d83269d1e362ad2b8d40ac6a76c026 5",
+    "HAPPYTOY_ARTIFACT_BEGIN diagnostic-listener-before-render.wav 192044 c0a4e1a49b21107b91ffed397ecdc58a30a264b8f0b790c9527e1129b3161959 63",
+    "HAPPYTOY_ARTIFACT_BEGIN listener-flashlight-ambience.wav 192044 1e25a299130b5c5e11a331f11c11ccd7cad038f48868b488614c5fb530bcfeff 63",
+    "HAPPYTOY_ARTIFACT_BEGIN listener-paused.wav 48044 c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b 16"
+  ],
+  "zip": {
+    "path": "HappyToyV2-Windows64-build10.zip",
+    "bytes": 73175011,
+    "sha256": "534e001f1afd81947e07f0f28b6b34e32e8af6d507d132d61cf0712024654a09",
+    "entries": 186,
+    "crc_error": null,
+    "executables": [
+      "HappyToyV2.exe",
+      "UnityCrashHandler64.exe"
+    ],
+    "runtime_dll": [
+      "HappyToyV2_Data/Managed/Assembly-CSharp.dll",
+      "UnityPlayer.dll"
+    ],
+    "scene_files": [
+      "HappyToyV2_Data/level0"
+    ],
+    "test_assemblies": [],
+    "debug_backup": [
+      "HappyToyV2_BackUpThisFolder_ButDontShipItWithYourGame/x86_64/lib_burst_generated.txt"
+    ],
+    "productionAssemblySha256": "4f90a9c60a19650f3ca2d3c167278ce099674191bdc698cdf399b3938e404a3f",
+    "newRuntimeMethodsPresent": [
+      "DetectionFeedback",
+      "AnnexRoomPresentation",
+      "get_HiddenCameraLocalPosition",
+      "get_StagingDeferrals",
+      "get_EmergenceDistance",
+      "ActualRecognitionSight"
+    ]
+  },
+  "timing": {
+    "total": "00:23:05",
+    "queue": "00:09:54",
+    "checkout": "00:02:12",
+    "billable": "00:13:11",
+    "unit_tests": "00:06:27"
+  },
+  "final_log": {
+    "path": "build-10-final.log",
+    "bytes": 2230366,
+    "sha256": "ab07b263dc90856ca011bcab83f40b25efd5d6ec2d95b6866ede52d8d1eb6ea8",
+    "success_marker": true,
+    "csharp_error_count": 0
+  },
+  "final_budget": {
+    "verified_utc": "2026-10-04T09:10:44Z",
+    "windows_used": 94,
+    "windows_included": 200,
+    "windows_remaining": 106,
+    "mac_used": 0,
+    "linux_used": 0,
+    "egress_gb": 0.5,
+    "egress_included_gb": 100
+  }
+}

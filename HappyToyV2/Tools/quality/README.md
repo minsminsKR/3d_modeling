@@ -1,12 +1,13 @@
-# Player-reported presentation follow-up (engine execution pending)
+# Current personal-play verification: build #10
 
-Current definitions: 6 EditMode + 27 PlayMode = 33. Existing gates remain intact.
-New cabinet/intro/room/detection fixtures cover the six user play reports; actual
-rendered outcomes must be inspected after the next run. Extractor capacity is
-bounded at 32 files / 16 MB for this additional real-camera evidence, with explicit
-file-count and aggregate-size regression tests.
+Exact source `705c0639f1bb892a92057481f93381050c3626c8` passed **33 actual Unity tests**
+(6 EditMode + 27 PlayMode, zero failed/skipped) and exported the Windows player.
+All six user feedback fixes have engine/fixture coverage;32 envelopes and actual
+camera views were decoded/reviewed. The original strict route/audio gates remain.
+See `Verification/cloud-tests/build-10-results.json` and `build-10-experience.json`
+for hashes and limits. No further build is needed for this evidence-only update.
 
-# Current personal-play verification: build #9
+# Previous personal-play verification: build #9
 
 Source `7c13e7f98e40d5e2d89c43f71b41c073eb1ec5d3` passed all **24 actual Unity tests**
 (6 EditMode + 18 PlayMode, zero failures/skips) and exported the Windows player.

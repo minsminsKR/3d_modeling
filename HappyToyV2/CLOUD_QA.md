@@ -1,25 +1,52 @@
 # Unity Build Automation: real scene tests
 
-## Player feedback follow-up: implementation checked, next engine run pending
+## Latest player-feedback result: build #10 SUCCESS, 33/33 actual tests
 
-The user played #9 and requested real cabinet slit visibility, a slow physical
-Cyclopse corner entrance, a strong but comfort-aware recognition cue, a recognizable
-music classroom, naturally mounted room/stair text, and removal of flashlight state
-UI. The follow-up source implements all six; see `PERSONAL_PLAY.md` for boundaries.
-It intentionally changes only the cabinet asset and scoped runtime presentation,
-not the authored scene bytes or existing interaction IDs. Two new music seats/stands
-add six physical colliders and four bounded NavMesh carvers, which need a fresh
-navigation/access and full survival check.
+Tested/exported source: `705c0639f1bb892a92057481f93381050c3626c8`.
+Both original XML suites independently confirm **6/6 EditMode + 27/27 PlayMode**,
+zero failed/skipped/inconclusive. Final log ends SUCCESS at 09:08:16 UTC on
+2026-10-04. Source CI [37189833520](https://github.com/minsminsKR/3d_modeling/actions/runs/37189833520)
+passed on that exact source. This follow-up changes only evidence/docs.
 
-The current suite defines **6 EditMode + 27 PlayMode tests (33 total)**, retaining all
-prior tests. New camera evidence uses real meshes/cameras; rendered acceptance is
-still pending. The transport limit was bounded at 32 files / 16 MB to hold the new
-camera sequence, with new cap/overflow regressions. This is evidence transport
-capacity, not relaxation of gameplay/audio assertions. Independent review caught
-and corrected a recognition-ray mismatch above low cover and a fixed-wait intro
-audit; final source/API checks are recorded separately from the next engine result.
+Verified on the real engine:
+- Three cabinets keep their original imported mesh bindings and four collision
+  boxes each. Six actual standing/crouched-wide views show exterior room geometry
+  through genuine narrow slits, with intact opaque door panels
+- Cyclopse activates behind actual geometry and traverses 6.117772 m in 7.963809
+  gameplay seconds before one arrival-gated roar. Four frames show hidden/partial/
+  corner/forward stages. Pause, cancellation, deferred staging after camping and
+  single AI handoff pass
+- Recognition reuses actual observer sight, including over low cover, rejects
+  walls/other floors/stale events, does not stack stings, ends promptly and respects
+  pause/reduced motion/retry. Two effect captures are UI-only transparency targets,
+  not final world composites or proof of subjective intensity/audibility
+- Music-room layout/reload, six physical added colliders, four actual carved NavMesh
+  footprints, original records/cabinet/crossing access pass. Five real-camera views
+  show the piano/seats and wall-backed signs; the positioned player's real floor fog
+  is allowed to settle before capture. No walk-through is claimed for those fixtures
+- Actual F input still switches the flashlight with no on/off status or toggle caption
+- Original real-input seven-record strategy survives: 79.374 s / 237.609 m, four stair
+  legs, one cabinet and two items, all encounter owners retained
+- Existing strict audio gate: 96,000 actual active samples, peak 0.03640747,
+  RMS 0.00190542, zero clipping; 24,000 paused samples have peak 0
 
-## Latest personal-play result: build #9 SUCCESS, 24/24 actual tests
+All **32** artifact envelopes (9,142,325 bytes) were independently hash-decoded.
+The new camera/effect images were inspected, while interpretation limits remain
+explicit. No target-device manual performance/listening acceptance is claimed.
+
+Original ZIP: **73,175,011 bytes / 186 entries**, every CRC passes, SHA256
+`534e001f1afd81947e07f0f28b6b34e32e8af6d507d132d61cf0712024654a09`.
+Extract the whole archive and run root `HappyToyV2.exe`. The production DLL contains
+the new cabinet/intro/room/recognition code; scene/runtime dependencies are present
+and no project UTF/NUnit test assemblies ship. The original Burst backup report
+remains; no derivative or release-profile build was made. Earlier #9 is preserved.
+
+Exact records: `Verification/cloud-tests/build-10-results.json` and
+`build-10-experience.json`. Source preflight is retained in
+`Verification/player-reported-presentation/`. The next step is personal play
+feedback, not another automatic feature iteration.
+
+## Previous personal-play result: build #9 SUCCESS, 24/24 actual tests
 
 Exact tested/exported source: `7c13e7f98e40d5e2d89c43f71b41c073eb1ec5d3`.
 Both original XML suites independently confirm **6/6 EditMode + 18/18 PlayMode**,

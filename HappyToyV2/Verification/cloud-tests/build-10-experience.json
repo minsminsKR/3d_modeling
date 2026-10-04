@@ -1,0 +1,271 @@
+{
+  "build": 10,
+  "source": "705c0639f1bb892a92057481f93381050c3626c8",
+  "scope": "Actual engine verification of six personal-play feedback fixes. Camera/controlled fixtures remain distinct from the real-input survival strategy and subjective player evaluation.",
+  "transport": {
+    "scope": "Hash-verified real-engine output transport; not manual, hardware-performance or device-listening certification",
+    "build": 10,
+    "commit": "705c0639f1bb892a92057481f93381050c3626c8",
+    "provenanceNote": "Build and commit supplied from independently inspected UBA checkout; envelope alone does not prove the revision",
+    "input": "build-10-playmode.xml",
+    "inputSha256": "74ad227e1dd0da9eb29e0bbb99cfa96e48082528161e459c204e0becde396e69",
+    "artifacts": [
+      {
+        "filename": "recognition-static-ui.png",
+        "bytes": 162069,
+        "sha256": "8a40bf14a3d1401cbc00ac5eb7ae021bdf041f0545406584a5ac17cc7517f771"
+      },
+      {
+        "filename": "recognition-softened-ui.png",
+        "bytes": 45509,
+        "sha256": "420b3f25ad56a86a08d57649eaf40791200e3c2c433a09c62b4f778417d641c8"
+      },
+      {
+        "filename": "cabinet-0-standing-world-camera.png",
+        "bytes": 62735,
+        "sha256": "e55d3ea9c29b8a59fb82b6e55ac47f7a0db85a76a9ce31c25ce2d3a9686b03b8"
+      },
+      {
+        "filename": "cabinet-0-crouched-wide-world-camera.png",
+        "bytes": 83325,
+        "sha256": "a969a4e4c6c3dc244f13a040c3d45e5cecffc2a70aaae438220e4e2bc32012a4"
+      },
+      {
+        "filename": "cabinet-1-standing-world-camera.png",
+        "bytes": 68705,
+        "sha256": "9b34330e9c91175efd931e9858de41f34e682c4c7360e7e4add4bbe80a2ce38a"
+      },
+      {
+        "filename": "cabinet-1-crouched-wide-world-camera.png",
+        "bytes": 86627,
+        "sha256": "16ab76546247e64fdb7e1db273c56bed73864e46d6f09c81ed78cc143abec3c3"
+      },
+      {
+        "filename": "cabinet-2-standing-world-camera.png",
+        "bytes": 75059,
+        "sha256": "ea149534214ce2f03f5c27d9220ad8c5be99be52d0fa5a58f51b426095615b46"
+      },
+      {
+        "filename": "cabinet-2-crouched-wide-world-camera.png",
+        "bytes": 88376,
+        "sha256": "51be9c61ad848e8c6517b2627215d09931b61124b0373f3c329b6130f06985bc"
+      },
+      {
+        "filename": "annex-music-entry.png",
+        "bytes": 935233,
+        "sha256": "b623f4632fa1ac8a069012cb3dd06b779337070a5687ac3130c69ee710e55c30"
+      },
+      {
+        "filename": "annex-piano-board.png",
+        "bytes": 750579,
+        "sha256": "27292b54408f5fe654ccd43d8112e62da9e8969bfdc2b60cd1e3be84749d3b9a"
+      },
+      {
+        "filename": "annex-upper-stair-approach.png",
+        "bytes": 1044016,
+        "sha256": "b1c054b1aaa84eccae8c15df115816622dc5958fcd18dbaba9496fae358fe6b8"
+      },
+      {
+        "filename": "annex-upper-reverse.png",
+        "bytes": 691720,
+        "sha256": "d0d629b3fb99a2d9a590201f084fe69db3d1e25f4ca1403385a12657fc591da4"
+      },
+      {
+        "filename": "annex-music-rows-reverse.png",
+        "bytes": 891373,
+        "sha256": "37a98106f93b26a18119c22fcab2a632e490cd79b3e548242189fe2cdbda6cd5"
+      },
+      {
+        "filename": "hiding-unseen-item-feedback-large-720p.png",
+        "bytes": 66479,
+        "sha256": "322fb3bb82d904eb4200ab07ce6f4adaf1349203c551c9df695ba8075a3d220a"
+      },
+      {
+        "filename": "hiding-door-warning-large-720p.png",
+        "bytes": 66595,
+        "sha256": "ff49d6ab3012aad377cd6be3d3a76e23e691e193895a1c1fa42160df46d3c57c"
+      },
+      {
+        "filename": "cyclopse-01-occluded-activation.png",
+        "bytes": 535030,
+        "sha256": "0748e06f9015cd53713f1400b39cd3f82145249f7a69c496681b2b3ba8e1164b"
+      },
+      {
+        "filename": "cyclopse-02-first-visible-walk.png",
+        "bytes": 535853,
+        "sha256": "0a9545ba874066a594d06e8a54a47ee208ee7daa34a3b19b0f582c1d5d53a962"
+      },
+      {
+        "filename": "cyclopse-03-corner-turn.png",
+        "bytes": 536461,
+        "sha256": "35d180d8ddea2742af4bd80dafe74909157d77ee30d75ee7d0ebed7b9cbaf37b"
+      },
+      {
+        "filename": "cyclopse-04-arrived-roar.png",
+        "bytes": 537563,
+        "sha256": "1ff56811005d662206eb19e24227184b952283db79da253689cd0a49f9ad45ba"
+      },
+      {
+        "filename": "title-720p.png",
+        "bytes": 96197,
+        "sha256": "a9356de6476086362d46b9f13ebafdcd62f3daac8caebb629534602413320da4"
+      },
+      {
+        "filename": "settings-large-1280x720.png",
+        "bytes": 86863,
+        "sha256": "dbba7458a28b822cb43c584be3b4abb0f97ab06d4d9befdfc5628baf94a4b08b"
+      },
+      {
+        "filename": "settings-large-1024x768.png",
+        "bytes": 69524,
+        "sha256": "b74446b4943b973a5f49f56fa4bda1cbc5b859cd3c9940fa95e6f2702d8cfbad"
+      },
+      {
+        "filename": "settings-large-2560x1080.png",
+        "bytes": 156834,
+        "sha256": "e564dde507a9bf3f37215f3fc0711694e3702b6fd5d2a6bbe574a4654ded5020"
+      },
+      {
+        "filename": "title-large-720p.png",
+        "bytes": 105926,
+        "sha256": "92e62060a2f80d317dac09852813c5dc25ba49e2b38e3a8304ea21716aed7247"
+      },
+      {
+        "filename": "pause-large-4x3.png",
+        "bytes": 79415,
+        "sha256": "ac1ee026a8fb5b86b3983f3105a053fb022d7a95fc652d574fcf59dea06ca369"
+      },
+      {
+        "filename": "hud-large-720p.png",
+        "bytes": 51673,
+        "sha256": "917714f02a2fc791d80bb15c4e17d339ffde13b994bc6f76cd51bd6afc62a494"
+      },
+      {
+        "filename": "journal-1080p.png",
+        "bytes": 134332,
+        "sha256": "368daf69523323250841bdfaf4232d9b43b649200ddaa97b6f937d63fb5fa3e3"
+      },
+      {
+        "filename": "authored-start-camera.png",
+        "bytes": 650842,
+        "sha256": "a8b82f0d2398d705e1afd3fcbfb7fda5cd94357766322818627f329a8d3bab5b"
+      },
+      {
+        "filename": "diagnostic-listener-before-render.json",
+        "bytes": 15280,
+        "sha256": "e22a4da83427d78c99871f56b65a4d5736d83269d1e362ad2b8d40ac6a76c026"
+      },
+      {
+        "filename": "diagnostic-listener-before-render.wav",
+        "bytes": 192044,
+        "sha256": "c0a4e1a49b21107b91ffed397ecdc58a30a264b8f0b790c9527e1129b3161959"
+      },
+      {
+        "filename": "listener-flashlight-ambience.wav",
+        "bytes": 192044,
+        "sha256": "1e25a299130b5c5e11a331f11c11ccd7cad038f48868b488614c5fb530bcfeff"
+      },
+      {
+        "filename": "listener-paused.wav",
+        "bytes": 48044,
+        "sha256": "c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b"
+      }
+    ],
+    "metrics": [
+      "HAPPYTOY_RENDER_METRICS device=Microsoft Basic Render Driver; api=Direct3D12; cpu=INTEL(R) XEON(R) PLATINUM 8573C; resolution=960x540; offscreenRenderAndFullReadbackMs=177.433,165.167,165.100,164.541,160.464,159.433; firstSampleIncludesWarmup=true; presentedFps=false; targetHardwareCertification=false; managedBytes=78602240",
+      "HAPPYTOY_AUDIO_METRICS capture=UnityAudioRendererMainOutput; rate=48000; channels=2; fixedCaptureRate=60; activeSamples=96000; peak=0.036407470703125; rms=0.00190541652221679; clippedSamples=0; pausePeak=0; deviceListeningCertification=false"
+    ]
+  },
+  "survival": {
+    "passed": true,
+    "stage": "exit",
+    "destination": "(-7.32, 0.03, 0.59)",
+    "diagnostic": "stage=exit, destination=(-7.32, 0.03, 0.59), game=79.37, wall=79.39, records=7, defeat=, hint=문을 닫아 시선을 끊고, 숨을 회복한 뒤 이동하세요., stamina=0.99, hidden=False, focus=none, collision=Below, dynamicUpdates=9510, CPress=False, WHeld=True, inputAllowed=False, crouching=False, eyeY=1.607193, grounded=True, speed=0, position=(-7.19, 0.08, 0.63), footsteps=169, nursery=True/True, upper=resolved, uncat=True/True, lantern=Resolved, mannequin=False; V1 Cyclopse active=False state=Patrol at=(27.69, 0.03, 5.56) attacks=3 awareness=0.00; V1 Hwacat_angry active=False state=Patrol at=(29.80, 5.03, 32.40) attacks=0 awareness=0.00; V1 Baby — nursery encounter active=False state=Patrol at=(13.96, -4.97, -26.67) attacks=0 awareness=0.00; V1 Uncat — archive emergence active=False state=Patrol at=(13.87, 0.03, -2.76) attacks=0 awareness=0.00",
+    "milestones": [
+      "0.05s Started at the authored spawn with every encounter enabled at (-7.80, 0.08, 0.00)",
+      "2.03s CLASSROOM opened by E at (-4.63, 0.08, 0.00)",
+      "2.75s WASHROOM opened by E at (-4.63, 0.08, 0.00)",
+      "5.82s Recovered register at (-5.44, 0.08, 7.42)",
+      "8.84s Flashlight off through F at (-4.51, 0.08, 0.16)",
+      "9.89s Recovered ribbon at (-3.60, 0.08, -2.19)",
+      "26.43s upper ascent physically completed at (29.80, 5.08, 21.85)",
+      "30.45s Recovered record at (30.98, 5.08, 32.13)",
+      "37.49s upper descent physically completed at (29.80, 0.08, 10.16)",
+      "39.06s Recovered music-roster at (24.66, 0.08, 11.77)",
+      "40.10s Entered music cabinet through E at (20.20, 0.00, 13.85)",
+      "40.61s Left music cabinet through E at (20.20, 0.00, 12.75)",
+      "49.19s archive diversion thrown through Q at (20.83, 0.08, -12.79)",
+      "49.23s Recovered archive-record at (20.83, 0.08, -12.79)",
+      "56.93s basement descent physically completed at (13.80, -4.92, -21.82)",
+      "56.97s nursery diversion thrown through Q at (13.80, -4.92, -21.82)",
+      "57.62s Nursery warning triggered by actual entry at (14.93, -4.92, -23.87)",
+      "59.03s Recovered nursery-tag at (18.40, -4.92, -26.92)",
+      "64.25s basement ascent physically completed at (13.80, 0.08, -10.15)",
+      "74.99s Recovered restore at (-2.98, 0.08, 7.64)",
+      "79.37s Escaped with all seven records through real input at (-7.19, 0.08, 0.63)"
+    ],
+    "gameSeconds": 79.3735122680664,
+    "wallSeconds": 79.38552856445312,
+    "physicalMeters": 237.6092529296875,
+    "minY": -4.920000076293945,
+    "maxY": 5.080000400543213,
+    "records": 7,
+    "movementUpdates": 3945,
+    "groundedFrames": 9141,
+    "stairLegs": 4,
+    "hidingEntries": 1,
+    "firecrackersThrown": 2,
+    "maximumLiveStalkers": 4
+  },
+  "presentationPasses": [
+    "HAPPYTOY_PRESENTATION_PASS recognition: actual sight event, no wall/floor oracle, brief static, no stacked stings, pause/comfort/retry",
+    "HAPPYTOY_PRESENTATION_PASS cabinets: all shared meshes resolve; true view apertures, intact solid panels/collision, outward standing/crouched cameras, pause and stance-preserving exit; six real world-camera captures",
+    "HAPPYTOY_PRESENTATION_PASS cancellation: restoration interrupts the physical walk, repeated cancellation settles it, no late roar or activation",
+    "HAPPYTOY_PRESENTATION_PASS deferred stage: camping prevents visible activation, pause preserves staging, bounded checks stay pending, leaving safely starts the physical encounter once, cancellation is terminal",
+    "HAPPYTOY_PRESENTATION_PASS intro: occluded activation, physical slow route and walk/footsteps, paused movement/roar, arrival before single roar, single normal-AI handoff; phase=done, distance=6.117772, elapsed=7.963809, failure=",
+    "HAPPYTOY_PRESENTATION_PASS flashlight: actual F toggles, no persistent/toggle state text, control hint and sound retained"
+  ],
+  "roomFrames": [
+    "HAPPYTOY_ROOM_FRAME name=annex-music-entry.png; eye=(23.40, 1.60, 5.50); aim=(23.40, 1.30, 13.30); player=(23.40, 0.00, 5.50); authoredPlayerCamera=true; fixedPausedView=true; positionedPlayerFixture=true; threatsIsolated=true; realFloorAtmosphereSettledSeconds=1.5; fog=RGBA(0.025, 0.035, 0.040, 1.000); fogDensity=0.025; survivalEvidence=false",
+    "HAPPYTOY_ROOM_FRAME name=annex-piano-board.png; eye=(25.00, 1.60, 11.10); aim=(25.10, 1.50, 13.40); player=(25.00, 0.00, 11.10); authoredPlayerCamera=true; fixedPausedView=true; positionedPlayerFixture=true; threatsIsolated=true; realFloorAtmosphereSettledSeconds=1.5; fog=RGBA(0.025, 0.035, 0.040, 1.000); fogDensity=0.025; survivalEvidence=false",
+    "HAPPYTOY_ROOM_FRAME name=annex-upper-stair-approach.png; eye=(29.80, 1.60, 8.20); aim=(31.70, 2.10, 11.15); player=(29.80, 0.00, 8.20); authoredPlayerCamera=true; fixedPausedView=true; positionedPlayerFixture=true; threatsIsolated=true; realFloorAtmosphereSettledSeconds=1.5; fog=RGBA(0.025, 0.035, 0.040, 1.000); fogDensity=0.025; survivalEvidence=false",
+    "HAPPYTOY_ROOM_FRAME name=annex-upper-reverse.png; eye=(29.80, 6.60, 24.00); aim=(29.80, 6.50, 21.20); player=(29.80, 5.00, 24.00); authoredPlayerCamera=true; fixedPausedView=true; positionedPlayerFixture=true; threatsIsolated=true; realFloorAtmosphereSettledSeconds=1.5; fog=RGBA(0.082, 0.009, 0.013, 1.000); fogDensity=0.03165131; survivalEvidence=false",
+    "HAPPYTOY_ROOM_FRAME name=annex-music-rows-reverse.png; eye=(23.40, 1.60, 11.60); aim=(23.40, 1.10, 5.40); player=(23.40, 0.00, 11.60); authoredPlayerCamera=true; fixedPausedView=true; positionedPlayerFixture=true; threatsIsolated=true; realFloorAtmosphereSettledSeconds=1.5; fog=RGBA(0.028, 0.034, 0.039, 1.000); fogDensity=0.02533466; survivalEvidence=false"
+  ],
+  "audioPcm": [
+    {
+      "filename": "listener-flashlight-ambience.wav",
+      "channels": 2,
+      "rate": 48000,
+      "frames": 48000,
+      "sampleWidthBytes": 2,
+      "peakPcm16": 1192,
+      "rmsPcm16": 62.2382002705466,
+      "sha256": "1e25a299130b5c5e11a331f11c11ccd7cad038f48868b488614c5fb530bcfeff"
+    },
+    {
+      "filename": "listener-paused.wav",
+      "channels": 2,
+      "rate": 48000,
+      "frames": 12000,
+      "sampleWidthBytes": 2,
+      "peakPcm16": 0,
+      "rmsPcm16": 0.0,
+      "sha256": "c8cc59b36af8d7360eda593b020040e51aed8165f0af41a70c16b4a947b7b18b"
+    }
+  ],
+  "visualReview": {
+    "cabinet": "All six standing/crouched-wide actual camera views show outside room surfaces through narrow real slits, with intact door panels. This is constrained peeking, not an unobstructed panorama.",
+    "cyclopse": "Four actual frames progress from hidden activation to a partial silhouette, turning body, then forward arrival. Runtime records 6.117772 physical meters over7.963809 gameplay seconds before the roar; this frame sequence is not a video.",
+    "music": "Entry and reverse frames show six seats/score stands, upright piano with key grouping, wall instruments, a clearer aisle and fully wall-backed choir board. Close view shows raised black keys and score rest.",
+    "signs": "2F approach shows text on a physical side-wall plaque, not across the open stair mouth. The reverse upstairs view uses the real player-floor red atmosphere and shows no floating entry label.",
+    "recognition": "Normal and softened UI-only transparent-target frames were inspected. The ordinary grain and reduced-motion edge-only states differ; these are not composites with the world camera, nor proof of perceived temporal intensity or audible mix.",
+    "flashlight": "The actual F-input case and HUD inspection confirm no persistent/toggle on/off text; the control hint and sound clip remain."
+  },
+  "limits": [
+    "Controlled actor/player placements for presentation and geometry fixtures are not a full human playthrough.",
+    "The original real-input seven-record route keeps all encounter owners and original movement speeds; one map-aware strategy is not all difficulty/survival strategies.",
+    "Actual active/pause main-output audio gate remains strict but does not separately certify new recognition-sting audibility or subjective mixing.",
+    "No new target-device manual launch/performance/listening result is claimed."
+  ]
+}
