@@ -258,7 +258,7 @@ namespace HappyToy.V2
             Outline(card, Edge);
             Panel(x + 26, y + 27, 3, 70, Gold);
             Small("SCHOOL ARCHIVE  /  출석 확인", x + 46, y + 28, 450);
-            Text(progress ? $"복원한 기록  {session.StoryStep} / 4" : "출석 확인서", x + 46, y + 61, 460, 48, 30);
+            Text(progress ? $"주요 단계  {session.StoryStep} / 4" : "출석 확인서", x + 46, y + 61, 460, 48, 30);
             for (int i = 0; i < 4; i++)
             {
                 float lineY = y + 136 + i * 43;

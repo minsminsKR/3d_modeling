@@ -1,0 +1,122 @@
+{
+  "scope": "Actual #6: 15/16 tests passed, strict overall build failed on zero-sample audio capture. No player exported. Real-input route, listed UI layouts and authored-camera/world-sign contracts passed.",
+  "build": 6,
+  "commit": "e3122fb0c83659100904e93d486f5d97093f721d",
+  "provenanceNote": "Build and commit supplied from independently inspected UBA checkout; envelope alone does not prove the revision",
+  "input": "build-6-playmode.xml",
+  "inputSha256": "f091a37eff35d9e102a4dbc992be3e98d463e8d7bc3e5ecd3a45f1f3dcac2f58",
+  "artifacts": [
+    {
+      "filename": "title-720p.png",
+      "bytes": 95138,
+      "sha256": "6051bbf91931bb6a2c9dbc50cfb995a6e4bdefa6036f07ba23e180a77ab2db78"
+    },
+    {
+      "filename": "settings-large-1280x720.png",
+      "bytes": 86864,
+      "sha256": "ebe99171a73c55a9ef2e73045c98cc5420d4091f5dc013b4c58ea72cbe515ce9"
+    },
+    {
+      "filename": "settings-large-1024x768.png",
+      "bytes": 69532,
+      "sha256": "f2687b008ea7bfda269009c684e3ed809ad4f8acf96b32aa878d9f963db24a70"
+    },
+    {
+      "filename": "settings-large-2560x1080.png",
+      "bytes": 156844,
+      "sha256": "616f75d0106fe35a21841aa38368a30f162c19766df2781bf4a122f0eaaa92ad"
+    },
+    {
+      "filename": "title-large-720p.png",
+      "bytes": 104804,
+      "sha256": "a3914aed6a497b607ce1df44e95c506b6e931f01411783fb52c5043b0e62dc81"
+    },
+    {
+      "filename": "pause-large-4x3.png",
+      "bytes": 78794,
+      "sha256": "49d86a5d9b6a53f721e7b17b07c6ffc8e04cf556117e48c5200ee17b418720ad"
+    },
+    {
+      "filename": "hud-large-720p.png",
+      "bytes": 53373,
+      "sha256": "20696879aeaaafe900c4e19f0dea5057335974738927e81dacd88e252bf00bdb"
+    },
+    {
+      "filename": "journal-1080p.png",
+      "bytes": 134330,
+      "sha256": "06fe6c4deea3e8f2903775a4a5baef0314203c0aece9d612d0d3ed55e5c7fc4b"
+    },
+    {
+      "filename": "authored-start-camera.png",
+      "bytes": 650870,
+      "sha256": "32902c8a8458968ff5f29f742409b0081b7be530f58a596089fa152f804d40b4"
+    }
+  ],
+  "metrics": [
+    "HAPPYTOY_RENDER_METRICS device=Microsoft Basic Render Driver; api=Direct3D12; cpu=INTEL(R) XEON(R) PLATINUM 8573C; resolution=960x540; offscreenRenderAndFullReadbackMs=803.057,165.448,157.258,157.617,165.895,155.100; firstSampleIncludesWarmup=true; presentedFps=false; targetHardwareCertification=false; managedBytes=41803776"
+  ],
+  "survival": {
+    "passed": true,
+    "stage": "exit",
+    "destination": "(-7.32, 0.03, 0.59)",
+    "diagnostic": "stage=exit, destination=(-7.32, 0.03, 0.59), game=79.70, wall=79.71, records=7, defeat=, hint=문을 닫아 시선을 끊고, 숨을 회복한 뒤 이동하세요., stamina=0.98, hidden=False, focus=none, collision=Below, dynamicUpdates=9526, CPress=False, WHeld=True, inputAllowed=False, crouching=False, eyeY=1.605858, grounded=True, speed=0, position=(-7.19, 0.08, 0.63), footsteps=169, nursery=True/True, upper=resolved, uncat=True/True, lantern=Resolved, mannequin=False; V1 Cyclopse active=False state=Patrol at=(24.75, 0.03, 6.17) attacks=1 awareness=0.00; V1 Hwacat_angry active=False state=Patrol at=(29.80, 5.03, 32.40) attacks=0 awareness=0.00; V1 Baby — nursery encounter active=False state=Patrol at=(13.99, -4.97, -26.65) attacks=0 awareness=0.00; V1 Uncat — archive emergence active=False state=Patrol at=(13.98, 0.03, -7.38) attacks=0 awareness=0.00",
+    "milestones": [
+      "0.09s Started at the authored spawn with every encounter enabled at (-7.80, 0.08, 0.00)",
+      "2.16s CLASSROOM opened by E at (-4.63, 0.08, 0.00)",
+      "2.88s WASHROOM opened by E at (-4.63, 0.08, 0.00)",
+      "5.98s Recovered register at (-5.44, 0.08, 7.42)",
+      "8.98s Flashlight off through F at (-4.51, 0.08, 0.16)",
+      "10.01s Recovered ribbon at (-3.60, 0.08, -2.19)",
+      "26.54s upper ascent physically completed at (29.80, 5.08, 21.85)",
+      "30.58s Recovered record at (30.98, 5.08, 32.14)",
+      "37.64s upper descent physically completed at (29.80, 0.08, 10.17)",
+      "39.23s Recovered music-roster at (24.66, 0.08, 11.77)",
+      "40.32s Entered music cabinet through E at (20.20, 0.00, 13.85)",
+      "40.89s Left music cabinet through E at (20.20, 0.00, 12.75)",
+      "49.46s archive diversion thrown through Q at (20.85, 0.08, -12.82)",
+      "49.50s Recovered archive-record at (20.85, 0.08, -12.82)",
+      "57.22s basement descent physically completed at (13.80, -4.92, -21.82)",
+      "57.26s nursery diversion thrown through Q at (13.80, -4.92, -21.82)",
+      "57.93s Nursery warning triggered by actual entry at (14.93, -4.92, -23.86)",
+      "59.33s Recovered nursery-tag at (18.40, -4.92, -26.92)",
+      "64.56s basement ascent physically completed at (13.80, 0.08, -10.15)",
+      "75.31s Recovered restore at (-2.98, 0.08, 7.64)",
+      "79.70s Escaped with all seven records through real input at (-7.19, 0.08, 0.63)"
+    ],
+    "gameSeconds": 79.69913482666016,
+    "wallSeconds": 79.71076202392578,
+    "physicalMeters": 237.629638671875,
+    "minY": -4.920000076293945,
+    "maxY": 5.080000400543213,
+    "records": 7,
+    "movementUpdates": 3958,
+    "groundedFrames": 9151,
+    "stairLegs": 4,
+    "hidingEntries": 1,
+    "firecrackersThrown": 2,
+    "maximumLiveStalkers": 4
+  },
+  "visualReview": [
+    "All nine hash-verified PNGs were individually viewed.",
+    "Corrected corridor has one readable room-label face; mirrored/overlaid duplicates visible in #5 are absent. World materials are visible; not all shading differences are attributed to the sign fix.",
+    "Default/large title, large settings at720p/4:3/ultrawide, large pause4:3, large HUD720p and empty journal1080p have no obvious text clipping in the captured views.",
+    "HUD capture is a UI-only transparent layer, not a black rendered world.",
+    "Result screens, populated/paginated journal, all rooms/monsters/animations and target hardware are not certified."
+  ],
+  "audio": {
+    "status": "BLOCKED_ZERO_CAPTURE_SAMPLES",
+    "expectedSamples": 96000,
+    "actualSamples": 0,
+    "captureDeltaTime": 0.01666667,
+    "captureFramerate": 60,
+    "timeScale": 1,
+    "listenerPause": false,
+    "dspTime": 123.242666666667,
+    "driverCapabilities": "Stereo",
+    "workerOutput": "FMOD nosound",
+    "wavProduced": false,
+    "pauseSilenceReached": false,
+    "interpretation": "No actual audio output was measured. This does not establish a silent game. Same-worker retries stopped; no waveform replacement or relaxed assertion."
+  },
+  "laterCopyChange": "Pause card label changes from recovered records/4 to main stages/4 after this tested commit; actual engine-tested revision remains e3122fb0c83659100904e93d486f5d97093f721d."
+}

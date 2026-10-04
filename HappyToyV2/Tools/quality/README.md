@@ -1,6 +1,6 @@
 # Current cloud experience and packaging tools
 
-The runtime suite has **6 EditMode + 10 PlayMode**. UBA #5 passed14/16: the real-input full survival route and authored camera passed; Korean UI line boxes and zero-sample audio capture failed. Current UI/sign corrections and the fixed-clock audio experiment remain **RETEST REQUIRED**. See `CLOUD_QA.md` for the true survival strategy, actual camera/UI/audio evidence, and remaining human/hardware limits.
+The runtime suite has **6 EditMode + 10 PlayMode**. UBA #6 at `e3122fb` passed 15/16: the real-input full route, corrected UI layouts and world-sign/camera render passed. Audio capture still returned zero samples, so the strict build failed and no player was exported. The later pause-card caption clarification is source-tested only; actual engine evidence stays pinned to `e3122fb`. See `CLOUD_QA.md` for the true survival strategy, actual camera/UI/audio evidence, and remaining human/hardware limits.
 
 Decode verified output from a downloaded NUnit XML (use the independently verified full checkout commit):
 

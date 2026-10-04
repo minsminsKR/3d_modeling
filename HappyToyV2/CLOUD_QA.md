@@ -1,6 +1,20 @@
 # Unity Build Automation: real scene tests
 
-## Latest expanded result: build #5 failed, 14/16 checks passed
+## Latest engine result: build #6 failed only on audio capture, 15/16 passed
+
+Pinned source `e3122fb0c83659100904e93d486f5d97093f721d`, Unity 6000.6.0f1 / Windows Micro: **6/6 EditMode + 9/10 PlayMode passed; 1 failed; 0 skipped/inconclusive**. The terminal log ends FAILURE and the unchanged strict gate prevented player export. Exact XML/log hashes and the remaining free allocation are in `Verification/cloud-tests/build-6-results.json`. Source CI [37174240095](https://github.com/minsminsKR/3d_modeling/actions/runs/37174240095) passed.
+
+Verified improvements:
+- The same real-input seven-record strategy passed again: **79.70 gameplay seconds, 237.63 meters, four stair legs, seven records, one cabinet and two firecrackers**, with all encounter owners and original stalker speeds intact. This is repeatability of a map-aware strategy, not two different strategies or first-time-player balance
+- **All listed UI layouts passed** with default/large text and high contrast: title720p, settings720p/4:3/ultrawide, pause4:3, HUD720p, empty journal1080p. Nine actual PNGs were recovered through the strict hash/chunk envelope and individually viewed. No obvious clipping is present in those captures. Result screens and populated/paginated journal remain outside this capture coverage
+- The real corridor render and15-sign contracts passed. Reversed/overlapping legacy room labels seen in #5 are absent; the original paired faces/words/transforms and shared GUI font remain intact. Current corridor materials are visible, but the sign correction alone is not claimed to explain every shading difference
+- The HUD PNG is a transparent UI-only layer, separate from the authored-world camera image. Render timings remain software-driver offscreen/readback observations, not target-hardware FPS
+
+The only remaining test failure is **0 of 96,000 real AudioRenderer samples**, even with `captureDeltaTime=0.01666667`, `captureFramerate=60`, active gameplay (`timeScale=1`, listener unpaused), stereo capabilities and a nonzero DSP timestamp. A single timestamp does not establish that the DSP clock advanced during capture. UBA reports FMOD nosound. No WAV was produced and the pause-silence phase was not reached. This is an unresolved cloud audio-capture limit, not evidence that the game is silent. The fixed-clock experiment did not solve it; no further blind same-worker retries, fake waveform, ignored test or weaker audio assertion were used. Real mixed-output and device-listening acceptance remain open.
+
+The later narrow pause caption correction changes “recovered records /4” to **“main stages /4”**, matching the four primary story stages while HUD/journal correctly count all seven records. That copy edit has source validation only; these actual engine results and screenshots remain pinned to `e3122fb`. The nine image hashes, full route report and review boundaries are in `Verification/cloud-tests/build-6-experience.json`. Last successful Windows player export remains #4; the safe derivative package also contains #4 code.
+
+## Previous expanded result: build #5 failed, 14/16 checks passed
 
 At exact commit `db36acf3939fbec39a5bcb9228e09668975ad6eb`, UBA #5 ran **6/6 EditMode + 8/10 PlayMode**, with **0 skipped/inconclusive**. The strict gate correctly prevented player export after two failures. Original XML and terminal log hashes are in `Verification/cloud-tests/build-5-results.json`.
 
@@ -14,9 +28,9 @@ Audio **did not capture any samples** (0 of 96,000); this is not evidence of sil
 
 Artifact transport hashes, complete survival report and visual findings are retained in `Verification/cloud-tests/build-5-experience.json`. The original PNG/XML/log files remain separate evidence. Production UI/sign corrections and the revised audio harness require a new pinned run. Last successful player export remains #4.
 
-## Expanded gate scope (current corrections require a new run)
+## Expanded gate scope
 
-The next pinned UBA run must discover **6 EditMode + 10 PlayMode tests (16 total)**. Build #5 established the route and camera cases above; the UI/audio corrections still need runtime retesting:
+The expanded suite contains **6 EditMode + 10 PlayMode tests (16 total)**. Build #6 established the route, camera/sign and listed UI cases above; audio remains a failed/unverified gate:
 
 - `AuthoredSevenRecordRouteSurvivesWithRealMovementAndInteraction`: begins at the preserved authored spawn, then uses injected keyboard/mouse controls through the real motor and focus/E path; all encounter owners remain enabled and authored stalker speeds remain unchanged. The route must climb and descend both staircases continuously, recover all seven records and escape. Actual hiding and two finite firecrackers form a single deterministic survival strategy. No direct collection, actor disabling, fixture relocation or invulnerability is used. A defeat or blocked route fails; this is not a first-time-player difficulty or all-encounter certification
 - `KoreanMenusRenderAcrossSupportedAspectRatios`: actual UI Toolkit render targets at 720p, 1080p, 4:3 and ultrawide, large-text/high-contrast settings, text/button bounds and Korean sample-glyph checks. Every target is cleared before capture to reject stale/undefined output. PNGs still require visual inspection; automated content checks do not certify complete art or all text

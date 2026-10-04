@@ -1,0 +1,8 @@
+{
+  "actualEngineTestedCommit": "e3122fb0c83659100904e93d486f5d97093f721d",
+  "runtimeResult": "15/16 passed, audio zero capture failed, no player export",
+  "followupProductionChange": "Pause attendance card caption only: recovered records N/4 -> main stages N/4. Counts/logic/font/geometry unchanged.",
+  "followupChecks": "77 Python tests, zero skips; parser-required protected-source validation; seven genuine API compiler stages. Subsequent CI must be verified for published follow-up commit.",
+  "notClaimed": "No actual Unity runtime rerun for this caption/doc update; no full-pass build or audio/device-performance acceptance.",
+  "independentEvidenceReview": "Both XML counts/hashes, final checkout/log, full route JSON, all nine PNG payloads/hashes and image appearance independently checked."
+}
