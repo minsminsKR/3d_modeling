@@ -32,6 +32,20 @@ namespace HappyToy.V2
         float standSpeed, danceSpeed;
         WrapMode standWrap;
         bool initialized, capturedPainting, capturedAnimation;
+        bool chapterDriven;
+        public bool ChapterWitnessed { get; private set; }
+        float chapterSightTime;
+        public void PrepareChapter()
+        {
+            chapterDriven=true; Unsubscribe(); session=GameSession.Current;
+            Cancelled=Triggered=Completed=false; Phase="idle"; enabled=true;
+            ChapterWitnessed=false; chapterSightTime=0;
+            if(normal) normal.SetActive(false); if(angry) angry.gameObject.SetActive(false);
+        }
+        public void StartChapterReveal()
+        {
+            if(chapterDriven && !Triggered && !Cancelled && session && session.InputAllowed) StartCoroutine(Reveal());
+        }
 
         void Start()
         {
@@ -62,6 +76,7 @@ namespace HappyToy.V2
 
         void OnStory(int step)
         {
+            if(chapterDriven) return;
             if (step >= 4) { CancelEncounter(); return; }
             if (step == 3 && isActiveAndEnabled && !Triggered && !Cancelled && session && session.InputAllowed)
                 StartCoroutine(Reveal());
@@ -69,14 +84,28 @@ namespace HappyToy.V2
 
         void Update()
         {
+            if(chapterDriven && Triggered && !ChapterWitnessed && session && session.InputAllowed)
+            {
+                var actor=normal && normal.activeInHierarchy?normal:angry && angry.gameObject.activeInHierarchy?angry.gameObject:null;
+                if(actor)
+                {
+                    var camera=session.player.eyes;var target=actor.transform.position+Vector3.up*.9f;
+                    var viewport=camera.WorldToViewportPoint(target);
+                    bool visible=viewport.z>0 && viewport.x>.04f && viewport.x<.96f && viewport.y>.04f && viewport.y<.96f;
+                    if(visible && Physics.Linecast(camera.transform.position,target,out var obstruction,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
+                        visible=obstruction.collider.transform.IsChildOf(actor.transform);
+                    if(visible) chapterSightTime+=Time.deltaTime;
+                    if(chapterSightTime>=.5f) ChapterWitnessed=true;
+                }
+            }
             // Results stop scaled time, so cleanup cannot depend on a coroutine's next timed wait.
-            if (initialized && !Cancelled && (!session || session.Finished || session.StoryStep >= 4))
+            if (initialized && !Cancelled && (!session || session.EncountersResolved))
                 CancelEncounter();
         }
 
         bool CanContinue()
         {
-            if (!Cancelled && session && !session.Finished && session.StoryStep < 4 && painting && normal && angry)
+            if (!Cancelled && session && !session.EncountersResolved && painting && normal && angry)
                 return true;
             CancelEncounter(); return false;
         }

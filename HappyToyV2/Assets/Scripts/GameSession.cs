@@ -8,6 +8,55 @@ namespace HappyToy.V2
     {
         public static GameSession Current { get; private set; }
         public PlayerMotor player;
+        public CorridorRun Corridor { get; private set; }
+        public MemoryChapter Chapter { get; private set; }
+        public bool ChapterMode => Chapter && Chapter.Ready;
+        public int EncounterStep => ChapterMode ? Chapter.Recovered : StoryStep;
+        public bool EncountersResolved => Finished || (!ChapterMode && StoryStep >= 4);
+        public void CreateChapter()
+        {
+            if(Chapter || Corridor || Finished) return;
+            // Restart enters from GameShell.Start, before default-order presentation Start.
+            // Complete that idempotent dressing while its authored interaction IDs still exist.
+            var presentation=GetComponent<AnnexRoomPresentation>();if(presentation) presentation.Apply();
+            Chapter=gameObject.AddComponent<MemoryChapter>(); Chapter.Prepare();
+        }
+        public CorridorRecords Records { get; private set; }
+        public CorridorCheckpointStore Suspension { get; private set; }
+        public string RecordSaveMessage { get; private set; } = "";
+        public bool RecordSaved { get; private set; }
+        public bool RetryRecordSave()
+        {
+            if (!Finished || !CorridorMode || !Records.PersistenceEnabled || RecordSaved) return false;
+            RecordSaved = Records.Record(Corridor.Seed, Corridor.Recovered, Escaped, ElapsedPlayTime);
+            RecordSaveMessage = Records.Status; return RecordSaved;
+        }
+        public void ConfigureRecordDirectory(string directory)
+        {
+            if (Chapter || Corridor || Finished) throw new System.InvalidOperationException("Record storage must be configured before a run");
+            Records = new CorridorRecords(directory, true);
+            Suspension = new CorridorCheckpointStore(directory, true);
+        }
+        public bool CorridorMode => Corridor && Corridor.Ready;
+        public CorridorCheckpoint CaptureCheckpoint()
+        {
+            if(!CorridorMode) throw new System.InvalidOperationException("No corridor to suspend");
+            return Corridor.CaptureCheckpoint();
+        }
+        public void ApplyCheckpoint(CorridorCheckpoint checkpoint)
+        {
+            checkpoint.Validate();
+            if(!CorridorMode || Shell.Screen!=GameShell.Page.Title || Finished)
+                throw new System.InvalidOperationException("Prepare a fresh title corridor before restoring");
+            Corridor.RestoreCheckpoint(checkpoint); ElapsedPlayTime=checkpoint.seconds;
+            Notify("중단한 회랑 상태를 복원했습니다. 준비되면 탐색을 이어가세요.");
+        }
+        public void CreateCorridor(int seed)
+        {
+            if (Chapter || Corridor || Finished) return;
+            Corridor = gameObject.AddComponent<CorridorRun>();
+            Corridor.Build(seed);
+        }
         public int requiredNames = 4;
         public bool requireAnnexRecords;
         static readonly string[] annexIds = { "music-roster", "archive-record", "nursery-tag" };
@@ -27,12 +76,14 @@ namespace HappyToy.V2
         {
             get
             {
+                if (ChapterMode) return Chapter.Recovered;
+                if (CorridorMode) return Corridor.Recovered;
                 int count = StoryStep;
                 if (requireAnnexRecords) foreach (var id in annexIds) if (inspected.Contains(id)) count++;
                 return count;
             }
         }
-        public int TotalRecords => requireAnnexRecords ? 7 : 4;
+        public int TotalRecords => ChapterMode ? 5 : CorridorMode ? CorridorRun.Required : requireAnnexRecords ? 7 : 4;
         public bool HasInspected(string id) => !string.IsNullOrEmpty(id) && inspected.Contains(id);
         public int StoryStep => names.Count;
         public bool InputAllowed => Shell && Shell.Screen==GameShell.Page.Playing && !Shell.IsReloading && !Finished;
@@ -41,6 +92,8 @@ namespace HappyToy.V2
         {
             get
             {
+                if (ChapterMode) return Chapter.Objective;
+                if (CorridorMode) return Corridor.Objective;
                 if(StoryStep==3 && requireAnnexRecords)
                     for(int i=0;i<annexIds.Length;i++)if(!inspected.Contains(annexIds[i]))return annexObjectives[i];
                 if(StoryStep==2 && requireAnnexRecords)return "별관 북쪽 계단으로 2층 붉은 액자실에 올라가 보건 기록을 찾으세요.";
@@ -51,6 +104,8 @@ namespace HappyToy.V2
         {
             get
             {
+                if (ChapterMode) return Chapter.Recovered>=5 ? "exit" : "chapter-memory-"+Chapter.Recovered;
+                if (CorridorMode) return Corridor.Recovered >= CorridorRun.Required ? "exit" : "memories";
                 if(StoryStep>=4)return "exit";
                 if(StoryStep==3&&requireAnnexRecords)
                     foreach(var id in annexIds)if(!inspected.Contains(id))return id;
@@ -59,7 +114,8 @@ namespace HappyToy.V2
         }
         public string Notice => notice;
         public int NoticeRevision { get; private set; }
-        public string JournalEntry(int index)=>index>=0&&index<StoryStep?clues[index]:null;
+        public int JournalCount => ChapterMode ? 5 : 4;
+        public string JournalEntry(int index)=>ChapterMode ? Chapter.JournalEntry(index) : index>=0&&index<StoryStep?clues[index]:null;
         public string ExplorationEntry(int index)=>index>=0&&index<exploration.Count?exploration[index]:null;
         public int ExplorationCount=>exploration.Count;
         readonly List<string> exploration=new List<string>();
@@ -87,7 +143,16 @@ namespace HappyToy.V2
         };
         readonly HashSet<string> names = new HashSet<string>();
         string notice = "마지막 출석 — 지워진 아이의 하교 기록을 복원하세요.";
-        void Awake() { Current = this; Application.targetFrameRate=120; Shell=gameObject.AddComponent<GameShell>();gameObject.AddComponent<RoomAmbience>();gameObject.AddComponent<AnnexRoomPresentation>(); }
+        void Awake()
+        {
+            Current = this; Application.targetFrameRate=120;
+            gameObject.AddComponent<PlayerControls>();
+            // Batch audits use isolated injected storage when testing persistence.
+            // They must never add artificial attempts to the player's profile.
+            Records = new CorridorRecords(Application.persistentDataPath, !Application.isBatchMode);
+            Suspension = new CorridorCheckpointStore(Application.persistentDataPath, !Application.isBatchMode);
+            Shell=gameObject.AddComponent<GameShell>();gameObject.AddComponent<RoomAmbience>();gameObject.AddComponent<AnnexRoomPresentation>();
+        }
         void Update()
         {
             if (InputAllowed) ElapsedPlayTime += Time.deltaTime;
@@ -124,6 +189,16 @@ namespace HappyToy.V2
         public void TryEscape()
         {
             if(!InputAllowed)return;
+            if(ChapterMode)
+            {
+                if(Chapter.Recovered<5) {Notify(Chapter.Objective);return;}
+                Finish(true);return;
+            }
+            if (CorridorMode)
+            {
+                if (Corridor.Recovered < CorridorRun.Required) { Notify(Corridor.Objective); return; }
+                Finish(true); return;
+            }
             if (names.Count < requiredNames || StoryStep < sequence.Length || !AnnexRecordsComplete) { Notify(Objective); return; }
             Finish(true);
         }
@@ -132,6 +207,7 @@ namespace HappyToy.V2
         {
             if (Finished) return;
             Finished = true; Escaped = escaped; Time.timeScale = 0;
+            if (CorridorMode && Records.PersistenceEnabled) RetryRecordSave();
             Shell.ShowResult();
         }
     }

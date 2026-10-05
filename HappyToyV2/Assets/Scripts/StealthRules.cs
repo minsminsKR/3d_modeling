@@ -53,6 +53,11 @@ namespace HappyToy.V2
             }
 
             public void Reset() { Value = 0; }
+            public void Restore(float value)
+            {
+                if (!Finite(value) || value < 0 || value > 1) throw new ArgumentOutOfRangeException(nameof(value));
+                Value = value;
+            }
         }
     }
 }

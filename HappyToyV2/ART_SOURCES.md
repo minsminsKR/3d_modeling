@@ -6,6 +6,10 @@
 
 # Art provenance
 
+## Runtime school chapter dressing — 2026-10-05
+
+`ChapterAtmosphere.cs` adds original code-authored ceiling damage, sagging cable geometry, empty timber frames with graphite drawings, damp seams, nursery tide marks, cracked tile surrounds and rusted pipe restraints. It reuses the documented generated plaster/wood textures and existing original classroom-chair, classroom-desk and infirmary-bed mesh/material assets. The furniture copies contain static renderers and their own small physical/NavMesh footprints; no monster mesh or original source FBX is replaced. No external image, model or audio was downloaded for this dressing. Actual three-floor render captures and input traversal are recorded in `CHAPTER_REBUILD.md`.
+
 ## Newly authored for this project
 
 User direction on 2026-09-14: prioritize V1 monster models and events, refining them as necessary. The original attendance-warden experiment is retained as source art but is NOT the active gameplay enemy. Do not replace V1 identities with new characters by default.
@@ -74,3 +78,22 @@ The same Blender furniture script now authors `infirmary-bed`: metric steel fram
 ### External asset licensing requirements
 
 The user permits external assets. Before adding one, record its exact download/source page, creator, license/version, redistribution and attribution requirements, local destination and modifications. A publicly downloadable file alone is not proof of permission. Preserve supplied license files. No new external assets were downloaded for the attendance-warden update.
+# 회랑 벽 재질 추가 (2026-10-05)
+
+- 파일: `Assets/Resources/Corridor/aged-plaster-v1.png`
+- 출처: Codex 내장 ImageGen으로 이 프로젝트용으로 새로 생성한 석회 회벽 알베도. 기존 게임의 이미지를 입력하거나 복제하지 않았다.
+- SHA-256: `a28c9d67d65f5181ba2b012b2719ecfc532a1dc699164216984f58ccd1bd0af3`
+- 생성 방식: builtin ImageGen, 참조 이미지 없음. 회랑 런타임의 Damp plaster 재질에서 사용한다.
+- 프롬프트: “Use-case: photorealistic-natural. Create a production game environment albedo texture, a single square seamless tile of old lime plaster for an abandoned indoor horror corridor. Full-frame orthographic flat surface only, absolutely no room perspective, no objects, no borders, no text. Fine mineral grain, restrained hairline cracks, small irregular patches of worn plaster and subtle damp stains. Desaturated warm grey and pale dusty olive, even neutral diffuse lighting, no directional light, no vignette, no baked cast shadows, no specular highlights. All four opposite edges must tile seamlessly. Detail should read naturally at one tile per two metres, avoid a large recognizable central motif. This is an original material asset for Happy Toy V2, not a recreation of any existing game's art.”
+- 이 기록은 해당 재질의 생성 경로이며 기존 몬스터·음악·외부 에셋 전체의 상업 사용권 검증을 대체하지 않는다.
+
+회랑 기억의 종소리는 `MemoryResonance.cs`의 사인파 합성과 감쇠 포락선으로 생성한 원본 음향이다. 외부 음원·게임 녹음·샘플을 사용하지 않는다. 수집물 위치에 붙은 9m 범위의 공간 음원이며 벽에 가려지면 음량과 고역을 낮춘다. 수집하면 해당 오브젝트와 함께 멈춘다.
+
+## 회랑 목재 바닥 (2026-10-05)
+
+- Assets/Resources/Corridor/aged-floor-v1.png: 이 프로젝트용으로 내장 ImageGen에서 새로 생성한 목재 바닥 알베도. 참조 이미지·다른 게임의 이미지·다운로드 재질 없음.
+- SHA-256: 429824c42cc1fde8fd8418ede0ed187e447454c81bbad5c38849d0fd67fa21b8.
+- 원본 생성 파일은 .codex/generated_images/01a10852-4dc2-7861-a5c1-accf35318b5a/exec-359e8b80-7e6d-45da-a90d-4d3b8e7d1f71.png. 기존 원본을 보존하고 프로젝트와 outputs/Corridor-floor-texture-v1.png에 복사했다.
+- 정확한 프롬프트는 outputs/Corridor-floor-texture-v1-prompt.txt. 생성 방식은 builtin ImageGen, 투명 배경 없음, CLI/API 사용 없음.
+- 정사영의 평평한 표면, 좁은 평행 목재 판자와 엇갈린 이음·마모, 중립 조명·그림자/문자/로고/원근 없음, 양쪽 반복 경계를 요청했다. 반복 타일 품질은 실제 회랑 렌더에서도 검수해야 한다.
+- Worn wooden floor에서 색 .9, 6m 방당 UV 4회(약 1.5m 타일), roughness 대응 smoothness .12, mipmap·trilinear·anisotropy 8로 사용한다. 충돌·내비게이션·몬스터 모델은 변경하지 않는다.

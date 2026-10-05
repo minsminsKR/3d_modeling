@@ -1,0 +1,281 @@
+{
+    "player": {
+        "x": -7.800000190734863,
+        "y": 0.0,
+        "z": 0.0
+    },
+    "items": [
+        {
+            "name": "자료실 은신함",
+            "id": "",
+            "kind": "HidingPlace",
+            "position": {
+                "x": 23.399999618530273,
+                "y": 0.0,
+                "z": -13.850000381469727
+            }
+        },
+        {
+            "name": "CLASSROOM sliding door",
+            "id": "",
+            "kind": "Door",
+            "position": {
+                "x": -4.5,
+                "y": 0.0,
+                "z": 1.5999999046325684
+            }
+        },
+        {
+            "name": "Handwritten note",
+            "id": "choir-seat",
+            "kind": "Inspect",
+            "position": {
+                "x": 25.700000762939453,
+                "y": 0.02500000037252903,
+                "z": 12.050000190734863
+            }
+        },
+        {
+            "name": "story-ribbon",
+            "id": "ribbon",
+            "kind": "NameSlip",
+            "position": {
+                "x": -2.8022987842559814,
+                "y": 0.8728849291801453,
+                "z": -3.859999895095825
+            }
+        },
+        {
+            "name": "인형방 이름표",
+            "id": "nursery-tag",
+            "kind": "Inspect",
+            "position": {
+                "x": 19.979999542236328,
+                "y": -3.700000047683716,
+                "z": -27.600000381469727
+            }
+        },
+        {
+            "name": "Return the names",
+            "id": "",
+            "kind": "Exit",
+            "position": {
+                "x": -8.75,
+                "y": 1.100000023841858,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "Classroom seating record",
+            "id": "",
+            "kind": "Inspect",
+            "position": {
+                "x": -0.625,
+                "y": 1.649999976158142,
+                "z": 7.25
+            }
+        },
+        {
+            "name": "WASHROOM sliding door",
+            "id": "",
+            "kind": "Door",
+            "position": {
+                "x": -4.5,
+                "y": 0.0,
+                "z": -1.5999999046325684
+            }
+        },
+        {
+            "name": "Hiding cabinet",
+            "id": "",
+            "kind": "HidingPlace",
+            "position": {
+                "x": 3.75,
+                "y": 0.0,
+                "z": 4.699999809265137
+            }
+        },
+        {
+            "name": "story-medical-record",
+            "id": "record",
+            "kind": "NameSlip",
+            "position": {
+                "x": 31.299999237060547,
+                "y": 6.25,
+                "z": 33.81999969482422
+            }
+        },
+        {
+            "name": "합창 명단 조사",
+            "id": "music-roster",
+            "kind": "Inspect",
+            "position": {
+                "x": 23.400001525878906,
+                "y": 1.350000023841858,
+                "z": 13.020000457763672
+            }
+        },
+        {
+            "name": "Corridor dismissal board",
+            "id": "",
+            "kind": "Inspect",
+            "position": {
+                "x": -7.849999904632568,
+                "y": 1.4800000190734863,
+                "z": -1.465000033378601
+            }
+        },
+        {
+            "name": "story-register",
+            "id": "register",
+            "kind": "NameSlip",
+            "position": {
+                "x": -7.0,
+                "y": 0.8100000023841858,
+                "z": 8.100000381469727
+            }
+        },
+        {
+            "name": "story-preparation-box",
+            "id": "restore",
+            "kind": "NameSlip",
+            "position": {
+                "x": -1.2999999523162842,
+                "y": 0.699999988079071,
+                "z": 8.0
+            }
+        },
+        {
+            "name": "Handwritten note",
+            "id": "archive-ledger",
+            "kind": "Inspect",
+            "position": {
+                "x": 21.700000762939453,
+                "y": 0.8420000076293945,
+                "z": -6.449999809265137
+            }
+        },
+        {
+            "name": "INFIRMARY sliding door",
+            "id": "",
+            "kind": "Door",
+            "position": {
+                "x": 5.5,
+                "y": 0.0,
+                "z": 1.5999999046325684
+            }
+        },
+        {
+            "name": "별관 피난도 조사",
+            "id": "annex-route",
+            "kind": "Inspect",
+            "position": {
+                "x": 10.600000381469727,
+                "y": 1.399999976158142,
+                "z": 1.4199999570846558
+            }
+        },
+        {
+            "name": "폐쇄 기록 조사",
+            "id": "archive-record",
+            "kind": "Inspect",
+            "position": {
+                "x": 21.799999237060547,
+                "y": 1.350000023841858,
+                "z": -14.220000267028809
+            }
+        },
+        {
+            "name": "음악실 은신함",
+            "id": "",
+            "kind": "HidingPlace",
+            "position": {
+                "x": 20.200000762939453,
+                "y": 0.0,
+                "z": 13.850000381469727
+            }
+        }
+    ],
+    "actors": [
+        {
+            "name": "V1 Uncat — archive emergence",
+            "id": "",
+            "kind": "StalkerBrain",
+            "position": {
+                "x": 29.799999237060547,
+                "y": 0.0,
+                "z": -9.600000381469727
+            }
+        },
+        {
+            "name": "V1 Hwacat_angry",
+            "id": "",
+            "kind": "StalkerBrain",
+            "position": {
+                "x": 31.299999237060547,
+                "y": 5.0,
+                "z": 27.10000228881836
+            }
+        },
+        {
+            "name": "V1 Cyclopse",
+            "id": "",
+            "kind": "StalkerBrain",
+            "position": {
+                "x": 7.5,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "V1 Baby — nursery encounter",
+            "id": "",
+            "kind": "StalkerBrain",
+            "position": {
+                "x": 13.800000190734863,
+                "y": -5.0,
+                "z": -31.0
+            }
+        },
+        {
+            "name": "V1 Hwacat painting event",
+            "id": "",
+            "kind": "V1HwacatEvent",
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            }
+        },
+        {
+            "name": "Nursery cry and crawl event",
+            "id": "",
+            "kind": "AnnexEncounter",
+            "position": {
+                "x": 13.800000190734863,
+                "y": -5.0,
+                "z": -27.600000381469727
+            }
+        },
+        {
+            "name": "V1 lantern mask — south loop",
+            "id": "",
+            "kind": "LanternMaskEncounter",
+            "position": {
+                "x": 33.0,
+                "y": 0.0,
+                "z": -9.600000381469727
+            }
+        },
+        {
+            "name": "V1 silent mannequin — eastern loop",
+            "id": "",
+            "kind": "WeepingAngelEncounter",
+            "position": {
+                "x": 39.400001525878906,
+                "y": 0.0,
+                "z": 8.0
+            }
+        }
+    ]
+}

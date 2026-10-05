@@ -1,0 +1,15 @@
+{
+    "status": "PASS",
+    "unityVersion": "6000.6.0f1",
+    "scene": "Assets/Annex/SchoolAnnex.unity",
+    "sceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+    "pureClockAssertions": 29,
+    "pureRippleAssertions": 20,
+    "pureStealthAssertions": 68,
+    "pureRestartAssertions": 26,
+    "worldSigns": 9,
+    "gameObjects": 2400,
+    "missingScripts": 0,
+    "interactables": 19,
+    "inspections": 8
+}

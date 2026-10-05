@@ -13,6 +13,7 @@ namespace HappyToy.V2
             intro < .65f ? IntroStage.Tension : intro < 1.35f ? IntroStage.PartialTurn :
             intro < 1.7f ? IntroStage.RigidHold : intro < 2.4f ? IntroStage.FinishTurn : IntroStage.FinalStill;
         public Transform visual;
+        public int activationStep = 1;
         public Light displayLight;
         public bool Triggered { get; private set; }
         public bool Released { get; private set; }
@@ -139,7 +140,7 @@ namespace HappyToy.V2
         {
             var session = GameSession.Current;
             if (!session) return;
-            if (session.Finished || session.StoryStep >= 4) { Resolve(); return; }
+            if (session.EncountersResolved) { Resolve(); return; }
             if (Resolved) return;
             if (Triggered && !Released) { IntroLight(); IntroPose(); }
             if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { Stop(); repath = 0; return; }
@@ -151,7 +152,7 @@ namespace HappyToy.V2
             if (!Triggered)
             {
                 Stop();
-                if (session.StoryStep < 1 || player.Hidden || !sameFloor || delta.magnitude > 8 || !Observed) return;
+                if (session.EncounterStep < activationStep || player.Hidden || !sameFloor || delta.magnitude > 8 || !Observed) return;
                 Triggered = true; startTurn = visual.localRotation; CaptureDisplayLight();
                 if (!visualPoseCaptured) { originalVisualRotation = startTurn; visualPoseCaptured = true; }
                 var toward = delta; toward.y = 0;

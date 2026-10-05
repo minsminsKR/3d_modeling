@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Experimental.Rendering;
+using UnityEngine.InputSystem;
 
 namespace HappyToy.V2
 {
@@ -18,10 +19,19 @@ namespace HappyToy.V2
         VisualElement recognitionGrain, recognitionEdge;
         VisualElement root, stage, stamina, crosshair, noticePanel, noticeAccent, focusPanel, captionPanel, itemFeedbackPanel;
         Label objective, objectiveCount, notice, focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
+        Label navigationHelp, controlInstructions, controlsFooter;
+        bool sendingGamepadNavigation;
+        Vector2 previousMenuDirection;
+        float nextMenuRepeat;
+        bool GamepadMenuIntent => Gamepad.current != null && (PlayerControls.UsingGamepad || Gamepad.current.buttonSouth.isPressed ||
+            Gamepad.current.dpad.ReadValue().sqrMagnitude > .1f || Gamepad.current.leftStick.ReadValue().sqrMagnitude > .25f);
+        string NavigationHelp => PlayerControls.UsingGamepad ? "방향 패드  선택     아래 버튼  확인     오른쪽 버튼  뒤로" : "Tab / 방향키  선택      Enter  확인      Esc  뒤로";
+        string ControlInstructions => PlayerControls.UsingGamepad ? "왼쪽 스틱  이동 / 누르며 달리기\n오른쪽 스틱  시선\n아래 버튼  조사·문·은신\n오른쪽 버튼  낮은 자세 / 위 버튼  빛\nLT 조준 / RT 폭죽 (추격 전 유인)\nSelect 기록 / Start 일시정지" : "WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신\nF  손전등          Q  폭죽 (추격 전 유인)\n우클릭 누르기  폭죽 첫 충돌 조준\nJ  조사 기록      Esc  일시정지";
+        string ControlsFooter => PlayerControls.UsingGamepad ? "오른쪽  낮은 자세    위  빛    RT  폭죽    Start  메뉴" : "C  낮은 자세    F  빛    Q  폭죽    J  기록    Esc  메뉴";
         Button reducedMotionButton, subtitlesButton, contrastButton, textSizeButton;
         GameShell.Page shown = (GameShell.Page)(-1);
         int journalStep = -1, journalExploration = -1, journalPage;
-        bool shownContrast, shownLargeText, settingsLabelsDirty;
+        bool shownContrast, shownLargeText, shownGamepad, settingsLabelsDirty;
         bool shownReloading;
         string shownReloadError;
         readonly VisualElement[] objectiveSegments = new VisualElement[7];
@@ -47,6 +57,11 @@ namespace HappyToy.V2
             document.panelSettings = settings;
             root = document.rootVisualElement;
             root.name = "game-shell";
+            // Own gamepad event production explicitly, including offscreen panels.
+            // Filter the native provider's duplicate events before controls receive them.
+            root.RegisterCallback<NavigationMoveEvent>(e => { if (!sendingGamepadNavigation && GamepadMenuIntent) e.StopImmediatePropagation(); }, TrickleDown.TrickleDown);
+            root.RegisterCallback<NavigationSubmitEvent>(e => { if (!sendingGamepadNavigation && GamepadMenuIntent) e.StopImmediatePropagation(); }, TrickleDown.TrickleDown);
+            root.RegisterCallback<NavigationCancelEvent>(e => { if (!sendingGamepadNavigation && GamepadMenuIntent) e.StopImmediatePropagation(); }, TrickleDown.TrickleDown);
             root.style.flexGrow = 1;
             root.style.alignItems = Align.Center;
             root.style.justifyContent = Justify.Center;
@@ -171,9 +186,10 @@ namespace HappyToy.V2
             shown = shell.Screen;
             shownContrast = shell.HighContrast;
             shownLargeText = shell.LargeText;
+            shownGamepad = PlayerControls.UsingGamepad;
             shownReloading = shell.IsReloading;
             shownReloadError = shell.ReloadError;
-            journalStep = session.StoryStep;
+            journalStep = session.RecordsRecovered;
             journalExploration = session.ExplorationCount;
             root.Clear(); recognitionGrain = recognitionEdge = null;
             objective = objectiveCount = notice = focus = meter = status = noise = caption = itemFeedback = volume = sensitivity = fieldOfView = null;
@@ -229,7 +245,7 @@ namespace HappyToy.V2
             else if (!string.IsNullOrWhiteSpace(shell.ReloadError))
                 Small(shell.ReloadError, 150, 786, 1300, 48).style.color = Rust;
             Small("HAPPY TOY  /  LAST ATTENDANCE", 150, 837, 580);
-            var navigation = Small("Tab / 방향키  선택      Enter  확인      Esc  뒤로", 820, 837, 630);
+            var navigation = navigationHelp = Small(NavigationHelp, 820, 837, 630);
             navigation.style.unityTextAlign = TextAnchor.UpperRight;
             string initialId = samePage && !string.IsNullOrEmpty(previousFocus) ? previousFocus :
                 shown == GameShell.Page.Title ? "begin" : shown == GameShell.Page.Pause ? "resume" : shown == GameShell.Page.Result ? "restart" : "back";
@@ -252,19 +268,24 @@ namespace HappyToy.V2
             Small("폐교 조사 기록  /  마지막 출석", 150, 78, 1050);
             var paused = Small(shown == GameShell.Page.Title ? "아직 끝나지 않은 하교 시간" : "시간이 멈춰 있습니다", 1060, 78, 390);
             paused.style.unityTextAlign = TextAnchor.UpperRight;
-            string title = shown == GameShell.Page.Title ? "마지막 출석" : shown == GameShell.Page.Pause ? "숨을 고르다" :
+            string title = shown == GameShell.Page.Title ? "잊힌 회랑" : shown == GameShell.Page.Pause ? "숨을 고르다" :
                 shown == GameShell.Page.Journal ? "조사 기록" : shown == GameShell.Page.Settings ? "환경 설정" :
-                session.Escaped ? "마지막 아이가 하교했습니다" : "발소리가 멈췄습니다";
+                session.Escaped ? session.CorridorMode ? "회랑의 문이 열렸습니다" : "마지막 아이가 하교했습니다" : "발소리가 멈췄습니다";
             Text(title, 150, 145, 1300, shown == GameShell.Page.Title ? 110 : 82, shown == GameShell.Page.Title ? 66 : 48).style.unityFontStyleAndWeight = FontStyle.Bold;
         }
         void BuildTitle()
         {
-            Text("지워진 이름 하나.\n돌아오지 않은 아이 한 명.", 153, 262, 640, 110, shell.LargeText ? 32 : 28);
-            Small("흩어진 기록을 모아 마지막 하교를 완성하세요.", 153, 374, 640, 55);
-            Button("begin", "학교에 들어가기  [Enter]", 451, shell.Begin, primary: true);
-            Button("settings", "환경 설정 · 접근성", 519, shell.Settings);
-            Button("quit", "종료", 587, () => Application.Quit());
-            Small("이야기 진행은 현재 탐색 중에만 유지됩니다.\n갑작스러운 소리와 추격 장면이 포함되어 있습니다.", 153, 677, 650, 70);
+            Text("다섯 개의 기억.\n1층에서 2층, 그리고 지하로.", 153, 262, 640, 110, shell.LargeText ? 32 : 28);
+            Small("발소리를 듣고 숨어, 잊힌 회랑의 출구를 찾으세요.\n갑작스러운 소리와 추격 장면이 포함되어 있습니다.", 153, 374, 640, 65);
+            bool saved=session.Suspension.HasRun;
+            Button("begin", "학교에 들어가기  [Enter]", 451, shell.BeginChapter, primary:true);
+            if(saved) Button("continue-run", "이전 회랑 중단 기록 이어가기", 519, shell.ContinueCorridor).SetEnabled(session.Suspension.Writable);
+            Button("settings", "환경 설정 · 접근성", saved?587:519, shell.Settings);
+            Button("quit", "종료", saved?655:587, () => Application.Quit());
+            var records = session.Records.Snapshot;
+            string best = records.escapes > 0 ? $"최단 탈출  {(int)records.bestEscapeSeconds / 60}분 {(int)records.bestEscapeSeconds % 60:00}초" : "아직 탈출 기록이 없습니다.";
+            Small($"이전 회랑 기록 {records.attempts}회 · 탈출 {records.escapes}회 · 최고 기억 {records.bestRecovered}/5\n{best}", 153, saved?723:653, 675, 65).name = "corridor-record-summary";
+            if(!saved) Small("기억을 회수할 때마다 학교 안의 무언가가 깨어납니다.", 153, 725, 675, 60);
             BuildAttendanceCard(895, 245, false);
         }
         void BuildAttendanceCard(float x, float y, bool progress)
@@ -273,17 +294,19 @@ namespace HappyToy.V2
             Outline(card, Edge);
             Panel(x + 26, y + 27, 3, 70, Gold);
             Small("SCHOOL ARCHIVE  /  출석 확인", x + 46, y + 28, 450);
-            Text(progress ? $"주요 단계  {session.StoryStep} / 4" : "출석 확인서", x + 46, y + 61, 460, 48, 30);
-            for (int i = 0; i < 4; i++)
+            Text(progress ? session.CorridorMode || session.ChapterMode ? $"회수한 기억  {session.RecordsRecovered} / 5" : $"주요 단계  {session.StoryStep} / 4" : "잊힌 회랑", x + 46, y + 61, 460, 48, 30);
+            bool corridorCard = session.CorridorMode || session.ChapterMode || !progress;
+            for (int i = 0; i < (corridorCard ? 5 : 4); i++)
             {
-                float lineY = y + 136 + i * 43;
+                float lineY = y + 136 + i * (corridorCard ? 35 : 43);
                 Small($"0{i + 1}", x + 30, lineY, 46);
                 Panel(x + 88, lineY + 9, 255 - i * 24, 9, new Color(.16f, .22f, .18f));
-                Small(progress && session.StoryStep > i ? "확인" : "미확인", x + 419, lineY, 95).style.color = progress && session.StoryStep > i ? Gold : Muted;
+                bool complete = progress && (corridorCard ? session.RecordsRecovered : session.StoryStep) > i;
+                Small(complete ? "회수" : "미확인", x + 419, lineY, 95).style.color = complete ? Gold : Muted;
                 Panel(x + 27, lineY + 33, 486, 1, Edge);
             }
             Panel(x + 26, y + 311, 487, 1, Edge);
-            Text("WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신\nF  손전등          Q  폭죽 (추격 전 유인)\n우클릭 누르기  폭죽 첫 충돌 조준\nJ  조사 기록      Esc  일시정지", x + 30, y + 323, 485, 200, shell.LargeText ? 23 : 21);
+            controlInstructions = Text(ControlInstructions, x + 30, y + 323, 485, 200, shell.LargeText ? 23 : 21);
         }
         void BuildPause()
         {
@@ -294,26 +317,35 @@ namespace HappyToy.V2
             Button("settings", "환경 설정 · 접근성", 523, shell.Settings);
             Button("restart", "처음부터 다시 시작", 591, () => shell.Restart(true));
             Button("title", "시작 화면으로 (진행 초기화)", 659, () => shell.Restart(false));
+            if(session.CorridorMode)
+            {
+                var suspend=Button("suspend-run", "탐색 저장 후 시작 화면으로", 727, shell.SuspendCorridor);
+                suspend.SetEnabled(session.Suspension.Writable&&string.IsNullOrEmpty(session.Corridor.SuspendBlockReason));
+            }
             BuildAttendanceCard(895, 245, true);
-            Small("다시 시작하거나 시작 화면으로 가면 이번 탐색 기록이 사라집니다.", 153, 787, 1270);
+            if(string.IsNullOrEmpty(shell.ReloadError)) Small(!session.Suspension.Writable&&!string.IsNullOrEmpty(session.Suspension.Status)?session.Suspension.Status:
+                session.CorridorMode && !string.IsNullOrEmpty(session.Corridor.SuspendBlockReason)?session.Corridor.SuspendBlockReason:
+                session.ChapterMode ? "학교 탐색은 일시정지로 계속할 수 있습니다. 시작 화면으로 나가거나 다시 시작하면 진행이 초기화됩니다." :
+                "중단 저장으로 나가면 같은 회랑을 이어갈 수 있습니다. 다시 시작은 현재 탐색을 초기화합니다.", 153, 787, 1270,40);
         }
         void BuildJournal()
         {
-            int pages = Mathf.Max(1, Mathf.CeilToInt((4 + session.ExplorationCount) / 6f));
+            int required=session.JournalCount;
+            int pages = Mathf.Max(1, Mathf.CeilToInt((required + session.ExplorationCount) / 6f));
             journalPage = Mathf.Clamp(journalPage, 0, pages - 1);
             Small($"복원 {session.RecordsRecovered} / {session.TotalRecords}     주변 기록 {session.ExplorationCount}개     ·     발견한 내용만 보관합니다", 153, 218, 1290);
             for (int slot = 0; slot < 6; slot++)
             {
                 int index = journalPage * 6 + slot;
                 float x = 150 + slot % 2 * 665, y = 264 + slot / 2 * 158;
-                string entry = index < 4 ? session.JournalEntry(index) : session.ExplorationEntry(index - 4);
-                string placeholder = index < 4 ? "아직 발견하지 못했습니다.\n학교 안에서 단서를 찾아 조사하세요." : "아직 비어 있습니다.\n게시물을 조사하면 이곳에 남습니다.";
+                string entry = index < required ? session.JournalEntry(index) : session.ExplorationEntry(index - required);
+                string placeholder = index < required ? "아직 발견하지 못했습니다.\n학교 안에서 단서를 찾아 조사하세요." : "아직 비어 있습니다.\n게시물을 조사하면 이곳에 남습니다.";
                 var card = Panel(x, y, 635, 148, Surface);
                 Outline(card, entry == null ? Edge : new Color(.39f, .43f, .30f));
                 Panel(x, y, 3, 148, entry == null ? Edge : Gold);
-                Small(index < 4 ? $"필수 기록  0{index + 1}" : $"주변 기록  {index - 3:00}", x + 20, y + 11, 460, 25).style.color = entry == null ? Muted : Gold;
+                Small(index < required ? $"필수 기록  0{index + 1}" : $"주변 기록  {index - required+1:00}", x + 20, y + 11, 460, 25).style.color = entry == null ? Muted : Gold;
                 var label = Text(entry ?? placeholder, x + 20, y + 43, 596, 103, shell.LargeText ? 22 : 20);
-                label.name = index < 4 ? "record-" + index : "inspection-" + (index - 4);
+                label.name = index < required ? "record-" + index : "inspection-" + (index - required);
                 if (entry == null) label.style.color = Muted;
             }
             Button("back", "돌아가기  [J / Esc]", 747, shell.Back, primary: true);
@@ -354,16 +386,22 @@ namespace HappyToy.V2
         {
             Small(session.Escaped ? "조사 종료  /  하교 확인" : "조사 중단  /  기록 미완료", 153, 247, 1170);
             string message = session.Escaped ? "지워졌던 이름을 다시 적었다.\n복도 너머에서 마지막 문이 닫힌다." : "이곳에는 아직 돌아오지 못한 기록이 있습니다.\n다시 들어가 마지막 이름을 찾아주세요.";
+            if (session.CorridorMode || session.ChapterMode) message = session.Escaped ? "다섯 기억이 모이자 봉인이 풀렸다.\n이번에는 복도 너머로 돌아갈 수 있다." : "돌아갈 길을 잃었다.\n발소리를 기억하고 학교를 다시 탐색하세요.";
             Text(message, 153, 294, 1210, 103, shell.LargeText ? 30 : 27);
-            Panel(895, 437, 540, 305, Surface);
+            Panel(895, 437, 540, 391, Surface);
             Small(session.Escaped ? "마지막 출석 확인" : "다음 탐색을 위한 기록", 920, 460, 490);
             Text($"복원한 기록  {session.RecordsRecovered} / {session.TotalRecords}\n탐색 시간  {Mathf.FloorToInt(session.ElapsedPlayTime / 60)}분 {Mathf.FloorToInt(session.ElapsedPlayTime % 60):00}초", 920, 505, 490, 85, ReadingSize);
             string hint = session.Escaped ? "모든 이름이 제자리로 돌아왔습니다." : !string.IsNullOrWhiteSpace(session.DefeatHint) ? session.DefeatHint : "문을 닫아 시선을 끊고 걸으며 숨을 회복하세요.";
-            Text(hint, 920, 603, 490, 126, shell.LargeText ? 23 : 20).style.color = session.Escaped ? Gold : Muted;
+            Text(hint, 920, 603, 490, 211, shell.LargeText ? 23 : 20).style.color = session.Escaped ? Gold : Muted;
             Button("restart", session.Escaped ? "다시 탐색하기" : "다시 시작", 447, () => shell.Restart(true), primary: true);
             Button("title", "시작 화면으로", 515, () => shell.Restart(false));
             Button("quit", "종료", 583, () => Application.Quit());
-            if (!session.Escaped) Small("다시 시작하면 이번 탐색 기록은 초기화됩니다.", 153, 680, 675, 70);
+            bool retryRecord = session.CorridorMode && !session.RecordSaved && session.Records.Writable && !string.IsNullOrWhiteSpace(session.RecordSaveMessage);
+            if (retryRecord) Button("retry-record-save", "탐색 기록 저장 다시 시도", 651, () => { session.RetryRecordSave(); Rebuild(); });
+            if (!session.Escaped) Small(session.CorridorMode ? "다시 시작하면 현재 회랑은 새로 생성됩니다." : "다시 시작하면 이번 탐색 기록은 초기화됩니다.",
+                153, retryRecord ? 715 : 680, 675, retryRecord ? 55 : 70);
+            if (!string.IsNullOrWhiteSpace(session.RecordSaveMessage))
+                Small(session.RecordSaveMessage, 153, retryRecord ? 770 : 752, 675, retryRecord ? 60 : 80).name = "record-save-status";
         }
 
         void BuildHud()
@@ -409,7 +447,8 @@ namespace HappyToy.V2
             itemFeedback.name = "item-action-feedback";
             itemFeedback.style.unityTextAlign = TextAnchor.UpperRight;
             itemFeedback.style.color = Gold;
-            Small("C  낮은 자세    F  빛    Q  폭죽    J  기록    Esc  메뉴", 942, 840, 610).style.unityTextAlign = TextAnchor.UpperRight;
+            controlsFooter = Small(ControlsFooter, 942, 840, 610);
+            controlsFooter.style.unityTextAlign = TextAnchor.UpperRight;
             UpdateHud();
         }
         void UpdateSettingsLabels()
@@ -437,7 +476,7 @@ namespace HappyToy.V2
             if (!session.player || objective == null) return;
             var player = session.player;
             objective.text = session.Objective;
-            objectiveCount.text = $"기록 {session.RecordsRecovered} / {session.TotalRecords}";
+            objectiveCount.text = $"{(session.CorridorMode || session.ChapterMode ? "기억" : "기록")} {session.RecordsRecovered} / {session.TotalRecords}";
             for (int i = 0; i < objectiveSegments.Length; i++)
                 if (objectiveSegments[i] != null) objectiveSegments[i].style.backgroundColor = session.RecordsRecovered > i ? Gold : Edge;
             notice.text = session.Notice;
@@ -451,9 +490,10 @@ namespace HappyToy.V2
             stamina.style.backgroundColor = player.SprintExhausted ? Rust : Gold;
             int count = player.Firecrackers != null ? player.Firecrackers.Count : 0;
             meter.text = $"숨 {Mathf.RoundToInt(player.Stamina * 100)}%    ·    폭죽 {count}개";
-            if (player.SprintExhausted) meter.text += player.Stamina < .25f ? "    걸으며 숨을 회복하세요" : "    Shift를 놓으면 다시 달릴 수 있습니다";
+            if (player.SprintExhausted) meter.text += player.Stamina < .25f ? "    걸으며 숨을 회복하세요" : shownGamepad ? "    스틱 버튼을 놓으면 다시 달릴 수 있습니다" : "    Shift를 놓으면 다시 달릴 수 있습니다";
             bool hasFocus = player.Hidden || player.Focus;
-            focus.text = player.Hidden ? "[E]  숨은 곳에서 나오기" : player.Focus ? "[E]  " + player.Focus.DisplayLabel : string.Empty;
+            string interact = shownGamepad ? "[아래 버튼]  " : "[E]  ";
+            focus.text = player.Hidden ? interact + "숨은 곳에서 나오기" : player.Focus ? interact + player.Focus.DisplayLabel : string.Empty;
             Visible(focus, hasFocus);
             Visible(focusPanel, hasFocus);
             crosshair.style.backgroundColor = player.Focus ? Gold : Paper;
@@ -483,12 +523,47 @@ namespace HappyToy.V2
         void LateUpdate()
         {
             if (root == null || !shell || !session) return;
-            bool changedRecords = journalStep != session.StoryStep || journalExploration != session.ExplorationCount;
+            bool changedRecords = journalStep != session.RecordsRecovered || journalExploration != session.ExplorationCount;
+            if (shownGamepad != PlayerControls.UsingGamepad)
+            {
+                shownGamepad = PlayerControls.UsingGamepad;
+                if (navigationHelp != null) navigationHelp.text = NavigationHelp;
+                if (controlInstructions != null) controlInstructions.text = ControlInstructions;
+                if (controlsFooter != null) controlsFooter.text = ControlsFooter;
+            }
             if (shown != shell.Screen || shownContrast != shell.HighContrast || shownLargeText != shell.LargeText ||
                 shownReloading != shell.IsReloading || shownReloadError != shell.ReloadError || changedRecords && shown != GameShell.Page.Playing)
                 Rebuild();
             if (shown == GameShell.Page.Settings && settingsLabelsDirty) UpdateSettingsLabels();
             if (shown == GameShell.Page.Playing) UpdateHud();
+            UpdateGamepadMenu();
+        }
+        void UpdateGamepadMenu()
+        {
+            var pad = Gamepad.current;
+            if (shown == GameShell.Page.Playing || shell.IsReloading || pad == null || !PlayerControls.UsingGamepad)
+            { previousMenuDirection = Vector2.zero; return; }
+            var direction = pad.dpad.ReadValue();
+            if (direction.sqrMagnitude < .25f) direction = pad.leftStick.ReadValue();
+            if (direction.sqrMagnitude < .25f) direction = Vector2.zero;
+            else direction = Mathf.Abs(direction.x) > Mathf.Abs(direction.y) ? new Vector2(Mathf.Sign(direction.x),0) : new Vector2(0,Mathf.Sign(direction.y));
+            var target = root.panel?.focusController.focusedElement as VisualElement;
+            if (target == null || target.panel != root.panel) target = stage.Q<Button>();
+            if (target == null) return;
+            sendingGamepadNavigation = true;
+            try
+            {
+                if (direction != Vector2.zero && (direction != previousMenuDirection || Time.unscaledTime >= nextMenuRepeat))
+                {
+                    using (var e = NavigationMoveEvent.GetPooled(direction)) target.SendEvent(e);
+                    nextMenuRepeat = Time.unscaledTime + (direction != previousMenuDirection ? .45f : .12f);
+                }
+                // Resolve focus again after movement; one press submits exactly once.
+                target = root.panel.focusController.focusedElement as VisualElement ?? target;
+                if (pad.buttonSouth.wasPressedThisFrame && shell.GameplayEntryFrame != Time.frameCount)
+                    using (var e = NavigationSubmitEvent.GetPooled()) target.SendEvent(e);
+            }
+            finally { sendingGamepadNavigation = false; previousMenuDirection = direction; }
         }
         void OnDestroy()
         {

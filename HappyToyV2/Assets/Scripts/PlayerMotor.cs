@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 namespace HappyToy.V2
 {
     [RequireComponent(typeof(CharacterController))]
-    public sealed class PlayerMotor : MonoBehaviour
+    public sealed partial class PlayerMotor : MonoBehaviour
     {
         public Camera eyes;
         public Light flashlight;
@@ -70,31 +70,27 @@ namespace HappyToy.V2
         void Update()
         {
             var session = GameSession.Current;
-            if (Paused || !eyes)
+            if (Paused || !eyes || session.Shell.GameplayEntryFrame == Time.frameCount)
             {
                 sprintRequested = Running = false; moveDirection = Vector3.zero; ActualSpeed = 0; Focus = null; return;
             }
-            var keys = Keyboard.current;
-            var mouse = Mouse.current;
-            SlowRemaining = session.StoryStep >= 4 ? 0 : Mathf.Max(0, SlowRemaining - Time.deltaTime);
+            SlowRemaining = session.EncountersResolved ? 0 : Mathf.Max(0, SlowRemaining - Time.deltaTime);
             FootstepNoiseRemaining = Mathf.Max(0, FootstepNoiseRemaining - Time.deltaTime);
             if (FootstepNoiseRemaining <= 0) FootstepNoiseRadius = 0;
-            if (keys != null && (keys.cKey.wasPressedThisFrame || keys.leftCtrlKey.wasPressedThisFrame || keys.rightCtrlKey.wasPressedThisFrame))
+            if (PlayerControls.Crouch)
                 TrySetCrouching(!Crouching);
-            var delta = (mouse != null ? mouse.delta.ReadValue() : Vector2.zero) * sensitivity;
+            var delta = PlayerControls.Look(sensitivity);
             transform.Rotate(0, delta.x, 0);
             pitch = Mathf.Clamp(pitch - delta.y, -78, 78);
             eyes.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
-            if (keys != null && keys.fKey.wasPressedThisFrame && !Hidden && flashlight)
+            if (PlayerControls.Flashlight && !Hidden && flashlight)
             {
                 flashlight.enabled = !flashlight.enabled;
                 Feedback.PlayFlashlight(flashlight.enabled);
             }
-            var move = keys == null ? Vector2.zero : new Vector2(
-                (keys.dKey.isPressed ? 1 : 0) - (keys.aKey.isPressed ? 1 : 0),
-                (keys.wKey.isPressed ? 1 : 0) - (keys.sKey.isPressed ? 1 : 0));
+            var move = PlayerControls.Movement;
             move = Vector2.ClampMagnitude(move, 1);
-            bool sprintHeld = keys != null && (keys.leftShiftKey.isPressed || keys.rightShiftKey.isPressed);
+            bool sprintHeld = PlayerControls.Sprint;
             // Recover, then release Shift: no low-stamina sprint pulsing.
             if (SprintExhausted && Stamina >= .25f && !sprintHeld) SprintExhausted = false;
             if (Stamina <= .05f) SprintExhausted = true;
@@ -103,7 +99,7 @@ namespace HappyToy.V2
             sprintRequested = !Hidden && !Crouching && sprintHeld && move.sqrMagnitude > .01f && !SprintExhausted;
             moveDirection = Hidden ? Vector3.zero : transform.right * move.x + transform.forward * move.y;
             Focus = FindFocus();
-            if (keys != null && keys.eKey.wasPressedThisFrame && Focus) Focus.Use(this);
+            if (PlayerControls.Interact && Focus) Focus.Use(this);
         }
         /// <summary>Toggle stance without moving the feet or standing through a ceiling.</summary>
         public bool TrySetCrouching(bool crouched)
@@ -153,12 +149,15 @@ namespace HappyToy.V2
             var direction = eyes.transform.forward;
             // The exact ray always wins; opaque geometry cannot be bypassed by aim assistance.
             if (Physics.Raycast(origin, direction, out var direct, 2.2f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
-                return direct.collider.GetComponentInParent<Interactable>();
+            {
+                var item=direct.collider.GetComponentInParent<Interactable>();
+                return item&&item.kind!=Interactable.Kind.Decoration?item:null;
+            }
             // Tiny distant notes should not demand pixel-perfect aim. A wall still blocks this cast.
             if (!Physics.SphereCast(origin, .065f, direction, out var assist, 2.135f,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return null;
             var candidate = assist.collider.GetComponentInParent<Interactable>();
-            if (!candidate) return null;
+            if (!candidate || candidate.kind==Interactable.Kind.Decoration) return null;
             var toPoint = assist.point - origin;
             if (toPoint.sqrMagnitude > 2.2f * 2.2f) return null;
             if (Physics.Raycast(origin, toPoint.normalized, out var blocker, toPoint.magnitude + .015f,

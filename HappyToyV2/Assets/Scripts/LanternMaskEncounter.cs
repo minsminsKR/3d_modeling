@@ -16,6 +16,7 @@ namespace HappyToy.V2
             IntroElapsed < .65f ? IntroStage.LanternTicks : IntroElapsed < 1.5f ? IntroStage.MaskRise : IntroStage.StillBeat;
         public Phase State { get; private set; } = Phase.Dormant;
         public Transform mask, body, lantern;
+        public int activationStep = 2;
         public Animation motion;
         public Light flameLight;
         public Transform[] patrol;
@@ -111,7 +112,7 @@ namespace HappyToy.V2
         void HearFootstep(Vector3 point, float radius)
         {
             var session = GameSession.Current;
-            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.Finished || session.StoryStep >= 4 ||
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
                 !noisePlayer || noisePlayer != session.player || noisePlayer.Hidden ||
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
                 IntroActive || attack.Active || !StealthRules.Finite(radius) || radius <= 0 || !StealthRules.Finite(point.x) ||
@@ -144,7 +145,7 @@ namespace HappyToy.V2
         public bool HearNoise(Vector3 point, float duration)
         {
             var session = GameSession.Current;
-            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.Finished || session.StoryStep >= 4 ||
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
                 !EnemyNavigation.Ready(agent) ||
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
                 IntroActive || attack.Active || !StealthRules.Finite(duration) || duration <= 0 ||
@@ -196,7 +197,7 @@ namespace HappyToy.V2
             var session = GameSession.Current;
             BindFootsteps(session ? session.player : null);
             if (!session) return;
-            if (session.Finished || session.StoryStep >= 4) { Resolve(); return; }
+            if (session.EncountersResolved) { Resolve(); return; }
             if (ReducedMotion && flameLight) flameLight.intensity = 1.2f + attack.Windup * .7f;
             if (!session.InputAllowed || !EnemyNavigation.Ready(agent))
             {
@@ -208,7 +209,7 @@ namespace HappyToy.V2
             if (State == Phase.Resolved) return;
             if (State == Phase.Dormant)
             {
-                if (session.StoryStep < 2) { Stop(); return; }
+                if (session.EncounterStep < activationStep) { Stop(); return; }
                 State = Phase.Wander;
             }
             SetVisible(true);

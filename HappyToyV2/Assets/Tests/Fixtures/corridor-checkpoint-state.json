@@ -1,0 +1,322 @@
+{
+    "version": 1,
+    "simulationVersion": 1,
+    "seed": 73,
+    "token": "54815864fa3c46599f545071e4e01ca1",
+    "seconds": 0.8857811093330383,
+    "recovered": [
+        true,
+        true,
+        false,
+        false,
+        false
+    ],
+    "supplies": [
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+    ],
+    "player": {
+        "position": {
+            "x": 201.23199462890625,
+            "y": 0.0799998939037323,
+            "z": 200.0
+        },
+        "yaw": 90.0,
+        "pitch": 0.0,
+        "stamina": 0.96399986743927,
+        "slow": 0.0,
+        "noiseRadius": 1.75,
+        "noiseRemaining": 0.6834438443183899,
+        "itemCooldown": 0.0,
+        "crouched": true,
+        "exhausted": false,
+        "light": false,
+        "stock": 2
+    },
+    "threats": [
+        {
+            "active": true,
+            "witnessed": false,
+            "cueIssued": false,
+            "searchArrived": false,
+            "searchStarted": false,
+            "patrolDwelling": false,
+            "state": 1,
+            "position": {
+                "x": 224.72898864746094,
+                "y": 0.01000000536441803,
+                "z": 235.6273193359375
+            },
+            "lastKnown": {
+                "x": 224.72898864746094,
+                "y": 0.01000000536441803,
+                "z": 236.3273162841797
+            },
+            "hidingApproach": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "searchOrigin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "searchTarget": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "yaw": 84.83167266845703,
+            "floor": 0.01000000536441803,
+            "memory": 6.0,
+            "awareness": 0.0,
+            "searchDwell": 0.0,
+            "searchTransit": 0.0,
+            "searchDoorWait": 0.0,
+            "searchYaw": 0.0,
+            "patrolRemaining": 0.0,
+            "doorPush": 0.0,
+            "waypoint": 1,
+            "searchCandidate": 0,
+            "visited": 0,
+            "attacks": 0,
+            "noises": 1,
+            "footstepNoises": 0,
+            "door": ""
+        },
+        {
+            "active": true,
+            "witnessed": false,
+            "cueIssued": false,
+            "searchArrived": false,
+            "searchStarted": false,
+            "patrolDwelling": false,
+            "state": 0,
+            "position": {
+                "x": 210.8378448486328,
+                "y": 0.01000000536441803,
+                "z": 247.76763916015625
+            },
+            "lastKnown": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "hidingApproach": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "searchOrigin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "searchTarget": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "yaw": 278.3973083496094,
+            "floor": 0.01000000536441803,
+            "memory": 0.0,
+            "awareness": 0.0,
+            "searchDwell": 0.0,
+            "searchTransit": 0.0,
+            "searchDoorWait": 0.0,
+            "searchYaw": 0.0,
+            "patrolRemaining": 0.0,
+            "doorPush": 0.0,
+            "waypoint": 1,
+            "searchCandidate": 0,
+            "visited": 0,
+            "attacks": 0,
+            "noises": 0,
+            "footstepNoises": 0,
+            "door": ""
+        },
+        {
+            "active": true,
+            "witnessed": false,
+            "cueIssued": false,
+            "searchArrived": false,
+            "searchStarted": false,
+            "patrolDwelling": false,
+            "state": 0,
+            "position": {
+                "x": 236.73387145996094,
+                "y": 0.01000000536441803,
+                "z": 247.94776916503906
+            },
+            "lastKnown": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "hidingApproach": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "searchOrigin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "searchTarget": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "yaw": 63.83372116088867,
+            "floor": 0.01000000536441803,
+            "memory": 0.0,
+            "awareness": 0.0,
+            "searchDwell": 0.0,
+            "searchTransit": 0.0,
+            "searchDoorWait": 0.0,
+            "searchYaw": 0.0,
+            "patrolRemaining": 0.0,
+            "doorPush": 0.0,
+            "waypoint": 1,
+            "searchCandidate": 0,
+            "visited": 0,
+            "attacks": 0,
+            "noises": 0,
+            "footstepNoises": 0,
+            "door": ""
+        },
+        {
+            "active": false,
+            "witnessed": false,
+            "cueIssued": false,
+            "searchArrived": false,
+            "searchStarted": false,
+            "patrolDwelling": false,
+            "state": 0,
+            "position": {
+                "x": 242.0,
+                "y": 0.029999999329447746,
+                "z": 230.0
+            },
+            "lastKnown": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "hidingApproach": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "searchOrigin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "searchTarget": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "yaw": 0.0,
+            "floor": 0.0,
+            "memory": 0.0,
+            "awareness": 0.0,
+            "searchDwell": 0.0,
+            "searchTransit": 0.0,
+            "searchDoorWait": 0.0,
+            "searchYaw": 0.0,
+            "patrolRemaining": 0.0,
+            "doorPush": 0.0,
+            "waypoint": 0,
+            "searchCandidate": 0,
+            "visited": 0,
+            "attacks": 0,
+            "noises": 0,
+            "footstepNoises": 0,
+            "door": ""
+        }
+    ],
+    "doors": [
+        {
+            "id": "door-1-0",
+            "open": true,
+            "leaf": {
+                "x": 0.2307918518781662,
+                "y": 1.1799999475479126,
+                "z": 0.0
+            }
+        },
+        {
+            "id": "door-17-0",
+            "open": false,
+            "leaf": {
+                "x": 0.0,
+                "y": 1.1799999475479126,
+                "z": 0.0
+            }
+        },
+        {
+            "id": "door-2-1",
+            "open": false,
+            "leaf": {
+                "x": 0.0,
+                "y": 1.1799999475479126,
+                "z": 0.0
+            }
+        },
+        {
+            "id": "door-25-0",
+            "open": false,
+            "leaf": {
+                "x": 0.0,
+                "y": 1.1799999475479126,
+                "z": 0.0
+            }
+        },
+        {
+            "id": "door-34-1",
+            "open": false,
+            "leaf": {
+                "x": 0.0,
+                "y": 1.1799999475479126,
+                "z": 0.0
+            }
+        },
+        {
+            "id": "door-58-1",
+            "open": false,
+            "leaf": {
+                "x": 0.0,
+                "y": 1.1799999475479126,
+                "z": 0.0
+            }
+        },
+        {
+            "id": "door-65-0",
+            "open": false,
+            "leaf": {
+                "x": 0.0,
+                "y": 1.1799999475479126,
+                "z": 0.0
+            }
+        },
+        {
+            "id": "door-9-0",
+            "open": false,
+            "leaf": {
+                "x": 0.0,
+                "y": 1.1799999475479126,
+                "z": 0.0
+            }
+        }
+    ]
+}

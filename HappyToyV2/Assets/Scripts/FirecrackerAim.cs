@@ -30,19 +30,19 @@ namespace HappyToy.V2
         public LineRenderer TrajectoryRenderer => trajectory;
         public LineRenderer ContactRenderer => contact;
         public string Hint => InitialOverlap ? "던질 공간이 없습니다 · 조금 물러나세요" :
-            HasContact ? "첫 충돌 예상 · Q 투척 · 우클릭 놓기 취소" : "도화선 범위 예상 · Q 투척 · 우클릭 놓기 취소";
+            HasContact ? PlayerControls.UsingGamepad ? "첫 충돌 예상 · RT 투척 · LT 놓기 취소" : "첫 충돌 예상 · Q 투척 · 우클릭 놓기 취소" :
+            PlayerControls.UsingGamepad ? "도화선 범위 예상 · RT 투척 · LT 놓기 취소" : "도화선 범위 예상 · Q 투척 · 우클릭 놓기 취소";
 
         void Awake() { inventory = GetComponent<FirecrackerInventory>(); player = GetComponent<PlayerMotor>(); }
         void LateUpdate()
         {
-            var mouse = Mouse.current;
-            bool pressed = mouse != null && mouse.rightButton.isPressed;
-            if (!inventory || !inventory.CanAim || mouse == null)
+            bool pressed = PlayerControls.AimHeld;
+            if (!inventory || !inventory.CanAim || GameSession.Current.Shell.GameplayEntryFrame == Time.frameCount)
             { Cancel(); return; }
             // A held button from a menu/cabinet/previous life is not a fresh intent.
             if (!pressed) { held = false; requireRelease = false; Hide(); return; }
             if (requireRelease) { Hide(); return; }
-            if (mouse.rightButton.wasPressedThisFrame) held = true;
+            if (PlayerControls.AimPressed) held = true;
             if (!held) { Hide(); return; }
             var eye = player.eyes.transform;
             FirecrackerTrajectory.GetLaunch(eye.position, eye.forward, out var position, out var velocity);

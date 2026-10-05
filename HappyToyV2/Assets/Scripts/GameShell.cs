@@ -26,12 +26,18 @@ namespace HappyToy.V2
         public bool CaptionVisible => Subtitles && captionTime > 0 && !string.IsNullOrWhiteSpace(Caption);
         public event Action SettingsChanged;
         public bool IsReloading { get; private set; }
+        public int GameplayEntryFrame { get; private set; } = -1;
         public string ReloadError { get; private set; } = string.Empty;
 
         Page returnPage = Page.Title;
         GameSession session;
         Font font;
         static readonly SceneRestartGate restartGate = new SceneRestartGate();
+        static bool corridorRestart;
+        static bool chapterRestart;
+        static string checkpointReloadError;
+        string pendingSavedToken;
+        bool requestChapterOnReload;
         float volume = .8f, sensitivity = .09f, fieldOfView = 72f;
         float noticeTime, captionTime;
         int lastNoticeRevision = -1, captionPriority;
@@ -39,7 +45,7 @@ namespace HappyToy.V2
         bool preferencesDirty, auditMode, ownsFont;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStartupRequest() { restartGate.Cancel(); }
+        static void ResetStartupRequest() { restartGate.Cancel(); checkpointReloadError=null; }
 
         void Awake()
         {
@@ -63,19 +69,21 @@ namespace HappyToy.V2
             var args = Environment.GetCommandLineArgs();
             auditMode = args.Any(a => a.StartsWith("-v2-", StringComparison.Ordinal) && a.EndsWith("-output", StringComparison.Ordinal));
             // Existing standalone audits enter through Begin; the flow audit retains the title.
-            bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output");
+            bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output") && !args.Contains("-v2-chapter-output");
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
-            { if (playAfterLoad) Begin(); else Set(Page.Title); }
+            { if (playAfterLoad) { if (chapterRestart) BeginChapter(); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
             else if (autoStartAudit) Begin();
             else Set(Page.Title);
             if (!GetComponent<GameShellView>()) gameObject.AddComponent<GameShellView>();
+            if(!string.IsNullOrEmpty(checkpointReloadError)) { ReloadError=checkpointReloadError; checkpointReloadError=null; }
         }
 
         void Set(Page page)
         {
             if (IsReloading) return;
             if (page == Page.Playing && (!session || session.Finished)) return;
+            if (page == Page.Playing && Screen != Page.Playing) GameplayEntryFrame = Time.frameCount;
             Screen = page;
             ReloadError = string.Empty;
             ApplyScreenState();
@@ -90,8 +98,79 @@ namespace HappyToy.V2
         }
 
         public void Begin() { if (Screen == Page.Title) Set(Page.Playing); }
+        public void BeginChapter()
+        {
+            if(Screen!=Page.Title || IsReloading) return;
+            try
+            {
+                if(session.ChapterMode || session.CorridorMode) { requestChapterOnReload=true; Restart(true); return; }
+                session.CreateChapter();
+                if(session.ChapterMode) Set(Page.Playing);
+            }
+            catch(Exception error)
+            {
+                ReloadError="학교를 준비하지 못했습니다. 다시 시작해 주세요.";
+                Debug.LogException(error,this);
+            }
+        }
+        public void BeginCorridor()
+        {
+            if (Screen != Page.Title || IsReloading) return;
+            try
+            {
+                if(session.CorridorMode) { Restart(true); return; }
+                session.CreateCorridor(unchecked(Environment.TickCount ^ Guid.NewGuid().GetHashCode()));
+                if(session.Suspension.HasRun && session.Suspension.Writable && !session.Suspension.Consume(session.Suspension.Snapshot.token))
+                { ReloadError=session.Suspension.Status; return; }
+                if (session.CorridorMode) Set(Page.Playing);
+            }
+            catch (Exception error)
+            {
+                ReloadError = "회랑을 준비하지 못했습니다. 다시 시작해 주세요.";
+                Debug.LogException(error, this);
+            }
+        }
+        public void SuspendCorridor()
+        {
+            if(Screen!=Page.Pause || IsReloading || !session.CorridorMode) return;
+            try
+            {
+                var checkpoint=session.CaptureCheckpoint();
+                if(!session.Suspension.Save(checkpoint))
+                { ReloadError=session.Suspension.Status; return; }
+                pendingSavedToken=checkpoint.token;
+                Restart(false);
+            }
+            catch(InvalidOperationException error) { ReloadError=error.Message; }
+            catch(ArgumentException) { ReloadError="현재 탐색 상태를 안전하게 저장할 수 없습니다. 탐색을 계속한 뒤 다시 시도하세요."; }
+        }
+        public void ContinueCorridor()
+        {
+            if(Screen!=Page.Title || IsReloading || !session.Suspension.HasRun || !session.Suspension.Writable) return;
+            var data=session.Suspension.Snapshot;
+            try
+            {
+                session.CreateCorridor(data.seed); session.ApplyCheckpoint(data);
+                if(!session.Suspension.Consume(data.token)) throw new InvalidOperationException(session.Suspension.Status);
+                // Give the player control of when restored danger starts moving.
+                Set(Page.Pause);
+            }
+            catch(Exception error) when(error is ArgumentException || error is InvalidOperationException)
+            {
+                ReloadError="중단한 탐색을 복원하지 못했습니다. 기록을 보존했습니다.";
+                if(session.CorridorMode) { checkpointReloadError=ReloadError; Restart(false); }
+            }
+        }
         public void Pause() { if (Screen == Page.Playing) Set(Page.Pause); }
-        public void Resume() { if (Screen == Page.Pause) Set(Page.Playing); }
+        public void Resume()
+        {
+            if(Screen!=Page.Pause) return;
+            // If saving succeeded but scene reload failed, continuing this live
+            // run must consume its checkpoint too, rather than leaving a rewind.
+            if(pendingSavedToken!=null && !session.Suspension.Consume(pendingSavedToken) && !session.Suspension.Conflict)
+            { ReloadError=session.Suspension.Status; return; }
+            pendingSavedToken=null; Set(Page.Playing);
+        }
         public void Journal()
         {
             if (Screen != Page.Playing && Screen != Page.Pause) return;
@@ -130,6 +209,8 @@ namespace HappyToy.V2
             try
             {
                 SaveSettings();
+                chapterRestart = requestChapterOnReload || session && session.ChapterMode;
+                corridorRestart = !chapterRestart && session && session.CorridorMode;
                 if (!restartGate.TryRequest(scene.path, play)) return;
                 IsReloading = true; ReloadError = string.Empty; ApplyScreenState();
                 if (scene.buildIndex >= 0) SceneManager.LoadScene(scene.buildIndex);
@@ -233,15 +314,16 @@ namespace HappyToy.V2
                 captionTime = Mathf.Max(0, captionTime - Time.deltaTime);
             }
             var keys = Keyboard.current;
-            if (keys == null) return;
+            var pad = Gamepad.current;
             // UI Toolkit alone owns submit; Enter must activate the focused button exactly once.
-            if (keys.escapeKey.wasPressedThisFrame)
+            if (keys != null && keys.escapeKey.wasPressedThisFrame || pad != null &&
+                (pad.startButton.wasPressedThisFrame || Screen != Page.Playing && pad.buttonEast.wasPressedThisFrame))
             {
                 if (Screen == Page.Playing) Pause();
                 else if (Screen == Page.Pause) Resume();
                 else if (Screen == Page.Journal || Screen == Page.Settings) Back();
             }
-            else if (keys.jKey.wasPressedThisFrame)
+            else if (keys != null && keys.jKey.wasPressedThisFrame || pad != null && pad.selectButton.wasPressedThisFrame)
             {
                 if (Screen == Page.Playing || Screen == Page.Pause) Journal();
                 else if (Screen == Page.Journal) Back();

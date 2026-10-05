@@ -7,6 +7,20 @@ namespace HappyToy.V2
     public sealed class FirecrackerInventory : MonoBehaviour
     {
         public int Count { get; private set; } = 2;
+        public const int Capacity = 5;
+        public void SetRunStock(int count) { Count = Mathf.Clamp(count, 0, Capacity); }
+        public float Cooldown => cooldown;
+        public void RestoreStock(int count, float seconds)
+        {
+            SetRunStock(count); cooldown = seconds; throwRequested = false;
+            ClearFeedback(); if (Aim) Aim.Cancel();
+        }
+        public bool AddSupply()
+        {
+            var session = GameSession.Current;
+            if (!session || !session.InputAllowed || Count >= Capacity) return false;
+            Count++; ShowFeedback("폭죽을 주웠습니다 · " + Count + "/" + Capacity, 2.5f); return true;
+        }
         public FirecrackerProjectile LastThrown { get; private set; }
         public FirecrackerAim Aim { get; private set; }
         public string ActionFeedback { get; private set; } = string.Empty;
@@ -19,7 +33,7 @@ namespace HappyToy.V2
         bool throwRequested;
 
         public bool CanAim => isActiveAndEnabled && player && player.eyes && !player.Hidden && Count > 0 && cooldown <= 0 &&
-            GameSession.Current && GameSession.Current.player == player && GameSession.Current.InputAllowed && GameSession.Current.StoryStep < 4;
+            GameSession.Current && GameSession.Current.player == player && GameSession.Current.InputAllowed && !GameSession.Current.EncountersResolved;
 
         void Awake()
         {
@@ -33,11 +47,11 @@ namespace HappyToy.V2
             var session = GameSession.Current;
             if (!session || session.Finished) { ClearFeedback(); return; }
             // Menus freeze the cooldown and feedback, and Q there has no effect.
-            if (!session.InputAllowed) return;
+            if (!session.InputAllowed || session.Shell.GameplayEntryFrame == Time.frameCount) return;
             cooldown = Mathf.Max(0, cooldown - Time.deltaTime);
             FeedbackRemaining = Mathf.Max(0, FeedbackRemaining - Time.deltaTime);
             if (FeedbackRemaining <= 0) ActionFeedback = string.Empty;
-            throwRequested = Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame;
+            throwRequested = PlayerControls.Throw;
         }
         // The same rendered-frame Q press uses the final player/camera pose,
         // after PlayerFeedback's stance/bob, just like the held preview.
@@ -47,7 +61,7 @@ namespace HappyToy.V2
             var session = GameSession.Current;
             if (!session || !session.InputAllowed || !player || !player.eyes) return false;
             if (player.Hidden) return Deny("숨어 있는 동안에는 폭죽을 던질 수 없습니다.");
-            if (session.StoryStep >= 4) return Deny("이름이 복원되어 폭죽이 필요하지 않습니다.");
+            if (session.EncountersResolved) return Deny("이름이 복원되어 폭죽이 필요하지 않습니다.");
             if (Count <= 0) return Deny("폭죽을 모두 사용했습니다.");
             if (cooldown > 0) return Deny("다음 폭죽을 준비 중입니다. 잠시 기다리세요.");
             var eye = player.eyes.transform;

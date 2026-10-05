@@ -26,6 +26,13 @@ namespace HappyToy.V2.CloudTests
                 yield return route.Run();
             }
         }
+        [UnityTest, Timeout(750000)]
+        public IEnumerator ChapterFiveMemoryRouteSurvivesThroughActualInputAndFourStairLegs()
+        {
+            Call(shell,"BeginChapter");
+            using(var route=new CloudSurvivalTests(session,player,shell,Keys,InputDiagnostics))
+                yield return route.Run();
+        }
     }
 
     /// <summary>
@@ -48,6 +55,7 @@ namespace HappyToy.V2.CloudTests
         readonly Dictionary<Component, Vector2> originalSpeeds = new Dictionary<Component, Vector2>();
         readonly List<string> milestones = new List<string>();
         readonly float wallStart;
+        readonly bool chapterStrategy;
         float gameStart, progressTime, minY, maxY, distanceWalked, ungroundedFor;
         Vector3 previousPosition;
         int monitorFrame = -1, movementStart, groundedFrames, maximumLiveStalkers, throws, hidingEntries, stairLegs;
@@ -58,6 +66,7 @@ namespace HappyToy.V2.CloudTests
             Action<Key[]> keys, Func<string> inputDiagnostics)
         {
             this.session = session; this.player = player; this.shell = shell;
+            chapterStrategy=Get<bool>(session,"ChapterMode");
             this.keys = keys; this.inputDiagnostics = inputDiagnostics;
             eyes = Get<Camera>(player, "eyes"); controller = player.GetComponent<CharacterController>();
             stalkers = Components("StalkerBrain");
@@ -82,6 +91,7 @@ namespace HappyToy.V2.CloudTests
 
         public IEnumerator Run()
         {
+            if(chapterStrategy) {yield return RunChapter();yield break;}
             gameStart = Get<float>(session, "ElapsedPlayTime");
             try
             {
@@ -188,6 +198,68 @@ namespace HappyToy.V2.CloudTests
             }
         }
 
+        IEnumerator RunChapter()
+        {
+            gameStart=Get<float>(session,"ElapsedPlayTime");
+            try
+            {
+                Assert.That(stalkers.All(x=>!x.gameObject.activeInHierarchy),Is.True,"Chapter started with a monster");
+                yield return Await(()=>Get<bool>(player,"Grounded"),3,20,"Opening floor never grounded");
+                yield return Walk(new Vector3(-4.5f,0,0),false);
+                yield return OpenDoor("WASHROOM");
+                yield return SetFlashlight(false);
+                yield return TakeRecord("chapter-memory-0");
+                Assert.That(stalkers.Count(x=>x.gameObject.activeInHierarchy),Is.EqualTo(1));
+                yield return TakeRecord("chapter-memory-1");
+                Assert.That(mannequin.gameObject.activeInHierarchy,Is.True);Assert.That(lantern.gameObject.activeInHierarchy,Is.False);
+                yield return Walk(new Vector3(29.8f,0,10),true);
+                yield return Stair(new Vector3(29.8f,5,22),"chapter upper ascent",false);
+                yield return TakeRecord("chapter-memory-2");
+                Assert.That(lantern.gameObject.activeInHierarchy,Is.True);
+                yield return RecoverStamina();
+                var fourth=Record("chapter-memory-3");stage="mandatory portrait";
+                yield return Approach(fourth,true);yield return Interact(fourth);
+                Assert.That(Get<int>(session,"RecordsRecovered"),Is.EqualTo(3));
+                Assert.That(Get<bool>(upper,"Triggered"),Is.True);
+                // Watch the actual stand-up from the room's eastern escape route.
+                yield return Walk(new Vector3(34.7f,5,32.2f),true);
+                keys(Array.Empty<Key>());
+                float started=GameTime;
+                while(!Get<bool>(upper,"ChapterWitnessed"))
+                {
+                    Check();Require(GameTime-started<12,"Portrait could not be witnessed from its physical viewing route");
+                    Steer(Get<Vector3>(upper,"spawn")+Vector3.up*.9f,false);yield return null;
+                }
+                // Continue through the two partition passages while the reveal finishes;
+                // standing still with the newly released mask is unsafe.
+                yield return Walk(new Vector3(34.7f,5,23.2f),true);
+                yield return Walk(new Vector3(25.2f,5,22.8f),true);
+                yield return Walk(new Vector3(25.2f,5,32.8f),true);
+                yield return Await(()=>Get<bool>(upper,"Completed"),3,15,"Portrait did not finish after the physical escape loop");
+                Milestone("Witnessed the portrait and crossed both escape passages");
+                yield return TakeRecord("chapter-memory-3");
+                yield return Walk(new Vector3(29.8f,5,22),true);
+                yield return Stair(new Vector3(29.8f,0,10),"chapter upper descent",false);
+                yield return Walk(new Vector3(13.8f,0,-10),true);
+                yield return Stair(new Vector3(13.8f,-5,-22),"chapter basement descent",false);
+                yield return Await(()=>Get<bool>(nursery,"Released"),8,25,"Real basement entry did not release the baby");
+                yield return TakeRecord("chapter-memory-4");
+                yield return Walk(new Vector3(13.8f,-5,-22),true);
+                yield return Stair(new Vector3(13.8f,0,-10),"chapter basement ascent",true);
+                yield return Walk(new Vector3(-4.5f,0,0),true);
+                var exit=Components("Interactable").Single(x=>Get<object>(x,"kind").ToString()=="Exit");stage="chapter exit";
+                yield return Approach(exit,true);expectingEscape=true;yield return Interact(exit);
+                Assert.That(Escaped&&Finished,Is.True);Assert.That(Get<int>(session,"RecordsRecovered"),Is.EqualTo(5));
+                Assert.That(stairLegs,Is.EqualTo(4));Assert.That(minY,Is.LessThan(-4.8f));Assert.That(maxY,Is.GreaterThan(4.8f));
+                Assert.That(distanceWalked,Is.GreaterThan(100));passed=true;Milestone("Escaped five-memory chapter through real input");
+            }
+            finally
+            {
+                keys(Array.Empty<Key>());
+                Debug.Log("HAPPYTOY_CHAPTER_INPUT_RESULT "+JsonUtility.ToJson(new Report {passed=passed,stage=stage,destination=destination,gameSeconds=GameTime,wallSeconds=WallTime,records=Get<int>(session,"RecordsRecovered"),movementUpdates=Get<int>(player,"MovementUpdates")-movementStart,physicalMeters=distanceWalked,groundedFrames=groundedFrames,stairLegs=stairLegs,minY=minY,maxY=maxY,maximumLiveStalkers=maximumLiveStalkers,milestones=milestones.ToArray(),diagnostic=Diagnostics()}));
+            }
+        }
+
         [Serializable]
         sealed class Report
         {
@@ -208,7 +280,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Time.timeScale, Is.EqualTo(1), "Survival may not alter game time");
             Assert.That(((Behaviour)player).enabled, Is.True);
             Assert.That(Mouse.current, Is.SameAs(mouse), "Route mouse is not current");
-            foreach (var owner in encounterOwners)
+            foreach (var owner in chapterStrategy?new[]{(Behaviour)nursery,(Behaviour)upper}:encounterOwners)
                 Assert.That(owner && owner.enabled && owner.gameObject.activeInHierarchy, Is.True,
                     "An authored encounter owner was disabled: " + (owner ? owner.name : "missing"));
             foreach (var enemy in stalkers)

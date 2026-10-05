@@ -5,7 +5,7 @@ namespace HappyToy.V2
 {
     public sealed class Interactable : MonoBehaviour
     {
-        public enum Kind { Door, NameSlip, HidingPlace, Exit, Inspect }
+        public enum Kind { Door, NameSlip, HidingPlace, Exit, Inspect, CorridorMemory, FirecrackerSupply, ChapterMemory, Decoration }
         public Kind kind;
         public string label;
         public string stableId;
@@ -16,6 +16,33 @@ namespace HappyToy.V2
         public Transform inside, outside;
         public NavMeshObstacle obstacle;
         bool open;
+        public bool IsOpen => open;
+        public void RestoreDoor(bool requestedOpen, Vector3 leafPosition)
+        {
+            if (kind != Kind.Door || !movingLeaf) throw new System.InvalidOperationException("Not a movable door");
+            open = requestedOpen; movingLeaf.localPosition = leafPosition;
+            if (obstacle) obstacle.enabled = !open;
+        }
+        public void ConfigureDoor(Transform leaf, NavMeshObstacle blocker, Vector3 offset)
+        {
+            kind = Kind.Door; movingLeaf = leaf; obstacle = blocker; openOffset = offset;
+            if (movingLeaf) closedPosition = movingLeaf.localPosition;
+        }
+        public bool OpenForPursuer()
+        {
+            var session = GameSession.Current;
+            if (kind != Kind.Door || !movingLeaf || open || !session || !session.InputAllowed || session.Finished) return false;
+            SetDoorOpen(true);
+            return true;
+        }
+        void SetDoorOpen(bool value)
+        {
+            open = value;
+            if (obstacle) obstacle.enabled = !open;
+            var audio = GetComponent<InteractionAudio>();
+            if (!audio) audio = gameObject.AddComponent<InteractionAudio>();
+            audio.PlayDoor(open);
+        }
         Vector3 closedPosition;
         Vector3 secondaryClosed;
         public string DisplayLabel
@@ -28,6 +55,8 @@ namespace HappyToy.V2
                     return room+" 문 "+(open?"닫기":"열기");
                 }
                 if(kind==Kind.HidingPlace)return "캐비닛에 숨기";
+                if(kind==Kind.Exit && GameSession.Current && GameSession.Current.CorridorMode)return "봉인된 회랑 문 확인";
+                if(kind==Kind.Exit && GameSession.Current && GameSession.Current.ChapterMode)return "1층 출입문 확인";
                 if(kind==Kind.Exit)return GameSession.Current&&GameSession.Current.StoryStep>=4?"출석함에 마지막 이름 돌려놓기":"현관 출석함 확인";
                 return label;
             }
@@ -46,16 +75,23 @@ namespace HappyToy.V2
             if (!player || !GameSession.Current || !GameSession.Current.InputAllowed) return;
             switch (kind)
             {
+                case Kind.ChapterMemory:
+                    if(GameSession.Current.Chapter && GameSession.Current.Chapter.Collect(stableId)) gameObject.SetActive(false);
+                    break;
+                case Kind.CorridorMemory:
+                    if (GameSession.Current.Corridor && GameSession.Current.Corridor.Collect(stableId)) gameObject.SetActive(false);
+                    break;
+                case Kind.FirecrackerSupply:
+                    if (player.Firecrackers && player.Firecrackers.AddSupply()) gameObject.SetActive(false);
+                    else GameSession.Current.Notify("폭죽은 다섯 개까지 소지할 수 있습니다.");
+                    break;
                 case Kind.Door:
                     // Do not close a door on a player standing in its opening.
                     var local=transform.InverseTransformPoint(player.transform.position);
                     float halfWidth=obstacle?obstacle.size.x*.5f:1.2f;
                     if (open && Mathf.Abs(local.x)<halfWidth+.35f && Mathf.Abs(local.z)<.5f && local.y>-.5f && local.y<2.5f)
                     {GameSession.Current.Notify("문 사이에 서 있습니다. 조금 물러난 뒤 닫으세요.");return;}
-                    open = !open;
-                    var audio = GetComponent<InteractionAudio>();
-                    if (!audio) audio = gameObject.AddComponent<InteractionAudio>();
-                    audio.PlayDoor(open);
+                    SetDoorOpen(!open);
                     break;
                 case Kind.NameSlip:
                     if (GameSession.Current.Collect(stableId)) gameObject.SetActive(false);

@@ -104,6 +104,10 @@ namespace HappyToy.V2.CloudTests
                 var inventory = Get<Component>(player, "Firecrackers");
                 yield return AimHold(mouse, true); AssertAimHidden("Title");
                 yield return RecoveryClick("begin"); yield return AimFrames();
+                IsolateThreats();
+                // The production title now enters a corridor with one initial item.
+                int initialStock = Get<int>(inventory, "Count");
+                Assert.That(initialStock, Is.EqualTo(Get<bool>(session, "CorridorMode") ? 1 : 2));
                 AssertAimHidden("RMB inherited from title");
                 yield return FreshAim(mouse);
                 Quaternion beforeLook = Get<Camera>(player, "eyes").transform.rotation;
@@ -111,7 +115,7 @@ namespace HappyToy.V2.CloudTests
                 mouse.LookWhileHeld(new Vector2(0, -180)); yield return AimFrames();
                 Assert.That(Quaternion.Angle(beforeLook, Get<Camera>(player, "eyes").transform.rotation), Is.GreaterThan(1), "RMB preview swallowed actual mouse look");
                 Assert.That(Vector3.Distance(beforeForecast, Get<Vector3>(CurrentAim, "EndPosition")), Is.GreaterThan(.05f), "Forecast did not follow actual mouse look");
-                Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(2));
+                Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(initialStock));
                 yield return AimHold(mouse, false); AssertAimHidden("Release cancel");
                 Assert.That(Get<bool>(inventory, "CanAim"), Is.True, "Cancel consumed cooldown");
                 Assert.That(Get<Component>(inventory, "LastThrown"), Is.Null);
@@ -125,13 +129,14 @@ namespace HappyToy.V2.CloudTests
                 yield return RecoveryPulse(Key.J); AssertAimHidden("Journal");
                 yield return RecoveryPulse(Key.J); yield return AimFrames(); AssertAimHidden("Held RMB after journal");
                 yield return FreshAim(mouse);
-                var cabinet = Components("Interactable").Single(item => item.name == "음악실 은신함");
+                var cabinet = Get<bool>(session, "CorridorMode") ? Components("Interactable").First(item => item.name == "Corridor hiding cabinet") :
+                    Components("Interactable").Single(item => item.name == "음악실 은신함");
                 PlacePlayer(Get<Transform>(cabinet, "outside").position);
                 Call(cabinet, "Use", player); Assert.That(Get<bool>(player, "Hidden"), Is.True);
                 yield return AimFrames(); AssertAimHidden("Cabinet entry");
                 Call(cabinet, "Use", player); Assert.That(Get<bool>(player, "Hidden"), Is.False);
                 yield return AimFrames(); AssertAimHidden("Held RMB after cabinet exit");
-                Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(2));
+                Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(initialStock));
                 Assert.That(Get<bool>(inventory, "CanAim"), Is.True);
                 yield return FreshAim(mouse);
                 var repeatedLine = Get<LineRenderer>(CurrentAim, "TrajectoryRenderer");
@@ -166,6 +171,14 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(oldAim == null && oldLine == null && oldMaterial == null, Is.True, "Retry leaked owned preview resources");
                 Assert.That(Components("FirecrackerAim").Length, Is.EqualTo(1));
                 AssertAimHidden("Held RMB inherited by retry");
+                Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(initialStock));
+                if (Get<bool>(session, "CorridorMode"))
+                {
+                    // Controlled collectible fixture, not a survival traversal.
+                    var supply = Components("Interactable").First(item => Get<object>(item,"kind").ToString()=="FirecrackerSupply");
+                    Call(supply,"Use",player);
+                    Assert.That(supply.gameObject.activeSelf, Is.False);
+                }
                 Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(2));
                 yield return FreshAim(mouse); yield return AimHold(mouse, false);
                 Assert.That(Get<bool>(inventory, "CanAim"), Is.True, "Repeated aim cancellation spent cooldown");

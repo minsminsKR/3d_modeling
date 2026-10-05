@@ -10,6 +10,14 @@ namespace HappyToy.V2
         public StalkerBrain monster;
         public Vector3 roomCenter;
         public float triggerRadius = 4.5f;
+        public int activationStep = 1;
+        bool chapterDriven;
+        public void PrepareChapter()
+        {
+            chapterDriven=true; Cancelled=false; Triggered=Released=false; Phase="idle";
+            activationStep=4; triggerRadius=7.5f; enabled=true;
+            if(monster) monster.gameObject.SetActive(false);
+        }
         public Light warningLight;
         public bool Triggered { get; private set; }
         public bool Released { get; private set; }
@@ -42,11 +50,11 @@ namespace HappyToy.V2
         {
             if (!session) return;
             // Result screens pause time/input; cancellation must run before that gate.
-            if(session.Finished||session.StoryStep>=4){if(!Cancelled)CancelEncounter();return;}
+            if(session.EncountersResolved){if(!Cancelled)CancelEncounter();return;}
             if(Cancelled||!monster||!session.InputAllowed||!session.player||session.player.Hidden)return;
             var delta = session.player.transform.position - roomCenter;
             if (Mathf.Abs(delta.y)>2) return; delta.y = 0;
-            if (!Triggered && session.StoryStep >= 1 && delta.magnitude < triggerRadius)
+            if (!Triggered && session.EncounterStep >= activationStep && delta.magnitude < triggerRadius)
                 StartCoroutine(Reveal());
         }
         IEnumerator Reveal()
@@ -65,7 +73,7 @@ namespace HappyToy.V2
             if (animation && animation.GetClip("cry")) { animation["cry"].speed = .72f; animation.Play("cry"); }
             for (float t = 0; t < 5;)
             {
-                if (!session || session.Finished || session.StoryStep >= 4 || !monster)
+                if (!session || session.EncountersResolved || !monster)
                 { CancelEncounter(); yield break; }
                 // Settings pauses the reveal clock, but comfort changes must still
                 // remove a frozen flicker frame immediately, as in the other reveals.
@@ -101,7 +109,7 @@ namespace HappyToy.V2
             Phase = "released"; Released = true;
         }
         void RestoreLight(){if(initialized&&warningLight)warningLight.intensity=originalIntensity;}
-        void OnStory(int step){if(step>=4)CancelEncounter();}
+        void OnStory(int step){if(!chapterDriven&&step>=4)CancelEncounter();}
         void CancelEncounter()
         {
             Cancelled=true;Phase="resolved";StopAllCoroutines();

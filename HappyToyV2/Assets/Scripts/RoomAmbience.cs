@@ -16,6 +16,13 @@ namespace HappyToy.V2
         public int MixUpdates {get;private set;}
         public float StoryGain {get;private set;}=1;
         float nextTrace;
+        Vector3[] runPositions;
+        public void ConfigureRunPositions(Vector3[] positions)
+        {
+            if (positions == null || positions.Length != 3) throw new System.ArgumentException("Expected three spatial ambience positions");
+            runPositions = (Vector3[])positions.Clone(); nextTrace = 0;
+            for (int i = 0; i < voices.Count; i++) if (voices[i].source) voices[i].source.transform.position = runPositions[i];
+        }
         void Start()
         {
             Add("washroom-drip",new Vector3(-5.7f,1.1f,-5.1f),MakeClip("V1 wet drip adaptation",6,0),.42f);
@@ -24,6 +31,7 @@ namespace HappyToy.V2
         }
         void Add(string name,Vector3 position,AudioClip clip,float gain)
         {
+            if (runPositions != null) position = runPositions[voices.Count];
             var go=new GameObject(name);go.transform.SetParent(transform,false);go.transform.position=position;
             var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.loop=true;source.clip=clip;
             source.spatialBlend=1;source.rolloffMode=AudioRolloffMode.Linear;source.minDistance=1.2f;source.maxDistance=12;

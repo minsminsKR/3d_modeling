@@ -286,6 +286,7 @@ namespace HappyToy.V2
             if (!item) throw new InvalidOperationException("Missing original music roster interaction.");
             RequirePosition(item.transform, new Vector3(23.4f, 1.35f, 13.02f));
             var group = Group("Mounted original choir roster", item.transform.position, Quaternion.identity);
+            group.SetParent(item.transform,true);
             Part(group, "Roster wooden border", new Vector3(0, 0, -.043f), new Vector3(.60f, .45f, .012f), wood);
             Part(group, "Roster paper", new Vector3(0, 0, -.052f), new Vector3(.53f, .38f, .006f), paper);
             ScoreLines(group, new Vector3(0, .015f, -.057f), .44f, .23f);
