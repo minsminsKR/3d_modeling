@@ -1,0 +1,133 @@
+{
+  "source_xml": "play-02.xml",
+  "source_sha256": "fb6a36f409e5946b1b2f759039144a3a7bd964291a3c387bd84975ab50450397",
+  "scope": "Local Unity UTF artifact transport integrity; excludes human listening/art certification",
+  "artifacts": [
+    {
+      "file": "school-history-page-1-large-1280x720.png",
+      "sha256": "437f89d9afb8e76e918e6c34869f19060fc6756a13b5249ab1e49a85b67cd3a9",
+      "bytes": 107786,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolHistoryEightReportsPageThroughRealButtonsAndLargeTextAtThreeSizes",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-history-page-1-large-1024x768.png",
+      "sha256": "a6603965d0e43203be4e458349796e7cbcd5d7f689317b9c21e7770ce35a4631",
+      "bytes": 86387,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolHistoryEightReportsPageThroughRealButtonsAndLargeTextAtThreeSizes",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-history-page-1-large-2560x1080.png",
+      "sha256": "dfb45981c86d1fb6c6a94fdd2ce39fc244de2999439d44d5ffe5ab5327012205",
+      "bytes": 190611,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolHistoryEightReportsPageThroughRealButtonsAndLargeTextAtThreeSizes",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-history-page-2-large-1280x720.png",
+      "sha256": "09e3dd6bf88bcd99c5c6fcf735522795a900e78e443be41159c4f27d8e09239c",
+      "bytes": 108618,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolHistoryEightReportsPageThroughRealButtonsAndLargeTextAtThreeSizes",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-history-page-2-large-1024x768.png",
+      "sha256": "b835ebf7e091300b93ff94ab409f35da754368531a1370cab260ea7e4f7c90b8",
+      "bytes": 86862,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolHistoryEightReportsPageThroughRealButtonsAndLargeTextAtThreeSizes",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-history-page-2-large-2560x1080.png",
+      "sha256": "14039271bd6c4ac81d59ccad3122c6a01e8e7fce5bb9cf59b5e6006f6857e6bd",
+      "bytes": 191963,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolHistoryEightReportsPageThroughRealButtonsAndLargeTextAtThreeSizes",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-protected-title-large.png",
+      "sha256": "284f351673a92395beadd715fde362c5662e6ae9833b83a2eebca3832e2c0544",
+      "bytes": 118665,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolProtectedPrimaryTitleExplainsReadOnlyHistoryAndPreservesRawFiles",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-protected-history-large.png",
+      "sha256": "834de526bbc8978b640b4f2630050f5bd2bd13bb1a937aeeb465a05dcfeaa3bd",
+      "bytes": 70355,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolProtectedPrimaryTitleExplainsReadOnlyHistoryAndPreservesRawFiles",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-presentation-entrance.png",
+      "sha256": "ab080a07b385d74b8267d717d0c719223194bb142a635637459caff3d1ef47e7",
+      "bytes": 1062137,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+      "test_result": "Failed"
+    },
+    {
+      "file": "school-result-large-1280x720.png",
+      "sha256": "d1f2e7a5eb8865581891f4eeabe8a70e74ebedbdada12e9cfbbd1d86cda6ab4a",
+      "bytes": 119367,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-result-large-1024x768.png",
+      "sha256": "b3928b041b786f0faf62cb378a5f9df7ef3a775befd78c85183996e923b781fe",
+      "bytes": 95547,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-result-large-2560x1080.png",
+      "sha256": "97ad419b8ac719c75371150a2f63c44fb708f46240a6b61c2a1fd1a324f6f1e9",
+      "bytes": 207581,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-history-large-1280x720.png",
+      "sha256": "c9e2e40230d1ca26699533bbfc7f7c5d81203c2ad424a3c466d05bc1d56d325f",
+      "bytes": 68928,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-history-large-1024x768.png",
+      "sha256": "9adfed70fb80868c9639facae905ff8f6f2249de2669b1e2ec6f8f0da1756275",
+      "bytes": 55484,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-history-large-2560x1080.png",
+      "sha256": "3f1a3cc2c637f66019af76bf5b0f134d85b74b141b59bb6105a0017dd3a13f94",
+      "bytes": 128814,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-result-write-error-1280x720.png",
+      "sha256": "5547d294643be5eeb3cd94f0a428a9dbff575268f7cd80d4d46cdb354112f1da",
+      "bytes": 127163,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultWriteFailureRetriesThroughRealMenuAndTitleShowsSchoolTotals",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-result-write-error-1024x768.png",
+      "sha256": "24409ee2b30f8ca3eb29c4e47e7056533b9f4e143d82efd74748201c74a98390",
+      "bytes": 101601,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultWriteFailureRetriesThroughRealMenuAndTitleShowsSchoolTotals",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-result-write-error-2560x1080.png",
+      "sha256": "5ea37bb1ae551a9e37993a570635dffc2b54e26f35c57fa9928938ed31d50388",
+      "bytes": 220105,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultWriteFailureRetriesThroughRealMenuAndTitleShowsSchoolTotals",
+      "test_result": "Passed"
+    }
+  ]
+}

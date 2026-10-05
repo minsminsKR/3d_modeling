@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -11,7 +12,7 @@ namespace HappyToy.V2
     [DisallowMultipleComponent]
     public sealed class GameShell : MonoBehaviour
     {
-        public enum Page { Title, Playing, Pause, Journal, Settings, Result }
+        public enum Page { Title, Playing, Pause, Journal, Settings, Result, Records }
         public Page Screen { get; private set; } = Page.Title;
         public Font ShellFont => font;
         public float Volume => volume;
@@ -37,7 +38,9 @@ namespace HappyToy.V2
         static bool chapterRestart;
         static string checkpointReloadError;
         string pendingSavedToken;
+        string pendingChapterToken;
         bool requestChapterOnReload;
+        bool requestCorridorOnReload;
         float volume = .8f, sensitivity = .09f, fieldOfView = 72f;
         float noticeTime, captionTime;
         int lastNoticeRevision = -1, captionPriority;
@@ -69,7 +72,8 @@ namespace HappyToy.V2
             var args = Environment.GetCommandLineArgs();
             auditMode = args.Any(a => a.StartsWith("-v2-", StringComparison.Ordinal) && a.EndsWith("-output", StringComparison.Ordinal));
             // Existing standalone audits enter through Begin; the flow audit retains the title.
-            bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output") && !args.Contains("-v2-chapter-output");
+            bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output") && !args.Contains("-v2-chapter-output") &&
+                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output");
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
             { if (playAfterLoad) { if (chapterRestart) BeginChapter(); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
@@ -103,8 +107,12 @@ namespace HappyToy.V2
             if(Screen!=Page.Title || IsReloading) return;
             try
             {
-                if(session.ChapterMode || session.CorridorMode) { requestChapterOnReload=true; Restart(true); return; }
+                if(session.ChapterMode || session.CorridorMode)
+                { requestChapterOnReload=true; requestCorridorOnReload=false; Restart(true); return; }
                 session.CreateChapter();
+                if(session.ChapterSuspension.HasRun && session.ChapterSuspension.Writable &&
+                    !session.ChapterSuspension.Consume(session.ChapterSuspension.Snapshot.token))
+                { ReloadError=session.ChapterSuspension.Status; return; }
                 if(session.ChapterMode) Set(Page.Playing);
             }
             catch(Exception error)
@@ -118,7 +126,8 @@ namespace HappyToy.V2
             if (Screen != Page.Title || IsReloading) return;
             try
             {
-                if(session.CorridorMode) { Restart(true); return; }
+                if(session.CorridorMode || session.ChapterMode)
+                { requestCorridorOnReload=true; requestChapterOnReload=false; Restart(true); return; }
                 session.CreateCorridor(unchecked(Environment.TickCount ^ Guid.NewGuid().GetHashCode()));
                 if(session.Suspension.HasRun && session.Suspension.Writable && !session.Suspension.Consume(session.Suspension.Snapshot.token))
                 { ReloadError=session.Suspension.Status; return; }
@@ -143,6 +152,52 @@ namespace HappyToy.V2
             }
             catch(InvalidOperationException error) { ReloadError=error.Message; }
             catch(ArgumentException) { ReloadError="현재 탐색 상태를 안전하게 저장할 수 없습니다. 탐색을 계속한 뒤 다시 시도하세요."; }
+        }
+        public void SuspendChapter()
+        {
+            if(Screen!=Page.Pause || IsReloading || !session.ChapterMode) return;
+            try
+            {
+                var checkpoint=session.CaptureChapterCheckpoint();
+                if(!session.ChapterSuspension.Save(checkpoint)) { ReloadError=session.ChapterSuspension.Status; return; }
+                pendingChapterToken=checkpoint.token; Restart(false);
+            }
+            catch(InvalidOperationException error) { ReloadError=error.Message; }
+            catch(ArgumentException) { ReloadError="현재 학교 상태를 안전하게 저장할 수 없습니다. 탐색을 계속한 뒤 다시 시도하세요."; }
+        }
+        public void ContinueChapter()
+        {
+            if(Screen!=Page.Title || IsReloading || !session.ChapterSuspension.HasRun || !session.ChapterSuspension.Writable) return;
+            var data=session.ChapterSuspension.Snapshot;
+            StartCoroutine(ContinueChapterAfterNavigation(data));
+        }
+        IEnumerator ContinueChapterAfterNavigation(ChapterCheckpoint data)
+        {
+            IsReloading=true; ApplyScreenState(); Exception failure=null;
+            try
+            {
+                session.CreateChapter(); session.Chapter.PrepareCheckpointNavigation(data);
+            }
+            catch(Exception error) when(error is ArgumentException || error is InvalidOperationException) { failure=error; }
+            if(failure==null)
+            {
+                yield return null; yield return null;
+                try
+                {
+                    session.ApplyChapterCheckpoint(data);
+                    if(!session.ChapterSuspension.Consume(data.token)) throw new InvalidOperationException(session.ChapterSuspension.Status);
+                }
+                catch(Exception error) when(error is ArgumentException || error is InvalidOperationException) { failure=error; }
+            }
+            IsReloading=false;
+            if(failure==null) Set(Page.Pause);
+            else
+            {
+                Debug.LogWarning("HappyToy school restore failed: "+failure.Message,this);
+                ReloadError="학교 탐색을 복원하지 못했습니다. 중단 기록을 보존했습니다.";
+                if(session.ChapterMode) { checkpointReloadError=ReloadError; Restart(false); }
+                else ApplyScreenState();
+            }
         }
         public void ContinueCorridor()
         {
@@ -169,7 +224,9 @@ namespace HappyToy.V2
             // run must consume its checkpoint too, rather than leaving a rewind.
             if(pendingSavedToken!=null && !session.Suspension.Consume(pendingSavedToken) && !session.Suspension.Conflict)
             { ReloadError=session.Suspension.Status; return; }
-            pendingSavedToken=null; Set(Page.Playing);
+            if(pendingChapterToken!=null && !session.ChapterSuspension.Consume(pendingChapterToken) && !session.ChapterSuspension.Conflict)
+            { ReloadError=session.ChapterSuspension.Status; return; }
+            pendingSavedToken=pendingChapterToken=null; Set(Page.Playing);
         }
         public void Journal()
         {
@@ -180,15 +237,20 @@ namespace HappyToy.V2
         public void Settings()
         {
             // Prevent repeated clicks from replacing the return destination with Settings itself.
-            if (Screen == Page.Settings || Screen == Page.Journal) return;
+            if (Screen == Page.Settings || Screen == Page.Journal || Screen==Page.Records) return;
             returnPage = Screen;
             Set(Page.Settings);
         }
         public void Back()
         {
-            if (Screen != Page.Settings && Screen != Page.Journal) return;
+            if (Screen != Page.Settings && Screen != Page.Journal && Screen!=Page.Records) return;
             if (Screen == Page.Settings) SaveSettings();
             Set(returnPage);
+        }
+        public void ChapterHistory()
+        {
+            if(IsReloading || Screen!=Page.Title && Screen!=Page.Result) return;
+            returnPage=Screen; Set(Page.Records);
         }
         public void ShowResult()
         {
@@ -209,8 +271,8 @@ namespace HappyToy.V2
             try
             {
                 SaveSettings();
-                chapterRestart = requestChapterOnReload || session && session.ChapterMode;
-                corridorRestart = !chapterRestart && session && session.CorridorMode;
+                chapterRestart = requestChapterOnReload || !requestCorridorOnReload && session && session.ChapterMode;
+                corridorRestart = requestCorridorOnReload || !chapterRestart && session && session.CorridorMode;
                 if (!restartGate.TryRequest(scene.path, play)) return;
                 IsReloading = true; ReloadError = string.Empty; ApplyScreenState();
                 if (scene.buildIndex >= 0) SceneManager.LoadScene(scene.buildIndex);
@@ -321,7 +383,7 @@ namespace HappyToy.V2
             {
                 if (Screen == Page.Playing) Pause();
                 else if (Screen == Page.Pause) Resume();
-                else if (Screen == Page.Journal || Screen == Page.Settings) Back();
+                else if (Screen == Page.Journal || Screen == Page.Settings || Screen==Page.Records) Back();
             }
             else if (keys != null && keys.jKey.wasPressedThisFrame || pad != null && pad.selectButton.wasPressedThisFrame)
             {

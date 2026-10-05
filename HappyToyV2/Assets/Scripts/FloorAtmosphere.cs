@@ -12,7 +12,8 @@ namespace HappyToy.V2
         AudioSource waterSound;
         AudioLowPassFilter waterFilter;
         GameSession session;
-        bool initialized, waterOccluded;
+        bool initialized, waterOccluded, appliedSchoolFog, corridorSuppressed;
+        bool CorridorOwnsAtmosphere => session && session.CorridorMode;
 
         void Start()
         {
@@ -52,17 +53,35 @@ namespace HappyToy.V2
             for (int i = 0; i < samples.Length; i++)
                 samples[i] *= Mathf.Clamp01(Mathf.Min(i, samples.Length - 1 - i) / (rate * .025f));
             waterClip = AudioClip.Create("Basement irregular drips", samples.Length, 1, rate, false);
-            waterClip.SetData(samples, 0); waterSound.clip = waterClip; waterSound.Play();
+            waterClip.SetData(samples, 0);
+            var recordedWater = ExternalAudio.Owned("ambience-basement");
+            if (recordedWater) { Destroy(waterClip); waterClip = recordedWater; }
+            waterSound.clip = waterClip; waterSound.Play();
         }
         void LateUpdate()
         {
+            // The generated corridor has its own fog and relocated ambience.
+            // Decide ownership before the input/pause gate so entering it from the
+            // title also stops the school water loop without waiting for gameplay.
+            if (CorridorOwnsAtmosphere)
+            {
+                corridorSuppressed = true;
+                if (waterSound) { waterSound.volume = 0; if (waterSound.isPlaying) waterSound.Stop(); }
+                return;
+            }
             if (!session || !session.InputAllowed || !session.player || !session.player.eyes) return;
+            if (corridorSuppressed)
+            {
+                corridorSuppressed = false;
+                if (waterSound) waterSound.Play();
+            }
             var player = session.player;
             float y = player.transform.position.y;
             Color fog = y < -2 ? new Color(.018f, .045f, .045f) : y > 3 ? new Color(.085f, .008f, .012f) : originalFog;
             float blend = 1 - Mathf.Exp(-2 * Time.deltaTime);
             RenderSettings.fogColor = Color.Lerp(RenderSettings.fogColor, fog, blend);
             RenderSettings.fogDensity = Mathf.Lerp(RenderSettings.fogDensity, y < -2 ? .038f : y > 3 ? .032f : originalDensity, blend);
+            appliedSchoolFog = true;
             if (!waterSound) return;
             if (Time.time >= nextTrace)
             {
@@ -79,12 +98,15 @@ namespace HappyToy.V2
             waterFilter.cutoffFrequency = Mathf.MoveTowards(waterFilter.cutoffFrequency, cutoff, Time.deltaTime * 8000);
         }
         void OnDisable() { if (waterSound) waterSound.Stop(); }
-        void OnEnable() { if (initialized && waterSound) waterSound.Play(); }
+        void OnEnable() { if (initialized && waterSound && !CorridorOwnsAtmosphere) waterSound.Play(); }
         void OnDestroy()
         {
             // An old scene's teardown must not overwrite the next scene's RenderSettings.
-            if (initialized && gameObject.scene == SceneManager.GetActiveScene())
+            // Only undo a school fog change we actually applied. Removing this
+            // component during a live corridor cannot restore a competing snapshot.
+            if (initialized && appliedSchoolFog && !CorridorOwnsAtmosphere && gameObject.scene == SceneManager.GetActiveScene())
             { RenderSettings.fogColor = originalFog; RenderSettings.fogDensity = originalDensity; }
+            if (waterSound) { waterSound.Stop(); Destroy(waterSound.gameObject); }
             if (waterClip) Destroy(waterClip);
         }
     }

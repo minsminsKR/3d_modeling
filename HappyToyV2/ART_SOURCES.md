@@ -97,3 +97,28 @@ The user permits external assets. Before adding one, record its exact download/s
 - 정확한 프롬프트는 outputs/Corridor-floor-texture-v1-prompt.txt. 생성 방식은 builtin ImageGen, 투명 배경 없음, CLI/API 사용 없음.
 - 정사영의 평평한 표면, 좁은 평행 목재 판자와 엇갈린 이음·마모, 중립 조명·그림자/문자/로고/원근 없음, 양쪽 반복 경계를 요청했다. 반복 타일 품질은 실제 회랑 렌더에서도 검수해야 한다.
 - Worn wooden floor에서 색 .9, 6m 방당 UV 4회(약 1.5m 타일), roughness 대응 smoothness .12, mipmap·trilinear·anisotropy 8로 사용한다. 충돌·내비게이션·몬스터 모델은 변경하지 않는다.
+
+## Recorded CC0 situational audio — 2026-10-05
+
+`Assets/Resources/Audio/External/` now contains 51 prepared WAV files from five currently used external CC0 packs. `ThirdParty/Audio/manifest.json` is the per-file provenance record: primary source pack/file, creator, public source page, exact download URL, CC0-1.0 designation, resampling/trim/fade/gain, every extra layer and output SHA-256. Source metadata and retained source-page snapshots are in the same directory; the original Kenney Impact and RPG license texts are preserved there.
+
+| Source | Creator | Applied material |
+| --- | --- | --- |
+| [Impact Sounds](https://kenney.nl/assets/impact-sounds) | Kenney | Wood/concrete footsteps, wood/metal/glass contacts, creature movement and attack layers |
+| [50 RPG sound effects](https://opengameart.org/content/50-rpg-sound-effects) | Kenney | Door opening/closing, latch, cloth, creak, book/paper handling and flashlight switch |
+| [The Shop](https://opengameart.org/content/the-shop) | LEGIT Audio | Three spatial ambience beds derived from the two explicitly free CC0 WAV samples |
+| [100 CC0 SFX #2](https://opengameart.org/content/100-cc0-sfx-2) | rubberduck | Three actual `sfx100v2_footstep_wet_01..03.ogg` contacts and a nursery movement layer |
+| [Dripping water loop](https://opengameart.org/content/dripping-water-loop) | Independent.nu, submitted by qubodup | Spatial dripping-water loop |
+
+The source pages and bundled Kenney licenses identify these acquisitions as [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Creator credit is retained voluntarily. Exact download addresses are stored in the manifest and `*-source.json`; they identify the files actually acquired rather than a search result or an unrelated asset with the same name. The 51 derived files have 24 Kenney Impact, 19 Kenney RPG, 3 LEGIT Audio, 4 rubberduck and 1 Independent.nu primary sources; layered entries may use multiple packs. The purchased complete LEGIT Audio library is excluded. Earlier Ogrebane provenance snapshots remain as historical evidence; those two derived beds were replaced and are not in the current catalog.
+
+The preparation converts to mono 24 kHz PCM16 WAV, removes DC mean, trims leading silence and caps duration where appropriate, adds 6ms contact or 35ms drip edge fades, and applies measured gain. The three new room beds use two-pole zero-phase high/low-pass filters and a 0.75-second equal-power loop overlap; their actual derived lengths are 10.69/12.79/10.69 seconds, without invented repeated duration. Individual contact/impact files are limited to about 0.58 absolute peak and 0.13 RMS; ambience files to about 0.42 peak and 0.065 RMS. `ExternalAudioImport` preserves the prepared PCM/sample rate and preloads decompressed audio. These are individual-file limits, not a certification of every possible final mix.
+
+`ExternalAudio.Shared` returns imported Resource assets; `Owned` returns independent instantiated copies for components that destroy their clips on teardown. Actual movement/contact/use/reveal events bind recorded wood, stone, water, door, cloth, metal, paper and appearance cues. Existing synthesis remains the fallback for absent recordings. The quiet sliding rail, player exertion breath, nursery whimper, Cyclopse breath, Lantern rise, Wraith growth and Hwacat jaw remain original synthesis. The six movement/attack identities use prepared recorded contact layers; this does not imply that all creature voices were replaced with recordings.
+
+This entry supersedes the earlier **Spatial ambience synthesis** description for the currently preferred RoomAmbience/FloorAtmosphere samples; their documented original synthesis remains available as fallback. It does not alter the inherited model/art provenance recorded above. No existing commercial game's audio was used for these new acquisitions. `AUDIO_UPGRADE.md` records the cue map, exact fallbacks, current verification scope and remaining listening/pacing/art work.
+## 무작위 회랑 표현과 녹음 교체 — 2026-10-06
+
+`HauntedCorridorPresentation.cs` 및 `CorridorRunPresentation.cs`는 기존 무작위 회랑의 벽·문·기억 제단에 목재 하부판, 종이 격자, 겹친 문틀, 봉인 종이, 팔각 등불을 런타임 메시로 제작한다. 장식은 기존 바닥 텍스처와 한글 폰트를 재사용하고 자체 메시·재질만 소유한다. 새 충돌체나 NavMesh 장애물을 추가하지 않으며, 실제 문짝 크기·이동과 원래 기억의 상호작용 위치를 유지한다. 학교 원본 씬과 캐릭터 원본 파일은 유지한다.
+
+캐비닛 열림·닫힘은 fractilegames의 [Creaky light wooden door](https://opengameart.org/content/creaky-light-wooden-door), CC BY 3.0 원본의 별도 구간이다. 실제 신발 접촉은 OwlishMedia의 [Sound Effects Pack](https://opengameart.org/content/sound-effects-pack), CC0 원본이다. 파일별 변환과 라이선스는 `ThirdParty/Audio/manifest.json`, 재배포 크레딧은 `Audio-Credits.txt`에 보존한다. 현재 61 WAV 중 59개가 CC0이며 2개 캐비닛 파일은 CC BY 3.0이다.

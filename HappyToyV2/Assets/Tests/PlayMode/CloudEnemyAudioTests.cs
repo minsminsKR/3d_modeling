@@ -31,6 +31,8 @@ namespace HappyToy.V2.CloudTests
         {
             public string capture = "UnityAudioRendererMainOutput", wave = "enemy-movement-acoustics.wav";
             public string scope = "Positioned isolated production movement clips; real colliders for wall/slab; natural authored lantern transformation. Separate tests cover actual locomotion and attack events.";
+            public string[] waveParts;
+            public int[] partSampleOffsets;
             public bool syntheticPcm = false, fullRouteEvidence = false, deviceListeningCertification = false;
             public int sampleRate, channels = 2, totalSamples;
             public Vector3 wallCenter, wallSize, slabCenter, slabSize;
@@ -278,13 +280,17 @@ namespace HappyToy.V2.CloudTests
             // Advance the actual mixer, discard old one-shot/filter tails and let
             // production gain/occlusion settle. These samples never stand in for a cue.
             var flush = new List<float>(); yield return CaptureAudio(flush, Mathf.CeilToInt(rate * .7f) * 2, 6);
+            float completeCueSeconds = .45f;
             foreach (var steps in chosen)
             {
                 var source = Get<AudioSource>(steps, "MovementSource"); var clip = Get<AudioClip>(steps, "MovementClip");
-                Assert.That(clip.length, Is.LessThanOrEqualTo(.351f), "The bounded full-cue capture window must be redesigned for longer production clips");
+                Assert.That(clip.length, Is.GreaterThan(0));
+                // Recorded shoe contacts retain their natural heel/sole tail.
+                // Observe each whole cue instead of trimming production for the old synthetic window.
+                completeCueSeconds = Mathf.Max(completeCueSeconds, clip.length + .12f);
                 source.pitch = 1; source.PlayOneShot(clip);
             }
-            var values = new List<float>(); yield return CaptureAudio(values, Mathf.CeilToInt(rate * .45f) * 2, 6);
+            var values = new List<float>(); yield return CaptureAudio(values, Mathf.CeilToInt(rate * completeCueSeconds) * 2, 6);
             var segment = CloudEnemyAudioTests.Measure(label, primary, values, rate, montage.Count, flush.Count, simultaneous != null);
             segment.playbackProfiles = chosen.Select(steps => Get<object>(steps, "Profile").ToString()).ToArray();
             segment.playbackPositions = sources.Select(item => item.transform.position).ToArray();
@@ -396,8 +402,20 @@ namespace HappyToy.V2.CloudTests
                 for (int i = 0; i < stalkers.Length; i++) PositionAudioFixture(stalkers[i], fixture + new Vector3((i - 1.5f) * .6f, 0, 2));
                 yield return CaptureEnemySegment("four-nearby-stalkers", primary, rate, montage, segments, stalkers);
                 Assert.That(segments.Count, Is.EqualTo(17));
-                CloudExperienceTests.Artifact("enemy-movement-acoustics.wav", CloudExperienceTests.Wave(montage, rate, 2));
+                // Keep the bounded artifact transport and retain every sample of
+                // the longer real shoe-contact tails in consecutive PCM parts.
+                var waveParts = new List<string>(); var partOffsets = new List<int>();
+                const int partValues = 700000;
+                for (int offset = 0; offset < montage.Count; offset += partValues)
+                {
+                    string filename = offset == 0 ? "enemy-movement-acoustics.wav" :
+                        "enemy-movement-acoustics-part-" + (waveParts.Count + 1).ToString("000") + ".wav";
+                    waveParts.Add(filename); partOffsets.Add(offset);
+                    CloudExperienceTests.Artifact(filename, CloudExperienceTests.Wave(
+                        montage.GetRange(offset,Math.Min(partValues,montage.Count-offset)),rate,2));
+                }
                 var report = new CloudEnemyAudioTests.Report { sampleRate = rate, totalSamples = montage.Count, segments = segments.ToArray(),
+                    waveParts = waveParts.ToArray(), partSampleOffsets = partOffsets.ToArray(),
                     wallCenter = wall.transform.position, wallSize = wall.transform.localScale, slabCenter = slab.transform.position, slabSize = slab.transform.localScale };
                 CloudExperienceTests.Artifact("enemy-movement-acoustics.json", System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(report, true)));
                 var byName = segments.ToDictionary(segment => segment.name);

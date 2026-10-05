@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="21" result="Passed" total="21" passed="21" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:34:03Z" duration="11.1127065">
+  <test-suite type="TestSuite" id="1000" name="Happy Toy V2 — Development" fullname="Happy Toy V2 — Development" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:34:03Z" duration="11.112707" total="21" passed="21" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1027" name="HappyToy.V2.EditModeTests.dll" fullname="C:/Users/강 두오/Documents/Codex/2026-10-05/d/outputs/HappyToyV2-90a194f2/HappyToyV2/Library/ScriptAssemblies/HappyToy.V2.EditModeTests.dll" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:34:03Z" duration="11.100267" total="21" passed="21" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42832" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1028" name="HappyToy" fullname="HappyToy" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:34:03Z" duration="11.099526" total="21" passed="21" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1029" name="V2" fullname="HappyToy.V2" runstate="Runnable" testcasecount="21" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:34:03Z" duration="11.099196" total="21" passed="21" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1032" name="CloudTests" fullname="HappyToy.V2.CloudTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:53Z" duration="0.335693" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1017" name="ChapterCheckpointStoreTests" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:52Z" duration="0.192395" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1018" name="ChapterRoundTripKeepsSchoolResourcesAndConsumesOnlyOnce" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.ChapterRoundTripKeepsSchoolResourcesAndConsumesOnlyOnce" methodname="ChapterRoundTripKeepsSchoolResourcesAndConsumesOnlyOnce" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="1849054139" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:52Z" duration="0.074160" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1020" name="FailedLockedAndStaleWritesPreserveExistingRun" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.FailedLockedAndStaleWritesPreserveExistingRun" methodname="FailedLockedAndStaleWritesPreserveExistingRun" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="873330127" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:52Z" duration="0.034898" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1019" name="SchoolAndCorridorSchemasRemainSeparateAndInvalidProgressNeverCommits" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.SchoolAndCorridorSchemasRemainSeparateAndInvalidProgressNeverCommits" methodname="SchoolAndCorridorSchemasRemainSeparateAndInvalidProgressNeverCommits" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="361689303" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:52Z" duration="0.008855" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1021" name="UnknownCorruptOversizedAndCorridorFilesArePreserved" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.UnknownCorruptOversizedAndCorridorFilesArePreserved" methodname="UnknownCorruptOversizedAndCorridorFilesArePreserved" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="650947947" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:52Z" duration="0.052684" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1022" name="CorridorCheckpointStoreTests" fullname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests" classname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:53Z" duration="0.136546" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1025" name="LockReadOnlyAndInvalidDataNeverCommitAndRetryWorks" fullname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.LockReadOnlyAndInvalidDataNeverCommitAndRetryWorks" methodname="LockReadOnlyAndInvalidDataNeverCommitAndRetryWorks" classname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests" runstate="Runnable" seed="15091221" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:52Z" duration="0.021253" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1023" name="RoundTripIsImmutableAndConsumeCannotReviveOldBackups" fullname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.RoundTripIsImmutableAndConsumeCannotReviveOldBackups" methodname="RoundTripIsImmutableAndConsumeCannotReviveOldBackups" classname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests" runstate="Runnable" seed="1154012291" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:52Z" duration="0.049719" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1026" name="StaleInstancesCannotOverwriteOrConsumeAnotherRun" fullname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.StaleInstancesCannotOverwriteOrConsumeAnotherRun" methodname="StaleInstancesCannotOverwriteOrConsumeAnotherRun" classname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests" runstate="Runnable" seed="1048805591" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:52Z" duration="0.037793" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1024" name="UnknownCorruptAndOversizedProfilesArePreserved" fullname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.UnknownCorruptAndOversizedProfilesArePreserved" methodname="UnknownCorruptAndOversizedProfilesArePreserved" classname="HappyToy.V2.CloudTests.CorridorCheckpointStoreTests" runstate="Runnable" seed="1236307589" result="Passed" start-time="2026-10-05 12:33:52Z" end-time="2026-10-05 12:33:53Z" duration="0.025514" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+          </test-suite>
+          <test-suite type="TestSuite" id="1030" name="Tests" fullname="HappyToy.V2.Tests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-10-05 12:33:53Z" end-time="2026-10-05 12:34:03Z" duration="10.763108" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1031" name="EditMode" fullname="HappyToy.V2.Tests.EditMode" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-10-05 12:33:53Z" end-time="2026-10-05 12:34:03Z" duration="10.762352" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1001" name="CloudEditModeTests" fullname="HappyToy.V2.Tests.EditMode.CloudEditModeTests" classname="HappyToy.V2.Tests.EditMode.CloudEditModeTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-05 12:33:53Z" end-time="2026-10-05 12:34:02Z" duration="9.961980" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1003" name="ActualEnemyAttackClockPassesAll29Checks" fullname="HappyToy.V2.Tests.EditMode.CloudEditModeTests.ActualEnemyAttackClockPassesAll29Checks" methodname="ActualEnemyAttackClockPassesAll29Checks" classname="HappyToy.V2.Tests.EditMode.CloudEditModeTests" runstate="Runnable" seed="305327065" result="Passed" start-time="2026-10-05 12:33:53Z" end-time="2026-10-05 12:33:53Z" duration="0.003164" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1006" name="ActualSceneRestartGatePassesAll26Checks" fullname="HappyToy.V2.Tests.EditMode.CloudEditModeTests.ActualSceneRestartGatePassesAll26Checks" methodname="ActualSceneRestartGatePassesAll26Checks" classname="HappyToy.V2.Tests.EditMode.CloudEditModeTests" runstate="Runnable" seed="1751094720" result="Passed" start-time="2026-10-05 12:33:53Z" end-time="2026-10-05 12:33:53Z" duration="0.001157" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1005" name="ActualStealthRulesPassAll68Checks" fullname="HappyToy.V2.Tests.EditMode.CloudEditModeTests.ActualStealthRulesPassAll68Checks" methodname="ActualStealthRulesPassAll68Checks" classname="HappyToy.V2.Tests.EditMode.CloudEditModeTests" runstate="Runnable" seed="1313701201" result="Passed" start-time="2026-10-05 12:33:53Z" end-time="2026-10-05 12:33:53Z" duration="0.004358" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1004" name="ActualSurfaceRippleBufferPassesAll20Checks" fullname="HappyToy.V2.Tests.EditMode.CloudEditModeTests.ActualSurfaceRippleBufferPassesAll20Checks" methodname="ActualSurfaceRippleBufferPassesAll20Checks" classname="HappyToy.V2.Tests.EditMode.CloudEditModeTests" runstate="Runnable" seed="1265819477" result="Passed" start-time="2026-10-05 12:33:53Z" end-time="2026-10-05 12:33:53Z" duration="0.001669" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1007" name="ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles" fullname="HappyToy.V2.Tests.EditMode.CloudEditModeTests.ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles" methodname="ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles" classname="HappyToy.V2.Tests.EditMode.CloudEditModeTests" runstate="Runnable" seed="1057882500" result="Passed" start-time="2026-10-05 12:33:53Z" end-time="2026-10-05 12:34:02Z" duration="9.948366" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[HAPPYTOY_QUALITY_VALIDATION_PASS clockAssertions=29 scene=Assets/Annex/SchoolAnnex.unity
+]]></output>
+                </test-case>
+                <test-case id="1002" name="TargetEditorAndGameplayAssemblyIdentitiesArePreserved" fullname="HappyToy.V2.Tests.EditMode.CloudEditModeTests.TargetEditorAndGameplayAssemblyIdentitiesArePreserved" methodname="TargetEditorAndGameplayAssemblyIdentitiesArePreserved" classname="HappyToy.V2.Tests.EditMode.CloudEditModeTests" runstate="Runnable" seed="288155487" result="Passed" start-time="2026-10-05 12:34:02Z" end-time="2026-10-05 12:34:02Z" duration="0.000801" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1008" name="CorridorLayoutTests" fullname="HappyToy.V2.Tests.EditMode.CorridorLayoutTests" classname="HappyToy.V2.Tests.EditMode.CorridorLayoutTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-05 12:34:02Z" end-time="2026-10-05 12:34:03Z" duration="0.646545" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1009" name="FiveHundredSeedsHaveConnectedLoopsSeparatedGoalsAndSafeThreatSpawns" fullname="HappyToy.V2.Tests.EditMode.CorridorLayoutTests.FiveHundredSeedsHaveConnectedLoopsSeparatedGoalsAndSafeThreatSpawns" methodname="FiveHundredSeedsHaveConnectedLoopsSeparatedGoalsAndSafeThreatSpawns" classname="HappyToy.V2.Tests.EditMode.CorridorLayoutTests" runstate="Runnable" seed="304134420" result="Passed" start-time="2026-10-05 12:34:02Z" end-time="2026-10-05 12:34:03Z" duration="0.643785" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1010" name="CorridorRecordsTests" fullname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests" classname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-05 12:34:03Z" end-time="2026-10-05 12:34:03Z" duration="0.153195" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties />
+                <test-case id="1012" name="DamagedPrimaryRecoversBackupAndCanCommitTheNextResult" fullname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests.DamagedPrimaryRecoversBackupAndCanCommitTheNextResult" methodname="DamagedPrimaryRecoversBackupAndCanCommitTheNextResult" classname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests" runstate="Runnable" seed="1876213075" result="Passed" start-time="2026-10-05 12:34:03Z" end-time="2026-10-05 12:34:03Z" duration="0.049440" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1011" name="FinishedRunsKeepFastestEscapeAndHighestRecoveryAcrossRecreation" fullname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests.FinishedRunsKeepFastestEscapeAndHighestRecoveryAcrossRecreation" methodname="FinishedRunsKeepFastestEscapeAndHighestRecoveryAcrossRecreation" classname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests" runstate="Runnable" seed="563287917" result="Passed" start-time="2026-10-05 12:34:03Z" end-time="2026-10-05 12:34:03Z" duration="0.046379" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1013" name="FutureVersionIsPreservedAndInvalidResultsDoNotChangeStorage" fullname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests.FutureVersionIsPreservedAndInvalidResultsDoNotChangeStorage" methodname="FutureVersionIsPreservedAndInvalidResultsDoNotChangeStorage" classname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests" runstate="Runnable" seed="240334093" result="Passed" start-time="2026-10-05 12:34:03Z" end-time="2026-10-05 12:34:03Z" duration="0.010782" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1015" name="IndependentInstancesMergeResultsAndAFileLeasePreventsLostUpdates" fullname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests.IndependentInstancesMergeResultsAndAFileLeasePreventsLostUpdates" methodname="IndependentInstancesMergeResultsAndAFileLeasePreventsLostUpdates" classname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests" runstate="Runnable" seed="1885281960" result="Passed" start-time="2026-10-05 12:34:03Z" end-time="2026-10-05 12:34:03Z" duration="0.024823" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1016" name="OversizedUnknownProfileIsPreservedRatherThanSilentlyReplaced" fullname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests.OversizedUnknownProfileIsPreservedRatherThanSilentlyReplaced" methodname="OversizedUnknownProfileIsPreservedRatherThanSilentlyReplaced" classname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests" runstate="Runnable" seed="245007873" result="Passed" start-time="2026-10-05 12:34:03Z" end-time="2026-10-05 12:34:03Z" duration="0.011737" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1014" name="StorageFailureKeepsInMemoryTotalsAndReturnsRecoverableStatus" fullname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests.StorageFailureKeepsInMemoryTotalsAndReturnsRecoverableStatus" methodname="StorageFailureKeepsInMemoryTotalsAndReturnsRecoverableStatus" classname="HappyToy.V2.Tests.EditMode.CorridorRecordsTests" runstate="Runnable" seed="1489694686" result="Passed" start-time="2026-10-05 12:34:03Z" end-time="2026-10-05 12:34:03Z" duration="0.008233" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/강 두오/AppData/LocalLow/Happy Toy/Happy Toy V2 — Development\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

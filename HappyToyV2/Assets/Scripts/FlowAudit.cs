@@ -10,7 +10,7 @@ using UnityEngine.UIElements;
 
 namespace HappyToy.V2
 {
-    // Opt-in, rendered-player UI integration audit. Does not run in ordinary play.
+    // Opt-in preserved-annex UI audit. Main corridor entry has separate flow evidence.
     public sealed class FlowAudit : MonoBehaviour
     {
         string output;
@@ -29,6 +29,7 @@ namespace HappyToy.V2
         [Serializable]
         class Result
         {
+            public string scope = "Preserved authored annex via explicit Begin(); excludes the new main corridor title entry.";
             public bool titleFrozen, started, journalPaused, journalGated, journalFrozen, resumed,
                 pauseOpened, pauseJournalReturns, pauseSettingsReturns, resultOpened, restartClean,
                 pointerSettings, pointerVolume, pointerSensitivity, pointerFieldOfView, pointerToggles,
@@ -210,12 +211,13 @@ namespace HappyToy.V2
             view.SetCaptureSize(1280, 720); yield return Capture("settings-720p"); result.compactLayout = LayoutFits();
             view.SetCaptureSize(1024, 768); yield return Capture("settings-4x3"); result.compactLayout &= LayoutFits();
             view.SetCaptureSize(1600, 900); yield return null; yield return Click("back");
-            var titleRoot = view.Root; var begin = titleRoot.Q<Button>("begin"); begin.Focus();
-            yield return null; yield return new WaitForEndOfFrame();
-            yield return Key(UnityEngine.InputSystem.Key.Enter); result.started = session.InputAllowed && Time.timeScale == 1;
+            // This downstream audit inspects original annex records and actors.
+            // The title's primary entry now starts the separate seeded corridor.
+            shell.Begin(); yield return null;
+            result.started = session.InputAllowed && Time.timeScale == 1;
             if (!result.started)
             {
-                errors.Add("Enter did not begin play; downstream checks were not run."); yield return Capture("start-input-failed");
+                errors.Add("Explicit preserved annex did not begin; downstream checks were not run."); yield return Capture("start-input-failed");
                 Save(result); RestorePreferences(); Application.Quit(1); yield break;
             }
             var notes = FindObjectsByType<Interactable>(FindObjectsSortMode.None)

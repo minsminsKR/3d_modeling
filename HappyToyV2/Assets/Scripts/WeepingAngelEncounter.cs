@@ -5,7 +5,7 @@ namespace HappyToy.V2
 {
     // V1 mannequin: flashlight-powered, floor-bound pursuit interrupted by visible gaze.
     [RequireComponent(typeof(NavMeshAgent))]
-    public sealed class WeepingAngelEncounter : MonoBehaviour
+    public sealed partial class WeepingAngelEncounter : MonoBehaviour
     {
         public enum IntroStage { WaitingForSight, Tension, PartialTurn, RigidHold, FinishTurn, FinalStill, Complete }
         public float IntroElapsed => intro;

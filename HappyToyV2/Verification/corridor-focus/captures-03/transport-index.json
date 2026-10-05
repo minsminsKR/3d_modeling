@@ -1,0 +1,56 @@
+{
+  "source_xml": "play-03.xml",
+  "source_sha256": "2fc39a694d3657fb0df98b9e9a622a0b5086bf4504fd25267412e1b63fe93d82",
+  "scope": "Local Unity UTF artifact transport integrity; excludes human listening/art certification",
+  "artifacts": [
+    {
+      "file": "haunted-corridor-entrance-natural.png",
+      "sha256": "e9aeac66b1a1d9bad135eadeac5deb435afd8882adfc52d108f59ab842241c4d",
+      "bytes": 705186,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+      "test_result": "Passed"
+    },
+    {
+      "file": "haunted-corridor-timber-paper-close.png",
+      "sha256": "c2ef355f2f0ed09c08fde71334a348f8a19f2f3ef08e9accef0a1a8ab1184c76",
+      "bytes": 723601,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+      "test_result": "Passed"
+    },
+    {
+      "file": "haunted-corridor-layered-passage.png",
+      "sha256": "ff0c24670435163620e0d89df871d9b27356c8f3e2ae965467c81c3c653b79e3",
+      "bytes": 351904,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+      "test_result": "Passed"
+    },
+    {
+      "file": "haunted-corridor-memory-seal.png",
+      "sha256": "ae72c983f36ba1e94b87675ec0067ccea7286555456a16d94f0f6910ad2eeb86",
+      "bytes": 756533,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+      "test_result": "Passed"
+    },
+    {
+      "file": "haunted-corridor-exit-clue.png",
+      "sha256": "6bd7bc350ac4a4276ad53d1d45eeae67595b575950c42d0b8ae39f3936df0862",
+      "bytes": 828238,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+      "test_result": "Passed"
+    },
+    {
+      "file": "haunted-corridor-guard-14m-flashlight.png",
+      "sha256": "5154abd791902a7a36e1330001d0e06604469488922796ff491d66e65115ca3a",
+      "bytes": 353330,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+      "test_result": "Passed"
+    },
+    {
+      "file": "haunted-corridor-presentation.json",
+      "sha256": "f9e2ac72450d6748e5c1a0e6eac39daa2cc1d5089636af5ae8ecb2384eba29a2",
+      "bytes": 3911,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+      "test_result": "Passed"
+    }
+  ]
+}

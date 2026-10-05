@@ -1,0 +1,35 @@
+{
+  "source_xml": "play-03.xml",
+  "source_sha256": "333bfd5dcb9ffa3e893efae7c032469eac5d38edda02135942db7067a30684d1",
+  "scope": "Local Unity UTF artifact transport integrity; excludes human listening/art certification",
+  "artifacts": [
+    {
+      "file": "school-presentation-entrance.png",
+      "sha256": "c3e619ce405a013c58d3322643f7730674f28d6b075f96adc73219c2bdcbff02",
+      "bytes": 1061204,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-presentation-washroom.png",
+      "sha256": "7d5ecaeba086e39ea9ccc432d6e449946e91ff6e1fa647c082d3318176e7e73b",
+      "bytes": 738613,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-presentation-upper.png",
+      "sha256": "88ecd9e77cf4fc9f01dc9acf22a5f6ad8f88385fa88d9bdcfe93f6c7b98a3f02",
+      "bytes": 878578,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-presentation-basement.png",
+      "sha256": "92f2c42132463e8f38bd7cbd2d3dccbab0766854ca116268861d7323692afba3",
+      "bytes": 628933,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+      "test_result": "Passed"
+    }
+  ]
+}

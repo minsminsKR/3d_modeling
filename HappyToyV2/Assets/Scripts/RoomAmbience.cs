@@ -9,7 +9,7 @@ namespace HappyToy.V2
     {
         public sealed class Voice
         {
-            public AudioSource source;public AudioLowPassFilter filter;public float gain;public bool occluded;
+            public AudioSource source;public AudioLowPassFilter filter;public AudioClip ownedClip;public float gain;public bool occluded;
         }
         readonly List<Voice> voices=new List<Voice>();
         public IReadOnlyList<Voice> Voices=>voices;
@@ -25,9 +25,11 @@ namespace HappyToy.V2
         }
         void Start()
         {
-            Add("washroom-drip",new Vector3(-5.7f,1.1f,-5.1f),MakeClip("V1 wet drip adaptation",6,0),.42f);
-            Add("infirmary-wiring",new Vector3(5.7f,2.6f,5.5f),MakeClip("V1 wiring adaptation",4,1),.32f);
-            Add("classroom-draft",new Vector3(-6.4f,1.8f,7.8f),MakeClip("Classroom paper air",6,2),.28f);
+            Add("washroom-drip",new Vector3(-5.7f,1.1f,-5.1f),ExternalAudio.Owned("ambience-ground") ?? MakeClip("V1 wet drip adaptation",6,0),.28f);
+            Add("infirmary-wiring",new Vector3(5.7f,2.6f,5.5f),ExternalAudio.Owned("ambience-upper") ?? MakeClip("V1 wiring adaptation",4,1),.24f);
+            // Water drips belong to FloorAtmosphere's one physical leak. This is a
+            // distinct air/pipe room bed, so the same recording never doubles in B1.
+            Add("classroom-draft",new Vector3(-6.4f,1.8f,7.8f),ExternalAudio.Owned("ambience-basement-bed") ?? MakeClip("Classroom paper air",6,2),.3f);
         }
         void Add(string name,Vector3 position,AudioClip clip,float gain)
         {
@@ -37,7 +39,7 @@ namespace HappyToy.V2
             source.spatialBlend=1;source.rolloffMode=AudioRolloffMode.Linear;source.minDistance=1.2f;source.maxDistance=12;
             source.dopplerLevel=0;source.priority=180;source.volume=0;source.ignoreListenerPause=false;
             var filter=go.AddComponent<AudioLowPassFilter>();filter.cutoffFrequency=6000;
-            voices.Add(new Voice{source=source,filter=filter,gain=gain});source.Play();
+            voices.Add(new Voice{source=source,filter=filter,ownedClip=clip,gain=gain});source.Play();
         }
         static AudioClip MakeClip(string name,int seconds,int kind)
         {
@@ -84,6 +86,9 @@ namespace HappyToy.V2
                 voice.filter.cutoffFrequency=Mathf.MoveTowards(voice.filter.cutoffFrequency,voice.occluded?850:6000,Time.deltaTime*9000);
             }
         }
-        void OnDestroy(){foreach(var voice in voices)if(voice.source&&voice.source.clip)Destroy(voice.source.clip);}
+        void OnDisable(){foreach(var voice in voices)if(voice.source)voice.source.Stop();}
+        void OnEnable(){foreach(var voice in voices)if(voice.source)voice.source.Play();}
+        // Retain ownership independently of a child emitter's lifetime/order of teardown.
+        void OnDestroy(){foreach(var voice in voices)if(voice.ownedClip)Destroy(voice.ownedClip);}
     }
 }

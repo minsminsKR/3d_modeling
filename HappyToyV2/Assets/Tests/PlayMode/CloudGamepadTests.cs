@@ -32,6 +32,7 @@ namespace HappyToy.V2.CloudTests
             AddAuditPad(); yield return null; yield return null;
             yield return Wait(() => Get<VisualElement>(One("GameShellView"), "Root")?.panel != null, 3, "Runtime screen panel missing");
             yield return PadPulse(GamepadButton.DpadDown);
+            yield return PadPulse(GamepadButton.DpadDown);
             var root = Get<VisualElement>(One("GameShellView"), "Root");
             Assert.That(((VisualElement)root.panel.focusController.focusedElement).name, Is.EqualTo("settings"));
             yield return PadState(new GamepadState().WithButton(GamepadButton.South), .65f);
@@ -39,7 +40,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(RecoveryPage, Is.EqualTo("Settings"), "Native gamepad submit did not open focused settings");
             yield return PadPulse(GamepadButton.East); Assert.That(RecoveryPage, Is.EqualTo("Title"));
             yield return PadPulse(GamepadButton.South);
-            Assert.That(Get<bool>(session, "ChapterMode"), Is.True); Assert.That(RecoveryPage, Is.EqualTo("Playing"));
+            Assert.That(Get<bool>(session, "CorridorMode"), Is.True); Assert.That(Get<bool>(session, "ChapterMode"), Is.False);
+            Assert.That(RecoveryPage, Is.EqualTo("Playing"));
             yield return PadPulse(GamepadButton.Start); Assert.That(RecoveryPage, Is.EqualTo("Pause"));
             yield return PadPulse(GamepadButton.South); Assert.That(RecoveryPage, Is.EqualTo("Playing"));
             yield return PadPulse(GamepadButton.Select); Assert.That(RecoveryPage, Is.EqualTo("Journal"));

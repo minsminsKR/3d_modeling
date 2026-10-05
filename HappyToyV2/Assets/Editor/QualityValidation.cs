@@ -69,16 +69,23 @@ namespace HappyToy.V2.Editor
         {
             Validate();
             string before = Hash(ScenePath);
-            Directory.CreateDirectory("Builds/Windows");
-            var report = BuildPipeline.BuildPlayer(new[] { ScenePath }, "Builds/Windows/HappyToyV2.exe",
+            string destination = "Builds/Windows";
+            var args = Environment.GetCommandLineArgs();
+            int outputArg = Array.IndexOf(args, "-v2-build-output");
+            if (outputArg >= 0 && outputArg + 1 < args.Length) destination = Path.GetFullPath(args[outputArg + 1]);
+            Directory.CreateDirectory(destination);
+            var report = BuildPipeline.BuildPlayer(new[] { ScenePath }, Path.Combine(destination, "HappyToyV2.exe"),
                 BuildTarget.StandaloneWindows64, BuildOptions.Development);
             if (Hash(ScenePath) != before) throw new InvalidOperationException("Authored scene changed during build.");
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Quality build failed: " + report.summary.result);
+            // Ship the attribution alongside every playable build, including the
+            // CC BY cabinet recordings. Source metadata remains in the project.
+            File.Copy("ThirdParty/Audio/Audio-Credits.txt", Path.Combine(destination, "Audio-Credits.txt"), true);
             var inputs = new[] { "Assets", "ProjectSettings", "Packages" }
                 .SelectMany(directory => Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
                 .Select(path => path.Replace('\\', '/')).OrderBy(path => path, StringComparer.Ordinal)
                 .Select(path => new FingerprintEntry { path = path, sha256 = Hash(path) }).ToArray();
-            File.WriteAllText("Builds/Windows/quality-build.json", JsonUtility.ToJson(new BuildManifest
+            File.WriteAllText(Path.Combine(destination, "quality-build.json"), JsonUtility.ToJson(new BuildManifest
             {
                 status = "PASS", unityVersion = Application.unityVersion, scene = ScenePath,
                 createdUtc = DateTime.UtcNow.ToString("o"), inputs = inputs

@@ -1,0 +1,96 @@
+{
+    "capture": "UnityAudioRendererMainOutput",
+    "scope": "Actual keyboard/CharacterController contacts on ground wood, washroom stone and basement water; this is not a continuous survival route.",
+    "syntheticPcm": false,
+    "fullRouteEvidence": false,
+    "deviceListeningCertification": false,
+    "segments": [
+        {
+            "name": "actual-school-footstep",
+            "clip": "External step-wood / step-wood-0",
+            "cue": "",
+            "surface": "wood",
+            "collider": "Corridor floor",
+            "samples": 0,
+            "rate": 0,
+            "channels": 2,
+            "offset": 0,
+            "clipped": 0,
+            "emitted": 1,
+            "master": 0.0,
+            "volume": 0.0,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -6.604000568389893,
+                "y": 0.07999999821186066,
+                "z": 0.0
+            },
+            "listener": {
+                "x": -6.597589015960693,
+                "y": 1.6925725936889648,
+                "z": 0.0
+            },
+            "peak": 0.0,
+            "rms": 0.0
+        },
+        {
+            "name": "actual-school-footstep",
+            "clip": "External step-stone / step-stone-1",
+            "cue": "",
+            "surface": "stone",
+            "collider": "WASHROOM floor",
+            "samples": 0,
+            "rate": 0,
+            "channels": 2,
+            "offset": 0,
+            "clipped": 0,
+            "emitted": 1,
+            "master": 0.0,
+            "volume": 0.0,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -3.3040003776550293,
+                "y": 0.07999999821186066,
+                "z": -3.200000047683716
+            },
+            "listener": {
+                "x": -3.3120975494384766,
+                "y": 1.6894282102584839,
+                "z": -3.200000047683716
+            },
+            "peak": 0.0,
+            "rms": 0.0
+        },
+        {
+            "name": "actual-school-footstep",
+            "clip": "External step-wet / step-wet-2",
+            "cue": "",
+            "surface": "wet",
+            "collider": "Floor B1",
+            "samples": 0,
+            "rate": 0,
+            "channels": 2,
+            "offset": 0,
+            "clipped": 0,
+            "emitted": 1,
+            "master": 0.0,
+            "volume": 0.0,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 13.800000190734863,
+                "y": -4.920000076293945,
+                "z": -26.695999145507813
+            },
+            "listener": {
+                "x": 13.807997703552246,
+                "y": -3.3137409687042236,
+                "z": -26.695999145507813
+            },
+            "peak": 0.0,
+            "rms": 0.0
+        }
+    ]
+}

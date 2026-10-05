@@ -5,7 +5,7 @@ using UnityEngine.AI;
 namespace HappyToy.V2
 {
     // An authored room encounter. The actor is visible but harmless during its warning.
-    public sealed class AnnexEncounter : MonoBehaviour
+    public sealed partial class AnnexEncounter : MonoBehaviour
     {
         public StalkerBrain monster;
         public Vector3 roomCenter;

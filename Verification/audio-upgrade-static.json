@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "scope": "Static source and asset checks only",
+  "status": "FAIL",
+  "checks": [
+    {
+      "name": "asset_metadata_and_lfs",
+      "status": "FAIL",
+      "guid_count": 920
+    },
+    {
+      "name": "authored_scene_preserved",
+      "status": "PASS",
+      "files": [
+        "Assets/Annex/SchoolAnnex.unity",
+        "Assets/Annex/SchoolAnnex.unity.meta",
+        "ProjectSettings/EditorBuildSettings.asset"
+      ]
+    },
+    {
+      "name": "scene_script_reference_inventory",
+      "status": "PASS",
+      "component_count": 968,
+      "preexisting_external_guid_count": 4
+    },
+    {
+      "name": "csharp_syntax_tree",
+      "status": "NOT RUN"
+    },
+    {
+      "name": "public_api_names",
+      "status": "NOT RUN"
+    },
+    {
+      "name": "opt_in_audit_manifest",
+      "status": "PASS",
+      "audits": 13
+    }
+  ],
+  "errors": [
+    "Missing metadata: Assets\\Editor\\ExternalAudioImport.cs",
+    "Missing metadata: Assets\\Resources\\Audio",
+    "Missing metadata: Assets\\Resources\\Audio\\External",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\ambience-basement-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\ambience-ground-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\ambience-upper-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\cabinet-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\cabinet-rustle-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\cabinet-rustle-1.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\cabinet-rustle-2.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\cabinet-rustle-3.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\discovery-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\discovery-1.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\discovery-2.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\door-close-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\door-close-1.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\door-close-2.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\door-close-3.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\door-open-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\door-open-1.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\door-seat-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-baby-attack-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-baby-movement-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-cyclopse-attack-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-cyclopse-movement-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-hwacat-attack-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-hwacat-movement-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-lantern-attack-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-lantern-movement-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-uncat-attack-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-uncat-movement-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-wraith-attack-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\enemy-wraith-movement-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\flashlight-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\frame-impact-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\frame-impact-1.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\frame-impact-2.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\frame-strain-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\frame-strain-1.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\frame-strain-2.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-stone-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-stone-1.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-stone-2.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-stone-3.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-stone-4.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-wet-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-wet-1.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-wet-2.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-wood-0.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-wood-1.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-wood-2.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-wood-3.wav",
+    "Missing metadata: Assets\\Resources\\Audio\\External\\step-wood-4.wav",
+    "Missing metadata: Assets\\Scripts\\ChapterActorProgress.cs",
+    "Missing metadata: Assets\\Scripts\\ChapterCheckpoint.cs",
+    "Missing metadata: Assets\\Scripts\\ChapterCheckpointStore.cs",
+    "Missing metadata: Assets\\Scripts\\ChapterRunCheckpoint.cs",
+    "Missing metadata: Assets\\Scripts\\ExternalAudio.cs"
+  ],
+  "warnings": [
+    "Four pre-existing package script GUIDs need Unity's PackageCache/AssetDatabase to resolve; the static inventory does not verify those package types.",
+    "C# syntax/API-name checks were NOT RUN; install Tools/quality/requirements.txt."
+  ],
+  "unity_compilation": "NOT RUN",
+  "unity_runtime_audits": "NOT RUN",
+  "rendered_visual_review": "NOT RUN"
+}

@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 namespace HappyToy.V2
 {
-    public sealed class GameSession : MonoBehaviour
+    public sealed partial class GameSession : MonoBehaviour
     {
         public static GameSession Current { get; private set; }
         public PlayerMotor player;
@@ -20,9 +20,11 @@ namespace HappyToy.V2
             // Complete that idempotent dressing while its authored interaction IDs still exist.
             var presentation=GetComponent<AnnexRoomPresentation>();if(presentation) presentation.Apply();
             Chapter=gameObject.AddComponent<MemoryChapter>(); Chapter.Prepare();
+            BeginChapterMetrics();
         }
         public CorridorRecords Records { get; private set; }
         public CorridorCheckpointStore Suspension { get; private set; }
+        public ChapterCheckpointStore ChapterSuspension { get; private set; }
         public string RecordSaveMessage { get; private set; } = "";
         public bool RecordSaved { get; private set; }
         public bool RetryRecordSave()
@@ -36,8 +38,24 @@ namespace HappyToy.V2
             if (Chapter || Corridor || Finished) throw new System.InvalidOperationException("Record storage must be configured before a run");
             Records = new CorridorRecords(directory, true);
             Suspension = new CorridorCheckpointStore(directory, true);
+            ChapterSuspension = new ChapterCheckpointStore(directory, true);
+            ChapterRecords = new ChapterRecords(directory,true);
         }
         public bool CorridorMode => Corridor && Corridor.Ready;
+        public ChapterCheckpoint CaptureChapterCheckpoint()
+        {
+            if(!ChapterMode) throw new System.InvalidOperationException("No school chapter to suspend");
+            var data=Chapter.CaptureCheckpoint(); data.runProgress=CaptureChapterMetrics(); data.Validate(); return data;
+        }
+        public void ApplyChapterCheckpoint(ChapterCheckpoint checkpoint)
+        {
+            checkpoint.Validate();
+            if(!ChapterMode || Shell.Screen!=GameShell.Page.Title || Finished)
+                throw new System.InvalidOperationException("Prepare a fresh title school before restoring");
+            Chapter.RestoreCheckpoint(checkpoint); ElapsedPlayTime=checkpoint.seconds;
+            RestoreChapterMetrics(checkpoint.runProgress);
+            Notify("학교 탐색을 복원했습니다. 준비되면 계속하세요. "+Chapter.Objective);
+        }
         public CorridorCheckpoint CaptureCheckpoint()
         {
             if(!CorridorMode) throw new System.InvalidOperationException("No corridor to suspend");
@@ -151,7 +169,10 @@ namespace HappyToy.V2
             // They must never add artificial attempts to the player's profile.
             Records = new CorridorRecords(Application.persistentDataPath, !Application.isBatchMode);
             Suspension = new CorridorCheckpointStore(Application.persistentDataPath, !Application.isBatchMode);
+            ChapterSuspension = new ChapterCheckpointStore(Application.persistentDataPath, !Application.isBatchMode);
+            ChapterRecords = new ChapterRecords(Application.persistentDataPath,!Application.isBatchMode);
             Shell=gameObject.AddComponent<GameShell>();gameObject.AddComponent<RoomAmbience>();gameObject.AddComponent<AnnexRoomPresentation>();
+            gameObject.AddComponent<LocalShadowBudget>();
         }
         void Update()
         {
@@ -206,8 +227,10 @@ namespace HappyToy.V2
         public void Finish(bool escaped)
         {
             if (Finished) return;
+            if(ChapterMode) PrepareChapterResult(escaped);
             Finished = true; Escaped = escaped; Time.timeScale = 0;
             if (CorridorMode && Records.PersistenceEnabled) RetryRecordSave();
+            if(ChapterMode && ChapterRecords.PersistenceEnabled) RetryChapterRecordSave();
             Shell.ShowResult();
         }
     }

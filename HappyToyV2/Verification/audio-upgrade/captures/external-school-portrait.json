@@ -1,0 +1,96 @@
+{
+    "capture": "UnityAudioRendererMainOutput",
+    "scope": "Actual fourth-memory public Use and authored portrait drop; imported creak/impact listener output, frozen event clock and result cancellation. Positioned listener, not a survival route.",
+    "syntheticPcm": false,
+    "fullRouteEvidence": false,
+    "deviceListeningCertification": false,
+    "segments": [
+        {
+            "name": "fourth-memory-frame-strain",
+            "clip": "External frame-strain / frame-strain-0",
+            "cue": "frame-strain",
+            "surface": "",
+            "collider": "",
+            "samples": 24000,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 0,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.41999998688697815,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 29.799999237060547,
+                "y": 6.5,
+                "z": 33.560001373291016
+            },
+            "listener": {
+                "x": 31.299999237060547,
+                "y": 6.619999885559082,
+                "z": 32.5
+            },
+            "peak": 0.13771045207977295,
+            "rms": 0.01391733902906053
+        },
+        {
+            "name": "fourth-memory-paused",
+            "clip": "External frame-strain / frame-strain-0",
+            "cue": "frame-strain",
+            "surface": "",
+            "collider": "",
+            "samples": 24000,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 24000,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.41999998688697815,
+            "paused": true,
+            "occluded": false,
+            "source": {
+                "x": 29.799999237060547,
+                "y": 6.5,
+                "z": 33.560001373291016
+            },
+            "listener": {
+                "x": 31.299999237060547,
+                "y": 6.619999885559082,
+                "z": 32.5
+            },
+            "peak": 1.5146129380243427e-28,
+            "rms": 1.0709930793498926e-28
+        },
+        {
+            "name": "fourth-memory-frame-impact",
+            "clip": "External frame-impact / frame-impact-0",
+            "cue": "frame-impact",
+            "surface": "",
+            "collider": "",
+            "samples": 21120,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 48000,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.41999998688697815,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 29.799999237060547,
+                "y": 5.099999904632568,
+                "z": 33.21000289916992
+            },
+            "listener": {
+                "x": 31.299999237060547,
+                "y": 6.619999885559082,
+                "z": 32.5
+            },
+            "peak": 0.03578297793865204,
+            "rms": 0.005141228548862693
+        }
+    ]
+}

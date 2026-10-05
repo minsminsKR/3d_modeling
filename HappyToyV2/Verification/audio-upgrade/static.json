@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "scope": "Static source and asset checks only",
+  "status": "PASS_WITH_SKIPS",
+  "checks": [
+    {
+      "name": "asset_metadata_and_lfs",
+      "status": "PASS",
+      "guid_count": 980
+    },
+    {
+      "name": "authored_scene_preserved",
+      "status": "PASS",
+      "files": [
+        "Assets/Annex/SchoolAnnex.unity",
+        "Assets/Annex/SchoolAnnex.unity.meta",
+        "ProjectSettings/EditorBuildSettings.asset"
+      ]
+    },
+    {
+      "name": "scene_script_reference_inventory",
+      "status": "PASS",
+      "component_count": 968,
+      "preexisting_external_guid_count": 4
+    },
+    {
+      "name": "csharp_syntax_tree",
+      "status": "NOT RUN"
+    },
+    {
+      "name": "public_api_names",
+      "status": "NOT RUN"
+    },
+    {
+      "name": "opt_in_audit_manifest",
+      "status": "PASS",
+      "audits": 13
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "Four pre-existing package script GUIDs need Unity's PackageCache/AssetDatabase to resolve; the static inventory does not verify those package types.",
+    "C# syntax/API-name checks were NOT RUN; install Tools/quality/requirements.txt."
+  ],
+  "unity_compilation": "NOT RUN",
+  "unity_runtime_audits": "NOT RUN",
+  "rendered_visual_review": "NOT RUN"
+}

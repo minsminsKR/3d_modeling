@@ -1,0 +1,7 @@
+Creative Commons Attribution 3.0 Unported
+https://creativecommons.org/licenses/by/3.0/
+Legal code: https://creativecommons.org/licenses/by/3.0/legalcode
+Creaky light wooden door by fractilegames
+Source: https://opengameart.org/content/creaky-light-wooden-door
+Changes: opening/closing excerpts, mono 24 kHz PCM16, filtering, DC removal, edge fades and gain.
+No endorsement is implied. Derived recordings retain CC BY 3.0.

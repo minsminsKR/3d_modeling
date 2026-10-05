@@ -1,0 +1,49 @@
+{
+  "source_xml": "play-02.xml",
+  "source_sha256": "88be2d3338d29f57bd44e3960ca34a75614b90195d7ae3b6949fd7b4ca3280bd",
+  "scope": "Local Unity UTF artifact transport integrity; excludes human listening/art certification",
+  "artifacts": [
+    {
+      "file": "main-corridor-both-slots-large-1280x720.png",
+      "sha256": "f08bcdbcc944473c92a03ce7b4e08e6b0f5a4f1844b2130cf7ee370b34a31093",
+      "bytes": 135374,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.MainCorridorAndSchoolRealEntriesKeepBothSuspendSlotsAndRecordsSeparate",
+      "test_result": "Passed"
+    },
+    {
+      "file": "main-corridor-both-slots-large-1024x768.png",
+      "sha256": "894024680a927af76a92f1504c3c7f0247c8fe8c9985ae470bf98329ad75ecf1",
+      "bytes": 108486,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.MainCorridorAndSchoolRealEntriesKeepBothSuspendSlotsAndRecordsSeparate",
+      "test_result": "Passed"
+    },
+    {
+      "file": "main-corridor-both-slots-large-2560x1080.png",
+      "sha256": "c5fcbfc353727bb9f6452d144f7ee0e517e4f15510ee095ffae4a2febbe93032",
+      "bytes": 234399,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.MainCorridorAndSchoolRealEntriesKeepBothSuspendSlotsAndRecordsSeparate",
+      "test_result": "Passed"
+    },
+    {
+      "file": "enemy-movement-acoustics.wav",
+      "sha256": "fef9506bd94949bdbe4fda000f63e27960fb25def4d79fbbf8aee971f04f2532",
+      "bytes": 1400044,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.RealEnemyMixProvesIdentitySpatialAttenuationAndControls",
+      "test_result": "Passed"
+    },
+    {
+      "file": "enemy-movement-acoustics-part-002.wav",
+      "sha256": "c1e190cbba521ef737356f248e966a6f3351097cb979ba493c6069da3aa0e540",
+      "bytes": 492948,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.RealEnemyMixProvesIdentitySpatialAttenuationAndControls",
+      "test_result": "Passed"
+    },
+    {
+      "file": "enemy-movement-acoustics.json",
+      "sha256": "6744a872f6a319bd6bbe7d6c606fd8703d64483fe29edc60eb83b4332ef64e97",
+      "bytes": 36742,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.RealEnemyMixProvesIdentitySpatialAttenuationAndControls",
+      "test_result": "Passed"
+    }
+  ]
+}

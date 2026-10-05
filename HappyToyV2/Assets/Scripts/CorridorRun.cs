@@ -181,6 +181,7 @@ namespace HappyToy.V2
             var ambience = session.GetComponent<RoomAmbience>();
             if (ambience) ambience.ConfigureRunPositions(new[] { CellPosition(Layout.Supplies[0]) + Vector3.up,
                 CellPosition(Layout.Supplies[3]) + Vector3.up * 2.5f, CellPosition(Layout.Supplies[6]) + Vector3.up * 1.5f });
+            ApplyCorridorPresentation();
             CombineArchitecture();
             Physics.SyncTransforms(); Ready = true;
             session.Notify("다섯 기억을 회수하고 입구로 돌아오세요. 폭죽은 회랑에서 보충할 수 있습니다.");
@@ -221,7 +222,7 @@ namespace HappyToy.V2
             foreach (var filter in world.GetComponentsInChildren<MeshFilter>())
             {
                 var renderer = filter.GetComponent<MeshRenderer>();
-                if (!renderer || !materials.Contains(renderer.sharedMaterial) || filter.GetComponentInParent<Interactable>()) continue;
+                if (!renderer || !renderer.enabled || !materials.Contains(renderer.sharedMaterial) || filter.GetComponentInParent<Interactable>()) continue;
                 Vector3 local = filter.transform.position - Origin;
                 // One-room batches keep URP's finite per-object light selection local.
                 string key = materials.IndexOf(renderer.sharedMaterial) + ":" + Mathf.FloorToInt((local.x + 3) / 6) + ":" + Mathf.FloorToInt((local.z + 3) / 6);

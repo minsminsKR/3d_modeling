@@ -216,6 +216,7 @@ namespace HappyToy.V2
                 eyes.transform.localPosition = HiddenCameraLocalPosition;
             }
             if (flashlight) flashlight.enabled = false;
+            GameSession.Current.NoteChapterAction(ChapterAction.HidingEntered);
             Feedback.PlayHide(true);
         }
         public void LeaveHiding()

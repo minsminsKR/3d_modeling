@@ -24,13 +24,14 @@ namespace HappyToy.V2
         public int TraceCount { get; private set; }
         public int BoundSourceCount => voices.Count;
 
-        public static EnemyAcoustics Bind(AudioSource source, Transform actorRoot, float baseGain)
+        public static EnemyAcoustics Bind(AudioSource source, Transform actorRoot, float baseGain, float sourceHeight = -1)
         {
             var acoustics = source.GetComponent<EnemyAcoustics>();
             if (!acoustics) acoustics = source.gameObject.AddComponent<EnemyAcoustics>();
             acoustics.actor = actorRoot ? actorRoot : source.transform;
             var agent = acoustics.actor.GetComponent<NavMeshAgent>();
             acoustics.height = agent ? Mathf.Clamp(agent.height * .5f, .4f, 1.3f) : .8f;
+            if (sourceHeight >= 0 && StealthRules.Finite(sourceHeight)) acoustics.height = Mathf.Clamp(sourceHeight, 0, 2);
             if (!acoustics.filter)
             {
                 acoustics.filter = source.GetComponent<AudioLowPassFilter>();
@@ -51,7 +52,9 @@ namespace HappyToy.V2
         {
             TraceCount++; Occluded = FloorOccluded = false;
             if (!actor || !player || !player.eyes) return;
-            Vector3 origin = actor.position + Vector3.up * height;
+            // The owner excludes self geometry; the real voice supplies the ray origin.
+            // Sliding doors and displaced reveal emitters must not trace from an old root.
+            Vector3 origin = transform.position + Vector3.up * height;
             Vector3 delta = player.eyes.transform.position - origin;
             float length = delta.magnitude;
             if (length > .02f)

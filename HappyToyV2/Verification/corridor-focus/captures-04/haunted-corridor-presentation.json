@@ -1,0 +1,133 @@
+{
+    "scope": "Controlled art views of the actual seeded runtime corridor using the production player camera. Doors are opened and threats isolated for review; the 14m visibility view repositions one unchanged authored monster with its behaviour disabled. Separate seed73/211 input runs certify survival.",
+    "seed": 73,
+    "wallFaces": 518,
+    "layeredPassages": 97,
+    "shrines": 5,
+    "lanterns": 25,
+    "visualBatches": 453,
+    "physicalColliders": 921,
+    "obstacles": 8,
+    "geometryChangedPixels": 348083,
+    "clueChangedPixels": 2435,
+    "visibleGuardPixels": 2045,
+    "fogDensity": 0.017999999225139618,
+    "contrastRetentionAt18m": 0.9003461599349976,
+    "guardDistance": 14.0,
+    "views": [
+        {
+            "image": "haunted-corridor-entrance-natural.png",
+            "feet": {
+                "x": 200.0,
+                "y": 0.029999999329447746,
+                "z": 200.0
+            },
+            "camera": {
+                "x": 200.0,
+                "y": 1.6299999952316284,
+                "z": 200.0
+            },
+            "target": {
+                "x": 200.0,
+                "y": 1.6299999952316284,
+                "z": 206.0
+            },
+            "flashlight": false
+        },
+        {
+            "image": "haunted-corridor-timber-paper-close.png",
+            "feet": {
+                "x": 200.0,
+                "y": 0.029999999329447746,
+                "z": 198.60000610351563
+            },
+            "camera": {
+                "x": 200.0,
+                "y": 1.6299999952316284,
+                "z": 198.60000610351563
+            },
+            "target": {
+                "x": 200.0,
+                "y": 2.0299999713897705,
+                "z": 202.6999969482422
+            },
+            "flashlight": true
+        },
+        {
+            "image": "haunted-corridor-layered-passage.png",
+            "feet": {
+                "x": 206.0,
+                "y": 0.029999999329447746,
+                "z": 198.0
+            },
+            "camera": {
+                "x": 206.0,
+                "y": 1.6299999952316284,
+                "z": 198.0
+            },
+            "target": {
+                "x": 206.0,
+                "y": 1.6299999952316284,
+                "z": 214.0
+            },
+            "flashlight": true
+        },
+        {
+            "image": "haunted-corridor-memory-seal.png",
+            "feet": {
+                "x": 224.0,
+                "y": 0.029999999329447746,
+                "z": 240.0
+            },
+            "camera": {
+                "x": 224.0,
+                "y": 1.6299999952316284,
+                "z": 240.0
+            },
+            "target": {
+                "x": 224.0,
+                "y": 1.4299999475479126,
+                "z": 242.0
+            },
+            "flashlight": true
+        },
+        {
+            "image": "haunted-corridor-exit-clue.png",
+            "feet": {
+                "x": 199.10000610351563,
+                "y": 0.029999999329447746,
+                "z": 200.0
+            },
+            "camera": {
+                "x": 199.10000610351563,
+                "y": 1.6299999952316284,
+                "z": 200.0
+            },
+            "target": {
+                "x": 197.36500549316406,
+                "y": 1.3300000429153442,
+                "z": 200.0
+            },
+            "flashlight": true
+        },
+        {
+            "image": "haunted-corridor-guard-14m-flashlight.png",
+            "feet": {
+                "x": 206.0,
+                "y": 0.029999999329447746,
+                "z": 198.0
+            },
+            "camera": {
+                "x": 206.0,
+                "y": 1.6299999952316284,
+                "z": 198.0
+            },
+            "target": {
+                "x": 206.0,
+                "y": 1.6100000143051147,
+                "z": 212.0
+            },
+            "flashlight": true
+        }
+    ]
+}

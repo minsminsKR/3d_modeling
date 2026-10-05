@@ -5,7 +5,7 @@ using UnityEngine.AI;
 namespace HappyToy.V2
 {
     // The authored upstairs portrait leads the reveal; the player keeps camera and movement control.
-    public sealed class V1HwacatEvent : MonoBehaviour
+    public sealed partial class V1HwacatEvent : MonoBehaviour
     {
         public Transform painting;
         public GameObject normal;

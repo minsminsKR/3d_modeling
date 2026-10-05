@@ -1,0 +1,17 @@
+{
+    "status": "PASS",
+    "unity": "6000.6.0f1",
+    "graphics": "Direct3D11",
+    "device": "NVIDIA GeForce RTX 2060 SUPER",
+    "chapter": true,
+    "grounded": true,
+    "navigation": true,
+    "wallTexture": true,
+    "floorTexture": true,
+    "memories": 0,
+    "activeStalkers": 0,
+    "movementUpdates": 256,
+    "unsupportedMaterials": 0,
+    "seconds": 5.127908229827881,
+    "errors": []
+}

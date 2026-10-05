@@ -1,0 +1,70 @@
+{
+  "source_xml": "play-02.xml",
+  "source_sha256": "31ad406dcc745e52d84a40b1dd6413d008b04f86ce05e610efe5bb1efcb0c896",
+  "scope": "Local Unity UTF artifact transport integrity; excludes human listening/art certification",
+  "artifacts": [
+    {
+      "file": "external-school-ambience.wav",
+      "sha256": "c33ed585a0ab078be78e28aac6c846e778b1d7e1e1fe84ee6b5b7dfbaa4c5172",
+      "bytes": 729648,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalChapterRoomLoopsAreAudibleAndOccludedAcrossTheAuthoredFloor",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-ambience.json",
+      "sha256": "fe231506179f056812fabc20c8c5fca0685c91d256d9a26d8f1c26e7580de4bc",
+      "bytes": 5833,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalChapterRoomLoopsAreAudibleAndOccludedAcrossTheAuthoredFloor",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-materials.json",
+      "sha256": "0d5e6814572e406d555ebf97205e337f74e4d742c9c8309f1e579288f6b3d196",
+      "bytes": 2872,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalFootstepsFollowRealSchoolMaterialsAndFlashlightKeyboardInput",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-portrait.wav",
+      "sha256": "c5f9eb3b24ae5eb4de20b6dd283653b68611055937fb847b748f7af2cd55459c",
+      "bytes": 138284,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalPortraitCreakAndImpactFollowTheActualFourthMemoryEvent",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-portrait.json",
+      "sha256": "bd2cacd13fb9121e49edb8f27c599f10dce29ead54d884c2ddefb9ffcfbc4c48",
+      "bytes": 3104,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalPortraitCreakAndImpactFollowTheActualFourthMemoryEvent",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-door.wav",
+      "sha256": "a72b161d3cc0ad5d926ac5ffc4efdc6e951bd57a4ad72e3a90c3f8b38a638315",
+      "bytes": 374444,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalSchoolDoorMixFollowsLeafPauseDistanceMasterVolumeAndRetry",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-door.json",
+      "sha256": "309b7d98e2082807de15bbafe89b4988e32e3c7c81941ebf5b53d63de563d27e",
+      "bytes": 6592,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalSchoolDoorMixFollowsLeafPauseDistanceMasterVolumeAndRetry",
+      "test_result": "Passed"
+    },
+    {
+      "file": "enemy-movement-acoustics.wav",
+      "sha256": "885092866b25a104094d971c8a17b75a26f8931045a0ab30420000ee1990cbf5",
+      "bytes": 1393964,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.RealEnemyMixProvesIdentitySpatialAttenuationAndControls",
+      "test_result": "Passed"
+    },
+    {
+      "file": "enemy-movement-acoustics.json",
+      "sha256": "3c0ea32140a56e39727d8a00c6f0a7ec8c88558076ed12cb1b087c1d4a65bb36",
+      "bytes": 36538,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.RealEnemyMixProvesIdentitySpatialAttenuationAndControls",
+      "test_result": "Passed"
+    }
+  ]
+}

@@ -1,0 +1,367 @@
+{
+  "result": "PASS",
+  "wave_count": 51,
+  "total_bytes": 3507268,
+  "scene_sha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "issues": [],
+  "files": [
+    {
+      "file": "step-wood-0.wav",
+      "seconds": 0.271375,
+      "rms": 0.06863345318022876,
+      "peak": 0.579986572265625,
+      "sha256": "48eadafee8f0e6cdfe4535097a2667bc1e2ed4dbf554ab3eed8513901622e49d"
+    },
+    {
+      "file": "step-wood-1.wav",
+      "seconds": 0.24866666666666667,
+      "rms": 0.0709487597998269,
+      "peak": 0.579986572265625,
+      "sha256": "1e6f209fc94b259c434910e46382d76c97a2b6f322a7bca106778d95d86e323f"
+    },
+    {
+      "file": "step-wood-2.wav",
+      "seconds": 0.2485,
+      "rms": 0.07471883416152884,
+      "peak": 0.579986572265625,
+      "sha256": "a75b0b41dfd3415ee29ff9a1a6f6cc4bb374a9d68fc742919f8a9580eba66e1b"
+    },
+    {
+      "file": "step-wood-3.wav",
+      "seconds": 0.248625,
+      "rms": 0.0655447464880247,
+      "peak": 0.579986572265625,
+      "sha256": "57546564240c49c46f98ea068e7cd32716fd4fb9054d63780a47f2ada02aa26a"
+    },
+    {
+      "file": "step-wood-4.wav",
+      "seconds": 0.245,
+      "rms": 0.07597338158254807,
+      "peak": 0.579986572265625,
+      "sha256": "2963d838c90ba4f94705e6a45fa57825b4a114fe92de688617857a6609dd140c"
+    },
+    {
+      "file": "step-stone-0.wav",
+      "seconds": 0.10304166666666667,
+      "rms": 0.10794409570740138,
+      "peak": 0.579986572265625,
+      "sha256": "b5cb716e8ad7380a9ae1d80b8db0239b39e792f43aea43018510165079e49c2c"
+    },
+    {
+      "file": "step-stone-1.wav",
+      "seconds": 0.10475,
+      "rms": 0.10180671592275828,
+      "peak": 0.579986572265625,
+      "sha256": "62d8b451e2d913ac6b346115ecf095da3b594cb51ea807d6e198afce5d95f8d8"
+    },
+    {
+      "file": "step-stone-2.wav",
+      "seconds": 0.109875,
+      "rms": 0.09593963763704041,
+      "peak": 0.579986572265625,
+      "sha256": "4c4d7fdaa03f0cfb5b153fc521ee8506062c937c1af33d7ef3f61cd4b6e849fb"
+    },
+    {
+      "file": "step-stone-3.wav",
+      "seconds": 0.10758333333333334,
+      "rms": 0.09556965019623541,
+      "peak": 0.579986572265625,
+      "sha256": "9a2389c32a74996c0e8eb4c1fe13f79331590215a6d8d1dce1c0eb314bb1211d"
+    },
+    {
+      "file": "step-stone-4.wav",
+      "seconds": 0.11145833333333334,
+      "rms": 0.1016481605271106,
+      "peak": 0.579986572265625,
+      "sha256": "ec4040851d6081ececd283c56f06a6e9059aadccee9d4e28c844c02553805fe5"
+    },
+    {
+      "file": "step-wet-0.wav",
+      "seconds": 0.28029166666666666,
+      "rms": 0.048501715817763656,
+      "peak": 0.579986572265625,
+      "sha256": "0db503c2d93eb64d81ae9ead4fbf76d34bef7bde23648f6a684d1b275b319c20"
+    },
+    {
+      "file": "step-wet-1.wav",
+      "seconds": 0.34,
+      "rms": 0.06163943504910478,
+      "peak": 0.579986572265625,
+      "sha256": "18e7fe5f0963bc8af6b14986d14bee8023ad0bfcdd29bc856b1493d22f59e958"
+    },
+    {
+      "file": "step-wet-2.wav",
+      "seconds": 0.34,
+      "rms": 0.05081925063744644,
+      "peak": 0.579986572265625,
+      "sha256": "a229358f3e78e543bb64f129c71cb91f2557d4e709c711f93ffee2c76e2145be"
+    },
+    {
+      "file": "door-open-0.wav",
+      "seconds": 0.9189583333333333,
+      "rms": 0.046526085887303836,
+      "peak": 0.579986572265625,
+      "sha256": "3c60ac1d9b8708069cdc71a4c62dbd123457a2da237222cceb43927d663a69b5"
+    },
+    {
+      "file": "door-open-1.wav",
+      "seconds": 1.4133333333333333,
+      "rms": 0.037142786295340464,
+      "peak": 0.579986572265625,
+      "sha256": "3dbcd6eac1b78f8b61115d317a3417578eea37896e51a632fc4800ad1c5e0c2b"
+    },
+    {
+      "file": "door-close-0.wav",
+      "seconds": 0.6750416666666667,
+      "rms": 0.0632793251815848,
+      "peak": 0.579986572265625,
+      "sha256": "45a2c5f349a18f00209665dc6459a182def8e51400af34c476309c8dba10640a"
+    },
+    {
+      "file": "door-close-1.wav",
+      "seconds": 0.6125,
+      "rms": 0.08082715774004902,
+      "peak": 0.579986572265625,
+      "sha256": "9010a85fc4c2860fae543c54582e1591de8e50aaf7d59816f518cc62ede2ef55"
+    },
+    {
+      "file": "door-close-2.wav",
+      "seconds": 0.7139583333333334,
+      "rms": 0.1048506752550924,
+      "peak": 0.579986572265625,
+      "sha256": "42f5398de4e9a5d4f1bde9e709d8b9b629453fd862508cf3d3731f2bddeef143"
+    },
+    {
+      "file": "door-close-3.wav",
+      "seconds": 0.603375,
+      "rms": 0.06701128414635737,
+      "peak": 0.579986572265625,
+      "sha256": "680ad58187e4960bb3a01d4b8ec0b45eeea44a102a1f5232b966a0d21c204c84"
+    },
+    {
+      "file": "cabinet-rustle-0.wav",
+      "seconds": 0.6367083333333333,
+      "rms": 0.04429989918777809,
+      "peak": 0.579986572265625,
+      "sha256": "d0a5f1dd2f71b2658584c8926982aa42c3fa48241cf9aa34721ae9b17099c9b8"
+    },
+    {
+      "file": "cabinet-rustle-1.wav",
+      "seconds": 0.38345833333333335,
+      "rms": 0.06719220396477411,
+      "peak": 0.579986572265625,
+      "sha256": "8dc26760e5f23e1e1b738a4f5126a5def9d06d8cc3f1abb2b94db0b31261d65e"
+    },
+    {
+      "file": "cabinet-rustle-2.wav",
+      "seconds": 0.47658333333333336,
+      "rms": 0.06518593971214129,
+      "peak": 0.579986572265625,
+      "sha256": "e23b6f18b9ecaa0e13e370168544afc408550dd6a834a026263db4dc2269ca4e"
+    },
+    {
+      "file": "cabinet-rustle-3.wav",
+      "seconds": 0.38433333333333336,
+      "rms": 0.05390295984970534,
+      "peak": 0.579986572265625,
+      "sha256": "16f3afdf0c89904efb478a6ff393b36037b7c41599fe14dc15f78affda12bffc"
+    },
+    {
+      "file": "frame-strain-0.wav",
+      "seconds": 0.6072083333333333,
+      "rms": 0.08154060888652427,
+      "peak": 0.579986572265625,
+      "sha256": "991516d23e3d43c4618eb490ec69f6ba65b475d35b235d0efa54111e8b317944"
+    },
+    {
+      "file": "frame-impact-0.wav",
+      "seconds": 0.310125,
+      "rms": 0.07369046753259158,
+      "peak": 0.579986572265625,
+      "sha256": "380f80d70d0a936fc4cf739bcef12e94c1faabb6ee0db0c68877c01282b71fd7"
+    },
+    {
+      "file": "discovery-0.wav",
+      "seconds": 0.7055833333333333,
+      "rms": 0.018543795624252988,
+      "peak": 0.579986572265625,
+      "sha256": "11b4cdfd5156a6c344d6f07da8407fab6c388281d2ae4ebceb658630f3b8b789"
+    },
+    {
+      "file": "frame-strain-1.wav",
+      "seconds": 0.8301666666666667,
+      "rms": 0.07464451249573026,
+      "peak": 0.579986572265625,
+      "sha256": "6d9dc6fc36979649265e091e7c1daa9d6b6c5cd0dc81ccb625f4b6edd919c385"
+    },
+    {
+      "file": "frame-impact-1.wav",
+      "seconds": 0.310125,
+      "rms": 0.07373746520834976,
+      "peak": 0.579986572265625,
+      "sha256": "a223b84f1889ca739b3885960dbc44bf6d43b3350cfda13858e7f2b31acd2d95"
+    },
+    {
+      "file": "discovery-1.wav",
+      "seconds": 0.43045833333333333,
+      "rms": 0.023694908865088224,
+      "peak": 0.579986572265625,
+      "sha256": "8f51e71e8e20fb71207eaf6a8d82591479e758afe466166acf1fdd349c05eade"
+    },
+    {
+      "file": "frame-strain-2.wav",
+      "seconds": 0.33820833333333333,
+      "rms": 0.11614143727651986,
+      "peak": 0.579986572265625,
+      "sha256": "cf211f71a105ba68b133b0d9df14b22e2a15b91670f444b313b4a52a986b72ba"
+    },
+    {
+      "file": "frame-impact-2.wav",
+      "seconds": 0.310125,
+      "rms": 0.07028049476039067,
+      "peak": 0.579986572265625,
+      "sha256": "8ac679ff34bf92c05cec80ae70198b4a45543deacac15619ce0cc2b0341a27b9"
+    },
+    {
+      "file": "discovery-2.wav",
+      "seconds": 0.230625,
+      "rms": 0.026394555070601258,
+      "peak": 0.579986572265625,
+      "sha256": "11ecbdb604d1b3b7aad71d812e701ce66b547337e6fdaf75b5adb8777cdee05a"
+    },
+    {
+      "file": "flashlight-0.wav",
+      "seconds": 0.15,
+      "rms": 0.03439844147166331,
+      "peak": 0.579986572265625,
+      "sha256": "74af5c5fde8c379debd55fe2317acc19af480c7ca2888016e5e2901af82e23fc"
+    },
+    {
+      "file": "door-seat-0.wav",
+      "seconds": 0.2613333333333333,
+      "rms": 0.045756186833014294,
+      "peak": 0.579986572265625,
+      "sha256": "ca34dbde88e1eba6f6a29f283c34893902b3d949778a430f8d46fdfd69879b1e"
+    },
+    {
+      "file": "cabinet-0.wav",
+      "seconds": 0.16475,
+      "rms": 0.07745131245128602,
+      "peak": 0.579986572265625,
+      "sha256": "d6653ab7bd7f96d4df169d06b6ca663fefce220ae4699cdc76e29426e9bda4af"
+    },
+    {
+      "file": "ambience-basement-0.wav",
+      "seconds": 20.063125,
+      "rms": 0.008804322681214534,
+      "peak": 0.41998291015625,
+      "sha256": "7afe4180619e7f2ed0f3d27ae49f1f81d2711134e1f4569c5d7280271070fd72"
+    },
+    {
+      "file": "enemy-cyclopse-movement-0.wav",
+      "seconds": 0.310125,
+      "rms": 0.07398301779282437,
+      "peak": 0.579986572265625,
+      "sha256": "0fe49b7f37480ebabcfa0130f68b096c0669ab2cb6a0bce021f2129b9414b390"
+    },
+    {
+      "file": "enemy-cyclopse-attack-0.wav",
+      "seconds": 0.46,
+      "rms": 0.0925514525006897,
+      "peak": 0.579986572265625,
+      "sha256": "537e4383df3b0fa18df863def823cba7183ff1a79a146a41e967180fe7afa08f"
+    },
+    {
+      "file": "enemy-hwacat-movement-0.wav",
+      "seconds": 0.23075,
+      "rms": 0.06167056319577115,
+      "peak": 0.579986572265625,
+      "sha256": "a2dc43f0f63fa734ec1c094064b66eb413de70d9428154a87ccb52c3b0cf830b"
+    },
+    {
+      "file": "enemy-hwacat-attack-0.wav",
+      "seconds": 0.46,
+      "rms": 0.0785589958667081,
+      "peak": 0.579986572265625,
+      "sha256": "be3a7fbaa5f595a34414482f2e33524268c25385d2d4213c00f84e081e540d21"
+    },
+    {
+      "file": "enemy-uncat-movement-0.wav",
+      "seconds": 0.245,
+      "rms": 0.07915699778896197,
+      "peak": 0.579986572265625,
+      "sha256": "42fad1f7569cf2839e096174dd389393c5f0be1801d2a07edf1ee8590a86940e"
+    },
+    {
+      "file": "enemy-uncat-attack-0.wav",
+      "seconds": 0.46,
+      "rms": 0.09326197144730075,
+      "peak": 0.579986572265625,
+      "sha256": "fa7a3b669a3beeabf35d9198fa695b1f075dd66b02c2883b9e26705798814ca6"
+    },
+    {
+      "file": "enemy-baby-movement-0.wav",
+      "seconds": 0.34,
+      "rms": 0.08546096544106428,
+      "peak": 0.579986572265625,
+      "sha256": "46efaf56b06e97daee8377cace4471a9830f3fc40f9fe4a146e122ffb3915e6d"
+    },
+    {
+      "file": "enemy-baby-attack-0.wav",
+      "seconds": 0.46,
+      "rms": 0.09373662962037249,
+      "peak": 0.579986572265625,
+      "sha256": "63ef2965423dd20667077e4bb70e79bec21bf97de9a9e276a0e4acbc909b41b6"
+    },
+    {
+      "file": "enemy-lantern-movement-0.wav",
+      "seconds": 0.34,
+      "rms": 0.06495586782241025,
+      "peak": 0.579986572265625,
+      "sha256": "dd5bc998b525e13d9d486ceb4880f60b7ae2cd22f78164bd2d96d0724d645a1d"
+    },
+    {
+      "file": "enemy-lantern-attack-0.wav",
+      "seconds": 0.46,
+      "rms": 0.06283789043297673,
+      "peak": 0.579986572265625,
+      "sha256": "ede3a88672d2991b53d644c1763788013c2f44d623bad86b69cd7d65efb83ed4"
+    },
+    {
+      "file": "enemy-wraith-movement-0.wav",
+      "seconds": 0.34,
+      "rms": 0.0670107607833965,
+      "peak": 0.579986572265625,
+      "sha256": "197c6123acaba9963937604bdf79293d47ebba2f49aa9367cf92ab9ab0c99c69"
+    },
+    {
+      "file": "enemy-wraith-attack-0.wav",
+      "seconds": 0.46,
+      "rms": 0.09390030958560905,
+      "peak": 0.579986572265625,
+      "sha256": "d7a99c52c8ea90e5740d68050c97d10d3a389d9c40f7068f9978d33e7ea0fbb0"
+    },
+    {
+      "file": "ambience-ground-0.wav",
+      "seconds": 10.687291666666667,
+      "rms": 0.039998770020660115,
+      "peak": 0.150146484375,
+      "sha256": "5b3c1e8e1efec3119e695831d260ab99ed0513abff925d02454ce478b43c87bf"
+    },
+    {
+      "file": "ambience-upper-0.wav",
+      "seconds": 12.791625,
+      "rms": 0.03799884909936204,
+      "peak": 0.192962646484375,
+      "sha256": "9716ece71005aefbbeecaeb5c79eb6080920c1e6618a02857650797bfb69e565"
+    },
+    {
+      "file": "ambience-basement-bed-0.wav",
+      "seconds": 10.687291666666667,
+      "rms": 0.034998927748711245,
+      "peak": 0.125030517578125,
+      "sha256": "9fd8374e9a57af015e22ab93f38aeaf9565935e774752e6f3720cc7538162b29"
+    }
+  ],
+  "scope": "Current on-disk PCM format and exact manifest hashes; excludes audibility, spatial engine rendering and human listening."
+}

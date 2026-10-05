@@ -18,11 +18,15 @@ namespace HappyToy.V2
         public AudioClip AttackClip => attackClip;
         public float StepDistance => EnemySoundProfile.Stride(Profile, StepsPlayed);
         public float TravelRemainder => distance;
+        public string LastSurface { get; private set; } = "wood";
         public EnemyAcoustics MovementAcoustics { get; private set; }
         public EnemyAcoustics AttackAcoustics { get; private set; }
         AudioSource source, attackSource;
         AudioClip clip, attackClip, cabinetRattle;
         readonly Dictionary<EnemySoundKind, AudioClip[]> clips = new Dictionary<EnemySoundKind, AudioClip[]>();
+        readonly Dictionary<string, AudioClip[]> surfaceClips = new Dictionary<string, AudioClip[]>();
+        readonly RaycastHit[] floorHits = new RaycastHit[12];
+        AudioClip[] movementBank;
         NavMeshAgent agent;
         LanternMaskEncounter lantern;
         Vector3 previous;
@@ -57,16 +61,58 @@ namespace HappyToy.V2
             }
             cabinetRattle = AudioClip.Create("Cabinet door attack rattle", door.Length, 1, rate, false);
             cabinetRattle.SetData(door, 0);
+            var recordedCabinet = ExternalAudio.Owned("cabinet");
+            if (recordedCabinet) { Destroy(cabinetRattle); cabinetRattle = recordedCabinet; }
         }
         void SetProfile(EnemySoundKind kind)
         {
             Profile = kind; distance = 0;
             if (!clips.TryGetValue(kind, out var pair))
             {
-                pair = new[] { EnemySoundProfile.Create(kind, false), EnemySoundProfile.Create(kind, true) };
+                int count = Mathf.Max(1, ExternalAudio.VariantCount("enemy-" + kind.ToString().ToLowerInvariant() + "-movement"));
+                pair = new AudioClip[count + 1];
+                for (int index = 0; index < count; index++) pair[index] = EnemySoundProfile.Create(kind, false, index);
+                pair[count] = EnemySoundProfile.Create(kind, true);
                 clips.Add(kind, pair);
             }
-            clip = pair[0]; attackClip = pair[1];
+            movementBank = pair; clip = pair[0]; attackClip = pair[pair.Length - 1];
+        }
+        AudioClip StepClip()
+        {
+            // Floating masks keep their original moving-object voice. Walking
+            // pursuers choose actual recorded contacts on the floor under them.
+            if (Profile == EnemySoundKind.Lantern || Profile == EnemySoundKind.Wraith)
+            { LastSurface = "floating"; return movementBank[0]; }
+            string surface = Surface(); LastSurface = surface;
+            if (surface == "wood") return movementBank[StepsPlayed % (movementBank.Length - 1)];
+            string cue = "step-" + surface;
+            if (!surfaceClips.TryGetValue(cue, out var bank))
+            {
+                int count = ExternalAudio.VariantCount(cue); bank = new AudioClip[count];
+                for (int index = 0; index < count; index++) bank[index] = ExternalAudio.Owned(cue, index);
+                surfaceClips.Add(cue, bank);
+            }
+            var contact = bank.Length > 0 ? bank[StepsPlayed % bank.Length] : null;
+            return contact ? contact : movementBank[StepsPlayed % (movementBank.Length - 1)];
+        }
+        string Surface()
+        {
+            if (WaterSurfaceFeedback.IsSubmerged(transform.position)) return "wet";
+            int count = Physics.RaycastNonAlloc(transform.position + Vector3.up * .28f, Vector3.down, floorHits,
+                .95f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            Collider floor = null; float nearest = float.PositiveInfinity;
+            for (int index = 0; index < count; index++)
+            {
+                var hit = floorHits[index];
+                if (!hit.collider || hit.collider.transform.IsChildOf(transform) || hit.normal.y < .4f || hit.distance >= nearest) continue;
+                floor = hit.collider; nearest = hit.distance;
+            }
+            if (!floor) return "wood";
+            string material = floor.name.ToLowerInvariant();
+            var renderer = floor.GetComponent<Renderer>();
+            if (renderer && renderer.sharedMaterial) material += " " + renderer.sharedMaterial.name.ToLowerInvariant();
+            return material.Contains("washroom") || material.Contains("tile") || material.Contains("ceramic") ||
+                material.Contains("grout") || material.Contains("stone") || material.Contains("concrete") ? "stone" : "wood";
         }
         void OnEnable() { previous = transform.position; distance = 0; }
         public void PlayAttackCue() => PlayAttackCue(false);
@@ -106,6 +152,7 @@ namespace HappyToy.V2
             distance += travelled;
             if (distance < StepDistance) return;
             distance -= StepDistance;
+            clip = StepClip();
             source.pitch = EnemySoundProfile.Pitch(Profile, StepsPlayed);
             source.PlayOneShot(clip); StepsPlayed++;
             PerceivedTension.ReportSound(session, source, MovementAcoustics, false);
@@ -115,6 +162,7 @@ namespace HappyToy.V2
         void OnDestroy()
         {
             foreach (var pair in clips.Values) foreach (var ownedClip in pair) if (ownedClip) Destroy(ownedClip);
+            foreach (var bank in surfaceClips.Values) foreach (var ownedClip in bank) if (ownedClip) Destroy(ownedClip);
             if (cabinetRattle) Destroy(cabinetRattle);
             if (attackSource) Destroy(attackSource.gameObject);
             if (source) Destroy(source);

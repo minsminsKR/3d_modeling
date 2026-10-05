@@ -1,0 +1,297 @@
+{
+  "status": "PASS_SCOPED_REVIEW",
+  "base_commit": "90a194f2718e5caf0c45caba51073be63adb26f2",
+  "branch": "quality/happytoy-v2-playability-2026-10-02",
+  "goal_complete": false,
+  "scope": "Situational audio, school runtime presentation, suspend compatibility, result/history persistence, real-input Editor survival, native Windows startup. Does not certify first-player difficulty, full native survival, final art or device-level sound/animation timing.",
+  "latest_unique_tests": 53,
+  "latest_passed_tests": 53,
+  "runs": [
+    {
+      "file": "edit-02.xml",
+      "sha256": "05bc0fd5fb6089aa689fd1c9a05f8770cc65342c246bdef425acfcbdc2001912",
+      "passed": 28,
+      "failed": 0,
+      "duration_seconds": 12.5627571
+    },
+    {
+      "file": "edit-03.xml",
+      "sha256": "ebde339c2c628eec438e3fe83072cf214bf7d0a2a06fa82570385cd782ee00fa",
+      "passed": 13,
+      "failed": 0,
+      "duration_seconds": 1.5254693
+    },
+    {
+      "file": "play-01.xml",
+      "sha256": "2f7b21a72ebf4f57a2cdc7bf18c26acd6f19ee4dec60991c98d5a4b8eb042f2d",
+      "passed": 19,
+      "failed": 2,
+      "duration_seconds": 338.4389386
+    },
+    {
+      "file": "play-02.xml",
+      "sha256": "fb6a36f409e5946b1b2f759039144a3a7bd964291a3c387bd84975ab50450397",
+      "passed": 5,
+      "failed": 1,
+      "duration_seconds": 31.1715451
+    },
+    {
+      "file": "play-03.xml",
+      "sha256": "333bfd5dcb9ffa3e893efae7c032469eac5d38edda02135942db7067a30684d1",
+      "passed": 2,
+      "failed": 0,
+      "duration_seconds": 9.5126122
+    }
+  ],
+  "tests": {
+    "HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.ChapterRoundTripKeepsSchoolResourcesAndConsumesOnlyOnce": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.ExplicitMalformedMetricsAreRejectedAndTheirRawBytesArePreserved": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.FailedLockedAndStaleWritesPreserveExistingRun": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.RawVersionOneSchoolSaveWithoutMetricsLoadsAsAbsentAndRemainsWritable": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.SchoolAndCorridorSchemasRemainSeparateAndInvalidProgressNeverCommits": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.UnknownCorruptOversizedAndCorridorFilesArePreserved": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterRecordsTests.CorruptUnknownAndOversizedPrimaryFilesArePreservedEvenWithReadableBackup": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterRecordsTests.MissingPrimaryRecoversValidBackupAndWriteFailureCanRetryWithoutDataLoss": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterRecordsTests.ReadOnlyInvalidResourcesAndImpossibleEscapesNeverWrite": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterRecordsTests.SchoolResultsKeepBestEscapeRecentActionsAndBoundedIndependentHistory": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterRecordsTests.StaleWritersMergeUnderLeaseAndDuplicateRecentRunTokensCountOnce": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.LockReadOnlyAndInvalidDataNeverCommitAndRetryWorks": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.RoundTripIsImmutableAndConsumeCannotReviveOldBackups": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.StaleInstancesCannotOverwriteOrConsumeAnotherRun": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.UnknownCorruptAndOversizedProfilesArePreserved": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CloudEditModeTests.ActualEnemyAttackClockPassesAll29Checks": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CloudEditModeTests.ActualSceneRestartGatePassesAll26Checks": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CloudEditModeTests.ActualStealthRulesPassAll68Checks": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CloudEditModeTests.ActualSurfaceRippleBufferPassesAll20Checks": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CloudEditModeTests.ImportedAuthoredScenePassesQualityValidationWithoutChangingProtectedFiles": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CloudEditModeTests.TargetEditorAndGameplayAssemblyIdentitiesArePreserved": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CorridorLayoutTests.FiveHundredSeedsHaveConnectedLoopsSeparatedGoalsAndSafeThreatSpawns": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CorridorRecordsTests.DamagedPrimaryRecoversBackupAndCanCommitTheNextResult": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CorridorRecordsTests.FinishedRunsKeepFastestEscapeAndHighestRecoveryAcrossRecreation": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CorridorRecordsTests.FutureVersionIsPreservedAndInvalidResultsDoNotChangeStorage": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CorridorRecordsTests.IndependentInstancesMergeResultsAndAFileLeasePreventsLostUpdates": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CorridorRecordsTests.OversizedUnknownProfileIsPreservedRatherThanSilentlyReplaced": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.Tests.EditMode.CorridorRecordsTests.StorageFailureKeepsInMemoryTotalsAndReturnsRecoverableStatus": {
+      "result": "Passed",
+      "report": "edit-02.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterRecordsTests.LockedDamagedBackupKeepsPrimaryAndOriginalBytesAndAllowsSafeRetry": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.ChapterRecordsTests.ValidPrimaryStaysWritableAndArchivesDamagedBackupBytesWithoutReplacingThem": {
+      "result": "Passed",
+      "report": "edit-03.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.ActualSuspendAndContinueButtonsRestoreOnceAndNewSchoolPreservesSlot": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.ChapterFiveMemoryRouteSurvivesThroughActualInputAndFourStairLegs": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.ChapterRealMenusRestartDeathAndTitleIntoAnEmptyFirstMemorySchool": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalChapterRoomLoopsAreAudibleAndOccludedAcrossTheAuthoredFloor": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalFootstepsFollowRealSchoolMaterialsAndFlashlightKeyboardInput": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalPortraitCreakAndImpactFollowTheActualFourthMemoryEvent": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalSchoolDoorMixFollowsLeafPauseDistanceMasterVolumeAndRetry": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolActionMetricsSurviveSuspendAndRawOldVersionOneWithoutMetricsResumesHonestly": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolCheckpointRejectsCorruptGeometryBeforeMutatingFreshChapter": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolCheckpointRestoresCompletedAuthoredPortraitAndNurseryWithoutReplayingReveals": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolContinueRehydratesOpenDoorCarvingBeforeRestoringPlayerInsideTheDoorway": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolFullRealInputEscapePersistsCurrentSchoolBestAndTravel": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches": {
+      "result": "Passed",
+      "report": "play-03.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce": {
+      "result": "Passed",
+      "report": "play-02.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultWriteFailureRetriesThroughRealMenuAndTitleShowsSchoolTotals": {
+      "result": "Passed",
+      "report": "play-02.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolSuspendWriteFailureKeepsLivePausedChapterAndAllowsActualRetry": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolWayfindingRetainsCeramicCollisionAndRestoresOriginalPresentationOnRemoval": {
+      "result": "Passed",
+      "report": "play-03.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalLiveExertionCabinetAndPauseMixSurvivesRealRetryCleanup": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute": {
+      "result": "Passed",
+      "report": "play-01.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolHistoryEightReportsPageThroughRealButtonsAndLargeTextAtThreeSizes": {
+      "result": "Passed",
+      "report": "play-02.xml"
+    },
+    "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolProtectedPrimaryTitleExplainsReadOnlyHistoryAndPreservesRawFiles": {
+      "result": "Passed",
+      "report": "play-02.xml"
+    }
+  },
+  "asset_audit": "PASS",
+  "build_audit": {
+    "status": "PASS",
+    "unity": "6000.6.0f1",
+    "input_count": 1968,
+    "mismatches": [],
+    "build_manifest_sha256": "52622b58afdd076b01d2a31077e13daa01036fdb79e3613b1888c73843a336c4",
+    "exe_sha256": "718444f6a718fa668da96eb0a58445b009673310e6129152a63dbf7a92b8de00",
+    "scope": "All recorded Assets/ProjectSettings/Packages build inputs match current files; excludes whole native survival or human play."
+  },
+  "native": {
+    "status": "PASS",
+    "unity": "6000.6.0f1",
+    "graphics": "Direct3D11",
+    "device": "NVIDIA GeForce RTX 2060 SUPER",
+    "chapter": true,
+    "grounded": true,
+    "navigation": true,
+    "wallTexture": true,
+    "floorTexture": true,
+    "memories": 0,
+    "activeStalkers": 0,
+    "movementUpdates": 259,
+    "unsupportedMaterials": 0,
+    "seconds": 5.192890644073486,
+    "errors": []
+  },
+  "audio_clock_limit": "Offline AudioRenderer mixer health/context evidence; exact device-level timing and human listening unverified.",
+  "visual_review": "Native entrance and four final controlled camera views reviewed. Korean writing and aged surfaces render; torn ceiling shape improved; memory stand front grain remains faint at distant upper/basement views.",
+  "candidate": "Builds/PolishReview/HappyToyV2.exe",
+  "remaining_quality_review": [
+    "Device-level listening and actual sound-animation timing",
+    "First-play navigation, pursuit fairness and repeated-play balance",
+    "Close flashlight review of dark memory stands; further art/performance review as needed"
+  ],
+  "audio_dsp_game_ratio": 1.27969067404027,
+  "visible_player_process": 51368
+}

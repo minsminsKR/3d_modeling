@@ -5,7 +5,7 @@ using UnityEngine.AI;
 namespace HappyToy.V2
 {
     [RequireComponent(typeof(NavMeshAgent))]
-    public sealed class LanternMaskEncounter : MonoBehaviour
+    public sealed partial class LanternMaskEncounter : MonoBehaviour
     {
         public enum Phase { Dormant, Wander, Investigate, Chase, Transforming, Resolved }
         public enum IntroStage { WaitingForSight, LanternTicks, MaskRise, StillBeat, Complete }
@@ -79,7 +79,7 @@ namespace HappyToy.V2
             revealAudio = EncounterRevealAudio.Ensure(transform);
             CaptureVisualDefaults();
         }
-        void Start() { CaptureVisualDefaults(); SetVisible(false); }
+        void Start() { CaptureVisualDefaults(); SetVisible(State!=Phase.Dormant && State!=Phase.Resolved); }
         void CaptureVisualDefaults()
         {
             if (visualDefaultsCaptured || (!mask && !body && !lantern && !flameLight)) return;

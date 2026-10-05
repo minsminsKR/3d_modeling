@@ -4,7 +4,8 @@ namespace HappyToy.V2
 {
     public enum EnemySoundKind { Generic, Cyclopse, Hwacat, Uncat, Baby, Lantern, Wraith }
 
-    // Original deterministic textures. Identity changes timbre/cadence only, never AI.
+    // Recorded shoe contacts for walking pursuers; floating/attack signatures
+    // and synthesis remain separate. Sound identity never changes the AI.
     public static class EnemySoundProfile
     {
         public const int SampleRate = 24000;
@@ -31,15 +32,24 @@ namespace HappyToy.V2
                 default: return .85f;
             }
         }
-        public static float Pitch(EnemySoundKind kind, int contacts) => contacts % 2 == 0 ? .97f : 1.025f;
+        public static float Pitch(EnemySoundKind kind, int contacts)
+        {
+            float basePitch = kind == EnemySoundKind.Cyclopse ? .96f : kind == EnemySoundKind.Hwacat ? 1.03f :
+                kind == EnemySoundKind.Baby ? 1.10f : 1;
+            return basePitch * (contacts % 2 == 0 ? .985f : 1.015f);
+        }
         static float Contact(float t, float frequency, float decay, float noise, float grain)
         {
             if (t < 0) return 0;
             float envelope = Mathf.Clamp01(t / .004f) * Mathf.Exp(-decay * t);
             return envelope * (Mathf.Sin(2 * Mathf.PI * frequency * t) + noise * grain);
         }
-        public static AudioClip Create(EnemySoundKind kind, bool attack)
+        public static AudioClip Create(EnemySoundKind kind, bool attack) => Create(kind, attack, 0);
+        public static AudioClip Create(EnemySoundKind kind, bool attack, int variant)
         {
+            var recorded = ExternalAudio.Owned("enemy-" + kind.ToString().ToLowerInvariant() +
+                (attack ? "-attack" : "-movement"), variant);
+            if (recorded) return recorded;
             float seconds = attack ? AttackSeconds : MovementSeconds;
             var samples = new float[Mathf.RoundToInt(seconds * SampleRate)];
             var random = new System.Random(114 + (int)kind * 977 + (attack ? 3701 : 0));

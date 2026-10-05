@@ -85,7 +85,7 @@ namespace HappyToy.V2.CloudTests
             yield return RecoveryPulse(Key.Escape); previous=session;
             yield return RecoveryClick("suspend-run"); yield return RecoveryRebind(previous); yield return RefreshSlotTitle(directory);
             Assert.That(Get<bool>(Get<object>(session,"Suspension"),"HasRun"),Is.True);
-            yield return RecoveryClick("begin");
+            yield return RecoveryClick("begin-school");
             Assert.That(RecoveryPage,Is.EqualTo("Playing")); Assert.That(Get<int>(session,"RecordsRecovered"),Is.Zero);
             Assert.That(Get<bool>(session,"ChapterMode"),Is.True);
             Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(2));

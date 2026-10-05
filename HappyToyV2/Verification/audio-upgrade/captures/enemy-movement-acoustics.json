@@ -1,0 +1,1173 @@
+{
+    "capture": "UnityAudioRendererMainOutput",
+    "wave": "enemy-movement-acoustics.wav",
+    "scope": "Positioned isolated production movement clips; real colliders for wall/slab; natural authored lantern transformation. Separate tests cover actual locomotion and attack events.",
+    "syntheticPcm": false,
+    "fullRouteEvidence": false,
+    "deviceListeningCertification": false,
+    "sampleRate": 48000,
+    "channels": 2,
+    "totalSamples": 696960,
+    "wallCenter": {
+        "x": 800.0,
+        "y": 21.299999237060547,
+        "z": 801.5
+    },
+    "wallSize": {
+        "x": 8.0,
+        "y": 6.0,
+        "z": 0.30000001192092896
+    },
+    "slabCenter": {
+        "x": 800.0,
+        "y": 23.0,
+        "z": 800.0
+    },
+    "slabSize": {
+        "x": 10.0,
+        "y": 0.30000001192092896,
+        "z": 10.0
+    },
+    "segments": [
+        {
+            "name": "identity-Lantern",
+            "profile": "Lantern",
+            "clip": "External enemy-lantern-movement / enemy-lantern-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 0,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3400000035762787,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Lantern"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.2065529227256775,
+            "rms": 0.019405698603062998,
+            "leftRms": 0.019405698603063275,
+            "rightRms": 0.019405698603063275
+        },
+        {
+            "name": "identity-Cyclopse",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 43200,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.20667071640491486,
+            "rms": 0.021867413426395754,
+            "leftRms": 0.021867413426395588,
+            "rightRms": 0.021867413426395588
+        },
+        {
+            "name": "identity-Hwacat",
+            "profile": "Hwacat",
+            "clip": "External enemy-hwacat-movement / enemy-hwacat-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 86400,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.23074999451637268,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Hwacat"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.2055310606956482,
+            "rms": 0.01563644434039919,
+            "leftRms": 0.0156364443403993,
+            "rightRms": 0.0156364443403993
+        },
+        {
+            "name": "identity-Uncat",
+            "profile": "Uncat",
+            "clip": "External enemy-uncat-movement / enemy-uncat-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 129600,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.24500000476837158,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Uncat"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.20666952431201935,
+            "rms": 0.0207942538918446,
+            "leftRms": 0.020794253891844798,
+            "rightRms": 0.020794253891844798
+        },
+        {
+            "name": "identity-Baby",
+            "profile": "Baby",
+            "clip": "External enemy-baby-movement / enemy-baby-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 172800,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3400000035762787,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Baby"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.20471416413784027,
+            "rms": 0.025693942273553864,
+            "leftRms": 0.02569394227355381,
+            "rightRms": 0.02569394227355381
+        },
+        {
+            "name": "identity-Wraith",
+            "profile": "Wraith",
+            "clip": "External enemy-wraith-movement / enemy-wraith-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 216000,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3400000035762787,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Wraith"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.20072133839130402,
+            "rms": 0.02024358588962519,
+            "leftRms": 0.02024358588962545,
+            "rightRms": 0.02024358588962545
+        },
+        {
+            "name": "beyond-range",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 259200,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.0,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 21.060863494873047,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 821.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": false,
+            "physicalCaptionAudibility": false,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 821.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 1.5146129380243427e-28,
+            "rms": 9.03140663739495e-29,
+            "leftRms": 9.03140663739495e-29,
+            "rightRms": 9.03140663739495e-29
+        },
+        {
+            "name": "wall-blocked",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 302400,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 0.3799999952316284,
+            "sourceVolume": 0.26600000262260437,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 1200.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": true,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.07848740369081497,
+            "rms": 0.008321594990741359,
+            "leftRms": 0.008321594990741381,
+            "rightRms": 0.008321594990741381
+        },
+        {
+            "name": "vertical-open",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 345600,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.3999996185302734,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 25.0,
+                    "z": 800.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 25.0,
+                "z": 800.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.20667071640491486,
+            "rms": 0.02183119077406853,
+            "leftRms": 0.021831190774068362,
+            "rightRms": 0.021831190774068362
+        },
+        {
+            "name": "floor-blocked",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 388800,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 0.14000000059604645,
+            "sourceVolume": 0.09799999743700027,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 650.0,
+            "sourceDistance": 3.3999996185302734,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 25.0,
+                    "z": 800.0
+                }
+            ],
+            "paused": false,
+            "occluded": true,
+            "floorOccluded": true,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 25.0,
+                "z": 800.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.028238961473107338,
+            "rms": 0.0030996816614736297,
+            "leftRms": 0.00309968166147362,
+            "rightRms": 0.00309968166147362
+        },
+        {
+            "name": "left",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 432000,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 5.249762058258057,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 796.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 796.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.24355296790599823,
+            "rms": 0.01859133110333082,
+            "leftRms": 0.025678788504156554,
+            "rightRms": 0.005645795368780703
+        },
+        {
+            "name": "right",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 475200,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 5.249762058258057,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 804.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 804.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.24355141818523407,
+            "rms": 0.01865727031208568,
+            "leftRms": 0.00566581966744159,
+            "rightRms": 0.025769865317701913
+        },
+        {
+            "name": "master-zero",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 518400,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.0,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 1.5146129380243427e-28,
+            "rms": 9.327881317838693e-29,
+            "leftRms": 9.327881317838693e-29,
+            "rightRms": 9.327881317838693e-29
+        },
+        {
+            "name": "before-pause",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "in-flight cue prefix",
+            "sampleOffset": 561600,
+            "samples": 5760,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.05999999865889549,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.20667071640491486,
+            "rms": 0.05919854505242641,
+            "leftRms": 0.0591985450524265,
+            "rightRms": 0.0591985450524265
+        },
+        {
+            "name": "paused",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "already-playing cue frozen by listener pause",
+            "sampleOffset": 567360,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 19200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": true,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": false,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 1.5146129380243427e-28,
+            "rms": 1.0709930793498926e-28,
+            "leftRms": 1.0709930793498926e-28,
+            "rightRms": 1.0709930793498926e-28
+        },
+        {
+            "name": "resumed",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "same in-flight cue tail; no replay",
+            "sampleOffset": 610560,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 0,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 3.4000000953674316,
+            "playbackProfiles": [
+                "Cyclopse"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 800.0,
+                    "y": 20.0,
+                    "z": 803.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": false,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 800.0,
+                "y": 20.0,
+                "z": 803.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.021253036335110664,
+            "rms": 0.003284633974904048,
+            "leftRms": 0.003284633974904037,
+            "rightRms": 0.003284633974904037
+        },
+        {
+            "name": "four-nearby-stalkers",
+            "profile": "Cyclopse",
+            "clip": "External enemy-cyclopse-movement / enemy-cyclopse-movement-0",
+            "phase": "complete-cue",
+            "sampleOffset": 653760,
+            "samples": 43200,
+            "channels": 2,
+            "sampleRate": 48000,
+            "flushSamples": 67200,
+            "clippedSamples": 0,
+            "clipSeconds": 0.3101249933242798,
+            "captureSeconds": 0.44999998807907104,
+            "listenerVolume": 0.800000011920929,
+            "sourceGain": 1.0,
+            "sourceVolume": 0.699999988079071,
+            "sourceMinDistance": 2.0,
+            "sourceMaxDistance": 16.0,
+            "cutoffHz": 9000.0,
+            "sourceDistance": 2.71478271484375,
+            "playbackProfiles": [
+                "Cyclopse",
+                "Hwacat",
+                "Uncat",
+                "Baby"
+            ],
+            "playbackPositions": [
+                {
+                    "x": 799.0999755859375,
+                    "y": 20.0,
+                    "z": 802.0
+                },
+                {
+                    "x": 799.7000122070313,
+                    "y": 20.0,
+                    "z": 802.0
+                },
+                {
+                    "x": 800.2999877929688,
+                    "y": 20.0,
+                    "z": 802.0
+                },
+                {
+                    "x": 800.9000244140625,
+                    "y": 20.0,
+                    "z": 802.0
+                }
+            ],
+            "paused": false,
+            "occluded": false,
+            "floorOccluded": false,
+            "inRange": true,
+            "physicalCaptionAudibility": true,
+            "simultaneous": true,
+            "listenerPosition": {
+                "x": 800.0,
+                "y": 21.600000381469727,
+                "z": 800.0
+            },
+            "sourcePosition": {
+                "x": 799.0999755859375,
+                "y": 20.0,
+                "z": 802.0
+            },
+            "listenerForward": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+            },
+            "listenerRight": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "listenerUp": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "peak": 0.6290891170501709,
+            "rms": 0.060886560580982074,
+            "leftRms": 0.06201440712361338,
+            "rightRms": 0.0597374240143472
+        }
+    ]
+}

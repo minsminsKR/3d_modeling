@@ -1,0 +1,42 @@
+{
+  "dateKorea": "2026-10-06",
+  "baseCommit": "90a194f2718e5caf0c45caba51073be63adb26f2",
+  "scope": "Latest result per unique Unity test; controlled art captures are separate from native full survival, real-time DSP, device listening and user performance. Original failure XML retained.",
+  "editMode": {
+    "unique": 31,
+    "passed": 31
+  },
+  "playMode": {
+    "unique": 17,
+    "passed": 17
+  },
+  "remainingTestFailures": [],
+  "build": {
+    "status": "PASS",
+    "unity": "6000.6.0f1",
+    "createdUtc": "2026-10-05T15:48:10.3879060Z",
+    "inputFiles": 2010,
+    "inputMismatches": [],
+    "manifestSha256": "6d67108bbcd1a89c127b565ecca4fa58f268c7d6d8fd84ba96f3d2ef0ff8baf7",
+    "exeSha256": "718444f6a718fa668da96eb0a58445b009673310e6129152a63dbf7a92b8de00",
+    "creditsMatch": true
+  },
+  "nativeMainFullRoute": "NOT RUN",
+  "nativeSchoolFullRouteThisBuild": "NOT RUN",
+  "realTimeDspMixThisBuild": "NOT RUN",
+  "deviceListening": "NOT VERIFIED",
+  "userPerformance": "NOT MEASURED",
+  "nextWorkDocument": "DEVELOPMENT_ROADMAP.md",
+  "sourceIntegrity": {
+    "audio_files": 61,
+    "licenses": {
+      "CC0-1.0": 59,
+      "CC-BY-3.0": 2
+    },
+    "mismatched_audio": [],
+    "metas": 1011,
+    "invalid_meta": [],
+    "duplicate_guids": [],
+    "preserved_scene_sha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede"
+  }
+}

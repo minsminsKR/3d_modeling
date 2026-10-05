@@ -1,0 +1,183 @@
+{
+    "capture": "UnityAudioRendererMainOutput",
+    "scope": "Three actual chapter room loop sources and positioned listener; actual Floor 2F collider/low-pass separation and listener pause. Isolated main-output excerpts, not device listening certification.",
+    "syntheticPcm": false,
+    "fullRouteEvidence": false,
+    "deviceListeningCertification": false,
+    "segments": [
+        {
+            "name": "near-ambience-ground",
+            "clip": "External ambience-ground / ambience-ground-0",
+            "cue": "ambience-ground",
+            "surface": "",
+            "collider": "",
+            "samples": 67200,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 0,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.2800000011920929,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -3.0,
+                "y": 1.2000000476837158,
+                "z": -4.0
+            },
+            "listener": {
+                "x": -3.0,
+                "y": 1.6200000047683716,
+                "z": -3.299999952316284
+            },
+            "peak": 0.019334087148308754,
+            "rms": 0.005959819959334705
+        },
+        {
+            "name": "near-ambience-upper",
+            "clip": "External ambience-upper / ambience-upper-0",
+            "cue": "ambience-upper",
+            "surface": "",
+            "collider": "",
+            "samples": 67200,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 67200,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.23999999463558197,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 29.799999237060547,
+                "y": 7.099999904632568,
+                "z": 31.0
+            },
+            "listener": {
+                "x": 29.799999237060547,
+                "y": 6.619999885559082,
+                "z": 30.0
+            },
+            "peak": 0.015980560332536697,
+            "rms": 0.004759378732871762
+        },
+        {
+            "name": "near-ambience-basement-bed",
+            "clip": "External ambience-basement-bed / ambience-basement-bed-0",
+            "cue": "ambience-basement-bed",
+            "surface": "",
+            "collider": "",
+            "samples": 67200,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 134400,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.30000001192092896,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 13.800000190734863,
+                "y": -3.799999952316284,
+                "z": -29.0
+            },
+            "listener": {
+                "x": 13.800000190734863,
+                "y": -3.380000114440918,
+                "z": -28.0
+            },
+            "peak": 0.01674818806350231,
+            "rms": 0.005601826855356264
+        },
+        {
+            "name": "upper-clear",
+            "clip": "External ambience-upper / ambience-upper-0",
+            "cue": "ambience-upper",
+            "surface": "",
+            "collider": "",
+            "samples": 67200,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 201600,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.23999999463558197,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 29.799999237060547,
+                "y": 7.099999904632568,
+                "z": 31.0
+            },
+            "listener": {
+                "x": 29.799999237060547,
+                "y": 6.619999885559082,
+                "z": 30.0
+            },
+            "peak": 0.015980560332536697,
+            "rms": 0.004759378732871762
+        },
+        {
+            "name": "upper-through-school-floor",
+            "clip": "External ambience-upper / ambience-upper-0",
+            "cue": "ambience-upper",
+            "surface": "",
+            "collider": "",
+            "samples": 67200,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 268800,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.06719999760389328,
+            "paused": false,
+            "occluded": true,
+            "source": {
+                "x": 29.799999237060547,
+                "y": 7.099999904632568,
+                "z": 31.0
+            },
+            "listener": {
+                "x": 29.799999237060547,
+                "y": 1.6200000047683716,
+                "z": 30.0
+            },
+            "peak": 0.002557384315878153,
+            "rms": 0.0008851352273625254
+        },
+        {
+            "name": "ambience-paused",
+            "clip": "External ambience-upper / ambience-upper-0",
+            "cue": "ambience-upper",
+            "surface": "",
+            "collider": "",
+            "samples": 28802,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 336000,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.06719999760389328,
+            "paused": true,
+            "occluded": false,
+            "source": {
+                "x": 29.799999237060547,
+                "y": 7.099999904632568,
+                "z": 31.0
+            },
+            "listener": {
+                "x": 29.799999237060547,
+                "y": 1.6200000047683716,
+                "z": 30.0
+            },
+            "peak": 1.1036348953316616e-29,
+            "rms": 1.0979388788981333e-29
+        }
+    ]
+}

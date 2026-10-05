@@ -1,0 +1,12 @@
+{
+  "audio_files": 61,
+  "licenses": {
+    "CC0-1.0": 59,
+    "CC-BY-3.0": 2
+  },
+  "mismatched_audio": [],
+  "metas": 1011,
+  "invalid_meta": [],
+  "duplicate_guids": [],
+  "preserved_scene_sha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede"
+}

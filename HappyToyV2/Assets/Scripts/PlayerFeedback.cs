@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace HappyToy.V2
@@ -8,12 +9,21 @@ namespace HappyToy.V2
     {
         PlayerMotor player;
         AudioSource steps, foley, breathing;
-        AudioClip dryStep, wetStep, click, rustle, discovery, breath;
+        AudioClip dryStep, wetStep, click, cabinetOpen, cabinetClose, discovery, breath;
+        AudioClip[] woodSteps, stoneSteps, waterSteps;
+        readonly List<AudioClip> ownedClips = new List<AudioClip>();
         Vector3 previousPosition, cameraHome;
         float stride, phase;
         int stepIndex;
         bool initialized;
         public int FootstepsPlayed { get; private set; }
+        public string LastFootstepSurface { get; private set; } = "";
+        public string LastFootstepColliderName { get; private set; } = "";
+        public AudioClip LastFootstepClip { get; private set; }
+        public AudioClip LastInteractionClip { get; private set; }
+        public int InteractionCuesPlayed { get; private set; }
+        public AudioSource FootstepSource => steps;
+        public AudioSource InteractionSource => foley;
         public event System.Action<Vector3, bool, float> Footstep;
 
         void Start()
@@ -27,14 +37,40 @@ namespace HappyToy.V2
             steps = Source("Player footsteps", .36f, 120);
             foley = Source("Player interaction foley", .38f, 70);
             breathing = Source("Player breathing", 0, 160);
-            dryStep = MakeTransient("Soft sole on dusty floor", .19f, 0);
-            wetStep = MakeTransient("Soft sole in shallow water", .27f, 1);
-            click = MakeTransient("Flashlight switch", .065f, 2);
-            rustle = MakeTransient("Cabinet clothing rustle", .28f, 3);
-            discovery = MakeTransient("Recovered paper and soft bell", .48f, 4);
-            breath = MakeBreath();
+            dryStep = Own(MakeTransient("Soft sole on dusty floor", .19f, 0));
+            wetStep = Own(MakeTransient("Soft sole in shallow water", .27f, 1));
+            woodSteps = Variants("step-wood", dryStep);
+            stoneSteps = Variants("step-stone", dryStep);
+            waterSteps = Variants("step-wet", wetStep);
+            click = RecordedOrFallback("flashlight", "Flashlight switch", .065f, 2);
+            cabinetOpen = Own(ExternalAudio.Owned("cabinet-open"));
+            cabinetClose = Own(ExternalAudio.Owned("cabinet-close"));
+            if (!cabinetOpen) cabinetOpen = Own(MakeCabinetFallback(true));
+            if (!cabinetClose) cabinetClose = Own(MakeCabinetFallback(false));
+            discovery = RecordedOrFallback("discovery", "Recovered paper and soft bell", .48f, 4);
+            breath = Own(MakeBreath());
             breathing.clip = breath; breathing.loop = true; breathing.Play();
             initialized = true;
+        }
+        AudioClip Own(AudioClip clip)
+        {
+            if (clip) ownedClips.Add(clip);
+            return clip;
+        }
+        AudioClip RecordedOrFallback(string cue, string label, float seconds, int kind)
+        {
+            var clip = ExternalAudio.Owned(cue);
+            return Own(clip ? clip : MakeTransient(label, seconds, kind));
+        }
+        AudioClip[] Variants(string cue, AudioClip fallback)
+        {
+            var clips = new AudioClip[Mathf.Max(1, ExternalAudio.VariantCount(cue))];
+            for (int i = 0; i < clips.Length; i++)
+            {
+                var recorded = Own(ExternalAudio.Owned(cue, i));
+                clips[i] = recorded ? recorded : fallback;
+            }
+            return clips;
         }
         AudioSource Source(string label, float volume, int priority)
         {
@@ -44,23 +80,30 @@ namespace HappyToy.V2
             source.playOnAwake = false; source.spatialBlend = 0;
             source.volume = volume; source.priority = priority; source.dopplerLevel = 0;
             source.ignoreListenerPause = false;
+            source.ignoreListenerVolume = false;
             return source;
         }
         public void PlayFlashlight(bool on)
         {
-            if (!initialized) return;
-            foley.pitch = on ? 1 : .86f; foley.PlayOneShot(click, .75f);
+            if (!initialized || !isActiveAndEnabled) return;
+            LastInteractionClip = click; InteractionCuesPlayed++;
+            foley.pitch = on ? 1 : .96f; foley.PlayOneShot(click, .75f);
         }
         public void PlayHide(bool entering)
         {
             previousPosition = transform.position; stride = 0;
-            if (!initialized) return;
-            foley.pitch = entering ? .85f : 1; foley.PlayOneShot(rustle, .65f);
-            Caption(entering ? "[옷자락 스침 · 캐비닛 안]" : "[옷자락 스침 · 캐비닛 밖]", 1.8f);
+            if (!initialized || !isActiveAndEnabled) return;
+            LastInteractionClip = entering ? cabinetClose : cabinetOpen; InteractionCuesPlayed++;
+            // The successful hiding transition seats the door; leaving opens it.
+            // One cabinet recording replaces any preceding interaction. No cloth,
+            // extra impact, paper or pitch-transformed copy is layered on it.
+            foley.Stop(); foley.pitch = 1; foley.clip = LastInteractionClip; foley.Play();
+            Caption(entering ? "[캐비닛 문 닫힘]" : "[캐비닛 문 열림]", 1.8f);
         }
         public void PlayDiscovery()
         {
-            if (!initialized) return;
+            if (!initialized || !isActiveAndEnabled) return;
+            LastInteractionClip = discovery; InteractionCuesPlayed++;
             foley.pitch = 1; foley.PlayOneShot(discovery, .6f);
         }
         void Caption(string text, float duration)
@@ -93,22 +136,42 @@ namespace HappyToy.V2
                     stride %= interval;
                     int strideIndex = stepIndex++;
                     var contact = transform.position + transform.right * (strideIndex % 2 == 0 ? .11f : -.11f);
-                    bool wet = false;
-                    if (Physics.Raycast(contact + Vector3.up * .15f, Vector3.down, out var floor,
-                        .6f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
-                    {
-                        string surface = floor.collider.name.ToLowerInvariant();
-                        wet = surface.Contains("water") || surface.Contains("wet") || WaterSurfaceFeedback.IsSubmerged(contact);
-                    }
-                    steps.pitch = 1 + ((strideIndex % 5) - 2) * .025f;
+                    LastFootstepSurface = ContactSurface(contact, out bool wet, out string floorName);
+                    LastFootstepColliderName = floorName;
+                    var bank = wet ? waterSteps : LastFootstepSurface == "stone" ? stoneSteps : woodSteps;
+                    // Several recorded contacts and a tiny shoe variation avoid a repeating single-sample rhythm.
+                    LastFootstepClip = bank[strideIndex % bank.Length];
+                    steps.pitch = 1 + ((strideIndex % 7) - 3) * .008f;
                     float strength = player.Crouching ? .24f : player.Running ? 1 : .55f;
-                    steps.PlayOneShot(wet ? wetStep : dryStep, strength * .95f);
+                    steps.PlayOneShot(LastFootstepClip, strength * .95f);
                     FootstepsPlayed++;
                     player.ReportFootstep(contact, wet);
                     Footstep?.Invoke(contact, wet, strength);
                 }
             }
             else stride = Mathf.MoveTowards(stride, 0, Time.deltaTime * 2);
+        }
+        static string ContactSurface(Vector3 contact, out bool wet, out string floorName)
+        {
+            // The visible water sheet need not have collision; its authored bounds are authoritative.
+            wet = WaterSurfaceFeedback.IsSubmerged(contact);
+            floorName = "";
+            string surface = "";
+            if (Physics.Raycast(contact + Vector3.up * .15f, Vector3.down, out var floor,
+                .6f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            {
+                floorName = floor.collider.name;
+                surface = floorName.ToLowerInvariant();
+                // Damp stair paint is not standing water and must not increase the AI noise radius.
+                wet |= surface.Contains("water") || surface.Contains("wet");
+                var renderer = floor.collider.GetComponent<Renderer>();
+                if (!renderer) renderer = floor.collider.GetComponentInParent<Renderer>();
+                if (renderer && renderer.sharedMaterial) surface += " " + renderer.sharedMaterial.name.ToLowerInvariant();
+            }
+            if (wet) return "wet";
+            // The school's washroom is grouted ceramic; the corridor/classrooms retain parquet.
+            return surface.Contains("washroom") || surface.Contains("tile") || surface.Contains("stone") ||
+                surface.Contains("ceramic") || surface.Contains("concrete") || surface.Contains("grout") ? "stone" : "wood";
         }
         void LateUpdate()
         {
@@ -150,6 +213,24 @@ namespace HappyToy.V2
             }
             var clip = AudioClip.Create(name, data.Length, 1, rate, false); clip.SetData(data, 0); return clip;
         }
+        static AudioClip MakeCabinetFallback(bool opening)
+        {
+            const int rate = 24000;
+            float seconds = opening ? .65f : .38f;
+            var data = new float[Mathf.CeilToInt(rate * seconds)];
+            var random = new System.Random(opening ? 6521 : 6522); float grain = 0;
+            for (int index = 0; index < data.Length; index++)
+            {
+                float t = index / (float)rate;
+                grain = Mathf.Lerp(grain, (float)random.NextDouble() * 2 - 1, .13f);
+                float hinge = Mathf.Sin(Mathf.PI * t / seconds) * (.06f * grain +
+                    .018f * Mathf.Sin(2 * Mathf.PI * (opening ? 280 : 180) * t));
+                float latch = opening ? 0 : Mathf.Exp(-t * 45) * .12f * grain;
+                data[index] = (hinge + latch) * Mathf.Clamp01(t / .004f) * Mathf.Clamp01((seconds - t) / .015f);
+            }
+            var clip = AudioClip.Create(opening ? "Cabinet door opening fallback" : "Cabinet door closing fallback", data.Length, 1, rate, false);
+            clip.SetData(data, 0); return clip;
+        }
         static AudioClip MakeBreath()
         {
             const int rate = 24000;
@@ -171,7 +252,12 @@ namespace HappyToy.V2
         void OnEnable() { if (initialized && breathing) breathing.Play(); }
         void OnDestroy()
         {
-            foreach (var clip in new[] { dryStep, wetStep, click, rustle, discovery, breath }) if (clip) Destroy(clip);
+            foreach (var clip in ownedClips) if (clip) Destroy(clip);
+            ownedClips.Clear();
+            // Removing this component alone must release its emitters, as scene retry does.
+            if (steps) Destroy(steps.gameObject);
+            if (foley) Destroy(foley.gameObject);
+            if (breathing) Destroy(breathing.gameObject);
         }
     }
 }

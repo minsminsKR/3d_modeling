@@ -21,16 +21,19 @@ namespace HappyToy.V2
         Label objective, objectiveCount, notice, focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
         Label navigationHelp, controlInstructions, controlsFooter;
         bool sendingGamepadNavigation;
+        bool sendingKeyboardSubmit;
         Vector2 previousMenuDirection;
         float nextMenuRepeat;
         bool GamepadMenuIntent => Gamepad.current != null && (PlayerControls.UsingGamepad || Gamepad.current.buttonSouth.isPressed ||
             Gamepad.current.dpad.ReadValue().sqrMagnitude > .1f || Gamepad.current.leftStick.ReadValue().sqrMagnitude > .25f);
+        bool KeyboardSubmitIntent => Keyboard.current != null && (Keyboard.current.enterKey.isPressed || Keyboard.current.numpadEnterKey.isPressed);
         string NavigationHelp => PlayerControls.UsingGamepad ? "방향 패드  선택     아래 버튼  확인     오른쪽 버튼  뒤로" : "Tab / 방향키  선택      Enter  확인      Esc  뒤로";
         string ControlInstructions => PlayerControls.UsingGamepad ? "왼쪽 스틱  이동 / 누르며 달리기\n오른쪽 스틱  시선\n아래 버튼  조사·문·은신\n오른쪽 버튼  낮은 자세 / 위 버튼  빛\nLT 조준 / RT 폭죽 (추격 전 유인)\nSelect 기록 / Start 일시정지" : "WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신\nF  손전등          Q  폭죽 (추격 전 유인)\n우클릭 누르기  폭죽 첫 충돌 조준\nJ  조사 기록      Esc  일시정지";
         string ControlsFooter => PlayerControls.UsingGamepad ? "오른쪽  낮은 자세    위  빛    RT  폭죽    Start  메뉴" : "C  낮은 자세    F  빛    Q  폭죽    J  기록    Esc  메뉴";
         Button reducedMotionButton, subtitlesButton, contrastButton, textSizeButton;
         GameShell.Page shown = (GameShell.Page)(-1);
         int journalStep = -1, journalExploration = -1, journalPage;
+        int schoolRecordPage;
         bool shownContrast, shownLargeText, shownGamepad, settingsLabelsDirty;
         bool shownReloading;
         string shownReloadError;
@@ -60,7 +63,11 @@ namespace HappyToy.V2
             // Own gamepad event production explicitly, including offscreen panels.
             // Filter the native provider's duplicate events before controls receive them.
             root.RegisterCallback<NavigationMoveEvent>(e => { if (!sendingGamepadNavigation && GamepadMenuIntent) e.StopImmediatePropagation(); }, TrickleDown.TrickleDown);
-            root.RegisterCallback<NavigationSubmitEvent>(e => { if (!sendingGamepadNavigation && GamepadMenuIntent) e.StopImmediatePropagation(); }, TrickleDown.TrickleDown);
+            root.RegisterCallback<NavigationSubmitEvent>(e =>
+            {
+                if (!sendingGamepadNavigation && !sendingKeyboardSubmit && (GamepadMenuIntent || KeyboardSubmitIntent))
+                    e.StopImmediatePropagation();
+            }, TrickleDown.TrickleDown);
             root.RegisterCallback<NavigationCancelEvent>(e => { if (!sendingGamepadNavigation && GamepadMenuIntent) e.StopImmediatePropagation(); }, TrickleDown.TrickleDown);
             root.style.flexGrow = 1;
             root.style.alignItems = Align.Center;
@@ -183,6 +190,7 @@ namespace HappyToy.V2
             string previousFocus = (root.focusController?.focusedElement as VisualElement)?.name;
             bool samePage = shown == shell.Screen;
             if (!samePage) journalPage = 0;
+            if(!samePage) schoolRecordPage=0;
             shown = shell.Screen;
             shownContrast = shell.HighContrast;
             shownLargeText = shell.LargeText;
@@ -236,6 +244,7 @@ namespace HappyToy.V2
                 case GameShell.Page.Journal: BuildJournal(); break;
                 case GameShell.Page.Settings: BuildSettings(); break;
                 case GameShell.Page.Result: BuildResult(); break;
+                case GameShell.Page.Records: BuildSchoolRecords(); break;
             }
             if (shell.IsReloading)
             {
@@ -244,7 +253,7 @@ namespace HappyToy.V2
             }
             else if (!string.IsNullOrWhiteSpace(shell.ReloadError))
                 Small(shell.ReloadError, 150, 786, 1300, 48).style.color = Rust;
-            Small("HAPPY TOY  /  LAST ATTENDANCE", 150, 837, 580);
+            Small("HAPPY TOY  /  FORGOTTEN CORRIDOR", 150, 837, 580);
             var navigation = navigationHelp = Small(NavigationHelp, 820, 837, 630);
             navigation.style.unityTextAlign = TextAnchor.UpperRight;
             string initialId = samePage && !string.IsNullOrEmpty(previousFocus) ? previousFocus :
@@ -265,36 +274,78 @@ namespace HappyToy.V2
         {
             Panel(105, 80, 3, 705, Gold);
             Panel(150, 115, 1300, 1, Edge);
-            Small("폐교 조사 기록  /  마지막 출석", 150, 78, 1050);
-            var paused = Small(shown == GameShell.Page.Title ? "아직 끝나지 않은 하교 시간" : "시간이 멈춰 있습니다", 1060, 78, 390);
+            Small(session.ChapterMode || shown==GameShell.Page.Records ? "폐교의 기억  /  마지막 출석" : session.CorridorMode || shown==GameShell.Page.Title ? "잊힌 회랑  /  소리를 따라 남은 기억을 찾다" : "폐교 조사 기록  /  마지막 출석", 150, 78, 1050);
+            var paused = Small(shown == GameShell.Page.Title ? "돌아갈 문을 기억하세요" : "시간이 멈춰 있습니다", 1060, 78, 390);
             paused.style.unityTextAlign = TextAnchor.UpperRight;
             string title = shown == GameShell.Page.Title ? "잊힌 회랑" : shown == GameShell.Page.Pause ? "숨을 고르다" :
                 shown == GameShell.Page.Journal ? "조사 기록" : shown == GameShell.Page.Settings ? "환경 설정" :
+                shown==GameShell.Page.Records ? "학교 탐색 기록" :
                 session.Escaped ? session.CorridorMode ? "회랑의 문이 열렸습니다" : "마지막 아이가 하교했습니다" : "발소리가 멈췄습니다";
             Text(title, 150, 145, 1300, shown == GameShell.Page.Title ? 110 : 82, shown == GameShell.Page.Title ? 66 : 48).style.unityFontStyleAndWeight = FontStyle.Bold;
         }
         void BuildTitle()
         {
-            Text("다섯 개의 기억.\n1층에서 2층, 그리고 지하로.", 153, 262, 640, 110, shell.LargeText ? 32 : 28);
-            Small("발소리를 듣고 숨어, 잊힌 회랑의 출구를 찾으세요.\n갑작스러운 소리와 추격 장면이 포함되어 있습니다.", 153, 374, 640, 65);
-            bool saved=session.Suspension.HasRun;
-            Button("begin", "학교에 들어가기  [Enter]", 451, shell.BeginChapter, primary:true);
-            if(saved) Button("continue-run", "이전 회랑 중단 기록 이어가기", 519, shell.ContinueCorridor).SetEnabled(session.Suspension.Writable);
-            Button("settings", "환경 설정 · 접근성", saved?587:519, shell.Settings);
-            Button("quit", "종료", saved?655:587, () => Application.Quit());
-            var records = session.Records.Snapshot;
-            string best = records.escapes > 0 ? $"최단 탈출  {(int)records.bestEscapeSeconds / 60}분 {(int)records.bestEscapeSeconds % 60:00}초" : "아직 탈출 기록이 없습니다.";
-            Small($"이전 회랑 기록 {records.attempts}회 · 탈출 {records.escapes}회 · 최고 기억 {records.bestRecovered}/5\n{best}", 153, saved?723:653, 675, 65).name = "corridor-record-summary";
-            if(!saved) Small("기억을 회수할 때마다 학교 안의 무언가가 깨어납니다.", 153, 725, 675, 60);
-            BuildAttendanceCard(895, 245, false);
+            Text("매번 달라지는 회랑.\n다섯 기억을 모아 입구로 돌아오세요.", 153, 262, 680, 110, shell.LargeText ? 32 : 28);
+            bool protectedRecords=!session.ChapterRecords.Writable && !string.IsNullOrEmpty(session.ChapterRecords.Status);
+            bool protectedSchoolSlot=!session.ChapterSuspension.Writable && !string.IsNullOrEmpty(session.ChapterSuspension.Status);
+            bool protectedCorridorSlot=!session.Suspension.Writable && !string.IsNullOrEmpty(session.Suspension.Status);
+            bool protectedSlot=protectedSchoolSlot || protectedCorridorSlot;
+            string introduction=protectedRecords?"학교 기록 저장이 중지됐습니다.\n최근 학교 기록에서 상태를 확인하세요.":"발소리를 듣고, 문으로 시선을 끊고, 어둠 속에 숨으세요.\n폭죽은 추격이 시작되기 전에 소리로 유인할 수 있습니다.";
+            if(protectedSlot)
+            {
+                string mode=protectedSchoolSlot && protectedCorridorSlot?"회랑·폐교":protectedSchoolSlot?"폐교":"회랑";
+                introduction=mode+" 중단 기록을 읽을 수 없어 원문을 보존했습니다.\n"+
+                    (protectedRecords?"학교 결과 저장도 중지됐습니다. 최근 학교 기록을 확인하세요.":"새 탐색은 가능합니다. 해당 중단 저장은 보호 중입니다.");
+            }
+            var titleNotice=Small(introduction,153,374,680,65);
+            titleNotice.name=protectedRecords?"school-profile-notice":protectedSlot?"checkpoint-status":"title-introduction";
+            if(protectedSlot || protectedRecords) titleNotice.style.color=Rust;
+            bool saved=session.Suspension.HasRun, schoolSaved=session.ChapterSuspension.HasRun;
+            float next=451;
+            Button("begin", saved?"새 회랑 탐색  [Enter]":"회랑에 들어가기  [Enter]", next, shell.BeginCorridor, primary:true); next+=60;
+            if(saved) { Button("continue-run", "회랑 이어하기 · 기억 "+session.Suspension.Snapshot.recovered.Count(value=>value)+"/5", next, shell.ContinueCorridor).SetEnabled(session.Suspension.Writable); next+=60; }
+            Button("begin-school", schoolSaved?"폐교의 기억 · 처음부터":"폐교의 기억 · 세 층의 학교", next, shell.BeginChapter); next+=60;
+            if(schoolSaved)
+            {
+                var data=session.ChapterSuspension.Snapshot;
+                Button("continue-chapter", $"폐교 이어하기 · 기억 {data.recovered}/5", next, shell.ContinueChapter).SetEnabled(session.ChapterSuspension.Writable); next+=60;
+            }
+            Button("settings", "환경 설정 · 접근성", next, shell.Settings); next+=60;
+            Button("quit", "종료", next, () => Application.Quit()); next+=64;
+            BuildTitleRecords(895,245);
+        }
+        void BuildTitleRecords(float x,float y)
+        {
+            var card=Panel(x,y,540,583,Surface); Outline(card,Edge);
+            Small("회랑 / 폐교 · 별도로 보관하는 탐색 기록",x+30,y+26,480,36);
+            var corridor=session.Records.Snapshot;
+            string corridorBest=corridor.escapes>0?"최단 탈출  "+RunTime(corridor.bestEscapeSeconds):"아직 회랑 탈출 기록이 없습니다.";
+            Text($"회랑 탐색 {corridor.attempts}회 · 탈출 {corridor.escapes}회\n최고 기억 {corridor.bestRecovered}/5\n{corridorBest}",x+30,y+70,480,106,shell.LargeText?23:21).name="corridor-record-summary";
+            Panel(x+26,y+177,487,1,Edge);
+            var school=session.ChapterRecords.Snapshot;
+            string schoolBest=school.escapes>0?"최단 탈출  "+RunTime(school.bestEscapeSeconds):"아직 학교 탈출 기록이 없습니다.";
+            Text($"학교 탐색 {school.attempts}회 · 탈출 {school.escapes}회\n최고 기억 {school.bestRecovered}/5\n{schoolBest}",x+30,y+190,480,106,shell.LargeText?23:21).name="school-record-summary";
+            Button("school-records","최근 학교 탐색 기록",y+301,shell.ChapterHistory,x+30,480);
+            Panel(x+26,y+365,487,1,Edge);
+            controlInstructions=Text(ControlInstructions,x+30,y+377,485,200,shell.LargeText?23:21);
         }
         void BuildAttendanceCard(float x, float y, bool progress)
         {
             var card = Panel(x, y, 540, 535, Surface);
             Outline(card, Edge);
             Panel(x + 26, y + 27, 3, 70, Gold);
-            Small("SCHOOL ARCHIVE  /  출석 확인", x + 46, y + 28, 450);
-            Text(progress ? session.CorridorMode || session.ChapterMode ? $"회수한 기억  {session.RecordsRecovered} / 5" : $"주요 단계  {session.StoryStep} / 4" : "잊힌 회랑", x + 46, y + 61, 460, 48, 30);
+            Small(session.CorridorMode?"CORRIDOR  /  돌아갈 문을 기억하세요":"SCHOOL ARCHIVE  /  출석 확인", x + 46, y + 28, 450);
+            Text(progress ? session.CorridorMode || session.ChapterMode ? $"회수한 기억  {session.RecordsRecovered} / 5" : $"주요 단계  {session.StoryStep} / 4" : "학교 탐색 기록", x + 46, y + 61, 460, 48, 30);
+            if(!progress)
+            {
+                var school=session.ChapterRecords.Snapshot;
+                string best=school.escapes>0?"최단 탈출  "+RunTime(school.bestEscapeSeconds):"아직 학교 탈출 기록이 없습니다.";
+                Text($"학교 탐색 {school.attempts}회 · 탈출 {school.escapes}회\n최고 기억 {school.bestRecovered}/5\n{best}",x+30,y+132,480,110,shell.LargeText?23:21).name="school-record-summary";
+                Button("school-records","최근 학교 탐색 기록",y+249,shell.ChapterHistory,x+30,480);
+                Panel(x+26,y+311,487,1,Edge);
+                controlInstructions=Text(ControlInstructions,x+30,y+323,485,200,shell.LargeText?23:21);
+                return;
+            }
             bool corridorCard = session.CorridorMode || session.ChapterMode || !progress;
             for (int i = 0; i < (corridorCard ? 5 : 4); i++)
             {
@@ -315,37 +366,46 @@ namespace HappyToy.V2
             Button("resume", "계속하기  [Esc]", 387, shell.Resume, primary: true);
             Button("journal", "조사 기록  [J]", 455, shell.Journal);
             Button("settings", "환경 설정 · 접근성", 523, shell.Settings);
-            Button("restart", "처음부터 다시 시작", 591, () => shell.Restart(true));
+            Button("restart", session.CorridorMode?"새 회랑에서 다시 시작":"처음부터 다시 시작", 591, () => shell.Restart(true));
             Button("title", "시작 화면으로 (진행 초기화)", 659, () => shell.Restart(false));
             if(session.CorridorMode)
             {
                 var suspend=Button("suspend-run", "탐색 저장 후 시작 화면으로", 727, shell.SuspendCorridor);
                 suspend.SetEnabled(session.Suspension.Writable&&string.IsNullOrEmpty(session.Corridor.SuspendBlockReason));
             }
+            if(session.ChapterMode)
+            {
+                var suspend=Button("suspend-chapter", "학교 저장 후 시작 화면으로", 727, shell.SuspendChapter);
+                suspend.SetEnabled(session.ChapterSuspension.Writable&&string.IsNullOrEmpty(session.Chapter.SuspendBlockReason));
+            }
             BuildAttendanceCard(895, 245, true);
-            if(string.IsNullOrEmpty(shell.ReloadError)) Small(!session.Suspension.Writable&&!string.IsNullOrEmpty(session.Suspension.Status)?session.Suspension.Status:
+            if(string.IsNullOrEmpty(shell.ReloadError)) Small(session.ChapterMode && !session.ChapterSuspension.Writable?session.ChapterSuspension.Status:
+                session.ChapterMode && !string.IsNullOrEmpty(session.Chapter.SuspendBlockReason)?session.Chapter.SuspendBlockReason:
+                !session.Suspension.Writable&&!string.IsNullOrEmpty(session.Suspension.Status)?session.Suspension.Status:
                 session.CorridorMode && !string.IsNullOrEmpty(session.Corridor.SuspendBlockReason)?session.Corridor.SuspendBlockReason:
-                session.ChapterMode ? "학교 탐색은 일시정지로 계속할 수 있습니다. 시작 화면으로 나가거나 다시 시작하면 진행이 초기화됩니다." :
+                session.ChapterMode ? "학교 저장으로 나가면 기억과 현재 상태를 이어갑니다. 처음부터 시작하면 저장된 학교 탐색을 초기화합니다." :
                 "중단 저장으로 나가면 같은 회랑을 이어갈 수 있습니다. 다시 시작은 현재 탐색을 초기화합니다.", 153, 787, 1270,40);
         }
         void BuildJournal()
         {
-            int required=session.JournalCount;
-            int pages = Mathf.Max(1, Mathf.CeilToInt((required + session.ExplorationCount) / 6f));
+            int required=session.CorridorMode?0:session.JournalCount;
+            int total=session.CorridorMode?Mathf.Max(CorridorRun.Required,session.ExplorationCount):required+session.ExplorationCount;
+            int pages = Mathf.Max(1, Mathf.CeilToInt(total / 6f));
             journalPage = Mathf.Clamp(journalPage, 0, pages - 1);
-            Small($"복원 {session.RecordsRecovered} / {session.TotalRecords}     주변 기록 {session.ExplorationCount}개     ·     발견한 내용만 보관합니다", 153, 218, 1290);
+            Small(session.CorridorMode?$"회수한 기억 {session.RecordsRecovered} / 5     ·     발견한 순서대로 보관합니다":$"복원 {session.RecordsRecovered} / {session.TotalRecords}     주변 기록 {session.ExplorationCount}개     ·     발견한 내용만 보관합니다", 153, 218, 1290);
             for (int slot = 0; slot < 6; slot++)
             {
                 int index = journalPage * 6 + slot;
+                if(session.CorridorMode && index>=total) break;
                 float x = 150 + slot % 2 * 665, y = 264 + slot / 2 * 158;
                 string entry = index < required ? session.JournalEntry(index) : session.ExplorationEntry(index - required);
-                string placeholder = index < required ? "아직 발견하지 못했습니다.\n학교 안에서 단서를 찾아 조사하세요." : "아직 비어 있습니다.\n게시물을 조사하면 이곳에 남습니다.";
+                string placeholder = session.CorridorMode?"아직 회수하지 못했습니다.\n갈림길에서 기억이 울리는 소리를 들으세요.":index < required ? "아직 발견하지 못했습니다.\n학교 안에서 단서를 찾아 조사하세요." : "아직 비어 있습니다.\n게시물을 조사하면 이곳에 남습니다.";
                 var card = Panel(x, y, 635, 148, Surface);
                 Outline(card, entry == null ? Edge : new Color(.39f, .43f, .30f));
                 Panel(x, y, 3, 148, entry == null ? Edge : Gold);
-                Small(index < required ? $"필수 기록  0{index + 1}" : $"주변 기록  {index - required+1:00}", x + 20, y + 11, 460, 25).style.color = entry == null ? Muted : Gold;
+                Small(session.CorridorMode?$"회랑의 기억  0{index+1}":index < required ? $"필수 기록  0{index + 1}" : $"주변 기록  {index - required+1:00}", x + 20, y + 11, 460, 25).style.color = entry == null ? Muted : Gold;
                 var label = Text(entry ?? placeholder, x + 20, y + 43, 596, 103, shell.LargeText ? 22 : 20);
-                label.name = index < required ? "record-" + index : "inspection-" + (index - required);
+                label.name = session.CorridorMode?"corridor-memory-"+index:index < required ? "record-" + index : "inspection-" + (index - required);
                 if (entry == null) label.style.color = Muted;
             }
             Button("back", "돌아가기  [J / Esc]", 747, shell.Back, primary: true);
@@ -384,12 +444,13 @@ namespace HappyToy.V2
         }
         void BuildResult()
         {
-            Small(session.Escaped ? "조사 종료  /  하교 확인" : "조사 중단  /  기록 미완료", 153, 247, 1170);
+            if(session.ChapterMode) { BuildSchoolResult(); return; }
+            Small(session.CorridorMode?(session.Escaped?"회랑 탐색 종료  /  탈출 성공":"회랑 탐색 중단  /  기억 미완료"):session.Escaped ? "조사 종료  /  하교 확인" : "조사 중단  /  기록 미완료", 153, 247, 1170);
             string message = session.Escaped ? "지워졌던 이름을 다시 적었다.\n복도 너머에서 마지막 문이 닫힌다." : "이곳에는 아직 돌아오지 못한 기록이 있습니다.\n다시 들어가 마지막 이름을 찾아주세요.";
-            if (session.CorridorMode || session.ChapterMode) message = session.Escaped ? "다섯 기억이 모이자 봉인이 풀렸다.\n이번에는 복도 너머로 돌아갈 수 있다." : "돌아갈 길을 잃었다.\n발소리를 기억하고 학교를 다시 탐색하세요.";
+            if (session.CorridorMode) message = session.Escaped ? "다섯 기억이 모이자 봉인이 풀렸다.\n처음 들어온 문 너머로 돌아왔다." : "돌아갈 길을 잃었다.\n들었던 발소리를 기억하고 다음 회랑에 들어가세요.";
             Text(message, 153, 294, 1210, 103, shell.LargeText ? 30 : 27);
             Panel(895, 437, 540, 391, Surface);
-            Small(session.Escaped ? "마지막 출석 확인" : "다음 탐색을 위한 기록", 920, 460, 490);
+            Small(session.CorridorMode?"이번 회랑 탐색":session.Escaped ? "마지막 출석 확인" : "다음 탐색을 위한 기록", 920, 460, 490);
             Text($"복원한 기록  {session.RecordsRecovered} / {session.TotalRecords}\n탐색 시간  {Mathf.FloorToInt(session.ElapsedPlayTime / 60)}분 {Mathf.FloorToInt(session.ElapsedPlayTime % 60):00}초", 920, 505, 490, 85, ReadingSize);
             string hint = session.Escaped ? "모든 이름이 제자리로 돌아왔습니다." : !string.IsNullOrWhiteSpace(session.DefeatHint) ? session.DefeatHint : "문을 닫아 시선을 끊고 걸으며 숨을 회복하세요.";
             Text(hint, 920, 603, 490, 211, shell.LargeText ? 23 : 20).style.color = session.Escaped ? Gold : Muted;
@@ -402,6 +463,55 @@ namespace HappyToy.V2
                 153, retryRecord ? 715 : 680, 675, retryRecord ? 55 : 70);
             if (!string.IsNullOrWhiteSpace(session.RecordSaveMessage))
                 Small(session.RecordSaveMessage, 153, retryRecord ? 770 : 752, 675, retryRecord ? 60 : 80).name = "record-save-status";
+        }
+        static string RunTime(float seconds) => $"{Mathf.FloorToInt(seconds/60)}분 {Mathf.FloorToInt(seconds%60):00}초";
+        void BuildSchoolResult()
+        {
+            var result=session.ChapterResult;
+            Small(session.Escaped?"학교 조사 종료  /  하교 확인":"학교 조사 중단  /  다섯 기억의 기록",153,247,675);
+            Text(session.Escaped?"다섯 이름이 돌아왔다.\n학교 밖의 공기를 다시 마신다.":"기억은 아직 학교 안에 남아 있다.\n들었던 소리를 기억하고 다시 들어가세요.",153,294,650,109,shell.LargeText?30:27);
+            Panel(895,245,540,583,Surface);
+            Small("이번 학교 탐색",920,269,490);
+            Text($"기억 {result.recovered} / 5\n탐색 시간  {RunTime(result.seconds)}\n남은 폭죽 {result.firecrackersRemaining}개 · 호흡 {Mathf.RoundToInt(result.staminaRemaining*100)}%\n이동 거리 {result.distance:0.0} m\n폭죽 {result.throws}회 · 은신 {result.hides}회 · 문 닫기 {result.closedDoors}회",920,320,490,176,shell.LargeText?23:21).name="school-result-details";
+            Text(session.Escaped?"결과: 학교 탈출 성공":"마지막 기척: "+(string.IsNullOrEmpty(result.defeatSource)?"기록되지 않음":result.defeatSource),920,498,490,54,ReadingSize).name="school-result-source";
+            Small(result.actionsComplete?"행동 기록은 이번 탐색 전체를 포함합니다.\n일시정지와 중단 시간은 탐색 시간에서 제외됩니다.":"이전 저장에는 행동 기록이 없어 이어하기 이후 행동만 표시합니다. 탐색 시간과 기억은 전체 진행입니다.",920,559,490,77).name="school-result-scope";
+            string advice=session.Escaped?"모든 기억을 회수하고 1층 출입문으로 돌아왔습니다. 다른 탐색 기록은 최근 기록에서 확인할 수 있습니다.":
+                session.Chapter.Objective+"\n"+session.DefeatHint;
+            Text(advice,920,646,490,172,shell.LargeText?23:20).style.color=session.Escaped?Gold:Muted;
+            Button("restart",session.Escaped?"학교 다시 탐색하기":"학교 처음부터 다시 시작",447,()=>shell.Restart(true),primary:true);
+            Button("title","시작 화면으로",515,()=>shell.Restart(false)); Button("quit","종료",583,()=>Application.Quit());
+            Button("school-records","최근 학교 탐색 기록",651,shell.ChapterHistory);
+            bool retry=!session.ChapterRecordSaved && session.ChapterRecords.Writable && !string.IsNullOrEmpty(session.ChapterRecordSaveMessage);
+            if(retry) Button("retry-school-record-save","학교 결과 저장 다시 시도",710,()=>{session.RetryChapterRecordSave(); Rebuild();});
+            string message=session.ChapterRecordSaveMessage;
+            if(string.IsNullOrEmpty(message)) message=session.Escaped?"다음 탐색에서는 새로운 기록에 도전할 수 있습니다.":"다시 시작은 첫 기억부터 진행합니다. 완료된 탐색 기록은 남습니다.";
+            Small(message,153,retry?770:723,675,retry?62:98).name="school-record-save-status";
+        }
+        void BuildSchoolRecords()
+        {
+            var summary=session.ChapterRecords.Snapshot;
+            string best=summary.escapes>0?"최단 탈출 "+RunTime(summary.bestEscapeSeconds):"아직 학교 탈출 기록이 없습니다.";
+            Small($"학교 탐색 {summary.attempts}회 · 탈출 {summary.escapes}회 · 최고 기억 {summary.bestRecovered}/5\n{best}",153,247,1290,62).name="school-history-summary";
+            Small(string.IsNullOrEmpty(session.ChapterRecords.Status)?"최근 저장된 여덟 번의 학교 탐색을 보관합니다. 회랑 탐색 기록은 별도입니다.":session.ChapterRecords.Status.Replace("\n"," "),153,313,1290,30);
+            int pages=Mathf.Max(1,Mathf.CeilToInt(summary.recent.Length/4f)); schoolRecordPage=Mathf.Clamp(schoolRecordPage,0,pages-1);
+            if(summary.recent.Length==0) Text("아직 완료된 학교 탐색이 없습니다.\n학교에 들어가면 탈출 또는 포획 결과가 이곳에 남습니다.",174,384,1220,110,ReadingSize).name="school-history-empty";
+            for(int slot=0;slot<4;slot++)
+            {
+                int index=schoolRecordPage*4+slot; if(index>=summary.recent.Length) break;
+                var run=summary.recent[index]; float y=344+slot*108; var card=Panel(150,y,1300,99,Surface); Outline(card,Edge);
+                string source=string.IsNullOrEmpty(run.defeatSource)?"기록 미완료":run.defeatSource;
+                if(source.Length>32) source=source.Substring(0,32)+"…";
+                Text($"{(run.escaped?"탈출 성공":"포획 · "+source)}    기억 {run.recovered}/5    {RunTime(run.seconds)}",174,y+12,1240,40,shell.LargeText?24:22).name="school-history-run-"+index;
+                Small($"폭죽 {run.throws}회 · 은신 {run.hides}회 · 문 닫기 {run.closedDoors}회 · 이동 {run.distance:0.0} m · 남은 폭죽 {run.firecrackersRemaining}개"+
+                    (run.actionsComplete?"":"  (이어하기 이후 행동)"),174,y+54,1240,36);
+            }
+            Button("back","돌아가기  [Esc]",775,shell.Back,primary:true);
+            if(pages>1)
+            {
+                Button("school-records-previous","이전",775,()=>{schoolRecordPage--; Rebuild();},895,165).SetEnabled(schoolRecordPage>0);
+                var count=Text($"{schoolRecordPage+1} / {pages}",1080,787,165,40,22); count.style.unityTextAlign=TextAnchor.UpperCenter;
+                Button("school-records-next","다음",775,()=>{schoolRecordPage++; Rebuild();},1285,165).SetEnabled(schoolRecordPage<pages-1);
+            }
         }
 
         void BuildHud()
@@ -536,7 +646,23 @@ namespace HappyToy.V2
                 Rebuild();
             if (shown == GameShell.Page.Settings && settingsLabelsDirty) UpdateSettingsLabels();
             if (shown == GameShell.Page.Playing) UpdateHud();
+            UpdateKeyboardSubmit();
             UpdateGamepadMenu();
+        }
+        void UpdateKeyboardSubmit()
+        {
+            var keyboard=Keyboard.current;
+            if(shell.Screen==GameShell.Page.Playing || shell.IsReloading || keyboard==null ||
+                !(keyboard.enterKey.wasPressedThisFrame || keyboard.numpadEnterKey.wasPressedThisFrame)) return;
+            var target=root.panel?.focusController.focusedElement as VisualElement;
+            if(target==null || target.panel!=root.panel) target=stage.Q<Button>();
+            if(target==null) return;
+            // Runtime panels rendered to textures receive no native keyboard
+            // submit. The same focused-button path also owns native Enter so a
+            // press cannot arrive twice through the platform event provider.
+            sendingKeyboardSubmit=true;
+            try { using(var submit=NavigationSubmitEvent.GetPooled()) target.SendEvent(submit); }
+            finally { sendingKeyboardSubmit=false; }
         }
         void UpdateGamepadMenu()
         {

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="13" result="Passed" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:04Z" duration="1.5254693">
+  <test-suite type="TestSuite" id="1000" name="Happy Toy V2 — Development" fullname="Happy Toy V2 — Development" runstate="Runnable" testcasecount="30" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:04Z" duration="1.525469" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1037" name="HappyToy.V2.EditModeTests.dll" fullname="C:/Users/강 두오/Documents/Codex/2026-10-05/d/outputs/HappyToyV2-90a194f2/HappyToyV2/Library/ScriptAssemblies/HappyToy.V2.EditModeTests.dll" runstate="Runnable" testcasecount="30" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:04Z" duration="1.512136" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="43392" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1038" name="HappyToy" fullname="HappyToy" runstate="Runnable" testcasecount="30" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:04Z" duration="1.511490" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1039" name="V2" fullname="HappyToy.V2" runstate="Runnable" testcasecount="30" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:04Z" duration="1.511176" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1042" name="CloudTests" fullname="HappyToy.V2.CloudTests" runstate="Runnable" testcasecount="17" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:04Z" duration="1.510418" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1017" name="ChapterCheckpointStoreTests" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:02Z" duration="0.213938" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1020" name="ChapterRoundTripKeepsSchoolResourcesAndConsumesOnlyOnce" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.ChapterRoundTripKeepsSchoolResourcesAndConsumesOnlyOnce" methodname="ChapterRoundTripKeepsSchoolResourcesAndConsumesOnlyOnce" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="12625970" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:02Z" duration="0.063231" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1019" name="ExplicitMalformedMetricsAreRejectedAndTheirRawBytesArePreserved" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.ExplicitMalformedMetricsAreRejectedAndTheirRawBytesArePreserved" methodname="ExplicitMalformedMetricsAreRejectedAndTheirRawBytesArePreserved" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="1812310414" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:02Z" duration="0.027237" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1022" name="FailedLockedAndStaleWritesPreserveExistingRun" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.FailedLockedAndStaleWritesPreserveExistingRun" methodname="FailedLockedAndStaleWritesPreserveExistingRun" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="821289930" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:02Z" duration="0.032732" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1018" name="RawVersionOneSchoolSaveWithoutMetricsLoadsAsAbsentAndRemainsWritable" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.RawVersionOneSchoolSaveWithoutMetricsLoadsAsAbsentAndRemainsWritable" methodname="RawVersionOneSchoolSaveWithoutMetricsLoadsAsAbsentAndRemainsWritable" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="430592202" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:02Z" duration="0.021891" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1021" name="SchoolAndCorridorSchemasRemainSeparateAndInvalidProgressNeverCommits" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.SchoolAndCorridorSchemasRemainSeparateAndInvalidProgressNeverCommits" methodname="SchoolAndCorridorSchemasRemainSeparateAndInvalidProgressNeverCommits" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="1477954895" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:02Z" duration="0.007338" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1023" name="UnknownCorruptOversizedAndCorridorFilesArePreserved" fullname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests.UnknownCorruptOversizedAndCorridorFilesArePreserved" methodname="UnknownCorruptOversizedAndCorridorFilesArePreserved" classname="HappyToy.V2.CloudTests.ChapterCheckpointStoreTests" runstate="Runnable" seed="286030023" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:02Z" duration="0.037834" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1024" name="ChapterRecordsTests" fullname="HappyToy.V2.CloudTests.ChapterRecordsTests" classname="HappyToy.V2.CloudTests.ChapterRecordsTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:04Z" duration="1.290849" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1027" name="CorruptUnknownAndOversizedPrimaryFilesArePreservedEvenWithReadableBackup" fullname="HappyToy.V2.CloudTests.ChapterRecordsTests.CorruptUnknownAndOversizedPrimaryFilesArePreservedEvenWithReadableBackup" methodname="CorruptUnknownAndOversizedPrimaryFilesArePreservedEvenWithReadableBackup" classname="HappyToy.V2.CloudTests.ChapterRecordsTests" runstate="Runnable" seed="2133213598" result="Passed" start-time="2026-10-05 13:46:02Z" end-time="2026-10-05 13:46:03Z" duration="0.069566" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1029" name="LockedDamagedBackupKeepsPrimaryAndOriginalBytesAndAllowsSafeRetry" fullname="HappyToy.V2.CloudTests.ChapterRecordsTests.LockedDamagedBackupKeepsPrimaryAndOriginalBytesAndAllowsSafeRetry" methodname="LockedDamagedBackupKeepsPrimaryAndOriginalBytesAndAllowsSafeRetry" classname="HappyToy.V2.CloudTests.ChapterRecordsTests" runstate="Runnable" seed="630997286" result="Passed" start-time="2026-10-05 13:46:03Z" end-time="2026-10-05 13:46:03Z" duration="0.057113" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1030" name="MissingPrimaryRecoversValidBackupAndWriteFailureCanRetryWithoutDataLoss" fullname="HappyToy.V2.CloudTests.ChapterRecordsTests.MissingPrimaryRecoversValidBackupAndWriteFailureCanRetryWithoutDataLoss" methodname="MissingPrimaryRecoversValidBackupAndWriteFailureCanRetryWithoutDataLoss" classname="HappyToy.V2.CloudTests.ChapterRecordsTests" runstate="Runnable" seed="473987307" result="Passed" start-time="2026-10-05 13:46:03Z" end-time="2026-10-05 13:46:03Z" duration="0.057561" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1031" name="ReadOnlyInvalidResourcesAndImpossibleEscapesNeverWrite" fullname="HappyToy.V2.CloudTests.ChapterRecordsTests.ReadOnlyInvalidResourcesAndImpossibleEscapesNeverWrite" methodname="ReadOnlyInvalidResourcesAndImpossibleEscapesNeverWrite" classname="HappyToy.V2.CloudTests.ChapterRecordsTests" runstate="Runnable" seed="1771246024" result="Passed" start-time="2026-10-05 13:46:03Z" end-time="2026-10-05 13:46:03Z" duration="0.003927" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1025" name="SchoolResultsKeepBestEscapeRecentActionsAndBoundedIndependentHistory" fullname="HappyToy.V2.CloudTests.ChapterRecordsTests.SchoolResultsKeepBestEscapeRecentActionsAndBoundedIndependentHistory" methodname="SchoolResultsKeepBestEscapeRecentActionsAndBoundedIndependentHistory" classname="HappyToy.V2.CloudTests.ChapterRecordsTests" runstate="Runnable" seed="1035295703" result="Passed" start-time="2026-10-05 13:46:03Z" end-time="2026-10-05 13:46:04Z" duration="0.970879" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1026" name="StaleWritersMergeUnderLeaseAndDuplicateRecentRunTokensCountOnce" fullname="HappyToy.V2.CloudTests.ChapterRecordsTests.StaleWritersMergeUnderLeaseAndDuplicateRecentRunTokensCountOnce" methodname="StaleWritersMergeUnderLeaseAndDuplicateRecentRunTokensCountOnce" classname="HappyToy.V2.CloudTests.ChapterRecordsTests" runstate="Runnable" seed="636244463" result="Passed" start-time="2026-10-05 13:46:04Z" end-time="2026-10-05 13:46:04Z" duration="0.041791" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1028" name="ValidPrimaryStaysWritableAndArchivesDamagedBackupBytesWithoutReplacingThem" fullname="HappyToy.V2.CloudTests.ChapterRecordsTests.ValidPrimaryStaysWritableAndArchivesDamagedBackupBytesWithoutReplacingThem" methodname="ValidPrimaryStaysWritableAndArchivesDamagedBackupBytesWithoutReplacingThem" classname="HappyToy.V2.CloudTests.ChapterRecordsTests" runstate="Runnable" seed="29676981" result="Passed" start-time="2026-10-05 13:46:04Z" end-time="2026-10-05 13:46:04Z" duration="0.086097" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/강 두오/AppData/LocalLow/Happy Toy/Happy Toy V2 — Development\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

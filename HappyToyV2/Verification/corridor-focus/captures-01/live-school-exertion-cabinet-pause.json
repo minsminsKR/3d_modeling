@@ -1,0 +1,241 @@
+{
+    "capture": "UnityAudioRendererMainOutput",
+    "scope": "All production voices together during actual opening-school keyboard sprint, positioned actual cabinet Use, rest, pause/resume and exit. No voice selection, replacement audio or threat deactivation. Separate complete input route covers live enemy mixing.",
+    "syntheticPcm": false,
+    "fullRouteEvidence": false,
+    "deviceListeningCertification": false,
+    "segments": [
+        {
+            "name": "unselected-live-sprint-0",
+            "clip": "",
+            "cue": "all-live-voices",
+            "surface": "",
+            "collider": "",
+            "samples": 76800,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 0,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.36000001430511475,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -4.280001640319824,
+                "y": 0.07999999821186066,
+                "z": 0.0
+            },
+            "listener": {
+                "x": -4.2740797996521,
+                "y": 1.6890499591827393,
+                "z": 0.0
+            },
+            "peak": 0.12327492237091064,
+            "rms": 0.012273208825613321
+        },
+        {
+            "name": "unselected-live-sprint-1",
+            "clip": "External step-wood / step-wood-1",
+            "cue": "all-live-voices",
+            "surface": "",
+            "collider": "",
+            "samples": 76800,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 76800,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.36000001430511475,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -0.6720026731491089,
+                "y": 0.07999999821186066,
+                "z": 0.0
+            },
+            "listener": {
+                "x": -0.6691095232963562,
+                "y": 1.6873247623443604,
+                "z": 0.0
+            },
+            "peak": 0.11465082317590714,
+            "rms": 0.01075433373899122
+        },
+        {
+            "name": "unselected-live-sprint-2",
+            "clip": "External step-wood / step-wood-3",
+            "cue": "all-live-voices",
+            "surface": "",
+            "collider": "",
+            "samples": 76800,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 153600,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.36000001430511475,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 2.9359960556030273,
+                "y": 0.07999999821186066,
+                "z": 0.0
+            },
+            "listener": {
+                "x": 2.9287493228912354,
+                "y": 1.6878470182418823,
+                "z": 0.0
+            },
+            "peak": 0.11320853978395462,
+            "rms": 0.011253035558523763
+        },
+        {
+            "name": "unselected-live-sprint-3",
+            "clip": "External step-wood / step-wood-0",
+            "cue": "all-live-voices",
+            "surface": "",
+            "collider": "",
+            "samples": 76800,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 230400,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.36000001430511475,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 6.455995082855225,
+                "y": 0.07999999821186066,
+                "z": 0.0
+            },
+            "listener": {
+                "x": 6.4552083015441895,
+                "y": 1.688285231590271,
+                "z": 0.0
+            },
+            "peak": 0.11338741332292557,
+            "rms": 0.011121815857052225
+        },
+        {
+            "name": "unselected-live-cabinet-enter",
+            "clip": "External cabinet-close / cabinet-close-0",
+            "cue": "all-live-voices",
+            "surface": "",
+            "collider": "",
+            "samples": 48000,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 307200,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.3799999952316284,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 3.75,
+                "y": 0.0,
+                "z": 4.699999809265137
+            },
+            "listener": {
+                "x": 3.4779999256134033,
+                "y": 1.6449999809265137,
+                "z": 4.699999809265137
+            },
+            "peak": 0.039248738437891006,
+            "rms": 0.003992895183693092
+        },
+        {
+            "name": "unselected-live-paused",
+            "clip": "Quiet exertion breath",
+            "cue": "all-live-voices",
+            "surface": "",
+            "collider": "",
+            "samples": 28802,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 355200,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.048237014561891556,
+            "paused": true,
+            "occluded": false,
+            "source": {
+                "x": 3.75,
+                "y": 0.0,
+                "z": 4.699999809265137
+            },
+            "listener": {
+                "x": 3.4779999256134033,
+                "y": 1.6449999809265137,
+                "z": 4.699999809265137
+            },
+            "peak": 1.0240092477109158e-28,
+            "rms": 8.564149797097038e-29
+        },
+        {
+            "name": "unselected-live-resumed",
+            "clip": "Quiet exertion breath",
+            "cue": "all-live-voices",
+            "surface": "",
+            "collider": "",
+            "samples": 48000,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 384002,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.022814908996224403,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 3.75,
+                "y": 0.0,
+                "z": 4.699999809265137
+            },
+            "listener": {
+                "x": 3.4779999256134033,
+                "y": 1.6449999809265137,
+                "z": 4.699999809265137
+            },
+            "peak": 0.05043156445026398,
+            "rms": 0.007260686496548141
+        },
+        {
+            "name": "unselected-live-cabinet-exit",
+            "clip": "External cabinet-open / cabinet-open-0",
+            "cue": "all-live-voices",
+            "surface": "",
+            "collider": "",
+            "samples": 28802,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 432002,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.3799999952316284,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": 3.75,
+                "y": 0.07999992370605469,
+                "z": 3.5999999046325684
+            },
+            "listener": {
+                "x": 3.746770143508911,
+                "y": 1.6805342435836792,
+                "z": 3.5999999046325684
+            },
+            "peak": 0.058549314737319946,
+            "rms": 0.010374254269007318
+        }
+    ]
+}

@@ -1,0 +1,101 @@
+using System;
+using UnityEngine;
+using UnityEngine.AI;
+
+namespace HappyToy.V2
+{
+    public sealed partial class WeepingAngelEncounter
+    {
+        [Serializable] public sealed class ChapterProgress
+        {
+            public bool active, released;
+            public Vector3 position;
+            public Quaternion rotation, visualRotation;
+            public float unobserved, soundRemaining;
+            public int paths, attacks;
+            public void Validate()
+            {
+                if(!ChapterCheckpoint.Point(position) || !ChapterCheckpoint.Rotation(rotation) || !ChapterCheckpoint.Rotation(visualRotation) ||
+                    !CorridorCheckpoint.Number(unobserved,0,1000000000) || !CorridorCheckpoint.Number(soundRemaining,0,.81f) ||
+                    paths<0 || attacks<0 || released && !active) throw new ArgumentException("Invalid mannequin checkpoint");
+            }
+        }
+        public ChapterProgress CaptureChapterProgress() => new ChapterProgress {
+            active=gameObject.activeSelf,released=Released,position=transform.position,rotation=transform.rotation,
+            visualRotation=visual?visual.localRotation:Quaternion.identity,unobserved=unobservedFor,
+            soundRemaining=Mathf.Max(0,soundTimer),paths=PathRequests,attacks=AttacksStarted };
+        public void RestoreChapterProgress(ChapterProgress data)
+        {
+            data.Validate(); agent=GetComponent<NavMeshAgent>(); agent.enabled=false;
+            transform.SetPositionAndRotation(data.position,data.rotation); gameObject.SetActive(data.active);
+            if(data.active) { agent.enabled=true; if(!agent.Warp(data.position)) throw new InvalidOperationException("Mannequin restore has no floor"); }
+            floorY=data.position.y; Triggered=Released=data.released; Resolved=false; Observed=Moving=false;
+            intro=data.released?2.8f:0; partialCueIssued=settleCueIssued=data.released; attack.Reset(); repath=0;
+            unobservedFor=data.unobserved; soundTimer=data.soundRemaining; PathRequests=data.paths; AttacksStarted=data.attacks;
+            if(visual) { visual.gameObject.SetActive(true); visual.localRotation=data.visualRotation; }
+            RestoreDisplayLight(); EnemyNavigation.Stop(agent,true);
+        }
+    }
+    public sealed partial class LanternMaskEncounter
+    {
+        [Serializable] public sealed class ChapterProgress
+        {
+            public bool active, introComplete, transformed, cueIssued;
+            public Phase state;
+            public Vector3 position, target;
+            public Quaternion rotation;
+            public float age, memory, awareness;
+            public int waypoint, curses, attacks, noises;
+            public void Validate()
+            {
+                if(!ChapterCheckpoint.Point(position) || !CorridorCheckpoint.Vector(target) || !ChapterCheckpoint.Rotation(rotation) ||
+                    !Enum.IsDefined(typeof(Phase),state) || state==Phase.Transforming || state==Phase.Resolved ||
+                    !CorridorCheckpoint.Number(age,0,1000000000) || !CorridorCheckpoint.Number(memory,0,8.01f) ||
+                    !CorridorCheckpoint.Number(awareness,0,1) || waypoint<0 || waypoint>2 || curses<0 || attacks<0 || noises<0 ||
+                    introComplete && !active || transformed && !introComplete) throw new ArgumentException("Invalid mask checkpoint");
+            }
+        }
+        public ChapterProgress CaptureChapterProgress() => new ChapterProgress {
+            active=gameObject.activeSelf,introComplete=IntroCompleted,transformed=Transformed,cueIssued=recognitionCueIssued,
+            state=State,position=transform.position,target=target,rotation=transform.rotation,age=age,memory=Mathf.Max(0,memory),
+            awareness=awareness.Value,waypoint=waypoint,curses=CursesApplied,attacks=AttacksStarted,noises=FootstepNoisesAccepted };
+        public void RestoreChapterProgress(ChapterProgress data)
+        {
+            data.Validate(); agent=GetComponent<NavMeshAgent>(); agent.enabled=false;
+            transform.SetPositionAndRotation(data.position,data.rotation); gameObject.SetActive(data.active);
+            if(data.active) { agent.enabled=true; if(!agent.Warp(data.position)) throw new InvalidOperationException("Mask restore has no floor"); }
+            floorY=data.position.y; State=data.state; target=data.target; age=data.age; memory=data.memory; waypoint=data.waypoint;
+            IntroStarted=IntroCompleted=data.introComplete; IntroElapsed=data.introComplete?2.2f:0; riseCueIssued=data.introComplete;
+            Transformed=data.transformed; transformTime=data.transformed?5:0; recognitionCueIssued=data.cueIssued;
+            awareness.Restore(data.awareness); CursesApplied=data.curses; AttacksStarted=data.attacks; FootstepNoisesAccepted=data.noises;
+            attack.Reset(); repath=0; EnemyNavigation.Stop(agent,true); SetVisible(data.active); if(data.active) Visual();
+        }
+    }
+    public sealed partial class V1HwacatEvent
+    {
+        public void RestoreChapterCompletion(bool completed,bool witnessed)
+        {
+            if(!chapterDriven || witnessed && !completed) throw new ArgumentException("Invalid portrait restoration");
+            StopAllCoroutines(); Cancelled=false; Triggered=Completed=completed; ChapterWitnessed=witnessed;
+            chapterSightTime=witnessed?.5f:0; Phase=completed?"done":"idle"; PhaseElapsed=RevealElapsed=0;
+            if(normal) normal.SetActive(false); RestorePainting();
+            if(completed && capturedPainting && painting)
+            {
+                var start=painting.position; var rotation=painting.rotation;
+                painting.position=new Vector3(start.x,spawn.y+.10f,start.z-.35f);
+                painting.rotation=rotation*Quaternion.Euler(85,0,0);
+            }
+            if(angry) angry.enabled=true;
+        }
+    }
+    public sealed partial class AnnexEncounter
+    {
+        public void RestoreChapterCompletion(bool released)
+        {
+            if(!chapterDriven) throw new InvalidOperationException("Nursery is not chapter driven");
+            StopAllCoroutines(); Cancelled=false; Triggered=Released=released; Phase=released?"released":"idle";
+            RevealElapsed=released?5:0; RestoreLight();
+            if(monster) { monster.enabled=true; var motion=monster.GetComponent<V1MonsterMotion>(); if(motion) motion.enabled=true; }
+        }
+    }
+}

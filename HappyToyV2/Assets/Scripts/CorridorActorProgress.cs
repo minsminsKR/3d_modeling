@@ -14,8 +14,12 @@ namespace HappyToy.V2
             public bool crouched, exhausted, light;
             public int stock;
             public void Validate()
+            { ValidatePosition(false); }
+            public void ValidateChapter()
+            { ValidatePosition(true); }
+            void ValidatePosition(bool chapter)
             {
-                if(!CorridorCheckpoint.Point(position) || !CorridorCheckpoint.Number(yaw,0,360) || !CorridorCheckpoint.Number(pitch,-78,78) ||
+                if(!(chapter ? ChapterCheckpoint.Point(position) : CorridorCheckpoint.Point(position)) || !CorridorCheckpoint.Number(yaw,0,360) || !CorridorCheckpoint.Number(pitch,-78,78) ||
                     !CorridorCheckpoint.Number(stamina,0,1) || !CorridorCheckpoint.Number(slow,0,3600) ||
                     !CorridorCheckpoint.Number(noiseRadius,0,28) || !CorridorCheckpoint.Number(noiseRemaining,0,.81f) ||
                     !CorridorCheckpoint.Number(itemCooldown,0,.51f) || stock < 0 || stock > FirecrackerInventory.Capacity)
@@ -31,8 +35,12 @@ namespace HappyToy.V2
                 light=flashlight&&flashlight.enabled };
         }
         public void RestoreProgress(Progress data)
+        { data.Validate(); RestoreValidatedProgress(data); }
+        public void RestoreChapterProgress(Progress data)
+        { data.ValidateChapter(); RestoreValidatedProgress(data); }
+        void RestoreValidatedProgress(Progress data)
         {
-            data.Validate(); controller.enabled=false;
+            controller.enabled=false;
             Hidden=false; hidingPlace=warnedHidingPlace=null; hidingThreatUntil=0;
             transform.SetPositionAndRotation(data.position,Quaternion.Euler(0,data.yaw,0)); pitch=data.pitch;
             Crouching=data.crouched; StandingBlocked=false;
@@ -46,10 +54,13 @@ namespace HappyToy.V2
             Firecrackers.RestoreStock(data.stock,data.itemCooldown); controller.enabled=true;
         }
         public bool CanRestoreProgress(Progress data)
+        { data.Validate(); return CanRestoreValidatedProgress(data,(1<<8)|(1<<9)); }
+        public bool CanRestoreChapterProgress(Progress data)
+        { data.ValidateChapter(); return CanRestoreValidatedProgress(data,Physics.DefaultRaycastLayers); }
+        bool CanRestoreValidatedProgress(Progress data,int supportLayers)
         {
-            data.Validate();
             if(!NavMesh.SamplePosition(data.position,out _,.65f,NavMesh.AllAreas) ||
-                !Physics.Raycast(data.position+Vector3.up*.15f,Vector3.down,.4f,(1<<8)|(1<<9),QueryTriggerInteraction.Ignore)) return false;
+                !Physics.Raycast(data.position+Vector3.up*.15f,Vector3.down,.4f,supportLayers,QueryTriggerInteraction.Ignore)) return false;
             float height=data.crouched?crouchedHeight:standingHeight;
             var center=standingCenter-Vector3.up*(standingHeight-height)*.5f+data.position;
             float half=Mathf.Max(0,height*.5f-controller.radius);
@@ -68,18 +79,23 @@ namespace HappyToy.V2
             public int waypoint,searchCandidate,visited,attacks,noises,footstepNoises;
             public string door;
             public void Validate()
+            { ValidatePosition(false); }
+            public void ValidateChapter()
+            { ValidatePosition(true); }
+            void ValidatePosition(bool chapter)
             {
-                if(!CorridorCheckpoint.Point(position) || !Enum.IsDefined(typeof(State),state) ||
-                    !CorridorCheckpoint.Number(yaw,0,360) || !CorridorCheckpoint.Number(floor,-.15f,.85f) ||
+                Func<Vector3,bool> point = chapter ? ChapterCheckpoint.Point : CorridorCheckpoint.Point;
+                if(!point(position) || !Enum.IsDefined(typeof(State),state) ||
+                    !CorridorCheckpoint.Number(yaw,0,360) || !CorridorCheckpoint.Number(floor,chapter?-6:-.15f,chapter?8:.85f) ||
                     !CorridorCheckpoint.Vector(lastKnown) || !CorridorCheckpoint.Vector(hidingApproach) ||
                     !CorridorCheckpoint.Vector(searchOrigin) || !CorridorCheckpoint.Vector(searchTarget) ||
-                    active && state!=State.Patrol && !CorridorCheckpoint.Point(lastKnown) ||
-                    active && state==State.Search && (!CorridorCheckpoint.Point(searchOrigin)||!CorridorCheckpoint.Point(searchTarget)) ||
+                    active && state!=State.Patrol && !point(lastKnown) ||
+                    active && state==State.Search && (!point(searchOrigin)||!point(searchTarget)) ||
                     !CorridorCheckpoint.Number(memory,0,3600) || !CorridorCheckpoint.Number(awareness,0,1) ||
                     !CorridorCheckpoint.Number(searchDwell,0,4) || !CorridorCheckpoint.Number(searchTransit,0,4.1f) ||
                     !CorridorCheckpoint.Number(searchDoorWait,0,4.01f) || !CorridorCheckpoint.Number(searchYaw,0,360) ||
                     !CorridorCheckpoint.Number(patrolRemaining,0,1.81f) || !CorridorCheckpoint.Number(doorPush,0,1.21f) ||
-                    waypoint<0 || waypoint>3 || searchCandidate<0 || searchCandidate>8 || visited<0 || visited>9 ||
+                    waypoint<0 || waypoint>(chapter?1000:3) || searchCandidate<0 || searchCandidate>8 || visited<0 || visited>9 ||
                     attacks<0 || noises<0 || footstepNoises<0 || door==null || door.Length>40)
                     throw new ArgumentException("Invalid threat checkpoint");
             }
@@ -98,8 +114,11 @@ namespace HappyToy.V2
                 attacks=AttacksStarted,noises=NoisesAccepted,footstepNoises=FootstepNoisesAccepted };
         }
         public void RestoreProgress(Progress data,Interactable[] doors)
+        { data.Validate(); RestoreValidatedProgress(data,doors); }
+        public void RestoreChapterProgress(Progress data,Interactable[] doors)
+        { data.ValidateChapter(); RestoreValidatedProgress(data,doors); }
+        void RestoreValidatedProgress(Progress data,Interactable[] doors)
         {
-            data.Validate();
             agent=GetComponent<NavMeshAgent>(); agent.enabled=false;
             transform.SetPositionAndRotation(data.position,Quaternion.Euler(0,data.yaw,0));
             gameObject.SetActive(data.active);

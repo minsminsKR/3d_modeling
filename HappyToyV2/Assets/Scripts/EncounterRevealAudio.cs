@@ -69,6 +69,15 @@ namespace HappyToy.V2
         { float t = time - start; return t < 0 ? 0 : (1 - Mathf.Exp(-t * 1100)) * Mathf.Exp(-t * decay); }
         public static AudioClip CreateClip(Cue kind)
         {
+            string recordedCue = kind == Cue.FrameStrain ? "frame-strain" :
+                kind == Cue.FrameImpact ? "frame-impact" :
+                kind == Cue.ToyMechanism || kind == Cue.LanternTicks ? "door-seat" :
+                kind == Cue.UncatScrape ? "cabinet-rustle" :
+                kind == Cue.NurseryContact ? "step-wet" :
+                kind == Cue.MannequinTension ? "frame-strain" :
+                kind == Cue.MannequinSettle ? "step-wood" : null;
+            var recorded = ExternalAudio.Owned(recordedCue);
+            if (recorded) return recorded;
             const int rate = 24000;
             float duration = kind == Cue.NurseryWhimper ? 2.7f : kind == Cue.WraithGrowth ? 4.8f :
                 kind == Cue.CyclopseBreath ? 1.05f : kind == Cue.ToyMechanism ? 1.15f :

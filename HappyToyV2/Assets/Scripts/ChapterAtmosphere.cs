@@ -10,12 +10,21 @@ namespace HappyToy.V2
     public sealed class ChapterAtmosphere : MonoBehaviour
     {
         readonly List<Object> owned = new List<Object>();
+        struct SurfaceState { public MeshRenderer renderer; public Material original, applied; }
+        struct LightState { public Light light; public Color color; public float intensity, range; }
+        readonly List<SurfaceState> surfacesChanged = new List<SurfaceState>();
+        readonly List<LightState> lightsChanged = new List<LightState>();
+        readonly List<GameObject> outsideDressing = new List<GameObject>();
         Transform dressing;
-        Material iron, paper, grime, timber, ivory;
+        Material iron, paper, grime, timber, ivory, memoryTop;
         public int WallTreatments { get; private set; }
         public int DressingPieces { get; private set; }
+        public int PreservedTileFloors { get; private set; }
+        public Transform DressingRoot => dressing;
+        public SchoolWayfinding Wayfinding { get; private set; }
         public void Prepare(Interactable[] memories)
         {
+            if (dressing) throw new System.InvalidOperationException("School dressing is already prepared");
             dressing = new GameObject("Chapter — abandoned school dressing").transform;
             dressing.SetParent(transform, false);
             iron = Material("Oxidised iron", new Color(.09f,.12f,.12f), .35f);
@@ -25,6 +34,10 @@ namespace HappyToy.V2
             ivory = Material("Peeling ceiling board", new Color(.29f,.32f,.29f), .05f);
             var wallMap = Resources.Load<Texture2D>("Corridor/aged-plaster-v1");
             var floorMap = Resources.Load<Texture2D>("Corridor/aged-floor-v1");
+            // The existing original timber texture gives the small stands a material scale, without replacing their physical footprint.
+            if (floorMap) timber.SetTexture("_BaseMap",floorMap);
+            memoryTop=Material("Worn school memory stand top",new Color(.24f,.16f,.09f),.13f);
+            if (floorMap) memoryTop.SetTexture("_BaseMap",floorMap);
             var surfaces = FindObjectsByType<MeshRenderer>(FindObjectsInactive.Include,FindObjectsSortMode.None)
                 .Where(x=>x.gameObject.scene==gameObject.scene && x.GetComponent<BoxCollider>() && x.sharedMaterial).ToArray();
             var random = new System.Random(9307);
@@ -36,12 +49,20 @@ namespace HappyToy.V2
                 if(!wall&&!floor) continue;
                 var bounds=surface.bounds;
                 if(wall && bounds.size.y<1.8f) continue;
-                var m=new Material(surface.sharedMaterial) {name="Chapter damp surface"}; owned.Add(m);
+                var original = surface.sharedMaterial;
+                bool tile = floor && (name.Contains("washroom") || original.name.ToLowerInvariant().Contains("grout") ||
+                    original.name.ToLowerInvariant().Contains("ceramic"));
+                var m=new Material(original) {name=tile?"Chapter retained washroom ceramic":"Chapter damp surface"}; owned.Add(m);
+                surfacesChanged.Add(new SurfaceState { renderer=surface, original=original, applied=m });
                 Color tint=surface.transform.position.y < -1 ? new Color(.3f,.39f,.33f) : new Color(.5f,.46f,.38f);
-                m.SetColor("_BaseColor",floor?new Color(.65f,.61f,.51f):tint);
-                m.SetFloat("_Smoothness",floor&&surface.transform.position.y< -1?.38f:.06f);
-                m.SetTexture("_BaseMap",floor?floorMap:wallMap);
-                m.SetTextureScale("_BaseMap",floor?new Vector2(bounds.size.x/1.8f,bounds.size.z/1.8f):new Vector2(Mathf.Max(bounds.size.x,bounds.size.z)/2.8f,bounds.size.y/2.8f));
+                if (tile) { m.SetFloat("_Smoothness",.20f); PreservedTileFloors++; }
+                else
+                {
+                    m.SetColor("_BaseColor",floor?new Color(.65f,.61f,.51f):tint);
+                    m.SetFloat("_Smoothness",floor&&surface.transform.position.y< -1?.38f:.06f);
+                    m.SetTexture("_BaseMap",floor?floorMap:wallMap);
+                    m.SetTextureScale("_BaseMap",floor?new Vector2(bounds.size.x/1.8f,bounds.size.z/1.8f):new Vector2(Mathf.Max(bounds.size.x,bounds.size.z)/2.8f,bounds.size.y/2.8f));
+                }
                 surface.sharedMaterial=m;
                 if(!wall || name.Contains("stairwell")) continue;
                 WallTreatments++;
@@ -66,6 +87,8 @@ namespace HappyToy.V2
             foreach(var light in FindObjectsByType<Light>(FindObjectsSortMode.None))
             {
                 if(light.type!=LightType.Point || light.transform.IsChildOf(GameSession.Current.player.transform)) continue;
+                if (light.gameObject.scene != gameObject.scene) continue;
+                lightsChanged.Add(new LightState { light=light,color=light.color,intensity=light.intensity,range=light.range });
                 if(light.name.Contains("Upper red")) {light.color=new Color(.63f,.06f,.025f);light.intensity=.55f;light.range=4.8f;}
                 else if(light.name.Contains("Portrait red")) {light.intensity=1.1f;light.range=4.5f;}
                 else if(!light.name.Contains("Basement")) light.intensity*=.62f;
@@ -116,13 +139,25 @@ namespace HappyToy.V2
                 var p=item.transform.position;float top=p.y-.09f;
                 var table=Box("Memory support — "+memoryIndex,new Vector3(p.x,(floor+top)*.5f,p.z),new Vector3(.68f,top-floor,.38f),timber,true);
                 var obstacle=table.AddComponent<NavMeshObstacle>();obstacle.shape=NavMeshObstacleShape.Box;obstacle.size=Vector3.one;obstacle.carving=true;
+                // Keep the original collider/obstacle, height and item pose; only its opaque visual shell changes.
+                table.GetComponent<Renderer>().enabled=false;
+                const float cap=.024f;
+                Box("Timber memory stand body",new Vector3(p.x,(floor+top-cap)*.5f,p.z),new Vector3(.68f,top-floor-cap,.38f),timber);
+                Box("Worn memory stand top",new Vector3(p.x,top-cap*.5f,p.z),new Vector3(.68f,cap,.38f),memoryTop);
+                foreach(float side in new[]{-1f,1f})
+                    Box("Memory stand corner moulding",new Vector3(p.x+side*.329f,(floor+top-cap)*.5f,p.z-.187f),
+                        new Vector3(.020f,top-floor-cap,.012f),memoryTop);
+                Box("Memory stand front rail",new Vector3(p.x,top-.06f,p.z-.187f),new Vector3(.66f,.026f,.012f),memoryTop);
             }
             foreach(var memory in memories)
             {
                 if(!memory.GetComponent<MemoryResonance>()) memory.gameObject.AddComponent<MemoryResonance>();
-                var light=Lamp("Memory reflected glimmer",memory.transform.position+Vector3.up*.2f,new Color(.65f,.75f,.52f),.7f,1.8f);
+                var light=Lamp("Memory reflected glimmer",memory.transform.position+Vector3.up*.2f,new Color(.66f,.70f,.62f),.22f,1.5f);
                 light.transform.SetParent(memory.transform,true);
+                outsideDressing.Add(light.gameObject);
             }
+            Wayfinding = dressing.gameObject.AddComponent<SchoolWayfinding>();
+            Wayfinding.Prepare();
             var ambience=GetComponent<RoomAmbience>();
             if(ambience) ambience.ConfigureRunPositions(new[]{new Vector3(-3,1.2f,-4),new Vector3(29.8f,7.1f,31),new Vector3(13.8f,-3.8f,-29)});
         }
@@ -137,12 +172,48 @@ namespace HappyToy.V2
         }
         void CeilingDamage(Vector3 at)
         {
-            Box("Exposed ceiling void",at,new Vector3(1.7f,.025f,1.1f),grime);
-            for(int i=0;i<5;i++) Box("Exposed ceiling lattice",at+new Vector3(-.75f+i*.35f,-.02f,0),new Vector3(.025f,.025f,1.1f),iron);
-            var fallen=Box("Hanging ceiling board",at+new Vector3(.63f,-.18f,.1f),new Vector3(.58f,.02f,.75f),ivory);fallen.transform.rotation=Quaternion.Euler(23,0,17);
+            // Damage falls beside the fixtures. Uneven angles and deep notches avoid a neat polygon surrounding a lamp.
+            int seed=Mathf.RoundToInt(at.x*37+at.y*19+at.z*11)+17031;
+            at += new Vector3(.18f,.23f,seed%2==0?.39f:-.39f);
+            const int count=15;
+            var vertices=new Vector3[count+1];var triangles=new int[count*3];
+            var random=new System.Random(seed);
+            float width=.53f+(float)random.NextDouble()*.16f, depth=.22f+(float)random.NextDouble()*.09f;
+            for(int i=0;i<count;i++)
+            {
+                float angle=(i+(float)random.NextDouble()*.36f-.18f)*Mathf.PI*2/count;
+                float edge=.72f+(float)random.NextDouble()*.28f;
+                if (i==2 || i==6 || i==10 || i==11) edge*=.43f+(float)random.NextDouble()*.20f;
+                vertices[i+1]=new Vector3(Mathf.Cos(angle)*width*edge,0,Mathf.Sin(angle)*depth*edge);
+                triangles[i*3]=0;triangles[i*3+1]=i+1;triangles[i*3+2]=(i+1)%count+1;
+            }
+            var mesh=new Mesh {name="Irregular school ceiling tear",vertices=vertices,triangles=triangles};
+            mesh.RecalculateNormals();mesh.RecalculateBounds();owned.Add(mesh);
+            var recess=new GameObject("Exposed ceiling tear",typeof(MeshFilter),typeof(MeshRenderer));
+            recess.transform.SetParent(dressing,false);recess.transform.position=at;
+            recess.GetComponent<MeshFilter>().sharedMesh=mesh;recess.GetComponent<MeshRenderer>().sharedMaterial=grime;
+            // Separate plaster remnants leave gaps around the torn edge, rather than framing it with a continuous rim.
+            for(int i=0;i<count;i++)
+            {
+                if(random.NextDouble()<.48) continue;
+                var remnant=new GameObject("Broken plaster edge");remnant.transform.SetParent(dressing,false);
+                var edge=remnant.AddComponent<LineRenderer>();edge.sharedMaterial=ivory;
+                edge.widthMultiplier=.010f+(float)random.NextDouble()*.009f;edge.positionCount=2;
+                edge.generateLightingData=true;edge.shadowCastingMode=ShadowCastingMode.Off;
+                Vector3 a=vertices[i+1],b=vertices[(i+1)%count+1];
+                edge.SetPosition(0,at+Vector3.Lerp(a,b,.08f)+Vector3.down*.009f);
+                edge.SetPosition(1,at+Vector3.Lerp(a,b,.58f+(float)random.NextDouble()*.22f)+Vector3.down*.009f);
+                DressingPieces++;
+            }
+            for(int i=0;i<2;i++) Box("Exposed ceiling crossbar",at+new Vector3((i-.5f)*.36f,-.004f,0),new Vector3(.018f,.018f,depth*1.7f),iron);
+            var fallen=Box("Hanging ceiling fragment",at+new Vector3(width*.7f,-.07f,.1f),new Vector3(.24f,.015f,.33f),ivory);
+            fallen.transform.rotation=Quaternion.Euler(12,0,(float)random.NextDouble()*12-6);
+            DressingPieces++;
+            if (random.NextDouble() < .46) return;
             var go=new GameObject("Sagging dead cable");go.transform.SetParent(dressing,false);
-            var cable=go.AddComponent<LineRenderer>();cable.sharedMaterial=iron;cable.widthMultiplier=.017f;cable.positionCount=13;cable.shadowCastingMode=ShadowCastingMode.On;
-            for(int i=0;i<13;i++) {float t=i/12f;cable.SetPosition(i,at+new Vector3(-.55f+t*1.1f,-.06f-Mathf.Sin(t*Mathf.PI)*.65f,.26f));}
+            var cable=go.AddComponent<LineRenderer>();cable.sharedMaterial=iron;cable.widthMultiplier=.012f;cable.positionCount=13;cable.shadowCastingMode=ShadowCastingMode.On;
+            float sag=.13f+(float)random.NextDouble()*.13f;
+            for(int i=0;i<13;i++) {float t=i/12f;cable.SetPosition(i,at+new Vector3(-width*.7f+t*width*1.4f,-.035f-Mathf.Sin(t*Mathf.PI)*sag,depth*.5f));}
             DressingPieces++;
         }
         void Frame(Vector3 p,Vector2 size,Quaternion rotation)
@@ -186,6 +257,16 @@ namespace HappyToy.V2
         }
         Light Lamp(string name,Vector3 p,Color color,float intensity,float range)
         {var l=new GameObject(name).AddComponent<Light>();l.transform.SetParent(dressing,false);l.transform.position=p;l.color=color;l.intensity=intensity;l.range=range;l.type=LightType.Point;l.shadows=LightShadows.Soft;return l;}
-        void OnDestroy(){foreach(var resource in owned) if(resource) Destroy(resource);}
+        void OnDestroy()
+        {
+            foreach(var state in surfacesChanged)
+                if(state.renderer && state.renderer.sharedMaterial==state.applied) state.renderer.sharedMaterial=state.original;
+            foreach(var state in lightsChanged)
+                if(state.light) {state.light.color=state.color;state.light.intensity=state.intensity;state.light.range=state.range;}
+            foreach(var child in outsideDressing) if(child) Destroy(child);
+            if(dressing) Destroy(dressing.gameObject);
+            foreach(var resource in owned) if(resource) Destroy(resource);
+            surfacesChanged.Clear();lightsChanged.Clear();outsideDressing.Clear();owned.Clear();
+        }
     }
 }

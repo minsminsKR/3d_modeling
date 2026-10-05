@@ -15,6 +15,9 @@ namespace HappyToy.V2
         public bool Writable => allowWrite && !protectedFile;
         public bool Conflict { get; private set; }
         public string Status { get; private set; } = "";
+        // Diagnostic only: never persisted, displayed as product copy, or used
+        // to bypass an atomic operation or its token/lease checks.
+        public string StorageDiagnostic { get; private set; } = "";
         public CorridorCheckpoint Snapshot => state == null ? null : JsonUtility.FromJson<CorridorCheckpoint>(JsonUtility.ToJson(state));
         public CorridorCheckpointStore(string directory,bool write)
         {
@@ -27,8 +30,12 @@ namespace HappyToy.V2
                 if(data==null) throw new ArgumentException("Empty save"); state=data;
             }
             catch(Exception error) when(error is ArgumentException || error is IOException || error is UnauthorizedAccessException)
-            { protectedFile=true; Status="중단 기록을 안전하게 읽을 수 없어 보존했습니다. 새 탐색은 시작할 수 있습니다."; }
+            {
+                protectedFile=true; StorageDiagnostic=Failure("read",error);
+                Status="중단 기록을 안전하게 읽을 수 없어 보존했습니다. 새 탐색은 시작할 수 있습니다.";
+            }
         }
+        static string Failure(string phase,Exception error) => "phase="+phase+"; type="+error.GetType().FullName+"; HResult=0x"+error.HResult.ToString("X8");
         bool Same(CorridorCheckpointStore fresh) => !fresh.protectedFile && fresh.state?.token==state?.token;
         public bool Save(CorridorCheckpoint data)
         {
@@ -61,23 +68,29 @@ namespace HappyToy.V2
         }
         public bool Consume(string token)
         {
-            Conflict=false;
+            Conflict=false; StorageDiagnostic="";
             if(!Writable || state==null || state.token!=token) return false;
+            string phase="lease";
             try
             {
                 using(var lease=new FileStream(path+".lock",FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.None))
                 {
                     var fresh=new CorridorCheckpointStore(Path.GetDirectoryName(path),true);
-                    if(!Same(fresh)) { Conflict=true; Status="중단 기록이 다른 실행에서 변경되었습니다. 다시 시작 화면을 열어 주세요."; return false; }
+                    if(!Same(fresh))
+                    {
+                        Conflict=true;
+                        StorageDiagnostic=fresh.protectedFile?"read-current: "+fresh.StorageDiagnostic:"phase=token-check; type=conflict; HResult=none";
+                        Status="중단 기록이 다른 실행에서 변경되었습니다. 다시 시작 화면을 열어 주세요."; return false;
+                    }
                     // Atomic move out of the readable slot. Keep used bytes for recovery,
                     // but never fall back to .used/.bak and revive a consumed run.
-                    if(File.Exists(path+".used")) File.Replace(path,path+".used",null);
-                    else File.Move(path,path+".used");
+                    if(File.Exists(path+".used")) { phase="replace-used"; File.Replace(path,path+".used",null); }
+                    else { phase="move-used"; File.Move(path,path+".used"); }
                     state=null; Status="중단 기록을 이어받았습니다."; return true;
                 }
             }
             catch(Exception error) when(error is IOException || error is UnauthorizedAccessException || error is NotSupportedException)
-            { Status="중단 기록을 이어받지 못했습니다. 파일을 보존했습니다."; return false; }
+            { StorageDiagnostic=Failure(phase,error); Status="중단 기록을 이어받지 못했습니다. 파일을 보존했습니다."; return false; }
         }
     }
 }

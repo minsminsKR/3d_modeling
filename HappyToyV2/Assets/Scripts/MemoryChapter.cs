@@ -6,7 +6,7 @@ using UnityEngine.AI;
 namespace HappyToy.V2
 {
     // Directed descent through the authored three-storey school.
-    public sealed class MemoryChapter : MonoBehaviour
+    public sealed partial class MemoryChapter : MonoBehaviour
     {
         public bool Ready { get; private set; }
         public int Recovered { get; private set; }
@@ -22,10 +22,24 @@ namespace HappyToy.V2
             "1층 화장실에 남겨진 두 번째 기억을 찾으세요. 발소리를 들으세요.",
             "북쪽 계단으로 2층에 올라가 세 번째 기억을 찾으세요.",
             "2층 붉은 액자 뒤의 네 번째 기억을 확인하세요.",
-            "남쪽 계단으로 지하에 내려가 울음이 들리는 곳의 마지막 기억을 찾으세요.",
+            "북쪽 계단으로 1층에 돌아온 뒤, 남쪽 계단으로 지하의 마지막 기억을 찾으세요.",
             "다섯 기억을 찾았습니다. 1층 입구의 문으로 돌아가세요."
         };
-        public string Objective => objectives[Mathf.Clamp(Recovered,0,5)];
+        public string Objective
+        {
+            get
+            {
+                if(Recovered==3 && Portrait && Portrait.Triggered)
+                {
+                    if(!Portrait.ChapterWitnessed) return "액자에서 나온 인형을 잠시 바라보세요. 거리를 두고 모습을 확인하세요.";
+                    if(!Portrait.Completed) return "인형의 변화가 끝나면 액자 뒤의 네 번째 기억을 회수하세요.";
+                    return "인형의 모습을 확인했습니다. 액자 뒤의 네 번째 기억을 회수하세요.";
+                }
+                if(Recovered==4 && Nursery && Nursery.Triggered && !Nursery.Released)
+                    return "울음이 멎고 베이비가 움직이기 시작하면 마지막 기억을 회수하세요.";
+                return objectives[Mathf.Clamp(Recovered,0,5)];
+            }
+        }
         readonly string[] memories = {
             "1층 입구 — 지워진 출석부를 집어 들자 복도에서 무거운 발소리가 시작됐다.",
             "1층 화장실 — 젖은 리본. 손전등을 켜고 등을 돌리면 마네킹의 관절이 움직인다.",
@@ -92,10 +106,10 @@ namespace HappyToy.V2
             if(Recovered==3 && (!Portrait.Completed || !Portrait.ChapterWitnessed))
             {
                 Portrait.StartChapterReveal();
-                session.Notify("액자가 반응했습니다. 그 뒤에서 일어나는 인형을 확인한 뒤 기억을 회수하세요."); return false;
+                session.Notify(Objective); return false;
             }
             if(Recovered==4 && !Nursery.Released)
-            {session.Notify("물 너머에서 울음이 들립니다. 베이비가 모습을 드러낸 뒤 마지막 기억을 확인하세요.");return false;}
+            {session.Notify(Nursery.Triggered?Objective:"물 너머에서 울음이 들립니다. 방 안쪽에서 기척을 확인하고 돌아갈 길을 준비하세요.");return false;}
             Recovered++;
             if(Recovered==1)
             {

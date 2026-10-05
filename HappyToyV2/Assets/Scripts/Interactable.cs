@@ -23,6 +23,22 @@ namespace HappyToy.V2
             open = requestedOpen; movingLeaf.localPosition = leafPosition;
             if (obstacle) obstacle.enabled = !open;
         }
+        public bool CanRestoreSchoolDoor(Vector3 leafPosition,Vector3 secondaryPosition,bool hasSecondary)
+        {
+            if(kind!=Kind.Door || !movingLeaf || hasSecondary!=(secondaryLeaf!=null)) return false;
+            bool OnSlide(Vector3 pose,Vector3 origin,Vector3 offset)
+            {
+                float q=offset.sqrMagnitude>.0001f?Vector3.Dot(pose-origin,offset)/offset.sqrMagnitude:0;
+                return q>=-.001f && q<=1.001f && Vector3.Distance(pose,origin+offset*Mathf.Clamp01(q))<.002f;
+            }
+            return OnSlide(leafPosition,closedPosition,openOffset) &&
+                (!hasSecondary || OnSlide(secondaryPosition,secondaryClosed,-openOffset));
+        }
+        public void RestoreSchoolDoor(bool requestedOpen,Vector3 leafPosition,Vector3 secondaryPosition)
+        {
+            RestoreDoor(requestedOpen,leafPosition);
+            if(secondaryLeaf) secondaryLeaf.localPosition=secondaryPosition;
+        }
         public void ConfigureDoor(Transform leaf, NavMeshObstacle blocker, Vector3 offset)
         {
             kind = Kind.Door; movingLeaf = leaf; obstacle = blocker; openOffset = offset;
@@ -92,6 +108,7 @@ namespace HappyToy.V2
                     if (open && Mathf.Abs(local.x)<halfWidth+.35f && Mathf.Abs(local.z)<.5f && local.y>-.5f && local.y<2.5f)
                     {GameSession.Current.Notify("문 사이에 서 있습니다. 조금 물러난 뒤 닫으세요.");return;}
                     SetDoorOpen(!open);
+                    if(!open) GameSession.Current.NoteChapterAction(ChapterAction.DoorClosed);
                     break;
                 case Kind.NameSlip:
                     if (GameSession.Current.Collect(stableId)) gameObject.SetActive(false);

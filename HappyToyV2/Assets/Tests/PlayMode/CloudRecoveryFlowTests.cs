@@ -232,7 +232,9 @@ namespace HappyToy.V2.CloudTests
             yield return RecoveryClick("defaults"); yield return RecoveryClick("reduced-motion");
             Assert.That(Get<bool>(shell, "ReducedMotion"), Is.True);
             yield return RecoveryClick("back"); Assert.That(RecoveryPage, Is.EqualTo("Title"));
-            yield return RecoveryClick("begin"); Assert.That(Get<bool>(session, "InputAllowed"), Is.True);
+            // This fixture audits the original authored annex lifecycle. The
+            // production primary button now enters the separate seeded corridor.
+            Begin(); yield return null;
             for (int cycle = 0; cycle < 2; cycle++)
             {
                 IsolateThreats(); Assert.That((bool)Call(session, "Collect", "register"), Is.True);
@@ -279,7 +281,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(AudioListener.pause, Is.True); Assert.That(Time.timeScale, Is.Zero);
             yield return RecoveryUiReady(); RecoveryUiOwnership();
             yield return RecoveryClick("settings"); yield return RecoveryClick("back"); Assert.That(RecoveryPage, Is.EqualTo("Title"));
-            yield return RecoveryClick("begin"); Assert.That(Get<bool>(session, "InputAllowed"), Is.True);
+            Begin(); yield return null;
             Assert.That(Get<int>(session, "RecordsRecovered"), Is.Zero);
             Debug.Log("HAPPYTOY_RECOVERY_PASS UI: real pointer settings/back/journal/title, two actual enemy deaths and retry buttons, preserved settings/reset resources, old native objects destroyed and stable owned panel/target/texture counts");
         }

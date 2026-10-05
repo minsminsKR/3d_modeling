@@ -72,6 +72,7 @@ namespace HappyToy.V2
             LastThrown = root.AddComponent<FirecrackerProjectile>();
             LastThrown.Launch(velocity);
             Count--;
+            session.NoteChapterAction(ChapterAction.FirecrackerThrown);
             cooldown = .5f;
             if (Aim) Aim.Cancel();
             ShowFeedback("폭죽을 던졌습니다 · 남은 " + Count + "개", 2.5f);

@@ -29,6 +29,8 @@ namespace HappyToy.V2.CloudTests
             RuntimeAccess.Set(data,"token",Guid.NewGuid().ToString("N")); return data;
         }
         bool Save(object store,object data) => (bool)RuntimeAccess.Call(store,"Save",data);
+        string ConsumeDiagnostic(object store) => "Status="+RuntimeAccess.Get<string>(store,"Status")+
+            "; Conflict="+RuntimeAccess.Get<bool>(store,"Conflict")+"; "+RuntimeAccess.Get<string>(store,"StorageDiagnostic");
         [Test] public void RoundTripIsImmutableAndConsumeCannotReviveOldBackups()
         {
             var store=Store(); var data=Data(); Assert.That(Save(store,data),Is.True);
@@ -42,8 +44,36 @@ namespace HappyToy.V2.CloudTests
             Assert.That(File.Exists(path+".used"),Is.True);
             var next=Data(); Assert.That(Save(reloaded,next),Is.True); Assert.That(Save(reloaded,Data()),Is.True);
             Assert.That(File.Exists(path+".bak"),Is.True);
-            Assert.That((bool)RuntimeAccess.Call(reloaded,"Consume",RuntimeAccess.Get<string>(RuntimeAccess.Get<object>(reloaded,"Snapshot"),"token")),Is.True);
+            Assert.That((bool)RuntimeAccess.Call(reloaded,"Consume",RuntimeAccess.Get<string>(RuntimeAccess.Get<object>(reloaded,"Snapshot"),"token")),Is.True,ConsumeDiagnostic(reloaded));
             Assert.That(RuntimeAccess.Get<bool>(Store(),"HasRun"),Is.False,"Consumed slot revived a .bak");
+        }
+        [Test] public void LockedConsumedArchivePreservesLiveSnapshotAndRetriesAfterUnlock()
+        {
+            if(Application.platform!=RuntimePlatform.WindowsEditor)
+                Assert.Ignore("This archive sharing case verifies Windows FileShare.None replacement semantics.");
+            var store=Store(); var first=Data(); Assert.That(Save(store,first),Is.True);
+            Assert.That((bool)RuntimeAccess.Call(store,"Consume",RuntimeAccess.Get<string>(first,"token")),Is.True,ConsumeDiagnostic(store));
+            string oldUsed=File.ReadAllText(path+".used");
+            Assert.That(Save(store,Data()),Is.True); Assert.That(Save(store,Data()),Is.True);
+            string primary=File.ReadAllText(path),backup=File.ReadAllText(path+".bak");
+            string token=RuntimeAccess.Get<string>(RuntimeAccess.Get<object>(store,"Snapshot"),"token");
+            using(var archiveLease=new FileStream(path+".used",FileMode.Open,FileAccess.Read,FileShare.None))
+            {
+                Assert.That((bool)RuntimeAccess.Call(store,"Consume",token),Is.False);
+                Assert.That(RuntimeAccess.Get<string>(store,"StorageDiagnostic"),Does.Contain("phase=replace-used"));
+                Assert.That(RuntimeAccess.Get<string>(store,"StorageDiagnostic"),Does.Contain("System.IO.IOException"));
+                Assert.That(RuntimeAccess.Get<string>(store,"StorageDiagnostic"),Does.Contain("HResult=0x80070020"));
+                Assert.That(RuntimeAccess.Get<bool>(store,"Conflict"),Is.False,"A locked archive is not a stale-token conflict");
+                Assert.That(File.ReadAllText(path),Is.EqualTo(primary)); Assert.That(File.ReadAllText(path+".bak"),Is.EqualTo(backup));
+                Assert.That(RuntimeAccess.Get<bool>(store,"HasRun"),Is.True);
+                Assert.That(RuntimeAccess.Get<string>(RuntimeAccess.Get<object>(store,"Snapshot"),"token"),Is.EqualTo(token));
+            }
+            Assert.That(File.ReadAllText(path+".used"),Is.EqualTo(oldUsed));
+            Assert.That((bool)RuntimeAccess.Call(store,"Consume",token),Is.True,ConsumeDiagnostic(store));
+            Assert.That(RuntimeAccess.Get<string>(store,"StorageDiagnostic"),Is.Empty);
+            Assert.That(File.Exists(path),Is.False); Assert.That(File.ReadAllText(path+".used"),Is.EqualTo(primary));
+            Assert.That(File.ReadAllText(path+".bak"),Is.EqualTo(backup));
+            Assert.That(RuntimeAccess.Get<bool>(Store(),"HasRun"),Is.False,"Consumed archive/backup must never become a readable live slot");
         }
         [Test] public void UnknownCorruptAndOversizedProfilesArePreserved()
         {

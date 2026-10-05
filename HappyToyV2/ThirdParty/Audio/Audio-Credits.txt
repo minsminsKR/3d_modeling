@@ -1,0 +1,41 @@
+HAPPY TOY V2 — EXTERNAL SOUND CREDITS
+
+Creaky light wooden door — fractilegames
+Source: https://opengameart.org/content/creaky-light-wooden-door
+License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
+https://creativecommons.org/licenses/by/3.0/
+Legal code: https://creativecommons.org/licenses/by/3.0/legalcode
+Used for cabinet opening and closing. Changes: separate excerpts, mono 24 kHz
+PCM16 conversion, DC removal, filtering, edge fades and gain adjustment.
+No endorsement by fractilegames is implied. These derived recordings retain
+CC BY 3.0; no additional restriction is imposed on the recordings.
+
+Sound Effects Pack — OwlishMedia
+https://opengameart.org/content/sound-effects-pack
+CC0 1.0. Recorded shoe contacts used for the four walking pursuers, with
+separate takes, mono conversion, filtering, fades and measured gain.
+
+Impact Sounds — Kenney
+https://kenney.nl/assets/impact-sounds
+CC0 1.0. Player footsteps and material contacts/creature attack layers.
+
+50 RPG sound effects — Kenney
+https://opengameart.org/content/50-rpg-sound-effects
+CC0 1.0. Wooden sliding doors, latches, paper and mechanical contacts.
+
+The Shop (two free samples only) — LEGIT Audio
+https://opengameart.org/content/the-shop
+CC0 1.0. Spatial room tones, filtered and prepared for looping.
+
+100 CC0 SFX #2 — rubberduck
+https://opengameart.org/content/100-cc0-sfx-2
+CC0 1.0. Wet footsteps and original creature-contact layers.
+
+Dripping water loop — Independent.nu; submitted by qubodup
+https://opengameart.org/content/dripping-water-loop
+CC0 1.0. Spatial water drops.
+
+CC0 license: https://creativecommons.org/publicdomain/zero/1.0/
+Per-file sources, transformations and SHA-256: ThirdParty/Audio/manifest.json
+All other synthesized cues are original project code. These sound credits
+describe the listed acquisitions; the authors do not endorse this game.

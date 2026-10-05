@@ -1,0 +1,343 @@
+{
+  "source_xml": "play-01.xml",
+  "source_sha256": "2f7b21a72ebf4f57a2cdc7bf18c26acd6f19ee4dec60991c98d5a4b8eb042f2d",
+  "scope": "Local Unity UTF artifact transport integrity; excludes human listening/art certification",
+  "artifacts": [
+    {
+      "file": "suspend-pause-large-1280x720.png",
+      "sha256": "cd5883acd2fd9a387472661b424ea3029a7959f830a1f7763a9da88741c1b76a",
+      "bytes": 116740,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ActualSuspendAndContinueButtonsRestoreOnceAndNewSchoolPreservesSlot",
+      "test_result": "Passed"
+    },
+    {
+      "file": "suspend-pause-large-1024x768.png",
+      "sha256": "fa9c6fa7c8f8718996914c90511f2f74c3e8a6bdb2f1ba1ee22628d14b2ba096",
+      "bytes": 93717,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ActualSuspendAndContinueButtonsRestoreOnceAndNewSchoolPreservesSlot",
+      "test_result": "Passed"
+    },
+    {
+      "file": "suspend-pause-large-2560x1080.png",
+      "sha256": "0ff9de79154d442cc2aa189aa9e4499cc2a62427cb4edea2e74b2528ebca4c1d",
+      "bytes": 205201,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ActualSuspendAndContinueButtonsRestoreOnceAndNewSchoolPreservesSlot",
+      "test_result": "Passed"
+    },
+    {
+      "file": "suspend-title-large-1280x720.png",
+      "sha256": "2ac506dbd2a167ebdc1dba0a44dd2ba1ca196abdd3b994343add133bd63a4ae4",
+      "bytes": 126001,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ActualSuspendAndContinueButtonsRestoreOnceAndNewSchoolPreservesSlot",
+      "test_result": "Passed"
+    },
+    {
+      "file": "suspend-title-large-1024x768.png",
+      "sha256": "f81ade8635c46b41c9bf50c4ec1aba06274dd93ac0f4fd6f544b46bf529561b2",
+      "bytes": 100569,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ActualSuspendAndContinueButtonsRestoreOnceAndNewSchoolPreservesSlot",
+      "test_result": "Passed"
+    },
+    {
+      "file": "suspend-title-large-2560x1080.png",
+      "sha256": "7073f07ee72c6b51641b4b19da0ec22bf1db80e583c4609a1a0a52ccdc2d6dbd",
+      "bytes": 219222,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ActualSuspendAndContinueButtonsRestoreOnceAndNewSchoolPreservesSlot",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-ambience.wav",
+      "sha256": "e666e1b857f703d4c373bd6d905ba23b6bf69c2262e26027287b2b40b70dc3b7",
+      "bytes": 729648,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalChapterRoomLoopsAreAudibleAndOccludedAcrossTheAuthoredFloor",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-ambience.json",
+      "sha256": "6f7cd12f2d23a4b0add00f1ef4e414b527c04444b5943cde527aae0cd6cf0418",
+      "bytes": 5851,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalChapterRoomLoopsAreAudibleAndOccludedAcrossTheAuthoredFloor",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-materials.json",
+      "sha256": "a7fdfd8aeaf4de746ff641c387d0e528131b685b7520b7c38852697ca7e3cb49",
+      "bytes": 2873,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalFootstepsFollowRealSchoolMaterialsAndFlashlightKeyboardInput",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-portrait.wav",
+      "sha256": "c5f9eb3b24ae5eb4de20b6dd283653b68611055937fb847b748f7af2cd55459c",
+      "bytes": 138284,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalPortraitCreakAndImpactFollowTheActualFourthMemoryEvent",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-portrait.json",
+      "sha256": "ff3c01cfeef324e80f4352102e863be06ec25a75f7f5460a70a59eef9da14a87",
+      "bytes": 3103,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalPortraitCreakAndImpactFollowTheActualFourthMemoryEvent",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-door.wav",
+      "sha256": "a72b161d3cc0ad5d926ac5ffc4efdc6e951bd57a4ad72e3a90c3f8b38a638315",
+      "bytes": 374444,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalSchoolDoorMixFollowsLeafPauseDistanceMasterVolumeAndRetry",
+      "test_result": "Passed"
+    },
+    {
+      "file": "external-school-door.json",
+      "sha256": "309b7d98e2082807de15bbafe89b4988e32e3c7c81941ebf5b53d63de563d27e",
+      "bytes": 6592,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.ExternalSchoolDoorMixFollowsLeafPauseDistanceMasterVolumeAndRetry",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-presentation-entrance.png",
+      "sha256": "b1b81b7c6013f26831ef7cb9783ea6f84d40b4f3206cacfdca6fdfe020eea533",
+      "bytes": 248385,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-presentation-washroom.png",
+      "sha256": "511d4487575dc680f694fd809082085294739f5f9979bdc4ad5ced750f1ccbc4",
+      "bytes": 734635,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-presentation-upper.png",
+      "sha256": "48385513fed97747aec2c6ae669115f1a0102f2e6252fdbd1719810a53c0a1c0",
+      "bytes": 871474,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-presentation-basement.png",
+      "sha256": "7f5f3ecedd179f38fbca028b0c18e30c82808430f5e1d44a98b8fc1d4b89aa13",
+      "bytes": 627842,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+      "test_result": "Passed"
+    },
+    {
+      "file": "school-result-large-1280x720.png",
+      "sha256": "21dc86cf72452cb6acfa3cba368486d6d1098869fc082122aacdefefa6a698d0",
+      "bytes": 119365,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Failed"
+    },
+    {
+      "file": "school-result-large-1024x768.png",
+      "sha256": "289affc8a4209ae87881b50a75ce663aefc8d02416dccdfdd07de691effbbe78",
+      "bytes": 95548,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Failed"
+    },
+    {
+      "file": "school-result-large-2560x1080.png",
+      "sha256": "9cc6f1ce11d8ad9ac0bf4ef623dd96c3cc4bbf1d5fbffdd23bf3334ab7a3f98e",
+      "bytes": 207591,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Failed"
+    },
+    {
+      "file": "school-history-large-1280x720.png",
+      "sha256": "328111fef1e1289fce4341ff956f42baab9251c3febd7b8f1aa1b22627e189e0",
+      "bytes": 68883,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Failed"
+    },
+    {
+      "file": "school-history-large-1024x768.png",
+      "sha256": "18864c9a1a1bcfd4a70638c50f07e75ac39db424cb79a280f8d43aea50984121",
+      "bytes": 55481,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Failed"
+    },
+    {
+      "file": "school-history-large-2560x1080.png",
+      "sha256": "3f1a3cc2c637f66019af76bf5b0f134d85b74b141b59bb6105a0017dd3a13f94",
+      "bytes": 128814,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+      "test_result": "Failed"
+    },
+    {
+      "file": "school-result-write-error-1280x720.png",
+      "sha256": "8d52a9ed9d22f87803f5a5e80181d81ee597d9d1b0b76351dfbbf00d638a457b",
+      "bytes": 127064,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultWriteFailureRetriesThroughRealMenuAndTitleShowsSchoolTotals",
+      "test_result": "Failed"
+    },
+    {
+      "file": "school-result-write-error-1024x768.png",
+      "sha256": "40ec632273c15682ce5eb66560d7111a9a03f72cb29fce9ae1d7052ac909be82",
+      "bytes": 101541,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultWriteFailureRetriesThroughRealMenuAndTitleShowsSchoolTotals",
+      "test_result": "Failed"
+    },
+    {
+      "file": "school-result-write-error-2560x1080.png",
+      "sha256": "7e9be4ec172f3f2f54986574cf376d36cfa1076a86c7b898fe99a65d59c6ed1c",
+      "bytes": 219937,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolResultWriteFailureRetriesThroughRealMenuAndTitleShowsSchoolTotals",
+      "test_result": "Failed"
+    },
+    {
+      "file": "live-school-mix-cabinet.png",
+      "sha256": "b34f503148b196a990b2929e04a9df4265ba9b5e56101560f15dfec756264145",
+      "bytes": 35879,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalLiveExertionCabinetAndPauseMixSurvivesRealRetryCleanup",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-exertion-cabinet-pause.wav",
+      "sha256": "b7f1d3c983ef8ca32ffca192ae97eccc289fd6518c9d5c6cc459be32b5767303",
+      "bytes": 921652,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalLiveExertionCabinetAndPauseMixSurvivesRealRetryCleanup",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-exertion-cabinet-pause.json",
+      "sha256": "604da143137f9a9c1612060189634aae42d8d1ae558ed950de2c2b9f49b248e3",
+      "bytes": 7651,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalLiveExertionCabinetAndPauseMixSurvivesRealRetryCleanup",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-entrance.png",
+      "sha256": "423e4508df62a2563af60a5f7fdbe1e7c9372f9177590bcb1649481cd098cb57",
+      "bytes": 272909,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-portrait.png",
+      "sha256": "caa3d2300df72b43fe318b312973736cbe5f9633d57027131fb1bad5cf0f6d7c",
+      "bytes": 211011,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-nursery.png",
+      "sha256": "bbcfc2578a3396fc030d61df304a24bb1aab9b8438ce389d51c8d4f2c039b58b",
+      "bytes": 150024,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-opening-ground-mix.wav",
+      "sha256": "2acca0e402da017216ba0d881b569bcd0e72ab5e35a64af2a0b0746375aabace",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-ground-walk.wav",
+      "sha256": "ba840b34f08851861fff7da6df2f90faf197aab4978b5d35e2aec233dae700f3",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-authored-door.wav",
+      "sha256": "35dc4652bf70bd5097b135f6fad19411db27cb110da55e56fba0ccd3786dc990",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-memory-1.wav",
+      "sha256": "04a44c0d5734b46e6f57a86bfaa64b9ff00fd0f1fd135a83c9491ee37b3058f0",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-heard-enemy.wav",
+      "sha256": "98622f0a3cd1ef32f8a36f53eac107db0422b59a0b408830c51063aee0b439c2",
+      "bytes": 230448,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-washroom-stone.wav",
+      "sha256": "76ab66255c5eea6dd1e7f00a430d16ec3be95b39d72e96cae20c100abb13fffa",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-memory-2.wav",
+      "sha256": "b5103cbbcdd1d1e6d5cba2a151ba88d590a36a185ce71c31ee72513bce168f5b",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-witnessed-recognition.wav",
+      "sha256": "c5311b0b80d79b443caaef1b10a103bb9ac7375ed36110f4f47dff68cdfa8000",
+      "bytes": 230448,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-physical-sprint.wav",
+      "sha256": "3e156182ab1ef7a9a3b46aa61fa4aa297e73fa1d240a461380bf7187ea0f7dfe",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-memory-3.wav",
+      "sha256": "e16ae7dbbbf772e56e693e26260a8e01f11c020a55cf3d9a8f1fc9b293f2d5a9",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-portrait-strain.wav",
+      "sha256": "7987abb4d2ba379c5abb22d97f7e6f0085e497e99935c574c2c7f6f5aea7d531",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-portrait-impact.wav",
+      "sha256": "58fc9471e13efa2467cf7241a9ac275d1fe246e439e9484105714ba6599e2c09",
+      "bytes": 86444,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-memory-4.wav",
+      "sha256": "1075fde31f871926cb169e653c6ccca15f1185185cf512ecf8d613533c67d3e7",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-basement-wet.wav",
+      "sha256": "6ea950e70f1ae1c38a8e1f0fbe1989c3e3aa40ad6be7439826f0a47da9dc9482",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-mix-memory-5.wav",
+      "sha256": "65839a66635428ded477b3720a6968ad37ac3e2fdf7cca2e2134c2a84eb4a14b",
+      "bytes": 153644,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    },
+    {
+      "file": "live-school-whole-mix.json",
+      "sha256": "8e052a1c762a5636fd1fbe171c4599e812fbcc324e692790dd0d78100769f697",
+      "bytes": 293330,
+      "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+      "test_result": "Passed"
+    }
+  ]
+}

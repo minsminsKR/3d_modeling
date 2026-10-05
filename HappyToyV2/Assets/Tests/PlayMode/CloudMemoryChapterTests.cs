@@ -40,7 +40,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(120000)]
         public IEnumerator ChapterRealMenusRestartDeathAndTitleIntoAnEmptyFirstMemorySchool()
         {
-            yield return RecoveryUiReady();yield return RecoveryClick("begin");
+            yield return RecoveryUiReady();yield return RecoveryClick("begin-school");
             Assert.That(Get<bool>(session,"ChapterMode"),Is.True);var original=session;
             yield return RecoveryPulse(UnityEngine.InputSystem.Key.Escape);yield return RecoveryClick("restart");yield return RecoveryRebind(original);
             Assert.That(Get<bool>(session,"ChapterMode"),Is.True);Assert.That(Get<int>(session,"RecordsRecovered"),Is.Zero);
@@ -49,7 +49,7 @@ namespace HappyToy.V2.CloudTests
             Call(session,"Finish",false);yield return null;original=session;yield return RecoveryClick("restart");yield return RecoveryRebind(original);
             Assert.That(Get<bool>(session,"ChapterMode"),Is.True);Assert.That(RecoveryPage,Is.EqualTo("Playing"));
             original=session;yield return RecoveryPulse(UnityEngine.InputSystem.Key.Escape);yield return RecoveryClick("title");yield return RecoveryRebind(original);
-            Assert.That(RecoveryPage,Is.EqualTo("Title"));yield return RecoveryClick("begin");Assert.That(Get<bool>(session,"ChapterMode"),Is.True);
+            Assert.That(RecoveryPage,Is.EqualTo("Title"));yield return RecoveryClick("begin-school");Assert.That(Get<bool>(session,"ChapterMode"),Is.True);
             Assert.That(Get<int>(session,"RecordsRecovered"),Is.Zero);Assert.That(Components("StalkerBrain").All(x=>!x.gameObject.activeInHierarchy),Is.True);
             Call(shell,"Pause");Call(shell,"Journal");yield return null;
             Assert.That(Get< UnityEngine.UIElements.VisualElement>(One("GameShellView"),"Root").Q<UnityEngine.UIElements.Label>("record-4"),Is.Not.Null);

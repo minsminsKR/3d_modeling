@@ -1,0 +1,212 @@
+{
+    "capture": "UnityAudioRendererMainOutput",
+    "scope": "Actual authored WASHROOM public door Use/leaf animation; near, frozen in-flight pause, same cue resume, finite distance, master mute. Positioned listener, not a continuous playthrough.",
+    "syntheticPcm": false,
+    "fullRouteEvidence": false,
+    "deviceListeningCertification": false,
+    "segments": [
+        {
+            "name": "door-opening",
+            "clip": "External door-open / door-open-0",
+            "cue": "door-open",
+            "surface": "",
+            "collider": "",
+            "samples": 9600,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 0,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.3199999928474426,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -3.690000295639038,
+                "y": 1.25,
+                "z": -1.5999999046325684
+            },
+            "listener": {
+                "x": -3.9000000953674316,
+                "y": 1.25,
+                "z": 0.8000001907348633
+            },
+            "peak": 0.019420690834522247,
+            "rms": 0.003204310306290552
+        },
+        {
+            "name": "door-paused",
+            "clip": "External door-open / door-open-0",
+            "cue": "door-open",
+            "surface": "",
+            "collider": "",
+            "samples": 24000,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 9600,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.3199999928474426,
+            "paused": true,
+            "occluded": false,
+            "source": {
+                "x": -3.690000295639038,
+                "y": 1.25,
+                "z": -1.5999999046325684
+            },
+            "listener": {
+                "x": -3.9000000953674316,
+                "y": 1.25,
+                "z": 0.8000001907348633
+            },
+            "peak": 1.5146129380243427e-28,
+            "rms": 1.0709930793498926e-28
+        },
+        {
+            "name": "door-resumed",
+            "clip": "External door-open / door-open-0",
+            "cue": "door-open",
+            "surface": "",
+            "collider": "",
+            "samples": 33600,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 33600,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.3199999928474426,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -3.030000925064087,
+                "y": 1.25,
+                "z": -1.5999999046325684
+            },
+            "listener": {
+                "x": -3.9000000953674316,
+                "y": 1.25,
+                "z": 0.8000001907348633
+            },
+            "peak": 0.09097369015216827,
+            "rms": 0.01120670296493004
+        },
+        {
+            "name": "door-beyond-range",
+            "clip": "External door-close / door-close-0",
+            "cue": "door-close",
+            "surface": "",
+            "collider": "",
+            "samples": 33600,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 67200,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.0,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -3.6899991035461426,
+                "y": 1.25,
+                "z": -1.5999999046325684
+            },
+            "listener": {
+                "x": -3.9000000953674316,
+                "y": 1.25,
+                "z": 17.799999237060547
+            },
+            "peak": 3.5676527894877e-23,
+            "rms": 1.616773554271314e-24
+        },
+        {
+            "name": "door-master-zero",
+            "clip": "External door-open / door-open-0",
+            "cue": "door-open",
+            "surface": "",
+            "collider": "",
+            "samples": 33600,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 100800,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.0,
+            "volume": 0.3199999928474426,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -2.8800010681152344,
+                "y": 1.25,
+                "z": -1.5999999046325684
+            },
+            "listener": {
+                "x": -3.9000000953674316,
+                "y": 1.25,
+                "z": 0.8000001907348633
+            },
+            "peak": 6.156414392573888e-23,
+            "rms": 2.447983532091538e-24
+        },
+        {
+            "name": "door-closing-near",
+            "clip": "External door-close / door-close-0",
+            "cue": "door-close",
+            "surface": "",
+            "collider": "",
+            "samples": 33600,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 134400,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.3199999928474426,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -3.3299994468688965,
+                "y": 1.25,
+                "z": -1.5999999046325684
+            },
+            "listener": {
+                "x": -3.9000000953674316,
+                "y": 1.25,
+                "z": 0.8000001907348633
+            },
+            "peak": 0.10093611478805542,
+            "rms": 0.01292291234005562
+        },
+        {
+            "name": "door-reversed-in-flight",
+            "clip": "External door-open / door-open-0",
+            "cue": "door-open",
+            "surface": "",
+            "collider": "",
+            "samples": 19200,
+            "rate": 48000,
+            "channels": 2,
+            "offset": 168000,
+            "clipped": 0,
+            "emitted": 0,
+            "master": 0.800000011920929,
+            "volume": 0.3199999928474426,
+            "paused": false,
+            "occluded": false,
+            "source": {
+                "x": -2.93999981880188,
+                "y": 1.25,
+                "z": -1.5999999046325684
+            },
+            "listener": {
+                "x": -3.9000000953674316,
+                "y": 1.25,
+                "z": 0.8000001907348633
+            },
+            "peak": 0.09941122680902481,
+            "rms": 0.011252940110218794
+        }
+    ]
+}

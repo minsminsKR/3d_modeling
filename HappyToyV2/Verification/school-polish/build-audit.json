@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "unity": "6000.6.0f1",
+  "input_count": 1968,
+  "mismatches": [],
+  "build_manifest_sha256": "52622b58afdd076b01d2a31077e13daa01036fdb79e3613b1888c73843a336c4",
+  "exe_sha256": "718444f6a718fa668da96eb0a58445b009673310e6129152a63dbf7a92b8de00",
+  "scope": "All recorded Assets/ProjectSettings/Packages build inputs match current files; excludes whole native survival or human play."
+}
