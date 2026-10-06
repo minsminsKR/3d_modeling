@@ -64,6 +64,7 @@ namespace HappyToy.V2
         readonly List<ObstacleState> obstacles = new List<ObstacleState>();
         readonly List<HiddenState> hidden = new List<HiddenState>();
         readonly List<MaterialState> cabinetMaterials = new List<MaterialState>();
+        readonly Dictionary<Mesh, Mesh> cabinetPeekMeshes = new Dictionary<Mesh, Mesh>();
         readonly List<LampState> lamps = new List<LampState>();
         readonly List<Light> eligibleLanterns = new List<Light>();
         readonly List<Transform> externalVisualRoots = new List<Transform>();
@@ -417,6 +418,7 @@ namespace HappyToy.V2
                     externalVisualRoots.Add(root);
                     var model=GraphicsPropLibrary.Attach("cabinet-timber",root,graphicsSurfaces.Resolve,owned);
                     GraphicsPropLibrary.Fit(model,target);
+                    CabinetPeekWindow.Prepare(cabinet,model,cabinetPeekMeshes,owned);
                     foreach(var renderer in originals)Hide(renderer);
                     TimberCabinets++;
                 }

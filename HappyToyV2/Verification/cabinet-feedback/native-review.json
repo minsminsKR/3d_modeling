@@ -1,0 +1,21 @@
+{
+    "status": "PASS",
+    "cabinets": 14,
+    "openSlits": 14,
+    "surroundingDoors": 14,
+    "branchSigns": 0,
+    "goalSigns": 5,
+    "hidden": true,
+    "flashlightKeyOn": true,
+    "flashlightKeyOff": true,
+    "chargeDrains": true,
+    "pauseStopsDrain": true,
+    "depletedStaysOff": true,
+    "exitKeepsSwitch": true,
+    "noNoticeOverlay": true,
+    "noThreatMessage": true,
+    "shortLatch": true,
+    "litChargeUsed": 0.601409912109375,
+    "latchSeconds": 0.2800000011920929,
+    "errors": []
+}

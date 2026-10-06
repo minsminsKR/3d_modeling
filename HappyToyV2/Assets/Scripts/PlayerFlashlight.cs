@@ -36,10 +36,10 @@ namespace HappyToy.V2
         void Update()
         {
             if (!player || !player.flashlight) return;
-            // Read the actual lamp: hiding, tests and authored effects may extinguish it.
+            // The actual switch drains charge in a cabinet too. Pauses still cost zero.
             float before = Charge;
             Charge = FlashlightChargeRules.Drain(Charge, Time.deltaTime,
-                player.flashlight.enabled && !player.Hidden, !player.Paused && player.isActiveAndEnabled);
+                player.flashlight.enabled, !player.Paused && player.isActiveAndEnabled);
             if (Charge > 0) return;
             player.flashlight.enabled = false;
             if (before <= 0) return;
@@ -49,7 +49,7 @@ namespace HappyToy.V2
         }
         public bool Toggle()
         {
-            if (!player || player.Paused || player.Hidden || !player.flashlight) return false;
+            if (!player || player.Paused || !player.flashlight) return false;
             if (!player.flashlight.enabled && Depleted)
             {
                 GameSession.Current.Notify("배터리가 없습니다. 회랑의 배터리를 찾아 E로 주우세요.");

@@ -47,9 +47,8 @@ namespace HappyToy.V2
             for(int cell=0;cell<CorridorLayout.Count;cell++)
             {
                 int goal=Array.IndexOf(SectorPlan.GoalCells,cell);
-                int branch=SectorPlan.BranchOrdinals[cell];
-                // Goal identities are permanent; numbered branches are sparse, real topology marks.
-                if(goal<0 && branch==0) continue;
+                // Keep memory-room identities; intersections need no topology placards.
+                if(goal<0) continue;
                 int direction=ChooseClueWall(cell,out float offset);
                 Vector3 outward=new Vector3(CorridorLayout.DX[direction],0,CorridorLayout.DZ[direction]);
                 Vector3 inward=-outward,across=new Vector3(outward.z,0,-outward.x);
@@ -57,7 +56,7 @@ namespace HappyToy.V2
                 Vector3 plane=center+outward*3+across*offset+inward*.183f+Vector3.up*1.73f;
                 Quaternion basis=Quaternion.LookRotation(inward);
                 var board=CellDraft(cell,SectorPaper(cell),false);var frame=CellDraft(cell,timber,false);
-                float width=goal>=0?.92f:.68f,height=goal>=0?.45f:.36f;
+                float width=.92f,height=.45f;
                 board.Box(plane,new Vector3(width,height,.013f),basis);
                 // Four fine joinery edges stay flat on an already opaque wall.
                 foreach(float side in new[]{-1f,1f})
@@ -67,21 +66,20 @@ namespace HappyToy.V2
                 }
                 var stamp=CellDraft(cell,SectorBinding(cell),false);
                 // Distinct quiet cord marks, rather than colour-only navigation.
-                int strokes=goal>=0?goal+1:CorridorSectorPlan.Degree(SectorPlan.Connections[cell]);
+                int strokes=goal+1;
                 for(int i=0;i<strokes;i++)
                     stamp.Box(plane+across*((i-(strokes-1)*.5f)*.066f)+inward*.015f-Vector3.up*(height*.5f-.055f),
                         new Vector3(.032f,.035f,.004f),basis);
-                string label=goal>=0?"봉인 "+(goal+1).ToString("D2")+" · "+sectorNames[goal]:
-                    "갈림 "+branch.ToString("D2")+" · "+CorridorSectorPlan.Degree(SectorPlan.Connections[cell])+"갈래";
-                var text=new GameObject((goal>=0?"Goal chamber clue ":"Branch topology clue ")+cell).AddComponent<TextMesh>();
+                string label="봉인 "+(goal+1).ToString("D2")+" · "+sectorNames[goal];
+                var text=new GameObject("Goal chamber clue "+cell).AddComponent<TextMesh>();
                 text.transform.SetParent(additions,false);
                 // TextMesh front points opposite local Z; this normal faces the actual room.
                 text.transform.SetPositionAndRotation(plane+inward*.017f,Quaternion.LookRotation(outward));
                 text.anchor=TextAnchor.MiddleCenter;text.alignment=TextAlignment.Center;text.fontSize=72;
-                text.characterSize=goal>=0?.014f:.012f;text.color=new Color(.13f,.10f,.067f);
+                text.characterSize=.014f;text.color=new Color(.13f,.10f,.067f);
                 text.text=label;text.gameObject.AddComponent<AnnexSignFont>().Apply();
                 sectorClues.Add(text);fittedSectorClues.Add((text,width*.91f,height*.64f));
-                if(goal>=0) GoalRoomClues++; else BranchClues++;
+                GoalRoomClues++;
             }
         }
         int ChooseClueWall(int cell,out float offset)

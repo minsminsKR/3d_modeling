@@ -95,10 +95,10 @@ namespace HappyToy.V2
             if (!initialized || !isActiveAndEnabled) return;
             LastInteractionClip = entering ? cabinetClose : cabinetOpen; InteractionCuesPlayed++;
             // The successful hiding transition seats the door; leaving opens it.
-            // One cabinet recording replaces any preceding interaction. No cloth,
+            // One short metal latch clack replaces any preceding interaction. No cloth,
             // extra impact, paper or pitch-transformed copy is layered on it.
             foley.Stop(); foley.pitch = 1; foley.clip = LastInteractionClip; foley.Play();
-            Caption(entering ? "[캐비닛 문 닫힘]" : "[캐비닛 문 열림]", 1.8f);
+            Caption(entering ? "[철컥 · 문 잠금쇠 닫힘]" : "[철컥 · 문 잠금쇠 열림]", .8f);
         }
         public void PlayDiscovery()
         {
@@ -187,6 +187,10 @@ namespace HappyToy.V2
             var stanceHome = player.Hidden ? player.HiddenCameraLocalPosition : cameraHome - Vector3.up * player.CameraHeightOffset;
             player.eyes.transform.localPosition = player.Hidden || session.Shell.ReducedMotion ? stanceHome : Vector3.Lerp(player.eyes.transform.localPosition,
                 stanceHome + bob, 1 - Mathf.Exp(-14 * Time.deltaTime));
+            if (player.Hidden && player.flashlight)
+            {
+                player.flashlight.transform.SetPositionAndRotation(player.eyes.transform.position, player.eyes.transform.rotation);
+            }
             float targetFov = session.Shell.FieldOfView + (motion && player.Running && speed > .5f ? 2.5f : 0);
             player.eyes.fieldOfView = Mathf.Lerp(player.eyes.fieldOfView, targetFov, 1 - Mathf.Exp(-5 * Time.unscaledDeltaTime));
         }
@@ -216,19 +220,23 @@ namespace HappyToy.V2
         static AudioClip MakeCabinetFallback(bool opening)
         {
             const int rate = 24000;
-            float seconds = opening ? .65f : .38f;
+            float seconds = opening ? .24f : .28f;
             var data = new float[Mathf.CeilToInt(rate * seconds)];
-            var random = new System.Random(opening ? 6521 : 6522); float grain = 0;
+            var random = new System.Random(opening ? 7821 : 7822);
             for (int index = 0; index < data.Length; index++)
             {
                 float t = index / (float)rate;
-                grain = Mathf.Lerp(grain, (float)random.NextDouble() * 2 - 1, .13f);
-                float hinge = Mathf.Sin(Mathf.PI * t / seconds) * (.06f * grain +
-                    .018f * Mathf.Sin(2 * Mathf.PI * (opening ? 280 : 180) * t));
-                float latch = opening ? 0 : Mathf.Exp(-t * 45) * .12f * grain;
-                data[index] = (hinge + latch) * Mathf.Clamp01(t / .004f) * Mathf.Clamp01((seconds - t) / .015f);
+                float value = 0;
+                foreach(float start in new[]{0f, opening ? .055f : .072f})
+                {
+                    float u=t-start;if(u<0) continue;
+                    value+=Mathf.Clamp01(u/.0007f)*(.34f*Mathf.Exp(-65*u)*Mathf.Sin(2*Mathf.PI*210*u)+
+                        .22f*Mathf.Exp(-90*u)*Mathf.Sin(2*Mathf.PI*1170*u)+
+                        .28f*Mathf.Exp(-210*u)*((float)random.NextDouble()*2-1));
+                }
+                data[index] = value*Mathf.Clamp01((seconds-t)/.015f);
             }
-            var clip = AudioClip.Create(opening ? "Cabinet door opening fallback" : "Cabinet door closing fallback", data.Length, 1, rate, false);
+            var clip = AudioClip.Create(opening ? "Cabinet metal latch release fallback" : "Cabinet metal latch seat fallback", data.Length, 1, rate, false);
             clip.SetData(data, 0); return clip;
         }
         static AudioClip MakeBreath()

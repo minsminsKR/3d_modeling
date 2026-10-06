@@ -73,7 +73,7 @@ namespace HappyToy.V2
             auditMode = args.Contains("-v3-graphics-output") || args.Any(a => a.StartsWith("-v2-", StringComparison.Ordinal) && a.EndsWith("-output", StringComparison.Ordinal));
             // Existing standalone audits enter through Begin; the flow audit retains the title.
             bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output") && !args.Contains("-v2-chapter-output") &&
-                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v3-graphics-output");
+                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v3-graphics-output");
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
             { if (playAfterLoad) { if (chapterRestart) BeginChapter(); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
@@ -354,6 +354,8 @@ namespace HappyToy.V2
         /// <summary>Call for a sound actually emitted near the player, never to reveal an unseen actor.</summary>
         public void ShowCaption(string text, float duration = 2.5f, int priority = 0)
         {
+            // Corridor threat sounds speak for themselves; omit instructional approach warnings.
+            if (session.CorridorMode && priority >= 2) return;
             if (Screen != Page.Playing || string.IsNullOrWhiteSpace(text)) return;
             if (captionTime > 0 && priority < captionPriority) return;
             captionPriority = priority;

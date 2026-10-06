@@ -1,14 +1,9 @@
 HAPPY TOY V2 — EXTERNAL SOUND CREDITS
 
-Creaky light wooden door — fractilegames
-Source: https://opengameart.org/content/creaky-light-wooden-door
-License: Creative Commons Attribution 3.0 Unported (CC BY 3.0)
-https://creativecommons.org/licenses/by/3.0/
-Legal code: https://creativecommons.org/licenses/by/3.0/legalcode
-Used for cabinet opening and closing. Changes: separate excerpts, mono 24 kHz
-PCM16 conversion, DC removal, filtering, edge fades and gain adjustment.
-No endorsement by fractilegames is implied. These derived recordings retain
-CC BY 3.0; no additional restriction is imposed on the recordings.
+Cabinet metal latch release and seating — original project synthesis
+Editable generator: SourceArt/Audio/render_cabinet_latch.py (Python 3 stdlib).
+Short mechanical clacks, mono 24 kHz PCM16. No external samples or creaking
+door recording is used for cabinet entry/exit.
 
 Sound Effects Pack — OwlishMedia
 https://opengameart.org/content/sound-effects-pack

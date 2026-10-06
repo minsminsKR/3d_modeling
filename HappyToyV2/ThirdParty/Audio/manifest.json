@@ -1566,65 +1566,47 @@
     "sha256": "ed802b98979c4c6b4d58cd5ee14b61f217ae7968f8de925ae843e32ddc1f9292"
   },
   {
-    "pack": "fractile-cabinet",
-    "creator": "fractilegames",
-    "title": "Creaky light wooden door",
-    "license": "CC-BY-3.0",
-    "license_url": "https://creativecommons.org/licenses/by/3.0/",
-    "page": "https://opengameart.org/content/creaky-light-wooden-door",
-    "download": "https://opengameart.org/sites/default/files/creakylightwoodendoor.wav",
-    "source_file": "creakylightwoodendoor.wav",
-    "source_file_sha256": "9b0a91420015c2ae080ef6fd9a3bf8141dc897b4d05aa6488d4e23c13bae8335",
+    "title": "Original metal cabinet latch release",
+    "author": "HappyToyV2 project",
+    "license": "Original project synthesis",
+    "source_file": "SourceArt/Audio/render_cabinet_latch.py",
+    "source_file_sha256": "02c0c86a3b8b3d42f1128c3f6e745ef5c08f34f55a97c84969fbcfed589f2174",
     "resource": "Audio/External/cabinet-open-0",
     "file": "cabinet-open-0.wav",
     "modifications": {
-      "source_start_seconds": 0.08,
-      "source_end_seconds": 2.6,
-      "high_pass_hz": 65,
-      "low_pass_hz": 5800,
-      "filter": "two-pole Butterworth zero phase",
-      "scope": "Cabinet-door recording only; no cloth, body, discovery or added impact layers.",
-      "mono": true,
       "sample_rate": 24000,
+      "mono": true,
       "format": "PCM16 WAV",
-      "edge_fade_seconds": 0.005,
-      "gain": 0.36862739402064904,
-      "layers": []
+      "layers": [
+        "original latch and pawl contacts"
+      ],
+      "scope": "Short metal clack; no external samples or door creak"
     },
-    "seconds": 2.52,
-    "peak": 0.54998779296875,
-    "rms": 0.03793171046117269,
-    "sha256": "a441f2f7fc720c326d5d47b55af45711b0595dd57a116379cf0ff999c5b8eb4b"
+    "seconds": 0.24,
+    "peak": 0.78,
+    "rms": 0.08822693690481934,
+    "sha256": "e373c78ec015595087d9343160a87d6d9093a127374b138613e9911e76ffcf6a"
   },
   {
-    "pack": "fractile-cabinet",
-    "creator": "fractilegames",
-    "title": "Creaky light wooden door",
-    "license": "CC-BY-3.0",
-    "license_url": "https://creativecommons.org/licenses/by/3.0/",
-    "page": "https://opengameart.org/content/creaky-light-wooden-door",
-    "download": "https://opengameart.org/sites/default/files/creakylightwoodendoor.wav",
-    "source_file": "creakylightwoodendoor.wav",
-    "source_file_sha256": "9b0a91420015c2ae080ef6fd9a3bf8141dc897b4d05aa6488d4e23c13bae8335",
+    "title": "Original metal cabinet latch seat",
+    "author": "HappyToyV2 project",
+    "license": "Original project synthesis",
+    "source_file": "SourceArt/Audio/render_cabinet_latch.py",
+    "source_file_sha256": "02c0c86a3b8b3d42f1128c3f6e745ef5c08f34f55a97c84969fbcfed589f2174",
     "resource": "Audio/External/cabinet-close-0",
     "file": "cabinet-close-0.wav",
     "modifications": {
-      "source_start_seconds": 3.05,
-      "source_end_seconds": 4.68,
-      "high_pass_hz": 65,
-      "low_pass_hz": 5800,
-      "filter": "two-pole Butterworth zero phase",
-      "scope": "Cabinet-door recording only; no cloth, body, discovery or added impact layers.",
-      "mono": true,
       "sample_rate": 24000,
+      "mono": true,
       "format": "PCM16 WAV",
-      "edge_fade_seconds": 0.005,
-      "gain": 0.4165463082463611,
-      "layers": []
+      "layers": [
+        "original latch and pawl contacts"
+      ],
+      "scope": "Short metal clack; no external samples or door creak"
     },
-    "seconds": 1.63,
-    "peak": 0.54998779296875,
-    "rms": 0.03638491555190838,
-    "sha256": "08e61f8a35d0e72fcd488fd41f2f1ff37c81cbbbaedf7a4252a831585b1ae59d"
+    "seconds": 0.28,
+    "peak": 0.78,
+    "rms": 0.06349206920945594,
+    "sha256": "5bf94827fb63247e87a59597f92482b3b19d19a3e2da94e7f82dc5a0d5f1f51e"
   }
 ]

@@ -217,3 +217,22 @@ python Tools/quality/compile_surface_shaders.py --dxc "$DXC" --include-root "$UN
 For Unity's Linux editor, the reference assemblies are in Data/Managed, Data/NetStandard and its matching URP blank template ScriptAssemblies cache. The include root must contain a Packages directory mapped to Data/Resources/PackageManager/BuiltInPackages, whose Core and Universal manifests must both read 17.6.0. Use the official Microsoft DirectXShaderCompiler distribution. The recorded compiler was 1.9.2609.5. The script extracts the single HLSLPROGRAM, exercises Forward/Forward+ and lighting/shadow/fog/instancing variants, writes source hashes and individual logs, and returns nonzero on a failed compile.
 
 Final evidence is in Verification/quality-surface/. Do not interpret the shader's analytical alpha range as proof of visibility or appearance: its actual font/material import and scene rendering still require Unity execution.
+
+## Cabinet slit and gameplay overlay review
+
+After a fresh `QualityValidation.BuildWindows` build, run its actual Windows player:
+
+```powershell
+& '<fresh-build>/HappyToyV2.exe' -v2-cabinet-peek-output '<fresh-evidence-folder>' -screen-width 1280 -screen-height 720 -screen-fullscreen 0 -logFile '<fresh-evidence-folder>/Player.log'
+```
+
+This opt-in controlled audit creates the seed-73 corridor, freezes threats, checks all
+14 cabinet meshes for an open slit surrounded by opaque door geometry, and drives
+the real F-key input while hidden. It verifies battery drain/pause/depletion, switch
+state on exit, absent branch signs and notice/threat overlays, and short latch clips.
+It writes `cabinet-peek.json` and native lamp-on/off camera PNGs, then exits nonzero
+on failure. It does not certify survival, human listening or frame rate.
+
+The slit geometry is derived at runtime from the retained FBX by `CabinetPeekWindow`;
+the imported mesh and original collision are preserved. The latch WAVs can be
+regenerated without extra libraries using `python SourceArt/Audio/render_cabinet_latch.py`.

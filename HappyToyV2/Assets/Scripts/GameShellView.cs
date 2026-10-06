@@ -17,8 +17,8 @@ namespace HappyToy.V2
         UIDocument document;
         PanelSettings settings;
         VisualElement recognitionGrain, recognitionEdge;
-        VisualElement root, stage, stamina, crosshair, noticePanel, noticeAccent, focusPanel, captionPanel, itemFeedbackPanel;
-        Label objective, objectiveCount, notice, focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
+        VisualElement root, stage, stamina, crosshair, focusPanel, itemFeedbackPanel;
+        Label objective, objectiveCount, focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
         Label navigationHelp, controlInstructions, controlsFooter, batteryMeter;
         bool sendingGamepadNavigation;
         bool sendingKeyboardSubmit;
@@ -200,9 +200,9 @@ namespace HappyToy.V2
             journalStep = session.RecordsRecovered;
             journalExploration = session.ExplorationCount;
             root.Clear(); recognitionGrain = recognitionEdge = null;
-            objective = objectiveCount = notice = focus = meter = status = noise = caption = itemFeedback = volume = sensitivity = fieldOfView = null;
+            objective = objectiveCount = focus = meter = status = noise = caption = itemFeedback = volume = sensitivity = fieldOfView = null;
             reducedMotionButton = subtitlesButton = contrastButton = textSizeButton = null;
-            stamina = crosshair = noticePanel = noticeAccent = focusPanel = captionPanel = itemFeedbackPanel = null;
+            stamina = crosshair = focusPanel = itemFeedbackPanel = null;
             root.style.color = Paper;
             root.style.backgroundColor = shown == GameShell.Page.Playing ? Color.clear : new Color(.013f, .025f, .021f, .97f);
             root.pickingMode = shown == GameShell.Page.Playing ? PickingMode.Ignore : PickingMode.Position;
@@ -528,13 +528,8 @@ namespace HappyToy.V2
             for (int i = 0; i < segmentCount; i++) objectiveSegments[i] = Panel(66 + segmentWidth * i, 163, segmentWidth - 9, 3, Edge);
             crosshair = Panel(797, 447, 6, 6, Paper);
             crosshair.name = "crosshair";
-            noticePanel = Panel(355, 618, 890, 129, Surface);
-            Outline(noticePanel, Edge);
-            noticeAccent = Panel(355, 618, 3, 129, Gold);
-            noticeAccent.name = "notice-accent";
-            notice = Text("", 379, 632, 840, 104, shell.LargeText ? 26 : 23);
-            captionPanel = Panel(355, 526, 890, 77, new Color(.01f, .015f, .012f, .93f));
-            caption = Text("", 379, 536, 842, 62, shell.LargeText ? 24 : 21);
+            caption = Text("", 440, 688, 720, 54, shell.LargeText ? 22 : 19);
+            caption.name = "sound-caption";
             caption.style.unityTextAlign = TextAnchor.UpperCenter;
             caption.style.color = Gold;
             focusPanel = Panel(460, 753, 680, 54, new Color(.017f, .026f, .022f, .95f));
@@ -591,13 +586,8 @@ namespace HappyToy.V2
             objectiveCount.text = $"{(session.CorridorMode || session.ChapterMode ? "기억" : "기록")} {session.RecordsRecovered} / {session.TotalRecords}";
             for (int i = 0; i < objectiveSegments.Length; i++)
                 if (objectiveSegments[i] != null) objectiveSegments[i].style.backgroundColor = session.RecordsRecovered > i ? Gold : Edge;
-            notice.text = session.Notice;
-            Visible(notice, shell.NoticeVisible);
-            Visible(noticePanel, shell.NoticeVisible);
-            Visible(noticeAccent, shell.NoticeVisible);
             caption.text = shell.Caption;
             Visible(caption, shell.CaptionVisible);
-            Visible(captionPanel, shell.CaptionVisible);
             stamina.style.width = 265 * Mathf.Clamp01(player.Stamina);
             stamina.style.backgroundColor = player.SprintExhausted ? Rust : Gold;
             var charge=player.FlashlightSystem;

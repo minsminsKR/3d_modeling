@@ -21,7 +21,7 @@ namespace HappyToy.V2
         readonly CabinetHidingRules.Decision hidingDecision = new CabinetHidingRules.Decision();
         // Authored upper ventilation slit. The capsule/stance stays unchanged;
         // while hidden only the eye occupies this outward-facing peek position.
-        public Vector3 HiddenCameraLocalPosition => new Vector3(.272f, 1.645f, 0);
+        public Vector3 HiddenCameraLocalPosition => hiddenPeek ? transform.InverseTransformPoint(hiddenPeek.EyePosition) : new Vector3(.272f, 1.645f, 0);
         // A short remembered cue from an actual attack at this cabinet door.
         // This is not a query of unseen enemy awareness or general hiding safety.
         public bool HidingThreatCueActive => Hidden && hidingPlace && warnedHidingPlace == hidingPlace && Time.time < hidingThreatUntil;
@@ -54,7 +54,10 @@ namespace HappyToy.V2
         float pitch, fallSpeed, standingHeight, crouchedHeight;
         Vector3 standingCenter;
         readonly Collider[] stanceOverlaps = new Collider[32];
-        bool flashlightBeforeHiding;
+        CabinetPeekWindow hiddenPeek;
+        float hiddenFacing, normalNearClip;
+        Vector3 normalFlashlightPosition;
+        Quaternion normalFlashlightRotation;
 
         void Awake()
         {
@@ -88,10 +91,15 @@ namespace HappyToy.V2
             if (PlayerControls.Crouch)
                 TrySetCrouching(!Crouching);
             var delta = PlayerControls.Look(sensitivity);
-            transform.Rotate(0, delta.x, 0);
-            pitch = Mathf.Clamp(pitch - delta.y, -78, 78);
+            if (Hidden && hiddenPeek)
+            {
+                float yaw = Mathf.Clamp(Mathf.DeltaAngle(hiddenFacing, transform.eulerAngles.y) + delta.x, -55, 55);
+                transform.rotation = Quaternion.Euler(0, hiddenFacing + yaw, 0);
+            }
+            else transform.Rotate(0, delta.x, 0);
+            pitch = Mathf.Clamp(pitch - delta.y, Hidden && hiddenPeek ? -25 : -78, Hidden && hiddenPeek ? 25 : 78);
             eyes.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
-            if (PlayerControls.Flashlight && !Hidden && flashlight)
+            if (PlayerControls.Flashlight && flashlight)
             {
                 FlashlightSystem.Toggle();
             }
@@ -217,17 +225,25 @@ namespace HappyToy.V2
             hidingPlace = place; hideExit = exit; Hidden = true; Running = false;
             FootstepNoiseRemaining = FootstepNoiseRadius = 0;
             moveDirection = Vector3.zero; sprintRequested = false; ActualSpeed = 0;
-            flashlightBeforeHiding = flashlight && flashlight.enabled;
+            hiddenPeek = place.GetComponent<CabinetPeekWindow>();
             controller.enabled = false; transform.position = inside;
             var outward = exit - inside; outward.y = 0;
+            if (hiddenPeek) outward = hiddenPeek.Outward;
             if (outward.sqrMagnitude > .001f) transform.rotation = Quaternion.LookRotation(outward);
+            hiddenFacing = transform.eulerAngles.y;
             pitch = 0;
             if (eyes)
             {
+                normalNearClip = eyes.nearClipPlane;
+                if (hiddenPeek) eyes.nearClipPlane = .01f;
                 eyes.transform.localRotation = Quaternion.identity;
                 eyes.transform.localPosition = HiddenCameraLocalPosition;
             }
-            if (flashlight) flashlight.enabled = false;
+            if (flashlight)
+            {
+                normalFlashlightPosition = flashlight.transform.localPosition;
+                normalFlashlightRotation = flashlight.transform.localRotation;
+            }
             GameSession.Current.NoteChapterAction(ChapterAction.HidingEntered);
             Feedback.PlayHide(true);
             if (HidingOutcome == CabinetHidingOutcome.Defeated)
@@ -258,7 +274,13 @@ namespace HappyToy.V2
             }
             transform.position = hideExit; Hidden = false; hidingPlace = null;
             fallSpeed = -2; controller.enabled = true;
-            if (flashlight) flashlight.enabled = flashlightBeforeHiding;
+            hiddenPeek = null;
+            if (eyes) eyes.nearClipPlane = normalNearClip;
+            if (flashlight)
+            {
+                flashlight.transform.localPosition = normalFlashlightPosition;
+                flashlight.transform.localRotation = normalFlashlightRotation;
+            }
             Feedback.PlayHide(false);
         }
     }
