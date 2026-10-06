@@ -80,7 +80,10 @@ namespace HappyToy.V2
                     throw new InvalidOperationException("No reachable school lighting station " + i);
                 // Find an adjacent structural wall rather than occupying a narrow route.
                 var mount = SchoolWallMount(floor.position, i, out var alongWall);
-                Battery("school-battery-" + i, mount + Vector3.up * 1.12f);
+                // The wall-mounted fourth record is at battery height. Keep its
+                // interaction ray clear rather than putting a supply directly over it.
+                Vector3 batteryMount = i == 3 ? mount - alongWall * .8f : mount;
+                Battery("school-battery-" + i, batteryMount + Vector3.up * 1.12f);
                 Candle("school-candle-" + i, mount + alongWall * .42f + Vector3.up * 1.06f, i);
             }
             SortIdentities();

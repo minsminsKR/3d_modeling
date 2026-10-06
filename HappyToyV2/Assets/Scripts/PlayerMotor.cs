@@ -35,7 +35,9 @@ namespace HappyToy.V2
         public float FootstepNoiseRemaining { get; private set; }
         public event System.Action<Vector3, float> FootstepNoiseEmitted;
         public bool SprintExhausted { get; private set; }
-        public bool Paused => !GameSession.Current || !GameSession.Current.InputAllowed;
+        public bool Paused => !GameSession.Current || !GameSession.Current.InputAllowed ||
+            GameSession.Current.ChapterMode && GameSession.Current.Chapter.FirstAppearances &&
+            GameSession.Current.Chapter.FirstAppearances.CameraOwned;
         public Interactable Focus { get; private set; }
         public int MovementUpdates { get; private set; }
         public CollisionFlags LastCollision { get; private set; }

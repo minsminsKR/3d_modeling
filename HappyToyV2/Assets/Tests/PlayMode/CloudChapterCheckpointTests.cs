@@ -39,7 +39,8 @@ namespace HappyToy.V2.CloudTests
             string directory=NewRecordFixture(); Call(session,"ConfigureRecordDirectory",directory);
             yield return RecoveryUiReady(); yield return RecoveryClick("begin-school"); yield return null;
             var chapter=Get<Component>(session,"Chapter"); var memories=Get<Component[]>(chapter,"Memories");
-            Call(memories[0],"Use",player); Call(memories[1],"Use",player); ((Behaviour)player).enabled=false;
+            Call(memories[0],"Use",player);yield return ChapterAwaitAppearance();
+            Call(memories[1],"Use",player);yield return ChapterAwaitAppearance();((Behaviour)player).enabled=false;
             PlacePlayer(new Vector3(25.8f,5.02f,24.5f)); Call(memories[2],"Use",player);
             var portrait=Get<Component>(chapter,"Portrait"); var nursery=Get<Component>(chapter,"Nursery");
             var camera=Get<Camera>(player,"eyes"); PlacePlayer(new Vector3(31.3f,5.02f,32.5f));
@@ -76,7 +77,8 @@ namespace HappyToy.V2.CloudTests
             string directory=NewRecordFixture(); Call(session,"ConfigureRecordDirectory",directory);
             yield return RecoveryUiReady(); yield return RecoveryClick("begin-school"); yield return null;
             var chapter=Get<Component>(session,"Chapter"); var memories=Get<Component[]>(chapter,"Memories");
-            Call(memories[0],"Use",player); Call(memories[1],"Use",player);
+            Call(memories[0],"Use",player);yield return ChapterAwaitAppearance();
+            Call(memories[1],"Use",player);yield return ChapterAwaitAppearance();
             Get<Light>(player,"flashlight").enabled=false;
             Assert.That((bool)Call(player,"TrySetCrouching",true),Is.True); yield return Delay(.15f);
             var mannequin=Get<Component>(chapter,"Mannequin");

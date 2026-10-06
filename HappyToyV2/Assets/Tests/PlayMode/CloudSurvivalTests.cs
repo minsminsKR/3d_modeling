@@ -454,6 +454,7 @@ namespace HappyToy.V2.CloudTests
         bool FindApproach(Component item, out Vector3 position, out Vector3 aim)
         {
             float best = float.PositiveInfinity; position = aim = Vector3.zero;
+            int blockedCapsules=0,blockedRays=0,blockedPaths=0;string firstBlocker="";
             Vector3 eyeOffset = eyes.transform.position - player.transform.position;
             foreach (var collider in item.GetComponentsInChildren<Collider>())
             {
@@ -469,21 +470,25 @@ namespace HappyToy.V2.CloudTests
                     Vector3 capsuleCenter = at + controller.center;
                     float half = controller.height * .5f - controller.radius;
                     if (Physics.CheckCapsule(capsuleCenter - Vector3.up * half, capsuleCenter + Vector3.up * half,
-                        controller.radius - .015f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) continue;
+                        controller.radius - .015f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) {blockedCapsules++;continue;}
                     Vector3 eye = at + eyeOffset, ray = center - eye;
                     if (ray.magnitude > 2.15f || !Physics.Raycast(eye, ray.normalized, out var hit, 2.2f,
                         Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) ||
-                        hit.collider.GetComponentInParent(RequireType("Interactable")) != item) continue;
+                        hit.collider.GetComponentInParent(RequireType("Interactable")) != item)
+                    {blockedRays++;if(firstBlocker=="" && Physics.Raycast(eye,ray.normalized,out var blocker,2.2f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))firstBlocker=blocker.collider.name;continue;}
                     var path = new NavMeshPath();
                     if (!NavMesh.CalculatePath(player.transform.position, at, NavMesh.AllAreas, path) ||
-                        path.status != NavMeshPathStatus.PathComplete) continue;
+                        path.status != NavMeshPathStatus.PathComplete) {blockedPaths++;continue;}
                     float length = 0;
                     for (int n = 1; n < path.corners.Length; n++) length += Vector3.Distance(path.corners[n - 1], path.corners[n]);
                     if (length >= best) continue;
                     best = length; position = at; aim = center;
                 }
             }
-            return !float.IsPositiveInfinity(best);
+            bool found=!float.IsPositiveInfinity(best);
+            if(!found)Debug.Log("HAPPYTOY_RECORD_APPROACH_TRACE "+item.name+" at="+item.transform.position+" eyeOffset="+eyeOffset+
+                " capsules="+blockedCapsules+" rays="+blockedRays+" paths="+blockedPaths+" firstRayBlocker="+firstBlocker);
+            return found;
         }
 
         IEnumerator Interact(Component item)
@@ -524,6 +529,11 @@ namespace HappyToy.V2.CloudTests
                 Assert.That((bool)Call(session, "HasInspected", id), Is.True);
             else Assert.That(item.gameObject.activeSelf, Is.False, "Collected story object did not settle");
             Milestone("Recovered " + id);
+            if(Get<bool>(session,"ChapterMode"))
+            {
+                var shots=Get<Component>(Get<Component>(session,"Chapter"),"FirstAppearances");
+                yield return Await(()=>!Get<bool>(shots,"CameraOwned"),30,60,"School first appearance did not return control");
+            }
         }
 
         IEnumerator RecoverStamina()

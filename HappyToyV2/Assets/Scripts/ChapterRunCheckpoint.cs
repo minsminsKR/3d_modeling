@@ -25,7 +25,7 @@ namespace HappyToy.V2
             {
                 if(!Ready || session.Finished || session.Shell.Screen!=GameShell.Page.Pause) return "일시정지 메뉴에서 학교 탐색을 저장하세요.";
                 if(session.player.Hidden) return "은신처에서 나온 뒤 학교 탐색을 저장할 수 있습니다.";
-                if(Portrait.Triggered && !Portrait.Completed || Nursery.Triggered && !Nursery.Released ||
+                if(FirstAppearances.CameraOwned || Portrait.Triggered && !Portrait.Completed || Nursery.Triggered && !Nursery.Released ||
                     Mannequin.Triggered && !Mannequin.Released || Mask.IntroStarted && !Mask.IntroCompleted ||
                     Mask.State==LanternMaskEncounter.Phase.Transforming)
                     return "등장이나 변신이 끝난 뒤 다시 일시정지해 저장하세요.";
@@ -110,6 +110,7 @@ namespace HappyToy.V2
                     throw new ArgumentException("Invalid saved school threat floor");
             // All references, movement constraints and physical floors passed before mutation.
             Recovered=data.recovered;
+            FirstAppearances.RestoreProgress(Recovered);
             for(int i=0;i<Memories.Length;i++) Memories[i].gameObject.SetActive(i>=Recovered);
             for(int i=0;i<packs.Length;i++) packs[i].gameObject.SetActive(data.supplies[i].available);
             for(int i=0;i<doors.Length;i++) doors[i].RestoreSchoolDoor(data.doors[i].open,data.doors[i].leaf,data.doors[i].secondary);

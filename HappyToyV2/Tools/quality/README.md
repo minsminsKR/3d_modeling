@@ -236,3 +236,15 @@ on failure. It does not certify survival, human listening or frame rate.
 The slit geometry is derived at runtime from the retained FBX by `CabinetPeekWindow`;
 the imported mesh and original collision are preserved. The latch WAVs can be
 regenerated without extra libraries using `python SourceArt/Audio/render_cabinet_latch.py`.
+
+## School first appearance camera review
+
+Run a fresh player with `-v2-school-reveal-output <fresh-evidence-folder>`.
+The controlled review invokes the real first and second school memory events,
+captures the actual corridor zoom and occluded Cyclopse emergence, and captures the
+mannequin under its solitary ceiling spotlight in a different physical corridor.
+It checks that the player capsule stays put, gameplay input is held during shots,
+pause freezes the shot clock, and the original view/control return. It writes
+`school-reveal.json` and PNGs, then exits nonzero on failure. It does not certify
+survival balance, human listening, or frame rate. Chapter checkpoint tests separately
+cover restoration without replaying the completed first appearances.

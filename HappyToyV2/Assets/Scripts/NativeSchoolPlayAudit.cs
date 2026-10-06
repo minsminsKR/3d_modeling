@@ -454,6 +454,7 @@ namespace HappyToy.V2
             stage=id;Require(session.CurrentObjectiveId==id,"Native route objective order changed");var item=Record(id);int before=session.RecordsRecovered;
             yield return Approach(item,session.StoryStep>=2);yield return Interact(item);
             Require(session.RecordsRecovered==before+1&&!item.gameObject.activeSelf,"Actual E did not recover exactly one memory: "+id);Milestone("Recovered "+id);
+            yield return Await(()=>!chapter.FirstAppearances.CameraOwned,30,"School first appearance did not return player control");
         }
         IEnumerator Rest()
         {Keys();yield return Await(()=>player.Stamina>=.98f&&!player.SprintExhausted,12,"Real stamina failed to recover");sprintReady=true;}

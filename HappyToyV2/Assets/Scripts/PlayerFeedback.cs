@@ -178,6 +178,7 @@ namespace HappyToy.V2
             if (!initialized || !player.eyes) return;
             var session = GameSession.Current;
             if (!session || !session.Shell) return;
+            if (session.ChapterMode && session.Chapter.FirstAppearances && session.Chapter.FirstAppearances.CameraOwned) return;
             bool motion = session.InputAllowed && !player.Hidden && !session.Shell.ReducedMotion;
             float speed = motion && player.Grounded ? Mathf.Clamp(player.ActualSpeed, 0, player.runSpeed) : 0;
             phase += speed * Time.deltaTime * 4.5f;

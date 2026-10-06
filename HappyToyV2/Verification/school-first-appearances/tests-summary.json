@@ -1,0 +1,63 @@
+{
+  "tests": [
+    {
+      "result": "Passed",
+      "name": "AuthoredSchoolPunctualShadowsAreAtlasBoundedAtTitleAndDuringTheChapter",
+      "run": "school-reveal-final-tests.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "ChapterFiveMemoryRouteSurvivesThroughActualInputAndFourStairLegs",
+      "run": "school-route-fixed.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "ChapterGatesEveryActorAndRequiresTheRealPortraitAndNurseryReveals",
+      "run": "school-reveal-final-tests.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "ChapterMannequinMovesOnlyWhenBothUnseenAndFlashlightOn",
+      "run": "school-reveal-final-tests.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "ChapterRealMenusRestartDeathAndTitleIntoAnEmptyFirstMemorySchool",
+      "run": "school-reveal-final-tests.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "ChapterStartsEmptyAndUsesFiveReachableMemoriesAcrossThreeFloors",
+      "run": "school-reveal-final-tests.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "ExternalChapterRoomLoopsAreAudibleAndOccludedAcrossTheAuthoredFloor",
+      "run": "school-reveal-final-tests.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "SchoolCheckpointRejectsCorruptGeometryBeforeMutatingFreshChapter",
+      "run": "school-reveal-final-tests.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "SchoolCheckpointRestoresCompletedAuthoredPortraitAndNurseryWithoutReplayingReveals",
+      "run": "school-route-fixed.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
+      "run": "school-route-fixed.xml"
+    },
+    {
+      "result": "Passed",
+      "name": "SchoolSuspendWriteFailureKeepsLivePausedChapterAndAllowsActualRetry",
+      "run": "school-reveal-final-tests.xml"
+    }
+  ],
+  "status": "PASS",
+  "scope": "Latest test result by name across the targeted school run and corrected full-route/checkpoint run. Includes real five-memory input escape with four physical stair legs, mannequin rules, pause/restart and save restoration. Native rendered camera review is reported separately.",
+  "uniqueTests": 11,
+  "passed": 11
+}

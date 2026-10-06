@@ -1,0 +1,30 @@
+{
+    "status": "PASS",
+    "cyclopsePhase": "done",
+    "zoom": true,
+    "gradualEmergence": true,
+    "occludedStaging": true,
+    "inputBlocked": true,
+    "feetStayPut": true,
+    "pauseFreezes": true,
+    "cameraReturned": true,
+    "mannequinOtherCorridor": true,
+    "solitarySpotlight": true,
+    "mannequinStill": true,
+    "restoreSkipsShots": true,
+    "initialFov": 72.0,
+    "zoomFov": 30.0,
+    "emergenceDistance": 6.015738010406494,
+    "pauseElapsed": 0.0,
+    "mannequinPosition": {
+        "x": 13.800000190734863,
+        "y": 0.03333330154418945,
+        "z": -7.400000095367432
+    },
+    "lampPosition": {
+        "x": 13.800000190734863,
+        "y": 2.8499999046325684,
+        "z": -7.400000095367432
+    },
+    "errors": []
+}

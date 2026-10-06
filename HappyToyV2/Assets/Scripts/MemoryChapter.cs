@@ -16,6 +16,7 @@ namespace HappyToy.V2
         public LanternMaskEncounter Mask { get; private set; }
         public V1HwacatEvent Portrait { get; private set; }
         public AnnexEncounter Nursery { get; private set; }
+        public SchoolFirstAppearances FirstAppearances { get; private set; }
         GameSession session;
         readonly string[] objectives = {
             "1층 입구 가까이 놓인 첫 기억을 찾으세요.",
@@ -75,7 +76,7 @@ namespace HappyToy.V2
             Memories[0].transform.position=new Vector3(-6.4f,.88f,.7f);
             Memories[2].transform.position=new Vector3(25.8f,6.1f,25.8f);
             Memories[4].transform.position=new Vector3(14.8f,-3.85f,-27.6f);
-            Mannequin.activationStep=2; PlaceActor(Mannequin.transform,new Vector3(0,0,-1.3f));
+            Mannequin.activationStep=2; PlaceActor(Mannequin.transform,SchoolFirstAppearances.MannequinStation);
             Mask.activationStep=3; PlaceActor(Mask.transform,new Vector3(27,5,27.6f));
             Mask.patrol=new[] {new Vector3(27,5,27.6f),new Vector3(30,5,30.8f),new Vector3(32,5,25)}
                 .Select(p=>{var marker=new GameObject("Upper mask patrol").transform;marker.SetParent(transform);marker.position=p;return marker;}).ToArray();
@@ -84,6 +85,7 @@ namespace HappyToy.V2
             gameObject.AddComponent<ChapterAtmosphere>().Prepare(Memories);
             GetComponent<GraphicsSchoolSurfaces>()?.Refresh();
             Lighting=gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareSchool(this);
+            FirstAppearances=gameObject.AddComponent<SchoolFirstAppearances>();FirstAppearances.Prepare(this);
             Physics.SyncTransforms(); Ready=true;
             session.Notify("아직 아무것도 움직이지 않습니다. 입구 가까이 놓인 첫 기억을 확인하세요.");
         }
@@ -103,7 +105,7 @@ namespace HappyToy.V2
         }
         public bool Collect(string id)
         {
-            if(!Ready||!session.InputAllowed||Recovered>=5) return false;
+            if(!Ready||!session.InputAllowed||Recovered>=5||FirstAppearances.CameraOwned) return false;
             if(id!="chapter-memory-"+Recovered) {session.Notify(Objective);return false;}
             if(Recovered==3 && (!Portrait.Completed || !Portrait.ChapterWitnessed))
             {
@@ -116,9 +118,9 @@ namespace HappyToy.V2
             if(Recovered==1)
             {
                 foreach(var startup in Cyclopse.GetComponents<NavMeshStartup>()) {startup.StopAllCoroutines();startup.enabled=false;}
-                Cyclopse.state=StalkerBrain.State.Patrol; Release(Cyclopse.transform);
+                Cyclopse.state=StalkerBrain.State.Patrol; FirstAppearances.PlayCyclopse();
             }
-            if(Recovered==2) Release(Mannequin.transform);
+            if(Recovered==2) {Release(Mannequin.transform);FirstAppearances.PlayMannequin();}
             if(Recovered==3) Release(Mask.transform);
             if(session.player.Feedback) session.player.Feedback.PlayDiscovery(); session.Notify(Objective);
             return true;

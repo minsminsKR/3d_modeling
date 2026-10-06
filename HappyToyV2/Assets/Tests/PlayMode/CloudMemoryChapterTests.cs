@@ -13,16 +13,22 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        IEnumerator ChapterAwaitAppearance()
+        {
+            var shots=Get<Component>(Get<Component>(session,"Chapter"),"FirstAppearances");
+            yield return Wait(()=>!Get<bool>(shots,"CameraOwned"),30,"School appearance did not return player control");
+        }
         [UnityTest, Timeout(90000)]
         public IEnumerator ChapterMannequinMovesOnlyWhenBothUnseenAndFlashlightOn()
         {
             Call(shell,"BeginChapter");yield return null;
             var chapter=Get<Component>(session,"Chapter");var memories=Get<Component[]>(chapter,"Memories");
-            Call(memories[0],"Use",player);Call(memories[1],"Use",player);
+            Call(memories[0],"Use",player);yield return ChapterAwaitAppearance();
+            Call(memories[1],"Use",player);yield return ChapterAwaitAppearance();
             // Isolate the gaze/light rule, keeping the production mannequin and navigation.
             Get<Component>(chapter,"Cyclopse").gameObject.SetActive(false);((Behaviour)player).enabled=false;
             var mannequin=Get<Component>(chapter,"Mannequin");var camera=Get<Camera>(player,"eyes");var light=Get<Light>(player,"flashlight");
-            PlacePlayer(new Vector3(-3,.02f,0));light.enabled=true;
+            PlacePlayer(mannequin.transform.position+Vector3.forward*4);light.enabled=true;
             camera.transform.rotation=Quaternion.LookRotation(mannequin.transform.position+Vector3.up*1.25f-camera.transform.position);
             yield return Wait(()=>Get<bool>(mannequin,"Released"),5,"Second-memory mannequin never finished its first sight turn");
             var at=mannequin.transform.position;yield return Delay(.4f);
@@ -109,9 +115,12 @@ namespace HappyToy.V2.CloudTests
             var cyclopse=Get<Component>(chapter,"Cyclopse");var mannequin=Get<Component>(chapter,"Mannequin");
             var mask=Get<Component>(chapter,"Mask");var portrait=Get<Component>(chapter,"Portrait");var nursery=Get<Component>(chapter,"Nursery");
             Call(memories[0],"Use",player);Assert.That(Get<int>(chapter,"Recovered"),Is.EqualTo(1));
-            Assert.That(cyclopse.gameObject.activeSelf,Is.True);Assert.That(Get<object>(cyclopse,"state").ToString(),Is.EqualTo("Patrol"));
+            Assert.That(Get<bool>(player,"Paused"),Is.True);yield return ChapterAwaitAppearance();
+            Assert.That(cyclopse.gameObject.activeSelf,Is.True);
+            Assert.That(Get<bool>(Get<Component>(Get<Component>(chapter,"FirstAppearances"),"CyclopseIntro"),"Completed"),Is.True);
             Assert.That(mannequin.gameObject.activeSelf,Is.False);Assert.That(mask.gameObject.activeSelf,Is.False);
             Call(memories[1],"Use",player);Assert.That(Get<int>(chapter,"Recovered"),Is.EqualTo(2));Assert.That(mannequin.gameObject.activeSelf,Is.True);
+            yield return ChapterAwaitAppearance();
             Assert.That(Get<int>(mannequin,"activationStep"),Is.EqualTo(2));Assert.That(mask.gameObject.activeSelf,Is.False);
             // Controlled encounter probe; no isolated actor result is presented as a full run.
             ((Behaviour)player).enabled=false;
