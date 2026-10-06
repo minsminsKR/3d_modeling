@@ -1,0 +1,111 @@
+{
+  "generator": "Original measured correlated micro-surface fields; no external images",
+  "resolution": [
+    2048,
+    2048
+  ],
+  "normalConvention": "Tangent-space +Y normal; importer type NormalMap; albedo sRGB and other maps linear",
+  "metallicSmoothness": "Metallic red, smoothness alpha; green/blue zero",
+  "maps": [
+    {
+      "path": "Assets/Resources/GraphicsPbr/brass-tarnished/albedo.png",
+      "bytes": 2248356,
+      "sha256": "402164ca2dfc9db83c7098278d1ec68c2f48e7c52452970b99a6e53f206dda9d"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/brass-tarnished/ao.png",
+      "bytes": 215271,
+      "sha256": "61ca0a793fbbcb553f1887980a39b82b5c1ea7678e08b4081ed5fda7a059476e"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/brass-tarnished/metallic-smoothness.png",
+      "bytes": 1985493,
+      "sha256": "78325709a9f9c0c72fb116ee66e7fa4609f4286ef7e149b1d189164e98adbe55"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/brass-tarnished/normal.png",
+      "bytes": 673494,
+      "sha256": "7ff428e2571157e6fe0865178c21c77a8e0186a7834e6b7152c3e44b0b4c41b2"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/cloth-charred/albedo.png",
+      "bytes": 1226877,
+      "sha256": "14a3f7e8a635f8d3b08fe9c99d24d99d07e66abd1373e182dbf9d6ba36bb2f7e"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/cloth-charred/ao.png",
+      "bytes": 793982,
+      "sha256": "4ced8fa48944ffa0dd2fed546a615c3a479debabb520e38157302623d11ef349"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/cloth-charred/metallic-smoothness.png",
+      "bytes": 631141,
+      "sha256": "42ae0adab4b7ab0e6a3887be9767b48a920b8e20b56e7a7f5912a46e1d5aa28b"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/cloth-charred/normal.png",
+      "bytes": 1829664,
+      "sha256": "1aeef7c952d9602ef36ddf762f929a2564edd4d62a2181f3d6a9869373e3f772"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/painted-metal/albedo.png",
+      "bytes": 1543756,
+      "sha256": "91e44ef8767915f36d32b0dd541305fa0bd3d5bb39c5d501a07fc8b6176874d5"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/painted-metal/ao.png",
+      "bytes": 233499,
+      "sha256": "f5c17ee829a278b941047f3a81590d817fc93c8cf42b6b99fa166bcc2313245e"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/painted-metal/metallic-smoothness.png",
+      "bytes": 1057288,
+      "sha256": "b8e22045cc198ad04757b73fdd71d0db9b06e4fa1438cdf4dcebce64ca08277b"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/painted-metal/normal.png",
+      "bytes": 1073596,
+      "sha256": "99c63df0fb7a0b3986815f7ae6603bc41d782da7a45025bf53034d5676abdd48"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-pool/albedo.png",
+      "bytes": 484741,
+      "sha256": "25046542497147115e731004052fe8dbdbb44d63a53a13d570d77ae0854fcdd7"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-pool/ao.png",
+      "bytes": 8533,
+      "sha256": "169bca061bc03a0f28be7e8e32b8d15aff2daa5def3ce38bf5e27569eb0356b9"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-pool/metallic-smoothness.png",
+      "bytes": 647278,
+      "sha256": "83fc6d7516418c9b7a6f6e6371cb28e908a0df1778a48741a10163791ea04a76"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-pool/normal.png",
+      "bytes": 206276,
+      "sha256": "df8c12195b2e85a4ff6a61b3afa520dd9e4e70976ce4f9bea2e2d44437b5b47a"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-tallow/albedo.png",
+      "bytes": 1177228,
+      "sha256": "849aac66e50e2001070567a6767a2cc1b24c584e50734ff5bb0cbdd86f93d504"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-tallow/ao.png",
+      "bytes": 562190,
+      "sha256": "29f393d1f4771c9df753fbe20efb150c69ee6e465ebd8f5b6c01e67f5a48c1eb"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-tallow/metallic-smoothness.png",
+      "bytes": 487908,
+      "sha256": "95411da7bdddfc6e888a9c9d13a108cfa108f3d91605bae96d0ff2902752bdf9"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-tallow/normal.png",
+      "bytes": 921974,
+      "sha256": "74513e59d2760b7500bae6d3201e26ea03ff874078d074dec38386ef661da7bd"
+    }
+  ]
+}

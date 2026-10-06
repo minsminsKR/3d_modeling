@@ -10,6 +10,8 @@ namespace HappyToy.V2
     {
         public int version = 1, simulationVersion = 1, seed;
         public string token;
+        public int lightingVersion;
+        public LightExplorationCheckpoint lighting;
         public float seconds;
         public bool[] recovered, supplies;
         public PlayerMotor.Progress player;
@@ -25,6 +27,11 @@ namespace HappyToy.V2
                 recovered == null || recovered.Length != 5 || supplies == null || supplies.Length != 8 ||
                 doors == null || doors.Length > 162 || threats == null || threats.Length != 4 || player == null)
                 throw new ArgumentException("Invalid checkpoint schema");
+            // Legacy marker 0 means this run predates batteries/candles. New captures always write 1.
+            if(lightingVersion<0 || lightingVersion>1 || lightingVersion==1 && lighting==null ||
+                lightingVersion==0 && lighting!=null && !lighting.LegacyEmpty)
+                throw new ArgumentException("Invalid lighting checkpoint version");
+            if(lightingVersion==1) lighting.Validate();
             player.Validate();
             foreach(var threat in threats) { if(threat == null) throw new ArgumentException("Missing threat"); threat.Validate(); }
             var ids=new System.Collections.Generic.HashSet<string>();

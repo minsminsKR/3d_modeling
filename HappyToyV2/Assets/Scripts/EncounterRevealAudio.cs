@@ -67,6 +67,44 @@ namespace HappyToy.V2
         static float S(float frequency, float time) => Mathf.Sin(2 * Mathf.PI * frequency * time);
         static float Hit(float time, float start, float decay)
         { float t = time - start; return t < 0 ? 0 : (1 - Mathf.Exp(-t * 1100)) * Mathf.Exp(-t * decay); }
+        static AudioClip RecordedToyMechanism(AudioClip contact)
+        {
+            // Preserve the original mechanism's 1.15 s / four-click grammar.
+            // These are decoded recorded samples; source Resources remain owned
+            // by ExternalAudio, and this returned phrase belongs to this voice.
+            const float duration = 1.15f;
+            var sourceData = new float[contact.samples * contact.channels];
+            if (!contact.GetData(sourceData, 0))
+                throw new System.InvalidOperationException("Recorded toy contact cannot be decoded");
+            int frames = Mathf.CeilToInt(duration * contact.frequency);
+            var phrase = new float[frames * contact.channels];
+            float[] starts = { 0f, .23f, .51f, .84f };
+            float[] gains = { .85f, .65f, .75f, .55f };
+            for (int hit = 0; hit < starts.Length; hit++)
+            {
+                int offset = Mathf.RoundToInt(starts[hit] * contact.frequency) * contact.channels;
+                int count = Mathf.Min(sourceData.Length, phrase.Length - offset);
+                for (int sample = 0; sample < count; sample++)
+                    phrase[offset + sample] += sourceData[sample] * gains[hit];
+            }
+            float peak = 0;
+            foreach (float value in phrase)
+            {
+                if (!StealthRules.Finite(value))
+                    throw new System.InvalidOperationException("Recorded toy contact contains invalid samples");
+                peak = Mathf.Max(peak, Mathf.Abs(value));
+            }
+            float normalization = peak > .58f ? .58f / peak : 1;
+            for (int frame = 0; frame < frames; frame++)
+            {
+                float time = frame / (float)contact.frequency;
+                float edge = Mathf.Clamp01(time / .004f) * Mathf.Clamp01((duration - time) / .035f);
+                for (int channel = 0; channel < contact.channels; channel++)
+                    phrase[frame * contact.channels + channel] *= normalization * edge;
+            }
+            var result = AudioClip.Create("Recorded toy mechanism / " + contact.name, frames, contact.channels, contact.frequency, false);
+            result.SetData(phrase, 0); return result;
+        }
         public static AudioClip CreateClip(Cue kind)
         {
             string recordedCue = kind == Cue.FrameStrain ? "frame-strain" :
@@ -76,8 +114,18 @@ namespace HappyToy.V2
                 kind == Cue.NurseryContact ? "step-wet" :
                 kind == Cue.MannequinTension ? "frame-strain" :
                 kind == Cue.MannequinSettle ? "step-wood" : null;
-            var recorded = ExternalAudio.Owned(recordedCue);
-            if (recorded) return recorded;
+            // Different authored reveals must not alias the same recorded take.
+            // The frame and mannequin share a material family, but use real
+            // independent takes. A toy mechanism has its own four-contact phrase,
+            // assembled from the recorded latch rather than relabeling one tick.
+            int variant = kind == Cue.MannequinTension ? 1 : 0;
+            var recorded = ExternalAudio.Owned(recordedCue, variant);
+            if (recorded)
+            {
+                if (kind != Cue.ToyMechanism) return recorded;
+                try { return RecordedToyMechanism(recorded); }
+                finally { Object.Destroy(recorded); }
+            }
             const int rate = 24000;
             float duration = kind == Cue.NurseryWhimper ? 2.7f : kind == Cue.WraithGrowth ? 4.8f :
                 kind == Cue.CyclopseBreath ? 1.05f : kind == Cue.ToyMechanism ? 1.15f :

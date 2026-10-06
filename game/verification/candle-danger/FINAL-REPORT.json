@@ -1,0 +1,80 @@
+{
+  "status": "CANDLE_DANGER_TARGETED_VALIDATION_PASS",
+  "scope": "Current runtime revision targeted PlayMode and fresh Windows build/input fingerprint; no claim of manual/native danger playthrough or whole-suite completion.",
+  "reports": [
+    {
+      "file": "regression02.xml",
+      "result": "Passed",
+      "total": 3,
+      "passed": 3,
+      "durationSeconds": 23.4574809,
+      "tests": [
+        {
+          "name": "CandlePhysicalIgnitionAndFiniteSupplyCheckpointRestoreWithoutReplay",
+          "result": "Passed"
+        },
+        {
+          "name": "RealModeledCandleKeepsActualInteractionPhysicsPauseAndPhotographicFlame",
+          "result": "Passed"
+        },
+        {
+          "name": "SchoolLightingKeepsSeparateCheckpointAndFreshModeRemovesCorridorStations",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "file": "danger03.xml",
+      "result": "Passed",
+      "total": 6,
+      "passed": 6,
+      "durationSeconds": 30.343513,
+      "tests": [
+        {
+          "name": "CandleActualFarSightBlackoutsBeforeEnemyUpdateAndPhysicalCoverPreventsIt",
+          "result": "Passed"
+        },
+        {
+          "name": "CandleBlackoutPersistsExtinguishedThroughBothModeCheckpointRoundTrips",
+          "result": "Passed"
+        },
+        {
+          "name": "CandleDangerPauseFreezesThreatStateAndReducedMotionKeepsSteadyDimming",
+          "result": "Passed"
+        },
+        {
+          "name": "CandleDangerRejectsInactiveUnreadyWrongModeAndRealOtherFloorActors",
+          "result": "Passed"
+        },
+        {
+          "name": "CandleDormantSchoolMaskAndUnreleasedMannequinStayHarmlessWithReadyNavigation",
+          "result": "Passed"
+        },
+        {
+          "name": "CandleProximityDimsAllLitMarkersBlackoutsAndRequiresActualManualRelight",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "file": "flicker04.xml",
+      "result": "Passed",
+      "total": 1,
+      "passed": 1,
+      "durationSeconds": 13.4816219,
+      "tests": [
+        {
+          "name": "CandleActualNormalMotionWarningGrowsFlickerDepthAndCompletedPulseCount",
+          "result": "Passed"
+        }
+      ]
+    }
+  ],
+  "sourceHashes": {
+    "Assets/Scripts/CandleDanger.cs": "9b0bf497f12343687152584fe58c33bac91db79d36cec477548fbb1c2ce388dd",
+    "Assets/Scripts/WaymarkCandle.cs": "ff4dbe784a4746ba41637929a227a1f4223f361529a8064d93da830052056406",
+    "Assets/Scripts/LightExplorationRun.cs": "f72ac5cbb92fc12a601a04efdd95001c016c9dfa2fccbdf148ad4eb486599de7"
+  },
+  "build": "E:\\AI\\3d_modeling\\HappyToyV2\\Builds\\CandleDangerReview-20261006\\HappyToyV2.exe",
+  "buildProof": "GRAPHICS_BUILD_INPUTS_PASS"
+}

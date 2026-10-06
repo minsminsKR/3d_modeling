@@ -15,11 +15,12 @@ namespace HappyToy.V2
         RenderTexture target;Texture2D readback;float nextSample;
         int sampleIndex;
         readonly List<SlowSample> slowSamples=new List<SlowSample>();
-        [Serializable] class SlowSample {public int index,storyStep;public float milliseconds,realtime;public Vector3 playerPosition;public bool firstRender;}
+        [Serializable] class SlowSample {public int index,storyStep,progress;public string progressMode;public float milliseconds,realtime;public Vector3 playerPosition;public bool firstRender;}
         [Serializable] class Stats {public int frames,over33ms,over50ms;public float p50ms,p95ms,p99ms,maxMs;}
         [Serializable] class Report
         {
             public string device,cpu,graphicsApi,unity,measurement;
+            public string phaseDefinition=PerformanceProgressPhase.Definition;
             public int width,height,targetFrameRate,vSync;
             public long managedBytes;
             public bool developmentBuild,escaped;
@@ -45,10 +46,11 @@ namespace HappyToy.V2
             // A one-pixel synchronous readback waits for GPU completion, including the rendered scene.
             RenderTexture.active=target;readback.ReadPixels(new Rect(0,0,1,1),0,0);readback.Apply();RenderTexture.active=previous;
             timer.Stop();float ms=(float)timer.Elapsed.TotalMilliseconds;
-            if(ms>16.667f||sampleIndex==0)slowSamples.Add(new SlowSample{index=sampleIndex,storyStep=session.StoryStep,
+            if(ms>16.667f||sampleIndex==0)slowSamples.Add(new SlowSample{index=sampleIndex,storyStep=session.StoryStep,progress=PerformanceProgressPhase.Progress(session),
+                progressMode=PerformanceProgressPhase.Mode(session),
                 milliseconds=ms,realtime=Time.realtimeSinceStartup,playerPosition=session.player.transform.position,firstRender=sampleIndex==0});
             sampleIndex++;
-            (session.StoryStep>=2&&session.StoryStep<4?threat:calm).Add(ms);
+            (PerformanceProgressPhase.IsThreat(session)?threat:calm).Add(ms);
         }
         static Stats Summarize(List<float> values)
         {

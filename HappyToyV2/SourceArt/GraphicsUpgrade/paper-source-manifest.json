@@ -1,0 +1,21 @@
+{
+  "key": "paper-aged",
+  "origin": "Original deterministic torn-pulp/washi microfibre material, authored for HappyToyV2",
+  "author": "HappyToyV2 development",
+  "tileMetres": [
+    0.6,
+    0.6
+  ],
+  "pixels": [
+    2048,
+    2048
+  ],
+  "method": "Periodic oriented pulp fibres produce correlated albedo/height/normal/roughness. Finite differences use wrapped edges. No source images copied; original procedural data maps, not a photograph.",
+  "seed": 736129,
+  "sha256": {
+    "albedo.png": "b9474f1e4c5712d88093f8ccd5b59efee28095448dcba9e2dcfcb3e914123caf",
+    "ao.png": "fd13ad461f79816890a2c9719a0c4ab139e3010283a3476380b0c99a49584444",
+    "metallic-smoothness.png": "00fcf949757bba6490990f3b677ee10dbe29e8dc1846c8e82a4c7df4be583141",
+    "normal.png": "dce949d6c2760ad3ec79d19c1d0af57327bc5705dcb41edea9573c8e21ed6c78"
+  }
+}

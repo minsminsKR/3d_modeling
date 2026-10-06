@@ -41,7 +41,7 @@ namespace HappyToy.V2
         {
             if(!string.IsNullOrEmpty(SuspendBlockReason)) throw new InvalidOperationException(SuspendBlockReason);
             EnsureCheckpointIdentities();
-            var data=new ChapterCheckpoint { token=Guid.NewGuid().ToString("N"),scene=gameObject.scene.path,recovered=Recovered,
+            var data=new ChapterCheckpoint { lightingVersion=1,lighting=Lighting.Capture(), token=Guid.NewGuid().ToString("N"),scene=gameObject.scene.path,recovered=Recovered,
                 seconds=session.ElapsedPlayTime,player=session.player.CaptureProgress(),cyclopse=Cyclopse.CaptureProgress(),
                 portraitActor=Portrait.angry.CaptureProgress(),nurseryActor=Nursery.monster.CaptureProgress(),
                 mannequin=Mannequin.CaptureChapterProgress(),mask=Mask.CaptureChapterProgress(),
@@ -62,12 +62,16 @@ namespace HappyToy.V2
             data.Validate();
             if(!Ready || Recovered!=0 || session.Finished || session.InputAllowed || gameObject.scene.path!=data.scene)
                 throw new InvalidOperationException("Restore into a fresh paused school chapter");
+            Lighting.ValidateRestore(data.lightingVersion==0?null:data.lighting);
             EnsureCheckpointIdentities();
             var doors=ChapterItems(Interactable.Kind.Door); var packs=ChapterItems(Interactable.Kind.FirecrackerSupply);
             if(!doors.Select(x=>x.stableId).SequenceEqual(data.doors.Select(x=>x.id)) ||
                 !packs.Select(x=>x.stableId).SequenceEqual(data.supplies.Select(x=>x.id)) ||
                 new[]{data.cyclopse,data.portraitActor,data.nurseryActor}.Any(x=>!string.IsNullOrEmpty(x.door) && !doors.Any(d=>d.stableId==x.door)))
                 throw new ArgumentException("School checkpoint geometry mismatch");
+            if(!StalkerDoorTraversal.ReferencesValid(data.mannequin.doorPassage,doors) ||
+                !StalkerDoorTraversal.ReferencesValid(data.mask.doorPassage,doors))
+                throw new ArgumentException("Unknown advanced actor door passage");
             for(int i=0;i<doors.Length;i++)
                 if(!doors[i].CanRestoreSchoolDoor(data.doors[i].leaf,data.doors[i].secondary,data.doors[i].hasSecondary))
                     throw new ArgumentException("Invalid school door pose");
@@ -113,7 +117,8 @@ namespace HappyToy.V2
             Cyclopse.RestoreChapterProgress(data.cyclopse,doors); Portrait.angry.RestoreChapterProgress(data.portraitActor,doors);
             Nursery.monster.RestoreChapterProgress(data.nurseryActor,doors);
             Mannequin.RestoreChapterProgress(data.mannequin); Mask.RestoreChapterProgress(data.mask);
-            session.player.RestoreChapterProgress(data.player); Physics.SyncTransforms();
+            session.player.RestoreChapterProgress(data.player);
+            Lighting.Restore(data.lightingVersion==0?null:data.lighting); Physics.SyncTransforms();
         }
     }
 }

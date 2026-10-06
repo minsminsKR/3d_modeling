@@ -10,6 +10,8 @@ namespace HappyToy.V2
     {
         public int version = 1, simulationVersion = 1, recovered;
         public string token, scene;
+        public int lightingVersion;
+        public LightExplorationCheckpoint lighting;
         public float seconds;
         public PlayerMotor.Progress player;
         public ChapterRunProgress runProgress;
@@ -37,6 +39,11 @@ namespace HappyToy.V2
                 recovered<0 || recovered>5 || player==null || cyclopse==null || portraitActor==null || nurseryActor==null ||
                 mannequin==null || mask==null || doors==null || doors.Length>128 || supplies==null || supplies.Length>128)
                 throw new ArgumentException("Invalid school checkpoint schema");
+            // Legacy marker 0 means this run predates batteries/candles. New captures always write 1.
+            if(lightingVersion<0 || lightingVersion>1 || lightingVersion==1 && lighting==null ||
+                lightingVersion==0 && lighting!=null && !lighting.LegacyEmpty)
+                throw new ArgumentException("Invalid lighting checkpoint version");
+            if(lightingVersion==1) lighting.Validate();
             player.ValidateChapter(); cyclopse.ValidateChapter(); portraitActor.ValidateChapter(); nurseryActor.ValidateChapter();
             runProgress?.Validate();
             mannequin.Validate(); mask.Validate();

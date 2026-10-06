@@ -58,7 +58,10 @@ namespace HappyToy.V2.CloudTests
         readonly float wallStart;
         float meters, gameStart;
         Vector3 previous;
-        int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, lastRecovered;
+        int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, lastRecovered, batteriesCollected, candlesIgnited, lastHidingEntry, lastHidingRolls;
+        float lastCharge; string lastHidingOutcome = "None";
+        public int BatteriesCollected => batteriesCollected;
+        public int CandlesIgnited => candlesIgnited;
         float alertUntil, lastThrow = -100, lastDodge = -100, lastHide = -100, lastGameTime;
         bool expectEscape, passed, disposed, seekingHiding;
         string stage = "startup";
@@ -77,6 +80,12 @@ namespace HappyToy.V2.CloudTests
             lastGameTime = Get<float>(session, "ElapsedPlayTime") - gameStart; lastRecovered = Get<int>(session, "RecordsRecovered");
             observedKeyboard = Keyboard.current;
             maximumThreats = Mathf.Max(maximumThreats, monsters.Count(x => x.gameObject.activeSelf));
+            lastCharge = Get<float>(Get<Component>(player, "FlashlightSystem"), "Charge");
+            lastHidingEntry = Get<int>(player, "HidingEntryId"); lastHidingRolls = Get<int>(player, "HidingRolls");
+            lastHidingOutcome = Get<object>(player, "HidingOutcome").ToString();
+            Assert.That(Get<object>(player, "HidingRandomSample"), Is.Null, "Full route may not override production hiding RNG");
+            Assert.That(Time.timeScale, Is.EqualTo(1)); Assert.That(Time.captureDeltaTime, Is.Zero);
+            Assert.That(((Behaviour)player).enabled, Is.True, "Full route cannot disable the actual motor");
             bool terminal = Get<bool>(session, "Finished") && !(expectEscape && Get<bool>(session, "Escaped"));
             if (terminal) SaveEvidence();
             Assert.That(terminal, Is.False,
@@ -92,9 +101,10 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator Run()
         {
             gameStart = Get<float>(session, "ElapsedPlayTime");
-            if (Get<Light>(player, "flashlight").enabled) yield return Pulse(Key.F);
-            yield return Pulse(Key.C);
-            Assert.That(Get<bool>(player, "Crouching"), Is.True); Mark("dark, quiet stance through F/C");
+            if (!Get<bool>(player, "Crouching")) yield return Pulse(Key.C);
+            Assert.That(Get<bool>(player, "Crouching"), Is.True);
+            yield return DemonstrateLighting();
+            Mark("finite light, battery and candle demonstrated through F/E; quiet stance through C");
             yield return TopUpNearbySupply(18);
             for (int i = 0; i < 5; i++)
             {
@@ -306,16 +316,12 @@ namespace HappyToy.V2.CloudTests
                     }
                     if (!Get<bool>(player, "Crouching") && GameTime > alertUntil && !RecognitionCue)
                         yield return Pulse(Key.C);
-                    if (Physics.SphereCast(eyes.transform.position, .08f, delta.normalized, out var obstacle, Mathf.Min(2.05f, distance + .1f), Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+                    var blockingDoor = DoorOnRoute(delta, distance);
+                    if (blockingDoor)
                     {
-                        var door = obstacle.collider.GetComponentInParent(RequireType("Interactable"));
-                        if (door && Get<object>(door, "kind").ToString() == "Door" && !Get<bool>(door, "IsOpen"))
-                        {
-                            yield return Interact(door); doorsOpened++; Mark("opened real door through E");
-                            keys(Array.Empty<Key>()); float wait = Time.realtimeSinceStartup + 1.65f;
-                            while (Time.realtimeSinceStartup < wait) { yield return null; Check(); }
-                            progressTime = Time.realtimeSinceStartup;
-                        }
+                        yield return OpenPhysicalDoor(blockingDoor);
+                        progressTime = Time.realtimeSinceStartup;
+                        continue; // recompute actual feet/direction after a moving leaf
                     }
                     Steer(eyes.transform.position + delta, true);
                     keys(Vector3.Angle(player.transform.forward, delta) > 12 ? Array.Empty<Key>() : !Get<bool>(player, "Crouching") && !Get<bool>(player, "SprintExhausted") ? new[] { Key.W, Key.LeftShift } : new[] { Key.W }); yield return null;
@@ -323,14 +329,79 @@ namespace HappyToy.V2.CloudTests
             }
             keys(Array.Empty<Key>()); yield return null; Check();
         }
+        Component DoorOnRoute(Vector3 direction, float distance)
+        {
+            float radius = capsule.radius + .02f;
+            var center = player.transform.position + capsule.center + Vector3.up * .08f;
+            float half = Mathf.Max(0, capsule.height * .5f - capsule.radius);
+            if (!Physics.CapsuleCast(center - Vector3.up * half, center + Vector3.up * half, radius,
+                direction.normalized, out var hit, Mathf.Min(2.05f, distance + .1f),
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return null;
+            var door = hit.collider.GetComponentInParent(RequireType("Interactable"));
+            return door && Get<object>(door, "kind").ToString() == "Door" ? door : null;
+        }
+        IEnumerator OpenPhysicalDoor(Component door)
+        {
+            keys(Array.Empty<Key>()); float deadline = Time.realtimeSinceStartup + 5;
+            while (!Get<bool>(door, "IsOpen") || !Get<bool>(door, "AtRequestedDoorPose"))
+            {
+                Check(); RouteRequire(Time.realtimeSinceStartup < deadline, "Actual door never cleared: " + door.name);
+                if (!Get<bool>(door, "IsOpen"))
+                {
+                    yield return Interact(door);
+                    if (Get<bool>(door, "IsOpen")) { doorsOpened++; Mark("opened/reopened physical door through E"); }
+                }
+                else yield return null;
+            }
+        }
+        public IEnumerator DemonstrateLighting()
+        {
+            string previousStage = stage; stage = "finite light and route marker";
+            var lamp = Get<Component>(player, "FlashlightSystem");
+            if (!Get<Light>(player, "flashlight").enabled) yield return Pulse(Key.F);
+            RouteRequire(Get<Light>(player, "flashlight").enabled, "Actual F could not light the charged flashlight");
+            float beforeDrain = Get<float>(lamp, "Charge"), waitUntil = GameTime + .3f;
+            while (GameTime < waitUntil) { keys(Array.Empty<Key>()); yield return null; Check(); }
+            RouteRequire(Get<float>(lamp, "Charge") < beforeDrain, "The lit flashlight did not consume real gameplay charge");
+            Component battery = null; Vector3 batteryAt = Vector3.zero; float best = 24;
+            foreach (var item in Components("Interactable").Where(x => x.gameObject.activeSelf && Get<object>(x, "kind").ToString() == "FlashlightBattery"))
+                if (FindApproach(item, out var at, out var length) && length < best) { battery = item; batteryAt = at; best = length; }
+            RouteRequire(battery, "No finite early battery has a physical input route");
+            yield return Walk(batteryAt); float beforeRefill = Get<float>(lamp, "Charge"); int packs = Get<int>(lamp, "PacksCollected");
+            yield return Interact(battery);
+            RouteRequire(!battery.gameObject.activeSelf && Get<int>(lamp, "PacksCollected") == packs + 1 && Get<float>(lamp, "Charge") > beforeRefill,
+                "Actual E did not consume one finite battery and refill the lamp");
+            batteriesCollected++; Mark("picked up finite battery through E after actual lit drain");
+            Component marker = null; Vector3 markerAt = Vector3.zero; best = 24;
+            foreach (var item in Components("Interactable").Where(x => x.gameObject.activeSelf && Get<object>(x, "kind").ToString() == "Candle"))
+                if (FindApproach(item, out var at, out var length) && length < best) { marker = item; markerAt = at; best = length; }
+            RouteRequire(marker, "No nearby candle has a physical input route");
+            yield return Walk(markerAt); var candle = marker.GetComponent(RequireType("WaymarkCandle")); int ignitions = Get<int>(candle, "Ignitions");
+            yield return Interact(marker);
+            RouteRequire(Get<bool>(candle, "Lit") && Get<Light>(candle, "LocalLight").enabled && Get<int>(candle, "Ignitions") == ignitions + 1,
+                "Actual E did not light the route candle exactly once");
+            candlesIgnited++; Mark("lit a route candle through E");
+            yield return Interact(marker);
+            RouteRequire(Get<int>(candle, "Ignitions") == ignitions + 1, "Revisiting the lit candle repeated ignition");
+            if (Get<Light>(player, "flashlight").enabled) yield return Pulse(Key.F);
+            RouteRequire(!Get<Light>(player, "flashlight").enabled, "Actual F did not extinguish the flashlight");
+            float offCharge = Get<float>(lamp, "Charge"); waitUntil = GameTime + .3f;
+            while (GameTime < waitUntil) { keys(Array.Empty<Key>()); yield return null; Check(); }
+            RouteRequire(Get<float>(lamp, "Charge") == offCharge, "An extinguished flashlight consumed charge");
+            stage = previousStage;
+        }
+
+        static void RouteRequire(bool condition, string message) { Assert.That(condition, Is.True, message); }
+
         IEnumerator Interact(Component item)
         {
             keys(Array.Empty<Key>()); float deadline = Time.realtimeSinceStartup + 4;
             while (Get<Component>(player, "Focus") != item)
             {
                 Check(); Assert.That(Time.realtimeSinceStartup, Is.LessThan(deadline), "Could not focus " + item.name);
-                var collider = item.GetComponentsInChildren<Collider>().First(x => x.enabled && !x.isTrigger);
-                Steer(collider.bounds.center); yield return null;
+                var collider = item.GetComponentsInChildren<Collider>().Where(x => x.enabled && !x.isTrigger)
+                    .OrderBy(x => Vector3.Distance(x.ClosestPoint(eyes.transform.position), eyes.transform.position)).First();
+                Steer(Vector3.Lerp(collider.ClosestPoint(eyes.transform.position), collider.bounds.center, .08f)); yield return null;
             }
             yield return Pulse(Key.E);
         }
@@ -392,14 +463,23 @@ namespace HappyToy.V2.CloudTests
                 capsule.radius - .02f, ~0, QueryTriggerInteraction.Ignore)
                 .Where(x => !x.transform.IsChildOf(player.transform)).Select(x => x.name + " at " + x.transform.position));
         }
-        [Serializable] sealed class Evidence { public bool passed; public string stage; public float gameSeconds, physicalMeters; public int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, recovered; public string[] milestones; }
+        [Serializable] sealed class Evidence
+        {
+            public bool passed; public string stage, hidingOutcome, hidingRng = "production Unity RNG; no forced sample or seed";
+            public float gameSeconds, physicalMeters, flashlightCharge;
+            public int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, recovered,
+                batteriesCollected, candlesIgnited, hidingEntryId, hidingRolls;
+            public string[] milestones;
+        }
         void SaveEvidence()
         {
             System.IO.Directory.CreateDirectory("Verification/corridor");
             System.IO.File.WriteAllText("Verification/corridor/input-survival.json", JsonUtility.ToJson(new Evidence { passed = passed, stage = stage,
                 gameSeconds = lastGameTime, physicalMeters = meters, maximumThreats = maximumThreats,
                 doorsOpened = doorsOpened, throws = throws, dodges = dodges, hidingEntries = hidingEntries,
-                suppliesCollected = suppliesCollected, recovered = lastRecovered, milestones = milestones.ToArray() }, true));
+                suppliesCollected = suppliesCollected, recovered = lastRecovered, batteriesCollected = batteriesCollected,
+                candlesIgnited = candlesIgnited, flashlightCharge = lastCharge, hidingEntryId = lastHidingEntry,
+                hidingRolls = lastHidingRolls, hidingOutcome = lastHidingOutcome, milestones = milestones.ToArray() }, true));
         }
         public void Dispose()
         {

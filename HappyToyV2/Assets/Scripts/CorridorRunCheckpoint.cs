@@ -14,7 +14,7 @@ namespace HappyToy.V2
         public CorridorCheckpoint CaptureCheckpoint()
         {
             if(!string.IsNullOrEmpty(SuspendBlockReason)) throw new InvalidOperationException(SuspendBlockReason);
-            var data=new CorridorCheckpoint { token=Guid.NewGuid().ToString("N"),seed=Seed,seconds=session.ElapsedPlayTime,
+            var data=new CorridorCheckpoint { lightingVersion=1,lighting=Lighting.Capture(), token=Guid.NewGuid().ToString("N"),seed=Seed,seconds=session.ElapsedPlayTime,
                 recovered=Enumerable.Range(0,5).Select(i=>recovered.Contains("memory-"+i)).ToArray(),
                 supplies=CheckpointItems(Interactable.Kind.FirecrackerSupply).Select(x=>x.gameObject.activeSelf).ToArray(),
                 player=session.player.CaptureProgress(),threats=threats.Select(x=>x.CaptureProgress()).ToArray(),
@@ -38,6 +38,7 @@ namespace HappyToy.V2
             data.Validate();
             if(!Ready || Seed!=data.seed || session.Finished || session.InputAllowed)
                 throw new InvalidOperationException("Checkpoint must match a prepared, paused corridor");
+            Lighting.ValidateRestore(data.lightingVersion==0?null:data.lighting);
             var doors=CheckpointDoors; var memories=CheckpointItems(Interactable.Kind.CorridorMemory);
             var packs=CheckpointItems(Interactable.Kind.FirecrackerSupply);
             // Validate all references/physical points before changing any gameplay state.
@@ -68,7 +69,8 @@ namespace HappyToy.V2
             for(int i=0;i<8;i++) packs[i].gameObject.SetActive(data.supplies[i]);
             for(int i=0;i<doors.Length;i++) doors[i].RestoreDoor(data.doors[i].open,data.doors[i].leaf);
             for(int i=0;i<threats.Count;i++) threats[i].RestoreProgress(data.threats[i],doors);
-            session.player.RestoreProgress(data.player); Physics.SyncTransforms();
+            session.player.RestoreProgress(data.player);
+            Lighting.Restore(data.lightingVersion==0?null:data.lighting); Physics.SyncTransforms();
         }
     }
 }

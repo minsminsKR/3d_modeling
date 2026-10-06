@@ -403,9 +403,12 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Investigate"));
             ((Behaviour)player).enabled = false; PlacePlayer(origin + Vector3.right * 4, false);
             Get<Light>(player, "flashlight").enabled = true;
-            yield return Wait(() => Get<float>(enemy, "Awareness") > 0, 1, "Visible target accumulated no awareness");
-            Assert.That(Get<float>(enemy, "Awareness"), Is.LessThan(1));
-            yield return Wait(() => Get<object>(enemy, "state").ToString() == "Chase", 3, "Recognition never became chase");
+            Physics.SyncTransforms();
+            Assert.That((bool)Call(enemy, "CanSeePlayer"), Is.True);
+            FeedbackCall(enemy, "Update");
+            Assert.That(Get<float>(enemy, "Awareness"), Is.EqualTo(1));
+            Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Chase"),
+                "Confirmed sight must start pursuit in the same AI update");
             player.GetComponent<CharacterController>().enabled = true;
             Assert.That((bool)Call(player, "TrySetCrouching", true), Is.True);
             Assert.That(Get<bool>(player, "Crouching"), Is.True);

@@ -36,6 +36,86 @@ namespace HappyToy.V2
         readonly List<CueEvent> events=new List<CueEvent>();
         PauseProbe pauseProbe;
 
+        ClockPoint routeBeginClock, routeEndClock, settlingEndClock, captureEndClock;
+        bool routeCompleted, audioSettlingRequested, audioSettlingCompleted;
+        double writerWallSeconds; long writerStartedTicks, writerEndedTicks;
+        [Serializable] sealed class ClockPoint
+        {
+            public string phase;
+            public float gameplaySeconds, engineRealtimeSeconds;
+            public double dspSeconds;
+            public long stopwatchTicks;
+        }
+        [Serializable] sealed class TimingReport
+        {
+            public string scope="Active route, requested natural .2-second audio settling, capture cleanup and PCM disk retention are separate intervals. Clock values are observed, never forced.";
+            public bool routeStarted, routeCompleted, audioSettlingRequested, audioSettlingCompleted;
+            public long stopwatchFrequency, writerStartedTicks, writerEndedTicks;
+            public ClockPoint routeBegin, routeEnd, settlingEnd, captureEnd;
+            public double routeWallSeconds, routeDspSeconds, settlingWallSeconds, settlingDspSeconds, cleanupWallSeconds, cleanupDspSeconds, writerWallSeconds;
+            public float routeGameSeconds, settlingGameSeconds, cleanupGameSeconds;
+        }
+        ClockPoint ReadClock(string phase) => new ClockPoint {
+            phase=phase,gameplaySeconds=session?session.ElapsedPlayTime:0,
+            engineRealtimeSeconds=Time.realtimeSinceStartup,dspSeconds=AudioSettings.dspTime,
+            stopwatchTicks=System.Diagnostics.Stopwatch.GetTimestamp() };
+        static double ClockWall(ClockPoint start,ClockPoint end) => start!=null && end!=null ?
+            Math.Max(0,(end.stopwatchTicks-start.stopwatchTicks)/(double)System.Diagnostics.Stopwatch.Frequency):0;
+        static float ClockGame(ClockPoint start,ClockPoint end) => start!=null && end!=null ?
+            Math.Max(0,end.gameplaySeconds-start.gameplaySeconds):0;
+        static double ClockDsp(ClockPoint start,ClockPoint end) => start!=null && end!=null ?
+            Math.Max(0,end.dspSeconds-start.dspSeconds):0;
+        void EndGameplayClock(string phase,bool completed)
+        {
+            if(routeEndClock!=null)return;
+            routeEndClock=ReadClock(phase);routeCompleted=completed;
+        }
+        void SnapshotInterruptedRoute()
+        {
+            // Capture a failure at first entry to finally, before route Dispose
+            // writes its evidence or native PCM retention blocks the main thread.
+            EndGameplayClock(string.IsNullOrEmpty(failure)?"route-finalized":"route-failed: "+failure,false);
+            if(audioSettlingRequested && settlingEndClock==null)
+                settlingEndClock=ReadClock("audio-settling-interrupted: "+failure);
+        }
+        RouteAudioCapture.Report RetainCapturedAudio()
+        {
+            // This boundary immediately precedes Complete(), which freezes the
+            // real listener tap and writes/hashes the remaining original PCM.
+            captureEndClock=ReadClock("capture-before-PCM-retention");
+            writerStartedTicks=System.Diagnostics.Stopwatch.GetTimestamp();
+            try { return capture?capture.Complete():null; }
+            catch(Exception error)
+            {
+                string retainedFailure="Native PCM retention failed: "+error.GetType().Name+": "+error.Message;
+                failure=string.IsNullOrEmpty(failure)?retainedFailure:failure+" | "+retainedFailure;
+                if(errors.Count<64)errors.Add(retainedFailure);
+                Debug.LogError(retainedFailure);
+                // Preserve the real counters/files already retained. No PCM or
+                // callback is synthesized when final file persistence fails.
+                return capture?capture.Snapshot():null;
+            }
+            finally
+            {
+                writerEndedTicks=System.Diagnostics.Stopwatch.GetTimestamp();
+                writerWallSeconds=(writerEndedTicks-writerStartedTicks)/(double)System.Diagnostics.Stopwatch.Frequency;
+            }
+        }
+        TimingReport ClockEvidence()
+        {
+            var cleanupStart=settlingEndClock??routeEndClock;
+            return new TimingReport {
+                routeStarted=routeBeginClock!=null,routeCompleted=routeCompleted,audioSettlingRequested=audioSettlingRequested,audioSettlingCompleted=audioSettlingCompleted,
+                stopwatchFrequency=System.Diagnostics.Stopwatch.Frequency,writerStartedTicks=writerStartedTicks,writerEndedTicks=writerEndedTicks,
+                routeBegin=routeBeginClock,routeEnd=routeEndClock,settlingEnd=settlingEndClock,captureEnd=captureEndClock,
+                routeWallSeconds=ClockWall(routeBeginClock,routeEndClock),routeGameSeconds=ClockGame(routeBeginClock,routeEndClock),routeDspSeconds=ClockDsp(routeBeginClock,routeEndClock),
+                settlingWallSeconds=audioSettlingRequested?ClockWall(routeEndClock,settlingEndClock):0,
+                settlingGameSeconds=audioSettlingRequested?ClockGame(routeEndClock,settlingEndClock):0,
+                settlingDspSeconds=audioSettlingRequested?ClockDsp(routeEndClock,settlingEndClock):0,
+                cleanupWallSeconds=ClockWall(cleanupStart,captureEndClock),cleanupGameSeconds=ClockGame(cleanupStart,captureEndClock),cleanupDspSeconds=ClockDsp(cleanupStart,captureEndClock),
+                writerWallSeconds=writerWallSeconds };
+        }
+
         [Serializable] sealed class CueEvent
         {
             public string kind,owner,clip,detail;
@@ -49,17 +129,25 @@ namespace HappyToy.V2
             public int callbacksBefore,callbacksAfter;
             public double dspAdvance;public float wallSeconds;
         }
+        int lastMeasuredTargetFrameRate=-1,lastMeasuredVSyncCount=-1;
         [Serializable] sealed class Report
         {
-            public string status,failure,stage,destination,unity,graphics,device,audioDirectory;
-            public string scope="Native rendered Windows player using natural listener callbacks and actual keyboard/mouse input through the full five-memory route. No teleport/Use/Collect calls, enemy suppression/speed edits, forced audio rendering or capture clock. This is one automated strategy and pre-device mixer evidence, not device listening, human fear or first-player difficulty certification.";
+            public string status,failure,stage,destination,unity,graphics,device,cpu,audioDirectory;
+            public int width,height,targetFrameRate,vSyncCount;public bool developmentBuild;
+            public int lastMeasuredTargetFrameRate,lastMeasuredVSyncCount;
+            public bool frameSettingsMeasured;
+            public string frameSettingsScope="Frame settings are sampled with active audit Update intervals before restoration. Desktop vSyncCount != 0 ignores Application.targetFrameRate; requested target settings do not certify a frame cap, refresh rate or hardware presentation.";
+            public string frameMeasurement="Active Update unscaled frame intervals including audit screenshots/audio/disk overhead; audit leaves game frame settings unchanged; Desktop VSync may override the target property; not GPU timings or hardware presentation timestamps.";
+            public string lightingScope="Route switches the flashlight off near WASHROOM and does not collect a battery or ignite a candle; full school escape alone does not certify finite-light supply balance.";
+            public float flashlightCharge;public int batteriesCollected;
+            public string scope="Native rendered Windows player using natural listener callbacks and actual keyboard/mouse input through the full five-memory route. No teleport/Use/Collect calls, enemy suppression/speed edits or forced audio rendering/capture clock. Milestone screenshots add offscreen camera rendering and readback overhead. This is one automated strategy and pre-device mixer evidence, not device listening, human fear or first-player difficulty certification.";
             public bool escaped,chapter,portraitWitnessed,portraitCompleted,nurseryReleased,inputDevicesRestored;
             public int records,movementUpdates,groundedFrames,stairLegs,maximumActiveStalkers,footsteps,contacts,recognition,frames;
             public float gameSeconds,wallSeconds,physicalMeters,minY,maxY,meanFrameMs,p95FrameMs,worstFrameMs;
             public double routeDspSeconds,dspToGameRatio,dspToWallRatio;
             public float userVolume,userFov,userSensitivity;public bool userReducedMotion,userSubtitles;
             public string[] errors,milestones,images;public CueEvent[] cueEvents;
-            public PauseProbe pause;public RouteAudioCapture.Report audio;
+            public PauseProbe pause;public RouteAudioCapture.Report audio;public TimingReport timing;
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Install()
@@ -94,9 +182,10 @@ namespace HappyToy.V2
             }
             finally
             {
+                SnapshotInterruptedRoute();
                 while(stack.Count>0)(stack.Pop() as IDisposable)?.Dispose();
                 Keys();RestoreSettings();
-                var audio=capture?capture.Complete():null;
+                var audio=RetainCapturedAudio();
                 Save(audio);Debug.Log("HAPPYTOY_NATIVE_SCHOOL_PLAY_"+(string.IsNullOrEmpty(failure)?"PASS":"FAIL"));
                 Application.Quit(string.IsNullOrEmpty(failure)?0:2);
             }
@@ -140,6 +229,7 @@ namespace HappyToy.V2
             Require(pauseProbe.listenerPaused&&pauseProbe.positionFrozen&&pauseProbe.staminaFrozen&&pauseProbe.gameClockFrozen,"Actual native pause failed to freeze gameplay");
             yield return Pulse(Key.Escape);Require(shell.Screen==GameShell.Page.Playing,"Escape did not resume native gameplay");
             routeWallStart=Time.realtimeSinceStartup;routeDspStart=AudioSettings.dspTime;routeGameStart=session.ElapsedPlayTime;progressWall=routeWallStart;
+            routeBeginClock=ReadClock("active-route-begin");
             yield return Walk(new Vector3(-4.5f,0,0),false);yield return OpenDoor("WASHROOM");yield return Flashlight(false);
             yield return Take("chapter-memory-0");Require(stalkers.Count(actor=>actor.gameObject.activeInHierarchy)==1,"First memory did not release one authored stalker");
             yield return Take("chapter-memory-1");Require(chapter.Mannequin.gameObject.activeInHierarchy&&!chapter.Mask.gameObject.activeInHierarchy,"Second memory actor gate failed");
@@ -161,7 +251,10 @@ namespace HappyToy.V2
             yield return Approach(exit,true);expectingEscape=true;yield return Interact(exit);
             Require(session.Escaped&&session.Finished&&session.RecordsRecovered==5,"Actual native E input did not finish the five-memory escape");
             Require(stairLegs==4&&minY< -4.8f&&maxY>4.8f&&travel>100,"Native full route lacks four physical stair legs/three floors/travel");
+            EndGameplayClock("five-memory-four-stair-input-route-complete",true);
+            audioSettlingRequested=true;
             yield return new WaitForSecondsRealtime(.2f);
+            settlingEndClock=ReadClock("natural-audio-settling-complete");audioSettlingCompleted=true;
             var audio=capture.Snapshot();Require(audio.callbacks>10&&audio.channels==2&&audio.nonSilent&&!audio.truncated&&audio.nonfiniteSamples==0,"Native raw audio capture is incomplete/invalid");
             Require(audio.stages.All(segment=>segment.clipped==0),"Natural native combined mix clips");
             Require(audio.floors.All(segment=>segment.samples>audio.sampleRate&&segment.rms>.00002),"Native mix missing an audible physical floor");
@@ -173,7 +266,12 @@ namespace HappyToy.V2
         void Update()
         {
             if(!ready || !session)return;
-            if(session.InputAllowed)frameSeconds.Add(Time.unscaledDeltaTime);
+            if(session.InputAllowed)
+            {
+                lastMeasuredTargetFrameRate=Application.targetFrameRate;
+                lastMeasuredVSyncCount=QualitySettings.vSyncCount;
+                frameSeconds.Add(Time.unscaledDeltaTime);
+            }
             ObserveCues();
             if(chapter.Portrait.ChapterWitnessed&&!portraitImage){portraitImage=true;Frame("native-school-portrait-witnessed.png");}
             if(player.transform.position.y< -4.6f&&!nurseryImage){nurseryImage=true;Frame("native-school-nursery.png");}
@@ -209,6 +307,7 @@ namespace HappyToy.V2
             Require(!session.Finished || expectingEscape&&session.Escaped,"Native survival route ended in defeat: "+session.DefeatSource);
             if(session.Finished)return;
             Require(session.InputAllowed&&player.enabled,"Actual gameplay lost input/motor");Require(Time.timeScale==1&&Time.captureDeltaTime==0,"Natural simulation clock changed");
+            Require(player.HidingRandomSample==null,"Native school audit cannot override production hiding RNG");
             Require(Keyboard.current==keyboard&&Mouse.current==mouse,"Native virtual input device ownership changed");
             Require(chapter.Portrait.enabled&&chapter.Nursery.enabled,"Authored encounter owner was disabled");
             for(int i=0;i<stalkers.Length;i++)Require(new Vector2(stalkers[i].patrolSpeed,stalkers[i].chaseSpeed)==speeds[i],"Authored threat speed changed");
@@ -260,6 +359,34 @@ namespace HappyToy.V2
             yield return MoveTo(target,sprint,true);Keys();yield return Await(()=>player.Grounded,2,"Actual stair landing never grounded");
             Require(Mathf.Abs(player.transform.position.y-target.y)<.4f,"Wrong native stair height");stairLegs++;Milestone(label+" physically completed");
         }
+        Interactable SchoolDoorOnRoute(Vector3 direction, float distance)
+        {
+            var body = player.GetComponent<CharacterController>();
+            var center = player.transform.position + body.center + Vector3.up * .08f;
+            float half = Mathf.Max(0, body.height * .5f - body.radius);
+            if (!Physics.CapsuleCast(center - Vector3.up * half, center + Vector3.up * half, body.radius + .02f,
+                direction.normalized, out var hit, Mathf.Min(2.05f, distance + .1f), Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return null;
+            var door = hit.collider.GetComponentInParent<Interactable>();
+            if(!door || door.kind!=Interactable.Kind.Door) return null;
+            // A body sweep includes capsule radius beyond its cast distance.
+            // Keep moving through actual input until the closed leaf is within
+            // the unchanged 2.2m eye interaction ray, before waiting for E.
+            if(!door.IsOpen && Vector3.Distance(player.eyes.transform.position,
+                hit.collider.ClosestPoint(player.eyes.transform.position))>2.15f) return null;
+            return door;
+        }
+        IEnumerator OpenSchoolPhysicalDoor(Interactable door)
+        {
+            Keys(); float end = Time.realtimeSinceStartup + 5;
+            while (!door.IsOpen || !door.AtRequestedDoorPose)
+            {
+                Check(); Require(Time.realtimeSinceStartup < end, "Actual school leaf never cleared: " + door.name);
+                if (!door.IsOpen) yield return Interact(door);
+                else yield return null;
+            }
+            Milestone("School door clear through actual E/leaf motion: " + door.name);
+        }
+
         IEnumerator MoveTo(Vector3 target,bool sprint,bool stair)
         {
             float began=Time.realtimeSinceStartup,best=Horizontal(target-player.transform.position),lastProgress=began;
@@ -270,6 +397,9 @@ namespace HappyToy.V2
                 if(distance<best-.04f){best=distance;lastProgress=Time.realtimeSinceStartup;}
                 Require(Time.realtimeSinceStartup-began<(stair?25:45)&&Time.realtimeSinceStartup-lastProgress<8,"No physical route progress toward "+target);
                 Require(distance>.025f||Mathf.Abs(delta.y)<.4f,"Arrived horizontally at wrong stair height");
+                var blockingDoor = SchoolDoorOnRoute(new Vector3(delta.x,0,delta.z), distance);
+                if (blockingDoor)
+                { yield return OpenSchoolPhysicalDoor(blockingDoor); lastProgress=Time.realtimeSinceStartup; continue; }
                 Steer(player.eyes.transform.position+new Vector3(delta.x,0,delta.z),true);
                 float angle=Vector3.Angle(new Vector3(player.transform.forward.x,0,player.transform.forward.z),new Vector3(delta.x,0,delta.z));
                 Keys(angle>12?Array.Empty<Key>():Sprint(sprint&&distance>.75f)?new[]{Key.W,Key.LeftShift}:new[]{Key.W});yield return null;
@@ -308,18 +438,15 @@ namespace HappyToy.V2
             while(player.Focus!=item)
             {
                 Check();Require(Time.realtimeSinceStartup-began<4,"Actual E focus never reached "+item.name);
-                var collider=item.GetComponentsInChildren<Collider>().Where(value=>value.enabled&&!value.isTrigger).OrderBy(value=>Vector3.Distance(value.bounds.center,player.eyes.transform.position)).First();
-                Steer(collider.bounds.center,false);yield return null;
+                var collider=item.GetComponentsInChildren<Collider>().Where(value=>value.enabled&&!value.isTrigger).OrderBy(value=>Vector3.Distance(value.ClosestPoint(player.eyes.transform.position),player.eyes.transform.position)).First();
+                Steer(Vector3.Lerp(collider.ClosestPoint(player.eyes.transform.position),collider.bounds.center,.08f),false);yield return null;
             }
             yield return Pulse(Key.E);
         }
         IEnumerator OpenDoor(string room)
         {
             stage="open "+room;var door=Items().Single(item=>item.kind==Interactable.Kind.Door&&item.name.StartsWith(room));
-            Require(!door.IsOpen,"Native route expects original closed door");Vector3 target=door.movingLeaf.localPosition+door.openOffset;
-            Vector3 second=door.secondaryLeaf?door.secondaryLeaf.localPosition-door.openOffset:Vector3.zero;
-            yield return Interact(door);Require(door.IsOpen,"Actual E did not open door");
-            yield return Await(()=>Vector3.Distance(door.movingLeaf.localPosition,target)<.02f&&(!door.secondaryLeaf||Vector3.Distance(door.secondaryLeaf.localPosition,second)<.02f)&&!door.obstacle.enabled,4,"Physical door/nav carving never opened");
+            yield return OpenSchoolPhysicalDoor(door);
             Milestone(room+" opened through E");
         }
         IEnumerator Take(string id)
@@ -359,10 +486,14 @@ namespace HappyToy.V2
         {
             if(string.IsNullOrEmpty(failure)&&(!session||!session.Escaped))failure="Native route did not prove escape";
             if(string.IsNullOrEmpty(failure)&&(audio==null || audio.truncated || !string.IsNullOrEmpty(audio.writerError)))failure="Native audio files were not retained completely";
-            var sorted=frameSeconds.OrderBy(value=>value).ToArray();float game=session?session.ElapsedPlayTime-routeGameStart:0,wall=routeWallStart>0?Time.realtimeSinceStartup-routeWallStart:0;
-            double dsp=routeWallStart>0?AudioSettings.dspTime-routeDspStart:0;var tension=player?player.GetComponent<PerceivedTension>():null;
+            var sorted=frameSeconds.OrderBy(value=>value).ToArray();var clocks=ClockEvidence();
+            float game=clocks.routeGameSeconds,wall=(float)clocks.routeWallSeconds;
+            double dsp=clocks.routeDspSeconds;var tension=player?player.GetComponent<PerceivedTension>():null;
             var report=new Report {status=string.IsNullOrEmpty(failure)?"PASS":"FAIL",failure=failure,stage=stage,destination=destination,
-                unity=Application.unityVersion,graphics=SystemInfo.graphicsDeviceType.ToString(),device=SystemInfo.graphicsDeviceName,
+                unity=Application.unityVersion,graphics=SystemInfo.graphicsDeviceType.ToString(),device=SystemInfo.graphicsDeviceName,cpu=SystemInfo.processorType,
+                width=Screen.width,height=Screen.height,targetFrameRate=Application.targetFrameRate,vSyncCount=QualitySettings.vSyncCount,developmentBuild=Debug.isDebugBuild,
+                lastMeasuredTargetFrameRate=lastMeasuredTargetFrameRate,lastMeasuredVSyncCount=lastMeasuredVSyncCount,frameSettingsMeasured=sorted.Length>0,
+                flashlightCharge=player?player.FlashlightSystem.Charge:0,batteriesCollected=player?player.FlashlightSystem.PacksCollected:0,
                 audioDirectory=capture?capture.OutputDirectory:"",escaped=session&&session.Escaped,chapter=session&&session.ChapterMode,
                 portraitWitnessed=chapter&&chapter.Portrait.ChapterWitnessed,portraitCompleted=chapter&&chapter.Portrait.Completed,nurseryReleased=chapter&&chapter.Nursery.Released,
                 records=session?session.RecordsRecovered:0,movementUpdates=player?player.MovementUpdates-movementStart:0,groundedFrames=groundedFrames,
@@ -373,7 +504,7 @@ namespace HappyToy.V2
                 p95FrameMs=sorted.Length>0?sorted[Math.Min(sorted.Length-1,Mathf.FloorToInt(sorted.Length*.95f))]*1000:0,worstFrameMs=sorted.Length>0?sorted.Last()*1000:0,
                 userVolume=shell?shell.Volume:0,userFov=shell?shell.FieldOfView:0,userSensitivity=shell?shell.Sensitivity:0,
                 userReducedMotion=shell&&shell.ReducedMotion,userSubtitles=shell&&shell.Subtitles,inputDevicesRestored=restored,
-                errors=errors.ToArray(),milestones=milestones.ToArray(),images=images.ToArray(),cueEvents=events.ToArray(),pause=pauseProbe,audio=audio};
+                errors=errors.ToArray(),milestones=milestones.ToArray(),images=images.ToArray(),cueEvents=events.ToArray(),pause=pauseProbe,audio=audio,timing=clocks};
             File.WriteAllText(Path.Combine(output,"native-school-play.json"),JsonUtility.ToJson(report,true));
         }
     }

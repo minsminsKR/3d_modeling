@@ -1,0 +1,20 @@
+{
+  "far": {
+    "enemyDistance": 9.94703197479248,
+    "danger": 0.20529679954051971,
+    "depth": 0.1007794737815857,
+    "samples": 348,
+    "completedPulses": 1,
+    "gameSeconds": 3.0070879459381104,
+    "largestFrameGap": 0.017819881439208984
+  },
+  "near": {
+    "enemyDistance": 3.0,
+    "danger": 0.8999999761581421,
+    "depth": 0.4657747149467468,
+    "samples": 356,
+    "completedPulses": 9,
+    "gameSeconds": 3.002378463745117,
+    "largestFrameGap": 0.014004230499267578
+  }
+}

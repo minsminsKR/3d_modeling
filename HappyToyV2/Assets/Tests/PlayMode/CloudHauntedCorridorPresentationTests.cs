@@ -54,6 +54,27 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(90000)]
         public IEnumerator HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt()
         {
+            string RelativePath(Transform item,Transform root)
+            {
+                var parts=new Stack<string>();var cursor=item;
+                while(cursor&&cursor!=root){parts.Push(cursor.name+"["+cursor.GetSiblingIndex()+"]");cursor=cursor.parent;}
+                Assert.That(cursor,Is.SameAs(root),"Renderer/marker left its actual source hierarchy");
+                return string.Join("/",parts);
+            }
+            // Independent baseline taken before production corridor construction,
+            // using the same authored template ordering and real renderer flags.
+            var cabinetTemplate=Components("Interactable").Where(item=>Get<object>(item,"kind").ToString()=="HidingPlace" &&
+                Get<Transform>(item,"inside")&&Get<Transform>(item,"outside"))
+                .OrderBy(item=>item.name,StringComparer.Ordinal).ThenBy(item=>item.transform.position.x)
+                .ThenBy(item=>item.transform.position.z).First();
+            var templateRenderers=cabinetTemplate.GetComponentsInChildren<MeshRenderer>(true)
+                .ToDictionary(renderer=>RelativePath(renderer.transform,cabinetTemplate.transform),
+                    renderer=>new {renderer.enabled,mesh=renderer.GetComponent<MeshFilter>().sharedMesh});
+            Assert.That(templateRenderers,Is.Not.Empty);
+            var templateInside=Get<Transform>(cabinetTemplate,"inside");var templateOutside=Get<Transform>(cabinetTemplate,"outside");
+            string insidePath=RelativePath(templateInside,cabinetTemplate.transform),outsidePath=RelativePath(templateOutside,cabinetTemplate.transform);
+            var insideLocal=cabinetTemplate.transform.InverseTransformPoint(templateInside.position);
+            var outsideLocal=cabinetTemplate.transform.InverseTransformPoint(templateOutside.position);
             Call(session,"CreateCorridor",73);IsolateThreats();Begin();yield return null;yield return null;
             var run=HauntedRun(session);var art=Get<Component>(run,"Presentation");
             Assert.That(Get<bool>(run,"Ready") && Get<bool>(art,"Prepared"),Is.True);
@@ -83,12 +104,39 @@ namespace HappyToy.V2.CloudTests
             Assert.That(items.Count(item=>Get<object>(item,"kind").ToString()=="FirecrackerSupply"),Is.EqualTo(8));
             Assert.That(Get<int>(art,"TimberCabinets"),Is.EqualTo(items.Count(item=>Get<object>(item,"kind").ToString()=="HidingPlace")),
                 "Some live hiding cabinets retained school enamel");
-            var cabinetMeshes=items.Where(item=>Get<object>(item,"kind").ToString()=="HidingPlace")
-                .SelectMany(item=>item.GetComponentsInChildren<MeshFilter>(true)).ToDictionary(filter=>filter,filter=>filter.sharedMesh);
-            var cabinetSkins=items.Where(item=>Get<object>(item,"kind").ToString()=="HidingPlace")
-                .SelectMany(item=>item.GetComponentsInChildren<MeshRenderer>(true))
-                .Where(renderer=>renderer.sharedMaterials.Any(material=>material && material.name.StartsWith("Corridor cabinet "))).ToArray();
+            var cabinets=items.Where(item=>Get<object>(item,"kind").ToString()=="HidingPlace").ToArray();
+            var cabinetVisuals=cabinets.Select(item=>item.transform.Find("Graphics corridor timber cabinet")).ToArray();
+            Assert.That(cabinetVisuals.All(root=>root),Is.True,"Missing realistic timber cabinet skin");
+            foreach(var visual in cabinetVisuals)
+            {
+                Assert.That(visual.GetComponentsInChildren<Collider>(true),Is.Empty);
+                Assert.That(visual.GetComponentsInChildren<MeshRenderer>(true).SelectMany(renderer=>renderer.sharedMaterials)
+                    .Any(material=>material.GetTag("GraphicsSurface",false)=="wood-aged"),Is.True);
+            }
+            var originalCabinetFilters=cabinets.SelectMany(item=>item.GetComponentsInChildren<MeshFilter>(true))
+                .Where(filter=>!cabinetVisuals.Any(root=>filter.transform.IsChildOf(root))).ToArray();
+            var cabinetMeshes=originalCabinetFilters.ToDictionary(filter=>filter,filter=>filter.sharedMesh);
+            var cabinetSkins=originalCabinetFilters.Select(filter=>filter.GetComponent<MeshRenderer>()).Where(renderer=>renderer).ToArray();
             Assert.That(cabinetSkins,Is.Not.Empty);
+            var cabinetEnabled=new Dictionary<MeshRenderer,bool>();
+            foreach(var cabinet in cabinets)
+            {
+                var originalRenderers=originalCabinetFilters.Where(filter=>filter.transform.IsChildOf(cabinet.transform))
+                    .Select(filter=>filter.GetComponent<MeshRenderer>()).Where(renderer=>renderer).ToArray();
+                Assert.That(originalRenderers.Length,Is.EqualTo(templateRenderers.Count),"Clone source renderer hierarchy changed");
+                foreach(var renderer in originalRenderers)
+                {
+                    string path=RelativePath(renderer.transform,cabinet.transform);
+                    Assert.That(templateRenderers.ContainsKey(path),Is.True,"Clone did not use the actual ordered cabinet template: "+path);
+                    Assert.That(renderer.GetComponent<MeshFilter>().sharedMesh,Is.SameAs(templateRenderers[path].mesh));
+                    cabinetEnabled.Add(renderer,templateRenderers[path].enabled);
+                }
+                var inside=Get<Transform>(cabinet,"inside");var outside=Get<Transform>(cabinet,"outside");
+                Assert.That(RelativePath(inside,cabinet.transform),Is.EqualTo(insidePath));
+                Assert.That(RelativePath(outside,cabinet.transform),Is.EqualTo(outsidePath));
+                Assert.That(Vector3.Distance(cabinet.transform.InverseTransformPoint(inside.position),insideLocal),Is.LessThan(.0001f));
+                Assert.That(Vector3.Distance(cabinet.transform.InverseTransformPoint(outside.position),outsideLocal),Is.LessThan(.0001f));
+            }
             var altarRenderers=art.GetComponentsInChildren<MeshRenderer>(true).Where(renderer=>renderer.name=="Memory altar").ToArray();
             Assert.That(altarRenderers.Length,Is.EqualTo(5));
             Assert.That(altarRenderers.All(renderer=>!renderer.enabled),Is.True,"Original opaque altar still conceals its new timber skin");
@@ -117,20 +165,28 @@ namespace HappyToy.V2.CloudTests
             }
             HauntedCompleteApproaches(run);ulong navigation=HauntedNavigationHash();
             var meshes=root.GetComponentsInChildren<MeshFilter>().Select(filter=>filter.sharedMesh).Distinct().ToArray();
-            var materials=root.GetComponentsInChildren<MeshRenderer>().Select(renderer=>renderer.sharedMaterial).Distinct().ToArray();
-            var texture=Resources.Load<Texture2D>("Corridor/aged-floor-v1");var font=Resources.Load<Font>("Fonts/Korean");
+            var materials=root.GetComponentsInChildren<MeshRenderer>().SelectMany(renderer=>renderer.sharedMaterials).Distinct().ToArray();
+            var importedProps=new[]{"seal-altar","paper-lantern","cabinet-timber","door-hardware"}
+                .Select(key=>Resources.Load<GameObject>("GraphicsUpgrade/Props/"+key)).ToArray();
+            Assert.That(importedProps.All(asset=>asset),Is.True);
+            var importedMeshes=importedProps.SelectMany(asset=>asset.GetComponentsInChildren<MeshFilter>(true)).Select(filter=>filter.sharedMesh).Distinct().ToArray();
+            var texture=Resources.Load<Texture2D>("GraphicsPbr/wood-aged/albedo");var font=Resources.Load<Font>("Fonts/Korean");
             Assert.That(materials.Any(material=>material.HasProperty("_BaseMap") && material.GetTexture("_BaseMap")==texture),Is.True);
             var lanterns=((IEnumerable<Light>)Get<object>(art,"Lanterns")).ToArray();
             Assert.That(lanterns.Length,Is.GreaterThanOrEqualTo(21));
             foreach(var lantern in lanterns) Assert.That(lantern.name,Is.EqualTo("Corridor lamp"));
             Object.Destroy(art);yield return null;yield return null;yield return null;
             Assert.That(root==null,Is.True);Assert.That(folded.All(child=>child==null),Is.True,"Collectible-child art leaked outside dressing root");
-            Assert.That(meshes.All(mesh=>mesh==null),Is.True,"Owned room batch mesh leaked");
+            Assert.That(cabinetVisuals.All(child=>child==null),Is.True,"Cabinet child skin leaked outside dressing root");
+            Assert.That(meshes.Where(mesh=>!importedMeshes.Contains(mesh)).All(mesh=>mesh==null),Is.True,"Owned room batch mesh leaked");
+            Assert.That(importedMeshes.All(mesh=>mesh!=null),Is.True,"Art cleanup destroyed shared imported altar meshes");
             Assert.That(materials.Where(material=>material && material.name!="World sign font").Any(),Is.False,"Owned art material leaked");
             Assert.That(texture && font,Is.True,"Removing corridor art destroyed an imported shared asset");
             Assert.That(memoryRenderers.All(renderer=>renderer.enabled),Is.True,"Removing art did not restore original memory renderers");
             Assert.That(altarRenderers.All(renderer=>renderer.enabled),Is.True,"Removing art did not restore original altar renderers");
-            foreach(var pair in cabinetMeshes)Assert.That(pair.Key.sharedMesh,Is.SameAs(pair.Value),"Timber skin changed cabinet mesh identity");
+            foreach(var pair in cabinetMeshes)Assert.That(pair.Key.sharedMesh,Is.SameAs(pair.Value),"Timber skin changed original cabinet mesh identity");
+            foreach(var expected in cabinetEnabled)Assert.That(expected.Key.enabled,Is.EqualTo(expected.Value),
+                "Removing skin changed the captured original renderer state: "+expected.Key.name);
             foreach(var renderer in cabinetSkins)Assert.That(renderer.sharedMaterials.Any(material=>material && material.name.StartsWith("Corridor cabinet ")),Is.False,
                 "Removing dressing did not restore original cabinet material slots");
             foreach(var lantern in lanterns)

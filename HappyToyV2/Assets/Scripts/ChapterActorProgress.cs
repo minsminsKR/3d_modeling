@@ -13,17 +13,20 @@ namespace HappyToy.V2
             public Quaternion rotation, visualRotation;
             public float unobserved, soundRemaining;
             public int paths, attacks;
+            public StalkerDoorTraversal.Progress doorPassage;
             public void Validate()
             {
                 if(!ChapterCheckpoint.Point(position) || !ChapterCheckpoint.Rotation(rotation) || !ChapterCheckpoint.Rotation(visualRotation) ||
                     !CorridorCheckpoint.Number(unobserved,0,1000000000) || !CorridorCheckpoint.Number(soundRemaining,0,.81f) ||
                     paths<0 || attacks<0 || released && !active) throw new ArgumentException("Invalid mannequin checkpoint");
+                doorPassage?.Validate();
             }
         }
         public ChapterProgress CaptureChapterProgress() => new ChapterProgress {
             active=gameObject.activeSelf,released=Released,position=transform.position,rotation=transform.rotation,
             visualRotation=visual?visual.localRotation:Quaternion.identity,unobserved=unobservedFor,
-            soundRemaining=Mathf.Max(0,soundTimer),paths=PathRequests,attacks=AttacksStarted };
+            soundRemaining=Mathf.Max(0,soundTimer),paths=PathRequests,attacks=AttacksStarted,
+            doorPassage=doorTraversal?doorTraversal.CaptureProgress():null };
         public void RestoreChapterProgress(ChapterProgress data)
         {
             data.Validate(); agent=GetComponent<NavMeshAgent>(); agent.enabled=false;
@@ -34,6 +37,7 @@ namespace HappyToy.V2
             unobservedFor=data.unobserved; soundTimer=data.soundRemaining; PathRequests=data.paths; AttacksStarted=data.attacks;
             if(visual) { visual.gameObject.SetActive(true); visual.localRotation=data.visualRotation; }
             RestoreDisplayLight(); EnemyNavigation.Stop(agent,true);
+            DoorTraversal.RestoreProgress(data.doorPassage);
         }
     }
     public sealed partial class LanternMaskEncounter
@@ -46,19 +50,28 @@ namespace HappyToy.V2
             public Quaternion rotation;
             public float age, memory, awareness;
             public int waypoint, curses, attacks, noises;
+            public StalkerDoorTraversal.Progress doorPassage;
+            public NoiseInvestigationClock.Progress investigation;
+            public float investigationYaw;
             public void Validate()
             {
                 if(!ChapterCheckpoint.Point(position) || !CorridorCheckpoint.Vector(target) || !ChapterCheckpoint.Rotation(rotation) ||
                     !Enum.IsDefined(typeof(Phase),state) || state==Phase.Transforming || state==Phase.Resolved ||
-                    !CorridorCheckpoint.Number(age,0,1000000000) || !CorridorCheckpoint.Number(memory,0,8.01f) ||
+                    !CorridorCheckpoint.Number(age,0,1000000000) || !CorridorCheckpoint.Number(memory,0,state==Phase.Investigate?3600:8.01f) ||
                     !CorridorCheckpoint.Number(awareness,0,1) || waypoint<0 || waypoint>2 || curses<0 || attacks<0 || noises<0 ||
                     introComplete && !active || transformed && !introComplete) throw new ArgumentException("Invalid mask checkpoint");
+                doorPassage?.Validate(); investigation?.Validate();
+                if(!CorridorCheckpoint.Number(investigationYaw,0,360) ||
+                    investigation!=null && investigation.active && state==Phase.Investigate &&
+                    Vector3.Distance(investigation.point,target)>.002f) throw new ArgumentException("Invalid mask investigation evidence");
             }
         }
         public ChapterProgress CaptureChapterProgress() => new ChapterProgress {
             active=gameObject.activeSelf,introComplete=IntroCompleted,transformed=Transformed,cueIssued=recognitionCueIssued,
             state=State,position=transform.position,target=target,rotation=transform.rotation,age=age,memory=Mathf.Max(0,memory),
-            awareness=awareness.Value,waypoint=waypoint,curses=CursesApplied,attacks=AttacksStarted,noises=FootstepNoisesAccepted };
+            awareness=awareness.Value,waypoint=waypoint,curses=CursesApplied,attacks=AttacksStarted,noises=FootstepNoisesAccepted,
+            doorPassage=doorTraversal?doorTraversal.CaptureProgress():null,
+            investigation=investigation.Capture(),investigationYaw=investigationFacing.eulerAngles.y };
         public void RestoreChapterProgress(ChapterProgress data)
         {
             data.Validate(); agent=GetComponent<NavMeshAgent>(); agent.enabled=false;
@@ -69,6 +82,8 @@ namespace HappyToy.V2
             Transformed=data.transformed; transformTime=data.transformed?5:0; recognitionCueIssued=data.cueIssued;
             awareness.Restore(data.awareness); CursesApplied=data.curses; AttacksStarted=data.attacks; FootstepNoisesAccepted=data.noises;
             attack.Reset(); repath=0; EnemyNavigation.Stop(agent,true); SetVisible(data.active); if(data.active) Visual();
+            DoorTraversal.RestoreProgress(data.doorPassage);
+            investigation.Restore(data.investigation); investigationFacing=Quaternion.Euler(0,data.investigationYaw,0);
         }
     }
     public sealed partial class V1HwacatEvent

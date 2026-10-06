@@ -10,6 +10,7 @@ namespace HappyToy.V2
         {
             Presentation = world.gameObject.AddComponent<HauntedCorridorPresentation>();
             Presentation.Prepare(this);
+            Lighting.DimCorridor(this, world);
         }
     }
 }

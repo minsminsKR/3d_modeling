@@ -11,3 +11,4 @@
 # Override parent repository's model-download exclusions for required Unity sources.
 !/Assets/**/*.fbx
 !/SourceArt/*.blend
+!/SourceArt/GraphicsUpgrade/**/*.blend

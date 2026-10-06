@@ -37,6 +37,30 @@ namespace HappyToy.V2
                 QueryTriggerInteraction.Ignore) || (player && hit.collider.GetComponentInParent<PlayerMotor>() == player);
         }
 
+        static readonly RaycastHit[] soundHits = new RaycastHit[32];
+
+        // Range already models distance decay. Physical cover reduces the radius
+        // additionally, without granting a listener visual knowledge through cover.
+        public static float SoundTransmission(Vector3 origin, Vector3 target, Transform listener, Transform emitter)
+        {
+            var delta = target - origin;
+            if (delta.sqrMagnitude < .0001f) return 1;
+            int count = Physics.RaycastNonAlloc(origin, delta.normalized, soundHits, delta.magnitude,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            if (count == soundHits.Length) return 0; // Omitted cover cannot certify hearing.
+            float transmission = 1;
+            for (int i = 0; i < count; i++)
+            {
+                var collider = soundHits[i].collider;
+                if (!collider || listener && collider.transform.IsChildOf(listener) ||
+                    emitter && collider.transform.IsChildOf(emitter)) continue;
+                var door = collider.GetComponentInParent<Interactable>();
+                transmission = Mathf.Min(transmission,
+                    door && door.kind == Interactable.Kind.Door ? .55f : .38f);
+            }
+            return transmission;
+        }
+
         public static void Stop(NavMeshAgent agent, bool clearPath = false)
         {
             if (!Ready(agent)) return;

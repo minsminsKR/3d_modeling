@@ -14,7 +14,7 @@ namespace HappyToy.V2
     /// components are added, so a visually concealed opening never fools enemy sight.
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class HauntedCorridorPresentation : MonoBehaviour
+    public sealed partial class HauntedCorridorPresentation : MonoBehaviour
     {
         sealed class PhysicalState
         {
@@ -47,45 +47,19 @@ namespace HappyToy.V2
             public readonly Vector3 origin;
             public readonly Material material;
             public readonly bool castShadows;
-            readonly List<Vector3> vertices = new List<Vector3>();
-            readonly List<Vector3> normals = new List<Vector3>();
-            readonly List<Vector2> uvs = new List<Vector2>();
-            readonly List<int> triangles = new List<int>();
-            public Draft(Vector3 origin, Material material, bool castShadows = true)
-            { this.origin = origin; this.material = material; this.castShadows = castShadows; }
-            public void Quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
-            {
-                int start = vertices.Count;
-                Vector3 normal = Vector3.Cross(b - a, c - a).normalized;
-                vertices.Add(a-origin); vertices.Add(b-origin); vertices.Add(c-origin); vertices.Add(d-origin);
-                for (int i=0;i<4;i++) normals.Add(normal);
-                uvs.Add(Vector2.zero); uvs.Add(Vector2.right); uvs.Add(Vector2.one); uvs.Add(Vector2.up);
-                triangles.Add(start); triangles.Add(start+1); triangles.Add(start+2);
-                triangles.Add(start); triangles.Add(start+2); triangles.Add(start+3);
-            }
-            public void Box(Vector3 center, Vector3 size, Quaternion rotation)
-            {
-                Vector3 p000=center+rotation*Vector3.Scale(size,new Vector3(-.5f,-.5f,-.5f));
-                Vector3 p001=center+rotation*Vector3.Scale(size,new Vector3(-.5f,-.5f,.5f));
-                Vector3 p010=center+rotation*Vector3.Scale(size,new Vector3(-.5f,.5f,-.5f));
-                Vector3 p011=center+rotation*Vector3.Scale(size,new Vector3(-.5f,.5f,.5f));
-                Vector3 p100=center+rotation*Vector3.Scale(size,new Vector3(.5f,-.5f,-.5f));
-                Vector3 p101=center+rotation*Vector3.Scale(size,new Vector3(.5f,-.5f,.5f));
-                Vector3 p110=center+rotation*Vector3.Scale(size,new Vector3(.5f,.5f,-.5f));
-                Vector3 p111=center+rotation*Vector3.Scale(size,new Vector3(.5f,.5f,.5f));
-                Quad(p001,p101,p111,p011); Quad(p100,p000,p010,p110);
-                Quad(p000,p001,p011,p010); Quad(p101,p100,p110,p111);
-                Quad(p011,p111,p110,p010); Quad(p000,p100,p101,p001);
-            }
-            public Mesh Mesh(string name)
-            {
-                var mesh=new Mesh {name=name,indexFormat=vertices.Count>65535?IndexFormat.UInt32:IndexFormat.UInt16};
-                mesh.SetVertices(vertices); mesh.SetNormals(normals); mesh.SetUVs(0,uvs);
-                mesh.SetTriangles(triangles,0); mesh.RecalculateBounds(); return mesh;
-            }
+            readonly GraphicsSurfaceLibrary.Geometry geometry;
+            public Draft(Vector3 origin,Material material,bool castShadows=true)
+            {this.origin=origin;this.material=material;this.castShadows=castShadows;
+                geometry=new GraphicsSurfaceLibrary.Geometry(origin,GraphicsSurfaceLibrary.TileSpan(material));}
+            public void Quad(Vector3 a,Vector3 b,Vector3 c,Vector3 d)=>geometry.Quad(a,b,c,d);
+            public void Box(Vector3 center,Vector3 size,Quaternion rotation)=>geometry.Box(center,size,rotation,
+                Mathf.Min(.003f,Mathf.Min(size.x,Mathf.Min(size.y,size.z))*.12f));
+            public Mesh Mesh(string name)=>geometry.Mesh(name);
+            public int VertexCount=>geometry.VertexCount;
         }
 
         readonly List<UnityEngine.Object> owned = new List<UnityEngine.Object>();
+        readonly GraphicsSurfaceLibrary.Pool graphicsSurfaces = new GraphicsSurfaceLibrary.Pool();
         readonly List<PhysicalState> physical = new List<PhysicalState>();
         readonly List<ObstacleState> obstacles = new List<ObstacleState>();
         readonly List<HiddenState> hidden = new List<HiddenState>();
@@ -140,13 +114,14 @@ namespace HappyToy.V2
                     enabled=obstacle.enabled,carving=obstacle.carving,shape=obstacle.shape});
             additions=new GameObject("Original seal-and-timber corridor dressing").transform;
             additions.SetParent(transform,false);
-            timber=Surface("Weathered corridor lattice",new Color(.64f,.49f,.32f),Resources.Load<Texture2D>("Corridor/aged-floor-v1"));
+            timber=Surface("Weathered corridor lattice",new Color(.64f,.49f,.32f),Resources.Load<Texture2D>("Corridor/aged-floor-v2"));
             var fibers=PaperTexture();
             paper=Surface("Smoke-stained handmade paper",new Color(.77f,.71f,.56f),fibers);
             cloth=Surface("Oxide-red seal cloth",new Color(.38f,.12f,.075f),fibers);
             ink=Surface("Faded seal ink",new Color(.12f,.075f,.035f),fibers);
             warmShade=Surface("Translucent amber paper lantern",new Color(.79f,.54f,.26f),fibers,new Color(.70f,.31f,.085f)*.75f);
             redShade=Surface("Translucent vermilion paper lantern",new Color(.69f,.20f,.09f),fibers,new Color(.52f,.085f,.025f)*.72f);
+            PrepareSectors();
             for (int cell=0;cell<CorridorLayout.Count;cell++)
             {
                 Vector3 center=run.CellPosition(cell);center.y=0;
@@ -167,6 +142,7 @@ namespace HappyToy.V2
                     if(passage) LayeredPassages++;
                 }
             }
+            DressSectorClues();
             DressLanterns();
             DressSlidingLeaves();
             DressShrines();
@@ -217,7 +193,7 @@ namespace HappyToy.V2
                     {
                         float width=.11f+(float)random.NextDouble()*.055f;
                         float bottom=2.37f+(float)random.NextDouble()*.075f;
-                        HangingSeal(CellDraft(cell,(seed&7)==1?cloth:paper,false),edge+across*(strip-1)*.34f+inward*.14f,
+                        HangingSeal(CellDraft(cell,(seed&7)==1?SectorBinding(cell):SectorPaper(cell),false),edge+across*(strip-1)*.34f+inward*.14f,
                             across,inward,width,bottom,2.70f,random);
                     }
             }
@@ -225,14 +201,14 @@ namespace HappyToy.V2
 
         void Panel(int cell,Vector3 edge,Vector3 across,Vector3 inward,Quaternion basis,float offset,float width,System.Random random)
         {
-            var wood=CellDraft(cell,timber);var sheet=CellDraft(cell,paper);
+            var wood=CellDraft(cell,timber);var sheet=CellDraft(cell,SectorPaper(cell));
             Vector3 at=edge+across*offset+inward*.12f;
             // Shallow cladding follows the original wall: continuous opaque backing,
             // lower timber boards, then uneven inset paper with a structural lattice.
             wood.Box(at+Vector3.up*.44f,new Vector3(width,.72f,.018f),basis);
             foreach(float y in new[]{.10f,.80f,2.56f})
                 wood.Box(at+inward*.014f+Vector3.up*y,new Vector3(width,.065f,.025f),basis);
-            int bays=Mathf.Max(1,Mathf.RoundToInt(width/.74f));float bay=width/bays;
+            int bays=Mathf.Max(1,Mathf.RoundToInt(width/SectorBayWidth(cell)));float bay=width/bays;
             for(int index=0;index<bays;index++)
             {
                 float x=offset-width*.5f+(index+.5f)*bay;
@@ -259,7 +235,7 @@ namespace HappyToy.V2
                 if(random.NextDouble()<.23)
                 {
                     float patchY=1.02f+(float)random.NextDouble()*.5f;
-                    var patch=CellDraft(cell,(index&1)==0?cloth:paper,false);
+                    var patch=CellDraft(cell,(index&1)==0?SectorBinding(cell):SectorPaper(cell),false);
                     HangingSeal(patch,face+inward*.038f,across,inward,.12f,patchY,patchY+.28f,random);
                     var marks=CellDraft(cell,ink,false);
                     for(int mark=0;mark<3;mark++)
@@ -267,7 +243,7 @@ namespace HappyToy.V2
                 }
             }
             wood.Box(edge+across*(offset+width*.5f)+inward*.157f+Vector3.up*1.7f,new Vector3(.04f,1.77f,.027f),basis);
-            foreach(float y in new[]{1.25f,1.91f,2.32f})
+            foreach(float y in SectorCrossbars(cell))
                 wood.Box(at+inward*.05f+Vector3.up*y,new Vector3(width,.022f,.02f),basis);
             // Slightly separated bottom planks break the repeating wall panel rhythm.
             for(float x=-width*.5f+.28f;x<width*.5f;x+=.46f)
@@ -297,26 +273,13 @@ namespace HappyToy.V2
                 light.intensity=cell==0?2.65f:red?2.15f:2.45f;
                 // Keep the authored light positions/range. Paper transmits this point
                 // light, so its visual shade casts no opaque self-shadow around the bulb.
-                var shade=CellDraft(cell,red?redShade:warmShade,false);
                 var wood=CellDraft(cell,timber);Vector3 center=light.transform.position;
-                const int sides=8;
-                for(int side=0;side<sides;side++)
-                {
-                    float a=side*Mathf.PI*2/sides,b=(side+1)*Mathf.PI*2/sides;
-                    Vector3 radialA=new Vector3(Mathf.Cos(a),0,Mathf.Sin(a));
-                    Vector3 radialB=new Vector3(Mathf.Cos(b),0,Mathf.Sin(b));
-                    Vector3 lowA=center+radialA*.18f+Vector3.down*.20f;
-                    Vector3 lowB=center+radialB*.18f+Vector3.down*.20f;
-                    Vector3 midA=center+radialA*.27f,midB=center+radialB*.27f;
-                    Vector3 highA=center+radialA*.17f+Vector3.up*.20f;
-                    Vector3 highB=center+radialB*.17f+Vector3.up*.20f;
-                    shade.Quad(lowA,midA,midB,lowB);shade.Quad(midA,highA,highB,midB);
-                    // Thin visible ribs stay in the shade; disable their shadow casting
-                    // too so a selected point-light shadow can actually leave the lantern.
-                    var ribs=CellDraft(cell,ink,false);
-                    Beam(ribs,lowA,midA,.015f);Beam(ribs,midA,highA,.015f);
-                    Beam(ribs,lowA,lowB,.017f);Beam(ribs,highA,highB,.018f);
-                }
+                var lanternRoot=new GameObject("Graphics paper lantern composition").transform;
+                lanternRoot.SetParent(additions,false);lanternRoot.position=center;
+                var lantern=GraphicsPropLibrary.Attach("paper-lantern",lanternRoot,
+                    slot=>slot=="GU_washi"?(red?redShade:warmShade):graphicsSurfaces.Resolve(slot),owned);
+                foreach(var renderer in lantern.GetComponentsInChildren<MeshRenderer>())
+                {renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=true;}
                 wood.Box(center+Vector3.up*.30f,new Vector3(.027f,.20f,.027f),Quaternion.identity);
                 if(red)
                 {
@@ -343,7 +306,7 @@ namespace HappyToy.V2
                 var root=new GameObject("Sliding timber-paper leaf dressing").transform;
                 root.SetParent(door.movingLeaf,false);externalVisualRoots.Add(root);
                 root.localScale=new Vector3(1/door.movingLeaf.localScale.x,1/door.movingLeaf.localScale.y,1/door.movingLeaf.localScale.z);
-                var wood=new Draft(Vector3.zero,timber);var sheets=new Draft(Vector3.zero,paper);
+                var wood=new Draft(Vector3.zero,timber);var sheets=new Draft(Vector3.zero,SectorPaper(NearestCell(door.transform.position)));
                 Hide(door.movingLeaf.GetComponent<MeshRenderer>());
                 wood.Box(Vector3.zero,new Vector3(2.59f,2.35f,.10f),Quaternion.identity);
                 foreach(float side in new[]{-1f,1f})
@@ -359,7 +322,13 @@ namespace HappyToy.V2
                     }
                     foreach(float y in new[]{-.35f,.25f,.90f,1.10f})
                         wood.Box(new Vector3(0,y,side*.048f),new Vector3(2.57f,.037f,.022f),Quaternion.identity);
-                    wood.Box(new Vector3(1.23f,-.05f,side*.047f),new Vector3(.06f,.21f,.024f),Quaternion.identity);
+                    var mount=new GameObject("Graphics leaf handle mount").transform;mount.SetParent(root,false);
+                    mount.localPosition=new Vector3(1.23f,-.05f,side*.044f);
+                    mount.localRotation=Quaternion.Euler(0,side>0?180:0,0);
+                    var hardware=GraphicsPropLibrary.Attach("door-hardware",mount,graphicsSurfaces.Resolve,owned);
+                    // Fit owns the identity imported-model wrapper. The mount
+                    // turns its centered pull outward on each real leaf face.
+                    GraphicsPropLibrary.Fit(hardware,new Bounds(Vector3.zero,new Vector3(.06f,.21f,.022f)));
                 }
                 Emit(wood,root,"Moving timber leaf lattice",true);Emit(sheets,root,"Moving leaf aged paper",true);
             }
@@ -372,20 +341,20 @@ namespace HappyToy.V2
             foreach(var item in memories)
             {
                 int cell=NearestCell(item.transform.position);Vector3 center=run.CellPosition(cell);center.y=.03f;
-                var wood=CellDraft(cell,timber);var band=CellDraft(cell,cloth,false);var marks=CellDraft(cell,ink,false);
+                var wood=CellDraft(cell,timber);var band=CellDraft(cell,SectorBinding(cell),false);var marks=CellDraft(cell,ink,false);
                 // The new skin sits inside the preserved physical box. Its old opaque
                 // renderer must not hide it or be baked into an architecture chunk.
                 Hide(GetComponentsInChildren<MeshRenderer>(true).Single(renderer=>renderer.name=="Memory altar" && NearestCell(renderer.transform.position)==cell));
-                // Body profiles and tabletop are within the real altar's .85 x .72 x .65m body.
-                wood.Box(center+Vector3.up*.36f,new Vector3(.84f,.70f,.64f),Quaternion.identity);
-                wood.Box(center+Vector3.up*.707f,new Vector3(.84f,.025f,.64f),Quaternion.identity);
-                foreach(float side in new[]{-1f,1f})
-                {
-                    wood.Box(center+new Vector3(side*.38f,.37f,-.318f),new Vector3(.045f,.62f,.009f),Quaternion.identity);
-                    wood.Box(center+new Vector3(side*.38f,.37f,.318f),new Vector3(.045f,.62f,.009f),Quaternion.identity);
-                    band.Box(center+new Vector3(0,.58f,side*.323f),new Vector3(.67f,.062f,.004f),Quaternion.identity);
-                    marks.Box(center+new Vector3(0,.34f,side*.324f),new Vector3(.28f,.022f,.004f),Quaternion.identity);
-                }
+                // Original bevelled joinery model, authored as a separate version.
+                // Geometry remains inside the preserved physical altar body.
+                var altar=new GameObject("Graphics joined seal altar");
+                altar.transform.SetParent(additions,false);altar.transform.position=center;
+                var model=GraphicsPropLibrary.Attach("seal-altar",altar.transform,graphicsSurfaces.Resolve,owned);
+                // Only the visual model meets the real slab top (Y=0). The
+                // existing cell/item/collider offsets remain unchanged.
+                altar.transform.position=new Vector3(center.x,-GraphicsPropLibrary.LocalBounds(model).min.y,center.z);
+                foreach(var renderer in model.GetComponentsInChildren<MeshRenderer>())
+                {renderer.receiveShadows=true;VisualBatches++;}
                 Hide(item.GetComponent<MeshRenderer>());
                 var root=new GameObject("Folded original memory seal").transform;
                 root.SetParent(item.transform,false);
@@ -393,7 +362,7 @@ namespace HappyToy.V2
                 // so its metre-authored folded paper remains inside the item's collider.
                 root.localScale=new Vector3(1/item.transform.localScale.x,1/item.transform.localScale.y,1/item.transform.localScale.z);
                 externalVisualRoots.Add(root);
-                var seal=new Draft(Vector3.zero,paper,false);var sealInk=new Draft(Vector3.zero,ink,false);var tie=new Draft(Vector3.zero,cloth,false);
+                var seal=new Draft(Vector3.zero,SectorPaper(cell),false);var sealInk=new Draft(Vector3.zero,ink,false);var tie=new Draft(Vector3.zero,SectorBinding(cell),false);
                 seal.Box(Vector3.zero,new Vector3(.265f,.278f,.112f),Quaternion.identity);
                 seal.Quad(new Vector3(-.132f,.139f,-.058f),new Vector3(.132f,.139f,-.058f),
                     new Vector3(.10f,.052f,-.067f),new Vector3(-.06f,.068f,-.067f));
@@ -412,11 +381,10 @@ namespace HappyToy.V2
 
         void DressCabinets()
         {
-            var grain=Resources.Load<Texture2D>("Corridor/aged-floor-v1");
+            var grain=Resources.Load<Texture2D>("GraphicsPbr/wood-aged/albedo");
             var body=Surface("Corridor cabinet aged timber",new Color(.90f,.75f,.55f),grain);
             var panel=Surface("Corridor cabinet recessed timber",new Color(.72f,.54f,.36f),grain);
             var hardware=Surface("Corridor cabinet tarnished iron",new Color(.28f,.25f,.20f),null);
-            hardware.SetFloat("_Metallic",.6f);hardware.SetFloat("_Smoothness",.18f);
             foreach(var cabinet in GetComponentsInChildren<Interactable>(true).Where(item=>item.kind==Interactable.Kind.HidingPlace))
             {
                 bool dressed=false;
@@ -441,7 +409,17 @@ namespace HappyToy.V2
                     cabinetMaterials.Add(new MaterialState {renderer=renderer,original=original,applied=applied});
                     renderer.sharedMaterials=applied;dressed=true;
                 }
-                if(dressed) TimberCabinets++;
+                if(dressed || cabinet.GetComponentsInChildren<MeshRenderer>(true).Any(renderer=>renderer.enabled))
+                {
+                    var originals=cabinet.GetComponentsInChildren<MeshRenderer>(true).Where(renderer=>renderer.enabled).ToArray();
+                    var target=GraphicsPropLibrary.LocalBounds(cabinet.transform);
+                    var root=new GameObject("Graphics corridor timber cabinet").transform;root.SetParent(cabinet.transform,false);
+                    externalVisualRoots.Add(root);
+                    var model=GraphicsPropLibrary.Attach("cabinet-timber",root,graphicsSurfaces.Resolve,owned);
+                    GraphicsPropLibrary.Fit(model,target);
+                    foreach(var renderer in originals)Hide(renderer);
+                    TimberCabinets++;
+                }
             }
         }
 
@@ -475,6 +453,7 @@ namespace HappyToy.V2
         {
             if(!Prepared) return;
             RefreshReturnClue();
+            FitSectorClues();
             if(!returnClue) return;
             // This physical plaque faces +X, so its world Z/Y bounds are its
             // printed width/height. Fit live glyph bounds after native font updates.
@@ -496,6 +475,7 @@ namespace HappyToy.V2
         }
         void Emit(Draft draft,Transform parent,string name,bool local)
         {
+            if(draft.VertexCount==0)return;
             var mesh=draft.Mesh(name);owned.Add(mesh);
             var go=new GameObject(name);go.transform.SetParent(parent,false);
             if(!local) go.transform.position=draft.origin;
@@ -506,27 +486,17 @@ namespace HappyToy.V2
         }
         Material Surface(string name,Color color,Texture2D texture,Color emission=default)
         {
-            var material=new Material(Shader.Find("Universal Render Pipeline/Lit")) {name=name};
-            material.SetColor("_BaseColor",color);material.SetTexture("_BaseMap",texture);
-            material.SetFloat("_Smoothness",.055f);material.SetFloat("_Metallic",0);
-            if(emission.maxColorComponent>0)
-            {material.SetColor("_EmissionColor",emission);material.SetTexture("_EmissionMap",texture);material.EnableKeyword("_EMISSION");}
-            owned.Add(material);return material;
+            string kind=name.ToLowerInvariant();
+            string key=kind.Contains("iron")?"metal-rust":kind.Contains("timber")||kind.Contains("lattice")?"wood-aged":"paper-aged";
+            var material=graphicsSurfaces.Get(key,color,emission);
+            material.name=name+" — measured PBR";
+            return material;
         }
         Texture2D PaperTexture()
         {
-            const int size=128;var random=new System.Random(42661);var colors=new Color[size*size];
-            for(int y=0;y<size;y++) for(int x=0;x<size;x++)
-            {
-                float fiber=.90f+(float)random.NextDouble()*.10f;
-                float stain=Mathf.PerlinNoise(x*.032f+13,y*.037f+31)*.18f;
-                float dampEdge=(1-Mathf.Clamp01(y/28f))*.21f;
-                float crease=(x%31==0 || y%47==0)?.045f:0;
-                float value=Mathf.Clamp01(fiber-stain-dampEdge-crease);
-                colors[y*size+x]=new Color(value,value*.98f,value*.92f,1);
-            }
-            var texture=new Texture2D(size,size,TextureFormat.RGB24,true) {name="Original paper fibres and damp edge",wrapMode=TextureWrapMode.Repeat};
-            texture.SetPixels(colors);texture.Apply();owned.Add(texture);return texture;
+            var paper=Resources.Load<Texture2D>("GraphicsPbr/paper-aged/albedo");
+            if(!paper)throw new InvalidOperationException("Missing physical paper scan/fibre surface");
+            return paper; // imported resource is not presentation-owned
         }
         void ApplyFog()
         {
@@ -548,6 +518,7 @@ namespace HappyToy.V2
             foreach(var root in externalVisualRoots) if(root) Destroy(root.gameObject);
             if(additions) Destroy(additions.gameObject);
             foreach(var resource in owned) if(resource) Destroy(resource);
+            graphicsSurfaces.Dispose();
             if(ownsFog && SceneManager.GetActiveScene()==gameObject.scene &&
                 RenderSettings.fogMode==FogMode.ExponentialSquared && Mathf.Approximately(RenderSettings.fogDensity,.018f))
             {

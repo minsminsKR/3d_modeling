@@ -26,7 +26,10 @@ namespace HappyToy.V2
         public bool Passed => passed; public Mouse VirtualMouse => mouse;
         float meters, gameStart;
         Vector3 previous;
-        int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, lastRecovered;
+        int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, lastRecovered, batteriesCollected, candlesIgnited, lastHidingEntry, lastHidingRolls;
+        float lastCharge; string lastHidingOutcome = "None";
+        public int BatteriesCollected => batteriesCollected;
+        public int CandlesIgnited => candlesIgnited;
         float alertUntil, lastThrow = -100, lastDodge = -100, lastHide = -100, lastGameTime;
         bool expectEscape, passed, disposed, seekingHiding;
         string stage = "startup";
@@ -45,6 +48,9 @@ namespace HappyToy.V2
             lastGameTime = session.ElapsedPlayTime - gameStart; lastRecovered = session.RecordsRecovered;
             observedKeyboard = Keyboard.current;
             maximumThreats = Mathf.Max(maximumThreats, monsters.Count(x => x.gameObject.activeSelf));
+            lastCharge = player.FlashlightSystem.Charge; lastHidingEntry = player.HidingEntryId;
+            lastHidingRolls = player.HidingRolls; lastHidingOutcome = player.HidingOutcome.ToString();
+            Require(player.HidingRandomSample == null, "Native route may not override the production hiding RNG");
             bool terminal = session.Finished && !(expectEscape && session.Escaped);
             if (terminal) SaveEvidence();
             Require(!(terminal), "Run ended at " + stage + " after " + session.ElapsedPlayTime + "s; " + session.DefeatSource + "; at " + player.transform.position);
@@ -61,9 +67,10 @@ namespace HappyToy.V2
         public IEnumerator Run()
         {
             gameStart = session.ElapsedPlayTime;
-            if (player.flashlight.enabled) yield return Pulse(Key.F);
-            yield return Pulse(Key.C);
-            Require((player.Crouching), "Native corridor invariant failed: Is.True"); Mark("dark, quiet stance through F/C");
+            if (!player.Crouching) yield return Pulse(Key.C);
+            Require(player.Crouching, "Actual C did not set quiet stance");
+            yield return DemonstrateLighting();
+            Mark("finite light, battery and candle demonstrated through F/E; quiet stance through C");
             yield return TopUpNearbySupply(18);
             for (int i = 0; i < 5; i++)
             {
@@ -168,7 +175,16 @@ namespace HappyToy.V2
             float wait = Time.realtimeSinceStartup + 1.5f;
             while (Time.realtimeSinceStartup < wait && !RecognitionCue) { keys(Array.Empty<Key>()); yield return null; Check(); }
         }
-        IEnumerator Dodge(StalkerBrain monster, Vector3 destination)
+        StalkerBrain StationaryThreat()
+        {
+            // The same actual line of sight / recognition cue as Walk, including
+            // a pursuer behind us when its real sting tells us to look around.
+            // No unseen actor position or future warning is consulted.
+            var guard=VisibleThreat();
+            return guard && Vector3.Distance(player.transform.position,guard.transform.position)<3.2f &&
+                (guard.AttackActive || RecognitionCue) && GameTime-lastDodge>.9f ? guard : null;
+        }
+        IEnumerator Dodge(StalkerBrain monster, Vector3 destination, bool continuePast = true)
         {
             var observedGuard = monster.transform.position;
             if (player.Crouching) yield return Pulse(Key.C);
@@ -213,7 +229,7 @@ namespace HappyToy.V2
                 }
             }
             keys(Array.Empty<Key>()); dodges++; Mark(observedStrike ? "evaded an observed committed swing through real movement" : "retreated from observed guard through real movement");
-            if (!observedStrike) yield break;
+            if (!observedStrike || !continuePast) yield break;
             // Keep the observation's finite warning time; don't query unseen
             // movement/attack state after turning toward the escape route.
             while (GameTime < passNotBefore) { yield return null; Check(); }
@@ -275,16 +291,14 @@ namespace HappyToy.V2
                     }
                     if (!player.Crouching && GameTime > alertUntil && !RecognitionCue)
                         yield return Pulse(Key.C);
-                    if (Physics.SphereCast(eyes.transform.position, .08f, delta.normalized, out var obstacle, Mathf.Min(2.05f, distance + .1f), Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+                    var blockingDoor = DoorOnRoute(delta, distance);
+                    if (blockingDoor)
                     {
-                        var door = obstacle.collider.GetComponentInParent<Interactable>();
-                        if (door && door.kind.ToString() == "Door" && !door.IsOpen)
-                        {
-                            yield return Interact(door); doorsOpened++; Mark("opened real door through E");
-                            keys(Array.Empty<Key>()); float wait = Time.realtimeSinceStartup + 1.65f;
-                            while (Time.realtimeSinceStartup < wait) { yield return null; Check(); }
-                            progressTime = Time.realtimeSinceStartup;
-                        }
+                        int before=dodges;
+                        yield return OpenPhysicalDoor(blockingDoor,at);
+                        progressTime = Time.realtimeSinceStartup;
+                        if(dodges>before) { yield return Walk(at); yield break; }
+                        continue; // recompute actual feet/direction after a moving leaf
                     }
                     Steer(eyes.transform.position + delta, true);
                     keys(Vector3.Angle(player.transform.forward, delta) > 12 ? Array.Empty<Key>() : !player.Crouching && !player.SprintExhausted ? new[] { Key.W, Key.LeftShift } : new[] { Key.W }); yield return null;
@@ -292,14 +306,109 @@ namespace HappyToy.V2
             }
             keys(Array.Empty<Key>()); yield return null; Check();
         }
+        Interactable DoorOnRoute(Vector3 direction, float distance)
+        {
+            float radius = capsule.radius + .02f;
+            var center = player.transform.position + capsule.center + Vector3.up * .08f;
+            float half = Mathf.Max(0, capsule.height * .5f - capsule.radius);
+            if (!Physics.CapsuleCast(center - Vector3.up * half, center + Vector3.up * half, radius,
+                direction.normalized, out var hit, Mathf.Min(2.05f, distance + .1f),
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return null;
+            var door = hit.collider.GetComponentInParent<Interactable>();
+            if(!door || door.kind!=Interactable.Kind.Door) return null;
+            // Body sweeps reach farther than the real 2.2m eye interaction ray.
+            // Continue honest locomotion until the closed leaf can actually be
+            // focused; stopping at capsule reach strands E outside its range.
+            if(!door.IsOpen && Vector3.Distance(eyes.transform.position,
+                hit.collider.ClosestPoint(eyes.transform.position))>2.15f) return null;
+            return door;
+        }
+        IEnumerator OpenPhysicalDoor(Interactable door, Vector3 destination)
+        {
+            keys(Array.Empty<Key>()); float deadline = Time.realtimeSinceStartup + 5;
+            while (!door.IsOpen || !door.AtRequestedDoorPose)
+            {
+                Check(); Require(Time.realtimeSinceStartup < deadline, "Actual door never cleared: " + door.name);
+                var guard=StationaryThreat();
+                if(guard)
+                {
+                    int before=dodges;
+                    yield return Dodge(guard,destination,false);
+                    if(dodges>before) Mark("interrupted physical door wait for an observed threat; replan from actual feet");
+                    yield break;
+                }
+                if (!door.IsOpen)
+                {
+                    int before=dodges;
+                    yield return Interact(door);
+                    if (door.IsOpen) { doorsOpened++; Mark("opened/reopened physical door through E"); }
+                    if(dodges>before) yield break;
+                }
+                else yield return null;
+            }
+        }
+        public IEnumerator DemonstrateLighting()
+        {
+            string previousStage = stage; stage = "finite light and route marker";
+            var lamp = player.FlashlightSystem;
+            if (!player.flashlight.enabled) yield return Pulse(Key.F);
+            Require(player.flashlight.enabled, "Actual F could not light the charged flashlight");
+            float beforeDrain = lamp.Charge, waitUntil = GameTime + .3f;
+            while (GameTime < waitUntil) { keys(Array.Empty<Key>()); yield return null; Check(); }
+            Require(lamp.Charge < beforeDrain, "The lit flashlight did not consume real gameplay charge");
+            Interactable battery = null; Vector3 batteryAt = Vector3.zero; float best = 24;
+            foreach (var item in Items().Where(x => x.gameObject.activeSelf && x.kind == Interactable.Kind.FlashlightBattery))
+                if (FindApproach(item, out var at, out var length) && length < best) { battery = item; batteryAt = at; best = length; }
+            Require(battery, "No finite early battery has a physical input route");
+            yield return Walk(batteryAt); float beforeRefill = lamp.Charge; int packs = lamp.PacksCollected;
+            yield return Interact(battery);
+            Require(!battery.gameObject.activeSelf && lamp.PacksCollected == packs + 1 && lamp.Charge > beforeRefill,
+                "Actual E did not consume one finite battery and refill the lamp");
+            batteriesCollected++; Mark("picked up finite battery through E after actual lit drain");
+            Interactable marker = null; Vector3 markerAt = Vector3.zero; best = 24;
+            foreach (var item in Items().Where(x => x.gameObject.activeSelf && x.kind == Interactable.Kind.Candle))
+                if (FindApproach(item, out var at, out var length) && length < best) { marker = item; markerAt = at; best = length; }
+            Require(marker, "No nearby candle has a physical input route");
+            yield return Walk(markerAt); var candle = marker.GetComponent<WaymarkCandle>(); int ignitions = candle.Ignitions;
+            yield return Interact(marker);
+            Require(candle.Lit && candle.LocalLight.enabled && candle.Ignitions == ignitions + 1,
+                "Actual E did not light the route candle exactly once");
+            candlesIgnited++; Mark("lit a route candle through E");
+            yield return Interact(marker);
+            Require(candle.Ignitions == ignitions + 1, "Revisiting the lit candle repeated ignition");
+            if (player.flashlight.enabled) yield return Pulse(Key.F);
+            Require(!player.flashlight.enabled, "Actual F did not extinguish the flashlight");
+            float offCharge = lamp.Charge; waitUntil = GameTime + .3f;
+            while (GameTime < waitUntil) { keys(Array.Empty<Key>()); yield return null; Check(); }
+            Require(lamp.Charge == offCharge, "An extinguished flashlight consumed charge");
+            stage = previousStage;
+        }
+
         IEnumerator Interact(Interactable item)
         {
             keys(Array.Empty<Key>()); float deadline = Time.realtimeSinceStartup + 4;
             while (player.Focus != item)
             {
                 Check(); Require((Time.realtimeSinceStartup) < (deadline), "Could not focus " + item.name);
-                var collider = item.GetComponentsInChildren<Collider>().First(x => x.enabled && !x.isTrigger);
-                Steer(collider.bounds.center); yield return null;
+                var guard=StationaryThreat();
+                if(guard)
+                {
+                    int before=dodges;
+                    yield return Dodge(guard,item.transform.position,false);
+                    if(dodges>before)
+                    {
+                        Mark("interrupted item focus for an observed threat; approach again through actual input");
+                        Require(FindApproach(item,out var at,out _),"No physical re-approach after observed threat: "+item.name);
+                        yield return Walk(at);
+                        // This is a new focus attempt after actual locomotion;
+                        // whole route gameplay/wall budgets continue unchanged.
+                        deadline=Time.realtimeSinceStartup+4;
+                    }
+                    continue;
+                }
+                var collider = item.GetComponentsInChildren<Collider>().Where(x => x.enabled && !x.isTrigger)
+                    .OrderBy(x => Vector3.Distance(x.ClosestPoint(eyes.transform.position), eyes.transform.position)).First();
+                Steer(Vector3.Lerp(collider.ClosestPoint(eyes.transform.position), collider.bounds.center, .08f)); yield return null;
             }
             yield return Pulse(Key.E);
         }
@@ -360,14 +469,23 @@ namespace HappyToy.V2
                 capsule.radius - .02f, ~0, QueryTriggerInteraction.Ignore)
                 .Where(x => !x.transform.IsChildOf(player.transform)).Select(x => x.name + " at " + x.transform.position));
         }
-        [Serializable] sealed class Evidence { public bool passed; public string stage; public float gameSeconds, physicalMeters; public int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, recovered; public string[] milestones; }
+        [Serializable] sealed class Evidence
+        {
+            public bool passed; public string stage, hidingOutcome, hidingRng = "production Unity RNG; no forced sample or seed";
+            public float gameSeconds, physicalMeters, flashlightCharge;
+            public int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, recovered,
+                batteriesCollected, candlesIgnited, hidingEntryId, hidingRolls;
+            public string[] milestones;
+        }
         void SaveEvidence()
         {
             System.IO.Directory.CreateDirectory(evidenceDirectory);
             System.IO.File.WriteAllText(System.IO.Path.Combine(evidenceDirectory,"native-corridor-route.json"), JsonUtility.ToJson(new Evidence { passed = passed, stage = stage,
                 gameSeconds = lastGameTime, physicalMeters = meters, maximumThreats = maximumThreats,
                 doorsOpened = doorsOpened, throws = throws, dodges = dodges, hidingEntries = hidingEntries,
-                suppliesCollected = suppliesCollected, recovered = lastRecovered, milestones = milestones.ToArray() }, true));
+                suppliesCollected = suppliesCollected, recovered = lastRecovered, batteriesCollected = batteriesCollected,
+                candlesIgnited = candlesIgnited, flashlightCharge = lastCharge, hidingEntryId = lastHidingEntry,
+                hidingRolls = lastHidingRolls, hidingOutcome = lastHidingOutcome, milestones = milestones.ToArray() }, true));
         }
 
         Interactable[] Items() => UnityEngine.Object.FindObjectsByType<Interactable>(FindObjectsInactive.Include, FindObjectsSortMode.None)

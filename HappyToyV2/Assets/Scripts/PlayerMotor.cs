@@ -11,6 +11,14 @@ namespace HappyToy.V2
         public float walkSpeed = 2.6f, runSpeed = 4.4f, sensitivity = .09f;
         public float Stamina { get; private set; } = 1;
         public bool Hidden { get; private set; }
+        public int HidingEntryId => hidingDecision.EntryId;
+        public int HidingRolls => hidingDecision.Rolls;
+        public CabinetHidingOutcome HidingOutcome => hidingDecision.Outcome;
+        public bool HidingProtected => Hidden && (HidingOutcome == CabinetHidingOutcome.Quiet ||
+            HidingOutcome == CabinetHidingOutcome.Survived);
+        // Test/audit injection is per player and nonserialized. Normal play uses Unity's RNG.
+        [System.NonSerialized] public System.Func<float> HidingRandomSample;
+        readonly CabinetHidingRules.Decision hidingDecision = new CabinetHidingRules.Decision();
         // Authored upper ventilation slit. The capsule/stance stays unchanged;
         // while hidden only the eye occupies this outward-facing peek position.
         public Vector3 HiddenCameraLocalPosition => new Vector3(.272f, 1.645f, 0);
@@ -85,8 +93,7 @@ namespace HappyToy.V2
             eyes.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
             if (PlayerControls.Flashlight && !Hidden && flashlight)
             {
-                flashlight.enabled = !flashlight.enabled;
-                Feedback.PlayFlashlight(flashlight.enabled);
+                FlashlightSystem.Toggle();
             }
             var move = PlayerControls.Movement;
             move = Vector2.ClampMagnitude(move, 1);
@@ -200,7 +207,12 @@ namespace HappyToy.V2
         public void Hide(Interactable place, Vector3 inside, Vector3 exit)
         {
             if (Hidden || !place || Paused) return;
-            foreach (var stalker in FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None)) stalker.ObserveHiding(exit);
+            // Decide once on successful entry, before any observer loses the real sightline.
+            // The player owns the draw: adding enemies or running more frames cannot multiply risk.
+            var stalkers = FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None);
+            bool pursued = IsPursuedForHiding(stalkers);
+            hidingDecision.Resolve(hidingDecision.EntryId + 1, pursued, HidingRandomSample ?? (() => Random.value));
+            foreach (var stalker in stalkers) stalker.ObserveHiding(exit);
             if (warnedHidingPlace != place) { warnedHidingPlace = null; hidingThreatUntil = 0; }
             hidingPlace = place; hideExit = exit; Hidden = true; Running = false;
             FootstepNoiseRemaining = FootstepNoiseRadius = 0;
@@ -218,6 +230,23 @@ namespace HappyToy.V2
             if (flashlight) flashlight.enabled = false;
             GameSession.Current.NoteChapterAction(ChapterAction.HidingEntered);
             Feedback.PlayHide(true);
+            if (HidingOutcome == CabinetHidingOutcome.Defeated)
+                GameSession.Current.TryDefeat("추격 중 캐비닛 은신", CabinetHidingRules.RiskExplanation);
+        }
+        bool IsPursuedForHiding(StalkerBrain[] stalkers)
+        {
+            foreach (var stalker in stalkers)
+                if (stalker.isActiveAndEnabled && stalker.player == this &&
+                    EnemyNavigation.SameFloor(transform.position, stalker.HomeFloorY) &&
+                    (stalker.state == StalkerBrain.State.Chase || stalker.AttackActive)) return true;
+            // The school's other mobile threats share the same single entry draw.
+            foreach (var mask in FindObjectsByType<LanternMaskEncounter>(FindObjectsSortMode.None))
+                if (mask.isActiveAndEnabled && EnemyNavigation.SameFloor(transform.position, mask.transform.position.y) &&
+                    (mask.State == LanternMaskEncounter.Phase.Chase || mask.AttackActive)) return true;
+            foreach (var angel in FindObjectsByType<WeepingAngelEncounter>(FindObjectsSortMode.None))
+                if (angel.isActiveAndEnabled && EnemyNavigation.SameFloor(transform.position, angel.transform.position.y) &&
+                    (angel.Moving || angel.AttackActive)) return true;
+            return false;
         }
         public void LeaveHiding()
         {

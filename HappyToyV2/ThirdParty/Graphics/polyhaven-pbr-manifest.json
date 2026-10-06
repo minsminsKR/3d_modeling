@@ -1,0 +1,350 @@
+{
+  "assetLicense": "CC0-1.0",
+  "apiCredit": "Powered by Poly Haven (https://polyhaven.com)",
+  "maps": [
+    {
+      "key": "wood-floor",
+      "slug": "wood_floor_worn",
+      "sourcePage": "https://polyhaven.com/a/wood_floor_worn",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "tileMetres": [
+        1.9999996423721313,
+        1.9999996423721313
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/wood_floor_worn/wood_floor_worn_diff_2k.png",
+          "bytes": 20932502,
+          "md5": "d96ad5076dc9a80b56239de663443e13",
+          "sha256": "1ef41d3b95e7cbe28c61ef13395a4090f9b525740f0c55c1bb7e36b46c3dee0e"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/wood_floor_worn/wood_floor_worn_nor_gl_2k.png",
+          "bytes": 21481266,
+          "md5": "d76a5105e916ee82ebcb4c39fdef494a",
+          "sha256": "043389579bee075423984b5556c7e28aa1d90e88b84b016ca74385b069aff896"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/wood_floor_worn/wood_floor_worn_arm_2k.png",
+          "bytes": 16589205,
+          "md5": "dcb3055f11b475e5e869328954660336",
+          "sha256": "f93c4e1c178d882f4b5fe3ed2cb4ebfdb708dded6f3b20c1d42cc9faec7c589a"
+        }
+      },
+      "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+      "outputs": {
+        "albedo.png": {
+          "bytes": 5478741,
+          "sha256": "5d0e1600be61073f42866973f137961b2cb9ce45994f6a710d91d8891928b486"
+        },
+        "ao.png": {
+          "bytes": 2881429,
+          "sha256": "757df9cd3f3079f1a4a47bbe7be2e9a5cbb33436147bb83e8b16d13991282d76"
+        },
+        "metallic-smoothness.png": {
+          "bytes": 2018735,
+          "sha256": "80773153c8c6f4f2a2d177d1ad2706e437bb9189ad997ac64598ece15686758c"
+        },
+        "normal.png": {
+          "bytes": 6304526,
+          "sha256": "7fc1c91b6dda385a2eec2d439c7acaed3fdcdaa4d8084f8a760751dcbcfbf942"
+        }
+      }
+    },
+    {
+      "key": "wood-aged",
+      "slug": "wood_table_worn",
+      "sourcePage": "https://polyhaven.com/a/wood_table_worn",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "Photography",
+        "Rico Cilliers": "Processing"
+      },
+      "tileMetres": [
+        0.5499999523162842,
+        0.5500000715255737
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/wood_table_worn/wood_table_worn_diff_2k.png",
+          "bytes": 21771616,
+          "md5": "546c0ff39ee957dffe28ec234b01852d",
+          "sha256": "86f7cae1393d57c7ad463967591643d04b80e27ec947c6a428a7dff3a9af0aa6"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/wood_table_worn/wood_table_worn_nor_gl_2k.png",
+          "bytes": 20560698,
+          "md5": "324af6b74bc615177b892c2ef6260b6f",
+          "sha256": "3ebc64a1507808acd3943aa5f0c8f2397bc57daa7f716de1df612814d3bb1d4e"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/wood_table_worn/wood_table_worn_arm_2k.png",
+          "bytes": 17320809,
+          "md5": "7bbcdee7bd4fc2a4d93b4bae2754cc9f",
+          "sha256": "5a590cb76755510f6366f495a7c446efab244f9a0881cd8d28f160991b236478"
+        }
+      },
+      "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+      "outputs": {
+        "albedo.png": {
+          "bytes": 6146668,
+          "sha256": "434b4300cdbaf9b54f030a05da3849c87e1c2c6c53abdf7254be6ffbf176b314"
+        },
+        "ao.png": {
+          "bytes": 2165682,
+          "sha256": "4a248f82c38b0700114e8b28b9fc8118636c49c363190d1b50e17e1d304ced82"
+        },
+        "metallic-smoothness.png": {
+          "bytes": 4041217,
+          "sha256": "956bcbdb9a8a8302f8073a76297d8f1454d96fa889ee6cd58f8d417f48aaf3bb"
+        },
+        "normal.png": {
+          "bytes": 6434193,
+          "sha256": "dddd69009170c6665cf9a0177ec2e303e43665e86229eb6719d07daadacc25a2"
+        }
+      }
+    },
+    {
+      "key": "plaster-damp",
+      "slug": "worn_plaster_wall",
+      "sourcePage": "https://polyhaven.com/a/worn_plaster_wall",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "tileMetres": [
+        1.8000000715255737,
+        1.8000000715255737
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/worn_plaster_wall/worn_plaster_wall_diff_2k.png",
+          "bytes": 22434035,
+          "md5": "824b0843f7494bb957083fe8e44d19b6",
+          "sha256": "73ee72138837dd53a1733b18c129eb0a045a8732fefa229eb043d8b42284e11c"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/worn_plaster_wall/worn_plaster_wall_nor_gl_2k.png",
+          "bytes": 21443530,
+          "md5": "b91a729c409fb81e4852637a5051fe3d",
+          "sha256": "6fb1430e75064d72b7e7a5710c4504592ef5fdf76222afb96416f60611e75da8"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/worn_plaster_wall/worn_plaster_wall_arm_2k.png",
+          "bytes": 15033520,
+          "md5": "773f15ae8038d6b86f456fd0480d0d4b",
+          "sha256": "7d0150cd60268b96a42602f215c344759b59638999ece4fec3166a060ee92112"
+        }
+      },
+      "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+      "outputs": {
+        "albedo.png": {
+          "bytes": 7547587,
+          "sha256": "bf24a78daf4b82edb2c0bccf63386504888f8e569ea38173f85debe638977ff4"
+        },
+        "ao.png": {
+          "bytes": 1780935,
+          "sha256": "e8891c3f79bf4c8ed5105d622249abe9e0a9b15c4193f2d7b119ac4d49eab848"
+        },
+        "metallic-smoothness.png": {
+          "bytes": 1817003,
+          "sha256": "75b68c90fc115744c8e098b3ca0f1372cff66e0c19b0b6500ca8514900c8e9be"
+        },
+        "normal.png": {
+          "bytes": 6427543,
+          "sha256": "f9dda8eb97cb9df270324aa7d96a7f8c4304eb0ac4a36b344b4a30d5110431c6"
+        }
+      }
+    },
+    {
+      "key": "concrete-rough",
+      "slug": "concrete_floor_02",
+      "sourcePage": "https://polyhaven.com/a/concrete_floor_02",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "tileMetres": [
+        2.0,
+        2.0
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_floor_02/concrete_floor_02_diff_2k.png",
+          "bytes": 10037331,
+          "md5": "e6328911fe7cd3a74f11486f06a5ad60",
+          "sha256": "c438815b55874b9bbab5befa559c9ef2b635f674ebf9415c7341f6865156b03b"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_floor_02/concrete_floor_02_nor_gl_2k.png",
+          "bytes": 25222001,
+          "md5": "e7bbae9a0ec85c590b82ccdf5788c46d",
+          "sha256": "0b13102bbf79daef40b7230c20aaca402620b618e043413f1ff677c47acc2861"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/concrete_floor_02/concrete_floor_02_arm_2k.png",
+          "bytes": 5957227,
+          "md5": "b544106ab5142f1e15731dc52c9586cf",
+          "sha256": "e191d359dc99575393d314a8195f67007661b49e313131693accecf022584256"
+        }
+      },
+      "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+      "outputs": {
+        "albedo.png": {
+          "bytes": 10327160,
+          "sha256": "66b7a773a5aafe7faf79bb1d6973e3e52e4b44066170ce092f5cb9e13d0a19bd"
+        },
+        "ao.png": {
+          "bytes": 2570714,
+          "sha256": "91e3d089b2037ecdc63b57d6a4f148af8c0db675c7a8ee08cfbfd68535c00fdb"
+        },
+        "metallic-smoothness.png": {
+          "bytes": 3545251,
+          "sha256": "ddce6f23d49e96e6578864b53e29a78f7795eeccf12fd83b3cd5222147f3f5ef"
+        },
+        "normal.png": {
+          "bytes": 7759615,
+          "sha256": "32dd5846563e4af312631256e7f471c9f8200224a53436ba4428d24cbae1d885"
+        }
+      }
+    },
+    {
+      "key": "ceramic-tile",
+      "slug": "floor_tiles_06",
+      "sourcePage": "https://polyhaven.com/a/floor_tiles_06",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "tileMetres": [
+        3.0,
+        3.0
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/floor_tiles_06/floor_tiles_06_diff_2k.png",
+          "bytes": 5807131,
+          "md5": "4365b02e48ae8e329cf92fb7da92a6d7",
+          "sha256": "48da914c8a468035cb7fb4a8c5f64784d68a302acd045caff48655f0c78661ba"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/floor_tiles_06/floor_tiles_06_nor_gl_2k.png",
+          "bytes": 5178912,
+          "md5": "f84afc022fcd2744a11c8308fd3e66f0",
+          "sha256": "41635cd3ea9dd9b5b8a36d0221de933ae51aeb4e7ee570d388427c99d199774d"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/floor_tiles_06/floor_tiles_06_arm_2k.png",
+          "bytes": 4470828,
+          "md5": "6d0ea95c2834f7566086d2c7db1c0fb3",
+          "sha256": "51e073c3364fd2b620bf998a65dd74e7c5e7cc0f44630cb07a8ab5a493fbfd23"
+        }
+      },
+      "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+      "outputs": {
+        "albedo.png": {
+          "bytes": 5529842,
+          "sha256": "990a73ba511d921766ac8d2195990a5b3aeb61179c5f862e021f3dd554f1e0e5"
+        },
+        "ao.png": {
+          "bytes": 2089117,
+          "sha256": "96879a0e0be19d334f63565c589f236d11271ff78cba1020cc00e8a7722cc7b7"
+        },
+        "metallic-smoothness.png": {
+          "bytes": 1981846,
+          "sha256": "7a5949db6a3ec87c57250bebad8cd2d4911575419d1559192f4aee66a9cd1947"
+        },
+        "normal.png": {
+          "bytes": 4809318,
+          "sha256": "9fc97722238b565b7bdc17e5fa472b77e08d6e4843837304fda0e4895ea4cf4b"
+        }
+      }
+    },
+    {
+      "key": "metal-rust",
+      "slug": "rusty_metal_02",
+      "sourcePage": "https://polyhaven.com/a/rusty_metal_02",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "tileMetres": [
+        1.0,
+        1.0
+      ],
+      "pixels": [
+        2048,
+        2048
+      ],
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rusty_metal_02/rusty_metal_02_diff_2k.png",
+          "bytes": 6323414,
+          "md5": "e7dc606c454c6f6f5dd91c64a6378ec7",
+          "sha256": "7e99c3c2d94712a6b04de2100729907f91d2feb841da7e97c50229df097bd302"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rusty_metal_02/rusty_metal_02_nor_gl_2k.png",
+          "bytes": 3897537,
+          "md5": "ffbde4a17f2977baebcec7d3c3301b29",
+          "sha256": "6ad252152bc4baecfe3553e0a5472d96e895d39c4f77f9ef059be5ba22ae0e6f"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rusty_metal_02/rusty_metal_02_arm_2k.png",
+          "bytes": 5067593,
+          "md5": "b844a82aff1adb28453411dd94d40556",
+          "sha256": "4d36db2e58b4f044f70b3547f5917ce84f783f5d5543a83ed72884f8542930a3"
+        }
+      },
+      "derivation": "Official 2k diffuse/OpenGL tangent normal converted to RGB8 PNG. glTF ARM red->AO; blue->URP metallic red; 255-green roughness->URP smoothness alpha. Packed green/blue zero.",
+      "outputs": {
+        "albedo.png": {
+          "bytes": 6678415,
+          "sha256": "99ba6631804308f77b74a4a67d6e444253fdf230f93a09c91fcf80e9e988bf10"
+        },
+        "ao.png": {
+          "bytes": 2953471,
+          "sha256": "fbb93a46184d23538f86543ba1a2fb2e62a847e6e3be9ddf01e89604030d0a48"
+        },
+        "metallic-smoothness.png": {
+          "bytes": 1534469,
+          "sha256": "a9d272a795b7660331a48c4ee569910aca53434328b2dfac850ab7ed3d14da08"
+        },
+        "normal.png": {
+          "bytes": 3944015,
+          "sha256": "6f5b299ff7c92fdd43a8b4836db734aaca2e69999a41f7cc3f4fa621c03b42ca"
+        }
+      }
+    }
+  ],
+  "scope": "Authentic downloaded source PBR maps and correlated Unity channel conversion; actual game render verification remains separate."
+}

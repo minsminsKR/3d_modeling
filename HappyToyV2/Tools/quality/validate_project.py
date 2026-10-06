@@ -44,7 +44,7 @@ def metadata_issues(assets: Path) -> tuple[list[str], dict[str, str]]:
         if len(matches) != 1:
             issues.append(f"Expected exactly one lowercase 32-character GUID: {path.relative_to(assets.parent)}")
         else:
-            paths_by_guid[matches[0]].append(str(target.relative_to(assets.parent)))
+            paths_by_guid[matches[0]].append(target.relative_to(assets.parent).as_posix())
     for guid, paths in paths_by_guid.items():
         if len(paths) > 1:
             issues.append(f"Duplicate GUID {guid}: {', '.join(paths)}")

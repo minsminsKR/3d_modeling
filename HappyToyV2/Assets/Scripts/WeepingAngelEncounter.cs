@@ -30,6 +30,16 @@ namespace HappyToy.V2
             new Vector3(.25f, 1.1f, 0), new Vector3(0, .4f, 0)
         };
         NavMeshAgent agent;
+        StalkerDoorTraversal doorTraversal;
+        StalkerDoorTraversal DoorTraversal
+        {
+            get
+            {
+                if (!doorTraversal) doorTraversal = GetComponent<StalkerDoorTraversal>();
+                if (!doorTraversal) doorTraversal = gameObject.AddComponent<StalkerDoorTraversal>();
+                doorTraversal.Bind(this); return doorTraversal;
+            }
+        }
         NavMeshPath path;
         AudioSource sound;
         AudioClip creak;
@@ -45,6 +55,7 @@ namespace HappyToy.V2
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath(); floorY = transform.position.y;
+            DoorTraversal.Bind(this);
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 15; sound.volume = .3f; sound.dopplerLevel = 0;
             EnemyAcoustics.Bind(sound, transform, .3f);
@@ -63,6 +74,7 @@ namespace HappyToy.V2
         void Stop()
         {
             Moving = false; EnemyNavigation.Stop(agent, true);
+            if (doorTraversal) doorTraversal.Suspend();
         }
         bool Clear(Camera camera, Vector3 point)
         {
@@ -131,6 +143,7 @@ namespace HappyToy.V2
         }
         void Resolve()
         {
+            if (doorTraversal) doorTraversal.Cancel();
             Resolved = true; Observed = false; attack.Reset(); Stop(); if (sound) sound.Stop();
             RestoreDisplayLight(); RestoreVisualPose();
             if (revealAudio) revealAudio.Stop();
@@ -188,6 +201,10 @@ namespace HappyToy.V2
                 session.WarnThreat("마네킹의 관절 소리가 가까이 납니다 · 돌아보거나 손전등을 끄세요.", 1.6f);
                 return;
             }
+            // Only a released, unseen, lit, same-floor mannequin may operate a
+            // door. Looking at it or extinguishing the lamp still stops it first.
+            if (DoorTraversal.Tick(player.transform.position, floorY) != StalkerDoorTraversal.Result.Clear)
+            { repath = 0; UpdateMovementPresentation(); return; }
             repath -= Time.deltaTime;
             if (repath <= 0)
             {
@@ -195,6 +212,10 @@ namespace HappyToy.V2
                 if (!EnemyNavigation.TryRoute(agent, player.transform.position, floorY, path)) { Stop(); return; }
                 agent.SetPath(path); agent.isStopped = false;
             }
+            UpdateMovementPresentation();
+        }
+        void UpdateMovementPresentation()
+        {
             Moving = !agent.isStopped && agent.hasPath;
             if (Moving)
             {
@@ -206,6 +227,7 @@ namespace HappyToy.V2
         }
         void OnDisable()
         {
+            if (doorTraversal) doorTraversal.Cancel();
             attack.Reset(); unobservedFor = 0; Stop(); if (sound) sound.Stop();
             if (revealAudio) revealAudio.Stop(); RestoreDisplayLight(); RestoreVisualPose();
         }

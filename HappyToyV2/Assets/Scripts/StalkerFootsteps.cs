@@ -31,10 +31,14 @@ namespace HappyToy.V2
         LanternMaskEncounter lantern;
         Vector3 previous;
         float distance;
+        V1MonsterMotion motion;
+        bool pendingContact,movedForContact;
+        public bool PendingContact => pendingContact;
 
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>(); lantern = GetComponent<LanternMaskEncounter>();
+            motion = GetComponent<V1MonsterMotion>();
             source = gameObject.AddComponent<AudioSource>();
             source.minDistance = 2; source.maxDistance = 16; source.priority = 70;
             MovementAcoustics = EnemyAcoustics.Bind(source, transform, .7f);
@@ -114,7 +118,7 @@ namespace HappyToy.V2
             return material.Contains("washroom") || material.Contains("tile") || material.Contains("ceramic") ||
                 material.Contains("grout") || material.Contains("stone") || material.Contains("concrete") ? "stone" : "wood";
         }
-        void OnEnable() { previous = transform.position; distance = 0; }
+        void OnEnable() { previous = transform.position; distance = 0; pendingContact = movedForContact = false; }
         public void PlayAttackCue() => PlayAttackCue(false);
         public void PlayAttackCue(bool atCabinet)
         {
@@ -129,14 +133,17 @@ namespace HappyToy.V2
         }
         void Update()
         {
+            movedForContact = false;
             Vector3 delta = transform.position - previous; previous = transform.position;
             float vertical = Mathf.Abs(delta.y); delta.y = 0;
             var session = GameSession.Current;
             if (!session || session.Finished || session.StoryStep >= 4 ||
                 lantern && (!lantern.isActiveAndEnabled || lantern.State == LanternMaskEncounter.Phase.Dormant ||
                     lantern.State == LanternMaskEncounter.Phase.Resolved))
-            { distance = 0; source.Stop(); attackSource.Stop(); return; }
-            if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { distance = 0; return; }
+            { distance = 0; pendingContact = false; source.Stop(); attackSource.Stop(); return; }
+            if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { distance = 0; pendingContact = false; return; }
+            if (Profile == EnemySoundKind.Uncat && motion && !motion.isActiveAndEnabled)
+            { ClearRenderedContactDebt(); return; }
             if (lantern)
             {
                 var next = lantern.Transformed ? EnemySoundKind.Wraith : EnemySoundKind.Lantern;
@@ -147,18 +154,50 @@ namespace HappyToy.V2
             // brain-disabled corner emergence audible without inventing stationary steps.
             float maximumTravel = Mathf.Max(.45f, agent.velocity.magnitude * Time.deltaTime * 2.5f + .08f);
             if (vertical > .65f || travelled > maximumTravel)
-            { distance = 0; TeleportsSuppressed++; return; }
-            if (agent.isStopped || !agent.hasPath || agent.velocity.sqrMagnitude < .0036f || travelled < .001f) return;
+            { distance = 0; pendingContact = false; TeleportsSuppressed++; return; }
+            if (agent.isStopped || !agent.hasPath || agent.velocity.sqrMagnitude < .0036f || travelled < .001f)
+            {
+                pendingContact = false;
+                // A queued airborne candidate has a full stride of debt. An
+                // actual stop must discard that debt before resumed movement.
+                // Other profiles keep their existing partial-stride cadence.
+                if (Profile == EnemySoundKind.Uncat && motion && motion.LimbContactRigAvailable) distance = 0;
+                return;
+            }
+            movedForContact = true;
             distance += travelled;
             if (distance < StepDistance) return;
+            if (Profile == EnemySoundKind.Uncat && motion && motion.LimbContactRigAvailable)
+            {
+                // One real-travel candidate waits for this frame's skin contact.
+                // Discard additional airborne travel debt, so a landing cannot
+                // emit a sequence of stale contacts on consecutive frames.
+                pendingContact = true; distance = Mathf.Min(distance, StepDistance); return;
+            }
             distance -= StepDistance;
+            PlayMovementContact();
+        }
+        internal void ClearRenderedContactDebt()
+        { pendingContact = movedForContact = false; distance = 0; }
+        internal void EmitAtRenderedLimbContact(float gap)
+        {
+            if (!pendingContact || !movedForContact || !isActiveAndEnabled ||
+                Profile != EnemySoundKind.Uncat || !StealthRules.Finite(gap) || Mathf.Abs(gap) > .045f) return;
+            var session = GameSession.Current;
+            if (!session || !session.InputAllowed || session.Finished || session.StoryStep >= 4 ||
+                !EnemyNavigation.Ready(agent) || agent.isStopped || !agent.hasPath || agent.velocity.sqrMagnitude < .0036f)
+            { pendingContact = false; distance = 0; return; }
+            pendingContact = false; distance = 0; PlayMovementContact();
+        }
+        void PlayMovementContact()
+        {
             clip = StepClip();
             source.pitch = EnemySoundProfile.Pitch(Profile, StepsPlayed);
             source.PlayOneShot(clip); StepsPlayed++;
-            PerceivedTension.ReportSound(session, source, MovementAcoustics, false);
+            PerceivedTension.ReportSound(GameSession.Current, source, MovementAcoustics, false);
         }
         void OnDisable()
-        { distance = 0; if (source) source.Stop(); if (attackSource) attackSource.Stop(); }
+        { distance = 0; pendingContact = movedForContact = false; if (source) source.Stop(); if (attackSource) attackSource.Stop(); }
         void OnDestroy()
         {
             foreach (var pair in clips.Values) foreach (var ownedClip in pair) if (ownedClip) Destroy(ownedClip);

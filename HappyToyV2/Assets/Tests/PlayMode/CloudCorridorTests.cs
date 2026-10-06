@@ -47,11 +47,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(session, "CorridorMode"), Is.True);
             var run = Get<Component>(session, "Corridor");
             Assert.That(Get<bool>(run, "Ready"), Is.True);
-            var wallTexture = Resources.Load<Texture2D>("Corridor/aged-plaster-v1");
-            Assert.That(wallTexture, Is.Not.Null, "Production wall texture missing from Resources");
+            var wallTexture = Resources.Load<Texture2D>("GraphicsPbr/plaster-damp/albedo");
+            Assert.That(wallTexture, Is.Not.Null, "Physical scanned wall albedo missing from Resources");
             Assert.That(wallTexture.wrapModeU, Is.EqualTo(TextureWrapMode.Repeat));
             Assert.That(wallTexture.wrapModeV, Is.EqualTo(TextureWrapMode.Repeat));
-            var floorTexture=Resources.Load<Texture2D>("Corridor/aged-floor-v1");
+            var floorTexture=Resources.Load<Texture2D>("GraphicsPbr/wood-floor/albedo");
             Assert.That(floorTexture,Is.Not.Null); Assert.That(floorTexture.wrapModeU,Is.EqualTo(TextureWrapMode.Repeat));
             Assert.That(floorTexture.filterMode,Is.EqualTo(FilterMode.Trilinear)); Assert.That(floorTexture.anisoLevel,Is.EqualTo(8));
             Assert.That(run.GetComponentsInChildren<Renderer>().SelectMany(x=>x.sharedMaterials)
@@ -59,6 +59,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(run.GetComponentsInChildren<Renderer>().SelectMany(x => x.sharedMaterials)
                 .Any(x => x && x.name.StartsWith("Damp plaster") && x.mainTexture == wallTexture), Is.True,
                 "Generated walls did not use the imported texture");
+            foreach(string key in new[]{"wood-floor","plaster-damp"})
+            {
+                var assigned=run.GetComponentsInChildren<Renderer>().SelectMany(renderer=>renderer.sharedMaterials)
+                    .First(material=>material&&material.GetTag("GraphicsSurface",false)==key);
+                foreach(var channel in new[]{("_BaseMap","albedo"),("_BumpMap","normal"),("_OcclusionMap","ao"),("_MetallicGlossMap","metallic-smoothness")})
+                    Assert.That(assigned.GetTexture(channel.Item1),Is.SameAs(Resources.Load<Texture2D>("GraphicsPbr/"+key+"/"+channel.Item2)));
+            }
             var ambience = session.GetComponent(RequireType("RoomAmbience"));
             yield return null;
             var voices = Get<System.Collections.IEnumerable>(ambience, "Voices");

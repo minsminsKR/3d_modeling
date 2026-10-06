@@ -33,6 +33,16 @@ namespace HappyToy.V2
         public Bounds LastMaskBounds { get; private set; }
         public int AttachmentSamples { get; private set; }
         NavMeshAgent agent;
+        StalkerDoorTraversal doorTraversal;
+        StalkerDoorTraversal DoorTraversal
+        {
+            get
+            {
+                if (!doorTraversal) doorTraversal = GetComponent<StalkerDoorTraversal>();
+                if (!doorTraversal) doorTraversal = gameObject.AddComponent<StalkerDoorTraversal>();
+                doorTraversal.Bind(this); return doorTraversal;
+            }
+        }
         NavMeshPath path;
         Vector3 target;
         float floorY, age, transformTime, memory, repath;
@@ -41,6 +51,13 @@ namespace HappyToy.V2
         bool recognitionCueIssued;
         readonly StealthRules.Awareness awareness = new StealthRules.Awareness();
         readonly EnemyAttackClock attack = new EnemyAttackClock();
+        readonly NoiseInvestigationClock investigation = new NoiseInvestigationClock();
+        Quaternion investigationFacing;
+        public bool InvestigationArrived => investigation.Arrived;
+        public bool InvestigationActive => investigation.Active;
+        public Vector3 InvestigationPoint => investigation.Point;
+        public float InvestigationTravelRemaining => investigation.TravelRemaining;
+        public float InvestigationDwellRemaining => investigation.DwellRemaining;
         AudioSource sound;
         AudioClip warning;
         EnemyAcoustics acoustics;
@@ -60,6 +77,7 @@ namespace HappyToy.V2
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath(); floorY = transform.position.y;
+            DoorTraversal.Bind(this);
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 16; sound.dopplerLevel = 0; sound.volume = .5f;
             // Create both root sources before the first built-in filter. Adding an
@@ -99,7 +117,7 @@ namespace HappyToy.V2
         }
         void OnEnable()
         {
-            floorY = transform.position.y; repath = 0; recognitionCueIssued = false; awareness.Reset();
+            floorY = transform.position.y; repath = 0; recognitionCueIssued = false; awareness.Reset(); investigation.Reset();
             BindFootsteps(GameSession.Current ? GameSession.Current.player : null);
         }
         void BindFootsteps(PlayerMotor next)
@@ -117,11 +135,34 @@ namespace HappyToy.V2
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
                 IntroActive || attack.Active || !StealthRules.Finite(radius) || radius <= 0 || !StealthRules.Finite(point.x) ||
                 !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z) ||
-                Vector3.Distance(point, transform.position) > radius ||
+                !EnemyNavigation.SameFloor(point, floorY)) return;
+            radius *= EnemyNavigation.SoundTransmission(point + Vector3.up * .5f,
+                transform.position + Vector3.up, transform, noisePlayer.transform);
+            if (Vector3.Distance(point, transform.position) > radius ||
                 !EnemyNavigation.TryRoute(agent, point, floorY, path, radius)) return;
             var corners = path.corners;
             target = corners.Length > 0 ? corners[corners.Length - 1] : point;
-            State = Phase.Investigate; memory = 3; repath = 0; FootstepNoisesAccepted++;
+            BeginNoiseInvestigation(3); FootstepNoisesAccepted++;
+        }
+        void BeginNoiseInvestigation(float dwell)
+        {
+            NoiseInvestigationRoute.Begin(investigation,transform.position,target,path,1.15f,dwell);
+            memory=investigation.DwellRemaining; State=Phase.Investigate; repath=0;
+        }
+        void EnsureNoiseInvestigation()
+        {
+            if(investigation.Active)return;
+            float dwell=Mathf.Clamp(memory,.01f,3600);
+            if(Route(target)) BeginNoiseInvestigation(dwell);
+            else investigation.Begin(target,dwell,new Vector2(transform.position.x-target.x,transform.position.z-target.z).magnitude,1.15f,0);
+        }
+        void InspectNoisePoint()
+        {
+            EnemyNavigation.Stop(agent,true); if(doorTraversal)doorTraversal.Suspend();
+            float sweep=Mathf.Sin((investigation.DwellDuration-investigation.DwellRemaining)*1.7f)*65;
+            transform.rotation=Quaternion.RotateTowards(transform.rotation,
+                investigationFacing*Quaternion.Euler(0,sweep,0),160*Time.deltaTime);
+            Visual();
         }
         void SetVisible(bool show)
         {
@@ -130,12 +171,12 @@ namespace HappyToy.V2
             if (body) body.gameObject.SetActive(show && transformTime > .85f);
             if (flameLight) flameLight.enabled = show;
         }
-        void Stop() { EnemyNavigation.Stop(agent); }
+        void Stop() { EnemyNavigation.Stop(agent); if (doorTraversal) doorTraversal.Suspend(); }
         bool Route(Vector3 point) => EnemyNavigation.TryRoute(agent, point, floorY, path);
         bool Sees(PlayerMotor player)
         {
             // The lantern keeps its omnidirectional identity. This is physical LOS,
-            // separate from the slower, stance-dependent recognition below.
+            // confirmed sight starts immediate pursuit after the authored intro.
             return player && !player.Hidden && EnemyNavigation.SameFloor(player.transform.position, floorY) &&
                 Vector3.Distance(player.transform.position, transform.position) < 12 &&
                 EnemyNavigation.ClearSight(transform.position + Vector3.up,
@@ -148,11 +189,12 @@ namespace HappyToy.V2
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
                 !EnemyNavigation.Ready(agent) ||
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
-                IntroActive || attack.Active || !StealthRules.Finite(duration) || duration <= 0 ||
+                IntroActive || attack.Active || !StealthRules.Finite(duration) || duration <= 0 || duration > 3600 ||
                 !StealthRules.Finite(point.x) || !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z) ||
                 Vector3.Distance(point, transform.position) > 28 || awareness.Acquired ||
                 !EnemyNavigation.TryRoute(agent, point, floorY, path, 38)) return false;
-            State = Phase.Investigate; target = point; memory = duration; repath = 0; return true;
+            var corners=path.corners; target=corners.Length>0?corners[corners.Length-1]:point;
+            BeginNoiseInvestigation(duration); return true;
         }
         bool FirstSight(PlayerMotor player)
         {
@@ -187,6 +229,7 @@ namespace HappyToy.V2
         }
         void Resolve()
         {
+            if (doorTraversal) doorTraversal.Cancel();
             State = Phase.Resolved; awareness.Reset(); attack.Reset(); EnemyNavigation.Stop(agent, true); SetVisible(false);
             RestoreVisualDefaults();
             if (sound) sound.Stop();
@@ -265,27 +308,26 @@ namespace HappyToy.V2
                 if (!attack.Active) repath = 0;
                 Visual(); return;
             }
-            bool acquiring = false;
-            if (State != Phase.Chase)
-            {
-                bool lightOn = player.flashlight && player.flashlight.isActiveAndEnabled;
-                acquiring = sees && distance < StealthRules.SightRange(player.Crouching, lightOn, false, 12);
-                awareness.Tick(acquiring,
-                    StealthRules.AcquisitionSeconds(player.Crouching, lightOn, player.Running, distance), Time.deltaTime);
-            }
-            if (sees && (State == Phase.Chase || acquiring && awareness.Acquired))
+            if (sees)
             {
                 if (!recognitionCueIssued) { DetectionFeedback.Signal(session, transform); recognitionCueIssued = true; }
+                if (State != Phase.Chase) repath = 0;
+                awareness.Restore(1); investigation.Cancel();
                 State = Phase.Chase; target = player.transform.position; memory = Transformed ? 8 : 3;
             }
-            else if (State == Phase.Chase || State == Phase.Investigate)
+            else if (State == Phase.Investigate)
             {
-                memory -= Time.deltaTime;
-                if (memory <= 0)
-                {
-                    if (State == Phase.Chase) awareness.Reset();
-                    State = Phase.Wander; repath = 0;
-                }
+                EnsureNoiseInvestigation(); bool hadArrived=investigation.Arrived;
+                float distanceToPoint=new Vector2(transform.position.x-investigation.Point.x,transform.position.z-investigation.Point.z).magnitude;
+                var step=investigation.Tick(Time.deltaTime,distanceToPoint,true); memory=investigation.DwellRemaining;
+                if(!hadArrived && investigation.Arrived) investigationFacing=Quaternion.Euler(0,transform.eulerAngles.y,0);
+                if(step==NoiseInvestigationClock.Step.Expired)
+                { memory=0; State=Phase.Wander; if(doorTraversal)doorTraversal.Cancel(); repath=0; }
+            }
+            else if (State == Phase.Chase)
+            {
+                memory-=Time.deltaTime;
+                if(memory<=0) { awareness.Reset(); State=Phase.Wander; repath=0; }
             }
             if (sees && State == Phase.Chase && distance < (Transformed ? .75f : .85f))
             {
@@ -296,14 +338,7 @@ namespace HappyToy.V2
                     "녹색 가면이 저주를 준비합니다 · 뒤로 물러나세요.", 1.6f);
                 Visual(); return;
             }
-            if (acquiring && State != Phase.Chase)
-            {
-                Stop(); repath = 0;
-                var facing = player.transform.position - transform.position; facing.y = 0;
-                if (facing.sqrMagnitude > .001f)
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(facing), 180 * Time.deltaTime);
-                Visual(); return;
-            }
+            if(State==Phase.Investigate && investigation.Arrived) { InspectNoisePoint(); return; }
             // Crossing floors ends direct pursuit, not a valid investigation of
             // a sound on this floor. Route() still rejects every cross-floor path.
             if (State == Phase.Chase && !EnemyNavigation.SameFloor(player.transform.position, floorY))
@@ -317,6 +352,18 @@ namespace HappyToy.V2
             }
             float stride = age % 2.4f < .2f ? .18f : age % 2.4f < .75f ? 1.4f : .9f;
             agent.speed = State == Phase.Chase ? (Transformed ? 3.4f * stride : 2.7f) : 1.15f;
+            // Intro, transformation, attack, pause and floor gates have all passed.
+            // The same physical leaf/audio/leases used by walking stalkers apply.
+            var doorResult = DoorTraversal.Tick(target, floorY);
+            if (doorResult != StalkerDoorTraversal.Result.Clear)
+            {
+                repath = 0;
+                if(doorResult==StalkerDoorTraversal.Result.Blocked && State==Phase.Investigate)
+                { investigation.Cancel(); memory=0; State=Phase.Wander; }
+                if (doorResult == StalkerDoorTraversal.Result.Blocked && State == Phase.Wander && patrol != null && patrol.Length > 1)
+                    waypoint = (waypoint + 1) % patrol.Length;
+                Visual(); return;
+            }
             repath -= Time.deltaTime;
             if (repath <= 0)
             {
@@ -441,7 +488,8 @@ namespace HappyToy.V2
         }
         void OnDisable()
         {
-            BindFootsteps(null); awareness.Reset(); attack.Reset(); EnemyNavigation.Stop(agent, true);
+            if (doorTraversal) doorTraversal.Cancel();
+            BindFootsteps(null); awareness.Reset(); attack.Reset(); investigation.Reset(); EnemyNavigation.Stop(agent, true);
             if (sound) sound.Stop();
             if (revealAudio) revealAudio.Stop();
             SetVisible(false); RestoreVisualDefaults();

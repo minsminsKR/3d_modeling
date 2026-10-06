@@ -67,7 +67,12 @@ namespace HappyToy.V2.Editor
         }
         public static void BuildWindows()
         {
+            GraphicsPbrImport.Ensure();
+            GraphicsLightingSetup.EnsureAndActivate();
             Validate();
+            // Resources anchors retain material feature combinations created only at runtime.
+            // They are generated before BuildPlayer and included in the post-build input hash list.
+            RuntimeMaterialVariantAnchors.Ensure(ScenePath);
             string before = Hash(ScenePath);
             string destination = "Builds/Windows";
             var args = Environment.GetCommandLineArgs();
@@ -81,6 +86,7 @@ namespace HappyToy.V2.Editor
             // Ship the attribution alongside every playable build, including the
             // CC BY cabinet recordings. Source metadata remains in the project.
             File.Copy("ThirdParty/Audio/Audio-Credits.txt", Path.Combine(destination, "Audio-Credits.txt"), true);
+            File.Copy("ThirdParty/Graphics/Graphics-Credits.txt", Path.Combine(destination, "Graphics-Credits.txt"), true);
             var inputs = new[] { "Assets", "ProjectSettings", "Packages" }
                 .SelectMany(directory => Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
                 .Select(path => path.Replace('\\', '/')).OrderBy(path => path, StringComparer.Ordinal)

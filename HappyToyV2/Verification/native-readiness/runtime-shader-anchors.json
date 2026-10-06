@@ -1,0 +1,54 @@
+{
+    "scope": "Owned Resources material anchors retain runtime shader_feature combinations; no original asset, scene, model or shader stripping setting modified.",
+    "scene": "Assets/Annex/SchoolAnnex.unity",
+    "unity": "6000.6.0f1",
+    "count": 4,
+    "entries": [
+        {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-b20e70bb910911656849f39b5a5e0bf14fdf723b021ecf94f635999d56d7409f.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_EMISSION"
+            ],
+            "sources": [
+                "CorridorRun lantern shade, HauntedCorridorPresentation paper shade, LightExplorationRun candle/locator flame"
+            ]
+        },
+        {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-21bc63dfb56636b8b63a7f3bb922814189fdb235514a8737d0eb7ac2dd8d11fe.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_ENVIRONMENTREFLECTIONS_OFF",
+                "_METALLICSPECGLOSSMAP",
+                "_NORMALMAP",
+                "_SPECULARHIGHLIGHTS_OFF"
+            ],
+            "sources": [
+                "Cyclopse / Assets/Generated/Cyclopse_skin 3.mat / Cyclopse_skin 3"
+            ]
+        },
+        {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-04bfb2aff0376539e0671227847e5e08793beafa6fae3caf58526e92c4d86582.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_METALLICSPECGLOSSMAP",
+                "_NORMALMAP"
+            ],
+            "sources": [
+                "Uncat / Assets/Generated/Uncat_skin.mat / Uncat_skin",
+                "Hwacat_angry / Assets/Generated/Hwacat_angry_skin 5.mat / Hwacat_angry_skin 5",
+                "Baby / Assets/Generated/Baby_skin 1.mat / Baby_skin 1"
+            ]
+        },
+        {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-01b604c0806f6655433f4d1675d66a8367d068b50b89015505f2e369ab4c614b.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_NORMALMAP"
+            ],
+            "sources": [
+                "CorridorRun floor/ceiling and HauntedCorridorPresentation timber surfaces"
+            ]
+        }
+    ]
+}

@@ -70,12 +70,19 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(label.GetComponent<MeshRenderer>().sharedMaterial.shader.name,Is.EqualTo("HappyToy/WorldSignText"));
             }
             var root=Get<Transform>(atmosphere,"DressingRoot");var appliedFloor=floor.sharedMaterial;
+            // The school surface owner retains its cached ceramic material. The
+            // chapter's temporary patina clones must still all be released.
+            var ownedChapterSurfaces=Resources.FindObjectsOfTypeAll<Material>()
+                .Where(material=>material.name=="Chapter retained washroom ceramic"||material.name=="Chapter damp surface").ToArray();
+            Assert.That(ownedChapterSurfaces,Is.Not.Empty);
+            Assert.That(appliedFloor,Is.SameAs(floorMaterial));
             var signsCreated=additions.GetComponentsInChildren<TextMesh>(true);
             Assert.That(signsCreated.All(label=>label.text.Any(character=>character>='가' && character<='힣')),Is.True);
             Object.Destroy(atmosphere);yield return null;yield return null;yield return null;
             Assert.That(root==null,Is.True,"Removing chapter dressing leaks visual/collision children");
             Assert.That(additions==null && wayfinding==null,Is.True,"Removing chapter dressing leaks wayfinding");
-            Assert.That(appliedFloor==null,Is.True,"Owned material was not released");Assert.That(floor.sharedMaterial,Is.SameAs(floorMaterial));
+            Assert.That(ownedChapterSurfaces.All(material=>material==null),Is.True,"Chapter-owned patina material leaked");
+            Assert.That(appliedFloor,Is.SameAs(floorMaterial));Assert.That(floor.sharedMaterial,Is.SameAs(floorMaterial));
             Assert.That(tileTexture && floorMaterial,Is.True,"Removing dressing destroyed the shared imported tile texture/material");
             foreach(var pair in originals)
             {

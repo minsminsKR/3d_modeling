@@ -23,7 +23,7 @@ namespace HappyToy.V2.CloudTests
             Call(session,"CreateCorridor",Get<int>(data,"seed")); Call(session,"ApplyCheckpoint",CheckpointCopy(data));
         }
         [UnityTest, Timeout(120000)]
-        public IEnumerator CorridorCheckpointKeepsPartialRecognitionAndOngoingObservedSearch()
+        public IEnumerator CorridorCheckpointKeepsImmediateVisualChaseAndOngoingObservedSearch()
         {
             Call(session,"CreateCorridor",73); Begin(); yield return Delay(.15f);
             var brain=CheckpointThreats().First(x=>x.gameObject.activeSelf);
@@ -32,17 +32,25 @@ namespace HappyToy.V2.CloudTests
             var agent=brain.GetComponent<NavMeshAgent>();
             Assert.That(NavMesh.SamplePosition(at,out var hit,.3f,NavMesh.AllAreas),Is.True);
             Assert.That(agent.Warp(hit.position),Is.True); brain.transform.rotation=Quaternion.LookRotation(-direction);
+            // Controlled checkpoint fixture only: hold locomotion while real
+            // perception confirms sight and the .8-second recognition cue ends.
+            // The separate full-input routes preserve every authored AI speed.
+            Set(brain,"patrolSpeed",0f); Set(brain,"chaseSpeed",0f);
             Get<Light>(player,"flashlight").enabled=true;
-            yield return Wait(()=>Get<float>(brain,"Awareness")>.08f,2,"No real partial visual recognition");
+            yield return Wait(()=>Get<float>(brain,"Awareness")==1,2,"Actual sight did not immediately acquire the player");
+            Assert.That(Get<object>(brain,"state").ToString(),Is.EqualTo("Chase"));
+            Assert.That(Get<Vector3>(brain,"LastKnownPosition"),Is.EqualTo(player.transform.position));
+            var cue=player.GetComponent(RequireType("DetectionFeedback"));
+            yield return Wait(()=>!cue || Get<float>(cue,"Remaining")<=0,2,"Recognition cue did not finish before checkpoint");
             Call(shell,"Pause");
-            Assert.That(Get<float>(brain,"Awareness"),Is.InRange(.08f,.8f));
-            var partial=Call(session,"CaptureCheckpoint");
+            Assert.That(Get<float>(brain,"Awareness"),Is.EqualTo(1));
+            var observed=Call(session,"CaptureCheckpoint");
             float awareness=Get<float>(brain,"Awareness"); var pose=brain.transform.position;
-            yield return RestoreCheckpointInFreshScene(partial);
+            yield return RestoreCheckpointInFreshScene(observed);
             brain=CheckpointThreats().OrderBy(x=>Vector3.Distance(x.transform.position,pose)).First();
-            Assert.That(Get<float>(brain,"Awareness"),Is.EqualTo(awareness).Within(.0001f),"Reload erased accumulated evidence");
-            Assert.That(Get<object>(brain,"state").ToString(),Is.Not.EqualTo("Chase"));
-            Begin(); yield return Wait(()=>Get<object>(brain,"state").ToString()=="Chase",2,"Restored recognition never completed");
+            Assert.That(Get<float>(brain,"Awareness"),Is.EqualTo(awareness).Within(.0001f),"Reload erased confirmed visual evidence");
+            Assert.That(Get<object>(brain,"state").ToString(),Is.EqualTo("Chase"));
+            Begin();
             var run=Get<Component>(session,"Corridor");
             var away=(Vector3)Call(run,"CellPosition",80)+Vector3.right;
             PlacePlayer(away); yield return Wait(()=>Get<object>(brain,"state").ToString()=="Search",5,"Lost actual sight did not start local search");

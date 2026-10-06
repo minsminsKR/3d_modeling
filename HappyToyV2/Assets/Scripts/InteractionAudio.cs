@@ -95,11 +95,26 @@ namespace HappyToy.V2
             elapsed += Time.deltaTime;
             Vector3 at = door.movingLeaf.localPosition;
             float travel = Vector3.Distance(at, previousLeafPosition); previousLeafPosition = at;
-            if (travel > .00001f) { observedTravel = true; quietTime = 0; }
+            if (travel > .00001f)
+            {
+                observedTravel = true; quietTime = 0;
+                // A blocked physical leaf can resume later without replaying the
+                // handle. Only the rail follows renewed real displacement.
+                if (!railSource.isPlaying)
+                { railSource.clip = railClip; railSource.loop = true; railSource.Play(); }
+            }
             else quietTime += Time.deltaTime;
             // The endpoint contact follows real movement rather than an assumed clip or animation duration.
-            if (observedTravel && quietTime >= .04f) FinishSlide(true);
-            else if (!observedTravel && elapsed >= .15f) FinishSlide(false);
+            if (observedTravel && quietTime >= .04f)
+            {
+                if (door.AtRequestedDoorPose) FinishSlide(true);
+                else railSource.Stop();
+            }
+            else if (!observedTravel && elapsed >= .15f)
+            {
+                if (door.AtRequestedDoorPose) FinishSlide(false);
+                else railSource.Stop();
+            }
         }
         void FinishSlide(bool seated)
         {

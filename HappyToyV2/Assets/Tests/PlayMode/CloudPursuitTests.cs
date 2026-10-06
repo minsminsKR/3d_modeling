@@ -98,6 +98,10 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(() => NavMesh.CalculateTriangulation().vertices.Length > 0, 5, "Missing authored navigation");
             Vector3 origin = MainCorridorPoint();
             ((Behaviour)player).enabled = false; PlacePlayer(origin + Vector3.up * 5, false);
+            var doors=Components("Interactable").Where(item=>Get<object>(item,"kind").ToString()=="Door"&&Get<Transform>(item,"movingLeaf")).ToArray();
+            var leafPositions=doors.SelectMany(item=>new[]{Get<Transform>(item,"movingLeaf"),Get<Transform>(item,"secondaryLeaf")})
+                .Where(leaf=>leaf).ToDictionary(leaf=>leaf,leaf=>leaf.localPosition);
+            var cueCounts=doors.ToDictionary(item=>item,item=>{var audio=item.GetComponent(RequireType("InteractionAudio"));return audio?Get<int>(audio,"CuesPlayed"):0;});
             var enemy = MovingStalker(origin, Vector3.right);
             // Deliberate stale-evidence fixture, not a natural observation: a closed
             // route must fail safely even if no candidate near its old goal remains.
@@ -108,111 +112,46 @@ namespace HappyToy.V2.CloudTests
             Set(enemy, "state", "Chase");
             yield return Wait(() => Get<object>(enemy, "state").ToString() == "Search", 2, "Expired pursuit did not begin fallback search");
             Assert.That(Get<Vector3>(enemy, "SearchOrigin"), Is.EqualTo(unreachable));
+            float searchBegan=Get<float>(session,"ElapsedPlayTime");
             yield return Wait(() => Get<object>(enemy, "state").ToString() == "Patrol", 10,
-                "Rejected search routes kept the enemy searching forever", () => PursuitDiagnostics(enemy));
+                "Rejected search routes kept the enemy searching forever", () => PursuitDiagnostics(enemy)+
+                    ", actualSearchGameSeconds="+(Get<float>(session,"ElapsedPlayTime")-searchBegan)+", snapshot="+JsonUtility.ToJson(Call(enemy,"CaptureProgress")));
+            Assert.That(Get<float>(session,"ElapsedPlayTime")-searchBegan,Is.LessThan(7),"Rejected evidence consumed a spurious door travel allowance before its authored 6.5s fallback scan");
             Assert.That(Get<int>(enemy, "SearchPointsVisited"), Is.Zero, "Unreachable point was falsely counted as visited");
             Assert.That(FlatDistance(origin, enemy.transform.position), Is.LessThan(.1f));
             Assert.That(Get<Vector3>(enemy, "LastKnownPosition"), Is.EqualTo(unreachable));
+            foreach(var pair in leafPositions)Assert.That(Vector3.Distance(pair.Key.localPosition,pair.Value),Is.LessThan(.00001f),"Rejected evidence moved a real door before validating its route");
+            foreach(var pair in cueCounts){var audio=pair.Key.GetComponent(RequireType("InteractionAudio"));Assert.That(audio?Get<int>(audio,"CuesPlayed"):0,Is.EqualTo(pair.Value),"Rejected evidence operated a handle before validating its route");}
             Debug.Log("HAPPYTOY_PURSUIT_PASS unreachable fixture: rejected routes, no invented visit, bounded fallback scan");
         }
 
         [UnityTest, Timeout(60000)]
-        public IEnumerator CabinetWitnessCannotBeInventedOrErasedByRepeatedEntry()
+        public IEnumerator CabinetWitnessRecordsRealSightButCannotOverrideSurvivalOrCauseAnotherRoll()
         {
             IsolateThreats(); Begin();
             yield return Wait(() => NavMesh.CalculateTriangulation().vertices.Length > 0, 5, "Missing authored navigation");
-            Call(shell, "RestoreDefaultSettings"); Call(shell, "ToggleLargeText"); Call(shell, "ToggleHighContrast");
-            var view = One("GameShellView"); var layoutErrors = new List<string>();
-            var cabinet = Components("Interactable").Single(item => item.name == "음악실 은신함");
-            Vector3 inside = Get<Transform>(cabinet, "inside").position, outside = Get<Transform>(cabinet, "outside").position;
-            Vector3 outward = outside - inside; outward.y = 0; outward.Normalize();
-            Assert.That(NavMesh.SamplePosition(outside + outward * 3, out var anchor, .5f, NavMesh.AllAreas), Is.True);
-            ((Behaviour)player).enabled = false; PlacePlayer(outside);
-            var enemy = StalkerAt(anchor.position); enemy.transform.rotation = Quaternion.LookRotation(outside - anchor.position);
+            ((Behaviour)player).enabled = false;
+            var cabinet = SchoolCabinet(); var outside = Get<Transform>(cabinet, "outside").position;
+            PlacePlayer(outside); var enemy = CabinetChaser(cabinet);
             Get<Light>(player, "flashlight").enabled = true;
-            Assert.That((bool)Call(enemy, "CanSeePlayer"), Is.True, "Witness fixture has no actual sightline");
-            yield return Wait(() => Get<object>(enemy, "state").ToString() == "Chase", 3, "No natural cabinet approach recognition");
-            var cover = Cube("CloudQA cabinet cover", Vector3.Lerp(outside, anchor.position, .5f) + Vector3.up * 1.5f,
-                new Vector3(2, 3, .2f));
-            cover.transform.rotation = Quaternion.LookRotation(outward); Physics.SyncTransforms();
-            Assert.That((bool)Call(enemy, "CanSeePlayer"), Is.False);
+            Assert.That((bool)Call(enemy, "CanSeePlayer"), Is.True, "Witness fixture has no real sightline");
+            int draws = 0;
+            Set(player, "HidingRandomSample", (Func<float>)(() => { draws++; return .2f; }));
             Call(cabinet, "Use", player);
-            Assert.That(Get<bool>(player, "Hidden"), Is.True);
-            Assert.That(Get<bool>(enemy, "SawHiding"), Is.False, "Old chase memory invented a witness through cover");
-            var inventory = Get<Component>(player, "Firecrackers");
-            Assert.That((bool)Call(inventory, "TryThrow"), Is.False); Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(2));
-            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False, "Unseen hiding must not invent perceived danger");
-            yield return CaptureFrozenHud(view, "hiding-unseen-item-feedback-large-720p.png", layoutErrors);
-            Assert.That(Get<VisualElement>(view, "Root").Q<Label>("player-status").text, Does.Contain("발소리를 듣고"));
-            Assert.That(Get<VisualElement>(view, "Root").Q<Label>("item-action-feedback").text, Is.Not.Empty);
-            cover.SetActive(false); Physics.SyncTransforms();
-            Set(enemy, "patrolSpeed", 1.45f); Set(enemy, "chaseSpeed", 3.5f);
-            yield return Wait(() => Get<object>(enemy, "state").ToString() == "Search", 10, "Unseen entry did not lead to local search");
-            yield return Wait(() => Get<object>(enemy, "state").ToString() == "Patrol", 12, "Unseen cabinet search was unbounded");
-            Assert.That(Get<bool>(session, "Finished"), Is.False);
-            Assert.That(Get<bool>(enemy, "SawHiding"), Is.False);
-            Assert.That(Get<int>(enemy, "AttacksStarted"), Is.Zero, "Search guessed the occupied cabinet");
-            // Real exit capsule must reject a blocked doorway before a second case.
-            var obstruction = Cube("CloudQA blocked cabinet exit", outside + Vector3.up * .9f, new Vector3(.7f, 1.8f, .7f));
-            Physics.SyncTransforms(); Call(cabinet, "Use", player);
-            Assert.That(Get<bool>(player, "Hidden"), Is.True);
-            obstruction.SetActive(false); Physics.SyncTransforms();
-            Assert.That(enemy.GetComponent<NavMeshAgent>().Warp(anchor.position), Is.True);
-            Set(enemy, "patrolSpeed", 0f); Set(enemy, "chaseSpeed", 0f);
-            enemy.transform.rotation = Quaternion.LookRotation(outside - anchor.position);
-            Call(cabinet, "Use", player); Assert.That(Get<bool>(player, "Hidden"), Is.False);
-            yield return Wait(() => Get<object>(enemy, "state").ToString() == "Chase", 3, "Visible exit was not reacquired");
-            Call(cabinet, "Use", player);
-            Assert.That(Get<bool>(enemy, "SawHiding"), Is.True, "Clearly witnessed entry was forgotten");
-            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False,
-                "Witness flag alone must not expose a distant enemy's internal state to the HUD");
-            var footsteps = enemy.GetComponent(RequireType("StalkerFootsteps"));
-            var source = enemy.GetComponent<AudioSource>();
-            Assert.That(source.spatialBlend, Is.EqualTo(1)); Assert.That(source.ignoreListenerPause, Is.False);
-            Assert.That(source.ignoreListenerVolume, Is.False);
-            var clipField = footsteps.GetType().GetField("cabinetRattle", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            Assert.That(clipField, Is.Not.Null);
-            var doorClip = (AudioClip)clipField.GetValue(footsteps);
-            var clipSamples = new float[doorClip.samples * doorClip.channels];
-            Assert.That(doorClip.GetData(clipSamples, 0), Is.True);
-            Assert.That(clipSamples.All(value => !float.IsNaN(value) && !float.IsInfinity(value) && Mathf.Abs(value) < .4f), Is.True);
-            Assert.That(clipSamples.Any(value => Mathf.Abs(value) > .01f), Is.True, "Door cue has no actual waveform");
-            Set(enemy, "chaseSpeed", 3.5f);
-            yield return Wait(() => Get<bool>(enemy, "AttackActive"), 5, "Witnessed entry never produced a warned cabinet attack");
-            Assert.That(Get<bool>(session, "Finished"), Is.False);
-            Assert.That((bool)Call(enemy, "HearNoise", anchor.position, 8f), Is.False);
-            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.True);
-            Assert.That(Get<int>(footsteps, "AttackCuesPlayed"), Is.EqualTo(1));
-            Assert.That(Get<int>(footsteps, "CabinetAttackCuesPlayed"), Is.EqualTo(1));
-            yield return CaptureFrozenHud(view, "hiding-door-warning-large-720p.png", layoutErrors);
-            Assert.That(Get<VisualElement>(view, "Root").Q<Label>("player-status").text, Does.Contain("문 앞에서 공격 준비"));
-            float cueRemaining = Get<float>(player, "HidingThreatCueRemaining");
-            Call(shell, "Pause");
-            Call(footsteps, "PlayAttackCue", true); // Deliberate paused misuse must not emit a second cue.
-            Call(player, "ReportHidingDoorAttack", 2f);
-            yield return Delay(.3f);
-            Assert.That(Get<float>(player, "HidingThreatCueRemaining"), Is.EqualTo(cueRemaining).Within(.001f));
-            Assert.That(Get<int>(footsteps, "CabinetAttackCuesPlayed"), Is.EqualTo(1));
-            Call(shell, "Resume");
-            // Leaving and immediately re-entering a witnessed cabinet cannot reset
-            // the active windup. Use the real cabinet API and real attack clock.
-            Call(cabinet, "Use", player); Assert.That(Get<bool>(player, "Hidden"), Is.False);
-            Call(cabinet, "Use", player); Assert.That(Get<bool>(player, "Hidden"), Is.True);
-            Assert.That(Get<bool>(enemy, "SawHiding"), Is.True);
-            Assert.That(Get<bool>(enemy, "AttackActive"), Is.True);
-            yield return Wait(() => Get<bool>(session, "Finished"), 2, "Repeated entry granted immunity to a witnessed attack");
-            Assert.That(Get<bool>(session, "Escaped"), Is.False);
-            Assert.That(Get<int>(footsteps, "CabinetAttackCuesPlayed"), Is.EqualTo(1), "One actual attack replayed its door cue");
-            Assert.That(layoutErrors, Is.Empty, string.Join("\n", layoutErrors));
-            var previousSession = session;
-            Call(shell, "Restart", true);
-            yield return Wait(() => Components("GameSession").Length == 1 && One("GameSession") != previousSession, 20,
-                "Retry did not replace the old cabinet/attack session");
-            yield return null; yield return null;
-            session = One("GameSession"); player = Get<Component>(session, "player"); shell = Get<Component>(session, "Shell");
-            Assert.That(Get<bool>(player, "Hidden"), Is.False); Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False);
-            Assert.That(source == null && doorClip == null && footsteps == null, Is.True, "Old threat audio/clip leaked into retry");
-            Debug.Log("HAPPYTOY_PURSUIT_PASS cabinet: unseen entry safe, blocked exit safe, visible entry witnessed, repeated entry still vulnerable; actual door cue once, truthful HUD, pause and retry cleanup");
+            Assert.That(Get<bool>(player, "Hidden"), Is.True); Assert.That(Get<bool>(enemy, "SawHiding"), Is.True);
+            Assert.That(Get<object>(player, "HidingOutcome").ToString(), Is.EqualTo("Survived"));
+            Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Search"));
+            Assert.That(Get<Vector3>(enemy, "SearchOrigin"), Is.EqualTo(outside));
+            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False);
+            Set(enemy, "chaseSpeed", 3.5f); Set(enemy, "patrolSpeed", 1.45f);
+            yield return Delay(1.6f);
+            Assert.That(Get<bool>(session, "Finished"), Is.False, "A witness overrode the 75% survival selection");
+            Assert.That(Get<int>(enemy, "AttacksStarted"), Is.Zero);
+            Assert.That(Get<int>(enemy.GetComponent(RequireType("StalkerFootsteps")), "CabinetAttackCuesPlayed"), Is.Zero);
+            Assert.That(draws, Is.EqualTo(1));
+            Call(shell, "Pause"); yield return Delay(.2f); Call(shell, "Resume");
+            Assert.That(Get<bool>(player, "HidingProtected"), Is.True); Assert.That(draws, Is.EqualTo(1));
+            Debug.Log("HAPPYTOY_PURSUIT_PASS cabinet: real witnessed entrance becomes evidence-only search; shared survival overrides guaranteed capture; pause cannot reroll");
         }
 
         IEnumerator CaptureFrozenHud(Component view, string name, List<string> errors)

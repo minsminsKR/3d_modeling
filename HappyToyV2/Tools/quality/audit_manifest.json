@@ -133,6 +133,16 @@
       "timeout_seconds": 180,
       "status": "NOT RUN",
       "purpose": "Current three authored doors: collider, paired leaf travel, edge-close protection."
+    },
+    {
+      "name": "graphics-camera-review",
+      "source": "Assets/Scripts/GraphicsPresentationAudit.cs",
+      "flag": "-v3-graphics-output",
+      "argument_kind": "directory",
+      "result": "graphics-review.json",
+      "timeout_seconds": 180,
+      "status": "NOT RUN",
+      "purpose": "Controlled real native camera/material review of corridor and school, actors explicitly frozen and observer poses placed; not survival/input/device-listening or performance proof."
     }
   ],
   "public_api_names": {

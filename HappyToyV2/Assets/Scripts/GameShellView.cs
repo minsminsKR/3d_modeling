@@ -19,7 +19,7 @@ namespace HappyToy.V2
         VisualElement recognitionGrain, recognitionEdge;
         VisualElement root, stage, stamina, crosshair, noticePanel, noticeAccent, focusPanel, captionPanel, itemFeedbackPanel;
         Label objective, objectiveCount, notice, focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
-        Label navigationHelp, controlInstructions, controlsFooter;
+        Label navigationHelp, controlInstructions, controlsFooter, batteryMeter;
         bool sendingGamepadNavigation;
         bool sendingKeyboardSubmit;
         Vector2 previousMenuDirection;
@@ -28,7 +28,7 @@ namespace HappyToy.V2
             Gamepad.current.dpad.ReadValue().sqrMagnitude > .1f || Gamepad.current.leftStick.ReadValue().sqrMagnitude > .25f);
         bool KeyboardSubmitIntent => Keyboard.current != null && (Keyboard.current.enterKey.isPressed || Keyboard.current.numpadEnterKey.isPressed);
         string NavigationHelp => PlayerControls.UsingGamepad ? "방향 패드  선택     아래 버튼  확인     오른쪽 버튼  뒤로" : "Tab / 방향키  선택      Enter  확인      Esc  뒤로";
-        string ControlInstructions => PlayerControls.UsingGamepad ? "왼쪽 스틱  이동 / 누르며 달리기\n오른쪽 스틱  시선\n아래 버튼  조사·문·은신\n오른쪽 버튼  낮은 자세 / 위 버튼  빛\nLT 조준 / RT 폭죽 (추격 전 유인)\nSelect 기록 / Start 일시정지" : "WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신\nF  손전등          Q  폭죽 (추격 전 유인)\n우클릭 누르기  폭죽 첫 충돌 조준\nJ  조사 기록      Esc  일시정지";
+        string ControlInstructions => PlayerControls.UsingGamepad ? "왼쪽 스틱  이동 / 누르며 달리기\n오른쪽 스틱  시선\n아래 버튼  조사·문·은신\n오른쪽 버튼  낮은 자세 / 위 버튼  빛\nLT 조준 / RT 폭죽 (추격 전 유인)\nSelect 기록 / Start 일시정지" : "WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신·배터리·촛불\nF  손전등          Q  폭죽 (추격 전 유인)\n우클릭 누르기  폭죽 첫 충돌 조준\nJ  조사 기록      Esc  일시정지";
         string ControlsFooter => PlayerControls.UsingGamepad ? "오른쪽  낮은 자세    위  빛    RT  폭죽    Start  메뉴" : "C  낮은 자세    F  빛    Q  폭죽    J  기록    Esc  메뉴";
         Button reducedMotionButton, subtitlesButton, contrastButton, textSizeButton;
         GameShell.Page shown = (GameShell.Page)(-1);
@@ -545,6 +545,8 @@ namespace HappyToy.V2
             Panel(47, 817, 265, 6, Edge);
             stamina = Panel(47, 817, 265, 6, Gold);
             meter = Text("", 47, 837, 860, 36, shell.LargeText ? 23 : 19);
+            batteryMeter = Text("", 47, 740, 365, 40, shell.LargeText ? 23 : 19);
+            batteryMeter.name="flashlight-battery-meter";
             status = Text("", 753, 189, 802, 44, shell.LargeText ? 24 : 20);
             status.name = "player-status";
             status.style.unityTextAlign = TextAnchor.UpperRight;
@@ -598,6 +600,9 @@ namespace HappyToy.V2
             Visible(captionPanel, shell.CaptionVisible);
             stamina.style.width = 265 * Mathf.Clamp01(player.Stamina);
             stamina.style.backgroundColor = player.SprintExhausted ? Rust : Gold;
+            var charge=player.FlashlightSystem;
+            batteryMeter.text=$"손전등 {Mathf.CeilToInt(charge.Fraction*100)}% · {(charge.Depleted?"배터리 필요":charge.Lit?"켜짐":"꺼짐")}";
+            batteryMeter.style.color=charge.Fraction<.2f?Rust:Gold;
             int count = player.Firecrackers != null ? player.Firecrackers.Count : 0;
             meter.text = $"숨 {Mathf.RoundToInt(player.Stamina * 100)}%    ·    폭죽 {count}개";
             if (player.SprintExhausted) meter.text += player.Stamina < .25f ? "    걸으며 숨을 회복하세요" : shownGamepad ? "    스틱 버튼을 놓으면 다시 달릴 수 있습니다" : "    Shift를 놓으면 다시 달릴 수 있습니다";

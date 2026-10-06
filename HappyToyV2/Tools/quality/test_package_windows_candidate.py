@@ -47,6 +47,14 @@ class PackagingTests(unittest.TestCase):
         self.output = self.root / "candidate.zip"
         self.manifest = self.output.with_suffix(".manifest.json")
 
+    def make_symlink(self, link, target, *, directory=False):
+        try:
+            link.symlink_to(target, target_is_directory=directory)
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1314:
+                self.skipTest("This Windows account lacks symbolic-link creation privilege")
+            raise
+
     def tearDown(self):
         self.temp.cleanup()
 
@@ -58,6 +66,10 @@ class PackagingTests(unittest.TestCase):
             warnings.simplefilter("ignore", UserWarning)  # Intentional duplicate-name fixture.
             for name, payload in items:
                 info = name if isinstance(name, zipfile.ZipInfo) else zipfile.ZipInfo(name, date)
+                if not isinstance(name, zipfile.ZipInfo):
+                    # ZipInfo normalizes os.sep on Windows. Keep the deliberately
+                    # hostile raw archive spelling so this test still exercises it.
+                    info.filename = info.orig_filename = name
                 archive.writestr(info, payload)
         return path or self.source
 
@@ -344,7 +356,7 @@ class PackagingTests(unittest.TestCase):
         self.write_zip()
         for target in (self.output, self.manifest):
             with self.subTest(target=target):
-                target.symlink_to(self.root / "absent")
+                self.make_symlink(target, self.root / "absent")
                 with self.assertRaisesRegex(pack.PackagingError, "already exists"):
                     self.run_package()
                 self.assertTrue(target.is_symlink())
@@ -363,7 +375,7 @@ class PackagingTests(unittest.TestCase):
     def test_reject_symlink_parent_into_repository(self):
         self.write_zip()
         linked = self.root / "alias"
-        linked.symlink_to(self.repo, target_is_directory=True)
+        self.make_symlink(linked, self.repo, directory=True)
         self.output = linked / "candidate.zip"
         with self.assertRaisesRegex(pack.PackagingError, "outside repository"):
             self.run_package()

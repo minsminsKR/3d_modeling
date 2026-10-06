@@ -82,6 +82,8 @@ namespace HappyToy.V2
             Portrait.PrepareChapter(); Nursery.PrepareChapter();
             session.player.Firecrackers.SetRunStock(2);
             gameObject.AddComponent<ChapterAtmosphere>().Prepare(Memories);
+            GetComponent<GraphicsSchoolSurfaces>()?.Refresh();
+            Lighting=gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareSchool(this);
             Physics.SyncTransforms(); Ready=true;
             session.Notify("아직 아무것도 움직이지 않습니다. 입구 가까이 놓인 첫 기억을 확인하세요.");
         }

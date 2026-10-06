@@ -31,7 +31,7 @@ namespace HappyToy.V2
         Transform refresh;
         Transform[] originals;
         Material wood, darkWood, iron, ivory, graphite, brass, paper;
-        readonly List<Material> ownedMaterials = new List<Material>();
+        readonly GraphicsSurfaceLibrary.Pool graphicsSurfaces = new GraphicsSurfaceLibrary.Pool();
         readonly List<FittedText> fitted = new List<FittedText>();
         int fitFrames;
 
@@ -104,6 +104,9 @@ namespace HappyToy.V2
             Font.textureRebuilt += FontRebuilt;
             fitFrames = 3;
             Applied = true;
+            var surfaces=GetComponent<GraphicsSchoolSurfaces>();
+            if(!surfaces)surfaces=gameObject.AddComponent<GraphicsSchoolSurfaces>();
+            surfaces.Prepare(GetComponent<GameSession>());
         }
 
         Transform Exactly(string name)
@@ -134,16 +137,14 @@ namespace HappyToy.V2
             paper = Material("Music score paper", new Color(.66f, .62f, .47f));
         }
 
-        Material Material(string name, Color color, float metallic = 0)
+        Material Material(string name,Color color,float metallic=0)
         {
-            var shader = Shader.Find("Universal Render Pipeline/Lit");
-            if (!shader) throw new InvalidOperationException("Missing URP material shader.");
-            var material = new Material(shader) { name = name, enableInstancing = true };
-            material.SetColor("_BaseColor", color);
-            material.SetFloat("_Metallic", metallic);
-            material.SetFloat("_Smoothness", .24f);
-            ownedMaterials.Add(material);
-            return material;
+            string key=name.Contains("brass")?"brass-tarnished":name.Contains("steel")?"painted-metal":
+                name.Contains("ivory")?"wax-tallow":name.Contains("graphite")?"cloth-charred":
+                name.Contains("paper")?"paper-aged":"wood-aged";
+            Color tint=key=="wood-aged"?(name.Contains("dark")?new Color(.61f,.57f,.48f):new Color(.97f,.94f,.86f)):
+                key=="paper-aged"?new Color(.97f,.94f,.86f):key=="brass-tarnished"||key=="wax-tallow"?Color.white:color;
+            var material=graphicsSurfaces.Get(key,tint);material.name=name+" — measured PBR";return material;
         }
 
         Transform Group(string name, Vector3 at, Quaternion rotation)
@@ -164,6 +165,11 @@ namespace HappyToy.V2
             part.transform.localRotation = rotation ?? Quaternion.identity;
             part.transform.localScale = size;
             part.GetComponent<Renderer>().sharedMaterial = material;
+            if(type==PrimitiveType.Cube)
+            {
+                float bevel=Mathf.Min(.003f,Mathf.Min(size.x,Mathf.Min(size.y,size.z))*.12f);
+                part.GetComponent<MeshFilter>().sharedMesh=graphicsSurfaces.MetreBoxMesh(size,bevel,GraphicsSurfaceLibrary.TileSpan(material));
+            }
             var collision = part.GetComponent<Collider>();
             if (collision) { collision.enabled = false; Destroy(collision); }
             return part;
@@ -369,7 +375,7 @@ namespace HappyToy.V2
         void OnDestroy()
         {
             Font.textureRebuilt -= FontRebuilt;
-            foreach (var material in ownedMaterials) if (material) Destroy(material);
+            graphicsSurfaces.Dispose();
         }
     }
 }

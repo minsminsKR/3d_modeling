@@ -1,0 +1,16 @@
+{
+  "mode": "Built-in image_gen",
+  "transparent_background": true,
+  "prompt": "Use case: photorealistic-natural. Asset type: physically realistic candle flame transparent RGBA sprite for a Unity horror game. Generate ONE isolated small burning candle flame seen front-on, upright and centered, full flame entirely inside image with transparent margins. Photographically realistic: bright white-yellow narrow inner core, smooth warm amber outer edge, subtle tiny blue base, thin slightly asymmetric flickering tip, beautiful natural combustion translucency. Flame itself only, no candle, no wick, no stand, no background, no shadows, no ground, no text, no watermark. Native transparent alpha; transparent space around the flame, fine antialiased soft natural edges, no opaque black rectangle or heavy glow halo. Vertical flame aspect ratio about 1:3, occupies central 65 percent height. This is a real flame sprite, not a cartoon/icon or a stylized illustration.",
+  "savedAsset": "E:\\AI\\3d_modeling\\HappyToyV2\\Assets\\Resources\\GraphicsUpgrade\\Textures\\candle-flame-v3.png",
+  "sha256": "788ee32136f9bacc5d4b54015568d8842ce1d5eb1cd712f5ddfea825798c246b",
+  "generatedSource": "C:\\Users\\sanguk\\.codex\\generated_images\\01a10ebc-010e-7cd3-9be2-cd4343845198\\exec-1d64319b-e35e-41c1-a31b-3e65a25942b5.png",
+  "inspection": {
+    "format": "RGBA",
+    "width": 1024,
+    "height": 1536,
+    "alphaMin": 0,
+    "alphaMax": 254
+  },
+  "scope": "Generated raster only; actual flame geometry, lighting, pause and game camera validation separate."
+}

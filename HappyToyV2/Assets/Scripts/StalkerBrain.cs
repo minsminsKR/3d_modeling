@@ -25,13 +25,22 @@ namespace HappyToy.V2
         float memory, repath, floorY;
         int waypoint;
         Interactable blockingDoor;
-        float doorPush;
+        float doorPush, doorEntrySide, doorCloseWait, doorBlockedWait;
+        bool passingDoor;
+        readonly RaycastHit[] doorHits = new RaycastHit[32];
         bool patrolDwelling;
         float patrolDwellUntil;
         bool witnessedHiding, attackingHiding, recognitionCueIssued;
         PlayerMotor noisePlayer;
         readonly StealthRules.Awareness awareness = new StealthRules.Awareness();
         readonly EnemyAttackClock attack = new EnemyAttackClock();
+        readonly NoiseInvestigationClock investigation = new NoiseInvestigationClock();
+        Quaternion investigationFacing;
+        public bool InvestigationArrived => investigation.Arrived;
+        public bool InvestigationActive => investigation.Active;
+        public Vector3 InvestigationPoint => investigation.Point;
+        public float InvestigationTravelRemaining => investigation.TravelRemaining;
+        public float InvestigationDwellRemaining => investigation.DwellRemaining;
         public bool SawHiding => witnessedHiding;
         public float AttackWindup => attack.Windup;
         public float AttackRecovery => attack.Recovery;
@@ -49,17 +58,36 @@ namespace HappyToy.V2
         {
             var session = GameSession.Current;
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
-                !StealthRules.Finite(duration) || duration <= 0 ||
+                !StealthRules.Finite(duration) || duration <= 0 || duration > 3600 ||
                 state == State.Chase || AttackActive || awareness.Acquired ||
                 !StealthRules.Finite(point.x) || !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z) ||
                 Vector3.Distance(point, transform.position) > 28 ||
                 !EnemyNavigation.TryRoute(agent, point, floorY, path, 38)) return false;
             var corners = path.corners;
             lastKnown = corners.Length > 0 ? corners[corners.Length - 1] : point;
-            memory = duration; state = State.Investigate; repath = 0; NoisesAccepted++;
+            BeginNoiseInvestigation(duration); NoisesAccepted++;
             return true;
         }
 
+        void BeginNoiseInvestigation(float dwell)
+        {
+            NoiseInvestigationRoute.Begin(investigation,transform.position,lastKnown,path,patrolSpeed,dwell);
+            memory=investigation.DwellRemaining; state=State.Investigate; repath=0;
+        }
+        void EnsureNoiseInvestigation()
+        {
+            if(investigation.Active)return;
+            float dwell=Mathf.Clamp(memory,.01f,3600);
+            if(EnemyNavigation.TryRoute(agent,lastKnown,floorY,path)) BeginNoiseInvestigation(dwell);
+            else investigation.Begin(lastKnown,dwell,HorizontalDistance(transform.position,lastKnown),patrolSpeed,0);
+        }
+        void InspectNoisePoint()
+        {
+            EnemyNavigation.Stop(agent,true);
+            float sweep=Mathf.Sin((investigation.DwellDuration-investigation.DwellRemaining)*1.7f)*65;
+            transform.rotation=Quaternion.RotateTowards(transform.rotation,
+                investigationFacing*Quaternion.Euler(0,sweep,0),160*Time.deltaTime);
+        }
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath();
@@ -69,12 +97,12 @@ namespace HappyToy.V2
         }
         void OnEnable()
         {
-            patrolDwelling = false;
+            patrolDwelling = false; investigation.Reset();
             floorY = transform.position.y; repath = 0; recognitionCueIssued = false; awareness.Reset(); BindFootsteps(player);
         }
         void OnDisable()
         {
-            blockingDoor = null; doorPush = 0;
+            ClearDoorPassage(); investigation.Reset();
             BindFootsteps(null); awareness.Reset(); attack.Reset(); witnessedHiding = false;
             EnemyNavigation.Stop(agent, true);
         }
@@ -97,11 +125,13 @@ namespace HappyToy.V2
             // The listener hears a larger real footstep radius, with the same
             // physical route/floor restrictions as the original actor.
             radius *= Senses.HearingScale;
+            radius *= EnemyNavigation.SoundTransmission(point + Vector3.up * .5f,
+                transform.position + Vector3.up, transform, player.transform);
             if (!StealthRules.Finite(radius) || Vector3.Distance(point, transform.position) > radius ||
                 !EnemyNavigation.TryRoute(agent, point, floorY, path, radius)) return;
             var corners = path.corners;
             lastKnown = corners.Length > 0 ? corners[corners.Length - 1] : point;
-            state = State.Investigate; memory = 3; repath = 0; FootstepNoisesAccepted++;
+            BeginNoiseInvestigation(3); FootstepNoisesAccepted++;
         }
 
         public bool CanSeePlayer()
@@ -123,16 +153,24 @@ namespace HappyToy.V2
         public void ObserveHiding(Vector3 entrance)
         {
             // Called before the player's collider disappears, not inferred from old chase memory.
-            witnessedHiding = (state == State.Chase || awareness.Acquired) && CanSeePlayer() &&
+            witnessedHiding = isActiveAndEnabled && player &&
+                (state == State.Chase || awareness.Acquired) && CanSeePlayer() &&
                 EnemyNavigation.SameFloor(entrance, floorY);
             if (!witnessedHiding) return;
-            hidingApproach = entrance; lastKnown = entrance; memory = 8; state = State.Chase;
+            hidingApproach = entrance; lastKnown = entrance;
+            if (player.HidingOutcome == CabinetHidingOutcome.Survived)
+            {
+                // The successful entry's shared 75% result overrides witness-based capture.
+                // Inspect only the witnessed entrance; no knowledge of the hidden body is added.
+                BeginSearch(); witnessedHiding = true; return;
+            }
+            memory = 8; state = State.Chase;
         }
 
         bool AtWitnessedHidingPlace()
         {
             var delta = transform.position - hidingApproach; delta.y = 0;
-            return player.Hidden && witnessedHiding && state == State.Chase && delta.magnitude < .85f &&
+            return player.Hidden && !player.HidingProtected && witnessedHiding && state == State.Chase && delta.magnitude < .85f &&
                 EnemyNavigation.SameFloor(hidingApproach, floorY) &&
                 EnemyNavigation.ClearSight(transform.position + Vector3.up * 1.1f, hidingApproach + Vector3.up * 1.1f);
         }
@@ -154,53 +192,147 @@ namespace HappyToy.V2
         static float HorizontalDistance(Vector3 a, Vector3 b)
         { a.y = b.y = 0; return Vector3.Distance(a, b); }
 
+        void ClearDoorPassage()
+        {
+            if (blockingDoor) blockingDoor.ReleaseDoorPassage(this);
+            blockingDoor = null; doorPush = doorEntrySide = doorCloseWait = doorBlockedWait = 0; passingDoor = false;
+        }
+
+        bool AbandonBlockedDoorRoute()
+        {
+            if (state == State.Patrol)
+            {
+                if (patrol == null || patrol.Length < 2) return false;
+                waypoint = (waypoint + 1) % patrol.Length; patrolDwelling = false;
+                ClearDoorPassage(); repath = 0; return true;
+            }
+            if (state == State.Investigate)
+            {
+                investigation.Cancel(); memory=0; state=State.Patrol;
+                ClearDoorPassage(); repath=0; return true;
+            }
+            if (state == State.Chase && CanSeePlayer()) return false;
+            if (state != State.Search) BeginSearch();
+            // Keep the evidence anchor, but inspect the reachable side of this
+            // physical blockage instead of retrying an inoperable leaf forever.
+            searchTarget = transform.position; searchArrived = searchStarted = true;
+            searchDwell = 0; searchFacing = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+            ClearDoorPassage(); repath = 0; return true;
+        }
+
         bool TryPassDoor()
         {
-            // Only inspect the first physical obstruction toward observed evidence.
-            // A wall must never reveal or open a door behind it.
             if (state != State.Chase && state != State.Investigate && state != State.Patrol && state != State.Search)
-            { blockingDoor = null; doorPush = 0; return false; }
-            Vector3 origin = transform.position + Vector3.up;
-            Vector3 targetPoint = state == State.Search ? searchTarget : lastKnown;
-            if (agent.hasPath) targetPoint = agent.steeringTarget;
-            else if (state == State.Patrol)
+            { ClearDoorPassage(); return false; }
+            if (state == State.Search && searchArrived)
             {
-                if (patrol == null || patrol.Length == 0 || !patrol[waypoint % patrol.Length]) return false;
+                // Arrival can precede full body clearance through a cached door.
+                // Suspend handle requests during the local scan, keeping the
+                // passage for the next observed route to finish and close behind.
+                if (blockingDoor) blockingDoor.HoldDoorPassage(this);
+                return false;
+            }
+            // SearchArea owns the same bounded native route. Stale/unreachable
+            // evidence must enter its fallback scan before it can choose a door
+            // along a straight line towards a goal that navigation has rejected.
+            if (state == State.Search && !searchArrived &&
+                !EnemyNavigation.TryRoute(agent,searchTarget,floorY,path,8))
+            {
+                ClearDoorPassage(); EnemyNavigation.Stop(agent,true);
+                searchArrived=searchStarted=true; searchDwell=0;
+                searchFacing=Quaternion.Euler(0,transform.eulerAngles.y,0);
+                return false;
+            }
+            if (blockingDoor && (!EnemyNavigation.SameFloor(blockingDoor.transform.position, floorY) ||
+                HorizontalDistance(transform.position, blockingDoor.transform.position) > 4.5f)) ClearDoorPassage();
+            if (blockingDoor)
+            {
+                blockingDoor.HoldDoorPassage(this);
+                float side = Vector3.Dot(transform.position - blockingDoor.transform.position, blockingDoor.DoorNormal);
+                if (passingDoor && side * doorEntrySide < -(agent.radius + .5f))
+                {
+                    // The first actor leaves the handle to the last actor. The
+                    // final actor closes from within reach only after every body
+                    // has cleared the opening; a blocked handle has a finite wait.
+                    if (blockingDoor.HasOtherDoorPassage(this)) { ClearDoorPassage(); repath = 0; }
+                    else if (!blockingDoor.IsOpen || blockingDoor.CloseForPursuer(this))
+                    { ClearDoorPassage(); repath = 0; }
+                    else if (doorCloseWait < 2 && blockingDoor.DoorOperable)
+                    {
+                        doorCloseWait = Mathf.Min(2, doorCloseWait + Time.deltaTime); EnemyNavigation.Stop(agent, true);
+                        Vector3 facing = blockingDoor.transform.position - transform.position; facing.y = 0;
+                        if (facing.sqrMagnitude > .001f) transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                            Quaternion.LookRotation(facing), 180 * Time.deltaTime);
+                        return true;
+                    }
+                    else { ClearDoorPassage(); repath = 0; }
+                }
+            }
+            Vector3 targetPoint = state == State.Search ? searchTarget : lastKnown;
+            if (state == State.Patrol)
+            {
+                if (patrol == null || patrol.Length == 0 || !patrol[waypoint % patrol.Length])
+                { ClearDoorPassage(); return false; }
                 targetPoint = patrol[waypoint % patrol.Length].position;
             }
-            Vector3 target = targetPoint + Vector3.up;
-            if (!Physics.Linecast(origin, target, out var hit, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
-            { blockingDoor = null; doorPush = 0; return false; }
+            if (agent.hasPath && !blockingDoor) targetPoint = agent.steeringTarget;
+            Vector3 direction = targetPoint - transform.position; direction.y = 0;
+            if (direction.sqrMagnitude < .001f) return false;
+            float radius = agent.radius + .06f;
+            Vector3 bottom = transform.position + Vector3.up * (radius + .12f);
+            Vector3 top = transform.position + Vector3.up * Mathf.Max(radius + .12f, agent.height - radius);
+            int count = Physics.CapsuleCastNonAlloc(bottom, top, radius, direction.normalized, doorHits,
+                Mathf.Min(direction.magnitude, 6), Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            if (count == doorHits.Length) { EnemyNavigation.Stop(agent); return true; }
+            int first = -1; float distance = float.PositiveInfinity;
+            for (int i = 0; i < count; i++)
+            {
+                if (doorHits[i].collider.transform.IsChildOf(transform) ||
+                    doorHits[i].collider.GetComponentInParent<StalkerBrain>()) continue;
+                if (doorHits[i].distance < distance) { first = i; distance = doorHits[i].distance; }
+            }
+            // Inspect the first physical obstruction on the native route. A wall
+            // cannot reveal a remote door, and a radius-wide opening must be clear.
+            if (first < 0) return false;
+            var hit = doorHits[first];
             var door = hit.collider.GetComponentInParent<Interactable>();
             if (!door || door.kind != Interactable.Kind.Door || !door.movingLeaf ||
                 !EnemyNavigation.SameFloor(door.transform.position, floorY))
-            { blockingDoor = null; doorPush = 0; return false; }
-            if (blockingDoor != door) { blockingDoor = door; doorPush = 0; }
-            // The collider still matters while a requested opening is sliding.
-            // Native agents do not collide with it, so keep them stopped until clear.
-            if (door.IsOpen) { EnemyNavigation.Stop(agent); return true; }
-            if (HorizontalDistance(transform.position, hit.point) > 1.25f)
+            {
+                if (blockingDoor && !passingDoor) ClearDoorPassage();
+                return false;
+            }
+            if (blockingDoor != door)
+            {
+                ClearDoorPassage(); blockingDoor = door;
+                doorEntrySide = Vector3.Dot(transform.position - door.transform.position, door.DoorNormal) >= 0 ? 1 : -1;
+            }
+            door.HoldDoorPassage(this);
+            if (HorizontalDistance(transform.position, hit.point) > Mathf.Max(1.25f, agent.radius + .85f))
             {
                 doorPush = 0;
-                Vector3 approach = hit.point + (origin - hit.point).normalized * .85f;
-                approach.y = transform.position.y;
-                if (!EnemyNavigation.TryRoute(agent, approach, floorY, path, 12)) return false;
+                if (!StalkerDoorTraversal.TryDoorApproach(agent,door,doorEntrySide,floorY,path))
+                { EnemyNavigation.Stop(agent, true); return true; }
                 agent.SetPath(path); agent.isStopped = false;
                 return true;
             }
             EnemyNavigation.Stop(agent, true);
-            Vector3 facing = hit.point - origin; facing.y = 0;
-            if (facing.sqrMagnitude > .001f)
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(facing), 180 * Time.deltaTime);
-            doorPush += Time.deltaTime;
-            // Closing a door buys time, rather than permanently cancelling pursuit.
-            if (doorPush >= 1.2f)
-            { door.OpenForPursuer(); blockingDoor = null; doorPush = 0; repath = 0; }
+            doorBlockedWait = Mathf.Min(6.1f, doorBlockedWait + Time.deltaTime);
+            if (doorBlockedWait >= 6 && AbandonBlockedDoorRoute()) return state != State.Search;
+            Vector3 pushFacing = hit.point - transform.position; pushFacing.y = 0;
+            if (pushFacing.sqrMagnitude > .001f)
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(pushFacing), 180 * Time.deltaTime);
+            if (door.IsOpen) { passingDoor = true; return true; }
+            if (!door.DoorOperable) return true;
+            doorPush = Mathf.Min(1.2f, doorPush + Time.deltaTime);
+            if (doorPush >= 1.2f && door.OpenForPursuer())
+            { passingDoor = true; doorPush = 0; repath = 0; }
             return true;
         }
 
         void BeginSearch()
         {
+            investigation.Cancel();
             state = State.Search; memory = Senses.SearchSeconds; witnessedHiding = false; awareness.Reset();
             // This anchor is observed evidence, never the current unseen player.
             searchOrigin = searchTarget = lastKnown;
@@ -280,30 +412,26 @@ namespace HappyToy.V2
                         Vector3.Distance(attackHidingApproach, hidingApproach) < .1f : visible && offset.magnitude < 1.55f && inArc;
                     if (hit)
                     {
-                        string hint = attackingHiding ? "숨는 모습을 본 적은 문 앞까지 따라옵니다. 시야를 끊은 뒤 은신처에 들어가세요." :
+                        string hint = attackingHiding ? CabinetHidingRules.RiskExplanation :
                             "공격음과 예고가 시작되면 거리를 벌리세요. 공격이 빗나간 직후 지나갈 수 있습니다.";
                         string counterplay = CorridorThreatRules.Counterplay(corridorRole);
                         if (!string.IsNullOrEmpty(counterplay)) hint = (attackingHiding ?
-                            "숨는 모습을 보이면 은신처까지 쫓아옵니다." : "공격 예고가 들리면 즉시 거리를 벌리세요.") + "\n\n" + counterplay;
+                            CabinetHidingRules.RiskExplanation : "공격 예고가 들리면 즉시 거리를 벌리세요.") + "\n\n" + counterplay;
                         session.TryDefeat(name, hint);
                     }
                 }
                 if (!attack.Active) repath = 0;
                 return;
             }
-            bool acquiring = false;
-            if (state != State.Chase)
-            {
-                bool lightOn = player.flashlight && player.flashlight.isActiveAndEnabled;
-                acquiring = visible && offset.magnitude < StealthRules.SightRange(player.Crouching, lightOn, false, Senses.SightRange);
-                awareness.Tick(acquiring,
-                    StealthRules.AcquisitionSeconds(player.Crouching, lightOn, player.Running, offset.magnitude), Time.deltaTime);
-            }
-            if (visible && (state == State.Chase || acquiring && awareness.Acquired))
+            // A confirmed physical sight starts pursuit in this update. Sound
+            // evidence never contributes to visual recognition or tracks the player.
+            if (visible)
             {
                 // Scripted encounters can enable an actor already in Chase.
                 // Its first actual sight, not that scripted flag alone, earns the cue.
                 if (!recognitionCueIssued) { DetectionFeedback.Signal(session, transform); recognitionCueIssued = true; }
+                if (state != State.Chase) repath = 0;
+                awareness.Restore(1); investigation.Cancel();
                 state = State.Chase; memory = Senses.ChaseMemory; lastKnown = player.transform.position; witnessedHiding = false;
             }
             else if (state == State.Chase)
@@ -333,24 +461,22 @@ namespace HappyToy.V2
                     }
                     else memory -= Time.deltaTime;
                 }
-                else if (state == State.Investigate) memory -= Time.deltaTime;
+                else if (state == State.Investigate)
+                {
+                    EnsureNoiseInvestigation(); bool hadArrived=investigation.Arrived;
+                    var step=investigation.Tick(Time.deltaTime,HorizontalDistance(transform.position,investigation.Point),true);
+                    memory=investigation.DwellRemaining;
+                    if(!hadArrived && investigation.Arrived) investigationFacing=Quaternion.Euler(0,transform.eulerAngles.y,0);
+                    if(step==NoiseInvestigationClock.Step.Expired)
+                    { memory=0; state=State.Patrol; ClearDoorPassage(); repath=0; }
+                }
                 if ((state == State.Search || state == State.Investigate) && memory <= 0)
                 { state = State.Patrol; repath = 0; }
             }
             if (AtWitnessedHidingPlace()) { BeginAttack(true, session); return; }
             if (visible && state == State.Chase && offset.magnitude < 1.5f) { BeginAttack(false, session); return; }
 
-            if (acquiring && state != State.Chase)
-            {
-                // A spatial tell only while actually seeing the player. No global warning
-                // reveals an enemy through walls, and occlusion stops target tracking.
-                EnemyNavigation.Stop(agent); repath = 0;
-                var facing = offset; facing.y = 0;
-                if (facing.sqrMagnitude > .001f)
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(facing), 180 * Time.deltaTime);
-                return;
-            }
-
+            if(state==State.Investigate && investigation.Arrived) { InspectNoisePoint(); return; }
             agent.speed = state == State.Chase ? chaseSpeed : patrolSpeed;
             if (state != State.Patrol) patrolDwelling = false;
             if (TryPassDoor())

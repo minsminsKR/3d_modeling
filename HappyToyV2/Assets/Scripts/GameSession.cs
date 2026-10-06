@@ -16,10 +16,12 @@ namespace HappyToy.V2
         public void CreateChapter()
         {
             if(Chapter || Corridor || Finished) return;
+            GraphicsLightingPresentation.BeginTransition(this);
             // Restart enters from GameShell.Start, before default-order presentation Start.
             // Complete that idempotent dressing while its authored interaction IDs still exist.
             var presentation=GetComponent<AnnexRoomPresentation>();if(presentation) presentation.Apply();
             Chapter=gameObject.AddComponent<MemoryChapter>(); Chapter.Prepare();
+            GraphicsLightingPresentation.BeginMode(this,transform);
             BeginChapterMetrics();
         }
         public CorridorRecords Records { get; private set; }
@@ -72,8 +74,10 @@ namespace HappyToy.V2
         public void CreateCorridor(int seed)
         {
             if (Chapter || Corridor || Finished) return;
+            GraphicsLightingPresentation.BeginTransition(this);
             Corridor = gameObject.AddComponent<CorridorRun>();
             Corridor.Build(seed);
+            GraphicsLightingPresentation.BeginMode(this,transform);
         }
         public int requiredNames = 4;
         public bool requireAnnexRecords;
@@ -180,6 +184,7 @@ namespace HappyToy.V2
         }
         void OnDestroy()
         {
+            GraphicsLightingPresentation.EndMode(this);
             if (Current == this) Current = null;
         }
         public void WarnThreat(string cue, float duration = 2.5f)

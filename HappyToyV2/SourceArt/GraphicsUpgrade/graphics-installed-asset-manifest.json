@@ -1,0 +1,888 @@
+{
+  "schema": 1,
+  "date": "2026-10-06",
+  "scope": "Read-only installed source/data inventory with linked measured tests, build inputs and declared graphics-scope native acceptance. No whole-route, all-limb, device-listening, human-fear or GPU/FPS certification.",
+  "counts": {
+    "physicalPbrSets": 12,
+    "pbrPngs": 48,
+    "authoredFbx": 8,
+    "packedBlend": 8,
+    "generatedFlamePng": 1
+  },
+  "assets": [
+    {
+      "path": "Assets/Resources/GraphicsPbr/brass-tarnished/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 2248356,
+      "sha256": "402164ca2dfc9db83c7098278d1ec68c2f48e7c52452970b99a6e53f206dda9d",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/brass-tarnished/ao.png",
+      "kind": "PBR data map",
+      "bytes": 215271,
+      "sha256": "61ca0a793fbbcb553f1887980a39b82b5c1ea7678e08b4081ed5fda7a059476e",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/brass-tarnished/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 1985493,
+      "sha256": "78325709a9f9c0c72fb116ee66e7fa4609f4286ef7e149b1d189164e98adbe55",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/brass-tarnished/normal.png",
+      "kind": "PBR data map",
+      "bytes": 673494,
+      "sha256": "7ff428e2571157e6fe0865178c21c77a8e0186a7834e6b7152c3e44b0b4c41b2",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/ceramic-tile/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 5529842,
+      "sha256": "990a73ba511d921766ac8d2195990a5b3aeb61179c5f862e021f3dd554f1e0e5",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/ceramic-tile/ao.png",
+      "kind": "PBR data map",
+      "bytes": 2089117,
+      "sha256": "96879a0e0be19d334f63565c589f236d11271ff78cba1020cc00e8a7722cc7b7",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/ceramic-tile/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 1981846,
+      "sha256": "7a5949db6a3ec87c57250bebad8cd2d4911575419d1559192f4aee66a9cd1947",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/ceramic-tile/normal.png",
+      "kind": "PBR data map",
+      "bytes": 4809318,
+      "sha256": "9fc97722238b565b7bdc17e5fa472b77e08d6e4843837304fda0e4895ea4cf4b",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/cloth-charred/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 1226877,
+      "sha256": "14a3f7e8a635f8d3b08fe9c99d24d99d07e66abd1373e182dbf9d6ba36bb2f7e",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/cloth-charred/ao.png",
+      "kind": "PBR data map",
+      "bytes": 793982,
+      "sha256": "4ced8fa48944ffa0dd2fed546a615c3a479debabb520e38157302623d11ef349",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/cloth-charred/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 631141,
+      "sha256": "42ae0adab4b7ab0e6a3887be9767b48a920b8e20b56e7a7f5912a46e1d5aa28b",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/cloth-charred/normal.png",
+      "kind": "PBR data map",
+      "bytes": 1829664,
+      "sha256": "1aeef7c952d9602ef36ddf762f929a2564edd4d62a2181f3d6a9869373e3f772",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/concrete-rough/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 10327160,
+      "sha256": "66b7a773a5aafe7faf79bb1d6973e3e52e4b44066170ce092f5cb9e13d0a19bd",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/concrete-rough/ao.png",
+      "kind": "PBR data map",
+      "bytes": 2570714,
+      "sha256": "91e3d089b2037ecdc63b57d6a4f148af8c0db675c7a8ee08cfbfd68535c00fdb",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/concrete-rough/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 3545251,
+      "sha256": "ddce6f23d49e96e6578864b53e29a78f7795eeccf12fd83b3cd5222147f3f5ef",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/concrete-rough/normal.png",
+      "kind": "PBR data map",
+      "bytes": 7759615,
+      "sha256": "32dd5846563e4af312631256e7f471c9f8200224a53436ba4428d24cbae1d885",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/metal-rust/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 6678415,
+      "sha256": "99ba6631804308f77b74a4a67d6e444253fdf230f93a09c91fcf80e9e988bf10",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/metal-rust/ao.png",
+      "kind": "PBR data map",
+      "bytes": 2953471,
+      "sha256": "fbb93a46184d23538f86543ba1a2fb2e62a847e6e3be9ddf01e89604030d0a48",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/metal-rust/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 1534469,
+      "sha256": "a9d272a795b7660331a48c4ee569910aca53434328b2dfac850ab7ed3d14da08",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/metal-rust/normal.png",
+      "kind": "PBR data map",
+      "bytes": 3944015,
+      "sha256": "6f5b299ff7c92fdd43a8b4836db734aaca2e69999a41f7cc3f4fa621c03b42ca",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/painted-metal/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 1543756,
+      "sha256": "91e44ef8767915f36d32b0dd541305fa0bd3d5bb39c5d501a07fc8b6176874d5",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/painted-metal/ao.png",
+      "kind": "PBR data map",
+      "bytes": 233499,
+      "sha256": "f5c17ee829a278b941047f3a81590d817fc93c8cf42b6b99fa166bcc2313245e",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/painted-metal/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 1057288,
+      "sha256": "b8e22045cc198ad04757b73fdd71d0db9b06e4fa1438cdf4dcebce64ca08277b",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/painted-metal/normal.png",
+      "kind": "PBR data map",
+      "bytes": 1073596,
+      "sha256": "99c63df0fb7a0b3986815f7ae6603bc41d782da7a45025bf53034d5676abdd48",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/paper-aged/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 1892772,
+      "sha256": "b9474f1e4c5712d88093f8ccd5b59efee28095448dcba9e2dcfcb3e914123caf",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/paper-aged/ao.png",
+      "kind": "PBR data map",
+      "bytes": 1043431,
+      "sha256": "fd13ad461f79816890a2c9719a0c4ab139e3010283a3476380b0c99a49584444",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/paper-aged/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 1390984,
+      "sha256": "00fcf949757bba6490990f3b677ee10dbe29e8dc1846c8e82a4c7df4be583141",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/paper-aged/normal.png",
+      "kind": "PBR data map",
+      "bytes": 6385732,
+      "sha256": "dce949d6c2760ad3ec79d19c1d0af57327bc5705dcb41edea9573c8e21ed6c78",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/plaster-damp/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 7547587,
+      "sha256": "bf24a78daf4b82edb2c0bccf63386504888f8e569ea38173f85debe638977ff4",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/plaster-damp/ao.png",
+      "kind": "PBR data map",
+      "bytes": 1780935,
+      "sha256": "e8891c3f79bf4c8ed5105d622249abe9e0a9b15c4193f2d7b119ac4d49eab848",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/plaster-damp/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 1817003,
+      "sha256": "75b68c90fc115744c8e098b3ca0f1372cff66e0c19b0b6500ca8514900c8e9be",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/plaster-damp/normal.png",
+      "kind": "PBR data map",
+      "bytes": 6427543,
+      "sha256": "f9dda8eb97cb9df270324aa7d96a7f8c4304eb0ac4a36b344b4a30d5110431c6",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-pool/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 484741,
+      "sha256": "25046542497147115e731004052fe8dbdbb44d63a53a13d570d77ae0854fcdd7",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-pool/ao.png",
+      "kind": "PBR data map",
+      "bytes": 8533,
+      "sha256": "169bca061bc03a0f28be7e8e32b8d15aff2daa5def3ce38bf5e27569eb0356b9",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-pool/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 647278,
+      "sha256": "83fc6d7516418c9b7a6f6e6371cb28e908a0df1778a48741a10163791ea04a76",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-pool/normal.png",
+      "kind": "PBR data map",
+      "bytes": 206276,
+      "sha256": "df8c12195b2e85a4ff6a61b3afa520dd9e4e70976ce4f9bea2e2d44437b5b47a",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-tallow/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 1177228,
+      "sha256": "849aac66e50e2001070567a6767a2cc1b24c584e50734ff5bb0cbdd86f93d504",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-tallow/ao.png",
+      "kind": "PBR data map",
+      "bytes": 562190,
+      "sha256": "29f393d1f4771c9df753fbe20efb150c69ee6e465ebd8f5b6c01e67f5a48c1eb",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-tallow/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 487908,
+      "sha256": "95411da7bdddfc6e888a9c9d13a108cfa108f3d91605bae96d0ff2902752bdf9",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wax-tallow/normal.png",
+      "kind": "PBR data map",
+      "bytes": 921974,
+      "sha256": "74513e59d2760b7500bae6d3201e26ea03ff874078d074dec38386ef661da7bd",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wood-aged/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 6146668,
+      "sha256": "434b4300cdbaf9b54f030a05da3849c87e1c2c6c53abdf7254be6ffbf176b314",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wood-aged/ao.png",
+      "kind": "PBR data map",
+      "bytes": 2165682,
+      "sha256": "4a248f82c38b0700114e8b28b9fc8118636c49c363190d1b50e17e1d304ced82",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wood-aged/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 4041217,
+      "sha256": "956bcbdb9a8a8302f8073a76297d8f1454d96fa889ee6cd58f8d417f48aaf3bb",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wood-aged/normal.png",
+      "kind": "PBR data map",
+      "bytes": 6434193,
+      "sha256": "dddd69009170c6665cf9a0177ec2e303e43665e86229eb6719d07daadacc25a2",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wood-floor/albedo.png",
+      "kind": "PBR data map",
+      "bytes": 5478741,
+      "sha256": "5d0e1600be61073f42866973f137961b2cb9ce45994f6a710d91d8891928b486",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wood-floor/ao.png",
+      "kind": "PBR data map",
+      "bytes": 2881429,
+      "sha256": "757df9cd3f3079f1a4a47bbe7be2e9a5cbb33436147bb83e8b16d13991282d76",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "L"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wood-floor/metallic-smoothness.png",
+      "kind": "PBR data map",
+      "bytes": 2018735,
+      "sha256": "80773153c8c6f4f2a2d177d1ad2706e437bb9189ad997ac64598ece15686758c",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGBA"
+    },
+    {
+      "path": "Assets/Resources/GraphicsPbr/wood-floor/normal.png",
+      "kind": "PBR data map",
+      "bytes": 6304526,
+      "sha256": "7fc1c91b6dda385a2eec2d439c7acaed3fdcdaa4d8084f8a760751dcbcfbf942",
+      "pixels": [
+        2048,
+        2048
+      ],
+      "mode": "RGB"
+    },
+    {
+      "path": "Assets/Resources/GraphicsUpgrade/Props/battery-supply.fbx",
+      "kind": "Authored visual prop",
+      "bytes": 466924,
+      "sha256": "9efaa5445ce70af97f04ecb40f33ba4ba7e8ca206ccd0f2336a71e56fad1f589"
+    },
+    {
+      "path": "Assets/Resources/GraphicsUpgrade/Props/cabinet-shell.fbx",
+      "kind": "Authored visual prop",
+      "bytes": 632844,
+      "sha256": "6d2d694ed67ae998cf7c6b6ff293b33a37aa1d288bd998615b7801a259664f74"
+    },
+    {
+      "path": "Assets/Resources/GraphicsUpgrade/Props/cabinet-timber.fbx",
+      "kind": "Authored visual prop",
+      "bytes": 725420,
+      "sha256": "7bb4e6583bb70184a42b61d37a9bcfced32a4e36c5ced87b4bca19eb3bfab50b"
+    },
+    {
+      "path": "Assets/Resources/GraphicsUpgrade/Props/candle-flame.fbx",
+      "kind": "Authored visual prop",
+      "bytes": 23020,
+      "sha256": "1f367ec321344293e0b96c427a875960ec7489ae914a3e68fff9aae41528001d"
+    },
+    {
+      "path": "Assets/Resources/GraphicsUpgrade/Props/candle-waymark.fbx",
+      "kind": "Authored visual prop",
+      "bytes": 491388,
+      "sha256": "e7f9066900d75af5351ef8d26466beec95593f46369942db794bac1ff9d733a2"
+    },
+    {
+      "path": "Assets/Resources/GraphicsUpgrade/Props/door-hardware.fbx",
+      "kind": "Authored visual prop",
+      "bytes": 90732,
+      "sha256": "90f4f99d0a42c61ba6609836d8fc7a0a619858f7526d134500f2f589cbef3b2e"
+    },
+    {
+      "path": "Assets/Resources/GraphicsUpgrade/Props/paper-lantern.fbx",
+      "kind": "Authored visual prop",
+      "bytes": 512300,
+      "sha256": "6b0db928aefad3d26c73da2411c905bb3d8e7f4aa87309f5e8decf517794a74b"
+    },
+    {
+      "path": "Assets/Resources/GraphicsUpgrade/Props/seal-altar.fbx",
+      "kind": "Authored visual prop",
+      "bytes": 438380,
+      "sha256": "44dea3d6b6924f35462ad32d3697bc985eed9ba3c2794fe2ad29acce09cdb2f3"
+    },
+    {
+      "path": "SourceArt/GraphicsUpgrade/Props/battery-supply.blend",
+      "kind": "Packed editable prop source",
+      "bytes": 5212619,
+      "sha256": "2753017fc8686ba43ec24d483845074f0e5767e6ac08be734dba6a2aaf6637c7"
+    },
+    {
+      "path": "SourceArt/GraphicsUpgrade/Props/cabinet-shell.blend",
+      "kind": "Packed editable prop source",
+      "bytes": 12613148,
+      "sha256": "515bf0a3d82f1e3fc7a8541a43d04ce582ffc5e07166bfbc6be3c51261128df8"
+    },
+    {
+      "path": "SourceArt/GraphicsUpgrade/Props/cabinet-timber.blend",
+      "kind": "Packed editable prop source",
+      "bytes": 8968732,
+      "sha256": "df3a9070a60a555fcb9ea4797712a92d20afd6e4fd2e938349ddb18dfcce71ba"
+    },
+    {
+      "path": "SourceArt/GraphicsUpgrade/Props/candle-flame.blend",
+      "kind": "Packed editable prop source",
+      "bytes": 2688746,
+      "sha256": "3b9462f6f924570659d77e53ef79b21b80bb8f94e1512767f9bf95de03b6c4b8"
+    },
+    {
+      "path": "SourceArt/GraphicsUpgrade/Props/candle-waymark.blend",
+      "kind": "Packed editable prop source",
+      "bytes": 12864944,
+      "sha256": "449ece362f94bc1817ba865037bf173e5b43bda570e5894776b56d6c99bade7e"
+    },
+    {
+      "path": "SourceArt/GraphicsUpgrade/Props/door-hardware.blend",
+      "kind": "Packed editable prop source",
+      "bytes": 8728871,
+      "sha256": "60c54de5108a2b26ae29b24c86ec39dff0c55a8aa819bd0613a2b609758ab7ba"
+    },
+    {
+      "path": "SourceArt/GraphicsUpgrade/Props/paper-lantern.blend",
+      "kind": "Packed editable prop source",
+      "bytes": 316043,
+      "sha256": "7d0d368fc8fc14951e3b368f8ad27e518982b7ae32c2282de3ce3bc0b3d784c0"
+    },
+    {
+      "path": "SourceArt/GraphicsUpgrade/Props/seal-altar.blend",
+      "kind": "Packed editable prop source",
+      "bytes": 3954420,
+      "sha256": "9058b845e716c44bdfe8cc29e2bed67199286c81faddac4d21f3b8e2359d6d72"
+    },
+    {
+      "path": "Assets/Resources/GraphicsUpgrade/Textures/candle-flame-v3.png",
+      "kind": "AI-generated photographic-style RGBA raster",
+      "bytes": 1024258,
+      "sha256": "788ee32136f9bacc5d4b54015568d8842ce1d5eb1cd712f5ddfea825798c246b"
+    }
+  ],
+  "testEvidence": [
+    {
+      "path": "../game/verification/graphics-upgrade/graphics-edit-05.xml",
+      "sha256": "e84348094c1a247feff9fbb8cb10627d4f7831cc999566e132fa051a23811eb9",
+      "platform": "EditMode",
+      "result": "Failed(Child)",
+      "total": "62",
+      "passed": "61",
+      "failed": "1",
+      "duration": "23.2915487",
+      "start-time": "2026-10-06 06:29:30Z",
+      "end-time": "2026-10-06 06:29:53Z"
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/props-edit-07.xml",
+      "sha256": "c39ec904bad56127f61b922887ba09cb68eed3ef1e3bab6c9c548c40732322a7",
+      "platform": "EditMode",
+      "result": "Failed(Child)",
+      "total": "2",
+      "passed": "1",
+      "failed": "1",
+      "duration": "2.8945791",
+      "start-time": "2026-10-06 06:41:42Z",
+      "end-time": "2026-10-06 06:41:45Z"
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/graphics-edit-repair-08.xml",
+      "sha256": "5e7d69097100490be0e5acee1c8750a582b6c461e85f5d86366ce0ce07f3e064",
+      "platform": "EditMode",
+      "result": "Passed",
+      "total": "4",
+      "passed": "4",
+      "failed": "0",
+      "duration": "2.9039408",
+      "start-time": "2026-10-06 06:44:14Z",
+      "end-time": "2026-10-06 06:44:17Z"
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/graphics-play-09.xml",
+      "sha256": "c16c549d51f171c474521053a92243db5edc87fdf383f5deeaa712daacb3d14c",
+      "platform": "PlayMode",
+      "result": "Failed(Child)",
+      "total": "73",
+      "passed": "69",
+      "failed": "4",
+      "duration": "562.1787985",
+      "start-time": "2026-10-06 06:46:05Z",
+      "end-time": "2026-10-06 06:55:27Z"
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/graphics-intro-10.xml",
+      "sha256": "d170081f3bd2d0353c82690642c4d991376aab009421b23bb74df7346d5a8d1c",
+      "platform": "PlayMode",
+      "result": "Passed",
+      "total": "2",
+      "passed": "2",
+      "failed": "0",
+      "duration": "33.3958055",
+      "start-time": "2026-10-06 06:59:43Z",
+      "end-time": "2026-10-06 07:00:16Z"
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/graphics-play-11.xml",
+      "sha256": "e281605bdd6ad42378160f83b217cf2520871f248a8503f7443bae5d0e627a11",
+      "platform": "PlayMode",
+      "result": "Failed(Child)",
+      "total": "73",
+      "passed": "72",
+      "failed": "1",
+      "duration": "566.8860945",
+      "start-time": "2026-10-06 07:10:09Z",
+      "end-time": "2026-10-06 07:19:36Z"
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/graphics-environment-12.xml",
+      "sha256": "4c64ab532f8a4eb77181a609204b662c8305cf3f3b0259d4df58b614e3a2f326",
+      "platform": "PlayMode",
+      "result": "Passed",
+      "total": "4",
+      "passed": "4",
+      "failed": "0",
+      "duration": "20.2141889",
+      "start-time": "2026-10-06 07:23:51Z",
+      "end-time": "2026-10-06 07:24:11Z"
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/graphics-native-repair-15.xml",
+      "sha256": "7af55b44c04c1bec8898868acc12e312f8924ef524e345207fb0cf0f0a104a10",
+      "platform": "PlayMode",
+      "result": "Passed",
+      "total": "6",
+      "passed": "6",
+      "failed": "0",
+      "duration": "20.8468779",
+      "start-time": "2026-10-06 08:04:02Z",
+      "end-time": "2026-10-06 08:04:22Z"
+    }
+  ],
+  "firstNativeEvidence": [
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0726/build-input-proof.json",
+      "sha256": "7dd9a313df6126fae70135c0537dcbb75712e056640f091539adc50e49f038b4",
+      "status": "GRAPHICS_BUILD_INPUTS_PASS",
+      "scope": "Full current Assets/Packages/ProjectSettings inventory and hashes through the existing verifier, explicit new graphics Resources/settings input inclusion, original hash protection and copied credit equality. Input inclusion does not by itself certify actual shipped shader appearance, GPU duration, survival or audio.",
+      "frameCount": 0
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0726/build-input-proof-after-native.json",
+      "sha256": "5ef578ffdd593fbe556b7e6272dca1cdf92eca6094d00d7c9fd14496874688c1",
+      "status": "GRAPHICS_BUILD_INPUTS_PASS",
+      "scope": "Full current Assets/Packages/ProjectSettings inventory and hashes through the existing verifier, explicit new graphics Resources/settings input inclusion, original hash protection and copied credit equality. Input inclusion does not by itself certify actual shipped shader appearance, GPU duration, survival or audio.",
+      "frameCount": 0
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0726/native-art/graphics-review.json",
+      "sha256": "af585c5ab2a74e4ad088cc6918ad3ff61d7685b0e79e10bccc0e771ba3b59ba8",
+      "status": "FAIL",
+      "scope": "Controlled native art review of actual runtime worlds/materials with supported camera positions. Actors are explicitly frozen and observer poses set; no survival, input route, resource balance, device listening, human fear or hardware FPS certification.",
+      "frameCount": 0
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0726/native-art-visible/graphics-review.json",
+      "sha256": "d2849ac4ef0bc819eac663a49a649f3aa83efcfe5ed090a287d4f55101b32d2a",
+      "status": "PASS",
+      "scope": "Controlled native art review of actual runtime worlds/materials with supported camera positions. Actors are explicitly frozen and observer poses set; no survival, input route, resource balance, device listening, human fear or hardware FPS certification.",
+      "frameCount": 20
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0726/capture-artifacts-proof.json",
+      "sha256": "ff5527ed4d5139b29725bcaf7f355f0b9437134f222dbca596d1a60554da036e",
+      "status": "CAPTURE_ARTIFACTS_PASS",
+      "scope": "Actual native JSON status, exact20 real PNGs/checksums/decoded statistics and recorded HDR/post/probe/shadow configuration. Requires separate ViewImage inspection for visible material/lighting acceptance; no survival, audio, GPU/FPS or HDR-display certification.",
+      "frameCount": 20
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0726/capture-scope-rejection.json",
+      "sha256": "1540565f6b0f1eb4e63a0f89a4b8054913d2f2866115cf033a4706f871256195",
+      "status": "FAIL",
+      "scope": "Actual full20 native artifacts plus actual world subject/floor/observer reflection bounds, visible multi-candle frustum/ray scope and same-cell light-revision probe refresh. Actor skin minima/animation phase are observations, not all-feet-grounded certification. Actual visual acceptance remains separate.",
+      "frameCount": 0
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0726/visual-review-root-first.json",
+      "sha256": "a31704e8c4a8b966c890abd6df8874aadff2ff153ea4fad8748a2d335a85b32d",
+      "status": "NEEDS_REPAIR",
+      "scope": "All twenty original PNGs individually viewed through view_image. Native metadata/artifact PASS is separate from visual acceptance. No claims of survival, live locomotion or FPS.",
+      "frameCount": 20
+    }
+  ],
+  "finalNativeEvidence": [
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0806-fixed16/build-input-proof.json",
+      "sha256": "880decb5327d768ddbb22ff33e0f873a758bd0ce2f232d18250c56fa8848758a",
+      "status": "GRAPHICS_BUILD_INPUTS_PASS",
+      "scope": "Full current Assets/Packages/ProjectSettings inventory and hashes through the existing verifier, explicit new graphics Resources/settings input inclusion, original hash protection and copied credit equality. Input inclusion does not by itself certify actual shipped shader appearance, GPU duration, survival or audio.",
+      "frameCount": 0
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0806-fixed16/build-input-proof-after-native.json",
+      "sha256": "0c878d6a67207935eb97e3b5362047ea63b36fa60fc9ca6717989d53c6dbc07b",
+      "status": "GRAPHICS_BUILD_INPUTS_PASS",
+      "scope": "Full current Assets/Packages/ProjectSettings inventory and hashes through the existing verifier, explicit new graphics Resources/settings input inclusion, original hash protection and copied credit equality. Input inclusion does not by itself certify actual shipped shader appearance, GPU duration, survival or audio.",
+      "frameCount": 0
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0806-fixed16/capture-scope-proof.json",
+      "sha256": "d2eb85d36f7856d784b57bbd3de85ac503048408287e95a9aaa8960d4c48afd5",
+      "status": "CAPTURE_SCOPES_PASS",
+      "scope": "Actual full20 native artifacts plus actual world subject/floor/observer reflection bounds, visible multi-candle frustum/ray scope and same-cell light-revision probe refresh. Actor skin minima/animation phase are observations, not all-feet-grounded certification. Actual visual acceptance remains separate.",
+      "frameCount": 0
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0806-fixed16/native-art-visible/graphics-review.json",
+      "sha256": "90e79adff8eafa9c23b321712ca18460a678d04238fd9b7977cff2aaa10121ca",
+      "status": "PASS",
+      "scope": "Controlled native art review of actual runtime worlds/materials with supported camera positions. Actors are explicitly frozen and observer poses set; no survival, input route, resource balance, device listening, human fear or hardware FPS certification.",
+      "frameCount": 20
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0806-fixed16/visual-review-root-final.json",
+      "sha256": "ac742ca1ac84b9d8bc453b8e285bfd5dad7dbd8f016372b4d1f97021e1f319cc",
+      "status": "ACCEPTED_FOR_DECLARED_GRAPHICS_SCOPE",
+      "scope": "All twenty original final PNGs individually viewed through view_image: modeled props, PBR material response, readable interior routes, visible candle flame/local pool and actual floor reflection placement. Existing characters retain their v2 geometry/rig/clips. Controlled posing is not live locomotion, survival, device listening, human fear, path tracing or GPU FPS certification.",
+      "frameCount": 20
+    },
+    {
+      "path": "../game/verification/graphics-upgrade/lighting/native-verification/run-20261006-0806-fixed16/native-process.json",
+      "sha256": "753bdaa5c1020ed61f3c461ff966e72128c6bf6ca8078c36a4bdfe4b325368b6",
+      "status": "EXITED",
+      "scope": "Explicit root visible native-only lease; supported observer camera art review, no survival/performance claim",
+      "frameCount": 0
+    }
+  ],
+  "finalGraphicsAcceptance": "ACCEPTED_FOR_DECLARED_GRAPHICS_SCOPE",
+  "finalBuild": {
+    "path": "Builds/GraphicsReview-20261006-0806-fixed16",
+    "inputCount": 2329,
+    "graphicsInputCount": 165,
+    "manifestCreatedUtc": "2026-10-06T08:07:49.1896443Z",
+    "afterNativeInputRehash": "PASS"
+  },
+  "runtimeSourceSnapshot": [
+    {
+      "path": "Assets/Scripts/GraphicsPropLibrary.cs",
+      "sha256": "117786a4ce7fd794a2e0a70988ec80c0680aac16e1f12c8e753b98cc9a400ea3"
+    },
+    {
+      "path": "Assets/Scripts/GraphicsLightingPresentation.cs",
+      "sha256": "d7f24c5a603b9f0a8cac01b55207aa12d0006cdd9d4c774782f5e100dac041ad"
+    },
+    {
+      "path": "Assets/Scripts/GraphicsPresentationAudit.cs",
+      "sha256": "e24cbb3fbebad2852edea0fe2046f3f06018ba40e3429537b36c60c4d994c6e5"
+    },
+    {
+      "path": "Assets/Scripts/GraphicsSchoolSurfaces.cs",
+      "sha256": "8a343775b250f9282bad88bb1944d88e958dc96286c8e4bde23d9c3feb56d21b"
+    }
+  ],
+  "protectedSources": [
+    {
+      "path": "Assets/Annex/SchoolAnnex.unity",
+      "sha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede"
+    },
+    {
+      "path": "Assets/Generated/SchoolPipeline 17.asset",
+      "sha256": "b48380a6a0890c6e64b62383885a9176418754572fbd273ea0687ffd362f6daa"
+    },
+    {
+      "path": "Assets/Generated/SchoolRenderer 17.asset",
+      "sha256": "61b3c1d274b8e9ca7f9dd1eeae7a0b8f430b9465c465d6844d087424871086dc"
+    }
+  ],
+  "pending": [
+    "Natural-time full routes",
+    "Device audio/human perception/long resource balance and measured GPU performance",
+    "HDR monitor validation",
+    "All limb planting/live locomotion certification from frozen art views"
+  ],
+  "scopeExclusions": [
+    "New anatomical enemy sculpts",
+    "Weather/noise-effect validation",
+    "Path tracing"
+  ]
+}

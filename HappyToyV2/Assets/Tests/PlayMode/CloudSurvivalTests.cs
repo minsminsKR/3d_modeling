@@ -278,6 +278,8 @@ namespace HappyToy.V2.CloudTests
             if (Finished) return;
             Require(Get<bool>(session, "InputAllowed"), "Route lost gameplay input");
             Assert.That(Time.timeScale, Is.EqualTo(1), "Survival may not alter game time");
+            Assert.That(Time.captureDeltaTime, Is.Zero, "Survival may not force the simulation clock");
+            Assert.That(Get<object>(player, "HidingRandomSample"), Is.Null, "Full route may not force a hiding outcome");
             Assert.That(((Behaviour)player).enabled, Is.True);
             Assert.That(Mouse.current, Is.SameAs(mouse), "Route mouse is not current");
             foreach (var owner in chapterStrategy?new[]{(Behaviour)nursery,(Behaviour)upper}:encounterOwners)
@@ -389,6 +391,28 @@ namespace HappyToy.V2.CloudTests
             stairLegs++; Milestone(label + " physically completed");
         }
 
+        Component SchoolDoorOnRoute(Vector3 direction, float distance)
+        {
+            var body = player.GetComponent<CharacterController>();
+            var center = player.transform.position + body.center + Vector3.up * .08f;
+            float half = Mathf.Max(0, body.height * .5f - body.radius);
+            if (!Physics.CapsuleCast(center - Vector3.up * half, center + Vector3.up * half, body.radius + .02f,
+                direction.normalized, out var hit, Mathf.Min(2.05f, distance + .1f), Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return null;
+            var door = hit.collider.GetComponentInParent(RequireType("Interactable"));
+            return door && Get<object>(door, "kind").ToString() == "Door" ? door : null;
+        }
+        IEnumerator OpenSchoolPhysicalDoor(Component door)
+        {
+            keys(Array.Empty<Key>()); float end = Time.realtimeSinceStartup + 5;
+            while (!Get<bool>(door, "IsOpen") || !Get<bool>(door, "AtRequestedDoorPose"))
+            {
+                Check(); Require(Time.realtimeSinceStartup < end, "Actual school leaf never cleared: " + door.name);
+                if (!Get<bool>(door, "IsOpen")) yield return Interact(door);
+                else yield return null;
+            }
+            Milestone("School door clear through actual E/leaf motion: " + door.name);
+        }
+
         IEnumerator MoveTo(Vector3 target, bool sprint, bool stair)
         {
             float startGame = GameTime, startWall = WallTime, best = Horizontal(target - player.transform.position);
@@ -407,6 +431,9 @@ namespace HappyToy.V2.CloudTests
                     "No forward physical progress toward " + target);
                 Require(horizontal > .025f || Mathf.Abs(delta.y) < .4f,
                     "Horizontal arrival on the wrong stair/floor height");
+                var blockingDoor = SchoolDoorOnRoute(new Vector3(delta.x, 0, delta.z), horizontal);
+                if (blockingDoor)
+                { yield return OpenSchoolPhysicalDoor(blockingDoor); lastProgressGame=GameTime; lastProgressWall=WallTime; continue; }
                 Steer(eyes.transform.position + new Vector3(delta.x, 0, delta.z), true);
                 float facing = Vector3.Angle(new Vector3(player.transform.forward.x, 0, player.transform.forward.z),
                     new Vector3(delta.x, 0, delta.z));
@@ -469,8 +496,8 @@ namespace HappyToy.V2.CloudTests
                 Require(GameTime - startGame < 3 && WallTime - startWall < 20,
                     "Actual E focus never reached " + item.name);
                 var collider = item.GetComponentsInChildren<Collider>().Where(value => value.enabled && !value.isTrigger)
-                    .OrderBy(value => Vector3.Distance(value.bounds.center, eyes.transform.position)).First();
-                Steer(collider.bounds.center, false);
+                    .OrderBy(value => Vector3.Distance(value.ClosestPoint(eyes.transform.position), eyes.transform.position)).First();
+                Steer(Vector3.Lerp(collider.ClosestPoint(eyes.transform.position), collider.bounds.center, .08f), false);
                 yield return null;
             }
             Assert.That(Get<Component>(player, "Focus"), Is.SameAs(item));
@@ -481,16 +508,7 @@ namespace HappyToy.V2.CloudTests
         {
             stage = "open " + room;
             var door = Components("Interactable").Single(item => Get<object>(item, "kind").ToString() == "Door" && item.name.StartsWith(room));
-            string before = Get<string>(door, "DisplayLabel");
-            Assert.That(before.EndsWith("열기"), Is.True, "Route expects the original closed door");
-            var leaf = Get<Transform>(door, "movingLeaf"); var second = Get<Transform>(door, "secondaryLeaf");
-            Vector3 offset = Get<Vector3>(door, "openOffset"), target = leaf.localPosition + offset;
-            Vector3 secondTarget = second ? second.localPosition - offset : Vector3.zero;
-            yield return Interact(door);
-            Assert.That(Get<string>(door, "DisplayLabel").EndsWith("닫기"), Is.True, "E failed to open authored door");
-            yield return Await(() => Vector3.Distance(leaf.localPosition, target) < .02f &&
-                (!second || Vector3.Distance(second.localPosition, secondTarget) < .02f) &&
-                !Get<NavMeshObstacle>(door, "obstacle").enabled, 4, 20, "Physical door leaves/navigation did not open");
+            yield return OpenSchoolPhysicalDoor(door);
             Milestone(room + " opened by E");
         }
 

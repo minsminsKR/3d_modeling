@@ -1,0 +1,240 @@
+{
+  "assets": [
+    {
+      "key": "candle-waymark",
+      "vertices": 4256,
+      "triangles": 8010,
+      "boundsMin": [
+        -0.1120000034570694,
+        -1.059999942779541,
+        -0.1120000034570694
+      ],
+      "boundsMax": [
+        0.1120000034570694,
+        0.21835824847221375,
+        0.1120000034570694
+      ],
+      "dimensions": [
+        0.2240000069141388,
+        1.2783581912517548,
+        0.2240000069141388
+      ],
+      "materials": [
+        "GU_aged_iron",
+        "GU_tarnished_brass",
+        "GU_tallow",
+        "GU_wax_pool",
+        "GU_charred_wick",
+        "GU_wick_ash"
+      ],
+      "uvLayers": 1,
+      "objects": 1,
+      "colliders": 0
+    },
+    {
+      "key": "battery-supply",
+      "vertices": 4721,
+      "triangles": 8460,
+      "boundsMin": [
+        -0.1120000034570694,
+        -1.1200000047683716,
+        -0.1120000034570694
+      ],
+      "boundsMax": [
+        0.1120000034570694,
+        0.21400000154972076,
+        0.1120000034570694
+      ],
+      "dimensions": [
+        0.2240000069141388,
+        1.3340000063180923,
+        0.2240000069141388
+      ],
+      "materials": [
+        "GU_aged_iron",
+        "GU_tarnished_brass",
+        "GU_battery_paper",
+        "GU_battery_metal",
+        "GU_washi"
+      ],
+      "uvLayers": 1,
+      "objects": 1,
+      "colliders": 0
+    },
+    {
+      "key": "paper-lantern",
+      "vertices": 4176,
+      "triangles": 7988,
+      "boundsMin": [
+        -0.18553026020526886,
+        -0.24484708905220032,
+        -0.18388080596923828
+      ],
+      "boundsMax": [
+        0.1832759827375412,
+        0.2961176931858063,
+        0.18559463322162628
+      ],
+      "dimensions": [
+        0.36880624294281006,
+        0.5409647822380066,
+        0.36947543919086456
+      ],
+      "materials": [
+        "GU_washi",
+        "GU_dark_timber",
+        "GU_aged_iron"
+      ],
+      "uvLayers": 1,
+      "objects": 1,
+      "colliders": 0
+    },
+    {
+      "key": "seal-altar",
+      "vertices": 4296,
+      "triangles": 8408,
+      "boundsMin": [
+        -0.4050000011920929,
+        0.0009999871253967285,
+        -0.30000001192092896
+      ],
+      "boundsMax": [
+        0.4050000011920929,
+        0.690500020980835,
+        0.30000001192092896
+      ],
+      "dimensions": [
+        0.8100000023841858,
+        0.6895000338554382,
+        0.6000000238418579
+      ],
+      "materials": [
+        "GU_dark_timber",
+        "GU_charred_wick",
+        "GU_aged_iron"
+      ],
+      "uvLayers": 1,
+      "objects": 1,
+      "colliders": 0
+    },
+    {
+      "key": "cabinet-shell",
+      "vertices": 5928,
+      "triangles": 11452,
+      "boundsMin": [
+        -0.4494999945163727,
+        0.0,
+        -0.3697652220726013
+      ],
+      "boundsMax": [
+        0.4494999945163727,
+        1.875499963760376,
+        0.30799999833106995
+      ],
+      "dimensions": [
+        0.8989999890327454,
+        1.875499963760376,
+        0.6777652204036713
+      ],
+      "materials": [
+        "GU_scarred_enamel",
+        "GU_aged_iron",
+        "GU_charred_wick",
+        "GU_tarnished_brass",
+        "GU_washi"
+      ],
+      "uvLayers": 1,
+      "objects": 1,
+      "colliders": 0
+    },
+    {
+      "key": "cabinet-timber",
+      "vertices": 6888,
+      "triangles": 13332,
+      "boundsMin": [
+        -0.4494999945163727,
+        0.0,
+        -0.3697652220726013
+      ],
+      "boundsMax": [
+        0.4494999945163727,
+        1.875499963760376,
+        0.30799999833106995
+      ],
+      "dimensions": [
+        0.8989999890327454,
+        1.875499963760376,
+        0.6777652204036713
+      ],
+      "materials": [
+        "GU_dark_timber",
+        "GU_aged_iron",
+        "GU_charred_wick",
+        "GU_tarnished_brass",
+        "GU_washi"
+      ],
+      "uvLayers": 1,
+      "objects": 1,
+      "colliders": 0
+    },
+    {
+      "key": "door-hardware",
+      "vertices": 588,
+      "triangles": 1144,
+      "boundsMin": [
+        -0.030500000342726707,
+        -0.1054999977350235,
+        -0.025150088593363762
+      ],
+      "boundsMax": [
+        0.030500000342726707,
+        0.1054999977350235,
+        0.004000000189989805
+      ],
+      "dimensions": [
+        0.061000000685453415,
+        0.210999995470047,
+        0.029150088783353567
+      ],
+      "materials": [
+        "GU_aged_iron",
+        "GU_charred_wick",
+        "GU_tarnished_brass"
+      ],
+      "uvLayers": 1,
+      "objects": 1,
+      "colliders": 0
+    },
+    {
+      "key": "candle-flame",
+      "vertices": 54,
+      "triangles": 48,
+      "boundsMin": [
+        -0.013355371542274952,
+        0.0,
+        -0.011566090397536755
+      ],
+      "boundsMax": [
+        0.01585441082715988,
+        0.06400000303983688,
+        0.013730322010815144
+      ],
+      "dimensions": [
+        0.029209782369434834,
+        0.06400000303983688,
+        0.025296412408351898
+      ],
+      "materials": [
+        "GU_tallow"
+      ],
+      "uvLayers": 1,
+      "objects": 1,
+      "colliders": 0
+    }
+  ],
+  "blender": "4.0.2",
+  "authoring": "Original procedural measured mesh modeling; no external meshes",
+  "units": "metres",
+  "sourceSceneModified": false,
+  "sourceAssetsModified": false
+}

@@ -18,6 +18,7 @@ namespace HappyToy.V2
         public string Objective => Recovered < Required ? "회랑에 흩어진 기억 다섯 개를 찾으세요. 발소리를 듣고 길을 고르세요." : "기억을 모두 찾았습니다. 입구의 봉인된 문으로 돌아가세요.";
         readonly HashSet<string> recovered = new HashSet<string>();
         readonly List<Material> materials = new List<Material>();
+        readonly GraphicsSurfaceLibrary.Pool graphicsSurfaces = new GraphicsSurfaceLibrary.Pool();
         readonly List<UnityEngine.Object> generated = new List<UnityEngine.Object>();
         readonly List<StalkerBrain> threats = new List<StalkerBrain>();
         GameSession session;
@@ -143,6 +144,7 @@ namespace HappyToy.V2
             }
             var exit = Box("Sealed entrance", CellPosition(0) + new Vector3(-2.72f, 1.1f, 0), new Vector3(.12f, 2.2f, 1.6f), timber);
             var exitInteraction = exit.AddComponent<Interactable>(); exitInteraction.kind = Interactable.Kind.Exit; exitInteraction.label = "회랑 출구";
+            Lighting = gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareCorridor(this, world);
             // Rebuild after all physical furniture is present. Walkable routes include actual obstacles.
             Physics.SyncTransforms(); surface.BuildNavMesh();
             for (int i = 0; i < 4; i++)
@@ -212,7 +214,14 @@ namespace HappyToy.V2
             if (!create) return null;
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube); go.name = name; go.layer = 8;
             go.transform.SetParent(world); go.transform.position = at; go.transform.localScale = size;
-            go.GetComponent<Renderer>().sharedMaterial = material; return go;
+            go.GetComponent<Renderer>().sharedMaterial = material;
+            // Bevel only visible object edges; slab joins remain coplanar. The
+            // original cube collider, transform, layer and navigation stay intact.
+            float span=GraphicsSurfaceLibrary.TileSpan(material);
+            float bevel=name=="Floor"||name=="Ceiling"?0:Mathf.Min(.006f,Mathf.Min(size.x,Mathf.Min(size.y,size.z))*.12f);
+            var mesh=graphicsSurfaces.MetreBoxMesh(size,bevel,span);
+            go.GetComponent<MeshFilter>().sharedMesh=graphicsSurfaces.MetreMappedMesh(mesh,go.transform,span);
+            return go;
         }
         void CombineArchitecture()
         {
@@ -243,34 +252,20 @@ namespace HappyToy.V2
         }
         Material MakeMaterial(string name, Color color, int seed)
         {
-            var material = new Material(Shader.Find("Universal Render Pipeline/Lit")); material.name = name; material.color = color;
-            if (name == "Worn wooden floor")
-            {
-                var albedo = Resources.Load<Texture2D>("Corridor/aged-floor-v1");
-                if (!albedo) throw new InvalidOperationException("Missing corridor floor texture");
-                material.color = new Color(.9f,.9f,.9f);
-                material.mainTexture = albedo; material.mainTextureScale = new Vector2(4,4);
-                material.SetFloat("_Smoothness", .12f); materials.Add(material); return material;
-            }
-            if (name == "Damp plaster")
-            {
-                var albedo = Resources.Load<Texture2D>("Corridor/aged-plaster-v1");
-                if (!albedo) throw new InvalidOperationException("Missing corridor plaster texture");
-                material.mainTexture = albedo; material.mainTextureScale = new Vector2(3, 3);
-                material.SetFloat("_Smoothness", .12f); materials.Add(material); return material;
-            }
-            var texture = new Texture2D(64, 64, TextureFormat.RGB24, true); texture.name = name + " grain"; texture.wrapMode = TextureWrapMode.Repeat;
-            var random = new System.Random(seed); var pixels = new Color[64 * 64];
-            for (int y = 0; y < 64; y++) for (int x = 0; x < 64; x++)
-            { float grain = .76f + (float)random.NextDouble() * .24f; if (x % 16 == 0) grain *= .7f; pixels[y * 64 + x] = Color.white * grain; }
-            texture.SetPixels(pixels); texture.Apply(); material.mainTexture = texture; material.mainTextureScale = new Vector2(3, 3);
-            material.SetFloat("_Smoothness", .12f); materials.Add(material); generated.Add(texture); return material;
+            string key=name=="Worn wooden floor"?"wood-floor":name=="Damp plaster"?"plaster-damp":
+                name=="Stained ceiling"?"concrete-rough":name=="Memory brass"?"brass-tarnished":
+                name=="Warm paper lantern"?"paper-aged":"wood-aged";
+            Color tint=key=="wood-aged"?new Color(.79f,.75f,.68f):Color.white;
+            var material=graphicsSurfaces.Get(key,tint,name=="Warm paper lantern"?new Color(.7f,.35f,.13f):Color.black);
+            material.name=name+" — measured PBR";
+            if(!materials.Contains(material))materials.Add(material);
+            return material;
         }
         void OnDestroy()
         {
             if (surface) surface.RemoveData();
             if (world) Destroy(world.gameObject);
-            foreach (var material in materials) if (material) Destroy(material);
+            graphicsSurfaces.Dispose();
             foreach (var resource in generated) if (resource) Destroy(resource);
         }
     }

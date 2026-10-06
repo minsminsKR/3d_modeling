@@ -1,0 +1,15 @@
+{
+    "unity": "6000.6.0f1",
+    "sourcePipelineSha256": "b48380a6a0890c6e64b62383885a9176418754572fbd273ea0687ffd362f6daa",
+    "sourceRendererSha256": "61b3c1d274b8e9ca7f9dd1eeae7a0b8f430b9465c465d6844d087424871086dc",
+    "sourceSceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+    "pipelineGuid": "9cdfca7d4384de646857dc9023b4639e",
+    "rendererGuid": "787c31861ac78e34d9ed5c4cefc0b5a5",
+    "scope": "Owned URP17.6 pipeline/renderer copied via AssetDatabase, HDR/depth/SMAA camera support, standard conservative SSAO and reflection variants retained by active build pipeline. Original assets/scene unchanged.",
+    "shadowAtlas": 2048,
+    "torchTier": 1024,
+    "localTier": 512,
+    "aoSamples": 4,
+    "aoIntensity": 0.6499999761581421,
+    "aoRadius": 0.2199999988079071
+}

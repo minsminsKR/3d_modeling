@@ -13,7 +13,7 @@ namespace HappyToy.V2
         bool eligibleBefore;GameSession lastSession;
         readonly List<float> calm=new List<float>(),threat=new List<float>();
         [Serializable]class Stats {public int samples;public float p50ms,p95ms,p99ms,maxMs;}
-        [Serializable]class Report {public string measurement="Focused main-camera render callback intervals during manual gameplay; not GPU time or hardware-presented FPS",device,cpu;public int width,height,resolutionChanges,unfocusedCallbacks,menuCallbacks,targetFrameRate,vSync;public bool enoughSamples,developmentBuild;public Stats calm,threat;}
+        [Serializable]class Report {public string measurement="Focused main-camera render callback intervals during manual gameplay; not GPU time or hardware-presented FPS",device,cpu;public string phaseDefinition=PerformanceProgressPhase.Definition;public int width,height,resolutionChanges,unfocusedCallbacks,menuCallbacks,targetFrameRate,vSync;public bool enoughSamples,developmentBuild;public Stats calm,threat;}
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Install()
         {
             var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-v2-play-review");if(i<0||i+1>=args.Length||installed)return;
@@ -33,7 +33,7 @@ namespace HappyToy.V2
             if(eligible&&eligibleBefore&&lastSession==session)
             {
                 float ms=(float)((now-previous)*1000.0/System.Diagnostics.Stopwatch.Frequency);
-                var samples=session.StoryStep>=2&&session.StoryStep<4?threat:calm;
+                var samples=PerformanceProgressPhase.IsThreat(session)?threat:calm;
                 if(samples.Count<72000)samples.Add(ms);
             }
             previous=now;eligibleBefore=eligible;lastSession=session;

@@ -69,7 +69,10 @@ namespace HappyToy.V2
             if(motion)motion.enabled = false;
             monster.enabled = false; agent.enabled = false;
             monster.gameObject.SetActive(true);
-            var animation = monster.GetComponentInChildren<Animation>();
+            // Activation may run refinement Awake in this same frame. Its old
+            // imported root Animation is destroyed at end-of-frame, so use the
+            // locomotion controller's authoritative, already-updated reference.
+            var animation = motion ? motion.animationPlayer : monster.GetComponentInChildren<Animation>();
             if (animation && animation.GetClip("cry")) { animation["cry"].speed = .72f; animation.Play("cry"); }
             for (float t = 0; t < 5;)
             {

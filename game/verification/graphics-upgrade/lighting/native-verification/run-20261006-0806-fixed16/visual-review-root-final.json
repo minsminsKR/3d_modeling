@@ -1,0 +1,110 @@
+{
+  "status": "ACCEPTED_FOR_DECLARED_GRAPHICS_SCOPE",
+  "reviewedBy": "root",
+  "readUtc": "2026-10-06T08:16:33.393961+00:00",
+  "scope": "All twenty original final PNGs individually viewed through view_image: modeled props, PBR material response, readable interior routes, visible candle flame/local pool and actual floor reflection placement. Existing characters retain their v2 geometry/rig/clips. Controlled posing is not live locomotion, survival, device listening, human fear, path tracing or GPU FPS certification.",
+  "directory": "E:\\AI\\3d_modeling\\game\\verification\\graphics-upgrade\\lighting\\native-verification\\run-20261006-0806-fixed16\\native-art-visible",
+  "views": [
+    {
+      "file": "corridor-candle-unlit.png",
+      "sha256": "ebaa9bd254ef963ecf8defb64d78ad9c50043cd033ed5e90acd2444f39ad28bb",
+      "observation": "Melted rim, drips, wick, forged stand and brass tray visibly replace the primitive. Feet contact is visible."
+    },
+    {
+      "file": "corridor-candle-lit.png",
+      "sha256": "df1459f243accb44d7e80fd7305eff289b81eff725892d7deb94a1dd3df4a1df",
+      "observation": "Actual warm candle-only pool is visible with a small tapered flame. Source image/geometry unchanged; transparent UV padding corrected."
+    },
+    {
+      "file": "corridor-candle-close.png",
+      "sha256": "a0e5d856da099fbf8ed285b08fd38dcd86b09a19db201a7e425f7d2dcfa24a31",
+      "observation": "Visible blue-base/pale-yellow teardrop replaces the needle. Melted rim, drips and brass tray remain visible. The close torch produces strong wax highlights."
+    },
+    {
+      "file": "corridor-battery-close.png",
+      "sha256": "26d1d01a5c6c8bc178a17d15b6d75966be558de4731b6b1db855e38440f0cc5f",
+      "observation": "Crimped dual-cell/terminals/keeper/tray visible. Wrappers have a plain cream palette; no missing or pink materials."
+    },
+    {
+      "file": "corridor-door-joinery.png",
+      "sha256": "095d065eaf828f092a2a4ac6a2af97007911eeffb09f529f403e56a4c130293e",
+      "observation": "Actual generated corridor door is verified by subject path/world position. Paper/wood leaf is visible at an oblique angle; this angle gives limited hardware detail."
+    },
+    {
+      "file": "corridor-lantern.png",
+      "sha256": "2a996564d457f52d5ada6fb56915b55b0bb26e64d619b9f802ecbd3bed80525d",
+      "observation": "Authored ribbed oval shade and ceiling normal relief visible, with readable local warm illumination."
+    },
+    {
+      "file": "corridor-floor-ceiling.png",
+      "sha256": "7ae9969b7564d5bacbc63744bc7e98b249e34fead68adf15fca8453dffb1ee65",
+      "observation": "Readable corridor passage, metre wood floor, ceiling relief and timber joinery. No missing surfaces visible."
+    },
+    {
+      "file": "corridor-cabinet.png",
+      "sha256": "5b2691c1f87bccc29ba851d4b6facd98d8a253b0d48636be501c3304240f68c7",
+      "observation": "Modeled timber stiles, louvers, hinges and handles visibly replace the original skin; darker route remains readable."
+    },
+    {
+      "file": "corridor-seal-room.png",
+      "sha256": "0b559aa3d2a6a46ef580f29d74610e2aabbb91de96f9db447e56a5692a06878a",
+      "observation": "Modeled joined altar, floor and five-goal clue visible. The original collectible retains its existing appearance."
+    },
+    {
+      "file": "corridor-many-candles.png",
+      "sha256": "2ba9dc7742757361eea6c909c14e8dca3d25f867052716f1c157bc0395db5b6e",
+      "observation": "Two unobstructed lit candles and their warm pools are actually visible in different connected cells with the torch off."
+    },
+    {
+      "file": "corridor-enemy-1.png",
+      "sha256": "d5841c4b0fa0a5cdfaca8e16b5e55f18bad4732bfb9394540e0ec94dd4640345",
+      "observation": "Existing v2 identity/material visible; original rig/clips unchanged. Actual production-convention all-skin minimum matches floor within .001m. This frozen phase does not prove every limb is planted, live locomotion or fear."
+    },
+    {
+      "file": "corridor-enemy-2.png",
+      "sha256": "a6036e042da433a2037580e1a4080d60e6b9b9ebbd59c12cef63de36bcede97d",
+      "observation": "Existing v2 identity/material visible; original rig/clips unchanged. Actual production-convention all-skin minimum matches floor within .001m. This frozen phase does not prove every limb is planted, live locomotion or fear."
+    },
+    {
+      "file": "corridor-enemy-3.png",
+      "sha256": "2b3eff7444707ae90761028cb1b541697f3e161b5368fc685f01c9ade307cc80",
+      "observation": "Existing v2 identity/material visible; original rig/clips unchanged. Actual production-convention all-skin minimum matches floor within .001m. This frozen phase does not prove every limb is planted, live locomotion or fear."
+    },
+    {
+      "file": "corridor-enemy-4.png",
+      "sha256": "e6049782fd1f20a1ca7a0f345a85ca1eb84a8e8b6c4667fd9851a2a25360ceea",
+      "observation": "Existing v2 identity/material visible; original rig/clips unchanged. Actual production-convention all-skin minimum matches floor within .001m. This frozen phase does not prove every limb is planted, live locomotion or fear."
+    },
+    {
+      "file": "school-ground-hall.png",
+      "sha256": "20f914cb4ca26cf4430756f8cee117fd4945c54c4905b56ac3fca5f3f7f49878",
+      "observation": "Actual school worn-plaster/ceiling/wood-floor response, directional torch and route signage are visible."
+    },
+    {
+      "file": "school-washroom.png",
+      "sha256": "04aa4f1b7dbf1a3abea924aa274c49c36b939b37388a189d64c4491e98f44f29",
+      "observation": "Actual tiled washroom, two toilets, two sinks and stall partitions are visible. Observed support is WASHROOM floor."
+    },
+    {
+      "file": "school-music.png",
+      "sha256": "5a37f84359db7d9584fba60aa5bc89568363d486087bea369764dcca3ee9fb87",
+      "observation": "Actual music sign, piano, keys, pedals and modeled metal locker visible with aged wood/plaster."
+    },
+    {
+      "file": "school-upper.png",
+      "sha256": "b58f20a6e1b4f5f6f669a32a5ebdde184267264637006f81dbec4f180ce0fd4e",
+      "observation": "Actual upper-floor materials are visible. Independent runtime supportY=5 and finished probe centerY=6.5 confirm the repaired floor selection."
+    },
+    {
+      "file": "school-basement.png",
+      "sha256": "e3fd6a043517866509932c735421229f6c4df7f395309028463cce063802e05d",
+      "observation": "Concrete surfaces, pipes, local colored illumination and floor objects visible with readable silhouettes."
+    },
+    {
+      "file": "school-candle-close.png",
+      "sha256": "225ff1b39fb8f6c95aeecab24f55e0cc1dd8fd2c4d03d1224baf412d4b306398",
+      "observation": "Correct school candle has a visible tapered flame, drips, wax well and brass tray against an actual worn plaster/tile scene."
+    }
+  ],
+  "previousVisualReviewRetained": "E:\\AI\\3d_modeling\\game\\verification\\graphics-upgrade\\lighting\\native-verification\\run-20261006-0726\\visual-review-root-first.json"
+}

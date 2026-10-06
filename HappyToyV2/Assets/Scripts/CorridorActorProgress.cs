@@ -13,12 +13,16 @@ namespace HappyToy.V2
             public float yaw, pitch, stamina, slow, noiseRadius, noiseRemaining, itemCooldown;
             public bool crouched, exhausted, light;
             public int stock;
+            // Legacy checkpoints omit these fields and correctly start with no prior entry.
+            public int hidingEntry, hidingRolls;
+            public CabinetHidingOutcome hidingOutcome;
             public void Validate()
             { ValidatePosition(false); }
             public void ValidateChapter()
             { ValidatePosition(true); }
             void ValidatePosition(bool chapter)
             {
+                CabinetHidingRules.Validate(hidingEntry, hidingRolls, hidingOutcome);
                 if(!(chapter ? ChapterCheckpoint.Point(position) : CorridorCheckpoint.Point(position)) || !CorridorCheckpoint.Number(yaw,0,360) || !CorridorCheckpoint.Number(pitch,-78,78) ||
                     !CorridorCheckpoint.Number(stamina,0,1) || !CorridorCheckpoint.Number(slow,0,3600) ||
                     !CorridorCheckpoint.Number(noiseRadius,0,28) || !CorridorCheckpoint.Number(noiseRemaining,0,.81f) ||
@@ -32,7 +36,7 @@ namespace HappyToy.V2
             return new Progress { position=transform.position,yaw=transform.eulerAngles.y,pitch=pitch,stamina=Stamina,
                 slow=SlowRemaining,noiseRadius=FootstepNoiseRadius,noiseRemaining=FootstepNoiseRemaining,
                 itemCooldown=Firecrackers.Cooldown,stock=Firecrackers.Count,crouched=Crouching,exhausted=SprintExhausted,
-                light=flashlight&&flashlight.enabled };
+                light=flashlight&&flashlight.enabled,hidingEntry=HidingEntryId,hidingRolls=HidingRolls,hidingOutcome=HidingOutcome };
         }
         public void RestoreProgress(Progress data)
         { data.Validate(); RestoreValidatedProgress(data); }
@@ -42,6 +46,7 @@ namespace HappyToy.V2
         {
             controller.enabled=false;
             Hidden=false; hidingPlace=warnedHidingPlace=null; hidingThreatUntil=0;
+            hidingDecision.Restore(data.hidingEntry,data.hidingRolls,data.hidingOutcome);
             transform.SetPositionAndRotation(data.position,Quaternion.Euler(0,data.yaw,0)); pitch=data.pitch;
             Crouching=data.crouched; StandingBlocked=false;
             controller.height=Crouching?crouchedHeight:standingHeight;
@@ -72,12 +77,14 @@ namespace HappyToy.V2
     {
         [Serializable] public sealed class Progress
         {
-            public bool active, witnessed, cueIssued, searchArrived, searchStarted, patrolDwelling;
+            public bool active, witnessed, cueIssued, searchArrived, searchStarted, patrolDwelling, passingDoor;
             public State state;
             public Vector3 position,lastKnown,hidingApproach,searchOrigin,searchTarget;
-            public float yaw,floor,memory,awareness,searchDwell,searchTransit,searchDoorWait,searchYaw,patrolRemaining,doorPush;
+            public float yaw,floor,memory,awareness,searchDwell,searchTransit,searchDoorWait,searchYaw,patrolRemaining,doorPush,doorEntrySide,doorCloseWait,doorBlockedWait;
             public int waypoint,searchCandidate,visited,attacks,noises,footstepNoises;
             public string door;
+            public NoiseInvestigationClock.Progress investigation;
+            public float investigationYaw;
             public void Validate()
             { ValidatePosition(false); }
             public void ValidateChapter()
@@ -95,9 +102,16 @@ namespace HappyToy.V2
                     !CorridorCheckpoint.Number(searchDwell,0,4) || !CorridorCheckpoint.Number(searchTransit,0,4.1f) ||
                     !CorridorCheckpoint.Number(searchDoorWait,0,4.01f) || !CorridorCheckpoint.Number(searchYaw,0,360) ||
                     !CorridorCheckpoint.Number(patrolRemaining,0,1.81f) || !CorridorCheckpoint.Number(doorPush,0,1.21f) ||
+                    !CorridorCheckpoint.Number(doorEntrySide,-1,1) || !CorridorCheckpoint.Number(doorCloseWait,0,2.1f) ||
+                    !CorridorCheckpoint.Number(doorBlockedWait,0,6.11f) ||
+                    passingDoor && (Mathf.Abs(doorEntrySide) != 1 || string.IsNullOrEmpty(door)) ||
                     waypoint<0 || waypoint>(chapter?1000:3) || searchCandidate<0 || searchCandidate>8 || visited<0 || visited>9 ||
                     attacks<0 || noises<0 || footstepNoises<0 || door==null || door.Length>40)
                     throw new ArgumentException("Invalid threat checkpoint");
+                investigation?.Validate();
+                if(!CorridorCheckpoint.Number(investigationYaw,0,360) ||
+                    investigation!=null && investigation.active && state==State.Investigate &&
+                    Vector3.Distance(investigation.point,lastKnown)>.002f) throw new ArgumentException("Invalid investigation evidence snapshot");
             }
         }
         public Progress CaptureProgress()
@@ -110,8 +124,9 @@ namespace HappyToy.V2
                 searchDoorWait=searchDoorWait,searchYaw=searchFacing.eulerAngles.y,searchCandidate=searchCandidate,
                 visited=SearchPointsVisited,waypoint=patrol!=null&&patrol.Length>0?waypoint%patrol.Length:0,patrolDwelling=patrolDwelling,
                 patrolRemaining=patrolDwelling?Mathf.Max(0,patrolDwellUntil-Time.time):0,
-                door=blockingDoor?blockingDoor.stableId:"",doorPush=doorPush,
-                attacks=AttacksStarted,noises=NoisesAccepted,footstepNoises=FootstepNoisesAccepted };
+                door=blockingDoor?blockingDoor.stableId:"",doorPush=doorPush,passingDoor=passingDoor,doorEntrySide=doorEntrySide,doorCloseWait=doorCloseWait,doorBlockedWait=doorBlockedWait,
+                attacks=AttacksStarted,noises=NoisesAccepted,footstepNoises=FootstepNoisesAccepted,
+                investigation=investigation.Capture(),investigationYaw=investigationFacing.eulerAngles.y };
         }
         public void RestoreProgress(Progress data,Interactable[] doors)
         { data.Validate(); RestoreValidatedProgress(data,doors); }
@@ -119,6 +134,7 @@ namespace HappyToy.V2
         { data.ValidateChapter(); RestoreValidatedProgress(data,doors); }
         void RestoreValidatedProgress(Progress data,Interactable[] doors)
         {
+            ClearDoorPassage();
             agent=GetComponent<NavMeshAgent>(); agent.enabled=false;
             transform.SetPositionAndRotation(data.position,Quaternion.Euler(0,data.yaw,0));
             gameObject.SetActive(data.active);
@@ -137,7 +153,14 @@ namespace HappyToy.V2
             SearchPointsVisited=data.visited; waypoint=data.waypoint; patrolDwelling=data.patrolDwelling;
             patrolDwellUntil=Time.time+data.patrolRemaining;
             blockingDoor=string.IsNullOrEmpty(data.door)?null:doors.Single(x=>x.stableId==data.door); doorPush=data.doorPush;
+            passingDoor=data.passingDoor; doorEntrySide=data.doorEntrySide; doorCloseWait=data.doorCloseWait;
+            doorBlockedWait=data.doorBlockedWait;
+            // Old saves did not carry passage stages. Their pending closed-door
+            // push safely reconstructs its entry side on first approach.
+            if (blockingDoor && doorEntrySide == 0)
+                doorEntrySide=Vector3.Dot(transform.position-blockingDoor.transform.position,blockingDoor.DoorNormal)>=0?1:-1;
             AttacksStarted=data.attacks; NoisesAccepted=data.noises; FootstepNoisesAccepted=data.footstepNoises;
+            investigation.Restore(data.investigation); investigationFacing=Quaternion.Euler(0,data.investigationYaw,0);
         }
     }
 }
