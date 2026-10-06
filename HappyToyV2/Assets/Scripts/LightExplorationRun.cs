@@ -157,7 +157,7 @@ namespace HappyToy.V2
             var lamp = player.FlashlightSystem;
             var data = new LightExplorationCheckpoint { charge = lamp.Charge, packsCollected = lamp.PacksCollected, depletions = lamp.Depletions,
                 batteries = batteries.Select(x => new LightExplorationCheckpoint.Battery { id = x.stableId, available = x.gameObject.activeSelf }).ToArray(),
-                candles = candles.Select(x => new LightExplorationCheckpoint.Candle { id = x.GetComponent<Interactable>().stableId, lit = x.Lit }).ToArray() };
+                candles = candles.Select(x => new LightExplorationCheckpoint.Candle { id = x.GetComponent<Interactable>().stableId, lit = x.HasBeenLit }).ToArray() };
             data.Validate(); return data;
         }
         public void ValidateRestore(LightExplorationCheckpoint data)

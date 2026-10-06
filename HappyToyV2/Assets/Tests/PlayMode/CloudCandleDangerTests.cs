@@ -96,7 +96,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(90000)]
-        public IEnumerator CandleProximityDimsAllLitMarkersBlackoutsAndRequiresActualManualRelight()
+        public IEnumerator CandleProximityFlickersAndTemporarilyBlackoutsOnlyPreviouslyLitMarkers()
         {
             yield return CandleDangerPrepare();
             var target = LightTargets("Candle")[0]; var candle = target.GetComponent(RequireType("WaymarkCandle"));
@@ -107,7 +107,8 @@ namespace HappyToy.V2.CloudTests
             CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 14.5f));
             CandleDangerExpectSafe();
             CandleDangerArmAll();
-            Assert.That(CandleDangerMarks().All(mark => Get<bool>(mark, "Lit")), Is.True);
+            var untouched = CandleDangerMarks().Last(); Call(untouched, "Restore", false);
+            Assert.That(CandleDangerMarks().All(mark => Get<bool>(mark, "Lit") == (mark != untouched)), Is.True);
             Call(shell, "ToggleReducedMotion"); yield return null;
             float safeBrightness = Get<Light>(candle, "LocalLight").intensity;
             CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 8));
@@ -115,18 +116,22 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<float>(LightRun, "Danger"), Is.GreaterThan(0).And.LessThan(1));
             Assert.That(Get<bool>(LightRun, "Blackout"), Is.False);
             Assert.That(Get<Light>(candle, "LocalLight").intensity, Is.LessThan(safeBrightness));
-            Assert.That(CandleDangerMarks().All(mark => Get<bool>(mark, "Lit") && Get<float>(mark, "Danger") > 0), Is.True);
+            Assert.That(CandleDangerMarks().All(mark => Get<bool>(mark, "Lit") == (mark != untouched) && Get<float>(mark, "Danger") > 0), Is.True);
             CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 1.7f));
             Call(LightRun, "RefreshDanger"); CandleDangerExpectExtinguished();
             Assert.That((bool)Call(candle, "TryIgnite", player), Is.False);
             Assert.That(Get<int>(candle, "Ignitions"), Is.EqualTo(1), "Blocked ignition changed the event count");
             actor.gameObject.SetActive(false); CandleDangerExpectSafe(); yield return Delay(.15f);
-            Assert.That(CandleDangerMarks().All(mark => !Get<bool>(mark, "Lit")), Is.True, "Safe distance silently relit extinguished candles");
+            Assert.That(CandleDangerMarks().All(mark => Get<bool>(mark, "Lit") == (mark != untouched)), Is.True,
+                "Safe distance must relight only previously ignited candles");
+            Assert.That(CandleDangerMarks().All(mark => !Get<AudioSource>(mark, "IgnitionSource").isPlaying), Is.True,
+                "Automatic recovery replayed the match strike");
             Assert.That(Get<bool>(candle, "IgnitionBlocked"), Is.False);
             ((Behaviour)player).enabled = true; PlacePlayer(LightApproach(target)); yield return null; yield return LightAim(target);
             Assert.That(Get<bool>(candle, "Lit"), Is.True);
-            Assert.That(Get<int>(candle, "Ignitions"), Is.EqualTo(2), "Actual E did not produce one new manual ignition");
-            Assert.That(CandleDangerMarks().Count(mark => Get<bool>(mark, "Lit")), Is.EqualTo(1));
+            Assert.That(Get<int>(candle, "Ignitions"), Is.EqualTo(1), "Automatic recovery or redundant E counted a new ignition");
+            Assert.That(Get<bool>(untouched, "HasBeenLit"), Is.False);
+            Assert.That(CandleDangerMarks().Count(mark => Get<bool>(mark, "Lit")), Is.EqualTo(CandleDangerMarks().Length - 1));
         }
 
         [UnityTest, Timeout(90000)]
@@ -272,7 +277,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(150000)]
-        public IEnumerator CandleBlackoutPersistsExtinguishedThroughBothModeCheckpointRoundTrips()
+        public IEnumerator CandleTemporaryBlackoutPreservesIgnitionThroughBothModeCheckpointRoundTrips()
         {
             foreach (bool corridor in new[] { true, false })
             {
@@ -283,23 +288,26 @@ namespace HappyToy.V2.CloudTests
                 var actor = CandleDangerOwnedBrain();
                 CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 1.7f));
                 Call(LightRun, "RefreshDanger"); CandleDangerExpectExtinguished();
+                var blackoutLighting = Call(LightRun, "Capture");
+                Assert.That(((IEnumerable)Get<object>(blackoutLighting, "candles")).Cast<object>().Count(mark => Get<bool>(mark, "lit")), Is.EqualTo(1),
+                    "Temporary darkness erased the durable ignition from the checkpoint");
                 actor.gameObject.SetActive(false); CandleDangerExpectSafe(); Call(shell, "Pause");
                 var saved = Call(session, corridor ? "CaptureCheckpoint" : "CaptureChapterCheckpoint");
                 var lighting = Get<object>(saved, "lighting");
-                Assert.That(((IEnumerable)Get<object>(lighting, "candles")).Cast<object>().All(mark => !Get<bool>(mark, "lit")), Is.True);
+                Assert.That(((IEnumerable)Get<object>(lighting, "candles")).Cast<object>().Count(mark => Get<bool>(mark, "lit")), Is.EqualTo(1));
                 var parsed = corridor ? CheckpointCopy(saved) : SchoolCheckpointCopy(saved);
                 var previous = session; Call(shell, "Restart", false); yield return RecoveryRebind(previous);
                 Call(session, corridor ? "CreateCorridor" : "CreateChapter", corridor ? new object[] { 73 } : Array.Empty<object>());
                 Call(session, corridor ? "ApplyCheckpoint" : "ApplyChapterCheckpoint", parsed);
-                Assert.That(CandleDangerMarks().All(mark => !Get<bool>(mark, "Lit") && Get<int>(mark, "Ignitions") == 0 &&
-                    !Get<AudioSource>(mark, "IgnitionSource").isPlaying && !Get<Light>(mark, "LocalLight").enabled), Is.True,
-                    "Checkpoint relit or replayed an extinguished candle");
+                Assert.That(CandleDangerMarks().Count(mark => Get<bool>(mark, "HasBeenLit")), Is.EqualTo(1));
+                Assert.That(CandleDangerMarks().All(mark => Get<int>(mark, "Ignitions") == 0 &&
+                    !Get<AudioSource>(mark, "IgnitionSource").isPlaying), Is.True, "Checkpoint replayed a manual ignition");
                 IsolateThreats(); Begin(); yield return null; CandleDangerExpectSafe();
-                Assert.That(CandleDangerMarks().All(mark => !Get<bool>(mark, "Lit")), Is.True, "First safe restored frame auto-relit markers");
+                Assert.That(CandleDangerMarks().Count(mark => Get<bool>(mark, "Lit")), Is.EqualTo(1), "Safe restored frame did not recover the lit marker");
                 target = LightTargets("Candle")[0]; ((Behaviour)player).enabled = true;
                 PlacePlayer(LightApproach(target)); yield return null; yield return LightAim(target);
                 Assert.That(CandleDangerMarks().Count(mark => Get<bool>(mark, "Lit")), Is.EqualTo(1));
-                Assert.That(Get<int>(target.GetComponent(RequireType("WaymarkCandle")), "Ignitions"), Is.EqualTo(1));
+                Assert.That(Get<int>(target.GetComponent(RequireType("WaymarkCandle")), "Ignitions"), Is.EqualTo(0));
                 if (corridor)
                 { previous = session; Call(shell, "Restart", false); yield return RecoveryRebind(previous); }
             }

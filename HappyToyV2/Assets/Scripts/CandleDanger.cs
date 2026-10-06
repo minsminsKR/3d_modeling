@@ -69,7 +69,7 @@ namespace HappyToy.V2
                 extinguished |= Blackout && candle.Lit;
                 candle.ApplyDanger(Danger, Blackout);
             }
-            if (extinguished) session.Notify("촛불이 모두 꺼졌습니다 · 적이 아주 가깝거나 당신을 발견했습니다.");
+            if (extinguished) session.Notify("켜 두었던 촛불이 잠시 꺼졌습니다 · 위험이 사라지면 다시 켜집니다.");
         }
         bool OwnsStalker(GameSession session, StalkerBrain actor)
         {

@@ -17,18 +17,22 @@ namespace HappyToy.V2
         public float Danger { get; private set; }
         public bool IgnitionBlocked { get; private set; }
         public bool Lit { get; private set; }
+        public bool HasBeenLit { get; private set; }
         public int Ignitions { get; private set; }
         public Light LocalLight => localLight;
         public Transform Flame => flame;
         public AudioSource IgnitionSource => ignition;
-        public string DisplayLabel => IgnitionBlocked ? "위험 · 촛불을 켤 수 없습니다" :
+        public string DisplayLabel => IgnitionBlocked ? (HasBeenLit ? "기척에 잠시 꺼진 촛불" : "위험 · 촛불을 켤 수 없습니다") :
             Lit ? (Danger > 0 ? "떨리는 촛불 · 근처에 적이 있습니다" : "켜진 촛불 · 지나온 길") : "촛불 켜기";
 
         public void BindDanger(LightExplorationRun owner) => dangerOwner = owner;
         public void ApplyDanger(float danger, bool blackout)
         {
             Danger = Mathf.Clamp01(danger); IgnitionBlocked = blackout;
-            if (blackout && Lit) Restore(false);
+            bool visible = HasBeenLit && !blackout;
+            if (Lit == visible) return;
+            if (!visible && ignition) ignition.Stop();
+            Apply(visible);
         }
 
         public void Configure(Transform flameVisual, Light light, float seed)
@@ -56,17 +60,23 @@ namespace HappyToy.V2
         }
         public bool TryIgnite(PlayerMotor player)
         {
-            if (Lit || !isActiveAndEnabled || !player || player.Hidden || !GameSession.Current ||
+            if (HasBeenLit || !isActiveAndEnabled || !player || player.Hidden || !GameSession.Current ||
                 !GameSession.Current.InputAllowed || !flame || !localLight) return false;
             if (dangerOwner) dangerOwner.RefreshDanger();
             if (IgnitionBlocked) return false;
-            Apply(true); Ignitions++;
+            HasBeenLit = true; Apply(true); Ignitions++;
             ignition.Play();
             GameSession.Current.Shell.ShowCaption("[치익 · 촛불 점화]", 1.2f);
-            GameSession.Current.Notify("촛불을 켰습니다. 가까운 적이 있으면 떨리고, 들키거나 너무 가까워지면 꺼집니다.");
+            GameSession.Current.Notify("촛불을 켰습니다. 적이 가까우면 떨리고, 아주 가까워지거나 들키면 잠시 꺼졌다가 위험이 사라지면 다시 켜집니다.");
             return true;
         }
-        public void Restore(bool lit) { if (ignition) ignition.Stop(); Apply(lit); }
+        // Restore the player's durable ignition, not the transient danger blackout.
+        // Automatic recovery is silent and never counts as another manual ignition.
+        public void Restore(bool lit)
+        {
+            if (ignition) ignition.Stop();
+            HasBeenLit = lit; Apply(lit && !IgnitionBlocked);
+        }
         void Apply(bool lit)
         {
             Lit = lit;

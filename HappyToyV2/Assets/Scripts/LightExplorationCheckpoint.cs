@@ -11,6 +11,8 @@ namespace HappyToy.V2
         public Battery[] batteries;
         public Candle[] candles;
         [Serializable] public sealed class Battery { public string id; public bool available; }
+        // Keep the version-1 field: lit records a manually ignited marker. A temporary
+        // danger blackout is presentation only and must not erase it from a save.
         [Serializable] public sealed class Candle { public string id; public bool lit; }
         // Unity can materialize an absent nested class as an empty object. Only that
         // representation may accompany legacy marker 0; substantive new state cannot.

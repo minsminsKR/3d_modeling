@@ -1,0 +1,50 @@
+{
+  "status": "Passed",
+  "unity": "6000.6.0f1",
+  "failed": 0,
+  "passed": 10,
+  "tests": [
+    {
+      "result": "Passed",
+      "name": "CandleActualFarSightBlackoutsBeforeEnemyUpdateAndPhysicalCoverPreventsIt"
+    },
+    {
+      "result": "Passed",
+      "name": "CandleActualNormalMotionWarningGrowsFlickerDepthAndCompletedPulseCount"
+    },
+    {
+      "result": "Passed",
+      "name": "CandleDangerPauseFreezesThreatStateAndReducedMotionKeepsSteadyDimming"
+    },
+    {
+      "result": "Passed",
+      "name": "CandleDangerRejectsInactiveUnreadyWrongModeAndRealOtherFloorActors"
+    },
+    {
+      "result": "Passed",
+      "name": "CandleDormantSchoolMaskAndUnreleasedMannequinStayHarmlessWithReadyNavigation"
+    },
+    {
+      "result": "Passed",
+      "name": "CandlePhysicalIgnitionAndFiniteSupplyCheckpointRestoreWithoutReplay"
+    },
+    {
+      "result": "Passed",
+      "name": "CandleProximityFlickersAndTemporarilyBlackoutsOnlyPreviouslyLitMarkers"
+    },
+    {
+      "result": "Passed",
+      "name": "CandleTemporaryBlackoutPreservesIgnitionThroughBothModeCheckpointRoundTrips"
+    },
+    {
+      "result": "Passed",
+      "name": "NativeCorridorRouteLightingUsesActualInputFiniteBatteryAndOneCandleIgnition"
+    },
+    {
+      "result": "Passed",
+      "name": "RealModeledCandleKeepsActualInteractionPhysicsPauseAndPhotographicFlame"
+    }
+  ],
+  "scope": "Real Unity PlayMode scenes, candle intensity and ignition input, threat eligibility, temporary suppression and both-mode checkpoint round trips. Not a native survival, human listening or frame-rate certification.",
+  "total": 10
+}
