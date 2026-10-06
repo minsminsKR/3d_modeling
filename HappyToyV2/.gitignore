@@ -11,4 +11,10 @@
 # Override parent repository's model-download exclusions for required Unity sources.
 !/Assets/**/*.fbx
 !/SourceArt/*.blend
-!/SourceArt/GraphicsUpgrade/**/*.blend
+!/SourceArt/**/*.blend
+
+# Reproducible authoring tools write review candidates and previews here.
+/SourceArt/**/proposed/
+/SourceArt/**/staged/
+/SourceArt/**/previews/
+/SourceArt/EnemyRefinementV2/work/
