@@ -30,6 +30,7 @@ namespace HappyToy.V2
         public bool Crouching { get; private set; }
         public bool StandingBlocked { get; private set; }
         public float CameraHeightOffset => Crouching ? standingHeight - crouchedHeight : 0;
+        public Quaternion LookRotation => Quaternion.Euler(pitch, 0, 0);
         public float SightTargetHeight => Crouching ? crouchedHeight * .63f : standingHeight * .63f;
         public float FootstepNoiseRadius { get; private set; }
         public float FootstepNoiseRemaining { get; private set; }

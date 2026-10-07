@@ -77,6 +77,15 @@ namespace HappyToy.V2
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath(); floorY = transform.position.y;
+            // Resize the imported children; the growth/mask attachment owners keep
+            // their existing animated pivots and the navigation capsule stays put.
+            if(motion && body)MonsterPresentationScale.Enlarge(motion.transform,2.24f,
+                transform.position.y-agent.baseOffset,false);
+            if(mask && mask.childCount>0)
+            {
+                var model=mask.GetChild(0);var bounds=MonsterPresentationScale.Bounds(model);
+                model.localScale*=Mathf.Clamp(.68f/Mathf.Max(.01f,bounds.size.y),1,1.2f);
+            }
             DoorTraversal.Bind(this);
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 16; sound.dopplerLevel = 0; sound.volume = .5f;

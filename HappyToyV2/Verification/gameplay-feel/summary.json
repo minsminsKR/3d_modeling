@@ -1,0 +1,144 @@
+{
+  "status": "PASS",
+  "recordedUtc": "2026-10-07T06:15:47.587304+00:00",
+  "unity": "6000.6.0f1",
+  "sourceBaseCommit": "cb545fe04c98cbde43b267ff3516ee8dea4458cc",
+  "build": "Builds/GameplayFeel-20261007-r2",
+  "buildInputCount": 2357,
+  "editMode": {
+    "filter": "LocomotionCameraMotionTests",
+    "observedPassed": 3
+  },
+  "playMode": {
+    "uniquePassed": 12,
+    "cases": [
+      {
+        "name": "ActualRecognitionImpactAndWitnessedPursuitAreOcclusionBoundedAndPauseSafe",
+        "result": "Passed"
+      },
+      {
+        "name": "ActualRenderedSkinChoosesBakeCoordinateModeAtOriginalTransformScale",
+        "result": "Passed"
+      },
+      {
+        "name": "CameraMotionCabinetLeaveDoesNotCarryRollOrPositionalDrift",
+        "result": "Passed"
+      },
+      {
+        "name": "CameraMotionRealWalkSprintWallPauseAndComfortStayGrounded",
+        "result": "Passed"
+      },
+      {
+        "name": "CameraMotionYieldsToSchoolShotAndResumesWithoutDriftAfterCancellation",
+        "result": "Passed"
+      },
+      {
+        "name": "ChapterCyclopseGlancesThenPassesWithPauseAndSafeControlReturn",
+        "result": "Passed"
+      },
+      {
+        "name": "EnlargedMonstersKeepNavigationScaleAndGroundedAuthoredPose",
+        "result": "Passed"
+      },
+      {
+        "name": "FocusDisabledGamepadDoesNotOpenPauseButDisconnectStillDoes",
+        "result": "Passed"
+      },
+      {
+        "name": "RealPerceivedTensionMixHasQuietBoundsAndLeavesFootstepHeadroom",
+        "result": "Passed"
+      },
+      {
+        "name": "SilentEnemyStateCannotInventTensionButActualUnseenFootstepsCanAnticipate",
+        "result": "Passed"
+      },
+      {
+        "name": "TrueRecognitionHasBoundedAftermathAndClearsOnRestorationAndRetry",
+        "result": "Passed"
+      },
+      {
+        "name": "WindowFocusChangesKeepRunAliveAndPreserveExplicitPause",
+        "result": "Passed"
+      }
+    ]
+  },
+  "horror": {
+    "status": "PASS",
+    "scope": "Controlled native poses/zero movement speed; genuine LOS, recognition, Chase. Production URP camera and existing UI Toolkit panel directly render into the same native HDR target; bounded fresh-paint polling, no screenshot/backbuffer or synthetic composition. Listener DSP runs naturally while brief image captures freeze game time. Escape is controlled threat disengagement, not chapter completion.",
+    "recognition": true,
+    "continuousChase": true,
+    "returnedToCalm": true,
+    "reducedMotionRespected": true,
+    "pauseFreezes": true
+  },
+  "nativeAudio": {
+    "capture": "Unity listener DSP tap, pre-device; natural native callback clock; no device listening certification",
+    "sampleRate": 48000,
+    "channels": 2,
+    "callbacks": 581,
+    "capturedSamples": 1189888,
+    "nonfiniteSamples": 0,
+    "nonSilent": true,
+    "truncated": false,
+    "writerError": ""
+  },
+  "school": {
+    "status": "PASS",
+    "cyclopsePhase": "done",
+    "zoom": true,
+    "gradualEmergence": true,
+    "occludedStaging": true,
+    "inputBlocked": true,
+    "feetStayPut": true,
+    "pauseFreezes": true,
+    "cameraReturned": true,
+    "mannequinOtherCorridor": true,
+    "solitarySpotlight": true,
+    "mannequinStill": true,
+    "restoreSkipsShots": true,
+    "looksAtPlayer": true,
+    "turnsSideways": true,
+    "passesAcrossJunction": true,
+    "holdsZoom": true,
+    "noEarlyPursuit": true,
+    "pursuitGrace": true,
+    "initialFov": 72.0,
+    "zoomFov": 24.0,
+    "emergenceDistance": 6.20025110244751,
+    "pauseElapsed": 0.0,
+    "cyclopseHeight": 2.380000114440918,
+    "minimumPlayerDistance": 20.20000457763672,
+    "attacksDuringReveal": 0,
+    "crossingStart": {
+      "x": 13.800000190734863,
+      "y": 0.03333330154418945,
+      "z": 3.200000047683716
+    },
+    "crossingEnd": {
+      "x": 13.800000190734863,
+      "y": 0.03333330154418945,
+      "z": -3.200000047683716
+    },
+    "mannequinPosition": {
+      "x": 13.800000190734863,
+      "y": 0.03333330154418945,
+      "z": -7.400000095367432
+    },
+    "lampPosition": {
+      "x": 13.800000190734863,
+      "y": 2.8499999046325684,
+      "z": -7.400000095367432
+    },
+    "errors": []
+  },
+  "renderedPatrolHeightsMetres": {
+    "Cyclopse": 2.38,
+    "Uncat": 2.2,
+    "angryHwacat": 2.22,
+    "Baby": 1.48
+  },
+  "visualReview": "Inspected native detection and sustained-pursuit camera/HUD images, plus Cyclopse facing/sideways passing corridor shots.",
+  "reproduce": "Tools/quality/README.md and SOURCE_HANDOFF.md; opt-in native flags -v2-horror-feedback-output and -v2-school-reveal-output.",
+  "optionalLocalEvidence": "../game/verification/gameplay-feel-20261007; raw images/audio/logs and builds are not required source.",
+  "scope": "Focused Unity/runtime regressions and controlled native presentation assays; does not certify subjective fear, hardware audio listening or complete survival-route balance."
+}

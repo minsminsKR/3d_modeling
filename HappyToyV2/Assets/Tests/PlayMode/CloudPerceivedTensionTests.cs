@@ -93,6 +93,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(silent, "CanSeePlayer"), Is.False);
             Assert.That(Get<int>(AudioSteps(silent), "StepsPlayed"), Is.Zero);
             Assert.That(Get<int>(tension, "PerceivedEvents"), Is.Zero); Assert.That(TensionQuiet(tension), Is.True);
+            Assert.That(Get<float>(player.GetComponent(RequireType("DetectionFeedback")), "ChaseStrength"), Is.Zero,
+                "An unwitnessed chase flag revealed an unknown pursuer");
             Assert.That(Get<float>(ambience, "StoryGain"), Is.EqualTo(1).Within(.001f), "Unseen Chase state still ducks local ambience");
             wall.SetActive(false); PlacePlayer(origin + Vector3.right * 4 + Vector3.up * 5, false);
             yield return Delay(.4f);

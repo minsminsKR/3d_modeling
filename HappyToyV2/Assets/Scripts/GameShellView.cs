@@ -16,7 +16,7 @@ namespace HappyToy.V2
         GameSession session;
         UIDocument document;
         PanelSettings settings;
-        VisualElement recognitionGrain, recognitionEdge;
+        VisualElement threatVeil;
         VisualElement root, stage, stamina, crosshair, focusPanel, itemFeedbackPanel;
         Label objective, objectiveCount, focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
         Label navigationHelp, controlInstructions, controlsFooter, batteryMeter;
@@ -199,7 +199,7 @@ namespace HappyToy.V2
             shownReloadError = shell.ReloadError;
             journalStep = session.RecordsRecovered;
             journalExploration = session.ExplorationCount;
-            root.Clear(); recognitionGrain = recognitionEdge = null;
+            root.Clear(); threatVeil = null;
             objective = objectiveCount = focus = meter = status = noise = caption = itemFeedback = volume = sensitivity = fieldOfView = null;
             reducedMotionButton = subtitlesButton = contrastButton = textSizeButton = null;
             stamina = crosshair = focusPanel = itemFeedbackPanel = null;
@@ -212,16 +212,13 @@ namespace HappyToy.V2
             stage.style.flexShrink = 0;
             if (shown == GameShell.Page.Playing)
             {
-                recognitionGrain = new VisualElement { name = "recognition-static", pickingMode = PickingMode.Ignore };
-                recognitionEdge = new VisualElement { name = "recognition-edge", pickingMode = PickingMode.Ignore };
-                foreach (var effect in new[] { recognitionGrain, recognitionEdge })
+                threatVeil = new VisualElement { name = "witnessed-threat-veil", pickingMode = PickingMode.Ignore };
+                threatVeil.style.backgroundSize = new BackgroundSize(new Length(100, LengthUnit.Percent), new Length(100, LengthUnit.Percent));
+                foreach (var effect in new[] { threatVeil })
                 {
                     effect.style.position = Position.Absolute; effect.style.left = effect.style.top = effect.style.right = effect.style.bottom = 0;
                     effect.style.display = DisplayStyle.None; root.Add(effect);
                 }
-                recognitionEdge.style.borderLeftWidth = recognitionEdge.style.borderRightWidth = 32;
-                recognitionEdge.style.borderTopWidth = recognitionEdge.style.borderBottomWidth = 20;
-                recognitionEdge.style.borderLeftColor = recognitionEdge.style.borderRightColor = recognitionEdge.style.borderTopColor = recognitionEdge.style.borderBottomColor = new Color(.09f, .015f, .012f, .65f);
             }
             root.Add(stage);
             if (shown == GameShell.Page.Playing)
@@ -615,13 +612,12 @@ namespace HappyToy.V2
             string sound = player.FootstepNoiseRadius <= 0 ? "없음" : player.FootstepNoiseRadius <= 3.5f ? "작음" : player.FootstepNoiseRadius <= 7 ? "보통" : "큼";
             noise.text = "내 발소리  " + sound;
             var detection = player.GetComponent<DetectionFeedback>();
-            bool detected = detection && detection.Active;
-            Visible(recognitionGrain, detected && !detection.Softened); Visible(recognitionEdge, detected);
-            if (detected)
+            bool threatened = detection && detection.PeripheralStrength > .001f;
+            Visible(threatVeil, threatened);
+            if (threatened)
             {
-                recognitionGrain.style.backgroundImage = detection.GrainTexture;
-                recognitionGrain.style.opacity = detection.Strength;
-                recognitionEdge.style.opacity = detection.Strength * (detection.Softened ? .45f : 1);
+                threatVeil.style.backgroundImage = detection.PeripheralTexture;
+                threatVeil.style.opacity = detection.PeripheralStrength;
             }
             noise.style.color = player.FootstepNoiseRadius > 7 ? Rust : Muted;
         }

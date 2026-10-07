@@ -55,6 +55,7 @@ namespace HappyToy.V2
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath(); floorY = transform.position.y;
+            MonsterPresentationScale.Enlarge(visual,2.20f,transform.position.y-agent.baseOffset);
             DoorTraversal.Bind(this);
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 15; sound.volume = .3f; sound.dopplerLevel = 0;

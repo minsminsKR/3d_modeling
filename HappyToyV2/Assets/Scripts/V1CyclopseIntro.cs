@@ -11,6 +11,13 @@ namespace HappyToy.V2
         public const float EmergenceSpeed = .85f;
         public const float StagingWaitLimit = 8;
         public const float MinimumStagingDistance = 5;
+        public const float CrossingSpeed = 1.3f;
+        // School first-memory shot: glance at the player and keep walking across
+        // the far junction. The original story reveal retains its authored route.
+        public bool CrossCorridorOnly;
+        public bool LookAtPlayerCompleted { get; private set; }
+        public bool SideTurnCompleted { get; private set; }
+        public bool PassCompleted { get; private set; }
         const float FloorY = 0, FloorDrift = .4f, ArrivalDistance = .2f;
         static readonly Vector3 AuthoredCorner = new Vector3(13.8f, 0, 0);
         static readonly Vector3 AuthoredReveal = new Vector3(10.6f, 0, 0);
@@ -26,6 +33,7 @@ namespace HappyToy.V2
         public Vector3 SelectedStagingPosition { get; private set; }
         public Vector3 SelectedCornerPosition { get; private set; }
         public Vector3 SelectedRevealPosition { get; private set; }
+        public Vector3 SelectedExitPosition { get; private set; }
         public float EmergenceDistance { get; private set; }
         public float EmergenceElapsed { get; private set; }
         public bool StagingWasOccluded { get; private set; }
@@ -39,6 +47,7 @@ namespace HappyToy.V2
         StalkerBrain actor;
         NavMeshAgent agent;
         float previousSpeed, previousStoppingDistance;
+        bool previousUpdateRotation;
         bool settingsOwned;
 
         bool SessionValid => Phase != "resolved" && isActiveAndEnabled && session && GameSession.Current == session &&
@@ -88,11 +97,12 @@ namespace HappyToy.V2
         bool TryStaging()
         {
             var filter = new NavMeshQueryFilter { agentTypeID = agent.agentTypeID, areaMask = agent.areaMask };
-            if (!Sample(AuthoredCorner, filter, out var corner) || !Sample(AuthoredReveal, filter, out var reveal)) return false;
+            if (!Sample(AuthoredCorner, filter, out var corner) ||
+                !Sample(CrossCorridorOnly ? AuthoredCorner : AuthoredReveal, filter, out var reveal)) return false;
             var player = session.player;
             var eye = player.eyes ? player.eyes.transform.position : player.transform.position + Vector3.up * 1.6f;
             var path = new NavMeshPath();
-            if (!CompleteFloorPath(corner, reveal, filter, path)) return false;
+            if (!CrossCorridorOnly && !CompleteFloorPath(corner, reveal, filter, path)) return false;
             // Prefer the branch farther from the player, but validate both branches.
             float side = player.transform.position.z > 0 ? -1 : 1;
             for (int i = 0; i < 2; i++)
@@ -102,7 +112,13 @@ namespace HappyToy.V2
                     HorizontalDistance(staging, player.transform.position) < MinimumStagingDistance ||
                     !CompleteFloorPath(staging, corner, filter, path) || !OccludedFrom(eye, staging) ||
                     !OccludedFrom(new Vector3(0, 1.6f, 0), staging)) continue;
+                var exit = reveal;
+                if (CrossCorridorOnly && (!Sample(new Vector3(13.8f, FloorY, -staging.z), filter, out exit) ||
+                    !CompleteFloorPath(corner, exit, filter, path) ||
+                    HorizontalDistance(corner,player.transform.position)<MinimumStagingDistance ||
+                    HorizontalDistance(exit,player.transform.position)<MinimumStagingDistance)) continue;
                 SelectedStagingPosition = staging; SelectedCornerPosition = corner; SelectedRevealPosition = reveal;
+                SelectedExitPosition = exit;
                 StagingWasOccluded = true;
                 return true;
             }
@@ -172,8 +188,9 @@ namespace HappyToy.V2
             brain.gameObject.SetActive(true); ActivationCount++;
             if (!EnemyNavigation.Ready(agent))
             { ReleaseBlocked("Staged agent did not bind to NavMesh"); yield break; }
-            previousSpeed = agent.speed; previousStoppingDistance = agent.stoppingDistance; settingsOwned = true;
-            agent.speed = EmergenceSpeed; agent.stoppingDistance = .08f;
+            previousSpeed = agent.speed; previousStoppingDistance = agent.stoppingDistance;
+            previousUpdateRotation=agent.updateRotation;settingsOwned = true;
+            agent.speed = CrossCorridorOnly ? CrossingSpeed : EmergenceSpeed; agent.stoppingDistance = .08f;
             EnemyNavigation.Stop(agent, true);
             Phase = "anticipation";
             anticipation = EncounterRevealAudio.Ensure(transform);
@@ -189,49 +206,28 @@ namespace HappyToy.V2
             }
             anticipation.Stop();
             Phase = "emerge";
-            foreach (var destination in new[] { SelectedCornerPosition, SelectedRevealPosition })
+            foreach (var destination in CrossCorridorOnly ? new[] { SelectedCornerPosition } :
+                new[] { SelectedCornerPosition, SelectedRevealPosition })
             {
-                var path = new NavMeshPath();
-                if (!EnemyNavigation.TryRoute(agent, destination, FloorY, path, 6) ||
-                    !ValidLivePath(path, destination) || !agent.SetPath(path))
-                { ReleaseBlocked("Emergence route became unavailable"); yield break; }
-                agent.isStopped = false;
-                float elapsed = 0, stalled = 0;
-                var previous = brain.transform.position;
-                var progressAnchor = previous;
-                while (true)
-                {
-                    if (!SessionValid || !brain.gameObject.activeInHierarchy)
-                    { Cancel(); yield break; }
-                    if (!EnemyNavigation.Ready(agent) || !OnIntroFloor(brain.transform.position))
-                    { ReleaseBlocked("Emergence agent left its same-floor route"); yield break; }
-                    if (!session.InputAllowed)
-                    { EnemyNavigation.Stop(agent); previous = brain.transform.position; yield return null; continue; }
-                    agent.isStopped = false;
-                    float distance = HorizontalDistance(previous, brain.transform.position);
-                    EmergenceDistance += distance; previous = brain.transform.position;
-                    elapsed += Time.deltaTime; EmergenceElapsed += Time.deltaTime;
-                    stalled += Time.deltaTime;
-                    if (HorizontalDistance(progressAnchor, brain.transform.position) >= .025f)
-                    { stalled = 0; progressAnchor = brain.transform.position; }
-                    if (!agent.pathPending && HorizontalDistance(brain.transform.position, destination) <= ArrivalDistance &&
-                        agent.remainingDistance <= ArrivalDistance)
-                    { RouteLegsCompleted++; break; }
-                    if ((!agent.pathPending && (!agent.hasPath || agent.pathStatus != NavMeshPathStatus.PathComplete)) ||
-                        elapsed >= 11 || stalled >= 3)
-                    { ReleaseBlocked("Emergence route blocked or timed out"); yield break; }
-                    yield return null;
-                }
+                yield return WalkTo(destination);
+                if(Phase=="blocked" || Phase=="resolved")yield break;
             }
             Phase = "roar"; EnemyNavigation.Stop(agent, true);
             var facing = session.player.transform.position - brain.transform.position; facing.y = 0;
-            if (facing.sqrMagnitude > .01f) brain.transform.rotation = Quaternion.LookRotation(facing);
+            if(CrossCorridorOnly)
+            {
+                agent.updateRotation=false;
+                yield return TurnTo(facing,.4f);
+                if(Phase=="blocked" || Phase=="resolved")yield break;
+            }
+            else if (facing.sqrMagnitude > .01f) brain.transform.rotation = Quaternion.LookRotation(facing);
             // The actor already has its movement filter. Configure a fresh inactive
             // emitter before activation rather than auto-playing an empty root source.
             voiceEmitter = new GameObject("Cyclopse intro voice"); voiceEmitter.SetActive(false);
             voiceEmitter.transform.SetParent(brain.transform, false);
             voice = voiceEmitter.AddComponent<AudioSource>(); voice.playOnAwake = false;
-            voice.spatialBlend = 1; voice.minDistance = 2; voice.maxDistance = 18; voice.volume = .6f;
+            voice.spatialBlend = 1; voice.minDistance = 2;
+            voice.maxDistance = CrossCorridorOnly ? 26 : 18; voice.volume = .6f;
             var acoustics = EnemyAcoustics.Bind(voice, brain.transform, .6f);
             // V1's two descending sawtooth voices, bandpass at 245 Hz (Q .85).
             const int rate=24000;var samples=new float[(int)(rate*.78f)];
@@ -249,7 +245,7 @@ namespace HappyToy.V2
             if(session.player.eyes&&session.Shell&&
                 Vector3.Distance(session.player.eyes.transform.position,voice.transform.position)<=voice.maxDistance&&acoustics.IsAudible(voice))
                 session.Shell.ShowCaption("[복도 끝 · 낮게 가라앉는 포효]", 2.6f, 1);
-            for (float elapsed = 0; elapsed < 1.3f || (session && !session.InputAllowed);)
+            for (float elapsed = 0; elapsed < (CrossCorridorOnly ? .75f : 1.3f) || (session && !session.InputAllowed);)
             {
                 if (!SessionValid || !brain.gameObject.activeInHierarchy)
                 { Cancel(); yield break; }
@@ -260,8 +256,63 @@ namespace HappyToy.V2
             }
             if (!SessionValid || !brain.gameObject.activeInHierarchy || !EnemyNavigation.Ready(agent))
             { Cancel(); yield break; }
-            RestoreAgentSettings(); agent.isStopped = false; brain.enabled = true;
+            if(CrossCorridorOnly)
+            {
+                LookAtPlayerCompleted=true;Phase="turnAway";
+                yield return TurnTo(SelectedExitPosition-brain.transform.position,.45f);
+                if(Phase=="blocked" || Phase=="resolved")yield break;
+                SideTurnCompleted=true;agent.updateRotation=previousUpdateRotation;Phase="pass";
+                yield return WalkTo(SelectedExitPosition);
+                if(Phase=="blocked" || Phase=="resolved")yield break;
+                PassCompleted=true;
+            }
+            RestoreAgentSettings(); agent.isStopped = CrossCorridorOnly; brain.enabled = !CrossCorridorOnly;
             Phase = "done"; Completed = true; ReleaseVoice();
+        }
+        IEnumerator TurnTo(Vector3 direction,float duration)
+        {
+            direction.y=0;if(direction.sqrMagnitude<.01f)yield break;
+            var from=actor.transform.rotation;var to=Quaternion.LookRotation(direction);
+            for(float elapsed=0;elapsed<duration;)
+            {
+                if(!SessionValid || !actor.gameObject.activeInHierarchy){Cancel();yield break;}
+                if(!EnemyNavigation.Ready(agent)){ReleaseBlocked("Turning agent lost NavMesh");yield break;}
+                EnemyNavigation.Stop(agent,true);
+                if(session.InputAllowed)
+                {
+                    elapsed+=Time.deltaTime;
+                    actor.transform.rotation=Quaternion.Slerp(from,to,Mathf.SmoothStep(0,1,Mathf.Clamp01(elapsed/duration)));
+                }
+                yield return null;
+            }
+        }
+        IEnumerator WalkTo(Vector3 destination)
+        {
+            var path=new NavMeshPath();
+            if(!EnemyNavigation.TryRoute(agent,destination,FloorY,path,6) ||
+                !ValidLivePath(path,destination) || !agent.SetPath(path))
+            {ReleaseBlocked("Emergence route became unavailable");yield break;}
+            agent.isStopped=false;float elapsed=0,stalled=0;
+            var previous=actor.transform.position;var progressAnchor=previous;
+            while(true)
+            {
+                if(!SessionValid || !actor.gameObject.activeInHierarchy){Cancel();yield break;}
+                if(!EnemyNavigation.Ready(agent) || !OnIntroFloor(actor.transform.position))
+                {ReleaseBlocked("Emergence agent left its same-floor route");yield break;}
+                if(!session.InputAllowed)
+                {EnemyNavigation.Stop(agent);previous=actor.transform.position;yield return null;continue;}
+                agent.isStopped=false;
+                EmergenceDistance+=HorizontalDistance(previous,actor.transform.position);previous=actor.transform.position;
+                elapsed+=Time.deltaTime;EmergenceElapsed+=Time.deltaTime;stalled+=Time.deltaTime;
+                if(HorizontalDistance(progressAnchor,actor.transform.position)>=.025f)
+                {stalled=0;progressAnchor=actor.transform.position;}
+                if(!agent.pathPending && HorizontalDistance(actor.transform.position,destination)<=ArrivalDistance &&
+                    agent.remainingDistance<=ArrivalDistance){RouteLegsCompleted++;yield break;}
+                if((!agent.pathPending && (!agent.hasPath || agent.pathStatus!=NavMeshPathStatus.PathComplete)) ||
+                    elapsed>=11 || stalled>=3)
+                {ReleaseBlocked("Emergence route blocked or timed out");yield break;}
+                yield return null;
+            }
         }
         static bool ValidLivePath(NavMeshPath path, Vector3 destination)
         {
@@ -273,7 +324,8 @@ namespace HappyToy.V2
         void RestoreAgentSettings()
         {
             if (!settingsOwned) return;
-            if (agent) { agent.speed = previousSpeed; agent.stoppingDistance = previousStoppingDistance; }
+            if (agent) { agent.speed = previousSpeed; agent.stoppingDistance = previousStoppingDistance;
+                agent.updateRotation=previousUpdateRotation; }
             settingsOwned = false;
         }
         void ReleaseBlocked(string reason)
@@ -283,7 +335,9 @@ namespace HappyToy.V2
             // A newly blocked door/agent must not cause a visible teleport or a
             // false arrival/roar. Let ordinary AI recover from this exact position.
             EnemyNavigation.Stop(agent, true); RestoreAgentSettings();
-            actor.enabled = true; Phase = "blocked";
+            actor.enabled = !CrossCorridorOnly;
+            if(CrossCorridorOnly)actor.gameObject.SetActive(false);
+            Phase = "blocked";
         }
         // The iterator is driven by StoryDirector. Stopping its parent coroutine
         // never reaches its guards, so cancellation explicitly settles owned state.

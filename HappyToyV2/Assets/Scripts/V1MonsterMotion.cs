@@ -24,6 +24,8 @@ namespace HappyToy.V2
         public string CurrentClip => current;
         public float ClipTime => animationPlayer&&current!=null?animationPlayer[current].time:0;
         public bool RefinedVisual { get; private set; }
+        public float PresentationHeight { get; private set; }
+        public float PresentationScale { get; private set; } = 1;
         Material[] refinedMaterials;
         void Awake()
         {
@@ -36,6 +38,13 @@ namespace HappyToy.V2
                 groundCorrectionLimit=Mathf.Max(.35f,agent.height*.5f);
             RefinedVisual=EnemyVisualRefinement.TryApply(this,out var refinedModel,out var refinedAnimation,out refinedMaterials);
             model=refinedModel;animationPlayer=refinedAnimation;
+            var patrol=animationPlayer.GetClip("patrol");
+            if(patrol)patrol.SampleAnimation(animationPlayer.gameObject,0);
+            PresentationScale=MonsterPresentationScale.Enlarge(model,
+                MonsterPresentationScale.TargetHeight(EnemySoundProfile.Identify(transform)),
+                transform.position.y-(agent?agent.baseOffset:0));
+            PresentationHeight=MonsterPresentationScale.Bounds(model).size.y;
+            groundCorrectionLimit*=PresentationScale;
             rest=model.localRotation;restPosition=model.localPosition;skins=model.GetComponentsInChildren<SkinnedMeshRenderer>();
             sampledMesh=new Mesh();attackPose=new V1AttackPose(model);
             if(EnemySoundProfile.Identify(transform)==EnemySoundKind.Uncat)

@@ -52,6 +52,9 @@ namespace HappyToy.V2
 
         void Awake()
         {
+            // Desktop window switching keeps the current run alive. Input devices
+            // still reset on focus loss, so typing in another app cannot move us.
+            Application.runInBackground = true;
             session = GetComponent<GameSession>();
             LoadSettings();
             Set(Page.Title);
@@ -377,6 +380,7 @@ namespace HappyToy.V2
                 noticeTime = Mathf.Max(0, noticeTime - Time.deltaTime);
                 captionTime = Mathf.Max(0, captionTime - Time.deltaTime);
             }
+            if (!PlayerControls.AcceptsInput) return;
             var keys = Keyboard.current;
             var pad = Gamepad.current;
             // UI Toolkit alone owns submit; Enter must activate the focused button exactly once.
@@ -393,8 +397,13 @@ namespace HappyToy.V2
                 else if (Screen == Page.Journal) Back();
             }
         }
-        void OnApplicationFocus(bool focused) { if (!focused && !auditMode) Pause(); }
-        void OnApplicationPause(bool paused) { if (paused && !auditMode) Pause(); }
+        void OnApplicationFocus(bool focused)
+        {
+            if (focused) ApplyScreenState();
+            else { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
+        }
+        // OS window/minimize notifications do not own the explicit Esc menu.
+        void OnApplicationPause(bool paused) { if (!paused) ApplyScreenState(); }
         void OnApplicationQuit() { SaveSettings(); }
         void OnDestroy()
         {

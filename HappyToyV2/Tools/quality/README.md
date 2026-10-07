@@ -248,3 +248,30 @@ pause freezes the shot clock, and the original view/control return. It writes
 `school-reveal.json` and PNGs, then exits nonzero on failure. It does not certify
 survival balance, human listening, or frame rate. Chapter checkpoint tests separately
 cover restoration without replaying the completed first appearances.
+
+The school Cyclopse now crosses the junction at constant corridor x, looks at the
+player, turns sideways and exits the opposite branch. The audit also checks held
+zoom, no pursuit/attack during the shot, and the pause-aware four-second grace
+after control returns. `CloudMonsterPresenceTests` checks the actual posed skin
+height independently of the sizing helper, retained root/navigation dimensions,
+ground contact, and restoration after the second camera shot.
+
+## Movement, focus and pursuit presentation
+
+Use Unity **6000.6.0f1** and a fresh `QualityValidation.BuildWindows` output.
+`LocomotionCameraMotionTests` covers distance-driven gait, settling and landing.
+The three `CameraMotion...` PlayMode tests cover physical walking/sprinting, held
+input against a wall, pause, reduced motion, cabinet exit and school-shot ownership.
+`WindowFocusChangesKeepRunAliveAndPreserveExplicitPause` and
+`FocusDisabledGamepadDoesNotOpenPauseButDisconnectStillDoes` exercise focus/pause
+notifications and Input System device disable/removal; they do not send actual
+desktop Alt+Tab input.
+
+Run the fresh Windows player with
+`-v2-horror-feedback-output <fresh-evidence-folder>` for the opt-in controlled
+presentation assay. It uses genuine sight acquisition and Chase on a stationary
+real actor, checks continuous pursuit, disengagement, explicit pause and reduced
+motion, and retains camera/UI images plus native listener DSP audio. Its capture
+scope and any failure are recorded in `horror-feedback.json`. Test preferences are
+restored before exit. Capture outputs, builds and editor caches are optional local
+evidence; the C# generators and audits with their metadata are required source.

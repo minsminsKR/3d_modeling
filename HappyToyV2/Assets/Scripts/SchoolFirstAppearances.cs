@@ -6,7 +6,7 @@ using UnityEngine.AI;
 namespace HappyToy.V2
 {
     // Chapter-owned shots. The camera visits the real corridors; the player capsule
-    // stays put. The existing Cyclopse intro still owns its occluded spawn and walk.
+    // stays put. The Cyclopse owns an occluded, protected crossing at the far junction.
     [DefaultExecutionOrder(300)]
     public sealed class SchoolFirstAppearances : MonoBehaviour
     {
@@ -16,6 +16,8 @@ namespace HappyToy.V2
         public bool MannequinShown { get; private set; }
         public float ShotElapsed { get; private set; }
         public V1CyclopseIntro CyclopseIntro { get; private set; }
+        public const float CyclopsePursuitGrace = 4;
+        public bool CyclopseGraceActive { get; private set; }
         public Light MannequinSpotlight { get; private set; }
         MemoryChapter chapter;
         GameSession session;
@@ -36,6 +38,7 @@ namespace HappyToy.V2
         {
             chapter=owner;session=GameSession.Current;camera=session.player.eyes;
             CyclopseIntro=gameObject.AddComponent<V1CyclopseIntro>();
+            CyclopseIntro.CrossCorridorOnly=true;
             var keyObject=new GameObject("School Cyclopse gradual reveal light");keyObject.transform.SetParent(transform,false);
             keyObject.transform.position=new Vector3(8.9f,2.45f,.35f);
             cyclopseKey=keyObject.AddComponent<Light>();cyclopseKey.type=LightType.Point;
@@ -92,7 +95,7 @@ namespace HappyToy.V2
             var torch=session.player.flashlight;torchWasOn=torch&&torch.enabled;if(torch)torch.enabled=false;
             FreezeOtherThreats();
             shotEye=cyclopse?new Vector3(-6.1f,1.65f,0):new Vector3(13.8f,1.65f,-.7f);
-            shotTarget=cyclopse?new Vector3(13.8f,1.35f,0):MannequinStation+Vector3.up*1.25f;
+            shotTarget=cyclopse?new Vector3(13.8f,1.62f,0):MannequinStation+Vector3.up*1.5f;
             ApplyCamera();
         }
         public void PlayCyclopse()
@@ -111,17 +114,39 @@ namespace HappyToy.V2
             {
                 // Normal first-memory input is far from the junction. A malformed or
                 // obstructed setup still cannot trap the player's camera indefinitely.
-                if(ShotElapsed>24) {CyclopseIntro.Cancel();break;}
+                if(ShotElapsed>14) {CyclopseIntro.Cancel();break;}
                 yield return reveal.Current;
             }
             CyclopseShown=CyclopseIntro.Completed;
-            if(!actor.gameObject.activeSelf && session && !session.Finished)
-            {
-                actor.gameObject.SetActive(true);var agent=actor.GetComponent<NavMeshAgent>();agent.enabled=true;
-                agent.Warp(actor.transform.position);actor.enabled=true;
-            }
+            // A blocked reveal never falls back to visible placement or releases
+            // ordinary pursuit in front of the immobilized player.
             actor.enabled=false;EnemyNavigation.Stop(actor.GetComponent<NavMeshAgent>());
             yield return ReturnCamera();
+        }
+        IEnumerator ReleaseCyclopseAfterGrace()
+        {
+            CyclopseGraceActive=true;
+            for(float elapsed=0;elapsed<CyclopsePursuitGrace;)
+            {
+                if(!session || session.Finished || !chapter || !chapter.Cyclopse ||
+                    !chapter.Cyclopse.gameObject.activeInHierarchy)
+                {CyclopseGraceActive=false;yield break;}
+                HoldCyclopse();
+                if(session.InputAllowed && !CameraOwned)elapsed+=Time.deltaTime;
+                yield return null;
+            }
+            CyclopseGraceActive=false;
+            if(session && !session.Finished && chapter.Cyclopse.gameObject.activeInHierarchy)
+                chapter.Cyclopse.enabled=true;
+        }
+        void HoldCyclopse()
+        {
+            if(!chapter || !chapter.Cyclopse)return;
+            var agent=chapter.Cyclopse.GetComponent<NavMeshAgent>();
+            EnemyNavigation.Stop(agent,true);
+            // ResetPath can clear native stop state. Set it after the reset as
+            // well, so the protected camera return is a physical locomotion lock.
+            if(EnemyNavigation.Ready(agent))agent.isStopped=true;
         }
         public void PlayMannequin()
         {
@@ -148,11 +173,16 @@ namespace HappyToy.V2
             if(!camera)return;
             var eye=shotEye;var target=shotTarget;
             if(cyclopseShot && chapter.Cyclopse.gameObject.activeSelf &&
-                (CyclopseIntro.Phase=="emerge" || CyclopseIntro.Phase=="roar" || CyclopseIntro.Completed))
-                target=chapter.Cyclopse.transform.position+Vector3.up*1.3f;
+                (CyclopseIntro.Phase=="emerge" || CyclopseIntro.Phase=="roar" ||
+                CyclopseIntro.Phase=="turnAway" || CyclopseIntro.Phase=="pass" || CyclopseIntro.Completed))
+            {
+                var motion=chapter.Cyclopse.GetComponent<V1MonsterMotion>();
+                float height=motion?motion.PresentationHeight:2.38f;
+                target=chapter.Cyclopse.transform.position+Vector3.up*(height*.68f);
+            }
             var rotation=Quaternion.LookRotation(target-eye);
             float zoom=cyclopseShot?Mathf.SmoothStep(0,1,Mathf.Clamp01(ShotElapsed/1.35f)):0;
-            float fov=Mathf.Lerp(cameraFov,session.Shell.ReducedMotion?48:30,zoom);
+            float fov=Mathf.Lerp(cameraFov,session.Shell.ReducedMotion?48:24,zoom);
             if(returning)
             {
                 float t=Mathf.SmoothStep(0,1,Mathf.Clamp01((ShotElapsed-returnStart)/.75f));
@@ -166,12 +196,19 @@ namespace HappyToy.V2
         }
         void LateUpdate()
         {
+            if(CyclopseGraceActive)HoldCyclopse();
+            if(CameraOwned && (!session || session.Finished))
+            {StopAllCoroutines();if(cyclopseShot)CyclopseIntro.Cancel();End(false);return;}
             if(!CameraOwned || !session || !session.InputAllowed)return;
+            // Nested navigation iterators are bounded individually; the shot also
+            // has its own active-time ceiling even while a nested iterator runs.
+            if(cyclopseShot && !returning && ShotElapsed>=14)
+            {StopAllCoroutines();CyclopseIntro.Cancel();StartCoroutine(ReturnCamera());}
             ShotElapsed+=Time.deltaTime;ApplyCamera();
             if(cyclopseShot && cyclopseKey)
                 cyclopseKey.intensity=4.5f*Mathf.SmoothStep(0,1,Mathf.Clamp01((ShotElapsed-1.35f)/2));
         }
-        void End()
+        void End(bool releaseCyclopse=true)
         {
             if(!CameraOwned)return;
             if(camera) {camera.transform.localPosition=cameraPosition;camera.transform.localRotation=cameraRotation;camera.fieldOfView=cameraFov;}
@@ -179,12 +216,18 @@ namespace HappyToy.V2
                 session.player.flashlight.enabled=torchWasOn&&!session.player.FlashlightSystem.Depleted;
             foreach(var state in frozen)
             {
+                if(chapter && state.owner==chapter.Cyclopse && (cyclopseShot || CyclopseGraceActive))continue;
                 if(state.owner)state.owner.enabled=state.enabled;
                 if(EnemyNavigation.Ready(state.agent))state.agent.isStopped=state.stopped;
             }
             frozen.Clear();CameraOwned=false;
             if(cyclopseKey)cyclopseKey.enabled=false;
-            if(cyclopseShot && chapter && chapter.Cyclopse.gameObject.activeSelf)chapter.Cyclopse.enabled=true;
+            if(releaseCyclopse && cyclopseShot && isActiveAndEnabled && chapter &&
+                chapter.Cyclopse.gameObject.activeSelf && CyclopseIntro.Completed)
+            {
+                HoldCyclopse();
+                StartCoroutine(ReleaseCyclopseAfterGrace());
+            }
         }
         public void RestoreProgress(int recovered)
         {
@@ -193,7 +236,11 @@ namespace HappyToy.V2
             if(bulb)bulb.enabled=recovered>=2;
         }
         void OnDisable()
-        {StopAllCoroutines();if(CameraOwned && cyclopseShot && CyclopseIntro)CyclopseIntro.Cancel();End();}
+        {
+            StopAllCoroutines();
+            if((CameraOwned && cyclopseShot || CyclopseGraceActive) && CyclopseIntro)CyclopseIntro.Cancel();
+            CyclopseGraceActive=false;End(false);
+        }
         void OnDestroy()
         {
             foreach(var state in darkened)if(state.light)state.light.enabled=state.enabled;

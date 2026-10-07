@@ -12,8 +12,9 @@ namespace HappyToy.V2
         AudioClip dryStep, wetStep, click, cabinetOpen, cabinetClose, discovery, breath;
         AudioClip[] woodSteps, stoneSteps, waterSteps;
         readonly List<AudioClip> ownedClips = new List<AudioClip>();
-        Vector3 previousPosition, cameraHome;
-        float stride, phase;
+        Vector3 previousPosition, cameraHome, cameraPreviousPosition, stancePosition;
+        float stride;
+        readonly LocomotionCameraMotion cameraMotion = new LocomotionCameraMotion();
         int stepIndex;
         bool initialized;
         public int FootstepsPlayed { get; private set; }
@@ -34,6 +35,7 @@ namespace HappyToy.V2
             if (!GetComponent<PerceivedTension>()) gameObject.AddComponent<PerceivedTension>();
             previousPosition = transform.position;
             cameraHome = player.eyes.transform.localPosition;
+            cameraPreviousPosition = transform.position; stancePosition = cameraHome;
             steps = Source("Player footsteps", .36f, 120);
             foley = Source("Player interaction foley", .38f, 70);
             breathing = Source("Player breathing", 0, 160);
@@ -178,21 +180,33 @@ namespace HappyToy.V2
             if (!initialized || !player.eyes) return;
             var session = GameSession.Current;
             if (!session || !session.Shell) return;
-            if (session.ChapterMode && session.Chapter.FirstAppearances && session.Chapter.FirstAppearances.CameraOwned) return;
-            bool motion = session.InputAllowed && !player.Hidden && !session.Shell.ReducedMotion;
-            float speed = motion && player.Grounded ? Mathf.Clamp(player.ActualSpeed, 0, player.runSpeed) : 0;
-            phase += speed * Time.deltaTime * 4.5f;
-            // Position only: mouse rotation and scripted camera direction remain authoritative.
-            var bob = speed > .12f ? new Vector3(Mathf.Sin(phase * .5f) * .009f,
-                Mathf.Abs(Mathf.Sin(phase)) * .015f, 0) : Vector3.zero;
+            var displacement = transform.position - cameraPreviousPosition;
+            cameraPreviousPosition = transform.position;
+            if (session.ChapterMode && session.Chapter.FirstAppearances && session.Chapter.FirstAppearances.CameraOwned)
+            {
+                cameraMotion.Reset(); return;
+            }
+            // Explicit pause freezes the player's actual view, including an in-flight stride.
+            if (!session.InputAllowed) return;
             var stanceHome = player.Hidden ? player.HiddenCameraLocalPosition : cameraHome - Vector3.up * player.CameraHeightOffset;
-            player.eyes.transform.localPosition = player.Hidden || session.Shell.ReducedMotion ? stanceHome : Vector3.Lerp(player.eyes.transform.localPosition,
-                stanceHome + bob, 1 - Mathf.Exp(-14 * Time.deltaTime));
+            bool motion = !player.Hidden && !session.Shell.ReducedMotion && player.isActiveAndEnabled;
+            if (motion)
+            {
+                cameraMotion.Step(displacement, player.ActualSpeed, player.Grounded, player.Running,
+                    player.Crouching, Time.deltaTime);
+                stancePosition = Vector3.Lerp(stancePosition, stanceHome, 1 - Mathf.Exp(-14 * Time.deltaTime));
+            }
+            else { cameraMotion.Reset(); stancePosition = stanceHome; }
+            player.eyes.transform.localPosition = stancePosition + cameraMotion.PositionOffset;
+            // Rebuild from the mouse look every frame. An additive quaternion is never accumulated.
+            // Disabled motors remain available to scripted camera/audit owners.
+            if (player.isActiveAndEnabled)
+                player.eyes.transform.localRotation = player.LookRotation * Quaternion.Euler(cameraMotion.RotationOffset);
             if (player.Hidden && player.flashlight)
             {
                 player.flashlight.transform.SetPositionAndRotation(player.eyes.transform.position, player.eyes.transform.rotation);
             }
-            float targetFov = session.Shell.FieldOfView + (motion && player.Running && speed > .5f ? 2.5f : 0);
+            float targetFov = session.Shell.FieldOfView + cameraMotion.FovOffset;
             player.eyes.fieldOfView = Mathf.Lerp(player.eyes.fieldOfView, targetFov, 1 - Mathf.Exp(-5 * Time.unscaledDeltaTime));
         }
         static AudioClip MakeTransient(string name, float seconds, int kind)
@@ -255,10 +269,21 @@ namespace HappyToy.V2
         }
         void OnDisable()
         {
-            if (initialized && player && player.eyes) player.eyes.transform.localPosition = cameraHome;
+            cameraMotion.Reset();
+            var session = GameSession.Current;
+            bool cameraOwned = session && session.ChapterMode && session.Chapter.FirstAppearances && session.Chapter.FirstAppearances.CameraOwned;
+            if (initialized && player && player.eyes && !cameraOwned)
+            {
+                player.eyes.transform.localPosition = player.Hidden ? player.HiddenCameraLocalPosition : cameraHome - Vector3.up * player.CameraHeightOffset;
+                if (player.isActiveAndEnabled) player.eyes.transform.localRotation = player.LookRotation;
+            }
             if (steps) steps.Stop(); if (foley) foley.Stop(); if (breathing) breathing.Stop();
         }
-        void OnEnable() { if (initialized && breathing) breathing.Play(); }
+        void OnEnable()
+        {
+            cameraPreviousPosition = transform.position;
+            if (initialized && breathing) breathing.Play();
+        }
         void OnDestroy()
         {
             foreach (var clip in ownedClips) if (clip) Destroy(clip);
