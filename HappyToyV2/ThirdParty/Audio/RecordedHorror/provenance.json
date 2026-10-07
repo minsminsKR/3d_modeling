@@ -1,0 +1,85 @@
+{
+  "scope": "Author and licensing facts from the linked public asset pages. Website scripts, service credentials, login forms and unrelated page content are excluded. Selected original audio and hashes remain in sources.json.",
+  "pages": [
+    {
+      "page": "https://freesound.org/people/Benboncan/sounds/62912/",
+      "creator": "Benboncan",
+      "license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "download": "https://cdn.freesound.org/previews/62/62912_634166-hq.mp3",
+      "recording_provenance_paraphrase": "The author recorded a real human heartbeat at 61 BPM through a lavalier microphone connected to a stethoscope and a Zoom H2 recorder.",
+      "checked_date": "2026-10-08",
+      "captured_public_page_sha256": "f05c96aac215ab487860fac805b3147f5abadd94b46a3dad06bead270e2d3ce7"
+    },
+    {
+      "page": "https://opengameart.org/content/flare-ignition",
+      "creator": "qubodup",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "download": "https://opengameart.org/sites/default/files/ignition.flac",
+      "recording_provenance_paraphrase": "The author made this effect by accelerating and normalizing a matchstick ignition recording.",
+      "checked_date": "2026-10-08",
+      "captured_public_page_sha256": "ae3d521090bd9bceb9b42b0c425e56ff526ae6e4d0eff83c929c5ae107b66da0"
+    },
+    {
+      "page": "https://opengameart.org/content/scrapes",
+      "creator": "AntumDeluge",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "download": "https://opengameart.org/sites/default/files/scrapes.zip",
+      "recording_provenance_paraphrase": "The author recorded an object dragged across a cinder block and edited the recording in Audacity.",
+      "checked_date": "2026-10-08",
+      "captured_public_page_sha256": "a94138f6a6421f8c24f7f1c5a52dc899fb0f3345afb18cd1fef1bca489edeba4"
+    },
+    {
+      "page": "https://opengameart.org/content/25-cc0-bang-firework-sfx",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "download": "https://opengameart.org/sites/default/files/25-CC0-bang-sfx.zip",
+      "recording_provenance_paraphrase": "The author recorded fireworks and supplied short reports, longer explosions and some processed variants. This project selects the three short shot takes.",
+      "checked_date": "2026-10-08",
+      "captured_public_page_sha256": "cc07b5c049b36a5c14c2432038c00d7d987d76d755a7193c29911c51da470342"
+    },
+    {
+      "page": "https://opengameart.org/content/68-workshop-sounds",
+      "creator": "bart",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "download": "https://opengameart.org/sites/default/files/workshop.7z",
+      "recording_provenance_paraphrase": "The author recorded tools in a garage using a Tascam DR-05. This project uses metal drops, dragging, jingles and a ratchet.",
+      "checked_date": "2026-10-08",
+      "captured_public_page_sha256": "50eb51508973c8ef905badac7dcfdbd7e5357a7298e16139f930699544896f59"
+    },
+    {
+      "page": "https://opengameart.org/content/100-cc0-sfx",
+      "creator": "rubberduck",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "download": "https://opengameart.org/sites/default/files/100-CC0-SFX_0.zip",
+      "recording_provenance_paraphrase": "The author recorded a household sound collection with an Android device. The project selects the physical bell recording.",
+      "checked_date": "2026-10-08",
+      "captured_public_page_sha256": "5f2a9dd52145c708a703aba0fb405e3efa1bf5ee3d6e5b4ac1f7fb099edd005f"
+    },
+    {
+      "page": "https://freesound.org/people/sandocho/sounds/17700/",
+      "creator": "sandocho",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "download": "https://cdn.freesound.org/previews/17/17700_19463-hq.mp3",
+      "recording_provenance_paraphrase": "The author recorded one note of an antique wind-up toy with a nearby microphone. Mechanical movement and faint room hum are part of the recording.",
+      "checked_date": "2026-10-08",
+      "captured_public_page_sha256": "26688b3066f9edb6a687191d142a64e721a88113e8e3c062db776fb10e8c7093"
+    },
+    {
+      "page": "https://freesound.org/people/jamesmbock/sounds/458646/",
+      "creator": "jamesmbock",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "download": "https://cdn.freesound.org/previews/458/458646_6996390-hq.mp3",
+      "recording_provenance_paraphrase": "The author recorded his son with an iPhone for a film class. The project selects a short nonverbal excerpt.",
+      "checked_date": "2026-10-08",
+      "captured_public_page_sha256": "2e8079a80e8e745adab575f708884abe76c371c8abe73d7a41ee5b4bf36bd48a"
+    }
+  ]
+}

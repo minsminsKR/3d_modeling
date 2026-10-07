@@ -19,7 +19,7 @@ namespace HappyToy.V2
         {
             var session = GameSession.Current;
             if (!session || !session.InputAllowed || Count >= Capacity) return false;
-            Count++; ShowFeedback("폭죽을 주웠습니다 · " + Count + "/" + Capacity, 2.5f); return true;
+            Count++; ShowFeedback("폭죽 +1 · " + Count + "/" + Capacity, 1.6f); return true;
         }
         public FirecrackerProjectile LastThrown { get; private set; }
         public FirecrackerAim Aim { get; private set; }
@@ -75,7 +75,7 @@ namespace HappyToy.V2
             session.NoteChapterAction(ChapterAction.FirecrackerThrown);
             cooldown = .5f;
             if (Aim) Aim.Cancel();
-            ShowFeedback("폭죽을 던졌습니다 · 남은 " + Count + "개", 2.5f);
+            ShowFeedback("폭죽 사용 · 남은 " + Count + "개", 1.6f);
             return true;
         }
         bool Deny(string text) { ShowFeedback(text, 1.8f); return false; }

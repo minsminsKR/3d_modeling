@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "playModeChecks": {
+    "ActualRecognitionImpactAndWitnessedPursuitAreOcclusionBoundedAndPauseSafe": "Passed",
+    "CabinetTransitionsPlayOnlyDistinctRecordedOpeningAndClosingDoors": "Passed",
+    "CandlePhysicalIgnitionAndFiniteSupplyCheckpointRestoreWithoutReplay": "Passed",
+    "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies": "Passed",
+    "FirstAppearanceAudioComesFromRealEventsWithQuietPauseMuteAndComfortControls": "Passed",
+    "RealPerceivedTensionMixHasQuietBoundsAndLeavesFootstepHeadroom": "Passed",
+    "RealThrownFirecrackerUsesThreeRecordedTakesAndReleasesOnlyOwnedAudio": "Passed",
+    "TrueRecognitionHasBoundedAftermathAndClearsOnRestorationAndRetry": "Passed"
+  },
+  "nativeAudit": "PASS",
+  "nativeListenerSeconds": 11.114666666666666,
+  "nativeDSPPeak": 0.2730903625488281,
+  "nativeClippedSamples": 0,
+  "pauseSteadyPeak": 3.085832808974115e-28,
+  "scope": "Real imported resources, production event playback and pre-device native DSP; no subjective listening certification.",
+  "date": "2026-10-08",
+  "baseCommit": "acd8125b90c13428d946fa3400c2b89ca68f8ad1",
+  "buildInputCount": 2432,
+  "buildInputs": "BUILD_INPUTS_PASS",
+  "audioCuesReplaced": 23,
+  "previousDoorChecksPassed": 10,
+  "previousHudFixtureChecksPassed": 7
+}

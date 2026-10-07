@@ -36,8 +36,18 @@ namespace HappyToy.V2.CloudTests
             Call(shell,"BeginChapter"); yield return null; yield return null;
             IntroSetup(actorKind);
             var chapter=Get<Component>(session,"Chapter"); var memories=Get<Component[]>(chapter,"Memories");
-            Call(memories[0],"Use",player); Call(memories[1],"Use",player);
-            if(actorKind=="LanternMaskEncounter") Call(memories[2],"Use",player);
+            var appearances=Get<Component>(chapter,"FirstAppearances");
+            Call(memories[0],"Use",player);
+            yield return Wait(()=>!Get<bool>(appearances,"CameraOwned"),30,"First memory appearance did not return player control");
+            Assert.That(Get<int>(chapter,"Recovered"),Is.EqualTo(1));
+            Call(memories[1],"Use",player);
+            yield return Wait(()=>!Get<bool>(appearances,"CameraOwned"),10,"Second memory appearance did not return player control");
+            Assert.That(Get<int>(chapter,"Recovered"),Is.EqualTo(2));
+            if(actorKind=="LanternMaskEncounter")
+            {
+                Call(memories[2],"Use",player);
+                Assert.That(Get<int>(chapter,"Recovered"),Is.EqualTo(3));
+            }
             foreach(var brain in Components("StalkerBrain")) brain.gameObject.SetActive(false);
             var other=Get<Component>(chapter,actorKind=="LanternMaskEncounter"?"Mannequin":"Mask"); other.gameObject.SetActive(false);
             var actor=Get<Component>(chapter,actorKind=="LanternMaskEncounter"?"Mask":"Mannequin");

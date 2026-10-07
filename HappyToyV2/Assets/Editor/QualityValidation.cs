@@ -37,6 +37,10 @@ namespace HappyToy.V2.Editor
             int rippleAssertions = SurfaceRippleChecks.Run();
             int stealthAssertions = StealthRulesChecks.Run();
             int restartAssertions = SceneRestartGateChecks.Run();
+            foreach (string cue in ExternalAudio.Cues)
+                for (int i = 0; i < ExternalAudio.VariantCount(cue); i++)
+                    if (!ExternalAudio.Shared(cue, i))
+                        throw new InvalidOperationException("Missing required recorded cue: " + cue + "/" + i);
             var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
             int worldSignCount = AnnexSignFontValidation.Run(scene);
             var transforms = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Transform>(true)).ToArray();
@@ -85,7 +89,7 @@ namespace HappyToy.V2.Editor
             if (Hash(ScenePath) != before) throw new InvalidOperationException("Authored scene changed during build.");
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Quality build failed: " + report.summary.result);
             // Ship the attribution alongside every playable build, including the
-            // CC BY cabinet recordings. Source metadata remains in the project.
+            // CC BY human heartbeat recording. Source metadata remains in the project.
             File.Copy("ThirdParty/Audio/Audio-Credits.txt", Path.Combine(destination, "Audio-Credits.txt"), true);
             File.Copy("ThirdParty/Graphics/Graphics-Credits.txt", Path.Combine(destination, "Graphics-Credits.txt"), true);
             var inputs = new[] { "Assets", "ProjectSettings", "Packages" }

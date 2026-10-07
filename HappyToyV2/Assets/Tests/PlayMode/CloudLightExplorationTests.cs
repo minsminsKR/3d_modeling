@@ -130,6 +130,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(candle,"Lit"),Is.True); Assert.That(Get<Transform>(candle,"Flame").gameObject.activeSelf,Is.True);
             Assert.That(Get<Light>(candle,"LocalLight").enabled,Is.True); Assert.That(Get<int>(candle,"Ignitions"),Is.EqualTo(1));
             Assert.That(Get<AudioSource>(candle,"IgnitionSource").clip.samples,Is.GreaterThan(0));
+            Assert.That(CloudExternalAudioTests.MatchesFamily(Get<AudioSource>(candle,"IgnitionSource").clip,
+                "candle-ignite",1),Is.True,"Physical ignition did not use the recorded match");
             yield return LightAim(candleTarget); Assert.That(Get<int>(candle,"Ignitions"),Is.EqualTo(1));
             var lamp=Get<Light>(player,"flashlight"); lamp.enabled=false; Call(LampCharge,"Restore",30f,0,0);
             var pack=LightTargets("FlashlightBattery")[0]; PlacePlayer(LightApproach(pack)); yield return null; yield return LightAim(pack);

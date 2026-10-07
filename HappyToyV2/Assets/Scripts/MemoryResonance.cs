@@ -19,21 +19,7 @@ namespace HappyToy.V2
         {
             voice = GetComponent<AudioSource>(); filter = GetComponent<AudioLowPassFilter>();
             memory = GetComponent<Interactable>();
-            const int rate = 24000;
-            var samples = new float[rate * 4];
-            for (int i = 0; i < samples.Length; i++)
-            {
-                float time = i / (float)rate;
-                for (int note = 0; note < 3; note++)
-                {
-                    float t = time - .12f - note * .22f;
-                    if (t < 0 || t > 1.2f) continue;
-                    float pitch = note == 1 ? 932.33f : 622.25f;
-                    samples[i] += .22f * Mathf.Clamp01(t / .008f) * Mathf.Exp(-7 * t) *
-                        (Mathf.Sin(2 * Mathf.PI * pitch * t) + .22f * Mathf.Sin(2 * Mathf.PI * pitch * 2.01f * t));
-                }
-            }
-            clip = AudioClip.Create("Original memory bell", samples.Length, 1, rate, false); clip.SetData(samples, 0);
+            clip = ExternalAudio.Required("memory-bell");
             voice.clip = clip; voice.playOnAwake = false; voice.loop = true; voice.spatialBlend = 1;
             voice.rolloffMode = AudioRolloffMode.Linear; voice.minDistance = .5f; voice.maxDistance = 9;
             voice.dopplerLevel = 0; voice.priority = 150; voice.volume = .16f;

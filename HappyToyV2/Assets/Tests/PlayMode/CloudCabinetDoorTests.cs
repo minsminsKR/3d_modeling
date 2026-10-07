@@ -28,7 +28,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(source.clip, Is.SameAs(close)); Assert.That(source.isPlaying, Is.True);
             Assert.That(source.pitch, Is.EqualTo(1));
             Assert.That(Get<int>(feedback, "InteractionCuesPlayed"), Is.EqualTo(before + 1));
-            Assert.That(Get<string>(shell, "Caption"), Is.EqualTo("[캐비닛 문 닫힘]"));
+            Assert.That(Get<string>(shell, "Caption"), Is.EqualTo("[철컥 · 문 잠금쇠 닫힘]"));
             Call(shell, "Pause"); yield return Delay(.06f);
             float sample = source.timeSamples; yield return Delay(.12f);
             Assert.That(source.timeSamples, Is.EqualTo(sample)); Call(shell, "Resume");
@@ -38,7 +38,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(CloudExternalAudioTests.MatchesFamily(open, "cabinet-open", 1), Is.True);
             Assert.That(source.clip, Is.SameAs(open)); Assert.That(source.pitch, Is.EqualTo(1));
             Assert.That(CloudExternalAudioTests.Fingerprint(open), Is.Not.EqualTo(CloudExternalAudioTests.Fingerprint(close)));
-            Assert.That(Get<string>(shell, "Caption"), Is.EqualTo("[캐비닛 문 열림]"));
+            Assert.That(Get<string>(shell, "Caption"), Is.EqualTo("[철컥 · 문 잠금쇠 열림]"));
             Assert.That(Get<int>(feedback, "InteractionCuesPlayed"), Is.EqualTo(before + 2));
             // A fast repeated transition replaces the prior door, rather than
             // stacking an opening, a closing and the old clothing one-shots.

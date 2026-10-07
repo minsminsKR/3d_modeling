@@ -275,8 +275,10 @@ namespace HappyToy.V2
                 { ClearDoorPassage(); return false; }
                 targetPoint = patrol[waypoint % patrol.Length].position;
             }
-            if (agent.hasPath && !blockingDoor) targetPoint = agent.steeringTarget;
+            Vector3 intendedTarget = targetPoint;
+            targetPoint = blockingDoor && !passingDoor ? blockingDoor.transform.position : agent.hasPath ? agent.steeringTarget : intendedTarget;
             Vector3 direction = targetPoint - transform.position; direction.y = 0;
+            if (direction.sqrMagnitude < .001f) { direction = intendedTarget - transform.position; direction.y = 0; }
             if (direction.sqrMagnitude < .001f) return false;
             float radius = agent.radius + .06f;
             Vector3 bottom = transform.position + Vector3.up * (radius + .12f);
@@ -288,14 +290,21 @@ namespace HappyToy.V2
             for (int i = 0; i < count; i++)
             {
                 if (doorHits[i].collider.transform.IsChildOf(transform) ||
-                    doorHits[i].collider.GetComponentInParent<StalkerBrain>()) continue;
+                    doorHits[i].collider.GetComponentInParent<StalkerBrain>() ||
+                    doorHits[i].collider.GetComponentInParent<LanternMaskEncounter>() ||
+                    doorHits[i].collider.GetComponentInParent<WeepingAngelEncounter>()) continue;
                 if (doorHits[i].distance < distance) { first = i; distance = doorHits[i].distance; }
             }
             // Inspect the first physical obstruction on the native route. A wall
             // cannot reveal a remote door, and a radius-wide opening must be clear.
-            if (first < 0) return false;
-            var hit = doorHits[first];
-            var door = hit.collider.GetComponentInParent<Interactable>();
+            var hit = first >= 0 ? doorHits[first] : default(RaycastHit);
+            var door = first >= 0 ? hit.collider.GetComponentInParent<Interactable>() : null;
+            Vector3 handlePoint = hit.point;
+            if (!door || door.kind != Interactable.Kind.Door || !door.movingLeaf)
+            {
+                door = StalkerDoorTraversal.NearbyDoorOnRoute(agent, intendedTarget, floorY, path);
+                if (door) handlePoint = door.transform.position;
+            }
             if (!door || door.kind != Interactable.Kind.Door || !door.movingLeaf ||
                 !EnemyNavigation.SameFloor(door.transform.position, floorY))
             {
@@ -308,7 +317,7 @@ namespace HappyToy.V2
                 doorEntrySide = Vector3.Dot(transform.position - door.transform.position, door.DoorNormal) >= 0 ? 1 : -1;
             }
             door.HoldDoorPassage(this);
-            if (HorizontalDistance(transform.position, hit.point) > Mathf.Max(1.25f, agent.radius + .85f))
+            if (HorizontalDistance(transform.position, handlePoint) > Mathf.Max(1.25f, agent.radius + .85f))
             {
                 doorPush = 0;
                 if (!StalkerDoorTraversal.TryDoorApproach(agent,door,doorEntrySide,floorY,path))
@@ -319,7 +328,7 @@ namespace HappyToy.V2
             EnemyNavigation.Stop(agent, true);
             doorBlockedWait = Mathf.Min(6.1f, doorBlockedWait + Time.deltaTime);
             if (doorBlockedWait >= 6 && AbandonBlockedDoorRoute()) return state != State.Search;
-            Vector3 pushFacing = hit.point - transform.position; pushFacing.y = 0;
+            Vector3 pushFacing = handlePoint - transform.position; pushFacing.y = 0;
             if (pushFacing.sqrMagnitude > .001f)
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(pushFacing), 180 * Time.deltaTime);
             if (door.IsOpen) { passingDoor = true; return true; }

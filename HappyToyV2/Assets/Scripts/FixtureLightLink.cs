@@ -3,6 +3,7 @@ using UnityEngine;
 namespace HappyToy.V2
 {
     // Keeps the visual fixture and local bounce consistent with story-driven flicker.
+    [DefaultExecutionOrder(150)]
     public sealed class FixtureLightLink : MonoBehaviour
     {
         public Light source, bounce;
@@ -25,7 +26,7 @@ namespace HappyToy.V2
             if(diffuser)
             {
                 diffuser.GetPropertyBlock(block);block.SetColor("_EmissionColor",emission*ratio);
-                block.SetColor("_BaseColor",lit?new Color(.72f,.78f,.73f):new Color(.10f,.12f,.11f));diffuser.SetPropertyBlock(block);
+                block.SetColor("_BaseColor",Color.Lerp(new Color(.10f,.12f,.11f),new Color(.72f,.78f,.73f),Mathf.Clamp01(ratio)));diffuser.SetPropertyBlock(block);
             }
         }
     }

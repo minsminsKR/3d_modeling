@@ -27,7 +27,7 @@ Importer는 Texture2D, 색상 sRGB/노멀 linear, mipmap·trilinear·anisotropy 
 
 Unity의 실제 가져오기 계층에서 세 모델에 추가된 identity Armature를 상대 애니메이션 바인딩 루트로 사용한다. 원본 클립 객체와 본의 로컬 기준을 검증한다. 실제 GPU 스킨과 같은 카메라·같은 TRS의 CPU 스냅샷 비교에서 네 모델 모두 `BakeMesh(..., true)`가 IoU 0.9998 이상으로 일치했다. 원본 파일은 수정하지 않고 생성된 런타임 인스턴스에만 선택 자산을 적용한다.
 
-기존 모델·오디오의 출처와 라이선스는 프로젝트 ThirdParty 문서를 따른다. 이 개선은 새로운 외부 모델이나 녹음을 추가하지 않는다. 촛불 점화음은 직접 합성한 효과다. Windows 배포에는 기존 `Audio-Credits.txt`를 포함한다.
+기존 모델·오디오의 출처와 라이선스는 프로젝트 ThirdParty 문서를 따른다. 이 문서의 2026-10-06 아트 단계에서는 외부 녹음을 추가하지 않았으며 당시 촛불 점화음은 합성이었다. 2026-10-08 업데이트에서는 성냥·심장박동·호흡·폭죽 등 23개 효과음을 녹음 기반으로 교체했다. 현재 출처와 후보 선택은 `ThirdParty/Audio/RecordedHorror/SELECTION.md`, 재편집 안내는 `SourceArt/Audio/README.md`를 따른다. Windows 배포에는 갱신한 `Audio-Credits.txt`를 포함한다.
 
 ## 증거와 한계
 

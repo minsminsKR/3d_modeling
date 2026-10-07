@@ -76,6 +76,13 @@ namespace HappyToy.V2
         public void PrepareSchool(MemoryChapter chapter)
         {
             Prepare(chapter.transform, GameSession.Current.player, false);
+            foreach (var fixture in FindObjectsByType<FixtureLightLink>(FindObjectsSortMode.None))
+                if (fixture.gameObject.scene == gameObject.scene && fixture.source)
+                {
+                    var flicker = fixture.GetComponent<ThreatFixtureFlicker>();
+                    if (!flicker) flicker = fixture.gameObject.AddComponent<ThreatFixtureFlicker>();
+                    flicker.Configure(this, fixture.source, null, fixture.transform.position.x * .31f + fixture.transform.position.z * .17f);
+                }
             // Derive all five floor positions from the actual authored memories and NavMesh.
             // No school source scene, stair or original pickup is replaced.
             for (int i = 0; i < chapter.Memories.Length; i++)

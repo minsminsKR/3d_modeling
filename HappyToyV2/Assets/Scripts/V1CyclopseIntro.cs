@@ -229,18 +229,7 @@ namespace HappyToy.V2
             voice.spatialBlend = 1; voice.minDistance = 2;
             voice.maxDistance = CrossCorridorOnly ? 26 : 18; voice.volume = .6f;
             var acoustics = EnemyAcoustics.Bind(voice, brain.transform, .6f);
-            // V1's two descending sawtooth voices, bandpass at 245 Hz (Q .85).
-            const int rate=24000;var samples=new float[(int)(rate*.78f)];
-            float omega=2*Mathf.PI*245/rate,alpha=Mathf.Sin(omega)/(2*.85f),a0=1+alpha;
-            float b0=alpha/a0,b2=-alpha/a0,a1=-2*Mathf.Cos(omega)/a0,a2=(1-alpha)/a0;
-            double phaseA=0,phaseB=0;float x1=0,x2=0,y1=0,y2=0;
-            for(int i=0;i<samples.Length;i++)
-            {
-                float t=i/(float)rate;phaseA+=136*Mathf.Pow(48f/136,Mathf.Min(t/.72f,1))/rate;phaseB+=143*Mathf.Pow(48f/143,Mathf.Min(t/.72f,1))/rate;
-                float x=(.23f*(2*(float)(phaseA%1)-1)+.15f*(2*(float)(phaseB%1)-1))*Mathf.Exp(-10*t);
-                float y=b0*x+b2*x2-a1*y1-a2*y2;samples[i]=y;x2=x1;x1=x;y2=y1;y1=y;
-            }
-            roar=AudioClip.Create("V1 Cyclopse descending roar",samples.Length,1,rate,false);roar.SetData(samples,0);
+            roar=ExternalAudio.Required("cyclopse-roar");
             voiceEmitter.SetActive(true);voice.PlayOneShot(roar);RoarPlayed=true;RoarCount++;
             if(session.player.eyes&&session.Shell&&
                 Vector3.Distance(session.player.eyes.transform.position,voice.transform.position)<=voice.maxDistance&&acoustics.IsAudible(voice))

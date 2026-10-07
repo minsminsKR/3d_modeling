@@ -1,0 +1,233 @@
+{
+  "scream": {
+    "file": "scream.wav",
+    "pack": "owlish-recorded-foley",
+    "creator": "OwlishMedia",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/sound-effects-pack",
+    "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+    "source_file": "Human/SCREAM.wav",
+    "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
+    "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+  },
+  "panic": {
+    "file": "panic.wav",
+    "pack": "owlish-recorded-foley",
+    "creator": "OwlishMedia",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/sound-effects-pack",
+    "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+    "source_file": "Human/freakedbreath.wav",
+    "source_file_sha256": "10881ee9d5c83b15e269762ccc89cc932173d2c720588e9303e0995ff32b69db",
+    "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+  },
+  "breath": {
+    "file": "breath.wav",
+    "pack": "owlish-recorded-foley",
+    "creator": "OwlishMedia",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/sound-effects-pack",
+    "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+    "source_file": "Human/breath-female2.wav",
+    "source_file_sha256": "20fa189254f8befac5ee4b710a417fb02e4e0b4b66631585d8a57e170ad3a930",
+    "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+  },
+  "scared": {
+    "file": "scared.wav",
+    "pack": "owlish-recorded-foley",
+    "creator": "OwlishMedia",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/sound-effects-pack",
+    "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+    "source_file": "Human/scared-breathing.wav",
+    "source_file_sha256": "3adbe6f518576fa67308cfac57e6238249244f9e043d675fce9d80b853690eb1",
+    "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+  },
+  "latch-open": {
+    "file": "latch-open.wav",
+    "pack": "owlish-household",
+    "creator": "OwlishMedia",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/202-more-sound-effects",
+    "download": "https://opengameart.org/sites/default/files/MoreSounds.zip",
+    "source_file": "Keys, Locks, Door/Key_Lock_Door_30.wav",
+    "source_file_sha256": "b5661a631d77d2ccda85739c4537c88dd972d6f7bc95749e45db883bd32c0653",
+    "archive_sha256": "9428c1437137d9ea06ba94e13da12488d4c57990a1c32d83db9e7707e69fb3af"
+  },
+  "latch-close": {
+    "file": "latch-close.wav",
+    "pack": "owlish-household",
+    "creator": "OwlishMedia",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/202-more-sound-effects",
+    "download": "https://opengameart.org/sites/default/files/MoreSounds.zip",
+    "source_file": "Keys, Locks, Door/Key_Lock_Door_39.wav",
+    "source_file_sha256": "dfa8146abba4218538eea56377f64287df451070bfaab5affa3480ef5e2b320c",
+    "archive_sha256": "9428c1437137d9ea06ba94e13da12488d4c57990a1c32d83db9e7707e69fb3af"
+  },
+  "metal-drop": {
+    "file": "metal-drop.wav",
+    "pack": "recorded-workshop",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - metal drop 3.wav",
+    "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+  },
+  "wood-clap": {
+    "file": "wood-clap.wav",
+    "pack": "recorded-workshop",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - wood clap.wav",
+    "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+  },
+  "metal-drag": {
+    "file": "metal-drag.wav",
+    "pack": "recorded-workshop",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - dragging metal.wav",
+    "source_file_sha256": "e29e47f649d959075653ec1f451174365b0ba0a88c4b7b58d08a480cf6b0feee",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+  },
+  "metal-jingle": {
+    "file": "metal-jingle.wav",
+    "pack": "recorded-workshop",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - jingle3.wav",
+    "source_file_sha256": "099bf9d1442cbecd202714482b3e04cd425fa4844c83ea9cf11a1dc4d53e007c",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+  },
+  "ratchet": {
+    "file": "ratchet.wav",
+    "pack": "recorded-workshop",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - ratchet1.wav",
+    "source_file_sha256": "e075b655154ad88bcd5b5ed002826664a4ef40c3afa7852f99c5efcfd8626836",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+  },
+  "firecracker1": {
+    "file": "firecracker1.ogg",
+    "pack": "recorded-fireworks",
+    "creator": "rubberduck",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/25-cc0-bang-firework-sfx",
+    "download": "https://opengameart.org/sites/default/files/25-CC0-bang-sfx.zip",
+    "source_file": "shot_01.ogg",
+    "source_file_sha256": "a846eefebbb08b6f6d31a7728318b8de349ea2971cea148d7afdb41d797fdcfc",
+    "archive_sha256": "c0c9ecc11e2dc0d190f0cced755569858234b8528286bc83becb6314c663407f"
+  },
+  "firecracker2": {
+    "file": "firecracker2.ogg",
+    "pack": "recorded-fireworks",
+    "creator": "rubberduck",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/25-cc0-bang-firework-sfx",
+    "download": "https://opengameart.org/sites/default/files/25-CC0-bang-sfx.zip",
+    "source_file": "shot_02.ogg",
+    "source_file_sha256": "4b9b62ff7f430d9d257a07efc54be8192c2e01668fe5e2461f217b2f8fe33a77",
+    "archive_sha256": "c0c9ecc11e2dc0d190f0cced755569858234b8528286bc83becb6314c663407f"
+  },
+  "firecracker3": {
+    "file": "firecracker3.ogg",
+    "pack": "recorded-fireworks",
+    "creator": "rubberduck",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/25-cc0-bang-firework-sfx",
+    "download": "https://opengameart.org/sites/default/files/25-CC0-bang-sfx.zip",
+    "source_file": "shot_03.ogg",
+    "source_file_sha256": "f3cfbf0af36a717ff9c8f58640f181db7b73266e8263591014d453c4e77c6418",
+    "archive_sha256": "c0c9ecc11e2dc0d190f0cced755569858234b8528286bc83becb6314c663407f"
+  },
+  "bell": {
+    "file": "bell.ogg",
+    "pack": "recorded-household-rubberduck",
+    "creator": "rubberduck",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/100-cc0-sfx",
+    "download": "https://opengameart.org/sites/default/files/100-CC0-SFX_0.zip",
+    "source_file": "bell_01.ogg",
+    "source_file_sha256": "b29cf8f3885eb2a266a16455227288dd3e004ea0414d2823b1a8677915f862d1",
+    "archive_sha256": "a5c135878c132f1c59cca54e60061c296cd0ac27ad031ca2c41b8cd5cab3c706"
+  },
+  "scrape": {
+    "file": "scrape.wav",
+    "pack": "recorded-scrapes",
+    "creator": "AntumDeluge",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/scrapes",
+    "download": "https://opengameart.org/sites/default/files/scrapes.zip",
+    "source_file": "scrape-3.wav",
+    "source_file_sha256": "5586c252106affc44e71fcc5781bafb7c6d6d49c301b92f69a210f0d7435d508",
+    "archive_sha256": "9598070ddd77ed99e922df1d4472a249624adcd945794d1b6eba88ac77f6a014"
+  },
+  "match": {
+    "file": "match.flac",
+    "pack": "recorded-match",
+    "creator": "qubodup",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/flare-ignition",
+    "download": "https://opengameart.org/sites/default/files/ignition.flac",
+    "source_file": "ignition.flac",
+    "source_file_sha256": "bd8281bcee65bc705755fd36bdf40d04fadddd474f52fd481233523e178b4ea1",
+    "archive_sha256": null
+  },
+  "heart": {
+    "file": "heart.mp3",
+    "pack": "real-human-heart",
+    "creator": "Benboncan",
+    "license": "CC-BY-4.0",
+    "page": "https://freesound.org/people/Benboncan/sounds/62912/",
+    "download": "https://cdn.freesound.org/previews/62/62912_634166-hq.mp3",
+    "source_file": "Heartbeat Mono.wav (public high quality MP3 preview)",
+    "source_file_sha256": "403a6f61990841067331977492d16f4111cd1ddc9b642d50d5657b209dce2d10",
+    "archive_sha256": null
+  },
+  "music-note": {
+    "file": "music-note.mp3",
+    "pack": "recorded-music-note",
+    "creator": "sandocho",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/sandocho/sounds/17700/",
+    "download": "https://cdn.freesound.org/previews/17/17700_19463-hq.mp3",
+    "source_file": "musicbox1.wav (public high quality MP3 preview)",
+    "source_file_sha256": "ff6274db336dda9467117581d4fde2fe426e1143de52e45af47d6e21a2d70fa7",
+    "archive_sha256": null
+  },
+  "baby-cry": {
+    "file": "baby-cry.mp3",
+    "pack": "recorded-baby-cry",
+    "creator": "jamesmbock",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/jamesmbock/sounds/458646/",
+    "download": "https://cdn.freesound.org/previews/458/458646_6996390-hq.mp3",
+    "source_file": "babycry.mp3 (public high quality MP3 preview)",
+    "source_file_sha256": "c6a241782aba0f198bd1216a50f0535f7c9a3a473d39fae0bd9c05c692a8d668",
+    "archive_sha256": null
+  },
+  "room-air": {
+    "file": "room-air.wav",
+    "pack": "legit-shop",
+    "creator": "LEGIT Audio",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/the-shop",
+    "download": "https://opengameart.org/sites/default/files/legit_audio_-_the_shop_free_sfx_wav.zip",
+    "source_file": "Prepared ambience-upper-0.wav; derived from TheShopCollection_convenience_store_drinks_fridge_drone_2.wav",
+    "source_file_sha256": "9716ece71005aefbbeecaeb5c79eb6080920c1e6618a02857650797bfb69e565",
+    "archive_sha256": null
+  }
+}

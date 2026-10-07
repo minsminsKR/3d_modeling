@@ -39,10 +39,10 @@ namespace HappyToy.V2
             // The complete door root is ignored by acoustic traces, so the leaf cannot muffle itself.
             acoustics = EnemyAcoustics.Bind(source, transform, .32f, 0);
             EnemyAcoustics.Bind(railSource, transform, .15f, 0);
-            openClip = RecordedOrFallback("door-open", "Sliding door opening handle", .14f, false);
-            closeClip = RecordedOrFallback("door-close", "Sliding door closing handle", .14f, false);
-            seatClip = RecordedOrFallback("door-seat", "Sliding door seated in rail", .11f, true);
-            railClip = Own(MakeRail());
+            openClip = Recorded("door-open");
+            closeClip = Recorded("door-close");
+            seatClip = Recorded("door-seat");
+            railClip = Own(ExternalAudio.Required("door-rail"));
         }
 
         static AudioSource Emitter(GameObject owner, float gain, int priority)
@@ -60,11 +60,8 @@ namespace HappyToy.V2
             if (clip) ownedClips.Add(clip);
             return clip;
         }
-        AudioClip RecordedOrFallback(string cue, string label, float seconds, bool seated)
-        {
-            var clip = ExternalAudio.Owned(cue);
-            return Own(clip ? clip : MakeContact(label, seconds, seated));
-        }
+        AudioClip Recorded(string cue)
+        { return Own(ExternalAudio.Required(cue)); }
 
         public void PlayDoor(bool opening)
         {
@@ -129,36 +126,6 @@ namespace HappyToy.V2
             if (seated && seatClip) { railSource.PlayOneShot(seatClip, .8f); SeatCuesPlayed++; }
         }
 
-        static AudioClip MakeContact(string name, float seconds, bool seated)
-        {
-            const int rate = 24000;
-            var data = new float[Mathf.CeilToInt(rate * seconds)];
-            var random = new System.Random(seated ? 2893 : 2891); float filtered = 0;
-            for (int i = 0; i < data.Length; i++)
-            {
-                float t = i / (float)rate;
-                filtered = Mathf.Lerp(filtered, (float)random.NextDouble() * 2 - 1, .22f);
-                float latch = Mathf.Sin(2 * Mathf.PI * (seated ? 115 : 175) * t) * Mathf.Exp(-55 * t) * .25f;
-                float fade = Mathf.Clamp01(t / .003f) * Mathf.Clamp01((seconds - t) / .02f);
-                data[i] = (latch + filtered * .15f * Mathf.Exp(-35 * t)) * fade;
-            }
-            var clip = AudioClip.Create(name, data.Length, 1, rate, false); clip.SetData(data, 0); return clip;
-        }
-        static AudioClip MakeRail()
-        {
-            const int rate = 24000; const float seconds = .72f;
-            var data = new float[Mathf.CeilToInt(rate * seconds)];
-            var random = new System.Random(2897); float filtered = 0;
-            for (int i = 0; i < data.Length; i++)
-            {
-                float t = i / (float)rate;
-                filtered = Mathf.Lerp(filtered, (float)random.NextDouble() * 2 - 1, .1f);
-                float grain = .7f + .3f * Mathf.Sin(t * Mathf.PI * 18);
-                float edge = Mathf.Clamp01(t / .018f) * Mathf.Clamp01((seconds - t) / .018f);
-                data[i] = filtered * grain * .22f * edge;
-            }
-            var clip = AudioClip.Create("Soft sliding wood rail", data.Length, 1, rate, false); clip.SetData(data, 0); return clip;
-        }
         void OnDisable()
         {
             Moving = false;

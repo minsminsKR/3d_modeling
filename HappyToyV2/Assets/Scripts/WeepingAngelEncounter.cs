@@ -61,13 +61,7 @@ namespace HappyToy.V2
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 15; sound.volume = .3f; sound.dopplerLevel = 0;
             movementAcoustics = EnemyAcoustics.Bind(sound, transform, .3f);
-            const int rate = 24000; var data = new float[rate];
-            for (int i = 0; i < data.Length; i++)
-            {
-                float t = i / (float)rate;
-                data[i] = Mathf.Sin(Mathf.PI * t) * (.28f * Mathf.Sin(720 * t + 18 * Mathf.Sin(31 * t)) + .12f * Mathf.Sin(1190 * t));
-            }
-            creak = AudioClip.Create("Mannequin joint creak", rate, 1, rate, false); creak.SetData(data, 0);
+            creak = ExternalAudio.Required("mannequin-joint");
             revealAudio = EncounterRevealAudio.Ensure(transform);
             if (visual) { originalVisualRotation = visual.localRotation; visualPoseCaptured = true; }
         }

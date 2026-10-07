@@ -57,20 +57,8 @@ namespace HappyToy.V2
             ignition.spatialBlend = 1; ignition.volume = .3f; ignition.dopplerLevel = 0;
             ignition.minDistance = 1; ignition.maxDistance = 7; ignition.rolloffMode = AudioRolloffMode.Linear;
             ignition.ignoreListenerPause = false; ignition.ignoreListenerVolume = false;
-            // Original short match strike/fwoosh, generated here. No external asset license dependency.
-            const int rate = 24000; var samples = new float[rate / 3];
-            var noise = new System.Random(7133); float filtered = 0;
-            for (int i = 0; i < samples.Length; i++)
-            {
-                float t = i / (float)rate;
-                filtered = Mathf.Lerp(filtered, (float)noise.NextDouble() * 2 - 1, .38f);
-                float attack = Mathf.Clamp01(t / .012f), tail = Mathf.Clamp01((1f / 3 - t) / .07f);
-                float scrape = filtered * Mathf.Exp(-12 * t) * .20f;
-                float catchFlame = Mathf.Sin(t * Mathf.PI * 230) * Mathf.Exp(-15 * t) * .045f;
-                samples[i] = (scrape + catchFlame) * attack * tail;
-            }
-            clip = AudioClip.Create("Original candle match strike", samples.Length, 1, rate, false);
-            clip.SetData(samples, 0); ignition.clip = clip; Apply(false);
+            clip = ExternalAudio.Required("candle-ignite");
+            ignition.clip = clip; Apply(false);
         }
         public bool TryIgnite(PlayerMotor player)
         {

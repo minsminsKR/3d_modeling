@@ -93,16 +93,7 @@ namespace HappyToy.V2
             // empty default-playOnAwake source to an already-filtered root warns.
             if (!GetComponent<StalkerFootsteps>()) gameObject.AddComponent<StalkerFootsteps>();
             acoustics = EnemyAcoustics.Bind(sound, transform, .5f);
-            const int rate = 24000;
-            var data = new float[(int)(rate * .55f)];
-            for (int i = 0; i < data.Length; i++)
-            {
-                float t = i / (float)rate;
-                float envelope = Mathf.Sin(Mathf.PI * i / (data.Length - 1));
-                data[i] = envelope * (.18f * Mathf.Sin(2 * Mathf.PI * (190 * t + 75 * t * t)) +
-                    .08f * Mathf.Sin(2 * Mathf.PI * 570 * t));
-            }
-            warning = AudioClip.Create("Lantern warning rattle", data.Length, 1, rate, false); warning.SetData(data, 0);
+            warning = ExternalAudio.Required("lantern-warning");
             revealAudio = EncounterRevealAudio.Ensure(transform);
             CaptureVisualDefaults();
         }

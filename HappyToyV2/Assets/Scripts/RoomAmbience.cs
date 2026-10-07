@@ -25,11 +25,11 @@ namespace HappyToy.V2
         }
         void Start()
         {
-            Add("washroom-drip",new Vector3(-5.7f,1.1f,-5.1f),ExternalAudio.Owned("ambience-ground") ?? MakeClip("V1 wet drip adaptation",6,0),.28f);
-            Add("infirmary-wiring",new Vector3(5.7f,2.6f,5.5f),ExternalAudio.Owned("ambience-upper") ?? MakeClip("V1 wiring adaptation",4,1),.24f);
+            Add("washroom-drip",new Vector3(-5.7f,1.1f,-5.1f),ExternalAudio.Required("ambience-ground"),.28f);
+            Add("infirmary-wiring",new Vector3(5.7f,2.6f,5.5f),ExternalAudio.Required("ambience-upper"),.24f);
             // Water drips belong to FloorAtmosphere's one physical leak. This is a
             // distinct air/pipe room bed, so the same recording never doubles in B1.
-            Add("classroom-draft",new Vector3(-6.4f,1.8f,7.8f),ExternalAudio.Owned("ambience-basement-bed") ?? MakeClip("Classroom paper air",6,2),.3f);
+            Add("classroom-draft",new Vector3(-6.4f,1.8f,7.8f),ExternalAudio.Required("ambience-basement-bed"),.3f);
         }
         void Add(string name,Vector3 position,AudioClip clip,float gain)
         {
@@ -41,34 +41,7 @@ namespace HappyToy.V2
             var filter=go.AddComponent<AudioLowPassFilter>();filter.cutoffFrequency=6000;
             voices.Add(new Voice{source=source,filter=filter,ownedClip=clip,gain=gain});source.Play();
         }
-        static AudioClip MakeClip(string name,int seconds,int kind)
-        {
-            const int rate=24000;var data=new float[rate*seconds];var random=new System.Random(821+kind);float smooth=0;
-            var dropTimes=new[]{.8f,2.9f,5.1f};
-            for(int i=0;i<data.Length;i++)
-            {
-                float t=i/(float)rate,v=0;
-                if(kind==0)
-                {
-                    foreach(float start in dropTimes)
-                    {
-                        float q=t-start;if(q<0||q>.28f)continue;
-                        // V1 wet_drip falls from about 240 Hz to 64 Hz; integrate the exponential sweep.
-                        float k=Mathf.Log(64f/240)/.2f,phase=240*(Mathf.Exp(k*q)-1)/k;
-                        v+=.28f*Mathf.Sin(2*Mathf.PI*phase)*Mathf.Exp(-25*q)*Mathf.Clamp01(q/.004f);
-                    }
-                }
-                else if(kind==1)
-                    v=.065f*(Mathf.Sin(2*Mathf.PI*41.5f*t)+Mathf.Sin(2*Mathf.PI*43*t))+.025f*Mathf.Sin(2*Mathf.PI*50*t)+.012f*Mathf.Sin(2*Mathf.PI*100*t);
-                else
-                {
-                    smooth=Mathf.Lerp(smooth,(float)random.NextDouble()*2-1,.09f);
-                    v=smooth*.14f*(.35f+.65f*Mathf.Pow(Mathf.Sin(Mathf.PI*t/seconds),2));
-                }
-                float seam=Mathf.Clamp01(Mathf.Min(t,seconds-t)/.025f);data[i]=v*seam;
-            }
-            var clip=AudioClip.Create(name,data.Length,1,rate,false);clip.SetData(data,0);return clip;
-        }
+
         void Update()
         {
             var session=GameSession.Current;if(!session||!session.InputAllowed)return;

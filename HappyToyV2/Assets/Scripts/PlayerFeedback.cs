@@ -9,7 +9,7 @@ namespace HappyToy.V2
     {
         PlayerMotor player;
         AudioSource steps, foley, breathing;
-        AudioClip dryStep, wetStep, click, cabinetOpen, cabinetClose, discovery, breath;
+        AudioClip click, cabinetOpen, cabinetClose, discovery, breath;
         AudioClip[] woodSteps, stoneSteps, waterSteps;
         readonly List<AudioClip> ownedClips = new List<AudioClip>();
         Vector3 previousPosition, cameraHome, cameraPreviousPosition, stancePosition;
@@ -39,18 +39,14 @@ namespace HappyToy.V2
             steps = Source("Player footsteps", .36f, 120);
             foley = Source("Player interaction foley", .38f, 70);
             breathing = Source("Player breathing", 0, 160);
-            dryStep = Own(MakeTransient("Soft sole on dusty floor", .19f, 0));
-            wetStep = Own(MakeTransient("Soft sole in shallow water", .27f, 1));
-            woodSteps = Variants("step-wood", dryStep);
-            stoneSteps = Variants("step-stone", dryStep);
-            waterSteps = Variants("step-wet", wetStep);
-            click = RecordedOrFallback("flashlight", "Flashlight switch", .065f, 2);
-            cabinetOpen = Own(ExternalAudio.Owned("cabinet-open"));
-            cabinetClose = Own(ExternalAudio.Owned("cabinet-close"));
-            if (!cabinetOpen) cabinetOpen = Own(MakeCabinetFallback(true));
-            if (!cabinetClose) cabinetClose = Own(MakeCabinetFallback(false));
-            discovery = RecordedOrFallback("discovery", "Recovered paper and soft bell", .48f, 4);
-            breath = Own(MakeBreath());
+            woodSteps = Variants("step-wood");
+            stoneSteps = Variants("step-stone");
+            waterSteps = Variants("step-wet");
+            click = Recorded("flashlight");
+            cabinetOpen = Own(ExternalAudio.Required("cabinet-open"));
+            cabinetClose = Own(ExternalAudio.Required("cabinet-close"));
+            discovery = Recorded("discovery");
+            breath = Own(ExternalAudio.Required("player-breath"));
             breathing.clip = breath; breathing.loop = true; breathing.Play();
             initialized = true;
         }
@@ -59,18 +55,15 @@ namespace HappyToy.V2
             if (clip) ownedClips.Add(clip);
             return clip;
         }
-        AudioClip RecordedOrFallback(string cue, string label, float seconds, int kind)
-        {
-            var clip = ExternalAudio.Owned(cue);
-            return Own(clip ? clip : MakeTransient(label, seconds, kind));
-        }
-        AudioClip[] Variants(string cue, AudioClip fallback)
+        AudioClip Recorded(string cue)
+        { return Own(ExternalAudio.Required(cue)); }
+        AudioClip[] Variants(string cue)
         {
             var clips = new AudioClip[Mathf.Max(1, ExternalAudio.VariantCount(cue))];
             for (int i = 0; i < clips.Length; i++)
             {
-                var recorded = Own(ExternalAudio.Owned(cue, i));
-                clips[i] = recorded ? recorded : fallback;
+                var recorded = Own(ExternalAudio.Required(cue, i));
+                clips[i] = recorded;
             }
             return clips;
         }
@@ -209,64 +202,7 @@ namespace HappyToy.V2
             float targetFov = session.Shell.FieldOfView + cameraMotion.FovOffset;
             player.eyes.fieldOfView = Mathf.Lerp(player.eyes.fieldOfView, targetFov, 1 - Mathf.Exp(-5 * Time.unscaledDeltaTime));
         }
-        static AudioClip MakeTransient(string name, float seconds, int kind)
-        {
-            const int rate = 24000;
-            var data = new float[Mathf.CeilToInt(seconds * rate)];
-            var random = new System.Random(9127 + kind);
-            float filtered = 0;
-            for (int i = 0; i < data.Length; i++)
-            {
-                float t = i / (float)rate;
-                float n = (float)random.NextDouble() * 2 - 1;
-                filtered = Mathf.Lerp(filtered, n, kind == 2 ? .8f : .18f);
-                float attack = Mathf.Clamp01(t / .004f);
-                float tail = Mathf.Clamp01((seconds - t) / .015f);
-                float value;
-                if (kind == 0) value = .35f * Mathf.Exp(-30 * t) * Mathf.Sin(2 * Mathf.PI * 95 * t) + filtered * .18f * Mathf.Exp(-15 * t);
-                else if (kind == 1) value = filtered * .32f * Mathf.Exp(-11 * t) + .08f * Mathf.Sin(2 * Mathf.PI * (330 * t - 250 * t * t)) * Mathf.Exp(-25 * t);
-                else if (kind == 2) value = filtered * .35f * Mathf.Exp(-65 * t);
-                else if (kind == 3) value = filtered * .26f * Mathf.Sin(Mathf.PI * t / seconds);
-                else value = filtered * .12f * Mathf.Exp(-12 * t) + .1f * Mathf.Sin(2 * Mathf.PI * 660 * t) * Mathf.Exp(-9 * t);
-                data[i] = Mathf.Clamp(value * attack * tail, -.65f, .65f);
-            }
-            var clip = AudioClip.Create(name, data.Length, 1, rate, false); clip.SetData(data, 0); return clip;
-        }
-        static AudioClip MakeCabinetFallback(bool opening)
-        {
-            const int rate = 24000;
-            float seconds = opening ? .24f : .28f;
-            var data = new float[Mathf.CeilToInt(rate * seconds)];
-            var random = new System.Random(opening ? 7821 : 7822);
-            for (int index = 0; index < data.Length; index++)
-            {
-                float t = index / (float)rate;
-                float value = 0;
-                foreach(float start in new[]{0f, opening ? .055f : .072f})
-                {
-                    float u=t-start;if(u<0) continue;
-                    value+=Mathf.Clamp01(u/.0007f)*(.34f*Mathf.Exp(-65*u)*Mathf.Sin(2*Mathf.PI*210*u)+
-                        .22f*Mathf.Exp(-90*u)*Mathf.Sin(2*Mathf.PI*1170*u)+
-                        .28f*Mathf.Exp(-210*u)*((float)random.NextDouble()*2-1));
-                }
-                data[index] = value*Mathf.Clamp01((seconds-t)/.015f);
-            }
-            var clip = AudioClip.Create(opening ? "Cabinet metal latch release fallback" : "Cabinet metal latch seat fallback", data.Length, 1, rate, false);
-            clip.SetData(data, 0); return clip;
-        }
-        static AudioClip MakeBreath()
-        {
-            const int rate = 24000;
-            var data = new float[rate * 3]; var random = new System.Random(4921); float filtered = 0;
-            for (int i = 0; i < data.Length; i++)
-            {
-                float t = i / (float)rate;
-                filtered = Mathf.Lerp(filtered, (float)random.NextDouble() * 2 - 1, .045f);
-                float envelope = Mathf.Pow(Mathf.Max(0, Mathf.Sin(t * Mathf.PI * 2 / 3)), 1.4f);
-                data[i] = filtered * envelope * .5f;
-            }
-            var clip = AudioClip.Create("Quiet exertion breath", data.Length, 1, rate, false); clip.SetData(data, 0); return clip;
-        }
+
         void OnDisable()
         {
             cameraMotion.Reset();

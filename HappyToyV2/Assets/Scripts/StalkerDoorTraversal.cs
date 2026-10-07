@@ -14,6 +14,8 @@ namespace HappyToy.V2
         NavMeshAgent agent;
         NavMeshPath approachPath;
         readonly RaycastHit[] hits = new RaycastHit[32];
+        static readonly Collider[] nearbyLeaves = new Collider[32];
+        static readonly RaycastHit[] nearbySight = new RaycastHit[32];
         Interactable door, deferredDoor;
         bool passing;
         float entrySide, push, closeWait, blockedWait, retryUntil;
@@ -92,6 +94,72 @@ namespace HappyToy.V2
             return corners.Length>0&&Vector3.Dot(corners[corners.Length-1]-actualDoor.transform.position,actualDoor.DoorNormal)*fromSide>.1f;
         }
 
+        // A short/sideways cached steering corner can hide a closed leaf from the
+        // forward capsule sweep. Admit only a physically visible nearby leaf that
+        // the real intended native route crosses through its opening.
+        public static Interactable NearbyDoorOnRoute(NavMeshAgent walkingAgent, Vector3 destination, float floorY, NavMeshPath route)
+        {
+            if (!EnemyNavigation.Ready(walkingAgent) || route == null || !EnemyNavigation.SameFloor(walkingAgent.transform.position, floorY) ||
+                !EnemyNavigation.SameFloor(destination, floorY)) return null;
+            var origin = walkingAgent.transform.position + Vector3.up * 1.1f;
+            int count = Physics.OverlapSphereNonAlloc(origin, 2.2f, nearbyLeaves, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            if (count == nearbyLeaves.Length) return null;
+            Interactable nearest = null; float nearestDistance = float.PositiveInfinity; bool routeReady = false;
+            for (int i = 0; i < count; i++)
+            {
+                var candidate = nearbyLeaves[i] ? nearbyLeaves[i].GetComponentInParent<Interactable>() : null;
+                if (!candidate || !candidate.DoorOperable || candidate.IsOpen || !EnemyNavigation.SameFloor(candidate.transform.position, floorY)) continue;
+                float distance = Horizontal(walkingAgent.transform.position - candidate.transform.position);
+                if (distance > 2.2f || distance >= nearestDistance) continue;
+                // Ordinary open corridors need only the cheap local overlap.
+                // Recalculate a route only when a nearby closed leaf exists.
+                if (!routeReady)
+                {
+                    if (!EnemyNavigation.TryRoute(walkingAgent, destination, floorY, route)) return null;
+                    routeReady = true;
+                }
+                if (!RouteCrossesOpening(walkingAgent, destination, candidate, route)) continue;
+                var delta = candidate.transform.position + Vector3.up * 1.1f - origin;
+                int sightCount = Physics.RaycastNonAlloc(origin, delta.normalized, nearbySight, delta.magnitude + .05f,
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+                if (sightCount == nearbySight.Length) continue;
+                Collider first = null; float firstDistance = float.PositiveInfinity;
+                for (int hit = 0; hit < sightCount; hit++)
+                {
+                    var collider = nearbySight[hit].collider;
+                    if (!collider || collider.transform.IsChildOf(walkingAgent.transform) || collider.GetComponentInParent<StalkerBrain>() ||
+                        collider.GetComponentInParent<LanternMaskEncounter>() || collider.GetComponentInParent<WeepingAngelEncounter>()) continue;
+                    if (nearbySight[hit].distance < firstDistance) { first = collider; firstDistance = nearbySight[hit].distance; }
+                }
+                if (!first || first.GetComponentInParent<Interactable>() != candidate) continue;
+                nearest = candidate; nearestDistance = distance;
+            }
+            return nearest;
+        }
+
+        static bool RouteCrossesOpening(NavMeshAgent walkingAgent, Vector3 destination, Interactable door, NavMeshPath route)
+        {
+            var slide = door.openOffset.normalized; var normal = Vector3.Cross(Vector3.up, slide).normalized;
+            var previous = door.transform.InverseTransformPoint(walkingAgent.transform.position);
+            float initialSide = Vector3.Dot(previous, normal);
+            float goalSide = Vector3.Dot(door.transform.InverseTransformPoint(destination), normal);
+            if (initialSide * goalSide >= 0 || Mathf.Abs(initialSide) < .05f) return false;
+            float halfWidth = door.obstacle ? Vector3.Dot(door.obstacle.size,
+                new Vector3(Mathf.Abs(slide.x), Mathf.Abs(slide.y), Mathf.Abs(slide.z))) * .5f : 1.3f;
+            foreach (var corner in route.corners)
+            {
+                var current = door.transform.InverseTransformPoint(corner);
+                float a = Vector3.Dot(previous, normal), b = Vector3.Dot(current, normal);
+                if (a * b <= 0 && Mathf.Abs(a - b) > .001f)
+                {
+                    var crossing = Vector3.Lerp(previous, current, a / (a - b));
+                    if (Mathf.Abs(Vector3.Dot(crossing, slide)) < halfWidth - walkingAgent.radius - .03f) return true;
+                }
+                previous = current;
+            }
+            return false;
+        }
+
         public Result Tick(Vector3 intendedTarget, float floorY)
         {
             lastTarget=intendedTarget; lastFloorY=floorY; lastHitCollider=null; lastHitCount=0;
@@ -124,9 +192,9 @@ namespace HappyToy.V2
                     else ClearPassage();
                 }
             }
-            Vector3 target=intendedTarget;
-            if (agent.hasPath && !door) target=agent.steeringTarget;
+            Vector3 target=door && !passing ? door.transform.position : agent.hasPath ? agent.steeringTarget : intendedTarget;
             Vector3 direction=target-transform.position; direction.y=0;
+            if (direction.sqrMagnitude<.001f) { direction=intendedTarget-transform.position; direction.y=0; }
             if (direction.sqrMagnitude<.001f) return Result.Clear;
             float radius=agent.radius+.06f;
             Vector3 bottom=transform.position+Vector3.up*(radius+.12f);
@@ -142,9 +210,15 @@ namespace HappyToy.V2
                     hits[i].collider.GetComponentInParent<LanternMaskEncounter>() || hits[i].collider.GetComponentInParent<WeepingAngelEncounter>()) continue;
                 if (hits[i].distance<distance) { first=i; distance=hits[i].distance; }
             }
-            if (first<0) { lastDecision="route physically clear"; return Result.Clear; }
-            var hit=hits[first]; lastHitCollider=hit.collider; lastHitPoint=hit.point; lastHitDistance=hit.distance;
-            var nextDoor=hit.collider.GetComponentInParent<Interactable>();
+            var hit=first>=0?hits[first]:default(RaycastHit);
+            if (first>=0) { lastHitCollider=hit.collider; lastHitPoint=hit.point; lastHitDistance=hit.distance; }
+            var nextDoor=first>=0?hit.collider.GetComponentInParent<Interactable>():null;
+            Vector3 handlePoint=hit.point;
+            if (!nextDoor || nextDoor.kind!=Interactable.Kind.Door || !nextDoor.movingLeaf)
+            {
+                nextDoor=NearbyDoorOnRoute(agent,intendedTarget,floorY,approachPath);
+                if(nextDoor) { handlePoint=nextDoor.transform.position; lastHitPoint=handlePoint; }
+            }
             // Walls/furniture remain the native geometry; no door beyond the
             // first obstruction can be learned or operated remotely.
             if (!nextDoor || nextDoor.kind!=Interactable.Kind.Door || !nextDoor.movingLeaf ||
@@ -158,7 +232,7 @@ namespace HappyToy.V2
                 entrySide=Vector3.Dot(transform.position-door.transform.position,door.DoorNormal)>=0?1:-1;
             }
             door.HoldDoorPassage(owner);
-            if (Horizontal(transform.position-hit.point)>Mathf.Max(1.25f,agent.radius+.85f))
+            if (Horizontal(transform.position-handlePoint)>Mathf.Max(1.25f,agent.radius+.85f))
             {
                 push=0;
                 if (!TryDoorApproach(agent,door,entrySide,floorY,approachPath))
@@ -167,7 +241,7 @@ namespace HappyToy.V2
                 agent.SetPath(approachPath); agent.isStopped=false;
                 return Result.Waiting;
             }
-            EnemyNavigation.Stop(agent,true); Face(hit.point);
+            EnemyNavigation.Stop(agent,true); Face(handlePoint);
             blockedWait=Mathf.Min(6,blockedWait+seconds);
             if (blockedWait>=6)
             {

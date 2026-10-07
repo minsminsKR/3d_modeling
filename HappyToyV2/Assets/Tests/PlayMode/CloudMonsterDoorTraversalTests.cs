@@ -123,6 +123,110 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(120000)]
+        public IEnumerator ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches()
+        {
+            Call(session, "CreateCorridor", 73); Begin(); IsolateThreats();
+            ((Behaviour)player).enabled = false; PlacePlayer(new Vector3(200, 5, 200), false);
+            yield return null; yield return null;
+            var door = TraversalDoor(true); var normal = Get<Vector3>(door, "DoorNormal");
+            var destination = new GameObject("CloudQA diagonal real-monster patrol");
+            destination.transform.position = SupportedDoorSide(door, 2.6f, -.8f);
+            var monsters = Components("StalkerBrain").Where(item => item.name.EndsWith("— corridor")).ToArray();
+            Assert.That(monsters.Length, Is.EqualTo(4));
+            foreach (var monster in monsters)
+            {
+                var agent = monster.GetComponent<NavMeshAgent>();
+                agent.enabled = false; monster.gameObject.SetActive(false);
+                monster.transform.SetPositionAndRotation(SupportedDoorSide(door, -2.6f, .8f), Quaternion.LookRotation(normal));
+                Set(monster, "state", "Patrol"); Set(monster, "patrol", new[] { destination.transform });
+                ((Behaviour)monster).enabled = true; monster.gameObject.SetActive(true); agent.enabled = true;
+                Assert.That(agent.Warp(monster.transform.position), Is.True);
+                Physics.SyncTransforms();
+                bool opened = false; float deadline = Time.realtimeSinceStartup + 20;
+                while (Time.realtimeSinceStartup < deadline)
+                {
+                    yield return null; Physics.SyncTransforms(); DoorBodyClear(door, monster);
+                    opened |= Get<bool>(door, "IsOpen");
+                    if (opened && Vector3.Dot(monster.transform.position - door.transform.position, normal) > .8f &&
+                        !Get<bool>(door, "IsOpen") && Get<bool>(door, "AtRequestedDoorPose")) break;
+                }
+                var progress = Call(monster, "CaptureProgress");
+                string diagnostics = monster.name + " position=" + monster.transform.position + " radius=" + agent.radius +
+                    " height=" + agent.height + " stopped=" + agent.isStopped + " steering=" + agent.steeringTarget +
+                    " remaining=" + agent.remainingDistance + " progress=" + JsonUtility.ToJson(progress);
+                Assert.That(opened, Is.True, "Actual patrol monster did not open door: " + diagnostics);
+                Assert.That(Vector3.Dot(monster.transform.position - door.transform.position, normal), Is.GreaterThan(.8f), diagnostics);
+                Assert.That(Get<bool>(door, "IsOpen"), Is.False, "Door did not close after actual monster crossed: " + diagnostics);
+                monster.gameObject.SetActive(false); yield return null; yield return null;
+            }
+        }
+
+        [UnityTest, Timeout(45000)]
+        public IEnumerator ShortNativeSteeringSegmentDoesNotHideTheDoorOnAnActualPatrolRoute()
+        {
+            Call(session, "CreateCorridor", 73); Begin(); IsolateThreats();
+            ((Behaviour)player).enabled = false; PlacePlayer(new Vector3(200, 5, 200), false);
+            yield return null; yield return null;
+            var door = TraversalDoor(true); var normal = Get<Vector3>(door, "DoorNormal");
+            var monster = Components("StalkerBrain").First(item => item.name.EndsWith("— corridor"));
+            var agent = monster.GetComponent<NavMeshAgent>();
+            agent.enabled = false; monster.gameObject.SetActive(false);
+            monster.transform.SetPositionAndRotation(SupportedDoorSide(door, -1.15f), Quaternion.LookRotation(normal));
+            float walkingSpeed = Get<float>(monster, "patrolSpeed");
+            Set(monster, "patrolSpeed", 0f); Set(monster, "state", "Patrol");
+            var marker = new GameObject("CloudQA actual patrol route beyond nearby door");
+            marker.transform.position = SupportedDoorSide(door, 2.1f);
+            Set(monster, "patrol", new[] { marker.transform });
+            ((Behaviour)monster).enabled = true; monster.gameObject.SetActive(true); agent.enabled = true;
+            Assert.That(agent.Warp(monster.transform.position), Is.True); Physics.SyncTransforms();
+            // Isolate a short/stale steering segment with a genuine native path.
+            // The real patrol destination remains across the real closed leaf.
+            // No synthetic collision, position jump or door operation is injected.
+            var shortPath = new NavMeshPath(); float deadline = Time.realtimeSinceStartup + 3;
+            while (!Get<bool>(door, "IsOpen") && Time.realtimeSinceStartup < deadline)
+            {
+                Assert.That(agent.CalculatePath(SupportedDoorSide(door, -1.15f, 1.4f), shortPath), Is.True);
+                Assert.That(shortPath.status, Is.EqualTo(NavMeshPathStatus.PathComplete));
+                agent.SetPath(shortPath); agent.isStopped = false;
+                Assert.That(agent.hasPath, Is.True, "The controlled cached steering path completed before it could exercise the scan");
+                yield return null;
+            }
+            Assert.That(Get<bool>(door, "IsOpen"), Is.True, "A short cached steering corner hid the nearby closed door from the actual patrol goal");
+            Set(monster, "patrolSpeed", walkingSpeed);
+            yield return Wait(() => Vector3.Dot(monster.transform.position - door.transform.position, normal) > .8f &&
+                !Get<bool>(door, "IsOpen") && Get<bool>(door, "AtRequestedDoorPose"), 10,
+                "The corrected actual patrol did not cross and close its door", () => PursuitDiagnostics(monster));
+            Physics.SyncTransforms(); DoorBodyClear(door, monster);
+        }
+
+        [UnityTest, Timeout(30000)]
+        public IEnumerator NearbyClosedDoorStaysClosedWhenThePatrolRouteDoesNotCrossIt()
+        {
+            Call(session, "CreateCorridor", 73); Begin(); IsolateThreats();
+            ((Behaviour)player).enabled = false; PlacePlayer(new Vector3(200, 5, 200), false);
+            yield return null; yield return null;
+            var door = TraversalDoor(true); var normal = Get<Vector3>(door, "DoorNormal");
+            var monster = Components("StalkerBrain").First(item => item.name.EndsWith("— corridor"));
+            var agent = monster.GetComponent<NavMeshAgent>();
+            agent.enabled = false; monster.gameObject.SetActive(false);
+            monster.transform.SetPositionAndRotation(SupportedDoorSide(door, -1.15f), Quaternion.LookRotation(normal));
+            Set(monster, "patrolSpeed", 0f); Set(monster, "state", "Patrol");
+            var marker = new GameObject("CloudQA patrol stays on this side of nearby door");
+            marker.transform.position = SupportedDoorSide(door, -1.15f, 1.4f);
+            Set(monster, "patrol", new[] { marker.transform });
+            ((Behaviour)monster).enabled = true; monster.gameObject.SetActive(true); agent.enabled = true;
+            Assert.That(agent.Warp(monster.transform.position), Is.True); Physics.SyncTransforms();
+            float deadline = Time.realtimeSinceStartup + 2;
+            while (Time.realtimeSinceStartup < deadline)
+            {
+                yield return null;
+                Assert.That(Get<bool>(door, "IsOpen"), Is.False, "Nearby-route fallback opened an unrelated closed door");
+            }
+            var audio = door.GetComponent(RequireType("InteractionAudio"));
+            Assert.That(audio ? Get<int>(audio, "CuesPlayed") : 0, Is.Zero);
+        }
+
+        [UnityTest, Timeout(120000)]
         public IEnumerator MonsterDoorTraversalRealSchoolOpensAndClosesBothLeavesInEveryMovementState()
         {
             Call(shell, "BeginChapter"); IsolateThreats();

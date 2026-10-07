@@ -22,6 +22,7 @@ namespace HappyToy.V2
         Light glow;
         AudioSource source;
         AudioClip crack;
+        AudioClip[] crackTakes;
         Material material;
         GameObject body;
 
@@ -56,16 +57,8 @@ namespace HappyToy.V2
             source.playOnAwake = false; source.spatialBlend = 1;
             source.minDistance = 2; source.maxDistance = 28; source.volume = .35f;
             source.dopplerLevel = 0; source.ignoreListenerPause = false; source.ignoreListenerVolume = false;
-            const int rate = 24000;
-            var samples = new float[rate / 5];
-            var random = new System.Random(381);
-            for (int i = 0; i < samples.Length; i++)
-            {
-                float t = i / (float)rate;
-                samples[i] = (float)(random.NextDouble() * 2 - 1) * Mathf.Exp(-t * 40);
-            }
-            crack = AudioClip.Create("Firecracker pop", samples.Length, 1, rate, false);
-            crack.SetData(samples, 0);
+            crackTakes = new AudioClip[ExternalAudio.VariantCount("firecracker")];
+            for (int i = 0; i < crackTakes.Length; i++) crackTakes[i] = ExternalAudio.Required("firecracker", i);
         }
         void Update()
         {
@@ -128,6 +121,7 @@ namespace HappyToy.V2
         void PlayPop(GameSession session)
         {
             // The first explosion uses this same path: one pop, not a second overlapping one-shot.
+            crack = crackTakes[PopsPlayed % crackTakes.Length];
             source.PlayOneShot(crack);
             PopsPlayed++;
             if ((PopsPlayed - 1) % 4 == 0 && session.player && session.player.eyes &&
@@ -135,6 +129,10 @@ namespace HappyToy.V2
                 session.Shell.ShowCaption("[폭죽 터지는 소리]", 1.2f);
         }
         void OnDisable() { if (source) source.Stop(); if (glow) glow.intensity = 0; }
-        void OnDestroy() { if (material) Destroy(material); if (crack) Destroy(crack); }
+        void OnDestroy()
+        {
+            if (material) Destroy(material);
+            if (crackTakes != null) foreach (var take in crackTakes) if (take) Destroy(take);
+        }
     }
 }

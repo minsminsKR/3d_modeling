@@ -18,10 +18,16 @@ namespace HappyToy.V2
             {"enemy-uncat-movement",3},{"enemy-uncat-attack",1},
             {"enemy-baby-movement",3},{"enemy-baby-attack",1},
             {"enemy-lantern-movement",1},{"enemy-lantern-attack",1},
-            {"enemy-wraith-movement",1},{"enemy-wraith-attack",1}
+            {"enemy-wraith-movement",1},{"enemy-wraith-attack",1},
+            {"recognition",1},{"tension-heart",1},{"tension-air",1},{"tension-breath",1},
+            {"player-breath",1},{"firecracker",3},{"candle-ignite",1},{"door-rail",1},
+            {"chair-scrape",1},{"mannequin-joint",1},{"lantern-warning",1},{"cyclopse-roar",1},
+            {"nursery-whimper",1},{"wraith-growth",1},{"lantern-rise",1},{"hwacat-jaw",1},
+            {"story-bell",1},{"memory-bell",1},{"doll-musicbox",1}
         };
         static readonly Dictionary<string, AudioClip> resources = new Dictionary<string, AudioClip>();
         public static int VariantCount(string cue) => cue != null && variants.TryGetValue(cue, out var count) ? count : 0;
+        public static IEnumerable<string> Cues => variants.Keys;
         public static AudioClip Shared(string cue, int variant = 0)
         {
             if (cue == null || !variants.TryGetValue(cue, out var count)) return null;
@@ -43,6 +49,12 @@ namespace HappyToy.V2
             var copy = Object.Instantiate(resource);
             copy.name = "External " + cue + " / " + resource.name;
             return copy;
+        }
+        public static AudioClip Required(string cue, int variant = 0)
+        {
+            var clip = Owned(cue, variant);
+            if (!clip) throw new System.InvalidOperationException("Missing required recorded audio: " + cue + "/" + variant);
+            return clip;
         }
     }
 }

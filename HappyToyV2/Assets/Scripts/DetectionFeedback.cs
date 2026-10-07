@@ -39,8 +39,8 @@ namespace HappyToy.V2
             {
                 if (!CurrentSession || !CurrentSession.InputAllowed) return 0;
                 float heartbeat = Softened ? 0 : PerceivedTension.HeartbeatEnvelope(pulseClock);
-                float sustained = chase * (.34f + heartbeat * .07f);
-                return Mathf.Clamp01(Mathf.Max(Strength * .88f, sustained)) * (Softened ? .4f : 1);
+                float sustained = chase * (Softened ? .34f : .48f + heartbeat * .14f);
+                return Mathf.Clamp01(Mathf.Max(Strength * .95f, sustained)) * (Softened ? .35f : 1);
             }
         }
         public float DistortionStrength => lens != null && post && post.weight > 0 ? Mathf.Abs(lens.intensity.value) : 0;
@@ -61,9 +61,9 @@ namespace HappyToy.V2
         {
             player = GetComponent<PlayerMotor>();
             source = gameObject.AddComponent<AudioSource>();
-            source.playOnAwake = false; source.spatialBlend = 0; source.volume = .64f; source.priority = 20;
+            source.playOnAwake = false; source.spatialBlend = 0; source.volume = .84f; source.priority = 20;
             source.ignoreListenerPause = false; source.ignoreListenerVolume = false; source.dopplerLevel = 0;
-            sting = MakeRecognition(); peripheral = MakePeripheralVeil(); nativeGrain = MakeNativeGrain();
+            sting = ExternalAudio.Required("recognition"); peripheral = MakePeripheralVeil(); nativeGrain = MakeNativeGrain();
             // Only perception parameters override the independently owned lighting.
             postObject = new GameObject("Witnessed threat lens scope");
             postObject.transform.SetParent(transform, false);
@@ -116,7 +116,7 @@ namespace HappyToy.V2
             // never track an actor through a wall; physical feet remain the locator.
             Vector3 direction = (observer.position - transform.position).normalized;
             source.panStereo = Softened ? 0 : Mathf.Clamp(Vector3.Dot(transform.right, direction) * .34f, -.34f, .34f);
-            source.volume = Softened ? .32f : .64f;
+            source.volume = Softened ? .32f : .84f;
             source.PlayOneShot(sting);
         }
 
@@ -147,7 +147,7 @@ namespace HappyToy.V2
         {
             var session = CurrentSession;
             if (!session) { Clear(); return; }
-            if (source) source.volume = Softened ? .32f : .64f;
+            if (source) source.volume = Softened ? .32f : .84f;
             if (!session.InputAllowed) return;
             float dt = Time.deltaTime;
             remaining = Mathf.Max(0, remaining - dt); cooldown = Mathf.Max(0, cooldown - dt);
@@ -178,11 +178,11 @@ namespace HappyToy.V2
             // pursuit texture. Original fine grain is tiled in screen pixels and
             // luminance aware, preserving the path, faces and HUD readability.
             float interference = .5f + .5f * Mathf.Sin(pulseClock * 7.1f + .6f * Mathf.Sin(pulseClock * 2.7f));
-            filmGrain.intensity.value = Mathf.Max(Strength * .76f, chase * (.35f + .055f * interference));
+            filmGrain.intensity.value = Mathf.Max(Strength * .95f, chase * (.48f + .07f * interference));
             // A smooth contraction and breathing veil support the grain without
             // strobes, camera rotation, blur or additional FOV movement.
-            lens.intensity.value = -Strength * .085f - chase * (.022f + .007f * breathing);
-            chromatic.intensity.value = Strength * .11f + chase * .025f;
+            lens.intensity.value = -Strength * .14f - chase * (.045f + .013f * breathing);
+            chromatic.intensity.value = Strength * .24f + chase * .055f;
         }
 
         void Clear()
@@ -234,44 +234,15 @@ namespace HappyToy.V2
                 float angle = Mathf.Atan2(v, u);
                 float radius = Mathf.Sqrt(u * u * .87f + v * v);
                 // Broad fixed contours close peripheral vision with a clear centre.
-                radius += .028f * Mathf.Sin(angle * 3 + .7f) + .018f * Mathf.Sin(angle * 5 - .4f);
-                float edge = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.36f, 1.2f, radius));
+                radius += .036f * Mathf.Sin(angle * 3 + .7f) + .027f * Mathf.Sin(angle * 7 - .4f) +
+                    .013f * Mathf.Sin(angle * 17 + radius * 14);
+                // Keep the central navigation/aiming view clear while an irregular,
+                // bruised edge closes in hard at discovery and breathes during chase.
+                float edge = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.48f, 1.12f, radius));
                 float warm = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.6f, .95f, radius));
-                pixels[y * width + x] = new Color32((byte)Mathf.Lerp(4, 30, warm), 2, 5, (byte)(edge * 238));
+                pixels[y * width + x] = new Color32((byte)Mathf.Lerp(4, 42, warm), 2, 5, (byte)(edge * 248));
             }
             texture.SetPixels32(pixels); texture.Apply(false, true); return texture;
-        }
-
-        static AudioClip MakeRecognition()
-        {
-            const int rate = 48000; const float seconds = 1.65f;
-            var samples = new float[Mathf.RoundToInt(rate * seconds)];
-            var random = new System.Random(9341);
-            float fast = 0, slow = 0;
-            float highCut = 1 - Mathf.Exp(-2 * Mathf.PI * 2700 / rate);
-            float lowCut = 1 - Mathf.Exp(-2 * Mathf.PI * 190 / rate);
-            for (int i = 0; i < samples.Length; i++)
-            {
-                float t = i / (float)rate;
-                float white = (float)random.NextDouble() * 2 - 1;
-                fast += (white - fast) * highCut; slow += (fast - slow) * lowCut;
-                float attack = Mathf.Clamp01(t / .008f), fade = Mathf.Clamp01((seconds - t) / .16f);
-                float body = .43f * Mathf.Exp(-6 * t) * Mathf.Sin(2 * Mathf.PI * (64 * t - 9 * t * t));
-                float resonance = .12f * Mathf.Exp(-3.7f * t) * Mathf.Sin(2 * Mathf.PI * 311 * t) +
-                    .09f * Mathf.Exp(-4.2f * t) * Mathf.Sin(2 * Mathf.PI * 437 * t);
-                float scrapeEnvelope = Mathf.Clamp01(t / .035f) * Mathf.Exp(-3.5f * t);
-                float scrape = scrapeEnvelope * (.1f * Mathf.Sin(2 * Mathf.PI * (1490 * t - 320 * t * t)) +
-                    .07f * Mathf.Sin(2 * Mathf.PI * (1513 * t - 331 * t * t)));
-                float tail = t > .17f ? .065f * Mathf.Exp(-3 * (t - .17f)) *
-                    Mathf.Sin(2 * Mathf.PI * 229 * (t - .17f)) * Mathf.Clamp01((t - .17f) / .04f) : 0;
-                // Original band-limited interference tears into the metallic
-                // impact and fades before it masks the enemy's next contact.
-                float interference = (fast - slow) * .30f * Mathf.Exp(-4.8f * t) * Mathf.Clamp01(t / .015f);
-                float value = (body + resonance + scrape + tail + interference) * attack * fade;
-                samples[i] = .58f * (float)System.Math.Tanh(value / .58f);
-            }
-            var clip = AudioClip.Create("Original recognition iron and interference", samples.Length, 1, rate, false);
-            clip.SetData(samples, 0); return clip;
         }
 
         void OnDisable() { Clear(); }

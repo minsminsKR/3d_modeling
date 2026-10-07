@@ -43,6 +43,11 @@ python -m pip install -r Tools/requirements-authoring.txt
   다섯 모델의 실제 편집 원본. Blender **4.0.2**의 제작·검증 도구와 상대 경로
   PBR 입력은 같은 폴더의 `README.md`에 기록되어 있다.
 - `SourceArt/seal-altar-v2.blend`: 앞선 제단 제작 원본.
+- `SourceArt/Audio/render_recorded_horror.py`: 녹음 기반 효과음 23개의 재편집 도구.
+  선택한 실제 원본은 `ThirdParty/Audio/RecordedHorror/sources/`에 함께 보관한다.
+  **Python 3.12**와 해당 폴더의 버전을 고정한 `requirements.txt`를 별도 환경에서
+  사용한다. [오디오 재생성 안내](SourceArt/Audio/README.md)를 따르면 다른 PC에서도
+  재다운로드·인증·개인 캐시 없이 현재 음원을 재생성할 수 있다.
 - 게임에 사용되는 FBX·텍스처·재질·셰이더와 `.meta`는 `Assets`에 함께 있다.
 - `SourceArt/GraphicsUpgrade`: 모델 제작, Poly Haven 취득, 종이/소품 PBR 생성 도구.
   `author_props_v3.py`는 Blender **4.0.x**, Python PBR 도구는 **NumPy·Pillow**를

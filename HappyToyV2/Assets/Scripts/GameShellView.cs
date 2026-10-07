@@ -546,10 +546,24 @@ namespace HappyToy.V2
             noise = Text("", 753, 230, 802, 34, shell.LargeText ? 22 : 19);
             noise.style.unityTextAlign = TextAnchor.UpperRight;
             noise.style.color = Muted;
-            itemFeedbackPanel = Panel(740, 270, 815, 68, new Color(.015f, .027f, .022f, .93f));
-            itemFeedback = Text("", 760, 279, 775, 52, shell.LargeText ? 22 : 19);
-            itemFeedback.name = "item-action-feedback";
-            itemFeedback.style.unityTextAlign = TextAnchor.UpperRight;
+            // Fit the message instead of covering the upper-right view with an empty box.
+            // This sits above the lower-left inventory and leaves the aiming path clear.
+            itemFeedbackPanel = Panel(47, 672, 365, 42, new Color(.015f, .027f, .022f, shell.HighContrast ? .95f : .58f));
+            itemFeedbackPanel.name = "item-action-feedback-panel";
+            itemFeedbackPanel.style.width = itemFeedbackPanel.style.height = StyleKeyword.Auto;
+            itemFeedbackPanel.style.maxWidth = 365;
+            itemFeedbackPanel.style.paddingLeft = itemFeedbackPanel.style.paddingRight = 10;
+            itemFeedbackPanel.style.paddingTop = itemFeedbackPanel.style.paddingBottom = 5;
+            itemFeedback = new Label { name = "item-action-feedback", pickingMode = PickingMode.Ignore };
+            itemFeedbackPanel.Add(itemFeedback);
+            itemFeedback.style.fontSize = shell.LargeText ? 21 : 18;
+            itemFeedback.style.whiteSpace = WhiteSpace.Normal;
+            itemFeedback.style.maxWidth = 345;
+            itemFeedback.style.marginLeft = itemFeedback.style.marginRight = 0;
+            itemFeedback.style.marginTop = itemFeedback.style.marginBottom = 0;
+            itemFeedback.style.paddingLeft = itemFeedback.style.paddingRight = 0;
+            itemFeedback.style.paddingTop = itemFeedback.style.paddingBottom = 0;
+            itemFeedback.style.unityTextAlign = TextAnchor.MiddleLeft;
             itemFeedback.style.color = Gold;
             controlsFooter = Small(ControlsFooter, 942, 840, 610);
             controlsFooter.style.unityTextAlign = TextAnchor.UpperRight;
@@ -609,6 +623,7 @@ namespace HappyToy.V2
             bool showItemFeedback = inventory && (inventory.FeedbackVisible || showAim);
             itemFeedback.text = showAim ? inventory.Aim.Hint : showItemFeedback ? inventory.ActionFeedback : string.Empty;
             Visible(itemFeedback, showItemFeedback); Visible(itemFeedbackPanel, showItemFeedback);
+            itemFeedbackPanel.style.opacity = showAim ? 1 : inventory ? Mathf.Clamp01(inventory.FeedbackRemaining / .25f) : 0;
             string sound = player.FootstepNoiseRadius <= 0 ? "없음" : player.FootstepNoiseRadius <= 3.5f ? "작음" : player.FootstepNoiseRadius <= 7 ? "보통" : "큼";
             noise.text = "내 발소리  " + sound;
             var detection = player.GetComponent<DetectionFeedback>();

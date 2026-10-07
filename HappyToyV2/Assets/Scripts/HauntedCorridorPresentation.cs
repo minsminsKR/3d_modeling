@@ -281,6 +281,8 @@ namespace HappyToy.V2
                     slot=>slot=="GU_washi"?(red?redShade:warmShade):graphicsSurfaces.Resolve(slot),owned);
                 foreach(var renderer in lantern.GetComponentsInChildren<MeshRenderer>())
                 {renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=true;}
+                var threatFlicker=light.gameObject.AddComponent<ThreatFixtureFlicker>();
+                threatFlicker.Configure(run.Lighting,light,lantern.GetComponentsInChildren<Renderer>(),cell*.73f);
                 wood.Box(center+Vector3.up*.30f,new Vector3(.027f,.20f,.027f),Quaternion.identity);
                 if(red)
                 {

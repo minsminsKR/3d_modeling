@@ -32,30 +32,7 @@ namespace HappyToy.V2
             waterSound.rolloffMode = AudioRolloffMode.Linear; waterSound.dopplerLevel = 0;
             waterSound.loop = true; waterSound.volume = 0; waterSound.priority = 180;
             waterFilter = emitter.AddComponent<AudioLowPassFilter>(); waterFilter.cutoffFrequency = 4800;
-            const int rate = 24000;
-            var samples = new float[rate * 13]; var random = new System.Random(441);
-            // Deterministic irregular spacing, with silence at both loop ends. No machine-gun drip rhythm.
-            float startTime = .45f;
-            for (int k = 0; k < 13; k++)
-            {
-                int start = (int)(startTime * rate);
-                float frequency = 700 + (float)random.NextDouble() * 900;
-                float gain = .13f + (float)random.NextDouble() * .10f;
-                for (int i = 0; i < 6000 && start + i < samples.Length; i++)
-                {
-                    float t = i / (float)rate;
-                    float envelope = Mathf.Clamp01(t / .004f) * Mathf.Exp(-24 * t);
-                    samples[start + i] += gain * envelope * Mathf.Sin(2 * Mathf.PI * (frequency * t - 650 * t * t));
-                }
-                startTime += .45f + (float)random.NextDouble() * .95f;
-            }
-            // Explicit boundary fade prevents clicks if future timing changes put a drop at the seam.
-            for (int i = 0; i < samples.Length; i++)
-                samples[i] *= Mathf.Clamp01(Mathf.Min(i, samples.Length - 1 - i) / (rate * .025f));
-            waterClip = AudioClip.Create("Basement irregular drips", samples.Length, 1, rate, false);
-            waterClip.SetData(samples, 0);
-            var recordedWater = ExternalAudio.Owned("ambience-basement");
-            if (recordedWater) { Destroy(waterClip); waterClip = recordedWater; }
+            waterClip = ExternalAudio.Required("ambience-basement");
             waterSound.clip = waterClip; waterSound.Play();
         }
         void LateUpdate()

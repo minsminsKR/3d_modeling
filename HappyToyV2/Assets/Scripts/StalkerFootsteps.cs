@@ -48,25 +48,7 @@ namespace HappyToy.V2
             AttackAcoustics = EnemyAcoustics.Bind(attackSource, transform, .7f);
             SetProfile(lantern ? EnemySoundKind.Lantern : EnemySoundProfile.Identify(transform));
             // Keep the established cabinet impact independent from creature identity.
-            const int rate = 24000;
-            var door = new float[(int)(rate * .42f)]; var grain = new System.Random(731);
-            for (int i = 0; i < door.Length; i++)
-            {
-                float t = i / (float)rate, value = 0;
-                for (int strike = 0; strike < 2; strike++)
-                {
-                    float q = t - strike * .135f;
-                    if (q < 0) continue;
-                    float envelope = Mathf.Clamp01(q / .003f) * Mathf.Exp(-q * 27);
-                    value += envelope * (.25f * Mathf.Sin(2 * Mathf.PI * (92 + strike * 24) * q) +
-                        .11f * (float)(grain.NextDouble() * 2 - 1));
-                }
-                door[i] = Mathf.Clamp(value, -.38f, .38f) * Mathf.Clamp01((.42f - t) / .025f);
-            }
-            cabinetRattle = AudioClip.Create("Cabinet door attack rattle", door.Length, 1, rate, false);
-            cabinetRattle.SetData(door, 0);
-            var recordedCabinet = ExternalAudio.Owned("cabinet");
-            if (recordedCabinet) { Destroy(cabinetRattle); cabinetRattle = recordedCabinet; }
+            cabinetRattle = ExternalAudio.Required("cabinet");
         }
         void SetProfile(EnemySoundKind kind)
         {

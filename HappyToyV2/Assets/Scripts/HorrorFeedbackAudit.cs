@@ -136,7 +136,9 @@ namespace HappyToy.V2
             Physics.SyncTransforms();
             capture = RouteAudioCapture.Attach(Path.Combine(output, "listener-audio"));
             yield return new WaitForSecondsRealtime(.25f);
-            yield return Capture("01-calm.png");
+            player.Firecrackers.SetRunStock(1);
+            if (!player.Firecrackers.AddSupply()) throw new InvalidOperationException("Native pickup feedback could not be shown");
+            yield return Capture("01-calm-pickup.png");
             actor.enabled = true;
             deadline = Time.realtimeSinceStartup + 3;
             while (detection.Strength < .7f && Time.realtimeSinceStartup < deadline) yield return null;

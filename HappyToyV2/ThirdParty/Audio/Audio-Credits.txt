@@ -1,10 +1,5 @@
 HAPPY TOY V2 — EXTERNAL SOUND CREDITS
 
-Cabinet metal latch release and seating — original project synthesis
-Editable generator: SourceArt/Audio/render_cabinet_latch.py (Python 3 stdlib).
-Short mechanical clacks, mono 24 kHz PCM16. No external samples or creaking
-door recording is used for cabinet entry/exit.
-
 Sound Effects Pack — OwlishMedia
 https://opengameart.org/content/sound-effects-pack
 CC0 1.0. Recorded shoe contacts used for the four walking pursuers, with
@@ -32,5 +27,63 @@ CC0 1.0. Spatial water drops.
 
 CC0 license: https://creativecommons.org/publicdomain/zero/1.0/
 Per-file sources, transformations and SHA-256: ThirdParty/Audio/manifest.json
-All other synthesized cues are original project code. These sound credits
-describe the listed acquisitions; the authors do not endorse this game.
+The authors do not endorse this game. Source provenance and selected originals for
+the realistic horror replacement are retained in ThirdParty/Audio/RecordedHorror.
+No oscillator/noise synthesized fallback cues are used by runtime audio.
+
+REALISTIC HORROR REPLACEMENTS — 2026-10-08
+
+Heartbeat Mono.wav — Benboncan
+https://freesound.org/people/Benboncan/sounds/62912/
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+Actual human heart recorded with a lavalier/stethoscope and Zoom H2.
+Derived from the author's publicly playable high-quality MP3 preview (the
+original WAV requires login). Changes: mono, 2.23–3.2136 second cycle,
+25–600 Hz filter, rate conversion to about 83 BPM, fades and gain.
+Additional stress-dependent playback pitch in game.
+
+Sound Effects Pack — OwlishMedia
+https://opengameart.org/content/sound-effects-pack
+CC0 1.0. Recorded scream, frightened vocal breath and solo breathing.
+Trimmed, filtered, faded and sometimes slowed. Scream layered with actual
+workshop metal drop for recognition. No Scifi/UI/synthetic pack cues selected.
+
+202 More Sound Effects — OwlishMedia
+https://opengameart.org/content/202-more-sound-effects
+CC0 1.0. Actual key/lock/door contacts used as distinct cabinet latch foley.
+
+68 Workshop Sounds — bart
+https://opengameart.org/content/68-workshop-sounds
+CC0 1.0. Garage/tool recordings: metal drop, dragging metal, tool jingle and
+ratchet. Trimmed, filtered, slowed and gain-calibrated for physical horror foley.
+
+25 CC0 bang / firework SFX — rubberduck
+https://opengameart.org/content/25-cc0-bang-firework-sfx
+CC0 1.0. Three independent short recorded firework reports, shot_01–03.
+Trimmed, converted to mono and filtered; no synthesized explosion layer.
+
+100 CC0 SFX — rubberduck
+https://opengameart.org/content/100-cc0-sfx
+CC0 1.0. Actual physical bell recording used for dismissal and spatial clue.
+Bell clue is an edited two-strike phrase followed by silence.
+
+Flare ignition — qubodup
+https://opengameart.org/content/flare-ignition
+CC0 1.0. Author's matchstick recording, already accelerated by its author;
+ignition excerpt slightly slowed, filtered, faded and normalized.
+
+Scrapes — AntumDeluge
+https://opengameart.org/content/scrapes
+CC0 1.0. Object dragged on a cinder block; edited as sliding-rail and chair
+scrape foley. This is material foley, not claimed to be an actual chair recording.
+
+musicbox1.wav — sandocho
+https://freesound.org/people/sandocho/sounds/17700/
+CC0 1.0. Actual antique wind-up toy note, public high-quality MP3 preview.
+Filtered and edited into a four-note phrase with sample rate changes.
+
+babycry.mp3 — jamesmbock
+https://freesound.org/people/jamesmbock/sounds/458646/
+CC0 1.0. Author's iPhone recording of his son, public high-quality MP3 preview.
+Short nonverbal excerpt, mono, filtered, faded and gain-calibrated.

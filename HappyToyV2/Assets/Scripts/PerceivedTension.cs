@@ -9,8 +9,8 @@ namespace HappyToy.V2
     {
         public const float RecognitionStrength = .85f, ContactCeiling = .35f, AttackCeiling = .95f;
         public const float RisePerSecond = 3.5f, DecayPerSecond = .16f, DuckSeconds = .24f;
-        public const float PulseMaximumVolume = .095f, AirMaximumVolume = .035f;
-        public const float InterferenceMaximumVolume = .075f;
+        public const float PulseMaximumVolume = .13f, AirMaximumVolume = .035f;
+        public const float InterferenceMaximumVolume = .13f;
         struct PendingCue
         {
             public AudioSource source;
@@ -66,7 +66,8 @@ namespace HappyToy.V2
             player = GetComponent<PlayerMotor>();
             emitter = new GameObject("Perceived tension soundscape"); emitter.SetActive(false);
             emitter.transform.SetParent(transform, false);
-            PulseClip = MakePulse(); AirClip = MakeAir(); InterferenceClip = MakeInterference();
+            PulseClip = ExternalAudio.Required("tension-heart"); AirClip = ExternalAudio.Required("tension-air");
+            InterferenceClip = ExternalAudio.Required("tension-breath");
             PulseSource = Source(PulseClip, 170); AirSource = Source(AirClip, 180);
             InterferenceSource = Source(InterferenceClip, 190);
             emitter.SetActive(true);
@@ -245,68 +246,7 @@ namespace HappyToy.V2
             }
             return Mathf.Clamp01(envelope);
         }
-        static AudioClip MakePulse()
-        {
-            const int rate = 24000; const float seconds = .72f;
-            var samples = new float[Mathf.RoundToInt(rate * seconds)];
-            for (int i = 0; i < samples.Length; i++)
-            {
-                float t = i / (float)rate, value = 0;
-                for (int beat = 0; beat < 2; beat++)
-                {
-                    float q = t - (beat == 0 ? .035f : .20f);
-                    if (q < 0) continue;
-                    value += (beat == 0 ? 1 : .55f) * Mathf.Clamp01(q / .012f) * Mathf.Exp(-18 * q) *
-                        (.29f * Mathf.Sin(2 * Mathf.PI * (56 * q - 10 * q * q)) +
-                         .075f * Mathf.Sin(2 * Mathf.PI * 89 * q) + .028f * Mathf.Sin(2 * Mathf.PI * 126 * q));
-                }
-                samples[i] = .34f * (float)System.Math.Tanh(value / .34f) * Mathf.Clamp01(Mathf.Min(t, seconds - t) / .025f);
-            }
-            var clip = AudioClip.Create("Original close double heartbeat", samples.Length, 1, rate, false);
-            clip.SetData(samples, 0); return clip;
-        }
-        static AudioClip MakeAir()
-        {
-            const int rate = 24000; const float seconds = 2.88f;
-            var samples = new float[Mathf.RoundToInt(rate * seconds)];
-            for (int i = 0; i < samples.Length; i++)
-            {
-                float t = i / (float)rate;
-                float seam = Mathf.SmoothStep(0, 1, Mathf.Clamp01(Mathf.Min(t, seconds - t) / .12f));
-                // A restrained beating low chord adds body without static masking
-                // real footsteps. Whole-cycle partials and a fade make a clean seam.
-                float body = .13f * Mathf.Sin(2 * Mathf.PI * (161 / seconds) * t) +
-                    .055f * Mathf.Sin(2 * Mathf.PI * (163 / seconds) * t) +
-                    .024f * Mathf.Sin(2 * Mathf.PI * (242 / seconds) * t);
-                samples[i] = body * (.8f + .2f * Mathf.Sin(2 * Mathf.PI * t / seconds)) * seam;
-            }
-            var clip = AudioClip.Create("Original low pursuit resonance", samples.Length, 1, rate, false);
-            clip.SetData(samples, 0); return clip;
-        }
-        static AudioClip MakeInterference()
-        {
-            const int rate = 48000; const float seconds = 3.6f;
-            var samples = new float[Mathf.RoundToInt(rate * seconds)];
-            var random = new System.Random(27571);
-            float fast = 0, slow = 0;
-            float highCut = 1 - Mathf.Exp(-2 * Mathf.PI * 1700 / rate);
-            float lowCut = 1 - Mathf.Exp(-2 * Mathf.PI * 210 / rate);
-            for (int i = 0; i < samples.Length; i++)
-            {
-                float t = i / (float)rate;
-                float white = (float)random.NextDouble() * 2 - 1;
-                fast += (white - fast) * highCut; slow += (fast - slow) * lowCut;
-                float breath = .60f + .24f * Mathf.Sin(2 * Mathf.PI * 2 * t / seconds) +
-                    .10f * Mathf.Sin(2 * Mathf.PI * 5 * t / seconds + .7f);
-                float seam = Mathf.SmoothStep(0, 1, Mathf.Clamp01(Mathf.Min(t, seconds - t) / .09f));
-                // Narrow dark hiss and resonant grains rather than loud broadband
-                // white noise. Physical steps stay louder and retain their timing.
-                float texture = .20f * (float)System.Math.Tanh((fast - slow) * 2.8f) * breath;
-                samples[i] = texture * seam;
-            }
-            var clip = AudioClip.Create("Original witnessed pursuit bandpass interference", samples.Length, 1, rate, false);
-            clip.SetData(samples, 0); return clip;
-        }
+
         void OnDisable() { Clear(); }
         void OnDestroy()
         {

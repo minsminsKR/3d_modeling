@@ -52,6 +52,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(nativeNoise.filterMode, Is.EqualTo(FilterMode.Bilinear)); Assert.That(nativeNoise.wrapMode, Is.EqualTo(TextureWrapMode.Repeat));
             var source = (AudioSource)detection.GetType().GetField("source", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(detection);
             var clip = (AudioClip)detection.GetType().GetField("sting", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(detection);
+            Assert.That(CloudExternalAudioTests.MatchesFamily(clip, "recognition", 1), Is.True,
+                "Recognition bypassed the imported metal/performed-vocal recording");
             Assert.That(source.ignoreListenerPause, Is.False); Assert.That(source.ignoreListenerVolume, Is.False);
             var samples = new float[clip.samples]; Assert.That(clip.GetData(samples, 0), Is.True);
             Assert.That(samples.All(v => !float.IsNaN(v) && !float.IsInfinity(v) && Mathf.Abs(v) <= .58f), Is.True);
@@ -80,11 +82,11 @@ namespace HappyToy.V2.CloudTests
             yield return new WaitForSeconds(.9f);
             Assert.That(Get<bool>(detection, "Active"), Is.False, "Recognition impact outlived its brief window");
             Assert.That(Get<float>(detection, "ChaseStrength"), Is.GreaterThan(.95f));
-            Assert.That(Get<float>(detection, "PeripheralStrength"), Is.InRange(.32f, .42f), "Actual sustained chase lost its restrained peripheral pressure");
-            Assert.That(Get<float>(detection, "NoiseStrength"), Is.InRange(.34f, .42f), "Grain stopped when the discovery impact ended despite real pursuit");
+            Assert.That(Get<float>(detection, "PeripheralStrength"), Is.InRange(.46f, .63f), "Actual sustained chase lost its stronger peripheral pressure");
+            Assert.That(Get<float>(detection, "NoiseStrength"), Is.InRange(.46f, .56f), "Grain stopped when the discovery impact ended despite real pursuit");
             var interference = Get<AudioSource>(TensionOwner(), "InterferenceSource");
             Assert.That(interference.isPlaying, Is.True, "Known continuous pursuit has no interference texture");
-            Assert.That(interference.volume, Is.GreaterThan(0).And.LessThanOrEqualTo(.07501f));
+            Assert.That(interference.volume, Is.GreaterThan(0).And.LessThanOrEqualTo(.13001f));
             Assert.That(interference.ignoreListenerPause || interference.ignoreListenerVolume, Is.False);
             yield return CaptureFrozenHud(view, "witnessed-pursuit-ui.png", errors);
             yield return new WaitForSeconds(3.2f);

@@ -26,10 +26,7 @@ namespace HappyToy.V2
             records=FindObjectsByType<Interactable>(FindObjectsInactive.Include,FindObjectsSortMode.None);
             model.gameObject.SetActive(false);guideLight.enabled=false;
             source=gameObject.AddComponent<AudioSource>();source.spatialBlend=1;source.minDistance=2;source.maxDistance=12;source.playOnAwake=false;
-            const int rate=24000;var samples=new float[rate*3];var notes=new[]{660f,880f,784f,990f,880f};
-            for(int k=0;k<notes.Length;k++)for(int i=0;i<rate;i++)
-            {int index=k*rate/3+i;if(index>=samples.Length)break;float t=i/(float)rate;samples[index]+=.12f*Mathf.Exp(-6*t)*(Mathf.Sin(2*Mathf.PI*notes[k]*t)+.3f*Mathf.Sin(2*Mathf.PI*notes[k]*2.76f*t));}
-            music=AudioClip.Create("Lovely Doll music box",samples.Length,1,rate,false);music.SetData(samples,0);
+            music=ExternalAudio.Required("doll-musicbox");
         }
         void Update()
         {

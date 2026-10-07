@@ -30,20 +30,8 @@ namespace HappyToy.V2
             }
             stalker.gameObject.SetActive(false);
             source=gameObject.AddComponent<AudioSource>();source.spatialBlend=1;source.minDistance=2;source.maxDistance=22;
-            // Original synthesized cracked-school-bell cue; no borrowed soundtrack.
-            const int rate=24000;var samples=new float[rate*2];
-            for(int i=0;i<samples.Length;i++)
-            {float t=i/(float)rate;samples[i]=.18f*Mathf.Exp(-3*t)*(Mathf.Sin(2*Mathf.PI*540*t)+.35f*Mathf.Sin(2*Mathf.PI*839*t));}
-            bell=AudioClip.Create("Cracked dismissal bell",samples.Length,1,rate,false);bell.SetData(samples,0);
-            var scrape=new float[(int)(rate*.72f)];var random=new System.Random(431);float previous=0;
-            for(int i=0;i<scrape.Length;i++)
-            {
-                float t=i/(float)rate;float noise=(float)(random.NextDouble()*2-1);
-                float rasp=noise-previous*.8f;previous=noise;
-                float envelope=Mathf.Sin(Mathf.PI*i/(scrape.Length-1));
-                scrape[i]=envelope*(rasp*.12f+Mathf.Sin(2*Mathf.PI*(190*t+35*t*t))*.055f);
-            }
-            chairScrape=AudioClip.Create("Empty chair wood scrape",scrape.Length,1,rate,false);chairScrape.SetData(scrape,0);
+            bell=ExternalAudio.Required("story-bell");
+            chairScrape=ExternalAudio.Required("chair-scrape");
             if(session)session.StoryChanged+=OnStory;
         }
         void OnDestroy()

@@ -293,6 +293,10 @@ namespace HappyToy.V2.CloudTests
             IsolateThreats(); Begin(); Call(shell, "RestoreDefaultSettings"); ((Behaviour)player).enabled = false;
             ((Behaviour)Get<Component>(player, "Feedback")).enabled = false;
             var tension = TensionOwner(); var pulse = Get<AudioSource>(tension, "PulseSource"); var air = Get<AudioSource>(tension, "AirSource");
+            Assert.That(CloudExternalAudioTests.MatchesFamily(pulse.clip, "tension-heart", 1), Is.True);
+            Assert.That(CloudExternalAudioTests.MatchesFamily(air.clip, "tension-air", 1), Is.True);
+            Assert.That(CloudExternalAudioTests.MatchesFamily(Get<AudioSource>(tension, "InterferenceSource").clip,
+                "tension-breath", 1), Is.True, "Witnessed pursuit is still using generated static");
             foreach (var bed in new[] { pulse, air })
             { Assert.That(bed.spatialBlend, Is.Zero); Assert.That(bed.ignoreListenerPause || bed.ignoreListenerVolume, Is.False); }
             Assert.That(pulse.pitch, Is.InRange(.9f, 1.2f)); Assert.That(air.pitch, Is.EqualTo(1));
