@@ -43,17 +43,30 @@ namespace HappyToy.V2.CloudTests
             Assert.That(detached.GetComponent<MeshRenderer>().enabled, Is.False,
                 "Opening the classroom door revived its detached label");
 
-            // A controlled inside-room view uses the production player camera and
-            // flashlight on the original school. It does not claim a walked route.
-            PlacePlayer(new Vector3(-4.5f, .02f, 3.15f), false);
+            // Look through the opening at eye level, where the runtime portrait
+            // used to float. The old upward-only sign view missed this object.
+            PlacePlayer(new Vector3(-4.5f, .02f, -.85f), false);
             var camera = Get<Camera>(player, "eyes");
             ((Behaviour)player).enabled = false;
+            camera.transform.rotation = Quaternion.LookRotation(new Vector3(-4.8f, 1.75f, 1.46f) - camera.transform.position);
+            yield return Delay(.25f);
+            var doorwayFrame = SchoolCameraFrame(camera, out _, out _, out _);
+            try { CloudExperienceTests.Artifact("school-classroom-open-doorway-front.png", doorwayFrame.EncodeToPNG()); }
+            finally { Object.Destroy(doorwayFrame); }
+
+            // The inside-room view also checks the original suppressed text face.
+            PlacePlayer(new Vector3(-4.5f, .02f, 3.15f), false);
             camera.transform.rotation = Quaternion.LookRotation(detached.position - camera.transform.position);
             yield return Delay(.25f);
             var frame = SchoolCameraFrame(camera, out _, out _, out _);
             try { CloudExperienceTests.Artifact("school-classroom-door-no-floating-sign.png", frame.EncodeToPNG()); }
             finally { Object.Destroy(frame); }
-            Debug.Log("HAPPYTOY_CLASSROOM_SIGN_PASS opened original 1-2 sliding door; interior duplicate text removed; exterior/backing and lintel collision retained");
+            var opening = new Bounds(new Vector3(-4.5f, 1.3f, 1.6f), new Vector3(2.4f, 2.4f, .4f));
+            var portraits = player.gameObject.scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<Transform>(true))
+                .Where(item => item.name == "Empty school portrait" && opening.Contains(item.position)).ToArray();
+            Assert.That(portraits, Is.Empty, "A generated picture frame still floats in the open 1-2 doorway");
+            Debug.Log("HAPPYTOY_CLASSROOM_SIGN_PASS opened original 1-2 sliding door; no detached label or generated portrait inside its opening; exterior/backing and lintel collision retained");
         }
     }
 }

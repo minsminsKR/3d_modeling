@@ -102,7 +102,11 @@ namespace HappyToy.V2
             foreach(float x in new[]{-5f,1f,9f,16.8f,26.6f,33f}) CeilingDamage(new Vector3(x,2.9f,0));
             CeilingDamage(new Vector3(25.8f,7.9f,24.8f)); CeilingDamage(new Vector3(33.8f,7.9f,29.8f));
             CeilingDamage(new Vector3(13.8f,-2.2f,-27.6f));
-            foreach(float x in new[]{-4.8f,1.3f,12.2f,20.2f,27.5f})
+            // The former (-4.8,1.75,1.46) portrait occupied the 1-2 door opening
+            // with no wall behind it. Do not generate that frame or any of its parts.
+            // Retain the subsequent random sequence for the remaining dressing.
+            random.NextDouble();
+            foreach(float x in new[]{1.3f,12.2f,20.2f,27.5f})
                 Frame(new Vector3(x,1.75f,1.46f),new Vector2(.7f,.9f),Quaternion.Euler(0,180,(float)random.NextDouble()*16-8));
             foreach(float x in new[]{24.8f,26f,28.3f,33.8f,35f})
                 Frame(new Vector3(x,6.65f,33.86f),new Vector2(.64f,.82f),Quaternion.Euler(0,180,(float)random.NextDouble()*24-12));

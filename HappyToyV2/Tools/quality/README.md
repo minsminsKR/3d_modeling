@@ -284,9 +284,12 @@ pose; a nonzero Volume parameter alone is insufficient. Pause, hiding and reduce
 motion suppress the rendered noise.
 
 `SchoolClassroomDoorOpensWithoutFloatingInteriorSign` opens the real 1-2 classroom
-door and captures its player-camera view after hiding only `CLASSROOM sign interior`.
-The exterior plaque and original door/lintel collision remain. The original scene
-is not regenerated.
+door and captures the production player camera looking through the opening at eye
+level. The runtime `Empty school portrait` formerly generated at (-4.8, 1.75, 1.46)
+floated inside that opening; its frame, backing and drawing are no longer generated.
+The test rejects a portrait root in the opening and also checks the suppressed
+`CLASSROOM sign interior` from inside the room. The exterior plaque and original
+door/lintel collision remain. The original scene is not regenerated.
 
 `CandleActualNormalMotionWarningGrowsFlickerDepthAndCompletedPulseCount` samples
 natural frames at approximately 10, 6 and 3 metres, measuring real light intensity,

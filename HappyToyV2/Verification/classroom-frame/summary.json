@@ -1,0 +1,61 @@
+{
+  "status": "PASS",
+  "recordedUtc": "2026-10-07T06:59:01.012083+00:00",
+  "unity": "6000.6.0f1",
+  "sourceBaseCommit": "556ad7b2052f8319f63edcf5fcb5a2290abac4aa",
+  "build": "Builds/ClassroomFrameFix-20261007",
+  "buildInputStatus": "BUILD_INPUTS_PASS",
+  "buildInputCount": 2359,
+  "protectedSchoolSceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "removedObject": {
+    "name": "Empty school portrait",
+    "formerPosition": [
+      -4.8,
+      1.75,
+      1.46
+    ],
+    "scope": "The runtime portrait formerly generated inside the open 1-2 classroom doorway, including all 11 frame, backing and charcoal drawing mesh pieces, is no longer generated.",
+    "remainingDressingRandomSequencePreserved": true
+  },
+  "regression": {
+    "beforeFix": {
+      "result": "Expected failure reproduced",
+      "message": "A generated picture frame still floats in the open 1-2 doorway"
+    },
+    "afterFix": {
+      "passed": 2,
+      "failed": 0,
+      "cases": [
+        {
+          "name": "SchoolClassroomDoorOpensWithoutFloatingInteriorSign",
+          "result": "Passed"
+        },
+        {
+          "name": "SchoolWayfindingRetainsCeramicCollisionAndRestoresOriginalPresentationOnRemoval",
+          "result": "Passed"
+        }
+      ]
+    },
+    "productionCameraViewsInspected": [
+      "school-classroom-open-doorway-front.png before and after",
+      "school-classroom-door-no-floating-sign.png"
+    ],
+    "doorAndLintelCollisionRetained": true,
+    "exteriorPlaqueRetained": true
+  },
+  "images": [
+    {
+      "phase": "before",
+      "name": "school-classroom-open-doorway-front.png",
+      "sha256": "df342c52ea8fea2a1bcca200b353e200ce4ffa2a580f041281567adc7f7e4924"
+    },
+    {
+      "phase": "after",
+      "name": "school-classroom-open-doorway-front.png",
+      "sha256": "da868ee9d1f1ca0923a5b924756e2fbef284f93205578b910ceba66c54a12209"
+    }
+  ],
+  "reproduce": "SOURCE_HANDOFF.md and Tools/quality/README.md; runtime generation is in Assets/Scripts/ChapterAtmosphere.cs and the doorway regression is in Assets/Tests/PlayMode/CloudSchoolSignCleanupTests.cs.",
+  "optionalLocalEvidence": "../game/verification/classroom-frame-20261007; raw test XML, logs, images and builds are optional local evidence.",
+  "scope": "Controlled PlayMode real door opening and production player-camera captures, inspected before and after. Fresh Windows build with matching source inventory. Does not claim a full chapter survival playthrough."
+}

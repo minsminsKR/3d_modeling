@@ -1,6 +1,6 @@
 # 돌아오지 않는 회랑 — 플레이 안내
 
-이번 간판·노이즈·촛불 개선 후보는 `Builds/Atmosphere-20261007-r2/HappyToyV2.exe`다. 실행 파일만 옮기지 말고 폴더 전체를 보관한다. 시작 화면의 **회랑에 들어가기** 또는 기본 선택에서 Enter로 새 회랑을 연다. **폐교의 기억**은 원래 학교의 별도 장이다. 빌드 폴더는 Git에 포함하지 않으며 다른 PC에서는 `SOURCE_HANDOFF.md`에 따라 다시 빌드한다. 이번 검증 요약은 `Verification/atmosphere/summary.json`에서 확인한다.
+이번 1학년 2반 출입구 액자 제거 후보는 `Builds/ClassroomFrameFix-20261007/HappyToyV2.exe`다. 실행 파일만 옮기지 말고 폴더 전체를 보관한다. 시작 화면의 **회랑에 들어가기** 또는 기본 선택에서 Enter로 새 회랑을 연다. **폐교의 기억**은 원래 학교의 별도 장이다. 빌드 폴더는 Git에 포함하지 않으며 다른 PC에서는 `SOURCE_HANDOFF.md`에 따라 다시 빌드한다. 이번 검증 요약은 `Verification/classroom-frame/summary.json`에서 확인한다. 기존 노이즈·촛불 개선 검증은 `Verification/atmosphere/summary.json`에 기록되어 있다.
 
 ## 조작
 
