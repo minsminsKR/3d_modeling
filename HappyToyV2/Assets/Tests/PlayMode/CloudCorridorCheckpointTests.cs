@@ -76,7 +76,7 @@ namespace HappyToy.V2.CloudTests
         {
             Call(session,"CreateCorridor",73); Begin(); yield return Delay(.2f);
             var memories=CheckpointItems("CorridorMemory"); Call(memories[0],"Use",player); Call(memories[1],"Use",player);
-            var supply=CheckpointItems("FirecrackerSupply")[0]; Call(supply,"Use",player);
+            var supply=CheckpointItems("FirecrackerSupply")[0]; yield return FurnitureExposeForFixture(supply); Call(supply,"Use",player);
             yield return Delay(.15f);
             yield return KeysObserved(Key.W,Key.LeftShift); yield return Delay(.25f); Keys(); yield return null;
             Assert.That(Get<float>(player,"Stamina"),Is.LessThan(1));

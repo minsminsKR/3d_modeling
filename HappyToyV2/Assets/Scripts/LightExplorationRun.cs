@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
@@ -48,7 +49,11 @@ namespace HappyToy.V2
         {
             Prepare(world, GameSession.Current.player, true);
             for (int i = 0; i < 6; i++)
-                Battery("corridor-battery-" + i, run.CellPosition(run.Layout.Supplies[i]) + new Vector3(2.22f, 1.12f, -1.82f));
+            {
+                var anchor=run.FurnishingBatteryAnchor(i);
+                var battery=Battery("corridor-battery-" + i, anchor.position, true);
+                battery.transform.rotation=anchor.rotation;
+            }
             // Stable, finite, evenly spaced markers plus all goal rooms and the entrance.
             var cells = Enumerable.Range(0, CorridorLayout.Count).Where(i => i % 7 == 0)
                 .Concat(run.Layout.Relics).Concat(new[] { 0 }).Distinct().OrderBy(i => i).ToArray();
@@ -124,18 +129,20 @@ namespace HappyToy.V2
             batteries.Sort((a, b) => string.CompareOrdinal(a.stableId, b.stableId));
             candles.Sort((a, b) => string.CompareOrdinal(a.GetComponent<Interactable>().stableId, b.GetComponent<Interactable>().stableId));
         }
-        void Battery(string id, Vector3 position)
+        Interactable Battery(string id, Vector3 position, bool shelf=false)
         {
             var station = new GameObject("Finite flashlight battery"); station.layer = 8;
             station.transform.SetParent(root, false); station.transform.position = position;
             var interaction = station.AddComponent<Interactable>(); interaction.kind = Interactable.Kind.FlashlightBattery;
             interaction.stableId = id; interaction.label = "손전등 배터리 줍기";
             station.AddComponent<FlashlightBattery>();
-            var target = station.AddComponent<BoxCollider>(); target.size = new Vector3(.32f, .28f, .23f); target.center = Vector3.up * .09f;
+            if(shelf) { var navigation=station.AddComponent<NavMeshModifier>(); navigation.overrideArea=true; navigation.area=1; }
+            var target = station.AddComponent<BoxCollider>(); target.size = shelf ? new Vector3(.22f,.25f,.14f) : new Vector3(.32f, .28f, .23f); target.center = Vector3.up * (shelf ? .125f : .09f);
             // Visual stand/cells are authored shared meshes. Consuming the root also removes its stand.
-            var body = GraphicsPropLibrary.Attach("battery-supply", station.transform, propSurfaces.Resolve);
-            body.localPosition = Vector3.up * stationVisualOffset;
+            var body = shelf ? CorridorFurnitureLibrary.Attach("battery-pack",station.transform,propSurfaces) : GraphicsPropLibrary.Attach("battery-supply", station.transform, propSurfaces.Resolve);
+            body.localPosition = shelf ? Vector3.zero : Vector3.up * stationVisualOffset;
             batteries.Add(interaction);
+            return interaction;
         }
         void Candle(string id, Vector3 position, int seed)
         {

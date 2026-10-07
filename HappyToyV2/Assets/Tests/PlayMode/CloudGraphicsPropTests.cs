@@ -71,15 +71,35 @@ namespace HappyToy.V2.CloudTests
             foreach(var station in stations)
             {
                 bool isCandle=Get<object>(station,"kind").ToString()=="Candle";
-                Assert.That(station.transform.position.y,Is.EqualTo(isCandle?1.09f:1.15f).Within(.0001f),"Visual grounding moved the original station root");
+                Assert.That(station.transform.position.y,Is.EqualTo(isCandle?1.09f:.504f).Within(.0001f),"Station moved away from its original candle floor or furnished battery shelf");
                 var colliders=station.GetComponentsInChildren<Collider>(true);Assert.That(colliders.Length,Is.EqualTo(1));
                 var target=(BoxCollider)colliders[0];
-                Assert.That(target.size,Is.EqualTo(isCandle?new Vector3(.3f,.35f,.25f):new Vector3(.32f,.28f,.23f)));
-                Assert.That(target.center,Is.EqualTo(Vector3.up*(isCandle?.08f:.09f)));
+                Assert.That(target.size,Is.EqualTo(isCandle?new Vector3(.3f,.35f,.25f):new Vector3(.22f,.25f,.14f)));
+                Assert.That(target.center,Is.EqualTo(Vector3.up*(isCandle?.08f:.125f)));
+                if(!isCandle)
+                {
+                    string id=Get<string>(station,"stableId");
+                    Assert.That(id,Does.StartWith("corridor-battery-"));
+                    var visual=station.transform.Find("Authored corridor furnishing — battery-pack");
+                    Assert.That(visual,Is.Not.Null,"Shelf cells lost their authored compact model");
+                    Assert.That(station.GetComponentsInChildren<Transform>(true).Any(item=>item.name=="Authored realistic prop — battery-supply"),Is.False,
+                        "Old floor stand was instantiated on the shelf");
+                    var batteryBody=visual.GetComponentsInChildren<MeshRenderer>(true).Single();
+                    var support=Physics.RaycastAll(station.transform.position+Vector3.up*.05f,Vector3.down,.20f,
+                        Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)
+                        .Where(hit=>hit.collider.name=="Shelf bearing board").OrderBy(hit=>hit.distance).ToArray();
+                    Assert.That(support,Is.Not.Empty,"Finite battery has no actual shelf board beneath it");
+                    var shelf=support[0].collider.GetComponentInParent(RequireType("CorridorFurniturePlacement"));
+                    Assert.That(Get<string>(shelf,"StableId"),Is.EqualTo("furniture-shelf-battery-"+id.Substring("corridor-battery-".Length)));
+                    Assert.That(support[0].point.y,Is.EqualTo(.50f).Within(.001f));
+                    Assert.That(batteryBody.bounds.min.y-support[0].point.y,Is.EqualTo(.004f).Within(.001f),
+                        "Authored battery cells float above or penetrate their actual bearing board");
+                    continue;
+                }
                 var floor=Physics.RaycastAll(station.transform.position+Vector3.up*.45f,Vector3.down,2.5f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)
                     .Where(hit=>hit.collider.gameObject.name=="Floor").OrderBy(hit=>hit.distance).First();
-                var body=station.GetComponentsInChildren<MeshRenderer>(true).Single(renderer=>renderer.transform.parent.name=="Authored realistic prop — "+(isCandle?"candle-waymark":"battery-supply") ||
-                    renderer.GetComponentsInParent<Transform>(true).Any(parent=>parent.name=="Authored realistic prop — "+(isCandle?"candle-waymark":"battery-supply")));
+                var body=station.GetComponentsInChildren<MeshRenderer>(true).Single(renderer=>renderer.transform.parent.name=="Authored realistic prop — candle-waymark" ||
+                    renderer.GetComponentsInParent<Transform>(true).Any(parent=>parent.name=="Authored realistic prop — candle-waymark"));
                 Assert.That(Mathf.Abs(body.bounds.min.y-floor.point.y),Is.LessThan(.002f),Get<string>(station,"stableId")+" rendered foot floats above actual floor");
                 if(isCandle)
                 {

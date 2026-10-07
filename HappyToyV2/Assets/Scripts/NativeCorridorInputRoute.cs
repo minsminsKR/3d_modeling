@@ -96,11 +96,25 @@ namespace HappyToy.V2
             Interactable selected = null; Vector3 at = Vector3.zero; float best = maximumDetour;
             foreach (var supply in Items().Where(x => x.gameObject.activeSelf &&
                 x.kind.ToString() == "FirecrackerSupply"))
-                if (FindApproach(supply, out var point, out var length) && length < best)
+            {
+                var drawer=supply.GetComponentInParent<CorridorDrawer>();
+                var focus=drawer && !drawer.ExposesPickup ? drawer.GetComponent<Interactable>() : supply;
+                if (FindApproach(focus, out var point, out var length) && length < best)
                 { selected = supply; at = point; best = length; }
+            }
             if (!selected) yield break;
             string previousStage = stage; stage = "collect nearby supply";
-            yield return Walk(at); int before = stock.Count; yield return Interact(selected);
+            yield return Walk(at);
+            var tray=selected.GetComponentInParent<CorridorDrawer>();
+            if(tray && !tray.ExposesPickup)
+            {
+                if(!tray.IsOpen) yield return Interact(tray.GetComponent<Interactable>());
+                float deadline=Time.realtimeSinceStartup+3;
+                while(!tray.ExposesPickup) { Require(Time.realtimeSinceStartup<deadline,"Real drawer did not expose supply"); yield return null; Check(); }
+                Require(FindApproach(selected,out var pickupAt,out _),"Opened drawer supply lacks a real pickup approach");
+                yield return Walk(pickupAt); Mark("opened actual desk drawer through E");
+            }
+            int before = stock.Count; yield return Interact(selected);
             Require((stock.Count) == (before + 1), "Native corridor invariant failed: Is.EqualTo(before + 1)"); suppliesCollected++;
             Mark("collected finite supply through E"); stage = previousStage;
         }

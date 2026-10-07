@@ -320,3 +320,35 @@ artifact envelope. Pixel assertions measure the original unencoded textures.
 checks that the severe near-warning freezes during pause and that automatic recovery
 retains durable ignition without replaying the match. Keep contact blackout,
 ownership, comfort and checkpoint tests in the same focused test run.
+
+## Authored corridor furniture
+
+`CorridorFurnitureImport.Ensure` configures the five original FBX resources with
+metre scale, preserved hierarchy, imported normals, Mikk tangents and no imported
+physics or animation. The Windows quality build invokes this import recipe.
+`CorridorFurnitureAssetTests` checks actual imported vertices, finite UVs, normals,
+material slots, bounded triangle counts and the desk's independent `Drawer`.
+Editable `.blend`, generator, validator and license are in
+`SourceArt/CorridorFurnishings`; follow its README for Blender 4.0.2 regeneration.
+
+`FurnishedCorridorThreeSeedNavigationKeepsEveryRoomPickupCabinetAndDoorwayReachable`
+uses seeds 73, 211 and 509 to test all 81 room paths, real 2.2m interaction rays,
+body clearance, cabinet exits and open doorway capsules. All furniture is present
+during the navigation bake; elevated furniture surfaces and full open-drawer
+footprints are marked NotWalkable without phantom physics.
+`CorridorDrawerRealERevealsFinitePickupAndRestoresConsumedStateWithNewAndLegacyCheckpoints`
+uses actual mouse aiming and E to expose and collect a finite drawer item, checks
+closed-item gating, silent consumed-stock persistence, paused movement, rejected
+invalid data and fresh-scene new/legacy checkpoint restoration.
+`CorridorFurnishingsActualTorchCameraShowsDeskDrawerShelvesAndAuthoredPbrDetails`
+saves production-camera JPEG95 views of the desk, open tray with its item, shelf
+and close detail, retaining the original flashlight/fog/light setup. Renderer-off
+pixel differences only prove the authored models reached the camera; visual art
+review is separate. Repeat navigation/visible-item checks after moving a pickup.
+
+Run these with the existing corridor finite-stock/checkpoint/suspend, physical
+monster-door passage and cabinet/aim regressions. Existing direct-API stock
+fixtures now expose their real drawer before collecting; the dedicated drawer
+test retains closed rejection and real input coverage. The finite supply and
+battery identities/counts remain eight and six. Summary:
+`Verification/corridor-furnishings/summary.json`.

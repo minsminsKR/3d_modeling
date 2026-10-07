@@ -25,7 +25,9 @@ namespace HappyToy.V2.CloudTests
         Vector3 LightApproach(Component target)
         {
             var center=target.GetComponent<Collider>().bounds.center;
-            float floor=target.transform.position.y-(Get<object>(target,"kind").ToString()=="Candle"?1.06f:1.12f);
+            bool shelfBattery=Get<bool>(session,"CorridorMode") && Get<object>(target,"kind").ToString()=="FlashlightBattery";
+            float floor=shelfBattery ? ((Vector3)Call(Get<Component>(session,"Corridor"),"CellPosition",0)).y :
+                target.transform.position.y-(Get<object>(target,"kind").ToString()=="Candle"?1.06f:1.12f);
             for(int i=0;i<16;i++)
             {
                 float angle=i*Mathf.PI/8; var candidate=new Vector3(center.x+Mathf.Cos(angle)*1.15f,floor+.02f,center.z+Mathf.Sin(angle)*1.15f);

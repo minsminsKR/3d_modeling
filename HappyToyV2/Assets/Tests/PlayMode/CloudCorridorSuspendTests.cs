@@ -60,7 +60,7 @@ namespace HappyToy.V2.CloudTests
             string directory=NewRecordFixture(); Call(session,"ConfigureRecordDirectory",directory);
             Call(session,"CreateCorridor",73); Begin(); yield return Delay(.2f);
             foreach(var memory in CheckpointItems("CorridorMemory").Take(2)) Call(memory,"Use",player);
-            Call(CheckpointItems("FirecrackerSupply")[0],"Use",player);
+            var supply=CheckpointItems("FirecrackerSupply")[0]; yield return FurnitureExposeForFixture(supply); Call(supply,"Use",player);
             yield return Delay(.2f); Call(shell,"ToggleLargeText"); yield return RecoveryPulse(Key.Escape);
             var source=Call(session,"CaptureCheckpoint"); var failures=new List<string>();
             foreach(var size in new[] {new Vector2Int(1280,720),new Vector2Int(1024,768),new Vector2Int(2560,1080)})

@@ -1,0 +1,720 @@
+{
+  "assets": [
+    {
+      "key": "battery-pack",
+      "resource": "CorridorFurnishings/battery-pack",
+      "vertices": 2056,
+      "triangles": 3892,
+      "boundsMin": [
+        -0.08500000089406967,
+        0.0,
+        -0.05169636383652687
+      ],
+      "boundsMax": [
+        0.08500000089406967,
+        0.24199999868869781,
+        0.039000000804662704
+      ],
+      "dimensions": [
+        0.17000000178813934,
+        0.24199999868869781,
+        0.09069636464118958
+      ],
+      "meshParts": [
+        "Battery pack"
+      ],
+      "materialSlots": [
+        "CF_dust",
+        "CF_ledger_blue",
+        "GU_aged_iron",
+        "GU_tarnished_brass",
+        "GU_washi"
+      ],
+      "uvLayers": 1,
+      "colliders": 0,
+      "source": "SourceArt/CorridorFurnishings/Models/battery-pack.blend",
+      "fbx": "Assets/Resources/CorridorFurnishings/battery-pack.fbx",
+      "sourceSha256": "5ec976775e6dbd22ac27968c3b16425e3a2be1988edcc60702a1b3aed043fcd1",
+      "fbxSha256": "6ccddec734599a1af1e7cc05746f4960f23309e972829485294db709c3ec6b0a",
+      "pickupOrigin": "bottom center"
+    },
+    {
+      "key": "writing-set",
+      "resource": "CorridorFurnishings/writing-set",
+      "vertices": 2054,
+      "triangles": 3980,
+      "boundsMin": [
+        -0.23999999463558197,
+        0.0,
+        -0.15112455189228058
+      ],
+      "boundsMax": [
+        0.23011383414268494,
+        0.06400000303983688,
+        0.23800000548362732
+      ],
+      "dimensions": [
+        0.4701138287782669,
+        0.06400000303983688,
+        0.3891245573759079
+      ],
+      "meshParts": [
+        "Writing set"
+      ],
+      "materialSlots": [
+        "CF_celadon",
+        "CF_ledger_blue",
+        "GU_charred_wick",
+        "GU_dark_timber",
+        "GU_washi"
+      ],
+      "uvLayers": 1,
+      "colliders": 0,
+      "source": "SourceArt/CorridorFurnishings/Models/writing-set.blend",
+      "fbx": "Assets/Resources/CorridorFurnishings/writing-set.fbx",
+      "sourceSha256": "2068e0c0269d741ae7d29a618e9effd1c27abd67a71968586e9cd94d0b5d8b73",
+      "fbxSha256": "2b1efcafce460c436da5f6d239de20a90bc298e6430b1578f7542966396907d0",
+      "desktopOffset": [
+        -0.25,
+        0.84,
+        0.05
+      ]
+    },
+    {
+      "key": "writing-desk",
+      "resource": "CorridorFurnishings/writing-desk",
+      "vertices": 6114,
+      "triangles": 11912,
+      "boundsMin": [
+        -0.675000011920929,
+        0.0,
+        -0.3657999634742737
+      ],
+      "boundsMax": [
+        0.675000011920929,
+        0.8427500128746033,
+        0.3264999985694885
+      ],
+      "dimensions": [
+        1.350000023841858,
+        0.8427500128746033,
+        0.6922999620437622
+      ],
+      "meshParts": [
+        "Case",
+        "Drawer"
+      ],
+      "materialSlots": [
+        "CF_dust",
+        "GU_aged_iron",
+        "GU_charred_wick",
+        "GU_dark_timber",
+        "GU_tarnished_brass"
+      ],
+      "uvLayers": 1,
+      "colliders": 0,
+      "source": "SourceArt/CorridorFurnishings/Models/writing-desk.blend",
+      "fbx": "Assets/Resources/CorridorFurnishings/writing-desk.fbx",
+      "sourceSha256": "638aafee92ba8c584dd2fa049a40dd3b9cb37d19f79b73dec9912074a292e89e",
+      "fbxSha256": "eed0c95ac74929622217c71e1fda500b12e44802a1114ad42a1edab0112118de",
+      "drawer": {
+        "transform": "Drawer",
+        "pivot": [
+          0,
+          0.708,
+          -0.052
+        ],
+        "openAxis": [
+          0,
+          0,
+          -1
+        ],
+        "travel": 0.3,
+        "innerFloorTop": 0.649,
+        "innerBoundsMin": [
+          -0.451,
+          0.649,
+          -0.265
+        ],
+        "innerBoundsMax": [
+          0.451,
+          0.7685,
+          0.157
+        ],
+        "wallTop": 0.7565,
+        "closedCavityCeiling": 0.7685,
+        "pickupMount": [
+          0,
+          0.649,
+          -0.03
+        ]
+      },
+      "pickupMounts": {
+        "desktop": [
+          0.35,
+          0.84,
+          -0.02
+        ],
+        "drawer": [
+          0,
+          0.649,
+          -0.03
+        ]
+      },
+      "collisionBoxes": [
+        {
+          "name": "Countertop",
+          "center": [
+            0,
+            0.816,
+            0
+          ],
+          "size": [
+            1.35,
+            0.048,
+            0.653
+          ]
+        },
+        {
+          "name": "Solid under-top bead",
+          "center": [
+            0,
+            0.783,
+            0
+          ],
+          "size": [
+            1.29,
+            0.029,
+            0.604
+          ]
+        },
+        {
+          "name": "Leg",
+          "center": [
+            -0.585,
+            0.391,
+            -0.245
+          ],
+          "size": [
+            0.094,
+            0.782,
+            0.094
+          ]
+        },
+        {
+          "name": "Leg",
+          "center": [
+            -0.585,
+            0.391,
+            0.245
+          ],
+          "size": [
+            0.094,
+            0.782,
+            0.094
+          ]
+        },
+        {
+          "name": "Leg",
+          "center": [
+            0.585,
+            0.391,
+            -0.245
+          ],
+          "size": [
+            0.094,
+            0.782,
+            0.094
+          ]
+        },
+        {
+          "name": "Leg",
+          "center": [
+            0.585,
+            0.391,
+            0.245
+          ],
+          "size": [
+            0.094,
+            0.782,
+            0.094
+          ]
+        },
+        {
+          "name": "Back apron",
+          "center": [
+            0,
+            0.691,
+            0.246
+          ],
+          "size": [
+            1.14,
+            0.17,
+            0.026
+          ]
+        }
+      ],
+      "drawerCollisionBoxes": [
+        {
+          "name": "Bottom",
+          "center": [
+            0,
+            0.642,
+            -0.052
+          ],
+          "size": [
+            0.922,
+            0.014,
+            0.426
+          ]
+        },
+        {
+          "name": "Front",
+          "center": [
+            0,
+            0.708,
+            -0.297
+          ],
+          "size": [
+            0.973,
+            0.151,
+            0.044
+          ]
+        },
+        {
+          "name": "Back",
+          "center": [
+            0,
+            0.696,
+            0.167
+          ],
+          "size": [
+            0.925,
+            0.121,
+            0.02
+          ]
+        },
+        {
+          "name": "Side",
+          "center": [
+            -0.462,
+            0.696,
+            -0.052
+          ],
+          "size": [
+            0.02,
+            0.121,
+            0.438
+          ]
+        },
+        {
+          "name": "Side",
+          "center": [
+            0.462,
+            0.696,
+            -0.052
+          ],
+          "size": [
+            0.02,
+            0.121,
+            0.438
+          ]
+        }
+      ]
+    },
+    {
+      "key": "archive-shelf",
+      "resource": "CorridorFurnishings/archive-shelf",
+      "vertices": 15235,
+      "triangles": 29664,
+      "boundsMin": [
+        -0.7250000238418579,
+        0.0,
+        -0.2160000056028366
+      ],
+      "boundsMax": [
+        0.7250000834465027,
+        2.1500000953674316,
+        0.1979999989271164
+      ],
+      "dimensions": [
+        1.4500001072883606,
+        2.1500000953674316,
+        0.414000004529953
+      ],
+      "meshParts": [
+        "Archive"
+      ],
+      "materialSlots": [
+        "CF_celadon",
+        "CF_dust",
+        "CF_ledger_blue",
+        "CF_ledger_red",
+        "GU_charred_wick",
+        "GU_dark_timber",
+        "GU_washi"
+      ],
+      "uvLayers": 1,
+      "colliders": 0,
+      "source": "SourceArt/CorridorFurnishings/Models/archive-shelf.blend",
+      "fbx": "Assets/Resources/CorridorFurnishings/archive-shelf.fbx",
+      "sourceSha256": "b0483662d717f7a699219854307bb1bfdda8ab8a17a5dc7fada8a8d884141b4c",
+      "fbxSha256": "c2eb51b8f7b9f0fbd5fd7329a79789f5e1de379d2571beb625d0df53ba9640e0",
+      "pickupMounts": {
+        "lowerLeft": [
+          -0.4,
+          0.504,
+          -0.09
+        ],
+        "middleLeft": [
+          -0.4,
+          1.504,
+          -0.09
+        ]
+      },
+      "placementEnvelope": {
+        "center": [
+          0,
+          1.075,
+          0
+        ],
+        "size": [
+          1.45,
+          2.15,
+          0.4
+        ],
+        "usage": "Placement/navigation clearance only; never a solid physics collider"
+      },
+      "collisionBoxes": [
+        {
+          "name": "Corner post",
+          "center": [
+            -0.672,
+            1.074,
+            -0.145
+          ],
+          "size": [
+            0.067,
+            2.148,
+            0.067
+          ]
+        },
+        {
+          "name": "Corner post",
+          "center": [
+            -0.672,
+            1.074,
+            0.145
+          ],
+          "size": [
+            0.067,
+            2.148,
+            0.067
+          ]
+        },
+        {
+          "name": "Corner post",
+          "center": [
+            0.672,
+            1.074,
+            -0.145
+          ],
+          "size": [
+            0.067,
+            2.148,
+            0.067
+          ]
+        },
+        {
+          "name": "Corner post",
+          "center": [
+            0.672,
+            1.074,
+            0.145
+          ],
+          "size": [
+            0.067,
+            2.148,
+            0.067
+          ]
+        },
+        {
+          "name": "Rear planks",
+          "center": [
+            0,
+            1.089,
+            0.183
+          ],
+          "size": [
+            1.293,
+            1.962,
+            0.022
+          ]
+        },
+        {
+          "name": "Bearing shelf",
+          "center": [
+            0,
+            0.128,
+            -0.015
+          ],
+          "size": [
+            1.367,
+            0.04,
+            0.362
+          ]
+        },
+        {
+          "name": "Bearing shelf",
+          "center": [
+            0,
+            0.48,
+            -0.015
+          ],
+          "size": [
+            1.367,
+            0.04,
+            0.362
+          ]
+        },
+        {
+          "name": "Bearing shelf",
+          "center": [
+            0,
+            0.98,
+            -0.015
+          ],
+          "size": [
+            1.367,
+            0.04,
+            0.362
+          ]
+        },
+        {
+          "name": "Bearing shelf",
+          "center": [
+            0,
+            1.48,
+            -0.015
+          ],
+          "size": [
+            1.367,
+            0.04,
+            0.362
+          ]
+        },
+        {
+          "name": "Bearing shelf",
+          "center": [
+            0,
+            2.02,
+            -0.015
+          ],
+          "size": [
+            1.367,
+            0.04,
+            0.362
+          ]
+        },
+        {
+          "name": "Crown cornice",
+          "center": [
+            0,
+            2.119,
+            -0.002
+          ],
+          "size": [
+            1.45,
+            0.062,
+            0.4
+          ]
+        },
+        {
+          "name": "End side panel",
+          "center": [
+            -0.699,
+            1.097,
+            0.017
+          ],
+          "size": [
+            0.014,
+            1.936,
+            0.237
+          ]
+        },
+        {
+          "name": "End side panel",
+          "center": [
+            0.699,
+            1.097,
+            0.017
+          ],
+          "size": [
+            0.014,
+            1.936,
+            0.237
+          ]
+        }
+      ],
+      "shelfSurfaceHeights": [
+        0.148,
+        0.5,
+        1.0,
+        1.5,
+        2.04
+      ],
+      "emptyPickupRegions": [
+        {
+          "min": [
+            -0.57,
+            0.5,
+            -0.17
+          ],
+          "max": [
+            -0.1,
+            0.85,
+            0.1
+          ]
+        },
+        {
+          "min": [
+            -0.57,
+            1.5,
+            -0.17
+          ],
+          "max": [
+            -0.06,
+            1.86,
+            0.1
+          ]
+        }
+      ],
+      "mountCoordinateSpace": "Runtime furniture owner-local metres after preserved FBX conversion; source-plan X is mirrored"
+    },
+    {
+      "key": "firecracker-pack",
+      "resource": "CorridorFurnishings/firecracker-pack",
+      "vertices": 1497,
+      "triangles": 2940,
+      "boundsMin": [
+        -0.061319995671510696,
+        0.0,
+        -0.052919309586286545
+      ],
+      "boundsMax": [
+        0.061315711587667465,
+        0.11199449747800827,
+        0.0663599967956543
+      ],
+      "dimensions": [
+        0.12263570725917816,
+        0.11199449747800827,
+        0.11927930638194084
+      ],
+      "meshParts": [
+        "Firecracker pack"
+      ],
+      "materialSlots": [
+        "CF_dust",
+        "CF_ledger_red",
+        "GU_charred_wick",
+        "GU_washi"
+      ],
+      "uvLayers": 1,
+      "colliders": 0,
+      "source": "SourceArt/CorridorFurnishings/Models/firecracker-pack.blend",
+      "fbx": "Assets/Resources/CorridorFurnishings/firecracker-pack.fbx",
+      "sourceSha256": "985d0c777dd10e66e2a258dfeee632a8bdf70f3224b31488fa31892592153dc4",
+      "fbxSha256": "a56174074190b722c73ce7d4d8c01e631f856c46459bea99e66ab298fd25c0df",
+      "pickupOrigin": "bottom center",
+      "closedDrawerFit": {
+        "maximumHeight": 0.112,
+        "mountY": 0.649,
+        "ceilingY": 0.7685
+      }
+    }
+  ],
+  "schema": 1,
+  "blender": "4.0.2",
+  "license": "CC0-1.0 geometry",
+  "authoring": "Original measured joinery, carved hardware, sewn ledgers, lathed ceramic and scroll meshes",
+  "units": "metres; Y-up front -Z; constructor source-plan X mirrored by Unity FBX handedness conversion",
+  "textureSource": "Tracked Assets/Resources/GraphicsPbr; source .blend relative links",
+  "materialContract": {
+    "GU_dark_timber": {
+      "surfaceKey": "wood-aged",
+      "tint": [
+        0.62,
+        0.58,
+        0.49
+      ]
+    },
+    "GU_aged_iron": {
+      "surfaceKey": "metal-rust",
+      "tint": [
+        0.75,
+        0.76,
+        0.72
+      ]
+    },
+    "GU_tarnished_brass": {
+      "surfaceKey": "brass-tarnished",
+      "tint": [
+        1,
+        1,
+        1
+      ]
+    },
+    "GU_washi": {
+      "surfaceKey": "paper-aged",
+      "tint": [
+        0.94,
+        0.9,
+        0.78
+      ]
+    },
+    "GU_charred_wick": {
+      "surfaceKey": "cloth-charred",
+      "tint": [
+        1,
+        1,
+        1
+      ]
+    },
+    "CF_ledger_blue": {
+      "surfaceKey": "paper-aged",
+      "tint": [
+        0.2,
+        0.3,
+        0.32
+      ]
+    },
+    "CF_ledger_red": {
+      "surfaceKey": "paper-aged",
+      "tint": [
+        0.45,
+        0.2,
+        0.12
+      ]
+    },
+    "CF_celadon": {
+      "surfaceKey": "ceramic-tile",
+      "tint": [
+        0.62,
+        0.76,
+        0.66
+      ]
+    },
+    "CF_dust": {
+      "surfaceKey": "paper-aged",
+      "tint": [
+        0.45,
+        0.42,
+        0.34
+      ]
+    }
+  },
+  "gameplay": "Runtime adds finite existing pickups and collider proxies; source contains only visual geometry",
+  "runtimeMountCoordinateSpace": "Furniture owner-local Unity metres; source-plan X sign conversion already reflected in shelf pickup mounts",
+  "boundsCoordinateSpace": "Source constructor plan before Unity FBX conversion; asymmetric runtime X bounds are [-sourceMaxX,-sourceMinX]"
+}

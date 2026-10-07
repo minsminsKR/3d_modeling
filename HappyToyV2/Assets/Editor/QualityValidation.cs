@@ -68,6 +68,7 @@ namespace HappyToy.V2.Editor
         public static void BuildWindows()
         {
             GraphicsPbrImport.Ensure();
+            CorridorFurnitureImport.Ensure();
             GraphicsLightingSetup.EnsureAndActivate();
             Validate();
             // Resources anchors retain material feature combinations created only at runtime.

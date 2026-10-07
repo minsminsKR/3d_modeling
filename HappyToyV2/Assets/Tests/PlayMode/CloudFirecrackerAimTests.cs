@@ -176,6 +176,7 @@ namespace HappyToy.V2.CloudTests
                 {
                     // Controlled collectible fixture, not a survival traversal.
                     var supply = Components("Interactable").First(item => Get<object>(item,"kind").ToString()=="FirecrackerSupply");
+                    yield return FurnitureExposeForFixture(supply);
                     Call(supply,"Use",player);
                     Assert.That(supply.gameObject.activeSelf, Is.False);
                 }

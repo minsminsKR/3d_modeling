@@ -6,7 +6,7 @@ namespace HappyToy.V2
 {
     public sealed class Interactable : MonoBehaviour
     {
-        public enum Kind { Door, NameSlip, HidingPlace, Exit, Inspect, CorridorMemory, FirecrackerSupply, ChapterMemory, Decoration, FlashlightBattery, Candle }
+        public enum Kind { Door, NameSlip, HidingPlace, Exit, Inspect, CorridorMemory, FirecrackerSupply, ChapterMemory, Decoration, FlashlightBattery, Candle, Drawer }
         public Kind kind;
         public string label;
         public string stableId;
@@ -18,6 +18,15 @@ namespace HappyToy.V2
         public NavMeshObstacle obstacle;
         bool open;
         public bool IsOpen => open;
+        public bool InteractionAvailable
+        {
+            get
+            {
+                if (!isActiveAndEnabled || !gameObject.activeInHierarchy) return false;
+                var drawer=GetComponentInParent<CorridorDrawer>();
+                return !drawer || kind==Kind.Drawer || drawer.ExposesPickup;
+            }
+        }
         public bool DoorOperable => isActiveAndEnabled && kind == Kind.Door && movingLeaf;
         public Vector3 DoorNormal => Vector3.Cross(transform.up, transform.TransformVector(openOffset)).normalized;
         public bool AtRequestedDoorPose => movingLeaf &&
@@ -200,6 +209,7 @@ namespace HappyToy.V2
                     return room+" 문 "+(open?"닫기":"열기");
                 }
                 if(kind==Kind.FlashlightBattery)return "손전등 배터리 줍기";
+                if(kind==Kind.Drawer) { var drawer=GetComponent<CorridorDrawer>(); return drawer?drawer.DisplayLabel:label; }
                 if(kind==Kind.Candle) { var candle=GetComponent<WaymarkCandle>(); return candle?candle.DisplayLabel:label; }
                 if(kind==Kind.HidingPlace)return "캐비닛에 숨기";
                 if(kind==Kind.Exit && GameSession.Current && GameSession.Current.CorridorMode)return "봉인된 회랑 문 확인";
@@ -233,7 +243,7 @@ namespace HappyToy.V2
         }
         public void Use(PlayerMotor player)
         {
-            if (!player || !GameSession.Current || !GameSession.Current.InputAllowed) return;
+            if (!player || !GameSession.Current || !GameSession.Current.InputAllowed || !InteractionAvailable) return;
             switch (kind)
             {
                 case Kind.ChapterMemory:
@@ -253,6 +263,9 @@ namespace HappyToy.V2
                 case Kind.Candle:
                     var candle = GetComponent<WaymarkCandle>();
                     if (candle) candle.TryIgnite(player);
+                    break;
+                case Kind.Drawer:
+                    var drawer=GetComponent<CorridorDrawer>(); if(drawer) drawer.Use(player);
                     break;
                 case Kind.Door:
                     if (!DoorOperable) return;

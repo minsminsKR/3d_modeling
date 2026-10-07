@@ -113,13 +113,6 @@ namespace HappyToy.V2
                 item.AddComponent<MemoryResonance>();
                 var beacon = item.AddComponent<Light>(); beacon.range = 2; beacon.intensity = .45f; beacon.color = new Color(.6f, .8f, .7f);
             }
-            for (int i = 0; i < Layout.Supplies.Length; i++)
-            {
-                var item = Box("Firecracker pack", CellPosition(Layout.Supplies[i]) + new Vector3(1.9f, .30f, 1.9f), new Vector3(.30f, .48f, .22f), brass);
-                var interaction = item.AddComponent<Interactable>(); interaction.kind = Interactable.Kind.FirecrackerSupply;
-                interaction.stableId = "supply-" + i;
-                interaction.label = "폭죽 한 개 줍기";
-            }
             var cabinetTemplate = FindObjectsByType<Interactable>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                 .Where(x => x.gameObject.scene == gameObject.scene && x.kind == Interactable.Kind.HidingPlace && x.inside && x.outside)
                 .OrderBy(x => x.name, StringComparer.Ordinal).ThenBy(x => x.transform.position.x).ThenBy(x => x.transform.position.z)
@@ -144,6 +137,7 @@ namespace HappyToy.V2
             }
             var exit = Box("Sealed entrance", CellPosition(0) + new Vector3(-2.72f, 1.1f, 0), new Vector3(.12f, 2.2f, 1.6f), timber);
             var exitInteraction = exit.AddComponent<Interactable>(); exitInteraction.kind = Interactable.Kind.Exit; exitInteraction.label = "회랑 출구";
+            BuildFurnishings();
             Lighting = gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareCorridor(this, world);
             // Rebuild after all physical furniture is present. Walkable routes include actual obstacles.
             Physics.SyncTransforms(); surface.BuildNavMesh();

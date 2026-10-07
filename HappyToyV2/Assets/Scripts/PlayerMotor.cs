@@ -169,13 +169,13 @@ namespace HappyToy.V2
             if (Physics.Raycast(origin, direction, out var direct, 2.2f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             {
                 var item=direct.collider.GetComponentInParent<Interactable>();
-                return item&&item.kind!=Interactable.Kind.Decoration?item:null;
+                return item&&item.InteractionAvailable&&item.kind!=Interactable.Kind.Decoration?item:null;
             }
             // Tiny distant notes should not demand pixel-perfect aim. A wall still blocks this cast.
             if (!Physics.SphereCast(origin, .065f, direction, out var assist, 2.135f,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return null;
             var candidate = assist.collider.GetComponentInParent<Interactable>();
-            if (!candidate || candidate.kind==Interactable.Kind.Decoration) return null;
+            if (!candidate || !candidate.InteractionAvailable || candidate.kind==Interactable.Kind.Decoration) return null;
             var toPoint = assist.point - origin;
             if (toPoint.sqrMagnitude > 2.2f * 2.2f) return null;
             if (Physics.Raycast(origin, toPoint.normalized, out var blocker, toPoint.magnitude + .015f,

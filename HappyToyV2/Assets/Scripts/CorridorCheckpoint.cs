@@ -12,12 +12,15 @@ namespace HappyToy.V2
         public string token;
         public int lightingVersion;
         public LightExplorationCheckpoint lighting;
+        public int furnitureVersion;
+        public Drawer[] drawers;
         public float seconds;
         public bool[] recovered, supplies;
         public PlayerMotor.Progress player;
         public StalkerBrain.Progress[] threats;
         public Door[] doors;
         [Serializable] public sealed class Door { public string id; public bool open; public Vector3 leaf; }
+        [Serializable] public sealed class Drawer { public string id; public bool open; public float travel; }
         public static bool Number(float value, float min, float max) => StealthRules.Finite(value) && value >= min && value <= max;
         public static bool Point(Vector3 p) => Number(p.x,197,251) && Number(p.z,197,251) && Number(p.y,-.15f,.85f);
         public static bool Vector(Vector3 p) => Number(p.x,-10000,10000) && Number(p.y,-10000,10000) && Number(p.z,-10000,10000);
@@ -32,6 +35,18 @@ namespace HappyToy.V2
                 lightingVersion==0 && lighting!=null && !lighting.LegacyEmpty)
                 throw new ArgumentException("Invalid lighting checkpoint version");
             if(lightingVersion==1) lighting.Validate();
+            // Marker zero is an older save with no furniture. Finite pickup
+            // flags still apply unchanged; new trays simply start closed.
+            if(furnitureVersion<0 || furnitureVersion>1 || furnitureVersion==0 && drawers!=null && drawers.Length!=0 ||
+                furnitureVersion==1 && (drawers==null || drawers.Length!=4))
+                throw new ArgumentException("Invalid furniture checkpoint version");
+            if(furnitureVersion==1)
+            {
+                var drawerIds=new System.Collections.Generic.HashSet<string>();
+                foreach(var drawer in drawers)
+                    if(drawer==null || (drawer.id!="drawer-supply-0" && drawer.id!="drawer-supply-2" && drawer.id!="drawer-supply-4" && drawer.id!="drawer-supply-6") ||
+                        !drawerIds.Add(drawer.id) || !Number(drawer.travel,0,.30f)) throw new ArgumentException("Invalid drawer checkpoint");
+            }
             player.Validate();
             foreach(var threat in threats) { if(threat == null) throw new ArgumentException("Missing threat"); threat.Validate(); }
             var ids=new System.Collections.Generic.HashSet<string>();

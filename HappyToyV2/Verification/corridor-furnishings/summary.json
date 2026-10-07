@@ -1,0 +1,415 @@
+{
+  "status": "PASS",
+  "scope": "Authored corridor furnishing source/import, production camera visibility, actual E drawer/pickup/cabinet interaction, finite stock, save compatibility and three-seed navigation. Full native survival/escape is NOT certified; its incomplete result is retained below.",
+  "recordedUtc": "2026-10-07T09:10:59.967101+00:00",
+  "sourceBaseCommit": "50227e46837bc472eb2046713f2139f2470063ee",
+  "unity": "6000.6.0f1",
+  "blender": "4.0.2",
+  "build": "Builds/CorridorFurnishings-20261007-r3",
+  "buildInputStatus": "BUILD_INPUTS_PASS",
+  "buildInputCount": 2384,
+  "buildArtifacts": [
+    {
+      "path": "HappyToyV2.exe",
+      "bytes": 667136,
+      "sha256": "718444f6a718fa668da96eb0a58445b009673310e6129152a63dbf7a92b8de00"
+    },
+    {
+      "path": "UnityPlayer.dll",
+      "bytes": 91080616,
+      "sha256": "48c3863e83c8615567fd62ed6a22fa9852c80b058bb97179721ec30454680345"
+    },
+    {
+      "path": "HappyToyV2_Data/globalgamemanagers",
+      "bytes": 122452,
+      "sha256": "52de030f3492db2f75d1c302802b72b07c2c2a5d7ee8ba0d681061e1224e68bd"
+    },
+    {
+      "path": "Audio-Credits.txt",
+      "bytes": 1599,
+      "sha256": "70e5de1d05f1f89852181b89abd00e7918c62c0c4a14e4c18220c99ea2ce2040"
+    }
+  ],
+  "initialNativeAuditAssemblySha256": "63e1ba8e5e4d8dee4ae2a59e2ed88e4debd0bb9ae64cdbbd82b9e26e51482f89",
+  "finalBuildAssemblySha256": "63e1ba8e5e4d8dee4ae2a59e2ed88e4debd0bb9ae64cdbbd82b9e26e51482f89",
+  "protectedSchoolSceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "furnishings": {
+    "desks": 12,
+    "archiveShelves": 6,
+    "openableDrawers": 4,
+    "originalFiniteFirecrackers": 8,
+    "originalFiniteBatteries": 6,
+    "drawerTravelMetres": 0.3,
+    "decorations": [
+      "sewn ledgers and page blocks",
+      "manuscripts and ink marks",
+      "brush and inkstone",
+      "rolled archives",
+      "hollow celadon vessel"
+    ],
+    "placement": "Wall-aware placement reserves full door-leaf sweeps, cabinet exits, candle mounts, entrance/altar and other furniture. Accurate physical parts precede NavMesh bake; elevated surfaces and the full open tray area are not walkable.",
+    "checkpoint": "Four stable drawer IDs and bounded travel; captured open/partial poses, consumed supply flags retained; old furnitureVersion=0 starts shut without replenishing items; invalid data validated before changing state."
+  },
+  "editableSourceValidation": {
+    "status": "PASS",
+    "blender": "4.0.2",
+    "assets": [
+      {
+        "key": "battery-pack",
+        "triangles": 3892,
+        "parts": 1,
+        "relativeSourceImages": 9,
+        "sourceBytes": 171787,
+        "runtimeBytes": 195020
+      },
+      {
+        "key": "writing-set",
+        "triangles": 3980,
+        "parts": 1,
+        "relativeSourceImages": 12,
+        "sourceBytes": 174679,
+        "runtimeBytes": 218220
+      },
+      {
+        "key": "writing-desk",
+        "triangles": 11912,
+        "parts": 2,
+        "relativeSourceImages": 15,
+        "sourceBytes": 260469,
+        "runtimeBytes": 582796
+      },
+      {
+        "key": "archive-shelf",
+        "triangles": 29664,
+        "parts": 1,
+        "relativeSourceImages": 12,
+        "sourceBytes": 540704,
+        "runtimeBytes": 1395244,
+        "shelfPickupClearance": {
+          "runtimeAnchor": [
+            -0.4,
+            0.504,
+            -0.09
+          ],
+          "payloadMin": [
+            -0.4850000008940697,
+            0.504,
+            -0.14169636383652687
+          ],
+          "payloadMax": [
+            -0.31499999910593035,
+            0.7459999986886978,
+            -0.05099999919533729
+          ],
+          "storedObjectFaceOverlaps": 0,
+          "boardSurfaceY": 0.5
+        }
+      },
+      {
+        "key": "firecracker-pack",
+        "triangles": 2940,
+        "parts": 1,
+        "relativeSourceImages": 6,
+        "sourceBytes": 158185,
+        "runtimeBytes": 168156
+      }
+    ],
+    "scope": "Read-only editable source, relative mapped texture, hierarchy and FBX digest checks; no Unity gameplay or visual certification"
+  },
+  "modelManifestSha256": "54fd1da38b6131ae5835bf260439a1e8bee189bf85ad326303149256e1007615",
+  "tests": {
+    "uniquePassed": 17,
+    "editModePassed": 2,
+    "playModePassed": 15,
+    "latestPerCase": [
+      {
+        "name": "ActualSuspendAndContinueButtonsRestoreOnceAndNewSchoolPreservesSlot",
+        "result": "Passed",
+        "latestReport": "play.xml"
+      },
+      {
+        "name": "CabinetEntryDecisionSurvivesRealSchoolAndCorridorCheckpointRoundTrips",
+        "result": "Passed",
+        "latestReport": "play.xml"
+      },
+      {
+        "name": "CandlePhysicalIgnitionAndFiniteSupplyCheckpointRestoreWithoutReplay",
+        "result": "Passed",
+        "latestReport": "shelf-support.xml"
+      },
+      {
+        "name": "CandleProductionCameraShowsNearDarkHoldsAndBrightCatchesWithFlashlightInBothModes",
+        "result": "Passed",
+        "latestReport": "play.xml"
+      },
+      {
+        "name": "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
+        "result": "Passed",
+        "latestReport": "play.xml"
+      },
+      {
+        "name": "CorridorCheckpointRejectsUnknownVersionAndBlockedPoseBeforeMutatingWorld",
+        "result": "Passed",
+        "latestReport": "play.xml"
+      },
+      {
+        "name": "CorridorDrawerRealERevealsFinitePickupAndRestoresConsumedStateWithNewAndLegacyCheckpoints",
+        "result": "Passed",
+        "latestReport": "play.xml"
+      },
+      {
+        "name": "CorridorFurnishingsActualTorchCameraShowsDeskDrawerShelvesAndAuthoredPbrDetails",
+        "result": "Passed",
+        "latestReport": "visible-items.xml"
+      },
+      {
+        "name": "CorridorFurnitureImportsAuthoredMetreScaleBevelTopologyFiniteUvsNormalsAndIndependentDrawer",
+        "result": "Passed",
+        "latestReport": "edit.xml"
+      },
+      {
+        "name": "CorridorHasReachableGoalsOriginalMonstersAndBoundedCollectibleSupplies",
+        "result": "Passed",
+        "latestReport": "followup.xml"
+      },
+      {
+        "name": "CorridorMonsterPushesARealClosedDoorBeforeCrossing",
+        "result": "Passed",
+        "latestReport": "followup.xml"
+      },
+      {
+        "name": "FlashlightBatteryPhysicalInputDepletionPauseOffFullCapAndRefill",
+        "result": "Passed",
+        "latestReport": "shelf-support.xml"
+      },
+      {
+        "name": "FurnishedCorridorThreeSeedNavigationKeepsEveryRoomPickupCabinetAndDoorwayReachable",
+        "result": "Passed",
+        "latestReport": "cabinet-focus.xml"
+      },
+      {
+        "name": "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
+        "result": "Passed",
+        "latestReport": "play.xml"
+      },
+      {
+        "name": "HeldAimCancelsAcrossRealInputMenusHidingDeathAndRetryWithoutSpending",
+        "result": "Passed",
+        "latestReport": "play.xml"
+      },
+      {
+        "name": "ModeledCorridorStationFeetMeetActualFloorWhileTargetsAndLightsStayExact",
+        "result": "Passed",
+        "latestReport": "shelf-support.xml"
+      },
+      {
+        "name": "RoundTripIsImmutableAndConsumeCannotReviveOldBackups",
+        "result": "Passed",
+        "latestReport": "edit.xml"
+      }
+    ],
+    "runs": [
+      {
+        "report": "edit.xml",
+        "sha256": "be571f1b2b876e1440ada39732837c91054b7f72ab5cee06916dab87aee8a912",
+        "passed": 2,
+        "failed": 0
+      },
+      {
+        "report": "play.xml",
+        "sha256": "fbf265d28fa92d82d99e46f8ce30fc570ae8d7090645f706a74e9806f14a9d06",
+        "passed": 10,
+        "failed": 1
+      },
+      {
+        "report": "followup.xml",
+        "sha256": "62fd26d0040f9443687284c84fce08c7862bfe61dc5f6f85ba1fa5ff4f486d29",
+        "passed": 2,
+        "failed": 0
+      },
+      {
+        "report": "visible-items.xml",
+        "sha256": "384156ebbf377263da6a8387316764c51bd944fb8b246ce31fef6fd30f351467",
+        "passed": 2,
+        "failed": 0
+      },
+      {
+        "report": "cabinet-focus.xml",
+        "sha256": "b7797c161a9c57447ae86897b23521bbe951b02b383df41f5d79348250a0188f",
+        "passed": 1,
+        "failed": 0
+      },
+      {
+        "report": "shelf-support.xml",
+        "sha256": "9e9ac9a16f00268bb1735479adc115d32aa5b4ed37c05eaea936642258aa0b39",
+        "passed": 3,
+        "failed": 0
+      }
+    ],
+    "resolvedFixtureFailure": "Existing floor texture fixture expected anisotropy 8 while tracked texture metadata and GraphicsPbrImport already require 16. Corrected assertion, original finite-stock/navigation assertions preserved, rerun PASS. The former corridor battery floor-stand fixture now verifies modeled cells above an actual shelf bearing board, with unchanged candle floor grounding and target/light checks.",
+    "navigationSeeds": [
+      73,
+      211,
+      509
+    ],
+    "roomsPerSeed": 81,
+    "actualCabinetEEntriesAndExits": 42,
+    "cabinetScope": "Production Mouse/E focus and safe entry/exit from controlled physical approaches with threats isolated; no forced production hiding random sample."
+  },
+  "actualCameraReview": {
+    "scope": "Actual seeded production corridor and player camera with original torch, fog, wall dressing and lighting; threats isolated for art review. Renderer-off comparison is used only to prove that the modeled furnishing reached the raster.",
+    "seed": 73,
+    "views": [
+      {
+        "image": "corridor-furniture-desk-closed.jpg",
+        "prop": "writing-desk",
+        "id": "furniture-desk-supply-0",
+        "camera": {
+          "x": 206.8249969482422,
+          "y": 1.6299999952316284,
+          "z": 206.0
+        },
+        "target": {
+          "x": 208.375,
+          "y": 0.699999988079071,
+          "z": 206.0
+        },
+        "feet": {
+          "x": 206.8249969482422,
+          "y": 0.029999999329447746,
+          "z": 206.0
+        },
+        "distance": 1.8075977563858032,
+        "flashlight": true,
+        "visibleChangedPixels": 31954,
+        "imageSha256": "2eed3e3bb03ca1d925dd49d0411fb37df9a41d9c37f460a432610300c561ad94"
+      },
+      {
+        "image": "corridor-furniture-desk-open-item.jpg",
+        "prop": "writing-desk",
+        "id": "furniture-desk-supply-0",
+        "camera": {
+          "x": 206.8249969482422,
+          "y": 1.6299999952316284,
+          "z": 206.0
+        },
+        "target": {
+          "x": 208.375,
+          "y": 0.6600000262260437,
+          "z": 206.0
+        },
+        "feet": {
+          "x": 206.8249969482422,
+          "y": 0.029999999329447746,
+          "z": 206.0
+        },
+        "distance": 1.8284991979599,
+        "flashlight": true,
+        "visibleChangedPixels": 46148,
+        "imageSha256": "bb81634b98621e86214bc5015cea70285bfb6e22d89e2ecfbdfe8333da6f4ae9"
+      },
+      {
+        "image": "corridor-furniture-archive-shelf.jpg",
+        "prop": "archive-shelf",
+        "id": "furniture-shelf-battery-0",
+        "camera": {
+          "x": 206.10000610351562,
+          "y": 1.6299999952316284,
+          "z": 208.10000610351562
+        },
+        "target": {
+          "x": 208.5,
+          "y": 1.100000023841858,
+          "z": 208.10000610351562
+        },
+        "feet": {
+          "x": 206.10000610351562,
+          "y": 0.029999999329447746,
+          "z": 208.10000610351562
+        },
+        "distance": 2.4578182697296143,
+        "flashlight": true,
+        "visibleChangedPixels": 90946,
+        "imageSha256": "2a947b76994a90c270af9629877313a4206e30446275c86142bef7fc8f8e7ce1"
+      },
+      {
+        "image": "corridor-furniture-shelf-details.jpg",
+        "prop": "archive-shelf",
+        "id": "furniture-shelf-battery-0",
+        "camera": {
+          "x": 206.89999389648438,
+          "y": 1.6299999952316284,
+          "z": 208.10000610351562
+        },
+        "target": {
+          "x": 208.5,
+          "y": 1.2000000476837158,
+          "z": 208.10000610351562
+        },
+        "feet": {
+          "x": 206.89999389648438,
+          "y": 0.029999999329447746,
+          "z": 208.10000610351562
+        },
+        "distance": 1.6567798852920532,
+        "flashlight": true,
+        "visibleChangedPixels": 109638,
+        "imageSha256": "91726b22389af31ffde9a3d810d553bd08abf0d9349eba6e3ce4e34f47a3a450"
+      }
+    ]
+  },
+  "visualCorrections": [
+    "Furniture backs pulled inward to clear timber/washi cladding and sliding pockets.",
+    "Firecracker payload measured below closed drawer bead with more than 7mm headroom.",
+    "Shelf battery moved to visible runtime left bay, actual source face overlap count zero."
+  ],
+  "nativeInputAudit": {
+    "testedBuild": "Builds/CorridorFurnishings-20261007",
+    "status": "FAIL",
+    "routePassed": false,
+    "failure": "InvalidOperationException: Could not focus Corridor hiding cabinet; stage=Memory 1; records=3; at=(204.93, 0.08, 239.84)",
+    "errors": [],
+    "recovered": 3,
+    "suppliesCollected": 2,
+    "batteriesCollected": 1,
+    "candlesIgnited": 1,
+    "doorsOpened": 2,
+    "physicalMeters": 185.21630859375,
+    "milestones": [
+      "5.07s opened/reopened physical door through E at (205.38, 0.08, 201.39)",
+      "10.87s picked up finite battery through E after actual lit drain at (207.56, 0.08, 207.03)",
+      "17.07s lit a route candle through E at (205.13, 0.08, 215.35)",
+      "17.45s finite light, battery and candle demonstrated through F/E; quiet stance through C at (205.13, 0.08, 215.35)",
+      "23.67s opened actual desk drawer through E at (207.43, 0.08, 207.49)",
+      "23.69s collected finite supply through E at (207.43, 0.08, 207.49)",
+      "38.01s recovered Memory 2 through E at (222.42, 0.08, 217.68)",
+      "51.85s evaded an observed committed swing through real movement at (230.21, 0.08, 203.69)",
+      "55.27s recovered Memory 3 through E at (240.41, 0.08, 199.98)",
+      "55.34s threw real Q decoy beyond visible guard at (240.41, 0.08, 199.98)",
+      "57.31s evaded an observed committed swing through real movement at (240.38, 0.08, 197.97)",
+      "95.91s recovered Memory 4 through E at (206.01, 0.08, 246.40)",
+      "102.57s collected finite supply through E at (207.67, 0.08, 237.25)",
+      "111.39s opened/reopened physical door through E at (209.89, 0.08, 246.70)",
+      "113.17s evaded an observed committed swing through real movement at (208.39, 0.08, 248.04)",
+      "113.17s interrupted physical door wait for an observed threat; replan from actual feet at (208.39, 0.08, 248.04)"
+    ],
+    "interpretation": "Fresh Windows player demonstrated F/E finite lighting, actual E opening of an authored desk drawer and collecting its payload, two finite supplies and three memories. Full route stopped while the audit driver aimed a cabinet from behind a north doorway. Source geometry reconstruction of the recorded feet and cabinet indicates the helper validates center rays but later aims a different closest-corner ray into an existing doorway wall. New desk/shelf bounds do not overlap that ray. This is an inference; the failed run did not record a contemporaneous ray-hit diagnostic. Three-seed production E focus/entry/exit tests subsequently passed all 42 cabinets. This partial native run is not an escape or performance PASS.",
+    "profile": "Isolated audit record/settings paths; production threat speed, natural clock/motor and hiding RNG retained."
+  },
+  "handoff": {
+    "sources": [
+      "Assets/Resources/CorridorFurnishings/*.fbx and Unity-generated .meta",
+      "SourceArt/CorridorFurnishings/Models/*.blend",
+      "SourceArt/CorridorFurnishings/author_corridor_furnishings.py",
+      "SourceArt/CorridorFurnishings/validate_furnishing_sources.py",
+      "SourceArt/CorridorFurnishings/model-manifest.json",
+      "SourceArt/CorridorFurnishings/README.md",
+      "SourceArt/CorridorFurnishings/LICENSE.md",
+      "CORRIDOR_FURNISHINGS.md",
+      "SOURCE_HANDOFF.md"
+    ],
+    "license": "Original geometry/generator CC0; existing PBR attribution and licenses retained.",
+    "rawArtifactsOptional": true,
+    "rawArtifacts": "Local game/verification/corridor-furnishings-20261007; builds, redundant studio/runtime screenshots, logs, caches and personal network settings remain outside source commits."
+  }
+}

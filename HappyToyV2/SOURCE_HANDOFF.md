@@ -39,6 +39,9 @@ python -m pip install -r Tools/requirements-authoring.txt
 
 - `SourceArt/EnemyRefinementV2/*.blend`: 네 적의 실제 편집 원본.
 - `SourceArt/GraphicsUpgrade/Props/*.blend`: 여덟 소품의 실제 편집 원본.
+- `SourceArt/CorridorFurnishings/Models/*.blend`: 회랑 책상·선반·필기 도구·보급품
+  다섯 모델의 실제 편집 원본. Blender **4.0.2**의 제작·검증 도구와 상대 경로
+  PBR 입력은 같은 폴더의 `README.md`에 기록되어 있다.
 - `SourceArt/seal-altar-v2.blend`: 앞선 제단 제작 원본.
 - 게임에 사용되는 FBX·텍스처·재질·셰이더와 `.meta`는 `Assets`에 함께 있다.
 - `SourceArt/GraphicsUpgrade`: 모델 제작, Poly Haven 취득, 종이/소품 PBR 생성 도구.

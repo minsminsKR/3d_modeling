@@ -8,6 +8,9 @@ namespace HappyToy.V2
     public sealed class InteractionAudio : MonoBehaviour
     {
         Interactable door;
+        CorridorDrawer drawer;
+        Transform MovingLeaf => drawer ? drawer.MovingDrawer : door ? door.movingLeaf : null;
+        bool AtRequestedPose => drawer ? drawer.AtRequestedPose : door && door.AtRequestedDoorPose;
         AudioSource source, railSource;
         EnemyAcoustics acoustics;
         AudioClip openClip, closeClip, railClip, seatClip;
@@ -27,9 +30,10 @@ namespace HappyToy.V2
         void Awake()
         {
             door = GetComponent<Interactable>();
+            drawer = GetComponent<CorridorDrawer>();
             var emitter = new GameObject("Sliding door contact and rail");
             // Sound follows the contact point, including reversing mid-slide.
-            emitter.transform.SetParent(door && door.movingLeaf ? door.movingLeaf : transform, false);
+            emitter.transform.SetParent(MovingLeaf ? MovingLeaf : transform, false);
             source = Emitter(emitter, .32f, 100);
             railSource = Emitter(emitter, .15f, 135);
             // The complete door root is ignored by acoustic traces, so the leaf cannot muffle itself.
@@ -73,15 +77,16 @@ namespace HappyToy.V2
             source.clip = LastClip; source.Play();
             elapsed = quietTime = 0; observedTravel = false;
             playFrame = Time.frameCount;
-            Moving = door && door.movingLeaf;
+            Moving = MovingLeaf;
             if (Moving)
             {
-                previousLeafPosition = door.movingLeaf.localPosition;
+                previousLeafPosition = MovingLeaf.localPosition;
                 railSource.clip = railClip; railSource.loop = true; railSource.pitch = opening ? 1 : .95f;
                 railSource.Play();
             }
             if (session.Shell && acoustics && acoustics.IsAudible(source))
-                session.Shell.ShowCaption(opening ? "[철컥 · 나무 문 열림]" : "[철컥 · 나무 문 닫힘]", 1.6f);
+                session.Shell.ShowCaption(drawer ? (opening ? "[철컥 · 나무 서랍 열림]" : "[철컥 · 나무 서랍 닫힘]") :
+                    (opening ? "[철컥 · 나무 문 열림]" : "[철컥 · 나무 문 닫힘]"), 1.6f);
         }
 
         void LateUpdate()
@@ -91,9 +96,9 @@ namespace HappyToy.V2
             // Use can run after the leaf's Update. Its initiation frame is not a
             // whole frame of failed travel, particularly after an import/render hitch.
             if (Time.frameCount == playFrame) return;
-            if (!door || !door.movingLeaf) { FinishSlide(false); return; }
+            if (!MovingLeaf) { FinishSlide(false); return; }
             elapsed += Time.deltaTime;
-            Vector3 at = door.movingLeaf.localPosition;
+            Vector3 at = MovingLeaf.localPosition;
             float travel = Vector3.Distance(at, previousLeafPosition); previousLeafPosition = at;
             if (travel > .00001f)
             {
@@ -107,12 +112,12 @@ namespace HappyToy.V2
             // The endpoint contact follows real movement rather than an assumed clip or animation duration.
             if (observedTravel && quietTime >= .04f)
             {
-                if (door.AtRequestedDoorPose) FinishSlide(true);
+                if (AtRequestedPose) FinishSlide(true);
                 else railSource.Stop();
             }
             else if (!observedTravel && elapsed >= .15f)
             {
-                if (door.AtRequestedDoorPose) FinishSlide(false);
+                if (AtRequestedPose) FinishSlide(false);
                 else railSource.Stop();
             }
         }
