@@ -60,7 +60,10 @@ namespace HappyToy.V2
                     }
                 }
             }
-            Danger = Mathf.Clamp01((CandleWarningDistance - nearest) / (CandleWarningDistance - CandleBlackoutDistance));
+            float proximity = Mathf.Clamp01((CandleWarningDistance - nearest) / (CandleWarningDistance - CandleBlackoutDistance));
+            // Start visibly reacting while there is still time to escape, then build to
+            // violent flame collapse just before the existing two-metre blackout.
+            Danger = Mathf.Pow(proximity, .72f);
             Blackout = detected || nearest <= CandleBlackoutDistance;
             bool extinguished = false;
             foreach (var candle in candles)

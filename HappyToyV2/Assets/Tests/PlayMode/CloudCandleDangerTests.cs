@@ -253,10 +253,14 @@ namespace HappyToy.V2.CloudTests
             yield return CandleDangerPrepare(); ((Behaviour)player).enabled = false;
             PlacePlayer(LightApproach(LightTargets("Candle")[0]), false);
             var actor = CandleDangerOwnedBrain();
-            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 8));
+            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 3));
             Call(LightRun, "RefreshDanger"); CandleDangerArmAll(); Call(shell, "ToggleReducedMotion");
             yield return null; yield return null;
             var candle = CandleDangerMarks()[0]; var light = Get<Light>(candle, "LocalLight"); var flame = Get<Transform>(candle, "Flame");
+            var flameRenderer = flame.GetComponentInChildren<Renderer>(); var flameProperties = new MaterialPropertyBlock();
+            int emission = Shader.PropertyToID("_Emission"), opacity = Shader.PropertyToID("_Opacity");
+            flameRenderer.GetPropertyBlock(flameProperties);
+            float steadyEmission = flameProperties.GetFloat(emission), steadyOpacity = flameProperties.GetFloat(opacity);
             Assert.That(Get<float>(LightRun, "Danger"), Is.GreaterThan(0).And.LessThan(1));
             Assert.That(light.intensity, Is.GreaterThan(0).And.LessThan(.68f));
             float steady = light.intensity; var position = flame.localPosition; var rotation = flame.localRotation; var scale = flame.localScale;
@@ -264,6 +268,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(light.intensity, Is.EqualTo(steady).Within(.00001f), "ReducedMotion still flashed the warning");
             Assert.That(flame.localPosition, Is.EqualTo(position)); Assert.That(flame.localRotation, Is.EqualTo(rotation));
             Assert.That(flame.localScale, Is.EqualTo(scale), "Comfort warning did not keep its captured dimmed scale steady");
+            flameRenderer.GetPropertyBlock(flameProperties);
+            Assert.That(flameProperties.GetFloat(emission), Is.EqualTo(steadyEmission)); Assert.That(flameProperties.GetFloat(opacity), Is.EqualTo(steadyOpacity));
             Call(shell, "Pause"); yield return null;
             float frozenDanger = Get<float>(LightRun, "Danger");
             CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 1.7f));

@@ -10,6 +10,7 @@ namespace HappyToy.V2
         public const float RecognitionStrength = .85f, ContactCeiling = .35f, AttackCeiling = .95f;
         public const float RisePerSecond = 3.5f, DecayPerSecond = .16f, DuckSeconds = .24f;
         public const float PulseMaximumVolume = .095f, AirMaximumVolume = .035f;
+        public const float InterferenceMaximumVolume = .075f;
         struct PendingCue
         {
             public AudioSource source;
@@ -23,7 +24,7 @@ namespace HappyToy.V2
         PlayerMotor player;
         GameObject emitter;
         float recognitionCooldown, contactCooldown, attackCooldown, duckEnvelope = 1;
-        bool bedRunning;
+        bool bedRunning, interferenceRunning;
         public float Stress { get; private set; }
         public float TargetStress { get; private set; }
         public float AmbienceGain => CurrentSession ? Mathf.Lerp(1, .55f, Stress) : 1;
@@ -36,10 +37,13 @@ namespace HappyToy.V2
         public float HoldRemaining { get; private set; }
         public float DuckRemaining { get; private set; }
         public float BedGain { get; private set; }
+        public float InterferenceGain { get; private set; }
         public AudioSource PulseSource { get; private set; }
         public AudioSource AirSource { get; private set; }
+        public AudioSource InterferenceSource { get; private set; }
         public AudioClip PulseClip { get; private set; }
         public AudioClip AirClip { get; private set; }
+        public AudioClip InterferenceClip { get; private set; }
         GameSession CurrentSession
         {
             get
@@ -62,8 +66,9 @@ namespace HappyToy.V2
             player = GetComponent<PlayerMotor>();
             emitter = new GameObject("Perceived tension soundscape"); emitter.SetActive(false);
             emitter.transform.SetParent(transform, false);
-            PulseClip = MakePulse(); AirClip = MakeAir();
+            PulseClip = MakePulse(); AirClip = MakeAir(); InterferenceClip = MakeInterference();
             PulseSource = Source(PulseClip, 170); AirSource = Source(AirClip, 180);
+            InterferenceSource = Source(InterferenceClip, 190);
             emitter.SetActive(true);
         }
         AudioSource Source(AudioClip clip, int priority)
@@ -185,6 +190,21 @@ namespace HappyToy.V2
                 PulseSource.pitch = softened ? 1 : Mathf.Lerp(.9f, 1.2f, Stress);
             }
             if (AirSource) AirSource.volume = AirMaximumVolume * BedGain;
+            // Audible feet can raise anticipation, but never invent visual/static
+            // discovery. This texture belongs only to an actually seen pursuit.
+            var detection = player.GetComponent<DetectionFeedback>();
+            InterferenceGain = detection ? detection.WitnessedPressure * duckEnvelope * comfort : 0;
+            if (InterferenceSource) InterferenceSource.volume = InterferenceMaximumVolume * InterferenceGain;
+            if (InterferenceGain <= .0001f)
+            {
+                if (InterferenceSource) InterferenceSource.Stop();
+                interferenceRunning = false;
+            }
+            else if (mayStart && !interferenceRunning)
+            {
+                interferenceRunning = true;
+                if (InterferenceSource && InterferenceSource.isActiveAndEnabled && !InterferenceSource.mute) InterferenceSource.Play();
+            }
             if (Stress <= .0001f)
             {
                 if (PulseSource) PulseSource.Stop();
@@ -200,13 +220,14 @@ namespace HappyToy.V2
         }
         void Clear()
         {
-            Stress = TargetStress = HoldRemaining = DuckRemaining = BedGain = 0;
+            Stress = TargetStress = HoldRemaining = DuckRemaining = BedGain = InterferenceGain = 0;
             LastPerceivedStrength = LastStimulusAge = 0;
             recognitionCooldown = contactCooldown = attackCooldown = 0;
-            duckEnvelope = 1; bedRunning = false;
+            duckEnvelope = 1; bedRunning = interferenceRunning = false;
             DiscardPending();
             if (PulseSource) { PulseSource.Stop(); PulseSource.volume = 0; }
             if (AirSource) { AirSource.Stop(); AirSource.volume = 0; }
+            if (InterferenceSource) { InterferenceSource.Stop(); InterferenceSource.volume = 0; }
         }
         void DiscardPending()
         {
@@ -261,6 +282,30 @@ namespace HappyToy.V2
             var clip = AudioClip.Create("Original low pursuit resonance", samples.Length, 1, rate, false);
             clip.SetData(samples, 0); return clip;
         }
+        static AudioClip MakeInterference()
+        {
+            const int rate = 48000; const float seconds = 3.6f;
+            var samples = new float[Mathf.RoundToInt(rate * seconds)];
+            var random = new System.Random(27571);
+            float fast = 0, slow = 0;
+            float highCut = 1 - Mathf.Exp(-2 * Mathf.PI * 1700 / rate);
+            float lowCut = 1 - Mathf.Exp(-2 * Mathf.PI * 210 / rate);
+            for (int i = 0; i < samples.Length; i++)
+            {
+                float t = i / (float)rate;
+                float white = (float)random.NextDouble() * 2 - 1;
+                fast += (white - fast) * highCut; slow += (fast - slow) * lowCut;
+                float breath = .60f + .24f * Mathf.Sin(2 * Mathf.PI * 2 * t / seconds) +
+                    .10f * Mathf.Sin(2 * Mathf.PI * 5 * t / seconds + .7f);
+                float seam = Mathf.SmoothStep(0, 1, Mathf.Clamp01(Mathf.Min(t, seconds - t) / .09f));
+                // Narrow dark hiss and resonant grains rather than loud broadband
+                // white noise. Physical steps stay louder and retain their timing.
+                float texture = .20f * (float)System.Math.Tanh((fast - slow) * 2.8f) * breath;
+                samples[i] = texture * seam;
+            }
+            var clip = AudioClip.Create("Original witnessed pursuit bandpass interference", samples.Length, 1, rate, false);
+            clip.SetData(samples, 0); return clip;
+        }
         void OnDisable() { Clear(); }
         void OnDestroy()
         {
@@ -268,6 +313,7 @@ namespace HappyToy.V2
             if (emitter) { emitter.SetActive(false); Destroy(emitter); }
             if (PulseClip) Destroy(PulseClip);
             if (AirClip) Destroy(AirClip);
+            if (InterferenceClip) Destroy(InterferenceClip);
         }
     }
 }

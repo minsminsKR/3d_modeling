@@ -10,9 +10,13 @@ namespace HappyToy.V2
         Light localLight;
         AudioSource ignition;
         AudioClip clip;
+        Renderer[] flameRenderers;
+        MaterialPropertyBlock flameProperties;
+        float[] flameEmission, flameOpacity;
+        static readonly int EmissionId = Shader.PropertyToID("_Emission"), OpacityId = Shader.PropertyToID("_Opacity");
         Vector3 flameScale, flamePosition;
         Quaternion flameRotation;
-        float phase, flutter;
+        float phase, flutter, turbulenceClock;
         LightExplorationRun dangerOwner;
         public float Danger { get; private set; }
         public bool IgnitionBlocked { get; private set; }
@@ -39,6 +43,15 @@ namespace HappyToy.V2
         {
             if (flame) throw new System.InvalidOperationException("Candle already configured");
             flame = flameVisual; localLight = light; flameScale = flame.localScale; flamePosition = flame.localPosition; flameRotation = flame.localRotation; phase = seed;
+            flameRenderers = flame.GetComponentsInChildren<Renderer>(true);
+            flameProperties = new MaterialPropertyBlock();
+            flameEmission = new float[flameRenderers.Length]; flameOpacity = new float[flameRenderers.Length];
+            for (int i = 0; i < flameRenderers.Length; i++)
+            {
+                var material = flameRenderers[i].sharedMaterial;
+                flameEmission[i] = material && material.HasProperty(EmissionId) ? material.GetFloat(EmissionId) : 0;
+                flameOpacity[i] = material && material.HasProperty(OpacityId) ? material.GetFloat(OpacityId) : 0;
+            }
             ignition = gameObject.AddComponent<AudioSource>(); ignition.playOnAwake = false;
             ignition.spatialBlend = 1; ignition.volume = .3f; ignition.dopplerLevel = 0;
             ignition.minDistance = 1; ignition.maxDistance = 7; ignition.rolloffMode = AudioRolloffMode.Linear;
@@ -86,27 +99,49 @@ namespace HappyToy.V2
                 flame.gameObject.SetActive(lit);
             }
             if (localLight) { localLight.enabled = lit; localLight.intensity = .68f; }
+            ApplyFlameRadiance(1);
         }
         void Update()
         {
             if (!Lit || !GameSession.Current || !GameSession.Current.InputAllowed) return;
             bool softened = GameSession.Current.Shell && GameSession.Current.Shell.ReducedMotion;
-            // Both frequency and depth grow continuously with danger. Comfort mode retains
-            // the warning as steady dimming rather than flashing or bending the flame.
-            float frequency = Mathf.Lerp(6.2f, 22f, Danger);
-            // Integrate phase: changing distance cannot turn a long playtime into a rapid flash.
+            // An approaching threat chokes the flame, followed by short bright catches.
+            // Per-candle gusts vary their cadence instead of a uniform sinusoidal warning.
+            // Integrate both clocks so distance changes and pause cannot jump the phase.
+            turbulenceClock += Time.deltaTime;
+            float gust = Mathf.PerlinNoise(phase * .21f + 17.6f, turbulenceClock * 1.85f);
+            float frequency = Mathf.Lerp(6.2f, 33f, Danger) * Mathf.Lerp(.89f, 1.13f, gust);
             flutter = Mathf.Repeat(flutter + Time.deltaTime * frequency, Mathf.PI * 2);
-            float wave = softened ? 0 : Mathf.Sin(flutter + phase) * .05f +
-                Mathf.Sin(Time.time * 2.7f + phase) * .035f;
-            float pulse = softened ? 0 : Mathf.Pow(.5f + .5f * Mathf.Sin(flutter + phase), 2);
-            float brightness = softened ? 1 - .75f * Danger :
-                1 - Danger * (.18f + .78f * pulse);
+            float close = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.45f, 1, Danger));
+            float cycle = .5f + .5f * Mathf.Sin(flutter + phase);
+            float collapse = Mathf.Pow(cycle, Mathf.Lerp(2, .52f, Danger));
+            float surge = close * .5f * Mathf.Pow(1 - cycle, 9);
+            float wave = softened ? 0 : Mathf.Sin(flutter + phase) * (.04f + .14f * close) +
+                Mathf.Sin(turbulenceClock * 2.7f + phase) * .025f;
+            // Comfort mode keeps the same proximity warning as steady dimming.
+            float brightness = softened ? 1 - .78f * Danger :
+                Mathf.Pow(Mathf.Max(.02f, 1 - Danger * (.12f + .86f * collapse)), Mathf.Lerp(1, 1.8f, Danger)) + surge;
             localLight.intensity = Mathf.Max(.01f, (.68f + wave) * brightness);
             flame.localScale = Vector3.Scale(flameScale,
-                new Vector3((1 - wave) * Mathf.Lerp(1, .65f, 1 - brightness),
-                    (1 + wave) * Mathf.Lerp(.35f, 1, brightness), 1 - wave));
-            flame.localPosition = flamePosition + new Vector3(wave * .008f, 0, wave * .003f);
-            flame.localRotation = flameRotation * Quaternion.Euler(0, 0, wave * (12 + Danger * 70));
+                new Vector3((1 - wave) * Mathf.Lerp(.44f, 1, Mathf.Clamp01(brightness)),
+                    (1 + wave) * Mathf.Lerp(.18f, 1, Mathf.Clamp01(brightness)) + (softened ? 0 : surge * .55f), 1 - wave));
+            flame.localPosition = flamePosition + new Vector3(wave * .019f, 0, wave * .009f);
+            flame.localRotation = flameRotation * Quaternion.Euler(wave * close * 38, 0, wave * (12 + close * 100));
+            ApplyFlameRadiance(brightness);
+        }
+        void ApplyFlameRadiance(float brightness)
+        {
+            if (flameRenderers == null) return;
+            // The photographic flame material is shared. Property blocks make each
+            // flame actually fade with its light without modifying other candles.
+            for (int i = 0; i < flameRenderers.Length; i++)
+            {
+                var renderer = flameRenderers[i]; if (!renderer) continue;
+                renderer.GetPropertyBlock(flameProperties);
+                if (flameEmission[i] > 0) flameProperties.SetFloat(EmissionId, flameEmission[i] * Mathf.Max(.06f, brightness));
+                if (flameOpacity[i] > 0) flameProperties.SetFloat(OpacityId, flameOpacity[i] * Mathf.Lerp(.12f, 1, Mathf.Clamp01(brightness)));
+                renderer.SetPropertyBlock(flameProperties);
+            }
         }
         void OnDisable() { if (ignition) ignition.Stop(); }
         void OnDestroy() { if (clip) Destroy(clip); }

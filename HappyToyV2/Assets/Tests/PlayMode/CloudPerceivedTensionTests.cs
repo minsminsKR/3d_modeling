@@ -95,6 +95,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(tension, "PerceivedEvents"), Is.Zero); Assert.That(TensionQuiet(tension), Is.True);
             Assert.That(Get<float>(player.GetComponent(RequireType("DetectionFeedback")), "ChaseStrength"), Is.Zero,
                 "An unwitnessed chase flag revealed an unknown pursuer");
+            Assert.That(Get<float>(tension, "InterferenceGain"), Is.Zero, "An unheard, unseen chase invented pursuit noise");
+            Assert.That(Get<AudioSource>(tension, "InterferenceSource").isPlaying, Is.False);
             Assert.That(Get<float>(ambience, "StoryGain"), Is.EqualTo(1).Within(.001f), "Unseen Chase state still ducks local ambience");
             wall.SetActive(false); PlacePlayer(origin + Vector3.right * 4 + Vector3.up * 5, false);
             yield return Delay(.4f);
@@ -110,6 +112,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(walker, "CanSeePlayer"), Is.False);
             Assert.That(Get<int>(tension, "RecognitionEvents"), Is.Zero);
             Assert.That(Get<int>(player.GetComponent(RequireType("DetectionFeedback")), "CuesPlayed"), Is.Zero);
+            Assert.That(Get<float>(tension, "InterferenceGain"), Is.Zero, "Footsteps alone produced discovery interference");
             Assert.That(Get<float>(tension, "TargetStress"), Is.InRange(.001f, .35001f));
             yield return Wait(() => Get<float>(tension, "Stress") > .001f && Get<float>(ambience, "StoryGain") < .999f, 1, "Audible evidence did not gently reshape the room bed");
             walker.gameObject.SetActive(false); float aftermath = Get<float>(tension, "Stress");
@@ -235,9 +238,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(tension, "PerceivedEvents"), Is.EqualTo(events)); Assert.That(TensionQuiet(tension), Is.True);
             var pulse = Get<AudioSource>(tension, "PulseSource"); var air = Get<AudioSource>(tension, "AirSource");
             var pulseClip = Get<AudioClip>(tension, "PulseClip"); var airClip = Get<AudioClip>(tension, "AirClip");
+            var interference = Get<AudioSource>(tension, "InterferenceSource"); var interferenceClip = Get<AudioClip>(tension, "InterferenceClip");
             Call(session, "TryEscape"); Assert.That(Get<bool>(session, "Escaped"), Is.True);
             var previous = session; Call(shell, "Restart", true); yield return RecoveryRebind(previous);
-            Assert.That(tension == null && pulse == null && air == null && pulseClip == null && airClip == null, Is.True, "Old player-local tension resources survived retry");
+            Assert.That(tension == null && pulse == null && air == null && pulseClip == null && airClip == null &&
+                interference == null && interferenceClip == null, Is.True, "Old player-local tension resources survived retry");
             var fresh = TensionOwner(); Assert.That(Components("PerceivedTension").Length, Is.EqualTo(1));
             Assert.That(Get<int>(fresh, "PerceivedEvents"), Is.Zero); Assert.That(TensionQuiet(fresh), Is.True);
             Call(RequireType("PerceivedTension"), "ReportRecognition", previous); yield return TensionAdmissionFrames();

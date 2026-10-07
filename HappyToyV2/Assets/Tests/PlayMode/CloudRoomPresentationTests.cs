@@ -90,6 +90,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(presentation, "BlackKeyCount"), Is.EqualTo(20));
             Assert.That(Get<int>(presentation, "MountedSignCount"), Is.EqualTo(6));
             Assert.That(Get<string>(presentation, "Failure"), Is.Empty);
+            Assert.That(Named("CLASSROOM sign interior").GetComponent<MeshRenderer>().enabled, Is.False,
+                "The detached 1-2 interior text face is still visible");
+            foreach (string name in new[] { "CLASSROOM sign", "CLASSROOM sign opaque backing", "WASHROOM sign interior", "INFIRMARY sign interior" })
+                Assert.That(Named(name).GetComponent<MeshRenderer>().enabled, Is.True,
+                    "Classroom cleanup removed unrelated wayfinding: " + name);
             Assert.That(Get<int>(presentation, "InitialColliderCount"), Is.GreaterThan(0));
             Assert.That(Get<int>(presentation, "FinalColliderCount"), Is.EqualTo(Get<int>(presentation, "InitialColliderCount") + 6));
             var refresh = Named("Annex presentation refresh");

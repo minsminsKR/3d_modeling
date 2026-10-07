@@ -275,3 +275,22 @@ motion, and retains camera/UI images plus native listener DSP audio. Its capture
 scope and any failure are recorded in `horror-feedback.json`. Test preferences are
 restored before exit. Capture outputs, builds and editor caches are optional local
 evidence; the C# generators and audits with their metadata are required source.
+
+The pursuit scope now uses URP's native FilmGrain with an original generated high-contrast alpha texture for the brief recognition
+burst and continued witnessed Chase, with a generated band-limited interference
+clip underneath real enemy contacts. The native assay saves grain-disabled world
+references and checks actual central camera pixel differences with the same frozen
+pose; a nonzero Volume parameter alone is insufficient. Pause, hiding and reduced
+motion suppress the rendered noise.
+
+`SchoolClassroomDoorOpensWithoutFloatingInteriorSign` opens the real 1-2 classroom
+door and captures its player-camera view after hiding only `CLASSROOM sign interior`.
+The exterior plaque and original door/lintel collision remain. The original scene
+is not regenerated.
+
+`CandleActualNormalMotionWarningGrowsFlickerDepthAndCompletedPulseCount` samples
+natural frames at approximately 10, 6 and 3 metres, measuring real light intensity,
+flame emission and height. `CandleViolentNearWarningFreezesOnPauseAndRecoversSilentlyAfterBlackout`
+checks that the severe near-warning freezes during pause and that automatic recovery
+retains durable ignition without replaying the match. Keep original blackout,
+ownership, comfort and checkpoint tests in the same focused test run.

@@ -76,6 +76,7 @@ namespace HappyToy.V2
             MakeMaterials();
             refresh = new GameObject("Annex presentation refresh").transform;
             refresh.SetParent(school, false);
+            RemoveDetachedClassroomLabel();
             DressPiano(piano, bench);
             var addedChairs = new List<Transform>();
             var addedStands = new List<Transform>();
@@ -120,6 +121,19 @@ namespace HappyToy.V2
         {
             if (Vector3.Distance(item.position, expected) > .06f)
                 throw new InvalidOperationException("Authored presentation target moved: " + item.name);
+        }
+
+        void RemoveDetachedClassroomLabel()
+        {
+            // The old reverse face is a lone text plane beyond the classroom lintel.
+            // Opening 1-2's door exposes it hanging inside the room. Keep the backed
+            // corridor sign and all door/collision geometry; remove only this face.
+            var interior = Exactly("CLASSROOM sign interior");
+            RequirePosition(interior, new Vector3(-4.5f, 2.7f, 1.74f));
+            var renderer = interior.GetComponent<MeshRenderer>();
+            if (!renderer || !interior.GetComponent<TextMesh>())
+                throw new InvalidOperationException("Expected the detached classroom TextMesh face.");
+            renderer.enabled = false;
         }
 
         int CountEnabledColliders() => gameObject.scene.GetRootGameObjects()

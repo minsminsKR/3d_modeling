@@ -5,7 +5,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace HappyToy.V2
 {
-    /// <summary>Original recognition impact and a continuous veil for witnessed pursuit.</summary>
+    /// <summary>Original recognition interference and continuous pressure from witnessed pursuit.</summary>
     [DisallowMultipleComponent]
     public sealed class DetectionFeedback : MonoBehaviour
     {
@@ -14,20 +14,23 @@ namespace HappyToy.V2
         PlayerMotor player;
         AudioSource source;
         AudioClip sting;
-        Texture2D peripheral;
+        Texture2D peripheral, nativeGrain;
         GameObject postObject;
         Volume post;
         VolumeProfile profile;
         LensDistortion lens;
         ChromaticAberration chromatic;
+        FilmGrain filmGrain;
         float remaining, cooldown, chase, pulseClock;
         public int CuesPlayed { get; private set; }
         public float Remaining => remaining;
-        public bool Active => remaining > 0 && CurrentSession && CurrentSession.InputAllowed;
+        public bool Active => remaining > 0 && CurrentSession && CurrentSession.InputAllowed && !player.Hidden;
         public bool Softened => CurrentSession && CurrentSession.Shell && CurrentSession.Shell.ReducedMotion;
         public float Strength => Active ? Mathf.Clamp01((Duration - remaining) / .045f) * Mathf.Clamp01(remaining / .35f) : 0;
-        // Kept for existing integrations: animated static has been retired entirely.
+        // Grain is rendered at native pixel density by URP, never stretched over
+        // the HUD from a low-resolution animated static texture.
         public Texture2D GrainTexture => null;
+        public Texture2D NativeNoiseTexture => nativeGrain;
         public Texture2D PeripheralTexture => peripheral;
         public float ChaseStrength => CurrentSession ? chase : 0;
         public float PeripheralStrength
@@ -42,6 +45,8 @@ namespace HappyToy.V2
         }
         public float DistortionStrength => lens != null && post && post.weight > 0 ? Mathf.Abs(lens.intensity.value) : 0;
         public float ChromaticStrength => chromatic != null && post && post.weight > 0 ? chromatic.intensity.value : 0;
+        public float NoiseStrength => filmGrain != null && post && post.weight > 0 && filmGrain.active ? filmGrain.intensity.value : 0;
+        public float WitnessedPressure => CurrentSession && CurrentSession.InputAllowed && !player.Hidden ? Mathf.Max(Strength, chase) : 0;
         GameSession CurrentSession
         {
             get
@@ -58,14 +63,17 @@ namespace HappyToy.V2
             source = gameObject.AddComponent<AudioSource>();
             source.playOnAwake = false; source.spatialBlend = 0; source.volume = .64f; source.priority = 20;
             source.ignoreListenerPause = false; source.ignoreListenerVolume = false; source.dopplerLevel = 0;
-            sting = MakeRecognition(); peripheral = MakePeripheralVeil();
-            // Only these two parameters override the independently owned lighting profile.
+            sting = MakeRecognition(); peripheral = MakePeripheralVeil(); nativeGrain = MakeNativeGrain();
+            // Only perception parameters override the independently owned lighting.
             postObject = new GameObject("Witnessed threat lens scope");
             postObject.transform.SetParent(transform, false);
             profile = ScriptableObject.CreateInstance<VolumeProfile>(); profile.name = "Original witnessed threat lens";
             lens = profile.Add<LensDistortion>(); lens.intensity.Override(0);
             lens.xMultiplier.Override(.55f); lens.yMultiplier.Override(.65f); lens.scale.Override(1);
             chromatic = profile.Add<ChromaticAberration>(); chromatic.intensity.Override(0);
+            filmGrain = profile.Add<FilmGrain>(); filmGrain.type.Override(FilmGrainLookup.Custom);
+            filmGrain.texture.Override(nativeGrain);
+            filmGrain.intensity.Override(0); filmGrain.response.Override(.58f);
             post = postObject.AddComponent<Volume>(); post.isGlobal = true; post.priority = 90; post.weight = 0; post.sharedProfile = profile;
         }
 
@@ -162,12 +170,17 @@ namespace HappyToy.V2
         {
             if (!post) return;
             var session = CurrentSession;
-            bool motion = session && session.InputAllowed && !Softened;
+            bool motion = session && session.InputAllowed && !Softened && !player.Hidden;
             post.weight = motion ? 1 : 0;
-            if (!motion) { lens.intensity.value = chromatic.intensity.value = 0; return; }
+            if (!motion) { lens.intensity.value = chromatic.intensity.value = filmGrain.intensity.value = 0; return; }
             float breathing = .5f + .5f * Mathf.Sin(pulseClock * 2.4f);
-            // Smooth contraction on discovery, then slow peripheral breathing.
-            // No image noise, strobe, blur, camera rotation or FOV seizure.
+            // Discovery attacks rapidly, then resolves into a finer, irregular
+            // pursuit texture. Original fine grain is tiled in screen pixels and
+            // luminance aware, preserving the path, faces and HUD readability.
+            float interference = .5f + .5f * Mathf.Sin(pulseClock * 7.1f + .6f * Mathf.Sin(pulseClock * 2.7f));
+            filmGrain.intensity.value = Mathf.Max(Strength * .76f, chase * (.35f + .055f * interference));
+            // A smooth contraction and breathing veil support the grain without
+            // strobes, camera rotation, blur or additional FOV movement.
             lens.intensity.value = -Strength * .085f - chase * (.022f + .007f * breathing);
             chromatic.intensity.value = Strength * .11f + chase * .025f;
         }
@@ -176,7 +189,36 @@ namespace HappyToy.V2
         {
             remaining = cooldown = chase = pulseClock = 0; witnessed.Clear();
             if (source) source.Stop();
+            if (filmGrain) filmGrain.intensity.value = 0;
             if (post) post.weight = 0;
+        }
+
+        static Texture2D MakeNativeGrain()
+        {
+            const int size = 512;
+            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false, true) {
+                name = "Original native-pixel witnessed interference", filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Repeat
+            };
+            var random = new System.Random(61781);
+            var field = new float[size * size];
+            for (int i = 0; i < field.Length; i++) field[i] = (float)random.NextDouble() * 2 - 1;
+            var pixels = new Color32[field.Length];
+            for (int y = 0; y < size; y++) for (int x = 0; x < size; x++)
+            {
+                int left = (x + size - 1) % size, right = (x + 1) % size, above = (y + size - 1) % size;
+                // Correlation stays within one native pixel. No upscaled blocks,
+                // checkerboard pattern or hard horizontal tearing. The stronger
+                // original alpha contrast makes interference legible in shadows,
+                // where the stock photographic grain is almost imperceptible.
+                float grain = .58f * field[y * size + x] + .14f * field[y * size + left] +
+                    .14f * field[above * size + x] + .07f * field[y * size + right] + .07f * field[above * size + left];
+                byte alpha = (byte)Mathf.RoundToInt((.5f + .46f * grain) * 255);
+                // URP ApplyGrain samples alpha and treats .5 as neutral. RGB
+                // remains neutral; this texture cannot tint the scene or the HUD.
+                pixels[y * size + x] = new Color32(128, 128, 128, alpha);
+            }
+            texture.SetPixels32(pixels); texture.Apply(false, true); return texture;
         }
 
         static Texture2D MakePeripheralVeil()
@@ -204,9 +246,15 @@ namespace HappyToy.V2
         {
             const int rate = 48000; const float seconds = 1.65f;
             var samples = new float[Mathf.RoundToInt(rate * seconds)];
+            var random = new System.Random(9341);
+            float fast = 0, slow = 0;
+            float highCut = 1 - Mathf.Exp(-2 * Mathf.PI * 2700 / rate);
+            float lowCut = 1 - Mathf.Exp(-2 * Mathf.PI * 190 / rate);
             for (int i = 0; i < samples.Length; i++)
             {
                 float t = i / (float)rate;
+                float white = (float)random.NextDouble() * 2 - 1;
+                fast += (white - fast) * highCut; slow += (fast - slow) * lowCut;
                 float attack = Mathf.Clamp01(t / .008f), fade = Mathf.Clamp01((seconds - t) / .16f);
                 float body = .43f * Mathf.Exp(-6 * t) * Mathf.Sin(2 * Mathf.PI * (64 * t - 9 * t * t));
                 float resonance = .12f * Mathf.Exp(-3.7f * t) * Mathf.Sin(2 * Mathf.PI * 311 * t) +
@@ -216,11 +264,13 @@ namespace HappyToy.V2
                     .07f * Mathf.Sin(2 * Mathf.PI * (1513 * t - 331 * t * t)));
                 float tail = t > .17f ? .065f * Mathf.Exp(-3 * (t - .17f)) *
                     Mathf.Sin(2 * Mathf.PI * 229 * (t - .17f)) * Mathf.Clamp01((t - .17f) / .04f) : 0;
-                // Smooth saturation preserves resonance without a random/static bed.
-                float value = (body + resonance + scrape + tail) * attack * fade;
+                // Original band-limited interference tears into the metallic
+                // impact and fades before it masks the enemy's next contact.
+                float interference = (fast - slow) * .30f * Mathf.Exp(-4.8f * t) * Mathf.Clamp01(t / .015f);
+                float value = (body + resonance + scrape + tail + interference) * attack * fade;
                 samples[i] = .58f * (float)System.Math.Tanh(value / .58f);
             }
-            var clip = AudioClip.Create("Original recognition iron resonance", samples.Length, 1, rate, false);
+            var clip = AudioClip.Create("Original recognition iron and interference", samples.Length, 1, rate, false);
             clip.SetData(samples, 0); return clip;
         }
 
@@ -231,6 +281,7 @@ namespace HappyToy.V2
             if (source) Destroy(source);
             if (sting) Destroy(sting);
             if (peripheral) Destroy(peripheral);
+            if (nativeGrain) Destroy(nativeGrain);
             if (postObject) { postObject.SetActive(false); Destroy(postObject); }
             if (profile)
             {

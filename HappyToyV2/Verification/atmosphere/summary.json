@@ -1,0 +1,182 @@
+{
+  "status": "PASS",
+  "recordedUtc": "2026-10-07T06:49:29.965771+00:00",
+  "unity": "6000.6.0f1",
+  "sourceBaseCommit": "f8688e2f4fb32cf6bebba0b8b867e75050a570ca",
+  "build": "Builds/Atmosphere-20261007-r2",
+  "buildInputCount": 2359,
+  "protectedSchoolSceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "playMode": {
+    "uniquePassed": 14,
+    "cases": [
+      {
+        "name": "ActualRecognitionImpactAndWitnessedPursuitAreOcclusionBoundedAndPauseSafe",
+        "result": "Passed"
+      },
+      {
+        "name": "AnnexPresentationStaysBoundedAcrossEnableAndReload",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleActualFarSightBlackoutsBeforeEnemyUpdateAndPhysicalCoverPreventsIt",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleActualNormalMotionWarningGrowsFlickerDepthAndCompletedPulseCount",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleDangerPauseFreezesThreatStateAndReducedMotionKeepsSteadyDimming",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleDangerRejectsInactiveUnreadyWrongModeAndRealOtherFloorActors",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleDormantSchoolMaskAndUnreleasedMannequinStayHarmlessWithReadyNavigation",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleProximityFlickersAndTemporarilyBlackoutsOnlyPreviouslyLitMarkers",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleTemporaryBlackoutPreservesIgnitionThroughBothModeCheckpointRoundTrips",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleViolentNearWarningFreezesOnPauseAndRecoversSilentlyAfterBlackout",
+        "result": "Passed"
+      },
+      {
+        "name": "RealPerceivedTensionMixHasQuietBoundsAndLeavesFootstepHeadroom",
+        "result": "Passed"
+      },
+      {
+        "name": "SchoolClassroomDoorOpensWithoutFloatingInteriorSign",
+        "result": "Passed"
+      },
+      {
+        "name": "SilentEnemyStateCannotInventTensionButActualUnseenFootstepsCanAnticipate",
+        "result": "Passed"
+      },
+      {
+        "name": "TrueRecognitionHasBoundedAftermathAndClearsOnRestorationAndRetry",
+        "result": "Passed"
+      }
+    ]
+  },
+  "classroom": {
+    "removedVisibleFace": "School — authored V2 first floor/CLASSROOM sign interior",
+    "originalPosition": [
+      -4.5,
+      2.7,
+      1.74
+    ],
+    "exteriorPlaqueRetained": true,
+    "doorAndLintelCollisionRetained": true,
+    "openedDoorCameraImageInspected": true
+  },
+  "nativeNoise": {
+    "status": "PASS",
+    "scope": "Controlled native poses/zero movement speed; genuine LOS, recognition, Chase. Production URP camera and existing UI Toolkit panel directly render into the same native HDR target; bounded fresh-paint polling, no screenshot/backbuffer or synthetic composition. Listener DSP runs naturally while brief image captures freeze game time. Escape is controlled threat disengagement, not chapter completion.",
+    "recognition": true,
+    "continuousChase": true,
+    "returnedToCalm": true,
+    "reducedMotionRespected": true,
+    "pauseFreezes": true,
+    "discoveryNoiseRendered": true,
+    "pursuitNoiseRendered": true
+  },
+  "noiseShots": [
+    {
+      "name": "01-calm.png",
+      "noise": 0.0,
+      "noiseOnOffMeanDifference": 0.0,
+      "noiseAffectedPixels": 0,
+      "interferenceGain": 0.0
+    },
+    {
+      "name": "02-detection.png",
+      "noise": 0.5332287549972534,
+      "noiseOnOffMeanDifference": 0.0057703424245119095,
+      "noiseAffectedPixels": 225799,
+      "interferenceGain": 0.7016168236732483
+    },
+    {
+      "name": "03-chased.png",
+      "noise": 0.401252806186676,
+      "noiseOnOffMeanDifference": 0.0036127029452472925,
+      "noiseAffectedPixels": 146354,
+      "interferenceGain": 1.0
+    },
+    {
+      "name": "04-reduced-motion.png",
+      "noise": 0.0,
+      "noiseOnOffMeanDifference": 0.0,
+      "noiseAffectedPixels": 0,
+      "interferenceGain": 0.44999998807907104
+    },
+    {
+      "name": "05-escaped-pressure.png",
+      "noise": 0.0,
+      "noiseOnOffMeanDifference": 0.0,
+      "noiseAffectedPixels": 0,
+      "interferenceGain": 0.0
+    }
+  ],
+  "listenerAudio": {
+    "capture": "Unity listener DSP tap, pre-device; natural native callback clock; no device listening certification",
+    "nonfiniteSamples": 0,
+    "nonSilent": true,
+    "truncated": false,
+    "writerError": ""
+  },
+  "candleScope": "Controlled real active mode-owned Watchman, natural frames/timeScale1 and actual candle LocalLight intensity. No theoretical intensity evaluation or forced frame cadence. Does not certify GPU/FPS, visual comfort or native survival.",
+  "candleWindows": [
+    {
+      "label": "far-warning",
+      "enemyDistance": 9.94703197479248,
+      "danger": 0.31982702016830444,
+      "minimum": 0.43354952335357666,
+      "maximum": 0.6344540119171143,
+      "depth": 0.2009044885635376,
+      "mean": 0.5520932674407959,
+      "minimumEmission": 0.9665636420249939,
+      "maximumEmission": 1.4756615161895752,
+      "completedPulses": 7,
+      "samples": 359
+    },
+    {
+      "label": "middle-warning",
+      "enemyDistance": 6.0,
+      "danger": 0.6922594904899597,
+      "minimum": 0.12930242717266083,
+      "maximum": 0.652776300907135,
+      "depth": 0.523473858833313,
+      "mean": 0.3390713036060333,
+      "minimumEmission": 0.266060471534729,
+      "maximumEmission": 1.6727827787399292,
+      "completedPulses": 12,
+      "samples": 360
+    },
+    {
+      "label": "near-warning",
+      "enemyDistance": 3.0,
+      "danger": 0.9269463419914246,
+      "minimum": 0.01290899608284235,
+      "maximum": 0.6826817989349365,
+      "depth": 0.6697728037834167,
+      "mean": 0.19662117958068848,
+      "minimumEmission": 0.09299999475479126,
+      "maximumEmission": 1.9944404363632202,
+      "completedPulses": 14,
+      "samples": 360
+    }
+  ],
+  "visualReview": "Inspected opened classroom-door camera image and actual native detection/pursuit world+HUD captures; pixel differences compare fresh noise ON/OFF in the same frozen frame.",
+  "reproduce": "SOURCE_HANDOFF.md and Tools/quality/README.md; original procedural alpha texture and audio generation are in DetectionFeedback.cs and PerceivedTension.cs.",
+  "optionalLocalEvidence": "../game/verification/atmosphere-20261007; raw camera images, logs, audio and builds are optional local evidence.",
+  "scope": "Focused scene/engine regressions and controlled native rendering/audio checks; no claim of subjective fear, hardware listening or a complete survival-route playthrough."
+}

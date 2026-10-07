@@ -35,9 +35,10 @@ namespace HappyToy.V2
         [Serializable] sealed class Shot
         {
             public string name, state;
-            public float wallSeconds, impact, chase, peripheral, distortion, chromatic, stress, targetStress;
+            public float wallSeconds, impact, chase, peripheral, distortion, chromatic, noise, stress, targetStress, interferenceGain;
+            public float noiseOnOffMeanDifference;
             public int cues;
-            public int nativeHudPixels;
+            public int nativeHudPixels, noiseAffectedPixels;
             public bool reducedMotion, sight;
         }
         [Serializable] sealed class Report
@@ -46,6 +47,7 @@ namespace HappyToy.V2
             public string unity, device, failure;
             public int width, height;
             public bool recognition, continuousChase, returnedToCalm, reducedMotionRespected, pauseFreezes;
+            public bool discoveryNoiseRendered, pursuitNoiseRendered;
             public string[] errors;
             public Shot[] shots;
             public RouteAudioCapture.Report audio;
@@ -144,24 +146,27 @@ namespace HappyToy.V2
             yield return new WaitForSecondsRealtime(1.3f);
             var tension = player.GetComponent<PerceivedTension>();
             report.continuousChase = !detection.Active && detection.ChaseStrength > .95f &&
-                detection.PeripheralStrength > .32f && tension && tension.TargetStress > .75f;
+                detection.PeripheralStrength > .32f && detection.NoiseStrength >= .34f && tension && tension.TargetStress > .75f &&
+                tension.InterferenceGain > 0 && tension.InterferenceSource && tension.InterferenceSource.isPlaying;
             yield return Capture("03-chased.png");
             session.Shell.Pause();
             float frozen = detection.ChaseStrength, stress = tension.Stress;
             yield return new WaitForSecondsRealtime(.2f);
-            report.pauseFreezes = detection.ChaseStrength == frozen && tension.Stress == stress && detection.PeripheralStrength == 0 && detection.DistortionStrength == 0;
+            report.pauseFreezes = detection.ChaseStrength == frozen && tension.Stress == stress && detection.PeripheralStrength == 0 &&
+                detection.DistortionStrength == 0 && detection.NoiseStrength == 0 && tension.InterferenceGain == 0;
             session.Shell.Resume();
             session.Shell.ToggleReducedMotion();
             yield return new WaitForSecondsRealtime(.25f);
             report.reducedMotionRespected = detection.Softened && detection.DistortionStrength == 0 &&
-                detection.ChromaticStrength == 0 && detection.PeripheralStrength <= .1641f &&
+                detection.ChromaticStrength == 0 && detection.NoiseStrength == 0 && detection.PeripheralStrength <= .1641f &&
                 tension.PulseSource.pitch == 1;
             yield return Capture("04-reduced-motion.png");
             session.Shell.ToggleReducedMotion();
             actor.enabled = false;
             yield return new WaitForSecondsRealtime(6.7f);
             report.returnedToCalm = detection.ChaseStrength == 0 && detection.PeripheralStrength == 0 &&
-                detection.DistortionStrength == 0 && tension.Stress <= .0001f;
+                detection.DistortionStrength == 0 && detection.NoiseStrength == 0 && tension.Stress <= .0001f &&
+                tension.InterferenceGain == 0 && !tension.InterferenceSource.isPlaying;
             yield return Capture("05-escaped-pressure.png");
         }
         IEnumerator Capture(string name)
@@ -178,7 +183,8 @@ namespace HappyToy.V2
                 name = "Native production camera with actual HUD paint"
             };
             target.Create();
-            int paintedPixels = 0;
+            int paintedPixels = 0, noiseAffectedPixels = 0;
+            float noiseDifference = 0;
             try
             {
                 if (!target.IsCreated() || target.sRGB) throw new InvalidOperationException("Native HDR capture target unavailable");
@@ -196,6 +202,7 @@ namespace HappyToy.V2
                     // world. Normal UI Toolkit rendering then paints the same colour
                     // buffer. Refresh the world before every paint to avoid stacking
                     // a translucent veil over last frame's veil.
+                    RefreshProductionVolumes();
                     RenderPipeline.SubmitRenderRequest(player.eyes,
                         new UniversalRenderPipeline.SingleCameraRequest { destination = target });
                     world = ReadLinear(target);
@@ -214,6 +221,45 @@ namespace HappyToy.V2
                     throw new InvalidOperationException("Existing UI Toolkit panel did not freshly paint the actual camera target");
                 SaveLinear(name.Replace(".png", "-world.png"), world);
                 SaveLinear(name, combined);
+                if (detection.NoiseStrength > .001f)
+                {
+                    // An identical frozen production pose with only the actual
+                    // grain component disabled proves the native render pass
+                    // applies noise. UI, camera, lights and actors stay untouched.
+                    var scope = detection.GetComponentsInChildren<Volume>().Single(volume =>
+                        volume.sharedProfile && volume.sharedProfile.TryGet<FilmGrain>(out _));
+                    scope.sharedProfile.TryGet<FilmGrain>(out var grain);
+                    bool wasActive = grain.active;
+                    float appliedNoise = detection.NoiseStrength;
+                    try
+                    {
+                        RefreshProductionVolumes();
+                        RenderPipeline.SubmitRenderRequest(player.eyes,
+                            new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                        var withNoise = ReadLinear(target);
+                        SaveLinear(name.Replace(".png", "-world-noise-enabled.png"), withNoise);
+                        grain.active = false;
+                        RefreshProductionVolumes();
+                        RenderPipeline.SubmitRenderRequest(player.eyes,
+                            new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                        var withoutNoise = ReadLinear(target);
+                        SaveLinear(name.Replace(".png", "-world-noise-disabled.png"), withoutNoise);
+                        double sum = 0; int tested = 0;
+                        for (int y = 144; y < 576; y++) for (int x = 128; x < 1152; x++)
+                        {
+                            int i = y * 1280 + x;
+                            var difference = withNoise[i] - withoutNoise[i];
+                            float magnitude = (Mathf.Abs(difference.r) + Mathf.Abs(difference.g) + Mathf.Abs(difference.b)) / 3;
+                            sum += magnitude; tested++;
+                            if (magnitude > .003f) noiseAffectedPixels++;
+                        }
+                        noiseDifference = (float)(sum / tested);
+                        bool rendered = noiseDifference > .001f && noiseAffectedPixels > 4000;
+                        if (name == "02-detection.png") report.discoveryNoiseRendered = appliedNoise >= .5f && rendered;
+                        if (name == "03-chased.png") report.pursuitNoiseRendered = appliedNoise >= .34f && rendered;
+                    }
+                    finally { grain.active = wasActive; RefreshProductionVolumes(); }
+                }
             }
             finally
             {
@@ -224,10 +270,19 @@ namespace HappyToy.V2
             var tension = player.GetComponent<PerceivedTension>();
             shots.Add(new Shot { name = name, state = actor.state.ToString(), wallSeconds = Time.realtimeSinceStartup - started,
                 impact = detection.Strength, chase = detection.ChaseStrength, peripheral = detection.PeripheralStrength,
-                distortion = detection.DistortionStrength, chromatic = detection.ChromaticStrength, cues = detection.CuesPlayed,
-                nativeHudPixels = paintedPixels,
+                distortion = detection.DistortionStrength, chromatic = detection.ChromaticStrength, noise = detection.NoiseStrength, cues = detection.CuesPlayed,
+                nativeHudPixels = paintedPixels, noiseOnOffMeanDifference = noiseDifference, noiseAffectedPixels = noiseAffectedPixels,
                 reducedMotion = detection.Softened, sight = actor.isActiveAndEnabled && actor.CanSeePlayer(),
-                stress = tension ? tension.Stress : 0, targetStress = tension ? tension.TargetStress : 0 });
+                stress = tension ? tension.Stress : 0, targetStress = tension ? tension.TargetStress : 0,
+                interferenceGain = tension ? tension.InterferenceGain : 0 });
+        }
+        void RefreshProductionVolumes()
+        {
+            // URP's standalone SingleCameraRequest reuses the current volume
+            // stack. Re-evaluate native blending after this one-component toggle.
+            var data = player.eyes.GetUniversalAdditionalCameraData();
+            var trigger = data.volumeTrigger ? data.volumeTrigger : player.eyes.transform;
+            VolumeManager.instance.Update(data.volumeStack ?? VolumeManager.instance.stack, trigger, data.volumeLayerMask);
         }
         static Color[] ReadLinear(RenderTexture target)
         {
@@ -265,7 +320,8 @@ namespace HappyToy.V2
                 report.unity = Application.unityVersion; report.device = SystemInfo.graphicsDeviceName;
                 report.width = Screen.width; report.height = Screen.height;
                 bool passed = string.IsNullOrEmpty(failure) && errors.Count == 0 && shots.Count == 5 && report.recognition &&
-                    report.continuousChase && report.returnedToCalm && report.reducedMotionRespected && report.pauseFreezes;
+                    report.continuousChase && report.returnedToCalm && report.reducedMotionRespected && report.pauseFreezes &&
+                    report.discoveryNoiseRendered && report.pursuitNoiseRendered;
                 report.status = passed ? "PASS" : "FAIL";
                 File.WriteAllText(Path.Combine(output, "horror-feedback.json"), JsonUtility.ToJson(report, true));
                 Debug.Log("HAPPYTOY_HORROR_FEEDBACK_" + report.status);
