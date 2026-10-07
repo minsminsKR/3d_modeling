@@ -118,6 +118,7 @@ namespace HappyToy.V2
             float attenuation = Mathf.InverseLerp(cue.source.maxDistance, cue.source.minDistance, distance);
             float heardGain = cue.source.volume * attenuation * Mathf.Clamp01(AudioListener.volume) * cue.scale;
             if (!StealthRules.Finite(heardGain) || heardGain <= .015f) return;
+            if (!cue.attack) LightExplorationRun.ReportAudibleMovement(session, cue.source);
             float strength;
             if (cue.attack)
             {

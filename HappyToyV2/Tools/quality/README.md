@@ -296,14 +296,26 @@ natural frames at approximately 10, 6 and 3 metres, measuring real light intensi
 flame emission, height, completed pulses and readable dark holds. A slower dying
 flame / dark hold / strong catch now replaces the former fast small flutter.
 `CandleActualFarSightStrengthensFlickerBeforeEnemyUpdateAndPhysicalCoverPreventsIt`
-checks real distant LOS and pursuit: recognition strengthens the visible warning
-instead of extinguishing it immediately. Blackout requires an eligible enemy within
-two metres or an active attack.
+checks player-camera sight of a real monster beyond 12m before it sees the player,
+physical occlusion and pursuit. Enabled monster geometry in the camera viewport
+with a clear physical ray starts the warning; enemy `CanSeePlayer()` alone does not.
+`CandleActualUnseenMovementStartsWarningAndRejectsUnheardContacts` drives the real
+owned enemy through NavMesh movement and production foot contacts behind cover.
+Only actually playing movement audio accepted by the existing acoustics/mute/master
+gain checks creates actor-specific 1.25s hearing memory. It checks silence, source
+mute, master zero, range, insufficient transmitted gain, pause, expiry and retry.
+Mannequin joint movement uses the same admission path. Actual cues can qualify
+across floors; physical blackout requires a same-floor enemy within two metres or
+an active attack. Harmless scripted Cyclopse/mannequin camera appearances can be
+perceived while their brains are disabled without causing contact blackout; mask
+and mannequin first-sight turns can warn before their harmful release.
 `CandleProductionCameraShowsNearDarkHoldsAndBrightCatchesWithFlashlightInBothModes`
 captures the production camera at a clear, physical 2.3m approach in the corridor
 and school with the ordinary flashlight enabled. Safe, near-dark and near-bright
 images plus measured flame screen height and surrounding pixel contrast prevent
 a nonzero intensity/MPB value from passing as a visible effect.
+These candle camera images use 95-quality JPEG to stay inside the unchanged 1.5MB
+artifact envelope. Pixel assertions measure the original unencoded textures.
 `CandleViolentNearWarningFreezesOnPauseAndRecoversSilentlyAfterBlackout`
 checks that the severe near-warning freezes during pause and that automatic recovery
 retains durable ignition without replaying the match. Keep contact blackout,

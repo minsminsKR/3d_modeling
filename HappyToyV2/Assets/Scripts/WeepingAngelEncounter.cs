@@ -42,6 +42,7 @@ namespace HappyToy.V2
         }
         NavMeshPath path;
         AudioSource sound;
+        EnemyAcoustics movementAcoustics;
         AudioClip creak;
         EncounterRevealAudio revealAudio;
         bool lightCaptured, originalLightEnabled, partialCueIssued, settleCueIssued;
@@ -59,7 +60,7 @@ namespace HappyToy.V2
             DoorTraversal.Bind(this);
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 15; sound.volume = .3f; sound.dopplerLevel = 0;
-            EnemyAcoustics.Bind(sound, transform, .3f);
+            movementAcoustics = EnemyAcoustics.Bind(sound, transform, .3f);
             const int rate = 24000; var data = new float[rate];
             for (int i = 0; i < data.Length; i++)
             {
@@ -223,7 +224,11 @@ namespace HappyToy.V2
                 var facing = agent.steeringTarget - transform.position; facing.y = 0;
                 if (facing.sqrMagnitude > .01f) visual.rotation = Quaternion.LookRotation(facing);
                 soundTimer -= Time.deltaTime;
-                if (soundTimer <= 0) { soundTimer = .8f; sound.PlayOneShot(creak); }
+                if (soundTimer <= 0)
+                {
+                    soundTimer = .8f; sound.PlayOneShot(creak);
+                    PerceivedTension.ReportSound(GameSession.Current, sound, movementAcoustics, false);
+                }
             }
         }
         void OnDisable()

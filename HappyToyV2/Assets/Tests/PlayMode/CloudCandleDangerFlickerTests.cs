@@ -85,6 +85,58 @@ namespace HappyToy.V2.CloudTests
             return Vector3.zero;
         }
 
+        void CandleProductionCombinedView(Component target, Renderer flameRenderer, Component actor)
+        {
+            var camera = Get<Camera>(player, "eyes");
+            var controller = player.GetComponent<CharacterController>();
+            float floor = target.transform.position.y - 1.06f;
+            for (int view = 0; view < 48; view++)
+            {
+                float angle = view * Mathf.PI / 24;
+                var desired = target.transform.position + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * 2.3f;
+                desired.y = floor;
+                if (!NavMesh.SamplePosition(desired, out var playerHit, .15f, NavMesh.AllAreas) ||
+                    Mathf.Abs(playerHit.position.y - floor) > .1f) continue;
+                var body = playerHit.position + controller.center;
+                float half = controller.height * .5f - controller.radius;
+                if (Physics.OverlapCapsule(body - Vector3.up * half, body + Vector3.up * half,
+                    controller.radius - .02f, ~0, QueryTriggerInteraction.Ignore)
+                    .Any(item => !item.transform.IsChildOf(player.transform))) continue;
+                PlacePlayer(playerHit.position, false);
+                var flameDirection = (flameRenderer.bounds.center - camera.transform.position).normalized;
+                for (int ray = 0; ray < 96; ray++)
+                {
+                    float enemyAngle = ray * Mathf.PI / 48;
+                    var enemyPoint = playerHit.position + new Vector3(Mathf.Cos(enemyAngle), 0, Mathf.Sin(enemyAngle)) * 3;
+                    if (!NavMesh.SamplePosition(enemyPoint, out var enemyHit, .22f, NavMesh.AllAreas) ||
+                        Mathf.Abs(enemyHit.position.y - floor) > .2f) continue;
+                    CandleDangerPlaceActor(actor, enemyHit.position);
+                    var monsterRenderer = actor.GetComponentsInChildren<Renderer>().FirstOrDefault(item =>
+                        item.enabled && (item is MeshRenderer || item is SkinnedMeshRenderer));
+                    if (!monsterRenderer) continue;
+                    var monsterDirection = (monsterRenderer.bounds.center - camera.transform.position).normalized;
+                    var combined = flameDirection + monsterDirection;
+                    if (combined.sqrMagnitude < .001f) continue;
+                    camera.transform.rotation = Quaternion.LookRotation(combined);
+                    if (!CandleDangerPlayerSees(actor)) continue;
+                    var bounds = flameRenderer.bounds; bool fits = true;
+                    for (int corner = 0; corner < 8; corner++)
+                    {
+                        var point = bounds.center + Vector3.Scale(bounds.extents, new Vector3(
+                            (corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1));
+                        var viewport = camera.WorldToViewportPoint(point);
+                        if (viewport.z <= camera.nearClipPlane || viewport.x < .05f || viewport.x > .95f ||
+                            viewport.y < .05f || viewport.y > .95f) { fits = false; break; }
+                    }
+                    if (!fits || Physics.Linecast(camera.transform.position, bounds.center, out var hit,
+                        Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) &&
+                        !hit.collider.transform.IsChildOf(target.transform)) continue;
+                    return;
+                }
+            }
+            Assert.Fail("No physical 2.3m candle approach and 3m monster placement visible together in the actual production camera");
+        }
+
         [UnityTest, Timeout(150000)]
         public IEnumerator CandleProductionCameraShowsNearDarkHoldsAndBrightCatchesWithFlashlightInBothModes()
         {
@@ -96,17 +148,22 @@ namespace HappyToy.V2.CloudTests
                 flashlight.enabled = true; CandleDangerArmAll();
                 var flame = Get<Transform>(candle, "Flame"); var light = Get<Light>(candle, "LocalLight");
                 var renderer = flame.GetComponentInChildren<Renderer>();
-                PlacePlayer(CandleProductionViewApproach(target, renderer), false); ((Behaviour)player).enabled = false;
-                camera.transform.rotation = Quaternion.LookRotation(renderer.bounds.center - camera.transform.position);
-                yield return Delay(.2f);
+                ((Behaviour)player).enabled = false;
+                var actor = CandleDangerOwnedBrain();
+                CandleProductionCombinedView(target, renderer, actor);
+                var actorPoint = actor.transform.position; actor.gameObject.SetActive(false);
+                Call(LightRun, "RefreshDanger"); yield return Delay(.2f);
                 Assert.That(Time.timeScale, Is.EqualTo(1)); Assert.That(Time.captureDeltaTime, Is.EqualTo(0));
                 Assert.That(Get<bool>(shell, "ReducedMotion"), Is.False);
                 string mode = corridor ? "corridor" : "school";
+                // Encode evidence as high-quality JPEG within the bounded log envelope.
+                // Pixel assertions still measure the original, unencoded camera textures.
                 var far = SchoolCameraFrame(camera, out _, out _, out _);
-                try { CloudExperienceTests.Artifact("candle-" + mode + "-safe-flashlight.png", far.EncodeToPNG()); }
+                try { CloudExperienceTests.Artifact("candle-" + mode + "-safe-flashlight.jpg", far.EncodeToJPG(95)); }
                 finally { Object.Destroy(far); }
-                var actor = CandleDangerOwnedBrain();
-                CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 3));
+                CandleDangerPlaceActor(actor, actorPoint);
+                Assert.That(CandleDangerPlayerSees(actor), Is.True,
+                    "The flame capture camera must also see the actual nearby monster");
                 Call(LightRun, "RefreshDanger"); yield return Delay(.15f);
                 var evidence = new CandleRenderedWarning { mode = mode,
                     candleId = Get<string>(target, "stableId"), flashlightEnabled = flashlight.enabled,
@@ -142,8 +199,8 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(dark && bright, Is.True);
                     CandleRenderedRegion(bright, dark, evidence.flameRegion,
                         out evidence.brightRegionLuminance, out evidence.darkRegionLuminance, out evidence.brighterFlamePixels);
-                    CloudExperienceTests.Artifact("candle-" + mode + "-near-dark-flashlight.png", dark.EncodeToPNG());
-                    CloudExperienceTests.Artifact("candle-" + mode + "-near-bright-flashlight.png", bright.EncodeToPNG());
+                    CloudExperienceTests.Artifact("candle-" + mode + "-near-dark-flashlight.jpg", dark.EncodeToJPG(95));
+                    CloudExperienceTests.Artifact("candle-" + mode + "-near-bright-flashlight.jpg", bright.EncodeToJPG(95));
                     CloudExperienceTests.Artifact("candle-" + mode + "-rendered-warning.json",
                         Encoding.UTF8.GetBytes(JsonUtility.ToJson(evidence, true)));
                     Assert.That(evidence.minimumIntensity, Is.LessThan(.05f));
@@ -227,17 +284,17 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Time.timeScale, Is.EqualTo(1)); Assert.That(Time.captureDeltaTime, Is.EqualTo(0));
             var actor = CandleDangerOwnedBrain(); var candle = CandleDangerMarks()[0];
             var evidence = new CandleFlickerEvidence();
-            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 10));
+            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 10)); CandleDangerObserve(actor);
             Call(LightRun, "RefreshDanger"); CandleDangerArmAll(); yield return Delay(.15f);
             evidence.far = new CandleFlickerWindow { label = "far-warning", enemyDistance = Vector3.Distance(actor.transform.position, player.transform.position), danger = Get<float>(LightRun, "Danger") };
             Assert.That(evidence.far.danger, Is.GreaterThan(0).And.LessThan(1));
             yield return CandleCaptureLiveFlicker(candle, evidence.far);
-            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 6));
+            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 6)); CandleDangerObserve(actor);
             Call(LightRun, "RefreshDanger"); yield return Delay(.15f);
             evidence.middle = new CandleFlickerWindow { label = "middle-warning", enemyDistance = Vector3.Distance(actor.transform.position, player.transform.position), danger = Get<float>(LightRun, "Danger") };
             Assert.That(evidence.middle.danger, Is.GreaterThan(evidence.far.danger).And.LessThan(1));
             yield return CandleCaptureLiveFlicker(candle, evidence.middle);
-            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 3));
+            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 3)); CandleDangerObserve(actor);
             Call(LightRun, "RefreshDanger"); yield return Delay(.15f);
             evidence.near = new CandleFlickerWindow { label = "near-warning", enemyDistance = Vector3.Distance(actor.transform.position, player.transform.position), danger = Get<float>(LightRun, "Danger") };
             Assert.That(evidence.near.danger, Is.GreaterThan(evidence.far.danger).And.LessThan(1));
@@ -272,7 +329,7 @@ namespace HappyToy.V2.CloudTests
             yield return CandleDangerPrepare();
             ((Behaviour)player).enabled = false; PlacePlayer(LightApproach(LightTargets("Candle")[0]), false);
             var actor = CandleDangerOwnedBrain(); var candle = CandleDangerMarks()[0];
-            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 3));
+            CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 3)); CandleDangerObserve(actor);
             Call(LightRun, "RefreshDanger"); CandleDangerArmAll(); yield return Delay(.3f);
             var flame = Get<Transform>(candle, "Flame"); var light = Get<Light>(candle, "LocalLight");
             var renderer = flame.GetComponentInChildren<Renderer>(); var properties = new MaterialPropertyBlock();

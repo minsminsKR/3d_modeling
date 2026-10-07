@@ -1,0 +1,191 @@
+{
+  "status": "PASS",
+  "recordedUtc": "2026-10-07T07:35:53.046158+00:00",
+  "unity": "6000.6.0f1",
+  "sourceBaseCommit": "29784ba2d2736aee770e762a157cd8d3416a365d",
+  "build": "Builds/PerceivedCandles-20261007",
+  "buildInputStatus": "BUILD_INPUTS_PASS",
+  "buildInputCount": 2359,
+  "protectedSchoolSceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "perception": {
+    "visual": "Enabled owned monster mesh geometry in the production player camera viewport with a clear physical ray; player sight, not enemy CanSeePlayer.",
+    "audible": "Only actual playing movement contacts admitted by PerceivedTension after source/listener mute and pause, current acoustics, linear attenuation and heard gain > .015 checks.",
+    "movementSources": [
+      "StalkerFootsteps actual NavMesh movement contacts including lantern/wraith",
+      "WeepingAngelEncounter actual moving joint creak"
+    ],
+    "onsetDangerFloor": 0.45,
+    "heardMemoryGameSeconds": 1.25,
+    "distanceRamp": "Perceived threats strengthen the existing dramatic candle waveform as they approach. A visible threat beyond12m starts immediately.",
+    "crossFloor": "Actual visual or audible cues may qualify across an open stairwell; physical blackout retains same-floor restrictions.",
+    "firstAppearances": "Disabled-brain Cyclopse/mannequin camera reveals, mask IntroStarted and mannequin Triggered can warn before harmful release without contact blackout."
+  },
+  "playMode": {
+    "uniquePassed": 15,
+    "latestPerCase": [
+      {
+        "name": "CandleActualFarSightStrengthensFlickerBeforeEnemyUpdateAndPhysicalCoverPreventsIt",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleActualNormalMotionWarningGrowsFlickerDepthAndCompletedPulseCount",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleActualUnseenMovementStartsWarningAndRejectsUnheardContacts",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleDangerPauseFreezesThreatStateAndReducedMotionKeepsSteadyDimming",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleDangerRejectsInactiveUnreadyWrongModeAndRealOtherFloorActors",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleDormantSchoolMaskAndUnreleasedMannequinStayHarmlessWithReadyNavigation",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleProductionCameraShowsNearDarkHoldsAndBrightCatchesWithFlashlightInBothModes",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleProximityFlickersAndTemporarilyBlackoutsOnlyPreviouslyLitMarkers",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleSchoolMannequinStartsWarningDuringHarmlessFirstTurn",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleSchoolMaskStartsWarningDuringHarmlessFirstSight",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleTemporaryBlackoutPreservesIgnitionThroughBothModeCheckpointRoundTrips",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleViolentNearWarningFreezesOnPauseAndRecoversSilentlyAfterBlackout",
+        "result": "Passed"
+      },
+      {
+        "name": "ChapterCyclopseGlancesThenPassesWithPauseAndSafeControlReturn",
+        "result": "Passed"
+      },
+      {
+        "name": "PerceivedHearingUsesCurrentTransmissionAndRejectsUnheardOrInactiveCues",
+        "result": "Passed"
+      },
+      {
+        "name": "SilentEnemyStateCannotInventTensionButActualUnseenFootstepsCanAnticipate",
+        "result": "Passed"
+      }
+    ],
+    "runs": [
+      {
+        "report": "play.xml",
+        "passed": 10,
+        "failed": 2
+      },
+      {
+        "report": "followup.xml",
+        "passed": 7,
+        "failed": 1
+      },
+      {
+        "report": "camera.xml",
+        "passed": 1,
+        "failed": 0
+      }
+    ],
+    "resolvedFixtureAndTransportFailures": "Stopped footstep fixture now prevents new contacts after resume; camera sampling chooses jointly visible physical candle/enemy positions; JPEG95 exports remain bounded, with pixel assertions on original unencoded textures."
+  },
+  "evidenceTransport": {
+    "existingTestsPassed": 20,
+    "maxFileBytes": 1500000,
+    "cameraEncoding": "JPEG95; sizes, chunk completeness and SHA256 verified by extract_cloud_evidence.py."
+  },
+  "productionCameraWithFlashlight": [
+    {
+      "mode": "corridor",
+      "candleId": "corridor-candle-00",
+      "scope": "Production player camera and ordinary enabled flashlight, same physical approach and natural frames/timeScale1. Peak/trough are captured live without forcing a phase or changing materials/lights. No comfort/FPS claim.",
+      "cameraDistance": 2.3192977905273438,
+      "enemyDistance": 2.999995470046997,
+      "danger": 0.9269466996192932,
+      "minimumIntensity": 0.013372309505939484,
+      "maximumIntensity": 2.994951009750366,
+      "flameHeightPixels": 45.50114440917969,
+      "brightRegionLuminance": 0.6136702299118042,
+      "darkRegionLuminance": 0.13149863481521606,
+      "flashlightEnabled": true,
+      "brighterFlamePixels": 5909,
+      "flameRegion": {
+        "serializedVersion": "2",
+        "x": 0.17741142213344574,
+        "y": 0.4937989413738251,
+        "width": 0.017606288194656372,
+        "height": 0.06319603323936462
+      }
+    },
+    {
+      "mode": "school",
+      "candleId": "school-candle-0",
+      "scope": "Production player camera and ordinary enabled flashlight, same physical approach and natural frames/timeScale1. Peak/trough are captured live without forcing a phase or changing materials/lights. No comfort/FPS claim.",
+      "cameraDistance": 2.3149631023406982,
+      "enemyDistance": 3.0,
+      "danger": 0.9269463419914246,
+      "minimumIntensity": 0.01337228249758482,
+      "maximumIntensity": 2.9897449016571045,
+      "flameHeightPixels": 39.437034606933594,
+      "brightRegionLuminance": 0.6774213910102844,
+      "darkRegionLuminance": 0.10634520649909973,
+      "flashlightEnabled": true,
+      "brighterFlamePixels": 6470,
+      "flameRegion": {
+        "serializedVersion": "2",
+        "x": 0.29579153656959534,
+        "y": 0.49579718708992004,
+        "width": 0.023711860179901123,
+        "height": 0.05477365851402283
+      }
+    }
+  ],
+  "inspectedImages": [
+    {
+      "name": "candle-corridor-near-bright-flashlight.jpg",
+      "sha256": "079525c90d852c74130135ffabb57eee6352537b20ac17e82bfd7172e41ec653"
+    },
+    {
+      "name": "candle-corridor-near-dark-flashlight.jpg",
+      "sha256": "b745fa493c3f8f1e8fc466ee1adf53e7b8160882adb1bdc14deb4ecb0d3c7ffa"
+    },
+    {
+      "name": "candle-corridor-safe-flashlight.jpg",
+      "sha256": "6facbef7e3124b0dcbc24569cc8aedd1be9fd1a3f67eee1e990b7d2bb20addea"
+    },
+    {
+      "name": "candle-school-near-bright-flashlight.jpg",
+      "sha256": "49e0ba0b3f8a225fdca0e7a4d82b588b6dbeed8e29fcf76ca8d105bdfbc2edcc"
+    },
+    {
+      "name": "candle-school-near-dark-flashlight.jpg",
+      "sha256": "cfd44b403bcad0303c980227324d942428ffb3e26b938234d14e90963ab83e85"
+    },
+    {
+      "name": "candle-school-safe-flashlight.jpg",
+      "sha256": "14e13fc7ba5a6ca7d395cb8f264840a0143568f08ec4970f655ef2c1b1cf6b2e"
+    }
+  ],
+  "reproduce": "SOURCE_HANDOFF.md and Tools/quality/README.md; runtime CandleDanger.cs, PerceivedTension.cs, WeepingAngelEncounter.cs; candle regressions and CloudMonsterPresenceTests.cs.",
+  "optionalLocalEvidence": "../game/verification/perceived-candles-20261007; raw XML, logs, natural-frame samples and camera images are optional local evidence.",
+  "scope": "Focused actual sight, natural NavMesh movement/audio admission and scripted chapter appearances, plus production camera renders with ordinary flashlight. Fresh source-matching Windows build. No full survival-route, device listening, hardware performance or subjective fear certification.",
+  "compiledRuntime": {
+    "path": "HappyToyV2_Data/Managed/Assembly-CSharp.dll",
+    "bytes": 749568,
+    "sha256": "59d36b00e8cc7a0016cc32ca22eb4ca3f7352a0b362dfc70538e34406a25743a"
+  }
+}

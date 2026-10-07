@@ -12,7 +12,7 @@ from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
 
-NAME = re.compile(r"^[A-Za-z0-9_-]+\.(?:png|wav|json)$")
+NAME = re.compile(r"^[A-Za-z0-9_-]+\.(?:png|jpg|wav|json)$")
 MAX_FILE = 1_500_000
 # Preserve the 34 prior presentation/audio artifacts and allow one bounded
 # perceived-tension montage plus its report. Capacity is not a gameplay pass gate.
