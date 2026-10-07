@@ -1,0 +1,211 @@
+{
+  "status": "PASS",
+  "recordedUtc": "2026-10-07T07:07:27.253842+00:00",
+  "unity": "6000.6.0f1",
+  "sourceBaseCommit": "0b8b2cce6f0c685f10e4ae99720d0fcecb566a58",
+  "build": "Builds/DramaticCandles-20261007",
+  "buildInputStatus": "BUILD_INPUTS_PASS",
+  "buildInputCount": 2359,
+  "protectedSchoolSceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "behavior": {
+    "approach": "Dying flame, sustained dark hold, strong bright catch; faster and deeper as an eligible monster approaches the player.",
+    "recognitionAndPursuit": "Maintain visible warning at Danger >= .75 instead of immediately extinguishing every lit candle.",
+    "blackout": "Eligible same-floor monster within 2m or active attack; previously lit markers recover silently without changing durable ignition.",
+    "nearFlare": "Flame height about 2.2x and width about 1.8x; local-light intensity capped at 3 and current candle range at 5m.",
+    "reducedMotion": "Steady proximity dimming instead of rhythmic flashes; pause freezes clocks and current warning."
+  },
+  "playMode": {
+    "uniquePassed": 9,
+    "cases": [
+      {
+        "name": "CandleActualFarSightStrengthensFlickerBeforeEnemyUpdateAndPhysicalCoverPreventsIt",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleActualNormalMotionWarningGrowsFlickerDepthAndCompletedPulseCount",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleDangerPauseFreezesThreatStateAndReducedMotionKeepsSteadyDimming",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleDangerRejectsInactiveUnreadyWrongModeAndRealOtherFloorActors",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleDormantSchoolMaskAndUnreleasedMannequinStayHarmlessWithReadyNavigation",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleProductionCameraShowsNearDarkHoldsAndBrightCatchesWithFlashlightInBothModes",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleProximityFlickersAndTemporarilyBlackoutsOnlyPreviouslyLitMarkers",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleTemporaryBlackoutPreservesIgnitionThroughBothModeCheckpointRoundTrips",
+        "result": "Passed"
+      },
+      {
+        "name": "CandleViolentNearWarningFreezesOnPauseAndRecoversSilentlyAfterBlackout",
+        "result": "Passed"
+      }
+    ]
+  },
+  "actualNaturalFrameWindows": [
+    {
+      "label": "far-warning",
+      "enemyDistance": 9.94703197479248,
+      "danger": 0.31982702016830444,
+      "minimum": 0.19486463069915771,
+      "maximum": 1.2740566730499268,
+      "depth": 1.079192042350769,
+      "mean": 0.5816825032234192,
+      "minimumEmission": 0.49238380789756775,
+      "maximumEmission": 2.743621587753296,
+      "minimumFlameHeight": 0.3124407231807709,
+      "maximumFlameHeight": 1.3634623289108276,
+      "gameSeconds": 3.0062756538391113,
+      "wallSeconds": 3.0051097869873047,
+      "largestFrameGap": 0.017023086547851562,
+      "longestDarkHoldSeconds": 0.0,
+      "samples": 356,
+      "completedPulses": 3
+    },
+    {
+      "label": "middle-warning",
+      "enemyDistance": 6.0,
+      "danger": 0.6922594904899597,
+      "minimum": 0.06348884850740433,
+      "maximum": 2.0178472995758057,
+      "depth": 1.954358458518982,
+      "mean": 0.5825464725494385,
+      "minimumEmission": 0.17416633665561676,
+      "maximumEmission": 4.462612628936768,
+      "minimumFlameHeight": 0.1190851628780365,
+      "maximumFlameHeight": 1.8053981065750122,
+      "gameSeconds": 3.002992630004883,
+      "wallSeconds": 3.0031070709228516,
+      "largestFrameGap": 0.02148723602294922,
+      "longestDarkHoldSeconds": 0.13294315338134766,
+      "samples": 343,
+      "completedPulses": 4
+    },
+    {
+      "label": "near-warning",
+      "enemyDistance": 3.0,
+      "danger": 0.9269463419914246,
+      "minimum": 0.01337225828319788,
+      "maximum": 2.995469808578491,
+      "depth": 2.982097625732422,
+      "mean": 0.7111798524856567,
+      "minimumEmission": 0.03877781704068184,
+      "maximumEmission": 5.6389384269714355,
+      "minimumFlameHeight": 0.04220621660351753,
+      "maximumFlameHeight": 2.242006540298462,
+      "gameSeconds": 3.0045166015625,
+      "wallSeconds": 3.0037899017333984,
+      "largestFrameGap": 0.02468585968017578,
+      "longestDarkHoldSeconds": 0.13159942626953125,
+      "samples": 346,
+      "completedPulses": 6
+    }
+  ],
+  "realFarSightChase": {
+    "label": "actual-far-sight-chase",
+    "enemyDistance": 13.5,
+    "danger": 0.75,
+    "minimum": 0.04951523616909981,
+    "maximum": 2.4460742473602295,
+    "depth": 2.396559000015259,
+    "mean": 0.6537817120552063,
+    "minimumEmission": 0.13765627145767212,
+    "maximumEmission": 4.750620365142822,
+    "minimumFlameHeight": 0.09792468696832657,
+    "maximumFlameHeight": 1.9800549745559692,
+    "gameSeconds": 3.0077412128448486,
+    "wallSeconds": 2.991121292114258,
+    "largestFrameGap": 0.025755882263183594,
+    "longestDarkHoldSeconds": 0.1433417797088623,
+    "samples": 350,
+    "completedPulses": 4
+  },
+  "productionCameraWithFlashlight": [
+    {
+      "mode": "corridor",
+      "candleId": "corridor-candle-00",
+      "scope": "Production player camera and ordinary enabled flashlight, same physical approach and natural frames/timeScale1. Peak/trough are captured live without forcing a phase or changing materials/lights. No comfort/FPS claim.",
+      "cameraDistance": 2.3242642879486084,
+      "enemyDistance": 3.051166534423828,
+      "danger": 0.923149049282074,
+      "minimumIntensity": 0.014061958529055119,
+      "maximumIntensity": 2.9582598209381104,
+      "flameHeightPixels": 34.37516784667969,
+      "brightRegionLuminance": 0.6569411158561707,
+      "darkRegionLuminance": 0.38625603914260864,
+      "flashlightEnabled": true,
+      "brighterFlamePixels": 4496,
+      "flameRegion": {
+        "serializedVersion": "2",
+        "x": 0.4981067180633545,
+        "y": 0.4860652983188629,
+        "width": 0.007417619228363037,
+        "height": 0.0477432906627655
+      }
+    },
+    {
+      "mode": "school",
+      "candleId": "school-candle-0",
+      "scope": "Production player camera and ordinary enabled flashlight, same physical approach and natural frames/timeScale1. Peak/trough are captured live without forcing a phase or changing materials/lights. No comfort/FPS claim.",
+      "cameraDistance": 2.314922332763672,
+      "enemyDistance": 3.0,
+      "danger": 0.9269463419914246,
+      "minimumIntensity": 0.013372661545872688,
+      "maximumIntensity": 2.9957687854766846,
+      "flameHeightPixels": 34.75883102416992,
+      "brightRegionLuminance": 0.7547080516815186,
+      "darkRegionLuminance": 0.3748944401741028,
+      "flashlightEnabled": true,
+      "brighterFlamePixels": 5547,
+      "flameRegion": {
+        "serializedVersion": "2",
+        "x": 0.487885057926178,
+        "y": 0.4852108061313629,
+        "width": 0.017473816871643066,
+        "height": 0.048276156187057495
+      }
+    }
+  ],
+  "inspectedCameraImages": [
+    {
+      "name": "candle-corridor-near-bright-flashlight.png",
+      "sha256": "2adb29e0dd785a578ec67e90007fe3c5471763453005f9e89b8bb528383d806a"
+    },
+    {
+      "name": "candle-corridor-near-dark-flashlight.png",
+      "sha256": "0a16a36fcc66cf421232cbfe965f8d3bebe2c9eb1dc886b841786c1fe64fca6c"
+    },
+    {
+      "name": "candle-corridor-safe-flashlight.png",
+      "sha256": "de1715a0fa1f0fd3a271eab8b402688566725eda93b8be53ccda02beb8b5df16"
+    },
+    {
+      "name": "candle-school-near-bright-flashlight.png",
+      "sha256": "28162534f3038ca18e1127cefc387adb7900f9f040f6f502e2d748b434e9274d"
+    },
+    {
+      "name": "candle-school-near-dark-flashlight.png",
+      "sha256": "c1a14c1253f904c78812632a682bbc140695f0de9ec09e5e98ee3bcf02baa2ec"
+    },
+    {
+      "name": "candle-school-safe-flashlight.png",
+      "sha256": "45b1e5ee658be996405fda178ba5664c30803744a3618761c8aff65c09772e93"
+    }
+  ],
+  "reproduce": "SOURCE_HANDOFF.md and Tools/quality/README.md; runtime sources CandleDanger.cs and WaymarkCandle.cs, focused regressions CloudCandleDangerTests.cs and CloudCandleDangerFlickerTests.cs.",
+  "optionalLocalEvidence": "../game/verification/dramatic-candles-20261007; raw XML, logs, natural-frame samples and camera images are optional local evidence.",
+  "scope": "Controlled natural-frame real mode-owned enemies and production-camera captures on the original corridor and school at a physical 2.3m approach, flashlight enabled. Fresh source-matching Windows build. No complete survival-route, native device performance or human fear/comfort certification."
+}

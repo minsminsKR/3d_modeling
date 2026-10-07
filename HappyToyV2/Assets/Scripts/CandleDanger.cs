@@ -30,7 +30,7 @@ namespace HappyToy.V2
                 candleMannequins = FindObjectsByType<WeepingAngelEncounter>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 nextThreatRefresh = Time.time + 1;
             }
-            float nearest = float.PositiveInfinity; bool detected = false;
+            float nearest = float.PositiveInfinity; bool detected = false, attacking = false;
             if (!session.EncountersResolved)
             {
                 foreach (var actor in candleStalkers)
@@ -41,6 +41,7 @@ namespace HappyToy.V2
                         !EnemyNavigation.SameFloor(actor.transform.position, actor.HomeFloorY)) continue;
                     nearest = Mathf.Min(nearest, Vector3.Distance(player.transform.position, actor.transform.position));
                     detected |= actor.state == StalkerBrain.State.Chase || actor.AttackActive || actor.CanSeePlayer();
+                    attacking |= actor.AttackActive;
                 }
                 if (!corridorDangerMode)
                 {
@@ -51,20 +52,23 @@ namespace HappyToy.V2
                         nearest = Mathf.Min(nearest, Vector3.Distance(player.transform.position, actor.transform.position));
                         detected |= actor.State == LanternMaskEncounter.Phase.Chase ||
                             actor.State == LanternMaskEncounter.Phase.Transforming || actor.AttackActive || actor.CanSeePlayer();
+                        attacking |= actor.AttackActive;
                     }
                     foreach (var actor in candleMannequins)
                     {
                         if (!Eligible(actor) || actor != session.Chapter.Mannequin || !actor.Released || actor.Resolved) continue;
                         nearest = Mathf.Min(nearest, Vector3.Distance(player.transform.position, actor.transform.position));
                         detected |= actor.AttackActive;
+                        attacking |= actor.AttackActive;
                     }
                 }
             }
             float proximity = Mathf.Clamp01((CandleWarningDistance - nearest) / (CandleWarningDistance - CandleBlackoutDistance));
-            // Start visibly reacting while there is still time to escape, then build to
-            // violent flame collapse just before the existing two-metre blackout.
-            Danger = Mathf.Pow(proximity, .72f);
-            Blackout = detected || nearest <= CandleBlackoutDistance;
+            // Keep the visible warning alive during recognition and pursuit. An
+            // immediate recognition blackout used to hide the approach flicker.
+            // Only imminent physical contact or an actual attack extinguishes it.
+            Danger = Mathf.Max(Mathf.Pow(proximity, .72f), detected ? .75f : 0);
+            Blackout = attacking || nearest <= CandleBlackoutDistance;
             bool extinguished = false;
             foreach (var candle in candles)
             {

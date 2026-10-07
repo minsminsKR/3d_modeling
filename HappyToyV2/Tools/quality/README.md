@@ -293,7 +293,18 @@ door/lintel collision remain. The original scene is not regenerated.
 
 `CandleActualNormalMotionWarningGrowsFlickerDepthAndCompletedPulseCount` samples
 natural frames at approximately 10, 6 and 3 metres, measuring real light intensity,
-flame emission and height. `CandleViolentNearWarningFreezesOnPauseAndRecoversSilentlyAfterBlackout`
+flame emission, height, completed pulses and readable dark holds. A slower dying
+flame / dark hold / strong catch now replaces the former fast small flutter.
+`CandleActualFarSightStrengthensFlickerBeforeEnemyUpdateAndPhysicalCoverPreventsIt`
+checks real distant LOS and pursuit: recognition strengthens the visible warning
+instead of extinguishing it immediately. Blackout requires an eligible enemy within
+two metres or an active attack.
+`CandleProductionCameraShowsNearDarkHoldsAndBrightCatchesWithFlashlightInBothModes`
+captures the production camera at a clear, physical 2.3m approach in the corridor
+and school with the ordinary flashlight enabled. Safe, near-dark and near-bright
+images plus measured flame screen height and surrounding pixel contrast prevent
+a nonzero intensity/MPB value from passing as a visible effect.
+`CandleViolentNearWarningFreezesOnPauseAndRecoversSilentlyAfterBlackout`
 checks that the severe near-warning freezes during pause and that automatic recovery
-retains durable ignition without replaying the match. Keep original blackout,
+retains durable ignition without replaying the match. Keep contact blackout,
 ownership, comfort and checkpoint tests in the same focused test run.

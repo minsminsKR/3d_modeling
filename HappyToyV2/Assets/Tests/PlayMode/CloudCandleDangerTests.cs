@@ -135,7 +135,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(90000)]
-        public IEnumerator CandleActualFarSightBlackoutsBeforeEnemyUpdateAndPhysicalCoverPreventsIt()
+        public IEnumerator CandleActualFarSightStrengthensFlickerBeforeEnemyUpdateAndPhysicalCoverPreventsIt()
         {
             yield return CandleDangerPrepare();
             ((Behaviour)player).enabled = false;
@@ -175,9 +175,19 @@ namespace HappyToy.V2.CloudTests
             cover.SetActive(false); Physics.SyncTransforms();
             Assert.That((bool)Call(actor, "CanSeePlayer"), Is.True, "The real cone/range/eye physics did not see the player");
             Assert.That(Get<object>(actor, "state").ToString(), Is.EqualTo("Patrol"), "Fixture allowed an AI Update before the immediate E guard");
-            Call(LightRun, "RefreshDanger"); CandleDangerExpectExtinguished();
-            Assert.That((bool)Call(CandleDangerMarks()[0], "TryIgnite", player), Is.False);
+            Call(LightRun, "RefreshDanger");
+            Assert.That(Get<float>(LightRun, "Danger"), Is.GreaterThanOrEqualTo(.75f),
+                "Actual LOS must strengthen the visible warning before the enemy's next Update");
+            Assert.That(Get<bool>(LightRun, "Blackout"), Is.False,
+                "Detection at range must leave the candle available to visibly flicker");
+            Assert.That(CandleDangerMarks().All(mark => Get<bool>(mark, "Lit")), Is.True);
             yield return Wait(() => Get<object>(actor, "state").ToString() == "Chase", 2, "Actual source LOS did not start chase");
+            var chase = new CandleFlickerWindow { label = "actual-far-sight-chase",
+                enemyDistance = Vector3.Distance(enemyPoint, playerPoint), danger = Get<float>(LightRun, "Danger") };
+            yield return CandleCaptureLiveFlicker(CandleDangerMarks()[0], chase);
+            Assert.That(chase.depth, Is.GreaterThan(.5f), "Real pursuit suppressed the candle warning instead of making it visibly fluctuate");
+            CloudExperienceTests.Artifact("candle-danger-far-sight-chase.json",
+                System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(chase, true)));
             Object.Destroy(cover);
         }
 

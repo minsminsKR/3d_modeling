@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.TestTools;
 using static HappyToy.V2.CloudTests.RuntimeAccess;
+using Object = UnityEngine.Object;
 
 namespace HappyToy.V2.CloudTests
 {
@@ -20,7 +22,7 @@ namespace HappyToy.V2.CloudTests
         {
             public string label;
             public float enemyDistance, danger, minimum, maximum, depth, mean, minimumEmission, maximumEmission,
-                minimumFlameHeight, maximumFlameHeight, gameSeconds, wallSeconds, largestFrameGap;
+                minimumFlameHeight, maximumFlameHeight, gameSeconds, wallSeconds, largestFrameGap, longestDarkHoldSeconds;
             public int samples, completedPulses;
             public CandleFlickerFrame[] frames;
         }
@@ -28,6 +30,136 @@ namespace HappyToy.V2.CloudTests
         {
             public string scope = "Controlled real active mode-owned Watchman, natural frames/timeScale1 and actual candle LocalLight intensity. No theoretical intensity evaluation or forced frame cadence. Does not certify GPU/FPS, visual comfort or native survival.";
             public CandleFlickerWindow far, middle, near;
+        }
+        [Serializable] sealed class CandleRenderedWarning
+        {
+            public string mode, candleId;
+            public string scope = "Production player camera and ordinary enabled flashlight, same physical approach and natural frames/timeScale1. Peak/trough are captured live without forcing a phase or changing materials/lights. No comfort/FPS claim.";
+            public float cameraDistance, enemyDistance, danger, minimumIntensity, maximumIntensity,
+                flameHeightPixels, brightRegionLuminance, darkRegionLuminance;
+            public bool flashlightEnabled;
+            public int brighterFlamePixels;
+            public Rect flameRegion;
+        }
+
+        static void CandleRenderedRegion(Texture2D bright, Texture2D dark, Rect region,
+            out float brightLuminance, out float darkLuminance, out int brighterPixels)
+        {
+            var a = bright.GetPixels32(); var b = dark.GetPixels32();
+            int x0 = Mathf.Clamp(Mathf.FloorToInt(region.xMin * bright.width) - 24, 0, bright.width - 1);
+            int x1 = Mathf.Clamp(Mathf.CeilToInt(region.xMax * bright.width) + 24, 0, bright.width - 1);
+            int y0 = Mathf.Clamp(Mathf.FloorToInt(region.yMin * bright.height) - 24, 0, bright.height - 1);
+            int y1 = Mathf.Clamp(Mathf.CeilToInt(region.yMax * bright.height) + 24, 0, bright.height - 1);
+            double sumA = 0, sumB = 0; int count = 0; brighterPixels = 0;
+            for (int y = y0; y <= y1; y++) for (int x = x0; x <= x1; x++)
+            {
+                int index = y * bright.width + x;
+                float la = (a[index].r * .2126f + a[index].g * .7152f + a[index].b * .0722f) / 255;
+                float lb = (b[index].r * .2126f + b[index].g * .7152f + b[index].b * .0722f) / 255;
+                sumA += la; sumB += lb; count++;
+                if (la > lb + .08f) brighterPixels++;
+            }
+            brightLuminance = (float)(sumA / count); darkLuminance = (float)(sumB / count);
+        }
+
+        Vector3 CandleProductionViewApproach(Component target, Renderer flameRenderer)
+        {
+            float floor = target.transform.position.y - 1.06f;
+            var controller = player.GetComponent<CharacterController>();
+            for (int index = 0; index < 48; index++)
+            {
+                float angle = index * Mathf.PI / 24;
+                var desired = target.transform.position + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * 2.3f;
+                desired.y = floor;
+                if (!NavMesh.SamplePosition(desired, out var hit, .15f, NavMesh.AllAreas) || Mathf.Abs(hit.position.y - floor) > .1f) continue;
+                var body = hit.position + controller.center;
+                float half = controller.height * .5f - controller.radius;
+                if (Physics.OverlapCapsule(body - Vector3.up * half, body + Vector3.up * half,
+                    controller.radius - .02f, ~0, QueryTriggerInteraction.Ignore).Any(item => !item.transform.IsChildOf(player.transform))) continue;
+                var eye = hit.position + Get<Camera>(player, "eyes").transform.localPosition;
+                if (Physics.Linecast(eye, flameRenderer.bounds.center, out var ray, Physics.DefaultRaycastLayers,
+                    QueryTriggerInteraction.Ignore) && !ray.collider.transform.IsChildOf(target.transform)) continue;
+                return hit.position;
+            }
+            Assert.Fail("No physical production eye-level flame approach at 2.3m to " + target.name);
+            return Vector3.zero;
+        }
+
+        [UnityTest, Timeout(150000)]
+        public IEnumerator CandleProductionCameraShowsNearDarkHoldsAndBrightCatchesWithFlashlightInBothModes()
+        {
+            foreach (bool corridor in new[] { true, false })
+            {
+                yield return CandleDangerPrepare(corridor);
+                var target = LightTargets("Candle")[0]; var candle = CandleDangerMarks()[0];
+                var camera = Get<Camera>(player, "eyes"); var flashlight = Get<Light>(player, "flashlight");
+                flashlight.enabled = true; CandleDangerArmAll();
+                var flame = Get<Transform>(candle, "Flame"); var light = Get<Light>(candle, "LocalLight");
+                var renderer = flame.GetComponentInChildren<Renderer>();
+                PlacePlayer(CandleProductionViewApproach(target, renderer), false); ((Behaviour)player).enabled = false;
+                camera.transform.rotation = Quaternion.LookRotation(renderer.bounds.center - camera.transform.position);
+                yield return Delay(.2f);
+                Assert.That(Time.timeScale, Is.EqualTo(1)); Assert.That(Time.captureDeltaTime, Is.EqualTo(0));
+                Assert.That(Get<bool>(shell, "ReducedMotion"), Is.False);
+                string mode = corridor ? "corridor" : "school";
+                var far = SchoolCameraFrame(camera, out _, out _, out _);
+                try { CloudExperienceTests.Artifact("candle-" + mode + "-safe-flashlight.png", far.EncodeToPNG()); }
+                finally { Object.Destroy(far); }
+                var actor = CandleDangerOwnedBrain();
+                CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 3));
+                Call(LightRun, "RefreshDanger"); yield return Delay(.15f);
+                var evidence = new CandleRenderedWarning { mode = mode,
+                    candleId = Get<string>(target, "stableId"), flashlightEnabled = flashlight.enabled,
+                    cameraDistance = Vector3.Distance(camera.transform.position, renderer.bounds.center),
+                    enemyDistance = Vector3.Distance(actor.transform.position, player.transform.position),
+                    danger = Get<float>(LightRun, "Danger"), minimumIntensity = float.PositiveInfinity,
+                    maximumIntensity = float.NegativeInfinity };
+                Texture2D dark = null, bright = null;
+                float start = Time.time, wallStart = Time.realtimeSinceStartup;
+                try
+                {
+                    while (Time.time - start < 4)
+                    {
+                        Assert.That(Time.realtimeSinceStartup - wallStart, Is.LessThan(20));
+                        Assert.That(Get<bool>(candle, "Lit"), Is.True);
+                        Assert.That(Get<bool>(LightRun, "Blackout"), Is.False);
+                        if (light.intensity < evidence.minimumIntensity)
+                        {
+                            if (dark) Object.Destroy(dark);
+                            evidence.minimumIntensity = light.intensity;
+                            dark = SchoolCameraFrame(camera, out _, out _, out _);
+                        }
+                        if (light.intensity > evidence.maximumIntensity)
+                        {
+                            if (bright) Object.Destroy(bright);
+                            evidence.maximumIntensity = light.intensity;
+                            bright = SchoolCameraFrame(camera, out var matrix, out _, out var viewport);
+                            evidence.flameRegion = SchoolScreenBounds(matrix, viewport, renderer.bounds);
+                            evidence.flameHeightPixels = evidence.flameRegion.height * bright.height;
+                        }
+                        yield return null;
+                    }
+                    Assert.That(dark && bright, Is.True);
+                    CandleRenderedRegion(bright, dark, evidence.flameRegion,
+                        out evidence.brightRegionLuminance, out evidence.darkRegionLuminance, out evidence.brighterFlamePixels);
+                    CloudExperienceTests.Artifact("candle-" + mode + "-near-dark-flashlight.png", dark.EncodeToPNG());
+                    CloudExperienceTests.Artifact("candle-" + mode + "-near-bright-flashlight.png", bright.EncodeToPNG());
+                    CloudExperienceTests.Artifact("candle-" + mode + "-rendered-warning.json",
+                        Encoding.UTF8.GetBytes(JsonUtility.ToJson(evidence, true)));
+                    Assert.That(evidence.minimumIntensity, Is.LessThan(.05f));
+                    Assert.That(evidence.maximumIntensity, Is.GreaterThan(.55f));
+                    Assert.That(evidence.flameRegion.xMin, Is.InRange(0, 1)); Assert.That(evidence.flameRegion.xMax, Is.InRange(0, 1));
+                    Assert.That(evidence.flameRegion.yMin, Is.InRange(0, 1)); Assert.That(evidence.flameRegion.yMax, Is.InRange(0, 1));
+                    Assert.That(evidence.flameHeightPixels, Is.GreaterThan(16), "Actual flame is too small to read at a physical 2.3m approach");
+                    Assert.That(evidence.brighterFlamePixels, Is.GreaterThan(20), "Ordinary flashlight hid the candle's actual dark/bright change");
+                    Assert.That(evidence.brightRegionLuminance, Is.GreaterThan(evidence.darkRegionLuminance + .01f),
+                        "The actual flame region has no visible near-threat dark hold and bright catch");
+                }
+                finally { if (dark) Object.Destroy(dark); if (bright) Object.Destroy(bright); }
+                actor.gameObject.SetActive(false);
+                if (corridor)
+                { var previous = session; Call(shell, "Restart", false); yield return RecoveryRebind(previous); }
+            }
         }
 
         IEnumerator CandleCaptureLiveFlicker(Component candle, CandleFlickerWindow result)
@@ -63,6 +195,16 @@ namespace HappyToy.V2.CloudTests
             result.minimumFlameHeight = frames.Min(frame => frame.flameHeight); result.maximumFlameHeight = frames.Max(frame => frame.flameHeight);
             result.largestFrameGap = Enumerable.Range(1, frames.Count - 1)
                 .Select(index => frames[index].gameSeconds - frames[index - 1].gameSeconds).DefaultIfEmpty(0).Max();
+            float darkStart = -1;
+            foreach (var frame in frames)
+            {
+                if (frame.intensity < .068f)
+                {
+                    if (darkStart < 0) darkStart = frame.gameSeconds;
+                    result.longestDarkHoldSeconds = Mathf.Max(result.longestDarkHoldSeconds, frame.gameSeconds - darkStart);
+                }
+                else darkStart = -1;
+            }
             // Independent hysteresis over the measured intensity range counts complete
             // dark->bright->dark pulses, excluding partial cycles at the window edges.
             float low = result.minimum + result.depth * .30f, high = result.minimum + result.depth * .70f;
@@ -110,17 +252,16 @@ namespace HappyToy.V2.CloudTests
             Assert.That(evidence.near.depth, Is.GreaterThan(evidence.middle.depth + .10f), "The last few metres did not strengthen the flame collapse");
             Assert.That(evidence.near.minimum, Is.LessThan(.05f), "A nearby undetected monster never nearly choked the actual light");
             Assert.That(evidence.near.maximum, Is.GreaterThan(.55f), "The nearly collapsed light never visibly caught again");
-            Assert.That(evidence.near.mean, Is.LessThan(evidence.far.mean - .15f), "Danger did not dim the surrounding pool overall");
+            Assert.That(evidence.near.longestDarkHoldSeconds, Is.GreaterThanOrEqualTo(.07f),
+                "The near warning has no sustained visible dark hold between its bright catches");
             Assert.That(evidence.near.minimumEmission, Is.LessThan(evidence.far.minimumEmission * .3f), "The unlit flame sprite stayed radiant while its actual light collapsed");
             Assert.That(evidence.near.maximumEmission, Is.GreaterThan(evidence.near.minimumEmission + 1), "Actual photographic flame emission lacked the collapse and surge");
             Assert.That(evidence.near.minimumFlameHeight, Is.LessThan(evidence.near.maximumFlameHeight * .3f), "The visible flame did not shrink as it choked");
-            // A constant old ~1Hz flutter cannot complete six full measured pulses in
-            // this three-second window. No exact theoretical waveform is sampled here.
-            Assert.That(evidence.near.completedPulses, Is.GreaterThanOrEqualTo(6));
-            Assert.That(evidence.near.completedPulses, Is.GreaterThanOrEqualTo(evidence.far.completedPulses + 2),
+            // Readable dark holds replace the old rapid shimmer. Judge complete
+            // natural pulses and their distance trend, not an exact oscillator rate.
+            Assert.That(evidence.near.completedPulses, Is.GreaterThanOrEqualTo(2));
+            Assert.That(evidence.near.completedPulses, Is.GreaterThan(evidence.far.completedPulses),
                 "Actual nearby warning did not show more completed light pulses than the far warning");
-            Assert.That(evidence.middle.completedPulses, Is.GreaterThanOrEqualTo(evidence.far.completedPulses + 1));
-            Assert.That(evidence.near.completedPulses, Is.GreaterThanOrEqualTo(evidence.middle.completedPulses + 1));
             Assert.That(Get<bool>(LightRun, "Blackout"), Is.False);
             Assert.That(CandleDangerMarks().All(mark => Get<bool>(mark, "Lit")), Is.True);
         }
