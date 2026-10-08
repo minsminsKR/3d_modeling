@@ -77,7 +77,7 @@ namespace HappyToy.V2
             auditMode = args.Contains("-v3-graphics-output") || args.Any(a => a.StartsWith("-v2-", StringComparison.Ordinal) && a.EndsWith("-output", StringComparison.Ordinal));
             // Existing standalone audits enter through Begin; the flow audit retains the title.
             bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output") && !args.Contains("-v2-chapter-output") &&
-                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v2-altar-output") && !args.Contains("-v2-school-reveal-output") && !args.Contains("-v3-graphics-output");
+                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v2-altar-output") && !args.Contains("-v2-school-reveal-output") && !args.Contains("-v2-school-stair-output") && !args.Contains("-v3-graphics-output");
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
             { if (playAfterLoad) { if (chapterRestart) BeginChapter(); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }

@@ -1,5 +1,13 @@
 # 다른 PC에서 이어서 개발하기
 
+폐교 계단 이동은 `EnemyNavigation.cs`의 학교 모드 경로 정책과 실제 NavMesh 높이를
+사용한다. 같은 씬의 학교 몬스터만 층 이동을 허용하며, 문과 캐비닛의 근거리 판정은
+현재 몬스터 높이를 사용한다. 기존 폐교 저장 버전 1을 유지하며, 수색 이동 시간은
+학교에서 최대 40초, 회랑에서 기존 최대 8초다. 실제 첫 등장·왕복 계단·일시정지·
+저장 재개 검증 소스는 `CloudSchoolStairPursuitTests.cs`에 있다. 일반 Player에
+`-v2-school-stair-output <검증 디렉터리>`를 주면 `SchoolStairAudit.cs`가 준비된 액터
+스냅샷의 실제 계단 왕복을 기록한다. 이 선택 검증은 일반 생존 플레이를 대신하지 않는다.
+
 현재 기본 새 탐색은 회랑 버전 3이다. `CorridorRunAltar.cs`가 결정적인 외곽 방·연결부
 충돌을 만들고, `CorridorAltarChamber.cs`가 직접 제작한 제단 소품과 기존 학교 가구를
 배치한다. `SourceArt/CorridorAltarChamber`에 Blender 4.0.2 편집 원본 4개, 원본

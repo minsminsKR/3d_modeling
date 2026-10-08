@@ -99,8 +99,8 @@ namespace HappyToy.V2
         // the real intended native route crosses through its opening.
         public static Interactable NearbyDoorOnRoute(NavMeshAgent walkingAgent, Vector3 destination, float floorY, NavMeshPath route)
         {
-            if (!EnemyNavigation.Ready(walkingAgent) || route == null || !EnemyNavigation.SameFloor(walkingAgent.transform.position, floorY) ||
-                !EnemyNavigation.SameFloor(destination, floorY)) return null;
+            if (!EnemyNavigation.Ready(walkingAgent) || route == null || !EnemyNavigation.WithinFloorPolicy(walkingAgent, walkingAgent.transform.position, floorY) ||
+                !EnemyNavigation.WithinFloorPolicy(walkingAgent, destination, floorY)) return null;
             var origin = walkingAgent.transform.position + Vector3.up * 1.1f;
             int count = Physics.OverlapSphereNonAlloc(origin, 2.2f, nearbyLeaves, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
             if (count == nearbyLeaves.Length) return null;
@@ -108,7 +108,7 @@ namespace HappyToy.V2
             for (int i = 0; i < count; i++)
             {
                 var candidate = nearbyLeaves[i] ? nearbyLeaves[i].GetComponentInParent<Interactable>() : null;
-                if (!candidate || !candidate.DoorOperable || candidate.IsOpen || !EnemyNavigation.SameFloor(candidate.transform.position, floorY)) continue;
+                if (!candidate || !candidate.DoorOperable || candidate.IsOpen || !EnemyNavigation.SameActorFloor(walkingAgent, candidate.transform.position, floorY)) continue;
                 float distance = Horizontal(walkingAgent.transform.position - candidate.transform.position);
                 if (distance > 2.2f || distance >= nearestDistance) continue;
                 // Ordinary open corridors need only the cheap local overlap.
@@ -153,7 +153,8 @@ namespace HappyToy.V2
                 if (a * b <= 0 && Mathf.Abs(a - b) > .001f)
                 {
                     var crossing = Vector3.Lerp(previous, current, a / (a - b));
-                    if (Mathf.Abs(Vector3.Dot(crossing, slide)) < halfWidth - walkingAgent.radius - .03f) return true;
+                    if (Mathf.Abs(crossing.y) < EnemyNavigation.FloorTolerance &&
+                        Mathf.Abs(Vector3.Dot(crossing, slide)) < halfWidth - walkingAgent.radius - .03f) return true;
                 }
                 previous = current;
             }
@@ -166,13 +167,13 @@ namespace HappyToy.V2
             lastHitPoint=Vector3.zero; lastHitDistance=0; lastDecision="scanning physical route";
             var session = GameSession.Current;
             if (!owner || !owner.isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
-                !EnemyNavigation.Ready(agent) || !EnemyNavigation.SameFloor(transform.position,floorY) ||
-                !EnemyNavigation.SameFloor(intendedTarget,floorY))
+                !EnemyNavigation.Ready(agent) || !EnemyNavigation.WithinFloorPolicy(agent,transform.position,floorY) ||
+                !EnemyNavigation.WithinFloorPolicy(agent,intendedTarget,floorY))
             { EnemyNavigation.Stop(agent,true); Suspend(); return Result.Waiting; }
             float seconds = Time.deltaTime;
             if (!StealthRules.Finite(seconds) || seconds < 0)
             { EnemyNavigation.Stop(agent,true); return Result.Waiting; }
-            if (door && (!EnemyNavigation.SameFloor(door.transform.position,floorY) ||
+            if (door && (!EnemyNavigation.SameActorFloor(agent,door.transform.position,floorY) ||
                 Horizontal(transform.position-door.transform.position)>4.5f)) ClearPassage();
             if (deferredDoor && Horizontal(intendedTarget-deferredTarget)>.5f)
             { deferredDoor=null; retryUntil=0; }
@@ -222,7 +223,7 @@ namespace HappyToy.V2
             // Walls/furniture remain the native geometry; no door beyond the
             // first obstruction can be learned or operated remotely.
             if (!nextDoor || nextDoor.kind!=Interactable.Kind.Door || !nextDoor.movingLeaf ||
-                !EnemyNavigation.SameFloor(nextDoor.transform.position,floorY))
+                !EnemyNavigation.SameActorFloor(agent,nextDoor.transform.position,floorY))
             { lastDecision="first physical obstruction is not an operable door"; if (door && !passing) ClearPassage(); return Result.Clear; }
             if (nextDoor==deferredDoor && Time.time<retryUntil)
             { lastDecision="blocked route retry cooldown"; EnemyNavigation.Stop(agent,true); return Result.Blocked; }

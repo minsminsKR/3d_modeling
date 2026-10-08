@@ -82,7 +82,7 @@ namespace HappyToy.V2
             if (!session || session != GameSession.Current || !session.InputAllowed || session.StoryStep >= 4 ||
                 !session.player || !observer || observer.gameObject.scene != session.gameObject.scene) return;
             var player = session.player;
-            if (player.Hidden || !EnemyNavigation.SameFloor(player.transform.position, observer.position.y) ||
+            if (player.Hidden || !EnemyNavigation.WithinFloorPolicy(observer.GetComponent<UnityEngine.AI.NavMeshAgent>(), player.transform.position, observer.position.y) ||
                 Vector3.Distance(player.transform.position, observer.position) > 22 || !ActualRecognitionSight(player, observer)) return;
             var feedback = player.GetComponent<DetectionFeedback>();
             if (!feedback) feedback = player.gameObject.AddComponent<DetectionFeedback>();

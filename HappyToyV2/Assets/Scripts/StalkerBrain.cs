@@ -79,7 +79,7 @@ namespace HappyToy.V2
             if(investigation.Active)return;
             float dwell=Mathf.Clamp(memory,.01f,3600);
             if(EnemyNavigation.TryRoute(agent,lastKnown,floorY,path)) BeginNoiseInvestigation(dwell);
-            else investigation.Begin(lastKnown,dwell,HorizontalDistance(transform.position,lastKnown),patrolSpeed,0);
+            else investigation.Begin(lastKnown,dwell,Vector3.Distance(transform.position,lastKnown),patrolSpeed,0);
         }
         void InspectNoisePoint()
         {
@@ -136,7 +136,7 @@ namespace HappyToy.V2
 
         public bool CanSeePlayer()
         {
-            if (!player || player.Hidden || !EnemyNavigation.SameFloor(player.transform.position, floorY)) return false;
+            if (!player || player.Hidden || !EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY)) return false;
             var eye = transform.position + Vector3.up * 1.7f;
             // A visible torso counts too; a camera point can sit outside the capsule's curved head.
             for (int i = 0; i < 2; i++)
@@ -155,7 +155,7 @@ namespace HappyToy.V2
             // Called before the player's collider disappears, not inferred from old chase memory.
             witnessedHiding = isActiveAndEnabled && player &&
                 (state == State.Chase || awareness.Acquired) && CanSeePlayer() &&
-                EnemyNavigation.SameFloor(entrance, floorY);
+                EnemyNavigation.WithinFloorPolicy(agent, entrance, floorY);
             if (!witnessedHiding) return;
             hidingApproach = entrance; lastKnown = entrance;
             if (player.HidingOutcome == CabinetHidingOutcome.Survived)
@@ -171,7 +171,7 @@ namespace HappyToy.V2
         {
             var delta = transform.position - hidingApproach; delta.y = 0;
             return player.Hidden && !player.HidingProtected && witnessedHiding && state == State.Chase && delta.magnitude < .85f &&
-                EnemyNavigation.SameFloor(hidingApproach, floorY) &&
+                EnemyNavigation.SameActorFloor(agent, hidingApproach, floorY) &&
                 EnemyNavigation.ClearSight(transform.position + Vector3.up * 1.1f, hidingApproach + Vector3.up * 1.1f);
         }
 
@@ -191,6 +191,8 @@ namespace HappyToy.V2
 
         static float HorizontalDistance(Vector3 a, Vector3 b)
         { a.y = b.y = 0; return Vector3.Distance(a, b); }
+
+        float SearchRouteLimit => EnemyNavigation.AllowsCrossFloor(agent) && !searchStarted ? 38 : 8;
 
         void ClearDoorPassage()
         {
@@ -236,14 +238,14 @@ namespace HappyToy.V2
             // evidence must enter its fallback scan before it can choose a door
             // along a straight line towards a goal that navigation has rejected.
             if (state == State.Search && !searchArrived &&
-                !EnemyNavigation.TryRoute(agent,searchTarget,floorY,path,8))
+                !EnemyNavigation.TryRoute(agent,searchTarget,floorY,path,SearchRouteLimit))
             {
                 ClearDoorPassage(); EnemyNavigation.Stop(agent,true);
                 searchArrived=searchStarted=true; searchDwell=0;
                 searchFacing=Quaternion.Euler(0,transform.eulerAngles.y,0);
                 return false;
             }
-            if (blockingDoor && (!EnemyNavigation.SameFloor(blockingDoor.transform.position, floorY) ||
+            if (blockingDoor && (!EnemyNavigation.SameActorFloor(agent, blockingDoor.transform.position, floorY) ||
                 HorizontalDistance(transform.position, blockingDoor.transform.position) > 4.5f)) ClearDoorPassage();
             if (blockingDoor)
             {
@@ -306,7 +308,7 @@ namespace HappyToy.V2
                 if (door) handlePoint = door.transform.position;
             }
             if (!door || door.kind != Interactable.Kind.Door || !door.movingLeaf ||
-                !EnemyNavigation.SameFloor(door.transform.position, floorY))
+                !EnemyNavigation.SameActorFloor(agent, door.transform.position, floorY))
             {
                 if (blockingDoor && !passingDoor) ClearDoorPassage();
                 return false;
@@ -350,12 +352,13 @@ namespace HappyToy.V2
             // Budget the observed route at walking speed instead of abandoning
             // it after a fixed four seconds; door waits remain separately bounded.
             var session=GameSession.Current;
-            if(session && session.CorridorMode && session.Corridor.Layout.Version>=2 &&
-                EnemyNavigation.TryRoute(agent,searchOrigin,floorY,path,8))
+            bool schoolStairs = EnemyNavigation.AllowsCrossFloor(agent);
+            if((schoolStairs || session && session.CorridorMode && session.Corridor.Layout.Version>=2) &&
+                EnemyNavigation.TryRoute(agent,searchOrigin,floorY,path,SearchRouteLimit))
             {
                 float length=0; var previous=transform.position;
                 foreach(var corner in path.corners) { length+=Vector3.Distance(previous,corner); previous=corner; }
-                searchTransit=Mathf.Clamp(length/Mathf.Max(.25f,patrolSpeed)+3,4,8);
+                searchTransit=Mathf.Clamp(length/Mathf.Max(.25f,patrolSpeed)+3,4,schoolStairs?40:8);
             }
             SearchPointsVisited = 0; repath = 0;
             searchFacing = Quaternion.Euler(0, transform.eulerAngles.y, 0);
@@ -363,7 +366,7 @@ namespace HappyToy.V2
 
         void SearchArea()
         {
-            if (!searchArrived && HorizontalDistance(transform.position, searchTarget) < .65f)
+            if (!searchArrived && Vector3.Distance(transform.position, searchTarget) < .65f)
             {
                 searchArrived = searchStarted = true; searchDwell = 0; SearchPointsVisited++;
                 searchFacing = Quaternion.Euler(0, transform.eulerAngles.y, 0);
@@ -386,7 +389,7 @@ namespace HappyToy.V2
                     Vector3 candidate = searchOrigin + searchFacing * Quaternion.Euler(0, angle, 0) *
                         Vector3.forward * (index < 4 ? 2.2f : 3.2f);
                     if (!NavMesh.SamplePosition(candidate, out var hit, .6f, agent.areaMask) ||
-                        !EnemyNavigation.SameFloor(hit.position, floorY) ||
+                        !EnemyNavigation.SameFloor(hit.position, searchOrigin.y) ||
                         HorizontalDistance(hit.position, searchOrigin) > 3.8f ||
                         HorizontalDistance(hit.position, transform.position) < 1 ||
                         !EnemyNavigation.TryRoute(agent, hit.position, floorY, path, 8)) continue;
@@ -401,7 +404,7 @@ namespace HappyToy.V2
             repath -= Time.deltaTime;
             if (repath > 0) return;
             repath = .25f;
-            if (EnemyNavigation.TryRoute(agent, searchTarget, floorY, path, 8))
+            if (EnemyNavigation.TryRoute(agent, searchTarget, floorY, path, SearchRouteLimit))
             { agent.SetPath(path); agent.isStopped = false; }
             else { EnemyNavigation.Stop(agent, true); searchArrived = searchStarted = true; searchDwell = 0; }
         }
@@ -459,7 +462,7 @@ namespace HappyToy.V2
                 memory -= Time.deltaTime;
                 // Once the last confirmed location is reached, actually inspect the
                 // area instead of standing at one stale destination for nine seconds.
-                if (memory <= 0 || !witnessedHiding && HorizontalDistance(transform.position, lastKnown) < .65f)
+                if (memory <= 0 || !witnessedHiding && Vector3.Distance(transform.position, lastKnown) < .65f)
                     BeginSearch();
             }
             else
@@ -484,7 +487,7 @@ namespace HappyToy.V2
                 else if (state == State.Investigate)
                 {
                     EnsureNoiseInvestigation(); bool hadArrived=investigation.Arrived;
-                    var step=investigation.Tick(Time.deltaTime,HorizontalDistance(transform.position,investigation.Point),true);
+                    var step=investigation.Tick(Time.deltaTime,Vector3.Distance(transform.position,investigation.Point),true);
                     memory=investigation.DwellRemaining;
                     if(!hadArrived && investigation.Arrived) investigationFacing=Quaternion.Euler(0,transform.eulerAngles.y,0);
                     if(step==NoiseInvestigationClock.Step.Expired)
@@ -507,7 +510,8 @@ namespace HappyToy.V2
                 if (state == State.Search && !searchStarted && agent.isStopped && searchDoorWait < 4)
                 {
                     float wait = Mathf.Min(Time.deltaTime, 4 - searchDoorWait);
-                    searchTransit += wait; searchDoorWait += wait;
+                    searchTransit = Mathf.Min(EnemyNavigation.AllowsCrossFloor(agent) ? 40 : 8, searchTransit + wait);
+                    searchDoorWait += wait;
                 }
                 return;
             }
@@ -515,7 +519,7 @@ namespace HappyToy.V2
             if (state == State.Patrol && Senses.PatrolDwell > 0 && patrol != null && patrol.Length > 0)
             {
                 waypoint %= patrol.Length;
-                if (patrol[waypoint] && HorizontalDistance(transform.position, patrol[waypoint].position) < .6f)
+                if (patrol[waypoint] && Vector3.Distance(transform.position, patrol[waypoint].position) < .6f)
                 {
                     if (!patrolDwelling) { patrolDwelling = true; patrolDwellUntil = Time.time + Senses.PatrolDwell; }
                     if (Time.time < patrolDwellUntil)
@@ -541,7 +545,8 @@ namespace HappyToy.V2
             waypoint %= patrol.Length;
             if (patrol[waypoint] && Vector3.Distance(transform.position, patrol[waypoint].position) < .6f)
                 waypoint = (waypoint + 1) % patrol.Length;
-            // Ignore invalid/other-floor markers instead of following a complete path through stairs.
+            // Only complete native routes may reach patrol markers, including
+            // connected stair routes in the school chapter.
             for (int i = 0; i < patrol.Length; i++)
             {
                 waypoint %= patrol.Length;

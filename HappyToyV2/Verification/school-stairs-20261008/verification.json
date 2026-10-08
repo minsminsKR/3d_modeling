@@ -1,0 +1,234 @@
+{
+  "status": "PASS",
+  "date": "2026-10-08",
+  "unity": "6000.6.0f1",
+  "scope": "Selected real Unity tests and controlled released-actor native Windows locomotion proof. Not a full-suite, ordinary survival or target-GPU performance certification.",
+  "tests": [
+    {
+      "report": "regression01.xml",
+      "sha256": "98c9977ec0f3e3968985c57de13d0a59347d46cc65104610996f8e9093d3c13f",
+      "startUtc": "2026-10-08 03:02:20Z",
+      "endUtc": "2026-10-08 03:03:27Z",
+      "passed": 4,
+      "cases": [
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.LanternFirstSightRequiresFloorViewportAndLosBeforeSafeLightThenMask",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.LanternInvestigatesItsOwnFloorWhilePlayerIsUpstairs",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.NoiseInvestigationSchoolMaskActualFootstepSurvivesTravelThenScansEventPoint",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolCheckpointRestoresCompletedAuthoredPortraitAndNurseryWithoutReplayingReveals",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "report": "regression03.xml",
+      "sha256": "6d1631aa22be4de734bbfa591c004f2e83dce06dbd658f5b21b1705516c5b1c8",
+      "startUtc": "2026-10-08 03:26:45Z",
+      "endUtc": "2026-10-08 03:28:14Z",
+      "passed": 4,
+      "cases": [
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.ActualRecognitionImpactAndWitnessedPursuitAreOcclusionBoundedAndPauseSafe",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.AdvancedDoorTraversalSchoolMannequinHonorsGazeLightPauseAndRestoresRealPassage",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.AdvancedDoorTraversalSchoolMaskOpensClosesInWanderInvestigationAndChaseAndRestoresPassage",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.MonsterDoorTraversalRealSchoolOpensAndClosesBothLeavesInEveryMovementState",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "report": "stairs03.xml",
+      "sha256": "e288de3285475a6de234e13ac5071d10593a4e14b0d225df5ec692cc9c4a0168",
+      "startUtc": "2026-10-08 03:23:13Z",
+      "endUtc": "2026-10-08 03:25:14Z",
+      "passed": 2,
+      "cases": [
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolStairPursuitReleasedBasementBabyClimbsPausesRestoresOnGroundAndDescendsBack",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolStairPursuitReleasedUpperMaskDescendsPausesRestoresOnGroundAndClimbsBack",
+          "result": "Passed"
+        }
+      ]
+    }
+  ],
+  "totalSelectedPassingTests": 10,
+  "native": {
+    "status": "PASS",
+    "developmentBuild": false,
+    "scope": "Controlled native Windows NavMeshAgent locomotion of released school mask/Baby snapshots on authored stairs, both directions. No speed overrides or actor warps during travel. Separate tests cover release, pause and saved-state restoration; not a survival/performance certification.",
+    "legs": [
+      {
+        "name": "mask-upper-descent",
+        "image": "mask-upper-descent.png",
+        "from": {
+          "x": 29.799999237060547,
+          "y": 5.033333778381348,
+          "z": 22.0
+        },
+        "target": {
+          "x": 29.799999237060547,
+          "y": 0.03333330154418945,
+          "z": 10.0
+        },
+        "arrived": {
+          "x": 29.799999237060547,
+          "y": 0.03333330154418945,
+          "z": 10.649680137634277
+        },
+        "completePath": true,
+        "completed": true,
+        "intermediateSamples": 70,
+        "unsupportedSamples": 0,
+        "maximumFrameTravel": 0.3959071636199951
+      },
+      {
+        "name": "mask-upper-ascent",
+        "image": "mask-upper-ascent.png",
+        "from": {
+          "x": 29.799999237060547,
+          "y": 0.03333330154418945,
+          "z": 10.649680137634277
+        },
+        "target": {
+          "x": 29.799999237060547,
+          "y": 5.033333778381348,
+          "z": 22.0
+        },
+        "arrived": {
+          "x": 29.799999237060547,
+          "y": 5.0202789306640625,
+          "z": 21.3504638671875
+        },
+        "completePath": true,
+        "completed": true,
+        "intermediateSamples": 71,
+        "unsupportedSamples": 0,
+        "maximumFrameTravel": 0.17508439719676971
+      },
+      {
+        "name": "baby-basement-ascent",
+        "image": "baby-basement-ascent.png",
+        "from": {
+          "x": 13.800000190734863,
+          "y": -4.9666666984558105,
+          "z": -22.0
+        },
+        "target": {
+          "x": 13.800000190734863,
+          "y": 0.03333330154418945,
+          "z": -10.0
+        },
+        "arrived": {
+          "x": 13.800000190734863,
+          "y": 0.03333330154418945,
+          "z": -10.649809837341309
+        },
+        "completePath": true,
+        "completed": true,
+        "intermediateSamples": 78,
+        "unsupportedSamples": 0,
+        "maximumFrameTravel": 0.15211175382137299
+      },
+      {
+        "name": "baby-basement-descent",
+        "image": "baby-basement-descent.png",
+        "from": {
+          "x": 13.800000190734863,
+          "y": 0.03333330154418945,
+          "z": -10.649809837341309
+        },
+        "target": {
+          "x": 13.800000190734863,
+          "y": -4.9666666984558105,
+          "z": -22.0
+        },
+        "arrived": {
+          "x": 13.800000190734863,
+          "y": -4.9150590896606445,
+          "z": -21.352214813232422
+        },
+        "completePath": true,
+        "completed": true,
+        "intermediateSamples": 79,
+        "unsupportedSamples": 0,
+        "maximumFrameTravel": 0.12530924379825592
+      }
+    ],
+    "errors": []
+  },
+  "representativeImages": [
+    {
+      "file": "mask-upper-descent.png",
+      "sha256": "5f98d6cce04be0565dd1a2d1a53c3ad0daa00aef98950ea64d70ef4515103082"
+    },
+    {
+      "file": "baby-basement-ascent.png",
+      "sha256": "d69da8606e1a70b0cacd84e50be0842b6d69ba64f39f889d4b630cff686fcaa2"
+    }
+  ],
+  "build": {
+    "status": "GRAPHICS_BUILD_INPUTS_PASS",
+    "inputCount": 2464,
+    "createdUtc": "2026-10-08T03:29:43.8706543Z",
+    "artifacts": [
+      {
+        "path": "HappyToyV2.exe",
+        "bytes": 667136,
+        "sha256": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d"
+      },
+      {
+        "path": "UnityPlayer.dll",
+        "bytes": 38669232,
+        "sha256": "8698332fa0d299291b58e71a505db6f20a8f291a2b7349421f93a4f9838ed895"
+      },
+      {
+        "path": "HappyToyV2_Data/globalgamemanagers",
+        "bytes": 206788,
+        "sha256": "b8e131c3a2aa4d73a090c30174704352d2bd2cbbd628728299878ce03a1d4233"
+      },
+      {
+        "path": "Audio-Credits.txt",
+        "bytes": 4119,
+        "sha256": "f599d282fa6ead7f2883a92c6e7abdda8dae257e56934d9bbfe30101622cfa81"
+      }
+    ]
+  },
+  "geometry": "Authored SchoolAnnex.unity and its baked NavMesh remain unchanged; complete paths retain real corner heights.",
+  "compatibility": "Existing school schema/simulationVersion1 preserved. Chapter search transit accepts 40.1s; corridor stays 8.1s. Home anchor retained separately from actual actor elevation.",
+  "sourceCompleteness": {
+    "status": "PASS",
+    "requiredSourceCount": 2644,
+    "missingFromGit": [],
+    "unhydratedLfsFiles": []
+  },
+  "repairedFindings": [
+    "Chapter actors were restricted to their release floor in route/perception/door guards. Connected native stair paths are now allowed only in the school chapter.",
+    "Horizontal-only arrival checks could confuse an endpoint on another elevation. Evidence/search/patrol arrival now uses full3D distance.",
+    "Nearby doors, hiding risk and physical candle danger now follow chapter actor current elevation. Genuine stairwell recognition can register its cue.",
+    "Initial known-evidence Search approach was capped8m/4s, shorter than an actual stair flight. Chapter approach gets38m/path-derived up-to40s; local scanning remains bounded8m.",
+    "The isolated test fixture deactivated actors required by chapter progression. It now restores real active flags while isolating non-subject AI; production validation was preserved.",
+    "A just-enabled actor did not retain the stopped flag when the path reset followed it. Path reset now precedes the tested final stop operations.",
+    "Door-wait refunds are capped at the mode travel ceiling, keeping newly initialized search budgets serializable."
+  ]
+}

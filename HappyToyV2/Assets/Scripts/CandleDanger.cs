@@ -110,8 +110,9 @@ namespace HappyToy.V2
                 {
                     if (!(PerceptionEligible(actor) || IntroPerceivable(session, actor)) || actor.player != player || !OwnsStalker(session, actor) ||
                         (actor.corridorRole != CorridorThreatRole.Authored) != corridorDangerMode) continue;
-                    bool physical = Eligible(actor) && EnemyNavigation.SameFloor(player.transform.position, actor.HomeFloorY) &&
-                        EnemyNavigation.SameFloor(actor.transform.position, actor.HomeFloorY);
+                    var navigation = actor.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                    bool physical = Eligible(actor) && EnemyNavigation.SameActorFloor(navigation, player.transform.position, actor.HomeFloorY) &&
+                        EnemyNavigation.WithinFloorPolicy(navigation, actor.transform.position, actor.HomeFloorY);
                     if (physical) nearest = Mathf.Min(nearest, Vector3.Distance(player.transform.position, actor.transform.position));
                     perceived = Mathf.Max(perceived, PerceivedDanger(actor, actor.isActiveAndEnabled && (actor.state == StalkerBrain.State.Chase || actor.AttackActive)));
                     attacking |= physical && actor.AttackActive;

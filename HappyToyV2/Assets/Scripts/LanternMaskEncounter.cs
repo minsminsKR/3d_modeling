@@ -135,7 +135,7 @@ namespace HappyToy.V2
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
                 IntroActive || attack.Active || !StealthRules.Finite(radius) || radius <= 0 || !StealthRules.Finite(point.x) ||
                 !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z) ||
-                !EnemyNavigation.SameFloor(point, floorY)) return;
+                !EnemyNavigation.WithinFloorPolicy(agent, point, floorY)) return;
             radius *= EnemyNavigation.SoundTransmission(point + Vector3.up * .5f,
                 transform.position + Vector3.up, transform, noisePlayer.transform);
             if (Vector3.Distance(point, transform.position) > radius ||
@@ -154,7 +154,7 @@ namespace HappyToy.V2
             if(investigation.Active)return;
             float dwell=Mathf.Clamp(memory,.01f,3600);
             if(Route(target)) BeginNoiseInvestigation(dwell);
-            else investigation.Begin(target,dwell,new Vector2(transform.position.x-target.x,transform.position.z-target.z).magnitude,1.15f,0);
+            else investigation.Begin(target,dwell,Vector3.Distance(transform.position,target),1.15f,0);
         }
         void InspectNoisePoint()
         {
@@ -177,7 +177,7 @@ namespace HappyToy.V2
         {
             // The lantern keeps its omnidirectional identity. This is physical LOS,
             // confirmed sight starts immediate pursuit after the authored intro.
-            return player && !player.Hidden && EnemyNavigation.SameFloor(player.transform.position, floorY) &&
+            return player && !player.Hidden && EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY) &&
                 Vector3.Distance(player.transform.position, transform.position) < 12 &&
                 EnemyNavigation.ClearSight(transform.position + Vector3.up,
                     player.transform.position + Vector3.up * player.SightTargetHeight, player);
@@ -278,7 +278,7 @@ namespace HappyToy.V2
                     // to track a player who escaped behind geometry or onto another floor.
                     Transformed = true; State = Phase.Chase; memory = 8; repath = 0; recognitionCueIssued = false;
                     sound.pitch = .6f; sound.PlayOneShot(warning);
-                    if (EnemyNavigation.SameFloor(player.transform.position, floorY) &&
+                    if (EnemyNavigation.SameActorFloor(agent, player.transform.position, floorY) &&
                         Vector3.Distance(player.transform.position, transform.position) <= sound.maxDistance && acoustics.IsAudible(sound))
                         session.WarnThreat("가면의 몸이 완성됐습니다 · 녹색 가면을 피해 다른 복도로 이동하세요.", 3);
                 }
@@ -318,7 +318,7 @@ namespace HappyToy.V2
             else if (State == Phase.Investigate)
             {
                 EnsureNoiseInvestigation(); bool hadArrived=investigation.Arrived;
-                float distanceToPoint=new Vector2(transform.position.x-investigation.Point.x,transform.position.z-investigation.Point.z).magnitude;
+                float distanceToPoint=Vector3.Distance(transform.position,investigation.Point);
                 var step=investigation.Tick(Time.deltaTime,distanceToPoint,true); memory=investigation.DwellRemaining;
                 if(!hadArrived && investigation.Arrived) investigationFacing=Quaternion.Euler(0,transform.eulerAngles.y,0);
                 if(step==NoiseInvestigationClock.Step.Expired)
@@ -339,9 +339,9 @@ namespace HappyToy.V2
                 Visual(); return;
             }
             if(State==Phase.Investigate && investigation.Arrived) { InspectNoisePoint(); return; }
-            // Crossing floors ends direct pursuit, not a valid investigation of
-            // a sound on this floor. Route() still rejects every cross-floor path.
-            if (State == Phase.Chase && !EnemyNavigation.SameFloor(player.transform.position, floorY))
+            // School pursuit follows the last observed position through actual
+            // stairs. Other modes retain their original floor restriction.
+            if (State == Phase.Chase && !EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY))
             { Stop(); repath = 0; Visual(); return; }
             if (State == Phase.Wander && patrol != null && patrol.Length > 0)
             {

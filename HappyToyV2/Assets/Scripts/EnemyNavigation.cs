@@ -3,25 +3,38 @@ using UnityEngine.AI;
 
 namespace HappyToy.V2
 {
-    // Floors are anchored when an actor is released, never to its moving stair position.
+    // The school chapter follows connected stairs. Other modes retain the floor
+    // anchored at release; nearby handles always use the actor's actual elevation.
     public static class EnemyNavigation
     {
         public const float FloorTolerance = 1.6f;
         public static bool SameFloor(Vector3 point, float floorY) => Mathf.Abs(point.y - floorY) <= FloorTolerance;
         public static bool Ready(NavMeshAgent agent) => agent && agent.enabled && agent.isOnNavMesh;
 
+        public static bool AllowsCrossFloor(NavMeshAgent agent)
+        {
+            var session = GameSession.Current;
+            return agent && session && session.ChapterMode && agent.gameObject.scene == session.gameObject.scene;
+        }
+        public static bool WithinFloorPolicy(NavMeshAgent agent, Vector3 point, float homeFloorY) =>
+            AllowsCrossFloor(agent) || SameFloor(point, homeFloorY);
+        public static bool SameActorFloor(NavMeshAgent agent, Vector3 point, float homeFloorY) =>
+            SameFloor(point, AllowsCrossFloor(agent) ? agent.transform.position.y : homeFloorY);
+
         public static bool TryRoute(NavMeshAgent agent, Vector3 point, float floorY, NavMeshPath path,
             float maximumLength = float.PositiveInfinity)
         {
-            if (!Ready(agent) || path == null || !SameFloor(agent.transform.position, floorY) || !SameFloor(point, floorY) ||
-                !NavMesh.SamplePosition(point, out var hit, 1.5f, agent.areaMask) || !SameFloor(hit.position, floorY) ||
+            if (!Ready(agent) || path == null || !CorridorCheckpoint.Vector(point) ||
+                !WithinFloorPolicy(agent, agent.transform.position, floorY) || !WithinFloorPolicy(agent, point, floorY) ||
+                !NavMesh.SamplePosition(point, out var hit, 1.5f, new NavMeshQueryFilter { agentTypeID = agent.agentTypeID, areaMask = agent.areaMask }) ||
+                !SameFloor(hit.position, AllowsCrossFloor(agent) ? point.y : floorY) ||
                 !agent.CalculatePath(hit.position, path) || path.status != NavMeshPathStatus.PathComplete) return false;
             var corners = path.corners;
             float length = 0;
             var previous = agent.transform.position;
             foreach (var corner in corners)
             {
-                if (!SameFloor(corner, floorY)) return false;
+                if (!WithinFloorPolicy(agent, corner, floorY)) return false;
                 length += Vector3.Distance(previous, corner);
                 if (length > maximumLength) return false;
                 previous = corner;
@@ -64,9 +77,12 @@ namespace HappyToy.V2
         public static void Stop(NavMeshAgent agent, bool clearPath = false)
         {
             if (!Ready(agent)) return;
+            // Reset the native path before enforcing the final stopped state.
+            // A just-enabled actor must remain stopped while a paused snapshot
+            // rebinds the other chapter actors to their valid floors.
+            if (clearPath) agent.ResetPath();
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
-            if (clearPath) agent.ResetPath();
         }
     }
 }

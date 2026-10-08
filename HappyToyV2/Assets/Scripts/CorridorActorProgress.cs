@@ -99,7 +99,7 @@ namespace HappyToy.V2
                     active && state!=State.Patrol && !point(lastKnown) ||
                     active && state==State.Search && (!point(searchOrigin)||!point(searchTarget)) ||
                     !CorridorCheckpoint.Number(memory,0,3600) || !CorridorCheckpoint.Number(awareness,0,1) ||
-                    !CorridorCheckpoint.Number(searchDwell,0,4) || !CorridorCheckpoint.Number(searchTransit,0,8.1f) ||
+                    !CorridorCheckpoint.Number(searchDwell,0,4) || !CorridorCheckpoint.Number(searchTransit,0,chapter?40.1f:8.1f) ||
                     !CorridorCheckpoint.Number(searchDoorWait,0,4.01f) || !CorridorCheckpoint.Number(searchYaw,0,360) ||
                     !CorridorCheckpoint.Number(patrolRemaining,0,1.81f) || !CorridorCheckpoint.Number(doorPush,0,1.21f) ||
                     !CorridorCheckpoint.Number(doorEntrySide,-1,1) || !CorridorCheckpoint.Number(doorCloseWait,0,2.1f) ||

@@ -256,7 +256,7 @@ namespace HappyToy.V2
         {
             foreach (var stalker in stalkers)
                 if (stalker.isActiveAndEnabled && stalker.player == this &&
-                    EnemyNavigation.SameFloor(transform.position, stalker.HomeFloorY) &&
+                    EnemyNavigation.SameActorFloor(stalker.GetComponent<UnityEngine.AI.NavMeshAgent>(), transform.position, stalker.HomeFloorY) &&
                     (stalker.state == StalkerBrain.State.Chase || stalker.AttackActive)) return true;
             // The school's other mobile threats share the same single entry draw.
             foreach (var mask in FindObjectsByType<LanternMaskEncounter>(FindObjectsSortMode.None))

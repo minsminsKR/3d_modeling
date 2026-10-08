@@ -3,7 +3,8 @@ using UnityEngine.AI;
 
 namespace HappyToy.V2
 {
-    // V1 mannequin: flashlight-powered, floor-bound pursuit interrupted by visible gaze.
+    // Flashlight-powered pursuit interrupted by visible gaze; the school chapter
+    // can follow connected stairs after the original first-sight release.
     [RequireComponent(typeof(NavMeshAgent))]
     public sealed partial class WeepingAngelEncounter : MonoBehaviour
     {
@@ -157,7 +158,7 @@ namespace HappyToy.V2
             if (!player || !player.eyes || !visual) { Stop(); return; }
             var delta = player.transform.position - transform.position;
             bool sameFloor = EnemyNavigation.SameFloor(player.transform.position, floorY);
-            Observed = sameFloor && VisibleTo(player.eyes);
+            Observed = (Released ? EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY) : sameFloor) && VisibleTo(player.eyes);
             if (!Triggered)
             {
                 Stop();
@@ -173,7 +174,7 @@ namespace HappyToy.V2
             // First sight starts a bounded harmless sequence. It does not need the
             // player to keep looking, stay nearby, or remain on the same floor.
             if (!Released) { AdvanceIntro(); return; }
-            if (!sameFloor || delta.magnitude > 30 || player.Hidden || !player.flashlight || !player.flashlight.enabled || Observed)
+            if (!EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY) || delta.magnitude > 30 || player.Hidden || !player.flashlight || !player.flashlight.enabled || Observed)
             {
                 Stop(); repath = 0; unobservedFor = 0; attack.Reset(); return;
             }
@@ -197,7 +198,7 @@ namespace HappyToy.V2
                 session.WarnThreat("마네킹의 관절 소리가 가까이 납니다 · 돌아보거나 손전등을 끄세요.", 1.6f);
                 return;
             }
-            // Only a released, unseen, lit, same-floor mannequin may operate a
+            // Only a released, unseen, lit mannequin with an allowed route may operate a
             // door. Looking at it or extinguishing the lamp still stops it first.
             if (DoorTraversal.Tick(player.transform.position, floorY) != StalkerDoorTraversal.Result.Clear)
             { repath = 0; UpdateMovementPresentation(); return; }
