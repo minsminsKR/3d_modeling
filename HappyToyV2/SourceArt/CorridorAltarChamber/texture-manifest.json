@@ -1,0 +1,42 @@
+{
+  "authoring": "Original procedural classroom enamel and eraser/chalk deposits; no downloaded pixels",
+  "fontSource": "Assets/Resources/Fonts/Korean.ttf",
+  "fontLicense": "Assets/Resources/Fonts/OFL.txt",
+  "dimensionsMetres": [
+    4.62,
+    1.48
+  ],
+  "resolution": [
+    2048,
+    1024
+  ],
+  "metallicSmoothness": "R=dielectric metallic 0, A=correlated smoothness; normal is OpenGL +Y tangent space",
+  "seed": 810085,
+  "chalkPigmentSrgb": [
+    0.81,
+    0.84,
+    0.73
+  ],
+  "images": [
+    {
+      "file": "Assets/Resources/CorridorAltarChamber/Chalkboard/albedo.png",
+      "bytes": 435331,
+      "sha256": "5fc901afb2a30515081993bfeafbce7e64e6a313a055838f7112c3bbc066afe9"
+    },
+    {
+      "file": "Assets/Resources/CorridorAltarChamber/Chalkboard/ao.png",
+      "bytes": 6982,
+      "sha256": "e7534b36cc4c13461dc4341687261231fbe32b154c2836070f2b7131ba4a0604"
+    },
+    {
+      "file": "Assets/Resources/CorridorAltarChamber/Chalkboard/metallic-smoothness.png",
+      "bytes": 191794,
+      "sha256": "478a5a9ea1ccda6648d8d9d39199af6ff48796c56b33eeccad2f4673c97c7fa7"
+    },
+    {
+      "file": "Assets/Resources/CorridorAltarChamber/Chalkboard/normal.png",
+      "bytes": 291868,
+      "sha256": "665349495356a19cdbe84eac3e7eafdcae410f308b1136499c42d60d8b219160"
+    }
+  ]
+}

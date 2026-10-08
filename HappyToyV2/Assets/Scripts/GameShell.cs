@@ -12,7 +12,7 @@ namespace HappyToy.V2
     [DisallowMultipleComponent]
     public sealed class GameShell : MonoBehaviour
     {
-        public enum Page { Title, Playing, Pause, Journal, Settings, Result, Records }
+        public enum Page { Title, Playing, Pause, Journal, Settings, Result, Records, ChapterTransition }
         public Page Screen { get; private set; } = Page.Title;
         public Font ShellFont => font;
         public float Volume => volume;
@@ -36,6 +36,7 @@ namespace HappyToy.V2
         static readonly SceneRestartGate restartGate = new SceneRestartGate();
         static bool corridorRestart;
         static bool chapterRestart;
+        static bool chapterFromOffering;
         static string checkpointReloadError;
         string pendingSavedToken;
         string pendingChapterToken;
@@ -48,7 +49,7 @@ namespace HappyToy.V2
         bool preferencesDirty, auditMode, ownsFont;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetStartupRequest() { restartGate.Cancel(); checkpointReloadError=null; }
+        static void ResetStartupRequest() { restartGate.Cancel(); checkpointReloadError=null; chapterFromOffering=false; }
 
         void Awake()
         {
@@ -76,7 +77,7 @@ namespace HappyToy.V2
             auditMode = args.Contains("-v3-graphics-output") || args.Any(a => a.StartsWith("-v2-", StringComparison.Ordinal) && a.EndsWith("-output", StringComparison.Ordinal));
             // Existing standalone audits enter through Begin; the flow audit retains the title.
             bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output") && !args.Contains("-v2-chapter-output") &&
-                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v2-school-reveal-output") && !args.Contains("-v3-graphics-output");
+                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v2-altar-output") && !args.Contains("-v2-school-reveal-output") && !args.Contains("-v3-graphics-output");
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
             { if (playAfterLoad) { if (chapterRestart) BeginChapter(); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
@@ -112,8 +113,9 @@ namespace HappyToy.V2
             {
                 if(session.ChapterMode || session.CorridorMode)
                 { requestChapterOnReload=true; requestCorridorOnReload=false; Restart(true); return; }
+                bool storyEntry=chapterFromOffering; chapterFromOffering=false;
                 session.CreateChapter();
-                if(session.ChapterSuspension.HasRun && session.ChapterSuspension.Writable &&
+                if(!storyEntry && session.ChapterSuspension.HasRun && session.ChapterSuspension.Writable &&
                     !session.ChapterSuspension.Consume(session.ChapterSuspension.Snapshot.token))
                 { ReloadError=session.ChapterSuspension.Status; return; }
                 if(session.ChapterMode) Set(Page.Playing);
@@ -122,6 +124,26 @@ namespace HappyToy.V2
             {
                 ReloadError="학교를 준비하지 못했습니다. 다시 시작해 주세요.";
                 Debug.LogException(error,this);
+            }
+        }
+        public void BeginSchoolFromOffering()
+        {
+            if(IsReloading || Screen!=Page.Result || !session.CorridorMode || !session.Escaped || session.Corridor.Layout.Version<3) return;
+            Set(Page.ChapterTransition);
+            StartCoroutine(SchoolAfterOffering());
+        }
+        IEnumerator SchoolAfterOffering()
+        {
+            yield return new WaitForSecondsRealtime(1.2f);
+            if(Screen!=Page.ChapterTransition || IsReloading) yield break;
+            chapterFromOffering=true; requestChapterOnReload=true; requestCorridorOnReload=false;
+            Restart(true);
+            if(!IsReloading)
+            {
+                string error=ReloadError;
+                chapterFromOffering=false; requestChapterOnReload=false; requestCorridorOnReload=false;
+                chapterRestart=false; corridorRestart=false;
+                Set(Page.Result); ReloadError=error;
             }
         }
         public void BeginCorridor()

@@ -147,6 +147,7 @@ namespace HappyToy.V2.CloudTests
             var image = new Texture2D(1280, 720, TextureFormat.RGB24, false); image.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0); image.Apply();
             System.IO.Directory.CreateDirectory("Verification/corridor"); System.IO.File.WriteAllBytes("Verification/corridor/entrance.png", image.EncodeToPNG());
             RenderTexture.active = previousTarget; camera.targetTexture = null; capture.Release(); Object.Destroy(capture); Object.Destroy(image);
+            PlacePlayer(Get<Vector3>(run,"AltarApproach"));
             Call(session, "TryEscape"); Assert.That(Get<bool>(session, "Escaped"), Is.True);
         }
     }

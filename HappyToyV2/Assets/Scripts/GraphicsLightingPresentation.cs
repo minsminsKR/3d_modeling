@@ -144,11 +144,21 @@ namespace HappyToy.V2
             Vector3 center;Vector3 size;
             if(session.CorridorMode)
             {
+                if(session.Corridor.InAltarChamber(session.player.transform.position))
+                {
+                    if(!force&&!lightChanged&&lastCell==CorridorLayout.Count)return;
+                    lastCell=CorridorLayout.Count;
+                    center=session.Corridor.AltarRoomRoot.position+Vector3.up*1.7f;
+                    size=new Vector3(11.8f,3.3f,9.8f);
+                }
+                else
+                {
                 int cell=0;float best=float.PositiveInfinity;
                 for(int i=0;i<CorridorLayout.Count;i++)
                 {float d=(session.Corridor.CellPosition(i)-session.player.transform.position).sqrMagnitude;if(d<best){best=d;cell=i;}}
                 if(!force&&!lightChanged&&cell==lastCell)return;lastCell=cell;
                 center=session.Corridor.CellPosition(cell)+Vector3.up*1.5f;size=new Vector3(5.5f,3,5.5f);
+                }
             }
             else
             {

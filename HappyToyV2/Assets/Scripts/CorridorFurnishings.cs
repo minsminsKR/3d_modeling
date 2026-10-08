@@ -68,7 +68,7 @@ namespace HappyToy.V2
             var candidates = new List<(int direction,float offset,int score)>();
             for (int direction=0;direction<4;direction++)
             {
-                bool passage = (Layout.Connections[cell] & (1<<direction)) != 0;
+                bool passage = (Layout.Connections[cell] & (1<<direction)) != 0 || Layout.IsAltarPortal(cell,direction);
                 foreach(float offset in passage ? new[]{-2.1f,2.1f} : new[]{0f,-1.0f,1.0f,-2.1f,2.1f})
                 {
                     int score=(passage ? 100 : 0) + (Mathf.Abs(offset)>1.5f ? 30 : Mathf.Abs(offset)>.5f ? 10 : 0);
@@ -105,6 +105,13 @@ namespace HappyToy.V2
         bool ReservedCorridorStation(int cell, Bounds furniture)
         {
             var center=CellPosition(cell); center.y=0;
+            if(cell==Layout.AltarCell)
+            {
+                var direction=new Vector3(CorridorLayout.DX[Layout.AltarDirection],0,CorridorLayout.DZ[Layout.AltarDirection]);
+                var clearance=new Bounds(center+direction*1.7f+Vector3.up*1.2f,
+                    Layout.AltarDirection%2==0 ? new Vector3(2.9f,2.4f,3.4f) : new Vector3(3.4f,2.4f,2.9f));
+                if(furniture.Intersects(clearance))return true;
+            }
             if(cell>=1 && (cell-1)%6==0 && furniture.Intersects(new Bounds(center+new Vector3(-1.50f,1.3f,1.6f),new Vector3(2.30f,2.6f,2.40f)))) return true;
             if(Layout.HasCandle(cell) && furniture.Intersects(new Bounds(CandlePosition(cell)+Vector3.up*.19f,new Vector3(.65f,2.5f,.65f)))) return true;
             if(cell==0 && furniture.Intersects(new Bounds(center+new Vector3(-2.72f,1.1f,0),new Vector3(.50f,2.2f,1.9f)))) return true;

@@ -24,6 +24,7 @@ namespace HappyToy.V2.Editor
         [Serializable] class BuildManifest
         {
             public string status, unityVersion, scene, createdUtc;
+            public bool developmentBuild;
             public FingerprintEntry[] inputs;
         }
         public static void Validate()
@@ -84,8 +85,9 @@ namespace HappyToy.V2.Editor
             int outputArg = Array.IndexOf(args, "-v2-build-output");
             if (outputArg >= 0 && outputArg + 1 < args.Length) destination = Path.GetFullPath(args[outputArg + 1]);
             Directory.CreateDirectory(destination);
+            bool development = Array.IndexOf(args, "-v2-release-player") < 0;
             var report = BuildPipeline.BuildPlayer(new[] { ScenePath }, Path.Combine(destination, "HappyToyV2.exe"),
-                BuildTarget.StandaloneWindows64, BuildOptions.Development);
+                BuildTarget.StandaloneWindows64, development ? BuildOptions.Development : BuildOptions.None);
             if (Hash(ScenePath) != before) throw new InvalidOperationException("Authored scene changed during build.");
             if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Quality build failed: " + report.summary.result);
             // Ship the attribution alongside every playable build, including the
@@ -99,7 +101,7 @@ namespace HappyToy.V2.Editor
             File.WriteAllText(Path.Combine(destination, "quality-build.json"), JsonUtility.ToJson(new BuildManifest
             {
                 status = "PASS", unityVersion = Application.unityVersion, scene = ScenePath,
-                createdUtc = DateTime.UtcNow.ToString("o"), inputs = inputs
+                createdUtc = DateTime.UtcNow.ToString("o"), developmentBuild = development, inputs = inputs
             }, true));
             Debug.Log("HAPPYTOY_QUALITY_BUILD_PASS");
         }

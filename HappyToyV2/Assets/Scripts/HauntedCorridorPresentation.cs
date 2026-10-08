@@ -138,7 +138,7 @@ namespace HappyToy.V2
                     if ((direction==2 || direction==3) && neighbor>=0) continue;
                     Vector3 normal=new Vector3(CorridorLayout.DX[direction],0,CorridorLayout.DZ[direction]);
                     Vector3 edge=center+normal*3;
-                    bool passage=(run.Layout.Connections[cell]&(1<<direction))!=0;
+                    bool passage=(run.Layout.Connections[cell]&(1<<direction))!=0 || run.Layout.IsAltarPortal(cell,direction);
                     if (passage && !run.Layout.FramedPassage(cell,direction)) continue;
                     DressEdge(cell,edge,normal,passage,unchecked(run.Seed*17+cell*113+direction*43));
                     if(neighbor>=0) DressEdge(neighbor,edge,-normal,passage,unchecked(run.Seed*19+neighbor*113+direction*43));
@@ -452,7 +452,7 @@ namespace HappyToy.V2
 
         void DressEntrance()
         {
-            var exit=GetComponentsInChildren<Interactable>(true).Single(item=>item.name=="Sealed entrance" && item.kind==Interactable.Kind.Exit);
+            var exit=GetComponentsInChildren<Interactable>(true).Single(item=>item.name=="Sealed entrance");
             Vector3 center=exit.transform.position;
             var wood=CellDraft(0,timber);var sheet=CellDraft(0,paper);var binding=CellDraft(0,cloth,false);
             Quaternion basis=Quaternion.Euler(0,90,0);
@@ -474,6 +474,7 @@ namespace HappyToy.V2
         {
             if(!returnClue || !run || lastRecovered==run.Recovered) return;
             lastRecovered=run.Recovered;
+            if(run.Layout.Version>=3) { returnClue.text="돌아갈 수 없는 입구\n기억은 붉은 교실로"; return; }
             returnClue.text=lastRecovered<CorridorRun.Required?"기억을 돌려놓는 문\n봉인 "+lastRecovered+" / 5":"다섯 봉인이 풀렸다\n돌아갈 수 있다";
         }
         void LateUpdate()

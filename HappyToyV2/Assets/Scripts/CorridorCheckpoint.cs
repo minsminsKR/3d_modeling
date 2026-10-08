@@ -22,11 +22,11 @@ namespace HappyToy.V2
         [Serializable] public sealed class Door { public string id; public bool open; public Vector3 leaf; }
         [Serializable] public sealed class Drawer { public string id; public bool open; public float travel; }
         public static bool Number(float value, float min, float max) => StealthRules.Finite(value) && value >= min && value <= max;
-        public static bool Point(Vector3 p) => Number(p.x,197,251) && Number(p.z,197,251) && Number(p.y,-.15f,.85f);
+        public static bool Point(Vector3 p) => Number(p.x,193,268) && Number(p.z,193,268) && Number(p.y,-.15f,.85f);
         public static bool Vector(Vector3 p) => Number(p.x,-10000,10000) && Number(p.y,-10000,10000) && Number(p.z,-10000,10000);
         public void Validate()
         {
-            if (version != 1 || simulationVersion < 1 || simulationVersion > 2 || !Guid.TryParseExact(token,"N",out _) || !Number(seconds,0,1000000000) ||
+            if (version != 1 || simulationVersion < 1 || simulationVersion > 3 || !Guid.TryParseExact(token,"N",out _) || !Number(seconds,0,1000000000) ||
                 recovered == null || recovered.Length != 5 || supplies == null || supplies.Length != 8 ||
                 doors == null || doors.Length > 162 || threats == null || threats.Length != 4 || player == null)
                 throw new ArgumentException("Invalid checkpoint schema");

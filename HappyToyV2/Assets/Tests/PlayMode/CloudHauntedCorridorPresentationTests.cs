@@ -92,7 +92,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(RenderSettings.fogDensity,Is.EqualTo(corridorDensity),"Legacy floor teardown overwrote live corridor atmosphere");
             Assert.That(Get<int>(art,"CladWallFaces"),Is.GreaterThan(200));
             var layout=Get<object>(run,"Layout"); var connections=Get<int[]>(layout,"Connections");
-            int framed=Enumerable.Range(0,81).Sum(cell=>Enumerable.Range(0,2).Count(d=>(connections[cell]&(1<<d))!=0 && (bool)Call(layout,"FramedPassage",cell,d)));
+            int framed=Enumerable.Range(0,81).Sum(cell=>Enumerable.Range(0,2).Count(d=>((connections[cell]&(1<<d))!=0 || (bool)Call(layout,"IsAltarPortal",cell,d)) && (bool)Call(layout,"FramedPassage",cell,d)));
             Assert.That(Get<int>(art,"LayeredPassages"),Is.EqualTo(framed),"Frames must follow room thresholds, leaving hall-to-hall edges continuous");
             Assert.That(Get<int>(art,"SealShrines"),Is.EqualTo(5));
             var root=Get<Transform>(art,"AdditionRoot");

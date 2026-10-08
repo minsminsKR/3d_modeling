@@ -99,6 +99,8 @@ namespace HappyToy.V2
             EnsurePanelSettings();
             width = Mathf.Max(1, width);
             height = Mathf.Max(1, height);
+            settings.clearColor = true;
+            settings.colorClearValue = Color.clear;
             if (CaptureTarget && CaptureTarget.width == width && CaptureTarget.height == height) return;
             settings.targetTexture = null;
             if (CaptureTarget) { CaptureTarget.Release(); Destroy(CaptureTarget); }
@@ -233,6 +235,14 @@ namespace HappyToy.V2
                 }
                 return;
             }
+            if(shown==GameShell.Page.ChapterTransition)
+            {
+                root.style.backgroundColor=new Color(.008f,.006f,.008f,1);
+                Text("기억을 제단에 돌려놓았다",400,323,800,60,26).style.unityTextAlign=TextAnchor.MiddleCenter;
+                Text("폐교의 기억",400,411,800,76,shell.LargeText?46:40).style.unityTextAlign=TextAnchor.MiddleCenter;
+                Small("문 너머에서, 수업을 마치지 못한 아이들이 기다린다.",400,519,800,60).style.unityTextAlign=TextAnchor.MiddleCenter;
+                return;
+            }
             BuildFrame();
             switch (shown)
             {
@@ -272,7 +282,7 @@ namespace HappyToy.V2
             Panel(105, 80, 3, 705, Gold);
             Panel(150, 115, 1300, 1, Edge);
             Small(session.ChapterMode || shown==GameShell.Page.Records ? "폐교의 기억  /  마지막 출석" : session.CorridorMode || shown==GameShell.Page.Title ? "잊힌 회랑  /  소리를 따라 남은 기억을 찾다" : "폐교 조사 기록  /  마지막 출석", 150, 78, 1050);
-            var paused = Small(shown == GameShell.Page.Title ? "돌아갈 문을 기억하세요" : "시간이 멈춰 있습니다", 1060, 78, 390);
+            var paused = Small(shown == GameShell.Page.Title ? "기억을 돌려놓을 제단을 찾으세요" : "시간이 멈춰 있습니다", 1060, 78, 390);
             paused.style.unityTextAlign = TextAnchor.UpperRight;
             string title = shown == GameShell.Page.Title ? "잊힌 회랑" : shown == GameShell.Page.Pause ? "숨을 고르다" :
                 shown == GameShell.Page.Journal ? "조사 기록" : shown == GameShell.Page.Settings ? "환경 설정" :
@@ -282,7 +292,7 @@ namespace HappyToy.V2
         }
         void BuildTitle()
         {
-            Text("매번 달라지는 회랑.\n다섯 기억을 모아 입구로 돌아오세요.", 153, 262, 680, 110, shell.LargeText ? 32 : 28);
+            Text("매번 달라지는 회랑.\n다섯 기억을 붉은 교실의 제단에 바치세요.", 153, 262, 680, 110, shell.LargeText ? 32 : 28);
             bool protectedRecords=!session.ChapterRecords.Writable && !string.IsNullOrEmpty(session.ChapterRecords.Status);
             bool protectedSchoolSlot=!session.ChapterSuspension.Writable && !string.IsNullOrEmpty(session.ChapterSuspension.Status);
             bool protectedCorridorSlot=!session.Suspension.Writable && !string.IsNullOrEmpty(session.Suspension.Status);
@@ -331,7 +341,7 @@ namespace HappyToy.V2
             var card = Panel(x, y, 540, 535, Surface);
             Outline(card, Edge);
             Panel(x + 26, y + 27, 3, 70, Gold);
-            Small(session.CorridorMode?"CORRIDOR  /  돌아갈 문을 기억하세요":"SCHOOL ARCHIVE  /  출석 확인", x + 46, y + 28, 450);
+            Small(session.CorridorMode?(session.Corridor.Layout.Version>=3 ? "CORRIDOR  /  붉은 교실에 기억을 돌려놓으세요" : "CORRIDOR  /  돌아갈 문을 기억하세요"):"SCHOOL ARCHIVE  /  출석 확인", x + 46, y + 28, 450);
             Text(progress ? session.CorridorMode || session.ChapterMode ? $"회수한 기억  {session.RecordsRecovered} / 5" : $"주요 단계  {session.StoryStep} / 4" : "학교 탐색 기록", x + 46, y + 61, 460, 48, 30);
             if(!progress)
             {
@@ -444,7 +454,7 @@ namespace HappyToy.V2
             if(session.ChapterMode) { BuildSchoolResult(); return; }
             Small(session.CorridorMode?(session.Escaped?"회랑 탐색 종료  /  탈출 성공":"회랑 탐색 중단  /  기억 미완료"):session.Escaped ? "조사 종료  /  하교 확인" : "조사 중단  /  기록 미완료", 153, 247, 1170);
             string message = session.Escaped ? "지워졌던 이름을 다시 적었다.\n복도 너머에서 마지막 문이 닫힌다." : "이곳에는 아직 돌아오지 못한 기록이 있습니다.\n다시 들어가 마지막 이름을 찾아주세요.";
-            if (session.CorridorMode) message = session.Escaped ? "다섯 기억이 모이자 봉인이 풀렸다.\n처음 들어온 문 너머로 돌아왔다." : "돌아갈 길을 잃었다.\n들었던 발소리를 기억하고 다음 회랑에 들어가세요.";
+            if (session.CorridorMode) message = session.Escaped ? (session.Corridor.Layout.Version>=3 ? "기억을 제단에 돌려놓았다.\n문 너머로 폐교의 기억이 이어진다." : "다섯 기억이 모이자 봉인이 풀렸다.\n처음 들어온 문 너머로 돌아왔다.") : "돌아갈 길을 잃었다.\n들었던 발소리를 기억하고 다음 회랑에 들어가세요.";
             Text(message, 153, 294, 1210, 103, shell.LargeText ? 30 : 27);
             Panel(895, 437, 540, 391, Surface);
             Small(session.CorridorMode?"이번 회랑 탐색":session.Escaped ? "마지막 출석 확인" : "다음 탐색을 위한 기록", 920, 460, 490);
@@ -523,8 +533,11 @@ namespace HappyToy.V2
             int segmentCount = Mathf.Clamp(session.TotalRecords, 1, objectiveSegments.Length);
             float segmentWidth = 638f / segmentCount;
             for (int i = 0; i < segmentCount; i++) objectiveSegments[i] = Panel(66 + segmentWidth * i, 163, segmentWidth - 9, 3, Edge);
-            crosshair = Panel(797, 447, 6, 6, Paper);
+            crosshair = Panel(797.5f, 447.5f, 5, 5, Color.white);
             crosshair.name = "crosshair";
+            // Preserve the white dot against bright flashlight-lit surfaces.
+            Outline(crosshair, new Color(0, 0, 0, .85f), shell.HighContrast ? 1 : .75f);
+            UpdateCrosshair(false);
             caption = Text("", 440, 688, 720, 54, shell.LargeText ? 22 : 19);
             caption.name = "sound-caption";
             caption.style.unityTextAlign = TextAnchor.UpperCenter;
@@ -589,6 +602,22 @@ namespace HappyToy.V2
         {
             if (element != null) element.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
         }
+        void UpdateCrosshair(bool focused)
+        {
+            float diameter = focused ? 7 : 5;
+            float radius = diameter * .5f;
+            crosshair.style.width = crosshair.style.height = diameter;
+            crosshair.style.left = 800 - radius;
+            crosshair.style.top = 450 - radius;
+            // UI Toolkit can snap the layout beyond the authored diameter.
+            // Unresolved (NaN) dimensions leave the nominal radius intact.
+            var resolved = crosshair.resolvedStyle;
+            if (resolved.width > diameter) diameter = resolved.width;
+            if (resolved.height > diameter) diameter = resolved.height;
+            radius = diameter * .5f;
+            crosshair.style.borderTopLeftRadius = crosshair.style.borderTopRightRadius = radius;
+            crosshair.style.borderBottomLeftRadius = crosshair.style.borderBottomRightRadius = radius;
+        }
         void UpdateHud()
         {
             if (!session.player || objective == null) return;
@@ -612,10 +641,7 @@ namespace HappyToy.V2
             focus.text = player.Hidden ? interact + "숨은 곳에서 나오기" : player.Focus ? interact + player.Focus.DisplayLabel : string.Empty;
             Visible(focus, hasFocus);
             Visible(focusPanel, hasFocus);
-            crosshair.style.backgroundColor = player.Focus ? Gold : Paper;
-            crosshair.style.width = crosshair.style.height = player.Focus ? 9 : 6;
-            crosshair.style.left = player.Focus ? 795.5f : 797;
-            crosshair.style.top = player.Focus ? 445.5f : 447;
+            UpdateCrosshair(player.Focus);
             status.text = player.Hidden ? (player.HidingThreatCueActive ? "문 앞에서 공격 준비 · [E] 지금 나오세요" : "캐비닛 안 · 발소리를 듣고 움직이세요") : player.SlowRemaining > 0 ? $"이동 속도 감소  ·  {Mathf.CeilToInt(player.SlowRemaining)}초" : player.ActualSpeed <= .12f ? (player.Crouching ? "낮은 자세 · 멈춰서 숨을 고릅니다" : "멈춰서 숨을 고릅니다") : player.Crouching ? "낮은 자세 · 천천히 조용하게 이동합니다" : player.Running ? "달리는 중 · 발소리가 멀리 퍼집니다" : "걷는 중 · 물에서는 발소리가 더 멀리 퍼집니다";
             status.style.color = player.HidingThreatCueActive ? Rust : Gold;
             var inventory = player.Firecrackers;

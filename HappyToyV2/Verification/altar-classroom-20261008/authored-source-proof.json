@@ -1,0 +1,126 @@
+{
+  "status": "PASS",
+  "blender": "4.0.2",
+  "assets": [
+    {
+      "key": "offering-table",
+      "editableParts": 104,
+      "triangles": 19040,
+      "sourceVertices": 9766,
+      "independentFbxDimensionsMetres": [
+        2.1600000858306885,
+        1.0770000307322256,
+        1.1039440035820007
+      ],
+      "relativeImages": [
+        "Assets/Resources/GraphicsPbr/brass-tarnished/albedo.png",
+        "Assets/Resources/GraphicsPbr/brass-tarnished/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/brass-tarnished/normal.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/albedo.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/normal.png",
+        "Assets/Resources/GraphicsPbr/metal-rust/albedo.png",
+        "Assets/Resources/GraphicsPbr/metal-rust/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/metal-rust/normal.png",
+        "Assets/Resources/GraphicsPbr/paper-aged/albedo.png",
+        "Assets/Resources/GraphicsPbr/paper-aged/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/paper-aged/normal.png",
+        "Assets/Resources/GraphicsPbr/wood-aged/albedo.png",
+        "Assets/Resources/GraphicsPbr/wood-aged/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/wood-aged/normal.png"
+      ],
+      "sourceBytes": 2291959,
+      "fbxBytes": 1270652
+    },
+    {
+      "key": "lesson-blackboard",
+      "editableParts": 22,
+      "triangles": 4000,
+      "sourceVertices": 2044,
+      "independentFbxDimensionsMetres": [
+        4.838000297546387,
+        1.8264999985694885,
+        0.2880001366138458
+      ],
+      "relativeImages": [
+        "Assets/Resources/CorridorAltarChamber/Chalkboard/albedo.png",
+        "Assets/Resources/CorridorAltarChamber/Chalkboard/metallic-smoothness.png",
+        "Assets/Resources/CorridorAltarChamber/Chalkboard/normal.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/albedo.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/normal.png",
+        "Assets/Resources/GraphicsPbr/metal-rust/albedo.png",
+        "Assets/Resources/GraphicsPbr/metal-rust/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/metal-rust/normal.png",
+        "Assets/Resources/GraphicsPbr/painted-metal/albedo.png",
+        "Assets/Resources/GraphicsPbr/painted-metal/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/painted-metal/normal.png",
+        "Assets/Resources/GraphicsPbr/paper-aged/albedo.png",
+        "Assets/Resources/GraphicsPbr/paper-aged/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/paper-aged/normal.png",
+        "Assets/Resources/GraphicsPbr/wood-aged/albedo.png",
+        "Assets/Resources/GraphicsPbr/wood-aged/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/wood-aged/normal.png"
+      ],
+      "sourceBytes": 1007950,
+      "fbxBytes": 284252,
+      "chalkboardFace": {
+        "solidEnamelMetres": 0.009999999776482582,
+        "sourceFrontZ": -0.013000000268220901,
+        "woodBackingFrontZ": 0.010500000789761543,
+        "uniqueWholeBoardUv": true,
+        "sourcePlanXCompensatedForUnityHandedness": true
+      }
+    },
+    {
+      "key": "hanging-seals",
+      "editableParts": 201,
+      "triangles": 31530,
+      "sourceVertices": 16329,
+      "independentFbxDimensionsMetres": [
+        5.100784778594971,
+        1.2346593029797077,
+        0.06672446057200432
+      ],
+      "relativeImages": [
+        "Assets/Resources/GraphicsPbr/cloth-charred/albedo.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/normal.png",
+        "Assets/Resources/GraphicsPbr/paper-aged/albedo.png",
+        "Assets/Resources/GraphicsPbr/paper-aged/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/paper-aged/normal.png"
+      ],
+      "sourceBytes": 3339088,
+      "fbxBytes": 2156828
+    },
+    {
+      "key": "fluorescent-fixture",
+      "editableParts": 19,
+      "triangles": 2864,
+      "sourceVertices": 1520,
+      "independentFbxDimensionsMetres": [
+        1.6656136512756348,
+        0.2341492772102356,
+        0.27399998903274536
+      ],
+      "relativeImages": [
+        "Assets/Resources/GraphicsPbr/cloth-charred/albedo.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/cloth-charred/normal.png",
+        "Assets/Resources/GraphicsPbr/metal-rust/albedo.png",
+        "Assets/Resources/GraphicsPbr/metal-rust/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/metal-rust/normal.png",
+        "Assets/Resources/GraphicsPbr/painted-metal/albedo.png",
+        "Assets/Resources/GraphicsPbr/painted-metal/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/painted-metal/normal.png",
+        "Assets/Resources/GraphicsPbr/wax-tallow/albedo.png",
+        "Assets/Resources/GraphicsPbr/wax-tallow/metallic-smoothness.png",
+        "Assets/Resources/GraphicsPbr/wax-tallow/normal.png"
+      ],
+      "sourceBytes": 834164,
+      "fbxBytes": 220268
+    }
+  ],
+  "chalkboardMaps": 4,
+  "scope": "Read-only original source hashes, editable named parts, relative resource links, UVs, material contract and independent FBX metre-scale roundtrip. Does not certify Unity import, native rendering, gameplay, collisions or navigation."
+}

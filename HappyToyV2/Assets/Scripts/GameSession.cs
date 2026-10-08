@@ -72,7 +72,7 @@ namespace HappyToy.V2
             Notify("중단한 회랑 상태를 복원했습니다. 준비되면 탐색을 이어가세요.");
         }
         public void CreateCorridor(int seed)
-        { CreateCorridorVersion(seed, 2); }
+        { CreateCorridorVersion(seed, 3); }
         public void CreateCorridorForCheckpoint(CorridorCheckpoint data)
         { data.Validate(); CreateCorridorVersion(data.seed, data.simulationVersion); }
         void CreateCorridorVersion(int seed, int layoutVersion)
@@ -131,7 +131,7 @@ namespace HappyToy.V2
             get
             {
                 if (ChapterMode) return Chapter.Recovered>=5 ? "exit" : "chapter-memory-"+Chapter.Recovered;
-                if (CorridorMode) return Corridor.Recovered >= CorridorRun.Required ? "exit" : "memories";
+                if (CorridorMode) return Corridor.Recovered >= CorridorRun.Required ? (Corridor.Layout.Version>=3 ? "altar" : "exit") : "memories";
                 if(StoryStep>=4)return "exit";
                 if(StoryStep==3&&requireAnnexRecords)
                     foreach(var id in annexIds)if(!inspected.Contains(id))return id;
@@ -227,7 +227,10 @@ namespace HappyToy.V2
             if (CorridorMode)
             {
                 if (Corridor.Recovered < CorridorRun.Required) { Notify(Corridor.Objective); return; }
-                Finish(true); return;
+                if (Corridor.Layout.Version>=3 && !Corridor.AtOffering(player)) { Notify(Corridor.Objective); return; }
+                Finish(true);
+                if(Corridor.Layout.Version>=3) Shell.BeginSchoolFromOffering();
+                return;
             }
             if (names.Count < requiredNames || StoryStep < sequence.Length || !AnnexRecordsComplete) { Notify(Objective); return; }
             Finish(true);

@@ -1,0 +1,215 @@
+{
+  "status": "PASS",
+  "date": "2026-10-08",
+  "unity": "6000.6.0f1",
+  "scope": "Selected actual Unity fixtures plus a controlled native Windows art, navigation, focus and reticle review. This is not a full-suite, survival-balance, audio or target-GPU performance certification.",
+  "testRuns": [
+    {
+      "report": "editmode01.xml",
+      "sha256": "96a08838b70e9e2ba166b051055387b78bdb40fa311ccbea8e1f807cbae755da",
+      "passed": 12,
+      "startUtc": "2026-10-08 01:42:38Z",
+      "endUtc": "2026-10-08 01:42:39Z",
+      "tests": [
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.LockedConsumedArchivePreservesLiveSnapshotAndRetriesAfterUnlock",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.LockReadOnlyAndInvalidDataNeverCommitAndRetryWorks",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.RoundTripIsImmutableAndConsumeCannotReviveOldBackups",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.StaleInstancesCannotOverwriteOrConsumeAnotherRun",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorCheckpointStoreTests.UnknownCorruptAndOversizedProfilesArePreserved",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorSectorPlanTests.AllFiveVisualRegionsAreDeterministicConnectedAndNearestByRealTopology(73)",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorSectorPlanTests.AllFiveVisualRegionsAreDeterministicConnectedAndNearestByRealTopology(211)",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorSectorPlanTests.AllFiveVisualRegionsAreDeterministicConnectedAndNearestByRealTopology(42661)",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorSectorPlanTests.NumberedBranchMarksExistOnlyAtRealThreeOrFourWayJunctions(73)",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CorridorSectorPlanTests.NumberedBranchMarksExistOnlyAtRealThreeOrFourWayJunctions(211)",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.Tests.EditMode.CorridorLayoutTests.FiveHundredSeedsHaveConnectedLoopsSeparatedGoalsAndSafeThreatSpawns",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.Tests.EditMode.CorridorLayoutTests.NewRunsFavorLongHallsAndBoundedJunctionsWhileLegacyTopologyRemainsSelectable",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "report": "playmode04.xml",
+      "sha256": "22d2923aa154a97248fa118ecdd63145101938c8b4c91ac66c9d98c0afddb1b7",
+      "passed": 5,
+      "startUtc": "2026-10-08 02:41:06Z",
+      "endUtc": "2026-10-08 02:41:44Z",
+      "tests": [
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorAltarFailedChapterReloadKeepsVisibleErrorAndSchoolSaveAndClearsTransitionOverrides",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorAltarLegacyVersionOneJsonRestoresAndKeepsItsSealedEntranceResult",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorAltarLegacyVersionTwoRoundTripKeepsOriginalGeometryAndEntranceFlow",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorAltarRequiresAllFiveMemoriesAndRealOfferingInputContinuesIntoSchoolWithoutConsumingItsSave",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorAltarRoomIsDistantReachableAndRestoresTheSamePhysicalSeededChamber",
+          "result": "Passed"
+        }
+      ]
+    },
+    {
+      "report": "regression02.xml",
+      "sha256": "15fb317c5541763a8542cf4f91c3bd4c09be89a5f23a4a4320d9c10f7c0af393",
+      "passed": 5,
+      "startUtc": "2026-10-08 01:51:36Z",
+      "endUtc": "2026-10-08 01:52:17Z",
+      "tests": [
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorHasReachableGoalsOriginalMonstersAndBoundedCollectibleSupplies",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorResultPersistsExactlyOnceAndReappearsAfterRealSceneReload",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.FurnishedCorridorThreeSeedNavigationKeepsEveryRoomPickupCabinetAndDoorwayReachable",
+          "result": "Passed"
+        },
+        {
+          "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
+          "result": "Passed"
+        }
+      ]
+    }
+  ],
+  "totalSelectedPassingTests": 22,
+  "native": {
+    "status": "PASS",
+    "scope": "Controlled native Windows room/reticle/focus review; not a survival or target-GPU performance test.",
+    "seed": 73,
+    "layoutVersion": 3,
+    "altarCell": 72,
+    "memories": 4,
+    "renderers": 388,
+    "connected": true,
+    "standingClear": true,
+    "focus": true,
+    "whiteCircularReticle": true,
+    "developmentBuild": false,
+    "reticleDiameter": 7.5,
+    "reticleRadius": 3.75,
+    "reticleNominalDiameter": 7.0,
+    "errors": []
+  },
+  "reviewedNativeViews": [
+    "altar-threshold.png",
+    "altar-room.png",
+    "altar-room-torch-off.png",
+    "altar-school-props.png",
+    "altar-chalkboard-close.png",
+    "altar-offering-focus.png"
+  ],
+  "representativeImages": [
+    {
+      "file": "altar-room.png",
+      "sha256": "cd09aa3d52100e8d7f2f2199c5b372d1c997a85fcf3a6e6a4e789a2871150431"
+    },
+    {
+      "file": "altar-chalkboard-close.png",
+      "sha256": "f2d27fd43f4fcf6f76a2468afe9d3b12ddc98b039478b8ba418da95b5359aa5b"
+    },
+    {
+      "file": "altar-offering-focus.png",
+      "sha256": "a1460dbad733a2d9c0721b32aca87354061cc9cb7ce418eb737157533fbc02f3"
+    }
+  ],
+  "build": {
+    "status": "GRAPHICS_BUILD_INPUTS_PASS",
+    "inputCount": 2460,
+    "createdUtc": "2026-10-08T02:43:29.6687372Z",
+    "developmentBuild": false,
+    "artifacts": [
+      {
+        "path": "HappyToyV2.exe",
+        "bytes": 667136,
+        "sha256": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d"
+      },
+      {
+        "path": "UnityPlayer.dll",
+        "bytes": 38669232,
+        "sha256": "8698332fa0d299291b58e71a505db6f20a8f291a2b7349421f93a4f9838ed895"
+      },
+      {
+        "path": "HappyToyV2_Data/globalgamemanagers",
+        "bytes": 206740,
+        "sha256": "5f4fd2fe0eeaee0fa024d7ebb74a8a81206ef403bcb689c42b4a592b30d4f5b7"
+      },
+      {
+        "path": "Audio-Credits.txt",
+        "bytes": 4119,
+        "sha256": "f599d282fa6ead7f2883a92c6e7abdda8dae257e56934d9bbfe30101622cfa81"
+      }
+    ]
+  },
+  "networkObservation": {
+    "readUtc": "2026-10-08T02:44:15.8069576Z",
+    "processRunning": true,
+    "tcpBindings": 0,
+    "udpBindings": 0,
+    "firewallChanged": false
+  },
+  "repairedFindings": [
+    "An exterior portal had been obstructed by furniture. Its outgoing strip is now reserved and real complete-path/standing checks pass.",
+    "A test fixture counted a not-yet-created UI capture globally. It now checks old-target disposal and actual replacement-target creation.",
+    "Resolved UI pixel rounding expanded the nominal 7px focus circle to 7.5px. The radius now tracks resolved diameter; native radius is 3.75px.",
+    "The lesson board needed a solid exposed enamel face and a scoped cold wash/stronger physical chalk deposits. Correct Korean UVs, actual GPU texture and close/room views were checked.",
+    "The added fixture glass requested an absent emissive template. That override was removed; the scoped actual light remains and all five final altar tests pass.",
+    "Opening guidance now points to the classroom. Failed chapter reloads preserve a visible error, clear mode overrides and preserve the independent school save."
+  ],
+  "compatibility": "Fresh runs use simulationVersion3. Legacy simulationVersion1/2 saves retain their graph and entrance completion. Direct school chapter selection remains available.",
+  "sourceHandoff": "Original .blend/FBX/PBR sources, relative generators, import rules, licences and pinned instructions are tracked. Run Tools/quality/check_source_completeness.py after staging.",
+  "sourceCompleteness": {
+    "status": "PASS",
+    "requiredSourceCount": 2640,
+    "missingFromGit": [],
+    "unhydratedLfsFiles": []
+  }
+}

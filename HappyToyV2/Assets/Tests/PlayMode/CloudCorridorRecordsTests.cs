@@ -34,6 +34,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreateCorridor", 73); Begin(); yield return Delay(.3f);
             // Any-order completion fixture exercises finish/storage, not survival.
             foreach (var memory in Components("Interactable").Where(x => Get<object>(x, "kind").ToString() == "CorridorMemory")) Call(memory, "Use", player);
+            PlacePlayer(Get<Vector3>(Get<Component>(session,"Corridor"),"AltarApproach"));
             Call(session, "TryEscape"); Assert.That(Get<bool>(session, "RecordSaved"), Is.True);
             Call(session, "Finish", true); Assert.That((bool)Call(session, "RetryRecordSave"), Is.False);
             var stored = Get<object>(Get<object>(session, "Records"), "Snapshot");

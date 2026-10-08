@@ -15,7 +15,8 @@ namespace HappyToy.V2
         public bool Ready { get; private set; }
         public int Recovered => recovered.Count;
         public int Seed => Layout == null ? 0 : Layout.Seed;
-        public string Objective => Recovered < Required ? "회랑에 흩어진 기억 다섯 개를 찾으세요. 발소리를 듣고 길을 고르세요." : "기억을 모두 찾았습니다. 입구의 봉인된 문으로 돌아가세요.";
+        public string Objective => Recovered < Required ? "회랑에 흩어진 기억 다섯 개를 찾으세요. 발소리를 듣고 길을 고르세요." :
+            Layout.Version >= 3 ? "기억을 모두 찾았습니다. 회랑 끝의 붉은 교실 제단에 기억을 바치세요." : "기억을 모두 찾았습니다. 입구의 봉인된 문으로 돌아가세요.";
         readonly HashSet<string> recovered = new HashSet<string>();
         readonly List<Material> materials = new List<Material>();
         readonly GraphicsSurfaceLibrary.Pool graphicsSurfaces = new GraphicsSurfaceLibrary.Pool();
@@ -27,7 +28,7 @@ namespace HappyToy.V2
         static readonly Vector3 Origin = new Vector3(200, 0, 200);
         public Vector3 CellPosition(int cell) => Origin + new Vector3(cell % CorridorLayout.Width * 6, .03f, cell / CorridorLayout.Width * 6);
 
-        public void Build(int seed, int layoutVersion = 2)
+        public void Build(int seed, int layoutVersion = 3)
         {
             if (Ready) throw new InvalidOperationException("Run already built");
             session = GetComponent<GameSession>(); Layout = new CorridorLayout(seed, layoutVersion);
@@ -60,7 +61,7 @@ namespace HappyToy.V2
                     var normal = new Vector3(CorridorLayout.DX[d], 0, CorridorLayout.DZ[d]);
                     var across = new Vector3(normal.z, 0, -normal.x);
                     var edge = p + normal * 3;
-                    bool passage = (Layout.Connections[cell] & (1 << d)) != 0;
+                    bool passage = (Layout.Connections[cell] & (1 << d)) != 0 || Layout.IsAltarPortal(cell,d);
                     if (!passage) Box("Plaster wall", edge + Vector3.up * 1.5f, d % 2 == 0 ? new Vector3(6, 3, .22f) : new Vector3(.22f, 3, 6), plaster);
                     else if (Layout.FramedPassage(cell, d))
                     {
@@ -137,7 +138,11 @@ namespace HappyToy.V2
                     new Vector3(1, 0, -1).normalized) * cabinet.transform.rotation;
             }
             var exit = Box("Sealed entrance", CellPosition(0) + new Vector3(-2.72f, 1.1f, 0), new Vector3(.12f, 2.2f, 1.6f), timber);
-            var exitInteraction = exit.AddComponent<Interactable>(); exitInteraction.kind = Interactable.Kind.Exit; exitInteraction.label = "회랑 출구";
+            var exitInteraction = exit.AddComponent<Interactable>();
+            exitInteraction.kind = Layout.Version >= 3 ? Interactable.Kind.Inspect : Interactable.Kind.Exit;
+            exitInteraction.stableId="corridor-entrance"; exitInteraction.label=Layout.Version>=3 ? "닫힌 입구 확인" : "회랑 출구";
+            exitInteraction.inspectionText="문은 안쪽에서 봉인되었다. 다섯 기억을 회랑 끝 붉은 교실의 제단에 돌려놓아야 한다.";
+            if (Layout.Version >= 3) BuildAltarRoom();
             BuildFurnishings();
             Lighting = gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareCorridor(this, world);
             // Rebuild after all physical furniture is present. Walkable routes include actual obstacles.
@@ -181,7 +186,9 @@ namespace HappyToy.V2
             ApplyCorridorPresentation();
             CombineArchitecture();
             Physics.SyncTransforms(); Ready = true;
-            session.Notify("다섯 기억을 회수하고 입구로 돌아오세요. 폭죽은 회랑에서 보충할 수 있습니다.");
+            session.Notify(Layout.Version >= 3 ?
+                "다섯 기억을 회수하고 붉은 교실의 제단에 돌려놓으세요. 폭죽은 회랑에서 보충할 수 있습니다." :
+                "다섯 기억을 회수하고 입구로 돌아오세요. 폭죽은 회랑에서 보충할 수 있습니다.");
         }
         // Tile the solid parts around a 2.8m central hall and its connected arms.
         // Collision, visibility and the navigation bake all use these same walls.

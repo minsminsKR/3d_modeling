@@ -212,7 +212,9 @@ namespace HappyToy.V2
                 if(kind==Kind.Drawer) { var drawer=GetComponent<CorridorDrawer>(); return drawer?drawer.DisplayLabel:label; }
                 if(kind==Kind.Candle) { var candle=GetComponent<WaymarkCandle>(); return candle?candle.DisplayLabel:label; }
                 if(kind==Kind.HidingPlace)return "캐비닛에 숨기";
-                if(kind==Kind.Exit && GameSession.Current && GameSession.Current.CorridorMode)return "봉인된 회랑 문 확인";
+                if(kind==Kind.Exit && GameSession.Current && GameSession.Current.CorridorMode)
+                    return stableId=="corridor-offering" ? (GameSession.Current.Corridor.Recovered>=5 ? "다섯 기억을 제단에 바치기" :
+                        "제단 확인 · 기억 "+GameSession.Current.Corridor.Recovered+"/5") : "봉인된 회랑 문 확인";
                 if(kind==Kind.Exit && GameSession.Current && GameSession.Current.ChapterMode)return "1층 출입문 확인";
                 if(kind==Kind.Exit)return GameSession.Current&&GameSession.Current.StoryStep>=4?"출석함에 마지막 이름 돌려놓기":"현관 출석함 확인";
                 return label;

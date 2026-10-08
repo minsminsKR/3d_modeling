@@ -1,5 +1,16 @@
 # 다른 PC에서 이어서 개발하기
 
+현재 기본 새 탐색은 회랑 버전 3이다. `CorridorRunAltar.cs`가 결정적인 외곽 방·연결부
+충돌을 만들고, `CorridorAltarChamber.cs`가 직접 제작한 제단 소품과 기존 학교 가구를
+배치한다. `SourceArt/CorridorAltarChamber`에 Blender 4.0.2 편집 원본 4개, 원본
+칠판 PBR 제작 도구와 고정 의존성·재생성·라이선스가 있다. 원본 학교 씬을 바꾸지
+않고 같은 씬을 다시 불러 학교 장으로 이어진다. 버전 1·2 저장은 원래 지도·입구
+클리어 규칙을 선택하며, 이야기 전환은 별도 폐교 중단 저장을 소비하지 않는다.
+
+일반 플레이용 Windows 빌드는 기존 `QualityValidation.BuildWindows` 호출에
+`-v2-release-player`를 추가한다. 개발용 Profiler 빌드는 이 인자를 생략한다.
+두 방식 모두 자산 입력 해시와 Audio/Graphics 크레딧을 동봉한다.
+
 회랑 지도 버전 2(2026-10-08)의 생성·벽 충돌·가구·촛불 배치는 모두
 `Assets/Scripts/CorridorLayout.cs`, `CorridorRun.cs`, `CorridorFurnishings.cs`와
 `LightExplorationRun.cs`의 런타임 코드에서 재현한다. 추가 로컬 제작 도구나 원본

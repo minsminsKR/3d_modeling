@@ -14,11 +14,12 @@ namespace HappyToy.V2
         public readonly int[] Threats = new int[4];
         public readonly int Seed;
         public readonly int Version;
+        public readonly int AltarCell = -1, AltarDirection = -1;
         public static readonly int[] DX = { 0, 1, 0, -1 }, DZ = { 1, 0, -1, 0 };
-        public CorridorLayout(int seed) : this(seed, 2) { }
+        public CorridorLayout(int seed) : this(seed, 3) { }
         public CorridorLayout(int seed, int version)
         {
-            if (version < 1 || version > 2) throw new ArgumentException("Unknown corridor layout version");
+            if (version < 1 || version > 3) throw new ArgumentException("Unknown corridor layout version");
             Seed = seed; Version = version; var random = new Random(seed);
             var seen = new bool[Count]; var stack = new Stack<int>(); seen[0] = true; stack.Push(0);
             var headings = new int[Count];
@@ -28,7 +29,7 @@ namespace HappyToy.V2
                 int cell = stack.Peek(); var directions = new List<int>();
                 for (int d = 0; d < 4; d++) if (Neighbor(cell, d) >= 0 && !seen[Neighbor(cell, d)]) directions.Add(d);
                 if (directions.Count == 0) { stack.Pop(); continue; }
-                int direction = version == 2 && directions.Contains(headings[cell]) && random.NextDouble() < .9
+                int direction = version >= 2 && directions.Contains(headings[cell]) && random.NextDouble() < .9
                     ? headings[cell] : directions[random.Next(directions.Count)];
                 int next = Neighbor(cell, direction); headings[next] = direction;
                 Connect(cell, direction); seen[next] = true; stack.Push(next);
@@ -88,6 +89,15 @@ namespace HappyToy.V2
             var earlySupply = supplyCells.FindAll(cell => Distance[cell] <= 2);
             Supplies[0] = earlySupply[random.Next(earlySupply.Count)]; supplyCells.Remove(Supplies[0]);
             for (int i = 1; i < Supplies.Length; i++) { int j = random.Next(supplyCells.Count); Supplies[i] = supplyCells[j]; supplyCells.RemoveAt(j); }
+            if (version >= 3)
+            {
+                // Add a destination outside the maze without moving any existing seeded pickup.
+                int farthest = -1;
+                for (int cell = 1; cell < Count; cell++)
+                    if ((cell % Width == Width-1 || cell / Width == Width-1) && Distance[cell] > farthest)
+                    { AltarCell = cell; farthest = Distance[cell]; }
+                AltarDirection = AltarCell % Width == Width-1 ? 1 : 0;
+            }
         }
         void Connect(int cell, int direction)
         { Connections[cell] |= 1 << direction; Connections[Neighbor(cell, direction)] |= 1 << ((direction + 2) % 4); }
@@ -112,10 +122,11 @@ namespace HappyToy.V2
             return Count;
         }
         // Wider alcoves hold furniture, goals and hiding places; the remainder is a continuous narrow hall.
-        public bool IsRoom(int cell) => Version == 1 || cell == 0 || (cell >= 1 && (cell - 1) % 6 == 0) ||
+        public bool IsRoom(int cell) => Version == 1 || cell == 0 || cell == AltarCell || (cell >= 1 && (cell - 1) % 6 == 0) ||
             Array.IndexOf(Relics, cell) >= 0 || Array.IndexOf(Supplies, cell) >= 0;
         public bool FramedPassage(int cell, int direction)
-        { int next = Neighbor(cell, direction); return next >= 0 && (IsRoom(cell) || IsRoom(next)); }
-        public bool HasCandle(int cell) => Version == 2 || cell % 7 == 0 || Array.IndexOf(Relics, cell) >= 0;
+        { int next = Neighbor(cell, direction); return IsAltarPortal(cell,direction) || next >= 0 && (IsRoom(cell) || IsRoom(next)); }
+        public bool IsAltarPortal(int cell, int direction) => Version >= 3 && cell == AltarCell && direction == AltarDirection;
+        public bool HasCandle(int cell) => Version >= 2 || cell % 7 == 0 || Array.IndexOf(Relics, cell) >= 0;
     }
 }
