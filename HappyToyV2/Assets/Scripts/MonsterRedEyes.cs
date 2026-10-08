@@ -1,295 +1,247 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace HappyToy.V2
 {
-    /// <summary>Depth-tested red eye cores on the authored animated head. No Light is created.</summary>
+    // Red light belongs to the original eye surface. No foreground discs,
+    // substitute eyeballs, additional renderers, colliders or lights are made.
     [DisallowMultipleComponent]
     public sealed class MonsterRedEyes : MonoBehaviour
     {
-        struct Profile
+        [Serializable] sealed class Profile
+        { public int version; public string key; public EyeProfile[] eyes; }
+        [Serializable] sealed class EyeProfile
         {
-            public Vector2 left, right;
-            public Profile(float lx, float ly, float rx, float ry)
-            { left = new Vector2(lx, ly); right = new Vector2(rx, ry); }
+            public Vector2 uv;
+            public int materialSlot;
+            public string sourceMesh;
+            public bool aperture;
+            public Vector2[] uvBoundarySamples;
         }
-        struct Surface { public Vector3 point, normal; public float distance; }
-        readonly List<UnityEngine.Object> owned = new List<UnityEngine.Object>();
-        readonly GraphicsSurfaceLibrary.Pool surfaces = new GraphicsSurfaceLibrary.Pool();
-        readonly List<Transform> anchors = new List<Transform>();
-        readonly List<MeshRenderer> cores = new List<MeshRenderer>();
+        sealed class SlotState
+        { public int index; public Material original,applied; public MaterialPropertyBlock originalBlock; }
+        sealed class RendererState
+        { public Renderer renderer; public readonly List<SlotState> slots=new List<SlotState>(); }
+        struct Surface
+        { public Renderer renderer; public Vector3 point,normal; public int slot; public float distance; }
+        sealed class PosedSurface
+        {
+            public Renderer renderer;
+            public Vector3[] vertices,normals;
+            public Vector2[] uv;
+            public int[][] triangles;
+        }
+        sealed class EyeShape
+        { public Transform anchor; public Vector3 horizontal,vertical; }
+        readonly List<RendererState> states=new List<RendererState>();
+        readonly List<Transform> anchors=new List<Transform>();
+        readonly List<EyeShape> shapes=new List<EyeShape>();
+        readonly List<Renderer> emissionRenderers=new List<Renderer>();
+        readonly List<Material> owned=new List<Material>();
         MaterialPropertyBlock block;
-        void Awake() => block = new MaterialPropertyBlock();
-        static readonly int Emission = Shader.PropertyToID("_EmissionColor");
-        static readonly Color CoreEmission = new Color(18f, .075f, .025f);
-        static readonly Vector2 MaskLeftUpper = new Vector2(.268022388f, .958278418f);
-        static readonly Vector2 MaskRightUpper = new Vector2(.720218182f, .527960896f);
+        static readonly int Emission=Shader.PropertyToID("_EmissionColor");
+        // Strong enough to register at distance, bounded so original sclera,
+        // iris shading and the un-emissive pupil survive a close torch view.
+        static readonly Color Glow=new Color(1.1f,.012f,.008f);
         float phase;
-        public bool Prepared { get; private set; }
-        public Transform Head { get; private set; }
-        public IReadOnlyList<Transform> EyeAnchors => anchors;
-        public IReadOnlyList<MeshRenderer> Cores => cores;
-        public string ProfileKey { get; private set; }
+        bool emissionEnabled=true;
+        public bool Prepared {get;private set;}
+        public Transform Head {get;private set;}
+        public string ProfileKey {get;private set;}
+        public bool EmissionEnabled=>emissionEnabled;
+        public IReadOnlyList<Transform> EyeAnchors=>anchors;
+        public IReadOnlyList<Renderer> EmissionRenderers=>emissionRenderers;
+        public IReadOnlyList<float> EyeRadii=>shapes.Select(s=>Mathf.Max(
+            Head.TransformVector(s.horizontal).magnitude,Head.TransformVector(s.vertical).magnitude)).ToArray();
+        void Awake()=>block=new MaterialPropertyBlock();
 
-        public static MonsterRedEyes Attach(Transform model, string key)
+        public static MonsterRedEyes Attach(Transform model,string key)=>Prepare(model,key,true);
+        public static MonsterRedEyes AttachStatic(Transform model,string key)=>Prepare(model,key,false);
+        static MonsterRedEyes Prepare(Transform model,string key,bool skinned)
         {
-            if (!model) throw new ArgumentNullException(nameof(model));
-            var prior = model.GetComponentInChildren<MonsterRedEyes>(true);
-            if (prior) return prior;
-            var profile = For(key);
-            Transform head = null;
-            foreach (var node in model.GetComponentsInChildren<Transform>(true))
-                if (node.name == "mixamorig:Head") { head = node; break; }
-            if (!head) throw new InvalidOperationException("Animated head is required for red eyes: " + key);
-            var skins = model.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-            if (skins.Length == 0) throw new InvalidOperationException("Skinned enemy face is absent: " + key);
-            var left = new Surface { distance = float.PositiveInfinity };
-            var right = left;
-            var scratch = new Mesh();
-            var bounds = new Bounds(); bool any = false;
+            if(!model)throw new ArgumentNullException(nameof(model));
+            var prior=model.GetComponentInChildren<MonsterRedEyes>(true);if(prior)return prior;
+            var data=Resources.Load<TextAsset>("ThreatEyes/"+key+"-profile");
+            var mask=Resources.Load<Texture2D>("ThreatEyes/"+key+"-emission");
+            if(!data||!mask)throw new InvalidOperationException("Missing original-eye emission authoring: "+key+" profile="+(bool)data+" mask="+(bool)mask);
+            var profile=JsonUtility.FromJson<Profile>(data.text);
+            int expected=key=="Cyclopse"?1:2;
+            if(profile==null||profile.version!=2||profile.key!=key||profile.eyes==null||profile.eyes.Length!=expected)
+                throw new InvalidOperationException("Eye anatomy profile mismatch: "+key);
+            var head=skinned?model.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="mixamorig:Head"):model;
+            if(!head)throw new InvalidOperationException("Original animated head missing: "+key);
+            var posed=CaptureSurfaces(model,skinned);
+            var surfaces=new Surface[expected];
+            var boundaries=new Vector3[expected][];
+            for(int i=0;i<expected;i++)
+            {
+                var eye=profile.eyes[i];
+                if(eye.materialSlot<0||eye.uvBoundarySamples==null||eye.uvBoundarySamples.Length<4)
+                    throw new InvalidOperationException("Eye surface boundary missing: "+key);
+                surfaces[i]=Resolve(posed,head,eye,eye.aperture?eye.uvBoundarySamples[0]:eye.uv);
+                var lips=eye.uvBoundarySamples.Select(uv=>Resolve(posed,head,eye,uv)).ToArray();
+                boundaries[i]=lips.Select(surface=>surface.point).ToArray();
+                if(eye.aperture)
+                {
+                    // The mask centre is empty space. Only its real porcelain
+                    // lips carry emission; this empty anchor is for inspection.
+                    var bounds=new Bounds(boundaries[i][0],Vector3.zero);
+                    foreach(var p in boundaries[i])bounds.Encapsulate(p);
+                    surfaces[i].point=bounds.center;
+                    surfaces[i].normal=lips.Aggregate(Vector3.zero,(sum,surface)=>sum+surface.normal).normalized;
+                }
+            }
+            var root=new GameObject("Original eye surface glow");root.transform.SetParent(head,false);
+            var art=root.AddComponent<MonsterRedEyes>();art.Head=head;art.ProfileKey=key;
+            art.phase=key=="Baby"?2.1f:key=="Uncat"?1.3f:key=="Cyclopse"?.4f:3.6f;
             try
             {
-                foreach (var skin in skins)
+                for(int i=0;i<expected;i++)
                 {
-                    // The imported FBX is intentionally not CPU-readable. BakeMesh is
-                    // a readable posed snapshot and retains its authored UVs/topology.
-                    skin.BakeMesh(scratch, true);
-                    var vertices = scratch.vertices; var uv = scratch.uv; var normals = scratch.normals;
-                    var triangles = scratch.triangles;
-                    foreach (var vertex in vertices)
+                    var surface=surfaces[i];
+                    art.Mount(surface.renderer,surface.slot,mask);
+                    var anchor=new GameObject(expected==1?"Central original eye":i==0?"Left original eye":"Right original eye").transform;
+                    anchor.SetParent(root.transform,false);anchor.position=surface.point;
+                    var normal=surface.normal.normalized;
+                    var up=Vector3.ProjectOnPlane(head.up,normal);
+                    if(up.sqrMagnitude<.001f)up=Vector3.ProjectOnPlane(Vector3.up,normal);
+                    anchor.rotation=Quaternion.LookRotation(normal,up.normalized);
+                    float radius=boundaries[i].Max(p=>Vector3.Distance(p,surface.point));
+                    if(radius<=.00001f||float.IsNaN(radius)||float.IsInfinity(radius))throw new InvalidOperationException("Degenerate eye extent: "+key);
+                    art.anchors.Add(anchor);art.shapes.Add(new EyeShape {anchor=anchor,
+                        horizontal=head.InverseTransformVector(anchor.right*radius),vertical=head.InverseTransformVector(anchor.up*radius)});
+                }
+                art.Prepared=true;art.SetEmissionEnabled(true);return art;
+            }
+            catch {GraphicsSurfaceLibrary.DestroyOwned(root);throw;}
+        }
+
+        static List<PosedSurface> CaptureSurfaces(Transform model,bool skinned)
+        {
+            var posed=new List<PosedSurface>();
+            var scratch=skinned?new Mesh():null;
+            try
+            {
+                if(skinned)
+                {
+                    foreach(var skin in model.GetComponentsInChildren<SkinnedMeshRenderer>(true))
                     {
-                        var point = skin.transform.TransformPoint(vertex);
-                        if (!any) { bounds = new Bounds(point, Vector3.zero); any = true; }
-                        else bounds.Encapsulate(point);
+                        if(!skin.enabled||!skin.sharedMesh)continue;
+                        skin.BakeMesh(scratch,true);posed.Add(Capture(skin,scratch));scratch.Clear();
                     }
-                    if (uv.Length != vertices.Length || normals.Length != vertices.Length)
-                        throw new InvalidOperationException("Posed enemy has no complete surface UVs/normals: " + key);
-                    FindSurface(skin.transform, vertices, uv, normals, triangles, profile.left, head.position, ref left);
-                    FindSurface(skin.transform, vertices, uv, normals, triangles, profile.right, head.position, ref right);
-                    scratch.Clear();
                 }
-            }
-            finally { GraphicsSurfaceLibrary.DestroyOwned(scratch); }
-            if (!any || float.IsInfinity(left.distance) || float.IsInfinity(right.distance))
-                throw new InvalidOperationException("Authored eye UV anchor is missing on the posed enemy: " + key);
-            return Create(head, key, left, right, bounds);
-        }
-
-        public static MonsterRedEyes AttachStatic(Transform faceRoot, string key)
-        {
-            if (!faceRoot) throw new ArgumentNullException(nameof(faceRoot));
-            var prior = faceRoot.GetComponentInChildren<MonsterRedEyes>(true);
-            if (prior) return prior;
-            var profile = For(key);
-            var left = new Surface { distance = float.PositiveInfinity }; var right = left;
-            var leftUpper = left; var rightUpper = left;
-            var bounds = new Bounds(); bool any = false;
-            foreach (var filter in faceRoot.GetComponentsInChildren<MeshFilter>(true))
-            {
-                var renderer = filter.GetComponent<MeshRenderer>();
-                if (!renderer || !renderer.enabled || !filter.sharedMesh) continue;
-                var mesh = filter.sharedMesh;
-                if (!mesh.isReadable) throw new InvalidOperationException("Static red-eye face needs its dedicated readable import: " + key);
-                var vertices = mesh.vertices; var uv = mesh.uv; var normals = mesh.normals; var triangles = mesh.triangles;
-                foreach (var vertex in vertices)
+                else foreach(var filter in model.GetComponentsInChildren<MeshFilter>(true))
                 {
-                    var point = filter.transform.TransformPoint(vertex);
-                    if (!any) { bounds = new Bounds(point, Vector3.zero); any = true; } else bounds.Encapsulate(point);
+                    var renderer=filter.GetComponent<MeshRenderer>();
+                    if(!renderer||!renderer.enabled||!filter.sharedMesh)continue;
+                    if(!filter.sharedMesh.isReadable)throw new InvalidOperationException("Static eye mesh requires the authored readable importer");
+                    posed.Add(Capture(renderer,filter.sharedMesh));
                 }
-                if (uv.Length != vertices.Length || normals.Length != vertices.Length)
-                    throw new InvalidOperationException("Static face has no complete surface UVs/normals: " + key);
-                FindSurface(filter.transform, vertices, uv, normals, triangles, profile.left, faceRoot.position, ref left);
-                FindSurface(filter.transform, vertices, uv, normals, triangles, profile.right, faceRoot.position, ref right);
-                if (key == "LanternMask")
+            }
+            finally {if(scratch)GraphicsSurfaceLibrary.DestroyOwned(scratch);}
+            return posed;
+        }
+        static PosedSurface Capture(Renderer renderer,Mesh mesh)
+        {
+            var snapshot=new PosedSurface {renderer=renderer,vertices=mesh.vertices,normals=mesh.normals,uv=mesh.uv,
+                triangles=Enumerable.Range(0,mesh.subMeshCount).Select(mesh.GetTriangles).ToArray()};
+            if(snapshot.uv.Length!=snapshot.vertices.Length||snapshot.normals.Length!=snapshot.vertices.Length)
+                throw new InvalidOperationException("Incomplete original eye UVs/normals");
+            return snapshot;
+        }
+        static Surface Resolve(List<PosedSurface> posed,Transform head,EyeProfile eye,Vector2 uv)
+        {
+            var result=new Surface {distance=float.PositiveInfinity};
+            foreach(var surface in posed)
+                if(eye.materialSlot<surface.triangles.Length)FindSurface(surface,eye.materialSlot,uv,head.position,ref result);
+            if(!result.renderer||float.IsInfinity(result.distance))throw new InvalidOperationException("No original eye surface at "+uv);
+            return result;
+        }
+        static void FindSurface(PosedSurface surface,int slot,Vector2 at,Vector3 head,ref Surface result)
+        {
+            var renderer=surface.renderer;var vertices=surface.vertices;var uv=surface.uv;var normals=surface.normals;var triangles=surface.triangles[slot];
+            var transform=renderer.transform;var normalMatrix=transform.worldToLocalMatrix.transpose;
+            for(int i=0;i<triangles.Length;i+=3)
+            {
+                int a=triangles[i],b=triangles[i+1],c=triangles[i+2];
+                var ab=uv[b]-uv[a];var ac=uv[c]-uv[a];var ap=at-uv[a];
+                float determinant=ab.x*ac.y-ac.x*ab.y;if(Mathf.Abs(determinant)<1e-10f)continue;
+                float v=(ap.x*ac.y-ac.x*ap.y)/determinant,w=(ab.x*ap.y-ap.x*ab.y)/determinant,u=1-v-w;
+                if(u<-.00001f||v<-.00001f||w<-.00001f)continue;
+                var point=transform.TransformPoint(vertices[a]*u+vertices[b]*v+vertices[c]*w);
+                float distance=(point-head).sqrMagnitude;if(distance>=result.distance)continue;
+                var normal=normalMatrix.MultiplyVector(normals[a]*u+normals[b]*v+normals[c]*w).normalized;
+                result=new Surface {renderer=renderer,point=point,normal=normal,slot=slot,distance=distance};
+            }
+        }
+        void Mount(Renderer renderer,int slot,Texture2D mask)
+        {
+            var state=states.FirstOrDefault(s=>s.renderer==renderer);
+            if(state==null){state=new RendererState {renderer=renderer};states.Add(state);emissionRenderers.Add(renderer);}
+            if(state.slots.Any(s=>s.index==slot))return;
+            var assigned=renderer.sharedMaterials;
+            if(slot>=assigned.Length||!assigned[slot])throw new InvalidOperationException("Original eye material slot is absent");
+            var original=assigned[slot];
+            if(!original.HasProperty("_EmissionMap")||!original.HasProperty("_EmissionColor"))throw new InvalidOperationException("Original eye shader cannot carry surface emission: "+original.shader.name);
+            var originalBlock=new MaterialPropertyBlock();renderer.GetPropertyBlock(originalBlock,slot);
+            var material=new Material(original){name=original.name+" — original eye surface emission"};
+            material.SetTexture("_EmissionMap",mask);material.SetColor("_EmissionColor",Glow);material.EnableKeyword("_EMISSION");
+            material.globalIlluminationFlags=(original.globalIlluminationFlags & ~MaterialGlobalIlluminationFlags.EmissiveIsBlack) | MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            owned.Add(material);assigned[slot]=material;renderer.sharedMaterials=assigned;
+            state.slots.Add(new SlotState {index=slot,original=original,applied=material,originalBlock=originalBlock});
+        }
+        public int[] GetAffectedSlots(Renderer renderer)=>states.FirstOrDefault(s=>s.renderer==renderer)?.slots.Select(s=>s.index).ToArray()??Array.Empty<int>();
+        public Material GetOriginalMaterial(Renderer renderer,int slot)=>states.FirstOrDefault(s=>s.renderer==renderer)?.slots.FirstOrDefault(s=>s.index==slot)?.original;
+        public Color GetEmissionColor(Renderer renderer,int slot)=>GetAffectedSlots(renderer).Contains(slot)?Glow:Color.black;
+        public void SetEmissionEnabled(bool value)
+        {emissionEnabled=value;if(Prepared)ApplyEmission();}
+        void ApplyEmission()
+        {
+            float breath=.97f+.03f*Mathf.Sin(Time.time*2.15f+phase);
+            foreach(var state in states)
+            {
+                if(!state.renderer)continue;
+                var current=state.renderer.sharedMaterials;
+                foreach(var slot in state.slots)
                 {
-                    FindSurface(filter.transform, vertices, uv, normals, triangles, MaskLeftUpper, faceRoot.position, ref leftUpper);
-                    FindSurface(filter.transform, vertices, uv, normals, triangles, MaskRightUpper, faceRoot.position, ref rightUpper);
+                    if(slot.index>=current.Length||current[slot.index]!=slot.applied)continue;
+                    state.renderer.GetPropertyBlock(block,slot.index);
+                    block.SetColor(Emission,emissionEnabled?Glow*breath:Color.black);
+                    state.renderer.SetPropertyBlock(block,slot.index);
                 }
             }
-            if (!any || float.IsInfinity(left.distance) || float.IsInfinity(right.distance))
-                throw new InvalidOperationException("Authored static eye UV anchor is missing: " + key);
-            if (key == "LanternMask")
+        }
+        void LateUpdate(){if(Prepared)ApplyEmission();}
+        void OnEnable()
+        {
+            if(!Prepared)return;
+            foreach(var state in states)
             {
-                if (float.IsInfinity(leftUpper.distance) || float.IsInfinity(rightUpper.distance))
-                    throw new InvalidOperationException("Mask aperture boundary anchor is missing");
-                var horizontal = right.point - left.point;
-                var vertical = (leftUpper.point + rightUpper.point - left.point - right.point) * .5f;
-                var forward = Vector3.Cross(horizontal, vertical).normalized;
-                if (Vector3.Dot(forward, left.normal + right.normal) < 0) forward = -forward;
-                left = Aperture(left, leftUpper); right = Aperture(right, rightUpper);
-                left.normal = forward; right.normal = forward;
+                if(!state.renderer)continue;var current=state.renderer.sharedMaterials;
+                foreach(var slot in state.slots)
+                    if(slot.index<current.Length&&current[slot.index]==slot.original)current[slot.index]=slot.applied;
+                state.renderer.sharedMaterials=current;
             }
-            return Create(faceRoot, key, left, right, bounds);
+            ApplyEmission();
         }
-        static Surface Aperture(Surface lower, Surface upper) => new Surface
-        { point = (lower.point + upper.point) * .5f, normal = (lower.normal + upper.normal).normalized, distance = lower.distance };
-        static MonsterRedEyes Create(Transform head, string key, Surface left, Surface right, Bounds bounds)
+        void OnDisable()=>RestoreOriginalSlots();
+        void RestoreOriginalSlots()
         {
-            float separation = Vector3.Distance(left.point, right.point);
-            if (separation <= bounds.size.y * .015f || separation >= bounds.size.y * (key == "LanternMask" ? .85f : .35f))
-                throw new InvalidOperationException("Red eye pair does not fit the authored head: " + key);
-            var root = new GameObject("Animated paired red eye sockets");
-            root.transform.SetParent(head, false);
-            var art = root.AddComponent<MonsterRedEyes>();
-            art.Head = head; art.ProfileKey = key;
-            art.phase = key == "Baby" ? 2.1f : key == "Uncat" ? 1.3f : key == "Cyclopse" ? .4f : 3.6f;
-            try
+            foreach(var state in states)
             {
-                float radius = Mathf.Clamp(separation * .115f, bounds.size.y * .007f,
-                    bounds.size.y * (key == "LanternMask" ? .065f : .013f));
-                var coreMaterial = art.CoreMaterial();
-                var socketMaterial = art.surfaces.Get("cloth-charred", new Color(.18f, .055f, .035f));
-                var coreMesh = Dome(radius, radius * .38f, false, "Red eye convex core");
-                var socketMesh = Dome(radius * 1.48f, radius * .10f, true, "Charred recessed eye rim");
-                art.owned.Add(coreMesh); art.owned.Add(socketMesh);
-                art.Eye(head, left, "Left red eye", radius, coreMesh, coreMaterial, socketMesh, socketMaterial);
-                art.Eye(head, right, "Right red eye", radius, coreMesh, coreMaterial, socketMesh, socketMaterial);
-                art.Prepared = true;
-                return art;
+                if(!state.renderer)continue;var current=state.renderer.sharedMaterials;
+                foreach(var slot in state.slots)
+                    if(slot.index<current.Length&&current[slot.index]==slot.applied)
+                    {current[slot.index]=slot.original;state.renderer.SetPropertyBlock(slot.originalBlock,slot.index);}
+                state.renderer.sharedMaterials=current;
             }
-            catch { GraphicsSurfaceLibrary.DestroyOwned(root); throw; }
-        }
-
-        static Profile For(string key)
-        {
-            // UVs measured by ray hits on the editable posed source faces; see
-            // SourceArt/ThreatEyes/eye-surface-anchors.json and inspect_head_sources.py.
-            switch (key)
-            {
-                case "Cyclopse": return new Profile(.336293548f, .214996651f, .330183864f, .142739877f);
-                case "Uncat": return new Profile(.884333134f, .905642629f, .956248999f, .120433450f);
-                case "Hwacat_angry": return new Profile(.865963340f, .367665559f, .068320289f, .948560596f);
-                case "Baby": return new Profile(.582066715f, .621558905f, .575446725f, .698374629f);
-                case "LanternMask": return new Profile(.798695505f, .970696390f, .978926063f, .136576608f);
-                case "Mannequin": return new Profile(.606296301f, .841941833f, .600609303f, .897853851f);
-                default: throw new ArgumentException("Unsupported red eye anatomy: " + key);
-            }
-        }
-        static void FindSurface(Transform meshTransform, Vector3[] vertices, Vector2[] uv, Vector3[] normals,
-            int[] triangles, Vector2 at, Vector3 head, ref Surface result)
-        {
-            var normalMatrix = meshTransform.worldToLocalMatrix.transpose;
-            for (int index = 0; index < triangles.Length; index += 3)
-            {
-                int a = triangles[index], b = triangles[index + 1], c = triangles[index + 2];
-                Vector2 ab = uv[b] - uv[a], ac = uv[c] - uv[a], ap = at - uv[a];
-                float determinant = ab.x * ac.y - ac.x * ab.y;
-                if (Mathf.Abs(determinant) < .0000000001f) continue;
-                float v = (ap.x * ac.y - ac.x * ap.y) / determinant;
-                float w = (ab.x * ap.y - ap.x * ab.y) / determinant;
-                float u = 1 - v - w;
-                if (u < -.00001f || v < -.00001f || w < -.00001f) continue;
-                var point = meshTransform.TransformPoint(vertices[a] * u + vertices[b] * v + vertices[c] * w);
-                float distance = (point - head).sqrMagnitude;
-                if (distance >= result.distance) continue;
-                var normal = normalMatrix.MultiplyVector(normals[a] * u + normals[b] * v + normals[c] * w).normalized;
-                if (normal.sqrMagnitude < .5f) continue;
-                result = new Surface { point = point, normal = normal, distance = distance };
-            }
-        }
-        Material CoreMaterial()
-        {
-            // Reuse the imported URP Lit emission variant retained in release
-            // builds. Keep its keyword set; constant maps remove paper appearance.
-            var template = Resources.Load<Material>("GraphicsPbr/paper-aged/material-emissive");
-            if (!template) throw new InvalidOperationException("Retained red-eye emission template is absent");
-            var material = new Material(template) { name = "Depth-tested blood-red eye emission", enableInstancing = true };
-            material.SetTexture("_BaseMap", Texture2D.whiteTexture);
-            // A hot inner pupil fades into deep red at the curved outer iris.
-            // A constant white emission map made the dome read as a flat button.
-            // This small original radial texture is generated from editable code.
-            const int side=64;
-            var heat=new Texture2D(side,side,TextureFormat.RGB24,false,true)
-                {name="Original blood-red iris heat",wrapMode=TextureWrapMode.Clamp,filterMode=FilterMode.Bilinear};
-            var pixels=new Color[side*side];
-            for(int y=0;y<side;y++)for(int x=0;x<side;x++)
-            {
-                var p=new Vector2((x+.5f)/side*2-1,(y+.5f)/side*2-1);
-                float inner=Mathf.Clamp01(1-p.magnitude);
-                float rays=.96f+.04f*Mathf.Sin(Mathf.Atan2(p.y,p.x)*19+inner*13);
-                float red=.004f+.996f*Mathf.Pow(inner,2.3f)*rays;
-                float hot=Mathf.Pow(inner,7);
-                pixels[y*side+x]=new Color(red,hot,hot*.62f);
-            }
-            heat.SetPixels(pixels);heat.Apply(false,true);owned.Add(heat);
-            material.SetTexture("_EmissionMap", heat);
-            material.SetTexture("_OcclusionMap", Texture2D.whiteTexture);
-            material.SetTexture("_MetallicGlossMap", Texture2D.blackTexture);
-            material.SetTextureScale("_BaseMap", Vector2.one); material.SetTextureOffset("_BaseMap", Vector2.zero);
-            material.SetColor("_BaseColor", new Color(.20f, .003f, .002f));
-            material.SetColor("_EmissionColor", CoreEmission);
-            material.SetFloat("_BumpScale", 0); material.SetFloat("_Metallic", 0);
-            material.SetFloat("_Smoothness", .38f); material.SetFloat("_OcclusionStrength", 0);
-            owned.Add(material); return material;
-        }
-        void Eye(Transform head, Surface surface, string name, float radius, Mesh mesh, Material material,
-            Mesh socketMesh, Material socketMaterial)
-        {
-            var anchor = new GameObject(name).transform; anchor.SetParent(transform, false);
-            anchor.position = surface.point + surface.normal * radius * .08f;
-            var up = Vector3.ProjectOnPlane(head.up, surface.normal);
-            if (up.sqrMagnitude < .001f) up = Vector3.ProjectOnPlane(head.right, surface.normal);
-            anchor.rotation = Quaternion.LookRotation(surface.normal, up.normalized);
-            // Preserve the measured world size through FBX bone/unit scales. All
-            // later model enlargement and animation transforms are inherited.
-            anchor.localScale = Vector3.one;
-            var scale = anchor.lossyScale;
-            anchor.localScale = new Vector3(1 / Mathf.Abs(scale.x), 1 / Mathf.Abs(scale.y), 1 / Mathf.Abs(scale.z));
-            anchors.Add(anchor);
-            Render(anchor, socketMesh, socketMaterial, "Charred eye socket", false);
-            cores.Add(Render(anchor, mesh, material, "Visible red eye core", true));
-        }
-        static MeshRenderer Render(Transform parent, Mesh mesh, Material material, string name, bool core)
-        {
-            var go = new GameObject(name); go.transform.SetParent(parent, false); go.layer = parent.gameObject.layer;
-            go.AddComponent<MeshFilter>().sharedMesh = mesh;
-            var renderer = go.AddComponent<MeshRenderer>(); renderer.sharedMaterial = material;
-            renderer.shadowCastingMode = ShadowCastingMode.Off; renderer.receiveShadows = !core;
-            renderer.lightProbeUsage = core ? LightProbeUsage.Off : LightProbeUsage.BlendProbes;
-            renderer.reflectionProbeUsage = core ? ReflectionProbeUsage.Off : ReflectionProbeUsage.BlendProbes;
-            return renderer;
-        }
-        static Mesh Dome(float radius, float depth, bool annulus, string name)
-        {
-            const int sides = 32, rings = 5;
-            var vertices = new List<Vector3>(); var uv = new List<Vector2>(); var triangles = new List<int>();
-            for (int ring = 0; ring <= rings; ring++)
-            {
-                float t = ring / (float)rings;
-                float r = annulus ? Mathf.Lerp(radius * .66f, radius, t) : radius * t;
-                float z = annulus ? depth * Mathf.Sin(t * Mathf.PI) : depth * Mathf.Sqrt(Mathf.Max(0, 1 - t * t)) + depth * .32f;
-                for (int side = 0; side <= sides; side++)
-                {
-                    float angle = side * Mathf.PI * 2 / sides;
-                    vertices.Add(new Vector3(Mathf.Cos(angle) * r, Mathf.Sin(angle) * r, z));
-                    uv.Add(new Vector2(.5f + Mathf.Cos(angle) * r / radius * .5f, .5f + Mathf.Sin(angle) * r / radius * .5f));
-                }
-            }
-            for (int ring = 0; ring < rings; ring++) for (int side = 0; side < sides; side++)
-            {
-                int a = ring * (sides + 1) + side, b = a + 1, c = a + sides + 1, d = c + 1;
-                // Front-only positive-Z winding, opaque depth writes and ordinary
-                // backface culling stop the glow being visible through the skull.
-                if (ring > 0 || annulus) { triangles.Add(a); triangles.Add(c); triangles.Add(b); }
-                triangles.Add(b); triangles.Add(c); triangles.Add(d);
-            }
-            var mesh = new Mesh { name = name };
-            mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetTriangles(triangles, 0);
-            mesh.RecalculateNormals(); mesh.RecalculateTangents(); mesh.RecalculateBounds(); return mesh;
-        }
-        void LateUpdate()
-        {
-            if (!Prepared) return;
-            float breath = .96f + .04f * Mathf.Sin(Time.time * 2.15f + phase);
-            block.SetColor(Emission, CoreEmission * breath);
-            foreach (var core in cores) if (core) core.SetPropertyBlock(block);
         }
         void OnDestroy()
         {
-            foreach (var resource in owned) GraphicsSurfaceLibrary.DestroyOwned(resource);
-            surfaces.Dispose();
+            RestoreOriginalSlots();
+            foreach(var material in owned)if(material)GraphicsSurfaceLibrary.DestroyOwned(material);
         }
     }
 }

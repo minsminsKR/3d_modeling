@@ -27,7 +27,11 @@ def verify(project,build):
     scene='Assets/Annex/SchoolAnnex.unity'
     check(expected.get(scene)=='0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede','Preserved scene fingerprint differs')
     anchors=sorted(name for name in expected if name.startswith('Assets/Resources/FeedbackShaderVariants/') and name.endswith('.mat'))
-    check(len(anchors)==4 and all(name+'.meta' in expected for name in anchors),'Four serialized shader anchors/metadata omitted from build inputs')
+    retained=json.loads((project/'Verification/native-readiness/runtime-shader-anchors.json').read_text(encoding='utf-8-sig'))
+    declared=sorted(entry['asset'] for entry in retained.get('entries',[]))
+    check(retained.get('count')==len(declared) and len(declared)>=4 and anchors==declared
+          and all(name+'.meta' in expected for name in anchors),
+          'Serialized shader anchors/metadata differ from the verified Resources inventory')
     artifacts=[]
     for name in ('HappyToyV2.exe','UnityPlayer.dll','HappyToyV2_Data/globalgamemanagers','Audio-Credits.txt'):
         path=build/name

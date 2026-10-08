@@ -79,7 +79,23 @@ namespace HappyToy.V2.Editor
                         material.SetTexture("_MetallicGlossMap",packed);material.SetFloat("_Smoothness",1);
                         material.SetFloat("_SmoothnessTextureChannel",0);material.EnableKeyword("_METALLICSPECGLOSSMAP");
                         Add(material,key+" / "+AssetDatabase.GetAssetPath(prior)+" / "+prior.name);
+                        var eyeGlow=new Material(material);eyeGlow.EnableKeyword("_EMISSION");
+                        eyeGlow.SetColor("_EmissionColor",new Color(1.1f,.012f,.008f));
+                        eyeGlow.globalIlluminationFlags=(material.globalIlluminationFlags & ~MaterialGlobalIlluminationFlags.EmissiveIsBlack) | MaterialGlobalIlluminationFlags.RealtimeEmissive;
+                        Add(eyeGlow,key+" / original eye surface emission / "+prior.name);
                     }
+                }
+                // Static faces keep their own original surface properties too;
+                // these exact inherited keyword combinations need emission.
+                var staticFaces=scene.GetRootGameObjects().SelectMany(root=>root.GetComponentsInChildren<Renderer>(true))
+                    .Where(renderer=>renderer.sharedMaterials.Any(m=>m&&(m.name=="LanternMaskSkin"||m.name=="MannequinSkin")))
+                    .SelectMany(renderer=>renderer.sharedMaterials).Where(m=>m).Distinct();
+                foreach(var prior in staticFaces)
+                {
+                    var eyeGlow=new Material(prior);eyeGlow.EnableKeyword("_EMISSION");
+                    eyeGlow.SetColor("_EmissionColor",new Color(1.1f,.012f,.008f));
+                    eyeGlow.globalIlluminationFlags=(prior.globalIlluminationFlags & ~MaterialGlobalIlluminationFlags.EmissiveIsBlack) | MaterialGlobalIlluminationFlags.RealtimeEmissive;
+                    Add(eyeGlow,"Static original eye surface emission / "+AssetDatabase.GetAssetPath(prior));
                 }
                 if(!AssetDatabase.IsValidFolder(Folder))
                 {

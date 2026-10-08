@@ -1,0 +1,2383 @@
+{
+    "status": "PASS",
+    "scope": "Controlled native render-only snapshots of all six live production hostile faces, including Cyclopse's single original eye. Close3m torch on/off, 15m dark distance, rear view and opaque-panel occlusion use production camera post processing/materials. Emission-on/off captures retain identical original meshes, renderer enabled states and BaseMap/iris/pupil textures; only indexed snapshot property-block emission colour changes. Original central RGB and existing local feature pattern are compared pixel-for-pixel; dark-pupil contrast is additionally required where the emission-off eye is actually dark. Empty mask apertures retain their original centre/mesh rather than gain a substitute eyeball. No AI, route, gameplay survival, audio or performance certification.",
+    "developmentBuild": false,
+    "views": [
+        {
+            "profile": "Cyclopse",
+            "name": "close-torch-on",
+            "image": "Cyclopse-close-torch-on.png",
+            "emissionOffImage": "Cyclopse-close-torch-on-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.29248046875,
+                "y": 10.653016090393066,
+                "z": 1002.9134521484375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0000610351563
+            },
+            "eyeCount": 1,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 1126,
+                    "anchor": {
+                        "x": 1000.0,
+                        "y": 10.0,
+                        "z": 1000.0000610351563
+                    },
+                    "pixelCentre": {
+                        "x": 960.0,
+                        "y": 540.0
+                    },
+                    "worldRadius": 0.07866163551807404,
+                    "projectedRadius": 43.55474853515625,
+                    "pupilBefore": 0.0018572453409433365,
+                    "pupilAfter": 0.0018572453409433365,
+                    "irisBefore": 0.19792501628398895,
+                    "irisAfter": 0.21482737362384796,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.04951643571257591,
+                    "centralAfterDeviation": 0.04951643571257591,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 88,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": true,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                }
+            ],
+            "totalAttributableRedPixels": 1126
+        },
+        {
+            "profile": "Cyclopse",
+            "name": "close-torch-off",
+            "image": "Cyclopse-close-torch-off.png",
+            "emissionOffImage": "Cyclopse-close-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.29248046875,
+                "y": 10.653016090393066,
+                "z": 1002.9134521484375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0000610351563
+            },
+            "eyeCount": 1,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 1167,
+                    "anchor": {
+                        "x": 1000.0,
+                        "y": 10.0,
+                        "z": 1000.0000610351563
+                    },
+                    "pixelCentre": {
+                        "x": 960.0,
+                        "y": 540.0
+                    },
+                    "worldRadius": 0.07866163551807404,
+                    "projectedRadius": 43.55474853515625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 1167
+        },
+        {
+            "profile": "Cyclopse",
+            "name": "far-15m-torch-off",
+            "image": "Cyclopse-far-15m-torch-off.png",
+            "emissionOffImage": "Cyclopse-far-15m-torch-off-emission-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1001.46240234375,
+                "y": 13.265079498291016,
+                "z": 1014.567138671875
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0000610351563
+            },
+            "eyeCount": 1,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 21,
+                    "anchor": {
+                        "x": 1000.0,
+                        "y": 10.0,
+                        "z": 1000.0000610351563
+                    },
+                    "pixelCentre": {
+                        "x": 959.9961547851563,
+                        "y": 540.0
+                    },
+                    "worldRadius": 0.07866163551807404,
+                    "projectedRadius": 3.898376703262329,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 21
+        },
+        {
+            "profile": "Cyclopse",
+            "name": "rear-torch-off",
+            "image": "Cyclopse-rear-torch-off.png",
+            "emissionOffImage": "Cyclopse-rear-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 999.70751953125,
+                "y": 9.346983909606934,
+                "z": 997.086669921875
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0000610351563
+            },
+            "eyeCount": 1,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.0,
+                        "y": 10.0,
+                        "z": 1000.0000610351563
+                    },
+                    "pixelCentre": {
+                        "x": 959.9609375,
+                        "y": 539.989013671875
+                    },
+                    "worldRadius": 0.07866163551807404,
+                    "projectedRadius": 43.55462646484375,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Cyclopse",
+            "name": "opaque-panel-occlusion",
+            "image": "Cyclopse-opaque-panel-occlusion.png",
+            "emissionOffImage": "Cyclopse-opaque-panel-occlusion-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.29248046875,
+                "y": 10.653016090393066,
+                "z": 1002.9134521484375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0000610351563
+            },
+            "eyeCount": 1,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.0,
+                        "y": 10.0,
+                        "z": 1000.0000610351563
+                    },
+                    "pixelCentre": {
+                        "x": 960.0,
+                        "y": 540.0
+                    },
+                    "worldRadius": 0.07866163551807404,
+                    "projectedRadius": 43.55474853515625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Uncat",
+            "name": "close-torch-on",
+            "image": "Uncat-close-torch-on.png",
+            "emissionOffImage": "Uncat-close-torch-on-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9462280273438,
+                "y": 10.538538932800293,
+                "z": 1002.9508056640625
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 86,
+                    "anchor": {
+                        "x": 1000.0855102539063,
+                        "y": 9.988659858703613,
+                        "z": 999.9986572265625
+                    },
+                    "pixelCentre": {
+                        "x": 912.6941528320313,
+                        "y": 534.1099853515625
+                    },
+                    "worldRadius": 0.02109595015645027,
+                    "projectedRadius": 11.69970703125,
+                    "pupilBefore": 0.2354966402053833,
+                    "pupilAfter": 0.2354966402053833,
+                    "irisBefore": 0.27367863059043884,
+                    "irisAfter": 0.30308032035827637,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.020898474380373955,
+                    "centralAfterDeviation": 0.020898474380373955,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 7,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 89,
+                    "anchor": {
+                        "x": 999.91455078125,
+                        "y": 10.011341094970703,
+                        "z": 1000.0013427734375
+                    },
+                    "pixelCentre": {
+                        "x": 1007.3427124023438,
+                        "y": 545.8873291015625
+                    },
+                    "worldRadius": 0.019339168444275856,
+                    "projectedRadius": 10.797613143920898,
+                    "pupilBefore": 0.4131787419319153,
+                    "pupilAfter": 0.4131787419319153,
+                    "irisBefore": 0.21461427211761475,
+                    "irisAfter": 0.24843791127204895,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.03284050524234772,
+                    "centralAfterDeviation": 0.03284050524234772,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 5,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                }
+            ],
+            "totalAttributableRedPixels": 175
+        },
+        {
+            "profile": "Uncat",
+            "name": "close-torch-off",
+            "image": "Uncat-close-torch-off.png",
+            "emissionOffImage": "Uncat-close-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9462280273438,
+                "y": 10.538538932800293,
+                "z": 1002.9508056640625
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 113,
+                    "anchor": {
+                        "x": 1000.0855102539063,
+                        "y": 9.988659858703613,
+                        "z": 999.9986572265625
+                    },
+                    "pixelCentre": {
+                        "x": 912.6941528320313,
+                        "y": 534.1099853515625
+                    },
+                    "worldRadius": 0.02109595015645027,
+                    "projectedRadius": 11.69970703125,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 102,
+                    "anchor": {
+                        "x": 999.91455078125,
+                        "y": 10.011341094970703,
+                        "z": 1000.0013427734375
+                    },
+                    "pixelCentre": {
+                        "x": 1007.3427124023438,
+                        "y": 545.8873291015625
+                    },
+                    "worldRadius": 0.019339168444275856,
+                    "projectedRadius": 10.797613143920898,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 215
+        },
+        {
+            "profile": "Uncat",
+            "name": "far-15m-torch-off",
+            "image": "Uncat-far-15m-torch-off.png",
+            "emissionOffImage": "Uncat-far-15m-torch-off-emission-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.7310791015625,
+                "y": 12.692693710327148,
+                "z": 1014.75390625
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 2,
+                    "anchor": {
+                        "x": 1000.0855102539063,
+                        "y": 9.988659858703613,
+                        "z": 999.9986572265625
+                    },
+                    "pixelCentre": {
+                        "x": 955.7669677734375,
+                        "y": 539.4733276367188
+                    },
+                    "worldRadius": 0.02109595015645027,
+                    "projectedRadius": 1.0427247285842896,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 2,
+                    "anchor": {
+                        "x": 999.91455078125,
+                        "y": 10.011341094970703,
+                        "z": 1000.0013427734375
+                    },
+                    "pixelCentre": {
+                        "x": 964.2318115234375,
+                        "y": 540.5275268554688
+                    },
+                    "worldRadius": 0.019339168444275856,
+                    "projectedRadius": 1.0,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 4
+        },
+        {
+            "profile": "Uncat",
+            "name": "rear-torch-off",
+            "image": "Uncat-rear-torch-off.png",
+            "emissionOffImage": "Uncat-rear-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 1000.0537719726563,
+                "y": 9.461461067199707,
+                "z": 997.0491943359375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.0855102539063,
+                        "y": 9.988659858703613,
+                        "z": 999.9986572265625
+                    },
+                    "pixelCentre": {
+                        "x": 1007.4199829101563,
+                        "y": 534.0908813476563
+                    },
+                    "worldRadius": 0.02109595015645027,
+                    "projectedRadius": 11.69976806640625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 999.91455078125,
+                        "y": 10.011341094970703,
+                        "z": 1000.0013427734375
+                    },
+                    "pixelCentre": {
+                        "x": 912.7731323242188,
+                        "y": 545.8679809570313
+                    },
+                    "worldRadius": 0.019339168444275856,
+                    "projectedRadius": 10.685546875,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Uncat",
+            "name": "opaque-panel-occlusion",
+            "image": "Uncat-opaque-panel-occlusion.png",
+            "emissionOffImage": "Uncat-opaque-panel-occlusion-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9462280273438,
+                "y": 10.538538932800293,
+                "z": 1002.9508056640625
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.0855102539063,
+                        "y": 9.988659858703613,
+                        "z": 999.9986572265625
+                    },
+                    "pixelCentre": {
+                        "x": 912.6941528320313,
+                        "y": 534.1099853515625
+                    },
+                    "worldRadius": 0.02109595015645027,
+                    "projectedRadius": 11.69970703125,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 999.91455078125,
+                        "y": 10.011341094970703,
+                        "z": 1000.0013427734375
+                    },
+                    "pixelCentre": {
+                        "x": 1007.3427124023438,
+                        "y": 545.8873291015625
+                    },
+                    "worldRadius": 0.019339168444275856,
+                    "projectedRadius": 10.797613143920898,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "close-torch-on",
+            "image": "Hwacat_angry-close-torch-on.png",
+            "emissionOffImage": "Hwacat_angry-close-torch-on-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.6694946289063,
+                "y": 11.268854141235352,
+                "z": 1002.6983032226563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 9.999998092651367,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 176,
+                    "anchor": {
+                        "x": 1000.1671142578125,
+                        "y": 9.972076416015625,
+                        "z": 1000.0308227539063
+                    },
+                    "pixelCentre": {
+                        "x": 866.1329956054688,
+                        "y": 523.60009765625
+                    },
+                    "worldRadius": 0.046573154628276825,
+                    "projectedRadius": 25.75982666015625,
+                    "pupilBefore": 0.13921692967414856,
+                    "pupilAfter": 0.13921692967414856,
+                    "irisBefore": 0.36720845103263855,
+                    "irisAfter": 0.36963045597076416,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.06796286255121231,
+                    "centralAfterDeviation": 0.06796286255121231,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 29,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": true,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 237,
+                    "anchor": {
+                        "x": 999.8328857421875,
+                        "y": 10.027920722961426,
+                        "z": 999.9691162109375
+                    },
+                    "pixelCentre": {
+                        "x": 1054.09814453125,
+                        "y": 556.4486083984375
+                    },
+                    "worldRadius": 0.06403558701276779,
+                    "projectedRadius": 35.45777130126953,
+                    "pupilBefore": 0.13305708765983582,
+                    "pupilAfter": 0.13305708765983582,
+                    "irisBefore": 0.3663226366043091,
+                    "irisAfter": 0.36766549944877625,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.041754964739084244,
+                    "centralAfterDeviation": 0.041754964739084244,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 57,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": true,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                }
+            ],
+            "totalAttributableRedPixels": 413
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "close-torch-off",
+            "image": "Hwacat_angry-close-torch-off.png",
+            "emissionOffImage": "Hwacat_angry-close-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.6694946289063,
+                "y": 11.268854141235352,
+                "z": 1002.6983032226563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 9.999998092651367,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 222,
+                    "anchor": {
+                        "x": 1000.1671142578125,
+                        "y": 9.972076416015625,
+                        "z": 1000.0308227539063
+                    },
+                    "pixelCentre": {
+                        "x": 866.1329956054688,
+                        "y": 523.60009765625
+                    },
+                    "worldRadius": 0.046573154628276825,
+                    "projectedRadius": 25.75982666015625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 263,
+                    "anchor": {
+                        "x": 999.8328857421875,
+                        "y": 10.027920722961426,
+                        "z": 999.9691162109375
+                    },
+                    "pixelCentre": {
+                        "x": 1054.09814453125,
+                        "y": 556.4486083984375
+                    },
+                    "worldRadius": 0.06403558701276779,
+                    "projectedRadius": 35.45777130126953,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 485
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "far-15m-torch-off",
+            "image": "Hwacat_angry-far-15m-torch-off.png",
+            "emissionOffImage": "Hwacat_angry-far-15m-torch-off-emission-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 998.347412109375,
+                "y": 16.344276428222656,
+                "z": 1013.491455078125
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 9.999998092651367,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 3,
+                    "anchor": {
+                        "x": 1000.1671142578125,
+                        "y": 9.972076416015625,
+                        "z": 1000.0308227539063
+                    },
+                    "pixelCentre": {
+                        "x": 951.5912475585938,
+                        "y": 538.532470703125
+                    },
+                    "worldRadius": 0.046573154628276825,
+                    "projectedRadius": 2.308227777481079,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 6,
+                    "anchor": {
+                        "x": 999.8328857421875,
+                        "y": 10.027920722961426,
+                        "z": 999.9691162109375
+                    },
+                    "pixelCentre": {
+                        "x": 968.3998413085938,
+                        "y": 541.4713134765625
+                    },
+                    "worldRadius": 0.06403558701276779,
+                    "projectedRadius": 3.172302484512329,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 9
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "rear-torch-off",
+            "image": "Hwacat_angry-rear-torch-off.png",
+            "emissionOffImage": "Hwacat_angry-rear-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 1000.3305053710938,
+                "y": 8.731142044067383,
+                "z": 997.3016967773438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 9.999998092651367,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.1671142578125,
+                        "y": 9.972076416015625,
+                        "z": 1000.0308227539063
+                    },
+                    "pixelCentre": {
+                        "x": 1054.0198974609375,
+                        "y": 523.5733642578125
+                    },
+                    "worldRadius": 0.046573154628276825,
+                    "projectedRadius": 25.8016357421875,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 999.8328857421875,
+                        "y": 10.027920722961426,
+                        "z": 999.9691162109375
+                    },
+                    "pixelCentre": {
+                        "x": 866.0548706054688,
+                        "y": 556.421875
+                    },
+                    "worldRadius": 0.06403558701276779,
+                    "projectedRadius": 35.47943878173828,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "opaque-panel-occlusion",
+            "image": "Hwacat_angry-opaque-panel-occlusion.png",
+            "emissionOffImage": "Hwacat_angry-opaque-panel-occlusion-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.6694946289063,
+                "y": 11.268854141235352,
+                "z": 1002.6983032226563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 9.999998092651367,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.1671142578125,
+                        "y": 9.972076416015625,
+                        "z": 1000.0308227539063
+                    },
+                    "pixelCentre": {
+                        "x": 866.1329956054688,
+                        "y": 523.60009765625
+                    },
+                    "worldRadius": 0.046573154628276825,
+                    "projectedRadius": 25.75982666015625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 999.8328857421875,
+                        "y": 10.027920722961426,
+                        "z": 999.9691162109375
+                    },
+                    "pixelCentre": {
+                        "x": 1054.09814453125,
+                        "y": 556.4486083984375
+                    },
+                    "worldRadius": 0.06403558701276779,
+                    "projectedRadius": 35.45777130126953,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Baby",
+            "name": "close-torch-on",
+            "image": "Baby-close-torch-on.png",
+            "emissionOffImage": "Baby-close-torch-on-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9224853515625,
+                "y": 10.032516479492188,
+                "z": 1002.9988403320313
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.000000953674316,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 323,
+                    "anchor": {
+                        "x": 1000.1141357421875,
+                        "y": 9.996749877929688,
+                        "z": 999.9898681640625
+                    },
+                    "pixelCentre": {
+                        "x": 897.22900390625,
+                        "y": 538.2844848632813
+                    },
+                    "worldRadius": 0.049427855759859085,
+                    "projectedRadius": 27.26300048828125,
+                    "pupilBefore": 0.540617048740387,
+                    "pupilAfter": 0.540617048740387,
+                    "irisBefore": 0.1881638914346695,
+                    "irisAfter": 0.28062552213668823,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0091602373868227,
+                    "centralAfterDeviation": 0.0091602373868227,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 33,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 244,
+                    "anchor": {
+                        "x": 999.8858642578125,
+                        "y": 10.003252029418945,
+                        "z": 1000.0101928710938
+                    },
+                    "pixelCentre": {
+                        "x": 1023.3630981445313,
+                        "y": 541.7297973632813
+                    },
+                    "worldRadius": 0.03961458057165146,
+                    "projectedRadius": 22.04949951171875,
+                    "pupilBefore": 0.4933432340621948,
+                    "pupilAfter": 0.4933432340621948,
+                    "irisBefore": 0.4504227042198181,
+                    "irisAfter": 0.4644324779510498,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.010990023612976074,
+                    "centralAfterDeviation": 0.010990023612976074,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 22,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                }
+            ],
+            "totalAttributableRedPixels": 567
+        },
+        {
+            "profile": "Baby",
+            "name": "close-torch-off",
+            "image": "Baby-close-torch-off.png",
+            "emissionOffImage": "Baby-close-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9224853515625,
+                "y": 10.032516479492188,
+                "z": 1002.9988403320313
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.000000953674316,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 500,
+                    "anchor": {
+                        "x": 1000.1141357421875,
+                        "y": 9.996749877929688,
+                        "z": 999.9898681640625
+                    },
+                    "pixelCentre": {
+                        "x": 897.22900390625,
+                        "y": 538.2844848632813
+                    },
+                    "worldRadius": 0.049427855759859085,
+                    "projectedRadius": 27.26300048828125,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 419,
+                    "anchor": {
+                        "x": 999.8858642578125,
+                        "y": 10.003252029418945,
+                        "z": 1000.0101928710938
+                    },
+                    "pixelCentre": {
+                        "x": 1023.3630981445313,
+                        "y": 541.7297973632813
+                    },
+                    "worldRadius": 0.03961458057165146,
+                    "projectedRadius": 22.04949951171875,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 919
+        },
+        {
+            "profile": "Baby",
+            "name": "far-15m-torch-off",
+            "image": "Baby-far-15m-torch-off.png",
+            "emissionOffImage": "Baby-far-15m-torch-off-emission-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.6123046875,
+                "y": 10.162579536437988,
+                "z": 1014.9940795898438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.000000953674316,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 18,
+                    "anchor": {
+                        "x": 1000.1141357421875,
+                        "y": 9.996749877929688,
+                        "z": 999.9898681640625
+                    },
+                    "pixelCentre": {
+                        "x": 954.3643188476563,
+                        "y": 539.8460693359375
+                    },
+                    "worldRadius": 0.049427855759859085,
+                    "projectedRadius": 2.450927734375,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 14,
+                    "anchor": {
+                        "x": 999.8858642578125,
+                        "y": 10.003252029418945,
+                        "z": 1000.0101928710938
+                    },
+                    "pixelCentre": {
+                        "x": 965.6456298828125,
+                        "y": 540.1541748046875
+                    },
+                    "worldRadius": 0.03961458057165146,
+                    "projectedRadius": 1.966552734375,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 32
+        },
+        {
+            "profile": "Baby",
+            "name": "rear-torch-off",
+            "image": "Baby-rear-torch-off.png",
+            "emissionOffImage": "Baby-rear-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 1000.0775146484375,
+                "y": 9.967485427856445,
+                "z": 997.0011596679688
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.000000953674316,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.1141357421875,
+                        "y": 9.996749877929688,
+                        "z": 999.9898681640625
+                    },
+                    "pixelCentre": {
+                        "x": 1023.3238525390625,
+                        "y": 538.2691040039063
+                    },
+                    "worldRadius": 0.049427855759859085,
+                    "projectedRadius": 27.5423583984375,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 999.8858642578125,
+                        "y": 10.003252029418945,
+                        "z": 1000.0101928710938
+                    },
+                    "pixelCentre": {
+                        "x": 897.1900634765625,
+                        "y": 541.71435546875
+                    },
+                    "worldRadius": 0.03961458057165146,
+                    "projectedRadius": 21.85711669921875,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Baby",
+            "name": "opaque-panel-occlusion",
+            "image": "Baby-opaque-panel-occlusion.png",
+            "emissionOffImage": "Baby-opaque-panel-occlusion-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9224853515625,
+                "y": 10.032516479492188,
+                "z": 1002.9988403320313
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.000000953674316,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.1141357421875,
+                        "y": 9.996749877929688,
+                        "z": 999.9898681640625
+                    },
+                    "pixelCentre": {
+                        "x": 897.22900390625,
+                        "y": 538.2844848632813
+                    },
+                    "worldRadius": 0.049427855759859085,
+                    "projectedRadius": 27.26300048828125,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 999.8858642578125,
+                        "y": 10.003252029418945,
+                        "z": 1000.0101928710938
+                    },
+                    "pixelCentre": {
+                        "x": 1023.3630981445313,
+                        "y": 541.7297973632813
+                    },
+                    "worldRadius": 0.03961458057165146,
+                    "projectedRadius": 22.04949951171875,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "LanternMask",
+            "name": "close-torch-on",
+            "image": "LanternMask-close-torch-on.png",
+            "emissionOffImage": "LanternMask-close-torch-on-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.3268432617188,
+                "y": 10.06108570098877,
+                "z": 1002.9815063476563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 750,
+                    "anchor": {
+                        "x": 1000.125732421875,
+                        "y": 9.998208045959473,
+                        "z": 999.9991455078125
+                    },
+                    "pixelCentre": {
+                        "x": 890.4450073242188,
+                        "y": 538.8580322265625
+                    },
+                    "worldRadius": 0.0754798948764801,
+                    "projectedRadius": 41.9359130859375,
+                    "pupilBefore": 0.011291948147118092,
+                    "pupilAfter": 0.011291948147118092,
+                    "irisBefore": 0.24162344634532928,
+                    "irisAfter": 0.26586267352104187,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 78,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 586,
+                    "anchor": {
+                        "x": 999.874267578125,
+                        "y": 10.001791954040527,
+                        "z": 1000.0008544921875
+                    },
+                    "pixelCentre": {
+                        "x": 1029.0048828125,
+                        "y": 541.13232421875
+                    },
+                    "worldRadius": 0.0693349689245224,
+                    "projectedRadius": 38.236572265625,
+                    "pupilBefore": 0.011291948147118092,
+                    "pupilAfter": 0.011291948147118092,
+                    "irisBefore": 0.23051542043685913,
+                    "irisAfter": 0.2633315920829773,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 66,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                }
+            ],
+            "totalAttributableRedPixels": 1336
+        },
+        {
+            "profile": "LanternMask",
+            "name": "close-torch-off",
+            "image": "LanternMask-close-torch-off.png",
+            "emissionOffImage": "LanternMask-close-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.3268432617188,
+                "y": 10.06108570098877,
+                "z": 1002.9815063476563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 754,
+                    "anchor": {
+                        "x": 1000.125732421875,
+                        "y": 9.998208045959473,
+                        "z": 999.9991455078125
+                    },
+                    "pixelCentre": {
+                        "x": 890.4450073242188,
+                        "y": 538.8580322265625
+                    },
+                    "worldRadius": 0.0754798948764801,
+                    "projectedRadius": 41.9359130859375,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 580,
+                    "anchor": {
+                        "x": 999.874267578125,
+                        "y": 10.001791954040527,
+                        "z": 1000.0008544921875
+                    },
+                    "pixelCentre": {
+                        "x": 1029.0048828125,
+                        "y": 541.13232421875
+                    },
+                    "worldRadius": 0.0693349689245224,
+                    "projectedRadius": 38.236572265625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 1334
+        },
+        {
+            "profile": "LanternMask",
+            "name": "far-15m-torch-off",
+            "image": "LanternMask-far-15m-torch-off.png",
+            "emissionOffImage": "LanternMask-far-15m-torch-off-emission-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1001.6342163085938,
+                "y": 10.30543041229248,
+                "z": 1014.9075927734375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 8,
+                    "anchor": {
+                        "x": 1000.125732421875,
+                        "y": 9.998208045959473,
+                        "z": 999.9991455078125
+                    },
+                    "pixelCentre": {
+                        "x": 953.7916259765625,
+                        "y": 539.8982543945313
+                    },
+                    "worldRadius": 0.0754798948764801,
+                    "projectedRadius": 3.74139404296875,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 7,
+                    "anchor": {
+                        "x": 999.874267578125,
+                        "y": 10.001791954040527,
+                        "z": 1000.0008544921875
+                    },
+                    "pixelCentre": {
+                        "x": 966.1860961914063,
+                        "y": 540.1016235351563
+                    },
+                    "worldRadius": 0.0693349689245224,
+                    "projectedRadius": 3.43463134765625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 16
+        },
+        {
+            "profile": "LanternMask",
+            "name": "rear-torch-off",
+            "image": "LanternMask-rear-torch-off.png",
+            "emissionOffImage": "LanternMask-rear-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 999.6731567382813,
+                "y": 9.93891429901123,
+                "z": 997.0184936523438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 20,
+                    "anchor": {
+                        "x": 1000.125732421875,
+                        "y": 9.998208045959473,
+                        "z": 999.9991455078125
+                    },
+                    "pixelCentre": {
+                        "x": 1029.0020751953125,
+                        "y": 538.8670654296875
+                    },
+                    "worldRadius": 0.0754798948764801,
+                    "projectedRadius": 41.6190185546875,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 26,
+                    "anchor": {
+                        "x": 999.874267578125,
+                        "y": 10.001791954040527,
+                        "z": 1000.0008544921875
+                    },
+                    "pixelCentre": {
+                        "x": 890.4058227539063,
+                        "y": 541.1412963867188
+                    },
+                    "worldRadius": 0.0693349689245224,
+                    "projectedRadius": 38.60235595703125,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 46
+        },
+        {
+            "profile": "LanternMask",
+            "name": "opaque-panel-occlusion",
+            "image": "LanternMask-opaque-panel-occlusion.png",
+            "emissionOffImage": "LanternMask-opaque-panel-occlusion-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.3268432617188,
+                "y": 10.06108570098877,
+                "z": 1002.9815063476563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.125732421875,
+                        "y": 9.998208045959473,
+                        "z": 999.9991455078125
+                    },
+                    "pixelCentre": {
+                        "x": 890.4450073242188,
+                        "y": 538.8580322265625
+                    },
+                    "worldRadius": 0.0754798948764801,
+                    "projectedRadius": 41.9359130859375,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 999.874267578125,
+                        "y": 10.001791954040527,
+                        "z": 1000.0008544921875
+                    },
+                    "pixelCentre": {
+                        "x": 1029.0048828125,
+                        "y": 541.13232421875
+                    },
+                    "worldRadius": 0.0693349689245224,
+                    "projectedRadius": 38.236572265625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Mannequin",
+            "name": "close-torch-on",
+            "image": "Mannequin-close-torch-on.png",
+            "emissionOffImage": "Mannequin-close-torch-on-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9368286132813,
+                "y": 9.21027946472168,
+                "z": 1002.8934936523438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 208,
+                    "anchor": {
+                        "x": 1000.06005859375,
+                        "y": 9.98825454711914,
+                        "z": 999.9946899414063
+                    },
+                    "pixelCentre": {
+                        "x": 926.8723754882813,
+                        "y": 532.7679443359375
+                    },
+                    "worldRadius": 0.035730186849832535,
+                    "projectedRadius": 19.743896484375,
+                    "pupilBefore": 0.10872825235128403,
+                    "pupilAfter": 0.10872825235128403,
+                    "irisBefore": 0.23740904033184052,
+                    "irisAfter": 0.2410343736410141,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0008430263842456043,
+                    "centralAfterDeviation": 0.0008430263842456043,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 17,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": true,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 212,
+                    "anchor": {
+                        "x": 999.9400024414063,
+                        "y": 10.011746406555176,
+                        "z": 1000.0052490234375
+                    },
+                    "pixelCentre": {
+                        "x": 993.1998901367188,
+                        "y": 547.247802734375
+                    },
+                    "worldRadius": 0.021592186763882637,
+                    "projectedRadius": 12.004150390625,
+                    "pupilBefore": 0.11276642233133316,
+                    "pupilAfter": 0.11276642233133316,
+                    "irisBefore": 0.09600205719470978,
+                    "irisAfter": 0.18673034012317657,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0006341792759485543,
+                    "centralAfterDeviation": 0.0006341792759485543,
+                    "centralFeatureCorrelation": 1.0,
+                    "centralSamples": 7,
+                    "centralPreservationApplicable": true,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": true,
+                    "originalPupilVisible": true
+                }
+            ],
+            "totalAttributableRedPixels": 420
+        },
+        {
+            "profile": "Mannequin",
+            "name": "close-torch-off",
+            "image": "Mannequin-close-torch-off.png",
+            "emissionOffImage": "Mannequin-close-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9368286132813,
+                "y": 9.21027946472168,
+                "z": 1002.8934936523438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 210,
+                    "anchor": {
+                        "x": 1000.06005859375,
+                        "y": 9.98825454711914,
+                        "z": 999.9946899414063
+                    },
+                    "pixelCentre": {
+                        "x": 926.8723754882813,
+                        "y": 532.7679443359375
+                    },
+                    "worldRadius": 0.035730186849832535,
+                    "projectedRadius": 19.743896484375,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 211,
+                    "anchor": {
+                        "x": 999.9400024414063,
+                        "y": 10.011746406555176,
+                        "z": 1000.0052490234375
+                    },
+                    "pixelCentre": {
+                        "x": 993.1998901367188,
+                        "y": 547.247802734375
+                    },
+                    "worldRadius": 0.021592186763882637,
+                    "projectedRadius": 12.004150390625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 421
+        },
+        {
+            "profile": "Mannequin",
+            "name": "far-15m-torch-off",
+            "image": "Mannequin-far-15m-torch-off.png",
+            "emissionOffImage": "Mannequin-far-15m-torch-off-emission-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.6842651367188,
+                "y": 6.051396369934082,
+                "z": 1014.467529296875
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 9,
+                    "anchor": {
+                        "x": 1000.06005859375,
+                        "y": 9.98825454711914,
+                        "z": 999.9946899414063
+                    },
+                    "pixelCentre": {
+                        "x": 957.0397338867188,
+                        "y": 539.3541259765625
+                    },
+                    "worldRadius": 0.035730186849832535,
+                    "projectedRadius": 1.7651981115341187,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 5,
+                    "anchor": {
+                        "x": 999.9400024414063,
+                        "y": 10.011746406555176,
+                        "z": 1000.0052490234375
+                    },
+                    "pixelCentre": {
+                        "x": 962.9732666015625,
+                        "y": 540.6483764648438
+                    },
+                    "worldRadius": 0.021592186763882637,
+                    "projectedRadius": 1.0704962015151978,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 11
+        },
+        {
+            "profile": "Mannequin",
+            "name": "rear-torch-off",
+            "image": "Mannequin-rear-torch-off.png",
+            "emissionOffImage": "Mannequin-rear-torch-off-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 1000.0631713867188,
+                "y": 10.78972053527832,
+                "z": 997.1065063476563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.06005859375,
+                        "y": 9.98825454711914,
+                        "z": 999.9946899414063
+                    },
+                    "pixelCentre": {
+                        "x": 993.2005615234375,
+                        "y": 532.7520751953125
+                    },
+                    "worldRadius": 0.035730186849832535,
+                    "projectedRadius": 19.8656005859375,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 999.9400024414063,
+                        "y": 10.011746406555176,
+                        "z": 1000.0052490234375
+                    },
+                    "pixelCentre": {
+                        "x": 926.8716430664063,
+                        "y": 547.232177734375
+                    },
+                    "worldRadius": 0.021592186763882637,
+                    "projectedRadius": 11.97930908203125,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Mannequin",
+            "name": "opaque-panel-occlusion",
+            "image": "Mannequin-opaque-panel-occlusion.png",
+            "emissionOffImage": "Mannequin-opaque-panel-occlusion-emission-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9368286132813,
+                "y": 9.21027946472168,
+                "z": 1002.8934936523438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "eyeCount": 2,
+            "originalGeometryAndBaseMapsPreserved": true,
+            "eyes": [
+                {
+                    "index": 0,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 1000.06005859375,
+                        "y": 9.98825454711914,
+                        "z": 999.9946899414063
+                    },
+                    "pixelCentre": {
+                        "x": 926.8723754882813,
+                        "y": 532.7679443359375
+                    },
+                    "worldRadius": 0.035730186849832535,
+                    "projectedRadius": 19.743896484375,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                },
+                {
+                    "index": 1,
+                    "attributableRedPixels": 0,
+                    "anchor": {
+                        "x": 999.9400024414063,
+                        "y": 10.011746406555176,
+                        "z": 1000.0052490234375
+                    },
+                    "pixelCentre": {
+                        "x": 993.1998901367188,
+                        "y": 547.247802734375
+                    },
+                    "worldRadius": 0.021592186763882637,
+                    "projectedRadius": 12.004150390625,
+                    "pupilBefore": 0.0,
+                    "pupilAfter": 0.0,
+                    "irisBefore": 0.0,
+                    "irisAfter": 0.0,
+                    "centralRgbMeanError": 0.0,
+                    "centralRgbMaxError": 0.0,
+                    "centralBeforeDeviation": 0.0,
+                    "centralAfterDeviation": 0.0,
+                    "centralFeatureCorrelation": 0.0,
+                    "centralSamples": 0,
+                    "centralPreservationApplicable": false,
+                    "pupilContrastApplicable": false,
+                    "originalCentralFeaturePreserved": false,
+                    "originalPupilVisible": false
+                }
+            ],
+            "totalAttributableRedPixels": 0
+        }
+    ],
+    "errors": []
+}

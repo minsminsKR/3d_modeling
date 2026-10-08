@@ -24,17 +24,35 @@ namespace HappyToy.V2
         readonly GraphicsSurfaceLibrary.Pool surfaces = new GraphicsSurfaceLibrary.Pool();
         [Serializable] sealed class View
         {
-            public string profile, name, image;
+            public string profile, name, image, emissionOffImage;
             public float distance, cameraFov;
             public bool torch, blocked, back;
             public Vector3 cameraPosition, faceCentre;
-            public int leftAttributableRedPixels, rightAttributableRedPixels;
+            public int eyeCount;
+            public bool originalGeometryAndBaseMapsPreserved;
+            public EyeView[] eyes;
             public int totalAttributableRedPixels;
+        }
+        [Serializable] sealed class EyeView
+        {
+            public int index, attributableRedPixels;
+            public Vector3 anchor;
+            public Vector2 pixelCentre;
+            public float worldRadius, projectedRadius, pupilBefore, pupilAfter, irisBefore, irisAfter;
+            public float centralRgbMeanError, centralRgbMaxError, centralBeforeDeviation, centralAfterDeviation, centralFeatureCorrelation;
+            public int centralSamples;
+            public bool centralPreservationApplicable, pupilContrastApplicable, originalCentralFeaturePreserved, originalPupilVisible;
+        }
+        sealed class Binding
+        {
+            public Renderer source, snapshot;
+            public int[] slots;
+            public readonly Dictionary<int, MaterialPropertyBlock> on = new Dictionary<int, MaterialPropertyBlock>();
         }
         [Serializable] sealed class Report
         {
             public string status;
-            public string scope = "Controlled native render-only clones of all six live production hostile faces. Close 3m torch on/off, 15m dark distance, rear view, and opaque panel occlusion use the release player's reviewCamera post processing/materials. Red-pixel counts compare cores on/off in the identical scene. No AI, route, gameplay survival, audio or performance certification.";
+            public string scope = "Controlled native render-only snapshots of all six live production hostile faces, including Cyclopse's single original eye. Close3m torch on/off, 15m dark distance, rear view and opaque-panel occlusion use production camera post processing/materials. Emission-on/off captures retain identical original meshes, renderer enabled states and BaseMap/iris/pupil textures; only indexed snapshot property-block emission colour changes. Original central RGB and existing local feature pattern are compared pixel-for-pixel; dark-pupil contrast is additionally required where the emission-off eye is actually dark. Empty mask apertures retain their original centre/mesh rather than gain a substitute eyeball. No AI, route, gameplay survival, audio or performance certification.";
             public bool developmentBuild;
             public View[] views;
             public string[] errors;
@@ -44,7 +62,7 @@ namespace HappyToy.V2
         {
             var args = Environment.GetCommandLineArgs(); int at = Array.IndexOf(args, "-v2-threat-visual-output");
             if (at < 0 || at + 1 >= args.Length) return;
-            new GameObject("Opt-in native paired-eye visual gallery").AddComponent<ThreatVisualAudit>().output = args[at + 1];
+            new GameObject("Opt-in original-eye preservation gallery").AddComponent<ThreatVisualAudit>().output = args[at + 1];
         }
         void OnEnable() => Application.logMessageReceived += Log;
         void OnDisable() => Application.logMessageReceived -= Log;
@@ -63,10 +81,20 @@ namespace HappyToy.V2
                 yield return yielded;
             }
             bool visible = views.Where(view => !view.back && !view.blocked).All(view =>
-                view.leftAttributableRedPixels > 0 && view.rightAttributableRedPixels > 0);
-            bool occluded = views.Where(view => view.back || view.blocked).All(view => view.totalAttributableRedPixels == 0);
+                view.eyes.Length == view.eyeCount && view.eyes.All(eye => eye.attributableRedPixels > 0));
+            bool occluded = views.Where(view => view.back || view.blocked).All(view =>
+                // The mask has open holes rather than a solid rear head.
+                // Its original inner aperture lips can genuinely be visible
+                // through those holes. Every opaque panel must still hide all
+                // emission, and solid heads must hide it from behind.
+                view.back && !view.blocked && view.profile == "LanternMask"
+                    ? view.totalAttributableRedPixels == view.eyes.Sum(eye => eye.attributableRedPixels)
+                    : view.totalAttributableRedPixels == 0);
+            bool preserved = views.All(view => view.originalGeometryAndBaseMapsPreserved &&
+                view.eyeCount == (view.profile == "Cyclopse" ? 1 : 2)) && views.Where(view => view.name == "close-torch-on")
+                .All(view => view.eyes.All(eye => !eye.centralPreservationApplicable || eye.originalCentralFeaturePreserved));
             var report = new Report { developmentBuild = Debug.isDebugBuild, views = views.ToArray(), errors = errors.ToArray() };
-            report.status = errors.Count == 0 && views.Count == 30 && visible && occluded ? "PASS" : "FAIL";
+            report.status = errors.Count == 0 && views.Count == 30 && visible && occluded && preserved ? "PASS" : "FAIL";
             File.WriteAllText(Path.Combine(output, "threat-visuals.json"), JsonUtility.ToJson(report, true));
             if (reviewCamera) Destroy(reviewCamera.gameObject);
             surfaces.Dispose(); Application.Quit(report.status == "PASS" ? 0 : 2);
@@ -123,18 +151,54 @@ namespace HappyToy.V2
                 if (key == "LanternMask") visual = eyes.GetComponentInParent<LanternMaskEncounter>().mask;
                 else if (key == "Mannequin") visual = eyes.GetComponentInParent<WeepingAngelEncounter>().visual;
                 else visual = eyes.GetComponentInParent<V1MonsterMotion>().model;
+                // The original appearance gate may leave a visual child
+                // inactive even though its AI-disabled actor root is active.
+                // Activate the real source child before snapshotting so its
+                // eye owner's OnEnable binds the owned emission material.
+                visual.gameObject.SetActive(true);
+                typeof(MonsterRedEyes).GetMethod("SetEmissionEnabled").Invoke(eyes, new object[] { true });
                 var snapshot = Instantiate(visual.gameObject); snapshot.name = key + " frozen production visual snapshot";
                 snapshot.SetActive(true);
                 foreach (var node in snapshot.GetComponentsInChildren<Transform>(true)) node.gameObject.layer = Layer;
                 foreach (var behaviour in snapshot.GetComponentsInChildren<Behaviour>(true)) behaviour.enabled = false;
                 if (snapshot.GetComponentsInChildren<Collider>(true).Length != 0 || snapshot.GetComponentsInChildren<NavMeshAgent>(true).Length != 0)
                     throw new InvalidOperationException("Gallery clone contains gameplay physics: " + key);
+                if (eyes.GetComponentsInChildren<Renderer>(true).Length != 0 || eyes.GetComponentsInChildren<MeshFilter>(true).Length != 0)
+                    throw new InvalidOperationException("Opaque added eye geometry hides original eye anatomy: " + key);
                 var anchors = eyes.EyeAnchors.Select(anchor => snapshot.transform.Find(PathFrom(visual, anchor))).ToArray();
-                var cores = eyes.Cores.Select(core => snapshot.transform.Find(PathFrom(visual, core.transform)).GetComponent<MeshRenderer>()).ToArray();
-                var centre = (anchors[0].position + anchors[1].position) * .5f;
+                var radii = EyeRadii(eyes).ToArray();
+                if (anchors.Length != (key == "Cyclopse" ? 1 : 2) || radii.Length != anchors.Length)
+                    throw new InvalidOperationException("Native eye count/extent disagrees with anatomy: " + key);
+                var bindings = EmissionRenderers(eyes).Select(renderer => new Binding { source = renderer,
+                    snapshot = snapshot.transform.Find(PathFrom(visual, renderer.transform)).GetComponent<Renderer>(),
+                    slots = AffectedSlots(eyes, renderer) }).ToArray();
+                foreach (var binding in bindings)
+                {
+                    var global = new MaterialPropertyBlock(); binding.source.GetPropertyBlock(global); binding.snapshot.SetPropertyBlock(global);
+                    for (int slot = 0; slot < binding.source.sharedMaterials.Length; slot++)
+                    {
+                        var originalBlock = new MaterialPropertyBlock(); binding.source.GetPropertyBlock(originalBlock, slot);
+                        binding.snapshot.SetPropertyBlock(originalBlock, slot);
+                    }
+                    foreach (int slot in binding.slots)
+                    {
+                        var baseline = (Material)typeof(MonsterRedEyes).GetMethod("GetOriginalMaterial").Invoke(eyes, new object[] { binding.source, slot });
+                        if (!OriginalAppearancePreserved(binding.source.sharedMaterials[slot], baseline))
+                            throw new InvalidOperationException("Original BaseMap/iris/pupil material changed before gallery capture: " + key);
+                        var originalBlock = new MaterialPropertyBlock(); binding.source.GetPropertyBlock(originalBlock, slot);
+                        if (originalBlock.GetColor("_EmissionColor").maxColorComponent <= 0)
+                            originalBlock.SetColor("_EmissionColor", EmissionColor(eyes, binding.source, slot));
+                        binding.on.Add(slot, originalBlock);
+                    }
+                }
+                var originalMeshes = bindings.Select(binding => OriginalMesh(binding.snapshot)).ToArray();
+                var originalMaterials = bindings.Select(binding => binding.snapshot.sharedMaterials).ToArray();
+                var originalEnabled = bindings.Select(binding => binding.snapshot.enabled).ToArray();
+                var originalBaseMaps = originalMaterials.Select(materials => materials.Select(material => material.GetTexture("_BaseMap")).ToArray()).ToArray();
+                var centre = anchors.Aggregate(Vector3.zero, (sum, anchor) => sum + anchor.position) / anchors.Length;
                 snapshot.transform.position += new Vector3(1000, 10, 1000) - centre;
-                centre = (anchors[0].position + anchors[1].position) * .5f;
-                var forward = (anchors[0].forward + anchors[1].forward).normalized;
+                centre = anchors.Aggregate(Vector3.zero, (sum, anchor) => sum + anchor.position) / anchors.Length;
+                var forward = anchors.Aggregate(Vector3.zero, (sum, anchor) => sum + anchor.forward).normalized;
                 var up = Vector3.ProjectOnPlane(Vector3.up, forward).normalized;
                 if (up.sqrMagnitude < .5f) up = Vector3.ProjectOnPlane(snapshot.transform.up, forward).normalized;
                 for (int index = 0; index < 5; index++)
@@ -158,16 +222,52 @@ namespace HappyToy.V2
                     yield return null;
                     string name = index == 0 ? "close-torch-on" : index == 1 ? "close-torch-off" :
                         index == 2 ? "far-15m-torch-off" : index == 3 ? "rear-torch-off" : "opaque-panel-occlusion";
-                    foreach (var core in cores) core.enabled = false;
-                    var without = Capture(null);
-                    foreach (var core in cores) core.enabled = true;
                     string filename = key + "-" + name + ".png";
+                    string offFilename = key + "-" + name + "-emission-off.png";
+                    ToggleSnapshot(bindings, false);
+                    var without = Capture(offFilename);
+                    ToggleSnapshot(bindings, true);
                     var after = Capture(filename);
                     var view = new View { profile = key, name = name, image = filename, distance = distance,
                         cameraFov = reviewCamera.fieldOfView, torch = lit, back = back, blocked = blocked,
-                        cameraPosition = reviewCamera.transform.position, faceCentre = centre };
-                    view.leftAttributableRedPixels = CountRed(without, after, PixelBounds(cores[0]));
-                    view.rightAttributableRedPixels = CountRed(without, after, PixelBounds(cores[1]));
+                        cameraPosition = reviewCamera.transform.position, faceCentre = centre, emissionOffImage = offFilename,
+                        eyeCount = anchors.Length, eyes = new EyeView[anchors.Length] };
+                    view.originalGeometryAndBaseMapsPreserved = bindings.Select((binding, at) =>
+                        OriginalMesh(binding.snapshot) == originalMeshes[at] && binding.snapshot.enabled == originalEnabled[at] &&
+                        binding.snapshot.sharedMaterials.SequenceEqual(originalMaterials[at]) &&
+                        binding.snapshot.sharedMaterials.Select(material => material.GetTexture("_BaseMap")).SequenceEqual(originalBaseMaps[at])).All(value => value);
+                    for (int eye = 0; eye < anchors.Length; eye++)
+                    {
+                        var viewport = reviewCamera.WorldToViewportPoint(anchors[eye].position);
+                        var extent = reviewCamera.WorldToViewportPoint(anchors[eye].position + reviewCamera.transform.right * radii[eye]);
+                        var point = new Vector2(viewport.x * Width, viewport.y * Height);
+                        float radius = Mathf.Max(1, Vector2.Distance(point, new Vector2(extent.x * Width, extent.y * Height)));
+                        var observed = new EyeView { index = eye, anchor = anchors[eye].position, pixelCentre = point, worldRadius = radii[eye], projectedRadius = radius,
+                            attributableRedPixels = CountRed(without, after, EyePixelBounds(point, radius)),
+                            centralPreservationApplicable = lit && !back && !blocked };
+                        if (observed.centralPreservationApplicable)
+                        {
+                            observed.pupilBefore = MedianLuminance(without, point, radius, 0, .12f);
+                            observed.pupilAfter = MedianLuminance(after, point, radius, 0, .12f);
+                            observed.irisBefore = MedianLuminance(without, point, radius, .42f, .85f);
+                            observed.irisAfter = MedianLuminance(after, point, radius, .42f, .85f);
+                            // Some original eyes are pale stone or contain a
+                            // bright specular centre. Preserve their own RGB
+                            // and local feature pattern rather than require
+                            // every source asset to have a black pupil.
+                            MeasureCentralFeature(without, after, point, radius, observed);
+                            observed.pupilContrastApplicable = key != "LanternMask" &&
+                                observed.irisBefore > observed.pupilBefore + .012f && observed.pupilBefore < observed.irisBefore * .85f;
+                            bool contrastSurvives = !observed.pupilContrastApplicable ||
+                                observed.irisAfter > observed.pupilAfter + .012f && observed.pupilAfter < observed.irisAfter * .85f;
+                            bool patternSurvives = observed.centralBeforeDeviation < .003f ||
+                                observed.centralAfterDeviation >= observed.centralBeforeDeviation * .75f && observed.centralFeatureCorrelation >= .95f;
+                            observed.originalCentralFeaturePreserved = observed.centralSamples > 0 &&
+                                observed.centralRgbMeanError <= .01f && observed.centralRgbMaxError <= .03f && patternSurvives && contrastSurvives;
+                            observed.originalPupilVisible = observed.originalCentralFeaturePreserved;
+                        }
+                        view.eyes[eye] = observed;
+                    }
                     view.totalAttributableRedPixels = CountRed(without, after, new RectInt(0, 0, Width, Height));
                     views.Add(view); if (blocker) Destroy(blocker);
                     yield return null;
@@ -185,19 +285,94 @@ namespace HappyToy.V2
             }
             return string.Join("/", names);
         }
-        RectInt PixelBounds(Renderer renderer)
+        static IReadOnlyList<float> EyeRadii(MonsterRedEyes eyes) =>
+            (IReadOnlyList<float>)typeof(MonsterRedEyes).GetProperty("EyeRadii").GetValue(eyes);
+        static IReadOnlyList<Renderer> EmissionRenderers(MonsterRedEyes eyes) =>
+            (IReadOnlyList<Renderer>)typeof(MonsterRedEyes).GetProperty("EmissionRenderers").GetValue(eyes);
+        static int[] AffectedSlots(MonsterRedEyes eyes, Renderer renderer) =>
+            (int[])typeof(MonsterRedEyes).GetMethod("GetAffectedSlots").Invoke(eyes, new object[] { renderer });
+        static Color EmissionColor(MonsterRedEyes eyes, Renderer renderer, int slot) =>
+            (Color)typeof(MonsterRedEyes).GetMethod("GetEmissionColor").Invoke(eyes, new object[] { renderer, slot });
+        static Mesh OriginalMesh(Renderer renderer) => renderer is SkinnedMeshRenderer skin ? skin.sharedMesh : renderer.GetComponent<MeshFilter>().sharedMesh;
+        static bool OriginalAppearancePreserved(Material actual, Material original)
         {
-            var bounds = renderer.bounds; float minX = Width, minY = Height, maxX = 0, maxY = 0;
-            for (int corner = 0; corner < 8; corner++)
+            if (!actual || !original || actual.shader != original.shader ||
+                !actual.shaderKeywords.Where(keyword => keyword != "_EMISSION").OrderBy(keyword => keyword)
+                    .SequenceEqual(original.shaderKeywords.Where(keyword => keyword != "_EMISSION").OrderBy(keyword => keyword))) return false;
+            for (int index = 0; index < original.shader.GetPropertyCount(); index++)
             {
-                var sign = new Vector3((corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1);
-                var point = reviewCamera.WorldToViewportPoint(bounds.center + Vector3.Scale(bounds.extents, sign));
-                minX = Mathf.Min(minX, point.x * Width); maxX = Mathf.Max(maxX, point.x * Width);
-                minY = Mathf.Min(minY, point.y * Height); maxY = Mathf.Max(maxY, point.y * Height);
+                string property = original.shader.GetPropertyName(index);
+                if (property == "_EmissionColor" || property == "_EmissionMap") continue;
+                switch (original.shader.GetPropertyType(index))
+                {
+                    case ShaderPropertyType.Color: if (actual.GetColor(property) != original.GetColor(property)) return false; break;
+                    case ShaderPropertyType.Vector: if (actual.GetVector(property) != original.GetVector(property)) return false; break;
+                    case ShaderPropertyType.Float:
+                    case ShaderPropertyType.Range: if (actual.GetFloat(property) != original.GetFloat(property)) return false; break;
+                    case ShaderPropertyType.Texture:
+                        if (actual.GetTexture(property) != original.GetTexture(property) ||
+                            actual.GetTextureScale(property) != original.GetTextureScale(property) ||
+                            actual.GetTextureOffset(property) != original.GetTextureOffset(property)) return false; break;
+                }
             }
-            int x = Mathf.Clamp(Mathf.FloorToInt(minX) - 3, 0, Width), y = Mathf.Clamp(Mathf.FloorToInt(minY) - 3, 0, Height);
-            return new RectInt(x, y, Mathf.Clamp(Mathf.CeilToInt(maxX) + 3, x, Width) - x,
-                Mathf.Clamp(Mathf.CeilToInt(maxY) + 3, y, Height) - y);
+            return true;
+        }
+        static void ToggleSnapshot(IEnumerable<Binding> bindings, bool enabled)
+        {
+            foreach (var binding in bindings) foreach (int slot in binding.slots)
+            {
+                if (enabled) binding.snapshot.SetPropertyBlock(binding.on[slot], slot);
+                else
+                {
+                    var block = new MaterialPropertyBlock(); binding.snapshot.GetPropertyBlock(block, slot);
+                    block.SetColor("_EmissionColor", Color.black); binding.snapshot.SetPropertyBlock(block, slot);
+                }
+            }
+        }
+        static RectInt EyePixelBounds(Vector2 point, float radius)
+        {
+            float extent = radius * 1.25f + 3;
+            int x = Mathf.Clamp(Mathf.FloorToInt(point.x - extent), 0, Width), y = Mathf.Clamp(Mathf.FloorToInt(point.y - extent), 0, Height);
+            return new RectInt(x, y, Mathf.Clamp(Mathf.CeilToInt(point.x + extent), x, Width) - x,
+                Mathf.Clamp(Mathf.CeilToInt(point.y + extent), y, Height) - y);
+        }
+        static float MedianLuminance(Color[] pixels, Vector2 centre, float radius, float inner, float outer)
+        {
+            var samples = new List<float>(); var region = EyePixelBounds(centre, radius);
+            for (int y = region.yMin; y < region.yMax; y++) for (int x = region.xMin; x < region.xMax; x++)
+            {
+                float distance = Vector2.Distance(new Vector2(x + .5f, y + .5f), centre) / radius;
+                if (distance < inner || distance > outer) continue;
+                var pixel = pixels[y * Width + x]; samples.Add(pixel.r * .2126f + pixel.g * .7152f + pixel.b * .0722f);
+            }
+            if (samples.Count == 0) return 0;
+            samples.Sort(); return samples[samples.Count / 2];
+        }
+        static void MeasureCentralFeature(Color[] before, Color[] after, Vector2 centre, float radius, EyeView result)
+        {
+            var region = EyePixelBounds(centre, radius);
+            double sumBefore = 0, sumAfter = 0, squaresBefore = 0, squaresAfter = 0, products = 0, errors = 0;
+            float maximum = 0; int count = 0;
+            for (int y = region.yMin; y < region.yMax; y++) for (int x = region.xMin; x < region.xMax; x++)
+            {
+                // Radius is the widest eye extent. Inspect the pupil core:
+                // a larger circular window crosses the deliberately glowing
+                // iris of narrow, tilted eyes, even with an untouched pupil.
+                if (Vector2.Distance(new Vector2(x + .5f, y + .5f), centre) > radius * .12f) continue;
+                int index = y * Width + x; var a = before[index]; var b = after[index];
+                float dr = Mathf.Abs(b.r - a.r), dg = Mathf.Abs(b.g - a.g), db = Mathf.Abs(b.b - a.b);
+                errors += (dr + dg + db) / 3; maximum = Mathf.Max(maximum, Mathf.Max(dr, Mathf.Max(dg, db)));
+                double la = a.r * .2126 + a.g * .7152 + a.b * .0722, lb = b.r * .2126 + b.g * .7152 + b.b * .0722;
+                sumBefore += la; sumAfter += lb; squaresBefore += la * la; squaresAfter += lb * lb; products += la * lb; count++;
+            }
+            result.centralSamples = count; if (count == 0) return;
+            double varianceBefore = Math.Max(0, squaresBefore / count - Math.Pow(sumBefore / count, 2));
+            double varianceAfter = Math.Max(0, squaresAfter / count - Math.Pow(sumAfter / count, 2));
+            double covariance = products / count - sumBefore / count * (sumAfter / count);
+            result.centralRgbMeanError = (float)(errors / count); result.centralRgbMaxError = maximum;
+            result.centralBeforeDeviation = (float)Math.Sqrt(varianceBefore); result.centralAfterDeviation = (float)Math.Sqrt(varianceAfter);
+            result.centralFeatureCorrelation = varianceBefore < 1e-10 || varianceAfter < 1e-10 ?
+                (maximum <= .01f ? 1 : 0) : (float)Math.Max(-1, Math.Min(1, covariance / Math.Sqrt(varianceBefore * varianceAfter)));
         }
         static int CountRed(Color[] before, Color[] after, RectInt region)
         {

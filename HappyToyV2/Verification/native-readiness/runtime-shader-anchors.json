@@ -2,7 +2,7 @@
     "scope": "Owned Resources material anchors retain runtime shader_feature combinations; no original asset, scene, model or shader stripping setting modified.",
     "scene": "Assets/Annex/SchoolAnnex.unity",
     "unity": "6000.6.0f1",
-    "count": 4,
+    "count": 6,
     "entries": [
         {
             "asset": "Assets/Resources/FeedbackShaderVariants/Lit-b20e70bb910911656849f39b5a5e0bf14fdf723b021ecf94f635999d56d7409f.mat",
@@ -11,7 +11,37 @@
                 "_EMISSION"
             ],
             "sources": [
-                "CorridorRun lantern shade, HauntedCorridorPresentation paper shade, LightExplorationRun candle/locator flame"
+                "CorridorRun lantern shade, HauntedCorridorPresentation paper shade, LightExplorationRun candle/locator flame",
+                "Static original eye surface emission / Assets/Annex/MannequinSkin.mat",
+                "Static original eye surface emission / Assets/Annex/LanternMaskSkin.mat"
+            ]
+        },
+        {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-50995a49aeeb344371469e40a34065a36a4363015dbc969b60d83605975655b5.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_EMISSION",
+                "_ENVIRONMENTREFLECTIONS_OFF",
+                "_METALLICSPECGLOSSMAP",
+                "_NORMALMAP",
+                "_SPECULARHIGHLIGHTS_OFF"
+            ],
+            "sources": [
+                "Cyclopse / original eye surface emission / Cyclopse_skin 3"
+            ]
+        },
+        {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-87c3df18c91c0d8e5801f5cb942eaebacfd70824fe54bbc911a6d1d746572718.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_EMISSION",
+                "_METALLICSPECGLOSSMAP",
+                "_NORMALMAP"
+            ],
+            "sources": [
+                "Uncat / original eye surface emission / Uncat_skin",
+                "Hwacat_angry / original eye surface emission / Hwacat_angry_skin 5",
+                "Baby / original eye surface emission / Baby_skin 1"
             ]
         },
         {

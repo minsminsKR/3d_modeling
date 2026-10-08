@@ -1,79 +1,79 @@
-# Paired threat eyes and moving door pulls
+# Original-eye emission and moving door pulls
 
-The four refined stalkers, lantern mask and mannequin have two opaque blood-red
-cores in measured face locations. Core domes and charred rims are authored by
-`Assets/Scripts/MonsterRedEyes.cs`; this code is the editable geometry source.
-There are no point lights, spot lights, billboards, transparent overlay halos,
-new shaders or downloaded assets. URP's existing bloom profile supplies the halo.
-The front-only core geometry writes normal depth and is occluded by real walls.
-A small original radial heat texture is generated in `CoreMaterial`: the inner
-pupil is hot red and the curved edge fades to deep red. This avoids a uniform
-flat-button appearance. The editable C# is the texture/geometry authoring source.
+The glow follows the original eye material surfaces. Cyclopse retains its one
+central eye; Uncat, Hwacat, Baby, the mannequin and lantern mask retain their
+original two eye regions. No replacement eyeball, dome, disc, button, light or
+new eye mesh is authored. The original BaseMaps, normals, meshes, UVs and rig
+remain unchanged. The pupil/iris or stone-eyeball centre receives exactly zero
+emission. The lantern mask has genuinely empty apertures, so only its original
+porcelain lips/visible inner walls receive the mask; no centre surface is added.
 
-The four Mixamo models contain a Head bone, but no eye bones. Face UV points are
-ray-hit from the existing editable refinement sources. At runtime a single
-readable BakeMesh snapshot resolves their posed world position and normal. Both
-anchors become children of the animated head before presentation enlargement.
-The snapshot uses the same verified `BakeMesh(mesh,true)` convention as
-`EnemyVisualRefinement.BakedBounds`; no large skinned FBX import becomes readable.
-The original Cyclopse has one painted eye. Its two ritual cores flank that
-orbital band, fulfilling the requested pair without changing its face mesh/UVs.
+`eye_regions.py` is the editable anatomical authoring source. Its ellipses and
+aperture polygons are measured on the existing optional 800x800 source face crops.
+`build_surface_emission.py` opens the tracked editable refinement .blend sources
+or original static FBX files read-only. It rasterizes the anatomical annulus into
+the existing mesh's UV triangles, tests frontmost visibility, and preserves UV
+islands/seams. It never saves a source .blend or modifies original albedo images.
+The output grayscale RGB emission masks are 2048x2048 and use face material slot0.
+The annulus uses a smooth radial intensity ridge, broad smooth edge fades and
+restrained low-frequency variation around its arc. It has no solid-white plateau.
+Baby's larger stone eye regions receive a softer/lower scalar. The original
+pupil/iris/white eyeball exclusion regions remain fully clear and unchanged.
 
-The mask contains actual eye holes. Lower/upper lip UV pairs determine aperture
-centres and a shared face plane. The doll's cores are on its existing eye sockets.
-`ThreatEyeModelImport.Ensure` changes only these two static FBX imports to readable,
-permitting one startup sample of their actual mesh. The existing movement,
-visibility, introduction, scaling and mask attachment continue to own their face
-pivots and automatically carry the new children.
+Resources are `Assets/Resources/ThreatEyes/<key>-profile.json` and
+`<key>-emission.png`. JSON is compatible with Unity JsonUtility: `version=2`,
+`key`, `maskResource`, `materialSlot=0`, and `eyes`. Each eye has `uv{x,y}`,
+`sourceMesh`, `materialSlot`, `uvBoundarySamples[]`, `sourceWorldRadius`,
+`sourceWorldHeight`, source normal/anchor/centre vectors, screen region shape,
+clear-region extents, `centreHasSurface` and `aperture` (the inverse of that field).
+Runtime reads `aperture=true` for the mask and false for all natural eyes.
+Shader integration must retain the
+original `_BaseMap` and its colour; use the mask for `_EmissionMap` with a moderate
+red `_EmissionColor`. Import masks as linear RGB, opaque, uncompressed 2048 data.
 
-Integration points:
+For natural eyes the anchor UV hits the original central pupil/eyeball/dark eye
+cavity, with mask value exactly zero across its bilinear footprint. The outer
+boundary UVs measure the existing anatomical ring. `sourceWorldRadius /
+sourceWorldHeight` provides a source-scale-independent fallback ROI radius;
+resolving the actual posed UV boundary provides the most precise runtime ROI.
 
-- `EnemyVisualRefinement.TryApply`: `MonsterRedEyes.Attach(replacement.transform,key)`
-  after mesh/material/pose fitting, before retiring the original.
-- `WeepingAngelEncounter.Awake`, after visual enlargement:
-  `if (visual) MonsterRedEyes.AttachStatic(visual,"Mannequin");`
-- `LanternMaskEncounter.Awake`, after the mask model resize:
-  `if (mask) MonsterRedEyes.AttachStatic(mask,"LanternMask");`
-- `HauntedCorridorPresentation.DressSlidingLeaves` replaces the small flat-fit
-  hardware with `CorridorDoorHardware.Attach(door,door.movingLeaf,2.6f,2.36f,.12f)`.
-  Its returned transform is registered in the existing presentation cleanup list.
+For LanternMask, `centreHasSurface=false`: the anchor UV is a real lower-lip hit,
+because no valid UV exists at an empty hole centre. Average the resolved boundary
+world positions for its aperture-centred ROI, rather than measuring a pupil disk
+at the lower lip. `sourceCentreWorld` documents the source aperture centre and
+`sourceAnchorWorld` the actual lip hit. Apertures require original topology/BaseMap
+preservation checks; iris-contrast metrics do not apply to an empty hole.
 
-`CorridorDoorHardware.Attach(Interactable owner,Transform movingLeaf,float widthMetres,
-float heightMetres,float thicknessMetres,int pullEdge=1)` uses metre dimensions,
-with X width/Y height/Z thickness and a centred moving-leaf pivot. It returns a
-component exposing `Owner`, `Leaf`, `FaceRoots`, `LeafDimensions` and `Prepared`.
-The actual leaf's scale is countered in the new visual child. Both pulls move and
-restore with the leaf. Raised U handles, screw heads, inset finger wells and
-slotted escutcheons reuse the existing detailed `door-hardware` asset and editable
-`SourceArt/GraphicsUpgrade/Props/door-hardware.blend` source. Backings use the
-existing measured brass PBR material and procedural bevel geometry. No collider,
-obstacle, interactable, door state, stable ID or NavMesh settings are added.
+The four source rigs contain `mixamorig:Head` but no eye bones. Updated
+`inspect_head_sources.py` and `inspect_static_faces.py` record the corrected
+original-eye hits in their JSON inventories. Source crops are placement aids,
+not native Unity visual acceptance. No workstation paths are required.
 
-From a clone, use Blender **4.0.2** and the project's Unity **6000.6.0f1**. No Python
-packages beyond Blender's bundled bpy/mathutils are needed for measurements.
-Commands below run from the HappyToyV2 project root, with the executable on PATH:
+Pinned tools: Blender **4.0.2** (bundled bpy/mathutils/NumPy) for authoring,
+Python **3.11** and Pillow **10.2.0** for validation, Unity **6000.6.0f1** for the
+runtime integration owned by the game code. Run from the HappyToyV2 project root:
 
 ```powershell
+blender --background --python-exit-code 1 --python SourceArt/ThreatEyes/build_surface_emission.py
 blender --background --python-exit-code 1 --python SourceArt/ThreatEyes/inspect_head_sources.py -- --output SourceArt/ThreatEyes/eye-surface-anchors.json
 blender --background --python-exit-code 1 --python SourceArt/ThreatEyes/inspect_static_faces.py -- --output SourceArt/ThreatEyes/static-eye-surface-anchors.json
+python -m pip install -r SourceArt/ThreatEyes/requirements-validation.txt
 python SourceArt/ThreatEyes/validate_visual_sources.py
 ```
 
-Optional `--preview-dir` emits source studio crops outside committed source. These
-crops are placement aids, not native Unity visual acceptance. No source .blend
-is modified or resaved. Source inputs, UV measurements, runtime generator code,
-material-template dependency and licenses must be committed with this work.
+Both generator/inspectors accept `--resource-project` for read-only source review;
+the generator accepts `--output-project` for mirrored staging. Outputs preserve
+their existing Unity .meta GUIDs on regeneration. Optional `--preview-dir` source
+crops belong outside source commits. Commit the generators, region definitions,
+measurements, masks, profiles, .meta files, source inventory and licenses together.
+The referenced .blend/FBX sources and original attribution remain tracked project
+dependencies. Native close/distance/torch-on/off and opaque occlusion views must
+verify texture readability, correct original eye count, anatomical placement and
+release shader variants. Source checks alone cannot certify the final appearance.
 
-Unity PlayMode checks:
-
-- `EveryHostileFaceHasTwoOpaqueHeadBoundRedCoresWithoutAdditionalLightsOrPhysics`
-  checks all six profiles, paired head inheritance, red emission, release-retained
-  keyword combination, opaque depth/backface culling and absence of new physics/lights.
-- `RaisedDoorPullsStayOnBothMovingFacesDuringOpeningAndCheckpointPoseRestore`
-  opens actual corridor leaves, verifies both face pulls follow, restores their
-  saved pose, and checks IDs/colliders/NavMesh remain intact.
-
-Final visual acceptance requires native release views of all six faces with torch
-on/off, including a distant front/side view, plus handles from both sides of open
-and closed leaves. Automated component checks do not certify anatomical placement,
-bloom strength, wall occlusion or the final horror presentation.
+Door hardware continues to use `CorridorDoorHardware.Attach(owner,leaf,width,
+height,thickness,pullEdge)` on the actual primary/secondary moving leaf. Its raised
+U pulls, screw heads and finger wells reuse the existing detailed authored
+`SourceArt/GraphicsUpgrade/Props/door-hardware.blend` and generator. Both face
+pulls follow opening/restoration. This eye-authoring revision does not change the
+door, its physics, IDs, NavMesh or hardware implementation.

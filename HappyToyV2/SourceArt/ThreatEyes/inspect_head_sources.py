@@ -11,15 +11,15 @@ import sys
 import bpy
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from eye_regions import REGIONS
 
 PROJECT = Path(__file__).resolve().parents[2]
 # Measured on the optional 800px front source crop, not on a guessed bone axis.
-# Cyclopse's source has one painted eye: two cores flank its orbital band.
+# Preserve the source eye count: Cyclopse has only its central original pupil.
 EYE_PIXELS = {
-    'Cyclopse': ((354, 427), (453, 427)),
-    'Uncat': ((344, 468), (444, 453)),
-    'Hwacat_angry': ((378, 467), (531, 444)),
-    'Baby': ((290, 396), (466, 393)),
+    key: tuple(region['centre'] for region in REGIONS[key])
+    for key in ('Cyclopse', 'Uncat', 'Hwacat_angry', 'Baby')
 }
 
 

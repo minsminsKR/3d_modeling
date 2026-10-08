@@ -1,0 +1,150 @@
+{
+  "version": 2,
+  "blender": "4.0.2",
+  "assets": [
+    {
+      "key": "Cyclopse",
+      "eyeCount": 1,
+      "source": "SourceArt/EnemyRefinementV2/Cyclopse-refinement-v2.blend",
+      "materialSlots": [
+        0
+      ],
+      "nonzeroTexels": 1001,
+      "strongTexels": 96,
+      "paintedSamples": 1001,
+      "textureDimensions": [
+        2048,
+        2048
+      ],
+      "preservesOriginalBaseMap": true,
+      "addsGeometry": false,
+      "maximumScalar": 0.7982109189033508,
+      "meanPositiveScalar": 0.19861555099487305,
+      "flatWhiteTexels": 0,
+      "centreMaskValues": [
+        0.0
+      ]
+    },
+    {
+      "key": "Uncat",
+      "eyeCount": 2,
+      "source": "SourceArt/EnemyRefinementV2/Uncat-refinement-v2.blend",
+      "materialSlots": [
+        0
+      ],
+      "nonzeroTexels": 149,
+      "strongTexels": 0,
+      "paintedSamples": 149,
+      "textureDimensions": [
+        2048,
+        2048
+      ],
+      "preservesOriginalBaseMap": true,
+      "addsGeometry": false,
+      "maximumScalar": 0.46946460008621216,
+      "meanPositiveScalar": 0.1233028694987297,
+      "flatWhiteTexels": 0,
+      "centreMaskValues": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "key": "Hwacat_angry",
+      "eyeCount": 2,
+      "source": "SourceArt/EnemyRefinementV2/Hwacat_angry-refinement-v2.blend",
+      "materialSlots": [
+        0
+      ],
+      "nonzeroTexels": 887,
+      "strongTexels": 17,
+      "paintedSamples": 887,
+      "textureDimensions": [
+        2048,
+        2048
+      ],
+      "preservesOriginalBaseMap": true,
+      "addsGeometry": false,
+      "maximumScalar": 0.5892415642738342,
+      "meanPositiveScalar": 0.131726935505867,
+      "flatWhiteTexels": 0,
+      "centreMaskValues": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "key": "Baby",
+      "eyeCount": 2,
+      "source": "SourceArt/EnemyRefinementV2/Baby-refinement-v2.blend",
+      "materialSlots": [
+        0
+      ],
+      "nonzeroTexels": 1053,
+      "strongTexels": 107,
+      "paintedSamples": 1053,
+      "textureDimensions": [
+        2048,
+        2048
+      ],
+      "preservesOriginalBaseMap": true,
+      "addsGeometry": false,
+      "maximumScalar": 0.772967517375946,
+      "meanPositiveScalar": 0.21345777809619904,
+      "flatWhiteTexels": 0,
+      "centreMaskValues": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "key": "Mannequin",
+      "eyeCount": 2,
+      "source": "Assets/Art/V1/Mannequin/Mannequin.fbx",
+      "materialSlots": [
+        0
+      ],
+      "nonzeroTexels": 754,
+      "strongTexels": 125,
+      "paintedSamples": 754,
+      "textureDimensions": [
+        2048,
+        2048
+      ],
+      "preservesOriginalBaseMap": true,
+      "addsGeometry": false,
+      "maximumScalar": 0.9019410014152527,
+      "meanPositiveScalar": 0.26328516006469727,
+      "flatWhiteTexels": 0,
+      "centreMaskValues": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "key": "LanternMask",
+      "eyeCount": 2,
+      "source": "Assets/Art/V1/LanternMask/LanternMask.fbx",
+      "materialSlots": [
+        0
+      ],
+      "nonzeroTexels": 23798,
+      "strongTexels": 8055,
+      "paintedSamples": 23798,
+      "textureDimensions": [
+        2048,
+        2048
+      ],
+      "preservesOriginalBaseMap": true,
+      "addsGeometry": false,
+      "maximumScalar": 0.8690493106842041,
+      "meanPositiveScalar": 0.3801265358924866,
+      "flatWhiteTexels": 0,
+      "centreMaskValues": [
+        null,
+        null
+      ]
+    }
+  ],
+  "scope": "Read-only source mesh UV rasterization. Original pupils/iris/eyeballs/apertures are preserved. Native Unity review is separate."
+}

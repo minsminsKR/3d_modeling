@@ -7,13 +7,13 @@ import bpy
 from mathutils import Vector
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from inspect_head_sources import source_eye_uv
+from eye_regions import REGIONS
 
 PROJECT = Path(__file__).resolve().parents[2]
 EYE_PIXELS = {
-    # The mask has actual eye holes. Lower/upper lip pairs are averaged at
-    # runtime, placing each core in its aperture rather than on porcelain.
-    'LanternMask': ((275, 418), (284, 352), (511, 418), (520, 341)),
-    'Mannequin': ((301, 457), (417, 431)),
+    # Actual lip hits for empty apertures, original dark pupil hits for the doll.
+    key: tuple(region.get('anchor',region['centre']) for region in REGIONS[key])
+    for key in ('LanternMask','Mannequin')
 }
 
 

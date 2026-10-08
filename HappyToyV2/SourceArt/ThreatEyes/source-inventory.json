@@ -1,51 +1,229 @@
 {
   "status": "PASS",
-  "profiles": 6,
-  "scope": "Source/measurement validation only; Unity/native review is separate.",
+  "version": 2,
+  "anatomy": [
+    {
+      "key": "Cyclopse",
+      "eyeCount": 1,
+      "pupilChecks": [
+        {
+          "name": "original central eye",
+          "centreBilinearEmission": "exact zero"
+        }
+      ]
+    },
+    {
+      "key": "Uncat",
+      "eyeCount": 2,
+      "pupilChecks": [
+        {
+          "name": "original left eye",
+          "centreBilinearEmission": "exact zero"
+        },
+        {
+          "name": "original right eye",
+          "centreBilinearEmission": "exact zero"
+        }
+      ]
+    },
+    {
+      "key": "Hwacat_angry",
+      "eyeCount": 2,
+      "pupilChecks": [
+        {
+          "name": "original left eye below fringe",
+          "centreBilinearEmission": "exact zero"
+        },
+        {
+          "name": "original right eye below fringe",
+          "centreBilinearEmission": "exact zero"
+        }
+      ]
+    },
+    {
+      "key": "Baby",
+      "eyeCount": 2,
+      "pupilChecks": [
+        {
+          "name": "original left stone eyeball",
+          "centreBilinearEmission": "exact zero"
+        },
+        {
+          "name": "original right stone eyeball",
+          "centreBilinearEmission": "exact zero"
+        }
+      ]
+    },
+    {
+      "key": "LanternMask",
+      "eyeCount": 2,
+      "pupilChecks": [
+        {
+          "name": "original left open aperture lip",
+          "centre": "empty original aperture; no new surface"
+        },
+        {
+          "name": "original right open aperture lip",
+          "centre": "empty original aperture; no new surface"
+        }
+      ]
+    },
+    {
+      "key": "Mannequin",
+      "eyeCount": 2,
+      "pupilChecks": [
+        {
+          "name": "original left dark eye",
+          "centreBilinearEmission": "exact zero"
+        },
+        {
+          "name": "original right dark eye",
+          "centreBilinearEmission": "exact zero"
+        }
+      ]
+    }
+  ],
   "sources": [
     {
+      "path": "Assets/Resources/ThreatEyes/Baby-emission.png",
+      "sha256": "e2521e7caeb31b8afc97030558295f15388107bc8d2da96b686db0cdcac56737"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Baby-emission.png.meta",
+      "sha256": "c7301bfacda62d4f66553791fd69dbf960f5de3072d0a4199e9e041f75c4dfcd"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Baby-profile.json",
+      "sha256": "2bfdf4b20b8c2c0473c30f8fcb175d80dcc2c8b038230bb37aba19c1b0272d5e"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Baby-profile.json.meta",
+      "sha256": "d4ce5898d014af311fc9361fb780c04ad0e3cfd4946f6a4132e68e40192fab08"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Cyclopse-emission.png",
+      "sha256": "2299ae7a23826be4cde50e0a744baa2d4b96ecb82b706bf577dd1e30201afb5d"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Cyclopse-emission.png.meta",
+      "sha256": "76f1f7815840ad78e38702f5b629550ab0956f40c43d4947661c5e94d532de09"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Cyclopse-profile.json",
+      "sha256": "3eb01d579daa8416256cb7b4fe4d7efd3fa3f01e7fb2d0a12375c30e95f6c54e"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Cyclopse-profile.json.meta",
+      "sha256": "4636ef19e0c180996fb4a3d9d7b413ef2b98575f06961dfca0e6ccbfefc1c267"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Hwacat_angry-emission.png",
+      "sha256": "b98e7ee3a40e3fe5518052117832c3d484d09d2d866c7eb27ef5eb61c2cd0c32"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Hwacat_angry-emission.png.meta",
+      "sha256": "9676278c853952ea052ec0155c0099088b01918053cef939b874eefb34327996"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Hwacat_angry-profile.json",
+      "sha256": "64d5ca26b22f1d6fb0d1a37ec274400ae1646cc30abbc693ef03ca7faddae7fc"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Hwacat_angry-profile.json.meta",
+      "sha256": "483c1e3b664094401956f03076e8716c69a751b9c35a2b41cd4a61d6953a3647"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/LanternMask-emission.png",
+      "sha256": "8a12fa857ee0ff5ed5d47d57eb74f7da82d7a74c802dc4570f378c207c9837ed"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/LanternMask-emission.png.meta",
+      "sha256": "285a41da37b2e73c463ae05034c3fabb1633ecb5ec8586101ab90be6b82bfe03"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/LanternMask-profile.json",
+      "sha256": "767f239ab2dac130db226e5caa94a872a2a12cf5c978ec89c670068e88867d54"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/LanternMask-profile.json.meta",
+      "sha256": "9d73751175da71c97c0d47e50ab293a603a0209ee6b73e1cf4cb90c15ae8b259"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Mannequin-emission.png",
+      "sha256": "777a8e60ed904da24f61e02d2cc7acd12a3f62ca79b7c9433c26d8cecab2cd1d"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Mannequin-emission.png.meta",
+      "sha256": "7974fd46b208cfb1fed39266431289e1dea32fdc7ec46ed58def830fcee6700c"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Mannequin-profile.json",
+      "sha256": "47f42d906afe11e98671143699f2c4df545da61f126c80f841723645f5ae10fb"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Mannequin-profile.json.meta",
+      "sha256": "7087ac3287d6b92bca6a3b1c5f894036315a7eb87a061694a90b73a100083ec7"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Uncat-emission.png",
+      "sha256": "c57e7efd6a5583725805f18630c586b5841497db7051bda7ed51c7a1eeef48b9"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Uncat-emission.png.meta",
+      "sha256": "c61b52b0aadbbeaabab663ad0703aadf4869c70ef699c83d8794711c0134c34a"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Uncat-profile.json",
+      "sha256": "6e75696ae86222720f25b1ebd1c1ec0e93b626cb4eff5ff1374de842ab1039c8"
+    },
+    {
+      "path": "Assets/Resources/ThreatEyes/Uncat-profile.json.meta",
+      "sha256": "59f4d4e74a225c3c890f95850509c89fc76e113b72fb1d6d715bf04bac5006a7"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/build_surface_emission.py",
+      "sha256": "d92d3680988a3edf0059e5f8ae7658446ca6c28522afeff666d3ae4e35472d36"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/emission-mask-manifest.json",
+      "sha256": "4b88461fb0aabc04d70450cc165a1716955613b19ce4cbb0e37cbc34969059a6"
+    },
+    {
       "path": "SourceArt/ThreatEyes/eye-surface-anchors.json",
-      "sha256": "61f083bf5b37072cd6eac7f32f61a800b870d06c3c252d040f5c495d2242d7e0"
+      "sha256": "3006272b68887ebcde5778eb9ae5f0109b526c4461bd1d761c580c10be7efa9d"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/eye_regions.py",
+      "sha256": "eb780c6a2597e412317f5a0fbc5a2e0544300cd80f93e27bdd085778a9e27d17"
     },
     {
       "path": "SourceArt/ThreatEyes/inspect_head_sources.py",
-      "sha256": "871fbe3ab57e3ab676f40406d6c966d1e4f772278cb0d706525b532767360e99"
+      "sha256": "066302ce3f5fdd7024b53285b41bb20f2437303599acc3dc54a7c0bbad1b5a38"
     },
     {
       "path": "SourceArt/ThreatEyes/inspect_static_faces.py",
-      "sha256": "bbf72029ecbf6a9320a18d0fcb965b57b46947ff352e69f6b5f8f086a47af241"
+      "sha256": "4ece9f0aa396b4ff7f1583b045286f24b129d5c0edbf2f97cc41a334c03bdc69"
     },
     {
       "path": "SourceArt/ThreatEyes/LICENSE.md",
-      "sha256": "a84b29445f04b17fd106a921c25c089ab9681069810ca49ffae7f972ea59392d"
+      "sha256": "9873ae480350cf373b91316308f29c64dd23904c6faaddf164cd28794c8b53ba"
     },
     {
       "path": "SourceArt/ThreatEyes/README.md",
-      "sha256": "8ab529ea5b43f2a5612bf464bf5633ffbfe6fe9409c31640eecffb38d8dbd119"
+      "sha256": "11ea0c2e360a20089d06824763c46ebbf218e6f9a4fa5d57b82b0d99a850eb32"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/requirements-validation.txt",
+      "sha256": "2ea4551718a5b6779227e26956103791b7d0a87aca1610fbd4566d5da80988e3"
     },
     {
       "path": "SourceArt/ThreatEyes/static-eye-surface-anchors.json",
-      "sha256": "3ef739ae9558dcfd17bc004319a06bce69db431b6b395e41daa2812859806cbe"
+      "sha256": "8f0e99ed5a344df28bc58d76de653394c1725c9d192f2d6124975c7bf314eb8e"
     },
     {
       "path": "SourceArt/ThreatEyes/validate_visual_sources.py",
-      "sha256": "c587c41a4c9089964d136e9b178915209b9c2ce8a1e64ae29698db50e12550c2"
-    },
-    {
-      "path": "Assets/Scripts/MonsterRedEyes.cs",
-      "sha256": "ca8aeb0469f611bdc5387f967d4a1ba9a930539163b4f323cfc828bdfe7d18bb"
-    },
-    {
-      "path": "Assets/Scripts/CorridorDoorHardware.cs",
-      "sha256": "e09ff8fabcdac2c92b8d4f63ad375a6d5e24b8cf81038dfa123eca9566797892"
-    },
-    {
-      "path": "Assets/Editor/ThreatEyeModelImport.cs",
-      "sha256": "69d588fdedf54743cdc20e23e357f9862bf07831c488f596c66817546a4d8697"
-    },
-    {
-      "path": "Assets/Tests/PlayMode/CloudRedEyeDoorVisualTests.cs",
-      "sha256": "94bfe1b0986fac30d8fbbafc7f3c672158889ddceaaa4d8600b2c0e23a0ae22e"
+      "sha256": "a45de7372b52ef0ba24628e01ff2cc76acde7dfadac8bb52f7e59688859eb8ef"
     }
-  ]
+  ],
+  "scope": "PNG/profile/source validation only. Native anatomy, bloom, original texture readability and release materials require separate Unity review."
 }
