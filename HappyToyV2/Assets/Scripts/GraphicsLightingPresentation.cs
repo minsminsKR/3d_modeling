@@ -12,6 +12,7 @@ namespace HappyToy.V2
     {
         static GraphicsLightingPresentation renderOwner;
         static readonly Color Bounce=new Color(.058f,.065f,.072f);
+        Color appliedBounce;
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetOwnership(){renderOwner=null;}
         struct LightState
@@ -81,8 +82,9 @@ namespace HappyToy.V2
             cameraData.antialiasing=AntialiasingMode.SubpixelMorphologicalAntiAliasing;cameraData.antialiasingQuality=AntialiasingQuality.Medium;
             // Low neutral bounce retains silhouettes and colour; local emitters provide contrast.
             renderOwner=this;
-            RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=Bounce;
-            RenderSettings.ambientIntensity=.65f;RenderSettings.reflectionIntensity=.6f;RenderSettings.reflectionBounces=1;
+            appliedBounce=session.CorridorMode ? new Color(.039f,.044f,.050f) : Bounce;
+            RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=appliedBounce;
+            RenderSettings.ambientIntensity=session.CorridorMode ? .5f : .65f;RenderSettings.reflectionIntensity=.6f;RenderSettings.reflectionBounces=1;
             var torch=session.player.flashlight;
             if(torch)
             {
@@ -214,7 +216,7 @@ namespace HappyToy.V2
                 }
                 // Loading another scene installs its globals before all old callbacks end.
                 // Restore only our active group, never overwrite a newer scene/mode owner.
-                if(renderOwner==this&&RenderSettings.ambientMode==AmbientMode.Flat&&RenderSettings.ambientLight==Bounce)
+                if(renderOwner==this&&RenderSettings.ambientMode==AmbientMode.Flat&&RenderSettings.ambientLight==appliedBounce)
                 {
                     RenderSettings.ambientMode=oldAmbientMode;RenderSettings.ambientLight=oldAmbient;
                     RenderSettings.ambientSkyColor=oldSky;RenderSettings.ambientEquatorColor=oldEquator;RenderSettings.ambientGroundColor=oldGround;

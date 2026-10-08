@@ -1,5 +1,11 @@
 # 다른 PC에서 이어서 개발하기
 
+회랑 지도 버전 2(2026-10-08)의 생성·벽 충돌·가구·촛불 배치는 모두
+`Assets/Scripts/CorridorLayout.cs`, `CorridorRun.cs`, `CorridorFurnishings.cs`와
+`LightExplorationRun.cs`의 런타임 코드에서 재현한다. 추가 로컬 제작 도구나 원본
+자산은 필요하지 않다. 버전 1 중단 저장의 재개는 `CreateCorridorForCheckpoint`가
+기존 생성 순서를 선택하므로 같은 시드의 기존 문·아이템·적 위치를 유지한다.
+
 이 프로젝트의 코드, Unity 자산/메타데이터, 프로젝트·패키지 설정, 제작 원본,
 재생성·검증 도구와 크레딧을 Git으로 함께 전달한다. Unity 빌드와 Library 캐시는
 소스에 포함하지 않으며 새 PC에서 다시 생성한다.

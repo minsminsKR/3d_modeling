@@ -127,6 +127,7 @@ namespace HappyToy.V2
             {
                 Vector3 center=run.CellPosition(cell);center.y=0;
                 var wood=CellDraft(cell,timber);
+                if (!run.Layout.IsRoom(cell)) DressNarrowHall(cell);
                 // Real ceiling joists sit above head height and never disguise a passage.
                 foreach(float z in new[]{-1.7f,1.7f})
                     wood.Box(center+new Vector3(0,2.935f,z),new Vector3(5.78f,.055f,.10f),Quaternion.identity);
@@ -138,6 +139,7 @@ namespace HappyToy.V2
                     Vector3 normal=new Vector3(CorridorLayout.DX[direction],0,CorridorLayout.DZ[direction]);
                     Vector3 edge=center+normal*3;
                     bool passage=(run.Layout.Connections[cell]&(1<<direction))!=0;
+                    if (passage && !run.Layout.FramedPassage(cell,direction)) continue;
                     DressEdge(cell,edge,normal,passage,unchecked(run.Seed*17+cell*113+direction*43));
                     if(neighbor>=0) DressEdge(neighbor,edge,-normal,passage,unchecked(run.Seed*19+neighbor*113+direction*43));
                     if(passage) LayeredPassages++;
@@ -156,6 +158,27 @@ namespace HappyToy.V2
             Prepared=true;
             if(!PhysicalStateIntact) throw new InvalidOperationException("Visual dressing changed corridor physics");
             RefreshReturnClue();
+        }
+
+        void DressNarrowHall(int cell)
+        {
+            var center=run.CellPosition(cell); center.y=0;
+            int mask=run.Layout.Connections[cell]; var edges=CorridorRun.HallTileEdges;
+            for(int x=0;x<3;x++) for(int z=0;z<3;z++)
+            {
+                if(CorridorRun.HallTileOpen(mask,x,z)) continue;
+                for(int d=0;d<4;d++)
+                {
+                    int nx=x+CorridorLayout.DX[d], nz=z+CorridorLayout.DZ[d];
+                    if(nx<0 || nx>2 || nz<0 || nz>2 || !CorridorRun.HallTileOpen(mask,nx,nz)) continue;
+                    var inward=new Vector3(CorridorLayout.DX[d],0,CorridorLayout.DZ[d]);
+                    var across=new Vector3(inward.z,0,-inward.x);
+                    var at=center+new Vector3((edges[x]+edges[x+1])*.5f,0,(edges[z]+edges[z+1])*.5f);
+                    at+=inward*((d%2==0 ? edges[z+1]-edges[z] : edges[x+1]-edges[x])*.5f);
+                    float width=d%2==0 ? edges[x+1]-edges[x] : edges[z+1]-edges[z];
+                    Panel(cell,at,across,inward,Quaternion.LookRotation(inward),0,width-.02f,new System.Random(unchecked(run.Seed+cell*43+x*7+z*17+d)));
+                }
+            }
         }
 
         Draft CellDraft(int cell,Material material,bool castShadows=true)

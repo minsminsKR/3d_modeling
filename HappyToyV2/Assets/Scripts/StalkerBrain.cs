@@ -346,6 +346,17 @@ namespace HappyToy.V2
             // This anchor is observed evidence, never the current unseen player.
             searchOrigin = searchTarget = lastKnown;
             searchCandidate = 0; searchArrived = searchStarted = false; searchDwell = searchDoorWait = 0; searchTransit = 4;
+            // Narrow halls require an approach around the actual closed leaf.
+            // Budget the observed route at walking speed instead of abandoning
+            // it after a fixed four seconds; door waits remain separately bounded.
+            var session=GameSession.Current;
+            if(session && session.CorridorMode && session.Corridor.Layout.Version>=2 &&
+                EnemyNavigation.TryRoute(agent,searchOrigin,floorY,path,8))
+            {
+                float length=0; var previous=transform.position;
+                foreach(var corner in path.corners) { length+=Vector3.Distance(previous,corner); previous=corner; }
+                searchTransit=Mathf.Clamp(length/Mathf.Max(.25f,patrolSpeed)+3,4,8);
+            }
             SearchPointsVisited = 0; repath = 0;
             searchFacing = Quaternion.Euler(0, transform.eulerAngles.y, 0);
         }

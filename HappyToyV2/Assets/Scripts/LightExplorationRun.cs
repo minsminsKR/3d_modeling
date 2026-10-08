@@ -24,7 +24,7 @@ namespace HappyToy.V2
         float originalAmbientIntensity;
         bool ownsAmbient;
         float stationVisualOffset;
-        readonly Color runAmbient = new Color(.028f, .032f, .036f);
+        Color runAmbient;
         public bool Prepared => root;
         public IReadOnlyList<Interactable> Batteries => batteries;
         public IReadOnlyList<WaymarkCandle> Candles => candles;
@@ -42,8 +42,9 @@ namespace HappyToy.V2
             propSurfaces = new GraphicsSurfaceLibrary.Pool();
             originalAmbientMode = RenderSettings.ambientMode; originalAmbient = RenderSettings.ambientLight;
             originalAmbientIntensity = RenderSettings.ambientIntensity;
+            runAmbient = corridor ? new Color(.017f,.020f,.024f) : new Color(.028f,.032f,.036f);
             RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = runAmbient;
-            RenderSettings.ambientIntensity = corridor ? .55f : .7f; ownsAmbient = true;
+            RenderSettings.ambientIntensity = corridor ? .42f : .7f; ownsAmbient = true;
         }
         public void PrepareCorridor(CorridorRun run, Transform world)
         {
@@ -55,10 +56,9 @@ namespace HappyToy.V2
                 battery.transform.rotation=anchor.rotation;
             }
             // Stable, finite, evenly spaced markers plus all goal rooms and the entrance.
-            var cells = Enumerable.Range(0, CorridorLayout.Count).Where(i => i % 7 == 0)
-                .Concat(run.Layout.Relics).Concat(new[] { 0 }).Distinct().OrderBy(i => i).ToArray();
+            var cells = Enumerable.Range(0, CorridorLayout.Count).Where(run.Layout.HasCandle).ToArray();
             foreach (int cell in cells)
-                Candle("corridor-candle-" + cell.ToString("D2"), run.CellPosition(cell) + new Vector3(-2.23f, 1.06f, -1.78f), cell);
+                Candle("corridor-candle-" + cell.ToString("D2"), run.CandlePosition(cell), cell);
             SortIdentities();
         }
         public void DimCorridor(CorridorRun run, Transform world)
@@ -69,8 +69,8 @@ namespace HappyToy.V2
                 {
                     dimmed.Add((light, light.intensity, light.range));
                     // The entrance remains legible; sparse lantern pools no longer light whole rooms.
-                    light.intensity *= Vector3.Distance(light.transform.position, run.CellPosition(0)) < 3 ? .75f : .48f;
-                    light.range = 5.4f;
+                    light.intensity *= Vector3.Distance(light.transform.position, run.CellPosition(0)) < 3 ? .65f : .32f;
+                    light.range = 4.6f;
                 }
         }
         public void PrepareSchool(MemoryChapter chapter)

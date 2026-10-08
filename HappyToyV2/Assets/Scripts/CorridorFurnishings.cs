@@ -30,14 +30,15 @@ namespace HappyToy.V2
                 stationery.localPosition = new Vector3(-.25f,.84f,.05f);
                 bool inDrawer = i % 2 == 0;
                 var pickup = CreateFurnishedSupply(i, desk.transform, inDrawer ? new Vector3(0,.649f,-.03f) : new Vector3(.35f,.84f,-.02f));
-                if (inDrawer) ConfigureDrawer(visual, desk.transform, pickup, "drawer-supply-" + i);
+                ConfigureDrawer(visual, desk.transform, inDrawer ? pickup : null, "drawer-supply-" + i);
             }
             // An obvious furnished entrance teaches the visual language before a
             // resource room is found. Goal-room desks make the long run less empty.
             foreach (int cell in new[] { 0 }.Concat(Layout.Relics.Take(3)))
             {
                 var desk = PlaceFurnishing("furniture-desk-atmosphere-" + cell, "writing-desk", cell, true, cell+19);
-                CorridorFurnitureLibrary.Attach("writing-desk", desk.transform, graphicsSurfaces);
+                var visual=CorridorFurnitureLibrary.Attach("writing-desk", desk.transform, graphicsSurfaces);
+                ConfigureDrawer(visual, desk.transform, null, "drawer-atmosphere-" + cell);
                 AddDeskPhysics(desk.transform);
                 var stationery = CorridorFurnitureLibrary.Attach("writing-set", desk.transform, graphicsSurfaces);
                 stationery.localPosition = new Vector3(-.25f,.84f,.05f);
@@ -105,8 +106,7 @@ namespace HappyToy.V2
         {
             var center=CellPosition(cell); center.y=0;
             if(cell>=1 && (cell-1)%6==0 && furniture.Intersects(new Bounds(center+new Vector3(-1.50f,1.3f,1.6f),new Vector3(2.30f,2.6f,2.40f)))) return true;
-            bool candle=cell%7==0 || Array.IndexOf(Layout.Relics,cell)>=0;
-            if(candle && furniture.Intersects(new Bounds(center+new Vector3(-2.23f,1.25f,-1.78f),new Vector3(.65f,2.5f,.65f)))) return true;
+            if(Layout.HasCandle(cell) && furniture.Intersects(new Bounds(CandlePosition(cell)+Vector3.up*.19f,new Vector3(.65f,2.5f,.65f)))) return true;
             if(cell==0 && furniture.Intersects(new Bounds(center+new Vector3(-2.72f,1.1f,0),new Vector3(.50f,2.2f,1.9f)))) return true;
             return false;
         }
@@ -178,7 +178,7 @@ namespace HappyToy.V2
             FurnitureCollider(moving,desk,"Drawer physical rear",new Vector3(0,.696f,.167f),new Vector3(.925f,.121f,.020f),9);
             foreach(float x in new[]{-.462f,.462f})
                 FurnitureCollider(moving,desk,"Drawer physical side",new Vector3(x,.696f,-.052f),new Vector3(.020f,.121f,.438f),9);
-            pickup.transform.SetParent(moving,true);
+            if (pickup) pickup.transform.SetParent(moving,true);
             var interaction=moving.gameObject.AddComponent<Interactable>(); interaction.kind=Interactable.Kind.Drawer; interaction.stableId=id;
             var drawer=moving.gameObject.AddComponent<CorridorDrawer>(); drawer.Configure(id,desk,pickup); drawers.Add(drawer);
         }

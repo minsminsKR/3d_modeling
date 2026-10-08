@@ -72,11 +72,15 @@ namespace HappyToy.V2
             Notify("중단한 회랑 상태를 복원했습니다. 준비되면 탐색을 이어가세요.");
         }
         public void CreateCorridor(int seed)
+        { CreateCorridorVersion(seed, 2); }
+        public void CreateCorridorForCheckpoint(CorridorCheckpoint data)
+        { data.Validate(); CreateCorridorVersion(data.seed, data.simulationVersion); }
+        void CreateCorridorVersion(int seed, int layoutVersion)
         {
             if (Chapter || Corridor || Finished) return;
             GraphicsLightingPresentation.BeginTransition(this);
             Corridor = gameObject.AddComponent<CorridorRun>();
-            Corridor.Build(seed);
+            Corridor.Build(seed, layoutVersion);
             GraphicsLightingPresentation.BeginMode(this,transform);
         }
         public int requiredNames = 4;

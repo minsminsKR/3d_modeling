@@ -26,7 +26,7 @@ namespace HappyToy.V2
         public static bool Vector(Vector3 p) => Number(p.x,-10000,10000) && Number(p.y,-10000,10000) && Number(p.z,-10000,10000);
         public void Validate()
         {
-            if (version != 1 || simulationVersion != 1 || !Guid.TryParseExact(token,"N",out _) || !Number(seconds,0,1000000000) ||
+            if (version != 1 || simulationVersion < 1 || simulationVersion > 2 || !Guid.TryParseExact(token,"N",out _) || !Number(seconds,0,1000000000) ||
                 recovered == null || recovered.Length != 5 || supplies == null || supplies.Length != 8 ||
                 doors == null || doors.Length > 162 || threats == null || threats.Length != 4 || player == null)
                 throw new ArgumentException("Invalid checkpoint schema");
@@ -37,14 +37,15 @@ namespace HappyToy.V2
             if(lightingVersion==1) lighting.Validate();
             // Marker zero is an older save with no furniture. Finite pickup
             // flags still apply unchanged; new trays simply start closed.
-            if(furnitureVersion<0 || furnitureVersion>1 || furnitureVersion==0 && drawers!=null && drawers.Length!=0 ||
-                furnitureVersion==1 && (drawers==null || drawers.Length!=4))
+            if(furnitureVersion<0 || furnitureVersion>2 || furnitureVersion==0 && drawers!=null && drawers.Length!=0 ||
+                furnitureVersion==1 && (drawers==null || drawers.Length!=4) ||
+                furnitureVersion==2 && (drawers==null || drawers.Length!=12))
                 throw new ArgumentException("Invalid furniture checkpoint version");
-            if(furnitureVersion==1)
+            if(furnitureVersion>=1)
             {
                 var drawerIds=new System.Collections.Generic.HashSet<string>();
                 foreach(var drawer in drawers)
-                    if(drawer==null || (drawer.id!="drawer-supply-0" && drawer.id!="drawer-supply-2" && drawer.id!="drawer-supply-4" && drawer.id!="drawer-supply-6") ||
+                    if(drawer==null || !ValidDrawerId(drawer.id, furnitureVersion) ||
                         !drawerIds.Add(drawer.id) || !Number(drawer.travel,0,.30f)) throw new ArgumentException("Invalid drawer checkpoint");
             }
             player.Validate();
@@ -54,6 +55,13 @@ namespace HappyToy.V2
                 if(door == null || string.IsNullOrEmpty(door.id) || door.id.Length > 40 || !ids.Add(door.id) ||
                     !Number(door.leaf.x,0,2.8f) || !Number(door.leaf.y,1.17f,1.19f) || !Number(door.leaf.z,-.01f,.01f))
                     throw new ArgumentException("Invalid door checkpoint");
+        }
+        static bool ValidDrawerId(string id, int furnitureVersion)
+        {
+            if (furnitureVersion == 1) return id=="drawer-supply-0" || id=="drawer-supply-2" || id=="drawer-supply-4" || id=="drawer-supply-6";
+            if (string.IsNullOrEmpty(id)) return false;
+            if (id.StartsWith("drawer-supply-")) return int.TryParse(id.Substring(14),out int supply) && supply>=0 && supply<8 && id=="drawer-supply-"+supply;
+            return id.StartsWith("drawer-atmosphere-") && int.TryParse(id.Substring(18),out int cell) && cell>=0 && cell<CorridorLayout.Count && id=="drawer-atmosphere-"+cell;
         }
     }
 }

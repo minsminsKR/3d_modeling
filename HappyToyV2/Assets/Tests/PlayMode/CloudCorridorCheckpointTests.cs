@@ -20,7 +20,7 @@ namespace HappyToy.V2.CloudTests
         IEnumerator RestoreCheckpointInFreshScene(object data)
         {
             var previous=session; Call(shell,"Restart",false); yield return RecoveryRebind(previous);
-            Call(session,"CreateCorridor",Get<int>(data,"seed")); Call(session,"ApplyCheckpoint",CheckpointCopy(data));
+            Call(session,"CreateCorridorForCheckpoint",data); Call(session,"ApplyCheckpoint",CheckpointCopy(data));
         }
         [UnityTest, Timeout(120000)]
         public IEnumerator CorridorCheckpointKeepsImmediateVisualChaseAndOngoingObservedSearch()

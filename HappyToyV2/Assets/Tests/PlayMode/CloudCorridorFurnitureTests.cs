@@ -121,7 +121,7 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(path.status, Is.EqualTo(NavMeshPathStatus.PathComplete), "Furniture disconnected seed " + seed + " room " + cell);
                 }
                 foreach (var target in CheckpointItems("CorridorMemory").Concat(CheckpointItems("FirecrackerSupply"))
-                    .Concat(CheckpointItems("FlashlightBattery")).Concat(CheckpointItems("Drawer")))
+                    .Concat(CheckpointItems("FlashlightBattery")).Concat(CheckpointItems("Drawer")).Concat(CheckpointItems("Candle")))
                     Assert.That(FurnitureApproach(target, start.position, out _), Is.True,
                         "No physical body clearance and unobstructed 2.2m interaction ray: seed " + seed + " " + Get<string>(target, "stableId"));
                 foreach (var cabinet in CheckpointItems("HidingPlace").Where(item => item.name == "Corridor hiding cabinet"))
@@ -162,7 +162,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator CorridorDrawerRealERevealsFinitePickupAndRestoresConsumedStateWithNewAndLegacyCheckpoints()
         {
             Call(session, "CreateCorridor", 73); IsolateThreats(); Begin(); yield return null; yield return null;
-            var drawer = FurnitureDrawers.First(); string id = Get<string>(drawer, "StableId");
+            var drawer = FurnitureDrawers.First(item=>Get<Component>(item,"ContainedPickup")); string id = Get<string>(drawer, "StableId");
             var pickup = Get<Component>(drawer, "ContainedPickup"); var interaction = DrawerInteraction(drawer);
             var stock = Get<Component>(player, "Firecrackers"); int before = Get<int>(stock, "Count");
             Assert.That(Get<bool>(drawer, "IsOpen") || Get<bool>(drawer, "ExposesPickup"), Is.False);
@@ -190,7 +190,7 @@ namespace HappyToy.V2.CloudTests
             Call(shell, "Pause"); var moving = Get<Transform>(drawer, "MovingDrawer"); Vector3 paused = moving.position;
             yield return Delay(.2f); Assert.That(moving.position, Is.EqualTo(paused), "Pause moved the physical drawer");
             var saved = Call(session, "CaptureCheckpoint");
-            Assert.That(Get<int>(saved, "furnitureVersion"), Is.EqualTo(1));
+            Assert.That(Get<int>(saved, "furnitureVersion"), Is.EqualTo(2));
             var invalid = CheckpointCopy(saved); Set(Get<Array>(invalid, "drawers").GetValue(0), "travel", float.NaN);
             Assert.Throws<ArgumentException>(() => Call(session, "ApplyCheckpoint", invalid));
             Assert.That(moving.position, Is.EqualTo(paused), "Rejected drawer save mutated the physical tray");
@@ -267,7 +267,7 @@ namespace HappyToy.V2.CloudTests
             ((Behaviour)player).enabled = false;
             var desk = FurniturePlacements.First(item => Get<string>(item, "StableId") == "furniture-desk-supply-0");
             var shelf = FurniturePlacements.First(item => Get<string>(item, "PropKey") == "archive-shelf");
-            var drawer = FurnitureDrawers.First();
+            var drawer = FurnitureDrawers.First(item=>Get<Component>(item,"ContainedPickup"));
             var views = new List<FurnitureViewEvidence>();
             yield return FurnitureRenderView(desk, "corridor-furniture-desk-closed.jpg", 1.55f, .70f, views);
             Call(drawer, "Use", player);
@@ -284,6 +284,60 @@ namespace HappyToy.V2.CloudTests
             }
             CloudExperienceTests.Artifact("corridor-furniture-camera-views.json", Encoding.UTF8.GetBytes(JsonUtility.ToJson(new FurnitureCameraEvidence { seed = 73, views = views.ToArray() }, true)));
             Debug.Log("HAPPYTOY_FURNITURE_CAMERA_PASS production 1.5-3m torch views of beveled desk, real sliding drawer, finite item and detailed archival shelving");
+        }
+        [UnityTest, Timeout(180000)]
+        public IEnumerator EmptyDrawersOpenThroughRealInputAndDenseHallCandlesKeepTheirSavedWaymarks()
+        {
+            Call(session,"CreateCorridor",73); IsolateThreats(); Begin(); yield return null; yield return null;
+            var run=Get<Component>(session,"Corridor"); var layout=Get<object>(run,"Layout");
+            Assert.That(FurnitureDrawers.Length,Is.EqualTo(12));
+            Assert.That(CheckpointItems("Candle").Length,Is.EqualTo(81));
+            Assert.That(RenderSettings.ambientLight.r,Is.LessThan(.058f));
+            var empty=FurnitureDrawers.First(item=>!Get<Component>(item,"ContainedPickup"));
+            string id=Get<string>(empty,"StableId"); var interaction=DrawerInteraction(empty);
+            Assert.That(FurnitureApproach(interaction,player.transform.position,out var feet),Is.True);
+            PlacePlayer(feet); yield return null; yield return FurniturePressE(interaction);
+            yield return Wait(()=>Get<bool>(empty,"IsOpen") && Get<bool>(empty,"AtRequestedPose"),3,"Empty drawer did not open");
+            yield return FurniturePressE(interaction);
+            yield return Wait(()=>!Get<bool>(empty,"IsOpen") && Get<bool>(empty,"AtRequestedPose"),3,"Empty drawer did not close");
+            yield return FurniturePressE(interaction);
+            yield return Wait(()=>Get<bool>(empty,"AtRequestedPose"),3,"Empty drawer did not reopen");
+            var masks=Get<int[]>(layout,"Connections");
+            int hall=Enumerable.Range(0,81).First(cell=>!(bool)Call(layout,"IsRoom",cell) && (masks[cell]==5 || masks[cell]==10));
+            var candle=CheckpointItems("Candle").Single(item=>Get<string>(item,"stableId")=="corridor-candle-"+hall.ToString("D2"));
+            Assert.That(FurnitureApproach(candle,player.transform.position,out feet),Is.True);
+            PlacePlayer(feet); yield return null; yield return FurniturePressE(candle);
+            Assert.That(Get<bool>(candle.GetComponent(RequireType("WaymarkCandle")),"HasBeenLit"),Is.True);
+            ((Behaviour)player).enabled=false;
+            var camera=Get<Camera>(player,"eyes"); var center=(Vector3)Call(run,"CellPosition",hall);
+            camera.transform.rotation=Quaternion.LookRotation((masks[hall]==5?Vector3.forward:Vector3.right));
+            var frame=SchoolCameraFrame(camera,out _,out _,out _);
+            CloudExperienceTests.Artifact("continuous-hall-candle.jpg",frame.EncodeToJPG(95)); Object.Destroy(frame);
+            ((Behaviour)player).enabled=true;
+            Call(shell,"Pause"); var saved=Call(session,"CaptureCheckpoint");
+            yield return RestoreCheckpointInFreshScene(saved);
+            empty=FurnitureDrawers.Single(item=>Get<string>(item,"StableId")==id);
+            Assert.That(Get<bool>(empty,"IsOpen"),Is.True,"Empty drawer lost its saved pose");
+            candle=CheckpointItems("Candle").Single(item=>Get<string>(item,"stableId")=="corridor-candle-"+hall.ToString("D2"));
+            Assert.That(Get<bool>(candle.GetComponent(RequireType("WaymarkCandle")),"HasBeenLit"),Is.True,"Route marker lost on restore");
+        }
+        [UnityTest, Timeout(120000)]
+        public IEnumerator ExistingVersionOneCheckpointReconstructsItsOriginalRoomsAndDoors()
+        {
+            var saved=JsonUtility.FromJson(System.IO.File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"),RequireType("CorridorCheckpoint"));
+            Call(session,"CreateCorridorForCheckpoint",saved); Call(session,"ApplyCheckpoint",saved);
+            Assert.That(Get<int>(Get<object>(Get<Component>(session,"Corridor"),"Layout"),"Version"),Is.EqualTo(1));
+            Assert.That(player.transform.position,Is.EqualTo(Get<Vector3>(Get<object>(saved,"player"),"position")));
+            yield return null;
+            IsolateThreats(); Begin(); yield return null; Call(shell,"Pause");
+            var fourTraySave=Call(session,"CaptureCheckpoint"); var all=Get<Array>(fourTraySave,"drawers");
+            var oldRows=all.Cast<object>().Where(row=>new[]{"drawer-supply-0","drawer-supply-2","drawer-supply-4","drawer-supply-6"}.Contains(Get<string>(row,"id"))).ToArray();
+            var four=Array.CreateInstance(all.GetType().GetElementType(),4);
+            for(int i=0;i<4;i++) four.SetValue(oldRows[i],i);
+            Set(fourTraySave,"furnitureVersion",1); Set(fourTraySave,"drawers",four);
+            yield return RestoreCheckpointInFreshScene(fourTraySave);
+            Assert.That(FurnitureDrawers.Length,Is.EqualTo(12));
+            Assert.That(FurnitureDrawers.Where(item=>!Get<Component>(item,"ContainedPickup")).All(item=>!Get<bool>(item,"IsOpen")),Is.True,"Old four-tray save invented open empty drawers");
         }
     }
 }

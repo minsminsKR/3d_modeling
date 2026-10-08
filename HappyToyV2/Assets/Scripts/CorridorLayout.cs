@@ -13,21 +13,50 @@ namespace HappyToy.V2
         public readonly int[] Supplies = new int[8];
         public readonly int[] Threats = new int[4];
         public readonly int Seed;
+        public readonly int Version;
         public static readonly int[] DX = { 0, 1, 0, -1 }, DZ = { 1, 0, -1, 0 };
-        public CorridorLayout(int seed)
+        public CorridorLayout(int seed) : this(seed, 2) { }
+        public CorridorLayout(int seed, int version)
         {
-            Seed = seed; var random = new Random(seed);
+            if (version < 1 || version > 2) throw new ArgumentException("Unknown corridor layout version");
+            Seed = seed; Version = version; var random = new Random(seed);
             var seen = new bool[Count]; var stack = new Stack<int>(); seen[0] = true; stack.Push(0);
+            var headings = new int[Count];
+            for (int i = 0; i < Count; i++) headings[i] = -1;
             while (stack.Count > 0)
             {
                 int cell = stack.Peek(); var directions = new List<int>();
                 for (int d = 0; d < 4; d++) if (Neighbor(cell, d) >= 0 && !seen[Neighbor(cell, d)]) directions.Add(d);
                 if (directions.Count == 0) { stack.Pop(); continue; }
-                int direction = directions[random.Next(directions.Count)], next = Neighbor(cell, direction);
+                int direction = version == 2 && directions.Contains(headings[cell]) && random.NextDouble() < .9
+                    ? headings[cell] : directions[random.Next(directions.Count)];
+                int next = Neighbor(cell, direction); headings[next] = direction;
                 Connect(cell, direction); seen[next] = true; stack.Push(next);
             }
-            for (int cell = 0; cell < Count; cell++) for (int d = 0; d < 2; d++)
-                if (Neighbor(cell, d) >= 0 && random.NextDouble() < .19) Connect(cell, d);
+            if (version == 1)
+            {
+                for (int cell = 0; cell < Count; cell++) for (int d = 0; d < 2; d++)
+                    if (Neighbor(cell, d) >= 0 && random.NextDouble() < .19) Connect(cell, d);
+            }
+            else
+            {
+                // A few long bypasses, rather than a lattice of short square loops.
+                var edges = new List<(int cell, int direction)>();
+                for (int cell = 0; cell < Count; cell++) for (int d = 0; d < 2; d++)
+                    if (Neighbor(cell, d) >= 0 && (Connections[cell] & (1 << d)) == 0) edges.Add((cell, d));
+                for (int i = edges.Count - 1; i > 0; i--)
+                { int j = random.Next(i + 1); var edge = edges[i]; edges[i] = edges[j]; edges[j] = edge; }
+                int loops = 0;
+                foreach (var edge in edges)
+                {
+                    int next = Neighbor(edge.cell, edge.direction);
+                    if (CorridorSectorPlan.Degree(Connections[edge.cell]) >= 3 || CorridorSectorPlan.Degree(Connections[next]) >= 3 ||
+                        RouteLength(edge.cell, next) < 8) continue;
+                    Connect(edge.cell, edge.direction);
+                    if (++loops == 5) break;
+                }
+                if (loops == 0) throw new InvalidOperationException("No corridor bypass");
+            }
             for (int i = 0; i < Count; i++) Distance[i] = -1;
             var queue = new Queue<int>(); queue.Enqueue(0); Distance[0] = 0;
             while (queue.Count > 0)
@@ -69,5 +98,24 @@ namespace HappyToy.V2
         }
         public IEnumerable<int> Neighbors(int cell)
         { for (int d = 0; d < 4; d++) if ((Connections[cell] & (1 << d)) != 0) yield return Neighbor(cell, d); }
+        int RouteLength(int start, int end)
+        {
+            var distances = new int[Count]; Array.Fill(distances, -1);
+            var queue = new Queue<int>(); queue.Enqueue(start); distances[start] = 0;
+            while (queue.Count > 0)
+            {
+                int cell = queue.Dequeue();
+                if (cell == end) return distances[cell];
+                foreach (int next in Neighbors(cell)) if (distances[next] < 0)
+                { distances[next] = distances[cell] + 1; queue.Enqueue(next); }
+            }
+            return Count;
+        }
+        // Wider alcoves hold furniture, goals and hiding places; the remainder is a continuous narrow hall.
+        public bool IsRoom(int cell) => Version == 1 || cell == 0 || (cell >= 1 && (cell - 1) % 6 == 0) ||
+            Array.IndexOf(Relics, cell) >= 0 || Array.IndexOf(Supplies, cell) >= 0;
+        public bool FramedPassage(int cell, int direction)
+        { int next = Neighbor(cell, direction); return next >= 0 && (IsRoom(cell) || IsRoom(next)); }
+        public bool HasCandle(int cell) => Version == 2 || cell % 7 == 0 || Array.IndexOf(Relics, cell) >= 0;
     }
 }

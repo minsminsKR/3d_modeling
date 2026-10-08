@@ -22,14 +22,14 @@ namespace HappyToy.V2
 
         public void Configure(string id, Transform furniture, Interactable pickup)
         {
-            if (string.IsNullOrEmpty(id) || !furniture || !pickup || !transform.parent)
+            if (string.IsNullOrEmpty(id) || !furniture || !transform.parent)
                 throw new ArgumentException("Invalid corridor drawer");
             StableId = id; ContainedPickup = pickup; closedPosition = transform.localPosition;
             // A Blender/FBX hierarchy may contain unit and axis conversion. Slide
             // in the identity wrapper's physical metres, keeping those transforms.
             parentSlide = transform.parent.InverseTransformVector(furniture.TransformVector(Vector3.back * OpenTravel));
             trayColliders = GetComponentsInChildren<Collider>(true);
-            pickupColliders = pickup.GetComponentsInChildren<Collider>(true);
+            pickupColliders = pickup ? pickup.GetComponentsInChildren<Collider>(true) : Array.Empty<Collider>();
             RefreshPickup();
         }
         public bool CanRestore(float distance) => CorridorCheckpoint.Number(distance, 0, OpenTravel);

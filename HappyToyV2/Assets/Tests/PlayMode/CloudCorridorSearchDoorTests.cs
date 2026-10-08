@@ -77,7 +77,10 @@ namespace HappyToy.V2.CloudTests
             }
             Assert.That(sawClosedPause,Is.True,"No approach: position="+brain.transform.position+" state="+Get<object>(brain,"state")+" path="+agent.pathStatus+" steering="+agent.steeringTarget);
             Assert.That(Get<bool>(door,"IsOpen"),Is.True,"Closed door remained shut: "+brain.transform.position);
-            Assert.That(Vector3.Dot(brain.transform.position-door.transform.position,forward),Is.GreaterThan(.6f),"Search never passed the opened door");
+            Assert.That(Vector3.Dot(brain.transform.position-door.transform.position,forward),Is.GreaterThan(.6f),
+                "Search never passed the opened door: actor="+brain.name+" position="+brain.transform.position+" radius="+agent.radius+
+                " leaf="+Get<Transform>(door,"movingLeaf").localPosition+" state="+Get<object>(brain,"state")+
+                " stopped="+agent.isStopped+" path="+agent.pathStatus+" steering="+agent.steeringTarget);
             Assert.That(Vector3.Distance(Get<Vector3>(brain,"SearchOrigin"),evidence),Is.LessThan(.2f));
         }
     }

@@ -8,6 +8,21 @@ namespace HappyToy.V2.Tests.EditMode
     public sealed class CorridorLayoutTests
     {
         [Test]
+        public void NewRunsFavorLongHallsAndBoundedJunctionsWhileLegacyTopologyRemainsSelectable()
+        {
+            var type = Type.GetType("HappyToy.V2.CorridorLayout, Assembly-CSharp", true);
+            for (int seed=0;seed<500;seed++)
+            {
+                var layout=Activator.CreateInstance(type,seed);
+                var edges=(int[])type.GetField("Connections").GetValue(layout);
+                Assert.That(edges.Count(mask=>mask==5 || mask==10),Is.GreaterThanOrEqualTo(25),"Too few straight sections: "+seed);
+                Assert.That(edges.Count(mask=>Enumerable.Range(0,4).Count(d=>(mask&(1<<d))!=0)>=3),Is.LessThanOrEqualTo(22),"Too many intersections: "+seed);
+                Assert.That(Enumerable.Range(0,81).Count(cell=>!(bool)type.GetMethod("IsRoom").Invoke(layout,new object[]{cell})),Is.GreaterThanOrEqualTo(48));
+                var legacy=Activator.CreateInstance(type,new object[]{seed,1});
+                Assert.That(Enumerable.Range(0,81).All(cell=>(bool)type.GetMethod("IsRoom").Invoke(legacy,new object[]{cell})),Is.True);
+            }
+        }
+        [Test]
         public void FiveHundredSeedsHaveConnectedLoopsSeparatedGoalsAndSafeThreatSpawns()
         {
             var type = Type.GetType("HappyToy.V2.CorridorLayout, Assembly-CSharp", true);

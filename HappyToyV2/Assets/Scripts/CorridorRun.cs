@@ -27,10 +27,10 @@ namespace HappyToy.V2
         static readonly Vector3 Origin = new Vector3(200, 0, 200);
         public Vector3 CellPosition(int cell) => Origin + new Vector3(cell % CorridorLayout.Width * 6, .03f, cell / CorridorLayout.Width * 6);
 
-        public void Build(int seed)
+        public void Build(int seed, int layoutVersion = 2)
         {
             if (Ready) throw new InvalidOperationException("Run already built");
-            session = GetComponent<GameSession>(); Layout = new CorridorLayout(seed);
+            session = GetComponent<GameSession>(); Layout = new CorridorLayout(seed, layoutVersion);
             // Capture all four authored monster hierarchies before stopping encounter directors.
             var actors = FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                 .Where(x => x.gameObject.scene == gameObject.scene).ToArray();
@@ -62,7 +62,7 @@ namespace HappyToy.V2
                     var edge = p + normal * 3;
                     bool passage = (Layout.Connections[cell] & (1 << d)) != 0;
                     if (!passage) Box("Plaster wall", edge + Vector3.up * 1.5f, d % 2 == 0 ? new Vector3(6, 3, .22f) : new Vector3(.22f, 3, 6), plaster);
-                    else
+                    else if (Layout.FramedPassage(cell, d))
                     {
                         foreach (int side in new[] { -1, 1 })
                         {
@@ -90,6 +90,7 @@ namespace HappyToy.V2
                     }
                     Box("Wall base", edge + Vector3.up * .16f, d % 2 == 0 ? new Vector3(passage ? 0 : 6, .24f, .26f) : new Vector3(.26f, .24f, passage ? 0 : 6), timber, !passage);
                 }
+                if (!Layout.IsRoom(cell)) BuildNarrowHall(cell, plaster, timber);
                 // Local pool of warm light; long stretches remain navigable by torch.
                 if (cell == 0 || cell % 4 == 0 || Array.IndexOf(Layout.Relics, cell) >= 0)
                 {
@@ -181,6 +182,39 @@ namespace HappyToy.V2
             CombineArchitecture();
             Physics.SyncTransforms(); Ready = true;
             session.Notify("다섯 기억을 회수하고 입구로 돌아오세요. 폭죽은 회랑에서 보충할 수 있습니다.");
+        }
+        // Tile the solid parts around a 2.8m central hall and its connected arms.
+        // Collision, visibility and the navigation bake all use these same walls.
+        public static bool HallTileOpen(int mask, int x, int z) => x == 1 && z == 1 ||
+            x == 1 && z == 2 && (mask & 1) != 0 || x == 2 && z == 1 && (mask & 2) != 0 ||
+            x == 1 && z == 0 && (mask & 4) != 0 || x == 0 && z == 1 && (mask & 8) != 0;
+        public static readonly float[] HallTileEdges = { -3, -1.4f, 1.4f, 3 };
+        void BuildNarrowHall(int cell, Material plaster, Material timber)
+        {
+            var center = CellPosition(cell); center.y = 0;
+            for (int x = 0; x < 3; x++) for (int z = 0; z < 3; z++)
+            {
+                if (HallTileOpen(Layout.Connections[cell], x, z)) continue;
+                var at = center + new Vector3((HallTileEdges[x] + HallTileEdges[x+1])*.5f, 1.5f,
+                    (HallTileEdges[z] + HallTileEdges[z+1])*.5f);
+                var size = new Vector3(HallTileEdges[x+1] - HallTileEdges[x], 3, HallTileEdges[z+1] - HallTileEdges[z]);
+                Box("Corridor inner wall", at, size, plaster);
+                size.y = .24f; at.y = .16f;
+                Box("Corridor inner skirting", at, size, timber, false);
+            }
+        }
+        public Vector3 CandlePosition(int cell)
+        {
+            var offset = new Vector3(-2.23f, 1.06f, -1.78f);
+            if (!Layout.IsRoom(cell))
+            {
+                // A corner face beside the path, never in the middle of a connected arm.
+                int mask = Layout.Connections[cell];
+                offset = (mask & 1) != 0 ? new Vector3(-1.16f, 1.06f, 1.73f) :
+                    (mask & 4) != 0 ? new Vector3(-1.16f, 1.06f, -1.73f) :
+                    new Vector3((mask & 2) != 0 ? 1.73f : -1.73f, 1.06f, -1.16f);
+            }
+            return CellPosition(cell) + offset;
         }
         void Release(StalkerBrain brain)
         {

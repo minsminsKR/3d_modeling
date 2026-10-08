@@ -208,7 +208,7 @@ namespace HappyToy.V2
             var data=session.Suspension.Snapshot;
             try
             {
-                session.CreateCorridor(data.seed); session.ApplyCheckpoint(data);
+                session.CreateCorridorForCheckpoint(data); session.ApplyCheckpoint(data);
                 if(!session.Suspension.Consume(data.token)) throw new InvalidOperationException(session.Suspension.Status);
                 // Give the player control of when restored danger starts moving.
                 Set(Page.Pause);

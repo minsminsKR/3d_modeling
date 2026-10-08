@@ -1,0 +1,92 @@
+{
+  "baseCommit": "2595a3322c64099f5b3bddf71e022c6ccddaacec",
+  "verifiedUtc": "2026-10-08T00:19:00.1675743Z",
+  "unity": "6000.6.0f1",
+  "changes": [
+    "Straight-biased version-2 topology with up to five long bypass loops and 2.8m halls; no frames between consecutive hall cells.",
+    "All twelve desk drawers open, including eight empty drawers; old four-tray saves migrate with new trays closed.",
+    "Eighty-one manually ignited candle waymarks; lower corridor bounce and lantern intensity; school lighting retained.",
+    "Version-1 saves reconstruct their original topology; version-2 search transit budgets actual walking routes within eight seconds."
+  ],
+  "testRuns": [
+    {
+      "report": "editmode02.xml",
+      "sha256": "095af817f935457a4e54864eb95b51109af840dc257f9babe36a0f7f62b43fb0",
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "result": "Passed",
+      "failures": []
+    },
+    {
+      "report": "playmode01.xml",
+      "sha256": "445591f1b5519f1832c81b86be8b52eb96d7c4cb3fb24e3eed213c583bf30f60",
+      "total": 7,
+      "passed": 7,
+      "failed": 0,
+      "result": "Passed",
+      "failures": []
+    },
+    {
+      "report": "regression01.xml",
+      "sha256": "28e17dc9a42458ea4a511c45a22734051aae56133fa71f111956a0a94228d5d1",
+      "total": 19,
+      "passed": 18,
+      "failed": 1,
+      "result": "Failed(Child)",
+      "failures": [
+        "CorridorSearchingMonsterCannotPassAClosedPhysicalDoor"
+      ]
+    },
+    {
+      "report": "repair01.xml",
+      "sha256": "d08162617a0de3e7d0e984511c33d86f62296d003f8ee8d1a8d93b69c3063760",
+      "total": 3,
+      "passed": 2,
+      "failed": 1,
+      "result": "Failed(Child)",
+      "failures": [
+        "CorridorSearchingMonsterCannotPassAClosedPhysicalDoor"
+      ]
+    },
+    {
+      "report": "repair02.xml",
+      "sha256": "868c278c228cf74277394bedf6aa7b195650663b03d9cd1ca8881d49c34fb27c",
+      "total": 3,
+      "passed": 3,
+      "failed": 0,
+      "result": "Passed",
+      "failures": []
+    }
+  ],
+  "repair": "The first door-search regression stopped before crossing an opened leaf because four-second transit expired. Route-based transit budget passed all three related final checks in repair02. Repair01 also passed old four-tray save migration and dressing/physics checks. Counts above describe separate targeted runs, not one full-suite run.",
+  "freshWindowsBuild": {
+    "directory": "Builds/CorridorPaths-20261008",
+    "status": "GRAPHICS_BUILD_INPUTS_PASS",
+    "inputCount": 2432,
+    "buildInputProofSha256": "f80a09f3c0889d8768f1b3b7f25da701a37d30ff0a9f2f6691aa052ad20cb4c4",
+    "manifestSha256": "9a412bbf551f2d07754c2c7aca5a7b9518626ff1024ddf820a79ecefbc058bf1"
+  },
+  "nativeControlledCorridor": {
+    "status": "PASS",
+    "cabinets": 14,
+    "openSlits": 14,
+    "surroundingDoors": 14,
+    "branchSigns": 0,
+    "goalSigns": 5,
+    "hidden": true,
+    "flashlightKeyOn": true,
+    "flashlightKeyOff": true,
+    "chargeDrains": true,
+    "pauseStopsDrain": true,
+    "depletedStaysOff": true,
+    "exitKeepsSwitch": true,
+    "noNoticeOverlay": true,
+    "noThreatMessage": true,
+    "shortLatch": true,
+    "litChargeUsed": 0.60052490234375,
+    "latchSeconds": 0.3241666555404663,
+    "errors": []
+  },
+  "scope": "Real engine topology, three-seed navigation, input, save migration, lighting restore and native corridor/cabinet/flashlight checks; not a complete survival or target-device performance certification. Builds, logs and screenshots are optional generated outputs and remain outside source commits."
+}
