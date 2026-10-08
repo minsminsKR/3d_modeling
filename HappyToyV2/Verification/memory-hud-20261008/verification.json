@@ -1,0 +1,111 @@
+{
+  "status": "PASS",
+  "date": "2026-10-08",
+  "scope": "Controlled native Windows actual UI and camera, actual memory collection0..5. No new unit tests for this reversible UI change; no full survival or GPU certification.",
+  "nominalSize": {
+    "width": 140,
+    "height": 26
+  },
+  "emptyOpacity": 0.26,
+  "recoveredOpacity": 1.0,
+  "frames": [
+    {
+      "recovered": 0,
+      "iconCount": 5,
+      "size": {
+        "x": 140.0,
+        "y": 26.25
+      },
+      "opacity": [
+        0.25999999046325684,
+        0.25999999046325684,
+        0.25999999046325684,
+        0.25999999046325684,
+        0.25999999046325684
+      ],
+      "image": "memory-hud-0.png"
+    },
+    {
+      "recovered": 1,
+      "iconCount": 5,
+      "size": {
+        "x": 140.0,
+        "y": 26.25
+      },
+      "opacity": [
+        1.0,
+        0.25999999046325684,
+        0.25999999046325684,
+        0.25999999046325684,
+        0.25999999046325684
+      ],
+      "image": "memory-hud-1.png"
+    },
+    {
+      "recovered": 2,
+      "iconCount": 5,
+      "size": {
+        "x": 140.0,
+        "y": 26.25
+      },
+      "opacity": [
+        1.0,
+        1.0,
+        0.25999999046325684,
+        0.25999999046325684,
+        0.25999999046325684
+      ],
+      "image": "memory-hud-2.png"
+    },
+    {
+      "recovered": 3,
+      "iconCount": 5,
+      "size": {
+        "x": 140.0,
+        "y": 26.25
+      },
+      "opacity": [
+        1.0,
+        1.0,
+        1.0,
+        0.25999999046325684,
+        0.25999999046325684
+      ],
+      "image": "memory-hud-3.png"
+    },
+    {
+      "recovered": 4,
+      "iconCount": 5,
+      "size": {
+        "x": 140.0,
+        "y": 26.25
+      },
+      "opacity": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.25999999046325684
+      ],
+      "image": "memory-hud-4.png"
+    },
+    {
+      "recovered": 5,
+      "iconCount": 5,
+      "size": {
+        "x": 140.0,
+        "y": 26.25
+      },
+      "opacity": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "image": "memory-hud-5.png"
+    }
+  ],
+  "developmentBuild": false,
+  "errors": []
+}

@@ -17,8 +17,8 @@ namespace HappyToy.V2
         UIDocument document;
         PanelSettings settings;
         VisualElement threatVeil;
-        VisualElement root, stage, stamina, crosshair, focusPanel, itemFeedbackPanel;
-        Label objective, objectiveCount, focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
+        VisualElement root, stage, stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip;
+        Label focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
         Label navigationHelp, controlInstructions, controlsFooter, batteryMeter;
         bool sendingGamepadNavigation;
         bool sendingKeyboardSubmit;
@@ -37,7 +37,46 @@ namespace HappyToy.V2
         bool shownContrast, shownLargeText, shownGamepad, settingsLabelsDirty;
         bool shownReloading;
         string shownReloadError;
-        readonly VisualElement[] objectiveSegments = new VisualElement[7];
+        readonly MemoryToken[] memoryTokens = new MemoryToken[7];
+
+        sealed class MemoryToken : VisualElement
+        {
+            readonly bool highContrast;
+            bool recovered;
+            public MemoryToken(bool contrast)
+            {
+                highContrast = contrast; pickingMode = PickingMode.Ignore;
+                generateVisualContent += Draw;
+                SetRecovered(false);
+            }
+            public void SetRecovered(bool found)
+            {
+                bool changed = recovered != found; recovered = found;
+                style.opacity = found ? 1 : highContrast ? .48f : .26f;
+                EnableInClassList("recovered", found);
+                if (changed) MarkDirtyRepaint();
+            }
+            void Draw(MeshGenerationContext context)
+            {
+                var painter = context.painter2D;
+                float sx = contentRect.width / 20, sy = contentRect.height / 26;
+                Vector2 At(float x, float y) => new Vector2(x * sx, y * sy);
+                void Page()
+                {
+                    painter.BeginPath(); painter.MoveTo(At(2, 2)); painter.LineTo(At(12, 2));
+                    painter.LineTo(At(18, 8)); painter.LineTo(At(18, 24)); painter.LineTo(At(2, 24)); painter.ClosePath();
+                }
+                // Small folded attendance leaves remain readable against both
+                // dark walls and a bright torch, without an enclosing HUD panel.
+                Page(); painter.lineWidth = 3.4f * sx; painter.strokeColor = new Color(0, 0, 0, .8f); painter.Stroke();
+                Page(); painter.fillColor = new Color(.93f, .90f, .80f, recovered ? .24f : .035f); painter.Fill();
+                painter.lineWidth = 1.25f * sx; painter.strokeColor = new Color(.94f, .92f, .84f); painter.Stroke();
+                painter.BeginPath(); painter.MoveTo(At(12, 2)); painter.LineTo(At(12, 8)); painter.LineTo(At(18, 8));
+                painter.MoveTo(At(6, 13)); painter.LineTo(At(14, 13));
+                painter.MoveTo(At(6, 17)); painter.LineTo(At(13, 17));
+                painter.MoveTo(At(6, 21)); painter.LineTo(At(10, 21)); painter.Stroke();
+            }
+        }
 
         public RenderTexture CaptureTarget { get; private set; }
         public VisualElement Root => root;
@@ -202,9 +241,10 @@ namespace HappyToy.V2
             journalStep = session.RecordsRecovered;
             journalExploration = session.ExplorationCount;
             root.Clear(); threatVeil = null;
-            objective = objectiveCount = focus = meter = status = noise = caption = itemFeedback = volume = sensitivity = fieldOfView = null;
+            focus = meter = status = noise = caption = itemFeedback = volume = sensitivity = fieldOfView = null;
             reducedMotionButton = subtitlesButton = contrastButton = textSizeButton = null;
-            stamina = crosshair = focusPanel = itemFeedbackPanel = null;
+            stamina = crosshair = focusPanel = itemFeedbackPanel = memoryStrip = null;
+            Array.Clear(memoryTokens, 0, memoryTokens.Length);
             root.style.color = Paper;
             root.style.backgroundColor = shown == GameShell.Page.Playing ? Color.clear : new Color(.013f, .025f, .021f, .97f);
             root.pickingMode = shown == GameShell.Page.Playing ? PickingMode.Ignore : PickingMode.Position;
@@ -523,16 +563,17 @@ namespace HappyToy.V2
 
         void BuildHud()
         {
-            var objectivePanel = Panel(42, 32, 688, 143, new Color(.015f, .027f, .022f, shell.HighContrast ? 1 : .93f));
-            Outline(objectivePanel, Edge);
-            Panel(42, 32, 3, 143, Gold);
-            Small("현재 목표", 65, 47, 220);
-            objectiveCount = Small("", 525, 47, 180);
-            objectiveCount.style.unityTextAlign = TextAnchor.UpperRight;
-            objective = Text(session.Objective, 65, 82, 641, 74, ReadingSize);
-            int segmentCount = Mathf.Clamp(session.TotalRecords, 1, objectiveSegments.Length);
-            float segmentWidth = 638f / segmentCount;
-            for (int i = 0; i < segmentCount; i++) objectiveSegments[i] = Panel(66 + segmentWidth * i, 163, segmentWidth - 9, 3, Edge);
+            int tokenCount = Mathf.Clamp(session.TotalRecords, 1, memoryTokens.Length);
+            float tokenWidth = shell.LargeText ? 24 : 20, tokenHeight = tokenWidth * 1.3f, pitch = tokenWidth + 10;
+            memoryStrip = Panel(42, 36, pitch * tokenCount - 10, tokenHeight, Color.clear);
+            memoryStrip.name = "memory-progress";
+            for (int i = 0; i < tokenCount; i++)
+            {
+                var token = new MemoryToken(shell.HighContrast) { name = "memory-token-" + i };
+                token.style.position = Position.Absolute; token.style.left = i * pitch; token.style.top = 0;
+                token.style.width = tokenWidth; token.style.height = tokenHeight;
+                memoryStrip.Add(token); memoryTokens[i] = token;
+            }
             crosshair = Panel(797.5f, 447.5f, 5, 5, Color.white);
             crosshair.name = "crosshair";
             // Preserve the white dot against bright flashlight-lit surfaces.
@@ -620,12 +661,10 @@ namespace HappyToy.V2
         }
         void UpdateHud()
         {
-            if (!session.player || objective == null) return;
+            if (!session.player || memoryStrip == null) return;
             var player = session.player;
-            objective.text = session.Objective;
-            objectiveCount.text = $"{(session.CorridorMode || session.ChapterMode ? "기억" : "기록")} {session.RecordsRecovered} / {session.TotalRecords}";
-            for (int i = 0; i < objectiveSegments.Length; i++)
-                if (objectiveSegments[i] != null) objectiveSegments[i].style.backgroundColor = session.RecordsRecovered > i ? Gold : Edge;
+            for (int i = 0; i < memoryTokens.Length; i++)
+                memoryTokens[i]?.SetRecovered(session.RecordsRecovered > i);
             caption.text = shell.Caption;
             Visible(caption, shell.CaptionVisible);
             stamina.style.width = 265 * Mathf.Clamp01(player.Stamina);

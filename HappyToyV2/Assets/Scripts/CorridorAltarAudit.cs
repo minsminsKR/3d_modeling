@@ -19,6 +19,14 @@ namespace HappyToy.V2
         readonly List<string> errors=new List<string>();
         readonly List<string> frames=new List<string>();
         GameSession session; PlayerMotor player;
+        [Serializable] sealed class MemoryHudFrame
+        {
+            public int recovered,iconCount;
+            public Vector2 size;
+            public float[] opacity;
+            public string image;
+        }
+        readonly List<MemoryHudFrame> memoryFrames=new List<MemoryHudFrame>();
         [Serializable] sealed class BoardInspection
         {
             public string name,material,surface,shader,baseMap,keywords;
@@ -37,6 +45,8 @@ namespace HappyToy.V2
             public int seed,layoutVersion,altarCell,memories,renderers;
             public bool connected,standingClear,focus,whiteCircularReticle,developmentBuild;
             public float reticleDiameter,reticleRadius,reticleNominalDiameter;
+            public bool memoryHudRequested,compactMemoryHud;
+            public MemoryHudFrame[] memoryHudFrames;
             public string[] images,errors;
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -63,6 +73,28 @@ namespace HappyToy.V2
             foreach(var door in run.GetComponentsInChildren<Interactable>().Where(x=>x.kind==Interactable.Kind.Door))door.OpenForPursuer();
             yield return new WaitForSecondsRealtime(2);
             session.GetComponent<GameShellView>().SetCaptureSize(1280,720);
+            report.memoryHudRequested=Environment.GetCommandLineArgs().Contains("-v2-memory-hud");
+            if(report.memoryHudRequested)
+            {
+                var memories=run.GetComponentsInChildren<Interactable>().Where(x=>x.kind==Interactable.Kind.CorridorMemory).ToArray();
+                for(int count=0;count<=CorridorRun.Required;count++)
+                {
+                    if(count>0) { player.enabled=true; memories[count-1].Use(player); }
+                    string filename="memory-hud-"+count+".png";
+                    yield return View(run,new Vector3(0,.03f,-3.4f),new Vector3(0,1.55f,2.8f),filename,true);
+                    var strip=session.GetComponent<GameShellView>().Root.Q<VisualElement>("memory-progress");
+                    if(strip==null) throw new InvalidOperationException("Compact memory strip absent");
+                    var icons=strip.Children().ToArray();
+                    var frame=new MemoryHudFrame{recovered=run.Recovered,iconCount=icons.Length,
+                        size=new Vector2(strip.resolvedStyle.width,strip.resolvedStyle.height),
+                        opacity=icons.Select(icon=>icon.resolvedStyle.opacity).ToArray(),image=filename};
+                    if(frame.recovered!=count || icons.Length!=5 || frame.size.x>180 || frame.size.y>40 ||
+                        icons.Where((icon,index)=>icon.ClassListContains("recovered")!=(index<count)).Any() ||
+                        frame.opacity.Where((alpha,index)=>index<count?alpha<.99f:alpha>.5f).Any())
+                        throw new InvalidOperationException("Memory HUD does not match actual collected progress");
+                    memoryFrames.Add(frame);
+                }
+            }
             report.seed=run.Seed;report.layoutVersion=run.Layout.Version;report.altarCell=run.Layout.AltarCell;report.developmentBuild=Debug.isDebugBuild;
             report.renderers=run.AltarRoomRoot.GetComponentsInChildren<Renderer>().Length;
             InspectBoard(run);
@@ -70,7 +102,8 @@ namespace HappyToy.V2
             report.connected=NavMesh.CalculatePath(run.CellPosition(0),run.AltarApproach,NavMesh.AllAreas,path)&&path.status==NavMeshPathStatus.PathComplete;
             var pose=player.CaptureProgress();pose.position=run.AltarApproach;
             report.standingClear=player.CanRestoreProgress(pose);
-            foreach(var memory in run.GetComponentsInChildren<Interactable>().Where(x=>x.kind==Interactable.Kind.CorridorMemory).Take(4))memory.Use(player);
+            if(!report.memoryHudRequested)
+                foreach(var memory in run.GetComponentsInChildren<Interactable>().Where(x=>x.kind==Interactable.Kind.CorridorMemory).Take(4))memory.Use(player);
             yield return View(run,new Vector3(0,.03f,-6.6f),new Vector3(0,1.45f,2.8f),"altar-threshold.png",true);
             yield return View(run,new Vector3(0,.03f,-3.4f),new Vector3(0,1.55f,2.8f),"altar-room.png",true);
             yield return View(run,new Vector3(0,.03f,-3.4f),new Vector3(0,1.55f,2.8f),"altar-room-torch-off.png",false);
@@ -93,7 +126,8 @@ namespace HappyToy.V2
             report.whiteCircularReticle=Mathf.Abs(report.reticleDiameter-reticle.resolvedStyle.height)<.01f &&
                 report.reticleNominalDiameter<=7.1f && report.reticleRadius>=report.reticleDiameter*.5f-.01f && color.r>.99f&&color.g>.99f&&color.b>.99f;
             report.memories=run.Recovered;report.images=frames.ToArray();report.errors=errors.ToArray();
-            report.status=report.connected&&report.standingClear&&report.focus&&report.whiteCircularReticle&&errors.Count==0?"PASS":"FAIL";
+            report.memoryHudFrames=memoryFrames.ToArray(); report.compactMemoryHud=!report.memoryHudRequested || memoryFrames.Count==6;
+            report.status=report.connected&&report.standingClear&&report.focus&&report.whiteCircularReticle&&report.compactMemoryHud&&errors.Count==0?"PASS":"FAIL";
             File.WriteAllText(Path.Combine(output,"altar-review.json"),JsonUtility.ToJson(report,true));
             // Keep the bounded native review process alive briefly for read-only
             // host endpoint inspection; no firewall or networking setting is changed.
