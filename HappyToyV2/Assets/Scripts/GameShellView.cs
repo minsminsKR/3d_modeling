@@ -17,6 +17,8 @@ namespace HappyToy.V2
         UIDocument document;
         PanelSettings settings;
         VisualElement threatVeil;
+        VisualElement menuFaceBackground;
+        Texture2D menuFaceTexture;
         VisualElement root, stage, stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip;
         Label focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
         Label navigationHelp, controlInstructions, controlsFooter, batteryMeter;
@@ -80,10 +82,23 @@ namespace HappyToy.V2
 
         public RenderTexture CaptureTarget { get; private set; }
         public VisualElement Root => root;
+        public const string MenuFaceResourcePath = "Menu/cyclopse-menace-v1";
+        public Texture2D MenuFaceTexture => menuFaceTexture;
+        public bool MenuFaceVisible => menuFaceTexture && menuFaceBackground != null &&
+            menuFaceBackground.style.display.value != DisplayStyle.None;
         Color Paper => shell && shell.HighContrast ? Color.white : new Color(.91f, .89f, .81f);
         Color Muted => shell && shell.HighContrast ? new Color(.83f, .86f, .83f) : new Color(.65f, .71f, .68f);
         Color Gold => shell && shell.HighContrast ? new Color(1f, .86f, .48f) : new Color(.84f, .72f, .47f);
         Color Surface => shell && shell.HighContrast ? new Color(.015f, .02f, .018f) : new Color(.048f, .075f, .065f);
+        Color CardSurface
+        {
+            get
+            {
+                var color = Surface;
+                if (MenuFaceVisible) color.a = shell.HighContrast ? .90f : .78f;
+                return color;
+            }
+        }
         Color Edge => new Color(.22f, .30f, .25f);
         Color Rust => shell && shell.HighContrast ? new Color(1f, .66f, .48f) : new Color(.91f, .55f, .39f);
         int ReadingSize => shell && shell.LargeText ? 26 : 22;
@@ -225,6 +240,29 @@ namespace HappyToy.V2
             return label;
         }
 
+        void BuildMenuFaceBackground()
+        {
+            // Resources owns this texture. Rebuilding a menu must never destroy it.
+            if (!menuFaceTexture) menuFaceTexture = Resources.Load<Texture2D>(MenuFaceResourcePath);
+            bool visible = menuFaceTexture && shown != GameShell.Page.Playing && shown != GameShell.Page.ChapterTransition;
+            menuFaceBackground = new VisualElement { name = "menu-face-background", pickingMode = PickingMode.Ignore, focusable = false };
+            menuFaceBackground.style.position = Position.Absolute;
+            menuFaceBackground.style.left = menuFaceBackground.style.top = menuFaceBackground.style.right = menuFaceBackground.style.bottom = 0;
+            menuFaceBackground.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            menuFaceBackground.style.backgroundImage = menuFaceTexture;
+            // Fill the viewport independently of the safe area, preserving the face's proportions.
+            menuFaceBackground.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Cover);
+            menuFaceBackground.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Center);
+            menuFaceBackground.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Center);
+            menuFaceBackground.style.backgroundRepeat = new BackgroundRepeat(Repeat.NoRepeat, Repeat.NoRepeat);
+            var scrim = new VisualElement { name = "menu-face-scrim", pickingMode = PickingMode.Ignore, focusable = false };
+            scrim.style.position = Position.Absolute;
+            scrim.style.left = scrim.style.top = scrim.style.right = scrim.style.bottom = 0;
+            scrim.style.backgroundColor = new Color(0, 0, 0, shell.HighContrast ? .40f : .28f);
+            menuFaceBackground.Add(scrim);
+            root.Add(menuFaceBackground);
+        }
+
         void Rebuild()
         {
             if (root == null || !shell || !session) return;
@@ -248,6 +286,7 @@ namespace HappyToy.V2
             root.style.color = Paper;
             root.style.backgroundColor = shown == GameShell.Page.Playing ? Color.clear : new Color(.013f, .025f, .021f, .97f);
             root.pickingMode = shown == GameShell.Page.Playing ? PickingMode.Ignore : PickingMode.Position;
+            BuildMenuFaceBackground();
             stage = new VisualElement { name = "safe-area", pickingMode = PickingMode.Ignore };
             stage.style.width = 1600;
             stage.style.height = 900;
@@ -269,7 +308,7 @@ namespace HappyToy.V2
                 // Scripted restarts can also originate in play; never hide a recovery error.
                 if (shell.IsReloading || !string.IsNullOrWhiteSpace(shell.ReloadError))
                 {
-                    Panel(355, 414, 890, 96, Surface);
+                    Panel(355, 414, 890, 96, CardSurface);
                     Text(shell.IsReloading ? "새 탐색을 준비하고 있습니다…" : shell.ReloadError,
                         379, 428, 842, 70, shell.LargeText ? 24 : 21).style.color = shell.IsReloading ? Gold : Rust;
                 }
@@ -363,7 +402,7 @@ namespace HappyToy.V2
         }
         void BuildTitleRecords(float x,float y)
         {
-            var card=Panel(x,y,540,583,Surface); Outline(card,Edge);
+            var card=Panel(x,y,540,583,CardSurface); Outline(card,Edge);
             Small("회랑 / 폐교 · 별도로 보관하는 탐색 기록",x+30,y+26,480,36);
             var corridor=session.Records.Snapshot;
             string corridorBest=corridor.escapes>0?"최단 탈출  "+RunTime(corridor.bestEscapeSeconds):"아직 회랑 탈출 기록이 없습니다.";
@@ -378,7 +417,7 @@ namespace HappyToy.V2
         }
         void BuildAttendanceCard(float x, float y, bool progress)
         {
-            var card = Panel(x, y, 540, 535, Surface);
+            var card = Panel(x, y, 540, 535, CardSurface);
             Outline(card, Edge);
             Panel(x + 26, y + 27, 3, 70, Gold);
             Small(session.CorridorMode?(session.Corridor.Layout.Version>=3 ? "CORRIDOR  /  붉은 교실에 기억을 돌려놓으세요" : "CORRIDOR  /  돌아갈 문을 기억하세요"):"SCHOOL ARCHIVE  /  출석 확인", x + 46, y + 28, 450);
@@ -447,7 +486,7 @@ namespace HappyToy.V2
                 float x = 150 + slot % 2 * 665, y = 264 + slot / 2 * 158;
                 string entry = index < required ? session.JournalEntry(index) : session.ExplorationEntry(index - required);
                 string placeholder = session.CorridorMode?"아직 회수하지 못했습니다.\n갈림길에서 기억이 울리는 소리를 들으세요.":index < required ? "아직 발견하지 못했습니다.\n학교 안에서 단서를 찾아 조사하세요." : "아직 비어 있습니다.\n게시물을 조사하면 이곳에 남습니다.";
-                var card = Panel(x, y, 635, 148, Surface);
+                var card = Panel(x, y, 635, 148, CardSurface);
                 Outline(card, entry == null ? Edge : new Color(.39f, .43f, .30f));
                 Panel(x, y, 3, 148, entry == null ? Edge : Gold);
                 Small(session.CorridorMode?$"회랑의 기억  0{index+1}":index < required ? $"필수 기록  0{index + 1}" : $"주변 기록  {index - required+1:00}", x + 20, y + 11, 460, 25).style.color = entry == null ? Muted : Gold;
@@ -469,8 +508,8 @@ namespace HappyToy.V2
         void BuildSettings()
         {
             Small("변경 사항은 즉시 적용되며, 돌아가면 이 PC에 저장됩니다.", 153, 229, 1290);
-            Panel(150, 278, 630, 426, Surface);
-            Panel(810, 278, 640, 426, Surface);
+            Panel(150, 278, 630, 426, CardSurface);
+            Panel(810, 278, 640, 426, CardSurface);
             volume = Text("", 174, 295, 580, 42, ReadingSize);
             Button("volume-down", "− 5%", 343, () => shell.AdjustSettings(-.05f, 0), 174, 270);
             Button("volume-up", "+ 5%", 343, () => shell.AdjustSettings(.05f, 0), 466, 290);
@@ -496,7 +535,7 @@ namespace HappyToy.V2
             string message = session.Escaped ? "지워졌던 이름을 다시 적었다.\n복도 너머에서 마지막 문이 닫힌다." : "이곳에는 아직 돌아오지 못한 기록이 있습니다.\n다시 들어가 마지막 이름을 찾아주세요.";
             if (session.CorridorMode) message = session.Escaped ? (session.Corridor.Layout.Version>=3 ? "기억을 제단에 돌려놓았다.\n문 너머로 폐교의 기억이 이어진다." : "다섯 기억이 모이자 봉인이 풀렸다.\n처음 들어온 문 너머로 돌아왔다.") : "돌아갈 길을 잃었다.\n들었던 발소리를 기억하고 다음 회랑에 들어가세요.";
             Text(message, 153, 294, 1210, 103, shell.LargeText ? 30 : 27);
-            Panel(895, 437, 540, 391, Surface);
+            Panel(895, 437, 540, 391, CardSurface);
             Small(session.CorridorMode?"이번 회랑 탐색":session.Escaped ? "마지막 출석 확인" : "다음 탐색을 위한 기록", 920, 460, 490);
             Text($"복원한 기록  {session.RecordsRecovered} / {session.TotalRecords}\n탐색 시간  {Mathf.FloorToInt(session.ElapsedPlayTime / 60)}분 {Mathf.FloorToInt(session.ElapsedPlayTime % 60):00}초", 920, 505, 490, 85, ReadingSize);
             string hint = session.Escaped ? "모든 이름이 제자리로 돌아왔습니다." : !string.IsNullOrWhiteSpace(session.DefeatHint) ? session.DefeatHint : "문을 닫아 시선을 끊고 걸으며 숨을 회복하세요.";
@@ -517,7 +556,7 @@ namespace HappyToy.V2
             var result=session.ChapterResult;
             Small(session.Escaped?"학교 조사 종료  /  하교 확인":"학교 조사 중단  /  다섯 기억의 기록",153,247,675);
             Text(session.Escaped?"다섯 이름이 돌아왔다.\n학교 밖의 공기를 다시 마신다.":"기억은 아직 학교 안에 남아 있다.\n들었던 소리를 기억하고 다시 들어가세요.",153,294,650,109,shell.LargeText?30:27);
-            Panel(895,245,540,583,Surface);
+            Panel(895,245,540,583,CardSurface);
             Small("이번 학교 탐색",920,269,490);
             Text($"기억 {result.recovered} / 5\n탐색 시간  {RunTime(result.seconds)}\n남은 폭죽 {result.firecrackersRemaining}개 · 호흡 {Mathf.RoundToInt(result.staminaRemaining*100)}%\n이동 거리 {result.distance:0.0} m\n폭죽 {result.throws}회 · 은신 {result.hides}회 · 문 닫기 {result.closedDoors}회",920,320,490,176,shell.LargeText?23:21).name="school-result-details";
             Text(session.Escaped?"결과: 학교 탈출 성공":"마지막 기척: "+(string.IsNullOrEmpty(result.defeatSource)?"기록되지 않음":result.defeatSource),920,498,490,54,ReadingSize).name="school-result-source";
@@ -545,7 +584,7 @@ namespace HappyToy.V2
             for(int slot=0;slot<4;slot++)
             {
                 int index=schoolRecordPage*4+slot; if(index>=summary.recent.Length) break;
-                var run=summary.recent[index]; float y=344+slot*108; var card=Panel(150,y,1300,99,Surface); Outline(card,Edge);
+                var run=summary.recent[index]; float y=344+slot*108; var card=Panel(150,y,1300,99,CardSurface); Outline(card,Edge);
                 string source=string.IsNullOrEmpty(run.defeatSource)?"기록 미완료":run.defeatSource;
                 if(source.Length>32) source=source.Substring(0,32)+"…";
                 Text($"{(run.escaped?"탈출 성공":"포획 · "+source)}    기억 {run.recovered}/5    {RunTime(run.seconds)}",174,y+12,1240,40,shell.LargeText?24:22).name="school-history-run-"+index;

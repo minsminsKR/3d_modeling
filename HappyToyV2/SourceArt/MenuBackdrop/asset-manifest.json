@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "tool": "built-in image_gen",
+  "createdDate": "2026-10-08",
+  "asset": "Assets/Resources/Menu/cyclopse-menace-v1.png",
+  "dimensions": [
+    1672,
+    941
+  ],
+  "sha256": "18d1bcba4315a3a68800dcba9a2c0a51bd690c0d58d8b7818839fcf6f0ddb69c",
+  "reference": "Verification/eye-surface-20261008/Cyclopse-close-torch-on.png",
+  "prompts": "SourceArt/MenuBackdrop/prompts.md",
+  "anatomy": "Exactly one central Cyclopse eye",
+  "scope": "Selected complete bitmap source; no remote-only or workstation cache required at runtime"
+}

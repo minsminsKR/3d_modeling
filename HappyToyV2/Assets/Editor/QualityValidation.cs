@@ -75,6 +75,7 @@ namespace HappyToy.V2.Editor
             GraphicsPbrImport.Ensure();
             ThreatEyeModelImport.Ensure();
             ThreatEyeMaskImport.Ensure();
+            MenuBackdropImport.Ensure();
             CorridorFurnitureImport.Ensure();
             GraphicsLightingSetup.EnsureAndActivate();
             Validate();

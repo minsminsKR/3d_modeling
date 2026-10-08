@@ -1,0 +1,312 @@
+{
+    "status": "PASS",
+    "texture": "cyclopse-menace-v1",
+    "scope": "Release UI Toolkit snapshots of the actual borrowed menu bitmap: normal title, four aspect ratios with large text/high contrast on title and pause, settings focus/submit, real Escape pause and focused Resume button, and original authored scene plus unobscured playing HUD. Controlled Begin() is used only to reach pause/HUD. No gameplay, path, survival, audio or performance certification.",
+    "developmentBuild": false,
+    "settingsFocus": true,
+    "escapePause": true,
+    "resumeButton": true,
+    "textureAlive": true,
+    "playingFaceHidden": true,
+    "referenceChangedPixels": 1194996,
+    "frames": [
+        {
+            "image": "title-normal-1600x900.png",
+            "page": "Title",
+            "width": 1600,
+            "height": 900,
+            "buttons": 5,
+            "largeText": false,
+            "highContrast": false,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "settings-large-high-contrast-1600x900.png",
+            "page": "Settings",
+            "width": 1600,
+            "height": 900,
+            "buttons": 12,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "title-large-high-contrast-1280x720.png",
+            "page": "Title",
+            "width": 1280,
+            "height": 720,
+            "buttons": 5,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "title-large-high-contrast-1600x900.png",
+            "page": "Title",
+            "width": 1600,
+            "height": 900,
+            "buttons": 5,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "title-large-high-contrast-1280x960.png",
+            "page": "Title",
+            "width": 1280,
+            "height": 960,
+            "buttons": 5,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 1200.0
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 1200.0
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "title-large-high-contrast-2560x1080.png",
+            "page": "Title",
+            "width": 2560,
+            "height": 1080,
+            "buttons": 5,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 2133.333251953125,
+                "height": 899.9999389648438
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 2133.333251953125,
+                "height": 899.9999389648438
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "pause-large-high-contrast-1280x720.png",
+            "page": "Pause",
+            "width": 1280,
+            "height": 720,
+            "buttons": 5,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "pause-large-high-contrast-1600x900.png",
+            "page": "Pause",
+            "width": 1600,
+            "height": 900,
+            "buttons": 5,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "pause-large-high-contrast-1280x960.png",
+            "page": "Pause",
+            "width": 1280,
+            "height": 960,
+            "buttons": 5,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 1200.0
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 1200.0
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "pause-large-high-contrast-2560x1080.png",
+            "page": "Pause",
+            "width": 2560,
+            "height": 1080,
+            "buttons": 5,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": true,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 2133.333251953125,
+                "height": 899.9999389648438
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 2133.333251953125,
+                "height": 899.9999389648438
+            },
+            "uiOpaqueFraction": 1.0
+        },
+        {
+            "image": "playing-world-and-hud-1600x900.png",
+            "page": "Playing",
+            "width": 1600,
+            "height": 900,
+            "buttons": 0,
+            "largeText": true,
+            "highContrast": true,
+            "faceVisible": false,
+            "buttonsFit": true,
+            "backgroundNonPickable": true,
+            "logicalViewport": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 1600.0,
+                "height": 900.0
+            },
+            "backgroundBounds": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 0.0,
+                "height": 0.0
+            },
+            "uiOpaqueFraction": 0.008876388892531395
+        }
+    ],
+    "errors": []
+}
