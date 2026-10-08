@@ -64,7 +64,7 @@ namespace HappyToy.V2.Editor
                 foreach (var directory in Directory.GetDirectories(pbrRoot))
                 {
                     EnsureMaterial(directory.Replace('\\', '/'), false);
-                    if (Path.GetFileName(directory) == "paper-aged")
+                    if (Path.GetFileName(directory) == "paper-aged" || Path.GetFileName(directory) == "painted-metal")
                         EnsureMaterial(directory.Replace('\\', '/'), true);
                 }
             AssetDatabase.SaveAssets();

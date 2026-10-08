@@ -8,7 +8,9 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed class LightExplorationRulesTests
     {
-        [TestCase(90f, 10f, true, true, 80f)]
+        [TestCase(90f, 10f, true, true, 82.5f)]
+        [TestCase(180f, 120f, true, true, 90f)]
+        [TestCase(180f, 240f, true, true, 0f)]
         [TestCase(90f, 10f, false, true, 90f)]
         [TestCase(90f, 10f, true, false, 90f)]
         [TestCase(90f, 10f, false, false, 90f)]

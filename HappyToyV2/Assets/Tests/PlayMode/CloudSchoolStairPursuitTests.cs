@@ -281,8 +281,8 @@ namespace HappyToy.V2.CloudTests
             var portrait = Get<Component>(chapter, "Portrait");
             PlacePlayer(new Vector3(31.3f, 5.02f, 32.5f)); Call(memories[3], "Use", player);
             Assert.That(Get<bool>(portrait, "Triggered"), Is.True);
-            PlacePlayer(new Vector3(34.7f, 5.02f, 32.2f));
-            IntroLook(Get<Vector3>(portrait, "spawn") + Vector3.up * .9f);
+            Vector3 portraitSpawn = Get<Vector3>(portrait, "spawn");
+            IntroPlace(portraitSpawn, portraitSpawn + Vector3.up * .9f, 3);
             yield return Wait(() => Get<bool>(portrait, "ChapterWitnessed") && Get<bool>(portrait, "Completed"), 12,
                 "Original portrait sight/reveal gate did not complete before the nursery fixture");
             Call(memories[3], "Use", player); Assert.That(Get<int>(chapter, "Recovered"), Is.EqualTo(4));

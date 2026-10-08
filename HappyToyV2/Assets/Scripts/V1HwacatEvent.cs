@@ -35,6 +35,17 @@ namespace HappyToy.V2
         bool chapterDriven;
         public bool ChapterWitnessed { get; private set; }
         float chapterSightTime;
+        public void MoveChapterDisplay(Vector3 delta)
+        {
+            if(Triggered) throw new System.InvalidOperationException("Cannot relocate an active school reveal");
+            spawn+=delta; if(normal)normal.transform.position+=delta;if(angry)angry.transform.position+=delta;
+            if(painting)
+            {
+                painting.position+=delta;
+                paintingLocalPosition=painting.localPosition;paintingLocalRotation=painting.localRotation;
+                paintingLocalScale=painting.localScale;capturedPainting=true;
+            }
+        }
         public void PrepareChapter()
         {
             chapterDriven=true; Unsubscribe(); session=GameSession.Current;

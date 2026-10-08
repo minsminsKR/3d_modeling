@@ -103,6 +103,7 @@ namespace HappyToy.V2
                 }
                 skins[index].sharedMaterials = mapped; skins[index].updateWhenOffscreen = true;
             }
+            MonsterRedEyes.Attach(replacement.transform, key);
             original.gameObject.SetActive(false); UnityEngine.Object.Destroy(original.gameObject);
             model = replacement.transform; animation = next; owned = materials.ToArray(); return true;
         }

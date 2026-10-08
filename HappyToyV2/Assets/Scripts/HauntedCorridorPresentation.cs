@@ -348,15 +348,11 @@ namespace HappyToy.V2
                     }
                     foreach(float y in new[]{-.35f,.25f,.90f,1.10f})
                         wood.Box(new Vector3(0,y,side*.048f),new Vector3(2.57f,.037f,.022f),Quaternion.identity);
-                    var mount=new GameObject("Graphics leaf handle mount").transform;mount.SetParent(root,false);
-                    mount.localPosition=new Vector3(1.23f,-.05f,side*.044f);
-                    mount.localRotation=Quaternion.Euler(0,side>0?180:0,0);
-                    var hardware=GraphicsPropLibrary.Attach("door-hardware",mount,graphicsSurfaces.Resolve,owned);
-                    // Fit owns the identity imported-model wrapper. The mount
-                    // turns its centered pull outward on each real leaf face.
-                    GraphicsPropLibrary.Fit(hardware,new Bounds(Vector3.zero,new Vector3(.06f,.21f,.022f)));
+
                 }
                 Emit(wood,root,"Moving timber leaf lattice",true);Emit(sheets,root,"Moving leaf aged paper",true);
+                var hardware=CorridorDoorHardware.Attach(door,door.movingLeaf,2.6f,2.36f,.12f);
+                externalVisualRoots.Add(hardware.transform);
             }
         }
 

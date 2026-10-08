@@ -89,9 +89,18 @@ namespace HappyToy.V2.CloudTests
                 var path=new NavMeshPath();Assert.That(NavMesh.CalculatePath(start.position,hit.position,NavMesh.AllAreas,path),Is.True);
                 Assert.That(path.status,Is.EqualTo(NavMeshPathStatus.PathComplete),"Disconnected stairs or memory: "+memory.name);
             }
-            var atmosphere=session.GetComponent(RequireType("ChapterAtmosphere"));
-            Assert.That(Get<int>(atmosphere,"WallTreatments"),Is.GreaterThan(30));
-            Assert.That(Get<int>(atmosphere,"DressingPieces"),Is.GreaterThan(200));
+            if(Get<int>(chapter,"LayoutVersion")==1)
+            {
+                var atmosphere=session.GetComponent(RequireType("ChapterAtmosphere"));
+                Assert.That(Get<int>(atmosphere,"WallTreatments"),Is.GreaterThan(30));
+                Assert.That(Get<int>(atmosphere,"DressingPieces"),Is.GreaterThan(200));
+            }
+            else
+            {
+                var campus=Get<Component>(chapter,"Campus");
+                foreach(int floor in new[]{-1,0,1})Assert.That((int)Call(campus,"RoomCount",floor),Is.GreaterThanOrEqualTo(6));
+                Assert.That(Get<Transform>(campus,"Root").GetComponentsInChildren<Collider>().Length,Is.GreaterThan(200));
+            }
             // Controlled render tour for art review. This is not an input survival claim.
             var camera=Get<Camera>(player,"eyes");
             ((Behaviour)player).enabled=false;
@@ -134,7 +143,7 @@ namespace HappyToy.V2.CloudTests
             Call(shell,"Pause");float elapsed=Get<float>(portrait,"RevealElapsed");yield return Delay(.25f);
             Assert.That(Get<float>(portrait,"RevealElapsed"),Is.EqualTo(elapsed));Call(shell,"Resume");
             // Keep outside attack range while the actual authored animation plays.
-            PlacePlayer(new Vector3(34.7f,5.02f,32.2f));
+            IntroPlace(Get<Vector3>(portrait,"spawn"),Get<Vector3>(portrait,"spawn")+Vector3.up*.9f,3);
             var target=Get<Vector3>(portrait,"spawn")+Vector3.up*.9f;camera.transform.rotation=Quaternion.LookRotation(target-camera.transform.position);
             yield return Wait(()=>Get<bool>(portrait,"ChapterWitnessed"),8,"Portrait became collectable without being visible");
             yield return Wait(()=>Get<bool>(portrait,"Completed"),8,"Authored portrait reveal never completed");

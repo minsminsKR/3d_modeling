@@ -73,6 +73,7 @@ namespace HappyToy.V2.Editor
         public static void BuildWindows()
         {
             GraphicsPbrImport.Ensure();
+            ThreatEyeModelImport.Ensure();
             CorridorFurnitureImport.Ensure();
             GraphicsLightingSetup.EnsureAndActivate();
             Validate();

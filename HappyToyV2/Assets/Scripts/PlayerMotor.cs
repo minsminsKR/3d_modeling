@@ -39,7 +39,13 @@ namespace HappyToy.V2
         public bool Paused => !GameSession.Current || !GameSession.Current.InputAllowed ||
             GameSession.Current.ChapterMode && GameSession.Current.Chapter.FirstAppearances &&
             GameSession.Current.Chapter.FirstAppearances.CameraOwned;
-        public Interactable Focus { get; private set; }
+        Interactable currentFocus;
+        public Interactable Focus
+        {
+            // Ignition and restoration can invalidate a focus before the next motor frame.
+            get => currentFocus && currentFocus.CanFocus ? currentFocus : null;
+            private set => currentFocus = value;
+        }
         public int MovementUpdates { get; private set; }
         public CollisionFlags LastCollision { get; private set; }
         public FirecrackerInventory Firecrackers { get; private set; }
@@ -169,13 +175,13 @@ namespace HappyToy.V2
             if (Physics.Raycast(origin, direction, out var direct, 2.2f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
             {
                 var item=direct.collider.GetComponentInParent<Interactable>();
-                return item&&item.InteractionAvailable&&item.kind!=Interactable.Kind.Decoration?item:null;
+                return item && item.CanFocus ? item : null;
             }
             // Tiny distant notes should not demand pixel-perfect aim. A wall still blocks this cast.
             if (!Physics.SphereCast(origin, .065f, direction, out var assist, 2.135f,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return null;
             var candidate = assist.collider.GetComponentInParent<Interactable>();
-            if (!candidate || !candidate.InteractionAvailable || candidate.kind==Interactable.Kind.Decoration) return null;
+            if (!candidate || !candidate.CanFocus) return null;
             var toPoint = assist.point - origin;
             if (toPoint.sqrMagnitude > 2.2f * 2.2f) return null;
             if (Physics.Raycast(origin, toPoint.normalized, out var blocker, toPoint.magnitude + .015f,

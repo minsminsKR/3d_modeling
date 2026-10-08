@@ -154,6 +154,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(CandleDangerMarks().All(mark => Get<bool>(mark, "Lit") == (mark != untouched) && Get<float>(mark, "Danger") > 0), Is.True);
             CandleDangerPlaceActor(actor, CandleDangerPoint(player.transform.position, 1.7f));
             Call(LightRun, "RefreshDanger"); CandleDangerExpectExtinguished();
+            Assert.That(Get<bool>(target,"CanFocus"),Is.True,"Blackout candle did not expose its existing danger warning");
+            Assert.That(Get<bool>(candle,"HasBeenLit"),Is.True,"Focus availability erased durable manual ignition");
             Assert.That((bool)Call(candle, "TryIgnite", player), Is.False);
             Assert.That(Get<int>(candle, "Ignitions"), Is.EqualTo(1), "Blocked ignition changed the event count");
             actor.gameObject.SetActive(false); CandleDangerExpectSafe(); yield return Delay(.15f);
@@ -162,7 +164,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(CandleDangerMarks().All(mark => !Get<AudioSource>(mark, "IgnitionSource").isPlaying), Is.True,
                 "Automatic recovery replayed the match strike");
             Assert.That(Get<bool>(candle, "IgnitionBlocked"), Is.False);
-            ((Behaviour)player).enabled = true; PlacePlayer(LightApproach(target)); yield return null; yield return LightAim(target);
+            Assert.That(Get<bool>(target,"CanFocus"),Is.False,"Automatically recovered candle kept an interaction prompt");
+            ((Behaviour)player).enabled = true; PlacePlayer(LightApproach(target)); yield return null; yield return LightAim(target,false);
             Assert.That(Get<bool>(candle, "Lit"), Is.True);
             Assert.That(Get<int>(candle, "Ignitions"), Is.EqualTo(1), "Automatic recovery or redundant E counted a new ignition");
             Assert.That(Get<bool>(untouched, "HasBeenLit"), Is.False);
@@ -453,7 +456,7 @@ namespace HappyToy.V2.CloudTests
                 IsolateThreats(); Begin(); yield return null; CandleDangerExpectSafe();
                 Assert.That(CandleDangerMarks().Count(mark => Get<bool>(mark, "Lit")), Is.EqualTo(1), "Safe restored frame did not recover the lit marker");
                 target = LightTargets("Candle")[0]; ((Behaviour)player).enabled = true;
-                PlacePlayer(LightApproach(target)); yield return null; yield return LightAim(target);
+                PlacePlayer(LightApproach(target)); yield return null; yield return LightAim(target,false);
                 Assert.That(CandleDangerMarks().Count(mark => Get<bool>(mark, "Lit")), Is.EqualTo(1));
                 Assert.That(Get<int>(target.GetComponent(RequireType("WaymarkCandle")), "Ignitions"), Is.EqualTo(0));
                 if (corridor)

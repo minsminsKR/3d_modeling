@@ -13,14 +13,23 @@ namespace HappyToy.V2
         public bool ChapterMode => Chapter && Chapter.Ready;
         public int EncounterStep => ChapterMode ? Chapter.Recovered : StoryStep;
         public bool EncountersResolved => Finished || (!ChapterMode && StoryStep >= 4);
-        public void CreateChapter()
+        public void CreateChapter() => CreateChapterVersion(SchoolCampusLayout.Version);
+        public void CreateChapterForCheckpoint(ChapterCheckpoint data)
+        { data.Validate(); CreateChapterVersion(data.simulationVersion); }
+        public void CreateChapterVersion(int layoutVersion)
         {
             if(Chapter || Corridor || Finished) return;
+            if(layoutVersion!=1 && layoutVersion!=SchoolCampusLayout.Version) throw new System.ArgumentException("Unknown school layout");
             GraphicsLightingPresentation.BeginTransition(this);
             // Restart enters from GameShell.Start, before default-order presentation Start.
             // Complete that idempotent dressing while its authored interaction IDs still exist.
             var presentation=GetComponent<AnnexRoomPresentation>();if(presentation) presentation.Apply();
-            Chapter=gameObject.AddComponent<MemoryChapter>(); Chapter.Prepare();
+            var surfaces=GetComponent<GraphicsSchoolSurfaces>();
+            // Release render batches before detaching props or retiring geometry:
+            // their pooled meshes belong to the previous presentation owner.
+            if(layoutVersion>=2 && surfaces) surfaces.enabled=false;
+            Chapter=gameObject.AddComponent<MemoryChapter>(); Chapter.Prepare(layoutVersion);
+            if(surfaces) { surfaces.enabled=true; surfaces.Refresh(); }
             GraphicsLightingPresentation.BeginMode(this,transform);
             BeginChapterMetrics();
         }

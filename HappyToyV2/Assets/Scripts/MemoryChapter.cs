@@ -9,6 +9,8 @@ namespace HappyToy.V2
     public sealed partial class MemoryChapter : MonoBehaviour
     {
         public bool Ready { get; private set; }
+        public int LayoutVersion { get; private set; } = 1;
+        public SchoolCampusLayout Campus { get; private set; }
         public int Recovered { get; private set; }
         public Interactable[] Memories { get; private set; }
         public StalkerBrain Cyclopse { get; private set; }
@@ -38,6 +40,7 @@ namespace HappyToy.V2
                 }
                 if(Recovered==4 && Nursery && Nursery.Triggered && !Nursery.Released)
                     return "울음이 멎고 베이비가 움직이기 시작하면 마지막 기억을 회수하세요.";
+                if(LayoutVersion>=2 && Recovered==2)return "북쪽 계단으로 2층에 올라가 음악실의 합창 명단을 찾으세요.";
                 return objectives[Mathf.Clamp(Recovered,0,5)];
             }
         }
@@ -48,10 +51,12 @@ namespace HappyToy.V2
             "2층 붉은 액자 — 액자에서 일어난 화캣을 만났다. 그 뒤의 보건 기록을 회수했다.",
             "지하 인형방 — 울음을 멈춘 베이비 곁에서 마지막 이름표를 찾았다. 이제 입구로 돌아가야 한다."
         };
-        public string JournalEntry(int index)=>index>=0&&index<Recovered?memories[index]:null;
-        public void Prepare()
+        public string JournalEntry(int index)=>index>=0&&index<Recovered?
+            LayoutVersion>=2&&index==2?"2층 음악실 — 합창 명단. 종이 사이로 떠다니는 가면이 깨어났다.":memories[index]:null;
+        public void Prepare(int layoutVersion = SchoolCampusLayout.Version)
         {
             if(Ready) throw new InvalidOperationException("Chapter already prepared");
+            LayoutVersion=layoutVersion;
             session=GetComponent<GameSession>();
             var scripts=FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include,FindObjectsSortMode.None)
                 .Where(x=>x.gameObject.scene==gameObject.scene).ToArray();
@@ -76,13 +81,21 @@ namespace HappyToy.V2
             Memories[0].transform.position=new Vector3(-6.4f,.88f,.7f);
             Memories[2].transform.position=new Vector3(25.8f,6.1f,25.8f);
             Memories[4].transform.position=new Vector3(14.8f,-3.85f,-27.6f);
+            if(LayoutVersion>=2)
+            {
+                // The lectern is inside the room, clear of the actual music
+                // doorway and the central aisle's approach from the stairs.
+                Memories[2].transform.position=new Vector3(25.8f,6.1f,30.8f);
+                Portrait.MoveChapterDisplay(Vector3.right*4);
+                Campus=gameObject.AddComponent<SchoolCampusLayout>(); Campus.Prepare(this);
+            }
             Mannequin.activationStep=2; PlaceActor(Mannequin.transform,SchoolFirstAppearances.MannequinStation);
             Mask.activationStep=3; PlaceActor(Mask.transform,new Vector3(27,5,27.6f));
             Mask.patrol=new[] {new Vector3(27,5,27.6f),new Vector3(30,5,30.8f),new Vector3(32,5,25)}
                 .Select(p=>{var marker=new GameObject("Upper mask patrol").transform;marker.SetParent(transform);marker.position=p;return marker;}).ToArray();
             Portrait.PrepareChapter(); Nursery.PrepareChapter();
             session.player.Firecrackers.SetRunStock(2);
-            gameObject.AddComponent<ChapterAtmosphere>().Prepare(Memories);
+            if(LayoutVersion==1) gameObject.AddComponent<ChapterAtmosphere>().Prepare(Memories);
             GetComponent<GraphicsSchoolSurfaces>()?.Refresh();
             Lighting=gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareSchool(this);
             FirstAppearances=gameObject.AddComponent<SchoolFirstAppearances>();FirstAppearances.Prepare(this);

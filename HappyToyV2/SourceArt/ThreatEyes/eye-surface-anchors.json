@@ -1,0 +1,322 @@
+{
+  "blender": "4.0.2",
+  "assets": [
+    {
+      "key": "Cyclopse",
+      "source": "SourceArt/EnemyRefinementV2/Cyclopse-refinement-v2.blend",
+      "headBone": "mixamorig:Head",
+      "actualEyeBones": [],
+      "supportedHeadVertices": 3711,
+      "posedWorldBounds": {
+        "min": [
+          -0.007836248725652695,
+          -0.006705369800329208,
+          0.010547517798841
+        ],
+        "max": [
+          0.008450866676867008,
+          0.0070300414226949215,
+          0.019751565530896187
+        ]
+      },
+      "headWorldPosition": [
+        0.0005828625289723277,
+        -0.0014550794148817658,
+        0.012791980057954788
+      ],
+      "headWorldRotation": [
+        0.7305698394775391,
+        0.6827951073646545,
+        0.002019049832597375,
+        -0.007380364462733269
+      ],
+      "sourcePose": "existing refinement scene frame1; no source deformation/bone/clip change",
+      "eyeAnchors": [
+        {
+          "distance": 0.03479282185435295,
+          "uv": [
+            0.3362935483455658,
+            0.21499665081501007
+          ],
+          "posedWorldPoint": [
+            -0.0009101526811718941,
+            -0.005769457668066025,
+            0.014482376165688038
+          ],
+          "posedWorldNormal": [
+            -0.0828545093536377,
+            -0.9537351131439209,
+            0.28900596499443054
+          ],
+          "sourceMesh": "model_textured",
+          "sourcePixel": [
+            354,
+            427
+          ],
+          "materialSlot": 0
+        },
+        {
+          "distance": 0.034768812358379364,
+          "uv": [
+            0.33018386363983154,
+            0.14273987710475922
+          ],
+          "posedWorldPoint": [
+            0.0017100365366786718,
+            -0.005793467164039612,
+            0.014482568949460983
+          ],
+          "posedWorldNormal": [
+            0.13438628613948822,
+            -0.9843621253967285,
+            0.11389285326004028
+          ],
+          "sourceMesh": "model_textured",
+          "sourcePixel": [
+            453,
+            427
+          ],
+          "materialSlot": 0
+        }
+      ]
+    },
+    {
+      "key": "Uncat",
+      "source": "SourceArt/EnemyRefinementV2/Uncat-refinement-v2.blend",
+      "headBone": "mixamorig:Head",
+      "actualEyeBones": [],
+      "supportedHeadVertices": 2785,
+      "posedWorldBounds": {
+        "min": [
+          -0.0025326935574412346,
+          -0.00778562156483531,
+          0.007588901091367006
+        ],
+        "max": [
+          0.004082169383764267,
+          -0.0012060700682923198,
+          0.014738359488546848
+        ]
+      },
+      "headWorldPosition": [
+        0.0009709333535283804,
+        -0.0036997490096837282,
+        0.007925868034362793
+      ],
+      "headWorldRotation": [
+        0.742860734462738,
+        0.668172299861908,
+        -0.036033425480127335,
+        0.020132767036557198
+      ],
+      "sourcePose": "existing refinement scene frame1; no source deformation/bone/clip change",
+      "eyeAnchors": [
+        {
+          "distance": 0.015369154512882233,
+          "uv": [
+            0.8843331336975098,
+            0.9056426286697388
+          ],
+          "posedWorldPoint": [
+            0.00012413720833137631,
+            -0.007007149048149586,
+            0.010393681935966015
+          ],
+          "posedWorldNormal": [
+            0.027380039915442467,
+            -0.8240070343017578,
+            0.5659175515174866
+          ],
+          "sourceMesh": "model_textured",
+          "sourcePixel": [
+            344,
+            468
+          ],
+          "materialSlot": 0
+        },
+        {
+          "distance": 0.015356107614934444,
+          "uv": [
+            0.9562489986419678,
+            0.12043344974517822
+          ],
+          "posedWorldPoint": [
+            0.001285924226976931,
+            -0.0070188008248806,
+            0.010568048804998398
+          ],
+          "posedWorldNormal": [
+            -0.06889158487319946,
+            -0.9950056672096252,
+            -0.07223304361104965
+          ],
+          "sourceMesh": "model_textured",
+          "sourcePixel": [
+            444,
+            453
+          ],
+          "materialSlot": 0
+        }
+      ]
+    },
+    {
+      "key": "Hwacat_angry",
+      "source": "SourceArt/EnemyRefinementV2/Hwacat_angry-refinement-v2.blend",
+      "headBone": "mixamorig:Head",
+      "actualEyeBones": [],
+      "supportedHeadVertices": 2473,
+      "posedWorldBounds": {
+        "min": [
+          -0.005999329034239054,
+          -0.009205001406371593,
+          0.0062113357707858086
+        ],
+        "max": [
+          0.002737658331170678,
+          -0.00010913587175309658,
+          0.01589808613061905
+        ]
+      },
+      "headWorldPosition": [
+        -0.0012444776948541403,
+        -0.0035646934993565083,
+        0.008138421922922134
+      ],
+      "headWorldRotation": [
+        0.6506513953208923,
+        0.7485495805740356,
+        0.017378225922584534,
+        0.12658703327178955
+      ],
+      "sourcePose": "existing refinement scene frame1; no source deformation/bone/clip change",
+      "eyeAnchors": [
+        {
+          "distance": 0.020888421684503555,
+          "uv": [
+            0.865963339805603,
+            0.367665559053421
+          ],
+          "posedWorldPoint": [
+            -0.0019771368242800236,
+            -0.007994625717401505,
+            0.010026735253632069
+          ],
+          "posedWorldNormal": [
+            -0.0045380680821835995,
+            -0.9931159019470215,
+            -0.11704786121845245
+          ],
+          "sourceMesh": "model_textured",
+          "sourcePixel": [
+            378,
+            467
+          ],
+          "materialSlot": 0
+        },
+        {
+          "distance": 0.021316921338438988,
+          "uv": [
+            0.06832028925418854,
+            0.9485605955123901
+          ],
+          "posedWorldPoint": [
+            0.0004312315722927451,
+            -0.007563246414065361,
+            0.010385338217020035
+          ],
+          "posedWorldNormal": [
+            0.10663863271474838,
+            -0.9016969799995422,
+            0.419011652469635
+          ],
+          "sourceMesh": "model_textured",
+          "sourcePixel": [
+            531,
+            444
+          ],
+          "materialSlot": 0
+        }
+      ]
+    },
+    {
+      "key": "Baby",
+      "source": "SourceArt/EnemyRefinementV2/Baby-refinement-v2.blend",
+      "headBone": "mixamorig:Head",
+      "actualEyeBones": [],
+      "supportedHeadVertices": 1533,
+      "posedWorldBounds": {
+        "min": [
+          -0.0026145081501454115,
+          -0.005813549738377333,
+          0.004492546431720257
+        ],
+        "max": [
+          0.0023997349198907614,
+          0.00015447111218236387,
+          0.010802366770803928
+        ]
+      },
+      "headWorldPosition": [
+        6.158288306323811e-05,
+        -0.0029871000442653894,
+        0.0054584043100476265
+      ],
+      "headWorldRotation": [
+        0.758295476436615,
+        0.651540219783783,
+        -0.0157111007720232,
+        -0.015377326868474483
+      ],
+      "sourcePose": "existing refinement scene frame1; no source deformation/bone/clip change",
+      "eyeAnchors": [
+        {
+          "distance": 0.013563181273639202,
+          "uv": [
+            0.5820667147636414,
+            0.6215589046478271
+          ],
+          "posedWorldPoint": [
+            -0.0012352669145911932,
+            -0.005041014403104782,
+            0.007706164848059416
+          ],
+          "posedWorldNormal": [
+            -0.2702113389968872,
+            -0.9438614845275879,
+            0.1900295615196228
+          ],
+          "sourceMesh": "model_textured",
+          "sourcePixel": [
+            290,
+            396
+          ],
+          "materialSlot": 0
+        },
+        {
+          "distance": 0.013416973873972893,
+          "uv": [
+            0.5754467248916626,
+            0.6983746290206909
+          ],
+          "posedWorldPoint": [
+            0.0005693415878340602,
+            -0.00518697127699852,
+            0.007738094311207533
+          ],
+          "posedWorldNormal": [
+            -0.01570797711610794,
+            -0.9768722057342529,
+            -0.213246151804924
+          ],
+          "sourceMesh": "model_textured",
+          "sourcePixel": [
+            466,
+            393
+          ],
+          "materialSlot": 0
+        }
+      ]
+    }
+  ],
+  "scope": "Read-only posed head vertices and rig inventory. Optional source studio head crops are not native Unity acceptance."
+}

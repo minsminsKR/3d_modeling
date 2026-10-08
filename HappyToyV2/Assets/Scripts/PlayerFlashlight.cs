@@ -3,15 +3,17 @@ using UnityEngine;
 
 namespace HappyToy.V2
 {
-    // Charge is measured in lit gameplay seconds. Pauses and extinguished lamps cost zero.
+    // Preserve saved battery units; a full lamp now lasts 240 lit gameplay seconds.
+    // Pauses and extinguished lamps cost zero.
     public static class FlashlightChargeRules
     {
         public const float Capacity = 180f, PackCharge = 90f;
+        public const float DrainPerSecond = .75f;
         public static float Drain(float charge, float seconds, bool lit, bool playing)
         {
             if (!Valid(charge) || !StealthRules.Finite(seconds) || seconds < 0)
                 throw new ArgumentException("Invalid flashlight charge/time");
-            return lit && playing ? Mathf.Max(0, charge - seconds) : charge;
+            return lit && playing ? Mathf.Max(0, charge - seconds * DrainPerSecond) : charge;
         }
         public static bool Valid(float charge) => StealthRules.Finite(charge) && charge >= 0 && charge <= Capacity;
         public static float Refill(float charge)

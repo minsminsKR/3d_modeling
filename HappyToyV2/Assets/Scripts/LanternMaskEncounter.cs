@@ -86,6 +86,7 @@ namespace HappyToy.V2
                 var model=mask.GetChild(0);var bounds=MonsterPresentationScale.Bounds(model);
                 model.localScale*=Mathf.Clamp(.68f/Mathf.Max(.01f,bounds.size.y),1,1.2f);
             }
+            if(mask)MonsterRedEyes.AttachStatic(mask,"LanternMask");
             DoorTraversal.Bind(this);
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 16; sound.dopplerLevel = 0; sound.volume = .5f;

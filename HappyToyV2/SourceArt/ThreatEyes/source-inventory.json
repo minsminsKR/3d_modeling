@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "profiles": 6,
+  "scope": "Source/measurement validation only; Unity/native review is separate.",
+  "sources": [
+    {
+      "path": "SourceArt/ThreatEyes/eye-surface-anchors.json",
+      "sha256": "61f083bf5b37072cd6eac7f32f61a800b870d06c3c252d040f5c495d2242d7e0"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/inspect_head_sources.py",
+      "sha256": "871fbe3ab57e3ab676f40406d6c966d1e4f772278cb0d706525b532767360e99"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/inspect_static_faces.py",
+      "sha256": "bbf72029ecbf6a9320a18d0fcb965b57b46947ff352e69f6b5f8f086a47af241"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/LICENSE.md",
+      "sha256": "a84b29445f04b17fd106a921c25c089ab9681069810ca49ffae7f972ea59392d"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/README.md",
+      "sha256": "8ab529ea5b43f2a5612bf464bf5633ffbfe6fe9409c31640eecffb38d8dbd119"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/static-eye-surface-anchors.json",
+      "sha256": "3ef739ae9558dcfd17bc004319a06bce69db431b6b395e41daa2812859806cbe"
+    },
+    {
+      "path": "SourceArt/ThreatEyes/validate_visual_sources.py",
+      "sha256": "c587c41a4c9089964d136e9b178915209b9c2ce8a1e64ae29698db50e12550c2"
+    },
+    {
+      "path": "Assets/Scripts/MonsterRedEyes.cs",
+      "sha256": "ca8aeb0469f611bdc5387f967d4a1ba9a930539163b4f323cfc828bdfe7d18bb"
+    },
+    {
+      "path": "Assets/Scripts/CorridorDoorHardware.cs",
+      "sha256": "e09ff8fabcdac2c92b8d4f63ad375a6d5e24b8cf81038dfa123eca9566797892"
+    },
+    {
+      "path": "Assets/Editor/ThreatEyeModelImport.cs",
+      "sha256": "69d588fdedf54743cdc20e23e357f9862bf07831c488f596c66817546a4d8697"
+    },
+    {
+      "path": "Assets/Tests/PlayMode/CloudRedEyeDoorVisualTests.cs",
+      "sha256": "94bfe1b0986fac30d8fbbafc7f3c672158889ddceaaa4d8600b2c0e23a0ae22e"
+    }
+  ]
+}

@@ -1,0 +1,1184 @@
+{
+    "status": "passed",
+    "scope": "Controlled native school-campus v2 structure and art inspection. Actual production player camera/torch, physical open doors, supported standing locations and complete planned room/door/return routes. Player placement is explicit; no AI, full-input survival, listening quality or target-hardware performance claim.",
+    "developmentBuild": false,
+    "layoutVersion": 2,
+    "groundRooms": 6,
+    "upperRooms": 6,
+    "basementRooms": 6,
+    "currentDoors": 31,
+    "generatedDoors": 28,
+    "colliderCount": 682,
+    "cameraFov": 72.0,
+    "torchIntensity": 5.0,
+    "torchRange": 18.0,
+    "rooms": [
+        {
+            "id": "b-archive",
+            "label": "폐기 문서고",
+            "image": "campus-room-b-archive.png",
+            "floor": -1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": -44.599998474121094,
+                "width": 12.0,
+                "height": 7.399997711181641
+            },
+            "feet": {
+                "x": 6.199999809265137,
+                "y": -4.940000057220459,
+                "z": -38.45000076293945
+            },
+            "camera": {
+                "x": 6.199999809265137,
+                "y": -3.3400001525878906,
+                "z": -38.45000076293945
+            },
+            "target": {
+                "x": 6.0,
+                "y": -3.799999952316284,
+                "z": -40.900001525878906
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "b-evidence",
+            "label": "봉인 보관실",
+            "image": "campus-room-b-evidence.png",
+            "floor": -1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 24.0,
+                "y": -44.599998474121094,
+                "width": 13.0,
+                "height": 7.399997711181641
+            },
+            "feet": {
+                "x": 30.100000381469727,
+                "y": -4.940000057220459,
+                "z": -38.45000076293945
+            },
+            "camera": {
+                "x": 30.100000381469727,
+                "y": -3.3400001525878906,
+                "z": -38.45000076293945
+            },
+            "target": {
+                "x": 30.5,
+                "y": -3.799999952316284,
+                "z": -40.900001525878906
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "b-nursery",
+            "label": "침수된 인형 보관실",
+            "image": "campus-room-b-nursery.png",
+            "floor": -1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 3.200000047683716,
+                "y": -34.0,
+                "width": 17.399999618530273,
+                "height": 9.600000381469727
+            },
+            "feet": {
+                "x": 13.800000190734863,
+                "y": -4.940000057220459,
+                "z": -25.649999618530273
+            },
+            "camera": {
+                "x": 13.800000190734863,
+                "y": -3.3400001525878906,
+                "z": -25.649999618530273
+            },
+            "target": {
+                "x": 11.899999618530273,
+                "y": -3.799999952316284,
+                "z": -29.200000762939453
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "b-plant",
+            "label": "기계실",
+            "image": "campus-room-b-plant.png",
+            "floor": -1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 23.799999237060547,
+                "y": -34.0,
+                "width": 10.0,
+                "height": 9.600000381469727
+            },
+            "feet": {
+                "x": 28.799999237060547,
+                "y": -4.940000057220459,
+                "z": -25.649999618530273
+            },
+            "camera": {
+                "x": 28.799999237060547,
+                "y": -3.3400001525878906,
+                "z": -25.649999618530273
+            },
+            "target": {
+                "x": 28.799999237060547,
+                "y": -3.799999952316284,
+                "z": -29.200000762939453
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "b-store",
+            "label": "자재 창고",
+            "image": "campus-room-b-store.png",
+            "floor": -1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": -9.0,
+                "y": -34.0,
+                "width": 9.0,
+                "height": 12.799999237060547
+            },
+            "feet": {
+                "x": -1.25,
+                "y": -4.940000057220459,
+                "z": -27.200000762939453
+            },
+            "camera": {
+                "x": -1.25,
+                "y": -3.3400001525878906,
+                "z": -27.200000762939453
+            },
+            "target": {
+                "x": -4.5,
+                "y": -3.799999952316284,
+                "z": -27.600000381469727
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "b-tools",
+            "label": "시설 관리실",
+            "image": "campus-room-b-tools.png",
+            "floor": -1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 12.0,
+                "y": -44.599998474121094,
+                "width": 12.0,
+                "height": 7.399997711181641
+            },
+            "feet": {
+                "x": 18.100000381469727,
+                "y": -4.940000057220459,
+                "z": -38.45000076293945
+            },
+            "camera": {
+                "x": 18.100000381469727,
+                "y": -3.3400001525878906,
+                "z": -38.45000076293945
+            },
+            "target": {
+                "x": 18.0,
+                "y": -3.799999952316284,
+                "z": -40.900001525878906
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "g-class",
+            "label": "1학년 3반",
+            "image": "campus-room-g-class.png",
+            "floor": 0,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 15.399999618530273,
+                "y": 1.600000023841858,
+                "width": 12.80000114440918,
+                "height": 6.400000095367432
+            },
+            "feet": {
+                "x": 18.100000381469727,
+                "y": 0.03999948501586914,
+                "z": 2.8499999046325684
+            },
+            "camera": {
+                "x": 18.100000381469727,
+                "y": 1.639999508857727,
+                "z": 2.8499999046325684
+            },
+            "target": {
+                "x": 21.799999237060547,
+                "y": 1.2000000476837158,
+                "z": 4.800000190734863
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "g-health",
+            "label": "상담실",
+            "image": "campus-room-g-health.png",
+            "floor": 0,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 31.399999618530273,
+                "y": -8.0,
+                "width": 10.000001907348633,
+                "height": 6.400000095367432
+            },
+            "feet": {
+                "x": 34.099998474121094,
+                "y": 0.03999948501586914,
+                "z": -2.8499999046325684
+            },
+            "camera": {
+                "x": 34.099998474121094,
+                "y": 1.639999508857727,
+                "z": -2.8499999046325684
+            },
+            "target": {
+                "x": 36.400001525878906,
+                "y": 1.2000000476837158,
+                "z": -4.800000190734863
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "g-library",
+            "label": "도서실",
+            "image": "campus-room-g-library.png",
+            "floor": 0,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 31.399999618530273,
+                "y": 1.600000023841858,
+                "width": 10.000001907348633,
+                "height": 6.400000095367432
+            },
+            "feet": {
+                "x": 34.099998474121094,
+                "y": 0.03999948501586914,
+                "z": 2.8499999046325684
+            },
+            "camera": {
+                "x": 34.099998474121094,
+                "y": 1.639999508857727,
+                "z": 2.8499999046325684
+            },
+            "target": {
+                "x": 36.400001525878906,
+                "y": 1.2000000476837158,
+                "z": 4.800000190734863
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "g-science",
+            "label": "과학 준비실",
+            "image": "campus-room-g-science.png",
+            "floor": 0,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 44.599998474121094,
+                "y": 1.600000023841858,
+                "width": 10.0,
+                "height": 9.59999942779541
+            },
+            "feet": {
+                "x": 45.849998474121094,
+                "y": 0.03999948501586914,
+                "z": 5.199999809265137
+            },
+            "camera": {
+                "x": 45.849998474121094,
+                "y": 1.639999508857727,
+                "z": 5.199999809265137
+            },
+            "target": {
+                "x": 49.599998474121094,
+                "y": 1.2000000476837158,
+                "z": 6.399999618530273
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "g-staff",
+            "label": "교무실",
+            "image": "campus-room-g-staff.png",
+            "floor": 0,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 15.399999618530273,
+                "y": -8.0,
+                "width": 7.80000114440918,
+                "height": 6.400000095367432
+            },
+            "feet": {
+                "x": 18.100000381469727,
+                "y": 0.03999948501586914,
+                "z": -2.8499999046325684
+            },
+            "camera": {
+                "x": 18.100000381469727,
+                "y": 1.639999508857727,
+                "z": -2.8499999046325684
+            },
+            "target": {
+                "x": 19.299999237060547,
+                "y": 1.2000000476837158,
+                "z": -4.800000190734863
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "g-supply",
+            "label": "교재 준비실",
+            "image": "campus-room-g-supply.png",
+            "floor": 0,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 23.200000762939453,
+                "y": -8.0,
+                "width": 5.0,
+                "height": 6.400000095367432
+            },
+            "feet": {
+                "x": 25.700000762939453,
+                "y": 0.03999948501586914,
+                "z": -2.8499999046325684
+            },
+            "camera": {
+                "x": 25.700000762939453,
+                "y": 1.639999508857727,
+                "z": -2.8499999046325684
+            },
+            "target": {
+                "x": 25.700000762939453,
+                "y": 1.2000000476837158,
+                "z": -4.800000190734863
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "u-art",
+            "label": "미술실",
+            "image": "campus-room-u-art.png",
+            "floor": 1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 0.0,
+                "y": 13.5,
+                "width": 9.0,
+                "height": 7.700000762939453
+            },
+            "feet": {
+                "x": 5.0,
+                "y": 5.0199995040893555,
+                "z": 19.950000762939453
+            },
+            "camera": {
+                "x": 5.0,
+                "y": 6.619999408721924,
+                "z": 19.950000762939453
+            },
+            "target": {
+                "x": 4.5,
+                "y": 6.199999809265137,
+                "z": 17.350000381469727
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "u-class-a",
+            "label": "2학년 1반",
+            "image": "campus-room-u-class-a.png",
+            "floor": 1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 3.200000047683716,
+                "y": 24.399999618530273,
+                "width": 7.40000057220459,
+                "height": 9.600000381469727
+            },
+            "feet": {
+                "x": 6.199999809265137,
+                "y": 5.0199995040893555,
+                "z": 25.649999618530273
+            },
+            "camera": {
+                "x": 6.199999809265137,
+                "y": 6.619999408721924,
+                "z": 25.649999618530273
+            },
+            "target": {
+                "x": 6.90000057220459,
+                "y": 6.199999809265137,
+                "z": 29.200000762939453
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "u-class-b",
+            "label": "2학년 2반",
+            "image": "campus-room-u-class-b.png",
+            "floor": 1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 10.600000381469727,
+                "y": 24.399999618530273,
+                "width": 7.399999618530273,
+                "height": 9.600000381469727
+            },
+            "feet": {
+                "x": 14.899999618530273,
+                "y": 5.0199995040893555,
+                "z": 25.649999618530273
+            },
+            "camera": {
+                "x": 14.899999618530273,
+                "y": 6.619999408721924,
+                "z": 25.649999618530273
+            },
+            "target": {
+                "x": 14.300000190734863,
+                "y": 6.199999809265137,
+                "z": 29.200000762939453
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "u-music",
+            "label": "음악실 · 합창 명단",
+            "image": "campus-room-u-music.png",
+            "floor": 1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 21.200000762939453,
+                "y": 24.399999618530273,
+                "width": 9.599998474121094,
+                "height": 9.600000381469727
+            },
+            "feet": {
+                "x": 25.799999237060547,
+                "y": 5.0199995040893555,
+                "z": 25.649999618530273
+            },
+            "camera": {
+                "x": 25.799999237060547,
+                "y": 6.619999408721924,
+                "z": 25.649999618530273
+            },
+            "target": {
+                "x": 26.0,
+                "y": 6.199999809265137,
+                "z": 29.200000762939453
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "u-record",
+            "label": "기록실 · 붉은 액자",
+            "image": "campus-room-u-record.png",
+            "floor": 1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 30.799999237060547,
+                "y": 24.399999618530273,
+                "width": 9.0,
+                "height": 9.600000381469727
+            },
+            "feet": {
+                "x": 35.099998474121094,
+                "y": 5.0199995040893555,
+                "z": 25.649999618530273
+            },
+            "camera": {
+                "x": 35.099998474121094,
+                "y": 6.619999408721924,
+                "z": 25.649999618530273
+            },
+            "target": {
+                "x": 35.29999923706055,
+                "y": 6.199999809265137,
+                "z": 29.200000762939453
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        },
+        {
+            "id": "u-store",
+            "label": "악기 보관실",
+            "image": "campus-room-u-store.png",
+            "floor": 1,
+            "rect": {
+                "serializedVersion": "2",
+                "x": 9.0,
+                "y": 13.5,
+                "width": 9.0,
+                "height": 7.700000762939453
+            },
+            "feet": {
+                "x": 13.699999809265137,
+                "y": 5.0199995040893555,
+                "z": 19.950000762939453
+            },
+            "camera": {
+                "x": 13.699999809265137,
+                "y": 6.619999408721924,
+                "z": 19.950000762939453
+            },
+            "target": {
+                "x": 13.5,
+                "y": 6.199999809265137,
+                "z": 17.350000381469727
+            },
+            "standingClear": true,
+            "forwardRoute": true,
+            "returnRoute": true,
+            "renderedContent": true
+        }
+    ],
+    "doors": [
+        {
+            "id": "campus-g-class-a",
+            "a": {
+                "x": 18.100000381469727,
+                "y": 0.03999948501586914,
+                "z": 2.75
+            },
+            "b": {
+                "x": 18.100000381469727,
+                "y": 0.03999948501586914,
+                "z": 0.4500000476837158
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-g-class-b",
+            "a": {
+                "x": 25.700000762939453,
+                "y": 0.03999948501586914,
+                "z": 9.149999618530273
+            },
+            "b": {
+                "x": 25.700000762939453,
+                "y": 0.03999948501586914,
+                "z": 6.849999904632568
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-g-staff-a",
+            "a": {
+                "x": 18.100000381469727,
+                "y": 0.03999948501586914,
+                "z": -0.4500000476837158
+            },
+            "b": {
+                "x": 18.100000381469727,
+                "y": 0.03999948501586914,
+                "z": -2.75
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-g-staff-b",
+            "a": {
+                "x": 20.799999237060547,
+                "y": 0.03999948501586914,
+                "z": -6.849999904632568
+            },
+            "b": {
+                "x": 20.799999237060547,
+                "y": 0.03999948501586914,
+                "z": -9.149999618530273
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-g-supply-a",
+            "a": {
+                "x": 25.700000762939453,
+                "y": 0.03999948501586914,
+                "z": -0.4500000476837158
+            },
+            "b": {
+                "x": 25.700000762939453,
+                "y": 0.03999948501586914,
+                "z": -2.75
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-g-library-a",
+            "a": {
+                "x": 34.099998474121094,
+                "y": 0.03999948501586914,
+                "z": 2.75
+            },
+            "b": {
+                "x": 34.099998474121094,
+                "y": 0.03999948501586914,
+                "z": 0.4500000476837158
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-g-library-b",
+            "a": {
+                "x": 38.5,
+                "y": 0.03999948501586914,
+                "z": 9.149999618530273
+            },
+            "b": {
+                "x": 38.5,
+                "y": 0.03999948501586914,
+                "z": 6.849999904632568
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-g-health-a",
+            "a": {
+                "x": 34.099998474121094,
+                "y": 0.03999948501586914,
+                "z": -0.4500000476837158
+            },
+            "b": {
+                "x": 34.099998474121094,
+                "y": 0.03999948501586914,
+                "z": -2.75
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-g-health-b",
+            "a": {
+                "x": 38.49400329589844,
+                "y": 0.03999948501586914,
+                "z": -6.975904941558838
+            },
+            "b": {
+                "x": 38.5,
+                "y": 0.03999948501586914,
+                "z": -9.149999618530273
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-g-science-a",
+            "a": {
+                "x": 45.75,
+                "y": 0.03999948501586914,
+                "z": 5.199999809265137
+            },
+            "b": {
+                "x": 43.44999694824219,
+                "y": 0.03999948501586914,
+                "z": 5.199999809265137
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-class-a-a",
+            "a": {
+                "x": 6.199999809265137,
+                "y": 5.0199995040893555,
+                "z": 25.549999237060547
+            },
+            "b": {
+                "x": 6.199999809265137,
+                "y": 5.0199995040893555,
+                "z": 23.25
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-class-a-b",
+            "a": {
+                "x": 6.199999809265137,
+                "y": 5.0199995040893555,
+                "z": 35.150001525878906
+            },
+            "b": {
+                "x": 6.199999809265137,
+                "y": 5.0199995040893555,
+                "z": 32.849998474121094
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-class-b-a",
+            "a": {
+                "x": 14.899999618530273,
+                "y": 5.0199995040893555,
+                "z": 25.549999237060547
+            },
+            "b": {
+                "x": 14.899999618530273,
+                "y": 5.0199995040893555,
+                "z": 23.25
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-class-b-b",
+            "a": {
+                "x": 14.899999618530273,
+                "y": 5.0199995040893555,
+                "z": 35.150001525878906
+            },
+            "b": {
+                "x": 14.899999618530273,
+                "y": 5.0199995040893555,
+                "z": 32.849998474121094
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-music-a",
+            "a": {
+                "x": 25.799999237060547,
+                "y": 5.0199995040893555,
+                "z": 25.549999237060547
+            },
+            "b": {
+                "x": 25.799999237060547,
+                "y": 5.0199995040893555,
+                "z": 23.25
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-music-b",
+            "a": {
+                "x": 25.799999237060547,
+                "y": 5.0199995040893555,
+                "z": 35.150001525878906
+            },
+            "b": {
+                "x": 25.799999237060547,
+                "y": 5.0199995040893555,
+                "z": 32.849998474121094
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-record-a",
+            "a": {
+                "x": 35.099998474121094,
+                "y": 5.0199995040893555,
+                "z": 25.549999237060547
+            },
+            "b": {
+                "x": 35.099998474121094,
+                "y": 5.0199995040893555,
+                "z": 23.25
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-record-b",
+            "a": {
+                "x": 35.099998474121094,
+                "y": 5.0199995040893555,
+                "z": 35.150001525878906
+            },
+            "b": {
+                "x": 35.099998474121094,
+                "y": 5.0199995040893555,
+                "z": 32.849998474121094
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-art-a",
+            "a": {
+                "x": 5.0,
+                "y": 5.0199995040893555,
+                "z": 22.350000381469727
+            },
+            "b": {
+                "x": 5.0,
+                "y": 5.0199995040893555,
+                "z": 20.05000114440918
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-u-store-a",
+            "a": {
+                "x": 13.699999809265137,
+                "y": 5.0199995040893555,
+                "z": 22.350000381469727
+            },
+            "b": {
+                "x": 13.699999809265137,
+                "y": 5.0199995040893555,
+                "z": 20.05000114440918
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-b-nursery-a",
+            "a": {
+                "x": 13.800000190734863,
+                "y": -4.940000057220459,
+                "z": -23.25
+            },
+            "b": {
+                "x": 13.800000190734863,
+                "y": -4.940000057220459,
+                "z": -25.549999237060547
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-b-nursery-b",
+            "a": {
+                "x": 6.199999809265137,
+                "y": -4.940000057220459,
+                "z": -32.849998474121094
+            },
+            "b": {
+                "x": 6.199999809265137,
+                "y": -4.940000057220459,
+                "z": -35.150001525878906
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-b-plant-a",
+            "a": {
+                "x": 28.799999237060547,
+                "y": -4.940000057220459,
+                "z": -23.25
+            },
+            "b": {
+                "x": 28.799999237060547,
+                "y": -4.940000057220459,
+                "z": -25.549999237060547
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-b-plant-b",
+            "a": {
+                "x": 28.799999237060547,
+                "y": -4.940000057220459,
+                "z": -32.849998474121094
+            },
+            "b": {
+                "x": 28.799999237060547,
+                "y": -4.940000057220459,
+                "z": -35.150001525878906
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-b-archive-a",
+            "a": {
+                "x": 6.199999809265137,
+                "y": -4.940000057220459,
+                "z": -36.04999923706055
+            },
+            "b": {
+                "x": 6.199999809265137,
+                "y": -4.940000057220459,
+                "z": -38.35000228881836
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-b-tools-a",
+            "a": {
+                "x": 18.100000381469727,
+                "y": -4.940000057220459,
+                "z": -36.04999923706055
+            },
+            "b": {
+                "x": 18.100000381469727,
+                "y": -4.940000057220459,
+                "z": -38.35000228881836
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-b-evidence-a",
+            "a": {
+                "x": 30.100000381469727,
+                "y": -4.940000057220459,
+                "z": -36.04999923706055
+            },
+            "b": {
+                "x": 30.100000381469727,
+                "y": -4.940000057220459,
+                "z": -38.35000228881836
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        },
+        {
+            "id": "campus-b-store-a",
+            "a": {
+                "x": 1.149999976158142,
+                "y": -4.940000057220459,
+                "z": -27.200000762939453
+            },
+            "b": {
+                "x": -1.149999976158142,
+                "y": -4.940000057220459,
+                "z": -27.200000762939453
+            },
+            "openPose": true,
+            "floorA": true,
+            "floorB": true,
+            "standingA": true,
+            "standingB": true,
+            "completeRoute": true,
+            "clearCapsule": true,
+            "blockers": []
+        }
+    ],
+    "errors": []
+}

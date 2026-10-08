@@ -84,7 +84,7 @@ def graphics_inventory(project, expected=None):
                                     ('sRGBTexture', 1 if channel == 'albedo.png' else 0), ('enableMipMap', 1), ('isReadable', 0)]:
                     check(re.search(r'^\s*' + name + r': ' + str(value) + r'\s*$', text, re.M) is not None,
                           'Actual importer setting changed: ' + folder + '/' + channel + ' ' + name)
-        names = ['material.mat'] + (['material-emissive.mat'] if key == 'paper-aged' else [])
+        names = ['material.mat'] + (['material-emissive.mat'] if key in ('paper-aged','painted-metal') else [])
         for name in names:
             path, _ = asset(folder + '/' + name)
             if path:
@@ -100,7 +100,7 @@ def graphics_inventory(project, expected=None):
                     check(match is not None and match.group(1) == guids.get(folder + '/' + channel),
                           'Retained material map GUID mismatch: ' + folder + '/' + name + ' ' + prop)
     check(len(list(pbr_root.rglob('*.png'))) == 48 if pbr_root.is_dir() else False, 'Expected exactly48 PBR PNGs')
-    check(len(list(pbr_root.rglob('*.mat'))) == 13 if pbr_root.is_dir() else False, 'Expected exactly13 retained PBR materials')
+    check(len(list(pbr_root.rglob('*.mat'))) == 14 if pbr_root.is_dir() else False, 'Expected exactly14 retained PBR materials')
     props_root = project / 'Assets/Resources/GraphicsUpgrade/Props'
     actual_props = sorted(p.stem for p in props_root.glob('*.fbx'))
     check(actual_props == sorted(PROP_KEYS), 'Expected exactly the eight named prop FBXs: ' + repr(actual_props))
@@ -146,7 +146,7 @@ def graphics_inventory(project, expected=None):
         text = (project / name).read_text(encoding='utf-8-sig')
         check(pipeline_guid is not None and pipeline_guid in text, 'Owned pipeline missing from current settings: ' + name)
     return {'errors': errors, 'requiredInputs': records, 'metadataGuids': guids,
-            'pbrSets': list(PBR_KEYS), 'pbrPngCount': len(maps), 'pbrMaterialCount': 13,
+            'pbrSets': list(PBR_KEYS), 'pbrPngCount': len(maps), 'pbrMaterialCount': 14,
             'propModels': list(PROP_KEYS), 'protectedOriginals': PROTECTED}
 
 def verify(project, build, not_before, base_path):

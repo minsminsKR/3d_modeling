@@ -23,10 +23,16 @@ namespace HappyToy.V2
             get
             {
                 if (!isActiveAndEnabled || !gameObject.activeInHierarchy) return false;
+                if (kind == Kind.Candle)
+                {
+                    var candle = GetComponent<WaymarkCandle>();
+                    if (candle && candle.Lit) return false;
+                }
                 var drawer=GetComponentInParent<CorridorDrawer>();
                 return !drawer || kind==Kind.Drawer || drawer.ExposesPickup;
             }
         }
+        public bool CanFocus => InteractionAvailable && kind != Kind.Decoration;
         public bool DoorOperable => isActiveAndEnabled && kind == Kind.Door && movingLeaf;
         public Vector3 DoorNormal => Vector3.Cross(transform.up, transform.TransformVector(openOffset)).normalized;
         public bool AtRequestedDoorPose => movingLeaf &&

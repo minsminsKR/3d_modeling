@@ -105,7 +105,7 @@ namespace HappyToy.V2
             var renderers=gameObject.scene.GetRootGameObjects().SelectMany(root=>root.GetComponentsInChildren<MeshRenderer>(true)).ToArray();
             foreach(var renderer in renderers)
             {
-                if(!renderer||!renderer.enabled||Excluded(renderer))continue;
+                if(!renderer||!renderer.enabled||!renderer.gameObject.activeInHierarchy||Excluded(renderer))continue;
                 var filter=renderer.GetComponent<MeshFilter>();if(!filter||!filter.sharedMesh)continue;
                 // Other upgraded prop owners retain their exact metre-authored UV
                 // and cached materials; they are already physically mapped.
@@ -165,7 +165,7 @@ namespace HappyToy.V2
         {
             foreach(var door in gameObject.scene.GetRootGameObjects().SelectMany(root=>root.GetComponentsInChildren<Interactable>(true)))
             {
-                if(door.kind!=Interactable.Kind.Door||!door.movingLeaf||door.transform.position.x>100||!dressedDoors.Add(door.GetEntityId()))continue;
+                if(!door.gameObject.activeInHierarchy||door.kind!=Interactable.Kind.Door||!door.movingLeaf||door.transform.position.x>100||!dressedDoors.Add(door.GetEntityId()))continue;
                 foreach(var leaf in new[]{door.movingLeaf,door.secondaryLeaf})
                 {
                     if(!leaf)continue;
@@ -199,7 +199,7 @@ namespace HappyToy.V2
             // contact/edge geometry remains within the opaque wall footprint.
             foreach(var state in states.Values)
             {
-                var renderer=state.renderer;if(!renderer||!renderer.enabled||!renderer.name.ToLowerInvariant().Contains("wall"))continue;
+                var renderer=state.renderer;if(!renderer||!renderer.enabled||!renderer.gameObject.activeInHierarchy||!renderer.name.ToLowerInvariant().Contains("wall"))continue;
                 string name="Graphics contact wear "+renderer.GetEntityId().ToString();
                 if(details.Any(item=>item&&item.name==name))continue;
                 var bounds=renderer.bounds;if(bounds.size.y<1.8f)continue;
@@ -226,7 +226,7 @@ namespace HappyToy.V2
         }
         static bool Architecture(State state)
         {
-            if(!state.renderer||!state.renderer.enabled||state.renderer.GetComponentInParent<Interactable>())return false;
+            if(!state.renderer||!state.renderer.enabled||!state.renderer.gameObject.activeInHierarchy||state.renderer.GetComponentInParent<Interactable>())return false;
             string name=state.renderer.name.ToLowerInvariant();
             return name.Contains("floor")||name.Contains("wall")||name.Contains("ceiling")||name.Contains("partition")||
                 name.EndsWith("end")||name.EndsWith("side")||name.EndsWith("back")||name.Contains("stair tread");

@@ -1,0 +1,698 @@
+{
+    "status": "PASS",
+    "scope": "Controlled native render-only clones of all six live production hostile faces. Close 3m torch on/off, 15m dark distance, rear view, and opaque panel occlusion use the release player's reviewCamera post processing/materials. Red-pixel counts compare cores on/off in the identical scene. No AI, route, gameplay survival, audio or performance certification.",
+    "developmentBuild": false,
+    "views": [
+        {
+            "profile": "Cyclopse",
+            "name": "close-torch-on",
+            "image": "Cyclopse-close-torch-on.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.995361328125,
+                "y": 10.810938835144043,
+                "z": 1002.8883056640625
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 472,
+            "rightAttributableRedPixels": 556,
+            "totalAttributableRedPixels": 1028
+        },
+        {
+            "profile": "Cyclopse",
+            "name": "close-torch-off",
+            "image": "Cyclopse-close-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.995361328125,
+                "y": 10.810938835144043,
+                "z": 1002.8883056640625
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 913,
+            "rightAttributableRedPixels": 910,
+            "totalAttributableRedPixels": 1823
+        },
+        {
+            "profile": "Cyclopse",
+            "name": "far-15m-torch-off",
+            "image": "Cyclopse-far-15m-torch-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9766845703125,
+                "y": 14.054696083068848,
+                "z": 1014.4415893554688
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 6,
+            "rightAttributableRedPixels": 7,
+            "totalAttributableRedPixels": 13
+        },
+        {
+            "profile": "Cyclopse",
+            "name": "rear-torch-off",
+            "image": "Cyclopse-rear-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 1000.004638671875,
+                "y": 9.189061164855957,
+                "z": 997.1116943359375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Cyclopse",
+            "name": "opaque-panel-occlusion",
+            "image": "Cyclopse-opaque-panel-occlusion.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.995361328125,
+                "y": 10.810938835144043,
+                "z": 1002.8883056640625
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Uncat",
+            "name": "close-torch-on",
+            "image": "Uncat-close-torch-on.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.916015625,
+                "y": 10.674762725830078,
+                "z": 1002.9219360351563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 270,
+            "rightAttributableRedPixels": 265,
+            "totalAttributableRedPixels": 535
+        },
+        {
+            "profile": "Uncat",
+            "name": "close-torch-off",
+            "image": "Uncat-close-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.916015625,
+                "y": 10.674762725830078,
+                "z": 1002.9219360351563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 406,
+            "rightAttributableRedPixels": 403,
+            "totalAttributableRedPixels": 809
+        },
+        {
+            "profile": "Uncat",
+            "name": "far-15m-torch-off",
+            "image": "Uncat-far-15m-torch-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.5799560546875,
+                "y": 13.373811721801758,
+                "z": 1014.609619140625
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 3,
+            "rightAttributableRedPixels": 3,
+            "totalAttributableRedPixels": 6
+        },
+        {
+            "profile": "Uncat",
+            "name": "rear-torch-off",
+            "image": "Uncat-rear-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 1000.083984375,
+                "y": 9.325237274169922,
+                "z": 997.0780639648438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Uncat",
+            "name": "opaque-panel-occlusion",
+            "image": "Uncat-opaque-panel-occlusion.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.916015625,
+                "y": 10.674762725830078,
+                "z": 1002.9219360351563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "close-torch-on",
+            "image": "Hwacat_angry-close-torch-on.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.6517944335938,
+                "y": 11.191798210144043,
+                "z": 1002.7310180664063
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 407,
+            "rightAttributableRedPixels": 406,
+            "totalAttributableRedPixels": 813
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "close-torch-off",
+            "image": "Hwacat_angry-close-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.6517944335938,
+                "y": 11.191798210144043,
+                "z": 1002.7310180664063
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 476,
+            "rightAttributableRedPixels": 556,
+            "totalAttributableRedPixels": 1032
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "far-15m-torch-off",
+            "image": "Hwacat_angry-far-15m-torch-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 998.2589111328125,
+                "y": 15.958991050720215,
+                "z": 1013.655029296875
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 4,
+            "rightAttributableRedPixels": 5,
+            "totalAttributableRedPixels": 9
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "rear-torch-off",
+            "image": "Hwacat_angry-rear-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 1000.3482055664063,
+                "y": 8.808201789855957,
+                "z": 997.2689819335938
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Hwacat_angry",
+            "name": "opaque-panel-occlusion",
+            "image": "Hwacat_angry-opaque-panel-occlusion.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.6517944335938,
+                "y": 11.191798210144043,
+                "z": 1002.7310180664063
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Baby",
+            "name": "close-torch-on",
+            "image": "Baby-close-torch-on.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.0494384765625,
+                "y": 9.915192604064941,
+                "z": 1002.9984130859375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 167,
+            "rightAttributableRedPixels": 171,
+            "totalAttributableRedPixels": 338
+        },
+        {
+            "profile": "Baby",
+            "name": "close-torch-off",
+            "image": "Baby-close-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.0494384765625,
+                "y": 9.915192604064941,
+                "z": 1002.9984130859375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 355,
+            "rightAttributableRedPixels": 358,
+            "totalAttributableRedPixels": 713
+        },
+        {
+            "profile": "Baby",
+            "name": "far-15m-torch-off",
+            "image": "Baby-far-15m-torch-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.2472534179688,
+                "y": 9.57596206665039,
+                "z": 1014.991943359375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 3,
+            "rightAttributableRedPixels": 3,
+            "totalAttributableRedPixels": 6
+        },
+        {
+            "profile": "Baby",
+            "name": "rear-torch-off",
+            "image": "Baby-rear-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 999.9505615234375,
+                "y": 10.084807395935059,
+                "z": 997.0015869140625
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Baby",
+            "name": "opaque-panel-occlusion",
+            "image": "Baby-opaque-panel-occlusion.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.0494384765625,
+                "y": 9.915192604064941,
+                "z": 1002.9984130859375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "LanternMask",
+            "name": "close-torch-on",
+            "image": "LanternMask-close-torch-on.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.0447998046875,
+                "y": 9.226106643676758,
+                "z": 1002.8981323242188
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 751,
+            "rightAttributableRedPixels": 752,
+            "totalAttributableRedPixels": 1503
+        },
+        {
+            "profile": "LanternMask",
+            "name": "close-torch-off",
+            "image": "LanternMask-close-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.0447998046875,
+                "y": 9.226106643676758,
+                "z": 1002.8981323242188
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 745,
+            "rightAttributableRedPixels": 742,
+            "totalAttributableRedPixels": 1487
+        },
+        {
+            "profile": "LanternMask",
+            "name": "far-15m-torch-off",
+            "image": "LanternMask-far-15m-torch-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.223876953125,
+                "y": 6.130530834197998,
+                "z": 1014.4906005859375
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 4,
+            "rightAttributableRedPixels": 4,
+            "totalAttributableRedPixels": 8
+        },
+        {
+            "profile": "LanternMask",
+            "name": "rear-torch-off",
+            "image": "LanternMask-rear-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 999.9552001953125,
+                "y": 10.773893356323242,
+                "z": 997.1018676757813
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "LanternMask",
+            "name": "opaque-panel-occlusion",
+            "image": "LanternMask-opaque-panel-occlusion.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 1000.0447998046875,
+                "y": 9.226106643676758,
+                "z": 1002.8981323242188
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Mannequin",
+            "name": "close-torch-on",
+            "image": "Mannequin-close-torch-on.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": true,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9368286132813,
+                "y": 9.21027946472168,
+                "z": 1002.8934936523438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 209,
+            "rightAttributableRedPixels": 217,
+            "totalAttributableRedPixels": 426
+        },
+        {
+            "profile": "Mannequin",
+            "name": "close-torch-off",
+            "image": "Mannequin-close-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9368286132813,
+                "y": 9.21027946472168,
+                "z": 1002.8934936523438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 207,
+            "rightAttributableRedPixels": 215,
+            "totalAttributableRedPixels": 422
+        },
+        {
+            "profile": "Mannequin",
+            "name": "far-15m-torch-off",
+            "image": "Mannequin-far-15m-torch-off.png",
+            "distance": 15.0,
+            "cameraFov": 72.0,
+            "torch": false,
+            "blocked": false,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.6842651367188,
+                "y": 6.051396369934082,
+                "z": 1014.467529296875
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 2,
+            "rightAttributableRedPixels": 2,
+            "totalAttributableRedPixels": 4
+        },
+        {
+            "profile": "Mannequin",
+            "name": "rear-torch-off",
+            "image": "Mannequin-rear-torch-off.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": false,
+            "back": true,
+            "cameraPosition": {
+                "x": 1000.0631713867188,
+                "y": 10.78972053527832,
+                "z": 997.1065063476563
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        },
+        {
+            "profile": "Mannequin",
+            "name": "opaque-panel-occlusion",
+            "image": "Mannequin-opaque-panel-occlusion.png",
+            "distance": 3.0,
+            "cameraFov": 36.0,
+            "torch": false,
+            "blocked": true,
+            "back": false,
+            "cameraPosition": {
+                "x": 999.9368286132813,
+                "y": 9.21027946472168,
+                "z": 1002.8934936523438
+            },
+            "faceCentre": {
+                "x": 1000.0,
+                "y": 10.0,
+                "z": 1000.0
+            },
+            "leftAttributableRedPixels": 0,
+            "rightAttributableRedPixels": 0,
+            "totalAttributableRedPixels": 0
+        }
+    ],
+    "errors": []
+}

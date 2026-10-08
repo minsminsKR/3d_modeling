@@ -1,0 +1,88 @@
+{
+  "status": "PASS",
+  "scope": "Final results of 16 unique related PlayMode cases across targeted runs, plus 11 EditMode cases; not an entire-suite execution.",
+  "playModeUnique": 16,
+  "editModePassed": 11,
+  "cases": [
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.ChapterGatesEveryActorAndRequiresTheRealPortraitAndNurseryReveals",
+      "result": "Passed",
+      "report": "play05.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.ChapterStartsEmptyAndUsesFiveReachableMemoriesAcrossThreeFloors",
+      "result": "Passed",
+      "report": "play05.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.LitCandleFocusClearsImmediatelyAndPhysicalOccludersStillBlockObjectsBehindIt",
+      "result": "Passed",
+      "report": "play02.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolLightingKeepsSeparateCheckpointAndFreshModeRemovesCorridorStations",
+      "result": "Passed",
+      "report": "play02.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CandlePhysicalIgnitionAndFiniteSupplyCheckpointRestoreWithoutReplay",
+      "result": "Passed",
+      "report": "play03.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CandleProximityFlickersAndTemporarilyBlackoutsOnlyPreviouslyLitMarkers",
+      "result": "Passed",
+      "report": "play03.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.FlashlightBatteryPhysicalInputDepletionPauseOffFullCapAndRefill",
+      "result": "Passed",
+      "report": "play03.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolCampusHasSixDistinctRoomsPerFloorConnectedDoorsAndReturnRoutesToAllMemories",
+      "result": "Passed",
+      "report": "play06.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolCampusLegacyVersionOneCheckpointSelectsOriginalSchoolAndRestoresItsDoorIdentitySet",
+      "result": "Passed",
+      "report": "play05.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolCampusVersionTwoCheckpointKeepsUpperPlayerPoseExplicitDoorGeometryAndFiniteLighting",
+      "result": "Passed",
+      "report": "play05.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolStairPursuitReleasedBasementBabyClimbsPausesRestoresOnGroundAndDescendsBack",
+      "result": "Passed",
+      "report": "play05.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolStairPursuitReleasedUpperMaskDescendsPausesRestoresOnGroundAndClimbsBack",
+      "result": "Passed",
+      "report": "play05.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.EveryHostileFaceHasTwoOpaqueHeadBoundRedCoresWithoutAdditionalLightsOrPhysics",
+      "result": "Passed",
+      "report": "eyes02.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.RaisedDoorPullsStayOnBothMovingFacesDuringOpeningAndCheckpointPoseRestore",
+      "result": "Passed",
+      "report": "play05.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorAltarRequiresAllFiveMemoriesAndRealOfferingInputContinuesIntoSchoolWithoutConsumingItsSave",
+      "result": "Passed",
+      "report": "furniture02-flow.xml"
+    },
+    {
+      "name": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolCampusMusicFurnitureKeepsFullMetreAssembliesGroundedSupportsAndRenderedScores",
+      "result": "Passed",
+      "report": "furniture03.xml"
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 # 다른 PC에서 이어서 개발하기
 
+학교 기본 지도 버전은 2다. 학교의 직사각 공간·복도·문 계획은
+`Assets/Scripts/SchoolCampusLayout.cs`, 건물과 소품 배치는
+`SchoolCampusArchitecture.cs`, `SchoolCampusRooms.cs`가 원본이다.
+`SourceArt/SchoolCampus/README.md`에 배치와 저장 버전 선택을 기록했다.
+별도 캐시나 로컬 제작 도구 없이 Unity 6000.6.0f1에서 재구성한다.
+이전 학교 저장의 `simulationVersion=1`은 `CreateChapterForCheckpoint`가
+보존된 학교 씬의 기존 배치를 선택한다. 새 저장은 2를 명시한다.
+
 폐교 계단 이동은 `EnemyNavigation.cs`의 학교 모드 경로 정책과 실제 NavMesh 높이를
 사용한다. 같은 씬의 학교 몬스터만 층 이동을 허용하며, 문과 캐비닛의 근거리 판정은
 현재 몬스터 높이를 사용한다. 기존 폐교 저장 버전 1을 유지하며, 수색 이동 시간은

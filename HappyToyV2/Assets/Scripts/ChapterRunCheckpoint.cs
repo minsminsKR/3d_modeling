@@ -8,14 +8,22 @@ namespace HappyToy.V2
     public sealed partial class MemoryChapter
     {
         Interactable[] ChapterItems(Interactable.Kind kind) => FindObjectsByType<Interactable>(FindObjectsInactive.Include,FindObjectsSortMode.None)
-            .Where(x=>x.gameObject.scene==gameObject.scene && x.kind==kind)
+            .Where(x=>x.gameObject.scene==gameObject.scene && x.kind==kind &&
+                (LayoutVersion==1 || !SchoolCampusLayoutRetired(x.transform)))
             .OrderBy(x=>HierarchyKey(x.transform),StringComparer.Ordinal).ToArray();
         static string HierarchyKey(Transform node) => node.parent ? HierarchyKey(node.parent)+"/"+node.GetSiblingIndex().ToString("D5") : node.GetSiblingIndex().ToString("D5");
+        static bool SchoolCampusLayoutRetired(Transform node)
+        {
+            for(;node;node=node.parent)
+                if(node.name=="Annex — looped school corridors" || node.name=="School upper and flooded basement" || node.name=="Annex presentation refresh")return true;
+            return false;
+        }
         // Authoring leaves many door IDs empty. Deterministic hierarchy IDs exist only at runtime.
         void EnsureCheckpointIdentities()
         {
             var doors=ChapterItems(Interactable.Kind.Door);
-            for(int i=0;i<doors.Length;i++) doors[i].stableId="school-door-"+i;
+            for(int i=0;i<doors.Length;i++)
+                if(LayoutVersion==1 || !Campus.Owns(doors[i].transform)) doors[i].stableId="school-door-"+i;
             var packs=ChapterItems(Interactable.Kind.FirecrackerSupply);
             for(int i=0;i<packs.Length;i++) packs[i].stableId="school-supply-"+i;
         }
@@ -41,7 +49,7 @@ namespace HappyToy.V2
         {
             if(!string.IsNullOrEmpty(SuspendBlockReason)) throw new InvalidOperationException(SuspendBlockReason);
             EnsureCheckpointIdentities();
-            var data=new ChapterCheckpoint { lightingVersion=1,lighting=Lighting.Capture(), token=Guid.NewGuid().ToString("N"),scene=gameObject.scene.path,recovered=Recovered,
+            var data=new ChapterCheckpoint { simulationVersion=LayoutVersion,lightingVersion=1,lighting=Lighting.Capture(), token=Guid.NewGuid().ToString("N"),scene=gameObject.scene.path,recovered=Recovered,
                 seconds=session.ElapsedPlayTime,player=session.player.CaptureProgress(),cyclopse=Cyclopse.CaptureProgress(),
                 portraitActor=Portrait.angry.CaptureProgress(),nurseryActor=Nursery.monster.CaptureProgress(),
                 mannequin=Mannequin.CaptureChapterProgress(),mask=Mask.CaptureChapterProgress(),
@@ -60,7 +68,7 @@ namespace HappyToy.V2
         Interactable[] ValidatedCheckpointDoors(ChapterCheckpoint data)
         {
             data.Validate();
-            if(!Ready || Recovered!=0 || session.Finished || session.InputAllowed || gameObject.scene.path!=data.scene)
+            if(!Ready || Recovered!=0 || session.Finished || session.InputAllowed || gameObject.scene.path!=data.scene || LayoutVersion!=data.simulationVersion)
                 throw new InvalidOperationException("Restore into a fresh paused school chapter");
             Lighting.ValidateRestore(data.lightingVersion==0?null:data.lighting);
             EnsureCheckpointIdentities();

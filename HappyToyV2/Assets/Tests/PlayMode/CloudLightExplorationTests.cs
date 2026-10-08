@@ -45,13 +45,16 @@ namespace HappyToy.V2.CloudTests
             }
             Assert.Fail("No physically clear E approach to "+Get<string>(target,"stableId")); return Vector3.zero;
         }
-        IEnumerator LightAim(Component target)
+        IEnumerator LightAim(Component target, bool focusExpected = true)
         {
             var previous=Mouse.current; var mouse=InputSystem.AddDevice<Mouse>();
             try
             {
                 float deadline=Time.realtimeSinceStartup+5;
-                while(Get<Component>(player,"Focus")!=target && Time.realtimeSinceStartup<deadline)
+                while((focusExpected ? Get<Component>(player,"Focus")!=target :
+                    Vector3.Angle(Get<Camera>(player,"eyes").transform.forward,
+                        target.GetComponent<Collider>().bounds.center-Get<Camera>(player,"eyes").transform.position)>.25f) &&
+                    Time.realtimeSinceStartup<deadline)
                 {
                     var eyes=Get<Camera>(player,"eyes"); var direction=target.GetComponent<Collider>().bounds.center-eyes.transform.position;
                     float yaw=Mathf.Atan2(direction.x,direction.z)*Mathf.Rad2Deg;
@@ -63,7 +66,18 @@ namespace HappyToy.V2.CloudTests
                         -Mathf.Clamp(Mathf.DeltaAngle(eyes.transform.localEulerAngles.x,pitch),-30,30))/sensitivity;
                     InputSystem.QueueDeltaStateEvent(mouse.delta,pixels); yield return null;
                 }
-                Assert.That(Get<Component>(player,"Focus"),Is.SameAs(target),"Actual eye physics ray never focused the resource; "+LightAimDiagnostics(target));
+                if(focusExpected)
+                    Assert.That(Get<Component>(player,"Focus"),Is.SameAs(target),"Actual eye physics ray never focused the resource; "+LightAimDiagnostics(target));
+                else
+                {
+                    var eyes=Get<Camera>(player,"eyes");
+                    Assert.That(Physics.Raycast(eyes.transform.position,eyes.transform.forward,out var hit,2.2f,
+                        Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore),Is.True);
+                    Assert.That(hit.collider.GetComponentInParent(RequireType("Interactable")),Is.SameAs(target),
+                        "Ignored candle fixture did not actually aim at its physical collider; "+LightAimDiagnostics(target));
+                    Assert.That(Get<bool>(target,"CanFocus"),Is.False);
+                    Assert.That(Get<Component>(player,"Focus"),Is.Null,"Lit candle kept its interaction prompt");
+                }
                 yield return LightPulse(Key.E);
             }
             finally
@@ -132,7 +146,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<AudioSource>(candle,"IgnitionSource").clip.samples,Is.GreaterThan(0));
             Assert.That(CloudExternalAudioTests.MatchesFamily(Get<AudioSource>(candle,"IgnitionSource").clip,
                 "candle-ignite",1),Is.True,"Physical ignition did not use the recorded match");
-            yield return LightAim(candleTarget); Assert.That(Get<int>(candle,"Ignitions"),Is.EqualTo(1));
+            yield return LightAim(candleTarget,false); Assert.That(Get<int>(candle,"Ignitions"),Is.EqualTo(1));
             var lamp=Get<Light>(player,"flashlight"); lamp.enabled=false; Call(LampCharge,"Restore",30f,0,0);
             var pack=LightTargets("FlashlightBattery")[0]; PlacePlayer(LightApproach(pack)); yield return null; yield return LightAim(pack);
             Assert.That(Get<float>(LampCharge,"Charge"),Is.EqualTo(120)); Call(shell,"Pause"); yield return null;
@@ -143,6 +157,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<float>(LampCharge,"Charge"),Is.EqualTo(120)); Assert.That(LightTargets("FlashlightBattery")[0].gameObject.activeSelf,Is.False);
             candle=LightTargets("Candle")[0].GetComponent(RequireType("WaymarkCandle"));
             Assert.That(Get<bool>(candle,"Lit"),Is.True); Assert.That(Get<int>(candle,"Ignitions"),Is.Zero,"Restore replayed ignition");
+            Assert.That(Get<bool>(LightTargets("Candle")[0],"CanFocus"),Is.False,"Restored lit candle advertised an interaction");
             Assert.That(Get<AudioSource>(candle,"IgnitionSource").isPlaying,Is.False);
             Begin(); yield return null; Call(shell,"Pause"); float paused=Get<float>(LampCharge,"Charge"); yield return Delay(.2f);
             Assert.That(Get<float>(LampCharge,"Charge"),Is.EqualTo(paused));
@@ -155,6 +170,62 @@ namespace HappyToy.V2.CloudTests
             Call(session,"CreateCorridor",211); Call(session,"ApplyCheckpoint",legacy);
             Assert.That(Get<float>(LampCharge,"Charge"),Is.EqualTo(180)); Assert.That(LightTargets("FlashlightBattery").All(x=>x.gameObject.activeSelf),Is.True);
             Assert.That(Components("WaymarkCandle").All(x=>!Get<bool>(x,"Lit")),Is.True,"Legacy migration invented prior candle ignitions");
+        }
+        [UnityTest, Timeout(90000)]
+        public IEnumerator LitCandleFocusClearsImmediatelyAndPhysicalOccludersStillBlockObjectsBehindIt()
+        {
+            Call(session,"CreateCorridor",211); Begin(); yield return null; LightControlledIsolation();
+            var target=LightTargets("Candle")[0]; var candle=target.GetComponent(RequireType("WaymarkCandle"));
+            PlacePlayer(LightApproach(target)); yield return null; yield return LightAim(target);
+            Assert.That(Get<bool>(target,"InteractionAvailable"),Is.False);
+            Assert.That(Get<bool>(target,"CanFocus"),Is.False);
+            Assert.That(Get<Component>(player,"Focus"),Is.Null);
+            var view=One("GameShellView");
+            var panelField=view.GetType().GetField("focusPanel",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+            Assert.That(panelField,Is.Not.Null);
+            var focusPanel=(VisualElement)panelField.GetValue(view);
+            Assert.That(focusPanel,Is.Not.Null);
+            Assert.That(focusPanel.resolvedStyle.display,Is.EqualTo(DisplayStyle.None));
+            Call(candle,"Restore",false);
+            Assert.That(Get<bool>(target,"CanFocus"),Is.True,"Extinguished restoration retained stale focus availability");
+            yield return null;
+            Assert.That(Get<Component>(player,"Focus"),Is.SameAs(target));
+            Call(candle,"Restore",true);
+            Assert.That(Get<Component>(player,"Focus"),Is.Null,"Lit restoration left a cached focus visible in the same frame");
+
+            // Controlled optical fixture: exercise the production query against
+            // real native colliders without claiming a player survival route.
+            var motor=(Behaviour)player; bool enabled=motor.enabled;
+            var eyes=Get<Camera>(player,"eyes"); var originalRotation=eyes.transform.rotation;
+            GameObject behind=null,cover=null;
+            try
+            {
+                motor.enabled=false;
+                var direction=(target.GetComponent<Collider>().bounds.center-eyes.transform.position).normalized;
+                eyes.transform.rotation=Quaternion.LookRotation(direction);
+                behind=GameObject.CreatePrimitive(PrimitiveType.Cube); behind.name="Candle focus rear optical fixture";
+                behind.transform.position=eyes.transform.position+direction*1.9f; behind.transform.localScale=Vector3.one*.15f;
+                var rear=behind.AddComponent(RequireType("Interactable"));
+                Set(rear,"kind",Enum.Parse(RequireType("Interactable").GetNestedType("Kind"),"Inspect"));
+                var query=player.GetType().GetMethod("FindFocus",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+                Assert.That(query,Is.Not.Null); Physics.SyncTransforms();
+                Assert.That(Physics.Raycast(eyes.transform.position,direction,out var hit,2.2f,
+                    Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore),Is.True);
+                Assert.That(hit.collider.GetComponentInParent(RequireType("Interactable")),Is.SameAs(target));
+                Assert.That(query.Invoke(player,null),Is.Null,"Unavailable candle let the ray focus an object behind its body");
+                Call(candle,"Restore",false);
+                Assert.That(query.Invoke(player,null),Is.SameAs(target),"Extinguished candle failed to regain native focus immediately");
+                cover=GameObject.CreatePrimitive(PrimitiveType.Cube); cover.name="Candle focus opaque cover fixture";
+                cover.transform.position=eyes.transform.position+direction*.6f; cover.transform.localScale=Vector3.one*.2f;
+                Physics.SyncTransforms();
+                Assert.That(query.Invoke(player,null),Is.Null,"Opaque non-interactable cover let aim assistance focus the candle");
+            }
+            finally
+            {
+                if(behind) UnityEngine.Object.Destroy(behind);
+                if(cover) UnityEngine.Object.Destroy(cover);
+                eyes.transform.rotation=originalRotation; motor.enabled=enabled; Call(candle,"Restore",true);
+            }
         }
         [UnityTest, Timeout(120000)]
         public IEnumerator SchoolLightingKeepsSeparateCheckpointAndFreshModeRemovesCorridorStations()
