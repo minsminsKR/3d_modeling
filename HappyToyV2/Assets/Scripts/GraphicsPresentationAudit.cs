@@ -24,7 +24,7 @@ namespace HappyToy.V2
             public string file, mode, graphicsDevice, pipeline, captureFormat, projectColorSpace, sourceCameraType, captureCameraType, antialiasing, toneMapping, reflectionTexture;
             public Vector3 eye, look, reflectionCenter, reflectionSize;
             public ActorProof actor;public int visibleLitCandles;
-            public int renderers, triangles, candles, litCandles, shadowLights, shadowFaces, sourceCameraStack, shadowAtlas, torchTile, localTile, reflectionCaptures, reflectionTextureWidth;
+            public int renderers, triangles, candles, litCandles, shadowLights, shadowFaces, sourceCameraStack, shadowAtlas, torchTile, localTile, reflectionCaptures, reflectionTextureWidth, captureMsaa;
             public long selectedShadowPixels, observedShadowPixels;
             public bool postProcessing, hdrCamera, hdrPipeline, captureSrgb, reflectionReady, bloomActive, gpuTimingFeatureEnabled;
             public float ambientIntensity, meanRed, meanGreen, meanBlue, bloomIntensity, reflectionSettleSeconds;
@@ -75,6 +75,8 @@ namespace HappyToy.V2
             if(errors.Count>0 && string.IsNullOrEmpty(failure))failure="Runtime errors during controlled art review";
             var result=new Result{status=string.IsNullOrEmpty(failure)?"PASS":"FAIL",failure=failure,
                 unity=Application.unityVersion,device=SystemInfo.graphicsDeviceName,errors=errors.ToArray(),frames=frames.ToArray()};
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-v4-surface-diagnostic")>=0)
+                result.scope="Seven-frame surface diagnosis, one presented-window screenshot and actual mesh triangle intersections. AO/shadow controls retain their release shader keywords and change only positive effect strength. Actors frozen; no complete art inventory, gameplay, survival, listening or FPS certification.";
             File.WriteAllText(Path.Combine(output,"graphics-review.json"),JsonUtility.ToJson(result,true));
             Debug.Log("HAPPYTOY_GRAPHICS_CAMERA_REVIEW_"+result.status);Application.Quit(result.status=="PASS"?0:2);
         }
@@ -88,7 +90,24 @@ namespace HappyToy.V2
             session.CreateCorridor(73);session.Shell.Begin();
             yield return new WaitForSecondsRealtime(1.2f);Freeze(session);
             Require(session.Corridor.Presentation,"Actual corridor world unavailable");
+            if(Array.IndexOf(Environment.GetCommandLineArgs(),"-v4-surface-diagnostic")>=0)
+            {
+                yield return SurfaceDiagnostic(session);
+                yield break;
+            }
             var corridorWorld=session.Corridor.Presentation.transform;
+            var floorEvidence=new System.Text.StringBuilder("Renderer\tEnabled\tMaterial\tBounds\tTopY\n");
+            var sample=new Vector3(207,0,201);
+            foreach(var filter in corridorWorld.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var renderer=filter.GetComponent<MeshRenderer>();if(!renderer||!filter.sharedMesh||!filter.sharedMesh.isReadable)continue;
+                var bounds=renderer.bounds;
+                if(bounds.min.x>sample.x||bounds.max.x<sample.x||bounds.min.z>sample.z||bounds.max.z<sample.z||bounds.min.y>.08f||bounds.max.y<-.1f)continue;
+                float top=float.NegativeInfinity;
+                foreach(var vertex in filter.sharedMesh.vertices)top=Mathf.Max(top,filter.transform.TransformPoint(vertex).y);
+                floorEvidence.AppendLine(HierarchyPath(filter.transform)+"\t"+renderer.enabled+"\t"+renderer.sharedMaterial.name+"\t"+bounds+"\t"+top.ToString("R"));
+            }
+            File.WriteAllText(Path.Combine(output,"floor-geometry.tsv"),floorEvidence.ToString());
             var corridorItems=CorridorItems(session);
             var corridorCandles=corridorWorld.GetComponentsInChildren<WaymarkCandle>(true);
             var candle=corridorCandles.OrderBy(x=>x.GetComponent<Interactable>().stableId,StringComparer.Ordinal).First();
@@ -105,10 +124,45 @@ namespace HappyToy.V2
             var lamp=corridorWorld.GetComponentsInChildren<Light>().Where(x=>x.name=="Corridor lamp").OrderBy(x=>x.transform.position.x).ThenBy(x=>x.transform.position.z).First();
             yield return CaptureTarget(session,"corridor-lantern",lamp.transform.position-Vector3.up*.14f,2,true,lamp.transform);
             yield return Capture(session,"corridor-floor-ceiling",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));
+            var pipeline=GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+            var rendererField=typeof(UniversalRenderPipelineAsset).GetField("m_RendererDataList",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+            var rendererData=rendererField?.GetValue(pipeline) as ScriptableRendererData[];
+            Require(rendererData!=null&&rendererData.Length>0,"Owned renderer unavailable for art noise comparison");
+            var ao=rendererData[0].rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().Single();
+            var settings=typeof(ScreenSpaceAmbientOcclusion).GetField("m_Settings",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(ao);
+            var intensityField=settings.GetType().GetField("Intensity",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic);
+            float originalIntensity=(float)intensityField.GetValue(settings);
+            try
+            {intensityField.SetValue(settings,.0001f);yield return Capture(session,"corridor-floor-ceiling-ao-control",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));}
+            finally {intensityField.SetValue(settings,originalIntensity);}
+            yield return ShadowStrengthControl(session,"corridor-floor-ceiling-shadow-control");
+            var groups=corridorWorld.GetComponentsInChildren<LODGroup>(true);
+            var lowRenderers=groups.SelectMany(x=>x.GetLODs().Skip(1)).SelectMany(x=>x.renderers).Where(x=>x).Distinct().ToArray();
+            var lowEnabled=lowRenderers.Select(x=>x.enabled).ToArray();
+            try
+            {foreach(var group in groups)group.ForceLOD(0);foreach(var renderer in lowRenderers)renderer.enabled=false;
+                yield return Capture(session,"corridor-floor-ceiling-lod-control",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));}
+            finally {for(int i=0;i<lowRenderers.Length;i++)if(lowRenderers[i])lowRenderers[i].enabled=lowEnabled[i];foreach(var group in groups)if(group)group.ForceLOD(-1);}
+            var neutral=new Material(Resources.Load<Material>("GraphicsPbr/wood-aged/material"));
+            neutral.SetColor("_BaseColor",new Color(.55f,.55f,.55f));neutral.SetTexture("_BaseMap",Texture2D.whiteTexture);
+            neutral.SetTexture("_BumpMap",null);neutral.DisableKeyword("_NORMALMAP");
+            neutral.SetTexture("_OcclusionMap",null);neutral.DisableKeyword("_OCCLUSIONMAP");
+            neutral.SetTexture("_MetallicGlossMap",null);neutral.DisableKeyword("_METALLICSPECGLOSSMAP");neutral.SetFloat("_Metallic",0);neutral.SetFloat("_Smoothness",.15f);
+            var architecture=corridorWorld.GetComponentsInChildren<MeshRenderer>(true).Where(x=>x.GetComponentInParent<LODGroup>()!=null&&x.GetComponentInParent<StalkerBrain>()==null).ToArray();
+            var originals=architecture.Select(x=>x.sharedMaterials).ToArray();
+            try
+            {foreach(var renderer in architecture)renderer.sharedMaterial=neutral;yield return Capture(session,"corridor-floor-ceiling-material-control",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));}
+            finally {for(int i=0;i<architecture.Length;i++)if(architecture[i])architecture[i].sharedMaterials=originals[i];Destroy(neutral);}
             var cabinet=corridorItems.First(x=>x.kind==Interactable.Kind.HidingPlace);
             yield return CaptureTarget(session,"corridor-cabinet",cabinet.transform.position+Vector3.up*.7f,2.7f,true,cabinet.transform);
             var memory=corridorItems.First(x=>x.kind==Interactable.Kind.CorridorMemory);
             yield return CaptureTarget(session,"corridor-seal-room",memory.transform.position,2.4f,true,memory.transform);
+            var classroom=session.Corridor.AltarRoomRoot;
+            Require(classroom&&session.Corridor.AltarChamber,"Final classroom unavailable for complete corridor art review");
+            session.player.flashlight.enabled=true;
+            yield return Capture(session,"corridor-final-classroom-entry",classroom.TransformPoint(new Vector3(0,.08f,-3.5f)),classroom.TransformPoint(new Vector3(0,1.8f,3.8f)));
+            yield return Capture(session,"corridor-final-classroom-joinery",classroom.TransformPoint(new Vector3(-4.4f,.08f,1)),classroom.TransformPoint(new Vector3(-5.89f,1.6f,2.7f)));
+            yield return CaptureTarget(session,"corridor-final-classroom-altar",session.Corridor.AltarChamber.OfferingAim,2.4f,true,session.Corridor.AltarChamber.Offering.transform);
             foreach(var mark in corridorCandles)mark.Restore(true);
             session.player.flashlight.enabled=false;
             yield return Capture(session,"corridor-many-candles",new Vector3(202,.08f,247.8f),new Vector3(202.8f,1.25f,242.2f));
@@ -145,7 +199,118 @@ namespace HappyToy.V2
             var schoolCandle=FindObjectsByType<WaymarkCandle>(FindObjectsSortMode.None).First();
             yield return CaptureTarget(session,"school-candle-close",schoolCandle.transform.position+Vector3.up*.13f,.72f,true,schoolCandle.transform);
             Require(enemyIndex==4,"Expected the four actual corridor clone models");
-            Require(frames.Count==20,"Controlled views incomplete: expected exactly 20, got "+frames.Count);
+            Require(frames.Count==27&&frames.Select(x=>x.file).Distinct(StringComparer.Ordinal).Count()==27,
+                "Controlled views incomplete: expected 20 original views, 3 final classroom views and 4 rendering controls; got "+frames.Count);
+        }
+        IEnumerator SurfaceDiagnostic(GameSession session)
+        {
+            // A separate, explicitly narrow diagnostic. It does not replace the
+            // complete chapter inventory or certify the production appearance.
+            session.player.flashlight.enabled=true;
+            yield return Capture(session,"surface-production",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));
+            yield return new WaitForEndOfFrame();
+            ScreenCapture.CaptureScreenshot(Path.Combine(output,"surface-presented.png"));
+            yield return null;yield return null;
+            var evidence=new System.Text.StringBuilder("Renderer\tEnabled\tPlaneY\tNormalY\n");
+            var sample=new Vector3(207.043f,0,201.071f);
+            foreach(var filter in FindObjectsByType<MeshFilter>(FindObjectsInactive.Include,FindObjectsSortMode.None))
+            {
+                var renderer=filter.GetComponent<MeshRenderer>();var mesh=filter.sharedMesh;
+                if(!renderer||!mesh||!mesh.isReadable)continue;
+                var bounds=renderer.bounds;
+                if(sample.x<bounds.min.x||sample.x>bounds.max.x||sample.z<bounds.min.z||sample.z>bounds.max.z)continue;
+                var vertices=mesh.vertices;var indices=mesh.triangles;
+                for(int i=0;i<indices.Length;i+=3)
+                {
+                    var a=filter.transform.TransformPoint(vertices[indices[i]]);
+                    var b=filter.transform.TransformPoint(vertices[indices[i+1]]);
+                    var c=filter.transform.TransformPoint(vertices[indices[i+2]]);
+                    float determinant=(b.z-c.z)*(a.x-c.x)+(c.x-b.x)*(a.z-c.z);
+                    if(Mathf.Abs(determinant)<1e-9f)continue;
+                    float u=((b.z-c.z)*(sample.x-c.x)+(c.x-b.x)*(sample.z-c.z))/determinant;
+                    float v=((c.z-a.z)*(sample.x-c.x)+(a.x-c.x)*(sample.z-c.z))/determinant;
+                    if(u<0||v<0||u+v>1)continue;
+                    float y=u*a.y+v*b.y+(1-u-v)*c.y;
+                    if(y<-.3f||y>3.3f)continue;
+                    evidence.AppendLine(HierarchyPath(filter.transform)+"\t"+renderer.enabled+"\t"+y.ToString("R")+"\t"+Vector3.Cross(b-a,c-a).normalized.y.ToString("R"));
+                }
+            }
+            File.WriteAllText(Path.Combine(output,"surface-triangle-intersections.tsv"),evidence.ToString());
+            var pipeline=GraphicsSettings.currentRenderPipeline as UniversalRenderPipelineAsset;
+            var rendererField=typeof(UniversalRenderPipelineAsset).GetField("m_RendererDataList",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+            var rendererData=(ScriptableRendererData[])rendererField.GetValue(pipeline);
+            var ao=rendererData[0].rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().Single();
+            var settings=typeof(ScreenSpaceAmbientOcclusion).GetField("m_Settings",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(ao);
+            var intensityField=settings.GetType().GetField("Intensity",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic);
+            float intensityBefore=(float)intensityField.GetValue(settings);
+            try
+            {intensityField.SetValue(settings,.0001f);yield return Capture(session,"surface-ao-strength-control",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));}
+            finally {intensityField.SetValue(settings,intensityBefore);}
+            yield return ShadowStrengthControl(session,"surface-shadow-strength-control");
+            var architecture=session.Corridor.Presentation.GetComponentsInChildren<LODGroup>(true);
+            var low=architecture.SelectMany(x=>x.GetLODs().Skip(1)).SelectMany(x=>x.renderers).Where(x=>x).Distinct().ToArray();
+            var wasEnabled=low.Select(x=>x.enabled).ToArray();
+            try
+            {
+                foreach(var group in architecture)group.ForceLOD(0);
+                foreach(var renderer in low)renderer.enabled=false;
+                yield return Capture(session,"surface-high-only",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));
+                // Reflectance is the remaining shared input after texture,
+                // occlusion and shadow controls; omit only local probe radiance.
+                var graphics=session.GetComponent<GraphicsLightingPresentation>();float intensity=graphics.OwnedProbe.intensity;
+                float ambientReflection=RenderSettings.reflectionIntensity;
+                try
+                {
+                    graphics.OwnedProbe.intensity=0;RenderSettings.reflectionIntensity=0;
+                    yield return Capture(session,"surface-reflection-control",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));
+                }
+                finally {graphics.OwnedProbe.intensity=intensity;RenderSettings.reflectionIntensity=ambientReflection;}
+                var shader=Resources.Load<Shader>("GraphicsUpgrade/Shaders/SurfaceDiagnostic");
+                Require(shader&&shader.isSupported,"Explicit uniform diagnostic shader unavailable");
+                var renderers=FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None);var uniform=new List<Material>();
+                var materials=renderers.Select(x=>x.sharedMaterials).ToArray();
+                try
+                {
+                    for(int i=0;i<renderers.Length;i++)
+                    {
+                        // Distinct colours expose any interleaved coplanar renderers;
+                        // smooth geometric normals expose mesh-only surface changes.
+                        var material=new Material(shader);material.SetColor("_BaseColor",Color.HSVToRGB((i*.618034f)%1,.6f,.7f));uniform.Add(material);
+                        renderers[i].sharedMaterials=Enumerable.Repeat(material,renderers[i].sharedMaterials.Length).ToArray();
+                    }
+                    yield return Capture(session,"surface-unlit-control",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));
+                }
+                finally {for(int i=0;i<renderers.Length;i++)if(renderers[i])renderers[i].sharedMaterials=materials[i];foreach(var material in uniform)Destroy(material);}
+                var matte=new Dictionary<Material,Material>();
+                try
+                {
+                    foreach(var renderer in renderers)
+                    {
+                        renderer.sharedMaterials=renderer.sharedMaterials.Select(source=>
+                        {
+                            if(!matte.TryGetValue(source,out var copy))
+                            {
+                                copy=new Material(source);matte.Add(source,copy);
+                                // Keep the imported shader variants. Zero strengths
+                                // do not depend on stripped keyword combinations.
+                                copy.SetFloat("_Smoothness",0);copy.SetFloat("_BumpScale",0);copy.SetFloat("_OcclusionStrength",0);
+                            }
+                            return copy;
+                        }).ToArray();
+                    }
+                    yield return Capture(session,"surface-matte-control",new Vector3(201,.08f,200),new Vector3(211,1.45f,201));
+                }
+                finally {for(int i=0;i<renderers.Length;i++)if(renderers[i])renderers[i].sharedMaterials=materials[i];foreach(var material in matte.Values)Destroy(material);}
+            }
+            finally {for(int i=0;i<low.Length;i++)if(low[i])low[i].enabled=wasEnabled[i];foreach(var group in architecture)if(group)group.ForceLOD(-1);}
+            Require(frames.Count==7,"Surface diagnostic requires seven controlled camera frames");
+        }
+        IEnumerator ShadowStrengthControl(GameSession session,string name)
+        {
+            var lights=FindObjectsByType<Light>(FindObjectsSortMode.None);var strengths=lights.Select(x=>x.shadowStrength).ToArray();
+            try
+            {foreach(var light in lights)light.shadowStrength=.0001f;yield return Capture(session,name,new Vector3(201,.08f,200),new Vector3(211,1.45f,201));}
+            finally {for(int i=0;i<lights.Length;i++)if(lights[i])lights[i].shadowStrength=strengths[i];}
         }
         void Freeze(GameSession session)
         {
@@ -188,7 +353,10 @@ namespace HappyToy.V2
             yield return new WaitForSecondsRealtime(3.1f);
             yield return null;yield return null;
             while(!graphics.ReflectionReady)
-            {Require(Time.realtimeSinceStartup<deadline,"Local reflection did not finish for "+name);yield return null;}
+            {Require(Time.realtimeSinceStartup<deadline,"Local reflection did not finish for "+name+
+                " request="+graphics.ReflectionRenderId+" globalEnabled="+QualitySettings.realtimeReflectionProbes+
+                " probeEnabled="+graphics.OwnedProbe.isActiveAndEnabled+" captures="+graphics.ReflectionCaptures+
+                " input="+session.InputAllowed+" quality="+QualitySettings.GetQualityLevel());yield return null;}
             session.GetComponent<LocalShadowBudget>()?.RefreshNow();
             var sourceData=player.eyes.GetUniversalAdditionalCameraData();
             Require(sourceData.renderType==CameraRenderType.Base&&sourceData.cameraStack.Count==0,"Controlled single-camera review cannot omit an authored overlay stack");
@@ -196,18 +364,22 @@ namespace HappyToy.V2
             camera.CopyFrom(player.eyes);camera.transform.SetPositionAndRotation(player.eyes.transform.position,player.eyes.transform.rotation);
             camera.enabled=false;camera.allowHDR=true;
             var data=camera.GetUniversalAdditionalCameraData();
-            data.renderPostProcessing=sourceData.renderPostProcessing;data.volumeLayerMask=sourceData.volumeLayerMask;
+            data.renderPostProcessing=name=="surface-unlit-control"?false:sourceData.renderPostProcessing;data.volumeLayerMask=sourceData.volumeLayerMask;
             data.volumeTrigger=camera.transform;data.antialiasing=sourceData.antialiasing;data.antialiasingQuality=sourceData.antialiasingQuality;
-            data.renderShadows=sourceData.renderShadows;data.requiresDepthOption=sourceData.requiresDepthOption;data.requiresColorOption=sourceData.requiresColorOption;
+            data.renderShadows=sourceData.renderShadows;
+            data.requiresDepthOption=sourceData.requiresDepthOption;data.requiresColorOption=sourceData.requiresColorOption;
             data.stopNaN=sourceData.stopNaN;data.dithering=sourceData.dithering;
             // URP17.6 inherits an external target's format for intermediate colour.
             // Keep floating-point HDR here; sRGB encoding happens after tone mapping.
-            var rt=new RenderTexture(1600,900,24,RenderTextureFormat.ARGBHalf,RenderTextureReadWrite.Linear);rt.Create();
+            var capturePipeline=(UniversalRenderPipelineAsset)GraphicsSettings.currentRenderPipeline;
+            var rt=new RenderTexture(1600,900,24,RenderTextureFormat.ARGBHalf,RenderTextureReadWrite.Linear);
+            rt.antiAliasing=camera.allowMSAA?capturePipeline.msaaSampleCount:1;rt.Create();
             var old=RenderTexture.active;Texture2D linear=null,texture=null;
             try
             {
                 Require(rt.IsCreated()&&!rt.sRGB,"Linear HDR capture target unavailable");
                 RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest{destination=rt});
+                if(rt.antiAliasing>1)rt.ResolveAntiAliasedSurface();
                 RenderTexture.active=rt;linear=new Texture2D(1600,900,TextureFormat.RGBAHalf,false,true);
                 linear.ReadPixels(new Rect(0,0,1600,900),0,0);linear.Apply();
                 var pixels=EncodeToneMappedLinearToSrgb(linear.GetPixels());
@@ -244,7 +416,7 @@ namespace HappyToy.V2
                     supportFloor=supportPlan.Floor?supportPlan.Floor.name:null,supportFloorLayer=supportPlan.Floor?supportPlan.Floor.gameObject.layer:-1,supportFloorY=supportPlan.SupportY,
                     graphicsDevice=SystemInfo.graphicsDeviceName,pipeline=pipeline.name,captureFormat=rt.graphicsFormat.ToString(),projectColorSpace=QualitySettings.activeColorSpace.ToString(),
                     sourceCameraType=sourceData.renderType.ToString(),captureCameraType=data.renderType.ToString(),sourceCameraStack=sourceData.cameraStack.Count,antialiasing=data.antialiasing.ToString(),
-                    hdrCamera=camera.allowHDR,hdrPipeline=pipeline.supportsHDR,captureSrgb=rt.sRGB,postProcessing=data.renderPostProcessing,
+                    hdrCamera=camera.allowHDR,hdrPipeline=pipeline.supportsHDR,captureSrgb=rt.sRGB,postProcessing=data.renderPostProcessing,captureMsaa=rt.antiAliasing,
                     toneMapping=tone.mode.value.ToString(),bloomActive=bloom.IsActive(),bloomIntensity=bloom.intensity.value,
                     gpuTimingFeatureEnabled=FrameTimingManager.IsFeatureEnabled(),
                     shadowAtlas=budget.AtlasResolution,torchTile=budget.TorchTileResolution,localTile=budget.LocalTileResolution,

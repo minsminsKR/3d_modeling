@@ -1,4 +1,4 @@
-"""Verify actual controlled native JSON/20 PNG artifacts; visual acceptance is a separate human inspection."""
+"""Verify 27 native PNGs, including final classroom and rendering controls; visual acceptance is separate."""
 from pathlib import Path
 import argparse, datetime, hashlib, json, math, sys
 from PIL import Image, ImageStat
@@ -7,6 +7,10 @@ VIEWS = (
     'corridor-candle-unlit', 'corridor-candle-lit', 'corridor-candle-close',
     'corridor-battery-close', 'corridor-door-joinery', 'corridor-lantern',
     'corridor-floor-ceiling', 'corridor-cabinet', 'corridor-seal-room', 'corridor-many-candles',
+    'corridor-floor-ceiling-ao-control', 'corridor-floor-ceiling-shadow-control', 'corridor-final-classroom-entry',
+    'corridor-floor-ceiling-lod-control',
+    'corridor-floor-ceiling-material-control',
+    'corridor-final-classroom-joinery', 'corridor-final-classroom-altar',
     'corridor-enemy-1', 'corridor-enemy-2', 'corridor-enemy-3', 'corridor-enemy-4',
     'school-ground-hall', 'school-washroom', 'school-music', 'school-upper', 'school-basement', 'school-candle-close',
 )
@@ -25,7 +29,7 @@ def verify(directory):
     check(bool(report.get('device')), 'Actual native graphics device missing')
     frames = report.get('frames', [])
     expected = {view + '.png' for view in VIEWS}; names = [frame.get('file') for frame in frames]
-    check(len(frames) == 20 and len(set(names)) == 20 and set(names) == expected,
+    check(len(frames) == len(expected) and len(set(names)) == len(expected) and set(names) == expected,
           'Actual view inventory differs: missing=' + repr(sorted(expected - set(names))) + ' extra=' + repr(sorted(set(names) - expected)))
     for frame in frames:
         name = frame.get('file', '')

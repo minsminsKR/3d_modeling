@@ -7,7 +7,31 @@ separate takes, mono conversion, filtering, fades and measured gain.
 
 Impact Sounds — Kenney
 https://kenney.nl/assets/impact-sounds
-CC0 1.0. Player footsteps and material contacts/creature attack layers.
+CC0 1.0. Stone player footsteps and material contacts/creature attack layers.
+
+FEETHmn Squeaky Wooden Parquet Footsteps — evghenifloca
+https://freesound.org/people/evghenifloca/sounds/817482/
+CC0 1.0. Actual shoes on old parquet; five separate mono contacts including
+their board creak, filtered and gain-limited. Public high quality MP3 preview
+is retained as the source encoding; this is not the lossless original WAV.
+
+Footsteps wooden floor creaking — vrodge (comparison source only)
+https://freesound.org/people/vrodge/sounds/119522/
+CC0 1.0. Public high quality MP3 preview retained for candidate comparison,
+not used in runtime cues. Sources and edits: ThirdParty/Audio/CorridorFoley.
+
+WINDInt Closed room in an abandoned defense base — vhio
+https://freesound.org/people/vhio/sounds/791287/
+CC0 1.0. Actual closed-room wind/room-tone field recording. Three quiet excerpts,
+mono conversion, filtering and wrap crossfades make corridor spatial loops.
+Distant road traffic exists in the retained source. Public high quality MP3
+preview is used; this is not the lossless 96 kHz original WAV.
+
+Corridor attack contacts — bart and OwlishMedia; baby cry — jamesmbock
+Retained source URLs and source hashes: ThirdParty/Audio/RecordedHorror/sources.json.
+Four short creature-contact cues layer real workshop wood/tool contacts with
+recorded human vocal texture, without the earlier glass/impact library layers.
+See ThirdParty/Audio/CorridorFoley/prepared-cues.json for exact edits and hashes.
 
 50 RPG sound effects — Kenney
 https://opengameart.org/content/50-rpg-sound-effects
@@ -46,8 +70,9 @@ Additional stress-dependent playback pitch in game.
 Sound Effects Pack — OwlishMedia
 https://opengameart.org/content/sound-effects-pack
 CC0 1.0. Recorded scream, frightened vocal breath and solo breathing.
-Trimmed, filtered, faded and sometimes slowed. Scream layered with actual
-workshop metal drop for recognition. No Scifi/UI/synthetic pack cues selected.
+Trimmed, filtered, faded and sometimes slowed. The current recognition cue uses
+frightened breath with actual workshop metal impact and dragged-metal friction;
+the earlier scream layer was replaced. No Scifi/UI/synthetic pack cues selected.
 
 202 More Sound Effects — OwlishMedia
 https://opengameart.org/content/202-more-sound-effects

@@ -21,15 +21,22 @@ namespace HappyToy.V2
         {
             if (positions == null || positions.Length != 3) throw new System.ArgumentException("Expected three spatial ambience positions");
             runPositions = (Vector3[])positions.Clone(); nextTrace = 0;
-            for (int i = 0; i < voices.Count; i++) if (voices[i].source) voices[i].source.transform.position = runPositions[i];
+            for (int i = 0; i < voices.Count; i++) if (voices[i].source)
+            {
+                var voice=voices[i];voice.source.transform.position=runPositions[i];
+                voice.source.Stop();var previous=voice.ownedClip;
+                voice.ownedClip=ExternalAudio.Required("ambience-corridor",i);voice.source.clip=voice.ownedClip;
+                voice.gain=.18f;voice.source.Play();if(previous)Destroy(previous);
+            }
         }
         void Start()
         {
-            Add("washroom-drip",new Vector3(-5.7f,1.1f,-5.1f),ExternalAudio.Required("ambience-ground"),.28f);
-            Add("infirmary-wiring",new Vector3(5.7f,2.6f,5.5f),ExternalAudio.Required("ambience-upper"),.24f);
+            bool corridor=runPositions!=null;
+            Add("washroom-drip",new Vector3(-5.7f,1.1f,-5.1f),ExternalAudio.Required(corridor?"ambience-corridor":"ambience-ground",0),corridor?.18f:.28f);
+            Add("infirmary-wiring",new Vector3(5.7f,2.6f,5.5f),ExternalAudio.Required(corridor?"ambience-corridor":"ambience-upper",corridor?1:0),corridor?.18f:.24f);
             // Water drips belong to FloorAtmosphere's one physical leak. This is a
             // distinct air/pipe room bed, so the same recording never doubles in B1.
-            Add("classroom-draft",new Vector3(-6.4f,1.8f,7.8f),ExternalAudio.Required("ambience-basement-bed"),.3f);
+            Add("classroom-draft",new Vector3(-6.4f,1.8f,7.8f),ExternalAudio.Required(corridor?"ambience-corridor":"ambience-basement-bed",corridor?2:0),corridor?.18f:.3f);
         }
         void Add(string name,Vector3 position,AudioClip clip,float gain)
         {
@@ -37,7 +44,8 @@ namespace HappyToy.V2
             var go=new GameObject(name);go.transform.SetParent(transform,false);go.transform.position=position;
             var source=go.AddComponent<AudioSource>();source.playOnAwake=false;source.loop=true;source.clip=clip;
             source.spatialBlend=1;source.rolloffMode=AudioRolloffMode.Linear;source.minDistance=1.2f;source.maxDistance=12;
-            source.dopplerLevel=0;source.priority=180;source.volume=0;source.ignoreListenerPause=false;
+            source.dopplerLevel=0;source.priority=180;source.volume=0;
+            source.ignoreListenerPause=false;source.ignoreListenerVolume=false;
             var filter=go.AddComponent<AudioLowPassFilter>();filter.cutoffFrequency=6000;
             voices.Add(new Voice{source=source,filter=filter,ownedClip=clip,gain=gain});source.Play();
         }
@@ -61,7 +69,20 @@ namespace HappyToy.V2
         }
         void OnDisable(){foreach(var voice in voices)if(voice.source)voice.source.Stop();}
         void OnEnable(){foreach(var voice in voices)if(voice.source)voice.source.Play();}
-        // Retain ownership independently of a child emitter's lifetime/order of teardown.
-        void OnDestroy(){foreach(var voice in voices)if(voice.ownedClip)Destroy(voice.ownedClip);}
+        // Removing this component alone must release the emitters as well as clips.
+        // During scene teardown a child may already be gone; clip ownership remains here.
+        void OnDestroy()
+        {
+            foreach(var voice in voices)
+            {
+                if(voice.source)
+                {
+                    voice.source.Stop();voice.source.clip=null;
+                    Destroy(voice.source.gameObject);
+                }
+                if(voice.ownedClip)Destroy(voice.ownedClip);
+            }
+            voices.Clear();
+        }
     }
 }

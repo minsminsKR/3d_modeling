@@ -116,18 +116,13 @@ namespace HappyToy.V2
             // its quiet ember colour only when the actual run records that memory.
             for (int i = 0; i < CorridorRun.Required; i++)
             {
-                var paper = Part(root, "Returned memory place " + (i + 1), new Vector3((i - 2) * .285f, .126f, -.265f),
-                    new Vector3(.228f, .005f, .294f), blankSeal, false, .0008f);
-                paper.transform.localRotation = Quaternion.Euler(0, (i % 2 == 0 ? 1 : -1) * (i + 1) * 1.7f, 0);
-                sockets.Add(paper.GetComponent<MeshRenderer>());
-                Part(root, "Five memory paper binding", new Vector3((i - 2) * .285f, .130f, -.278f),
-                    new Vector3(.031f, .003f, .247f), oldBlood, false, .0006f);
-                for (int mark = 0; mark < 3; mark++)
-                    Part(root, "Faded name field stroke", new Vector3((i - 2) * .285f - .047f + mark * .044f, .131f, -.224f),
-                        new Vector3(.020f, .0017f, .043f + mark * .004f), graphite, false, .0002f);
+                var paper = DetailModel("memory-socket", root, new Vector3((i - 2) * .285f, .126f, -.265f), blankSeal,
+                    Quaternion.Euler(0, (i % 2 == 0 ? 1 : -1) * (i + 1) * 1.7f, 0), false);
+                // Exactly one merged paper renderer per memory keeps the original
+                // five readiness states; binding and ink retain their own surfaces.
+                sockets.Add(paper.GetComponentsInChildren<MeshRenderer>().Single(r => r.enabled && r.sharedMaterial == blankSeal));
             }
-            var plaque = Part(root, "Altar count plaque timber backing", new Vector3(0, -.033f, -.544f),
-                new Vector3(.94f, .22f, .025f), surfaces.Get("wood-aged", new Color(.54f, .51f, .43f)), false, .003f);
+            DetailModel("timber-plaque", root, new Vector3(0, -.033f, -.544f), null, default, false);
             offeringClue = Label(root, "Memory offering instruction", "기억을 돌려놓는 자리\n0 / 5", new Vector3(0, -.033f, -.561f),
                 .023f, new Color(.77f, .73f, .60f));
             readyLight = Lamp("Altar five memories reflected ember", new Vector3(0, 1.15f, 2.45f), new Color(.88f, .53f, .31f), 0, 2.3f, false);
@@ -146,17 +141,9 @@ namespace HappyToy.V2
             {
                 var frame = Group(additions, "Empty classroom photograph frame", new Vector3(side * 4.42f, 2.26f, 4.84f),
                     Quaternion.Euler(0, 0, side * 5));
-                Part(frame, "Unrecognisable school photograph backing", Vector3.zero, new Vector3(.81f, 1.03f, .024f), dust);
-                foreach (float sign in new[] { -1f, 1f })
-                {
-                    Part(frame, "Worn picture frame side", new Vector3(sign * .415f, 0, -.023f), new Vector3(.055f, 1.11f, .052f), surfaces.Resolve("GU_dark_timber"));
-                    Part(frame, "Worn picture frame rail", new Vector3(0, sign * .535f, -.023f), new Vector3(.84f, .055f, .052f), surfaces.Resolve("GU_dark_timber"));
-                }
                 // The page has no unsupported human or graphic asset: charcoal
                 // lesson remnants imply the absent class without a stock portrait.
-                for (int row = 0; row < 7; row++)
-                    Part(frame, "Erased photograph and old attendance mark", new Vector3((row % 3 - 1) * .067f, .32f - row * .10f, -.018f),
-                        new Vector3(.42f - (row % 3) * .054f, .008f, .002f), graphite, false, .0004f);
+                DetailModel("classroom-photo", frame, Vector3.zero, dust);
             }
         }
 
@@ -269,23 +256,17 @@ namespace HappyToy.V2
             Physical(shelf, "Archive physical case", new Vector3(0, 1.08f, .025f), new Vector3(1.44f, 2.17f, .44f));
             // Classroom window recesses follow existing solid side walls. Nothing
             // pretends to be a door or removes the caller's shell collision.
-            var wood = surfaces.Resolve("GU_dark_timber"); var enamel = surfaces.Get("painted-metal", new Color(2.2f, 1.9f, 1.6f));
-            var glass = surfaces.Get("metal-rust", new Color(.080f, .105f, .112f));
             for (int bay = 0; bay < 3; bay++)
             {
                 var window = Group(additions, "Opaque abandoned school window recess", new Vector3(-5.82f, 1.91f, -1.85f + bay * 2.05f), Quaternion.Euler(0, -90, 0));
-                Part(window, "Opaque grime and night window", Vector3.zero, new Vector3(1.71f, 1.76f, .028f), glass);
-                foreach (float x in new[] { -.873f, 0, .873f }) Part(window, "School window narrow timber mullion", new Vector3(x, 0, -.031f), new Vector3(.043f, 1.86f, .052f), enamel);
-                foreach (float y in new[] { -.899f, 0, .899f }) Part(window, "School window narrow horizontal rail", new Vector3(0, y, -.034f), new Vector3(1.79f, .043f, .052f), enamel);
-                Part(window, "Deep worn school window sill", new Vector3(0, -.94f, -.103f), new Vector3(1.88f, .066f, .27f), wood);
+                DetailModel("window-recess", window, Vector3.zero);
             }
             // A few realistic leaves in corners, not a repetitive full floor decal.
             for (int i = 0; i < 11; i++)
             {
                 float side = i % 2 == 0 ? -1 : 1;
-                var sheet = Part(additions, "Abandoned torn class exercise leaf", new Vector3(side * (4.02f + (i % 3) * .34f), .008f + (i % 2) * .0009f, -3.73f + i * .64f),
-                    new Vector3(.218f, .0015f, .299f), i % 4 == 0 ? blankSeal : dust, false, .0003f);
-                sheet.transform.localRotation = Quaternion.Euler(0, i * 37, 0);
+                DetailModel("exercise-leaf", additions, new Vector3(side * (4.02f + (i % 3) * .34f), .008f + (i % 2) * .0009f, -3.73f + i * .64f),
+                    i % 4 == 0 ? blankSeal : dust, Quaternion.Euler(0, i * 37, 0), false);
             }
         }
 
@@ -350,8 +331,8 @@ namespace HappyToy.V2
             var radii = new[] { 1f, .952f, .863f, .736f, .56f };
             var strengths = new[] { .045f, .20f, .48f, .77f, 1f };
             var normal = rotation * Vector3.up; bool floor = Mathf.Abs(normal.y) > .9f;
-            string key = floor ? "wood-floor" : "plaster-damp";
-            Color support = floor ? new Color(.76f, .71f, .66f) : new Color(.70f, .67f, .63f);
+            string key = floor ? "wood-aged" : "plaster-damp";
+            Color support = floor ? new Color(.83f, .79f, .72f) : new Color(.86f, .83f, .77f);
             Color residue = material == blood ? new Color(.42f, .145f, .105f) : new Color(.31f, .122f, .083f);
             var materials = strengths.Select(strength => surfaces.Get(key, Color.Lerp(support, residue, strength))).ToArray();
             var vertices = new Vector3[count * radii.Length + 1]; var uv = new Vector2[vertices.Length];
@@ -367,9 +348,12 @@ namespace HappyToy.V2
                     Mathf.Sin(angle) * depth * contour * radii[ring]);
                 // Keep the support's measured grain coherent across all density
                 // bands. Existing opaque Lit PBR needs no extra shader keywords.
-                uv[at] = GraphicsSurfaceLibrary.Project(position + rotation * vertices[at], normal) / span;
+                var measured=position+rotation*vertices[at];
+                // Authored floorboard grain runs along the classroom's Z axis.
+                // Match that same metre projection at the soak boundary.
+                uv[at] = (floor?new Vector2(measured.z,measured.x):GraphicsSurfaceLibrary.Project(measured,normal)) / span;
             }
-            int centre = vertices.Length - 1; uv[centre] = GraphicsSurfaceLibrary.Project(position, normal) / span;
+            int centre = vertices.Length - 1; uv[centre] = (floor?new Vector2(position.z,position.x):GraphicsSurfaceLibrary.Project(position, normal)) / span;
             var mesh = new Mesh { name = "Original softly absorbed organic blood contour", vertices = vertices, uv = uv, subMeshCount = strengths.Length };
             for (int ring = 0; ring < radii.Length - 1; ring++)
             {
@@ -394,6 +378,27 @@ namespace HappyToy.V2
             var root = Group(additions, name, position, rotation); root.gameObject.AddComponent<MeshFilter>().sharedMesh = mesh;
             var renderer = root.gameObject.AddComponent<MeshRenderer>(); renderer.sharedMaterials = materials;
             renderer.receiveShadows = true; renderer.shadowCastingMode = ShadowCastingMode.Off; SurfaceStains++;
+        }
+
+        Transform DetailModel(string key, Transform parent, Vector3 at, Material paper = null,
+            Quaternion rotation = default, bool castShadows = true)
+        {
+            var root=CorridorDetailLibrary.Attach(key,parent,slot =>
+            {
+                switch(slot)
+                {
+                    case "CD_timber":return surfaces.Resolve("GU_dark_timber");
+                    case "CD_paper":return paper ? paper : dust;
+                    case "CD_binding":return oldBlood;
+                    case "CD_ink":return graphite;
+                    case "CD_iron":return surfaces.Get("metal-rust",new Color(.48f,.49f,.46f));
+                    case "CD_enamel":return surfaces.Get("painted-metal",new Color(2.2f,1.9f,1.6f));
+                    case "CD_glass":return surfaces.Get("metal-rust",new Color(.080f,.105f,.112f));
+                    default:throw new InvalidOperationException("Unknown chamber detail surface: "+slot);
+                }
+            });
+            root.localPosition=at;root.localRotation=rotation==default?Quaternion.identity:rotation;
+            BatchModel(root,castShadows);modelRoots.Add(root);return root;
         }
 
         Transform Model(string key, Transform parent, Vector3 at)
@@ -449,14 +454,6 @@ namespace HappyToy.V2
         {
             var root = new GameObject(name).transform; root.gameObject.layer = 8; root.SetParent(parent, false);
             root.localPosition = at; root.localRotation = rotation == default ? Quaternion.identity : rotation; return root;
-        }
-        GameObject Part(Transform parent, string name, Vector3 at, Vector3 size, Material material, bool physical = false, float bevel = .002f)
-        {
-            var root = Group(parent, name, at); root.localScale = size;
-            root.gameObject.AddComponent<MeshFilter>().sharedMesh = surfaces.MetreBoxMesh(size, bevel, GraphicsSurfaceLibrary.TileSpan(material));
-            var renderer = root.gameObject.AddComponent<MeshRenderer>(); renderer.sharedMaterial = material; renderer.receiveShadows = true;
-            if (physical) { var collider = root.gameObject.AddComponent<BoxCollider>(); physics.Add(collider); }
-            return root.gameObject;
         }
         BoxCollider Physical(Transform parent, string name, Vector3 center, Vector3 size)
         {

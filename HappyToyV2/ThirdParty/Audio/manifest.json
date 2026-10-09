@@ -1,125 +1,5 @@
 [
   {
-    "resource": "Audio/External/step-wood-0",
-    "file": "step-wood-0.wav",
-    "pack": "kenney-impact",
-    "source_file": "Audio/footstep_wood_000.ogg",
-    "license": "CC0-1.0",
-    "creator": "Kenney",
-    "page": "https://kenney.nl/assets/impact-sounds",
-    "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
-    "modifications": {
-      "mono": true,
-      "sample_rate": 24000,
-      "format": "PCM16 WAV",
-      "leading_trim_seconds": 0.0,
-      "duration_limit": 0.34,
-      "edge_fade_seconds": 0.006,
-      "gain": 0.97338008114914,
-      "layers": []
-    },
-    "seconds": 0.271375,
-    "peak": 0.5799999833106995,
-    "rms": 0.0686357319355011,
-    "sha256": "48eadafee8f0e6cdfe4535097a2667bc1e2ed4dbf554ab3eed8513901622e49d"
-  },
-  {
-    "resource": "Audio/External/step-wood-1",
-    "file": "step-wood-1.wav",
-    "pack": "kenney-impact",
-    "source_file": "Audio/footstep_wood_001.ogg",
-    "license": "CC0-1.0",
-    "creator": "Kenney",
-    "page": "https://kenney.nl/assets/impact-sounds",
-    "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
-    "modifications": {
-      "mono": true,
-      "sample_rate": 24000,
-      "format": "PCM16 WAV",
-      "leading_trim_seconds": 0.0,
-      "duration_limit": 0.34,
-      "edge_fade_seconds": 0.006,
-      "gain": 0.7760342078259246,
-      "layers": []
-    },
-    "seconds": 0.24866666666666667,
-    "peak": 0.5800000429153442,
-    "rms": 0.07095082104206085,
-    "sha256": "1e6f209fc94b259c434910e46382d76c97a2b6f322a7bca106778d95d86e323f"
-  },
-  {
-    "resource": "Audio/External/step-wood-2",
-    "file": "step-wood-2.wav",
-    "pack": "kenney-impact",
-    "source_file": "Audio/footstep_wood_002.ogg",
-    "license": "CC0-1.0",
-    "creator": "Kenney",
-    "page": "https://kenney.nl/assets/impact-sounds",
-    "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
-    "modifications": {
-      "mono": true,
-      "sample_rate": 24000,
-      "format": "PCM16 WAV",
-      "leading_trim_seconds": 0.0,
-      "duration_limit": 0.34,
-      "edge_fade_seconds": 0.006,
-      "gain": 0.7256907641936231,
-      "layers": []
-    },
-    "seconds": 0.2485,
-    "peak": 0.5800000429153442,
-    "rms": 0.0747210830450058,
-    "sha256": "a75b0b41dfd3415ee29ff9a1a6f6cc4bb374a9d68fc742919f8a9580eba66e1b"
-  },
-  {
-    "resource": "Audio/External/step-wood-3",
-    "file": "step-wood-3.wav",
-    "pack": "kenney-impact",
-    "source_file": "Audio/footstep_wood_003.ogg",
-    "license": "CC0-1.0",
-    "creator": "Kenney",
-    "page": "https://kenney.nl/assets/impact-sounds",
-    "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
-    "modifications": {
-      "mono": true,
-      "sample_rate": 24000,
-      "format": "PCM16 WAV",
-      "leading_trim_seconds": 0.0,
-      "duration_limit": 0.34,
-      "edge_fade_seconds": 0.006,
-      "gain": 1.0940959319893793,
-      "layers": []
-    },
-    "seconds": 0.248625,
-    "peak": 0.5799999833106995,
-    "rms": 0.0655464231967926,
-    "sha256": "57546564240c49c46f98ea068e7cd32716fd4fb9054d63780a47f2ada02aa26a"
-  },
-  {
-    "resource": "Audio/External/step-wood-4",
-    "file": "step-wood-4.wav",
-    "pack": "kenney-impact",
-    "source_file": "Audio/footstep_wood_004.ogg",
-    "license": "CC0-1.0",
-    "creator": "Kenney",
-    "page": "https://kenney.nl/assets/impact-sounds",
-    "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
-    "modifications": {
-      "mono": true,
-      "sample_rate": 24000,
-      "format": "PCM16 WAV",
-      "leading_trim_seconds": 0.0,
-      "duration_limit": 0.34,
-      "edge_fade_seconds": 0.006,
-      "gain": 0.771388510932856,
-      "layers": []
-    },
-    "seconds": 0.245,
-    "peak": 0.5800000429153442,
-    "rms": 0.07597578316926956,
-    "sha256": "2963d838c90ba4f94705e6a45fa57825b4a114fe92de688617857a6609dd140c"
-  },
-  {
     "resource": "Audio/External/step-stone-0",
     "file": "step-stone-0.wav",
     "pack": "kenney-impact",
@@ -864,146 +744,6 @@
     "sha256": "7afe4180619e7f2ed0f3d27ae49f1f81d2711134e1f4569c5d7280271070fd72"
   },
   {
-    "resource": "Audio/External/enemy-cyclopse-attack-0",
-    "file": "enemy-cyclopse-attack-0.wav",
-    "pack": "kenney-impact",
-    "source_file": "Audio/impactSoft_heavy_002.ogg",
-    "license": "CC0-1.0",
-    "creator": "Kenney",
-    "page": "https://kenney.nl/assets/impact-sounds",
-    "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
-    "modifications": {
-      "mono": true,
-      "sample_rate": 24000,
-      "format": "PCM16 WAV",
-      "leading_trim_seconds": 0.0,
-      "duration_limit": 0.46,
-      "edge_fade_seconds": 0.006,
-      "gain": 0.39013361860103196,
-      "layers": [
-        {
-          "pack": "kenney-impact",
-          "file": "Audio/impactWood_heavy_000.ogg",
-          "gain": 0.8
-        },
-        {
-          "pack": "kenney-rpg",
-          "file": "OGG/creak3.ogg",
-          "gain": 0.3
-        }
-      ]
-    },
-    "seconds": 0.46,
-    "peak": 0.5799999833106995,
-    "rms": 0.0925542488694191,
-    "sha256": "537e4383df3b0fa18df863def823cba7183ff1a79a146a41e967180fe7afa08f"
-  },
-  {
-    "resource": "Audio/External/enemy-hwacat-attack-0",
-    "file": "enemy-hwacat-attack-0.wav",
-    "pack": "kenney-impact",
-    "source_file": "Audio/impactSoft_heavy_002.ogg",
-    "license": "CC0-1.0",
-    "creator": "Kenney",
-    "page": "https://kenney.nl/assets/impact-sounds",
-    "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
-    "modifications": {
-      "mono": true,
-      "sample_rate": 24000,
-      "format": "PCM16 WAV",
-      "leading_trim_seconds": 0.0,
-      "duration_limit": 0.46,
-      "edge_fade_seconds": 0.006,
-      "gain": 0.3694804915994966,
-      "layers": [
-        {
-          "pack": "kenney-impact",
-          "file": "Audio/impactGlass_light_000.ogg",
-          "gain": 0.8
-        },
-        {
-          "pack": "kenney-rpg",
-          "file": "OGG/creak3.ogg",
-          "gain": 0.3
-        }
-      ]
-    },
-    "seconds": 0.46,
-    "peak": 0.5799999833106995,
-    "rms": 0.07856137305498123,
-    "sha256": "be3a7fbaa5f595a34414482f2e33524268c25385d2d4213c00f84e081e540d21"
-  },
-  {
-    "resource": "Audio/External/enemy-uncat-attack-0",
-    "file": "enemy-uncat-attack-0.wav",
-    "pack": "kenney-impact",
-    "source_file": "Audio/impactSoft_heavy_002.ogg",
-    "license": "CC0-1.0",
-    "creator": "Kenney",
-    "page": "https://kenney.nl/assets/impact-sounds",
-    "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
-    "modifications": {
-      "mono": true,
-      "sample_rate": 24000,
-      "format": "PCM16 WAV",
-      "leading_trim_seconds": 0.0,
-      "duration_limit": 0.46,
-      "edge_fade_seconds": 0.006,
-      "gain": 0.41820160830882774,
-      "layers": [
-        {
-          "pack": "kenney-impact",
-          "file": "Audio/footstep_wood_004.ogg",
-          "gain": 0.8
-        },
-        {
-          "pack": "kenney-rpg",
-          "file": "OGG/creak3.ogg",
-          "gain": 0.3
-        }
-      ]
-    },
-    "seconds": 0.46,
-    "peak": 0.5799999833106995,
-    "rms": 0.09326478838920593,
-    "sha256": "fa7a3b669a3beeabf35d9198fa695b1f075dd66b02c2883b9e26705798814ca6"
-  },
-  {
-    "resource": "Audio/External/enemy-baby-attack-0",
-    "file": "enemy-baby-attack-0.wav",
-    "pack": "kenney-impact",
-    "source_file": "Audio/impactSoft_heavy_002.ogg",
-    "license": "CC0-1.0",
-    "creator": "Kenney",
-    "page": "https://kenney.nl/assets/impact-sounds",
-    "download": "https://kenney.nl/media/pages/assets/impact-sounds/87b4ddecda-1677589768/kenney_impact-sounds.zip",
-    "modifications": {
-      "mono": true,
-      "sample_rate": 24000,
-      "format": "PCM16 WAV",
-      "leading_trim_seconds": 0.0,
-      "duration_limit": 0.46,
-      "edge_fade_seconds": 0.006,
-      "gain": 0.45498407123175705,
-      "layers": [
-        {
-          "pack": "rubberduck-foley",
-          "file": "sfx100v2_footstep_wet_02.ogg",
-          "gain": 0.8
-        },
-        {
-          "pack": "kenney-rpg",
-          "file": "OGG/creak3.ogg",
-          "gain": 0.3
-        }
-      ]
-    },
-    "seconds": 0.46,
-    "peak": 0.5799999833106995,
-    "rms": 0.09373936057090759,
-    "sha256": "63ef2965423dd20667077e4bb70e79bec21bf97de9a9e276a0e4acbc909b41b6"
-  },
-  {
     "resource": "Audio/External/enemy-lantern-movement-0",
     "file": "enemy-lantern-movement-0.wav",
     "pack": "kenney-impact",
@@ -1564,54 +1304,6 @@
     "peak": 0.439971923828125,
     "rms": 0.034052753461023884,
     "sha256": "ed802b98979c4c6b4d58cd5ee14b61f217ae7968f8de925ae843e32ddc1f9292"
-  },
-  {
-    "pack": "recorded-workshop",
-    "creator": "bart",
-    "license": "CC0-1.0",
-    "page": "https://opengameart.org/content/68-workshop-sounds",
-    "download": "https://opengameart.org/sites/default/files/workshop.7z",
-    "source_file": "workshop/workshop - metal drop 3.wav",
-    "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
-    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3",
-    "resource": "Audio/External/recognition-0",
-    "file": "recognition-0.wav",
-    "modifications": {
-      "sample_rate": 48000,
-      "mono": true,
-      "format": "PCM16 WAV",
-      "scope": "Recorded dropped metal plus performed scream; mono, filtered, slowed, layered at 90 ms; short tail.",
-      "loop": false,
-      "recordings": [
-        {
-          "file": "metal-drop.wav",
-          "pack": "recorded-workshop",
-          "creator": "bart",
-          "license": "CC0-1.0",
-          "page": "https://opengameart.org/content/68-workshop-sounds",
-          "download": "https://opengameart.org/sites/default/files/workshop.7z",
-          "source_file": "workshop/workshop - metal drop 3.wav",
-          "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
-          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
-        },
-        {
-          "file": "scream.wav",
-          "pack": "owlish-recorded-foley",
-          "creator": "OwlishMedia",
-          "license": "CC0-1.0",
-          "page": "https://opengameart.org/content/sound-effects-pack",
-          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
-          "source_file": "Human/SCREAM.wav",
-          "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
-          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
-        }
-      ],
-      "source_kind": "recorded; edited physical foley or human performance; no oscillator/noise layers"
-    },
-    "seconds": 2.45,
-    "peak": 0.574981689453125,
-    "rms": 0.11333891783893704,
-    "sha256": "ae64efe9e1a2e7417d46136be3947367fd4a6862757af3031fc5419db4c7b97c"
   },
   {
     "pack": "real-human-heart",
@@ -2426,5 +2118,528 @@
     "peak": 0.379974365234375,
     "rms": 0.06482575873236393,
     "sha256": "0d7d53826b14ca2b0be102415c1ff71b8436c587313a8a7fa7e308f4db6da9f6"
+  },
+  {
+    "creator": "evghenifloca",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+    "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+    "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+    "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923",
+    "resource": "Audio/External/step-wood-0",
+    "file": "step-wood-0.wav",
+    "pack": "corridor-recorded-foley",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Distinct old-parquet shoe contact 2.01–2.68 s; mono, 65 Hz high-pass/10 kHz low-pass, 6 ms/90 ms fades; preserved board creak.",
+      "recordings": [
+        {
+          "file": "parquet.mp3",
+          "creator": "evghenifloca",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+          "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+          "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+          "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 0.67,
+    "peak": 0.46002197265625,
+    "rms": 0.01982096697448256,
+    "sha256": "5a5bce50ed475c3bfae996f5cdf8bbd7747d795c832ef376126de6313a7227cb"
+  },
+  {
+    "creator": "evghenifloca",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+    "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+    "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+    "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923",
+    "resource": "Audio/External/step-wood-1",
+    "file": "step-wood-1.wav",
+    "pack": "corridor-recorded-foley",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Distinct old-parquet shoe contact 3.57–4.24 s; mono, 65 Hz high-pass/10 kHz low-pass, 6 ms/90 ms fades; preserved board creak.",
+      "recordings": [
+        {
+          "file": "parquet.mp3",
+          "creator": "evghenifloca",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+          "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+          "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+          "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 0.67,
+    "peak": 0.459991455078125,
+    "rms": 0.01352458639240277,
+    "sha256": "c49a0e967eb20eed3b1951dec7c62416a571865d056ddfbd05515c642fee5bde"
+  },
+  {
+    "creator": "evghenifloca",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+    "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+    "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+    "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923",
+    "resource": "Audio/External/step-wood-2",
+    "file": "step-wood-2.wav",
+    "pack": "corridor-recorded-foley",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Distinct old-parquet shoe contact 4.37–5.04 s; mono, 65 Hz high-pass/10 kHz low-pass, 6 ms/90 ms fades; preserved board creak.",
+      "recordings": [
+        {
+          "file": "parquet.mp3",
+          "creator": "evghenifloca",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+          "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+          "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+          "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 0.67,
+    "peak": 0.46002197265625,
+    "rms": 0.017416373910119947,
+    "sha256": "7713505fb1ca08e42340e3aaad7b275b67e8a049e2ac0f6e934d57e3ac947554"
+  },
+  {
+    "creator": "evghenifloca",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+    "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+    "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+    "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923",
+    "resource": "Audio/External/step-wood-3",
+    "file": "step-wood-3.wav",
+    "pack": "corridor-recorded-foley",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Distinct old-parquet shoe contact 5.28–5.95 s; mono, 65 Hz high-pass/10 kHz low-pass, 6 ms/90 ms fades; preserved board creak.",
+      "recordings": [
+        {
+          "file": "parquet.mp3",
+          "creator": "evghenifloca",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+          "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+          "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+          "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 0.67,
+    "peak": 0.46002197265625,
+    "rms": 0.012257035558235244,
+    "sha256": "1bcd44fedb08ec6188a56c7b124bdae5c987fdfa12aa75787f0c15714963d958"
+  },
+  {
+    "creator": "evghenifloca",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+    "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+    "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+    "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923",
+    "resource": "Audio/External/step-wood-4",
+    "file": "step-wood-4.wav",
+    "pack": "corridor-recorded-foley",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Distinct old-parquet shoe contact 9.99–10.66 s; mono, 65 Hz high-pass/10 kHz low-pass, 6 ms/90 ms fades; preserved board creak.",
+      "recordings": [
+        {
+          "file": "parquet.mp3",
+          "creator": "evghenifloca",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+          "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+          "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+          "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 0.67,
+    "peak": 0.46002197265625,
+    "rms": 0.014887673648496167,
+    "sha256": "02ebbc80a8d7c1b6ac21a6de824205340b303f03effc571695716150786003d7"
+  },
+  {
+    "pack": "corridor-recorded-foley",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - metal drop 3.wav",
+    "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3",
+    "resource": "Audio/External/recognition-0",
+    "file": "recognition-0.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Recorded metal impact, dragged-metal friction at 28 ms, performed frightened breath at 160 ms; distinct rate reductions and filtering; 1.75 s fading tail; no synthetic tone or noise.",
+      "recordings": [
+        {
+          "file": "metal-drop.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - metal drop 3.wav",
+          "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "metal-drag.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - dragging metal.wav",
+          "source_file_sha256": "e29e47f649d959075653ec1f451174365b0ba0a88c4b7b58d08a480cf6b0feee",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "panic.wav",
+          "pack": "owlish-recorded-foley",
+          "creator": "OwlishMedia",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/sound-effects-pack",
+          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+          "source_file": "Human/freakedbreath.wav",
+          "source_file_sha256": "10881ee9d5c83b15e269762ccc89cc932173d2c720588e9303e0995ff32b69db",
+          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 1.75,
+    "peak": 0.52001953125,
+    "rms": 0.06033952587572141,
+    "sha256": "be00a855931a15ccfc5fede6797ebae4f93d85800e1b1cacaff2088dd8058149"
+  },
+  {
+    "pack": "corridor-recorded-foley",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - wood clap.wav",
+    "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3",
+    "resource": "Audio/External/enemy-cyclopse-attack-0",
+    "file": "enemy-cyclopse-attack-0.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Short actual wood/tool contact plus recorded vocal texture; .46 s action-synchronized contact, independent source-rate edits, filtered and faded; no glass or synthetic tone.",
+      "recordings": [
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "panic.wav",
+          "pack": "owlish-recorded-foley",
+          "creator": "OwlishMedia",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/sound-effects-pack",
+          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+          "source_file": "Human/freakedbreath.wav",
+          "source_file_sha256": "10881ee9d5c83b15e269762ccc89cc932173d2c720588e9303e0995ff32b69db",
+          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 0.46,
+    "peak": 0.41998291015625,
+    "rms": 0.03382703929515968,
+    "sha256": "976f53010b65a0264a149c2d16dd81594a2af84ddc15e799d7195ea012902f01"
+  },
+  {
+    "pack": "corridor-recorded-foley",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - ratchet1.wav",
+    "source_file_sha256": "e075b655154ad88bcd5b5ed002826664a4ef40c3afa7852f99c5efcfd8626836",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3",
+    "resource": "Audio/External/enemy-hwacat-attack-0",
+    "file": "enemy-hwacat-attack-0.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Short actual wood/tool contact plus recorded vocal texture; .46 s action-synchronized contact, independent source-rate edits, filtered and faded; no glass or synthetic tone.",
+      "recordings": [
+        {
+          "file": "ratchet.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - ratchet1.wav",
+          "source_file_sha256": "e075b655154ad88bcd5b5ed002826664a4ef40c3afa7852f99c5efcfd8626836",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 0.46,
+    "peak": 0.420013427734375,
+    "rms": 0.0413750570786666,
+    "sha256": "128fac70b280e2b7f7ef996fb8a9b2c36409eba23f5766f6f266a390c23cea76"
+  },
+  {
+    "pack": "corridor-recorded-foley",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - wood clap.wav",
+    "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3",
+    "resource": "Audio/External/enemy-uncat-attack-0",
+    "file": "enemy-uncat-attack-0.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Short actual wood/tool contact plus recorded vocal texture; .46 s action-synchronized contact, independent source-rate edits, filtered and faded; no glass or synthetic tone.",
+      "recordings": [
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "scared.wav",
+          "pack": "owlish-recorded-foley",
+          "creator": "OwlishMedia",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/sound-effects-pack",
+          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+          "source_file": "Human/scared-breathing.wav",
+          "source_file_sha256": "3adbe6f518576fa67308cfac57e6238249244f9e043d675fce9d80b853690eb1",
+          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 0.46,
+    "peak": 0.420013427734375,
+    "rms": 0.03203190182449051,
+    "sha256": "cd6b20397b7f40450a2b53b231df061aede87bda62edf13216f28ed41fede17a"
+  },
+  {
+    "pack": "corridor-recorded-foley",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - wood clap.wav",
+    "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3",
+    "resource": "Audio/External/enemy-baby-attack-0",
+    "file": "enemy-baby-attack-0.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Short actual wood/tool contact plus recorded vocal texture; .46 s action-synchronized contact, independent source-rate edits, filtered and faded; no glass or synthetic tone.",
+      "recordings": [
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "baby-cry.mp3",
+          "pack": "recorded-baby-cry",
+          "creator": "jamesmbock",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/jamesmbock/sounds/458646/",
+          "download": "https://cdn.freesound.org/previews/458/458646_6996390-hq.mp3",
+          "source_file": "babycry.mp3 (public high quality MP3 preview)",
+          "source_file_sha256": "c6a241782aba0f198bd1216a50f0535f7c9a3a473d39fae0bd9c05c692a8d668",
+          "archive_sha256": null
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 0.46,
+    "peak": 0.420013427734375,
+    "rms": 0.03438518100167637,
+    "sha256": "ff64973ce88a6b2c15e8cbae8fe5f6325bc86110e7e354c02c26336a5d3b78f0"
+  },
+  {
+    "creator": "vhio",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/vhio/sounds/791287/",
+    "download": "https://cdn.freesound.org/previews/791/791287_15774433-hq.mp3",
+    "source_file": "WINDInt Closed room in an abandoned defense base (public high quality MP3 preview)",
+    "source_file_sha256": "45ff5a6890779f55699f8228e5f1d1d73bbecdefdb602df4ad3788d1b2a6de73",
+    "resource": "Audio/External/ambience-corridor-0",
+    "file": "ambience-corridor-0.wav",
+    "pack": "corridor-recorded-foley",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Actual sheltered room/wind field recording 395–419 s; distant road remains in source. Mono, 45 Hz high-pass/1.9 kHz low-pass, 1.5 s wrap crossfade to 22.5 s spatial loop; no added drone.",
+      "recordings": [
+        {
+          "file": "abandoned-room.mp3",
+          "creator": "vhio",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/vhio/sounds/791287/",
+          "download": "https://cdn.freesound.org/previews/791/791287_15774433-hq.mp3",
+          "source_file": "WINDInt Closed room in an abandoned defense base (public high quality MP3 preview)",
+          "source_file_sha256": "45ff5a6890779f55699f8228e5f1d1d73bbecdefdb602df4ad3788d1b2a6de73"
+        }
+      ],
+      "loop": true,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 22.5,
+    "peak": 0.199981689453125,
+    "rms": 0.03549881803187614,
+    "sha256": "78cdb96921d4860b8c2f7e43002faaa86eb39cb7bd18ac5218dda9c34e84189e"
+  },
+  {
+    "creator": "vhio",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/vhio/sounds/791287/",
+    "download": "https://cdn.freesound.org/previews/791/791287_15774433-hq.mp3",
+    "source_file": "WINDInt Closed room in an abandoned defense base (public high quality MP3 preview)",
+    "source_file_sha256": "45ff5a6890779f55699f8228e5f1d1d73bbecdefdb602df4ad3788d1b2a6de73",
+    "resource": "Audio/External/ambience-corridor-1",
+    "file": "ambience-corridor-1.wav",
+    "pack": "corridor-recorded-foley",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Actual sheltered room/wind field recording 230–254 s; distant road remains in source. Mono, 45 Hz high-pass/1.9 kHz low-pass, 1.5 s wrap crossfade to 22.5 s spatial loop; no added drone.",
+      "recordings": [
+        {
+          "file": "abandoned-room.mp3",
+          "creator": "vhio",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/vhio/sounds/791287/",
+          "download": "https://cdn.freesound.org/previews/791/791287_15774433-hq.mp3",
+          "source_file": "WINDInt Closed room in an abandoned defense base (public high quality MP3 preview)",
+          "source_file_sha256": "45ff5a6890779f55699f8228e5f1d1d73bbecdefdb602df4ad3788d1b2a6de73"
+        }
+      ],
+      "loop": true,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 22.5,
+    "peak": 0.199981689453125,
+    "rms": 0.038215917157381735,
+    "sha256": "b97f6106c557ac80dce30beb04fb9ea2d945d05febd4b66577423f6bef642742"
+  },
+  {
+    "creator": "vhio",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/vhio/sounds/791287/",
+    "download": "https://cdn.freesound.org/previews/791/791287_15774433-hq.mp3",
+    "source_file": "WINDInt Closed room in an abandoned defense base (public high quality MP3 preview)",
+    "source_file_sha256": "45ff5a6890779f55699f8228e5f1d1d73bbecdefdb602df4ad3788d1b2a6de73",
+    "resource": "Audio/External/ambience-corridor-2",
+    "file": "ambience-corridor-2.wav",
+    "pack": "corridor-recorded-foley",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Actual sheltered room/wind field recording 95–119 s; distant road remains in source. Mono, 45 Hz high-pass/1.9 kHz low-pass, 1.5 s wrap crossfade to 22.5 s spatial loop; no added drone.",
+      "recordings": [
+        {
+          "file": "abandoned-room.mp3",
+          "creator": "vhio",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/vhio/sounds/791287/",
+          "download": "https://cdn.freesound.org/previews/791/791287_15774433-hq.mp3",
+          "source_file": "WINDInt Closed room in an abandoned defense base (public high quality MP3 preview)",
+          "source_file_sha256": "45ff5a6890779f55699f8228e5f1d1d73bbecdefdb602df4ad3788d1b2a6de73"
+        }
+      ],
+      "loop": true,
+      "source_kind": "Physical contact and human-performance recordings; no synthesized layers"
+    },
+    "seconds": 22.5,
+    "peak": 0.20001220703125,
+    "rms": 0.04616803298242998,
+    "sha256": "dec725d58571144ab7f5f28ddc14be351499295703eb8d78f55be52a201fde87"
   }
 ]

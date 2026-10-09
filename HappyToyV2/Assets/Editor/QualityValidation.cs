@@ -77,6 +77,8 @@ namespace HappyToy.V2.Editor
             ThreatEyeMaskImport.Ensure();
             MenuBackdropImport.Ensure();
             CorridorFurnitureImport.Ensure();
+            CorridorArchitectureImport.Ensure();
+            CorridorDetailsImport.Ensure();
             GraphicsLightingSetup.EnsureAndActivate();
             Validate();
             // Resources anchors retain material feature combinations created only at runtime.
@@ -89,6 +91,8 @@ namespace HappyToy.V2.Editor
             if (outputArg >= 0 && outputArg + 1 < args.Length) destination = Path.GetFullPath(args[outputArg + 1]);
             Directory.CreateDirectory(destination);
             bool development = Array.IndexOf(args, "-v2-release-player") < 0;
+            // Retain real native CPU/GPU timestamp availability in release players.
+            PlayerSettings.enableFrameTimingStats=true;
             var report = BuildPipeline.BuildPlayer(new[] { ScenePath }, Path.Combine(destination, "HappyToyV2.exe"),
                 BuildTarget.StandaloneWindows64, development ? BuildOptions.Development : BuildOptions.None);
             if (Hash(ScenePath) != before) throw new InvalidOperationException("Authored scene changed during build.");

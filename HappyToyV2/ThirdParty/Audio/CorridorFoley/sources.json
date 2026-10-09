@@ -1,0 +1,29 @@
+{
+  "parquet": {
+    "file": "parquet.mp3",
+    "creator": "evghenifloca",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+    "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+    "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+    "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923"
+  },
+  "creaking": {
+    "file": "creaking.mp3",
+    "creator": "vrodge",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/vrodge/sounds/119522/",
+    "download": "https://cdn.freesound.org/previews/119/119522_1492767-hq.mp3",
+    "source_file": "Footsteps_wooden floor_creaking.aif (public high quality MP3 preview)",
+    "source_file_sha256": "dd7c4709e9806fc5f5a5548db6b7f04d15eb4abd46ddedeed1f95cd29e8a6659"
+  },
+  "abandoned-room": {
+    "file": "abandoned-room.mp3",
+    "creator": "vhio",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/vhio/sounds/791287/",
+    "download": "https://cdn.freesound.org/previews/791/791287_15774433-hq.mp3",
+    "source_file": "WINDInt Closed room in an abandoned defense base (public high quality MP3 preview)",
+    "source_file_sha256": "45ff5a6890779f55699f8228e5f1d1d73bbecdefdb602df4ad3788d1b2a6de73"
+  }
+}

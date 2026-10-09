@@ -14,7 +14,7 @@ PROTECTED = {
     'Assets/Generated/SchoolRenderer 17.asset': '61b3c1d274b8e9ca7f9dd1eeae7a0b8f430b9465c465d6844d087424871086dc',
 }
 SCOPE = ('Full current Assets/Packages/ProjectSettings inventory and hashes through the existing verifier, '
-         'explicit new graphics Resources/settings input inclusion, original hash protection and copied credit equality. '
+         'explicit new graphics Resources/settings input inclusion, original hash protection (LF-canonical YAML assets; raw scene bytes), and copied credit equality. Build inputs retain strict raw byte hashes. '
          'Input inclusion does not by itself certify actual shipped shader appearance, GPU duration, survival or audio.')
 
 def sha(path):
@@ -125,8 +125,11 @@ def graphics_inventory(project, expected=None):
         include(name)
     for name, digest in PROTECTED.items():
         path = project / name
-        check(path.is_file() and sha(path) == digest, 'Protected original changed: ' + name)
-        if expected is not None: check(expected.get(name) == digest, 'Protected original hash absent/wrong in build: ' + name)
+        # Git's Windows autocrlf changes YAML line endings without changing the
+        # authored pipeline. The preserved scene remains a byte-exact LFS asset.
+        protected = hashlib.sha256(path.read_bytes().replace(b'\r\n', b'\n')).hexdigest() if path.is_file() and name.endswith('.asset') else sha(path) if path.is_file() else None
+        check(path.is_file() and (sha(path) == digest or protected == digest), 'Protected original changed: ' + name)
+        if expected is not None: check(path.is_file() and expected.get(name) == sha(path), 'Protected original hash absent/wrong in build: ' + name)
     pipeline_guid = guids.get('Assets/GraphicsUpgrade/Settings/GraphicsPipeline.asset')
     renderer_guid = guids.get('Assets/GraphicsUpgrade/Settings/GraphicsRenderer.asset')
     if pipeline:

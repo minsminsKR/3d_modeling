@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "checkedDateLocal": "2026-10-10",
+  "scope": "Recorded corridor audio verification summary. Preserve run statuses and separate PCM/runtime facts from subjective acceptance.",
+  "certifications": {"humanListening": false, "humanFear": false, "targetHardwarePerformance": false, "entireThreadGoal": false},
+  "sourceValidation": {"status": "PASS", "command": "python Tools/quality/verify_recorded_audio.py", "mandatoryWavs": 85, "canonicalWavs": 85, "verifiedWavs": 85, "uniqueUnityGuids": 85, "retainedRecordings": 24, "recordingGroups": {"CorridorFoley": 3, "RecordedHorror": 21}, "scope": "Current mandatory inventory, canonical WAV hashes, retained recording hashes, mono PCM16, provenance fields and Unity GUIDs. This does not itself execute Unity."},
+  "sourceFingerprints": [
+    {"path": "ThirdParty/Audio/manifest.json", "sha256": "18f1d94e13ca9d2e8f0d8b2c0f22208dd941a70d5e857929a608ff931043cf7b"},
+    {"path": "ThirdParty/Audio/CorridorFoley/prepared-cues.json", "sha256": "fa8bbde0c6499a9b06856a0512b1c21f1793801e0bb05ad7af4cba9c18b5235c"},
+    {"path": "ThirdParty/Audio/CorridorFoley/sources.json", "sha256": "e5442fb1676e4b60c0186bc8c7be40c116b0d7bdc5959bfd7b3634eab7d024b8"},
+    {"path": "ThirdParty/Audio/RecordedHorror/sources.json", "sha256": "5ea2f1b2d3a16efe4ca37f45c3977ed926b053b0480feee2825c6c9ea0648318"},
+    {"path": "SourceArt/Audio/requirements-corridor.txt", "sha256": "a2a061aa6f4461d46ca23ccfd919b13815456fe5a45ea31ae89ff6119a27b2eb"},
+    {"path": "SourceArt/Audio/render_corridor_foley.py", "sha256": "1baa4dc4b66e6b110ce84995d7157793f3a44c85867bcc91d13de44be1917cc6"},
+    {"path": "Tools/quality/verify_recorded_audio.py", "sha256": "c4c0764e15a8c12330709d00c7c13caa373c87ea861da8681e5342442f72c698"}
+  ],
+  "corridorReproduction": {"status": "PASS", "cues": 13, "hashMismatches": [], "scope": "Current thirteen corridor cues were rendered from retained recordings into an isolated temporary folder and matched their canonical hashes byte-for-byte.", "python": "CPython 3.11", "dependencies": {"numpy": "1.26.4", "scipy": "1.14.1", "soundfile": "0.13.1", "cffi": "2.1.1", "pycparser": "3.1"}, "command": "python SourceArt/Audio/render_corridor_foley.py", "order": "Run after render_recorded_horror.py when rebuilding both passes."},
+  "ownershipRuntime": {"status": "PASS", "unity": "6000.6.0f1", "device": "NVIDIA GeForce RTX 2060 SUPER", "scope": "Controlled current corridor assay through public CreateCorridor/Begin. Player and actors do not move naturally: player poses are teleported near each real ambience emitter, monster behaviours and NavMesh agents are disabled. Non-ambience sources are explicitly muted throughout spatial-loop isolation. The three production RoomAmbience sources/owned imported clips play normally; no synthetic cue, forced AudioRenderer or manual clip playback. Phase statistics observe natural pre-device listener DSP and full WAV is retained. This is loop audibility, actual master/source mute, pause, disable/re-enable and owned cleanup evidence; not chapter survival, full game mix, human/device listening, fear or hardware performance certification.", "isolatedOtherSources": 109, "checks": {"importedOwnership": true, "pauseFrozen": true, "disableStopped": true, "enableResumed": true, "ownedCleanup": true, "importedResourcesSurvive": true}, "captureSeconds": 12.586666666666666, "errors": []},
+  "ownershipClipImports": [
+    {"cue": "ambience-corridor-0", "importedName": "ambience-corridor-0", "ownedName": "External ambience-corridor / ambience-corridor-0", "samples": 1080000, "frequency": 48000, "channels": 1, "peak": 0.199981689453125, "listenerDistance": 0.649993896484375, "gain": 0.18000000715255737, "cutoff": 6000.0, "ownedCopy": true, "loadedPcm": true, "spatialLoop": true, "occluded": false},
+    {"cue": "ambience-corridor-1", "importedName": "ambience-corridor-1", "ownedName": "External ambience-corridor / ambience-corridor-1", "samples": 1080000, "frequency": 48000, "channels": 1, "peak": 0.199981689453125, "listenerDistance": 0.649993896484375, "gain": 0.18000000715255737, "cutoff": 6000.0, "ownedCopy": true, "loadedPcm": true, "spatialLoop": true, "occluded": false},
+    {"cue": "ambience-corridor-2", "importedName": "ambience-corridor-2", "ownedName": "External ambience-corridor / ambience-corridor-2", "samples": 1080000, "frequency": 48000, "channels": 1, "peak": 0.20001220703125, "listenerDistance": 0.649993896484375, "gain": 0.18000000715255737, "cutoff": 6000.0, "ownedCopy": true, "loadedPcm": true, "spatialLoop": true, "occluded": false}
+  ],
+  "ownershipPhases": [
+    {"name": "near-ambience-corridor-0", "expectedAudible": true, "callbacks": 27, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 55296, "peak": 0.013739385642111301, "rms": 0.003135373890931497},
+    {"name": "near-ambience-corridor-1", "expectedAudible": true, "callbacks": 27, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 55296, "peak": 0.014329393394291401, "rms": 0.00407360246488402},
+    {"name": "near-ambience-corridor-2", "expectedAudible": true, "callbacks": 26, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 53248, "peak": 0.01785098947584629, "rms": 0.0050344121090100825},
+    {"name": "master-positive-before", "expectedAudible": true, "callbacks": 25, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 51200, "peak": 0.012879308313131332, "rms": 0.0036808307003916444},
+    {"name": "master-zero", "expectedAudible": false, "callbacks": 25, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 51200, "peak": 3.018009260052574e-28, "rms": 1.9162691897608138e-28},
+    {"name": "master-restored", "expectedAudible": true, "callbacks": 26, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 53248, "peak": 0.011584918946027756, "rms": 0.0035102570096264955},
+    {"name": "all-room-sources-muted", "expectedAudible": false, "callbacks": 27, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 55296, "peak": 3.018009260052574e-28, "rms": 1.9161894644843496e-28},
+    {"name": "room-source-unmuted", "expectedAudible": true, "callbacks": 27, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 55296, "peak": 0.01178981177508831, "rms": 0.003625367923577002},
+    {"name": "shell-paused", "expectedAudible": false, "callbacks": 26, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 53248, "peak": 3.018009260052574e-28, "rms": 1.916160125448996e-28},
+    {"name": "shell-resumed", "expectedAudible": true, "callbacks": 26, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 53248, "peak": 0.012235712260007858, "rms": 0.003436049052167957},
+    {"name": "ambience-component-disabled", "expectedAudible": false, "callbacks": 26, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 53248, "peak": 1.409349310983914e-28, "rms": 1.0423440505503875e-28},
+    {"name": "ambience-component-enabled", "expectedAudible": true, "callbacks": 26, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 53248, "peak": 0.00983859971165657, "rms": 0.0025804642739126996},
+    {"name": "ambience-component-destroyed", "expectedAudible": false, "callbacks": 26, "channels": 2, "nonfinite": 0, "clipped": 0, "samples": 53248, "peak": 1.409349310983914e-28, "rms": 1.0423233625182245e-28}
+  ],
+  "fullCorridorMix": {"runStatus": "FAIL", "routePassed": false, "escaped": true, "records": 5, "failure": "InvalidOperationException: Native natural clock/motor changed; stage=return memories to distant classroom altar; records=5; at=(261.19, 0.08, 211.99)", "failureInterpretation": "The player reported escaped=true and five records. Overall FAIL is retained: the previous route audit demanded the active-game clock after legitimate Result screen paused it. The revised audit rerun is separate evidence, not a retroactive PASS.", "scope": "Native rendered Windows seeded main corridor. Existing known-map nearest-goal stealth strategy uses only keyboard/mouse events after public level preparation. Natural listener DSP callbacks preserve the complete pre-device PCM stream in bounded 180-second WAV parts. No AI suppression/speed edits, teleport/Use/Collect calls or forced audio rendering/capture clock. Milestone screenshots add offscreen camera rendering and readback overhead. Audit overhead and concurrent external GPU load are not removed; no device listening, human fear or first-player difficulty certification.", "unity": "6000.6.0f1", "device": "NVIDIA GeForce RTX 2060 SUPER", "sampleRate": 48000, "channels": 2, "seconds": 179.47733333333332, "callbacks": 8413, "samples": 17229824, "nonfiniteSamples": 0, "truncated": false, "overflowSamples": 0, "recognitionEvents": 2, "footsteps": 256, "contacts": 120, "errors": [], "writerError": "", "pauseSteadySamples": 36864, "pauseSteadyPeak": 3.340949193127426e-28, "independentPcm": {"sha256Matches": true, "samples": 17229824, "peak": 0.281646728515625, "rms": 0.0059364302418840175, "clippedSamples": 0}, "currentAudioInputsMatchBuild": {"buildManifestSha256": "075140f99051f86490dddf7eac0ff2b48ab958c616e73523158e80bfed4570d0", "matchedFiles": 178, "scope": "85 WAVs, their 85 metas and eight audio runtime/import files match the fine-joints build inputs; this is not a claim that every current project input is unchanged."}},
+  "corridorMixStages": [
+    {"storyStep": 0, "name": "progress-0", "samples": 4284416, "clipped": 0, "peak": 0.11184898018836975, "rms": 0.0026175843116858313},
+    {"storyStep": 1, "name": "progress-1", "samples": 1488896, "clipped": 0, "peak": 0.28167176246643066, "rms": 0.008306544719992138},
+    {"storyStep": 2, "name": "progress-2", "samples": 1853440, "clipped": 0, "peak": 0.23500317335128784, "rms": 0.008685999744240771},
+    {"storyStep": 3, "name": "progress-3", "samples": 1994752, "clipped": 0, "peak": 0.07480274140834808, "rms": 0.001473495211151859},
+    {"storyStep": 4, "name": "progress-4", "samples": 6342656, "clipped": 0, "peak": 0.26694974303245544, "rms": 0.007219230335526644},
+    {"storyStep": 5, "name": "progress-5", "samples": 1265664, "clipped": 0, "peak": 0.07643969357013702, "rms": 0.0009706467322213254}
+  ],
+  "rawArtifactPolicy": "These raw logs/WAVs are optional local verification outputs outside source commits. Their relative names identify the run artifacts; authoring, building and playing require no access to them. Paths resolve under the external review-output directory, not under this Unity project.",
+  "optionalRawArtifacts": [
+    {"path": "work/corridor-realism-audio-ownership/corridor-audio-ownership.json", "sha256": "cf801de012e093e3617adab6fe8cb1a649cc24b24336108b24d70b213ac6d02e"},
+    {"path": "work/corridor-realism-audio-ownership/listener-audio/route.wav", "sha256": "efd4e688614efe51ac31090d535c974791a3c268fd78d5a8fdb1dc186e12df5f"},
+    {"path": "work/corridor-realism-fine-live-route-211/native-corridor-play.json", "sha256": "14bef3514c976e817ef679c561b40e1babfb31819c67f142278dd39b8a9793d3"},
+    {"path": "work/corridor-realism-fine-live-route-211/native-corridor-route.json", "sha256": "5a64341c772d9630f1f1fdc5678ba2f7862db75c7f2ead4f9f3fb5f7108e45ea"},
+    {"path": "work/corridor-realism-fine-live-route-211/audio/audio.json", "sha256": "9db06f7763d190e5f9510eb7ba9941ef9bf0d9f427b4bc3ee6ca2df6986b40ee"},
+    {"path": "work/corridor-realism-fine-live-route-211/audio/route.wav", "sha256": "307d073769e3be0ae8931f770ee38c626c20e1742959dc118c5725475c97de92"},
+    {"path": "work/corridor-audio-reproduction.json", "sha256": "c5e051576a0ec2761aeac7c81d86727114f1e3ef1b85c5c27473c412fc573360"}
+  ],
+  "repeatRuntimeCommands": ["HappyToyV2.exe -v4-corridor-audio-output <output-dir>", "HappyToyV2.exe -v2-corridor-play-output <output-dir> -v2-audit-seed 211"]
+}

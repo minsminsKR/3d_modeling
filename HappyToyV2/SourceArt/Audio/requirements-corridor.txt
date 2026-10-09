@@ -1,0 +1,6 @@
+# CPython 3.11 Windows x64, corridor Foley authoring.
+numpy==1.26.4
+scipy==1.14.1
+soundfile==0.13.1
+cffi==2.1.1
+pycparser==3.1

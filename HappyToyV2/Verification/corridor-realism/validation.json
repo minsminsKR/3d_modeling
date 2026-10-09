@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "checkedDateLocal": "2026-10-10",
+  "scope": "Current corridor candidate: Blender source/import integrity, full native input escape, recorded game mix, controlled native appearance review and measured GPU cost. Subjective fear and target-device presented FPS are not certified by these assays.",
+  "sourceBaseCommit": "1e5f0be5fbe471786ec8f4dfc314ce38320bcc09",
+  "models": [
+    {
+      "manifest": "SourceArt/GraphicsUpgrade/architecture-manifest.json",
+      "models": 18,
+      "sourceAndFbxHashes": "PASS"
+    },
+    {
+      "manifest": "SourceArt/GraphicsUpgrade/details-manifest.json",
+      "models": 28,
+      "sourceAndFbxHashes": "PASS"
+    }
+  ],
+  "graphics": {
+    "pipeline": "Owned URP forward HDR",
+    "msaa": 4,
+    "postAA": "SMAA",
+    "localReflection": "128 HDR, time-sliced, three-second bounded refresh",
+    "shadowAtlas": 2048,
+    "details": [
+      "closed cupped floorboards",
+      "0.8 mm supported joints",
+      "profiled timber and curved thick paper",
+      "measured PBR UVs",
+      "two mesh LODs and spatial material batching"
+    ],
+    "nativeReview": {
+      "status": "PASS",
+      "views": 27,
+      "errors": [],
+      "reportSha256": "9bcbf994801e91eadb4758197492b7ae52daa0b0dad5d57acc70d61aa67ead70",
+      "scope": "Controlled native art review of actual runtime worlds/materials with supported camera positions. Actors are explicitly frozen and observer poses set; no survival, input route, resource balance, device listening, human fear or hardware FPS certification.",
+      "optionalRawDirectory": "corridor-realism-release-art"
+    }
+  },
+  "nativeRoute": {
+    "status": "PASS",
+    "seed": 211,
+    "escaped": true,
+    "records": 5,
+    "physicalMeters": 261.42791748046875,
+    "maximumThreats": 4,
+    "hidingOutcome": "Survived",
+    "hidingRng": "production Unity RNG; no forced sample or seed",
+    "batteriesCollected": 1,
+    "candlesIgnited": 1,
+    "gameSeconds": 173.72105407714844,
+    "wallSeconds": 173.7583770751953,
+    "inputDevicesRestored": true,
+    "reportSha256": "d9b18679af7c95faea000c4a3f5446a1403afc1e84730a257cd4f82a975593ff",
+    "scope": "Native rendered Windows seeded main corridor. Existing known-map nearest-goal stealth strategy uses only keyboard/mouse events after public level preparation. Natural listener DSP callbacks preserve the complete pre-device PCM stream in bounded 180-second WAV parts. No AI suppression/speed edits, teleport/Use/Collect calls or forced audio rendering/capture clock. Milestone screenshots add offscreen camera rendering and readback overhead. Audit overhead and concurrent external GPU load are not removed; no device listening, human fear or first-player difficulty certification.",
+    "optionalRawDirectory": "corridor-realism-release-escape-211"
+  },
+  "audio": {
+    "sourceSummary": "audio-validation.json",
+    "actualMixSeconds": 181.056,
+    "stages": [
+      {
+        "storyStep": 0,
+        "name": "progress-0",
+        "samples": 4179968,
+        "clipped": 0,
+        "peak": 0.10691731423139572,
+        "rms": 0.0026468563331227004
+      },
+      {
+        "storyStep": 1,
+        "name": "progress-1",
+        "samples": 1480704,
+        "clipped": 0,
+        "peak": 0.25923117995262146,
+        "rms": 0.00845394982373165
+      },
+      {
+        "storyStep": 2,
+        "name": "progress-2",
+        "samples": 1837056,
+        "clipped": 0,
+        "peak": 0.2257014364004135,
+        "rms": 0.00868417348960029
+      },
+      {
+        "storyStep": 3,
+        "name": "progress-3",
+        "samples": 1994752,
+        "clipped": 0,
+        "peak": 0.07479659467935562,
+        "rms": 0.0014252555232447325
+      },
+      {
+        "storyStep": 4,
+        "name": "progress-4",
+        "samples": 6592512,
+        "clipped": 0,
+        "peak": 0.28396400809288025,
+        "rms": 0.008935515290151099
+      },
+      {
+        "storyStep": 5,
+        "name": "progress-5",
+        "samples": 1296384,
+        "clipped": 0,
+        "peak": 0.07492778450250626,
+        "rms": 0.000958726721370672
+      }
+    ],
+    "nonfiniteSamples": 0,
+    "overflowSamples": 0,
+    "truncated": false,
+    "files": [
+      {
+        "file": "route.wav",
+        "sha256": "354fe41484983f073ac97bee74b6b770165c45281f3999a52f20101a3d486fb6",
+        "samples": 17280000,
+        "channels": 2,
+        "seconds": 180.0
+      },
+      {
+        "file": "route-part-002.wav",
+        "sha256": "7be6bc1f7a2aee86f79e981500cddbca75e319a081c9dbb096ffcbcad96301a6",
+        "samples": 101376,
+        "channels": 2,
+        "seconds": 1.056
+      }
+    ],
+    "pauseSteadyPeak": 4.223672220118094e-28,
+    "scope": "Complete natural listener DSP before the device; no listening-quality certification."
+  },
+  "performance": {
+    "device": "NVIDIA GeForce RTX 2060 SUPER",
+    "api": "Direct3D12",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "developmentBuild": false,
+    "gpuMs": {
+      "count": 12301,
+      "median": 4.013824,
+      "p95": 6.156032,
+      "p99": 6.891264,
+      "max": 133.971712
+    },
+    "witnessedGpuMs": {
+      "count": 1207,
+      "median": 3.940608,
+      "p95": 6.24384,
+      "p99": 6.679808,
+      "max": 133.971712
+    },
+    "lateGpuMs": {
+      "count": 6398,
+      "median": 3.659264,
+      "p95": 5.835264,
+      "p99": 6.543104,
+      "max": 7.665664
+    },
+    "cpuMs": {
+      "count": 12301,
+      "median": 8.7538,
+      "p95": 18.618,
+      "p99": 25.0453,
+      "max": 209.4023
+    },
+    "reportSha256": "17bd249640e0c6f8b6ec0d65549580e91e24c937ae4e535caa9c8e47904507e5",
+    "scope": "FrameTimingManager CPU/GPU timestamps during active corridor gameplay. offscreenTarget=true explicitly submits the normal production eye camera to a 1920x1080 HDR target each Update when hidden-window automatic rendering is suspended. Automatic renders, if present, add workload. No pixel readback or CPU render stopwatch is used. This conservative GPU workload is not hardware-presented FPS. CPU includes waits/audit overhead. Zero GPU time is unavailable; RTX 3060 is not this measured device.",
+    "targetClassAssessment": "Observed 1080p GPU p95 is under 16.67 ms on RTX 2060 SUPER, supporting the intended midrange budget. RTX 3060 itself was not measured. CPU and maximum timings include audit/readback/retention overhead; no presented-FPS promise."
+  },
+  "buildInputs": {
+    "status": "GRAPHICS_BUILD_INPUTS_PASS",
+    "reportSha256": "89ce1e0e877a17e034535419e2337742d6b46c23934a0a54bc2dd67807493f8d",
+    "scope": "Full current Assets/Packages/ProjectSettings inventory and hashes through the existing verifier, explicit new graphics Resources/settings input inclusion, original hash protection (LF-canonical YAML assets; raw scene bytes), and copied credit equality. Build inputs retain strict raw byte hashes. Input inclusion does not by itself certify actual shipped shader appearance, GPU duration, survival or audio."
+  },
+  "preservation": "Original scene, monster models/AI, PlayerMotor and navigation/collision sources retain their Git base contents. Render-only additions keep runtime physical-state checks.",
+  "rawEvidence": "Large logs, PNGs, WAVs and Windows builds are optional validation outputs outside source control. Recreate via BuildWindows, -v3-graphics-output, -v2-corridor-play-output, -v4-gpu-timings and -v4-corridor-audio-output. Source generators, .blend, FBX, recordings, .meta, pinned tools and licenses are retained in the repository."
+}

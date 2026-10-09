@@ -55,21 +55,13 @@ namespace HappyToy.V2
                 Vector3 center=run.CellPosition(cell);center.y=0;
                 Vector3 plane=center+outward*3+across*offset+inward*.183f+Vector3.up*1.73f;
                 Quaternion basis=Quaternion.LookRotation(inward);
-                var board=CellDraft(cell,SectorPaper(cell),false);var frame=CellDraft(cell,timber,false);
                 float width=.92f,height=.45f;
-                board.Box(plane,new Vector3(width,height,.013f),basis);
-                // Four fine joinery edges stay flat on an already opaque wall.
-                foreach(float side in new[]{-1f,1f})
-                {
-                    frame.Box(plane+across*side*(width*.5f+.015f),new Vector3(.021f,height+.044f,.019f),basis);
-                    frame.Box(plane+Vector3.up*side*(height*.5f+.015f),new Vector3(width+.04f,.021f,.019f),basis);
-                }
-                var stamp=CellDraft(cell,SectorBinding(cell),false);
+                AddDetail(cell,"framed-plaque",plane,basis,Vector3.one,false);
                 // Distinct quiet cord marks, rather than colour-only navigation.
                 int strokes=goal+1;
                 for(int i=0;i<strokes;i++)
-                    stamp.Box(plane+across*((i-(strokes-1)*.5f)*.066f)+inward*.015f-Vector3.up*(height*.5f-.055f),
-                        new Vector3(.032f,.035f,.004f),basis);
+                    AddDetail(cell,"binding-stamp",plane+across*((i-(strokes-1)*.5f)*.066f)+inward*.015f-Vector3.up*(height*.5f-.055f),
+                        basis,Vector3.one,false);
                 string label="봉인 "+(goal+1).ToString("D2")+" · "+sectorNames[goal];
                 var text=new GameObject("Goal chamber clue "+cell).AddComponent<TextMesh>();
                 text.transform.SetParent(additions,false);

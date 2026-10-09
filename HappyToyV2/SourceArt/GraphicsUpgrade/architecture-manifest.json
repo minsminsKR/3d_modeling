@@ -1,0 +1,177 @@
+{
+  "blender": "4.0.2",
+  "license": "Original project authoring; no external geometry",
+  "units": "metres; constructor Unity X right/Y up/front +Z",
+  "features": [
+    "editable bevel profiles",
+    "weighted split normals",
+    "curved thin paper mesh",
+    "staggered floorboard joints and 0.65 mm mesh cupping",
+    "measured PBR UVs",
+    "two physical mesh LODs"
+  ],
+  "models": [
+    {
+      "key": "wall-0-lod0",
+      "triangles": 3320,
+      "objects": 36,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/wall-0-lod0.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/wall-0-lod0.fbx",
+      "source_sha256": "c7f556d61f508b96649cd9627c1cb922026e3de17f05b7c641c258062811b042",
+      "fbx_sha256": "9249f91cecf4b01f39f7cc953dacad3c97ddcbbcb409bbdbd7f20ef25deaf0fe"
+    },
+    {
+      "key": "wall-0-lod1",
+      "triangles": 880,
+      "objects": 20,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/wall-0-lod1.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/wall-0-lod1.fbx",
+      "source_sha256": "896363b3c1106036e0432eefa5ac74c0396dcd2d2ea623b1d4e6ab7ec8136769",
+      "fbx_sha256": "69dd0608db09ed41936300e75b3d15e875a72c0e0f35d066263c2220b067c3a6"
+    },
+    {
+      "key": "wall-1-lod0",
+      "triangles": 3320,
+      "objects": 36,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/wall-1-lod0.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/wall-1-lod0.fbx",
+      "source_sha256": "e56a72a065e621ce93ad698442a0ba9dea84a3ac8cbe65f93067d06aa3ff8f59",
+      "fbx_sha256": "14684cfe845cdff07cf4b1a2a5734e44718ee7a23dcc6796f90f6329d2b19fe9"
+    },
+    {
+      "key": "wall-1-lod1",
+      "triangles": 880,
+      "objects": 20,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/wall-1-lod1.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/wall-1-lod1.fbx",
+      "source_sha256": "5768725ed18cbb605eb2a0f67600ea32f11dadac8b3376317a9d239f64fe0fea",
+      "fbx_sha256": "5d47b240154a782dbaf24c8d62ff9149dc875aa7f0600d75a14c602fbe98e2c1"
+    },
+    {
+      "key": "wall-2-lod0",
+      "triangles": 3320,
+      "objects": 36,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/wall-2-lod0.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/wall-2-lod0.fbx",
+      "source_sha256": "81eb9350f9b0adc1e411e77d3cd38413bafc1599808866b0ba3d620b9cfa35af",
+      "fbx_sha256": "56fd93d85a5a91fc499bb66e747c27148aa13ee3d509b7f7d63b6b80c654bfcf"
+    },
+    {
+      "key": "wall-2-lod1",
+      "triangles": 880,
+      "objects": 20,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/wall-2-lod1.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/wall-2-lod1.fbx",
+      "source_sha256": "e2b33298a7d9bb40fb41582133155fef06a77a4978912ef586fca053bfb2500c",
+      "fbx_sha256": "c9138a50293d7dd52df2f3e5c2283e5ce78bce6b718b1aea0ea96e6f2aa0b7f1"
+    },
+    {
+      "key": "floor-course-lod0",
+      "triangles": 3348,
+      "objects": 19,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/floor-course-lod0.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/floor-course-lod0.fbx",
+      "source_sha256": "61d1f7e609b7b99a603559ec6e8447710cbbdb36e292771d5588805093cef3da",
+      "fbx_sha256": "4d91f2531ac6c061601389d6f09a31e4df4f0b2176aef4f0c7f1997f816c52c1"
+    },
+    {
+      "key": "floor-course-lod1",
+      "triangles": 1124,
+      "objects": 19,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/floor-course-lod1.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/floor-course-lod1.fbx",
+      "source_sha256": "03f5efd0c53e0091a219ffdf1b086a5fc34e38cc65891e1c56668784f9ca0783",
+      "fbx_sha256": "492d4ec74c548a86c9e77693ca264ec36dc8989d4bb86bef2ff54662db1dc2d6"
+    },
+    {
+      "key": "ceiling-course-lod0",
+      "triangles": 540,
+      "objects": 5,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/ceiling-course-lod0.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/ceiling-course-lod0.fbx",
+      "source_sha256": "ecd1b7c2ea525d66b41a76bde991eeb89668ecb7e8b871c646b577527b090992",
+      "fbx_sha256": "5b4b2479e8b8198d29948ab7457900488d7a31da8cffa7d80c86d0e4ce2038ab"
+    },
+    {
+      "key": "ceiling-course-lod1",
+      "triangles": 220,
+      "objects": 5,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/ceiling-course-lod1.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/ceiling-course-lod1.fbx",
+      "source_sha256": "11b824f2c6156720fe4f5ef5ec74d08f633fbce4f77019f6fe93e71652b7f4e0",
+      "fbx_sha256": "02878312c3f99bbee20cdeb0b3505f0e33f686229a3ee28e9ad57b34008113d6"
+    },
+    {
+      "key": "door-leaf-lod0",
+      "triangles": 8480,
+      "objects": 64,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/door-leaf-lod0.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/door-leaf-lod0.fbx",
+      "source_sha256": "0c52348b2b844b10800ffe0a32eec5a93825885e934cb07caa861cfee9f2232c",
+      "fbx_sha256": "f380cad54e71905b2b46850a4f052868be3b7985893717535d44466c110c2777"
+    },
+    {
+      "key": "door-leaf-lod1",
+      "triangles": 2816,
+      "objects": 64,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/door-leaf-lod1.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/door-leaf-lod1.fbx",
+      "source_sha256": "ddd3ae5866d9e1164f844635d3978e47ba0d7cbab979e4c90c7d9ade621605be",
+      "fbx_sha256": "3eb9941751dc746633479b94a31286b3ebe88dc7eb9694a4394549b6d5d6753a"
+    },
+    {
+      "key": "door-post-lod0",
+      "triangles": 636,
+      "objects": 7,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/door-post-lod0.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/door-post-lod0.fbx",
+      "source_sha256": "2755509e08748d26fdbc14c8ff5b031b8ffb06b34dda7e117c89dbb156257aba",
+      "fbx_sha256": "5847136ea5eacecca459b1ae871e921a7cb1b7b0e76ab086ad96fc2083fd35f5"
+    },
+    {
+      "key": "door-post-lod1",
+      "triangles": 220,
+      "objects": 5,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/door-post-lod1.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/door-post-lod1.fbx",
+      "source_sha256": "84d6b6205a6f72e133255e4c6d41b045de84ad26c0c1e9020936ec686c4e7a34",
+      "fbx_sha256": "ba456fd8dfde50f9f8a3f2bb43c8a8a47827e893d84085852073b0547ee04ab3"
+    },
+    {
+      "key": "door-lintel-lod0",
+      "triangles": 972,
+      "objects": 9,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/door-lintel-lod0.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/door-lintel-lod0.fbx",
+      "source_sha256": "ff5715ae31dca6899b3c67a68263f765413e867748dda982640ef19116dfcdf4",
+      "fbx_sha256": "90cf6ad6a993e554aa8e415b094d11fd4dd11efa459a4fa16c61f6f9eea395c8"
+    },
+    {
+      "key": "door-lintel-lod1",
+      "triangles": 396,
+      "objects": 9,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/door-lintel-lod1.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/door-lintel-lod1.fbx",
+      "source_sha256": "44ec63ac7a44798107a2cf7af245047f958a049d30ee2991c9bbffa93a6a97db",
+      "fbx_sha256": "1b38bf0aea92d7f2d6d29be2727a29637aea9473b28ba3a2893584f08e5d0fd2"
+    },
+    {
+      "key": "plaster-wall-lod0",
+      "triangles": 1224,
+      "objects": 11,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/plaster-wall-lod0.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/plaster-wall-lod0.fbx",
+      "source_sha256": "6c99b87c09d00b4b443603b3cd198b1ddb45160387e5626bb13f5eb1617f3d2e",
+      "fbx_sha256": "99fa9bd9f6b8fd54dfbdb5a80ec184109dd2b10cdc83ac6642b14fac956ef9ec"
+    },
+    {
+      "key": "plaster-wall-lod1",
+      "triangles": 456,
+      "objects": 11,
+      "source": "SourceArt/GraphicsUpgrade/Architecture/plaster-wall-lod1.blend",
+      "asset": "Assets/Resources/CorridorArchitecture/plaster-wall-lod1.fbx",
+      "source_sha256": "b11a3712264ef562ff300347d2450be80fd4eb4705476cba0120e0eec73fd691",
+      "fbx_sha256": "55b9f03fe65ccecb2ea8609749541840303df2aa0476844972790e55a9861436"
+    }
+  ]
+}

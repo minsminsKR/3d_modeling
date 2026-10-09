@@ -40,24 +40,6 @@ namespace HappyToy.V2
         sealed class HiddenState { public MeshRenderer renderer; public bool enabled; }
         sealed class MaterialState { public MeshRenderer renderer; public Material[] original, applied; }
 
-        // A separate mesh per cell/material keeps URP light selection local and
-        // avoids one draw per lattice batten. No temporary primitive colliders exist.
-        sealed class Draft
-        {
-            public readonly Vector3 origin;
-            public readonly Material material;
-            public readonly bool castShadows;
-            readonly GraphicsSurfaceLibrary.Geometry geometry;
-            public Draft(Vector3 origin,Material material,bool castShadows=true)
-            {this.origin=origin;this.material=material;this.castShadows=castShadows;
-                geometry=new GraphicsSurfaceLibrary.Geometry(origin,GraphicsSurfaceLibrary.TileSpan(material));}
-            public void Quad(Vector3 a,Vector3 b,Vector3 c,Vector3 d)=>geometry.Quad(a,b,c,d);
-            public void Box(Vector3 center,Vector3 size,Quaternion rotation)=>geometry.Box(center,size,rotation,
-                Mathf.Min(.003f,Mathf.Min(size.x,Mathf.Min(size.y,size.z))*.12f));
-            public Mesh Mesh(string name)=>geometry.Mesh(name);
-            public int VertexCount=>geometry.VertexCount;
-        }
-
         readonly List<UnityEngine.Object> owned = new List<UnityEngine.Object>();
         readonly GraphicsSurfaceLibrary.Pool graphicsSurfaces = new GraphicsSurfaceLibrary.Pool();
         readonly List<PhysicalState> physical = new List<PhysicalState>();
@@ -68,7 +50,6 @@ namespace HappyToy.V2
         readonly List<LampState> lamps = new List<LampState>();
         readonly List<Light> eligibleLanterns = new List<Light>();
         readonly List<Transform> externalVisualRoots = new List<Transform>();
-        readonly Dictionary<string,Draft> drafts = new Dictionary<string,Draft>();
         CorridorRun run;
         Material timber, paper, ink, cloth, warmShade, redShade;
         Transform additions;
@@ -126,12 +107,11 @@ namespace HappyToy.V2
             for (int cell=0;cell<CorridorLayout.Count;cell++)
             {
                 Vector3 center=run.CellPosition(cell);center.y=0;
-                var wood=CellDraft(cell,timber);
                 if (!run.Layout.IsRoom(cell)) DressNarrowHall(cell);
                 // Real ceiling joists sit above head height and never disguise a passage.
                 foreach(float z in new[]{-1.7f,1.7f})
-                    wood.Box(center+new Vector3(0,2.935f,z),new Vector3(5.78f,.055f,.10f),Quaternion.identity);
-                wood.Box(center+Vector3.up*2.935f,new Vector3(.10f,.055f,5.78f),Quaternion.identity);
+                    AddDetail(cell,"ceiling-joist",center+new Vector3(0,2.935f,z),Quaternion.identity,new Vector3(5.78f,1,1));
+                AddDetail(cell,"ceiling-joist",center+Vector3.up*2.935f,Quaternion.Euler(0,90,0),new Vector3(5.78f,1,1));
                 for (int direction=0;direction<4;direction++)
                 {
                     int neighbor=CorridorLayout.Neighbor(cell,direction);
@@ -151,9 +131,11 @@ namespace HappyToy.V2
             DressShrines();
             DressCabinets();
             DressEntrance();
-            foreach(var entry in drafts)
-                Emit(entry.Value,additions,"Timber-paper cell batch "+entry.Key,false);
-            drafts.Clear();
+            DressAuthoredFloorsAndCeilings();
+            DressAuthoredStructuralTimber();
+            DressAuthoredClassroomShell();
+            EmitDetails();
+            EmitArchitecture();
             ApplyFog();
             Prepared=true;
             if(!PhysicalStateIntact) throw new InvalidOperationException("Visual dressing changed corridor physics");
@@ -181,17 +163,6 @@ namespace HappyToy.V2
             }
         }
 
-        Draft CellDraft(int cell,Material material,bool castShadows=true)
-        {
-            string key=cell+":"+material.name+":"+castShadows;
-            if (!drafts.TryGetValue(key,out var draft))
-            {
-                Vector3 origin=run.CellPosition(cell);origin.y=0;
-                draft=new Draft(origin,material,castShadows);drafts.Add(key,draft);
-            }
-            return draft;
-        }
-
         void DressEdge(int cell,Vector3 edge,Vector3 outward,bool passage,int seed)
         {
             Vector3 inward=-outward, across=new Vector3(outward.z,0,-outward.x);
@@ -204,85 +175,23 @@ namespace HappyToy.V2
                 // stay outside the original post's +/-1.29m clear opening.
                 Panel(cell,edge,across,inward,basis,-2.18f,1.57f,random);
                 Panel(cell,edge,across,inward,basis,2.18f,1.57f,random);
-                var wood=CellDraft(cell,timber);
                 foreach(float side in new[]{-1f,1f})
                 {
-                    wood.Box(edge+across*side*1.42f+inward*.145f+Vector3.up*1.26f,new Vector3(.12f,2.45f,.035f),basis);
-                    wood.Box(edge+across*side*1.50f+inward*.128f+Vector3.up*1.33f,new Vector3(.035f,2.27f,.022f),basis);
+                    AddDetail(cell,"passage-upright",edge+across*side*1.42f+inward*.145f+Vector3.up*1.26f,basis,Vector3.one);
+                    AddDetail(cell,"passage-upright",edge+across*side*1.50f+inward*.128f+Vector3.up*1.33f,basis,
+                        new Vector3(.035f/.12f,2.27f/2.45f,.022f/.035f));
                 }
-                wood.Box(edge+inward*.145f+Vector3.up*2.72f,new Vector3(2.95f,.13f,.038f),basis);
+                AddDetail(cell,"passage-header",edge+inward*.145f+Vector3.up*2.72f,basis,Vector3.one);
                 // Three unequal short paper strips above all standing eye/capsule heights.
                 if((seed&3)!=0)
                     for(int strip=0;strip<3;strip++)
                     {
                         float width=.11f+(float)random.NextDouble()*.055f;
                         float bottom=2.37f+(float)random.NextDouble()*.075f;
-                        HangingSeal(CellDraft(cell,(seed&7)==1?SectorBinding(cell):SectorPaper(cell),false),edge+across*(strip-1)*.34f+inward*.14f,
-                            across,inward,width,bottom,2.70f,random);
+                        AddDetail(cell,"hanging-seal",edge+across*(strip-1)*.34f+inward*.14f+Vector3.up*2.70f,
+                            basis,new Vector3(width,2.70f-bottom,1),false,(seed&7)==1?SectorBinding(cell):SectorPaper(cell));
                     }
             }
-        }
-
-        void Panel(int cell,Vector3 edge,Vector3 across,Vector3 inward,Quaternion basis,float offset,float width,System.Random random)
-        {
-            var wood=CellDraft(cell,timber);var sheet=CellDraft(cell,SectorPaper(cell));
-            Vector3 at=edge+across*offset+inward*.12f;
-            // Shallow cladding follows the original wall: continuous opaque backing,
-            // lower timber boards, then uneven inset paper with a structural lattice.
-            wood.Box(at+Vector3.up*.44f,new Vector3(width,.72f,.018f),basis);
-            foreach(float y in new[]{.10f,.80f,2.56f})
-                wood.Box(at+inward*.014f+Vector3.up*y,new Vector3(width,.065f,.025f),basis);
-            int bays=Mathf.Max(1,Mathf.RoundToInt(width/SectorBayWidth(cell)));float bay=width/bays;
-            for(int index=0;index<bays;index++)
-            {
-                float x=offset-width*.5f+(index+.5f)*bay;
-                float top=2.50f-(float)random.NextDouble()*.045f;
-                float bottom=.86f+(float)random.NextDouble()*.04f;
-                Vector3 face=edge+across*x+inward*.137f;
-                // Slightly bent lower corners and unequal upper edges make old paper
-                // readable as a material, rather than a pristine rectangular paint strip.
-                sheet.Quad(face-across*(bay*.5f-.025f)+Vector3.up*bottom,
-                    face+across*(bay*.5f-.025f)+Vector3.up*(bottom+.012f)+inward*.003f,
-                    face+across*(bay*.5f-.025f)+Vector3.up*top,
-                    face-across*(bay*.5f-.025f)+Vector3.up*(top-.012f));
-                // Both wall sides have their own inward-facing sheet. Winding differs
-                // from the across axis on opposite sides, so choose the visible order.
-                sheet.Quad(face+across*(bay*.5f-.025f)+Vector3.up*(bottom+.012f)+inward*.003f,
-                    face-across*(bay*.5f-.025f)+Vector3.up*bottom,
-                    face-across*(bay*.5f-.025f)+Vector3.up*(top-.012f),
-                    face+across*(bay*.5f-.025f)+Vector3.up*top);
-                for(int line=0;line<2;line++)
-                    wood.Box(face+across*(line==0?-bay*.24f:bay*.24f)+inward*.015f+Vector3.up*1.68f,
-                        new Vector3(.018f,1.64f,.014f),basis);
-                wood.Box(edge+across*(offset-width*.5f+index*bay)+inward*.157f+Vector3.up*1.7f,
-                    new Vector3(.04f,1.77f,.027f),basis);
-                if(random.NextDouble()<.23)
-                {
-                    float patchY=1.02f+(float)random.NextDouble()*.5f;
-                    var patch=CellDraft(cell,(index&1)==0?SectorBinding(cell):SectorPaper(cell),false);
-                    HangingSeal(patch,face+inward*.038f,across,inward,.12f,patchY,patchY+.28f,random);
-                    var marks=CellDraft(cell,ink,false);
-                    for(int mark=0;mark<3;mark++)
-                        marks.Box(face+inward*.046f+Vector3.up*(patchY+.06f+mark*.06f),new Vector3(.054f,.012f,.003f),basis);
-                }
-            }
-            wood.Box(edge+across*(offset+width*.5f)+inward*.157f+Vector3.up*1.7f,new Vector3(.04f,1.77f,.027f),basis);
-            foreach(float y in SectorCrossbars(cell))
-                wood.Box(at+inward*.05f+Vector3.up*y,new Vector3(width,.022f,.02f),basis);
-            // Slightly separated bottom planks break the repeating wall panel rhythm.
-            for(float x=-width*.5f+.28f;x<width*.5f;x+=.46f)
-                wood.Box(at+across*x+inward*.022f+Vector3.up*.43f,new Vector3(.018f,.62f,.012f),basis);
-            CladWallFaces++;
-        }
-
-        static void HangingSeal(Draft draft,Vector3 plane,Vector3 across,Vector3 normal,float width,float bottom,float top,System.Random random)
-        {
-            float notch=.025f+(float)random.NextDouble()*.035f;
-            Vector3 a=plane-across*width*.5f+Vector3.up*bottom;
-            Vector3 b=plane+across*width*.5f+Vector3.up*(bottom+notch)+normal*.009f;
-            Vector3 c=plane+across*width*.5f+Vector3.up*top;
-            Vector3 d=plane-across*width*.5f+Vector3.up*top;
-            draft.Quad(a,b,c,d);draft.Quad(b,a,d,c);
         }
 
         void DressLanterns()
@@ -297,7 +206,7 @@ namespace HappyToy.V2
                 light.intensity=cell==0?2.65f:red?2.15f:2.45f;
                 // Keep the authored light positions/range. Paper transmits this point
                 // light, so its visual shade casts no opaque self-shadow around the bulb.
-                var wood=CellDraft(cell,timber);Vector3 center=light.transform.position;
+                Vector3 center=light.transform.position;
                 var lanternRoot=new GameObject("Graphics paper lantern composition").transform;
                 lanternRoot.SetParent(additions,false);lanternRoot.position=center;
                 var lantern=GraphicsPropLibrary.Attach("paper-lantern",lanternRoot,
@@ -306,22 +215,11 @@ namespace HappyToy.V2
                 {renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=true;}
                 var threatFlicker=light.gameObject.AddComponent<ThreatFixtureFlicker>();
                 threatFlicker.Configure(run.Lighting,light,lantern.GetComponentsInChildren<Renderer>(),cell*.73f);
-                wood.Box(center+Vector3.up*.30f,new Vector3(.027f,.20f,.027f),Quaternion.identity);
-                if(red)
-                {
-                    var tassel=CellDraft(cell,cloth,false);
-                    tassel.Box(center+Vector3.down*.245f,new Vector3(.035f,.09f,.022f),Quaternion.identity);
-                }
+                AddDetail(cell,"lantern-hardware",center,Quaternion.identity,Vector3.one,false);
                 var housing=GetComponentsInChildren<MeshRenderer>(true).FirstOrDefault(renderer=>renderer.name=="Lamp housing" &&
                     Vector3.Distance(renderer.transform.position,center)<.01f);
                 Hide(housing);
             }
-        }
-
-        static void Beam(Draft draft,Vector3 a,Vector3 b,float width)
-        {
-            Vector3 delta=b-a;
-            draft.Box((a+b)*.5f,new Vector3(width,width,delta.magnitude),Quaternion.LookRotation(delta));
         }
 
         void DressSlidingLeaves()
@@ -332,25 +230,8 @@ namespace HappyToy.V2
                 var root=new GameObject("Sliding timber-paper leaf dressing").transform;
                 root.SetParent(door.movingLeaf,false);externalVisualRoots.Add(root);
                 root.localScale=new Vector3(1/door.movingLeaf.localScale.x,1/door.movingLeaf.localScale.y,1/door.movingLeaf.localScale.z);
-                var wood=new Draft(Vector3.zero,timber);var sheets=new Draft(Vector3.zero,SectorPaper(NearestCell(door.transform.position)));
                 Hide(door.movingLeaf.GetComponent<MeshRenderer>());
-                wood.Box(Vector3.zero,new Vector3(2.59f,2.35f,.10f),Quaternion.identity);
-                foreach(float side in new[]{-1f,1f})
-                {
-                    wood.Box(new Vector3(0,-.76f,side*.048f),new Vector3(2.57f,.79f,.018f),Quaternion.identity);
-                    for(int panel=0;panel<4;panel++)
-                    {
-                        float x=(panel-1.5f)*.62f;
-                        sheets.Box(new Vector3(x,.34f,side*.050f),new Vector3(.59f,1.35f,.009f),Quaternion.identity);
-                        wood.Box(new Vector3(x-.31f,.35f,side*.052f),new Vector3(.035f,1.46f,.014f),Quaternion.identity);
-                        for(int slat=0;slat<2;slat++)
-                            wood.Box(new Vector3(x+(slat==0?-.16f:.16f),.35f,side*.052f),new Vector3(.016f,1.33f,.014f),Quaternion.identity);
-                    }
-                    foreach(float y in new[]{-.35f,.25f,.90f,1.10f})
-                        wood.Box(new Vector3(0,y,side*.048f),new Vector3(2.57f,.037f,.022f),Quaternion.identity);
-
-                }
-                Emit(wood,root,"Moving timber leaf lattice",true);Emit(sheets,root,"Moving leaf aged paper",true);
+                EmitDynamicArchitecture("door-leaf",root,NearestCell(door.transform.position));
                 var hardware=CorridorDoorHardware.Attach(door,door.movingLeaf,2.6f,2.36f,.12f);
                 externalVisualRoots.Add(hardware.transform);
             }
@@ -363,7 +244,6 @@ namespace HappyToy.V2
             foreach(var item in memories)
             {
                 int cell=NearestCell(item.transform.position);Vector3 center=run.CellPosition(cell);center.y=.03f;
-                var wood=CellDraft(cell,timber);var band=CellDraft(cell,SectorBinding(cell),false);var marks=CellDraft(cell,ink,false);
                 // The new skin sits inside the preserved physical box. Its old opaque
                 // renderer must not hide it or be baked into an architecture chunk.
                 Hide(GetComponentsInChildren<MeshRenderer>(true).Single(renderer=>renderer.name=="Memory altar" && NearestCell(renderer.transform.position)==cell));
@@ -384,19 +264,7 @@ namespace HappyToy.V2
                 // so its metre-authored folded paper remains inside the item's collider.
                 root.localScale=new Vector3(1/item.transform.localScale.x,1/item.transform.localScale.y,1/item.transform.localScale.z);
                 externalVisualRoots.Add(root);
-                var seal=new Draft(Vector3.zero,SectorPaper(cell),false);var sealInk=new Draft(Vector3.zero,ink,false);var tie=new Draft(Vector3.zero,SectorBinding(cell),false);
-                seal.Box(Vector3.zero,new Vector3(.265f,.278f,.112f),Quaternion.identity);
-                seal.Quad(new Vector3(-.132f,.139f,-.058f),new Vector3(.132f,.139f,-.058f),
-                    new Vector3(.10f,.052f,-.067f),new Vector3(-.06f,.068f,-.067f));
-                foreach(float face in new[]{-1f,1f})
-                {
-                    tie.Box(new Vector3(0,-.048f,face*.060f),new Vector3(.266f,.017f,.004f),Quaternion.identity);
-                    for(int stroke=0;stroke<3;stroke++)
-                        sealInk.Box(new Vector3((stroke==1?.018f:-.012f),.052f-stroke*.029f,face*.063f),
-                            new Vector3(stroke==1?.066f:.084f,.007f,.003f),Quaternion.Euler(0,0,stroke==1?-8:5));
-                    sealInk.Box(new Vector3(-.022f,.036f,face*.064f),new Vector3(.007f,.095f,.003f),Quaternion.identity);
-                }
-                Emit(seal,root,"Folded seal paper",true);Emit(sealInk,root,"Original memory ink strokes",true);Emit(tie,root,"Memory binding cord",true);
+                EmitDynamicDetail("memory-seal",root,cell,false);
                 SealShrines++;
             }
         }
@@ -450,14 +318,8 @@ namespace HappyToy.V2
         {
             var exit=GetComponentsInChildren<Interactable>(true).Single(item=>item.name=="Sealed entrance");
             Vector3 center=exit.transform.position;
-            var wood=CellDraft(0,timber);var sheet=CellDraft(0,paper);var binding=CellDraft(0,cloth,false);
             Quaternion basis=Quaternion.Euler(0,90,0);
-            wood.Box(center+Vector3.right*.062f,new Vector3(1.55f,2.17f,.014f),basis);
-            foreach(float side in new[]{-1f,1f})
-                wood.Box(center+Vector3.right*.072f+Vector3.forward*side*.73f,new Vector3(.055f,2.14f,.016f),basis);
-            sheet.Box(center+Vector3.right*.072f+Vector3.up*.20f,new Vector3(1.12f,.69f,.013f),basis);
-            for(int mark=0;mark<5;mark++)
-                binding.Box(center+Vector3.right*.08f+new Vector3(0,-.33f,(mark-2)*.18f),new Vector3(.085f,.35f,.008f),basis);
+            AddDetail(0,"entrance-panel",center,basis,Vector3.one);
             returnClue=new GameObject("Memory-return door clue").AddComponent<TextMesh>();
             returnClue.transform.SetParent(additions,false);
             returnClue.transform.SetPositionAndRotation(center+Vector3.right*.085f+Vector3.up*.20f,Quaternion.Euler(0,-90,0));
@@ -496,17 +358,6 @@ namespace HappyToy.V2
         {
             if(!renderer) return;
             hidden.Add(new HiddenState {renderer=renderer,enabled=renderer.enabled});renderer.enabled=false;
-        }
-        void Emit(Draft draft,Transform parent,string name,bool local)
-        {
-            if(draft.VertexCount==0)return;
-            var mesh=draft.Mesh(name);owned.Add(mesh);
-            var go=new GameObject(name);go.transform.SetParent(parent,false);
-            if(!local) go.transform.position=draft.origin;
-            go.AddComponent<MeshFilter>().sharedMesh=mesh;
-            var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=draft.material;
-            renderer.shadowCastingMode=draft.castShadows?ShadowCastingMode.On:ShadowCastingMode.Off;
-            renderer.receiveShadows=true;VisualBatches++;
         }
         Material Surface(string name,Color color,Texture2D texture,Color emission=default)
         {

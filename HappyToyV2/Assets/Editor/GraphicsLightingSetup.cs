@@ -73,7 +73,7 @@ namespace HappyToy.V2.Editor
             var data=new SerializedObject(pipeline);var renderers=Require(data,"m_RendererDataList");renderers.arraySize=1;
             renderers.GetArrayElementAtIndex(0).objectReferenceValue=renderer;Require(data,"m_DefaultRendererIndex").intValue=0;
             Require(data,"m_SupportsHDR").boolValue=true;Require(data,"m_RequireDepthTexture").boolValue=true;
-            Require(data,"m_MSAA").intValue=1;Require(data,"m_ColorGradingMode").intValue=(int)ColorGradingMode.HighDynamicRange;
+            Require(data,"m_MSAA").intValue=4;Require(data,"m_ColorGradingMode").intValue=(int)ColorGradingMode.HighDynamicRange;
             Require(data,"m_ReflectionProbeBlending").boolValue=true;Require(data,"m_ReflectionProbeBoxProjection").boolValue=true;
             Require(data,"m_AdditionalLightShadowsSupported").boolValue=true;Require(data,"m_SoftShadowsSupported").boolValue=true;
             Require(data,"m_AdditionalLightsShadowmapResolution").intValue=2048;

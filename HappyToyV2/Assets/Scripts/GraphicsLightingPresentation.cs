@@ -22,7 +22,8 @@ namespace HappyToy.V2
         }
         readonly List<LightState> originals=new List<LightState>();
         GameSession session;Behaviour modeOwner;Camera camera;UniversalAdditionalCameraData cameraData;
-        bool captured,applied,addedCameraData,oldHDR,oldMSAA,oldPost;
+        bool captured,applied,addedCameraData,oldHDR,oldMSAA,oldPost,oldRealtimeReflections;
+        float oldFarClip;
         LayerMask oldVolumeMask;AntialiasingMode oldAA;AntialiasingQuality oldAAQuality;
         CameraOverrideOption oldDepth;
         AmbientMode oldAmbientMode;Color oldAmbient,oldSky,oldEquator,oldGround;
@@ -35,6 +36,7 @@ namespace HappyToy.V2
         public Volume OwnedVolume=>volume;
         public ReflectionProbe OwnedProbe=>probe;
         public int ReflectionCaptures {get;private set;}
+        public int ReflectionRenderId=>probeRenderId;
         public bool ReflectionReady=>probe&&probeRenderId>=0&&probe.IsFinishedRendering(probeRenderId);
         public static void BeginTransition(GameSession owner)
         {
@@ -59,6 +61,8 @@ namespace HappyToy.V2
                     range=light.range,temperature=light.colorTemperature,useTemperature=light.useColorTemperature,
                     spot=light.spotAngle,inner=light.innerSpotAngle,cookie=light.cookie,near=light.shadowNearPlane});
             oldHDR=camera.allowHDR;oldMSAA=camera.allowMSAA;
+            oldFarClip=camera.farClipPlane;
+            oldRealtimeReflections=QualitySettings.realtimeReflectionProbes;
             addedCameraData=!camera.TryGetComponent<UniversalAdditionalCameraData>(out cameraData);
             if(addedCameraData)cameraData=camera.GetUniversalAdditionalCameraData();
             oldPost=cameraData.renderPostProcessing;oldVolumeMask=cameraData.volumeLayerMask;
@@ -77,7 +81,12 @@ namespace HappyToy.V2
             root=new GameObject("Owned graphics light and reflection scope").transform;root.SetParent(modeRoot,false);
             profile=CreateProfile();
             volume=root.gameObject.AddComponent<Volume>();volume.isGlobal=true;volume.priority=50;volume.weight=1;volume.sharedProfile=profile;
-            camera.allowHDR=true;camera.allowMSAA=false;cameraData.renderPostProcessing=true;
+            // Thin modeled joinery needs coverage sampling at grazing angles.
+            // Four samples supplement SMAA without temporal motion/history trails.
+            camera.allowHDR=true;camera.allowMSAA=true;cameraData.renderPostProcessing=true;
+            // Indoor sightlines fit within 120 m. Avoid the original kilometre
+            // depth range wasting precision on millimetre-scale joinery/overlays.
+            camera.farClipPlane=Mathf.Min(oldFarClip,120);
             cameraData.volumeLayerMask=oldVolumeMask.value|1;cameraData.requiresDepthOption=CameraOverrideOption.On;
             cameraData.antialiasing=AntialiasingMode.SubpixelMorphologicalAntiAliasing;cameraData.antialiasingQuality=AntialiasingQuality.Medium;
             // Low neutral bounce retains silhouettes and colour; local emitters provide contrast.
@@ -92,7 +101,10 @@ namespace HappyToy.V2
                 torch.color=Color.white;torch.intensity=5;torch.range=18;torch.spotAngle=52;torch.innerSpotAngle=22;torch.shadowNearPlane=.05f;
                 // enabled/charge belong exclusively to PlayerFlashlight.
             }
-            var probeObject=new GameObject("Local room reflection (128 HDR, time sliced)");probeObject.transform.SetParent(root,false);
+            var probeObject=new GameObject("Local room reflection (128 HDR, bounded refresh)");probeObject.transform.SetParent(root,false);
+            // Low authored quality tiers disable realtime probes globally. This owned,
+            // bounded 128 px probe must be allowed to finish on every supported tier.
+            QualitySettings.realtimeReflectionProbes=true;
             probe=probeObject.AddComponent<ReflectionProbe>();probe.mode=ReflectionProbeMode.Realtime;
             probe.refreshMode=ReflectionProbeRefreshMode.ViaScripting;probe.timeSlicingMode=ReflectionProbeTimeSlicingMode.IndividualFaces;
             probe.resolution=128;probe.hdr=true;probe.boxProjection=true;probe.blendDistance=.65f;probe.intensity=.6f;
@@ -217,7 +229,7 @@ namespace HappyToy.V2
                     state.light.useColorTemperature=state.useTemperature;state.light.colorTemperature=state.temperature;
                     state.light.spotAngle=state.spot;state.light.innerSpotAngle=state.inner;state.light.cookie=state.cookie;state.light.shadowNearPlane=state.near;
                 }
-                if(camera){camera.allowHDR=oldHDR;camera.allowMSAA=oldMSAA;}
+                if(camera){camera.allowHDR=oldHDR;camera.allowMSAA=oldMSAA;camera.farClipPlane=oldFarClip;}
                 if(cameraData)
                 {
                     cameraData.renderPostProcessing=oldPost;cameraData.volumeLayerMask=oldVolumeMask;
@@ -235,6 +247,8 @@ namespace HappyToy.V2
                     RenderSettings.fogColor=oldFogColor;RenderSettings.fogDensity=oldFogDensity;RenderSettings.fogStartDistance=oldFogStart;RenderSettings.fogEndDistance=oldFogEnd;
                 }
             }
+            if(renderOwner==this&&captured&&QualitySettings.realtimeReflectionProbes)
+                QualitySettings.realtimeReflectionProbes=oldRealtimeReflections;
             if(root)Destroy(root.gameObject);
             if(profile){foreach(var component in profile.components)if(component)Destroy(component);Destroy(profile);}
             if(cookie)Destroy(cookie);

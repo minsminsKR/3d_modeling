@@ -1,0 +1,548 @@
+{
+  "blender": "4.0.2",
+  "license": "Original project authoring; no external geometry",
+  "units": "metres; constructor Unity X right/Y up/front +Z",
+  "features": [
+    "editable eased edge bevel profiles",
+    "weighted split normals",
+    "physical folded and curved paper",
+    "tube mesh binding and bent metal hooks",
+    "separate tassel strands",
+    "measured PBR UVs",
+    "two mesh LODs"
+  ],
+  "models": [
+    {
+      "key": "memory-seal-lod0",
+      "triangles": 2208,
+      "objects": 16,
+      "bounds_min": [
+        -0.13799750804901123,
+        -0.13600000739097595,
+        -0.07050000131130219
+      ],
+      "bounds_max": [
+        0.13799750804901123,
+        0.13600000739097595,
+        0.07100000232458115
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/memory-seal-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/memory-seal-lod0.fbx",
+      "source_sha256": "3ba12f546ea186253c05c55322fef281335793fea6229f43d0add02bbb8d1ade",
+      "fbx_sha256": "2aa6723fdfe3e05f796cf1c921bc3192d53e796bd52cc3a7e0547f7b5d523dd6"
+    },
+    {
+      "key": "memory-seal-lod1",
+      "triangles": 676,
+      "objects": 16,
+      "bounds_min": [
+        -0.13799750804901123,
+        -0.13600000739097595,
+        -0.07050000131130219
+      ],
+      "bounds_max": [
+        0.13723406195640564,
+        0.13600000739097595,
+        0.07100000232458115
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/memory-seal-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/memory-seal-lod1.fbx",
+      "source_sha256": "378badf97342ea5f733b95cc66066495f2384ba2bcaad969f95c9d4ef4c335e9",
+      "fbx_sha256": "94be830d5aa055a408ee2335ff96066b636f97d068829a5766bd94861451a3b5"
+    },
+    {
+      "key": "entrance-panel-lod0",
+      "triangles": 3660,
+      "objects": 24,
+      "bounds_min": [
+        -0.7714999914169312,
+        -1.0850000381469727,
+        0.05299999937415123
+      ],
+      "bounds_max": [
+        0.7714999914169312,
+        1.0850000381469727,
+        0.08299999684095383
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/entrance-panel-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/entrance-panel-lod0.fbx",
+      "source_sha256": "b76a575bfa4240bb3d5beab121e5bdb9849ebee2d9faccf9c1b34fa771998292",
+      "fbx_sha256": "4f6318006dd600854fd3193acdf405a15cb5b429919a3d6fbd9988fab0351b66"
+    },
+    {
+      "key": "entrance-panel-lod1",
+      "triangles": 936,
+      "objects": 24,
+      "bounds_min": [
+        -0.7714999914169312,
+        -1.0850000381469727,
+        0.05299999937415123
+      ],
+      "bounds_max": [
+        0.7714999914169312,
+        1.0850000381469727,
+        0.08299999684095383
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/entrance-panel-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/entrance-panel-lod1.fbx",
+      "source_sha256": "f4177e57d159b901a9e5270981226958a364573dc15293abb6201076bedb4c7b",
+      "fbx_sha256": "3cc2a67356f662041dcc86f8d9c1e0ee4c9c0000a73c52aa9e983ea64f33d542"
+    },
+    {
+      "key": "passage-upright-lod0",
+      "triangles": 752,
+      "objects": 4,
+      "bounds_min": [
+        -0.05999999865889549,
+        -1.225000023841858,
+        -0.017500000074505806
+      ],
+      "bounds_max": [
+        0.05999999865889549,
+        1.225000023841858,
+        0.02199999988079071
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/passage-upright-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/passage-upright-lod0.fbx",
+      "source_sha256": "3b090e0d4b9f85ad11145aa4b1e441dd4ca88b8cf29f0b32016d2bfa72cf6664",
+      "fbx_sha256": "d4cd416a7f76a7925d67e22900803065bef578a2ac50a4c1b095bc1215e45921"
+    },
+    {
+      "key": "passage-upright-lod1",
+      "triangles": 176,
+      "objects": 4,
+      "bounds_min": [
+        -0.05999999865889549,
+        -1.225000023841858,
+        -0.017500000074505806
+      ],
+      "bounds_max": [
+        0.05999999865889549,
+        1.225000023841858,
+        0.02199999988079071
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/passage-upright-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/passage-upright-lod1.fbx",
+      "source_sha256": "1d8a26256c94b28c78d60b427b12f511ce34768ae9ad2f8cd7634f0bfed0452e",
+      "fbx_sha256": "dcd280ac305f49b2158b155191e0990fe79883bb879d7f1048e8ca2eaa993352"
+    },
+    {
+      "key": "passage-header-lod0",
+      "triangles": 940,
+      "objects": 5,
+      "bounds_min": [
+        -1.475000023841858,
+        -0.06499999761581421,
+        -0.01899999938905239
+      ],
+      "bounds_max": [
+        1.475000023841858,
+        0.06499999761581421,
+        0.02199999988079071
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/passage-header-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/passage-header-lod0.fbx",
+      "source_sha256": "42d11c18f28029260625d79e4fb8d33c67bda76b72ba0e7c58869f3d0430a156",
+      "fbx_sha256": "4c0f31de38a4739add34b854250aabf5fb091d0ae59fd968412530bc4874f689"
+    },
+    {
+      "key": "passage-header-lod1",
+      "triangles": 220,
+      "objects": 5,
+      "bounds_min": [
+        -1.475000023841858,
+        -0.06499999761581421,
+        -0.01899999938905239
+      ],
+      "bounds_max": [
+        1.475000023841858,
+        0.06499999761581421,
+        0.02199999988079071
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/passage-header-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/passage-header-lod1.fbx",
+      "source_sha256": "68a60bdeeb3c92d151e4faad0e2c0b03a496a83cfb525037e5d2c91384d5be62",
+      "fbx_sha256": "720611931958f7b2e91145b53b7e672d65683f0b15aae8c067cec26814f00f77"
+    },
+    {
+      "key": "ceiling-joist-lod0",
+      "triangles": 564,
+      "objects": 3,
+      "bounds_min": [
+        -0.5,
+        -0.027499999850988388,
+        -0.05000000074505806
+      ],
+      "bounds_max": [
+        0.5,
+        0.027499999850988388,
+        0.05000000074505806
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/ceiling-joist-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/ceiling-joist-lod0.fbx",
+      "source_sha256": "69d5d4ea6e576a32c067e298b345d26c72b1377766e58599dfabafa0fe02bab1",
+      "fbx_sha256": "87bdf6ebaca24b7943b47e923c1e8e16ba856bcb85b4cd3f136cac1c7c296504"
+    },
+    {
+      "key": "ceiling-joist-lod1",
+      "triangles": 132,
+      "objects": 3,
+      "bounds_min": [
+        -0.5,
+        -0.027499999850988388,
+        -0.05000000074505806
+      ],
+      "bounds_max": [
+        0.5,
+        0.027499999850988388,
+        0.05000000074505806
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/ceiling-joist-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/ceiling-joist-lod1.fbx",
+      "source_sha256": "07889a84a3f38c31bba1034535d60b41a81c1ec661e980286e509c4ea7b6580d",
+      "fbx_sha256": "1dcf7a0292e59ce19c3a3403af087547bb6a60f5071f8cd4c992a7e690a6b387"
+    },
+    {
+      "key": "lantern-hardware-lod0",
+      "triangles": 784,
+      "objects": 12,
+      "bounds_min": [
+        -0.017200984060764313,
+        -0.3302687108516693,
+        -0.018455609679222107
+      ],
+      "bounds_max": [
+        0.018880905583500862,
+        0.39429041743278503,
+        0.04549160227179527
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/lantern-hardware-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/lantern-hardware-lod0.fbx",
+      "source_sha256": "431901d9358d653a566fddc030f241d56b43e295a152a2e950132dfd70b39bcd",
+      "fbx_sha256": "6b3c8933727e18564ab03326b22af78512a22b485584ecdaee2147c402496095"
+    },
+    {
+      "key": "lantern-hardware-lod1",
+      "triangles": 278,
+      "objects": 8,
+      "bounds_min": [
+        -0.013849153183400631,
+        -0.33026713132858276,
+        -0.01625763066112995
+      ],
+      "bounds_max": [
+        0.01878884807229042,
+        0.3940291702747345,
+        0.04466518387198448
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/lantern-hardware-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/lantern-hardware-lod1.fbx",
+      "source_sha256": "dedc3fc935d5cb3cd20d8a169900c3088f09447f3ccc8e6335637ee6ba5b2b0d",
+      "fbx_sha256": "2377d818209d9579bb98a26319ebd32b08b2cbfb5cc0c98ac2dbdea004885969"
+    },
+    {
+      "key": "hanging-seal-lod0",
+      "triangles": 216,
+      "objects": 1,
+      "bounds_min": [
+        -0.5000008344650269,
+        -1.0,
+        -0.0018499628640711308
+      ],
+      "bounds_max": [
+        0.5,
+        0.0,
+        0.004253254272043705
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/hanging-seal-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/hanging-seal-lod0.fbx",
+      "source_sha256": "bc8639dc4024a8ae99562d5650827694a908ab52da1746e7b56760b71d6f1a4a",
+      "fbx_sha256": "cb5f1ccfdc75f76efd85fd60434f303bc1f25c4ff2af0e9d1b27b9866cb9e969"
+    },
+    {
+      "key": "hanging-seal-lod1",
+      "triangles": 56,
+      "objects": 1,
+      "bounds_min": [
+        -0.5,
+        -1.0,
+        -0.0018499850993975997
+      ],
+      "bounds_max": [
+        0.5,
+        0.0,
+        0.004154252354055643
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/hanging-seal-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/hanging-seal-lod1.fbx",
+      "source_sha256": "bc72a24de71c4a390685c9d9e234eed8c3e80e7261a58f7e0e22297ce1368b80",
+      "fbx_sha256": "ada1694ac45edbc6992bc5a707b0804bf44fc9d644535718c84d378c57f38d46"
+    },
+    {
+      "key": "framed-plaque-lod0",
+      "triangles": 1316,
+      "objects": 7,
+      "bounds_min": [
+        -0.4855000078678131,
+        -0.25049999356269836,
+        -0.008999999612569809
+      ],
+      "bounds_max": [
+        0.4855000078678131,
+        0.25049999356269836,
+        0.012500000186264515
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/framed-plaque-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/framed-plaque-lod0.fbx",
+      "source_sha256": "916ad98a762a7b2ce1b65fab28a82d9db8fd8fab73ac8dc50301a04f7f905b4c",
+      "fbx_sha256": "c527fa4828d532c368448e3a2f88821d2c89371139f188933aea11b0145f37cc"
+    },
+    {
+      "key": "framed-plaque-lod1",
+      "triangles": 308,
+      "objects": 7,
+      "bounds_min": [
+        -0.4855000078678131,
+        -0.25049999356269836,
+        -0.008999999612569809
+      ],
+      "bounds_max": [
+        0.4855000078678131,
+        0.25049999356269836,
+        0.012500000186264515
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/framed-plaque-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/framed-plaque-lod1.fbx",
+      "source_sha256": "e9d0d16daa31d4830d4135194c3cb69328809210b15fa16b6552f7be09ebd244",
+      "fbx_sha256": "5cadaa67e354dcc0e220d303bdb825d5c12f68a78c49e99e1ca1e6c4c08bee08"
+    },
+    {
+      "key": "binding-stamp-lod0",
+      "triangles": 188,
+      "objects": 1,
+      "bounds_min": [
+        -0.01600000075995922,
+        -0.017500000074505806,
+        -0.0020000000949949026
+      ],
+      "bounds_max": [
+        0.01600000075995922,
+        0.017500000074505806,
+        0.0020000000949949026
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/binding-stamp-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/binding-stamp-lod0.fbx",
+      "source_sha256": "4ee7019a30b2068abf18e690e81ec55a110e580774e4a43052f4c618e6538940",
+      "fbx_sha256": "ba2dfdb1287e508996c13e1ccecb8ade1e0cb47fbc8883b47eb43984fcc301e8"
+    },
+    {
+      "key": "binding-stamp-lod1",
+      "triangles": 44,
+      "objects": 1,
+      "bounds_min": [
+        -0.01600000075995922,
+        -0.017500000074505806,
+        -0.0020000000949949026
+      ],
+      "bounds_max": [
+        0.01600000075995922,
+        0.017500000074505806,
+        0.0020000000949949026
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/binding-stamp-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/binding-stamp-lod1.fbx",
+      "source_sha256": "feebba5f0bb1d4be5cc35deb12e89e574885f20a521b80883ba69ed6be1efce5",
+      "fbx_sha256": "de9459e0c5dfd379ad56efbb54f65a5b4c56a6bc74353bf7c39dd683931fc169"
+    },
+    {
+      "key": "memory-socket-lod0",
+      "triangles": 888,
+      "objects": 5,
+      "bounds_min": [
+        -0.11401793360710144,
+        -0.0020999982953071594,
+        -0.14700689911842346
+      ],
+      "bounds_max": [
+        0.11401830613613129,
+        0.004600000102072954,
+        0.14702469110488892
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/memory-socket-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/memory-socket-lod0.fbx",
+      "source_sha256": "ba26f9acb1a301a37eecca89ce0d0da73db024962700ab1593e6eb202afa1aae",
+      "fbx_sha256": "10b790e4d433cde39e2b9e1f35cb615e8951c29b4cdf485372451cf8ae7a7e33"
+    },
+    {
+      "key": "memory-socket-lod1",
+      "triangles": 220,
+      "objects": 5,
+      "bounds_min": [
+        -0.11400683969259262,
+        -0.0020043598487973213,
+        -0.14700347185134888
+      ],
+      "bounds_max": [
+        0.11400529742240906,
+        0.004600000102072954,
+        0.1470116227865219
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/memory-socket-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/memory-socket-lod1.fbx",
+      "source_sha256": "3c2b4d6f3924c1b8fc7d3cd71b6cd09c82f6cb86fa554b91c17e2b64a8443cb5",
+      "fbx_sha256": "467345e423efe86cab9f98d70dcf98cb8336abd920741871728e3adf1c825ee1"
+    },
+    {
+      "key": "timber-plaque-lod0",
+      "triangles": 564,
+      "objects": 3,
+      "bounds_min": [
+        -0.4699999988079071,
+        -0.10999999940395355,
+        -0.014999999664723873
+      ],
+      "bounds_max": [
+        0.4699999988079071,
+        0.10999999940395355,
+        0.012500000186264515
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/timber-plaque-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/timber-plaque-lod0.fbx",
+      "source_sha256": "18c8149a3357dd47529dc150ba69e79e74c6c37f599f24abcb361fc392150e3c",
+      "fbx_sha256": "97b3dec9b3c8803a2f9bb874bfa451f6b24776881f3d55ffa82b85fd7b7f80f1"
+    },
+    {
+      "key": "timber-plaque-lod1",
+      "triangles": 132,
+      "objects": 3,
+      "bounds_min": [
+        -0.4699999988079071,
+        -0.10999999940395355,
+        -0.014999999664723873
+      ],
+      "bounds_max": [
+        0.4699999988079071,
+        0.10999999940395355,
+        0.012500000186264515
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/timber-plaque-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/timber-plaque-lod1.fbx",
+      "source_sha256": "39fc256ea62ac9ef1abf1adb034d311a4a573c57b590642412342c170286de9a",
+      "fbx_sha256": "6a43420483d5b6e33855b3fa30a75bafc894f48997f435fb521e5e2e03708474"
+    },
+    {
+      "key": "classroom-photo-lod0",
+      "triangles": 2632,
+      "objects": 14,
+      "bounds_min": [
+        -0.4424999952316284,
+        -0.5625,
+        -0.05000000074505806
+      ],
+      "bounds_max": [
+        0.4424999952316284,
+        0.5625,
+        0.012000000104308128
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/classroom-photo-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/classroom-photo-lod0.fbx",
+      "source_sha256": "c534d547ff6850e8adfe2e910b227411c104141281e952612fedafa92066d323",
+      "fbx_sha256": "a64cbcd2571fa5549b266409bc800b17d1f441b3c98464991c299df22fbb0d78"
+    },
+    {
+      "key": "classroom-photo-lod1",
+      "triangles": 616,
+      "objects": 14,
+      "bounds_min": [
+        -0.4424999952316284,
+        -0.5625,
+        -0.05000000074505806
+      ],
+      "bounds_max": [
+        0.4424999952316284,
+        0.5625,
+        0.012000000104308128
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/classroom-photo-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/classroom-photo-lod1.fbx",
+      "source_sha256": "93163bb83742573027373880fb1c19891ac9726c40452ee02e3f455322392c49",
+      "fbx_sha256": "91d8e00c4c59438fd673764b21acb4b66fdddf77c1a4673f8c2a45ca1f83c4fe"
+    },
+    {
+      "key": "window-recess-lod0",
+      "triangles": 2256,
+      "objects": 12,
+      "bounds_min": [
+        -0.9399999976158142,
+        -1.0010000467300415,
+        -0.23800000548362732
+      ],
+      "bounds_max": [
+        0.9399999976158142,
+        0.9300000071525574,
+        0.03200000524520874
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/window-recess-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/window-recess-lod0.fbx",
+      "source_sha256": "b0badaac1d8d604cb571b4a8f4d8166315fbe5833ba7d0671684f0fd2693b0ca",
+      "fbx_sha256": "0e61dd96c9aab27fa13f0130450db31e139033624d6e1d12a0ef89a38d938394"
+    },
+    {
+      "key": "window-recess-lod1",
+      "triangles": 528,
+      "objects": 12,
+      "bounds_min": [
+        -0.9399999976158142,
+        -1.0010000467300415,
+        -0.23800000548362732
+      ],
+      "bounds_max": [
+        0.9399999976158142,
+        0.9300000071525574,
+        0.03200000524520874
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/window-recess-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/window-recess-lod1.fbx",
+      "source_sha256": "bce64187e1a91e9a823d6c71648085881c809c5783a1b0e984b793c73a8c2047",
+      "fbx_sha256": "f600e4cf01f4fc2272161d39fd4a3fe50af22f5349ebf3e18925135d119ce7c2"
+    },
+    {
+      "key": "exercise-leaf-lod0",
+      "triangles": 156,
+      "objects": 1,
+      "bounds_min": [
+        -0.1090119481086731,
+        -0.0014992066426202655,
+        -0.15126252174377441
+      ],
+      "bounds_max": [
+        0.10906417667865753,
+        0.0076303244568407536,
+        0.1495378315448761
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/exercise-leaf-lod0.blend",
+      "asset": "Assets/Resources/CorridorDetails/exercise-leaf-lod0.fbx",
+      "source_sha256": "e0ed60384f9e5ea8426b86d6934ff808af8725cda346971b7a6162756b5e52b4",
+      "fbx_sha256": "2b88f79f9448739a9aa9e3e6f15626cf4617d9411b2951ddcef7dd71f6aeed19"
+    },
+    {
+      "key": "exercise-leaf-lod1",
+      "triangles": 44,
+      "objects": 1,
+      "bounds_min": [
+        -0.10900630056858063,
+        -0.0013474473962560296,
+        -0.15063925087451935
+      ],
+      "bounds_max": [
+        0.10902868956327438,
+        0.007552706636488438,
+        0.14952954649925232
+      ],
+      "source": "SourceArt/GraphicsUpgrade/Details/exercise-leaf-lod1.blend",
+      "asset": "Assets/Resources/CorridorDetails/exercise-leaf-lod1.fbx",
+      "source_sha256": "cd959734b964d0394c14f736854246197d87a8c3f2575e754a3cd6110d668992",
+      "fbx_sha256": "3eea4840a510b857adb4dcc3d71052e1dd236c9393f09926c501bddcbdafad7a"
+    }
+  ]
+}

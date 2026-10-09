@@ -56,7 +56,13 @@ namespace HappyToy.V2
             Require(!(terminal), "Run ended at " + stage + " after " + session.ElapsedPlayTime + "s; " + session.DefeatSource + "; at " + player.transform.position);
             Require((Time.realtimeSinceStartup - wallStart) < (590), "Wall budget expired at " + stage);
             Require((session.ElapsedPlayTime - gameStart) < (580), "Game budget expired at " + stage);
-            Require(Time.timeScale==1 && Time.captureDeltaTime==0 && player.enabled,"Native natural clock/motor changed");
+            bool expectedResult=expectEscape && session.Finished && session.Escaped;
+            Require(Time.timeScale==(expectedResult?0:1) && Time.captureDeltaTime==0 && player.enabled,
+                "Native natural clock/motor changed: scale="+Time.timeScale+" capture="+Time.captureDeltaTime+
+                " motor="+player.enabled+" screen="+shell.Screen+" escaped="+session.Escaped);
+            if(expectedResult)Require((shell.Screen==GameShell.Page.Result ||
+                session.Corridor.Layout.Version>=3 && shell.Screen==GameShell.Page.ChapterTransition) && !session.InputAllowed,
+                "Successful real offering must enter its frozen result or school transition page: "+shell.Screen);
             Require(Mouse.current==mouse,"Native route mouse ownership changed");
             Require((player.transform.position.y) >= (-.15f) && (player.transform.position.y) <= (.85f), "Left the walkable floor/low-step range at " + player.transform.position);
             Require((Physics.Raycast(player.transform.position + Vector3.up * .15f, Vector3.down, .95f,
@@ -82,12 +88,13 @@ namespace HappyToy.V2
                 Require((session.RecordsRecovered) == (i + 1), "Native corridor invariant failed: Is.EqualTo(i + 1)"); Mark("recovered " + selected.name + " through E");
                 if (i < 4) yield return TopUpNearbySupply(14);
             }
-            var exit = Items().Single(x => x.name == "Sealed entrance"); stage = "return to entrance";
+            var exit = session.Corridor.Layout.Version>=3 ? session.Corridor.AltarChamber.Offering : Items().Single(x => x.name == "Sealed entrance");
+            stage = session.Corridor.Layout.Version>=3 ? "return memories to distant classroom altar" : "return to entrance";
             Require((FindApproach(exit, out var exitAt, out _)), "Native corridor invariant failed: Is.True"); yield return Walk(exitAt);
             expectEscape = true; yield return Interact(exit); Require((session.Escaped), "Native corridor invariant failed: Is.True");
             for (int i = 0; i < monsters.Length; i++) Require(new Vector2(monsters[i].patrolSpeed,monsters[i].chaseSpeed)==speeds[i],"Authored corridor threat speed changed");
             Require((maximumThreats) == (4), "Native corridor invariant failed: Is.EqualTo(4)"); Require((meters) > (80), "Native corridor invariant failed: Is.GreaterThan(80)");
-            passed = true; Mark("escaped with all five memories");
+            passed = true; Mark("escaped with all five memories through the active layout's actual exit");
         }
         IEnumerator TopUpNearbySupply(float maximumDetour)
         {
@@ -388,8 +395,19 @@ namespace HappyToy.V2
             Require(candle.Lit && candle.LocalLight.enabled && candle.Ignitions == ignitions + 1,
                 "Actual E did not light the route candle exactly once");
             candlesIgnited++; Mark("lit a route candle through E");
-            yield return Interact(marker);
-            Require(candle.Ignitions == ignitions + 1, "Revisiting the lit candle repeated ignition");
+            // A durably lit candle deliberately leaves the focus list. Revisit it
+            // through the same real ray/input while proving E cannot relight it.
+            float aimDeadline=Time.realtimeSinceStartup+1.5f;bool aimed=false;
+            while(!aimed)
+            {
+                Require(Time.realtimeSinceStartup<aimDeadline,"Could not physically aim at the lit candle");
+                Steer(marker.GetComponent<Collider>().bounds.center);yield return null;Check();
+                aimed=Physics.Raycast(eyes.transform.position,eyes.transform.forward,out var hit,2.2f,
+                    Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)&&hit.collider.GetComponentInParent<Interactable>()==marker;
+            }
+            Require(!marker.CanFocus&&player.Focus!=marker,"Already-lit candle remained an actionable focus target");
+            yield return Pulse(Key.E);
+            Require(candle.HasBeenLit&&candle.Ignitions == ignitions + 1, "Revisiting the lit candle repeated ignition");
             if (player.flashlight.enabled) yield return Pulse(Key.F);
             Require(!player.flashlight.enabled, "Actual F did not extinguish the flashlight");
             float offCharge = lamp.Charge; waitUntil = GameTime + .3f;
