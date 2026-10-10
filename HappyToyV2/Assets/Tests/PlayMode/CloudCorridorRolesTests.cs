@@ -17,7 +17,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreateCorridor", 73); Begin();
             var actors = Components("StalkerBrain").Where(x => x.name.EndsWith("— corridor")).ToArray();
             Assert.That(actors.Select(x => Get<object>(x, "corridorRole").ToString()),
-                Is.EquivalentTo(new[] { "Watchman", "Listener", "Tracker", "Wanderer" }));
+                Is.EquivalentTo(new[] { "Watchman", "Listener", "Wanderer" }));
             foreach (var actor in actors) actor.gameObject.SetActive(false);
             foreach (var door in Components("Interactable").Where(x => x.name == "Corridor sliding door")) Call(door, "OpenForPursuer");
             return actors;
@@ -114,7 +114,9 @@ namespace HappyToy.V2.CloudTests
         {
             var actors = PrepareRoleFixture(); yield return Delay(1.8f);
             ((Behaviour)player).enabled = false; PlacePlayer(RoleCell(80) + Vector3.up * 5, false);
-            var actor = actors[3]; var start = RoleCell(0);
+            // Exercise the shared role on a non-baby actor; the corridor baby
+            // now has its own crying/resting lifecycle covered separately.
+            var actor = actors[0]; var start = RoleCell(0);
             StartRoleActor(actor, "Wanderer", start, Vector3.forward);
             var markers = new[] { new GameObject("CloudQA arrived waypoint").transform, new GameObject("CloudQA next waypoint").transform };
             markers[0].position = start;

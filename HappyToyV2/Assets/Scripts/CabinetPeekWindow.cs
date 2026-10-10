@@ -14,6 +14,22 @@ namespace HappyToy.V2
         public Vector3 EyePosition => visual.TransformPoint(new Vector3(.216f, 1.48f, -.262f));
         public Vector3 Outward => visual.TransformDirection(Vector3.back).normalized;
         public Transform Visual => visual;
+        public Bounds ApertureLocalBounds => aperture;
+
+        public bool RayPassesAperture(Vector3 eye, Vector3 point)
+        {
+            if (!visual) return false;
+            var origin = visual.InverseTransformPoint(eye);
+            var target = visual.InverseTransformPoint(point);
+            // The eye stays inside the real cut volume. Only a ray leaving its
+            // outward face can see the room; side/back rays keep the opaque shell.
+            if (!aperture.Contains(origin) || target.z >= aperture.min.z || target.z >= origin.z) return false;
+            float t = (aperture.min.z - origin.z) / (target.z - origin.z);
+            if (t < 0 || t > 1) return false;
+            var exit = Vector3.LerpUnclamped(origin, target, t);
+            return exit.x >= aperture.min.x && exit.x <= aperture.max.x &&
+                exit.y >= aperture.min.y && exit.y <= aperture.max.y;
+        }
 
         public static void Prepare(Interactable cabinet, Transform model, Dictionary<Mesh, Mesh> cache,
             ICollection<UnityEngine.Object> owned)

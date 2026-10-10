@@ -56,6 +56,7 @@ namespace HappyToy.V2
 
         public bool HearNoise(Vector3 point, float duration)
         {
+            if (BabyMode) return HearBabyLoudNoise(point, duration);
             var session = GameSession.Current;
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
                 !StealthRules.Finite(duration) || duration <= 0 || duration > 3600 ||
@@ -71,7 +72,7 @@ namespace HappyToy.V2
 
         void BeginNoiseInvestigation(float dwell)
         {
-            NoiseInvestigationRoute.Begin(investigation,transform.position,lastKnown,path,patrolSpeed,dwell);
+            NoiseInvestigationRoute.Begin(investigation,transform.position,lastKnown,path,CalmNavigationSpeed,dwell);
             memory=investigation.DwellRemaining; state=State.Investigate; repath=0;
         }
         void EnsureNoiseInvestigation()
@@ -102,6 +103,7 @@ namespace HappyToy.V2
         }
         void OnDisable()
         {
+            if (CorridorBaby) CorridorBaby.StopVoice();
             ClearDoorPassage(); investigation.Reset();
             BindFootsteps(null); awareness.Reset(); attack.Reset(); witnessedHiding = false;
             EnemyNavigation.Stop(agent, true);
@@ -117,9 +119,10 @@ namespace HappyToy.V2
         }
         void HearFootstep(Vector3 point, float radius)
         {
+            bool loudBabyStep = BabyMode && radius >= CorridorBabyBehaviour.LoudFootstepRadius;
             var session = GameSession.Current;
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
-                !player || noisePlayer != player || player.Hidden || state == State.Chase || attack.Active ||
+                !player || noisePlayer != player || player.Hidden || state == State.Chase && !loudBabyStep || attack.Active ||
                 !StealthRules.Finite(radius) || radius <= 0 || !StealthRules.Finite(point.x) ||
                 !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z)) return;
             // The listener hears a larger real footstep radius, with the same
@@ -131,7 +134,13 @@ namespace HappyToy.V2
                 !EnemyNavigation.TryRoute(agent, point, floorY, path, radius)) return;
             var corners = path.corners;
             lastKnown = corners.Length > 0 ? corners[corners.Length - 1] : point;
-            BeginNoiseInvestigation(3); FootstepNoisesAccepted++;
+            if (loudBabyStep) BeginBabySoundChase();
+            else
+            {
+                if (BabyMode) CorridorBaby.Memory.HearSmall();
+                BeginNoiseInvestigation(3);
+            }
+            FootstepNoisesAccepted++;
         }
 
         public bool CanSeePlayer()
@@ -210,6 +219,7 @@ namespace HappyToy.V2
             }
             if (state == State.Investigate)
             {
+                if (BabyMode) CorridorBaby.Memory.FinishInvestigation();
                 investigation.Cancel(); memory=0; state=State.Patrol;
                 ClearDoorPassage(); repath=0; return true;
             }
@@ -343,6 +353,7 @@ namespace HappyToy.V2
 
         void BeginSearch()
         {
+            if (BabyMode) { LoseBabyPursuit(); return; }
             investigation.Cancel();
             state = State.Search; memory = Senses.SearchSeconds; witnessedHiding = false; awareness.Reset();
             // This anchor is observed evidence, never the current unseen player.
@@ -446,8 +457,9 @@ namespace HappyToy.V2
                 if (!attack.Active) repath = 0;
                 return;
             }
-            // A confirmed physical sight starts pursuit in this update. Sound
-            // evidence never contributes to visual recognition or tracks the player.
+            // A confirmed physical sight earns recognition. The corridor Baby's
+            // requested loud-sound alert has a separate bounded last-known target;
+            // it never earns visual feedback until genuine sight occurs here.
             if (visible)
             {
                 // Scripted encounters can enable an actor already in Chase.
@@ -455,6 +467,7 @@ namespace HappyToy.V2
                 if (!recognitionCueIssued) { DetectionFeedback.Signal(session, transform); recognitionCueIssued = true; }
                 if (state != State.Chase) repath = 0;
                 awareness.Restore(1); investigation.Cancel();
+                if (BabyMode) CorridorBaby.Memory.SeePlayer();
                 state = State.Chase; memory = Senses.ChaseMemory; lastKnown = player.transform.position; witnessedHiding = false;
             }
             else if (state == State.Chase)
@@ -491,7 +504,10 @@ namespace HappyToy.V2
                     memory=investigation.DwellRemaining;
                     if(!hadArrived && investigation.Arrived) investigationFacing=Quaternion.Euler(0,transform.eulerAngles.y,0);
                     if(step==NoiseInvestigationClock.Step.Expired)
-                    { memory=0; state=State.Patrol; ClearDoorPassage(); repath=0; }
+                    {
+                        if (BabyMode) CorridorBaby.Memory.FinishInvestigation();
+                        memory=0; state=State.Patrol; ClearDoorPassage(); repath=0;
+                    }
                 }
                 if ((state == State.Search || state == State.Investigate) && memory <= 0)
                 { state = State.Patrol; repath = 0; }
@@ -500,7 +516,8 @@ namespace HappyToy.V2
             if (visible && state == State.Chase && offset.magnitude < 1.5f) { BeginAttack(false, session); return; }
 
             if(state==State.Investigate && investigation.Arrived) { InspectNoisePoint(); return; }
-            agent.speed = state == State.Chase ? chaseSpeed : patrolSpeed;
+            if (HoldWaitingBaby()) return;
+            agent.speed = state == State.Chase ? chaseSpeed : CalmNavigationSpeed;
             if (state != State.Patrol) patrolDwelling = false;
             if (TryPassDoor())
             {

@@ -18,7 +18,10 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(session,"CorridorMode"),Is.True);
             Assert.That(Get<bool>(session,"ChapterMode"),Is.False);
             Assert.That(Get<int>(session,"TotalRecords"),Is.EqualTo(5));
-            Assert.That(CheckpointThreats().Length,Is.EqualTo(4),"Main entry must retain the original corridor threat set");
+            Assert.That(CheckpointThreats().Length,Is.EqualTo(3),"Main entry must create Cyclops, Uncat and Baby stalkers");
+            var mask=Get<Component>(Get<Component>(session,"Corridor"),"Mask");
+            Assert.That(mask,Is.Not.Null,"Main entry must retain the actual lantern mask encounter");
+            Assert.That(mask.GetType(),Is.EqualTo(RequireType("LanternMaskEncounter")));
             Assert.That(CheckpointItems("CorridorMemory").Length,Is.EqualTo(5));
             Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(1));
         }

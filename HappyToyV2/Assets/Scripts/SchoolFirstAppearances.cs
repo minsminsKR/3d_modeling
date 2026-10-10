@@ -5,8 +5,8 @@ using UnityEngine.AI;
 
 namespace HappyToy.V2
 {
-    // Chapter-owned shots. The camera visits the real corridors; the player capsule
-    // stays put. The Cyclopse owns an occluded, protected crossing at the far junction.
+    // Chapter-owned shots. Cyclopse has a protected distant crossing; the mannequin
+    // is discovered from the player's own eyes in the real, illuminated corridor.
     [DefaultExecutionOrder(300)]
     public sealed class SchoolFirstAppearances : MonoBehaviour
     {
@@ -14,6 +14,18 @@ namespace HappyToy.V2
         public bool CameraOwned { get; private set; }
         public bool CyclopseShown { get; private set; }
         public bool MannequinShown { get; private set; }
+        public bool MannequinArmed { get; private set; }
+        public Vector3 MannequinRevealEye { get; private set; }
+        public Vector3 MannequinRevealForward { get; private set; }
+        public float MannequinRevealPlayerSpeed { get; private set; }
+        public Vector3 StoredCameraLocalPosition => cameraPosition;
+        public Quaternion StoredCameraLocalRotation => cameraRotation;
+        public float StoredCameraFov => cameraFov;
+        public Vector3 LastCameraReturnEye { get; private set; }
+        public Vector3 LastCameraReturnForward { get; private set; }
+        public float LastCameraReturnFov { get; private set; }
+        public int LastCameraReturnFrame { get; private set; }
+        public const float MannequinRevealRange = 12;
         public float ShotElapsed { get; private set; }
         public V1CyclopseIntro CyclopseIntro { get; private set; }
         public const float CyclopsePursuitGrace = 4;
@@ -82,6 +94,9 @@ namespace HappyToy.V2
             {
                 if(owner.gameObject.scene!=gameObject.scene ||
                     !(owner is StalkerBrain || owner is WeepingAngelEncounter || owner is LanternMaskEncounter)) continue;
+                // The mannequin's harmless first turn should play in the actual
+                // shot, rather than being reset by its OnDisable callback.
+                if(!cyclopseShot && owner==chapter.Mannequin) continue;
                 var agent=owner.GetComponent<NavMeshAgent>();
                 frozen.Add(new Frozen {owner=owner,enabled=owner.enabled,agent=agent,
                     stopped=EnemyNavigation.Ready(agent)&&agent.isStopped});
@@ -92,10 +107,11 @@ namespace HappyToy.V2
         {
             CameraOwned=true;cyclopseShot=cyclopse;returning=false;ShotElapsed=0;
             cameraPosition=camera.transform.localPosition;cameraRotation=camera.transform.localRotation;cameraFov=camera.fieldOfView;
-            var torch=session.player.flashlight;torchWasOn=torch&&torch.enabled;if(torch)torch.enabled=false;
+            var torch=session.player.flashlight;torchWasOn=torch&&torch.enabled;
+            if(cyclopse && torch)torch.enabled=false;
             FreezeOtherThreats();
-            shotEye=cyclopse?new Vector3(-6.1f,1.65f,0):new Vector3(13.8f,1.65f,-.7f);
-            shotTarget=cyclopse?new Vector3(13.8f,1.62f,0):MannequinStation+Vector3.up*1.5f;
+            shotEye=cyclopse?new Vector3(-6.1f,1.65f,0):camera.transform.position;
+            shotTarget=cyclopse?new Vector3(13.8f,1.62f,0):chapter.Mannequin.transform.position+Vector3.up*1.65f;
             ApplyCamera();
         }
         public void PlayCyclopse()
@@ -150,13 +166,27 @@ namespace HappyToy.V2
         }
         public void PlayMannequin()
         {
-            if(CameraOwned || MannequinShown)return;
+            // Recovering the ribbon only prepares the physical encounter. It must
+            // not black out the torch, move the camera or look around a corner.
+            if(MannequinShown)return;
+            MannequinArmed=true;
             MannequinSpotlight.enabled=true;
             if(bulb)bulb.enabled=true;
-            StartCoroutine(MannequinShot());
+        }
+        public bool CanSeeMannequinForReveal()
+        {
+            var actor=chapter?chapter.Mannequin:null;
+            return MannequinArmed && !CameraOwned && session && session.InputAllowed &&
+                session.ChapterMode && actor && actor.isActiveAndEnabled && session.player && !session.player.Hidden &&
+                MannequinSpotlight && MannequinSpotlight.isActiveAndEnabled && MannequinSpotlight.intensity>.01f &&
+                EnemyNavigation.SameFloor(session.player.transform.position,actor.transform.position.y) &&
+                Vector3.Distance(session.player.transform.position,actor.transform.position)<=MannequinRevealRange &&
+                actor.FirstSightVisibleTo(camera);
         }
         IEnumerator MannequinShot()
         {
+            MannequinRevealEye=camera.transform.position;MannequinRevealForward=camera.transform.forward;
+            MannequinRevealPlayerSpeed=session.player.ActualSpeed;
             Begin(false);
             while(ShotElapsed<2.8f)yield return null;
             MannequinShown=true;
@@ -181,15 +211,24 @@ namespace HappyToy.V2
                 target=chapter.Cyclopse.transform.position+Vector3.up*(height*.68f);
             }
             var rotation=Quaternion.LookRotation(target-eye);
-            float zoom=cyclopseShot?Mathf.SmoothStep(0,1,Mathf.Clamp01(ShotElapsed/1.35f)):0;
-            float fov=Mathf.Lerp(cameraFov,session.Shell.ReducedMotion?48:24,zoom);
+            float zoom=Mathf.SmoothStep(0,1,Mathf.Clamp01(ShotElapsed/(cyclopseShot?1.35f:.95f)));
+            float zoomFov=cyclopseShot?(session.Shell.ReducedMotion?48:24):(session.Shell.ReducedMotion?52:32);
+            float fov=Mathf.Lerp(cameraFov,Mathf.Min(cameraFov,zoomFov),zoom);
+            if(!cyclopseShot)
+            {
+                // The actor is already visible. Ease a small reframing from the
+                // actual view; never cut to the remote display corridor.
+                var original=camera.transform.parent.rotation*cameraRotation;
+                rotation=Quaternion.Slerp(original,rotation,zoom);
+            }
             if(returning)
             {
                 float t=Mathf.SmoothStep(0,1,Mathf.Clamp01((ShotElapsed-returnStart)/.75f));
-                // Cut back to the real player view rather than flying through the
-                // walls between the remote mannequin corridor and the player.
+                // Cyclopse cuts back from its remote shot. The mannequin stays
+                // at this same eye and eases both framing and FOV back to input.
                 eye=camera.transform.parent.TransformPoint(cameraPosition);
-                rotation=camera.transform.parent.rotation*cameraRotation;
+                var original=camera.transform.parent.rotation*cameraRotation;
+                rotation=cyclopseShot?original:Quaternion.Slerp(rotation,original,t);
                 fov=Mathf.Lerp(fov,cameraFov,t);
             }
             camera.transform.SetPositionAndRotation(eye,rotation);camera.fieldOfView=fov;
@@ -199,6 +238,8 @@ namespace HappyToy.V2
             if(CyclopseGraceActive)HoldCyclopse();
             if(CameraOwned && (!session || session.Finished))
             {StopAllCoroutines();if(cyclopseShot)CyclopseIntro.Cancel();End(false);return;}
+            if(!CameraOwned && !MannequinShown && CanSeeMannequinForReveal() && chapter.Mannequin.Triggered)
+                StartCoroutine(MannequinShot());
             if(!CameraOwned || !session || !session.InputAllowed)return;
             // Nested navigation iterators are bounded individually; the shot also
             // has its own active-time ceiling even while a nested iterator runs.
@@ -211,7 +252,14 @@ namespace HappyToy.V2
         void End(bool releaseCyclopse=true)
         {
             if(!CameraOwned)return;
-            if(camera) {camera.transform.localPosition=cameraPosition;camera.transform.localRotation=cameraRotation;camera.fieldOfView=cameraFov;}
+            if(camera)
+            {
+                camera.transform.localPosition=cameraPosition;camera.transform.localRotation=cameraRotation;camera.fieldOfView=cameraFov;
+                // Record the handoff before the normal locomotion presentation
+                // resumes. Its next frame may settle the captured stride offset.
+                LastCameraReturnEye=camera.transform.position;LastCameraReturnForward=camera.transform.forward;
+                LastCameraReturnFov=camera.fieldOfView;LastCameraReturnFrame=Time.frameCount;
+            }
             if(session && session.player && session.player.flashlight)
                 session.player.flashlight.enabled=torchWasOn&&!session.player.FlashlightSystem.Depleted;
             foreach(var state in frozen)
@@ -229,9 +277,11 @@ namespace HappyToy.V2
                 StartCoroutine(ReleaseCyclopseAfterGrace());
             }
         }
-        public void RestoreProgress(int recovered)
+        public void RestoreProgress(int recovered) => RestoreProgress(recovered,true);
+        public void RestoreProgress(int recovered,bool mannequinReleased)
         {
-            CyclopseShown=recovered>=1;MannequinShown=recovered>=2;
+            CyclopseShown=recovered>=1;MannequinArmed=recovered>=2;
+            MannequinShown=recovered>=2 && mannequinReleased;
             if(MannequinSpotlight)MannequinSpotlight.enabled=recovered>=2;
             if(bulb)bulb.enabled=recovered>=2;
         }

@@ -84,6 +84,8 @@ namespace HappyToy.V2
             public int waypoint,searchCandidate,visited,attacks,noises,footstepNoises;
             public string door;
             public NoiseInvestigationClock.Progress investigation;
+            public int babyVersion;
+            public CorridorBabyMemory.Progress baby;
             public float investigationYaw;
             public void Validate()
             { ValidatePosition(false); }
@@ -109,6 +111,16 @@ namespace HappyToy.V2
                     attacks<0 || noises<0 || footstepNoises<0 || door==null || door.Length>40)
                     throw new ArgumentException("Invalid threat checkpoint");
                 investigation?.Validate();
+                if (babyVersion < 0 || babyVersion > 1 || babyVersion == 1 && baby == null ||
+                    babyVersion == 0 && baby != null && !baby.LegacyEmpty)
+                    throw new ArgumentException("Invalid Baby checkpoint marker");
+                if (babyVersion == 1)
+                {
+                    baby.Validate();
+                    if (state != (baby.phase == CorridorBabyMemory.Phase.Chasing ? State.Chase :
+                        baby.phase == CorridorBabyMemory.Phase.InvestigatingCry ? State.Investigate : State.Patrol))
+                        throw new ArgumentException("Baby phase does not match saved pursuit");
+                }
                 if(!CorridorCheckpoint.Number(investigationYaw,0,360) ||
                     investigation!=null && investigation.active && state==State.Investigate &&
                     Vector3.Distance(investigation.point,lastKnown)>.002f) throw new ArgumentException("Invalid investigation evidence snapshot");
@@ -126,7 +138,8 @@ namespace HappyToy.V2
                 patrolRemaining=patrolDwelling?Mathf.Max(0,patrolDwellUntil-Time.time):0,
                 door=blockingDoor?blockingDoor.stableId:"",doorPush=doorPush,passingDoor=passingDoor,doorEntrySide=doorEntrySide,doorCloseWait=doorCloseWait,doorBlockedWait=doorBlockedWait,
                 attacks=AttacksStarted,noises=NoisesAccepted,footstepNoises=FootstepNoisesAccepted,
-                investigation=investigation.Capture(),investigationYaw=investigationFacing.eulerAngles.y };
+                investigation=investigation.Capture(),investigationYaw=investigationFacing.eulerAngles.y,
+                babyVersion=CorridorBaby ? 1 : 0, baby=CorridorBaby ? CorridorBaby.Memory.Capture() : null };
         }
         public void RestoreProgress(Progress data,Interactable[] doors)
         { data.Validate(); RestoreValidatedProgress(data,doors); }
@@ -161,6 +174,17 @@ namespace HappyToy.V2
                 doorEntrySide=Vector3.Dot(transform.position-blockingDoor.transform.position,blockingDoor.DoorNormal)>=0?1:-1;
             AttacksStarted=data.attacks; NoisesAccepted=data.noises; FootstepNoisesAccepted=data.footstepNoises;
             investigation.Restore(data.investigation); investigationFacing=Quaternion.Euler(0,data.investigationYaw,0);
+            if (CorridorBaby)
+            {
+                var savedBaby = data.babyVersion == 1 ? data.baby : null;
+                CorridorBaby.Memory.Restore(savedBaby);
+                // Legacy saved pursuit is still real pursuit. Older patrol saves
+                // start from the new waiting state because no chase history exists.
+                if (savedBaby == null && state == State.Chase) CorridorBaby.Memory.SeePlayer();
+                else if (savedBaby == null && state == State.Investigate) CorridorBaby.Memory.HearSmall();
+                else if (savedBaby == null && state == State.Search)
+                { CorridorBaby.Memory.SeePlayer(); CorridorBaby.Memory.LosePlayer(); state = State.Patrol; }
+            }
         }
     }
 }

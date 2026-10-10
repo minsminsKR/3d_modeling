@@ -53,12 +53,21 @@ namespace HappyToy.V2
             public StalkerDoorTraversal.Progress doorPassage;
             public NoiseInvestigationClock.Progress investigation;
             public float investigationYaw;
-            public void Validate()
+            // JsonUtility can turn a missing inline class into its empty fields.
+            // Only this representation may accompany the legacy corridor marker.
+            public bool LegacyEmpty => !active && !introComplete && !transformed && !cueIssued && state == Phase.Dormant &&
+                position == Vector3.zero && target == Vector3.zero && rotation.Equals(default(Quaternion)) && age == 0 && memory == 0 &&
+                awareness == 0 && waypoint == 0 && curses == 0 && attacks == 0 && noises == 0 && investigationYaw == 0 &&
+                (doorPassage == null || doorPassage.LegacyEmpty) &&
+                (investigation == null || investigation.version >= 0 && investigation.version <= 1 && investigation.LegacyEmpty);
+            public void Validate() => Validate(false);
+            public void ValidateCorridor() => Validate(true);
+            void Validate(bool corridor)
             {
-                if(!ChapterCheckpoint.Point(position) || !CorridorCheckpoint.Vector(target) || !ChapterCheckpoint.Rotation(rotation) ||
+                if(!(corridor ? CorridorCheckpoint.Point(position) : ChapterCheckpoint.Point(position)) || !CorridorCheckpoint.Vector(target) || !ChapterCheckpoint.Rotation(rotation) ||
                     !Enum.IsDefined(typeof(Phase),state) || state==Phase.Transforming || state==Phase.Resolved ||
                     !CorridorCheckpoint.Number(age,0,1000000000) || !CorridorCheckpoint.Number(memory,0,state==Phase.Investigate?3600:8.01f) ||
-                    !CorridorCheckpoint.Number(awareness,0,1) || waypoint<0 || waypoint>2 || curses<0 || attacks<0 || noises<0 ||
+                    !CorridorCheckpoint.Number(awareness,0,1) || waypoint<0 || waypoint>(corridor?3:2) || curses<0 || attacks<0 || noises<0 ||
                     introComplete && !active || transformed && !introComplete) throw new ArgumentException("Invalid mask checkpoint");
                 doorPassage?.Validate(); investigation?.Validate();
                 if(!CorridorCheckpoint.Number(investigationYaw,0,360) ||
@@ -73,8 +82,12 @@ namespace HappyToy.V2
             doorPassage=doorTraversal?doorTraversal.CaptureProgress():null,
             investigation=investigation.Capture(),investigationYaw=investigationFacing.eulerAngles.y };
         public void RestoreChapterProgress(ChapterProgress data)
+        { data.Validate(); RestoreMaskProgress(data); }
+        public void RestoreCorridorProgress(ChapterProgress data)
+        { data.ValidateCorridor(); RestoreMaskProgress(data); }
+        void RestoreMaskProgress(ChapterProgress data)
         {
-            data.Validate(); agent=GetComponent<NavMeshAgent>(); agent.enabled=false;
+            agent=GetComponent<NavMeshAgent>(); agent.enabled=false;
             transform.SetPositionAndRotation(data.position,data.rotation); gameObject.SetActive(data.active);
             if(data.active) { agent.enabled=true; if(!agent.Warp(data.position)) throw new InvalidOperationException("Mask restore has no floor"); }
             floorY=data.position.y; State=data.state; target=data.target; age=data.age; memory=data.memory; waypoint=data.waypoint;

@@ -47,7 +47,7 @@ namespace HappyToy.V2
             meters += Vector3.Distance(previous, player.transform.position); previous = player.transform.position;
             lastGameTime = session.ElapsedPlayTime - gameStart; lastRecovered = session.RecordsRecovered;
             observedKeyboard = Keyboard.current;
-            maximumThreats = Mathf.Max(maximumThreats, monsters.Count(x => x.gameObject.activeSelf));
+            maximumThreats = Mathf.Max(maximumThreats, session.Corridor.ActiveThreatCount);
             lastCharge = player.FlashlightSystem.Charge; lastHidingEntry = player.HidingEntryId;
             lastHidingRolls = player.HidingRolls; lastHidingOutcome = player.HidingOutcome.ToString();
             Require(player.HidingRandomSample == null, "Native route may not override the production hiding RNG");
@@ -169,21 +169,24 @@ namespace HappyToy.V2
         {
             get { var cue = player.GetComponent<DetectionFeedback>(); return cue && cue.Active; }
         }
-        StalkerBrain VisibleThreat()
+        MonoBehaviour VisibleThreat()
         {
-            StalkerBrain closest = null; float nearest = 8;
-            foreach (var monster in monsters)
+            MonoBehaviour closest = null; float nearest = 8;
+            foreach (var monster in monsters.Cast<MonoBehaviour>().Concat(new MonoBehaviour[]{session.Corridor.Mask}))
             {
-                if (!monster.gameObject.activeSelf) continue;
+                if (!monster || !monster.gameObject.activeSelf) continue;
                 var delta = monster.transform.position + Vector3.up - eyes.transform.position;
                 if (delta.magnitude >= nearest || !RecognitionCue && Vector3.Angle(eyes.transform.forward, delta) > 80) continue;
                 if (Physics.Linecast(eyes.transform.position, monster.transform.position + Vector3.up, out var hit,
-                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) && hit.collider.GetComponentInParent<StalkerBrain>() != monster) continue;
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) && !hit.collider.transform.IsChildOf(monster.transform)) continue;
                 closest = monster; nearest = delta.magnitude;
             }
             return closest;
         }
-        IEnumerator Decoy(StalkerBrain monster)
+        static bool AttackActive(MonoBehaviour actor) => actor is StalkerBrain stalker ? stalker.AttackActive : ((LanternMaskEncounter)actor).AttackActive;
+        static float AttackRecovery(MonoBehaviour actor) => actor is StalkerBrain stalker ? stalker.AttackRecovery : ((LanternMaskEncounter)actor).AttackRecovery;
+        static float AttackWindup(MonoBehaviour actor) => actor is StalkerBrain stalker ? stalker.AttackWindup : ((LanternMaskEncounter)actor).AttackWindup;
+        IEnumerator Decoy(MonoBehaviour monster)
         {
             var stock = player.Firecrackers; int before = stock.Count;
             var away = monster.transform.position - player.transform.position; away.y = 0;
@@ -196,16 +199,16 @@ namespace HappyToy.V2
             float wait = Time.realtimeSinceStartup + 1.5f;
             while (Time.realtimeSinceStartup < wait && !RecognitionCue) { keys(Array.Empty<Key>()); yield return null; Check(); }
         }
-        StalkerBrain StationaryThreat()
+        MonoBehaviour StationaryThreat()
         {
             // The same actual line of sight / recognition cue as Walk, including
             // a pursuer behind us when its real sting tells us to look around.
             // No unseen actor position or future warning is consulted.
             var guard=VisibleThreat();
             return guard && Vector3.Distance(player.transform.position,guard.transform.position)<3.2f &&
-                (guard.AttackActive || RecognitionCue) && GameTime-lastDodge>.9f ? guard : null;
+                (AttackActive(guard) || RecognitionCue) && GameTime-lastDodge>.9f ? guard : null;
         }
-        IEnumerator Dodge(StalkerBrain monster, Vector3 destination, bool continuePast = true)
+        IEnumerator Dodge(MonoBehaviour monster, Vector3 destination, bool continuePast = true)
         {
             var observedGuard = monster.transform.position;
             if (player.Crouching) yield return Pulse(Key.C);
@@ -213,17 +216,17 @@ namespace HappyToy.V2
             // rather than blindly crossing it before the warning has resolved.
             keys(Array.Empty<Key>());
             float baitDeadline = GameTime + 1.35f;
-            while (VisibleThreat() == monster && !monster.AttackActive && GameTime < baitDeadline)
+            while (VisibleThreat() == monster && !AttackActive(monster) && GameTime < baitDeadline)
             {
                 observedGuard = monster.transform.position;
                 Steer(observedGuard + Vector3.up, true);
                 yield return null; Check();
             }
-            bool observedStrike = VisibleThreat() == monster && monster.AttackActive;
+            bool observedStrike = VisibleThreat() == monster && AttackActive(monster);
             if (observedStrike) observedGuard = monster.transform.position;
             float passNotBefore = GameTime;
-            if (observedStrike && monster.AttackRecovery <= 0)
-                passNotBefore += .75f * (1 - monster.AttackWindup);
+            if (observedStrike && AttackRecovery(monster) <= 0)
+                passNotBefore += .75f * (1 - AttackWindup(monster));
             var away = player.transform.position - observedGuard; away.y = 0;
             var tangent = Vector3.Cross(Vector3.up, away.normalized);
             var selected = new NavMeshPath(); bool found = false; float best = 0;
@@ -444,7 +447,7 @@ namespace HappyToy.V2
             }
             yield return Pulse(Key.E);
         }
-        IEnumerator HideFrom(StalkerBrain guard)
+        IEnumerator HideFrom(MonoBehaviour guard)
         {
             Interactable cabinet = null; Vector3 destination = Vector3.zero; float best = 30;
             foreach (var item in Items().Where(x => x.name == "Corridor hiding cabinet"))

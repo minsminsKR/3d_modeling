@@ -357,7 +357,7 @@ namespace HappyToy.V2
         }
         void ApplySettings()
         {
-            AudioListener.volume = volume;
+            AudioListener.volume = DiagnosticAudioSilence.FilterVolume(volume);
             if (!session || !session.player) return;
             session.player.sensitivity = sensitivity;
             if (session.player.eyes) session.player.eyes.fieldOfView = fieldOfView;

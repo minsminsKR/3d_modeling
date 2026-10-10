@@ -18,6 +18,7 @@ namespace HappyToy.V2
             {"enemy-hwacat-movement",3},{"enemy-hwacat-attack",1},
             {"enemy-uncat-movement",3},{"enemy-uncat-attack",1},
             {"enemy-baby-movement",3},{"enemy-baby-attack",1},
+            {"enemy-baby-cry",1},
             {"enemy-lantern-movement",1},{"enemy-lantern-attack",1},
             {"enemy-wraith-movement",1},{"enemy-wraith-attack",1},
             {"recognition",1},{"tension-heart",1},{"tension-air",1},{"tension-breath",1},

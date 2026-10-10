@@ -331,6 +331,10 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(hardware.GetComponentsInChildren(RequireType("Interactable"), true), Is.Empty);
                 Assert.That(faces[0].localPosition.z, Is.LessThan(0)); Assert.That(faces[1].localPosition.z, Is.GreaterThan(0));
                 Assert.That(Vector3.Dot(faces[0].forward, faces[1].forward), Is.LessThan(-.99f));
+                var travel=Get<Vector3>(hardware,"OpeningWorldDelta");
+                foreach(var face in faces)
+                    Assert.That(Vector3.Dot(face.position-leaf.position,travel.normalized),Is.LessThan(-.9f),
+                        "Actual corridor pull occupies the leading disappearing edge instead of the trailing edge");
                 foreach (var face in faces)
                 {
                     var renderers = face.GetComponentsInChildren<MeshRenderer>(true);

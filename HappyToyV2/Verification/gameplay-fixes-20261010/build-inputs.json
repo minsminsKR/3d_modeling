@@ -1,0 +1,1003 @@
+{
+  "status": "GRAPHICS_BUILD_INPUTS_PASS",
+  "scope": "Full current Assets/Packages/ProjectSettings inventory and hashes through the existing verifier, explicit new graphics Resources/settings input inclusion, original hash protection (LF-canonical YAML assets; raw scene bytes), and copied credit equality. Build inputs retain strict raw byte hashes. Input inclusion does not by itself certify actual shipped shader appearance, GPU duration, survival or audio.",
+  "readUtc": "2026-10-10T08:47:58.255252+00:00",
+  "project": "C:\\Users\\강 두오\\Documents\\Codex\\2026-10-05\\d\\outputs\\HappyToyV2-latest\\HappyToyV2",
+  "build": "C:\\Users\\강 두오\\Documents\\Codex\\2026-10-06\\dkdk\\outputs\\HappyToyV2-gameplay-fixes-release",
+  "errors": [],
+  "notBeforeUtc": "2026-10-10T08:15:22.408960+00:00",
+  "baseVerifierSha256": "33c6acb6482e2e2d7eed45dfee639dc5c803ddefe0563296ca386653923c49fa",
+  "base": {
+    "status": "BUILD_INPUTS_PASS",
+    "scope": "Fresh native artifact existence/checksums, full current Assets/Packages/ProjectSettings inventory/hashes and copied credit equality; does not certify actual native shader appearance, route completion, DSP/device audio or performance.",
+    "readUtc": "2026-10-10T08:47:56.419194+00:00",
+    "project": "C:\\Users\\강 두오\\Documents\\Codex\\2026-10-05\\d\\outputs\\HappyToyV2-latest\\HappyToyV2",
+    "build": "C:\\Users\\강 두오\\Documents\\Codex\\2026-10-06\\dkdk\\outputs\\HappyToyV2-gameplay-fixes-release",
+    "errors": [],
+    "manifestCreatedUtc": "2026-10-10T08:16:55.7968671Z",
+    "unity": "6000.6.0f1",
+    "inputCount": 2668,
+    "shaderAnchors": [
+      "Assets/Resources/FeedbackShaderVariants/Lit-01b604c0806f6655433f4d1675d66a8367d068b50b89015505f2e369ab4c614b.mat",
+      "Assets/Resources/FeedbackShaderVariants/Lit-04bfb2aff0376539e0671227847e5e08793beafa6fae3caf58526e92c4d86582.mat",
+      "Assets/Resources/FeedbackShaderVariants/Lit-21bc63dfb56636b8b63a7f3bb922814189fdb235514a8737d0eb7ac2dd8d11fe.mat",
+      "Assets/Resources/FeedbackShaderVariants/Lit-50995a49aeeb344371469e40a34065a36a4363015dbc969b60d83605975655b5.mat",
+      "Assets/Resources/FeedbackShaderVariants/Lit-87c3df18c91c0d8e5801f5cb942eaebacfd70824fe54bbc911a6d1d746572718.mat",
+      "Assets/Resources/FeedbackShaderVariants/Lit-b20e70bb910911656849f39b5a5e0bf14fdf723b021ecf94f635999d56d7409f.mat"
+    ],
+    "artifacts": [
+      {
+        "path": "HappyToyV2.exe",
+        "bytes": 667136,
+        "sha256": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d"
+      },
+      {
+        "path": "UnityPlayer.dll",
+        "bytes": 38669232,
+        "sha256": "8698332fa0d299291b58e71a505db6f20a8f291a2b7349421f93a4f9838ed895"
+      },
+      {
+        "path": "HappyToyV2_Data/globalgamemanagers",
+        "bytes": 363716,
+        "sha256": "160eef8ca84386db461123174ae80eb1b71a5e00393834264b685819b02f26cb"
+      },
+      {
+        "path": "Audio-Credits.txt",
+        "bytes": 6459,
+        "sha256": "88470455015f9953a59bccf12d6ae4a1ca914107eff285894da70a1c98c776af"
+      }
+    ]
+  },
+  "graphics": {
+    "errors": [],
+    "requiredInputs": [
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished.meta",
+        "bytes": 121,
+        "sha256": "1ab54d44a4aaa4245373814ab00c6479407a2dd06eb001578796e244f7aebbb3"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/albedo.png",
+        "bytes": 2248356,
+        "sha256": "402164ca2dfc9db83c7098278d1ec68c2f48e7c52452970b99a6e53f206dda9d"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "12eaa369295a1a0c35e4d11631ec4f6799dda7ad2432b639841517a0f6ba695b"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/ao.png",
+        "bytes": 215271,
+        "sha256": "61ca0a793fbbcb553f1887980a39b82b5c1ea7678e08b4081ed5fda7a059476e"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "b77f5daa429756c9cc8cd3fdaddbc781daa60f77c5453d525f84d692f314e167"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/metallic-smoothness.png",
+        "bytes": 1985493,
+        "sha256": "78325709a9f9c0c72fb116ee66e7fa4609f4286ef7e149b1d189164e98adbe55"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "2432fca6c42dc7b484d121a2607e520d1467d0f5a9ce5c175becf2a4914fce7a"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/normal.png",
+        "bytes": 673494,
+        "sha256": "7ff428e2571157e6fe0865178c21c77a8e0186a7834e6b7152c3e44b0b4c41b2"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "da5f65e1f94bd2403beebdd2121d3402f2e02aea1379cacdd41c82a0570ea434"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/material.mat",
+        "bytes": 4218,
+        "sha256": "551cb3d6e09a214d0671992f2e9483f7a27284622c11ae9b57555c67796cbca9"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/brass-tarnished/material.mat.meta",
+        "bytes": 196,
+        "sha256": "cf2872d50a1e7ac3537139d471665c1b6cfb3535237c581d184cc41cf65af9c6"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile.meta",
+        "bytes": 180,
+        "sha256": "80b1142585b125a5d3d89bdc44e186201b611c3e5bb94c4d7bc4a065c3bc96f1"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/albedo.png",
+        "bytes": 5529842,
+        "sha256": "990a73ba511d921766ac8d2195990a5b3aeb61179c5f862e021f3dd554f1e0e5"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "4f2cb9d206d5a5ca375225c1cc5bc6172d198558ab019bb33539b4fdbfed4b8f"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/ao.png",
+        "bytes": 2089117,
+        "sha256": "96879a0e0be19d334f63565c589f236d11271ff78cba1020cc00e8a7722cc7b7"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "a5577a26aa6e88456acfbe570e6444c7332b0feaa537b56cbe7ddc2ca5e1d95a"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/metallic-smoothness.png",
+        "bytes": 1981846,
+        "sha256": "7a5949db6a3ec87c57250bebad8cd2d4911575419d1559192f4aee66a9cd1947"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "6457fe47f788c04bc07ceb876a77531be830dd89dec1e87ce27be95690fce9a0"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/normal.png",
+        "bytes": 4809318,
+        "sha256": "9fc97722238b565b7bdc17e5fa472b77e08d6e4843837304fda0e4895ea4cf4b"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "a43158780356b0aa751b475564ba20973a6150cc48c0dcec55f2af08c440a9bc"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/material.mat",
+        "bytes": 4218,
+        "sha256": "5f3b7676a3223157ea00b42494819ae0b01ddf0733a166416258dd56c62e07f7"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/ceramic-tile/material.mat.meta",
+        "bytes": 196,
+        "sha256": "ab47355ebf44792fce01981711505ab6cf81e62a9210a9cfc8a4a38085280d83"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred.meta",
+        "bytes": 121,
+        "sha256": "310871ca70119792888e92cd0d9fbeff727d0dc7fe1a9b46be8aca8cc2cf5f50"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/albedo.png",
+        "bytes": 1226877,
+        "sha256": "14a3f7e8a635f8d3b08fe9c99d24d99d07e66abd1373e182dbf9d6ba36bb2f7e"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "18a5926e724fdc702960ffa62e044fd1045abcfbec277b8d1850f909339e2a60"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/ao.png",
+        "bytes": 793982,
+        "sha256": "4ced8fa48944ffa0dd2fed546a615c3a479debabb520e38157302623d11ef349"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "0faa6c95a268696e4198719f1b32d551ae31ba93ab935d71ef421220dcf86246"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/metallic-smoothness.png",
+        "bytes": 631141,
+        "sha256": "42ae0adab4b7ab0e6a3887be9767b48a920b8e20b56e7a7f5912a46e1d5aa28b"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "e7d893fef5f678d5c723aca54daaa1d7cc9deb40152e21bb296deb81a8e3fe16"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/normal.png",
+        "bytes": 1829664,
+        "sha256": "1aeef7c952d9602ef36ddf762f929a2564edd4d62a2181f3d6a9869373e3f772"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "76bc02aec1e63f7b7566988526078d94c32e11767565d1cf87b2ea9a3b3dc514"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/material.mat",
+        "bytes": 4217,
+        "sha256": "c6d35b0b29e46ca9b4b3c947e908095550074a94cbf762a850ab9749117d113d"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/cloth-charred/material.mat.meta",
+        "bytes": 196,
+        "sha256": "802efad173db6f991775f6f9df032c222b1ec17db800ab8c226e2b34912f37a8"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough.meta",
+        "bytes": 180,
+        "sha256": "bb74ca02c724df2f4e47ee054afadc775c4e16d5d8b19f33ebb9ea87a95fb53a"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/albedo.png",
+        "bytes": 10327160,
+        "sha256": "66b7a773a5aafe7faf79bb1d6973e3e52e4b44066170ce092f5cb9e13d0a19bd"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "ced47f374549bdf9a4ae9ee8298db63cfc82d72d890cc8cb9b190fd7e95e3767"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/ao.png",
+        "bytes": 2570714,
+        "sha256": "91e3d089b2037ecdc63b57d6a4f148af8c0db675c7a8ee08cfbfd68535c00fdb"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "796718f2eebe02efeb6ac3f3d47df433eb0bf10956d31e633d0822975163c000"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/metallic-smoothness.png",
+        "bytes": 3545251,
+        "sha256": "ddce6f23d49e96e6578864b53e29a78f7795eeccf12fd83b3cd5222147f3f5ef"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "88b45bcbc5d3ef189c0f9293e9ded1092d95460c7b92a6287952e6a0ca7e11e8"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/normal.png",
+        "bytes": 7759615,
+        "sha256": "32dd5846563e4af312631256e7f471c9f8200224a53436ba4428d24cbae1d885"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "21578018a417ca9ef31a43403d356c5d5a8048f7ca9abfbe4cb02ed9f9330b6d"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/material.mat",
+        "bytes": 4218,
+        "sha256": "8ba8b5773ca9f9ba957571a7969cfd3c87dd2f7818a1c8c537f8898a8a2a09ce"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/concrete-rough/material.mat.meta",
+        "bytes": 196,
+        "sha256": "231ecb10ea583e3d12c317d036d97c1481258be9a1dfac662b869084457b33c0"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust.meta",
+        "bytes": 180,
+        "sha256": "42f8764a3b289dedde987d2d732eb32681fc1b60959c41dd45da2f209634b547"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/albedo.png",
+        "bytes": 6678415,
+        "sha256": "99ba6631804308f77b74a4a67d6e444253fdf230f93a09c91fcf80e9e988bf10"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "a0d449017f9c10a1b08259747a497e3c696b64743eb5bc771d53cd09b11c5f85"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/ao.png",
+        "bytes": 2953471,
+        "sha256": "fbb93a46184d23538f86543ba1a2fb2e62a847e6e3be9ddf01e89604030d0a48"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "17923859c44dccf6deca8bfaebbc468fc16d0eee1780c26f1c57f38f5c35b8ea"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/metallic-smoothness.png",
+        "bytes": 1534469,
+        "sha256": "a9d272a795b7660331a48c4ee569910aca53434328b2dfac850ab7ed3d14da08"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "c1cf5ef3209b123519277523389f540901511f50702246f83ffb9dd631cd9a0a"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/normal.png",
+        "bytes": 3944015,
+        "sha256": "6f5b299ff7c92fdd43a8b4836db734aaca2e69999a41f7cc3f4fa621c03b42ca"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "f1bb76d106a5e7824ccabfba0cda11f692d156e5eed69dd3867331f5600adba9"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/material.mat",
+        "bytes": 4218,
+        "sha256": "d629ff695034c9b3438b34da3494e662c155fe7703ad0a5aa4aeee37ff1ef11c"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/metal-rust/material.mat.meta",
+        "bytes": 196,
+        "sha256": "e0f02718dd74c2a884c07418f614bcec747e3806248fbb689a68883356069ad6"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal.meta",
+        "bytes": 121,
+        "sha256": "013a10df4df91e720e051923e2d1b8a5bd22dc90f2a059cb85514ecbfee934e8"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/albedo.png",
+        "bytes": 1543756,
+        "sha256": "91e44ef8767915f36d32b0dd541305fa0bd3d5bb39c5d501a07fc8b6176874d5"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "967d92adbf6aebe1533ac59d3f9b7afbcc7a0ca652c14fb23652c39244365e03"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/ao.png",
+        "bytes": 233499,
+        "sha256": "f5c17ee829a278b941047f3a81590d817fc93c8cf42b6b99fa166bcc2313245e"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "a417f0959f097664ae054f6e1cc77d267176502600c9d138eba776238d2d6fd8"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/metallic-smoothness.png",
+        "bytes": 1057288,
+        "sha256": "b8e22045cc198ad04757b73fdd71d0db9b06e4fa1438cdf4dcebce64ca08277b"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "2a6318e2e0636aacf5095a4036f02b99d202b1ce14d79b9061090b10bf0b7085"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/normal.png",
+        "bytes": 1073596,
+        "sha256": "99c63df0fb7a0b3986815f7ae6603bc41d782da7a45025bf53034d5676abdd48"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "7bb9ebc78060417d4eeefa4f03e658286a4902bd9755bc4bd4825171b92467aa"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/material.mat",
+        "bytes": 4217,
+        "sha256": "faea30e6b997c3d4265159f662daf25fb30be5d55246f5624012b10965fc33a6"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/material.mat.meta",
+        "bytes": 196,
+        "sha256": "b95440fdb36eaddb961238e70cc956eed2e3a1b33087da9a5117dbab5056074c"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/material-emissive.mat",
+        "bytes": 4311,
+        "sha256": "d8859f53a781267b26b006851826cb185a4e6123cdc3fc89d06545dc44279a36"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/painted-metal/material-emissive.mat.meta",
+        "bytes": 196,
+        "sha256": "6900373252c4763dc2a1c9d49e30c18521ce34dce80dd8e9c00a188205841f03"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged.meta",
+        "bytes": 180,
+        "sha256": "89dbe761e2d46670ae2f3c475d329b44e28691dd18ece1103cb8a98b7aee0109"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/albedo.png",
+        "bytes": 1892772,
+        "sha256": "b9474f1e4c5712d88093f8ccd5b59efee28095448dcba9e2dcfcb3e914123caf"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "1a79e0051c8c630f711df23922dfa7ed6bdb1af9c540e144b08af87459337e73"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/ao.png",
+        "bytes": 1043431,
+        "sha256": "fd13ad461f79816890a2c9719a0c4ab139e3010283a3476380b0c99a49584444"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "9a28795f95ba2663c5112ef78ba0b31aec80d02953c89cf1f3b68887d9b98de9"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/metallic-smoothness.png",
+        "bytes": 1390984,
+        "sha256": "00fcf949757bba6490990f3b677ee10dbe29e8dc1846c8e82a4c7df4be583141"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "74f578d61152e243361e016621cad9416574a7505549c425b6039daad197204c"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/normal.png",
+        "bytes": 6385732,
+        "sha256": "dce949d6c2760ad3ec79d19c1d0af57327bc5705dcb41edea9573c8e21ed6c78"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "c4346f463ac2e2683873e542ccc873fd6f289f4dca7fe272eb0f38248cd67d5b"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/material.mat",
+        "bytes": 4218,
+        "sha256": "ff843881af8a838919e79b6347e3b4bdbea285ed121a9b113b4dc89b6f2b7956"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/material.mat.meta",
+        "bytes": 196,
+        "sha256": "5201a5faa6f75841219401d1847e84c14a0d0ab7539756975d7c8f5b1613e47e"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/material-emissive.mat",
+        "bytes": 4312,
+        "sha256": "822c53151fa78377ddbed7629cf9a35808bd733b2434a0c6c88e1d6a9a88be8b"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/paper-aged/material-emissive.mat.meta",
+        "bytes": 196,
+        "sha256": "8334b0ddb8e5ac41a70def807d3675ac911bd326c35eb0091ea50913ba864c23"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp.meta",
+        "bytes": 180,
+        "sha256": "ea4c193ae54b03ed0b9226244b60abf66427ab5a0349b423aefb287d604542aa"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/albedo.png",
+        "bytes": 7547587,
+        "sha256": "bf24a78daf4b82edb2c0bccf63386504888f8e569ea38173f85debe638977ff4"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "c4c873bb2f3c72a314bea84ce35112f38a114133d8c6df1fe7d567b3ce8b7f6f"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/ao.png",
+        "bytes": 1780935,
+        "sha256": "e8891c3f79bf4c8ed5105d622249abe9e0a9b15c4193f2d7b119ac4d49eab848"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "14139b0b6b6701c4cf780316f83711f2d51c3fc231ba381616585a2c2b947908"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/metallic-smoothness.png",
+        "bytes": 1817003,
+        "sha256": "75b68c90fc115744c8e098b3ca0f1372cff66e0c19b0b6500ca8514900c8e9be"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "4e3d2bb555c48b22ea03c57b013b6968f22ea49eda8c4d025e230b3f4cacf639"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/normal.png",
+        "bytes": 6427543,
+        "sha256": "f9dda8eb97cb9df270324aa7d96a7f8c4304eb0ac4a36b344b4a30d5110431c6"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "17d7d14fc7d37bcde62e8d0d46907008f0eb80232bc8bb1352f44941c02e1daf"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/material.mat",
+        "bytes": 4217,
+        "sha256": "7369962b679f5730df615016ebb1ee24c7056b62b6f53c5450937e8407e5a94a"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/plaster-damp/material.mat.meta",
+        "bytes": 196,
+        "sha256": "92516ab7b8f988b69de11805a01ef79d37f5f6ae58329419420bfcda8acb38c7"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool.meta",
+        "bytes": 121,
+        "sha256": "d2d801b6ae6eb7342af63075954de5a9d84baa6a518137691c8087707268df91"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/albedo.png",
+        "bytes": 484741,
+        "sha256": "25046542497147115e731004052fe8dbdbb44d63a53a13d570d77ae0854fcdd7"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "ccf2357c791eed29d1b32454e84010b350257c32e12bdafe367f03dbcf1fa0ce"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/ao.png",
+        "bytes": 8533,
+        "sha256": "169bca061bc03a0f28be7e8e32b8d15aff2daa5def3ce38bf5e27569eb0356b9"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "2adf61624948611e048acc2af22c1bd31546e43633fce3d184aec00b9d677393"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/metallic-smoothness.png",
+        "bytes": 647278,
+        "sha256": "83fc6d7516418c9b7a6f6e6371cb28e908a0df1778a48741a10163791ea04a76"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "df7374b054b51cf8480a1f7eadba408c9f96321d5f45dd4d330d6e0e8acc8ede"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/normal.png",
+        "bytes": 206276,
+        "sha256": "df8c12195b2e85a4ff6a61b3afa520dd9e4e70976ce4f9bea2e2d44437b5b47a"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "7a66c75c0edc6a445c625ed4ccc4a4722a101989f2537ac1c46c91e2e862275d"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/material.mat",
+        "bytes": 4218,
+        "sha256": "45b50615a56162c9288f38e579e707857f1354aaca94cbb13fd35ac2f35abf69"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-pool/material.mat.meta",
+        "bytes": 196,
+        "sha256": "73ea0175d0459492e59eb6c843630a2d6cab71c5e40a628bba95793d324d53cd"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow.meta",
+        "bytes": 121,
+        "sha256": "ccc2b78426a3ee4b3ec4aaed9163b94efdee80f6d4d925b2eccacfb838f22dbf"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/albedo.png",
+        "bytes": 1177228,
+        "sha256": "849aac66e50e2001070567a6767a2cc1b24c584e50734ff5bb0cbdd86f93d504"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "5f4065830ec88827f939127b618bcd538c48e8f46a5f9984d76e9e4c6f0eb6ad"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/ao.png",
+        "bytes": 562190,
+        "sha256": "29f393d1f4771c9df753fbe20efb150c69ee6e465ebd8f5b6c01e67f5a48c1eb"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "4f96af03bacc882f1bc81e64cecca5a9f7d69bb5a73668d4fa29f31e21a2a111"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/metallic-smoothness.png",
+        "bytes": 487908,
+        "sha256": "95411da7bdddfc6e888a9c9d13a108cfa108f3d91605bae96d0ff2902752bdf9"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "b4ae1ca61e69f495a9d29d9f06877d8424b66ddcdd56aef395c61cfa552f6ba6"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/normal.png",
+        "bytes": 921974,
+        "sha256": "74513e59d2760b7500bae6d3201e26ea03ff874078d074dec38386ef661da7bd"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "7b0e4ae5ca7c5fdeb021a74337d0add5eb495d0b5b5b9bbb359379a981c63b71"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/material.mat",
+        "bytes": 4217,
+        "sha256": "0f383d414ce47e2967816ea88aeea91744522a8b754e9a0c57da51c6d0e9cbd7"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wax-tallow/material.mat.meta",
+        "bytes": 196,
+        "sha256": "ef250455c5177b7947814dd06c8000523cd29a76df33a8711a2ecafacca85ebb"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged.meta",
+        "bytes": 180,
+        "sha256": "11ad466fdd1852c56f7bb36224082ff86ba42c74727c5481a6e3a66a5f84cb49"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/albedo.png",
+        "bytes": 6146668,
+        "sha256": "434b4300cdbaf9b54f030a05da3849c87e1c2c6c53abdf7254be6ffbf176b314"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "35c868222123b913967d748f8649265baadff0ba0057c60e748bad9a0043eb0a"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/ao.png",
+        "bytes": 2165682,
+        "sha256": "4a248f82c38b0700114e8b28b9fc8118636c49c363190d1b50e17e1d304ced82"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "07973618280d09a3697476e23e8e095ddb1fd8b8bf394b5c09e3a2f8ccb92836"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/metallic-smoothness.png",
+        "bytes": 4041217,
+        "sha256": "956bcbdb9a8a8302f8073a76297d8f1454d96fa889ee6cd58f8d417f48aaf3bb"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "9de2bc3f2f9f76cf0a1d31be20352deadd39e83b5fe7bb1e5d7ff65895b93b7d"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/normal.png",
+        "bytes": 6434193,
+        "sha256": "dddd69009170c6665cf9a0177ec2e303e43665e86229eb6719d07daadacc25a2"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "de48939831156787af3ec4b34a4fced669dc852f187bab77d3a51fcc17ce6b6e"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/material.mat",
+        "bytes": 4217,
+        "sha256": "fe58e08f3f8511d00b7c36fc8c58c8f4547c8fd2f35f73d79fedc93f44f6e996"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-aged/material.mat.meta",
+        "bytes": 196,
+        "sha256": "03095ad1ac5389c3761e7c1b8e8e3b5bc71518a57fe8f15d217d882cb911fd4a"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor.meta",
+        "bytes": 180,
+        "sha256": "abc0ec9520e75ce896c034eabe852c1dbd63b19b856dec023cd236293d58c546"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/albedo.png",
+        "bytes": 5478741,
+        "sha256": "5d0e1600be61073f42866973f137961b2cb9ce45994f6a710d91d8891928b486"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/albedo.png.meta",
+        "bytes": 2834,
+        "sha256": "25bf8459a451a8040a1634bde36967bfb1206d75d8bf61254faede2b0be5a015"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/ao.png",
+        "bytes": 2881429,
+        "sha256": "757df9cd3f3079f1a4a47bbe7be2e9a5cbb33436147bb83e8b16d13991282d76"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/ao.png.meta",
+        "bytes": 2834,
+        "sha256": "6ebedf66895f398fb67e9702cb2eb434756eacc889ce785c37783dfc1c3d8358"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/metallic-smoothness.png",
+        "bytes": 2018735,
+        "sha256": "80773153c8c6f4f2a2d177d1ad2706e437bb9189ad997ac64598ece15686758c"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/metallic-smoothness.png.meta",
+        "bytes": 2834,
+        "sha256": "e6d3e985ff2085e958ab8733d9957ecaa3ea49c401c75ab187232067c0f0dbba"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/normal.png",
+        "bytes": 6304526,
+        "sha256": "7fc1c91b6dda385a2eec2d439c7acaed3fdcdaa4d8084f8a760751dcbcfbf942"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/normal.png.meta",
+        "bytes": 2834,
+        "sha256": "ad0b35b9c7b282b52c503f59ca3e68f45a21ca4089f14d1a2ea1101492a654e4"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/material.mat",
+        "bytes": 4217,
+        "sha256": "4d8f0236eddea36155cb1233e106467383b6c3cce68ed489e16edd73ea374ab3"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr/wood-floor/material.mat.meta",
+        "bytes": 196,
+        "sha256": "42372bc1a2a8de26f02a3b91c74444f910bfbfd123996c5ea4806767c4167f89"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/battery-supply.fbx",
+        "bytes": 466924,
+        "sha256": "9efaa5445ce70af97f04ecb40f33ba4ba7e8ca206ccd0f2336a71e56fad1f589"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/battery-supply.fbx.meta",
+        "bytes": 3179,
+        "sha256": "3c0b4b980699ec865134ef08e4398ab65a784add428d2d5f68441e2ec5f45b00"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/cabinet-shell.fbx",
+        "bytes": 632844,
+        "sha256": "6d2d694ed67ae998cf7c6b6ff293b33a37aa1d288bd998615b7801a259664f74"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/cabinet-shell.fbx.meta",
+        "bytes": 3179,
+        "sha256": "90699f92c53b5d6d315bc8dd612bf9f9b7c2dcdd3541ac6afa3434427ef42fcb"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/cabinet-timber.fbx",
+        "bytes": 725420,
+        "sha256": "7bb4e6583bb70184a42b61d37a9bcfced32a4e36c5ced87b4bca19eb3bfab50b"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/cabinet-timber.fbx.meta",
+        "bytes": 3179,
+        "sha256": "6c74649f71789fcf45f66639ea97952c80e5c8b9c365cb0f660ff333cf693ea8"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/candle-flame.fbx",
+        "bytes": 23020,
+        "sha256": "1f367ec321344293e0b96c427a875960ec7489ae914a3e68fff9aae41528001d"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/candle-flame.fbx.meta",
+        "bytes": 3179,
+        "sha256": "53b48d82a55550a082c716783ce5cef31f4b8fae21ee1a35a60c03499ffe97c8"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/candle-waymark.fbx",
+        "bytes": 491388,
+        "sha256": "e7f9066900d75af5351ef8d26466beec95593f46369942db794bac1ff9d733a2"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/candle-waymark.fbx.meta",
+        "bytes": 3179,
+        "sha256": "4fe1397d50dcd7b8ec3d01d046d43493b5ec0d8d418dbac6ff4b2ae7461679ee"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/door-hardware.fbx",
+        "bytes": 90732,
+        "sha256": "90f4f99d0a42c61ba6609836d8fc7a0a619858f7526d134500f2f589cbef3b2e"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/door-hardware.fbx.meta",
+        "bytes": 3179,
+        "sha256": "6cdcadaae028795dd2e834f657ca09d1f7d4e1d4bd7348ee7df2b27543f30c13"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/paper-lantern.fbx",
+        "bytes": 512300,
+        "sha256": "6b0db928aefad3d26c73da2411c905bb3d8e7f4aa87309f5e8decf517794a74b"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/paper-lantern.fbx.meta",
+        "bytes": 3179,
+        "sha256": "be6c083d9c0ee5dd2d22809a02017b136a616bc4b7122fc0521bb7fae3f3b8c2"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/seal-altar.fbx",
+        "bytes": 438380,
+        "sha256": "44dea3d6b6924f35462ad32d3697bc985eed9ba3c2794fe2ad29acce09cdb2f3"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props/seal-altar.fbx.meta",
+        "bytes": 3179,
+        "sha256": "704075cbb5e53126984180f0ea9ac0e190c843e281128e17e4c824331ce34145"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Textures/candle-flame-v3.png",
+        "bytes": 1024258,
+        "sha256": "788ee32136f9bacc5d4b54015568d8842ce1d5eb1cd712f5ddfea825798c246b"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Textures/candle-flame-v3.png.meta",
+        "bytes": 2833,
+        "sha256": "b0e37ffb2bfce06eac2a974e5a0f86e7e2bd2802fab69ffa05044d2d20a60537"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Shaders/CandleFlame.shader",
+        "bytes": 2080,
+        "sha256": "cbdfa7b7e3d289cb263ea1ff26277a68d2e407fe178b4daebfb7f11497d078e2"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Shaders/CandleFlame.shader.meta",
+        "bytes": 62,
+        "sha256": "ea5e28d7e612dd127154c174aff00fe9de529c1204ef35108304602c9b081bac"
+      },
+      {
+        "path": "Assets/GraphicsUpgrade/Settings/GraphicsPipeline.asset",
+        "bytes": 4921,
+        "sha256": "38f38c0b8c11f7c122377f369b19e97dbc17734cb1ec49d3177b2f80526eab95"
+      },
+      {
+        "path": "Assets/GraphicsUpgrade/Settings/GraphicsPipeline.asset.meta",
+        "bytes": 197,
+        "sha256": "f3a20433ebffac30ca4f206545ae2fd71c9f5211f8ad516edc8409146a29a259"
+      },
+      {
+        "path": "Assets/GraphicsUpgrade/Settings/GraphicsRenderer.asset",
+        "bytes": 2704,
+        "sha256": "6b54377ca9eced251e128790f2ee2803f6ff79d4c619fefe7d3d33f335e02222"
+      },
+      {
+        "path": "Assets/GraphicsUpgrade/Settings/GraphicsRenderer.asset.meta",
+        "bytes": 197,
+        "sha256": "55b4da08f71b579815573c41532d9f57df07c2edd398e0d1720b69ff474ca4e2"
+      },
+      {
+        "path": "Assets/Resources/GraphicsPbr.meta",
+        "bytes": 180,
+        "sha256": "f116aa950c4d266dba7c2447edc03a9751924722c776916290ca3b921464f97c"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade.meta",
+        "bytes": 180,
+        "sha256": "4579eeb83fef2494df38d6b78c2e5ac6699f259310a66a14d016be9ad43fb92f"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Props.meta",
+        "bytes": 121,
+        "sha256": "dfa3fc207cff91e4c75c90a7f3fd1c01470203e1992da8ff6601bb226be53126"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Textures.meta",
+        "bytes": 180,
+        "sha256": "d001f0a49617b064cf7f76f735bd3521cc4a8b86e2624f5a878fe870dc02da42"
+      },
+      {
+        "path": "Assets/Resources/GraphicsUpgrade/Shaders.meta",
+        "bytes": 121,
+        "sha256": "674e0b4f69826ee2acaf79737d44f1095e3fdaae1b3f4dce997f3f7a5a548c36"
+      },
+      {
+        "path": "Assets/GraphicsUpgrade.meta",
+        "bytes": 180,
+        "sha256": "88eb908410291f52b0c9d4f63ddb4aef1eb8f5d3faad1626b9ec2b8fbb2df9fa"
+      },
+      {
+        "path": "Assets/GraphicsUpgrade/Settings.meta",
+        "bytes": 180,
+        "sha256": "b3bdd7b630f2a3226bdc15b047f6044efde4ba350ec72151d852a80118c73026"
+      }
+    ],
+    "metadataGuids": {
+      "Assets/Resources/GraphicsPbr/brass-tarnished/albedo.png": "9b8e95e5e9dc44d090310407c783468d",
+      "Assets/Resources/GraphicsPbr/brass-tarnished/ao.png": "f8bbb0cc842a4a34ba7a84b594f14312",
+      "Assets/Resources/GraphicsPbr/brass-tarnished/metallic-smoothness.png": "794853aa5aac4d04bf4a283bd48fd194",
+      "Assets/Resources/GraphicsPbr/brass-tarnished/normal.png": "a4aae02e06b8470fbe7c6e5a26949228",
+      "Assets/Resources/GraphicsPbr/brass-tarnished/material.mat": "4e0f2db5f617aa640a52e55a44bbdcb2",
+      "Assets/Resources/GraphicsPbr/ceramic-tile/albedo.png": "e6b282e59bddcc5429b50d8642f1b9c5",
+      "Assets/Resources/GraphicsPbr/ceramic-tile/ao.png": "749f87349e646d84bbc65dbdfc61cae9",
+      "Assets/Resources/GraphicsPbr/ceramic-tile/metallic-smoothness.png": "d3a666dff849c4d4d8f137d5134bab7c",
+      "Assets/Resources/GraphicsPbr/ceramic-tile/normal.png": "90ab23cb68a12d241b03cd8bf29cc3ab",
+      "Assets/Resources/GraphicsPbr/ceramic-tile/material.mat": "8b3abc4da75c4534a8cba4f335afc56d",
+      "Assets/Resources/GraphicsPbr/cloth-charred/albedo.png": "5ee6b9af61f74a5596c71a00f8bf5dc4",
+      "Assets/Resources/GraphicsPbr/cloth-charred/ao.png": "a54af6fd07404f06be776593aea4511b",
+      "Assets/Resources/GraphicsPbr/cloth-charred/metallic-smoothness.png": "ba7cc9d8b3be4c07b1f7a27d6d75161d",
+      "Assets/Resources/GraphicsPbr/cloth-charred/normal.png": "831bd865bea34f23bd7e9e01437c45ab",
+      "Assets/Resources/GraphicsPbr/cloth-charred/material.mat": "70ab0f8132736b343839993d6c7db59e",
+      "Assets/Resources/GraphicsPbr/concrete-rough/albedo.png": "dc60b029f25135443a0769d0ef6186c6",
+      "Assets/Resources/GraphicsPbr/concrete-rough/ao.png": "c5c4b860b8578b746be74071c2f171c8",
+      "Assets/Resources/GraphicsPbr/concrete-rough/metallic-smoothness.png": "527a403285edad54ca0bafa2e8abcbda",
+      "Assets/Resources/GraphicsPbr/concrete-rough/normal.png": "ff1ed2b65c729c244a56df1700add266",
+      "Assets/Resources/GraphicsPbr/concrete-rough/material.mat": "33dbc3c65422f114f8a0322fcbe2381e",
+      "Assets/Resources/GraphicsPbr/metal-rust/albedo.png": "6ac857f64d6dc25448ab9392feedaf87",
+      "Assets/Resources/GraphicsPbr/metal-rust/ao.png": "e022d596a0ca04848b082adad0ee9664",
+      "Assets/Resources/GraphicsPbr/metal-rust/metallic-smoothness.png": "5b87716643718a3409b2268cfd878777",
+      "Assets/Resources/GraphicsPbr/metal-rust/normal.png": "5c1c4bb22a7f3084ea5b33883cdcdc50",
+      "Assets/Resources/GraphicsPbr/metal-rust/material.mat": "fda100d77fd131d4492d842632dc2f11",
+      "Assets/Resources/GraphicsPbr/painted-metal/albedo.png": "1995455455e246a4b610bc472204de07",
+      "Assets/Resources/GraphicsPbr/painted-metal/ao.png": "181f83000604438d93e3498ff9205bec",
+      "Assets/Resources/GraphicsPbr/painted-metal/metallic-smoothness.png": "6e530f64b9c74036a23ee454e6e151ca",
+      "Assets/Resources/GraphicsPbr/painted-metal/normal.png": "20f4234496714ddf9152a256ce0552b3",
+      "Assets/Resources/GraphicsPbr/painted-metal/material.mat": "9d99621cb1a856c4d9233662992a7338",
+      "Assets/Resources/GraphicsPbr/painted-metal/material-emissive.mat": "8e6779f87081c364ebecef493010b835",
+      "Assets/Resources/GraphicsPbr/paper-aged/albedo.png": "825f8d065480338439415049c9e59150",
+      "Assets/Resources/GraphicsPbr/paper-aged/ao.png": "dd0a5798965c0ae468540f4ad8696ba1",
+      "Assets/Resources/GraphicsPbr/paper-aged/metallic-smoothness.png": "391335541278ed048928b05e72e18ba3",
+      "Assets/Resources/GraphicsPbr/paper-aged/normal.png": "336ddf1c74469ef40a8a5a400f9e8a02",
+      "Assets/Resources/GraphicsPbr/paper-aged/material.mat": "526fc20db5910d647bd3574eb96a289c",
+      "Assets/Resources/GraphicsPbr/paper-aged/material-emissive.mat": "766450732838bc94c8c1184c117d94e6",
+      "Assets/Resources/GraphicsPbr/plaster-damp/albedo.png": "83fd82318415ce248bc469037d3e6c10",
+      "Assets/Resources/GraphicsPbr/plaster-damp/ao.png": "9d5c78d706b93bc4dae4ac539c5fa214",
+      "Assets/Resources/GraphicsPbr/plaster-damp/metallic-smoothness.png": "03c7200b79de447499fa00f41b5394f3",
+      "Assets/Resources/GraphicsPbr/plaster-damp/normal.png": "e874aead9ff8f914082fcfca7f15924e",
+      "Assets/Resources/GraphicsPbr/plaster-damp/material.mat": "7d59a4c93969749428ef4a9405503a7f",
+      "Assets/Resources/GraphicsPbr/wax-pool/albedo.png": "0db8f1ced2e14a069f1b86b0d7242d4d",
+      "Assets/Resources/GraphicsPbr/wax-pool/ao.png": "9b6be18e14164d0c882eb6054f32ef1e",
+      "Assets/Resources/GraphicsPbr/wax-pool/metallic-smoothness.png": "670d7a7ec300467abef0529c79ea67f7",
+      "Assets/Resources/GraphicsPbr/wax-pool/normal.png": "6e30b9e06ba2468d9c6a8628831c0b19",
+      "Assets/Resources/GraphicsPbr/wax-pool/material.mat": "9e6b9b3c093254d4c98af1e49cd219c2",
+      "Assets/Resources/GraphicsPbr/wax-tallow/albedo.png": "c5af388db82640bdae35880742c43bc1",
+      "Assets/Resources/GraphicsPbr/wax-tallow/ao.png": "dde483a237e44a0e940b8b75f1387c75",
+      "Assets/Resources/GraphicsPbr/wax-tallow/metallic-smoothness.png": "020d9fd51ade49ff89cd581eb2f2bcdb",
+      "Assets/Resources/GraphicsPbr/wax-tallow/normal.png": "5a23bd9cdeb847b4bb94814e777fb6d2",
+      "Assets/Resources/GraphicsPbr/wax-tallow/material.mat": "9c8cfe7af1b69cc45b24db97e8033cf9",
+      "Assets/Resources/GraphicsPbr/wood-aged/albedo.png": "17a2cfe4b804db8409e2d4282bb8f04f",
+      "Assets/Resources/GraphicsPbr/wood-aged/ao.png": "4d7d10979a2951f4c89c6895af323916",
+      "Assets/Resources/GraphicsPbr/wood-aged/metallic-smoothness.png": "fa1466c24500c3d43ba24fbc052e6a81",
+      "Assets/Resources/GraphicsPbr/wood-aged/normal.png": "0e30cf91b2555fd468b83a352b3952da",
+      "Assets/Resources/GraphicsPbr/wood-aged/material.mat": "206ded87d10a27f42be9bae46904201b",
+      "Assets/Resources/GraphicsPbr/wood-floor/albedo.png": "cc5f805475e49214c8bfc95b6a5321e2",
+      "Assets/Resources/GraphicsPbr/wood-floor/ao.png": "f6ff72be8fd26e9438688e5076ef53b2",
+      "Assets/Resources/GraphicsPbr/wood-floor/metallic-smoothness.png": "1600b0b11c0a1a243a33d1eab890bc2e",
+      "Assets/Resources/GraphicsPbr/wood-floor/normal.png": "8b2ffc2618c321b40b0727c733f4548c",
+      "Assets/Resources/GraphicsPbr/wood-floor/material.mat": "584e85f3ee34a554f97a660c205b7d1b",
+      "Assets/Resources/GraphicsUpgrade/Props/battery-supply.fbx": "0fa5fd6b60d2410aa81b37fe830bd5b1",
+      "Assets/Resources/GraphicsUpgrade/Props/cabinet-shell.fbx": "1a0cca59700348f0b13d77682fa5e621",
+      "Assets/Resources/GraphicsUpgrade/Props/cabinet-timber.fbx": "650777cc00a0419892b132a49a6b80dc",
+      "Assets/Resources/GraphicsUpgrade/Props/candle-flame.fbx": "cf60a14029b144eb88d521624172f41f",
+      "Assets/Resources/GraphicsUpgrade/Props/candle-waymark.fbx": "6076c5ca41d442459e9f5ba3b25b629c",
+      "Assets/Resources/GraphicsUpgrade/Props/door-hardware.fbx": "35539f01eccc4576890f8252ff658dd0",
+      "Assets/Resources/GraphicsUpgrade/Props/paper-lantern.fbx": "85c7a548db5f4a458c586c84656fadbb",
+      "Assets/Resources/GraphicsUpgrade/Props/seal-altar.fbx": "759b008e593e4dedb44591de0245a22b",
+      "Assets/Resources/GraphicsUpgrade/Textures/candle-flame-v3.png": "7af646c88531a624da8c4621101c0f69",
+      "Assets/Resources/GraphicsUpgrade/Shaders/CandleFlame.shader": "416907e868de4d60b481f720847fbdfd",
+      "Assets/GraphicsUpgrade/Settings/GraphicsPipeline.asset": "9cdfca7d4384de646857dc9023b4639e",
+      "Assets/GraphicsUpgrade/Settings/GraphicsRenderer.asset": "787c31861ac78e34d9ed5c4cefc0b5a5"
+    },
+    "pbrSets": [
+      "brass-tarnished",
+      "ceramic-tile",
+      "cloth-charred",
+      "concrete-rough",
+      "metal-rust",
+      "painted-metal",
+      "paper-aged",
+      "plaster-damp",
+      "wax-pool",
+      "wax-tallow",
+      "wood-aged",
+      "wood-floor"
+    ],
+    "pbrPngCount": 48,
+    "pbrMaterialCount": 14,
+    "propModels": [
+      "battery-supply",
+      "cabinet-shell",
+      "cabinet-timber",
+      "candle-flame",
+      "candle-waymark",
+      "door-hardware",
+      "paper-lantern",
+      "seal-altar"
+    ],
+    "protectedOriginals": {
+      "Assets/Annex/SchoolAnnex.unity": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+      "Assets/Generated/SchoolPipeline 17.asset": "b48380a6a0890c6e64b62383885a9176418754572fbd273ea0687ffd362f6daa",
+      "Assets/Generated/SchoolRenderer 17.asset": "61b3c1d274b8e9ca7f9dd1eeae7a0b8f430b9465c465d6844d087424871086dc"
+    }
+  },
+  "graphicsCredits": {
+    "source": "C:\\Users\\강 두오\\Documents\\Codex\\2026-10-05\\d\\outputs\\HappyToyV2-latest\\HappyToyV2\\ThirdParty\\Graphics\\Graphics-Credits.txt",
+    "copied": "C:\\Users\\강 두오\\Documents\\Codex\\2026-10-06\\dkdk\\outputs\\HappyToyV2-gameplay-fixes-release\\Graphics-Credits.txt",
+    "sha256": "c920e9425e52e6c6454409dec8aaf6be694fd24abc11541ac3e10db65b2ced9d"
+  }
+}

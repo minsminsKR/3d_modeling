@@ -109,8 +109,12 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(path.status, Is.EqualTo(NavMeshPathStatus.PathComplete), "Unreachable generated memory " + item.name);
             }
             var threats = Components("StalkerBrain").Where(x => x.name.EndsWith("— corridor")).ToArray();
-            Assert.That(threats.Length, Is.EqualTo(4));
-            Assert.That(threats.Count(x => x.gameObject.activeSelf), Is.EqualTo(2));
+            Assert.That(threats.Length, Is.EqualTo(3));
+            Assert.That(threats.Any(x => x.name.Contains("Hwacat")), Is.False);
+            Assert.That(threats.Count(x => x.gameObject.activeSelf), Is.EqualTo(1));
+            var mask = Get<Component>(run, "Mask");
+            Assert.That(mask.name, Is.EqualTo("LanternMask — corridor"));
+            Assert.That(mask.gameObject.activeSelf, Is.False);
             Assert.That(threats.All(x => x.GetComponentInChildren<SkinnedMeshRenderer>(true)), Is.True, "Original models missing");
             foreach (var actor in threats) foreach (var marker in Get<Transform[]>(actor, "patrol"))
             {
@@ -131,7 +135,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(5));
             yield return null;
             Assert.That(memories.All(x => !x.GetComponent<AudioSource>().isPlaying), Is.True, "Collected memories continued sounding");
-            Assert.That(threats.Count(x => x.gameObject.activeSelf), Is.EqualTo(4));
+            Assert.That(threats.Count(x => x.gameObject.activeSelf), Is.EqualTo(3));
+            Assert.That(mask.gameObject.activeSelf, Is.True);
             // Genuine keyboard movement at the generated entrance; no teleport/path injection.
             float distance = 0; var previous = player.transform.position;
             yield return KeysObserved(Key.W);

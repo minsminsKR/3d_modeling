@@ -1,0 +1,434 @@
+{
+    "status": "PASS",
+    "failure": "",
+    "unity": "6000.6.0f1",
+    "device": "NVIDIA GeForce RTX 2060 SUPER",
+    "scope": "Controlled native corridor Baby fixture. Public CreateCorridor prepares the actual actor/model/resources; its release is explicitly forced for this diagnostic. Initial wait, admitted small-sound navigation, actual sight/chase loss and slow patrol use production brain/agent. Footstep and loud-noise callbacks are controlled stimuli using production physical-range/NavMesh guards, not claims of keyboard footsteps or natural firecracker throwing. Other enemies are disabled; player positions are controlled teleports. Actor speeds are set to zero only after state/movement proof for isolated crying PCM/pause/mute/cabinet/cleanup controls. Other sources are muted during isolation. Cabinet RNG is explicitly fixed to the successful outcome for that acoustic fixture. Listener DSP is natural, pre-device and retained as a WAV; no synthetic samples or forced AudioRenderer. This does not certify natural survival, full mix, human/device listening, fear or hardware performance.",
+    "checks": [
+        {
+            "name": "real session",
+            "passed": true
+        },
+        {
+            "name": "supported Baby release",
+            "passed": true
+        },
+        {
+            "name": "real Baby agent",
+            "passed": true
+        },
+        {
+            "name": "initial recorded crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "initial recorded crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "first appearance stays and cries",
+            "passed": true
+        },
+        {
+            "name": "owned spatial imported cry",
+            "passed": true
+        },
+        {
+            "name": "small callback investigates heard position",
+            "passed": true
+        },
+        {
+            "name": "small noise caused real travel",
+            "passed": true
+        },
+        {
+            "name": "real sight remembers pursuit",
+            "passed": true
+        },
+        {
+            "name": "wander is slow and crying",
+            "passed": true
+        },
+        {
+            "name": "loud callback admitted without sight",
+            "passed": true
+        },
+        {
+            "name": "heard large report targets player",
+            "passed": true
+        },
+        {
+            "name": "baby checkpoint retains chase history",
+            "passed": true
+        },
+        {
+            "name": "post-chase recorded crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "post-chase recorded crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "master muted crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "master muted crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "master restored crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "master restored crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "source muted crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "source muted crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "source restored crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "source restored crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "paused crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "paused crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "pause freezes position and native clip cursor",
+            "passed": true
+        },
+        {
+            "name": "resumed crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "resumed crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "stationary cry admitted to candle danger",
+            "passed": true
+        },
+        {
+            "name": "supported cabinet cry fixture",
+            "passed": true
+        },
+        {
+            "name": "real agent cabinet fixture warp",
+            "passed": true
+        },
+        {
+            "name": "actual cabinet acoustic fixture",
+            "passed": true
+        },
+        {
+            "name": "cabinet recorded crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "cabinet recorded crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "stationary cry refreshes danger inside cabinet",
+            "passed": true
+        },
+        {
+            "name": "disabled crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "disabled crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "enabled crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "enabled crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "finished crying native callbacks",
+            "passed": true
+        },
+        {
+            "name": "finished crying native PCM",
+            "passed": true
+        },
+        {
+            "name": "finish stops cry",
+            "passed": true
+        },
+        {
+            "name": "owned cry cleanup preserves imported resource",
+            "passed": true
+        }
+    ],
+    "errors": [],
+    "phases": [
+        {
+            "name": "initial recorded crying",
+            "expectedAudible": true,
+            "callbacks": 31,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 63488,
+            "peak": 0.06732388585805893,
+            "rms": 0.007214685329418084
+        },
+        {
+            "name": "post-chase recorded crying",
+            "expectedAudible": true,
+            "callbacks": 31,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 63488,
+            "peak": 0.06595443934202194,
+            "rms": 0.004850729400790881
+        },
+        {
+            "name": "master muted crying",
+            "expectedAudible": false,
+            "callbacks": 31,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 63488,
+            "peak": 5.9938637654824e-28,
+            "rms": 3.0659026647211743e-28
+        },
+        {
+            "name": "master restored crying",
+            "expectedAudible": true,
+            "callbacks": 30,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 61440,
+            "peak": 0.10046571493148804,
+            "rms": 0.010290017411510899
+        },
+        {
+            "name": "source muted crying",
+            "expectedAudible": false,
+            "callbacks": 30,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 61440,
+            "peak": 5.9927852447135435e-28,
+            "rms": 3.06598655467108e-28
+        },
+        {
+            "name": "source restored crying",
+            "expectedAudible": true,
+            "callbacks": 30,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 61440,
+            "peak": 0.07447902113199234,
+            "rms": 0.015185332701835752
+        },
+        {
+            "name": "paused crying",
+            "expectedAudible": false,
+            "callbacks": 31,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 63488,
+            "peak": 5.9938637654824e-28,
+            "rms": 3.066259358658241e-28
+        },
+        {
+            "name": "resumed crying",
+            "expectedAudible": true,
+            "callbacks": 31,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 63488,
+            "peak": 0.09171496331691742,
+            "rms": 0.011047658585358059
+        },
+        {
+            "name": "cabinet recorded crying",
+            "expectedAudible": true,
+            "callbacks": 30,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 61440,
+            "peak": 0.02336644008755684,
+            "rms": 0.0056943184724083575
+        },
+        {
+            "name": "disabled crying",
+            "expectedAudible": false,
+            "callbacks": 31,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 63488,
+            "peak": 1.9500578468190994e-23,
+            "rms": 4.965759856372676e-25
+        },
+        {
+            "name": "enabled crying",
+            "expectedAudible": true,
+            "callbacks": 30,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 61440,
+            "peak": 0.04874793812632561,
+            "rms": 0.011188543316472673
+        },
+        {
+            "name": "finished crying",
+            "expectedAudible": false,
+            "callbacks": 31,
+            "channels": 2,
+            "nonfinite": 0,
+            "clipped": 0,
+            "samples": 63488,
+            "peak": 1.9799792423465192e-28,
+            "rms": 1.9551314502522608e-28
+        }
+    ],
+    "audio": {
+        "capture": "Unity listener DSP tap, pre-device; natural native callback clock; no device listening certification",
+        "sampleRate": 48000,
+        "channels": 2,
+        "callbacks": 993,
+        "nonfiniteSamples": 0,
+        "maximumSeconds": 180,
+        "observedSamples": 2033664,
+        "capturedSamples": 2033664,
+        "overflowSamples": 0,
+        "seconds": 21.184,
+        "dspSeconds": 19.050666666666668,
+        "callbackWallSeconds": 21.1596013,
+        "firstCallbackAfterStartSeconds": 0.0119054,
+        "gameSeconds": 19.35184097290039,
+        "truncated": false,
+        "nonSilent": true,
+        "stages": [
+            {
+                "storyStep": 0,
+                "name": "progress-0",
+                "samples": 2033664,
+                "clipped": 0,
+                "peak": 0.10046571493148804,
+                "rms": 0.00538480706515173
+            },
+            {
+                "storyStep": 1,
+                "name": "progress-1",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            },
+            {
+                "storyStep": 2,
+                "name": "progress-2",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            },
+            {
+                "storyStep": 3,
+                "name": "progress-3",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            },
+            {
+                "storyStep": 4,
+                "name": "progress-4",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            },
+            {
+                "storyStep": 5,
+                "name": "progress-5",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            }
+        ],
+        "floors": [
+            {
+                "storyStep": 0,
+                "name": "ground",
+                "samples": 2033664,
+                "clipped": 0,
+                "peak": 0.10046571493148804,
+                "rms": 0.00538480706515173
+            },
+            {
+                "storyStep": 1,
+                "name": "upper",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            },
+            {
+                "storyStep": 2,
+                "name": "basement",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            }
+        ],
+        "pause": {
+            "samples": 204800,
+            "steadySamples": 184320,
+            "peak": 0.05512261390686035,
+            "rms": 0.0014190686098840605,
+            "steadyPeak": 0.05512261390686035,
+            "steadyRms": 0.0014958296544275204,
+            "transitionAllowanceSeconds": 0.10000000149011612
+        },
+        "writerError": "",
+        "progressMode": "corridor-memories",
+        "files": [
+            {
+                "file": "route.wav",
+                "sha256": "9d11092e9e59a617802a3225297e39232dc82dc7e287bb3632b9609b88f84a1f",
+                "samples": 2033664,
+                "channels": 2,
+                "seconds": 21.184
+            }
+        ]
+    }
+}

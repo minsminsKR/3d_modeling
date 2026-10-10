@@ -1,0 +1,146 @@
+{
+    "status": "PASS",
+    "cyclopsePhase": "done",
+    "zoom": true,
+    "gradualEmergence": true,
+    "occludedStaging": true,
+    "inputBlocked": true,
+    "feetStayPut": true,
+    "pauseFreezes": true,
+    "cameraReturned": true,
+    "mannequinOtherCorridor": true,
+    "solitarySpotlight": true,
+    "mannequinStill": true,
+    "restoreSkipsShots": true,
+    "looksAtPlayer": true,
+    "turnsSideways": true,
+    "passesAcrossJunction": true,
+    "holdsZoom": true,
+    "noEarlyPursuit": true,
+    "pursuitGrace": true,
+    "mannequinArmedWithoutCamera": true,
+    "lookAwayDoesNotTrigger": true,
+    "wallDoesNotTrigger": true,
+    "unlitDoesNotTrigger": true,
+    "walkTriggersMannequin": true,
+    "mannequinZoom": true,
+    "mannequinEyeStaysLocal": true,
+    "mannequinFeetStayPut": true,
+    "torchPreserved": true,
+    "mannequinPauseFreezes": true,
+    "mannequinCameraReturned": true,
+    "mannequinControlReturned": true,
+    "pendingRestoreKeepsReveal": true,
+    "initialFov": 72.0,
+    "zoomFov": 24.0,
+    "expectedCyclopseZoomFov": 24.0,
+    "emergenceDistance": 6.200634956359863,
+    "pauseElapsed": 0.0,
+    "cyclopseHeight": 2.3799996376037598,
+    "minimumPlayerDistance": 20.200010299682617,
+    "mannequinWalkMetres": 1.249000906944275,
+    "mannequinTriggerSpeed": 2.600003242492676,
+    "mannequinZoomFov": 32.0,
+    "expectedMannequinZoomFov": 32.0,
+    "mannequinPreWalkFov": 72.0,
+    "mannequinStoredFov": 72.0,
+    "mannequinReturnFov": 72.0,
+    "mannequinReturnFovError": 0.0,
+    "mannequinReturnEyeDistance": 0.02571035735309124,
+    "mannequinReturnForwardAngle": 0.20076894760131836,
+    "mannequinEndFov": 72.0,
+    "mannequinEndFovError": 0.0,
+    "mannequinEndEyeDistance": 0.0,
+    "mannequinEndForwardAngle": 0.0,
+    "mannequinTriggerYaw": 180.0,
+    "mannequinTriggerPitch": 0.0,
+    "mannequinReturnYaw": 180.0,
+    "mannequinReturnPitch": 0.0,
+    "mannequinLogicalForwardAngle": 0.0,
+    "mannequinTriggerPresentationAngle": 0.20076894760131836,
+    "mannequinReturnPresentationAngle": 0.0,
+    "mannequinReturnFrame": 23043,
+    "mannequinEndReturnFrame": 23042,
+    "mannequinReturnFrameGap": 1,
+    "mannequinReturnCameraOwned": false,
+    "mannequinReturnShown": true,
+    "cyclopseDeactivatedForMannequinAssay": true,
+    "mannequinEndPoseReturned": true,
+    "mannequinLogicalLookReturned": true,
+    "mannequinPresentationReturned": true,
+    "mannequinLogicalYawError": 0.0,
+    "mannequinLogicalPitchError": 0.0,
+    "attacksDuringReveal": 0,
+    "crossingStart": {
+        "x": 13.800000190734863,
+        "y": 0.03999948501586914,
+        "z": 3.200000047683716
+    },
+    "crossingEnd": {
+        "x": 13.800000190734863,
+        "y": 0.03999948501586914,
+        "z": -3.200000047683716
+    },
+    "mannequinPosition": {
+        "x": 13.800000190734863,
+        "y": 0.05557022616267204,
+        "z": -7.400000095367432
+    },
+    "lampPosition": {
+        "x": 13.800000190734863,
+        "y": 2.8499999046325684,
+        "z": -7.400000095367432
+    },
+    "mannequinTriggerEye": {
+        "x": 13.798346519470215,
+        "y": 1.6543474197387695,
+        "z": 4.552485942840576
+    },
+    "mannequinStoredLocalEye": {
+        "x": 0.0016535102622583508,
+        "y": 1.5743474960327148,
+        "z": -0.0004855189472436905
+    },
+    "mannequinStoredLocalEuler": {
+        "x": 0.200558602809906,
+        "y": -6.5138155286303956e-12,
+        "z": 359.965087890625
+    },
+    "mannequinTriggerForward": {
+        "x": -8.742222235014196e-8,
+        "y": -0.003500400809571147,
+        "z": -0.9999939799308777
+    },
+    "mannequinTriggerLogicalForward": {
+        "x": -8.742277657347586e-8,
+        "y": 0.0,
+        "z": -1.0
+    },
+    "mannequinReturnedEye": {
+        "x": 13.800000190734863,
+        "y": 1.6799999475479126,
+        "z": 4.552000522613525
+    },
+    "mannequinReturnedForward": {
+        "x": -8.742277657347586e-8,
+        "y": 0.0,
+        "z": -1.0
+    },
+    "mannequinReturnedLogicalForward": {
+        "x": -8.742277657347586e-8,
+        "y": 0.0,
+        "z": -1.0
+    },
+    "mannequinEndEye": {
+        "x": 13.798346519470215,
+        "y": 1.6543474197387695,
+        "z": 4.552485942840576
+    },
+    "mannequinEndForward": {
+        "x": -8.742222235014196e-8,
+        "y": -0.003500400809571147,
+        "z": -0.9999939799308777
+    },
+    "scope": "Controlled first-memory Cyclopse sequence, public second-memory arming and a local actual-keyboard W walk from a supported school corridor into the mannequin's lit, unobstructed view. Setup uses observer placement and deactivates the actual Cyclopse GameObject after its existing reveal checks so its rendered body cannot occlude this separate mannequin assay. View/cover/light negative controls, natural pause and control-return checks; not complete chapter survival, human fear or hardware performance certification.",
+    "errors": []
+}

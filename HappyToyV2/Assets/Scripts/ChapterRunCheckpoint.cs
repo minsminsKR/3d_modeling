@@ -118,7 +118,7 @@ namespace HappyToy.V2
                     throw new ArgumentException("Invalid saved school threat floor");
             // All references, movement constraints and physical floors passed before mutation.
             Recovered=data.recovered;
-            FirstAppearances.RestoreProgress(Recovered);
+            FirstAppearances.RestoreProgress(Recovered, data.mannequin.released);
             for(int i=0;i<Memories.Length;i++) Memories[i].gameObject.SetActive(i>=Recovered);
             for(int i=0;i<packs.Length;i++) packs[i].gameObject.SetActive(data.supplies[i].available);
             for(int i=0;i<doors.Length;i++) doors[i].RestoreSchoolDoor(data.doors[i].open,data.doors[i].leaf,data.doors[i].secondary);

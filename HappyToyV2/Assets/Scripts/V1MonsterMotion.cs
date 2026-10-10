@@ -56,9 +56,13 @@ namespace HappyToy.V2
             if(Time.timeScale==0)return;
             attackPose.Reset();
             var next=brain.state==StalkerBrain.State.Chase?"chase":"patrol";
+            bool cryingIdle = brain.CorridorBaby && brain.state != StalkerBrain.State.Chase &&
+                agent.velocity.sqrMagnitude < .0036f && animationPlayer.GetClip("cry");
+            if (cryingIdle) { next = "cry"; animationPlayer["cry"].wrapMode = WrapMode.Loop; }
             if(current!=next){animationPlayer.CrossFade(next,.2f);current=next;}
             bool striking=brain.AttackActive;
-            animationPlayer[current].speed=striking?0:Mathf.Clamp(agent.velocity.magnitude/(next=="chase"?3.5f:1.45f),0,1.5f);
+            animationPlayer[current].speed = striking ? 0 : cryingIdle ? .72f :
+                Mathf.Clamp(agent.velocity.magnitude/(next=="chase"?3.5f:1.45f),0,1.5f);
         }
         void LateUpdate()
         {

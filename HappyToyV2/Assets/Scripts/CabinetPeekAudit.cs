@@ -51,6 +51,7 @@ namespace HappyToy.V2
             var session=GameSession.Current;session.CreateCorridor(73);session.Shell.Begin();
             yield return new WaitForSecondsRealtime(2);
             foreach(var enemy in FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None)) enemy.gameObject.SetActive(false);
+            foreach(var mask in FindObjectsByType<LanternMaskEncounter>(FindObjectsInactive.Include,FindObjectsSortMode.None)) mask.gameObject.SetActive(false);
             var player=session.player;var charge=player.FlashlightSystem;
             var report=new Report();var cabinets=FindObjectsByType<CabinetPeekWindow>(FindObjectsSortMode.None);
             report.cabinets=cabinets.Length;

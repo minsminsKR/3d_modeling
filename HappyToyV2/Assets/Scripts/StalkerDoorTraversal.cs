@@ -42,6 +42,8 @@ namespace HappyToy.V2
             public bool passing;
             public float entrySide, push, closeWait, blockedWait, retryRemaining;
             public Vector3 deferredTarget;
+            public bool LegacyEmpty => string.IsNullOrEmpty(door) && string.IsNullOrEmpty(deferredDoor) && !passing &&
+                entrySide == 0 && push == 0 && closeWait == 0 && blockedWait == 0 && retryRemaining == 0 && deferredTarget == Vector3.zero;
             public void Validate()
             {
                 if (!CorridorCheckpoint.Number(entrySide,-1,1) ||

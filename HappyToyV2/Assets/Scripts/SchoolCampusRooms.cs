@@ -21,6 +21,10 @@ namespace HappyToy.V2
                     for(int row=0;row<2;row++) for(int column=0;column<2;column++)
                     {
                         float x=r.xMin+2.25f+column*3.0f,z=r.yMin+3.0f+row*2.35f;
+                        // This pair previously overlapped the upper classroom
+                        // cabinet's original exit capsule. Move both into the room
+                        // while preserving their spacing and the other desk rows.
+                        if(space.id=="u-class-a" && row==0 && column==1) {x-=.5f;z+=.5f;}
                         Copy("classroom-desk",new Vector3(x,floor,z),Quaternion.identity);
                         Copy("classroom-chair",new Vector3(x,floor,z-.78f),Quaternion.Euler(0,column==1&&row==1?17:0,0));
                     }

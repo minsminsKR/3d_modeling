@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
@@ -11,7 +12,15 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
-        Component SchoolCabinet() => Components("Interactable").Single(item => item.name == "음악실 은신함");
+        Component SchoolCabinet()
+        {
+            var chapter = Get<Component>(session, "Chapter");
+            bool campus = chapter && Get<int>(chapter, "LayoutVersion") >= 2;
+            // SchoolCampusRooms creates a real upper classroom cabinet; the
+            // old annex music-room interaction is an inactive source template.
+            return Components("Interactable", false).Single(item => campus ?
+                Get<string>(item, "stableId") == "campus-hide-u-class-a" : item.name == "음악실 은신함");
+        }
         Component CabinetChaser(Component cabinet)
         {
             var inside = Get<Transform>(cabinet, "inside").position;
@@ -21,6 +30,83 @@ namespace HappyToy.V2.CloudTests
             var enemy = StalkerAt(anchor.position);
             Set(enemy, "state", "Chase"); enemy.transform.rotation = Quaternion.LookRotation(outside - anchor.position);
             Physics.SyncTransforms(); return enemy;
+        }
+        void AssertCabinetEntryReady(Component cabinet, Component enemy)
+        {
+            Assert.That(Get<bool>(session, "InputAllowed"), Is.True);
+            Assert.That(Get<bool>(player, "Paused"), Is.False, "A protected camera or paused menu must not block this entry fixture");
+            Assert.That(Get<bool>(player, "Hidden"), Is.False);
+            Assert.That(Get<bool>(cabinet, "InteractionAvailable"), Is.True, "The fixture selected a retired or disabled cabinet");
+            Assert.That(((Behaviour)enemy).isActiveAndEnabled, Is.True);
+            Assert.That(Get<Component>(enemy, "player"), Is.SameAs(player));
+            Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Chase"));
+            Assert.That((bool)Call(RequireType("EnemyNavigation"), "SameActorFloor", enemy.GetComponent<NavMeshAgent>(),
+                player.transform.position, Get<float>(enemy, "HomeFloorY")), Is.True, "The pursuit fixture must be on the player's actual floor");
+        }
+        Collider[] CabinetExitBlockers(Component cabinet)
+        {
+            // Match the real standing exit volume when selecting a local fixture;
+            // no collider, cabinet marker or production clearance rule is changed.
+            var controller = player.GetComponent<CharacterController>();
+            var feet = Get<Transform>(cabinet, "outside").position;
+            var centre = feet + player.transform.TransformVector(controller.center);
+            float half = Mathf.Max(0, controller.height * .5f - controller.radius);
+            return Physics.OverlapCapsule(centre - player.transform.up * half, centre + player.transform.up * half,
+                Mathf.Max(.01f, controller.radius - .02f), ~0, QueryTriggerInteraction.Ignore)
+                .Where(collider => !collider.transform.IsChildOf(player.transform)).ToArray();
+        }
+        string CabinetExitBlockerDetails(Component cabinet) => string.Join(", ", CabinetExitBlockers(cabinet)
+            .Select(collider => collider.name + " parent=" + (collider.transform.parent ? collider.transform.parent.name : "scene") +
+                " position=" + collider.transform.position.ToString("F3") + " rotation=" + collider.transform.eulerAngles.ToString("F3") +
+                " scale=" + collider.transform.lossyScale.ToString("F3") + " boundsMin=" + collider.bounds.min.ToString("F3") +
+                " boundsMax=" + collider.bounds.max.ToString("F3")));
+        Component CheckpointCabinetFixture(bool corridor)
+        {
+            Physics.SyncTransforms();
+            var rejected = new List<string>();
+            var pose = Call(player, "CaptureProgress");
+            foreach (var cabinet in Components("Interactable", false).Where(item =>
+                Get<object>(item, "kind").ToString() == "HidingPlace" && Get<bool>(item, "InteractionAvailable") &&
+                (corridor ? item.name == "Corridor hiding cabinet" :
+                    Get<string>(item, "stableId") == "campus-hide-u-class-a"))
+                .OrderBy(item => Get<string>(item, "stableId"), StringComparer.Ordinal))
+            {
+                var outside = Get<Transform>(cabinet, "outside").position;
+                string label = cabinet.name + " at=" + outside.ToString("F3");
+                var blockers = CabinetExitBlockerDetails(cabinet);
+                if (blockers.Length > 0)
+                {
+                    string obstruction = label + " blocked by " + blockers;
+                    rejected.Add(obstruction); Debug.Log("CABINET_CHECKPOINT_EXIT_BLOCKED " + obstruction);
+                }
+                // The school regression must use this original cabinet. It may
+                // never hide a layout defect by falling back to another room.
+                if (!corridor) Assert.That(CabinetExitBlockers(cabinet), Is.Empty,
+                    "The original upper classroom cabinet exit must remain clear: " + blockers);
+                if (blockers.Length > 0) continue;
+                Set(pose, "position", outside);
+                if (!(bool)Call(player, corridor ? "CanRestoreProgress" : "CanRestoreChapterProgress", pose))
+                { rejected.Add(label + " lacks a supported checkpoint pose"); continue; }
+                var outward = outside - Get<Transform>(cabinet, "inside").position; outward.y = 0; outward.Normalize();
+                var path = new NavMeshPath();
+                if (!NavMesh.SamplePosition(outside + outward * 3, out var anchor, .5f, NavMesh.AllAreas) ||
+                    Mathf.Abs(anchor.position.y - outside.y) > .15f ||
+                    !NavMesh.CalculatePath(outside, anchor.position, NavMesh.AllAreas, path) || path.status != NavMeshPathStatus.PathComplete)
+                { rejected.Add(label + " lacks a same-floor pursuit approach"); continue; }
+                Debug.Log("CABINET_CHECKPOINT_FIXTURE selected=" + label + " rejected=" + string.Join("; ", rejected));
+                return cabinet;
+            }
+            Assert.Fail("No existing active cabinet has a safe original exit and real checkpoint/pursuit navigation: " + string.Join("; ", rejected));
+            return null;
+        }
+        void LeaveCabinetForCheckpoint(Component cabinet, Component enemy)
+        {
+            // End the controlled chase before attempting the public exit action.
+            enemy.gameObject.SetActive(false); Physics.SyncTransforms();
+            Assert.That(Get<bool>(player, "Paused"), Is.False);
+            Assert.That(CabinetExitBlockers(cabinet), Is.Empty, "Real exit is obstructed: " + CabinetExitBlockerDetails(cabinet));
+            Call(cabinet, "Use", player);
+            Assert.That(Get<bool>(player, "Hidden"), Is.False, "Public cabinet exit failed before checkpoint capture");
         }
 
         [UnityTest, Timeout(60000)]
@@ -106,12 +192,15 @@ namespace HappyToy.V2.CloudTests
             // Both mode schemas use PlayerMotor.Progress. Hidden suspension stays explicitly blocked.
             yield return RecoveryUiReady(); yield return RecoveryClick("begin-school");
             IsolateThreats(); ((Behaviour)player).enabled = false;
-            var cabinet = SchoolCabinet(); PlacePlayer(Get<Transform>(cabinet, "outside").position);
+            var cabinet = CheckpointCabinetFixture(false); PlacePlayer(Get<Transform>(cabinet, "outside").position);
+            Assert.That(Get<string>(cabinet, "stableId"), Is.EqualTo("campus-hide-u-class-a"));
             var enemy = CabinetChaser(cabinet); int draws = 0;
             Set(player, "HidingRandomSample", (Func<float>)(() => { draws++; return .2f; }));
+            AssertCabinetEntryReady(cabinet, enemy);
             Call(cabinet, "Use", player); Assert.That(draws, Is.EqualTo(1));
+            Assert.That(Get<bool>(player, "Hidden"), Is.True);
             Call(shell, "Pause"); Assert.Throws<InvalidOperationException>(() => Call(session, "CaptureChapterCheckpoint"));
-            Call(shell, "Resume"); Call(cabinet, "Use", player); enemy.gameObject.SetActive(false); Call(shell, "Pause");
+            Call(shell, "Resume"); LeaveCabinetForCheckpoint(cabinet, enemy); Call(shell, "Pause");
             var school = Call(session, "CaptureChapterCheckpoint"); var saved = Get<object>(school, "player");
             var parsed = SchoolCheckpointCopy(school);
             Assert.That(Get<int>(Get<object>(parsed, "player"), "hidingEntry"), Is.EqualTo(1));
@@ -122,12 +211,14 @@ namespace HappyToy.V2.CloudTests
             var previous = session; Call(shell, "Restart", false); yield return RecoveryRebind(previous);
             Call(session, "CreateCorridor", 73); IsolateThreats(); Begin(); yield return Delay(.15f);
             ((Behaviour)player).enabled = false;
-            cabinet = CheckpointItems("HidingPlace").First(x => x.name == "Corridor hiding cabinet");
+            cabinet = CheckpointCabinetFixture(true);
             PlacePlayer(Get<Transform>(cabinet, "outside").position); enemy = CabinetChaser(cabinet); draws = 0;
             Set(player, "HidingRandomSample", (Func<float>)(() => { draws++; return .2f; }));
+            AssertCabinetEntryReady(cabinet, enemy);
             Call(cabinet, "Use", player); Call(shell, "Pause");
+            Assert.That(Get<bool>(player, "Hidden"), Is.True); Assert.That(draws, Is.EqualTo(1));
             Assert.Throws<InvalidOperationException>(() => Call(session, "CaptureCheckpoint"));
-            Call(shell, "Resume"); Call(cabinet, "Use", player); enemy.gameObject.SetActive(false); Call(shell, "Pause");
+            Call(shell, "Resume"); LeaveCabinetForCheckpoint(cabinet, enemy); Call(shell, "Pause");
             var corridor = Call(session, "CaptureCheckpoint"); saved = Get<object>(CheckpointCopy(corridor), "player");
             Assert.That(Get<int>(saved, "hidingRolls"), Is.EqualTo(1));
             Call(player, "RestoreProgress", saved);
@@ -135,6 +226,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<object>(player, "HidingOutcome").ToString(), Is.EqualTo("Survived"));
             Assert.That(draws, Is.EqualTo(1), "Corridor restore consumed RNG");
             Call(shell, "Resume"); enemy.gameObject.SetActive(true); Set(enemy, "state", "Chase");
+            AssertCabinetEntryReady(cabinet, enemy);
             Call(cabinet, "Use", player); Assert.That(draws, Is.EqualTo(2));
             Assert.That(Get<int>(player, "HidingEntryId"), Is.EqualTo(2), "A new post-restore entry reused the old draw");
         }

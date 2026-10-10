@@ -31,6 +31,7 @@ namespace HappyToy.V2.CloudTests
             PlacePlayer(mannequin.transform.position+Vector3.forward*4);light.enabled=true;
             camera.transform.rotation=Quaternion.LookRotation(mannequin.transform.position+Vector3.up*1.25f-camera.transform.position);
             yield return Wait(()=>Get<bool>(mannequin,"Released"),5,"Second-memory mannequin never finished its first sight turn");
+            yield return ChapterAwaitAppearance();
             var at=mannequin.transform.position;yield return Delay(.4f);
             Assert.That(Get<bool>(mannequin,"Observed"),Is.True);Assert.That(Vector3.Distance(at,mannequin.transform.position),Is.LessThan(.025f));
             camera.transform.rotation=Quaternion.LookRotation(Vector3.left);light.enabled=false;yield return Delay(.5f);
@@ -42,6 +43,73 @@ namespace HappyToy.V2.CloudTests
             at=mannequin.transform.position;yield return Delay(.3f);
             Assert.That(Get<bool>(mannequin,"Observed"),Is.True);Assert.That(Get<bool>(mannequin,"Moving"),Is.False);
             Assert.That(Vector3.Distance(at,mannequin.transform.position),Is.LessThan(.025f),"Gaze did not stop pursuit");
+        }
+        [UnityTest, Timeout(60000)]
+        public IEnumerator ChapterMannequinWaitsForActualSightAndZoomsFromThePlayersOwnEyes()
+        {
+            Call(shell,"BeginChapter");yield return null;
+            var chapter=Get<Component>(session,"Chapter");var shots=Get<Component>(chapter,"FirstAppearances");
+            ((Behaviour)player).enabled=false;
+            // This local mannequin fixture skips the independently tested Cyclopse
+            // camera; it never sets private mannequin reveal or movement state.
+            Call(shots,"RestoreProgress",1);
+            var memories=Get<Component[]>(chapter,"Memories");Call(memories[0],"Use",player);
+            var eye=Get<Camera>(player,"eyes");var torch=Get<Light>(player,"flashlight");torch.enabled=true;
+            float fov=eye.fieldOfView;var originalEye=eye.transform.position;var originalView=eye.transform.rotation;
+            float expectedZoomFov=Mathf.Min(fov,Get<bool>(shell,"ReducedMotion")?52:32);
+            Call(memories[1],"Use",player);yield return Delay(.15f);
+            var actor=Get<Component>(chapter,"Mannequin");var spot=Get<Light>(shots,"MannequinSpotlight");
+            Assert.That(Get<bool>(shots,"MannequinArmed"),Is.True);Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);
+            Assert.That(Get<bool>(actor,"Triggered"),Is.False);Assert.That(spot.enabled,Is.True);Assert.That(torch.enabled,Is.True);
+            Assert.That(eye.transform.position,Is.EqualTo(originalEye));Assert.That(Quaternion.Angle(eye.transform.rotation,originalView),Is.LessThan(.01f));
+            Assert.That(eye.fieldOfView,Is.EqualTo(fov));
+            PlacePlayer(new Vector3(13.8f,.03f,.1f));eye.transform.rotation=Quaternion.LookRotation(Vector3.forward);
+            yield return Delay(.15f);Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);Assert.That(Get<bool>(actor,"Triggered"),Is.False);
+            var blocker=Cube("Explicit school mannequin occlusion control",new Vector3(13.8f,1.5f,-3.65f),new Vector3(3.15f,3,.3f));
+            eye.transform.rotation=Quaternion.LookRotation(Vector3.back);Physics.SyncTransforms();yield return Delay(.15f);
+            Assert.That((bool)Call(actor,"FirstSightVisibleTo",eye),Is.False);Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);
+            PlacePlayer(new Vector3(13.8f,.03f,5.8f));blocker.SetActive(false);Object.Destroy(blocker);
+            eye.transform.rotation=Quaternion.LookRotation(Vector3.back);spot.enabled=false;
+            PlacePlayer(new Vector3(13.8f,.03f,4));eye.transform.rotation=Quaternion.LookRotation(Vector3.back);
+            yield return Delay(.15f);Assert.That(Get<bool>(actor,"Triggered"),Is.False);Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);
+            Assert.That((bool)Call(actor,"FirstSightVisibleTo",eye),Is.True,"The unlit control must retain the same real sightline");
+            var feet=player.transform.position;var seenEye=eye.transform.position;var seenView=eye.transform.rotation;
+            spot.enabled=true;yield return Wait(()=>Get<bool>(shots,"CameraOwned"),2,"Visible lit mannequin never began its actual-view zoom");
+            Assert.That(Get<bool>(actor,"Triggered"),Is.True);Assert.That(((Behaviour)actor).enabled,Is.True);
+            Assert.That(Vector3.Distance(seenEye,eye.transform.position),Is.LessThan(.01f));
+            yield return Delay(1.15f);Assert.That(eye.fieldOfView,Is.EqualTo(expectedZoomFov).Within(.2f));
+            Assert.That(Vector3.Distance(seenEye,eye.transform.position),Is.LessThan(.01f));Assert.That(torch.enabled,Is.True);
+            Call(shell,"Pause");float elapsed=Get<float>(shots,"ShotElapsed"),turn=Get<float>(actor,"IntroElapsed");yield return Delay(.2f);
+            Assert.That(Get<float>(shots,"ShotElapsed"),Is.EqualTo(elapsed));Assert.That(Get<float>(actor,"IntroElapsed"),Is.EqualTo(turn));Call(shell,"Resume");
+            yield return ChapterAwaitAppearance();Assert.That(Get<bool>(shots,"MannequinShown"),Is.True);
+            Assert.That(Get<bool>(actor,"Released"),Is.True);Assert.That(Get<bool>(actor,"Moving"),Is.False);
+            Assert.That(Vector3.Distance(feet,player.transform.position),Is.LessThan(.01f));
+            Assert.That(Vector3.Distance(seenEye,eye.transform.position),Is.LessThan(.01f));
+            Assert.That(Quaternion.Angle(seenView,eye.transform.rotation),Is.LessThan(.01f));Assert.That(eye.fieldOfView,Is.EqualTo(fov).Within(.01f));
+            Assert.That(Get<bool>(player,"Paused"),Is.False);Assert.That(torch.enabled,Is.True);
+        }
+        [UnityTest, Timeout(40000)]
+        public IEnumerator ChapterMannequinNeverTakesTheCameraWhileThePlayerIsHidden()
+        {
+            Call(shell,"BeginChapter");yield return null;
+            var chapter=Get<Component>(session,"Chapter");var shots=Get<Component>(chapter,"FirstAppearances");Call(shots,"RestoreProgress",1);
+            var memories=Get<Component[]>(chapter,"Memories");Call(memories[0],"Use",player);Call(memories[1],"Use",player);
+            ((Behaviour)player).enabled=false;PlacePlayer(new Vector3(13.8f,.03f,4));
+            // A view-compatible public hiding-state fixture tests this policy
+            // independently of cabinet walls. It is not a cabinet-entry/art assay.
+            var fixture=new GameObject("Explicit school hidden-view guard fixture");var place=fixture.AddComponent(RequireType("Interactable"));
+            Set(place,"kind","HidingPlace");
+            try
+            {
+                Call(player,"Hide",place,player.transform.position,player.transform.position+Vector3.forward);
+                var eye=Get<Camera>(player,"eyes");var actor=Get<Component>(chapter,"Mannequin");
+                eye.transform.rotation=Quaternion.LookRotation(actor.transform.position+Vector3.up*1.65f-eye.transform.position);
+                Physics.SyncTransforms();Assert.That(Get<bool>(player,"Hidden"),Is.True);
+                Assert.That((bool)Call(actor,"FirstSightVisibleTo",eye),Is.True,"Hidden control must expose a recognisable body in its deliberate test view");
+                yield return Delay(.2f);Assert.That((bool)Call(shots,"CanSeeMannequinForReveal"),Is.False);
+                Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);Assert.That(Get<bool>(actor,"Triggered"),Is.False);
+            }
+            finally {Object.Destroy(fixture);}
         }
         [UnityTest, Timeout(120000)]
         public IEnumerator ChapterRealMenusRestartDeathAndTitleIntoAnEmptyFirstMemorySchool()

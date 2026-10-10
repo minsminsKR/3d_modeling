@@ -91,6 +91,19 @@ namespace HappyToy.V2
             }
             return false;
         }
+        public bool FirstSightVisibleTo(Camera camera)
+        {
+            if(!camera || !gameObject.activeInHierarchy || !visual || !visual.gameObject.activeInHierarchy)return false;
+            // A recognisable head/torso must already be in the player's view.
+            // Peripheral freeze samples remain wider in VisibleTo after release.
+            for(int i=0;i<3;i++)
+            {
+                var point=transform.TransformPoint(sightPoints[i]);var view=camera.WorldToViewportPoint(point);
+                if(view.z>0 && view.x>=.1f && view.x<=.9f && view.y>=.08f && view.y<=.92f &&
+                    Clear(camera,point) && !MonsterBodyCoversReveal(camera,point))return true;
+            }
+            return false;
+        }
         void CaptureDisplayLight()
         {
             if (lightCaptured || !displayLight) return;
@@ -163,7 +176,10 @@ namespace HappyToy.V2
             if (!Triggered)
             {
                 Stop();
-                if (session.EncounterStep < activationStep || player.Hidden || !sameFloor || delta.magnitude > 8 || !Observed) return;
+                var schoolShot=session.ChapterMode?session.Chapter.FirstAppearances:null;
+                float firstSightRange=schoolShot?SchoolFirstAppearances.MannequinRevealRange:8;
+                if (session.EncounterStep < activationStep || player.Hidden || !sameFloor || delta.magnitude > firstSightRange || !Observed ||
+                    schoolShot && !schoolShot.CanSeeMannequinForReveal()) return;
                 Triggered = true; startTurn = visual.localRotation; CaptureDisplayLight();
                 if (!visualPoseCaptured) { originalVisualRotation = startTurn; visualPoseCaptured = true; }
                 var toward = delta; toward.y = 0;
@@ -233,6 +249,6 @@ namespace HappyToy.V2
             attack.Reset(); unobservedFor = 0; Stop(); if (sound) sound.Stop();
             if (revealAudio) revealAudio.Stop(); RestoreDisplayLight(); RestoreVisualPose();
         }
-        void OnDestroy() { if (creak) Destroy(creak); }
+        void OnDestroy() { DisposeRevealMeshes(); if (creak) Destroy(creak); }
     }
 }

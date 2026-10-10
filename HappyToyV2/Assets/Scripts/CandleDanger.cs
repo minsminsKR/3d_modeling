@@ -32,7 +32,8 @@ namespace HappyToy.V2
         bool PlayerSees(MonoBehaviour actor)
         {
             var camera = player.eyes;
-            if (!camera || !camera.isActiveAndEnabled || player.Hidden) return false;
+            if (!camera || !camera.isActiveAndEnabled) return false;
+            var peek = player.ActivePeekWindow;
             if (!threatRenderers.TryGetValue(actor, out var renderers))
             {
                 renderers = actor.GetComponentsInChildren<Renderer>(true);
@@ -57,6 +58,8 @@ namespace HappyToy.V2
                     var viewport = camera.WorldToViewportPoint(point);
                     if (viewport.z <= camera.nearClipPlane || viewport.z > camera.farClipPlane ||
                         viewport.x < 0 || viewport.x > 1 || viewport.y < 0 || viewport.y > 1) continue;
+                    bool throughSlit = peek && peek.RayPassesAperture(camera.transform.position, point);
+                    if (peek && !throughSlit) continue;
                     var delta = point - camera.transform.position;
                     int count = Physics.RaycastNonAlloc(camera.transform.position, delta.normalized,
                         candleSightHits, delta.magnitude, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
@@ -65,7 +68,11 @@ namespace HappyToy.V2
                     {
                         var hit = candleSightHits[i].collider;
                         if (hit && !hit.transform.IsChildOf(actor.transform) &&
-                            !hit.transform.IsChildOf(player.transform)) clear = false;
+                            !hit.transform.IsChildOf(player.transform) &&
+                            // Cabinet physics deliberately remains a solid body.
+                            // Ignore only this occupied shell when the ray has
+                            // passed its actual visible slit, never external cover.
+                            !(throughSlit && hit.transform.IsChildOf(peek.transform))) clear = false;
                     }
                     if (clear) return true;
                 }
@@ -117,19 +124,20 @@ namespace HappyToy.V2
                     perceived = Mathf.Max(perceived, PerceivedDanger(actor, actor.isActiveAndEnabled && (actor.state == StalkerBrain.State.Chase || actor.AttackActive)));
                     attacking |= physical && actor.AttackActive;
                 }
+                foreach (var actor in candleMasks)
+                {
+                    var ownedMask = corridorDangerMode ? session.Corridor.Mask : session.Chapter.Mask;
+                    if (!PerceptionEligible(actor) || actor != ownedMask || !(actor.IntroStarted || actor.IntroCompleted) ||
+                        actor.State == LanternMaskEncounter.Phase.Dormant || actor.State == LanternMaskEncounter.Phase.Resolved) continue;
+                    bool physical = actor.IntroCompleted && Eligible(actor);
+                    if (physical) nearest = Mathf.Min(nearest, Vector3.Distance(player.transform.position, actor.transform.position));
+                    perceived = Mathf.Max(perceived, PerceivedDanger(actor, actor.IntroCompleted &&
+                        (actor.State == LanternMaskEncounter.Phase.Chase ||
+                        actor.State == LanternMaskEncounter.Phase.Transforming || actor.AttackActive)));
+                    attacking |= physical && actor.AttackActive;
+                }
                 if (!corridorDangerMode)
                 {
-                    foreach (var actor in candleMasks)
-                    {
-                        if (!PerceptionEligible(actor) || actor != session.Chapter.Mask || !(actor.IntroStarted || actor.IntroCompleted) ||
-                            actor.State == LanternMaskEncounter.Phase.Dormant || actor.State == LanternMaskEncounter.Phase.Resolved) continue;
-                        bool physical = actor.IntroCompleted && Eligible(actor);
-                        if (physical) nearest = Mathf.Min(nearest, Vector3.Distance(player.transform.position, actor.transform.position));
-                        perceived = Mathf.Max(perceived, PerceivedDanger(actor, actor.IntroCompleted &&
-                            (actor.State == LanternMaskEncounter.Phase.Chase ||
-                            actor.State == LanternMaskEncounter.Phase.Transforming || actor.AttackActive)));
-                        attacking |= physical && actor.AttackActive;
-                    }
                     foreach (var actor in candleMannequins)
                     {
                         bool shotReveal = MannequinShotPerceivable(session, actor);

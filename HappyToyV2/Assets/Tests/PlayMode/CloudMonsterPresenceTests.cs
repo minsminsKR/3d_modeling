@@ -50,6 +50,7 @@ namespace HappyToy.V2.CloudTests
             var chapter=Get<Component>(session,"Chapter");var shots=Get<Component>(chapter,"FirstAppearances");
             var actor=Get<Component>(chapter,"Cyclopse");var navigation=actor.GetComponent<NavMeshAgent>();
             var camera=Get<Camera>(player,"eyes");float fov=camera.fieldOfView;
+            float expectedZoomFov=Mathf.Min(fov,Get<bool>(shell,"ReducedMotion")?48:24);
             Vector3 playerAt=player.transform.position;var memories=Get<Component[]>(chapter,"Memories");
             Call(memories[0],"Use",player);
             var intro=Get<Component>(shots,"CyclopseIntro");
@@ -58,7 +59,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(((Behaviour)actor).enabled,Is.False);
             Assert.That(Get<int>(actor,"AttacksStarted"),Is.Zero);
             Assert.That(Vector3.Distance(actor.transform.position,playerAt),Is.GreaterThan(5));
-            Assert.That(camera.fieldOfView,Is.LessThan(fov-15));
+            Assert.That(camera.fieldOfView,Is.EqualTo(expectedZoomFov).Within(.2f));
             Assert.That(CandleDangerPlayerSees(actor),Is.True);
             Call(LightRun,"RefreshDanger");
             Assert.That(Get<float>(LightRun,"Danger"),Is.GreaterThanOrEqualTo(.45f),"First visible Cyclopse did not start the candle warning");
@@ -72,7 +73,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(intro,"LookAtPlayerCompleted"),Is.True);
             Assert.That(Get<bool>(intro,"SideTurnCompleted"),Is.True);
             Assert.That(Mathf.Abs(actor.transform.forward.z),Is.GreaterThan(.98f));
-            Assert.That(camera.fieldOfView,Is.LessThan(fov-15));
+            Assert.That(camera.fieldOfView,Is.EqualTo(expectedZoomFov).Within(.2f));
             while(Get<bool>(shots,"CameraOwned"))
             {
                 Assert.That(actor.transform.position.x,Is.EqualTo(13.8f).Within(.22f));
@@ -97,10 +98,17 @@ namespace HappyToy.V2.CloudTests
             // A later mannequin camera shot must restore the already released actor.
             Call(memories[1],"Use",player);
             var mannequin=Get<Component>(chapter,"Mannequin");
+            Assert.That(Get<bool>(shots,"CameraOwned"),Is.False,"The ribbon must not cut to a different corridor");
+            Assert.That(Get<bool>(shots,"MannequinArmed"),Is.True);
+            PlacePlayer(mannequin.transform.position+Vector3.forward*5);
+            player.transform.rotation=Quaternion.Euler(0,180,0);
+            camera.transform.rotation=Quaternion.LookRotation(mannequin.transform.position+Vector3.up*1.65f-camera.transform.position);
+            var mannequinEye=camera.transform.position;
             yield return Wait(()=>Get<bool>(shots,"CameraOwned")&&CandleDangerPlayerSees(mannequin),2,
-                "Second-memory camera never showed its real mannequin");
-            Assert.That(((Behaviour)mannequin).enabled,Is.False);
-            Assert.That(Get<bool>(mannequin,"Triggered"),Is.False);
+                "Actual sight never zoomed toward the real mannequin");
+            Assert.That(((Behaviour)mannequin).enabled,Is.True);
+            Assert.That(Get<bool>(mannequin,"Triggered"),Is.True);
+            Assert.That(Vector3.Distance(mannequinEye,camera.transform.position),Is.LessThan(.02f));
             Call(LightRun,"RefreshDanger");
             Assert.That(Get<float>(LightRun,"Danger"),Is.GreaterThanOrEqualTo(.45f),"First camera-visible mannequin did not start the warning");
             Assert.That(Get<bool>(LightRun,"Blackout"),Is.False);

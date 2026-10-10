@@ -2641,5 +2641,39 @@
     "peak": 0.20001220703125,
     "rms": 0.04616803298242998,
     "sha256": "dec725d58571144ab7f5f28ddc14be351499295703eb8d78f55be52a201fde87"
+  },
+  {
+    "creator": "Alex_hears_things",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/Alex_hears_things/sounds/636845/",
+    "download": "https://cdn.freesound.org/previews/636/636845_2309965-hq.mp3",
+    "source_file": "Baby crying.wav (public high quality MP3 preview)",
+    "source_file_sha256": "5379eab4f614c5f1738241e89e3be3f236d1cb7b5b8ae3bbb906c48801f59815",
+    "resource": "Audio/External/enemy-baby-cry-0",
+    "file": "enemy-baby-cry-0.wav",
+    "pack": "corridor-baby-recorded-cry",
+    "seconds": 15.55,
+    "peak": 0.5,
+    "rms": 0.05624588982011007,
+    "sha256": "00eebd76bbfac6e68b7206ba799bcc1c9913b2b54a9fd8c1059a4009a6d7814c",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": true,
+      "recordings": [
+        {
+          "file": "zoom.mp3",
+          "creator": "Alex_hears_things",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/Alex_hears_things/sounds/636845/",
+          "download": "https://cdn.freesound.org/previews/636/636845_2309965-hq.mp3",
+          "source_file": "Baby crying.wav (public high quality MP3 preview)",
+          "source_file_sha256": "5379eab4f614c5f1738241e89e3be3f236d1cb7b5b8ae3bbb906c48801f59815"
+        }
+      ],
+      "source_kind": "Actual baby voice recorded on a Zoom H4n Pro; edited recording, no synthesized voice/noise/tone.",
+      "scope": "Selected source 6–22 s; mono, 85 Hz high-pass/7.6 kHz low-pass, preserved natural pitch and breath gaps, .45 s wrap crossfade to 15.55 s loop; measured peak .50. Spatial gain/occlusion is applied by the real actor emitter."
+    }
   }
 ]

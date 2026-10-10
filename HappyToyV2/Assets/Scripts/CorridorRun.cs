@@ -22,6 +22,8 @@ namespace HappyToy.V2
         readonly GraphicsSurfaceLibrary.Pool graphicsSurfaces = new GraphicsSurfaceLibrary.Pool();
         readonly List<UnityEngine.Object> generated = new List<UnityEngine.Object>();
         readonly List<StalkerBrain> threats = new List<StalkerBrain>();
+        public LanternMaskEncounter Mask { get; private set; }
+        public int ActiveThreatCount => threats.Count(x => x.gameObject.activeSelf) + (Mask && Mask.gameObject.activeSelf ? 1 : 0);
         GameSession session;
         Transform world;
         NavMeshSurface surface;
@@ -35,11 +37,15 @@ namespace HappyToy.V2
             // Capture all four authored monster hierarchies before stopping encounter directors.
             var actors = FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include, FindObjectsSortMode.None)
                 .Where(x => x.gameObject.scene == gameObject.scene).ToArray();
+            var maskTemplate = FindObjectsByType<LanternMaskEncounter>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+                .FirstOrDefault(x => x.gameObject.scene == gameObject.scene);
+            if (!maskTemplate) throw new InvalidOperationException("Missing authored lantern mask");
             foreach (var director in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                 if (director is StoryDirector || director is AnnexEncounter || director is V1HwacatEvent ||
                     director is UncatAnnexEvent || director is LanternMaskEncounter || director is WeepingAngelEncounter || director is LovelyDollGuide)
                     director.enabled = false;
             foreach (var actor in actors) actor.gameObject.SetActive(false);
+            maskTemplate.gameObject.SetActive(false);
             world = new GameObject("The forgotten corridor — seed " + seed).transform;
             world.SetParent(transform, true);
             var plaster = MakeMaterial("Damp plaster", new Color(.54f, .56f, .50f), 83);
@@ -149,31 +155,46 @@ namespace HappyToy.V2
             Physics.SyncTransforms(); surface.BuildNavMesh();
             for (int i = 0; i < 4; i++)
             {
-                var template = actors.FirstOrDefault(x => i == 0 ? x.name.Contains("Cyclopse") : i == 1 ? x.name.Contains("Uncat") : i == 2 ? x.name.Contains("Hwacat") : x.name.Contains("Baby"));
+                // Slot two belongs to the actual lantern/mask encounter. Hwacat's
+                // first appearance is preserved for the later school chapter.
+                if (i == 2)
+                {
+                    var maskClone = Instantiate(maskTemplate.gameObject, world);
+                    maskClone.name = "LanternMask — corridor";
+                    maskClone.SetActive(false);
+                    maskClone.transform.position = CellPosition(Layout.Threats[i]);
+                    Mask = maskClone.GetComponent<LanternMaskEncounter>();
+                    // The school template has already created owned runtime voices.
+                    // Start this inactive clone with fresh owners rather than
+                    // reawakening a copied filter before its empty sources exist.
+                    // A paused checkpoint can enable it in this same Build frame.
+                    // Remove only copied voices on this new inactive scene instance
+                    // synchronously; no source asset or school template is destroyed.
+                    foreach (var stale in maskClone.GetComponents<StalkerFootsteps>()) DestroyImmediate(stale);
+                    foreach (var stale in maskClone.GetComponents<EncounterRevealAudio>()) DestroyImmediate(stale);
+                    foreach (var stale in maskClone.GetComponents<EnemyAcoustics>()) DestroyImmediate(stale);
+                    foreach (var stale in maskClone.GetComponents<AudioLowPassFilter>()) DestroyImmediate(stale);
+                    foreach (var stale in maskClone.GetComponents<AudioSource>()) DestroyImmediate(stale);
+                    foreach (var child in maskClone.transform.Cast<Transform>()
+                        .Where(x => x.name == "Enemy attack voice" || x.name == "Owned first-appearance voice").ToArray()) DestroyImmediate(child.gameObject);
+                    Mask.enabled = true; Mask.activationStep = 0;
+                    var maskAgent = maskClone.GetComponent<NavMeshAgent>(); maskAgent.enabled = false;
+                    foreach (var startup in maskClone.GetComponents<NavMeshStartup>()) startup.enabled = false;
+                    Mask.patrol = BuildPatrol(i, maskAgent);
+                    continue;
+                }
+                var template = actors.FirstOrDefault(x => i == 0 ? x.name.Contains("Cyclopse") : i == 1 ? x.name.Contains("Uncat") : x.name.Contains("Baby"));
                 if (!template) throw new InvalidOperationException("Missing existing monster " + i);
                 var clone = Instantiate(template.gameObject, world); clone.name = template.name + " — corridor";
                 clone.transform.position = CellPosition(Layout.Threats[i]);
                 var brain = clone.GetComponent<StalkerBrain>(); brain.player = session.player; brain.enabled = true;
                 brain.corridorRole = (CorridorThreatRole)(i + 1);
+                if (i == 3) brain.ConfigureCorridorBaby();
                 var agent = clone.GetComponent<NavMeshAgent>(); agent.enabled = false;
                 foreach (var startup in clone.GetComponents<NavMeshStartup>()) startup.enabled = false;
                 var motion = clone.GetComponent<V1MonsterMotion>(); if (motion) motion.enabled = true;
-                var markers = new List<Transform>();
-                foreach (int target in new[] { Layout.Threats[i], Layout.Relics[(i + 1) % 5], Layout.Supplies[(i * 2) % 8], Layout.Relics[(i + 3) % 5] })
-                {
-                    var center = CellPosition(target);
-                    // A relic's centre is occupied by its altar. The raw centre
-                    // can produce a complete path ending beside it, yet never
-                    // satisfy the patrol's arrival distance. Author the marker
-                    // at that actual reachable floor point after furniture bake.
-                    if (!NavMesh.SamplePosition(center, out var destination, 1.5f, agent.areaMask) ||
-                        Mathf.Abs(destination.position.y - center.y) > .25f)
-                        throw new InvalidOperationException("No physical patrol waypoint at cell " + target);
-                    var marker = new GameObject("Patrol evidence-free waypoint").transform;
-                    marker.SetParent(world); marker.position = destination.position; markers.Add(marker);
-                }
-                brain.patrol = markers.ToArray(); threats.Add(brain);
-                if (i < 2) Release(brain);
+                brain.patrol = BuildPatrol(i, agent); threats.Add(brain);
+                if (i == 0) Release(brain);
             }
             var controller = session.player.GetComponent<CharacterController>(); controller.enabled = false;
             int entranceDirection = Enumerable.Range(0, 4).First(d => (Layout.Connections[0] & (1 << d)) != 0);
@@ -223,7 +244,20 @@ namespace HappyToy.V2
             }
             return CellPosition(cell) + offset;
         }
-        void Release(StalkerBrain brain)
+        Transform[] BuildPatrol(int slot, NavMeshAgent agent)
+        {
+            var markers = new List<Transform>();
+            foreach (int target in new[] { Layout.Threats[slot], Layout.Relics[(slot + 1) % 5], Layout.Supplies[(slot * 2) % 8], Layout.Relics[(slot + 3) % 5] })
+            {
+                var center = CellPosition(target);
+                if (!NavMesh.SamplePosition(center, out var destination, 1.5f, agent.areaMask) || Mathf.Abs(destination.position.y - center.y) > .25f)
+                    throw new InvalidOperationException("No physical patrol waypoint at cell " + target);
+                var marker = new GameObject("Patrol evidence-free waypoint").transform;
+                marker.SetParent(world); marker.position = destination.position; markers.Add(marker);
+            }
+            return markers.ToArray();
+        }
+        void Release(MonoBehaviour brain)
         {
             var agent = brain.GetComponent<NavMeshAgent>();
             if (!NavMesh.SamplePosition(brain.transform.position, out var hit, 1, agent.areaMask)) throw new InvalidOperationException("No monster navigation spawn");
@@ -233,9 +267,11 @@ namespace HappyToy.V2
         void Update()
         {
             if (!Ready || !session.InputAllowed) return;
-            for (int i = 2; i < threats.Count; i++)
-                if (!threats[i].gameObject.activeSelf && Recovered >= (i == 2 ? 2 : 4) &&
+            for (int i = 1; i < threats.Count; i++)
+                if (!threats[i].gameObject.activeSelf && Recovered >= (i == 1 ? 2 : 4) &&
                     Vector3.Distance(threats[i].transform.position, session.player.transform.position) > 12) Release(threats[i]);
+            if (Mask && !Mask.gameObject.activeSelf && Recovered >= 3 &&
+                Vector3.Distance(Mask.transform.position, session.player.transform.position) > 12) Release(Mask);
         }
         public bool Collect(string id)
         {

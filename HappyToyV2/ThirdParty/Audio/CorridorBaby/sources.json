@@ -1,0 +1,20 @@
+{
+  "zoom": {
+    "file": "zoom.mp3",
+    "creator": "Alex_hears_things",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/Alex_hears_things/sounds/636845/",
+    "download": "https://cdn.freesound.org/previews/636/636845_2309965-hq.mp3",
+    "source_file": "Baby crying.wav (public high quality MP3 preview)",
+    "source_file_sha256": "5379eab4f614c5f1738241e89e3be3f236d1cb7b5b8ae3bbb906c48801f59815"
+  },
+  "three-breaths": {
+    "file": "three-breaths.mp3",
+    "creator": "MBPL",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/MBPL/sounds/667199/",
+    "download": "https://cdn.freesound.org/previews/667/667199_14585550-hq.mp3",
+    "source_file": "Crying baby 1 (public high quality MP3 preview)",
+    "source_file_sha256": "8d8522ef99c86a700e3d682246f9687015ea42a80850fd8717bcb3d172fdd42f"
+  }
+}

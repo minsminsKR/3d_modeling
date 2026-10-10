@@ -79,12 +79,15 @@ namespace HappyToy.V2.CloudTests
             meters += Vector3.Distance(previous, player.transform.position); previous = player.transform.position;
             lastGameTime = Get<float>(session, "ElapsedPlayTime") - gameStart; lastRecovered = Get<int>(session, "RecordsRecovered");
             observedKeyboard = Keyboard.current;
-            maximumThreats = Mathf.Max(maximumThreats, monsters.Count(x => x.gameObject.activeSelf));
+            maximumThreats = Mathf.Max(maximumThreats, Get<int>(Get<Component>(session,"Corridor"),"ActiveThreatCount"));
             lastCharge = Get<float>(Get<Component>(player, "FlashlightSystem"), "Charge");
             lastHidingEntry = Get<int>(player, "HidingEntryId"); lastHidingRolls = Get<int>(player, "HidingRolls");
             lastHidingOutcome = Get<object>(player, "HidingOutcome").ToString();
             Assert.That(Get<object>(player, "HidingRandomSample"), Is.Null, "Full route may not override production hiding RNG");
-            Assert.That(Time.timeScale, Is.EqualTo(1)); Assert.That(Time.captureDeltaTime, Is.Zero);
+            bool expectedResult=expectEscape&&Get<bool>(session,"Finished")&&Get<bool>(session,"Escaped");
+            Assert.That(Time.timeScale, Is.EqualTo(expectedResult?0:1)); Assert.That(Time.captureDeltaTime, Is.Zero);
+            if(expectedResult)
+                Assert.That(Get<object>(shell,"Screen").ToString(),Is.EqualTo("Result").Or.EqualTo("ChapterTransition"));
             Assert.That(((Behaviour)player).enabled, Is.True, "Full route cannot disable the actual motor");
             bool terminal = Get<bool>(session, "Finished") && !(expectEscape && Get<bool>(session, "Escaped"));
             if (terminal) SaveEvidence();
@@ -116,7 +119,11 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(i + 1)); Mark("recovered " + selected.name + " through E");
                 if (i < 4) yield return TopUpNearbySupply(14);
             }
-            var exit = Components("Interactable").Single(x => x.name == "Sealed entrance"); stage = "return to entrance";
+            var corridor=Get<Component>(session,"Corridor");
+            bool finalClassroom=Get<int>(Get<object>(corridor,"Layout"),"Version")>=3;
+            var exit = finalClassroom?Get<Component>(Get<Component>(corridor,"AltarChamber"),"Offering"):
+                Components("Interactable").Single(x => x.name == "Sealed entrance");
+            stage = finalClassroom?"return memories to distant classroom altar":"return to entrance";
             Assert.That(FindApproach(exit, out var exitAt, out _), Is.True); yield return Walk(exitAt);
             expectEscape = true; yield return Interact(exit); Assert.That(Get<bool>(session, "Escaped"), Is.True);
             for (int i = 0; i < monsters.Length; i++) Assert.That(new Vector2(Get<float>(monsters[i], "patrolSpeed"), Get<float>(monsters[i], "chaseSpeed")), Is.EqualTo(speeds[i]));
@@ -130,11 +137,24 @@ namespace HappyToy.V2.CloudTests
             Component selected = null; Vector3 at = Vector3.zero; float best = maximumDetour;
             foreach (var supply in Components("Interactable").Where(x => x.gameObject.activeSelf &&
                 Get<object>(x, "kind").ToString() == "FirecrackerSupply"))
-                if (FindApproach(supply, out var point, out var length) && length < best)
+            {
+                var drawer=supply.GetComponentInParent(RequireType("CorridorDrawer"));
+                var focus=drawer&&!Get<bool>(drawer,"ExposesPickup")?drawer.GetComponent(RequireType("Interactable")):supply;
+                if (FindApproach(focus, out var point, out var length) && length < best)
                 { selected = supply; at = point; best = length; }
+            }
             if (!selected) yield break;
             string previousStage = stage; stage = "collect nearby supply";
-            yield return Walk(at); int before = Get<int>(stock, "Count"); yield return Interact(selected);
+            yield return Walk(at);
+            var tray=selected.GetComponentInParent(RequireType("CorridorDrawer"));
+            if(tray&&!Get<bool>(tray,"ExposesPickup"))
+            {
+                if(!Get<bool>(tray,"IsOpen"))yield return Interact(tray.GetComponent(RequireType("Interactable")));
+                float deadline=Time.realtimeSinceStartup+3;
+                while(!Get<bool>(tray,"ExposesPickup"))
+                {Assert.That(Time.realtimeSinceStartup,Is.LessThan(deadline),"Actual drawer never exposed the finite supply");yield return null;Check();}
+            }
+            int before = Get<int>(stock, "Count"); yield return Interact(selected);
             Assert.That(Get<int>(stock, "Count"), Is.EqualTo(before + 1)); suppliesCollected++;
             Mark("collected finite supply through E"); stage = previousStage;
         }
@@ -182,21 +202,25 @@ namespace HappyToy.V2.CloudTests
         {
             get { var cue = player.GetComponent(RequireType("DetectionFeedback")); return cue && Get<bool>(cue, "Active"); }
         }
-        Component VisibleThreat()
+        MonoBehaviour VisibleThreat()
         {
-            Component closest = null; float nearest = 8;
-            foreach (var monster in monsters)
+            MonoBehaviour closest = null; float nearest = 8;
+            var mask=(MonoBehaviour)Get<Component>(Get<Component>(session,"Corridor"),"Mask");
+            foreach (var monster in monsters.Cast<MonoBehaviour>().Concat(new[]{mask}))
             {
-                if (!monster.gameObject.activeSelf) continue;
+                if (!monster || !monster.gameObject.activeSelf) continue;
                 var delta = monster.transform.position + Vector3.up - eyes.transform.position;
                 if (delta.magnitude >= nearest || !RecognitionCue && Vector3.Angle(eyes.transform.forward, delta) > 80) continue;
                 if (Physics.Linecast(eyes.transform.position, monster.transform.position + Vector3.up, out var hit,
-                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) && hit.collider.GetComponentInParent(RequireType("StalkerBrain")) != monster) continue;
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) && !hit.collider.transform.IsChildOf(monster.transform)) continue;
                 closest = monster; nearest = delta.magnitude;
             }
             return closest;
         }
-        IEnumerator Decoy(Component monster)
+        static bool AttackActive(MonoBehaviour actor)=>Get<bool>(actor,"AttackActive");
+        static float AttackRecovery(MonoBehaviour actor)=>Get<float>(actor,"AttackRecovery");
+        static float AttackWindup(MonoBehaviour actor)=>Get<float>(actor,"AttackWindup");
+        IEnumerator Decoy(MonoBehaviour monster)
         {
             var stock = Get<Component>(player, "Firecrackers"); int before = Get<int>(stock, "Count");
             var away = monster.transform.position - player.transform.position; away.y = 0;
@@ -209,7 +233,7 @@ namespace HappyToy.V2.CloudTests
             float wait = Time.realtimeSinceStartup + 1.5f;
             while (Time.realtimeSinceStartup < wait && !RecognitionCue) { keys(Array.Empty<Key>()); yield return null; Check(); }
         }
-        IEnumerator Dodge(Component monster, Vector3 destination)
+        IEnumerator Dodge(MonoBehaviour monster, Vector3 destination)
         {
             var observedGuard = monster.transform.position;
             if (Get<bool>(player, "Crouching")) yield return Pulse(Key.C);
@@ -217,17 +241,17 @@ namespace HappyToy.V2.CloudTests
             // rather than blindly crossing it before the warning has resolved.
             keys(Array.Empty<Key>());
             float baitDeadline = GameTime + 1.35f;
-            while (VisibleThreat() == monster && !Get<bool>(monster, "AttackActive") && GameTime < baitDeadline)
+            while (VisibleThreat() == monster && !AttackActive(monster) && GameTime < baitDeadline)
             {
                 observedGuard = monster.transform.position;
                 Steer(observedGuard + Vector3.up, true);
                 yield return null; Check();
             }
-            bool observedStrike = VisibleThreat() == monster && Get<bool>(monster, "AttackActive");
+            bool observedStrike = VisibleThreat() == monster && AttackActive(monster);
             if (observedStrike) observedGuard = monster.transform.position;
             float passNotBefore = GameTime;
-            if (observedStrike && Get<float>(monster, "AttackRecovery") <= 0)
-                passNotBefore += .75f * (1 - Get<float>(monster, "AttackWindup"));
+            if (observedStrike && AttackRecovery(monster) <= 0)
+                passNotBefore += .75f * (1 - AttackWindup(monster));
             var away = player.transform.position - observedGuard; away.y = 0;
             var tangent = Vector3.Cross(Vector3.up, away.normalized);
             var selected = new NavMeshPath(); bool found = false; float best = 0;
@@ -405,7 +429,7 @@ namespace HappyToy.V2.CloudTests
             }
             yield return Pulse(Key.E);
         }
-        IEnumerator HideFrom(Component guard)
+        IEnumerator HideFrom(MonoBehaviour guard)
         {
             Component cabinet = null; Vector3 destination = Vector3.zero; float best = 30;
             foreach (var item in Components("Interactable").Where(x => x.name == "Corridor hiding cabinet"))
@@ -417,7 +441,8 @@ namespace HappyToy.V2.CloudTests
                 if (!Physics.Linecast(guard.transform.position + Vector3.up * 1.7f, entrance + Vector3.up * 1.6f,
                     out var cover, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) ||
                     cover.collider.transform.IsChildOf(item.transform) ||
-                    cover.collider.GetComponentInParent(RequireType("StalkerBrain"))) continue;
+                    cover.collider.GetComponentInParent(RequireType("StalkerBrain")) ||
+                    cover.collider.GetComponentInParent(RequireType("LanternMaskEncounter"))) continue;
                 if (!FindApproach(item, out var at, out var length, guard.transform.position) || length >= best) continue;
                 // Choose known cover beyond a corner relative to the last observed
                 // guard. No hidden actor position is used to select a hiding place.

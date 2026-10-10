@@ -86,6 +86,7 @@ namespace HappyToy.V2
         { if (!condition) throw new InvalidOperationException(message); }
         IEnumerator Run()
         {
+            yield return DiagnosticAudioSilence.WaitForSafeAudio(output);
             yield return null; yield return null;
             session = GameSession.Current;
             Require(session && session.player && session.Shell, "Native session/player unavailable");

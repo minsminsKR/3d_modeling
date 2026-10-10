@@ -82,6 +82,9 @@ namespace HappyToy.V2.CloudTests
             Get<Light>(player,"flashlight").enabled=false;
             Assert.That((bool)Call(player,"TrySetCrouching",true),Is.True); yield return Delay(.15f);
             var mannequin=Get<Component>(chapter,"Mannequin");
+            var shots=Get<Component>(chapter,"FirstAppearances");
+            Assert.That(Get<bool>(shots,"MannequinArmed"),Is.True);
+            Assert.That(Get<bool>(shots,"MannequinShown"),Is.False,"An unseen mannequin cannot become a completed saved camera shot");
             if(Get<bool>(mannequin,"Triggered") && !Get<bool>(mannequin,"Released"))
                 yield return Wait(()=>Get<bool>(mannequin,"Released"),4,"Actual first-sight mannequin reveal never finished");
             var door=Components("Interactable").First(x=>Get<object>(x,"kind").ToString()=="Door" && Get<Transform>(x,"secondaryLeaf"));
@@ -107,6 +110,10 @@ namespace HappyToy.V2.CloudTests
             Assert.That(memories.Take(2).All(x=>!x.gameObject.activeSelf),Is.True); Assert.That(memories.Skip(2).All(x=>x.gameObject.activeSelf),Is.True);
             Assert.That(Get<Component>(chapter,"Cyclopse").gameObject.activeSelf,Is.True);
             Assert.That(Get<Component>(chapter,"Mannequin").gameObject.activeSelf,Is.True);
+            shots=Get<Component>(chapter,"FirstAppearances");
+            Assert.That(Get<bool>(shots,"MannequinArmed"),Is.True);
+            Assert.That(Get<bool>(shots,"MannequinShown"),Is.EqualTo(Get<bool>(Get<object>(data,"mannequin"),"released")));
+            Assert.That(Get<Light>(shots,"MannequinSpotlight").enabled,Is.True);
             Assert.That(Get<Component>(chapter,"Mask").gameObject.activeSelf,Is.False);
             var actualDoor=Components("Interactable").Single(x=>Get<string>(x,"stableId")==Get<string>(savedDoor,"id"));
             Assert.That(Get<bool>(actualDoor,"IsOpen"),Is.True);

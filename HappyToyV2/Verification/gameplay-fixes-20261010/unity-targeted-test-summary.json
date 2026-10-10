@@ -1,0 +1,211 @@
+{
+  "scope": "Latest per-case targeted Unity test results across repair runs; native player evidence reported separately.",
+  "total": 34,
+  "passed": 34,
+  "tests": [
+    {
+      "name": "OnlyRaysThroughTheOccupiedPhysicalSlitLeaveTheCabinetAtEveryRotationAndFitScale",
+      "fullname": "HappyToy.V2.CloudTests.CabinetPeekRayTests.OnlyRaysThroughTheOccupiedPhysicalSlitLeaveTheCabinetAtEveryRotationAndFitScale",
+      "result": "Passed",
+      "report": "gameplay-fixes-editmode.xml"
+    },
+    {
+      "name": "AudibleFootstepsKeepCandleWarningAcrossCabinetEntryAndWhileFacingAway",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.AudibleFootstepsKeepCandleWarningAcrossCabinetEntryAndWhileFacingAway",
+      "result": "Passed",
+      "report": "gameplay-fixes-fixtures-final.xml"
+    },
+    {
+      "name": "CabinetEntryDecisionSurvivesRealSchoolAndCorridorCheckpointRoundTrips",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CabinetEntryDecisionSurvivesRealSchoolAndCorridorCheckpointRoundTrips",
+      "result": "Passed",
+      "report": "gameplay-fixes-cabinet-clearance.xml"
+    },
+    {
+      "name": "CabinetSlitPreservesOutsideCandleWarningCoverBlackoutRecoveryAndFlashlight",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CabinetSlitPreservesOutsideCandleWarningCoverBlackoutRecoveryAndFlashlight",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "CabinetWitnessRecordsRealSightButCannotOverrideSurvivalOrCauseAnotherRoll",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CabinetWitnessRecordsRealSightButCannotOverrideSurvivalOrCauseAnotherRoll",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "CandleSchoolMannequinStartsWarningDuringHarmlessFirstTurn",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CandleSchoolMannequinStartsWarningDuringHarmlessFirstTurn",
+      "result": "Passed",
+      "report": "gameplay-fixes-quiet-final.xml"
+    },
+    {
+      "name": "ChapterCyclopseGlancesThenPassesWithPauseAndSafeControlReturn",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.ChapterCyclopseGlancesThenPassesWithPauseAndSafeControlReturn",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode.xml"
+    },
+    {
+      "name": "ChapterMannequinMovesOnlyWhenBothUnseenAndFlashlightOn",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.ChapterMannequinMovesOnlyWhenBothUnseenAndFlashlightOn",
+      "result": "Passed",
+      "report": "gameplay-fixes-quiet-final.xml"
+    },
+    {
+      "name": "ChapterMannequinNeverTakesTheCameraWhileThePlayerIsHidden",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.ChapterMannequinNeverTakesTheCameraWhileThePlayerIsHidden",
+      "result": "Passed",
+      "report": "gameplay-fixes-quiet-final.xml"
+    },
+    {
+      "name": "ChapterMannequinWaitsForActualSightAndZoomsFromThePlayersOwnEyes",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.ChapterMannequinWaitsForActualSightAndZoomsFromThePlayersOwnEyes",
+      "result": "Passed",
+      "report": "gameplay-fixes-quiet-final.xml"
+    },
+    {
+      "name": "CorridorActualMaskCompletesItsIntroChasesCursesTransformsAndRestoresItsOwnedState",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorActualMaskCompletesItsIntroChasesCursesTransformsAndRestoresItsOwnedState",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "CorridorCheckpointKeepsImmediateVisualChaseAndOngoingObservedSearch",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorCheckpointKeepsImmediateVisualChaseAndOngoingObservedSearch",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "CorridorCheckpointRefusesHiddenPlayerAndLiveThrownItem",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorCheckpointRefusesHiddenPlayerAndLiveThrownItem",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "CorridorCheckpointRejectsUnknownVersionAndBlockedPoseBeforeMutatingWorld",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorCheckpointRejectsUnknownVersionAndBlockedPoseBeforeMutatingWorld",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "CorridorHasReachableGoalsOriginalMonstersAndBoundedCollectibleSupplies",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorHasReachableGoalsOriginalMonstersAndBoundedCollectibleSupplies",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "CorridorMonsterPushesARealClosedDoorBeforeCrossing",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorMonsterPushesARealClosedDoorBeforeCrossing",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "CorridorReleasesCyclopsUncatMaskBabyAtExactMemoryStages",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorReleasesCyclopsUncatMaskBabyAtExactMemoryStages",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "LegacyFourThreatSnapshotsMapSlotsZeroOneThreeAndKeepUncatDormantAtZeroAndOneMemory",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.LegacyFourThreatSnapshotsMapSlotsZeroOneThreeAndKeepUncatDormantAtZeroAndOneMemory",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "MannequinFirstTurnRemainsStationaryAndReleasesWithoutGazeDeadlock",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.MannequinFirstTurnRemainsStationaryAndReleasesWithoutGazeDeadlock",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode.xml"
+    },
+    {
+      "name": "MannequinRevealKeepsRealOpeningsInReadableGpuAndCurrentSkinnedBodiesAndDisposesSnapshots",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.MannequinRevealKeepsRealOpeningsInReadableGpuAndCurrentSkinnedBodiesAndDisposesSnapshots",
+      "result": "Passed",
+      "report": "gameplay-fixes-quiet-final.xml"
+    },
+    {
+      "name": "MannequinRevealWaitsForAnOpaqueMonsterBodyWithoutAPhysicalCollider",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.MannequinRevealWaitsForAnOpaqueMonsterBodyWithoutAPhysicalCollider",
+      "result": "Passed",
+      "report": "gameplay-fixes-quiet-final.xml"
+    },
+    {
+      "name": "MultipleOccludedChasersShareOneSurvivalRollAndOnlyANewEntryCanDrawDeath",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.MultipleOccludedChasersShareOneSurvivalRollAndOnlyANewEntryCanDrawDeath",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "QuietCabinetEntryNeverDrawsAndRejectsDuplicatePausedOrBlockedTransitions",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.QuietCabinetEntryNeverDrawsAndRejectsDuplicatePausedOrBlockedTransitions",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "RaisedDoorPullsStayOnBothMovingFacesDuringOpeningAndCheckpointPoseRestore",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.RaisedDoorPullsStayOnBothMovingFacesDuringOpeningAndCheckpointPoseRestore",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode-final.xml"
+    },
+    {
+      "name": "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
+      "fullname": "HappyToy.V2.CloudTests.CloudPlayModeTests.SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
+      "result": "Passed",
+      "report": "gameplay-fixes-playmode.xml"
+    },
+    {
+      "name": "FirstSmallSoundInvestigatesThenReturnsToWaitingCry",
+      "fullname": "HappyToy.V2.CloudTests.CorridorBabyMemoryTests.FirstSmallSoundInvestigatesThenReturnsToWaitingCry",
+      "result": "Passed",
+      "report": "gameplay-fixes-editmode-final.xml"
+    },
+    {
+      "name": "FreshRunClearsPriorChaseAndInvalidSnapshotCannotMutateMemory",
+      "fullname": "HappyToy.V2.CloudTests.CorridorBabyMemoryTests.FreshRunClearsPriorChaseAndInvalidSnapshotCannotMutateMemory",
+      "result": "Passed",
+      "report": "gameplay-fixes-editmode-final.xml"
+    },
+    {
+      "name": "JsonRoundTripKeepsNonBabyChaseAndInvestigationWithoutInventingBabyState",
+      "fullname": "HappyToy.V2.CloudTests.CorridorBabyMemoryTests.JsonRoundTripKeepsNonBabyChaseAndInvestigationWithoutInventingBabyState",
+      "result": "Passed",
+      "report": "gameplay-fixes-editmode-final.xml"
+    },
+    {
+      "name": "LoudSoundChasesAndSavedLaterInvestigationRetainsWanderingHistory",
+      "fullname": "HappyToy.V2.CloudTests.CorridorBabyMemoryTests.LoudSoundChasesAndSavedLaterInvestigationRetainsWanderingHistory",
+      "result": "Passed",
+      "report": "gameplay-fixes-editmode-final.xml"
+    },
+    {
+      "name": "RealBabyJsonRoundTripRetainsHistoryAndStrictPhaseValidation",
+      "fullname": "HappyToy.V2.CloudTests.CorridorBabyMemoryTests.RealBabyJsonRoundTripRetainsHistoryAndStrictPhaseValidation",
+      "result": "Passed",
+      "report": "gameplay-fixes-editmode-final.xml"
+    },
+    {
+      "name": "SeenPursuitRejectsSmallDistractionAndLossStartsWandering",
+      "fullname": "HappyToy.V2.CloudTests.CorridorBabyMemoryTests.SeenPursuitRejectsSmallDistractionAndLossStartsWandering",
+      "result": "Passed",
+      "report": "gameplay-fixes-editmode-final.xml"
+    },
+    {
+      "name": "AutomaticPullsUseActualTravelOnBothFacesAndOpposingLeavesAtEveryCardinalRotation",
+      "fullname": "HappyToy.V2.CloudTests.DoorPullPlacementTests.AutomaticPullsUseActualTravelOnBothFacesAndOpposingLeavesAtEveryCardinalRotation",
+      "result": "Passed",
+      "report": "gameplay-fixes-editmode.xml"
+    },
+    {
+      "name": "TrailingEdgeUsesPhysicalWidthEvenWhenLeafBasisIsReversedAndRejectsNonSlidingTravel",
+      "fullname": "HappyToy.V2.CloudTests.DoorPullPlacementTests.TrailingEdgeUsesPhysicalWidthEvenWhenLeafBasisIsReversedAndRejectsNonSlidingTravel",
+      "result": "Passed",
+      "report": "gameplay-fixes-editmode.xml"
+    }
+  ]
+}

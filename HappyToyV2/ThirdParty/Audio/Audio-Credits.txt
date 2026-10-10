@@ -1,5 +1,19 @@
 HAPPY TOY V2 — EXTERNAL SOUND CREDITS
 
+Baby crying.wav — Alex_hears_things
+https://freesound.org/people/Alex_hears_things/sounds/636845/
+CC0 1.0. Actual baby voice recorded with a Zoom H4n Pro. Public high-quality MP3
+preview retained, not the original lossless WAV. Selected 6–22 second excerpt,
+mono conversion, filtering, .45 second wrap crossfade and measured gain produce
+the corridor Baby's owned spatial crying loop. Natural pitch and breath gaps
+remain; no synthesized voice or noise layers.
+
+Crying baby 1 — MBPL (comparison source only)
+https://freesound.org/people/MBPL/sounds/667199/
+CC0 1.0. Three actual recorded breaths, author-edited to reduce unrelated noise.
+Public high-quality MP3 preview retained for comparison; not used in runtime.
+Exact originals/edits/hashes: ThirdParty/Audio/CorridorBaby.
+
 Sound Effects Pack — OwlishMedia
 https://opengameart.org/content/sound-effects-pack
 CC0 1.0. Recorded shoe contacts used for the four walking pursuers, with

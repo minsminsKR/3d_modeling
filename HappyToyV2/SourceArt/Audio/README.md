@@ -1,5 +1,31 @@
 # Recorded horror audio authoring
 
+The corridor Baby also owns one **15.55-second actual recorded crying loop**.
+After the other passes, run `python SourceArt/Audio/render_corridor_baby.py` with
+the same CPython 3.11 / `requirements-corridor.txt` environment. Selected and
+comparison recordings, original hashes, CC0 sources and decisions are retained
+in `ThirdParty/Audio/CorridorBaby`. No network access is needed to regenerate it.
+This pass preserves the natural voice pitch and breath gaps; the production
+emitter supplies spatial positioning, physical occlusion and pause/mute behavior.
+
+Baby state verification is separate from waveform/source validation:
+
+```sh
+dotnet run --project Tools/quality/BabyMemoryChecks.csproj
+HappyToyV2.exe -quiet-diagnostics -v5-baby-output <external-output-directory>
+```
+
+The C# console executes the production memory transitions and rejects invalid
+checkpoint states. Six EditMode `CorridorBabyMemoryTests` cover those event/save
+sequences and Unity's null-inline-object JSON round trip inside Unity. The opt-in native probe exercises real navigation, genuine
+sight and pursuit loss with explicitly controlled sound callbacks/poses, then
+isolates the recorded spatial cry for PCM, pause, mute, cabinet danger admission
+and owned cleanup. Automatic verification uses the diagnostic process-session
+silence guard; ordinary play keeps the user's sound settings. A failed guard
+retains listener volume zero and cannot prove positive mixer output.
+It emits its exact scope and preserves the natural listener
+WAV. These diagnostics do not certify human listening or natural survival balance.
+
 The corridor revision has five new wood contacts, a revised recorded detection
 cue, four creature contacts and three field-recorded room loops. Rebuild these
 thirteen cues **after** the tool below with CPython 3.11 and
