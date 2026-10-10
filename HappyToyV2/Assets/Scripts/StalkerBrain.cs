@@ -31,6 +31,7 @@ namespace HappyToy.V2
         bool patrolDwelling;
         float patrolDwellUntil;
         bool witnessedHiding, attackingHiding, recognitionCueIssued;
+        int witnessedHidingEntry, attackHidingEntry;
         PlayerMotor noisePlayer;
         readonly StealthRules.Awareness awareness = new StealthRules.Awareness();
         readonly EnemyAttackClock attack = new EnemyAttackClock();
@@ -106,6 +107,7 @@ namespace HappyToy.V2
             if (CorridorBaby) CorridorBaby.StopVoice();
             ClearDoorPassage(); investigation.Reset();
             BindFootsteps(null); awareness.Reset(); attack.Reset(); witnessedHiding = false;
+            witnessedHidingEntry = attackHidingEntry = 0;
             EnemyNavigation.Stop(agent, true);
         }
         void BindFootsteps(PlayerMotor next)
@@ -161,10 +163,15 @@ namespace HappyToy.V2
 
         public void ObserveHiding(Vector3 entrance)
         {
+            if (!player || player.Hidden) return;
+            // A new entry changes the target from the exposed body to a door.
+            // Neither a body strike nor an earlier visit's windup can carry over.
+            attack.Reset(); attackingHiding = false; attackHidingEntry = 0;
             // Called before the player's collider disappears, not inferred from old chase memory.
             witnessedHiding = isActiveAndEnabled && player &&
                 (state == State.Chase || awareness.Acquired) && CanSeePlayer() &&
                 EnemyNavigation.WithinFloorPolicy(agent, entrance, floorY);
+            witnessedHidingEntry = witnessedHiding ? player.HidingEntryId : 0;
             if (!witnessedHiding) return;
             hidingApproach = entrance; lastKnown = entrance;
             if (player.HidingOutcome == CabinetHidingOutcome.Survived)
@@ -179,7 +186,8 @@ namespace HappyToy.V2
         bool AtWitnessedHidingPlace()
         {
             var delta = transform.position - hidingApproach; delta.y = 0;
-            return player.Hidden && !player.HidingProtected && witnessedHiding && state == State.Chase && delta.magnitude < .85f &&
+            return player.Hidden && !player.HidingProtected && witnessedHiding && witnessedHidingEntry == player.HidingEntryId &&
+                state == State.Chase && delta.magnitude < .85f &&
                 EnemyNavigation.SameActorFloor(agent, hidingApproach, floorY) &&
                 EnemyNavigation.ClearSight(transform.position + Vector3.up * 1.1f, hidingApproach + Vector3.up * 1.1f);
         }
@@ -188,6 +196,7 @@ namespace HappyToy.V2
         {
             if (!attack.Begin(.75f, .9f)) return;
             attackingHiding = hiding; attackHidingApproach = hidingApproach;
+            attackHidingEntry = hiding ? player.HidingEntryId : 0;
             attackFacing = (hiding ? hidingApproach : player.transform.position) - transform.position;
             attackFacing.y = 0;
             if (attackFacing.sqrMagnitude > .001f) transform.rotation = Quaternion.LookRotation(attackFacing);
@@ -442,7 +451,7 @@ namespace HappyToy.V2
                     var horizontal = offset; horizontal.y = 0;
                     // Commit the strike to its warning direction; circling behind the reach is a dodge.
                     bool inArc = horizontal.sqrMagnitude < .01f || Vector3.Angle(attackFacing, horizontal) <= 75;
-                    bool hit = attackingHiding ? AtWitnessedHidingPlace() &&
+                    bool hit = attackingHiding ? attackHidingEntry == player.HidingEntryId && AtWitnessedHidingPlace() &&
                         Vector3.Distance(attackHidingApproach, hidingApproach) < .1f : visible && offset.magnitude < 1.55f && inArc;
                     if (hit)
                     {

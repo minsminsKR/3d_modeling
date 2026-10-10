@@ -1,0 +1,129 @@
+{
+  "status": "CABINET_CATCH_VERIFICATION_PASS",
+  "scope": "Controlled public cabinet interactions in original school and corridor fixtures, real Unity NavMesh and actual native Cyclops approach. This is not a full survival playthrough or human listening evaluation.",
+  "change": "Remove entry-roll damage; only a witnessed current entry can be captured after physical entrance arrival and a fresh complete attack warning. Previous body or cabinet strikes cannot carry into a new entry. Save enum and schema remain compatible.",
+  "playMode": {
+    "passed": 11,
+    "failed": 0,
+    "durationSeconds": 125.4170409,
+    "cases": [
+      {
+        "name": "AudibleFootstepsKeepCandleWarningAcrossCabinetEntryAndWhileFacingAway",
+        "result": "Passed",
+        "durationSeconds": 35.68672
+      },
+      {
+        "name": "CabinetEntryCancelsPendingVisibleBodyStrikeAndStartsFreshDoorWarning",
+        "result": "Passed",
+        "durationSeconds": 5.368448
+      },
+      {
+        "name": "CabinetEntryDecisionSurvivesRealSchoolAndCorridorCheckpointRoundTrips",
+        "result": "Passed",
+        "durationSeconds": 26.754343
+      },
+      {
+        "name": "CabinetSlitPreservesOutsideCandleWarningCoverBlackoutRecoveryAndFlashlight",
+        "result": "Passed",
+        "durationSeconds": 17.122624
+      },
+      {
+        "name": "CabinetTransitionsPlayOnlyDistinctRecordedOpeningAndClosingDoors",
+        "result": "Passed",
+        "durationSeconds": 5.657278
+      },
+      {
+        "name": "CabinetWitnessRecordsRealSightButCannotOverrideSurvivalOrCauseAnotherRoll",
+        "result": "Passed",
+        "durationSeconds": 5.722079
+      },
+      {
+        "name": "LeavingAndReenteringSameCabinetCannotInheritPreviousDoorStrike",
+        "result": "Passed",
+        "durationSeconds": 5.691968
+      },
+      {
+        "name": "MultipleOccludedChasersShareOneSurvivalRollAndFailedNewEntryCannotKillRemotely",
+        "result": "Passed",
+        "durationSeconds": 7.392141
+      },
+      {
+        "name": "QuietCabinetEntryNeverDrawsAndRejectsDuplicatePausedOrBlockedTransitions",
+        "result": "Passed",
+        "durationSeconds": 3.961404
+      },
+      {
+        "name": "WitnessedCabinetStrikeCannotCommitThroughNewOpaqueCover",
+        "result": "Passed",
+        "durationSeconds": 5.625137
+      },
+      {
+        "name": "WitnessedFailedCabinetEntryRequiresActualApproachAndFullDoorWarning",
+        "result": "Passed",
+        "durationSeconds": 5.50709
+      }
+    ]
+  },
+  "native": {
+    "status": "NATIVE_HIDING_PASS",
+    "checks": {
+      "quietSafe": true,
+      "unseenChaseSurvived": true,
+      "visibleBeforeHiding": true,
+      "witnessRecorded": true,
+      "witnessedChaseSurvived": true,
+      "unseenFailedNoInstantDefeat": true,
+      "unseenFailedNoDelayedDefeat": true,
+      "witnessedFailedNoInstantDefeat": true,
+      "physicalApproachProved": true,
+      "warningBeforeDefeat": true,
+      "deathBranch": true,
+      "pauseKeptDecision": true,
+      "exitWorks": true,
+      "blockedExitSafe": true,
+      "sightBlockerPreventsCapture": true,
+      "blockedAttackResolved": true,
+      "spatialAudio": true
+    },
+    "entryDistanceMetres": 3.000000476837158,
+    "warningDistanceMetres": 0.8243610262870789,
+    "impactDistanceMetres": 0.8243610262870789,
+    "warningGameSeconds": 0.7578639984130859,
+    "unseenFailedObservedGameSeconds": 2.0022528171539307,
+    "actualTravelDistanceMetres": 6.527214050292969
+  },
+  "quietVerification": {
+    "sessionMuteVerified": true,
+    "currentProcessOnly": true,
+    "nativeRestoreSucceeded": true,
+    "preferenceRestoreSucceeded": true,
+    "exitListenerVolume": 0.0
+  },
+  "sourceCompleteness": {
+    "status": "PASS",
+    "requiredSourceCount": 3063,
+    "missingFromGit": [],
+    "unhydratedLfsFiles": [],
+    "scope": "Required local editable source files vs Git index; not a Unity build or clone execution test."
+  },
+  "build": {
+    "status": "GRAPHICS_BUILD_INPUTS_PASS",
+    "unityVersion": "6000.6.0f1",
+    "createdUtc": "2026-10-10T15:24:56.2645299Z",
+    "developmentBuild": false,
+    "inputCount": 2746,
+    "executableSha256": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d",
+    "compiledGameplaySha256": "a9c7aba797b7e49ea71a62ec6b446ed2f5b3ebdef359db5f88393855bdd75fb6",
+    "buildInputsReportSha256": "1f3e691889db1573bfd3683f4d557440469dca53868bbdb93a010b098be0305c"
+  },
+  "actualTestedSourceSha256": {
+    "Assets/Scripts/PlayerMotor.cs": "0c4080b79bda6fe77bcbec0ebb640eac7fb7faa2fabb596e8b34df09e3fd76e3",
+    "Assets/Scripts/StalkerBrain.cs": "83a7b68386f95ce61d6ee59cea3da4e03caea85af97df38e03ea13bf52fedfee",
+    "Assets/Scripts/CabinetHidingRules.cs": "30cf9f0da5dc2a4c6f9cb761410e7af2694ef9fa9b5e8a005459d9ac3fd4dd69",
+    "Assets/Scripts/CorridorActorProgress.cs": "5df8a0bfe8286be82bc21c44597d05c408dde39dd36a407ce38e5a8010187718",
+    "Assets/Scripts/CorridorThreatRules.cs": "ec3f985062603f3f653cf72bbb4c723b7ace5d9d67d928c37583a9b8a5242ea2",
+    "Assets/Scripts/HidingAudit.cs": "e419e1cc9e1bb82b4a59620a78c268c6f600fdeffe0f0ec61397e8d3eca4e0b2",
+    "Assets/Tests/PlayMode/CloudCabinetSurvivalTests.cs": "0f009fd7182933b25c1b78d9648e34fd28f082e4bf0e7e1376bfdb28416e0a82"
+  },
+  "protectedSceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede"
+}

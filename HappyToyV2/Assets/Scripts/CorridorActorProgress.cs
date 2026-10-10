@@ -159,7 +159,7 @@ namespace HappyToy.V2
             }
             floorY=data.floor; state=data.state; lastKnown=data.lastKnown; hidingApproach=data.hidingApproach;
             memory=data.memory; awareness.Restore(data.awareness); witnessedHiding=data.witnessed; recognitionCueIssued=data.cueIssued;
-            attack.Reset(); attackingHiding=false; repath=0;
+            attack.Reset(); attackingHiding=false; witnessedHidingEntry=attackHidingEntry=0; repath=0;
             searchOrigin=data.searchOrigin; searchTarget=data.searchTarget; searchFacing=Quaternion.Euler(0,data.searchYaw,0);
             searchArrived=data.searchArrived; searchStarted=data.searchStarted; searchDwell=data.searchDwell;
             searchTransit=data.searchTransit; searchDoorWait=data.searchDoorWait; searchCandidate=data.searchCandidate;

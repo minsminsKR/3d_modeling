@@ -108,6 +108,59 @@ namespace HappyToy.V2.CloudTests
             Call(cabinet, "Use", player);
             Assert.That(Get<bool>(player, "Hidden"), Is.False, "Public cabinet exit failed before checkpoint capture");
         }
+        static float CabinetFlatDistance(Vector3 first, Vector3 second)
+        { first.y = second.y = 0; return Vector3.Distance(first, second); }
+        string CabinetAttackDiagnostics(Component cabinet, Component enemy) =>
+            "enemy=" + enemy.transform.position.ToString("F3") + ", entrance=" +
+            Get<Transform>(cabinet, "outside").position.ToString("F3") + ", state=" + Get<object>(enemy, "state") +
+            ", witness=" + Get<bool>(enemy, "SawHiding") + ", attacks=" + Get<int>(enemy, "AttacksStarted") +
+            ", progress=" + Get<float>(enemy, "AttackWindup") + ", finished=" + Get<bool>(session, "Finished");
+        IEnumerator CabinetMustStayAliveFor(float gameSeconds)
+        {
+            float deadline = Time.time + gameSeconds, timeout = Time.realtimeSinceStartup + gameSeconds + 5;
+            while (Time.time < deadline && Time.realtimeSinceStartup < timeout)
+            {
+                Assert.That(Get<bool>(session, "Finished"), Is.False, "An old or remote strike bypassed the fresh cabinet warning");
+                yield return null;
+            }
+            Assert.That(Get<bool>(session, "Finished"), Is.False);
+            Assert.That(Time.time, Is.GreaterThanOrEqualTo(deadline), "The cabinet warning stalled or paused unexpectedly");
+        }
+        IEnumerator RiskyCabinetAttackReachesOriginalEntrance(Component cabinet, Component enemy)
+        {
+            var entrance = Get<Transform>(cabinet, "outside").position;
+            var start = enemy.transform.position;
+            Assert.That(CabinetFlatDistance(start, entrance), Is.GreaterThan(2.5f));
+            Assert.That((bool)Call(enemy, "CanSeePlayer"), Is.True, "This entry must be physically witnessed before hiding");
+            var route = new NavMeshPath();
+            Assert.That(enemy.GetComponent<NavMeshAgent>().CalculatePath(entrance, route), Is.True);
+            Assert.That(route.status, Is.EqualTo(NavMeshPathStatus.PathComplete), "Original cabinet entrance lacks a real approach route");
+            Set(player, "HidingRandomSample", (Func<float>)(() => .95f));
+            Set(enemy, "chaseSpeed", 3.5f);
+            Call(cabinet, "Use", player);
+            Assert.That(Get<bool>(player, "Hidden"), Is.True);
+            Assert.That(Get<object>(player, "HidingOutcome").ToString(), Is.EqualTo("Defeated"));
+            Assert.That(Get<bool>(enemy, "SawHiding"), Is.True);
+            Assert.That(Get<bool>(session, "Finished"), Is.False, "A risky roll cannot kill at entry before physical approach");
+            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False);
+            float timeout = Time.realtimeSinceStartup + 12;
+            while (Get<int>(enemy, "AttacksStarted") == 0 && Time.realtimeSinceStartup < timeout)
+            {
+                Assert.That(Get<bool>(session, "Finished"), Is.False, "Remote pursuit killed a hidden player before reaching the cabinet");
+                if (CabinetFlatDistance(enemy.transform.position, entrance) >= .85f)
+                    Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False, "Door warning started outside its physical reach");
+                yield return null;
+            }
+            Assert.That(Get<int>(enemy, "AttacksStarted"), Is.EqualTo(1), CabinetAttackDiagnostics(cabinet, enemy));
+            Assert.That(Get<bool>(enemy, "AttackActive"), Is.True);
+            Assert.That(CabinetFlatDistance(start, enemy.transform.position), Is.GreaterThan(1.5f), "Enemy never physically approached");
+            Assert.That(CabinetFlatDistance(enemy.transform.position, entrance), Is.LessThan(.85f));
+            Assert.That((bool)Call(RequireType("EnemyNavigation"), "SameActorFloor", enemy.GetComponent<NavMeshAgent>(),
+                entrance, Get<float>(enemy, "HomeFloorY")), Is.True);
+            Assert.That((bool)Call(RequireType("EnemyNavigation"), "ClearSight", enemy.transform.position + Vector3.up * 1.1f,
+                entrance + Vector3.up * 1.1f, null), Is.True);
+            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.True, "Arrival must give a cabinet door warning before capture");
+        }
 
         [UnityTest, Timeout(60000)]
         public IEnumerator QuietCabinetEntryNeverDrawsAndRejectsDuplicatePausedOrBlockedTransitions()
@@ -146,7 +199,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(60000)]
-        public IEnumerator MultipleOccludedChasersShareOneSurvivalRollAndOnlyANewEntryCanDrawDeath()
+        public IEnumerator MultipleOccludedChasersShareOneSurvivalRollAndFailedNewEntryCannotKillRemotely()
         {
             IsolateThreats(); Begin();
             yield return Wait(() => NavMesh.CalculateTriangulation().vertices.Length > 0, 5, "Missing real navigation");
@@ -178,12 +231,126 @@ namespace HappyToy.V2.CloudTests
             Call(cabinet, "Use", player); Assert.That(Get<bool>(player, "Hidden"), Is.False);
             Set(first, "state", "Chase"); Set(second, "state", "Chase");
             Call(cabinet, "Use", player);
-            Assert.That(Get<bool>(player, "Hidden"), Is.True, "Death selection must follow successful real entry");
+            Assert.That(Get<bool>(player, "Hidden"), Is.True, "Risk selection must follow successful real entry");
             Assert.That(Get<object>(player, "HidingOutcome").ToString(), Is.EqualTo("Defeated"));
-            Assert.That(Get<bool>(session, "Finished"), Is.True); Assert.That(Get<bool>(session, "Escaped"), Is.False);
+            Assert.That(Get<bool>(session, "Finished"), Is.False, "The failed roll cannot defeat a player whose entry was unseen");
+            Assert.That(Get<bool>(first, "SawHiding"), Is.False); Assert.That(Get<bool>(second, "SawHiding"), Is.False);
             Assert.That(draws, Is.EqualTo(2)); Assert.That(Get<int>(player, "HidingEntryId"), Is.EqualTo(2));
             Assert.That(Get<int>(player, "HidingRolls"), Is.EqualTo(2));
-            Assert.That(Get<string>(session, "DefeatHint"), Does.Contain("생존 75% / 사망 25%"));
+            yield return CabinetMustStayAliveFor(1.8f);
+            Assert.That(Get<int>(first, "AttacksStarted"), Is.Zero); Assert.That(Get<int>(second, "AttacksStarted"), Is.Zero);
+            Assert.That(draws, Is.EqualTo(2), "An unseen failed entry was rerolled during hidden frames");
+        }
+
+        [UnityTest, Timeout(60000)]
+        public IEnumerator WitnessedFailedCabinetEntryRequiresActualApproachAndFullDoorWarning()
+        {
+            IsolateThreats(); Begin();
+            yield return Wait(() => NavMesh.CalculateTriangulation().vertices.Length > 0, 5, "Missing real navigation");
+            ((Behaviour)player).enabled = false;
+            var cabinet = SchoolCabinet(); PlacePlayer(Get<Transform>(cabinet, "outside").position);
+            var enemy = CabinetChaser(cabinet);
+            yield return RiskyCabinetAttackReachesOriginalEntrance(cabinet, enemy);
+            Call(shell, "Pause");
+            float pausedProgress = Get<float>(enemy, "AttackWindup"), pausedTime = Time.time;
+            var pausedPosition = enemy.transform.position;
+            yield return Delay(.25f);
+            Assert.That(Get<float>(enemy, "AttackWindup"), Is.EqualTo(pausedProgress));
+            Assert.That(Time.time, Is.EqualTo(pausedTime));
+            Assert.That(enemy.transform.position, Is.EqualTo(pausedPosition));
+            Assert.That(Get<bool>(session, "Finished"), Is.False);
+            Call(shell, "Resume");
+            float began = Time.time;
+            float remainingWarning = .75f * (1 - Get<float>(enemy, "AttackWindup"));
+            Assert.That(remainingWarning, Is.GreaterThan(.5f), "Physical arrival did not begin a fresh complete warning");
+            yield return CabinetMustStayAliveFor(remainingWarning - .1f);
+            yield return Wait(() => Get<bool>(session, "Finished"), 3, "Reached and witnessed cabinet never resolved its actual strike",
+                () => CabinetAttackDiagnostics(cabinet, enemy));
+            Assert.That(Time.time - began, Is.GreaterThanOrEqualTo(remainingWarning - .06f), "Capture shortened the actual .75 second warning");
+            Assert.That(Get<bool>(session, "Escaped"), Is.False);
+            Assert.That(Get<string>(session, "DefeatHint"), Does.Contain("은신 성공 75% / 발각 위험 25%"));
+            Assert.That(Get<int>(player, "HidingRolls"), Is.EqualTo(1));
+        }
+
+        [UnityTest, Timeout(60000)]
+        public IEnumerator WitnessedCabinetStrikeCannotCommitThroughNewOpaqueCover()
+        {
+            IsolateThreats(); Begin();
+            yield return Wait(() => NavMesh.CalculateTriangulation().vertices.Length > 0, 5, "Missing real navigation");
+            ((Behaviour)player).enabled = false;
+            var cabinet = SchoolCabinet(); var entrance = Get<Transform>(cabinet, "outside").position;
+            PlacePlayer(entrance); var enemy = CabinetChaser(cabinet);
+            yield return RiskyCabinetAttackReachesOriginalEntrance(cabinet, enemy);
+            // Explicit dynamic cover fixture added after genuine approach. It tests
+            // the strike's live sight recheck; it never alters authored cabinet geometry.
+            var cover = Cube("CloudQA cabinet strike occlusion", Vector3.Lerp(enemy.transform.position, entrance, .5f) + Vector3.up * 1.1f,
+                new Vector3(2, 2.2f, .15f));
+            var direction = entrance - enemy.transform.position; direction.y = 0;
+            cover.transform.rotation = Quaternion.LookRotation(direction); Physics.SyncTransforms();
+            Assert.That((bool)Call(RequireType("EnemyNavigation"), "ClearSight", enemy.transform.position + Vector3.up * 1.1f,
+                entrance + Vector3.up * 1.1f, null), Is.False);
+            yield return CabinetMustStayAliveFor(1.05f);
+            Assert.That(Get<bool>(player, "Hidden"), Is.True);
+            Assert.That(Get<int>(enemy, "AttacksStarted"), Is.EqualTo(1));
+            Assert.That(Get<float>(enemy, "AttackRecovery"), Is.GreaterThan(0), "Covered strike never reached its real impact/recovery frame");
+        }
+
+        [UnityTest, Timeout(60000)]
+        public IEnumerator LeavingAndReenteringSameCabinetCannotInheritPreviousDoorStrike()
+        {
+            IsolateThreats(); Begin();
+            yield return Wait(() => NavMesh.CalculateTriangulation().vertices.Length > 0, 5, "Missing real navigation");
+            ((Behaviour)player).enabled = false;
+            var cabinet = SchoolCabinet(); PlacePlayer(Get<Transform>(cabinet, "outside").position);
+            var enemy = CabinetChaser(cabinet);
+            yield return RiskyCabinetAttackReachesOriginalEntrance(cabinet, enemy);
+            yield return Wait(() => Get<float>(enemy, "AttackWindup") > .65f, 3, "Original cabinet strike never advanced to late windup");
+            Assert.That(Get<bool>(session, "Finished"), Is.False);
+            int firstEntry = Get<int>(player, "HidingEntryId");
+            Assert.That(CabinetExitBlockers(cabinet), Is.Empty, "Original cabinet exit is obstructed: " + CabinetExitBlockerDetails(cabinet));
+            Call(cabinet, "Use", player);
+            Assert.That(Get<bool>(player, "Hidden"), Is.False);
+            Assert.That((bool)Call(enemy, "CanSeePlayer"), Is.True, "Fresh same-cabinet entry must also be witnessed");
+            Call(cabinet, "Use", player);
+            Assert.That(Get<int>(player, "HidingEntryId"), Is.EqualTo(firstEntry + 1));
+            Assert.That(Get<bool>(enemy, "AttackActive"), Is.False, "Fresh entry retained the previous cabinet's nearly resolved strike");
+            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False, "Fresh entry inherited the previous door warning");
+            Assert.That(Get<bool>(session, "Finished"), Is.False);
+            yield return Wait(() => Get<int>(enemy, "AttacksStarted") == 2, 3, "New witnessed entry did not start its own physical door warning");
+            Assert.That(Get<float>(enemy, "AttackWindup"), Is.LessThan(.2f), "New entry began with an advanced strike clock");
+            yield return CabinetMustStayAliveFor(.45f);
+            Assert.That(Get<int>(player, "HidingRolls"), Is.EqualTo(2));
+            yield return Wait(() => Get<bool>(session, "Finished"), 3, "New valid cabinet attack failed to complete");
+        }
+
+        [UnityTest, Timeout(60000)]
+        public IEnumerator CabinetEntryCancelsPendingVisibleBodyStrikeAndStartsFreshDoorWarning()
+        {
+            IsolateThreats(); Begin();
+            yield return Wait(() => NavMesh.CalculateTriangulation().vertices.Length > 0, 5, "Missing real navigation");
+            ((Behaviour)player).enabled = false;
+            var cabinet = SchoolCabinet(); var entrance = Get<Transform>(cabinet, "outside").position;
+            var inside = Get<Transform>(cabinet, "inside").position;
+            var outward = entrance - inside; outward.y = 0; outward.Normalize();
+            PlacePlayer(entrance);
+            Assert.That(NavMesh.SamplePosition(entrance + outward * .7f, out var anchor, .2f, NavMesh.AllAreas), Is.True);
+            Assert.That(CabinetFlatDistance(anchor.position, entrance), Is.LessThan(.85f));
+            var enemy = StalkerAt(anchor.position); Set(enemy, "state", "Chase");
+            enemy.transform.rotation = Quaternion.LookRotation(entrance - anchor.position); Physics.SyncTransforms();
+            yield return Wait(() => Get<int>(enemy, "AttacksStarted") == 1 && Get<float>(enemy, "AttackWindup") > .65f,
+                3, "Nearby visible-body strike did not reach late windup");
+            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.False);
+            Assert.That(Get<bool>(session, "Finished"), Is.False);
+            Set(player, "HidingRandomSample", (Func<float>)(() => .95f));
+            Call(cabinet, "Use", player);
+            Assert.That(Get<bool>(player, "Hidden"), Is.True);
+            Assert.That(Get<bool>(enemy, "SawHiding"), Is.True);
+            Assert.That(Get<bool>(enemy, "AttackActive"), Is.False, "Visible-body attack was carried inside the cabinet");
+            Assert.That(Get<bool>(session, "Finished"), Is.False);
+            yield return Wait(() => Get<int>(enemy, "AttacksStarted") == 2, 3, "Physical cabinet approach did not start a fresh warning");
+            Assert.That(Get<bool>(player, "HidingThreatCueActive"), Is.True);
+            yield return CabinetMustStayAliveFor(.45f);
+            Assert.That(Get<int>(player, "HidingRolls"), Is.EqualTo(1));
         }
 
         [UnityTest, Timeout(120000)]

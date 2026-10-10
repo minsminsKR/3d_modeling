@@ -230,8 +230,9 @@ namespace HappyToy.V2
             var stalkers = FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None);
             bool pursued = IsPursuedForHiding(stalkers);
             hidingDecision.Resolve(hidingDecision.EntryId + 1, pursued, HidingRandomSample ?? (() => Random.value));
-            foreach (var stalker in stalkers) stalker.ObserveHiding(exit);
-            if (warnedHidingPlace != place) { warnedHidingPlace = null; hidingThreatUntil = 0; }
+            foreach (var stalker in stalkers)
+                if (stalker.player == this) stalker.ObserveHiding(exit);
+            warnedHidingPlace = null; hidingThreatUntil = 0;
             hidingPlace = place; hideExit = exit; Hidden = true; Running = false;
             FootstepNoiseRemaining = FootstepNoiseRadius = 0;
             moveDirection = Vector3.zero; sprintRequested = false; ActualSpeed = 0;
@@ -256,8 +257,8 @@ namespace HappyToy.V2
             }
             GameSession.Current.NoteChapterAction(ChapterAction.HidingEntered);
             Feedback.PlayHide(true);
-            if (HidingOutcome == CabinetHidingOutcome.Defeated)
-                GameSession.Current.TryDefeat("추격 중 캐비닛 은신", CabinetHidingRules.RiskExplanation);
+            // A failed entry draw permits a witnessed cabinet attack; it is never
+            // damage. The pursuer must reach this entrance and finish its warning.
         }
         bool IsPursuedForHiding(StalkerBrain[] stalkers)
         {
