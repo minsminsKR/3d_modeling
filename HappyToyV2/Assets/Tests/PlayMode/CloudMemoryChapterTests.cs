@@ -28,7 +28,7 @@ namespace HappyToy.V2.CloudTests
             // Isolate the gaze/light rule, keeping the production mannequin and navigation.
             Get<Component>(chapter,"Cyclopse").gameObject.SetActive(false);((Behaviour)player).enabled=false;
             var mannequin=Get<Component>(chapter,"Mannequin");var camera=Get<Camera>(player,"eyes");var light=Get<Light>(player,"flashlight");
-            PlacePlayer(mannequin.transform.position+Vector3.forward*4);light.enabled=true;
+            PlacePlayer(new Vector3(13.8f,.03f,.1f));light.enabled=true;
             camera.transform.rotation=Quaternion.LookRotation(mannequin.transform.position+Vector3.up*1.25f-camera.transform.position);
             yield return Wait(()=>Get<bool>(mannequin,"Released"),5,"Second-memory mannequin never finished its first sight turn");
             yield return ChapterAwaitAppearance();
@@ -63,21 +63,22 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(actor,"Triggered"),Is.False);Assert.That(spot.enabled,Is.True);Assert.That(torch.enabled,Is.True);
             Assert.That(eye.transform.position,Is.EqualTo(originalEye));Assert.That(Quaternion.Angle(eye.transform.rotation,originalView),Is.LessThan(.01f));
             Assert.That(eye.fieldOfView,Is.EqualTo(fov));
-            PlacePlayer(new Vector3(13.8f,.03f,.1f));eye.transform.rotation=Quaternion.LookRotation(Vector3.forward);
+            PlacePlayer(new Vector3(13.8f,.03f,4));eye.transform.rotation=Quaternion.LookRotation(Vector3.forward);
             yield return Delay(.15f);Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);Assert.That(Get<bool>(actor,"Triggered"),Is.False);
             var blocker=Cube("Explicit school mannequin occlusion control",new Vector3(13.8f,1.5f,-3.65f),new Vector3(3.15f,3,.3f));
+            PlacePlayer(new Vector3(13.8f,.03f,.1f));
             eye.transform.rotation=Quaternion.LookRotation(Vector3.back);Physics.SyncTransforms();yield return Delay(.15f);
             Assert.That((bool)Call(actor,"FirstSightVisibleTo",eye),Is.False);Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);
             PlacePlayer(new Vector3(13.8f,.03f,5.8f));blocker.SetActive(false);Object.Destroy(blocker);
             eye.transform.rotation=Quaternion.LookRotation(Vector3.back);spot.enabled=false;
-            PlacePlayer(new Vector3(13.8f,.03f,4));eye.transform.rotation=Quaternion.LookRotation(Vector3.back);
+            PlacePlayer(new Vector3(13.8f,.03f,.1f));eye.transform.rotation=Quaternion.LookRotation(Vector3.back);
             yield return Delay(.15f);Assert.That(Get<bool>(actor,"Triggered"),Is.False);Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);
             Assert.That((bool)Call(actor,"FirstSightVisibleTo",eye),Is.True,"The unlit control must retain the same real sightline");
             var feet=player.transform.position;var seenEye=eye.transform.position;var seenView=eye.transform.rotation;
             spot.enabled=true;yield return Wait(()=>Get<bool>(shots,"CameraOwned"),2,"Visible lit mannequin never began its actual-view zoom");
             Assert.That(Get<bool>(actor,"Triggered"),Is.True);Assert.That(((Behaviour)actor).enabled,Is.True);
             Assert.That(Vector3.Distance(seenEye,eye.transform.position),Is.LessThan(.01f));
-            yield return Delay(1.15f);Assert.That(eye.fieldOfView,Is.EqualTo(expectedZoomFov).Within(.2f));
+            yield return Delay(1.7f);Assert.That(eye.fieldOfView,Is.EqualTo(expectedZoomFov).Within(.2f));
             Assert.That(Vector3.Distance(seenEye,eye.transform.position),Is.LessThan(.01f));Assert.That(torch.enabled,Is.True);
             Call(shell,"Pause");float elapsed=Get<float>(shots,"ShotElapsed"),turn=Get<float>(actor,"IntroElapsed");yield return Delay(.2f);
             Assert.That(Get<float>(shots,"ShotElapsed"),Is.EqualTo(elapsed));Assert.That(Get<float>(actor,"IntroElapsed"),Is.EqualTo(turn));Call(shell,"Resume");
@@ -88,13 +89,69 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Quaternion.Angle(seenView,eye.transform.rotation),Is.LessThan(.01f));Assert.That(eye.fieldOfView,Is.EqualTo(fov).Within(.01f));
             Assert.That(Get<bool>(player,"Paused"),Is.False);Assert.That(torch.enabled,Is.True);
         }
+
+        [UnityTest, Timeout(60000)]
+        public IEnumerator ChapterMannequinWaitsForTheJunctionCenterBeforeTurningFromBothHallApproaches()
+        {
+            Call(shell,"BeginChapter");yield return null;((Behaviour)player).enabled=false;
+            var chapter=Get<Component>(session,"Chapter");var shots=Get<Component>(chapter,"FirstAppearances");
+            Call(shots,"RestoreProgress",1);var memories=Get<Component[]>(chapter,"Memories");
+            Call(memories[0],"Use",player);Call(memories[1],"Use",player);
+            foreach(var brain in Components("StalkerBrain"))brain.gameObject.SetActive(false);
+            var actor=Get<Component>(chapter,"Mannequin");var eye=Get<Camera>(player,"eyes");
+            // These are genuine connected main/cross corridor approaches. A
+            // recognisable glimpse or being within the old 12m range is not arrival.
+            foreach(var at in new[]{new Vector3(11.7f,.03f,0),new Vector3(13.8f,.03f,2.1f),new Vector3(13.8f,.03f,-2.1f)})
+            {
+                Assert.That(NavMesh.SamplePosition(at,out var supported,.35f,NavMesh.AllAreas),Is.True,"Approach has no actual school floor: "+at);
+                Assert.That(Vector3.Distance(at,supported.position),Is.LessThan(.35f));
+                PlacePlayer(at);eye.transform.rotation=Quaternion.LookRotation(actor.transform.position+Vector3.up*1.65f-eye.transform.position);
+                Physics.SyncTransforms();yield return Delay(.12f);
+                Assert.That(Get<bool>(shots,"PlayerAtMannequinJunction"),Is.False);
+                Assert.That(Get<bool>(shots,"CameraOwned"),Is.False,"An approach corridor stole the camera before junction-center arrival: "+at);
+                Assert.That(Get<bool>(actor,"Triggered"),Is.False);
+            }
+            var blocker=Cube("Junction target clearance regression wall",new Vector3(13.8f,1.5f,-3.65f),new Vector3(3.15f,3,.3f));
+            PlacePlayer(new Vector3(13.8f,.03f,.1f));eye.transform.rotation=Quaternion.LookRotation(Vector3.right);
+            Physics.SyncTransforms();yield return Delay(.15f);
+            Assert.That(Get<bool>(shots,"PlayerAtMannequinJunction"),Is.True);
+            Assert.That((bool)Call(shots,"CanFrameMannequinForReveal"),Is.False);
+            Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);Assert.That(Get<bool>(actor,"Triggered"),Is.False);
+            var feet=player.transform.position;var originalEye=eye.transform.position;var originalView=eye.transform.rotation;float originalFov=eye.fieldOfView;
+            Assert.That((bool)Call(actor,"FirstSightVisibleTo",eye),Is.False,"The crossing-arrival control must actually face away from the mannequin");
+            blocker.SetActive(false);Object.Destroy(blocker);Physics.SyncTransforms();
+            yield return Wait(()=>Get<bool>(shots,"CameraOwned"),2,"Clear junction-center arrival did not turn the player's own view toward the mannequin");
+            Assert.That(Get<bool>(shots,"MannequinRevealAtJunction"),Is.True);
+            Assert.That(Get<bool>(shots,"MannequinRevealWasInView"),Is.False);
+            Assert.That(Get<bool>(shots,"MannequinRevealHadClearFraming"),Is.True);
+            Assert.That(Vector3.Distance(Get<Vector3>(shots,"MannequinRevealPlayerPosition"),feet),Is.LessThan(.01f));
+            bool observedZoom=false;float returnDeadline=Time.realtimeSinceStartup+6;
+            while(Get<bool>(shots,"CameraOwned")&&Time.realtimeSinceStartup<returnDeadline)
+            {
+                Assert.That(Vector3.Distance(originalEye,eye.transform.position),Is.LessThan(.015f),"The junction shot left the player's eye");
+                Assert.That(Vector3.Distance(feet,player.transform.position),Is.LessThan(.015f));
+                Assert.That((bool)Call(actor,"FirstSightClearFrom",eye),Is.True,"A real wall or opaque NPC blocked head/torso during the camera shot");
+                if(Get<float>(shots,"ShotElapsed")>1.65f && Get<float>(shots,"ShotElapsed")<2.6f)
+                {observedZoom=true;Assert.That((bool)Call(actor,"FirstSightVisibleTo",eye),Is.True,"The completed zoom framed a wall instead of the lit mannequin");}
+                yield return null;
+            }
+            Assert.That(Get<bool>(shots,"CameraOwned"),Is.False,"Junction camera failed to return within its bounded sequence");
+            Assert.That(observedZoom,Is.True);Assert.That(Get<bool>(shots,"MannequinShown"),Is.True);
+            Assert.That(Get<bool>(actor,"Released"),Is.True);Assert.That(Get<int>(actor,"AttacksStarted"),Is.Zero);
+            Assert.That(Quaternion.Angle(originalView,eye.transform.rotation),Is.LessThan(.2f));
+            Assert.That(eye.fieldOfView,Is.EqualTo(originalFov).Within(.1f));Assert.That(Get<bool>(player,"Paused"),Is.False);
+            Call(shell,"Pause");Call(shots,"RestoreProgress",2,false);
+            Assert.That(Get<bool>(shots,"MannequinArmed"),Is.True);Assert.That(Get<bool>(shots,"MannequinShown"),Is.False);
+            Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);Call(shots,"RestoreProgress",2,true);
+            Assert.That(Get<bool>(shots,"MannequinShown"),Is.True);Assert.That(Get<bool>(shots,"CameraOwned"),Is.False);
+        }
         [UnityTest, Timeout(40000)]
         public IEnumerator ChapterMannequinNeverTakesTheCameraWhileThePlayerIsHidden()
         {
             Call(shell,"BeginChapter");yield return null;
             var chapter=Get<Component>(session,"Chapter");var shots=Get<Component>(chapter,"FirstAppearances");Call(shots,"RestoreProgress",1);
             var memories=Get<Component[]>(chapter,"Memories");Call(memories[0],"Use",player);Call(memories[1],"Use",player);
-            ((Behaviour)player).enabled=false;PlacePlayer(new Vector3(13.8f,.03f,4));
+            ((Behaviour)player).enabled=false;PlacePlayer(new Vector3(13.8f,.03f,.1f));
             // A view-compatible public hiding-state fixture tests this policy
             // independently of cabinet walls. It is not a cabinet-entry/art assay.
             var fixture=new GameObject("Explicit school hidden-view guard fixture");var place=fixture.AddComponent(RequireType("Interactable"));

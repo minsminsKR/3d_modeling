@@ -104,6 +104,18 @@ namespace HappyToy.V2
             }
             return false;
         }
+        public bool FirstSightClearFrom(Camera camera)
+        {
+            if(!camera || !gameObject.activeInHierarchy || !visual || !visual.gameObject.activeInHierarchy)return false;
+            // The chapter's junction event can turn the camera toward this actor.
+            // Require a recognisable unobstructed head and torso before that turn.
+            for(int i=0;i<3;i++)
+            {
+                var point=transform.TransformPoint(sightPoints[i]);
+                if(!Clear(camera,point) || MonsterBodyCoversReveal(camera,point))return false;
+            }
+            return true;
+        }
         void CaptureDisplayLight()
         {
             if (lightCaptured || !displayLight) return;
@@ -178,8 +190,8 @@ namespace HappyToy.V2
                 Stop();
                 var schoolShot=session.ChapterMode?session.Chapter.FirstAppearances:null;
                 float firstSightRange=schoolShot?SchoolFirstAppearances.MannequinRevealRange:8;
-                if (session.EncounterStep < activationStep || player.Hidden || !sameFloor || delta.magnitude > firstSightRange || !Observed ||
-                    schoolShot && !schoolShot.CanSeeMannequinForReveal()) return;
+                if (session.EncounterStep < activationStep || player.Hidden || !sameFloor || delta.magnitude > firstSightRange ||
+                    (schoolShot ? !schoolShot.CanSeeMannequinForReveal() : !Observed)) return;
                 Triggered = true; startTurn = visual.localRotation; CaptureDisplayLight();
                 if (!visualPoseCaptured) { originalVisualRotation = startTurn; visualPoseCaptured = true; }
                 var toward = delta; toward.y = 0;

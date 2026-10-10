@@ -11,6 +11,8 @@ namespace HappyToy.V2
     public sealed class SchoolFirstAppearances : MonoBehaviour
     {
         public static readonly Vector3 MannequinStation = new Vector3(13.8f, 0, -7.4f);
+        public static readonly Vector3 MannequinJunctionCenter = new Vector3(13.8f, 0, 0);
+        public const float MannequinJunctionRadius = .9f;
         public bool CameraOwned { get; private set; }
         public bool CyclopseShown { get; private set; }
         public bool MannequinShown { get; private set; }
@@ -18,6 +20,20 @@ namespace HappyToy.V2
         public Vector3 MannequinRevealEye { get; private set; }
         public Vector3 MannequinRevealForward { get; private set; }
         public float MannequinRevealPlayerSpeed { get; private set; }
+        public Vector3 MannequinRevealPlayerPosition { get; private set; }
+        public bool MannequinRevealAtJunction { get; private set; }
+        public bool MannequinRevealWasInView { get; private set; }
+        public bool MannequinRevealHadClearFraming { get; private set; }
+        public bool PlayerAtMannequinJunction
+        {
+            get
+            {
+                if(!session || !session.player)return false;
+                var delta=session.player.transform.position-MannequinJunctionCenter;
+                if(Mathf.Abs(delta.y)>.5f)return false;
+                delta.y=0;return delta.sqrMagnitude<=MannequinJunctionRadius*MannequinJunctionRadius;
+            }
+        }
         public Vector3 StoredCameraLocalPosition => cameraPosition;
         public Quaternion StoredCameraLocalRotation => cameraRotation;
         public float StoredCameraFov => cameraFov;
@@ -173,6 +189,12 @@ namespace HappyToy.V2
             MannequinSpotlight.enabled=true;
             if(bulb)bulb.enabled=true;
         }
+        public bool CanFrameMannequinForReveal()
+        {
+            var actor=chapter?chapter.Mannequin:null;
+            return actor && camera && actor.FirstSightClearFrom(camera) &&
+                EnemyNavigation.ClearSight(camera.transform.position,actor.transform.position+Vector3.up*1.65f);
+        }
         public bool CanSeeMannequinForReveal()
         {
             var actor=chapter?chapter.Mannequin:null;
@@ -181,12 +203,17 @@ namespace HappyToy.V2
                 MannequinSpotlight && MannequinSpotlight.isActiveAndEnabled && MannequinSpotlight.intensity>.01f &&
                 EnemyNavigation.SameFloor(session.player.transform.position,actor.transform.position.y) &&
                 Vector3.Distance(session.player.transform.position,actor.transform.position)<=MannequinRevealRange &&
-                actor.FirstSightVisibleTo(camera);
+                (MannequinShown ? actor.FirstSightVisibleTo(camera) :
+                    PlayerAtMannequinJunction && CanFrameMannequinForReveal());
         }
         IEnumerator MannequinShot()
         {
             MannequinRevealEye=camera.transform.position;MannequinRevealForward=camera.transform.forward;
             MannequinRevealPlayerSpeed=session.player.ActualSpeed;
+            MannequinRevealPlayerPosition=session.player.transform.position;
+            MannequinRevealAtJunction=PlayerAtMannequinJunction;
+            MannequinRevealWasInView=chapter.Mannequin.FirstSightVisibleTo(camera);
+            MannequinRevealHadClearFraming=CanFrameMannequinForReveal();
             Begin(false);
             while(ShotElapsed<2.8f)yield return null;
             MannequinShown=true;
@@ -203,23 +230,28 @@ namespace HappyToy.V2
             if(!camera)return;
             var eye=shotEye;var target=shotTarget;
             if(cyclopseShot && chapter.Cyclopse.gameObject.activeSelf &&
-                (CyclopseIntro.Phase=="emerge" || CyclopseIntro.Phase=="roar" ||
+                (CyclopseIntro.Phase=="emerge" || CyclopseIntro.Phase=="stumble" ||
+                CyclopseIntro.Phase=="fallen" || CyclopseIntro.Phase=="getUp" || CyclopseIntro.Phase=="roar" ||
                 CyclopseIntro.Phase=="turnAway" || CyclopseIntro.Phase=="pass" || CyclopseIntro.Completed))
             {
                 var motion=chapter.Cyclopse.GetComponent<V1MonsterMotion>();
                 float height=motion?motion.PresentationHeight:2.38f;
-                target=chapter.Cyclopse.transform.position+Vector3.up*(height*.68f);
+                target=motion && motion.IntroPoseActive ? motion.IntroHeadPosition :
+                    chapter.Cyclopse.transform.position+Vector3.up*(height*.68f);
             }
             var rotation=Quaternion.LookRotation(target-eye);
-            float zoom=Mathf.SmoothStep(0,1,Mathf.Clamp01(ShotElapsed/(cyclopseShot?1.35f:.95f)));
+            // At the real junction, first turn toward the clear corridor with the
+            // normal wide view. Zoom after that turn rather than magnifying a wall.
+            float zoom=Mathf.SmoothStep(0,1,Mathf.Clamp01(cyclopseShot?ShotElapsed/1.35f:(ShotElapsed-.55f)/.95f));
             float zoomFov=cyclopseShot?(session.Shell.ReducedMotion?48:24):(session.Shell.ReducedMotion?52:32);
             float fov=Mathf.Lerp(cameraFov,Mathf.Min(cameraFov,zoomFov),zoom);
             if(!cyclopseShot)
             {
-                // The actor is already visible. Ease a small reframing from the
-                // actual view; never cut to the remote display corridor.
+                // Junction arrival may face across the hallway. Turn from that
+                // actual view without relocating the player's eye through walls.
                 var original=camera.transform.parent.rotation*cameraRotation;
-                rotation=Quaternion.Slerp(original,rotation,zoom);
+                float turn=Mathf.SmoothStep(0,1,Mathf.Clamp01(ShotElapsed/.55f));
+                rotation=Quaternion.Slerp(original,rotation,turn);
             }
             if(returning)
             {

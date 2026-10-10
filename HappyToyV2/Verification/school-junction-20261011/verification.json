@@ -1,0 +1,254 @@
+{
+  "status": "SCHOOL_JUNCTION_VERIFICATION_PASS",
+  "scope": "Controlled first-memory Cyclopse walk/fall/get-up/glance/crossing with actual post-LateUpdate original-rig pose and floor measurements. Public second-memory arming, both hall approaches, unobstructed early glimpse and blocked junction controls, then actual-keyboard W walk east along the main corridor to the junction center while facing away from the mannequin. The camera turns and zooms from the same real player eye. Cyclopse is deactivated after its separate checks to isolate the mannequin assay. Natural pause/save/control-return checks; not complete chapter survival, human fear or hardware performance certification.",
+  "change": "Original Cyclops rig walks, falls, gets up, glances at the player and crosses to the opposite hall. The mannequin waits for the actual junction center and a clear head/torso view, then turns the real player camera before zooming and returning it.",
+  "playMode": {
+    "uniqueCasesPassed": 12,
+    "passedExecutions": 17,
+    "failedExecutions": 0,
+    "runs": [
+      {
+        "artifact": "school-junction-playmode.xml",
+        "passed": 11,
+        "failed": 0,
+        "durationSeconds": 264.0256337,
+        "cases": [
+          {
+            "name": "AdvancedDoorTraversalSchoolMannequinHonorsGazeLightPauseAndRestoresRealPassage",
+            "result": "Passed",
+            "durationSeconds": 47.653152
+          },
+          {
+            "name": "CandleSchoolMannequinStartsWarningDuringHarmlessFirstTurn",
+            "result": "Passed",
+            "durationSeconds": 17.39363
+          },
+          {
+            "name": "ChapterCyclopseFallsGetsUpBeforeLookingAndKeepsItsRealSkinGrounded",
+            "result": "Passed",
+            "durationSeconds": 23.762904
+          },
+          {
+            "name": "ChapterCyclopseGlancesThenPassesWithPauseAndSafeControlReturn",
+            "result": "Passed",
+            "durationSeconds": 29.311605
+          },
+          {
+            "name": "ChapterMannequinMovesOnlyWhenBothUnseenAndFlashlightOn",
+            "result": "Passed",
+            "durationSeconds": 29.873616
+          },
+          {
+            "name": "ChapterMannequinNeverTakesTheCameraWhileThePlayerIsHidden",
+            "result": "Passed",
+            "durationSeconds": 11.53306
+          },
+          {
+            "name": "ChapterMannequinWaitsForActualSightAndZoomsFromThePlayersOwnEyes",
+            "result": "Passed",
+            "durationSeconds": 17.298822
+          },
+          {
+            "name": "ChapterMannequinWaitsForTheJunctionCenterBeforeTurningFromBothHallApproaches",
+            "result": "Passed",
+            "durationSeconds": 15.544543
+          },
+          {
+            "name": "CyclopseWalksAnOccludedCornerWithPauseAndSingleRoar",
+            "result": "Passed",
+            "durationSeconds": 22.006145
+          },
+          {
+            "name": "MannequinRevealWaitsForAnOpaqueMonsterBodyWithoutAPhysicalCollider",
+            "result": "Passed",
+            "durationSeconds": 13.172177
+          },
+          {
+            "name": "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
+            "result": "Passed",
+            "durationSeconds": 35.084417
+          }
+        ]
+      },
+      {
+        "artifact": "school-junction-candle-playmode.xml",
+        "passed": 3,
+        "failed": 0,
+        "durationSeconds": 72.248906,
+        "cases": [
+          {
+            "name": "ChapterCyclopseFallsGetsUpBeforeLookingAndKeepsItsRealSkinGrounded",
+            "result": "Passed",
+            "durationSeconds": 28.980714
+          },
+          {
+            "name": "ChapterCyclopseGlancesThenPassesWithPauseAndSafeControlReturn",
+            "result": "Passed",
+            "durationSeconds": 25.658988
+          },
+          {
+            "name": "EnlargedMonstersKeepNavigationScaleAndGroundedAuthoredPose",
+            "result": "Passed",
+            "durationSeconds": 16.918284
+          }
+        ]
+      },
+      {
+        "artifact": "school-junction-final-playmode.xml",
+        "passed": 3,
+        "failed": 0,
+        "durationSeconds": 73.2494316,
+        "cases": [
+          {
+            "name": "ChapterCyclopseFallsGetsUpBeforeLookingAndKeepsItsRealSkinGrounded",
+            "result": "Passed",
+            "durationSeconds": 24.9964
+          },
+          {
+            "name": "ChapterCyclopseGlancesThenPassesWithPauseAndSafeControlReturn",
+            "result": "Passed",
+            "durationSeconds": 25.695847
+          },
+          {
+            "name": "EnlargedMonstersKeepNavigationScaleAndGroundedAuthoredPose",
+            "result": "Passed",
+            "durationSeconds": 22.30898
+          }
+        ]
+      }
+    ],
+    "scope": "Focused quiet PlayMode runs. Earlier runs precede the final fall silhouette refinement; the final focused run rechecks real rig grounding, ordered event/pause/control return and unchanged enlarged monster poses."
+  },
+  "native": {
+    "status": "PASS",
+    "checks": {
+      "zoom": true,
+      "gradualEmergence": true,
+      "occludedStaging": true,
+      "inputBlocked": true,
+      "feetStayPut": true,
+      "pauseFreezes": true,
+      "cameraReturned": true,
+      "mannequinOtherCorridor": true,
+      "solitarySpotlight": true,
+      "mannequinStill": true,
+      "restoreSkipsShots": true,
+      "looksAtPlayer": true,
+      "turnsSideways": true,
+      "passesAcrossJunction": true,
+      "holdsZoom": true,
+      "noEarlyPursuit": true,
+      "pursuitGrace": true,
+      "mannequinArmedWithoutCamera": true,
+      "lookAwayDoesNotTrigger": true,
+      "wallDoesNotTrigger": true,
+      "unlitDoesNotTrigger": true,
+      "walkTriggersMannequin": true,
+      "mannequinZoom": true,
+      "mannequinEyeStaysLocal": true,
+      "mannequinFeetStayPut": true,
+      "torchPreserved": true,
+      "mannequinPauseFreezes": true,
+      "mannequinCameraReturned": true,
+      "mannequinControlReturned": true,
+      "pendingRestoreKeepsReveal": true,
+      "mannequinAuditPlayerReady": true,
+      "mannequinAuditKeyboardCurrent": true,
+      "mannequinAuditSawForwardInput": true,
+      "cyclopseFallThenRise": true,
+      "cyclopsePronePose": true,
+      "cyclopseProneTowardEye": true,
+      "cyclopseRealRig": true,
+      "cyclopseGrounded": true,
+      "cyclopseFallenPauseFreezes": true,
+      "cyclopseHeadRises": true,
+      "bothHallApproachesWait": true,
+      "supportedHallApproaches": true,
+      "clearGlimpseBeforeJunctionWaits": true,
+      "mannequinArrivalTurnsFromOffscreen": true,
+      "mannequinTriggeredAtJunction": true,
+      "mannequinCompleteFraming": true,
+      "mannequinZoomShowsBody": true,
+      "mannequinNoEarlyWalkTrigger": true
+    },
+    "requiredChecksPassed": 48,
+    "cyclopsePhaseOrder": [
+      "anticipation",
+      "emerge",
+      "stumble",
+      "fallen",
+      "getUp",
+      "roar",
+      "turnAway",
+      "pass",
+      "done"
+    ],
+    "cyclopseMaximumBodyPitchDegrees": 86.0,
+    "cyclopseMaximumBodyYawDegrees": 78.0,
+    "cyclopseMaximumGroundGapMetres": 0.0,
+    "cyclopseHeadRiseMetres": 0.8543981313705444,
+    "mannequinTriggerDistanceFromCenterMetres": 0.8600006103515625,
+    "mannequinWalkMetres": 2.3405332565307617,
+    "mannequinTriggerSpeedMetresPerSecond": 2.600003242492676,
+    "attacksDuringReveal": 0,
+    "watchedRevealStation": {
+      "x": 13.800000190734863,
+      "y": 0.05557022616267204,
+      "z": -7.400000095367432
+    },
+    "postControlPosition": {
+      "x": 13.752370834350586,
+      "y": 0.05415794625878334,
+      "z": -6.990171909332275
+    },
+    "postControlMoving": true,
+    "postControlObserved": false
+  },
+  "quietVerification": {
+    "sessionMuteVerified": true,
+    "currentProcessOnly": true,
+    "nativeRestoreSucceeded": true,
+    "preferenceRestoreSucceeded": true,
+    "listenerVolume": 0.0
+  },
+  "storage": "The native audit injects isolated-records under its own output before starting the chapter; it cannot consume or add attempts to the player's save slots.",
+  "restoreScope": "Native restore checks exercise chapter reveal progress restoration. Persisted school checkpoint round trips are covered by the focused PlayMode cases.",
+  "sourceCompleteness": {
+    "status": "PASS",
+    "requiredSourceCount": 3063,
+    "missingFromGit": [],
+    "unhydratedLfsFiles": [],
+    "scope": "Required local editable source files vs Git index; not a Unity build or clone execution test."
+  },
+  "build": {
+    "status": "GRAPHICS_BUILD_INPUTS_PASS",
+    "unityVersion": "6000.6.0f1",
+    "createdUtc": "2026-10-10T16:28:30.3013272Z",
+    "developmentBuild": false,
+    "inputCount": 2746,
+    "executableSha256": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d",
+    "compiledGameplaySha256": "79cefcf74ffbb80922d92dc756e665f86fc17898fff9cd1d2f4587d062e1dda7",
+    "buildInputsReportSha256": "c5b59f21a54c1a374cf65bf113c74394a37bebc34fd5d2d81385fec4eaa4266b"
+  },
+  "nativeVerifiedSourceSha256": {
+    "Assets/Scripts/CandleDanger.cs": "a63c764d835f680c7ae3796ce443ff7a4848c62cb4f9c00fbc77937d3c4ae1b2",
+    "Assets/Scripts/SchoolFirstAppearances.cs": "a76b10ad23bcd298b93e229e89a2cd22e4ae3338349a04bf2e5581d0ee37ee1c",
+    "Assets/Scripts/SchoolRevealAudit.cs": "4604c6e7ab00b43c7f2e71cbff3c9cb99d34124adeb9045a2f662b215b42a92e",
+    "Assets/Scripts/V1CyclopseIntro.cs": "a0aefd7dcf0f39d0ae01d2572710f41c3b18137c350c86aea3a0f70f8eacc1b9",
+    "Assets/Scripts/V1MonsterMotion.cs": "eb11786d308538c11bc20f9fd1ce4682ed42df69b2d450fe626d065b18e7fa0f",
+    "Assets/Scripts/WeepingAngelEncounter.cs": "75be14fea5dc64766ef77106d734ea173bfec81bec1e260003d2ffe916fcce1b",
+    "Assets/Tests/PlayMode/CloudAdvancedDoorTraversalTests.cs": "2284c9616b7316bd3761552bb92bf2495524dc071745a9088cd3b992222a2f35",
+    "Assets/Tests/PlayMode/CloudMemoryChapterTests.cs": "59185f22f7b512730e9ab642a66492e34dc1ecb6747fda142bcec3ae8897066d",
+    "Assets/Tests/PlayMode/CloudMonsterPresenceTests.cs": "4cec5a9d526c8579588c9fbf7a6ff8be2b34a45ab1f80d885feb1e8fb462bc4b",
+    "Assets/Tests/PlayMode/CloudPresentationMovementTests.cs": "b1f04a154f0b8f212d70f6b7b9c465bb7126b0294dc166b5d233ef3597f953c2"
+  },
+  "protectedSceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "renderedEvidence": {
+    "cyclopse-fallen.png": "f5c5afa58e8ab172c2518d417d763e2441273059818deb5d58a8fbd27010559b",
+    "cyclopse-getUp-upright.png": "45b7b484ba97faff900fce733ab182da1636cd8f8da9d463b10d68b14e4d3bde",
+    "cyclopse-revealed.png": "1de3a092a80edcdb050e04ea530e2f02a655d1661959d03495f75bc1dc0e6de4",
+    "cyclopse-stumble.png": "0c01b8a52be406fcc1f4e89129c9d1daca1f1b5532fc0ec89add6804756ccf07",
+    "mannequin-before-junction.png": "6ecdc43c9fc4209780cb81b0d627133eab133b2105c9837187372a75b6cb8238",
+    "mannequin-player-view-zoom.png": "451706a8af4462b0ca6b9c04d5f6ee9c38c5a877531a9b547034b3e99acbe217"
+  }
+}

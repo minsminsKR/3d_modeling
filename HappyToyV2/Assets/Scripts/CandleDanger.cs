@@ -172,7 +172,8 @@ namespace HappyToy.V2
             if (!appearances || !appearances.CyclopseIntro) return false;
             string phase = appearances.CyclopseIntro.Phase;
             return appearances.CyclopseGraceActive || appearances.CameraOwned &&
-                (phase == "emerge" || phase == "roar" || phase == "turnAway" || phase == "pass");
+                (phase == "emerge" || phase == "stumble" || phase == "fallen" || phase == "getUp" ||
+                phase == "roar" || phase == "turnAway" || phase == "pass");
         }
         bool MannequinShotPerceivable(GameSession session, WeepingAngelEncounter actor)
         {

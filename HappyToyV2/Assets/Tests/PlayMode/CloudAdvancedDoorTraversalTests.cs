@@ -52,6 +52,16 @@ namespace HappyToy.V2.CloudTests
             var other=Get<Component>(chapter,actorKind=="LanternMaskEncounter"?"Mannequin":"Mask"); other.gameObject.SetActive(false);
             var actor=Get<Component>(chapter,actorKind=="LanternMaskEncounter"?"Mask":"Mannequin");
             Assert.That(actor.gameObject.activeInHierarchy,Is.True,"Real chapter release did not activate the source actor");
+            if(actorKind=="WeepingAngelEncounter")
+            {
+                // The school shot is discovered only at the actual junction.
+                // Finish that public event before the separate door fixture.
+                PlacePlayer(new Vector3(13.8f,.03f,.1f));
+                IntroCamera.transform.rotation=Quaternion.LookRotation(actor.transform.position+Vector3.up*1.4f-IntroCamera.transform.position);
+                yield return Wait(()=>Get<bool>(actor,"Triggered"),2,"Junction view did not start the real school mannequin introduction");
+                yield return Wait(()=>!Get<bool>(appearances,"CameraOwned")&&Get<bool>(actor,"Released"),6,
+                    "Real school mannequin shot did not return before the door fixture");
+            }
             IntroPlace(actor.transform.position,actor.transform.position+Vector3.up*1.4f);
             float introRealStart=Time.realtimeSinceStartup,introGameStart=Time.time;
             yield return Wait(()=>Get<bool>(actor,actorKind=="LanternMaskEncounter"?"IntroCompleted":"Released"),5,

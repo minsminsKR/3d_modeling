@@ -252,6 +252,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(intro, "ActivationCount"), Is.EqualTo(1));
             Assert.That(Get<int>(intro, "RoarCount"), Is.EqualTo(1));
             Assert.That(Get<string>(intro, "Phase"), Is.EqualTo("done"));
+            Assert.That(Get<bool>(intro,"CrossCorridorOnly"),Is.False);
+            Assert.That(Get<bool>(intro,"StumbleStarted"),Is.False,"The school-only stumble changed the original corridor introduction");
             Debug.Log("HAPPYTOY_PRESENTATION_PASS intro: occluded activation, physical slow route and walk/footsteps, paused movement/roar, arrival before single roar, single normal-AI handoff; " + IntroDiagnostics());
         }
 

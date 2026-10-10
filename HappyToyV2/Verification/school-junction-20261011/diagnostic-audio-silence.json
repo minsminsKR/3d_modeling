@@ -1,0 +1,19 @@
+{
+    "diagnosticRequested": true,
+    "deviceSessionMuted": false,
+    "sessionMuteVerified": true,
+    "currentProcessOnly": true,
+    "stopRequested": true,
+    "workerJoined": true,
+    "nativeRestoreRequired": true,
+    "nativeRestoreAttempted": true,
+    "nativeRestoreSucceeded": true,
+    "preferenceRestoreSucceeded": true,
+    "matchedSessions": 1,
+    "restoredSessions": 1,
+    "listenerVolume": 0.0,
+    "failure": "",
+    "nativeRestoreFailure": "",
+    "preferenceRestoreFailure": "",
+    "scope": "Current-process Windows render-session mute/readback, downstream of Unity listener DSP; device-configuration change immediately gates listener gain to zero. Polling does not certify unobserved newly created sessions. An unavailable guard retains zero gain and cannot prove positive PCM; visual-only diagnostics may continue silent. Exit records live-session original-mute readback and seven preference keys. Ordinary play does not activate the guard."
+}

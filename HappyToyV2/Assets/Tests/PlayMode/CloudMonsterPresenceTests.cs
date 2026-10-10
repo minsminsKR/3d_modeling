@@ -44,6 +44,76 @@ namespace HappyToy.V2.CloudTests
         {yield return CandleSchoolFirstSightBeforeRelease("WeepingAngelEncounter");}
 
         [UnityTest, Timeout(60000)]
+        public IEnumerator ChapterCyclopseFallsGetsUpBeforeLookingAndKeepsItsRealSkinGrounded()
+        {
+            Call(shell,"BeginChapter");yield return null;
+            var chapter=Get<Component>(session,"Chapter");var shots=Get<Component>(chapter,"FirstAppearances");
+            var actor=Get<Component>(chapter,"Cyclopse");var motion=actor.GetComponent(RequireType("V1MonsterMotion"));
+            var intro=Get<Component>(shots,"CyclopseIntro");var feet=player.transform.position;
+            var phases=new System.Collections.Generic.List<string>();
+            float maximumPitch=0,maximumGroundGap=0,fallenHead=float.PositiveInfinity,recoveredHead=0;
+            bool sampledProne=false,sampledRise=false;Vector3 fallenRoot=Vector3.zero;
+            var recorder=new GameObject("CloudQA school real post-LateUpdate pose recorder").AddComponent<CloudReferenceLatePoseRecorder>();
+            recorder.Sample=()=>
+            {
+                if(!actor.gameObject.activeInHierarchy)return;
+                string phase=Get<string>(intro,"Phase");
+                if(phases.Count==0||phases[phases.Count-1]!=phase)phases.Add(phase);
+                if(phase=="stumble"||phase=="fallen"||phase=="getUp")
+                {
+                    Assert.That(((Behaviour)actor).enabled,Is.False);Assert.That(Get<int>(actor,"AttacksStarted"),Is.Zero);
+                    maximumPitch=Mathf.Max(maximumPitch,Get<float>(motion,"IntroBodyPitch"));
+                    maximumGroundGap=Mathf.Max(maximumGroundGap,Mathf.Abs(Get<float>(motion,"GroundGap")));
+                    Assert.That(actor.GetComponent<NavMeshAgent>().isStopped,Is.True);
+                    if(phase=="fallen")
+                    {
+                        sampledProne=true;fallenRoot=actor.transform.position;
+                        fallenHead=Mathf.Min(fallenHead,Get<Vector3>(motion,"IntroHeadPosition").y);
+                        Assert.That(Get<bool>(motion,"IntroPoseActive"),Is.True);
+                        Assert.That(Get<float>(motion,"IntroBodyPitch"),Is.GreaterThan(80));
+                        var towardEye=Get<Camera>(player,"eyes").transform.position-actor.transform.position;towardEye.y=0;
+                        Assert.That(Vector3.Dot(Get<Vector3>(motion,"IntroHeadPosition")-actor.transform.position,towardEye.normalized),
+                            Is.GreaterThan(.35f),"The prone head must fall into the visible main hall rather than behind its corner");
+                        Assert.That(CandleDangerPlayerSees(actor),Is.True,"The camera lost the actual fallen Cyclopse");
+                        Call(LightRun,"RefreshDanger");
+                        Assert.That(Get<float>(LightRun,"Danger"),Is.GreaterThanOrEqualTo(.45f),
+                            "Falling must not interrupt the warning for a visibly present Cyclopse");
+                    }
+                    if(phase=="getUp")sampledRise=true;
+                }
+                if(phase=="roar")recoveredHead=Mathf.Max(recoveredHead,Get<Vector3>(motion,"IntroHeadPosition").y);
+            };
+            try
+            {
+                Call(Get<Component[]>(chapter,"Memories")[0],"Use",player);
+                yield return Wait(()=>Get<string>(intro,"Phase")=="fallen"&&sampledProne,12,"Walking school Cyclopse never visibly fell on its actual skeleton");
+                Assert.That(recorder.Error,Is.Null);Assert.That(Get<bool>(motion,"IntroPoseRigAvailable"),Is.True);
+                Assert.That(Get<bool>(intro,"FallCompleted"),Is.True);
+                float posePitch=Get<float>(motion,"IntroBodyPitch"),poseYaw=Get<float>(motion,"IntroBodyYaw"),clock=Get<float>(intro,"StumbleElapsed");
+                var head=Get<Vector3>(motion,"IntroHeadPosition");Call(shell,"Pause");yield return Delay(.2f);
+                Assert.That(Get<string>(intro,"Phase"),Is.EqualTo("fallen"));Assert.That(actor.transform.position,Is.EqualTo(fallenRoot));
+                Assert.That(Get<float>(intro,"StumbleElapsed"),Is.EqualTo(clock));Assert.That(Get<float>(motion,"IntroBodyPitch"),Is.EqualTo(posePitch));
+                Assert.That(Get<float>(motion,"IntroBodyYaw"),Is.EqualTo(poseYaw));
+                Assert.That(Vector3.Distance(head,Get<Vector3>(motion,"IntroHeadPosition")),Is.LessThan(.001f));
+                Call(shell,"Resume");yield return Wait(()=>Get<string>(intro,"Phase")=="roar",4,"Cyclopse did not stand up before facing the player");
+                Assert.That(Get<bool>(intro,"GetUpCompleted"),Is.True);Assert.That(Get<bool>(motion,"IntroPoseActive"),Is.False);
+                Assert.That(Get<float>(motion,"IntroBodyYaw"),Is.Zero);
+                yield return null;
+                Assert.That(recorder.Error,Is.Null);Assert.That(sampledRise,Is.True);
+                Assert.That(maximumPitch,Is.GreaterThan(80));Assert.That(maximumGroundGap,Is.LessThan(.035f));
+                Assert.That(recoveredHead-fallenHead,Is.GreaterThan(.75f),"Actual posed head did not rise from the floor to its standing height");
+                yield return ChapterAwaitAppearance();Assert.That(recorder.Error,Is.Null);
+                var requested=new[]{"emerge","stumble","fallen","getUp","roar","turnAway","pass","done"};
+                int previous=-1;foreach(var phase in requested)
+                {int index=phases.IndexOf(phase);Assert.That(index,Is.GreaterThan(previous),"School appearance order: "+string.Join(",",phases));previous=index;}
+                Assert.That(Get<bool>(intro,"Completed"),Is.True);Assert.That(Get<bool>(intro,"PassCompleted"),Is.True);
+                Assert.That(Get<int>(actor,"AttacksStarted"),Is.Zero);Assert.That(((Behaviour)actor).enabled,Is.False);
+                Assert.That(Get<bool>(shots,"CyclopseGraceActive"),Is.True);Assert.That(Vector3.Distance(feet,player.transform.position),Is.LessThan(.05f));
+            }
+            finally {Object.Destroy(recorder.gameObject);}
+        }
+
+        [UnityTest, Timeout(60000)]
         public IEnumerator ChapterCyclopseGlancesThenPassesWithPauseAndSafeControlReturn()
         {
             Call(shell,"BeginChapter");yield return null;
@@ -54,7 +124,8 @@ namespace HappyToy.V2.CloudTests
             Vector3 playerAt=player.transform.position;var memories=Get<Component[]>(chapter,"Memories");
             Call(memories[0],"Use",player);
             var intro=Get<Component>(shots,"CyclopseIntro");
-            yield return Wait(()=>Get<string>(intro,"Phase")=="roar",10,"School Cyclopse never reached its glance");
+            yield return Wait(()=>Get<string>(intro,"Phase")=="roar",14,"School Cyclopse never finished falling/getting up before its glance");
+            Assert.That(Get<bool>(intro,"StumbleStarted")&&Get<bool>(intro,"FallCompleted")&&Get<bool>(intro,"GetUpCompleted"),Is.True);
             Assert.That(Get<bool>(intro,"CrossCorridorOnly"),Is.True);
             Assert.That(((Behaviour)actor).enabled,Is.False);
             Assert.That(Get<int>(actor,"AttacksStarted"),Is.Zero);
@@ -100,7 +171,7 @@ namespace HappyToy.V2.CloudTests
             var mannequin=Get<Component>(chapter,"Mannequin");
             Assert.That(Get<bool>(shots,"CameraOwned"),Is.False,"The ribbon must not cut to a different corridor");
             Assert.That(Get<bool>(shots,"MannequinArmed"),Is.True);
-            PlacePlayer(mannequin.transform.position+Vector3.forward*5);
+            PlacePlayer(new Vector3(13.8f,.03f,.1f));
             player.transform.rotation=Quaternion.Euler(0,180,0);
             camera.transform.rotation=Quaternion.LookRotation(mannequin.transform.position+Vector3.up*1.65f-camera.transform.position);
             var mannequinEye=camera.transform.position;

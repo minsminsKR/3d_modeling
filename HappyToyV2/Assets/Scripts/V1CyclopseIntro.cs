@@ -12,12 +12,18 @@ namespace HappyToy.V2
         public const float StagingWaitLimit = 8;
         public const float MinimumStagingDistance = 5;
         public const float CrossingSpeed = 1.3f;
-        // School first-memory shot: glance at the player and keep walking across
+        public const float StumbleDuration=.65f, FallenDuration=.45f, GetUpDuration=1.2f;
+        // School first-memory shot: stumble, stand, glance and keep walking across
         // the far junction. The original story reveal retains its authored route.
         public bool CrossCorridorOnly;
         public bool LookAtPlayerCompleted { get; private set; }
         public bool SideTurnCompleted { get; private set; }
         public bool PassCompleted { get; private set; }
+        public bool StumbleStarted { get; private set; }
+        public bool FallCompleted { get; private set; }
+        public bool GetUpCompleted { get; private set; }
+        public float StumbleElapsed { get; private set; }
+        public float MaximumBodyPitch { get; private set; }
         const float FloorY = 0, FloorDrift = .4f, ArrivalDistance = .2f;
         static readonly Vector3 AuthoredCorner = new Vector3(13.8f, 0, 0);
         static readonly Vector3 AuthoredReveal = new Vector3(10.6f, 0, 0);
@@ -46,6 +52,7 @@ namespace HappyToy.V2
         GameSession session;
         StalkerBrain actor;
         NavMeshAgent agent;
+        V1MonsterMotion motion;
         float previousSpeed, previousStoppingDistance;
         bool previousUpdateRotation;
         bool settingsOwned;
@@ -186,6 +193,7 @@ namespace HappyToy.V2
             var approach = SelectedCornerPosition - SelectedStagingPosition; approach.y = 0;
             brain.transform.rotation = Quaternion.LookRotation(approach);
             brain.gameObject.SetActive(true); ActivationCount++;
+            motion=brain.GetComponent<V1MonsterMotion>();
             if (!EnemyNavigation.Ready(agent))
             { ReleaseBlocked("Staged agent did not bind to NavMesh"); yield break; }
             previousSpeed = agent.speed; previousStoppingDistance = agent.stoppingDistance;
@@ -210,6 +218,11 @@ namespace HappyToy.V2
                 new[] { SelectedCornerPosition, SelectedRevealPosition })
             {
                 yield return WalkTo(destination);
+                if(Phase=="blocked" || Phase=="resolved")yield break;
+            }
+            if(CrossCorridorOnly)
+            {
+                yield return StumbleAndGetUp();
                 if(Phase=="blocked" || Phase=="resolved")yield break;
             }
             Phase = "roar"; EnemyNavigation.Stop(agent, true);
@@ -257,6 +270,42 @@ namespace HappyToy.V2
             }
             RestoreAgentSettings(); agent.isStopped = CrossCorridorOnly; brain.enabled = !CrossCorridorOnly;
             Phase = "done"; Completed = true; ReleaseVoice();
+        }
+        IEnumerator StumbleAndGetUp()
+        {
+            if(!motion || !motion.IntroPoseRigAvailable)
+            {ReleaseBlocked("Cyclopse stumble skeleton unavailable");yield break;}
+            EnemyNavigation.Stop(agent,true);agent.updateRotation=false;
+            StumbleStarted=true;
+            foreach(var stage in new[]{"stumble","fallen","getUp"})
+            {
+                Phase=stage;
+                float duration=stage=="stumble"?StumbleDuration:stage=="fallen"?FallenDuration:GetUpDuration;
+                for(float elapsed=0;elapsed<duration;)
+                {
+                    if(!SessionValid || !actor.gameObject.activeInHierarchy){Cancel();yield break;}
+                    if(!EnemyNavigation.Ready(agent) || !OnIntroFloor(actor.transform.position))
+                    {ReleaseBlocked("Stumbling agent lost its same-floor footing");yield break;}
+                    EnemyNavigation.Stop(agent,true);
+                    if(session.InputAllowed)
+                    {
+                        float step=Mathf.Min(Time.deltaTime,duration-elapsed);
+                        elapsed+=step;StumbleElapsed+=step;
+                        float progress=Mathf.Clamp01(elapsed/duration);
+                        float fall=stage=="stumble"?Mathf.SmoothStep(0,1,progress):
+                            stage=="fallen"?1:1-Mathf.SmoothStep(0,1,progress);
+                        float kneel=stage=="getUp"?Mathf.Sin(progress*Mathf.PI)*.8f:0;
+                        float brace=stage=="getUp"?1-Mathf.SmoothStep(0,1,progress):fall;
+                        float roll=stage=="stumble"?Mathf.Sin(progress*Mathf.PI)*-6:
+                            stage=="getUp"?Mathf.Sin(progress*Mathf.PI)*3:0;
+                        motion.SetIntroPose(fall,kneel,brace,roll);
+                        MaximumBodyPitch=Mathf.Max(MaximumBodyPitch,motion.IntroBodyPitch);
+                    }
+                    yield return null;
+                }
+                if(stage=="stumble")FallCompleted=true;
+            }
+            motion.ClearIntroPose();GetUpCompleted=true;
         }
         IEnumerator TurnTo(Vector3 direction,float duration)
         {
@@ -320,6 +369,7 @@ namespace HappyToy.V2
         void ReleaseBlocked(string reason)
         {
             FailureReason = reason; ReleaseVoice(); if (anticipation) anticipation.Stop();
+            if(motion)motion.ClearIntroPose();
             if (!SessionValid || !actor.gameObject.activeInHierarchy) { Cancel(); return; }
             // A newly blocked door/agent must not cause a visible teleport or a
             // false arrival/roar. Let ordinary AI recover from this exact position.
@@ -334,6 +384,7 @@ namespace HappyToy.V2
         {
             Phase = "resolved";
             ReleaseVoice(); if (anticipation) anticipation.Stop();
+            if(motion)motion.ClearIntroPose();
             EnemyNavigation.Stop(agent, true); RestoreAgentSettings();
             if (actor) { actor.enabled = false; actor.gameObject.SetActive(false); }
         }
