@@ -21,7 +21,7 @@ namespace HappyToy.V2
         public int threatVersion;
         public LanternMaskEncounter.ChapterProgress mask;
         public Door[] doors;
-        [Serializable] public sealed class Door { public string id; public bool open; public Vector3 leaf; }
+        [Serializable] public sealed class Door { public string id; public bool open, broken, locked; public Vector3 leaf; }
         [Serializable] public sealed class Drawer { public string id; public bool open; public float travel; }
         public static bool Number(float value, float min, float max) => StealthRules.Finite(value) && value >= min && value <= max;
         public static bool Point(Vector3 p) => Number(p.x,193,268) && Number(p.z,193,268) && Number(p.y,-.15f,.85f);
@@ -58,7 +58,7 @@ namespace HappyToy.V2
             var ids=new System.Collections.Generic.HashSet<string>();
             foreach(var door in doors)
                 if(door == null || string.IsNullOrEmpty(door.id) || door.id.Length > 40 || !ids.Add(door.id) ||
-                    !Number(door.leaf.x,0,2.8f) || !Number(door.leaf.y,1.17f,1.19f) || !Number(door.leaf.z,-.01f,.01f))
+                    door.broken && !door.open || !Number(door.leaf.x,0,2.8f) || !Number(door.leaf.y,1.17f,1.19f) || !Number(door.leaf.z,-.01f,.01f))
                     throw new ArgumentException("Invalid door checkpoint");
         }
         static bool ValidDrawerId(string id, int furnitureVersion)

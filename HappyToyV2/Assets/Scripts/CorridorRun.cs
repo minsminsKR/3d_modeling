@@ -177,6 +177,7 @@ namespace HappyToy.V2
                     foreach (var stale in maskClone.GetComponents<AudioSource>()) DestroyImmediate(stale);
                     foreach (var child in maskClone.transform.Cast<Transform>()
                         .Where(x => x.name == "Enemy attack voice" || x.name == "Owned first-appearance voice").ToArray()) DestroyImmediate(child.gameObject);
+                    Mask.ConfigureCorridorRunner();
                     Mask.enabled = true; Mask.activationStep = 0;
                     var maskAgent = maskClone.GetComponent<NavMeshAgent>(); maskAgent.enabled = false;
                     foreach (var startup in maskClone.GetComponents<NavMeshStartup>()) startup.enabled = false;

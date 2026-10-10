@@ -126,3 +126,40 @@ babycry.mp3 — jamesmbock
 https://freesound.org/people/jamesmbock/sounds/458646/
 CC0 1.0. Author's iPhone recording of his son, public high-quality MP3 preview.
 Short nonverbal excerpt, mono, filtered, faded and gain-calibrated.
+
+Corridor mask runner: real human whistle recordings (CC0 1.0).
+Lunardrive, Whistle_SoundSmith.wav: https://freesound.org/people/Lunardrive/sounds/48982/
+jperezjacome, whistlingLikePanflute2.wav: https://freesound.org/people/jperezjacome/sounds/411508/
+Modified preview excerpts, filtering, rate changes, uneven three-breath edits and quiet source delays. Existing evghenifloca parquet and bart physical workshop recordings supply heavy contact/door-break body; origins above and in manifest. No synthesized oscillator/noise layers.
+
+
+Corridor Baby Korean mutter: synthetic character speech, authored input '어디..? 어디있어??'.
+HappyToyV2 generated speech / MyShell.ai MeloTTS; MIT licensed public MeloTTS-Korean model and library.
+https://huggingface.co/myshell-ai/MeloTTS-Korean
+https://github.com/myshell-ai/MeloTTS
+Auxiliary Korean language encoder by Kiyoung Kim (LMkor / kykim/bert-kor-base, Apache 2.0).
+https://github.com/kiyoungkim1/LMkor
+No real child/person voice was cloned or recorded for this utterance. Locally generated raw speech retained, then timing-preserving pitch/formant edits and filtering. Original real Baby cry remains the separately credited CC0 recording.
+
+
+MeloTTS upstream MIT notice (retained also with the generated speech sources):
+Copyright (c) 2024 MyShell.ai
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+LMkor auxiliary model license: Apache License 2.0; https://www.apache.org/licenses/LICENSE-2.0 . Complete notice retained at ThirdParty/Audio/CorridorBabyMutter/LMkor-Apache-2.0.txt in the editable source package. Neural weights/software are authoring dependencies and are not redistributed in the player.

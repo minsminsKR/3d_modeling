@@ -21,7 +21,8 @@ namespace HappyToy.V2
                 supplies=CheckpointItems(Interactable.Kind.FirecrackerSupply).Select(x=>x.gameObject.activeSelf).ToArray(),
                 player=session.player.CaptureProgress(),threats=threats.Select(x=>x.CaptureProgress()).ToArray(),
                 threatVersion=1,mask=Mask.CaptureChapterProgress(),
-                doors=CheckpointDoors.Select(x=>new CorridorCheckpoint.Door { id=x.stableId,open=x.IsOpen,leaf=x.movingLeaf.localPosition }).ToArray() };
+                doors=CheckpointDoors.Select(x=>new CorridorCheckpoint.Door { id=x.stableId,open=x.IsOpen,broken=x.DoorBroken,locked=x.DoorLocked,
+                    leaf=x.movingLeaf.localPosition }).ToArray() };
             data.Validate(); return data;
         }
         public string SuspendBlockReason
@@ -64,10 +65,12 @@ namespace HappyToy.V2
             // closed. Probe the saved geometry, then always put the fresh leaves
             // back; failed validation must not consume pickups or change AI.
             var freshLeaves=doors.Select(x=>x.movingLeaf.localPosition).ToArray();
+            var freshBroken=doors.Select(x=>x.DoorBroken).ToArray();
             var freshDrawers=drawers.Select(x=>(open:x.IsOpen,travel:x.Travel)).ToArray();
             try
             {
-                for(int i=0;i<doors.Length;i++) doors[i].movingLeaf.localPosition=data.doors[i].leaf;
+                for(int i=0;i<doors.Length;i++)
+                { doors[i].movingLeaf.localPosition=data.doors[i].leaf; doors[i].RestoreDoorDestruction(data.doors[i].broken); }
                 foreach(var drawer in drawers)
                 { savedDrawers.TryGetValue(drawer.StableId,out var state); drawer.Restore(state!=null && state.open,state?.travel ?? 0); }
                 Physics.SyncTransforms();
@@ -75,7 +78,8 @@ namespace HappyToy.V2
             }
             finally
             {
-                for(int i=0;i<doors.Length;i++) doors[i].movingLeaf.localPosition=freshLeaves[i];
+                for(int i=0;i<doors.Length;i++)
+                { doors[i].movingLeaf.localPosition=freshLeaves[i]; doors[i].RestoreDoorDestruction(freshBroken[i]); }
                 for(int i=0;i<drawers.Count;i++) drawers[i].Restore(freshDrawers[i].open,freshDrawers[i].travel);
                 Physics.SyncTransforms();
             }
@@ -87,7 +91,8 @@ namespace HappyToy.V2
             recovered.Clear();
             for(int i=0;i<5;i++) { if(data.recovered[i]) recovered.Add("memory-"+i); memories[i].gameObject.SetActive(!data.recovered[i]); }
             for(int i=0;i<8;i++) packs[i].gameObject.SetActive(data.supplies[i]);
-            for(int i=0;i<doors.Length;i++) doors[i].RestoreDoor(data.doors[i].open,data.doors[i].leaf);
+            for(int i=0;i<doors.Length;i++)
+            { doors[i].DoorLocked=data.doors[i].locked; doors[i].RestoreShatteredDoor(data.doors[i].open,data.doors[i].leaf,data.doors[i].broken); }
             foreach(var drawer in drawers)
             { savedDrawers.TryGetValue(drawer.StableId,out var state); drawer.Restore(state!=null && state.open,state?.travel ?? 0); }
             // Legacy snapshots stored Hwacat in slot two. Keep the original

@@ -1,0 +1,105 @@
+{
+  "status": "PASS",
+  "uniqueCases": 15,
+  "cases": [
+    {
+      "name": "AuthoredWraithKeepsOriginalNavigationAndFourMovingLimbPivots",
+      "result": "Passed",
+      "duration": "4.477591"
+    },
+    {
+      "name": "AuthoredWraithMaskHasActualOpenSocketsAndMouthThroughItsShell",
+      "result": "Passed",
+      "duration": "1.966971"
+    },
+    {
+      "name": "CorridorActualMaskRunsAlreadyGrownChasesPausesAndRestoresItsOwnedState",
+      "result": "Passed",
+      "duration": "17.651896"
+    },
+    {
+      "name": "CorridorReleasesCyclopsUncatMaskBabyAtExactMemoryStages",
+      "result": "Passed",
+      "duration": "7.945601"
+    },
+    {
+      "name": "EveryHostileFacePreservesOriginalEyeSurfaceAndPupilTexturesWithOneCyclopseEyeAndNoAddedGeometry",
+      "result": "Passed",
+      "duration": "4.218707"
+    },
+    {
+      "name": "FirstAppearanceAudioComesFromRealEventsWithQuietPauseMuteAndComfortControls",
+      "result": "Passed",
+      "duration": "22.865082"
+    },
+    {
+      "name": "LanternFirstSightRequiresFloorViewportAndLosBeforeSafeLightThenMask",
+      "result": "Passed",
+      "duration": "7.264249"
+    },
+    {
+      "name": "LegacyFourThreatSnapshotsMapSlotsZeroOneThreeAndKeepUncatDormantAtZeroAndOneMemory",
+      "result": "Passed",
+      "duration": "33.128707"
+    },
+    {
+      "name": "MaskReadableAttachmentBoundsExcludeEmptyRotatedLimbBoxCorners",
+      "result": "Passed",
+      "duration": "3.548536"
+    },
+    {
+      "name": "MaskRunnerNearWhistleSightStillRespectsRealRoomCoverAndHiding",
+      "result": "Passed",
+      "duration": "12.504093"
+    },
+    {
+      "name": "MaskRunnerShattersLockedAndOpenRealDoorsRunsFastestAndRestoresBrokenGeometry",
+      "result": "Passed",
+      "duration": "28.310962"
+    },
+    {
+      "name": "NaturalEyeEmissionTogglePreservesPausedChapterCheckpointPhysicsAndSourceAssetsAcrossReload",
+      "result": "Passed",
+      "duration": "11.405251"
+    },
+    {
+      "name": "NaturalEyeLifecycleRestoresCallerMaterialAndIndexedPropertiesAndHonoursLaterMaterialOwner",
+      "result": "Passed",
+      "duration": "5.966331"
+    },
+    {
+      "name": "RaisedDoorPullsStayOnBothMovingFacesDuringOpeningAndCheckpointPoseRestore",
+      "result": "Passed",
+      "duration": "17.880475"
+    },
+    {
+      "name": "AuthoredWraithNoseTeethAndRibsLeadTheNavigationHeading",
+      "result": "Passed",
+      "duration": "2.020504"
+    }
+  ],
+  "batches": [
+    {
+      "total": "14",
+      "passed": "13",
+      "failed": "1",
+      "start-time": "2026-10-10 09:41:00Z",
+      "end-time": "2026-10-10 09:43:56Z"
+    },
+    {
+      "total": "1",
+      "passed": "1",
+      "failed": "0",
+      "start-time": "2026-10-10 09:46:28Z",
+      "end-time": "2026-10-10 09:46:54Z"
+    },
+    {
+      "total": "5",
+      "passed": "5",
+      "failed": "0",
+      "start-time": "2026-10-10 09:59:58Z",
+      "end-time": "2026-10-10 10:00:34Z"
+    }
+  ],
+  "scope": "Targeted actual Unity PlayMode tests. Initial batch passed 13/14; the readable mask edge oracle replaced a conservative rotated renderer box with independently sampled actual vertices while preserving all existing tolerances. The one failed case passed on rerun. Not the entire test suite."
+}

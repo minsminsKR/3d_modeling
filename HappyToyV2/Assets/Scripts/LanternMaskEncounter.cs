@@ -71,6 +71,7 @@ namespace HappyToy.V2
         Renderer[] bodyRenderers, maskRenderers;
         Mesh attachmentMesh;
         readonly List<Vector3> attachmentVertices = new List<Vector3>();
+        readonly Dictionary<Mesh, Vector3[]> staticAttachmentVertices = new Dictionary<Mesh, Vector3[]>();
         bool IntroActive => IntroStarted && !IntroCompleted;
         bool ReducedMotion => GameSession.Current && GameSession.Current.Shell && GameSession.Current.Shell.ReducedMotion;
 
@@ -87,6 +88,7 @@ namespace HappyToy.V2
                 model.localScale*=Mathf.Clamp(.68f/Mathf.Max(.01f,bounds.size.y),1,1.2f);
             }
             if(mask)MonsterRedEyes.AttachStatic(mask,"LanternMask");
+            MaskHorrorVisual.Ensure(this);
             DoorTraversal.Bind(this);
             sound = gameObject.AddComponent<AudioSource>(); sound.playOnAwake = false; sound.spatialBlend = 1;
             sound.minDistance = 2; sound.maxDistance = 16; sound.dopplerLevel = 0; sound.volume = .5f;
@@ -119,6 +121,7 @@ namespace HappyToy.V2
         void OnEnable()
         {
             floorY = transform.position.y; repath = 0; recognitionCueIssued = false; awareness.Reset(); investigation.Reset();
+            if (CorridorRunner) PrepareCorridorRunner();
             BindFootsteps(GameSession.Current ? GameSession.Current.player : null);
         }
         void BindFootsteps(PlayerMotor next)
@@ -147,7 +150,7 @@ namespace HappyToy.V2
         }
         void BeginNoiseInvestigation(float dwell)
         {
-            NoiseInvestigationRoute.Begin(investigation,transform.position,target,path,1.15f,dwell);
+            NoiseInvestigationRoute.Begin(investigation,transform.position,target,path,CorridorRunner ? RunnerPatrolSpeed : 1.15f,dwell);
             memory=investigation.DwellRemaining; State=Phase.Investigate; repath=0;
         }
         void EnsureNoiseInvestigation()
@@ -339,7 +342,11 @@ namespace HappyToy.V2
                     "녹색 가면이 저주를 준비합니다 · 뒤로 물러나세요.", 1.6f);
                 Visual(); return;
             }
-            if(State==Phase.Investigate && investigation.Arrived) { InspectNoisePoint(); return; }
+            if(State==Phase.Investigate && investigation.Arrived)
+            {
+                if (CorridorRunner) { investigation.Cancel(); State = Phase.Wander; memory = 0; repath = 0; }
+                else { InspectNoisePoint(); return; }
+            }
             // School pursuit follows the last observed position through actual
             // stairs. Other modes retain their original floor restriction.
             if (State == Phase.Chase && !EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY))
@@ -352,10 +359,11 @@ namespace HappyToy.V2
                 if (patrol[waypoint]) target = patrol[waypoint].position;
             }
             float stride = age % 2.4f < .2f ? .18f : age % 2.4f < .75f ? 1.4f : .9f;
-            agent.speed = State == Phase.Chase ? (Transformed ? 3.4f * stride : 2.7f) : 1.15f;
+            agent.speed = CorridorRunner ? (State == Phase.Chase ? RunnerChaseSpeed : RunnerPatrolSpeed) :
+                State == Phase.Chase ? (Transformed ? 3.4f * stride : 2.7f) : 1.15f;
             // Intro, transformation, attack, pause and floor gates have all passed.
             // The same physical leaf/audio/leases used by walking stalkers apply.
-            var doorResult = DoorTraversal.Tick(target, floorY);
+            var doorResult = CorridorRunner ? TickRunnerDoor(target) : DoorTraversal.Tick(target, floorY);
             if (doorResult != StalkerDoorTraversal.Result.Clear)
             {
                 repath = 0;
@@ -460,9 +468,27 @@ namespace HappyToy.V2
                 }
                 else if (renderer is MeshRenderer)
                 {
-                    // The authored static mask is intentionally non-readable. Its
-                    // ordinary world bounds are conservative after tilt, not a loose
-                    // skinned animation envelope. Never read its unavailable vertices.
+                    var filter = renderer.GetComponent<MeshFilter>();
+                    if (filter && filter.sharedMesh && filter.sharedMesh.isReadable)
+                    {
+                        // New authored arms/head have real readable FBX geometry.
+                        // Rotating a long crooked limb's conservative bounds can
+                        // raise the face above empty box corners. Inspect actual
+                        // immutable vertices and apply the hierarchy exactly once.
+                        var mesh = filter.sharedMesh;
+                        if (!staticAttachmentVertices.TryGetValue(mesh, out var vertices))
+                        { vertices = mesh.vertices; staticAttachmentVertices.Add(mesh, vertices); }
+                        var toWorld = renderer.transform.localToWorldMatrix;
+                        foreach (var vertex in vertices)
+                        {
+                            var point = toWorld.MultiplyPoint3x4(vertex);
+                            if (!found) { bounds = new Bounds(point, Vector3.zero); found = true; }
+                            else bounds.Encapsulate(point);
+                        }
+                        continue;
+                    }
+                    // The retained original static face is non-readable. Preserve
+                    // that fallback without reading unavailable borrowed geometry.
                     var visible = renderer.bounds;
                     if (!found) { bounds = visible; found = true; }
                     else bounds.Encapsulate(visible);
@@ -499,6 +525,7 @@ namespace HappyToy.V2
         {
             BindFootsteps(null); if (warning) Destroy(warning);
             if (attachmentMesh) Destroy(attachmentMesh);
+            staticAttachmentVertices.Clear();
         }
     }
 }

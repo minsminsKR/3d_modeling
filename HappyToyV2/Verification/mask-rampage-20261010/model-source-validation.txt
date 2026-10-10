@@ -1,0 +1,7 @@
+MASK_HORROR_SOURCE_PASS wraith-body 32828
+MASK_HORROR_SOURCE_PASS wraith-mask 31459
+Blender 4.0.2 (hash 9be62e85b727 built 2023-12-05 13:01:12)
+Read blend: "<project>\SourceArt\MaskHorror\wraith-body.blend"
+Read blend: "<project>\SourceArt\MaskHorror\wraith-mask.blend"
+
+Blender quit

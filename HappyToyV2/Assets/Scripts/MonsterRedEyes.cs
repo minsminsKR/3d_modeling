@@ -59,6 +59,51 @@ namespace HappyToy.V2
 
         public static MonsterRedEyes Attach(Transform model,string key)=>Prepare(model,key,true);
         public static MonsterRedEyes AttachStatic(Transform model,string key)=>Prepare(model,key,false);
+        // An authored replacement mask supplies its real recessed eye surfaces.
+        // Keep the same inspection/emission owner, restoring the old face slots
+        // before binding these meshes; other actors retain their original profiles.
+        public void BindAuthoredStaticEyes(Renderer[] eyeSurfaces)
+        {
+            if(eyeSurfaces==null||eyeSurfaces.Length!=2||eyeSurfaces.Any(r=>!r)||eyeSurfaces.Distinct().Count()!=2)
+                throw new ArgumentException("The authored mask must supply two real eye surfaces");
+            var nextHead=Head?Head:transform.parent;
+            if(!nextHead)throw new InvalidOperationException("Authored mask head pivot missing");
+            foreach(var renderer in eyeSurfaces)
+            {
+                var filter=renderer.GetComponent<MeshFilter>();var materials=renderer.sharedMaterials;
+                float radius=Mathf.Max(renderer.bounds.extents.x,renderer.bounds.extents.y,renderer.bounds.extents.z);
+                if(!(renderer is MeshRenderer)||!filter||!filter.sharedMesh||!renderer.transform.IsChildOf(nextHead)||
+                    materials.Length!=1||!materials[0]||!materials[0].HasProperty("_EmissionMap")||
+                    !materials[0].HasProperty("_EmissionColor")||radius<.00001f||!StealthRules.Finite(radius))
+                    throw new ArgumentException("Recessed eyes require valid static surfaces beneath the mask pivot");
+            }
+            RestoreOriginalSlots();
+            foreach(var material in owned)if(material)GraphicsSurfaceLibrary.DestroyOwned(material);
+            owned.Clear();states.Clear();emissionRenderers.Clear();shapes.Clear();
+            Head=nextHead;
+            if(block==null)block=new MaterialPropertyBlock();
+            for(int i=0;i<2;i++)
+            {
+                var renderer=eyeSurfaces[i];var materials=renderer.sharedMaterials;
+                if(materials.Length!=1)throw new InvalidOperationException("A recessed eye must have its own single material surface");
+                Mount(renderer,0,Texture2D.whiteTexture);
+                Transform anchor;
+                if(i<anchors.Count&&anchors[i])anchor=anchors[i];
+                else
+                {
+                    var name=i==0?"Left original eye":"Right original eye";
+                    anchor=transform.Find(name);
+                    if(!anchor){anchor=new GameObject(name).transform;anchor.SetParent(transform,false);}
+                    if(i<anchors.Count)anchors[i]=anchor;else anchors.Add(anchor);
+                }
+                anchor.position=renderer.bounds.center;anchor.rotation=renderer.transform.rotation;
+                float radius=Mathf.Max(renderer.bounds.extents.x,renderer.bounds.extents.y,renderer.bounds.extents.z);
+                if(radius<.00001f||!StealthRules.Finite(radius))throw new InvalidOperationException("Empty recessed eye surface");
+                shapes.Add(new EyeShape{anchor=anchor,horizontal=Head.InverseTransformVector(anchor.right*radius),
+                    vertical=Head.InverseTransformVector(anchor.up*radius)});
+            }
+            ProfileKey="LanternMask";Prepared=true;ApplyEmission();
+        }
         static MonsterRedEyes Prepare(Transform model,string key,bool skinned)
         {
             if(!model)throw new ArgumentNullException(nameof(model));

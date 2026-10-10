@@ -1,0 +1,98 @@
+{
+  "seeking-soft": {
+    "file": "seeking-soft.wav",
+    "creator": "HappyToyV2 generated speech / MyShell.ai MeloTTS",
+    "license": "MIT",
+    "page": "https://huggingface.co/myshell-ai/MeloTTS-Korean",
+    "download": "https://huggingface.co/myshell-ai/MeloTTS-Korean/resolve/0207e5adfc90129a51b6b03d89be6d84360ed323/checkpoint.pth",
+    "source_file": "Locally generated Korean project utterance; original input text: 어디..? 어디있어??",
+    "source_file_sha256": "ee6bb59617f7fa22bb692febb3378f6dac1b6a9226b6b1256dd7f09d853d5ecb",
+    "generated": true,
+    "phrase": "어디..? 어디있어??",
+    "spoken_segments": [
+      "어디?",
+      "어디 있어?"
+    ],
+    "model": "myshell-ai/MeloTTS-Korean",
+    "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+    "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+    "auxiliary_model": "kykim/bert-kor-base",
+    "auxiliary_revision": "1779cc0982ada0216dd6de0dd4e86fb78201926d",
+    "authoring": {
+      "name": "seeking-soft",
+      "seed": 211,
+      "speed": 0.94,
+      "pause": 0.48,
+      "sample_rate": 44100,
+      "sdp_ratio": 0.2,
+      "noise_scale": 0.48,
+      "noise_scale_w": 0.6,
+      "script": "SourceArt/Audio/generate_baby_mutter.py",
+      "scope": "File-only local inference; no speaker output or live voice/person cloning."
+    }
+  },
+  "seeking-hesitant": {
+    "file": "seeking-hesitant.wav",
+    "creator": "HappyToyV2 generated speech / MyShell.ai MeloTTS",
+    "license": "MIT",
+    "page": "https://huggingface.co/myshell-ai/MeloTTS-Korean",
+    "download": "https://huggingface.co/myshell-ai/MeloTTS-Korean/resolve/0207e5adfc90129a51b6b03d89be6d84360ed323/checkpoint.pth",
+    "source_file": "Locally generated Korean project utterance; original input text: 어디..? 어디있어??",
+    "source_file_sha256": "a8ad266df7b98897b32eff0dff489ff4aa04f427ee70ec4cf5e2973edbef430e",
+    "generated": true,
+    "phrase": "어디..? 어디있어??",
+    "spoken_segments": [
+      "어디?",
+      "어디 있어?"
+    ],
+    "model": "myshell-ai/MeloTTS-Korean",
+    "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+    "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+    "auxiliary_model": "kykim/bert-kor-base",
+    "auxiliary_revision": "1779cc0982ada0216dd6de0dd4e86fb78201926d",
+    "authoring": {
+      "name": "seeking-hesitant",
+      "seed": 431,
+      "speed": 0.88,
+      "pause": 0.63,
+      "sample_rate": 44100,
+      "sdp_ratio": 0.2,
+      "noise_scale": 0.48,
+      "noise_scale_w": 0.6,
+      "script": "SourceArt/Audio/generate_baby_mutter.py",
+      "scope": "File-only local inference; no speaker output or live voice/person cloning."
+    }
+  },
+  "neutral-comparison": {
+    "file": "neutral-comparison.wav",
+    "creator": "HappyToyV2 generated speech / MyShell.ai MeloTTS",
+    "license": "MIT",
+    "page": "https://huggingface.co/myshell-ai/MeloTTS-Korean",
+    "download": "https://huggingface.co/myshell-ai/MeloTTS-Korean/resolve/0207e5adfc90129a51b6b03d89be6d84360ed323/checkpoint.pth",
+    "source_file": "Locally generated Korean project utterance; original input text: 어디..? 어디있어??",
+    "source_file_sha256": "8e9777192edffa407ed77e2915f875c9d7ba7aa7b641fb80eab118892d19bdd6",
+    "generated": true,
+    "phrase": "어디..? 어디있어??",
+    "spoken_segments": [
+      "어디?",
+      "어디 있어?"
+    ],
+    "model": "myshell-ai/MeloTTS-Korean",
+    "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+    "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+    "auxiliary_model": "kykim/bert-kor-base",
+    "auxiliary_revision": "1779cc0982ada0216dd6de0dd4e86fb78201926d",
+    "authoring": {
+      "name": "neutral-comparison",
+      "seed": 971,
+      "speed": 1.0,
+      "pause": 0.16,
+      "sample_rate": 44100,
+      "sdp_ratio": 0.2,
+      "noise_scale": 0.48,
+      "noise_scale_w": 0.6,
+      "script": "SourceArt/Audio/generate_baby_mutter.py",
+      "scope": "File-only local inference; no speaker output or live voice/person cloning."
+    }
+  }
+}

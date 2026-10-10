@@ -5,7 +5,7 @@ namespace HappyToy.V2
     // Installed only on the corridor's Baby. The school nursery's reveal and AI
     // stay separate. One owned spatial recording follows this actor while crying.
     [DisallowMultipleComponent]
-    public sealed class CorridorBabyBehaviour : MonoBehaviour
+    public sealed partial class CorridorBabyBehaviour : MonoBehaviour
     {
         public const float CalmSpeed = .65f, LoudFootstepRadius = 10f;
         public readonly CorridorBabyMemory Memory = new CorridorBabyMemory();
@@ -30,6 +30,7 @@ namespace HappyToy.V2
             CrySource.clip = OwnedCry; CrySource.minDistance = 1.5f; CrySource.maxDistance = 20;
             CrySource.priority = 80;
             CryAcoustics = EnemyAcoustics.Bind(CrySource, transform, .48f, 0);
+            ConfigureMutter();
         }
         void Update()
         {
@@ -42,6 +43,7 @@ namespace HappyToy.V2
             // the cry at menu entry or undo a deliberately muted/stopped source.
             if (!session.InputAllowed || !CrySource) return;
             if (!started) { CrySource.Play(); started = true; }
+            UpdateMutter(session);
             float distance = Vector3.Distance(session.player.eyes.transform.position, CrySource.transform.position);
             float heardGain = CrySource.volume * Mathf.InverseLerp(CrySource.maxDistance, CrySource.minDistance, distance) * Mathf.Clamp01(AudioListener.volume);
             if (Time.time >= nextHeardReport && CrySource.isActiveAndEnabled && CrySource.isPlaying && !CrySource.mute &&
@@ -51,11 +53,11 @@ namespace HappyToy.V2
                 LightExplorationRun.ReportAudibleMovement(session, CrySource);
             }
         }
-        public void StopVoice() { if (CrySource) CrySource.Stop(); started = false; nextHeardReport = 0; }
+        public void StopVoice() { StopMutter(); if (CrySource) CrySource.Stop(); started = false; nextHeardReport = 0; }
         void OnDisable() { StopVoice(); }
         void OnDestroy()
         {
-            StopVoice(); if (CrySource) CrySource.clip = null;
+            StopVoice(); DisposeMutter(); if (CrySource) CrySource.clip = null;
             if (emitter) Destroy(emitter); if (OwnedCry) Destroy(OwnedCry);
         }
     }

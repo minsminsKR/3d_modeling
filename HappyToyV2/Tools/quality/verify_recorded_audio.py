@@ -80,7 +80,28 @@ def verify() -> dict:
         for field in ("resource", "license", "creator", "page", "download", "source_file", "modifications", "sha256"):
             require(bool(item.get(field)), f"Missing canonical {field}: {name}")
         require(item.get("resource") == "Audio/External/" + path.stem, f"Wrong resource path: {name}")
-        require(item.get("license") in ("CC0-1.0", "CC-BY-4.0"), f"Unreviewed license: {name}")
+        if item.get("license") == "MIT":
+            # Explicitly reviewed local neural utterances, not a broad license
+            # exception for an arbitrary generated or unlicensed replacement.
+            generated = item.get("modifications", {}).get("generated_voice", {})
+            require(name in ("enemy-baby-mutter-0.wav", "enemy-baby-mutter-1.wav"),
+                    f"Unreviewed MIT audio cue: {name}")
+            require(generated.get("model") == "myshell-ai/MeloTTS-Korean" and
+                    generated.get("model_revision") == "0207e5adfc90129a51b6b03d89be6d84360ed323" and
+                    generated.get("tool_revision") == "209145371cff8fc3bd60d7be902ea69cbdb7965a" and
+                    generated.get("phrase") == "어디..? 어디있어??" and generated.get("clones_person") is False,
+                    f"Changed/unreviewed generated actor provenance: {name}")
+            digest = generated.get("raw_source_sha256")
+            require(digest in retained and retained[digest].get("generated") is True and
+                    retained[digest].get("license") == "MIT", f"Missing generated raw speech: {name}")
+            for relative in ("ThirdParty/Audio/CorridorBabyMutter/MeloTTS-MIT.txt",
+                             "ThirdParty/Audio/CorridorBabyMutter/LMkor-Apache-2.0.txt",
+                             "ThirdParty/Audio/CorridorBabyMutter/generation.json",
+                             "SourceArt/Audio/generate_baby_mutter.py",
+                             "SourceArt/Audio/render_baby_mutter.py"):
+                require((PROJECT / relative).is_file(), f"Missing generated voice authoring/license: {relative}")
+        else:
+            require(item.get("license") in ("CC0-1.0", "CC-BY-4.0"), f"Unreviewed license: {name}")
         for recording in item.get("modifications", {}).get("recordings", []):
             digest = recording.get("source_file_sha256")
             require(digest in retained, f"Cue origin is not a retained recording: {name}")

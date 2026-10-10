@@ -1,2 +1,4 @@
 # Reproducible authoring environment; dependency pins are committed separately.
 .venv-corridor/
+.venv-mutter/
+.venv-generation/

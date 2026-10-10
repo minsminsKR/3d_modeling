@@ -1,0 +1,20 @@
+{
+  "lip-whistle": {
+    "file": "lip-whistle.mp3",
+    "creator": "Lunardrive",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/Lunardrive/sounds/48982/",
+    "download": "https://cdn.freesound.org/previews/48/48982_120830-hq.mp3",
+    "source_file": "Whistle_SoundSmith.wav (public high quality MP3 preview)",
+    "source_file_sha256": "75794b3207fe810eb4cbdd5ec1c2355265a8bfa7ff64d034128b4519f192ef5a"
+  },
+  "panflute-whistle": {
+    "file": "panflute-whistle.mp3",
+    "creator": "jperezjacome",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/jperezjacome/sounds/411508/",
+    "download": "https://cdn.freesound.org/previews/411/411508_8015768-hq.mp3",
+    "source_file": "whistlingLikePanflute2.wav (public high quality MP3 preview)",
+    "source_file_sha256": "d349e55f7b099d161b0d5dabeda78d26f66f98738266cdc0de27f00ed84ade51"
+  }
+}

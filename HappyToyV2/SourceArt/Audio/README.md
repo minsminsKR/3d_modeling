@@ -96,3 +96,59 @@ Candidate decisions: [SELECTION.md](../../ThirdParty/Audio/RecordedHorror/SELECT
 Prepared audio and all transformations: [manifest.json](../../ThirdParty/Audio/manifest.json).
 Keep the sources, manifests, resulting WAVs, their `.meta` files and credits in
 Git together when revising a cue. Run the source completeness check after staging.
+
+## Corridor mask runner and Korean Baby mutter
+
+`render_corridor_mask.py` uses the existing pinned corridor requirements and
+retained real parquet, workshop contacts and two CC0 human whistle candidates.
+It creates three heavy pounding contacts, two near three-gesture human whistles
+and one physical door-break contact. No source acquisition is needed to rebuild.
+The new emitter owns live clips and fixed door impact sources, uses actual
+distance travelled for steps and a seven-metre near range for its whistle.
+
+The Korean Baby searching phrase **어디..? 어디있어??** is disclosed as generated
+character speech. Its two raw local neural utterances and comparison take are
+retained under `ThirdParty/Audio/CorridorBabyMutter/sources/`. The prepared
+speech changes voiced pitch and formants separately to preserve Korean speech
+timing; the existing real Baby cry remains a separate source. Normal offline
+regeneration does not download a model or use a speech account:
+
+```powershell
+py -3.11 -m venv HappyToyV2/SourceArt/Audio/.venv-mutter
+HappyToyV2/SourceArt/Audio/.venv-mutter/Scripts/python.exe -m pip install -r HappyToyV2/SourceArt/Audio/requirements-baby-mutter.txt
+HappyToyV2/SourceArt/Audio/.venv-mutter/Scripts/python.exe HappyToyV2/SourceArt/Audio/render_baby_mutter.py
+```
+
+To deliberately regenerate raw neural speech, first install the MIT MeloTTS
+library at the fixed commit with **no dependency auto-install**, then the
+documented generation requirements in a separate CPython 3.11 environment:
+
+```powershell
+py -3.11 -m venv HappyToyV2/SourceArt/Audio/.venv-generation
+HappyToyV2/SourceArt/Audio/.venv-generation/Scripts/python.exe -m pip install --no-deps https://github.com/myshell-ai/MeloTTS/archive/209145371cff8fc3bd60d7be902ea69cbdb7965a.zip
+HappyToyV2/SourceArt/Audio/.venv-generation/Scripts/python.exe -m pip install -r HappyToyV2/SourceArt/Audio/requirements-baby-generation.txt
+HappyToyV2/SourceArt/Audio/.venv-generation/Scripts/python.exe HappyToyV2/SourceArt/Audio/generate_baby_mutter.py
+```
+
+This explicit optional generation step fetches the fixed public MeloTTS-Korean
+revision and checks the configuration/model SHA-256 values. The Korean context
+encoder revision is also fixed. Use `--model-dir FOLDER` to supply those checked
+`config.json` and `checkpoint.pth` files locally. Do not install the `unidic`
+package, whose empty dictionary would override `unidic-lite`. The two actor
+words have an authored standard Korean pronunciation table; unreviewed words
+fail instead of invoking an auto-installing morphology backend. Generation
+seeds, weights, licenses, text, phonetics and CPU parameters are retained in
+`generation.json` and the generator. Cross-hardware raw inference may vary;
+ordinary offline preparation is deterministic from the retained raw WAVs.
+
+All authoring commands above only write files and never play sound. Automated
+Unity/player diagnostics must use `-quiet-diagnostics` and the confirmed current
+Windows process-session mute. Ordinary players retain the user's volume.
+
+The optional independent `Tools/quality/check_baby_mutter_intelligibility.py`
+uses `faster-whisper==1.1.0` and a fixed public large-v2 model conversion on
+CPU/int8 to check the two Korean phrases without a text prompt or playback.
+Install that package in a separate environment and use `--download` once on a
+new machine to acquire the fixed model; subsequent checks are offline. Its
+report hashes both prepared WAVs. It assesses recognized words, not human
+listening quality, perceived speaker age, Unity import or the native game mix.

@@ -1,0 +1,244 @@
+{
+  "schema": 1,
+  "blender": "4.0.2",
+  "license": "CC0-1.0 original geometry",
+  "axes": "source-plan metres Y-up front -Z; Unity mirrors source-plan X",
+  "assets": [
+    {
+      "key": "wraith-body",
+      "source": "SourceArt/MaskHorror/wraith-body.blend",
+      "fbx": "Assets/Resources/MaskHorror/wraith-body.fbx",
+      "sourceSha256": "1a3f376d014bf22482a6e6caa1113a14d8e2017b2e646a080574ae3d32cf9160",
+      "fbxSha256": "a5a64b6eb180d36b1c33ee6ed753ab8136018d5eb975f8cffc39b10377ad7e01",
+      "triangles": 32828,
+      "vertices": 16368,
+      "boundsMin": [
+        -1.2479300498962402,
+        0.004421938676387072,
+        -0.39026087522506714
+      ],
+      "boundsMax": [
+        1.2070921659469604,
+        1.6934826374053955,
+        0.3560406565666199
+      ],
+      "meshParts": [
+        "Organic fused anatomy WraithAuthoredBody",
+        "Exposed uneven rib 1 -1",
+        "Exposed uneven rib 2 1",
+        "Exposed uneven rib 4 -1",
+        "Exposed uneven rib 5 1",
+        "Exposed uneven rib 7 -1",
+        "Exposed uneven rib 8 1",
+        "Organic fused anatomy ArmSwingL",
+        "Long split black fingernail L0",
+        "Long split black fingernail L1",
+        "Long split black fingernail L2",
+        "Long split black fingernail L3",
+        "Raised forearm tendon L0",
+        "Shredded shoulder veil L",
+        "Organic fused anatomy LegSwingL",
+        "Organic fused anatomy ArmSwingR",
+        "Long split black fingernail R0",
+        "Long split black fingernail R1",
+        "Long split black fingernail R2",
+        "Raised forearm tendon R0",
+        "Shredded shoulder veil R",
+        "Organic fused anatomy LegSwingR"
+      ],
+      "pivotNames": [
+        "WraithAuthoredBody",
+        "ArmSwingL",
+        "LegSwingL",
+        "ArmSwingR",
+        "LegSwingR"
+      ],
+      "materialSlots": [
+        "MW_bone",
+        "MW_flesh",
+        "MW_veil"
+      ],
+      "highSculptParts": 22,
+      "sculpt": "Voxel fused anatomy; editable two-level multires; actual dermal/pores displacement",
+      "bake": "Actual Cycles atlas diffuse-color/AO/roughness surface bake; multires sculpt selected-to-active tangent normals",
+      "textures": [
+        {
+          "kind": "albedo",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-body-albedo.png",
+          "sha256": "bf5bb54801ddb0f94f41b0472ae7854900e6516b9a32504b122bf5ac6f7a5d6a",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "kind": "normal",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-body-normal.png",
+          "sha256": "83093628aa01961b2e6282d228e4a6efb8cb2dda8cd0de6ca131137735b6b43f",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "kind": "ao",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-body-ao.png",
+          "sha256": "2021bb4d9fa19dd4110d5d633478c030ede9de218f1cb70c2dd8817fb1ded3f3",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "kind": "roughness",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-body-roughness.png",
+          "sha256": "8f907fc4f7809d295c631caeb824757df261958e83820a00cfc31a673fa26fa8",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "kind": "metallic-smoothness",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-body-metallic-smoothness.png",
+          "sha256": "29a48f8b8b12f22604cffda6218cb798b2542ad97dcdeb3ddb89b9f70991182f",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "lod1": {
+        "fbx": "Assets/Resources/MaskHorror/wraith-body-lod1.fbx",
+        "fbxSha256": "f5c167c0c7c2cff492106475794eec5be18472991b0f9e50dc28b8f6c8dd7a34",
+        "triangles": 12368,
+        "meshParts": [
+          "LOD1 | Organic fused anatomy WraithAuthoredBody",
+          "LOD1 | Exposed uneven rib 1 -1",
+          "LOD1 | Exposed uneven rib 2 1",
+          "LOD1 | Exposed uneven rib 4 -1",
+          "LOD1 | Exposed uneven rib 5 1",
+          "LOD1 | Exposed uneven rib 7 -1",
+          "LOD1 | Exposed uneven rib 8 1",
+          "LOD1 | Organic fused anatomy ArmSwingL",
+          "LOD1 | Long split black fingernail L0",
+          "LOD1 | Long split black fingernail L1",
+          "LOD1 | Long split black fingernail L2",
+          "LOD1 | Long split black fingernail L3",
+          "LOD1 | Raised forearm tendon L0",
+          "LOD1 | Shredded shoulder veil L",
+          "LOD1 | Organic fused anatomy LegSwingL",
+          "LOD1 | Organic fused anatomy ArmSwingR",
+          "LOD1 | Long split black fingernail R0",
+          "LOD1 | Long split black fingernail R1",
+          "LOD1 | Long split black fingernail R2",
+          "LOD1 | Raised forearm tendon R0",
+          "LOD1 | Shredded shoulder veil R",
+          "LOD1 | Organic fused anatomy LegSwingR"
+        ],
+        "source": "SourceArt/MaskHorror/wraith-body.blend",
+        "preserves": "Four physical movement pivots, authored units, baked UV atlas and silhouette"
+      },
+      "normalMissPolicy": "Only pure-black ray misses/background neutralized; all valid sculpt normal texels retained"
+    },
+    {
+      "key": "wraith-mask",
+      "source": "SourceArt/MaskHorror/wraith-mask.blend",
+      "fbx": "Assets/Resources/MaskHorror/wraith-mask.fbx",
+      "sourceSha256": "7dc7527d599416ec49cf496efd9c2c7f1307c839305a383e62ddccb6046cdd5a",
+      "fbxSha256": "6f4c9906e95dce15b6426bb67eb79c0864dca3199523b00c87fbd2a4a37df30c",
+      "triangles": 31459,
+      "vertices": 16147,
+      "boundsMin": [
+        -0.37183475494384766,
+        -0.4789583086967468,
+        -0.32305246591567993
+      ],
+      "boundsMax": [
+        0.37632960081100464,
+        0.5479166507720947,
+        0.015283478423953056
+      ],
+      "meshParts": [
+        "Cracked porcelain shell with real hollow sockets",
+        "Buried red eye slit",
+        "Deep bruised socket backing",
+        "Buried red eye slit.001",
+        "Deep bruised socket backing.001",
+        "Recessed nostril",
+        "Recessed nostril.001",
+        "Irregular old tooth -1 0",
+        "Irregular old tooth -1 1",
+        "Irregular old tooth -1 2",
+        "Irregular old tooth -1 3",
+        "Irregular old tooth -1 4",
+        "Irregular old tooth -1 5",
+        "Irregular old tooth -1 6",
+        "Irregular old tooth 1 0",
+        "Irregular old tooth 1 1",
+        "Irregular old tooth 1 2",
+        "Irregular old tooth 1 3",
+        "Irregular old tooth 1 4",
+        "Irregular old tooth 1 5",
+        "Irregular old tooth 1 6",
+        "Torn desiccated gum -1",
+        "Torn desiccated gum 1",
+        "Deep branching fracture",
+        "Deep branching fracture.001",
+        "Deep branching fracture.002",
+        "Lifted delaminated forehead fragment",
+        "Dangling cheek ligament 0",
+        "Dangling cheek ligament 1",
+        "Dangling cheek ligament 2",
+        "Dangling cheek ligament 3",
+        "Dangling cheek ligament 4"
+      ],
+      "pivotNames": [
+        "WraithAuthoredMask"
+      ],
+      "materialSlots": [
+        "MW_bone",
+        "MW_eye",
+        "MW_mask",
+        "MW_scar"
+      ],
+      "highSculptParts": 32,
+      "sculpt": "Voxel fused anatomy; editable two-level multires; actual dermal/pores displacement",
+      "bake": "Actual Cycles atlas diffuse-color/AO/roughness surface bake; multires sculpt selected-to-active tangent normals",
+      "textures": [
+        {
+          "kind": "albedo",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-mask-albedo.png",
+          "sha256": "ff259ea40ef2804266734b5937b3f31764e34264bbf16b8343f0de226fc583a4",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "kind": "normal",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-mask-normal.png",
+          "sha256": "9cc1e7e12b42fa3b6ccb2d8faf04577db841033e2c953736dc644b154cbd85dc",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "kind": "ao",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-mask-ao.png",
+          "sha256": "3a5c4408a10b11453bdb023eeaf7a5fdcba5fb3bd0ee9be59520dad7b7414334",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "kind": "roughness",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-mask-roughness.png",
+          "sha256": "268acb8b83abce9dc0a59d70af192ec98a56b96ca44a75311f88398ab13c21da",
+          "width": 2048,
+          "height": 2048
+        },
+        {
+          "kind": "metallic-smoothness",
+          "path": "Assets/Resources/MaskHorror/Textures/wraith-mask-metallic-smoothness.png",
+          "sha256": "885f39b0e6cbae3a2e5053f4229e0eb77a35465c65686987bd9323050bdce907",
+          "width": 2048,
+          "height": 2048
+        }
+      ],
+      "normalMissPolicy": "Only pure-black ray misses/background neutralized; all valid sculpt normal texels retained",
+      "outwardShellVolume": 0.012459623817561587
+    }
+  ],
+  "materialContract": {
+    "all": "Original procedural skin/porcelain shaders baked to the per-resource tracked UV-atlas maps; MW_eye retains recessed red surface emission"
+  },
+  "runtime": "Visual only; original rig, mask attachment, body growth, nav capsule and authored physics remain owners.",
+  "professionalAuthoring": "Blender native volume remesh, silhouette-preserving decimation, unique atlas UV, editable multires sculpt and actual 2K Cycles PBR baking"
+}

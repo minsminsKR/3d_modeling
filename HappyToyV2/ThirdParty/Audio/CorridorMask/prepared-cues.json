@@ -1,0 +1,315 @@
+[
+  {
+    "creator": "evghenifloca",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+    "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+    "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+    "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923",
+    "resource": "Audio/External/mask-heavy-step-0",
+    "file": "mask-heavy-step-0.wav",
+    "pack": "corridor-mask-recorded-horror",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Distinct parquet heel contact near 2.12s, slowed .89; physical plank clap .69 and low-passed metal body .66. Mono 48 kHz, 45Hz high-pass, separate 3.8/1.9/.6kHz low-pass, .56s contact with 4/90ms fades. Peak .72; gain/cadence controlled by runner emitter.",
+      "recordings": [
+        {
+          "file": "parquet.mp3",
+          "creator": "evghenifloca",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+          "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+          "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+          "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923"
+        },
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "metal-drop.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - metal drop 3.wav",
+          "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical shoe/wood/metal contact and real human whistle recordings; edited and layered, no oscillator/noise synthesis."
+    },
+    "seconds": 0.56,
+    "peak": 0.719970703125,
+    "rms": 0.05766215902198771,
+    "sha256": "32951cefad301fb86a6360be74a1ed51f9676a6da5be385fcc5642d324c7bde5"
+  },
+  {
+    "creator": "evghenifloca",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+    "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+    "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+    "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923",
+    "resource": "Audio/External/mask-heavy-step-1",
+    "file": "mask-heavy-step-1.wav",
+    "pack": "corridor-mask-recorded-horror",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Distinct parquet heel contact near 4.48s, slowed .89; physical plank clap .69 and low-passed metal body .66. Mono 48 kHz, 45Hz high-pass, separate 3.8/1.9/.6kHz low-pass, .56s contact with 4/90ms fades. Peak .72; gain/cadence controlled by runner emitter.",
+      "recordings": [
+        {
+          "file": "parquet.mp3",
+          "creator": "evghenifloca",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+          "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+          "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+          "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923"
+        },
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "metal-drop.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - metal drop 3.wav",
+          "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical shoe/wood/metal contact and real human whistle recordings; edited and layered, no oscillator/noise synthesis."
+    },
+    "seconds": 0.56,
+    "peak": 0.719970703125,
+    "rms": 0.05786077331261788,
+    "sha256": "319734826b7a6817b8c4a6be84fd08f5c43090491b6f9770f4618baca19b09e1"
+  },
+  {
+    "creator": "evghenifloca",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+    "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+    "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+    "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923",
+    "resource": "Audio/External/mask-heavy-step-2",
+    "file": "mask-heavy-step-2.wav",
+    "pack": "corridor-mask-recorded-horror",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Distinct parquet heel contact near 5.39s, slowed .89; physical plank clap .69 and low-passed metal body .66. Mono 48 kHz, 45Hz high-pass, separate 3.8/1.9/.6kHz low-pass, .56s contact with 4/90ms fades. Peak .72; gain/cadence controlled by runner emitter.",
+      "recordings": [
+        {
+          "file": "parquet.mp3",
+          "creator": "evghenifloca",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/evghenifloca/sounds/817482/",
+          "download": "https://cdn.freesound.org/previews/817/817482_14899252-hq.mp3",
+          "source_file": "FEETHmn_Squeaky Wooden Parquet Footsteps.wav (public high quality MP3 preview)",
+          "source_file_sha256": "e466f4d5c669f85267caa012a861ea3998c9ae852cd36f935cc6d4458963c923"
+        },
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "metal-drop.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - metal drop 3.wav",
+          "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical shoe/wood/metal contact and real human whistle recordings; edited and layered, no oscillator/noise synthesis."
+    },
+    "seconds": 0.56,
+    "peak": 0.719970703125,
+    "rms": 0.05435237507768814,
+    "sha256": "19586534e1eb12f7462e807bce5e6c1379c3055f180057abc6ac1b652908fbee"
+  },
+  {
+    "creator": "Lunardrive",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/Lunardrive/sounds/48982/",
+    "download": "https://cdn.freesound.org/previews/48/48982_120830-hq.mp3",
+    "source_file": "Whistle_SoundSmith.wav (public high quality MP3 preview)",
+    "source_file_sha256": "75794b3207fe810eb4cbdd5ec1c2355265a8bfa7ff64d034128b4519f192ef5a",
+    "resource": "Audio/External/mask-near-whistle-0",
+    "file": "mask-near-whistle-0.wav",
+    "pack": "corridor-mask-recorded-horror",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Real lip whistle and tongue/front-teeth panflute-like human whistle; .96/.91 rate edits, triple uneven breath gestures at 0/0.39/0.84s; quiet non-synthetic source delays. 450/600Hz high-pass, 6.2/6.4kHz low-pass, 1.90s fade. No generated pitch tone or noise layer; close-range only runtime emitter.",
+      "recordings": [
+        {
+          "file": "lip-whistle.mp3",
+          "creator": "Lunardrive",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/Lunardrive/sounds/48982/",
+          "download": "https://cdn.freesound.org/previews/48/48982_120830-hq.mp3",
+          "source_file": "Whistle_SoundSmith.wav (public high quality MP3 preview)",
+          "source_file_sha256": "75794b3207fe810eb4cbdd5ec1c2355265a8bfa7ff64d034128b4519f192ef5a"
+        },
+        {
+          "file": "panflute-whistle.mp3",
+          "creator": "jperezjacome",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/jperezjacome/sounds/411508/",
+          "download": "https://cdn.freesound.org/previews/411/411508_8015768-hq.mp3",
+          "source_file": "whistlingLikePanflute2.wav (public high quality MP3 preview)",
+          "source_file_sha256": "d349e55f7b099d161b0d5dabeda78d26f66f98738266cdc0de27f00ed84ade51"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical shoe/wood/metal contact and real human whistle recordings; edited and layered, no oscillator/noise synthesis."
+    },
+    "seconds": 1.9,
+    "peak": 0.430023193359375,
+    "rms": 0.08764514425100733,
+    "sha256": "5b7377653ffa626ccd3ac550166960fbbe68de615a6f08ee72d14d0aded0c49f"
+  },
+  {
+    "creator": "Lunardrive",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/Lunardrive/sounds/48982/",
+    "download": "https://cdn.freesound.org/previews/48/48982_120830-hq.mp3",
+    "source_file": "Whistle_SoundSmith.wav (public high quality MP3 preview)",
+    "source_file_sha256": "75794b3207fe810eb4cbdd5ec1c2355265a8bfa7ff64d034128b4519f192ef5a",
+    "resource": "Audio/External/mask-near-whistle-1",
+    "file": "mask-near-whistle-1.wav",
+    "pack": "corridor-mask-recorded-horror",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Real lip whistle and tongue/front-teeth panflute-like human whistle; .96/.91 rate edits, triple uneven breath gestures at 0/0.44/0.94s; quiet non-synthetic source delays. 450/600Hz high-pass, 6.2/6.4kHz low-pass, 1.90s fade. No generated pitch tone or noise layer; close-range only runtime emitter.",
+      "recordings": [
+        {
+          "file": "lip-whistle.mp3",
+          "creator": "Lunardrive",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/Lunardrive/sounds/48982/",
+          "download": "https://cdn.freesound.org/previews/48/48982_120830-hq.mp3",
+          "source_file": "Whistle_SoundSmith.wav (public high quality MP3 preview)",
+          "source_file_sha256": "75794b3207fe810eb4cbdd5ec1c2355265a8bfa7ff64d034128b4519f192ef5a"
+        },
+        {
+          "file": "panflute-whistle.mp3",
+          "creator": "jperezjacome",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/jperezjacome/sounds/411508/",
+          "download": "https://cdn.freesound.org/previews/411/411508_8015768-hq.mp3",
+          "source_file": "whistlingLikePanflute2.wav (public high quality MP3 preview)",
+          "source_file_sha256": "d349e55f7b099d161b0d5dabeda78d26f66f98738266cdc0de27f00ed84ade51"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical shoe/wood/metal contact and real human whistle recordings; edited and layered, no oscillator/noise synthesis."
+    },
+    "seconds": 1.9,
+    "peak": 0.42999267578125,
+    "rms": 0.08543825375426299,
+    "sha256": "d4228527d5791b75f21e931e6f46ec26a6e551731c4e9ee753f6f12bba816df8"
+  },
+  {
+    "pack": "corridor-mask-recorded-horror",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - wood clap.wav",
+    "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3",
+    "resource": "Audio/External/mask-door-smash-0",
+    "file": "mask-door-smash-0.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "scope": "Physical plank clap, second split contact, dropped metal lock body and dragged metal friction; .84/.87/.91 rate edits. 1.34s captured impact and decay with 4/90ms fades, no synthetic crack. Bound to actual door break, not an unbreakable-door encounter.",
+      "recordings": [
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "metal-drop.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - metal drop 3.wav",
+          "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "metal-drag.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - dragging metal.wav",
+          "source_file_sha256": "e29e47f649d959075653ec1f451174365b0ba0a88c4b7b58d08a480cf6b0feee",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        }
+      ],
+      "loop": false,
+      "source_kind": "Physical shoe/wood/metal contact and real human whistle recordings; edited and layered, no oscillator/noise synthesis."
+    },
+    "seconds": 1.34,
+    "peak": 0.730010986328125,
+    "rms": 0.05876266361266323,
+    "sha256": "a6dd7167df8596dc317734b334af075606dc964d27b6d82bf2e940948c220380"
+  }
+]

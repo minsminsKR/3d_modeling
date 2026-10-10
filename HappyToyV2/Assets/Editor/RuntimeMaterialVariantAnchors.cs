@@ -57,6 +57,28 @@ namespace HappyToy.V2.Editor
                 var emissive=new Material(lit);emissive.SetColor("_EmissionColor",new Color(1,.49f,.1f));emissive.EnableKeyword("_EMISSION");
                 emissive.globalIlluminationFlags=MaterialGlobalIlluminationFlags.RealtimeEmissive;
                 Add(emissive,"CorridorRun lantern shade, HauntedCorridorPresentation paper shade, LightExplorationRun candle/locator flame");
+                // The authored mask uses baked normal, occlusion and packed
+                // metallic/smoothness together. Its recessed eyes add emission
+                // to that exact combination; retaining each flag separately
+                // would still strip the combined variant from a release.
+                foreach(bool eye in new[]{false,true})
+                {
+                    var authored=new Material(lit);
+                    foreach(string pair in new[]{"_BumpMap|normal","_OcclusionMap|ao","_MetallicGlossMap|metallic-smoothness"})
+                    {
+                        var parts=pair.Split('|');
+                        var texture=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Resources/MaskHorror/Textures/wraith-mask-"+parts[1]+".png");
+                        if(!texture)throw new InvalidOperationException("Missing authored mask shader bake: "+parts[1]);
+                        authored.SetTexture(parts[0],texture);
+                    }
+                    authored.EnableKeyword("_NORMALMAP");authored.EnableKeyword("_OCCLUSIONMAP");authored.EnableKeyword("_METALLICSPECGLOSSMAP");
+                    if(eye)
+                    {
+                        authored.EnableKeyword("_EMISSION");authored.SetColor("_EmissionColor",new Color(1.1f,.012f,.008f));
+                        authored.globalIlluminationFlags=MaterialGlobalIlluminationFlags.RealtimeEmissive;
+                    }
+                    Add(authored,eye?"MaskHorrorVisual recessed authored eye surface":"MaskHorrorVisual 2K sculpt-baked body and face");
+                }
                 var keys=new[]{"Cyclopse","Uncat","Hwacat_angry","Baby"};
                 var controllers=scene.GetRootGameObjects().SelectMany(root=>root.GetComponentsInChildren<V1MonsterMotion>(true)).ToArray();
                 foreach(string key in keys)

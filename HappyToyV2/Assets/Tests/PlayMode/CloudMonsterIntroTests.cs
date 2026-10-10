@@ -133,21 +133,49 @@ namespace HappyToy.V2.CloudTests
                         if (count++ == 0) bounds = new Bounds(world, Vector3.zero); else bounds.Encapsulate(world);
                     }
                 }
-                Assert.That(count, Is.GreaterThan(0), "Completed wraith has no enabled visible skin vertices");
+                foreach(var filter in root.GetComponentsInChildren<MeshFilter>(true))
+                {
+                    var renderer=filter.GetComponent<MeshRenderer>();
+                    if(!renderer||!renderer.enabled||!renderer.gameObject.activeInHierarchy)continue;
+                    Assert.That(filter.sharedMesh&&filter.sharedMesh.isReadable,Is.True,"Authored static body must expose its actual source vertices");
+                    vertices.Clear();filter.sharedMesh.GetVertices(vertices);
+                    foreach(var vertex in vertices)
+                    {
+                        var world=filter.transform.TransformPoint(vertex);
+                        if(count++==0)bounds=new Bounds(world,Vector3.zero);else bounds.Encapsulate(world);
+                    }
+                }
+                Assert.That(count, Is.GreaterThan(0), "Completed wraith has no enabled visible body vertices");
                 return bounds;
             }
             finally { Object.Destroy(mesh); }
         }
         static Bounds IntroVisibleStaticMaskBounds(Transform root)
         {
-            // The static imported mask mesh is unreadable at runtime. Its enabled
-            // MeshRenderer world bounds are a conservative envelope under tilt,
-            // explicitly not an exact sculpt-vertex measurement.
+            // Independently sample the new readable FBX's visible sculpt vertices.
+            // A tilted renderer box includes empty corners below the real face.
+            // Preserve renderer bounds only for the retained unreadable original.
             var renderers = root.GetComponentsInChildren<MeshRenderer>(true)
                 .Where(item => item.enabled && item.gameObject.activeInHierarchy).ToArray();
             Assert.That(renderers.Length, Is.GreaterThan(0), "Completed wraith has no visible static mask renderers");
-            var bounds = renderers[0].bounds;
-            foreach (var renderer in renderers.Skip(1)) bounds.Encapsulate(renderer.bounds);
+            var bounds = new Bounds(); var vertices = new List<Vector3>(); bool found = false;
+            foreach (var renderer in renderers)
+            {
+                var filter = renderer.GetComponent<MeshFilter>();
+                if (filter && filter.sharedMesh && filter.sharedMesh.isReadable)
+                {
+                    vertices.Clear(); filter.sharedMesh.GetVertices(vertices);
+                    Assert.That(vertices, Is.Not.Empty, "Visible authored mask has no actual source vertices");
+                    foreach (var vertex in vertices)
+                    {
+                        var world = filter.transform.TransformPoint(vertex);
+                        if (!found) { bounds = new Bounds(world, Vector3.zero); found = true; }
+                        else bounds.Encapsulate(world);
+                    }
+                }
+                else if (!found) { bounds = renderer.bounds; found = true; }
+                else bounds.Encapsulate(renderer.bounds);
+            }
             return bounds;
         }
         IEnumerator IntroLanternPause(Component owner, bool toggleComfort, bool afterAttachedLateUpdate = false)
@@ -175,14 +203,14 @@ namespace HappyToy.V2.CloudTests
                         Bounds bodyBounds = IntroTightVisibleBodyBounds(body);
                         Bounds maskBounds = IntroVisibleStaticMaskBounds(mask);
                         float edgeSeparation = maskBounds.min.y - bodyBounds.max.y;
-                        // Small inset accounts for the static tilted-mask envelope's conservatism.
+                        // Preserve the authored neck inset while comparing real visible edges.
                         Assert.That(edgeSeparation, Is.EqualTo(-.035f).Within(.003f),
                             "Visible mask lower edge did not meet the actual baked body's top edge");
                         Vector3 lateral = bodyBounds.center + owner.transform.forward * .03f;
                         Assert.That(maskBounds.center.x, Is.EqualTo(lateral.x).Within(.003f));
                         Assert.That(maskBounds.center.z, Is.EqualTo(lateral.z).Within(.003f));
                         TestContext.Out.WriteLine("HAPPYTOY_WRAITH_VISIBLE_JOIN tightBodyTop=" + bodyBounds.max.y +
-                            "; conservativeStaticMaskBottom=" + maskBounds.min.y + "; edgeSeparation=" + edgeSeparation);
+                            "; tightStaticMaskBottom=" + maskBounds.min.y + "; edgeSeparation=" + edgeSeparation);
                         pauseAndSnapshot();
                     };
                     yield return Wait(() => observer.Completed, 2, "Post-LateUpdate attachment observation never ran");

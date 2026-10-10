@@ -2,7 +2,7 @@
     "scope": "Owned Resources material anchors retain runtime shader_feature combinations; no original asset, scene, model or shader stripping setting modified.",
     "scene": "Assets/Annex/SchoolAnnex.unity",
     "unity": "6000.6.0f1",
-    "count": 6,
+    "count": 8,
     "entries": [
         {
             "asset": "Assets/Resources/FeedbackShaderVariants/Lit-b20e70bb910911656849f39b5a5e0bf14fdf723b021ecf94f635999d56d7409f.mat",
@@ -45,6 +45,19 @@
             ]
         },
         {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-438e85b77c16a041023c9e3b33849ba8d7313c2718c1c5a8ff1c64c559ad3f42.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_EMISSION",
+                "_METALLICSPECGLOSSMAP",
+                "_NORMALMAP",
+                "_OCCLUSIONMAP"
+            ],
+            "sources": [
+                "MaskHorrorVisual recessed authored eye surface"
+            ]
+        },
+        {
             "asset": "Assets/Resources/FeedbackShaderVariants/Lit-21bc63dfb56636b8b63a7f3bb922814189fdb235514a8737d0eb7ac2dd8d11fe.mat",
             "shader": "Universal Render Pipeline/Lit",
             "keywords": [
@@ -68,6 +81,18 @@
                 "Uncat / Assets/Generated/Uncat_skin.mat / Uncat_skin",
                 "Hwacat_angry / Assets/Generated/Hwacat_angry_skin 5.mat / Hwacat_angry_skin 5",
                 "Baby / Assets/Generated/Baby_skin 1.mat / Baby_skin 1"
+            ]
+        },
+        {
+            "asset": "Assets/Resources/FeedbackShaderVariants/Lit-86c2e9aa61bb216a545520a556d77c41fd60002b2a99c9cd7df1cad890c8aa88.mat",
+            "shader": "Universal Render Pipeline/Lit",
+            "keywords": [
+                "_METALLICSPECGLOSSMAP",
+                "_NORMALMAP",
+                "_OCCLUSIONMAP"
+            ],
+            "sources": [
+                "MaskHorrorVisual 2K sculpt-baked body and face"
             ]
         },
         {

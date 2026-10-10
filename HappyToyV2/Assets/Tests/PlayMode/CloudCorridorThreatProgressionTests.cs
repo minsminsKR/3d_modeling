@@ -74,7 +74,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(90000)]
-        public IEnumerator CorridorActualMaskCompletesItsIntroChasesCursesTransformsAndRestoresItsOwnedState()
+        public IEnumerator CorridorActualMaskRunsAlreadyGrownChasesPausesAndRestoresItsOwnedState()
         {
             Call(session,"CreateCorridor",73);Begin();((Behaviour)player).enabled=false;
             var run=Get<Component>(session,"Corridor");var mask=Get<Component>(run,"Mask");
@@ -84,38 +84,33 @@ namespace HappyToy.V2.CloudTests
                 "Third actual memory failed to release the real mask on the corridor floor");
             Assert.That(((Behaviour)mask).enabled,Is.True);
             Assert.That(mask.GetComponent(RequireType("StalkerBrain")),Is.Null,"Mask is a renamed walking stalker");
+            Assert.That(Get<bool>(mask,"CorridorRunner"),Is.True);
+            Assert.That(Get<bool>(mask,"Transformed"),Is.True,"Corridor runner still starts as a harmless floating lamp");
+            Assert.That(Get<bool>(mask,"IntroCompleted"),Is.True);
+            // Only school Mask authoring retains the lantern/curse/growth intro.
+            // The released corridor spirit is already grown and immediately
+            // acquires genuine unobstructed same-floor player sight.
             CorridorMaskCameraAndBodySight(mask,3);
-            Assert.That((bool)Call(mask,"CanSeePlayer"),Is.True,"Selected intro fixture lacks the production torso sightline");
-            yield return Wait(()=>Get<bool>(mask,"IntroStarted"),2,"Real same-floor corridor camera failed to begin the mask's harmless intro");
-            var introPosition=mask.transform.position;
+            Assert.That((bool)Call(mask,"CanSeePlayer"),Is.True,"Selected runner fixture lacks the production torso sightline");
             Assert.That(Get<int>(mask,"CursesApplied"),Is.Zero);Assert.That(Get<int>(mask,"AttacksStarted"),Is.Zero);
-            Call(shell,"Pause");float frozen=Get<float>(mask,"IntroElapsed");yield return Delay(.25f);
-            Assert.That(Get<float>(mask,"IntroElapsed"),Is.EqualTo(frozen));Call(shell,"Resume");
-            yield return Wait(()=>Get<bool>(mask,"IntroCompleted"),3,"Corridor mask did not complete its actual reveal clock");
-            Assert.That(Vector3.Distance(introPosition,mask.transform.position),Is.LessThan(.025f));
-            Assert.That((bool)Call(mask,"CanSeePlayer"),Is.True,"Unmoving intro lost its verified production torso LOS");
-            yield return Wait(()=>Get<object>(mask,"State").ToString()=="Chase",1,"Actual post-intro physical LOS never began chase",()=>
+            yield return Wait(()=>Get<object>(mask,"State").ToString()=="Chase",1,"Actual runner physical LOS never began chase",()=>
                 "state="+Get<object>(mask,"State")+" sees="+Call(mask,"CanSeePlayer")+" player="+player.transform.position+
                 " mask="+mask.transform.position+" ready="+mask.GetComponent<NavMeshAgent>().isOnNavMesh+
                 " input="+Get<bool>(session,"InputAllowed")+" complete="+Get<bool>(mask,"IntroCompleted"));
-            PlaceForLanternContact(mask);
-            yield return Wait(()=>Get<int>(mask,"CursesApplied")==1,4,"Real corridor mask attack never applied its curse");
-            Assert.That(Get<object>(mask,"State").ToString(),Is.EqualTo("Transforming"));
-            Assert.That(Get<float>(player,"SlowRemaining"),Is.GreaterThan(8));
-            Assert.That(Get<bool>(session,"Finished"),Is.False,"Initial mask curse defeated the player instead of slowing it");
-            // Retreat to the real entrance support. The controller, attack clock,
-            // five-second growth and curse remain production behavior throughout.
             var entrance=(Vector3)Call(run,"CellPosition",0);
             Assert.That(NavMesh.SamplePosition(entrance,out var floor,.25f,NavMesh.AllAreas),Is.True);
             PlacePlayer(floor.position,false);Get<Camera>(player,"eyes").transform.rotation=Quaternion.LookRotation(Vector3.back);
-            yield return Wait(()=>Get<bool>(mask,"Transformed"),7,"Actual five-second corridor growth never finished");
-            Assert.That(Get<bool>(mask,"IntroCompleted"),Is.True);Assert.That(Get<int>(mask,"CursesApplied"),Is.EqualTo(1));
+            yield return Delay(.9f);
+            Assert.That(Get<int>(mask,"CursesApplied"),Is.Zero);
             Assert.That(Get<object>(mask,"State").ToString(),Is.EqualTo("Chase"));
             Assert.That(Get<bool>(session,"Finished"),Is.False);
-            Call(shell,"Pause");var data=Call(run,"CaptureCheckpoint");var saved=Get<object>(data,"mask");
+            Call(shell,"Pause");var paused=mask.transform.position;float frozen=Get<float>(mask,"IntroElapsed");yield return Delay(.25f);
+            Assert.That(Get<float>(mask,"IntroElapsed"),Is.EqualTo(frozen));
+            Assert.That(mask.transform.position,Is.EqualTo(paused));
+            var data=Call(run,"CaptureCheckpoint");var saved=Get<object>(data,"mask");
             Assert.That(Get<int>(data,"threatVersion"),Is.EqualTo(1));
             Assert.That(Get<bool>(saved,"introComplete"),Is.True);Assert.That(Get<bool>(saved,"transformed"),Is.True);
-            Assert.That(Get<int>(saved,"curses"),Is.EqualTo(1));Assert.That(Get<int>(saved,"attacks"),Is.GreaterThan(0));
+            Assert.That(Get<int>(saved,"curses"),Is.Zero);Assert.That(Get<int>(saved,"attacks"),Is.Zero);
             // A real resume creates the fresh inactive mask and applies its
             // active saved state in that same frame, before any ordinary Update.
             yield return RestoreCheckpointInFreshScene(data);
@@ -123,12 +118,12 @@ namespace HappyToy.V2.CloudTests
             var restored=Call(mask,"CaptureChapterProgress");
             foreach(string field in new[]{"active","introComplete","transformed","cueIssued"})
                 Assert.That(Get<bool>(restored,field),Is.EqualTo(Get<bool>(saved,field)),field);
-            foreach(string field in new[]{"curses","attacks","noises","waypoint"})
+            foreach(string field in new[]{"curses","attacks","noises","waypoint","doorsShattered"})
                 Assert.That(Get<int>(restored,field),Is.EqualTo(Get<int>(saved,field)),field);
             Assert.That(Get<object>(restored,"state"),Is.EqualTo(Get<object>(saved,"state")));
             Assert.That(Get<Vector3>(restored,"target"),Is.EqualTo(Get<Vector3>(saved,"target")));
             Assert.That(Vector3.Distance(Get<Vector3>(restored,"position"),Get<Vector3>(saved,"position")),Is.LessThan(.002f));
-            Debug.Log("HAPPYTOY_CORRIDOR_REAL_MASK_PASS actual third-memory release, visible harmless intro/pause, real chase/curse/growth, version-one owned mask checkpoint round trip");
+            Debug.Log("HAPPYTOY_CORRIDOR_REAL_MASK_PASS actual third-memory grown-runner release, genuine torso-sight chase, pause, version-one owned mask checkpoint round trip");
         }
 
         [UnityTest, Timeout(120000)]

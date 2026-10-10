@@ -139,7 +139,7 @@ namespace HappyToy.V2
             return nearest;
         }
 
-        static bool RouteCrossesOpening(NavMeshAgent walkingAgent, Vector3 destination, Interactable door, NavMeshPath route)
+        public static bool RouteCrossesOpening(NavMeshAgent walkingAgent, Vector3 destination, Interactable door, NavMeshPath route)
         {
             var slide = door.openOffset.normalized; var normal = Vector3.Cross(Vector3.up, slide).normalized;
             var previous = door.transform.InverseTransformPoint(walkingAgent.transform.position);

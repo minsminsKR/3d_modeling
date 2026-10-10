@@ -1,0 +1,257 @@
+{
+  "status": "PASS",
+  "failure": "",
+  "unity": "6000.6.0f1",
+  "graphics": "NVIDIA GeForce RTX 2060 SUPER",
+  "scope": "Controlled native Mask fixture on actual seed-73 corridor. Third memory uses production release. Other monsters are disabled; player/Mask initial supported placements are explicit fixtures. Actual NavMesh runs, real locked/open scene doors, genuine solid-cover and cabinet entry, pause and checkpoint codec are production. Door locked state is fixture-authored because existing corridor ordinary leaves begin unlocked. Ordinary exit seals remain outside destructible Kind.Door. Native listener full mix is retained before the verified process-device mute; this does not certify natural survival, human listening, fear or hardware performance.",
+  "checks": [
+    {
+      "name": "real native session",
+      "passed": true
+    },
+    {
+      "name": "actual memory release 0",
+      "passed": true
+    },
+    {
+      "name": "actual memory release 1",
+      "passed": true
+    },
+    {
+      "name": "actual memory release 2",
+      "passed": true
+    },
+    {
+      "name": "already-grown runner release",
+      "passed": true
+    },
+    {
+      "name": "runner owns contact and whistle sources",
+      "passed": true
+    },
+    {
+      "name": "locked leaf rejects ordinary operation",
+      "passed": true
+    },
+    {
+      "name": "no warp during locked impact",
+      "passed": true
+    },
+    {
+      "name": "locked real scene leaf shattered",
+      "passed": true
+    },
+    {
+      "name": "locked actual native crossing",
+      "passed": true
+    },
+    {
+      "name": "ordinary leaf really opens",
+      "passed": true
+    },
+    {
+      "name": "no warp during open impact",
+      "passed": true
+    },
+    {
+      "name": "open real scene leaf shattered",
+      "passed": true
+    },
+    {
+      "name": "open actual native crossing",
+      "passed": true
+    },
+    {
+      "name": "actual patrol exceeds every authored monster patrol",
+      "passed": true
+    },
+    {
+      "name": "real running emits heavy contacts and door smashes",
+      "passed": true
+    },
+    {
+      "name": "near real clear sight",
+      "passed": true
+    },
+    {
+      "name": "room cover prevents close-range acquisition",
+      "passed": true
+    },
+    {
+      "name": "cover removal restores physical sight",
+      "passed": true
+    },
+    {
+      "name": "snapshot follows actual live attachment",
+      "passed": true
+    },
+    {
+      "name": "snapshot retains visible authored Mask",
+      "passed": true
+    },
+    {
+      "name": "player-camera render target created",
+      "passed": true
+    },
+    {
+      "name": "player-camera PNG encoded",
+      "passed": true
+    },
+    {
+      "name": "player-camera PNG retained",
+      "passed": true
+    },
+    {
+      "name": "actual cabinet approach provides clear near sight",
+      "passed": true
+    },
+    {
+      "name": "actual cabinet entry",
+      "passed": true
+    },
+    {
+      "name": "close runner respects actual cabinet hiding",
+      "passed": true
+    },
+    {
+      "name": "actual cabinet exit",
+      "passed": true
+    },
+    {
+      "name": "pause freezes native run and contact admission",
+      "passed": true
+    },
+    {
+      "name": "JSON retains shattered ordinary door",
+      "passed": true
+    },
+    {
+      "name": "paused production restore keeps destroyed physics",
+      "passed": true
+    },
+    {
+      "name": "seal remains a separate non-destructible exit",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "peakNativeSpeed": 6.6011247634887695,
+  "maximumAuthoredPatrol": 1.7000000476837158,
+  "contacts": 7,
+  "whistles": 1,
+  "smashed": 2,
+  "audio": {
+    "capture": "Unity listener DSP tap, pre-device; natural native callback clock; no device listening certification",
+    "sampleRate": 48000,
+    "channels": 2,
+    "callbacks": 218,
+    "nonfiniteSamples": 0,
+    "maximumSeconds": 180,
+    "observedSamples": 446464,
+    "capturedSamples": 446464,
+    "overflowSamples": 0,
+    "seconds": 4.650666666666667,
+    "dspSeconds": 4.394666666666667,
+    "callbackWallSeconds": 4.6385263,
+    "firstCallbackAfterStartSeconds": 0.0099211,
+    "gameSeconds": 4.388391017913818,
+    "truncated": false,
+    "nonSilent": true,
+    "stages": [
+      {
+        "storyStep": 0,
+        "name": "progress-0",
+        "samples": 12288,
+        "clipped": 0,
+        "peak": 0.0097417077049613,
+        "rms": 0.001498865735432967
+      },
+      {
+        "storyStep": 1,
+        "name": "progress-1",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 2,
+        "name": "progress-2",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 3,
+        "name": "progress-3",
+        "samples": 434176,
+        "clipped": 0,
+        "peak": 0.5010271072387695,
+        "rms": 0.026127756842584685
+      },
+      {
+        "storyStep": 4,
+        "name": "progress-4",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 5,
+        "name": "progress-5",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      }
+    ],
+    "floors": [
+      {
+        "storyStep": 0,
+        "name": "ground",
+        "samples": 446464,
+        "clipped": 0,
+        "peak": 0.5010271072387695,
+        "rms": 0.02576689178276113
+      },
+      {
+        "storyStep": 1,
+        "name": "upper",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 2,
+        "name": "basement",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      }
+    ],
+    "pause": {
+      "samples": 24576,
+      "steadySamples": 14336,
+      "peak": 0.0016151496674865484,
+      "rms": 1.3950447020143724e-05,
+      "steadyPeak": 8.180364327625452e-28,
+      "steadyRms": 4.8071454297553e-28,
+      "transitionAllowanceSeconds": 0.10000000149011612
+    },
+    "writerError": "",
+    "progressMode": "corridor-memories",
+    "files": [
+      {
+        "file": "route.wav",
+        "sha256": "50b7e8821a58cbb5e0fec2548aba2c5a7fc1708d6be93eda7464e999e36fef14",
+        "samples": 446464,
+        "channels": 2,
+        "seconds": 4.650666666666667
+      }
+    ]
+  }
+}

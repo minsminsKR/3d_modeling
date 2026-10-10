@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "model": "Systran/faster-whisper-large-v2",
+  "revision": "f0fe81560cb8b68660e564f55dd99207059c092e",
+  "device": "cpu/int8",
+  "speaker_output": false,
+  "results": [
+    {
+      "file": "enemy-baby-mutter-0.wav",
+      "sha256": "22f1e172a7576c793b6c27fbe724e54377d902d9bb02a08c7e56a33f69a6da8c",
+      "transcribed": " 어디? 어디 있어?",
+      "normalized": "어디어디있어",
+      "phraseRecognized": true,
+      "language": "ko"
+    },
+    {
+      "file": "enemy-baby-mutter-1.wav",
+      "sha256": "4fe92d4f0a4894c3693a9103c96761a14a5639af7effde8578b13e1d983c34fa",
+      "transcribed": " 어디? 어디 있어?",
+      "normalized": "어디어디있어",
+      "phraseRecognized": true,
+      "language": "ko"
+    }
+  ],
+  "scope": "Independent unprompted offline ASR intelligibility; not human listening/child-voice quality, Unity import, runtime mix or lifecycle verification."
+}

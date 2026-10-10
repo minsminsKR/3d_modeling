@@ -1,0 +1,192 @@
+[
+  {
+    "creator": "HappyToyV2 generated speech / MyShell.ai MeloTTS",
+    "license": "MIT",
+    "page": "https://huggingface.co/myshell-ai/MeloTTS-Korean",
+    "download": "https://huggingface.co/myshell-ai/MeloTTS-Korean/resolve/0207e5adfc90129a51b6b03d89be6d84360ed323/checkpoint.pth",
+    "source_file": "Locally generated Korean project utterance; original input text: 어디..? 어디있어??",
+    "source_file_sha256": "ee6bb59617f7fa22bb692febb3378f6dac1b6a9226b6b1256dd7f09d853d5ecb",
+    "generated": true,
+    "phrase": "어디..? 어디있어??",
+    "spoken_segments": [
+      "어디?",
+      "어디 있어?"
+    ],
+    "model": "myshell-ai/MeloTTS-Korean",
+    "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+    "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+    "auxiliary_model": "kykim/bert-kor-base",
+    "auxiliary_revision": "1779cc0982ada0216dd6de0dd4e86fb78201926d",
+    "authoring": {
+      "name": "seeking-soft",
+      "seed": 211,
+      "speed": 0.94,
+      "pause": 0.48,
+      "sample_rate": 44100,
+      "sdp_ratio": 0.2,
+      "noise_scale": 0.48,
+      "noise_scale_w": 0.6,
+      "script": "SourceArt/Audio/generate_baby_mutter.py",
+      "scope": "File-only local inference; no speaker output or live voice/person cloning."
+    },
+    "resource": "Audio/External/enemy-baby-mutter-0",
+    "file": "enemy-baby-mutter-0.wav",
+    "pack": "corridor-baby-generated-korean-mutter",
+    "seconds": 1.995,
+    "peak": 0.379974365234375,
+    "rms": 0.06138548973018704,
+    "sha256": "22f1e172a7576c793b6c27fbe724e54377d902d9bb02a08c7e56a33f69a6da8c",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "recordings": [
+        {
+          "file": "seeking-soft.wav",
+          "creator": "HappyToyV2 generated speech / MyShell.ai MeloTTS",
+          "license": "MIT",
+          "page": "https://huggingface.co/myshell-ai/MeloTTS-Korean",
+          "download": "https://huggingface.co/myshell-ai/MeloTTS-Korean/resolve/0207e5adfc90129a51b6b03d89be6d84360ed323/checkpoint.pth",
+          "source_file": "Locally generated Korean project utterance; original input text: 어디..? 어디있어??",
+          "source_file_sha256": "ee6bb59617f7fa22bb692febb3378f6dac1b6a9226b6b1256dd7f09d853d5ecb",
+          "generated": true,
+          "phrase": "어디..? 어디있어??",
+          "spoken_segments": [
+            "어디?",
+            "어디 있어?"
+          ],
+          "model": "myshell-ai/MeloTTS-Korean",
+          "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+          "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+          "auxiliary_model": "kykim/bert-kor-base",
+          "auxiliary_revision": "1779cc0982ada0216dd6de0dd4e86fb78201926d",
+          "authoring": {
+            "name": "seeking-soft",
+            "seed": 211,
+            "speed": 0.94,
+            "pause": 0.48,
+            "sample_rate": 44100,
+            "sdp_ratio": 0.2,
+            "noise_scale": 0.48,
+            "noise_scale_w": 0.6,
+            "script": "SourceArt/Audio/generate_baby_mutter.py",
+            "scope": "File-only local inference; no speaker output or live voice/person cloning."
+          }
+        }
+      ],
+      "generated_voice": {
+        "model": "myshell-ai/MeloTTS-Korean",
+        "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+        "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+        "phrase": "어디..? 어디있어??",
+        "clones_person": false,
+        "raw_source_sha256": "ee6bb59617f7fa22bb692febb3378f6dac1b6a9226b6b1256dd7f09d853d5ecb",
+        "generator": "SourceArt/Audio/generate_baby_mutter.py",
+        "renderer": "SourceArt/Audio/render_baby_mutter.py"
+      },
+      "source_kind": "Locally generated Korean neural character speech; not a recording of a real child. Independent vocal-pitch and formant edits preserve timing and Korean consonants.",
+      "scope": "Two question phrases '어디? 어디 있어?' with authored hesitation; preserved duration, WORLD 24kHz/5ms voiced/resonance analysis, 105Hz high-pass/5.6kHz low-pass, 14/55ms edge fades, peak .38; no voice service, cloned real person, oscillator or generic added noise.",
+      "raw_median_f0": 187.1082347075804,
+      "pitch_ratio": 1.65,
+      "formant_ratio": 1.16,
+      "prepared_median_f0": 308.72858726750763,
+      "world_version": "0.3.5"
+    }
+  },
+  {
+    "creator": "HappyToyV2 generated speech / MyShell.ai MeloTTS",
+    "license": "MIT",
+    "page": "https://huggingface.co/myshell-ai/MeloTTS-Korean",
+    "download": "https://huggingface.co/myshell-ai/MeloTTS-Korean/resolve/0207e5adfc90129a51b6b03d89be6d84360ed323/checkpoint.pth",
+    "source_file": "Locally generated Korean project utterance; original input text: 어디..? 어디있어??",
+    "source_file_sha256": "a8ad266df7b98897b32eff0dff489ff4aa04f427ee70ec4cf5e2973edbef430e",
+    "generated": true,
+    "phrase": "어디..? 어디있어??",
+    "spoken_segments": [
+      "어디?",
+      "어디 있어?"
+    ],
+    "model": "myshell-ai/MeloTTS-Korean",
+    "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+    "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+    "auxiliary_model": "kykim/bert-kor-base",
+    "auxiliary_revision": "1779cc0982ada0216dd6de0dd4e86fb78201926d",
+    "authoring": {
+      "name": "seeking-hesitant",
+      "seed": 431,
+      "speed": 0.88,
+      "pause": 0.63,
+      "sample_rate": 44100,
+      "sdp_ratio": 0.2,
+      "noise_scale": 0.48,
+      "noise_scale_w": 0.6,
+      "script": "SourceArt/Audio/generate_baby_mutter.py",
+      "scope": "File-only local inference; no speaker output or live voice/person cloning."
+    },
+    "resource": "Audio/External/enemy-baby-mutter-1",
+    "file": "enemy-baby-mutter-1.wav",
+    "pack": "corridor-baby-generated-korean-mutter",
+    "seconds": 2.23,
+    "peak": 0.379974365234375,
+    "rms": 0.0644440479702036,
+    "sha256": "4fe92d4f0a4894c3693a9103c96761a14a5639af7effde8578b13e1d983c34fa",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "recordings": [
+        {
+          "file": "seeking-hesitant.wav",
+          "creator": "HappyToyV2 generated speech / MyShell.ai MeloTTS",
+          "license": "MIT",
+          "page": "https://huggingface.co/myshell-ai/MeloTTS-Korean",
+          "download": "https://huggingface.co/myshell-ai/MeloTTS-Korean/resolve/0207e5adfc90129a51b6b03d89be6d84360ed323/checkpoint.pth",
+          "source_file": "Locally generated Korean project utterance; original input text: 어디..? 어디있어??",
+          "source_file_sha256": "a8ad266df7b98897b32eff0dff489ff4aa04f427ee70ec4cf5e2973edbef430e",
+          "generated": true,
+          "phrase": "어디..? 어디있어??",
+          "spoken_segments": [
+            "어디?",
+            "어디 있어?"
+          ],
+          "model": "myshell-ai/MeloTTS-Korean",
+          "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+          "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+          "auxiliary_model": "kykim/bert-kor-base",
+          "auxiliary_revision": "1779cc0982ada0216dd6de0dd4e86fb78201926d",
+          "authoring": {
+            "name": "seeking-hesitant",
+            "seed": 431,
+            "speed": 0.88,
+            "pause": 0.63,
+            "sample_rate": 44100,
+            "sdp_ratio": 0.2,
+            "noise_scale": 0.48,
+            "noise_scale_w": 0.6,
+            "script": "SourceArt/Audio/generate_baby_mutter.py",
+            "scope": "File-only local inference; no speaker output or live voice/person cloning."
+          }
+        }
+      ],
+      "generated_voice": {
+        "model": "myshell-ai/MeloTTS-Korean",
+        "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+        "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+        "phrase": "어디..? 어디있어??",
+        "clones_person": false,
+        "raw_source_sha256": "a8ad266df7b98897b32eff0dff489ff4aa04f427ee70ec4cf5e2973edbef430e",
+        "generator": "SourceArt/Audio/generate_baby_mutter.py",
+        "renderer": "SourceArt/Audio/render_baby_mutter.py"
+      },
+      "source_kind": "Locally generated Korean neural character speech; not a recording of a real child. Independent vocal-pitch and formant edits preserve timing and Korean consonants.",
+      "scope": "Two question phrases '어디? 어디 있어?' with authored hesitation; preserved duration, WORLD 24kHz/5ms voiced/resonance analysis, 105Hz high-pass/5.6kHz low-pass, 14/55ms edge fades, peak .38; no voice service, cloned real person, oscillator or generic added noise.",
+      "raw_median_f0": 179.2098338509666,
+      "pitch_ratio": 1.65,
+      "formant_ratio": 1.18,
+      "prepared_median_f0": 295.69622585409485,
+      "world_version": "0.3.5"
+    }
+  }
+]

@@ -203,6 +203,43 @@ namespace HappyToy.V2.CloudTests
                 var enabled = emitters.Select(renderer => renderer.enabled).ToArray();
                 var shadows = emitters.Select(renderer => renderer.shadowCastingMode).ToArray();
                 var motion = eye.GetComponentInParent(RequireType("V1MonsterMotion")) as Component;
+                // This requested replacement face owns two buried, genuinely
+                // modeled eye slits. Its oracle is the new Blender FBX; every
+                // other actor continues to use the retained original-eye oracle.
+                Vector3[][] authoredVertices = null; int[][] authoredTriangles = null;
+                if (key == "LanternMask")
+                {
+                    var horror = eye.GetComponentInParent(RequireType("MaskHorrorVisual")) as Component;
+                    Assert.That(horror, Is.Not.Null, "Requested authored mask replacement is missing");
+                    var authored = Get<Transform>(horror, "MaskModel");
+                    var source = Resources.Load<GameObject>("MaskHorror/wraith-mask");
+                    Assert.That(source, Is.Not.Null);
+                    var sourceEyes = source.GetComponentsInChildren<MeshRenderer>(true)
+                        .Where(renderer => renderer.name.StartsWith("Buried red eye slit", System.StringComparison.Ordinal)).ToArray();
+                    Assert.That(sourceEyes.Length, Is.EqualTo(2), "Editable FBX must contain two recessed anatomical eye surfaces");
+                    Assert.That(emitters.Count, Is.EqualTo(2)); Assert.That(emitters.Distinct().Count(), Is.EqualTo(2));
+                    Assert.That(authored.GetComponentsInChildren<Light>(true), Is.Empty, "Authored eyes added illumination");
+                    Assert.That(authored.GetComponentsInChildren<Collider>(true), Is.Empty, "Authored eyes changed actor physics");
+                    Assert.That(authored.GetComponentsInChildren<NavMeshObstacle>(true), Is.Empty);
+                    for (int index = 0; index < emitters.Count; index++)
+                    {
+                        var emitter = emitters[index]; var mesh = meshes[index];
+                        Assert.That(emitter is MeshRenderer && emitter.transform.IsChildOf(authored), Is.True,
+                            "Red emission left the real authored mask eye surface");
+                        Assert.That(sourceEyes.Any(renderer => EyeOriginalMesh(renderer) == mesh), Is.True,
+                            "Eye binding replaced the imported FBX topology with foreground glow geometry");
+                        Assert.That(mesh.vertexCount, Is.GreaterThan(8)); Assert.That(mesh.subMeshCount, Is.EqualTo(1));
+                        Assert.That(emitter.bounds.size.x, Is.GreaterThan(.001f));
+                        Assert.That(emitter.bounds.size.y, Is.GreaterThan(.001f));
+                        Assert.That(emitter.bounds.size.z, Is.GreaterThan(.001f), "Authored eye became a flat glow disc");
+                        Assert.That(Vector3.Distance(anchors[index].position, emitter.bounds.center), Is.LessThan(.00002f),
+                            "Eye inspection anchor floats in front of the actual recessed surface");
+                        float radius = Mathf.Max(emitter.bounds.extents.x, emitter.bounds.extents.y, emitter.bounds.extents.z);
+                        Assert.That(radii[index], Is.EqualTo(radius).Within(.00002f), "Eye extent ignores the actual authored surface");
+                    }
+                    authoredVertices = meshes.Select(mesh => mesh.vertices).ToArray();
+                    authoredTriangles = meshes.Select(mesh => mesh.triangles).ToArray();
+                }
                 foreach (var emitter in emitters)
                 {
                     Assert.That(emitter.transform.IsChildOf(eye.transform), Is.False, "Emission must use the original face renderer");
@@ -240,10 +277,17 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(emitters[index].sharedMaterials, Is.EqualTo(materials[index]));
                     Assert.That(emitters[index].enabled, Is.EqualTo(enabled[index]), "Toggling emission hid the original eyeball");
                     Assert.That(emitters[index].shadowCastingMode, Is.EqualTo(shadows[index]));
+                    if (key == "LanternMask")
+                    {
+                        Assert.That(meshes[index].vertices, Is.EqualTo(authoredVertices[index]), "Eye emission mutated imported FBX vertices");
+                        Assert.That(meshes[index].triangles, Is.EqualTo(authoredTriangles[index]), "Eye emission mutated imported FBX triangles");
+                    }
                     foreach (int slot in (int[])Call(eye, "GetAffectedSlots", emitters[index]))
                     {
                         var colour = EyeBlockEmission(emitters[index], slot);
                         Assert.That(colour.r, Is.GreaterThan(.1f)); Assert.That(colour.g, Is.LessThan(colour.r * .1f));
+                        if (key == "LanternMask") Assert.That(colour.r, Is.LessThanOrEqualTo(1.101f),
+                            "Requested recessed slits became an unbounded foreground light source");
                     }
                 }
                 var localPoints = anchors.Select(anchor => head.InverseTransformPoint(anchor.position)).ToArray();

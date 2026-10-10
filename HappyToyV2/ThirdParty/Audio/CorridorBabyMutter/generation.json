@@ -1,0 +1,24 @@
+{
+  "model": "myshell-ai/MeloTTS-Korean",
+  "model_revision": "0207e5adfc90129a51b6b03d89be6d84360ed323",
+  "model_license": "MIT",
+  "model_weight_hashes": {
+    "config.json": "74543376976dfadde45ba34336fa79c7e95509f43a7c2e701b22c0f71fd7695c",
+    "checkpoint.pth": "48e3ff3fd0b5348e095f0468e60ae727507564100f58142ef3a922ead6e0a4d0"
+  },
+  "tool_revision": "209145371cff8fc3bd60d7be902ea69cbdb7965a",
+  "auxiliary_model": "kykim/bert-kor-base",
+  "auxiliary_revision": "1779cc0982ada0216dd6de0dd4e86fb78201926d",
+  "auxiliary_license": "Apache-2.0 (LMkor)",
+  "authored_pronunciation": {
+    "어디": "어디",
+    "있어": "이써"
+  },
+  "phrase": "어디..? 어디있어??",
+  "python": "3.11",
+  "torch": "2.5.1+cpu",
+  "device": "cpu",
+  "clones_person": false,
+  "hardware_playback": false,
+  "notes": "Neural generated speech, then child-character formant/F0 authoring; not a recording of a real infant. Raw WAVs retained so the ordinary rebuild is fully offline."
+}

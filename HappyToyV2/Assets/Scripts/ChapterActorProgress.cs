@@ -49,7 +49,7 @@ namespace HappyToy.V2
             public Vector3 position, target;
             public Quaternion rotation;
             public float age, memory, awareness;
-            public int waypoint, curses, attacks, noises;
+            public int waypoint, curses, attacks, noises, doorsShattered;
             public StalkerDoorTraversal.Progress doorPassage;
             public NoiseInvestigationClock.Progress investigation;
             public float investigationYaw;
@@ -57,7 +57,7 @@ namespace HappyToy.V2
             // Only this representation may accompany the legacy corridor marker.
             public bool LegacyEmpty => !active && !introComplete && !transformed && !cueIssued && state == Phase.Dormant &&
                 position == Vector3.zero && target == Vector3.zero && rotation.Equals(default(Quaternion)) && age == 0 && memory == 0 &&
-                awareness == 0 && waypoint == 0 && curses == 0 && attacks == 0 && noises == 0 && investigationYaw == 0 &&
+                awareness == 0 && waypoint == 0 && curses == 0 && attacks == 0 && noises == 0 && doorsShattered == 0 && investigationYaw == 0 &&
                 (doorPassage == null || doorPassage.LegacyEmpty) &&
                 (investigation == null || investigation.version >= 0 && investigation.version <= 1 && investigation.LegacyEmpty);
             public void Validate() => Validate(false);
@@ -68,7 +68,8 @@ namespace HappyToy.V2
                     !Enum.IsDefined(typeof(Phase),state) || state==Phase.Transforming || state==Phase.Resolved ||
                     !CorridorCheckpoint.Number(age,0,1000000000) || !CorridorCheckpoint.Number(memory,0,state==Phase.Investigate?3600:8.01f) ||
                     !CorridorCheckpoint.Number(awareness,0,1) || waypoint<0 || waypoint>(corridor?3:2) || curses<0 || attacks<0 || noises<0 ||
-                    introComplete && !active || transformed && !introComplete) throw new ArgumentException("Invalid mask checkpoint");
+                    doorsShattered < 0 || doorsShattered > 162 || introComplete && !active || transformed && !introComplete)
+                    throw new ArgumentException("Invalid mask checkpoint");
                 doorPassage?.Validate(); investigation?.Validate();
                 if(!CorridorCheckpoint.Number(investigationYaw,0,360) ||
                     investigation!=null && investigation.active && state==Phase.Investigate &&
@@ -78,7 +79,7 @@ namespace HappyToy.V2
         public ChapterProgress CaptureChapterProgress() => new ChapterProgress {
             active=gameObject.activeSelf,introComplete=IntroCompleted,transformed=Transformed,cueIssued=recognitionCueIssued,
             state=State,position=transform.position,target=target,rotation=transform.rotation,age=age,memory=Mathf.Max(0,memory),
-            awareness=awareness.Value,waypoint=waypoint,curses=CursesApplied,attacks=AttacksStarted,noises=FootstepNoisesAccepted,
+            awareness=awareness.Value,waypoint=waypoint,curses=CursesApplied,attacks=AttacksStarted,noises=FootstepNoisesAccepted,doorsShattered=DoorsShattered,
             doorPassage=doorTraversal?doorTraversal.CaptureProgress():null,
             investigation=investigation.Capture(),investigationYaw=investigationFacing.eulerAngles.y };
         public void RestoreChapterProgress(ChapterProgress data)
@@ -94,6 +95,8 @@ namespace HappyToy.V2
             IntroStarted=IntroCompleted=data.introComplete; IntroElapsed=data.introComplete?2.2f:0; riseCueIssued=data.introComplete;
             Transformed=data.transformed; transformTime=data.transformed?5:0; recognitionCueIssued=data.cueIssued;
             awareness.Restore(data.awareness); CursesApplied=data.curses; AttacksStarted=data.attacks; FootstepNoisesAccepted=data.noises;
+            DoorsShattered=data.doorsShattered;
+            if (CorridorRunner && data.active) PrepareCorridorRunner();
             attack.Reset(); repath=0; EnemyNavigation.Stop(agent,true); SetVisible(data.active); if(data.active) Visual();
             DoorTraversal.RestoreProgress(data.doorPassage);
             investigation.Restore(data.investigation); investigationFacing=Quaternion.Euler(0,data.investigationYaw,0);

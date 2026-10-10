@@ -1,0 +1,305 @@
+{
+  "status": "PASS",
+  "failure": "",
+  "checks": [
+    {
+      "name": "actual occupied cabinet protects sight",
+      "passed": true
+    },
+    {
+      "name": "two owned Korean voice variants",
+      "passed": true
+    },
+    {
+      "name": "actual movement starts searching voice",
+      "passed": true
+    },
+    {
+      "name": "authored slow travel",
+      "passed": true
+    },
+    {
+      "name": "moving Korean mutter valid native PCM",
+      "passed": true
+    },
+    {
+      "name": "moving Korean mutter audible expectation",
+      "passed": true
+    },
+    {
+      "name": "active utterance before pause",
+      "passed": true
+    },
+    {
+      "name": "paused Korean mutter valid native PCM",
+      "passed": true
+    },
+    {
+      "name": "paused Korean mutter audible expectation",
+      "passed": true
+    },
+    {
+      "name": "pause freezes active voice and body",
+      "passed": true
+    },
+    {
+      "name": "natural voice repeats during wandering",
+      "passed": true
+    },
+    {
+      "name": "repeated Korean mutter valid native PCM",
+      "passed": true
+    },
+    {
+      "name": "repeated Korean mutter audible expectation",
+      "passed": true
+    },
+    {
+      "name": "source muted Korean mutter valid native PCM",
+      "passed": true
+    },
+    {
+      "name": "source muted Korean mutter audible expectation",
+      "passed": true
+    },
+    {
+      "name": "fresh active utterance before master mute",
+      "passed": true
+    },
+    {
+      "name": "master mute interrupts actual owned voice",
+      "passed": true
+    },
+    {
+      "name": "master muted Korean mutter valid native PCM",
+      "passed": true
+    },
+    {
+      "name": "master muted Korean mutter audible expectation",
+      "passed": true
+    },
+    {
+      "name": "master restore keeps searching voice",
+      "passed": true
+    },
+    {
+      "name": "master restored Korean mutter valid native PCM",
+      "passed": true
+    },
+    {
+      "name": "master restored Korean mutter audible expectation",
+      "passed": true
+    },
+    {
+      "name": "disabled Korean mutter valid native PCM",
+      "passed": true
+    },
+    {
+      "name": "disabled Korean mutter audible expectation",
+      "passed": true
+    },
+    {
+      "name": "disable stops owned voice",
+      "passed": true
+    },
+    {
+      "name": "owned voice cleanup preserves imported resources",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "phases": [
+    {
+      "name": "moving Korean mutter",
+      "expectedAudible": true,
+      "callbacks": 30,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 61440,
+      "peak": 0.015395106747746468,
+      "rms": 0.00205990500043633
+    },
+    {
+      "name": "paused Korean mutter",
+      "expectedAudible": false,
+      "callbacks": 31,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 63488,
+      "peak": 7.610042545053948e-28,
+      "rms": 4.710974113247194e-28
+    },
+    {
+      "name": "repeated Korean mutter",
+      "expectedAudible": true,
+      "callbacks": 31,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 63488,
+      "peak": 0.018772680312395096,
+      "rms": 0.004465690609295862
+    },
+    {
+      "name": "source muted Korean mutter",
+      "expectedAudible": false,
+      "callbacks": 30,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 61440,
+      "peak": 6.916831024590984e-28,
+      "rms": 4.381516619595734e-28
+    },
+    {
+      "name": "master muted Korean mutter",
+      "expectedAudible": false,
+      "callbacks": 30,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 61440,
+      "peak": 7.36481773709501e-28,
+      "rms": 4.413219009467674e-28
+    },
+    {
+      "name": "master restored Korean mutter",
+      "expectedAudible": true,
+      "callbacks": 31,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 63488,
+      "peak": 0.018160656094551086,
+      "rms": 0.004333488698427296
+    },
+    {
+      "name": "disabled Korean mutter",
+      "expectedAudible": false,
+      "callbacks": 31,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 63488,
+      "peak": 6.286420227754599e-28,
+      "rms": 3.916305582258185e-28
+    }
+  ],
+  "audio": {
+    "capture": "Unity listener DSP tap, pre-device; natural native callback clock; no device listening certification",
+    "sampleRate": 48000,
+    "channels": 2,
+    "callbacks": 846,
+    "nonfiniteSamples": 0,
+    "maximumSeconds": 180,
+    "observedSamples": 1732608,
+    "capturedSamples": 1732608,
+    "overflowSamples": 0,
+    "seconds": 18.048,
+    "dspSeconds": 16.981333333333332,
+    "callbackWallSeconds": 18.0388377,
+    "firstCallbackAfterStartSeconds": 0.0136299,
+    "gameSeconds": 17.320241928100586,
+    "truncated": false,
+    "nonSilent": true,
+    "stages": [
+      {
+        "storyStep": 0,
+        "name": "progress-0",
+        "samples": 1732608,
+        "clipped": 0,
+        "peak": 0.12897102534770966,
+        "rms": 0.003432237308102202
+      },
+      {
+        "storyStep": 1,
+        "name": "progress-1",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 2,
+        "name": "progress-2",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 3,
+        "name": "progress-3",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 4,
+        "name": "progress-4",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 5,
+        "name": "progress-5",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      }
+    ],
+    "floors": [
+      {
+        "storyStep": 0,
+        "name": "ground",
+        "samples": 1732608,
+        "clipped": 0,
+        "peak": 0.12897102534770966,
+        "rms": 0.003432237308102202
+      },
+      {
+        "storyStep": 1,
+        "name": "upper",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 2,
+        "name": "basement",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      }
+    ],
+    "pause": {
+      "samples": 102400,
+      "steadySamples": 92160,
+      "peak": 1.0245649946227786e-06,
+      "rms": 1.2850424461368047e-08,
+      "steadyPeak": 7.610042545053948e-28,
+      "steadyRms": 4.711092593344596e-28,
+      "transitionAllowanceSeconds": 0.10000000149011612
+    },
+    "writerError": "",
+    "progressMode": "corridor-memories",
+    "files": [
+      {
+        "file": "route.wav",
+        "sha256": "7d407fde587e1850daf2cad0ad76e6d91007d12dd7d24ff00482eb2183e6fcf6",
+        "samples": 1732608,
+        "channels": 2,
+        "seconds": 18.048
+      }
+    ]
+  },
+  "scope": "Controlled corridor Baby post-chase legal checkpoint restore, two local supported patrol markers and actual agent movement beside a real occupied cabinet. Other sources are muted, cabinet RNG is fixed only for this acoustic fixture, and pre-device natural listener DSP is retained. Speech is generated from the documented Korean text, not a recorded child. Not a natural full survival route or human listening certification."
+}

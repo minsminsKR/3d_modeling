@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 namespace HappyToy.V2
 {
-    public sealed class Interactable : MonoBehaviour
+    public sealed partial class Interactable : MonoBehaviour
     {
         public enum Kind { Door, NameSlip, HidingPlace, Exit, Inspect, CorridorMemory, FirecrackerSupply, ChapterMemory, Decoration, FlashlightBattery, Candle, Drawer }
         public Kind kind;
@@ -22,7 +22,7 @@ namespace HappyToy.V2
         {
             get
             {
-                if (!isActiveAndEnabled || !gameObject.activeInHierarchy) return false;
+                if (!isActiveAndEnabled || !gameObject.activeInHierarchy || DoorBroken) return false;
                 if (kind == Kind.Candle)
                 {
                     var candle = GetComponent<WaymarkCandle>();
@@ -33,7 +33,7 @@ namespace HappyToy.V2
             }
         }
         public bool CanFocus => InteractionAvailable && kind != Kind.Decoration;
-        public bool DoorOperable => isActiveAndEnabled && kind == Kind.Door && movingLeaf;
+        public bool DoorOperable => isActiveAndEnabled && kind == Kind.Door && movingLeaf && !DoorBroken;
         public Vector3 DoorNormal => Vector3.Cross(transform.up, transform.TransformVector(openOffset)).normalized;
         public bool AtRequestedDoorPose => movingLeaf &&
             Vector3.Distance(movingLeaf.localPosition, closedPosition + (open ? openOffset : Vector3.zero)) < .001f &&
@@ -160,6 +160,7 @@ namespace HappyToy.V2
         {
             if (kind != Kind.Door || !movingLeaf) throw new System.InvalidOperationException("Not a movable door");
             RememberDoorGeometry(); passages.Clear(); changeFrame = -1;
+            RestoreDoorDestruction(false);
             open = requestedOpen; movingLeaf.localPosition = leafPosition;
             if (obstacle) obstacle.enabled = !open;
         }
@@ -193,6 +194,7 @@ namespace HappyToy.V2
         }
         bool SetDoorOpen(bool value)
         {
+            if (DoorBroken || value && DoorLocked) return false;
             // All actors and the player share one requested direction and cue.
             // Opposite requests in one engine frame cannot stack handle sounds.
             if (open == value || changeFrame == Time.frameCount) return false;
