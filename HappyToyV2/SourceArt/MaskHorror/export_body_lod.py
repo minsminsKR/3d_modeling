@@ -11,7 +11,11 @@ record=next(item for item in manifest['assets'] if item['key']=='wraith-body')
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.open_mainfile(filepath=str(PROJECT/record['source']))
 scene=bpy.context.scene
-original=[obj for obj in scene.objects if obj.type=='MESH' and not obj.name.startswith('SCULPT HIGH |')]
+for obj in list(scene.objects):
+    if obj.name.startswith('LOD1 |'):bpy.data.objects.remove(obj,do_unlink=True)
+for collection in list(bpy.data.collections):
+    if collection.name.startswith('EDITABLE LOW DETAIL BODY LOD') and not collection.objects:bpy.data.collections.remove(collection)
+original=[obj for obj in scene.objects if obj.type=='MESH' and not obj.name.startswith(('SCULPT HIGH |','LOD1 |'))]
 collection=bpy.data.collections.new('EDITABLE LOW DETAIL BODY LOD — independently exported')
 scene.collection.children.link(collection)
 copies=[]
@@ -36,6 +40,6 @@ bpy.ops.wm.save_as_mainfile(filepath=str(PROJECT/record['source']),compress=True
 record['sourceSha256']=hashlib.sha256((PROJECT/record['source']).read_bytes()).hexdigest()
 record['lod1']=dict(fbx=fbx.relative_to(PROJECT).as_posix(),fbxSha256=hashlib.sha256(fbx.read_bytes()).hexdigest(),
     triangles=sum(len(obj.data.loop_triangles) for obj in copies),meshParts=[obj.name for obj in copies],
-    source=record['source'],preserves='Four physical movement pivots, authored units, baked UV atlas and silhouette')
+    source=record['source'],preserves='Eight body segments and sixteen paired human-arm/contact pivots; units, atlas and silhouette')
 p.write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
 print('MASK_BODY_LOD_SOURCE_PASS',record['lod1']['triangles'],flush=True)

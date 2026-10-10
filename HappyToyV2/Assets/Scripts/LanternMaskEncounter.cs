@@ -116,7 +116,11 @@ namespace HappyToy.V2
             if (mask) { mask.localPosition = originalMaskPosition; mask.localRotation = originalMaskRotation; }
             if (body) body.localScale = originalBodyScale;
             if (lantern) lantern.localScale = originalLanternScale;
-            if (flameLight) { flameLight.intensity = originalFlameIntensity; flameLight.enabled = originalFlameEnabled; }
+            if (flameLight)
+            {
+                flameLight.intensity = originalFlameIntensity;
+                flameLight.enabled = originalFlameEnabled && isActiveAndEnabled && State != Phase.Resolved && !Transformed;
+            }
         }
         void OnEnable()
         {
@@ -173,7 +177,7 @@ namespace HappyToy.V2
             if (mask) mask.gameObject.SetActive(show && (IntroCompleted || IntroStarted && IntroElapsed >= .65f));
             if (lantern) lantern.gameObject.SetActive(show && !Transformed);
             if (body) body.gameObject.SetActive(show && transformTime > .85f);
-            if (flameLight) flameLight.enabled = show;
+            if (flameLight) flameLight.enabled = show && !Transformed;
         }
         void Stop() { EnemyNavigation.Stop(agent); if (doorTraversal) doorTraversal.Suspend(); }
         bool Route(Vector3 point) => EnemyNavigation.TryRoute(agent, point, floorY, path);
@@ -226,7 +230,7 @@ namespace HappyToy.V2
             {
                 riseCueIssued = true;
                 revealAudio.Play(EncounterRevealAudio.Cue.LanternRise, transform.position + Vector3.up * 1.1f,
-                    "등불 위로 녹색 가면이 떠오릅니다.");
+                    "등불 위로 금 간 가면이 떠오릅니다.");
             }
             if (IntroElapsed >= 2.2f) { IntroCompleted = true; age = 0; }
             SetVisible(true); Visual();
@@ -284,7 +288,7 @@ namespace HappyToy.V2
                     sound.pitch = .6f; sound.PlayOneShot(warning);
                     if (EnemyNavigation.SameActorFloor(agent, player.transform.position, floorY) &&
                         Vector3.Distance(player.transform.position, transform.position) <= sound.maxDistance && acoustics.IsAudible(sound))
-                        session.WarnThreat("가면의 몸이 완성됐습니다 · 녹색 가면을 피해 다른 복도로 이동하세요.", 3);
+                        session.WarnThreat("가면의 몸이 완성됐습니다 · 금 간 가면을 피해 다른 복도로 이동하세요.", 3);
                 }
                 Visual(); return;
             }
@@ -339,7 +343,7 @@ namespace HappyToy.V2
                 DetectionFeedback.Signal(session, transform);
                 sound.pitch = Transformed ? .7f : 1; sound.PlayOneShot(warning);
                 session.WarnThreat(Transformed ? "가면이 공격을 준비합니다 · 즉시 거리를 벌리세요." :
-                    "녹색 가면이 저주를 준비합니다 · 뒤로 물러나세요.", 1.6f);
+                    "금 간 가면이 저주를 준비합니다 · 뒤로 물러나세요.", 1.6f);
                 Visual(); return;
             }
             if(State==Phase.Investigate && investigation.Arrived)
@@ -505,9 +509,15 @@ namespace HappyToy.V2
             if (maskRenderers == null) maskRenderers = mask.GetComponentsInChildren<Renderer>(true);
             if (!VisibleBounds(bodyRenderers, out var bodyBounds) || !VisibleBounds(maskRenderers, out var maskBounds)) return;
             var forwardOffset = transform.forward * .03f;
-            var correction = new Vector3(bodyBounds.center.x + forwardOffset.x - maskBounds.center.x,
-                bodyBounds.max.y - AttachmentOverlap - maskBounds.min.y,
-                bodyBounds.center.z + forwardOffset.z - maskBounds.center.z);
+            var reference = GetComponent<MaskHorrorVisual>();
+            // The reference creature has a low trailing body and its human head
+            // leads the many arms. Join the actual anatomical sockets instead of
+            // pulling that face onto the centre/highest point of its long back.
+            var correction = reference && reference.Prepared && reference.HeadSocket && reference.FaceJoint ?
+                reference.HeadSocket.position - reference.FaceJoint.position :
+                new Vector3(bodyBounds.center.x + forwardOffset.x - maskBounds.center.x,
+                    bodyBounds.max.y - AttachmentOverlap - maskBounds.min.y,
+                    bodyBounds.center.z + forwardOffset.z - maskBounds.center.z);
             var applied = correction * Mathf.SmoothStep(0, 1, Mathf.InverseLerp(4.15f, 5, transformTime));
             mask.position += applied;
             maskBounds.center += applied;

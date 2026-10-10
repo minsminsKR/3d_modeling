@@ -1,80 +1,109 @@
-# Grotesque running mask wraith
+# Many-handed corridor mask wraith
 
-Original authored geometry and new procedural surface bakes, released under
-CC0-1.0. No downloaded creature, face scan or reference asset is embedded. The
-initial generator's tracked PBR references retain the existing credits in
-`ThirdParty/Graphics`; final skin/porcelain atlases come from original Blender
-procedural sculpt materials rather than those large repeated surface patterns.
+This original Blender model interprets the user's private visual reference as a
+low, long creature with eight pairs of human arms and five-finger hands, dark
+mottled wet flesh, intertwined black cords, modeled greasy hair strands and
+hollow black-bronze bells. Its ivory human mask has volumetric cheeks, a nasal
+bridge/tip, a complete chin, two actual narrow eye apertures and a crooked open
+smile with ten individually modeled yellow incisors and a recessed dark mouth.
+The shell has physical thickness around every aperture.
 
-Blender **4.0.2** is the pinned tool. No add-ons or third-party Python dependencies
-are required. From the Unity project directory:
+The private reference is **not redistributed and is not relicensed**. Its SHA256
+is `0667ecacad32d2904108bc26f79616732babcf66f4d825253a3720c2d7190295`.
+The original generated meshes, procedural materials, bakes and authoring code
+are CC0-1.0. This is authored procedural art, not a person scan or photogrammetry.
+No online service, downloaded reference asset or third-party add-on is required.
+
+Blender **4.0.2** is pinned. From the Unity project directory, the complete
+reproducible authoring, 2K bake, LOD and independent validation chain is:
 
 ```powershell
-blender --background --python-exit-code 1 --python SourceArt/MaskHorror/author_mask_horror.py
-blender --background --python-exit-code 1 --python SourceArt/MaskHorror/sculpt_and_bake.py
-blender --background --python-exit-code 1 --python SourceArt/MaskHorror/export_body_lod.py
-blender --background --python-exit-code 1 --python SourceArt/MaskHorror/finish_surface_bakes.py
+blender --background --python-exit-code 1 --python SourceArt/MaskHorror/regenerate_reference.py
+```
+
+Replace `blender` with an installed 4.0.2 executable if necessary. All required
+project/source/texture paths derive from the scripts' repository locations.
+The manifest preserves source/FBX/map hashes, actual vertex bounds, counts,
+landmarks, private-reference provenance and material contracts.
+
+The stages are `author_manyhand_reference.py`, `sculpt_and_bake.py`,
+`finish_surface_bakes.py`, `export_body_lod.py` and `validate_sources.py`.
+To refresh maps/UVs/exports while preserving existing fused anatomy and high
+sculpts, use the tracked `rebake_reference.py` entry point with the same Blender
+command. Both paths use the same prioritized atlas pack: skin occupies a
+dedicated 72%-width region, face shell 74%, and hair/cord/bells use separate
+remaining regions. Actual skin/face UV area must exceed .25 of the full atlas;
+the independent validator checks this density, actual channels and hashes.
+The old `author_mask_horror.py` name is a compatibility entry point to the current
+eight-pair geometry; it cannot recreate the superseded upright two-arm model.
+That earlier model remains recoverable in Git history. The old normal-repair
+entry point now performs read-only validation because the current generator
+authors outward normals.
+
+Each editable `.blend` contains the exported low geometry and a hidden separate
+source collection with genuine Blender multires subdivision. Skin and face use
+two subdivision levels; small hair/cord/teeth/bells use one. Skin high geometry
+retains editable scar/fold and pore displacement. Each high object keeps its
+original procedural material separately from the low atlas preview materials.
+Human arms, fingers, wrists and anatomical torso forms are fused with Blender's
+voxel remesh, relaxed and decimated while preserving separate animation pivots.
+The original octagonal construction planes are then rounded with the tracked
+`relax_skin_surface.py` volume-preserving Laplacian stage. Explicit zero-weight
+pins preserve every hand/finger vertex and all contact pivots; weighting blends
+the wrist transition. Low topology/UVs remain unchanged, and the editable high
+base receives identical coordinates before a genuine tangent-normal rebake.
+Skin roughness varies .28–.70, retaining wet patches and softer dry tissue.
+Both sources remain below GitHub's 100 MiB regular-file limit.
+
+The unique 2048x2048 UV atlases are actual Cycles bakes: diffuse color,
+ambient occlusion, roughness, selected-high-to-low tangent normals and metallic.
+Diffuse/AO/roughness use direct low-surface shader baking to avoid color
+projection misses. Only pure-black missed normal rays/background become a
+neutral tangent normal; valid sculpt normal detail is preserved. The packed
+metallic/smoothness texture uses **R=actual metallic EMIT bake, A=1-roughness**.
+Black-bronze bells retain their .78 source metallic value; flesh, mask and hair
+remain nonmetal. Color imports as sRGB; normal/AO/roughness/packed channels are
+linear. All maps and relative source links are tracked; no local cache is needed.
+The narrowed black eye backing surfaces remain rough and nonemissive even when
+the game's other monsters use the global red-eye option.
+
+The runtime visual fit is 3.95 m long, 2.26 m wide and 1.64 m high for the body.
+The face shell alone fits to .74 m high; long hair and neck bells are excluded
+from that face measurement. The assembled creature remains below the 2.44 m
+hall lintel. Source construction is metres, Y-up, front -Z. The imported FBX
+root/child transforms are preserved, and only new wrappers receive a 180 degree
+Y rotation to align the modeled front with the actor's +Z heading.
+
+Eight `Segment00`–`Segment07` visual pivots trail behind the existing navigation
+root. The front `HeadSocket` remains within .25 m of that root in XZ, rather
+than centering the original capsule on the long body's bounds. `FaceJoint`
+attaches the mask to that anatomical front-neck socket. `FaceFront`,
+`FaceRear`, `HeadFrontTarget` and nose landmarks record the true modeled
+orientation. Each segment has `ArmSwing00L/R` through `ArmSwing07L/R` with
+a corresponding `HandContact` point. The independently exported body LOD
+preserves all these pivots, atlas UVs and the same silhouette at lower topology.
+
+`MaskHorrorVisual` hides the old body's/face's renderers while retaining the
+original source FBX, rig, animation clip, root, NavMesh agent and capsule. Its
+visual-only trailing segments follow actual root path history through turns;
+measured imported rest rotations and ground offsets are preserved. Arm gait
+uses actual agent travel distance and the existing 1.35 m audio contact stride.
+Ground compensation uses actual world contact height and world up, respecting
+FBX axis conversion. Scaled-time pause freezes the pose, and comfort mode reduces
+swing. The original five-second school growth and anatomical late attachment
+remain in `LanternMaskEncounter`. The narrow eye renderers bind through
+`MonsterRedEyes.BindAuthoredStaticEyes(eyes, false)`, retaining black eyes and
+existing ownership/anchor cleanup without changing other monster profiles.
+
+Silent optional review images go outside the source repository:
+
+```powershell
+blender --background --python-exit-code 1 --python SourceArt/MaskHorror/render_reference_review.py -- --output <absolute-review-directory> --samples 32
 blender --background --python-exit-code 1 --python SourceArt/MaskHorror/validate_sources.py
 ```
 
-Blender's executable may be replaced with its installed path. All resource paths
-are derived from the generator's repository location. The two editable `.blend`
-files preserve the individual shell, ribs, claws, veil and ligaments, the actual
-voxel-fused limb anatomy, low-detail body LOD and hidden editable two-level
-multires sculpt collection. Pore/raised-scar displacement remains editable on
-the high-resolution sources. Relative texture links resolve to the tracked
-initial PBR references and final `Assets/Resources/MaskHorror/Textures` atlases;
-pull/hydrate the entire repository before opening. Unity builds FBX files without
-Blender installed. Their tracked import metadata keeps geometry readable, imported
-transforms and four limb pivots, and excludes physics, lights and animation tracks.
-
-Optional silent studio previews go outside the source repository:
-
-```powershell
-blender --background --python-exit-code 1 --python SourceArt/MaskHorror/render_sculpt_review.py -- --output <absolute-review-directory>
-```
-
-The body has a crooked vertebral column, separate irregular ribs, open thorax,
-asymmetric bent arms, swollen knuckles, oversize hooked fingers/nails,
-reverse-bent knees and a cut,
-double-sided torn shoulder veil. The thick curved mask has **real open sockets
-and mouth**, irregular old teeth, recessed tiny red eye slits, a volumetric
-forehead/cheek/jaw, modeled nasal bridge and torn gum,
-lifted forehead lamina and hanging cheek ligaments. Aperture edges are smoothed
-independently so they stay hollow instead of becoming a solid flat billboard.
-
-The 2048x2048 unique UV atlases include actual Cycles color, tangent normal,
-ambient occlusion and roughness bakes, plus packed metallic/smoothness. Color,
-AO and roughness use direct surface bakes from the procedural sculpt materials
-to avoid projection misses on thin torn edges. Normal detail is baked from the
-actual multires/displaced source; only pure-black failed ray/background texels
-are made neutral, with no fabricated replacement normal detail. These are
-original procedural authored surfaces, not photogrammetry or a scanned person.
-
-Source construction is in metres, Y up and front -Z, following the existing
-CorridorFurnishings conversion. The imported resources face **local -Z**, while
-navigation actors face **local +Z**. Runtime rotates only the three new visual
-wrappers (body, body LOD and mask) 180 degrees around Y before attachment; fitted
-centering applies that same rotation. Original FBX child transforms, rig and
-navigation root remain intact. Actual nose/teeth/rib vertex landmarks verify
-that the modeled front leads the actor's heading. `model-manifest.json` records actual source vertex bounds, counts,
-material contracts and hashes. Mesh assets contain only visuals.
-
-`MaskHorrorVisual` attaches the authored geometry beneath the existing `body` and
-`mask` pivots and retains the imported wraith rig and running clip. Original body
-and mask renderers are hidden to avoid duplicate limbs/old eyes; their source,
-rig, clip and gameplay attachment anchors remain intact. The growing
-body remains owned by `LanternMaskEncounter`, including its five-second school
-transformation, visibility and late mask attachment. The original rig is fitted
-to 1.61m and the new mask to .72m; the combined silhouette stays below the lowest
-2.44m lintel. The actual arm geometry is fitted to 2.44m of the 2.8m hall. Neither
-navigation root scale nor its capsule is expanded. A 12,368-triangle body LOD
-retains the same atlas and four limb pivots. Limb swing uses actual navigation
-velocity and the 1.35m audio contact stride (two contacts per cycle), scaled
-time and the comfort setting; pause freezes the pose. Tiny emitted eye surfaces
-are rebound to the existing `MonsterRedEyes` ownership, anchors and mute toggle.
-
-Studio renders establish modeled geometry and material review only. Production
-camera images, live bounds while running and original root/navigation invariants
-must be verified in Unity. All automatic game/audio validation remains muted by
-the project quiet-diagnostics guard.
+Studio views assemble the body and face using the same real landmarks and face
+shell measurement. They establish geometry/material review. Live game-camera
+images, animated ground bounds, actual corner following and unchanged original
+navigation/physics still require Unity verification. Automatic game/audio
+validation uses the project's muted diagnostics guard.

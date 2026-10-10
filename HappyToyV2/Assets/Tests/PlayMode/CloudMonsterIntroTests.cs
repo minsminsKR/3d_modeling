@@ -202,15 +202,32 @@ namespace HappyToy.V2.CloudTests
                         Assert.That(Get<float>(owner, "TransformProgress"), Is.EqualTo(1));
                         Bounds bodyBounds = IntroTightVisibleBodyBounds(body);
                         Bounds maskBounds = IntroVisibleStaticMaskBounds(mask);
-                        float edgeSeparation = maskBounds.min.y - bodyBounds.max.y;
-                        // Preserve the authored neck inset while comparing real visible edges.
-                        Assert.That(edgeSeparation, Is.EqualTo(-.035f).Within(.003f),
-                            "Visible mask lower edge did not meet the actual baked body's top edge");
-                        Vector3 lateral = bodyBounds.center + owner.transform.forward * .03f;
-                        Assert.That(maskBounds.center.x, Is.EqualTo(lateral.x).Within(.003f));
-                        Assert.That(maskBounds.center.z, Is.EqualTo(lateral.z).Within(.003f));
-                        TestContext.Out.WriteLine("HAPPYTOY_WRAITH_VISIBLE_JOIN tightBodyTop=" + bodyBounds.max.y +
-                            "; tightStaticMaskBottom=" + maskBounds.min.y + "; edgeSeparation=" + edgeSeparation);
+                        var reference = owner.GetComponent(RequireType("MaskHorrorVisual"));
+                        if (reference && Get<bool>(reference, "Prepared") && Get<Transform>(reference, "HeadSocket") &&
+                            Get<Transform>(reference, "FaceJoint"))
+                        {
+                            var socket = Get<Transform>(reference, "HeadSocket"); var joint = Get<Transform>(reference, "FaceJoint");
+                            Assert.That(Vector3.Distance(socket.position, joint.position), Is.LessThan(.003f),
+                                "Reference human head left the actual leading anatomical neck socket");
+                            float frontDistance = Vector3.Dot(socket.position - bodyBounds.center, owner.transform.forward);
+                            Assert.That(frontDistance, Is.GreaterThan(.6f), "Low long creature's face migrated onto the middle of its back");
+                            Assert.That(Vector3.Dot(Get<Vector3>(reference, "FaceForward"), owner.transform.forward), Is.GreaterThan(.8f),
+                                "Human mask faces away from the creature's actual travel heading");
+                            TestContext.Out.WriteLine("HAPPYTOY_WRAITH_REFERENCE_JOIN jointError=" + Vector3.Distance(socket.position, joint.position) +
+                                "; headAheadOfBody=" + frontDistance + "; actualBodyTop=" + bodyBounds.max.y + "; maskTop=" + maskBounds.max.y);
+                        }
+                        else
+                        {
+                            float edgeSeparation = maskBounds.min.y - bodyBounds.max.y;
+                            // Preserve the retained upright actor's original exact inset.
+                            Assert.That(edgeSeparation, Is.EqualTo(-.035f).Within(.003f),
+                                "Visible mask lower edge did not meet the actual baked body's top edge");
+                            Vector3 lateral = bodyBounds.center + owner.transform.forward * .03f;
+                            Assert.That(maskBounds.center.x, Is.EqualTo(lateral.x).Within(.003f));
+                            Assert.That(maskBounds.center.z, Is.EqualTo(lateral.z).Within(.003f));
+                            TestContext.Out.WriteLine("HAPPYTOY_WRAITH_VISIBLE_JOIN tightBodyTop=" + bodyBounds.max.y +
+                                "; tightStaticMaskBottom=" + maskBounds.min.y + "; edgeSeparation=" + edgeSeparation);
+                        }
                         pauseAndSnapshot();
                     };
                     yield return Wait(() => observer.Completed, 2, "Post-LateUpdate attachment observation never ran");

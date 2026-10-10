@@ -1,0 +1,14 @@
+MaskHorror original model package — CC0-1.0
+
+The original meshes, Blender procedural shaders, resulting texture bakes and
+authoring/export/validation scripts in this package are dedicated under CC0 1.0.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+No scanned person, third-party creature mesh or downloaded texture is embedded
+in the current generated model. Blender 4.0.2 is the authoring tool, not an asset
+license. Superseded original models remain recoverable in repository history.
+
+The private user-provided visual reference is NOT covered by this dedication.
+It is not redistributed in this repository. Its checksum and descriptive
+proportions are recorded solely to identify the authorized reference used during
+model review. No ownership or public license is claimed for that source image.

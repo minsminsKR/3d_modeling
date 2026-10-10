@@ -21,7 +21,7 @@ namespace HappyToy.V2
         [Serializable] sealed class Report
         {
             public string status, failure, unity, graphics;
-            public string scope = "Controlled native Mask fixture on actual seed-73 corridor. Third memory uses production release. Other monsters are disabled; player/Mask initial supported placements are explicit fixtures. Actual NavMesh runs, real locked/open scene doors, genuine solid-cover and cabinet entry, pause and checkpoint codec are production. Door locked state is fixture-authored because existing corridor ordinary leaves begin unlocked. Ordinary exit seals remain outside destructible Kind.Door. Native listener full mix is retained before the verified process-device mute; this does not certify natural survival, human listening, fear or hardware performance.";
+            public string scope = "Controlled native Mask fixture on actual seed-73 corridor. Third memory uses production release. Other monsters are disabled; player/Mask initial supported placements are explicit fixtures. Actual NavMesh runs, real locked/open scene doors, genuine solid-cover and cabinet entry, pause and checkpoint codec are production. Reference PNGs use the actual player camera after live attachment: front, an independently supported side or honestly labeled oblique position, and supported close face detail, with unchanged camera lens, scene lighting and model pose. Door locked state is fixture-authored because existing corridor ordinary leaves begin unlocked. Ordinary exit seals remain outside destructible Kind.Door. Native listener full mix is retained before the verified process-device mute; this does not certify natural survival, human listening, fear or hardware performance.";
             public Check[] checks; public string[] errors; public float peakNativeSpeed, maximumAuthoredPatrol;
             public int contacts, whistles, smashed; public RouteAudioCapture.Report audio;
         }
@@ -124,6 +124,13 @@ namespace HappyToy.V2
             CheckValue("snapshot retains visible authored Mask", art && art.Prepared && mask.mask.gameObject.activeInHierarchy &&
                 mask.isActiveAndEnabled && mask.body.gameObject.activeInHierarchy && art.MaskModel.GetComponentsInChildren<Renderer>(true)
                     .Any(renderer => renderer.enabled && renderer.gameObject.activeInHierarchy));
+            CheckValue("reference snapshot uses the actual leading neck joint", art.HeadSocket && art.FaceJoint &&
+                Vector3.Distance(art.HeadSocket.position, art.FaceJoint.position) < .003f);
+            CheckValue("reference snapshot preserves many-arm forward anatomy", art.ArmPairCount == 8 && art.SwingPivotCount == 16 &&
+                Vector3.Dot(art.FaceForward, mask.transform.forward) > .8f);
+            CheckValue("fully grown reference disables extinguished lantern light", !mask.flameLight || !mask.flameLight.enabled);
+            CheckValue("reference hair and body stay beneath actual corridor lintel", Mathf.Max(mask.LastBodyBounds.max.y, mask.LastMaskBounds.max.y) -
+                mask.transform.position.y < MaskHorrorVisual.HallwayHeight);
             // Submit the actual player's camera through its existing URP renderer.
             // Keep camera pose/lens, volumes, materials and scene lights intact;
             // encode the render target directly instead of relying on an OS/window
@@ -145,6 +152,99 @@ namespace HappyToy.V2
             {
                 RenderTexture.active = previous;
                 if (image) Destroy(image); target.Release(); Destroy(target);
+            }
+        }
+        void CaptureSupportedSideView()
+        {
+            var camera = session.player.eyes;
+            var originalPosition = session.player.transform.position; var originalRotation = camera.transform.rotation;
+            var centre = mask.LastBodyBounds.center; centre.y = mask.transform.position.y;
+            var focus = Vector3.Lerp(mask.LastBodyBounds.center, mask.LastMaskBounds.center, .35f);
+            var saved = session.player.CaptureProgress(); bool captured = false, fullSide = false;
+            var candidates = new List<Vector3>();
+            foreach (float side in new[] { 1f, -1f })
+                foreach (float distance in new[] { 2.7f, 2.35f, 2.0f, 1.7f })
+                    candidates.Add(centre + mask.transform.right * side * distance + mask.transform.forward * .35f);
+            int sideCandidates = candidates.Count;
+            // Narrow halls may physically have no full-profile player position.
+            // A supported front oblique view still shows the trailing anatomy;
+            // label its file honestly instead of treating it as a studio profile.
+            var headFloor = mask.LastMaskBounds.center; headFloor.y = mask.transform.position.y;
+            foreach (float forward in new[] { 4f, 3.5f, 3f, 2.5f })
+                foreach (float sideways in new[] { 1.1f, -.8f, .8f, -1.1f, 0f })
+                    candidates.Add(headFloor + mask.transform.forward * forward + mask.transform.right * sideways);
+            try
+            {
+                // The same live attached pose supplies both views. Move only the
+                // explicitly controlled player onto existing supported side floor
+                // before the next AI frame, preserving the real camera lens and
+                // all model transforms, scene geometry, lights and materials.
+                for (int index = 0; index < candidates.Count; index++)
+                {
+                    var proposed = candidates[index];
+                    if (!NavMesh.SamplePosition(proposed, out var hit, .25f, NavMesh.AllAreas) ||
+                        Vector3.Distance(hit.position, proposed) > .3f || !EnemyNavigation.SameFloor(hit.position, mask.transform.position.y)) continue;
+                    saved.position = hit.position + Vector3.up * .03f;
+                    if (!session.player.CanRestoreProgress(saved)) continue;
+                    PlacePlayer(hit.position);
+                    if (!EnemyNavigation.ClearSight(camera.transform.position, mask.LastMaskBounds.center)) continue;
+                    camera.transform.rotation = Quaternion.LookRotation(focus - camera.transform.position);
+                    var head = camera.WorldToViewportPoint(mask.LastMaskBounds.center);
+                    if (head.z <= camera.nearClipPlane || head.x < .04f || head.x > .96f || head.y < .04f || head.y > .96f) continue;
+                    int visibleSegments = mask.GetComponent<MaskHorrorVisual>().BodyModel.GetComponentsInChildren<Transform>(true)
+                        .Where(node => node.name.StartsWith("Segment", StringComparison.Ordinal) && node.name.Length == 9)
+                        .Count(node =>
+                        {
+                            var renderers = node.GetComponentsInChildren<MeshRenderer>(true); if (renderers.Length == 0) return false;
+                            var bounds = renderers[0].bounds; foreach (var renderer in renderers) bounds.Encapsulate(renderer.bounds);
+                            var point = camera.WorldToViewportPoint(bounds.center);
+                            return point.z > camera.nearClipPlane && point.x >= .02f && point.x <= .98f && point.y >= .02f && point.y <= .98f;
+                        });
+                    if (visibleSegments < 6) continue;
+                    fullSide = index < sideCandidates;
+                    CapturePlayerView(fullSide ? "mask-reference-supported-side.png" : "mask-reference-supported-oblique.png"); captured = true; break;
+                }
+                CheckValue("reference second image uses existing supported floor and shows six actual body segments", captured);
+            }
+            finally
+            {
+                session.player.transform.position = originalPosition; camera.transform.rotation = originalRotation;
+                Physics.SyncTransforms();
+            }
+        }
+        void CaptureSupportedCloseView()
+        {
+            var player = session.player; var camera = player.eyes; var reference = mask.GetComponent<MaskHorrorVisual>();
+            var originalPosition = player.transform.position; var originalRotation = camera.transform.rotation;
+            var saved = player.CaptureProgress(); bool captured = false;
+            try
+            {
+                // This face detail uses another supported standing player pose
+                // within the same live attached frame. No AI frame, camera lens,
+                // eye height, model pose or lighting changes are introduced.
+                foreach (float distance in new[] { 2.2f, 2f, 1.8f })
+                {
+                    foreach (float lateral in new[] { .3f, -.3f, 0f })
+                    {
+                        var proposed = mask.transform.position + mask.transform.forward * distance + mask.transform.right * lateral;
+                        if (!NavMesh.SamplePosition(proposed, out var hit, .25f, NavMesh.AllAreas) ||
+                            Vector3.Distance(hit.position, proposed) > .3f || !EnemyNavigation.SameFloor(hit.position, mask.transform.position.y)) continue;
+                        saved.position = hit.position + Vector3.up * .03f;
+                        if (!player.CanRestoreProgress(saved)) continue;
+                        PlacePlayer(hit.position);
+                        if (!EnemyNavigation.ClearSight(camera.transform.position, reference.HeadFrontTarget)) continue;
+                        camera.transform.rotation = Quaternion.LookRotation(reference.HeadFrontTarget - camera.transform.position);
+                        var face = camera.WorldToViewportPoint(reference.HeadFrontTarget);
+                        if (face.z <= camera.nearClipPlane || face.x < .04f || face.x > .96f || face.y < .04f || face.y > .96f) continue;
+                        CapturePlayerView("mask-reference-supported-close.png"); captured = true; break;
+                    }
+                    if (captured) break;
+                }
+                CheckValue("reference close face image uses existing supported standing floor", captured);
+            }
+            finally
+            {
+                player.transform.position = originalPosition; camera.transform.rotation = originalRotation; Physics.SyncTransforms();
             }
         }
         IEnumerator Run()
@@ -198,14 +298,25 @@ namespace HappyToy.V2
             cover.transform.localScale = new Vector3(2.5f, 2.4f, .4f); Physics.SyncTransforms();
             CheckValue("room cover prevents close-range acquisition", !mask.CanSeePlayer());
             cover.SetActive(false); Destroy(cover); Physics.SyncTransforms(); CheckValue("cover removal restores physical sight", mask.CanSeePlayer());
-            session.player.eyes.transform.rotation = Quaternion.LookRotation(mask.mask.position - session.player.eyes.transform.position);
             int beforeAttachment = mask.AttachmentSamples, beforeNearWhistle = voice.WhistlesPlayed; mask.enabled = true;
             // Restore places the fixture but live production LateUpdate owns the
             // head/body attachment. Capture that rendered pose before disabling
             // this controlled actor for the independent cabinet counterfactual.
             yield return null; yield return new WaitForEndOfFrame();
             CheckValue("snapshot follows actual live attachment", mask.isActiveAndEnabled && mask.AttachmentSamples > beforeAttachment);
+            // The old floating mask pivot is reset by Visual before LateUpdate.
+            // Aim only after the real leading-neck attachment has settled, using
+            // actual body bounds and the authored front-face target. Keep the
+            // player's standing eye height and camera lens unchanged.
+            var reference = mask.GetComponent<MaskHorrorVisual>(); var camera = session.player.eyes;
+            var focus = Vector3.Lerp(mask.LastBodyBounds.center, reference.HeadFrontTarget, .75f);
+            camera.transform.rotation = Quaternion.LookRotation(focus - camera.transform.position);
+            var headViewport = camera.WorldToViewportPoint(mask.LastMaskBounds.center);
+            CheckValue("front snapshot looks at the actual attached head", headViewport.z > camera.nearClipPlane &&
+                headViewport.x >= .04f && headViewport.x <= .96f && headViewport.y >= .04f && headViewport.y <= .96f);
             CapturePlayerView("mask-actual-player-view.png");
+            CaptureSupportedSideView();
+            CaptureSupportedCloseView();
             mask.enabled = false;
             RealCabinetHide();
             PlacePlayer(Side(door, 2.1f)); PlaceMask(Side(door, -2.1f), marker.transform.position);

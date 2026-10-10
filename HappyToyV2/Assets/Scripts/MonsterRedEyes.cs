@@ -47,10 +47,13 @@ namespace HappyToy.V2
         static readonly Color Glow=new Color(1.1f,.012f,.008f);
         float phase;
         bool emissionEnabled=true;
+        // A reference-authored mask can keep its actual black eye slits while
+        // sharing the same material/anchor lifetime owner as the other faces.
+        [SerializeField] bool authoredEmissionAllowed=true;
         public bool Prepared {get;private set;}
         public Transform Head {get;private set;}
         public string ProfileKey {get;private set;}
-        public bool EmissionEnabled=>emissionEnabled;
+        public bool EmissionEnabled=>emissionEnabled&&authoredEmissionAllowed;
         public IReadOnlyList<Transform> EyeAnchors=>anchors;
         public IReadOnlyList<Renderer> EmissionRenderers=>emissionRenderers;
         public IReadOnlyList<float> EyeRadii=>shapes.Select(s=>Mathf.Max(
@@ -62,7 +65,7 @@ namespace HappyToy.V2
         // An authored replacement mask supplies its real recessed eye surfaces.
         // Keep the same inspection/emission owner, restoring the old face slots
         // before binding these meshes; other actors retain their original profiles.
-        public void BindAuthoredStaticEyes(Renderer[] eyeSurfaces)
+        public void BindAuthoredStaticEyes(Renderer[] eyeSurfaces,bool allowRedEmission=true)
         {
             if(eyeSurfaces==null||eyeSurfaces.Length!=2||eyeSurfaces.Any(r=>!r)||eyeSurfaces.Distinct().Count()!=2)
                 throw new ArgumentException("The authored mask must supply two real eye surfaces");
@@ -81,12 +84,13 @@ namespace HappyToy.V2
             foreach(var material in owned)if(material)GraphicsSurfaceLibrary.DestroyOwned(material);
             owned.Clear();states.Clear();emissionRenderers.Clear();shapes.Clear();
             Head=nextHead;
+            authoredEmissionAllowed=allowRedEmission;
             if(block==null)block=new MaterialPropertyBlock();
             for(int i=0;i<2;i++)
             {
                 var renderer=eyeSurfaces[i];var materials=renderer.sharedMaterials;
                 if(materials.Length!=1)throw new InvalidOperationException("A recessed eye must have its own single material surface");
-                Mount(renderer,0,Texture2D.whiteTexture);
+                Mount(renderer,0,allowRedEmission?Texture2D.whiteTexture:Texture2D.blackTexture);
                 Transform anchor;
                 if(i<anchors.Count&&anchors[i])anchor=anchors[i];
                 else
@@ -232,14 +236,23 @@ namespace HappyToy.V2
             if(!original.HasProperty("_EmissionMap")||!original.HasProperty("_EmissionColor"))throw new InvalidOperationException("Original eye shader cannot carry surface emission: "+original.shader.name);
             var originalBlock=new MaterialPropertyBlock();renderer.GetPropertyBlock(originalBlock,slot);
             var material=new Material(original){name=original.name+" — original eye surface emission"};
-            material.SetTexture("_EmissionMap",mask);material.SetColor("_EmissionColor",Glow);material.EnableKeyword("_EMISSION");
-            material.globalIlluminationFlags=(original.globalIlluminationFlags & ~MaterialGlobalIlluminationFlags.EmissiveIsBlack) | MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            material.SetTexture("_EmissionMap",mask);material.SetColor("_EmissionColor",authoredEmissionAllowed?Glow:Color.black);
+            if(authoredEmissionAllowed)
+            {
+                material.EnableKeyword("_EMISSION");
+                material.globalIlluminationFlags=(original.globalIlluminationFlags & ~MaterialGlobalIlluminationFlags.EmissiveIsBlack) | MaterialGlobalIlluminationFlags.RealtimeEmissive;
+            }
+            else
+            {
+                material.DisableKeyword("_EMISSION");
+                material.globalIlluminationFlags=MaterialGlobalIlluminationFlags.EmissiveIsBlack;
+            }
             owned.Add(material);assigned[slot]=material;renderer.sharedMaterials=assigned;
             state.slots.Add(new SlotState {index=slot,original=original,applied=material,originalBlock=originalBlock});
         }
         public int[] GetAffectedSlots(Renderer renderer)=>states.FirstOrDefault(s=>s.renderer==renderer)?.slots.Select(s=>s.index).ToArray()??Array.Empty<int>();
         public Material GetOriginalMaterial(Renderer renderer,int slot)=>states.FirstOrDefault(s=>s.renderer==renderer)?.slots.FirstOrDefault(s=>s.index==slot)?.original;
-        public Color GetEmissionColor(Renderer renderer,int slot)=>GetAffectedSlots(renderer).Contains(slot)?Glow:Color.black;
+        public Color GetEmissionColor(Renderer renderer,int slot)=>authoredEmissionAllowed&&GetAffectedSlots(renderer).Contains(slot)?Glow:Color.black;
         public void SetEmissionEnabled(bool value)
         {emissionEnabled=value;if(Prepared)ApplyEmission();}
         void ApplyEmission()
@@ -253,7 +266,7 @@ namespace HappyToy.V2
                 {
                     if(slot.index>=current.Length||current[slot.index]!=slot.applied)continue;
                     state.renderer.GetPropertyBlock(block,slot.index);
-                    block.SetColor(Emission,emissionEnabled?Glow*breath:Color.black);
+                    block.SetColor(Emission,EmissionEnabled?Glow*breath:Color.black);
                     state.renderer.SetPropertyBlock(block,slot.index);
                 }
             }

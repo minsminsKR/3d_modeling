@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "referenceSha256": "0667ecacad32d2904108bc26f79616732babcf66f4d825253a3720c2d7190295",
+  "privateReferenceRedistributed": false,
+  "model": {
+    "blender": "4.0.2",
+    "manifest": "SourceArt/MaskHorror/model-manifest.json",
+    "manifestSha256": "4a44252519e1c0810fce2bf1d852dd8ee879b43702ec7c684d676c07476d7606",
+    "runtime": {
+      "armPairs": 8,
+      "bodyLength": 3.95,
+      "bodyWidth": 2.26,
+      "bodyHeight": 1.64,
+      "maskFaceHeight": 0.74,
+      "attachment": "Front HeadSocket to FaceJoint; face-only scale excludes long hair/bells"
+    },
+    "assets": [
+      {
+        "key": "wraith-body",
+        "sourceSha256": "bd89c88e5452381fa65c4922ad1cc6ac8b02b11a720b8f5ce22c44bdf5fc4bce",
+        "fbxSha256": "c09c91f815595768d9a93f1c1116c765c9a11eb4ec0dac4f20c58d9a4869dcb6",
+        "triangles": 146230,
+        "vertices": 74275,
+        "uvAreaByMaterial": {
+          "MW_skin": 0.28308090333594643,
+          "MW_rope": 0.01137045971727968,
+          "MW_hair": 0.0043963914151807885,
+          "MW_bell": 0.04779032325640564
+        }
+      },
+      {
+        "key": "wraith-mask",
+        "sourceSha256": "29a3a7595d05be0746452a012454d6d1be8ae1057445e0de2e9fafba568a57fb",
+        "fbxSha256": "7b48cc75fba32ecc23df6094d4e1eb377bc4a643cf3b7c44eef9d3637f657cc5",
+        "triangles": 75512,
+        "vertices": 38758,
+        "uvAreaByMaterial": {
+          "MW_mask": 0.3936709009973469,
+          "MW_eye": 0.007372891222342304,
+          "MW_rope": 0.006200849085661986,
+          "MW_teeth": 0.026518746733481535,
+          "MW_hair": 0.003846289298710146,
+          "MW_bell": 0.025630979342547988
+        }
+      }
+    ]
+  },
+  "sourceValidation": {
+    "status": "PASS",
+    "sourceFiles": 2,
+    "fbxFiles": 3,
+    "pbrMaps": 10,
+    "authoringScripts": 13,
+    "scope": "Pinned Blender source validator and independent source/FBX/map/script hash audit; original editable high sculpt, low meshes and relative texture paths retained."
+  },
+  "playMode": {
+    "status": "PASS",
+    "uniquePassed": 10,
+    "cases": {
+      "EveryHostileFacePreservesOriginalEyeSurfaceAndPupilTexturesWithOneCyclopseEyeAndNoAddedGeometry": {
+        "result": "PASS",
+        "seconds": 9.639712
+      },
+      "FirstAppearanceAudioComesFromRealEventsWithQuietPauseMuteAndComfortControls": {
+        "result": "PASS",
+        "seconds": 24.179932
+      },
+      "MaskReadableAttachmentBoundsExcludeEmptyRotatedLimbBoxCorners": {
+        "result": "PASS",
+        "seconds": 2.047204
+      },
+      "NaturalEyeEmissionTogglePreservesPausedChapterCheckpointPhysicsAndSourceAssetsAcrossReload": {
+        "result": "PASS",
+        "seconds": 6.510909
+      },
+      "NaturalEyeLifecycleRestoresCallerMaterialAndIndexedPropertiesAndHonoursLaterMaterialOwner": {
+        "result": "PASS",
+        "seconds": 3.432303
+      },
+      "ReferenceHumanMaskHasNarrowBlackEyeAperturesSmilingMouthHairAndHollowBells": {
+        "result": "PASS",
+        "seconds": 1.985424
+      },
+      "ReferenceHumanNoseSmileAndLeadingNeckFollowTheActualNavigationHeading": {
+        "result": "PASS",
+        "seconds": 2.041054
+      },
+      "ReferenceManyHumanArmsMoveWithActualNavigationAndFreezeOnPause": {
+        "result": "PASS",
+        "seconds": 8.796282
+      },
+      "ReferenceWraithKeepsOriginalNavigationWithEightPairedHumanArms": {
+        "result": "PASS",
+        "seconds": 2.211631
+      },
+      "ReferenceTrailingBodyFollowsRealCornerWithoutRotatingHandsThroughTheFloor": {
+        "result": "PASS",
+        "seconds": 15.717399
+      }
+    },
+    "execution": "Nine feature cases passed with final geometry/maps in the full suite. The corner case passed in a follow-up after its batch-mode recorder was repaired; production game logic was unchanged by that harness repair.",
+    "realCorner": {
+      "travelledMetres": 19.48676,
+      "headingChangeDegrees": 66.87157,
+      "tailPathErrorMetres": 0.0
+    }
+  },
+  "build": {
+    "status": "GRAPHICS_BUILD_INPUTS_PASS",
+    "release": true,
+    "protectedSceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+    "scope": "Full current Assets/Packages/ProjectSettings inventory and hashes through the existing verifier, explicit new graphics Resources/settings input inclusion, original hash protection (LF-canonical YAML assets; raw scene bytes), and copied credit equality. Build inputs retain strict raw byte hashes. Input inclusion does not by itself certify actual shipped shader appearance, GPU duration, survival or audio."
+  },
+  "native": {
+    "status": "PASS",
+    "checks": 39,
+    "graphics": "NVIDIA GeForce RTX 2060 SUPER",
+    "peakNativeSpeed": 6.600325107574463,
+    "contacts": 7,
+    "whistles": 1,
+    "smashed": 2,
+    "images": [
+      {
+        "file": "mask-actual-player-view.png",
+        "sha256": "3dc4a0f2cb3a8afefcb21b352477397b8d274b751eaa772fd929fdeeefad9cfa"
+      },
+      {
+        "file": "mask-reference-supported-oblique.png",
+        "sha256": "832e18a2acdf983573a9376fbc54017925c56e394da78b9d212767ad7396ee61"
+      },
+      {
+        "file": "mask-reference-supported-close.png",
+        "sha256": "4a00f5a69a3370959a284f8869051441c1322b158e6112c83c745bc8bc361449"
+      }
+    ],
+    "scope": "Controlled seeded corridor, actual third-memory release and live AI navigation; real standing player camera, unchanged FOV and scene lighting. Supported oblique and close player poses captured within the same attached frame."
+  },
+  "quietVerification": {
+    "status": "PASS",
+    "sessionMuteVerified": true,
+    "processOnly": true,
+    "nativeRestoreSucceeded": true,
+    "preferenceRestoreSucceeded": true,
+    "exitListenerVolume": 0,
+    "scope": "Current-process Windows session mute/readback downstream of the retained Unity listener DSP. PCM inspected without playback; no subjective listening claim."
+  },
+  "visualReview": {
+    "status": "PASS",
+    "scope": "Independent review of source studio plus actual release player-camera captures. Reference-based original 3D reconstruction with long low body, eight paired human arms, aged smiling ivory mask, narrow black slits, hair and bells."
+  },
+  "sourceCompleteness": {
+    "status": "PASS",
+    "requiredSourceCount": 3063,
+    "missingFromGit": [],
+    "unhydratedLfsFiles": []
+  }
+}
