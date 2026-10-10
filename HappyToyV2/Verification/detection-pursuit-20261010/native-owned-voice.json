@@ -1,0 +1,449 @@
+{
+  "status": "PASS",
+  "failure": "",
+  "unity": "6000.6.0f1",
+  "graphics": "NVIDIA GeForce RTX 2060 SUPER",
+  "scope": "Controlled supported school Cyclops/player poses with actor movement speeds zero. Genuine opaque-cover no-sight control uses a legal active Chase restore without DetectionFeedback.Signal; subsequent cover removal earns actual production recognition/Chase. Only the new impact/music sources remain unmuted during isolation. Natural listener DSP is captured after current-process device mute verification. Pause, source/master mute, comfort, hidden presentation suppression, disengagement, lifecycle and imported clip ownership are production. Hiding suppression uses controlled public Hide state at the existing supported floor with an empty local marker, not authored cabinet geometry/survival. The separate HorrorFeedbackAudit verifies normal combined production audio; this isolated assay is not certification of human fear or natural survival.",
+  "checks": [
+    {
+      "name": "actual session",
+      "passed": true
+    },
+    {
+      "name": "perception owns new voices",
+      "passed": true
+    },
+    {
+      "name": "actual authored school actor",
+      "passed": true
+    },
+    {
+      "name": "supported actual school floor",
+      "passed": true
+    },
+    {
+      "name": "native school actor binding",
+      "passed": true
+    },
+    {
+      "name": "owned nonspatial clips",
+      "passed": true
+    },
+    {
+      "name": "opaque control prevents actual sight",
+      "passed": true
+    },
+    {
+      "name": "unwitnessed active chase valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "unwitnessed active chase audibility",
+      "passed": true
+    },
+    {
+      "name": "unwitnessed chase never creates music",
+      "passed": true
+    },
+    {
+      "name": "actual sight earns one impact",
+      "passed": true
+    },
+    {
+      "name": "same recognition cannot duplicate impact",
+      "passed": true
+    },
+    {
+      "name": "earned impact and rising pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "earned impact and rising pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "sustained owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "sustained owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "paused owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "paused owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "pause freezes envelope and native cursor",
+      "passed": true
+    },
+    {
+      "name": "resumed owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "resumed owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "source-muted owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "source-muted owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "master-muted owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "master-muted owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "master-restored owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "master-restored owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "comfort owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "comfort owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "comfort bounds steady subjective music",
+      "passed": true
+    },
+    {
+      "name": "actual protected hiding presentation",
+      "passed": true
+    },
+    {
+      "name": "successful witnessed hiding ends original chase",
+      "passed": true
+    },
+    {
+      "name": "protected hidden owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "protected hidden owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "hidden state cannot earn another impact",
+      "passed": true
+    },
+    {
+      "name": "public presentation fixture exits",
+      "passed": true
+    },
+    {
+      "name": "fresh actual sight earns one new episode impact",
+      "passed": true
+    },
+    {
+      "name": "visible-again owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "visible-again owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "disengaged owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "disengaged owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "disabled owned pursuit valid natural PCM",
+      "passed": true
+    },
+    {
+      "name": "disabled owned pursuit audibility",
+      "passed": true
+    },
+    {
+      "name": "disable clears owned presentation",
+      "passed": true
+    },
+    {
+      "name": "owned cleanup preserves imported audio",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "phases": [
+    {
+      "name": "unwitnessed active chase",
+      "expectedAudible": false,
+      "callbacks": 26,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 53248,
+      "peak": 5.889466386601995e-23,
+      "rms": 2.0877918666840193e-24
+    },
+    {
+      "name": "earned impact and rising pursuit",
+      "expectedAudible": true,
+      "callbacks": 25,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 51200,
+      "peak": 0.08625883609056473,
+      "rms": 0.018589550398541075
+    },
+    {
+      "name": "sustained owned pursuit",
+      "expectedAudible": true,
+      "callbacks": 27,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 55296,
+      "peak": 0.030691128224134445,
+      "rms": 0.007154911495377125
+    },
+    {
+      "name": "paused owned pursuit",
+      "expectedAudible": false,
+      "callbacks": 26,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 53248,
+      "peak": 2.669385125239374e-28,
+      "rms": 1.7298948622304896e-28
+    },
+    {
+      "name": "resumed owned pursuit",
+      "expectedAudible": true,
+      "callbacks": 25,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 51200,
+      "peak": 0.03611837700009346,
+      "rms": 0.007146099920207817
+    },
+    {
+      "name": "source-muted owned pursuit",
+      "expectedAudible": false,
+      "callbacks": 27,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 55296,
+      "peak": 2.669385125239374e-28,
+      "rms": 1.7298619317621735e-28
+    },
+    {
+      "name": "master-muted owned pursuit",
+      "expectedAudible": false,
+      "callbacks": 25,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 51200,
+      "peak": 2.669385125239374e-28,
+      "rms": 1.7298344326805437e-28
+    },
+    {
+      "name": "master-restored owned pursuit",
+      "expectedAudible": true,
+      "callbacks": 26,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 53248,
+      "peak": 0.02597029134631157,
+      "rms": 0.0057553160896089165
+    },
+    {
+      "name": "comfort owned pursuit",
+      "expectedAudible": true,
+      "callbacks": 27,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 55296,
+      "peak": 0.01357676088809967,
+      "rms": 0.002241992091729021
+    },
+    {
+      "name": "protected hidden owned pursuit",
+      "expectedAudible": false,
+      "callbacks": 26,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 53248,
+      "peak": 2.669385125239374e-28,
+      "rms": 1.729895145202098e-28
+    },
+    {
+      "name": "visible-again owned pursuit",
+      "expectedAudible": true,
+      "callbacks": 26,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 53248,
+      "peak": 0.050549156963825226,
+      "rms": 0.014909163863826859
+    },
+    {
+      "name": "disengaged owned pursuit",
+      "expectedAudible": false,
+      "callbacks": 26,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 53248,
+      "peak": 2.669385125239374e-28,
+      "rms": 1.7298025085824104e-28
+    },
+    {
+      "name": "disabled owned pursuit",
+      "expectedAudible": false,
+      "callbacks": 26,
+      "channels": 2,
+      "nonfinite": 0,
+      "clipped": 0,
+      "samples": 53248,
+      "peak": 2.669385125239374e-28,
+      "rms": 1.7298024950830039e-28
+    }
+  ],
+  "audio": {
+    "capture": "Unity listener DSP tap, pre-device; natural native callback clock; no device listening certification",
+    "sampleRate": 48000,
+    "channels": 2,
+    "callbacks": 591,
+    "nonfiniteSamples": 0,
+    "maximumSeconds": 180,
+    "observedSamples": 1210368,
+    "capturedSamples": 1210368,
+    "overflowSamples": 0,
+    "seconds": 12.608,
+    "dspSeconds": 11.861333333333333,
+    "callbackWallSeconds": 12.5875378,
+    "firstCallbackAfterStartSeconds": 0.0138447,
+    "gameSeconds": 11.962872505187988,
+    "truncated": false,
+    "nonSilent": true,
+    "stages": [
+      {
+        "storyStep": 0,
+        "name": "progress-0",
+        "samples": 1210368,
+        "clipped": 0,
+        "peak": 0.10005747526884079,
+        "rms": 0.007517669706922986
+      },
+      {
+        "storyStep": 1,
+        "name": "progress-1",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 2,
+        "name": "progress-2",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 3,
+        "name": "progress-3",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 4,
+        "name": "progress-4",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 5,
+        "name": "progress-5",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      }
+    ],
+    "floors": [
+      {
+        "storyStep": 0,
+        "name": "ground",
+        "samples": 1210368,
+        "clipped": 0,
+        "peak": 0.10005747526884079,
+        "rms": 0.007517669706922986
+      },
+      {
+        "storyStep": 1,
+        "name": "upper",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 2,
+        "name": "basement",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      }
+    ],
+    "pause": {
+      "samples": 71680,
+      "steadySamples": 63488,
+      "peak": 2.669385125239374e-28,
+      "rms": 1.7298344172373022e-28,
+      "steadyPeak": 2.669385125239374e-28,
+      "steadyRms": 1.7298850899143887e-28,
+      "transitionAllowanceSeconds": 0.10000000149011612
+    },
+    "writerError": "",
+    "progressMode": "legacy-story",
+    "files": [
+      {
+        "file": "route.wav",
+        "sha256": "4c844c8fbcea9ac472248bfe4d5ef83c23fbefd37292ba14112f4923f2784bb6",
+        "samples": 1210368,
+        "channels": 2,
+        "seconds": 12.608
+      }
+    ]
+  }
+}

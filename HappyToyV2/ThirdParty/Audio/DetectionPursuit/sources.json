@@ -1,0 +1,20 @@
+{
+  "violin-scratch": {
+    "file": "violin-scratch.mp3",
+    "creator": "cms4f",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/cms4f/sounds/159161/",
+    "download": "https://cdn.freesound.org/previews/159/159161_2018306-hq.mp3",
+    "source_file": "Violin scratch.wav (public high quality MP3 preview)",
+    "source_file_sha256": "9af975b0d9239cc81d20352d2a060818ea4d1a4323295a587fb49c6d061549f8"
+  },
+  "violin-tremolo": {
+    "file": "violin-tremolo.mp3",
+    "creator": "ldk1609",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/ldk1609/sounds/56082/",
+    "download": "https://cdn.freesound.org/previews/56/56082_692375-hq.mp3",
+    "source_file": "violin tremolo F3.aif (public high quality MP3 preview)",
+    "source_file_sha256": "566a9bf4f0a908d126b2cc3dbc00267c8f3f52082da3fd6267b9d48d73d19880"
+  }
+}

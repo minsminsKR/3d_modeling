@@ -163,3 +163,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 LMkor auxiliary model license: Apache License 2.0; https://www.apache.org/licenses/LICENSE-2.0 . Complete notice retained at ThirdParty/Audio/CorridorBabyMutter/LMkor-Apache-2.0.txt in the editable source package. Neural weights/software are authoring dependencies and are not redistributed in the player.
+
+Original detection/pursuit composition (separate from the referenced game's soundtrack):
+cms4f, Violin scratch.wav, real acoustic violin recording: https://freesound.org/people/cms4f/sounds/159161/
+ldk1609, violin tremolo F3.aif, violin tremolo instrument sample: https://freesound.org/people/ldk1609/sounds/56082/
+Both source previews are CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
+Modified recorded excerpts, mono conversion, filtering/rate edits and original 150BPM percussion/string arrangement. Existing bart physical workshop contacts and OwlishMedia real human frightened-breath/scream sources supply the sting/percussion body, with origins credited above and in the canonical manifest. No copied game music or added oscillator/noise synthesis. Originals, candidate decisions and complete transformations retained in ThirdParty/Audio/DetectionPursuit.
+

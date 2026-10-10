@@ -1,0 +1,233 @@
+{
+  "status": "PASS",
+  "scope": "Controlled native poses/zero movement speed; genuine LOS, recognition, Chase. Production URP camera and existing UI Toolkit panel directly render into the same native HDR target; bounded fresh-paint polling, no screenshot/backbuffer or synthetic composition. Listener DSP runs naturally while brief image captures freeze game time. Escape is controlled threat disengagement, not chapter completion.",
+  "unity": "6000.6.0f1",
+  "device": "NVIDIA GeForce RTX 2060 SUPER",
+  "failure": "",
+  "width": 1600,
+  "height": 900,
+  "recognition": true,
+  "continuousChase": true,
+  "returnedToCalm": true,
+  "reducedMotionRespected": true,
+  "pauseFreezes": true,
+  "discoveryNoiseRendered": true,
+  "pursuitNoiseRendered": true,
+  "errors": [],
+  "shots": [
+    {
+      "name": "01-calm-pickup.png",
+      "state": "Patrol",
+      "wallSeconds": 2.3216960430145264,
+      "impact": 0.0,
+      "chase": 0.0,
+      "peripheral": 0.0,
+      "distortion": 0.0,
+      "chromatic": 0.0,
+      "noise": 0.0,
+      "stress": 0.0,
+      "targetStress": 0.0,
+      "interferenceGain": 0.0,
+      "noiseOnOffMeanDifference": 0.0,
+      "cues": 0,
+      "nativeHudPixels": 9868,
+      "noiseAffectedPixels": 0,
+      "reducedMotion": false,
+      "sight": false
+    },
+    {
+      "name": "02-detection.png",
+      "state": "Chase",
+      "wallSeconds": 3.7320830821990967,
+      "impact": 0.7177736759185791,
+      "chase": 0.08397948741912842,
+      "peripheral": 0.7034181952476501,
+      "distortion": 0.11967841535806656,
+      "chromatic": 0.20727509260177612,
+      "noise": 0.7177736759185791,
+      "stress": 0.8500000238418579,
+      "targetStress": 0.8500000238418579,
+      "interferenceGain": 0.7177736759185791,
+      "noiseOnOffMeanDifference": 0.01202484779059887,
+      "cues": 1,
+      "nativeHudPixels": 712790,
+      "noiseAffectedPixels": 341849,
+      "reducedMotion": false,
+      "sight": true
+    },
+    {
+      "name": "03-chased.png",
+      "state": "Chase",
+      "wallSeconds": 6.385196685791016,
+      "impact": 0.0,
+      "chase": 1.0,
+      "peripheral": 0.5600497126579285,
+      "distortion": 0.05001154541969299,
+      "chromatic": 0.07500000298023224,
+      "noise": 0.6744322180747986,
+      "stress": 0.8199999928474426,
+      "targetStress": 0.8199999928474426,
+      "interferenceGain": 1.0,
+      "noiseOnOffMeanDifference": 0.008872458711266518,
+      "cues": 1,
+      "nativeHudPixels": 698996,
+      "noiseAffectedPixels": 292607,
+      "reducedMotion": false,
+      "sight": true
+    },
+    {
+      "name": "04-reduced-motion.png",
+      "state": "Chase",
+      "wallSeconds": 7.618300437927246,
+      "impact": 0.0,
+      "chase": 1.0,
+      "peripheral": 0.11900000274181366,
+      "distortion": 0.0,
+      "chromatic": 0.0,
+      "noise": 0.0,
+      "stress": 0.8199999928474426,
+      "targetStress": 0.8199999928474426,
+      "interferenceGain": 0.44999998807907104,
+      "noiseOnOffMeanDifference": 0.0,
+      "cues": 1,
+      "nativeHudPixels": 595820,
+      "noiseAffectedPixels": 0,
+      "reducedMotion": true,
+      "sight": true
+    },
+    {
+      "name": "05-escaped-pressure.png",
+      "state": "Chase",
+      "wallSeconds": 15.194318771362305,
+      "impact": 0.0,
+      "chase": 0.0,
+      "peripheral": 0.0,
+      "distortion": 0.0,
+      "chromatic": 0.0,
+      "noise": 0.0,
+      "stress": 0.0,
+      "targetStress": 0.0,
+      "interferenceGain": 0.0,
+      "noiseOnOffMeanDifference": 0.0,
+      "cues": 1,
+      "nativeHudPixels": 7026,
+      "noiseAffectedPixels": 0,
+      "reducedMotion": false,
+      "sight": false
+    }
+  ],
+  "audio": {
+    "capture": "Unity listener DSP tap, pre-device; natural native callback clock; no device listening certification",
+    "sampleRate": 48000,
+    "channels": 2,
+    "callbacks": 681,
+    "nonfiniteSamples": 0,
+    "maximumSeconds": 180,
+    "observedSamples": 1394688,
+    "capturedSamples": 1394688,
+    "overflowSamples": 0,
+    "seconds": 14.528,
+    "dspSeconds": 13.738666666666667,
+    "callbackWallSeconds": 14.501851,
+    "firstCallbackAfterStartSeconds": 0.0044728,
+    "gameSeconds": 9.604339599609375,
+    "truncated": false,
+    "nonSilent": true,
+    "stages": [
+      {
+        "storyStep": 0,
+        "name": "progress-0",
+        "samples": 1394688,
+        "clipped": 0,
+        "peak": 0.2385033518075943,
+        "rms": 0.011539129327521347
+      },
+      {
+        "storyStep": 1,
+        "name": "progress-1",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 2,
+        "name": "progress-2",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 3,
+        "name": "progress-3",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 4,
+        "name": "progress-4",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 5,
+        "name": "progress-5",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      }
+    ],
+    "floors": [
+      {
+        "storyStep": 0,
+        "name": "ground",
+        "samples": 1394688,
+        "clipped": 0,
+        "peak": 0.2385033518075943,
+        "rms": 0.011539129327521347
+      },
+      {
+        "storyStep": 1,
+        "name": "upper",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      },
+      {
+        "storyStep": 2,
+        "name": "basement",
+        "samples": 0,
+        "clipped": 0,
+        "peak": 0.0,
+        "rms": 0.0
+      }
+    ],
+    "pause": {
+      "samples": 14336,
+      "steadySamples": 6144,
+      "peak": 3.350255286618705e-28,
+      "rms": 1.848560138550643e-28,
+      "steadyPeak": 3.350255286618705e-28,
+      "steadyRms": 1.8488347011037541e-28,
+      "transitionAllowanceSeconds": 0.10000000149011612
+    },
+    "writerError": "",
+    "progressMode": "legacy-story",
+    "files": [
+      {
+        "file": "route.wav",
+        "sha256": "f1ecee19ae7692d9993490bcd5a1c902ca1414ddc84ffdc808e26ffef2b1a6dd",
+        "samples": 1394688,
+        "channels": 2,
+        "seconds": 14.528
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "requiredSourceCount": 3056,
+  "missingFromGit": [],
+  "unhydratedLfsFiles": [],
+  "scope": "Required local editable source files vs Git index; not a Unity build or clone execution test."
+}

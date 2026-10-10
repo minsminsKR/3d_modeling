@@ -736,6 +736,7 @@ namespace HappyToy.V2
             if (threatened)
             {
                 threatVeil.style.backgroundImage = detection.PeripheralTexture;
+                threatVeil.style.unityBackgroundImageTintColor = detection.OverlayColor;
                 threatVeil.style.opacity = detection.PeripheralStrength;
             }
             noise.style.color = player.FootstepNoiseRadius > 7 ? Rust : Muted;

@@ -95,6 +95,7 @@ namespace HappyToy.V2
         }
         IEnumerator Run()
         {
+            yield return DiagnosticAudioSilence.WaitForSafeAudio(output);
             yield return null; yield return null;
             session = GameSession.Current;
             if (!session || !session.player || !session.Shell) throw new InvalidOperationException("Player/session unavailable");

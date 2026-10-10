@@ -14,6 +14,7 @@ namespace HappyToy.V2
         PlayerMotor player;
         AudioSource source;
         AudioClip sting;
+        DetectionPursuitAudio pursuitAudio;
         Texture2D peripheral, nativeGrain;
         GameObject postObject;
         Volume post;
@@ -33,14 +34,28 @@ namespace HappyToy.V2
         public Texture2D NativeNoiseTexture => nativeGrain;
         public Texture2D PeripheralTexture => peripheral;
         public float ChaseStrength => CurrentSession ? chase : 0;
+        // UI tint belongs to the fixed peripheral alpha veil. Its centre stays
+        // transparent, so a discovery cannot cover the route or central HUD with
+        // a full-screen red/black card. This is not an enemy proximity oracle.
+        public float ShockTintStrength => Active ? Strength * (Softened ? .06f : .65f) : 0;
+        public Color OverlayColor
+        {
+            get
+            {
+                if (Softened) return new Color(.14f, .018f, .025f, 1);
+                float heartbeat = PerceivedTension.HeartbeatEnvelope(pulseClock);
+                float blood = Mathf.Clamp01(ShockTintStrength + chase * heartbeat * .20f);
+                return Color.Lerp(new Color(.28f, .007f, .018f, 1), new Color(.82f, .012f, .025f, 1), blood);
+            }
+        }
         public float PeripheralStrength
         {
             get
             {
-                if (!CurrentSession || !CurrentSession.InputAllowed) return 0;
+                if (!CurrentSession || !CurrentSession.InputAllowed || player.Hidden) return 0;
                 float heartbeat = Softened ? 0 : PerceivedTension.HeartbeatEnvelope(pulseClock);
-                float sustained = chase * (Softened ? .34f : .48f + heartbeat * .14f);
-                return Mathf.Clamp01(Mathf.Max(Strength * .95f, sustained)) * (Softened ? .35f : 1);
+                float sustained = chase * (Softened ? .34f : .56f + heartbeat * .18f);
+                return Mathf.Clamp01(Mathf.Max(Strength * (Softened ? .95f : .98f), sustained)) * (Softened ? .35f : 1);
             }
         }
         public float DistortionStrength => lens != null && post && post.weight > 0 ? Mathf.Abs(lens.intensity.value) : 0;
@@ -64,6 +79,8 @@ namespace HappyToy.V2
             source.playOnAwake = false; source.spatialBlend = 0; source.volume = .84f; source.priority = 20;
             source.ignoreListenerPause = false; source.ignoreListenerVolume = false; source.dopplerLevel = 0;
             sting = ExternalAudio.Required("recognition"); peripheral = MakePeripheralVeil(); nativeGrain = MakeNativeGrain();
+            pursuitAudio = GetComponent<DetectionPursuitAudio>();
+            if (!pursuitAudio) pursuitAudio = gameObject.AddComponent<DetectionPursuitAudio>();
             // Only perception parameters override the independently owned lighting.
             postObject = new GameObject("Witnessed threat lens scope");
             postObject.transform.SetParent(transform, false);
@@ -118,6 +135,7 @@ namespace HappyToy.V2
             source.panStereo = Softened ? 0 : Mathf.Clamp(Vector3.Dot(transform.right, direction) * .34f, -.34f, .34f);
             source.volume = Softened ? .32f : .84f;
             source.PlayOneShot(sting);
+            if (pursuitAudio) pursuitAudio.OnRecognition();
         }
 
         bool ActivePursuitIdentity(Transform observer)
@@ -174,21 +192,24 @@ namespace HappyToy.V2
             post.weight = motion ? 1 : 0;
             if (!motion) { lens.intensity.value = chromatic.intensity.value = filmGrain.intensity.value = 0; return; }
             float breathing = .5f + .5f * Mathf.Sin(pulseClock * 2.4f);
-            // Discovery attacks rapidly, then resolves into a finer, irregular
-            // pursuit texture. Original fine grain is tiled in screen pixels and
-            // luminance aware, preserving the path, faces and HUD readability.
+            // Discovery attacks rapidly, then resolves into a stronger, irregular
+            // pursuit texture. The rough grain stays at native pixel density and
+            // luminance aware; it never becomes stretched blocks over the HUD.
             float interference = .5f + .5f * Mathf.Sin(pulseClock * 7.1f + .6f * Mathf.Sin(pulseClock * 2.7f));
-            filmGrain.intensity.value = Mathf.Max(Strength * .95f, chase * (.48f + .07f * interference));
+            filmGrain.intensity.value = Mathf.Max(Strength, chase * (.59f + .09f * interference));
             // A smooth contraction and breathing veil support the grain without
             // strobes, camera rotation, blur or additional FOV movement.
-            lens.intensity.value = -Strength * .14f - chase * (.045f + .013f * breathing);
-            chromatic.intensity.value = Strength * .24f + chase * .055f;
+            lens.intensity.value = -Strength * .16f - chase * (.05f + .014f * breathing);
+            chromatic.intensity.value = Strength * .28f + chase * .075f;
         }
 
         void Clear()
         {
             remaining = cooldown = chase = pulseClock = 0; witnessed.Clear();
             if (source) source.Stop();
+            if (pursuitAudio) pursuitAudio.ResetPresentation();
+            if (lens) lens.intensity.value = 0;
+            if (chromatic) chromatic.intensity.value = 0;
             if (filmGrain) filmGrain.intensity.value = 0;
             if (post) post.weight = 0;
         }
@@ -211,9 +232,12 @@ namespace HappyToy.V2
                 // checkerboard pattern or hard horizontal tearing. The stronger
                 // original alpha contrast makes interference legible in shadows,
                 // where the stock photographic grain is almost imperceptible.
-                float grain = .58f * field[y * size + x] + .14f * field[y * size + left] +
-                    .14f * field[above * size + x] + .07f * field[y * size + right] + .07f * field[above * size + left];
-                byte alpha = (byte)Mathf.RoundToInt((.5f + .46f * grain) * 255);
+                // Stronger single-pixel grit gives the impact a rougher physical
+                // texture. It remains zero-mean local grain, not a white flash or
+                // a high-frequency whole-screen brightness modulation.
+                float grain = .74f * field[y * size + x] + .10f * field[y * size + left] +
+                    .08f * field[above * size + x] + .04f * field[y * size + right] + .04f * field[above * size + left];
+                byte alpha = (byte)Mathf.RoundToInt((.5f + .485f * grain) * 255);
                 // URP ApplyGrain samples alpha and treats .5 as neutral. RGB
                 // remains neutral; this texture cannot tint the scene or the HUD.
                 pixels[y * size + x] = new Color32(128, 128, 128, alpha);
@@ -239,8 +263,10 @@ namespace HappyToy.V2
                 // Keep the central navigation/aiming view clear while an irregular,
                 // bruised edge closes in hard at discovery and breathes during chase.
                 float edge = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.48f, 1.12f, radius));
-                float warm = Mathf.SmoothStep(0, 1, Mathf.InverseLerp(.6f, .95f, radius));
-                pixels[y * width + x] = new Color32((byte)Mathf.Lerp(4, 42, warm), 2, 5, (byte)(edge * 248));
+                // RGB is a neutral carrier for GameShellView's OverlayColor;
+                // only this fixed alpha shape closes the edge. A smooth dark-red
+                // tint/opacity heartbeat never alters the transparent centre.
+                pixels[y * width + x] = new Color32(255, 255, 255, (byte)(edge * 248));
             }
             texture.SetPixels32(pixels); texture.Apply(false, true); return texture;
         }
@@ -250,6 +276,7 @@ namespace HappyToy.V2
         {
             Clear();
             if (source) Destroy(source);
+            if (pursuitAudio) Destroy(pursuitAudio);
             if (sting) Destroy(sting);
             if (peripheral) Destroy(peripheral);
             if (nativeGrain) Destroy(nativeGrain);

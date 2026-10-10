@@ -1,0 +1,6 @@
+{
+  "status": "GRAPHICS_BUILD_INPUTS_PASS",
+  "errors": [],
+  "scope": "Full current Assets/Packages/ProjectSettings inventory and hashes through the existing verifier, explicit new graphics Resources/settings input inclusion, original hash protection (LF-canonical YAML assets; raw scene bytes), and copied credit equality. Build inputs retain strict raw byte hashes. Input inclusion does not by itself certify actual shipped shader appearance, GPU duration, survival or audio.",
+  "executableSha256": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d"
+}

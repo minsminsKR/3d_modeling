@@ -139,6 +139,20 @@ def verify() -> dict:
         require(0 < peak < 1, f"Silent or clipped PCM: {name}")
         require(abs(peak-item["peak"]) < 2/32768 and abs(rms-item["rms"]) < 2/32768,
                 f"Canonical PCM metrics differ: {name}")
+        if name.startswith("detection-impact-"):
+            require(.7 <= frames/rate <= 1.2 and rate == 48000 and rms > .01 and peak <= .55,
+                    f"Recognition sting lost its authored duration/headroom: {name}")
+        if name == "pursuit-loop-0.wav":
+            require(4 <= frames/rate <= 8 and item["modifications"].get("loop") is True and
+                    rate == 48000 and peak <= .36, "Pursuit bed lost its loop duration/headroom")
+            derivatives = sorted(abs(b-a) for a, b in zip(samples, samples[1:]))
+            p999 = derivatives[int(.999 * (len(derivatives)-1))]
+            seam_delta = abs(samples[0]-samples[-1])
+            window = min(round(rate*.25), len(samples)//2)
+            seam_samples = samples[-window:] + samples[:window]
+            seam_rms = math.sqrt(sum(value*value for value in seam_samples)/len(seam_samples))/32768
+            require(seam_delta <= max(3, p999), "Pursuit loop has an exceptional boundary discontinuity")
+            require(seam_rms >= rms*.25, "Pursuit loop has an unintended silent seam")
         cues.append(dict(file=name, rate=rate, seconds=frames/rate, peak=peak, rms=rms, sha256=item["sha256"]))
     credits = (PROJECT / "ThirdParty/Audio/Audio-Credits.txt").read_text(encoding="utf8")
     for item in manifest:

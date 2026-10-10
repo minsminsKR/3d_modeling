@@ -152,3 +152,25 @@ Install that package in a separate environment and use `--download` once on a
 new machine to acquire the fixed model; subsequent checks are offline. Its
 report hashes both prepared WAVs. It assesses recognized words, not human
 listening quality, perceived speaker age, Unity import or the native game mix.
+
+## Original detection and pursuit composition
+
+`render_detection_pursuit.py` creates two immediate 1.06/1.12-second detection
+stings and a 6.4-second, 150-BPM recorded pursuit bed. It uses the pinned
+`requirements-corridor.txt` environment, existing retained human/physical
+recordings and two newly retained CC0 acoustic violin preview files. It does not
+copy the reference game's audio, use generic oscillator/noise synthesis, or add
+a duplicate heartbeat. Normal regeneration is fully offline:
+
+```powershell
+HappyToyV2/SourceArt/Audio/.venv-corridor/Scripts/python.exe HappyToyV2/SourceArt/Audio/render_detection_pursuit.py
+```
+
+Independent string tail/head overlaps and percussion tails preserve a continuous
+loop with no global silence fade at the seam. Unity/runtime ownership controls
+onset, release, intensity and comfort gain. Candidate decisions, retained source
+hashes and all edits are in `ThirdParty/Audio/DetectionPursuit/`; the canonical
+manifest and distributed credits are updated together. Offline PCM validation
+checks loop duration/headroom and unusual boundary cuts in addition to the full
+mandatory inventory. It does not certify human listening or the actual game
+mix; all engine diagnostics must remain protected by `-quiet-diagnostics`.

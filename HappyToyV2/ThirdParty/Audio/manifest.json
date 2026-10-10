@@ -3178,5 +3178,221 @@
       "prepared_median_f0": 295.69622585409485,
       "world_version": "0.3.5"
     }
+  },
+  {
+    "pack": "recorded-detection-pursuit",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - metal drop 3.wav",
+    "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3",
+    "resource": "Audio/External/detection-impact-0",
+    "file": "detection-impact-0.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Immediate real dropped-metal/plank attack, performed frightened breath at 58ms, acoustic violin rasp at 90ms. Source-rate .82/.76/.85/.91, distinct recorded contact/voice body; 1.06s, 3/100ms edge fades, measured peak .50. No lead-in delay or fabricated tone.",
+      "recordings": [
+        {
+          "file": "metal-drop.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - metal drop 3.wav",
+          "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "panic.wav",
+          "pack": "owlish-recorded-foley",
+          "creator": "OwlishMedia",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/sound-effects-pack",
+          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+          "source_file": "Human/freakedbreath.wav",
+          "source_file_sha256": "10881ee9d5c83b15e269762ccc89cc932173d2c720588e9303e0995ff32b69db",
+          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+        },
+        {
+          "file": "violin-scratch.mp3",
+          "creator": "cms4f",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/cms4f/sounds/159161/",
+          "download": "https://cdn.freesound.org/previews/159/159161_2018306-hq.mp3",
+          "source_file": "Violin scratch.wav (public high quality MP3 preview)",
+          "source_file_sha256": "9af975b0d9239cc81d20352d2a060818ea4d1a4323295a587fb49c6d061549f8"
+        }
+      ],
+      "source_kind": "Human performances, physical wood/metal contacts and licensed acoustic violin recordings. Original recorded-layer composition; no copied game audio, heartbeat substitution, oscillator or generic noise synthesis."
+    },
+    "seconds": 1.06,
+    "peak": 0.5,
+    "rms": 0.07141466426132653,
+    "sha256": "343def1ec188383a71a368ec1ba7d1b5f3b92f595cfb48a479d339d591c8a9ba"
+  },
+  {
+    "pack": "recorded-detection-pursuit",
+    "creator": "bart",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/68-workshop-sounds",
+    "download": "https://opengameart.org/sites/default/files/workshop.7z",
+    "source_file": "workshop/workshop - wood clap.wav",
+    "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+    "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3",
+    "resource": "Audio/External/detection-impact-1",
+    "file": "detection-impact-1.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Independent sharp plank/metal recognition contact, 35ms acoustic bow rasp, shortened genuine performed scream at 71ms and frightened breath at 150ms. 1.12s, separate filtering/source-rate edits and 3/100ms fades; measured peak .52. Original layered recording, not copied game audio.",
+      "recordings": [
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "metal-drop.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - metal drop 3.wav",
+          "source_file_sha256": "e66fb7f839d7508d0b8ea55019d802e66691253e2188f12d1d8e064d03363112",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "violin-scratch.mp3",
+          "creator": "cms4f",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/cms4f/sounds/159161/",
+          "download": "https://cdn.freesound.org/previews/159/159161_2018306-hq.mp3",
+          "source_file": "Violin scratch.wav (public high quality MP3 preview)",
+          "source_file_sha256": "9af975b0d9239cc81d20352d2a060818ea4d1a4323295a587fb49c6d061549f8"
+        },
+        {
+          "file": "scream.wav",
+          "pack": "owlish-recorded-foley",
+          "creator": "OwlishMedia",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/sound-effects-pack",
+          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+          "source_file": "Human/SCREAM.wav",
+          "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
+          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+        },
+        {
+          "file": "panic.wav",
+          "pack": "owlish-recorded-foley",
+          "creator": "OwlishMedia",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/sound-effects-pack",
+          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+          "source_file": "Human/freakedbreath.wav",
+          "source_file_sha256": "10881ee9d5c83b15e269762ccc89cc932173d2c720588e9303e0995ff32b69db",
+          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+        }
+      ],
+      "source_kind": "Human performances, physical wood/metal contacts and licensed acoustic violin recordings. Original recorded-layer composition; no copied game audio, heartbeat substitution, oscillator or generic noise synthesis."
+    },
+    "seconds": 1.12,
+    "peak": 0.52001953125,
+    "rms": 0.08791061198184184,
+    "sha256": "8017186806650ce4eb02800f6b7cae0c4a7457b035f5853ddaffc94a0c852c08"
+  },
+  {
+    "creator": "ldk1609",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/ldk1609/sounds/56082/",
+    "download": "https://cdn.freesound.org/previews/56/56082_692375-hq.mp3",
+    "source_file": "violin tremolo F3.aif (public high quality MP3 preview)",
+    "source_file_sha256": "566a9bf4f0a908d126b2cc3dbc00267c8f3f52082da3fd6267b9d48d73d19880",
+    "resource": "Audio/External/pursuit-loop-0",
+    "file": "pursuit-loop-0.wav",
+    "pack": "recorded-detection-pursuit",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": true,
+      "scope": "Original 150BPM/16-beat/6.4s continuous pursuit bed. Two near-detuned rates of the recorded F3 violin tremolo (.20–7.30s at 1.035/.973) plus acoustic bow rasp (13–19.80s at .94), physical low/high plank percussion and off-beat ratchet. Each string bed has .4s natural tail/head overlap; percussion wraps its real decay across the bar. No global fade-to-silence seam, copied melody, synthetic oscillator/noise, or heartbeat layer. Measured peak .32; runtime owner controls onset/outro/gain.",
+      "recordings": [
+        {
+          "file": "violin-tremolo.mp3",
+          "creator": "ldk1609",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/ldk1609/sounds/56082/",
+          "download": "https://cdn.freesound.org/previews/56/56082_692375-hq.mp3",
+          "source_file": "violin tremolo F3.aif (public high quality MP3 preview)",
+          "source_file_sha256": "566a9bf4f0a908d126b2cc3dbc00267c8f3f52082da3fd6267b9d48d73d19880"
+        },
+        {
+          "file": "violin-scratch.mp3",
+          "creator": "cms4f",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/cms4f/sounds/159161/",
+          "download": "https://cdn.freesound.org/previews/159/159161_2018306-hq.mp3",
+          "source_file": "Violin scratch.wav (public high quality MP3 preview)",
+          "source_file_sha256": "9af975b0d9239cc81d20352d2a060818ea4d1a4323295a587fb49c6d061549f8"
+        },
+        {
+          "file": "wood-clap.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - wood clap.wav",
+          "source_file_sha256": "6d88bb8ce8a615c9ea1e56819c4c5287e562a764ec1063b3d7e1b7ad3a2ef464",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        },
+        {
+          "file": "ratchet.wav",
+          "pack": "recorded-workshop",
+          "creator": "bart",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/68-workshop-sounds",
+          "download": "https://opengameart.org/sites/default/files/workshop.7z",
+          "source_file": "workshop/workshop - ratchet1.wav",
+          "source_file_sha256": "e075b655154ad88bcd5b5ed002826664a4ef40c3afa7852f99c5efcfd8626836",
+          "archive_sha256": "79d7801041b5fbc8e181d9aaaa8dafb94b68bb51f325017e82fb37448e2fb1d3"
+        }
+      ],
+      "source_kind": "Human performances, physical wood/metal contacts and licensed acoustic violin recordings. Original recorded-layer composition; no copied game audio, heartbeat substitution, oscillator or generic noise synthesis.",
+      "tempo_bpm": 150,
+      "beats": 16,
+      "seam_overlap_seconds": 0.4,
+      "recommended_runtime_max_gain": 0.22
+    },
+    "seconds": 6.4,
+    "peak": 0.32000732421875,
+    "rms": 0.05069264049479706,
+    "sha256": "3b4fcdcdfa009584d8ea060b7d6dd2695ff3320e96857df2e0de9c13d6730d77"
   }
 ]

@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "cases": [
+    {
+      "name": "ActualRecognitionImpactAndWitnessedPursuitAreOcclusionBoundedAndPauseSafe",
+      "result": "Passed",
+      "duration": "14.582687"
+    },
+    {
+      "name": "PerceivedHearingUsesCurrentTransmissionAndRejectsUnheardOrInactiveCues",
+      "result": "Passed",
+      "duration": "6.773219"
+    },
+    {
+      "name": "PlayerLocalPursuitMusicRejectsUnwitnessedChaseAndOwnsItsLifecycle",
+      "result": "Passed",
+      "duration": "2.661931"
+    },
+    {
+      "name": "TrueRecognitionHasBoundedAftermathAndClearsOnRestorationAndRetry",
+      "result": "Passed",
+      "duration": "12.586174"
+    }
+  ],
+  "scope": "Four targeted Unity PlayMode tests of earned recognition, witnessed pursuit, unheard-source rejection, finite aftermath and ownership. Not the full suite."
+}

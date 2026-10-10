@@ -28,9 +28,17 @@ namespace HappyToy.V2.CloudTests
             var enemy = StalkerAt(origin); enemy.transform.rotation = Quaternion.LookRotation(Vector3.right);
             var detection = player.GetComponent(RequireType("DetectionFeedback"));
             Assert.That(detection, Is.Not.Null);
+            var pursuitAudio = player.GetComponent(RequireType("DetectionPursuitAudio"));
+            Assert.That(pursuitAudio, Is.Not.Null, "Perception owner did not install owned discovery/pursuit music");
+            var music = Get<AudioSource>(pursuitAudio, "PursuitSource");
+            var impacts = Get<AudioClip[]>(pursuitAudio, "OwnedImpactClips");
+            var musicClip = Get<AudioClip>(pursuitAudio, "OwnedPursuitClip");
             var cover = Cube("CloudQA recognition cover", origin + Vector3.right * 3 + Vector3.up * 1.5f, new Vector3(.25f, 3, 5));
             Physics.SyncTransforms(); yield return Delay(.5f);
             Assert.That(Get<int>(detection, "CuesPlayed"), Is.Zero, "A hidden enemy leaked a recognition effect through a wall");
+            Assert.That(Get<int>(pursuitAudio, "ImpactsPlayed"), Is.Zero);
+            Assert.That(Get<float>(pursuitAudio, "LoopGain"), Is.Zero, "Unwitnessed actor generated pursuit music");
+            Assert.That(Get<float>(detection, "ShockTintStrength"), Is.Zero, "Hidden enemy leaked a discovery tint");
             // Low cover blocks a waist-high ray but not the brain's actual eye ray.
             // A genuine recognition must not be discarded by a different guard.
             cover.transform.position = origin + Vector3.right * 3 + Vector3.up * .7f;
@@ -38,6 +46,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(enemy, "CanSeePlayer"), Is.True);
             yield return Wait(() => Get<object>(enemy, "state").ToString() == "Chase", 3, "Real LOS did not acquire player");
             Assert.That(Get<int>(detection, "CuesPlayed"), Is.EqualTo(1));
+            Assert.That(Get<int>(pursuitAudio, "ImpactsPlayed"), Is.EqualTo(1));
+            Assert.That(impacts.Length, Is.EqualTo(2));
+            Assert.That(impacts.All(impact => CloudExternalAudioTests.MatchesFamily(impact, "detection-impact", 2)), Is.True);
+            Assert.That(CloudExternalAudioTests.MatchesFamily(musicClip, "pursuit-loop", 1), Is.True);
+            Assert.That(music.clip, Is.SameAs(musicClip)); Assert.That(music.loop, Is.True);
+            Assert.That(music.spatialBlend, Is.Zero); Assert.That(music.panStereo, Is.Zero, "Subjective music leaked actor direction");
+            Assert.That(music.ignoreListenerPause || music.ignoreListenerVolume, Is.False);
             Assert.That(Get<bool>(detection, "Active"), Is.True);
             Assert.That(Get<Texture2D>(detection, "GrainTexture"), Is.Null, "Threat noise must use native pixel grain rather than a stretched UI texture");
             var texture = Get<Texture2D>(detection, "PeripheralTexture"); Assert.That(texture, Is.Not.Null);
@@ -63,10 +78,12 @@ namespace HappyToy.V2.CloudTests
             // actual world cameras separately; this is not a synthetic world view.
             var errors = new List<string>(); var view = One("GameShellView");
             yield return Wait(() => Get<float>(detection, "Strength") > .5f, 1, "Recognition edge never became visible");
+            Assert.That(Get<float>(detection, "ShockTintStrength"), Is.GreaterThan(.3f), "Actual discovery lost its bounded red peripheral tint");
             yield return Wait(() => Get<float>(detection, "NoiseStrength") > .45f, .5f, "Real detection never rendered a visible grain burst");
             yield return CaptureFrozenHud(view, "recognition-resonance-ui.png", errors);
             float remaining = Get<float>(detection, "Remaining");
             Call(shell, "Pause");
+            int musicCursor = music.timeSamples; float musicEnvelope = Get<float>(pursuitAudio, "Envelope");
             Call(RequireType("DetectionFeedback"), "Signal", session, enemy.transform);
             yield return Delay(.3f);
             Assert.That(Get<float>(detection, "Remaining"), Is.EqualTo(remaining));
@@ -75,15 +92,22 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<float>(detection, "PeripheralStrength"), Is.Zero);
             Assert.That(Get<float>(detection, "DistortionStrength"), Is.Zero);
             Assert.That(Get<float>(detection, "NoiseStrength"), Is.Zero, "Threat noise animated over the pause menu");
+            Assert.That(Get<float>(detection, "ShockTintStrength"), Is.Zero);
+            Assert.That(music.timeSamples, Is.EqualTo(musicCursor));
+            Assert.That(Get<float>(pursuitAudio, "Envelope"), Is.EqualTo(musicEnvelope), "Pause advanced pursuit music envelope");
             Assert.That(Get<float>(TensionOwner(), "InterferenceGain"), Is.Zero, "Pause retained audible pursuit interference");
             Call(shell, "Resume");
             for (int i = 0; i < 5; i++) Call(RequireType("DetectionFeedback"), "Signal", session, enemy.transform);
             Assert.That(Get<int>(detection, "CuesPlayed"), Is.EqualTo(1), "Concurrent observers stacked the sting");
+            Assert.That(Get<int>(pursuitAudio, "ImpactsPlayed"), Is.EqualTo(1), "Concurrent observers stacked owned impact variants");
             yield return new WaitForSeconds(.9f);
             Assert.That(Get<bool>(detection, "Active"), Is.False, "Recognition impact outlived its brief window");
             Assert.That(Get<float>(detection, "ChaseStrength"), Is.GreaterThan(.95f));
-            Assert.That(Get<float>(detection, "PeripheralStrength"), Is.InRange(.46f, .63f), "Actual sustained chase lost its stronger peripheral pressure");
-            Assert.That(Get<float>(detection, "NoiseStrength"), Is.InRange(.46f, .56f), "Grain stopped when the discovery impact ended despite real pursuit");
+            Assert.That(Get<float>(detection, "PeripheralStrength"), Is.InRange(.56f, .75f), "Actual sustained chase lost its stronger peripheral pressure");
+            Assert.That(Get<float>(detection, "NoiseStrength"), Is.InRange(.59f, .69f), "Grain stopped when the discovery impact ended despite real pursuit");
+            Assert.That(Get<float>(detection, "ShockTintStrength"), Is.Zero, "Brief discovery tint continued as a sustained flash");
+            Assert.That(Get<Color>(detection, "OverlayColor").r, Is.GreaterThan(.27f), "Witnessed pursuit lost its fixed red peripheral carrier");
+            Assert.That(music.isPlaying, Is.True); Assert.That(Get<float>(pursuitAudio, "LoopGain"), Is.GreaterThan(.20f).And.LessThanOrEqualTo(.22001f));
             var interference = Get<AudioSource>(TensionOwner(), "InterferenceSource");
             Assert.That(interference.isPlaying, Is.True, "Known continuous pursuit has no interference texture");
             Assert.That(interference.volume, Is.GreaterThan(0).And.LessThanOrEqualTo(.13001f));
@@ -106,6 +130,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Chase"), "Floor-transition fixture outlived genuine chase memory");
             Assert.That(Get<float>(detection, "PeripheralStrength"), Is.Zero);
             Assert.That(Get<float>(detection, "NoiseStrength"), Is.Zero, "Another floor retained rendered pursuit noise");
+            yield return Wait(() => Get<float>(pursuitAudio, "LoopGain") == 0 && !music.isPlaying, .6f, "Another floor retained unwarranted pursuit music");
             PlacePlayer(origin + Vector3.right * 6, false); Physics.SyncTransforms();
             // No Signal injection: the same continuous Chase does not emit a new
             // recognition, but returning to its floor must restore ongoing pressure.
@@ -124,6 +149,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<float>(detection, "ChromaticStrength"), Is.Zero, "Reduced motion retained chromatic separation");
             Assert.That(Get<float>(detection, "NoiseStrength"), Is.Zero, "Reduced motion retained animated grain");
             Assert.That(Get<float>(detection, "PeripheralStrength"), Is.LessThanOrEqualTo(.3521f));
+            Assert.That(Get<float>(pursuitAudio, "LoopGain"), Is.LessThanOrEqualTo(.07501f));
             yield return CaptureFrozenHud(view, "recognition-softened-ui.png", errors);
             Assert.That(errors, Is.Empty, string.Join("\n", errors));
             ((Behaviour)enemy).enabled = false;
@@ -142,6 +168,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(detection == null && source == null && clip == null && texture == null && nativeNoise == null &&
                 profile == null && grain == null && interference == null, Is.True, "Old threat audio/texture/post profile leaked on retry");
             Assert.That(Get<int>(player.GetComponent(RequireType("DetectionFeedback")), "CuesPlayed"), Is.Zero);
+            Assert.That(pursuitAudio == null && music == null && musicClip == null && impacts.All(impact => !impact), Is.True,
+                "Old discovery/pursuit owned sources or clip copies leaked on retry");
             Debug.Log("HAPPYTOY_PRESENTATION_PASS recognition: actual sight event, native fine-grain discovery/continuous witnessed pursuit, original filtered interference/tonal impact, no wall/floor oracle or stacked stings, pause/comfort/escape/retry");
         }
 

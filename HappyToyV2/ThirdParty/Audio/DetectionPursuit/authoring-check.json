@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "prepared": 3,
+  "speaker_output": false,
+  "loop_seconds": 6.4,
+  "loop_seam_delta": 0.012237548828125,
+  "loop_derivative_p999": 0.044891357421875,
+  "scope": "Offline composition/PCM only; not native game mix or human listening quality."
+}

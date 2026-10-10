@@ -1,0 +1,28 @@
+{
+  "captured_date": "2026-10-10",
+  "scope": "Sanitized source/licensing facts from the independent creators' public pages. No website scripts, forms, cookies or service credentials retained. Public high-quality MP3 preview bytes are retained, not claimed to be the lossless download originals.",
+  "violin-scratch": {
+    "creator": "cms4f",
+    "title": "Violin scratch.wav",
+    "page": "https://freesound.org/people/cms4f/sounds/159161/",
+    "creator_description": "Recording of a Violin",
+    "tags": ["Acoustic", "Instruments", "Violin"],
+    "license": "CC0-1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "download": "https://cdn.freesound.org/previews/159/159161_2018306-hq.mp3",
+    "original_public_page_sha256": "003fd82f23a46d88e4d34531a125b4a6da4a821567dc40a91024c3ded11b49b6",
+    "retained_source_sha256": "9af975b0d9239cc81d20352d2a060818ea4d1a4323295a587fb49c6d061549f8"
+  },
+  "violin-tremolo": {
+    "creator": "ldk1609",
+    "title": "violin tremolo F3.aif",
+    "page": "https://freesound.org/people/ldk1609/sounds/56082/",
+    "creator_description": "violin tremolo",
+    "category": "Instrument samples / String",
+    "license": "CC0-1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "download": "https://cdn.freesound.org/previews/56/56082_692375-hq.mp3",
+    "original_public_page_sha256": "5ae93ce7857367eb20fb2f42718601a8960afad2a95efc7782b822c124e085b4",
+    "retained_source_sha256": "566a9bf4f0a908d126b2cc3dbc00267c8f3f52082da3fd6267b9d48d73d19880"
+  }
+}

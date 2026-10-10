@@ -24,6 +24,7 @@ namespace HappyToy.V2
             {"enemy-lantern-movement",1},{"enemy-lantern-attack",1},
             {"enemy-wraith-movement",1},{"enemy-wraith-attack",1},
             {"recognition",1},{"tension-heart",1},{"tension-air",1},{"tension-breath",1},
+            {"detection-impact",2},{"pursuit-loop",1},
             {"player-breath",1},{"firecracker",3},{"candle-ignite",1},{"door-rail",1},
             {"chair-scrape",1},{"mannequin-joint",1},{"lantern-warning",1},{"cyclopse-roar",1},
             {"nursery-whimper",1},{"wraith-growth",1},{"lantern-rise",1},{"hwacat-jaw",1},

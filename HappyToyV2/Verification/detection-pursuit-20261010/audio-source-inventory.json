@@ -1,0 +1,786 @@
+{
+  "status": "PASS",
+  "scope": "Mandatory resource inventory, canonical hashes, retained recording hashes, mono PCM16 data and Unity GUIDs only; not Unity import, native mix, pause/mute output or human/device listening certification.",
+  "mandatoryCues": 97,
+  "verifiedCues": 97,
+  "retainedRecordings": 33,
+  "errors": [],
+  "cues": [
+    {
+      "file": "step-stone-0.wav",
+      "rate": 24000,
+      "seconds": 0.10304166666666667,
+      "peak": 0.579986572265625,
+      "rms": 0.10794409570740138,
+      "sha256": "b5cb716e8ad7380a9ae1d80b8db0239b39e792f43aea43018510165079e49c2c"
+    },
+    {
+      "file": "step-stone-1.wav",
+      "rate": 24000,
+      "seconds": 0.10475,
+      "peak": 0.579986572265625,
+      "rms": 0.10180671592275828,
+      "sha256": "62d8b451e2d913ac6b346115ecf095da3b594cb51ea807d6e198afce5d95f8d8"
+    },
+    {
+      "file": "step-stone-2.wav",
+      "rate": 24000,
+      "seconds": 0.109875,
+      "peak": 0.579986572265625,
+      "rms": 0.09593963763704041,
+      "sha256": "4c4d7fdaa03f0cfb5b153fc521ee8506062c937c1af33d7ef3f61cd4b6e849fb"
+    },
+    {
+      "file": "step-stone-3.wav",
+      "rate": 24000,
+      "seconds": 0.10758333333333334,
+      "peak": 0.579986572265625,
+      "rms": 0.09556965019623541,
+      "sha256": "9a2389c32a74996c0e8eb4c1fe13f79331590215a6d8d1dce1c0eb314bb1211d"
+    },
+    {
+      "file": "step-stone-4.wav",
+      "rate": 24000,
+      "seconds": 0.11145833333333334,
+      "peak": 0.579986572265625,
+      "rms": 0.1016481605271106,
+      "sha256": "ec4040851d6081ececd283c56f06a6e9059aadccee9d4e28c844c02553805fe5"
+    },
+    {
+      "file": "step-wet-0.wav",
+      "rate": 24000,
+      "seconds": 0.28029166666666666,
+      "peak": 0.579986572265625,
+      "rms": 0.048501715817763656,
+      "sha256": "0db503c2d93eb64d81ae9ead4fbf76d34bef7bde23648f6a684d1b275b319c20"
+    },
+    {
+      "file": "step-wet-1.wav",
+      "rate": 24000,
+      "seconds": 0.34,
+      "peak": 0.579986572265625,
+      "rms": 0.06163943504910478,
+      "sha256": "18e7fe5f0963bc8af6b14986d14bee8023ad0bfcdd29bc856b1493d22f59e958"
+    },
+    {
+      "file": "step-wet-2.wav",
+      "rate": 24000,
+      "seconds": 0.34,
+      "peak": 0.579986572265625,
+      "rms": 0.05081925063744644,
+      "sha256": "a229358f3e78e543bb64f129c71cb91f2557d4e709c711f93ffee2c76e2145be"
+    },
+    {
+      "file": "door-open-0.wav",
+      "rate": 24000,
+      "seconds": 0.9189583333333333,
+      "peak": 0.579986572265625,
+      "rms": 0.046526085887303836,
+      "sha256": "3c60ac1d9b8708069cdc71a4c62dbd123457a2da237222cceb43927d663a69b5"
+    },
+    {
+      "file": "door-open-1.wav",
+      "rate": 24000,
+      "seconds": 1.4133333333333333,
+      "peak": 0.579986572265625,
+      "rms": 0.037142786295340464,
+      "sha256": "3dbcd6eac1b78f8b61115d317a3417578eea37896e51a632fc4800ad1c5e0c2b"
+    },
+    {
+      "file": "door-close-0.wav",
+      "rate": 24000,
+      "seconds": 0.6750416666666667,
+      "peak": 0.579986572265625,
+      "rms": 0.0632793251815848,
+      "sha256": "45a2c5f349a18f00209665dc6459a182def8e51400af34c476309c8dba10640a"
+    },
+    {
+      "file": "door-close-1.wav",
+      "rate": 24000,
+      "seconds": 0.6125,
+      "peak": 0.579986572265625,
+      "rms": 0.08082715774004902,
+      "sha256": "9010a85fc4c2860fae543c54582e1591de8e50aaf7d59816f518cc62ede2ef55"
+    },
+    {
+      "file": "door-close-2.wav",
+      "rate": 24000,
+      "seconds": 0.7139583333333334,
+      "peak": 0.579986572265625,
+      "rms": 0.1048506752550924,
+      "sha256": "42f5398de4e9a5d4f1bde9e709d8b9b629453fd862508cf3d3731f2bddeef143"
+    },
+    {
+      "file": "door-close-3.wav",
+      "rate": 24000,
+      "seconds": 0.603375,
+      "peak": 0.579986572265625,
+      "rms": 0.06701128414635737,
+      "sha256": "680ad58187e4960bb3a01d4b8ec0b45eeea44a102a1f5232b966a0d21c204c84"
+    },
+    {
+      "file": "cabinet-rustle-0.wav",
+      "rate": 24000,
+      "seconds": 0.6367083333333333,
+      "peak": 0.579986572265625,
+      "rms": 0.04429989918777809,
+      "sha256": "d0a5f1dd2f71b2658584c8926982aa42c3fa48241cf9aa34721ae9b17099c9b8"
+    },
+    {
+      "file": "cabinet-rustle-1.wav",
+      "rate": 24000,
+      "seconds": 0.38345833333333335,
+      "peak": 0.579986572265625,
+      "rms": 0.06719220396477411,
+      "sha256": "8dc26760e5f23e1e1b738a4f5126a5def9d06d8cc3f1abb2b94db0b31261d65e"
+    },
+    {
+      "file": "cabinet-rustle-2.wav",
+      "rate": 24000,
+      "seconds": 0.47658333333333336,
+      "peak": 0.579986572265625,
+      "rms": 0.06518593971214129,
+      "sha256": "e23b6f18b9ecaa0e13e370168544afc408550dd6a834a026263db4dc2269ca4e"
+    },
+    {
+      "file": "cabinet-rustle-3.wav",
+      "rate": 24000,
+      "seconds": 0.38433333333333336,
+      "peak": 0.579986572265625,
+      "rms": 0.05390295984970534,
+      "sha256": "16f3afdf0c89904efb478a6ff393b36037b7c41599fe14dc15f78affda12bffc"
+    },
+    {
+      "file": "frame-strain-0.wav",
+      "rate": 24000,
+      "seconds": 0.6072083333333333,
+      "peak": 0.579986572265625,
+      "rms": 0.08154060888652427,
+      "sha256": "991516d23e3d43c4618eb490ec69f6ba65b475d35b235d0efa54111e8b317944"
+    },
+    {
+      "file": "frame-impact-0.wav",
+      "rate": 24000,
+      "seconds": 0.310125,
+      "peak": 0.579986572265625,
+      "rms": 0.07369046753259158,
+      "sha256": "380f80d70d0a936fc4cf739bcef12e94c1faabb6ee0db0c68877c01282b71fd7"
+    },
+    {
+      "file": "discovery-0.wav",
+      "rate": 24000,
+      "seconds": 0.7055833333333333,
+      "peak": 0.579986572265625,
+      "rms": 0.018543795624252988,
+      "sha256": "11b4cdfd5156a6c344d6f07da8407fab6c388281d2ae4ebceb658630f3b8b789"
+    },
+    {
+      "file": "frame-strain-1.wav",
+      "rate": 24000,
+      "seconds": 0.8301666666666667,
+      "peak": 0.579986572265625,
+      "rms": 0.07464451249573026,
+      "sha256": "6d9dc6fc36979649265e091e7c1daa9d6b6c5cd0dc81ccb625f4b6edd919c385"
+    },
+    {
+      "file": "frame-impact-1.wav",
+      "rate": 24000,
+      "seconds": 0.310125,
+      "peak": 0.579986572265625,
+      "rms": 0.07373746520834976,
+      "sha256": "a223b84f1889ca739b3885960dbc44bf6d43b3350cfda13858e7f2b31acd2d95"
+    },
+    {
+      "file": "discovery-1.wav",
+      "rate": 24000,
+      "seconds": 0.43045833333333333,
+      "peak": 0.579986572265625,
+      "rms": 0.023694908865088224,
+      "sha256": "8f51e71e8e20fb71207eaf6a8d82591479e758afe466166acf1fdd349c05eade"
+    },
+    {
+      "file": "frame-strain-2.wav",
+      "rate": 24000,
+      "seconds": 0.33820833333333333,
+      "peak": 0.579986572265625,
+      "rms": 0.11614143727651986,
+      "sha256": "cf211f71a105ba68b133b0d9df14b22e2a15b91670f444b313b4a52a986b72ba"
+    },
+    {
+      "file": "frame-impact-2.wav",
+      "rate": 24000,
+      "seconds": 0.310125,
+      "peak": 0.579986572265625,
+      "rms": 0.07028049476039067,
+      "sha256": "8ac679ff34bf92c05cec80ae70198b4a45543deacac15619ce0cc2b0341a27b9"
+    },
+    {
+      "file": "discovery-2.wav",
+      "rate": 24000,
+      "seconds": 0.230625,
+      "peak": 0.579986572265625,
+      "rms": 0.026394555070601258,
+      "sha256": "11ecbdb604d1b3b7aad71d812e701ce66b547337e6fdaf75b5adb8777cdee05a"
+    },
+    {
+      "file": "flashlight-0.wav",
+      "rate": 24000,
+      "seconds": 0.15,
+      "peak": 0.579986572265625,
+      "rms": 0.03439844147166331,
+      "sha256": "74af5c5fde8c379debd55fe2317acc19af480c7ca2888016e5e2901af82e23fc"
+    },
+    {
+      "file": "door-seat-0.wav",
+      "rate": 24000,
+      "seconds": 0.2613333333333333,
+      "peak": 0.579986572265625,
+      "rms": 0.045756186833014294,
+      "sha256": "ca34dbde88e1eba6f6a29f283c34893902b3d949778a430f8d46fdfd69879b1e"
+    },
+    {
+      "file": "cabinet-0.wav",
+      "rate": 24000,
+      "seconds": 0.16475,
+      "peak": 0.579986572265625,
+      "rms": 0.07745131245128602,
+      "sha256": "d6653ab7bd7f96d4df169d06b6ca663fefce220ae4699cdc76e29426e9bda4af"
+    },
+    {
+      "file": "ambience-basement-0.wav",
+      "rate": 24000,
+      "seconds": 20.063125,
+      "peak": 0.41998291015625,
+      "rms": 0.008804322681214534,
+      "sha256": "7afe4180619e7f2ed0f3d27ae49f1f81d2711134e1f4569c5d7280271070fd72"
+    },
+    {
+      "file": "enemy-lantern-movement-0.wav",
+      "rate": 24000,
+      "seconds": 0.34,
+      "peak": 0.579986572265625,
+      "rms": 0.06495586782241025,
+      "sha256": "dd5bc998b525e13d9d486ceb4880f60b7ae2cd22f78164bd2d96d0724d645a1d"
+    },
+    {
+      "file": "enemy-lantern-attack-0.wav",
+      "rate": 24000,
+      "seconds": 0.46,
+      "peak": 0.579986572265625,
+      "rms": 0.06283789043297673,
+      "sha256": "ede3a88672d2991b53d644c1763788013c2f44d623bad86b69cd7d65efb83ed4"
+    },
+    {
+      "file": "enemy-wraith-movement-0.wav",
+      "rate": 24000,
+      "seconds": 0.34,
+      "peak": 0.579986572265625,
+      "rms": 0.0670107607833965,
+      "sha256": "197c6123acaba9963937604bdf79293d47ebba2f49aa9367cf92ab9ab0c99c69"
+    },
+    {
+      "file": "enemy-wraith-attack-0.wav",
+      "rate": 24000,
+      "seconds": 0.46,
+      "peak": 0.579986572265625,
+      "rms": 0.09390030958560905,
+      "sha256": "d7a99c52c8ea90e5740d68050c97d10d3a389d9c40f7068f9978d33e7ea0fbb0"
+    },
+    {
+      "file": "ambience-ground-0.wav",
+      "rate": 24000,
+      "seconds": 10.687291666666667,
+      "peak": 0.150146484375,
+      "rms": 0.039998770020660115,
+      "sha256": "5b3c1e8e1efec3119e695831d260ab99ed0513abff925d02454ce478b43c87bf"
+    },
+    {
+      "file": "ambience-upper-0.wav",
+      "rate": 24000,
+      "seconds": 12.791625,
+      "peak": 0.192962646484375,
+      "rms": 0.03799884909936204,
+      "sha256": "9716ece71005aefbbeecaeb5c79eb6080920c1e6618a02857650797bfb69e565"
+    },
+    {
+      "file": "ambience-basement-bed-0.wav",
+      "rate": 24000,
+      "seconds": 10.687291666666667,
+      "peak": 0.125030517578125,
+      "rms": 0.034998927748711245,
+      "sha256": "9fd8374e9a57af015e22ab93f38aeaf9565935e774752e6f3720cc7538162b29"
+    },
+    {
+      "file": "enemy-cyclopse-movement-0.wav",
+      "rate": 24000,
+      "seconds": 0.5805,
+      "peak": 0.53997802734375,
+      "rms": 0.03975675713165027,
+      "sha256": "6d1c719b6a5dd944f5d64bc4a1a821d3f7695868f1a4f664bf7b24adefe19871"
+    },
+    {
+      "file": "enemy-cyclopse-movement-1.wav",
+      "rate": 24000,
+      "seconds": 0.487625,
+      "peak": 0.53997802734375,
+      "rms": 0.036968738201034045,
+      "sha256": "3eb76215c09367e13decb7e663f1fdf01082c7ac7e211356f769d254ffe91ffa"
+    },
+    {
+      "file": "enemy-cyclopse-movement-2.wav",
+      "rate": 24000,
+      "seconds": 0.7082083333333333,
+      "peak": 0.53997802734375,
+      "rms": 0.038425001171728826,
+      "sha256": "da0c353186699ed1d8cd4fb90dc7bd6a5315fdb69e99b031f4e802ab4a2ced63"
+    },
+    {
+      "file": "enemy-hwacat-movement-0.wav",
+      "rate": 24000,
+      "seconds": 0.39645833333333336,
+      "peak": 0.489990234375,
+      "rms": 0.03770274201454873,
+      "sha256": "b92cc674e25182fa4e1f4782b5cad9486a007f700ea2493bfb61731de6cbc123"
+    },
+    {
+      "file": "enemy-hwacat-movement-1.wav",
+      "rate": 24000,
+      "seconds": 0.3880416666666667,
+      "peak": 0.489990234375,
+      "rms": 0.058102102067601524,
+      "sha256": "165b672b6ce5a1f74447c89982912a01974ece2be7bb3f183a695f6d8e626565"
+    },
+    {
+      "file": "enemy-hwacat-movement-2.wav",
+      "rate": 24000,
+      "seconds": 0.37958333333333333,
+      "peak": 0.489990234375,
+      "rms": 0.039650677424485144,
+      "sha256": "0652eec97c667eabcd1ac6e834bf75078b975c6465cb3c41a5928c0b2a8e68d0"
+    },
+    {
+      "file": "enemy-uncat-movement-0.wav",
+      "rate": 24000,
+      "seconds": 0.5805,
+      "peak": 0.509979248046875,
+      "rms": 0.024206160541719174,
+      "sha256": "5526df3c225a0c8035ce08aef9b33b7719bc3554ef55fcf9d1e4037e4f53181e"
+    },
+    {
+      "file": "enemy-uncat-movement-1.wav",
+      "rate": 24000,
+      "seconds": 0.33741666666666664,
+      "peak": 0.509979248046875,
+      "rms": 0.057681641554255814,
+      "sha256": "c18aa88b33ad1b56191bf83f42887214b278f1024ef63abab86d4e8b1987644e"
+    },
+    {
+      "file": "enemy-uncat-movement-2.wav",
+      "rate": 24000,
+      "seconds": 0.487625,
+      "peak": 0.509979248046875,
+      "rms": 0.027133112315938433,
+      "sha256": "b966debc884c230be4f737c0f750b6b9885e2bd1ce5843e020ea12a38084fab5"
+    },
+    {
+      "file": "enemy-baby-movement-0.wav",
+      "rate": 24000,
+      "seconds": 0.33741666666666664,
+      "peak": 0.439971923828125,
+      "rms": 0.046763284531499215,
+      "sha256": "28528675a527d0aaface5717137a11e939ca30f1b1e72c3eaff6663d6ac1b2d7"
+    },
+    {
+      "file": "enemy-baby-movement-1.wav",
+      "rate": 24000,
+      "seconds": 0.39645833333333336,
+      "peak": 0.439971923828125,
+      "rms": 0.031403733477170424,
+      "sha256": "4073c2f32c7800888cff9f13e4b78802c6d4a99d227ccf7f10b0d0b4d012890b"
+    },
+    {
+      "file": "enemy-baby-movement-2.wav",
+      "rate": 24000,
+      "seconds": 0.37958333333333333,
+      "peak": 0.439971923828125,
+      "rms": 0.034052753461023884,
+      "sha256": "ed802b98979c4c6b4d58cd5ee14b61f217ae7968f8de925ae843e32ddc1f9292"
+    },
+    {
+      "file": "tension-heart-0.wav",
+      "rate": 48000,
+      "seconds": 0.72,
+      "peak": 0.280029296875,
+      "rms": 0.03615513612728985,
+      "sha256": "ca7153a817fcb28f0c4e57e2e78eb01ab4903ceb273796af595e08161d39fe0e"
+    },
+    {
+      "file": "tension-air-0.wav",
+      "rate": 48000,
+      "seconds": 5.0,
+      "peak": 0.259979248046875,
+      "rms": 0.08064130403949185,
+      "sha256": "aa815532fe97c12c65d6a8b11f9dd90a781974cd68f90192ec50e91d62487a64"
+    },
+    {
+      "file": "tension-breath-0.wav",
+      "rate": 48000,
+      "seconds": 6.0,
+      "peak": 0.319976806640625,
+      "rms": 0.02865483672182476,
+      "sha256": "38ca9b3a1c62d7b59443821189c97ae2ea1fb1fa840d50fe7e8d8b494ea33ee7"
+    },
+    {
+      "file": "player-breath-0.wav",
+      "rate": 48000,
+      "seconds": 4.269020833333333,
+      "peak": 0.280029296875,
+      "rms": 0.027729536821182524,
+      "sha256": "b04681737dd04521607ca73cb7319f7a201fba4f3a43dc72487c0577645e1285"
+    },
+    {
+      "file": "firecracker-0.wav",
+      "rate": 48000,
+      "seconds": 0.35304166666666664,
+      "peak": 0.66998291015625,
+      "rms": 0.04101249509355157,
+      "sha256": "5da012c911bd572809a69bce4bdb3f338a27a97a53437ceab947286696ea2090"
+    },
+    {
+      "file": "firecracker-1.wav",
+      "rate": 48000,
+      "seconds": 0.22845833333333335,
+      "peak": 0.66998291015625,
+      "rms": 0.04068496344506562,
+      "sha256": "4fce871c612448aa5516ac5dc6fe8e84f8c3932b4cd7fb7f88bdbecfceb12516"
+    },
+    {
+      "file": "firecracker-2.wav",
+      "rate": 48000,
+      "seconds": 0.23902083333333332,
+      "peak": 0.66998291015625,
+      "rms": 0.05512737468834872,
+      "sha256": "a21a90d3f933a27e0a4cb2df23ceb7d252997bf34e1633b74179bfa129423f5d"
+    },
+    {
+      "file": "candle-ignite-0.wav",
+      "rate": 48000,
+      "seconds": 0.760875,
+      "peak": 0.420013427734375,
+      "rms": 0.042115359570761804,
+      "sha256": "c0ff97b5635c4fe0ef50a344d4576e12439e778029c08ad5f40a9951cd52bcd5"
+    },
+    {
+      "file": "cabinet-open-0.wav",
+      "rate": 48000,
+      "seconds": 0.2319375,
+      "peak": 0.5999755859375,
+      "rms": 0.03827844190220406,
+      "sha256": "0e51908acb0efa6fa603d92ab0e8371b1d8c414592a9322ae4507c41786ef54e"
+    },
+    {
+      "file": "cabinet-close-0.wav",
+      "rate": 48000,
+      "seconds": 0.32416666666666666,
+      "peak": 0.5999755859375,
+      "rms": 0.03558497825696351,
+      "sha256": "391b3d75303e7c447db4cbde92f30beb21c95e056a7f01037df1348f7f73d864"
+    },
+    {
+      "file": "door-rail-0.wav",
+      "rate": 48000,
+      "seconds": 1.2141458333333333,
+      "peak": 0.32000732421875,
+      "rms": 0.02476340098027622,
+      "sha256": "940c22de7a523ccf092831849de6f688cb9b0be6f8673063371a7649d75703df"
+    },
+    {
+      "file": "chair-scrape-0.wav",
+      "rate": 48000,
+      "seconds": 1.3722291666666666,
+      "peak": 0.430023193359375,
+      "rms": 0.032744953627966714,
+      "sha256": "c54d7728f9164c2b671c312be7e6e717f22597c106e5c4c1e9fca09b64f5a957"
+    },
+    {
+      "file": "mannequin-joint-0.wav",
+      "rate": 48000,
+      "seconds": 0.9,
+      "peak": 0.41998291015625,
+      "rms": 0.07186081809947444,
+      "sha256": "8d8a531c9aef09f6406b4d330d8f355e09dbd0d38b20b3ef869a48e6735d867f"
+    },
+    {
+      "file": "lantern-warning-0.wav",
+      "rate": 48000,
+      "seconds": 0.9892083333333334,
+      "peak": 0.399993896484375,
+      "rms": 0.05371835742954149,
+      "sha256": "7e9ebe8255d88166fe4d5cdc44a891653184deef93980bf152cdb88acaff365d"
+    },
+    {
+      "file": "cyclopse-roar-0.wav",
+      "rate": 48000,
+      "seconds": 0.6115208333333333,
+      "peak": 0.480010986328125,
+      "rms": 0.06053956745663943,
+      "sha256": "d124fd5a38cae478eaff570809323b169f71016d663bc00b1522bfc0ecde8d77"
+    },
+    {
+      "file": "nursery-whimper-0.wav",
+      "rate": 48000,
+      "seconds": 2.7,
+      "peak": 0.3800048828125,
+      "rms": 0.02755461163732559,
+      "sha256": "b9259854419be8bace6afdd79120bb670563206eadb6b7a1f394c3ba48d8ffde"
+    },
+    {
+      "file": "wraith-growth-0.wav",
+      "rate": 48000,
+      "seconds": 4.75,
+      "peak": 0.4000244140625,
+      "rms": 0.04111862455483426,
+      "sha256": "08219287620602fdaff66bcf4c7a7a4599f28cd87d1174be35324f095373db68"
+    },
+    {
+      "file": "lantern-rise-0.wav",
+      "rate": 48000,
+      "seconds": 1.1999791666666666,
+      "peak": 0.399993896484375,
+      "rms": 0.06610400214266042,
+      "sha256": "4d2447b52ad9d49a05a0ca022f084bb4c6d652692626ab8d1762dfc8ee7624a0"
+    },
+    {
+      "file": "hwacat-jaw-0.wav",
+      "rate": 48000,
+      "seconds": 5.10775,
+      "peak": 0.41998291015625,
+      "rms": 0.03608645757887,
+      "sha256": "d23b0bcb98b036a9f421c117c590b87805aa9122ebeb151a4b5b0e2fd10097d1"
+    },
+    {
+      "file": "story-bell-0.wav",
+      "rate": 48000,
+      "seconds": 1.0022916666666666,
+      "peak": 0.45001220703125,
+      "rms": 0.03272876987335956,
+      "sha256": "6ad928a04877e8a1d2ddd871085411d5f5d09c4255a41f719ba5a974034734cb"
+    },
+    {
+      "file": "memory-bell-0.wav",
+      "rate": 48000,
+      "seconds": 4.0,
+      "peak": 0.4000244140625,
+      "rms": 0.016022085322993696,
+      "sha256": "762ae03193bbeafb2c0e49ac8c28752b1bcfbe012150c6ffd90dbe9e37df0a6d"
+    },
+    {
+      "file": "doll-musicbox-0.wav",
+      "rate": 48000,
+      "seconds": 3.2,
+      "peak": 0.379974365234375,
+      "rms": 0.06482575873236393,
+      "sha256": "0d7d53826b14ca2b0be102415c1ff71b8436c587313a8a7fa7e308f4db6da9f6"
+    },
+    {
+      "file": "step-wood-0.wav",
+      "rate": 48000,
+      "seconds": 0.67,
+      "peak": 0.46002197265625,
+      "rms": 0.01982096697448256,
+      "sha256": "5a5bce50ed475c3bfae996f5cdf8bbd7747d795c832ef376126de6313a7227cb"
+    },
+    {
+      "file": "step-wood-1.wav",
+      "rate": 48000,
+      "seconds": 0.67,
+      "peak": 0.459991455078125,
+      "rms": 0.01352458639240277,
+      "sha256": "c49a0e967eb20eed3b1951dec7c62416a571865d056ddfbd05515c642fee5bde"
+    },
+    {
+      "file": "step-wood-2.wav",
+      "rate": 48000,
+      "seconds": 0.67,
+      "peak": 0.46002197265625,
+      "rms": 0.017416373910119947,
+      "sha256": "7713505fb1ca08e42340e3aaad7b275b67e8a049e2ac0f6e934d57e3ac947554"
+    },
+    {
+      "file": "step-wood-3.wav",
+      "rate": 48000,
+      "seconds": 0.67,
+      "peak": 0.46002197265625,
+      "rms": 0.012257035558235244,
+      "sha256": "1bcd44fedb08ec6188a56c7b124bdae5c987fdfa12aa75787f0c15714963d958"
+    },
+    {
+      "file": "step-wood-4.wav",
+      "rate": 48000,
+      "seconds": 0.67,
+      "peak": 0.46002197265625,
+      "rms": 0.014887673648496167,
+      "sha256": "02ebbc80a8d7c1b6ac21a6de824205340b303f03effc571695716150786003d7"
+    },
+    {
+      "file": "recognition-0.wav",
+      "rate": 48000,
+      "seconds": 1.75,
+      "peak": 0.52001953125,
+      "rms": 0.06033952587572141,
+      "sha256": "be00a855931a15ccfc5fede6797ebae4f93d85800e1b1cacaff2088dd8058149"
+    },
+    {
+      "file": "enemy-cyclopse-attack-0.wav",
+      "rate": 48000,
+      "seconds": 0.46,
+      "peak": 0.41998291015625,
+      "rms": 0.03382703929515968,
+      "sha256": "976f53010b65a0264a149c2d16dd81594a2af84ddc15e799d7195ea012902f01"
+    },
+    {
+      "file": "enemy-hwacat-attack-0.wav",
+      "rate": 48000,
+      "seconds": 0.46,
+      "peak": 0.420013427734375,
+      "rms": 0.0413750570786666,
+      "sha256": "128fac70b280e2b7f7ef996fb8a9b2c36409eba23f5766f6f266a390c23cea76"
+    },
+    {
+      "file": "enemy-uncat-attack-0.wav",
+      "rate": 48000,
+      "seconds": 0.46,
+      "peak": 0.420013427734375,
+      "rms": 0.03203190182449051,
+      "sha256": "cd6b20397b7f40450a2b53b231df061aede87bda62edf13216f28ed41fede17a"
+    },
+    {
+      "file": "enemy-baby-attack-0.wav",
+      "rate": 48000,
+      "seconds": 0.46,
+      "peak": 0.420013427734375,
+      "rms": 0.03438518100167637,
+      "sha256": "ff64973ce88a6b2c15e8cbae8fe5f6325bc86110e7e354c02c26336a5d3b78f0"
+    },
+    {
+      "file": "ambience-corridor-0.wav",
+      "rate": 48000,
+      "seconds": 22.5,
+      "peak": 0.199981689453125,
+      "rms": 0.03549881803187614,
+      "sha256": "78cdb96921d4860b8c2f7e43002faaa86eb39cb7bd18ac5218dda9c34e84189e"
+    },
+    {
+      "file": "ambience-corridor-1.wav",
+      "rate": 48000,
+      "seconds": 22.5,
+      "peak": 0.199981689453125,
+      "rms": 0.038215917157381735,
+      "sha256": "b97f6106c557ac80dce30beb04fb9ea2d945d05febd4b66577423f6bef642742"
+    },
+    {
+      "file": "ambience-corridor-2.wav",
+      "rate": 48000,
+      "seconds": 22.5,
+      "peak": 0.20001220703125,
+      "rms": 0.04616803298242998,
+      "sha256": "dec725d58571144ab7f5f28ddc14be351499295703eb8d78f55be52a201fde87"
+    },
+    {
+      "file": "enemy-baby-cry-0.wav",
+      "rate": 48000,
+      "seconds": 15.55,
+      "peak": 0.5,
+      "rms": 0.05624588982011007,
+      "sha256": "00eebd76bbfac6e68b7206ba799bcc1c9913b2b54a9fd8c1059a4009a6d7814c"
+    },
+    {
+      "file": "mask-heavy-step-0.wav",
+      "rate": 48000,
+      "seconds": 0.56,
+      "peak": 0.719970703125,
+      "rms": 0.05766215902198771,
+      "sha256": "32951cefad301fb86a6360be74a1ed51f9676a6da5be385fcc5642d324c7bde5"
+    },
+    {
+      "file": "mask-heavy-step-1.wav",
+      "rate": 48000,
+      "seconds": 0.56,
+      "peak": 0.719970703125,
+      "rms": 0.05786077331261788,
+      "sha256": "319734826b7a6817b8c4a6be84fd08f5c43090491b6f9770f4618baca19b09e1"
+    },
+    {
+      "file": "mask-heavy-step-2.wav",
+      "rate": 48000,
+      "seconds": 0.56,
+      "peak": 0.719970703125,
+      "rms": 0.05435237507768814,
+      "sha256": "19586534e1eb12f7462e807bce5e6c1379c3055f180057abc6ac1b652908fbee"
+    },
+    {
+      "file": "mask-near-whistle-0.wav",
+      "rate": 48000,
+      "seconds": 1.9,
+      "peak": 0.430023193359375,
+      "rms": 0.08764514425100733,
+      "sha256": "5b7377653ffa626ccd3ac550166960fbbe68de615a6f08ee72d14d0aded0c49f"
+    },
+    {
+      "file": "mask-near-whistle-1.wav",
+      "rate": 48000,
+      "seconds": 1.9,
+      "peak": 0.42999267578125,
+      "rms": 0.08543825375426299,
+      "sha256": "d4228527d5791b75f21e931e6f46ec26a6e551731c4e9ee753f6f12bba816df8"
+    },
+    {
+      "file": "mask-door-smash-0.wav",
+      "rate": 48000,
+      "seconds": 1.34,
+      "peak": 0.730010986328125,
+      "rms": 0.05876266361266323,
+      "sha256": "a6dd7167df8596dc317734b334af075606dc964d27b6d82bf2e940948c220380"
+    },
+    {
+      "file": "enemy-baby-mutter-0.wav",
+      "rate": 48000,
+      "seconds": 1.995,
+      "peak": 0.379974365234375,
+      "rms": 0.06138548973018704,
+      "sha256": "22f1e172a7576c793b6c27fbe724e54377d902d9bb02a08c7e56a33f69a6da8c"
+    },
+    {
+      "file": "enemy-baby-mutter-1.wav",
+      "rate": 48000,
+      "seconds": 2.23,
+      "peak": 0.379974365234375,
+      "rms": 0.0644440479702036,
+      "sha256": "4fe92d4f0a4894c3693a9103c96761a14a5639af7effde8578b13e1d983c34fa"
+    },
+    {
+      "file": "detection-impact-0.wav",
+      "rate": 48000,
+      "seconds": 1.06,
+      "peak": 0.5,
+      "rms": 0.07141466426132653,
+      "sha256": "343def1ec188383a71a368ec1ba7d1b5f3b92f595cfb48a479d339d591c8a9ba"
+    },
+    {
+      "file": "detection-impact-1.wav",
+      "rate": 48000,
+      "seconds": 1.12,
+      "peak": 0.52001953125,
+      "rms": 0.08791061198184184,
+      "sha256": "8017186806650ce4eb02800f6b7cae0c4a7457b035f5853ddaffc94a0c852c08"
+    },
+    {
+      "file": "pursuit-loop-0.wav",
+      "rate": 48000,
+      "seconds": 6.4,
+      "peak": 0.32000732421875,
+      "rms": 0.05069264049479706,
+      "sha256": "3b4fcdcdfa009584d8ea060b7d6dd2695ff3320e96857df2e0de9c13d6730d77"
+    }
+  ]
+}
