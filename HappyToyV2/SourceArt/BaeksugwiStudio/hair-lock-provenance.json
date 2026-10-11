@@ -1,0 +1,255 @@
+{
+  "sourceVertices": 952517,
+  "deformationWeightSHA256": "4a41f651fa84c24c1beb06a9cf296741c38c2921ee8522e3dd19d855d435e396",
+  "threshold": "source edge length expansion >2 over actual three evaluated motion frames; frontZ>.18; dark connected component touches head",
+  "reports": [
+    {
+      "tag": "conservative",
+      "selectedVertices": 115349,
+      "selectedWarmFlesh": 3990,
+      "selectedStrainOver2": 10315,
+      "allFrontDarkStrainOver2": 12691,
+      "selectedDominants": {
+        "Arm1L_Shoulder": 3576,
+        "Arm1R_Shoulder": 1482,
+        "Arm2L_Shoulder": 1464,
+        "ArmFrontInside_Shoulder": 13025,
+        "Chest": 11428,
+        "Head": 39930,
+        "MaskTip": 494,
+        "SpineFront": 43950
+      },
+      "maxSelectedStrain": 39.14812469482422,
+      "components": [
+        {
+          "component": 66,
+          "weldedVertices": 58141,
+          "headSeeds": 33753,
+          "strainOver2Vertices": 6844,
+          "bounds": [
+            [
+              -0.17427238821983337,
+              -0.11051180213689804,
+              0.180000439286232
+            ],
+            [
+              0.18550843000411987,
+              0.3489838242530823,
+              0.4560202956199646
+            ]
+          ]
+        },
+        {
+          "component": 406,
+          "weldedVertices": 35,
+          "headSeeds": 35,
+          "strainOver2Vertices": 15,
+          "bounds": [
+            [
+              -0.023949483409523964,
+              0.28382408618927,
+              0.338890016078949
+            ],
+            [
+              -0.020733483135700226,
+              0.2922022342681885,
+              0.35170507431030273
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "balanced",
+      "selectedVertices": 136199,
+      "selectedWarmFlesh": 10076,
+      "selectedStrainOver2": 11318,
+      "allFrontDarkStrainOver2": 14393,
+      "selectedDominants": {
+        "Arm1L_Shoulder": 4431,
+        "Arm1R_Shoulder": 3898,
+        "Arm2L_Shoulder": 1586,
+        "ArmFrontInside_Shoulder": 14055,
+        "Chest": 12168,
+        "Head": 43217,
+        "MaskTip": 494,
+        "SpineFront": 56350
+      },
+      "maxSelectedStrain": 39.14812469482422,
+      "components": [
+        {
+          "component": 11,
+          "weldedVertices": 69074,
+          "headSeeds": 37330,
+          "strainOver2Vertices": 7550,
+          "bounds": [
+            [
+              -0.20525753498077393,
+              -0.11051180213689804,
+              0.180000439286232
+            ],
+            [
+              0.20163285732269287,
+              0.3787074685096741,
+              0.462516725063324
+            ]
+          ]
+        },
+        {
+          "component": 351,
+          "weldedVertices": 36,
+          "headSeeds": 36,
+          "strainOver2Vertices": 16,
+          "bounds": [
+            [
+              -0.023949483409523964,
+              0.28382408618927,
+              0.338890016078949
+            ],
+            [
+              -0.020733483135700226,
+              0.2922022342681885,
+              0.35170507431030273
+            ]
+          ]
+        },
+        {
+          "component": 381,
+          "weldedVertices": 31,
+          "headSeeds": 31,
+          "strainOver2Vertices": 18,
+          "bounds": [
+            [
+              -0.00965060293674469,
+              0.30574870109558105,
+              0.31228187680244446
+            ],
+            [
+              -0.0027879998087882996,
+              0.3117401897907257,
+              0.325774222612381
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "tag": "wide",
+      "selectedVertices": 148824,
+      "selectedWarmFlesh": 17420,
+      "selectedStrainOver2": 11654,
+      "allFrontDarkStrainOver2": 14846,
+      "selectedDominants": {
+        "Arm1L_Shoulder": 5100,
+        "Arm1R_Elbow": 316,
+        "Arm1R_Shoulder": 4941,
+        "Arm2L_Shoulder": 1635,
+        "ArmFrontInside_Elbow": 1970,
+        "ArmFrontInside_Shoulder": 15869,
+        "Chest": 12329,
+        "Head": 48276,
+        "MaskTip": 494,
+        "SpineFront": 57894
+      },
+      "maxSelectedStrain": 39.14812469482422,
+      "components": [
+        {
+          "component": 8,
+          "weldedVertices": 76396,
+          "headSeeds": 38329,
+          "strainOver2Vertices": 7795,
+          "bounds": [
+            [
+              -0.20647048950195312,
+              -0.1863000988960266,
+              0.180000439286232
+            ],
+            [
+              0.2076408565044403,
+              0.3787074685096741,
+              0.46313560009002686
+            ]
+          ]
+        },
+        {
+          "component": 172,
+          "weldedVertices": 36,
+          "headSeeds": 36,
+          "strainOver2Vertices": 16,
+          "bounds": [
+            [
+              -0.023949483409523964,
+              0.28382408618927,
+              0.338890016078949
+            ],
+            [
+              -0.020733483135700226,
+              0.2922022342681885,
+              0.35170507431030273
+            ]
+          ]
+        },
+        {
+          "component": 189,
+          "weldedVertices": 31,
+          "headSeeds": 31,
+          "strainOver2Vertices": 18,
+          "bounds": [
+            [
+              -0.00965060293674469,
+              0.30574870109558105,
+              0.31228187680244446
+            ],
+            [
+              -0.0027879998087882996,
+              0.3117401897907257,
+              0.325774222612381
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "recommendedMask": "hair-strain-lock-conservative.npy",
+  "recommendedMaskSHA256": "c836e419418a8c292d40f68db205ad7b3f768d289b93245399b22412671f060b",
+  "sourceSHA256": "4d1f449520c6672c3e38e7d2c96aff09bd53ee10941274896d23b27726587566",
+  "selectedSourceBounds": [
+    [
+      -0.17427238821983337,
+      -0.11051180213689804,
+      0.180000439286232
+    ],
+    [
+      0.18550843000411987,
+      0.3489838242530823,
+      0.4560202956199646
+    ]
+  ],
+  "selectedLowLimbs": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0,
+    "9": 0,
+    "10": 0,
+    "11": 0,
+    "12": 0,
+    "13": 0,
+    "14": 0,
+    "15": 0,
+    "16": 0,
+    "17": 0,
+    "18": 0,
+    "19": 0,
+    "20": 0,
+    "21": 0,
+    "22": 0,
+    "23": 0,
+    "24": 0
+  }
+}

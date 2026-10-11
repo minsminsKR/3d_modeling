@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Passed" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-11 13:57:10Z" end-time="2026-10-11 13:58:16Z" duration="65.7807668">
+  <test-suite type="TestSuite" id="1228" name="Happy Toy V2 — Development" fullname="Happy Toy V2 — Development" runstate="Runnable" testcasecount="218" result="Passed" start-time="2026-10-11 13:57:10Z" end-time="2026-10-11 13:58:16Z" duration="65.780767" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1220" name="HappyToy.V2.PlayModeTests.dll" fullname="C:/Users/강 두오/Documents/ChatGPT/HappyToyV2/HappyToyV2/Library/ScriptAssemblies/HappyToy.V2.PlayModeTests.dll" runstate="Runnable" testcasecount="218" result="Passed" start-time="2026-10-11 13:57:10Z" end-time="2026-10-11 13:58:16Z" duration="65.762940" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="47468" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1221" name="HappyToy" fullname="HappyToy" runstate="Runnable" testcasecount="218" result="Passed" start-time="2026-10-11 13:57:10Z" end-time="2026-10-11 13:58:16Z" duration="65.752448" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1222" name="V2" fullname="HappyToy.V2" runstate="Runnable" testcasecount="218" result="Passed" start-time="2026-10-11 13:57:10Z" end-time="2026-10-11 13:58:16Z" duration="65.734093" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1223" name="CloudTests" fullname="HappyToy.V2.CloudTests" runstate="Runnable" testcasecount="218" result="Passed" start-time="2026-10-11 13:57:10Z" end-time="2026-10-11 13:58:16Z" duration="65.722018" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="CloudPlayModeTests" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" testcasecount="218" result="Passed" start-time="2026-10-11 13:57:10Z" end-time="2026-10-11 13:58:16Z" duration="65.705154" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1134" name="MaskRunnerNearWhistleSightStillRespectsRealRoomCoverAndHiding" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.MaskRunnerNearWhistleSightStillRespectsRealRoomCoverAndHiding" methodname="MaskRunnerNearWhistleSightStillRespectsRealRoomCoverAndHiding" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="130914800" result="Passed" start-time="2026-10-11 13:57:10Z" end-time="2026-10-11 13:57:26Z" duration="15.965335" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[CABINET_CHECKPOINT_FIXTURE selected=Corridor hiding cabinet at=(204.978, 0.030, 201.022) rejected=
+]]></output>
+              </test-case>
+              <test-case id="1133" name="MaskRunnerShattersLockedAndOpenRealDoorsRunsFastestAndRestoresBrokenGeometry" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.MaskRunnerShattersLockedAndOpenRealDoorsRunsFastestAndRestoresBrokenGeometry" methodname="MaskRunnerShattersLockedAndOpenRealDoorsRunsFastestAndRestoresBrokenGeometry" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="958098913" result="Passed" start-time="2026-10-11 13:57:26Z" end-time="2026-10-11 13:57:50Z" duration="23.706413" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="90000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[HAPPYTOY_MASK_RUNNER_DOORS_PASS actual speed=6.600463 locked/open impact, native crossing, JSON/fresh-scene broken geometry
+]]></output>
+              </test-case>
+              <test-case id="1131" name="StudioCorridorCloneUsesOneReplacementAndHidesTheFloatingFace" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.StudioCorridorCloneUsesOneReplacementAndHidesTheFloatingFace" methodname="StudioCorridorCloneUsesOneReplacementAndHidesTheFloatingFace" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1104849330" result="Passed" start-time="2026-10-11 13:57:50Z" end-time="2026-10-11 13:57:59Z" duration="9.657472" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1129" name="StudioImportedRunKeepsFloorRoofAndForwardFacingHead" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.StudioImportedRunKeepsFloorRoofAndForwardFacingHead" methodname="StudioImportedRunKeepsFloorRoofAndForwardFacingHead" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1158798534" result="Passed" start-time="2026-10-11 13:57:59Z" end-time="2026-10-11 13:58:03Z" duration="3.460906" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1130" name="StudioRunMovesWithTheAgentAndFreezesOnPause" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.StudioRunMovesWithTheAgentAndFreezesOnPause" methodname="StudioRunMovesWithTheAgentAndFreezesOnPause" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1014963634" result="Passed" start-time="2026-10-11 13:58:03Z" end-time="2026-10-11 13:58:13Z" duration="10.285802" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1128" name="StudioWraithKeepsNavigationAndImportsEighteenSkinnedArms" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.StudioWraithKeepsNavigationAndImportsEighteenSkinnedArms" methodname="StudioWraithKeepsNavigationAndImportsEighteenSkinnedArms" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1987672791" result="Passed" start-time="2026-10-11 13:58:13Z" end-time="2026-10-11 13:58:16Z" duration="2.540216" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/강 두오/AppData/LocalLow/Happy Toy/Happy Toy V2 — Development\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

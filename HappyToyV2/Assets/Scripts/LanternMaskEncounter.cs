@@ -80,7 +80,7 @@ namespace HappyToy.V2
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath(); floorY = transform.position.y;
             // Resize the imported children; the growth/mask attachment owners keep
             // their existing animated pivots and the navigation capsule stays put.
-            if(motion && body)MonsterPresentationScale.Enlarge(motion.transform,2.24f,
+            if(motion && body && !body.Find("Baeksugwi Studio running model"))MonsterPresentationScale.Enlarge(motion.transform,2.24f,
                 transform.position.y-agent.baseOffset,false);
             if(mask && mask.childCount>0)
             {
@@ -435,7 +435,8 @@ namespace HappyToy.V2
                 lantern.localScale = Vector3.one * Mathf.Max(.001f, 1 - contraction);
             }
             if (flameLight) flameLight.intensity = 1.2f + (reducedMotion ? 0 : Mathf.Sin(age * 9) * .18f) + attack.Windup * .7f;
-            if (motion && body && body.gameObject.activeInHierarchy && progress > 0)
+            if (motion && body && body.gameObject.activeInHierarchy && progress > 0 &&
+                !(GetComponent<MaskHorrorVisual>()?.UsesStudioModel ?? false))
             {
                 bool moving = EnemyNavigation.Ready(agent) && !agent.isStopped && agent.velocity.sqrMagnitude > .01f;
                 var clip = motion["run"];
@@ -505,6 +506,15 @@ namespace HappyToy.V2
             var session = GameSession.Current;
             if (!session || !session.InputAllowed || Time.timeScale <= 0 || transformTime <= 4.15f ||
                 State == Phase.Resolved || !body || !mask) return;
+            var studio = GetComponent<MaskHorrorVisual>();
+            if (studio && studio.UsesStudioModel)
+            {
+                // One skinned creature owns both head and body. No separate
+                // face correction or per-frame million-vertex BakeMesh is needed.
+                studio.AttachmentBounds(out var studioBody, out var studioFace);
+                LastBodyBounds=studioBody;LastMaskBounds=studioFace;AttachmentSamples++;
+                return;
+            }
             if (bodyRenderers == null) bodyRenderers = body.GetComponentsInChildren<Renderer>(true);
             if (maskRenderers == null) maskRenderers = mask.GetComponentsInChildren<Renderer>(true);
             if (!VisibleBounds(bodyRenderers, out var bodyBounds) || !VisibleBounds(maskRenderers, out var maskBounds)) return;

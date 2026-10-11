@@ -1,0 +1,1175 @@
+{
+  "tool": "4.0.2",
+  "input": "source-original.glb",
+  "source_sha256": "4d1f449520c6672c3e38e7d2c96aff09bd53ee10941274896d23b27726587566",
+  "weights": {
+    "input_max_sum_error": 5.122274160385132e-08,
+    "quantization_max_error": 0.0007312630277824805,
+    "quantized_max_sum_error": 0,
+    "weight_bins": 1024,
+    "zero_weight_vertices": 0
+  },
+  "bones": 63,
+  "limbs": 18,
+  "meshes": {
+    "geometry_0": {
+      "before": {
+        "vertices": 952517,
+        "triangles": 988189,
+        "loops": 2964567,
+        "uv": {
+          "UVMap": "4d27f939c5f6c8fd299f2874adc464fdfa9acbd13c007aebf76702c86b0d07da"
+        },
+        "normal_sha256": "6e28fa1aeb1697fe61a4db6349b02c4622f6e78602389a77ccc0e3ffcdd64bb7",
+        "materials": [
+          "Material_0"
+        ]
+      },
+      "after": {
+        "vertices": 952517,
+        "triangles": 988189,
+        "loops": 2964567,
+        "uv": {
+          "UVMap": "4d27f939c5f6c8fd299f2874adc464fdfa9acbd13c007aebf76702c86b0d07da"
+        },
+        "normal_sha256": "6e28fa1aeb1697fe61a4db6349b02c4622f6e78602389a77ccc0e3ffcdd64bb7",
+        "materials": [
+          "Material_0"
+        ]
+      },
+      "correspondence": "identity-order",
+      "max_position_error": 0.0,
+      "binding": {
+        "groups": 63,
+        "batch_calls": 45978,
+        "influences": 3347958,
+        "preserve_volume": false
+      }
+    }
+  },
+  "palm_measurements": {
+    "Arm1L_Wrist": {
+      "source_min_y": -0.42456868290901184,
+      "samples": 2942,
+      "wrist_clearance": 0.08656868290901182,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm1R_Wrist": {
+      "source_min_y": -0.37376856803894043,
+      "samples": 1473,
+      "wrist_clearance": 0.07876856803894045,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm2L_Wrist": {
+      "source_min_y": -0.3094427287578583,
+      "samples": 1186,
+      "wrist_clearance": 0.046442728757858265,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm2R_Wrist": {
+      "source_min_y": -0.32355207204818726,
+      "samples": 769,
+      "wrist_clearance": 0.04355207204818723,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm3L_Wrist": {
+      "source_min_y": -0.24428242444992065,
+      "samples": 585,
+      "wrist_clearance": 0.03428242444992066,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm3R_Wrist": {
+      "source_min_y": -0.2703183591365814,
+      "samples": 778,
+      "wrist_clearance": 0.03031835913658143,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm4L_Wrist": {
+      "source_min_y": -0.23274900019168854,
+      "samples": 1978,
+      "wrist_clearance": 0.052749000191688544,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm4R_Wrist": {
+      "source_min_y": -0.23231583833694458,
+      "samples": 1355,
+      "wrist_clearance": 0.05231583833694459,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm5L_Wrist": {
+      "source_min_y": -0.23049013316631317,
+      "samples": 485,
+      "wrist_clearance": 0.05049013316631318,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm5R_Wrist": {
+      "source_min_y": -0.23035386204719543,
+      "samples": 517,
+      "wrist_clearance": 0.05035386204719544,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm6L_Wrist": {
+      "source_min_y": -0.12783820927143097,
+      "samples": 169,
+      "wrist_clearance": 0.027838209271430964,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "Arm6R_Wrist": {
+      "source_min_y": -0.13043203949928284,
+      "samples": 182,
+      "wrist_clearance": 0.03043203949928283,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "ArmInnerL_Wrist": {
+      "source_min_y": -0.22229889035224915,
+      "samples": 451,
+      "wrist_clearance": 0.03729889035224915,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "ArmInnerR_Wrist": {
+      "source_min_y": -0.22148838639259338,
+      "samples": 461,
+      "wrist_clearance": 0.036488386392593386,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "ArmFrontInside_Wrist": {
+      "source_min_y": -0.28079545497894287,
+      "samples": 648,
+      "wrist_clearance": 0.045795454978942884,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "ArmRearCenter_Wrist": {
+      "source_min_y": -0.16045790910720825,
+      "samples": 739,
+      "wrist_clearance": 0.060457909107208246,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "ArmRearL_Wrist": {
+      "source_min_y": -0.16021138429641724,
+      "samples": 738,
+      "wrist_clearance": 0.06021138429641723,
+      "method": "rigid weighted hand underside minimum"
+    },
+    "ArmRearR_Wrist": {
+      "source_min_y": -0.16003701090812683,
+      "samples": 732,
+      "wrist_clearance": 0.060037010908126826,
+      "method": "rigid weighted hand underside minimum"
+    }
+  },
+  "motion": {
+    "armature": "Baeksugwi_Rig",
+    "body_root": "BodyRoot",
+    "fps": 60,
+    "forward_axis": [
+      0.0,
+      -1.0,
+      0.0
+    ],
+    "ground_height": -0.2,
+    "arms": 18,
+    "contact_arms": 12,
+    "body_height_offset": -0.075,
+    "stride": 0.12,
+    "duty": 0.48,
+    "actions": {
+      "Run_InPlace": {
+        "action": "Run_InPlace",
+        "frames": 44,
+        "duration_seconds": 0.7166666666666667,
+        "root_motion": false,
+        "distance_per_cycle": 0,
+        "speed_model_units_per_second": 0.3488372093023256,
+        "max_segment_length_error": 5.811519465659387e-08,
+        "max_reach_correction": 7.450580596923828e-08,
+        "reach_corrected_samples": 0,
+        "minimum_wrist_z": -0.17216180264949799,
+        "max_pose_scale_error": 3.0994415283203125e-06,
+        "limbs": {
+          "Arm1L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.7990655851310376e-08,
+            "max_target_correction": 3.7990655851310376e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.11343134194612503,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm1R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.0719530773294423e-08,
+            "max_target_correction": 3.0719530773294423e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.12123144418001175,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm2L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.3527612686157227e-08,
+            "max_target_correction": 0.0095294247203148,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.15355730056762695,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm2R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 2.6863450374185958e-08,
+            "max_target_correction": 0.033247551577700186,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.15644794702529907,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm3L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 2.9802322387695312e-08,
+            "max_target_correction": 2.9802322387695312e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.16571758687496185,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm3R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 4.2146848510894035e-08,
+            "max_target_correction": 0.01628703458908993,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.16968165338039398,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm4L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 4.470348358154297e-08,
+            "max_target_correction": 4.470348358154297e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.14725102484226227,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm4R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 4.470348358154297e-08,
+            "max_target_correction": 4.470348358154297e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.14768420159816742,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm5L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 2.9802322387695312e-08,
+            "max_target_correction": 2.9802322387695312e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.14950990676879883,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm5R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.0719530773294423e-08,
+            "max_target_correction": 3.0719530773294423e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.14964616298675537,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm6L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 4.470348358154297e-08,
+            "max_target_correction": 0.048686284639581856,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.17216180264949799,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm6R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 4.712160915387242e-08,
+            "max_target_correction": 0.03870103645986853,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.1695680022239685,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "ArmInnerL_Wrist": {
+            "contact": false,
+            "max_reach_correction": 2.006130221163669e-08,
+            "max_target_correction": 2.006130221163669e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.12770113348960876,
+            "maximum_secondary_floor_lift": 0.1422642683982849
+          },
+          "ArmInnerR_Wrist": {
+            "contact": false,
+            "max_reach_correction": 1.862645149230957e-08,
+            "max_target_correction": 1.862645149230957e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.12851163744926453,
+            "maximum_secondary_floor_lift": 0.14076854944229125
+          },
+          "ArmFrontInside_Wrist": {
+            "contact": false,
+            "max_reach_correction": 2.2351741790771484e-08,
+            "max_target_correction": 2.2351741790771484e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.1192045509815216,
+            "maximum_secondary_floor_lift": 0.19096151649951934
+          },
+          "ArmRearCenter_Wrist": {
+            "contact": false,
+            "max_reach_correction": 7.450580596923828e-08,
+            "max_target_correction": 7.450580596923828e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.10454213619232178,
+            "maximum_secondary_floor_lift": 0.08091941386461257
+          },
+          "ArmRearL_Wrist": {
+            "contact": false,
+            "max_reach_correction": 5.3726900748371916e-08,
+            "max_target_correction": 5.3726900748371916e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.10478866100311279,
+            "maximum_secondary_floor_lift": 0.07866521090269088
+          },
+          "ArmRearR_Wrist": {
+            "contact": false,
+            "max_reach_correction": 5.3726900748371916e-08,
+            "max_target_correction": 5.3726900748371916e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.1049630343914032,
+            "maximum_secondary_floor_lift": 0.0718033155798912
+          }
+        },
+        "contact_events": [
+          {
+            "bone": "Arm1L_Wrist",
+            "frame": 1,
+            "phase": 0.0
+          },
+          {
+            "bone": "Arm4R_Wrist",
+            "frame": 5,
+            "phase": 0.093023
+          },
+          {
+            "bone": "Arm3R_Wrist",
+            "frame": 11,
+            "phase": 0.232558
+          },
+          {
+            "bone": "Arm6L_Wrist",
+            "frame": 15,
+            "phase": 0.325581
+          },
+          {
+            "bone": "Arm2R_Wrist",
+            "frame": 17,
+            "phase": 0.372093
+          },
+          {
+            "bone": "Arm5L_Wrist",
+            "frame": 21,
+            "phase": 0.465116
+          },
+          {
+            "bone": "Arm1R_Wrist",
+            "frame": 23,
+            "phase": 0.511628
+          },
+          {
+            "bone": "Arm4L_Wrist",
+            "frame": 27,
+            "phase": 0.604651
+          },
+          {
+            "bone": "Arm3L_Wrist",
+            "frame": 33,
+            "phase": 0.744186
+          },
+          {
+            "bone": "Arm6R_Wrist",
+            "frame": 37,
+            "phase": 0.837209
+          },
+          {
+            "bone": "Arm2L_Wrist",
+            "frame": 39,
+            "phase": 0.883721
+          },
+          {
+            "bone": "Arm5R_Wrist",
+            "frame": 42,
+            "phase": 0.953488
+          }
+        ]
+      },
+      "Run_Forward": {
+        "action": "Run_Forward",
+        "frames": 44,
+        "duration_seconds": 0.7166666666666667,
+        "root_motion": true,
+        "distance_per_cycle": 0.25,
+        "speed_model_units_per_second": 0.3488372093023256,
+        "max_segment_length_error": 4.764552713476533e-08,
+        "max_reach_correction": 8.024529329096544e-08,
+        "reach_corrected_samples": 0,
+        "minimum_wrist_z": -0.17216180264949799,
+        "max_pose_scale_error": 3.2186508178710938e-06,
+        "limbs": {
+          "Arm1L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.725290298461914e-08,
+            "max_target_correction": 3.725290298461914e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.11343134194612503,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm1R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.0719530773294423e-08,
+            "max_target_correction": 3.0719530773294423e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.12123144418001175,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm2L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.960037906741593e-08,
+            "max_target_correction": 0.009529398187770969,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.15355730056762695,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm2R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 2.2351741790771484e-08,
+            "max_target_correction": 0.033247553766119195,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.15644794702529907,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm3L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 2.6863450374185958e-08,
+            "max_target_correction": 2.6863450374185958e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.16571758687496185,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm3R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 4.485843546238652e-08,
+            "max_target_correction": 0.01628704039662614,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.16968165338039398,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm4L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 4.470348358154297e-08,
+            "max_target_correction": 4.470348358154297e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.14725102484226227,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm4R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.332000937312528e-08,
+            "max_target_correction": 3.332000937312528e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.14768420159816742,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm5L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.0719530773294423e-08,
+            "max_target_correction": 3.0719530773294423e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.14950989186763763,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm5R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 2.5809568279517847e-08,
+            "max_target_correction": 2.5809568279517847e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.14964616298675537,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm6L_Wrist": {
+            "contact": true,
+            "max_reach_correction": 3.332000937312528e-08,
+            "max_target_correction": 0.0486862637171744,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.17216180264949799,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "Arm6R_Wrist": {
+            "contact": true,
+            "max_reach_correction": 4.712160915387242e-08,
+            "max_target_correction": 0.03870103645986853,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.1695680022239685,
+            "maximum_secondary_floor_lift": 0.0
+          },
+          "ArmInnerL_Wrist": {
+            "contact": false,
+            "max_reach_correction": 2.1073424255447017e-08,
+            "max_target_correction": 2.1073424255447017e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.12770113348960876,
+            "maximum_secondary_floor_lift": 0.1422642683982849
+          },
+          "ArmInnerR_Wrist": {
+            "contact": false,
+            "max_reach_correction": 2.2351741790771484e-08,
+            "max_target_correction": 2.2351741790771484e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.12851163744926453,
+            "maximum_secondary_floor_lift": 0.14076854944229125
+          },
+          "ArmFrontInside_Wrist": {
+            "contact": false,
+            "max_reach_correction": 2.2351741790771484e-08,
+            "max_target_correction": 2.2351741790771484e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.1192045509815216,
+            "maximum_secondary_floor_lift": 0.19096151649951934
+          },
+          "ArmRearCenter_Wrist": {
+            "contact": false,
+            "max_reach_correction": 8.024529329096544e-08,
+            "max_target_correction": 8.024529329096544e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.10454216599464417,
+            "maximum_secondary_floor_lift": 0.08091941386461257
+          },
+          "ArmRearL_Wrist": {
+            "contact": false,
+            "max_reach_correction": 5.3726900748371916e-08,
+            "max_target_correction": 5.3726900748371916e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.10478866100311279,
+            "maximum_secondary_floor_lift": 0.07866521090269088
+          },
+          "ArmRearR_Wrist": {
+            "contact": false,
+            "max_reach_correction": 6.143906154658885e-08,
+            "max_target_correction": 6.143906154658885e-08,
+            "reach_corrected_samples": 0,
+            "minimum_wrist_z": -0.1049630343914032,
+            "maximum_secondary_floor_lift": 0.0718033155798912
+          }
+        },
+        "contact_events": [
+          {
+            "bone": "Arm1L_Wrist",
+            "frame": 1,
+            "phase": 0.0
+          },
+          {
+            "bone": "Arm4R_Wrist",
+            "frame": 5,
+            "phase": 0.093023
+          },
+          {
+            "bone": "Arm3R_Wrist",
+            "frame": 11,
+            "phase": 0.232558
+          },
+          {
+            "bone": "Arm6L_Wrist",
+            "frame": 15,
+            "phase": 0.325581
+          },
+          {
+            "bone": "Arm2R_Wrist",
+            "frame": 17,
+            "phase": 0.372093
+          },
+          {
+            "bone": "Arm5L_Wrist",
+            "frame": 21,
+            "phase": 0.465116
+          },
+          {
+            "bone": "Arm1R_Wrist",
+            "frame": 23,
+            "phase": 0.511628
+          },
+          {
+            "bone": "Arm4L_Wrist",
+            "frame": 27,
+            "phase": 0.604651
+          },
+          {
+            "bone": "Arm3L_Wrist",
+            "frame": 33,
+            "phase": 0.744186
+          },
+          {
+            "bone": "Arm6R_Wrist",
+            "frame": 37,
+            "phase": 0.837209
+          },
+          {
+            "bone": "Arm2L_Wrist",
+            "frame": 39,
+            "phase": 0.883721
+          },
+          {
+            "bone": "Arm5R_Wrist",
+            "frame": 42,
+            "phase": 0.953488
+          }
+        ]
+      }
+    }
+  },
+  "validation": {
+    "clips": {
+      "Run_InPlace": {
+        "translation_loop_error": 0.0,
+        "rotation_loop_error_radians": 0.0,
+        "min_matrix_determinant": 0.9999961853027344,
+        "max_matrix_scale_error": 3.2782554626464844e-06
+      },
+      "Run_Forward": {
+        "translation_loop_error": 1.666000468656264e-07,
+        "rotation_loop_error_radians": 0.0,
+        "min_matrix_determinant": 0.9999961853027344,
+        "max_matrix_scale_error": 3.2782554626464844e-06
+      }
+    },
+    "pose_samples": [
+      {
+        "frame": 1,
+        "bounds": [
+          [
+            -0.40069708228111267,
+            -0.5603912472724915,
+            -0.2002015858888626
+          ],
+          [
+            0.3778139054775238,
+            0.5413058400154114,
+            0.3502350449562073
+          ]
+        ],
+        "floor": -0.2,
+        "lowest_surface_z": -0.2002015858888626,
+        "below_floor_vertices": 0,
+        "max_floor_intrusion": 0.00020158588886259876,
+        "mask_bounds": [
+          [
+            -0.17427238821983337,
+            -0.49931657314300537,
+            -0.18896900117397308
+          ],
+          [
+            0.18550843000411987,
+            -0.18045291304588318,
+            0.27038583159446716
+          ]
+        ],
+        "hands": {
+          "Arm1L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000076293945312,
+            "floor_intrusion": 7.629394531138978e-07
+          },
+          "Arm1R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.1976112574338913,
+            "floor_intrusion": 0.0
+          },
+          "Arm2L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.2002015858888626,
+            "floor_intrusion": 0.00020158588886259876
+          },
+          "Arm2R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.16207218170166016,
+            "floor_intrusion": 0.0
+          },
+          "Arm3L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000699162483215,
+            "floor_intrusion": 6.991624832142218e-06
+          },
+          "Arm3R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.15190397202968597,
+            "floor_intrusion": 0.0
+          },
+          "Arm4L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000003278255463,
+            "floor_intrusion": 3.2782554615362614e-08
+          },
+          "Arm4R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.17870210111141205,
+            "floor_intrusion": 0.0
+          },
+          "Arm5L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.18340831995010376,
+            "floor_intrusion": 0.0
+          },
+          "Arm5R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000000298023224,
+            "floor_intrusion": 2.980232227667301e-09
+          },
+          "Arm6L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.15441326797008514,
+            "floor_intrusion": 0.0
+          },
+          "Arm6R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000001788139343,
+            "floor_intrusion": 1.7881393421514957e-08
+          },
+          "ArmInnerL_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.15737411379814148,
+            "floor_intrusion": 0.0
+          },
+          "ArmInnerR_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16144512593746185,
+            "floor_intrusion": 0.0
+          },
+          "ArmFrontInside_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16585847735404968,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearCenter_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16134479641914368,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearL_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16365200281143188,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearR_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16596472263336182,
+            "floor_intrusion": 0.0
+          }
+        }
+      },
+      {
+        "frame": 12,
+        "bounds": [
+          [
+            -0.409821093082428,
+            -0.4972006678581238,
+            -0.20001542568206787
+          ],
+          [
+            0.37868818640708923,
+            0.5074253678321838,
+            0.35214078426361084
+          ]
+        ],
+        "floor": -0.2,
+        "lowest_surface_z": -0.20001542568206787,
+        "below_floor_vertices": 0,
+        "max_floor_intrusion": 1.542568206785999e-05,
+        "mask_bounds": [
+          [
+            -0.17410951852798462,
+            -0.4972006678581238,
+            -0.18396669626235962
+          ],
+          [
+            0.18603411316871643,
+            -0.1784386932849884,
+            0.27418261766433716
+          ]
+        ],
+        "hands": {
+          "Arm1L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000059902668,
+            "floor_intrusion": 5.990266799815736e-07
+          },
+          "Arm1R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.15448351204395294,
+            "floor_intrusion": 0.0
+          },
+          "Arm2L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.19991722702980042,
+            "floor_intrusion": 0.0
+          },
+          "Arm2R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.17438936233520508,
+            "floor_intrusion": 0.0
+          },
+          "Arm3L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.19019219279289246,
+            "floor_intrusion": 0.0
+          },
+          "Arm3R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20001542568206787,
+            "floor_intrusion": 1.542568206785999e-05
+          },
+          "Arm4L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.1548806130886078,
+            "floor_intrusion": 0.0
+          },
+          "Arm4R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.1999998837709427,
+            "floor_intrusion": 0.0
+          },
+          "Arm5L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.15032148361206055,
+            "floor_intrusion": 0.0
+          },
+          "Arm5R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000000298023224,
+            "floor_intrusion": 2.980232227667301e-09
+          },
+          "Arm6L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.18797141313552856,
+            "floor_intrusion": 0.0
+          },
+          "Arm6R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000001788139343,
+            "floor_intrusion": 1.7881393421514957e-08
+          },
+          "ArmInnerL_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.1643788069486618,
+            "floor_intrusion": 0.0
+          },
+          "ArmInnerR_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.17023080587387085,
+            "floor_intrusion": 0.0
+          },
+          "ArmFrontInside_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.1665341854095459,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearCenter_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16511794924736023,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearL_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16541510820388794,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearR_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.1659969985485077,
+            "floor_intrusion": 0.0
+          }
+        }
+      },
+      {
+        "frame": 23,
+        "bounds": [
+          [
+            -0.41293826699256897,
+            -0.50126713514328,
+            -0.20003607869148254
+          ],
+          [
+            0.38272857666015625,
+            0.5170909762382507,
+            0.35257241129875183
+          ]
+        ],
+        "floor": -0.2,
+        "lowest_surface_z": -0.20003607869148254,
+        "below_floor_vertices": 0,
+        "max_floor_intrusion": 3.607869148253284e-05,
+        "mask_bounds": [
+          [
+            -0.17427612841129303,
+            -0.50126713514328,
+            -0.18470266461372375
+          ],
+          [
+            0.1854604184627533,
+            -0.18196022510528564,
+            0.274996817111969
+          ]
+        ],
+        "hands": {
+          "Arm1L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.19485962390899658,
+            "floor_intrusion": 0.0
+          },
+          "Arm1R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.2000007927417755,
+            "floor_intrusion": 7.927417755015931e-07
+          },
+          "Arm2L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.16048988699913025,
+            "floor_intrusion": 0.0
+          },
+          "Arm2R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.19995445013046265,
+            "floor_intrusion": 0.0
+          },
+          "Arm3L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.15388336777687073,
+            "floor_intrusion": 0.0
+          },
+          "Arm3R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20003607869148254,
+            "floor_intrusion": 3.607869148253284e-05
+          },
+          "Arm4L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.18213333189487457,
+            "floor_intrusion": 0.0
+          },
+          "Arm4R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000006258487701,
+            "floor_intrusion": 6.258487700305793e-08
+          },
+          "Arm5L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000004768371582,
+            "floor_intrusion": 4.768371580921027e-08
+          },
+          "Arm5R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.1799701303243637,
+            "floor_intrusion": 0.0
+          },
+          "Arm6L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.2000001221895218,
+            "floor_intrusion": 1.2218952177844855e-07
+          },
+          "Arm6R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.15250630676746368,
+            "floor_intrusion": 0.0
+          },
+          "ArmInnerL_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.17129318416118622,
+            "floor_intrusion": 0.0
+          },
+          "ArmInnerR_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.1680610030889511,
+            "floor_intrusion": 0.0
+          },
+          "ArmFrontInside_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16294148564338684,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearCenter_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16565550863742828,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearL_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.1655488908290863,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearR_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.1624796986579895,
+            "floor_intrusion": 0.0
+          }
+        }
+      },
+      {
+        "frame": 33,
+        "bounds": [
+          [
+            -0.4082408845424652,
+            -0.5121331214904785,
+            -0.2000007927417755
+          ],
+          [
+            0.3796560764312744,
+            0.5433229207992554,
+            0.35400068759918213
+          ]
+        ],
+        "floor": -0.2,
+        "lowest_surface_z": -0.2000007927417755,
+        "below_floor_vertices": 0,
+        "max_floor_intrusion": 7.927417755015931e-07,
+        "mask_bounds": [
+          [
+            -0.17418859899044037,
+            -0.49914082884788513,
+            -0.17971813678741455
+          ],
+          [
+            0.18479026854038239,
+            -0.17918606102466583,
+            0.28083354234695435
+          ]
+        ],
+        "hands": {
+          "Arm1L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.1508372277021408,
+            "floor_intrusion": 0.0
+          },
+          "Arm1R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.2000007927417755,
+            "floor_intrusion": 7.927417755015931e-07
+          },
+          "Arm2L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.17168016731739044,
+            "floor_intrusion": 0.0
+          },
+          "Arm2R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.19993427395820618,
+            "floor_intrusion": 0.0
+          },
+          "Arm3L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000000298023224,
+            "floor_intrusion": 2.980232227667301e-09
+          },
+          "Arm3R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.19315332174301147,
+            "floor_intrusion": 0.0
+          },
+          "Arm4L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.2000000774860382,
+            "floor_intrusion": 7.748603819690558e-08
+          },
+          "Arm4R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.1568126231431961,
+            "floor_intrusion": 0.0
+          },
+          "Arm5L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000004768371582,
+            "floor_intrusion": 4.768371580921027e-08
+          },
+          "Arm5R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.14870044589042664,
+            "floor_intrusion": 0.0
+          },
+          "Arm6L_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.20000006258487701,
+            "floor_intrusion": 6.258487700305793e-08
+          },
+          "Arm6R_Wrist": {
+            "contact": true,
+            "lowest_surface_z": -0.1846051663160324,
+            "floor_intrusion": 0.0
+          },
+          "ArmInnerL_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16591854393482208,
+            "floor_intrusion": 0.0
+          },
+          "ArmInnerR_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.15957233309745789,
+            "floor_intrusion": 0.0
+          },
+          "ArmFrontInside_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16127049922943115,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearCenter_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16503413021564484,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearL_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.1616879403591156,
+            "floor_intrusion": 0.0
+          },
+          "ArmRearR_Wrist": {
+            "contact": false,
+            "lowest_surface_z": -0.16148683428764343,
+            "floor_intrusion": 0.0
+          }
+        }
+      }
+    ]
+  },
+  "blend": {
+    "file": "Baeksugwi_Run.blend",
+    "bytes": 217771688
+  },
+  "status": "COMPLETE",
+  "export": {
+    "bytes": 219022664,
+    "sha256": "61db0087fab3ff0d14a25f9e0982d62b6bea6bcafe5ad45cf1b0356babbbc4eb",
+    "skins": 1,
+    "joints": [
+      63
+    ],
+    "images": 2,
+    "animations": [
+      {
+        "name": "Run_Forward",
+        "channels": 189,
+        "max_samples": 44,
+        "duration": 0.7166666388511658,
+        "paths": [
+          "rotation",
+          "scale",
+          "translation"
+        ]
+      },
+      {
+        "name": "Run_InPlace",
+        "channels": 189,
+        "max_samples": 44,
+        "duration": 0.7166666388511658,
+        "paths": [
+          "rotation",
+          "scale",
+          "translation"
+        ]
+      }
+    ]
+  },
+  "elapsed_seconds": 115.19600009918213,
+  "body_height_offset": -0.075,
+  "rebake_source_weights_sha256": "8e37510690edc3509b63a08f7bdc95c90c8a19815599be98ad1fe673302640b1",
+  "previews": [
+    "C:\\Users\\강 두오\\Documents\\Codex\\2026-10-06\\dkdk\\work\\baeksugwi-blender\\final-preview\\run-threequarter-frame001.png",
+    "C:\\Users\\강 두오\\Documents\\Codex\\2026-10-06\\dkdk\\work\\baeksugwi-blender\\final-preview\\run-side-frame012.png"
+  ]
+}

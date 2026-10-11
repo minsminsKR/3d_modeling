@@ -1,0 +1,62 @@
+{
+  "status": "PASS",
+  "clips": {
+    "Run_Forward": {
+      "max_translation_error": 3.345302391148157e-07,
+      "max_rotation_matrix_error": 7.748603820800781e-07,
+      "wrist_translation_error": 3.345302391148157e-07,
+      "wrist_rotation_matrix_error": 7.748603820800781e-07,
+      "samples": [
+        {
+          "frame": 1,
+          "max_translation_error": 3.1654008904469015e-07,
+          "max_rotation_matrix_error": 7.152557373046875e-07
+        },
+        {
+          "frame": 12,
+          "max_translation_error": 3.345302391148157e-07,
+          "max_rotation_matrix_error": 6.556510925292969e-07
+        },
+        {
+          "frame": 23,
+          "max_translation_error": 2.8351392731726835e-07,
+          "max_rotation_matrix_error": 7.152557373046875e-07
+        },
+        {
+          "frame": 44,
+          "max_translation_error": 3.1043092393874615e-07,
+          "max_rotation_matrix_error": 7.748603820800781e-07
+        }
+      ]
+    },
+    "Run_InPlace": {
+      "max_translation_error": 4.4728311955343587e-07,
+      "max_rotation_matrix_error": 7.152557373046875e-07,
+      "wrist_translation_error": 4.4728311955343587e-07,
+      "wrist_rotation_matrix_error": 7.152557373046875e-07,
+      "samples": [
+        {
+          "frame": 1,
+          "max_translation_error": 3.1654008904469015e-07,
+          "max_rotation_matrix_error": 7.152557373046875e-07
+        },
+        {
+          "frame": 12,
+          "max_translation_error": 4.4728311955343587e-07,
+          "max_rotation_matrix_error": 7.152557373046875e-07
+        },
+        {
+          "frame": 23,
+          "max_translation_error": 2.5222168683723743e-07,
+          "max_rotation_matrix_error": 7.152557373046875e-07
+        },
+        {
+          "frame": 44,
+          "max_translation_error": 3.1654008904469015e-07,
+          "max_rotation_matrix_error": 7.152557373046875e-07
+        }
+      ]
+    }
+  },
+  "comparison": "actual exported GLB matrices vs saved Blender pose"
+}

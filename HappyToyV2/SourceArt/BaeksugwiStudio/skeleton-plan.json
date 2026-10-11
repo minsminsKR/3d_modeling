@@ -1,0 +1,1379 @@
+{
+  "coordinateSystem": "glTF Y-up / face +Z; Blender (x,-z,y)",
+  "bones": [
+    {
+      "name": "BodyRoot",
+      "parent": null,
+      "head": [
+        0,
+        0.23,
+        -0.08
+      ],
+      "tail": [
+        0,
+        0.3,
+        -0.16
+      ]
+    },
+    {
+      "name": "SpineRear",
+      "parent": "BodyRoot",
+      "head": [
+        0,
+        0.3,
+        -0.16
+      ],
+      "tail": [
+        0,
+        0.26,
+        -0.29
+      ]
+    },
+    {
+      "name": "SpineBack",
+      "parent": "SpineRear",
+      "head": [
+        0,
+        0.26,
+        -0.29
+      ],
+      "tail": [
+        0,
+        0.16,
+        -0.4
+      ]
+    },
+    {
+      "name": "Tail",
+      "parent": "SpineBack",
+      "head": [
+        0,
+        0.16,
+        -0.4
+      ],
+      "tail": [
+        0,
+        0.15,
+        -0.47
+      ]
+    },
+    {
+      "name": "SpineFront",
+      "parent": "BodyRoot",
+      "head": [
+        0,
+        0.27,
+        0.08
+      ],
+      "tail": [
+        0,
+        0.17,
+        0.26
+      ]
+    },
+    {
+      "name": "Chest",
+      "parent": "SpineFront",
+      "head": [
+        0,
+        0.17,
+        0.26
+      ],
+      "tail": [
+        0,
+        0.11,
+        0.33
+      ]
+    },
+    {
+      "name": "Neck",
+      "parent": "Chest",
+      "head": [
+        0,
+        0.11,
+        0.33
+      ],
+      "tail": [
+        0,
+        0.08,
+        0.4
+      ]
+    },
+    {
+      "name": "Head",
+      "parent": "Neck",
+      "head": [
+        0,
+        0.08,
+        0.4
+      ],
+      "tail": [
+        0,
+        -0.04,
+        0.4
+      ]
+    },
+    {
+      "name": "MaskTip",
+      "parent": "Head",
+      "head": [
+        0,
+        -0.04,
+        0.4
+      ],
+      "tail": [
+        0,
+        -0.08,
+        0.41
+      ]
+    },
+    {
+      "name": "Arm1L_Shoulder",
+      "parent": "Chest",
+      "head": [
+        -0.178,
+        0.155,
+        0.245
+      ],
+      "tail": [
+        -0.19,
+        -0.07,
+        0.25
+      ],
+      "limb": "Arm1L"
+    },
+    {
+      "name": "Arm1L_Elbow",
+      "parent": "Arm1L_Shoulder",
+      "head": [
+        -0.19,
+        -0.07,
+        0.25
+      ],
+      "tail": [
+        -0.133,
+        -0.338,
+        0.42
+      ],
+      "limb": "Arm1L"
+    },
+    {
+      "name": "Arm1L_Wrist",
+      "parent": "Arm1L_Elbow",
+      "head": [
+        -0.133,
+        -0.338,
+        0.42
+      ],
+      "tail": [
+        -0.15195089075210932,
+        -0.3900201385085647,
+        0.44286404517856803
+      ],
+      "limb": "Arm1L"
+    },
+    {
+      "name": "Arm1R_Shoulder",
+      "parent": "Chest",
+      "head": [
+        0.17,
+        0.16,
+        0.23
+      ],
+      "tail": [
+        0.192,
+        -0.035,
+        0.255
+      ],
+      "limb": "Arm1R"
+    },
+    {
+      "name": "Arm1R_Elbow",
+      "parent": "Arm1R_Shoulder",
+      "head": [
+        0.192,
+        -0.035,
+        0.255
+      ],
+      "tail": [
+        0.12,
+        -0.295,
+        0.18
+      ],
+      "limb": "Arm1R"
+    },
+    {
+      "name": "Arm1R_Wrist",
+      "parent": "Arm1R_Elbow",
+      "head": [
+        0.12,
+        -0.295,
+        0.18
+      ],
+      "tail": [
+        0.1024642354912228,
+        -0.34524157447646364,
+        0.16066915895601716
+      ],
+      "limb": "Arm1R"
+    },
+    {
+      "name": "Arm2L_Shoulder",
+      "parent": "Chest",
+      "head": [
+        -0.12,
+        0.105,
+        0.17
+      ],
+      "tail": [
+        -0.215,
+        0.075,
+        0.06
+      ],
+      "limb": "Arm2L"
+    },
+    {
+      "name": "Arm2L_Elbow",
+      "parent": "Arm2L_Shoulder",
+      "head": [
+        -0.215,
+        0.075,
+        0.06
+      ],
+      "tail": [
+        -0.189,
+        -0.263,
+        0.034
+      ],
+      "limb": "Arm2L"
+    },
+    {
+      "name": "Arm2L_Wrist",
+      "parent": "Arm2L_Elbow",
+      "head": [
+        -0.189,
+        -0.263,
+        0.034
+      ],
+      "tail": [
+        -0.18804503436815942,
+        -0.28590777960874264,
+        0.02554482358342068
+      ],
+      "limb": "Arm2L"
+    },
+    {
+      "name": "Arm2R_Shoulder",
+      "parent": "SpineFront",
+      "head": [
+        0.12,
+        0.1,
+        0.06
+      ],
+      "tail": [
+        0.215,
+        0.075,
+        -0.07
+      ],
+      "limb": "Arm2R"
+    },
+    {
+      "name": "Arm2R_Elbow",
+      "parent": "Arm2R_Shoulder",
+      "head": [
+        0.215,
+        0.075,
+        -0.07
+      ],
+      "tail": [
+        0.194,
+        -0.28,
+        -0.04
+      ],
+      "limb": "Arm2R"
+    },
+    {
+      "name": "Arm2R_Wrist",
+      "parent": "Arm2R_Elbow",
+      "head": [
+        0.194,
+        -0.28,
+        -0.04
+      ],
+      "tail": [
+        0.19054240119326246,
+        -0.2999433666576833,
+        -0.03857651835771434
+      ],
+      "limb": "Arm2R"
+    },
+    {
+      "name": "Arm3L_Shoulder",
+      "parent": "BodyRoot",
+      "head": [
+        -0.12,
+        0.105,
+        -0.005
+      ],
+      "tail": [
+        -0.225,
+        0.035,
+        -0.15
+      ],
+      "limb": "Arm3L"
+    },
+    {
+      "name": "Arm3L_Elbow",
+      "parent": "Arm3L_Shoulder",
+      "head": [
+        -0.225,
+        0.035,
+        -0.15
+      ],
+      "tail": [
+        -0.18,
+        -0.21,
+        -0.145
+      ],
+      "limb": "Arm3L"
+    },
+    {
+      "name": "Arm3L_Wrist",
+      "parent": "Arm3L_Elbow",
+      "head": [
+        -0.18,
+        -0.21,
+        -0.145
+      ],
+      "tail": [
+        -0.1749712822586298,
+        -0.2283541390299797,
+        -0.13597871899604796
+      ],
+      "limb": "Arm3L"
+    },
+    {
+      "name": "Arm3R_Shoulder",
+      "parent": "BodyRoot",
+      "head": [
+        0.12,
+        0.11,
+        -0.06
+      ],
+      "tail": [
+        0.21,
+        0.075,
+        -0.135
+      ],
+      "limb": "Arm3R"
+    },
+    {
+      "name": "Arm3R_Elbow",
+      "parent": "Arm3R_Shoulder",
+      "head": [
+        0.21,
+        0.075,
+        -0.135
+      ],
+      "tail": [
+        0.195,
+        -0.24,
+        -0.15
+      ],
+      "limb": "Arm3R"
+    },
+    {
+      "name": "Arm3R_Wrist",
+      "parent": "Arm3R_Elbow",
+      "head": [
+        0.195,
+        -0.24,
+        -0.15
+      ],
+      "tail": [
+        0.1964631015475178,
+        -0.25018130068655137,
+        -0.1467591274803851
+      ],
+      "limb": "Arm3R"
+    },
+    {
+      "name": "Arm4L_Shoulder",
+      "parent": "SpineRear",
+      "head": [
+        -0.14,
+        0.22,
+        -0.225
+      ],
+      "tail": [
+        -0.25,
+        0.04,
+        -0.34
+      ],
+      "limb": "Arm4L"
+    },
+    {
+      "name": "Arm4L_Elbow",
+      "parent": "Arm4L_Shoulder",
+      "head": [
+        -0.25,
+        0.04,
+        -0.34
+      ],
+      "tail": [
+        -0.3,
+        -0.18,
+        -0.214
+      ],
+      "limb": "Arm4L"
+    },
+    {
+      "name": "Arm4L_Wrist",
+      "parent": "Arm4L_Elbow",
+      "head": [
+        -0.3,
+        -0.18,
+        -0.214
+      ],
+      "tail": [
+        -0.30271125034337937,
+        -0.21667825782157546,
+        -0.19637755673787713
+      ],
+      "limb": "Arm4L"
+    },
+    {
+      "name": "Arm4R_Shoulder",
+      "parent": "SpineRear",
+      "head": [
+        0.14,
+        0.22,
+        -0.225
+      ],
+      "tail": [
+        0.25,
+        0.04,
+        -0.34
+      ],
+      "limb": "Arm4R"
+    },
+    {
+      "name": "Arm4R_Elbow",
+      "parent": "Arm4R_Shoulder",
+      "head": [
+        0.25,
+        0.04,
+        -0.34
+      ],
+      "tail": [
+        0.3,
+        -0.18,
+        -0.214
+      ],
+      "limb": "Arm4R"
+    },
+    {
+      "name": "Arm4R_Wrist",
+      "parent": "Arm4R_Elbow",
+      "head": [
+        0.3,
+        -0.18,
+        -0.214
+      ],
+      "tail": [
+        0.30352647352309625,
+        -0.21699306101516913,
+        -0.19219816646730628
+      ],
+      "limb": "Arm4R"
+    },
+    {
+      "name": "Arm5L_Shoulder",
+      "parent": "SpineRear",
+      "head": [
+        -0.095,
+        0.065,
+        -0.17
+      ],
+      "tail": [
+        -0.145,
+        0.03,
+        -0.38
+      ],
+      "limb": "Arm5L"
+    },
+    {
+      "name": "Arm5L_Elbow",
+      "parent": "Arm5L_Shoulder",
+      "head": [
+        -0.145,
+        0.03,
+        -0.38
+      ],
+      "tail": [
+        -0.156,
+        -0.18,
+        -0.29
+      ],
+      "limb": "Arm5L"
+    },
+    {
+      "name": "Arm5L_Wrist",
+      "parent": "Arm5L_Elbow",
+      "head": [
+        -0.156,
+        -0.18,
+        -0.29
+      ],
+      "tail": [
+        -0.15327591126359355,
+        -0.21460237571104304,
+        -0.26635233811506137
+      ],
+      "limb": "Arm5L"
+    },
+    {
+      "name": "Arm5R_Shoulder",
+      "parent": "SpineRear",
+      "head": [
+        0.095,
+        0.065,
+        -0.17
+      ],
+      "tail": [
+        0.145,
+        0.03,
+        -0.38
+      ],
+      "limb": "Arm5R"
+    },
+    {
+      "name": "Arm5R_Elbow",
+      "parent": "Arm5R_Shoulder",
+      "head": [
+        0.145,
+        0.03,
+        -0.38
+      ],
+      "tail": [
+        0.156,
+        -0.18,
+        -0.29
+      ],
+      "limb": "Arm5R"
+    },
+    {
+      "name": "Arm5R_Wrist",
+      "parent": "Arm5R_Elbow",
+      "head": [
+        0.156,
+        -0.18,
+        -0.29
+      ],
+      "tail": [
+        0.15275289482540555,
+        -0.214519930879275,
+        -0.2653224648148925
+      ],
+      "limb": "Arm5R"
+    },
+    {
+      "name": "Arm6L_Shoulder",
+      "parent": "SpineBack",
+      "head": [
+        -0.14,
+        0.2,
+        -0.34
+      ],
+      "tail": [
+        -0.19,
+        0.025,
+        -0.385
+      ],
+      "limb": "Arm6L"
+    },
+    {
+      "name": "Arm6L_Elbow",
+      "parent": "Arm6L_Shoulder",
+      "head": [
+        -0.19,
+        0.025,
+        -0.385
+      ],
+      "tail": [
+        -0.2,
+        -0.1,
+        -0.414
+      ],
+      "limb": "Arm6L"
+    },
+    {
+      "name": "Arm6L_Wrist",
+      "parent": "Arm6L_Elbow",
+      "head": [
+        -0.2,
+        -0.1,
+        -0.414
+      ],
+      "tail": [
+        -0.20165155322875006,
+        -0.12271167135844796,
+        -0.4062077135352765
+      ],
+      "limb": "Arm6L"
+    },
+    {
+      "name": "Arm6R_Shoulder",
+      "parent": "SpineBack",
+      "head": [
+        0.14,
+        0.2,
+        -0.34
+      ],
+      "tail": [
+        0.19,
+        0.025,
+        -0.385
+      ],
+      "limb": "Arm6R"
+    },
+    {
+      "name": "Arm6R_Elbow",
+      "parent": "Arm6R_Shoulder",
+      "head": [
+        0.19,
+        0.025,
+        -0.385
+      ],
+      "tail": [
+        0.2,
+        -0.1,
+        -0.414
+      ],
+      "limb": "Arm6R"
+    },
+    {
+      "name": "Arm6R_Wrist",
+      "parent": "Arm6R_Elbow",
+      "head": [
+        0.2,
+        -0.1,
+        -0.414
+      ],
+      "tail": [
+        0.2018982591265339,
+        -0.12499189528368287,
+        -0.40373568817720573
+      ],
+      "limb": "Arm6R"
+    },
+    {
+      "name": "ArmInnerL_Shoulder",
+      "parent": "SpineFront",
+      "head": [
+        -0.06,
+        0.08,
+        0.02
+      ],
+      "tail": [
+        -0.075,
+        -0.06,
+        -0.1
+      ],
+      "limb": "ArmInnerL"
+    },
+    {
+      "name": "ArmInnerL_Elbow",
+      "parent": "ArmInnerL_Shoulder",
+      "head": [
+        -0.075,
+        -0.06,
+        -0.1
+      ],
+      "tail": [
+        -0.105,
+        -0.185,
+        -0.06
+      ],
+      "limb": "ArmInnerL"
+    },
+    {
+      "name": "ArmInnerL_Wrist",
+      "parent": "ArmInnerL_Elbow",
+      "head": [
+        -0.105,
+        -0.185,
+        -0.06
+      ],
+      "tail": [
+        -0.10737600922584534,
+        -0.20850616114887785,
+        -0.041543791115165075
+      ],
+      "limb": "ArmInnerL"
+    },
+    {
+      "name": "ArmInnerR_Shoulder",
+      "parent": "SpineFront",
+      "head": [
+        0.06,
+        0.08,
+        0.02
+      ],
+      "tail": [
+        0.075,
+        -0.06,
+        -0.1
+      ],
+      "limb": "ArmInnerR"
+    },
+    {
+      "name": "ArmInnerR_Elbow",
+      "parent": "ArmInnerR_Shoulder",
+      "head": [
+        0.075,
+        -0.06,
+        -0.1
+      ],
+      "tail": [
+        0.108,
+        -0.185,
+        -0.06
+      ],
+      "limb": "ArmInnerR"
+    },
+    {
+      "name": "ArmInnerR_Wrist",
+      "parent": "ArmInnerR_Elbow",
+      "head": [
+        0.108,
+        -0.185,
+        -0.06
+      ],
+      "tail": [
+        0.11093043132883604,
+        -0.20783194671563113,
+        -0.04342753470676844
+      ],
+      "limb": "ArmInnerR"
+    },
+    {
+      "name": "ArmFrontInside_Shoulder",
+      "parent": "Chest",
+      "head": [
+        -0.055,
+        0.075,
+        0.245
+      ],
+      "tail": [
+        -0.064,
+        -0.11,
+        0.2
+      ],
+      "limb": "ArmFrontInside"
+    },
+    {
+      "name": "ArmFrontInside_Elbow",
+      "parent": "ArmFrontInside_Shoulder",
+      "head": [
+        -0.064,
+        -0.11,
+        0.2
+      ],
+      "tail": [
+        -0.048,
+        -0.235,
+        0.25
+      ],
+      "limb": "ArmFrontInside"
+    },
+    {
+      "name": "ArmFrontInside_Wrist",
+      "parent": "ArmFrontInside_Elbow",
+      "head": [
+        -0.048,
+        -0.235,
+        0.25
+      ],
+      "tail": [
+        -0.04158444851636887,
+        -0.26125433929264547,
+        0.2570051365531981
+      ],
+      "limb": "ArmFrontInside"
+    },
+    {
+      "name": "ArmRearCenter_Shoulder",
+      "parent": "SpineRear",
+      "head": [
+        0,
+        0.35,
+        -0.24
+      ],
+      "tail": [
+        0,
+        0.1,
+        -0.4
+      ],
+      "limb": "ArmRearCenter"
+    },
+    {
+      "name": "ArmRearCenter_Elbow",
+      "parent": "ArmRearCenter_Shoulder",
+      "head": [
+        0,
+        0.1,
+        -0.4
+      ],
+      "tail": [
+        0,
+        -0.1,
+        -0.48
+      ],
+      "limb": "ArmRearCenter"
+    },
+    {
+      "name": "ArmRearCenter_Wrist",
+      "parent": "ArmRearCenter_Elbow",
+      "head": [
+        0,
+        -0.1,
+        -0.48
+      ],
+      "tail": [
+        0.0035844597652109353,
+        -0.1530398886721089,
+        -0.48856444741195104
+      ],
+      "limb": "ArmRearCenter"
+    },
+    {
+      "name": "ArmRearL_Shoulder",
+      "parent": "SpineRear",
+      "head": [
+        -0.075,
+        0.34,
+        -0.24
+      ],
+      "tail": [
+        -0.075,
+        0.1,
+        -0.4
+      ],
+      "limb": "ArmRearL"
+    },
+    {
+      "name": "ArmRearL_Elbow",
+      "parent": "ArmRearL_Shoulder",
+      "head": [
+        -0.075,
+        0.1,
+        -0.4
+      ],
+      "tail": [
+        -0.073,
+        -0.1,
+        -0.48
+      ],
+      "limb": "ArmRearL"
+    },
+    {
+      "name": "ArmRearL_Wrist",
+      "parent": "ArmRearL_Elbow",
+      "head": [
+        -0.073,
+        -0.1,
+        -0.48
+      ],
+      "tail": [
+        -0.07502093324005998,
+        -0.15180328103485485,
+        -0.48996554403905046
+      ],
+      "limb": "ArmRearL"
+    },
+    {
+      "name": "ArmRearR_Shoulder",
+      "parent": "SpineRear",
+      "head": [
+        0.075,
+        0.34,
+        -0.24
+      ],
+      "tail": [
+        0.075,
+        0.1,
+        -0.4
+      ],
+      "limb": "ArmRearR"
+    },
+    {
+      "name": "ArmRearR_Elbow",
+      "parent": "ArmRearR_Shoulder",
+      "head": [
+        0.075,
+        0.1,
+        -0.4
+      ],
+      "tail": [
+        0.078,
+        -0.1,
+        -0.48
+      ],
+      "limb": "ArmRearR"
+    },
+    {
+      "name": "ArmRearR_Wrist",
+      "parent": "ArmRearR_Elbow",
+      "head": [
+        0.078,
+        -0.1,
+        -0.48
+      ],
+      "tail": [
+        0.07972748976174768,
+        -0.15171074492114406,
+        -0.48962846210786515
+      ],
+      "limb": "ArmRearR"
+    }
+  ],
+  "limbs": [
+    {
+      "name": "Arm1L",
+      "shoulder": "Arm1L_Shoulder",
+      "elbow": "Arm1L_Elbow",
+      "wrist": "Arm1L_Wrist",
+      "wrist_position": [
+        -0.133,
+        -0.338,
+        0.42
+      ],
+      "tip": [
+        -0.15195089075210932,
+        -0.3900201385085647,
+        0.44286404517856803
+      ],
+      "part": 0,
+      "index": 1,
+      "side": "L",
+      "contact": true,
+      "phase": 0.0,
+      "hand_radius": 0.045,
+      "stride": 0.12,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm1R",
+      "shoulder": "Arm1R_Shoulder",
+      "elbow": "Arm1R_Elbow",
+      "wrist": "Arm1R_Wrist",
+      "wrist_position": [
+        0.12,
+        -0.295,
+        0.18
+      ],
+      "tip": [
+        0.1024642354912228,
+        -0.34524157447646364,
+        0.16066915895601716
+      ],
+      "part": 7,
+      "index": 1,
+      "side": "R",
+      "contact": true,
+      "phase": 0.5,
+      "hand_radius": 0.045,
+      "stride": 0.12,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm2L",
+      "shoulder": "Arm2L_Shoulder",
+      "elbow": "Arm2L_Elbow",
+      "wrist": "Arm2L_Wrist",
+      "wrist_position": [
+        -0.189,
+        -0.263,
+        0.034
+      ],
+      "tip": [
+        -0.18804503436815942,
+        -0.28590777960874264,
+        0.02554482358342068
+      ],
+      "part": 8,
+      "index": 2,
+      "side": "L",
+      "contact": true,
+      "phase": 0.137,
+      "hand_radius": 0.032,
+      "stride": 0.12,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm2R",
+      "shoulder": "Arm2R_Shoulder",
+      "elbow": "Arm2R_Elbow",
+      "wrist": "Arm2R_Wrist",
+      "wrist_position": [
+        0.194,
+        -0.28,
+        -0.04
+      ],
+      "tip": [
+        0.19054240119326246,
+        -0.2999433666576833,
+        -0.03857651835771434
+      ],
+      "part": 9,
+      "index": 2,
+      "side": "R",
+      "contact": true,
+      "phase": 0.637,
+      "hand_radius": 0.032,
+      "stride": 0.12,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm3L",
+      "shoulder": "Arm3L_Shoulder",
+      "elbow": "Arm3L_Elbow",
+      "wrist": "Arm3L_Wrist",
+      "wrist_position": [
+        -0.18,
+        -0.21,
+        -0.145
+      ],
+      "tip": [
+        -0.1749712822586298,
+        -0.2283541390299797,
+        -0.13597871899604796
+      ],
+      "part": 10,
+      "index": 3,
+      "side": "L",
+      "contact": true,
+      "phase": 0.274,
+      "hand_radius": 0.032,
+      "stride": 0.085,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm3R",
+      "shoulder": "Arm3R_Shoulder",
+      "elbow": "Arm3R_Elbow",
+      "wrist": "Arm3R_Wrist",
+      "wrist_position": [
+        0.195,
+        -0.24,
+        -0.15
+      ],
+      "tip": [
+        0.1964631015475178,
+        -0.25018130068655137,
+        -0.1467591274803851
+      ],
+      "part": 5,
+      "index": 3,
+      "side": "R",
+      "contact": true,
+      "phase": 0.774,
+      "hand_radius": 0.032,
+      "stride": 0.085,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm4L",
+      "shoulder": "Arm4L_Shoulder",
+      "elbow": "Arm4L_Elbow",
+      "wrist": "Arm4L_Wrist",
+      "wrist_position": [
+        -0.3,
+        -0.18,
+        -0.214
+      ],
+      "tip": [
+        -0.30271125034337937,
+        -0.21667825782157546,
+        -0.19637755673787713
+      ],
+      "part": 4,
+      "index": 4,
+      "side": "L",
+      "contact": true,
+      "phase": 0.41100000000000003,
+      "hand_radius": 0.032,
+      "stride": 0.085,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm4R",
+      "shoulder": "Arm4R_Shoulder",
+      "elbow": "Arm4R_Elbow",
+      "wrist": "Arm4R_Wrist",
+      "wrist_position": [
+        0.3,
+        -0.18,
+        -0.214
+      ],
+      "tip": [
+        0.30352647352309625,
+        -0.21699306101516913,
+        -0.19219816646730628
+      ],
+      "part": 6,
+      "index": 4,
+      "side": "R",
+      "contact": true,
+      "phase": 0.911,
+      "hand_radius": 0.032,
+      "stride": 0.085,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm5L",
+      "shoulder": "Arm5L_Shoulder",
+      "elbow": "Arm5L_Elbow",
+      "wrist": "Arm5L_Wrist",
+      "wrist_position": [
+        -0.156,
+        -0.18,
+        -0.29
+      ],
+      "tip": [
+        -0.15327591126359355,
+        -0.21460237571104304,
+        -0.26635233811506137
+      ],
+      "part": 12,
+      "index": 5,
+      "side": "L",
+      "contact": true,
+      "phase": 0.548,
+      "hand_radius": 0.032,
+      "stride": 0.085,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm5R",
+      "shoulder": "Arm5R_Shoulder",
+      "elbow": "Arm5R_Elbow",
+      "wrist": "Arm5R_Wrist",
+      "wrist_position": [
+        0.156,
+        -0.18,
+        -0.29
+      ],
+      "tip": [
+        0.15275289482540555,
+        -0.214519930879275,
+        -0.2653224648148925
+      ],
+      "part": 11,
+      "index": 5,
+      "side": "R",
+      "contact": true,
+      "phase": 0.04800000000000004,
+      "hand_radius": 0.032,
+      "stride": 0.085,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm6L",
+      "shoulder": "Arm6L_Shoulder",
+      "elbow": "Arm6L_Elbow",
+      "wrist": "Arm6L_Wrist",
+      "wrist_position": [
+        -0.2,
+        -0.1,
+        -0.414
+      ],
+      "tip": [
+        -0.20165155322875006,
+        -0.12271167135844796,
+        -0.4062077135352765
+      ],
+      "part": 14,
+      "index": 6,
+      "side": "L",
+      "contact": true,
+      "phase": 0.685,
+      "hand_radius": 0.032,
+      "stride": 0.075,
+      "lift": 0.047
+    },
+    {
+      "name": "Arm6R",
+      "shoulder": "Arm6R_Shoulder",
+      "elbow": "Arm6R_Elbow",
+      "wrist": "Arm6R_Wrist",
+      "wrist_position": [
+        0.2,
+        -0.1,
+        -0.414
+      ],
+      "tip": [
+        0.2018982591265339,
+        -0.12499189528368287,
+        -0.40373568817720573
+      ],
+      "part": 13,
+      "index": 6,
+      "side": "R",
+      "contact": true,
+      "phase": 0.18500000000000005,
+      "hand_radius": 0.032,
+      "stride": 0.075,
+      "lift": 0.047
+    },
+    {
+      "name": "ArmInnerL",
+      "shoulder": "ArmInnerL_Shoulder",
+      "elbow": "ArmInnerL_Elbow",
+      "wrist": "ArmInnerL_Wrist",
+      "wrist_position": [
+        -0.105,
+        -0.185,
+        -0.06
+      ],
+      "tip": [
+        -0.10737600922584534,
+        -0.20850616114887785,
+        -0.041543791115165075
+      ],
+      "part": 2,
+      "index": 7,
+      "side": "L",
+      "contact": false,
+      "phase": 0.1859999999999995,
+      "hand_radius": 0.032,
+      "stride": 0.028,
+      "lift": 0.032
+    },
+    {
+      "name": "ArmInnerR",
+      "shoulder": "ArmInnerR_Shoulder",
+      "elbow": "ArmInnerR_Elbow",
+      "wrist": "ArmInnerR_Wrist",
+      "wrist_position": [
+        0.108,
+        -0.185,
+        -0.06
+      ],
+      "tip": [
+        0.11093043132883604,
+        -0.20783194671563113,
+        -0.04342753470676844
+      ],
+      "part": 3,
+      "index": 7,
+      "side": "R",
+      "contact": false,
+      "phase": 0.35899999999999954,
+      "hand_radius": 0.032,
+      "stride": 0.028,
+      "lift": 0.032
+    },
+    {
+      "name": "ArmFrontInside",
+      "shoulder": "ArmFrontInside_Shoulder",
+      "elbow": "ArmFrontInside_Elbow",
+      "wrist": "ArmFrontInside_Wrist",
+      "wrist_position": [
+        -0.048,
+        -0.235,
+        0.25
+      ],
+      "tip": [
+        -0.04158444851636887,
+        -0.26125433929264547,
+        0.2570051365531981
+      ],
+      "part": 1,
+      "index": 8,
+      "side": "L",
+      "contact": false,
+      "phase": 0.5319999999999996,
+      "hand_radius": 0.032,
+      "stride": 0.028,
+      "lift": 0.032
+    },
+    {
+      "name": "ArmRearCenter",
+      "shoulder": "ArmRearCenter_Shoulder",
+      "elbow": "ArmRearCenter_Elbow",
+      "wrist": "ArmRearCenter_Wrist",
+      "wrist_position": [
+        0,
+        -0.1,
+        -0.48
+      ],
+      "tip": [
+        0.0035844597652109353,
+        -0.1530398886721089,
+        -0.48856444741195104
+      ],
+      "part": 15,
+      "index": 8,
+      "side": "R",
+      "contact": false,
+      "phase": 0.7049999999999996,
+      "hand_radius": 0.032,
+      "stride": 0.028,
+      "lift": 0.032
+    },
+    {
+      "name": "ArmRearL",
+      "shoulder": "ArmRearL_Shoulder",
+      "elbow": "ArmRearL_Elbow",
+      "wrist": "ArmRearL_Wrist",
+      "wrist_position": [
+        -0.073,
+        -0.1,
+        -0.48
+      ],
+      "tip": [
+        -0.07502093324005998,
+        -0.15180328103485485,
+        -0.48996554403905046
+      ],
+      "part": 16,
+      "index": 9,
+      "side": "L",
+      "contact": false,
+      "phase": 0.8779999999999997,
+      "hand_radius": 0.032,
+      "stride": 0.028,
+      "lift": 0.032
+    },
+    {
+      "name": "ArmRearR",
+      "shoulder": "ArmRearR_Shoulder",
+      "elbow": "ArmRearR_Elbow",
+      "wrist": "ArmRearR_Wrist",
+      "wrist_position": [
+        0.078,
+        -0.1,
+        -0.48
+      ],
+      "tip": [
+        0.07972748976174768,
+        -0.15171074492114406,
+        -0.48962846210786515
+      ],
+      "part": 19,
+      "index": 9,
+      "side": "R",
+      "contact": false,
+      "phase": 0.05099999999999971,
+      "hand_radius": 0.032,
+      "stride": 0.028,
+      "lift": 0.032
+    }
+  ],
+  "floor": -0.2,
+  "body_height_offset": -0.075,
+  "cycle_seconds": 0.72,
+  "source": "fitted-limbs.json; reviewed source mesh, no humanoid retargeting"
+}

@@ -1,0 +1,3258 @@
+{
+  "job": "a2b07007-da21-466d-b147-0ccf19be6669",
+  "originalUiFields": [
+    {
+      "i": 0,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_0"
+        },
+        {
+          "id": "joint-parent",
+          "text": "최상위 관절",
+          "value": ""
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.02219"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.06661"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.34158"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 1,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_1"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_0",
+          "value": "38"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.01581"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.10093"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.46354"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 2,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_2"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_0",
+          "value": "38"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.02139"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.06602"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.27775"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 3,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_3"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_2",
+          "value": "28"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.05488"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.08286"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.34438"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 4,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_4"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_3",
+          "value": "5"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.15415"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.14385"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.34991"
+        },
+        {
+          "id": "joint-group",
+          "text": "팔 2",
+          "value": "auto-arm-2"
+        }
+      ]
+    },
+    {
+      "i": 5,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_5"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_4",
+          "value": "4"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.17572"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.23269"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.3247"
+        },
+        {
+          "id": "joint-group",
+          "text": "팔 2",
+          "value": "auto-arm-2"
+        }
+      ]
+    },
+    {
+      "i": 6,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_6"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_5",
+          "value": "3"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.19902"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.32882"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.29988"
+        },
+        {
+          "id": "joint-group",
+          "text": "팔 2",
+          "value": "auto-arm-2"
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_7"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_6",
+          "value": "2"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.2226"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.42752"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.29772"
+        },
+        {
+          "id": "joint-group",
+          "text": "팔 2",
+          "value": "auto-arm-2"
+        }
+      ]
+    },
+    {
+      "i": 8,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_8"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_2",
+          "value": "28"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.08367"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.11592"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.34234"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 9,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_9"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_8",
+          "value": "11"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.14119"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.21432"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.34555"
+        },
+        {
+          "id": "joint-group",
+          "text": "팔 1",
+          "value": "auto-arm-1"
+        }
+      ]
+    },
+    {
+      "i": 10,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_10"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_9",
+          "value": "10"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.11962"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.30316"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.32033"
+        },
+        {
+          "id": "joint-group",
+          "text": "팔 1",
+          "value": "auto-arm-1"
+        }
+      ]
+    },
+    {
+      "i": 11,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_11"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_10",
+          "value": "9"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.09798"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.39624"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.35915"
+        },
+        {
+          "id": "joint-group",
+          "text": "팔 1",
+          "value": "auto-arm-1"
+        }
+      ]
+    },
+    {
+      "i": 12,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_12"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_11",
+          "value": "8"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.07865"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.47893"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.38615"
+        },
+        {
+          "id": "joint-group",
+          "text": "팔 1",
+          "value": "auto-arm-1"
+        }
+      ]
+    },
+    {
+      "i": 13,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_13"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_12",
+          "value": "7"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.06319"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.54836"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.46122"
+        },
+        {
+          "id": "joint-group",
+          "text": "팔 1",
+          "value": "auto-arm-1"
+        }
+      ]
+    },
+    {
+      "i": 14,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_14"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_2",
+          "value": "28"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.0199"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.06668"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.18772"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 15,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_15"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_14",
+          "value": "19"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.01485"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.0821"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.09473"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 16,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_16"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_15",
+          "value": "18"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.0071"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.10862"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.00142"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 17,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_17"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_16",
+          "value": "17"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.00055"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.13495"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.09381"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 18,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_18"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_17",
+          "value": "16"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.01089"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.1724"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.18936"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 19,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_19"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_18",
+          "value": "15"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.02575"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.23044"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.25753"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 20,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_20"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_19",
+          "value": "14"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.04435"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.30561"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.30224"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 21,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_21"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_20",
+          "value": "13"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.06458"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.38789"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.34282"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 22,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_22"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_2",
+          "value": "28"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.00606"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.12698"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.22476"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 23,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_23"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_22",
+          "value": "27"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.00476"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.16735"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.14438"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 24,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_24"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_23",
+          "value": "26"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.01471"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.20408"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.0638"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 25,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_25"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_24",
+          "value": "25"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.0261"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.24755"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.00515"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 26,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_26"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_25",
+          "value": "24"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.04"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.30177"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.06976"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 27,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_27"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_26",
+          "value": "23"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.05292"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.35217"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.13084"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 28,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_28"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_27",
+          "value": "22"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.06566"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.40221"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.18442"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 29,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_29"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_28",
+          "value": "21"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "0.07915"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.45571"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.23406"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 30,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_30"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_0",
+          "value": "38"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.03943"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "-0.00402"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.36778"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 31,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_31"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_30",
+          "value": "37"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.04729"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "-0.04104"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.30198"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 32,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_32"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_31",
+          "value": "36"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.04899"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "-0.05237"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.23381"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 33,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_33"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_32",
+          "value": "35"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.04982"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "-0.06007"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.16584"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 34,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_34"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_33",
+          "value": "34"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.05046"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "-0.06741"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.09038"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 35,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_35"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_34",
+          "value": "33"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.04686"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "-0.05671"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "-0.01965"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 36,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_36"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_35",
+          "value": "32"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.04057"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "-0.03492"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.05423"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 37,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_37"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_36",
+          "value": "31"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.03504"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "-0.01658"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.13205"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    },
+    {
+      "i": 38,
+      "fields": [
+        {
+          "id": "joint-name",
+          "text": null,
+          "value": "bone_38"
+        },
+        {
+          "id": "joint-parent",
+          "text": "bone_37",
+          "value": "30"
+        },
+        {
+          "id": "joint-x",
+          "text": null,
+          "value": "-0.02942"
+        },
+        {
+          "id": "joint-y",
+          "text": null,
+          "value": "0.00194"
+        },
+        {
+          "id": "joint-z",
+          "text": null,
+          "value": "0.21361"
+        },
+        {
+          "id": "joint-group",
+          "text": "미지정",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "editedPlan": [
+    {
+      "name": "BodyRoot",
+      "p": "최상위 관절",
+      "pos": [
+        0,
+        0.23,
+        -0.08
+      ]
+    },
+    {
+      "i": 1,
+      "name": "Tail",
+      "p": "SpineBack",
+      "pos": [
+        0,
+        0.18,
+        -0.42
+      ]
+    },
+    {
+      "i": 2,
+      "name": "SpineBack",
+      "p": "SpineRear",
+      "pos": [
+        0,
+        0.28,
+        -0.29
+      ]
+    },
+    {
+      "i": 3,
+      "name": "SpineRear",
+      "p": "BodyRoot",
+      "pos": [
+        0,
+        0.31,
+        -0.16
+      ]
+    },
+    {
+      "i": 4,
+      "name": "SpineFront",
+      "p": "BodyRoot",
+      "pos": [
+        0,
+        0.3,
+        0.04
+      ]
+    },
+    {
+      "i": 5,
+      "name": "Chest",
+      "p": "SpineFront",
+      "pos": [
+        0,
+        0.24,
+        0.18
+      ]
+    },
+    {
+      "i": 6,
+      "name": "Neck",
+      "p": "Chest",
+      "pos": [
+        0,
+        0.14,
+        0.3
+      ]
+    },
+    {
+      "i": 7,
+      "name": "Head",
+      "p": "Neck",
+      "pos": [
+        0,
+        0.05,
+        0.39
+      ]
+    },
+    {
+      "i": 8,
+      "name": "MaskTip",
+      "p": "Head",
+      "pos": [
+        0,
+        -0.05,
+        0.41
+      ]
+    },
+    {
+      "i": 9,
+      "name": "Arm1L_Shoulder",
+      "p": "Chest",
+      "pos": [
+        -0.175,
+        0.18,
+        0.24
+      ]
+    },
+    {
+      "i": 10,
+      "name": "Arm1L_Elbow",
+      "p": "Arm1L_Shoulder",
+      "pos": [
+        -0.185,
+        -0.06,
+        0.335
+      ]
+    },
+    {
+      "i": 11,
+      "name": "Arm1L_Wrist",
+      "p": "Arm1L_Elbow",
+      "pos": [
+        -0.15,
+        -0.38,
+        0.46
+      ]
+    },
+    {
+      "i": 12,
+      "name": "Arm1R_Shoulder",
+      "p": "Chest",
+      "pos": [
+        0.175,
+        0.18,
+        0.24
+      ]
+    },
+    {
+      "i": 13,
+      "name": "Arm1R_Elbow",
+      "p": "Arm1R_Shoulder",
+      "pos": [
+        0.205,
+        -0.015,
+        0.235
+      ]
+    },
+    {
+      "i": 14,
+      "name": "Arm1R_Wrist",
+      "p": "Arm1R_Elbow",
+      "pos": [
+        0.155,
+        -0.255,
+        0.2
+      ]
+    },
+    {
+      "i": 15,
+      "name": "Arm2L_Shoulder",
+      "p": "SpineFront",
+      "pos": [
+        -0.185,
+        0.215,
+        0.12
+      ]
+    },
+    {
+      "i": 16,
+      "name": "Arm2L_Elbow",
+      "p": "Arm2L_Shoulder",
+      "pos": [
+        -0.235,
+        -0.01,
+        0.105
+      ]
+    },
+    {
+      "i": 17,
+      "name": "Arm2L_Wrist",
+      "p": "Arm2L_Elbow",
+      "pos": [
+        -0.235,
+        -0.27,
+        0.1
+      ]
+    },
+    {
+      "i": 18,
+      "name": "Arm2R_Shoulder",
+      "p": "SpineFront",
+      "pos": [
+        0.185,
+        0.215,
+        0.12
+      ]
+    },
+    {
+      "i": 19,
+      "name": "Arm2R_Elbow",
+      "p": "Arm2R_Shoulder",
+      "pos": [
+        0.235,
+        -0.01,
+        0.105
+      ]
+    },
+    {
+      "i": 20,
+      "name": "Arm2R_Wrist",
+      "p": "Arm2R_Elbow",
+      "pos": [
+        0.235,
+        -0.27,
+        0.1
+      ]
+    },
+    {
+      "i": 21,
+      "name": "Arm3L_Shoulder",
+      "p": "BodyRoot",
+      "pos": [
+        -0.185,
+        0.26,
+        -0.02
+      ]
+    },
+    {
+      "i": 22,
+      "name": "Arm3L_Elbow",
+      "p": "Arm3L_Shoulder",
+      "pos": [
+        -0.22,
+        0.035,
+        -0.015
+      ]
+    },
+    {
+      "i": 23,
+      "name": "Arm3L_Wrist",
+      "p": "Arm3L_Elbow",
+      "pos": [
+        -0.2,
+        -0.25,
+        -0.015
+      ]
+    },
+    {
+      "i": 24,
+      "name": "Arm3R_Shoulder",
+      "p": "BodyRoot",
+      "pos": [
+        0.185,
+        0.26,
+        -0.02
+      ]
+    },
+    {
+      "i": 25,
+      "name": "Arm3R_Elbow",
+      "p": "Arm3R_Shoulder",
+      "pos": [
+        0.22,
+        0.035,
+        -0.015
+      ]
+    },
+    {
+      "i": 26,
+      "name": "Arm3R_Wrist",
+      "p": "Arm3R_Elbow",
+      "pos": [
+        0.2,
+        -0.25,
+        -0.015
+      ]
+    },
+    {
+      "i": 27,
+      "name": "Arm4L_Shoulder",
+      "p": "SpineRear",
+      "pos": [
+        -0.17,
+        0.255,
+        -0.16
+      ]
+    },
+    {
+      "i": 28,
+      "name": "Arm4L_Elbow",
+      "p": "Arm4L_Shoulder",
+      "pos": [
+        -0.21,
+        0.015,
+        -0.14
+      ]
+    },
+    {
+      "i": 29,
+      "name": "Arm4L_Wrist",
+      "p": "Arm4L_Elbow",
+      "pos": [
+        -0.2,
+        -0.245,
+        -0.155
+      ]
+    },
+    {
+      "i": 30,
+      "name": "Arm4R_Shoulder",
+      "p": "SpineRear",
+      "pos": [
+        0.17,
+        0.255,
+        -0.16
+      ]
+    },
+    {
+      "i": 31,
+      "name": "Arm4R_Elbow",
+      "p": "Arm4R_Shoulder",
+      "pos": [
+        0.21,
+        0.015,
+        -0.14
+      ]
+    },
+    {
+      "i": 32,
+      "name": "Arm4R_Wrist",
+      "p": "Arm4R_Elbow",
+      "pos": [
+        0.2,
+        -0.245,
+        -0.155
+      ]
+    },
+    {
+      "i": 33,
+      "name": "Arm5L_Shoulder",
+      "p": "SpineBack",
+      "pos": [
+        -0.14,
+        0.23,
+        -0.29
+      ]
+    },
+    {
+      "i": 34,
+      "name": "Arm5L_Elbow",
+      "p": "Arm5L_Shoulder",
+      "pos": [
+        -0.17,
+        0,
+        -0.275
+      ]
+    },
+    {
+      "i": 35,
+      "name": "Arm5L_Wrist",
+      "p": "Arm5L_Elbow",
+      "pos": [
+        -0.155,
+        -0.24,
+        -0.295
+      ]
+    },
+    {
+      "i": 36,
+      "name": "Arm5R_Shoulder",
+      "p": "SpineBack",
+      "pos": [
+        0.14,
+        0.23,
+        -0.29
+      ]
+    },
+    {
+      "i": 37,
+      "name": "Arm5R_Elbow",
+      "p": "Arm5R_Shoulder",
+      "pos": [
+        0.17,
+        0,
+        -0.275
+      ]
+    },
+    {
+      "i": 38,
+      "name": "Arm5R_Wrist",
+      "p": "Arm5R_Elbow",
+      "pos": [
+        0.155,
+        -0.24,
+        -0.295
+      ]
+    },
+    {
+      "name": "Arm6L_Shoulder",
+      "p": "SpineBack",
+      "pos": [
+        -0.11,
+        0.16,
+        -0.385
+      ]
+    },
+    {
+      "name": "Arm6L_Elbow",
+      "p": "Arm6L_Shoulder",
+      "pos": [
+        -0.165,
+        -0.025,
+        -0.365
+      ]
+    },
+    {
+      "name": "Arm6L_Wrist",
+      "p": "Arm6L_Elbow",
+      "pos": [
+        -0.155,
+        -0.24,
+        -0.405
+      ]
+    },
+    {
+      "name": "Arm6R_Shoulder",
+      "p": "SpineBack",
+      "pos": [
+        0.11,
+        0.16,
+        -0.385
+      ]
+    },
+    {
+      "name": "Arm6R_Elbow",
+      "p": "Arm6R_Shoulder",
+      "pos": [
+        0.165,
+        -0.025,
+        -0.365
+      ]
+    },
+    {
+      "name": "Arm6R_Wrist",
+      "p": "Arm6R_Elbow",
+      "pos": [
+        0.155,
+        -0.24,
+        -0.405
+      ]
+    }
+  ],
+  "editedUiReadback": [
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "BodyRoot"
+      },
+      {
+        "id": "joint-parent",
+        "text": "최상위 관절",
+        "value": ""
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.23"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.08"
+      },
+      {
+        "id": "joint-group",
+        "text": "미지정",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Tail"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineBack",
+        "value": "28"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.18"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.42"
+      },
+      {
+        "id": "joint-group",
+        "text": "미지정",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "SpineBack"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineRear",
+        "value": "5"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.28"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.29"
+      },
+      {
+        "id": "joint-group",
+        "text": "미지정",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "SpineRear"
+      },
+      {
+        "id": "joint-parent",
+        "text": "BodyRoot",
+        "value": "38"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.31"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.16"
+      },
+      {
+        "id": "joint-group",
+        "text": "미지정",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "SpineFront"
+      },
+      {
+        "id": "joint-parent",
+        "text": "BodyRoot",
+        "value": "38"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.3"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.04"
+      },
+      {
+        "id": "joint-group",
+        "text": "미지정",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Chest"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineFront",
+        "value": "4"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.24"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.18"
+      },
+      {
+        "id": "joint-group",
+        "text": "미지정",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Neck"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Chest",
+        "value": "3"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.14"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.3"
+      },
+      {
+        "id": "joint-group",
+        "text": "미지정",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Head"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Neck",
+        "value": "2"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.05"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.39"
+      },
+      {
+        "id": "joint-group",
+        "text": "미지정",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "MaskTip"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Head",
+        "value": "1"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.05"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.41"
+      },
+      {
+        "id": "joint-group",
+        "text": "미지정",
+        "value": ""
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm1L_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Chest",
+        "value": "3"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.175"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.18"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.24"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 1L",
+        "value": "group-1"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm1L_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm1L_Shoulder",
+        "value": "10"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.185"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.06"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.335"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 1L",
+        "value": "group-1"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm1L_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm1L_Elbow",
+        "value": "9"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.15"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.38"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.46"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 1L",
+        "value": "group-1"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm1R_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Chest",
+        "value": "3"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.175"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.18"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.24"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 1R",
+        "value": "group-2"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm1R_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm1R_Shoulder",
+        "value": "7"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.205"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.015"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.235"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 1R",
+        "value": "group-2"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm1R_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm1R_Elbow",
+        "value": "6"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.155"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.255"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.2"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 1R",
+        "value": "group-2"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm2L_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineFront",
+        "value": "4"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.185"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.215"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.12"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 2L",
+        "value": "group-3"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm2L_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm2L_Shoulder",
+        "value": "18"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.235"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.01"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.105"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 2L",
+        "value": "group-3"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm2L_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm2L_Elbow",
+        "value": "17"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.235"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.27"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.1"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 2L",
+        "value": "group-3"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm2R_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineFront",
+        "value": "4"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.185"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.215"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.12"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 2R",
+        "value": "group-4"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm2R_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm2R_Shoulder",
+        "value": "15"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.235"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.01"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.105"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 2R",
+        "value": "group-4"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm2R_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm2R_Elbow",
+        "value": "14"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.235"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.27"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "0.1"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 2R",
+        "value": "group-4"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm3L_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "BodyRoot",
+        "value": "38"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.185"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.26"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.02"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 3L",
+        "value": "group-5"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm3L_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm3L_Shoulder",
+        "value": "12"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.22"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.035"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.015"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 3L",
+        "value": "group-5"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm3L_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm3L_Elbow",
+        "value": "27"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.2"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.25"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.015"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 3L",
+        "value": "group-5"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm3R_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "BodyRoot",
+        "value": "38"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.185"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.26"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.02"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 3R",
+        "value": "group-6"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm3R_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm3R_Shoulder",
+        "value": "25"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.22"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.035"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.015"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 3R",
+        "value": "group-6"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm3R_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm3R_Elbow",
+        "value": "24"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.2"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.25"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.015"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 3R",
+        "value": "group-6"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm4L_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineRear",
+        "value": "5"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.17"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.255"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.16"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 4L",
+        "value": "group-7"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm4L_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm4L_Shoulder",
+        "value": "22"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.21"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.015"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.14"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 4L",
+        "value": "group-7"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm4L_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm4L_Elbow",
+        "value": "21"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.2"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.245"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.155"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 4L",
+        "value": "group-7"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm4R_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineRear",
+        "value": "5"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.17"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.255"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.16"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 4R",
+        "value": "group-8"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm4R_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm4R_Shoulder",
+        "value": "37"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.21"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.015"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.14"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 4R",
+        "value": "group-8"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm4R_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm4R_Elbow",
+        "value": "36"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.2"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.245"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.155"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 4R",
+        "value": "group-8"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm5L_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineBack",
+        "value": "28"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.14"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.23"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.29"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 5L",
+        "value": "group-9"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm5L_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm5L_Shoulder",
+        "value": "34"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.17"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.275"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 5L",
+        "value": "group-9"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm5L_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm5L_Elbow",
+        "value": "33"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.155"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.24"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.295"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 5L",
+        "value": "group-9"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm5R_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineBack",
+        "value": "28"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.14"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.23"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.29"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 5R",
+        "value": "group-10"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm5R_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm5R_Shoulder",
+        "value": "31"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.17"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.275"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 5R",
+        "value": "group-10"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm5R_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm5R_Elbow",
+        "value": "30"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.155"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.24"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.295"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 5R",
+        "value": "group-10"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm6L_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineBack",
+        "value": "28"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.11"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.16"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.385"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 6L",
+        "value": "group-11"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm6L_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm6L_Shoulder",
+        "value": "new-1"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.165"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.025"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.365"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 6L",
+        "value": "group-11"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm6L_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm6L_Elbow",
+        "value": "new-2"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "-0.155"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.24"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.405"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 6L",
+        "value": "group-11"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm6R_Shoulder"
+      },
+      {
+        "id": "joint-parent",
+        "text": "SpineBack",
+        "value": "28"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.11"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "0.16"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.385"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 6R",
+        "value": "group-12"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm6R_Elbow"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm6R_Shoulder",
+        "value": "new-4"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.165"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.025"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.365"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 6R",
+        "value": "group-12"
+      }
+    ],
+    [
+      {
+        "id": "joint-name",
+        "text": null,
+        "value": "Arm6R_Wrist"
+      },
+      {
+        "id": "joint-parent",
+        "text": "Arm6R_Elbow",
+        "value": "new-5"
+      },
+      {
+        "id": "joint-x",
+        "text": null,
+        "value": "0.155"
+      },
+      {
+        "id": "joint-y",
+        "text": null,
+        "value": "-0.24"
+      },
+      {
+        "id": "joint-z",
+        "text": null,
+        "value": "-0.405"
+      },
+      {
+        "id": "joint-group",
+        "text": "보행 팔 6R",
+        "value": "group-12"
+      }
+    ]
+  ],
+  "note": "Browser editor fields only; no model download. AI reweight pending."
+}

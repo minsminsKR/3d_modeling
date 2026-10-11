@@ -1,0 +1,239 @@
+{
+  "sourceVertices": 952517,
+  "sourceSHA256": "4d1f449520c6672c3e38e7d2c96aff09bd53ee10941274896d23b27726587566",
+  "maskSHA256": "72c14283987eefbf69e9ade3e2d3013afcb6770c0b2ab061e1a84a7810a2c2e4",
+  "targetBone": "Head",
+  "selectedVertices": 4902,
+  "coordinateSystem": "glTF Y up / +Z face",
+  "sourceVertexOrder": "exact original POSITION accessor order",
+  "reason": "Isolated facial bells were cut into Head versus ArmShoulder/Elbow ownership by the rectangular face mask; stretching these rings produced long black metal triangles. Complete original components should move rigidly with the head. Actual forearm cuffs are not selected.",
+  "selectionMethod": "original source topology with coincident positions welded to 1e-6; reviewed full connected components highlighted red in cuff-components-threequarter.png; actual evaluated frame edge strain often 20\u2013160x",
+  "components": [
+    {
+      "component": 27,
+      "sourceVertices": 1191,
+      "sourceBounds": [
+        [
+          -0.15054360032081604,
+          -0.03968847543001175,
+          0.3015078604221344
+        ],
+        [
+          -0.10665982961654663,
+          0.015903808176517487,
+          0.34664201736450195
+        ]
+      ],
+      "dominantBefore": {
+        "Arm1L_Shoulder": 1049,
+        "Head": 142
+      },
+      "maxEvaluatedEdgeStrain": 160.7049560546875,
+      "fractionStrainAbove2": 0.6204869857262805,
+      "targetBone": "Head"
+    },
+    {
+      "component": 53,
+      "sourceVertices": 387,
+      "sourceBounds": [
+        [
+          -0.1055976152420044,
+          -0.08240687847137451,
+          0.29406553506851196
+        ],
+        [
+          -0.06963427364826202,
+          -0.043767474591732025,
+          0.33565524220466614
+        ]
+      ],
+      "dominantBefore": {
+        "Arm1L_Elbow": 62,
+        "ArmFrontInside_Shoulder": 140,
+        "Head": 164,
+        "MaskTip": 21
+      },
+      "maxEvaluatedEdgeStrain": 75.83329772949219,
+      "fractionStrainAbove2": 0.5297157622739018,
+      "targetBone": "Head"
+    },
+    {
+      "component": 55,
+      "sourceVertices": 285,
+      "sourceBounds": [
+        [
+          -0.10400900989770889,
+          -0.07986150681972504,
+          0.3030726909637451
+        ],
+        [
+          -0.07194706797599792,
+          -0.044970206916332245,
+          0.33404040336608887
+        ]
+      ],
+      "dominantBefore": {
+        "Arm1L_Elbow": 53,
+        "ArmFrontInside_Shoulder": 50,
+        "Head": 165,
+        "MaskTip": 17
+      },
+      "maxEvaluatedEdgeStrain": 76.1375961303711,
+      "fractionStrainAbove2": 0.5052631578947369,
+      "targetBone": "Head"
+    },
+    {
+      "component": 159,
+      "sourceVertices": 472,
+      "sourceBounds": [
+        [
+          0.020554278045892715,
+          -0.10227576643228531,
+          0.18870967626571655
+        ],
+        [
+          0.07818964123725891,
+          -0.046376071870326996,
+          0.23729771375656128
+        ]
+      ],
+      "dominantBefore": {
+        "Arm1R_Elbow": 441,
+        "ArmFrontInside_Shoulder": 31
+      },
+      "maxEvaluatedEdgeStrain": 51.02251052856445,
+      "fractionStrainAbove2": 0.3813559322033898,
+      "targetBone": "Head"
+    },
+    {
+      "component": 162,
+      "sourceVertices": 458,
+      "sourceBounds": [
+        [
+          0.021912120282649994,
+          -0.10102077573537827,
+          0.19013434648513794
+        ],
+        [
+          0.07693874835968018,
+          -0.047803375869989395,
+          0.23585136234760284
+        ]
+      ],
+      "dominantBefore": {
+        "Arm1R_Elbow": 434,
+        "ArmFrontInside_Shoulder": 24
+      },
+      "maxEvaluatedEdgeStrain": 50.25626754760742,
+      "fractionStrainAbove2": 0.388646288209607,
+      "targetBone": "Head"
+    },
+    {
+      "component": 174,
+      "sourceVertices": 1078,
+      "sourceBounds": [
+        [
+          0.04227026551961899,
+          -0.08215492963790894,
+          0.2800586223602295
+        ],
+        [
+          0.10693766921758652,
+          -0.043554116040468216,
+          0.3351799249649048
+        ]
+      ],
+      "dominantBefore": {
+        "Arm1R_Elbow": 568,
+        "Head": 285,
+        "MaskTip": 225
+      },
+      "maxEvaluatedEdgeStrain": 90.65332794189453,
+      "fractionStrainAbove2": 0.6920222634508348,
+      "targetBone": "Head"
+    },
+    {
+      "component": 175,
+      "sourceVertices": 299,
+      "sourceBounds": [
+        [
+          0.04372868686914444,
+          -0.08008481562137604,
+          0.3029681444168091
+        ],
+        [
+          0.0773177444934845,
+          -0.04480508714914322,
+          0.3339877128601074
+        ]
+      ],
+      "dominantBefore": {
+        "Head": 161,
+        "MaskTip": 138
+      },
+      "maxEvaluatedEdgeStrain": 37.862022399902344,
+      "fractionStrainAbove2": 0.4916387959866221,
+      "targetBone": "Head"
+    },
+    {
+      "component": 240,
+      "sourceVertices": 377,
+      "sourceBounds": [
+        [
+          0.10682269185781479,
+          -0.035754330456256866,
+          0.3002545237541199
+        ],
+        [
+          0.1524176001548767,
+          0.013720590621232986,
+          0.3424670994281769
+        ]
+      ],
+      "dominantBefore": {
+        "Arm1R_Shoulder": 323,
+        "Head": 54
+      },
+      "maxEvaluatedEdgeStrain": 102.53009033203125,
+      "fractionStrainAbove2": 0.519893899204244,
+      "targetBone": "Head"
+    },
+    {
+      "component": 244,
+      "sourceVertices": 355,
+      "sourceBounds": [
+        [
+          0.10835306346416473,
+          -0.03428693115711212,
+          0.3017602562904358
+        ],
+        [
+          0.1507096141576767,
+          0.012022366747260094,
+          0.3408539295196533
+        ]
+      ],
+      "dominantBefore": {
+        "Arm1R_Shoulder": 309,
+        "Head": 46
+      },
+      "maxEvaluatedEdgeStrain": 83.94969177246094,
+      "fractionStrainAbove2": 0.5746478873239437,
+      "targetBone": "Head"
+    }
+  ],
+  "lowLimbIntersectionVertices": 0,
+  "hairIntersectionVertices": 0,
+  "bounds": [
+    [
+      -0.15054360032081604,
+      -0.10227576643228531,
+      0.18870967626571655
+    ],
+    [
+      0.1524176001548767,
+      0.015903808176517487,
+      0.34664201736450195
+    ]
+  ]
+}

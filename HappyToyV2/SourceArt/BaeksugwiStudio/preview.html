@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>백수귀 · 질주 미리보기</title>
+  <style>
+    :root { color-scheme: dark; font-family: "Segoe UI", "Malgun Gothic", sans-serif; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #171a1f; }
+    #viewport { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+    #viewport.dragging { cursor: grabbing; }
+    .panel { position: absolute; left: 22px; top: 22px; width: 280px; padding: 21px; border: 1px solid #51576180; border-radius: 16px; background: #15181de8; backdrop-filter: blur(16px); box-shadow: 0 12px 44px #0005; }
+    .eyebrow { margin: 0 0 8px; color: #bdb3a2; font-size: 11px; letter-spacing: .18em; }
+    h1 { margin: 0; font-size: 25px; letter-spacing: -.02em; }
+    .subtitle { margin: 7px 0 22px; color: #a7abb3; font-size: 12px; line-height: 1.7; }
+    label { display: block; margin: 15px 0 7px; color: #bcc1c9; font-size: 12px; }
+    select, button { color: #e9e9e9; background: #292e36; border: 1px solid #474e58; border-radius: 8px; font: inherit; font-size: 12px; }
+    select { width: 100%; padding: 10px 9px; }
+    button { min-height: 38px; padding: 9px 11px; cursor: pointer; }
+    button:hover { border-color: #b9ab91; background: #363a40; }
+    button:disabled, select:disabled { cursor: default; opacity: .5; }
+    button.primary { background: #c2ac84; color: #181714; border-color: #d0bf9b; font-weight: 600; }
+    .actions { display: flex; gap: 7px; margin: 14px 0; }
+    .actions #play { flex: 1; }
+    #drawer { display: none; }
+    .row { display: flex; gap: 7px; margin-top: 10px; }
+    .row > button { flex: 1; }
+    .speed { display: flex; align-items: center; gap: 11px; }
+    input[type=range] { min-width: 0; flex: 1; accent-color: #c2ac84; }
+    output { color: #eee6d7; font-size: 12px; width: 34px; text-align: right; }
+    .checks { display: flex; gap: 16px; margin-top: 8px; }
+    .checks label { display: flex; gap: 5px; align-items: center; }
+    input[type=checkbox] { accent-color: #c2ac84; }
+    #detail { margin-top: 16px; padding-top: 13px; border-top: 1px solid #41464f; color: #929aa6; font-size: 11px; line-height: 1.8; }
+    #help { position: absolute; bottom: 20px; right: 24px; color: #a5abb5; font-size: 12px; background: #14171bb8; border: 1px solid #3c434b; border-radius: 8px; padding: 9px 14px; }
+    #overlay { position: absolute; left: 55%; top: 47%; transform: translate(-50%, -50%); max-width: 490px; text-align: center; border-radius: 12px; padding: 23px 30px; background: #171b22ee; border: 1px solid #4c5665; }
+    #overlay[hidden] { display: none; }
+    #message { margin: 0 0 9px; color: #f1ebde; font-size: 16px; }
+    #progress { color: #a9b4c5; font-size: 12px; white-space: pre-line; line-height: 1.7; }
+    #badge { position: absolute; top: 24px; right: 24px; color: #e1d8c8; font-size: 11px; letter-spacing: .1em; border: 1px solid #5f645e; background: #232721c9; padding: 8px 13px; border-radius: 20px; }
+    @media (max-width: 700px) {
+      .panel { left: 10px; top: auto; bottom: max(10px, env(safe-area-inset-bottom)); width: calc(100% - 20px); padding: 11px; border-radius: 13px; }
+      .headrow { display: flex; align-items: center; gap: 8px; }
+      .identity { flex: 1; min-width: 0; }
+      h1 { font-size: 18px; white-space: nowrap; }
+      .eyebrow, .subtitle { display: none; }
+      .actions { margin: 0; gap: 6px; flex-shrink: 0; }
+      .actions button { min-height: 42px; font-size: 12px; padding: 10px 9px; }
+      #drawer { display: block; }
+      #controls { display: none; max-height: 35vh; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 0 2px 4px; }
+      .panel[data-open="true"] #controls { display: block; }
+      #help { left: 12px; right: auto; top: 48px; bottom: auto; font-size: 10px; padding: 7px 9px; }
+      #badge { right: 12px; top: 12px; font-size: 10px; padding: 6px 10px; }
+      #overlay { left: 50%; top: 42%; width: 85%; padding: 20px 18px; }
+    }
+  </style>
+  <script type="importmap">
+    {"imports":{"three":"/vendor/three/build/three.module.js"}}
+  </script>
+</head>
+<body>
+  <canvas id="viewport" aria-label="백수귀 실제 3D 질주 모델"></canvas>
+  <section class="panel" data-open="false" aria-label="미리보기 조작">
+    <div class="headrow">
+      <div class="identity"><p class="eyebrow">BAEKSUGWI / RUN STUDY</p><h1>백수귀 질주</h1></div>
+      <div class="actions"><button id="play" class="primary" aria-label="질주 모션 일시 정지" disabled>일시 정지</button><button id="drawer" aria-controls="controls" aria-expanded="false" aria-label="미리보기 설정 열기">설정</button></div>
+    </div>
+    <p class="subtitle">수많은 팔로 지면을 딛는<br>격렬한 질주 동작.</p>
+    <div id="controls">
+    <label for="model">모델 품질</label>
+    <select id="model" disabled><option>모델 확인 중…</option></select>
+    <label for="clip">모션</label>
+    <select id="clip" disabled><option>모션을 불러오는 중…</option></select>
+    <label for="speed">재생 속도</label>
+    <div class="speed"><input id="speed" type="range" min="0.25" max="2.5" value="1" step="0.05"><output id="speedValue">1.0×</output></div>
+    <div class="row"><button data-view="front">정면</button><button data-view="quarter">앞 사선</button><button data-view="side">옆면</button></div>
+    <div class="row"><button id="reset" aria-label="전체 모델이 보이는 처음 시점으로 돌아가기">처음 시점</button></div>
+    <div class="checks"><label><input id="bones" type="checkbox">뼈대</label><label><input id="wire" type="checkbox">와이어</label></div>
+    <div id="detail">소리가 없는 미리보기입니다.</div>
+    </div>
+  </section>
+  <div id="badge">SILENT PREVIEW</div>
+  <div id="help">드래그 · 회전 &nbsp; / &nbsp; 휠 · 확대 &nbsp; / &nbsp; 오른쪽 드래그 · 이동</div>
+  <div id="overlay" role="status"><p id="message">실제 3D 모델을 불러옵니다</p><span id="progress">잠시 기다려 주세요.</span></div>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from '/vendor/three/examples/jsm/loaders/GLTFLoader.js';
+
+    const ui = Object.fromEntries(['viewport', 'model', 'clip', 'play', 'drawer', 'reset', 'speed', 'speedValue', 'bones', 'wire', 'detail', 'overlay', 'message', 'progress'].map(id => [id, document.getElementById(id)]));
+    const panel = document.querySelector('.panel');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#20242a');
+    const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, .01, 1000);
+    const renderer = new THREE.WebGLRenderer({canvas: ui.viewport, antialias: true, powerPreference: 'high-performance'});
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.18;
+
+    scene.add(new THREE.HemisphereLight(0xc6d9f0, 0x655345, 2.4));
+    const key = new THREE.DirectionalLight(0xffe0b3, 4.5);
+    const fill = new THREE.DirectionalLight(0xb1caf3, 2.5);
+    const rim = new THREE.DirectionalLight(0xffd9b1, 3.2);
+    scene.add(key, key.target, fill, fill.target, rim, rim.target);
+    // A small procedural studio environment keeps metallic skin and wet surfaces readable.
+    const studio = new THREE.Scene();
+    studio.background = new THREE.Color(0x34383e);
+    const studioPanel = (color, intensity, size, position, rotation) => {
+      const panel = new THREE.Mesh(new THREE.PlaneGeometry(...size), new THREE.MeshBasicMaterial({color, side: THREE.DoubleSide}));
+      panel.material.color.multiplyScalar(intensity);
+      panel.position.set(...position); panel.rotation.set(...rotation); studio.add(panel);
+    };
+    studioPanel(0xffe6c9, 5, [12, 8], [0, 6, 4], [-Math.PI / 3, 0, 0]);
+    studioPanel(0xc8ddff, 3, [8, 10], [-7, 2, 0], [0, Math.PI / 2, 0]);
+    studioPanel(0xffefd7, 4, [10, 10], [4, 2, -7], [0, Math.PI, 0]);
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envMap = pmrem.fromScene(studio, .04, .1, 100);
+    scene.environment = envMap.texture;
+    pmrem.dispose();
+    studio.traverse(object => {object.geometry?.dispose(); object.material?.dispose();});
+
+    const container = new THREE.Group(); scene.add(container);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({color: 0x424343, roughness: .95, metalness: 0}));
+    floor.rotation.x = -Math.PI / 2; scene.add(floor);
+    let grid;
+    let model, mixer, activeAction, skeletonHelper, rootBone;
+    let radius = 3, height = 3, modelSize = new THREE.Vector3(4, 3, 6), groundSpeed = 0, authoredGroundY = null, focusY = 1.4, mobileDockHeight = 88;
+    let fitBounds = new THREE.Box3(new THREE.Vector3(-2, 0, -3), new THREE.Vector3(2, 3, 3));
+    let paused = false, loading = false, loadedBytes = 0, renderFrames = 0;
+    let clipName = '', clipDuration = 0;
+    const followOrigin = new THREE.Vector3(), followDelta = new THREE.Vector3(), rootPosition = new THREE.Vector3();
+    const target = new THREE.Vector3(), panOffset = new THREE.Vector3();
+    const orbit = {yaw: .65, pitch: .16, distance: 10};
+    const clock = new THREE.Clock();
+    const meshes = [], materials = [], clips = [];
+    const debug = window.__baeksugwiPreview = {ready: false, error: null, file: null, clip: null};
+
+    function updateLayoutBounds() {
+      mobileDockHeight = innerWidth <= 700 ? panel.getBoundingClientRect().height + 22 : 0;
+    }
+
+    function resetCamera(view = 'quarter') {
+      updateLayoutBounds();
+      orbit.yaw = view === 'front' ? 0 : view === 'side' ? Math.PI / 2 : innerWidth <= 700 ? .34 : .66;
+      orbit.pitch = view === 'side' ? .12 : .16;
+      const tangent = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+      const horizontalTangent = tangent * camera.aspect;
+      const verticalTangent = tangent * Math.max(.25, (innerHeight - mobileDockHeight - 70) / innerHeight);
+      const right = new THREE.Vector3(Math.cos(orbit.yaw), 0, -Math.sin(orbit.yaw));
+      const up = new THREE.Vector3(-Math.sin(orbit.yaw) * Math.sin(orbit.pitch), Math.cos(orbit.pitch), -Math.cos(orbit.yaw) * Math.sin(orbit.pitch));
+      const back = new THREE.Vector3(Math.sin(orbit.yaw) * Math.cos(orbit.pitch), Math.sin(orbit.pitch), Math.cos(orbit.yaw) * Math.cos(orbit.pitch));
+      let distance = radius;
+      for (const x of [fitBounds.min.x, fitBounds.max.x]) for (const y of [fitBounds.min.y, fitBounds.max.y]) for (const z of [fitBounds.min.z, fitBounds.max.z]) {
+        const point = new THREE.Vector3(x, y - focusY, z), depth = point.dot(back);
+        distance = Math.max(distance, Math.abs(point.dot(right)) / horizontalTangent + depth, Math.abs(point.dot(up)) / verticalTangent + depth);
+      }
+      orbit.distance = distance * 1.14;
+      panOffset.set(0, 0, 0);
+    }
+
+    function showError(error) {
+      debug.ready = false; debug.error = String(error?.message || error);
+      ui.overlay.hidden = false; ui.message.textContent = '모델을 표시할 수 없습니다';
+      ui.progress.textContent = debug.error;
+      ui.play.disabled = true; ui.clip.disabled = true;
+    }
+
+    function disposeModel() {
+      if (!model) return;
+      mixer?.stopAllAction(); mixer?.uncacheRoot(model);
+      container.remove(model);
+      const textures = new Set();
+      model.traverse(object => {
+        object.geometry?.dispose();
+        const objectMaterials = Array.isArray(object.material) ? object.material : object.material ? [object.material] : [];
+        for (const material of objectMaterials) {
+          for (const value of Object.values(material)) if (value?.isTexture) textures.add(value);
+          material.dispose();
+        }
+      });
+      for (const texture of textures) {texture.dispose(); texture.source?.data?.close?.();}
+      if (skeletonHelper) {scene.remove(skeletonHelper); skeletonHelper.geometry.dispose(); skeletonHelper.material.dispose();}
+      model = undefined; mixer = undefined; skeletonHelper = undefined; rootBone = undefined;
+      meshes.length = 0; materials.length = 0; clips.length = 0;
+    }
+
+    function selectClip(name) {
+      activeAction?.stop();
+      clipName = name;
+      const clip = clips.find(value => value.name === name);
+      if (!clip) return;
+      activeAction = mixer.clipAction(clip);
+      activeAction.reset().setLoop(THREE.LoopRepeat, Infinity).play();
+      mixer.update(0);
+      rootBone?.getWorldPosition(followOrigin);
+      followDelta.set(0, 0, 0);
+      clipDuration = clip.duration;
+      debug.clip = name; debug.duration = clip.duration;
+      ui.clip.value = name;
+      updateDetail();
+    }
+
+    function updateDetail() {
+      let bones = 0, triangles = 0;
+      model?.traverse(object => {if (object.isBone) bones++; if (object.isMesh) triangles += (object.geometry.index?.count || object.geometry.attributes.position.count) / 3;});
+      ui.detail.textContent = `${bones}개 뼈 · ${Math.round(triangles).toLocaleString()}개 삼각형\n${clipDuration.toFixed(2)}초 반복 · ${Math.round(loadedBytes / 1048576)} MB · 무음`;
+      ui.detail.style.whiteSpace = 'pre-line';
+      debug.bones = bones; debug.triangles = triangles;
+    }
+
+    async function loadModel(file, bytes) {
+      if (loading) return;
+      loading = true; debug.ready = false; debug.error = null;
+      ui.overlay.hidden = false; ui.model.disabled = true; ui.clip.disabled = true; ui.play.disabled = true;
+      ui.message.textContent = '실제 3D 모델을 불러옵니다'; ui.progress.textContent = '모델과 텍스처를 읽는 중…';
+      disposeModel();
+      try {
+        const modelUrl = '/' + file.split('/').map(encodeURIComponent).join('/');
+        const gltf = await new GLTFLoader().loadAsync(modelUrl, event => {
+          const total = event.total || bytes;
+          const percentage = total ? Math.min(100, Math.round(event.loaded / total * 100)) : 0;
+          ui.progress.textContent = `${percentage}% · ${Math.round(event.loaded / 1048576)} / ${Math.round(total / 1048576)} MB\n완료 후 고해상도 텍스처를 준비합니다.`;
+        });
+        model = gltf.scene; container.position.set(0, 0, 0); container.add(model);
+        model.updateMatrixWorld(true);
+        const bounds = new THREE.Box3().setFromObject(model, true);
+        const center = bounds.getCenter(new THREE.Vector3());
+        modelSize = bounds.getSize(new THREE.Vector3());
+        // Rest geometry contains palms below the authored IK floor. Use the rig plan's
+        // actual contact plane, not the rest AABB minimum, for the ground placement.
+        const groundY = Number.isFinite(authoredGroundY) ? authoredGroundY : bounds.min.y;
+        container.position.set(-center.x, -groundY, -center.z);
+        container.updateMatrixWorld(true);
+        height = modelSize.y; radius = modelSize.length() / 2;
+        camera.near = Math.max(radius / 1500, .001); camera.far = radius * 80; camera.updateProjectionMatrix();
+        floor.scale.set(radius * 16, radius * 16, 1); floor.position.y = -Math.max(height * .002, .001);
+        if (grid) {scene.remove(grid); grid.geometry.dispose(); grid.material.dispose();}
+        const gridSize = radius * 12;
+        grid = new THREE.GridHelper(gridSize, 48, 0x7b7d7c, 0x686b6e);
+        grid.material.transparent = true; grid.material.opacity = .28; grid.position.y = floor.position.y + height * .0005; scene.add(grid);
+        grid.userData.step = gridSize / 48;
+        key.position.set(radius * 1.2, height * 2.1, radius * 1.5);
+        fill.position.set(-radius * 1.8, height * 1.1, radius * .6);
+        rim.position.set(radius * .4, height * 1.8, -radius * 1.5);
+        for (const light of [key, fill, rim]) light.target.position.set(0, height * .45, 0);
+        model.traverse(object => {
+          if (object.isBone && object.name === 'BodyRoot') rootBone = object;
+          if (!object.isMesh) return;
+          meshes.push(object);
+          const objectMaterials = Array.isArray(object.material) ? object.material : [object.material];
+          for (const material of objectMaterials) {
+            material.envMapIntensity = .7; material.wireframe = ui.wire.checked;
+            materials.push(material);
+          }
+          object.frustumCulled = false; // Rest bounds do not bound the large animated arms.
+        });
+        skeletonHelper = new THREE.SkeletonHelper(model); skeletonHelper.visible = ui.bones.checked;
+        skeletonHelper.material.depthTest = false; skeletonHelper.renderOrder = 10; scene.add(skeletonHelper);
+        clips.push(...gltf.animations);
+        ui.clip.replaceChildren(...clips.map(clip => {
+          const option = document.createElement('option'); option.value = clip.name;
+          option.textContent = clip.name.includes('InPlace') ? '질주 · 제자리 반복' : clip.name.includes('Forward') ? '질주 · 앞으로 이동' : clip.name;
+          return option;
+        }));
+        mixer = new THREE.AnimationMixer(model);
+        const forward = clips.find(clip => clip.name.includes('Forward'));
+        groundSpeed = 0;
+        if (forward) {
+          const track = forward.tracks.find(track => track.name.includes('BodyRoot') && track.name.endsWith('.position'));
+          if (track?.values.length >= 6) {
+            const values = track.values;
+            groundSpeed = new THREE.Vector3(values[values.length - 3] - values[0], 0, values[values.length - 1] - values[2]).length() / forward.duration;
+          }
+        }
+        if (!groundSpeed) groundSpeed = modelSize.z * .38;
+        loadedBytes = bytes;
+        if (clips.length) selectClip((clips.find(clip => clip.name.includes('InPlace')) || clips[0]).name);
+        else {clipDuration = 0; clipName = ''; updateDetail(); ui.clip.replaceChildren(new Option('모션이 없습니다', ''));}
+        container.updateMatrixWorld(true);
+        fitBounds = new THREE.Box3().setFromObject(container, true);
+        focusY = fitBounds.getCenter(new THREE.Vector3()).y;
+        ui.clip.disabled = !clips.length; ui.play.disabled = !clips.length;
+        ui.play.textContent = paused ? '재생' : '일시 정지';
+        resetCamera();
+        debug.file = file; debug.size = modelSize.toArray(); debug.bytes = bytes; debug.ready = true;
+        ui.overlay.hidden = true;
+      } catch (error) {showError(error);} finally {loading = false; ui.model.disabled = false;}
+    }
+
+    ui.model.addEventListener('change', () => {
+      const option = ui.model.selectedOptions[0]; loadModel(option.value, Number(option.dataset.bytes));
+    });
+    ui.clip.addEventListener('change', () => selectClip(ui.clip.value));
+    ui.play.addEventListener('click', () => {paused = !paused; ui.play.textContent = paused ? '재생' : '일시 정지'; ui.play.setAttribute('aria-label', paused ? '질주 모션 재생' : '질주 모션 일시 정지');});
+    ui.drawer.addEventListener('click', () => {
+      const open = panel.dataset.open !== 'true'; panel.dataset.open = String(open);
+      ui.drawer.setAttribute('aria-expanded', String(open)); ui.drawer.setAttribute('aria-label', open ? '미리보기 설정 닫기' : '미리보기 설정 열기'); ui.drawer.textContent = open ? '닫기' : '설정';
+      updateLayoutBounds();
+    });
+    ui.speed.addEventListener('input', () => {ui.speedValue.textContent = `${Number(ui.speed.value).toFixed(1)}×`;});
+    ui.reset.addEventListener('click', () => resetCamera());
+    document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => resetCamera(button.dataset.view)));
+    ui.bones.addEventListener('change', () => {if (skeletonHelper) skeletonHelper.visible = ui.bones.checked;});
+    ui.wire.addEventListener('change', () => {for (const material of materials) material.wireframe = ui.wire.checked;});
+
+    const pointers = new Map(); let previousPinch = null;
+    ui.viewport.addEventListener('contextmenu', event => event.preventDefault());
+    ui.viewport.addEventListener('pointerdown', event => {
+      pointers.set(event.pointerId, {x: event.clientX, y: event.clientY, button: event.button});
+      ui.viewport.setPointerCapture(event.pointerId); ui.viewport.classList.add('dragging');
+    });
+    ui.viewport.addEventListener('pointermove', event => {
+      const previous = pointers.get(event.pointerId); if (!previous) return;
+      const dx = event.clientX - previous.x, dy = event.clientY - previous.y;
+      pointers.set(event.pointerId, {x: event.clientX, y: event.clientY, button: previous.button});
+      if (pointers.size > 1) {
+        const points = [...pointers.values()];
+        const distance = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
+        if (previousPinch) orbit.distance *= previousPinch / Math.max(distance, 1);
+        previousPinch = distance;
+      } else if (previous.button === 2 || event.shiftKey) {
+        const right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
+        const up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion);
+        panOffset.addScaledVector(right, -dx * orbit.distance / innerHeight * .75);
+        panOffset.addScaledVector(up, dy * orbit.distance / innerHeight * .75);
+      } else {orbit.yaw -= dx * .006; orbit.pitch = THREE.MathUtils.clamp(orbit.pitch + dy * .004, -.12, 1.35);}
+      orbit.distance = THREE.MathUtils.clamp(orbit.distance, radius * .3, radius * 20);
+    });
+    const releasePointer = event => {pointers.delete(event.pointerId); previousPinch = null; if (!pointers.size) ui.viewport.classList.remove('dragging');};
+    ui.viewport.addEventListener('pointerup', releasePointer); ui.viewport.addEventListener('pointercancel', releasePointer);
+    ui.viewport.addEventListener('wheel', event => {
+      event.preventDefault(); orbit.distance = THREE.MathUtils.clamp(orbit.distance * Math.exp(event.deltaY * .001), radius * .3, radius * 20);
+    }, {passive: false});
+    addEventListener('resize', () => {camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); resetCamera();});
+    ui.viewport.addEventListener('webglcontextlost', event => {event.preventDefault(); showError(new Error('그래픽 메모리가 부족합니다. 브라우저를 새로 열거나 2K 미리보기 모델을 선택해 주세요.'));});
+
+    renderer.setAnimationLoop(() => {
+      const delta = Math.min(clock.getDelta(), .06), speed = Number(ui.speed.value);
+      if (mixer && !paused && !loading) mixer.update(delta * speed);
+      container.updateMatrixWorld(true);
+      if (rootBone && clipName.includes('Forward')) {
+        rootBone.getWorldPosition(rootPosition); followDelta.copy(rootPosition).sub(followOrigin); followDelta.y = 0;
+      } else followDelta.set(0, 0, 0);
+      target.set(0, focusY, 0).add(followDelta).add(panOffset);
+      camera.position.set(Math.sin(orbit.yaw) * Math.cos(orbit.pitch), Math.sin(orbit.pitch), Math.cos(orbit.yaw) * Math.cos(orbit.pitch)).multiplyScalar(orbit.distance).add(target);
+      // Shift the subject right to leave room for the control panel.
+      if (innerWidth > 700) {
+        const cameraRight = new THREE.Vector3(Math.cos(orbit.yaw), 0, -Math.sin(orbit.yaw));
+        const shift = -(280 / innerWidth) * orbit.distance * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect * .72;
+        camera.position.addScaledVector(cameraRight, shift); target.addScaledVector(cameraRight, shift);
+      } else {
+        const cameraUp = new THREE.Vector3(-Math.sin(orbit.yaw) * Math.sin(orbit.pitch), Math.cos(orbit.pitch), -Math.cos(orbit.yaw) * Math.sin(orbit.pitch));
+        const shift = -mobileDockHeight / innerHeight * orbit.distance * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+        camera.position.addScaledVector(cameraUp, shift); target.addScaledVector(cameraUp, shift);
+      }
+      camera.lookAt(target);
+      if (grid && !paused && !loading) grid.position.z = (grid.position.z - delta * groundSpeed * speed) % grid.userData.step;
+      if (grid) {grid.position.x = followDelta.x; grid.position.z = (grid.position.z % grid.userData.step) + Math.floor(followDelta.z / grid.userData.step) * grid.userData.step;}
+      floor.position.x = followDelta.x; floor.position.z = followDelta.z;
+      renderer.render(scene, camera); renderFrames++;
+      if (renderFrames % 30 === 0) {debug.time = activeAction?.time || 0; debug.paused = paused; debug.speed = speed; debug.frames = renderFrames; debug.camera = camera.position.toArray(); debug.renderCalls = renderer.info.render.calls;}
+    });
+
+    try {
+      const response = await fetch('/api/models', {cache: 'no-store'});
+      if (!response.ok) throw new Error(`모델 목록을 불러오지 못했습니다 (${response.status}).`);
+      const {models, groundY} = await response.json();
+      authoredGroundY = groundY;
+      if (!models.length) throw new Error('내보내기 완료된 Baeksugwi_Run.glb 파일이 아직 없습니다.');
+      ui.model.replaceChildren(...models.map(model => {
+        const option = document.createElement('option'); option.value = model.file; option.textContent = model.label; option.dataset.bytes = model.bytes; return option;
+      }));
+      const wanted = new URLSearchParams(location.search).get('model');
+      const selected = models.find(model => model.file === wanted) || models[0]; ui.model.value = selected.file;
+      await loadModel(selected.file, selected.bytes);
+    } catch (error) {showError(error);}
+  </script>
+</body>
+</html>

@@ -1,0 +1,285 @@
+{
+    "status": "PASS",
+    "failure": "",
+    "unity": "6000.6.0f1",
+    "graphics": "NVIDIA GeForce RTX 2060 SUPER",
+    "scope": "Controlled native Mask fixture on actual seed-73 corridor. Third memory uses production release. Other monsters are disabled; player/Mask initial supported placements are explicit fixtures. Actual NavMesh runs, real locked/open scene doors, genuine solid-cover and cabinet entry, pause and checkpoint codec are production. Reference PNGs use the actual player camera after live attachment: front, an independently supported side or honestly labeled oblique position, and supported close face detail, with unchanged camera lens, scene lighting and model pose. Door locked state is fixture-authored because existing corridor ordinary leaves begin unlocked. Ordinary exit seals remain outside destructible Kind.Door. Native listener full mix is retained before the verified process-device mute; this does not certify natural survival, human listening, fear or hardware performance.",
+    "checks": [
+        {
+            "name": "real native session",
+            "passed": true
+        },
+        {
+            "name": "actual memory release 0",
+            "passed": true
+        },
+        {
+            "name": "actual memory release 1",
+            "passed": true
+        },
+        {
+            "name": "actual memory release 2",
+            "passed": true
+        },
+        {
+            "name": "already-grown runner release",
+            "passed": true
+        },
+        {
+            "name": "runner owns contact and whistle sources",
+            "passed": true
+        },
+        {
+            "name": "locked leaf rejects ordinary operation",
+            "passed": true
+        },
+        {
+            "name": "no warp during locked impact",
+            "passed": true
+        },
+        {
+            "name": "locked real scene leaf shattered",
+            "passed": true
+        },
+        {
+            "name": "locked actual native crossing",
+            "passed": true
+        },
+        {
+            "name": "ordinary leaf really opens",
+            "passed": true
+        },
+        {
+            "name": "no warp during open impact",
+            "passed": true
+        },
+        {
+            "name": "open real scene leaf shattered",
+            "passed": true
+        },
+        {
+            "name": "open actual native crossing",
+            "passed": true
+        },
+        {
+            "name": "actual patrol exceeds every authored monster patrol",
+            "passed": true
+        },
+        {
+            "name": "real running emits heavy contacts and door smashes",
+            "passed": true
+        },
+        {
+            "name": "near real clear sight",
+            "passed": true
+        },
+        {
+            "name": "room cover prevents close-range acquisition",
+            "passed": true
+        },
+        {
+            "name": "cover removal restores physical sight",
+            "passed": true
+        },
+        {
+            "name": "snapshot follows actual live attachment",
+            "passed": true
+        },
+        {
+            "name": "front snapshot looks at the actual attached head",
+            "passed": true
+        },
+        {
+            "name": "snapshot retains visible authored Mask",
+            "passed": true
+        },
+        {
+            "name": "reference snapshot uses the actual leading neck joint",
+            "passed": true
+        },
+        {
+            "name": "reference snapshot preserves reviewed eighteen-arm forward anatomy",
+            "passed": true
+        },
+        {
+            "name": "fully grown reference disables extinguished lantern light",
+            "passed": true
+        },
+        {
+            "name": "reference hair and body stay beneath actual corridor lintel",
+            "passed": true
+        },
+        {
+            "name": "player-camera render target created",
+            "passed": true
+        },
+        {
+            "name": "player-camera PNG encoded",
+            "passed": true
+        },
+        {
+            "name": "player-camera PNG retained",
+            "passed": true
+        },
+        {
+            "name": "reference second image uses existing supported floor and shows six rigged wrist landmarks",
+            "passed": true
+        },
+        {
+            "name": "reference close face image uses existing supported standing floor",
+            "passed": true
+        },
+        {
+            "name": "actual cabinet approach provides clear near sight",
+            "passed": true
+        },
+        {
+            "name": "actual cabinet entry",
+            "passed": true
+        },
+        {
+            "name": "close runner respects actual cabinet hiding",
+            "passed": true
+        },
+        {
+            "name": "actual cabinet exit",
+            "passed": true
+        },
+        {
+            "name": "pause freezes native run and contact admission",
+            "passed": true
+        },
+        {
+            "name": "JSON retains shattered ordinary door",
+            "passed": true
+        },
+        {
+            "name": "paused production restore keeps destroyed physics",
+            "passed": true
+        },
+        {
+            "name": "seal remains a separate non-destructible exit",
+            "passed": true
+        }
+    ],
+    "errors": [],
+    "peakNativeSpeed": 6.600654125213623,
+    "maximumAuthoredPatrol": 1.7000000476837158,
+    "contacts": 7,
+    "whistles": 1,
+    "smashed": 2,
+    "audio": {
+        "capture": "Unity listener DSP tap, pre-device; natural native callback clock; no device listening certification",
+        "sampleRate": 48000,
+        "channels": 2,
+        "callbacks": 243,
+        "nonfiniteSamples": 0,
+        "maximumSeconds": 180,
+        "observedSamples": 497664,
+        "capturedSamples": 497664,
+        "overflowSamples": 0,
+        "seconds": 5.184,
+        "dspSeconds": 4.8853333333333335,
+        "callbackWallSeconds": 5.1500087,
+        "firstCallbackAfterStartSeconds": 0.0085199,
+        "gameSeconds": 4.508648872375488,
+        "truncated": false,
+        "nonSilent": true,
+        "stages": [
+            {
+                "storyStep": 0,
+                "name": "progress-0",
+                "samples": 28672,
+                "clipped": 0,
+                "peak": 0.01322510652244091,
+                "rms": 0.0016890819058380023
+            },
+            {
+                "storyStep": 1,
+                "name": "progress-1",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            },
+            {
+                "storyStep": 2,
+                "name": "progress-2",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            },
+            {
+                "storyStep": 3,
+                "name": "progress-3",
+                "samples": 468992,
+                "clipped": 0,
+                "peak": 0.4272404611110687,
+                "rms": 0.02665244590890551
+            },
+            {
+                "storyStep": 4,
+                "name": "progress-4",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            },
+            {
+                "storyStep": 5,
+                "name": "progress-5",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            }
+        ],
+        "floors": [
+            {
+                "storyStep": 0,
+                "name": "ground",
+                "samples": 497664,
+                "clipped": 0,
+                "peak": 0.4272404611110687,
+                "rms": 0.02587646736404297
+            },
+            {
+                "storyStep": 1,
+                "name": "upper",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            },
+            {
+                "storyStep": 2,
+                "name": "basement",
+                "samples": 0,
+                "clipped": 0,
+                "peak": 0.0,
+                "rms": 0.0
+            }
+        ],
+        "pause": {
+            "samples": 26624,
+            "steadySamples": 18432,
+            "peak": 2.347477490614714e-28,
+            "rms": 1.2009393647739329e-28,
+            "steadyPeak": 2.347477490614714e-28,
+            "steadyRms": 1.2006943254949179e-28,
+            "transitionAllowanceSeconds": 0.10000000149011612
+        },
+        "writerError": "",
+        "progressMode": "corridor-memories",
+        "files": [
+            {
+                "file": "route.wav",
+                "sha256": "fdbf5dd27d9ae807989083d9ef63a9b4dc9b5b13f6b2dc3579897bbe51357f77",
+                "samples": 497664,
+                "channels": 2,
+                "seconds": 5.184
+            }
+        ]
+    }
+}

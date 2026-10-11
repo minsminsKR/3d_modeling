@@ -12,6 +12,9 @@
 !/Assets/**/*.fbx
 !/SourceArt/*.blend
 !/SourceArt/**/*.blend
+!/SourceArt/BaeksugwiStudio/source-original.glb
+!/SourceArt/BaeksugwiStudio/source-ai-rig.glb
+!/SourceArt/BaeksugwiStudio/Baeksugwi_Run.glb
 
 # Reproducible authoring tools write review candidates and previews here.
 /SourceArt/**/proposed/

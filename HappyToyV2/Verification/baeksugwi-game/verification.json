@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "date": "2026-10-11",
+  "scope": "Reviewed Studio model replaces the Unity wraith. Real scene/agent PlayMode checks and controlled native seed-73 fixture, not natural survival or hardware performance certification.",
+  "playmodePassed": 6,
+  "nativeChecks": 39,
+  "gameExecutable": "Builds/Windows/HappyToyV2.exe",
+  "sourceModel": "SourceArt/BaeksugwiStudio/Baeksugwi_Run.blend",
+  "runtimePrefab": "Assets/Resources/Baeksugwi/Baeksugwi.prefab",
+  "fbxSha256": "5ba5677a7a47f7adb0e68cb59c6283b5d5e6fa12ef808f1aa2db66950d3ff1bb",
+  "sceneSha256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "buildManifestSha256": "5fe21757900e29d2f63d5dd4c7c5e665c3f51ce0ed1b5cc73b8b0304422dbbea",
+  "assemblySha256": "ee7d999433c5e689519e1d40822abd25e39c39385a78b6a0c32659a5c6f972ad",
+  "audio": "-runTests / -quiet-diagnostics; process silence verified before native audio proof"
+}

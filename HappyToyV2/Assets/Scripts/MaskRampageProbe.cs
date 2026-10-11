@@ -126,7 +126,7 @@ namespace HappyToy.V2
                     .Any(renderer => renderer.enabled && renderer.gameObject.activeInHierarchy));
             CheckValue("reference snapshot uses the actual leading neck joint", art.HeadSocket && art.FaceJoint &&
                 Vector3.Distance(art.HeadSocket.position, art.FaceJoint.position) < .003f);
-            CheckValue("reference snapshot preserves many-arm forward anatomy", art.ArmPairCount == 8 && art.SwingPivotCount == 16 &&
+            CheckValue("reference snapshot preserves reviewed eighteen-arm forward anatomy", art.ArmPairCount == 9 && art.SwingPivotCount == 18 &&
                 Vector3.Dot(art.FaceForward, mask.transform.forward) > .8f);
             CheckValue("fully grown reference disables extinguished lantern light", !mask.flameLight || !mask.flameLight.enabled);
             CheckValue("reference hair and body stay beneath actual corridor lintel", Mathf.Max(mask.LastBodyBounds.max.y, mask.LastMaskBounds.max.y) -
@@ -192,19 +192,17 @@ namespace HappyToy.V2
                     var head = camera.WorldToViewportPoint(mask.LastMaskBounds.center);
                     if (head.z <= camera.nearClipPlane || head.x < .04f || head.x > .96f || head.y < .04f || head.y > .96f) continue;
                     int visibleSegments = mask.GetComponent<MaskHorrorVisual>().BodyModel.GetComponentsInChildren<Transform>(true)
-                        .Where(node => node.name.StartsWith("Segment", StringComparison.Ordinal) && node.name.Length == 9)
+                        .Where(node => node.name.EndsWith("_Wrist", StringComparison.Ordinal))
                         .Count(node =>
                         {
-                            var renderers = node.GetComponentsInChildren<MeshRenderer>(true); if (renderers.Length == 0) return false;
-                            var bounds = renderers[0].bounds; foreach (var renderer in renderers) bounds.Encapsulate(renderer.bounds);
-                            var point = camera.WorldToViewportPoint(bounds.center);
+                            var point = camera.WorldToViewportPoint(node.position);
                             return point.z > camera.nearClipPlane && point.x >= .02f && point.x <= .98f && point.y >= .02f && point.y <= .98f;
                         });
                     if (visibleSegments < 6) continue;
                     fullSide = index < sideCandidates;
                     CapturePlayerView(fullSide ? "mask-reference-supported-side.png" : "mask-reference-supported-oblique.png"); captured = true; break;
                 }
-                CheckValue("reference second image uses existing supported floor and shows six actual body segments", captured);
+                CheckValue("reference second image uses existing supported floor and shows six rigged wrist landmarks", captured);
             }
             finally
             {
