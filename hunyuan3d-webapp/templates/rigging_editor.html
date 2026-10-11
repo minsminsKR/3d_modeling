@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>관절 편집 - {{ job.id[:8] }}</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='rigging-editor.css') }}?v=20261011-6">
+</head><body class="rig-editor-page">
+<main class="editor-shell">
+  <nav class="editor-nav"><a href="{{ url_for('job_detail',job_id=job.id) }}#motion-preview">← 결과로 돌아가기</a><span>작업 {{ job.id[:8] }} · 관절 편집</span></nav>
+  <header class="editor-header"><div><p class="eyebrow">AI RIG · HUMAN EDIT</p><h1>뼈대를 다듬고, 움직임을 확인하세요.</h1><p>관절을 선택해 축 방향으로 이동하거나 좌표를 입력하세요. 추가 팔다리의 뼈대는 관절 가지를 복제해 구성할 수 있습니다.</p></div><span id="editor-dirty">불러오는 중</span></header>
+  <div id="editor-status" class="editor-status" role="status" aria-live="polite">모델과 관절을 불러오는 중입니다.</div>
+  <div class="editor-toolbar"><div class="editor-tools"><button id="editor-undo" disabled>되돌리기</button><button id="editor-redo" disabled>다시 적용</button><button id="editor-fit">전체 보기</button><button id="editor-front">정면</button><label><input id="editor-transparent" type="checkbox"> 반투명 모델</label><label><input id="editor-weights" type="checkbox"> 선택 관절 가중치</label><span id="editor-weight-summary" class="edit-help hidden"></span></div><span id="editor-count">관절 —개</span></div>
+  <div class="editor-workspace">
+    <aside class="editor-panel editor-tree"><div class="editor-panel-head"><h2>관절 계층</h2><span>클릭해 선택</span></div><div id="editor-joints" role="group" aria-label="관절 목록"></div></aside>
+    <section class="editor-stage" aria-label="3D 관절 편집 화면"><div id="editor-canvas" tabindex="0" aria-label="3D 모델. 마우스로 회전하고 관절을 클릭해 선택합니다."></div><p class="editor-canvas-help">드래그: 시점 회전 · 휠: 확대 · 관절 선택 후 XYZ 축 드래그: 위치 수정</p><div class="editor-testbar"><label for="editor-test-group">동작 확인</label><select id="editor-test-group"><option value="all">전체 그룹</option></select><button id="editor-test" aria-pressed="false" disabled>동작 테스트</button></div></section>
+    <aside class="editor-panel editor-inspector"><h2>선택 관절</h2><p id="editor-selection">관절을 선택하세요.</p>
+      <fieldset id="joint-fields" disabled><div class="edit-field"><label for="joint-name">이름</label><input id="joint-name" maxlength="64"></div><div class="edit-field"><label for="joint-parent">부모 관절</label><select id="joint-parent"></select></div>
+      <div class="edit-xyz">{% for axis in ['x','y','z'] %}<div class="edit-field"><label for="joint-{{ axis }}">{{ axis|upper }}</label><input id="joint-{{ axis }}" type="number" step="0.005"></div>{% endfor %}</div>
+      <div class="edit-field"><label for="joint-group">팔다리 그룹</label><select id="joint-group"><option value="">미지정</option></select></div><label class="edit-check"><input id="group-children" type="checkbox" checked> 하위 관절도 함께 지정</label>
+      <div class="editor-joint-actions"><button id="joint-add" type="button">하위 관절 추가</button><button id="joint-copy" type="button">가지 복제</button><button id="joint-delete" type="button">관절 삭제</button></div></fieldset>
+      <p class="edit-help">관절 추가·삭제 또는 부모 연결 변경 후에는 AI로 가중치를 다시 계산합니다. 위치를 크게 바꿀 때도 AI 재계산을 권장합니다.</p>
+      <details open class="editor-group-settings"><summary>팔다리 그룹 · 동작 설정</summary><div class="edit-field"><label for="group-select">편집할 그룹</label><select id="group-select"><option value="">그룹 없음</option></select></div><button id="group-add">선택 가지로 그룹 만들기</button>
+      <fieldset id="group-fields" disabled><div class="edit-field"><label for="group-name">그룹 이름</label><input id="group-name" maxlength="40"></div><div class="edit-field"><label for="group-type">종류</label><select id="group-type"><option value="arm">팔</option><option value="leg">다리</option><option value="head">머리</option><option value="other">기타</option></select></div><div class="edit-xyz group-numbers"><div class="edit-field"><label for="group-amplitude">움직임 각도 (°)</label><input id="group-amplitude" type="number" min="0" max="60" step="1" value="20"></div><div class="edit-field"><label for="group-phase">타이밍 (%)</label><input id="group-phase" type="number" min="0" max="100" step="5" value="0"></div></div><p class="edit-help">0%와 50%로 나누면 서로 반대 타이밍으로 움직입니다.</p><button id="group-delete">그룹 해제</button></fieldset></details>
+    </aside>
+  </div>
+  <section class="editor-savebar editor-panel"><div><h2>수정본 저장</h2><p>원본 형상·텍스처를 유지한 새 버전으로 저장합니다. 추가한 관절의 표면 영향은 AI 재계산 후 확인하세요.</p></div><div class="editor-save-controls"><div class="edit-field"><label for="editor-weight-mode">가중치 처리</label><select id="editor-weight-mode"><option value="keep">기존 가중치 유지 · 빠른 저장</option><option value="ai">AI 가중치 재계산 · GPU 1</option></select></div><button id="editor-save" class="primary-button" disabled>수정본 저장</button><a id="editor-result" class="hidden" href="{{ url_for('job_detail',job_id=job.id) }}#motion-preview">저장된 동작 보기 →</a></div></section>
+  <section class="editor-history editor-panel"><div><h2>버전 기록</h2><p>이전 뼈대를 불러와 다시 편집하거나 결과의 활성 버전으로 복원할 수 있습니다.</p></div><div class="editor-history-controls"><label for="editor-version">저장된 버전</label><select id="editor-version"></select><button id="version-load">편집기에 불러오기</button><button id="version-restore">결과 버전 복원</button></div></section>
+</main>
+<script id="editor-config" type="application/json">{{ editor_config|tojson }}</script>
+<script type="module" src="{{ url_for('static',filename='rigging-editor.bundle.js') }}?v=20261011-6"></script>
+</body></html>

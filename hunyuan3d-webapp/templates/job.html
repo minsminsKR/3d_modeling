@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Job {{ job.id[:8] }} - Hunyuan3D Studio</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='rigging.css') }}?v=20261011-5">
+    <script type="module" src="{{ url_for('static', filename='vendor/model-viewer-4.4.0.min.js') }}"></script>
   </head>
   <body data-job-id="{{ job.id }}">
     <main class="shell">
@@ -23,6 +24,10 @@
         </div>
         <div class="metrics">
           <div>
+            <span class="metric-label">생성 모델</span>
+            <strong>{{ {'hunyuan3d-2.1': 'Hunyuan3D 2.1', 'hunyuan3d-omni': 'Hunyuan3D-Omni', 'trellis2': 'TRELLIS.2'}.get(job.get('options', {}).get('model'), '기록 없음') }}</strong>
+          </div>
+          <div>
             <span class="metric-label">경과 시간</span>
             <strong id="elapsed-time" data-elapsed="{{ job.elapsed_seconds }}">{{ job.elapsed_seconds }}s</strong>
           </div>
@@ -32,7 +37,11 @@
           </div>
           <div>
             <span class="metric-label">GPU</span>
-            <strong>{{ job.options.gpu_id | default(0) }}</strong>
+            <strong>{% if job.options.model == 'trellis2' %}{% if job.options.get('texture_gpu_id') is not none %}형상 {{ job.options.gpu_id }} / 재질 {{ job.options.texture_gpu_id }}{% else %}GPU {{ job.options.gpu_id }}{% endif %}{% else %}형상 {{ job.options.gpu_id | default(0) }}{% if job.options.texture and job.options.texture_gpu_id is defined and job.options.texture_gpu_id is not none %} / 텍스처 {{ job.options.texture_gpu_id }}{% endif %}{% endif %}</strong>
+          </div>
+          <div>
+            <span class="metric-label">텍스처 품질</span>
+            <strong>{% if job.options.model == 'trellis2' %}TRELLIS.2 · {{ '8K' if job.options.trellis_texture_size == 8192 else '4K' }}{% else %}{{ {'standard': '표준 · 4K', 'detail': '고품질 · 4K', 'ultra': '고품질 · 8K'}.get(job.options.texture_profile | default('standard'), '표준 · 4K') }}{% endif %}</strong>
           </div>
         </div>
         <div class="progress-track">
@@ -64,7 +73,7 @@
         <div id="processed-preview" class="processed-preview {% if not job.processed_input_url %}hidden{% endif %}">
           <div>
             <span class="metric-label">전처리 입력</span>
-            <p class="muted">여기서 배경이 투명/흰색으로 제거되어야 3D shape가 제대로 잡힙니다.</p>
+            <p class="muted">모델에 전달된 전처리 이미지입니다. 생성할 대상과 배경 제거 상태를 확인하세요.</p>
           </div>
           <img id="processed-image" src="{{ job.processed_input_url if job.processed_input_url else '' }}" alt="Processed input preview">
         </div>
@@ -82,10 +91,39 @@
         {% endif %}
       </section>
 
-      <section id="mixamo-panel" class="panel mixamo-panel {% if job.status != 'completed' %}hidden{% endif %}">
+      <section id="rigging-panel" class="panel rigging-panel {% if job.status != 'completed' %}hidden{% endif %}" aria-labelledby="rigging-heading" data-status-url="{{ job.rigging.status_url }}">
+        <div class="section-head"><div><p class="eyebrow">MODEL TO RIG</p><h2 id="rigging-heading">AI 자동 리깅</h2></div><span class="rig-model-badge">SkinTokens / TokenRig · 서버 실행</span></div>
+        <p class="rig-description">모델의 뼈대와 관절 가중치를 자동으로 생성합니다. 사람·동물형 캐릭터의 다음 제작 단계에 사용하세요.</p>
+        <form id="rigging-form" action="{{ job.rigging.start_url }}" method="post">
+          <div class="rig-fields"><div class="rig-field"><label for="rig-preserve">출력 모델</label><select id="rig-preserve" name="preserve_original"><option value="true">원본 형태·텍스처 유지 · 권장</option><option value="false">가벼운 모델 · 분석용 메시로 출력</option></select></div><div class="rig-field"><label for="rig-faces">분석 메시 면 수</label><select id="rig-faces" name="analysis_faces"><option value="30000">최대 3만 · 빠르게</option><option value="50000" selected>최대 5만 · 균형</option><option value="100000">최대 10만 · 세밀하게</option></select></div></div>
+          <p class="rig-help">분석 메시만 정리한 뒤 원본에 리깅을 적용합니다. 원본 GLB는 별도로 유지됩니다. 팔·다리가 분리된 중립 자세가 유리합니다.</p>
+          <details class="rig-advanced"><summary>고급 설정</summary><div class="rig-field"><label for="rig-seed">Seed</label><input id="rig-seed" name="seed" type="number" min="0" max="4294967295" value="1234"></div></details>
+          <div class="rig-action-row"><span>GPU 1 · 생성 작업과 순서대로 처리</span><button id="rigging-start" class="primary-button" type="submit" {% if not job.rigging.ready or job.rigging.status in ['queued','running'] %}disabled{% endif %}>AI 자동 리깅 시작</button></div>
+        </form>
+        <div id="rigging-status" class="rig-status" role="status" aria-live="polite"><span id="rigging-status-label">{% if not job.rigging.ready %}설치·검증 준비 중{% elif job.rigging.status == 'completed' %}리깅 완료{% elif job.rigging.status == 'failed' %}리깅 실패{% elif job.rigging.status in ['queued','running'] %}리깅 진행 중{% else %}실행 준비 완료{% endif %}</span><p id="rigging-message">{{ job.rigging.message | default('설정을 고르고 자동 리깅을 시작하세요.') }}</p></div>
+        <div id="rigging-result" class="{% if not job.rigging.download_url %}hidden{% endif %}">
+          <div class="rig-result-head"><div><h3>리깅 결과</h3><p id="rigging-metrics">{% if job.rigging.bone_count %}뼈대 {{ job.rigging.bone_count }}개 · {{ job.rigging.skinned_vertices }}개 정점에 가중치 적용{% endif %}</p></div><div class="result-actions"><a id="rigging-editor-link" class="download {% if not job.rigging.editor_url %}hidden{% endif %}" href="{{ job.rigging.editor_url | default('#') }}">관절 편집하기</a><a id="rigging-download" class="download" href="{{ job.rigging.download_url | default('#') }}">리깅 GLB 다운로드</a></div></div>
+          <div id="motion-preview" class="motion-stage" aria-labelledby="motion-heading">
+            <div class="motion-heading"><div><p class="eyebrow">RIG TO ACTION</p><h3 id="motion-heading">동작 미리보기</h3></div><span id="motion-state" role="status">모델을 불러오는 중</span></div>
+            <p class="motion-description">AI가 만든 뼈대에 동작 프리셋을 적용합니다. 동작을 바꾸며 관절 움직임을 확인하세요.</p>
+            <div class="rig-preview-controls">
+              <div class="motion-field"><label for="rigging-action">동작</label><select id="rigging-action" disabled><option value="Idle">대기</option></select></div>
+              <div class="motion-field"><label for="rigging-speed">속도</label><select id="rigging-speed" disabled><option value="0.5">0.5배</option><option value="1" selected>1배</option><option value="1.5">1.5배</option><option value="2">2배</option></select></div>
+              <button id="rigging-motion" type="button" class="rig-secondary" aria-pressed="false" disabled>재생</button>
+              <button id="rigging-reset" type="button" class="rig-secondary" disabled>처음으로</button>
+            </div>
+            <model-viewer id="rigging-viewer" {% if job.rigging.preview_url %}src="{{ job.rigging.preview_url }}"{% endif %} camera-controls shadow-intensity="0.5" exposure="1" animation-name="Idle" camera-orbit="0deg 80deg 170%" camera-target="auto 0.08m auto" interaction-prompt="none" loading="eager" alt="AI 리깅 캐릭터 동작 미리보기"></model-viewer>
+            <div class="motion-timeline"><label for="rigging-timeline">재생 위치</label><input id="rigging-timeline" type="range" min="0" max="1000" step="1" value="0" disabled><output id="rigging-time" for="rigging-timeline" aria-live="off">0.0 / 0.0초</output></div>
+            <div class="motion-footer"><p id="motion-note">원본 형상과 UV를 유지합니다. 다운로드에는 원본 품질과 모든 동작이 포함됩니다.</p><a id="motion-download" class="download hidden" href="#">동작 포함 GLB 다운로드</a></div>
+          </div>
+        </div>
+      </section>
+
+      <details id="mixamo-panel" class="panel mixamo-panel {% if job.status != 'completed' %}hidden{% endif %}">
+        <summary class="mixamo-option-heading">Mixamo 리깅 / 모션 <span>외부 서비스 · 선택 옵션</span></summary>
         <div class="section-head">
           <div>
-            <h2>Mixamo 리깅 / 모션</h2>
+            <h3>Mixamo에서 리깅하거나 모션 추가</h3>
             <p class="muted">
               Mixamo는 Adobe 웹 서비스라 이 앱이 로그인을 자동화하지 않습니다.
               아래 패키지를 받아 Mixamo에 업로드한 뒤, 다운로드한 FBX/GLB/DAE 결과를 다시 올려 관리하세요.
@@ -132,7 +170,7 @@
             {% endfor %}
           </div>
         {% endif %}
-      </section>
+      </details>
 
       <section id="failed-panel" class="panel danger {% if job.status != 'failed' %}hidden{% endif %}">
         <h2>작업 실패</h2>
@@ -140,6 +178,7 @@
         <p class="muted">대부분은 HUNYUAN3D_REPO 미설정, CUDA/torch 버전, texture renderer 빌드 문제에서 발생합니다.</p>
       </section>
     </main>
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script src="{{ url_for('static', filename='app.js') }}?v=20261011-4"></script>
+    <script src="{{ url_for('static', filename='rigging.js') }}?v=20261011-5"></script>
   </body>
 </html>

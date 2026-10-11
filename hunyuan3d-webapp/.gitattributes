@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.glb -text
+# Preserve bundled GLSL and upstream patch context byte-for-byte.
+static/rigging-editor.bundle.js -whitespace
+upstream/patches/*.patch -whitespace

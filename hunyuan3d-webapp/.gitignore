@@ -6,5 +6,19 @@ env/
 venv/
 instance/
 vendor/
+!static/vendor/
+!static/vendor/**
 *.log
+.venv*/
+.env.*
+!.env.example
+!.env.a100.example
+logs/
+backups/
+private-access/
+.21st/
+.staging/
+node_modules/
+# Small synthetic QA fixture; its authoring script is included under scripts/.
+!static/validation/rig-editor-four-arms.glb
 

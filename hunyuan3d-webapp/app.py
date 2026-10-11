@@ -12,6 +12,7 @@ import traceback
 import uuid
 import zipfile
 from datetime import datetime
+from dataclasses import replace
 from concurrent.futures import ThreadPoolExecutor
 from importlib.util import find_spec
 from pathlib import Path
@@ -20,7 +21,12 @@ from dotenv import load_dotenv
 from flask import Flask, abort, jsonify, redirect, render_template, request, send_file, url_for
 from werkzeug.utils import secure_filename
 
-from hunyuan_service import GenerationOptions, Hunyuan3DGenerator
+from rigging_runtime import rigging_ready, run_rigging
+from rigging_motion import MOTION_VERSION
+from rigging_editor import read_skeleton, validate_edit
+from rigging_edit_runtime import run_edit
+from hunyuan_service import GenerationOptions
+from gpu_runtime import TEXTURE_PROFILES, gpu_stats, run_isolated_generation
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -49,6 +55,53 @@ def env_int(name: str, default: int) -> int:
         return int(os.getenv(name, str(default)))
     except ValueError:
         return default
+
+
+def default_generation_model() -> str:
+    model = os.getenv("APP_DEFAULT_MODEL", "hunyuan3d-2.1")
+    if model not in {"hunyuan3d-2.1", "hunyuan3d-omni", "trellis2"}:
+        return "hunyuan3d-2.1"
+    if model == "trellis2" and not trellis_ready():
+        return "hunyuan3d-2.1"
+    return model
+
+
+def default_gpu_mode_for_model(model: str) -> str:
+    if model == "trellis2" and trellis_dual_ready():
+        return "split"
+    name = "TRELLIS_DEFAULT_GPU_MODE" if model == "trellis2" else "HUNYUAN_DEFAULT_GPU_MODE"
+    return os.getenv(name, "auto" if model == "trellis2" else "split")
+
+
+def trellis_dual_ready() -> bool:
+    marker = BASE_DIR / "instance/trellis-dual-ready.json"
+    try:
+        return json.loads(marker.read_text()).get("status") == "ready"
+    except (OSError, ValueError):
+        return False
+
+
+def trellis_generation_defaults(gpu_mode: str | None = None) -> dict:
+    pipeline = os.getenv("TRELLIS_DEFAULT_PIPELINE", "1536_cascade")
+    if pipeline not in {"512", "1024_cascade", "1536_cascade"}:
+        pipeline = "1536_cascade"
+    texture_size = env_int("TRELLIS_DEFAULT_TEXTURE_SIZE", 8192)
+    if texture_size not in {4096, 8192}:
+        texture_size = 8192
+    mode = gpu_mode or default_gpu_mode_for_model("trellis2")
+    tokens = env_int("TRELLIS_SPLIT_MAX_NUM_TOKENS", 65536) if mode == "split" else env_int("TRELLIS_MAX_NUM_TOKENS", 49152)
+    return {"trellis_pipeline": pipeline,
+            "trellis_steps": min(50, max(1, env_int("TRELLIS_DEFAULT_STEPS", 12))),
+            "trellis_texture_size": texture_size,
+            "trellis_max_tokens": tokens}
+
+
+def generation_defaults() -> dict:
+    model = default_generation_model()
+    return {"model": model, "gpu_mode": default_gpu_mode_for_model(model),
+            "seed": min(2**32 - 1, max(0, env_int("APP_DEFAULT_SEED", 1234))),
+            "remove_background": env_bool("APP_DEFAULT_REMOVE_BACKGROUND", True),
+            **trellis_generation_defaults()}
 
 
 def available_gpu_ids() -> list[int]:
@@ -123,29 +176,9 @@ def create_app() -> Flask:
     jobs_lock = threading.Lock()
     jobs = load_jobs()
     cleanup_unsaved_jobs(jobs)
-    executor = ThreadPoolExecutor(max_workers=env_int("GENERATION_WORKERS", 1))
-    generator = Hunyuan3DGenerator(
-        repo_path=os.getenv("HUNYUAN3D_REPO") or None,
-        model_path=os.getenv("HUNYUAN_MODEL_PATH", "tencent/Hunyuan3D-2.1"),
-        subfolder=os.getenv("HUNYUAN_SUBFOLDER", "hunyuan3d-dit-v2-1"),
-        device=os.getenv("HUNYUAN_DEVICE", "cuda"),
-        low_vram=env_bool("HUNYUAN_LOW_VRAM", False),
-        enable_flashvdm=env_bool("HUNYUAN_ENABLE_FLASHVDM", False),
-        compile_model=env_bool("HUNYUAN_COMPILE", False),
-        texture_views=env_int("HUNYUAN_TEXTURE_VIEWS", 8),
-        texture_resolution=env_int("HUNYUAN_TEXTURE_RESOLUTION", 512),
-        texture_render_size=env_int("HUNYUAN_TEXTURE_RENDER_SIZE", 4096),
-        texture_texture_size=env_int("HUNYUAN_TEXTURE_MAP_SIZE", 8192),
-        texture_view_selection_resolution=env_int("HUNYUAN_TEXTURE_VIEW_SELECTION_RESOLUTION", 512),
-        texture_render_device=os.getenv("HUNYUAN_TEXTURE_RENDER_DEVICE", "cuda"),
-        hy3dgen_models_dir=os.getenv("HY3DGEN_MODELS") or None,
-        local_model_dir=os.getenv("HUNYUAN_LOCAL_MODEL_DIR") or None,
-        omni_repo_path=os.getenv("HUNYUAN_OMNI_REPO") or None,
-        omni_model_path=os.getenv("HUNYUAN_OMNI_MODEL_PATH", "tencent/Hunyuan3D-Omni"),
-        omni_control_type=os.getenv("HUNYUAN_OMNI_CONTROL_TYPE", "bbox"),
-        omni_bbox=os.getenv("HUNYUAN_OMNI_BBOX") or None,
-        omni_enable_flashvdm=env_bool("HUNYUAN_OMNI_FLASHVDM", False),
-    )
+    executor = ThreadPoolExecutor(max_workers=env_int("GENERATION_WORKERS", 2))
+    gpu_load = {gpu_id: 0 for gpu_id in available_gpu_ids()}
+    rigging_executor = ThreadPoolExecutor(max_workers=1)
 
     def set_job(job_id: str, **updates) -> dict:
         with jobs_lock:
@@ -163,8 +196,8 @@ def create_app() -> Flask:
             started_at=time.time(),
         )
         try:
-            asset = generator.generate(
-                [Path(path) for path in image_paths],
+            asset = run_isolated_generation(
+                image_paths,
                 OUTPUT_DIR / job_id,
                 options,
                 progress=lambda message: set_job(job_id, status="running", message=message),
@@ -188,6 +221,11 @@ def create_app() -> Flask:
             error_path.parent.mkdir(parents=True, exist_ok=True)
             error_path.write_text(traceback.format_exc(), encoding="utf-8")
             set_job(job_id, status="failed", message=str(exc), finished_at=time.time(), error_path=str(error_path))
+        finally:
+            with jobs_lock:
+                gpu_load[options.gpu_id] = max(0, gpu_load.get(options.gpu_id, 0) - 1)
+                if options.model == "trellis2" and options.texture_gpu_id is not None:
+                    gpu_load[options.texture_gpu_id] = max(0, gpu_load.get(options.texture_gpu_id, 0) - 1)
 
     @app.get("/")
     def index():
@@ -199,6 +237,7 @@ def create_app() -> Flask:
         texture_issues = texture_dependency_issues()
         omni_issues = omni_dependency_issues()
         gpu_ids = available_gpu_ids()
+        defaults = generation_defaults()
         return render_template(
             "index.html",
             recent_jobs=[public_job(job) for job in visible_recent_jobs],
@@ -206,6 +245,16 @@ def create_app() -> Flask:
             max_files=env_int("MAX_UPLOAD_FILES", 15),
             gpu_ids=gpu_ids,
             default_gpu_id=default_gpu_id(gpu_ids),
+            default_model=defaults["model"],
+            default_gpu_mode=defaults["gpu_mode"],
+            hunyuan_default_gpu_mode=default_gpu_mode_for_model("hunyuan3d-2.1"),
+            trellis_default_gpu_mode=default_gpu_mode_for_model("trellis2"),
+            generation_defaults=defaults,
+            default_texture_profile=os.getenv("HUNYUAN_DEFAULT_TEXTURE_PROFILE", "detail"),
+            texture_profiles=TEXTURE_PROFILES,
+            gpu_stats=gpu_stats(),
+            omni_ema_ready=omni_ema_ready(),
+            trellis_ready=trellis_ready(),
             texture_ready=not texture_issues,
             texture_issues=texture_issues,
             omni_ready=not omni_issues,
@@ -224,29 +273,72 @@ def create_app() -> Flask:
 
         validated_files = []
         for file in uploaded_files:
-            filename = secure_filename(file.filename)
-            extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+            # secure_filename("캐릭터.png") becomes "png". Check the original
+            # basename's extension before sanitizing its stem for disk storage.
+            original_name = file.filename.replace("\\", "/").rsplit("/", 1)[-1]
+            extension = original_name.rsplit(".", 1)[-1].lower() if "." in original_name else ""
             if extension not in ALLOWED_EXTENSIONS:
-                abort(400, f"Unsupported image type: {filename}")
-            validated_files.append((file, filename))
+                abort(400, f"Unsupported image type: {original_name}")
+            stem = secure_filename(original_name.rsplit(".", 1)[0])[:160] or "image"
+            filename = f"{stem}.{extension}"
+            validated_files.append((file, filename, original_name))
 
-        model = request.form.get("model", "hunyuan3d-2.1")
-        if model not in {"hunyuan3d-2.1", "hunyuan3d-omni"}:
+        defaults = generation_defaults()
+        model = request.form.get("model", defaults["model"])
+        if model not in {"hunyuan3d-2.1", "hunyuan3d-omni", "trellis2"}:
             abort(400, "Unsupported model selection.")
+        if model == "trellis2" and not trellis_ready():
+            abort(400, "TRELLIS.2 모델 접근 승인과 서버 검증이 아직 완료되지 않았습니다.")
         if model == "hunyuan3d-omni" and omni_dependency_issues():
             abort(400, f"Hunyuan3D-Omni is not ready: {', '.join(omni_dependency_issues())}")
 
-        texture_requested = request.form.get("texture") == "on"
+        texture_requested = request.form.get("texture") == "on" or model == "trellis2"
+        gpu_ids = available_gpu_ids()
+        requested_gpu = request.form.get("gpu_id", default_gpu_mode_for_model(model))
+        gpu_mode = requested_gpu if requested_gpu in {"auto", "split"} else "manual"
+        shape_gpu = env_int("HUNYUAN_SHAPE_GPU", 0) if gpu_mode == "split" else form_gpu_id(gpu_ids)
+        texture_gpu = env_int("HUNYUAN_TEXTURE_GPU", 1) if gpu_mode == "split" else None
+        if shape_gpu not in gpu_ids or (texture_gpu is not None and texture_gpu not in gpu_ids):
+            abort(400, "선택한 GPU 처리 방식에 필요한 GPU가 없습니다.")
+        texture_profile = request.form.get("texture_profile", os.getenv("HUNYUAN_DEFAULT_TEXTURE_PROFILE", "detail"))
+        if texture_profile not in TEXTURE_PROFILES:
+            abort(400, "지원하지 않는 텍스처 품질 설정입니다.")
+        if model != "trellis2" and texture_requested and texture_profile != "standard" and gpu_mode == "manual" and shape_gpu != env_int("HUNYUAN_TEXTURE_GPU", 1):
+            abort(400, "고품질 텍스처는 여유 메모리가 있는 GPU 1 또는 두 GPU 분담 모드를 선택하세요.")
+        trellis_pipeline = request.form.get("trellis_pipeline", defaults["trellis_pipeline"])
+        if trellis_pipeline not in {"512", "1024_cascade", "1536_cascade"}:
+            abort(400, "지원하지 않는 TRELLIS.2 해상도입니다.")
+        trellis_texture_size = form_int("trellis_texture_size", defaults["trellis_texture_size"], 4096, 8192)
+        if trellis_texture_size not in {4096, 8192}:
+            abort(400, "TRELLIS.2 텍스처는 4K 또는 8K를 선택하세요.")
+        if model == "trellis2":
+            if gpu_mode == "split":
+                if not trellis_dual_ready() or len(gpu_ids) < 2:
+                    abort(503, "TRELLIS.2 두 GPU 분담 모드가 아직 준비되지 않았습니다.")
+                shape_gpu = env_int("HUNYUAN_TEXTURE_GPU", 1)
+                texture_gpu = next(gpu for gpu in gpu_ids if gpu != shape_gpu)
+            else:
+                texture_gpu = None
+            if trellis_pipeline != "512" and gpu_mode == "manual" and shape_gpu != env_int("HUNYUAN_TEXTURE_GPU", 1):
+                abort(400, "TRELLIS.2 1024·1536 모드는 GPU 1을 사용하세요.")
         options = GenerationOptions(
             model=model,
-            gpu_id=form_gpu_id(available_gpu_ids()),
-            texture=texture_requested and texture_dependencies_ready(),
-            remove_background=request.form.get("remove_background") == "on",
-            seed=form_int("seed", 1234, 0, 2**32 - 1),
+            gpu_id=shape_gpu,
+            texture_gpu_id=texture_gpu,
+            gpu_mode=gpu_mode,
+            texture_profile=texture_profile,
+            omni_use_ema=model == "hunyuan3d-omni" and omni_ema_ready() and env_bool("HUNYUAN_OMNI_USE_EMA", True),
+            trellis_pipeline=trellis_pipeline,
+            trellis_steps=form_int("trellis_steps", defaults["trellis_steps"], 1, 50),
+            trellis_texture_size=trellis_texture_size,
+            trellis_max_tokens=trellis_generation_defaults(gpu_mode)["trellis_max_tokens"],
+            texture=True if model == "trellis2" else texture_requested and texture_dependencies_ready(),
+            remove_background=("on" in request.form.getlist("remove_background")) if "remove_background" in request.form else defaults["remove_background"],
+            seed=form_int("seed", defaults["seed"], 0, 2**32 - 1),
             num_inference_steps=form_int("num_inference_steps", 50, 1, 100),
             guidance_scale=form_float("guidance_scale", 7.5, 0.1, 20.0),
             octree_resolution=form_int("octree_resolution", 512, 64, 512),
-            num_chunks=form_int("num_chunks", 200000, 1000, 300000),
+            num_chunks=form_int("num_chunks", 50000, 1000, 300000),
             output_format="glb",
         )
 
@@ -254,7 +346,18 @@ def create_app() -> Flask:
         batch_id = str(uuid.uuid4()) if len(uploaded_files) > 1 else None
         created_jobs = []
         with jobs_lock:
-            for index, (file, filename) in enumerate(validated_files, start=1):
+            for index, (file, filename, original_name) in enumerate(validated_files, start=1):
+                job_options = options
+                if gpu_mode == "auto":
+                    # GPU 0 shares VRAM with RTSP. High-resolution texture jobs
+                    # use GPU 1; standard jobs can run independently on both.
+                    dedicated = trellis_pipeline != "512" if model == "trellis2" else options.texture and texture_profile != "standard"
+                    candidates = [default_gpu_id(gpu_ids)] if dedicated else gpu_ids
+                    assigned_gpu = min(candidates, key=lambda gpu: (gpu_load.get(gpu, 0), gpu != default_gpu_id(gpu_ids)))
+                    job_options = replace(options, gpu_id=assigned_gpu)
+                gpu_load[job_options.gpu_id] = gpu_load.get(job_options.gpu_id, 0) + 1
+                if job_options.model == "trellis2" and job_options.texture_gpu_id is not None:
+                    gpu_load[job_options.texture_gpu_id] = gpu_load.get(job_options.texture_gpu_id, 0) + 1
                 job_id = str(uuid.uuid4())
                 job_upload_dir = UPLOAD_DIR / job_id
                 job_output_dir = OUTPUT_DIR / job_id
@@ -270,10 +373,10 @@ def create_app() -> Flask:
                     "created_at": now,
                     "updated_at": now,
                     "image_paths": [str(saved_path)],
-                    "source_filename": filename,
+                    "source_filename": original_name,
                     "batch_index": index,
                     "batch_total": len(uploaded_files),
-                    "options": options.__dict__,
+                    "options": job_options.__dict__,
                 }
                 if batch_id is not None:
                     job["batch_id"] = batch_id
@@ -282,7 +385,7 @@ def create_app() -> Flask:
             save_jobs(jobs)
 
         for job in created_jobs:
-            executor.submit(run_generation, job["id"], job["image_paths"], options)
+            executor.submit(run_generation, job["id"], job["image_paths"], GenerationOptions(**job["options"]))
 
         if batch_id is not None:
             return redirect(url_for("batch_detail", batch_id=batch_id))
@@ -420,6 +523,218 @@ def create_app() -> Flask:
             abort(404)
         return send_file(image_path, mimetype="image/png")
 
+    def set_rigging(job_id, **updates):
+        with jobs_lock:
+            record = dict(jobs[job_id].get("rigging") or {})
+            record.update(updates)
+            record["updated_at"] = time.time()
+            jobs[job_id]["rigging"] = record
+            save_jobs(jobs)
+
+    def run_auto_rigging(job_id, source, directory, options):
+        set_rigging(job_id, status="running", started_at=time.time(), message="자동 리깅을 준비 중입니다.")
+        try:
+            result = run_rigging(source, directory, options, lambda message: set_rigging(job_id, message=message))
+            set_rigging(job_id, **result, status="completed", finished_at=time.time(), message="AI 리깅과 동작 프리셋이 준비됐습니다. 아래에서 동작을 재생하세요.")
+        except Exception as exc:
+            Path(directory).mkdir(parents=True, exist_ok=True)
+            Path(directory, "error.log").write_text(traceback.format_exc())
+            set_rigging(job_id, status="failed", finished_at=time.time(), message=str(exc))
+        finally:
+            with jobs_lock:
+                gpu_load[1] = max(0, gpu_load.get(1, 0) - 1)
+
+    @app.post("/api/jobs/<job_id>/rigging")
+    def start_auto_rigging(job_id):
+        job = jobs.get(job_id)
+        if job is None: abort(404)
+        if job.get("status") != "completed":
+            return jsonify({"error": "3D 생성이 완료된 모델에서 리깅할 수 있습니다."}), 409
+        if not rigging_ready():
+            return jsonify({"error": "자동 리깅 모델 설치·검증이 아직 완료되지 않았습니다."}), 503
+        if 1 not in gpu_load:
+            return jsonify({"error": "자동 리깅에 필요한 GPU 1을 찾지 못했습니다."}), 503
+        payload = request.get_json(silent=True) or {}
+        if not isinstance(payload, dict): return jsonify({"error": "올바른 리깅 설정이 필요합니다."}), 400
+        try:
+            seed = int(payload.get("seed", 1234))
+            analysis_faces = int(payload.get("analysis_faces", 50000))
+        except (ValueError, TypeError): return jsonify({"error": "리깅 설정 값이 올바르지 않습니다."}), 400
+        preserve = payload.get("preserve_original", True)
+        if not isinstance(preserve, bool) or not 0 <= seed <= 2**32-1 or analysis_faces not in {30000,50000,100000}:
+            return jsonify({"error": "지원하지 않는 리깅 설정입니다."}), 400
+        source = Path(job.get("model_path", ""))
+        if not source.is_file() or source.suffix.lower() != ".glb":
+            return jsonify({"error": "리깅할 원본 GLB를 찾지 못했습니다."}), 400
+        options = {"seed": seed, "analysis_faces": analysis_faces, "preserve_original": preserve}
+        run_id = str(uuid.uuid4())
+        directory = OUTPUT_DIR / job_id / "rigging" / run_id
+        with jobs_lock:
+            current = dict(jobs[job_id].get("rigging") or {})
+            if current.get("status") in {"queued", "running"}:
+                return jsonify({"error": "이 모델의 자동 리깅이 이미 진행 중입니다."}), 409
+            current.update({"status":"queued", "message":"GPU 1 리깅 대기열에 등록됐습니다.", "run_id":run_id,
+                            "options":options, "created_at":time.time(), "started_at":None, "finished_at":None})
+            jobs[job_id]["rigging"] = current
+            gpu_load[1] = gpu_load.get(1,0)+1
+            save_jobs(jobs)
+        rigging_executor.submit(run_auto_rigging, job_id, str(source), directory, options)
+        return jsonify(public_job(jobs[job_id])["rigging"]), 202
+
+    @app.get("/api/jobs/<job_id>/rigging")
+    def auto_rigging_status(job_id):
+        job = jobs.get(job_id)
+        if job is None: abort(404)
+        return jsonify(public_job(job)["rigging"])
+
+    def editor_source(job_id, version=None):
+        job=jobs.get(job_id)
+        if job is None: abort(404)
+        record=job.get("rigging") or {}
+        if version is None:
+            stored=record.get("model_path")
+            if not stored: abort(404)
+            version=Path(stored).parent.name
+        try:
+            if str(uuid.UUID(version))!=version: abort(404)
+        except (ValueError,TypeError): abort(404)
+        folder=(OUTPUT_DIR/job_id/"rigging"/version).resolve()
+        if not folder.is_relative_to((OUTPUT_DIR/job_id/"rigging").resolve()) or not (folder/"rigging-result.json").is_file() or not (folder/"rigged.glb").is_file(): abort(404)
+        return job,folder
+
+    @app.get("/jobs/<job_id>/rigging/edit")
+    def rigging_editor_page(job_id):
+        job,folder=editor_source(job_id,request.args.get("v"))
+        config={"job_id":job_id,"version":folder.name,"skeleton_url":url_for("rigging_skeleton",job_id=job_id),
+                "save_url":url_for("save_rigging_edit",job_id=job_id),"status_url":url_for("auto_rigging_status",job_id=job_id),
+                "versions_url":url_for("rigging_versions",job_id=job_id),"restore_url":url_for("restore_rigging_version",job_id=job_id)}
+        return render_template("rigging_editor.html",job=public_job(job),editor_config=config)
+
+    @app.get("/api/jobs/<job_id>/rigging/skeleton")
+    def rigging_skeleton(job_id):
+        job,folder=editor_source(job_id,request.args.get("v"))
+        try: skeleton=read_skeleton(folder/"rigged.glb")
+        except ValueError as exc: return jsonify({"error":str(exc)}),400
+        state=folder/"editor-state.json"
+        skeleton["groups"]=json.loads(state.read_text()).get("groups",[]) if state.is_file() else []
+        manifest=folder/f"motion-{MOTION_VERSION}.json"
+        if not state.is_file() and manifest.is_file():
+            motion=json.loads(manifest.read_text())
+            for n,arm in enumerate(motion.get("roles",{}).get("arms",[])):
+                members=[str(arm["node"])]
+                for key in members:
+                    members.extend(j["id"] for j in skeleton["joints"] if j["parent"]==key)
+                skeleton["groups"].append({"id":f"auto-arm-{n+1}","name":f"팔 {n+1}","type":"arm","joints":members,"amplitude":20,"phase":n%2*.5})
+        skeleton.update(version=folder.name,current_version=Path(job["rigging"]["model_path"]).parent.name,
+            model_url=url_for("rigging_asset",job_id=job_id)+"?v="+folder.name)
+        # url_for on the shared asset function may pick any decorator; use the
+        # explicit clean model path, which preserves glTF node indices.
+        skeleton["model_url"]=url_for("job_detail",job_id=job_id)+"/rigging/model?v="+folder.name
+        if manifest.is_file() and (folder/f"preview-{MOTION_VERSION}.glb").is_file():
+            motion=json.loads(manifest.read_text())
+            if motion.get("preview_model",{}).get("vertices")==motion.get("full_model",{}).get("vertices"):
+                skeleton["model_url"]=url_for("job_detail",job_id=job_id)+"/rigging/action-preview?v="+folder.name
+        return jsonify(skeleton)
+
+    def run_editor_job(job_id,source,directory,edit,base_version):
+        set_rigging(job_id,status="running",started_at=time.time(),message="수정 뼈대를 적용 중입니다.")
+        try:
+            result=run_edit(source,directory,edit,base_version,lambda message:set_rigging(job_id,message=message))
+            set_rigging(job_id,**result,status="completed",finished_at=time.time(),message="수정본과 동작 미리보기가 저장됐습니다.")
+        except Exception as exc:
+            Path(directory).mkdir(parents=True,exist_ok=True)
+            Path(directory,"error.log").write_text(traceback.format_exc())
+            set_rigging(job_id,status="failed",finished_at=time.time(),message=str(exc))
+        finally:
+            if edit["weight_mode"]=="ai":
+                with jobs_lock: gpu_load[1]=max(0,gpu_load.get(1,0)-1)
+
+    @app.post("/api/jobs/<job_id>/rigging/edit")
+    def save_rigging_edit(job_id):
+        if request.content_length and request.content_length>262144: return jsonify({"error":"편집 데이터가 너무 큽니다."}),413
+        payload=request.get_json(silent=True)
+        if not isinstance(payload,dict): return jsonify({"error":"편집 데이터가 필요합니다."}),400
+        job,folder=editor_source(job_id,payload.get("base_version"))
+        if not rigging_ready(): return jsonify({"error":"리깅 환경이 준비되지 않았습니다."}),503
+        try: edit=validate_edit(payload,read_skeleton(folder/"rigged.glb"))
+        except ValueError as exc: return jsonify({"error":str(exc)}),400
+        run_id=str(uuid.uuid4());directory=OUTPUT_DIR/job_id/"rigging"/run_id
+        with jobs_lock:
+            current=dict(jobs[job_id].get("rigging") or {})
+            if current.get("status") in {"queued","running"}: return jsonify({"error":"리깅 작업이 이미 진행 중입니다."}),409
+            version=Path(current["model_path"]).parent.name
+            if payload.get("expected_version")!=version: return jsonify({"error":"다른 수정본이 저장됐습니다. 최신 결과를 불러온 뒤 다시 저장하세요."}),409
+            current.update(status="queued",run_id=run_id,created_at=time.time(),started_at=None,finished_at=None,
+                operation="edit",message="AI 가중치 재계산 대기 중입니다." if edit["weight_mode"]=="ai" else "수정본 저장 대기 중입니다.")
+            jobs[job_id]["rigging"]=current
+            if edit["weight_mode"]=="ai": gpu_load[1]=gpu_load.get(1,0)+1
+            save_jobs(jobs)
+        rigging_executor.submit(run_editor_job,job_id,folder/"rigged.glb",directory,edit,folder.name)
+        return jsonify(public_job(jobs[job_id])["rigging"]),202
+
+    @app.get("/api/jobs/<job_id>/rigging/versions")
+    def rigging_versions(job_id):
+        job=jobs.get(job_id)
+        if job is None: abort(404)
+        versions=[]
+        for file in (OUTPUT_DIR/job_id/"rigging").glob("*/rigging-result.json"):
+            try:
+                if str(uuid.UUID(file.parent.name))!=file.parent.name or not (file.parent/"rigged.glb").is_file(): continue
+                info=json.loads(file.read_text())
+                versions.append({"version":file.parent.name,"created_at":file.stat().st_mtime,"bone_count":info.get("bone_count"),
+                                 "edited":bool(info.get("edited")),"weight_mode":info.get("weight_mode","ai"),"base_version":info.get("base_version")})
+            except (ValueError,OSError): continue
+        return jsonify({"current_version":Path(job["rigging"]["model_path"]).parent.name if (job.get("rigging") or {}).get("model_path") else None,
+                        "versions":sorted(versions,key=lambda v:v["created_at"],reverse=True)})
+
+    @app.post("/api/jobs/<job_id>/rigging/restore")
+    def restore_rigging_version(job_id):
+        payload=request.get_json(silent=True) or {}
+        if not isinstance(payload,dict): return jsonify({"error":"버전 정보가 필요합니다."}),400
+        job,folder=editor_source(job_id,payload.get("version"))
+        with jobs_lock:
+            current=job.get("rigging") or {}
+            if current.get("status") in {"queued","running"}: return jsonify({"error":"작업 완료 후 이전 버전을 복원하세요."}),409
+            if payload.get("expected_version")!=Path(current["model_path"]).parent.name: return jsonify({"error":"최신 결과를 다시 불러오세요."}),409
+            info=json.loads((folder/"rigging-result.json").read_text())
+            info.update(model_path=str(folder/"rigged.glb"),preview_path=str(folder/"rig-preview.glb"),run_id=folder.name,
+                        status="completed",message="선택한 리깅 버전을 복원했습니다.",updated_at=time.time(),finished_at=time.time())
+            job["rigging"]=info;save_jobs(jobs)
+        return jsonify(public_job(job)["rigging"])
+
+    @app.get("/jobs/<job_id>/rigging/model")
+    @app.get("/jobs/<job_id>/rigging/preview")
+    @app.get("/jobs/<job_id>/rigging/download")
+    @app.get("/jobs/<job_id>/rigging/motion")
+    @app.get("/jobs/<job_id>/rigging/motion-download")
+    @app.get("/jobs/<job_id>/rigging/action-preview")
+    def rigging_asset(job_id):
+        job = jobs.get(job_id)
+        if job is None: abort(404)
+        record = job.get("rigging") or {}
+        preview = request.path.endswith("/preview")
+        motion = request.path.endswith(("/motion", "/motion-download", "/action-preview"))
+        stored = record.get("preview_path" if preview else "model_path")
+        version = request.args.get("v")
+        if version:
+            try:
+                if str(uuid.UUID(version)) != version: abort(404)
+            except ValueError: abort(404)
+            folder = OUTPUT_DIR / job_id / "rigging" / version
+            if not (folder / "rigging-result.json").is_file(): abort(404)
+            stored = str(folder / ("rig-preview.glb" if preview else "rigged.glb"))
+        if motion:
+            if not stored: abort(404)
+            folder = Path(stored).parent
+            manifest = folder / f"motion-{MOTION_VERSION}.json"
+            if not manifest.is_file(): abort(404)
+            stored = str(folder / (f"preview-{MOTION_VERSION}.glb" if request.path.endswith("/action-preview") else f"rig-{MOTION_VERSION}.glb"))
+        if not stored: abort(404)
+        path = Path(stored).resolve()
+        if not path.is_relative_to((OUTPUT_DIR / job_id / "rigging").resolve()) or not path.is_file(): abort(404)
+        return send_file(path, mimetype="model/gltf-binary", as_attachment=request.path.endswith(("/download", "/motion-download")),
+                         download_name=f"{'animated' if motion else 'rigged'}_{job_id[:8]}.glb")
+
     @app.get("/jobs/<job_id>/mixamo/package")
     def download_mixamo_package(job_id: str):
         job = jobs.get(job_id)
@@ -466,10 +781,39 @@ def create_app() -> Flask:
 
     @app.get("/health")
     def health():
-        return jsonify({"status": "ok", "jobs": len(jobs), **runtime_diagnostics()})
+        with jobs_lock:
+            queue_load = dict(gpu_load)
+        return jsonify({"status": "ok", "jobs": len(jobs), "gpu_stats": gpu_stats(), "gpu_queue_load": queue_load,
+                        "generation_workers": env_int("GENERATION_WORKERS", 2),
+                        "default_gpu_mode": default_gpu_mode_for_model(default_generation_model()),
+                        "generation_defaults": generation_defaults(),
+                        "default_texture_profile": os.getenv("HUNYUAN_DEFAULT_TEXTURE_PROFILE", "detail"),
+                        "omni_ema_ready": omni_ema_ready(), "trellis_ready": trellis_ready(), "rigging_ready": rigging_ready(), "rigging_gpu": 1,
+                        "rigging_tasks":sum((j.get("rigging") or {}).get("status") in {"queued","running"} for j in jobs.values()), **runtime_diagnostics()})
 
     def public_job(job: dict) -> dict:
         result = dict(job)
+        rig = dict(job.get("rigging") or {})
+        result["rigging"] = {key:value for key,value in rig.items() if key not in {"model_path","preview_path"}}
+        result["rigging"].setdefault("status", "idle")
+        result["rigging"]["ready"] = rigging_ready()
+        result["rigging"]["start_url"] = url_for("start_auto_rigging", job_id=job["id"])
+        result["rigging"]["status_url"] = url_for("auto_rigging_status", job_id=job["id"])
+        if rig.get("model_path") and Path(rig["model_path"]).is_file():
+            rig_base = url_for("job_detail", job_id=job["id"]) + "/rigging"
+            version = Path(rig["model_path"]).parent.name
+            result["rigging"]["editor_url"]=url_for("rigging_editor_page",job_id=job["id"])
+            result["rigging"].update(model_url=rig_base+"/model?v="+version, download_url=rig_base+"/download?v="+version, preview_url=rig_base+"/preview?v="+version)
+            manifest = Path(rig["model_path"]).parent / f"motion-{MOTION_VERSION}.json"
+            if manifest.is_file():
+                try:
+                    motion = json.loads(manifest.read_text())
+                    result["rigging"].update(motion_clips=motion["clips"], motion_method=motion["method"],
+                        motion_download_url=rig_base+"/motion-download?v="+version,
+                        preview_url=rig_base+"/action-preview?v="+version+"&motion="+MOTION_VERSION,
+                        preview_faces=motion["preview_model"]["faces"])
+                except (ValueError, KeyError):
+                    app.logger.exception("Invalid motion manifest for job %s", job["id"])
         result["elapsed_seconds"] = elapsed_seconds(job)
         result["warnings"] = job.get("warnings") or read_warnings(job)
         result["display_name"] = display_name_for_job(job)
@@ -726,6 +1070,24 @@ def texture_dependencies_ready() -> bool:
     return not texture_dependency_issues()
 
 
+def trellis_ready() -> bool:
+    marker = BASE_DIR / "logs/trellis-a100-ready.json"
+    if not marker.exists():
+        return False
+    try:
+        model_dir = Path(os.getenv("TRELLIS_MODEL_DIR", str(BASE_DIR / "vendor/TRELLIS.2/local_models/TRELLIS.2-4B")))
+        return (json.loads(marker.read_text()).get("status") == "ready"
+                and (BASE_DIR / ".venv-trellis/bin/python").exists()
+                and (model_dir / "pipeline-a100.json").exists())
+    except (OSError, ValueError):
+        return False
+
+
+def omni_ema_ready() -> bool:
+    model = resolve_repo_env_path(os.getenv("HUNYUAN_OMNI_MODEL_PATH"))
+    return model is not None and (model / "model" / "pytorch_model_ema.bin").is_file()
+
+
 def omni_dependency_issues() -> list[str]:
     repo_path = resolve_repo_env_path(os.getenv("HUNYUAN_OMNI_REPO"))
     if repo_path is None:
@@ -761,6 +1123,9 @@ def load_jobs() -> dict:
             job["status"] = "failed"
             job["message"] = "The server restarted before this job finished."
             job["finished_at"] = job.get("updated_at")
+        rig = job.get("rigging")
+        if rig and rig.get("status") in {"queued", "running"}:
+            rig.update(status="failed", message="서버 재시작으로 리깅이 중단됐습니다. 다시 실행하세요.", finished_at=time.time())
         jobs[job_id] = job
     return jobs
 

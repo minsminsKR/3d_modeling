@@ -4,6 +4,7 @@ const dropZone = document.querySelector(".drop-zone");
 
 if (fileInput && fileList && dropZone) {
   const filesBuffer = [];
+  let previewUrls = [];
   const maxFiles = Number(fileInput.dataset.maxFiles || 0);
 
   const allowedPasteImageTypes = new Set(["image/png", "image/jpeg", "image/webp"]);
@@ -34,7 +35,12 @@ if (fileInput && fileList && dropZone) {
   };
 
   const renderFiles = () => {
+    previewUrls.forEach(url => URL.revokeObjectURL(url));
+    previewUrls = [];
     fileList.innerHTML = "";
+    const count = document.querySelector("#file-count");
+    if (count) count.textContent = `${filesBuffer.length} / ${maxFiles}`;
+    document.dispatchEvent(new CustomEvent("generation-files-change", {detail: filesBuffer.length}));
     filesBuffer.forEach((file, index) => {
       const chip = document.createElement("div");
       chip.className = "file-chip";
@@ -56,6 +62,15 @@ if (fileInput && fileList && dropZone) {
         renderFiles();
       });
 
+      if (document.body.classList.contains("generator-page")) {
+        const preview = document.createElement("img");
+        const url = URL.createObjectURL(file);
+        previewUrls.push(url);
+        preview.src = url;
+        preview.alt = "";
+        preview.className = "file-thumbnail";
+        chip.appendChild(preview);
+      }
       chip.appendChild(label);
       chip.appendChild(removeBtn);
       fileList.appendChild(chip);
@@ -274,6 +289,8 @@ if (jobId) {
     if (job.status === "completed") {
       resultPanel.classList.remove("hidden");
       mixamoPanel?.classList.remove("hidden");
+      document.querySelector("#rigging-panel")?.classList.remove("hidden");
+      document.dispatchEvent(new CustomEvent("generation-job-completed"));
       failedPanel.classList.add("hidden");
       downloadLink.href = job.download_url;
       if (mixamoOpenLink && job.mixamo_url) {

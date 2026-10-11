@@ -161,6 +161,7 @@ def main() -> int:
     config.max_selected_view_num = payload["texture_views"]
     config.render_size = payload["texture_render_size"]
     config.texture_size = payload["texture_texture_size"]
+    config.export_downsample = False
     config.view_selection_resolution = payload["texture_view_selection_resolution"]
     config.render_device = payload["texture_render_device"]
 

@@ -1,0 +1,1 @@
+{"name":"a100-rig-editor","private":true,"type":"module","scripts":{"build":"esbuild editor.js --bundle --minify --format=esm --legal-comments=external --outfile=../static/rigging-editor.bundle.js"},"dependencies":{"three":"0.186.1"},"devDependencies":{"esbuild":"0.25.12"}}

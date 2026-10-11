@@ -51,6 +51,7 @@ def main() -> int:
     pipeline = Hunyuan3DOmniSiTFlowMatchingPipeline.from_pretrained(
         payload["model_path"],
         fast_decode=bool(payload.get("flashvdm", False)),
+        variant="ema" if payload.get("use_ema", False) else None,
     )
     bbox = torch.FloatTensor(payload["bbox"]).unsqueeze(0).unsqueeze(0).to(pipeline.device).to(pipeline.dtype)
     generator_device = "cuda" if str(pipeline.device).startswith("cuda") else "cpu"

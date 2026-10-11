@@ -1,3 +1,5 @@
+> **A100 서버 최신 소스 (2026.10.11.11)**: TRELLIS.2 1536/8K, 2GPU 분할, SkinTokens AI 리깅, 동작 미리보기와 관절 편집기를 포함합니다. 새 설치·의존성·원본 빌드는 [INSTALL-A100.md](INSTALL-A100.md)를 먼저 읽으세요. 아래는 기존 Windows/Hunyuan 사용 안내입니다.
+
 # Hunyuan3D Flask Web App
 
 사진 1장 또는 여러 장을 업로드해서 **Hunyuan3D 2.1**(PBR) 기반 GLB 모델을 생성하는 Flask 웹앱입니다. 여러 장을 올리면 이미지마다 독립 작업을 만들고, 배치 페이지에서 각 GLB를 미리보기/다운로드할 수 있습니다. 생성된 GLB는 `instance/outputs` 아래에 보관되어 게임 프로젝트에서 바로 asset 경로로 쓸 수 있습니다.
@@ -136,3 +138,8 @@ instance/outputs/<job_id>/model.glb
 ```
 
 Panda3D, Ursina, pygltflib 기반 렌더러처럼 GLB/glTF를 읽을 수 있는 엔진을 쓰면 경로만 넘기면 됩니다.
+
+
+## A100 Linux deployment (2026-10-10)
+
+See [README-A100.md](README-A100.md) for the configured A100 service, paths, dependencies, and validation.

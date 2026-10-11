@@ -1,0 +1,12 @@
+from pathlib import Path
+import json,shutil
+root=Path(__file__).resolve().parents[1]
+source=root/'instance/outputs/DATA-20261011-A100-005-EDITOR-GPU/multi'
+report=json.loads((root/'logs/rig-editor-gpu-validation.json').read_text())
+assert report['passed']
+target=root/'static/validation';target.mkdir(exist_ok=True)
+shutil.copy2(source/'rig-actions-v2.glb',target/'rig-editor-four-arms.glb')
+html='''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>다중 팔다리 AI 스키닝 검증</title><link rel="stylesheet" href="../styles.css"><script type="module" src="../vendor/model-viewer-4.4.0.min.js"></script><style>body{background:var(--paper)}main{max-width:960px;margin:30px auto;padding:20px}h1{font-size:1.6rem}model-viewer{height:550px;width:100%;background:#eee9dc;border-radius:14px}select,button{padding:10px;font:inherit;border-radius:8px;border:1px solid var(--line)}.controls{display:flex;gap:12px;margin:18px 0}</style></head><body><main><p class="eyebrow">DATA-20261011-A100-005-EDITOR-GPU</p><h1>팔 4개 · 다리 2개 AI 스키닝 검증</h1><p>검증용 합성 모델입니다. 19개 관절을 유지하며 TokenRig가 가중치를 다시 계산했고, 여섯 팔다리 그룹 각각의 움직임을 GLB에 저장했습니다.</p><div class="controls"><label for="action">동작 그룹</label><select id="action"></select><button id="play">일시정지</button></div><model-viewer id="viewer" src="rig-editor-four-arms.glb" camera-controls autoplay animation-name="GroupAction" shadow-intensity=".5" camera-orbit="0deg 75deg 150%" alt="네 개 팔과 두 개 다리가 움직이는 검증 모델"></model-viewer><p><a href="/jobs/60d905f2-6aa9-43cf-8d8f-80f8fae302c8/rigging/edit">펭귄 결과 관절 편집기로 돌아가기</a> · <a href="rig-editor-four-arms.glb" download>검증 GLB 다운로드</a></p></main><script type="module">const clips=CLIPS;const v=document.getElementById('viewer'),s=document.getElementById('action'),b=document.getElementById('play');for(const c of clips){const o=document.createElement('option');o.value=c.name;o.textContent=c.label;s.append(o);}s.value='GroupAction';s.addEventListener('change',()=>{v.animationName=s.value;v.currentTime=0;v.play();b.textContent='일시정지';});b.addEventListener('click',()=>{if(v.paused){v.play();b.textContent='일시정지';}else{v.pause();b.textContent='재생';}});</script></body></html>'''
+html=html.replace('CLIPS',json.dumps(report['motion_clips'],ensure_ascii=False))
+(target/'rig-editor-multi.html').write_text(html)
+print('Validation example: /static/validation/rig-editor-multi.html')

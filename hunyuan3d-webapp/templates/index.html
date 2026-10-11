@@ -3,135 +3,95 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hunyuan3D Studio</title>
+    <title>A100 3D Studio</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='generator.css') }}?v=20261011-3">
+    <script type="module" src="{{ url_for('static', filename='vendor/model-viewer-4.4.0.min.js') }}"></script>
   </head>
-  <body>
+  <body class="generator-page">
     <main class="shell">
-      <nav class="topbar site-nav">
-        <a href="{{ url_for('saved_jobs_page') }}">
-          저장된 모델{% if saved_job_count %} ({{ saved_job_count }}){% endif %}
-        </a>
+      <nav class="studio-nav" aria-label="주 메뉴">
+        <a class="studio-brand" href="{{ url_for('index') }}"><span class="brand-mark" aria-hidden="true">3D</span> A100 Studio</a>
+        <a class="library-link" href="{{ url_for('saved_jobs_page') }}">저장된 모델{% if saved_job_count %} <span>{{ saved_job_count }}</span>{% endif %} <span aria-hidden="true">↗</span></a>
       </nav>
+      <header class="studio-heading">
+        <div><p class="eyebrow">IMAGE TO 3D</p><h1>이미지를 3D로, 디테일까지.</h1><p>이미지를 올리고 품질을 선택하세요. 완성된 모델은 GLB로 내려받을 수 있습니다.</p></div>
+        <span class="server-badge"><span aria-hidden="true"></span>A100 40GB × {{ gpu_ids | length }}</span>
+      </header>
 
-      <section class="hero">
-        <div>
-          <p class="eyebrow">Hunyuan3D 2.1 Web Studio</p>
-          <h1>이미지에서 GLB 모델 생성</h1>
-          <p class="lead">
-            사진을 업로드하면 Hunyuan3D 2.1 shape 모델로 3D mesh를 생성합니다.
-            여러 장을 올리면 이미지마다 독립 작업을 만들어 각 이미지에 맞는 GLB 모델을 순서대로 생성합니다.
-          </p>
-        </div>
-        <div class="orb" aria-hidden="true"></div>
-      </section>
+      <form id="generation-form" class="generation-workspace" action="{{ url_for('create_job') }}" method="post" enctype="multipart/form-data">
+        <aside class="input-pane panel" aria-labelledby="input-heading">
+          <div class="pane-heading"><h2 id="input-heading"><span class="step-number">01</span> 입력 이미지</h2><span id="file-count">0 / {{ max_files }}</span></div>
+          <label class="drop-zone" for="images">
+            <input id="images" name="images" type="file" accept="image/png,image/jpeg,image/webp" data-max-files="{{ max_files }}" multiple required aria-label="입력 이미지 선택" aria-describedby="upload-help">
+            <span class="upload-symbol" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M8 13v-3a2 2 0 0 1 2-2h20a2 2 0 0 1 2 2v20a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-3M5 20h14m-5-5 5 5-5 5m10-2 3-3 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="14" r="2" fill="currentColor"/></svg></span>
+            <span class="drop-title">이미지를 여기에 놓으세요</span>
+            <span class="drop-copy">클릭해서 선택하거나 Ctrl+V로 붙여넣기</span>
+            <span class="upload-formats">PNG · JPG · WEBP</span>
+          </label>
+          <p id="upload-help" class="pane-help">최대 {{ max_files }}장. 이미지마다 각각의 3D 모델이 생성됩니다.</p>
+          <div id="file-list" class="file-list" aria-live="polite"></div>
+          <div class="input-tip"><strong>입력 이미지 팁</strong><p>대상이 잘리지 않고 한눈에 보이는 사진이 좋습니다. 복잡한 배경은 ‘배경 제거’를 켜주세요.</p></div>
+          <section class="selection-summary" aria-labelledby="summary-heading">
+            <h3 id="summary-heading">생성 설정 한눈에</h3>
+            <dl><div><dt>모델</dt><dd id="summary-model">—</dd></div><div><dt>형상</dt><dd id="summary-shape">—</dd></div><div><dt>텍스처</dt><dd id="summary-texture">—</dd></div><div><dt>처리 방식</dt><dd id="summary-gpu">—</dd></div></dl>
+            <p id="summary-extra">—</p>
+          </section>
+        </aside>
 
-      <form class="panel upload-panel" action="{{ url_for('create_job') }}" method="post" enctype="multipart/form-data">
-        <label class="drop-zone" for="images">
-          <input
-            id="images"
-            name="images"
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            data-max-files="{{ max_files }}"
-            multiple
-            required
-          >
-          <span>
-            <span class="drop-title">이미지 선택 또는 붙여넣기</span>
-            <span class="drop-copy">
-              PNG, JPG, WEBP를 최대 {{ max_files }}장까지 업로드할 수 있습니다. 여러 장은 각각 별도 모델로 생성됩니다.
-            </span>
-          </span>
-        </label>
-        <div id="file-list" class="file-list" aria-live="polite"></div>
+        <section class="settings-pane panel" aria-labelledby="settings-heading">
+          <div class="pane-heading"><h2 id="settings-heading"><span class="step-number">02</span> 생성 설정</h2><button type="button" id="reset-settings" class="text-button">기본값 복원</button></div>
+          <div class="field model-field"><label for="model">3D 생성 모델</label><select id="model" name="model" aria-describedby="model-help">
+            <option value="trellis2" data-default-gpu-mode="{{ trellis_default_gpu_mode }}" {% if default_model == 'trellis2' %}selected{% endif %} {% if not trellis_ready %}disabled{% endif %}>TRELLIS.2{% if not trellis_ready %} · 준비 필요{% endif %}</option>
+            <option value="hunyuan3d-2.1" data-default-gpu-mode="{{ hunyuan_default_gpu_mode }}" {% if default_model == 'hunyuan3d-2.1' %}selected{% endif %}>Hunyuan3D 2.1</option>
+            <option value="hunyuan3d-omni" data-default-gpu-mode="{{ hunyuan_default_gpu_mode }}" {% if default_model == 'hunyuan3d-omni' %}selected{% endif %} {% if not omni_ready %}disabled{% endif %}>Hunyuan3D-Omni{% if not omni_ready %} · 준비 필요{% endif %}</option>
+          </select><p id="model-help" class="param-help">선택한 모델에 맞는 품질 설정이 표시됩니다.</p></div>
 
-        <div class="grid">
-          <label>
-            Shape Model
-            <select name="model">
-              <option value="hunyuan3d-2.1" selected>Hunyuan3D 2.1 - 기본 이미지 기반 생성</option>
-              <option value="hunyuan3d-omni" {% if not omni_ready %}disabled{% endif %}>
-                Hunyuan3D-Omni - bbox 제어 기반 생성{% if not omni_ready %} (준비 필요){% endif %}
-              </option>
-            </select>
-          </label>
-          <label>
-            GPU
-            <select name="gpu_id">
-              {% for gpu_id in gpu_ids %}
-                <option value="{{ gpu_id }}" {% if gpu_id == default_gpu_id %}selected{% endif %}>
-                  GPU {{ gpu_id }}
-                </option>
-              {% endfor %}
-            </select>
-          </label>
-        </div>
+          <fieldset class="quality-section"><legend>품질 프리셋 <span id="preset-state" class="setting-badge" aria-live="polite"></span></legend>
+            <div class="preset-options">
+              <button type="button" class="preset-button" data-preset="fast" aria-pressed="false"><span class="preset-heading">빠르게 <span aria-hidden="true">↗</span></span><span class="preset-spec" id="preset-fast-spec">512 · 4K</span><span class="preset-description">구도와 형태 확인</span></button>
+              <button type="button" class="preset-button" data-preset="balanced" aria-pressed="false"><span class="preset-heading">균형</span><span class="preset-spec" id="preset-balanced-spec">1024 · 4K</span><span class="preset-description">시간과 디테일의 균형</span></button>
+              <button type="button" class="preset-button" data-preset="quality" aria-pressed="false"><span class="preset-heading">최고 품질 <span class="preset-recommend" id="quality-recommend">기본</span></span><span class="preset-spec" id="preset-quality-spec">1536 · 8K</span><span class="preset-description">세부 형상과 고해상도 재질</span></button>
+            </div><p id="preset-help" class="param-help">8K는 파일 크기와 저장 시간이 늘어납니다.</p>
+          </fieldset>
 
-        <div class="grid">
-          <label>
-            Seed
-            <input name="seed" type="number" min="0" max="4294967295" value="1234">
-            <span class="param-help">같은 값을 쓰면 같은 조건에서 비슷한 결과를 재현합니다.</span>
-          </label>
-          <label>
-            Steps
-            <input name="num_inference_steps" type="number" min="1" max="100" value="50">
-            <span class="param-help">높을수록 형태를 더 오래 다듬지만 생성 시간이 늘어납니다.</span>
-          </label>
-          <label>
-            Guidance
-            <input name="guidance_scale" type="number" min="0.1" max="20" step="0.1" value="7.5">
-            <span class="param-help">높을수록 입력 이미지와 프롬프트를 더 강하게 따릅니다.</span>
-          </label>
-          <label>
-            Octree
-            <select name="octree_resolution">
-              <option value="256">256</option>
-              <option value="384">384</option>
-              <option value="512" selected>512</option>
-            </select>
-            <span class="param-help">높을수록 세부 형상이 촘촘해지며 VRAM 사용량이 증가합니다.</span>
-          </label>
-        </div>
+          <div id="trellis-controls" class="fields-row {% if default_model != 'trellis2' %}hidden{% endif %}">
+            <div class="field"><label for="trellis-pipeline">형상 해상도</label><select id="trellis-pipeline" name="trellis_pipeline"><option value="512" {% if generation_defaults.trellis_pipeline == '512' %}selected{% endif %}>512</option><option value="1024_cascade" {% if generation_defaults.trellis_pipeline == '1024_cascade' %}selected{% endif %}>1024</option><option value="1536_cascade" {% if generation_defaults.trellis_pipeline == '1536_cascade' %}selected{% endif %}>최대 1536</option></select></div>
+            <div class="field"><label for="trellis-texture">PBR 텍스처 크기</label><select id="trellis-texture" name="trellis_texture_size"><option value="4096" {% if generation_defaults.trellis_texture_size == 4096 %}selected{% endif %}>4K · 4096 px</option><option value="8192" {% if generation_defaults.trellis_texture_size == 8192 %}selected{% endif %}>8K · 8192 px</option></select></div>
+          </div>
+          <div id="hunyuan-texture-controls" class="fields-row {% if default_model == 'trellis2' %}hidden{% endif %}">
+            <div class="field"><label for="octree-resolution">형상 세밀도 · Octree</label><select id="octree-resolution" name="octree_resolution"><option value="256">256</option><option value="384">384</option><option value="512" selected>512</option></select></div>
+            <div class="field"><label for="texture-profile">텍스처 품질</label><select id="texture-profile" name="texture_profile">{% for key, profile in texture_profiles.items() %}<option value="{{ key }}" {% if key == default_texture_profile %}selected{% endif %}>{{ profile.label }}</option>{% endfor %}</select></div>
+          </div>
+          <div class="processing-options">
+            <label class="option-row" for="remove-background"><span><strong>배경 제거</strong><span>이미지에서 대상만 추출합니다.</span></span><input name="remove_background" type="hidden" value="off"><input id="remove-background" name="remove_background" type="checkbox" {% if generation_defaults.remove_background %}checked{% endif %}></label>
+            <label class="option-row" for="texture"><span><strong>PBR 텍스처 생성</strong><span id="texture-help">색상과 재질을 모델에 입힙니다.</span></span><input id="texture" name="texture" type="checkbox" checked {% if not texture_ready %}disabled{% endif %} aria-describedby="texture-help"></label>
+          </div>
 
-        <div class="grid">
-          <label>
-            Chunks
-            <input name="num_chunks" type="number" min="1000" max="300000" step="1000" value="200000">
-            <span class="param-help">한 번에 처리하는 조각 수입니다. 낮추면 메모리 부담이 줄어듭니다.</span>
-          </label>
-        </div>
-
-        <div class="toggles">
-          <label class="check">
-            <input name="remove_background" type="checkbox" checked>
-            배경 제거
-          </label>
-          <label class="check">
-            <input name="texture" type="checkbox" checked {% if not texture_ready %}disabled{% endif %}>
-            PBR 텍스처 생성
-          </label>
-        </div>
-
-        {% if not texture_ready %}
-          <p class="form-note">
-            텍스처 기능 비활성화: {{ texture_issues | join(", ") }} 준비가 필요합니다.
-          </p>
-        {% endif %}
-        {% if not omni_ready %}
-          <p class="form-note">
-            Hunyuan3D-Omni 선택 비활성화: {{ omni_issues | join(", ") }} 준비가 필요합니다.
-          </p>
-        {% endif %}
-        <p class="muted">
-          배치 업로드 시 GPU worker 설정에 맞춰 작업이 대기열에 들어갑니다. 기본 설정에서는 한 번에 하나씩 순차 생성됩니다.
-        </p>
-
-        <button class="primary-button" type="submit">모델 생성 시작</button>
+          <details class="advanced-settings"><summary><span>고급 설정 <span class="advanced-preview" id="advanced-preview">Steps · Seed · GPU</span></span><span class="disclosure-icon" aria-hidden="true">+</span></summary>
+            <div class="advanced-body">
+              <div class="fields-row">
+                <div class="field"><label for="seed">Seed</label><input id="seed" name="seed" type="number" min="0" max="4294967295" value="{{ generation_defaults.seed }}" aria-describedby="seed-help"><p id="seed-help" class="param-help">같은 조건의 결과를 재현할 때 사용합니다.</p></div>
+                <div id="trellis-advanced-controls" class="field {% if default_model != 'trellis2' %}hidden{% endif %}"><label for="trellis-steps">단계별 Steps</label><input id="trellis-steps" name="trellis_steps" type="number" min="1" max="50" value="{{ generation_defaults.trellis_steps }}" aria-describedby="trellis-steps-help"><p id="trellis-steps-help" class="param-help">TRELLIS.2 기본값은 단계마다 12입니다.</p></div>
+                <div id="hunyuan-shape-controls" class="field {% if default_model == 'trellis2' %}hidden{% endif %}"><label for="inference-steps">Steps</label><input id="inference-steps" name="num_inference_steps" type="number" min="1" max="100" value="50"><p class="param-help">높을수록 생성 시간이 늘어납니다.</p></div>
+              </div>
+              <div id="hunyuan-chunks-controls" class="fields-row {% if default_model == 'trellis2' %}hidden{% endif %}">
+                <div class="field"><label for="guidance">Guidance</label><input id="guidance" name="guidance_scale" type="number" min="0.1" max="20" step="0.1" value="7.5"><p class="param-help">입력 이미지를 따르는 강도입니다.</p></div>
+                <div class="field"><label for="chunks">Chunks</label><input id="chunks" name="num_chunks" type="number" min="1000" max="300000" step="1000" value="50000"><p class="param-help">낮추면 메모리 부담이 줄어듭니다.</p></div>
+              </div>
+              <div class="field"><label for="gpu-id">GPU 처리 방식</label><select id="gpu-id" name="gpu_id" aria-describedby="gpu-mode-hint">
+                {% if gpu_ids | length >= 2 %}<option value="split" {% if default_gpu_mode == 'split' %}selected{% endif %}>두 GPU 분담 · {% if default_model == 'trellis2' %}형상 1 / 재질 0{% else %}형상 0 / 텍스처 1{% endif %}</option><option value="auto" {% if default_gpu_mode == 'auto' %}selected{% endif %}>자동 배정</option>{% endif %}
+                {% for gpu_id in gpu_ids %}<option value="{{ gpu_id }}" {% if default_gpu_mode not in ['split', 'auto'] and gpu_id == default_gpu_id %}selected{% endif %}>GPU {{ gpu_id }}</option>{% endfor %}
+              </select><p id="gpu-mode-hint" class="param-help">형상은 GPU 0, 텍스처는 GPU 1로 분담합니다.</p></div>
+              {% if gpu_stats %}<div class="gpu-status" aria-label="서버 GPU 상태">{% for gpu in gpu_stats %}<span>GPU {{ gpu.id }} <strong>여유 {{ (gpu.free_mib / 1024) | round(1) }}GB</strong></span>{% endfor %}</div>{% endif %}
+              <p class="param-help">두 GPU의 메모리는 합쳐지지 않습니다. 같은 GPU를 쓰는 작업은 대기열에서 순서대로 처리합니다.</p>
+            </div>
+          </details>
+          {% if not texture_ready %}<p class="form-note">Hunyuan 텍스처 준비 필요: {{ texture_issues | join(', ') }}</p>{% endif %}
+          {% if not omni_ready %}<p class="form-note">Omni 준비 필요: {{ omni_issues | join(', ') }}</p>{% endif %}
+          <div class="generation-footer"><div><strong id="submit-summary">설정을 확인하세요</strong><span id="submit-hint">이미지를 선택하면 생성할 수 있습니다.</span></div><button class="primary-button" type="submit">모델 생성 시작 <span aria-hidden="true">→</span></button></div>
+        </section>
       </form>
-
       {% if recent_jobs %}
         <section class="panel">
           <div class="section-head">
@@ -182,6 +142,7 @@
         </section>
       {% endif %}
     </main>
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script src="{{ url_for('static', filename='generator.js') }}?v=20261011-9"></script>
+    <script src="{{ url_for('static', filename='app.js') }}?v=20261011-3"></script>
   </body>
 </html>

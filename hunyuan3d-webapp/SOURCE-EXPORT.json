@@ -1,0 +1,16 @@
+{
+  "change_id": "CHG-20261011-A100-011",
+  "runtime_version": "2026.10.11.11",
+  "changed_files": 90,
+  "python_syntax_files_passed": 48,
+  "api_regression_cases_passed": 63,
+  "js_module_syntax_passed": true,
+  "rig_editor_npm_ci_and_build_passed": true,
+  "rebuilt_editor_sha256": "3cfcb47accca4ae117726a723347e9bcb2445432028d5879e9f137136e025907",
+  "production_editor_sha256": "734de6aa80f0762954a0075941914e608f4588fd74a656c0893c3afd66e72856",
+  "credential_pattern_scan_passed": true,
+  "only_webapp_changed": true,
+  "runtime_app_sha256": "a72793eaac12c400d9effd5ec7c4412d57b73d96b00e8c1ae53ee998c9b433b3",
+  "server_not_restarted": true,
+  "models_and_user_results_excluded": true
+}

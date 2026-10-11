@@ -15,6 +15,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Callable, Iterable
 
+from gpu_runtime import gpu_stage_lock
+
 
 class Hunyuan3DError(RuntimeError):
     """Raised when Hunyuan3D generation cannot be completed."""
@@ -24,13 +26,21 @@ class Hunyuan3DError(RuntimeError):
 class GenerationOptions:
     model: str = "hunyuan3d-2.1"
     gpu_id: int = 0
+    texture_gpu_id: int | None = None
+    gpu_mode: str = "auto"
+    texture_profile: str = "standard"
+    omni_use_ema: bool = False
+    trellis_pipeline: str = "1024_cascade"
+    trellis_steps: int = 12
+    trellis_texture_size: int = 4096
+    trellis_max_tokens: int = 49152
     texture: bool = False
     remove_background: bool = True
     seed: int = 1234
     num_inference_steps: int = 50
     guidance_scale: float = 7.5
     octree_resolution: int = 512
-    num_chunks: int = 200000
+    num_chunks: int = 50000
     output_format: str = "glb"
 
 
@@ -92,9 +102,8 @@ def pushd(path: Path):
 class Hunyuan3DGenerator:
     """Lazy wrapper around the official Hunyuan3D 2.1 Python API.
 
-    Quality-first defaults tuned for a single RTX 3090 Ti (24 GB). Paint uses
-    eight views, 512 multiview resolution (2.1 README), render_size 4096 and
-    texture_size 8192 for sharper PBR maps (slower than official 2048/4096).
+    A100 workers receive a validated texture profile and lock each GPU stage.
+    Separate processes isolate upstream CUDA state and repository imports.
     """
 
     def __init__(
@@ -106,10 +115,10 @@ class Hunyuan3DGenerator:
         low_vram: bool = False,
         enable_flashvdm: bool = False,
         compile_model: bool = False,
-        texture_views: int = 8,
+        texture_views: int = 6,
         texture_resolution: int = 512,
-        texture_render_size: int = 4096,
-        texture_texture_size: int = 8192,
+        texture_render_size: int = 2048,
+        texture_texture_size: int = 4096,
         texture_view_selection_resolution: int = 512,
         texture_render_device: str = "cuda",
         hy3dgen_models_dir: str | None = None,
@@ -171,7 +180,11 @@ class Hunyuan3DGenerator:
             images = self._load_images(image_paths, options.remove_background)
             self._save_processed_inputs(images, output_dir)
             self._progress(progress, "Generating shape mesh with Hunyuan3D...")
-            mesh = self._generate_shape(images, output_dir, options, warnings, progress)
+            with gpu_stage_lock(options.gpu_id, "형상", progress):
+                try:
+                    mesh = self._generate_shape(images, output_dir, options, warnings, progress)
+                finally:
+                    self._release_shape_pipeline()
             final_path = mesh
             used_texture = False
 
@@ -179,7 +192,9 @@ class Hunyuan3DGenerator:
                 try:
                     self._release_shape_pipeline()
                     self._progress(progress, "Generating texture maps...")
-                    final_path = self._generate_texture(mesh, images, output_dir, options.gpu_id)
+                    texture_gpu = options.texture_gpu_id if options.texture_gpu_id is not None else options.gpu_id
+                    with gpu_stage_lock(texture_gpu, "텍스처", progress):
+                        final_path = self._generate_texture(mesh, images, output_dir, texture_gpu)
                     used_texture = True
                 except Exception as exc:
                     # Texture generation is much more fragile on Windows/CUDA setups.
@@ -261,10 +276,6 @@ class Hunyuan3DGenerator:
         except Exception:
             pass
 
-    def _device_for_gpu(self, gpu_id: int) -> str:
-        if not self.device.startswith("cuda"):
-            return self.device
-        return f"cuda:{max(0, int(gpu_id))}"
         try:
             import torch
 
@@ -273,6 +284,12 @@ class Hunyuan3DGenerator:
                 torch.cuda.manual_seed_all(seed)
         except Exception:
             pass
+
+
+    def _device_for_gpu(self, gpu_id: int) -> str:
+        if not self.device.startswith("cuda"):
+            return self.device
+        return f"cuda:{max(0, int(gpu_id))}"
 
     def _load_images(self, image_paths: list[Path], remove_background: bool):
         from PIL import Image
@@ -372,6 +389,31 @@ class Hunyuan3DGenerator:
                 )
             return self._generate_omni_shape(output_dir / "processed_inputs" / "01.png", output_dir, options, progress)
 
+        # The upstream loader retains checkpoint tensors beyond pipeline deletion.
+        # End the shape process before unlocking VRAM for the next image.
+        request_path = output_dir / "shape_request.json"
+        request_path.write_text(json.dumps({
+            "repo_path": str(self.repo_path),
+            "image_paths": [str(path) for path in sorted((output_dir / "processed_inputs").glob("*.png"))],
+            "output_dir": str(output_dir), "options": asdict(options),
+            "model_path": self.model_path, "subfolder": self.subfolder,
+            "hy3dgen_models_dir": str(self.hy3dgen_models_dir) if self.hy3dgen_models_dir else None,
+            "local_model_dir": str(self.local_model_dir) if self.local_model_dir else None,
+            "low_vram": self.low_vram, "enable_flashvdm": self.enable_flashvdm,
+            "compile_model": self.compile_model,
+        }, indent=2), encoding="utf-8")
+        env = os.environ.copy()
+        if self.device.startswith("cuda"):
+            env["CUDA_VISIBLE_DEVICES"] = str(options.gpu_id)
+        log_path = output_dir / "shape_worker.log"
+        with log_path.open("w", encoding="utf-8") as log:
+            result = subprocess.run([sys.executable, str(Path(__file__).resolve().parent / "scripts/shape_worker.py"), str(request_path)], env=env, stdout=log, stderr=subprocess.STDOUT, text=True)
+        if result.returncode:
+            raise Hunyuan3DError("Shape worker failed: " + log_path.read_text(encoding="utf-8")[-3000:])
+        warnings.extend(json.loads((output_dir / "shape_result.json").read_text(encoding="utf-8"))["warnings"])
+        return output_dir / "model_initial.glb"
+
+    def _generate_shape_in_process(self, images, output_dir, options, warnings):
         pipeline = self._load_shape_pipeline(options.gpu_id)
         image = self._shape_input(images, pipeline, warnings)
         mesh = pipeline(
@@ -420,6 +462,7 @@ class Hunyuan3DGenerator:
             "seed": options.seed,
             "flashvdm": self.omni_enable_flashvdm,
             "gpu_id": options.gpu_id,
+            "use_ema": options.omni_use_ema,
         }
         worker_input.write_text(json.dumps(worker_payload, indent=2), encoding="utf-8")
 
@@ -502,6 +545,7 @@ class Hunyuan3DGenerator:
         config.max_selected_view_num = self.texture_views
         config.render_size = self.texture_render_size
         config.texture_size = self.texture_texture_size
+        config.export_downsample = False
         config.view_selection_resolution = self.texture_view_selection_resolution
         config.render_device = self.texture_render_device
         self._paint_pipeline = Hunyuan3DPaintPipeline(config)

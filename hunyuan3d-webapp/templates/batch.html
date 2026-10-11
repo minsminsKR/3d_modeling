@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Batch {{ batch_id[:8] }} - Hunyuan3D Studio</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <script type="module" src="{{ url_for('static', filename='vendor/model-viewer-4.4.0.min.js') }}"></script>
   </head>
   <body data-batch-id="{{ batch_id }}">
     <main class="shell">
