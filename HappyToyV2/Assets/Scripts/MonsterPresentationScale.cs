@@ -38,6 +38,8 @@ namespace HappyToy.V2
 
         public static Bounds Bounds(Transform visual, bool scaledSkin = true)
         {
+            var studio = visual ? visual.GetComponent<EnemyStudioRig>() : null;
+            if (studio) return EnemyStudioRig.PosedBounds(studio.primarySkins);
             var result = new Bounds(); bool any = false;
             var mesh = new Mesh(); var vertices = new List<Vector3>();
             try

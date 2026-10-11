@@ -1,0 +1,625 @@
+{
+  "version": 1,
+  "creature": "Uncat",
+  "coordinateSystem": "source glTF Y-up / face +Z; Blender (x,-z,y)",
+  "source": "source-original.glb",
+  "sourceSHA256": "58319e2d3cfe9ef1bfb23a283e010db9aa9c71deeac0954c12646546a1f651f8",
+  "sourceBounds": [
+    [
+      -0.33885639905929565,
+      -0.49872782826423645,
+      -0.3277839720249176
+    ],
+    [
+      0.3388667702674866,
+      0.49853989481925964,
+      0.3330322504043579
+    ]
+  ],
+  "target_height_m": 2.2,
+  "bones": [
+    {
+      "name": "mixamorig:Hips",
+      "parent": null,
+      "head": [
+        0.0,
+        -0.1596568024158478,
+        0.034904370307922365
+      ],
+      "tail": [
+        0.0,
+        -0.025025659799575807,
+        0.034904370307922365
+      ],
+      "semantic": "Hips"
+    },
+    {
+      "name": "mixamorig:Spine",
+      "parent": "mixamorig:Hips",
+      "head": [
+        0.0,
+        -0.025025659799575807,
+        0.034904370307922365
+      ],
+      "tail": [
+        0.0,
+        0.10461914420127869,
+        0.034904370307922365
+      ],
+      "semantic": "Spine"
+    },
+    {
+      "name": "mixamorig:Spine1",
+      "parent": "mixamorig:Spine",
+      "head": [
+        0.0,
+        0.10461914420127869,
+        0.034904370307922365
+      ],
+      "tail": [
+        0.0,
+        0.20434591650962827,
+        0.039890708923339846
+      ],
+      "semantic": "Spine1"
+    },
+    {
+      "name": "mixamorig:Spine2",
+      "parent": "mixamorig:Spine1",
+      "head": [
+        0.0,
+        0.20434591650962827,
+        0.039890708923339846
+      ],
+      "tail": [
+        0.0,
+        0.2641819798946381,
+        0.04487704753875732
+      ],
+      "semantic": "Spine2"
+    },
+    {
+      "name": "mixamorig:Neck",
+      "parent": "mixamorig:Spine2",
+      "head": [
+        0.0,
+        0.2641819798946381,
+        0.04487704753875732
+      ],
+      "tail": [
+        0.0,
+        0.32401804327964784,
+        0.0747950792312622
+      ],
+      "semantic": "Neck"
+    },
+    {
+      "name": "mixamorig:Head",
+      "parent": "mixamorig:Neck",
+      "head": [
+        0.0,
+        0.32401804327964784,
+        0.0747950792312622
+      ],
+      "tail": [
+        0.0,
+        0.4137721383571625,
+        0.0747950792312622
+      ],
+      "semantic": "Head"
+    },
+    {
+      "name": "mixamorig:LeftShoulder",
+      "parent": "mixamorig:Spine2",
+      "head": [
+        0.07978141784667969,
+        0.20434591650962827,
+        0.039890708923339846
+      ],
+      "tail": [
+        0.16454917430877686,
+        0.20434591650962827,
+        0.04487704753875732
+      ],
+      "semantic": "LeftShoulder"
+    },
+    {
+      "name": "mixamorig:LeftArm",
+      "parent": "mixamorig:LeftShoulder",
+      "head": [
+        0.16454917430877686,
+        0.20434591650962827,
+        0.04487704753875732
+      ],
+      "tail": [
+        0.2624776065349579,
+        0.05495811998844147,
+        0.07672774791717529
+      ],
+      "semantic": "LeftArm"
+    },
+    {
+      "name": "mixamorig:LeftForeArm",
+      "parent": "mixamorig:LeftArm",
+      "head": [
+        0.2624776065349579,
+        0.05495811998844147,
+        0.07672774791717529
+      ],
+      "tail": [
+        0.301994264125824,
+        -0.03387090191245079,
+        0.11409787833690643
+      ],
+      "semantic": "LeftForeArm"
+    },
+    {
+      "name": "mixamorig:LeftHand",
+      "parent": "mixamorig:LeftForeArm",
+      "head": [
+        0.301994264125824,
+        -0.03387090191245079,
+        0.11409787833690643
+      ],
+      "tail": [
+        0.301994264125824,
+        -0.11863865837454797,
+        0.1260650910139084
+      ],
+      "semantic": "LeftHand"
+    },
+    {
+      "name": "mixamorig:LeftUpLeg",
+      "parent": "mixamorig:Hips",
+      "head": [
+        0.11967212677001952,
+        -0.1746158182621002,
+        0.01495901584625244
+      ],
+      "tail": [
+        0.14566726982593536,
+        -0.3089979290962219,
+        0.0373651348054409
+      ],
+      "semantic": "LeftUpLeg"
+    },
+    {
+      "name": "mixamorig:LeftLeg",
+      "parent": "mixamorig:LeftUpLeg",
+      "head": [
+        0.14566726982593536,
+        -0.3089979290962219,
+        0.0373651348054409
+      ],
+      "tail": [
+        0.15276828408241272,
+        -0.43070775270462036,
+        0.013965697027742863
+      ],
+      "semantic": "LeftLeg"
+    },
+    {
+      "name": "mixamorig:LeftFoot",
+      "parent": "mixamorig:LeftLeg",
+      "head": [
+        0.15276828408241272,
+        -0.43070775270462036,
+        0.013965697027742863
+      ],
+      "tail": [
+        0.19477416574954987,
+        -0.4788203239440918,
+        0.12467721849679947
+      ],
+      "semantic": "LeftFoot"
+    },
+    {
+      "name": "mixamorig:LeftToeBase",
+      "parent": "mixamorig:LeftFoot",
+      "head": [
+        0.19477416574954987,
+        -0.4788203239440918,
+        0.12467721849679947
+      ],
+      "tail": [
+        0.19477416574954987,
+        -0.4788203239440918,
+        0.16456792742013931
+      ],
+      "semantic": "LeftToeBase"
+    },
+    {
+      "name": "mixamorig:RightShoulder",
+      "parent": "mixamorig:Spine2",
+      "head": [
+        -0.07978141784667969,
+        0.20434591650962827,
+        0.039890708923339846
+      ],
+      "tail": [
+        -0.16454917430877686,
+        0.20434591650962827,
+        0.04487704753875732
+      ],
+      "semantic": "RightShoulder"
+    },
+    {
+      "name": "mixamorig:RightArm",
+      "parent": "mixamorig:RightShoulder",
+      "head": [
+        -0.16454917430877686,
+        0.20434591650962827,
+        0.04487704753875732
+      ],
+      "tail": [
+        -0.26614275574684143,
+        0.05604752525687218,
+        0.06484229117631912
+      ],
+      "semantic": "RightArm"
+    },
+    {
+      "name": "mixamorig:RightForeArm",
+      "parent": "mixamorig:RightArm",
+      "head": [
+        -0.26614275574684143,
+        0.05604752525687218,
+        0.06484229117631912
+      ],
+      "tail": [
+        -0.30202218890190125,
+        -0.03400643542408943,
+        0.10573261231184006
+      ],
+      "semantic": "RightForeArm"
+    },
+    {
+      "name": "mixamorig:RightHand",
+      "parent": "mixamorig:RightForeArm",
+      "head": [
+        -0.30202218890190125,
+        -0.03400643542408943,
+        0.10573261231184006
+      ],
+      "tail": [
+        -0.30202218890190125,
+        -0.11877419188618661,
+        0.11769982498884202
+      ],
+      "semantic": "RightHand"
+    },
+    {
+      "name": "mixamorig:RightUpLeg",
+      "parent": "mixamorig:Hips",
+      "head": [
+        -0.11967212677001952,
+        -0.1746158182621002,
+        0.01495901584625244
+      ],
+      "tail": [
+        -0.1425955444574356,
+        -0.30890315771102905,
+        0.02383394166827202
+      ],
+      "semantic": "RightUpLeg"
+    },
+    {
+      "name": "mixamorig:RightLeg",
+      "parent": "mixamorig:RightUpLeg",
+      "head": [
+        -0.1425955444574356,
+        -0.30890315771102905,
+        0.02383394166827202
+      ],
+      "tail": [
+        -0.12913477420806885,
+        -0.4315171241760254,
+        -0.00617090193554759
+      ],
+      "semantic": "RightLeg"
+    },
+    {
+      "name": "mixamorig:RightFoot",
+      "parent": "mixamorig:RightLeg",
+      "head": [
+        -0.12913477420806885,
+        -0.4315171241760254,
+        -0.00617090193554759
+      ],
+      "tail": [
+        -0.1814325749874115,
+        -0.47808098793029785,
+        0.11606395989656448
+      ],
+      "semantic": "RightFoot"
+    },
+    {
+      "name": "mixamorig:RightToeBase",
+      "parent": "mixamorig:RightFoot",
+      "head": [
+        -0.1814325749874115,
+        -0.47808098793029785,
+        0.11606395989656448
+      ],
+      "tail": [
+        -0.1814325749874115,
+        -0.47808098793029785,
+        0.15595466881990433
+      ],
+      "semantic": "RightToeBase"
+    }
+  ],
+  "fittedStations": [
+    {
+      "joint": "LeftForeArm",
+      "surfaceVertices": 492,
+      "sourcePosition": [
+        0.2624776065349579,
+        0.05495811998844147,
+        0.07672774791717529
+      ],
+      "method": "mean of welded actual limb surface horizontal station",
+      "yStationNormalized": 0.055,
+      "xRangeNormalized": [
+        0.235,
+        0.29
+      ],
+      "zRangeNormalized": [
+        -0.03,
+        0.17
+      ]
+    },
+    {
+      "joint": "LeftHand",
+      "surfaceVertices": 264,
+      "sourcePosition": [
+        0.301994264125824,
+        -0.03387090191245079,
+        0.11409787833690643
+      ],
+      "method": "mean of welded actual limb surface horizontal station",
+      "yStationNormalized": -0.035,
+      "xRangeNormalized": [
+        0.265,
+        0.32
+      ],
+      "zRangeNormalized": [
+        0.04,
+        0.21
+      ]
+    },
+    {
+      "joint": "LeftLeg",
+      "surfaceVertices": 1275,
+      "sourcePosition": [
+        0.14566726982593536,
+        -0.3089979290962219,
+        0.0373651348054409
+      ],
+      "method": "mean of welded actual limb surface horizontal station",
+      "yStationNormalized": -0.31,
+      "xRangeNormalized": [
+        0.085,
+        0.19
+      ],
+      "zRangeNormalized": [
+        -0.08,
+        0.13
+      ]
+    },
+    {
+      "joint": "LeftFoot",
+      "surfaceVertices": 1590,
+      "sourcePosition": [
+        0.15276828408241272,
+        -0.43070775270462036,
+        0.013965697027742863
+      ],
+      "method": "mean of welded actual limb surface horizontal station",
+      "yStationNormalized": -0.432,
+      "xRangeNormalized": [
+        0.085,
+        0.215
+      ],
+      "zRangeNormalized": [
+        -0.055,
+        0.13
+      ]
+    },
+    {
+      "joint": "RightForeArm",
+      "surfaceVertices": 476,
+      "sourcePosition": [
+        -0.26614275574684143,
+        0.05604752525687218,
+        0.06484229117631912
+      ],
+      "method": "mean of welded actual limb surface horizontal station",
+      "yStationNormalized": 0.055,
+      "xRangeNormalized": [
+        0.235,
+        0.29
+      ],
+      "zRangeNormalized": [
+        -0.03,
+        0.17
+      ]
+    },
+    {
+      "joint": "RightHand",
+      "surfaceVertices": 290,
+      "sourcePosition": [
+        -0.30202218890190125,
+        -0.03400643542408943,
+        0.10573261231184006
+      ],
+      "method": "mean of welded actual limb surface horizontal station",
+      "yStationNormalized": -0.035,
+      "xRangeNormalized": [
+        0.265,
+        0.32
+      ],
+      "zRangeNormalized": [
+        0.04,
+        0.21
+      ]
+    },
+    {
+      "joint": "RightLeg",
+      "surfaceVertices": 1107,
+      "sourcePosition": [
+        -0.1425955444574356,
+        -0.30890315771102905,
+        0.02383394166827202
+      ],
+      "method": "mean of welded actual limb surface horizontal station",
+      "yStationNormalized": -0.31,
+      "xRangeNormalized": [
+        0.085,
+        0.19
+      ],
+      "zRangeNormalized": [
+        -0.08,
+        0.13
+      ]
+    },
+    {
+      "joint": "RightFoot",
+      "surfaceVertices": 1313,
+      "sourcePosition": [
+        -0.12913477420806885,
+        -0.4315171241760254,
+        -0.00617090193554759
+      ],
+      "method": "mean of welded actual limb surface horizontal station",
+      "yStationNormalized": -0.432,
+      "xRangeNormalized": [
+        0.085,
+        0.215
+      ],
+      "zRangeNormalized": [
+        -0.055,
+        0.13
+      ]
+    }
+  ],
+  "sourceAIUsedForSkin": false,
+  "skinMethod": "new source surface geodesic binding",
+  "headLock": {
+    "aboveY": 0.23,
+    "frontZ": 0.17,
+    "frontMinY": 0.155,
+    "halfWidth": 0.29
+  },
+  "animation_profile_overrides": {
+    "idle": {
+      "spine_bend": 1.0,
+      "pelvis_height": 0.506,
+      "pitch": 0.85
+    },
+    "patrol": {
+      "spine_bend": 1.0,
+      "pelvis_height": 0.506,
+      "pitch": 0.85
+    },
+    "chase": {
+      "spine_bend": 1.0,
+      "pelvis_height": 0.506,
+      "pitch": 0.95
+    }
+  },
+  "manualReview": "Actual original front/side source previews; torso joints inside body and lateral limb stations measured. Verify large-motion skin and floor before delivery.",
+  "contact_overrides": {
+    "left_hand": {
+      "contact_point": [
+        0.6791968818996659,
+        -0.34617111587235877,
+        0.9634731870881924
+      ],
+      "palm_normal": [
+        0.5092527437958977,
+        -0.8521667331663171,
+        0.12030586777458765
+      ],
+      "finger_direction": [
+        0.0,
+        -0.13979025044562954,
+        -0.9901811379138407
+      ],
+      "clearance": 0.1175956653
+    },
+    "left_foot": {
+      "contact_point": [
+        0.41723661754817204,
+        -0.22615675283770234,
+        0.004165459852196258
+      ],
+      "clearance": 0.15088870108127594
+    },
+    "right_hand": {
+      "contact_point": [
+        -0.6245316026129586,
+        -0.359776757380863,
+        0.9418953822178155
+      ],
+      "palm_normal": [
+        -0.055379822717506084,
+        -0.9886615772945905,
+        0.1395756455014628
+      ],
+      "finger_direction": [
+        0.0,
+        -0.1397901730845758,
+        -0.9901811488353959
+      ],
+      "clearance": 0.1498786734
+    },
+    "right_foot": {
+      "contact_point": [
+        -0.3765119944954139,
+        -0.190466745990212,
+        0.004195948928907532
+      ],
+      "clearance": 0.14907271146774292
+    }
+  },
+  "motion_fit_evidence": {
+    "method": "Full original source skin LBS with anatomically fitted 22-bone rig; patrol/chase four phases",
+    "source_vertex_count": 1038688,
+    "right_hand_final_clearance_m": 0.1498786734,
+    "candidate_minimum_body_z_m": 0.022068144828955263,
+    "candidate_minimum_head_z_m": 0.02487132064846609,
+    "candidate_ik_max_m": 4.8e-08,
+    "left_hand_final_clearance_m": 0.1175956653,
+    "final_skin_minimum_z_m": 0.00042
+  },
+  "game_triangle_budget": 52000,
+  "game_triangle_budget_reason": "Source hair/fur atlas seams caused 88068 estimated split vertices at 60k triangles; 52k preserves the 80k Unity vertex contract.",
+  "bodyCoreVolumes": [
+    {
+      "name": "back and side torso",
+      "yMin": -0.19,
+      "yMax": 0.23,
+      "halfWidth": 0.32,
+      "zMax": 0.005
+    },
+    {
+      "name": "central torso",
+      "yMin": -0.16,
+      "yMax": 0.205,
+      "halfWidth": 0.185,
+      "zMin": -0.25,
+      "zMax": 0.18
+    },
+    {
+      "name": "forward belly",
+      "yMin": -0.19,
+      "yMax": 0.08,
+      "halfWidth": 0.255,
+      "zMin": 0.11,
+      "zMax": 0.34
+    }
+  ],
+  "rigidSmallSurfaceComponentsMax": 80,
+  "bodyCoreReview": "Actual high-source patrol render showed rear/side torso fur owned by Arm/Shoulder. Anatomical torso volumes now blend only Hips/Spines by source height; actual front-side limbs retain geodesic ownership."
+}

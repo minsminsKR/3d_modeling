@@ -1,0 +1,711 @@
+{
+  "input": "source-rigged.glb",
+  "inputSHA256": "03f9301a9b2ac496e97f063867df862ffb62cf11a89bb7d349187d9b32f6dfb0",
+  "coordinateSystem": "glTF Y-up, Blender conversion (x,-z,y)",
+  "meshes": [
+    {
+      "node": 51,
+      "name": "geometry_0",
+      "primitive": 0,
+      "vertices": 1138216,
+      "bounds": [
+        [
+          -0.3573027551174164,
+          -0.4998953342437744,
+          -0.18321971595287323
+        ],
+        [
+          0.3571935296058655,
+          0.49826857447624207,
+          0.18605642020702362
+        ]
+      ],
+      "material": 0,
+      "skin": 0,
+      "hasUV": true,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0",
+        "JOINTS_0",
+        "WEIGHTS_0"
+      ],
+      "triangles": 938564,
+      "maxJointIndex": 50,
+      "maxWeightSumError": 1.7881393432617188e-07,
+      "zeroWeightVertices": 0,
+      "dominantCounts": [
+        251374,
+        60837,
+        39914,
+        50808,
+        210878,
+        41416,
+        46990,
+        50010,
+        462,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        22721,
+        82062,
+        37029,
+        880,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        90728,
+        28056,
+        0,
+        0,
+        97499,
+        26552
+      ]
+    }
+  ],
+  "skins": [
+    {
+      "index": 0,
+      "name": "Armature",
+      "joints": [
+        {
+          "index": 0,
+          "node": 50,
+          "name": "bone_0",
+          "parentNode": 52,
+          "position": [
+            0.0022150713484734297,
+            0.23659493029117584,
+            -0.06109612062573433
+          ],
+          "inverseBindClosureError": 0.0
+        },
+        {
+          "index": 1,
+          "node": 41,
+          "name": "bone_1",
+          "parentNode": 50,
+          "position": [
+            0.001536145224235952,
+            0.15844106674194336,
+            -0.04899315908551216
+          ],
+          "inverseBindClosureError": 2.881320817679241e-07
+        },
+        {
+          "index": 2,
+          "node": 40,
+          "name": "bone_2",
+          "parentNode": 41,
+          "position": [
+            0.0007728821454941182,
+            0.06853706866298596,
+            -0.040745110487309444
+          ],
+          "inverseBindClosureError": 3.744110776970899e-07
+        },
+        {
+          "index": 3,
+          "node": 39,
+          "name": "bone_3",
+          "parentNode": 40,
+          "position": [
+            -8.67879910980997e-05,
+            -0.03309842363926542,
+            -0.03244138610560612
+          ],
+          "inverseBindClosureError": 3.430271762194792e-07
+        },
+        {
+          "index": 4,
+          "node": 0,
+          "name": "bone_4",
+          "parentNode": 39,
+          "position": [
+            -0.0010549360892500082,
+            -0.14644672277262188,
+            -0.02017137999000819
+          ],
+          "inverseBindClosureError": 4.0976044024532143e-07
+        },
+        {
+          "index": 5,
+          "node": 19,
+          "name": "bone_5",
+          "parentNode": 39,
+          "position": [
+            0.05378871048581298,
+            -0.13516433248933446,
+            -0.020055908874373703
+          ],
+          "inverseBindClosureError": 2.5943070247613775e-07
+        },
+        {
+          "index": 6,
+          "node": 18,
+          "name": "bone_6",
+          "parentNode": 19,
+          "position": [
+            0.16745079017136694,
+            -0.1048106341497021,
+            -0.019849871267570235
+          ],
+          "inverseBindClosureError": 3.245611767799724e-07
+        },
+        {
+          "index": 7,
+          "node": 17,
+          "name": "bone_7",
+          "parentNode": 18,
+          "position": [
+            0.24280308353525115,
+            0.019678332228089748,
+            -0.028032657114580875
+          ],
+          "inverseBindClosureError": 3.5970126775308224e-07
+        },
+        {
+          "index": 8,
+          "node": 16,
+          "name": "bone_8",
+          "parentNode": 17,
+          "position": [
+            0.31057983494911173,
+            0.13989188811623104,
+            -0.12616529726452447
+          ],
+          "inverseBindClosureError": 3.6861029717449867e-07
+        },
+        {
+          "index": 9,
+          "node": 3,
+          "name": "bone_9",
+          "parentNode": 16,
+          "position": [
+            0.2991577332262209,
+            0.16723099834080885,
+            -0.153706131342201
+          ],
+          "inverseBindClosureError": 3.566321038483977e-07
+        },
+        {
+          "index": 10,
+          "node": 2,
+          "name": "bone_10",
+          "parentNode": 3,
+          "position": [
+            0.28765928059445156,
+            0.1867677627989381,
+            -0.17729921051094918
+          ],
+          "inverseBindClosureError": 3.0643067816527036e-07
+        },
+        {
+          "index": 11,
+          "node": 1,
+          "name": "bone_11",
+          "parentNode": 2,
+          "position": [
+            0.2800472061866084,
+            0.2063097334184471,
+            -0.1930588559270738
+          ],
+          "inverseBindClosureError": 3.733982987544989e-07
+        },
+        {
+          "index": 12,
+          "node": 6,
+          "name": "bone_12",
+          "parentNode": 16,
+          "position": [
+            0.32312312195512305,
+            0.21774433596703374,
+            -0.18124827177724742
+          ],
+          "inverseBindClosureError": 4.3340508715239423e-07
+        },
+        {
+          "index": 13,
+          "node": 5,
+          "name": "bone_13",
+          "parentNode": 6,
+          "position": [
+            0.31946169544524344,
+            0.24511253255848894,
+            -0.18921162868450556
+          ],
+          "inverseBindClosureError": 4.7578583073359937e-07
+        },
+        {
+          "index": 14,
+          "node": 4,
+          "name": "bone_14",
+          "parentNode": 5,
+          "position": [
+            0.3079149467253599,
+            0.26472385870615056,
+            -0.19716226977371748
+          ],
+          "inverseBindClosureError": 4.26160057465097e-07
+        },
+        {
+          "index": 15,
+          "node": 9,
+          "name": "bone_15",
+          "parentNode": 16,
+          "position": [
+            0.3309038852468845,
+            0.2217026072828615,
+            -0.1577787542286342
+          ],
+          "inverseBindClosureError": 3.4533934648007446e-07
+        },
+        {
+          "index": 16,
+          "node": 8,
+          "name": "bone_16",
+          "parentNode": 9,
+          "position": [
+            0.3272424489813531,
+            0.24907084135724147,
+            -0.16574210834594186
+          ],
+          "inverseBindClosureError": 3.992547485953679e-07
+        },
+        {
+          "index": 17,
+          "node": 7,
+          "name": "bone_17",
+          "parentNode": 8,
+          "position": [
+            0.31571576704375304,
+            0.27261140021886304,
+            -0.1698007406979511
+          ],
+          "inverseBindClosureError": 3.050177508345797e-07
+        },
+        {
+          "index": 18,
+          "node": 12,
+          "name": "bone_18",
+          "parentNode": 16,
+          "position": [
+            0.3270494895307058,
+            0.23748857073866025,
+            -0.13440154663753454
+          ],
+          "inverseBindClosureError": 3.627826676844137e-07
+        },
+        {
+          "index": 19,
+          "node": 11,
+          "name": "bone_19",
+          "parentNode": 12,
+          "position": [
+            0.32331169331928145,
+            0.25705446817938343,
+            -0.13841719004843123
+          ],
+          "inverseBindClosureError": 3.3230811888138526e-07
+        },
+        {
+          "index": 20,
+          "node": 10,
+          "name": "bone_20",
+          "parentNode": 11,
+          "position": [
+            0.30779017719849855,
+            0.2688769810083747,
+            -0.14634298553525876
+          ],
+          "inverseBindClosureError": 3.712156021089255e-07
+        },
+        {
+          "index": 21,
+          "node": 15,
+          "name": "bone_21",
+          "parentNode": 16,
+          "position": [
+            0.33474588506747377,
+            0.22969671853147325,
+            -0.11478696631511559
+          ],
+          "inverseBindClosureError": 4.087002358765801e-07
+        },
+        {
+          "index": 22,
+          "node": 14,
+          "name": "bone_22",
+          "parentNode": 15,
+          "position": [
+            0.3193086969536475,
+            0.2532693188422761,
+            -0.11885780306695136
+          ],
+          "inverseBindClosureError": 5.222378061109367e-07
+        },
+        {
+          "index": 23,
+          "node": 13,
+          "name": "bone_23",
+          "parentNode": 14,
+          "position": [
+            0.3037750641218565,
+            0.26511044731239736,
+            -0.12287297174028232
+          ],
+          "inverseBindClosureError": 5.001316030206482e-07
+        },
+        {
+          "index": 24,
+          "node": 38,
+          "name": "bone_24",
+          "parentNode": 39,
+          "position": [
+            -0.05570576627737155,
+            -0.1342661597250689,
+            -0.020398196081198805
+          ],
+          "inverseBindClosureError": 3.3499487761545765e-07
+        },
+        {
+          "index": 25,
+          "node": 37,
+          "name": "bone_25",
+          "parentNode": 38,
+          "position": [
+            -0.1649431522838788,
+            -0.10208402535805235,
+            -0.020888958944755755
+          ],
+          "inverseBindClosureError": 4.776015110131132e-07
+        },
+        {
+          "index": 26,
+          "node": 36,
+          "name": "bone_26",
+          "parentNode": 37,
+          "position": [
+            -0.23819050449153262,
+            0.023623881734650895,
+            -0.029536338932072602
+          ],
+          "inverseBindClosureError": 4.941852341124758e-07
+        },
+        {
+          "index": 27,
+          "node": 35,
+          "name": "bone_27",
+          "parentNode": 36,
+          "position": [
+            -0.30728181766121077,
+            0.14496013074963643,
+            -0.12809686947314533
+          ],
+          "inverseBindClosureError": 5.813707653167719e-07
+        },
+        {
+          "index": 28,
+          "node": 22,
+          "name": "bone_28",
+          "parentNode": 35,
+          "position": [
+            -0.2913303016420954,
+            0.17207464564168282,
+            -0.15555211050157652
+          ],
+          "inverseBindClosureError": 5.66601550233869e-07
+        },
+        {
+          "index": 29,
+          "node": 21,
+          "name": "bone_29",
+          "parentNode": 22,
+          "position": [
+            -0.2793656331248335,
+            0.19141895012136984,
+            -0.17907186139170944
+          ],
+          "inverseBindClosureError": 5.939690112112964e-07
+        },
+        {
+          "index": 30,
+          "node": 20,
+          "name": "bone_30",
+          "parentNode": 21,
+          "position": [
+            -0.27133563742609385,
+            0.21083261295571085,
+            -0.19478260570664133
+          ],
+          "inverseBindClosureError": 6.351614282477618e-07
+        },
+        {
+          "index": 31,
+          "node": 25,
+          "name": "bone_31",
+          "parentNode": 35,
+          "position": [
+            -0.310316369121042,
+            0.23076182805481543,
+            -0.18326583762592485
+          ],
+          "inverseBindClosureError": 6.019162993545018e-07
+        },
+        {
+          "index": 32,
+          "node": 24,
+          "name": "bone_32",
+          "parentNode": 25,
+          "position": [
+            -0.3061888861521435,
+            0.25415538729420983,
+            -0.19118620966509844
+          ],
+          "inverseBindClosureError": 4.99696659438784e-07
+        },
+        {
+          "index": 33,
+          "node": 23,
+          "name": "bone_33",
+          "parentNode": 24,
+          "position": [
+            -0.2942725047874857,
+            0.27357429660449356,
+            -0.19906355863957914
+          ],
+          "inverseBindClosureError": 5.100585027225625e-07
+        },
+        {
+          "index": 34,
+          "node": 28,
+          "name": "bone_34",
+          "parentNode": 35,
+          "position": [
+            -0.3181777050979722,
+            0.2348484062370541,
+            -0.1598452376532472
+          ],
+          "inverseBindClosureError": 6.015688785803813e-07
+        },
+        {
+          "index": 35,
+          "node": 27,
+          "name": "bone_35",
+          "parentNode": 28,
+          "position": [
+            -0.31405024928685843,
+            0.258241961962922,
+            -0.1677655703628519
+          ],
+          "inverseBindClosureError": 5.698674384229033e-07
+        },
+        {
+          "index": 36,
+          "node": 26,
+          "name": "bone_36",
+          "parentNode": 27,
+          "position": [
+            -0.30211382508807577,
+            0.28159005112725666,
+            -0.17175085389905148
+          ],
+          "inverseBindClosureError": 5.679924380619574e-07
+        },
+        {
+          "index": 37,
+          "node": 31,
+          "name": "bone_37",
+          "parentNode": 35,
+          "position": [
+            -0.31427533436437,
+            0.2427492552932049,
+            -0.13640651138521806
+          ],
+          "inverseBindClosureError": 5.77800890098759e-07
+        },
+        {
+          "index": 38,
+          "node": 30,
+          "name": "bone_38",
+          "parentNode": 31,
+          "position": [
+            -0.3101800383767921,
+            0.26223231326700536,
+            -0.1443083055340072
+          ],
+          "inverseBindClosureError": 6.121947514405754e-07
+        },
+        {
+          "index": 39,
+          "node": 29,
+          "name": "bone_39",
+          "parentNode": 30,
+          "position": [
+            -0.2982957816494794,
+            0.27774074463407794,
+            -0.15216708457993272
+          ],
+          "inverseBindClosureError": 5.90979977389291e-07
+        },
+        {
+          "index": 40,
+          "node": 34,
+          "name": "bone_40",
+          "parentNode": 35,
+          "position": [
+            -0.3221888415239251,
+            0.2389961959625497,
+            -0.1168593635653908
+          ],
+          "inverseBindClosureError": 5.342300313522696e-07
+        },
+        {
+          "index": 41,
+          "node": 33,
+          "name": "bone_41",
+          "parentNode": 34,
+          "position": [
+            -0.3063740480882137,
+            0.2584017044301685,
+            -0.12081388577130982
+          ],
+          "inverseBindClosureError": 6.045939034271593e-07
+        },
+        {
+          "index": 42,
+          "node": 32,
+          "name": "bone_42",
+          "parentNode": 33,
+          "position": [
+            -0.2906234593822928,
+            0.2699861823383146,
+            -0.12473122962949638
+          ],
+          "inverseBindClosureError": 5.832925279805785e-07
+        },
+        {
+          "index": 43,
+          "node": 45,
+          "name": "bone_43",
+          "parentNode": 50,
+          "position": [
+            0.10427822056226432,
+            0.27872034907341003,
+            -0.07271424680948257
+          ],
+          "inverseBindClosureError": 1.0742948683247938e-07
+        },
+        {
+          "index": 44,
+          "node": 44,
+          "name": "bone_44",
+          "parentNode": 45,
+          "position": [
+            0.1289784706428975,
+            0.4350221708470293,
+            -0.05774078726759695
+          ],
+          "inverseBindClosureError": 1.457828275577898e-07
+        },
+        {
+          "index": 45,
+          "node": 43,
+          "name": "bone_45",
+          "parentNode": 44,
+          "position": [
+            0.13762687964954012,
+            0.5445637205243853,
+            -0.034772324634139984
+          ],
+          "inverseBindClosureError": 1.5118290870600463e-07
+        },
+        {
+          "index": 46,
+          "node": 42,
+          "name": "bone_46",
+          "parentNode": 43,
+          "position": [
+            0.16977117824716897,
+            0.6103003659421099,
+            -0.13666576747887105
+          ],
+          "inverseBindClosureError": 2.3329819809347896e-07
+        },
+        {
+          "index": 47,
+          "node": 49,
+          "name": "bone_47",
+          "parentNode": 50,
+          "position": [
+            -0.09514608350582421,
+            0.2803376615047455,
+            -0.07724826782941818
+          ],
+          "inverseBindClosureError": 1.2237725690975612e-07
+        },
+        {
+          "index": 48,
+          "node": 48,
+          "name": "bone_48",
+          "parentNode": 49,
+          "position": [
+            -0.12130672154467304,
+            0.4370937984743145,
+            -0.054612517579876355
+          ],
+          "inverseBindClosureError": 1.357994636975217e-07
+        },
+        {
+          "index": 49,
+          "node": 47,
+          "name": "bone_49",
+          "parentNode": 48,
+          "position": [
+            -0.12437777891275945,
+            0.5467129334000599,
+            -0.035591327511493825
+          ],
+          "inverseBindClosureError": 1.4577262096831887e-07
+        },
+        {
+          "index": 50,
+          "node": 46,
+          "name": "bone_50",
+          "parentNode": 47,
+          "position": [
+            -0.15871226236978275,
+            0.6129949240087235,
+            -0.1376925038987066
+          ],
+          "inverseBindClosureError": 1.625122440934398e-07
+        }
+      ]
+    }
+  ],
+  "animationNames": []
+}

@@ -8,3 +8,8 @@ HappyToyV2/SourceArt/BaeksugwiStudio/*.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/BaeksugwiStudio/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/BaeksugwiStudio/*.npz filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/Baeksugwi/*.fbx filter=lfs diff=lfs merge=lfs -text
+# Newly generated editable creature sculpts, rigs and game meshes.
+HappyToyV2/SourceArt/CreatureStudio/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/CreatureStudio/**/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/CreatureStudio/**/*.npz filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/EnemyStudio/**/*.fbx filter=lfs diff=lfs merge=lfs -text

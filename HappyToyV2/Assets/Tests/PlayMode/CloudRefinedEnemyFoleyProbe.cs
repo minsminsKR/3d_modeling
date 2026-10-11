@@ -89,12 +89,16 @@ namespace HappyToy.V2.CloudTests
             for(int index=0;index<skins.Length;index++)
             {
                 var skin=skins[index];
-                skin.BakeMesh(mesh,true);
+                bool studio=Get<bool>(motion,"StudioVisual");
+                skin.BakeMesh(mesh,!studio);
+                var inherited=studio && skin.transform.parent ? skin.transform.parent.lossyScale : Vector3.one;
                 var vertices=mesh.vertices;
                 if(vertices.Length!=supportMasks[index].Length)throw new InvalidOperationException("Baked contact indices changed");
                 for(int vertex=0;vertex<vertices.Length;vertex++)
                 {
-                    float y=skin.transform.TransformPoint(vertices[vertex]).y;sole=Mathf.Min(sole,y);
+                    var point=vertices[vertex];
+                    if(studio)point=new Vector3(point.x/inherited.x,point.y/inherited.y,point.z/inherited.z);
+                    float y=skin.transform.TransformPoint(point).y;sole=Mathf.Min(sole,y);
                     for(int group=0;group<4;group++)
                     {
                         if((supportMasks[index][vertex]&(1<<group))!=0)support[group]=Mathf.Min(support[group],y);
@@ -182,6 +186,12 @@ namespace HappyToy.V2.CloudTests
                     var model=Get<Transform>(motion,"model");var animation=Get<Animation>(motion,"animationPlayer");
                     var steps=actor.GetComponent(RequireType("StalkerFootsteps"));
                     Assert.That(Get<bool>(motion,"RefinedVisual"),Is.True);
+                    Assert.That(Get<bool>(motion,"StudioVisual"),Is.EqualTo(key!="Hwacat_angry"));
+                    if(key!="Hwacat_angry")foreach(string alias in key=="Baby"?new[]{"patrol","chase","cry"}:new[]{"patrol","chase"})
+                    {
+                        var own=Resources.Load<AnimationClip>("EnemyStudio/"+key+"/"+alias);
+                        Assert.That(own,Is.Not.Null);Assert.That(animation.GetClip(alias),Is.SameAs(own));
+                    }
                     var allBones=model.GetComponentsInChildren<Transform>();
                     var probe=actor.gameObject.AddComponent<CloudRefinedEnemyFoleyProbe>();
                     probe.motion=motion;probe.steps=steps;probe.animation=animation;probe.agent=agent;
@@ -264,6 +274,7 @@ namespace HappyToy.V2.CloudTests
                                 weightedContactGroups=probe.contactGroups},true)));
                         Assert.That(finalSteps,Is.GreaterThan(firstSteps+1),"No production recorded cues during real navigation");
                         Assert.That(frames.Count(frame=>frame.speed>.1f),Is.GreaterThan(frames.Count/2));
+                        Assert.That(frames.Select(frame=>frame.phase).Distinct().Count(),Is.GreaterThan(5),"Live locomotion clip clock is frozen");
                         Assert.That(frames.Max(frame=>Mathf.Abs(frame.renderedGap)),Is.LessThan(.045f),"Live travel leaves the physical floor");
                         yield return null;
                     }

@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>괴물 작업실 · 동작 미리보기</title>
+  <style>
+    :root { color-scheme: dark; font-family: "Segoe UI", "Malgun Gothic", sans-serif; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #1d2229; }
+    canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+    canvas.dragging { cursor: grabbing; }
+    .panel { position: absolute; left: 22px; top: 22px; width: 280px; padding: 20px; border: 1px solid #56647780; border-radius: 16px; background: #171d25ec; backdrop-filter: blur(16px); box-shadow: 0 12px 44px #0005; }
+    .eyebrow { margin: 0 0 8px; color: #a8b9cc; font-size: 11px; letter-spacing: .18em; }
+    h1 { margin: 0; font-size: 26px; }
+    .subtitle { margin: 10px 0 17px; color: #aab2bf; font-size: 12px; line-height: 1.7; }
+    label { display: block; margin: 15px 0 7px; color: #c0cad5; font-size: 12px; }
+    select, button { color: #eaf0f6; background: #2c3542; border: 1px solid #48576b; border-radius: 8px; font: inherit; font-size: 12px; }
+    select { width: 100%; padding: 10px 9px; }
+    button { min-height: 40px; padding: 9px 11px; cursor: pointer; }
+    button:hover { border-color: #b0c8e8; background: #39495d; }
+    button:disabled, select:disabled { cursor: default; opacity: .5; }
+    button.primary { background: #b7cde8; color: #172234; border-color: #d1e0f3; font-weight: 600; }
+    .actions, .row { display: flex; gap: 7px; margin: 12px 0; }
+    .actions #play, .row > button { flex: 1; }
+    #drawer { display: none; }
+    .speed { display: flex; align-items: center; gap: 10px; }
+    input[type=range] { min-width: 0; flex: 1; accent-color: #b7cde8; }
+    output { color: #dce9f8; font-size: 12px; width: 34px; text-align: right; }
+    .checks { display: flex; gap: 16px; margin-top: 8px; }
+    .checks label { display: flex; gap: 5px; align-items: center; }
+    input[type=checkbox] { accent-color: #b7cde8; }
+    #detail { margin-top: 13px; padding-top: 12px; border-top: 1px solid #45505e; color: #a0abba; font-size: 11px; line-height: 1.8; }
+    #help { position: absolute; bottom: 20px; right: 24px; color: #b3bfcd; font-size: 12px; background: #151b23b8; border: 1px solid #424f60; border-radius: 8px; padding: 9px 14px; }
+    #badge { position: absolute; top: 24px; right: 24px; color: #d3e1f0; font-size: 11px; border: 1px solid #5e728b; background: #202d3bcc; padding: 8px 13px; border-radius: 20px; }
+    #overlay { position: absolute; left: 55%; top: 47%; transform: translate(-50%, -50%); max-width: 480px; text-align: center; border-radius: 12px; padding: 23px 30px; background: #19212cec; border: 1px solid #556882; }
+    #overlay[hidden] { display: none; }
+    #message { margin: 0 0 9px; color: #e7f0fc; font-size: 16px; }
+    #progress { color: #a9bdd7; font-size: 12px; white-space: pre-line; line-height: 1.7; }
+    @media (max-width: 700px) {
+      .panel { left: 10px; top: auto; bottom: max(10px, env(safe-area-inset-bottom)); width: calc(100% - 20px); padding: 11px; border-radius: 13px; }
+      .headrow { display: flex; align-items: center; gap: 8px; }
+      .identity { flex: 1; min-width: 0; }
+      h1 { font-size: 18px; white-space: nowrap; }
+      .eyebrow, .subtitle { display: none; }
+      .actions { margin: 0; gap: 6px; flex-shrink: 0; }
+      .actions button { min-height: 42px; font-size: 12px; padding: 10px 9px; }
+      #drawer { display: block; }
+      #controls { display: none; max-height: 35vh; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 0 2px 4px; }
+      .panel[data-open="true"] #controls { display: block; }
+      #help { left: 12px; right: auto; top: 48px; bottom: auto; font-size: 10px; padding: 7px 9px; }
+      #badge { right: 12px; top: 12px; font-size: 10px; padding: 6px 10px; }
+      #overlay { left: 50%; top: 42%; width: 85%; padding: 20px 18px; }
+    }
+  </style>
+  <script type="importmap">{"imports":{"three":"/vendor/three/build/three.module.js"}}</script>
+</head>
+<body>
+  <canvas id="viewport" aria-label="괴물의 실제 3D 모델과 동작"></canvas>
+  <section class="panel" data-open="false" aria-label="모델과 모션 선택">
+    <div class="headrow">
+      <div class="identity"><p class="eyebrow">CREATURE STUDIO</p><h1 id="title">괴물 작업실</h1></div>
+      <div class="actions"><button id="play" class="primary" aria-label="모션 일시 정지" disabled>일시 정지</button><button id="drawer" aria-controls="controls" aria-expanded="false" aria-label="미리보기 설정 열기">설정</button></div>
+    </div>
+    <p class="subtitle">동작을 선택하고<br>드래그해서 살펴보세요.</p>
+    <div id="controls">
+      <label for="model">몬스터</label>
+      <select id="model" disabled><option>모델 확인 중…</option></select>
+      <label for="clip">모션</label>
+      <select id="clip" disabled><option>모션 확인 중…</option></select>
+      <label for="speed">재생 속도</label>
+      <div class="speed"><input id="speed" type="range" min="0.5" max="2" value="1" step="0.05"><output id="speedValue">1.0×</output></div>
+      <div class="row"><button data-view="front">정면</button><button data-view="quarter">앞 사선</button><button data-view="side">옆면</button></div>
+      <div class="row"><button id="reset" aria-label="모션과 전체 모델 시점을 처음으로 되돌리기">처음으로</button><button id="reload" aria-label="완료된 실제 모델 목록 새로 불러오기">새로 불러오기</button></div>
+      <div class="checks"><label><input id="bones" type="checkbox">뼈대</label><label><input id="wire" type="checkbox">와이어</label></div>
+      <div id="detail">소리가 없는 미리보기입니다.</div>
+    </div>
+  </section>
+  <div id="badge">무음 미리보기</div>
+  <div id="help">드래그 · 회전 &nbsp; / &nbsp; 휠 · 확대</div>
+  <div id="overlay" role="status"><p id="message">완료된 모델을 확인합니다</p><span id="progress">잠시 기다려 주세요.</span></div>
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from '/vendor/three/examples/jsm/loaders/GLTFLoader.js';
+
+    const ids = ['viewport','title','model','clip','play','drawer','speed','speedValue','reset','reload','bones','wire','detail','badge','overlay','message','progress'];
+    const ui = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+    const panel = document.querySelector('.panel');
+    const scene = new THREE.Scene(); scene.background = new THREE.Color('#232b35');
+    const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, .01, 1000);
+    const renderer = new THREE.WebGLRenderer({canvas: ui.viewport, antialias: true, powerPreference: 'high-performance'});
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+    renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    scene.add(new THREE.HemisphereLight(0xc6d9f0, 0x655345, 2.2));
+    const keyLight = new THREE.DirectionalLight(0xffe3bb, 4.1), fill = new THREE.DirectionalLight(0xb8d0f7, 2.5), rim = new THREE.DirectionalLight(0xffd9b1, 3.0);
+    keyLight.castShadow = true; keyLight.shadow.mapSize.set(1024,1024); keyLight.shadow.normalBias = .005;
+    scene.add(keyLight,keyLight.target,fill,fill.target,rim,rim.target);
+    const studio = new THREE.Scene(); studio.background = new THREE.Color(0x343d49);
+    for (const [color,gain,size,position,rotation] of [
+      [0xffe6c9,5,[12,8],[0,6,4],[-Math.PI/3,0,0]],
+      [0xc8ddff,3,[8,10],[-7,2,0],[0,Math.PI/2,0]],
+      [0xffefd7,4,[10,10],[4,2,-7],[0,Math.PI,0]]
+    ]) {
+      const lamp = new THREE.Mesh(new THREE.PlaneGeometry(...size),new THREE.MeshBasicMaterial({color,side:THREE.DoubleSide}));
+      lamp.material.color.multiplyScalar(gain); lamp.position.set(...position); lamp.rotation.set(...rotation); studio.add(lamp);
+    }
+    const pmrem = new THREE.PMREMGenerator(renderer), environment = pmrem.fromScene(studio,.04,.1,100);
+    scene.environment = environment.texture; pmrem.dispose(); studio.traverse(item => {item.geometry?.dispose(); item.material?.dispose();});
+    const container = new THREE.Group(); scene.add(container);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshStandardMaterial({color:0x48505a,roughness:.94,metalness:0}));
+    floor.rotation.x = -Math.PI/2; floor.receiveShadow = true; scene.add(floor);
+    let model,mixer,action,skeleton,grid,catalog=[],clips=[],materials=[];
+    let radius=1,height=2,focusY=1,clipName='',clipDuration=0,paused=false,loading=false,frames=0;
+    let fitBounds = new THREE.Box3(new THREE.Vector3(-1,0,-1),new THREE.Vector3(1,2,1));
+    let dockHeight=88,selectedKey=null,loadedStamp=0;
+    const orbit={yaw:.5,pitch:.15,distance:6},pan=new THREE.Vector3(),target=new THREE.Vector3(),clock=new THREE.Clock();
+    const debug=window.__creatureStudioPreview={ready:false,error:null,key:null,clip:null,source:'Actual generated game GLB; no placeholder; silent'};
+
+    function overlay(message,progress='') {ui.overlay.hidden=false;ui.message.textContent=message;ui.progress.textContent=progress;}
+    function fail(error) {debug.ready=false;debug.error=String(error?.message||error);overlay('모델을 표시할 수 없습니다',debug.error);ui.play.disabled=true;ui.clip.disabled=true;}
+    function layout() {dockHeight=innerWidth<=700?panel.getBoundingClientRect().height+22:0;}
+    function resetCamera(view='quarter') {
+      layout(); orbit.yaw=view==='front'?0:view==='side'?Math.PI/2:innerWidth<=700?.34:.58;orbit.pitch=view==='side'?.1:.15;
+      const tangent=Math.tan(THREE.MathUtils.degToRad(camera.fov/2)),tanX=tangent*camera.aspect,tanY=tangent*Math.max(.25,(innerHeight-dockHeight-70)/innerHeight);
+      const right=new THREE.Vector3(Math.cos(orbit.yaw),0,-Math.sin(orbit.yaw));
+      const up=new THREE.Vector3(-Math.sin(orbit.yaw)*Math.sin(orbit.pitch),Math.cos(orbit.pitch),-Math.cos(orbit.yaw)*Math.sin(orbit.pitch));
+      const back=new THREE.Vector3(Math.sin(orbit.yaw)*Math.cos(orbit.pitch),Math.sin(orbit.pitch),Math.cos(orbit.yaw)*Math.cos(orbit.pitch));
+      let distance=radius;
+      for(const x of [fitBounds.min.x,fitBounds.max.x]) for(const y of [fitBounds.min.y,fitBounds.max.y]) for(const z of [fitBounds.min.z,fitBounds.max.z]) {
+        const point=new THREE.Vector3(x,y-focusY,z),depth=point.dot(back);
+        distance=Math.max(distance,Math.abs(point.dot(right))/tanX+depth,Math.abs(point.dot(up))/tanY+depth);
+      }
+      orbit.distance=distance*1.14;pan.set(0,0,0);
+    }
+    function disposeModel() {
+      if(!model)return;
+      mixer?.stopAllAction();mixer?.uncacheRoot(model);container.remove(model);
+      const geometries=new Set(),ownedMaterials=new Set(),textures=new Set();
+      model.traverse(item=>{
+        if(item.geometry)geometries.add(item.geometry);
+        for(const material of Array.isArray(item.material)?item.material:item.material?[item.material]:[]) {
+          ownedMaterials.add(material);for(const value of Object.values(material))if(value?.isTexture)textures.add(value);
+        }
+      });
+      for(const geometry of geometries)geometry.dispose();for(const material of ownedMaterials)material.dispose();
+      for(const texture of textures){texture.dispose();texture.source?.data?.close?.();}
+      if(skeleton){scene.remove(skeleton);skeleton.geometry.dispose();skeleton.material.dispose();}
+      model=mixer=action=skeleton=undefined;clips=[];materials=[];
+    }
+    function alias(clip) {
+      const name=clip.name.split('|').pop().toLowerCase().replace(/[^a-z0-9]/g,'');
+      if(['patrol','walk','walkpatrol'].includes(name))return 'patrol';
+      if(['chase','run','runinplace','runchase'].includes(name))return 'chase';
+      if(['cry','crying','idlecry'].includes(name))return 'cry';
+      return name;
+    }
+    const motionLabels={patrol:'배회',chase:'추격',cry:'울기'};
+    function chooseClip(name,refit=true) {
+      const clip=clips.find(value=>value.name===name);if(!clip)return;
+      action?.stop();action=mixer.clipAction(clip);action.reset().setLoop(THREE.LoopRepeat,Infinity).play();mixer.update(0);
+      clipName=clip.name;clipDuration=clip.duration;ui.clip.value=name;debug.clip=alias(clip);debug.duration=clip.duration;
+      ui.badge.textContent=`${motionLabels[alias(clip)]||clip.name} · 무음`;
+      if(refit) {
+        const union=new THREE.Box3();
+        for(const phase of [0,.25,.5,.75]) {action.time=phase*clip.duration;mixer.update(0);container.updateMatrixWorld(true);union.union(new THREE.Box3().setFromObject(container,true));}
+        action.time=0;mixer.update(0);container.updateMatrixWorld(true);fitBounds=union;focusY=union.getCenter(new THREE.Vector3()).y;resetCamera();
+      }
+      ui.detail.textContent=`${debug.bones}개 관절 · ${Math.round(debug.triangles).toLocaleString()}개 면\n${clipDuration.toFixed(2)}초 반복 · 무음`;
+    }
+    async function loadCreature(entry) {
+      if(loading||!entry?.ready)return;
+      loading=true;debug.ready=false;debug.error=null;ui.model.disabled=ui.clip.disabled=ui.play.disabled=true;
+      overlay(`${entry.label}를 불러옵니다`,'모델과 텍스처를 준비하는 중…');disposeModel();
+      try {
+        const gltf=await new GLTFLoader().loadAsync(`${entry.url}?v=${entry.stamp}`,event=>{
+          const total=event.total||entry.bytes;
+          ui.progress.textContent=`${Math.min(100,Math.round(event.loaded/total*100))}% · ${Math.round(event.loaded/1048576)} / ${Math.round(total/1048576)} MB`;
+        });
+        model=gltf.scene;container.position.set(0,0,0);container.add(model);mixer=new THREE.AnimationMixer(model);clips=gltf.animations;
+        const required=entry.key==='Baby'?['patrol','chase','cry']:['patrol','chase'];
+        for(const name of required)if(!clips.some(clip=>alias(clip)===name&&clip.duration>.1))throw new Error(`${entry.label}의 ${motionLabels[name]} 모션이 아직 준비되지 않았습니다.`);
+        let bones=0,triangles=0;
+        model.traverse(item=>{
+          if(item.isBone)bones++;
+          if(!item.isMesh)return;
+          triangles+=(item.geometry.index?.count||item.geometry.attributes.position.count)/3;item.frustumCulled=false;item.castShadow=true;item.receiveShadow=true;
+          for(const material of Array.isArray(item.material)?item.material:[item.material]){material.envMapIntensity=.7;material.wireframe=ui.wire.checked;materials.push(material);}
+        });
+        debug.bones=bones;debug.triangles=triangles;
+        if(!bones)throw new Error(`${entry.label}의 실제 리깅 데이터가 없습니다.`);
+        const first=clips.find(clip=>alias(clip)==='patrol');chooseClip(first.name,false);container.updateMatrixWorld(true);
+        const bounds=new THREE.Box3().setFromObject(container,true),center=bounds.getCenter(new THREE.Vector3()),size=bounds.getSize(new THREE.Vector3());
+        if(!Number.isFinite(size.length())||size.length()<.001)throw new Error('실제 모델 표면이 비어 있습니다.');
+        // One constant mounting offset from patrol0. Other phases retain their
+        // genuine skin deformation; this viewer does not simulate game grounding/AI.
+        container.position.set(-center.x,-bounds.min.y,-center.z);height=size.y;radius=size.length()/2;
+        camera.near=Math.max(radius/1500,.001);camera.far=radius*80;camera.updateProjectionMatrix();
+        floor.scale.set(radius*16,radius*16,1);floor.position.y=-height*.003;
+        if(grid){scene.remove(grid);grid.geometry.dispose();grid.material.dispose();}
+        grid=new THREE.GridHelper(radius*12,48,0x76818f,0x67717e);grid.position.y=floor.position.y+height*.0004;grid.material.transparent=true;grid.material.opacity=.2;scene.add(grid);
+        keyLight.position.set(radius*1.2,height*2.1,radius*1.5);fill.position.set(-radius*1.8,height*1.1,radius*.6);rim.position.set(radius*.4,height*1.8,-radius*1.5);
+        for(const light of [keyLight,fill,rim])light.target.position.set(0,height*.45,0);
+        const shadow=keyLight.shadow.camera;shadow.left=shadow.bottom=-radius*1.6;shadow.right=shadow.top=radius*1.6;shadow.near=.01;shadow.far=radius*10;shadow.updateProjectionMatrix();keyLight.shadow.bias=-.00015;keyLight.shadow.normalBias=height*.003;
+        skeleton=new THREE.SkeletonHelper(model);skeleton.visible=ui.bones.checked;skeleton.material.depthTest=false;skeleton.renderOrder=10;scene.add(skeleton);
+        ui.clip.replaceChildren(...required.map(name=>{
+          const clip=clips.find(value=>alias(value)===name),option=new Option(motionLabels[name],clip.name);return option;
+        }));
+        chooseClip(first.name);selectedKey=entry.key;loadedStamp=entry.stamp;ui.model.value=entry.key;ui.title.textContent=entry.label;
+        ui.clip.disabled=ui.play.disabled=false;ui.play.textContent=paused?'재생':'일시 정지';
+        debug.key=entry.key;debug.bytes=entry.bytes;debug.ready=true;ui.overlay.hidden=true;
+        const url=new URL(location.href);url.searchParams.set('creature',entry.key);history.replaceState(null,'',url);
+      } catch(error){disposeModel();fail(error);} finally{loading=false;ui.model.disabled=false;}
+    }
+    async function refresh(forceReload=false) {
+      if(loading)return;
+      try {
+        const response=await fetch('/api/models',{cache:'no-store'});if(!response.ok)throw new Error('모델 목록을 불러오지 못했습니다.');
+        catalog=(await response.json()).models;
+        ui.model.replaceChildren(...catalog.map(entry=>{const option=new Option(entry.label+(entry.ready?'':' · 준비 중'),entry.key);option.disabled=!entry.ready;return option;}));
+        const wanted=new URLSearchParams(location.search).get('creature');
+        const selected=catalog.find(entry=>entry.key===(selectedKey||wanted)&&entry.ready)||catalog.find(entry=>entry.ready);
+        ui.model.disabled=!selected;
+        if(!selected){overlay('모델을 내보내는 중입니다','완료된 실제 모델이 준비되면 여기에 표시됩니다.');return;}
+        ui.model.value=selected.key;
+        if(!model||forceReload||selected.key!==selectedKey||selected.stamp!==loadedStamp)await loadCreature(selected);
+      }catch(error){fail(error);}
+    }
+    ui.model.addEventListener('change',()=>loadCreature(catalog.find(entry=>entry.key===ui.model.value)));
+    ui.clip.addEventListener('change',()=>chooseClip(ui.clip.value));
+    ui.play.addEventListener('click',()=>{paused=!paused;ui.play.textContent=paused?'재생':'일시 정지';ui.play.setAttribute('aria-label',paused?'모션 재생':'모션 일시 정지');});
+    ui.speed.addEventListener('input',()=>{ui.speedValue.textContent=`${Number(ui.speed.value).toFixed(1)}×`;});
+    ui.reset.addEventListener('click',()=>{if(action){action.reset().play();mixer.update(0);}resetCamera();});ui.reload.addEventListener('click',()=>refresh(true));
+    ui.drawer.addEventListener('click',()=>{const open=panel.dataset.open!=='true';panel.dataset.open=String(open);ui.drawer.textContent=open?'닫기':'설정';ui.drawer.setAttribute('aria-expanded',String(open));ui.drawer.setAttribute('aria-label',open?'미리보기 설정 닫기':'미리보기 설정 열기');layout();});
+    document.querySelectorAll('[data-view]').forEach(button=>button.addEventListener('click',()=>resetCamera(button.dataset.view)));
+    ui.bones.addEventListener('change',()=>{if(skeleton)skeleton.visible=ui.bones.checked;});ui.wire.addEventListener('change',()=>{for(const material of materials)material.wireframe=ui.wire.checked;});
+
+    const pointers=new Map();let pinch=null;
+    ui.viewport.addEventListener('contextmenu',event=>event.preventDefault());
+    ui.viewport.addEventListener('pointerdown',event=>{pointers.set(event.pointerId,{x:event.clientX,y:event.clientY,button:event.button});ui.viewport.setPointerCapture(event.pointerId);ui.viewport.classList.add('dragging');});
+    ui.viewport.addEventListener('pointermove',event=>{
+      const previous=pointers.get(event.pointerId);if(!previous)return;const dx=event.clientX-previous.x,dy=event.clientY-previous.y;
+      pointers.set(event.pointerId,{x:event.clientX,y:event.clientY,button:previous.button});
+      if(pointers.size>1){const points=[...pointers.values()],distance=Math.hypot(points[0].x-points[1].x,points[0].y-points[1].y);if(pinch)orbit.distance*=pinch/Math.max(distance,1);pinch=distance;}
+      else if(previous.button===2||event.shiftKey){pan.addScaledVector(new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion),-dx*orbit.distance/innerHeight*.75);pan.addScaledVector(new THREE.Vector3(0,1,0).applyQuaternion(camera.quaternion),dy*orbit.distance/innerHeight*.75);}
+      else{orbit.yaw-=dx*.006;orbit.pitch=THREE.MathUtils.clamp(orbit.pitch+dy*.004,-.12,1.35);}
+      orbit.distance=THREE.MathUtils.clamp(orbit.distance,radius*.3,radius*20);
+    });
+    const release=event=>{pointers.delete(event.pointerId);pinch=null;if(!pointers.size)ui.viewport.classList.remove('dragging');};
+    ui.viewport.addEventListener('pointerup',release);ui.viewport.addEventListener('pointercancel',release);
+    ui.viewport.addEventListener('wheel',event=>{event.preventDefault();orbit.distance=THREE.MathUtils.clamp(orbit.distance*Math.exp(event.deltaY*.001),radius*.3,radius*20);},{passive:false});
+    addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);resetCamera();});
+    ui.viewport.addEventListener('webglcontextlost',event=>{event.preventDefault();fail(new Error('그래픽 메모리가 부족합니다. 다른 3D 탭을 닫고 이 미리보기를 새로 열어 주세요.'));});
+    renderer.setAnimationLoop(()=>{
+      const delta=Math.min(clock.getDelta(),.06);if(mixer&&!paused&&!loading)mixer.update(delta*Number(ui.speed.value));
+      container.updateMatrixWorld(true);target.set(0,focusY,0).add(pan);
+      camera.position.set(Math.sin(orbit.yaw)*Math.cos(orbit.pitch),Math.sin(orbit.pitch),Math.cos(orbit.yaw)*Math.cos(orbit.pitch)).multiplyScalar(orbit.distance).add(target);
+      if(innerWidth>700){const right=new THREE.Vector3(Math.cos(orbit.yaw),0,-Math.sin(orbit.yaw)),shift=-(280/innerWidth)*orbit.distance*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect*.72;camera.position.addScaledVector(right,shift);target.addScaledVector(right,shift);}
+      else{const up=new THREE.Vector3(-Math.sin(orbit.yaw)*Math.sin(orbit.pitch),Math.cos(orbit.pitch),-Math.cos(orbit.yaw)*Math.sin(orbit.pitch)),shift=-dockHeight/innerHeight*orbit.distance*Math.tan(THREE.MathUtils.degToRad(camera.fov/2));camera.position.addScaledVector(up,shift);target.addScaledVector(up,shift);}
+      camera.lookAt(target);renderer.render(scene,camera);frames++;
+      if(frames%30===0){debug.time=action?.time||0;debug.paused=paused;debug.speed=Number(ui.speed.value);debug.frames=frames;debug.renderCalls=renderer.info.render.calls;}
+    });
+    await refresh();
+    setInterval(()=>{if(!loading&&catalog.some(entry=>!entry.ready))refresh();},15000);
+  </script>
+</body>
+</html>

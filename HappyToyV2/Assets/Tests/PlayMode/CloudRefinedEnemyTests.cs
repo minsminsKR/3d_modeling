@@ -15,14 +15,9 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(120000)]
-        public IEnumerator RefinedFourEnemiesRetainAuthoredClipsDeformAndGroundAtEverySampledPhase()
+        public IEnumerator ModernThreeEnemiesUseTheirOwnClipsDeformAndGroundAtEverySampledPhase()
         {
-            var keys = new[] { "Cyclopse", "Uncat", "Hwacat_angry", "Baby" };
-            var originals = keys.ToDictionary(key => key, key =>
-            {
-                var authored = Components("V1MonsterMotion").Single(motion => motion.name.Contains(key) && !motion.name.EndsWith("— corridor"));
-                return Get<Animation>(authored, "animationPlayer").Cast<AnimationState>().ToDictionary(state => state.name, state => state.clip);
-            });
+            var keys = new[] { "Cyclopse", "Uncat", "Baby" };
             Call(session, "CreateCorridor", 73);
             foreach (var built in Components("StalkerBrain").Where(actor => actor.name.EndsWith("— corridor")))
             {
@@ -41,7 +36,7 @@ namespace HappyToy.V2.CloudTests
             var views = new List<RefinedEnemyCameraView>();
             var phases = new List<RefinedEnemyGroundPhase>();
             var enemies = Components("StalkerBrain").Where(x => x.name.EndsWith("— corridor")).ToArray();
-            Assert.That(enemies.Length, Is.EqualTo(4));
+            Assert.That(enemies.Length, Is.EqualTo(3));
             var scratch = new Mesh();
             try
             {
@@ -56,19 +51,32 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(Get<bool>(motion, "RefinedVisual"), Is.True, enemy.name + " still uses its old scanned surface");
                     var model = Get<Transform>(motion, "model"); var animation = Get<Animation>(motion, "animationPlayer");
                     string key = keys.Single(value => enemy.name.Contains(value));
-                    foreach (var authored in originals[key])
-                        Assert.That(animation.GetClip(authored.Key), Is.SameAs(authored.Value), "Original authored clip replaced: " + key + ": " + authored.Key);
-                    Assert.That(animation.transform, Is.SameAs(key == "Cyclopse" ? model : model.Find("Armature")), "Wrong relative source binding root");
+                    bool studio = Get<bool>(motion,"StudioVisual");
+                    Assert.That(studio, Is.True, "Wrong generation of visual: " + key);
+                        Assert.That(Resources.Load<GameObject>("EnemyStudio/" + key + "/" + key), Is.Not.Null);
+                        foreach (string alias in key == "Baby" ? new[] { "patrol", "chase", "cry" } : new[] { "patrol", "chase" })
+                        {
+                            var asset = Resources.Load<AnimationClip>("EnemyStudio/" + key + "/" + alias);
+                            Assert.That(asset, Is.Not.Null, "Missing newly authored motion: " + key + "/" + alias);
+                            Assert.That(animation.GetClip(alias), Is.SameAs(asset), "Live alias is not the new rig's motion");
+                        }
+                        Assert.That(Get<bool>(motion, "AttackRigAvailable"), Is.True);
+                        if (key == "Cyclopse") Assert.That(Get<bool>(motion, "IntroPoseRigAvailable"), Is.True);
+                        if (key == "Uncat") Assert.That(Get<bool>(motion, "LimbContactRigAvailable"), Is.True);
                     var skins = model.GetComponentsInChildren<SkinnedMeshRenderer>();
                     Assert.That(skins.Length, Is.GreaterThan(0));
+                    var priorMeshes = Resources.Load<GameObject>("EnemyRefinement/" + key + "-v2").GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(skin => skin.sharedMesh).ToArray();
                     foreach (var skin in skins)
                     {
                         int triangles = Enumerable.Range(0, skin.sharedMesh.subMeshCount).Sum(sub => (int)skin.sharedMesh.GetIndexCount(sub) / 3);
-                        Assert.That(triangles, Is.InRange(9980, 10000), "Imported candidate unexpectedly changed surface topology");
+                        Assert.That(triangles, studio ? Is.InRange(20000, 160000) : Is.InRange(9980, 10000), "Unexpected runtime surface budget");
+                        if (studio) Assert.That(skin.sharedMesh.vertexCount, Is.LessThanOrEqualTo(80000), "Source sculpt was imported without a game mesh");
+                        if (studio) Assert.That(priorMeshes.Contains(skin.sharedMesh), Is.False, "New visual retained an old scanned mesh");
                         Assert.That(skin.bones.All(bone => bone && bone.IsChildOf(model)), Is.True);
                         foreach (var material in skin.sharedMaterials)
                         {
-                            Assert.That(material.GetTexture("_BaseMap"), Is.Not.Null, "Original atlas lost");
+                            Assert.That(material.GetTexture("_BaseMap"), Is.Not.Null, "Character atlas lost");
+                            if (studio) Assert.That(material.GetTexture("_BaseMap"), Is.SameAs(Resources.Load<Texture2D>("EnemyStudio/" + key + "/albedo")), "New body retained the old scanned atlas");
                             Assert.That(material.GetTexture("_BumpMap"), Is.Not.Null);
                             Assert.That(material.GetTexture("_MetallicGlossMap"), Is.Not.Null);
                             Assert.That(material.IsKeywordEnabled("_NORMALMAP"), Is.True);
@@ -89,9 +97,7 @@ namespace HappyToy.V2.CloudTests
                             yield return null;
                             var points = skins.SelectMany(skin =>
                             {
-                                // Independently rendered GPU/CPU silhouettes prove true for these imported rigs.
-                                skin.BakeMesh(scratch, true);
-                                return scratch.vertices.Select(point => skin.transform.TransformPoint(point)).ToArray();
+                                return RefinedEnemySkinPoints(skin, scratch).ToArray();
                             }).ToArray();
                             Assert.That(points.All(point => !float.IsNaN(point.x) && !float.IsInfinity(point.x) && !float.IsNaN(point.y) && !float.IsInfinity(point.y) && !float.IsNaN(point.z) && !float.IsInfinity(point.z)), Is.True);
                             if (first == null) first = points;
@@ -130,7 +136,7 @@ namespace HappyToy.V2.CloudTests
                     enemy.transform.rotation = facing;
                     var pose = model.position; Call(shell, "Pause"); yield return Delay(.15f);
                     Assert.That(model.position, Is.EqualTo(pose)); Call(shell, "Resume");
-                    Debug.Log("HAPPYTOY_ENEMY_REFINEMENT_PASS " + enemy.name + ": atlas, normal/smoothness maps, authored patrol/chase deformation, eight phases, actual sole/floor and pause");
+                    Debug.Log("HAPPYTOY_ENEMY_REFINEMENT_PASS " + enemy.name + ": own atlas and rig clips, normal/smoothness maps, eight phases, actual sole/floor and pause");
                     enemy.gameObject.SetActive(false);
                 }
             }
@@ -143,7 +149,7 @@ namespace HappyToy.V2.CloudTests
                 CloudExperienceTests.Artifact("enemy-refinement-ground-phases.json", Encoding.UTF8.GetBytes(JsonUtility.ToJson(
                     new RefinedEnemyGroundEvidence { phases=phases.ToArray() },true)));
             }
-            Assert.That(views.Count, Is.EqualTo(12));
+            Assert.That(views.Count, Is.EqualTo(9));
             CloudExperienceTests.Artifact("enemy-refinement-main-camera-views.json", Encoding.UTF8.GetBytes(JsonUtility.ToJson(
                 new RefinedEnemyCameraEvidence { scope="Controlled actual main-camera near/turn/long-doorway views; not fear or survival certification",views=views.ToArray() },true)));
         }
@@ -163,16 +169,26 @@ namespace HappyToy.V2.CloudTests
                 foreach(var skin in model.GetComponentsInChildren<SkinnedMeshRenderer>())
                 {
                     if(!skin.enabled)continue;
-                    skin.BakeMesh(mesh,true);
-                    foreach(var vertex in mesh.vertices)
+                    foreach(var world in RefinedEnemySkinPoints(skin,mesh))
                     {
-                        var world=skin.transform.TransformPoint(vertex);
                         if(first){bounds=new Bounds(world,Vector3.zero);first=false;}else bounds.Encapsulate(world);
                     }
                 }
                 Assert.That(first,Is.False,"No actual refined render vertices");return bounds;
             }
             finally {UnityEngine.Object.Destroy(mesh);}
+        }
+        static IEnumerable<Vector3> RefinedEnemySkinPoints(SkinnedMeshRenderer skin, Mesh scratch)
+        {
+            var motion=skin.GetComponentInParent(RequireType("V1MonsterMotion"));
+            bool studio=motion && Get<bool>(motion,"StudioVisual");
+            skin.BakeMesh(scratch,!studio);
+            var inherited=studio && skin.transform.parent ? skin.transform.parent.lossyScale : Vector3.one;
+            foreach(var point in scratch.vertices)
+            {
+                var local=studio ? new Vector3(point.x/inherited.x,point.y/inherited.y,point.z/inherited.z) : point;
+                yield return skin.transform.TransformPoint(local);
+            }
         }
         void RefinedEnemyViewpoint(Vector3 anchor, Vector3 target, Vector3 front, float distance)
         {

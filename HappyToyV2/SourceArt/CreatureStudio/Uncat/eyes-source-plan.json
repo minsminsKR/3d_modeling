@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "key": "Uncat",
+  "source": "source-original.glb",
+  "face_preview_size": 1200,
+  "frontDepthDilationPixels": 3,
+  "review": "Only the actual narrow white ocular slit is selected, inside both dark eyelid rims. Opposite eye is fully covered by generated hair and receives a separately generated narrow actual ocular surface using these source triangles and UVs.",
+  "eyes": [
+    {"centerPixels": [799, 498.5], "radiiPixels": [23, 4.0], "pupilRadiusFraction": 0.16, "sourceZMin": 0.15}
+  ]
+}

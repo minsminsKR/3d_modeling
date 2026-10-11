@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "review": "Opaque source hair fills the opposite orbit. A narrow actual lens is placed at that anatomical orbit, just in front of the measured local hair surface; raw GLB remains unchanged.",
+  "coordinateSystem": "source glTF Y-up face +Z",
+  "centerGLTF": [
+    0.0202,
+    0.339,
+    0.217
+  ],
+  "radiiGLTF": [
+    0.009,
+    0.0015
+  ],
+  "convexDepthGLTF": 0.0009,
+  "segments": 24,
+  "sourceTriangleUVIndex": 0,
+  "darkRimUV": [
+    0.29937744140625,
+    0.38677978515625
+  ],
+  "localSourceHairMaximumZ": 0.21560597,
+  "rigidBone": "mixamorig:Head",
+  "materialSlot": 1,
+  "darkRimSourceRGB": [
+    89,
+    39,
+    14
+  ]
+}

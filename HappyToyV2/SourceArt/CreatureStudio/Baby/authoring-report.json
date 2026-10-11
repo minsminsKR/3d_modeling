@@ -1,0 +1,316 @@
+{
+  "creature": "Baby",
+  "input": "source-original.glb",
+  "sourceSHA256": "47b27eb1a8d69d8ed0547e67bb6c44b3f6f664e99d8054935dd7d9899a688239",
+  "tool": "4.0.2",
+  "oldMeshImported": false,
+  "reviewedBodyBinding": {
+    "bones": 22,
+    "quantization": {
+      "input_max_sum_error": 5.029141902923584e-08,
+      "quantization_max_error": 0.0007270127534866333,
+      "quantized_max_sum_error": 0,
+      "weight_bins": 1024,
+      "zero_weight_vertices": 0
+    },
+    "sourceAIWeightsReused": false,
+    "meshes": {
+      "Baby_EditableHigh": {
+        "correspondence": "identity-order",
+        "maximumPositionError": 0.0,
+        "binding": {
+          "groups": 22,
+          "batch_calls": 19267,
+          "influences": 2427034,
+          "preserve_volume": false
+        },
+        "originalGeometryAndUVUnchanged": true
+      }
+    }
+  },
+  "bodyPlan": "body-rig-plan.json",
+  "sourceAIUsedForSkin": false,
+  "normalization": {
+    "targetHeight": 1.48,
+    "sourceBounds": [
+      [
+        -0.3185940384864807,
+        -0.19353018701076508,
+        -0.4985085725784302
+      ],
+      [
+        0.3185090124607086,
+        0.19296833872795105,
+        0.5000700950622559
+      ]
+    ],
+    "uniformScale": 1.482106566022239,
+    "floor": 0,
+    "front": "-Y"
+  },
+  "derivedToeAnchors": [],
+  "gameLOD": {
+    "vertices": 67562,
+    "triangles": 60000,
+    "topologyCleanup": {
+      "before": {
+        "vertices": 157041,
+        "faces": 60000,
+        "loops": 180000
+      },
+      "after": {
+        "vertices": 67562,
+        "faces": 60000,
+        "loops": 180000
+      },
+      "duplicateOrDegenerateFacesRemoved": false,
+      "looseVerticesRemoved": 89479,
+      "customNormalsRecomputedForNewTopology": true,
+      "editableHighUnchanged": true
+    },
+    "estimatedUnitySplitVertices": 71865,
+    "skin": {
+      "maximumInfluences": 4,
+      "weightBins": 1024,
+      "unboundVertices": 0
+    }
+  },
+  "normal": {
+    "method": "Cycles selected-high-to-active-LOD tangent normal geometry bake",
+    "size": [
+      2048,
+      2048
+    ],
+    "rayDistance": 0.01184,
+    "cageExtrusion": 0.00592
+  },
+  "gamePBR": [
+    {
+      "material": 0,
+      "albedo": [
+        2048,
+        2048
+      ],
+      "normal": [
+        2048,
+        2048
+      ],
+      "metallicSmoothness": [
+        2048,
+        2048
+      ],
+      "source8KPreserved": true
+    }
+  ],
+  "contacts": {
+    "floor": 0,
+    "coordinateSystem": "Blender Z-up / front -Y",
+    "measurements": {
+      "left_hand": {
+        "joint": [
+          0.36421138048171997,
+          -0.1353573352098465,
+          0.661712110042572
+        ],
+        "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
+        "surface_min_z": 0.5267491936683655,
+        "vertices": 1345
+      },
+      "right_hand": {
+        "joint": [
+          -0.303716778755188,
+          0.03919435665011406,
+          0.6475898623466492
+        ],
+        "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
+        "surface_min_z": 0.5366709232330322,
+        "vertices": 1244
+      },
+      "left_foot": {
+        "joint": [
+          0.2444494664669037,
+          0.0455324687063694,
+          0.14313316345214844
+        ],
+        "method": "actual sole/toe underside in rest mesh",
+        "surface_min_z": 0.0018520441371947527,
+        "vertices": 2020
+      },
+      "right_foot": {
+        "joint": [
+          -0.1121385395526886,
+          0.03147576004266739,
+          0.13580477237701416
+        ],
+        "method": "actual sole/toe underside in rest mesh",
+        "surface_min_z": -0.0009437405969947577,
+        "vertices": 1776
+      },
+      "left_knee": {
+        "joint": [
+          0.20740021765232086,
+          0.002237749518826604,
+          0.32900285720825195
+        ],
+        "vertices": 1174,
+        "method": "95th percentile radial actual weighted knee surface",
+        "radius": 0.08089741039744272
+      },
+      "right_knee": {
+        "joint": [
+          -0.11072372645139694,
+          -0.0011065300786867738,
+          0.3224467933177948
+        ],
+        "vertices": 1085,
+        "method": "95th percentile radial actual weighted knee surface",
+        "radius": 0.0788854059648087
+      }
+    },
+    "left_hand": {
+      "contact_point": [
+        0.35328406297174614,
+        -0.20227343695504324,
+        0.6503984291750685
+      ],
+      "palm_normal": [
+        -0.8714326357834148,
+        -0.4856988918165812,
+        0.06856929181284621
+      ],
+      "finger_direction": [
+        0.0,
+        -0.1397903507021184,
+        -0.9901811237599809
+      ]
+    },
+    "right_hand": {
+      "contact_point": [
+        -0.381762474282714,
+        -0.0020253865323182196,
+        0.606349859355895
+      ],
+      "palm_normal": [
+        -0.05643309738577295,
+        -0.9886031633808733,
+        0.13956751367269637
+      ],
+      "finger_direction": [
+        0.0,
+        -0.13979028585536968,
+        -0.9901811329148189
+      ]
+    },
+    "left_foot": {
+      "contact_point": [
+        0.2640184671441211,
+        -0.07481033173448677,
+        0.005118657749358423
+      ]
+    },
+    "right_foot": {
+      "contact_point": [
+        -0.18462427953879038,
+        -0.08525276473826832,
+        0.0020578150852088584
+      ]
+    },
+    "left_knee": {
+      "clearance": 0.08089741039744272
+    },
+    "right_knee": {
+      "clearance": 0.0788854059648087
+    }
+  },
+  "animation": {
+    "creature": "Baby",
+    "armature": "Baby_Rig",
+    "coordinate_system": "Blender Z-up, front -Y",
+    "in_place": true,
+    "ground_height": 0,
+    "fps": 60,
+    "arm_lengths": 0.3124015606243967,
+    "leg_lengths": 0.3933758079126417,
+    "actions": {
+      "idle": {
+        "action": "idle",
+        "frames": 151,
+        "duration_seconds": 2.5,
+        "pelvis_height": 0.18475186964388346,
+        "body_pitch": 1.12,
+        "spine_bend": 0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 4.0978193283081055e-08,
+          "left_foot": 0.0,
+          "right_hand": 0.032823182776640245,
+          "right_foot": 0.0
+        },
+        "max_segment_length_error": 3.166396375653413e-08,
+        "max_scale_error": 2.682209014892578e-06,
+        "translation_loop_error": 0.0
+      },
+      "patrol": {
+        "action": "patrol",
+        "frames": 88,
+        "duration_seconds": 1.45,
+        "pelvis_height": 0.18475186964388346,
+        "body_pitch": 1.14,
+        "spine_bend": 0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 4.0978193283081055e-08,
+          "left_foot": 0.0,
+          "right_hand": 0.060462965137949964,
+          "right_foot": 0.0
+        },
+        "max_segment_length_error": 4.088501937005162e-08,
+        "max_scale_error": 2.7418136596679688e-06,
+        "translation_loop_error": 0.0
+      },
+      "chase": {
+        "action": "chase",
+        "frames": 38,
+        "duration_seconds": 0.6166666666666667,
+        "pelvis_height": 0.18475186964388346,
+        "body_pitch": 1.18,
+        "spine_bend": 0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 3.960037906741593e-08,
+          "left_foot": 0.0,
+          "right_hand": 0.05343183589393044,
+          "right_foot": 0.0
+        },
+        "max_segment_length_error": 3.5237471246452046e-08,
+        "max_scale_error": 2.682209014892578e-06,
+        "translation_loop_error": 0.0
+      },
+      "cry": {
+        "action": "cry",
+        "frames": 121,
+        "duration_seconds": 2.0,
+        "pelvis_height": 0.18475186964388346,
+        "body_pitch": 1.1,
+        "spine_bend": 0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 4.360340502381185e-08,
+          "left_foot": 0.0,
+          "right_hand": 0.037447150286396426,
+          "right_foot": 0.0
+        },
+        "max_segment_length_error": 4.69807091840746e-08,
+        "max_scale_error": 2.682209014892578e-06,
+        "translation_loop_error": 0.0
+      }
+    }
+  },
+  "actions": [
+    "chase",
+    "cry",
+    "idle",
+    "patrol"
+  ],
+  "status": "INSPECTION_SOURCE_ONLY"
+}

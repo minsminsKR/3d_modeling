@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "key": "Baby",
+  "source": "source-original.glb",
+  "face_preview_size": 1200,
+  "review": "Actual circular red glass irises, inside the scleral/orbital ring; center pupils remain black. Landmarks correspond to preview_geometry.py face projection.",
+  "eyes": [
+    {"centerPixels": [376, 603], "radiiPixels": [34, 36], "pupilRadiusFraction": 0.28},
+    {"centerPixels": [671, 522], "radiiPixels": [35, 38], "pupilRadiusFraction": 0.28}
+  ]
+}

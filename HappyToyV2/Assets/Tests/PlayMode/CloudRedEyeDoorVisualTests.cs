@@ -189,9 +189,13 @@ namespace HappyToy.V2.CloudTests
                 var anchors = Get<IReadOnlyList<Transform>>(eye, "EyeAnchors");
                 var radii = Get<IReadOnlyList<float>>(eye, "EyeRadii");
                 var emitters = Get<IReadOnlyList<Renderer>>(eye, "EmissionRenderers");
+                var motion = eye.GetComponentInParent(RequireType("V1MonsterMotion")) as Component;
+                bool studio = motion && Get<bool>(motion, "StudioVisual");
+                if(key=="Cyclopse" || key=="Uncat" || key=="Baby")
+                    Assert.That(studio,Is.True,key+" face still uses the old generation");
                 Assert.That(anchors.Count, Is.EqualTo(key == "Cyclopse" ? 1 : 2), key + " anatomical eye count");
                 Assert.That(radii.Count, Is.EqualTo(anchors.Count));
-                Assert.That(radii.All(radius => radius > .002f && radius < .15f), Is.True, key + " actual eye extent");
+                Assert.That(radii.All(radius => radius > .002f && radius < (studio ? .28f : .15f)), Is.True, key + " actual eye extent");
                 Assert.That(emitters, Is.Not.Empty);
                 Assert.That(eye.GetComponentsInChildren<Renderer>(true), Is.Empty, "An overlay covers the original iris/pupil");
                 Assert.That(eye.GetComponentsInChildren<MeshFilter>(true), Is.Empty, "Eyes added opaque dome/disc geometry");
@@ -202,7 +206,6 @@ namespace HappyToy.V2.CloudTests
                 var materials = emitters.Select(renderer => renderer.sharedMaterials).ToArray();
                 var enabled = emitters.Select(renderer => renderer.enabled).ToArray();
                 var shadows = emitters.Select(renderer => renderer.shadowCastingMode).ToArray();
-                var motion = eye.GetComponentInParent(RequireType("V1MonsterMotion")) as Component;
                 // This requested replacement face owns two buried, genuinely
                 // modeled eye slits. Its oracle is the new Blender FBX; every
                 // other actor continues to use the retained original-eye oracle.
@@ -255,6 +258,7 @@ namespace HappyToy.V2.CloudTests
                         EyeSameOriginalMaterial(material, (Material)Call(eye, "GetOriginalMaterial", emitter, slot), key + " original surface slot: ");
                         Assert.That(material.GetTexture("_BaseMap"), Is.Not.Null, key + " original eye atlas was removed");
                         Assert.That(material.GetTexture("_EmissionMap"), Is.Not.Null, key + " original-surface mask is missing");
+                        if(studio)Assert.That(material.GetTexture("_EmissionMap"),Is.SameAs(Resources.Load<Texture2D>("EnemyStudio/"+key+"/eyes-emission")),"New eye uses a stale UV mask");
                         if (key == "LanternMask")
                         {
                             Assert.That(material.IsKeywordEnabled("_EMISSION"), Is.False, "Reference black slit inherited a glowing red eye shader");
@@ -269,7 +273,7 @@ namespace HappyToy.V2.CloudTests
                         if (motion)
                         {
                             var skins = Get<Transform>(motion, "model").GetComponentsInChildren<SkinnedMeshRenderer>();
-                            var source = Resources.Load<GameObject>("EnemyRefinement/" + key + "-v2");
+                            var source = Resources.Load<GameObject>(studio ? "EnemyStudio/" + key + "/" + key : "EnemyRefinement/" + key + "-v2");
                             Assert.That(emitter is SkinnedMeshRenderer, Is.True);
                             int skinIndex = System.Array.IndexOf(skins, (SkinnedMeshRenderer)emitter);
                             Assert.That(EyeOriginalMesh(emitter), Is.SameAs(source.GetComponentsInChildren<SkinnedMeshRenderer>()[skinIndex].sharedMesh),
@@ -332,7 +336,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(effects, Is.Not.Empty);
             var colliders = UnityEngine.Object.FindObjectsByType<Collider>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             var navigation = NavMesh.CalculateTriangulation();
-            var sourceMaps = effects.Select(eye => Resources.Load<Texture2D>("ThreatEyes/" + Get<string>(eye, "ProfileKey") + "-emission")).Distinct().ToArray();
+            var sourceMaps = effects.Select(eye =>
+            {
+                string key=Get<string>(eye,"ProfileKey");
+                var motion=eye.GetComponentInParent(RequireType("V1MonsterMotion"));
+                bool studio=motion && Get<bool>(motion,"StudioVisual");
+                return Resources.Load<Texture2D>(studio ? "EnemyStudio/"+key+"/eyes-emission" : "ThreatEyes/"+key+"-emission");
+            }).Distinct().ToArray();
             Assert.That(sourceMaps.All(map => map), Is.True);
             foreach (var eye in effects) Call(eye, "SetEmissionEnabled", false);
             yield return new WaitForSecondsRealtime(.08f);

@@ -1,0 +1,16 @@
+{
+  "batch": "9db88457-ce0e-4332-8671-eb1eb63b6b0f",
+  "model": "TRELLIS.2",
+  "shape_resolution": 1536,
+  "texture_resolution": 8192,
+  "background_removal": true,
+  "sampler_steps": 12,
+  "seed": 1234,
+  "jobs": {
+    "Uncat": "96dbef69-c74f-4f9f-856e-84be0be5fd20",
+    "Cyclopse": "6d784c70-290c-41c3-9200-3ac4a7719d62",
+    "Baby": "d0eea79c-dc33-4bf9-9d4a-aa78a5357872"
+  },
+  "reference_source": "concept-prompts.json",
+  "rigging": "SkinTokens / TokenRig, with Blender skin and animation correction"
+}

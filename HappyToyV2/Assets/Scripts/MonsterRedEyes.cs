@@ -112,8 +112,10 @@ namespace HappyToy.V2
         {
             if(!model)throw new ArgumentNullException(nameof(model));
             var prior=model.GetComponentInChildren<MonsterRedEyes>(true);if(prior)return prior;
-            var data=Resources.Load<TextAsset>("ThreatEyes/"+key+"-profile");
-            var mask=Resources.Load<Texture2D>("ThreatEyes/"+key+"-emission");
+            var studio=model.GetComponent<EnemyStudioRig>();
+            if(studio&&studio.key!=key)throw new InvalidOperationException("Studio eye anatomy key differs: "+key);
+            var data=Resources.Load<TextAsset>(studio?"EnemyStudio/"+key+"/eyes-profile":"ThreatEyes/"+key+"-profile");
+            var mask=Resources.Load<Texture2D>(studio?"EnemyStudio/"+key+"/eyes-emission":"ThreatEyes/"+key+"-emission");
             if(!data||!mask)throw new InvalidOperationException("Missing original-eye emission authoring: "+key+" profile="+(bool)data+" mask="+(bool)mask);
             var profile=JsonUtility.FromJson<Profile>(data.text);
             int expected=key=="Cyclopse"?1:2;
@@ -144,6 +146,7 @@ namespace HappyToy.V2
             }
             var root=new GameObject("Original eye surface glow");root.transform.SetParent(head,false);
             var art=root.AddComponent<MonsterRedEyes>();art.Head=head;art.ProfileKey=key;
+            if(art.block==null)art.block=new MaterialPropertyBlock();
             art.phase=key=="Baby"?2.1f:key=="Uncat"?1.3f:key=="Cyclopse"?.4f:3.6f;
             try
             {
@@ -175,10 +178,13 @@ namespace HappyToy.V2
             {
                 if(skinned)
                 {
-                    foreach(var skin in model.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                    var studio=model.GetComponent<EnemyStudioRig>();
+                    var skins=studio?studio.primarySkins:model.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                    foreach(var skin in skins)
                     {
                         if(!skin.enabled||!skin.sharedMesh)continue;
-                        skin.BakeMesh(scratch,true);posed.Add(Capture(skin,scratch));scratch.Clear();
+                        if(studio)EnemyStudioRig.BakeLocalPose(skin,scratch);else skin.BakeMesh(scratch,true);
+                        posed.Add(Capture(skin,scratch));scratch.Clear();
                     }
                 }
                 else foreach(var filter in model.GetComponentsInChildren<MeshFilter>(true))

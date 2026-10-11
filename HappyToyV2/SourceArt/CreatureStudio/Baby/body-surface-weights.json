@@ -1,0 +1,33 @@
+{
+  "source": "source-original.glb",
+  "vertices": 798374,
+  "bones": 22,
+  "surfaceGraphVertices": 190401,
+  "sourceAIWeightsReused": false,
+  "maxWeightSumError": 1.1920928955078125e-07,
+  "zeroWeightVertices": 0,
+  "dominantVertices": {
+    "mixamorig:Hips": 41569,
+    "mixamorig:Spine": 10363,
+    "mixamorig:Spine1": 9939,
+    "mixamorig:Spine2": 13150,
+    "mixamorig:Neck": 0,
+    "mixamorig:Head": 166850,
+    "mixamorig:LeftShoulder": 44107,
+    "mixamorig:LeftArm": 95834,
+    "mixamorig:LeftForeArm": 16722,
+    "mixamorig:LeftHand": 19738,
+    "mixamorig:LeftUpLeg": 74612,
+    "mixamorig:LeftLeg": 21365,
+    "mixamorig:LeftFoot": 12483,
+    "mixamorig:LeftToeBase": 6679,
+    "mixamorig:RightShoulder": 36439,
+    "mixamorig:RightArm": 76673,
+    "mixamorig:RightForeArm": 11366,
+    "mixamorig:RightHand": 12619,
+    "mixamorig:RightUpLeg": 88814,
+    "mixamorig:RightLeg": 19770,
+    "mixamorig:RightFoot": 12689,
+    "mixamorig:RightToeBase": 6593
+  }
+}

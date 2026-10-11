@@ -1,0 +1,322 @@
+{
+  "creature": "Uncat",
+  "input": "source-original.glb",
+  "sourceSHA256": "58319e2d3cfe9ef1bfb23a283e010db9aa9c71deeac0954c12646546a1f651f8",
+  "tool": "4.0.2",
+  "oldMeshImported": false,
+  "reviewedBodyBinding": {
+    "bones": 22,
+    "quantization": {
+      "input_max_sum_error": 4.842877388000488e-08,
+      "quantization_max_error": 0.000725090503692627,
+      "quantized_max_sum_error": 0,
+      "weight_bins": 1024,
+      "zero_weight_vertices": 0
+    },
+    "sourceAIWeightsReused": false,
+    "meshes": {
+      "Uncat_EditableHigh": {
+        "correspondence": "identity-order",
+        "maximumPositionError": 0.0,
+        "binding": {
+          "groups": 22,
+          "batch_calls": 19312,
+          "influences": 3223066,
+          "preserve_volume": false
+        },
+        "originalGeometryAndUVUnchanged": true
+      }
+    }
+  },
+  "bodyPlan": "body-rig-plan.json",
+  "sourceAIUsedForSkin": false,
+  "normalization": {
+    "targetHeight": 2.2,
+    "sourceBounds": [
+      [
+        -0.33885639905929565,
+        -0.3330322504043579,
+        -0.49872782826423645
+      ],
+      [
+        0.3388667702674866,
+        0.3277839720249176,
+        0.49853989481925964
+      ]
+    ],
+    "uniformScale": 2.2060274779551903,
+    "floor": 0,
+    "front": "-Y"
+  },
+  "derivedToeAnchors": [],
+  "gameLOD": {
+    "vertices": 74795,
+    "triangles": 51998,
+    "topologyCleanup": {
+      "before": {
+        "vertices": 74795,
+        "faces": 51998,
+        "loops": 155994
+      },
+      "after": {
+        "vertices": 74795,
+        "faces": 51998,
+        "loops": 155994
+      },
+      "duplicateOrDegenerateFacesRemoved": false,
+      "looseVerticesRemoved": 0,
+      "customNormalsRecomputedForNewTopology": true,
+      "editableHighUnchanged": true
+    },
+    "estimatedUnitySplitVertices": 77343,
+    "skin": {
+      "maximumInfluences": 4,
+      "weightBins": 1024,
+      "unboundVertices": 0
+    }
+  },
+  "normal": {
+    "method": "Cycles selected-high-to-active-LOD tangent normal geometry bake",
+    "size": [
+      2048,
+      2048
+    ],
+    "rayDistance": 0.0176,
+    "cageExtrusion": 0.0088
+  },
+  "gamePBR": [
+    {
+      "material": 0,
+      "albedo": [
+        2048,
+        2048
+      ],
+      "normal": [
+        2048,
+        2048
+      ],
+      "metallicSmoothness": [
+        2048,
+        2048
+      ],
+      "source8KPreserved": true
+    }
+  ],
+  "contacts": {
+    "floor": 0,
+    "coordinateSystem": "Blender Z-up / front -Y",
+    "measurements": {
+      "left_hand": {
+        "joint": [
+          0.6661962270736694,
+          -0.24591413140296936,
+          1.0254871845245361
+        ],
+        "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
+        "surface_min_z": 0.6756003499031067,
+        "vertices": 779
+      },
+      "right_hand": {
+        "joint": [
+          -0.6662806868553162,
+          -0.2274601310491562,
+          1.0251882076263428
+        ],
+        "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
+        "surface_min_z": 0.6588946580886841,
+        "vertices": 838
+      },
+      "left_foot": {
+        "joint": [
+          0.3369995951652527,
+          -0.02501978725194931,
+          0.15005415678024292
+        ],
+        "method": "actual sole/toe underside in rest mesh",
+        "surface_min_z": -0.0013553902972489595,
+        "vertices": 792
+      },
+      "right_foot": {
+        "joint": [
+          -0.28488630056381226,
+          0.019402101635932922,
+          0.1482686996459961
+        ],
+        "method": "actual sole/toe underside in rest mesh",
+        "surface_min_z": -0.005550505127757788,
+        "vertices": 700
+      },
+      "left_knee": {
+        "joint": [
+          0.321334570646286,
+          -0.07663959264755249,
+          0.41854941844940186
+        ],
+        "vertices": 221,
+        "method": "95th percentile radial actual weighted knee surface",
+        "radius": 0.11805104801615486
+      },
+      "right_knee": {
+        "joint": [
+          -0.31458112597465515,
+          -0.04678940773010254,
+          0.41875845193862915
+        ],
+        "vertices": 372,
+        "method": "95th percentile radial actual weighted knee surface",
+        "radius": 0.11787044683426752
+      }
+    },
+    "left_hand": {
+      "contact_point": [
+        0.6791968818996659,
+        -0.34617111587235877,
+        0.9634731870881924
+      ],
+      "palm_normal": [
+        0.5092527437958977,
+        -0.8521667331663171,
+        0.12030586777458765
+      ],
+      "finger_direction": [
+        0.0,
+        -0.13979025044562954,
+        -0.9901811379138407
+      ],
+      "clearance": 0.1175956653
+    },
+    "right_hand": {
+      "contact_point": [
+        -0.6245316026129586,
+        -0.359776757380863,
+        0.9418953822178155
+      ],
+      "palm_normal": [
+        -0.055379822717506084,
+        -0.9886615772945905,
+        0.1395756455014628
+      ],
+      "finger_direction": [
+        0.0,
+        -0.1397901730845758,
+        -0.9901811488353959
+      ],
+      "clearance": 0.1498786734
+    },
+    "left_foot": {
+      "contact_point": [
+        0.41723661754817204,
+        -0.22615675283770234,
+        0.004165459852196258
+      ],
+      "clearance": 0.15088870108127594
+    },
+    "right_foot": {
+      "contact_point": [
+        -0.3765119944954139,
+        -0.190466745990212,
+        0.004195948928907532
+      ],
+      "clearance": 0.14907271146774292
+    },
+    "left_knee": {
+      "clearance": 0.11805104801615486
+    },
+    "right_knee": {
+      "clearance": 0.11787044683426752
+    }
+  },
+  "animation": {
+    "creature": "Uncat",
+    "armature": "Uncat_Rig",
+    "coordinate_system": "Blender Z-up, front -Y",
+    "in_place": true,
+    "ground_height": 0,
+    "fps": 60,
+    "arm_lengths": 0.6305641643676281,
+    "leg_lengths": 0.5805197343376609,
+    "actions": {
+      "idle": {
+        "action": "idle",
+        "frames": 163,
+        "duration_seconds": 2.7,
+        "pelvis_height": 0.506,
+        "body_pitch": 0.85,
+        "spine_bend": 1.0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 6.705522537231445e-08,
+          "left_foot": 8.363255977870393e-08,
+          "right_hand": 2.9802322387695312e-08,
+          "right_foot": 6.537857940340133e-08
+        },
+        "max_segment_length_error": 6.093341220481108e-08,
+        "max_scale_error": 1.9073486328125e-06,
+        "translation_loop_error": 0.0
+      },
+      "patrol": {
+        "action": "patrol",
+        "frames": 79,
+        "duration_seconds": 1.3,
+        "pelvis_height": 0.506,
+        "body_pitch": 0.85,
+        "spine_bend": 1.0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 6.705522537231445e-08,
+          "left_foot": 5.21540641784668e-08,
+          "right_hand": 8.940696716308594e-08,
+          "right_foot": 6.188917057900187e-08
+        },
+        "max_segment_length_error": 5.9332395996314347e-08,
+        "max_scale_error": 2.0265579223632812e-06,
+        "translation_loop_error": 0.0
+      },
+      "chase": {
+        "action": "chase",
+        "frames": 38,
+        "duration_seconds": 0.6166666666666667,
+        "pelvis_height": 0.506,
+        "body_pitch": 0.95,
+        "spine_bend": 1.0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 4.470348358154297e-08,
+          "left_foot": 5.21540641784668e-08,
+          "right_hand": 4.470348358154297e-08,
+          "right_foot": 4.998001405968792e-08
+        },
+        "max_segment_length_error": 7.096619808466542e-08,
+        "max_scale_error": 2.1457672119140625e-06,
+        "translation_loop_error": 0.0
+      }
+    }
+  },
+  "actions": [
+    "chase",
+    "idle",
+    "patrol"
+  ],
+  "fbx": {
+    "file": "Assets/Resources/EnemyStudio/Uncat/Uncat.fbx",
+    "sha256": "b9566d4f0ac21df8259ac1e49724b2be0fb5449b60808e89f35d39196236fd19"
+  },
+  "optionalGameGLB": {
+    "file": "Uncat/previews/Uncat_Game.glb",
+    "sha256": "caef0f95c64ee8eb31046b6c1fb9a3ba2cf56f17164a0449bd7725bd8aadd736"
+  },
+  "status": "INSPECTION_SOURCE_ONLY",
+  "reviewedRebinding": {
+    "groups": 22,
+    "batch_calls": 18838,
+    "influences": 2235902,
+    "preserve_volume": false,
+    "quantization": {
+      "input_max_sum_error": 4.842877388000488e-08,
+      "quantization_max_error": 0.0007239752971979806,
+      "quantized_max_sum_error": 0,
+      "weight_bins": 1024,
+      "zero_weight_vertices": 0
+    }
+  }
+}

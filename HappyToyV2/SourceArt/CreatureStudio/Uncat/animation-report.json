@@ -1,0 +1,66 @@
+{
+  "creature": "Uncat",
+  "armature": "Uncat_Rig",
+  "coordinate_system": "Blender Z-up, front -Y",
+  "in_place": true,
+  "ground_height": 0,
+  "fps": 60,
+  "arm_lengths": 0.6305641643676281,
+  "leg_lengths": 0.5805197343376609,
+  "actions": {
+    "idle": {
+      "action": "idle",
+      "frames": 163,
+      "duration_seconds": 2.7,
+      "pelvis_height": 0.506,
+      "body_pitch": 0.85,
+      "spine_bend": 1.0,
+      "neck_bend": 0,
+      "max_target_correction": {
+        "left_hand": 6.705522537231445e-08,
+        "left_foot": 8.363255977870393e-08,
+        "right_hand": 2.9802322387695312e-08,
+        "right_foot": 6.537857940340133e-08
+      },
+      "max_segment_length_error": 6.093341220481108e-08,
+      "max_scale_error": 1.9073486328125e-06,
+      "translation_loop_error": 0.0
+    },
+    "patrol": {
+      "action": "patrol",
+      "frames": 79,
+      "duration_seconds": 1.3,
+      "pelvis_height": 0.506,
+      "body_pitch": 0.85,
+      "spine_bend": 1.0,
+      "neck_bend": 0,
+      "max_target_correction": {
+        "left_hand": 6.705522537231445e-08,
+        "left_foot": 5.21540641784668e-08,
+        "right_hand": 8.940696716308594e-08,
+        "right_foot": 6.188917057900187e-08
+      },
+      "max_segment_length_error": 5.9332395996314347e-08,
+      "max_scale_error": 2.0265579223632812e-06,
+      "translation_loop_error": 0.0
+    },
+    "chase": {
+      "action": "chase",
+      "frames": 38,
+      "duration_seconds": 0.6166666666666667,
+      "pelvis_height": 0.506,
+      "body_pitch": 0.95,
+      "spine_bend": 1.0,
+      "neck_bend": 0,
+      "max_target_correction": {
+        "left_hand": 4.470348358154297e-08,
+        "left_foot": 5.21540641784668e-08,
+        "right_hand": 4.470348358154297e-08,
+        "right_foot": 4.998001405968792e-08
+      },
+      "max_segment_length_error": 7.096619808466542e-08,
+      "max_scale_error": 2.1457672119140625e-06,
+      "translation_loop_error": 0.0
+    }
+  }
+}

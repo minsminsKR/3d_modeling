@@ -1,0 +1,36 @@
+{
+  "key": "Baby",
+  "eyes": 2,
+  "whitePixels": 1566,
+  "uvOrigin": "bottom-left Blender/Unity",
+  "sourceAuthoringSHA256": "257c8868a9758dea1a5d1e33e7c6d549336e420eb52729a2bbd1a024b0feac89",
+  "sourceGLBSHA256": "47b27eb1a8d69d8ed0547e67bb6c44b3f6f664e99d8054935dd7d9899a688239",
+  "coverage": [
+    {
+      "eye": 0,
+      "whitePixels": 677,
+      "method": "source eye surface triangles, independent UV seam corners",
+      "sourceCenterGLTF": [
+        -0.08483999222517014,
+        0.2989393174648285,
+        0.08919861167669296
+      ],
+      "sourceRadius": 0.01800568215548992,
+      "selectedSourceTriangles": 286,
+      "uvIslands": 0
+    },
+    {
+      "eye": 1,
+      "whitePixels": 889,
+      "method": "source eye surface triangles, independent UV seam corners",
+      "sourceCenterGLTF": [
+        0.026003342121839523,
+        0.32928186655044556,
+        0.11716961860656738
+      ],
+      "sourceRadius": 0.01796005666255951,
+      "selectedSourceTriangles": 330,
+      "uvIslands": 0
+    }
+  ]
+}

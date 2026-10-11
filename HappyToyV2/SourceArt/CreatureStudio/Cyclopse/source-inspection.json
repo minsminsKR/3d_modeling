@@ -1,0 +1,36 @@
+{
+  "input": "source-original.glb",
+  "inputSHA256": "f14e48ff4890d7d11bde1598b2b139a327a65d88dda525f4f412350bfd7d2116",
+  "coordinateSystem": "glTF Y-up, Blender conversion (x,-z,y)",
+  "meshes": [
+    {
+      "node": 0,
+      "name": "geometry_0",
+      "primitive": 0,
+      "vertices": 1136965,
+      "bounds": [
+        [
+          -0.3573027551174164,
+          -0.4998953342437744,
+          -0.18321971595287323
+        ],
+        [
+          0.3571935296058655,
+          0.49826857447624207,
+          0.18605642020702362
+        ]
+      ],
+      "material": 0,
+      "skin": null,
+      "hasUV": true,
+      "attributes": [
+        "POSITION",
+        "TEXCOORD_0",
+        "NORMAL"
+      ],
+      "triangles": 938566
+    }
+  ],
+  "skins": [],
+  "animationNames": []
+}

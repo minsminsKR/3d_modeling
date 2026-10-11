@@ -21,7 +21,10 @@ namespace HappyToy.V2
         public float IntroBodyYaw => IntroPoseActive ? 78 * introFall * introYawSign : 0;
         public Vector3 IntroHeadPosition => introPose != null ? introPose.HeadPosition : transform.position + Vector3.up * PresentationHeight * .8f;
         UncatLimbContacts limbContacts;StalkerFootsteps footsteps;
-        public bool LimbContactRigAvailable => limbContacts!=null;
+        EnemyStudioGrounding studioGrounding;
+        public bool StudioVisual { get; private set; }
+        public int GroundSupportSampleCount => studioGrounding==null?0:studioGrounding.SampleCount;
+        public bool LimbContactRigAvailable => limbContacts!=null||studioGrounding!=null&&studioGrounding.HasLimbContacts;
         public float LimbContactGap { get; private set; }
         public float AttackPoseWeight=>attackPose==null?0:attackPose.Weight;
         public bool AttackRigAvailable=>attackPose!=null&&attackPose.Available;
@@ -45,6 +48,8 @@ namespace HappyToy.V2
                 groundCorrectionLimit=Mathf.Max(.35f,agent.height*.5f);
             RefinedVisual=EnemyVisualRefinement.TryApply(this,out var refinedModel,out var refinedAnimation,out refinedMaterials);
             model=refinedModel;animationPlayer=refinedAnimation;
+            var studioRig=model.GetComponent<EnemyStudioRig>();StudioVisual=studioRig;
+            if(studioRig)studioGrounding=new EnemyStudioGrounding(studioRig);
             var patrol=animationPlayer.GetClip("patrol");
             if(patrol)patrol.SampleAnimation(animationPlayer.gameObject,0);
             PresentationScale=MonsterPresentationScale.Enlarge(model,
@@ -53,10 +58,10 @@ namespace HappyToy.V2
             PresentationHeight=MonsterPresentationScale.Bounds(model).size.y;
             groundCorrectionLimit*=PresentationScale;
             rest=model.localRotation;restPosition=model.localPosition;skins=model.GetComponentsInChildren<SkinnedMeshRenderer>();
-            sampledMesh=new Mesh();attackPose=new V1AttackPose(model);
+            sampledMesh=StudioVisual?null:new Mesh();attackPose=new V1AttackPose(model);
             if(EnemySoundProfile.Identify(transform)==EnemySoundKind.Cyclopse)
                 introPose=new CyclopseStumblePose(model);
-            if(EnemySoundProfile.Identify(transform)==EnemySoundKind.Uncat)
+            if(EnemySoundProfile.Identify(transform)==EnemySoundKind.Uncat&&!StudioVisual)
                 limbContacts=new UncatLimbContacts(skins);
         }
         void Update()
@@ -97,7 +102,8 @@ namespace HappyToy.V2
             if(Physics.Raycast(transform.position+Vector3.up*.25f,Vector3.down,out var floor,.8f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
             {
                 float sole=float.MaxValue,limbSole=float.MaxValue;
-                for(int index=0;index<skins.Length;index++)
+                if(studioGrounding!=null)studioGrounding.Sample(out sole,out limbSole);
+                else for(int index=0;index<skins.Length;index++)
                 {
                     var skin=skins[index];var contactMask=limbContacts?.ForSkin(index);
                     // FBX hierarchy has ~95x scale; compensate it before applying TransformPoint.
@@ -137,7 +143,7 @@ namespace HappyToy.V2
         {
             attackPose?.Reset();
             ClearIntroPose();
-            if(limbContacts!=null)
+            if(LimbContactRigAvailable)
             {
                 if(!footsteps)footsteps=GetComponent<StalkerFootsteps>();
                 if(footsteps)footsteps.ClearRenderedContactDebt();
