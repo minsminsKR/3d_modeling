@@ -14,6 +14,8 @@
 | 적의 시야·청각 | `StalkerBrain.cs`가 게임 상태를 조정하고 `AI/StalkerPerception.cs`가 실제 가림·층·소리 경로의 증거를 반환한다. | `core`, `ai` |
 | 공격·캐비닛 은신 | `AI/StalkerAttack.cs`는 공격 예고/회복과 예고 시 확정한 표적을 소유한다. `Core/EnemyAttackClock.cs`, `CabinetHidingRules.cs`는 독립 규칙이다. `PlayerMotor.cs`, `Interactable.cs`는 실제 은신 입출력을 연결한다. | `core`, `ai`, 저장 변경 시 `checkpoint` |
 | 적의 문 통과·추적 경로 | `AI/StalkerDoorPassage.cs`는 문 통과와 제한된 대기를 소유한다. `EnemyNavigation.cs`, `StalkerDoorTraversal.cs`는 실제 NavMesh/층 경로를 처리한다. | `ai-doors` |
+| 큰 몬스터의 벽 겹침·걷기/추격 동작 | `AI/EnemyBodyClearance.cs`는 렌더링 몸체 크기의 트리거 쿼리(상호작용·NavMesh 베이크 제외)로 실제 NavMesh 이동을 보정한다. `AI/EnemyLocomotionPose.cs`는 원본 리그·클립 위에 복원 가능한 팔다리 동작을 더한다. `V1MonsterMotion.cs`가 이동 속도·상태·공격·일시정지를 연결한다. | `readability`, 문/경로 변경 시 `ai-doors` |
+| 획득 아이템 테두리·촛불 위기 소등 | `PickupOutline.cs`와 `Resources/PickupOutline.shader`는 실제 획득 가능/표시 상태와 깊이 검사를 따른다. `CandleDanger.cs`는 가까운 몸체와 공격을 판정하고 `WaymarkCandle.cs`는 점화 기억을 보존해 자동 복원한다. | `readability`, 저장 변경 시 `checkpoint` |
 | 베이비·적별 감각 | `StalkerCorridorBaby.cs`, `CorridorBabyBehaviour.cs`, `Core/CorridorBabyMemory.cs`, `Core/CorridorThreatRules.cs`. 운캣과 학교 화캣의 정체성은 별도다. | `core`, `ai` |
 | 서랍·가구 상호작용 | `CorridorDrawer.cs`, `CorridorFurniturePlacement.cs`, `CorridorFurnitureLibrary.cs`, `PlayerMotor.cs`. 움직이는 서랍과 플레이어 충돌·상호작용 거리를 확인한다. | `drawer` |
 | 회랑 생성·제단 | `CorridorLayout.cs`, `CorridorRun.cs`, `CorridorRunAltar.cs`, `CorridorAltarChamber.cs`. 저장된 지도 버전과 생성 순서를 보존한다. | `checkpoint`, 전체 공간 변경 시 `full` |
@@ -49,7 +51,7 @@ python HappyToyV2/Tools/quality/run_feature_tests.py --profile drawer
 python HappyToyV2/Tools/quality/run_feature_tests.py --profile full
 ```
 
-`core`는 빠른 EditMode 규칙 검사, `ui` / `ai` / `ai-doors` / `drawer` / `checkpoint`는
+`core`는 빠른 EditMode 규칙 검사, `ui` / `ai` / `ai-doors` / `drawer` / `checkpoint` / `readability`는
 해당 실제 동작의 PlayMode 검사다. `full`은 필터 없는 EditMode와 PlayMode를
 모두 실행한다. 필터가 0개 검사를 선택하거나 검사 실패·건너뜀·결과 누락이 있으면
 성공으로 처리하지 않는다. `--dry-run`은 명령을 확인하며 검사를 통과한 것으로
@@ -58,6 +60,11 @@ python HappyToyV2/Tools/quality/run_feature_tests.py --profile full
 Windows Editor의 GPU 오류를 진단할 때는 `--graphics-api d3d11` 또는 `d3d12`를
 명시할 수 있다. 이 옵션은 해당 검사 프로세스에만 적용하며 프로젝트/플레이어
 설정을 바꾸지 않는다. 다른 API에서의 통과는 기본 API의 렌더링 통과를 뜻하지 않는다.
+
+`readability`는 `CloudGameplayReadabilityTests.cs`의 실제 벽/리그/획득 상태/촛불 검사와
+기존 큰 몬스터 문 통과·촛불 복원·리그 일시정지 검사를 실행한다. 새 플레이어의 실제
+테두리 픽셀과 가림, 이동 중 걷기/추격 프레임은 선택 진단
+`-quiet-diagnostics -v2-readability-output <새 결과 폴더>`로 확인한다.
 
 전체 구조·어셈블리 변경 뒤에는 새 플레이어까지 확인한다.
 

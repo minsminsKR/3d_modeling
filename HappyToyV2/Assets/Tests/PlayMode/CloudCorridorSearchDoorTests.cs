@@ -66,7 +66,9 @@ namespace HappyToy.V2.CloudTests
                 {
                     Assert.That(Vector3.Dot(brain.transform.position-door.transform.position,forward),Is.LessThan(-.18f),
                         "Search crossed a real closed leaf without opening it");
-                    if(!sawClosedPause && Vector3.Distance(brain.transform.position,door.transform.position)<1.4f)
+                    // Large bodies stop before the former 1.4m root-distance
+                    // threshold. Observe their real closed-handle wait instead.
+                    if(!sawClosedPause && agent.isStopped && Vector3.Distance(brain.transform.position,door.transform.position)<3f)
                     {
                         sawClosedPause=true; Call(shell,"Pause"); var position=brain.transform.position;
                         yield return Delay(.3f); Assert.That(brain.transform.position,Is.EqualTo(position));

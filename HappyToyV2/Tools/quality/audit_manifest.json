@@ -143,6 +143,16 @@
       "timeout_seconds": 180,
       "status": "NOT RUN",
       "purpose": "Controlled real native camera/material review of corridor and school, actors explicitly frozen and observer poses placed; not survival/input/device-listening or performance proof."
+    },
+    {
+      "name": "gameplay-readability",
+      "source": "Assets/Scripts/GameplayReadabilityProbe.cs",
+      "flag": "-v2-readability-output",
+      "argument_kind": "directory",
+      "result": "readability.json",
+      "timeout_seconds": 120,
+      "status": "NOT RUN",
+      "purpose": "Controlled real corridor NavMesh movement, patrol/chase limb amplitude and grounding, player-camera captures and pickup outline visible/occluded pixel comparisons. Brain isolated; not a survival playthrough."
     }
   ],
   "public_api_names": {

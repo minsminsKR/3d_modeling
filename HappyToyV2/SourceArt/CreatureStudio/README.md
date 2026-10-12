@@ -26,6 +26,27 @@ and a small body lurch. Patrol and cry retain their calm authored curves.
 Uncat runs on hands/feet; Cyclopse runs upright; Baby pursues on hands/knees.
 The existing AI Chase state selects these own clips through V1MonsterMotion.
 
+The 2026-10-13 gameplay feedback adds an editable runtime gait layer in
+`Assets/Scripts/AI/EnemyLocomotionPose.cs`, composed by `V1MonsterMotion`.
+It keeps these source rigs, weights and imported clips and restores the base
+joint rotations before every sample. Patrol adds upper-limb swings of 28 degrees
+for Cyclopse and 24 for Uncat; pursuit blends to 72 and 58 degrees respectively.
+Leg stride grows from 18 to 42/48 degrees, with opposing diagonal pairs for
+Uncat. Actual agent speed advances the phase; stationary/attack poses do not
+apply this layer, and pause freezes it. Edit these tracked settings to reproduce
+or tune the in-game action; a Blender clip-only export does not include this
+runtime layer. No base model regeneration or texture re-export is required.
+
+`AI/EnemyBodyClearance.cs` derives a one-time actor-local torso/head footprint
+from the actual posed skin vertices with at least 65% torso/head bone influence.
+It excludes animated distal limbs rather than shrinking the creature to fit
+doorways. A trigger-only query is excluded from ray interactions and navigation
+baking, and horizontal penetration corrections move the real NavMesh agent on
+the same supported floor. It does not move the visual independently of AI.
+`--profile readability` checks real wall overlap and door passage. Native frames
+and pickup silhouette/depth comparisons use
+`-quiet-diagnostics -v2-readability-output <new-output-directory>`.
+
 Each folder includes the original GLBs, packed `<key>_Editable.blend`, body plan,
 source-order surface weights, contacts, eye authoring and
 reports. Uncat/Baby additionally retain precomputed game surface data. High geometry and 8K images stay in the editable source. Only the game

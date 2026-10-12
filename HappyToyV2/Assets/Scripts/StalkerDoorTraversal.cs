@@ -99,12 +99,12 @@ namespace HappyToy.V2
         // A short/sideways cached steering corner can hide a closed leaf from the
         // forward capsule sweep. Admit only a physically visible nearby leaf that
         // the real intended native route crosses through its opening.
-        public static Interactable NearbyDoorOnRoute(NavMeshAgent walkingAgent, Vector3 destination, float floorY, NavMeshPath route)
+        public static Interactable NearbyDoorOnRoute(NavMeshAgent walkingAgent, Vector3 destination, float floorY, NavMeshPath route, float lookAhead = 2.2f)
         {
             if (!EnemyNavigation.Ready(walkingAgent) || route == null || !EnemyNavigation.WithinFloorPolicy(walkingAgent, walkingAgent.transform.position, floorY) ||
                 !EnemyNavigation.WithinFloorPolicy(walkingAgent, destination, floorY)) return null;
             var origin = walkingAgent.transform.position + Vector3.up * 1.1f;
-            int count = Physics.OverlapSphereNonAlloc(origin, 2.2f, nearbyLeaves, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            int count = Physics.OverlapSphereNonAlloc(origin, lookAhead, nearbyLeaves, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
             if (count == nearbyLeaves.Length) return null;
             Interactable nearest = null; float nearestDistance = float.PositiveInfinity; bool routeReady = false;
             for (int i = 0; i < count; i++)
@@ -112,7 +112,7 @@ namespace HappyToy.V2
                 var candidate = nearbyLeaves[i] ? nearbyLeaves[i].GetComponentInParent<Interactable>() : null;
                 if (!candidate || !candidate.DoorOperable || candidate.IsOpen || !EnemyNavigation.SameActorFloor(walkingAgent, candidate.transform.position, floorY)) continue;
                 float distance = Horizontal(walkingAgent.transform.position - candidate.transform.position);
-                if (distance > 2.2f || distance >= nearestDistance) continue;
+                if (distance > lookAhead || distance >= nearestDistance) continue;
                 // Ordinary open corridors need only the cheap local overlap.
                 // Recalculate a route only when a nearby closed leaf exists.
                 if (!routeReady)

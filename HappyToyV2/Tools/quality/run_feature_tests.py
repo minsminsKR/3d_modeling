@@ -45,6 +45,11 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
     "core": ("Engine-independent rules; no scene setup", []),
+    "readability": ("Rendered body wall clearance, pickup borders, candle blackout and creature gait", [
+        ("PlayMode", play_tests("CloudGameplayReadabilityTests.cs") + (
+            PLAY + "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches",
+            PLAY + "CandleProximityFlickersAndTemporarilyBlackoutsOnlyPreviouslyLitMarkers",
+            PLAY + "CreatureStudioPursuitHasOffBeatHeadMotionAndRestoresCalmMotionAfterPause"))]),
     "ui": ("Title/loading, menu controls, results/history, retry/settings", [
         ("PlayMode", (
             PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",

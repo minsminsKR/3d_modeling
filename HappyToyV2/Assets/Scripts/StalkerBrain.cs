@@ -14,6 +14,7 @@ namespace HappyToy.V2
         public enum State { Patrol, Investigate, Chase, Search }
         public State state;
         NavMeshAgent agent;
+        V1MonsterMotion motion;
         NavMeshPath path;
         StalkerFootsteps footsteps;
         Vector3 lastKnown, hidingApproach;
@@ -101,7 +102,7 @@ namespace HappyToy.V2
 
         void Awake()
         {
-            agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath();
+            agent = GetComponent<NavMeshAgent>(); motion = GetComponent<V1MonsterMotion>(); path = new NavMeshPath();
             footsteps = GetComponent<StalkerFootsteps>();
             if (!footsteps) footsteps = gameObject.AddComponent<StalkerFootsteps>();
             floorY = transform.position.y;
@@ -264,7 +265,8 @@ namespace HappyToy.V2
                 targetPoint = patrol != null && patrol.Length > 0 && patrol[waypoint % patrol.Length] ?
                     patrol[waypoint % patrol.Length].position : (Vector3?)null;
             }
-            var decision = doorPassage.Tick(this, agent, path, targetPoint, floorY, Time.deltaTime);
+            var decision = doorPassage.Tick(this, agent, path, targetPoint, floorY, Time.deltaTime,
+                motion ? motion.BodyHorizontalReach : 0);
             if (decision.Repath) repath = 0;
             if (decision.Result == StalkerDoorPassage.Outcome.Blocked)
             {

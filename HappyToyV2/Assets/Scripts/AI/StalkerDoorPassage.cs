@@ -37,7 +37,7 @@ namespace HappyToy.V2
         }
 
         internal Decision Tick(Behaviour owner, NavMeshAgent agent, NavMeshPath route,
-            Vector3? intendedTarget, float homeFloor, float seconds)
+            Vector3? intendedTarget, float homeFloor, float seconds, float bodyReach = 0)
         {
             var actor = owner.transform;
             bool repath = false;
@@ -47,10 +47,10 @@ namespace HappyToy.V2
             {
                 Hold(owner);
                 float side = Vector3.Dot(actor.position - Door.transform.position, Door.DoorNormal);
-                if (Passing && side * EntrySide < -(agent.radius + .5f))
+                if (Passing && side * EntrySide < -Mathf.Max(agent.radius + .5f, bodyReach + .15f))
                 {
                     // Close after every body has cleared; the last actor owns the handle.
-                    if (Door.HasOtherDoorPassage(owner) || !Door.IsOpen || Door.CloseForPursuer(owner))
+                    if (Door.HasOtherDoorPassage(owner) || !Door.IsOpen || Door.CloseForPursuer(owner, bodyReach + .65f))
                     { Clear(owner); repath = true; }
                     else if (CloseWait < 2 && Door.DoorOperable)
                     {
@@ -96,7 +96,8 @@ namespace HappyToy.V2
             var handle = hit.point;
             if (!next || next.kind != Interactable.Kind.Door || !next.movingLeaf)
             {
-                next = StalkerDoorTraversal.NearbyDoorOnRoute(agent, destination, homeFloor, route);
+                next = StalkerDoorTraversal.NearbyDoorOnRoute(agent, destination, homeFloor, route,
+                    Mathf.Max(2.2f, bodyReach + .65f));
                 if (next) handle = next.transform.position;
             }
             if (!next || next.kind != Interactable.Kind.Door || !next.movingLeaf ||
@@ -112,7 +113,7 @@ namespace HappyToy.V2
                 EntrySide = Vector3.Dot(actor.position - next.transform.position, next.DoorNormal) >= 0 ? 1 : -1;
             }
             Hold(owner);
-            if (HorizontalDistance(actor.position, handle) > Mathf.Max(1.25f, agent.radius + .85f))
+            if (HorizontalDistance(actor.position, handle) > Mathf.Max(Mathf.Max(1.25f, agent.radius + .85f), bodyReach + .4f))
             {
                 Push = 0;
                 if (!StalkerDoorTraversal.TryDoorApproach(agent, next, EntrySide, homeFloor, route))

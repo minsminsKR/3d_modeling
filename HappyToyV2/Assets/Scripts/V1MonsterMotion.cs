@@ -22,6 +22,14 @@ namespace HappyToy.V2
         public Vector3 IntroHeadPosition => introPose != null ? introPose.HeadPosition : transform.position + Vector3.up * PresentationHeight * .8f;
         UncatLimbContacts limbContacts;StalkerFootsteps footsteps;
         EnemyStudioGrounding studioGrounding;
+        EnemyBodyClearance bodyClearance;
+        EnemyLocomotionPose locomotionPose;
+        public float LocomotionSwingDegrees => locomotionPose == null ? 0 : locomotionPose.SwingDegrees;
+        public bool LocomotionRigAvailable => locomotionPose != null && locomotionPose.Available;
+        public int BodyClearanceCorrections => bodyClearance == null ? 0 : bodyClearance.Corrections;
+        public float BodyHorizontalReach => bodyClearance == null ? 0 : bodyClearance.HorizontalReach;
+        public float BodySurfaceDistance(Vector3 point) => bodyClearance == null ?
+            Vector3.Distance(point, transform.position) : bodyClearance.SurfaceDistance(point);
         public bool StudioVisual { get; private set; }
         public int GroundSupportSampleCount => studioGrounding==null?0:studioGrounding.SampleCount;
         public bool LimbContactRigAvailable => limbContacts!=null||studioGrounding!=null&&studioGrounding.HasLimbContacts;
@@ -63,12 +71,17 @@ namespace HappyToy.V2
                 introPose=new CyclopseStumblePose(model);
             if(EnemySoundProfile.Identify(transform)==EnemySoundKind.Uncat&&!StudioVisual)
                 limbContacts=new UncatLimbContacts(skins);
+            var kind = EnemySoundProfile.Identify(transform);
+            locomotionPose = new EnemyLocomotionPose(model, kind);
+            if (kind == EnemySoundKind.Cyclopse || kind == EnemySoundKind.Uncat)
+                bodyClearance = new EnemyBodyClearance(transform, EnemyBodyClearance.RenderedBodyBounds(model, transform));
         }
         void Update()
         {
             if(!animationPlayer||GameSession.Current.Finished)return;
             if(Time.timeScale==0)return;
             attackPose.Reset();
+            locomotionPose?.Reset();
             introPose?.Reset();
             var next=brain.state==StalkerBrain.State.Chase?"chase":"patrol";
             bool cryingIdle = brain.CorridorBaby && brain.state != StalkerBrain.State.Chase &&
@@ -98,7 +111,13 @@ namespace HappyToy.V2
                 model.position+=forward*(.16f*introFall);
                 introPose?.Apply(forward,right,introFall,introKneel,introBrace);
             }
-            else attackPose.Apply(brain,transform);
+            else
+            {
+                locomotionPose?.Apply(transform, agent.velocity.magnitude, brain.state == StalkerBrain.State.Chase,
+                    Time.deltaTime, brain.AttackActive);
+                attackPose.Apply(brain,transform);
+            }
+            if (!IntroPoseActive && GameSession.Current && GameSession.Current.InputAllowed) bodyClearance?.Resolve(agent);
             if(Physics.Raycast(transform.position+Vector3.up*.25f,Vector3.down,out var floor,.8f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
             {
                 float sole=float.MaxValue,limbSole=float.MaxValue;
@@ -142,6 +161,7 @@ namespace HappyToy.V2
         void OnDisable()
         {
             attackPose?.Reset();
+            locomotionPose?.Reset();
             ClearIntroPose();
             if(LimbContactRigAvailable)
             {
