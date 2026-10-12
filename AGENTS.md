@@ -37,6 +37,9 @@ redundant previews, or personal machine settings.
 
 # HappyToyV2 pull means latest playable GitHub main
 
+User reaffirmed on 2026-10-12: every Git pull must use the latest remote `main`
+branch. Always fetch `origin/main` at request time, regardless of the current branch.
+
 Persistent user instruction, 2026-10-12: whenever the user asks to pull/update
 HappyToyV2 (including "happy toy v2 풀해줘"), treat it as a request to make the
 latest GitHub `origin/main` playable on this machine, not merely update sources.
@@ -55,6 +58,9 @@ latest GitHub `origin/main` playable on this machine, not merely update sources.
   as the latest main build.
 
 # Clean superseded HappyToyV2 builds after pushing
+
+User reaffirmed on 2026-10-12: after pushing, keep only the newest local build
+and delete past builds to reclaim disk space, following the safeguards below.
 
 Persistent user instruction, 2026-10-12: after a successful HappyToyV2 push,
 remove superseded local HappyToyV2 player builds to prevent disk accumulation.
