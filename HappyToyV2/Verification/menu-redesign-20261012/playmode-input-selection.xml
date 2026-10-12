@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='utf-8'?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-12 05:12:55Z" end-time="2026-10-12 05:13:40Z" duration="45.0486604">
+  <test-suite type="TestSuite" id="1233" name="Happy Toy V2 — Development" fullname="Happy Toy V2 — Development" runstate="Runnable" testcasecount="223" result="Passed" start-time="2026-10-12 05:12:55Z" end-time="2026-10-12 05:13:40Z" duration="45.048660" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1225" name="HappyToy.V2.PlayModeTests.dll" fullname="E:/AI/3d_modeling/HappyToyV2/Library/ScriptAssemblies/HappyToy.V2.PlayModeTests.dll" runstate="Runnable" testcasecount="223" result="Passed" start-time="2026-10-12 05:12:55Z" end-time="2026-10-12 05:13:40Z" duration="45.031528" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="50428" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1226" name="HappyToy" fullname="HappyToy" runstate="Runnable" testcasecount="223" result="Passed" start-time="2026-10-12 05:12:55Z" end-time="2026-10-12 05:13:40Z" duration="45.029394" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1227" name="V2" fullname="HappyToy.V2" runstate="Runnable" testcasecount="223" result="Passed" start-time="2026-10-12 05:12:55Z" end-time="2026-10-12 05:13:40Z" duration="45.027929" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1228" name="CloudTests" fullname="HappyToy.V2.CloudTests" runstate="Runnable" testcasecount="223" result="Passed" start-time="2026-10-12 05:12:55Z" end-time="2026-10-12 05:13:40Z" duration="45.026476" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="CloudPlayModeTests" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" testcasecount="223" result="Passed" start-time="2026-10-12 05:12:55Z" end-time="2026-10-12 05:13:40Z" duration="45.023983" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1103" name="GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit" methodname="GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="2125554769" result="Passed" start-time="2026-10-12 05:12:55Z" end-time="2026-10-12 05:13:10Z" duration="14.899783" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="90000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                </test-case>
+              <test-case id="1126" name="MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput" methodname="MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1323801011" result="Passed" start-time="2026-10-12 05:13:10Z" end-time="2026-10-12 05:13:18Z" duration="7.964268" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="90000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1125" name="MainCorridorRealPointerEntryLargeTitleJournalPauseAndResultRestartsStayInCorridor" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.MainCorridorRealPointerEntryLargeTitleJournalPauseAndResultRestartsStayInCorridor" methodname="MainCorridorRealPointerEntryLargeTitleJournalPauseAndResultRestartsStayInCorridor" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="247581148" result="Passed" start-time="2026-10-12 05:13:18Z" end-time="2026-10-12 05:13:40Z" duration="22.062887" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="120000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
