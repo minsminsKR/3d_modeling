@@ -71,7 +71,17 @@ namespace HappyToy.V2.CloudTests
             var frame = Read(target);
             try
             {
-                Artifact(name, frame.EncodeToPNG()); // Save even if the content assertion fails.
+                // Detailed photographic menus can exceed the bounded log transport
+                // at ultrawide resolutions. Keep resolution and geometry unchanged;
+                // use an honestly named JPEG preview when lossless PNG is too large.
+                var preview = frame.EncodeToPNG();
+                string previewName = name;
+                if (preview.Length > 1500000)
+                {
+                    preview = frame.EncodeToJPG(92);
+                    previewName = System.IO.Path.ChangeExtension(name, ".jpg");
+                }
+                Artifact(previewName, preview); // Preserve even when content assertions fail.
                 Assert.That(HasContent(frame), Is.True, "Real rendered frame is blank/flat: " + name);
             }
             finally { Object.Destroy(frame); }

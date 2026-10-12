@@ -10,7 +10,7 @@ namespace HappyToy.V2
     /// <summary>Scene-independent, keyboard-accessible UI. All measurements use a letterboxed safe area.</summary>
     [DisallowMultipleComponent]
     [DefaultExecutionOrder(200)]
-    public sealed class GameShellView : MonoBehaviour
+    public sealed partial class GameShellView : MonoBehaviour
     {
         GameShell shell;
         GameSession session;
@@ -19,6 +19,8 @@ namespace HappyToy.V2
         VisualElement threatVeil;
         VisualElement menuFaceBackground;
         Texture2D menuFaceTexture;
+        CinematicTitleScene titleScene;
+        public bool TitleUsesBaeksugwi => titleScene && titleScene.UsesBaeksugwi;
         VisualElement root, stage, stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip;
         Label focus, meter, status, noise, caption, itemFeedback, volume, sensitivity, fieldOfView;
         Label navigationHelp, controlInstructions, controlsFooter, batteryMeter;
@@ -249,16 +251,22 @@ namespace HappyToy.V2
             menuFaceBackground.style.position = Position.Absolute;
             menuFaceBackground.style.left = menuFaceBackground.style.top = menuFaceBackground.style.right = menuFaceBackground.style.bottom = 0;
             menuFaceBackground.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-            menuFaceBackground.style.backgroundImage = menuFaceTexture;
+            if (!titleScene) { titleScene = gameObject.AddComponent<CinematicTitleScene>(); titleScene.Initialize(shell); }
+            titleScene.SetVisible(shown == GameShell.Page.Title);
+            menuFaceBackground.style.backgroundImage = shown == GameShell.Page.Title
+                ? new StyleBackground(Background.FromRenderTexture(titleScene.Image)) : new StyleBackground(menuFaceTexture);
             // Fill the viewport independently of the safe area, preserving the face's proportions.
             menuFaceBackground.style.backgroundSize = new BackgroundSize(BackgroundSizeType.Cover);
             menuFaceBackground.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Center);
             menuFaceBackground.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Center);
             menuFaceBackground.style.backgroundRepeat = new BackgroundRepeat(Repeat.NoRepeat, Repeat.NoRepeat);
-            var scrim = new VisualElement { name = "menu-face-scrim", pickingMode = PickingMode.Ignore, focusable = false };
+            VisualElement scrim = shown == GameShell.Page.Title
+                ? new CinematicMenuScrim(shell.HighContrast)
+                : new VisualElement { pickingMode = PickingMode.Ignore, focusable = false };
+            scrim.name = "menu-face-scrim";
             scrim.style.position = Position.Absolute;
             scrim.style.left = scrim.style.top = scrim.style.right = scrim.style.bottom = 0;
-            scrim.style.backgroundColor = new Color(0, 0, 0, shell.HighContrast ? .40f : .28f);
+            if (shown != GameShell.Page.Title) scrim.style.backgroundColor = new Color(0, 0, 0, shell.HighContrast ? .40f : .28f);
             menuFaceBackground.Add(scrim);
             root.Add(menuFaceBackground);
         }
@@ -358,6 +366,7 @@ namespace HappyToy.V2
 
         void BuildFrame()
         {
+            if (shown == GameShell.Page.Title) return;
             Panel(105, 80, 3, 705, Gold);
             Panel(150, 115, 1300, 1, Edge);
             Small(session.ChapterMode || shown==GameShell.Page.Records ? "폐교의 기억  /  마지막 출석" : session.CorridorMode || shown==GameShell.Page.Title ? "잊힌 회랑  /  소리를 따라 남은 기억을 찾다" : "폐교 조사 기록  /  마지막 출석", 150, 78, 1050);
@@ -369,52 +378,7 @@ namespace HappyToy.V2
                 session.Escaped ? session.CorridorMode ? "회랑의 문이 열렸습니다" : "마지막 아이가 하교했습니다" : "발소리가 멈췄습니다";
             Text(title, 150, 145, 1300, shown == GameShell.Page.Title ? 110 : 82, shown == GameShell.Page.Title ? 66 : 48).style.unityFontStyleAndWeight = FontStyle.Bold;
         }
-        void BuildTitle()
-        {
-            Text("매번 달라지는 회랑.\n다섯 기억을 붉은 교실의 제단에 바치세요.", 153, 262, 680, 110, shell.LargeText ? 32 : 28);
-            bool protectedRecords=!session.ChapterRecords.Writable && !string.IsNullOrEmpty(session.ChapterRecords.Status);
-            bool protectedSchoolSlot=!session.ChapterSuspension.Writable && !string.IsNullOrEmpty(session.ChapterSuspension.Status);
-            bool protectedCorridorSlot=!session.Suspension.Writable && !string.IsNullOrEmpty(session.Suspension.Status);
-            bool protectedSlot=protectedSchoolSlot || protectedCorridorSlot;
-            string introduction=protectedRecords?"학교 기록 저장이 중지됐습니다.\n최근 학교 기록에서 상태를 확인하세요.":"발소리를 듣고, 문으로 시선을 끊고, 어둠 속에 숨으세요.\n폭죽은 추격이 시작되기 전에 소리로 유인할 수 있습니다.";
-            if(protectedSlot)
-            {
-                string mode=protectedSchoolSlot && protectedCorridorSlot?"회랑·폐교":protectedSchoolSlot?"폐교":"회랑";
-                introduction=mode+" 중단 기록을 읽을 수 없어 원문을 보존했습니다.\n"+
-                    (protectedRecords?"학교 결과 저장도 중지됐습니다. 최근 학교 기록을 확인하세요.":"새 탐색은 가능합니다. 해당 중단 저장은 보호 중입니다.");
-            }
-            var titleNotice=Small(introduction,153,374,680,65);
-            titleNotice.name=protectedRecords?"school-profile-notice":protectedSlot?"checkpoint-status":"title-introduction";
-            if(protectedSlot || protectedRecords) titleNotice.style.color=Rust;
-            bool saved=session.Suspension.HasRun, schoolSaved=session.ChapterSuspension.HasRun;
-            float next=451;
-            Button("begin", saved?"새 회랑 탐색  [Enter]":"회랑에 들어가기  [Enter]", next, shell.BeginCorridor, primary:true); next+=60;
-            if(saved) { Button("continue-run", "회랑 이어하기 · 기억 "+session.Suspension.Snapshot.recovered.Count(value=>value)+"/5", next, shell.ContinueCorridor).SetEnabled(session.Suspension.Writable); next+=60; }
-            Button("begin-school", schoolSaved?"폐교의 기억 · 처음부터":"폐교의 기억 · 세 층의 학교", next, shell.BeginChapter); next+=60;
-            if(schoolSaved)
-            {
-                var data=session.ChapterSuspension.Snapshot;
-                Button("continue-chapter", $"폐교 이어하기 · 기억 {data.recovered}/5", next, shell.ContinueChapter).SetEnabled(session.ChapterSuspension.Writable); next+=60;
-            }
-            Button("settings", "환경 설정 · 접근성", next, shell.Settings); next+=60;
-            Button("quit", "종료", next, () => Application.Quit()); next+=64;
-            BuildTitleRecords(895,245);
-        }
-        void BuildTitleRecords(float x,float y)
-        {
-            var card=Panel(x,y,540,583,CardSurface); Outline(card,Edge);
-            Small("회랑 / 폐교 · 별도로 보관하는 탐색 기록",x+30,y+26,480,36);
-            var corridor=session.Records.Snapshot;
-            string corridorBest=corridor.escapes>0?"최단 탈출  "+RunTime(corridor.bestEscapeSeconds):"아직 회랑 탈출 기록이 없습니다.";
-            Text($"회랑 탐색 {corridor.attempts}회 · 탈출 {corridor.escapes}회\n최고 기억 {corridor.bestRecovered}/5\n{corridorBest}",x+30,y+70,480,106,shell.LargeText?23:21).name="corridor-record-summary";
-            Panel(x+26,y+177,487,1,Edge);
-            var school=session.ChapterRecords.Snapshot;
-            string schoolBest=school.escapes>0?"최단 탈출  "+RunTime(school.bestEscapeSeconds):"아직 학교 탈출 기록이 없습니다.";
-            Text($"학교 탐색 {school.attempts}회 · 탈출 {school.escapes}회\n최고 기억 {school.bestRecovered}/5\n{schoolBest}",x+30,y+190,480,106,shell.LargeText?23:21).name="school-record-summary";
-            Button("school-records","최근 학교 탐색 기록",y+301,shell.ChapterHistory,x+30,480);
-            Panel(x+26,y+365,487,1,Edge);
-            controlInstructions=Text(ControlInstructions,x+30,y+377,485,200,shell.LargeText?23:21);
-        }
+        void BuildTitle() => BuildCinematicTitle();
         void BuildAttendanceCard(float x, float y, bool progress)
         {
             var card = Panel(x, y, 540, 535, CardSurface);
@@ -804,6 +768,7 @@ namespace HappyToy.V2
         }
         void OnDestroy()
         {
+            if (titleScene) Destroy(titleScene);
             if (shell) shell.SettingsChanged -= OnSettingsChanged;
             if (settings) settings.targetTexture = null;
             if (CaptureTarget) { CaptureTarget.Release(); Destroy(CaptureTarget); }

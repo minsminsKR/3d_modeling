@@ -34,7 +34,7 @@ namespace HappyToy.V2
         [Serializable] sealed class Report
         {
             public string status, texture;
-            public string scope = "Release UI Toolkit snapshots of the actual borrowed menu bitmap: normal title, four aspect ratios with large text/high contrast on title and pause, settings focus/submit, real Escape pause and focused Resume button, and original authored scene plus unobscured playing HUD. Controlled Begin() is used only to reach pause/HUD. No gameplay, path, survival, audio or performance certification.";
+            public string scope = "Release UI Toolkit snapshots of the live red-corridor Baeksugwi title scene and non-title menu art: normal title, four aspect ratios with large text/high contrast on title and pause, settings focus/submit, real Escape pause and focused Resume button, and original authored scene plus unobscured playing HUD. Controlled Begin() is used only to reach pause/HUD. No gameplay, path, survival, audio or performance certification.";
             public bool developmentBuild, settingsFocus, escapePause, resumeButton, textureAlive, playingFaceHidden;
             public int referenceChangedPixels; public Frame[] frames; public string[] errors;
         }
@@ -121,12 +121,14 @@ namespace HappyToy.V2
         }
         IEnumerator Run()
         {
+            yield return DiagnosticAudioSilence.WaitForSafeAudio(output);
             yield return Paint(); session = GameSession.Current; Require(session, "No production session"); shell = session.Shell;
             view = session.GetComponent<GameShellView>(); Require(view && view.Root != null, "No initialized UI Toolkit view");
             Require(shell.Screen == GameShell.Page.Title && !session.InputAllowed, "Opt-in audit did not retain Title");
             SavePreferences(); session.ConfigureRecordDirectory(Path.Combine(output,"isolated-profile"));
             var texture = FaceTexture; Require(texture && texture == Resources.Load<Texture2D>("Menu/cyclopse-menace-v1"), "Menu bitmap resource is missing");
-            report.texture = texture.name;
+            report.texture = "Live title: " + CinematicTitleScene.CreatureResource + "; non-title bitmap: " + texture.name;
+            Require(view.TitleUsesBaeksugwi, "Title does not use the actual Baeksugwi prefab");
             yield return Button("settings"); Require(shell.Screen == GameShell.Page.Settings, "Pointer settings button did not navigate");
             if (shell.HighContrast) shell.ToggleHighContrast(); if (shell.LargeText) shell.ToggleLargeText(); yield return Paint();
             yield return Button("back"); yield return Capture("title-normal",1600,900,true);
@@ -168,6 +170,14 @@ namespace HappyToy.V2
             Require(Fits(bounds,bounds),"Non-finite UI viewport");
             view.Root.Query<Button>().ForEach(button=>{item.buttons++;item.buttonsFit &= Fits(bounds,button.worldBound);});
             Require(item.buttonsFit,"Menu button clipped at "+width+"x"+height);
+            if (shell.Screen == GameShell.Page.Title)
+            {
+                var focused = view.Root.panel.focusController.focusedElement as Button;
+                var marked = view.Root.Query<Button>().ToList().Where(button =>
+                    button.Q<VisualElement>(button.name + "-selection") is VisualElement mark && mark.style.opacity.value > .5f).ToArray();
+                Require(focused != null && marked.Length == 1 && marked[0] == focused,
+                    "Title must show exactly one selection matching actual keyboard/pad focus");
+            }
             if(!playing)
             {
                 item.backgroundBounds=backdrop.worldBound;
