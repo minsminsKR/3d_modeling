@@ -18,3 +18,22 @@ machine and continue editing to be committed and pushed with the work.
   authoring tools. Use Git LFS where configured and preserve attributed assets.
 - A push is complete only after the intended remote branch matches the local commit.
   Push to the branch requested by the user; do not force-push to replace remote work.
+
+# HappyToyV2 pull means latest playable GitHub main
+
+Persistent user instruction, 2026-10-12: whenever the user asks to pull/update
+HappyToyV2 (including "happy toy v2 풀해줘"), treat it as a request to make the
+latest GitHub `origin/main` playable on this machine, not merely update sources.
+
+- Fetch the actual GitHub main branch at request time. Preserve local changes
+  and integrate without discarding or force-overwriting local/remote work.
+- Hydrate the required Git LFS assets, then build a fresh Windows player from
+  that updated main using the pinned Unity version and project build pipeline.
+- Verify build success and current source-input hashes. Check GitHub main again
+  before delivery; if newer main commits arrived, incorporate them and rebuild
+  before calling the player the latest version.
+- Provide a clickable link to the newly built executable. Never substitute an
+  older existing build or claim a source-only pull is a playable update.
+- If a build or integration is blocked, report the exact blocker and that a
+  latest-main playable build is not yet ready. Do not label an older executable
+  as the latest main build.
