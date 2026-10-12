@@ -1,3 +1,22 @@
+# Current feature verification
+
+Start with [CODE_MAP.md](../../CODE_MAP.md) and `run_feature_tests.py --list`.
+Use `--profile core|ui|ai|ai-doors|drawer|checkpoint|full` for fast rules, the affected
+scene behavior, or both complete Unity suites. All runs use pinned Unity
+6000.6.0f1, fresh result directories and strict nonempty/pass validation.
+Player build and native/visual verification remain separate checks.
+`readability` selects rendered torso wall clearance, pickup visibility, temporary
+candle blackout/recovery, enlarged creature gait and real large-monster door
+passage. Its silent native companion is `-quiet-diagnostics -v2-readability-output
+<new-directory>` on a freshly built player. The native report compares visible
+outline pixels and opaque-cover frames and captures actual NavMesh patrol/chase.
+`preview_gameplay_readability.py <native-output>` creates optional review GIFs
+and a contact sheet with Pillow 10.2.0; it does not alter game/model sources.
+Every stage preserves its own Editor log; summaries retain failing/skipped counts
+and missing selectors. Large XML capture output is streamed rather than retained
+in memory. `--graphics-api d3d11|d3d12` is an explicit Windows Editor-only diagnostic
+override, not a player/project setting change or verification of the default API.
+
 # Final result: 54/54, player exported; provider footer mismatch retained
 
 Build #16 at 1f0b6469 passes 6 Edit + 48 Play, zero failures/skips, and Unity Windows

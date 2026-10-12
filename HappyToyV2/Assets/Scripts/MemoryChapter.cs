@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
@@ -54,8 +53,7 @@ namespace HappyToy.V2
         };
         public string JournalEntry(int index)=>index>=0&&index<Recovered?
             LayoutVersion>=2&&index==2?"2층 음악실 — 합창 명단. 종이 사이로 떠다니는 가면이 깨어났다.":memories[index]:null;
-        public void Prepare(int layoutVersion = SchoolCampusLayout.Version) => RunPreparation.Immediate(PrepareSteps(layoutVersion,false));
-        public IEnumerator PrepareSteps(int layoutVersion = SchoolCampusLayout.Version,bool cooperative = true)
+        public void Prepare(int layoutVersion = SchoolCampusLayout.Version)
         {
             if(Ready) throw new InvalidOperationException("Chapter already prepared");
             LayoutVersion=layoutVersion;
@@ -89,17 +87,15 @@ namespace HappyToy.V2
                 // doorway and the central aisle's approach from the stairs.
                 Memories[2].transform.position=new Vector3(25.8f,6.1f,30.8f);
                 Portrait.MoveChapterDisplay(Vector3.right*4);
-                Campus=gameObject.AddComponent<SchoolCampusLayout>(); yield return Campus.PrepareSteps(this,cooperative);
+                Campus=gameObject.AddComponent<SchoolCampusLayout>(); Campus.Prepare(this);
             }
             Mannequin.activationStep=2; PlaceActor(Mannequin.transform,SchoolFirstAppearances.MannequinStation);
             Mask.activationStep=3; PlaceActor(Mask.transform,new Vector3(27,5,27.6f));
             Mask.patrol=new[] {new Vector3(27,5,27.6f),new Vector3(30,5,30.8f),new Vector3(32,5,25)}
                 .Select(p=>{var marker=new GameObject("Upper mask patrol").transform;marker.SetParent(transform);marker.position=p;return marker;}).ToArray();
-            if(cooperative) yield return null;
             Portrait.PrepareChapter(); Nursery.PrepareChapter();
             session.player.Firecrackers.SetRunStock(2);
             if(LayoutVersion==1) gameObject.AddComponent<ChapterAtmosphere>().Prepare(Memories);
-            if(cooperative) yield return null;
             GetComponent<GraphicsSchoolSurfaces>()?.Refresh();
             Lighting=gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareSchool(this);
             FirstAppearances=gameObject.AddComponent<SchoolFirstAppearances>();FirstAppearances.Prepare(this);

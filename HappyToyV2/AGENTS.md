@@ -1,3 +1,23 @@
+# HappyToyV2 persistent development rules
+
+Apply the repository-root `../AGENTS.md` for the game's development direction,
+complete source handoff, latest playable `origin/main` pulls, explicitly requested
+pushes to `origin/main`, build cleanup and the designated modeling webapp.
+Preserve generated reference images, original GLB/PBR, editable rig/animation
+sources, Unity assets and `.meta` files so work can continue on another PC.
+Choose webapp rigging or local Blender finishing by quality and efficiency.
+
+# Code ownership and verification
+
+Use `CODE_MAP.md` for feature entry points, module contracts and check profiles.
+Keep UI screen/HUD state in composed modules and AI sensing/attack/navigation
+state in their responsible collaborators; coordinators connect their results.
+New independent rules belong in `Assets/Scripts/Core`, and their tests directly
+reference `HappyToy.V2.Core` without loading a scene or using reflection.
+Use narrow inputs/actions rather than passing an entire session or view to each
+helper. Retain existing Unity script metadata and checkpoint schemas.
+Choose checks by the affected behavior and keep the map/profile list current.
+
 # Audio direction
 
 The user requires realistic horror audio. For new or revised sound effects,

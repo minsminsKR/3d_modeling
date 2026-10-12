@@ -314,7 +314,7 @@ namespace HappyToy.V2.CloudTests
             try
             {
                 Time.captureDeltaTime = 1f / 60f; yield return null;
-                started = AudioRenderer.Start(); Assert.That(started, Is.True);
+                started = StartOwnedAudioRenderer(); Assert.That(started, Is.True);
                 yield return FlushTensionAudio(.3f, rate);
                 yield return CaptureTensionSegment("quiet-baseline", tension, foot, .4f, rate, montage, segments, rate * 2 * 3 / 10);
                 TensionRecognition();
@@ -364,7 +364,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(TensionQuiet(tension), Is.True);
                 Debug.Log("HAPPYTOY_TENSION_PASS PCM: exact quiet baseline/onset/aftermath/quiet, full original foot cue versus low bed/combined headroom, master-zero/pause/resume/comfort/result; isolated actual engine mix, not subjective listening certification");
             }
-            finally { if (started) AudioRenderer.Stop(); Time.captureDeltaTime = capture; }
+            finally { if (started) StopOwnedAudioRenderer(); Time.captureDeltaTime = capture; }
         }
     }
 }

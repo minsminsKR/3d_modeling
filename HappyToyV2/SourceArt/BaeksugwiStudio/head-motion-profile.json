@@ -1,9 +1,11 @@
 {
-  "duration_seconds": 61.0,
+  "duration_seconds": 31.7,
   "fps": 60,
-  "seed": 12102026,
-  "yaw_radians": 0.65,
-  "roll_radians": 0.96,
-  "pitch_radians": 0.12,
-  "description": "Head-only seeded irregular insect-like snaps and holds, with large +/-55 degree roll. Unequal durations and amplitudes; smooth closed-loop boundaries."
+  "seed": 731021,
+  "roll_degrees": 54,
+  "yaw_degrees": 18,
+  "pitch_degrees": 7,
+  "transition_seconds": [0.09, 0.13, 0.22, 0.38, 0.74],
+  "hold_seconds": [0.12, 1.15],
+  "description": "Pronounced insect-like lateral head cocks: asymmetric seeded holds, abrupt reversals, slow reluctant returns and brief fine tremors. A 31.7-second authored sequence replaces the repetitive 2.4-second yaw wave."
 }

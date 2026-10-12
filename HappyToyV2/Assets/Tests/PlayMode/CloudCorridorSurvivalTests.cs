@@ -405,7 +405,9 @@ namespace HappyToy.V2.CloudTests
             RouteRequire(Get<bool>(candle, "Lit") && Get<Light>(candle, "LocalLight").enabled && Get<int>(candle, "Ignitions") == ignitions + 1,
                 "Actual E did not light the route candle exactly once");
             candlesIgnited++; Mark("lit a route candle through E");
-            yield return Interact(marker);
+            RouteRequire(Get<Component>(player, "Focus") != marker && !Get<bool>(marker, "CanFocus"),
+                "A manually lit candle retained an interaction prompt");
+            yield return Pulse(Key.E);
             RouteRequire(Get<int>(candle, "Ignitions") == ignitions + 1, "Revisiting the lit candle repeated ignition");
             if (Get<Light>(player, "flashlight").enabled) yield return Pulse(Key.F);
             RouteRequire(!Get<Light>(player, "flashlight").enabled, "Actual F did not extinguish the flashlight");

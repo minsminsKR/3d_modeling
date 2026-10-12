@@ -17,7 +17,9 @@ def main():
         intervals=[max(20,min(1000,round((b['time']-a['time'])*1000))) for a,b in zip(records,records[1:])]
         intervals.append(round(sum(intervals)/len(intervals)))
         frames[0].save(args.native_output/f'{stage}-head.gif',save_all=True,append_images=frames[1:],duration=intervals,loop=0)
-        for column,index in enumerate((0,3,7,11)):sheet.paste(frames[index].resize((320,192),Image.Resampling.LANCZOS),(column*320,row*204))
+        extremes=sorted(range(len(records)),key=lambda index:records[index].get('rollDegrees',0))
+        indices=(extremes[0],len(records)//3,extremes[-1],2*len(records)//3)
+        for column,index in enumerate(indices):sheet.paste(frames[index].resize((320,192),Image.Resampling.LANCZOS),(column*320,row*204))
     sheet.save(args.native_output/'head-contact-sheet.png')
 
 if __name__=='__main__':main()

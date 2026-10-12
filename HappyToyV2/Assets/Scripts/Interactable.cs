@@ -148,11 +148,12 @@ namespace HappyToy.V2
             }
             return false;
         }
-        public bool CloseForPursuer(Behaviour actor)
+        public bool CloseForPursuer(Behaviour actor) => CloseForPursuer(actor, 2.2f);
+        public bool CloseForPursuer(Behaviour actor, float handleReach)
         {
             var session = GameSession.Current;
             if (!DoorOperable || !open || !actor || !actor.isActiveAndEnabled || !session || !session.InputAllowed || session.Finished ||
-                Vector3.Distance(actor.transform.position, transform.position) > 2.2f ||
+                Vector3.Distance(actor.transform.position, transform.position) > Mathf.Max(2.2f, handleReach) ||
                 HasOtherDoorPassage(actor) || ThresholdOccupied()) return false;
             return SetDoorOpen(false);
         }
@@ -229,6 +230,7 @@ namespace HappyToy.V2
             }
         }
         void Awake() { RememberDoorGeometry(); }
+        void Start() { if (PickupOutline.IsPickup(kind) && !GetComponent<PickupOutline>()) gameObject.AddComponent<PickupOutline>(); }
         void Update()
         {
             if (!DoorOperable) return;

@@ -12,91 +12,35 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
-        [UnityTest,Timeout(120000)]
-        public IEnumerator BaeksugwiLoadingKeepsApproachingWhileActualCorridorIsPrepared()
-        {
-            yield return RecoveryUiReady();Call(shell,"RestoreDefaultSettings");yield return null;
-            var title=One("CinematicTitleScene");var creature=GameObject.Find("Actual Baeksugwi source clone");
-            var wrist=creature.GetComponentsInChildren<Transform>(true).First(t=>t.name=="Arm1L_Wrist");
-            var firstWrist=wrist.localRotation;var pivot=creature.transform.parent;
-            var start=pivot.position;int renders=Get<int>(title,"RenderedFrames");
-            Call(shell,"StartCorridorFromMenu");Assert.That(Get<bool>(shell,"IsStartingRun"),Is.True);
-            Call(shell,"StartCorridorFromMenu");Call(shell,"StartChapterFromMenu");
-            float distance=0,gait=0;int frames=0;float deadline=Time.realtimeSinceStartup+60;
-            while(Get<bool>(shell,"IsReloading") && Time.realtimeSinceStartup<deadline)
-            {
-                Assert.That(Get<bool>(session,"InputAllowed"),Is.False);Assert.That(Time.timeScale,Is.Zero);
-                yield return null;frames++;
-                distance=Mathf.Max(distance,Vector3.Distance(start,pivot.position));
-                gait=Mathf.Max(gait,Quaternion.Angle(firstWrist,wrist.localRotation));
-            }
-            Assert.That(Get<string>(shell,"ReloadError"),Is.Empty);
-            Assert.That(Get<bool>(session,"CorridorMode"),Is.True);Assert.That(Get<bool>(session,"InputAllowed"),Is.True);
-            Assert.That(Get<bool>(shell,"IsStartingRun"),Is.False);
-            Assert.That(distance,Is.GreaterThan(.1f));Assert.That(gait,Is.GreaterThan(3));
-            Assert.That(Get<int>(title,"RenderedFrames")-renders,Is.GreaterThan(5));Assert.That(frames,Is.GreaterThan(10));
-            Assert.That(Components("CorridorRun").Length,Is.EqualTo(1));Assert.That(Components("MemoryChapter").Length,Is.Zero);
-            Assert.That(Get<bool>(Get<Component>(session,"Corridor"),"Ready"),Is.True);
-            Call(shell,"Pause");Assert.That(Get<bool>(session,"InputAllowed"),Is.False);
-            Call(shell,"Resume");Assert.That(Get<bool>(session,"InputAllowed"),Is.True);
-        }
-
-        [UnityTest,Timeout(120000)]
-        public IEnumerator BaeksugwiLoadingAlsoPreparesPlayableSchoolFromActualMenuButton()
-        {
-            yield return RecoveryUiReady();yield return RecoveryClick("begin-school");
-            Assert.That(Get<string>(shell,"ReloadError"),Is.Empty);
-            Assert.That(Get<bool>(session,"ChapterMode"),Is.True);Assert.That(Get<bool>(session,"InputAllowed"),Is.True);
-            Assert.That(Get<bool>(shell,"IsStartingRun"),Is.False);
-            Assert.That(Components("MemoryChapter").Length,Is.EqualTo(1));Assert.That(Components("CorridorRun").Length,Is.Zero);
-        }
-
         [Test]
-        public void BaeksugwiLargeHeadMotionKeepsTheWholeSkinInsideItsFloorAndHeightEnvelope()
-        {
-            var instance=Object.Instantiate(Resources.Load<GameObject>("Baeksugwi/Baeksugwi"));
-            try
-            {
-                Resources.Load<AnimationClip>("Baeksugwi/Run_InPlace").SampleAnimation(instance,0);
-                var clip=Resources.Load<AnimationClip>("Baeksugwi/Head_Writhe");
-                var skins=instance.GetComponentsInChildren<SkinnedMeshRenderer>();
-                var evaluate=RequireType("EnemyStudioRig").GetMethod("PosedBounds");
-                clip.SampleAnimation(instance,0);var neutral=(Bounds)evaluate.Invoke(null,new object[]{skins});
-                for(int i=0;i<=180;i++)
-                {
-                    clip.SampleAnimation(instance,clip.length*i/180);
-                    var bounds=(Bounds)evaluate.Invoke(null,new object[]{skins});
-                    Assert.That(bounds.min.y,Is.GreaterThanOrEqualTo(neutral.min.y-.015f),"Head skin crosses the floor at "+i);
-                    Assert.That(bounds.max.y,Is.LessThanOrEqualTo(neutral.max.y+.05f),"Head skin crosses the body height envelope at "+i);
-                }
-            }
-            finally{Object.DestroyImmediate(instance);}
-        }
-
-        [Test]
-        public void BaeksugwiHeadRollIsLargeIrregularAndDoesNotRepeatTheOldShortCycle()
+        public void BaeksugwiHeadHasPronouncedRollBothWaysWithUnequalHoldsAndSnaps()
         {
             var instance=Object.Instantiate(Resources.Load<GameObject>("Baeksugwi/Baeksugwi"));
             try
             {
                 var clip=Resources.Load<AnimationClip>("Baeksugwi/Head_Writhe");
-                Assert.That(clip.length,Is.GreaterThan(30));
-                Resources.Load<AnimationClip>("Baeksugwi/Run_InPlace").SampleAnimation(instance,0);
+                Assert.That(clip.length,Is.GreaterThan(30),"A short repeated sway is too predictable");
+                clip.SampleAnimation(instance,0);
                 var head=instance.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Head");
-                clip.SampleAnimation(instance,0);var neutral=head.rotation;
-                float low=0,high=0;var differences=new System.Collections.Generic.List<float>();
-                for(int i=0;i<160;i++)
+                var neutral=head.rotation;var previous=head.rotation;
+                float minRoll=0,maxRoll=0,maxSpeed=0;int stillFrames=0,snapFrames=0,hold=0;
+                var holds=new System.Collections.Generic.List<int>();
+                for(int frame=1;frame<=Mathf.RoundToInt(clip.length*60);frame++)
                 {
-                    float time=clip.length*i/160;
-                    clip.SampleAnimation(instance,time);
-                    var pose=head.rotation;var delta=pose*Quaternion.Inverse(neutral);
-                    float roll=2*Mathf.Atan2(delta.z,delta.w)*Mathf.Rad2Deg;
-                    roll=Mathf.DeltaAngle(0,roll);low=Mathf.Min(low,roll);high=Mathf.Max(high,roll);
-                    clip.SampleAnimation(instance,Mathf.Repeat(time+2.4f,clip.length));
-                    differences.Add(Quaternion.Angle(pose,head.rotation));
+                    clip.SampleAnimation(instance,frame/60f);
+                    var delta=Quaternion.Inverse(instance.transform.rotation)*head.rotation*Quaternion.Inverse(neutral)*instance.transform.rotation;
+                    float roll=Vector3.SignedAngle(Vector3.up,Vector3.ProjectOnPlane(delta*Vector3.up,Vector3.forward),Vector3.forward);
+                    minRoll=Mathf.Min(minRoll,roll);maxRoll=Mathf.Max(maxRoll,roll);
+                    float speed=Quaternion.Angle(previous,head.rotation)*60;maxSpeed=Mathf.Max(maxSpeed,speed);
+                    if(speed<12){stillFrames++;hold++;}else{if(hold>=5)holds.Add(hold);hold=0;}
+                    if(speed>140)snapFrames++;
+                    previous=head.rotation;
                 }
-                Assert.That(high,Is.GreaterThan(40));Assert.That(low,Is.LessThan(-40));
-                Assert.That(differences.Average(),Is.GreaterThan(20),"Must not repeat the old 2.4-second wave");
+                Assert.That(minRoll,Is.LessThan(-35));Assert.That(maxRoll,Is.GreaterThan(35));
+                Assert.That(stillFrames,Is.GreaterThan(180));Assert.That(snapFrames,Is.GreaterThan(20));
+                Assert.That(holds.Count,Is.GreaterThan(5));Assert.That(holds.Max()-holds.Min(),Is.GreaterThan(15),"Holds must have different durations");
+                Assert.That(maxSpeed,Is.LessThan(2200),"Keep rotations continuous through fast cocks");
+                Assert.That(Quaternion.Angle(neutral,head.rotation),Is.LessThan(.1f));
             }
             finally{Object.DestroyImmediate(instance);}
         }

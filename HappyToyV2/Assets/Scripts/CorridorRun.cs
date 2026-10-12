@@ -31,10 +31,15 @@ namespace HappyToy.V2
         static readonly Vector3 Origin = new Vector3(200, 0, 200);
         public Vector3 CellPosition(int cell) => Origin + new Vector3(cell % CorridorLayout.Width * 6, .03f, cell / CorridorLayout.Width * 6);
 
-        public void Build(int seed, int layoutVersion = 3) => RunPreparation.Immediate(BuildSteps(seed, layoutVersion, false));
-        public IEnumerator BuildSteps(int seed, int layoutVersion = 3, bool cooperative = true)
+        public void Build(int seed, int layoutVersion = 3)
         {
-            if (Ready) throw new InvalidOperationException("Run already built");
+            var build=BuildRoutine(seed,layoutVersion,false);
+            while(build.MoveNext()) { }
+        }
+        public IEnumerator BuildIncremental(int seed,int layoutVersion=3) => BuildRoutine(seed,layoutVersion,true);
+        IEnumerator BuildRoutine(int seed,int layoutVersion,bool incremental)
+        {
+            if (Ready || Layout!=null) throw new InvalidOperationException("Run already built");
             session = GetComponent<GameSession>(); Layout = new CorridorLayout(seed, layoutVersion);
             // Capture all four authored monster hierarchies before stopping encounter directors.
             var actors = FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include, FindObjectsSortMode.None)
@@ -57,10 +62,9 @@ namespace HappyToy.V2
             var brass = MakeMaterial("Memory brass", new Color(.64f, .41f, .13f), 53);
             var paperLamp = MakeMaterial("Warm paper lantern", new Color(.7f, .45f, .2f), 13);
             paperLamp.SetColor("_EmissionColor", new Color(1f, .45f, .12f) * 1.4f); paperLamp.EnableKeyword("_EMISSION");
-            if(cooperative) yield return null;
+            if(incremental)yield return null;
             for (int cell = 0; cell < CorridorLayout.Count; cell++)
             {
-                if(cooperative && cell % 2 == 0) yield return null;
                 var p = CellPosition(cell); p.y = 0;
                 Box("Floor", p + Vector3.down * .12f, new Vector3(6, .24f, 6), floor);
                 Box("Ceiling", p + Vector3.up * 3.05f, new Vector3(6, .18f, 6), ceiling);
@@ -110,6 +114,7 @@ namespace HappyToy.V2
                     light.color = new Color(.95f, .68f, .36f); light.shadows = LightShadows.None;
                     Box("Lamp housing", lamp.transform.position, new Vector3(.35f, .20f, .35f), paperLamp);
                 }
+                if(incremental && cell%2==1)yield return null;
             }
             // Only generated geometry contributes to this NavMesh; the old school remains separate.
             surface = world.gameObject.AddComponent<NavMeshSurface>(); surface.collectObjects = CollectObjects.Children;
@@ -146,6 +151,7 @@ namespace HappyToy.V2
                 if (cabinetEntrance.sqrMagnitude < .01f) throw new InvalidOperationException("Cabinet has no outward entrance direction");
                 cabinet.transform.rotation = Quaternion.FromToRotation(cabinetEntrance.normalized,
                     new Vector3(1, 0, -1).normalized) * cabinet.transform.rotation;
+                if(incremental)yield return null;
             }
             var exit = Box("Sealed entrance", CellPosition(0) + new Vector3(-2.72f, 1.1f, 0), new Vector3(.12f, 2.2f, 1.6f), timber);
             var exitInteraction = exit.AddComponent<Interactable>();
@@ -153,15 +159,22 @@ namespace HappyToy.V2
             exitInteraction.stableId="corridor-entrance"; exitInteraction.label=Layout.Version>=3 ? "닫힌 입구 확인" : "회랑 출구";
             exitInteraction.inspectionText="문은 안쪽에서 봉인되었다. 다섯 기억을 회랑 끝 붉은 교실의 제단에 돌려놓아야 한다.";
             if (Layout.Version >= 3) BuildAltarRoom();
-            if(cooperative) yield return null;
-            yield return BuildFurnishingSteps(cooperative);
+            if(incremental)yield return null;
+            var furniture=BuildFurnishingsRoutine(incremental);while(furniture.MoveNext())yield return furniture.Current;
             Lighting = gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareCorridor(this, world);
+            if(incremental)yield return null;
             // Rebuild after all physical furniture is present. Walkable routes include actual obstacles.
             Physics.SyncTransforms();
-            if(cooperative) yield return RunPreparation.Navigation(surface); else surface.BuildNavMesh();
+            if(incremental)
+            {
+                var data=new NavMeshData(surface.agentTypeID){name=world.name,position=surface.transform.position,rotation=surface.transform.rotation};
+                generated.Add(data);surface.navMeshData=data;
+                yield return surface.UpdateNavMesh(data);
+                surface.AddData();yield return null;
+            }
+            else surface.BuildNavMesh();
             for (int i = 0; i < 4; i++)
             {
-                if(cooperative) yield return null;
                 // Slot two belongs to the actual lantern/mask encounter. Hwacat's
                 // first appearance is preserved for the later school chapter.
                 if (i == 2)
@@ -203,6 +216,7 @@ namespace HappyToy.V2
                 var motion = clone.GetComponent<V1MonsterMotion>(); if (motion) motion.enabled = true;
                 brain.patrol = BuildPatrol(i, agent); threats.Add(brain);
                 if (i == 0) Release(brain);
+                if(incremental)yield return null;
             }
             var controller = session.player.GetComponent<CharacterController>(); controller.enabled = false;
             int entranceDirection = Enumerable.Range(0, 4).First(d => (Layout.Connections[0] & (1 << d)) != 0);
@@ -212,11 +226,10 @@ namespace HappyToy.V2
             var ambience = session.GetComponent<RoomAmbience>();
             if (ambience) ambience.ConfigureRunPositions(new[] { CellPosition(Layout.Supplies[0]) + Vector3.up,
                 CellPosition(Layout.Supplies[3]) + Vector3.up * 2.5f, CellPosition(Layout.Supplies[6]) + Vector3.up * 1.5f });
-            if(cooperative) yield return null;
-            Presentation = world.gameObject.AddComponent<HauntedCorridorPresentation>();
-            yield return Presentation.PrepareSteps(this,cooperative);
+            Presentation=world.gameObject.AddComponent<HauntedCorridorPresentation>();
+            var dressing=Presentation.PrepareRoutine(this,incremental);while(dressing.MoveNext())yield return dressing.Current;
             Lighting.DimCorridor(this,world);
-            yield return CombineArchitectureSteps(cooperative);
+            var batches=CombineArchitectureRoutine(incremental);while(batches.MoveNext())yield return batches.Current;
             Physics.SyncTransforms(); Ready = true;
             session.Notify(Layout.Version >= 3 ?
                 "다섯 기억을 회수하고 붉은 교실의 제단에 돌려놓으세요. 폭죽은 회랑에서 보충할 수 있습니다." :
@@ -305,7 +318,7 @@ namespace HappyToy.V2
             go.GetComponent<MeshFilter>().sharedMesh=graphicsSurfaces.MetreMappedMesh(mesh,go.transform,span);
             return go;
         }
-        IEnumerator CombineArchitectureSteps(bool cooperative)
+        IEnumerator CombineArchitectureRoutine(bool incremental)
         {
             // Keep dynamic doors, pickups and authored cabinets separate. Static room
             // architecture becomes small spatial batches rather than hundreds of draws.
@@ -320,9 +333,9 @@ namespace HappyToy.V2
                 if (!batches.TryGetValue(key, out var list)) { list = new List<MeshFilter>(); batches.Add(key, list); }
                 list.Add(filter);
             }
+            float yieldAt=Time.realtimeSinceStartup+.004f;
             foreach (var entry in batches)
             {
-                if(cooperative) yield return null;
                 var combined = new Mesh { name = "Corridor architecture chunk" };
                 combined.CombineMeshes(entry.Value.Select(filter => new CombineInstance { mesh = filter.sharedMesh,
                     transform = world.worldToLocalMatrix * filter.transform.localToWorldMatrix }).ToArray(), true, true);
@@ -331,6 +344,7 @@ namespace HappyToy.V2
                 chunk.AddComponent<MeshFilter>().sharedMesh = combined;
                 chunk.AddComponent<MeshRenderer>().sharedMaterial = entry.Value[0].GetComponent<Renderer>().sharedMaterial;
                 foreach (var filter in entry.Value) filter.GetComponent<Renderer>().enabled = false;
+                if(incremental && Time.realtimeSinceStartup>=yieldAt){yield return null;yieldAt=Time.realtimeSinceStartup+.004f;}
             }
         }
         Material MakeMaterial(string name, Color color, int seed)

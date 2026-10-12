@@ -5,7 +5,7 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="../../Assets/Scripts/CorridorBabyMemory.cs" Link="CorridorBabyMemory.cs" />
+    <Compile Include="../../Assets/Scripts/Core/CorridorBabyMemory.cs" Link="CorridorBabyMemory.cs" />
     <Compile Include="BabyMemoryTestProgram.cs" />
   </ItemGroup>
 </Project>

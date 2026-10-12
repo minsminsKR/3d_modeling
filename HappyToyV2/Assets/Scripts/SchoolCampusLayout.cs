@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.AI.Navigation;
@@ -45,8 +44,7 @@ namespace HappyToy.V2
         public Transform Root { get; private set; }
         public int RoomCount(int floor) => spaces.Count(s => s.floor == floor && s.room);
         public bool Owns(Transform item) => item && item.IsChildOf(Root);
-        public void Prepare(MemoryChapter chapter) => RunPreparation.Immediate(PrepareSteps(chapter,false));
-        public IEnumerator PrepareSteps(MemoryChapter chapter,bool cooperative = true)
+        public void Prepare(MemoryChapter chapter)
         {
             if (Root) throw new InvalidOperationException("School campus already prepared");
             Root = new GameObject("School campus — architectural plan v2").transform;
@@ -73,12 +71,7 @@ namespace HappyToy.V2
             foreach (var source in all.Where(t => t.name == "Annex — looped school corridors" || t.name == "School upper and flooded basement" || t.name == "Annex presentation refresh"))
                 source.gameObject.SetActive(false);
             foreach (var old in all.Select(t => t.GetComponent<NavMeshSurface>()).Where(s => s)) { old.RemoveData(); old.enabled = false; }
-            Plan();
-            if(cooperative) yield return null;
-            yield return BuildArchitectureSteps(cooperative);
-            if(cooperative) yield return null;
-            yield return DressRoomSteps(chapter,cooperative);
-            if(cooperative) yield return null;
+            Plan(); BuildArchitecture(); DressRooms(chapter);
             // The original west doors predate the dynamic-door bake policy. A
             // closed leaf must not permanently erase its threshold from v2's
             // newly baked graph: physical sweeps still guard its real collider.
@@ -96,8 +89,8 @@ namespace HappyToy.V2
             navigation.layerMask = ~(1 << 9 | 1 << 2);
             navigation.overrideVoxelSize = true; navigation.voxelSize = .12f;
             navigation.overrideTileSize = true; navigation.tileSize = 128;
-            if(cooperative) yield return RunPreparation.Navigation(navigation); else navigation.BuildNavMesh();
-            yield return CombineStaticVisualSteps(cooperative);
+            navigation.BuildNavMesh();
+            CombineStaticVisuals();
             foreach (var memory in chapter.Memories)
                 if (!NavMesh.SamplePosition(memory.transform.position, out var hit, 2, NavMesh.AllAreas) || Mathf.Abs(hit.position.y - (memory.transform.position.y - 1)) > 1.15f)
                     throw new InvalidOperationException("Unreachable campus evidence: " + memory.stableId);

@@ -1,0 +1,813 @@
+{
+  "schema": 1,
+  "dateKorea": "2026-10-13",
+  "status": "FINISHED_WITH_REGRESSION_LIMITATIONS",
+  "fullSuiteGreen": false,
+  "baselineCommit": "20bc083",
+  "testNamePrefix": "HappyToy.V2.CloudTests.CloudPlayModeTests.",
+  "moduleIntent": [
+    "CODE_MAP.md routes features to narrow checks",
+    "UI screens own controls and receive presentation values/actions",
+    "AI collaborators own physical sensing, committed attacks and door passage",
+    "HappyToy.V2.Core has no Unity/game/session dependency"
+  ],
+  "coreMoves": [
+    {
+      "name": "CabinetHidingRules.cs",
+      "gitBlob": "8c235dfbb2abc49cdb8ad38a5113660c68e636a5",
+      "identicalToBaseline": true,
+      "sha256": "30cf9f0da5dc2a4c6f9cb761410e7af2694ef9fa9b5e8a005459d9ac3fd4dd69"
+    },
+    {
+      "name": "CorridorBabyMemory.cs",
+      "gitBlob": "389354d4d0f5699190d9382711aab58004a2715a",
+      "identicalToBaseline": true,
+      "sha256": "cb365fa2d64b06fdb3a2bb20effb3c996e0173674d55f4fd95d683fcd1d20631"
+    },
+    {
+      "name": "CorridorThreatRules.cs",
+      "gitBlob": "6e7237f4ee4b4c4c87263f7f189be870ba5af8ec",
+      "identicalToBaseline": true,
+      "sha256": "1d8a40135ff4809db01d2a0de377cce65e5dffb72a7b1bebc2c85a3d1fb64687"
+    },
+    {
+      "name": "EnemyAttackClock.cs",
+      "gitBlob": "7e0879e4ccd1a52f9114daa9c1371c08c4e26bbb",
+      "identicalToBaseline": true,
+      "sha256": "5ec709c67004ca58e4c0cc1f78345e3acc2c602d14fb1a7f057de25fd361c194"
+    },
+    {
+      "name": "SceneRestartGate.cs",
+      "gitBlob": "24d67878a908eb0de37ff4ebe69d43e9158c63bd",
+      "identicalToBaseline": true,
+      "sha256": "7bd96d1a4ab1e872052b7717118e70aa83de71955b66785ddf54fcecc46355d4"
+    },
+    {
+      "name": "StealthRules.cs",
+      "gitBlob": "767724b18eed15a4dae5fce6f4dbf3b869fd0352",
+      "identicalToBaseline": true,
+      "sha256": "9b46d306822e55eee70312aac0b32f0e9060c8484a44f17d97e4b3eb80fb8ed3"
+    },
+    {
+      "name": "SurfaceRippleBuffer.cs",
+      "gitBlob": "531251a454c8a2200184ad32fb72180b4624bb22",
+      "identicalToBaseline": true,
+      "sha256": "4803286fc3032c57b20a082cb3a562a4ffd45d7ed84cd0c9e6ec1daf9fd085c3"
+    }
+  ],
+  "coordinatorSnapshot": [
+    {
+      "path": "HappyToyV2/Assets/Scripts/GameShellView.cs",
+      "bytes": 24934,
+      "sha256": "01ff1144d55b8507327664ceac538612fb630ead752a9a5f8cb86558a4032b38"
+    },
+    {
+      "path": "HappyToyV2/Assets/Scripts/StalkerBrain.cs",
+      "bytes": 27229,
+      "sha256": "76a7923d9617633b863d781c3e82d947b8fafec435a395836321ef0a828920d1"
+    }
+  ],
+  "initialFullRun": {
+    "editMode": {
+      "total": 90,
+      "passed": 90,
+      "failed": 0
+    },
+    "playMode": {
+      "total": 231,
+      "passed": 187,
+      "failed": 44,
+      "durationSeconds": 2954.2911399,
+      "failureNames": [
+        "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches",
+        "ActualDeathRetryAndRepeatedUiNavigationKeepOwnedResourcesBounded",
+        "AllCabinetsHaveActualSlitsAndOutwardViewsAfterCrouchedEntry",
+        "CandleProductionCameraShowsNearDarkHoldsAndBrightCatchesWithFlashlightInBothModes",
+        "ChapterFiveMemoryRouteSurvivesThroughActualInputAndFourStairLegs",
+        "CorridorDifferentSeedFiveMemoryRunSurvivesThroughRealInput",
+        "CorridorFiveMemoryRunSurvivesThroughRealKeyboardMouseAndDoors",
+        "CorridorRealCameraShowsFloorSurfaceAndLightingDiagnostics",
+        "CorridorSectorsShowFiveGoalIdentitiesAndRealBranchesWithoutChangingPhysics",
+        "EveryHostileFacePreservesOriginalEyeSurfaceAndPupilTexturesWithOneCyclopseEyeAndNoAddedGeometry",
+        "ExternalChapterRoomLoopsAreAudibleAndOccludedAcrossTheAuthoredFloor",
+        "ExternalPortraitCreakAndImpactFollowTheActualFourthMemoryEvent",
+        "FirstAppearanceAudioComesFromRealEventsWithQuietPauseMuteAndComfortControls",
+        "GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit",
+        "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+        "MainCorridorAndSchoolRealEntriesKeepBothSuspendSlotsAndRecordsSeparate",
+        "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",
+        "ModeledCorridorStationFeetMeetActualFloorWhileTargetsAndLightsStayExact",
+        "NativeCorridorRouteDoorSweepWaitsForActualEyeReachThenOpensThroughInput",
+        "NativeCorridorRouteLightingUsesActualInputFiniteBatteryAndOneCandleIgnition",
+        "NativeCorridorRouteMovingDoorWaitEvadesActualRearWarningThroughInput",
+        "NativeSchoolDoorSweepWaitsForActualEyeReachThenOpensThroughInput",
+        "NearbyClosedDoorStaysClosedWhenThePatrolRouteDoesNotCrossIt",
+        "NurseryFirstCryAndCrawlPreparationKeepFullFiveSecondSafetyWindow",
+        "PerceivedHearingUsesCurrentTransmissionAndRejectsUnheardOrInactiveCues",
+        "RealEnemyMixProvesIdentitySpatialAttenuationAndControls",
+        "RealListenerMixCapturesDuringFlashlightInputAndPauseSilence",
+        "RealPerceivedTensionMixHasQuietBoundsAndLeavesFootstepHeadroom",
+        "SchoolActionMetricsSurviveSuspendAndRawOldVersionOneWithoutMetricsResumesHonestly",
+        "SchoolCheckpointRestoresCompletedAuthoredPortraitAndNurseryWithoutReplayingReveals",
+        "SchoolClassroomDoorOpensWithoutFloatingInteriorSign",
+        "SchoolContinueRehydratesOpenDoorCarvingBeforeRestoringPlayerInsideTheDoorway",
+        "SchoolFullRealInputEscapePersistsCurrentSchoolBestAndTravel",
+        "SchoolPortraitHintDistinguishesCompletedUnwitnessedRevealAndNurseryWaitsForRelease",
+        "SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches",
+        "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
+        "SchoolSuspendWriteFailureKeepsLivePausedChapterAndAllowsActualRetry",
+        "SchoolWayfindingRetainsCeramicCollisionAndRestoresOriginalPresentationOnRemoval",
+        "ShortNativeSteeringSegmentDoesNotHideTheDoorOnAnActualPatrolRoute",
+        "SilentEnemyStateCannotInventTensionButActualUnseenFootstepsCanAnticipate",
+        "SituationalLiveExertionCabinetAndPauseMixSurvivesRealRetryCleanup",
+        "SituationalWholeSchoolMixSurvivesTheActualFiveMemoryInputRoute",
+        "TrueRecognitionHasBoundedAftermathAndClearsOnRestorationAndRetry",
+        "UncatMovementCuesWaitForActualWeightedLimbPlantAndDiscardPausedStoppedWarpedDisabledDebt"
+      ]
+    },
+    "interpretation": "Observed failing full suite; not release-green and not proof that all failures predate refactoring"
+  },
+  "narrowOriginalCoordinatorBaseline": {
+    "scope": "Only GameShellView.cs and StalkerBrain.cs restored to 20bc083; current Core/test support/resources retained",
+    "result": {
+      "total": 6,
+      "passed": 3,
+      "failed": 3,
+      "skipped": 0,
+      "startUtc": "2026-10-12 16:26:09Z",
+      "durationSeconds": 40.5135999,
+      "cases": [
+        {
+          "name": "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches",
+          "result": "Failed"
+        },
+        {
+          "name": "ActualDeathRetryAndRepeatedUiNavigationKeepOwnedResourcesBounded",
+          "result": "Failed"
+        },
+        {
+          "name": "GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit",
+          "result": "Failed"
+        },
+        {
+          "name": "PerceivedHearingUsesCurrentTransmissionAndRejectsUnheardOrInactiveCues",
+          "result": "Passed"
+        },
+        {
+          "name": "SchoolContinueRehydratesOpenDoorCarvingBeforeRestoringPlayerInsideTheDoorway",
+          "result": "Passed"
+        },
+        {
+          "name": "SilentEnemyStateCannotInventTensionButActualUnseenFootstepsCanAnticipate",
+          "result": "Passed"
+        }
+      ]
+    },
+    "matchingInitialFullFailureNames": [
+      "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches",
+      "ActualDeathRetryAndRepeatedUiNavigationKeepOwnedResourcesBounded",
+      "GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit"
+    ],
+    "limit": "Three matched baseline failures are established for this scope. The other three baseline passes versus full-run failures suggest test-order/environment contamination; they do not prove every full-run failure preexisting"
+  },
+  "reportedStaticChecks": {
+    "validatorPythonTests": {
+      "total": 28,
+      "passed": 28,
+      "source": "Coordinating agent execution result"
+    },
+    "routingPythonTests": {
+      "total": 7,
+      "passed": 7,
+      "source": "Coordinating agent execution result"
+    },
+    "genuineUnityApiCompilation": {
+      "stages": 11,
+      "passedStages": 11,
+      "timing": "Initial 11-stage API compile predates the test-fixture and opt-in FlowAudit/DiagnosticAudioSilence corrections",
+      "limit": "Not rerun after those corrections. Current Unity Editor/Windows compilation is instead verified by the final build, two quiet PCM tests and native flow; this does not replace full regression execution"
+    },
+    "staticSource": {
+      "status": "PASS",
+      "report": "HappyToyV2/Builds/CodeStructure-20261013/static-final.json",
+      "limit": "Static validation only; four existing package GUIDs require AssetDatabase resolution",
+      "scriptCount": 337,
+      "guidCount": 1485,
+      "sceneComponentCount": 968
+    }
+  },
+  "currentDx11Ui": {
+    "result": {
+      "total": 16,
+      "passed": 15,
+      "failed": 1,
+      "skipped": 0,
+      "startUtc": "2026-10-12 16:35:50Z",
+      "durationSeconds": 186.5736791,
+      "cases": [
+        {
+          "name": "ActualDeathRetryAndRepeatedUiNavigationKeepOwnedResourcesBounded",
+          "result": "Passed"
+        },
+        {
+          "name": "CompactPickupFeedbackKeepsTheCentralViewClearAcrossScreenSizes",
+          "result": "Passed"
+        },
+        {
+          "name": "CorridorRecordWriteFailureCanBeRetriedThroughActualResultButtonWithoutDuplication",
+          "result": "Passed"
+        },
+        {
+          "name": "CorridorResultPersistsExactlyOnceAndReappearsAfterRealSceneReload",
+          "result": "Passed"
+        },
+        {
+          "name": "GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit",
+          "result": "Passed"
+        },
+        {
+          "name": "KoreanMenusRenderAcrossSupportedAspectRatios",
+          "result": "Passed"
+        },
+        {
+          "name": "LitCandleFocusClearsImmediatelyAndPhysicalOccludersStillBlockObjectsBehindIt",
+          "result": "Passed"
+        },
+        {
+          "name": "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",
+          "result": "Passed"
+        },
+        {
+          "name": "NurseryComfortRestoresLightDuringPausedSettingsWithoutAdvancingReveal",
+          "result": "Passed"
+        },
+        {
+          "name": "SchoolActionMetricsSurviveSuspendAndRawOldVersionOneWithoutMetricsResumesHonestly",
+          "result": "Passed"
+        },
+        {
+          "name": "SchoolFullRealInputEscapePersistsCurrentSchoolBestAndTravel",
+          "result": "Failed"
+        },
+        {
+          "name": "SchoolHistoryEightReportsPageThroughRealButtonsAndLargeTextAtThreeSizes",
+          "result": "Passed"
+        },
+        {
+          "name": "SchoolProtectedPrimaryTitleExplainsReadOnlyHistoryAndPreservesRawFiles",
+          "result": "Passed"
+        },
+        {
+          "name": "SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce",
+          "result": "Passed"
+        },
+        {
+          "name": "SchoolResultWriteFailureRetriesThroughRealMenuAndTitleShowsSchoolTotals",
+          "result": "Passed"
+        },
+        {
+          "name": "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+          "result": "Passed"
+        }
+      ]
+    },
+    "failure": "SchoolFullRealInputEscapePersistsCurrentSchoolBestAndTravel",
+    "observedCause": "Real route defeated by V1 Cyclopse at stage chapter-memory-1, recovered=2",
+    "originalCoordinatorBaseline": "MATCHED: original two coordinators reproduce the same route stage, positions, records and attack count",
+    "limit": "DX11 result does not certify DX12"
+  },
+  "dx12NativeCrashes": {
+    "count": 3,
+    "profiles": [
+      "ui",
+      "ai-doors",
+      "checkpoint"
+    ],
+    "playModeResultXml": "MISSING",
+    "reportedDiagnostic": "GPU unrecoverable/native crash",
+    "source": "Coordinator observed crash diagnostics; retained profile summaries record exitCode=6 and missing current XML",
+    "interpretation": "Interrupted process, neither passing tests nor an assertion-level test result"
+  },
+  "fixtureCorrections": [
+    "Tracked AudioRenderer ownership and captureDeltaTime cleanup in shared UnityTearDown",
+    "Current integrated skinned head sampled independently instead of disabled legacy floating mask",
+    "Lit candle tested with a second real E press while focus remains cleared"
+  ],
+  "inferences": [
+    "Nested first-appearance failure plus leaked .01 capture clock and later already-recording errors strongly indicate cross-test audio/clock contamination",
+    "Feature modules and profiles should reduce routine code reads/check scope; no quantified time or token benchmark was measured",
+    "Post-fixture RealListener passed even after the nested FirstAppearance failure, providing direct evidence that fixture teardown isolates recorder/capture clock state"
+  ],
+  "artifactPolicy": "Raw XML, editor logs and captures remain local under ignored Builds; this tracked summary keeps hashes/counts/failing names",
+  "localArtifacts": [
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/full/01-editmode.xml",
+      "bytes": 87128,
+      "sha256": "e4aa7781ba2767ad9ac7681079a956323893336432c0d6582c33fe396515cf44"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/full/02-playmode.xml",
+      "bytes": 137329512,
+      "sha256": "5373522ccdf749158ea3b1081925a01ff767292077389bb350f92d5214b96e1b"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/full/failure-summary.json",
+      "bytes": 40652,
+      "sha256": "dc6be7e4ff98e061ba759551e53ebb378c6aff19ec5f0d7d0d2c84ae1690094c"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/baseline/playmode.xml",
+      "bytes": 11895,
+      "sha256": "dfa47025a7a50e98361314cc9bb3659d2a97316812efeb5f8f31673cf58930b5"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/baseline/scope.json",
+      "bytes": 642,
+      "sha256": "55329fc8aebca8474c0e49a42a64ec99b50427ae65d0449a74300af85faeb74d"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/dx11-ui/01-editmode.xml",
+      "bytes": 19425,
+      "sha256": "d58f3508b76a0651cfcef6b62d7d9d865081fdc44a08a16d00dc5a8b5a314b95"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/dx11-ui/02-playmode.xml",
+      "bytes": 37809617,
+      "sha256": "04171a6c05e4ef9d7acff248d4b5dea6c0a9daa078d91852d603199f9f8f9109"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/static-final.json",
+      "bytes": 1401,
+      "sha256": "ed2ce2f0f99fbd246dc95d4041ebd390a82fd779bc49470b6a83fe214f68b42c"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/final-ui/summary.json",
+      "bytes": 3206,
+      "sha256": "0c8683803a0c0bf70c570d5910f86eaeceed978a9ee50ba4b6895442ff822f79"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/final-ai-doors/summary.json",
+      "bytes": 3383,
+      "sha256": "017fbe946d94b2db5130099875dcb5ebf4dccb08adf2e53da46132de6e50adeb"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/final-checkpoint/summary.json",
+      "bytes": 2967,
+      "sha256": "2d97f126e8d4a5e57ed9c65851342588b5be0bab4b3dd912320c9457dc312316"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/dx11-ai-doors/01-editmode.xml",
+      "bytes": 19416,
+      "sha256": "83cdc27fec9b8aa48991dd9cc5bc3cc220f820de4437429c63ffb71f3b91293f"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/dx11-ai-doors/02-playmode.xml",
+      "bytes": 84218,
+      "sha256": "1ffcca38b4d89bc022140bf7fca533173ba9fb2b3a9087f95d4ee918e1dd22c8"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/dx11-ai-doors/summary.json",
+      "bytes": 3876,
+      "sha256": "53d85ed0bccf8443e1d294f28a45238bba19d8b5c88a797cb3a7723d1d6b9632"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/dx11-checkpoint/01-editmode.xml",
+      "bytes": 30091,
+      "sha256": "4e522bdebaecaf697a64edf2cba0086fb8725e72fbf0c4fee254d7c4d3e368de"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/dx11-checkpoint/02-playmode.xml",
+      "bytes": 10003439,
+      "sha256": "0550572fe4010f688e01c66a911e6b9edfe67335ba08ff4510253e3874986c6e"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/dx11-checkpoint/summary.json",
+      "bytes": 3463,
+      "sha256": "b50282af021b9a05f0b997755c8b7f863c1121f7f3e04474507ce392c84d7dcb"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/baseline-survival/playmode.xml",
+      "bytes": 11869,
+      "sha256": "46987dfed0808951a57284f8ad710e8a942b3b155e39992afcb4e35f75f9fbf3"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/baseline-survival/scope.json",
+      "bytes": 491,
+      "sha256": "8ee456e8190754146544f3fed65e3e5a5bc27e59e5630650c879189e83df1d5d"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/fixture-followups/playmode.xml",
+      "bytes": 1182878,
+      "sha256": "139370fa4ff3f03156e5657eb6871de6478f745b4471a515475093ac23054bce"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/fixture-followups/scope.json",
+      "bytes": 608,
+      "sha256": "7ea89f375d3a9a4532c49c673d912a8bcfaf2f13230798848aaee41dcf0ab54b"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/audio-final/playmode.xml",
+      "bytes": 2911526,
+      "sha256": "55a86da5a0ef0913e4c6204aee4b09c59eba674ef700f63b68bbb23777e539d1"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/audio-final/exit.json",
+      "bytes": 196,
+      "sha256": "0fe5816c3ae10fd2cd3133b941168913fcfab699aa373f22662d9a4b7c5328c9"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/build-exit-final.json",
+      "bytes": 45,
+      "sha256": "6287b4613216d052dc3ba508f4ac2aaeb687acf135ac7330e98d560deb243764"
+    },
+    {
+      "path": "HappyToyV2/Builds/Windows-Structure-20261013/quality-build.json",
+      "bytes": 541698,
+      "sha256": "520cc971259c4eb204a75e71042c41d63645fcb0142250af55bfbf9ced911629"
+    },
+    {
+      "path": "HappyToyV2/Builds/Windows-Structure-20261013/HappyToyV2.exe",
+      "bytes": 667136,
+      "sha256": "a4c71b1bfc3e42d02f2f129fe04adef3ebf2343a662884e4b99598e9dfc90e7d"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/native-flow-final/flow.json",
+      "bytes": 1070,
+      "sha256": "e94972e3b77e136c42331cb08fd29498bbc0a83b1dbdbc12d040b94f6ada0b31"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/native-flow-verified/flow.json",
+      "bytes": 1069,
+      "sha256": "d3f098f7ebd2b6d45d571ab6b6d8807742a57ffc75eccfda64bcec4ab1f8e4e7"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/native-flow-verified/exit-code.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/quiet-audio-final/playmode.xml",
+      "bytes": 2911322,
+      "sha256": "efcf50e9fb18a1a648491ec09faf5f1f56c897173e1edd1b9b6092ab2010dd79"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/quiet-audio-final/exit-code.txt",
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/build-inputs-final.json",
+      "bytes": 2314,
+      "sha256": "3ee64f7d3953d2452cd8bfacc1d092c162f0f4fb3a17b1c3f9f6f8c33913abe0"
+    },
+    {
+      "path": "HappyToyV2/Builds/CodeStructure-20261013/source-completeness-final.json",
+      "bytes": 221,
+      "sha256": "9068338b6bc1a7ff6004118d73b82c75e36a180ce2b7949f122fc5015d6e7cc5"
+    }
+  ],
+  "currentDx11AiDoors": {
+    "status": "PASS",
+    "editMode": {
+      "total": 19,
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "startUtc": "2026-10-12 16:39:12Z",
+      "durationSeconds": 0.077524,
+      "failureNames": []
+    },
+    "playMode": {
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "startUtc": "2026-10-12 16:39:24Z",
+      "durationSeconds": 365.0360299,
+      "failureNames": []
+    }
+  },
+  "currentDx11Checkpoint": {
+    "status": "PASS",
+    "editMode": {
+      "total": 30,
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "startUtc": "2026-10-12 16:45:38Z",
+      "durationSeconds": 0.3167081,
+      "failureNames": []
+    },
+    "playMode": {
+      "total": 12,
+      "passed": 12,
+      "failed": 0,
+      "skipped": 0,
+      "startUtc": "2026-10-12 16:45:50Z",
+      "durationSeconds": 158.1099352,
+      "failureNames": []
+    }
+  },
+  "originalCoordinatorSurvivalBaseline": {
+    "graphicsApi": "d3d11",
+    "coordinatorsFrom": "20bc083",
+    "scope": "Only GameShellView.cs and StalkerBrain.cs restored; current Core, fixtures and resources retained",
+    "result": {
+      "total": 4,
+      "passed": 3,
+      "failed": 1,
+      "skipped": 0,
+      "startUtc": "2026-10-12 16:50:55Z",
+      "durationSeconds": 65.5764559,
+      "cases": [
+        {
+          "name": "PerceivedHearingUsesCurrentTransmissionAndRejectsUnheardOrInactiveCues",
+          "result": "Passed"
+        },
+        {
+          "name": "SchoolFullRealInputEscapePersistsCurrentSchoolBestAndTravel",
+          "result": "Failed"
+        },
+        {
+          "name": "SilentEnemyStateCannotInventTensionButActualUnseenFootstepsCanAnticipate",
+          "result": "Passed"
+        },
+        {
+          "name": "TrueRecognitionHasBoundedAftermathAndClearsOnRestorationAndRetry",
+          "result": "Passed"
+        }
+      ]
+    },
+    "observedFailure": {
+      "name": "SchoolFullRealInputEscapePersistsCurrentSchoolBestAndTravel",
+      "stage": "chapter-memory-1",
+      "recordsRecovered": 2,
+      "playerPosition": [
+        24.18,
+        0.08,
+        6.18
+      ],
+      "enemy": "V1 Cyclopse",
+      "enemyPosition": [
+        23.26,
+        0.04,
+        5.02
+      ],
+      "attacks": 3
+    },
+    "matchesCurrentDx11UiFailure": true,
+    "limit": "Establishes the same school-route failure with original coordinators; does not establish every full-suite failure preexisting"
+  },
+  "initialFullProfileCoverage": {
+    "source": "Initial full PlayMode XML, exact current feature selectors; subset summary, not independent reruns",
+    "ai": {
+      "total": 16,
+      "passed": 16,
+      "failed": 0,
+      "names": [
+        "CabinetEntryCancelsPendingVisibleBodyStrikeAndStartsFreshDoorWarning",
+        "CabinetEntryDecisionSurvivesRealSchoolAndCorridorCheckpointRoundTrips",
+        "CabinetWitnessRecordsRealSightButCannotOverrideSurvivalOrCauseAnotherRoll",
+        "FeedbackFootstepsInvestigateSnapshotWithWallAndDoorAttenuation",
+        "FeedbackSightStartsChaseInOneUpdateAndCoverNeverDoes",
+        "LanternInvestigatesItsOwnFloorWhilePlayerIsUpstairs",
+        "LeavingAndReenteringSameCabinetCannotInheritPreviousDoorStrike",
+        "LostSightSearchScansLocallyWithoutTrackingThroughCover",
+        "MultipleOccludedChasersShareOneSurvivalRollAndFailedNewEntryCannotKillRemotely",
+        "NoiseInvestigationFarActualFootstepCrossesRealDoorAndDwellsOnlyAtSavedEventPoint",
+        "NoiseInvestigationSchoolMaskActualFootstepSurvivesTravelThenScansEventPoint",
+        "QuietCabinetEntryNeverDrawsAndRejectsDuplicatePausedOrBlockedTransitions",
+        "RealFirecrackerInputDistractsAndExpiresWithoutInfiniteInventory",
+        "UnreachableSearchEvidenceTimesOutWithoutInventingTarget",
+        "WitnessedCabinetStrikeCannotCommitThroughNewOpaqueCover",
+        "WitnessedFailedCabinetEntryRequiresActualApproachAndFullDoorWarning"
+      ]
+    },
+    "drawer": {
+      "total": 1,
+      "passed": 1,
+      "failed": 0,
+      "names": [
+        "DrawerRealEOpensAndClosesAtTouchingDistanceWithoutShovingPlayerAndRestoresCollisionPairs"
+      ]
+    }
+  },
+  "finalCompleteSuiteRerun": "NOT RUN after fixture cleanup; initial complete result remains 187/231, 44 failures",
+  "postFixtureSevenCaseRun": {
+    "graphicsApi": "d3d11",
+    "result": {
+      "total": 7,
+      "passed": 4,
+      "failed": 3,
+      "skipped": 0,
+      "startUtc": "2026-10-12 16:52:14Z",
+      "durationSeconds": 289.7423652,
+      "cases": [
+        {
+          "name": "CorridorDifferentSeedFiveMemoryRunSurvivesThroughRealInput",
+          "result": "Failed",
+          "messageExcerpt": "  Expected: 1\n  But was:  0.0f\n"
+        },
+        {
+          "name": "CorridorFiveMemoryRunSurvivesThroughRealKeyboardMouseAndDoors",
+          "result": "Failed",
+          "messageExcerpt": "  Could not focus Corridor sliding door\n  Expected: less than 240.197083f\n  But was:  240.197113f\n"
+        },
+        {
+          "name": "FirstAppearanceAudioComesFromRealEventsWithQuietPauseMuteAndComfortControls",
+          "result": "Failed",
+          "messageExcerpt": "  Post-LateUpdate attachment assertion failed: NUnit.Framework.AssertionException:   Visible Studio head left its anatomical skeleton socket\n  Expected: less than 0.899999976f\n  But was:  1.7355448f\n\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression, System.String message, System.Ob"
+        },
+        {
+          "name": "PerceivedHearingUsesCurrentTransmissionAndRejectsUnheardOrInactiveCues",
+          "result": "Passed"
+        },
+        {
+          "name": "RealListenerMixCapturesDuringFlashlightInputAndPauseSilence",
+          "result": "Passed"
+        },
+        {
+          "name": "SilentEnemyStateCannotInventTensionButActualUnseenFootstepsCanAnticipate",
+          "result": "Passed"
+        },
+        {
+          "name": "TrueRecognitionHasBoundedAftermathAndClearsOnRestorationAndRetry",
+          "result": "Passed"
+        }
+      ]
+    },
+    "observedRecorderIsolation": "RealListener PCM passed after FirstAppearance failed inside its nested attachment observer; no inherited recording/capture-clock failure",
+    "provisionalFirstAppearanceFailure": "Unsupported test-only centroid-to-bone-pivot distance assumption, removed afterward because imported pivots need not coincide with weighted-mesh centroids",
+    "remainingCorridorRouteFailures": [
+      {
+        "name": "CorridorDifferentSeedFiveMemoryRunSurvivesThroughRealInput",
+        "condition": "Expected natural timeScale 1, observed 0.0 later in the route"
+      },
+      {
+        "name": "CorridorFiveMemoryRunSurvivesThroughRealKeyboardMouseAndDoors",
+        "condition": "Could not focus Corridor sliding door later in the route"
+      }
+    ],
+    "limit": "The lit-candle double-focus wait was corrected; these two complete-route tests still fail and are not claimed fixed"
+  },
+  "currentAudioFinal": {
+    "graphicsApi": "d3d11",
+    "cliExitCode": 0,
+    "result": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "startUtc": "2026-10-12 17:02:24Z",
+      "durationSeconds": 29.9631647,
+      "cases": [
+        {
+          "name": "FirstAppearanceAudioComesFromRealEventsWithQuietPauseMuteAndComfortControls",
+          "result": "Passed"
+        },
+        {
+          "name": "RealListenerMixCapturesDuringFlashlightInputAndPauseSilence",
+          "result": "Passed"
+        }
+      ]
+    },
+    "scope": "Current first-appearance and real-listener PCM after removing unsupported pivot-centroid threshold; weighted visible geometry, model/joint hierarchy, bodyfront/socket/facing and pause assertions retained"
+  },
+  "currentPlayerBuild": {
+    "status": "PASS",
+    "cliExitCode": 0,
+    "unityVersion": "6000.6.0f1",
+    "createdUtc": "2026-10-12T17:18:59.2573738Z",
+    "editorGraphicsApi": "d3d11",
+    "executable": "HappyToyV2/Builds/Windows-Structure-20261013/HappyToyV2.exe",
+    "manifest": "HappyToyV2/Builds/Windows-Structure-20261013/quality-build.json",
+    "manifestInputCount": 2919,
+    "limit": "Fresh current-input Windows build; exact Assets/Packages/ProjectSettings hashes and artifact/credit equality validated separately. Native annex flow passed; complete regression and survival limitations remain"
+  },
+  "pending": {},
+  "nativePlayerFlow": {
+    "status": "PASS",
+    "graphicsApi": "d3d11",
+    "cliExitCode": 0,
+    "scope": "Preserved authored annex via explicit Begin(); excludes the new main corridor title entry.",
+    "booleanChecks": 27,
+    "trueChecks": 27,
+    "checkNames": [
+      "titleFrozen",
+      "started",
+      "journalPaused",
+      "journalGated",
+      "journalFrozen",
+      "resumed",
+      "pauseOpened",
+      "pauseJournalReturns",
+      "pauseSettingsReturns",
+      "resultOpened",
+      "restartClean",
+      "pointerSettings",
+      "pointerVolume",
+      "pointerSensitivity",
+      "pointerFieldOfView",
+      "pointerToggles",
+      "settingsDefaults",
+      "settingsPersisted",
+      "compactLayout",
+      "inspectionStored",
+      "inspectionDeduplicated",
+      "inspectionDisplayed",
+      "journalPaging",
+      "inspectionReset",
+      "restartRequestsDeduplicated",
+      "restartResourcesClean",
+      "restartTitleDestination"
+    ],
+    "framesRendered": 10,
+    "captureAttempts": 10,
+    "inspections": 8,
+    "journalPagesVisited": 2,
+    "errors": [],
+    "visualReview": {
+      "source": "Coordinating agent inspected saved frames",
+      "frames": [
+        "settings.png",
+        "journal-4x3.png",
+        "result.png"
+      ],
+      "observed": "Readable Korean controls/text with no observed clipping in the reviewed images",
+      "limit": "Three reviewed images are not a manual whole-game or every-frame visual certification"
+    },
+    "priorDiagnosticFailure": "native-flow-final had only settingsPersisted=false; existing diagnostic audio guard restored startup volume onto later shells",
+    "diagnosticCorrections": [
+      "DiagnosticAudioSilence restores initial saved volume only for startup shell; later shells retain their saved volume through existing FilterVolume/hardware mute gating",
+      "Opt-in FlowAudit waits for two layout frames plus EndOfFrame after resizing and waits for actual restart conditions instead of a fixed .5 seconds"
+    ],
+    "limit": "Quiet Windows preserved-annex flow via explicit Begin; excludes new main-corridor title entry and does not certify complete survival routes or hardware performance"
+  },
+  "quietAudioFinal": {
+    "status": "PASS",
+    "graphicsApi": "d3d11",
+    "cliExitCode": 0,
+    "result": {
+      "total": 2,
+      "passed": 2,
+      "failed": 0,
+      "durationSeconds": 29.8817972,
+      "startUtc": "2026-10-12 17:22:22Z",
+      "cases": [
+        {
+          "name": "FirstAppearanceAudioComesFromRealEventsWithQuietPauseMuteAndComfortControls",
+          "result": "Passed"
+        },
+        {
+          "name": "RealListenerMixCapturesDuringFlashlightInputAndPauseSilence",
+          "result": "Passed"
+        }
+      ]
+    },
+    "scope": "Actual first-appearance/real-listener PCM rechecked after diagnostic guard correction"
+  },
+  "buildInputVerification": {
+    "status": "BUILD_INPUTS_PASS",
+    "manifestCreatedUtc": "2026-10-12T17:18:59.2573738Z",
+    "inputCount": 2919,
+    "errors": [],
+    "scope": "Fresh native artifact existence/checksums, full current Assets/Packages/ProjectSettings inventory/hashes and copied credit equality; does not certify actual native shader appearance, route completion, DSP/device audio or performance.",
+    "generatedTestSceneCleanup": "Three crash-generated InitTestScene files plus metadata were removed from project source inputs and retained locally under ignored Builds/interrupted-test-scenes"
+  },
+  "sourceCompletenessAfterStaging": {
+    "status": "PASS",
+    "sourceCount": 3387,
+    "missing": 0,
+    "unresolvedLfsPointers": 0,
+    "source": "Saved post-staging final source completeness report",
+    "scope": "Tracked code, Unity/import metadata, models/resources and editable authoring source handoff; no remote push requested",
+    "report": "HappyToyV2/Builds/CodeStructure-20261013/source-completeness-final.json"
+  },
+  "additionalAiFollowups": {
+    "passed": 3,
+    "names": [
+      "PerceivedHearingUsesCurrentTransmissionAndRejectsUnheardOrInactiveCues",
+      "SilentEnemyStateCannotInventTensionButActualUnseenFootstepsCanAnticipate",
+      "TrueRecognitionHasBoundedAftermathAndClearsOnRestorationAndRetry"
+    ],
+    "relationship": "Three distinct sensing/footstep/recognition methods passed after fixture cleanup in addition to the initial full-run 16-selector AI subset. No combined 19-case run was performed"
+  },
+  "finalEngineCompilation": {
+    "status": "PASS",
+    "unityVersion": "6000.6.0f1",
+    "scope": "Current Unity Editor/test and Windows player sources after opt-in diagnostic corrections",
+    "evidence": [
+      "Final quiet PCM test pair",
+      "Current Windows build",
+      "Current quiet native annex flow"
+    ],
+    "limit": "No final 11-stage external API rerun or full Unity suite rerun claimed"
+  },
+  "preexistingChangesPreserved": {
+    "files": 58,
+    "byteIdenticalToInitialSnapshots": true,
+    "source": "Coordinating agent final byte comparison, including GraphicsPipeline derived flags",
+    "stagedScope": "Only related code, tests, tools and documentation",
+    "snapshotInventory": "HappyToyV2/Builds/CodeStructure-20261013/preexisting-changes.json"
+  }
+}

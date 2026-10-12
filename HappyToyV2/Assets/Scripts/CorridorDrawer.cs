@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -19,6 +20,8 @@ namespace HappyToy.V2
         Vector3 closedPosition, parentSlide;
         Collider[] trayColliders, pickupColliders;
         int changedFrame = -1;
+        CharacterController contactPlayer;
+        readonly Dictionary<Collider,bool> previousPlayerPairs=new Dictionary<Collider,bool>();
 
         public void Configure(string id, Transform furniture, Interactable pickup)
         {
@@ -45,6 +48,9 @@ namespace HappyToy.V2
             // Keep activeSelf as the finite availability flag for old checkpoints.
             // Closed contents cannot be focused through a seam or collected by API.
             foreach (var collider in pickupColliders) if (collider) collider.enabled = ExposesPickup;
+            // Contents become physical at full extension. Include their pair as
+            // well so an exposed pack cannot shove the user standing at the tray.
+            RefreshPlayerContacts();
         }
         public void Use(PlayerMotor player)
         {
@@ -54,6 +60,7 @@ namespace HappyToy.V2
             if (SweepOccupied(destination - Travel))
             { session.Notify("서랍 앞이 막혀 있습니다. 조금 물러난 뒤 여닫으세요."); return; }
             IsOpen = !IsOpen; changedFrame = Time.frameCount;
+            RefreshPlayerContacts();
             RefreshPickup();
             var audio = GetComponent<InteractionAudio>();
             if (!audio) audio = gameObject.AddComponent<InteractionAudio>();
@@ -70,17 +77,14 @@ namespace HappyToy.V2
         {
             if (trayColliders == null || Mathf.Abs(metres) < .00001f) return false;
             Vector3 shift = transform.parent.TransformVector(parentSlide * (metres / OpenTravel));
-            var session = GameSession.Current; var player = session ? session.player : null;
             var actors = FindObjectsByType<NavMeshAgent>(FindObjectsSortMode.None);
             foreach (var collider in trayColliders)
             {
                 if (!collider || !collider.enabled || collider.isTrigger || collider.GetComponentInParent<Interactable>() == ContainedPickup) continue;
                 var swept = collider.bounds; var end = swept; end.center += shift; swept.Encapsulate(end);
-                if (player && !player.Hidden)
-                {
-                    var body = player.GetComponent<CharacterController>();
-                    if (BodyIntersects(swept, player.transform.position, body ? body.radius : .35f, body ? body.height : 1.8f)) return true;
-                }
+                // A usable tray must open while its user stands at the handle.
+                // Only that controller/tray pair is managed below; desk physics,
+                // other actors and loose payloads keep their existing collision.
                 foreach (var actor in actors)
                     if (actor && actor.isActiveAndEnabled && actor.gameObject.scene == gameObject.scene &&
                         BodyIntersects(swept, actor.transform.position, actor.radius, actor.height)) return true;
@@ -99,6 +103,7 @@ namespace HappyToy.V2
         }
         void Update()
         {
+            RefreshPlayerContacts();
             var session = GameSession.Current;
             if (!session || !session.InputAllowed || session.Finished || AtRequestedPose) return;
             float target = IsOpen ? OpenTravel : 0;
@@ -106,5 +111,29 @@ namespace HappyToy.V2
             if (SweepOccupied(next - Travel)) return;
             Travel = next; ApplyPose(); RefreshPickup(); Physics.SyncTransforms();
         }
+        void RefreshPlayerContacts()
+        {
+            var session=GameSession.Current;var player=session?session.player:null;
+            var body=player?player.GetComponent<CharacterController>():null;
+            if(body!=contactPlayer){RestorePlayerContacts();contactPlayer=body;}
+            if(!body || trayColliders==null)return;
+            foreach(var collider in trayColliders)
+            {
+                if(!collider || collider.isTrigger)continue;
+                if(!collider.enabled || !collider.gameObject.activeInHierarchy){previousPlayerPairs.Remove(collider);continue;}
+                bool ignore=player && !player.Hidden && (!AtRequestedPose || BodyIntersects(collider.bounds,player.transform.position,body.radius,body.height));
+                if(ignore && !previousPlayerPairs.ContainsKey(collider))
+                {previousPlayerPairs.Add(collider,Physics.GetIgnoreCollision(collider,body));Physics.IgnoreCollision(collider,body,true);}
+                else if(ignore && !Physics.GetIgnoreCollision(collider,body))Physics.IgnoreCollision(collider,body,true);
+                else if(!ignore && previousPlayerPairs.TryGetValue(collider,out bool prior))
+                {Physics.IgnoreCollision(collider,body,prior);previousPlayerPairs.Remove(collider);}
+            }
+        }
+        void RestorePlayerContacts()
+        {
+            if(contactPlayer)foreach(var pair in previousPlayerPairs)if(pair.Key)Physics.IgnoreCollision(pair.Key,contactPlayer,pair.Value);
+            previousPlayerPairs.Clear();contactPlayer=null;
+        }
+        void OnDisable()=>RestorePlayerContacts();
     }
 }

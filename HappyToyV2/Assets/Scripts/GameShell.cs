@@ -10,7 +10,7 @@ namespace HappyToy.V2
     /// <summary>Owns navigation, the gameplay input gate and local accessibility preferences.</summary>
     [DefaultExecutionOrder(-50)]
     [DisallowMultipleComponent]
-    public sealed class GameShell : MonoBehaviour
+    public sealed partial class GameShell : MonoBehaviour
     {
         public enum Page { Title, Playing, Pause, Journal, Settings, Result, Records, ChapterTransition }
         public Page Screen { get; private set; } = Page.Title;
@@ -27,9 +27,6 @@ namespace HappyToy.V2
         public bool CaptionVisible => Subtitles && captionTime > 0 && !string.IsNullOrWhiteSpace(Caption);
         public event Action SettingsChanged;
         public bool IsReloading { get; private set; }
-        public bool IsStartingRun { get; private set; }
-        public float LongestPreparationStep { get; private set; }
-        public string LongestPreparationStepName { get; private set; }
         public int GameplayEntryFrame { get; private set; } = -1;
         public string ReloadError { get; private set; } = string.Empty;
 
@@ -80,7 +77,7 @@ namespace HappyToy.V2
             auditMode = args.Contains("-v3-graphics-output") || args.Any(a => a.StartsWith("-v2-", StringComparison.Ordinal) && a.EndsWith("-output", StringComparison.Ordinal));
             // Existing standalone audits enter through Begin; the flow audit retains the title.
             bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output") && !args.Contains("-v2-chapter-output") &&
-                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v2-altar-output") && !args.Contains("-v2-school-reveal-output") && !args.Contains("-v2-school-stair-output") && !args.Contains("-v2-school-campus-output") && !args.Contains("-v2-threat-visual-output") && !args.Contains("-v2-menu-face-output") && !args.Contains("-v2-baeksugwi-head-output") && !args.Contains("-v2-menu-approach-output") && !args.Contains("-v3-graphics-output");
+                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v2-altar-output") && !args.Contains("-v2-school-reveal-output") && !args.Contains("-v2-school-stair-output") && !args.Contains("-v2-school-campus-output") && !args.Contains("-v2-threat-visual-output") && !args.Contains("-v2-menu-face-output") && !args.Contains("-v2-baeksugwi-head-output") && !args.Contains("-v2-start-loading-output") && !args.Contains("-v3-graphics-output");
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
             { if (playAfterLoad) { if (chapterRestart) BeginChapter(); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
@@ -109,69 +106,6 @@ namespace HappyToy.V2
         }
 
         public void Begin() { if (Screen == Page.Title) Set(Page.Playing); }
-        public void StartCorridorFromMenu() => StartRunFromMenu(false);
-        public void StartChapterFromMenu() => StartRunFromMenu(true);
-        void StartRunFromMenu(bool school)
-        {
-            if(Screen != Page.Title || IsReloading) return;
-            if(session.Corridor || session.Chapter)
-            {
-                requestChapterOnReload=school; requestCorridorOnReload=!school;
-                Restart(true); return;
-            }
-            IsReloading=true; IsStartingRun=true; ReloadError=string.Empty; ApplyScreenState();
-            StartCoroutine(PrepareMenuRun(school));
-        }
-        IEnumerator PrepareMenuRun(bool school)
-        {
-            // Give the real UI and title camera a rendered frame before creating geometry.
-            yield return null; yield return null;
-            LongestPreparationStep=0; LongestPreparationStepName=string.Empty;
-            var steps=RunPreparation.Flatten(school ? session.CreateChapterSteps() :
-                session.CreateCorridorSteps(unchecked(Environment.TickCount ^ Guid.NewGuid().GetHashCode())),
-                (step,seconds)=>{if(seconds>LongestPreparationStep){LongestPreparationStep=seconds;LongestPreparationStepName=step;}});
-            Exception failure=null;
-            var frameBudget=System.Diagnostics.Stopwatch.StartNew();
-            try
-            {
-                while(true)
-                {
-                    bool more=false; object next=null;
-                    try { more=steps.MoveNext(); if(more) next=steps.Current; }
-                    catch(Exception error) { failure=error; }
-                    if(failure!=null || !more) break;
-                    // Mesh chunks often take a fraction of a millisecond. Use
-                    // up to 5 ms per frame rather than stretching every tiny step
-                    // into a full display frame. Async navigation still yields.
-                    if(next==null && frameBudget.Elapsed.TotalMilliseconds<5) continue;
-                    yield return next;
-                    frameBudget.Restart();
-                }
-                if(failure==null)
-                {
-                    try
-                    {
-                        if(school ? !session.ChapterMode : !session.CorridorMode)
-                            throw new InvalidOperationException("Run preparation did not become ready");
-                        if(school && !chapterFromOffering && session.ChapterSuspension.HasRun && session.ChapterSuspension.Writable &&
-                            !session.ChapterSuspension.Consume(session.ChapterSuspension.Snapshot.token))
-                            throw new InvalidOperationException(session.ChapterSuspension.Status);
-                        if(!school && session.Suspension.HasRun && session.Suspension.Writable &&
-                            !session.Suspension.Consume(session.Suspension.Snapshot.token))
-                            throw new InvalidOperationException(session.Suspension.Status);
-                        chapterFromOffering=false;
-                    }
-                    catch(Exception error) { failure=error; }
-                }
-            }
-            finally { (steps as IDisposable)?.Dispose(); IsReloading=false; IsStartingRun=false; }
-            if(failure==null) Set(Page.Playing);
-            else
-            {
-                ReloadError="탐색을 준비하지 못했습니다. 다시 시작해 주세요. 중단 기록은 유지됩니다.";
-                ApplyScreenState(); Debug.LogWarning("Menu run preparation failed: "+failure.Message,this);
-            }
-        }
         public void BeginChapter()
         {
             if(Screen!=Page.Title || IsReloading) return;
@@ -456,6 +390,7 @@ namespace HappyToy.V2
 
         void Update()
         {
+            if(CinematicLoading)CinematicLoadingTime+=Time.unscaledDeltaTime;
             if (!session || IsReloading) return;
             if (lastNotice != session.Notice || lastNoticeRevision != session.NoticeRevision)
             {

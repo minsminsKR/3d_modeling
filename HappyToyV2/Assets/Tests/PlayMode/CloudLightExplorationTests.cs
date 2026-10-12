@@ -181,9 +181,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(target,"CanFocus"),Is.False);
             Assert.That(Get<Component>(player,"Focus"),Is.Null);
             var view=One("GameShellView");
-            var panelField=view.GetType().GetField("focusPanel",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
-            Assert.That(panelField,Is.Not.Null);
-            var focusPanel=(VisualElement)panelField.GetValue(view);
+            var focusPanel=Get<VisualElement>(view,"Root").Q<VisualElement>("focus-panel");
             Assert.That(focusPanel,Is.Not.Null);
             Assert.That(focusPanel.resolvedStyle.display,Is.EqualTo(DisplayStyle.None));
             Call(candle,"Restore",false);

@@ -8,39 +8,6 @@ namespace HappyToy.V2.CloudTests
     public sealed class CorridorBabyMemoryTests
     {
         object Fresh() => Activator.CreateInstance(RequireType("CorridorBabyMemory"));
-        string Phase(object memory) => Get<object>(memory, "Current").ToString();
-        [Test] public void FirstSmallSoundInvestigatesThenReturnsToWaitingCry()
-        {
-            var memory = Fresh(); Assert.That(Phase(memory), Is.EqualTo("WaitingCry"));
-            Assert.That((bool)Call(memory, "HearSmall"), Is.True);
-            Assert.That(Phase(memory), Is.EqualTo("InvestigatingCry"));
-            Call(memory, "FinishInvestigation"); Assert.That(Phase(memory), Is.EqualTo("WaitingCry"));
-            Assert.That(Get<bool>(memory, "HasChased"), Is.False);
-        }
-        [Test] public void SeenPursuitRejectsSmallDistractionAndLossStartsWandering()
-        {
-            var memory = Fresh(); Call(memory, "SeePlayer");
-            Assert.That((bool)Call(memory, "HearSmall"), Is.False);
-            Assert.That(Phase(memory), Is.EqualTo("Chasing"));
-            Call(memory, "LosePlayer"); Assert.That(Phase(memory), Is.EqualTo("WanderingCry"));
-            Assert.That(Get<bool>(memory, "HasChased"), Is.True);
-        }
-        [Test] public void LoudSoundChasesAndSavedLaterInvestigationRetainsWanderingHistory()
-        {
-            var memory = Fresh(); Call(memory, "HearLoud");
-            Assert.That(Phase(memory), Is.EqualTo("Chasing")); Call(memory, "LosePlayer"); Call(memory, "HearSmall");
-            var saved = Call(memory, "Capture"); var resumed = Fresh(); Call(resumed, "Restore", saved);
-            Assert.That(Phase(resumed), Is.EqualTo("InvestigatingCry")); Call(resumed, "FinishInvestigation");
-            Assert.That(Phase(resumed), Is.EqualTo("WanderingCry"));
-        }
-        [Test] public void FreshRunClearsPriorChaseAndInvalidSnapshotCannotMutateMemory()
-        {
-            var memory = Fresh(); Call(memory, "HearLoud"); Call(memory, "Restore", new object[] { null });
-            Assert.That(Phase(memory), Is.EqualTo("WaitingCry")); Assert.That(Get<bool>(memory, "HasChased"), Is.False);
-            var invalid = Call(memory, "Capture"); Set(invalid, "hasChased", true);
-            Assert.Throws<ArgumentException>(() => Call(memory, "Restore", invalid));
-            Assert.That(Phase(memory), Is.EqualTo("WaitingCry")); Assert.That(Get<bool>(memory, "HasChased"), Is.False);
-        }
         object ValidThreatProgress(string state)
         {
             var progress = Activator.CreateInstance(RequireType("StalkerBrain+Progress"));

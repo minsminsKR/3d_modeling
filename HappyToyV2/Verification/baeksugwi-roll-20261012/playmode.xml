@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="9" result="Passed" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-12 11:45:36Z" end-time="2026-10-12 11:47:31Z" duration="114.9291042">
+  <test-suite type="TestSuite" id="1239" name="Happy Toy V2 — Development" fullname="Happy Toy V2 — Development" runstate="Runnable" testcasecount="229" result="Passed" start-time="2026-10-12 11:45:36Z" end-time="2026-10-12 11:47:31Z" duration="114.929104" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1231" name="HappyToy.V2.PlayModeTests.dll" fullname="C:/Users/강 두오/Documents/ChatGPT/HappyToyV2/HappyToyV2/Library/ScriptAssemblies/HappyToy.V2.PlayModeTests.dll" runstate="Runnable" testcasecount="229" result="Passed" start-time="2026-10-12 11:45:36Z" end-time="2026-10-12 11:47:31Z" duration="114.907106" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="18344" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1232" name="HappyToy" fullname="HappyToy" runstate="Runnable" testcasecount="229" result="Passed" start-time="2026-10-12 11:45:36Z" end-time="2026-10-12 11:47:31Z" duration="114.905390" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1233" name="V2" fullname="HappyToy.V2" runstate="Runnable" testcasecount="229" result="Passed" start-time="2026-10-12 11:45:36Z" end-time="2026-10-12 11:47:31Z" duration="114.904243" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1234" name="CloudTests" fullname="HappyToy.V2.CloudTests" runstate="Runnable" testcasecount="229" result="Passed" start-time="2026-10-12 11:45:36Z" end-time="2026-10-12 11:47:31Z" duration="114.902932" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="CloudPlayModeTests" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" testcasecount="229" result="Passed" start-time="2026-10-12 11:45:36Z" end-time="2026-10-12 11:47:31Z" duration="114.899676" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1007" name="BaeksugwiHeadActionMovesOnlyHeadAndLoopsWithoutMovingAnyArm" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.BaeksugwiHeadActionMovesOnlyHeadAndLoopsWithoutMovingAnyArm" methodname="BaeksugwiHeadActionMovesOnlyHeadAndLoopsWithoutMovingAnyArm" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1704518849" result="Passed" start-time="2026-10-12 11:45:36Z" end-time="2026-10-12 11:45:50Z" duration="13.668389" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1006" name="BaeksugwiHeadHasPronouncedRollBothWaysWithUnequalHoldsAndSnaps" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.BaeksugwiHeadHasPronouncedRollBothWaysWithUnequalHoldsAndSnaps" methodname="BaeksugwiHeadHasPronouncedRollBothWaysWithUnequalHoldsAndSnaps" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1296988897" result="Passed" start-time="2026-10-12 11:45:50Z" end-time="2026-10-12 11:45:58Z" duration="7.604973" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1009" name="BaeksugwiHeadWritheAlsoMovesTheSchoolFloatingMaskBeforeTransformation" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.BaeksugwiHeadWritheAlsoMovesTheSchoolFloatingMaskBeforeTransformation" methodname="BaeksugwiHeadWritheAlsoMovesTheSchoolFloatingMaskBeforeTransformation" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1171794820" result="Passed" start-time="2026-10-12 11:45:58Z" end-time="2026-10-12 11:46:09Z" duration="11.672766" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="90000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1008" name="BaeksugwiHeadWritheUsesChaseStateFreezesOnPauseAndStopsWhenCalm" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.BaeksugwiHeadWritheUsesChaseStateFreezesOnPauseAndStopsWhenCalm" methodname="BaeksugwiHeadWritheUsesChaseStateFreezesOnPauseAndStopsWhenCalm" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="876123079" result="Passed" start-time="2026-10-12 11:46:09Z" end-time="2026-10-12 11:46:29Z" duration="19.781451" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="90000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1010" name="BaeksugwiTitleHeadMovesAtZeroTimeScaleWithAllBodySupportsPlanted" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.BaeksugwiTitleHeadMovesAtZeroTimeScaleWithAllBodySupportsPlanted" methodname="BaeksugwiTitleHeadMovesAtZeroTimeScaleWithAllBodySupportsPlanted" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="493352296" result="Passed" start-time="2026-10-12 11:46:29Z" end-time="2026-10-12 11:46:42Z" duration="12.920268" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="90000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1142" name="StudioCorridorCloneUsesOneReplacementAndHidesTheFloatingFace" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.StudioCorridorCloneUsesOneReplacementAndHidesTheFloatingFace" methodname="StudioCorridorCloneUsesOneReplacementAndHidesTheFloatingFace" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1040914183" result="Passed" start-time="2026-10-12 11:46:42Z" end-time="2026-10-12 11:46:58Z" duration="16.409504" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1140" name="StudioImportedRunKeepsFloorRoofAndForwardFacingHead" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.StudioImportedRunKeepsFloorRoofAndForwardFacingHead" methodname="StudioImportedRunKeepsFloorRoofAndForwardFacingHead" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1546366782" result="Passed" start-time="2026-10-12 11:46:58Z" end-time="2026-10-12 11:47:07Z" duration="8.990954" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1141" name="StudioRunMovesWithTheAgentAndFreezesOnPause" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.StudioRunMovesWithTheAgentAndFreezesOnPause" methodname="StudioRunMovesWithTheAgentAndFreezesOnPause" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="1564003976" result="Passed" start-time="2026-10-12 11:47:07Z" end-time="2026-10-12 11:47:23Z" duration="15.416818" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1139" name="StudioWraithKeepsNavigationAndImportsEighteenSkinnedArms" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.StudioWraithKeepsNavigationAndImportsEighteenSkinnedArms" methodname="StudioWraithKeepsNavigationAndImportsEighteenSkinnedArms" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="282536325" result="Passed" start-time="2026-10-12 11:47:23Z" end-time="2026-10-12 11:47:31Z" duration="8.216277" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/강 두오/AppData/LocalLow/Happy Toy/Happy Toy V2 — Development\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

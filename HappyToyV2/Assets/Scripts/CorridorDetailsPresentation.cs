@@ -1,4 +1,3 @@
-using System.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,11 +140,11 @@ namespace HappyToy.V2
             AuthoredDetailModules++;
         }
 
-        IEnumerator EmitDetailsSteps(bool cooperative)
+        System.Collections.IEnumerator EmitDetailsRoutine(bool incremental)
         {
+            float yieldAt=Time.realtimeSinceStartup+.004f;
             foreach(var cellGroup in detailBatches.Values.GroupBy(x=>x.cell))
             {
-                if(cooperative) yield return null;
                 var root=new GameObject("Blender corridor detail cell "+cellGroup.Key);root.transform.SetParent(additions,false);
                 root.transform.position=ArchitectureOrigin(cellGroup.Key);root.layer=8;
                 var levels=new List<Renderer>[2] {new List<Renderer>(),new List<Renderer>()};
@@ -160,6 +159,7 @@ namespace HappyToy.V2
                 }
                 var group=root.AddComponent<LODGroup>();group.fadeMode=LODFadeMode.None;
                 group.SetLODs(new[] {new LOD(.38f,levels[0].ToArray()),new LOD(.005f,levels[1].ToArray())});group.RecalculateBounds();ArchitectureLodGroups++;
+                if(incremental && Time.realtimeSinceStartup>=yieldAt){yield return null;yieldAt=Time.realtimeSinceStartup+.004f;}
             }
             detailBatches.Clear();
         }

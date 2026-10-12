@@ -25,6 +25,12 @@ namespace HappyToy.V2.CloudTests
         {
             Keys(key); yield return Delay(.08f); Keys(); yield return Delay(.08f);
         }
+        IEnumerator RecoveryWaitForCorridorEntry()
+        {
+            yield return Wait(() => !Get<bool>(shell, "CinematicLoading") && !Get<bool>(shell, "IsReloading") &&
+                Get<bool>(session, "CorridorMode") && RecoveryPage == "Playing", 45,
+                "Actual title submit did not finish preparing/fading into the corridor");
+        }
         IEnumerator RecoveryUiReady()
         {
             var view = One("GameShellView"); Call(view, "SetCaptureSize", 1280, 720);
@@ -49,8 +55,10 @@ namespace HappyToy.V2.CloudTests
             using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, mousePosition = position, button = 0, clickCount = 1 }))
                 target.SendEvent(up);
             yield return Delay(.15f);
-            if(id=="begin" || id=="begin-school")
-                yield return Wait(()=>!Get<bool>(shell,"IsReloading"),60,"Menu preparation did not finish");
+            if(id=="begin")yield return Wait(()=>!Get<bool>(shell,"CinematicLoading"),45,"Cinematic title entry did not finish preparing/fading into the corridor");
+            if (id == "continue-chapter")
+                yield return Wait(() => !Get<bool>(shell, "IsReloading"), 30,
+                    "School checkpoint restore did not finish its navigation preparation");
         }
         IEnumerator RecoveryRebind(Component previous)
         {
@@ -66,13 +74,15 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Components("PlayerMotor").Length, Is.EqualTo(1));
             Assert.That(Components("DetectionFeedback").Length, Is.EqualTo(1));
             Assert.That(Resources.FindObjectsOfTypeAll<PanelSettings>().Count(item => item.name == "HappyToy runtime UI panel"), Is.EqualTo(1), "Native UI panels accumulated across retries");
-            Assert.That(Resources.FindObjectsOfTypeAll<RenderTexture>().Count(item => item.name == Get<RenderTexture>(One("GameShellView"), "CaptureTarget").name), Is.EqualTo(1), "Native UI capture targets accumulated across retries");
-            var feedback=player.GetComponent(RequireType("DetectionFeedback"));
-            foreach(var property in new[]{"NativeNoiseTexture","PeripheralTexture"})
-            {
-                var texture=Get<Texture2D>(feedback,property);Assert.That(texture,Is.Not.Null);
-                Assert.That(Resources.FindObjectsOfTypeAll<Texture2D>().Count(item=>item.name==texture.name),Is.EqualTo(1),"Recognition textures accumulated across retries: "+property);
-            }
+            Assert.That(Resources.FindObjectsOfTypeAll<RenderTexture>().Count(item => item.name == "HappyToy display RGB UI capture"), Is.EqualTo(1), "Native UI capture targets accumulated across retries");
+            var detection = player.GetComponent(RequireType("DetectionFeedback"));
+            var nativeNoise = Get<Texture2D>(detection, "NativeNoiseTexture");
+            var peripheral = Get<Texture2D>(detection, "PeripheralTexture");
+            Assert.That(nativeNoise, Is.Not.Null, "Recognition lost its current native grain owner");
+            Assert.That(peripheral, Is.Not.Null, "Recognition lost its current peripheral veil owner");
+            var textures = Resources.FindObjectsOfTypeAll<Texture2D>();
+            Assert.That(textures.Count(item => item.name == nativeNoise.name), Is.EqualTo(1), "Native grain textures accumulated across retries");
+            Assert.That(textures.Count(item => item.name == peripheral.name), Is.EqualTo(1), "Peripheral veil textures accumulated across retries");
         }
 
         [UnityTest, Timeout(65000)]

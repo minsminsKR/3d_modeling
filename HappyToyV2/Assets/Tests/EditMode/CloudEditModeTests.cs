@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 
 namespace HappyToy.V2.Tests.EditMode
 {
-    // Test-only assembly: runtime scripts and their serialized assembly identities stay unchanged.
+    // Scene components preserve their assembly identity; engine-independent rules have a Core boundary.
     [TestFixture]
     public sealed class CloudEditModeTests
     {
@@ -55,14 +55,17 @@ namespace HappyToy.V2.Tests.EditMode
             foreach (string name in new[]
             {
                 "GameSession", "PlayerMotor", "GameShell", "GameShellView", "Interactable",
-                "StalkerBrain", "EnemyAttackClock", "SurfaceRippleBuffer", "StealthRules",
-                "SceneRestartGate", "AnnexSignFont", "FirecrackerInventory", "NavMeshStartup"
+                "StalkerBrain", "AnnexSignFont", "FirecrackerInventory", "NavMeshStartup"
             })
             {
                 Type type = RequireType("HappyToy.V2." + name, RuntimeAssembly);
                 Assert.That(type.Assembly.GetName().Name, Is.EqualTo(RuntimeAssembly),
-                    "Do not migrate existing gameplay scripts into a test-support or runtime asmdef.");
+                    "Preserve serialized scene component identities while extracting independent rules.");
             }
+            foreach (string name in new[] { "EnemyAttackClock", "SurfaceRippleBuffer", "StealthRules",
+                "SceneRestartGate", "CabinetHidingRules", "CorridorBabyMemory", "CorridorThreatRules" })
+                Assert.That(RequireType("HappyToy.V2." + name, "HappyToy.V2.Core").Assembly.GetName().Name,
+                    Is.EqualTo("HappyToy.V2.Core"), "Independent rules must retain their Core boundary.");
             Type validator = RequireType("HappyToy.V2.Editor.QualityValidation", EditorAssembly);
             Assert.That(validator.Assembly.GetName().Name, Is.EqualTo(EditorAssembly));
         }

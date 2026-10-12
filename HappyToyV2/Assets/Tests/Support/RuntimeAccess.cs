@@ -9,16 +9,20 @@ using UnityEngine.SceneManagement;
 
 namespace HappyToy.V2.CloudTests
 {
-    // UTF asmdefs cannot reference predefined Assembly-CSharp. This bridge invokes the
-    // real imported game assembly without moving scripts or changing scene type identities.
+    // Scene integration tests use this bridge for the predefined game assembly.
+    // Independent rules live in Core and are tested through typed references.
     public static class RuntimeAccess
     {
         public const string ScenePath = "Assets/Annex/SchoolAnnex.unity";
-        public static Type RequireType(string name, string assembly = "Assembly-CSharp")
+        public static Type RequireType(string name, string assembly = null)
         {
-            var type = Type.GetType("HappyToy.V2." + name + ", " + assembly, false);
-            Assert.That(type, Is.Not.Null, "Missing real project type " + name + " in " + assembly);
-            Assert.That(type.Assembly.GetName().Name, Is.EqualTo(assembly));
+            var type = assembly == null
+                ? Type.GetType("HappyToy.V2." + name + ", HappyToy.V2.Core", false) ??
+                  Type.GetType("HappyToy.V2." + name + ", Assembly-CSharp", false)
+                : Type.GetType("HappyToy.V2." + name + ", " + assembly, false);
+            Assert.That(type, Is.Not.Null, "Missing real project type " + name +
+                " in " + (assembly ?? "HappyToy.V2.Core / Assembly-CSharp"));
+            if (assembly != null) Assert.That(type.Assembly.GetName().Name, Is.EqualTo(assembly));
             return type;
         }
         public static Component[] Components(string name, bool includeInactive = true)

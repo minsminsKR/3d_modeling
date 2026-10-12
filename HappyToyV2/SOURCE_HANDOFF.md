@@ -1,5 +1,28 @@
 # 다른 PC에서 이어서 개발하기
 
+## 지속 개발 지침
+
+HappyToyV2는 그림자복도와 유사한 스핀오프급 공포 게임을 개발·테스트하는
+프로젝트다. 저장소 루트의 `AGENTS.md`와 프로젝트의 `AGENTS.md`에 지속 지침을
+보관하며, 이 문서들과 제작 원본을 함께 받아 다른 PC에서도 같은 규칙으로 작업한다.
+
+pull은 요청 시점의 GitHub `origin/main`을 가져오고 필요한 Git LFS 모델·리소스를
+모두 복원한 뒤, 고정 Unity 버전으로 새 Windows 플레이어를 빌드·검증하는 작업이다.
+기존 작업을 보존하고 전달 직전 main을 다시 확인한다. push는 사용자가 명시적으로
+요청할 때만 `origin/main`으로 하며, 원격 변경을 통합하고 제작 원본·리소스의 누락
+검사를 통과해야 한다. 완료 후 원격 main과 로컬 커밋이 일치하는지 확인한다.
+
+모델 제작은 우측 브라우저의
+[사용자 모델링 웹앱](https://agrees-mic-icon-contribution.trycloudflare.com/)을 사용한다.
+필요한 참조 이미지를 생성해 웹앱에 입력하고 원본 GLB/PBR를 만든다.
+리깅·관절 편집은 웹앱 또는 품질과 효율이 좋은 로컬 Blender 작업을 선택한다.
+입력 이미지·프롬프트·생성 설정·작업 기록·원본 모델·텍스처·리그·애니메이션·
+편집 가능한 제작 파일과 도구를 Git에 보관한다. 웹앱의 임시 작업 디렉터리나
+다운로드 링크에만 원본을 남기지 않는다. 터널이 바뀌면 사용자가 제공한 최신 URL을 쓴다.
+웹앱 소스는 저장소의 `hunyuan3d-webapp/`에 있다.
+
+## 현재 게임 소스와 빌드
+
 학교 기본 지도 버전은 2다. 학교의 직사각 공간·복도·문 계획은
 `Assets/Scripts/SchoolCampusLayout.cs`, 건물과 소품 배치는
 `SchoolCampusArchitecture.cs`, `SchoolCampusRooms.cs`가 원본이다.
@@ -62,6 +85,13 @@ Unity CLI는 별도 설치 도구이며 기본 빌드 결과는 `HappyToyV2/Buil
 원본 `Assets/Annex/SchoolAnnex.unity`는 재생성하거나 덮어쓰지 않는다.
 
 ## 제작 원본과 도구
+
+코드의 기능별 진입점과 검사 명령은 [CODE_MAP.md](CODE_MAP.md)에 있다.
+`Assets/Scripts/Core`는 Unity에 의존하지 않는 `HappyToy.V2.Core` 어셈블리이며,
+`Assets/Tests/EditMode/Core`는 이를 직접 참조하는 빠른 규칙 검사다.
+`Assets/Scripts/UI`와 `AI`의 모듈을 포함해 모든 `.cs`, `.asmdef`, `.meta`를
+함께 전달한다. 기존 씬 스크립트 GUID와 저장 데이터 형식은 보존한다.
+검증 프로필은 `Tools/quality/run_feature_tests.py --list`로 확인한다.
 
 독립 Python 3.11 환경에서 생성 도구의 실제 사용 버전을 설치한다.
 

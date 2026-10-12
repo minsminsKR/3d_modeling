@@ -71,8 +71,17 @@ namespace HappyToy.V2
             var shell = GameSession.Current ? GameSession.Current.Shell : null;
             if (shell && !ReferenceEquals(shell, lastShell))
             {
-                lastShell = shell; float volume = Get("HAS_v2.volume") == "1" ? SavedFloat("v2.volume") : .8f;
-                shell.AdjustSettings(volume - shell.Volume, 0);
+                bool startupShell = ReferenceEquals(lastShell, null);
+                lastShell = shell;
+                // Undo only the zero gain installed before the first Awake.
+                // Later scene reloads must retain settings saved by the audit.
+                // Device-session mute still gates all requested listener gain.
+                if (startupShell && Mathf.Approximately(shell.Volume, 0))
+                {
+                    float volume = Get("HAS_v2.volume") == "1" ? SavedFloat("v2.volume") : .8f;
+                    shell.AdjustSettings(volume - shell.Volume, 0);
+                }
+                else AudioListener.volume = FilterVolume(shell.Volume);
             }
             else if (shell && gainNeedsRestore) AudioListener.volume = FilterVolume(shell.Volume);
             gainNeedsRestore = false;

@@ -211,7 +211,7 @@ namespace HappyToy.V2.CloudTests
             float oldCaptureDelta=Time.captureDeltaTime;bool started=false;
             try
             {
-                Time.captureDeltaTime=1f/60;yield return null;started=AudioRenderer.Start();Assert.That(started,Is.True);
+                Time.captureDeltaTime=1f/60;yield return null;started=StartOwnedAudioRenderer();Assert.That(started,Is.True);
                 yield return ExternalFlush(rate);
                 // The bounded engine clock is active before the genuine first Use.
                 // Asset import/dressing startup must not consume the event before observation.
@@ -271,7 +271,7 @@ namespace HappyToy.V2.CloudTests
                 CloudExperienceTests.Artifact("external-school-door.json",System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(
                     new CloudExternalAudioTests.Report {scope="Actual authored WASHROOM public door Use/leaf animation; near, frozen in-flight pause, same cue resume, finite distance, master mute. Positioned listener, not a continuous playthrough.",segments=segments.ToArray()},true)));
             }
-            finally {if(started)AudioRenderer.Stop();Time.captureDeltaTime=oldCaptureDelta;}
+            finally {if(started)StopOwnedAudioRenderer();Time.captureDeltaTime=oldCaptureDelta;}
             var previous=session;Call(shell,"Restart",true);
             yield return Wait(()=>Components("GameSession").Length==1 && One("GameSession")!=previous,25,"School retry never loaded fresh scene");
             yield return null;yield return null;
@@ -306,7 +306,7 @@ namespace HappyToy.V2.CloudTests
             float oldCaptureDelta=Time.captureDeltaTime;bool started=false;
             try
             {
-                Time.captureDeltaTime=1f/60;yield return null;started=AudioRenderer.Start();Assert.That(started,Is.True);
+                Time.captureDeltaTime=1f/60;yield return null;started=StartOwnedAudioRenderer();Assert.That(started,Is.True);
                 yield return ExternalFlush(rate);
                 Call(memories[3],"Use",player);
                 Assert.That(Get<bool>(portrait,"Triggered"),Is.True,"Actual fourth memory never triggered prepared portrait; cancelled="+
@@ -340,7 +340,7 @@ namespace HappyToy.V2.CloudTests
                 CloudExperienceTests.Artifact("external-school-portrait.json",System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(
                     new CloudExternalAudioTests.Report {scope="Actual fourth-memory public Use and authored portrait drop; imported creak/impact listener output, frozen event clock and result cancellation. Positioned listener, not a survival route.",segments=segments.ToArray()},true)));
             }
-            finally{if(started)AudioRenderer.Stop();Time.captureDeltaTime=oldCaptureDelta;}
+            finally{if(started)StopOwnedAudioRenderer();Time.captureDeltaTime=oldCaptureDelta;}
             Debug.Log("HAPPYTOY_EXTERNAL_AUDIO_PASS fourth-memory real portrait creak/fall contact, imported non-silent PCM, one cue per beat, pause and result cancellation");
         }
 
@@ -364,7 +364,7 @@ namespace HappyToy.V2.CloudTests
             float oldCaptureDelta=Time.captureDeltaTime;bool started=false;
             try
             {
-                Time.captureDeltaTime=1f/60;yield return null;started=AudioRenderer.Start();Assert.That(started,Is.True);
+                Time.captureDeltaTime=1f/60;yield return null;started=StartOwnedAudioRenderer();Assert.That(started,Is.True);
                 for(int i=0;i<3;i++)
                 {
                     ExternalMuteExcept(sources[i]);sources[i].Play();PlacePlayer(positions[i],false);yield return ExternalFlush(rate,1.4f);
@@ -391,7 +391,7 @@ namespace HappyToy.V2.CloudTests
                 CloudExperienceTests.Artifact("external-school-ambience.json",System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(
                     new CloudExternalAudioTests.Report {scope="Three actual chapter room loop sources and positioned listener; actual Floor 2F collider/low-pass separation and listener pause. Isolated main-output excerpts, not device listening certification.",segments=segments.ToArray()},true)));
             }
-            finally{if(started)AudioRenderer.Stop();Time.captureDeltaTime=oldCaptureDelta;}
+            finally{if(started)StopOwnedAudioRenderer();Time.captureDeltaTime=oldCaptureDelta;}
             Debug.Log("HAPPYTOY_EXTERNAL_AUDIO_PASS imported loops at real ground/upper/basement positions, real upper slab attenuation and listener pause");
         }
     }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="2" result="Passed" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-12 12:53:23Z" end-time="2026-10-12 12:54:16Z" duration="52.9357239">
+  <test-suite type="TestSuite" id="1241" name="Happy Toy V2 — Development" fullname="Happy Toy V2 — Development" runstate="Runnable" testcasecount="231" result="Passed" start-time="2026-10-12 12:53:23Z" end-time="2026-10-12 12:54:16Z" duration="52.935724" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1233" name="HappyToy.V2.PlayModeTests.dll" fullname="C:/Users/강 두오/Documents/ChatGPT/HappyToyV2/HappyToyV2/Library/ScriptAssemblies/HappyToy.V2.PlayModeTests.dll" runstate="Runnable" testcasecount="231" result="Passed" start-time="2026-10-12 12:53:23Z" end-time="2026-10-12 12:54:16Z" duration="52.924060" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="29776" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1234" name="HappyToy" fullname="HappyToy" runstate="Runnable" testcasecount="231" result="Passed" start-time="2026-10-12 12:53:23Z" end-time="2026-10-12 12:54:16Z" duration="52.922163" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1235" name="V2" fullname="HappyToy.V2" runstate="Runnable" testcasecount="231" result="Passed" start-time="2026-10-12 12:53:23Z" end-time="2026-10-12 12:54:16Z" duration="52.919953" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1236" name="CloudTests" fullname="HappyToy.V2.CloudTests" runstate="Runnable" testcasecount="231" result="Passed" start-time="2026-10-12 12:53:23Z" end-time="2026-10-12 12:54:16Z" duration="52.918521" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="CloudPlayModeTests" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" testcasecount="231" result="Passed" start-time="2026-10-12 12:53:23Z" end-time="2026-10-12 12:54:16Z" duration="52.916101" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1055" name="CorridorDrawerRealERevealsFinitePickupAndRestoresConsumedStateWithNewAndLegacyCheckpoints" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorDrawerRealERevealsFinitePickupAndRestoresConsumedStateWithNewAndLegacyCheckpoints" methodname="CorridorDrawerRealERevealsFinitePickupAndRestoresConsumedStateWithNewAndLegacyCheckpoints" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="300444552" result="Passed" start-time="2026-10-12 12:53:23Z" end-time="2026-10-12 12:54:03Z" duration="39.548867" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="180000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[HAPPYTOY_FURNITURE_DRAWER_PASS real E focus/open/finite pickup; close/reopen cannot duplicate; pause and fresh-scene new/legacy saves retained consumption
+]]></output>
+              </test-case>
+              <test-case id="1228" name="DrawerRealEOpensAndClosesAtTouchingDistanceWithoutShovingPlayerAndRestoresCollisionPairs" fullname="HappyToy.V2.CloudTests.CloudPlayModeTests.DrawerRealEOpensAndClosesAtTouchingDistanceWithoutShovingPlayerAndRestoresCollisionPairs" methodname="DrawerRealEOpensAndClosesAtTouchingDistanceWithoutShovingPlayerAndRestoresCollisionPairs" classname="HappyToy.V2.CloudTests.CloudPlayModeTests" runstate="Runnable" seed="999246877" result="Passed" start-time="2026-10-12 12:54:03Z" end-time="2026-10-12 12:54:16Z" duration="13.275312" asserts="0">
+                <properties>
+                  <property name="_JOINTYPE" value="UnityCombinatorial" />
+                  <property name="Timeout" value="120000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/강 두오/AppData/LocalLow/Happy Toy/Happy Toy V2 — Development\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

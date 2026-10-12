@@ -81,8 +81,11 @@ namespace HappyToy.V2
                 state.obstacle.center==state.center && state.obstacle.size==state.size &&
                 state.obstacle.shape==state.shape && state.obstacle.carving==state.carving);
 
-        public void Prepare(CorridorRun source) => RunPreparation.Immediate(PrepareSteps(source,false));
-        public IEnumerator PrepareSteps(CorridorRun source,bool cooperative = true)
+        public void Prepare(CorridorRun source)
+        {
+            var preparation=PrepareRoutine(source,false);while(preparation.MoveNext()) { }
+        }
+        public IEnumerator PrepareRoutine(CorridorRun source,bool incremental)
         {
             if (Prepared || run) throw new InvalidOperationException("Corridor presentation already prepared");
             if (!source || source.Layout==null) throw new ArgumentException("Built corridor required",nameof(source));
@@ -106,9 +109,9 @@ namespace HappyToy.V2
             warmShade=Surface("Translucent amber paper lantern",new Color(.79f,.54f,.26f),fibers,new Color(.70f,.31f,.085f)*.75f);
             redShade=Surface("Translucent vermilion paper lantern",new Color(.69f,.20f,.09f),fibers,new Color(.52f,.085f,.025f)*.72f);
             PrepareSectors();
+            float yieldAt=Time.realtimeSinceStartup+.004f;
             for (int cell=0;cell<CorridorLayout.Count;cell++)
             {
-                if(cooperative && cell % 2 == 0) yield return null;
                 Vector3 center=run.CellPosition(cell);center.y=0;
                 if (!run.Layout.IsRoom(cell)) DressNarrowHall(cell);
                 // Real ceiling joists sit above head height and never disguise a passage.
@@ -127,29 +130,25 @@ namespace HappyToy.V2
                     if(neighbor>=0) DressEdge(neighbor,edge,-normal,passage,unchecked(run.Seed*19+neighbor*113+direction*43));
                     if(passage) LayeredPassages++;
                 }
+                if(incremental && Time.realtimeSinceStartup>=yieldAt){yield return null;yieldAt=Time.realtimeSinceStartup+.004f;}
             }
-            if(cooperative) yield return null;
             DressSectorClues();
-            if(cooperative) yield return null;
+            if(incremental)yield return null;
             DressLanterns();
-            if(cooperative) yield return null;
+            if(incremental)yield return null;
             DressSlidingLeaves();
-            if(cooperative) yield return null;
             DressShrines();
-            if(cooperative) yield return null;
+            if(incremental)yield return null;
             DressCabinets();
-            if(cooperative) yield return null;
             DressEntrance();
-            if(cooperative) yield return null;
+            if(incremental)yield return null;
             DressAuthoredFloorsAndCeilings();
-            if(cooperative) yield return null;
+            if(incremental)yield return null;
             DressAuthoredStructuralTimber();
-            if(cooperative) yield return null;
             DressAuthoredClassroomShell();
-            if(cooperative) yield return null;
-            yield return EmitDetailsSteps(cooperative);
-            if(cooperative) yield return null;
-            yield return EmitArchitectureSteps(cooperative);
+            if(incremental)yield return null;
+            var details=EmitDetailsRoutine(incremental);while(details.MoveNext())yield return details.Current;
+            var architecture=EmitArchitectureRoutine(incremental);while(architecture.MoveNext())yield return architecture.Current;
             ApplyFog();
             Prepared=true;
             if(!PhysicalStateIntact) throw new InvalidOperationException("Visual dressing changed corridor physics");

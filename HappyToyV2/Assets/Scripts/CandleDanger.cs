@@ -93,6 +93,14 @@ namespace HappyToy.V2
         WeepingAngelEncounter[] candleMannequins;
         public float Danger { get; private set; }
         public bool Blackout { get; private set; }
+        float PhysicalThreatDistance(StalkerBrain actor)
+        {
+            float rootDistance = Vector3.Distance(player.transform.position, actor.transform.position);
+            var motion = actor.GetComponent<V1MonsterMotion>();
+            // Very large rendered bodies can touch the player while their small
+            // navigation root is still farther away. Keep a 1.5m body clearance.
+            return motion ? Mathf.Min(rootDistance, motion.BodySurfaceDistance(player.transform.position + Vector3.up) + .5f) : rootDistance;
+        }
 
         void LateUpdate() => SampleDanger(false);
         // The E interaction samples immediately, so stale cached danger cannot allow relighting.
@@ -120,7 +128,7 @@ namespace HappyToy.V2
                     var navigation = actor.GetComponent<UnityEngine.AI.NavMeshAgent>();
                     bool physical = Eligible(actor) && EnemyNavigation.SameActorFloor(navigation, player.transform.position, actor.HomeFloorY) &&
                         EnemyNavigation.WithinFloorPolicy(navigation, actor.transform.position, actor.HomeFloorY);
-                    if (physical) nearest = Mathf.Min(nearest, Vector3.Distance(player.transform.position, actor.transform.position));
+                    if (physical) nearest = Mathf.Min(nearest, PhysicalThreatDistance(actor));
                     perceived = Mathf.Max(perceived, PerceivedDanger(actor, actor.isActiveAndEnabled && (actor.state == StalkerBrain.State.Chase || actor.AttackActive)));
                     attacking |= physical && actor.AttackActive;
                 }
@@ -153,7 +161,7 @@ namespace HappyToy.V2
             // Perception starts the legible pulse even beyond the proximity ramp.
             // Silent enemies behind the player or walls cannot reveal their location.
             Danger = perceived;
-            Blackout = attacking || nearest <= CandleBlackoutDistance;
+            Blackout = attacking || nearest <= (Blackout ? CandleBlackoutDistance + .65f : CandleBlackoutDistance);
             bool extinguished = false;
             foreach (var candle in candles)
             {

@@ -1,3 +1,34 @@
+# HappyToyV2 development workspace
+
+This workspace is for developing and testing HappyToyV2, a horror game inspired
+by Shadow Corridor (그림자복도), at the spin-off-comparable scope described by
+the user. The Unity project is under `HappyToyV2/`.
+
+These are persistent project instructions that must travel with the repository
+so development can continue on another machine. The repository is
+https://github.com/minsminsKR/3d_modeling ; HappyToyV2 pull and push requests
+target its GitHub `origin/main` branch.
+
+# Maintainable HappyToyV2 code — user instruction, 2026-10-13
+
+For game code changes, use `HappyToyV2/CODE_MAP.md` to find the affected feature
+and its checks. Read the relevant modules instead of routinely loading every
+script, historical verification report or the entire repository.
+
+Keep one clear responsibility per module. UI screens own their controls and
+receive presentation data/actions; AI collaborators own sensing, attacks and
+navigation state. Use explicit inputs, results and callbacks at boundaries.
+Keep independent rules in `HappyToy.V2.Core`, with no game/session/Unity dependency.
+Adding `partial` files alone does not establish a module boundary. Preserve
+scene script GUIDs, serialized names and save compatibility when refactoring.
+
+Use the feature verification profiles documented in `HappyToyV2/CODE_MAP.md`.
+Run fast rule checks and relevant integration checks for each change; broaden
+coverage when shared behavior, assembly boundaries or unresolved failures require
+it. Run both complete Unity test suites and a player build for broad refactors
+or release readiness. Update the code map/profiles when ownership or entry points
+change. Keep diagnostic code opt-in and preserve the quiet verification policy.
+
 # Repository handoff and push policy
 
 The user requires every related source needed to pull this repository on another
@@ -10,6 +41,11 @@ a push. Earlier requests or policies that implied automatic pushes do not
 authorize future pushes; this instruction supersedes them. Do not routinely
 ask for push approval when no push was requested. Keep completed work local
 until the user explicitly requests a push.
+
+Persistent user instruction: when a HappyToyV2 push is explicitly requested,
+push to GitHub `origin/main`, regardless of the current local branch. Fetch
+`origin/main` at request time and preserve/integrate remote changes before
+pushing. A feature branch push alone does not fulfill a HappyToyV2 push request.
 
 Persistent user instruction, 2026-10-12: whenever a push is explicitly requested,
 include all related models and resources, including original generated models,
@@ -32,10 +68,13 @@ redundant previews, or personal machine settings.
   reproducible or optional; they cannot be the only copy of an editable source.
 - Document pinned tools and clone/pull setup. Use repository-relative paths for
   authoring tools. Use Git LFS where configured and preserve attributed assets.
-- A push is complete only after the intended remote branch matches the local commit.
-  Push to the branch requested by the user; do not force-push to replace remote work.
+- A HappyToyV2 push is complete only after GitHub `origin/main` matches the
+  intended local commit. Do not force-push to replace remote work.
 
 # HappyToyV2 pull means latest playable GitHub main
+
+User reaffirmed on 2026-10-12: every Git pull must use the latest remote `main`
+branch. Always fetch `origin/main` at request time, regardless of the current branch.
 
 Persistent user instruction, 2026-10-12: whenever the user asks to pull/update
 HappyToyV2 (including "happy toy v2 풀해줘"), treat it as a request to make the
@@ -45,6 +84,8 @@ latest GitHub `origin/main` playable on this machine, not merely update sources.
   and integrate without discarding or force-overwriting local/remote work.
 - Hydrate the required Git LFS assets, then build a fresh Windows player from
   that updated main using the pinned Unity version and project build pipeline.
+- Verify that required models, textures and editable resources are present as
+  actual files; unresolved LFS pointers or missing resources block delivery.
 - Verify build success and current source-input hashes. Check GitHub main again
   before delivery; if newer main commits arrived, incorporate them and rebuild
   before calling the player the latest version.
@@ -55,6 +96,9 @@ latest GitHub `origin/main` playable on this machine, not merely update sources.
   as the latest main build.
 
 # Clean superseded HappyToyV2 builds after pushing
+
+User reaffirmed on 2026-10-12: after pushing, keep only the newest local build
+and delete past builds to reclaim disk space, following the safeguards below.
 
 Persistent user instruction, 2026-10-12: after a successful HappyToyV2 push,
 remove superseded local HappyToyV2 player builds to prevent disk accumulation.
@@ -82,8 +126,15 @@ this repository's modeling webapp, using the user's open right-sidebar browser.
 - User-designated live site: https://agrees-mic-icon-contribution.trycloudflare.com/ .
   Use that site in the existing in-app browser for new model generation or
   regeneration. If a future tunnel changes, use the user-provided current URL.
+- When a reference image is needed, generate the image, submit it through that
+  webapp, and generate the base 3D model there. Keep the actual input image and
+  its generation prompt/settings with the resulting model's provenance.
 - Preserve the generated original GLB/PBR, reference inputs, generation settings
   and job provenance in source control. Do not substitute another generator.
+- Copy all required game-related outputs from the webapp's temporary or ignored
+  job directories into tracked project authoring sources, such as
+  `HappyToyV2/SourceArt/`. A server job or download link alone is not a source
+  handoff; preserve originals, textures, rig/animation files and provenance.
 - Existing models generated by this app may be completed locally for rigging,
   skin repair, UVs, game LODs, animation, editable Blender sources and Unity
   integration. If the underlying model needs to be generated again, return to

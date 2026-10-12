@@ -85,11 +85,15 @@ import audit without editing the preserved school scene.
 
 ## Head-only writhing action
 
-`Head_Writhe` is a separate 61-second looping action in `Baeksugwi_Run.blend`.
+`Head_Writhe` is a separate 31.7-second looping action in `Baeksugwi_Run.blend`.
 Its four quaternion channels rotate Head only; body/neck/arm/root translations,
 scales and the original Run actions are preserved. `head-motion-profile.json`
-controls seeded irregular yaw/roll/pitch targets with unequal transition and hold
-intervals and roll up to roughly 55 degrees to either side; `author_head_motion.py` records unchanged
+controls a seeded sequence in `head_motion.py`: lateral cocks up to 54 degrees,
+unequal holds, 0.09–0.74-second transitions, abrupt reversals and fine tremors.
+Roll dominates the smaller yaw/pitch motion. The long asymmetric sequence
+replaces the old 2.4-second regular yaw wave with only 2.3 degrees of roll.
+Its endpoints are neutral and still, so the loop closes without a jump.
+`author_head_motion.py` records all beats, peak roll and unchanged
 Run curve hashes in `head-motion-report.json`. The original full run GLB and
 base Unity FBX still contain their existing gait; the new armature-only
 `Assets/Resources/Baeksugwi/Head_Writhe.fbx` supplies the independent head take.
@@ -111,3 +115,8 @@ The stationary title creature samples the same head action with an unscaled
 clock; planted body/arms stay frozen. Hidden title scenes stop their clock, and
 Reduced Motion retains a neutral head instead of the writhing title animation.
 Existing eye glow and face lighting follow the current Head matrix.
+
+The armature-only export temporarily disables mesh deformation during baking,
+then restores modifier settings before saving the packed editable source.
+The original full run GLB retains its locomotion; regenerate the separate head
+FBX and Unity `.anim` to reproduce this change, without re-exporting the base mesh.

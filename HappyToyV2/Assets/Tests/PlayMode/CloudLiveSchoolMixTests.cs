@@ -239,7 +239,7 @@ namespace HappyToy.V2.CloudTests
             try
             {
                 Time.captureDeltaTime=1f/60;yield return null;
-                started=AudioRenderer.Start();Assert.That(started,Is.True);Call(shell,"BeginChapter");yield return null;
+                started=StartOwnedAudioRenderer();Assert.That(started,Is.True);Call(shell,"BeginChapter");yield return null;
                 var capture=new CloudLiveSchoolMixCapture(session,player);
                 using(var route=new CloudSurvivalTests(session,player,shell,Keys,InputDiagnostics))
                 {
@@ -258,7 +258,7 @@ namespace HappyToy.V2.CloudTests
                 capture.ExportAndAssert(Get<float>(session,"ElapsedPlayTime"));
                 Debug.Log("HAPPYTOY_SITUATIONAL_MIX_PASS whole actual keyboard/mouse chapter route, all production audio voices, three floor mixes, discovery/door/portrait/wet/sprint/perceived-enemy contexts and real game-camera renders");
             }
-            finally{Keys();if(started)AudioRenderer.Stop();Time.captureDeltaTime=previousCapture;}
+            finally{Keys();if(started)StopOwnedAudioRenderer();Time.captureDeltaTime=previousCapture;}
         }
 
         [UnityTest,Timeout(120000)]
@@ -270,7 +270,7 @@ namespace HappyToy.V2.CloudTests
             AudioSource[] oldSources=null;AudioClip[] oldClips=null;
             try
             {
-                Time.captureDeltaTime=1f/60;yield return null;started=AudioRenderer.Start();Assert.That(started,Is.True);
+                Time.captureDeltaTime=1f/60;yield return null;started=StartOwnedAudioRenderer();Assert.That(started,Is.True);
                 Call(shell,"BeginChapter");yield return null;
                 var feedback=Get<Component>(player,"Feedback");int rate=AudioSettings.outputSampleRate;
                 Assert.That(Components("StalkerBrain").All(actor=>!actor.gameObject.activeInHierarchy),Is.True,
@@ -336,7 +336,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<int>(session,"RecordsRecovered"),Is.Zero);Assert.That(Get<bool>(session,"ChapterMode"),Is.True);
                 Debug.Log("HAPPYTOY_SITUATIONAL_MIX_PASS actual sprint breathing and footsteps, recorded cabinet foley/continued rest, all-voice pause/resume, distinct B1 room bed versus drips, complete scene audio resource teardown on retry");
             }
-            finally{Keys();if(started)AudioRenderer.Stop();Time.captureDeltaTime=previousCapture;}
+            finally{Keys();if(started)StopOwnedAudioRenderer();Time.captureDeltaTime=previousCapture;}
         }
     }
 }
