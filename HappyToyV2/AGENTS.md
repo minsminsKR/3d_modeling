@@ -26,3 +26,16 @@ report that positive audio was not verified; never run an audible fallback or
 count zero output as a positive mixer pass. Restore process mute/user settings
 at exit while the listener remains zero. Ordinary game launches must not be
 automatically muted. Automatic command examples must include the quiet guard.
+
+# Monster identity and naming — explicit user correction, 2026-10-12
+
+- 운캣 (Uncat) is the four-legged cat monster appearing in Chapter 1.
+- 화캣 (Hwacat / Hwacat_angry) is a separate school-chapter-only monster:
+  it dances, transforms into a devil-like form, and then chases the player.
+- Never call Uncat 화캣 or describe the two as the same monster. Show names
+  and model screenshots separately. Shared models or a runtime alias in the
+  current code are an implementation issue, not evidence of identical identity.
+- The current EnemyVisualRefinement alias Hwacat_angry -> Uncat was observed
+  during naming review. It is not corrected by this documentation update;
+  distinguish the school monster's intended identity from its current model
+  wiring when discussing or fixing it.
