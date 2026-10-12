@@ -1,7 +1,15 @@
 # Repository handoff and push policy
 
 The user requires every related source needed to pull this repository on another
-machine and continue editing to be committed and pushed with the work.
+machine and continue editing to be committed with the work.
+
+Persistent user instruction, 2026-10-12: push to a remote only when the user
+explicitly asks to push (for example, "푸시해" or "push"). Completing, fixing,
+building, pulling, updating, committing, or continuing work does not authorize
+a push. Earlier requests or policies that implied automatic pushes do not
+authorize future pushes; this instruction supersedes them. Do not routinely
+ask for push approval when no push was requested. Keep completed work local
+until the user explicitly requests a push.
 
 - Include project code, Unity Assets and their .meta files, Packages, ProjectSettings,
   editable authoring sources (including .blend), textures, shaders, source generators,

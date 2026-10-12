@@ -41,3 +41,10 @@ Escape pause, focused resume, one selection and an unobscured gameplay HUD.
 `build-inputs.json` checks all current Assets/Packages/ProjectSettings hashes
 and the fresh Windows player/credits. These are menu/build checks; they do not
 claim a complete survival playthrough or hardware performance certification.
+
+## Grounding follow-up
+
+The subsequent [grounding and eye-light update](../menu-grounding-20261012/README.md)
+replaces the moving title gait with twelve planted supports and uses real posed
+vertex bounds. It adds weak face lighting and original-surface red eye glow.
+The captures and reports above retain the initial redesign as historical evidence.

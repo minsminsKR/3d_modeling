@@ -5,6 +5,10 @@ Shader "HappyToy/TitleAtmosphere"
         _BaseMap ("Existing authored surface", 2D) = "white" {}
         _BaseColor ("Tint", Color) = (1,1,1,1)
         _Creature ("Silhouette", Float) = 0
+        _FaceLight ("Weak local face light", Float) = 0
+        _EyeGlow ("Original eye surface glow", Float) = 0
+        _EyeLeft ("Left eye in head space", Vector) = (0,0,0,0)
+        _EyeRight ("Right eye in head space", Vector) = (0,0,0,0)
         _StageOrigin ("Owned set origin", Vector) = (0,-3000,0,0)
     }
     SubShader
@@ -20,7 +24,10 @@ Shader "HappyToy/TitleAtmosphere"
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseColor, _StageOrigin;
-                float _Creature;
+                float _Creature, _FaceLight, _EyeGlow;
+                float4 _EyeLeft, _EyeRight;
+                float4x4 _WorldToFace;
+                float4 _FootContacts[12];
             CBUFFER_END
             struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; float2 uv : TEXCOORD0; };
             struct Varyings { float4 positionCS : SV_POSITION; float3 positionWS : TEXCOORD0; float3 normalWS : TEXCOORD1; float2 uv : TEXCOORD2; };
@@ -49,14 +56,33 @@ Shader "HappyToy/TitleAtmosphere"
                 {
                     float rim = pow(1 - saturate(dot(n,view)), 3);
                     colour = surface * float3(.003,.0015,.0015) + rim * float3(.035,.007,.004) * saturate(red);
+                    float3 face = mul(_WorldToFace, float4(i.positionWS,1)).xyz;
+                    float3 faceExtent = (face - float3(.013,-.01,-.04)) / float3(.075,.15,.05);
+                    float facePool = exp(-dot(faceExtent,faceExtent) * 1.5) * saturate(dot(n,view));
+                    colour += surface * float3(.65,.72,.82) * _FaceLight * facePool;
+                    float3 left = (face - _EyeLeft.xyz) / float3(.013,.0045,.015);
+                    float3 right = (face - _EyeRight.xyz) / float3(.013,.0045,.015);
+                    float eyes = exp(-dot(left,left)*2.5) + exp(-dot(right,right)*2.5);
+                    colour += float3(1,.025,.008) * eyes * _EyeGlow;
                 }
                 else
                 {
                     // Warm depth haze belongs only to this camera's set; global game fog/light cannot wash out the silhouette.
                     float haze = saturate((p.z + 1) / 14) * .45;
                     colour = lerp(colour, float3(.18,.009,.006), haze);
-                    float reflection = exp(-abs(p.x - 2.1) * 1.3) * saturate(n.y) * .045;
+                    // Broad dark contact pool under the planted creature, before the red floor reflection.
+                    float contact = exp(-pow((p.x-2.0)/2.0,2) - pow((p.z-3.6)/3.2,2)) * saturate(n.y);
+                    colour *= 1 - contact * .72;
+                    float reflection = exp(-abs(p.x - 2.1) * 1.3) * saturate(n.y) * .025;
                     colour += float3(1,.09,.025) * reflection;
+                    float footShadow = 0;
+                    [unroll] for(int foot=0;foot<12;foot++)
+                    {
+                        float radius=_FootContacts[foot].w;
+                        float2 offset=(p.xz-_FootContacts[foot].xz)/max(radius,.001);
+                        footShadow += radius>.001 ? exp(-dot(offset,offset)*1.5) : 0;
+                    }
+                    colour *= 1 - saturate(footShadow*.96) * saturate(n.y);
                 }
                 return half4(colour,1);
             }

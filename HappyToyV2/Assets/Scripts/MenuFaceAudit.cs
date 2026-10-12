@@ -36,6 +36,7 @@ namespace HappyToy.V2
             public string status, texture;
             public string scope = "Release UI Toolkit snapshots of the live red-corridor Baeksugwi title scene and non-title menu art: normal title, four aspect ratios with large text/high contrast on title and pause, settings focus/submit, real Escape pause and focused Resume button, and original authored scene plus unobscured playing HUD. Controlled Begin() is used only to reach pause/HUD. No gameplay, path, survival, audio or performance certification.";
             public bool developmentBuild, settingsFocus, escapePause, resumeButton, textureAlive, playingFaceHidden;
+            public int plantedTitleLimbs; public float titleFloorGap, maximumSupportFloorGap; public bool titleFaceLight, titleEyeGlow;
             public int referenceChangedPixels; public Frame[] frames; public string[] errors;
         }
         readonly Report report = new Report();
@@ -129,6 +130,14 @@ namespace HappyToy.V2
             var texture = FaceTexture; Require(texture && texture == Resources.Load<Texture2D>("Menu/cyclopse-menace-v1"), "Menu bitmap resource is missing");
             report.texture = "Live title: " + CinematicTitleScene.CreatureResource + "; non-title bitmap: " + texture.name;
             Require(view.TitleUsesBaeksugwi, "Title does not use the actual Baeksugwi prefab");
+            var title = view.GetComponent<CinematicTitleScene>();
+            report.plantedTitleLimbs = title.PlantedLimbCount;
+            Require(report.plantedTitleLimbs == 12, "Title support limbs are not all planted");
+            report.maximumSupportFloorGap = title.MaximumSupportFloorGap;
+            Require(report.maximumSupportFloorGap < .008f, "A scaled title support foot is above the floor");
+            report.titleFloorGap = title.SurfaceFloorGap; report.titleFaceLight = title.FaceLightReady; report.titleEyeGlow = title.EyesReady;
+            Require(Mathf.Abs(report.titleFloorGap) < .008f, "Title creature actual surface is not planted on floor");
+            Require(report.titleFaceLight && report.titleEyeGlow, "Title face lighting or original-surface eye glow is missing");
             yield return Button("settings"); Require(shell.Screen == GameShell.Page.Settings, "Pointer settings button did not navigate");
             if (shell.HighContrast) shell.ToggleHighContrast(); if (shell.LargeText) shell.ToggleLargeText(); yield return Paint();
             yield return Button("back"); yield return Capture("title-normal",1600,900,true);
