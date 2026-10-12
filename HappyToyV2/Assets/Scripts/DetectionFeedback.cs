@@ -96,7 +96,7 @@ namespace HappyToy.V2
 
         public static void Signal(GameSession session, Transform observer)
         {
-            if (!session || session != GameSession.Current || !session.InputAllowed || session.StoryStep >= 4 ||
+            if (!session || session.CheatSafeMode || session != GameSession.Current || !session.InputAllowed || session.StoryStep >= 4 ||
                 !session.player || !observer || observer.gameObject.scene != session.gameObject.scene) return;
             var player = session.player;
             if (player.Hidden || !EnemyNavigation.WithinFloorPolicy(observer.GetComponent<UnityEngine.AI.NavMeshAgent>(), player.transform.position, observer.position.y) ||
@@ -164,7 +164,7 @@ namespace HappyToy.V2
         void Update()
         {
             var session = CurrentSession;
-            if (!session) { Clear(); return; }
+            if (!session || session.CheatSafeMode) { Clear(); return; }
             if (source) source.volume = Softened ? .32f : .84f;
             if (!session.InputAllowed) return;
             float dt = Time.deltaTime;
@@ -188,7 +188,7 @@ namespace HappyToy.V2
         {
             if (!post) return;
             var session = CurrentSession;
-            bool motion = session && session.InputAllowed && !Softened && !player.Hidden;
+            bool motion = session && !session.CheatSafeMode && session.InputAllowed && !Softened && !player.Hidden;
             post.weight = motion ? 1 : 0;
             if (!motion) { lens.intensity.value = chromatic.intensity.value = filmGrain.intensity.value = 0; return; }
             float breathing = .5f + .5f * Mathf.Sin(pulseClock * 2.4f);
@@ -202,6 +202,8 @@ namespace HappyToy.V2
             lens.intensity.value = -Strength * .16f - chase * (.05f + .014f * breathing);
             chromatic.intensity.value = Strength * .28f + chase * .075f;
         }
+
+        public void ClearForCheat() => Clear();
 
         void Clear()
         {

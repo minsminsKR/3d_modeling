@@ -22,6 +22,7 @@ namespace HappyToy.V2
             { UsingGamepad = false; GameSession.Current?.Shell?.Pause(); }
             previousPad = pad;
             if (!AcceptsInput) return;
+            GameSession.Current?.HandleCheatInput();
             var keys = Keyboard.current; var mouse = Mouse.current;
             if (keys != null && keys.anyKey.wasPressedThisFrame || mouse != null &&
                 (mouse.delta.ReadValue().sqrMagnitude > 1 || mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame))

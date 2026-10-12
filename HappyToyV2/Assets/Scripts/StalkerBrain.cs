@@ -57,9 +57,10 @@ namespace HappyToy.V2
 
         public bool HearNoise(Vector3 point, float duration)
         {
+            if (GameSession.Current && GameSession.Current.CheatSafeMode) return false;
             if (BabyMode) return HearBabyLoudNoise(point, duration);
             var session = GameSession.Current;
-            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
                 !StealthRules.Finite(duration) || duration <= 0 || duration > 3600 ||
                 state == State.Chase || AttackActive || awareness.Acquired ||
                 !StealthRules.Finite(point.x) || !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z) ||
@@ -123,7 +124,7 @@ namespace HappyToy.V2
         {
             bool loudBabyStep = BabyMode && radius >= CorridorBabyBehaviour.LoudFootstepRadius;
             var session = GameSession.Current;
-            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
                 !player || noisePlayer != player || player.Hidden || state == State.Chase && !loudBabyStep || attack.Active ||
                 !StealthRules.Finite(radius) || radius <= 0 || !StealthRules.Finite(point.x) ||
                 !StealthRules.Finite(point.y) || !StealthRules.Finite(point.z)) return;
@@ -147,6 +148,7 @@ namespace HappyToy.V2
 
         public bool CanSeePlayer()
         {
+            if (GameSession.Current && GameSession.Current.CheatSafeMode) return false;
             if (!player || player.Hidden || !EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY)) return false;
             var eye = transform.position + Vector3.up * 1.7f;
             // A visible torso counts too; a camera point can sit outside the capsule's curved head.
@@ -435,6 +437,7 @@ namespace HappyToy.V2
             if (!player && session) player = session.player;
             BindFootsteps(player);
             if (!session || !player) { EnemyNavigation.Stop(agent); return; }
+            if (session.CheatSafeMode && (state != State.Patrol || AttackActive || awareness.Value > 0)) ForgetPlayerForCheat();
             if (session.EncountersResolved)
             { awareness.Reset(); attack.Reset(); witnessedHiding = false; EnemyNavigation.Stop(agent, true); return; }
             if (!EnemyNavigation.Ready(agent)) { attack.Reset(); repath = 0; return; }

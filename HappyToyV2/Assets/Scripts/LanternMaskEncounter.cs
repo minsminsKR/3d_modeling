@@ -138,7 +138,7 @@ namespace HappyToy.V2
         void HearFootstep(Vector3 point, float radius)
         {
             var session = GameSession.Current;
-            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
                 !noisePlayer || noisePlayer != session.player || noisePlayer.Hidden ||
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
                 IntroActive || attack.Active || !StealthRules.Finite(radius) || radius <= 0 || !StealthRules.Finite(point.x) ||
@@ -185,7 +185,7 @@ namespace HappyToy.V2
         {
             // The lantern keeps its omnidirectional identity. This is physical LOS,
             // confirmed sight starts immediate pursuit after the authored intro.
-            return player && !player.Hidden && EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY) &&
+            return !(GameSession.Current && GameSession.Current.CheatSafeMode) && player && !player.Hidden && EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY) &&
                 Vector3.Distance(player.transform.position, transform.position) < 12 &&
                 EnemyNavigation.ClearSight(transform.position + Vector3.up,
                     player.transform.position + Vector3.up * player.SightTargetHeight, player);
@@ -194,7 +194,7 @@ namespace HappyToy.V2
         public bool HearNoise(Vector3 point, float duration)
         {
             var session = GameSession.Current;
-            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.EncountersResolved ||
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
                 !EnemyNavigation.Ready(agent) ||
                 State == Phase.Dormant || State == Phase.Resolved || State == Phase.Chase || State == Phase.Transforming ||
                 IntroActive || attack.Active || !StealthRules.Finite(duration) || duration <= 0 || duration > 3600 ||
@@ -206,6 +206,7 @@ namespace HappyToy.V2
         }
         bool FirstSight(PlayerMotor player)
         {
+            if (GameSession.Current && GameSession.Current.CheatSafeMode) return false;
             if (!player || player.Hidden || !player.eyes || !player.eyes.isActiveAndEnabled || !mask ||
                 !EnemyNavigation.SameFloor(player.transform.position, floorY) ||
                 Vector3.Distance(player.transform.position, transform.position) > 12) return false;
@@ -257,6 +258,7 @@ namespace HappyToy.V2
                 // not reset mask attachment or resample a frozen locomotion pose.
                 return;
             }
+            if (session.CheatSafeMode && (State == Phase.Chase || State == Phase.Investigate || State == Phase.Transforming || attack.Active)) ForgetPlayerForCheat();
             if (State == Phase.Resolved) return;
             if (State == Phase.Dormant)
             {

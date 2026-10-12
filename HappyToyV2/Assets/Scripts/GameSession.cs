@@ -206,7 +206,7 @@ namespace HappyToy.V2
         }
         public bool TryDefeat(string source, string hint)
         {
-            if (!InputAllowed || Finished) return false;
+            if (!InputAllowed || Finished || CheatSafeMode) return false;
             DefeatSource = string.IsNullOrWhiteSpace(source) ? "알 수 없는 기척" : source;
             if (!string.IsNullOrWhiteSpace(hint)) DefeatHint = hint;
             Debug.Log("HappyToy defeat: " + DefeatSource + " | objective=" + CurrentObjectiveId +
@@ -247,7 +247,7 @@ namespace HappyToy.V2
         public void Notify(string text){if(!Finished&&!string.IsNullOrWhiteSpace(text)){notice=text;NoticeRevision++;}}
         public void Finish(bool escaped)
         {
-            if (Finished) return;
+            if (Finished || (!escaped && CheatSafeMode)) return;
             if(ChapterMode) PrepareChapterResult(escaped);
             Finished = true; Escaped = escaped; Time.timeScale = 0;
             if (CorridorMode && Records.PersistenceEnabled) RetryRecordSave();

@@ -10,7 +10,9 @@ namespace HappyToy.V2
             model = motion.model; animation = motion.animationPlayer;
             if (!EnemyStudioRig.Supported(key)) return false;
             var prefab = Resources.Load<GameObject>("EnemyStudio/" + key + "/" + key);
-            if (!prefab) return false;
+            // The handoff may contain an exported FBX before its reviewed prefab exists.
+            // Resources.Load also finds that raw FBX; only mount a completed studio rig.
+            if (!prefab || !prefab.GetComponent<EnemyStudioRig>()) return false;
             if (!model || !animation) throw new InvalidOperationException("Studio enemy lacks its navigation visual mount: " + key);
             var original = model;
             var replacement = UnityEngine.Object.Instantiate(prefab, original.parent, false);

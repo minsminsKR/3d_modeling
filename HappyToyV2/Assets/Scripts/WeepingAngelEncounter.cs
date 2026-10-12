@@ -178,6 +178,7 @@ namespace HappyToy.V2
             if (!session) return;
             if (session.EncountersResolved) { Resolve(); return; }
             if (Resolved) return;
+            if (session.CheatSafeMode) { ForgetPlayerForCheat(); return; }
             if (Triggered && !Released) { IntroLight(); IntroPose(); }
             if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { Stop(); repath = 0; return; }
             var player = session.player;

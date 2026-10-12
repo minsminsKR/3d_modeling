@@ -8,7 +8,7 @@ namespace HappyToy.V2
     // Chapter-owned shots. Cyclopse has a protected distant crossing; the mannequin
     // is discovered from the player's own eyes in the real, illuminated corridor.
     [DefaultExecutionOrder(300)]
-    public sealed class SchoolFirstAppearances : MonoBehaviour
+    public sealed partial class SchoolFirstAppearances : MonoBehaviour
     {
         public static readonly Vector3 MannequinStation = new Vector3(13.8f, 0, -7.4f);
         public static readonly Vector3 MannequinJunctionCenter = new Vector3(13.8f, 0, 0);
