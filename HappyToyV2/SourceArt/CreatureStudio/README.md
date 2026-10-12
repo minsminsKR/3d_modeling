@@ -1,8 +1,10 @@
 # CreatureStudio sources and game integration
 
-Cyclopse, Uncat (the angry portrait/Hwacat actor) and Baby use newly generated
+Cyclopse, Chapter 1 Uncat (운캣, the four-legged cat) and Baby use newly generated
 models from the user-designated modeling webapp in `hunyuan3d-webapp` at the
 repository root. The retained generation jobs are listed in `generation-jobs.json`.
+School Hwacat (화캣) is a distinct dancing-doll/demonic portrait monster. Its
+original Hwacat_angry mesh, rig and clips are retained; it does not use UncatRuntime.
 
 Cyclopse follows the user's 2026-10-12 round furry, single-eye human-face reference.
 It retains the beard, purple flower, short legs and upright pursuit. Its original

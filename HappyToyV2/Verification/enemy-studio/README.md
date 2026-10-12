@@ -1,8 +1,10 @@
 # CreatureStudio game verification
 
 The current Cyclopse is the user-requested round furry, one-eye human-face model,
-generated and saved in the designated modeling webapp (job f94f8013). Uncat is also
-installed on the school angry portrait actor; Baby uses its own crawl/chase/cry.
+generated and saved in the designated modeling webapp (job f94f8013). Chapter 1
+Uncat uses its own Studio cat model; Baby uses its own crawl/chase/cry. The initial
+run incorrectly also installed Uncat on the school angry portrait; the separation
+update below restores the distinct Hwacat model.
 Original GLBs/PBR, references, editable Blender sources and reproduction tools are
 under `SourceArt/CreatureStudio`. Baeksugwi and the authored school scene are preserved.
 
@@ -25,3 +27,10 @@ process guard, with successful mute/readback and restoration recorded in
 actual Cyclopse, Uncat, Baby and Baby cry views; no screenshot is a reference-image
 substitute for a runtime actor. Import reports record 22 bones and actual game mesh
 budgets for each creature. See the source README for clone/pull and pinned tools.
+
+## School Hwacat identity correction — 2026-10-12
+
+The earlier use of the Uncat model on the school angry portrait was an incorrect
+identity binding. [The separation update](../hwacat-separation-20261012/README.md)
+restores Hwacat_angry's own demonic mesh/rig/clips and leaves Chapter 1 Uncat intact.
+The initial reports above are retained as historical integration evidence.

@@ -35,7 +35,7 @@ automatically muted. Automatic command examples must include the quiet guard.
 - Never call Uncat 화캣 or describe the two as the same monster. Show names
   and model screenshots separately. Shared models or a runtime alias in the
   current code are an implementation issue, not evidence of identical identity.
-- The current EnemyVisualRefinement alias Hwacat_angry -> Uncat was observed
-  during naming review. It is not corrected by this documentation update;
-  distinguish the school monster's intended identity from its current model
-  wiring when discussing or fixing it.
+- EnemyVisualRefinement must preserve the Hwacat_angry key and use its own
+  demonic model and original locomotion clips; never alias it to Uncat.
+  The incorrect Hwacat_angry -> Uncat binding was removed on 2026-10-12.
+  The school normal doll retains its authored stand/dance clips before transforming.

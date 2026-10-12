@@ -12,8 +12,8 @@ namespace HappyToy.V2
             model = motion.model; animation = motion.animationPlayer; owned = Array.Empty<Material>();
             string key = Key(motion.name);
             if (key == null || !model || !animation) return false;
-            string studioKey=key=="Hwacat_angry"?"Uncat":key;
-            if (EnemyStudioVisual.TryApply(motion, studioKey, out model, out animation)) return true;
+            // School Hwacat owns its demonic rig and original clips; Uncat is the Chapter 1 cat.
+            if (EnemyStudioVisual.TryApply(motion, key, out model, out animation)) return true;
             var source = Resources.Load<GameObject>("EnemyRefinement/" + key + "-v2");
             if (!source) return false;
             var original = model;

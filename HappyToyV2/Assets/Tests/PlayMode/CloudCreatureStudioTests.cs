@@ -59,7 +59,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(180000)]
-        public IEnumerator CreatureStudioSchoolUsesNewCyclopsePortraitAndNurseryModelsAndKeepsSaveValid()
+        public IEnumerator CreatureStudioSchoolKeepsDistinctHwacatAndUpdatesCyclopseNurseryWithValidSave()
         {
             Call(session,"ConfigureRecordDirectory",NewRecordFixture());
             yield return RecoveryUiReady();yield return RecoveryClick("begin-school");
@@ -68,7 +68,29 @@ namespace HappyToy.V2.CloudTests
             yield return Delay(.2f);
             var chapter=Get<Component>(session,"Chapter");
             AssertStudioActor(Get<Component>(chapter,"Cyclopse"),"Cyclopse");
-            AssertStudioActor(Get<Component>(Get<Component>(chapter,"Portrait"),"angry"),"Uncat");
+            var portrait=Get<Component>(chapter,"Portrait");
+            var angry=Get<Component>(portrait,"angry");
+            var motion=angry.GetComponent(RequireType("V1MonsterMotion"));
+            Assert.That(angry.name,Does.Contain("Hwacat"));
+            Assert.That(Get<bool>(motion,"RefinedVisual"),Is.True);
+            Assert.That(Get<bool>(motion,"StudioVisual"),Is.False,"School Hwacat was replaced by the Uncat Studio cat");
+            Assert.That(Get<bool>(motion,"AttackRigAvailable"),Is.True);
+            var model=Get<Transform>(motion,"model");
+            Assert.That(model.GetComponent(RequireType("EnemyStudioRig")),Is.Null);
+            var source=Resources.Load<GameObject>("EnemyRefinement/Hwacat_angry-v2");
+            var expected=source.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(skin=>skin.sharedMesh).ToArray();
+            Assert.That(model.GetComponentsInChildren<SkinnedMeshRenderer>(true).All(skin=>expected.Contains(skin.sharedMesh)),Is.True,
+                "School transformation must mount the Hwacat demonic surface");
+            var animation=Get<Animation>(motion,"animationPlayer");
+            Assert.That(animation.GetClip("chase"),Is.Not.Null);
+            Assert.That(animation.GetClip("chase"),Is.Not.SameAs(Resources.Load<AnimationClip>("EnemyStudio/Uncat/chase")));
+            var eyes=model.GetComponentInChildren(RequireType("MonsterRedEyes"));
+            Assert.That(Get<string>(eyes,"ProfileKey"),Is.EqualTo("Hwacat_angry"));
+            Assert.That(Components("StalkerBrain").Where(actor=>actor.name.Contains("Uncat")).All(actor=>!actor.gameObject.activeInHierarchy),Is.True,
+                "Chapter 1 Uncat must remain dormant in the school");
+            var normal=Get<GameObject>(portrait,"normal");
+            Assert.That(normal.GetComponentInChildren<Animation>(true).GetClip("chase"),Is.Not.Null,
+                "School Hwacat must retain its own dance clip");
             AssertStudioActor(Get<Component>(Get<Component>(chapter,"Nursery"),"monster"),"Baby");
             Call(shell,"Pause");Assert.DoesNotThrow(()=>Call(session,"CaptureChapterCheckpoint"));
         }

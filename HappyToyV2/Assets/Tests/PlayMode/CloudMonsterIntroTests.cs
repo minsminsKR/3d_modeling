@@ -284,7 +284,15 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(() => IntroPhase(owner) == "standUp", 3, "Portrait never revealed the normal doll");
             Assert.That(Vector3.Distance(painting.position, original), Is.GreaterThan(.5f));
             Assert.That(Get<GameObject>(owner, "normal").activeSelf, Is.True);
-            yield return Wait(() => IntroPhase(owner) == "transform", 8, "Stand/dance/stillness did not reach the angry reveal");
+            yield return Wait(() => IntroPhase(owner) == "dance", 6, "School Hwacat never entered its authored dance");
+            var dancing=Get<GameObject>(owner,"normal");
+            Assert.That(dancing.activeSelf,Is.True);
+            Assert.That(brain.gameObject.activeSelf,Is.False,"Demonic form appeared before the dance finished");
+            Assert.That(dancing.GetComponentInChildren<Animation>(true).IsPlaying("chase"),Is.True);
+            yield return Wait(() => IntroPhase(owner) == "transform", 4, "Dance/stillness did not reach the angry reveal");
+            var angryMotion=brain.GetComponent(RequireType("V1MonsterMotion"));
+            Assert.That(Get<bool>(angryMotion,"StudioVisual"),Is.False);
+            Assert.That(Get<Transform>(angryMotion,"model").name,Does.Contain("Hwacat_angry"));
             IntroBrainSafe(brain); Assert.That(brain.gameObject.activeSelf, Is.True);
             IntroFrame(owner, "intro-portrait-angry.png");
             Assert.That(Get<float>(owner, "PhaseElapsed"), Is.LessThan(.4f));
