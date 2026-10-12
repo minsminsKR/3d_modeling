@@ -11,6 +11,14 @@ authorize future pushes; this instruction supersedes them. Do not routinely
 ask for push approval when no push was requested. Keep completed work local
 until the user explicitly requests a push.
 
+Persistent user instruction, 2026-10-12: whenever a push is explicitly requested,
+include all related models and resources, including original generated models,
+PBR textures, editable Blender/rig/animation sources, Unity assets and .meta files,
+reference inputs, generation settings/provenance, reproducible tools and licenses.
+Audit ignored and untracked authoring files and verify source completeness before
+pushing; a code-only push that omits required model/resource sources is incomplete.
+This does not authorize automatic pushes or inclusion of builds, caches, secrets,
+redundant previews, or personal machine settings.
 - Include project code, Unity Assets and their .meta files, Packages, ProjectSettings,
   editable authoring sources (including .blend), textures, shaders, source generators,
   import/export and validation tools, dependency instructions, and asset licenses.
