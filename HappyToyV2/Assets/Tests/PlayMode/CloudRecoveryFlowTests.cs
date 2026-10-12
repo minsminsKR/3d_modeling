@@ -49,6 +49,8 @@ namespace HappyToy.V2.CloudTests
             using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, mousePosition = position, button = 0, clickCount = 1 }))
                 target.SendEvent(up);
             yield return Delay(.15f);
+            if(id=="begin" || id=="begin-school")
+                yield return Wait(()=>!Get<bool>(shell,"IsReloading"),60,"Menu preparation did not finish");
         }
         IEnumerator RecoveryRebind(Component previous)
         {
@@ -64,8 +66,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Components("PlayerMotor").Length, Is.EqualTo(1));
             Assert.That(Components("DetectionFeedback").Length, Is.EqualTo(1));
             Assert.That(Resources.FindObjectsOfTypeAll<PanelSettings>().Count(item => item.name == "HappyToy runtime UI panel"), Is.EqualTo(1), "Native UI panels accumulated across retries");
-            Assert.That(Resources.FindObjectsOfTypeAll<RenderTexture>().Count(item => item.name == "HappyToy UI capture"), Is.EqualTo(1), "Native UI capture targets accumulated across retries");
-            Assert.That(Resources.FindObjectsOfTypeAll<Texture2D>().Count(item => item.name.StartsWith("Recognition grain ", StringComparison.Ordinal)), Is.EqualTo(8), "Recognition textures accumulated across retries");
+            Assert.That(Resources.FindObjectsOfTypeAll<RenderTexture>().Count(item => item.name == Get<RenderTexture>(One("GameShellView"), "CaptureTarget").name), Is.EqualTo(1), "Native UI capture targets accumulated across retries");
+            var feedback=player.GetComponent(RequireType("DetectionFeedback"));
+            foreach(var property in new[]{"NativeNoiseTexture","PeripheralTexture"})
+            {
+                var texture=Get<Texture2D>(feedback,property);Assert.That(texture,Is.Not.Null);
+                Assert.That(Resources.FindObjectsOfTypeAll<Texture2D>().Count(item=>item.name==texture.name),Is.EqualTo(1),"Recognition textures accumulated across retries: "+property);
+            }
         }
 
         [UnityTest, Timeout(65000)]

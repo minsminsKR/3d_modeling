@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,9 +17,10 @@ namespace HappyToy.V2
         public void CreateChapter() => CreateChapterVersion(SchoolCampusLayout.Version);
         public void CreateChapterForCheckpoint(ChapterCheckpoint data)
         { data.Validate(); CreateChapterVersion(data.simulationVersion); }
-        public void CreateChapterVersion(int layoutVersion)
+        public void CreateChapterVersion(int layoutVersion) => RunPreparation.Immediate(CreateChapterSteps(layoutVersion,false));
+        public IEnumerator CreateChapterSteps(int layoutVersion = SchoolCampusLayout.Version,bool cooperative = true)
         {
-            if(Chapter || Corridor || Finished) return;
+            if(Chapter || Corridor || Finished) yield break;
             if(layoutVersion!=1 && layoutVersion!=SchoolCampusLayout.Version) throw new System.ArgumentException("Unknown school layout");
             GraphicsLightingPresentation.BeginTransition(this);
             // Restart enters from GameShell.Start, before default-order presentation Start.
@@ -28,7 +30,7 @@ namespace HappyToy.V2
             // Release render batches before detaching props or retiring geometry:
             // their pooled meshes belong to the previous presentation owner.
             if(layoutVersion>=2 && surfaces) surfaces.enabled=false;
-            Chapter=gameObject.AddComponent<MemoryChapter>(); Chapter.Prepare(layoutVersion);
+            Chapter=gameObject.AddComponent<MemoryChapter>(); yield return Chapter.PrepareSteps(layoutVersion,cooperative);
             if(surfaces) { surfaces.enabled=true; surfaces.Refresh(); }
             GraphicsLightingPresentation.BeginMode(this,transform);
             BeginChapterMetrics();
@@ -84,12 +86,13 @@ namespace HappyToy.V2
         { CreateCorridorVersion(seed, 3); }
         public void CreateCorridorForCheckpoint(CorridorCheckpoint data)
         { data.Validate(); CreateCorridorVersion(data.seed, data.simulationVersion); }
-        void CreateCorridorVersion(int seed, int layoutVersion)
+        void CreateCorridorVersion(int seed, int layoutVersion) => RunPreparation.Immediate(CreateCorridorSteps(seed,layoutVersion,false));
+        public IEnumerator CreateCorridorSteps(int seed,int layoutVersion = 3,bool cooperative = true)
         {
-            if (Chapter || Corridor || Finished) return;
+            if (Chapter || Corridor || Finished) yield break;
             GraphicsLightingPresentation.BeginTransition(this);
             Corridor = gameObject.AddComponent<CorridorRun>();
-            Corridor.Build(seed, layoutVersion);
+            yield return Corridor.BuildSteps(seed, layoutVersion,cooperative);
             GraphicsLightingPresentation.BeginMode(this,transform);
         }
         public int requiredNames = 4;

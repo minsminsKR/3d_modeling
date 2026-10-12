@@ -12,6 +12,95 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest,Timeout(120000)]
+        public IEnumerator BaeksugwiLoadingKeepsApproachingWhileActualCorridorIsPrepared()
+        {
+            yield return RecoveryUiReady();Call(shell,"RestoreDefaultSettings");yield return null;
+            var title=One("CinematicTitleScene");var creature=GameObject.Find("Actual Baeksugwi source clone");
+            var wrist=creature.GetComponentsInChildren<Transform>(true).First(t=>t.name=="Arm1L_Wrist");
+            var firstWrist=wrist.localRotation;var pivot=creature.transform.parent;
+            var start=pivot.position;int renders=Get<int>(title,"RenderedFrames");
+            Call(shell,"StartCorridorFromMenu");Assert.That(Get<bool>(shell,"IsStartingRun"),Is.True);
+            Call(shell,"StartCorridorFromMenu");Call(shell,"StartChapterFromMenu");
+            float distance=0,gait=0;int frames=0;float deadline=Time.realtimeSinceStartup+60;
+            while(Get<bool>(shell,"IsReloading") && Time.realtimeSinceStartup<deadline)
+            {
+                Assert.That(Get<bool>(session,"InputAllowed"),Is.False);Assert.That(Time.timeScale,Is.Zero);
+                yield return null;frames++;
+                distance=Mathf.Max(distance,Vector3.Distance(start,pivot.position));
+                gait=Mathf.Max(gait,Quaternion.Angle(firstWrist,wrist.localRotation));
+            }
+            Assert.That(Get<string>(shell,"ReloadError"),Is.Empty);
+            Assert.That(Get<bool>(session,"CorridorMode"),Is.True);Assert.That(Get<bool>(session,"InputAllowed"),Is.True);
+            Assert.That(Get<bool>(shell,"IsStartingRun"),Is.False);
+            Assert.That(distance,Is.GreaterThan(.1f));Assert.That(gait,Is.GreaterThan(3));
+            Assert.That(Get<int>(title,"RenderedFrames")-renders,Is.GreaterThan(5));Assert.That(frames,Is.GreaterThan(10));
+            Assert.That(Components("CorridorRun").Length,Is.EqualTo(1));Assert.That(Components("MemoryChapter").Length,Is.Zero);
+            Assert.That(Get<bool>(Get<Component>(session,"Corridor"),"Ready"),Is.True);
+            Call(shell,"Pause");Assert.That(Get<bool>(session,"InputAllowed"),Is.False);
+            Call(shell,"Resume");Assert.That(Get<bool>(session,"InputAllowed"),Is.True);
+        }
+
+        [UnityTest,Timeout(120000)]
+        public IEnumerator BaeksugwiLoadingAlsoPreparesPlayableSchoolFromActualMenuButton()
+        {
+            yield return RecoveryUiReady();yield return RecoveryClick("begin-school");
+            Assert.That(Get<string>(shell,"ReloadError"),Is.Empty);
+            Assert.That(Get<bool>(session,"ChapterMode"),Is.True);Assert.That(Get<bool>(session,"InputAllowed"),Is.True);
+            Assert.That(Get<bool>(shell,"IsStartingRun"),Is.False);
+            Assert.That(Components("MemoryChapter").Length,Is.EqualTo(1));Assert.That(Components("CorridorRun").Length,Is.Zero);
+        }
+
+        [Test]
+        public void BaeksugwiLargeHeadMotionKeepsTheWholeSkinInsideItsFloorAndHeightEnvelope()
+        {
+            var instance=Object.Instantiate(Resources.Load<GameObject>("Baeksugwi/Baeksugwi"));
+            try
+            {
+                Resources.Load<AnimationClip>("Baeksugwi/Run_InPlace").SampleAnimation(instance,0);
+                var clip=Resources.Load<AnimationClip>("Baeksugwi/Head_Writhe");
+                var skins=instance.GetComponentsInChildren<SkinnedMeshRenderer>();
+                var evaluate=RequireType("EnemyStudioRig").GetMethod("PosedBounds");
+                clip.SampleAnimation(instance,0);var neutral=(Bounds)evaluate.Invoke(null,new object[]{skins});
+                for(int i=0;i<=180;i++)
+                {
+                    clip.SampleAnimation(instance,clip.length*i/180);
+                    var bounds=(Bounds)evaluate.Invoke(null,new object[]{skins});
+                    Assert.That(bounds.min.y,Is.GreaterThanOrEqualTo(neutral.min.y-.015f),"Head skin crosses the floor at "+i);
+                    Assert.That(bounds.max.y,Is.LessThanOrEqualTo(neutral.max.y+.05f),"Head skin crosses the body height envelope at "+i);
+                }
+            }
+            finally{Object.DestroyImmediate(instance);}
+        }
+
+        [Test]
+        public void BaeksugwiHeadRollIsLargeIrregularAndDoesNotRepeatTheOldShortCycle()
+        {
+            var instance=Object.Instantiate(Resources.Load<GameObject>("Baeksugwi/Baeksugwi"));
+            try
+            {
+                var clip=Resources.Load<AnimationClip>("Baeksugwi/Head_Writhe");
+                Assert.That(clip.length,Is.GreaterThan(30));
+                Resources.Load<AnimationClip>("Baeksugwi/Run_InPlace").SampleAnimation(instance,0);
+                var head=instance.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Head");
+                clip.SampleAnimation(instance,0);var neutral=head.rotation;
+                float low=0,high=0;var differences=new System.Collections.Generic.List<float>();
+                for(int i=0;i<160;i++)
+                {
+                    float time=clip.length*i/160;
+                    clip.SampleAnimation(instance,time);
+                    var pose=head.rotation;var delta=pose*Quaternion.Inverse(neutral);
+                    float roll=2*Mathf.Atan2(delta.z,delta.w)*Mathf.Rad2Deg;
+                    roll=Mathf.DeltaAngle(0,roll);low=Mathf.Min(low,roll);high=Mathf.Max(high,roll);
+                    clip.SampleAnimation(instance,Mathf.Repeat(time+2.4f,clip.length));
+                    differences.Add(Quaternion.Angle(pose,head.rotation));
+                }
+                Assert.That(high,Is.GreaterThan(40));Assert.That(low,Is.LessThan(-40));
+                Assert.That(differences.Average(),Is.GreaterThan(20),"Must not repeat the old 2.4-second wave");
+            }
+            finally{Object.DestroyImmediate(instance);}
+        }
+
         [Test]
         public void BaeksugwiHeadActionMovesOnlyHeadAndLoopsWithoutMovingAnyArm()
         {

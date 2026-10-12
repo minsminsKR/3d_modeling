@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.AI.Navigation;
@@ -30,7 +31,8 @@ namespace HappyToy.V2
         static readonly Vector3 Origin = new Vector3(200, 0, 200);
         public Vector3 CellPosition(int cell) => Origin + new Vector3(cell % CorridorLayout.Width * 6, .03f, cell / CorridorLayout.Width * 6);
 
-        public void Build(int seed, int layoutVersion = 3)
+        public void Build(int seed, int layoutVersion = 3) => RunPreparation.Immediate(BuildSteps(seed, layoutVersion, false));
+        public IEnumerator BuildSteps(int seed, int layoutVersion = 3, bool cooperative = true)
         {
             if (Ready) throw new InvalidOperationException("Run already built");
             session = GetComponent<GameSession>(); Layout = new CorridorLayout(seed, layoutVersion);
@@ -55,8 +57,10 @@ namespace HappyToy.V2
             var brass = MakeMaterial("Memory brass", new Color(.64f, .41f, .13f), 53);
             var paperLamp = MakeMaterial("Warm paper lantern", new Color(.7f, .45f, .2f), 13);
             paperLamp.SetColor("_EmissionColor", new Color(1f, .45f, .12f) * 1.4f); paperLamp.EnableKeyword("_EMISSION");
+            if(cooperative) yield return null;
             for (int cell = 0; cell < CorridorLayout.Count; cell++)
             {
+                if(cooperative && cell % 2 == 0) yield return null;
                 var p = CellPosition(cell); p.y = 0;
                 Box("Floor", p + Vector3.down * .12f, new Vector3(6, .24f, 6), floor);
                 Box("Ceiling", p + Vector3.up * 3.05f, new Vector3(6, .18f, 6), ceiling);
@@ -149,12 +153,15 @@ namespace HappyToy.V2
             exitInteraction.stableId="corridor-entrance"; exitInteraction.label=Layout.Version>=3 ? "닫힌 입구 확인" : "회랑 출구";
             exitInteraction.inspectionText="문은 안쪽에서 봉인되었다. 다섯 기억을 회랑 끝 붉은 교실의 제단에 돌려놓아야 한다.";
             if (Layout.Version >= 3) BuildAltarRoom();
-            BuildFurnishings();
+            if(cooperative) yield return null;
+            yield return BuildFurnishingSteps(cooperative);
             Lighting = gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareCorridor(this, world);
             // Rebuild after all physical furniture is present. Walkable routes include actual obstacles.
-            Physics.SyncTransforms(); surface.BuildNavMesh();
+            Physics.SyncTransforms();
+            if(cooperative) yield return RunPreparation.Navigation(surface); else surface.BuildNavMesh();
             for (int i = 0; i < 4; i++)
             {
+                if(cooperative) yield return null;
                 // Slot two belongs to the actual lantern/mask encounter. Hwacat's
                 // first appearance is preserved for the later school chapter.
                 if (i == 2)
@@ -205,8 +212,11 @@ namespace HappyToy.V2
             var ambience = session.GetComponent<RoomAmbience>();
             if (ambience) ambience.ConfigureRunPositions(new[] { CellPosition(Layout.Supplies[0]) + Vector3.up,
                 CellPosition(Layout.Supplies[3]) + Vector3.up * 2.5f, CellPosition(Layout.Supplies[6]) + Vector3.up * 1.5f });
-            ApplyCorridorPresentation();
-            CombineArchitecture();
+            if(cooperative) yield return null;
+            Presentation = world.gameObject.AddComponent<HauntedCorridorPresentation>();
+            yield return Presentation.PrepareSteps(this,cooperative);
+            Lighting.DimCorridor(this,world);
+            yield return CombineArchitectureSteps(cooperative);
             Physics.SyncTransforms(); Ready = true;
             session.Notify(Layout.Version >= 3 ?
                 "다섯 기억을 회수하고 붉은 교실의 제단에 돌려놓으세요. 폭죽은 회랑에서 보충할 수 있습니다." :
@@ -295,7 +305,7 @@ namespace HappyToy.V2
             go.GetComponent<MeshFilter>().sharedMesh=graphicsSurfaces.MetreMappedMesh(mesh,go.transform,span);
             return go;
         }
-        void CombineArchitecture()
+        IEnumerator CombineArchitectureSteps(bool cooperative)
         {
             // Keep dynamic doors, pickups and authored cabinets separate. Static room
             // architecture becomes small spatial batches rather than hundreds of draws.
@@ -312,6 +322,7 @@ namespace HappyToy.V2
             }
             foreach (var entry in batches)
             {
+                if(cooperative) yield return null;
                 var combined = new Mesh { name = "Corridor architecture chunk" };
                 combined.CombineMeshes(entry.Value.Select(filter => new CombineInstance { mesh = filter.sharedMesh,
                     transform = world.worldToLocalMatrix * filter.transform.localToWorldMatrix }).ToArray(), true, true);

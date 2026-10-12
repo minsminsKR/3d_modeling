@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Linq;
 using Unity.AI.Navigation;
 using UnityEngine;
@@ -7,10 +8,11 @@ namespace HappyToy.V2
 {
     public sealed partial class SchoolCampusLayout
     {
-        void DressRooms(MemoryChapter chapter)
+        IEnumerator DressRoomSteps(MemoryChapter chapter,bool cooperative)
         {
             foreach (var space in spaces.Where(s => s.room))
             {
+                if(cooperative) yield return null;
                 var r=space.rect; var floor=space.Height;
                 Fixture(space.Centre+Vector3.up*2.91f,space.floor);
                 if(space.id.Contains("class") || space.id=="u-art")

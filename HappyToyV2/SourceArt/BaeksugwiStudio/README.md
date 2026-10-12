@@ -85,10 +85,11 @@ import audit without editing the preserved school scene.
 
 ## Head-only writhing action
 
-`Head_Writhe` is a separate 2.4-second looping action in `Baeksugwi_Run.blend`.
+`Head_Writhe` is a separate 61-second looping action in `Baeksugwi_Run.blend`.
 Its four quaternion channels rotate Head only; body/neck/arm/root translations,
 scales and the original Run actions are preserved. `head-motion-profile.json`
-controls bounded yaw/roll/pitch waves; `author_head_motion.py` records unchanged
+controls seeded irregular yaw/roll/pitch targets with unequal transition and hold
+intervals and roll up to roughly 55 degrees to either side; `author_head_motion.py` records unchanged
 Run curve hashes in `head-motion-report.json`. The original full run GLB and
 base Unity FBX still contain their existing gait; the new armature-only
 `Assets/Resources/Baeksugwi/Head_Writhe.fbx` supplies the independent head take.

@@ -1,8 +1,9 @@
 {
-  "duration_seconds": 2.4,
+  "duration_seconds": 61.0,
   "fps": 60,
-  "yaw_radians": 0.5,
-  "roll_radians": 0.04,
-  "pitch_radians": 0.025,
-  "description": "Head-only dominant sideways writhing about model-up with small bounded roll/pitch to protect the original low mask and hanging decorations from the floor."
+  "seed": 12102026,
+  "yaw_radians": 0.65,
+  "roll_radians": 0.96,
+  "pitch_radians": 0.12,
+  "description": "Head-only seeded irregular insect-like snaps and holds, with large +/-55 degree roll. Unequal durations and amplitudes; smooth closed-loop boundaries."
 }

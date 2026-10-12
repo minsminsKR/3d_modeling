@@ -1,3 +1,4 @@
+using System.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -140,10 +141,11 @@ namespace HappyToy.V2
             AuthoredDetailModules++;
         }
 
-        void EmitDetails()
+        IEnumerator EmitDetailsSteps(bool cooperative)
         {
             foreach(var cellGroup in detailBatches.Values.GroupBy(x=>x.cell))
             {
+                if(cooperative) yield return null;
                 var root=new GameObject("Blender corridor detail cell "+cellGroup.Key);root.transform.SetParent(additions,false);
                 root.transform.position=ArchitectureOrigin(cellGroup.Key);root.layer=8;
                 var levels=new List<Renderer>[2] {new List<Renderer>(),new List<Renderer>()};

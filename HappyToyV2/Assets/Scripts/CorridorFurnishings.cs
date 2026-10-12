@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.AI.Navigation;
@@ -16,13 +17,15 @@ namespace HappyToy.V2
         public IReadOnlyList<CorridorDrawer> Drawers => drawers;
         public Transform FurnishingBatteryAnchor(int index) => furnishingBatteryAnchors[index];
 
-        void BuildFurnishings()
+        IEnumerator BuildFurnishingSteps(bool cooperative)
         {
             Physics.SyncTransforms();
             // Existing finite supplies keep their cell, identity and count. Four
             // packs require opening the actual tray; the other four rest on tops.
+            if(cooperative) yield return null;
             for (int i=0;i<Layout.Supplies.Length;i++)
             {
+                if(cooperative) yield return null;
                 var desk = PlaceFurnishing("furniture-desk-supply-" + i, "writing-desk", Layout.Supplies[i], true, i);
                 var visual = CorridorFurnitureLibrary.Attach("writing-desk", desk.transform, graphicsSurfaces);
                 AddDeskPhysics(desk.transform);
@@ -36,6 +39,7 @@ namespace HappyToy.V2
             // resource room is found. Goal-room desks make the long run less empty.
             foreach (int cell in new[] { 0 }.Concat(Layout.Relics.Take(3)))
             {
+                if(cooperative) yield return null;
                 var desk = PlaceFurnishing("furniture-desk-atmosphere-" + cell, "writing-desk", cell, true, cell+19);
                 var visual=CorridorFurnitureLibrary.Attach("writing-desk", desk.transform, graphicsSurfaces);
                 ConfigureDrawer(visual, desk.transform, null, "drawer-atmosphere-" + cell);
@@ -45,6 +49,7 @@ namespace HappyToy.V2
             }
             for (int i=0;i<6;i++)
             {
+                if(cooperative) yield return null;
                 var shelf = PlaceFurnishing("furniture-shelf-battery-" + i, "archive-shelf", Layout.Supplies[i], false, i+41);
                 CorridorFurnitureLibrary.Attach("archive-shelf", shelf.transform, graphicsSurfaces);
                 AddShelfPhysics(shelf.transform);

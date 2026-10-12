@@ -1,3 +1,4 @@
+using System.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,10 +30,11 @@ namespace HappyToy.V2
             }
             return go;
         }
-        void BuildArchitecture()
+        IEnumerator BuildArchitectureSteps(bool cooperative)
         {
             foreach (var space in spaces.Where(s=>s.room))
             {
+                if(cooperative) yield return null;
                 var r = space.rect; var c = space.Centre;
                 var floorKey = space.floor < 0 ? "concrete-rough" : space.room ? "wood-floor" : "ceramic-tile";
                 Slab(space.id + " school floor", c + Vector3.down * .12f, new Vector3(r.width,.24f,r.height),
@@ -48,6 +50,7 @@ namespace HappyToy.V2
                 var zs=halls.SelectMany(s=>new[]{s.rect.yMin,s.rect.yMax}).Distinct().OrderBy(z=>z).ToArray();
                 for(int x=0;x<xs.Length-1;x++)for(int z=0;z<zs.Length-1;z++)
                 {
+                    if(cooperative && z==0) yield return null;
                     var centre=new Vector2((xs[x]+xs[x+1])*.5f,(zs[z]+zs[z+1])*.5f);
                     if(!halls.Any(s=>s.rect.Contains(centre)))continue;
                     var c=new Vector3(centre.x,floor*5,centre.y);var size=new Vector3(xs[x+1]-xs[x],.24f,zs[z+1]-zs[z]);
@@ -59,12 +62,13 @@ namespace HappyToy.V2
             var keys = new HashSet<string>();
             foreach (var s in spaces)
             {
+                if(cooperative) yield return null;
                 Edge(s, false, s.rect.xMin, s.rect.yMin, s.rect.yMax, -1, keys);
                 Edge(s, false, s.rect.xMax, s.rect.yMin, s.rect.yMax, 1, keys);
                 Edge(s, true, s.rect.yMin, s.rect.xMin, s.rect.xMax, -1, keys);
                 Edge(s, true, s.rect.yMax, s.rect.xMin, s.rect.xMax, 1, keys);
             }
-            foreach (var opening in openings.Where(o => o.door)) MakeDoor(opening);
+            foreach (var opening in openings.Where(o => o.door)) { if(cooperative) yield return null; MakeDoor(opening); }
             Stair(29.8f, 11.2f, 1, 1); Stair(13.8f, -11.2f, -1, -1);
             foreach (var s in spaces.Where(s => !s.room && s.rect.width > 5))
                 for (float x = s.rect.xMin + 2.7f; x < s.rect.xMax - 1; x += 6.4f)
@@ -181,7 +185,7 @@ namespace HappyToy.V2
             fittedSigns.Add((label,size-new Vector2(.1f,.055f)));
         }
         readonly List<(TextMesh text,Vector2 limit)> fittedSigns = new List<(TextMesh,Vector2)>();
-        void CombineStaticVisuals()
+        IEnumerator CombineStaticVisualSteps(bool cooperative)
         {
             // Spatial batches keep the new multi-room campus affordable without
             // merging doors, hiding places, movable actors or depth-tested text.
@@ -194,6 +198,7 @@ namespace HappyToy.V2
                 Mathf.FloorToInt((r.bounds.min.y+.3f)/5)+":"+Mathf.FloorToInt(r.bounds.center.z/9));
             foreach(var group in groups)
             {
+                if(cooperative) yield return null;
                 var members=group.ToArray();if(members.Length<2)continue;
                 var mesh=new Mesh{name="Campus spatial static mesh",indexFormat=IndexFormat.UInt32};owned.Add(mesh);
                 mesh.CombineMeshes(members.Select(r=>new CombineInstance{mesh=r.GetComponent<MeshFilter>().sharedMesh,

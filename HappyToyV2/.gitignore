@@ -22,3 +22,7 @@
 /SourceArt/**/staged/
 /SourceArt/**/previews/
 /SourceArt/EnemyRefinementV2/work/
+
+# Optional per-frame captures and superseded loading diagnostic candidates.
+/Verification/menu-approach-20261012/native*/**/*.png
+/Verification/menu-approach-20261012/native-candidate/

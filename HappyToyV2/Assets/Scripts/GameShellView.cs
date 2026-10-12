@@ -268,6 +268,7 @@ namespace HappyToy.V2
             VisualElement scrim = shown == GameShell.Page.Title
                 ? new CinematicMenuScrim(shell.HighContrast)
                 : new VisualElement { pickingMode = PickingMode.Ignore, focusable = false };
+            if(shell.IsStartingRun) scrim = new VisualElement { pickingMode = PickingMode.Ignore };
             scrim.name = "menu-face-scrim";
             scrim.style.position = Position.Absolute;
             scrim.style.left = scrim.style.top = scrim.style.right = scrim.style.bottom = 0;
@@ -315,6 +316,11 @@ namespace HappyToy.V2
                 }
             }
             root.Add(stage);
+            if(shell.IsStartingRun)
+            {
+                Small("문 너머의 기억을 깨우고 있습니다…", 400, 820, 800, 40).style.unityTextAlign=TextAnchor.MiddleCenter;
+                return;
+            }
             if (shown == GameShell.Page.Playing)
             {
                 BuildHud();

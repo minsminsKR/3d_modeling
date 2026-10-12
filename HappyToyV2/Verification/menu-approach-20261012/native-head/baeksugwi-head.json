@@ -1,0 +1,334 @@
+{
+    "status": "PASS",
+    "failure": "",
+    "scope": "Actual title UI at timeScale zero, followed by controlled seed-73 corridor Chase using the real actor/prefab/camera. AI stopped for pose capture. Body joints compared while the head moves; pause and calm transition checked. Not a full survival, audio or hardware performance certification.",
+    "titleHeadSwing": 66.10494995117188,
+    "chaseHeadSwing": 103.0053482055664,
+    "pauseFrozen": true,
+    "calmHeadStopped": true,
+    "titleBodyFixed": true,
+    "chaseBodyFixed": true,
+    "frames": [
+        {
+            "image": "title-00.png",
+            "stage": "title",
+            "time": 0.6621184945106506,
+            "headAngle": 42.66913986206055,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-01.png",
+            "stage": "title",
+            "time": 0.9026973843574524,
+            "headAngle": 55.76622772216797,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-02.png",
+            "stage": "title",
+            "time": 1.1614940166473389,
+            "headAngle": 55.98877716064453,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-03.png",
+            "stage": "title",
+            "time": 1.3993526697158813,
+            "headAngle": 56.66236114501953,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-04.png",
+            "stage": "title",
+            "time": 1.6126019954681396,
+            "headAngle": 56.692867279052734,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-05.png",
+            "stage": "title",
+            "time": 1.8447362184524536,
+            "headAngle": 36.029727935791016,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-06.png",
+            "stage": "title",
+            "time": 2.0947916507720947,
+            "headAngle": 62.51111602783203,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-07.png",
+            "stage": "title",
+            "time": 2.317246437072754,
+            "headAngle": 66.10494995117188,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-08.png",
+            "stage": "title",
+            "time": 2.5624544620513916,
+            "headAngle": 64.59100341796875,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-09.png",
+            "stage": "title",
+            "time": 2.818066120147705,
+            "headAngle": 61.604347229003906,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-10.png",
+            "stage": "title",
+            "time": 3.0528676509857178,
+            "headAngle": 60.37711715698242,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-11.png",
+            "stage": "title",
+            "time": 3.282768726348877,
+            "headAngle": 60.28118133544922,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-12.png",
+            "stage": "title",
+            "time": 3.5015947818756104,
+            "headAngle": 35.535362243652344,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-13.png",
+            "stage": "title",
+            "time": 3.7234911918640137,
+            "headAngle": 42.33571243286133,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-14.png",
+            "stage": "title",
+            "time": 3.945563316345215,
+            "headAngle": 53.93588638305664,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "title-15.png",
+            "stage": "title",
+            "time": 4.170860767364502,
+            "headAngle": 53.93347930908203,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.0,
+            "roofY": 0.0
+        },
+        {
+            "image": "chase-00.png",
+            "stage": "chase",
+            "time": 1.1571046113967896,
+            "headAngle": 2.711038112640381,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-01.png",
+            "stage": "chase",
+            "time": 1.169472336769104,
+            "headAngle": 3.0142822265625,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-02.png",
+            "stage": "chase",
+            "time": 1.5028057098388672,
+            "headAngle": 6.7031707763671875,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-03.png",
+            "stage": "chase",
+            "time": 1.7284321784973145,
+            "headAngle": 19.661468505859375,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-04.png",
+            "stage": "chase",
+            "time": 1.9583970308303833,
+            "headAngle": 80.58138275146484,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-05.png",
+            "stage": "chase",
+            "time": 2.1878201961517334,
+            "headAngle": 102.7924575805664,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-06.png",
+            "stage": "chase",
+            "time": 2.4110207557678223,
+            "headAngle": 102.79071044921875,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-07.png",
+            "stage": "chase",
+            "time": 2.635002613067627,
+            "headAngle": 102.78430938720703,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-08.png",
+            "stage": "chase",
+            "time": 2.869875192642212,
+            "headAngle": 102.96659088134766,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-09.png",
+            "stage": "chase",
+            "time": 3.1116409301757813,
+            "headAngle": 103.0053482055664,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-10.png",
+            "stage": "chase",
+            "time": 3.3368632793426514,
+            "headAngle": 60.41779708862305,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-11.png",
+            "stage": "chase",
+            "time": 3.5606069564819336,
+            "headAngle": 21.38429069519043,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-12.png",
+            "stage": "chase",
+            "time": 3.781277894973755,
+            "headAngle": 15.006570816040039,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-13.png",
+            "stage": "chase",
+            "time": 3.965446710586548,
+            "headAngle": 16.122146606445313,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-14.png",
+            "stage": "chase",
+            "time": 4.154577732086182,
+            "headAngle": 10.674520492553711,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        },
+        {
+            "image": "chase-15.png",
+            "stage": "chase",
+            "time": 4.339322090148926,
+            "headAngle": 9.697128295898438,
+            "bodyRotationError": 0.0,
+            "bodyPositionError": 0.0,
+            "soleY": 0.010000184178352356,
+            "roofY": 1.6079041957855225
+        }
+    ],
+    "errors": []
+}

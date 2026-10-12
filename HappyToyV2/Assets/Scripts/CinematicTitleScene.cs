@@ -38,6 +38,16 @@ namespace HappyToy.V2
         GameShell shell;
         float nextFrame;
         bool visible;
+        JointPose[] titlePose;
+        Vector3 titlePosition;
+        Quaternion titleRotation;
+        float approachClock;
+        bool approaching;
+        Vector3[] headEnvelope;
+        public bool Approaching => approaching;
+        public float ApproachTime => approachClock;
+        public float ApproachDistance { get; private set; }
+        public int RenderedFrames { get; private set; }
         public RenderTexture Image { get; private set; }
         public bool UsesBaeksugwi => creature && creature.GetComponentsInChildren<SkinnedMeshRenderer>().Length > 0;
 
@@ -119,6 +129,38 @@ namespace HappyToy.V2
             camera.transform.localPosition = new Vector3(-1.2f, .72f, -4.9f);
             camera.transform.LookAt(set.transform.position + new Vector3(.35f, 1.25f, 4.1f));
             camera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
+            titlePose=creature.GetComponentsInChildren<Transform>(true).Select(t=>new JointPose(t)).ToArray();
+            titlePosition=pivot.transform.position; titleRotation=pivot.transform.rotation;
+            // Cache real wrist skin contact points for the moving gait. The title
+            // stance borrows different planted phases and cannot supply gait height.
+            pose.SampleAnimation(creature,0);
+            var gaitPoints=skins.Select(EnemyStudioRig.PosedVertices).ToArray();
+            Bounds headBounds=default;bool foundHead=false;
+            for(int k=0;k<skins.Length;k++)
+            {
+                int headBone=Array.IndexOf(skins[k].bones,faceJoint);
+                var weights=skins[k].sharedMesh.boneWeights;
+                for(int i=0;i<weights.Length;i++)
+                {
+                    var w=weights[i];
+                    if(!(w.boneIndex0==headBone&&w.weight0>.9f || w.boneIndex1==headBone&&w.weight1>.9f ||
+                        w.boneIndex2==headBone&&w.weight2>.9f || w.boneIndex3==headBone&&w.weight3>.9f))continue;
+                    var point=faceJoint.InverseTransformPoint(gaitPoints[k][i]);
+                    if(!foundHead){headBounds=new Bounds(point,Vector3.zero);foundHead=true;}else headBounds.Encapsulate(point);
+                }
+            }
+            if(!foundHead)throw new InvalidOperationException("Missing real head clearance surface");
+            headEnvelope=(from x in new[]{headBounds.min.x,headBounds.max.x}
+                from y in new[]{headBounds.min.y,headBounds.max.y}
+                from z in new[]{headBounds.min.z,headBounds.max.z} select new Vector3(x,y,z)).ToArray();
+            foreach(var support in plantedSupports)
+            {
+                Vector3 lowest=Vector3.zero;float minimum=float.PositiveInfinity;
+                for(int k=0;k<skins.Length;k++)foreach(int index in support.vertices[k])
+                    if(gaitPoints[k][index].y<minimum){minimum=gaitPoints[k][index].y;lowest=gaitPoints[k][index];}
+                support.contactLocal=support.joints[2].InverseTransformPoint(lowest);
+            }
+            foreach(var joint in titlePose)joint.Apply();
             set.SetActive(false);
         }
         Material Material(Color colour, string texture)
@@ -144,11 +186,57 @@ namespace HappyToy.V2
             // Title time is unscaled; the game intentionally pauses on this page.
             // Sampling only Head leaves every planted limb and body pose fixed.
             if(!shell || !shell.ReducedMotion)headClock+=Time.unscaledDeltaTime;
+            bool loading=shell && shell.IsStartingRun;
+            if(loading && !approaching) { approaching=true; approachClock=0; }
+            if(!loading && approaching)
+            {
+                approaching=false; approachClock=0; ApproachDistance=0;
+                foreach(var joint in titlePose)joint.Apply();
+                creature.transform.parent.SetPositionAndRotation(titlePosition,titleRotation);
+                UpdateContactShadows();
+            }
+            if(approaching) approachClock+=Time.unscaledDeltaTime;
             if(Time.unscaledTime < nextFrame)return;
+            if(approaching) UpdateApproach();
             headMotion.SampleAnimation(creature,shell && shell.ReducedMotion ? 0 : Mathf.Repeat(headClock,headMotion.length));
+            if(approaching)
+            {
+                // Wide roll can lower hanging head decorations beneath the moving
+                // wrist support plane. Lift only Head, after the authored gait,
+                // using its real cached skin envelope; body contacts stay planted.
+                float headLow=headEnvelope.Min(point=>faceJoint.TransformPoint(point).y);
+                float lift=Mathf.Max(0,set.transform.position.y+FloorHeight+.003f-headLow);
+                faceJoint.position+=Vector3.up*lift;
+            }
             UpdateFaceLighting();
             RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = Image });
-            nextFrame = Time.unscaledTime + (shell && shell.ReducedMotion ? 1 : 1f / 15);
+            RenderedFrames++;
+            nextFrame = Time.unscaledTime + (approaching ? 1f/30 : shell && shell.ReducedMotion ? 1 : 1f / 20);
+        }
+        void UpdateApproach()
+        {
+            var pivot=creature.transform.parent;
+            // Real authored limb locomotion, sampled slowly on an unscaled clock.
+            // Ease toward the centre of the camera view; never cross its near plane.
+            var start=titlePosition;
+            var destination=set.transform.position+new Vector3(-.65f,start.y-set.transform.position.y,-1.45f);
+            float progress=1-Mathf.Exp(-approachClock*(shell.ReducedMotion ? .075f : .14f));
+            var direction=destination-start; direction.y=0;
+            var facing=Quaternion.LookRotation(direction.normalized);
+            pivot.rotation=Quaternion.Slerp(titleRotation,facing,Mathf.SmoothStep(0,1,approachClock/1.5f));
+            pivot.position=Vector3.Lerp(start,destination,progress);
+            ApproachDistance=Vector3.Distance(start,pivot.position);
+            // One gentle gait cycle per 1.6 seconds; retain the original skin and limbs.
+            pose.SampleAnimation(creature,Mathf.Repeat(approachClock*.45f,pose.length));
+            float lowestSupport=plantedSupports.Min(s=>s.joints[2].TransformPoint(s.contactLocal).y);
+            pivot.position+=Vector3.up*(set.transform.position.y+FloorHeight+.003f-lowestSupport);
+            var contacts=new Vector4[plantedSupports.Count];
+            for(int i=0;i<contacts.Length;i++)
+            {
+                var wrist=plantedSupports[i].joints[2].TransformPoint(plantedSupports[i].contactLocal)-set.transform.position;
+                contacts[i]=new Vector4(wrist.x,0,wrist.z,.2f);
+            }
+            floorMaterial.SetVectorArray("_FootContacts",contacts);
         }
         struct JointPose
         {
@@ -159,6 +247,7 @@ namespace HappyToy.V2
         sealed class Support
         {
             public Transform shoulder; public Transform[] joints; public int[][] vertices;
+            public Vector3 contactLocal;
             public JointPose[] planted; public float minimum=float.PositiveInfinity;
         }
         void PlantTitlePose()

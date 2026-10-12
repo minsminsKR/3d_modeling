@@ -1,3 +1,4 @@
+using System.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -225,10 +226,11 @@ namespace HappyToy.V2
             AuthoredArchitectureModules++;
         }
 
-        void EmitArchitecture()
+        IEnumerator EmitArchitectureSteps(bool cooperative)
         {
             foreach(var cellGroup in architectureBatches.Values.GroupBy(x=>x.cell))
             {
+                if(cooperative) yield return null;
                 var root=new GameObject("Blender architecture cell "+cellGroup.Key);root.transform.SetParent(additions,false);
                 root.transform.position=ArchitectureOrigin(cellGroup.Key);
                 var renderers=new List<Renderer>[2] {new List<Renderer>(),new List<Renderer>()};

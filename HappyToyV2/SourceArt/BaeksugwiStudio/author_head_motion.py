@@ -5,7 +5,7 @@ blender --background --python-exit-code 1 --python HappyToyV2/SourceArt/Baeksugw
 The original game mesh, skin/PBR and all Run action curves are preserved.
 A separate armature-only FBX supplies Head_Writhe; Unity copies only Head rotation.
 """
-import hashlib,json,math,struct
+import hashlib,json,math,struct,random
 from pathlib import Path
 import bpy
 from mathutils import Quaternion,Vector
@@ -27,6 +27,10 @@ rig=bpy.data.objects['Baeksugwi_Rig'];head=rig.pose.bones['Head']
 profile=json.loads((HERE/'head-motion-profile.json').read_text(encoding='utf-8'))
 original={a.name:action_hash(a) for a in bpy.data.actions if a.name.startswith('Run_')}
 scene=bpy.context.scene;old_start,old_end=scene.frame_start,scene.frame_end
+# This export contains armature only. Do not evaluate the full sculpt's skin at
+# every FBX bake frame; preserve and restore all editable mesh visibility.
+visibility=[(o,o.hide_viewport) for o in scene.objects if o.type=='MESH']
+for obj,_ in visibility:obj.hide_viewport=True
 rig.animation_data.action=bpy.data.actions['Run_InPlace'];scene.frame_set(1)
 base=head.rotation_quaternion.copy()
 prior=bpy.data.actions.get('Head_Writhe')
@@ -35,11 +39,26 @@ action=bpy.data.actions.new('Head_Writhe');action.use_fake_user=True
 rig.animation_data.action=action;head.rotation_mode='QUATERNION'
 count=round(profile['duration_seconds']*profile['fps']);previous=None
 local_axes=[head.bone.matrix_local.to_quaternion().inverted()@Vector(axis) for axis in ((0,0,1),(0,-1,0),(1,0,0))]
+# Deterministic, editable irregular targets; unlike a stack of sine waves these
+# have unequal holds, sharp turns and wide roll on both sides of the face.
+rng=random.Random(profile['seed']);targets=[(0.0,(0.0,0.0,0.0))]
+time=.28
+while time < profile['duration_seconds']-.75:
+    roll=rng.choice((-1,1))*rng.uniform(.45,1.0)*profile['roll_radians']
+    targets.append((time,(rng.uniform(-1,1)*profile['yaw_radians'],roll,rng.uniform(-1,1)*profile['pitch_radians'])))
+    time+=rng.uniform(.18,.90)
+targets.append((profile['duration_seconds'],(0.0,0.0,0.0)))
+segment=0;peak_roll=0.0
 for step in range(count+1):
-    phase=(step/count)%1;angle=math.tau*phase
-    yaw=profile['yaw_radians']*(.72*math.sin(angle)+.28*math.sin(angle*3))
-    roll=profile['roll_radians']*(.68*math.tanh(2.2*math.sin(angle*2))/math.tanh(2.2)+.32*math.sin(angle))
-    pitch=profile['pitch_radians']*(.74*math.sin(angle*3)+.26*math.sin(angle*7))
+    time=step/profile['fps']
+    while segment+1<len(targets)-1 and time>targets[segment+1][0]:segment+=1
+    start,first=targets[segment];end,last=targets[segment+1]
+    u=min(1.0,max(0.0,(time-start)/(end-start)))
+    # Move early then hold at the new uncomfortable angle. Holds vary with the
+    # target spacing; cubic easing keeps rotations continuous even at the loop.
+    u=min(1.0,u/.68);u=u*u*(3-2*u)
+    yaw,roll,pitch=(a+(b-a)*u for a,b in zip(first,last))
+    peak_roll=max(peak_roll,abs(roll))
     rotation=base@Quaternion(local_axes[0],yaw)@Quaternion(local_axes[1],roll)@Quaternion(local_axes[2],pitch)
     if previous and rotation.dot(previous)<0:rotation.negate()
     head.rotation_quaternion=rotation
@@ -60,8 +79,9 @@ bpy.ops.export_scene.fbx(filepath=str(output),use_selection=True,object_types={'
     path_mode='AUTO',embed_textures=False)
 scene.frame_start=old_start;scene.frame_end=old_end
 rig.animation_data.action=bpy.data.actions['Run_InPlace'];scene.frame_set(1)
+for obj,hidden in visibility:obj.hide_viewport=hidden
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(HERE/'Baeksugwi_Run.blend'),compress=True,check_existing=False)
-report={'status':'PASS','action':'Head_Writhe','source':'Baeksugwi_Run.blend','sourceSHA256':hashlib.sha256((HERE/'Baeksugwi_Run.blend').read_bytes()).hexdigest(),'headOnlyRotationCurves':4,'durationSeconds':count/profile['fps'],'runActionCurveHashesPreserved':original,'fbx':output.relative_to(PROJECT).as_posix(),'fbxSHA256':hashlib.sha256(output.read_bytes()).hexdigest(),'scope':'Existing mesh/weights/texture data untouched; only a Head quaternion action added. Unity imports Head rotation curves only.'}
+report={'status':'PASS','action':'Head_Writhe','source':'Baeksugwi_Run.blend','sourceSHA256':hashlib.sha256((HERE/'Baeksugwi_Run.blend').read_bytes()).hexdigest(),'headOnlyRotationCurves':4,'durationSeconds':count/profile['fps'],'seed':profile['seed'],'peakRollDegrees':math.degrees(peak_roll),'irregularTargets':targets,'runActionCurveHashesPreserved':original,'fbx':output.relative_to(PROJECT).as_posix(),'fbxSHA256':hashlib.sha256(output.read_bytes()).hexdigest(),'scope':'Existing mesh/weights/texture data untouched; only a Head quaternion action added. Unity imports Head rotation curves only.'}
 (HERE/'head-motion-report.json').write_text(json.dumps(report,indent=2),encoding='utf-8')
 print('BAEKSUGWI_HEAD_ACTION_PASS',flush=True)

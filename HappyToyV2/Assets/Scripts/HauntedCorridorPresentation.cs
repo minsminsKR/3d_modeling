@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -80,7 +81,8 @@ namespace HappyToy.V2
                 state.obstacle.center==state.center && state.obstacle.size==state.size &&
                 state.obstacle.shape==state.shape && state.obstacle.carving==state.carving);
 
-        public void Prepare(CorridorRun source)
+        public void Prepare(CorridorRun source) => RunPreparation.Immediate(PrepareSteps(source,false));
+        public IEnumerator PrepareSteps(CorridorRun source,bool cooperative = true)
         {
             if (Prepared || run) throw new InvalidOperationException("Corridor presentation already prepared");
             if (!source || source.Layout==null) throw new ArgumentException("Built corridor required",nameof(source));
@@ -106,6 +108,7 @@ namespace HappyToy.V2
             PrepareSectors();
             for (int cell=0;cell<CorridorLayout.Count;cell++)
             {
+                if(cooperative && cell % 2 == 0) yield return null;
                 Vector3 center=run.CellPosition(cell);center.y=0;
                 if (!run.Layout.IsRoom(cell)) DressNarrowHall(cell);
                 // Real ceiling joists sit above head height and never disguise a passage.
@@ -125,17 +128,28 @@ namespace HappyToy.V2
                     if(passage) LayeredPassages++;
                 }
             }
+            if(cooperative) yield return null;
             DressSectorClues();
+            if(cooperative) yield return null;
             DressLanterns();
+            if(cooperative) yield return null;
             DressSlidingLeaves();
+            if(cooperative) yield return null;
             DressShrines();
+            if(cooperative) yield return null;
             DressCabinets();
+            if(cooperative) yield return null;
             DressEntrance();
+            if(cooperative) yield return null;
             DressAuthoredFloorsAndCeilings();
+            if(cooperative) yield return null;
             DressAuthoredStructuralTimber();
+            if(cooperative) yield return null;
             DressAuthoredClassroomShell();
-            EmitDetails();
-            EmitArchitecture();
+            if(cooperative) yield return null;
+            yield return EmitDetailsSteps(cooperative);
+            if(cooperative) yield return null;
+            yield return EmitArchitectureSteps(cooperative);
             ApplyFog();
             Prepared=true;
             if(!PhysicalStateIntact) throw new InvalidOperationException("Visual dressing changed corridor physics");
