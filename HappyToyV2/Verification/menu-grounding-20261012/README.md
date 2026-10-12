@@ -43,3 +43,9 @@ complete gameplay run or hardware performance.
 The changes are committed locally. No remote push is performed for this work.
 The previous verified player is preserved until a requested successful push
 permits superseded-player cleanup.
+
+## Brightness correction
+
+The offscreen PNGs above retain grounding/layout evidence, but their brightness
+differed from the normal player display. The [display brightness correction](../menu-brightness-20261012/README.md)
+uses a real presented backbuffer capture and verifies display-output stability.

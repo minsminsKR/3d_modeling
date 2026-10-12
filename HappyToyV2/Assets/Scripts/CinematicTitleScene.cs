@@ -43,7 +43,7 @@ namespace HappyToy.V2
             shell = owner;
             titleShader = Resources.Load<Shader>("TitleAtmosphere");
             if (!titleShader || !titleShader.isSupported) throw new InvalidOperationException("Missing or unsupported title atmosphere shader");
-            Image = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB)
+            Image = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear)
                 { name = "Baeksugwi red corridor title", antiAliasing = 1 };
             Image.Create();
             set = new GameObject("Owned title corridor set");

@@ -160,9 +160,14 @@ namespace HappyToy.V2
             if (CaptureTarget && CaptureTarget.width == width && CaptureTarget.height == height) return;
             settings.targetTexture = null;
             if (CaptureTarget) { CaptureTarget.Release(); Destroy(CaptureTarget); }
-            CaptureTarget = new RenderTexture(width, height, 24) { graphicsFormat = GraphicsFormat.R8G8B8A8_SRGB, name = "HappyToy UI capture" };
+            CaptureTarget = new RenderTexture(width, height, 24) { graphicsFormat = GraphicsFormat.R8G8B8A8_UNorm, name = "HappyToy display RGB UI capture" };
             CaptureTarget.Create();
             settings.targetTexture = CaptureTarget;
+        }
+
+        public void RestoreDisplayOutput()
+        {
+            EnsurePanelSettings(); settings.targetTexture = null; settings.clearColor = false;
         }
 
         VisualElement Place(VisualElement element, float x, float y, float width, float height)

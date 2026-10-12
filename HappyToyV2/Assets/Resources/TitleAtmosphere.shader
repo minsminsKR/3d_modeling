@@ -21,6 +21,7 @@ Shader "HappyToy/TitleAtmosphere"
             #pragma vertex vert
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
             TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseColor, _StageOrigin;
@@ -84,7 +85,9 @@ Shader "HappyToy/TitleAtmosphere"
                     }
                     colour *= 1 - saturate(footShadow*.96) * saturate(n.y);
                 }
-                return half4(colour,1);
+                // UI Toolkit presents display-referred RGB; keep the title texture UNorm
+                // and encode exactly once here, independent of the offscreen panel target.
+                return half4(LinearToSRGB(max(colour,0)),1);
             }
             ENDHLSL
         }

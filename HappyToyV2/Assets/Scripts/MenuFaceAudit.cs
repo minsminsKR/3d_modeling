@@ -36,6 +36,7 @@ namespace HappyToy.V2
             public string status, texture;
             public string scope = "Release UI Toolkit snapshots of the live red-corridor Baeksugwi title scene and non-title menu art: normal title, four aspect ratios with large text/high contrast on title and pause, settings focus/submit, real Escape pause and focused Resume button, and original authored scene plus unobscured playing HUD. Controlled Begin() is used only to reach pause/HUD. No gameplay, path, survival, audio or performance certification.";
             public bool developmentBuild, settingsFocus, escapePause, resumeButton, textureAlive, playingFaceHidden;
+            public bool displayReferenceHasContent; public float rawOffscreenMeanError, displayPreviewMeanError; public bool displayPreviewMatches;
             public int plantedTitleLimbs; public float titleFloorGap, maximumSupportFloorGap; public bool titleFaceLight, titleEyeGlow;
             public int referenceChangedPixels; public Frame[] frames; public string[] errors;
         }
@@ -96,7 +97,7 @@ namespace HappyToy.V2
             }
             catch (Exception error) { errors.Add("Cleanup: " + error.Message); }
             report.developmentBuild = Debug.isDebugBuild; report.frames = frames.ToArray(); report.errors = errors.ToArray();
-            report.status = errors.Count == 0 && !report.developmentBuild && frames.Count == 11 && report.settingsFocus &&
+            report.status = errors.Count == 0 && report.displayPreviewMatches && !report.developmentBuild && frames.Count == 11 && report.settingsFocus &&
                 report.escapePause && report.resumeButton && report.textureAlive && report.playingFaceHidden ? "PASS" : "FAIL";
             File.WriteAllText(Path.Combine(output,"menu-face-report.json"), JsonUtility.ToJson(report,true));
             Application.Quit(report.status == "PASS" ? 0 : 2);
@@ -140,7 +141,31 @@ namespace HappyToy.V2
             Require(report.titleFaceLight && report.titleEyeGlow, "Title face lighting or original-surface eye glow is missing");
             yield return Button("settings"); Require(shell.Screen == GameShell.Page.Settings, "Pointer settings button did not navigate");
             if (shell.HighContrast) shell.ToggleHighContrast(); if (shell.LargeText) shell.ToggleLargeText(); yield return Paint();
-            yield return Button("back"); yield return Capture("title-normal",1600,900,true);
+            yield return Button("back");
+            Screen.SetResolution(1600,900,FullScreenMode.Windowed);
+            yield return new WaitForSecondsRealtime(.3f); yield return Paint();
+            // This is the normal player backbuffer with UI still on screen, before any offscreen target.
+            yield return new WaitForEndOfFrame();
+            var display=ScreenCapture.CaptureScreenshotAsTexture();
+            Require(display && display.width==1600 && display.height==900,"Display reference resolution differs");
+            report.displayReferenceHasContent=display.GetPixels32().Count(pixel=>pixel.r+pixel.g+pixel.b>30)>display.width*display.height*.15f;
+            Require(report.displayReferenceHasContent,"Actual display reference is blank; run the interactive diagnostic in a visible player window");
+            File.WriteAllBytes(Path.Combine(output,"title-actual-display-1600x900.png"),display.EncodeToPNG());
+            yield return Capture("title-normal",1600,900,true);
+            var raw=Read(view.CaptureTarget);
+            try { report.rawOffscreenMeanError=PixelError(display,raw); } finally {Destroy(raw);}
+            // UI Toolkit's target-texture and backbuffer alpha blending can differ.
+            // Export the presented player backbuffer as the brightness preview.
+            view.RestoreDisplayOutput(); yield return Paint(); yield return new WaitForEndOfFrame();
+            var preview=ScreenCapture.CaptureScreenshotAsTexture();
+            try
+            {
+                report.displayPreviewMeanError=PixelError(display,preview);
+                report.displayPreviewMatches=report.displayPreviewMeanError<.003f;
+                Require(report.displayPreviewMatches,"Restored real display preview differs: "+report.displayPreviewMeanError);
+                File.WriteAllBytes(Path.Combine(output,"title-normal-1600x900.png"),preview.EncodeToPNG());
+            }
+            finally {Destroy(display);Destroy(preview);}
             yield return Button("settings"); yield return Button("high-contrast",true); yield return Button("large-text",true);
             report.settingsFocus = shell.Screen == GameShell.Page.Settings && shell.HighContrast && shell.LargeText;
             Require(report.settingsFocus, "Focused settings submit did not change real shell preferences");
@@ -159,12 +184,19 @@ namespace HappyToy.V2
             report.playingFaceHidden = !FaceVisible; report.textureAlive = texture && FaceTexture == texture;
             Require(report.textureAlive && report.playingFaceHidden, "Playing hid/destroyed the borrowed texture incorrectly");
         }
+        static float PixelError(Texture2D actual, Texture2D preview)
+        {
+            var a=actual.GetPixels32();var b=preview.GetPixels32();double error=0;
+            Require(a.Length==b.Length,"Display/preview pixel counts differ");
+            for(int i=0;i<a.Length;i++)error+=Math.Abs(a[i].r-b[i].r)+Math.Abs(a[i].g-b[i].g)+Math.Abs(a[i].b-b[i].b);
+            return (float)(error/(a.Length*3.0*255.0));
+        }
         static bool Fits(Rect outer, Rect inner) => !float.IsNaN(inner.x) && !float.IsNaN(inner.y) && !float.IsInfinity(inner.width) &&
             !float.IsInfinity(inner.height) && inner.width > 0 && inner.height > 0 && inner.xMin >= outer.xMin-1 && inner.yMin >= outer.yMin-1 &&
             inner.xMax <= outer.xMax+1 && inner.yMax <= outer.yMax+1;
         static Texture2D Read(RenderTexture target)
         {
-            var old = RenderTexture.active; var frame = new Texture2D(target.width,target.height,TextureFormat.RGBA32,false);
+            var old = RenderTexture.active; var frame = new Texture2D(target.width,target.height,TextureFormat.RGBA32,false,true);
             try { RenderTexture.active=target; frame.ReadPixels(new Rect(0,0,target.width,target.height),0,0); frame.Apply(); return frame; }
             catch { Destroy(frame); throw; } finally { RenderTexture.active=old; }
         }
