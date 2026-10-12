@@ -1,16 +1,44 @@
 {
-  "batch": "9db88457-ce0e-4332-8671-eb1eb63b6b0f",
-  "model": "TRELLIS.2",
-  "shape_resolution": 1536,
-  "texture_resolution": 8192,
-  "background_removal": true,
-  "sampler_steps": 12,
-  "seed": 1234,
+  "model": "per-creature settings below",
   "jobs": {
     "Uncat": "96dbef69-c74f-4f9f-856e-84be0be5fd20",
-    "Cyclopse": "6d784c70-290c-41c3-9200-3ac4a7719d62",
+    "Cyclopse": "f94f8013-1b86-445f-9c24-a3f66a391901",
     "Baby": "d0eea79c-dc33-4bf9-9d4a-aa78a5357872"
   },
   "reference_source": "concept-prompts.json",
-  "rigging": "SkinTokens / TokenRig, with Blender skin and animation correction"
+  "rigging": "Preserved webapp AI rig; final reviewed 22-bone body plans and source-surface weights, Blender own actions",
+  "supersededCyclopseJob": "6d784c70-290c-41c3-9200-3ac4a7719d62",
+  "settingsByCreature": {
+    "Cyclopse": {
+      "job": "f94f8013-1b86-445f-9c24-a3f66a391901",
+      "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+      "sourceRepository": "https://github.com/minsminsKR/3d_modeling",
+      "model": "Hunyuan3D 2.1",
+      "octree_resolution": 512,
+      "texture_resolution": 8192,
+      "texture_profile": "quality_8k",
+      "seed": 1234,
+      "sampler_steps": 50,
+      "reference": "reference-standing-round.png",
+      "status": "GENERATED_ORIGINAL_DOWNLOADED",
+      "supersedesDesign": "original tall bear-like Cyclopse; user now requests round furry human-face upright creature",
+      "sourceSHA256": "82e5fa2028a69ca30a7779c295bb218d7c22fc6845fdaec3b7debfd5f7ff3c92"
+    },
+    "Uncat": {
+      "model": "TRELLIS.2",
+      "shape_resolution": 1536,
+      "texture_resolution": 8192,
+      "sampler_steps": 12,
+      "seed": 1234,
+      "background_removal": true
+    },
+    "Baby": {
+      "model": "TRELLIS.2",
+      "shape_resolution": 1536,
+      "texture_resolution": 8192,
+      "sampler_steps": 12,
+      "seed": 1234,
+      "background_removal": true
+    }
+  }
 }

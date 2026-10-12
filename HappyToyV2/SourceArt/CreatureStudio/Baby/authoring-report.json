@@ -7,8 +7,8 @@
   "reviewedBodyBinding": {
     "bones": 22,
     "quantization": {
-      "input_max_sum_error": 5.029141902923584e-08,
-      "quantization_max_error": 0.0007270127534866333,
+      "input_max_sum_error": 4.6566128730773926e-08,
+      "quantization_max_error": 0.0007251668024457784,
       "quantized_max_sum_error": 0,
       "weight_bins": 1024,
       "zero_weight_vertices": 0
@@ -20,8 +20,8 @@
         "maximumPositionError": 0.0,
         "binding": {
           "groups": 22,
-          "batch_calls": 19267,
-          "influences": 2427034,
+          "batch_calls": 19204,
+          "influences": 1885379,
           "preserve_volume": false
         },
         "originalGeometryAndUVUnchanged": true
@@ -50,39 +50,59 @@
   },
   "derivedToeAnchors": [],
   "gameLOD": {
-    "vertices": 67562,
-    "triangles": 60000,
-    "topologyCleanup": {
-      "before": {
-        "vertices": 157041,
-        "faces": 60000,
-        "loops": 180000
-      },
-      "after": {
-        "vertices": 67562,
-        "faces": 60000,
-        "loops": 180000
-      },
-      "duplicateOrDegenerateFacesRemoved": false,
-      "looseVerticesRemoved": 89479,
-      "customNormalsRecomputedForNewTopology": true,
-      "editableHighUnchanged": true
-    },
-    "estimatedUnitySplitVertices": 71865,
+    "vertices": 14922,
+    "triangles": 29985,
+    "estimatedUnitySplitVertices": 40718,
     "skin": {
       "maximumInfluences": 4,
       "weightBins": 1024,
       "unboundVertices": 0
-    }
+    },
+    "topologyCleanup": {
+      "before": {
+        "vertices": 14922,
+        "faces": 29985,
+        "loops": 89955
+      },
+      "after": {
+        "vertices": 14922,
+        "faces": 29985,
+        "loops": 89955
+      },
+      "duplicateOrDegenerateFacesRemoved": false,
+      "looseVerticesRemoved": 0,
+      "customNormalsRecomputedForNewTopology": true,
+      "editableHighUnchanged": true
+    },
+    "surfaceReduction": "game-surface.npz",
+    "surfaceReductionSHA256": "b8ed0cd52e57b1b6661f4b887fdc465fd4e2364fcab09c729c3d2bd75638971e",
+    "originalSourceAtlasReprojected": true,
+    "originalSourceSkinInterpolated": true
   },
   "normal": {
-    "method": "Cycles selected-high-to-active-LOD tangent normal geometry bake",
+    "method": "actual interpolated source surface normals in new game tangent frame",
+    "size": [
+      2048,
+      2048
+    ]
+  },
+  "continuousAtlasBake": {
+    "method": "actual source BVH nearest surface, barycentric UV/PBR/custom-normal transfer to continuous game atlas",
     "size": [
       2048,
       2048
     ],
-    "rayDistance": 0.01184,
-    "cageExtrusion": 0.00592
+    "atlasSurfaceSamples": 595098,
+    "sourceDistanceP99": 0.0011702322284691045,
+    "sourceDistanceMax": 0.004495966248214245,
+    "originalSourceUVAnd8KUnchanged": true,
+    "normal": {
+      "method": "actual interpolated source surface normals in new game tangent frame",
+      "size": [
+        2048,
+        2048
+      ]
+    }
   },
   "gamePBR": [
     {
@@ -108,118 +128,118 @@
     "measurements": {
       "left_hand": {
         "joint": [
-          0.36421138048171997,
-          -0.1353573352098465,
-          0.661712110042572
+          0.4019414782524109,
+          -0.19785863161087036,
+          0.5817822813987732
         ],
         "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
-        "surface_min_z": 0.5267491936683655,
-        "vertices": 1345
+        "surface_min_z": 0.5239736437797546,
+        "vertices": 4707
       },
       "right_hand": {
         "joint": [
-          -0.303716778755188,
-          0.03919435665011406,
-          0.6475898623466492
+          -0.3901830017566681,
+          0.02108180709183216,
+          0.5830135345458984
         ],
         "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
-        "surface_min_z": 0.5366709232330322,
-        "vertices": 1244
+        "surface_min_z": 0.5360447764396667,
+        "vertices": 4235
       },
       "left_foot": {
         "joint": [
-          0.2444494664669037,
-          0.0455324687063694,
-          0.14313316345214844
+          0.20902611315250397,
+          0.016614004969596863,
+          0.1042102575302124
         ],
         "method": "actual sole/toe underside in rest mesh",
-        "surface_min_z": 0.0018520441371947527,
-        "vertices": 2020
+        "surface_min_z": 0.0021131038665771484,
+        "vertices": 14981
       },
       "right_foot": {
         "joint": [
-          -0.1121385395526886,
-          0.03147576004266739,
-          0.13580477237701416
+          -0.14135606586933136,
+          0.002424210775643587,
+          0.1032983660697937
         ],
         "method": "actual sole/toe underside in rest mesh",
-        "surface_min_z": -0.0009437405969947577,
-        "vertices": 1776
+        "surface_min_z": 0.0,
+        "vertices": 14426
       },
       "left_knee": {
         "joint": [
-          0.20740021765232086,
-          0.002237749518826604,
-          0.32900285720825195
+          0.1613737791776657,
+          -0.01815948076546192,
+          0.30462902784347534
         ],
-        "vertices": 1174,
+        "vertices": 14804,
         "method": "95th percentile radial actual weighted knee surface",
-        "radius": 0.08089741039744272
+        "radius": 0.07867536984298013
       },
       "right_knee": {
         "joint": [
-          -0.11072372645139694,
-          -0.0011065300786867738,
-          0.3224467933177948
+          -0.1585143357515335,
+          -0.0077863833867013454,
+          0.30254432559013367
         ],
-        "vertices": 1085,
+        "vertices": 6910,
         "method": "95th percentile radial actual weighted knee surface",
-        "radius": 0.0788854059648087
+        "radius": 0.08502836933639217
       }
     },
     "left_hand": {
       "contact_point": [
-        0.35328406297174614,
-        -0.20227343695504324,
-        0.6503984291750685
+        0.37366108327857717,
+        -0.22277111888917026,
+        0.5418676047285726
       ],
       "palm_normal": [
-        -0.8714326357834148,
-        -0.4856988918165812,
-        0.06856929181284621
+        -0.5341668815152958,
+        -0.8360260879275185,
+        0.12540383964150828
       ],
       "finger_direction": [
         0.0,
-        -0.1397903507021184,
-        -0.9901811237599809
+        -0.14834036784508373,
+        -0.9889363656310679
       ]
     },
     "right_hand": {
       "contact_point": [
-        -0.381762474282714,
-        -0.0020253865323182196,
-        0.606349859355895
+        -0.3695092310697916,
+        -0.010617920559397928,
+        0.5526016109055522
       ],
       "palm_normal": [
-        -0.05643309738577295,
-        -0.9886031633808733,
-        0.13956751367269637
+        0.07619904412403905,
+        -0.986061149995216,
+        0.14790914151834886
       ],
       "finger_direction": [
         0.0,
-        -0.13979028585536968,
-        -0.9901811329148189
+        -0.1483404225426952,
+        -0.9889363574264295
       ]
     },
     "left_foot": {
       "contact_point": [
-        0.2640184671441211,
-        -0.07481033173448677,
-        0.005118657749358423
+        0.26461639819925675,
+        -0.07807362409707393,
+        0.005631415298701402
       ]
     },
     "right_foot": {
       "contact_point": [
-        -0.18462427953879038,
-        -0.08525276473826832,
-        0.0020578150852088584
+        -0.17981189209468038,
+        -0.059529960908542165,
+        0.003472196181473024
       ]
     },
     "left_knee": {
-      "clearance": 0.08089741039744272
+      "clearance": 0.07867536984298013
     },
     "right_knee": {
-      "clearance": 0.0788854059648087
+      "clearance": 0.08502836933639217
     }
   },
   "animation": {
@@ -229,79 +249,79 @@
     "in_place": true,
     "ground_height": 0,
     "fps": 60,
-    "arm_lengths": 0.3124015606243967,
-    "leg_lengths": 0.3933758079126417,
+    "arm_lengths": 0.37049204039966527,
+    "leg_lengths": 0.3736594725526573,
     "actions": {
       "idle": {
         "action": "idle",
         "frames": 151,
         "duration_seconds": 2.5,
-        "pelvis_height": 0.18475186964388346,
+        "pelvis_height": 0.15768153924601475,
         "body_pitch": 1.12,
         "spine_bend": 0,
         "neck_bend": 0,
         "max_target_correction": {
-          "left_hand": 4.0978193283081055e-08,
+          "left_hand": 3.3527612686157227e-08,
           "left_foot": 0.0,
-          "right_hand": 0.032823182776640245,
+          "right_hand": 0.015833130004372337,
           "right_foot": 0.0
         },
-        "max_segment_length_error": 3.166396375653413e-08,
-        "max_scale_error": 2.682209014892578e-06,
+        "max_segment_length_error": 3.957780342345174e-08,
+        "max_scale_error": 2.0444393157958984e-05,
         "translation_loop_error": 0.0
       },
       "patrol": {
         "action": "patrol",
         "frames": 88,
         "duration_seconds": 1.45,
-        "pelvis_height": 0.18475186964388346,
+        "pelvis_height": 0.15768153924601475,
         "body_pitch": 1.14,
         "spine_bend": 0,
         "neck_bend": 0,
         "max_target_correction": {
-          "left_hand": 4.0978193283081055e-08,
+          "left_hand": 3.3527612686157227e-08,
           "left_foot": 0.0,
-          "right_hand": 0.060462965137949964,
+          "right_hand": 0.10943662129472467,
           "right_foot": 0.0
         },
-        "max_segment_length_error": 4.088501937005162e-08,
-        "max_scale_error": 2.7418136596679688e-06,
+        "max_segment_length_error": 3.787274996391865e-08,
+        "max_scale_error": 2.0802021026611328e-05,
         "translation_loop_error": 0.0
       },
       "chase": {
         "action": "chase",
         "frames": 38,
         "duration_seconds": 0.6166666666666667,
-        "pelvis_height": 0.18475186964388346,
+        "pelvis_height": 0.15768153924601475,
         "body_pitch": 1.18,
         "spine_bend": 0,
         "neck_bend": 0,
         "max_target_correction": {
-          "left_hand": 3.960037906741593e-08,
+          "left_hand": 3.003425057343598e-08,
           "left_foot": 0.0,
-          "right_hand": 0.05343183589393044,
+          "right_hand": 0.049895594093969965,
           "right_foot": 0.0
         },
-        "max_segment_length_error": 3.5237471246452046e-08,
-        "max_scale_error": 2.682209014892578e-06,
+        "max_segment_length_error": 3.521103711379148e-08,
+        "max_scale_error": 2.086162567138672e-05,
         "translation_loop_error": 0.0
       },
       "cry": {
         "action": "cry",
         "frames": 121,
         "duration_seconds": 2.0,
-        "pelvis_height": 0.18475186964388346,
+        "pelvis_height": 0.15768153924601475,
         "body_pitch": 1.1,
         "spine_bend": 0,
         "neck_bend": 0,
         "max_target_correction": {
-          "left_hand": 4.360340502381185e-08,
+          "left_hand": 3.3527612686157227e-08,
           "left_foot": 0.0,
-          "right_hand": 0.037447150286396426,
+          "right_hand": 0.020645652915416025,
           "right_foot": 0.0
         },
-        "max_segment_length_error": 4.69807091840746e-08,
-        "max_scale_error": 2.682209014892578e-06,
+        "max_segment_length_error": 3.695641034862085e-08,
+        "max_scale_error": 2.0503997802734375e-05,
         "translation_loop_error": 0.0
       }
     }
@@ -312,5 +332,30 @@
     "idle",
     "patrol"
   ],
-  "status": "INSPECTION_SOURCE_ONLY"
+  "fbx": {
+    "file": "Assets/Resources/EnemyStudio/Baby/Baby.fbx",
+    "sha256": "d03e6d3a292ab5caae7f27760601e489f9ac8b82d132afacc1fc15d5f64fa1fb"
+  },
+  "optionalGameGLB": {
+    "file": "Baby/previews/Baby_Game.glb",
+    "sha256": "40e28e0411f7ec2dab98907b7762ddcf24104d5c13cc17f2898d87a1595a1ad7",
+    "actualVertices": 32414,
+    "actualTriangles": 29985,
+    "actualActions": [
+      "chase",
+      "cry",
+      "idle",
+      "patrol"
+    ]
+  },
+  "finalReopenInventory": {
+    "armatureBones": 22,
+    "gameVertices": 14922,
+    "gameTriangles": 29985,
+    "sourceHighVertices": 798374,
+    "sourceHeadGroup": true,
+    "topologyValidatedBeforeExport": true,
+    "derivedGLBActualGeometryValidated": true
+  },
+  "status": "EXPORTED_VALIDATED"
 }

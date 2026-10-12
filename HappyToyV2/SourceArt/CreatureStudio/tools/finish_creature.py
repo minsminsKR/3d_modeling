@@ -5,6 +5,8 @@ reviewed source plan/contacts, optionally repair/rebake only the game topology,
 save the editable source, then export and validate a nonempty derivative mesh.
 """
 import argparse
+import os
+import uuid
 import json
 import sys
 from pathlib import Path
@@ -32,12 +34,14 @@ def export_game(rig, lod, high, folder, output, key, report):
     if lod.data.validate(clean_customdata=True):
         raise ValueError('Mesh changed at final export validation; rebake required')
     fbx = output/(key+'.fbx')
-    bpy.ops.export_scene.fbx(filepath=str(fbx), use_selection=True, object_types={'MESH', 'ARMATURE'},
+    temporary_fbx=fbx.with_name(fbx.stem+'.export-'+uuid.uuid4().hex+'.fbx')
+    bpy.ops.export_scene.fbx(filepath=str(temporary_fbx), use_selection=True, object_types={'MESH', 'ARMATURE'},
         axis_forward='-Z', axis_up='Y', global_scale=1, apply_unit_scale=True,
         apply_scale_options='FBX_SCALE_UNITS', add_leaf_bones=False, use_armature_deform_only=True,
         bake_anim=True, bake_anim_use_all_actions=True, bake_anim_use_nla_strips=False,
         bake_anim_simplify_factor=0, bake_anim_step=1, mesh_smooth_type='FACE', use_tspace=True,
         path_mode='AUTO', embed_textures=False)
+    os.replace(temporary_fbx,fbx)
     game = folder/'previews'/(key+'_Game.glb')
     game.parent.mkdir(parents=True, exist_ok=True)
     bpy.ops.export_scene.gltf(filepath=str(game), export_format='GLB', use_selection=True,
@@ -73,11 +77,14 @@ def main():
     parser.add_argument('--repair-topology', action='store_true')
     parser.add_argument('--rebind-body', action='store_true', help='Reviewed unchanged source-order high geometry only')
     parser.add_argument('--skip-export', action='store_true')
+    parser.add_argument('--triangles', type=int)
+    parser.add_argument('--animation-only',action='store_true')
     args = parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
     folder = author.STUDIO/args.creature
     output = author.PROJECT/'Assets'/'Resources'/'EnemyStudio'/args.creature
     blend = folder/(args.creature+'_Editable.blend')
     bpy.ops.wm.open_mainfile(filepath=str(blend))
+    author.say('Reviewed editable pose file loaded')
     high = bpy.data.objects[args.creature+'_EditableHigh']
     lod = bpy.data.objects[args.creature+'_LOD0']
     rig = next(modifier.object for modifier in lod.modifiers if modifier.type == 'ARMATURE')
@@ -114,15 +121,26 @@ def main():
         if previous.users == 0:
             bpy.data.meshes.remove(previous)
         lod, report['gameLOD'] = author.create_lod(high, rig, args.creature, mapping.get('game_triangle_budget', 60000))
-    if args.repair_topology or args.rebind_body:
+    if args.triangles:
+        previous=lod.data;bpy.data.objects.remove(lod,do_unlink=True)
+        if previous.users==0:bpy.data.meshes.remove(previous)
+        lod,report['gameLOD']=author.create_lod(high,rig,args.creature,args.triangles)
+        mapping['game_triangle_budget']=args.triangles
+        plan_path.write_text(json.dumps(mapping,indent=2),encoding='utf8')
+    if args.creature == 'Uncat' and not args.animation_only:
+        import uncat_eye_surface
+        report['ocularSurface'] = {
+            'editableHigh': uncat_eye_surface.apply_surface(high, normalization=report['normalization']),
+            'gameLOD': uncat_eye_surface.apply_surface(lod, normalization=report['normalization'])}
+    if args.repair_topology or args.rebind_body or (args.creature == 'Uncat' and not args.animation_only):
         report.setdefault('gameLOD', {})['topologyCleanup'] = author.clean_game_topology(lod)
         report['gameLOD']['skin'] = author.limit_weights(lod, rig)
         lod.data.calc_loop_triangles()
         report['gameLOD'].update(vertices=len(lod.data.vertices), triangles=len(lod.data.loop_triangles),
                                  estimatedUnitySplitVertices=author.split_vertex_estimate(lod.data))
-        report['normal'] = author.bake_geometry_normal(high, lod, output/'normal.png', 2048, mapping['target_height_m'])
-        report['gamePBR'] = author.prepare_game_materials(lod, output, 2048)
-    contacts = author.contact_specs(rig, lod)
+        author.say('Preparing original-source PBR and surface normals')
+        report['normal'],report['continuousAtlasBake'],report['gamePBR']=author.prepare_render_assets(high,lod,output,2048)
+    contacts = author.contact_specs(rig, high)
     for name, override in mapping.get('contact_overrides', {}).items():
         contacts.setdefault(name, {}).update(override)
     (folder/'contact-specs.json').write_text(json.dumps(contacts, indent=2), encoding='utf8')

@@ -1,0 +1,33 @@
+{
+  "original": "source-webapp-original.glb",
+  "originalSHA256": "82e5fa2028a69ca30a7779c295bb218d7c22fc6845fdaec3b7debfd5f7ff3c92",
+  "canonical": "source-original.glb",
+  "canonicalSHA256": "15fcae77929f095e59223bacdbd73e1035c5f3ce1db36f69b601d842dff86981",
+  "bakedNodeMatrix": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      -1.3435885648505064e-07,
+      -1.0000001343588565,
+      0.0
+    ],
+    [
+      0.0,
+      1.0000001343588565,
+      -1.3435885648505064e-07,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "sourceImagesUVIndicesUnchanged": true
+}

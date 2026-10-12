@@ -513,19 +513,22 @@
   },
   "animation_profile_overrides": {
     "idle": {
-      "spine_bend": 1.0,
-      "pelvis_height": 0.506,
-      "pitch": 0.85
+      "spine_bend": 0.65,
+      "pelvis_height": 0.55,
+      "pitch": 1.05,
+      "head_pitch": -0.2
     },
     "patrol": {
-      "spine_bend": 1.0,
-      "pelvis_height": 0.506,
-      "pitch": 0.85
+      "spine_bend": 0.65,
+      "pelvis_height": 0.55,
+      "pitch": 1.05,
+      "head_pitch": -0.2
     },
     "chase": {
-      "spine_bend": 1.0,
-      "pelvis_height": 0.506,
-      "pitch": 0.95
+      "spine_bend": 0.65,
+      "pelvis_height": 0.55,
+      "pitch": 1.05,
+      "head_pitch": -0.2
     }
   },
   "manualReview": "Actual original front/side source previews; torso joints inside body and lateral limb stations measured. Verify large-motion skin and floor before delivery.",
@@ -593,7 +596,7 @@
     "left_hand_final_clearance_m": 0.1175956653,
     "final_skin_minimum_z_m": 0.00042
   },
-  "game_triangle_budget": 52000,
+  "game_triangle_budget": 30000,
   "game_triangle_budget_reason": "Source hair/fur atlas seams caused 88068 estimated split vertices at 60k triangles; 52k preserves the 80k Unity vertex contract.",
   "bodyCoreVolumes": [
     {
@@ -621,5 +624,7 @@
     }
   ],
   "rigidSmallSurfaceComponentsMax": 80,
-  "bodyCoreReview": "Actual high-source patrol render showed rear/side torso fur owned by Arm/Shoulder. Anatomical torso volumes now blend only Hips/Spines by source height; actual front-side limbs retain geodesic ownership."
+  "bodyCoreReview": "Actual high-source patrol render showed rear/side torso fur owned by Arm/Shoulder. Anatomical torso volumes now blend only Hips/Spines by source height; actual front-side limbs retain geodesic ownership.",
+  "headBlendWidth": 0.055,
+  "headPoseReview": "Native player-eye review: raise the crawling face toward the player; global head pitch -0.20 rad while retaining four-limb body support."
 }

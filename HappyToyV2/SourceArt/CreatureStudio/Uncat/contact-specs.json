@@ -9,8 +9,8 @@
         1.0254871845245361
       ],
       "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
-      "surface_min_z": 0.6756003499031067,
-      "vertices": 779
+      "surface_min_z": 0.6721532940864563,
+      "vertices": 5926
     },
     "right_hand": {
       "joint": [
@@ -19,8 +19,8 @@
         1.0251882076263428
       ],
       "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
-      "surface_min_z": 0.6588946580886841,
-      "vertices": 838
+      "surface_min_z": 0.6569938659667969,
+      "vertices": 6507
     },
     "left_foot": {
       "joint": [
@@ -29,8 +29,8 @@
         0.15005415678024292
       ],
       "method": "actual sole/toe underside in rest mesh",
-      "surface_min_z": -0.0013553902972489595,
-      "vertices": 792
+      "surface_min_z": 0.0,
+      "vertices": 7464
     },
     "right_foot": {
       "joint": [
@@ -39,8 +39,8 @@
         0.1482686996459961
       ],
       "method": "actual sole/toe underside in rest mesh",
-      "surface_min_z": -0.005550505127757788,
-      "vertices": 700
+      "surface_min_z": 9.834766387939453e-05,
+      "vertices": 6462
     },
     "left_knee": {
       "joint": [
@@ -48,9 +48,9 @@
         -0.07663959264755249,
         0.41854941844940186
       ],
-      "vertices": 221,
+      "vertices": 2341,
       "method": "95th percentile radial actual weighted knee surface",
-      "radius": 0.11805104801615486
+      "radius": 0.11839090661667909
     },
     "right_knee": {
       "joint": [
@@ -58,9 +58,9 @@
         -0.04678940773010254,
         0.41875845193862915
       ],
-      "vertices": 372,
+      "vertices": 3847,
       "method": "95th percentile radial actual weighted knee surface",
-      "radius": 0.11787044683426752
+      "radius": 0.11707356909935007
     }
   },
   "left_hand": {
@@ -116,9 +116,9 @@
     "clearance": 0.14907271146774292
   },
   "left_knee": {
-    "clearance": 0.11805104801615486
+    "clearance": 0.11839090661667909
   },
   "right_knee": {
-    "clearance": 0.11787044683426752
+    "clearance": 0.11707356909935007
   }
 }

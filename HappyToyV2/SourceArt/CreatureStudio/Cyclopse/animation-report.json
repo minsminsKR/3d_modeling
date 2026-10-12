@@ -1,0 +1,66 @@
+{
+  "creature": "Cyclopse",
+  "armature": "Cyclopse_Rig",
+  "coordinate_system": "Blender Z-up, front -Y",
+  "in_place": true,
+  "ground_height": 0,
+  "fps": 60,
+  "arm_lengths": 0.5597770829320385,
+  "leg_lengths": 0.3269809112162695,
+  "actions": {
+    "idle": {
+      "action": "idle",
+      "frames": 169,
+      "duration_seconds": 2.8,
+      "pelvis_height": 0.40648408441036044,
+      "body_pitch": 0.025,
+      "spine_bend": 0,
+      "neck_bend": 0,
+      "max_target_correction": {
+        "left_hand": 0.0,
+        "left_foot": 3.1828894262453654e-08,
+        "right_hand": 0.0,
+        "right_foot": 4.16500117164066e-08
+      },
+      "max_segment_length_error": 6.030061366901762e-08,
+      "max_scale_error": 8.940696716308594e-07,
+      "translation_loop_error": 0.0
+    },
+    "patrol": {
+      "action": "patrol",
+      "frames": 66,
+      "duration_seconds": 1.0833333333333333,
+      "pelvis_height": 0.3983095616299537,
+      "body_pitch": 0.035,
+      "spine_bend": 0,
+      "neck_bend": 0,
+      "max_target_correction": {
+        "left_hand": 0.0,
+        "left_foot": 4.712160915387242e-08,
+        "right_hand": 0.0,
+        "right_foot": 4.16500117164066e-08
+      },
+      "max_segment_length_error": 7.539008151091764e-08,
+      "max_scale_error": 8.344650268554688e-07,
+      "translation_loop_error": 0.0
+    },
+    "chase": {
+      "action": "chase",
+      "frames": 35,
+      "duration_seconds": 0.5666666666666667,
+      "pelvis_height": 0.3983095616299537,
+      "body_pitch": 0.085,
+      "spine_bend": 0,
+      "neck_bend": 0,
+      "max_target_correction": {
+        "left_hand": 0.0,
+        "left_foot": 0.009525935617622248,
+        "right_hand": 0.0,
+        "right_foot": 0.004867277447765628
+      },
+      "max_segment_length_error": 5.554813686803328e-08,
+      "max_scale_error": 8.344650268554688e-07,
+      "translation_loop_error": 0.0
+    }
+  }
+}

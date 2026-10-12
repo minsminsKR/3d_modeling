@@ -1,0 +1,26 @@
+{
+    "status": "PASS",
+    "key": "Uncat",
+    "sourceFbx": "Assets/Resources/EnemyStudio/Uncat/Uncat.fbx",
+    "prefab": "Assets/Resources/EnemyStudio/Uncat/UncatRuntime.prefab",
+    "vertices": 42754,
+    "triangles": 28957,
+    "bones": 22,
+    "supportVertices": 666,
+    "targetHeight": 2.200000047683716,
+    "posedHeight": 2.200000047683716,
+    "groundMin": 0.0,
+    "maximumSupportGap": 0.0,
+    "clips": [
+        "patrol",
+        "chase"
+    ],
+    "clipSeconds": [
+        1.3000000715255737,
+        0.6166666746139526
+    ],
+    "clipCurves": [
+        230,
+        230
+    ]
+}

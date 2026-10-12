@@ -17,7 +17,7 @@ from mathutils import Vector
 def apply_surface(mesh, config_path=None, normalization=None):
     folder = Path(__file__).resolve().parent.parent/'Uncat'
     config = json.loads(Path(config_path or folder/'eye-surface.json').read_text(encoding='utf8'))
-    author_path = folder/'eyes-authoring.json'
+    author_path = folder/'eyes-source-authoring.json'
     authoring = json.loads(author_path.read_text(encoding='utf8'))
     source_eye = authoring['eyes'][0]
     head_group = mesh.vertex_groups.get('mixamorig:Head')

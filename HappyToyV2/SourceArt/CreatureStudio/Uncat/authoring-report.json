@@ -8,7 +8,7 @@
     "bones": 22,
     "quantization": {
       "input_max_sum_error": 4.842877388000488e-08,
-      "quantization_max_error": 0.000725090503692627,
+      "quantization_max_error": 0.0007239752971979806,
       "quantized_max_sum_error": 0,
       "weight_bins": 1024,
       "zero_weight_vertices": 0
@@ -20,8 +20,8 @@
         "maximumPositionError": 0.0,
         "binding": {
           "groups": 22,
-          "batch_calls": 19312,
-          "influences": 3223066,
+          "batch_calls": 19439,
+          "influences": 2400125,
           "preserve_volume": false
         },
         "originalGeometryAndUVUnchanged": true
@@ -30,6 +30,36 @@
   },
   "bodyPlan": "body-rig-plan.json",
   "sourceAIUsedForSkin": false,
+  "ocularSurface": {
+    "editableHigh": {
+      "centerGLTF": [
+        0.0202,
+        0.339,
+        0.217
+      ],
+      "sourceIrisAtlasReused": true,
+      "materialSlot": 1,
+      "lensFaces": 24,
+      "darkRimFaces": 48,
+      "rigidBone": "mixamorig:Head",
+      "originalGLBModified": false,
+      "gameSmallEyePreservedAfterDecimation": true
+    },
+    "gameLOD": {
+      "centerGLTF": [
+        0.0202,
+        0.339,
+        0.217
+      ],
+      "sourceIrisAtlasReused": true,
+      "materialSlot": 1,
+      "lensFaces": 24,
+      "darkRimFaces": 48,
+      "rigidBone": "mixamorig:Head",
+      "originalGLBModified": false,
+      "gameSmallEyePreservedAfterDecimation": true
+    }
+  },
   "normalization": {
     "targetHeight": 2.2,
     "sourceBounds": [
@@ -50,43 +80,79 @@
   },
   "derivedToeAnchors": [],
   "gameLOD": {
-    "vertices": 74795,
-    "triangles": 51998,
+    "vertices": 16346,
+    "triangles": 28957,
+    "estimatedUnitySplitVertices": 38459,
+    "skin": {
+      "maximumInfluences": 4,
+      "weightBins": 1024,
+      "unboundVertices": 0
+    },
     "topologyCleanup": {
       "before": {
-        "vertices": 74795,
-        "faces": 51998,
-        "loops": 155994
+        "vertices": 16346,
+        "faces": 28957,
+        "loops": 86871
       },
       "after": {
-        "vertices": 74795,
-        "faces": 51998,
-        "loops": 155994
+        "vertices": 16346,
+        "faces": 28957,
+        "loops": 86871
       },
       "duplicateOrDegenerateFacesRemoved": false,
       "looseVerticesRemoved": 0,
       "customNormalsRecomputedForNewTopology": true,
       "editableHighUnchanged": true
     },
-    "estimatedUnitySplitVertices": 77343,
-    "skin": {
-      "maximumInfluences": 4,
-      "weightBins": 1024,
-      "unboundVertices": 0
-    }
+    "surfaceReduction": "game-surface.npz",
+    "surfaceReductionSHA256": "332d58e7519d1091e89f6210fa489888bdd6f543ce5900ac56ffdf5ea194d41e",
+    "originalSourceAtlasReprojected": true,
+    "originalSourceSkinInterpolated": true
   },
   "normal": {
-    "method": "Cycles selected-high-to-active-LOD tangent normal geometry bake",
+    "method": "actual interpolated source surface normals in new game tangent frame",
+    "size": [
+      2048,
+      2048
+    ]
+  },
+  "continuousAtlasBake": {
+    "method": "actual source BVH nearest surface, barycentric UV/PBR/custom-normal transfer to continuous game atlas",
     "size": [
       2048,
       2048
     ],
-    "rayDistance": 0.0176,
-    "cageExtrusion": 0.0088
+    "atlasSurfaceSamples": 236461,
+    "sourceDistanceP99": 0.004237281065434217,
+    "sourceDistanceMax": 0.01191058848053217,
+    "originalSourceUVAnd8KUnchanged": true,
+    "normal": {
+      "method": "actual interpolated source surface normals in new game tangent frame",
+      "size": [
+        2048,
+        2048
+      ]
+    }
   },
   "gamePBR": [
     {
       "material": 0,
+      "albedo": [
+        2048,
+        2048
+      ],
+      "normal": [
+        2048,
+        2048
+      ],
+      "metallicSmoothness": [
+        2048,
+        2048
+      ],
+      "source8KPreserved": true
+    },
+    {
+      "material": 1,
       "albedo": [
         2048,
         2048
@@ -113,8 +179,8 @@
           1.0254871845245361
         ],
         "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
-        "surface_min_z": 0.6756003499031067,
-        "vertices": 779
+        "surface_min_z": 0.6721532940864563,
+        "vertices": 5926
       },
       "right_hand": {
         "joint": [
@@ -123,8 +189,8 @@
           1.0251882076263428
         ],
         "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
-        "surface_min_z": 0.6588946580886841,
-        "vertices": 838
+        "surface_min_z": 0.6569938659667969,
+        "vertices": 6507
       },
       "left_foot": {
         "joint": [
@@ -133,8 +199,8 @@
           0.15005415678024292
         ],
         "method": "actual sole/toe underside in rest mesh",
-        "surface_min_z": -0.0013553902972489595,
-        "vertices": 792
+        "surface_min_z": 0.0,
+        "vertices": 7464
       },
       "right_foot": {
         "joint": [
@@ -143,8 +209,8 @@
           0.1482686996459961
         ],
         "method": "actual sole/toe underside in rest mesh",
-        "surface_min_z": -0.005550505127757788,
-        "vertices": 700
+        "surface_min_z": 9.834766387939453e-05,
+        "vertices": 6462
       },
       "left_knee": {
         "joint": [
@@ -152,9 +218,9 @@
           -0.07663959264755249,
           0.41854941844940186
         ],
-        "vertices": 221,
+        "vertices": 2341,
         "method": "95th percentile radial actual weighted knee surface",
-        "radius": 0.11805104801615486
+        "radius": 0.11839090661667909
       },
       "right_knee": {
         "joint": [
@@ -162,9 +228,9 @@
           -0.04678940773010254,
           0.41875845193862915
         ],
-        "vertices": 372,
+        "vertices": 3847,
         "method": "95th percentile radial actual weighted knee surface",
-        "radius": 0.11787044683426752
+        "radius": 0.11707356909935007
       }
     },
     "left_hand": {
@@ -220,10 +286,10 @@
       "clearance": 0.14907271146774292
     },
     "left_knee": {
-      "clearance": 0.11805104801615486
+      "clearance": 0.11839090661667909
     },
     "right_knee": {
-      "clearance": 0.11787044683426752
+      "clearance": 0.11707356909935007
     }
   },
   "animation": {
@@ -240,35 +306,35 @@
         "action": "idle",
         "frames": 163,
         "duration_seconds": 2.7,
-        "pelvis_height": 0.506,
-        "body_pitch": 0.85,
-        "spine_bend": 1.0,
+        "pelvis_height": 0.55,
+        "body_pitch": 1.05,
+        "spine_bend": 0.65,
         "neck_bend": 0,
         "max_target_correction": {
-          "left_hand": 6.705522537231445e-08,
-          "left_foot": 8.363255977870393e-08,
-          "right_hand": 2.9802322387695312e-08,
-          "right_foot": 6.537857940340133e-08
+          "left_hand": 7.337970883992392e-08,
+          "left_foot": 7.634573255449234e-08,
+          "right_hand": 6.664001874625056e-08,
+          "right_foot": 6.322027276634104e-08
         },
-        "max_segment_length_error": 6.093341220481108e-08,
-        "max_scale_error": 1.9073486328125e-06,
+        "max_segment_length_error": 7.197638629552472e-08,
+        "max_scale_error": 2.0265579223632812e-06,
         "translation_loop_error": 0.0
       },
       "patrol": {
         "action": "patrol",
         "frames": 79,
         "duration_seconds": 1.3,
-        "pelvis_height": 0.506,
-        "body_pitch": 0.85,
-        "spine_bend": 1.0,
+        "pelvis_height": 0.55,
+        "body_pitch": 1.05,
+        "spine_bend": 0.65,
         "neck_bend": 0,
         "max_target_correction": {
-          "left_hand": 6.705522537231445e-08,
-          "left_foot": 5.21540641784668e-08,
-          "right_hand": 8.940696716308594e-08,
-          "right_foot": 6.188917057900187e-08
+          "left_hand": 7.450580596923828e-08,
+          "left_foot": 7.634573255449234e-08,
+          "right_hand": 5.960464477539063e-08,
+          "right_foot": 6.537857940340133e-08
         },
-        "max_segment_length_error": 5.9332395996314347e-08,
+        "max_segment_length_error": 5.5675825560985714e-08,
         "max_scale_error": 2.0265579223632812e-06,
         "translation_loop_error": 0.0
       },
@@ -276,17 +342,17 @@
         "action": "chase",
         "frames": 38,
         "duration_seconds": 0.6166666666666667,
-        "pelvis_height": 0.506,
-        "body_pitch": 0.95,
-        "spine_bend": 1.0,
+        "pelvis_height": 0.55,
+        "body_pitch": 1.05,
+        "spine_bend": 0.65,
         "neck_bend": 0,
         "max_target_correction": {
-          "left_hand": 4.470348358154297e-08,
-          "left_foot": 5.21540641784668e-08,
-          "right_hand": 4.470348358154297e-08,
-          "right_foot": 4.998001405968792e-08
+          "left_hand": 8.940696716308594e-08,
+          "left_foot": 6.537857940340133e-08,
+          "right_hand": 5.960464477539063e-08,
+          "right_foot": 4.7706993203109864e-08
         },
-        "max_segment_length_error": 7.096619808466542e-08,
+        "max_segment_length_error": 5.8183745932360864e-08,
         "max_scale_error": 2.1457672119140625e-06,
         "translation_loop_error": 0.0
       }
@@ -299,24 +365,27 @@
   ],
   "fbx": {
     "file": "Assets/Resources/EnemyStudio/Uncat/Uncat.fbx",
-    "sha256": "b9566d4f0ac21df8259ac1e49724b2be0fb5449b60808e89f35d39196236fd19"
+    "sha256": "9524504b552fe4e1f08259658a06bdafc2f8bed480fc9a06b6907b48bf4cbc40"
   },
   "optionalGameGLB": {
     "file": "Uncat/previews/Uncat_Game.glb",
-    "sha256": "caef0f95c64ee8eb31046b6c1fb9a3ba2cf56f17164a0449bd7725bd8aadd736"
+    "sha256": "150d1258dc3e3a09753de0072a48c743ca129d2ff505eea2395dde353612f05a",
+    "actualVertices": 42346,
+    "actualTriangles": 28957,
+    "actualActions": [
+      "chase",
+      "idle",
+      "patrol"
+    ]
   },
-  "status": "INSPECTION_SOURCE_ONLY",
-  "reviewedRebinding": {
-    "groups": 22,
-    "batch_calls": 18838,
-    "influences": 2235902,
-    "preserve_volume": false,
-    "quantization": {
-      "input_max_sum_error": 4.842877388000488e-08,
-      "quantization_max_error": 0.0007239752971979806,
-      "quantized_max_sum_error": 0,
-      "weight_bins": 1024,
-      "zero_weight_vertices": 0
-    }
-  }
+  "finalReopenInventory": {
+    "armatureBones": 22,
+    "gameVertices": 16346,
+    "gameTriangles": 28957,
+    "sourceHighVertices": 1038737,
+    "sourceHeadGroup": true,
+    "topologyValidatedBeforeExport": true,
+    "derivedGLBActualGeometryValidated": true
+  },
+  "status": "EXPORTED_VALIDATED"
 }

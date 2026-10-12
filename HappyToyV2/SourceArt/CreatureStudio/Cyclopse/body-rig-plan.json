@@ -1,35 +1,35 @@
 {
-  "version": 1,
+  "version": 2,
   "creature": "Cyclopse",
-  "coordinateSystem": "source glTF Y-up / face +Z; Blender (x,-z,y)",
+  "coordinateSystem": "canonical source glTF Y-up/front +Z",
   "source": "source-original.glb",
-  "sourceSHA256": "f14e48ff4890d7d11bde1598b2b139a327a65d88dda525f4f412350bfd7d2116",
+  "sourceSHA256": "15fcae77929f095e59223bacdbd73e1035c5f3ce1db36f69b601d842dff86981",
   "sourceBounds": [
     [
-      -0.3573027551174164,
-      -0.4998953342437744,
-      -0.18321971595287323
+      -0.9931939840316772,
+      -0.99198317527771,
+      -0.698572039604187
     ],
     [
-      0.3571935296058655,
-      0.49826857447624207,
-      0.18605642020702362
+      0.9840819835662842,
+      0.9824581146240234,
+      0.7001020908355713
     ]
   ],
-  "target_height_m": 2.38,
+  "target_height_m": 1.85,
   "bones": [
     {
       "name": "mixamorig:Hips",
       "parent": null,
       "head": [
         0.0,
-        -0.1605196100473404,
-        0.03493573784828186
+        -0.53,
+        -0.03
       ],
       "tail": [
         0.0,
-        -0.02576747834682465,
-        0.03493573784828186
+        -0.24,
+        0.0
       ],
       "semantic": "Hips"
     },
@@ -38,13 +38,13 @@
       "parent": "mixamorig:Hips",
       "head": [
         0.0,
-        -0.02576747834682465,
-        0.03493573784828186
+        -0.24,
+        0.0
       ],
       "tail": [
         0.0,
-        0.10399383366107941,
-        0.03493573784828186
+        0.04,
+        0.02
       ],
       "semantic": "Spine"
     },
@@ -53,13 +53,13 @@
       "parent": "mixamorig:Spine",
       "head": [
         0.0,
-        0.10399383366107941,
-        0.03493573784828186
+        0.04,
+        0.02
       ],
       "tail": [
         0.0,
-        0.2038102275133133,
-        0.039926557540893554
+        0.29,
+        0.02
       ],
       "semantic": "Spine1"
     },
@@ -68,13 +68,13 @@
       "parent": "mixamorig:Spine1",
       "head": [
         0.0,
-        0.2038102275133133,
-        0.039926557540893554
+        0.29,
+        0.02
       ],
       "tail": [
         0.0,
-        0.26370006382465366,
-        0.044917377233505244
+        0.43,
+        0.035
       ],
       "semantic": "Spine2"
     },
@@ -83,13 +83,13 @@
       "parent": "mixamorig:Spine2",
       "head": [
         0.0,
-        0.26370006382465366,
-        0.044917377233505244
+        0.43,
+        0.035
       ],
       "tail": [
         0.0,
-        0.323589900135994,
-        0.07486229538917541
+        0.54,
+        0.1
       ],
       "semantic": "Neck"
     },
@@ -98,13 +98,13 @@
       "parent": "mixamorig:Neck",
       "head": [
         0.0,
-        0.323589900135994,
-        0.07486229538917541
+        0.54,
+        0.1
       ],
       "tail": [
         0.0,
-        0.4134246546030045,
-        0.07486229538917541
+        0.7000000000000001,
+        0.1
       ],
       "semantic": "Head"
     },
@@ -112,14 +112,14 @@
       "name": "mixamorig:LeftShoulder",
       "parent": "mixamorig:Spine2",
       "head": [
-        0.07985311508178711,
-        0.2038102275133133,
-        0.039926557540893554
+        0.32,
+        0.18,
+        0.02
       ],
       "tail": [
-        0.1646970498561859,
-        0.2038102275133133,
-        0.044917377233505244
+        0.65,
+        0.16,
+        0.015
       ],
       "semantic": "LeftShoulder"
     },
@@ -127,14 +127,14 @@
       "name": "mixamorig:LeftArm",
       "parent": "mixamorig:LeftShoulder",
       "head": [
-        0.1646970498561859,
-        0.2038102275133133,
-        0.044917377233505244
+        0.65,
+        0.16,
+        0.015
       ],
       "tail": [
-        0.26156601309776306,
-        0.013736415654420853,
-        -0.01789524219930172
+        0.79,
+        -0.12,
+        0.02
       ],
       "semantic": "LeftArm"
     },
@@ -142,14 +142,14 @@
       "name": "mixamorig:LeftForeArm",
       "parent": "mixamorig:LeftArm",
       "head": [
-        0.26156601309776306,
-        0.013736415654420853,
-        -0.01789524219930172
+        0.79,
+        -0.12,
+        0.02
       ],
       "tail": [
-        0.3095354437828064,
-        -0.1016397774219513,
-        0.08136337250471115
+        0.885,
+        -0.385,
+        0.06
       ],
       "semantic": "LeftForeArm"
     },
@@ -157,14 +157,14 @@
       "name": "mixamorig:LeftHand",
       "parent": "mixamorig:LeftForeArm",
       "head": [
-        0.3095354437828064,
-        -0.1016397774219513,
-        0.08136337250471115
+        0.885,
+        -0.385,
+        0.06
       ],
       "tail": [
-        0.3095354437828064,
-        -0.1864837121963501,
-        0.09334133976697923
+        0.885,
+        -0.525,
+        0.075
       ],
       "semantic": "LeftHand"
     },
@@ -172,14 +172,14 @@
       "name": "mixamorig:LeftUpLeg",
       "parent": "mixamorig:Hips",
       "head": [
-        0.11977967262268066,
-        -0.17549206912517545,
-        0.014972459077835083
+        0.29,
+        -0.55,
+        -0.02
       ],
       "tail": [
-        0.15039297938346863,
-        -0.3099788427352905,
-        0.024208642542362213
+        0.305,
+        -0.72,
+        0.005
       ],
       "semantic": "LeftUpLeg"
     },
@@ -187,14 +187,14 @@
       "name": "mixamorig:LeftLeg",
       "parent": "mixamorig:LeftUpLeg",
       "head": [
-        0.15039297938346863,
-        -0.3099788427352905,
-        0.024208642542362213
+        0.305,
+        -0.72,
+        0.005
       ],
       "tail": [
-        0.15851636230945587,
-        -0.4320944547653198,
-        0.0005970236961729825
+        0.32,
+        -0.89,
+        0.05
       ],
       "semantic": "LeftLeg"
     },
@@ -202,14 +202,14 @@
       "name": "mixamorig:LeftFoot",
       "parent": "mixamorig:LeftLeg",
       "head": [
-        0.15851636230945587,
-        -0.4320944547653198,
-        0.0005970236961729825
+        0.32,
+        -0.89,
+        0.05
       ],
       "tail": [
-        0.17664068937301636,
-        -0.47871291637420654,
-        0.09547097980976105
+        0.325,
+        -0.958,
+        0.245
       ],
       "semantic": "LeftFoot"
     },
@@ -217,14 +217,14 @@
       "name": "mixamorig:LeftToeBase",
       "parent": "mixamorig:LeftFoot",
       "head": [
-        0.17664068937301636,
-        -0.47871291637420654,
-        0.09547097980976105
+        0.325,
+        -0.958,
+        0.245
       ],
       "tail": [
-        0.17664068937301636,
-        -0.47871291637420654,
-        0.1353975373506546
+        0.325,
+        -0.958,
+        0.28
       ],
       "semantic": "LeftToeBase"
     },
@@ -232,14 +232,14 @@
       "name": "mixamorig:RightShoulder",
       "parent": "mixamorig:Spine2",
       "head": [
-        -0.07985311508178711,
-        0.2038102275133133,
-        0.039926557540893554
+        -0.32,
+        0.18,
+        0.02
       ],
       "tail": [
-        -0.1646970498561859,
-        0.2038102275133133,
-        0.044917377233505244
+        -0.65,
+        0.16,
+        0.015
       ],
       "semantic": "RightShoulder"
     },
@@ -247,14 +247,14 @@
       "name": "mixamorig:RightArm",
       "parent": "mixamorig:RightShoulder",
       "head": [
-        -0.1646970498561859,
-        0.2038102275133133,
-        0.044917377233505244
+        -0.65,
+        0.16,
+        0.015
       ],
       "tail": [
-        -0.2618911862373352,
-        0.013991469517350197,
-        -0.009610071778297424
+        -0.79,
+        -0.12,
+        0.02
       ],
       "semantic": "RightArm"
     },
@@ -262,14 +262,14 @@
       "name": "mixamorig:RightForeArm",
       "parent": "mixamorig:RightArm",
       "head": [
-        -0.2618911862373352,
-        0.013991469517350197,
-        -0.009610071778297424
+        -0.79,
+        -0.12,
+        0.02
       ],
       "tail": [
-        -0.30838289856910706,
-        -0.10154332220554352,
-        0.08304448425769806
+        -0.885,
+        -0.385,
+        0.06
       ],
       "semantic": "RightForeArm"
     },
@@ -277,14 +277,14 @@
       "name": "mixamorig:RightHand",
       "parent": "mixamorig:RightForeArm",
       "head": [
-        -0.30838289856910706,
-        -0.10154332220554352,
-        0.08304448425769806
+        -0.885,
+        -0.385,
+        0.06
       ],
       "tail": [
-        -0.30838289856910706,
-        -0.18638725697994232,
-        0.09502245151996613
+        -0.885,
+        -0.525,
+        0.075
       ],
       "semantic": "RightHand"
     },
@@ -292,14 +292,14 @@
       "name": "mixamorig:RightUpLeg",
       "parent": "mixamorig:Hips",
       "head": [
-        -0.11977967262268066,
-        -0.17549206912517545,
-        0.014972459077835083
+        -0.29,
+        -0.55,
+        -0.02
       ],
       "tail": [
-        -0.1471073478460312,
-        -0.3104526996612549,
-        0.021279025822877884
+        -0.305,
+        -0.72,
+        0.005
       ],
       "semantic": "RightUpLeg"
     },
@@ -307,14 +307,14 @@
       "name": "mixamorig:RightLeg",
       "parent": "mixamorig:RightUpLeg",
       "head": [
-        -0.1471073478460312,
-        -0.3104526996612549,
-        0.021279025822877884
+        -0.305,
+        -0.72,
+        0.005
       ],
       "tail": [
-        -0.15173472464084625,
-        -0.4326155185699463,
-        0.0013932260917499661
+        -0.32,
+        -0.89,
+        0.05
       ],
       "semantic": "RightLeg"
     },
@@ -322,14 +322,14 @@
       "name": "mixamorig:RightFoot",
       "parent": "mixamorig:RightLeg",
       "head": [
-        -0.15173472464084625,
-        -0.4326155185699463,
-        0.0013932260917499661
+        -0.32,
+        -0.89,
+        0.05
       ],
       "tail": [
-        -0.1772506982088089,
-        -0.4785192012786865,
-        0.09562733769416809
+        -0.325,
+        -0.958,
+        0.245
       ],
       "semantic": "RightFoot"
     },
@@ -337,180 +337,55 @@
       "name": "mixamorig:RightToeBase",
       "parent": "mixamorig:RightFoot",
       "head": [
-        -0.1772506982088089,
-        -0.4785192012786865,
-        0.09562733769416809
+        -0.325,
+        -0.958,
+        0.245
       ],
       "tail": [
-        -0.1772506982088089,
-        -0.4785192012786865,
-        0.13555389523506164
+        -0.325,
+        -0.958,
+        0.28
       ],
       "semantic": "RightToeBase"
     }
   ],
-  "fittedStations": [
+  "sourceAIUsedForSkin": false,
+  "skinMethod": "reviewed compact anatomy and geodesic source-surface skin",
+  "game_triangle_budget": 40000,
+  "requires_eye_surgery": false,
+  "headLock": {
+    "aboveY": 0.29,
+    "frontZ": 0.49,
+    "frontMinY": -0.025,
+    "halfWidth": 0.32
+  },
+  "bodyCoreVolumes": [
     {
-      "joint": "LeftForeArm",
-      "surfaceVertices": 1365,
-      "sourcePosition": [
-        0.26156601309776306,
-        0.013736415654420853,
-        -0.01789524219930172
-      ],
-      "method": "mean of welded actual limb surface horizontal station",
-      "yStationNormalized": 0.015,
-      "xRangeNormalized": [
-        0.235,
-        0.31
-      ],
-      "zRangeNormalized": [
-        -0.06,
-        0.15
-      ]
-    },
-    {
-      "joint": "LeftHand",
-      "surfaceVertices": 280,
-      "sourcePosition": [
-        0.3095354437828064,
-        -0.1016397774219513,
-        0.08136337250471115
-      ],
-      "method": "mean of welded actual limb surface horizontal station",
-      "yStationNormalized": -0.1,
-      "xRangeNormalized": [
-        0.27,
-        0.34
-      ],
-      "zRangeNormalized": [
-        -0.04,
-        0.15
-      ]
-    },
-    {
-      "joint": "LeftLeg",
-      "surfaceVertices": 498,
-      "sourcePosition": [
-        0.15039297938346863,
-        -0.3099788427352905,
-        0.024208642542362213
-      ],
-      "method": "mean of welded actual limb surface horizontal station",
-      "yStationNormalized": -0.31,
-      "xRangeNormalized": [
-        0.085,
-        0.19
-      ],
-      "zRangeNormalized": [
-        -0.08,
-        0.13
-      ]
-    },
-    {
-      "joint": "LeftFoot",
-      "surfaceVertices": 591,
-      "sourcePosition": [
-        0.15851636230945587,
-        -0.4320944547653198,
-        0.0005970236961729825
-      ],
-      "method": "mean of welded actual limb surface horizontal station",
-      "yStationNormalized": -0.432,
-      "xRangeNormalized": [
-        0.085,
-        0.215
-      ],
-      "zRangeNormalized": [
-        -0.055,
-        0.13
-      ]
-    },
-    {
-      "joint": "RightForeArm",
-      "surfaceVertices": 1415,
-      "sourcePosition": [
-        -0.2618911862373352,
-        0.013991469517350197,
-        -0.009610071778297424
-      ],
-      "method": "mean of welded actual limb surface horizontal station",
-      "yStationNormalized": 0.015,
-      "xRangeNormalized": [
-        0.235,
-        0.31
-      ],
-      "zRangeNormalized": [
-        -0.06,
-        0.15
-      ]
-    },
-    {
-      "joint": "RightHand",
-      "surfaceVertices": 281,
-      "sourcePosition": [
-        -0.30838289856910706,
-        -0.10154332220554352,
-        0.08304448425769806
-      ],
-      "method": "mean of welded actual limb surface horizontal station",
-      "yStationNormalized": -0.1,
-      "xRangeNormalized": [
-        0.27,
-        0.34
-      ],
-      "zRangeNormalized": [
-        -0.04,
-        0.15
-      ]
-    },
-    {
-      "joint": "RightLeg",
-      "surfaceVertices": 637,
-      "sourcePosition": [
-        -0.1471073478460312,
-        -0.3104526996612549,
-        0.021279025822877884
-      ],
-      "method": "mean of welded actual limb surface horizontal station",
-      "yStationNormalized": -0.31,
-      "xRangeNormalized": [
-        0.085,
-        0.19
-      ],
-      "zRangeNormalized": [
-        -0.08,
-        0.13
-      ]
-    },
-    {
-      "joint": "RightFoot",
-      "surfaceVertices": 690,
-      "sourcePosition": [
-        -0.15173472464084625,
-        -0.4326155185699463,
-        0.0013932260917499661
-      ],
-      "method": "mean of welded actual limb surface horizontal station",
-      "yStationNormalized": -0.432,
-      "xRangeNormalized": [
-        0.085,
-        0.215
-      ],
-      "zRangeNormalized": [
-        -0.055,
-        0.13
-      ]
+      "yMin": -0.55,
+      "yMax": 0.29,
+      "halfWidth": 0.63,
+      "zMin": -0.7,
+      "zMax": 0.65
     }
   ],
-  "sourceAIUsedForSkin": false,
-  "skinMethod": "new source surface geodesic binding",
-  "headLock": {
-    "aboveY": 0.25371842443943027,
-    "frontZ": 0.20462360739707947,
-    "frontMinY": 0.14891121089458464,
-    "halfWidth": 0.15970623016357421
+  "rigidSmallSurfaceComponentsMax": 64,
+  "animation_profile_overrides": {
+    "patrol": {
+      "duration": 1.08,
+      "pitch": 0.035,
+      "stride": 0.32,
+      "lift": 0.055,
+      "head_pitch": 0
+    },
+    "chase": {
+      "duration": 0.56,
+      "pitch": 0.085,
+      "stride": 0.54,
+      "lift": 0.1,
+      "head_pitch": 0,
+      "bob": 0.012,
+      "sway": 0.018
+    }
   },
-  "animation_profile_overrides": {},
-  "manualReview": "Actual original front/side source previews; torso joints inside body and lateral limb stations measured. Verify large-motion skin and floor before delivery."
+  "manualReview": "Generated front/side anatomy: round rigid face, short separate upright legs, dangling arms; AI source skeleton axes rejected. Validate real posed skin and contacts."
 }

@@ -1,0 +1,23 @@
+{
+  "key": "Cyclopse",
+  "eyes": 1,
+  "whitePixels": 615,
+  "uvOrigin": "bottom-left Blender/Unity",
+  "sourceAuthoringSHA256": "b36fe88acef03174ccef233d72c3e978fa4a287ef25acdb4fbf7ab2d2244fa09",
+  "sourceGLBSHA256": "15fcae77929f095e59223bacdbd73e1035c5f3ce1db36f69b601d842dff86981",
+  "coverage": [
+    {
+      "eye": 0,
+      "whitePixels": 615,
+      "method": "source eye surface triangles, independent UV seam corners",
+      "sourceCenterGLTF": [
+        -0.01244422234594822,
+        0.46754810214042664,
+        0.6054017543792725
+      ],
+      "sourceRadius": 0.05932139977812767,
+      "selectedSourceTriangles": 7,
+      "uvIslands": 0
+    }
+  ]
+}

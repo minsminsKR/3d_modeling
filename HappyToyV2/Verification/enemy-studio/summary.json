@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "playMode": [
+    {
+      "report": "playmode-models-cheats.xml",
+      "passed": 5,
+      "failed": 0
+    },
+    {
+      "report": "playmode-cyclopse-intro.xml",
+      "passed": 3,
+      "failed": 0
+    }
+  ],
+  "native": {
+    "checks": 92,
+    "errors": 0,
+    "scope": "Controlled native seed-73 corridor: newly generated meshes/materials, live clip aliases, eight sampled deformation/ground phases, actual player-camera views, Baby cry and Cyclopse stumble joints. AI is disabled for the art fixture. Does not certify survival balance or perceived fear."
+  },
+  "buildInputReport": "build-inputs.json",
+  "sourceBindingReport": "../creature-studio/source-binding.json",
+  "preservedSceneSHA256": "0f2d25f211c76c7aa5299702ad15cf52d042f5a316ef32f5c4f43d69994aaede",
+  "generationProof": "cyclopse-webapp-completed.png"
+}

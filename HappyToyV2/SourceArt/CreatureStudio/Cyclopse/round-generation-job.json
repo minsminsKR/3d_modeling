@@ -1,0 +1,21 @@
+{
+  "job": "f94f8013-1b86-445f-9c24-a3f66a391901",
+  "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "sourceRepository": "https://github.com/minsminsKR/3d_modeling",
+  "model": "Hunyuan3D 2.1",
+  "octree_resolution": 512,
+  "texture_resolution": 8192,
+  "texture_profile": "quality_8k",
+  "seed": 1234,
+  "sampler_steps": 50,
+  "reference": "reference-standing-round.png",
+  "status": "SAVED_COMPLETED_AND_GAME_INTEGRATED",
+  "supersedesDesign": "original tall bear-like Cyclopse; user now requests round furry human-face upright creature",
+  "sourceSHA256": "82e5fa2028a69ca30a7779c295bb218d7c22fc6845fdaec3b7debfd5f7ff3c92",
+  "riggedOriginal": "source-webapp-rigged.glb",
+  "riggingVersion": "af345db4-50cf-4238-ba0a-89fd56046d34",
+  "aiRigUsedForFinalSkin": false,
+  "finalRig": "body-rig-plan.json",
+  "canonicalOriginal": "source-original.glb",
+  "editable": "Cyclopse_Editable.blend"
+}

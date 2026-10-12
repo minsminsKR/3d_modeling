@@ -5,79 +5,79 @@
   "in_place": true,
   "ground_height": 0,
   "fps": 60,
-  "arm_lengths": 0.3124015606243967,
-  "leg_lengths": 0.3933758079126417,
+  "arm_lengths": 0.37049204039966527,
+  "leg_lengths": 0.3736594725526573,
   "actions": {
     "idle": {
       "action": "idle",
       "frames": 151,
       "duration_seconds": 2.5,
-      "pelvis_height": 0.18475186964388346,
+      "pelvis_height": 0.15768153924601475,
       "body_pitch": 1.12,
       "spine_bend": 0,
       "neck_bend": 0,
       "max_target_correction": {
-        "left_hand": 4.0978193283081055e-08,
+        "left_hand": 3.3527612686157227e-08,
         "left_foot": 0.0,
-        "right_hand": 0.032823182776640245,
+        "right_hand": 0.015833130004372337,
         "right_foot": 0.0
       },
-      "max_segment_length_error": 3.166396375653413e-08,
-      "max_scale_error": 2.682209014892578e-06,
+      "max_segment_length_error": 3.957780342345174e-08,
+      "max_scale_error": 2.0444393157958984e-05,
       "translation_loop_error": 0.0
     },
     "patrol": {
       "action": "patrol",
       "frames": 88,
       "duration_seconds": 1.45,
-      "pelvis_height": 0.18475186964388346,
+      "pelvis_height": 0.15768153924601475,
       "body_pitch": 1.14,
       "spine_bend": 0,
       "neck_bend": 0,
       "max_target_correction": {
-        "left_hand": 4.0978193283081055e-08,
+        "left_hand": 3.3527612686157227e-08,
         "left_foot": 0.0,
-        "right_hand": 0.060462965137949964,
+        "right_hand": 0.10943662129472467,
         "right_foot": 0.0
       },
-      "max_segment_length_error": 4.088501937005162e-08,
-      "max_scale_error": 2.7418136596679688e-06,
+      "max_segment_length_error": 3.787274996391865e-08,
+      "max_scale_error": 2.0802021026611328e-05,
       "translation_loop_error": 0.0
     },
     "chase": {
       "action": "chase",
       "frames": 38,
       "duration_seconds": 0.6166666666666667,
-      "pelvis_height": 0.18475186964388346,
+      "pelvis_height": 0.15768153924601475,
       "body_pitch": 1.18,
       "spine_bend": 0,
       "neck_bend": 0,
       "max_target_correction": {
-        "left_hand": 3.960037906741593e-08,
+        "left_hand": 3.003425057343598e-08,
         "left_foot": 0.0,
-        "right_hand": 0.05343183589393044,
+        "right_hand": 0.049895594093969965,
         "right_foot": 0.0
       },
-      "max_segment_length_error": 3.5237471246452046e-08,
-      "max_scale_error": 2.682209014892578e-06,
+      "max_segment_length_error": 3.521103711379148e-08,
+      "max_scale_error": 2.086162567138672e-05,
       "translation_loop_error": 0.0
     },
     "cry": {
       "action": "cry",
       "frames": 121,
       "duration_seconds": 2.0,
-      "pelvis_height": 0.18475186964388346,
+      "pelvis_height": 0.15768153924601475,
       "body_pitch": 1.1,
       "spine_bend": 0,
       "neck_bend": 0,
       "max_target_correction": {
-        "left_hand": 4.360340502381185e-08,
+        "left_hand": 3.3527612686157227e-08,
         "left_foot": 0.0,
-        "right_hand": 0.037447150286396426,
+        "right_hand": 0.020645652915416025,
         "right_foot": 0.0
       },
-      "max_segment_length_error": 4.69807091840746e-08,
-      "max_scale_error": 2.682209014892578e-06,
+      "max_segment_length_error": 3.695641034862085e-08,
+      "max_scale_error": 2.0503997802734375e-05,
       "translation_loop_error": 0.0
     }
   }

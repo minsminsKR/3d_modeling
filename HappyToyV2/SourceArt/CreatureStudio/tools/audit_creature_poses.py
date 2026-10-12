@@ -111,6 +111,7 @@ def main():
                         help='Diagnostic preview only; does not save or change source materials')
     parser.add_argument('--size', type=int, default=1000)
     args = parser.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
+    args.output=args.output.resolve();args.blend=args.blend.resolve()
     args.output.mkdir(parents=True, exist_ok=True)
     bpy.ops.wm.open_mainfile(filepath=str(args.blend))
     rigs = [obj for obj in bpy.context.scene.objects if obj.type == 'ARMATURE']

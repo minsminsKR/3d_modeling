@@ -1,0 +1,36 @@
+{
+  "key": "Uncat",
+  "eyes": 2,
+  "whitePixels": 6,
+  "uvOrigin": "bottom-left Blender/Unity",
+  "sourceAuthoringSHA256": "e771bf06783b3cc7c4f61b0d87cd2190ec85863ea4dd7aa9f417a5a611f01d32",
+  "sourceGLBSHA256": "58319e2d3cfe9ef1bfb23a283e010db9aa9c71deeac0954c12646546a1f651f8",
+  "coverage": [
+    {
+      "eye": 0,
+      "whitePixels": 5,
+      "method": "single continuous UV island, explicitly reviewed",
+      "sourceCenterGLTF": [
+        0.07350948452949524,
+        0.33718129992485046,
+        0.1850849688053131
+      ],
+      "sourceRadius": 0.009394480846822262,
+      "selectedSourceTriangles": 0,
+      "uvIslands": 0
+    },
+    {
+      "eye": 1,
+      "whitePixels": 1,
+      "method": "single continuous UV island, explicitly reviewed",
+      "sourceCenterGLTF": [
+        0.0202,
+        0.339,
+        0.217
+      ],
+      "sourceRadius": 0.009124143795447329,
+      "selectedSourceTriangles": 0,
+      "uvIslands": 0
+    }
+  ]
+}

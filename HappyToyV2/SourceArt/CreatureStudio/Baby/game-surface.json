@@ -1,0 +1,21 @@
+{
+  "source": "source-original.glb",
+  "sourceSHA256": "47b27eb1a8d69d8ed0547e67bb6c44b3f6f664e99d8054935dd7d9899a688239",
+  "tool": "Blender 4.0.2 game-only voxel outer surface and collapse",
+  "sourceBoundsGLTF": [
+    [
+      -0.3185940384864807,
+      -0.4985085725784302,
+      -0.19296833872795105
+    ],
+    [
+      0.3185090124607086,
+      0.5000700950622559,
+      0.19353018701076508
+    ]
+  ],
+  "originalVertices": 798374,
+  "gameVertices": 14922,
+  "gameTriangles": 29985,
+  "originalUnchanged": true
+}

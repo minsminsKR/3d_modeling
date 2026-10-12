@@ -19,6 +19,22 @@ namespace HappyToy.V2.Editor
         const string BindingPrefix = "Rigged asset";
         static readonly string[] Keys = { "Uncat", "Cyclopse", "Baby" };
 
+        // A fresh clone must build the same three reviewed runtime prefabs.
+        public static void Ensure()
+        {
+            bool complete = true;
+            foreach (string key in Keys)
+            {
+                string path = Folder + "/" + key + "/";
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path + key + "Runtime.prefab");
+                var rig = prefab ? prefab.GetComponent<EnemyStudioRig>() : null;
+                complete &= rig && rig.key == key && rig.primarySkins.Length > 0;
+                foreach (string alias in key == "Baby" ? new[] { "patrol", "chase", "cry" } : new[] { "patrol", "chase" })
+                    complete &= AssetDatabase.LoadAssetAtPath<AnimationClip>(path + alias + ".anim");
+            }
+            if (!complete) Apply();
+        }
+
         public static void Apply()
         {
             AssetDatabase.Refresh();
@@ -135,11 +151,13 @@ namespace HappyToy.V2.Editor
                 if (!eyes.Prepared || eyes.EyeAnchors.Count != (key == "Cyclopse" ? 1 : 2))
                     throw new InvalidOperationException("Studio real eye surface authoring is incomplete: " + key);
                 UnityEngine.Object.DestroyImmediate(eyes.gameObject);
-                PrefabUtility.SaveAsPrefabAsset(root, path + "/" + key + ".prefab");
+                // EditMode destruction does not guarantee runtime material rollback.
+                foreach(var skin in skins) skin.sharedMaterials=Enumerable.Repeat(material,skin.sharedMesh.subMeshCount).ToArray();
+                PrefabUtility.SaveAsPrefabAsset(root, path + "/" + key + "Runtime.prefab");
                 Directory.CreateDirectory("Verification/enemy-studio");
                 File.WriteAllText("Verification/enemy-studio/import-" + key + ".json", JsonUtility.ToJson(new ImportReport
                 {
-                    status = "PASS", key = key, sourceFbx = modelPath, prefab = path + "/" + key + ".prefab",
+                    status = "PASS", key = key, sourceFbx = modelPath, prefab = path + "/" + key + "Runtime.prefab",
                     vertices = vertices, triangles = triangles,
                     bones = primary.SelectMany(skin => skin.bones).Distinct().Count(),
                     supportVertices = rig.surfaceSupports.Sum(surface => surface.vertexIndices.Length),
@@ -156,10 +174,8 @@ namespace HappyToy.V2.Editor
         {
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;
             if (!importer) throw new InvalidOperationException("Missing new studio map: " + path);
-            importer.textureType = normal ? TextureImporterType.NormalMap : TextureImporterType.Default;
-            importer.sRGBTexture = srgb; importer.maxTextureSize = 2048; importer.mipmapEnabled = true;
-            importer.alphaSource = TextureImporterAlphaSource.FromInput; importer.alphaIsTransparency = false;
-            importer.textureCompression = TextureImporterCompression.CompressedHQ; importer.SaveAndReimport();
+            EnemyStudioTextureImport.Configure(importer,path); importer.SaveAndReimport();
+            if(!AssetDatabase.LoadAssetAtPath<Texture2D>(path)) throw new InvalidOperationException("Studio map must import as Texture2D: "+path);
         }
 
         static AnimationClip FindClip(AnimationClip[] source, string alias)

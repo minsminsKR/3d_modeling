@@ -103,6 +103,7 @@ namespace HappyToy.V2
                             AssertValue(key+" "+alias+" floor phase "+phase,Mathf.Abs(points.Min(point=>point.y)-site.position.y)<.045f);
                         }
                         AssertValue(key+" "+alias+" skin deformation",change>.02f);
+                        animation[alias].time=0;animation.Sample();yield return null;
                         if(alias=="chase")CaptureView(session,camera,motion,actor.transform,2.7f,key+"-full.png");
                         if(alias=="cry")CaptureView(session,camera,motion,actor.transform,1.8f,key+"-cry.png");
                     }
@@ -130,6 +131,11 @@ namespace HappyToy.V2
                 found=true;break;
             }
             AssertValue(filename+" unobstructed player camera",found);
+            // The narrow real corridor may force a lateral camera site. Rotate
+            // the isolated art subject toward that site so its face is reviewable.
+            var towardCamera=camera.transform.position-actor.position;towardCamera.y=0;
+            actor.rotation=Quaternion.LookRotation(towardCamera);
+            Physics.SyncTransforms();
             var target=new RenderTexture(1280,720,24);target.Create();var previous=RenderTexture.active;
             RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest{destination=target});
             RenderTexture.active=target;var frame=new Texture2D(1280,720,TextureFormat.RGB24,false);

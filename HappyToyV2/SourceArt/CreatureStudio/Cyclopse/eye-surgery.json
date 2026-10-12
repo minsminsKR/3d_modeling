@@ -4,37 +4,109 @@
   "source": "source-original.glb",
   "sourceSHA256": "f14e48ff4890d7d11bde1598b2b139a327a65d88dda525f4f412350bfd7d2116",
   "coordinateSystem": "Raw source glTF Y-up, face +Z. Surgery maps Blender world (x,y,z) to source (x,z,-y).",
-  "sourceBounds": [[-0.3573027551,-0.4998953342,-0.1832197160],[0.3571935296,0.4982685745,0.1860564202]],
-  "donorCenterXY": [-0.0337,0.3918],
-  "donorSocketRadii": [0.026,0.0235],
-  "donorLensRadii": [0.018,0.0165],
-  "donorIrisRadii": [0.012,0.012],
-  "donorPupilRadii": [0.0063,0.0063],
-  "targetCenter": [-0.00805,0.418,0.136],
+  "sourceBounds": [
+    [
+      -0.3573027551,
+      -0.4998953342,
+      -0.183219716
+    ],
+    [
+      0.3571935296,
+      0.4982685745,
+      0.1860564202
+    ]
+  ],
+  "donorCenterXY": [
+    -0.0337,
+    0.3918
+  ],
+  "donorSocketRadii": [
+    0.026,
+    0.0235
+  ],
+  "donorLensRadii": [
+    0.018,
+    0.0165
+  ],
+  "donorIrisRadii": [
+    0.012,
+    0.012
+  ],
+  "donorPupilRadii": [
+    0.0063,
+    0.0063
+  ],
+  "targetCenter": [
+    -0.00805,
+    0.418,
+    0.136
+  ],
   "socketScale": 1.62,
   "depthScale": 1.15,
   "lensDomeDepth": 0.022,
   "oldOrbits": [
-    {"center": [-0.0337,0.3918],"radii": [0.038,0.035]},
-    {"center": [0.0176,0.3918],"radii": [0.038,0.035]}
+    {
+      "center": [
+        -0.0337,
+        0.3918
+      ],
+      "radii": [
+        0.038,
+        0.035
+      ]
+    },
+    {
+      "center": [
+        0.0176,
+        0.3918
+      ],
+      "radii": [
+        0.038,
+        0.035
+      ]
+    }
   ],
-  "targetCutRadii": [0.053,0.046],
+  "targetCutRadii": [
+    0.062,
+    0.052
+  ],
   "frontDepthMinimum": 0.09,
-  "noseProtection": {"center": [-0.00805,0.358],"radii": [0.033,0.022],"frontDepthMinimum": 0.145},
-  "skinUVCenter": [0.08228899538516998,0.5589358806610107],
+  "noseProtection": {
+    "center": [
+      -0.00805,
+      0.358
+    ],
+    "radii": [
+      0.033,
+      0.022
+    ],
+    "frontDepthMinimum": 0.145
+  },
+  "skinUVCenter": [
+    0.08228899538516998,
+    0.5589358806610107
+  ],
   "skinUVHalfWidth": 0.005859375,
   "skinTexelProvenance": {
     "sourceVertex": 423634,
-    "sourcePositionGLTF": [-0.0108440267,0.4423131347,0.1343586296],
+    "sourcePositionGLTF": [
+      -0.0108440267,
+      0.4423131347,
+      0.1343586296
+    ],
     "sourceAtlasSize": 8192,
     "reviewedPatchPixels": 96,
-    "meanRGB": [154.0906,86.7053,43.3794],
+    "meanRGB": [
+      154.0906,
+      86.7053,
+      43.3794
+    ],
     "blackPixelFraction": 0.0,
     "whitePixelFraction": 0.0,
     "purpose": "Only actual clean forehead skin texels; never remap skin over either original iris UV region."
   },
   "skinGridStep": 0.0025,
-  "weldDistance": 0.000001,
+  "weldDistance": 1e-06,
   "headGroup": "mixamorig:Head",
   "featureGroup": "StudioCentralEyeDetail"
 }

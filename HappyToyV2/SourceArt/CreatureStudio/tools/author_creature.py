@@ -1,13 +1,15 @@
-"""Author a NEW generated humanoid rig and its game LOD in Blender 4.0.2.
+"""Author generated creatures with reviewed anatomy, source skin and own actions.
 
-blender --background --factory-startup --python author_creature.py --
-  --creature Uncat --source ../Uncat/source-rigged.glb --map ../Uncat/joint-map.json
+blender --background --factory-startup --python-exit-code 1 --python author_creature.py --
+  --creature Uncat --animation-module creature_animation.py
 
-An explicit reviewed semantic mapping is required for unnamed AI bones. No old
-HappyToy mesh or material is imported. The original high-resolution source stays
-editable; the game mesh alone is decimated and receives a real geometry normal bake.
+The original app GLB, checked-in body plan and source-order weights are the default.
+Uncat/Baby use reviewed outer surfaces and BVH PBR/normal transfer; Cyclopse retains
+original source topology, UVs and normals. High geometry remains editable and packed.
 """
 import argparse
+import os
+import uuid
 import hashlib
 import importlib.util
 import json
@@ -20,6 +22,7 @@ import numpy as np
 from mathutils import Matrix, Vector
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0,str(HERE))
 STUDIO = HERE.parent
 PROJECT = STUDIO.parents[1]
 REQUIRED = ['Hips', 'Spine', 'Spine1', 'Head', 'LeftArm', 'LeftForeArm', 'LeftHand',
@@ -42,6 +45,12 @@ def digest(path):
             result.update(block)
     return result.hexdigest()
 
+
+def save_image_atomic(image,destination):
+    destination=Path(destination)
+    temporary=destination.with_name(destination.stem+'.export-'+uuid.uuid4().hex+destination.suffix)
+    image.filepath_raw=str(temporary);image.file_format='PNG';image.save()
+    os.replace(temporary,destination);image.filepath_raw=str(destination)
 
 def points(obj):
     result = np.empty(len(obj.data.vertices)*3, dtype=np.float32)
@@ -251,35 +260,73 @@ def limit_weights(obj, rig):
     return {'maximumInfluences': 4, 'weightBins': 1024, 'unboundVertices': 0}
 
 
+def create_reduced_surface(high, rig, key, payload_path):
+    metadata=json.loads(payload_path.with_suffix('.json').read_text(encoding='utf8'))
+    source=STUDIO/key/metadata['source']
+    if digest(source)!=metadata['sourceSHA256']:
+        raise ValueError('Game surface does not match the generated original')
+    arrays=np.load(payload_path,allow_pickle=False)
+    vertices=arrays['positions'][:,(0,2,1)].copy();vertices[:,1]*=-1
+    bounds=np.array(metadata['sourceBoundsGLTF'])
+    low=np.array([bounds[0,0],-bounds[1,2],bounds[0,1]])
+    upper=np.array([bounds[1,0],-bounds[0,2],bounds[1,1]])
+    center=(low+upper)/2;center[2]=low[2]
+    height=np.ptp(points(high)[:,2])
+    vertices=(vertices-center)*(height/(upper[2]-low[2]))
+    mesh=bpy.data.meshes.new(key+'_ContinuousGameSurface')
+    mesh.from_pydata(vertices.tolist(),[],arrays['triangles'].tolist());mesh.update()
+    lod=bpy.data.objects.new(key+'_LOD0',mesh);bpy.context.collection.objects.link(lod)
+    lod.parent=rig;lod.matrix_parent_inverse=Matrix.Identity(4)
+    for material in high.data.materials:mesh.materials.append(material)
+    for group in high.vertex_groups:lod.vertex_groups.new(name=group.name)
+    for layer in high.data.uv_layers:mesh.uv_layers.new(name=layer.name)
+    bpy.ops.object.select_all(action='DESELECT');lod.select_set(True)
+    bpy.context.view_layer.objects.active=lod
+    say('Binding reviewed skin to continuous game surface')
+    from mathutils.kdtree import KDTree
+    tree=KDTree(len(high.data.vertices))
+    for vertex in high.data.vertices:tree.insert(vertex.co,vertex.index)
+    tree.balance()
+    batches={}
+    for vertex in lod.data.vertices:
+        nearest=tree.find_n(vertex.co,3);values={};total=0.0
+        for _,index,distance in nearest:
+            factor=1/max(distance,1e-6);total+=factor
+            for entry in high.data.vertices[index].groups:
+                values[entry.group]=values.get(entry.group,0)+factor*entry.weight
+        for group,value in values.items():
+            amount=round(value/total*1024)
+            if amount:batches.setdefault((group,amount),[]).append(vertex.index)
+    for (group,amount),ids in batches.items():lod.vertex_groups[group].add(ids,amount/1024,'REPLACE')
+    if key=='Uncat':
+        import smooth_game_skin
+        lod['studio_skin_regularization']=json.dumps(smooth_game_skin.smooth(lod,arrays['positions']))
+    skin=lod.modifiers.new('Reviewed source skeleton','ARMATURE');skin.object=rig
+    skin.use_deform_preserve_volume=False
+    topology=clean_game_topology(lod)
+    for polygon in mesh.polygons:polygon.use_smooth=True
+    skin_report=limit_weights(lod,rig)
+    mesh.calc_loop_triangles();split=split_vertex_estimate(mesh)
+    if split>80000:raise ValueError('Actual continuous surface exceeds Unity split vertex budget')
+    return lod,{'vertices':len(mesh.vertices),'triangles':len(mesh.loop_triangles),
+        'estimatedUnitySplitVertices':split,'skin':skin_report,'topologyCleanup':topology,
+        'surfaceReduction':payload_path.name,'surfaceReductionSHA256':digest(payload_path),
+        'originalSourceAtlasReprojected':True,'originalSourceSkinInterpolated':True}
+
+
 def create_lod(high, rig, key, triangle_budget):
-    lod = high.copy()
-    lod.data = high.data.copy()
-    lod.name = key+'_LOD0'
-    bpy.context.collection.objects.link(lod)
-    lod.hide_render = False
-    lod.hide_set(False)
-    bpy.ops.object.select_all(action='DESELECT')
-    lod.select_set(True)
-    bpy.context.view_layer.objects.active = lod
-    lod.data.calc_loop_triangles()
-    modifier = lod.modifiers.new('Game-only topology reduction', 'DECIMATE')
-    modifier.ratio = min(1, triangle_budget/len(lod.data.loop_triangles))
-    modifier.use_collapse_triangulate = True
-    bpy.ops.object.modifier_move_up(modifier=modifier.name)
-    while lod.modifiers[0] != modifier:
-        bpy.ops.object.modifier_move_up(modifier=modifier.name)
-    bpy.ops.object.modifier_apply(modifier=modifier.name)
-    topology = clean_game_topology(lod)
-    for polygon in lod.data.polygons:
-        polygon.use_smooth = True
-    skin_report = limit_weights(lod, rig)
-    lod.data.calc_loop_triangles()
-    triangles = len(lod.data.loop_triangles)
-    split_vertices = split_vertex_estimate(lod.data)
-    if triangles > triangle_budget*1.05 or split_vertices > 80000:
-        raise ValueError(f'LOD budget exceeded: {triangles} triangles, estimated {split_vertices} Unity vertices')
-    return lod, {'vertices': len(lod.data.vertices), 'triangles': triangles, 'topologyCleanup': topology,
-                 'estimatedUnitySplitVertices': split_vertices, 'skin': skin_report}
+    if key=='Cyclopse' and len(high.data.vertices)<60000:
+        lod=high.copy();lod.data=high.data.copy();lod.name=key+'_LOD0';bpy.context.collection.objects.link(lod)
+        lod.hide_set(False);lod.hide_render=False;lod['studio_source_topology_identical']=True
+        for modifier in lod.modifiers:
+            if modifier.type=='ARMATURE':modifier.show_viewport=True;modifier.show_render=True
+        skin=limit_weights(lod,rig);lod.data.calc_loop_triangles();split=split_vertex_estimate(lod.data)
+        if split>80000:raise ValueError('Source copy exceeds actual game vertex budget')
+        return lod,dict(vertices=len(lod.data.vertices),triangles=len(lod.data.loop_triangles),
+            estimatedUnitySplitVertices=split,skin=skin,sameSourceTopology=True,originalSourceUVAndNormalsPreserved=True)
+    reduced=STUDIO/key/'game-surface.npz'
+    if reduced.is_file():return create_reduced_surface(high,rig,key,reduced)
+    raise FileNotFoundError('Create the reviewed game-only outer surface first with reduce_surface_blender.py: '+str(reduced))
 
 
 def clean_game_topology(lod):
@@ -295,7 +342,7 @@ def clean_game_topology(lod):
     bpy.context.view_layer.objects.active = lod
     bpy.ops.object.select_all(action='DESELECT')
     lod.select_set(True)
-    if mesh.has_custom_normals:
+    if mesh.has_custom_normals and not lod.get('studio_source_topology_identical'):
         bpy.ops.mesh.customdata_custom_splitnormals_clear()
     repaired = mesh.validate(verbose=False, clean_customdata=True)
     editable = bmesh.new()
@@ -315,6 +362,19 @@ def clean_game_topology(lod):
             'customNormalsRecomputedForNewTopology': True, 'editableHighUnchanged': True}
 
 
+def prepare_render_assets(high,lod,output,size):
+    if lod.get('studio_source_topology_identical'):
+        image=bpy.data.images.new(lod.name+'_IdentityNormal',width=size,height=size,alpha=False)
+        image.colorspace_settings.name='Non-Color'
+        pixels=np.ones((size*size,4),dtype='f4');pixels[:,:3]=(.5,.5,1);image.pixels.foreach_set(pixels.ravel())
+        save_image_atomic(image,output/'normal.png')
+        normal=dict(method='identity tangent normal: actual source geometry/UV/custom normals retained without surface reduction',size=[size,size])
+        atlas=dict(method='source already under game budget; original UV and PBR retained',originalSourceUVAnd8KUnchanged=True)
+    else:
+        import bake_game_atlas,bake_surface_atlas
+        bake_game_atlas.unwrap(lod);atlas=bake_surface_atlas.bake(high,lod,output,size);normal=atlas['normal']
+    return normal,atlas,prepare_game_materials(lod,output,size)
+
 def bake_geometry_normal(high, lod, destination, size, height):
     scene = bpy.context.scene
     scene.render.engine = 'CYCLES'
@@ -328,6 +388,7 @@ def bake_geometry_normal(high, lod, destination, size, height):
     image = bpy.data.images.new(lod.name+'_geometryNormal', width=size, height=size, alpha=False)
     image.colorspace_settings.name = 'Non-Color'
     originals = list(lod.data.materials)
+    polygon_materials=[face.material_index for face in lod.data.polygons]
     lod.data.materials.clear()
     for index, original in enumerate(originals):
         material = original.copy()
@@ -339,6 +400,7 @@ def bake_geometry_normal(high, lod, destination, size, height):
         nodes.active = target
         for node in nodes:
             node.select = node == target
+    for polygon,index in zip(lod.data.polygons,polygon_materials):polygon.material_index=index
     bpy.ops.object.select_all(action='DESELECT')
     high.hide_set(False)
     high.hide_render = False
@@ -350,9 +412,7 @@ def bake_geometry_normal(high, lod, destination, size, height):
     rig = next(modifier.object for modifier in lod.modifiers if modifier.type == 'ARMATURE')
     rig.data.pose_position = 'REST'
     bpy.ops.object.bake(type='NORMAL', normal_space='TANGENT')
-    image.filepath_raw = str(destination)
-    image.file_format = 'PNG'
-    image.save()
+    save_image_atomic(image,destination)
     rig.data.pose_position = 'POSE'
     return {'method': 'Cycles selected-high-to-active-LOD tangent normal geometry bake',
             'size': [size, size], 'rayDistance': height*.008, 'cageExtrusion': height*.004}
@@ -362,7 +422,7 @@ def prepare_game_materials(lod, destination, size):
     """Duplicate/downsample images only in the game material; keep source 8K."""
     copied = {}
     report = []
-    normal = bpy.data.images.load(str(destination/'normal.png'), check_existing=True)
+    normal = bpy.data.images.load(str(destination/'normal.png'), check_existing=False)
     normal.colorspace_settings.name = 'Non-Color'
 
     def linked_image(socket, visited=None):
@@ -406,7 +466,7 @@ def prepare_game_materials(lod, destination, size):
         name_prefix = '' if slot == 0 else f'material{slot}-'
         albedo.filepath_raw = str(destination/(name_prefix+'albedo.png'))
         albedo.file_format = 'PNG'
-        albedo.save()
+        save_image_atomic(albedo,destination/(name_prefix+'albedo.png'))
         packed = linked_image(bsdf.inputs['Metallic']) or linked_image(bsdf.inputs['Roughness'])
         if packed:
             pixels = np.empty(packed.size[0]*packed.size[1]*4, dtype=np.float32)
@@ -427,7 +487,7 @@ def prepare_game_materials(lod, destination, size):
             metallic.pixels.foreach_set(pixels.ravel())
         metallic.filepath_raw = str(destination/(name_prefix+'metallic-smoothness.png'))
         metallic.file_format = 'PNG'
-        metallic.save()
+        save_image_atomic(metallic,destination/(name_prefix+'metallic-smoothness.png'))
         texture = material.node_tree.nodes.new('ShaderNodeTexImage')
         texture.image = normal
         normal_map = material.node_tree.nodes.new('ShaderNodeNormalMap')
@@ -556,16 +616,26 @@ def main():
         rig = rigs[0]
         report['semanticMap'] = renamed_rig(rig, [high], mapping)
         report['sourceAIUsedForSkin'] = True
+    if args.creature == 'Cyclopse' and mapping.get('requires_eye_surgery', False):
+        sys.path.insert(0, str(HERE))
+        from cyclopse_eye_surgery import apply_surgery
+        report['eyeSurgery'] = apply_surgery(high)
+        (folder/'eyes-authoring.json').write_text(json.dumps(report['eyeSurgery']['eyeAuthoring'], indent=2), encoding='utf8')
+        (folder/'eye-surgery-report.json').write_text(json.dumps(report['eyeSurgery'], indent=2), encoding='utf8')
+    if args.creature=='Uncat':
+        import uncat_eye_surface
+        report['ocularSurface']={'editableHigh':uncat_eye_surface.apply_surface(high)}
     report['normalization'] = normalize_rest(rig, [high], height)
     report['derivedToeAnchors'] = derive_missing_toes(rig, high)
     say('Reducing only the game mesh to the triangle budget')
     rig.data.pose_position = 'REST'
-    lod, report['gameLOD'] = create_lod(high, rig, args.creature, args.triangles)
+    lod, report['gameLOD'] = create_lod(high, rig, args.creature, mapping.get('game_triangle_budget', args.triangles))
+    if args.creature=='Uncat':
+        report['ocularSurface']['gameLOD']=uncat_eye_surface.apply_surface(lod,normalization=report['normalization'])
     if not args.skip_normal:
         say('Baking real high-resolution surface normals onto the game LOD')
-        report['normal'] = bake_geometry_normal(high, lod, output/'normal.png', args.texture_size, height)
-        report['gamePBR'] = prepare_game_materials(lod, output, args.texture_size)
-    report['contacts'] = contact_specs(rig, lod)
+        report['normal'],report['continuousAtlasBake'],report['gamePBR']=prepare_render_assets(high,lod,output,args.texture_size)
+    report['contacts'] = contact_specs(rig, high)
     for key, override in mapping.get('contact_overrides', {}).items():
         report['contacts'].setdefault(key, {}).update(override)
     (folder/'contact-specs.json').write_text(json.dumps(report['contacts'], indent=2), encoding='utf8')
@@ -591,38 +661,9 @@ def main():
     say('Saving editable source '+repr(str(blend))+'; parentExists='+str(blend.parent.is_dir()))
     bpy.ops.wm.save_as_mainfile(filepath=str(blend), compress=True, check_existing=False, relative_remap=False)
     if not args.skip_export:
-        # Editable high source stays fully rigged in the saved .blend. Exports
-        # sample only the selected game LOD; disable hidden million-vertex skin
-        # evaluation during every animation frame to avoid unnecessary work.
-        for modifier in high.modifiers:
-            if modifier.type == 'ARMATURE':
-                modifier.show_viewport = False
-        bpy.ops.object.select_all(action='DESELECT')
-        rig.select_set(True)
-        lod.select_set(True)
-        bpy.context.view_layer.objects.active = rig
-        rig.animation_data.action = bpy.data.actions['patrol']
-        bpy.context.scene.frame_set(1)
-        fbx = output/(args.creature+'.fbx')
-        bpy.ops.export_scene.fbx(filepath=str(fbx), use_selection=True, object_types={'MESH', 'ARMATURE'},
-            axis_forward='-Z', axis_up='Y', global_scale=1, apply_unit_scale=True,
-            apply_scale_options='FBX_SCALE_UNITS', add_leaf_bones=False, use_armature_deform_only=True,
-            bake_anim=True, bake_anim_use_all_actions=True, bake_anim_use_nla_strips=False,
-            bake_anim_simplify_factor=0, bake_anim_step=1, mesh_smooth_type='FACE', use_tspace=True,
-            path_mode='AUTO', embed_textures=False)
-        report['fbx'] = {'file': fbx.relative_to(PROJECT).as_posix(), 'sha256': digest(fbx)}
-        game_glb = args.game_glb or folder/'previews'/(args.creature+'_Game.glb')
-        game_glb.parent.mkdir(parents=True, exist_ok=True)
-        bpy.ops.export_scene.gltf(filepath=str(game_glb), export_format='GLB', use_selection=True,
-            export_yup=True, export_animations=True, export_animation_mode='ACTIONS',
-            export_anim_single_armature=True, export_frame_range=False, export_frame_step=1,
-            export_force_sampling=True, export_anim_slide_to_zero=True,
-            export_optimize_animation_size=False, export_def_bones=True, export_apply=False,
-            export_texcoords=True, export_normals=True, export_materials='EXPORT',
-            export_image_format='AUTO', export_cameras=False, export_lights=False,
-            export_all_influences=False, export_skins=True)
-        report['optionalGameGLB'] = {'file': game_glb.relative_to(STUDIO).as_posix(), 'sha256': digest(game_glb)}
-    report['status'] = 'INSPECTION_SOURCE_ONLY' if args.skip_export else 'EXPORTED'
+        from finish_creature import export_game
+        export_game(rig,lod,high,folder,output,args.creature,report)
+    report['status'] = 'INSPECTION_SOURCE_ONLY' if args.skip_export else 'EXPORTED_VALIDATED'
     (folder/'authoring-report.json').write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding='utf8')
     say(report['status'])
 

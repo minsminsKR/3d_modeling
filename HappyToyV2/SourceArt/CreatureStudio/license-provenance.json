@@ -1,0 +1,26 @@
+[
+  {
+    "provider": "Hunyuan3D-2.1",
+    "repository": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1.git",
+    "pinnedRevision": "82920d643c0dc2f7bfd7255f45f62d386edfe60c",
+    "licenseSource": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1/blob/82920d643c0dc2f7bfd7255f45f62d386edfe60c/LICENSE",
+    "licenseFile": "licenses/Hunyuan3D-2.1-LICENSE",
+    "sha256": "b79ac5e11ce063b6c6570dbe9686a45a03ba08bd248aa6aa82fb342a23a81c0c"
+  },
+  {
+    "provider": "TRELLIS.2",
+    "repository": "https://github.com/microsoft/TRELLIS.2.git",
+    "pinnedRevision": "75fbf0183001ed9876c8dbb35de6b68552ee08bd",
+    "licenseSource": "https://github.com/microsoft/TRELLIS.2/blob/75fbf0183001ed9876c8dbb35de6b68552ee08bd/LICENSE",
+    "licenseFile": "licenses/TRELLIS.2-LICENSE",
+    "sha256": "d9a1b1e30d633d5732ea18e3cba9538d293ebc53e1a9e4e96ab739e0c5c4f1cb"
+  },
+  {
+    "provider": "SkinTokens",
+    "repository": "https://github.com/VAST-AI-Research/SkinTokens.git",
+    "pinnedRevision": "273b691d35989d71cd17ff2895fdc735097b92d1",
+    "licenseSource": "https://github.com/VAST-AI-Research/SkinTokens/blob/273b691d35989d71cd17ff2895fdc735097b92d1/LICENSE",
+    "licenseFile": "licenses/SkinTokens-LICENSE",
+    "sha256": "4f818b00ed33ed1772236c8b0acfd40e740e11e93f4d6f4f846b506b5b690789"
+  }
+]

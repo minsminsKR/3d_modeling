@@ -1,0 +1,325 @@
+{
+  "creature": "Cyclopse",
+  "input": "source-original.glb",
+  "sourceSHA256": "15fcae77929f095e59223bacdbd73e1035c5f3ce1db36f69b601d842dff86981",
+  "tool": "4.0.2",
+  "oldMeshImported": false,
+  "reviewedBodyBinding": {
+    "bones": 22,
+    "quantization": {
+      "input_max_sum_error": 4.470348358154297e-08,
+      "quantization_max_error": 0.0006839541701400918,
+      "quantized_max_sum_error": 0,
+      "weight_bins": 1024,
+      "zero_weight_vertices": 0
+    },
+    "sourceAIWeightsReused": false,
+    "meshes": {
+      "Cyclopse_EditableHigh": {
+        "correspondence": "identity-order",
+        "maximumPositionError": 0.0,
+        "binding": {
+          "groups": 22,
+          "batch_calls": 9420,
+          "influences": 68042,
+          "preserve_volume": false
+        },
+        "originalGeometryAndUVUnchanged": true
+      }
+    }
+  },
+  "bodyPlan": "body-rig-plan.json",
+  "sourceAIUsedForSkin": false,
+  "normalization": {
+    "targetHeight": 1.85,
+    "sourceBounds": [
+      [
+        -0.9931939840316772,
+        -0.7001020908355713,
+        -0.99198317527771
+      ],
+      [
+        0.9840819835662842,
+        0.698572039604187,
+        0.9824581146240234
+      ]
+    ],
+    "uniformScale": 0.9369739224264669,
+    "floor": 0,
+    "front": "-Y"
+  },
+  "derivedToeAnchors": [],
+  "gameLOD": {
+    "vertices": 38992,
+    "triangles": 40000,
+    "estimatedUnitySplitVertices": 38992,
+    "skin": {
+      "maximumInfluences": 4,
+      "weightBins": 1024,
+      "unboundVertices": 0
+    },
+    "sameSourceTopology": true,
+    "originalSourceUVAndNormalsPreserved": true,
+    "topologyCleanup": {
+      "before": {
+        "vertices": 38992,
+        "faces": 40000,
+        "loops": 120000
+      },
+      "after": {
+        "vertices": 38992,
+        "faces": 40000,
+        "loops": 120000
+      },
+      "duplicateOrDegenerateFacesRemoved": false,
+      "looseVerticesRemoved": 0,
+      "customNormalsRecomputedForNewTopology": true,
+      "editableHighUnchanged": true
+    }
+  },
+  "normal": {
+    "method": "identity tangent normal: actual source geometry/UV/custom normals retained without surface reduction",
+    "size": [
+      2048,
+      2048
+    ]
+  },
+  "continuousAtlasBake": {
+    "method": "source already under game budget; original UV and PBR retained",
+    "originalSourceUVAnd8KUnchanged": true
+  },
+  "gamePBR": [
+    {
+      "material": 0,
+      "albedo": [
+        2048,
+        2048
+      ],
+      "normal": [
+        2048,
+        2048
+      ],
+      "metallicSmoothness": [
+        2048,
+        2048
+      ],
+      "source8KPreserved": true
+    }
+  ],
+  "contacts": {
+    "floor": 0,
+    "coordinateSystem": "Blender Z-up / front -Y",
+    "measurements": {
+      "left_hand": {
+        "joint": [
+          0.8334907293319702,
+          -0.05550162494182587,
+          0.568727433681488
+        ],
+        "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
+        "surface_min_z": 0.5342522859573364,
+        "vertices": 130
+      },
+      "right_hand": {
+        "joint": [
+          -0.8249530792236328,
+          -0.05550162494182587,
+          0.568727433681488
+        ],
+        "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
+        "surface_min_z": 0.5337772369384766,
+        "vertices": 119
+      },
+      "left_foot": {
+        "joint": [
+          0.30410051345825195,
+          -0.046131886541843414,
+          0.09555560350418091
+        ],
+        "method": "actual sole/toe underside in rest mesh",
+        "surface_min_z": 0.0022365450859069824,
+        "vertices": 287
+      },
+      "right_foot": {
+        "joint": [
+          -0.2955628037452698,
+          -0.046131886541843414,
+          0.09555560350418091
+        ],
+        "method": "actual sole/toe underside in rest mesh",
+        "surface_min_z": 0.0,
+        "vertices": 304
+      },
+      "left_knee": {
+        "joint": [
+          0.29004591703414917,
+          -0.003968060482293367,
+          0.2548410892486572
+        ],
+        "vertices": 25,
+        "method": "95th percentile radial actual weighted knee surface",
+        "radius": 0.07251355370003183
+      },
+      "right_knee": {
+        "joint": [
+          -0.281508207321167,
+          -0.003968060482293367,
+          0.2548410892486572
+        ],
+        "vertices": 27,
+        "method": "95th percentile radial actual weighted knee surface",
+        "radius": 0.07210161923225791
+      }
+    },
+    "left_hand": {
+      "contact_point": [
+        0.8502718643708662,
+        -0.12844612381675027,
+        0.5618708187883551
+      ],
+      "palm_normal": [
+        0.9992573829215571,
+        -0.038312302663767714,
+        0.004104892368921074
+      ],
+      "finger_direction": [
+        0.0,
+        -0.10653319542085851,
+        -0.9943091462283855
+      ]
+    },
+    "right_hand": {
+      "contact_point": [
+        -0.8478899200757345,
+        -0.14842869920863044,
+        0.5683236122131348
+      ],
+      "palm_normal": [
+        -0.9985730216414893,
+        -0.05309946409392785,
+        0.005689232173432063
+      ],
+      "finger_direction": [
+        0.0,
+        -0.10653319542085851,
+        -0.9943091462283855
+      ]
+    },
+    "left_foot": {
+      "contact_point": [
+        0.29799794033169746,
+        -0.21933143120259047,
+        0.005828380584716797
+      ]
+    },
+    "right_foot": {
+      "contact_point": [
+        -0.27021042576857973,
+        -0.2294618615082332,
+        0.003387817314692906
+      ]
+    },
+    "left_knee": {
+      "clearance": 0.07251355370003183
+    },
+    "right_knee": {
+      "clearance": 0.07210161923225791
+    }
+  },
+  "animation": {
+    "creature": "Cyclopse",
+    "armature": "Cyclopse_Rig",
+    "coordinate_system": "Blender Z-up, front -Y",
+    "in_place": true,
+    "ground_height": 0,
+    "fps": 60,
+    "arm_lengths": 0.5597770829320385,
+    "leg_lengths": 0.3269809112162695,
+    "actions": {
+      "idle": {
+        "action": "idle",
+        "frames": 169,
+        "duration_seconds": 2.8,
+        "pelvis_height": 0.40648408441036044,
+        "body_pitch": 0.025,
+        "spine_bend": 0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 0.0,
+          "left_foot": 3.1828894262453654e-08,
+          "right_hand": 0.0,
+          "right_foot": 4.16500117164066e-08
+        },
+        "max_segment_length_error": 6.030061366901762e-08,
+        "max_scale_error": 8.940696716308594e-07,
+        "translation_loop_error": 0.0
+      },
+      "patrol": {
+        "action": "patrol",
+        "frames": 66,
+        "duration_seconds": 1.0833333333333333,
+        "pelvis_height": 0.3983095616299537,
+        "body_pitch": 0.035,
+        "spine_bend": 0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 0.0,
+          "left_foot": 4.712160915387242e-08,
+          "right_hand": 0.0,
+          "right_foot": 4.16500117164066e-08
+        },
+        "max_segment_length_error": 7.539008151091764e-08,
+        "max_scale_error": 8.344650268554688e-07,
+        "translation_loop_error": 0.0
+      },
+      "chase": {
+        "action": "chase",
+        "frames": 35,
+        "duration_seconds": 0.5666666666666667,
+        "pelvis_height": 0.3983095616299537,
+        "body_pitch": 0.085,
+        "spine_bend": 0,
+        "neck_bend": 0,
+        "max_target_correction": {
+          "left_hand": 0.0,
+          "left_foot": 0.009525935617622248,
+          "right_hand": 0.0,
+          "right_foot": 0.004867277447765628
+        },
+        "max_segment_length_error": 5.554813686803328e-08,
+        "max_scale_error": 8.344650268554688e-07,
+        "translation_loop_error": 0.0
+      }
+    }
+  },
+  "actions": [
+    "chase",
+    "idle",
+    "patrol"
+  ],
+  "fbx": {
+    "file": "Assets/Resources/EnemyStudio/Cyclopse/Cyclopse.fbx",
+    "sha256": "1140d0db26e70e6b3e09c8370f81133c312774af2c3ff76179b356bdb9f44240"
+  },
+  "optionalGameGLB": {
+    "file": "Cyclopse/previews/Cyclopse_Game.glb",
+    "sha256": "1bca6c9379f7ddf25679bd72b7fcbba294686a3047747419fd7b87e941eddd1d",
+    "actualVertices": 39003,
+    "actualTriangles": 40000,
+    "actualActions": [
+      "chase",
+      "idle",
+      "patrol"
+    ]
+  },
+  "finalReopenInventory": {
+    "armatureBones": 22,
+    "gameVertices": 38992,
+    "gameTriangles": 40000,
+    "sourceHighVertices": 38992,
+    "sourceHeadGroup": true,
+    "topologyValidatedBeforeExport": true,
+    "derivedGLBActualGeometryValidated": true
+  },
+  "status": "EXPORTED_VALIDATED"
+}

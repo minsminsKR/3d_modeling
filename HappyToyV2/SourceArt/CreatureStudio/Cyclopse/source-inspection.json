@@ -1,23 +1,23 @@
 {
   "input": "source-original.glb",
-  "inputSHA256": "f14e48ff4890d7d11bde1598b2b139a327a65d88dda525f4f412350bfd7d2116",
+  "inputSHA256": "15fcae77929f095e59223bacdbd73e1035c5f3ce1db36f69b601d842dff86981",
   "coordinateSystem": "glTF Y-up, Blender conversion (x,-z,y)",
   "meshes": [
     {
       "node": 0,
-      "name": "geometry_0",
+      "name": "model_textured",
       "primitive": 0,
-      "vertices": 1136965,
+      "vertices": 38992,
       "bounds": [
         [
-          -0.3573027551174164,
-          -0.4998953342437744,
-          -0.18321971595287323
+          -0.9931939840316772,
+          -0.99198317527771,
+          -0.698572039604187
         ],
         [
-          0.3571935296058655,
-          0.49826857447624207,
-          0.18605642020702362
+          0.9840819835662842,
+          0.9824581146240234,
+          0.7001020908355713
         ]
       ],
       "material": 0,
@@ -25,10 +25,10 @@
       "hasUV": true,
       "attributes": [
         "POSITION",
-        "TEXCOORD_0",
-        "NORMAL"
+        "NORMAL",
+        "TEXCOORD_0"
       ],
-      "triangles": 938566
+      "triangles": 40000
     }
   ],
   "skins": [],

@@ -1,0 +1,120 @@
+{
+  "floor": 0,
+  "coordinateSystem": "Blender Z-up / front -Y",
+  "measurements": {
+    "left_hand": {
+      "joint": [
+        0.8334907293319702,
+        -0.05550162494182587,
+        0.568727433681488
+      ],
+      "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
+      "surface_min_z": 0.5342522859573364,
+      "vertices": 130
+    },
+    "right_hand": {
+      "joint": [
+        -0.8249530792236328,
+        -0.05550162494182587,
+        0.568727433681488
+      ],
+      "method": "near-wrist palm-plane estimate; inspect posed palm skin before accepting grounding",
+      "surface_min_z": 0.5337772369384766,
+      "vertices": 119
+    },
+    "left_foot": {
+      "joint": [
+        0.30410051345825195,
+        -0.046131886541843414,
+        0.09555560350418091
+      ],
+      "method": "actual sole/toe underside in rest mesh",
+      "surface_min_z": 0.0022365450859069824,
+      "vertices": 287
+    },
+    "right_foot": {
+      "joint": [
+        -0.2955628037452698,
+        -0.046131886541843414,
+        0.09555560350418091
+      ],
+      "method": "actual sole/toe underside in rest mesh",
+      "surface_min_z": 0.0,
+      "vertices": 304
+    },
+    "left_knee": {
+      "joint": [
+        0.29004591703414917,
+        -0.003968060482293367,
+        0.2548410892486572
+      ],
+      "vertices": 25,
+      "method": "95th percentile radial actual weighted knee surface",
+      "radius": 0.07251355370003183
+    },
+    "right_knee": {
+      "joint": [
+        -0.281508207321167,
+        -0.003968060482293367,
+        0.2548410892486572
+      ],
+      "vertices": 27,
+      "method": "95th percentile radial actual weighted knee surface",
+      "radius": 0.07210161923225791
+    }
+  },
+  "left_hand": {
+    "contact_point": [
+      0.8502718643708662,
+      -0.12844612381675027,
+      0.5618708187883551
+    ],
+    "palm_normal": [
+      0.9992573829215571,
+      -0.038312302663767714,
+      0.004104892368921074
+    ],
+    "finger_direction": [
+      0.0,
+      -0.10653319542085851,
+      -0.9943091462283855
+    ]
+  },
+  "right_hand": {
+    "contact_point": [
+      -0.8478899200757345,
+      -0.14842869920863044,
+      0.5683236122131348
+    ],
+    "palm_normal": [
+      -0.9985730216414893,
+      -0.05309946409392785,
+      0.005689232173432063
+    ],
+    "finger_direction": [
+      0.0,
+      -0.10653319542085851,
+      -0.9943091462283855
+    ]
+  },
+  "left_foot": {
+    "contact_point": [
+      0.29799794033169746,
+      -0.21933143120259047,
+      0.005828380584716797
+    ]
+  },
+  "right_foot": {
+    "contact_point": [
+      -0.27021042576857973,
+      -0.2294618615082332,
+      0.003387817314692906
+    ]
+  },
+  "left_knee": {
+    "clearance": 0.07251355370003183
+  },
+  "right_knee": {
+    "clearance": 0.07210161923225791
+  }
+}

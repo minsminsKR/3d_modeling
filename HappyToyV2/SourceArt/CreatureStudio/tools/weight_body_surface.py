@@ -59,7 +59,18 @@ def bind(source,plan,output,voxel=.003):
         dense[rows_body,[name_index[body_names[i]]for i in lower]]=1-factor
         dense[rows_body,[name_index[body_names[i+1]]for i in lower]]=factor
     head_mask=(points[:,1]>lock['aboveY'])|((points[:,2]>lock['frontZ'])&(points[:,1]>lock['frontMinY'])&(abs(points[:,0])<lock['halfWidth']))
-    dense[head_mask]=0;dense[head_mask,name_index['mixamorig:Head']]=1
+    if plan.get('headBlendWidth',0):
+        width=float(plan['headBlendWidth'])
+        def smooth(value):
+            value=np.clip(value,0,1);return value*value*(3-2*value)
+        upper=smooth((points[:,1]-lock['aboveY']+width)/(2*width))
+        front=smooth((points[:,2]-lock['frontZ'])/width)*smooth((points[:,1]-lock['frontMinY'])/width)
+        front*=smooth((lock['halfWidth']-abs(points[:,0]))/width)
+        influence=np.maximum(upper,front)
+        dense*=1-influence[:,None];dense[:,name_index['mixamorig:Head']]+=influence
+        head_mask=influence>.999
+    else:
+        dense[head_mask]=0;dense[head_mask,name_index['mixamorig:Head']]=1
     for side in ('Left','Right'):
         hand=next(b for b in plan['bones']if b['semantic']==side+'Hand');head,tail=np.array(hand['head']),np.array(hand['tail'])
         direction=tail-head;side_sign=1 if side=='Left'else-1

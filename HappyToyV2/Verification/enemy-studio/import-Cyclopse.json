@@ -1,0 +1,26 @@
+{
+    "status": "PASS",
+    "key": "Cyclopse",
+    "sourceFbx": "Assets/Resources/EnemyStudio/Cyclopse/Cyclopse.fbx",
+    "prefab": "Assets/Resources/EnemyStudio/Cyclopse/CyclopseRuntime.prefab",
+    "vertices": 39090,
+    "triangles": 40000,
+    "bones": 22,
+    "supportVertices": 780,
+    "targetHeight": 2.380000114440918,
+    "posedHeight": 2.380000352859497,
+    "groundMin": 0.0,
+    "maximumSupportGap": 0.0038893260061740875,
+    "clips": [
+        "patrol",
+        "chase"
+    ],
+    "clipSeconds": [
+        1.0833333730697632,
+        0.5666667222976685
+    ],
+    "clipCurves": [
+        230,
+        230
+    ]
+}

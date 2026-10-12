@@ -1,0 +1,29 @@
+{
+    "status": "PASS",
+    "key": "Baby",
+    "sourceFbx": "Assets/Resources/EnemyStudio/Baby/Baby.fbx",
+    "prefab": "Assets/Resources/EnemyStudio/Baby/BabyRuntime.prefab",
+    "vertices": 32589,
+    "triangles": 29985,
+    "bones": 22,
+    "supportVertices": 751,
+    "targetHeight": 1.4800000190734863,
+    "posedHeight": 1.4800000190734863,
+    "groundMin": 0.0,
+    "maximumSupportGap": 0.0,
+    "clips": [
+        "patrol",
+        "chase",
+        "cry"
+    ],
+    "clipSeconds": [
+        1.4500000476837158,
+        0.6166666746139526,
+        2.0
+    ],
+    "clipCurves": [
+        230,
+        230,
+        230
+    ]
+}
