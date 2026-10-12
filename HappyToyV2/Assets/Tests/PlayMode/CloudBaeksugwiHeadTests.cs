@@ -13,6 +13,39 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [Test]
+        public void BaeksugwiHeadHasPronouncedRollBothWaysWithUnequalHoldsAndSnaps()
+        {
+            var instance=Object.Instantiate(Resources.Load<GameObject>("Baeksugwi/Baeksugwi"));
+            try
+            {
+                var clip=Resources.Load<AnimationClip>("Baeksugwi/Head_Writhe");
+                Assert.That(clip.length,Is.GreaterThan(30),"A short repeated sway is too predictable");
+                clip.SampleAnimation(instance,0);
+                var head=instance.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Head");
+                var neutral=head.rotation;var previous=head.rotation;
+                float minRoll=0,maxRoll=0,maxSpeed=0;int stillFrames=0,snapFrames=0,hold=0;
+                var holds=new System.Collections.Generic.List<int>();
+                for(int frame=1;frame<=Mathf.RoundToInt(clip.length*60);frame++)
+                {
+                    clip.SampleAnimation(instance,frame/60f);
+                    var delta=Quaternion.Inverse(instance.transform.rotation)*head.rotation*Quaternion.Inverse(neutral)*instance.transform.rotation;
+                    float roll=Vector3.SignedAngle(Vector3.up,Vector3.ProjectOnPlane(delta*Vector3.up,Vector3.forward),Vector3.forward);
+                    minRoll=Mathf.Min(minRoll,roll);maxRoll=Mathf.Max(maxRoll,roll);
+                    float speed=Quaternion.Angle(previous,head.rotation)*60;maxSpeed=Mathf.Max(maxSpeed,speed);
+                    if(speed<12){stillFrames++;hold++;}else{if(hold>=5)holds.Add(hold);hold=0;}
+                    if(speed>140)snapFrames++;
+                    previous=head.rotation;
+                }
+                Assert.That(minRoll,Is.LessThan(-35));Assert.That(maxRoll,Is.GreaterThan(35));
+                Assert.That(stillFrames,Is.GreaterThan(180));Assert.That(snapFrames,Is.GreaterThan(20));
+                Assert.That(holds.Count,Is.GreaterThan(5));Assert.That(holds.Max()-holds.Min(),Is.GreaterThan(15),"Holds must have different durations");
+                Assert.That(maxSpeed,Is.LessThan(2200),"Keep rotations continuous through fast cocks");
+                Assert.That(Quaternion.Angle(neutral,head.rotation),Is.LessThan(.1f));
+            }
+            finally{Object.DestroyImmediate(instance);}
+        }
+
+        [Test]
         public void BaeksugwiHeadActionMovesOnlyHeadAndLoopsWithoutMovingAnyArm()
         {
             var instance=Object.Instantiate(Resources.Load<GameObject>("Baeksugwi/Baeksugwi"));

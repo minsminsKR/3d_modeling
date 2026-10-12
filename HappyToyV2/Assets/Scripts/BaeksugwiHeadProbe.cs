@@ -15,12 +15,12 @@ namespace HappyToy.V2
     {
         string output;bool finished;float started;
         readonly List<string> errors=new List<string>();readonly List<Frame> frames=new List<Frame>();
-        [Serializable]sealed class Frame{public string image,stage;public float time,headAngle,bodyRotationError,bodyPositionError,soleY,roofY;}
+        [Serializable]sealed class Frame{public string image,stage;public float time,headAngle,rollDegrees,bodyRotationError,bodyPositionError,soleY,roofY;}
         [Serializable]sealed class Report
         {
             public string status,failure;
             public string scope="Actual title UI at timeScale zero, followed by controlled seed-73 corridor Chase using the real actor/prefab/camera. AI stopped for pose capture. Body joints compared while the head moves; pause and calm transition checked. Not a full survival, audio or hardware performance certification.";
-            public float titleHeadSwing,chaseHeadSwing;public bool pauseFrozen,calmHeadStopped,titleBodyFixed,chaseBodyFixed;
+            public float titleHeadSwing,chaseHeadSwing,titleMinRoll,titleMaxRoll,chaseMinRoll,chaseMaxRoll,clipSeconds;public bool pauseFrozen,calmHeadStopped,titleBodyFixed,chaseBodyFixed;
             public Frame[] frames;public string[] errors;
         }
         readonly Report report=new Report();
@@ -32,7 +32,7 @@ namespace HappyToy.V2
         void OnEnable()=>Application.logMessageReceived+=Log;
         void OnDisable()=>Application.logMessageReceived-=Log;
         void Log(string message,string trace,LogType type){if(type==LogType.Error||type==LogType.Exception||type==LogType.Assert)errors.Add(message);}
-        void Update(){if(!finished&&started>0&&Time.realtimeSinceStartup-started>150)Finish("Native head diagnostic timeout");}
+        void Update(){if(!finished&&started>0&&Time.realtimeSinceStartup-started>240)Finish("Native head diagnostic timeout");}
         IEnumerator Start()
         {
             started=Time.realtimeSinceStartup;Directory.CreateDirectory(output);var stack=new Stack<IEnumerator>();stack.Push(Run());
@@ -46,6 +46,11 @@ namespace HappyToy.V2
             }
         }
         static void Require(bool value,string message){if(!value)throw new InvalidOperationException(message);}
+        static float Roll(Transform root,Transform head,Quaternion neutral)
+        {
+            var delta=Quaternion.Inverse(root.rotation)*head.rotation*Quaternion.Inverse(neutral)*root.rotation;
+            return Vector3.SignedAngle(Vector3.up,Vector3.ProjectOnPlane(delta*Vector3.up,Vector3.forward),Vector3.forward);
+        }
         sealed class BodyPose
         {
             readonly Transform[] joints;readonly Quaternion[] rotations;readonly Vector3[] positions;
@@ -66,14 +71,18 @@ namespace HappyToy.V2
             var title=FindAnyObjectByType<CinematicTitleScene>();var creature=GameObject.Find("Actual Baeksugwi source clone");
             Require(title&&creature&&Time.timeScale==0,"Actual title at paused game clock missing");
             var head=creature.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Head");var first=head.localRotation;var body=new BodyPose(creature);
-            for(int i=0;i<16;i++)
+            title.HeadMotionClip.SampleAnimation(creature,0);var neutral=head.rotation;
+            report.clipSeconds=title.HeadMotionClip.length;
+            for(int i=0;i<96;i++)
             {
-                yield return new WaitForSecondsRealtime(.15f);yield return new WaitForEndOfFrame();
-                var frame=new Frame{stage="title",image="title-"+i.ToString("D2")+".png",time=title.HeadMotionTime,headAngle=Quaternion.Angle(first,head.localRotation)};
+                yield return new WaitForSecondsRealtime(report.clipSeconds/96);yield return new WaitForEndOfFrame();
+                var frame=new Frame{stage="title",image="title-"+i.ToString("D2")+".png",time=title.HeadMotionTime,headAngle=Quaternion.Angle(first,head.localRotation),rollDegrees=Roll(creature.transform,head,neutral)};
+                report.titleMinRoll=Mathf.Min(report.titleMinRoll,frame.rollDegrees);report.titleMaxRoll=Mathf.Max(report.titleMaxRoll,frame.rollDegrees);
                 body.Check(frame);report.titleHeadSwing=Mathf.Max(report.titleHeadSwing,frame.headAngle);frames.Add(frame);
                 var screenshot=ReadUi(view.CaptureTarget);File.WriteAllBytes(Path.Combine(output,frame.image),screenshot.EncodeToPNG());Destroy(screenshot);
             }
             Require(report.titleHeadSwing>15,"Title head stayed still");report.titleBodyFixed=true;
+            Require(report.titleMinRoll<-35&&report.titleMaxRoll>35,"Title needs pronounced roll in both directions");
             session.CreateCorridor(73);session.Shell.Begin();session.ToggleCheatSafeMode();
             foreach(var actor in FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include,FindObjectsSortMode.None)){actor.enabled=false;actor.gameObject.SetActive(false);}
             for(int i=0;i<3;i++)Require(session.Corridor.Collect("memory-"+i),"Actual mask release failed");
@@ -95,12 +104,14 @@ namespace HappyToy.V2
             }
             Require(found,"No supported unobstructed real corridor camera");yield return null;yield return null;
             head=visual.HeadSocket;first=head.localRotation;body=new BodyPose(visual.BodyModel.gameObject);var mesh=new Mesh();
+            visual.HeadMotionClip.SampleAnimation(visual.BodyModel.gameObject,0);neutral=head.rotation;
             try
             {
-                for(int i=0;i<16;i++)
+                for(int i=0;i<96;i++)
                 {
-                    yield return new WaitForSeconds(.15f);
-                    var frame=new Frame{stage="chase",image="chase-"+i.ToString("D2")+".png",time=visual.HeadMotionTime,headAngle=Quaternion.Angle(first,head.localRotation),soleY=float.MaxValue,roofY=float.MinValue};body.Check(frame);
+                    yield return new WaitForSeconds(report.clipSeconds/96);
+                    var frame=new Frame{stage="chase",image="chase-"+i.ToString("D2")+".png",time=visual.HeadMotionTime,headAngle=Quaternion.Angle(first,head.localRotation),rollDegrees=Roll(visual.BodyModel,head,neutral),soleY=float.MaxValue,roofY=float.MinValue};body.Check(frame);
+                    report.chaseMinRoll=Mathf.Min(report.chaseMinRoll,frame.rollDegrees);report.chaseMaxRoll=Mathf.Max(report.chaseMaxRoll,frame.rollDegrees);
                     foreach(var skin in visual.BodyModel.GetComponentsInChildren<SkinnedMeshRenderer>())
                     {
                         skin.BakeMesh(mesh,false);var inherited=skin.transform.parent.lossyScale;
@@ -112,6 +123,7 @@ namespace HappyToy.V2
             }
             finally{Destroy(mesh);}
             Require(report.chaseHeadSwing>15,"Chase head stayed still");report.chaseBodyFixed=true;
+            Require(report.chaseMinRoll<-35&&report.chaseMaxRoll>35,"Chase needs pronounced roll in both directions");
             session.Shell.Pause();float paused=visual.HeadMotionTime;var rotation=head.localRotation;yield return new WaitForSecondsRealtime(.25f);
             report.pauseFrozen=visual.HeadMotionTime==paused&&Quaternion.Angle(rotation,head.localRotation)<.01f;Require(report.pauseFrozen,"Chase head moved during pause");
             session.Shell.Resume();state=mask.CaptureChapterProgress();state.state=LanternMaskEncounter.Phase.Wander;state.memory=0;state.doorPassage=null;state.investigation=null;mask.RestoreCorridorProgress(state);
