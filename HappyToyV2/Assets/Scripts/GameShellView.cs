@@ -18,6 +18,7 @@ namespace HappyToy.V2
         PanelSettings settings;
         VisualElement threatVeil;
         VisualElement menuFaceBackground;
+        VisualElement transitionVeil;
         Texture2D menuFaceTexture;
         CinematicTitleScene titleScene;
         public bool TitleUsesBaeksugwi => titleScene && titleScene.UsesBaeksugwi;
@@ -315,11 +316,16 @@ namespace HappyToy.V2
                 }
             }
             root.Add(stage);
+            transitionVeil=new VisualElement{name="start-transition-black",pickingMode=PickingMode.Ignore};
+            transitionVeil.style.position=Position.Absolute;
+            transitionVeil.style.left=transitionVeil.style.top=transitionVeil.style.right=transitionVeil.style.bottom=0;
+            transitionVeil.style.backgroundColor=Color.black;
+            transitionVeil.style.display=DisplayStyle.None;root.Add(transitionVeil);
             if (shown == GameShell.Page.Playing)
             {
                 BuildHud();
                 // Scripted restarts can also originate in play; never hide a recovery error.
-                if (shell.IsReloading || !string.IsNullOrWhiteSpace(shell.ReloadError))
+                if (shell.IsReloading && !shell.CinematicLoading || !string.IsNullOrWhiteSpace(shell.ReloadError))
                 {
                     Panel(355, 414, 890, 96, CardSurface);
                     Text(shell.IsReloading ? "새 탐색을 준비하고 있습니다…" : shell.ReloadError,
@@ -347,7 +353,7 @@ namespace HappyToy.V2
             }
             if (shell.IsReloading)
             {
-                Small("새 탐색을 준비하고 있습니다…", 150, 793, 1300, 35).style.color = Gold;
+                if(!shell.CinematicLoading)Small("새 탐색을 준비하고 있습니다…", 150, 793, 1300, 35).style.color = Gold;
                 stage.Query<Button>().ForEach(button => button.SetEnabled(false));
             }
             else if (!string.IsNullOrWhiteSpace(shell.ReloadError))
@@ -726,6 +732,14 @@ namespace HappyToy.V2
                 Rebuild();
             if (shown == GameShell.Page.Settings && settingsLabelsDirty) UpdateSettingsLabels();
             if (shown == GameShell.Page.Playing) UpdateHud();
+            stage.style.opacity=shown==GameShell.Page.Title?shell.TransitionMenuOpacity:1-shell.TransitionBlack;
+            var scrim=menuFaceBackground?.Q<VisualElement>("menu-face-scrim");
+            if(scrim!=null)scrim.style.opacity=shown==GameShell.Page.Title?shell.TransitionMenuOpacity:1;
+            if(transitionVeil!=null)
+            {
+                transitionVeil.style.display=shell.TransitionBlack>0?DisplayStyle.Flex:DisplayStyle.None;
+                transitionVeil.style.opacity=shell.TransitionBlack;
+            }
             UpdateKeyboardSubmit();
             UpdateGamepadMenu();
         }

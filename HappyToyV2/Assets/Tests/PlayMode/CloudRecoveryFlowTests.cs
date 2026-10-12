@@ -49,6 +49,7 @@ namespace HappyToy.V2.CloudTests
             using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, mousePosition = position, button = 0, clickCount = 1 }))
                 target.SendEvent(up);
             yield return Delay(.15f);
+            if(id=="begin")yield return Wait(()=>!Get<bool>(shell,"CinematicLoading"),45,"Cinematic title entry did not finish preparing/fading into the corridor");
         }
         IEnumerator RecoveryRebind(Component previous)
         {

@@ -1,0 +1,541 @@
+{
+    "status": "PASS",
+    "failure": "",
+    "scope": "Actual title pointer start, incremental corridor preparation and unscaled approach, black transition and gated corridor reveal. Screens compose the actual UI target over the actual player camera when Playing. Controlled actual entrance-drawer fixture keeps the player capsule at touching distance and uses its public interaction. PlayMode additionally verifies real E input. Not a complete survival run or audio certification.",
+    "preparingFrames": 278,
+    "movingPreparingFrames": 168,
+    "maximumApproach": 4.981245040893555,
+    "minimumMenu": 0.0,
+    "maximumBlack": 1.0,
+    "maximumArmSwing": 17.27594757080078,
+    "loadingSeconds": 11.577707290649414,
+    "drawerTravel": 0.30000001192092896,
+    "playerDrift": 0.0,
+    "revealGated": true,
+    "drawerOpened": true,
+    "drawerClosed": true,
+    "playerPairRestored": true,
+    "frames": [
+        {
+            "image": "title-before.png",
+            "page": "Title",
+            "seconds": 0.0,
+            "menu": 1.0,
+            "black": 0.0,
+            "approach": 0.0,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "transition-000.png",
+            "page": "Title",
+            "seconds": 0.011895179748535156,
+            "menu": 1.0,
+            "black": 0.0,
+            "approach": 0.0,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "transition-001.png",
+            "page": "Title",
+            "seconds": 0.2503662109375,
+            "menu": 0.7766783833503723,
+            "black": 0.0,
+            "approach": 0.3943713903427124,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-002.png",
+            "page": "Title",
+            "seconds": 0.4941134452819824,
+            "menu": 0.3075070381164551,
+            "black": 0.0,
+            "approach": 0.7808905839920044,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-003.png",
+            "page": "Title",
+            "seconds": 0.7468438148498535,
+            "menu": 0.003135204315185547,
+            "black": 0.0,
+            "approach": 1.1465851068496704,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-004.png",
+            "page": "Title",
+            "seconds": 0.9964509010314941,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 1.472271203994751,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-005.png",
+            "page": "Title",
+            "seconds": 1.2527241706848145,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 1.7784959077835083,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-006.png",
+            "page": "Title",
+            "seconds": 1.4914240837097168,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 1.9601757526397705,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-007.png",
+            "page": "Title",
+            "seconds": 1.7316908836364746,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 2.307241201400757,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-008.png",
+            "page": "Title",
+            "seconds": 1.990354061126709,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 2.4976701736450195,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-009.png",
+            "page": "Title",
+            "seconds": 2.200653553009033,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 2.6505441665649414,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-010.png",
+            "page": "Title",
+            "seconds": 2.4327445030212402,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 2.9110429286956787,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-011.png",
+            "page": "Title",
+            "seconds": 2.687134265899658,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 3.078291654586792,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-012.png",
+            "page": "Title",
+            "seconds": 2.913978099822998,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 3.260606288909912,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-013.png",
+            "page": "Title",
+            "seconds": 3.1314196586608887,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 3.3818094730377197,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-014.png",
+            "page": "Title",
+            "seconds": 3.3658947944641113,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 3.511897087097168,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-015.png",
+            "page": "Title",
+            "seconds": 3.586463451385498,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 3.6385908126831055,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-016.png",
+            "page": "Title",
+            "seconds": 3.8151936531066895,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 3.758164167404175,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-017.png",
+            "page": "Title",
+            "seconds": 4.040982723236084,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 3.8613922595977783,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-018.png",
+            "page": "Title",
+            "seconds": 4.263341426849365,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 3.9542508125305176,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-019.png",
+            "page": "Title",
+            "seconds": 4.477960109710693,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.042739391326904,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-020.png",
+            "page": "Title",
+            "seconds": 4.710391521453857,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.1228814125061035,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-021.png",
+            "page": "Title",
+            "seconds": 5.338501453399658,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.199490070343018,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-022.png",
+            "page": "Title",
+            "seconds": 5.558483600616455,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.374794960021973,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-023.png",
+            "page": "Title",
+            "seconds": 5.795679569244385,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.433806419372559,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-024.png",
+            "page": "Title",
+            "seconds": 6.020308017730713,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.484906196594238,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-025.png",
+            "page": "Title",
+            "seconds": 6.226541996002197,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.522747039794922,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-026.png",
+            "page": "Title",
+            "seconds": 6.434373378753662,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.571019649505615,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-027.png",
+            "page": "Title",
+            "seconds": 6.648582935333252,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.609661102294922,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-028.png",
+            "page": "Title",
+            "seconds": 6.9050612449646,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.652403354644775,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-029.png",
+            "page": "Title",
+            "seconds": 7.158837795257568,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.691201210021973,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-030.png",
+            "page": "Title",
+            "seconds": 7.372883319854736,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.718683242797852,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-031.png",
+            "page": "Title",
+            "seconds": 7.594667911529541,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.751213073730469,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-032.png",
+            "page": "Title",
+            "seconds": 7.814610004425049,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.77800178527832,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-033.png",
+            "page": "Title",
+            "seconds": 8.029998779296875,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.802989959716797,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-034.png",
+            "page": "Title",
+            "seconds": 8.28335952758789,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.827946662902832,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-035.png",
+            "page": "Title",
+            "seconds": 8.50068473815918,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.8470330238342285,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-036.png",
+            "page": "Title",
+            "seconds": 8.717914581298828,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.869148254394531,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-037.png",
+            "page": "Title",
+            "seconds": 8.93690299987793,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.8849263191223145,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-038.png",
+            "page": "Title",
+            "seconds": 9.15536117553711,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.903255462646484,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-039.png",
+            "page": "Title",
+            "seconds": 9.382854461669922,
+            "menu": 0.0,
+            "black": 0.0,
+            "approach": 4.9202561378479,
+            "preparing": true,
+            "input": false
+        },
+        {
+            "image": "transition-040.png",
+            "page": "Title",
+            "seconds": 9.642206192016602,
+            "menu": 0.0,
+            "black": 0.005910963751375675,
+            "approach": 4.936145782470703,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "transition-041.png",
+            "page": "Title",
+            "seconds": 9.879146575927734,
+            "menu": 0.0,
+            "black": 0.2462325096130371,
+            "approach": 4.950222492218018,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "transition-042.png",
+            "page": "Title",
+            "seconds": 10.10861587524414,
+            "menu": 0.0,
+            "black": 0.6177836060523987,
+            "approach": 4.963497638702393,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "transition-043.png",
+            "page": "Title",
+            "seconds": 10.33322525024414,
+            "menu": 0.0,
+            "black": 0.9330660700798035,
+            "approach": 4.97475004196167,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "transition-044.png",
+            "page": "Playing",
+            "seconds": 10.523750305175781,
+            "menu": 0.0,
+            "black": 0.9948145151138306,
+            "approach": 4.981245040893555,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "transition-045.png",
+            "page": "Playing",
+            "seconds": 10.935857772827148,
+            "menu": 0.0,
+            "black": 0.623810350894928,
+            "approach": 4.981245040893555,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "transition-046.png",
+            "page": "Playing",
+            "seconds": 11.159032821655273,
+            "menu": 0.0,
+            "black": 0.3239738345146179,
+            "approach": 4.981245040893555,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "transition-047.png",
+            "page": "Playing",
+            "seconds": 11.389482498168945,
+            "menu": 0.0,
+            "black": 0.07754665613174438,
+            "approach": 4.981245040893555,
+            "preparing": false,
+            "input": false
+        },
+        {
+            "image": "corridor-ready.png",
+            "page": "Playing",
+            "seconds": 11.587430953979492,
+            "menu": 1.0,
+            "black": 0.0,
+            "approach": 4.981245040893555,
+            "preparing": false,
+            "input": true
+        },
+        {
+            "image": "drawer-before.png",
+            "page": "Playing",
+            "seconds": 11.663829803466797,
+            "menu": 1.0,
+            "black": 0.0,
+            "approach": 4.981245040893555,
+            "preparing": false,
+            "input": true
+        },
+        {
+            "image": "drawer-open.png",
+            "page": "Playing",
+            "seconds": 12.076627731323242,
+            "menu": 1.0,
+            "black": 0.0,
+            "approach": 4.981245040893555,
+            "preparing": false,
+            "input": true
+        }
+    ],
+    "errors": []
+}

@@ -225,8 +225,9 @@ namespace HappyToy.V2
             AuthoredArchitectureModules++;
         }
 
-        void EmitArchitecture()
+        System.Collections.IEnumerator EmitArchitectureRoutine(bool incremental)
         {
+            float yieldAt=Time.realtimeSinceStartup+.004f;
             foreach(var cellGroup in architectureBatches.Values.GroupBy(x=>x.cell))
             {
                 var root=new GameObject("Blender architecture cell "+cellGroup.Key);root.transform.SetParent(additions,false);
@@ -259,6 +260,7 @@ namespace HappyToy.V2
                 var group=root.AddComponent<LODGroup>();group.fadeMode=LODFadeMode.None;
                 group.SetLODs(new[] {new LOD(.38f,renderers[0].ToArray()),new LOD(.012f,renderers[1].ToArray())});
                 group.RecalculateBounds();ArchitectureLodGroups++;
+                if(incremental && Time.realtimeSinceStartup>=yieldAt){yield return null;yieldAt=Time.realtimeSinceStartup+.004f;}
             }
             architectureBatches.Clear();
         }

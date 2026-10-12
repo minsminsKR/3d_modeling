@@ -10,7 +10,7 @@ namespace HappyToy.V2
     /// <summary>Owns navigation, the gameplay input gate and local accessibility preferences.</summary>
     [DefaultExecutionOrder(-50)]
     [DisallowMultipleComponent]
-    public sealed class GameShell : MonoBehaviour
+    public sealed partial class GameShell : MonoBehaviour
     {
         public enum Page { Title, Playing, Pause, Journal, Settings, Result, Records, ChapterTransition }
         public Page Screen { get; private set; } = Page.Title;
@@ -77,7 +77,7 @@ namespace HappyToy.V2
             auditMode = args.Contains("-v3-graphics-output") || args.Any(a => a.StartsWith("-v2-", StringComparison.Ordinal) && a.EndsWith("-output", StringComparison.Ordinal));
             // Existing standalone audits enter through Begin; the flow audit retains the title.
             bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output") && !args.Contains("-v2-chapter-output") &&
-                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v2-altar-output") && !args.Contains("-v2-school-reveal-output") && !args.Contains("-v2-school-stair-output") && !args.Contains("-v2-school-campus-output") && !args.Contains("-v2-threat-visual-output") && !args.Contains("-v2-menu-face-output") && !args.Contains("-v2-baeksugwi-head-output") && !args.Contains("-v3-graphics-output");
+                !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v2-altar-output") && !args.Contains("-v2-school-reveal-output") && !args.Contains("-v2-school-stair-output") && !args.Contains("-v2-school-campus-output") && !args.Contains("-v2-threat-visual-output") && !args.Contains("-v2-menu-face-output") && !args.Contains("-v2-baeksugwi-head-output") && !args.Contains("-v2-start-loading-output") && !args.Contains("-v3-graphics-output");
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
             { if (playAfterLoad) { if (chapterRestart) BeginChapter(); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
@@ -390,6 +390,7 @@ namespace HappyToy.V2
 
         void Update()
         {
+            if(CinematicLoading)CinematicLoadingTime+=Time.unscaledDeltaTime;
             if (!session || IsReloading) return;
             if (lastNotice != session.Notice || lastNoticeRevision != session.NoticeRevision)
             {

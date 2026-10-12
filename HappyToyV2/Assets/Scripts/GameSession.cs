@@ -82,6 +82,15 @@ namespace HappyToy.V2
         }
         public void CreateCorridor(int seed)
         { CreateCorridorVersion(seed, 3); }
+        public System.Collections.IEnumerator CreateCorridorIncremental(int seed)
+        {
+            if(Chapter || Corridor || Finished)throw new System.InvalidOperationException("Fresh title session required");
+            GraphicsLightingPresentation.BeginTransition(this);
+            Corridor=gameObject.AddComponent<CorridorRun>();
+            var build=Corridor.BuildIncremental(seed);
+            while(build.MoveNext())yield return build.Current;
+            GraphicsLightingPresentation.BeginMode(this,transform);
+        }
         public void CreateCorridorForCheckpoint(CorridorCheckpoint data)
         { data.Validate(); CreateCorridorVersion(data.seed, data.simulationVersion); }
         void CreateCorridorVersion(int seed, int layoutVersion)

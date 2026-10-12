@@ -22,6 +22,14 @@ namespace HappyToy.V2
         public AnimationClip HeadMotionClip=>headMotion;
         Shader titleShader;
         Transform faceJoint;
+        Transform titlePivot;
+        Vector3 idlePivotPosition,approachDirection;
+        Quaternion idleCameraRotation;
+        JointPose[] idleJoints;
+        bool wasApproaching;
+        float maximumApproach;
+        public float ApproachDistance { get; private set; }
+        public float MovingFloorGap { get; private set; }
         SkinnedMeshRenderer[] skins;
         readonly List<Material> creatureMaterials = new List<Material>();
         Material floorMaterial;
@@ -75,6 +83,7 @@ namespace HappyToy.V2
             var source = Resources.Load<GameObject>(CreatureResource);
             if (!source) throw new InvalidOperationException("Missing real title Baeksugwi prefab");
             var pivot = new GameObject("Baeksugwi title pose"); pivot.transform.SetParent(set.transform, false);
+            titlePivot=pivot.transform;
             creature = Instantiate(source, pivot.transform, false); creature.name = "Actual Baeksugwi source clone";
             foreach (var behaviour in creature.GetComponentsInChildren<Behaviour>(true)) behaviour.enabled = false;
             foreach (var collider in creature.GetComponentsInChildren<Collider>(true)) Destroy(collider);
@@ -118,6 +127,10 @@ namespace HappyToy.V2
             camera.nearClipPlane = .08f; camera.farClipPlane = 30; camera.aspect = 16f / 9f;
             camera.transform.localPosition = new Vector3(-1.2f, .72f, -4.9f);
             camera.transform.LookAt(set.transform.position + new Vector3(.35f, 1.25f, 4.1f));
+            idlePivotPosition=titlePivot.position;idleCameraRotation=camera.transform.rotation;
+            approachDirection=camera.transform.position-faceJoint.position;approachDirection.y=0;
+            maximumApproach=Mathf.Max(.5f,approachDirection.magnitude-1.8f);approachDirection.Normalize();
+            idleJoints=creature.GetComponentsInChildren<Transform>(true).Select(t=>new JointPose(t)).ToArray();
             camera.GetUniversalAdditionalCameraData().renderPostProcessing = false;
             set.SetActive(false);
         }
@@ -145,10 +158,40 @@ namespace HappyToy.V2
             // Sampling only Head leaves every planted limb and body pose fixed.
             if(!shell || !shell.ReducedMotion)headClock+=Time.unscaledDeltaTime;
             if(Time.unscaledTime < nextFrame)return;
+            bool approaching=shell && shell.CinematicLoading;
+            if(approaching)
+            {
+                float progress=1-Mathf.Exp(-shell.CinematicLoadingTime*.35f);
+                ApproachDistance=maximumApproach*progress;
+                titlePivot.position=idlePivotPosition+approachDirection*ApproachDistance;
+                pose.SampleAnimation(creature,Mathf.Repeat(shell.CinematicLoadingTime*.72f,pose.length));
+                wasApproaching=true;
+            }
+            else if(wasApproaching)
+            {
+                foreach(var joint in idleJoints)joint.Apply();
+                titlePivot.position=idlePivotPosition;camera.transform.rotation=idleCameraRotation;
+                ApproachDistance=0;wasApproaching=false;UpdateContactShadows();
+            }
             headMotion.SampleAnimation(creature,shell && shell.ReducedMotion ? 0 : Mathf.Repeat(headClock,headMotion.length));
+            if(approaching)
+            {
+                // Distal hand surfaces have reviewed rigid wrist ownership.
+                // Cache their wrist-local points once instead of CPU-skinning
+                // the million-vertex original on every approach frame.
+                var points=MovingContactPoints();
+                float lowest=points.Min(vertices=>vertices.Min(point=>point.y));
+                float rise=set.transform.position.y+FloorHeight+.003f-lowest;
+                titlePivot.position+=Vector3.up*rise;
+                for(int k=0;k<points.Length;k++)for(int i=0;i<points[k].Length;i++)points[k][i]+=Vector3.up*rise;
+                MovingFloorGap=points.Min(vertices=>vertices.Min(point=>point.y))-set.transform.position.y-FloorHeight;
+                UpdateMovingContactShadows(points);
+                var facing=Quaternion.LookRotation(faceJoint.position+Vector3.up*.10f-camera.transform.position);
+                camera.transform.rotation=Quaternion.Slerp(idleCameraRotation,facing,Mathf.Clamp01(ApproachDistance/maximumApproach));
+            }
             UpdateFaceLighting();
             RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = Image });
-            nextFrame = Time.unscaledTime + (shell && shell.ReducedMotion ? 1 : 1f / 15);
+            nextFrame = Time.unscaledTime + (approaching ? 1f/30 : shell && shell.ReducedMotion ? 1 : 1f / 15);
         }
         struct JointPose
         {
@@ -160,6 +203,7 @@ namespace HappyToy.V2
         {
             public Transform shoulder; public Transform[] joints; public int[][] vertices;
             public JointPose[] planted; public float minimum=float.PositiveInfinity;
+            public Vector3[] wristSurface,worldSurface;
         }
         void PlantTitlePose()
         {
@@ -211,15 +255,22 @@ namespace HappyToy.V2
             }
             if(PlantedLimbCount!=12)throw new InvalidOperationException("Title stance did not plant all twelve support limbs");
         }
-        void UpdateContactShadows()
+        void UpdateContactShadows(bool requirePlanted=true,Vector3[][] suppliedPoints=null)
         {
-            var points=skins.Select(EnemyStudioRig.PosedVertices).ToArray();
+            var points=suppliedPoints ?? skins.Select(EnemyStudioRig.PosedVertices).ToArray();
             var contacts=new Vector4[plantedSupports.Count];
             for(int limb=0;limb<plantedSupports.Count;limb++)
             {
                 var support=plantedSupports[limb];float low=float.PositiveInfinity;
+                if(support.wristSurface==null)
+                {
+                    var local=new List<Vector3>();
+                    for(int k=0;k<skins.Length;k++)foreach(int index in support.vertices[k])local.Add(support.joints[2].InverseTransformPoint(points[k][index]));
+                    support.wristSurface=local.ToArray();support.worldSurface=new Vector3[local.Count];
+                }
                 for(int k=0;k<skins.Length;k++)foreach(int index in support.vertices[k])low=Mathf.Min(low,points[k][index].y);
-                MaximumSupportFloorGap=Mathf.Max(MaximumSupportFloorGap,Mathf.Abs(low-set.transform.position.y-FloorHeight));
+                float floorGap=Mathf.Abs(low-set.transform.position.y-FloorHeight);
+                if(requirePlanted)MaximumSupportFloorGap=Mathf.Max(MaximumSupportFloorGap,floorGap);
                 bool first=true;Bounds footprint=default;
                 for(int k=0;k<skins.Length;k++)foreach(int index in support.vertices[k])if(points[k][index].y<low+.06f)
                 {
@@ -227,8 +278,34 @@ namespace HappyToy.V2
                 }
                 var centre=footprint.center-set.transform.position;
                 contacts[limb]=new Vector4(centre.x,0,centre.z,Mathf.Clamp((footprint.size.x+footprint.size.z)*.45f,.12f,.32f));
+                if(!requirePlanted && floorGap>.06f)contacts[limb]=new Vector4(10000,0,10000,.01f);
             }
-            if(MaximumSupportFloorGap>.008f)throw new InvalidOperationException("Scaled title support contact left the floor");
+            if(requirePlanted && MaximumSupportFloorGap>.008f)throw new InvalidOperationException("Scaled title support contact left the floor");
+            floorMaterial.SetVectorArray("_FootContacts",contacts);
+        }
+        Vector3[][] MovingContactPoints()
+        {
+            var result=new Vector3[plantedSupports.Count][];
+            for(int limb=0;limb<plantedSupports.Count;limb++)
+            {
+                var support=plantedSupports[limb];var matrix=support.joints[2].localToWorldMatrix;
+                for(int i=0;i<support.wristSurface.Length;i++)support.worldSurface[i]=matrix.MultiplyPoint3x4(support.wristSurface[i]);
+                result[limb]=support.worldSurface;
+            }
+            return result;
+        }
+        void UpdateMovingContactShadows(Vector3[][] points)
+        {
+            var contacts=new Vector4[points.Length];
+            for(int limb=0;limb<points.Length;limb++)
+            {
+                float low=points[limb].Min(p=>p.y);bool first=true;Bounds footprint=default;
+                foreach(var point in points[limb])if(point.y<low+.06f)
+                {if(first){footprint=new Bounds(point,Vector3.zero);first=false;}else footprint.Encapsulate(point);}
+                var centre=footprint.center-set.transform.position;
+                contacts[limb]=low-set.transform.position.y-FloorHeight>.06f?new Vector4(10000,0,10000,.01f):
+                    new Vector4(centre.x,0,centre.z,Mathf.Clamp((footprint.size.x+footprint.size.z)*.45f,.12f,.32f));
+            }
             floorMaterial.SetVectorArray("_FootContacts",contacts);
         }
         void UpdateFaceLighting()

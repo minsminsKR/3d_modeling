@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.AI.Navigation;
@@ -16,7 +17,7 @@ namespace HappyToy.V2
         public IReadOnlyList<CorridorDrawer> Drawers => drawers;
         public Transform FurnishingBatteryAnchor(int index) => furnishingBatteryAnchors[index];
 
-        void BuildFurnishings()
+        IEnumerator BuildFurnishingsRoutine(bool incremental)
         {
             Physics.SyncTransforms();
             // Existing finite supplies keep their cell, identity and count. Four
@@ -31,6 +32,7 @@ namespace HappyToy.V2
                 bool inDrawer = i % 2 == 0;
                 var pickup = CreateFurnishedSupply(i, desk.transform, inDrawer ? new Vector3(0,.649f,-.03f) : new Vector3(.35f,.84f,-.02f));
                 ConfigureDrawer(visual, desk.transform, inDrawer ? pickup : null, "drawer-supply-" + i);
+                if(incremental)yield return null;
             }
             // An obvious furnished entrance teaches the visual language before a
             // resource room is found. Goal-room desks make the long run less empty.
@@ -42,6 +44,7 @@ namespace HappyToy.V2
                 AddDeskPhysics(desk.transform);
                 var stationery = CorridorFurnitureLibrary.Attach("writing-set", desk.transform, graphicsSurfaces);
                 stationery.localPosition = new Vector3(-.25f,.84f,.05f);
+                if(incremental)yield return null;
             }
             for (int i=0;i<6;i++)
             {
@@ -53,6 +56,7 @@ namespace HappyToy.V2
                 // the finite cells visibly in front of the empty left-hand bay.
                 anchor.SetParent(shelf.transform, false); anchor.localPosition = new Vector3(-.40f,.504f,-.09f);
                 furnishingBatteryAnchors[i] = anchor;
+                if(incremental)yield return null;
             }
             drawers.Sort((a,b) => string.CompareOrdinal(a.StableId,b.StableId));
         }
