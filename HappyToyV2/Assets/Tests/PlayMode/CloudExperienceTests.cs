@@ -245,7 +245,7 @@ namespace HappyToy.V2.CloudTests
                 // it does not change the survival route or claim realtime performance.
                 Time.captureDeltaTime = 1f / 60f;
                 yield return null;
-                started = AudioRenderer.Start();
+                started = StartOwnedAudioRenderer();
                 Assert.That(started, Is.True, "Cloud worker cannot start Unity's actual main-output audio recorder");
                 var flashlight = Get<Light>(player, "flashlight"); bool wasOn = flashlight.enabled;
                 Keys(Key.F);
@@ -274,7 +274,7 @@ namespace HappyToy.V2.CloudTests
                 try { Keys(); }
                 finally
                 {
-                    try { if (started) AudioRenderer.Stop(); }
+                    try { if (started) StopOwnedAudioRenderer(); }
                     finally { Time.captureDeltaTime = oldCaptureDeltaTime; }
                 }
             }

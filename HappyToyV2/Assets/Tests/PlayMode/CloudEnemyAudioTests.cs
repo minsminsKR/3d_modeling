@@ -353,7 +353,7 @@ namespace HappyToy.V2.CloudTests
             try
             {
                 Time.captureDeltaTime = 1f / 60f; yield return null;
-                started = AudioRenderer.Start(); Assert.That(started, Is.True, "Actual Unity main-output capture is unavailable");
+                started = StartOwnedAudioRenderer(); Assert.That(started, Is.True, "Actual Unity main-output capture is unavailable");
                 yield return CaptureEnemySegment("identity-Lantern", lanternSteps, rate, montage, segments);
                 foreach (var steps in stalkers)
                     yield return CaptureEnemySegment("identity-" + Get<object>(steps, "Profile"), steps, rate, montage, segments);
@@ -465,7 +465,7 @@ namespace HappyToy.V2.CloudTests
             }
             finally
             {
-                if (started) AudioRenderer.Stop(); Time.captureDeltaTime = captureDelta;
+                if (started) StopOwnedAudioRenderer(); Time.captureDeltaTime = captureDelta;
                 Object.Destroy(wall); Object.Destroy(slab);
             }
         }

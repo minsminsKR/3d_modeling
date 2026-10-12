@@ -74,7 +74,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(((VisualElement)root.panel.focusController.focusedElement).name,Is.EqualTo("begin"));
             // Use the actual Input System keyboard and UI Toolkit submit path.
             // GameShell.Begin is intentionally reserved for original annex audits.
-            yield return RecoveryPulse(Key.Enter); AssertMainCorridor();
+            yield return RecoveryPulse(Key.Enter); yield return RecoveryWaitForCorridorEntry(); AssertMainCorridor();
             Assert.That(RecoveryPage,Is.EqualTo("Playing"));
             var run=Get<Component>(session,"Corridor");
             Keys(Key.Enter); yield return Delay(.3f); Keys(); yield return null;

@@ -1,0 +1,21 @@
+{
+  "name": "HappyToy.V2.CoreTests",
+  "rootNamespace": "HappyToy.V2.CoreTests",
+  "references": [
+    "HappyToy.V2.Core"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": true,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

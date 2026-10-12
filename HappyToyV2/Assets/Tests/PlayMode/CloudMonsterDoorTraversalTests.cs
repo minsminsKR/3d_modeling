@@ -15,7 +15,7 @@ namespace HappyToy.V2.CloudTests
         // These are controlled actors on actual school/corridor geometry and the
         // production NavMesh. No substitute door, motion time scale or AI warp is
         // used after the fixture's initial supported placement.
-        Component TraversalDoor(bool corridor)
+        Component TraversalDoor(bool corridor, Func<Component, bool> supportsFixture = null)
         {
             foreach (var door in Components("Interactable").Where(x =>
                 Get<object>(x, "kind").ToString() == "Door" && Get<Transform>(x, "movingLeaf") &&
@@ -31,10 +31,11 @@ namespace HappyToy.V2.CloudTests
                 var route = new NavMeshPath();
                 if (!NavMesh.CalculatePath(near.position, far.position, NavMesh.AllAreas, route) ||
                     route.status != NavMeshPathStatus.PathComplete) continue;
+                if (supportsFixture != null && !supportsFixture(door)) continue;
                 if (string.IsNullOrEmpty(Get<string>(door, "stableId"))) Set(door, "stableId", "school-door-traversal-fixture");
                 return door;
             }
-            Assert.Fail("No two-sided real closed door route was found in " + (corridor ? "corridor" : "school"));
+            Assert.Fail("No two-sided real closed door route supports the fixture in " + (corridor ? "corridor" : "school"));
             return null;
         }
 
@@ -46,6 +47,62 @@ namespace HappyToy.V2.CloudTests
             Assert.That(NavMesh.SamplePosition(point, out var hit, .3f, NavMesh.AllAreas), Is.True, "No native floor at " + point);
             Assert.That(Vector3.Distance(hit.position, point), Is.LessThan(.3f));
             return hit.position;
+        }
+
+        bool TryDoorSide(Component door, float side, float lateral, out Vector3 point)
+        {
+            var slide = door.transform.TransformVector(Get<Vector3>(door, "openOffset")).normalized;
+            var intended = door.transform.position + Get<Vector3>(door, "DoorNormal") * side + slide * lateral;
+            intended.y = .03f;
+            bool supported = NavMesh.SamplePosition(intended, out var hit, .3f, NavMesh.AllAreas) &&
+                Vector3.Distance(hit.position, intended) < .3f;
+            point = hit.position;
+            return supported;
+        }
+
+        bool SupportsDiagonalDoorRoute(Component door)
+        {
+            if (!TryDoorSide(door, -2.6f, .8f, out var start) ||
+                !TryDoorSide(door, 2.6f, -.8f, out var destination)) return false;
+            var route = new NavMeshPath();
+            return NavMesh.CalculatePath(start, destination, NavMesh.AllAreas, route) &&
+                route.status == NavMeshPathStatus.PathComplete;
+        }
+
+        // Furnished layouts can carve out the former fixed 1.4m lateral point.
+        // Select real floor while retaining a meaningful parallel, non-crossing
+        // segment; no valid segment is a fixture failure, never a skipped test.
+        bool TrySameSideSteeringSegment(Component door, out Vector3 start, out Vector3 destination)
+        {
+            destination = default;
+            if (!TryDoorSide(door, -1.15f, 0, out start)) return false;
+            var normal = Get<Vector3>(door, "DoorNormal");
+            foreach (float lateral in new[] { .8f, -.8f, .65f, -.65f, 1.05f, -1.05f })
+            {
+                if (!TryDoorSide(door, -1.15f, lateral, out var candidate)) continue;
+                var delta = candidate - start; delta.y = 0;
+                if (delta.magnitude < .55f || delta.magnitude > 1.25f ||
+                    Mathf.Abs(Vector3.Dot(delta, normal)) > .2f) continue;
+                var route = new NavMeshPath();
+                if (!NavMesh.CalculatePath(start, candidate, NavMesh.AllAreas, route) ||
+                    route.status != NavMeshPathStatus.PathComplete ||
+                    route.corners.Any(point => Vector3.Dot(point - door.transform.position, normal) >= -.25f)) continue;
+                destination = candidate; return true;
+            }
+            return false;
+        }
+
+        void AssertSameSideSteeringSegment(Component door, Vector3 start, Vector3 destination, NavMeshPath route)
+        {
+            var normal = Get<Vector3>(door, "DoorNormal");
+            var delta = destination - start; delta.y = 0;
+            Assert.That(delta.magnitude, Is.InRange(.55f, 1.25f), "Cached steering needs a real short lateral segment");
+            Assert.That(Mathf.Abs(Vector3.Dot(delta, normal)), Is.LessThanOrEqualTo(.2f));
+            Assert.That(Vector3.Dot(start - door.transform.position, normal), Is.LessThan(-.25f));
+            Assert.That(Vector3.Dot(destination - door.transform.position, normal), Is.LessThan(-.25f));
+            Assert.That(route.status, Is.EqualTo(NavMeshPathStatus.PathComplete));
+            Assert.That(route.corners.All(point => Vector3.Dot(point - door.transform.position, normal) < -.25f), Is.True,
+                "A non-crossing fixture route must stay on the entry side of the physical leaf");
         }
         void DoorBodyClear(Component door, Component brain)
         {
@@ -128,17 +185,42 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreateCorridor", 73); Begin(); IsolateThreats();
             ((Behaviour)player).enabled = false; PlacePlayer(new Vector3(200, 5, 200), false);
             yield return null; yield return null;
-            var door = TraversalDoor(true); var normal = Get<Vector3>(door, "DoorNormal");
+            var door = TraversalDoor(true, SupportsDiagonalDoorRoute); var normal = Get<Vector3>(door, "DoorNormal");
             var destination = new GameObject("CloudQA diagonal real-monster patrol");
             destination.transform.position = SupportedDoorSide(door, 2.6f, -.8f);
+            var entry = SupportedDoorSide(door, -2.6f, .8f);
+            var diagonalRoute = new NavMeshPath();
+            Assert.That(NavMesh.CalculatePath(entry, destination.transform.position, NavMesh.AllAreas, diagonalRoute), Is.True);
+            Assert.That(diagonalRoute.status, Is.EqualTo(NavMeshPathStatus.PathComplete));
+            var slide = door.transform.TransformVector(Get<Vector3>(door, "openOffset")).normalized;
+            Assert.That(Mathf.Abs(Vector3.Dot(destination.transform.position - entry, slide)), Is.GreaterThan(1),
+                "The real patrol route must approach diagonally, not collapse onto the opening's center line");
+            Assert.That(Vector3.Dot(entry - door.transform.position, normal), Is.LessThan(-2.25f));
+            Assert.That(Vector3.Dot(destination.transform.position - door.transform.position, normal), Is.GreaterThan(2.25f));
             var monsters = Components("StalkerBrain").Where(item => item.name.EndsWith("— corridor")).ToArray();
-            Assert.That(monsters.Length, Is.EqualTo(4));
+            Assert.That(monsters.Length, Is.EqualTo(3));
+            CollectionAssert.AreEquivalent(new[] { "Watchman", "Listener", "Wanderer" },
+                monsters.Select(monster => Get<object>(monster, "corridorRole").ToString()).ToArray());
+            var masks = Components("LanternMaskEncounter").Where(item => item.name.EndsWith("— corridor")).ToArray();
+            Assert.That(masks.Length, Is.EqualTo(1));
+            Assert.That(masks[0].GetComponent(RequireType("StalkerBrain")), Is.Null,
+                "The mask has its own runner and door-breaking behavior");
             foreach (var monster in monsters)
             {
                 var agent = monster.GetComponent<NavMeshAgent>();
                 agent.enabled = false; monster.gameObject.SetActive(false);
-                monster.transform.SetPositionAndRotation(SupportedDoorSide(door, -2.6f, .8f), Quaternion.LookRotation(normal));
+                monster.transform.SetPositionAndRotation(entry, Quaternion.LookRotation(normal));
                 Set(monster, "state", "Patrol"); Set(monster, "patrol", new[] { destination.transform });
+                var baby = Get<Component>(monster, "CorridorBaby");
+                if (baby)
+                {
+                    // This controlled patrol fixture starts after a previous chase.
+                    // WaitingCry must remain stationary in the separate Baby tests.
+                    var memory = Get<object>(baby, "Memory"); var saved = Call(memory, "Capture");
+                    Set(saved, "hasChased", true); Set(saved, "phase", "WanderingCry");
+                    Call(memory, "Restore", saved);
+                    Assert.That(Get<bool>(baby, "WaitingForSound"), Is.False);
+                }
                 ((Behaviour)monster).enabled = true; monster.gameObject.SetActive(true); agent.enabled = true;
                 Assert.That(agent.Warp(monster.transform.position), Is.True);
                 Physics.SyncTransforms();
@@ -167,11 +249,13 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreateCorridor", 73); Begin(); IsolateThreats();
             ((Behaviour)player).enabled = false; PlacePlayer(new Vector3(200, 5, 200), false);
             yield return null; yield return null;
-            var door = TraversalDoor(true); var normal = Get<Vector3>(door, "DoorNormal");
+            var door = TraversalDoor(true, candidate => TrySameSideSteeringSegment(candidate, out _, out _));
+            var normal = Get<Vector3>(door, "DoorNormal");
+            Assert.That(TrySameSideSteeringSegment(door, out var start, out var steeringTarget), Is.True);
             var monster = Components("StalkerBrain").First(item => item.name.EndsWith("— corridor"));
             var agent = monster.GetComponent<NavMeshAgent>();
             agent.enabled = false; monster.gameObject.SetActive(false);
-            monster.transform.SetPositionAndRotation(SupportedDoorSide(door, -1.15f), Quaternion.LookRotation(normal));
+            monster.transform.SetPositionAndRotation(start, Quaternion.LookRotation(normal));
             float walkingSpeed = Get<float>(monster, "patrolSpeed");
             Set(monster, "patrolSpeed", 0f); Set(monster, "state", "Patrol");
             var marker = new GameObject("CloudQA actual patrol route beyond nearby door");
@@ -185,8 +269,8 @@ namespace HappyToy.V2.CloudTests
             var shortPath = new NavMeshPath(); float deadline = Time.realtimeSinceStartup + 3;
             while (!Get<bool>(door, "IsOpen") && Time.realtimeSinceStartup < deadline)
             {
-                Assert.That(agent.CalculatePath(SupportedDoorSide(door, -1.15f, 1.4f), shortPath), Is.True);
-                Assert.That(shortPath.status, Is.EqualTo(NavMeshPathStatus.PathComplete));
+                Assert.That(agent.CalculatePath(steeringTarget, shortPath), Is.True);
+                AssertSameSideSteeringSegment(door, start, steeringTarget, shortPath);
                 agent.SetPath(shortPath); agent.isStopped = false;
                 Assert.That(agent.hasPath, Is.True, "The controlled cached steering path completed before it could exercise the scan");
                 yield return null;
@@ -205,17 +289,22 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreateCorridor", 73); Begin(); IsolateThreats();
             ((Behaviour)player).enabled = false; PlacePlayer(new Vector3(200, 5, 200), false);
             yield return null; yield return null;
-            var door = TraversalDoor(true); var normal = Get<Vector3>(door, "DoorNormal");
+            var door = TraversalDoor(true, candidate => TrySameSideSteeringSegment(candidate, out _, out _));
+            var normal = Get<Vector3>(door, "DoorNormal");
+            Assert.That(TrySameSideSteeringSegment(door, out var start, out var destination), Is.True);
             var monster = Components("StalkerBrain").First(item => item.name.EndsWith("— corridor"));
             var agent = monster.GetComponent<NavMeshAgent>();
             agent.enabled = false; monster.gameObject.SetActive(false);
-            monster.transform.SetPositionAndRotation(SupportedDoorSide(door, -1.15f), Quaternion.LookRotation(normal));
+            monster.transform.SetPositionAndRotation(start, Quaternion.LookRotation(normal));
             Set(monster, "patrolSpeed", 0f); Set(monster, "state", "Patrol");
             var marker = new GameObject("CloudQA patrol stays on this side of nearby door");
-            marker.transform.position = SupportedDoorSide(door, -1.15f, 1.4f);
+            marker.transform.position = destination;
             Set(monster, "patrol", new[] { marker.transform });
             ((Behaviour)monster).enabled = true; monster.gameObject.SetActive(true); agent.enabled = true;
             Assert.That(agent.Warp(monster.transform.position), Is.True); Physics.SyncTransforms();
+            var route = new NavMeshPath();
+            Assert.That(agent.CalculatePath(destination, route), Is.True);
+            AssertSameSideSteeringSegment(door, start, destination, route);
             float deadline = Time.realtimeSinceStartup + 2;
             while (Time.realtimeSinceStartup < deadline)
             {

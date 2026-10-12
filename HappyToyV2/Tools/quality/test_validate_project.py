@@ -109,6 +109,22 @@ class ParserTest(unittest.TestCase):
     def setUp(self):
         self.parser = quality.load_parser()
 
+    def test_partial_fragment_and_grouped_helpers_do_not_need_a_unity_filename(self):
+        self.assertFalse(quality.requires_unity_filename(self.parser, b"partial class Brain { public void Restore() {} }"))
+        self.assertFalse(quality.requires_unity_filename(self.parser, b"class Rules {} class Evidence {}"))
+
+    def test_unity_component_and_scriptable_asset_need_matching_filenames(self):
+        self.assertTrue(quality.requires_unity_filename(self.parser, b"class Actor : UnityEngine.MonoBehaviour {}"))
+        self.assertTrue(quality.requires_unity_filename(self.parser, b"class Config : ScriptableObject {}"))
+
+    def test_scene_serialized_type_requires_filename_even_with_indirect_base(self):
+        self.assertTrue(quality.requires_unity_filename(self.parser, b"class Actor : CustomActor {}", serialized=True))
+
+    def test_runtime_component_helper_in_partial_source_is_not_a_serialized_script(self):
+        source = b"partial class Door {} class Debris : MonoBehaviour {}"
+        self.assertFalse(quality.requires_unity_filename(self.parser, source))
+        self.assertTrue(quality.requires_unity_filename(self.parser, source, serialized=True))
+
     def test_valid_csharp_and_public_members(self):
         errors, declarations = quality.parse_source(self.parser, b"class Shell { public int field; public bool Playing => true; public void Begin() {} }")
         self.assertEqual(errors, [])

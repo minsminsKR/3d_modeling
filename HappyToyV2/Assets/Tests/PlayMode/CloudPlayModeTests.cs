@@ -26,7 +26,8 @@ namespace HappyToy.V2.CloudTests
         readonly Dictionary<string, int> ints = new Dictionary<string, int>();
         readonly HashSet<string> existing = new HashSet<string>();
         readonly List<string> audioInitializationWarnings = new List<string>();
-        float oldTimeScale, oldVolume;
+        float oldTimeScale, oldVolume, oldCaptureDeltaTime;
+        bool ownsAudioRenderer;
         bool oldAudioPause, oldBackgroundRun;
         int oldFrameRate;
         CursorLockMode oldCursorLock;
@@ -43,6 +44,7 @@ namespace HappyToy.V2.CloudTests
             audioInitializationWarnings.Clear();
             Application.logMessageReceived += ObserveAudioInitialization;
             oldTimeScale = Time.timeScale; oldVolume = AudioListener.volume; oldAudioPause = AudioListener.pause;
+            oldCaptureDeltaTime = Time.captureDeltaTime;
             oldBackgroundRun = Application.runInBackground; oldFrameRate = Application.targetFrameRate;
             oldCursorLock = UnityEngine.Cursor.lockState; oldCursorVisible = UnityEngine.Cursor.visible;
             oldBackground = InputSystem.settings.backgroundBehavior; previousKeyboard = Keyboard.current;
@@ -78,6 +80,11 @@ namespace HappyToy.V2.CloudTests
         {
             try
             {
+                // UTF can abort an outer iterator when a nested yielded assertion
+                // fails, without reaching that iterator's finally. Recording is
+                // fixture-owned so the next test cannot inherit its mixer/clock.
+                try { StopOwnedAudioRenderer(); }
+                finally { Time.captureDeltaTime = oldCaptureDeltaTime; }
                 InputSystem.onAfterUpdate -= ObserveInput;
                 if (keyboard != null && keyboard.added) InputSystem.RemoveDevice(keyboard);
                 keyboard = null;
@@ -112,7 +119,8 @@ namespace HappyToy.V2.CloudTests
                     PlayerPrefs.Save();
                     InputSystem.settings.backgroundBehavior = oldBackground;
                     InputSystem.settings.editorInputBehaviorInPlayMode = oldEditorInputBehavior;
-                    Time.timeScale = oldTimeScale; AudioListener.pause = oldAudioPause; AudioListener.volume = oldVolume;
+                    Time.timeScale = oldTimeScale; Time.captureDeltaTime = oldCaptureDeltaTime;
+                    AudioListener.pause = oldAudioPause; AudioListener.volume = oldVolume;
                     Application.runInBackground = oldBackgroundRun; Application.targetFrameRate = oldFrameRate;
                     UnityEngine.Cursor.lockState = oldCursorLock; UnityEngine.Cursor.visible = oldCursorVisible;
                     session = player = shell = null;
@@ -121,6 +129,20 @@ namespace HappyToy.V2.CloudTests
             Assert.That(audioInitializationWarnings, Is.Empty,
                 "Empty filtered AudioSource attempted automatic playback during scene load, intro or retry: " +
                 string.Join("\n", audioInitializationWarnings));
+        }
+
+        bool StartOwnedAudioRenderer()
+        {
+            Assert.That(ownsAudioRenderer, Is.False, "This fixture already owns an audio recording");
+            ownsAudioRenderer = AudioRenderer.Start();
+            return ownsAudioRenderer;
+        }
+
+        void StopOwnedAudioRenderer()
+        {
+            if (!ownsAudioRenderer) return;
+            try { AudioRenderer.Stop(); }
+            finally { ownsAudioRenderer = false; }
         }
 
         void ObserveAudioInitialization(string message, string stack, LogType type)

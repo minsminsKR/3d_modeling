@@ -1,14 +1,14 @@
 using System;
 using NUnit.Framework;
-using static HappyToy.V2.CloudTests.RuntimeAccess;
 
-namespace HappyToy.V2.CloudTests
+namespace HappyToy.V2.CoreTests
 {
     public sealed class CabinetHidingRulesTests
     {
-        object Decision() => Activator.CreateInstance(RequireType("CabinetHidingRules+Decision"));
-        object Outcome(string name) => Enum.Parse(RequireType("CabinetHidingOutcome"), name);
-        string Resolve(object decision, int entry, bool pursued, Func<float> random) => Call(decision, "Resolve", entry, pursued, random).ToString();
+        CabinetHidingRules.Decision Decision() => new CabinetHidingRules.Decision();
+        CabinetHidingOutcome Outcome(string name) => (CabinetHidingOutcome)Enum.Parse(typeof(CabinetHidingOutcome), name);
+        string Resolve(CabinetHidingRules.Decision decision, int entry, bool pursued, Func<float> random)
+            => decision.Resolve(entry, pursued, random).ToString();
 
         [Test]
         public void BothBranchesUseTheExactSeventyFivePercentBoundary()
@@ -17,7 +17,7 @@ namespace HappyToy.V2.CloudTests
             {
                 var decision = Decision();
                 Assert.That(Resolve(decision, 1, true, () => value), Is.EqualTo(value < .75f ? "Survived" : "Defeated"));
-                Assert.That(Get<int>(decision, "Rolls"), Is.EqualTo(1));
+                Assert.That(decision.Rolls, Is.EqualTo(1));
             }
         }
 
@@ -33,9 +33,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Resolve(decision, 2, true, random), Is.EqualTo("Defeated"));
             for (int observer = 0; observer < 12; observer++)
                 Assert.That(Resolve(decision, 2, true, () => 0f), Is.EqualTo("Defeated"));
-            Assert.That(calls, Is.EqualTo(1)); Assert.That(Get<int>(decision, "Rolls"), Is.EqualTo(1));
+            Assert.That(calls, Is.EqualTo(1)); Assert.That(decision.Rolls, Is.EqualTo(1));
             Assert.That(Resolve(decision, 3, true, () => .1f), Is.EqualTo("Survived"));
-            Assert.That(Get<int>(decision, "EntryId"), Is.EqualTo(3)); Assert.That(Get<int>(decision, "Rolls"), Is.EqualTo(2));
+            Assert.That(decision.EntryId, Is.EqualTo(3)); Assert.That(decision.Rolls, Is.EqualTo(2));
         }
 
         [Test]
@@ -44,14 +44,14 @@ namespace HappyToy.V2.CloudTests
             foreach (string outcome in new[] { "Quiet", "Survived", "Defeated" })
             {
                 var restored = Decision();
-                Call(restored, "Restore", 7, outcome == "Quiet" ? 3 : 4, Outcome(outcome));
+                restored.Restore(7, outcome == "Quiet" ? 3 : 4, Outcome(outcome));
                 int calls = 0;
                 Assert.That(Resolve(restored, 7, true, () => { calls++; return .95f; }), Is.EqualTo(outcome));
-                Assert.That(calls, Is.Zero); Assert.That(Get<int>(restored, "EntryId"), Is.EqualTo(7));
+                Assert.That(calls, Is.Zero); Assert.That(restored.EntryId, Is.EqualTo(7));
                 Assert.That(Resolve(restored, 8, true, () => { calls++; return .2f; }), Is.EqualTo("Survived"));
                 Assert.That(calls, Is.EqualTo(1));
             }
-            var legacy = Decision(); Call(legacy, "Restore", 0, 0, Outcome("None"));
+            var legacy = Decision(); legacy.Restore(0, 0, Outcome("None"));
             Assert.That(Resolve(legacy, 1, false, null), Is.EqualTo("Quiet"));
         }
 
@@ -61,11 +61,11 @@ namespace HappyToy.V2.CloudTests
             var decision = Decision();
             foreach (float value in new[] { float.NaN, float.PositiveInfinity, -.1f, 1.1f })
                 Assert.Throws<ArgumentException>(() => Resolve(decision, 1, true, () => value));
-            Assert.That(Get<int>(decision, "EntryId"), Is.Zero); Assert.That(Get<int>(decision, "Rolls"), Is.Zero);
+            Assert.That(decision.EntryId, Is.Zero); Assert.That(decision.Rolls, Is.Zero);
             Assert.Throws<ArgumentException>(() => Resolve(decision, 2, false, null));
             foreach (var data in new[] { new[] { -1, 0 }, new[] { 1, 2 }, new[] { 0, 0 }, new[] { 1, 0 } })
-                Assert.Throws<ArgumentException>(() => Call(decision, "Restore", data[0], data[1], Outcome("Survived")));
-            Assert.Throws<ArgumentException>(() => Call(decision, "Restore", 1, 0, Outcome("None")));
+                Assert.Throws<ArgumentException>(() => decision.Restore(data[0], data[1], Outcome("Survived")));
+            Assert.Throws<ArgumentException>(() => decision.Restore(1, 0, Outcome("None")));
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace HappyToy.V2.CloudTests
                 if (Resolve(decision, entry, true, () => (float)random.NextDouble()) == "Survived") survived++;
             // ±0.6 percentage points exceeds four sigma for a 75% binomial sample.
             Assert.That(survived / (double)entries, Is.InRange(.744, .756));
-            Assert.That(Get<int>(decision, "Rolls"), Is.EqualTo(entries));
+            Assert.That(decision.Rolls, Is.EqualTo(entries));
             TestContext.WriteLine("Cabinet seeded distribution: survived=" + survived + ", defeated=" + (entries - survived));
         }
     }

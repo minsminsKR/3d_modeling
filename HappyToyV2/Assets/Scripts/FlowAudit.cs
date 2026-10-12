@@ -122,6 +122,19 @@ namespace HappyToy.V2
             using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, mousePosition = position, button = 0, clickCount = 1 })) target.SendEvent(up);
             yield return new WaitForSecondsRealtime(.15f);
         }
+        IEnumerator AwaitRestart(GameSession previous, bool playing)
+        {
+            float end = Time.realtimeSinceStartup + 15;
+            while (Time.realtimeSinceStartup < end)
+            {
+                var current = GameSession.Current;
+                if (current && current != previous && current.Shell && !current.Shell.IsReloading &&
+                    (playing ? current.InputAllowed : current.Shell.Screen == GameShell.Page.Title))
+                { yield return null; yield break; }
+                yield return null;
+            }
+            throw new InvalidOperationException("Native flow restart did not reach its requested destination.");
+        }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Install()
         {
@@ -210,7 +223,11 @@ namespace HappyToy.V2
             var view = session.GetComponent<GameShellView>();
             view.SetCaptureSize(1280, 720); yield return Capture("settings-720p"); result.compactLayout = LayoutFits();
             view.SetCaptureSize(1024, 768); yield return Capture("settings-4x3"); result.compactLayout &= LayoutFits();
-            view.SetCaptureSize(1600, 900); yield return null; yield return Click("back");
+            view.SetCaptureSize(1600, 900);
+            // Let the resized runtime panel finish layout before computing the
+            // pointer position. Otherwise its bounds can change between down/up.
+            yield return null; yield return null; yield return new WaitForEndOfFrame();
+            yield return Click("back");
             // This downstream audit inspects original annex records and actors.
             // The title's primary entry now starts the separate seeded corridor.
             shell.Begin(); yield return null;
@@ -249,7 +266,7 @@ namespace HappyToy.V2
             shell.Restart(true);
             bool pending = shell.IsReloading && !session.InputAllowed;
             shell.Restart(false); // Same-frame stale callback must not replace the first intent.
-            yield return null; yield return new WaitForSecondsRealtime(.5f);
+            yield return AwaitRestart(session, true);
             var current = GameSession.Current;
             result.restartClean = current != session && current.InputAllowed && current.StoryStep == 0 && !current.Finished && !current.player.Hidden;
             result.inspectionReset = current.ExplorationCount == 0;
@@ -262,7 +279,7 @@ namespace HappyToy.V2
                 Mathf.Approximately(current.player.eyes.fieldOfView, changedFov) &&
                 restarted.ReducedMotion && !restarted.Subtitles && restarted.HighContrast && restarted.LargeText;
             restarted.Restart(false); restarted.Restart(true);
-            yield return null; yield return new WaitForSecondsRealtime(.5f);
+            yield return AwaitRestart(current, false);
             result.restartTitleDestination = GameSession.Current != current && GameSession.Current.Shell.Screen == GameShell.Page.Title &&
                 !GameSession.Current.InputAllowed && Time.timeScale == 0 && AudioListener.pause && UnityEngine.Cursor.visible;
             Save(result); RestorePreferences(); deadline = 0;

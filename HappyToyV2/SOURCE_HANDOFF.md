@@ -86,6 +86,13 @@ Unity CLI는 별도 설치 도구이며 기본 빌드 결과는 `HappyToyV2/Buil
 
 ## 제작 원본과 도구
 
+코드의 기능별 진입점과 검사 명령은 [CODE_MAP.md](CODE_MAP.md)에 있다.
+`Assets/Scripts/Core`는 Unity에 의존하지 않는 `HappyToy.V2.Core` 어셈블리이며,
+`Assets/Tests/EditMode/Core`는 이를 직접 참조하는 빠른 규칙 검사다.
+`Assets/Scripts/UI`와 `AI`의 모듈을 포함해 모든 `.cs`, `.asmdef`, `.meta`를
+함께 전달한다. 기존 씬 스크립트 GUID와 저장 데이터 형식은 보존한다.
+검증 프로필은 `Tools/quality/run_feature_tests.py --list`로 확인한다.
+
 독립 Python 3.11 환경에서 생성 도구의 실제 사용 버전을 설치한다.
 
 ```sh

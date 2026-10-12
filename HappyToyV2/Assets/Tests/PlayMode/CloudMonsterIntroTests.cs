@@ -178,6 +178,43 @@ namespace HappyToy.V2.CloudTests
             }
             return bounds;
         }
+        static Bounds IntroTightVisibleSkinnedHeadBounds(Transform model, Transform head)
+        {
+            // The Studio face is part of its actual skinned creature, rather
+            // than the retired floating mask. Sample only vertices whose
+            // imported weights belong predominantly to its anatomical head.
+            var baked = new Mesh(); var vertices = new List<Vector3>();
+            var bounds = new Bounds(); int count = 0;
+            try
+            {
+                foreach (var skin in model.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                {
+                    if (!skin.enabled || !skin.gameObject.activeInHierarchy) continue;
+                    Assert.That(skin.sharedMesh && skin.sharedMesh.isReadable, Is.True,
+                        "Studio head must retain editable imported skin weights");
+                    var weights = skin.sharedMesh.boneWeights; var bones = skin.bones;
+                    bool HeadBone(int index) => index >= 0 && index < bones.Length && bones[index] &&
+                        (bones[index] == head || bones[index].IsChildOf(head));
+                    baked.Clear(); skin.BakeMesh(baked); vertices.Clear(); baked.GetVertices(vertices);
+                    Assert.That(weights.Length, Is.EqualTo(vertices.Count), "Head weights lost their imported topology");
+                    for (int i = 0; i < vertices.Count; i++)
+                    {
+                        var weight = weights[i];
+                        float headWeight = (HeadBone(weight.boneIndex0) ? weight.weight0 : 0) +
+                            (HeadBone(weight.boneIndex1) ? weight.weight1 : 0) +
+                            (HeadBone(weight.boneIndex2) ? weight.weight2 : 0) +
+                            (HeadBone(weight.boneIndex3) ? weight.weight3 : 0);
+                        if (headWeight < .5f) continue;
+                        var point = skin.transform.TransformPoint(vertices[i]);
+                        if (count++ == 0) bounds = new Bounds(point, Vector3.zero); else bounds.Encapsulate(point);
+                    }
+                }
+                Assert.That(count, Is.GreaterThan(16), "Completed Studio creature has no visible weighted head geometry");
+                Assert.That(bounds.size.sqrMagnitude, Is.GreaterThan(.0001f), "Visible Studio head geometry collapsed");
+                return bounds;
+            }
+            finally { Object.Destroy(baked); }
+        }
         IEnumerator IntroLanternPause(Component owner, bool toggleComfort, bool afterAttachedLateUpdate = false)
         {
             var mask = Get<Transform>(owner, "mask"); var body = Get<Transform>(owner, "body");
@@ -201,16 +238,23 @@ namespace HappyToy.V2.CloudTests
                         Assert.That(Get<bool>(owner, "Transformed"), Is.True);
                         Assert.That(Get<float>(owner, "TransformProgress"), Is.EqualTo(1));
                         Bounds bodyBounds = IntroTightVisibleBodyBounds(body);
-                        Bounds maskBounds = IntroVisibleStaticMaskBounds(mask);
                         var reference = owner.GetComponent(RequireType("MaskHorrorVisual"));
                         if (reference && Get<bool>(reference, "Prepared") && Get<Transform>(reference, "HeadSocket") &&
                             Get<Transform>(reference, "FaceJoint"))
                         {
                             var socket = Get<Transform>(reference, "HeadSocket"); var joint = Get<Transform>(reference, "FaceJoint");
+                            var model = Get<Transform>(reference, "BodyModel");
+                            Assert.That(model && model.IsChildOf(body) && joint.IsChildOf(model), Is.True,
+                                "Studio face is no longer part of the actual visible creature");
+                            Bounds maskBounds = IntroTightVisibleSkinnedHeadBounds(model, joint);
                             Assert.That(Vector3.Distance(socket.position, joint.position), Is.LessThan(.003f),
                                 "Reference human head left the actual leading anatomical neck socket");
                             float frontDistance = Vector3.Dot(socket.position - bodyBounds.center, owner.transform.forward);
                             Assert.That(frontDistance, Is.GreaterThan(.6f), "Low long creature's face migrated onto the middle of its back");
+                            Assert.That(Vector3.Dot(maskBounds.center - bodyBounds.center, owner.transform.forward), Is.GreaterThan(.6f),
+                                "Visible weighted face migrated onto the middle of the creature's back");
+                            // Imported bone pivots need not sit at weighted-mesh centroids.
+                            // Ownership and the actual baked leading face establish attachment.
                             Assert.That(Vector3.Dot(Get<Vector3>(reference, "FaceForward"), owner.transform.forward), Is.GreaterThan(.8f),
                                 "Human mask faces away from the creature's actual travel heading");
                             TestContext.Out.WriteLine("HAPPYTOY_WRAITH_REFERENCE_JOIN jointError=" + Vector3.Distance(socket.position, joint.position) +
@@ -218,6 +262,7 @@ namespace HappyToy.V2.CloudTests
                         }
                         else
                         {
+                            Bounds maskBounds = IntroVisibleStaticMaskBounds(mask);
                             float edgeSeparation = maskBounds.min.y - bodyBounds.max.y;
                             // Preserve the retained upright actor's original exact inset.
                             Assert.That(edgeSeparation, Is.EqualTo(-.035f).Within(.003f),
@@ -519,7 +564,7 @@ namespace HappyToy.V2.CloudTests
             {
                 Time.captureDeltaTime = .01f;
                 foreach (var source in Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Include)) source.mute = true;
-                started = AudioRenderer.Start(); Assert.That(started, Is.True, "Actual first-appearance main-output PCM capture is unavailable");
+                started = StartOwnedAudioRenderer(); Assert.That(started, Is.True, "Actual first-appearance main-output PCM capture is unavailable");
                 yield return IntroFlush(.25f, rate);
                 yield return IntroAudioSegment("quiet-baseline", portrait, null, "none", .15f, rate, montage, segments, rate / 2);
 
@@ -640,7 +685,7 @@ namespace HappyToy.V2.CloudTests
             }
             finally
             {
-                if (started) AudioRenderer.Stop(); Time.captureDeltaTime = oldCapture;
+                if (started) StopOwnedAudioRenderer(); Time.captureDeltaTime = oldCapture;
             }
         }
     }

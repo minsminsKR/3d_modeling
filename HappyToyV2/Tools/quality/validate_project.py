@@ -79,6 +79,30 @@ def walk_nodes(root):
         stack.extend(reversed(node.children))
 
 
+def requires_unity_filename(parser, source: bytes, serialized: bool = False) -> bool:
+    """Unity script assets need a matching type; helpers and partial fragments do not."""
+    if serialized:
+        return True
+    classes = []
+    for node in walk_nodes(parser.parse(source).root_node):
+        if node.type == "class_declaration":
+            parent = node.parent
+            while parent and parent.type != "class_declaration":
+                parent = parent.parent
+            if parent is None:
+                classes.append(node)
+    # Multi-type sources can contain runtime AddComponent helpers, as well as
+    # partial fragments. Their MonoScript filename is only binding when serialized.
+    if len(classes) != 1:
+        return False
+    for node in classes:
+        for child in node.named_children:
+            if child.type == "base_list" and re.search(
+                    rb"\b(?:MonoBehaviour|ScriptableObject)\b", child.text):
+                return True
+    return False
+
+
 def parse_source(parser, source: bytes) -> tuple[list[str], dict[str, set[str]]]:
     """Extract declared public API names from an AST, excluding comments/string lookalikes."""
     root = parser.parse(source).root_node
@@ -155,12 +179,14 @@ def validate(project: Path, require_parser: bool = False) -> dict:
     problems = preservation_issues(project, baseline)
     errors.extend(problems); checks.append({"name": "authored_scene_preserved", "status": "FAIL" if problems else "PASS", "files": list(baseline["protected_files"])})
     scene_path = project / baseline["selected_scene"]
+    serialized_scripts = set()
     if scene_path.is_file():
         scene = scene_path.read_text(encoding="utf-8-sig")
         references = Counter(SCRIPT_REFERENCE.findall(scene))
         expected_external = set(baseline["preexisting_external_script_guids"])
         unknown = set(references) - set(guids) - expected_external
         bad_type = [guids[g] for g in references if g in guids and not guids[g].endswith(".cs")]
+        serialized_scripts = {guids[g] for g in references if g in guids and guids[g].endswith(".cs")}
         errors.extend(f"Unresolved scene script GUID: {g}" for g in sorted(unknown))
         errors.extend(f"Scene script GUID points to a non-script asset: {p}" for p in bad_type)
         checks.append({"name": "scene_script_reference_inventory", "status": "FAIL" if unknown or bad_type else "PASS", "component_count": sum(references.values()), "preexisting_external_guid_count": len(expected_external & set(references))})
@@ -173,9 +199,11 @@ def validate(project: Path, require_parser: bool = False) -> dict:
     if parser:
         syntax_errors, filename_errors, declarations = [], [], defaultdict(set)
         for path in scripts:
-            problems, declared = parse_source(parser, path.read_bytes())
+            source = path.read_bytes()
+            problems, declared = parse_source(parser, source)
             syntax_errors.extend(f"{path.relative_to(project)}: {problem}" for problem in problems)
-            if path.stem not in declared:
+            if path.stem not in declared and requires_unity_filename(
+                    parser, source, path.relative_to(project).as_posix() in serialized_scripts):
                 filename_errors.append(f"Script filename has no matching declared class/struct: {path.relative_to(project)}")
             for type_name, members in declared.items():
                 declarations[type_name].update(members)

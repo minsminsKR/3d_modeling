@@ -46,41 +46,56 @@ def main():
         if not path.is_file():
             parser.error('Required installed reference/tool is missing: ' + str(path))
     out.mkdir(parents=True, exist_ok=True)
+    core_name = 'HappyToy.V2.Core'
     test_names = {'HappyToy.V2.TestSupport': 'test-support',
                   'HappyToy.V2.EditModeTests': 'test-editor',
-                  'HappyToy.V2.PlayModeTests': 'test-playmode'}
+                  'HappyToy.V2.PlayModeTests': 'test-playmode',
+                  'HappyToy.V2.CoreTests': 'test-core'}
     expected_test_references = {'HappyToy.V2.TestSupport': set(),
                                 'HappyToy.V2.EditModeTests': {'HappyToy.V2.TestSupport'},
                                 'HappyToy.V2.PlayModeTests': {'HappyToy.V2.TestSupport', 'Unity.InputSystem', 'Unity.Collections',
-                                                              'Unity.RenderPipelines.Core.Runtime', 'Unity.RenderPipelines.Universal.Runtime'}}
+                                                              'Unity.RenderPipelines.Core.Runtime', 'Unity.RenderPipelines.Universal.Runtime'},
+                                'HappyToy.V2.CoreTests': {core_name}}
     assembly_roots, assembly_records, assembly_definitions = {}, [], {}
     for path in sorted((project / 'Assets').rglob('*.asmdef')):
         data = path.read_bytes()
         definition = json.loads(data)
         name = definition.get('name')
+        if name in assembly_roots.values():
+            parser.error('Duplicate project assembly: ' + str(name))
+        if name == core_name:
+            if (definition.get('references', []) or definition.get('includePlatforms', [])
+                    or definition.get('excludePlatforms', []) or definition.get('optionalUnityReferences', [])
+                    or not definition.get('autoReferenced', True) or not definition.get('noEngineReferences', False)
+                    or definition.get('overrideReferences', False) or definition.get('defineConstraints', [])
+                    or definition.get('versionDefines', [])):
+                parser.error('Core must remain engine-free, auto-referenced and independent: ' + str(path))
+            assembly_roots[path.parent] = name
+            assembly_definitions[name] = definition
+            assembly_records.append({'file': path.relative_to(project).as_posix(), 'name': name,
+                                     'sha256': hashlib.sha256(data).hexdigest()})
+            continue
         if name not in test_names:
             parser.error('Unsupported asset asmdef; update this compiler model before validating: ' + str(path))
         if 'TestAssemblies' not in definition.get('optionalUnityReferences', []):
             parser.error('Expected an isolated test assembly: ' + str(path))
         if definition.get('autoReferenced', True):
             parser.error('Test assemblies must not be auto-referenced: ' + str(path))
-        expected_platforms = ['Editor'] if name == 'HappyToy.V2.EditModeTests' else []
+        expected_platforms = ['Editor'] if name in ('HappyToy.V2.EditModeTests', 'HappyToy.V2.CoreTests') else []
         if (set(definition.get('references', [])) != expected_test_references[name]
                 or definition.get('includePlatforms', []) != expected_platforms
                 or definition.get('excludePlatforms', [])
                 or definition.get('overrideReferences', False)
-                or definition.get('noEngineReferences', False)
+                or definition.get('noEngineReferences', False) != (name == 'HappyToy.V2.CoreTests')
                 or definition.get('defineConstraints', [])
                 or definition.get('versionDefines', [])):
             parser.error('Test asmdef compilation contract changed; update this compiler model: ' + str(path))
-        if name in assembly_roots.values():
-            parser.error('Duplicate test assembly: ' + name)
         assembly_roots[path.parent] = name
         assembly_definitions[name] = definition
         assembly_records.append({'file': path.relative_to(project).as_posix(), 'name': name,
                                  'sha256': hashlib.sha256(data).hexdigest()})
-    if assembly_roots and set(assembly_roots.values()) != set(test_names):
-        parser.error('Expected all three isolated HappyToy test asmdefs.')
+    if set(assembly_roots.values()) != set(test_names) | {core_name}:
+        parser.error('Expected the independent Core and four isolated HappyToy test asmdefs.')
     test_refs = []
     if assembly_roots:
         locked = json.loads((project / 'Packages/packages-lock.json').read_text())['dependencies']
@@ -93,7 +108,7 @@ def main():
         for path in test_refs:
             if not path.is_file():
                 parser.error('Required genuine test framework reference is missing: ' + str(path))
-    runtime, editor_sources, records = [], [], []
+    runtime, editor_sources, core_sources, records = [], [], [], []
     test_sources = {name: [] for name in test_names}
     for path in sorted((project / 'Assets').rglob('*.cs')):
         relative = path.relative_to(project)
@@ -103,7 +118,9 @@ def main():
         target.write_bytes(data)
         records.append({'file': relative.as_posix(), 'sha256': hashlib.sha256(data).hexdigest()})
         assembly = next((assembly_roots[parent] for parent in path.parents if parent in assembly_roots), None)
-        if assembly:
+        if assembly == core_name:
+            core_sources.append(target)
+        elif assembly:
             test_sources[assembly].append(target)
         elif 'Tests' in relative.parts:
             parser.error('Test source has no supported asmdef: ' + str(path))
@@ -113,11 +130,13 @@ def main():
         parser.error('Every isolated test assembly must contain source files.')
     refs = sorted((editor / 'NetStandard/ref/2.1.0').glob('*.dll'))
     refs += sorted((editor / 'NetStandard/compat/2.1.0/shims/netfx').glob('*.dll'))
+    system_refs = list(refs)
     refs += [p for p in sorted((editor / 'Managed').glob('*.dll')) if p.name not in ('UnityEngine.dll', 'UnityEditor.dll')]
     refs += sorted((editor / 'Managed/UnityEngine').glob('*.dll'))
     test_dll_names = {'nunit.framework.dll', 'UnityEngine.TestRunner.dll', 'UnityEditor.TestRunner.dll'}
     engine_refs = [p for p in refs if p.name not in test_dll_names]
-    refs += [p for p in sorted(cache.glob('*.dll')) if not p.name.startswith('Assembly-CSharp')]
+    refs += [p for p in sorted(cache.glob('*.dll')) if not p.name.startswith('Assembly-CSharp')
+             and p.stem not in assembly_definitions]
     refs = [p for p in refs if p.name not in test_dll_names]
     seen = set()
     refs = [p for p in refs if not (p.name in seen or seen.add(p.name))]
@@ -128,18 +147,24 @@ def main():
                'UNITY_2019_4_OR_NEWER', 'UNITY_5_3_OR_NEWER', 'UNITY_STANDALONE', 'ENABLE_INPUT_SYSTEM',
                'ENABLE_MONO', 'NET_STANDARD_2_1', 'NET_STANDARD', 'NETSTANDARD2_1', 'ENABLE_UNITY_COLLECTIONS_CHECKS']
     results = []
+    core_editor = out / 'core-editor-runtime' / (core_name + '.dll')
+    core_linux = out / 'core-linux-player-runtime' / (core_name + '.dll')
+    core_windows = out / 'core-windows-player-runtime' / (core_name + '.dll')
     stages = [
-        ('editor-runtime', 'Assembly-CSharp', runtime, ['UNITY_EDITOR', 'UNITY_EDITOR_LINUX', 'UNITY_STANDALONE_LINUX'], []),
+        ('core-editor-runtime', core_name, core_sources, ['UNITY_EDITOR', 'UNITY_EDITOR_LINUX', 'UNITY_STANDALONE_LINUX'], []),
+        ('core-linux-player-runtime', core_name, core_sources, ['UNITY_STANDALONE_LINUX'], []),
+        ('core-windows-player-runtime', core_name, core_sources, ['UNITY_STANDALONE_WIN'], []),
+        ('editor-runtime', 'Assembly-CSharp', runtime, ['UNITY_EDITOR', 'UNITY_EDITOR_LINUX', 'UNITY_STANDALONE_LINUX'], [core_editor]),
         ('editor-scripts', 'Assembly-CSharp-Editor', editor_sources, ['UNITY_EDITOR', 'UNITY_EDITOR_LINUX', 'UNITY_STANDALONE_LINUX'],
-         [out / 'editor-runtime/Assembly-CSharp.dll']),
-        ('linux-player-runtime', 'Assembly-CSharp', runtime, ['UNITY_STANDALONE_LINUX'], []),
-        ('windows-player-runtime', 'Assembly-CSharp', runtime, ['UNITY_STANDALONE_WIN'], [])]
+         [out / 'editor-runtime/Assembly-CSharp.dll', core_editor]),
+        ('linux-player-runtime', 'Assembly-CSharp', runtime, ['UNITY_STANDALONE_LINUX'], [core_linux]),
+        ('windows-player-runtime', 'Assembly-CSharp', runtime, ['UNITY_STANDALONE_WIN'], [core_windows])]
     if assembly_roots:
         for assembly, stage in test_names.items():
             declared_refs = []
             for reference in assembly_definitions[assembly].get('references', []):
-                path = (out / test_names[reference] / (reference + '.dll')) if reference in test_names else cache / (reference + '.dll')
-                if reference not in test_names and not path.is_file():
+                path = core_editor if reference == core_name else (out / test_names[reference] / (reference + '.dll')) if reference in test_names else cache / (reference + '.dll')
+                if reference not in test_names and reference != core_name and not path.is_file():
                     parser.error('Missing declared test assembly reference: ' + str(path))
                 declared_refs.append(path)
             stages.append((stage, assembly, test_sources[assembly],
@@ -149,7 +174,7 @@ def main():
         folder = out / name
         folder.mkdir(exist_ok=True)
         dll = folder / (assembly + '.dll')
-        stage_refs = engine_refs if name.startswith('test-') else refs if name.startswith('editor-') else [p for p in refs if not
+        stage_refs = system_refs if name.startswith('core-') or name == 'test-core' else engine_refs if name.startswith('test-') else refs if name.startswith('editor-') else [p for p in refs if not
             (p.name.startswith('UnityEditor') or '.Editor.' in p.name or p.name.endswith('.Editor.dll'))]
         response = ['-nologo', '-target:library', '-nostdlib+', '-langversion:9', '-unsafe+', '-deterministic+',
                     '-out:"' + str(dll) + '"', '-define:' + ';'.join(defines + extra_defines)]
@@ -173,7 +198,7 @@ def main():
                 print(line)
     report = {'scope': 'External C# compilation against genuine Unity 6000.6 and matching package APIs. Test asmdefs compile separately without a reference to Assembly-CSharp. Not Unity import, serialization, ShaderLab compilation, player build, UTF execution or runtime testing.',
               'unityVersion': '6000.6.0f1', 'expectedPackageVersions': expected,
-              'runtimeSources': len(runtime), 'editorSources': len(editor_sources), 'sourceManifest': records,
+              'runtimeSources': len(runtime), 'coreSources': len(core_sources), 'editorSources': len(editor_sources), 'sourceManifest': records,
               'testSources': {name: len(sources) for name, sources in test_sources.items()} if assembly_roots else {},
               'assemblyDefinitions': assembly_records,
               'testFrameworkReferences': [{'name': p.name, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in test_refs],

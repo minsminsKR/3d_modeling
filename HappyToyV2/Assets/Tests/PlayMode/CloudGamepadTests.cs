@@ -40,6 +40,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(RecoveryPage, Is.EqualTo("Settings"), "Native gamepad submit did not open focused settings");
             yield return PadPulse(GamepadButton.East); Assert.That(RecoveryPage, Is.EqualTo("Title"));
             yield return PadPulse(GamepadButton.South);
+            yield return RecoveryWaitForCorridorEntry();
             Assert.That(Get<bool>(session, "CorridorMode"), Is.True); Assert.That(Get<bool>(session, "ChapterMode"), Is.False);
             Assert.That(RecoveryPage, Is.EqualTo("Playing"));
             yield return PadPulse(GamepadButton.Start); Assert.That(RecoveryPage, Is.EqualTo("Pause"));

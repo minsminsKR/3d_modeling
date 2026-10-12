@@ -9,6 +9,26 @@ so development can continue on another machine. The repository is
 https://github.com/minsminsKR/3d_modeling ; HappyToyV2 pull and push requests
 target its GitHub `origin/main` branch.
 
+# Maintainable HappyToyV2 code — user instruction, 2026-10-13
+
+For game code changes, use `HappyToyV2/CODE_MAP.md` to find the affected feature
+and its checks. Read the relevant modules instead of routinely loading every
+script, historical verification report or the entire repository.
+
+Keep one clear responsibility per module. UI screens own their controls and
+receive presentation data/actions; AI collaborators own sensing, attacks and
+navigation state. Use explicit inputs, results and callbacks at boundaries.
+Keep independent rules in `HappyToy.V2.Core`, with no game/session/Unity dependency.
+Adding `partial` files alone does not establish a module boundary. Preserve
+scene script GUIDs, serialized names and save compatibility when refactoring.
+
+Use the feature verification profiles documented in `HappyToyV2/CODE_MAP.md`.
+Run fast rule checks and relevant integration checks for each change; broaden
+coverage when shared behavior, assembly boundaries or unresolved failures require
+it. Run both complete Unity test suites and a player build for broad refactors
+or release readiness. Update the code map/profiles when ownership or entry points
+change. Keep diagnostic code opt-in and preserve the quiet verification policy.
+
 # Repository handoff and push policy
 
 The user requires every related source needed to pull this repository on another
