@@ -37,3 +37,21 @@ latest GitHub `origin/main` playable on this machine, not merely update sources.
 - If a build or integration is blocked, report the exact blocker and that a
   latest-main playable build is not yet ready. Do not label an older executable
   as the latest main build.
+
+# Clean superseded HappyToyV2 builds after pushing
+
+Persistent user instruction, 2026-10-12: after a successful HappyToyV2 push,
+remove superseded local HappyToyV2 player builds to prevent disk accumulation.
+
+- Keep one latest verified playable build, including its executable, _Data,
+  DLLs, credits and build/input manifest. Documentation-only pushes may retain
+  the existing verified player when its gameplay inputs are unchanged.
+- After confirming the remote branch matches the pushed commit and the retained
+  player is valid, delete older build directories only inside HappyToyV2/Builds.
+- Resolve and validate every deletion target as a child of that exact Builds
+  directory. Do not follow reparse points or delete the retained build, source
+  assets, authoring originals, saves or unrelated projects.
+- Do not delete a running player's build; report it and defer that directory.
+  If no verified replacement exists or the push failed, keep the last playable
+  build until a valid replacement is available.
+- Report the cleanup and provide the retained executable link when relevant.
