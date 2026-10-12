@@ -378,7 +378,7 @@
       "head_pitch": 0
     },
     "chase": {
-      "duration": 0.56,
+      "duration": 1.12,
       "pitch": 0.085,
       "stride": 0.54,
       "lift": 0.1,

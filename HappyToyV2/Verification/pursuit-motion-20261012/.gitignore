@@ -1,0 +1,7 @@
+# Optional failed attempts and raw frames; reproduce with the checked-in tools.
+playmode.xml
+playmode-final.xml
+playmode-verified.xml
+*.log
+native/*-chase-*.png
+native/isolated-profile/

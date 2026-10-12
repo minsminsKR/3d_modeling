@@ -58,6 +58,59 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(session,"Finished"),Is.False);
         }
 
+        [UnityTest, Timeout(120000)]
+        public IEnumerator CreatureStudioPursuitHasOffBeatHeadMotionAndRestoresCalmMotionAfterPause()
+        {
+            Call(session,"ConfigureRecordDirectory",NewRecordFixture());
+            Call(session,"CreateCorridor",73);Begin();Call(session,"ToggleCheatSafeMode");
+            for(int i=0;i<5;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
+            foreach(var built in Components("StalkerBrain")) ((Behaviour)built).enabled=false;
+            yield return Delay(.2f);
+            var anchor=Components("StalkerBrain").Single(x=>x.name.EndsWith("— corridor") && x.name.Contains("Cyclopse")).transform.position;
+            Assert.That(NavMesh.SamplePosition(anchor,out var site,1,NavMesh.AllAreas),Is.True);
+            foreach(string key in new[]{"Cyclopse","Uncat","Baby"})
+            {
+                var actor=Components("StalkerBrain").Single(x=>x.name.EndsWith("— corridor") && x.name.Contains(key));
+                var agent=actor.GetComponent<NavMeshAgent>();agent.enabled=false;
+                actor.transform.position=site.position;actor.gameObject.SetActive(true);((Behaviour)actor).enabled=false;
+                agent.enabled=true;
+                Assert.That(agent.Warp(site.position),Is.True,key+" controlled fixture must use the actual corridor NavMesh");agent.isStopped=true;
+                var motion=actor.GetComponent(RequireType("V1MonsterMotion"));
+                var model=Get<Transform>(motion,"model");var animation=Get<Animation>(motion,"animationPlayer");
+                Set(actor,"state","Chase");yield return null;yield return null;
+                Assert.That(Get<string>(motion,"CurrentClip"),Is.EqualTo("chase"),key+" must switch when AI enters pursuit");
+                ((Behaviour)motion).enabled=false;animation.Stop();
+                var head=model.GetComponentsInChildren<Transform>().Single(node=>node.name=="mixamorig:Head");
+                var rotations=new Quaternion[2];float calm=0,pursuit=0;
+                for(int action=0;action<2;action++)
+                {
+                    var clip=animation.GetClip(action==0?"patrol":"chase");
+                    clip.SampleAnimation(animation.gameObject,0);rotations[action]=head.localRotation;
+                    float largest=0;
+                    for(int phase=1;phase<64;phase++)
+                    {
+                        clip.SampleAnimation(animation.gameObject,clip.length*phase/64f);
+                        largest=Mathf.Max(largest,Quaternion.Angle(rotations[action],head.localRotation));
+                        Assert.That(head.localScale.x,Is.EqualTo(1).Within(.001f),key+" neck must not stretch");
+                    }
+                    clip.SampleAnimation(animation.gameObject,clip.length);
+                    Assert.That(Quaternion.Angle(rotations[action],head.localRotation),Is.LessThan(.2f),key+" seamless head loop");
+                    if(action==0)calm=largest;else pursuit=largest;
+                }
+                Assert.That(pursuit,Is.GreaterThan(18),key+" visible head snaps");
+                Assert.That(pursuit,Is.GreaterThan(calm*3),key+" pursuit must differ from calm walk");
+                ((Behaviour)motion).enabled=true;animation.Play("chase");
+                yield return null;Call(shell,"Pause");
+                var paused=head.localRotation;float pausedTime=animation["chase"].time;
+                yield return new WaitForSecondsRealtime(.12f);
+                Assert.That(Quaternion.Angle(paused,head.localRotation),Is.LessThan(.05f),key+" pause must freeze head");
+                Assert.That(animation["chase"].time,Is.EqualTo(pausedTime).Within(.01f));
+                Call(shell,"Resume");Set(actor,"state","Patrol");yield return null;yield return null;
+                Assert.That(Get<string>(motion,"CurrentClip"),Is.EqualTo(key=="Baby" ? "cry" : "patrol"),key+" restores its own stationary calm action");
+                actor.gameObject.SetActive(false);
+            }
+        }
+
         [UnityTest, Timeout(180000)]
         public IEnumerator CreatureStudioSchoolKeepsDistinctHwacatAndUpdatesCyclopseNurseryWithValidSave()
         {

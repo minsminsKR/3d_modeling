@@ -125,19 +125,19 @@ def profiles(creature):
         return {
             'idle': dict(duration=2.8, duty=.64, stride=.0, lift=.0, pitch=.025, sway=.008, bob=.005),
             'patrol': dict(duration=1.25, duty=.65, stride=.30, lift=.055, pitch=.055, sway=.016, bob=.012),
-            'chase': dict(duration=.70, duty=.47, stride=.47, lift=.10, pitch=.17, sway=.023, bob=.025),
+            'chase': dict(duration=1.30, gait_cycles=2, duty=.43, stride=.52, lift=.115, pitch=.19, sway=.030, bob=.029, head_yaw=.22, head_roll=.34, head_snap=.16, body_lurch=.018),
         }
     if creature == 'Uncat':
         return {
             'idle': dict(duration=2.7, duty=.70, stride=.0, lift=.0, pitch=.92, sway=.008, bob=.004),
             'patrol': dict(duration=1.30, duty=.71, stride=.29, lift=.065, pitch=.94, sway=.016, bob=.010),
-            'chase': dict(duration=.61, duty=.47, stride=.47, lift=.13, pitch=.98, sway=.028, bob=.024),
+            'chase': dict(duration=1.12, gait_cycles=2, duty=.43, stride=.52, lift=.15, pitch=.98, sway=.032, bob=.027, head_yaw=.23, head_roll=.32, head_snap=.14, body_lurch=.024),
         }
     if creature == 'Baby':
         return {
             'idle': dict(duration=2.5, duty=.72, stride=.0, lift=.0, pitch=1.12, sway=.006, bob=.003),
             'patrol': dict(duration=1.45, duty=.72, stride=.26, lift=.075, pitch=1.14, sway=.012, bob=.008),
-            'chase': dict(duration=.62, duty=.48, stride=.40, lift=.15, pitch=1.18, sway=.024, bob=.020),
+            'chase': dict(duration=1.18, gait_cycles=2, duty=.44, stride=.44, lift=.16, pitch=1.18, sway=.027, bob=.022, head_yaw=.21, head_roll=.33, head_snap=.22, body_lurch=.022),
             'cry': dict(duration=2.0, duty=1.0, stride=.0, lift=.0, pitch=1.10, sway=.008, bob=.006),
         }
     raise ValueError('Unknown creature: ' + creature)
@@ -317,9 +317,11 @@ def apply_creature_animation(armature, creature, contact_specs=None, fps=60, *, 
         first_pose = None
         for step in range(interval_count + 1):
             frame = 1 + step
-            phase = (step / interval_count) % 1
+            cycle = (step / interval_count) % 1
+            phase = (cycle * cfg.get('gait_cycles', 1)) % 1
             cry = name == 'cry'
             pitch = cfg['pitch'] + (0.018 * math.sin(TAU * phase * 2) if cfg['stride'] else .009 * math.sin(TAU * phase))
+            pitch += cfg.get('body_lurch', 0) * math.sin(TAU * cycle * 3)
             shudder = .006 * math.sin(TAU * phase * 8) if cry else 0.0
             position = hips.bone.head_local.copy()
             position.z = chosen_height
@@ -349,6 +351,14 @@ def apply_creature_animation(armature, creature, contact_specs=None, fps=60, *, 
                         head_pitch += .055 * math.sin(TAU * phase * 4)
                     yaw = (.025 if name != 'chase' else .012) * math.sin(TAU * phase)
                     roll = .025 * math.sin(TAU * phase * (3 if cry else 1))
+                    if name == 'chase':
+                        # A two-stride supercycle decouples the face from the feet.
+                        # Smooth, bounded impulses give neck snaps without random
+                        # frame noise, root motion, bone stretching or loop seams.
+                        accent = math.tanh(2.4 * math.sin(TAU * cycle * 3)) / math.tanh(2.4)
+                        yaw = cfg.get('head_yaw', 0) * (.72 * math.sin(TAU * cycle) + .28 * math.sin(TAU * cycle * 3))
+                        roll = cfg.get('head_roll', 0) * (.70 * accent + .30 * math.sin(TAU * cycle * 2))
+                        head_pitch += cfg.get('head_snap', 0) * (.75 * math.sin(TAU * cycle * 4) + .25 * math.sin(TAU * cycle))
                     head_rotation = Quaternion(UP, yaw) @ Quaternion(RIGHT, head_pitch) @ Quaternion(FORWARD, roll) @ head.bone.matrix_local.to_quaternion()
                     base = pose_matrix(base.translation, head_rotation)
                 store_pose(pb, base, posed, previous, frame)
@@ -408,8 +418,14 @@ def apply_creature_animation(armature, creature, contact_specs=None, fps=60, *, 
         action['creature'] = creature
         action['support_style'] = 'hands and knees' if creature == 'Baby' else 'hands and feet' if creature == 'Uncat' else 'feet'
         action['duration_seconds'] = interval_count / fps
+        action['gait_cycles'] = cfg.get('gait_cycles', 1)
+        action['pursuit_style'] = 'two-stride off-beat head snaps' if name == 'chase' else 'calm authored locomotion'
         report['actions'][name] = {'action': action.name, 'frames': interval_count + 1,
                                    'duration_seconds': interval_count / fps, 'pelvis_height': chosen_height,
+                                   'gait_cycles': cfg.get('gait_cycles', 1),
+                                   'head_yaw_radians': cfg.get('head_yaw', 0),
+                                   'head_roll_radians': cfg.get('head_roll', 0),
+                                   'head_snap_radians': cfg.get('head_snap', 0),
                                    'body_pitch': cfg['pitch'], 'spine_bend': cfg.get('spine_bend', 0),
                                    'neck_bend': cfg.get('neck_bend', 0),
                                    'max_target_correction': max_reach, 'max_segment_length_error': max_length_error,

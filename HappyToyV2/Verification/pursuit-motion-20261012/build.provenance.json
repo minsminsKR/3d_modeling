@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "generator": {
+    "name": "unity-cli",
+    "version": "1.0.0-beta.8"
+  },
+  "outcome": "success",
+  "exitCode": 0,
+  "startedAt": "2026-10-12T08:14:27.322Z",
+  "endedAt": "2026-10-12T08:15:31.417Z",
+  "editor": {
+    "version": "6000.6.0f1",
+    "changeset": "f7f8ed4d1e24",
+    "architecture": "x86_64"
+  },
+  "build": {
+    "target": "StandaloneWindows64",
+    "executeMethod": "HappyToy.V2.Editor.QualityValidation.BuildWindows",
+    "logFile": "Verification/pursuit-motion-20261012/build.log"
+  },
+  "source": {
+    "vcs": "git",
+    "revision": "0aa66c53227f95aa6b74656e7102d6beb79701d7",
+    "dirty": true
+  },
+  "packages": {
+    "source": "packages-lock.json",
+    "entries": {
+      "com.unity.ai.navigation": "2.0.12",
+      "com.unity.burst": "2.0.0",
+      "com.unity.collections": "6.6.0",
+      "com.unity.ext.nunit": "2.1.0",
+      "com.unity.graph-authoring": "1.0.0",
+      "com.unity.inputsystem": "1.19.0",
+      "com.unity.nuget.mono-cecil": "1.11.6",
+      "com.unity.nuget.newtonsoft-json": "3.2.2",
+      "com.unity.pipeline": "0.7.0-exp.1",
+      "com.unity.profiling.core": "1.0.3",
+      "com.unity.render-pipelines.core": "17.6.0",
+      "com.unity.render-pipelines.universal": "17.6.0",
+      "com.unity.render-pipelines.universal-config": "17.6.0",
+      "com.unity.searcher": "4.9.5",
+      "com.unity.shadergraph": "17.6.0",
+      "com.unity.test-framework": "1.8.0",
+      "com.unity.test-framework.performance": "6.6.0",
+      "com.unity.modules.ai": "1.0.0",
+      "com.unity.modules.animation": "1.0.0",
+      "com.unity.modules.audio": "1.0.0",
+      "com.unity.modules.hierarchycore": "1.0.0",
+      "com.unity.modules.imageconversion": "1.0.0",
+      "com.unity.modules.imgui": "1.0.0",
+      "com.unity.modules.jsonserialize": "1.0.0",
+      "com.unity.modules.physics": "1.0.0",
+      "com.unity.modules.screencapture": "1.0.0",
+      "com.unity.modules.ui": "1.0.0",
+      "com.unity.modules.uielements": "1.0.0"
+    }
+  }
+}

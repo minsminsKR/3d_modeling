@@ -20,7 +20,11 @@ are transferred to a new game UV atlas by actual nearest-surface BVH queries.
 Uncat's connected game skin is regularized across neighboring vertices while
 preserving facial and distal limb ownership. Baby joints are fitted from actual
 source limb cross sections. The final rigs have 22 semantic Mixamo-named bones.
-They use fresh in-place patrol/chase actions; Baby also has cry.
+They use fresh in-place patrol/chase actions; Baby also has cry. Chase uses a
+two-stride supercycle with creature-specific, off-beat head yaw/roll/pitch snaps
+and a small body lurch. Patrol and cry retain their calm authored curves.
+Uncat runs on hands/feet; Cyclopse runs upright; Baby pursues on hands/knees.
+The existing AI Chase state selects these own clips through V1MonsterMotion.
 
 Each folder includes the original GLBs, packed `<key>_Editable.blend`, body plan,
 source-order surface weights, contacts, eye authoring and
@@ -60,7 +64,10 @@ The checked-in plans/weights are the reviewed source of truth. Optional anatomic
 refitting uses `fit_baby_body.py` or `fit_round_cyclopse.py`; regenerating plans
 resets later recorded posture overrides; retain/review those when experimenting.
 `finish_creature.py --creature <key> --animation-only` changes clips without
-rebaking textures. The derived preview GLBs are reproducible optional outputs.
+rebaking textures. Run that command for each changed creature, then invoke
+`HappyToy.V2.Editor.EnemyStudioGameImport.Apply` in Unity to update the exported
+chase `.anim` and fitted prefab bounds. Profile overrides in `body-rig-plan.json`
+apply last; a two-stride chase duration covers two complete gait cycles. The derived preview GLBs are reproducible optional outputs.
 Do not use `export_pbr.py` to overwrite a reconstructed game atlas with source UV
 textures. That extractor applies only when the original source UVs are retained.
 

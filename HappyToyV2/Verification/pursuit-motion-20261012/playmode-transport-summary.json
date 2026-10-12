@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "scope": "Artifact transport hashes checked before removing repeated base64 payloads from NUnit output; JSON assertions retained. Native captures provide visual evidence separately.",
+  "decodedArtifacts": [
+    {
+      "name": "enemy-refined-cyclopse-near-main-camera.png",
+      "bytes": 487067
+    },
+    {
+      "name": "enemy-refined-cyclopse-turn-main-camera.png",
+      "bytes": 498477
+    },
+    {
+      "name": "enemy-refined-cyclopse-hall-main-camera.png",
+      "bytes": 378029
+    },
+    {
+      "name": "enemy-refined-uncat-near-main-camera.png",
+      "bytes": 446187
+    },
+    {
+      "name": "enemy-refined-uncat-turn-main-camera.png",
+      "bytes": 496072
+    },
+    {
+      "name": "enemy-refined-uncat-hall-main-camera.png",
+      "bytes": 453973
+    },
+    {
+      "name": "enemy-refined-baby-near-main-camera.png",
+      "bytes": 405177
+    },
+    {
+      "name": "enemy-refined-baby-turn-main-camera.png",
+      "bytes": 409891
+    },
+    {
+      "name": "enemy-refined-baby-hall-main-camera.png",
+      "bytes": 455235
+    },
+    {
+      "name": "enemy-refinement-ground-phases.json",
+      "bytes": 17505
+    },
+    {
+      "name": "enemy-refinement-main-camera-views.json",
+      "bytes": 10063
+    }
+  ]
+}

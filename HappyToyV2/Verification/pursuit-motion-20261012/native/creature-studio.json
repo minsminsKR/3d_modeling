@@ -1,0 +1,1254 @@
+{
+    "status": "PASS",
+    "failure": "",
+    "unity": "6000.6.0f1",
+    "graphics": "NVIDIA GeForce RTX 3090 Ti",
+    "scope": "Controlled native seed-73 corridor: newly generated meshes/materials, live clip aliases, 32 sampled deformation/ground phases and 16 pursuit frames with measured head rotation, actual player-camera views, Baby cry and Cyclopse stumble joints. AI is disabled for the art fixture. Does not certify survival balance or perceived fear.",
+    "checks": [
+        {
+            "name": "real game session",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse supported actual corridor fixture",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse new studio visual",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse attack rig",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse stumble rig",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse game mesh budget",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse own PBR atlas",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse live patrol clip",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 0",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 1",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 2",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 3",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 4",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 5",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 6",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 7",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 8",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 9",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 10",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 11",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 12",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 13",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 14",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 15",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 16",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 17",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 18",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 19",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 20",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 21",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 22",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 23",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 24",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 25",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 26",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 27",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 28",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 29",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 30",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol floor phase 31",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse patrol skin deformation",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse live chase clip",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-00.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 0",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 1",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-01.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 2",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 3",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-02.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 4",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 5",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-03.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 6",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 7",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-04.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 8",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 9",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-05.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 10",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 11",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-06.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 12",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 13",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-07.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 14",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 15",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-08.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 16",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 17",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-09.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 18",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 19",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-10.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 20",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 21",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-11.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 22",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 23",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-12.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 24",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 25",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-13.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 26",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 27",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-14.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 28",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 29",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-chase-15.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 30",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase floor phase 31",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse chase skin deformation",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse visibly distinct pursuit head rotation",
+            "passed": true
+        },
+        {
+            "name": "Cyclopse-full.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat supported actual corridor fixture",
+            "passed": true
+        },
+        {
+            "name": "Uncat new studio visual",
+            "passed": true
+        },
+        {
+            "name": "Uncat attack rig",
+            "passed": true
+        },
+        {
+            "name": "Uncat anatomical limb contact",
+            "passed": true
+        },
+        {
+            "name": "Uncat game mesh budget",
+            "passed": true
+        },
+        {
+            "name": "Uncat own PBR atlas",
+            "passed": true
+        },
+        {
+            "name": "Uncat live patrol clip",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 0",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 1",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 2",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 3",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 4",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 5",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 6",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 7",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 8",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 9",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 10",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 11",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 12",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 13",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 14",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 15",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 16",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 17",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 18",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 19",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 20",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 21",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 22",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 23",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 24",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 25",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 26",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 27",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 28",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 29",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 30",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol floor phase 31",
+            "passed": true
+        },
+        {
+            "name": "Uncat patrol skin deformation",
+            "passed": true
+        },
+        {
+            "name": "Uncat live chase clip",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-00.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 0",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 1",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-01.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 2",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 3",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-02.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 4",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 5",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-03.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 6",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 7",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-04.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 8",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 9",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-05.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 10",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 11",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-06.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 12",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 13",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-07.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 14",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 15",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-08.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 16",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 17",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-09.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 18",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 19",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-10.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 20",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 21",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-11.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 22",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 23",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-12.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 24",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 25",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-13.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 26",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 27",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-14.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 28",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 29",
+            "passed": true
+        },
+        {
+            "name": "Uncat-chase-15.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 30",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase floor phase 31",
+            "passed": true
+        },
+        {
+            "name": "Uncat chase skin deformation",
+            "passed": true
+        },
+        {
+            "name": "Uncat visibly distinct pursuit head rotation",
+            "passed": true
+        },
+        {
+            "name": "Uncat-full.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby supported actual corridor fixture",
+            "passed": true
+        },
+        {
+            "name": "Baby new studio visual",
+            "passed": true
+        },
+        {
+            "name": "Baby attack rig",
+            "passed": true
+        },
+        {
+            "name": "Baby game mesh budget",
+            "passed": true
+        },
+        {
+            "name": "Baby own PBR atlas",
+            "passed": true
+        },
+        {
+            "name": "Baby live patrol clip",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 0",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 1",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 2",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 3",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 4",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 5",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 6",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 7",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 8",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 9",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 10",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 11",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 12",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 13",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 14",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 15",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 16",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 17",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 18",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 19",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 20",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 21",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 22",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 23",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 24",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 25",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 26",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 27",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 28",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 29",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 30",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol floor phase 31",
+            "passed": true
+        },
+        {
+            "name": "Baby patrol skin deformation",
+            "passed": true
+        },
+        {
+            "name": "Baby live chase clip",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-00.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 0",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 1",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-01.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 2",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 3",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-02.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 4",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 5",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-03.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 6",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 7",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-04.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 8",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 9",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-05.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 10",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 11",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-06.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 12",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 13",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-07.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 14",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 15",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-08.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 16",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 17",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-09.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 18",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 19",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-10.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 20",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 21",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-11.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 22",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 23",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-12.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 24",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 25",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-13.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 26",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 27",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-14.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 28",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 29",
+            "passed": true
+        },
+        {
+            "name": "Baby-chase-15.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 30",
+            "passed": true
+        },
+        {
+            "name": "Baby chase floor phase 31",
+            "passed": true
+        },
+        {
+            "name": "Baby chase skin deformation",
+            "passed": true
+        },
+        {
+            "name": "Baby visibly distinct pursuit head rotation",
+            "passed": true
+        },
+        {
+            "name": "Baby-full.png unobstructed player camera",
+            "passed": true
+        },
+        {
+            "name": "Baby live cry clip",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 0",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 1",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 2",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 3",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 4",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 5",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 6",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 7",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 8",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 9",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 10",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 11",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 12",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 13",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 14",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 15",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 16",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 17",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 18",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 19",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 20",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 21",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 22",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 23",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 24",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 25",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 26",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 27",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 28",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 29",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 30",
+            "passed": true
+        },
+        {
+            "name": "Baby cry floor phase 31",
+            "passed": true
+        },
+        {
+            "name": "Baby cry skin deformation",
+            "passed": true
+        },
+        {
+            "name": "Baby-cry.png unobstructed player camera",
+            "passed": true
+        }
+    ],
+    "errors": []
+}

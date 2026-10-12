@@ -234,9 +234,10 @@ namespace HappyToy.V2.Editor
         static Bounds SamplePoseUnion(GameObject root, AnimationClip[] clips, EnemyStudioRig rig, out float maximumSupportGap)
         {
             var result = new Bounds(); bool any = false; maximumSupportGap = 0;
-            foreach (var clip in clips) for (int frame = 0; frame <= 8; frame++)
+            // Include off-beat neck extrema between footfall phases in culling/support bounds.
+            foreach (var clip in clips) for (int frame = 0; frame <= 32; frame++)
             {
-                clip.SampleAnimation(root, clip.length * frame / 8f);
+                clip.SampleAnimation(root, clip.length * frame / 32f);
                 float actualSole = float.MaxValue, supportSole = float.MaxValue;
                 foreach (var surface in rig.surfaceSupports)
                 {

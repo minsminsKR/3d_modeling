@@ -20,7 +20,7 @@ namespace HappyToy.V2
         [Serializable] sealed class Report
         {
             public string status,failure,unity,graphics;
-            public string scope="Controlled native seed-73 corridor: newly generated meshes/materials, live clip aliases, eight sampled deformation/ground phases, actual player-camera views, Baby cry and Cyclopse stumble joints. AI is disabled for the art fixture. Does not certify survival balance or perceived fear.";
+            public string scope="Controlled native seed-73 corridor: newly generated meshes/materials, live clip aliases, 32 sampled deformation/ground phases and 16 pursuit frames with measured head rotation, actual player-camera views, Baby cry and Cyclopse stumble joints. AI is disabled for the art fixture. Does not certify survival balance or perceived fear.";
             public Check[] checks; public string[] errors;
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] static void Install()
@@ -93,16 +93,21 @@ namespace HappyToy.V2
                         actor.state=alias=="chase"?StalkerBrain.State.Chase:StalkerBrain.State.Patrol;
                         animation.Play(alias);yield return null;yield return null;
                         Vector3[] first=null;float change=0;
-                        for(int phase=0;phase<8;phase++)
+                        var head=motion.model.GetComponentsInChildren<Transform>().Single(node=>node.name=="mixamorig:Head");
+                        Quaternion firstHead=Quaternion.identity;float headSwing=0;
+                        for(int phase=0;phase<32;phase++)
                         {
-                            animation.Play(alias);animation[alias].time=phase*clip.length/8;animation[alias].speed=0;animation.Sample();
+                            animation.Play(alias);animation[alias].time=phase*clip.length/32;animation[alias].speed=0;animation.Sample();
                             yield return null;
                             var points=skins.SelectMany(skin=>WorldPoints(skin,scratch)).ToArray();
-                            if(first==null)first=points;
+                            if(first==null){first=points;firstHead=head.localRotation;}
                             else change=Mathf.Max(change,points.Zip(first,(a,b)=>Vector3.Distance(a,b)).Max());
+                            headSwing=Mathf.Max(headSwing,Quaternion.Angle(firstHead,head.localRotation));
+                            if(alias=="chase" && phase%2==0)CaptureView(session,camera,motion,actor.transform,2.7f,key+"-chase-"+(phase/2).ToString("D2")+".png");
                             AssertValue(key+" "+alias+" floor phase "+phase,Mathf.Abs(points.Min(point=>point.y)-site.position.y)<.045f);
                         }
                         AssertValue(key+" "+alias+" skin deformation",change>.02f);
+                        if(alias=="chase")AssertValue(key+" visibly distinct pursuit head rotation",headSwing>15);
                         animation[alias].time=0;animation.Sample();yield return null;
                         if(alias=="chase")CaptureView(session,camera,motion,actor.transform,2.7f,key+"-full.png");
                         if(alias=="cry")CaptureView(session,camera,motion,actor.transform,1.8f,key+"-cry.png");
