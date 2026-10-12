@@ -1,0 +1,8 @@
+{
+  "duration_seconds": 2.4,
+  "fps": 60,
+  "yaw_radians": 0.5,
+  "roll_radians": 0.04,
+  "pitch_radians": 0.025,
+  "description": "Head-only dominant sideways writhing about model-up with small bounded roll/pitch to protect the original low mask and hanging decorations from the floor."
+}

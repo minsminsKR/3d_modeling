@@ -73,6 +73,7 @@ namespace HappyToy.V2.Editor
         public static void BuildWindows()
         {
             EnemyStudioGameImport.Ensure();
+            BaeksugwiHeadImport.Ensure();
             GraphicsPbrImport.Ensure();
             ThreatEyeModelImport.Ensure();
             ThreatEyeMaskImport.Ensure();

@@ -16,7 +16,10 @@ namespace HappyToy.V2
         readonly List<Material> materials = new List<Material>();
         GameObject set, creature;
         Camera camera;
-        AnimationClip pose;
+        AnimationClip pose,headMotion;
+        float headClock;
+        public float HeadMotionTime=>headClock;
+        public AnimationClip HeadMotionClip=>headMotion;
         Shader titleShader;
         Transform faceJoint;
         SkinnedMeshRenderer[] skins;
@@ -76,7 +79,8 @@ namespace HappyToy.V2
             foreach (var behaviour in creature.GetComponentsInChildren<Behaviour>(true)) behaviour.enabled = false;
             foreach (var collider in creature.GetComponentsInChildren<Collider>(true)) Destroy(collider);
             pose = Resources.Load<AnimationClip>("Baeksugwi/Run_InPlace");
-            if (!pose) throw new InvalidOperationException("Missing real Baeksugwi pose");
+            headMotion=Resources.Load<AnimationClip>("Baeksugwi/Head_Writhe");
+            if (!pose || !headMotion) throw new InvalidOperationException("Missing real Baeksugwi pose/head action");
             // Hold a real planted gait frame instead of walking in place above the title floor.
             skins = creature.GetComponentsInChildren<SkinnedMeshRenderer>();
             PlantTitlePose();
@@ -136,7 +140,12 @@ namespace HappyToy.V2
         public void SetVisible(bool value) { visible = value; if (set) set.SetActive(value); if (value) nextFrame = 0; }
         void LateUpdate()
         {
-            if (!visible || !Image || !camera || Time.frameCount < 3 || Time.unscaledTime < nextFrame) return;
+            if (!visible || !Image || !camera || Time.frameCount < 3) return;
+            // Title time is unscaled; the game intentionally pauses on this page.
+            // Sampling only Head leaves every planted limb and body pose fixed.
+            if(!shell || !shell.ReducedMotion)headClock+=Time.unscaledDeltaTime;
+            if(Time.unscaledTime < nextFrame)return;
+            headMotion.SampleAnimation(creature,shell && shell.ReducedMotion ? 0 : Mathf.Repeat(headClock,headMotion.length));
             UpdateFaceLighting();
             RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = Image });
             nextFrame = Time.unscaledTime + (shell && shell.ReducedMotion ? 1 : 1f / 15);

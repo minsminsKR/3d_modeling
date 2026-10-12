@@ -82,3 +82,31 @@ To regenerate Unity resources, run `export_game.py` in Blender, then
 reviewed full mesh and skin, remaps the in-place clip beneath its fitting root,
 converts glTF metallic/roughness channels for URP, and writes the prefab and
 import audit without editing the preserved school scene.
+
+## Head-only writhing action
+
+`Head_Writhe` is a separate 2.4-second looping action in `Baeksugwi_Run.blend`.
+Its four quaternion channels rotate Head only; body/neck/arm/root translations,
+scales and the original Run actions are preserved. `head-motion-profile.json`
+controls bounded yaw/roll/pitch waves; `author_head_motion.py` records unchanged
+Run curve hashes in `head-motion-report.json`. The original full run GLB and
+base Unity FBX still contain their existing gait; the new armature-only
+`Assets/Resources/Baeksugwi/Head_Writhe.fbx` supplies the independent head take.
+
+From repository root, with Blender 4.0.2 and Unity 6000.6.0f1:
+
+```powershell
+blender --background --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/BaeksugwiStudio/author_head_motion.py
+unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.Editor.BaeksugwiHeadImport.Apply
+```
+
+The Unity importer intentionally copies only Head rotation curves into
+`Head_Writhe.anim`, verifying their paths against the real prefab. During Chase,
+MaskHorrorVisual samples this action after the existing run pose, on a separate
+scaled-time clock. It freezes with gameplay pause and stops on leaving Chase. Before school
+transformation, the same sampled head delta rotates the separate visible mask
+after its encounter-owned pose, without accumulating rotation or moving the body.
+The stationary title creature samples the same head action with an unscaled
+clock; planted body/arms stay frozen. Hidden title scenes stop their clock, and
+Reduced Motion retains a neutral head instead of the writhing title animation.
+Existing eye glow and face lighting follow the current Head matrix.

@@ -1,0 +1,11 @@
+*.log
+native/title-*.png
+native/chase-*.png
+native/isolated-profile/
+
+# Earlier diagnostic attempts; final reports are kept.
+playmode.xml
+playmode-final.xml
+build.provenance.json
+build-final.provenance.json
+build-verified.provenance.json

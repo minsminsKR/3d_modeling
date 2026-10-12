@@ -1,0 +1,43 @@
+{
+  "status": "BUILD_INPUTS_PASS",
+  "scope": "Fresh native artifact existence/checksums, full current Assets/Packages/ProjectSettings inventory/hashes and copied credit equality; does not certify actual native shader appearance, route completion, DSP/device audio or performance.",
+  "readUtc": "2026-10-12T08:57:22.307270+00:00",
+  "project": "E:\\AI\\3d_modeling\\HappyToyV2",
+  "build": "E:\\AI\\3d_modeling\\HappyToyV2\\Builds\\Local-BaeksugwiHead-20261012",
+  "errors": [],
+  "manifestCreatedUtc": "2026-10-12T08:56:33.6689801Z",
+  "unity": "6000.6.0f1",
+  "inputCount": 2873,
+  "shaderAnchors": [
+    "Assets/Resources/FeedbackShaderVariants/Lit-01b604c0806f6655433f4d1675d66a8367d068b50b89015505f2e369ab4c614b.mat",
+    "Assets/Resources/FeedbackShaderVariants/Lit-04bfb2aff0376539e0671227847e5e08793beafa6fae3caf58526e92c4d86582.mat",
+    "Assets/Resources/FeedbackShaderVariants/Lit-21bc63dfb56636b8b63a7f3bb922814189fdb235514a8737d0eb7ac2dd8d11fe.mat",
+    "Assets/Resources/FeedbackShaderVariants/Lit-438e85b77c16a041023c9e3b33849ba8d7313c2718c1c5a8ff1c64c559ad3f42.mat",
+    "Assets/Resources/FeedbackShaderVariants/Lit-50995a49aeeb344371469e40a34065a36a4363015dbc969b60d83605975655b5.mat",
+    "Assets/Resources/FeedbackShaderVariants/Lit-86c2e9aa61bb216a545520a556d77c41fd60002b2a99c9cd7df1cad890c8aa88.mat",
+    "Assets/Resources/FeedbackShaderVariants/Lit-87c3df18c91c0d8e5801f5cb942eaebacfd70824fe54bbc911a6d1d746572718.mat",
+    "Assets/Resources/FeedbackShaderVariants/Lit-b20e70bb910911656849f39b5a5e0bf14fdf723b021ecf94f635999d56d7409f.mat"
+  ],
+  "artifacts": [
+    {
+      "path": "HappyToyV2.exe",
+      "bytes": 667136,
+      "sha256": "718444f6a718fa668da96eb0a58445b009673310e6129152a63dbf7a92b8de00"
+    },
+    {
+      "path": "UnityPlayer.dll",
+      "bytes": 91080616,
+      "sha256": "48c3863e83c8615567fd62ed6a22fa9852c80b058bb97179721ec30454680345"
+    },
+    {
+      "path": "HappyToyV2_Data/globalgamemanagers",
+      "bytes": 441204,
+      "sha256": "8533f6c44011b4cdc88959ee0339d94774ddf4710f3c15de6b9329d33a7d81c0"
+    },
+    {
+      "path": "Audio-Credits.txt",
+      "bytes": 10014,
+      "sha256": "47bca7cbf7c876993fcf262f575dbe4d8ff405078558796f3cc4a77807dfe209"
+    }
+  ]
+}
