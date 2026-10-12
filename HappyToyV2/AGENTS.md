@@ -1,3 +1,12 @@
+# HappyToyV2 persistent development rules
+
+Apply the repository-root `../AGENTS.md` for the game's development direction,
+complete source handoff, latest playable `origin/main` pulls, explicitly requested
+pushes to `origin/main`, build cleanup and the designated modeling webapp.
+Preserve generated reference images, original GLB/PBR, editable rig/animation
+sources, Unity assets and `.meta` files so work can continue on another PC.
+Choose webapp rigging or local Blender finishing by quality and efficiency.
+
 # Audio direction
 
 The user requires realistic horror audio. For new or revised sound effects,
