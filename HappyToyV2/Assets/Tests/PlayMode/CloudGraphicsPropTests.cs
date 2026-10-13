@@ -65,7 +65,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(60000)]
         public IEnumerator ModeledCorridorStationFeetMeetActualFloorWhileTargetsAndLightsStayExact()
         {
-            Call(session,"CreateCorridor",73);IsolateThreats();Begin();yield return null;
+            CreateLegacyCorridorFixture(73);IsolateThreats();Begin();yield return null;
             var stations=LightTargets("Candle").Concat(LightTargets("FlashlightBattery")).ToArray();
             Assert.That(stations.Length,Is.EqualTo(21));
             foreach(var station in stations)
@@ -84,7 +84,7 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(visual,Is.Not.Null,"Shelf cells lost their authored compact model");
                     Assert.That(station.GetComponentsInChildren<Transform>(true).Any(item=>item.name=="Authored realistic prop — battery-supply"),Is.False,
                         "Old floor stand was instantiated on the shelf");
-                    var batteryBody=visual.GetComponentsInChildren<MeshRenderer>(true).Single();
+                    var batteryBody=visual.GetComponentsInChildren<MeshRenderer>(true).Single(renderer=>renderer.name!="Pickup silhouette");
                     var support=Physics.RaycastAll(station.transform.position+Vector3.up*.05f,Vector3.down,.20f,
                         Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore)
                         .Where(hit=>hit.collider.name=="Shelf bearing board").OrderBy(hit=>hit.distance).ToArray();

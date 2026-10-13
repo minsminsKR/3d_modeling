@@ -163,7 +163,7 @@ namespace HappyToy.V2
             Wayfinding = dressing.gameObject.AddComponent<SchoolWayfinding>();
             Wayfinding.Prepare();
             var ambience=GetComponent<RoomAmbience>();
-            if(ambience) ambience.ConfigureRunPositions(new[]{new Vector3(-3,1.2f,-4),new Vector3(29.8f,7.1f,31),new Vector3(13.8f,-3.8f,-29)});
+            if(ambience) ambience.ConfigureRunPositions(new[]{new Vector3(-3,1.2f,-4),new Vector3(29.8f,7.1f,31),new Vector3(13.8f,-3.8f,-29)},false);
         }
         Material Material(string name,Color tint,float smooth)
         {var m=new Material(Shader.Find("Universal Render Pipeline/Lit")){name=name,enableInstancing=true};m.SetColor("_BaseColor",tint);m.SetFloat("_Smoothness",smooth);owned.Add(m);return m;}

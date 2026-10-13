@@ -151,6 +151,7 @@ namespace HappyToy.V2.CloudTests
             var state = CopyAdvancedProgress(Call(mask, "CaptureChapterProgress"));
             Set(state, "position", nearCabinet.position); Set(state, "state", "Wander"); Set(state, "memory", 0f);
             Call(mask, "RestoreCorridorProgress", state);
+            mask.transform.rotation=Quaternion.LookRotation(player.transform.position-mask.transform.position);
             Assert.That((bool)Call(mask, "CanSeePlayer"), Is.True, "Actual cabinet approach does not provide clear near-range player sight");
             Call(cabinet, "Use", player);
             Assert.That(Get<bool>(player, "Hidden"), Is.True, "Actual corridor cabinet entry failed");

@@ -17,6 +17,7 @@ namespace HappyToy.V2
             {"enemy-cyclopse-movement",3},{"enemy-cyclopse-attack",1},
             {"enemy-hwacat-movement",3},{"enemy-hwacat-attack",1},
             {"enemy-uncat-movement",3},{"enemy-uncat-attack",1},
+            {"enemy-uncat-bell",1},
             {"enemy-baby-movement",3},{"enemy-baby-attack",1},
             {"enemy-baby-cry",1},
             {"enemy-baby-mutter",2},

@@ -138,7 +138,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(55000)]
         public IEnumerator ExternalFootstepsFollowRealSchoolMaterialsAndFlashlightKeyboardInput()
         {
-            Call(shell, "BeginChapter"); yield return null; IsolateThreats(); Call(shell, "RestoreDefaultSettings");
+            BeginLegacyChapterFixture(); yield return null; IsolateThreats(); Call(shell, "RestoreDefaultSettings");
             var feedback = Get<Component>(player, "Feedback");
             var positions = new[] {new Vector3(-7.8f,.02f,0),new Vector3(-4.5f,.02f,-3.2f),new Vector3(13.8f,-4.98f,-25.5f)};
             var surfaces = new[] {"wood","stone","wet"}; var directions = new[] {Key.D,Key.D,Key.S};
@@ -196,7 +196,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(90000)]
         public IEnumerator ExternalSchoolDoorMixFollowsLeafPauseDistanceMasterVolumeAndRetry()
         {
-            Call(shell,"BeginChapter"); yield return null; IsolateThreats(); Call(shell,"RestoreDefaultSettings");
+            BeginLegacyChapterFixture(); yield return null; IsolateThreats(); Call(shell,"RestoreDefaultSettings");
             ((Behaviour)player).enabled=false; ((Behaviour)Get<Component>(player,"Feedback")).enabled=false;
             var door=Components("Interactable").First(item=>Get<object>(item,"kind").ToString()=="Door" &&
                 Get<Transform>(item,"movingLeaf") && item.name.IndexOf("WASHROOM",StringComparison.OrdinalIgnoreCase)>=0);
@@ -285,9 +285,9 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(65000)]
         public IEnumerator ExternalPortraitCreakAndImpactFollowTheActualFourthMemoryEvent()
         {
-            Call(shell,"BeginChapter");yield return null;Call(shell,"RestoreDefaultSettings");
+            BeginLegacyChapterFixture();yield return null;Call(shell,"RestoreDefaultSettings");
             var chapter=Get<Component>(session,"Chapter");var memories=Get<Component[]>(chapter,"Memories");
-            foreach(var memory in memories.Take(3))Call(memory,"Use",player);
+            for(int i=0;i<3;i++)Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
             Assert.That(Get<int>(chapter,"Recovered"),Is.EqualTo(3));
             // Do not disable the portrait being tested: its production OnDisable
             // deliberately cancels the encounter. Chapter preparation already
@@ -347,7 +347,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(90000)]
         public IEnumerator ExternalChapterRoomLoopsAreAudibleAndOccludedAcrossTheAuthoredFloor()
         {
-            Call(shell,"BeginChapter");yield return null;IsolateThreats();Call(shell,"RestoreDefaultSettings");
+            BeginLegacyChapterFixture();yield return null;IsolateThreats();Call(shell,"RestoreDefaultSettings");
             ((Behaviour)player).enabled=false;((Behaviour)Get<Component>(player,"Feedback")).enabled=false;
             var ambience=One("RoomAmbience");var voices=((IEnumerable)Get<object>(ambience,"Voices")).Cast<object>().ToArray();
             Assert.That(voices.Length,Is.EqualTo(3));

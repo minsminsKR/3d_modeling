@@ -116,7 +116,7 @@ namespace HappyToy.V2
                     Layout.AltarDirection%2==0 ? new Vector3(2.9f,2.4f,3.4f) : new Vector3(3.4f,2.4f,2.9f));
                 if(furniture.Intersects(clearance))return true;
             }
-            if(cell>=1 && (cell-1)%6==0 && furniture.Intersects(new Bounds(center+new Vector3(-1.50f,1.3f,1.6f),new Vector3(2.30f,2.6f,2.40f)))) return true;
+            if(cell>=1 && ((cell-1)%6==0 || Layout.HasShelterCabinet(cell)) && furniture.Intersects(new Bounds(center+new Vector3(-1.50f,1.3f,1.6f),new Vector3(2.30f,2.6f,2.40f)))) return true;
             if(Layout.HasCandle(cell) && furniture.Intersects(new Bounds(CandlePosition(cell)+Vector3.up*.19f,new Vector3(.65f,2.5f,.65f)))) return true;
             if(cell==0 && furniture.Intersects(new Bounds(center+new Vector3(-2.72f,1.1f,0),new Vector3(.50f,2.2f,1.9f)))) return true;
             return false;

@@ -66,6 +66,7 @@ namespace HappyToy.V2
             if (kind == Kind.Door && obstacle && !rememberedCarving)
             { authoredCarving = obstacle.carving; rememberedCarving = true; }
             if (kind == Kind.Door && obstacle && isActiveAndEnabled) obstacle.carving = false;
+            if (DoorOperable) DoorInteractionTarget.Ensure(this);
         }
         void OnEnable() { RememberDoorGeometry(); }
         void OnDisable()

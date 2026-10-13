@@ -96,8 +96,8 @@ namespace HappyToy.V2.Editor
             string pipelineGuid=AssetDatabase.AssetPathToGUID(PipelinePath),rendererGuid=AssetDatabase.AssetPathToGUID(RendererPath);
             if(!string.IsNullOrEmpty(oldPipelineGuid)&&oldPipelineGuid!=pipelineGuid || !string.IsNullOrEmpty(oldRendererGuid)&&oldRendererGuid!=rendererGuid)
                 throw new InvalidOperationException("Repeated setup changed owned asset GUIDs");
-            Directory.CreateDirectory("Verification/graphics-upgrade");
-            File.WriteAllText("Verification/graphics-upgrade/lighting-setup.json",JsonUtility.ToJson(new Proof {
+            Directory.CreateDirectory("Builds/GraphicsLighting");
+            File.WriteAllText("Builds/GraphicsLighting/lighting-setup-"+Guid.NewGuid().ToString("N")+".json",JsonUtility.ToJson(new Proof {
                 unity=Application.unityVersion,sourcePipelineSha256=pipelineHash,sourceRendererSha256=rendererHash,sourceSceneSha256=sceneHash,
                 pipelineGuid=pipelineGuid,rendererGuid=rendererGuid},true));
             Debug.Log("HAPPYTOY_GRAPHICS_LIGHTING_SETUP_PASS HDR/depth/SSAO/reflection settings and original hashes");

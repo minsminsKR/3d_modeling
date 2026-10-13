@@ -173,11 +173,15 @@ namespace HappyToy.V2
             var origin = eyes.transform.position;
             var direction = eyes.transform.forward;
             // The exact ray always wins; opaque geometry cannot be bypassed by aim assistance.
-            if (Physics.Raycast(origin, direction, out var direct, 2.2f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            bool opaque = Physics.Raycast(origin, direction, out var direct, 2.2f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            if (opaque)
             {
                 var item=direct.collider.GetComponentInParent<Interactable>();
-                return item && item.CanFocus ? item : null;
+                if (item && item.CanFocus) return item;
             }
+            var doorway = DoorInteractionTarget.Find(origin, direction, 2.2f, opaque ? direct.distance : 2.2f);
+            if (doorway) return doorway;
+            if (opaque) return null;
             // Tiny distant notes should not demand pixel-perfect aim. A wall still blocks this cast.
             if (!Physics.SphereCast(origin, .065f, direction, out var assist, 2.135f,
                 Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) return null;

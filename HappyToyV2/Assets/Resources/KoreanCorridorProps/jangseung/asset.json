@@ -1,0 +1,26 @@
+{
+  "key": "jangseung",
+  "tool": "Blender 4.0.2",
+  "original": "jangseung-original.glb",
+  "originalSha256": "9847f0da07b23c855ed27e80aa2a744727a0354c47b52d1a567d86723be913a3",
+  "editable": "jangseung.blend",
+  "heightMetres": 1.4,
+  "targetTriangles": 12000,
+  "originalFaces": 936051,
+  "gameFaces": 11998,
+  "fbx": "Assets/Resources/KoreanCorridorProps/jangseung/geometry.fbx",
+  "materials": [
+    {
+      "name": "KC_jangseung_0",
+      "roughness": 0.5,
+      "baseColor": "KC_jangseung_0-baseColor.png",
+      "metallicSmoothness": "KC_jangseung_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Original full PBR embedded in original GLB and packed blend; game maps resized to at most 2048px",
+  "bounds": {
+    "width": 0.352394353823543,
+    "depth": 0.2822516081603304,
+    "height": 1.4
+  }
+}

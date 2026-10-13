@@ -13,7 +13,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(45000)]
         public IEnumerator SchoolClassroomDoorOpensWithoutFloatingInteriorSign()
         {
-            Call(shell, "BeginChapter");
+            BeginLegacyChapterFixture();
             yield return null; yield return null;
             IsolateThreats();
             Assert.That(Get<bool>(session, "ChapterMode"), Is.True);

@@ -92,7 +92,8 @@ namespace HappyToy.V2
             run=source;
             foreach (var collider in GetComponentsInChildren<Collider>(true))
             {
-                if (collider.GetComponentInParent<StalkerBrain>()) continue;
+                if (collider.GetComponentInParent<StalkerBrain>() || collider.GetComponentInParent<LanternMaskEncounter>() ||
+                    collider.isTrigger && collider.gameObject.layer==2) continue;
                 physical.Add(new PhysicalState {collider=collider,position=collider.transform.position,rotation=collider.transform.rotation,
                     scale=collider.transform.lossyScale,center=collider.bounds.center,size=collider.bounds.size,enabled=collider.enabled,layer=collider.gameObject.layer});
             }

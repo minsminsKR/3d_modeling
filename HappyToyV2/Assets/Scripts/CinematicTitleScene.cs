@@ -44,7 +44,7 @@ namespace HappyToy.V2
         public bool FaceLightReady => faceJoint && creatureMaterials.Count > 0;
         public bool EyesReady => FaceLightReady && creatureMaterials.All(m => m.GetFloat("_EyeGlow") > 0);
         GameShell shell;
-        float nextFrame;
+        double nextFrame;
         bool visible;
         public RenderTexture Image { get; private set; }
         public bool UsesBaeksugwi => creature && creature.GetComponentsInChildren<SkinnedMeshRenderer>().Length > 0;
@@ -157,7 +157,8 @@ namespace HappyToy.V2
             // Title time is unscaled; the game intentionally pauses on this page.
             // Sampling only Head leaves every planted limb and body pose fixed.
             if(!shell || !shell.ReducedMotion)headClock+=Time.unscaledDeltaTime;
-            if(Time.unscaledTime < nextFrame)return;
+            double now=Time.unscaledTimeAsDouble;
+            if(now < nextFrame)return;
             bool approaching=shell && shell.CinematicLoading;
             if(approaching)
             {
@@ -191,7 +192,12 @@ namespace HappyToy.V2
             }
             UpdateFaceLighting();
             RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = Image });
-            nextFrame = Time.unscaledTime + (approaching ? 1f/30 : shell && shell.ReducedMotion ? 1 : 1f / 15);
+            double interval=!approaching && shell && shell.ReducedMotion ? 1d : 1d/60;
+            // Keep a 60 Hz phase instead of scheduling from each late frame.
+            // Tiny frame-time differences must not turn 60 Hz into skipped frames.
+            // After a real hitch, resume once without replaying missed renders.
+            if(nextFrame==0 || now-nextFrame>interval*4)nextFrame=now;
+            nextFrame+=interval;
         }
         struct JointPose
         {

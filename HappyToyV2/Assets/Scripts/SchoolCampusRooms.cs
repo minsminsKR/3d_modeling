@@ -137,7 +137,7 @@ namespace HappyToy.V2
                 Sign(spec.Item3,spec.Item2,Quaternion.Euler(0,spec.Item1<1?0:180,0),new Vector2(2.35f,.57f));
             Root.gameObject.AddComponent<FloorAtmosphere>();
             var ambience=GameSession.Current.GetComponent<RoomAmbience>();
-            if(ambience)ambience.ConfigureRunPositions(new[]{new Vector3(-3,1.2f,-4),new Vector3(29.8f,7.1f,31),new Vector3(13.8f,-3.8f,-29)});
+            if(ambience)ambience.ConfigureRunPositions(new[]{new Vector3(-3,1.2f,-4),new Vector3(29.8f,7.1f,31),new Vector3(13.8f,-3.8f,-29)},false);
         }
         void Cabinet(Space room,Vector3 position)
         {

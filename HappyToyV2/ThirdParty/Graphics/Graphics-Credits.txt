@@ -13,3 +13,6 @@ metal-rust / rusty_metal_02 — Rob Tuytel — https://polyhaven.com/a/rusty_met
 Original models/materials: HappyToyV2 bespoke Blender/procedural assets.
 Candle flame: original AI-generated photographic-style transparent raster; OpenAI built-in image generation.
 Source models and attribution records preserved under SourceArt/GraphicsUpgrade.
+
+Korean corridor jangseung, onggi and dokkaebi-inspired roof tile: generated for this project with the designated A100 Studio / TRELLIS.2 webapp, using original built-in ImageGen references; locally finished in Blender 4.0.2.
+References, original GLB/PBR, prompts, job provenance, editable Blender and backend license are preserved under SourceArt/KoreanCorridorProps.

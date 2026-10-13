@@ -17,10 +17,33 @@ namespace HappyToy.V2.Tests.EditMode
                 var edges=(int[])type.GetField("Connections").GetValue(layout);
                 Assert.That(edges.Count(mask=>mask==5 || mask==10),Is.GreaterThanOrEqualTo(25),"Too few straight sections: "+seed);
                 Assert.That(edges.Count(mask=>Enumerable.Range(0,4).Count(d=>(mask&(1<<d))!=0)>=3),Is.LessThanOrEqualTo(22),"Too many intersections: "+seed);
-                Assert.That(Enumerable.Range(0,81).Count(cell=>!(bool)type.GetMethod("IsRoom").Invoke(layout,new object[]{cell})),Is.GreaterThanOrEqualTo(48));
+                var previous=Activator.CreateInstance(type,new object[]{seed,3});
+                Assert.That(Enumerable.Range(0,81).Count(cell=>!(bool)type.GetMethod("IsRoom").Invoke(previous,new object[]{cell})),Is.GreaterThanOrEqualTo(48));
+                for(int cell=0;cell<81;cell++)
+                    if(new[]{3,6,9,12}.Contains(edges[cell]))
+                        Assert.That((bool)type.GetMethod("IsRoom").Invoke(layout,new object[]{cell}),Is.True,"Tight turn in seed "+seed);
+                var shelters=(int[])type.GetField("ShelterCells").GetValue(layout);
+                Assert.That(shelters.Length,Is.LessThanOrEqualTo(8));
+                int Doors(int cell) => Enumerable.Range(0,4).Count(d=>(edges[cell]&(1<<d))!=0);
+                Assert.That(shelters.All(cell=>cell>0 && (Doors(cell)==1 || Doors(cell)==2)),Is.True);
+                int single=shelters.Count(cell=>Doors(cell)==1), separate=shelters.Count(cell=>Doors(cell)==2);
+                Assert.That(separate,Is.GreaterThanOrEqualTo(1),"No separate escape room in seed "+seed);
+                Assert.That(separate,Is.EqualTo(single>0?single:2),"Unbalanced shelter mix in seed "+seed);
+                var fourth=Activator.CreateInstance(type,new object[]{seed,4});
+                Assert.That((int[])type.GetField("Connections").GetValue(fourth),Is.EqualTo(edges),"Door rooms changed existing maze links");
+                Assert.That(((int[])type.GetField("ShelterCells").GetValue(fourth)).All(cell=>Doors(cell)==1),Is.True);
                 var legacy=Activator.CreateInstance(type,new object[]{seed,1});
                 Assert.That(Enumerable.Range(0,81).All(cell=>(bool)type.GetMethod("IsRoom").Invoke(legacy,new object[]{cell})),Is.True);
             }
+        }
+        [TestCase(73, new[] {47,50}, new[] {1,47,50,2,17,5,68,14})]
+        [TestCase(211, new[] {16,29,51,67}, new[] {2,16,29,51,67,39,35,5})]
+        public void SavedVersionFourKeepsItsOriginalRoomsAndFiniteSupplies(int seed, int[] rooms, int[] supplies)
+        {
+            var type=Type.GetType("HappyToy.V2.CorridorLayout, Assembly-CSharp",true);
+            var saved=Activator.CreateInstance(type,new object[]{seed,4});
+            Assert.That((int[])type.GetField("ShelterCells").GetValue(saved),Is.EqualTo(rooms));
+            Assert.That((int[])type.GetField("Supplies").GetValue(saved),Is.EqualTo(supplies));
         }
         [Test]
         public void FiveHundredSeedsHaveConnectedLoopsSeparatedGoalsAndSafeThreatSpawns()

@@ -85,6 +85,7 @@ namespace HappyToy.V2.CloudTests
             lastHidingOutcome = Get<object>(player, "HidingOutcome").ToString();
             Assert.That(Get<object>(player, "HidingRandomSample"), Is.Null, "Full route may not override production hiding RNG");
             bool expectedResult=expectEscape&&Get<bool>(session,"Finished")&&Get<bool>(session,"Escaped");
+            Assert.That(!Get<bool>(session,"Finished")||expectedResult,Is.True,"Actual corridor defeat during "+stage+" at "+player.transform.position+" notice="+Get<string>(session,"Notice"));
             Assert.That(Time.timeScale, Is.EqualTo(expectedResult?0:1)); Assert.That(Time.captureDeltaTime, Is.Zero);
             if(expectedResult)
                 Assert.That(Get<object>(shell,"Screen").ToString(),Is.EqualTo("Result").Or.EqualTo("ChapterTransition"));
@@ -325,7 +326,7 @@ namespace HappyToy.V2.CloudTests
                         { int before = hidingEntries; yield return HideFrom(guard); progressTime = Time.realtimeSinceStartup;
                             if (hidingEntries > before) { yield return Walk(at); yield break; } }
                         var stock = Get<Component>(player, "Firecrackers");
-                        if (separation > 5 && GameTime - lastThrow > 10 && Get<int>(stock, "Count") > 0 && !RecognitionCue)
+                        if (guard.GetType().Name!="LanternMaskEncounter" && separation > 5 && GameTime - lastThrow > 10 && Get<int>(stock, "Count") > 0 && !RecognitionCue)
                         { yield return Decoy(guard); progressTime = Time.realtimeSinceStartup; continue; }
                         if ((separation < 4.5f || RecognitionCue) && Get<bool>(player, "Crouching"))
                         { yield return Pulse(Key.C); alertUntil = GameTime + 6; progressTime = Time.realtimeSinceStartup; }
@@ -387,16 +388,7 @@ namespace HappyToy.V2.CloudTests
             float beforeDrain = Get<float>(lamp, "Charge"), waitUntil = GameTime + .3f;
             while (GameTime < waitUntil) { keys(Array.Empty<Key>()); yield return null; Check(); }
             RouteRequire(Get<float>(lamp, "Charge") < beforeDrain, "The lit flashlight did not consume real gameplay charge");
-            Component battery = null; Vector3 batteryAt = Vector3.zero; float best = 24;
-            foreach (var item in Components("Interactable").Where(x => x.gameObject.activeSelf && Get<object>(x, "kind").ToString() == "FlashlightBattery"))
-                if (FindApproach(item, out var at, out var length) && length < best) { battery = item; batteryAt = at; best = length; }
-            RouteRequire(battery, "No finite early battery has a physical input route");
-            yield return Walk(batteryAt); float beforeRefill = Get<float>(lamp, "Charge"); int packs = Get<int>(lamp, "PacksCollected");
-            yield return Interact(battery);
-            RouteRequire(!battery.gameObject.activeSelf && Get<int>(lamp, "PacksCollected") == packs + 1 && Get<float>(lamp, "Charge") > beforeRefill,
-                "Actual E did not consume one finite battery and refill the lamp");
-            batteriesCollected++; Mark("picked up finite battery through E after actual lit drain");
-            Component marker = null; Vector3 markerAt = Vector3.zero; best = 24;
+            Component marker = null; Vector3 markerAt = Vector3.zero; float best = 24;
             foreach (var item in Components("Interactable").Where(x => x.gameObject.activeSelf && Get<object>(x, "kind").ToString() == "Candle"))
                 if (FindApproach(item, out var at, out var length) && length < best) { marker = item; markerAt = at; best = length; }
             RouteRequire(marker, "No nearby candle has a physical input route");
@@ -409,6 +401,15 @@ namespace HappyToy.V2.CloudTests
                 "A manually lit candle retained an interaction prompt");
             yield return Pulse(Key.E);
             RouteRequire(Get<int>(candle, "Ignitions") == ignitions + 1, "Revisiting the lit candle repeated ignition");
+            Component battery = null; Vector3 batteryAt = Vector3.zero; best = 24;
+            foreach (var item in Components("Interactable").Where(x => x.gameObject.activeSelf && Get<object>(x, "kind").ToString() == "FlashlightBattery"))
+                if (FindApproach(item, out var at, out var length) && length < best) { battery = item; batteryAt = at; best = length; }
+            RouteRequire(battery, "No finite early battery has a physical input route");
+            yield return Walk(batteryAt); float beforeRefill = Get<float>(lamp, "Charge"); int packs = Get<int>(lamp, "PacksCollected");
+            yield return Interact(battery);
+            RouteRequire(!battery.gameObject.activeSelf && Get<int>(lamp, "PacksCollected") == packs + 1 && Get<float>(lamp, "Charge") > beforeRefill,
+                "Actual E did not consume one finite battery and refill the lamp");
+            batteriesCollected++; Mark("picked up finite battery through E after actual lit drain");
             if (Get<Light>(player, "flashlight").enabled) yield return Pulse(Key.F);
             RouteRequire(!Get<Light>(player, "flashlight").enabled, "Actual F did not extinguish the flashlight");
             float offCharge = Get<float>(lamp, "Charge"); waitUntil = GameTime + .3f;
@@ -421,15 +422,29 @@ namespace HappyToy.V2.CloudTests
 
         IEnumerator Interact(Component item)
         {
-            keys(Array.Empty<Key>()); float deadline = Time.realtimeSinceStartup + 4;
-            while (Get<Component>(player, "Focus") != item)
+            // Release the previous input before aiming. A one-frame focus can
+            // disappear while Pulse releases E, especially beside a moving door.
+            keys(Array.Empty<Key>()); yield return null; Check();
+            float deadline = Time.realtimeSinceStartup + 4; int stableFrames = 0;
+            while (stableFrames < 2)
             {
                 Check(); Assert.That(Time.realtimeSinceStartup, Is.LessThan(deadline), "Could not focus " + item.name);
+                stableFrames = Get<Component>(player, "Focus") == item ? stableFrames + 1 : 0;
+                if (stableFrames >= 2) break;
+                if(Get<object>(item,"kind").ToString()=="Door")
+                {
+                    var point=item.transform.position+Vector3.up*1.18f;
+                    Steer(point);
+                    var direction=item.transform.position-player.transform.position;direction.y=0;
+                    keys(direction.magnitude>1.4f && Vector3.Angle(player.transform.forward,direction)<12?new[]{Key.W}:Array.Empty<Key>());
+                    yield return null;continue;
+                }
                 var collider = item.GetComponentsInChildren<Collider>().Where(x => x.enabled && !x.isTrigger)
                     .OrderBy(x => Vector3.Distance(x.ClosestPoint(eyes.transform.position), eyes.transform.position)).First();
                 Steer(Vector3.Lerp(collider.ClosestPoint(eyes.transform.position), collider.bounds.center, .08f)); yield return null;
             }
-            yield return Pulse(Key.E);
+            keys(new[] { Key.E }); yield return null;
+            keys(Array.Empty<Key>()); yield return null; Check();
         }
         IEnumerator HideFrom(MonoBehaviour guard)
         {
@@ -500,8 +515,8 @@ namespace HappyToy.V2.CloudTests
         }
         void SaveEvidence()
         {
-            System.IO.Directory.CreateDirectory("Verification/corridor");
-            System.IO.File.WriteAllText("Verification/corridor/input-survival.json", JsonUtility.ToJson(new Evidence { passed = passed, stage = stage,
+            System.IO.Directory.CreateDirectory("Builds/CorridorInputEvidence");
+            System.IO.File.WriteAllText("Builds/CorridorInputEvidence/input-survival-"+Guid.NewGuid().ToString("N")+".json", JsonUtility.ToJson(new Evidence { passed = passed, stage = stage,
                 gameSeconds = lastGameTime, physicalMeters = meters, maximumThreats = maximumThreats,
                 doorsOpened = doorsOpened, throws = throws, dodges = dodges, hidingEntries = hidingEntries,
                 suppliesCollected = suppliesCollected, recovered = lastRecovered, batteriesCollected = batteriesCollected,

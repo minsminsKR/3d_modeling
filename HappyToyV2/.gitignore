@@ -4,6 +4,13 @@
 /Logs/
 /UserSettings/
 /Builds/
+# Generated test/play-review output is disposable; keep only the required
+# shader-anchor inventory and the output policy in source control.
+/Verification/*
+!/Verification/README.md
+!/Verification/native-readiness/
+/Verification/native-readiness/*
+!/Verification/native-readiness/runtime-shader-anchors.json
 *.csproj
 *.sln
 *.blend1
@@ -16,6 +23,7 @@
 !/SourceArt/BaeksugwiStudio/source-ai-rig.glb
 !/SourceArt/BaeksugwiStudio/Baeksugwi_Run.glb
 !/SourceArt/CreatureStudio/**/*.glb
+!/SourceArt/KoreanCorridorProps/*-original.glb
 
 # Reproducible authoring tools write review candidates and previews here.
 /SourceArt/**/proposed/

@@ -17,21 +17,24 @@ namespace HappyToy.V2
         public float StoryGain {get;private set;}=1;
         float nextTrace;
         Vector3[] runPositions;
-        public void ConfigureRunPositions(Vector3[] positions)
+        bool corridorRun;
+        static readonly string[] SchoolCues={"ambience-ground","ambience-upper","ambience-basement-bed"};
+        static readonly float[] SchoolGains={.28f,.24f,.3f};
+        public void ConfigureRunPositions(Vector3[] positions,bool corridor=true)
         {
             if (positions == null || positions.Length != 3) throw new System.ArgumentException("Expected three spatial ambience positions");
-            runPositions = (Vector3[])positions.Clone(); nextTrace = 0;
+            runPositions = (Vector3[])positions.Clone(); corridorRun=corridor; nextTrace = 0;
             for (int i = 0; i < voices.Count; i++) if (voices[i].source)
             {
                 var voice=voices[i];voice.source.transform.position=runPositions[i];
                 voice.source.Stop();var previous=voice.ownedClip;
-                voice.ownedClip=ExternalAudio.Required("ambience-corridor",i);voice.source.clip=voice.ownedClip;
-                voice.gain=.18f;voice.source.Play();if(previous)Destroy(previous);
+                voice.ownedClip=ExternalAudio.Required(corridor?"ambience-corridor":SchoolCues[i],corridor?i:0);voice.source.clip=voice.ownedClip;
+                voice.gain=corridor?.18f:SchoolGains[i];voice.source.Play();if(previous)Destroy(previous);
             }
         }
         void Start()
         {
-            bool corridor=runPositions!=null;
+            bool corridor=corridorRun;
             Add("washroom-drip",new Vector3(-5.7f,1.1f,-5.1f),ExternalAudio.Required(corridor?"ambience-corridor":"ambience-ground",0),corridor?.18f:.28f);
             Add("infirmary-wiring",new Vector3(5.7f,2.6f,5.5f),ExternalAudio.Required(corridor?"ambience-corridor":"ambience-upper",corridor?1:0),corridor?.18f:.24f);
             // Water drips belong to FloorAtmosphere's one physical leak. This is a

@@ -3394,5 +3394,42 @@
     "peak": 0.32000732421875,
     "rms": 0.05069264049479706,
     "sha256": "3b4fcdcdfa009584d8ea060b7d6dd2695ff3320e96857df2e0de9c13d6730d77"
+  },
+  {
+    "pack": "recorded-household-rubberduck",
+    "creator": "rubberduck",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/100-cc0-sfx",
+    "download": "https://opengameart.org/sites/default/files/100-CC0-SFX_0.zip",
+    "source_file": "bell_01.ogg",
+    "source_file_sha256": "b29cf8f3885eb2a266a16455227288dd3e004ea0414d2823b1a8677915f862d1",
+    "archive_sha256": "a5c135878c132f1c59cca54e60061c296cd0ac27ad031ca2c41b8cd5cab3c706",
+    "resource": "Audio/External/enemy-uncat-bell-0",
+    "file": "enemy-uncat-bell-0.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Actual recorded small bell onset and ring, shortened with a 100ms tail fade. Runtime uses soft isolated patrol rings and faster pursuit rings; no synthesized layers.",
+      "recordings": [
+        {
+          "file": "bell.ogg",
+          "pack": "recorded-household-rubberduck",
+          "creator": "rubberduck",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/100-cc0-sfx",
+          "download": "https://opengameart.org/sites/default/files/100-CC0-SFX_0.zip",
+          "source_file": "bell_01.ogg",
+          "source_file_sha256": "b29cf8f3885eb2a266a16455227288dd3e004ea0414d2823b1a8677915f862d1",
+          "archive_sha256": "a5c135878c132f1c59cca54e60061c296cd0ac27ad031ca2c41b8cd5cab3c706"
+        }
+      ],
+      "source_kind": "recorded physical bell"
+    },
+    "seconds": 0.7,
+    "peak": 0.42,
+    "rms": 0.03556792612214715,
+    "sha256": "38b66355c49cc02993128c7e9ba18cf06a05fae7312011f9f82bcf76035e8622"
   }
 ]

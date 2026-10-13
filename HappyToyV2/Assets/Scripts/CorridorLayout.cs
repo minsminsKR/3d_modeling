@@ -7,6 +7,7 @@ namespace HappyToy.V2
     public sealed class CorridorLayout
     {
         public const int Width = 9, Count = Width * Width;
+        public const int CurrentVersion = 5;
         public readonly int[] Connections = new int[Count];
         public readonly int[] Distance = new int[Count];
         public readonly int[] Relics = new int[5];
@@ -15,11 +16,12 @@ namespace HappyToy.V2
         public readonly int Seed;
         public readonly int Version;
         public readonly int AltarCell = -1, AltarDirection = -1;
+        public readonly int[] ShelterCells = Array.Empty<int>();
         public static readonly int[] DX = { 0, 1, 0, -1 }, DZ = { 1, 0, -1, 0 };
-        public CorridorLayout(int seed) : this(seed, 3) { }
+        public CorridorLayout(int seed) : this(seed, CurrentVersion) { }
         public CorridorLayout(int seed, int version)
         {
-            if (version < 1 || version > 3) throw new ArgumentException("Unknown corridor layout version");
+            if (version < 1 || version > CurrentVersion) throw new ArgumentException("Unknown corridor layout version");
             Seed = seed; Version = version; var random = new Random(seed);
             var seen = new bool[Count]; var stack = new Stack<int>(); seen[0] = true; stack.Push(0);
             var headings = new int[Count];
@@ -98,6 +100,21 @@ namespace HappyToy.V2
                     { AltarCell = cell; farthest = Distance[cell]; }
                 AltarDirection = AltarCell % Width == Width-1 ? 1 : 0;
             }
+            if (version >= 4)
+            {
+                var excluded = new List<int> { 0, AltarCell }; excluded.AddRange(Threats);
+                ShelterCells = version >= 5
+                    ? CorridorShelterRules.SelectMixedRooms(Connections, Width, seed, excluded.ToArray())
+                    : CorridorShelterRules.SelectRooms(Connections, seed, excluded.ToArray());
+                int slot = 1;
+                foreach (int room in ShelterCells)
+                {
+                    if (slot >= Supplies.Length || Array.IndexOf(Relics, room) >= 0 || Supplies[0] == room) continue;
+                    int old = Array.IndexOf(Supplies, room);
+                    if (old >= 1) Supplies[old] = Supplies[slot];
+                    Supplies[slot++] = room;
+                }
+            }
         }
         void Connect(int cell, int direction)
         { Connections[cell] |= 1 << direction; Connections[Neighbor(cell, direction)] |= 1 << ((direction + 2) % 4); }
@@ -122,8 +139,13 @@ namespace HappyToy.V2
             return Count;
         }
         // Wider alcoves hold furniture, goals and hiding places; the remainder is a continuous narrow hall.
-        public bool IsRoom(int cell) => Version == 1 || cell == 0 || cell == AltarCell || (cell >= 1 && (cell - 1) % 6 == 0) ||
+        public bool IsRoom(int cell) => Version == 1 || cell == 0 || cell == AltarCell ||
+            Version >= 4 && (IsShelterRoom(cell) || CorridorShelterRules.NeedsTurningSpace(Connections[cell])) || (cell >= 1 && (cell - 1) % 6 == 0) ||
             Array.IndexOf(Relics, cell) >= 0 || Array.IndexOf(Supplies, cell) >= 0;
+        public bool IsShelterRoom(int cell) => Array.IndexOf(ShelterCells, cell) >= 0;
+        public bool HasShelterCabinet(int cell) { int index = Array.IndexOf(ShelterCells, cell); return index >= 0 && index % 2 == 0; }
+        public bool IsShelterPortal(int cell, int direction)
+        { int next = Neighbor(cell, direction); return Version >= 4 && next >= 0 && (Connections[cell] & (1 << direction)) != 0 && (IsShelterRoom(cell) || IsShelterRoom(next)); }
         public bool FramedPassage(int cell, int direction)
         { int next = Neighbor(cell, direction); return IsAltarPortal(cell,direction) || next >= 0 && (IsRoom(cell) || IsRoom(next)); }
         public bool IsAltarPortal(int cell, int direction) => Version >= 3 && cell == AltarCell && direction == AltarDirection;

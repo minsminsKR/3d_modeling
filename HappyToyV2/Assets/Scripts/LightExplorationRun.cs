@@ -157,6 +157,7 @@ namespace HappyToy.V2
             station.transform.SetParent(root, false); station.transform.position = position;
             var interaction = station.AddComponent<Interactable>(); interaction.kind = Interactable.Kind.Candle; interaction.stableId = id;
             var target = station.AddComponent<BoxCollider>(); target.size = new Vector3(.3f, .35f, .25f); target.center = Vector3.up * .08f;
+            var markerNavigation = station.AddComponent<Unity.AI.Navigation.NavMeshModifier>(); markerNavigation.ignoreFromBuild = true;
             // The irregular melt well, drip layers, wick and forged tray are real modeled surfaces.
             var body = GraphicsPropLibrary.Attach("candle-waymark", station.transform, propSurfaces.Resolve);
             body.localPosition = Vector3.up * stationVisualOffset;

@@ -47,6 +47,18 @@ namespace HappyToy.V2
             {
                 Hold(owner);
                 float side = Vector3.Dot(actor.position - Door.transform.position, Door.DoorNormal);
+                var guide=actor.GetComponent<CorridorRouteGuide>();
+                if(Passing && guide && side*EntrySide>=-Mathf.Max(agent.radius+.5f,bodyReach+.15f))
+                {
+                    // Clear the whole rendered body along the opening's axis
+                    // before turning toward a diagonal final goal or closing.
+                    float clearance=Mathf.Max(agent.radius+.5f,bodyReach+.15f)+agent.stoppingDistance+.45f;
+                    var exit=Door.transform.position-Door.DoorNormal*EntrySide*clearance;exit.y=actor.position.y;
+                    guide.FacePassage(exit,seconds);
+                    if(!Door.AtRequestedDoorPose || !EnemyNavigation.TryRoute(agent,exit,homeFloor,route,12))
+                    {EnemyNavigation.Stop(agent,true);return new Decision(Outcome.Waiting,repath);}
+                    agent.SetPath(route);agent.isStopped=false;return new Decision(Outcome.Waiting,repath);
+                }
                 if (Passing && side * EntrySide < -Mathf.Max(agent.radius + .5f, bodyReach + .15f))
                 {
                     // Close after every body has cleared; the last actor owns the handle.
@@ -84,7 +96,7 @@ namespace HappyToy.V2
             float distance = float.PositiveInfinity;
             for (int i = 0; i < count; i++)
             {
-                if (hits[i].collider.transform.IsChildOf(actor) ||
+                if (EnemyRouteGeometry.IsSmallRouteMarker(hits[i].collider) || hits[i].collider.transform.IsChildOf(actor) ||
                     hits[i].collider.GetComponentInParent<StalkerBrain>() ||
                     hits[i].collider.GetComponentInParent<LanternMaskEncounter>() ||
                     hits[i].collider.GetComponentInParent<WeepingAngelEncounter>()) continue;
@@ -116,6 +128,7 @@ namespace HappyToy.V2
             if (HorizontalDistance(actor.position, handle) > Mathf.Max(Mathf.Max(1.25f, agent.radius + .85f), bodyReach + .4f))
             {
                 Push = 0;
+                if(actor.GetComponent<CorridorRouteGuide>())Face(actor,next.transform.position,seconds);
                 if (!StalkerDoorTraversal.TryDoorApproach(agent, next, EntrySide, homeFloor, route))
                 { EnemyNavigation.Stop(agent, true); return new Decision(Outcome.Waiting, repath); }
                 agent.SetPath(route);
@@ -145,6 +158,8 @@ namespace HappyToy.V2
 
         static void Face(Transform actor, Vector3 point, float seconds)
         {
+            var guide=actor.GetComponent<CorridorRouteGuide>();
+            if(guide && guide.isActiveAndEnabled){guide.FacePassage(point,seconds);return;}
             var facing = point - actor.position;
             facing.y = 0;
             if (facing.sqrMagnitude > .001f) actor.rotation = Quaternion.RotateTowards(actor.rotation,

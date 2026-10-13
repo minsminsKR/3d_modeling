@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "createdDate": "2026-10-14",
+  "application": "hunyuan3d-webapp / A100 Studio",
+  "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "batchId": "767a81d5-c84e-4afe-9f4a-e46c6a3c7e31",
+  "requestedSettings": {
+    "model": "TRELLIS.2",
+    "preset": "highest quality",
+    "pipelineResolution": 1536,
+    "textureSize": 8192,
+    "removeBackground": true,
+    "steps": 12,
+    "seed": 1234
+  },
+  "settingsEvidence": "The visible webapp upload form and completed job page; no backend settings are inferred beyond the requested UI values.",
+  "jobs": [
+    {"key":"jangseung","jobId":"e713236e-5cef-47c8-8468-ce1aa7dc3052","input":"jangseung-reference.png","original":"jangseung-original.glb","completedSeconds":1952,"status":"completed"},
+    {"key":"onggi","jobId":"8b37839c-3e98-47ee-abdb-ecbee6fe3fe6","input":"onggi-reference.png","original":"onggi-original.glb","completedSeconds":634,"status":"completed"},
+    {"key":"dokkaebi-tile","jobId":"10fd02a4-c332-45bf-bb82-3f661e9124da","input":"dokkaebi-tile-reference.png","original":"dokkaebi-tile-original.glb","completedSeconds":826,"status":"completed"}
+  ],
+  "handoff": "Original full GLBs/PBR, actual uploaded reference images and prompts, packed editable Blender scenes, game LODs/maps, Unity prefabs/materials/meta and the reproducible converter are included in the repository. No server download or cache is the only copy."
+}

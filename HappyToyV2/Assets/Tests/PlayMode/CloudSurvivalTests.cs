@@ -56,6 +56,7 @@ namespace HappyToy.V2.CloudTests
         readonly List<string> milestones = new List<string>();
         readonly float wallStart;
         readonly bool chapterStrategy;
+        readonly bool controlledMixer;
         float gameStart, progressTime, minY, maxY, distanceWalked, ungroundedFor;
         Vector3 previousPosition;
         int monitorFrame = -1, movementStart, groundedFrames, maximumLiveStalkers, throws, hidingEntries, stairLegs;
@@ -63,8 +64,9 @@ namespace HappyToy.V2.CloudTests
         string stage = "startup", destination = "";
 
         public CloudSurvivalTests(Component session, Component player, Component shell,
-            Action<Key[]> keys, Func<string> inputDiagnostics)
+            Action<Key[]> keys, Func<string> inputDiagnostics, bool controlledMixer=false)
         {
+            this.controlledMixer=controlledMixer;
             this.session = session; this.player = player; this.shell = shell;
             chapterStrategy=Get<bool>(session,"ChapterMode");
             this.keys = keys; this.inputDiagnostics = inputDiagnostics;
@@ -239,9 +241,14 @@ namespace HappyToy.V2.CloudTests
                 Milestone("Witnessed the portrait and crossed both escape passages");
                 yield return TakeRecord("chapter-memory-3");
                 yield return Walk(new Vector3(29.8f,5,22),true);
-                yield return Stair(new Vector3(29.8f,0,10),"chapter upper descent",false);
+                yield return Stair(new Vector3(29.8f,0,10),"chapter upper descent",true);
                 yield return Walk(new Vector3(13.8f,0,-10),true);
-                yield return Stair(new Vector3(13.8f,-5,-22),"chapter basement descent",false);
+                yield return Stair(new Vector3(13.8f,-5,-22),"chapter basement descent",true);
+                // Keep moving while the five-second nursery warning runs;
+                // waiting at the stair landing lets the live pursuers catch up.
+                yield return Walk(new Vector3(22.2f,-5,-22.8f),true);
+                yield return Walk(new Vector3(22.2f,-5,-35.5f),true);
+                yield return Walk(new Vector3(6.2f,-5,-35.5f),true);
                 yield return Await(()=>Get<bool>(nursery,"Released"),8,25,"Real basement entry did not release the baby");
                 yield return TakeRecord("chapter-memory-4");
                 yield return Walk(new Vector3(13.8f,-5,-22),true);
@@ -278,7 +285,8 @@ namespace HappyToy.V2.CloudTests
             if (Finished) return;
             Require(Get<bool>(session, "InputAllowed"), "Route lost gameplay input");
             Assert.That(Time.timeScale, Is.EqualTo(1), "Survival may not alter game time");
-            Assert.That(Time.captureDeltaTime, Is.Zero, "Survival may not force the simulation clock");
+            Assert.That(Time.captureDeltaTime, Is.EqualTo(controlledMixer?1f/60:0),
+                "Natural survival keeps the clock unforced; only the explicit controlled mixer assay admits a fixed capture step");
             Assert.That(Get<object>(player, "HidingRandomSample"), Is.Null, "Full route may not force a hiding outcome");
             Assert.That(((Behaviour)player).enabled, Is.True);
             Assert.That(Mouse.current, Is.SameAs(mouse), "Route mouse is not current");
@@ -500,6 +508,14 @@ namespace HappyToy.V2.CloudTests
                 Check();
                 Require(GameTime - startGame < 3 && WallTime - startWall < 20,
                     "Actual E focus never reached " + item.name);
+                if(Get<object>(item,"kind").ToString()=="Door")
+                {
+                    var point=item.transform.position+Vector3.up*1.18f;
+                    Steer(point, false);
+                    var direction=item.transform.position-player.transform.position;direction.y=0;
+                    keys(direction.magnitude>1.4f && Vector3.Angle(player.transform.forward,direction)<12?new[]{Key.W}:Array.Empty<Key>());
+                    yield return null;continue;
+                }
                 var collider = item.GetComponentsInChildren<Collider>().Where(value => value.enabled && !value.isTrigger)
                     .OrderBy(value => Vector3.Distance(value.ClosestPoint(eyes.transform.position), eyes.transform.position)).First();
                 Steer(Vector3.Lerp(collider.ClosestPoint(eyes.transform.position), collider.bounds.center, .08f), false);
@@ -522,7 +538,7 @@ namespace HappyToy.V2.CloudTests
             stage = id;
             Assert.That(Get<string>(session, "CurrentObjectiveId"), Is.EqualTo(id), "Route must follow the authored objective order");
             var item = Record(id); int before = Get<int>(session, "RecordsRecovered");
-            if (travel) yield return Approach(item, Get<int>(session, "StoryStep") >= 2);
+            if (travel) yield return Approach(item, Get<int>(session, "EncounterStep") >= 2);
             yield return Interact(item);
             Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(before + 1), "E did not recover exactly one record: " + id + "\n" + Diagnostics());
             if (Get<object>(item, "kind").ToString() == "Inspect")

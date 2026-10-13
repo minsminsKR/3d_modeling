@@ -31,12 +31,12 @@ namespace HappyToy.V2
         static readonly Vector3 Origin = new Vector3(200, 0, 200);
         public Vector3 CellPosition(int cell) => Origin + new Vector3(cell % CorridorLayout.Width * 6, .03f, cell / CorridorLayout.Width * 6);
 
-        public void Build(int seed, int layoutVersion = 3)
+        public void Build(int seed, int layoutVersion = CorridorLayout.CurrentVersion)
         {
             var build=BuildRoutine(seed,layoutVersion,false);
             while(build.MoveNext()) { }
         }
-        public IEnumerator BuildIncremental(int seed,int layoutVersion=3) => BuildRoutine(seed,layoutVersion,true);
+        public IEnumerator BuildIncremental(int seed,int layoutVersion=CorridorLayout.CurrentVersion) => BuildRoutine(seed,layoutVersion,true);
         IEnumerator BuildRoutine(int seed,int layoutVersion,bool incremental)
         {
             if (Ready || Layout!=null) throw new InvalidOperationException("Run already built");
@@ -86,7 +86,7 @@ namespace HappyToy.V2
                             Box("Door post", edge + across * side * 1.36f + Vector3.up * 1.2f, new Vector3(.14f, 2.4f, .14f), timber);
                         }
                         Box("Door lintel", edge + Vector3.up * 2.72f, d % 2 == 0 ? new Vector3(2.8f, .56f, .24f) : new Vector3(.24f, .56f, 2.8f), timber);
-                        if (cell != 0 && (unchecked(cell * 31 + d * 17 + seed) & 7) == 0)
+                        if (Layout.IsShelterPortal(cell, d) || cell != 0 && (unchecked(cell * 31 + d * 17 + seed) & 7) == 0)
                         {
                             var frame = new GameObject("Corridor sliding door"); frame.layer = 8; frame.transform.SetParent(world);
                             frame.transform.SetPositionAndRotation(edge, Quaternion.LookRotation(normal));
@@ -123,6 +123,16 @@ namespace HappyToy.V2
             for (int i = 0; i < Layout.Relics.Length; i++)
             {
                 var p = CellPosition(Layout.Relics[i]);
+                if(Layout.Version>=4)
+                {
+                    // Leave the complete turning square clear for long creatures.
+                    // Finite memory identities remain the same; only new maps use
+                    // the peripheral stand instead of a centre-path obstacle.
+                    p+=new Vector3(2.05f,0,-2.05f);
+                    if(!occupiedFurnishingBounds.TryGetValue(Layout.Relics[i],out var reserved))
+                    { reserved=new List<Bounds>(); occupiedFurnishingBounds.Add(Layout.Relics[i],reserved); }
+                    reserved.Add(new Bounds(p+Vector3.up*.65f,new Vector3(1.15f,1.35f,.95f)));
+                }
                 Box("Memory altar", p + Vector3.up * .36f, new Vector3(.85f, .72f, .65f), timber);
                 var item = Box("Memory " + (i + 1), p + Vector3.up * .92f, new Vector3(.28f, .30f, .14f), brass);
                 var interaction = item.AddComponent<Interactable>(); interaction.kind = Interactable.Kind.CorridorMemory;
@@ -135,8 +145,9 @@ namespace HappyToy.V2
                 .OrderBy(x => x.name, StringComparer.Ordinal).ThenBy(x => x.transform.position.x).ThenBy(x => x.transform.position.z)
                 .FirstOrDefault();
             if (!cabinetTemplate) throw new InvalidOperationException("Missing existing cabinet");
-            for (int cell = 1; cell < CorridorLayout.Count; cell += 6)
+            for (int cell = 1; cell < CorridorLayout.Count; cell++)
             {
+                if ((cell - 1) % 6 != 0 && !Layout.HasShelterCabinet(cell)) continue;
                 var cabinet = Instantiate(cabinetTemplate.gameObject, world); cabinet.name = "Corridor hiding cabinet";
                 cabinet.transform.position = CellPosition(cell) + new Vector3(-1.8f, 0, 1.8f);
                 cabinet.SetActive(true);
@@ -153,6 +164,18 @@ namespace HappyToy.V2
                     new Vector3(1, 0, -1).normalized) * cabinet.transform.rotation;
                 if(incremental)yield return null;
             }
+            var builtDoors = world.GetComponentsInChildren<Interactable>(true).Where(x => x.kind == Interactable.Kind.Door).ToArray();
+            foreach (int cell in Layout.ShelterCells)
+            {
+                var roomDoors = Enumerable.Range(0, 4).Where(d => (Layout.Connections[cell] & (1 << d)) != 0).Select(direction =>
+                {
+                    int edgeCell = direction >= 2 ? CorridorLayout.Neighbor(cell, direction) : cell;
+                    int edgeDirection = direction >= 2 ? (direction + 2) % 4 : direction;
+                    return builtDoors.Single(x => x.stableId == "door-" + edgeCell + "-" + edgeDirection);
+                }).ToArray();
+                var room = new GameObject("Corridor shelter room — " + cell); room.transform.SetParent(world, false);
+                room.transform.position = CellPosition(cell); room.AddComponent<CorridorShelterRoom>().Configure(cell, roomDoors);
+            }
             var exit = Box("Sealed entrance", CellPosition(0) + new Vector3(-2.72f, 1.1f, 0), new Vector3(.12f, 2.2f, 1.6f), timber);
             var exitInteraction = exit.AddComponent<Interactable>();
             exitInteraction.kind = Layout.Version >= 3 ? Interactable.Kind.Inspect : Interactable.Kind.Exit;
@@ -162,6 +185,13 @@ namespace HappyToy.V2
             if(incremental)yield return null;
             var furniture=BuildFurnishingsRoutine(incremental);while(furniture.MoveNext())yield return furniture.Current;
             Lighting = gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareCorridor(this, world);
+            if(Layout.Version>=4)
+            {
+                var dressingRoot=new GameObject("Korean corridor generated set dressing"); dressingRoot.transform.SetParent(world,false);
+                var zones=Enumerable.Range(0,CorridorLayout.Count).Where(cell=>cell!=Layout.AltarCell).Select(cell=>
+                    new KoreanCorridorDressing.Zone(cell,Layout.Connections[cell],CellPosition(cell),Layout.IsRoom(cell))).ToArray();
+                dressingRoot.AddComponent<KoreanCorridorDressing>().Prepare(zones,Seed);
+            }
             if(incremental)yield return null;
             // Rebuild after all physical furniture is present. Walkable routes include actual obstacles.
             Physics.SyncTransforms();
@@ -200,6 +230,7 @@ namespace HappyToy.V2
                     Mask.ConfigureCorridorRunner();
                     Mask.enabled = true; Mask.activationStep = 0;
                     var maskAgent = maskClone.GetComponent<NavMeshAgent>(); maskAgent.enabled = false;
+                    if (Layout.Version >= 4) maskClone.AddComponent<CorridorRouteGuide>().Configure(Layout.Connections, CorridorLayout.Width, CellPosition(0), 6, Mask);
                     foreach (var startup in maskClone.GetComponents<NavMeshStartup>()) startup.enabled = false;
                     Mask.patrol = BuildPatrol(i, maskAgent);
                     continue;
@@ -210,8 +241,10 @@ namespace HappyToy.V2
                 clone.transform.position = CellPosition(Layout.Threats[i]);
                 var brain = clone.GetComponent<StalkerBrain>(); brain.player = session.player; brain.enabled = true;
                 brain.corridorRole = (CorridorThreatRole)(i + 1);
+                if (i == 1 && !clone.GetComponent<UncatBellVoice>()) clone.AddComponent<UncatBellVoice>();
                 if (i == 3) brain.ConfigureCorridorBaby();
                 var agent = clone.GetComponent<NavMeshAgent>(); agent.enabled = false;
+                if (Layout.Version >= 4) clone.AddComponent<CorridorRouteGuide>().Configure(Layout.Connections, CorridorLayout.Width, CellPosition(0), 6, brain);
                 foreach (var startup in clone.GetComponents<NavMeshStartup>()) startup.enabled = false;
                 var motion = clone.GetComponent<V1MonsterMotion>(); if (motion) motion.enabled = true;
                 brain.patrol = BuildPatrol(i, agent); threats.Add(brain);

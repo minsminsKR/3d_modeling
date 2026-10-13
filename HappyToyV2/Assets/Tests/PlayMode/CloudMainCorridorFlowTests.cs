@@ -175,7 +175,7 @@ namespace HappyToy.V2.CloudTests
         {
             yield return RecoveryUiReady(); yield return RecoveryClick("begin-school");
             var chapter=Get<Component>(session,"Chapter"); var memories=Get<Component[]>(chapter,"Memories");
-            Call(memories[0],"Use",player); Call(memories[1],"Use",player);
+            for(int i=0;i<2;i++)Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
             Get<Component>(chapter,"Cyclopse").gameObject.SetActive(false); Get<Component>(chapter,"Mannequin").gameObject.SetActive(false);
             ((Behaviour)player).enabled=false; PlacePlayer(new Vector3(34.7f,5.02f,32.2f)); Call(memories[2],"Use",player);
             Get<Component>(chapter,"Mask").gameObject.SetActive(false);

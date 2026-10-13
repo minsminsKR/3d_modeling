@@ -8,7 +8,7 @@ rights and attribution remain unchanged; this does not introduce a new license
 for those source assets.
 
 The project-relative identity reference is
-`Verification/eye-surface-20261008/Cyclopse-close-torch-on.png`. `prompts.md`
+`SourceArt/MenuBackdrop/Cyclopse-close-torch-on-reference.png`. `prompts.md`
 records the creation prompt and the final composition correction. The initial
 draft is optional preview output; only the selected final bitmap is needed to
 continue editing. Preserve the full-resolution PNG and its Unity .meta GUID.

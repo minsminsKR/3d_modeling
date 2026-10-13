@@ -20,6 +20,7 @@ namespace HappyToy.V2.CloudTests
                 if(!NavMesh.SamplePosition(anchor+direction*distance,out var hit,.25f,NavMesh.AllAreas)||
                     Mathf.Abs(hit.position.y-anchor.y)>.15f||Vector3.Distance(hit.position,anchor)<distance-.35f)continue;
                 PlacePlayer(hit.position,false);camera.transform.rotation=Quaternion.LookRotation(visualMask.position-camera.transform.position);
+                mask.transform.rotation=Quaternion.LookRotation(hit.position-anchor);
                 Physics.SyncTransforms();
                 var viewport=camera.WorldToViewportPoint(visualMask.position);
                 if(viewport.z<=camera.nearClipPlane||viewport.x<.05f||viewport.x>.95f||viewport.y<.05f||viewport.y>.95f||

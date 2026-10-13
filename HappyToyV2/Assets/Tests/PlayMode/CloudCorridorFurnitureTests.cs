@@ -277,7 +277,7 @@ namespace HappyToy.V2.CloudTests
             yield return FurnitureRenderView(shelf, "corridor-furniture-shelf-details.jpg", 1.6f, 1.2f, views);
             foreach (var placement in FurniturePlacements)
             {
-                var materials = placement.GetComponentsInChildren<MeshRenderer>(true).SelectMany(renderer => renderer.sharedMaterials).Distinct().ToArray();
+                var materials = placement.GetComponentsInChildren<MeshRenderer>(true).Where(renderer=>renderer.name!="Pickup silhouette").SelectMany(renderer => renderer.sharedMaterials).Distinct().ToArray();
                 Assert.That(materials.All(material => material && material.shader && material.shader.name == "Universal Render Pipeline/Lit"), Is.True, "Unresolved furnishing material");
                 Assert.That(materials.Any(material => material.GetTexture("_BaseMap") && material.GetTexture("_BumpMap") &&
                     material.GetTexture("_OcclusionMap") && material.GetTexture("_MetallicGlossMap")), Is.True, "Furnishing lacks its imported PBR surface maps");

@@ -46,7 +46,7 @@ namespace HappyToy.V2.CloudTests
                 .Where(collider=>collider.gameObject.scene==session.gameObject.scene &&
                     (collider.name.ToLowerInvariant().Contains("floor") || collider.name=="Stair tread"))
                 .ToDictionary(collider=>collider,collider=>new {position=collider.transform.position,scale=collider.transform.lossyScale,collider.enabled});
-            Call(shell,"BeginChapter");yield return null;yield return null;yield return null;
+            BeginLegacyChapterFixture();yield return null;yield return null;yield return null;
             var atmosphere=session.GetComponent(RequireType("ChapterAtmosphere"));var wayfinding=Get<Component>(atmosphere,"Wayfinding");
             Assert.That(Get<int>(wayfinding,"LocalizedRoomSigns"),Is.EqualTo(6));Assert.That(Get<int>(wayfinding,"MountedNotices"),Is.EqualTo(6));
             Assert.That(Get<int>(atmosphere,"PreservedTileFloors"),Is.GreaterThanOrEqualTo(1));
@@ -126,7 +126,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(90000)]
         public IEnumerator SchoolRealCameraViewsRenderKoreanRoomWritingAndRetainThreeFloorApproaches()
         {
-            Call(shell,"BeginChapter");yield return null;yield return null;IsolateThreats();
+            BeginLegacyChapterFixture();yield return null;yield return null;IsolateThreats();
             foreach(var door in Components("Interactable").Where(item=>Get<object>(item,"kind").ToString()=="Door")) Call(door,"OpenForPursuer");
             yield return Delay(1.4f);
             var camera=Get<Camera>(player,"eyes");((Behaviour)player).enabled=false;
@@ -219,7 +219,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(physical.bounds.max.y,Is.EqualTo(pose.y-.09f).Within(.001f),"Support's original physical top moved");
                 var body=Object.FindObjectsByType<MeshRenderer>().Single(renderer=>renderer.name=="Timber memory stand body" &&
                     renderer.gameObject.scene==session.gameObject.scene && Vector3.Distance(renderer.bounds.center,originalBounds.center)<.08f);
-                Assert.That(body.sharedMaterial.GetTexture("_BaseMap"),Is.SameAs(Resources.Load<Texture2D>("Corridor/aged-floor-v1")));
+                Assert.That(body.sharedMaterial.GetTexture("_BaseMap"),Is.SameAs(Resources.Load<Texture2D>("GraphicsPbr/wood-aged/albedo")));
                 string name=memoryIndex==2?"school-memory-stand-upper-flashlight-close.png":"school-memory-stand-basement-flashlight-close.png";
                 var frame=SchoolCameraFrame(camera,out _,out _,out _);
                 try {CloudExperienceTests.Artifact(name,frame.EncodeToPNG());}

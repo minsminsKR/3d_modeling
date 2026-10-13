@@ -151,7 +151,7 @@ namespace HappyToy.V2.CloudTests
             var run = Get<Component>(session, "Corridor"); AltarIsolateFixture(run);
             yield return null; yield return null;
             var layout = Get<object>(run, "Layout");
-            Assert.That(Get<int>(layout, "Version"), Is.EqualTo(3));
+            Assert.That(Get<int>(layout, "Version"), Is.EqualTo(5));
             int cell = Get<int>(layout, "AltarCell");
             Assert.That(cell, Is.InRange(1, 80), "The offering room must not occupy the entrance");
             Assert.That(cell % 9 == 8 || cell / 9 == 8, Is.True);
@@ -181,14 +181,14 @@ namespace HappyToy.V2.CloudTests
             finally { Object.Destroy(frame); }
             Call(shell, "Pause");
             var saved = Call(session, "CaptureCheckpoint");
-            Assert.That(Get<int>(saved, "simulationVersion"), Is.EqualTo(3));
+            Assert.That(Get<int>(saved, "simulationVersion"), Is.EqualTo(5));
             Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(4));
             Vector3 position = Get<Vector3>(Get<object>(saved, "player"), "position");
             Assert.That(position.x > 251 || position.z > 251, Is.True,
                 "Fixture must exercise the expanded checkpoint bounds in the exterior chamber");
             yield return RestoreCheckpointInFreshScene(saved);
             run = Get<Component>(session, "Corridor"); AltarIsolateFixture(run);
-            Assert.That(Get<int>(Get<object>(run, "Layout"), "Version"), Is.EqualTo(3));
+            Assert.That(Get<int>(Get<object>(run, "Layout"), "Version"), Is.EqualTo(5));
             Assert.That(Get<int[]>(Get<object>(run, "Layout"), "Connections"), Is.EqualTo(connections));
             Assert.That(Get<int>(Get<object>(run, "Layout"), "AltarCell"), Is.EqualTo(cell));
             Assert.That(Get<Vector3>(run, "AltarApproach"), Is.EqualTo(approach));

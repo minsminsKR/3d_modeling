@@ -39,7 +39,9 @@ pull은 요청 시점의 GitHub `origin/main`을 가져오고 필요한 Git LFS 
 `-v2-school-stair-output <검증 디렉터리>`를 주면 `SchoolStairAudit.cs`가 준비된 액터
 스냅샷의 실제 계단 왕복을 기록한다. 이 선택 검증은 일반 생존 플레이를 대신하지 않는다.
 
-현재 기본 새 탐색은 회랑 버전 3이다. `CorridorRunAltar.cs`가 결정적인 외곽 방·연결부
+현재 기본 새 탐색은 회랑 버전 4다. 막다른 숨는 방과 실제 입구 문, 넓은 코너,
+운냥이 종소리와 한국 소품을 추가했다. 이전 버전 1~3 저장은 원래 배치를 유지한다.
+`CorridorRunAltar.cs`가 결정적인 외곽 방·연결부
 충돌을 만들고, `CorridorAltarChamber.cs`가 직접 제작한 제단 소품과 기존 학교 가구를
 배치한다. `SourceArt/CorridorAltarChamber`에 Blender 4.0.2 편집 원본 4개, 원본
 칠판 PBR 제작 도구와 고정 의존성·재생성·라이선스가 있다. 원본 학교 씬을 바꾸지
@@ -100,6 +102,12 @@ python -m pip install -r Tools/requirements-authoring.txt
 ```
 
 
+- `SourceArt/KoreanCorridorProps/`: 지정 웹앱의 원본 GLB/PBR·실제 입력 PNG·프롬프트·
+  작업 기록·Blender 4.0.2 편집 원본과 LOD/PBR 변환 도구. `git lfs pull`로 원본을
+  복원하고 폴더의 README에 따라 재생성한다. 게임 자산과 메타는
+  `Assets/Resources/KoreanCorridorProps/`에 있다.
+- `SourceArt/Audio/render_uncat_bell.py`: 보관된 CC0 실녹음 방울의 시작·꼬리 편집과
+  Unity PCM 생성. 기존 녹음 원본과 크레딧, 선택 설정도 함께 보관한다.
 - `SourceArt/EnemyRefinementV2/*.blend`: 네 적의 실제 편집 원본.
 - `SourceArt/GraphicsUpgrade/Props/*.blend`: 여덟 소품의 실제 편집 원본.
 - `SourceArt/CorridorFurnishings/Models/*.blend`: 회랑 책상·선반·필기 도구·보급품
@@ -144,3 +152,23 @@ python HappyToyV2/Tools/quality/check_source_completeness.py
 `Tools/quality/verify_build_inputs.py`, `verify_graphics_build_inputs.py`에는 현재
 소스와 새 빌드의 해시를 확인하는 도구를 함께 제공한다. 개인 설정과 승인 규칙,
 비밀값, 빌드·캐시·반복 staging 복사본은 전달할 필수 소스로 취급하지 않는다.
+
+2026-10-14 회랑 수정 검증: 전체 EditMode 97/97, 전체 PlayMode 242/243,
+새 회랑 기능 통합 검사 7/7을 통과했다. 남은 seed 73 실제 입력 생존 경로는
+상호작용 포커스 대기 보강 후 기억 5개를 모두 획득했지만 제단 복귀 중 백수귀에게
+잡혔다. 이 완주 검사는 미통과이며 전체 생존 난이도를 인증한 것으로 취급하지 않는다.
+seed 211의 별도 실제 입력 완주는 통과했다. 개별 기능 검사와 플레이어 표면 검사는
+자연 생존 완주 또는 최종 장치 음향 믹스의 성공을 대신하지 않는다.
+
+같은 날 지도 5 복수 출구 방 추가: 전체 EditMode 101/101, 방·문·저장 관련
+PlayMode 19개를 재검사 포함 통과했다. 실제 W/E 입력으로 입장·입구 닫기·다른
+문 탈출, 사이클롭스/운캣의 두 문 통과·닫기, 두 문 상태의 독립 복원과 지도 4
+저장의 실제 재개를 확인했다. 플레이어 빌드·현재 입력 해시·Direct3D12 방 표면
+검사도 통과했다. 이 후속 검사는 전체 PlayMode/자연 생존 완주의 재인증이 아니다.
+
+같은 날 타이틀 60Hz 변경: `title` 프로필의 Core 28개와 PlayMode 7개를 통과했다.
+새 Windows 플레이어에서 캡처·읽기·디스크 쓰기 없는 5초 구간의 실제 타이틀
+카메라 렌더 완료 콜백은 300회, 갱신률은 약 59.94FPS였다. 실제 시작 버튼·접근·
+암전·회랑 전환과 기존 서랍 검증도 통과했다. 이는 해당 로컬 실행의 타이틀
+텍스처 갱신 측정이며 GPU 시간·하드웨어에 표시된 FPS 또는 전체 플레이 성능의
+인증은 아니다. 현재 소스 입력 해시와 빌드·그래픽 자산 검사도 통과했다.

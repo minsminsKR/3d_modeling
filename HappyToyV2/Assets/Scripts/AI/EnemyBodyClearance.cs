@@ -87,7 +87,7 @@ namespace HappyToy.V2
                 for (int i = 0; i < count; i++)
                 {
                     var other = nearby[i];
-                    if (!other || other.transform.IsChildOf(owner) || other.GetComponentInParent<PlayerMotor>() ||
+                    if (!other || EnemyRouteGeometry.IsSmallRouteMarker(other) || other.transform.IsChildOf(owner) || other.GetComponentInParent<PlayerMotor>() ||
                         other.GetComponentInParent<StalkerBrain>() || other.GetComponentInParent<LanternMaskEncounter>() ||
                         other.GetComponentInParent<WeepingAngelEncounter>()) continue;
                     if (Physics.ComputePenetration(shape, owner.position, owner.rotation, other,

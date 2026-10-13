@@ -96,6 +96,7 @@ namespace HappyToy.V2.CloudTests
                         float capsuleHeight = controller.height;
                         // Public cabinet interaction is deliberate controlled setup;
                         // the separate survival strategy retains real E input.
+                        bool torchBeforeEntry=Get<Light>(player,"flashlight").enabled;
                         Call(cabinet, "Use", player);
                         yield return null; yield return null;
                         Assert.That(Get<bool>(player, "Hidden"), Is.True);
@@ -112,7 +113,7 @@ namespace HappyToy.V2.CloudTests
                         Assert.That(Physics.Raycast(camera.transform.position, outward, 1.05f,
                             Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore), Is.True,
                             "Existing solid cabinet collision was removed");
-                        Assert.That(Get<Light>(player, "flashlight").enabled, Is.False);
+                        Assert.That(Get<Light>(player, "flashlight").enabled, Is.EqualTo(torchBeforeEntry),"Cabinet changed the player's flashlight switch");
                         var eyePosition = camera.transform.position;
                         Call(shell, "Pause"); yield return Delay(.15f);
                         Assert.That(Vector3.Distance(camera.transform.position, eyePosition), Is.LessThan(.001f));

@@ -22,7 +22,7 @@ VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests",
-    "CorridorBabyMemoryTests", "CorridorThreatRulesTests"))
+    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
 PLAY = CLOUD + "CloudPlayModeTests."
@@ -44,6 +44,17 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "title": ("Title head/body/comfort behavior, real start transition and keyboard start", [
+        ("PlayMode", play_tests("CloudBaeksugwiHeadTests.cs") + (
+            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput"))]),
+    "shelter": ("One/two-door room topology, actual player/pursuer passage and current/legacy checkpoint restoration", [
+        ("EditMode", (EDIT + "CorridorLayoutTests",)),
+        ("PlayMode", play_tests("CloudCorridorRevisionTests.cs", "CloudCorridorCheckpointTests.cs", "CloudCorridorSuspendTests.cs") + (
+            PLAY + "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches",
+            PLAY + "CorridorAltarRoomIsDistantReachableAndRestoresTheSamePhysicalSeededChamber"))]),
+    "corridor": ("Opened-door E focus, visual-only runner, one/two-door shelters and real corner navigation", [
+        ("PlayMode", play_tests("CloudCorridorRevisionTests.cs"))]),
     "core": ("Engine-independent rules; no scene setup", []),
     "readability": ("Rendered body wall clearance, pickup borders, candle blackout and creature gait", [
         ("PlayMode", play_tests("CloudGameplayReadabilityTests.cs") + (

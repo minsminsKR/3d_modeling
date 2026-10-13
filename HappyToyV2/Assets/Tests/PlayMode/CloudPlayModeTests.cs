@@ -37,6 +37,14 @@ namespace HappyToy.V2.CloudTests
         bool observedCPress, observedWHeld;
         static readonly string[] FloatKeys = { "v2.volume", "v2.sensitivity", "v2.fov" };
         static readonly string[] IntKeys = { "v2.reducedMotion", "v2.subtitles", "v2.highContrast", "v2.largeText" };
+        // Fixed-coordinate regressions explicitly retain their original map.
+        // Current corridor/campus suites continue to use the public defaults.
+        void BeginLegacyChapterFixture(){Call(session,"CreateChapterVersion",1);Begin();}
+        void CreateLegacyCorridorFixture(int seed, int version=1)
+        {
+            var method=session.GetType().GetMethod("CreateCorridorVersion",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+            Assert.That(method,Is.Not.Null);method.Invoke(session,new object[]{seed,version});
+        }
 
         [UnitySetUp]
         public IEnumerator LoadRealAuthoredScene()
@@ -45,6 +53,8 @@ namespace HappyToy.V2.CloudTests
             Application.logMessageReceived += ObserveAudioInitialization;
             oldTimeScale = Time.timeScale; oldVolume = AudioListener.volume; oldAudioPause = AudioListener.pause;
             oldCaptureDeltaTime = Time.captureDeltaTime;
+            // A failed nested mixer iterator must not poison later natural-clock tests.
+            Time.captureDeltaTime=0;
             oldBackgroundRun = Application.runInBackground; oldFrameRate = Application.targetFrameRate;
             oldCursorLock = UnityEngine.Cursor.lockState; oldCursorVisible = UnityEngine.Cursor.visible;
             oldBackground = InputSystem.settings.backgroundBehavior; previousKeyboard = Keyboard.current;

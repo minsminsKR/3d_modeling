@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
@@ -13,7 +14,9 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(120000)]
         public IEnumerator PursuerRecordedShoeTakesCycleOnWoodAndFollowActualTileAndWaterFloors()
         {
-            Call(shell, "BeginChapter"); yield return null; yield return null;
+            BeginLegacyChapterFixture(); yield return null; yield return null;
+            foreach(var door in Components("Interactable").Where(item=>Get<object>(item,"kind").ToString()=="Door"))Call(door,"OpenForPursuer");
+            yield return Delay(1.5f);
             ((Behaviour)player).enabled = false;
             var actor = Get<Component>(Get<Component>(session, "Chapter"), "Cyclopse");
             ((Behaviour)actor).enabled = false;
@@ -26,8 +29,8 @@ namespace HappyToy.V2.CloudTests
             // cubicle. SetDestination projected it onto the front edge at
             // z=-4.14, leaving less than Cyclopse's .95m stride. Use the actual
             // open ceramic aisle, as in the keyboard floor-contact fixture.
-            var starts = new[] {new Vector3(-7.3f,0,0),new Vector3(-6.25f,0,-3.2f),new Vector3(13.8f,-5,-25)};
-            var ends = new[] {new Vector3(2,0,0),new Vector3(-3.65f,0,-3.2f),new Vector3(13.8f,-5,-28.4f)};
+            var starts = new[] {new Vector3(18,0,10),new Vector3(-6.25f,0,-3.2f),new Vector3(12,-5,-24.5f)};
+            var ends = new[] {new Vector3(23,0,10),new Vector3(-3.7f,0,-3.2f),new Vector3(12,-5,-28f)};
             var surfaces = new[] {"wood","stone","wet"};
             for (int surface = 0; surface < 3; surface++)
             {
@@ -35,6 +38,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(NavMesh.SamplePosition(starts[surface],out var begin,1,NavMesh.AllAreas),Is.True);
                 Assert.That(Mathf.Abs(begin.position.y-starts[surface].y),Is.LessThan(.2f));
                 actor.transform.position = begin.position; agent.enabled = true;
+                actor.transform.rotation=Quaternion.LookRotation(ends[surface]-starts[surface]);
                 Assert.That(agent.Warp(begin.position),Is.True);
                 Assert.That(NavMesh.SamplePosition(ends[surface],out var destination,.15f,agent.areaMask),Is.True,
                     "Floor fixture target is outside real navigation: "+surfaces[surface]);
@@ -79,7 +83,10 @@ namespace HappyToy.V2.CloudTests
                 }
                 Assert.That(Vector3.Distance(actor.transform.position,destination.position),Is.LessThanOrEqualTo(.15f),
                     "Pursuer did not reach real "+surfaces[surface]+" target="+destination.position+
-                    " position="+actor.transform.position+" remaining="+agent.remainingDistance+" path="+agent.pathStatus);
+                    " position="+actor.transform.position+" remaining="+agent.remainingDistance+" path="+agent.pathStatus+
+                    " query="+actor.transform.Find("Rendered body clearance query").GetComponent<BoxCollider>().size+
+                    " blockers="+string.Join(",",Physics.OverlapBox(actor.transform.position+Vector3.up,Vector3.one*1.2f,actor.transform.rotation,
+                    Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore).Where(collider=>!collider.transform.IsChildOf(actor.transform)).Select(collider=>collider.name)));
                 Assert.That(Get<int>(steps,"StepsPlayed")-initial,Is.GreaterThanOrEqualTo(2),
                     "Actual floor "+surfaces[surface]+" position="+actor.transform.position+" speed="+agent.speed+" path="+agent.pathStatus+" moving="+agent.velocity);
                 Assert.That(fingerprints.Count,Is.GreaterThanOrEqualTo(surface==0?3:2),"Moving pursuer repeats the same recorded sole contact");
