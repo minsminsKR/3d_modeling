@@ -16,10 +16,15 @@ namespace HappyToy.V2
     {
         string output;float started;bool finished;
         readonly List<string> errors=new List<string>();readonly List<Frame> frames=new List<Frame>();
+        readonly List<double> titleRenderTimes=new List<double>();
+        Camera measuredTitleCamera;bool measuringTitle;int lastTitleFrame=-1;
         [Serializable]sealed class Frame{public string image,page;public float seconds,menu,black,approach;public bool preparing,input;}
         [Serializable]sealed class Report
         {
             public string status,failure;
+            public string titleTimingScope="Five-second warm title-camera end-render callback cadence at the production 1920x1080 target, without captures/readback/disk IO during sampling. Main Update FPS is separate. Not hardware-presented FPS or GPU timing.";
+            public int titleRenderFrames,mainFramesDuringTitle;
+            public float titleRenderFps,mainFpsDuringTitle,titleP50Milliseconds,titleP95Milliseconds;
             public string scope="Actual title pointer start, incremental corridor preparation and unscaled approach, black transition and gated corridor reveal. Screens compose the actual UI target over the actual player camera when Playing. Controlled actual entrance-drawer fixture keeps the player capsule at touching distance and uses its public interaction. PlayMode additionally verifies real E input. Not a complete survival run or audio certification.";
             public int preparingFrames,movingPreparingFrames;public float maximumApproach,minimumMenu=1,maximumBlack,maximumArmSwing,loadingSeconds,drawerTravel,playerDrift;
             public bool revealGated,drawerOpened,drawerClosed,playerPairRestored;
@@ -31,8 +36,13 @@ namespace HappyToy.V2
             var args=Environment.GetCommandLineArgs();int at=Array.IndexOf(args,"-v2-start-loading-output");
             if(at>=0&&at+1<args.Length)new GameObject("Explicit silent start-loading proof").AddComponent<StartLoadingProbe>().output=Path.GetFullPath(args[at+1]);
         }
-        void OnEnable()=>Application.logMessageReceived+=Log;
-        void OnDisable()=>Application.logMessageReceived-=Log;
+        void OnEnable(){Application.logMessageReceived+=Log;RenderPipelineManager.endCameraRendering+=TitleRendered;}
+        void OnDisable(){Application.logMessageReceived-=Log;RenderPipelineManager.endCameraRendering-=TitleRendered;}
+        void TitleRendered(ScriptableRenderContext context,Camera rendered)
+        {
+            if(!measuringTitle || rendered!=measuredTitleCamera || lastTitleFrame==Time.frameCount)return;
+            lastTitleFrame=Time.frameCount;titleRenderTimes.Add(Time.realtimeSinceStartupAsDouble);
+        }
         void Log(string message,string trace,LogType type){if(type==LogType.Error||type==LogType.Exception||type==LogType.Assert)errors.Add(message);}
         void Update(){if(!finished&&started>0&&Time.realtimeSinceStartup-started>120)Finish("Start-loading proof timeout");}
         static void Require(bool condition,string message){if(!condition)throw new InvalidOperationException(message);}
@@ -55,6 +65,18 @@ namespace HappyToy.V2
             session.ConfigureRecordDirectory(Path.Combine(output,"isolated-profile"));shell.RestoreDefaultSettings();view.SetCaptureSize(960,540);
             for(int i=0;i<5;i++)yield return null;
             var title=FindAnyObjectByType<CinematicTitleScene>();Require(title&&shell.Screen==GameShell.Page.Title,"Actual title missing");
+            measuredTitleCamera=GameObject.Find("Title-only camera").GetComponent<Camera>();
+            yield return new WaitForSecondsRealtime(1);
+            double sampleStart=Time.realtimeSinceStartupAsDouble;int firstMainFrame=Time.frameCount;measuringTitle=true;
+            while(Time.realtimeSinceStartupAsDouble-sampleStart<5)yield return null;
+            measuringTitle=false;report.titleRenderFrames=titleRenderTimes.Count;
+            report.mainFramesDuringTitle=Time.frameCount-firstMainFrame;
+            report.mainFpsDuringTitle=(float)(report.mainFramesDuringTitle/(Time.realtimeSinceStartupAsDouble-sampleStart));
+            Require(titleRenderTimes.Count>2,"No actual title-camera render samples");
+            report.titleRenderFps=(float)((titleRenderTimes.Count-1)/(titleRenderTimes.Last()-titleRenderTimes[0]));
+            var gaps=Enumerable.Range(1,titleRenderTimes.Count-1).Select(i=>(float)((titleRenderTimes[i]-titleRenderTimes[i-1])*1000)).OrderBy(value=>value).ToArray();
+            report.titleP50Milliseconds=gaps[(gaps.Length-1)/2];report.titleP95Milliseconds=gaps[Mathf.Min(gaps.Length-1,Mathf.CeilToInt(gaps.Length*.95f)-1)];
+            Require(report.titleRenderFps>=50 && report.titleRenderFps<=65,"Title render cadence outside the expected 60 FPS range: "+report.titleRenderFps);
             var arm=GameObject.Find("Actual Baeksugwi source clone").GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Arm1L_Wrist");var armRest=arm.localRotation;
             yield return new WaitForEndOfFrame();Capture(view,session,"title-before.png",0);
             var button=view.Root.Q<Button>("begin");var position=button.worldBound.center;var target=view.Root.panel.Pick(position);
