@@ -19,7 +19,7 @@
 | 획득 아이템 테두리·촛불 위기 소등 | `PickupOutline.cs`와 `Resources/PickupOutline.shader`는 실제 획득 가능/표시 상태와 깊이 검사를 따른다. `CandleDanger.cs`는 가까운 몸체와 공격을 판정하고 `WaymarkCandle.cs`는 점화 기억을 보존해 자동 복원한다. | `readability`, 저장 변경 시 `checkpoint` |
 | 베이비·적별 감각 | `StalkerCorridorBaby.cs`, `CorridorBabyBehaviour.cs`, `Core/CorridorBabyMemory.cs`, `Core/CorridorThreatRules.cs`. 운캣과 학교 화캣의 정체성은 별도다. | `core`, `ai` |
 | 서랍·가구 상호작용 | `CorridorDrawer.cs`, `CorridorFurniturePlacement.cs`, `CorridorFurnitureLibrary.cs`, `PlayerMotor.cs`. 움직이는 서랍과 플레이어 충돌·상호작용 거리를 확인한다. | `drawer` |
-| 회랑 생성·방·제단 | `CorridorLayout.cs` / `CorridorRun.cs`의 새 지도 버전은 4다. `Core/CorridorShelterRules.cs`는 막다른 방과 회전 여유를 선택하고 `CorridorShelterRoom.cs`는 실제 입구 문을 연결한다. 기존 지도 1~3은 같은 버전으로 재구성한다. 제단은 기존 모듈을 유지한다. | `corridor`, `checkpoint`, 전체 공간 변경 시 `full` |
+| 회랑 생성·방·제단 | `CorridorLayout.cs` / `CorridorRun.cs`의 새 지도 버전은 5다. `Core/CorridorShelterRules.cs`는 한 문짜리 막다른 방과 우회로 위의 두 문짜리 방을 선택한다. `CorridorShelterRoom.cs`는 각 방의 실제 문 목록을 연결한다. 기존 지도 1~4는 같은 버전으로 재구성한다. | 방·출구 선택/저장 변경은 `shelter`, 일반 회랑은 `corridor`, 전체 연결망 변경 시 `full` |
 | 운냥이 배회·추격 종소리 | `UncatBellVoice.cs`는 실제 움직임·추격 상태와 녹음 기반 공간 음원을 연결한다. `Core/EnemyBellClock.cs`는 배회/추격 간격과 음량을 판정한다. 제작 원본·비교는 `SourceArt/Audio/render_uncat_bell.py`와 `uncat-bell-selection.json`에 있다. | `core`, `corridor`, 기존 무음 음향 검사 |
 | 한국적인 소품 | `KoreanCorridorDressing.cs`는 위치 데이터만 받아 중앙 경로·가구·문 이동을 피한다. `KoreanCorridorProp.cs`는 자산/구역 정체성을 제공한다. `SourceArt/KoreanCorridorProps/`에는 웹앱 GLB/PBR·입력·프롬프트·Blender·LOD 재생성 도구가 있다. | `corridor`, `readability`, `full`, 새 플레이어 표면 확인 |
 | 학교 공간·첫 등장 | `SchoolCampusLayout.cs`, `SchoolCampusArchitecture.cs`, `SchoolCampusRooms.cs`, `SchoolFirstAppearances.cs`, 각 등장 이벤트. | `ai`, 공간/저장 버전 변경 시 `full` |
@@ -68,6 +68,12 @@ Windows Editor의 GPU 오류를 진단할 때는 `--graphics-api d3d11` 또는 `
 명시할 수 있다. 이 옵션은 해당 검사 프로세스에만 적용하며 프로젝트/플레이어
 설정을 바꾸지 않는다. 다른 API에서의 통과는 기본 API의 렌더링 통과를 뜻하지 않는다.
 
+`shelter`는 Core와 500개 시드의 방 혼합·기존 지도 4 재현, 실제 W/E 입력으로
+입장→입구 닫기→다른 문으로 탈출, 사이클롭스/운캣의 실제 두 문 통과·닫기,
+독립적인 두 문 상태의 저장·재개와 기존 회랑 체크포인트·중단·제단 검사를 묶는다.
+기본은 한 문/두 문 방 1:1, 최대 8개다. 안전한 막다른 방 후보가 없는 시드에서도
+우회로 위에 두 문 방 2개를 확보한다. 연결망 자체는 지도 4와 동일하다.
+
 `corridor`는 열린 문을 실제 E로 닫기, 발소리·폭죽의 생산 콜백을 거부하는
 백수귀의 정면/차폐 시야, 문이 있는 방의 차폐·선반·캐비닛·저장, 실제 NavMesh
 코너 이동, 실제 걷기→발각 추격의 종소리 간격·정지, 6m 추격 소등·점화 기억 복원,
@@ -82,7 +88,7 @@ Windows Editor의 GPU 오류를 진단할 때는 `--graphics-api d3d11` 또는 `
 
 고정된 옛 학교/회랑 좌표를 사용하는 회귀 검사는 `BeginLegacyChapterFixture` /
 `CreateLegacyCorridorFixture`로 지도 1을 명시한다. 최신 회랑 통합 검사는 기본 지도
-4, 최신 학교 공간/계단 검사는 기본 지도 2를 사용한다. 자연 입력 생존 검사는
+5, 최신 학교 공간/계단 검사는 기본 지도 2를 사용한다. 자연 입력 생존 검사는
 `Time.captureDeltaTime=0`을 유지한다. 명시적인 전체 음향 캡처 검사의 고정 믹서
 스텝은 별도 `controlledMixer` 입력으로 구분하며 자연 시간 생존 증거로 취급하지 않는다.
 

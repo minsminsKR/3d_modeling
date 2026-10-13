@@ -29,5 +29,31 @@ namespace HappyToy.V2.CoreTests
             foreach (int mask in new[] { 3, 6, 9, 12, 7, 15 }) Assert.That(CorridorShelterRules.NeedsTurningSpace(mask), Is.True);
             foreach (int mask in new[] { 0, 1, 2, 4, 8, 5, 10 }) Assert.That(CorridorShelterRules.NeedsTurningSpace(mask), Is.False);
         }
+
+        [Test]
+        public void SeparateExitRequiresARealBypassAndRejectsDeadEndCorridorsAndInvalidEdges()
+        {
+            Assert.That(CorridorShelterRules.IsThroughRoom(new[] { 3, 9, 6, 12 }, 2, 1), Is.True);
+            Assert.That(CorridorShelterRules.IsThroughRoom(new[] { 2, 10, 8 }, 3, 1), Is.False);
+            Assert.That(CorridorShelterRules.IsThroughRoom(new[] { 10, 8 }, 2, 0), Is.False);
+            Assert.That(CorridorShelterRules.IsThroughRoom(null, 2, 0), Is.False);
+        }
+
+        [Test]
+        public void MixedSheltersBalanceDeadEndsWithIndependentExitsAndRespectExcludedCells()
+        {
+            var graph = new[] { 3, 11, 9, 5, 4, 5, 6, 10, 12 };
+            var selected = CorridorShelterRules.SelectMixedRooms(graph, 3, 73, new[] { 2, 8 });
+            Assert.That(selected, Has.Length.EqualTo(2));
+            Assert.That(selected, Does.Contain(4));
+            Assert.That(selected.Count(cell => CorridorShelterRules.IsThroughRoom(graph, 3, cell)), Is.EqualTo(1));
+            Assert.That(selected.Intersect(new[] { 0, 2, 8 }), Is.Empty);
+            Assert.That(CorridorShelterRules.SelectMixedRooms(graph, 3, 73, new[] { 2, 8 }), Is.EqualTo(selected));
+            var noDeadEnds = CorridorShelterRules.SelectMixedRooms(graph, 3, 73, new[] { 4 });
+            Assert.That(noDeadEnds, Has.Length.EqualTo(2));
+            Assert.That(noDeadEnds.All(cell => CorridorShelterRules.IsThroughRoom(graph, 3, cell)), Is.True);
+            Assert.Throws<ArgumentNullException>(() => CorridorShelterRules.SelectMixedRooms(null, 3, 73, null));
+            Assert.Throws<ArgumentOutOfRangeException>(() => CorridorShelterRules.SelectMixedRooms(graph, 0, 73, null));
+        }
     }
 }

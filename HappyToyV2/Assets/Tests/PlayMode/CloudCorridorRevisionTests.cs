@@ -88,7 +88,7 @@ namespace HappyToy.V2.CloudTests
         {
             yield return RevisionPrepare(); ((Behaviour)player).enabled=false;
             var run=Get<Component>(session,"Corridor"); var rooms=Components("CorridorShelterRoom");
-            Assert.That(Get<int>(Get<object>(run,"Layout"),"Version"),Is.EqualTo(4));
+            Assert.That(Get<int>(Get<object>(run,"Layout"),"Version"),Is.EqualTo(5));
             Assert.That(rooms.Length,Is.GreaterThanOrEqualTo(2));
             var route=new NavMeshPath(); var start=(Vector3)Call(run,"CellPosition",0);
             foreach(var room in rooms)
@@ -98,7 +98,7 @@ namespace HappyToy.V2.CloudTests
             }
             Assert.That(Components("CorridorFurniturePlacement").Any(item=>Get<string>(item,"PropKey")=="archive-shelf"&&rooms.Any(room=>Get<int>(room,"Cell")==Get<int>(item,"Cell"))),Is.True);
             Assert.That(Components("Interactable").Any(item=>Get<object>(item,"kind").ToString()=="HidingPlace"&&rooms.Any(room=>Vector3.Distance(room.transform.position,item.transform.position)<3)),Is.True);
-            var selected=rooms[0]; var door=Get<Component>(selected,"EntranceDoor");
+            var selected=rooms.First(room=>!Get<bool>(room,"HasSeparateExit")); var door=Get<Component>(selected,"EntranceDoor");
             var inward=selected.transform.position-door.transform.position; inward.y=0; inward.Normalize();
             var mask=Get<Component>(run,"Mask"); mask.gameObject.SetActive(true); ((Behaviour)mask).enabled=false;
             var agent=mask.GetComponent<NavMeshAgent>(); agent.enabled=true;
@@ -110,8 +110,115 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(mask,"CanSeePlayer"),Is.True,"Opened room unexpectedly remained invisible");
             mask.gameObject.SetActive(false); Call(shell,"Pause"); yield return null;
             var checkpoint=Call(run,"CaptureCheckpoint"); Call(checkpoint,"Validate");
-            Assert.That(Get<int>(checkpoint,"simulationVersion"),Is.EqualTo(4));
+            Assert.That(Get<int>(checkpoint,"simulationVersion"),Is.EqualTo(5));
             Assert.That(Get<Array>(checkpoint,"doors").Length,Is.GreaterThanOrEqualTo(rooms.Length));
+        }
+
+        Component[] ShelterDoors(Component room) => ((IEnumerable)Get<object>(room,"Doors")).Cast<Component>().ToArray();
+        IEnumerator ShelterWalkTo(Vector3 destination)
+        {
+            var path=new NavMeshPath();
+            Assert.That(NavMesh.CalculatePath(player.transform.position,destination,NavMesh.AllAreas,path)&&path.status==NavMeshPathStatus.PathComplete,Is.True);
+            var previous=Mouse.current;var mouse=InputSystem.AddDevice<Mouse>();
+            try
+            {
+                foreach(var corner in path.corners.Skip(1))
+                {
+                    float deadline=Time.realtimeSinceStartup+12;
+                    while(Vector2.Distance(new Vector2(player.transform.position.x,player.transform.position.z),new Vector2(corner.x,corner.z))>.18f)
+                    {
+                        Assert.That(Time.realtimeSinceStartup,Is.LessThan(deadline),"Actual W movement blocked at "+player.transform.position+" toward "+corner);
+                        var camera=Get<Camera>(player,"eyes");var delta=corner-player.transform.position;delta.y=0;
+                        float yaw=Mathf.Atan2(delta.x,delta.z)*Mathf.Rad2Deg;
+                        var pixels=new Vector2(Mathf.Clamp(Mathf.DeltaAngle(player.transform.eulerAngles.y,yaw),-40,40),
+                            Mathf.Clamp(Mathf.DeltaAngle(camera.transform.localEulerAngles.x,0),-30,30))/Get<float>(player,"sensitivity");
+                        InputSystem.QueueDeltaStateEvent(mouse.delta,pixels);
+                        Keys(Vector3.Angle(player.transform.forward,delta)<12?new[]{Key.W}:Array.Empty<Key>());yield return null;
+                    }
+                }
+            }
+            finally { Keys();InputSystem.RemoveDevice(mouse);if(previous!=null&&previous.added)previous.MakeCurrent(); }
+            yield return null;
+        }
+        IEnumerator ShelterToggleWithE(Component door,bool open)
+        {
+            Keys();yield return null;yield return AimAtDoorway(door);
+            yield return KeysObserved(Key.E);Keys();
+            yield return Wait(()=>Get<bool>(door,"IsOpen")==open&&Get<bool>(door,"AtRequestedDoorPose"),4,"Actual E could not change shelter door to "+open);
+        }
+
+        [UnityTest,Timeout(90000)]
+        public IEnumerator TwoDoorShelterAllowsRealInputEntryClosingBehindAndEscapeThroughSeparateExit()
+        {
+            yield return RevisionPrepare();
+            var room=Components("CorridorShelterRoom").First(item=>Get<bool>(item,"HasSeparateExit"));
+            var doors=ShelterDoors(room);Assert.That(doors,Has.Length.EqualTo(2));Assert.That(doors[0],Is.Not.SameAs(doors[1]));
+            var inward=(room.transform.position-doors[0].transform.position).normalized;
+            PlacePlayer(doors[0].transform.position-inward*1.55f+Vector3.up*.03f);yield return null;
+            yield return ShelterToggleWithE(doors[0],true);
+            yield return ShelterWalkTo(doors[0].transform.position+inward*1.5f);
+            yield return ShelterToggleWithE(doors[0],false);
+            Assert.That(Get<bool>(doors[1],"IsOpen"),Is.False,"Operating the entrance changed the separate exit");
+            yield return ShelterWalkTo(room.transform.position);
+            var outward=(doors[1].transform.position-room.transform.position).normalized;
+            yield return ShelterWalkTo(doors[1].transform.position-outward*1.5f);
+            yield return ShelterToggleWithE(doors[1],true);
+            yield return ShelterWalkTo(doors[1].transform.position+outward*1.7f);
+            Assert.That(Vector3.Dot(player.transform.position-doors[1].transform.position,outward),Is.GreaterThan(1.3f));
+            Assert.That(Get<bool>(doors[0],"IsOpen"),Is.False,"Escape required reopening the entrance");
+            Assert.That(Physics.Raycast(player.transform.position+Vector3.up*.15f,Vector3.down,.6f,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore),Is.True);
+        }
+
+        [UnityTest,Timeout(120000)]
+        public IEnumerator TwoDoorShelterPursuersOpenCrossAndCloseBothPhysicalDoors()
+        {
+            yield return RevisionPrepare();((Behaviour)player).enabled=false;PlacePlayer(new Vector3(200,5,200),false);
+            var room=Components("CorridorShelterRoom").First(item=>Get<bool>(item,"HasSeparateExit"));var doors=ShelterDoors(room);
+            var inward=(room.transform.position-doors[0].transform.position).normalized;
+            var outward=(doors[1].transform.position-room.transform.position).normalized;
+            var start=doors[0].transform.position-inward*2.3f;var end=doors[1].transform.position+outward*3.1f;
+            foreach(string key in new[]{"Cyclopse","Uncat"})
+            {
+                var actor=ReadabilityActor(key);actor.gameObject.SetActive(true);((Behaviour)actor).enabled=true;
+                var agent=actor.GetComponent<NavMeshAgent>();agent.enabled=true;
+                Assert.That(NavMesh.SamplePosition(start,out var sample,.6f,NavMesh.AllAreas)&&agent.Warp(sample.position),Is.True);
+                actor.transform.rotation=Quaternion.LookRotation(inward);Set(actor,"state","Patrol");
+                Assert.That((bool)Call(actor,"HearNoise",end,30f),Is.True);
+                bool[] opened=new bool[2];float deadline=Time.realtimeSinceStartup+26;
+                while(Vector3.Distance(actor.transform.position,end)>.8f || doors.Any(door=>Get<bool>(door,"IsOpen")||!Get<bool>(door,"AtRequestedDoorPose")))
+                {
+                    Assert.That(Time.realtimeSinceStartup,Is.LessThan(deadline),key+" failed two-door room traversal at "+actor.transform.position);
+                    for(int i=0;i<doors.Length;i++){opened[i]|=Get<bool>(doors[i],"IsOpen");AdvancedDoorBodyClear(doors[i],actor);}
+                    yield return null;
+                }
+                Assert.That(opened.All(value=>value),Is.True,key+" bypassed one of the two actual doors");actor.gameObject.SetActive(false);
+            }
+        }
+
+        [UnityTest,Timeout(120000)]
+        public IEnumerator SeparateExitDoorStatesRestoreIndependentlyAndSavedVersionFourRetainsOneDoorRooms()
+        {
+            yield return RevisionPrepare();
+            var room=Components("CorridorShelterRoom").First(item=>Get<bool>(item,"HasSeparateExit"));var doors=ShelterDoors(room);
+            int cell=Get<int>(room,"Cell");var ids=doors.Select(door=>Get<string>(door,"stableId")).ToArray();
+            Assert.That((bool)Call(doors[1],"OpenForPursuer"),Is.True);
+            yield return Wait(()=>Get<bool>(doors[1],"AtRequestedDoorPose"),4,"Separate exit did not finish opening");
+            Call(shell,"Pause");yield return null;var saved=CheckpointCopy(Call(session,"CaptureCheckpoint"));
+            Assert.That(Get<int>(saved,"simulationVersion"),Is.EqualTo(5));
+            yield return RestoreCheckpointInFreshScene(saved);
+            room=Components("CorridorShelterRoom").Single(item=>Get<int>(item,"Cell")==cell);doors=ShelterDoors(room);
+            Assert.That(doors.Select(door=>Get<string>(door,"stableId")),Is.EqualTo(ids));
+            Assert.That(Get<bool>(doors[0],"IsOpen"),Is.False);Assert.That(Get<bool>(doors[1],"IsOpen"),Is.True);
+            var previous=session;Call(shell,"Restart",false);yield return RecoveryRebind(previous);
+            CreateLegacyCorridorFixture(73,4);yield return null;
+            Assert.That(Get<int>(Get<object>(Get<Component>(session,"Corridor"),"Layout"),"Version"),Is.EqualTo(4));
+            Assert.That(Components("CorridorShelterRoom"),Has.Length.EqualTo(2));
+            Assert.That(Components("CorridorShelterRoom").All(item=>ShelterDoors(item).Length==1&&!Get<bool>(item,"HasSeparateExit")),Is.True);
+            IsolateThreats();Begin();yield return null;Call(shell,"Pause");yield return null;
+            var legacy=CheckpointCopy(Call(session,"CaptureCheckpoint"));
+            yield return RestoreCheckpointInFreshScene(legacy);
+            Assert.That(Get<int>(Get<object>(Get<Component>(session,"Corridor"),"Layout"),"Version"),Is.EqualTo(4));
+            Assert.That(Components("CorridorShelterRoom").All(item=>ShelterDoors(item).Length==1),Is.True);
         }
         [UnityTest, Timeout(120000)]
         public IEnumerator CorridorCreaturesNavigateARealCornerWithoutWalkingInPlaceAtMarkers()

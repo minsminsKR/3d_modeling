@@ -40,10 +40,10 @@ namespace HappyToy.V2.CloudTests
         // Fixed-coordinate regressions explicitly retain their original map.
         // Current corridor/campus suites continue to use the public defaults.
         void BeginLegacyChapterFixture(){Call(session,"CreateChapterVersion",1);Begin();}
-        void CreateLegacyCorridorFixture(int seed)
+        void CreateLegacyCorridorFixture(int seed, int version=1)
         {
             var method=session.GetType().GetMethod("CreateCorridorVersion",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
-            Assert.That(method,Is.Not.Null);method.Invoke(session,new object[]{seed,1});
+            Assert.That(method,Is.Not.Null);method.Invoke(session,new object[]{seed,version});
         }
 
         [UnitySetUp]

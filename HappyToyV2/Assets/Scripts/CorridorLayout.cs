@@ -7,7 +7,7 @@ namespace HappyToy.V2
     public sealed class CorridorLayout
     {
         public const int Width = 9, Count = Width * Width;
-        public const int CurrentVersion = 4;
+        public const int CurrentVersion = 5;
         public readonly int[] Connections = new int[Count];
         public readonly int[] Distance = new int[Count];
         public readonly int[] Relics = new int[5];
@@ -103,7 +103,9 @@ namespace HappyToy.V2
             if (version >= 4)
             {
                 var excluded = new List<int> { 0, AltarCell }; excluded.AddRange(Threats);
-                ShelterCells = CorridorShelterRules.SelectRooms(Connections, seed, excluded.ToArray());
+                ShelterCells = version >= 5
+                    ? CorridorShelterRules.SelectMixedRooms(Connections, Width, seed, excluded.ToArray())
+                    : CorridorShelterRules.SelectRooms(Connections, seed, excluded.ToArray());
                 int slot = 1;
                 foreach (int room in ShelterCells)
                 {

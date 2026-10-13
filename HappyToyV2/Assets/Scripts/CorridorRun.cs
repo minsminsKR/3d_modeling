@@ -167,12 +167,14 @@ namespace HappyToy.V2
             var builtDoors = world.GetComponentsInChildren<Interactable>(true).Where(x => x.kind == Interactable.Kind.Door).ToArray();
             foreach (int cell in Layout.ShelterCells)
             {
-                int direction = Enumerable.Range(0, 4).Single(d => (Layout.Connections[cell] & (1 << d)) != 0);
-                int edgeCell = direction >= 2 ? CorridorLayout.Neighbor(cell, direction) : cell;
-                int edgeDirection = direction >= 2 ? (direction + 2) % 4 : direction;
-                var door = builtDoors.Single(x => x.stableId == "door-" + edgeCell + "-" + edgeDirection);
+                var roomDoors = Enumerable.Range(0, 4).Where(d => (Layout.Connections[cell] & (1 << d)) != 0).Select(direction =>
+                {
+                    int edgeCell = direction >= 2 ? CorridorLayout.Neighbor(cell, direction) : cell;
+                    int edgeDirection = direction >= 2 ? (direction + 2) % 4 : direction;
+                    return builtDoors.Single(x => x.stableId == "door-" + edgeCell + "-" + edgeDirection);
+                }).ToArray();
                 var room = new GameObject("Corridor shelter room — " + cell); room.transform.SetParent(world, false);
-                room.transform.position = CellPosition(cell); room.AddComponent<CorridorShelterRoom>().Configure(cell, door);
+                room.transform.position = CellPosition(cell); room.AddComponent<CorridorShelterRoom>().Configure(cell, roomDoors);
             }
             var exit = Box("Sealed entrance", CellPosition(0) + new Vector3(-2.72f, 1.1f, 0), new Vector3(.12f, 2.2f, 1.6f), timber);
             var exitInteraction = exit.AddComponent<Interactable>();

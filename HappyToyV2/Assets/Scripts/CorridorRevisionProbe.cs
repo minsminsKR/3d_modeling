@@ -77,7 +77,15 @@ namespace HappyToy.V2
             player.transform.position=door.transform.position-inward*1.8f+Vector3.up*.03f;
             player.eyes.transform.LookAt(room.transform.position+Vector3.up*.95f);Physics.SyncTransforms();yield return null;
             Capture(player.eyes,"shelter-room.png");
-            Require(session.Corridor.Layout.Version==4,"New map version 4");
+            var through=session.Corridor.GetComponentsInChildren<CorridorShelterRoom>().First(item=>item.HasSeparateExit);
+            Require(through.Doors.Count==2 && through.Doors[0]!=through.Doors[1],"Separate entrance and escape door");
+            player.transform.position=through.Centre;
+            for(int i=0;i<through.Doors.Count;i++)
+            {
+                player.eyes.transform.LookAt(through.Doors[i].transform.position+Vector3.up*1.18f);Physics.SyncTransforms();yield return null;
+                Capture(player.eyes,i==0?"through-room-entrance.png":"through-room-exit.png");
+            }
+            Require(session.Corridor.Layout.Version==CorridorLayout.CurrentVersion,"New map version "+CorridorLayout.CurrentVersion);
         }
         void Capture(Camera camera,string filename)
         {

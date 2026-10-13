@@ -44,7 +44,12 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
-    "corridor": ("Opened-door E focus, visual-only runner, enclosed shelter rooms and real corner navigation", [
+    "shelter": ("One/two-door room topology, actual player/pursuer passage and current/legacy checkpoint restoration", [
+        ("EditMode", (EDIT + "CorridorLayoutTests",)),
+        ("PlayMode", play_tests("CloudCorridorRevisionTests.cs", "CloudCorridorCheckpointTests.cs", "CloudCorridorSuspendTests.cs") + (
+            PLAY + "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches",
+            PLAY + "CorridorAltarRoomIsDistantReachableAndRestoresTheSamePhysicalSeededChamber"))]),
+    "corridor": ("Opened-door E focus, visual-only runner, one/two-door shelters and real corner navigation", [
         ("PlayMode", play_tests("CloudCorridorRevisionTests.cs"))]),
     "core": ("Engine-independent rules; no scene setup", []),
     "readability": ("Rendered body wall clearance, pickup borders, candle blackout and creature gait", [
