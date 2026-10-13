@@ -1,6 +1,6 @@
 # 돌아오지 않는 회랑 — 플레이 안내
 
-이번 회랑 가구·서랍 조사 빌드는 `Builds/CorridorFurnishings-20261007-r3/HappyToyV2.exe`다. 실행 파일만 옮기지 말고 폴더 전체를 보관한다. 시작 화면의 **회랑에 들어가기** 또는 기본 선택에서 Enter로 새 회랑을 연다. **폐교의 기억**은 원래 학교의 별도 장이다. 빌드 폴더는 Git에 포함하지 않으며 다른 PC에서는 `SOURCE_HANDOFF.md`에 따라 다시 빌드한다. 이번 검증 요약은 `Verification/corridor-furnishings/summary.json`에서 확인한다. 기존 촛불 시야·이동음 기록은 `Verification/perceived-candles/summary.json`에 있다.
+현재 로컬 플레이어는 `Builds/Windows-Feedback-20261013/HappyToyV2.exe`다. 실행 파일만 옮기지 말고 폴더 전체를 보관한다. 시작 화면의 **회랑에 들어가기** 또는 기본 선택에서 Enter로 새 회랑을 연다. **폐교의 기억**은 원래 학교의 별도 장이다. 빌드 폴더는 Git에 포함하지 않으며 다른 PC에서는 `SOURCE_HANDOFF.md`에 따라 다시 빌드한다. 과거 테스트 플레이의 결과와 캡처는 게임 실행에 필요하지 않다. 검증 도구와 재실행 방법은 `CODE_MAP.md`에 있다.
 
 ## 조작
 

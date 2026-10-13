@@ -61,6 +61,9 @@ model_test/model/_extracted/
 !game/happy_toy/vendor/three/build/three.module.js
 
 # Logs and temporary files
+# Unity test runners can also emit output from the repository root.
+/Builds/
+/Verification/
 *.log
 error.txt
 .DS_Store
