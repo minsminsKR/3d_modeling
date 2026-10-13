@@ -13,3 +13,6 @@ HappyToyV2/SourceArt/CreatureStudio/**/*.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/CreatureStudio/**/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/CreatureStudio/**/*.npz filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/EnemyStudio/**/*.fbx filter=lfs diff=lfs merge=lfs -text
+# Full webapp-generated Korean set dressing and editable packed authoring sources.
+HappyToyV2/SourceArt/KoreanCorridorProps/*-original.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/KoreanCorridorProps/*.blend filter=lfs diff=lfs merge=lfs -text

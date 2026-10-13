@@ -81,7 +81,7 @@ namespace HappyToy.V2
             Notify("중단한 회랑 상태를 복원했습니다. 준비되면 탐색을 이어가세요.");
         }
         public void CreateCorridor(int seed)
-        { CreateCorridorVersion(seed, 3); }
+        { CreateCorridorVersion(seed, CorridorLayout.CurrentVersion); }
         public System.Collections.IEnumerator CreateCorridorIncremental(int seed)
         {
             if(Chapter || Corridor || Finished)throw new System.InvalidOperationException("Fresh title session required");

@@ -7,6 +7,7 @@ namespace HappyToy.V2
     public sealed partial class LightExplorationRun
     {
         public const float CandleWarningDistance = 12f, CandleBlackoutDistance = 2f;
+        public const float CorridorPursuitBlackoutDistance = 6f;
         public const float CandleHeardMovementSeconds = 1.25f;
         readonly Dictionary<MonoBehaviour, float> heardMovement = new Dictionary<MonoBehaviour, float>();
         readonly Dictionary<MonoBehaviour, Renderer[]> threatRenderers = new Dictionary<MonoBehaviour, Renderer[]>();
@@ -118,7 +119,7 @@ namespace HappyToy.V2
                 candleMannequins = FindObjectsByType<WeepingAngelEncounter>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 nextThreatRefresh = Time.time + 1;
             }
-            float nearest = float.PositiveInfinity, perceived = 0; bool attacking = false;
+            float nearest = float.PositiveInfinity, nearestPursuit = float.PositiveInfinity, perceived = 0; bool attacking = false;
             if (!session.EncountersResolved)
             {
                 foreach (var actor in candleStalkers)
@@ -129,6 +130,7 @@ namespace HappyToy.V2
                     bool physical = Eligible(actor) && EnemyNavigation.SameActorFloor(navigation, player.transform.position, actor.HomeFloorY) &&
                         EnemyNavigation.WithinFloorPolicy(navigation, actor.transform.position, actor.HomeFloorY);
                     if (physical) nearest = Mathf.Min(nearest, PhysicalThreatDistance(actor));
+                    if (physical && actor.state == StalkerBrain.State.Chase) nearestPursuit = Mathf.Min(nearestPursuit, PhysicalThreatDistance(actor));
                     perceived = Mathf.Max(perceived, PerceivedDanger(actor, actor.isActiveAndEnabled && (actor.state == StalkerBrain.State.Chase || actor.AttackActive)));
                     attacking |= physical && actor.AttackActive;
                 }
@@ -139,6 +141,7 @@ namespace HappyToy.V2
                         actor.State == LanternMaskEncounter.Phase.Dormant || actor.State == LanternMaskEncounter.Phase.Resolved) continue;
                     bool physical = actor.IntroCompleted && Eligible(actor);
                     if (physical) nearest = Mathf.Min(nearest, Vector3.Distance(player.transform.position, actor.transform.position));
+                    if (physical && actor.State == LanternMaskEncounter.Phase.Chase) nearestPursuit = Mathf.Min(nearestPursuit, Vector3.Distance(player.transform.position, actor.transform.position));
                     perceived = Mathf.Max(perceived, PerceivedDanger(actor, actor.IntroCompleted &&
                         (actor.State == LanternMaskEncounter.Phase.Chase ||
                         actor.State == LanternMaskEncounter.Phase.Transforming || actor.AttackActive)));
@@ -161,7 +164,8 @@ namespace HappyToy.V2
             // Perception starts the legible pulse even beyond the proximity ramp.
             // Silent enemies behind the player or walls cannot reveal their location.
             Danger = perceived;
-            Blackout = attacking || nearest <= (Blackout ? CandleBlackoutDistance + .65f : CandleBlackoutDistance);
+            Blackout = attacking || nearest <= (Blackout ? CandleBlackoutDistance + .65f : CandleBlackoutDistance) ||
+                corridorDangerMode && nearestPursuit <= CorridorPursuitBlackoutDistance + (Blackout ? .65f : 0);
             bool extinguished = false;
             foreach (var candle in candles)
             {

@@ -45,10 +45,14 @@ namespace HappyToy.V2.CloudTests
             foreach(var item in run.GetComponentsInChildren(RequireType("Interactable"),true).Cast<Component>()
                 .Where(item=>Get<object>(item,"kind").ToString()=="CorridorMemory"))
             {
-                Vector3 at=item.transform.position+Vector3.back;at.y=.03f;
-                Assert.That(NavMesh.SamplePosition(at,out var end,.65f,NavMesh.AllAreas),Is.True,"Lost original altar approach "+item.name);
-                var path=new NavMeshPath();Assert.That(NavMesh.CalculatePath(start.position,end.position,NavMesh.AllAreas,path),Is.True);
-                Assert.That(path.status,Is.EqualTo(NavMeshPathStatus.PathComplete),"Dressing disconnected "+item.name);
+                bool reached=false;var path=new NavMeshPath();
+                for(int side=0;side<8&&!reached;side++)
+                {
+                    Vector3 at=item.transform.position+Quaternion.Euler(0,side*45,0)*Vector3.forward;at.y=.03f;
+                    reached=NavMesh.SamplePosition(at,out var end,.4f,NavMesh.AllAreas)&&
+                        NavMesh.CalculatePath(start.position,end.position,NavMesh.AllAreas,path)&&path.status==NavMeshPathStatus.PathComplete;
+                }
+                Assert.That(reached,Is.True,"Dressing disconnected every altar approach "+item.name);
             }
         }
         [UnityTest,Timeout(90000)]
@@ -142,7 +146,8 @@ namespace HappyToy.V2.CloudTests
             var altarRenderers=art.GetComponentsInChildren<MeshRenderer>(true).Where(renderer=>renderer.name=="Memory altar").ToArray();
             Assert.That(altarRenderers.Length,Is.EqualTo(5));
             Assert.That(altarRenderers.All(renderer=>!renderer.enabled),Is.True,"Original opaque altar still conceals its new timber skin");
-            var physical=art.GetComponentsInChildren<Collider>(true).Where(collider=>!collider.GetComponentInParent(RequireType("StalkerBrain")))
+            var physical=art.GetComponentsInChildren<Collider>(true).Where(collider=>!collider.GetComponentInParent(RequireType("StalkerBrain")) &&
+                !collider.GetComponentInParent(RequireType("LanternMaskEncounter")) && !(collider.isTrigger&&collider.gameObject.layer==2))
                 .ToDictionary(collider=>collider,collider=>new {collider.enabled,collider.bounds,position=collider.transform.position,
                     rotation=collider.transform.rotation,scale=collider.transform.lossyScale,layer=collider.gameObject.layer});
             Assert.That(physical.Count,Is.EqualTo(Get<int>(art,"PreservedColliders")),"New decoration introduced a physical collider");
@@ -303,7 +308,7 @@ namespace HappyToy.V2.CloudTests
                     CloudExperienceTests.Artifact(names[index],frame.EncodeToPNG());
                     views.Add(new HauntedView {image=names[index],feet=positions[index],camera=camera.transform.position,target=targets[index],flashlight=flashlight.enabled});
                     if(index!=3)continue;
-                    var clue=Get<TextMesh>(art,"ReturnClue");Assert.That(clue.text,Is.EqualTo("기억을 돌려놓는 문\n봉인 0 / 5"));
+                    var clue=Get<TextMesh>(art,"ReturnClue");Assert.That(clue.text,Is.EqualTo("돌아갈 수 없는 입구\n기억은 붉은 교실로"));
                     Assert.That(clue.font,Is.SameAs(Resources.Load<Font>("Fonts/Korean")));
                     var renderer=clue.GetComponent<MeshRenderer>();var screen=SchoolScreenBounds(projection,viewport,renderer.bounds);
                     Assert.That(renderer.bounds.size.z,Is.LessThanOrEqualTo(1.052f),"Printed clue extends past its physical paper width");

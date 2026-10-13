@@ -79,6 +79,7 @@ namespace HappyToy.V2.Editor
             ThreatEyeMaskImport.Ensure();
             MenuBackdropImport.Ensure();
             CorridorFurnitureImport.Ensure();
+            KoreanCorridorPropsImport.Ensure();
             CorridorArchitectureImport.Ensure();
             CorridorDetailsImport.Ensure();
             GraphicsLightingSetup.EnsureAndActivate();

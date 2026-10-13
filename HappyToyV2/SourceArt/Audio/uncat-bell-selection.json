@@ -1,0 +1,19 @@
+{
+  "selected": {
+    "file": "ThirdParty/Audio/RecordedHorror/sources/bell.ogg",
+    "sha256": "b29cf8f3885eb2a266a16455227288dd3e004ea0414d2823b1a8677915f862d1",
+    "reason": "A real pitched bell ring reads as a small carried bell; retain its natural pitch."
+  },
+  "compared": {
+    "file": "ThirdParty/Audio/RecordedHorror/sources/metal-jingle.wav",
+    "sha256": "099bf9d1442cbecd202714482b3e04cd425fa4844c83ea9cf11a1dc4d53e007c",
+    "reason": "Loose metal jingle is noisier and less clearly a bell, so it is not mixed into the cue."
+  },
+  "gain": "Patrol 0.18; pursuit 0.58 on the same spatial emitter",
+  "interval_seconds": {
+    "patrol": 0.88,
+    "pursuit": 0.23
+  },
+  "licensing": "CC0-1.0",
+  "listening_scope": "Selection from known retained physical recordings; PCM/source checks do not certify the final device mix."
+}

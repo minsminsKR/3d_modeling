@@ -1,5 +1,12 @@
 # Recorded horror audio authoring
 
+The corridor Uncat uses a soft carried-bell ring during actual movement and a
+faster, stronger rhythm during pursuit. `render_uncat_bell.py` derives the cue
+from the retained CC0 physical bell recording, after comparing it with the
+retained loose-metal jingle. `uncat-bell-selection.json` records the choice,
+hashes and rhythm. Reproduce with the pinned `requirements-corridor.txt`
+environment; no new recording download or synthesized fallback is needed.
+
 The corridor Baby also owns one **15.55-second actual recorded crying loop**.
 After the other passes, run `python SourceArt/Audio/render_corridor_baby.py` with
 the same CPython 3.11 / `requirements-corridor.txt` environment. Selected and

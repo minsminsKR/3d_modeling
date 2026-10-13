@@ -137,6 +137,8 @@ namespace HappyToy.V2
         }
         void HearFootstep(Vector3 point, float radius)
         {
+            // The corridor runner's own sprint masks external footsteps.
+            if (CorridorRunner) return;
             var session = GameSession.Current;
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
                 !noisePlayer || noisePlayer != session.player || noisePlayer.Hidden ||
@@ -183,16 +185,25 @@ namespace HappyToy.V2
         bool Route(Vector3 point) => EnemyNavigation.TryRoute(agent, point, floorY, path);
         bool Sees(PlayerMotor player)
         {
-            // The lantern keeps its omnidirectional identity. This is physical LOS,
-            // confirmed sight starts immediate pursuit after the authored intro.
-            return !(GameSession.Current && GameSession.Current.CheatSafeMode) && player && !player.Hidden && EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY) &&
-                Vector3.Distance(player.transform.position, transform.position) < 12 &&
-                EnemyNavigation.ClearSight(transform.position + Vector3.up,
-                    player.transform.position + Vector3.up * player.SightTargetHeight, player);
+            if (GameSession.Current && GameSession.Current.CheatSafeMode || !player || player.Hidden ||
+                !EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY) ||
+                Vector3.Distance(player.transform.position, transform.position) >= 12) return false;
+            var origin = transform.position + Vector3.up;
+            if (CorridorRunner)
+            {
+                var offset = player.transform.position - transform.position; offset.y = 0;
+                if (Vector3.Angle(transform.forward, offset) > 62f) return false;
+                var visual = GetComponent<MaskHorrorVisual>();
+                if (visual && visual.HeadSocket) origin = visual.HeadSocket.position;
+            }
+            // School lantern perception remains omnidirectional. Corridor sight
+            // uses the actual head and cover: a corner or closed room blocks it.
+            return EnemyNavigation.ClearSight(origin, player.transform.position + Vector3.up * player.SightTargetHeight, player);
         }
         public bool CanSeePlayer() => GameSession.Current && Sees(GameSession.Current.player);
         public bool HearNoise(Vector3 point, float duration)
         {
+            if (CorridorRunner) return false;
             var session = GameSession.Current;
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
                 !EnemyNavigation.Ready(agent) ||
@@ -383,7 +394,7 @@ namespace HappyToy.V2
             if (repath <= 0)
             {
                 repath = .35f;
-                if (Route(target)) { agent.SetPath(path); agent.isStopped = false; }
+                if (Route(target)) { EnemyNavigation.FollowPath(agent,path); }
                 else { EnemyNavigation.Stop(agent, true); if (patrol != null && patrol.Length > 0) waypoint = (waypoint + 1) % patrol.Length; }
             }
             Visual();

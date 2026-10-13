@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "references": [
+    {
+      "name": "jangseung",
+      "input": "jangseung-reference.png",
+      "generator": "built-in image_gen",
+      "date": "2026-10-14",
+      "transparent_background": false,
+      "prompt": "A single Korean jangseung wooden village guardian post for a realistic Korean horror game, isolated full object three-quarter product photograph against seamless plain light gray backdrop. Tall squat rough weathered dark chestnut timber with a carved exaggerated traditional guardian face: bulging carved round eyes, blunt nose, wide toothy mouth, no writing or legible symbols. Chipped aged wood with restrained old faded ochre-red pigment in the grooves. The post is 1.4 meters tall, broad stable flat base, solid sculpted volumes, entirely visible with a margin, no environment, no people, no loose parts, no shadows baked into material, evenly illuminated realistic PBR surfaces. Reference for image-to-3D reconstruction, strong readable silhouette, plausible handmade carving, unsettling neglected shrine atmosphere, no gore."
+    },
+    {
+      "name": "onggi",
+      "input": "onggi-reference.png",
+      "generator": "built-in image_gen",
+      "date": "2026-10-14",
+      "transparent_background": false,
+      "prompt": "A single antique Korean onggi earthenware storage jar with a fitted domed ceramic lid, isolated full object three-quarter product photograph against seamless plain light gray backdrop. Broad round shoulders, short neck, heavy circular rim, tapered foot, 65 cm tall. Deep muted brown glazed ceramic with weathered matte scuffs, tiny glaze crazing and dust, handmade shallow horizontal throwing rings, no text or painted illustrations. Solid physically believable complete vessel with closed lid, entire silhouette visible with margin, no environment, no people, no extra objects, no cast shadows baked into material, soft even studio light. High fidelity PBR reference for image-to-3D game asset reconstruction. A restrained neglected Korean household object for a haunted wooden corridor."
+    },
+    {
+      "name": "dokkaebi-tile",
+      "input": "dokkaebi-tile-reference.png",
+      "generator": "built-in image_gen",
+      "date": "2026-10-14",
+      "transparent_background": false,
+      "prompt": "A single old Korean dokkaebi-face roof-end tile ceramic relief mounted in a thick round tile body, isolated complete object three-quarter product photograph against seamless plain light gray backdrop. The sculpted traditional Korean guardian face fills a circular 45 cm charcoal terracotta disc: fierce round eyebrows, wide staring eyes, blunt broad nose, stylized curling mouth and prominent teeth. Deep chunky relief volumes readable from a three-quarter angle, solid continuous silhouette, worn slate gray fired clay with earthy brown chipped edges, dust and fine patina, no luminous parts, no gore, no text. Entire object visible with a margin, no stand, no wall, no people, no extra objects. Even PBR studio illumination, realistic handcrafted material, designed as a small unsettling wall ornament for a Korean horror corridor, image-to-3D reconstruction reference."
+    }
+  ]
+}

@@ -22,7 +22,7 @@ namespace HappyToy.V2.CloudTests
                     Debug.Log("CORRIDOR_RENDER light="+light.name+" at="+light.transform.position+" active="+light.isActiveAndEnabled+" intensity="+light.intensity+" range="+light.range+" mask="+light.cullingMask);
             var hits=Physics.RaycastAll(player.transform.position+Vector3.up*1.6f,Vector3.down,4,~0,QueryTriggerInteraction.Ignore);
             foreach(var hit in hits.OrderBy(x=>x.distance)) Debug.Log("CORRIDOR_RENDER below="+hit.collider.name+" at="+hit.point+" root="+hit.collider.transform.root.name);
-            var floor=run.GetComponentsInChildren<MeshRenderer>().First(x=>x.enabled&&x.sharedMaterial&&x.sharedMaterial.name.StartsWith("Worn wooden floor"));
+            var floor=run.GetComponentsInChildren<MeshRenderer>().First(x=>x.enabled&&x.sharedMaterial&&x.sharedMaterial.GetTag("GraphicsSurface",false)=="wood-floor");
             Debug.Log("CORRIDOR_RENDER floor="+floor.name+" bounds="+floor.bounds+" texture="+floor.sharedMaterial.mainTexture.name+" color="+floor.sharedMaterial.color+" shader="+floor.sharedMaterial.shader.name);
             Call(shell,"Pause"); camera.transform.localRotation=Quaternion.Euler(28,0,0);
             var target=new RenderTexture(1280,720,24); target.Create();

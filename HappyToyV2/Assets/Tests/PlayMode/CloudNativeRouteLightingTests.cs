@@ -113,7 +113,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(60000)]
         public IEnumerator NativeCorridorRouteMovingDoorWaitEvadesActualRearWarningThroughInput()
         {
-            Call(session,"CreateCorridor",73); Begin(); IsolateThreats();
+            CreateLegacyCorridorFixture(73); Begin(); IsolateThreats();
             yield return null; yield return null;
             // Controlled reproduction of the real build-20 leaf and approach.
             // Only initial actors are placed; all later movement/door action is

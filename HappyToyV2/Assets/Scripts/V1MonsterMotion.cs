@@ -65,6 +65,14 @@ namespace HappyToy.V2
                 transform.position.y-(agent?agent.baseOffset:0));
             PresentationHeight=MonsterPresentationScale.Bounds(model).size.y;
             groundCorrectionLimit*=PresentationScale;
+            if(brain.corridorRole!=CorridorThreatRole.Authored && GetComponent<CorridorRouteGuide>())
+            {
+                // The long cat's body is offset from its navigation pivot. Mount
+                // the torso over that pivot so centred door/corner paths also
+                // centre the actual body, leaving the original rig/clip intact.
+                var body=EnemyBodyClearance.RenderedBodyBounds(model,transform);
+                model.position-=transform.TransformVector(new Vector3(body.center.x,0,body.center.z));
+            }
             rest=model.localRotation;restPosition=model.localPosition;skins=model.GetComponentsInChildren<SkinnedMeshRenderer>();
             sampledMesh=StudioVisual?null:new Mesh();attackPose=new V1AttackPose(model);
             if(EnemySoundProfile.Identify(transform)==EnemySoundKind.Cyclopse)

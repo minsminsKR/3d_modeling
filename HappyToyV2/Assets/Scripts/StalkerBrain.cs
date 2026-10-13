@@ -331,7 +331,7 @@ namespace HappyToy.V2
                         HorizontalDistance(hit.position, transform.position) < 1 ||
                         !EnemyNavigation.TryRoute(agent, hit.position, floorY, path, 8)) continue;
                     searchTarget = hit.position; searchArrived = false; repath = .25f;
-                    agent.SetPath(path); agent.isStopped = false; found = true; break;
+                    EnemyNavigation.FollowPath(agent,path); found = true; break;
                 }
                 // No valid local branch is a normal dead end, not permission to
                 // route through walls or another floor. Keep looking until timeout.
@@ -342,7 +342,7 @@ namespace HappyToy.V2
             if (repath > 0) return;
             repath = .25f;
             if (EnemyNavigation.TryRoute(agent, searchTarget, floorY, path, SearchRouteLimit))
-            { agent.SetPath(path); agent.isStopped = false; }
+            { EnemyNavigation.FollowPath(agent,path); }
             else { EnemyNavigation.Stop(agent, true); searchArrived = searchStarted = true; searchDwell = 0; }
         }
 
@@ -446,7 +446,7 @@ namespace HappyToy.V2
             if (state != State.Patrol)
             {
                 if (EnemyNavigation.TryRoute(agent, lastKnown, floorY, path))
-                { agent.SetPath(path); agent.isStopped = false; }
+                { EnemyNavigation.FollowPath(agent,path); }
                 else EnemyNavigation.Stop(agent, true);
                 return;
             }
@@ -460,7 +460,7 @@ namespace HappyToy.V2
             {
                 waypoint %= patrol.Length;
                 if (patrol[waypoint] && EnemyNavigation.TryRoute(agent, patrol[waypoint].position, floorY, path))
-                { agent.SetPath(path); agent.isStopped = false; return; }
+                { EnemyNavigation.FollowPath(agent,path); return; }
                 waypoint = (waypoint + 1) % patrol.Length;
             }
             EnemyNavigation.Stop(agent, true);

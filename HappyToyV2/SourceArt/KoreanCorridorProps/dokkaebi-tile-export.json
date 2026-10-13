@@ -1,0 +1,26 @@
+{
+  "key": "dokkaebi-tile",
+  "tool": "Blender 4.0.2",
+  "original": "dokkaebi-tile-original.glb",
+  "originalSha256": "bcb4f3fdc9b0e3242e2ca13b7a0eaa1dbe9aaf625e2ed77c9fd2e16024f296ad",
+  "editable": "dokkaebi-tile.blend",
+  "heightMetres": 0.48,
+  "targetTriangles": 10000,
+  "originalFaces": 954907,
+  "gameFaces": 9998,
+  "fbx": "Assets/Resources/KoreanCorridorProps/dokkaebi-tile/geometry.fbx",
+  "materials": [
+    {
+      "name": "KC_dokkaebi-tile_0",
+      "roughness": 0.5,
+      "baseColor": "KC_dokkaebi-tile_0-baseColor.png",
+      "metallicSmoothness": "KC_dokkaebi-tile_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Original full PBR embedded in original GLB and packed blend; game maps resized to at most 2048px",
+  "bounds": {
+    "width": 0.48496947866045886,
+    "depth": 0.1534658846524402,
+    "height": 0.48
+  }
+}

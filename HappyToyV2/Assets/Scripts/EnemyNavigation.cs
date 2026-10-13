@@ -49,6 +49,12 @@ namespace HappyToy.V2
             return !Physics.Linecast(origin, target, out var hit, Physics.DefaultRaycastLayers,
                 QueryTriggerInteraction.Ignore) || (player && hit.collider.GetComponentInParent<PlayerMotor>() == player);
         }
+        public static bool FollowPath(NavMeshAgent agent, NavMeshPath path)
+        {
+            var guide = agent.GetComponent<CorridorRouteGuide>();
+            bool followed = guide && guide.isActiveAndEnabled ? guide.Follow(agent,path) : agent.SetPath(path);
+            agent.isStopped = !followed; return followed;
+        }
 
         static readonly RaycastHit[] soundHits = new RaycastHit[32];
 

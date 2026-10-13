@@ -38,7 +38,7 @@ namespace HappyToy.V2.CloudTests
             var sectors=Get<int[]>(plan,"Sectors");var branches=Get<int[]>(plan,"BranchOrdinals");
             var clues=((IEnumerable<TextMesh>)Get<object>(art,"SectorClues")).ToArray();
             Assert.That(Get<int>(art,"GoalRoomClues"),Is.EqualTo(5));
-            Assert.That(Get<int>(art,"BranchClues"),Is.EqualTo(Get<int>(plan,"BranchCount")-goals.Count(x=>branches[x]>0)));
+            Assert.That(Get<int>(art,"BranchClues"),Is.Zero,"Removed branch-number signage returned");
             Assert.That(Get<bool>(art,"PhysicalStateIntact"),Is.True);HauntedCompleteApproaches(run);
             ulong nav=HauntedNavigationHash();
             var additions=Get<Transform>(art,"AdditionRoot");
@@ -55,23 +55,14 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(material.GetTexture(channel.Item1),Is.SameAs(Resources.Load<Texture2D>("GraphicsPbr/paper-aged/"+channel.Item2)));
                 Assert.That(material.mainTextureScale,Is.EqualTo(Vector2.one));
             }
-            var crossbars=art.GetType().GetMethod("SectorCrossbars",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance);
-            Assert.That(crossbars,Is.Not.Null);
-            var profiles=goals.Select(cell=>(float[])crossbars.Invoke(art,new object[]{cell})).ToArray();
-            Assert.That(profiles.Select(profile=>string.Join(",",profile)).Distinct().Count(),Is.EqualTo(5),"Sector joinery identities collapsed");
-            for(int i=0;i<5;i++)
+            foreach(int cell in goals)
             {
-                string prefix="Timber-paper cell batch "+goals[i]+":Weathered corridor lattice";
-                var timbers=additions.GetComponentsInChildren<MeshFilter>().Where(filter=>filter.name.StartsWith(prefix,StringComparison.Ordinal)).ToArray();
-                Assert.That(timbers,Is.Not.Empty,"Missing actual lattice geometry for goal cell "+goals[i]);
-                Vector3 origin=HauntedCell(run,goals[i]);origin.y=0;
-                foreach(var timber in timbers)Assert.That(Vector3.Distance(timber.transform.position,origin),Is.LessThan(.0001f),
-                    "Lattice batch belongs to another cell: "+timber.name);
-                // Wall joinery casts shadows; the same cell's clue frame is a separate no-shadow batch.
-                var heights=timbers.SelectMany(timber=>timber.sharedMesh.vertices.Select(vertex=>timber.transform.TransformPoint(vertex).y)).ToArray();
-                foreach(float level in profiles[i])Assert.That(heights.Any(y=>Mathf.Abs(y-level-.011f)<.001f||Mathf.Abs(y-level+.011f)<.001f),Is.True,
-                    "Actual cell geometry lost its sector crossbar at "+level);
-                Assert.That(clues.Single(clue=>clue.name=="Goal chamber clue "+goals[i]).text,Does.Contain("봉인 "+(i+1).ToString("D2")));
+                var structure=additions.Find("Blender architecture cell "+cell);
+                Assert.That(structure,Is.Not.Null,"Missing authored architecture at goal "+cell);
+                var meshes=structure.GetComponentsInChildren<MeshFilter>();
+                Assert.That(meshes.Sum(filter=>filter.sharedMesh.vertexCount),Is.GreaterThan(1000));
+                Assert.That(meshes.All(filter=>filter.sharedMesh.uv.Length==filter.sharedMesh.vertexCount),Is.True);
+                Assert.That(clues.Single(clue=>clue.name=="Goal chamber clue "+cell).text,Does.Contain("봉인 "+(Array.IndexOf(goals,cell)+1).ToString("D2")));
             }
             Assert.That(papers.Select(x=>x.GetColor("_BaseColor")).Distinct().Count(),Is.EqualTo(5));
             var camera=Get<Camera>(player,"eyes");var torch=Get<Light>(player,"flashlight");
@@ -84,8 +75,7 @@ namespace HappyToy.V2.CloudTests
             try
             {
                 foreach(var light in pointStates.Keys) light.enabled=false;
-                var selected=goals.Concat(Enumerable.Range(0,81).Where(x=>branches[x]>0 && !goals.Contains(x))
-                    .OrderBy(x=>branches[x]).Take(2)).ToArray();
+                var selected=goals;
                 foreach(int cell in selected)
                 {
                     var clue=clues.Single(x=>x.name.EndsWith(" "+cell));

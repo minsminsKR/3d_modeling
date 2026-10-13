@@ -241,7 +241,7 @@ namespace HappyToy.V2.CloudTests
                 Time.captureDeltaTime=1f/60;yield return null;
                 started=StartOwnedAudioRenderer();Assert.That(started,Is.True);Call(shell,"BeginChapter");yield return null;
                 var capture=new CloudLiveSchoolMixCapture(session,player);
-                using(var route=new CloudSurvivalTests(session,player,shell,Keys,InputDiagnostics))
+                using(var route=new CloudSurvivalTests(session,player,shell,Keys,InputDiagnostics,true))
                 {
                     // Flatten only the test route's enumerators so every genuine
                     // input frame also renders the actual native mixer once.
@@ -271,7 +271,7 @@ namespace HappyToy.V2.CloudTests
             try
             {
                 Time.captureDeltaTime=1f/60;yield return null;started=StartOwnedAudioRenderer();Assert.That(started,Is.True);
-                Call(shell,"BeginChapter");yield return null;
+                BeginLegacyChapterFixture();yield return null;
                 var feedback=Get<Component>(player,"Feedback");int rate=AudioSettings.outputSampleRate;
                 Assert.That(Components("StalkerBrain").All(actor=>!actor.gameObject.activeInHierarchy),Is.True,
                     "Opening-school exercise must occur before the first real memory awakens threats");

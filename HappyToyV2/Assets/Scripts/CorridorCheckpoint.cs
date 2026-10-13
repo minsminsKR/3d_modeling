@@ -28,7 +28,7 @@ namespace HappyToy.V2
         public static bool Vector(Vector3 p) => Number(p.x,-10000,10000) && Number(p.y,-10000,10000) && Number(p.z,-10000,10000);
         public void Validate()
         {
-            if (version != 1 || simulationVersion < 1 || simulationVersion > 3 || !Guid.TryParseExact(token,"N",out _) || !Number(seconds,0,1000000000) ||
+            if (version != 1 || simulationVersion < 1 || simulationVersion > CorridorLayout.CurrentVersion || !Guid.TryParseExact(token,"N",out _) || !Number(seconds,0,1000000000) ||
                 recovered == null || recovered.Length != 5 || supplies == null || supplies.Length != 8 ||
                 doors == null || doors.Length > 162 || threats == null || player == null ||
                 threatVersion < 0 || threatVersion > 1 || threats.Length != (threatVersion == 0 ? 4 : 3) ||

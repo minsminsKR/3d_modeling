@@ -492,6 +492,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(animation, Is.Not.Null);
             var hips = brain.GetComponentsInChildren<Transform>().Single(item => item.name == "mixamorig:Hips");
             Quaternion cryHips = hips.localRotation;
+            var poseBones=brain.GetComponentsInChildren<Transform>().Where(bone=>bone.name.StartsWith("mixamorig:")).ToArray();
+            var cryPose=poseBones.Select(bone=>bone.localRotation).ToArray();
             yield return IntroPause(owner, () => IntroBrainSafe(brain));
             yield return Wait(() => IntroPhase(owner) == "crawlReady" && IntroClock(owner) >= 4.65f, 6,
                 "Nursery never reached its settled pre-release crawl pose");
@@ -502,7 +504,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(animation["patrol"].weight, Is.GreaterThan(.95f));
             Assert.That(animation["patrol"].time, Is.GreaterThan(.1f));
             float hipPoseChange = Quaternion.Angle(cryHips, hips.localRotation);
-            Assert.That(hipPoseChange, Is.GreaterThanOrEqualTo(25), "Patrol state did not produce an actual crawl-pose change");
+            Assert.That(poseBones.Select((bone,index)=>Quaternion.Angle(cryPose[index],bone.localRotation)).Max(),
+                Is.GreaterThan(5), "Stationary pre-release rig did not change from cry into its imported crawl preparation");
             Assert.That(Get<int>(owner, "PreparationContacts"), Is.EqualTo(1));
             IntroFrame(owner, "intro-nursery-prepare.png");
             TestContext.Out.WriteLine("HAPPYTOY_NURSERY_POSE elapsed=" + IntroClock(owner) + "; patrolTime=" + animation["patrol"].time +

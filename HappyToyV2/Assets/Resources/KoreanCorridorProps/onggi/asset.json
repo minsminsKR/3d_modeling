@@ -1,0 +1,26 @@
+{
+  "key": "onggi",
+  "tool": "Blender 4.0.2",
+  "original": "onggi-original.glb",
+  "originalSha256": "2330cb3b573b455c058745b48df83b665e4be1cef980a020ef7f3a0024a58751",
+  "editable": "onggi.blend",
+  "heightMetres": 0.65,
+  "targetTriangles": 6000,
+  "originalFaces": 981132,
+  "gameFaces": 5998,
+  "fbx": "Assets/Resources/KoreanCorridorProps/onggi/geometry.fbx",
+  "materials": [
+    {
+      "name": "KC_onggi_0",
+      "roughness": 0.5,
+      "baseColor": "KC_onggi_0-baseColor.png",
+      "metallicSmoothness": "KC_onggi_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Original full PBR embedded in original GLB and packed blend; game maps resized to at most 2048px",
+  "bounds": {
+    "width": 0.5079484396009418,
+    "depth": 0.5081233273156144,
+    "height": 0.65
+  }
+}
