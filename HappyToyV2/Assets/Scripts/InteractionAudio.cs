@@ -12,7 +12,6 @@ namespace HappyToy.V2
         Transform MovingLeaf => drawer ? drawer.MovingDrawer : door ? door.movingLeaf : null;
         bool AtRequestedPose => drawer ? drawer.AtRequestedPose : door && door.AtRequestedDoorPose;
         AudioSource source, railSource;
-        EnemyAcoustics acoustics;
         AudioClip openClip, closeClip, railClip, seatClip;
         readonly List<AudioClip> ownedClips = new List<AudioClip>();
         Vector3 previousLeafPosition;
@@ -37,7 +36,7 @@ namespace HappyToy.V2
             source = Emitter(emitter, .32f, 100);
             railSource = Emitter(emitter, .15f, 135);
             // The complete door root is ignored by acoustic traces, so the leaf cannot muffle itself.
-            acoustics = EnemyAcoustics.Bind(source, transform, .32f, 0);
+            EnemyAcoustics.Bind(source, transform, .32f, 0);
             EnemyAcoustics.Bind(railSource, transform, .15f, 0);
             openClip = Recorded("door-open");
             closeClip = Recorded("door-close");
@@ -81,9 +80,6 @@ namespace HappyToy.V2
                 railSource.clip = railClip; railSource.loop = true; railSource.pitch = opening ? 1 : .95f;
                 railSource.Play();
             }
-            if (session.Shell && acoustics && acoustics.IsAudible(source))
-                session.Shell.ShowCaption(drawer ? (opening ? "[철컥 · 나무 서랍 열림]" : "[철컥 · 나무 서랍 닫힘]") :
-                    (opening ? "[철컥 · 나무 문 열림]" : "[철컥 · 나무 문 닫힘]"), 1.6f);
         }
 
         void LateUpdate()

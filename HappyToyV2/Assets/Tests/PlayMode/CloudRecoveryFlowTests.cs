@@ -117,8 +117,8 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<float>(player, "Stamina"), Is.GreaterThan(stamina + .06f), "Blocked sprint kept charging instead of recovering");
                 Assert.That(Get<int>(Get<Component>(player, "Feedback"), "FootstepsPlayed"), Is.EqualTo(footsteps));
                 Assert.That(Get<float>(player, "FootstepNoiseRadius"), Is.Zero);
-                var status = Get<VisualElement>(One("GameShellView"), "Root").Q<Label>("player-status");
-                Assert.That(status.text, Is.EqualTo("멈춰서 숨을 고릅니다"), "HUD still claims running while physically stopped");
+                Assert.That(Get<VisualElement>(One("GameShellView"), "Root").Q<Label>("player-status"),
+                    Is.Null, "Removed movement guidance returned to the HUD");
                 stamina = Get<float>(player, "Stamina"); before = player.transform.position;
                 yield return KeysObserved(Key.W, Key.D, Key.LeftShift);
                 yield return Wait(() => Get<bool>(player, "Running") && Get<float>(player, "ActualSpeed") > 2, 2, "Diagonal wall slide was mistaken for a stop");

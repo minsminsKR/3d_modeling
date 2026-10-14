@@ -109,6 +109,7 @@ namespace HappyToy.V2.CloudTests
         {
             Call(session,"CreateCorridor",73); Begin(); yield return null; LightControlledIsolation();
             var lamp=Get<Light>(player,"flashlight"); lamp.enabled=true;
+            var view=One("GameShellView");var gaugeErrors=new System.Collections.Generic.List<string>();
             float charged=Get<float>(LampCharge,"Charge"); yield return Delay(.25f);
             Assert.That(Get<float>(LampCharge,"Charge"),Is.LessThan(charged-.1f));
             yield return LightPulse(Key.F); Assert.That(lamp.enabled,Is.False);
@@ -119,6 +120,7 @@ namespace HappyToy.V2.CloudTests
             Call(LampCharge,"Restore",.12f,0,0); yield return LightPulse(Key.F);
             yield return Wait(()=>Get<bool>(LampCharge,"Depleted"),2,"Actual lit gameplay did not deplete the charge");
             Assert.That(lamp.enabled,Is.False); Assert.That(Get<int>(LampCharge,"Depletions"),Is.EqualTo(1));
+            yield return CaptureMenu(view,"hud-gauge-empty.png",1280,720,gaugeErrors);
             yield return LightPulse(Key.F); Assert.That(lamp.enabled,Is.False,"Empty battery allowed the real F switch to relight");
             var pickup=LightTargets("FlashlightBattery")[0]; PlacePlayer(LightApproach(pickup)); yield return null;
             yield return LightAim(pickup); Assert.That(pickup.gameObject.activeSelf,Is.False);
@@ -126,12 +128,18 @@ namespace HappyToy.V2.CloudTests
             var battery=pickup.GetComponent(RequireType("FlashlightBattery"));
             Assert.That((bool)Call(battery,"TryCollect",player),Is.False); Assert.That(Get<int>(LampCharge,"PacksCollected"),Is.EqualTo(1));
             yield return LightPulse(Key.F); Assert.That(lamp.enabled,Is.True);
-            var view=One("GameShellView");
-            Assert.That(Get<VisualElement>(view,"Root").Q<Label>("flashlight-battery-meter").text,Does.Contain("손전등"));
+            yield return CaptureMenu(view,"hud-gauge-half.png",1280,720,gaugeErrors);
+            var gauge=Get<VisualElement>(view,"Root").Q<VisualElement>("flashlight-battery-meter");
+            Assert.That(gauge,Is.Not.Null);Assert.That(gauge,Is.Not.InstanceOf<Label>());
+            Assert.That(Get<float>(gauge,"Fraction"),Is.EqualTo(Get<float>(LampCharge,"Fraction")).Within(.0001f));
             Call(LampCharge,"Restore",180f,1,1); lamp.enabled=false;
             var fullPack=LightTargets("FlashlightBattery").First(x=>x.gameObject.activeSelf); PlacePlayer(LightApproach(fullPack)); yield return null;
             yield return LightAim(fullPack); Assert.That(fullPack.gameObject.activeSelf,Is.True,"Full charge wasted a finite pack");
             Assert.That(Get<float>(LampCharge,"Charge"),Is.EqualTo(180));
+            yield return CaptureMenu(view,"hud-gauge-full.png",1280,720,gaugeErrors);
+            Call(shell,"ToggleLargeText");
+            yield return CaptureMenu(view,"hud-gauge-full-large.png",1024,768,gaugeErrors);
+            Assert.That(gaugeErrors,Is.Empty,string.Join("\n",gaugeErrors));
         }
         [UnityTest, Timeout(120000)]
         public IEnumerator CandlePhysicalIgnitionAndFiniteSupplyCheckpointRestoreWithoutReplay()

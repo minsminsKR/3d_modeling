@@ -10,11 +10,11 @@ namespace HappyToy.V2
         readonly ShellLayout layout;
         readonly VisualElement threatVeil;
         VisualElement stamina, crosshair, focusPanel, itemFeedbackPanel, memoryStrip;
-        Label focus, meter, status, noise, caption, itemFeedback, controlsFooter, batteryMeter;
+        Label focus, meter, caption, itemFeedback, controlsFooter;
+        FlashlightGauge batteryMeter;
         readonly MemoryToken[] memoryTokens = new MemoryToken[7];
         Color Rust => layout.Rust;
         Color Gold => layout.Gold;
-        Color Muted => layout.Muted;
         public ShellHudView(ShellLayout layout, VisualElement threatVeil) { this.layout = layout; this.threatVeil = threatVeil; }
         public void UpdateControls(string text) { if (controlsFooter != null) controlsFooter.text = text; }
         sealed class MemoryToken : VisualElement
@@ -78,24 +78,34 @@ namespace HappyToy.V2
             caption.name = "sound-caption";
             caption.style.unityTextAlign = TextAnchor.UpperCenter;
             caption.style.color = layout.Gold;
-            focusPanel = layout.Panel(460, 753, 680, 54, new Color(.017f, .026f, .022f, .95f));
-            focusPanel.name = "focus-panel";
+            var focusAnchor = layout.Panel(0, 753, 1600, 54, Color.clear);
+            focusAnchor.style.alignItems = Align.Center;
+            focusAnchor.style.justifyContent = Justify.Center;
+            focusPanel = new VisualElement { name = "focus-panel", pickingMode = PickingMode.Ignore };
+            focusPanel.style.backgroundColor = new Color(.017f, .026f, .022f, .95f);
+            focusPanel.style.maxWidth = 680;
+            focusPanel.style.flexShrink = 0;
+            focusPanel.style.paddingLeft = focusPanel.style.paddingRight = 20;
+            focusPanel.style.paddingTop = focusPanel.style.paddingBottom = 10;
+            focusAnchor.Add(focusPanel);
             layout.Outline(focusPanel, layout.Edge);
-            focus = layout.Text("", 481, 764, 638, 42, layout.LargeText ? 27 : 23);
-            focus.style.unityTextAlign = TextAnchor.UpperCenter;
+            focus = new Label { name = "interaction-prompt", pickingMode = PickingMode.Ignore };
+            focus.style.fontSize = layout.LargeText ? 27 : 23;
+            focus.style.minHeight = layout.LargeText ? 44 : 38;
+            focus.style.color = layout.Paper;
+            focus.style.whiteSpace = WhiteSpace.Normal;
+            focus.style.marginLeft = focus.style.marginRight = 0;
+            focus.style.marginTop = focus.style.marginBottom = 0;
+            focus.style.paddingLeft = focus.style.paddingRight = 0;
+            focus.style.paddingTop = focus.style.paddingBottom = 0;
+            focus.style.unityTextAlign = TextAnchor.MiddleCenter;
+            focusPanel.Add(focus);
             layout.Small("호흡", 47, 781, 170);
             layout.Panel(47, 817, 265, 6, layout.Edge);
             stamina = layout.Panel(47, 817, 265, 6, layout.Gold);
             meter = layout.Text("", 47, 837, 860, 36, layout.LargeText ? 23 : 19);
-            batteryMeter = layout.Text("", 47, 740, 365, 40, layout.LargeText ? 23 : 19);
-            batteryMeter.name="flashlight-battery-meter";
-            status = layout.Text("", 753, 189, 802, 44, layout.LargeText ? 24 : 20);
-            status.name = "player-status";
-            status.style.unityTextAlign = TextAnchor.UpperRight;
-            status.style.color = layout.Gold;
-            noise = layout.Text("", 753, 230, 802, 34, layout.LargeText ? 22 : 19);
-            noise.style.unityTextAlign = TextAnchor.UpperRight;
-            noise.style.color = layout.Muted;
+            batteryMeter = new FlashlightGauge(layout.Paper, Gold, Rust);
+            layout.Place(batteryMeter, 47, 738, layout.LargeText ? 202 : 168, layout.LargeText ? 38 : 32);
             // Fit the message instead of covering the upper-right view with an empty box.
             // This sits above the lower-left inventory and leaves the aiming path clear.
             itemFeedbackPanel = layout.Panel(47, 672, 365, 42, new Color(.015f, .027f, .022f, layout.HighContrast ? .95f : .58f));
@@ -147,24 +157,18 @@ namespace HappyToy.V2
             Visible(caption, state.CaptionVisible);
             stamina.style.width = 265 * Mathf.Clamp01(state.Stamina);
             stamina.style.backgroundColor = state.SprintExhausted ? Rust : Gold;
-            batteryMeter.text = state.BatteryText;
-            batteryMeter.style.color = state.BatteryLow ? Rust : Gold;
+            batteryMeter.SetCharge(state.BatteryFraction, state.FlashlightLit);
             int count = state.Firecrackers;
-            meter.text = $"숨 {Mathf.RoundToInt(state.Stamina * 100)}%    ·    폭죽 {count}개";
-            if (state.SprintExhausted) meter.text += state.Stamina < .25f ? "    걸으며 숨을 회복하세요" : usingGamepad ? "    스틱 버튼을 놓으면 다시 달릴 수 있습니다" : "    Shift를 놓으면 다시 달릴 수 있습니다";
+            meter.text = $"폭죽 {count}개";
             bool hasFocus = state.Hidden || state.Focused;
             string interact = usingGamepad ? "[아래 버튼]  " : "[E]  ";
             focus.text = state.Hidden ? interact + "숨은 곳에서 나오기" : state.Focused ? interact + state.FocusLabel : string.Empty;
             Visible(focus, hasFocus);
             Visible(focusPanel, hasFocus);
             UpdateCrosshair(state.Focused);
-            status.text = state.Hidden ? (state.HidingThreatCueActive ? "문 앞에서 공격 준비 · [E] 지금 나오세요" : "캐비닛 안 · 발소리를 듣고 움직이세요") : state.SlowRemaining > 0 ? $"이동 속도 감소  ·  {Mathf.CeilToInt(state.SlowRemaining)}초" : state.ActualSpeed <= .12f ? (state.Crouching ? "낮은 자세 · 멈춰서 숨을 고릅니다" : "멈춰서 숨을 고릅니다") : state.Crouching ? "낮은 자세 · 천천히 조용하게 이동합니다" : state.Running ? "달리는 중 · 발소리가 멀리 퍼집니다" : "걷는 중 · 물에서는 발소리가 더 멀리 퍼집니다";
-            status.style.color = state.HidingThreatCueActive ? Rust : Gold;
             itemFeedback.text = state.ItemFeedback;
             Visible(itemFeedback, state.ItemFeedbackVisible); Visible(itemFeedbackPanel, state.ItemFeedbackVisible);
             itemFeedbackPanel.style.opacity = state.FeedbackOpacity;
-            string sound = state.FootstepNoiseRadius <= 0 ? "없음" : state.FootstepNoiseRadius <= 3.5f ? "작음" : state.FootstepNoiseRadius <= 7 ? "보통" : "큼";
-            noise.text = "내 발소리  " + sound;
             Visible(threatVeil, state.Threatened);
             if (state.Threatened)
             {
@@ -172,15 +176,14 @@ namespace HappyToy.V2
                 threatVeil.style.unityBackgroundImageTintColor = state.OverlayColor;
                 threatVeil.style.opacity = state.PeripheralStrength;
             }
-            noise.style.color = state.FootstepNoiseRadius > 7 ? Rust : Muted;
         }
         internal struct State
         {
-            public bool HasPlayer, CaptionVisible, SprintExhausted, BatteryLow, Hidden, Focused, HidingThreatCueActive;
-            public bool Crouching, Running, ItemFeedbackVisible, Threatened;
+            public bool HasPlayer, CaptionVisible, SprintExhausted, FlashlightLit, Hidden, Focused;
+            public bool ItemFeedbackVisible, Threatened;
             public int RecordsRecovered, Firecrackers;
-            public string Caption, BatteryText, FocusLabel, ItemFeedback;
-            public float Stamina, SlowRemaining, ActualSpeed, FootstepNoiseRadius, FeedbackOpacity, PeripheralStrength;
+            public string Caption, FocusLabel, ItemFeedback;
+            public float Stamina, BatteryFraction, FeedbackOpacity, PeripheralStrength;
             public Texture2D PeripheralTexture;
             public Color OverlayColor;
             public static State Read(GameSession session, GameShell shell)
@@ -195,14 +198,11 @@ namespace HappyToy.V2
                 return new State {
                     HasPlayer = true, RecordsRecovered = session.RecordsRecovered, Caption = shell.Caption, CaptionVisible = shell.CaptionVisible,
                     Stamina = player.Stamina, SprintExhausted = player.SprintExhausted,
-                    BatteryText = $"손전등 {Mathf.CeilToInt(charge.Fraction * 100)}% · {(charge.Depleted ? "배터리 필요" : charge.Lit ? "켜짐" : "꺼짐")}",
-                    BatteryLow = charge.Fraction < .2f, Firecrackers = inventory ? inventory.Count : 0,
+                    BatteryFraction = charge.Fraction, FlashlightLit = charge.Lit,
+                    Firecrackers = inventory ? inventory.Count : 0,
                     Hidden = player.Hidden, Focused = player.Focus, FocusLabel = player.Focus ? player.Focus.DisplayLabel : string.Empty,
-                    HidingThreatCueActive = player.HidingThreatCueActive, SlowRemaining = player.SlowRemaining,
-                    ActualSpeed = player.ActualSpeed, Crouching = player.Crouching, Running = player.Running,
                     ItemFeedbackVisible = showItem, ItemFeedback = showAim ? inventory.Aim.Hint : showItem ? inventory.ActionFeedback : string.Empty,
                     FeedbackOpacity = showAim ? 1 : inventory ? Mathf.Clamp01(inventory.FeedbackRemaining / .25f) : 0,
-                    FootstepNoiseRadius = player.FootstepNoiseRadius,
                     Threatened = detection && detection.PeripheralStrength > .001f,
                     PeripheralTexture = detection ? detection.PeripheralTexture : null,
                     OverlayColor = detection ? detection.OverlayColor : Color.clear,

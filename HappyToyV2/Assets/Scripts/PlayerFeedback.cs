@@ -93,18 +93,12 @@ namespace HappyToy.V2
             // One short metal latch clack replaces any preceding interaction. No cloth,
             // extra impact, paper or pitch-transformed copy is layered on it.
             foley.Stop(); foley.pitch = 1; foley.clip = LastInteractionClip; foley.Play();
-            Caption(entering ? "[철컥 · 문 잠금쇠 닫힘]" : "[철컥 · 문 잠금쇠 열림]", .8f);
         }
         public void PlayDiscovery()
         {
             if (!initialized || !isActiveAndEnabled) return;
             LastInteractionClip = discovery; InteractionCuesPlayed++;
             foley.pitch = 1; foley.PlayOneShot(discovery, .6f);
-        }
-        void Caption(string text, float duration)
-        {
-            if (GameSession.Current && GameSession.Current.Shell)
-                GameSession.Current.Shell.ShowCaption(text, duration);
         }
         void Update()
         {

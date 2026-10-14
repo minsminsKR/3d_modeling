@@ -133,7 +133,7 @@ namespace HappyToy.V2
         {
             // Resources owns this texture. Rebuilding a menu must never destroy it.
             if (!menuFaceTexture) menuFaceTexture = Resources.Load<Texture2D>(MenuFaceResourcePath);
-            bool visible = menuFaceTexture && shown != GameShell.Page.Playing && shown != GameShell.Page.ChapterTransition;
+            bool visible = menuFaceTexture && shown != GameShell.Page.Playing && shown != GameShell.Page.Pause && shown != GameShell.Page.ChapterTransition;
             menuFaceBackground = new VisualElement { name = "menu-face-background", pickingMode = PickingMode.Ignore, focusable = false };
             menuFaceBackground.style.position = Position.Absolute;
             menuFaceBackground.style.left = menuFaceBackground.style.top = menuFaceBackground.style.right = menuFaceBackground.style.bottom = 0;
@@ -175,7 +175,8 @@ namespace HappyToy.V2
             root.Clear(); threatVeil = null;
             settingsScreen = null; pauseScreen = null; hud = null; navigationHelp = null;
             root.style.color = Paper;
-            root.style.backgroundColor = shown == GameShell.Page.Playing ? Color.clear : new Color(.013f, .025f, .021f, .97f);
+            root.style.backgroundColor = shown == GameShell.Page.Playing ? Color.clear :
+                shown == GameShell.Page.Pause ? Color.black : new Color(.013f, .025f, .021f, .97f);
             root.pickingMode = shown == GameShell.Page.Playing ? PickingMode.Ignore : PickingMode.Position;
             BuildMenuFaceBackground();
             stage = new VisualElement { name = "safe-area", pickingMode = PickingMode.Ignore };
