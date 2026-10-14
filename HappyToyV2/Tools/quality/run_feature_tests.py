@@ -44,6 +44,9 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "graphics": ("Owned URP depth SSAO, unchanged shadow selection/restore and school/corridor presentation", [
+        ("EditMode", (CLOUD + "GraphicsLightingRulesTests",)),
+        ("PlayMode", play_tests("CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs"))]),
     "cabinet-expression": ("Eye emission through chase faces, third-entry captures and physical/save safety for all monsters", [
         ("PlayMode", play_tests("CloudCabinetSurvivalTests.cs", "CloudCabinetExpressionTests.cs", "CloudCabinetTauntTests.cs") + (
             PLAY + "NaturalEyeLifecycleRestoresCallerMaterialAndIndexedPropertiesAndHonoursLaterMaterialOwner",
@@ -128,8 +131,9 @@ def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
 
 
 def commands(profile: str, project: Path, output: Path, unity: str = "unity",
-             editor_path: str | None = None, timeout: int = 1800,
+             editor_path: str | None = None, timeout: int | None = None,
              graphics_api: str | None = None) -> list[dict]:
+    timeout = timeout if timeout is not None else (7200 if profile == "full" else 1800)
     result = []
     for index, (mode, selectors) in enumerate(stages(profile), 1):
         report = output / f"{index:02d}-{mode.lower()}.xml"
@@ -198,7 +202,7 @@ def main() -> int:
     parser.add_argument("--editor-path", help="Optional path to the installed pinned Unity executable")
     parser.add_argument("--graphics-api", choices=("d3d11", "d3d12"),
                         help="Optional Windows Editor-only override; leaves project/player settings unchanged")
-    parser.add_argument("--timeout", type=int, default=1800, help="Timeout per Unity stage in seconds")
+    parser.add_argument("--timeout", type=int, help="Timeout per Unity stage in seconds (full: 7200; focused profiles: 1800)")
     args = parser.parse_args()
     if args.list:
         for name, (scope, _) in PROFILES.items():
@@ -206,7 +210,7 @@ def main() -> int:
         return 0
     if not args.profile:
         parser.error("Choose --profile or --list; feature checks do not imply a full release gate.")
-    if args.timeout <= 0:
+    if args.timeout is not None and args.timeout <= 0:
         parser.error("--timeout must be positive")
     project = args.project.resolve()
     version_file = project / "ProjectSettings/ProjectVersion.txt"

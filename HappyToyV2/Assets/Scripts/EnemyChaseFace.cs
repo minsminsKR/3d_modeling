@@ -34,7 +34,10 @@ namespace HappyToy.V2
                 var material = new Material(source) { shader = data.shader };
                 material.SetTexture("_ChaseFace", data.chaseFace); return material;
             }).ToArray();
-            eyes=owner.GetComponentInChildren<MonsterRedEyes>(true);
+            // An awakened clone can still contain the retired rig until Destroy
+            // finishes. Bind the owner of THIS skin, never the first old child.
+            eyes=owner.GetComponentsInChildren<MonsterRedEyes>(true)
+                .SingleOrDefault(candidate=>candidate.Prepared&&candidate.EmissionRenderers.Contains(skin));
             if(eyes)eyes.BindExpressionMaterials(skin,materials);
             if (data.mouthLiner && data.mouthLinerMaterial)
             {

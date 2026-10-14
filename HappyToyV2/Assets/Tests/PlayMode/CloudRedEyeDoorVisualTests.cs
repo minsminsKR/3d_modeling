@@ -237,8 +237,21 @@ namespace HappyToy.V2.CloudTests
                             var source = Resources.Load<GameObject>(studio ? "EnemyStudio/" + key + "/" + key : "EnemyRefinement/" + key + "-v2");
                             Assert.That(emitter is SkinnedMeshRenderer, Is.True);
                             int skinIndex = System.Array.IndexOf(skins, (SkinnedMeshRenderer)emitter);
-                            Assert.That(EyeOriginalMesh(emitter), Is.SameAs(source.GetComponentsInChildren<SkinnedMeshRenderer>()[skinIndex].sharedMesh),
-                                key + " imported eye topology was replaced");
+                            var imported = source.GetComponentsInChildren<SkinnedMeshRenderer>()[skinIndex].sharedMesh;
+                            var current = EyeOriginalMesh(emitter);
+                            if (key == "Cyclopse" || key == "Uncat" || key == "Baby")
+                            {
+                                // Chase expressions own a deformable copy. Its
+                                // original surface topology/UVs/rig remain intact.
+                                Assert.That(current.vertexCount, Is.EqualTo(imported.vertexCount), key);
+                                Assert.That(current.subMeshCount, Is.EqualTo(imported.subMeshCount), key);
+                                for (int submesh = 0; submesh < imported.subMeshCount; submesh++)
+                                    Assert.That(current.GetIndices(submesh), Is.EqualTo(imported.GetIndices(submesh)), key);
+                                Assert.That(current.uv, Is.EqualTo(imported.uv), key);
+                                Assert.That(current.bindposes, Is.EqualTo(imported.bindposes), key);
+                                Assert.That(current.boneWeights, Is.EqualTo(imported.boneWeights), key);
+                            }
+                            else Assert.That(current, Is.SameAs(imported), key + " imported eye topology was replaced");
                         }
                     }
                 }

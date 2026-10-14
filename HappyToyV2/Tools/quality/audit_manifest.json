@@ -5,6 +5,16 @@
   "status": "NOT RUN",
   "audits": [
     {
+      "name": "graphics-optimization",
+      "source": "Assets/Scripts/GraphicsOptimizationProbe.cs",
+      "flag": "-v2-graphics-optimization-output",
+      "argument_kind": "directory",
+      "result": "graphics-optimization.json",
+      "timeout_seconds": 180,
+      "status": "NOT RUN",
+      "purpose": "Quiet production school/corridor HDR renders at four supported static poses, warmed synchronous GPU-completion render latency and PNG review. No displayed-FPS or isolated-GPU claim."
+    },
+    {
       "name": "cabinet-expression",
       "source": "Assets/Scripts/CabinetExpressionAudit.cs",
       "flag": "-v2-cabinet-expression-output",

@@ -12,6 +12,15 @@ SPEC.loader.exec_module(runner)
 
 
 class FeatureRoutingTests(unittest.TestCase):
+    def test_full_allows_the_natural_survival_suite_and_explicit_limits_still_win(self):
+        for profile, expected in (("full", 7200), ("core", 1800)):
+            for stage in runner.commands(profile, Path("Project"), Path("Output")):
+                command = stage["command"]
+                self.assertEqual(command[command.index("--timeout") + 1], str(expected))
+            for stage in runner.commands(profile, Path("Project"), Path("Output"), timeout=43):
+                command = stage["command"]
+                self.assertEqual(command[command.index("--timeout") + 1], "43")
+
     def test_full_runs_both_modes_without_a_filter_or_installer(self):
         planned = runner.commands("full", Path("Project"), Path("Output"))
         self.assertEqual([row["mode"] for row in planned], ["EditMode", "PlayMode"])

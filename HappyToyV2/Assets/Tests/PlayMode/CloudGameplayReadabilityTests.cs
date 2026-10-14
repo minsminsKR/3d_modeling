@@ -31,6 +31,8 @@ namespace HappyToy.V2.CloudTests
             yield return null;
             Assert.That(clone.GetComponentsInChildren<BoxCollider>(true).Count(x => x.name == "Rendered body clearance query"), Is.EqualTo(1));
             Assert.That(Get<bool>(clone.GetComponent(RequireType("V1MonsterMotion")), "LocomotionRigAvailable"), Is.True);
+            var face=clone.GetComponent(RequireType("EnemyChaseFace"));
+            Assert.That(Get<bool>(face,"Prepared"),Is.True,"Awakened clone must configure its own new face and eye surface");
             UnityEngine.Object.Destroy(clone);
         }
 

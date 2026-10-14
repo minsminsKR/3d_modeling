@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HappyToy.V2
 {
@@ -12,22 +11,36 @@ namespace HappyToy.V2
         public readonly List<int> selected=new List<int>();
         public long pixels;
         public int pointCasters,spotCasters,faces;
+        sealed class DistanceOrder : IComparer<Candidate>
+        {
+            public int Compare(Candidate a,Candidate b)
+            {int distance=a.distanceSquared.CompareTo(b.distanceSquared);return distance!=0?distance:a.id.CompareTo(b.id);}
+        }
+        static readonly IComparer<Candidate> Order=new DistanceOrder();
         public static ShadowAtlasPlan Build(int atlas,int torchSize,int localSize,bool torchActive,IEnumerable<Candidate> candidates)
+        {
+            var plan=new ShadowAtlasPlan();
+            plan.Rebuild(atlas,torchSize,localSize,torchActive,new List<Candidate>(candidates));return plan;
+        }
+        // Own and reuse the output and caller's scratch list; ordering is intentionally
+        // in-place. No per-frame LINQ buffers, result object or selection list.
+        public void Rebuild(int atlas,int torchSize,int localSize,bool torchActive,List<Candidate> candidates)
         {
             if(atlas<=0 || torchSize<=0 || localSize<=0 || torchSize>atlas || localSize>torchSize ||
                 atlas%torchSize!=0 || torchSize%localSize!=0)
                 throw new ArgumentException("Shadow tile sizes must divide the atlas and torch footprint");
-            var plan=new ShadowAtlasPlan();long available=(long)atlas*atlas;
-            if(torchActive){plan.pixels=(long)torchSize*torchSize;plan.faces=1;}
-            foreach(var candidate in candidates.OrderBy(x=>x.distanceSquared).ThenBy(x=>x.id))
+            selected.Clear();pixels=0;pointCasters=spotCasters=faces=0;
+            long available=(long)atlas*atlas;
+            if(torchActive){pixels=(long)torchSize*torchSize;faces=1;}
+            candidates.Sort(Order);
+            foreach(var candidate in candidates)
             {
-                if(candidate.point && plan.pointCasters>=2)continue;
-                int faces=candidate.point?6:1;long cost=(long)localSize*localSize*faces;
-                if(plan.pixels+cost>available)continue;
-                plan.selected.Add(candidate.id);plan.pixels+=cost;plan.faces+=faces;
-                if(candidate.point)plan.pointCasters++;else plan.spotCasters++;
+                if(candidate.point && pointCasters>=2)continue;
+                int count=candidate.point?6:1;long cost=(long)localSize*localSize*count;
+                if(pixels+cost>available)continue;
+                selected.Add(candidate.id);pixels+=cost;faces+=count;
+                if(candidate.point)pointCasters++;else spotCasters++;
             }
-            return plan;
         }
     }
 }

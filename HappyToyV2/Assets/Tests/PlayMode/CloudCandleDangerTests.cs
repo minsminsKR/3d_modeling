@@ -254,8 +254,10 @@ namespace HappyToy.V2.CloudTests
             {
                 float angle = ray * Mathf.PI / 48;
                 var direction = new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle));
-                if (!NavMesh.SamplePosition(player.transform.position + direction * 3, out var a, .22f, NavMesh.AllAreas) ||
-                    !NavMesh.SamplePosition(player.transform.position + direction * 5.2f, out var b, .22f, NavMesh.AllAreas) ||
+                // Hearing admission must be outside the independent physical
+                // pursuit blackout radius, including its hysteresis/body surface.
+                if (!NavMesh.SamplePosition(player.transform.position + direction * 9, out var a, .22f, NavMesh.AllAreas) ||
+                    !NavMesh.SamplePosition(player.transform.position + direction * 11.2f, out var b, .22f, NavMesh.AllAreas) ||
                     Mathf.Abs(a.position.y - player.transform.position.y) > .2f ||
                     Mathf.Abs(b.position.y - player.transform.position.y) > .2f ||
                     !NavMesh.CalculatePath(a.position, b.position, NavMesh.AllAreas, path) ||

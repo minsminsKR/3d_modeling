@@ -56,10 +56,11 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(renderer.bounds.size.x,Is.LessThan(.85f));
                 Assert.That(renderer.bounds.size.y,Is.LessThan(.72f));
                 Assert.That(renderer.bounds.size.z,Is.LessThan(.65f));
-                var physicalFloor=run.GetComponentsInChildren<BoxCollider>().Single(collider=>collider.name=="Floor" &&
-                    Mathf.Abs(collider.bounds.center.x-renderer.bounds.center.x)<2.9f && Mathf.Abs(collider.bounds.center.z-renderer.bounds.center.z)<2.9f);
-                Assert.That(Mathf.Abs(renderer.bounds.min.y-physicalFloor.bounds.max.y),Is.LessThanOrEqualTo(.002f),
-                    "Detailed altar floats above or penetrates its actual physical floor");
+                var physicalStand=run.GetComponentsInChildren<BoxCollider>().Single(collider=>collider.name=="Memory altar" &&
+                    Mathf.Abs(collider.bounds.center.x-renderer.bounds.center.x)<.1f && Mathf.Abs(collider.bounds.center.z-renderer.bounds.center.z)<.1f);
+                Assert.That(Mathf.Abs(renderer.bounds.min.y-physicalStand.bounds.min.y),Is.LessThanOrEqualTo(.002f),
+                    "Detailed altar must align with the preserved physical stand");
+                Assert.That(renderer.bounds.max.y,Is.LessThanOrEqualTo(physicalStand.bounds.max.y+.002f));
             }
             ((Behaviour)player).enabled = false;
             var camera=Get<Camera>(player,"eyes"); Get<Light>(player,"flashlight").enabled=true;

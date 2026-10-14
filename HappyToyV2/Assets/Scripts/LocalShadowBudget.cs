@@ -21,6 +21,7 @@ namespace HappyToy.V2
         readonly HashSet<Light> known=new HashSet<Light>();
         readonly HashSet<int> selected=new HashSet<int>();
         readonly List<ShadowAtlasPlan.Candidate> candidates=new List<ShadowAtlasPlan.Candidate>();
+        readonly ShadowAtlasPlan plan=new ShadowAtlasPlan();
         GameSession session;float nextScan;
         public int ActivePointCasters {get;private set;}
         public int ActiveSpotCasters {get;private set;}
@@ -78,7 +79,7 @@ namespace HappyToy.V2
                 if(distance>reach*reach)continue;
                 candidates.Add(new ShadowAtlasPlan.Candidate {id=saved.selectionId,point=light.type==LightType.Point,distanceSquared=distance});
             }
-            var plan=ShadowAtlasPlan.Build(AtlasResolution,TorchTileResolution,LocalTileResolution,torchOn,candidates);
+            plan.Rebuild(AtlasResolution,TorchTileResolution,LocalTileResolution,torchOn,candidates);
             selected.Clear();foreach(int id in plan.selected)selected.Add(id);
             ActivePointCasters=plan.pointCasters;ActiveSpotCasters=plan.spotCasters;
             ActiveShadowFaces=plan.faces;RequestedAtlasPixels=plan.pixels;
@@ -86,15 +87,18 @@ namespace HappyToy.V2
             {
                 var light=saved.light;if(!light)continue;
                 bool chosen=light.isActiveAndEnabled&&((light==Torch&&torchOn)||selected.Contains(saved.selectionId));
-                light.shadows=chosen?LightShadows.Soft:LightShadows.None;
+                var shadows=chosen?LightShadows.Soft:LightShadows.None;
+                if(light.shadows!=shadows)light.shadows=shadows;
                 if(!chosen)continue;
-                saved.data.additionalLightsShadowResolutionTier=light==Torch?
+                int tier=light==Torch?
                     UniversalAdditionalLightData.AdditionalLightsShadowResolutionTierHigh:
                     UniversalAdditionalLightData.AdditionalLightsShadowResolutionTierMedium;
-                saved.data.usePipelineSettings=false;
-                light.shadowStrength=light==Torch?.9f:.82f;
-                light.shadowNormalBias=light==Torch?.055f:.09f;
-                light.shadowBias=.035f;
+                if(saved.data.additionalLightsShadowResolutionTier!=tier)saved.data.additionalLightsShadowResolutionTier=tier;
+                if(saved.data.usePipelineSettings)saved.data.usePipelineSettings=false;
+                float strength=light==Torch?.9f:.82f,normalBias=light==Torch?.055f:.09f;
+                if(light.shadowStrength!=strength)light.shadowStrength=strength;
+                if(light.shadowNormalBias!=normalBias)light.shadowNormalBias=normalBias;
+                if(light.shadowBias!=.035f)light.shadowBias=.035f;
             }
         }
         void OnDisable()

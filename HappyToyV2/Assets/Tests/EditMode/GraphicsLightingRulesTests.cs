@@ -56,10 +56,37 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<UnityEngine.Object>(renderer,"postProcessData"),Is.Not.Null,"Camera flag alone cannot enable the null-resource authored post passes");
             var features=((IEnumerable)Get<object>(renderer,"rendererFeatures")).Cast<UnityEngine.Object>().ToArray();
             Assert.That(features.Length,Is.EqualTo(1));Assert.That(features[0].GetType().Name,Is.EqualTo("ScreenSpaceAmbientOcclusion"));Assert.That(Get<bool>(features[0],"isActive"),Is.True);
+            var settings=new SerializedObject(features[0]).FindProperty("m_Settings");
+            var source=settings.FindPropertyRelative("Source");
+            Assert.That(source.enumNames[source.enumValueIndex],Is.EqualTo("Depth"));
+            Assert.That(settings.FindPropertyRelative("AfterOpaque").boolValue,Is.False,"Emission must not be multiplied by a post-lighting AO overlay");
+            Assert.That(settings.FindPropertyRelative("Downsample").boolValue,Is.True);
+            var normals=settings.FindPropertyRelative("NormalSamples");
+            Assert.That(normals.enumNames[normals.enumValueIndex],Is.EqualTo("Low"));
+            Assert.That(Get<int>(pipeline,"msaaSampleCount"),Is.EqualTo(4));
             string pipelineGuid=AssetDatabase.AssetPathToGUID(pipelinePath),rendererGuid=AssetDatabase.AssetPathToGUID(rendererPath);
             Call(setup,"EnsureAndActivate");
             Assert.That(AssetDatabase.AssetPathToGUID(pipelinePath),Is.EqualTo(pipelineGuid));Assert.That(AssetDatabase.AssetPathToGUID(rendererPath),Is.EqualTo(rendererGuid));
             Assert.That(originals.Select(Hash).ToArray(),Is.EqualTo(hashes));
+        }
+        [Test]
+        public void ReusedShadowPlanClearsOldSelectionsAndPreservesDistanceTiesAndTorchPriority()
+        {
+            var rules=RequireType("ShadowAtlasPlan");var type=RequireType("ShadowAtlasPlan+Candidate");
+            var list=(IList)Activator.CreateInstance(typeof(System.Collections.Generic.List<>).MakeGenericType(type));
+            foreach(var candidate in Candidates((3,false,2),(2,true,1),(1,false,1),(4,true,3)))list.Add(candidate);
+            var plan=Activator.CreateInstance(rules);var original=Get<object>(plan,"selected");
+            for(int frame=0;frame<4;frame++)
+            {
+                bool torch=frame%2==0;Call(plan,"Rebuild",2048,1024,512,torch,list);
+                Assert.That(Get<object>(plan,"selected"),Is.SameAs(original));
+                var ids=((IEnumerable)original).Cast<int>().ToArray();
+                Assert.That(ids,Is.EqualTo(torch?new[]{1,2,3}:new[]{1,2,3,4}));
+                Assert.That(Get<int>(plan,"faces"),Is.EqualTo(torch?9:14));
+            }
+            list.Clear();Call(plan,"Rebuild",2048,1024,512,false,list);
+            Assert.That(((IEnumerable)original).Cast<int>(),Is.Empty);
+            Assert.That(Get<long>(plan,"pixels"),Is.Zero);Assert.That(Get<int>(plan,"faces"),Is.Zero);
         }
     }
 }

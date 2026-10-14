@@ -20,7 +20,7 @@ namespace HappyToy.V2.Editor
         [Serializable] sealed class Proof
         {
             public string unity,sourcePipelineSha256,sourceRendererSha256,sourceSceneSha256,pipelineGuid,rendererGuid;
-            public string scope="Owned URP17.6 pipeline/renderer copied via AssetDatabase, HDR/depth/SMAA camera support, standard conservative SSAO and reflection variants retained by active build pipeline. Original assets/scene unchanged.";
+            public string scope="Owned URP17.6 pipeline/renderer copied via AssetDatabase, HDR/depth/MSAA4/SMAA camera support, half-resolution depth-reconstructed SSAO (1 normal tap, before opaque lighting) and reflection variants retained by active build pipeline. Original assets/scene unchanged.";
             public int shadowAtlas=2048,torchTier=1024,localTier=512,aoSamples=4;public float aoIntensity=.65f,aoRadius=.22f;
         }
         public static void EnsureAndActivate()
@@ -57,8 +57,11 @@ namespace HappyToy.V2.Editor
             }
             ao.SetActive(true);
             var aoData=new SerializedObject(ao);var settings=Require(aoData,"m_Settings");
-            SetEnum(settings,"AOMethod","InterleavedGradient");SetEnum(settings,"Source","DepthNormals");
-            SetEnum(settings,"Samples","Low");SetEnum(settings,"NormalSamples","Medium");SetEnum(settings,"BlurQuality","Medium");
+            // Reconstruct normals from the existing depth prepass. This avoids a
+            // full-resolution normal attachment and normal-mapped geometry pass.
+            // Keep AO before lighting so emission (including eyes) stays unaffected.
+            SetEnum(settings,"AOMethod","InterleavedGradient");SetEnum(settings,"Source","Depth");
+            SetEnum(settings,"Samples","Low");SetEnum(settings,"NormalSamples","Low");SetEnum(settings,"BlurQuality","Medium");
             Require(settings,"Downsample").boolValue=true;Require(settings,"AfterOpaque").boolValue=false;
             Require(settings,"Intensity").floatValue=.65f;Require(settings,"DirectLightingStrength").floatValue=.1f;
             Require(settings,"Radius").floatValue=.22f;Require(settings,"Falloff").floatValue=30;

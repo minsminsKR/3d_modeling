@@ -27,7 +27,8 @@
 | 한국적인 소품 | `KoreanCorridorDressing.cs`는 위치 데이터만 받아 중앙 경로·가구·문 이동을 피한다. `KoreanCorridorProp.cs`는 자산/구역 정체성을 제공한다. `SourceArt/KoreanCorridorProps/`에는 웹앱 GLB/PBR·입력·프롬프트·Blender·LOD 재생성 도구가 있다. | `corridor`, `readability`, `full`, 새 플레이어 표면 확인 |
 | 학교 공간·첫 등장 | `SchoolCampusLayout.cs`, `SchoolCampusArchitecture.cs`, `SchoolCampusRooms.cs`, `SchoolFirstAppearances.cs`, 각 등장 이벤트. | `ai`, 공간/저장 버전 변경 시 `full` |
 | 저장·재개·게임 진행 | `GameSession.cs`, `CorridorRunCheckpoint.cs`, `ChapterRunCheckpoint.cs`, 각 `*CheckpointStore.cs` / `*Checkpoint.cs`. 체크포인트 partial은 기존 저장 형식을 연결하는 어댑터다. | `core`, `checkpoint` |
-| 소리·렌더링·자산 | `ExternalAudio.cs`, `EnemyAcoustics.cs`, `GraphicsLightingPresentation.cs`, `EnemyStudioVisual.cs`와 각 자산의 SourceArt/ThirdParty 안내. | 해당 기능 검사 및 기존 무음 네이티브 진단; 공통 변경 시 `full` |
+| 그래픽 설정·그림자 예산·성능 비교 | `Assets/Editor/GraphicsLightingSetup.cs`가 소유 URP 자산의 HDR·MSAA4·SMAA·깊이 재구성 SSAO를 재생성한다. `GraphicsLightingPresentation.cs`는 모드별 조명/반사를 복원한다. `LocalShadowBudget.cs`는 매 프레임 실제 광원에서 `ShadowAtlasPlan.Rebuild`의 재사용 목록을 채우며 동일 거리/ID 우선순위로 그림자를 선택한다. `GraphicsOptimizationProbe.cs`는 명시된 인자로만 정적 카메라의 GPU 완료 대기 렌더링 시간을 측정한다. | `graphics`, 공통 렌더링 변경/배포는 `full` 및 새 플레이어 표면·안광 검사 |
+| 소리·자산 | `ExternalAudio.cs`, `EnemyAcoustics.cs`, `EnemyStudioVisual.cs`와 각 자산의 SourceArt/ThirdParty 안내. | 해당 기능 검사 및 기존 무음 네이티브 진단 |
 
 `RoomAmbience.ConfigureRunPositions`는 위치와 회랑/학교 모드를 명시적으로 받는다.
 학교의 `ChapterAtmosphere`와 `SchoolCampusRooms`는 학교 모드를 전달한다. 위치
@@ -64,7 +65,9 @@ python HappyToyV2/Tools/quality/run_feature_tests.py --profile full
 
 `core`는 빠른 EditMode 규칙 검사, `ui` / `ai` / `ai-doors` / `drawer` / `checkpoint` / `readability` / `corridor`는
 해당 실제 동작의 PlayMode 검사다. `full`은 필터 없는 EditMode와 PlayMode를
-모두 실행한다. 필터가 0개 검사를 선택하거나 검사 실패·건너뜀·결과 누락이 있으면
+모두 실행한다. 자연 입력 생존 경로를 포함한 전체 스위트는 각 단계 기본 7,200초,
+기능별 검사는 1,800초의 대기 한도를 사용한다. `--timeout`으로 명시할 수 있다.
+필터가 0개 검사를 선택하거나 검사 실패·건너뜀·결과 누락이 있으면
 성공으로 처리하지 않는다. `--dry-run`은 명령을 확인하며 검사를 통과한 것으로
 표시하지 않는다. 결과 XML과 프로필 보고서는 무시되는 `Builds` 아래에 저장한다.
 각 검사에 독립 Editor 로그를 남기며 실패한 검사 수와 누락된 선택자도 요약한다.
@@ -114,6 +117,43 @@ Windows Editor의 GPU 오류를 진단할 때는 `--graphics-api d3d11` 또는 `
 `-quiet-diagnostics -v2-readability-output <새 결과 폴더>`로 확인한다.
 
 전체 구조·어셈블리 변경 뒤에는 새 플레이어까지 확인한다.
+
+`graphics`는 독립 규칙과 소유 파이프라인/SSAO 설정·그림자 선택 재사용,
+학교·회랑의 원래 조명/반사 복원을 검사한다. 네이티브 성능 비교는
+`-quiet-diagnostics -v2-graphics-optimization-output <새 결과 폴더>`를 사용하며,
+학교는 `-v2-optimization-school`을 추가해 별도 프로세스에서 실행한다.
+각 모드는 실제 NavMesh 위 두 정적 카메라, 64회 예열과 128회
+1280×720 HDR 렌더링을 사용한다. 타이밍에는 동기식 한 픽셀 GPU 완료 읽기가
+포함되고 PNG 저장은 제외된다. 표시 FPS나 순수 GPU 시간으로 해석하지 않는다.
+로컬 네이티브 환경에서 실시간 반사 완료 응답이 확인되지 않아 이 비교에서는
+양쪽 모두 반사 프로브·환경 반사를 제외하고 해당 범위를 보고서에 명시한다.
+일반 게임의 반사 설정은 유지된다. 일시정지한 정적 장면에서 측정하며 추가
+반사 요청이 생기면 실패한다. planner 바이트는 별도의 예열된 1,000회
+팩터리/재사용 호출 비교이며 게임 프레임 전체 GC 측정이 아니다. Release의
+할당 API가 양쪽 모두 0을 반환하면 카운터를 미지원으로 표시하며 0할당 증거가 아니다.
+`Tools/quality/compare_graphics_optimization.py`는 동일 하드웨어/API/카메라/
+MSAA/샘플 수를 확인해 변경 전후 중앙값·95백분위를 비교한다.
+
+Unity MCP는 설치된 Unity CLI의 `unity mcp --project-path <프로젝트>`와
+`com.unity.pipeline`을 사용한다. `Tools/quality/unity_mcp_call.py --output
+<새 결과 JSON>`은 설정 파일을 바꾸지 않고 도구 목록을 읽는다. `--tool`과
+필요한 `--arguments-file`로 해당 목록의 스키마에 맞는 호출을 재현할 수 있다.
+연결된 Editor에서는 Pipeline 안내의 `set_autotick`을 먼저 확인한다.
+검사 실행 중 자산을 바꾸지 않으며, MCP 응답과 실제 새 빌드 검증은 구분한다.
+
+2026-10-15 최적화 검증: 전체 EditMode 117개 통과. 전체 PlayMode는
+263/268 통과 후 촛불 청각 거리·표정 메시·실제 제단 지지체 기준을 고쳐
+관련 재검사 6개가 통과했다. 합산 고유 항목은 266/268 통과이며, 한 번의
+전체 녹색 실행은 아니다. `CorridorDifferentSeedFiveMemoryRunSurvivesThroughRealInput`과
+`CorridorFiveMemoryRunSurvivesThroughRealKeyboardMouseAndDoors`는 자연 입력
+생존 경로에서 계속 사망했다. 시험용 경로 보정은 되돌렸고 게임의 발각·공격·
+은신 RNG·세 번째 장난 강제 포획 규칙을 완화하지 않았다.
+초기 DX12 Editor 전체 검사는 UIElements 텍스처 업로드 중 장치 제거/응답 중단
+오류로 종료되어, 두 전체 스위트는 Editor만 `-force-d3d11`로 실행했다.
+프로젝트/플레이어 기본 API는 유지했으며 새 DX12 플레이어의 얼굴·캐비닛·가독성·
+회랑 검사 6회/261항목은 통과했다. 장시간 DX12 안정성과 전체 생존 성공을
+보증하는 결과는 아니다. 재현 가능한 도구만 커밋하고 상세 결과·비교 PNG/JSON은
+`Verification/README.md` 정책대로 로컬 `Builds/`와 `Verification/`에 둔다.
 
 ```powershell
 unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.Editor.QualityValidation.BuildWindows -v2-release-player -v2-build-output Builds/Windows-Structure
