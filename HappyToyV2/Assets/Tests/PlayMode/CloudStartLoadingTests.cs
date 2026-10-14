@@ -44,6 +44,39 @@ namespace HappyToy.V2.CloudTests
             Assert.That(RecoveryPage,Is.EqualTo("Playing"));Assert.That(Get<bool>(session,"CorridorMode"),Is.True);
             Assert.That(Get<float>(shell,"TransitionBlack"),Is.Zero);Assert.That(Time.timeScale,Is.EqualTo(1));
             AssertMainCorridor();
+            Assert.That(Get<int>(title,"ApproachStepsPlayed"),Is.GreaterThanOrEqualTo(2));
+            var voice=Get<AudioSource>(title,"ApproachFootstepSource");
+            Assert.That(voice.ignoreListenerPause,Is.True);Assert.That(voice.ignoreListenerVolume,Is.False);
+            Assert.That(voice.spatialBlend,Is.Zero);Assert.That(voice.isPlaying,Is.False,"Title footsteps leaked into gameplay");
+            Assert.That(CloudExternalAudioTests.MatchesFamily(Get<AudioClip>(title,"ApproachFootstepClip"),"mask-heavy-step",3),Is.True);
+        }
+
+        [UnityTest,Timeout(120000)]
+        public IEnumerator TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute()
+        {
+            yield return RecoveryUiReady();Call(shell,"RestoreDefaultSettings");yield return null;
+            var title=One("CinematicTitleScene");
+            Assert.That(Get<int>(title,"ApproachStepsPlayed"),Is.Zero,"Idle title emitted footsteps");
+            float captureDelta=Time.captureDeltaTime;bool started=false;
+            try
+            {
+                Time.captureDeltaTime=1f/60;yield return null;
+                started=StartOwnedAudioRenderer();Assert.That(started,Is.True,"Process-session silence guard/main output capture unavailable");
+                Call(shell,"BeginCorridorCinematic");
+                yield return Wait(()=>Get<int>(title,"ApproachStepsPlayed")>0,8,"Approach never emitted a recorded contact");
+                Assert.That(AudioListener.pause,Is.True,"Gameplay listener must remain paused during loading");
+                var samples=new System.Collections.Generic.List<float>();
+                yield return CaptureAudio(samples,AudioSettings.outputSampleRate*2,8);
+                double rms=System.Math.Sqrt(samples.Average(x=>x*(double)x));
+                Assert.That(rms,Is.GreaterThan(.0001),"Paused title approach produced silent main-output PCM");
+                CloudExperienceTests.Artifact("title-approach-footsteps.wav",CloudExperienceTests.Wave(samples,AudioSettings.outputSampleRate,2));
+                AudioListener.volume=0;yield return ExternalFlush(AudioSettings.outputSampleRate,.2f);
+                var muted=new System.Collections.Generic.List<float>();yield return CaptureAudio(muted,AudioSettings.outputSampleRate/3*2,5);
+                Assert.That(muted.Max(x=>System.Math.Abs(x)),Is.LessThan(.00001),"Title voice bypassed user master mute");
+                yield return Wait(()=>!Get<bool>(shell,"CinematicLoading"),50,"Loading never ended");
+                Assert.That(Get<AudioSource>(title,"ApproachFootstepSource").isPlaying,Is.False);
+            }
+            finally {AudioListener.volume=0;if(started)StopOwnedAudioRenderer();Time.captureDeltaTime=captureDelta;}
         }
 
         [UnityTest,Timeout(120000)]

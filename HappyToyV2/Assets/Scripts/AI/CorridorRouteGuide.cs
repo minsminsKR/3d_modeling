@@ -32,6 +32,7 @@ namespace HappyToy.V2
             connections = (int[])topology.Clone(); width = rowWidth; origin = firstCell; spacing = cellSpacing; current = next = -1;
             segment = new NavMeshPath();
             navigationOwner=owner; navigation=GetComponent<NavMeshAgent>(); authoredRotation=navigation.updateRotation; navigation.updateRotation=false;
+            var traffic=GetComponent<EnemyPassageTraffic>();if(!traffic)traffic=gameObject.AddComponent<EnemyPassageTraffic>();traffic.Configure(owner);
         }
         int Cell(Vector3 position)
         {

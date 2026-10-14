@@ -10,10 +10,11 @@
 | 메뉴·일시정지·설정 | `Assets/Scripts/GameShell.cs`는 화면 전환·입력 허용을 조정한다. `Assets/Scripts/UI/ShellPauseScreen.cs`, `ShellSettingsScreen.cs`는 각 화면의 컨트롤을 소유한다. | `ui` |
 | 기록·결과·페이지 이동 | `UI/ShellJournalScreen.cs`, `ShellRecordsScreen.cs`, `ShellResultScreen.cs`. 화면용 데이터와 Action을 받아 표시하며 게임 진행을 직접 변경하지 않는다. | `ui`, 저장 변경 시 `checkpoint` |
 | HUD·메뉴 공통 스타일 | `UI/ShellHudView.cs`는 HUD 컨트롤을 소유한다. `UI/FlashlightGauge.cs`는 낡은 금속 손전등 PNG와 얇은 황동 잔량 레일을 표시한다. 아이콘 제작 원본·프롬프트는 `SourceArt/Hud`에 있다. `UI/ShellLayout.cs`는 공통 배치·스타일을 만든다. `GameShellView.cs`는 Unity 패널·입력·각 모듈 연결을 담당한다. | `ui`, 손전등 표시만 변경 시 `flashlight-hud` |
-| 타이틀·게임 시작 전환 | `GameShellTitleView.cs`, `CinematicTitleScene.cs`, `GameShellStartTransition.cs`. 타이틀·접근 장면은 60Hz 예약을 유지하고, 동작 감소 시 정적인 타이틀은 저빈도 갱신한다. 실제 로딩 중 입력 차단과 접근 연출을 보존한다. | `title`, 공통 UI 변경 시 `ui` |
+| 타이틀·게임 시작 전환 | `GameShellTitleView.cs`, `CinematicTitleScene.cs`, `GameShellStartTransition.cs`. 타이틀·접근 장면은 60Hz 예약을 유지하고, 동작 감소 시 정적인 타이틀은 저빈도 갱신한다. `UI/TitleApproachFootsteps.cs`는 로딩 접근 중 기존 `mask-heavy-step` 녹음을 2D로 재생한다. 타이틀 일시정지만 우회하며 마스터 음량·진단 무음·종료 정리를 따른다. 실제 로딩 중 입력 차단과 접근 연출을 보존한다. | `title`, 공통 UI 변경 시 `ui` |
 | 적의 시야·청각 | `StalkerBrain.cs`와 `AI/StalkerPerception.cs`가 실제 가림·층·소리 경로를 처리한다. 회랑 백수귀는 `LanternMaskEncounter.cs` / `LanternMaskRunner.cs`의 정면 시야만 사용하며 발소리·폭죽 콜백을 거부한다. | `core`, `ai`, `corridor` |
 | 공격·캐비닛 은신 | `AI/StalkerAttack.cs`는 공격 예고/회복과 예고 시 확정한 표적을 소유한다. `Core/EnemyAttackClock.cs`, `CabinetHidingRules.cs`는 독립 규칙이다. `PlayerMotor.cs`, `Interactable.cs`는 실제 은신 입출력을 연결한다. | `core`, `ai`, 저장 변경 시 `checkpoint` |
 | 적의 문 통과·추적 경로 | `AI/StalkerDoorPassage.cs`는 문 통과와 제한된 대기를 소유한다. `AI/CorridorRouteGuide.cs`는 지도 4의 타일 중앙 경유와 회전을, 독립 `Core/CorridorRouteRules.cs`는 연결된 다음 타일을 선택한다. `EnemyNavigation.FollowPath`는 원래 최종 목표·경로 증거를 보존하며 실제 이동을 연결한다. | `ai-doors`, `corridor` |
+| 몬스터 간 통행·양보 | `AI/EnemyPassageTraffic.cs`가 실제 NavMesh 위의 짧은 양보 이동과 경로 복귀를 소유한다. `Core/MonsterPassingRules.cs`는 통행 우선권을 한쪽에만 준다. 기존 AI의 목표·저장 위치는 바꾸지 않는다. | `traffic-loading`, 문/공통 경로 변경 시 `ai-doors` |
 | 열린 문 다시 닫기 | `DoorInteractionTarget.cs`의 물리·NavMesh 제외 문틀 쿼리를 `PlayerMotor.FindFocus`가 실제 가림과 함께 판정한다. `Interactable.cs`는 문짝 이동·점유·소리의 기존 소유자다. | `corridor`, `ai-doors`, `ui` |
 | 큰 몬스터의 벽 겹침·걷기/추격 동작 | `AI/EnemyBodyClearance.cs`는 렌더링 몸체 크기의 트리거 쿼리(상호작용·NavMesh 베이크 제외)로 실제 NavMesh 이동을 보정한다. `AI/EnemyLocomotionPose.cs`는 원본 리그·클립 위에 복원 가능한 팔다리 동작을 더한다. `V1MonsterMotion.cs`가 이동 속도·상태·공격·일시정지를 연결한다. | `readability`, 문/경로 변경 시 `ai-doors` |
 | 획득 아이템 테두리·촛불 위기 소등 | `PickupOutline.cs`와 `Resources/PickupOutline.shader`는 실제 획득 가능/표시 상태와 깊이 검사를 따른다. `CandleDanger.cs`는 가까운 몸체와 공격을 판정하고 `WaymarkCandle.cs`는 점화 기억을 보존해 자동 복원한다. | `readability`, 저장 변경 시 `checkpoint` |
@@ -33,7 +34,7 @@
 
 ## 모듈 경계
 
-- `Assets/Scripts/Core/HappyToy.V2.Core.asmdef`: System만 사용하는 독립 규칙 10개.
+- `Assets/Scripts/Core/HappyToy.V2.Core.asmdef`: System만 사용하는 독립 규칙 11개.
   UnityEngine, 씬, `GameSession`, UI, 물리/NavMesh를 참조하지 않는다.
 - `Assets/Tests/EditMode/Core/HappyToy.V2.CoreTests.asmdef`: Core를 직접 참조하는
   빠른 규칙 검사. 씬 로드·프레임 대기·문자열 리플렉션이 없다.

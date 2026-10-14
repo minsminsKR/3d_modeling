@@ -22,7 +22,7 @@ VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests",
-    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests"))
+    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
 PLAY = CLOUD + "CloudPlayModeTests."
@@ -44,6 +44,14 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "traffic-loading": ("Real loading footsteps/mixer/master mute, physical head-on passing and related corner/door routes", [
+        ("PlayMode", (
+            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
+            PLAY + "CorridorLargeMonstersPassHeadOnThroughAnActualOpenDoor",
+            PLAY + "CorridorTemporarilyOccupiedDoorMakesOnlyBlockedActorYieldAndResume",
+            PLAY + "CorridorCreaturesNavigateARealCornerWithoutWalkingInPlaceAtMarkers",
+            PLAY + "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches"))]),
     "flashlight-hud": ("Flashlight depletion/refill, real icon/charge captures and HUD layout at supported sizes", [
         ("PlayMode", (
             PLAY + "FlashlightBatteryPhysicalInputDepletionPauseOffFullCapAndRefill",
@@ -58,6 +66,7 @@ PROFILES = {
     "title": ("Title head/body/comfort behavior, real start transition and keyboard start", [
         ("PlayMode", play_tests("CloudBaeksugwiHeadTests.cs") + (
             PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
             PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput"))]),
     "shelter": ("One/two-door room topology, actual player/pursuer passage and current/legacy checkpoint restoration", [
         ("EditMode", (EDIT + "CorridorLayoutTests",)),

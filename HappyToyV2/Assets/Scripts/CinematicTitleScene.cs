@@ -27,6 +27,10 @@ namespace HappyToy.V2
         Quaternion idleCameraRotation;
         JointPose[] idleJoints;
         bool wasApproaching;
+        TitleApproachFootsteps approachFootsteps;
+        public int ApproachStepsPlayed => approachFootsteps?.StepsPlayed ?? 0;
+        public AudioSource ApproachFootstepSource => approachFootsteps?.Source;
+        public AudioClip ApproachFootstepClip => approachFootsteps?.LastClip;
         float maximumApproach;
         public float ApproachDistance { get; private set; }
         public float MovingFloorGap { get; private set; }
@@ -52,6 +56,7 @@ namespace HappyToy.V2
         public void Initialize(GameShell owner)
         {
             shell = owner;
+            approachFootsteps=new TitleApproachFootsteps(transform);
             titleShader = Resources.Load<Shader>("TitleAtmosphere");
             if (!titleShader || !titleShader.isSupported) throw new InvalidOperationException("Missing or unsupported title atmosphere shader");
             Image = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear)
@@ -150,7 +155,7 @@ namespace HappyToy.V2
             item.GetComponent<MeshRenderer>().sharedMaterial = material; Destroy(item.GetComponent<Collider>());
         }
         static void PaintLayer(Transform root) { root.gameObject.layer = Layer; foreach (Transform child in root) PaintLayer(child); }
-        public void SetVisible(bool value) { visible = value; if (set) set.SetActive(value); if (value) nextFrame = 0; }
+        public void SetVisible(bool value) { visible = value; if (set) set.SetActive(value); if (value) nextFrame = 0; else approachFootsteps?.Stop(); }
         void LateUpdate()
         {
             if (!visible || !Image || !camera || Time.frameCount < 3) return;
@@ -174,6 +179,7 @@ namespace HappyToy.V2
                 titlePivot.position=idlePivotPosition;camera.transform.rotation=idleCameraRotation;
                 ApproachDistance=0;wasApproaching=false;UpdateContactShadows();
             }
+            approachFootsteps.Tick(approaching && shell.Screen==GameShell.Page.Title,ApproachDistance,maximumApproach,1-shell.TransitionBlack);
             headMotion.SampleAnimation(creature,shell && shell.ReducedMotion ? 0 : Mathf.Repeat(headClock,headMotion.length));
             if(approaching)
             {
@@ -326,8 +332,10 @@ namespace HappyToy.V2
                 material.SetFloat("_EyeGlow", shell && shell.ReducedMotion ? 1.25f : 1.25f + .04f * Mathf.Sin(Time.unscaledTime * .7f));
             }
         }
+        void OnDisable() => approachFootsteps?.Stop();
         void OnDestroy()
         {
+            approachFootsteps?.Dispose();
             if (set) Destroy(set);
             foreach (var material in materials) if (material) Destroy(material);
             if (Image) { Image.Release(); Destroy(Image); }

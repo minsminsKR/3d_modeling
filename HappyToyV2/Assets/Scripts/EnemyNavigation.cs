@@ -53,7 +53,9 @@ namespace HappyToy.V2
         {
             var guide = agent.GetComponent<CorridorRouteGuide>();
             bool followed = guide && guide.isActiveAndEnabled ? guide.Follow(agent,path) : agent.SetPath(path);
-            agent.isStopped = !followed; return followed;
+            agent.isStopped = !followed;
+            if(followed)agent.GetComponent<EnemyPassageTraffic>()?.ObserveRoute(agent.destination);
+            return followed;
         }
 
         static readonly RaycastHit[] soundHits = new RaycastHit[32];
@@ -83,6 +85,7 @@ namespace HappyToy.V2
         public static void Stop(NavMeshAgent agent, bool clearPath = false)
         {
             if (!Ready(agent)) return;
+            agent.GetComponent<EnemyPassageTraffic>()?.Cancel();
             // Reset the native path before enforcing the final stopped state.
             // A just-enabled actor must remain stopped while a paused snapshot
             // rebinds the other chapter actors to their valid floors.

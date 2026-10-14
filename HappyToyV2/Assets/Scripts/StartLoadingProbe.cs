@@ -23,7 +23,8 @@ namespace HappyToy.V2
         {
             public string status,failure;
             public string titleTimingScope="Five-second warm title-camera end-render callback cadence at the production 1920x1080 target, without captures/readback/disk IO during sampling. Main Update FPS is separate. Not hardware-presented FPS or GPU timing.";
-            public int titleRenderFrames,mainFramesDuringTitle;
+            public int titleRenderFrames,mainFramesDuringTitle,approachFootstepCount;
+            public string approachFootstepClip;public bool approachFootstepsStopped;
             public float titleRenderFps,mainFpsDuringTitle,titleP50Milliseconds,titleP95Milliseconds;
             public string scope="Actual title pointer start, incremental corridor preparation and unscaled approach, black transition and gated corridor reveal. Screens compose the actual UI target over the actual player camera when Playing. Controlled actual entrance-drawer fixture keeps the player capsule at touching distance and uses its public interaction. PlayMode additionally verifies real E input. Not a complete survival run or audio certification.";
             public int preparingFrames,movingPreparingFrames;public float maximumApproach,minimumMenu=1,maximumBlack,maximumArmSwing,loadingSeconds,drawerTravel,playerDrift;
@@ -100,6 +101,11 @@ namespace HappyToy.V2
                 yield return null;
             }
             report.loadingSeconds=Time.realtimeSinceStartup-begin;
+            report.approachFootstepCount=title.ApproachStepsPlayed;
+            report.approachFootstepClip=title.ApproachFootstepClip?title.ApproachFootstepClip.name:null;
+            report.approachFootstepsStopped=title.ApproachFootstepSource&&!title.ApproachFootstepSource.isPlaying;
+            Require(report.approachFootstepCount>=2 && report.approachFootstepClip!=null,"Loading approach never emitted its recorded contacts");
+            Require(report.approachFootstepsStopped,"Title footsteps leaked into gameplay");
             Require(session.CorridorMode&&session.InputAllowed,"Corridor never became playable");
             Require(report.movingPreparingFrames>3&&report.maximumApproach>1,"Title approach froze during preparation");
             Require(report.maximumArmSwing>10,"Loading creature did not use its locomotion");
