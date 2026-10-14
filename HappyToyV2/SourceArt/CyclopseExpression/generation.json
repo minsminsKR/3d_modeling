@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-14",
+  "tool": "built-in image_gen.imagegen",
+  "mode": "edit",
+  "transparentBackground": false,
+  "input": "generation-edit-target.png",
+  "output": "chase-face-generated-original.png",
+  "userDirection": "새 얼굴 텍스처로 자유롭게 재디자인. 사이클롭스 하나만 기괴하게 웃으며 더 공포스럽고 혐오스러운 표정의 GIF를 먼저 보여준다.",
+  "prompt": "Use case: precise-object-edit. Asset type: front projection texture source for an actual 3D horror game creature, not a poster. The attached image is the EDIT TARGET, a front orthographic close-up of Cyclopse's actual 3D game head in its proposed chase grin. Completely redesign the hairless facial skin, single eye, nose surface and grinning mouth into a genuinely terrifying, repellent uncanny monster. Dramatic new art direction, not subtle retouching: sickly ashen parchment skin with waxy damp highlights, deep asymmetric creases radiating from the mouth, dark bruised hollows, unsettling stretched cheek folds, blackened irregular gums, a broad malicious grin packed with uneven dirty yellow thin crooked teeth with dark gaps, and one predatory cloudy pale iris with a tiny sharply focused pupil and dark veined sclera. The face should look disturbing and hateful, grotesquely delighted, with lived-in skin detail, not cute or cartoonish. Keep features readable under neutral texture-review illumination. No fresh blood, exposed organs, torn flesh, or splatter. INVARIANTS FOR 3D TEXTURE PROJECTION: preserve the exact orthographic camera/framing, outer head silhouette, tawny fur and purple flower. Keep the single eye aperture, eyeball center, nose silhouette, mouth aperture and lips in exactly the same image locations and overall outlines as the target; redesign the appearance inside and around those fixed anatomical areas. There must be exactly ONE eye. Texture the existing grin rather than moving the mouth. New surface detail should match the existing 3D relief, with only subtle baked shading, no new directional lighting, no cast shadows. Preserve all pixels in the outer fur/flower region as closely as possible. Square image, no lettering, watermark, border, extra heads, hands or background objects.",
+  "sha256": {
+    "generation-edit-target.png": "4306ce13eee367aab6f8a0b969ada27dc63f3be7ae317ffe7b3efbc9c03ad94c",
+    "chase-face-generated-original.png": "cd47681b7028b528ae9bf077290b79372fd31b66dc5ae57d35bc76bb2b3d40c9"
+  }
+}
