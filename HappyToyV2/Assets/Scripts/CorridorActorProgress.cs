@@ -16,6 +16,7 @@ namespace HappyToy.V2
             // Legacy checkpoints omit these fields and correctly start with no prior entry.
             public int hidingEntry, hidingRolls;
             public CabinetHidingOutcome hidingOutcome;
+            public CabinetTauntMemory.Visit[] cabinetTaunts;
             public void Validate()
             { ValidatePosition(false); }
             public void ValidateChapter()
@@ -23,6 +24,7 @@ namespace HappyToy.V2
             void ValidatePosition(bool chapter)
             {
                 CabinetHidingRules.Validate(hidingEntry, hidingRolls, hidingOutcome);
+                CabinetTauntMemory.Validate(cabinetTaunts,hidingEntry);
                 if(!(chapter ? ChapterCheckpoint.Point(position) : CorridorCheckpoint.Point(position)) || !CorridorCheckpoint.Number(yaw,0,360) || !CorridorCheckpoint.Number(pitch,-78,78) ||
                     !CorridorCheckpoint.Number(stamina,0,1) || !CorridorCheckpoint.Number(slow,0,3600) ||
                     !CorridorCheckpoint.Number(noiseRadius,0,28) || !CorridorCheckpoint.Number(noiseRemaining,0,.81f) ||
@@ -36,7 +38,8 @@ namespace HappyToy.V2
             return new Progress { position=transform.position,yaw=transform.eulerAngles.y,pitch=pitch,stamina=Stamina,
                 slow=SlowRemaining,noiseRadius=FootstepNoiseRadius,noiseRemaining=FootstepNoiseRemaining,
                 itemCooldown=Firecrackers.Cooldown,stock=Firecrackers.Count,crouched=Crouching,exhausted=SprintExhausted,
-                light=flashlight&&flashlight.enabled,hidingEntry=HidingEntryId,hidingRolls=HidingRolls,hidingOutcome=HidingOutcome };
+                light=flashlight&&flashlight.enabled,hidingEntry=HidingEntryId,hidingRolls=HidingRolls,hidingOutcome=HidingOutcome,
+                cabinetTaunts=cabinetMemory.Capture(transform.position) };
         }
         public void RestoreProgress(Progress data)
         { data.Validate(); RestoreValidatedProgress(data); }
@@ -47,6 +50,7 @@ namespace HappyToy.V2
             controller.enabled=false;
             Hidden=false; hidingPlace=warnedHidingPlace=null; hidingThreatUntil=0;
             hidingDecision.Restore(data.hidingEntry,data.hidingRolls,data.hidingOutcome);
+            cabinetMemory.Restore(data.cabinetTaunts,data.hidingEntry);
             transform.SetPositionAndRotation(data.position,Quaternion.Euler(0,data.yaw,0)); pitch=data.pitch;
             Crouching=data.crouched; StandingBlocked=false;
             controller.height=Crouching?crouchedHeight:standingHeight;

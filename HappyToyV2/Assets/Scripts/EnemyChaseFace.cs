@@ -15,6 +15,7 @@ namespace HappyToy.V2
         Material[] previous, materials;
         MaterialPropertyBlock block;
         GameObject mouthLiner;
+        MonsterRedEyes eyes;
         public float Weight { get; private set; }
         public bool Prepared => owned && data;
         public void Configure(SkinnedMeshRenderer renderer, StalkerBrain owner, string resource)
@@ -33,6 +34,8 @@ namespace HappyToy.V2
                 var material = new Material(source) { shader = data.shader };
                 material.SetTexture("_ChaseFace", data.chaseFace); return material;
             }).ToArray();
+            eyes=owner.GetComponentInChildren<MonsterRedEyes>(true);
+            if(eyes)eyes.BindExpressionMaterials(skin,materials);
             if (data.mouthLiner && data.mouthLinerMaterial)
             {
                 var bone = skin.bones.Single(t => t.name == data.mouthLinerBone);
@@ -71,6 +74,7 @@ namespace HappyToy.V2
         protected virtual void OnDestroy()
         {
             if (skin) { skin.sharedMesh = original; skin.sharedMaterials = previous; }
+            if(eyes && skin)eyes.BindExpressionMaterials(skin,null);
             if (owned) Destroy(owned);
             if (mouthLiner) Destroy(mouthLiner);
             if (materials != null) foreach (var material in materials) if (material) Destroy(material);

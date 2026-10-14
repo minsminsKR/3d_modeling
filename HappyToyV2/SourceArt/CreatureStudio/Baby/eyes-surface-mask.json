@@ -1,0 +1,28 @@
+{
+    "inputHash": "876bd87175c1991dbd693ae1f2c59c2e7a2d9137837d9574826e2fe8de2afce0:f347c063eb9235e65bd7e52041361b53e002128bb0a6c763192e61339bba0f20:2dd72655f79d936a988fcfd51ae80721045eb44e703fe2e827122e2ada25c4cd:2cd60bd4509c8e429a37c7b84c61c81d7f916c67c87256e6214320e3814f0e49:af08ad26bf5cf19a3ba8eed636c9879dcdda8af2b9bcba7003b25c6c1fab2fc6",
+    "maskHash": "2c797388310d0c9c27fbac5ca314b49876272e3a02b56e2a301b2f4c4567c00a",
+    "profileHash": "42d92ace423285561a8e0468cc1e80973d9996879aa25691e43e7ce10884519d",
+    "method": "Visible posed game triangles clipped against anatomical iris ellipses, separately across UV seams; original pupil remains black",
+    "irisRadiusOfEyeSpacing": 0.14499999582767487,
+    "pupilFraction": 0.3199999928474426,
+    "centres": [
+        {
+            "x": 0.331462562084198,
+            "y": 0.9900700449943542,
+            "z": 0.6523553729057312
+        },
+        {
+            "x": 0.028306281194090843,
+            "y": 1.085667610168457,
+            "z": 0.7131558656692505
+        }
+    ],
+    "visibleTriangles": [
+        54,
+        51
+    ],
+    "whiteTexels": [
+        473,
+        466
+    ]
+}

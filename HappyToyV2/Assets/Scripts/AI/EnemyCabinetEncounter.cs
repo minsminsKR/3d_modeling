@@ -20,7 +20,7 @@ namespace HappyToy.V2
         public float Windup => clock.Windup;
         public float Recovery => clock.Recovery;
         public string Stage => clock.State.ToString();
-        public void Begin(Behaviour owner, NavMeshAgent agent, Vector3 observedEntrance, int entry, CabinetHidingOutcome outcome)
+        public void Begin(Behaviour owner, NavMeshAgent agent, Vector3 observedEntrance, int entry, CabinetHidingOutcome outcome,bool forcedCapture=false)
         {
             Reset(); if (route == null) route = new NavMeshPath(); entrance = observedEntrance;
             var away = owner.transform.position - entrance; away.y = 0;
@@ -35,7 +35,7 @@ namespace HappyToy.V2
             facing = Quaternion.LookRotation(-away);
             doors = owner.GetComponent<StalkerDoorTraversal>();
             if (!doors) doors = owner.gameObject.AddComponent<StalkerDoorTraversal>();
-            doors.Bind(owner); clock.Begin(entry, outcome);
+            doors.Bind(owner); clock.Begin(entry, outcome,forcedCapture);
             motion = owner.GetComponent<V1MonsterMotion>();
         }
         public void Reset()
@@ -58,8 +58,13 @@ namespace HappyToy.V2
             bool inReach = flatDistance < .85f || motion && motion.BodyHorizontalReach > 0 && flatDistance < 2.2f &&
                 motion.BodySurfaceDistance(entrance + Vector3.up * 1.1f) < surfaceReach;
             bool impact = sameEntry && !player.HidingProtected && clear && inReach;
+            // A long cat can already have its head at the cabinet while body
+            // clearance keeps its pivot behind the nominal inspection marker.
+            // Inspection may start there; attack reach remains independently strict.
+            bool inspectingReach=previous==CabinetEncounterClock.Phase.Approach && clear && motion &&
+                motion.BodyHorizontalReach>0 && flatDistance<4 && motion.BodySurfaceDistance(entrance+Vector3.up*1.1f)<.9f;
             bool arrived = previous == CabinetEncounterClock.Phase.Rush ? impact :
-                Vector3.Distance(agent.transform.position, target) < .5f;
+                inspectingReach || Vector3.Distance(agent.transform.position, target) < .5f;
             var step = clock.Tick(Time.deltaTime, sameEntry, player && player.HidingProtected, arrived, impact);
             if (!Active)
             { if (doors) doors.Cancel(); EnemyNavigation.Stop(agent, true); return step; }

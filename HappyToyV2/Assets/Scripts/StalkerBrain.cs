@@ -165,17 +165,19 @@ namespace HappyToy.V2
             return perception.CanSee(transform, agent, player, floorY, Senses, state == State.Chase);
         }
 
+        public bool CanWitnessHiding(PlayerMotor target,Vector3 entrance) => isActiveAndEnabled && target && target==player && !target.Hidden &&
+            (state==State.Chase || awareness.Acquired || cabinetEncounter.Active || target.RemembersCabinetWitness(this,entrance)) && CanSeePlayer() &&
+            EnemyNavigation.WithinFloorPolicy(agent,entrance,floorY);
         public void ObserveHiding(Vector3 entrance)
         {
             if (!player || player.Hidden) return;
+            bool witnessed=CanWitnessHiding(player,entrance);
             // A new entry changes the target from the exposed body to a door.
             // Neither a body strike nor an earlier visit's windup can carry over.
             attack.Reset(); attackingHiding = false; attackHidingEntry = 0;
             cabinetEncounter.Reset();
             // Called before the player's collider disappears, not inferred from old chase memory.
-            witnessedHiding = isActiveAndEnabled && player &&
-                (state == State.Chase || awareness.Acquired) && CanSeePlayer() &&
-                EnemyNavigation.WithinFloorPolicy(agent, entrance, floorY);
+            witnessedHiding = witnessed;
             witnessedHidingEntry = witnessedHiding ? player.HidingEntryId : 0;
             if (!witnessedHiding) return;
             hidingApproach = entrance; lastKnown = entrance;
@@ -183,8 +185,8 @@ namespace HappyToy.V2
             // the dedicated cabinet collaborator owns the transient scan route.
             searchOrigin = searchTarget = entrance;
             ClearDoorPassage(); investigation.Cancel(); awareness.Reset();
-            cabinetEncounter.Begin(this, agent, entrance, player.HidingEntryId, player.HidingOutcome);
-            state = State.Search; memory = 0;
+            cabinetEncounter.Begin(this, agent, entrance, player.HidingEntryId, player.HidingOutcome,player.HidingForcedCapture);
+            state = player.HidingForcedCapture ? State.Chase : State.Search; memory = 0;
         }
 
         bool TickCabinetEncounter(GameSession session)
@@ -196,7 +198,8 @@ namespace HappyToy.V2
             {
                 AttacksStarted++; if (footsteps) footsteps.PlayAttackCue(true);
                 player.ReportHidingDoorAttack(1.5f);
-                session.WarnThreat("은신처를 들켰습니다 · 캐비닛으로 돌진합니다. 지금 빠져나오세요.", 1.5f);
+                session.WarnThreat(player.HidingForcedCapture ? "반복한 은신을 간파당했습니다 · 몬스터가 출구를 막고 돌진합니다." :
+                    "은신처를 들켰습니다 · 캐비닛으로 돌진합니다. 지금 빠져나오세요.", 1.5f);
             }
             if (step == CabinetEncounterClock.Step.Impact) session.TryDefeat(name, CabinetHidingRules.RiskExplanation);
             else if (!cabinetEncounter.Active)

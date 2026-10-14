@@ -49,6 +49,22 @@ over 0.7 seconds. Pause freezes it, disable restores it, defeat keeps the attack
 face. Existing cabinet state transitions provide calm scan/retreat and renewed
 aggressive detection; the cabinet decision rules are unchanged.
 
+Follow-up, 2026-10-14: `MonsterRedEyes` now registers expression materials as
+explicit alternate surfaces. Its original UV0 eye masks, emission toggle and
+pulse continue during chase/rush; the lit face shader preserves that emission.
+No new eyes or overlay geometry are added. Native portraits compare the same
+pose with eye emission on/off and require visible red pixel differences around
+every original eye, in addition to material/property checks.
+
+Cabinet follow-up: three close, actually witnessed entries at the same cabinet
+by the same monster now force a direct rush and committed capture. The entry
+counter is per monster, never per frame or multiplied by several observers.
+Quiet use cannot erase it; moving over 12 metres from that cabinet clears it.
+History survives optional checkpoint fields, while old saves start empty.
+The third rush retains physical path/arrival and fresh warning/impact checks;
+exit spam is blocked while that committed rush or strike is active. Disabled
+threats, blocked paths, recovery and safe mode cannot permanently lock the exit.
+
 ## Verify
 
 Run `python Tools/quality/run_feature_tests.py --profile cabinet-expression`
@@ -61,3 +77,5 @@ A fresh player accepts `-quiet-diagnostics -v2-cabinet-expression-output <new-di
 uses isolated saves and quiet process audio, physically approaches/scans/leaves
 a protected cabinet, then detects/rushes/strikes a vulnerable entry and captures
 the actual lit chase, calm and rush faces. It never installs in normal play.
+Add `-v2-cabinet-taunt` for the controlled three-entry sequence with safe RNG
+on every entry: the third must still rush, reject exit/reroll spam and strike.

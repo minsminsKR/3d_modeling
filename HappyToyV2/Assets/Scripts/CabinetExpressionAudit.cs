@@ -13,11 +13,12 @@ namespace HappyToy.V2
     // Explicit quiet native proof. Never installed in ordinary play.
     public sealed class CabinetExpressionAudit : MonoBehaviour
     {
-        string output, creature = "Cyclopse"; float started; bool finished;
+        string output, creature = "Cyclopse"; float started; bool finished, taunt;
         readonly List<string> checks = new List<string>(), errors = new List<string>();
         [Serializable] sealed class Report
         {
             public string status, failure, unity, creature;
+            public bool repeatedEntry;
             public string scope = "Fresh native controlled creature chase/cabinet scan/retreat/rush/defeat, actual lit shader/camera renders. Not a survival playthrough or audio listening certification.";
             public string[] checks, errors;
         }
@@ -31,6 +32,7 @@ namespace HappyToy.V2
                 audit.output = args[index + 1];
                 int key = Array.IndexOf(args, "-v2-expression-creature");
                 if (key >= 0 && key + 1 < args.Length) audit.creature = args[key + 1];
+                audit.taunt=Array.IndexOf(args,"-v2-cabinet-taunt")>=0;
             }
         }
         void OnEnable() => Application.logMessageReceived += Log;
@@ -97,6 +99,32 @@ namespace HappyToy.V2
             yield return Wait(() => cyclopse.CabinetStage == "Complete", 12, "Successful hiding completed physical retreat");
             Require(!session.Finished && Vector3.Distance(cyclopse.transform.position, entrance) > 2.5f, "Retreat left the player alive");
             cyclopse.gameObject.SetActive(false); Physics.SyncTransforms(); player.LeaveHiding(); Require(!player.Hidden, "Normal cabinet exit remained usable");
+            if(taunt)
+            {
+                for(int entry=2;entry<=3;entry++)
+                {
+                    Place(player,entrance);Prepare(cyclopse,player,anchor.position,entrance);
+                    yield return Wait(()=>face.Weight>.95f,3,"Repeat pursuit restored the generated face and eye owner");
+                    if(entry==3)cyclopse.state=StalkerBrain.State.Patrol; // Same-frame repeat cannot exploit the awareness delay.
+                    cyclopse.chaseSpeed=3.5f;player.HidingRandomSample=()=>0;cabinet.Use(player);
+                    Require(player.CabinetTauntCount==entry,"One actual close witness per entry: "+entry);
+                    if(entry==2)
+                    {
+                        Require(player.HidingProtected && !player.HidingForcedCapture,"Second overt entry still permits its single normal result");
+                        yield return Wait(()=>cyclopse.CabinetStage=="Complete",15,"Second protected entry retreated normally");
+                        cyclopse.gameObject.SetActive(false);Physics.SyncTransforms();player.LeaveHiding();
+                        Require(!player.Hidden,"Second ordinary exit remained usable");
+                    }
+                }
+                Require(player.HidingForcedCapture && !player.HidingProtected,"Third entry forced detection despite zero-valued safe RNG");
+                int id=player.HidingEntryId;cabinet.Use(player);
+                Require(player.Hidden && player.HidingEntryId==id,"Immediate exit/re-entry could not reroll the committed capture");
+                yield return Wait(()=>cyclopse.AttackActive && face.Weight>.95f,8,"Third entry physically rushed to its fresh door warning");
+                Capture(session,cyclopse,"04-third-entry-forced-capture.png");
+                yield return Wait(()=>session.Finished,3,"Third entry committed its physical strike");
+                Require(!session.Escaped && player.HidingRolls==3,"Exactly three shared decisions ended in certain capture");
+                yield break;
+            }
             Place(player, entrance); Prepare(cyclopse, player, anchor.position, entrance);
             yield return Wait(() => face.Weight > .95f, 3, "Fresh pursuit reactivated the same face owner");
             cyclopse.chaseSpeed = 3.5f; player.HidingRandomSample = () => .95f; cabinet.Use(player);
@@ -143,7 +171,9 @@ namespace HappyToy.V2
                         { File.WriteAllBytes(Path.Combine(output, filename + ".rejected-" + attempt++ + ".png"), image.EncodeToPNG()); continue; }
                         Require(true, filename + " close-up camera remained outside opaque cabinet geometry");
                         Require(true, filename + " was not an overexposed cabinet wall");
-                        File.WriteAllBytes(Path.Combine(output, filename), image.EncodeToPNG()); captured = true; break;
+                        File.WriteAllBytes(Path.Combine(output, filename), image.EncodeToPNG());
+                        VerifyEyeEmission(actor,camera,target,image,pixels,filename);
+                        captured = true; break;
                     }
                     if (captured) break;
                 }
@@ -151,12 +181,36 @@ namespace HappyToy.V2
             }
             finally { target.Release(); Destroy(target); Destroy(image); Destroy(camera.gameObject); }
         }
+        void VerifyEyeEmission(StalkerBrain actor,Camera camera,RenderTexture target,Texture2D image,Color32[] on,string filename)
+        {
+            var eyes=actor.GetComponentInChildren<MonsterRedEyes>();Require(eyes.EmissionEnabled,filename+" retained its active eye-glow owner");
+            Color32[] off;
+            try
+            {
+                eyes.SetEmissionEnabled(false);
+                RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest {destination=target});
+                var previous=RenderTexture.active;RenderTexture.active=target;image.ReadPixels(new Rect(0,0,768,768),0,0);image.Apply();RenderTexture.active=previous;
+                off=image.GetPixels32();File.WriteAllBytes(Path.Combine(output,Path.GetFileNameWithoutExtension(filename)+"-eyes-off.png"),image.EncodeToPNG());
+            }
+            finally {eyes.SetEmissionEnabled(true);}
+            foreach(var eye in eyes.EyeAnchors)
+            {
+                var uv=camera.WorldToViewportPoint(eye.position);int x=(int)(uv.x*768),y=(int)(uv.y*768),lit=0;
+                for(int row=Mathf.Max(0,y-48);row<Mathf.Min(768,y+48);row++)
+                    for(int column=Mathf.Max(0,x-48);column<Mathf.Min(768,x+48);column++)
+                    {
+                        int p=row*768+column;
+                        if(on[p].r>off[p].r+6 && on[p].r>on[p].g*1.2f && on[p].r>on[p].b*1.1f)lit++;
+                    }
+                Require(lit>=4,filename+" actual lit eye pixels disappeared when original-mask emission was disabled: "+lit);
+            }
+        }
         void Finish(string failure)
         {
             if (finished) return; finished = true;
             bool passed = failure == null && errors.Count == 0;
             File.WriteAllText(Path.Combine(output, "cabinet-expression.json"), JsonUtility.ToJson(new Report {
-                status = passed ? "PASS" : "FAIL", failure = failure, creature = creature, unity = Application.unityVersion, checks = checks.ToArray(), errors = errors.ToArray() }, true));
+                status = passed ? "PASS" : "FAIL", failure = failure, creature = creature, repeatedEntry=taunt, unity = Application.unityVersion, checks = checks.ToArray(), errors = errors.ToArray() }, true));
             Application.Quit(passed ? 0 : 1);
         }
     }

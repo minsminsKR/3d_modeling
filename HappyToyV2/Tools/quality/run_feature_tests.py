@@ -21,7 +21,7 @@ PROJECT = Path(__file__).resolve().parents[2]
 VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
-    "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests",
+    "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests",
     "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
@@ -44,8 +44,10 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
-    "cabinet-expression": ("All-monster cabinet scan/retreat/rush, physical hit safety and Cyclopse/Uncat/Baby face transitions", [
-        ("PlayMode", play_tests("CloudCabinetSurvivalTests.cs", "CloudCabinetExpressionTests.cs"))]),
+    "cabinet-expression": ("Eye emission through chase faces, third-entry captures and physical/save safety for all monsters", [
+        ("PlayMode", play_tests("CloudCabinetSurvivalTests.cs", "CloudCabinetExpressionTests.cs", "CloudCabinetTauntTests.cs") + (
+            PLAY + "NaturalEyeLifecycleRestoresCallerMaterialAndIndexedPropertiesAndHonoursLaterMaterialOwner",
+            PLAY + "NaturalEyeEmissionTogglePreservesPausedChapterCheckpointPhysicsAndSourceAssetsAcrossReload"))]),
     "traffic-loading": ("Real loading footsteps/mixer/master mute, physical head-on passing and related corner/door routes", [
         ("PlayMode", (
             PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",

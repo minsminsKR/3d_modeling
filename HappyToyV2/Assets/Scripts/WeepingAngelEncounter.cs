@@ -28,16 +28,19 @@ namespace HappyToy.V2
         readonly EnemyCabinetEncounter cabinetEncounter = new EnemyCabinetEncounter();
         public string CabinetStage => cabinetEncounter.Stage;
         public bool CabinetAggressive => cabinetEncounter.Aggressive;
-        public void ObserveHiding(PlayerMotor player, Vector3 entrance)
-        {
-            bool witnessed = isActiveAndEnabled && Released && !Resolved && (Moving || attack.Active) && player && !player.Hidden &&
+        public bool CanWitnessHiding(PlayerMotor player,Vector3 entrance) =>
+            isActiveAndEnabled && Released && !Resolved && player && !player.Hidden &&
+                (Moving || attack.Active || cabinetEncounter.Active || player.RemembersCabinetWitness(this,entrance)) &&
                 EnemyNavigation.SameActorFloor(agent, entrance, floorY) &&
                 EnemyNavigation.ClearSight(transform.position + Vector3.up * 1.7f,
                     player.transform.position + Vector3.up * player.SightTargetHeight, player);
+        public void ObserveHiding(PlayerMotor player, Vector3 entrance)
+        {
+            bool witnessed = CanWitnessHiding(player,entrance);
             attack.Reset(); cabinetEncounter.Reset();
             if (!witnessed) return;
             if (doorTraversal) doorTraversal.Cancel();
-            cabinetEncounter.Begin(this, agent, entrance, player.HidingEntryId, player.HidingOutcome);
+            cabinetEncounter.Begin(this, agent, entrance, player.HidingEntryId, player.HidingOutcome,player.HidingForcedCapture);
         }
         bool TickCabinetEncounter(GameSession session, PlayerMotor player)
         {

@@ -113,11 +113,16 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(() => Get<float>(face, "Weight") > .95f, 2, "Genuine visual pursuit did not morph the face");
             Assert.That(skin.sharedMaterials.All(m => m.shader.name == "HappyToy/CyclopseChaseFace"), Is.True);
             Assert.That(skin.sharedMaterials.All(m => m.GetTexture("_ChaseFace")), Is.True);
+            AssertExpressionEyes(actor,true);
+            var eye=actor.GetComponentInChildren(RequireType("MonsterRedEyes")) as Component;
+            Call(eye,"SetEmissionEnabled",false);AssertExpressionEyes(actor,false);
+            yield return Delay(.1f);AssertExpressionEyes(actor,false);
+            Call(eye,"SetEmissionEnabled",true);AssertExpressionEyes(actor,true);
             // Remove genuine visual contact, retaining an ordinary last-seen pursuit for its finite memory.
             PlacePlayer(new Vector3(200, 5, 200), false);
             yield return Wait(() => Get<float>(face, "Weight") > .95f, 2, "Real chase did not morph the face");
             Call(shell, "Pause"); float frozen = Get<float>(face, "Weight"); yield return Delay(.2f);
-            Assert.That(Get<float>(face, "Weight"), Is.EqualTo(frozen)); Call(shell, "Resume");
+            Assert.That(Get<float>(face, "Weight"), Is.EqualTo(frozen));AssertExpressionEyes(actor,true); Call(shell, "Resume");
             Set(actor, "state", "Patrol");
             yield return Wait(() => Get<float>(face, "Weight") == 0, 2, "Lost pursuit did not restore original face");
             Assert.That(skin.sharedMaterials.All(m => m.shader.name != "HappyToy/CyclopseChaseFace"), Is.True, "Calm did not restore original lit materials");

@@ -21,7 +21,7 @@ namespace HappyToy.V2
             public Vector2[] uvBoundarySamples;
         }
         sealed class SlotState
-        { public int index; public Material original,applied; public MaterialPropertyBlock originalBlock; }
+        { public int index; public Material original,applied,expression; public MaterialPropertyBlock originalBlock; }
         sealed class RendererState
         { public Renderer renderer; public readonly List<SlotState> slots=new List<SlotState>(); }
         struct Surface
@@ -257,6 +257,23 @@ namespace HappyToy.V2
             state.slots.Add(new SlotState {index=slot,original=original,applied=material,originalBlock=originalBlock});
         }
         public int[] GetAffectedSlots(Renderer renderer)=>states.FirstOrDefault(s=>s.renderer==renderer)?.slots.Select(s=>s.index).ToArray()??Array.Empty<int>();
+        // Expression surfaces explicitly opt into this owner's existing eye mask,
+        // enable/disable state and pulse. Arbitrary replacement materials are ignored.
+        public void BindExpressionMaterials(Renderer renderer, Material[] materials)
+        {
+            var state=states.FirstOrDefault(s=>s.renderer==renderer);
+            if(state==null)throw new ArgumentException("Expression renderer has no authored eye surface");
+            foreach(var slot in state.slots)
+            {
+                if(materials!=null && (slot.index>=materials.Length || !materials[slot.index] ||
+                    !materials[slot.index].HasProperty("_EmissionColor") ||
+                    materials[slot.index].GetTexture("_EmissionMap")!=slot.applied.GetTexture("_EmissionMap") ||
+                    !materials[slot.index].IsKeywordEnabled("_EMISSION")))
+                    throw new ArgumentException("Expression must preserve the original eye mask and emission variant");
+                slot.expression=materials==null?null:materials[slot.index];
+            }
+            ApplyEmission();
+        }
         public Material GetOriginalMaterial(Renderer renderer,int slot)=>states.FirstOrDefault(s=>s.renderer==renderer)?.slots.FirstOrDefault(s=>s.index==slot)?.original;
         public Color GetEmissionColor(Renderer renderer,int slot)=>authoredEmissionAllowed&&GetAffectedSlots(renderer).Contains(slot)?Glow:Color.black;
         public void SetEmissionEnabled(bool value)
@@ -270,7 +287,7 @@ namespace HappyToy.V2
                 var current=state.renderer.sharedMaterials;
                 foreach(var slot in state.slots)
                 {
-                    if(slot.index>=current.Length||current[slot.index]!=slot.applied)continue;
+                    if(slot.index>=current.Length || (current[slot.index]!=slot.applied && current[slot.index]!=slot.expression))continue;
                     state.renderer.GetPropertyBlock(block,slot.index);
                     block.SetColor(Emission,EmissionEnabled?Glow*breath:Color.black);
                     state.renderer.SetPropertyBlock(block,slot.index);

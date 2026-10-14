@@ -16,10 +16,11 @@ namespace HappyToy.V2
         public bool Vulnerable { get; private set; }
         public float Windup => State == Phase.Strike ? (float)Math.Min(1, Elapsed / WarningSeconds) : 0;
         public float Recovery => State == Phase.Recovery ? (float)Math.Max(0, 1 - Elapsed / .9f) : 0;
-        public void Begin(int entry, CabinetHidingOutcome outcome)
+        public void Begin(int entry, CabinetHidingOutcome outcome,bool forcedCapture=false)
         {
             if (entry <= 0 || outcome == CabinetHidingOutcome.None) throw new ArgumentException("Observed entry required");
-            Entry = entry; Vulnerable = outcome == CabinetHidingOutcome.Defeated; Set(Phase.Approach);
+            if(forcedCapture && outcome!=CabinetHidingOutcome.Defeated)throw new ArgumentException("A forced capture requires a detected entry");
+            Entry = entry; Vulnerable = outcome == CabinetHidingOutcome.Defeated; Set(forcedCapture?Phase.Rush:Phase.Approach);
         }
         void Set(Phase phase) { State = phase; Elapsed = 0; }
         public void Reset() { Entry = 0; Vulnerable = false; Set(Phase.None); }

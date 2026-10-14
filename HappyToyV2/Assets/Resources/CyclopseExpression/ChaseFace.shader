@@ -67,7 +67,8 @@ Shader "HappyToy/CyclopseChaseFace"
                 surface.metallic=lerp(surface.metallic,0,blend);
                 surface.smoothness=lerp(surface.smoothness,.32,blend);
                 surface.normalTS=normalize(lerp(surface.normalTS,half3(0,0,1),blend));
-                surface.emission*=1-blend;
+                // The original UV0 eye mask remains authoritative through the
+                // generated-face blend; changing expression must not extinguish it.
                 InputData input=(InputData)0;
                 input.positionWS=i.positionWS;
                 half3 n=normalize(i.normalWS), t=normalize(i.tangentWS.xyz);

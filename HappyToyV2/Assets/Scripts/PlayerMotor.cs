@@ -19,6 +19,11 @@ namespace HappyToy.V2
         // Test/audit injection is per player and nonserialized. Normal play uses Unity's RNG.
         [System.NonSerialized] public System.Func<float> HidingRandomSample;
         readonly CabinetHidingRules.Decision hidingDecision = new CabinetHidingRules.Decision();
+        readonly PlayerCabinetMemory cabinetMemory = new PlayerCabinetMemory();
+        public bool HidingForcedCapture=>cabinetMemory.ForcedCapture;
+        public int CabinetTauntCount=>cabinetMemory.CurrentCount;
+        public bool RemembersCabinetWitness(Behaviour actor,Vector3 entrance) => GameSession.Current &&
+            !GameSession.Current.EncountersResolved && !GameSession.Current.CheatSafeMode && cabinetMemory.Remembers(actor,entrance);
         // Authored upper ventilation slit. The capsule/stance stays unchanged;
         // while hidden only the eye occupies this outward-facing peek position.
         public Vector3 HiddenCameraLocalPosition => hiddenPeek ? transform.InverseTransformPoint(hiddenPeek.EyePosition) : new Vector3(.272f, 1.645f, 0);
@@ -95,6 +100,7 @@ namespace HappyToy.V2
             {
                 sprintRequested = Running = false; moveDirection = Vector3.zero; ActualSpeed = 0; Focus = null; return;
             }
+            if(!Hidden)cabinetMemory.ForgetDistant(transform.position);
             SlowRemaining = session.EncountersResolved ? 0 : Mathf.Max(0, SlowRemaining - Time.deltaTime);
             FootstepNoiseRemaining = Mathf.Max(0, FootstepNoiseRemaining - Time.deltaTime);
             if (FootstepNoiseRemaining <= 0) FootstepNoiseRadius = 0;
@@ -232,12 +238,17 @@ namespace HappyToy.V2
             // Decide once on successful entry, before any observer loses the real sightline.
             // The player owns the draw: adding enemies or running more frames cannot multiply risk.
             var stalkers = FindObjectsByType<StalkerBrain>(FindObjectsSortMode.None);
-            bool pursued = IsPursuedForHiding(stalkers);
+            var masks=FindObjectsByType<LanternMaskEncounter>(FindObjectsSortMode.None);
+            var angels=FindObjectsByType<WeepingAngelEncounter>(FindObjectsSortMode.None);
+            cabinetMemory.Prepare(this,exit,stalkers,masks,angels);
+            bool pursued = cabinetMemory.HasWitness || IsPursuedForHiding(stalkers);
             hidingDecision.Resolve(hidingDecision.EntryId + 1, pursued, HidingRandomSample ?? (() => Random.value));
+            cabinetMemory.Record(HidingEntryId,place,exit);
+            if(HidingForcedCapture)hidingDecision.ConfirmDetectedEntry(HidingEntryId);
             foreach (var stalker in stalkers)
                 if (stalker.player == this) stalker.ObserveHiding(exit);
-            foreach (var mask in FindObjectsByType<LanternMaskEncounter>(FindObjectsSortMode.None)) mask.ObserveHiding(this, exit);
-            foreach (var angel in FindObjectsByType<WeepingAngelEncounter>(FindObjectsSortMode.None)) angel.ObserveHiding(this, exit);
+            foreach (var mask in masks) mask.ObserveHiding(this, exit);
+            foreach (var angel in angels) angel.ObserveHiding(this, exit);
             warnedHidingPlace = null; hidingThreatUntil = 0;
             hidingPlace = place; hideExit = exit; Hidden = true; Running = false;
             FootstepNoiseRemaining = FootstepNoiseRadius = 0;
@@ -284,6 +295,8 @@ namespace HappyToy.V2
         public void LeaveHiding()
         {
             if (!Hidden || Paused) return;
+            if(!GameSession.Current.CheatSafeMode && cabinetMemory.BlocksExit())
+            { GameSession.Current.Notify("반복한 은신을 간파당했습니다. 몬스터가 캐비닛 출구를 막았습니다.");return; }
             // Stay inside if another collider currently blocks the real exit capsule.
             if (CapsuleBlocked(hideExit, controller.height, controller.center))
             {

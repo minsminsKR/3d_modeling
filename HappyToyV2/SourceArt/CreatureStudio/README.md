@@ -111,3 +111,25 @@ documented in the repository's `hunyuan3d-webapp` sources. Blender
 and Python dependencies are installed tools, not bundled model weights or caches.
 Before a handoff push run `python HappyToyV2/Tools/quality/check_source_completeness.py`
 from the repository root after staging all required sources and Unity `.meta` files.
+
+
+## Baby game-eye emission repair, 2026-10-15
+
+`Assets/Editor/BabyEyeMaskImport.Apply` is the final Baby game-atlas eye baker.
+The original `eyes-authoring.json` remains the source-landmark input; its older
+single-triangle iris clipping left only 6/13 white texels. The new baker poses
+the actual pinned Unity FBX/patrol skin, clips each visible iris ellipse against
+all original game UV triangles, handles seams independently and leaves the
+central pupil black. It adds no eye geometry, light or overlay. Boundary samples
+come from the visible surface patches and sit slightly inside their source
+triangles so float serialization cannot strand them outside a tiny UV chart.
+
+`Baby/eyes-surface-mask.json` records source/recipe and output hashes, canonical
+centres, radii, selected triangle counts and coverage. The reproducible outputs
+are `eyes-surface-emission.png` and `eyes-surface-profile.json`, copied into the
+existing Unity eye assets while retaining their GUIDs. BuildWindows calls Ensure
+after the base studio importer. Models, original UVs, rig, clips and Blender
+sources remain unchanged. The native cabinet expression audit renders matching
+eye-emission on/off portraits and requires visible red differences for each eye
+during chase, calm and cabinet rush; optional taunt mode verifies the third-entry
+capture with safe RNG and same-frame patrol re-entry.
