@@ -44,6 +44,9 @@ namespace HappyToy.V2
         PlayerMotor noisePlayer;
         readonly StealthRules.Awareness awareness = new StealthRules.Awareness();
         readonly StalkerAttack attack = new StalkerAttack();
+        readonly EnemyCabinetEncounter cabinetEncounter = new EnemyCabinetEncounter();
+        public string CabinetStage => cabinetEncounter.Stage;
+        public bool CabinetAggressive => cabinetEncounter.Aggressive;
         readonly NoiseInvestigationClock investigation = new NoiseInvestigationClock();
         Quaternion investigationFacing;
         public bool InvestigationArrived => investigation.Arrived;
@@ -52,9 +55,9 @@ namespace HappyToy.V2
         public float InvestigationTravelRemaining => investigation.TravelRemaining;
         public float InvestigationDwellRemaining => investigation.DwellRemaining;
         public bool SawHiding => witnessedHiding;
-        public float AttackWindup => attack.Windup;
-        public float AttackRecovery => attack.Recovery;
-        public bool AttackActive => attack.Active;
+        public float AttackWindup => Mathf.Max(attack.Windup, cabinetEncounter.Windup);
+        public float AttackRecovery => Mathf.Max(attack.Recovery, cabinetEncounter.Recovery);
+        public bool AttackActive => attack.Active || cabinetEncounter.Striking;
         public int AttacksStarted { get; private set; }
         public int NoisesAccepted { get; private set; }
         public int FootstepNoisesAccepted { get; private set; }
@@ -116,6 +119,7 @@ namespace HappyToy.V2
 
         void OnDisable()
         {
+            cabinetEncounter.Reset();
             if (CorridorBaby) CorridorBaby.StopVoice();
             ClearDoorPassage(); investigation.Reset();
             BindFootsteps(null); awareness.Reset(); attack.Reset(); witnessedHiding = false;
@@ -167,6 +171,7 @@ namespace HappyToy.V2
             // A new entry changes the target from the exposed body to a door.
             // Neither a body strike nor an earlier visit's windup can carry over.
             attack.Reset(); attackingHiding = false; attackHidingEntry = 0;
+            cabinetEncounter.Reset();
             // Called before the player's collider disappears, not inferred from old chase memory.
             witnessedHiding = isActiveAndEnabled && player &&
                 (state == State.Chase || awareness.Acquired) && CanSeePlayer() &&
@@ -174,13 +179,32 @@ namespace HappyToy.V2
             witnessedHidingEntry = witnessedHiding ? player.HidingEntryId : 0;
             if (!witnessedHiding) return;
             hidingApproach = entrance; lastKnown = entrance;
-            if (player.HidingOutcome == CabinetHidingOutcome.Survived)
+            // Preserve the existing public/checkpoint evidence anchor even while
+            // the dedicated cabinet collaborator owns the transient scan route.
+            searchOrigin = searchTarget = entrance;
+            ClearDoorPassage(); investigation.Cancel(); awareness.Reset();
+            cabinetEncounter.Begin(this, agent, entrance, player.HidingEntryId, player.HidingOutcome);
+            state = State.Search; memory = 0;
+        }
+
+        bool TickCabinetEncounter(GameSession session)
+        {
+            if (!cabinetEncounter.Active) return false;
+            var step = cabinetEncounter.Tick(agent, floorY, player, CalmNavigationSpeed, chaseSpeed);
+            state = cabinetEncounter.Aggressive || step == CabinetEncounterClock.Step.Impact ? State.Chase : State.Search;
+            if (step == CabinetEncounterClock.Step.Warning)
             {
-                // The successful entry's shared 75% result overrides witness-based capture.
-                // Inspect only the witnessed entrance; no knowledge of the hidden body is added.
-                BeginSearch(); witnessedHiding = true; return;
+                AttacksStarted++; if (footsteps) footsteps.PlayAttackCue(true);
+                player.ReportHidingDoorAttack(1.5f);
+                session.WarnThreat("은신처를 들켰습니다 · 캐비닛으로 돌진합니다. 지금 빠져나오세요.", 1.5f);
             }
-            memory = 8; state = State.Chase;
+            if (step == CabinetEncounterClock.Step.Impact) session.TryDefeat(name, CabinetHidingRules.RiskExplanation);
+            else if (!cabinetEncounter.Active)
+            {
+                state = State.Patrol; witnessedHiding = false; memory = repath = 0; awareness.Reset();
+                if (BabyMode) CorridorBaby.Memory.LosePlayer();
+            }
+            return true;
         }
 
         bool AtWitnessedHidingPlace()
@@ -493,9 +517,10 @@ namespace HappyToy.V2
             if (!session || !player) { EnemyNavigation.Stop(agent); return; }
             if (session.CheatSafeMode && (state != State.Patrol || AttackActive || awareness.Value > 0)) ForgetPlayerForCheat();
             if (session.EncountersResolved)
-            { awareness.Reset(); attack.Reset(); witnessedHiding = false; EnemyNavigation.Stop(agent, true); return; }
+            { awareness.Reset(); attack.Reset(); cabinetEncounter.Reset(); witnessedHiding = false; EnemyNavigation.Stop(agent, true); return; }
             if (!EnemyNavigation.Ready(agent)) { attack.Reset(); repath = 0; return; }
             if (!session.InputAllowed) { EnemyNavigation.Stop(agent); repath = 0; return; }
+            if (TickCabinetEncounter(session)) return;
 
             if (state != State.Chase) recognitionCueIssued = false;
             bool visible = CanSeePlayer();

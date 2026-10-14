@@ -5,6 +5,16 @@
   "status": "NOT RUN",
   "audits": [
     {
+      "name": "cabinet-expression",
+      "source": "Assets/Scripts/CabinetExpressionAudit.cs",
+      "flag": "-v2-cabinet-expression-output",
+      "argument_kind": "directory",
+      "result": "cabinet-expression.json",
+      "timeout_seconds": 110,
+      "status": "NOT RUN",
+      "purpose": "Quiet actual Cyclopse chase face, calm cabinet scan/retreat, detected rush and fresh door-warning death, with native lit camera captures; controlled fixture, not a survival run."
+    },
+    {
       "name": "flow",
       "source": "Assets/Scripts/FlowAudit.cs",
       "flag": "-v2-flow-output",

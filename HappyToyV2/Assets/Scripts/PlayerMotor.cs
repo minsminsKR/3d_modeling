@@ -236,6 +236,8 @@ namespace HappyToy.V2
             hidingDecision.Resolve(hidingDecision.EntryId + 1, pursued, HidingRandomSample ?? (() => Random.value));
             foreach (var stalker in stalkers)
                 if (stalker.player == this) stalker.ObserveHiding(exit);
+            foreach (var mask in FindObjectsByType<LanternMaskEncounter>(FindObjectsSortMode.None)) mask.ObserveHiding(this, exit);
+            foreach (var angel in FindObjectsByType<WeepingAngelEncounter>(FindObjectsSortMode.None)) angel.ObserveHiding(this, exit);
             warnedHidingPlace = null; hidingThreatUntil = 0;
             hidingPlace = place; hideExit = exit; Hidden = true; Running = false;
             FootstepNoiseRemaining = FootstepNoiseRadius = 0;

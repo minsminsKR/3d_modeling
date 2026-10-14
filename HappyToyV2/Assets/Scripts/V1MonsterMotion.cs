@@ -83,6 +83,11 @@ namespace HappyToy.V2
             locomotionPose = new EnemyLocomotionPose(model, kind);
             if (kind == EnemySoundKind.Cyclopse || kind == EnemySoundKind.Uncat)
                 bodyClearance = new EnemyBodyClearance(transform, EnemyBodyClearance.RenderedBodyBounds(model, transform));
+            if (kind == EnemySoundKind.Cyclopse && StudioVisual)
+            {
+                var face = GetComponent<CyclopseChaseFace>(); if (!face) face = gameObject.AddComponent<CyclopseChaseFace>();
+                face.Configure(skins[0], brain);
+            }
         }
         void Update()
         {

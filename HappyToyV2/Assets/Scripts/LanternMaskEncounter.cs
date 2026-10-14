@@ -24,9 +24,37 @@ namespace HappyToy.V2
         public float TransformProgress => Mathf.Clamp01(transformTime / 5);
         public int CursesApplied { get; private set; }
         public int AttacksStarted { get; private set; }
-        public bool AttackActive => attack.Active;
-        public float AttackWindup => attack.Windup;
-        public float AttackRecovery => attack.Recovery;
+        public bool AttackActive => attack.Active || cabinetEncounter.Striking;
+        public float AttackWindup => Mathf.Max(attack.Windup, cabinetEncounter.Windup);
+        readonly EnemyCabinetEncounter cabinetEncounter = new EnemyCabinetEncounter();
+        public string CabinetStage => cabinetEncounter.Stage;
+        public bool CabinetAggressive => cabinetEncounter.Aggressive;
+        public void ObserveHiding(PlayerMotor player, Vector3 entrance)
+        {
+            bool witnessed = isActiveAndEnabled && IntroCompleted && !IntroActive &&
+                (State == Phase.Chase || attack.Active) && Sees(player) &&
+                EnemyNavigation.WithinFloorPolicy(agent, entrance, floorY);
+            attack.Reset(); cabinetEncounter.Reset();
+            if (!witnessed) return;
+            if (doorTraversal) doorTraversal.Cancel(); investigation.Cancel(); awareness.Reset();
+            cabinetEncounter.Begin(this, agent, entrance, player.HidingEntryId, player.HidingOutcome);
+            State = Phase.Investigate; repath = 0;
+        }
+        bool TickCabinetEncounter(GameSession session, PlayerMotor player)
+        {
+            if (!cabinetEncounter.Active) return false;
+            var step = cabinetEncounter.Tick(agent, floorY, player, 1.45f, CorridorRunner ? RunnerChaseSpeed : 3.4f);
+            State = cabinetEncounter.Aggressive || step == CabinetEncounterClock.Step.Impact ? Phase.Chase : Phase.Investigate;
+            if (step == CabinetEncounterClock.Step.Warning)
+            {
+                AttacksStarted++; sound.PlayOneShot(warning); player.ReportHidingDoorAttack(1.5f);
+                session.WarnThreat("가면이 은신처를 발견했습니다 · 캐비닛으로 돌진합니다.", 1.5f);
+            }
+            if (step == CabinetEncounterClock.Step.Impact) session.TryDefeat("Lantern mask", CabinetHidingRules.RiskExplanation);
+            else if (!cabinetEncounter.Active) { State = Phase.Wander; repath = memory = 0; }
+            Visual(); return true;
+        }
+        public float AttackRecovery => Mathf.Max(attack.Recovery, cabinetEncounter.Recovery);
         public float Awareness => awareness.Value;
         public int FootstepNoisesAccepted { get; private set; }
         public Bounds LastBodyBounds { get; private set; }
@@ -249,6 +277,7 @@ namespace HappyToy.V2
         }
         void Resolve()
         {
+            cabinetEncounter.Reset();
             if (doorTraversal) doorTraversal.Cancel();
             State = Phase.Resolved; awareness.Reset(); attack.Reset(); EnemyNavigation.Stop(agent, true); SetVisible(false);
             RestoreVisualDefaults();
@@ -280,6 +309,7 @@ namespace HappyToy.V2
             age += Time.deltaTime;
             var player = session.player;
             if (!player) { Stop(); return; }
+            if (TickCabinetEncounter(session, player)) return;
             if (!IntroStarted)
             {
                 // The lamp can still patrol/investigate unseen. Its mask stays at a
@@ -548,6 +578,7 @@ namespace HappyToy.V2
         }
         void OnDisable()
         {
+            cabinetEncounter.Reset();
             if (doorTraversal) doorTraversal.Cancel();
             BindFootsteps(null); awareness.Reset(); attack.Reset(); investigation.Reset(); EnemyNavigation.Stop(agent, true);
             if (sound) sound.Stop();

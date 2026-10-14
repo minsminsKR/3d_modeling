@@ -158,7 +158,7 @@ namespace HappyToy.V2.Editor
             mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             mesh.SetVertices(vertices); mesh.SetUVs(0, uv); mesh.SetTriangles(next, 0); mesh.RecalculateBounds();
         }
-        static Vector3 Sculpt(Vector3 vertex, Profile p, float weight)
+        public static Vector3 Sculpt(Vector3 vertex, Profile p, float weight)
         {
             var d = vertex - p.mouth;
             float front = Falloff(d.z / p.faceDepth);

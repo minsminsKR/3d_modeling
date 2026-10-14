@@ -115,6 +115,7 @@ namespace HappyToy.V2
     {
         public void ForgetPlayerForCheat()
         {
+            cabinetEncounter.Reset();
             awareness.Reset(); attack.Reset(); investigation.Reset();
             witnessedHiding = attackingHiding = recognitionCueIssued = false;
             witnessedHidingEntry = attackHidingEntry = 0;
@@ -128,6 +129,7 @@ namespace HappyToy.V2
     {
         public void ForgetPlayerForCheat()
         {
+            cabinetEncounter.Reset();
             awareness.Reset(); attack.Reset(); investigation.Reset(); memory = repath = 0;
             recognitionCueIssued = false;
             if (State == Phase.Chase || State == Phase.Investigate || State == Phase.Transforming) State = Phase.Wander;
@@ -138,7 +140,7 @@ namespace HappyToy.V2
     public sealed partial class WeepingAngelEncounter
     {
         public void ForgetPlayerForCheat()
-        { attack.Reset(); repath = unobservedFor = 0; Moving = false; Stop(); }
+        { cabinetEncounter.Reset(); attack.Reset(); repath = unobservedFor = 0; Moving = false; Stop(); }
 
         public void SkipIntroForCheat()
         {

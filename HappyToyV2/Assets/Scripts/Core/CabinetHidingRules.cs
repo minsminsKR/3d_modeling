@@ -9,7 +9,7 @@ namespace HappyToy.V2
     public static class CabinetHidingRules
     {
         public const float SurvivalChance = .75f;
-        public const string RiskExplanation = "추격 중 캐비닛 진입은 한 번만 판정합니다: 은신 성공 75% / 발각 위험 25%. 들어가는 모습을 본 적이 실제 문 앞에 도착해 공격해야 붙잡힙니다. 문 앞의 공격 예고가 들리면 빠져나오세요.";
+        public const string RiskExplanation = "추격 중 캐비닛 진입은 한 번만 판정합니다: 은신 성공 75% / 발각 위험 25%. 들어가는 모습을 본 적은 주변을 살핀 뒤 떠나거나, 발각 시 캐비닛으로 돌진합니다. 실제 문 앞의 공격 예고 뒤에 붙잡히므로 지금 빠져나오세요.";
         public static void Validate(int entry, int rolls, CabinetHidingOutcome outcome)
         {
             if (entry < 0 || rolls < 0 || rolls > entry || !Enum.IsDefined(typeof(CabinetHidingOutcome), outcome) ||

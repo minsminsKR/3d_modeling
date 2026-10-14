@@ -23,9 +23,37 @@ namespace HappyToy.V2
         public bool Resolved { get; private set; }
         public int PathRequests { get; private set; }
         public int AttacksStarted { get; private set; }
-        public bool AttackActive => attack.Active;
-        public float AttackWindup => attack.Windup;
-        public float AttackRecovery => attack.Recovery;
+        public bool AttackActive => attack.Active || cabinetEncounter.Striking;
+        public float AttackWindup => Mathf.Max(attack.Windup, cabinetEncounter.Windup);
+        readonly EnemyCabinetEncounter cabinetEncounter = new EnemyCabinetEncounter();
+        public string CabinetStage => cabinetEncounter.Stage;
+        public bool CabinetAggressive => cabinetEncounter.Aggressive;
+        public void ObserveHiding(PlayerMotor player, Vector3 entrance)
+        {
+            bool witnessed = isActiveAndEnabled && Released && !Resolved && (Moving || attack.Active) && player && !player.Hidden &&
+                EnemyNavigation.SameActorFloor(agent, entrance, floorY) &&
+                EnemyNavigation.ClearSight(transform.position + Vector3.up * 1.7f,
+                    player.transform.position + Vector3.up * player.SightTargetHeight, player);
+            attack.Reset(); cabinetEncounter.Reset();
+            if (!witnessed) return;
+            if (doorTraversal) doorTraversal.Cancel();
+            cabinetEncounter.Begin(this, agent, entrance, player.HidingEntryId, player.HidingOutcome);
+        }
+        bool TickCabinetEncounter(GameSession session, PlayerMotor player)
+        {
+            if (!cabinetEncounter.Active) return false;
+            var step = cabinetEncounter.Tick(agent, floorY, player, 1.45f, 4);
+            Moving = EnemyNavigation.Ready(agent) && !agent.isStopped && agent.hasPath;
+            if (step == CabinetEncounterClock.Step.Warning)
+            {
+                AttacksStarted++; sound.PlayOneShot(creak, 1.3f); player.ReportHidingDoorAttack(1.5f);
+                session.WarnThreat("마네킹이 은신처를 발견했습니다 · 캐비닛으로 돌진합니다.", 1.5f);
+            }
+            if (step == CabinetEncounterClock.Step.Impact) session.TryDefeat("Weeping mannequin", CabinetHidingRules.RiskExplanation);
+            else if (!cabinetEncounter.Active) { repath = unobservedFor = 0; Stop(); }
+            return true;
+        }
+        public float AttackRecovery => Mathf.Max(attack.Recovery, cabinetEncounter.Recovery);
         static readonly Vector3[] sightPoints = {
             new Vector3(0, 1.65f, 0), new Vector3(-.25f, 1.1f, 0),
             new Vector3(.25f, 1.1f, 0), new Vector3(0, .4f, 0)
@@ -166,6 +194,7 @@ namespace HappyToy.V2
         }
         void Resolve()
         {
+            cabinetEncounter.Reset();
             if (doorTraversal) doorTraversal.Cancel();
             Resolved = true; Observed = false; attack.Reset(); Stop(); if (sound) sound.Stop();
             RestoreDisplayLight(); RestoreVisualPose();
@@ -183,6 +212,7 @@ namespace HappyToy.V2
             if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { Stop(); repath = 0; return; }
             var player = session.player;
             if (!player || !player.eyes || !visual) { Stop(); return; }
+            if (TickCabinetEncounter(session, player)) return;
             var delta = player.transform.position - transform.position;
             bool sameFloor = EnemyNavigation.SameFloor(player.transform.position, floorY);
             Observed = (Released ? EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY) : sameFloor) && VisibleTo(player.eyes);
@@ -258,6 +288,7 @@ namespace HappyToy.V2
         }
         void OnDisable()
         {
+            cabinetEncounter.Reset();
             if (doorTraversal) doorTraversal.Cancel();
             attack.Reset(); unobservedFor = 0; Stop(); if (sound) sound.Stop();
             if (revealAudio) revealAudio.Stop(); RestoreDisplayLight(); RestoreVisualPose();

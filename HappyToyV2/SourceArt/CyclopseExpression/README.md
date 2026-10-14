@@ -3,6 +3,54 @@
 User art direction (2026-10-14): a grotesque, increasingly frightening and
 repulsive grin. Preview **Cyclopse only** as a GIF before gameplay integration.
 
+The user approved this generated face for gameplay on the same date. The
+runtime `CyclopseChaseFace` now attaches to the actual studio Cyclopse through
+`V1MonsterMotion`, morphs into the grin during Chase/cabinet detection rush,
+and restores the original mesh/material during Search/Patrol/disable. Pause
+freezes it. Defeat retains the striking face. Other creatures keep their own
+faces while sharing the cabinet encounter sequence.
+
+`Assets/Editor/CyclopseExpressionImport.Apply` reproduces
+`Assets/Resources/CyclopseExpression/Expression.asset` from the approved profile,
+source PNG and existing FBX/patrol pose. Per-vertex deltas are converted through
+the inverse weighted skin matrix into bind space, so they follow the head's
+authored animation instead of sliding in world space. Existing vertex order,
+UVs, bones, support samples and source files remain intact. Each live actor
+owns its cloned mesh/materials and restores/disposes them on exit.
+
+`Resources/CyclopseExpression/ChaseFace.shader` is a lit URP material with
+shadows, additional lights/cookies and fog, retaining the original material
+outside the face. It uses a second UV projection that follows the skinned
+surface. Source textures and facial shape can be edited here and re-imported
+without regenerating the base monster. A Resources material anchors the needed
+shader variants in Windows builds. `QualityValidation.BuildWindows` ensures
+the authored resource exists before building.
+
+Cabinet behavior keeps the existing player-owned 75% survival / 25% vulnerable
+entry result and saved schema. Only an enemy that physically saw that entry
+gets the entrance location. It approaches and visibly scans; success retreats,
+failure becomes aggressive and rushes through a valid route. A fresh 0.75s
+door warning starts only within physical strike reach. Exit, a new entry,
+cover, pause, disable and safe mode invalidate or freeze that strike. The same
+clock/navigation collaborator is used by StalkerBrain, LanternMaskEncounter
+and WeepingAngelEncounter; it never substitutes current hidden-body coordinates
+for witnessed evidence.
+
+## Gameplay verification
+
+Run `python Tools/quality/run_feature_tests.py --profile cabinet-expression`
+from the project root. The profile contains fast Core rules, existing physical
+cabinet safety/checkpoint tests, all six monsters' protected scan/retreat and
+detected rush/kill cases, and Cyclopse chase/pause/calm/disable restoration.
+Large actors may strike when their actual torso/head surface is at the door;
+their navigation pivot need not penetrate the cabinet. A hard root-distance
+cap, same floor and fresh physical line of sight still apply.
+
+A freshly built player accepts
+`-quiet-diagnostics -v2-cabinet-expression-output <new-directory>` for the
+controlled native cycle and lit camera PNGs. It uses an isolated save directory
+and the existing process audio guard. Ordinary players do not install it.
+
 The user then requested a newly generated, freely redesigned face texture
 instead of small existing-face edits. `chase-face-generated-original.png` is
 the original built-in ImageGen output. `generation-edit-target.png` is its exact

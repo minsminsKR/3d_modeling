@@ -12,12 +12,12 @@
 | HUD·메뉴 공통 스타일 | `UI/ShellHudView.cs`는 HUD 컨트롤을 소유한다. `UI/FlashlightGauge.cs`는 낡은 금속 손전등 PNG와 얇은 황동 잔량 레일을 표시한다. 아이콘 제작 원본·프롬프트는 `SourceArt/Hud`에 있다. `UI/ShellLayout.cs`는 공통 배치·스타일을 만든다. `GameShellView.cs`는 Unity 패널·입력·각 모듈 연결을 담당한다. | `ui`, 손전등 표시만 변경 시 `flashlight-hud` |
 | 타이틀·게임 시작 전환 | `GameShellTitleView.cs`, `CinematicTitleScene.cs`, `GameShellStartTransition.cs`. 타이틀·접근 장면은 60Hz 예약을 유지하고, 동작 감소 시 정적인 타이틀은 저빈도 갱신한다. `UI/TitleApproachFootsteps.cs`는 로딩 접근 중 기존 `mask-heavy-step` 녹음을 2D로 재생한다. 타이틀 일시정지만 우회하며 마스터 음량·진단 무음·종료 정리를 따른다. 실제 로딩 중 입력 차단과 접근 연출을 보존한다. | `title`, 공통 UI 변경 시 `ui` |
 | 적의 시야·청각 | `StalkerBrain.cs`와 `AI/StalkerPerception.cs`가 실제 가림·층·소리 경로를 처리한다. 회랑 백수귀는 `LanternMaskEncounter.cs` / `LanternMaskRunner.cs`의 정면 시야만 사용하며 발소리·폭죽 콜백을 거부한다. | `core`, `ai`, `corridor` |
-| 공격·캐비닛 은신 | `AI/StalkerAttack.cs`는 공격 예고/회복과 예고 시 확정한 표적을 소유한다. `Core/EnemyAttackClock.cs`, `CabinetHidingRules.cs`는 독립 규칙이다. `PlayerMotor.cs`, `Interactable.cs`는 실제 은신 입출력을 연결한다. | `core`, `ai`, 저장 변경 시 `checkpoint` |
+| 공격·캐비닛 은신 | `AI/StalkerAttack.cs`는 일반 공격 예고/회복과 표적을 소유한다. `Core/CabinetEncounterClock.cs`는 목격한 진입의 접근→두리번거림→후퇴 또는 발각 돌진→문 앞 예고를 판정한다. `AI/EnemyCabinetEncounter.cs`가 실제 NavMesh·문·현재 가림을 연결하며 Stalker/백수귀/마네킹이 공유한다. `PlayerMotor.Hide`는 콜라이더를 숨기기 전에 모든 관찰자에게 알린다. 기존 75%/25% 한 번 판정·저장은 유지한다. | `core`, `cabinet-expression`, `ai`, 저장 변경 시 `checkpoint` |
 | 적의 문 통과·추적 경로 | `AI/StalkerDoorPassage.cs`는 문 통과와 제한된 대기를 소유한다. `AI/CorridorRouteGuide.cs`는 지도 4의 타일 중앙 경유와 회전을, 독립 `Core/CorridorRouteRules.cs`는 연결된 다음 타일을 선택한다. `EnemyNavigation.FollowPath`는 원래 최종 목표·경로 증거를 보존하며 실제 이동을 연결한다. | `ai-doors`, `corridor` |
 | 몬스터 간 통행·양보 | `AI/EnemyPassageTraffic.cs`가 실제 NavMesh 위의 짧은 양보 이동과 경로 복귀를 소유한다. `Core/MonsterPassingRules.cs`는 통행 우선권을 한쪽에만 준다. 기존 AI의 목표·저장 위치는 바꾸지 않는다. | `traffic-loading`, 문/공통 경로 변경 시 `ai-doors` |
 | 열린 문 다시 닫기 | `DoorInteractionTarget.cs`의 물리·NavMesh 제외 문틀 쿼리를 `PlayerMotor.FindFocus`가 실제 가림과 함께 판정한다. `Interactable.cs`는 문짝 이동·점유·소리의 기존 소유자다. | `corridor`, `ai-doors`, `ui` |
 | 큰 몬스터의 벽 겹침·걷기/추격 동작 | `AI/EnemyBodyClearance.cs`는 렌더링 몸체 크기의 트리거 쿼리(상호작용·NavMesh 베이크 제외)로 실제 NavMesh 이동을 보정한다. `AI/EnemyLocomotionPose.cs`는 원본 리그·클립 위에 복원 가능한 팔다리 동작을 더한다. `V1MonsterMotion.cs`가 이동 속도·상태·공격·일시정지를 연결한다. | `readability`, 문/경로 변경 시 `ai-doors` |
-| 사이클롭스 표정 시안 | `Assets/Editor/CyclopseExpressionPreview.cs`와 `.shader`는 실제 모델 복사본의 얼굴을 변형하고 새로 생성한 얼굴 텍스처를 두 번째 UV로 입혀 GIF용 프레임을 만든다. 생성 원본·입력·프롬프트·설정·재생성은 `SourceArt/CyclopseExpression/`에 있다. 게임 추격 연결 전의 선택형 아트 미리보기다. | Editor 렌더 성공·`package_preview.py` 프레임/픽셀/GIF 검사. 실제 게임 반영 시 `readability`와 추격·일시정지·복원 검사 추가 |
+| 사이클롭스 추격 표정 | `CyclopseChaseFace.cs`는 실제 Chase/캐비닛 발각 돌진 중 새 얼굴·입/눈가 변형을 섞고, 수색·배회·비활성화 시 복원한다. `V1MonsterMotion`이 기존 studio skin 위에 붙이며 원래 모델·클립·지지는 유지한다. `CyclopseExpressionData`와 `Resources/CyclopseExpression/ChaseFace.shader`는 얼굴용 UV/변형과 조명·그림자·안개를 담당한다. `Assets/Editor/CyclopseExpressionImport.Apply`가 `SourceArt/CyclopseExpression/`의 원본·입력·프롬프트·설정에서 바인드 공간 리소스를 재생성한다. 기존 Preview 도구는 아트 비교 전용이다. | `cabinet-expression`, `readability`, 새 플레이어 얼굴·캐비닛 진단 |
 | 획득 아이템 테두리·촛불 위기 소등 | `PickupOutline.cs`와 `Resources/PickupOutline.shader`는 실제 획득 가능/표시 상태와 깊이 검사를 따른다. `CandleDanger.cs`는 가까운 몸체와 공격을 판정하고 `WaymarkCandle.cs`는 점화 기억을 보존해 자동 복원한다. | `readability`, 저장 변경 시 `checkpoint` |
 | 베이비·적별 감각 | `StalkerCorridorBaby.cs`, `CorridorBabyBehaviour.cs`, `Core/CorridorBabyMemory.cs`, `Core/CorridorThreatRules.cs`. 운캣과 학교 화캣의 정체성은 별도다. | `core`, `ai` |
 | 서랍·가구 상호작용 | `CorridorDrawer.cs`, `CorridorFurniturePlacement.cs`, `CorridorFurnitureLibrary.cs`, `PlayerMotor.cs`. 움직이는 서랍과 플레이어 충돌·상호작용 거리를 확인한다. | `drawer` |
@@ -35,7 +35,7 @@
 
 ## 모듈 경계
 
-- `Assets/Scripts/Core/HappyToy.V2.Core.asmdef`: System만 사용하는 독립 규칙 11개.
+- `Assets/Scripts/Core/HappyToy.V2.Core.asmdef`: System만 사용하는 독립 규칙 12개.
   UnityEngine, 씬, `GameSession`, UI, 물리/NavMesh를 참조하지 않는다.
 - `Assets/Tests/EditMode/Core/HappyToy.V2.CoreTests.asmdef`: Core를 직접 참조하는
   빠른 규칙 검사. 씬 로드·프레임 대기·문자열 리플렉션이 없다.
@@ -96,6 +96,11 @@ Windows Editor의 GPU 오류를 진단할 때는 `--graphics-api d3d11` 또는 `
 도깨비 기와와 숨는 방, 다섯 기억의 단상 정렬 화면과 금속 손전등 HUD의 완충·절반·부족·방전 실제 플레이어 화면을 캡처한다. 프로세스 무음 가드에서 시작하며, 표면 검사는
 가드 실패 시에도 리스너 0을 유지한다. 일반 플레이에는 설치되지 않는다. 이 검사는
 생존 난이도나 최종 음향 믹스를 인증하지 않는다.
+
+`-quiet-diagnostics -v2-cabinet-expression-output <새 결과 폴더>`는 보존된 학교
+캐비닛과 실제 사이클롭스를 사용해 추격 얼굴→원래 얼굴로 수색→후퇴→새 진입
+발각 돌진→문 앞 예고→사망을 검증한다. 원래/새 얼굴은 실제 조명·URP 재질과
+머리 위치를 쓰는 별도 근접 카메라로 캡처하며 생존 플레이·청감 검증은 아니다.
 
 고정된 옛 학교/회랑 좌표를 사용하는 회귀 검사는 `BeginLegacyChapterFixture` /
 `CreateLegacyCorridorFixture`로 지도 1을 명시한다. 최신 회랑 통합 검사는 기본 지도
