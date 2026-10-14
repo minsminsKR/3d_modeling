@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "creature": "Uncat",
+  "tool": "built-in image_gen.imagegen",
+  "mode": "precise-object-edit",
+  "date": "2026-10-14",
+  "input": "generation-edit-target.png",
+  "original": "chase-face-generated-original.png",
+  "prompt": "Use case: precise-object-edit. Asset type: projected face-color texture for the existing Uncat horror-game 3D mesh. Image 1 is the exact edit target, a straight-on orthographic render of the actual posed cat monster. Keep the exact square framing, silhouette, head orientation, hairline, hat, ears, whiskers, orange outer fur, nose location, two eye centers and existing open mouth/tongue silhouette. Redesign ONLY the central facial expression into a horrifying predatory, grotesquely delighted human-cat grin: sickly leathery pallid skin around the eyes and muzzle, two unnervingly alert small red cloudy eyes under wrinkled hateful lids at the existing eye centers, strongly raised asymmetric cheeks, a stretched malicious smile following the existing mouth opening, irregular thin stained yellow pointed teeth, black mouth cavity, wet dark gums, and the existing long tongue made slick and disturbing. Fine pores, deep folds and grime; uncanny realistic creature prop texture, terrifying and repulsive, not cute or cartoon. Preserve original warm fur along the outer cheeks with a soft natural blend and preserve hair/whiskers. Flat diffuse albedo lighting matching the render, no dramatic cast shadows, no glow bloom. The eye centers and nose cannot move; no extra eyes, no separate head, no background change, no text. Facial redesign should be clearly much more frightening than the neutral input, with an evil smiling stare. Keep mouth depth implied by painted detail but respect the existing opening and hanging tongue.",
+  "projection": "projection.json",
+  "implementation": "Projected secondary UVs and soft frontal vertex mask on the existing patrol-zero skinned mesh. Original mesh/rig/clips/UV0 are preserved; no base model regenerated.",
+  "authoring": "Assets/Editor/CreatureFaceAuthoring.cs",
+  "importer": "Assets/Editor/CreatureFaceImport.cs"
+}

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "creature": "Baby",
+  "tool": "built-in image_gen.imagegen",
+  "mode": "precise-object-edit",
+  "date": "2026-10-14",
+  "input": "generation-edit-target.png",
+  "original": "chase-face-generated-original.png",
+  "prompt": "Use case: precise-object-edit. Asset type: aligned projected face albedo texture for an existing haunted porcelain Baby doll monster in a horror game. Image 1 is the exact edit target, an orthographic render of the actual 3D doll. Preserve the exact square framing, tilted head orientation, head outline, ears, nose position, both existing eye centers and surrounding red romper/black background. Change ONLY its facial expression into a terrifying possessed antique doll: its eyes stare with tiny pale pinpoint pupils in deep black-red sockets at exactly the existing centers, tightly creased cruel eyelids; its cheeks and mouth form a grotesquely delighted crooked predatory grin around the EXISTING open mouth cavity at the same location. Make the same cavity black and add several irregular small yellow ceramic needlelike teeth along its inner edge; extend the smile as dark branching cracks and narrow curled corners across the cheeks, not a new mouth elsewhere. Old ivory cracked porcelain has dirty fine crazing, dark tear trails from both eyes, oily grime around lips, deeply unsettling smile folds, utterly merciless expression. Photorealistic practical haunted doll texture; frightening and revolting, not a cute baby, not a cartoon. Preserve recognizable antique porcelain material and old cracks. Use flat diffuse albedo light matching input rather than dramatic new highlights or cast shadows. Do not change geometry, eye positions, ear silhouette, head angle, clothing or background; no extra eyes, no additional face, no text. This is a game monster doll, not a living child. Maintain the original mouth opening shape and center so the new painted teeth and grin project precisely onto it.",
+  "projection": "projection.json",
+  "implementation": "Projected secondary UVs and soft frontal vertex mask on the existing patrol-zero skinned mesh. Original mesh/rig/clips/UV0 are preserved; no base model regenerated.",
+  "authoring": "Assets/Editor/CreatureFaceAuthoring.cs",
+  "importer": "Assets/Editor/CreatureFaceImport.cs"
+}

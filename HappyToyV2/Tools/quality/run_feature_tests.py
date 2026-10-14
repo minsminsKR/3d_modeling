@@ -44,7 +44,7 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
-    "cabinet-expression": ("All-monster cabinet scan/retreat/rush, physical hit safety and Cyclopse face transitions", [
+    "cabinet-expression": ("All-monster cabinet scan/retreat/rush, physical hit safety and Cyclopse/Uncat/Baby face transitions", [
         ("PlayMode", play_tests("CloudCabinetSurvivalTests.cs", "CloudCabinetExpressionTests.cs"))]),
     "traffic-loading": ("Real loading footsteps/mixer/master mute, physical head-on passing and related corner/door routes", [
         ("PlayMode", (

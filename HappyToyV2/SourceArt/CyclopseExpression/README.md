@@ -8,7 +8,9 @@ runtime `CyclopseChaseFace` now attaches to the actual studio Cyclopse through
 `V1MonsterMotion`, morphs into the grin during Chase/cabinet detection rush,
 and restores the original mesh/material during Search/Patrol/disable. Pause
 freezes it. Defeat retains the striking face. Other creatures keep their own
-faces while sharing the cabinet encounter sequence.
+faces while sharing the cabinet encounter sequence. The subsequent Uncat/Baby
+face extension is documented in `../ChaseFaces/README.md`; all three now use
+the shared `EnemyChaseFace` owner, retaining the Cyclopse component API.
 
 `Assets/Editor/CyclopseExpressionImport.Apply` reproduces
 `Assets/Resources/CyclopseExpression/Expression.asset` from the approved profile,

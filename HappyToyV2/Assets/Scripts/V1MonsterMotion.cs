@@ -88,6 +88,11 @@ namespace HappyToy.V2
                 var face = GetComponent<CyclopseChaseFace>(); if (!face) face = gameObject.AddComponent<CyclopseChaseFace>();
                 face.Configure(skins[0], brain);
             }
+            else if (StudioVisual && (kind == EnemySoundKind.Uncat || kind == EnemySoundKind.Baby))
+            {
+                var face = GetComponent<EnemyChaseFace>(); if (!face) face = gameObject.AddComponent<EnemyChaseFace>();
+                face.Configure(skins[0], brain, "ChaseFaces/" + kind + "/Expression");
+            }
         }
         void Update()
         {

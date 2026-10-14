@@ -70,13 +70,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(actor, "CabinetAggressive"), Is.False);
             yield return Wait(() => Get<string>(actor, "CabinetStage") == "Rush", 5, key + " never rushed after detection");
             Assert.That(Get<bool>(actor, "CabinetAggressive"), Is.True);
-            var face = actor.GetComponent(RequireType("CyclopseChaseFace"));
+            var face = actor.GetComponent(RequireType("EnemyChaseFace"));
             yield return Wait(() => Get<bool>(actor, "AttackActive"), 8, key + " never physically reached the cabinet",
                 () => "position=" + actor.transform.position + " entrance=" + entrance + " stage=" + Get<string>(actor, "CabinetStage"));
             var motion = actor.GetComponent(RequireType("V1MonsterMotion"));
             float reach = motion ? (float)Call(motion, "BodySurfaceDistance", entrance + Vector3.up * 1.1f) : float.MaxValue;
             Assert.That(CabinetFlatDistance(actor.transform.position, entrance) < .85f || reach < .55f, Is.True);
-            if (face) Assert.That(Get<float>(face, "Weight"), Is.GreaterThan(.25f), "Cyclopse did not restore its threatening face");
+            if (face) Assert.That(Get<float>(face, "Weight"), Is.GreaterThan(.25f), key + " did not restore its threatening face");
             yield return CabinetMustStayAliveFor(.45f);
             yield return Wait(() => Get<bool>(session, "Finished"), 3, key + " failed to resolve its witnessed physical strike");
             Assert.That(Get<bool>(session, "Escaped"), Is.False);
@@ -90,13 +90,29 @@ namespace HappyToy.V2.CloudTests
 
         [UnityTest, Timeout(60000)]
         public IEnumerator CyclopseFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin()
+        { yield return FaceFollowsChasePauseCalmAndDisable("Cyclopse"); }
+        [UnityTest, Timeout(60000)]
+        public IEnumerator UncatFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin()
+        { yield return FaceFollowsChasePauseCalmAndDisable("Uncat"); }
+        [UnityTest, Timeout(60000)]
+        public IEnumerator BabyFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin()
+        { yield return FaceFollowsChasePauseCalmAndDisable("Baby"); }
+        IEnumerator FaceFollowsChasePauseCalmAndDisable(string key)
         {
             IsolateThreats(); Begin(); ((Behaviour)player).enabled = false;
             var cabinet = SchoolCabinet(); PlacePlayer(Get<Transform>(cabinet, "outside").position);
-            var actor = CabinetActor("Cyclopse", cabinet); var face = actor.GetComponent(RequireType("CyclopseChaseFace"));
+            var originalPrefab = Resources.Load<GameObject>("EnemyStudio/" + key + "/" + key + "Runtime");
+            var sharedMesh = originalPrefab.GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh;
+            var originalVertices = sharedMesh.vertices; var originalUv = sharedMesh.uv;
+            var actor = CabinetActor(key, cabinet); var face = actor.GetComponent(RequireType("EnemyChaseFace"));
             Assert.That(face, Is.Not.Null); Assert.That(Get<bool>(face, "Prepared"), Is.True);
+            var skin = actor.GetComponentInChildren<SkinnedMeshRenderer>();
+            Assert.That(skin.sharedMesh, Is.Not.SameAs(sharedMesh));
+            CollectionAssert.AreEqual(originalUv, skin.sharedMesh.uv, key + " replaced the body UV atlas");
             Set(actor, "chaseSpeed", 0f);
             yield return Wait(() => Get<float>(face, "Weight") > .95f, 2, "Genuine visual pursuit did not morph the face");
+            Assert.That(skin.sharedMaterials.All(m => m.shader.name == "HappyToy/CyclopseChaseFace"), Is.True);
+            Assert.That(skin.sharedMaterials.All(m => m.GetTexture("_ChaseFace")), Is.True);
             // Remove genuine visual contact, retaining an ordinary last-seen pursuit for its finite memory.
             PlacePlayer(new Vector3(200, 5, 200), false);
             yield return Wait(() => Get<float>(face, "Weight") > .95f, 2, "Real chase did not morph the face");
@@ -104,8 +120,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<float>(face, "Weight"), Is.EqualTo(frozen)); Call(shell, "Resume");
             Set(actor, "state", "Patrol");
             yield return Wait(() => Get<float>(face, "Weight") == 0, 2, "Lost pursuit did not restore original face");
+            Assert.That(skin.sharedMaterials.All(m => m.shader.name != "HappyToy/CyclopseChaseFace"), Is.True, "Calm did not restore original lit materials");
             Set(actor, "state", "Chase"); yield return Delay(.2f); actor.gameObject.SetActive(false);
             Assert.That(Get<float>(face, "Weight"), Is.Zero);
+            CollectionAssert.AreEqual(originalVertices, sharedMesh.vertices, key + " edited the shared source vertices");
+            CollectionAssert.AreEqual(originalUv, sharedMesh.uv, key + " edited the original UV atlas");
         }
     }
 }

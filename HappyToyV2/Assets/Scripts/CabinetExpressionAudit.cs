@@ -13,12 +13,12 @@ namespace HappyToy.V2
     // Explicit quiet native proof. Never installed in ordinary play.
     public sealed class CabinetExpressionAudit : MonoBehaviour
     {
-        string output; float started; bool finished;
+        string output, creature = "Cyclopse"; float started; bool finished;
         readonly List<string> checks = new List<string>(), errors = new List<string>();
         [Serializable] sealed class Report
         {
-            public string status, failure, unity;
-            public string scope = "Fresh native controlled Cyclopse chase/cabinet scan/retreat/rush/defeat, actual lit shader/camera renders. Not a survival playthrough or audio listening certification.";
+            public string status, failure, unity, creature;
+            public string scope = "Fresh native controlled creature chase/cabinet scan/retreat/rush/defeat, actual lit shader/camera renders. Not a survival playthrough or audio listening certification.";
             public string[] checks, errors;
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -26,7 +26,12 @@ namespace HappyToy.V2
         {
             var args = Environment.GetCommandLineArgs(); int index = Array.IndexOf(args, "-v2-cabinet-expression-output");
             if (index >= 0 && index + 1 < args.Length)
-                new GameObject("Explicit quiet cabinet expression audit").AddComponent<CabinetExpressionAudit>().output = args[index + 1];
+            {
+                var audit = new GameObject("Explicit quiet cabinet expression audit").AddComponent<CabinetExpressionAudit>();
+                audit.output = args[index + 1];
+                int key = Array.IndexOf(args, "-v2-expression-creature");
+                if (key >= 0 && key + 1 < args.Length) audit.creature = args[key + 1];
+            }
         }
         void OnEnable() => Application.logMessageReceived += Log;
         void OnDisable() => Application.logMessageReceived -= Log;
@@ -74,10 +79,11 @@ namespace HappyToy.V2
             var cabinet = FindObjectsByType<Interactable>(FindObjectsSortMode.None).Single(item => item.name == "음악실 은신함");
             var entrance = cabinet.outside.position; var away = entrance - cabinet.inside.position; away.y = 0; away.Normalize();
             Require(NavMesh.SamplePosition(entrance + away * 3, out var anchor, .6f, NavMesh.AllAreas), "Real cabinet approach on NavMesh");
-            var cyclopse = FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include, FindObjectsSortMode.None).First(actor => actor.name.Contains("Cyclopse"));
+            var cyclopse = FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include, FindObjectsSortMode.None).First(actor => actor.name.Contains(creature));
             Place(player, entrance); Prepare(cyclopse, player, anchor.position, entrance);
-            var face = cyclopse.GetComponent<CyclopseChaseFace>();
+            var face = cyclopse.GetComponent<EnemyChaseFace>();
             yield return Wait(() => face && face.Weight > .95f, 3, "Actual chase raised generated face");
+            Require(cyclopse.GetComponentInChildren<SkinnedMeshRenderer>().sharedMaterials.All(m => m.GetTexture("_ChaseFace")), "Actual native face materials retained their generated textures");
             Capture(session, cyclopse, "01-chase-face.png");
             cyclopse.chaseSpeed = 3.5f; player.HidingRandomSample = () => .2f; cabinet.Use(player);
             Require(player.Hidden && player.HidingOutcome == CabinetHidingOutcome.Survived, "Actual protected cabinet entry");
@@ -103,31 +109,45 @@ namespace HappyToy.V2
         }
         void Capture(GameSession session, StalkerBrain actor, string filename)
         {
-            var eye = actor.GetComponentInChildren<MonsterRedEyes>().EyeAnchors[0].position;
-            var centre = eye - Vector3.up * .10f;
+            var eyes = actor.GetComponentInChildren<MonsterRedEyes>().EyeAnchors.ToArray();
+            var centre = eyes.Aggregate(Vector3.zero, (sum, eye) => sum + eye.position) / eyes.Length - Vector3.up * .10f;
+            var forward = actor.transform.forward;
+            if (eyes.Length == 2) { forward = Vector3.Cross(eyes[1].position - eyes[0].position, Vector3.up).normalized; if (Vector3.Dot(forward, actor.transform.forward) < 0) forward = -forward; }
             var camera = new GameObject("Owned native expression proof camera").AddComponent<Camera>(); camera.CopyFrom(session.player.eyes); camera.enabled = false;
-            camera.aspect = 1;
-            float distance = 1.8f; bool clear = false;
-            foreach (float candidate in new[] { 1.8f, 1.2f, .8f, .6f })
-            {
-                var position = centre + actor.transform.forward * candidate;
-                if (Physics.Linecast(position, centre, out var hit, ~0, QueryTriggerInteraction.Ignore) &&
-                    !hit.transform.IsChildOf(actor.transform)) continue;
-                camera.transform.position = position; distance = candidate; clear = true; break;
-            }
-            Require(clear, filename + " close-up camera remained outside opaque cabinet geometry");
-            camera.fieldOfView = Mathf.Clamp(2 * Mathf.Atan(.55f / distance) * Mathf.Rad2Deg, 30, 90);
-            camera.transform.LookAt(centre);
+            camera.aspect = 1; camera.nearClipPlane = .01f;
             var lamp = camera.gameObject.AddComponent<Light>(); lamp.type = LightType.Spot; lamp.range = 8;
-            lamp.spotAngle = 90; lamp.intensity = 3 * distance * distance / (1.8f * 1.8f);
+            lamp.spotAngle = 90;
             var target = new RenderTexture(768, 768, 24); target.Create(); var image = new Texture2D(768, 768, TextureFormat.RGB24, false);
             try
             {
-                RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
-                var previous = RenderTexture.active; RenderTexture.active = target; image.ReadPixels(new Rect(0, 0, 768, 768), 0, 0); image.Apply(); RenderTexture.active = previous;
-                var pixels = image.GetPixels32(); Require(pixels.Count(p => p.r > 220 && p.b > 220 && p.g < 60) < 30, filename + " retained native shader");
-                Require(pixels.Count(p => p.r > 248 && p.g > 248 && p.b > 248) < pixels.Length / 2, filename + " was not an overexposed cabinet wall");
-                File.WriteAllBytes(Path.Combine(output, filename), image.EncodeToPNG());
+                var right = Vector3.Cross(Vector3.up, forward).normalized;
+                bool captured = false; int attempt = 0;
+                // A clear centre ray can still put the lens beside the cabinet's
+                // edge. Check the actual image, then try closer/oblique viewpoints
+                // while keeping all world geometry and the same quality limits.
+                foreach (var direction in new[] { forward, (forward + right * .65f).normalized,
+                    (forward - right * .65f).normalized, (forward + Vector3.up * .5f).normalized })
+                {
+                    foreach (float distance in new[] { 1.8f, 1.2f, .8f, .6f, .4f, .3f })
+                    {
+                        var position = centre + direction * distance;
+                        if (Physics.Linecast(position, centre, out var hit, ~0, QueryTriggerInteraction.Ignore) && !hit.transform.IsChildOf(actor.transform)) continue;
+                        camera.transform.position = position; camera.transform.LookAt(centre);
+                        camera.fieldOfView = Mathf.Clamp(2 * Mathf.Atan(.55f / distance) * Mathf.Rad2Deg, 30, 90);
+                        lamp.intensity = 3 * distance * distance / (1.8f * 1.8f);
+                        RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                        var previous = RenderTexture.active; RenderTexture.active = target; image.ReadPixels(new Rect(0, 0, 768, 768), 0, 0); image.Apply(); RenderTexture.active = previous;
+                        var pixels = image.GetPixels32();
+                        Require(pixels.Count(p => p.r > 220 && p.b > 220 && p.g < 60) < 30, filename + " retained native shader");
+                        if (pixels.Count(p => p.r > 248 && p.g > 248 && p.b > 248) >= pixels.Length / 2)
+                        { File.WriteAllBytes(Path.Combine(output, filename + ".rejected-" + attempt++ + ".png"), image.EncodeToPNG()); continue; }
+                        Require(true, filename + " close-up camera remained outside opaque cabinet geometry");
+                        Require(true, filename + " was not an overexposed cabinet wall");
+                        File.WriteAllBytes(Path.Combine(output, filename), image.EncodeToPNG()); captured = true; break;
+                    }
+                    if (captured) break;
+                }
+                Require(captured, filename + " found a clear native face portrait without hiding world geometry");
             }
             finally { target.Release(); Destroy(target); Destroy(image); Destroy(camera.gameObject); }
         }
@@ -136,7 +156,7 @@ namespace HappyToy.V2
             if (finished) return; finished = true;
             bool passed = failure == null && errors.Count == 0;
             File.WriteAllText(Path.Combine(output, "cabinet-expression.json"), JsonUtility.ToJson(new Report {
-                status = passed ? "PASS" : "FAIL", failure = failure, unity = Application.unityVersion, checks = checks.ToArray(), errors = errors.ToArray() }, true));
+                status = passed ? "PASS" : "FAIL", failure = failure, creature = creature, unity = Application.unityVersion, checks = checks.ToArray(), errors = errors.ToArray() }, true));
             Application.Quit(passed ? 0 : 1);
         }
     }
