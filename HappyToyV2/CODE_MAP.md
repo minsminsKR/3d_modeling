@@ -9,7 +9,7 @@
 |---|---|---|
 | 메뉴·일시정지·설정 | `Assets/Scripts/GameShell.cs`는 화면 전환·입력 허용을 조정한다. `Assets/Scripts/UI/ShellPauseScreen.cs`, `ShellSettingsScreen.cs`는 각 화면의 컨트롤을 소유한다. | `ui` |
 | 기록·결과·페이지 이동 | `UI/ShellJournalScreen.cs`, `ShellRecordsScreen.cs`, `ShellResultScreen.cs`. 화면용 데이터와 Action을 받아 표시하며 게임 진행을 직접 변경하지 않는다. | `ui`, 저장 변경 시 `checkpoint` |
-| HUD·메뉴 공통 스타일 | `UI/ShellHudView.cs`는 HUD 컨트롤을 소유한다. `UI/FlashlightGauge.cs`는 손전등 몸통 안에 잔량을 그리며 숫자·이동/발소리 도움말 없이 표시한다. `UI/ShellLayout.cs`는 공통 배치·스타일을 만든다. `GameShellView.cs`는 Unity 패널·입력·각 모듈 연결을 담당한다. | `ui` |
+| HUD·메뉴 공통 스타일 | `UI/ShellHudView.cs`는 HUD 컨트롤을 소유한다. `UI/FlashlightGauge.cs`는 낡은 금속 손전등 PNG와 얇은 황동 잔량 레일을 표시한다. 아이콘 제작 원본·프롬프트는 `SourceArt/Hud`에 있다. `UI/ShellLayout.cs`는 공통 배치·스타일을 만든다. `GameShellView.cs`는 Unity 패널·입력·각 모듈 연결을 담당한다. | `ui`, 손전등 표시만 변경 시 `flashlight-hud` |
 | 타이틀·게임 시작 전환 | `GameShellTitleView.cs`, `CinematicTitleScene.cs`, `GameShellStartTransition.cs`. 타이틀·접근 장면은 60Hz 예약을 유지하고, 동작 감소 시 정적인 타이틀은 저빈도 갱신한다. 실제 로딩 중 입력 차단과 접근 연출을 보존한다. | `title`, 공통 UI 변경 시 `ui` |
 | 적의 시야·청각 | `StalkerBrain.cs`와 `AI/StalkerPerception.cs`가 실제 가림·층·소리 경로를 처리한다. 회랑 백수귀는 `LanternMaskEncounter.cs` / `LanternMaskRunner.cs`의 정면 시야만 사용하며 발소리·폭죽 콜백을 거부한다. | `core`, `ai`, `corridor` |
 | 공격·캐비닛 은신 | `AI/StalkerAttack.cs`는 공격 예고/회복과 예고 시 확정한 표적을 소유한다. `Core/EnemyAttackClock.cs`, `CabinetHidingRules.cs`는 독립 규칙이다. `PlayerMotor.cs`, `Interactable.cs`는 실제 은신 입출력을 연결한다. | `core`, `ai`, 저장 변경 시 `checkpoint` |
@@ -91,7 +91,7 @@ Windows Editor의 GPU 오류를 진단할 때는 `--graphics-api d3d11` 또는 `
 
 새 플레이어에 `-quiet-diagnostics -v2-corridor-revision-output <결과 경로>`를
 주면 `CorridorRevisionProbe.cs`가 실제 회랑 73의 손전등·카메라로 장승·옹기·
-도깨비 기와와 숨는 방, 다섯 기억의 단상 정렬 화면을 캡처한다. 프로세스 무음 가드에서 시작하며, 표면 검사는
+도깨비 기와와 숨는 방, 다섯 기억의 단상 정렬 화면과 금속 손전등 HUD의 완충·절반·부족·방전 실제 플레이어 화면을 캡처한다. 프로세스 무음 가드에서 시작하며, 표면 검사는
 가드 실패 시에도 리스너 0을 유지한다. 일반 플레이에는 설치되지 않는다. 이 검사는
 생존 난이도나 최종 음향 믹스를 인증하지 않는다.
 

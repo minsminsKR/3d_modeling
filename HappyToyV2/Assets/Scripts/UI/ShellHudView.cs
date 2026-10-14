@@ -104,8 +104,8 @@ namespace HappyToy.V2
             layout.Panel(47, 817, 265, 6, layout.Edge);
             stamina = layout.Panel(47, 817, 265, 6, layout.Gold);
             meter = layout.Text("", 47, 837, 860, 36, layout.LargeText ? 23 : 19);
-            batteryMeter = new FlashlightGauge(layout.Paper, Gold, Rust);
-            layout.Place(batteryMeter, 47, 738, layout.LargeText ? 202 : 168, layout.LargeText ? 38 : 32);
+            batteryMeter = new FlashlightGauge(Gold, Rust, layout.HighContrast);
+            layout.Place(batteryMeter, 47, 735, 265, 38);
             // Fit the message instead of covering the upper-right view with an empty box.
             // This sits above the lower-left inventory and leaves the aiming path clear.
             itemFeedbackPanel = layout.Panel(47, 672, 365, 42, new Color(.015f, .027f, .022f, layout.HighContrast ? .95f : .58f));

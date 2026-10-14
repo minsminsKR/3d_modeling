@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.UIElements;
 
 namespace HappyToy.V2
 {
@@ -17,7 +18,7 @@ namespace HappyToy.V2
         [Serializable] sealed class Report
         {
             public string status, failure, unity, graphics;
-            public string scope="Controlled seed-73 production camera/flashlight and generated PBR props/room. Does not certify survival balance or audio mix.";
+            public string scope="Controlled seed-73 production camera/flashlight, PBR props/room and camera plus UI render-target HUD composite. Does not certify survival balance, displayed backbuffer performance or audio mix.";
             public string[] checks, errors;
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] static void Install()
@@ -106,7 +107,67 @@ namespace HappyToy.V2
                 Physics.SyncTransforms();yield return null;yield return null;
                 Capture(player.eyes,"memory-stand-"+(i+1)+".png");
             }
+            session.Shell.Pause();yield return null;session.Shell.Resume();yield return null;
+            var view=session.GetComponent<GameShellView>();view.RestoreDisplayOutput();
+            var gauge=view.Root.Q<FlashlightGauge>("flashlight-battery-meter");
+            Require(gauge!=null,"Actual flashlight HUD available");
+            var chargeStates=new[]{180f,90f,18f,0f};var chargeNames=new[]{"full","half","low","empty"};
+            for(int i=0;i<chargeStates.Length;i++)
+            {
+                player.FlashlightSystem.Restore(chargeStates[i],0,0);player.flashlight.enabled=chargeStates[i]>0;
+                yield return null;yield return null;yield return new WaitForEndOfFrame();
+                Require(Mathf.Abs(gauge.Fraction-player.FlashlightSystem.Fraction)<.0001f,
+                    "Rendered flashlight gauge follows "+chargeNames[i]+" charge");
+                yield return CaptureHud(player.eyes,view,gauge,"hud-metal-"+chargeNames[i]+".png");
+            }
+            view.RestoreDisplayOutput();
             Require(session.Corridor.Layout.Version==CorridorLayout.CurrentVersion,"New map version "+CorridorLayout.CurrentVersion);
+        }
+        IEnumerator CaptureHud(Camera camera,GameShellView view,FlashlightGauge gauge,string filename)
+        {
+            view.SetCaptureSize(1280,720);
+            yield return null;yield return null;yield return new WaitForEndOfFrame();
+            var target=new RenderTexture(1280,720,24);target.Create();var previous=RenderTexture.active;
+            var frame=new Texture2D(1280,720,TextureFormat.RGBA32,false);
+            var overlay=new Texture2D(1280,720,TextureFormat.RGBA32,false);
+            try
+            {
+                RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest{destination=target});
+                RenderTexture.active=target;frame.ReadPixels(new Rect(0,0,1280,720),0,0);frame.Apply();
+                RenderTexture.active=view.CaptureTarget;overlay.ReadPixels(new Rect(0,0,1280,720),0,0);overlay.Apply();
+                var pixels=frame.GetPixels32();var hud=overlay.GetPixels32();int worldVisible=0,hudVisible=0;
+                var rail=gauge.worldBound;var rootBounds=view.Root.worldBound;
+                float toPixelX=1280/rootBounds.width,toPixelY=720/rootBounds.height;
+                int first=Mathf.RoundToInt((rail.x-rootBounds.x+rail.width*96/265f)*toPixelX);
+                int last=Mathf.RoundToInt((rail.x-rootBounds.x+rail.width*257/265f)*toPixelX);
+                int row=719-Mathf.RoundToInt((rail.y-rootBounds.y+rail.height*20/38f)*toPixelY),filled=0;
+                Require(first>=0 && last<1280 && row>=0 && row<720,filename+" gauge sample inside real UI target");
+                for(int x=first;x<last;x++)
+                {
+                    var sample=hud[row*1280+x];if(sample.r>65 && sample.r>sample.g+8)filled++;
+                }
+                Require(Mathf.Abs(filled-(last-first)*gauge.Fraction)<5,
+                    filename+" actual charged pixels="+filled+" expected="+((last-first)*gauge.Fraction).ToString("F1"));
+                for(int i=0;i<pixels.Length;i++)
+                {
+                    var back=pixels[i];var front=hud[i];
+                    if(Math.Max(back.r,Math.Max(back.g,back.b))>35)worldVisible++;
+                    if(front.a>20)hudVisible++;
+                    // UI Toolkit render targets contain premultiplied-alpha colour.
+                    int inverse=255-front.a;
+                    pixels[i]=new Color32((byte)Math.Min(255,front.r+back.r*inverse/255),
+                        (byte)Math.Min(255,front.g+back.g*inverse/255),
+                        (byte)Math.Min(255,front.b+back.b*inverse/255),255);
+                }
+                Require(worldVisible>3000,filename+" camera geometry pixels="+worldVisible);
+                Require(hudVisible>500,filename+" real UI pixels="+hudVisible);
+                frame.SetPixels32(pixels);frame.Apply();
+                File.WriteAllBytes(Path.Combine(output,filename),frame.EncodeToPNG());
+            }
+            finally
+            {
+                RenderTexture.active=previous;target.Release();Destroy(target);Destroy(frame);Destroy(overlay);
+            }
         }
         void Capture(Camera camera,string filename)
         {

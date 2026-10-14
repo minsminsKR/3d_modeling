@@ -44,6 +44,11 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "flashlight-hud": ("Flashlight depletion/refill, real icon/charge captures and HUD layout at supported sizes", [
+        ("PlayMode", (
+            PLAY + "FlashlightBatteryPhysicalInputDepletionPauseOffFullCapAndRefill",
+            PLAY + "KoreanMenusRenderAcrossSupportedAspectRatios",
+            PLAY + "CompactPickupFeedbackKeepsTheCentralViewClearAcrossScreenSizes"))]),
     "shrines": ("Visible memory stands match collectible positions on current/legacy maps and checkpoint resume", [
         ("PlayMode", (
             PLAY + "MemorySealsStayAboveTheirVisibleStandsOnCurrentAndLegacyMaps",

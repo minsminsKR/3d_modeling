@@ -131,6 +131,7 @@ namespace HappyToy.V2.CloudTests
             yield return CaptureMenu(view,"hud-gauge-half.png",1280,720,gaugeErrors);
             var gauge=Get<VisualElement>(view,"Root").Q<VisualElement>("flashlight-battery-meter");
             Assert.That(gauge,Is.Not.Null);Assert.That(gauge,Is.Not.InstanceOf<Label>());
+            Assert.That(gauge.Q<Image>("flashlight-icon").image,Is.Not.Null,"Flashlight HUD source image is missing");
             Assert.That(Get<float>(gauge,"Fraction"),Is.EqualTo(Get<float>(LampCharge,"Fraction")).Within(.0001f));
             Call(LampCharge,"Restore",180f,1,1); lamp.enabled=false;
             var fullPack=LightTargets("FlashlightBattery").First(x=>x.gameObject.activeSelf); PlacePlayer(LightApproach(fullPack)); yield return null;

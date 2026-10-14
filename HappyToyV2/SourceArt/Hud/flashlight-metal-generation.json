@@ -1,0 +1,11 @@
+{
+  "asset": "flashlight-metal-original.png",
+  "runtimeAsset": "Assets/Resources/Hud/flashlight-metal.png",
+  "generator": "Built-in image_gen tool",
+  "createdUtc": "2026-10-14T01:47:44.925297+00:00",
+  "prompt": "Use case: stylized-concept. Asset type: a single premium survival-horror game HUD flashlight icon, transparent PNG cutout, no interface mockup. Primary request: an evocative vintage handheld flashlight from an abandoned Korean school, old blackened steel barrel, tarnished bronze/brass rim, restrained worn edges and tiny scratches, muted warm ivory glass lens. Carefully hand-painted realistic inventory icon with sculptural light and shadow, not a thin line pictogram, not pixel art. Composition: one compact flashlight, exact horizontal side view, large flared lamp head facing LEFT and short ribbed cylindrical handle extending RIGHT, roughly 2.2:1 silhouette, centered and filling the canvas with comfortable small transparent margins, absolutely no perspective foreshortening. Shape must be readable when displayed at only 70 x 32 pixels. Materials: charcoal gunmetal, desaturated aged brass, dusty dark olive, softly polished bevels. Lighting: soft top-left rim light on the actual metal, deep quiet shadows, lens unlit with a small believable ivory glint; no projected light beam. Backdrop: genuinely transparent. No text, numbers, logo, labels, UI bars, gauges, border, drop shadow outside the object, neon, bright gold, blood, decoration or additional items.",
+  "transparentBackground": true,
+  "sha256": "eb2fb72105b499f1b29854ba8961f7f576c3ebb31c5858bd6ff17a23943960fa",
+  "processing": "Original PNG copied byte-for-byte. No raster repainting or cropping. Unity uses source alpha and bilinear filtering; charge rail is drawn by FlashlightGauge.",
+  "licenseNote": "AI-generated project-owned art; no external reference images used."
+}
