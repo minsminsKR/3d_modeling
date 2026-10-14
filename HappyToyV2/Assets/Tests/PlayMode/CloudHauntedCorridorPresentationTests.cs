@@ -38,6 +38,47 @@ namespace HappyToy.V2.CloudTests
                 hash=unchecked((hash^octet)*1099511628211UL);
             return hash;
         }
+        static void HauntedShrinesAligned(Component run)
+        {
+            var memories=run.GetComponentsInChildren(RequireType("Interactable"),true).Cast<Component>()
+                .Where(item=>Get<object>(item,"kind").ToString()=="CorridorMemory").ToArray();
+            var art=Get<Component>(run,"Presentation");
+            var stands=Get<Transform>(art,"AdditionRoot").GetComponentsInChildren<Transform>(true)
+                .Where(root=>root.name=="Graphics joined seal altar").ToArray();
+            Assert.That(memories.Length,Is.EqualTo(5));Assert.That(stands.Length,Is.EqualTo(5));
+            foreach(var memory in memories)
+            {
+                var stand=stands.OrderBy(root=>Vector2.Distance(new Vector2(root.position.x,root.position.z),
+                    new Vector2(memory.transform.position.x,memory.transform.position.z))).First();
+                var renderers=stand.GetComponentsInChildren<MeshRenderer>(true);
+                var bounds=renderers[0].bounds;foreach(var renderer in renderers.Skip(1))bounds.Encapsulate(renderer.bounds);
+                var collider=memory.GetComponent<BoxCollider>();
+                // Collected objects are inactive after resume; native bounds are
+                // then empty. Read their unchanged local interaction geometry.
+                var packet=new Bounds(memory.transform.TransformPoint(collider.center),
+                    Vector3.Scale(collider.size,memory.transform.lossyScale));
+                Assert.That(bounds.center.x,Is.EqualTo(packet.center.x).Within(.005f),memory.name+" is off its visible stand in X");
+                Assert.That(bounds.center.z,Is.EqualTo(packet.center.z).Within(.005f),memory.name+" is off its visible stand in Z");
+                Assert.That(packet.min.x,Is.GreaterThan(bounds.min.x));Assert.That(packet.max.x,Is.LessThan(bounds.max.x));
+                Assert.That(packet.min.z,Is.GreaterThan(bounds.min.z));Assert.That(packet.max.z,Is.LessThan(bounds.max.z));
+                Assert.That(packet.min.y-bounds.max.y,Is.InRange(-.005f,.15f),memory.name+" is not just above the visible tabletop");
+            }
+        }
+        [UnityTest,Timeout(180000)]
+        public IEnumerator MemorySealsStayAboveTheirVisibleStandsOnCurrentAndLegacyMaps()
+        {
+            foreach(var version in new[]{1,4,5})
+            {
+                if(Get<Component>(session,"Corridor"))
+                {
+                    var previous=session;
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(session.gameObject.scene.path);
+                    yield return RecoveryRebind(previous);
+                }
+                CreateLegacyCorridorFixture(211,version);IsolateThreats();yield return null;yield return null;
+                HauntedShrinesAligned(HauntedRun(session));
+            }
+        }
         static void HauntedCompleteApproaches(Component run)
         {
             Vector3 entrance=HauntedCell(run,0);
@@ -145,6 +186,7 @@ namespace HappyToy.V2.CloudTests
             }
             var altarRenderers=art.GetComponentsInChildren<MeshRenderer>(true).Where(renderer=>renderer.name=="Memory altar").ToArray();
             Assert.That(altarRenderers.Length,Is.EqualTo(5));
+            HauntedShrinesAligned(run);
             Assert.That(altarRenderers.All(renderer=>!renderer.enabled),Is.True,"Original opaque altar still conceals its new timber skin");
             var physical=art.GetComponentsInChildren<Collider>(true).Where(collider=>!collider.GetComponentInParent(RequireType("StalkerBrain")) &&
                 !collider.GetComponentInParent(RequireType("LanternMaskEncounter")) && !(collider.isTrigger&&collider.gameObject.layer==2))
@@ -294,8 +336,8 @@ namespace HappyToy.V2.CloudTests
             var memory=run.GetComponentsInChildren(RequireType("Interactable"),true).Cast<Component>()
                 .First(item=>Get<string>(item,"stableId")=="memory-0");
             Vector3 shrine=memory.transform.position;shrine.y=.03f;
-            var positions=new[]{entrance+Vector3.back*1.4f,hallFeet,shrine+Vector3.back*2,entrance+Vector3.left*.9f};
-            var targets=new[]{entrance+new Vector3(0,2.0f,2.7f),hallFeet+forward*16+Vector3.up*1.6f,shrine+Vector3.up*1.4f,
+            var positions=new[]{entrance+Vector3.back*1.4f,hallFeet,HauntedCell(run,Get<int[]>(layout,"Relics")[0]),entrance+Vector3.left*.9f};
+            var targets=new[]{entrance+new Vector3(0,2.0f,2.7f),hallFeet+forward*16+Vector3.up*1.6f,memory.transform.position-Vector3.up*.12f,
                 Get<TextMesh>(art,"ReturnClue").transform.position};
             var names=new[]{"haunted-corridor-timber-paper-close.png","haunted-corridor-layered-passage.png","haunted-corridor-memory-seal.png","haunted-corridor-exit-clue.png"};
             for(int index=0;index<positions.Length;index++)

@@ -85,6 +85,27 @@ namespace HappyToy.V2
                 player.eyes.transform.LookAt(through.Doors[i].transform.position+Vector3.up*1.18f);Physics.SyncTransforms();yield return null;
                 Capture(player.eyes,i==0?"through-room-entrance.png":"through-room-exit.png");
             }
+            var memories=session.Corridor.GetComponentsInChildren<Interactable>(true)
+                .Where(item=>item.kind==Interactable.Kind.CorridorMemory).OrderBy(item=>item.stableId).ToArray();
+            var stands=session.Corridor.GetComponentsInChildren<Transform>(true)
+                .Where(item=>item.name=="Graphics joined seal altar").ToArray();
+            Require(memories.Length==5 && stands.Length==5,"Five actual memory objects and visible stands");
+            for(int i=0;i<memories.Length;i++)
+            {
+                var memory=memories[i];
+                var stand=stands.OrderBy(item=>(item.position-memory.transform.position).sqrMagnitude).First();
+                var renderers=stand.GetComponentsInChildren<MeshRenderer>();
+                var bounds=renderers[0].bounds;foreach(var renderer in renderers.Skip(1))bounds.Encapsulate(renderer.bounds);
+                var packet=memory.GetComponent<BoxCollider>().bounds;
+                Require(Mathf.Abs(bounds.center.x-packet.center.x)<.005f && Mathf.Abs(bounds.center.z-packet.center.z)<.005f,
+                    memory.stableId+" centred on its visible stand");
+                Require(packet.min.y-bounds.max.y>=-.005f && packet.min.y-bounds.max.y<.15f,
+                    memory.stableId+" above the tabletop");
+                player.transform.position=session.Corridor.CellPosition(session.Corridor.Layout.Relics[i]);
+                player.eyes.transform.LookAt(memory.transform.position-Vector3.up*.12f);
+                Physics.SyncTransforms();yield return null;yield return null;
+                Capture(player.eyes,"memory-stand-"+(i+1)+".png");
+            }
             Require(session.Corridor.Layout.Version==CorridorLayout.CurrentVersion,"New map version "+CorridorLayout.CurrentVersion);
         }
         void Capture(Camera camera,string filename)

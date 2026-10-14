@@ -257,18 +257,21 @@ namespace HappyToy.V2
                 .OrderBy(item=>item.stableId,StringComparer.Ordinal).ToArray();
             foreach(var item in memories)
             {
-                int cell=NearestCell(item.transform.position);Vector3 center=run.CellPosition(cell);center.y=.03f;
-                // The new skin sits inside the preserved physical box. Its old opaque
-                // renderer must not hide it or be baked into an architecture chunk.
-                Hide(GetComponentsInChildren<MeshRenderer>(true).Single(renderer=>renderer.name=="Memory altar" && NearestCell(renderer.transform.position)==cell));
+                int cell=NearestCell(item.transform.position);
+                var support=GetComponentsInChildren<MeshRenderer>(true).Single(renderer=>renderer.name=="Memory altar" && NearestCell(renderer.transform.position)==cell);
+                var supportBounds=support.GetComponent<BoxCollider>().bounds;
+                Vector3 center=supportBounds.center;center.y=supportBounds.min.y;
+                // Follow the actual stand, including the peripheral placement on
+                // newer maps. The visual skin and collectible share that anchor.
+                Hide(support);
                 // Original bevelled joinery model, authored as a separate version.
                 // Geometry remains inside the preserved physical altar body.
                 var altar=new GameObject("Graphics joined seal altar");
                 altar.transform.SetParent(additions,false);altar.transform.position=center;
                 var model=GraphicsPropLibrary.Attach("seal-altar",altar.transform,graphicsSurfaces.Resolve,owned);
-                // Only the visual model meets the real slab top (Y=0). The
-                // existing cell/item/collider offsets remain unchanged.
-                altar.transform.position=new Vector3(center.x,-GraphicsPropLibrary.LocalBounds(model).min.y,center.z);
+                // Seat the model on the stand's floor without moving gameplay
+                // colliders, collectible identities or checkpoint coordinates.
+                altar.transform.position=new Vector3(center.x,center.y-GraphicsPropLibrary.LocalBounds(model).min.y,center.z);
                 foreach(var renderer in model.GetComponentsInChildren<MeshRenderer>())
                 {renderer.receiveShadows=true;VisualBatches++;}
                 Hide(item.GetComponent<MeshRenderer>());

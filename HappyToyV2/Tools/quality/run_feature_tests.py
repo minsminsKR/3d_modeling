@@ -44,6 +44,12 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "shrines": ("Visible memory stands match collectible positions on current/legacy maps and checkpoint resume", [
+        ("PlayMode", (
+            PLAY + "MemorySealsStayAboveTheirVisibleStandsOnCurrentAndLegacyMaps",
+            PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
+            PLAY + "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+            PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence"))]),
     "title": ("Title head/body/comfort behavior, real start transition and keyboard start", [
         ("PlayMode", play_tests("CloudBaeksugwiHeadTests.cs") + (
             PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",

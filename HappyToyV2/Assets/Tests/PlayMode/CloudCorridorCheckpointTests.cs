@@ -104,6 +104,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(player,"Crouching"),Is.True); Assert.That(Get<Light>(player,"flashlight").enabled,Is.False);
             Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(2));
             Assert.That(CheckpointItems("CorridorMemory").Take(2).All(x=>!x.gameObject.activeSelf),Is.True);
+            HauntedShrinesAligned(Get<Component>(session,"Corridor"));
             Assert.That(CheckpointItems("FirecrackerSupply")[0].gameObject.activeSelf,Is.False);
             var restoredDoor=CheckpointItems("Door")[0]; Assert.That(Get<bool>(restoredDoor,"IsOpen"),Is.True);
             Assert.That(Vector3.Distance(Get<Transform>(restoredDoor,"movingLeaf").localPosition,leaf),Is.LessThan(.001f));
