@@ -16,7 +16,9 @@ namespace HappyToy.V2
         MaterialPropertyBlock block;
         GameObject mouthLiner;
         MonsterRedEyes eyes;
+        EnemyCabinetFace cabinetFace;
         public float Weight { get; private set; }
+        public float CabinetWeight => cabinetFace?.Weight ?? 0;
         public bool Prepared => owned && data;
         public void Configure(SkinnedMeshRenderer renderer, StalkerBrain owner, string resource)
         {
@@ -49,6 +51,7 @@ namespace HappyToy.V2
                 lining.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 lining.receiveShadows = false;
             }
+            if (data.cabinetFace) cabinetFace = new EnemyCabinetFace(data.cabinetFace, skin, owned, materials);
             skin.sharedMesh = owned; Apply(0);
         }
         protected virtual void LateUpdate()
@@ -58,13 +61,15 @@ namespace HappyToy.V2
             if (session && session.Finished) return; // Retain the attacking face in defeat presentation.
             bool threatening = brain.isActiveAndEnabled && (brain.state == StalkerBrain.State.Chase || brain.AttackActive);
             float next = Mathf.MoveTowards(Weight, threatening ? 1 : 0, Time.deltaTime / (threatening ? .45f : .7f));
-            if (next != Weight) Apply(next);
+            bool cabinetChanged = cabinetFace != null && cabinetFace.Tick(brain.isActiveAndEnabled && brain.CabinetAggressive, Time.deltaTime);
+            if (next != Weight || cabinetChanged) Apply(next);
         }
         void Apply(float weight)
         {
             Weight = weight;
             if (mouthLiner) { mouthLiner.SetActive(weight > 0); mouthLiner.transform.localScale = Vector3.one * weight; }
             for (int i = 0; i < animated.Length; i++) animated[i] = neutral[i] + data.bindDeltas[i] * weight;
+            cabinetFace?.Apply(animated, weight);
             owned.vertices = animated; owned.RecalculateBounds();
             skin.sharedMesh = owned; skin.sharedMaterials = weight > 0 ? materials : previous;
             for (int slot = 0; slot < materials.Length; slot++)
@@ -72,12 +77,13 @@ namespace HappyToy.V2
                 skin.GetPropertyBlock(block, slot); block.SetFloat("_ExpressionWeight", weight); skin.SetPropertyBlock(block, slot);
             }
         }
-        protected virtual void OnEnable() { if (Prepared) Apply(0); }
-        protected virtual void OnDisable() { if (Prepared && skin) Apply(0); }
+        protected virtual void OnEnable() { cabinetFace?.Reset(); if (Prepared) Apply(0); }
+        protected virtual void OnDisable() { cabinetFace?.Reset(); if (Prepared && skin) Apply(0); }
         protected virtual void OnDestroy()
         {
             if (skin) { skin.sharedMesh = original; skin.sharedMaterials = previous; }
             if(eyes && skin)eyes.BindExpressionMaterials(skin,null);
+            cabinetFace?.Dispose();
             if (owned) Destroy(owned);
             if (mouthLiner) Destroy(mouthLiner);
             if (materials != null) foreach (var material in materials) if (material) Destroy(material);

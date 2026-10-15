@@ -17,7 +17,8 @@ namespace HappyToy.V2.Editor
             {
                 string meshHash = BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes("Assets/Resources/EnemyStudio/Cyclopse/Cyclopse.fbx"))).Replace("-", "").ToLowerInvariant();
                 if (!data || !data.chaseFace || !data.shader || data.sourceMeshHash != meshHash ||
-                    !AssetDatabase.LoadAssetAtPath<Material>(Folder + "/ExpressionMaterial.mat")) Apply();
+                    !AssetDatabase.LoadAssetAtPath<Material>(Folder + "/ExpressionMaterial.mat") ||
+                    !data.cabinetFace || data.cabinetFace.sourceHash != CyclopseCabinetFaceImport.InputHash()) Apply();
             }
         }
         public static void Apply()
@@ -70,6 +71,7 @@ namespace HappyToy.V2.Editor
                     float mask = (1 - Mathf.SmoothStep(0, 1, (radius - .72f) / .28f)) * Mathf.SmoothStep(0, 1, (posed[i].z - .40f) / .18f);
                     data.faceMask[i] = new Color(mask, mask, mask, 1);
                 }
+                data.cabinetFace = CyclopseCabinetFaceImport.Bake(skin, posed, profile);
                 data.chaseFace = AssetDatabase.LoadAssetAtPath<Texture2D>(texturePath);
                 data.shader = AssetDatabase.LoadAssetAtPath<Shader>(Folder + "/ChaseFace.shader");
                 if (!data.shader) throw new InvalidOperationException("Chase face lighting shader missing");

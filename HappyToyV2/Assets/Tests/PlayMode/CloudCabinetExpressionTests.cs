@@ -77,9 +77,23 @@ namespace HappyToy.V2.CloudTests
             float reach = motion ? (float)Call(motion, "BodySurfaceDistance", entrance + Vector3.up * 1.1f) : float.MaxValue;
             Assert.That(CabinetFlatDistance(actor.transform.position, entrance) < .85f || reach < .55f, Is.True);
             if (face) Assert.That(Get<float>(face, "Weight"), Is.GreaterThan(.25f), key + " did not restore its threatening face");
+            if (key == "Cyclopse")
+            {
+                Assert.That(Get<float>(face, "CabinetWeight"), Is.GreaterThan(.1f), "Detected rush never opened Cyclopse's jaw");
+                var mouth = actor.GetComponentsInChildren<MeshFilter>().Single(m => m.name == "Owned cabinet teeth gums and mouth cavity");
+                Assert.That(mouth.transform.parent.name, Is.EqualTo("mixamorig:Head"));
+                Assert.That(mouth.sharedMesh.subMeshCount, Is.EqualTo(5));
+                Assert.That(mouth.sharedMesh.vertexCount, Is.GreaterThan(2000), "Expected actual tooth/gum/cavity geometry");
+            }
             yield return CabinetMustStayAliveFor(.45f);
             yield return Wait(() => Get<bool>(session, "Finished"), 3, key + " failed to resolve its witnessed physical strike");
             Assert.That(Get<bool>(session, "Escaped"), Is.False);
+            if (key == "Cyclopse")
+            {
+                Assert.That(Get<float>(face, "CabinetWeight"), Is.GreaterThan(.9f), "Defeat did not retain the fully gaping face");
+                float held=Get<float>(face,"CabinetWeight");yield return Delay(.15f);
+                Assert.That(Get<float>(face,"CabinetWeight"),Is.EqualTo(held));
+            }
         }
         [UnityTest, Timeout(60000)] public IEnumerator CyclopseCabinetDetectionReraisesGrinAndRushesToKill() { yield return CabinetActorRush("Cyclopse"); }
         [UnityTest, Timeout(60000)] public IEnumerator UncatCabinetDetectionRushesToKill() { yield return CabinetActorRush("Uncat"); }
@@ -114,6 +128,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(skin.sharedMaterials.All(m => m.shader.name == "HappyToy/CyclopseChaseFace"), Is.True);
             Assert.That(skin.sharedMaterials.All(m => m.GetTexture("_ChaseFace")), Is.True);
             AssertExpressionEyes(actor,true);
+            Assert.That(Get<float>(face,"CabinetWeight"),Is.Zero,"Ordinary pursuit must retain its existing grin");
             var eye=actor.GetComponentInChildren(RequireType("MonsterRedEyes")) as Component;
             Call(eye,"SetEmissionEnabled",false);AssertExpressionEyes(actor,false);
             yield return Delay(.1f);AssertExpressionEyes(actor,false);
@@ -128,8 +143,27 @@ namespace HappyToy.V2.CloudTests
             Assert.That(skin.sharedMaterials.All(m => m.shader.name != "HappyToy/CyclopseChaseFace"), Is.True, "Calm did not restore original lit materials");
             Set(actor, "state", "Chase"); yield return Delay(.2f); actor.gameObject.SetActive(false);
             Assert.That(Get<float>(face, "Weight"), Is.Zero);
+            Assert.That(Get<float>(face,"CabinetWeight"),Is.Zero);
             CollectionAssert.AreEqual(originalVertices, sharedMesh.vertices, key + " edited the shared source vertices");
             CollectionAssert.AreEqual(originalUv, sharedMesh.uv, key + " edited the original UV atlas");
+        }
+
+        [UnityTest, Timeout(60000)]
+        public IEnumerator CyclopseCabinetGapePausesAndRestoresAfterEscape()
+        {
+            IsolateThreats(); Begin(); ((Behaviour)player).enabled=false;
+            var cabinet=SchoolCabinet();PlacePlayer(Get<Transform>(cabinet,"outside").position);
+            var actor=CabinetActor("Cyclopse",cabinet);
+            Set(player,"HidingRandomSample",(Func<float>)(()=>.95f));Call(cabinet,"Use",player);
+            var face=actor.GetComponent(RequireType("EnemyChaseFace"));
+            yield return Wait(()=>Get<float>(face,"CabinetWeight")>.2f,12,"Cyclopse never began its cabinet gape");
+            Call(shell,"Pause");float held=Get<float>(face,"CabinetWeight");yield return Delay(.2f);
+            Assert.That(Get<float>(face,"CabinetWeight"),Is.EqualTo(held));Call(shell,"Resume");
+            Call(cabinet,"Use",player);Assert.That(Get<bool>(player,"Hidden"),Is.False);
+            PlacePlayer(new Vector3(200,5,200),false);
+            yield return Wait(()=>Get<float>(face,"CabinetWeight")==0,2,"Escaping did not close the cabinet-only mouth");
+            Assert.That(Get<bool>(session,"Finished"),Is.False);
+            Assert.That(actor.GetComponentsInChildren<Transform>(true).Where(t=>t.name.StartsWith("Owned cabinet ")).All(t=>!t.gameObject.activeSelf),Is.True);
         }
     }
 }

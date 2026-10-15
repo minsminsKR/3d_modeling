@@ -1,0 +1,11 @@
+{
+  "tool": "built-in image_gen",
+  "mode": "edit",
+  "prompt": "Precise game face texture edit. Edit target: the attached existing square 1254x1254 front-facing Cyclops face texture, with one central eye, orange fur border, nose, wrinkled humanlike skin and a toothy grinning mouth. Preserve exact framing, camera, lighting, border colors, skin tone, eye and nose placement; no rescaling or reframing. CHANGE ONLY THE MOUTH REGION: replace the currently open mouth and ALL its visible teeth, gums and black mouth interior with tightly closed, stretched, puckered furious lips and heavily strained, leathery cheek folds. The closed mouth should be one thin, crooked, horizontal dark lip seam centered at about 72 percent of image height, spanning about 50 percent image width. Surround with natural, gruesome wrinkled skin, compressed jowls and tension creases. No visible teeth anywhere, no mouth hole, no black cavity, no blood. Keep the sole eye and nose entirely unchanged. This is the skin/albedo used for a 3D mouth that will be opened geometrically, so the mouth interior and teeth must NOT be painted onto this texture. Photorealistic game skin, neutral baked lighting matching the input. Square output.",
+  "transparent_background": false,
+  "reference": "generation-edit-target.png",
+  "output": "closed-lips-generated-original.png",
+  "referenceSha256": "cd47681b7028b528ae9bf077290b79372fd31b66dc5ae57d35bc76bb2b3d40c9",
+  "outputSha256": "d26c4c6ca3ef9864089469166ec61612dd59704d9564bcd887bae0a3acdea976",
+  "scope": "Lower-face skin only; eye remains original runtime surface. No new creature base generated."
+}

@@ -1,0 +1,26 @@
+{
+  "mouth": {
+    "x": 0,
+    "y": 1.48,
+    "z": 0.775
+  },
+  "radius": {
+    "x": 0.245,
+    "y": 0.112
+  },
+  "drop": 0.055,
+  "stretch": 0.95,
+  "widthStretch": 0.08,
+  "frontStart": 0.46,
+  "frontEnd": 0.66,
+  "eye": {
+    "x": 0.0031167,
+    "y": 1.7616551,
+    "z": 0.7601123
+  },
+  "eyeWiden": 0.026,
+  "openingSeconds": 0.6,
+  "closingSeconds": 0.7,
+  "teethPerRow": 13,
+  "seed": 3015
+}

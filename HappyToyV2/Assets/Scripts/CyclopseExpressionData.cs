@@ -13,6 +13,7 @@ namespace HappyToy.V2
         public Vector2[] faceUV;
         public Color[] faceMask;
         public string sourceMeshHash;
+        public CabinetFaceData cabinetFace;
         public Mesh mouthLiner;
         public Material mouthLinerMaterial;
         public string mouthLinerBone;

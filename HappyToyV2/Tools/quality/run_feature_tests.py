@@ -44,6 +44,11 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "cyclopse-cabinet-face": ("Cyclopse modeled cabinet gape, actual capture/escape, pause, original pursuit and eye lifecycle", [
+        ("PlayMode", (
+            PLAY + "CyclopseCabinetDetectionReraisesGrinAndRushesToKill",
+            PLAY + "CyclopseCabinetGapePausesAndRestoresAfterEscape",
+            PLAY + "CyclopseFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin"))]),
     "snappers": ("Six throws per pack, capacity and legacy checkpoint conversion; no PlayMode/player launch", [
         ("EditMode", ("HappyToy.V2.CoreTests.SnapperStockRulesTests",))]),
     "graphics": ("Owned URP depth SSAO, unchanged shadow selection/restore and school/corridor presentation", [
