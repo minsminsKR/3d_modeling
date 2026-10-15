@@ -37,6 +37,10 @@ run/door is reset, and disposes only its own combined meshes. Original shared
 fragment meshes/materials remain reusable. The recorded GPU 0 job, input image,
 prompt, original embedded PBR GLB, editable Blender source and finishing tools
 travel with the repository; see `SourceArt/DoorDebris/README.md`.
+Live launches also emit a short door-height wood-dust plume, followed by low
+landing dust at .85 seconds. `DoorBreakDust` and its procedural lit/depth-soft
+shader own the 3.8-second effect; pause freezes simulation and death removes it.
+Restored debris uses Seal without Launch, so transient dust is never replayed.
 
 School door saves add optional broken/locked booleans; old saves default to
 intact/unlocked. Existing corridor broken fields remain compatible. Saving

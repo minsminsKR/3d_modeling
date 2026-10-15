@@ -30,6 +30,23 @@ replaying the impact, and run/reset removes it. The existing real CC0 recorded
 wood-clap/metal-drop/metal-drag door impact is reused, with originals and licenses
 already under `ThirdParty/Audio` and the recipe under `SourceArt/Audio`.
 
+`DoorBreakDust` adds only a transient effect on live `Launch`: a door-height
+wood-dust plume and a delayed low landing puff at 0.85 seconds, clearing within
+3.8 seconds. Its own shader under Resources uses analytic cloud noise, scene
+depth feathering, fog and ambient/local lighting; no external bitmap, generated
+3D source, server GPU job, physics object, light or save field is required.
+The gameplay clock explicitly advances the paused ParticleSystems, keeping
+their age, drift and noise fixed during menus. Defeat and owner destruction
+remove the effect. `Seal` recreates only the persistent rubble on save loading.
+The shader/source code is the complete reproducible VFX authoring source.
+
+Render the exact particle effect and game fragments without launching gameplay:
+
+```powershell
+unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.Editor.DoorBreakDustPreview.Render -quiet-diagnostics
+python HappyToyV2/Tools/quality/run_feature_tests.py --profile door-dust
+```
+
 Reproduce from repository root with Git LFS hydrated, Blender **4.0.2**, its
 bundled Python/numpy and Unity **6000.6.0f1**:
 

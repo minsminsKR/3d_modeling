@@ -134,6 +134,7 @@ namespace HappyToy.V2.CloudTests
             var rubble=door.GetComponentInChildren(RequireType("DoorShatterDebris"));
             Assert.That(rubble,Is.Not.Null);Assert.That(Get<bool>(rubble,"Settled"),Is.True);
             Assert.That(Get<int>(rubble,"PieceCount"),Is.GreaterThanOrEqualTo(8),"Authored panels, rails and splinters were not restored");
+            Assert.That(rubble.GetComponentInChildren(RequireType("DoorBreakDust")),Is.Null,"Restoring rubble replayed the impact cloud");
             Assert.That(door.GetComponent(RequireType("DoorDestructionAudio")),Is.Null,"Loading replayed the smash");
             Debug.Log("HAPPYTOY_MASK_RUNNER_DOORS_PASS actual speed=" + peakSpeed + " closed/locked impact and intact open-door passage, native crossing, JSON/fresh-scene broken geometry");
             UnityEngine.Object.Destroy(destination);

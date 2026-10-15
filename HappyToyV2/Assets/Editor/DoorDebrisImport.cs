@@ -58,6 +58,7 @@ namespace HappyToy.V2.Editor
         }
         public static void Ensure()
         {
+            if(!Resources.Load<Shader>("DoorBreakDust"))throw new InvalidOperationException("Missing door impact dust shader");
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"ShatteredDoor.prefab");
             if(!prefab || prefab.GetComponentsInChildren<MeshFilter>().Length<8 || prefab.GetComponentsInChildren<Collider>().Length!=0)
                 throw new InvalidOperationException("Missing reviewed modeled timber fragments");

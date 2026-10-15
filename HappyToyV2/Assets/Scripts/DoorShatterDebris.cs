@@ -17,6 +17,9 @@ namespace HappyToy.V2
         readonly List<Piece> pieces=new List<Piece>();
         readonly List<Mesh> meshes=new List<Mesh>();
         Vector3 kick;
+        Bounds aperture;
+        bool hasAperture;
+        DoorBreakDust dust;
         float elapsed;
         public int PieceCount {get;private set;}
         public bool Settled {get;private set;}
@@ -33,6 +36,7 @@ namespace HappyToy.V2
             {
                 if(!panel)continue;
                 var bounds=LocalBounds(parent,panel);
+                if(!debris.hasAperture){debris.aperture=bounds;debris.hasAperture=true;}else debris.aperture.Encapsulate(bounds);
                 var centre=bounds.center;var size=bounds.size;
                 float scale=Mathf.Clamp(size.x*.9f,.6f,2.2f);
                 foreach(var filter in source.GetComponentsInChildren<MeshFilter>())
@@ -83,6 +87,7 @@ namespace HappyToy.V2
             if(Settled)return;
             kick=transform.InverseTransformDirection(Vector3.ProjectOnPlane(worldDirection,Vector3.up).normalized);
             elapsed=0;Pose(0);
+            if(hasAperture && !dust)dust=DoorBreakDust.Create(transform,aperture,worldDirection);
         }
         public void Seal(){if(!Settled){Pose(1);Combine();Settled=true;enabled=false;}}
         void Update()

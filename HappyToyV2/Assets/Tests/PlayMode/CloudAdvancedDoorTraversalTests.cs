@@ -99,13 +99,23 @@ namespace HappyToy.V2.CloudTests
                 var debris=door.GetComponentInChildren(RequireType("DoorShatterDebris"));
                 Assert.That(Get<int>(debris,"PieceCount"),Is.GreaterThanOrEqualTo(16),"Both real leaves need modeled panels, rails and splinters");
                 Assert.That(debris.GetComponentsInChildren<Collider>(),Is.Empty);
+                var dust=debris.GetComponentInChildren(RequireType("DoorBreakDust"));
+                Assert.That(dust,Is.Not.Null,"Actual break omitted its wood-dust cloud");
+                Assert.That(dust.GetComponentsInChildren<ParticleSystem>().Sum(p=>p.particleCount),Is.GreaterThan(0));
+                Assert.That(dust.GetComponentsInChildren<Light>(),Is.Empty,"Wood dust must not add an impact flash");
                 var voice=door.GetComponent(RequireType("DoorDestructionAudio"));
                 Assert.That(Get<int>(voice,"CuesPlayed"),Is.EqualTo(phase=="Wander"?1:phase=="Investigate"?2:3));
                 if(phase=="Investigate")
                 {
                     Call(shell,"Pause");var pieces=debris.GetComponentsInChildren<MeshRenderer>();var positions=pieces.Select(p=>p.transform.position).ToArray();
+                    var systems=dust.GetComponentsInChildren<ParticleSystem>();
+                    var dustClocks=systems.Select(p=>p.time).ToArray();
+                    var particles=systems.Select(p=>{var buffer=new ParticleSystem.Particle[p.main.maxParticles];int count=p.GetParticles(buffer);return buffer.Take(count).Select(v=>v.position).ToArray();}).ToArray();
                     yield return Delay(.2f);
                     for(int i=0;i<pieces.Length;i++)Assert.That(pieces[i].transform.position,Is.EqualTo(positions[i]));
+                    Assert.That(systems.Select(p=>p.time).ToArray(),Is.EqualTo(dustClocks),"Pause advanced the dust clocks");
+                    for(int i=0;i<systems.Length;i++)
+                    {var buffer=new ParticleSystem.Particle[systems[i].main.maxParticles];int count=systems[i].GetParticles(buffer);Assert.That(buffer.Take(count).Select(v=>v.position).ToArray(),Is.EqualTo(particles[i]),"Paused dust continued drifting");}
                     Call(shell,"Resume");
                 }
                 yield return Wait(()=>Vector3.Dot(actor.transform.position-door.transform.position,normal)>.8f,8,"Wraith did not pass its broken doorway");
@@ -113,6 +123,7 @@ namespace HappyToy.V2.CloudTests
                 yield return Delay(1.6f);
                 Assert.That(debris&&debris.gameObject.activeSelf,Is.True,"Rubble vanished after the old 1.4 second lifetime");
                 Assert.That(debris.GetComponentsInChildren<MeshRenderer>().Length,Is.EqualTo(1),"Settled rubble should batch into one renderer");
+                yield return Wait(()=>!dust,4,"Transient dust survived after its plume faded");
                 AdvancedDoorBodyClear(door,actor);
                 Assert.That(Get<bool>(door,"DoorOperable"),Is.False);
             }
@@ -130,6 +141,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(door,"DoorBroken"),Is.True);
             var restored=door.GetComponentInChildren(RequireType("DoorShatterDebris"));
             Assert.That(Get<bool>(restored,"Settled"),Is.True);
+            Assert.That(restored.GetComponentInChildren(RequireType("DoorBreakDust")),Is.Null,"Save restoration replayed the transient dust");
             Assert.That(door.GetComponent(RequireType("DoorDestructionAudio")),Is.Null,"Save restoration replayed a break voice");
             Assert.That(Get<Transform>(door,"movingLeaf").GetComponentsInChildren<Collider>().Any(c=>c.enabled),Is.False);
             UnityEngine.Object.Destroy(marker);
