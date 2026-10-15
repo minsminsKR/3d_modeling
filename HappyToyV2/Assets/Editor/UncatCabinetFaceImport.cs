@@ -17,7 +17,8 @@ namespace HappyToy.V2.Editor
         [Serializable] public sealed class Profile
         {
             public Vector3 mouth;
-            public float scale,shellRecession,patchWidth,patchTop,patchBottom,coverWidth,coverTop,coverBottom,clipStart,clipEnd,depthStart,depthEnd,openingSeconds,closingSeconds;
+            public Vector3[] lipCorners;
+            public float scale,patchWidth,patchTop,patchBottom,coverWidth,coverTop,coverBottom,clipStart,clipEnd,depthStart,depthEnd,openingSeconds,closingSeconds;
             public CyclopseCabinetFaceImport.Profile jaw;
         }
         public static CreatureFaceAuthoring.Profile FaceProfile()=>JsonUtility.FromJson<CreatureFaceAuthoring.Profile>(File.ReadAllText("SourceArt/ChaseFaces/Uncat/projection.json"));
@@ -47,20 +48,30 @@ namespace HappyToy.V2.Editor
             importer.sRGBTexture=true;importer.maxTextureSize=2048;importer.npotScale=TextureImporterNPOTScale.None;
             importer.textureCompression=TextureImporterCompression.Uncompressed;importer.wrapMode=TextureWrapMode.Clamp;importer.SaveAndReimport();
             var p=JsonUtility.FromJson<Profile>(File.ReadAllText(Source+"/gape-profile.json"));var projection=FaceProfile();
-            var forward=projection.forward.normalized;var right=Vector3.Cross(Vector3.up,forward).normalized;
-            var rotation=Quaternion.LookRotation(forward,Vector3.up);
-            Vector3 Local(Vector3 world){var d=world-projection.centre;return new Vector3(Vector3.Dot(d,right),d.y,Vector3.Dot(d,forward));}
-            Vector3 World(Vector3 local)=>projection.centre+rotation*local;
-            Vector3 Sculpt(Vector3 local)
-            {
-                var canonical=p.jaw.mouth+(local-p.mouth)/p.scale;
-                return p.mouth+(CyclopseCabinetFaceImport.Sculpt(canonical,p.jaw)-p.jaw.mouth)*p.scale;
-            }
+            var photoForward=projection.forward.normalized;var photoRight=Vector3.Cross(Vector3.up,photoForward).normalized;
+            var photoRotation=Quaternion.LookRotation(photoForward,Vector3.up);
+            Vector3 PhotoWorld(Vector3 v)=>projection.centre+photoRotation*v;
             var root=UnityEngine.Object.Instantiate(Resources.Load<GameObject>("EnemyStudio/Uncat/UncatRuntime"));
             try
             {
                 Resources.Load<AnimationClip>("EnemyStudio/Uncat/patrol").SampleAnimation(root,0);
                 var skin=root.GetComponentsInChildren<SkinnedMeshRenderer>().Single();var posed=EnemyStudioRig.PosedVertices(skin);
+                var head=skin.bones.Single(t=>t.name=="mixamorig:Head");
+                if(p.lipCorners==null||p.lipCorners.Length!=2)throw new InvalidDataException("Uncat needs its two original lip-corner landmarks");
+                // Photo projection remains fixed for the skin UVs. Jaw anatomy
+                // instead follows the slanted, depth-offset original lip line.
+                var right=(PhotoWorld(p.lipCorners[0])-PhotoWorld(p.lipCorners[1])).normalized;
+                var forward=Vector3.Cross(right,head.up).normalized;
+                if(Vector3.Dot(forward,photoForward)<0)forward=-forward;
+                var rotation=Quaternion.LookRotation(forward,Vector3.Cross(forward,right));
+                var centre=PhotoWorld(p.mouth);var inverse=Quaternion.Inverse(rotation);
+                Vector3 Local(Vector3 world)=>inverse*(world-centre);
+                Vector3 World(Vector3 local)=>centre+rotation*local;
+                Vector3 Sculpt(Vector3 local)
+                {
+                    var canonical=p.jaw.mouth+local/p.scale;
+                    return (CyclopseCabinetFaceImport.Sculpt(canonical,p.jaw)-p.jaw.mouth)*p.scale;
+                }
                 var local=posed.Select(Local).ToArray();var opened=local.Select(v=>World(Sculpt(v))).ToArray();
                 var data=AssetDatabase.LoadAssetAtPath<CabinetFaceData>(Folder+"/Face.asset");
                 if(!data){data=ScriptableObject.CreateInstance<CabinetFaceData>();AssetDatabase.CreateAsset(data,Folder+"/Face.asset");}
@@ -72,11 +83,10 @@ namespace HappyToy.V2.Editor
                     var matrix=Matrix4x4.zero;
                     for(int j=0;j<counts[i];j++)
                     {var influence=weights[cursor++];var m=matrices[influence.boneIndex];for(int e=0;e<16;e++)matrix[e]+=m[e]*influence.weight;}
-                    data.bindDeltas[i]=matrix.inverse.MultiplyVector(opened[i]-posed[i]);var d=local[i]-p.mouth;
+                    data.bindDeltas[i]=matrix.inverse.MultiplyVector(opened[i]-posed[i]);var d=local[i];
                     data.mouthUV[i]=new Vector3(d.x/p.coverWidth,d.y/(d.y>0?p.coverTop:p.coverBottom),
                         -Mathf.SmoothStep(0,1,Mathf.InverseLerp(p.clipStart,p.clipEnd,local[i].z)));
                 }
-                var head=skin.bones.Single(t=>t.name=="mixamorig:Head");var centre=World(p.mouth);
                 data.headBone=head.name;data.localPosition=head.InverseTransformPoint(centre);data.localRotation=Quaternion.Inverse(head.rotation)*rotation;
                 data.localScale=new Vector3(1/head.lossyScale.x,1/head.lossyScale.y,1/head.lossyScale.z);
                 data.openingSeconds=p.openingSeconds;data.closingSeconds=p.closingSeconds;
@@ -93,27 +103,53 @@ namespace HappyToy.V2.Editor
                 File.WriteAllText(output+"/face.json",JsonUtility.ToJson(new Surface{neutral=posed,opened=opened,uv=skin.sharedMesh.uv,triangles=skin.sharedMesh.triangles,mouthCentre=centre},true));
                 File.WriteAllText(output+"/mouth.json",JsonUtility.ToJson(new Mouth{vertices=data.mouth.vertices.Select(v=>rotation*v).ToArray(),closed=data.mouthClosed.Select(v=>rotation*v).ToArray(),uv=data.mouth.uv,
                     parts=Enumerable.Range(0,data.mouth.subMeshCount).Select(i=>new Part{triangles=data.mouth.GetTriangles(i)}).ToArray()},true));
-                var near=local.Where(v=>Mathf.Abs(v.x)<.12f&&Mathf.Abs(v.y-p.mouth.y)<.06f).Select(v=>v.z).OrderBy(v=>v).ToArray();
-                Debug.Log("UNCAT_CABINET_FACE_IMPORT_PASS vertices="+posed.Length+" teeth="+(p.jaw.upperTeeth.Length+p.jaw.lowerTeeth.Length)+" mouthDepthSamples="+string.Join(",",near.Where((v,i)=>i%Math.Max(1,near.Length/8)==0).Select(v=>v.ToString("F3"))));
+                var near=local.Where(v=>Mathf.Abs(v.x)<.12f&&Mathf.Abs(v.y)<.06f).Select(v=>v.z).OrderBy(v=>v).ToArray();
+                Debug.Log("UNCAT_CABINET_FACE_IMPORT_PASS vertices="+posed.Length+" teeth="+(p.jaw.upperTeeth.Length+p.jaw.lowerTeeth.Length)+" mouthAxis="+right.ToString("F4")+" mouthNormal="+forward.ToString("F4")+" mouthDepthSamples="+string.Join(",",near.Where((v,i)=>i%Math.Max(1,near.Length/8)==0).Select(v=>v.ToString("F3"))));
 
                 void BakePatch()
                 {
-                    var samples=Enumerable.Range(0,local.Length).Where(i=>Mathf.Abs(local[i].x)<p.patchWidth+.05f&&local[i].y>p.mouth.y-p.patchBottom-.05f&&local[i].y<p.mouth.y+p.patchTop+.025f&&local[i].z>p.depthStart&&local[i].z<p.depthEnd).ToArray();
+                    var samples=Enumerable.Range(0,local.Length).Where(i=>Mathf.Abs(local[i].x)<p.patchWidth+.05f&&local[i].y>-p.patchBottom-.05f&&local[i].y<p.patchTop+.025f&&local[i].z>p.depthStart&&local[i].z<p.depthEnd).ToArray();
                     var vertices=new List<Vector3>();var target=new List<Vector3>();var uv=new List<Vector2>();var faceUV=new List<Vector2>();var mouthUV=new List<Vector3>();var triangles=new List<int>();
                     const int rings=32,segments=96;
+                    var originalTriangles=skin.sharedMesh.triangles;
+                    float SurfaceDepth(float x,float y)
+                    {
+                        float best=float.NegativeInfinity;
+                        for(int t=0;t<originalTriangles.Length;t+=3)
+                        {
+                            var a=local[originalTriangles[t]];var b=local[originalTriangles[t+1]]-a;var c=local[originalTriangles[t+2]]-a;
+                            float det=b.x*c.y-b.y*c.x;if(Mathf.Abs(det)<1e-9f)continue;
+                            float u=((x-a.x)*c.y-(y-a.y)*c.x)/det,v=(b.x*(y-a.y)-b.y*(x-a.x))/det;
+                            if(u<0||v<0||u+v>1)continue;
+                            float z=a.z+b.z*u+c.z*v;
+                            if(z>p.depthStart&&z<p.depthEnd)best=Mathf.Max(best,z);
+                        }
+                        // The outer seam is buried in the actual source head,
+                        // rather than ending as a detached flat facial plate.
+                        if(float.IsNegativeInfinity(best))best=local[samples.OrderBy(i=>new Vector2(local[i].x-x,local[i].y-y).sqrMagnitude).First()].z;
+                        return Mathf.Clamp(best-.012f,-.22f,.025f);
+                    }
+                    var boundary=Enumerable.Range(0,segments).Select(j=>{
+                        float a=j*Mathf.PI*2/segments;
+                        return SurfaceDepth(Mathf.Cos(a)*p.patchWidth,Mathf.Sin(a)*(Mathf.Sin(a)>0?p.patchTop:p.patchBottom));
+                    }).ToArray();
+                    // The generated source has overlapping whisker/tongue
+                    // sheets. Filter their high-frequency depth out of the
+                    // cheek/chin seam while keeping its head-sized curvature.
+                    for(int pass=0;pass<18;pass++)
+                        boundary=Enumerable.Range(0,segments).Select(j=>(boundary[(j+segments-1)%segments]+boundary[j]*2+boundary[(j+1)%segments])*.25f).ToArray();
                     for(int r=0;r<=rings;r++)for(int j=0;j<segments;j++)
                     {
                         float f=Mathf.Max(.001f,r/(float)rings),a=j*Mathf.PI*2/segments;
-                        float x=p.mouth.x+Mathf.Cos(a)*p.patchWidth*f,y=p.mouth.y+Mathf.Sin(a)*(Mathf.Sin(a)>0?p.patchTop:p.patchBottom)*f;
+                        float x=Mathf.Cos(a)*p.patchWidth*f,y=Mathf.Sin(a)*(Mathf.Sin(a)>0?p.patchTop:p.patchBottom)*f;
                         var near=samples.OrderBy(i=>new Vector2(local[i].x-x,local[i].y-y).sqrMagnitude).Take(8).ToArray();
-                        // Smooth the overlapping generated muzzle sheets into one
-                        // continuous shell at the measured original lip depth.
-                        float radius=new Vector2((x-p.mouth.x)/(p.jaw.radius.x*p.scale),(y-p.mouth.y)/(p.jaw.radius.y*p.scale)).magnitude;
-                        float edge=Mathf.SmoothStep(0,1,Mathf.InverseLerp(1.15f,2.5f,radius));
-                        var v=new Vector3(x,y,p.mouth.z+.012f-p.shellRecession*edge);
-                        vertices.Add(v-p.mouth);target.Add(Sculpt(v)-p.mouth);uv.Add(skin.sharedMesh.uv[near[0]]);
-                        faceUV.Add(new Vector2(.5f-x/projection.size,.5f+y/projection.size));
-                        mouthUV.Add(new Vector3((x-p.mouth.x)/(p.jaw.radius.x*p.scale),(y-p.mouth.y)/(p.jaw.radius.y*p.scale),1));
+                        float radius=new Vector2(x/(p.jaw.radius.x*p.scale),y/(p.jaw.radius.y*p.scale)).magnitude;
+                        float edge=Mathf.SmoothStep(0,1,Mathf.InverseLerp(1.1f,radius/f,radius));
+                        var v=new Vector3(x,y,Mathf.Lerp(.012f,boundary[j],edge));
+                        vertices.Add(v);target.Add(Sculpt(v));uv.Add(skin.sharedMesh.uv[near[0]]);
+                        var photo=World(v)-projection.centre;
+                        faceUV.Add(new Vector2(.5f-Vector3.Dot(photo,photoRight)/projection.size,.5f+photo.y/projection.size));
+                        mouthUV.Add(new Vector3(x/(p.jaw.radius.x*p.scale),y/(p.jaw.radius.y*p.scale),1));
                     }
                     for(int r=0;r<rings;r++)for(int j=0;j<segments;j++)
                     {int a=r*segments+j,b=r*segments+(j+1)%segments,c=a+segments,d=b+segments;triangles.AddRange(new[]{a,c,b,b,c,d});}

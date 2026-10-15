@@ -9,9 +9,30 @@ The existing webapp-generated creature, rig, clips and editable full-body source
 remain in `../CreatureStudio/Uncat/`. No replacement base model is generated.
 
 `Assets/Editor/UncatCabinetFaceImport` evaluates Uncat's actual patrol-zero skin
-in the face frame recorded by `../ChaseFaces/Uncat/projection.json`, then bakes
-bind-space jaw deltas and a smooth lower-muzzle finishing surface. The original
-two eyes remain outside that surface/clip region and retain MonsterRedEyes.
+using two measured original lip corners in `gape-profile.json` and the head
+bone's up direction. The resulting frame contains the actual lip-line roll,
+left/right depth difference and head pitch; it is separate from the horizontal
+photo projection in `../ChaseFaces/Uncat/projection.json`. The mouth centre is
+at measured muzzle depth rather than floating in front of it. Skin UV projection
+stays in its original frame while jaw, teeth, clip footprint and lower-face
+sculpt all use the anatomical frame. Bind-space deltas follow the original skin.
+The cheek/chin seam samples the source triangles at its outer contour; bounded,
+circularly filtered depths remove overlapping whisker-sheet spikes and bury
+the edge in the head. The aperture retains its lip/gum depth. Original oral
+surfaces are hidden through the full old tongue extent while rear head surfaces
+remain present. This corrects the 2026-10-15 mismatched opening angle.
+
+`lipCorners` are in the original photo frame (metres): viewer-left
+image (u=.30, v=.65) maps to (.17118, -.12839, .04600), and viewer-right
+(u=.70, v=.73) maps to (-.17118, -.19686, .14430). Depth is the foremost
+intersection with the actual patrol-zero source triangles. U/V here use the
+image's top-left origin. The fixed photo mapping is retained for every surface
+point after anatomical-frame conversion; rotating the texture with the jaw
+frame would reintroduce the mismatch. Both new meshes stay parented to the
+original head bone, including the sampled patrol/chase review poses.
+
+The original two eyes remain outside that surface/clip region and retain
+MonsterRedEyes.
 The shared deterministic mouth topology/sculpt is supplied by
 `CyclopseCabinetFaceImport`, with Uncat-specific scale, depth, tooth recipes and
 longer canine pairs in `gape-profile.json`. It creates 22 modeled teeth with
@@ -44,7 +65,8 @@ Reproduce with Unity 6000.6.0f1, Blender 4.0.2 and Python 3.11/Pillow 10.4:
    -quiet-diagnostics -logFile <new log>`. It ensures the optional Uncat resource,
    exports editable pose/mesh data under ignored `Builds/UncatCabinetFace/authoring`,
    and silently renders the actual owned runtime skin/mouth at neutral, chase,
-   open/angled/isolated stages and 60 transition frames under `.../review`.
+   front/angled/both-side/isolated and patrol/chase head-pose stages, plus 60
+   transition frames under `.../review`.
    The tool resets the single-frame Editor skin cache for every pose. It opens
    no gameplay scene/player; these images are asset reviews, not playthroughs.
 2. From HappyToyV2, run Blender with `--background --factory-startup

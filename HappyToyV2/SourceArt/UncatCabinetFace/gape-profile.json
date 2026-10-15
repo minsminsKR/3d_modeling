@@ -2,19 +2,19 @@
   "mouth": {
     "x": 0,
     "y": -0.18,
-    "z": 0.23
+    "z": 0.125
   },
   "scale": 0.75,
-  "patchWidth": 0.32,
-  "patchTop": 0.14,
-  "patchBottom": 0.28,
+  "patchWidth": 0.34,
+  "patchTop": 0.2,
+  "patchBottom": 0.34,
   "coverWidth": 0.28,
   "coverTop": 0.125,
-  "coverBottom": 0.36,
-  "clipStart": -0.7,
-  "clipEnd": -0.45,
-  "depthStart": -0.26,
-  "depthEnd": 0.33,
+  "coverBottom": 0.5,
+  "clipStart": -0.3,
+  "clipEnd": -0.25,
+  "depthStart": -0.5,
+  "depthEnd": 0.22,
   "openingSeconds": 0.6,
   "closingSeconds": 0.7,
   "jaw": {
@@ -274,5 +274,16 @@
       }
     ]
   },
-  "shellRecession": 0.065
+  "lipCorners": [
+    {
+      "x": 0.17118,
+      "y": -0.12839,
+      "z": 0.046
+    },
+    {
+      "x": -0.17118,
+      "y": -0.19686,
+      "z": 0.1443
+    }
+  ]
 }

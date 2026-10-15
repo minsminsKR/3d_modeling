@@ -63,6 +63,8 @@ namespace HappyToy.V2.Editor
                 var lip=root.GetComponentsInChildren<MeshRenderer>().Single(r=>r.name=="Owned cabinet resurfaced lips and cheeks");
                 lip.enabled=false;Capture("gape-mouth-source");lip.enabled=true;
                 camera.transform.position=centre+forward*2+right*.85f+Vector3.up*.04f;camera.transform.LookAt(centre);Capture("gape-angle");
+                camera.transform.position=centre+forward*.9f+right*1.7f;camera.transform.LookAt(centre);Capture("gape-side-right");
+                camera.transform.position=centre+forward*.9f-right*1.7f;camera.transform.LookAt(centre);Capture("gape-side-left");
                 camera.transform.position=centre+forward*2;camera.transform.LookAt(centre);
                 for(int frame=0;frame<60;frame++)
                 {
@@ -71,7 +73,16 @@ namespace HappyToy.V2.Editor
                     float gape=t<.7f?0:t<1.6f?Mathf.SmoothStep(0,1,(t-.7f)/.9f):t<2.8f?1:1-Mathf.SmoothStep(0,1,(t-2.8f)/1.1f);
                     Pose(chase,gape);Capture($"frame-{frame:000}");
                 }
-                File.WriteAllText(output+"/review.json","{\"scope\":\"Actual runtime owned mesh, head-parented hinged jaw and 22 individually authored irregular teeth/gums/cavity, lit front and oblique asset review; no gameplay scene/player launch\",\"frames\":60}");
+                var head=root.GetComponentsInChildren<Transform>().Single(t=>t.name=="mixamorig:Head");
+                var trackedCentre=head.InverseTransformPoint(centre);
+                foreach(string clipName in new[]{"patrol","chase"})
+                {
+                    var clip=Resources.Load<AnimationClip>("EnemyStudio/Uncat/"+clipName);
+                    clip.SampleAnimation(root,clip.length*.35f);Pose(1,1);
+                    var tracked=head.TransformPoint(trackedCentre);camera.transform.position=tracked+forward*2+right*.5f;camera.transform.LookAt(tracked);
+                    Capture("gape-pose-"+clipName);
+                }
+                File.WriteAllText(output+"/review.json","{\"scope\":\"Actual runtime owned mesh, head-parented hinged jaw and 22 individually authored irregular teeth/gums/cavity, lip-landmark-aligned frame, lit front/oblique/both sides and patrol/chase head-pose asset review; no gameplay scene/player launch\",\"frames\":60}");
                 Debug.Log("UNCAT_CABINET_FACE_PREVIEW_PASS "+output);
             }
             finally{target.Release();UnityEngine.Object.DestroyImmediate(target);UnityEngine.Object.DestroyImmediate(image);UnityEngine.Object.DestroyImmediate(root);}
