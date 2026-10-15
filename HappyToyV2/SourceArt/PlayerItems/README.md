@@ -34,3 +34,19 @@ It uses the same Blender version and writes `Assets/Resources/Hud/Items`.
 These are project-generated surfaces and image inputs, rather than downloaded
 third-party prop models. The existing photographic candle-flame resource used by
 the talisman retains its existing project provenance and attribution.
+
+For silent action previews, use the actual runtime hand-pose code in the pinned
+Editor, then assemble its PNG frames with **Pillow 10.2.0** (already pinned in
+`Tools/requirements-authoring.txt`). From the repository root:
+
+```powershell
+unity run HappyToyV2 --editor-version 6000.6.0f1 --timeout 600 -- -force-d3d11 -executeMethod HappyToy.V2.Editor.PlayerHandsPreview.RenderActions -quiet-diagnostics
+python HappyToyV2/Tools/quality/render_hand_action_gifs.py game/verification/ritual-items/hand-action-gifs
+```
+
+The five clips sample the existing hand poses at 25 fps and play at 1x speed;
+the talisman includes its complete ten-second burn. These are isolated Editor
+hand-layer renders, not native gameplay recordings. The GIF assembler crops
+unused transparent space and adds labels with the project's Korean font. Its
+duration checks retain the renderer's time base. Frames, GIFs and manifests are
+optional review outputs outside required source assets.
