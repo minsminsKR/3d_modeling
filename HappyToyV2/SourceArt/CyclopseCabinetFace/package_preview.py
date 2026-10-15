@@ -10,10 +10,10 @@ atlas=Image.new('RGB',(768*3,768))
 for i,f in enumerate((frames[0],frames[18],frames[33])):atlas.paste(f,(i*768,0))
 palette=atlas.quantize(colors=256,method=Image.Quantize.MEDIANCUT)
 converted=[f.quantize(palette=palette,dither=Image.Dither.NONE) for f in frames]
-converted[0].save(folder/'cyclopse-cabinet-gape.gif',save_all=True,append_images=converted[1:],duration=67,loop=0,disposal=2,optimize=False)
+converted[0].save(folder/'cyclopse-cabinet-jaw-v2.gif',save_all=True,append_images=converted[1:],duration=67,loop=0,disposal=2,optimize=False)
 comparison=Image.new('RGB',(1536,768))
-comparison.paste(Image.open(folder/'chase.png'),(0,0));comparison.paste(Image.open(folder/'gape.png'),(768,0));comparison.save(folder/'chase-to-cabinet.png')
+comparison.paste(Image.open(folder/'chase.png'),(0,0));comparison.paste(Image.open(folder/'gape.png'),(768,0));comparison.save(folder/'chase-to-cabinet-v2.png')
 difference=sum(ImageStat.Stat(ImageChops.difference(frames[8],frames[33])).mean)
 assert difference>3
 report=dict(status='PASS',frames=60,seconds=4.02,meanChannelChange=difference,scope='Actual runtime lit asset review only; no player launch')
-(folder/'packaging.json').write_text(json.dumps(report,indent=2),encoding='utf-8');print(json.dumps(report,indent=2))
+(folder/'packaging-v2.json').write_text(json.dumps(report,indent=2),encoding='utf-8');print(json.dumps(report,indent=2))

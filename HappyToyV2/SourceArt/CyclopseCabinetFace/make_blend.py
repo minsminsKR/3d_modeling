@@ -33,6 +33,11 @@ names=['Ivory enamel','Stained enamel','Gum rim','Recessed mouth cavity','Tongue
 colors=[(.65,.51,.29,1),(.42,.29,.13,1),(.15,.036,.04,1),(.009,.0018,.003,1),(.19,.045,.065,1)]
 for part,name,color in zip(mouth['parts'],names,colors):
     ob=obj(name,[Vector(vec(p))+centre for p in mouth['vertices']],part['triangles'])
+    ob.shape_key_add(name='Basis')
+    for point,p in zip(ob.data.shape_keys.key_blocks['Basis'].data,mouth['closed']):point.co=Vector(vec(p))+centre
+    opened=ob.shape_key_add(name='Hinged cabinet gape')
+    for point,p in zip(opened.data,mouth['vertices']):point.co=Vector(vec(p))+centre
+    opened.value=1
     layer=ob.data.uv_layers.new(name='Enamel detail UV')
     for poly in ob.data.polygons:
         for li in poly.loop_indices:

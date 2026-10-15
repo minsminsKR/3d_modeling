@@ -31,16 +31,21 @@ namespace HappyToy.V2.Editor
             var tick=cabinet.GetType().GetMethod("Tick");var reset=cabinet.GetType().GetMethod("Reset");
             var apply=typeof(EnemyChaseFace).GetMethod("Apply",flags);
             void Pose(float chase,float gape)
-            { reset.Invoke(cabinet,null);tick.Invoke(cabinet,new object[]{true,gape*.6f});apply.Invoke(face,new object[]{chase}); }
+            {
+                reset.Invoke(cabinet,null);tick.Invoke(cabinet,new object[]{true,gape*.6f});apply.Invoke(face,new object[]{chase});
+                // ExecuteMethod renders many poses in one Editor frame. Reset
+                // the skin cache so each capture uses THIS pose's vertices.
+                skin.enabled=false;skin.enabled=true;
+            }
             RenderSettings.fog=false;RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=new Color(.18f,.19f,.22f);
             var key=new GameObject("Cabinet face key light").AddComponent<Light>();key.type=LightType.Directional;
             key.intensity=1.25f;key.color=new Color(1,.88f,.75f);key.transform.rotation=Quaternion.Euler(25,155,0);key.shadows=LightShadows.Soft;
             var fill=new GameObject("Cabinet face cold fill").AddComponent<Light>();fill.type=LightType.Directional;
             fill.intensity=.45f;fill.color=new Color(.53f,.65f,1);fill.transform.rotation=Quaternion.Euler(10,-130,0);
             var camera=new GameObject("Actual cabinet face review").AddComponent<Camera>();camera.enabled=false;
-            camera.orthographic=true;camera.orthographicSize=.52f;camera.aspect=1;camera.nearClipPlane=.01f;camera.farClipPlane=10;
+            camera.orthographic=true;camera.orthographicSize=.64f;camera.aspect=1;camera.nearClipPlane=.01f;camera.farClipPlane=10;
             camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.012f,.015f,.022f);
-            var centre=new Vector3(0,1.58f,.69f);camera.transform.position=centre+new Vector3(0,0,2);camera.transform.LookAt(centre);
+            var centre=new Vector3(0,1.47f,.69f);camera.transform.position=centre+new Vector3(0,0,2);camera.transform.LookAt(centre);
             camera.GetUniversalAdditionalCameraData().renderPostProcessing=false;
             var target=new RenderTexture(768,768,24);target.Create();var image=new Texture2D(768,768,TextureFormat.RGB24,false);
             void Capture(string name)
@@ -62,7 +67,7 @@ namespace HappyToy.V2.Editor
                     float gape=t<.7f?0:t<1.6f?Mathf.SmoothStep(0,1,(t-.7f)/.9f):t<2.8f?1:1-Mathf.SmoothStep(0,1,(t-2.8f)/1.1f);
                     Pose(chase,gape);Capture($"frame-{frame:000}");
                 }
-                File.WriteAllText(output+"/review.json","{\"scope\":\"Actual runtime owned mesh, head-parented 26 modeled teeth/gums/cavity, lit front and oblique asset review; no gameplay scene/player launch\",\"frames\":60}");
+                File.WriteAllText(output+"/review.json","{\"scope\":\"Actual runtime owned mesh, head-parented hinged jaw and 22 individually authored irregular teeth/gums/cavity, lit front and oblique asset review; no gameplay scene/player launch\",\"frames\":60}");
                 Debug.Log("CYCLOPSE_CABINET_FACE_PREVIEW_PASS "+output);
             }
             finally{target.Release();UnityEngine.Object.DestroyImmediate(target);UnityEngine.Object.DestroyImmediate(image);UnityEngine.Object.DestroyImmediate(root);}

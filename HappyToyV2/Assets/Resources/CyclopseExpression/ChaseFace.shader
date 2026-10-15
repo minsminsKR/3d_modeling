@@ -36,9 +36,10 @@ Shader "HappyToy/CyclopseChaseFace"
             // and all other creatures retain the default zero-weight shader.
             if (_CabinetMouthWeight > .025 && abs(mouth.z) > .5)
             {
-                if (mouth.z < 0) { clip(dot(mouth.xy,mouth.xy)-1); return; }
-                float aperture=lerp(.045,1,_CabinetMouthWeight);
-                clip(dot(float2(mouth.x,mouth.y/aperture),float2(mouth.x,mouth.y/aperture))-1);
+                // Aperture topology stays attached to the authored lips. The
+                // paired mesh poses supply the opening, including the dropped,
+                // tapered lower jaw, in all rendering passes.
+                clip(dot(mouth.xy,mouth.xy)-1);
             }
         }
         struct MouthAttributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float3 mouth:TEXCOORD2; };

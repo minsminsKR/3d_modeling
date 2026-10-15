@@ -5,14 +5,14 @@
     "z": 0.775
   },
   "radius": {
-    "x": 0.245,
-    "y": 0.112
+    "x": 0.224,
+    "y": 0.1
   },
-  "drop": 0.055,
-  "stretch": 0.95,
-  "widthStretch": 0.08,
-  "frontStart": 0.46,
-  "frontEnd": 0.66,
+  "drop": 0.325,
+  "stretch": 0,
+  "widthStretch": -0.015,
+  "frontStart": 0.25,
+  "frontEnd": 0.4,
   "eye": {
     "x": 0.0031167,
     "y": 1.7616551,
@@ -22,5 +22,236 @@
   "openingSeconds": 0.6,
   "closingSeconds": 0.7,
   "teethPerRow": 13,
-  "seed": 3015
+  "seed": 3015,
+  "upperHeightScale": 0.46,
+  "jawTaper": 0.2,
+  "jawSideShift": 0.018,
+  "jawCant": 0.028,
+  "jawRecede": 0.065,
+  "lowerJawAngle": 24,
+  "cornerDroop": 0.025,
+  "upperTeeth": [
+    {
+      "position": -0.91,
+      "length": 0.043,
+      "width": 0.01,
+      "lean": -24,
+      "twist": 13,
+      "depth": 0.007,
+      "pointed": true,
+      "broken": false
+    },
+    {
+      "position": -0.76,
+      "length": 0.087,
+      "width": 0.015,
+      "lean": 18,
+      "twist": -19,
+      "depth": -0.012,
+      "pointed": true,
+      "broken": false
+    },
+    {
+      "position": -0.6,
+      "length": 0.146,
+      "width": 0.016,
+      "lean": -11,
+      "twist": 22,
+      "depth": 0.014,
+      "pointed": true,
+      "broken": false
+    },
+    {
+      "position": -0.49,
+      "length": 0.039,
+      "width": 0.021,
+      "lean": 27,
+      "twist": -8,
+      "depth": -0.006,
+      "pointed": false,
+      "broken": true
+    },
+    {
+      "position": -0.25,
+      "length": 0.083,
+      "width": 0.024,
+      "lean": -9,
+      "twist": 18,
+      "depth": 0.008,
+      "pointed": false,
+      "broken": false
+    },
+    {
+      "position": -0.15,
+      "length": 0.047,
+      "width": 0.011,
+      "lean": -24,
+      "twist": -30,
+      "depth": -0.02,
+      "pointed": false,
+      "broken": true
+    },
+    {
+      "position": 0.01,
+      "length": 0.098,
+      "width": 0.022,
+      "lean": 15,
+      "twist": 9,
+      "depth": 0.013,
+      "pointed": false,
+      "broken": false
+    },
+    {
+      "position": 0.17,
+      "length": 0.062,
+      "width": 0.016,
+      "lean": -18,
+      "twist": -26,
+      "depth": -0.008,
+      "pointed": false,
+      "broken": true
+    },
+    {
+      "position": 0.42,
+      "length": 0.127,
+      "width": 0.019,
+      "lean": 21,
+      "twist": 16,
+      "depth": 0.018,
+      "pointed": true,
+      "broken": false
+    },
+    {
+      "position": 0.5,
+      "length": 0.031,
+      "width": 0.009,
+      "lean": -8,
+      "twist": -21,
+      "depth": -0.019,
+      "pointed": false,
+      "broken": true
+    },
+    {
+      "position": 0.73,
+      "length": 0.076,
+      "width": 0.014,
+      "lean": -27,
+      "twist": 31,
+      "depth": 0.011,
+      "pointed": true,
+      "broken": false
+    },
+    {
+      "position": 0.91,
+      "length": 0.051,
+      "width": 0.011,
+      "lean": 12,
+      "twist": -17,
+      "depth": -0.006,
+      "pointed": true,
+      "broken": false
+    }
+  ],
+  "lowerTeeth": [
+    {
+      "position": -0.88,
+      "length": 0.058,
+      "width": 0.013,
+      "lean": 22,
+      "twist": -11,
+      "depth": -0.008,
+      "pointed": true,
+      "broken": false
+    },
+    {
+      "position": -0.7,
+      "length": 0.106,
+      "width": 0.019,
+      "lean": -16,
+      "twist": 27,
+      "depth": 0.016,
+      "pointed": true,
+      "broken": false
+    },
+    {
+      "position": -0.55,
+      "length": 0.03,
+      "width": 0.011,
+      "lean": 29,
+      "twist": -25,
+      "depth": -0.018,
+      "pointed": false,
+      "broken": true
+    },
+    {
+      "position": -0.38,
+      "length": 0.081,
+      "width": 0.022,
+      "lean": -19,
+      "twist": 14,
+      "depth": 0.01,
+      "pointed": false,
+      "broken": false
+    },
+    {
+      "position": -0.1,
+      "length": 0.042,
+      "width": 0.014,
+      "lean": 14,
+      "twist": -31,
+      "depth": -0.012,
+      "pointed": false,
+      "broken": true
+    },
+    {
+      "position": 0.08,
+      "length": 0.114,
+      "width": 0.017,
+      "lean": -22,
+      "twist": 20,
+      "depth": 0.014,
+      "pointed": true,
+      "broken": false
+    },
+    {
+      "position": 0.25,
+      "length": 0.056,
+      "width": 0.021,
+      "lean": 26,
+      "twist": -12,
+      "depth": -0.009,
+      "pointed": false,
+      "broken": false
+    },
+    {
+      "position": 0.36,
+      "length": 0.024,
+      "width": 0.01,
+      "lean": -13,
+      "twist": 29,
+      "depth": -0.02,
+      "pointed": false,
+      "broken": true
+    },
+    {
+      "position": 0.58,
+      "length": 0.092,
+      "width": 0.019,
+      "lean": 17,
+      "twist": -24,
+      "depth": 0.009,
+      "pointed": true,
+      "broken": false
+    },
+    {
+      "position": 0.83,
+      "length": 0.039,
+      "width": 0.012,
+      "lean": -28,
+      "twist": 11,
+      "depth": -0.004,
+      "pointed": false,
+      "broken": true
+    }
+  ]
 }

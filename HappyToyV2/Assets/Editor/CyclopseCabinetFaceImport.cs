@@ -19,6 +19,13 @@ namespace HappyToy.V2.Editor
             public Vector2 radius;
             public float drop, stretch, widthStretch, frontStart, frontEnd, eyeWiden, openingSeconds, closingSeconds;
             public int teethPerRow, seed;
+            public float upperHeightScale, jawTaper, jawSideShift, jawCant, jawRecede, lowerJawAngle, cornerDroop;
+            public Tooth[] upperTeeth, lowerTeeth;
+        }
+        [Serializable] public sealed class Tooth
+        {
+            public float position, length, width, lean, twist, depth;
+            public bool pointed, broken;
         }
         public static string InputHash()
         {
@@ -35,17 +42,24 @@ namespace HappyToy.V2.Editor
         public static Vector3 Sculpt(Vector3 grin, Profile p)
         {
             var d = grin - p.mouth;
-            float r = new Vector2(d.x / p.radius.x, d.y / p.radius.y).magnitude;
             float front = Smooth(p.frontStart, p.frontEnd, grin.z);
-            float amount = (1 - Smooth(1.05f, 2.35f, r)) * front;
-            var delta = new Vector3(d.x * p.widthStretch, -p.drop + d.y * p.stretch, .02f * (1 - Mathf.Min(1, Mathf.Abs(d.x) / p.radius.x)));
-            // An uneven cheek pull and widened lower lid expose the stare while
-            // leaving the sole eyeball's UV/emission ownership in place.
-            delta.y += .012f * d.x / p.radius.x;
-            var e = grin - p.eye;
-            float lid = Mathf.Exp(-e.x * e.x / .018f - e.y * e.y / .004f) * front;
-            return grin + delta * amount + new Vector3(e.x * .1f, Mathf.Sign(e.y) * p.eyeWiden, .008f) * lid;
+            float lateral = 1-Smooth(.28f,.45f,Mathf.Abs(d.x));
+            float neck = 1-Smooth(.44f,.64f,-d.y);
+            float upper = 1-Smooth(.11f,.17f,d.y);
+            float mask = front*lateral*(d.y<0?neck:upper);
+            // Hinge the lower face downward. Keep the upper arch shallow;
+            // lower teeth and chin travel much farther than the upper jaw.
+            float jaw = Smooth(0,.82f,-d.y/p.radius.y);
+            float side = d.x/p.radius.x;
+            float corner = Mathf.Pow(Mathf.Clamp01(Mathf.Abs(side)),2) * (1-Smooth(.7f,1.4f,Mathf.Abs(d.y/p.radius.y)));
+            var delta = new Vector3(d.x*p.widthStretch-d.x*p.jawTaper*jaw+p.jawSideShift*jaw,
+                -p.drop*jaw + Mathf.Max(0,d.y)*(p.upperHeightScale-1) + p.jawCant*side*jaw - p.cornerDroop*corner*(side<0?1:.25f),
+                -p.jawRecede*jaw);
+            var e = grin-p.eye;
+            float lid = Mathf.Exp(-e.x*e.x/.018f-e.y*e.y/.004f)*front;
+            return grin+delta*mask+new Vector3(e.x*.1f,Mathf.Sign(e.y)*p.eyeWiden,.008f)*lid;
         }
+
         public static CabinetFaceData Bake(SkinnedMeshRenderer skin, Vector3[] posed, CyclopseExpressionPreview.Profile grinProfile)
         {
             Directory.CreateDirectory(Folder);
@@ -75,11 +89,11 @@ namespace HappyToy.V2.Editor
                 var grin = CyclopseExpressionPreview.Sculpt(posed[i], grinProfile, 1);
                 opened[i] = Sculpt(grin, p);
                 data.bindDeltas[i] = matrix.inverse.MultiplyVector(opened[i] - grin);
-                data.mouthUV[i] = new Vector3((grin.x - p.mouth.x) / .36f, (grin.y - p.mouth.y) / (grin.y > p.mouth.y ? .175f : .35f),
-                    -Smooth(p.frontStart, p.frontEnd, grin.z));
+                data.mouthUV[i] = new Vector3((grin.x - p.mouth.x) / .33f, (grin.y - p.mouth.y) / (grin.y > p.mouth.y ? .13f : .33f),
+                    -Smooth(.25f, .40f, grin.z));
             }
             var head = skin.bones.Single(t => t.name == "mixamorig:Head");
-            var centre = p.mouth - Vector3.up * p.drop;
+            var centre = p.mouth;
             data.headBone = head.name; data.localPosition = head.InverseTransformPoint(centre);
             data.localRotation = Quaternion.Inverse(head.rotation);
             data.localScale = new Vector3(1 / head.lossyScale.x, 1 / head.lossyScale.y, 1 / head.lossyScale.z);
@@ -90,7 +104,8 @@ namespace HappyToy.V2.Editor
                 Material("Gums", new Color(.24f,.055f,.045f), .58f),
                 Material("Cavity", new Color(.009f,.0018f,.003f), .12f),
                 Material("Tongue", new Color(.19f,.045f,.065f), .72f) };
-            var built = BuildMouth(p);
+            var built = BuildMouth(p, out var mouthClosed);
+            data.mouthClosed = mouthClosed;
             var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(Folder + "/Mouth.asset");
             if (!mesh) { mesh = new Mesh(); AssetDatabase.CreateAsset(mesh, Folder + "/Mouth.asset"); }
             EditorUtility.CopySerialized(built, mesh); UnityEngine.Object.DestroyImmediate(built);
@@ -99,8 +114,8 @@ namespace HappyToy.V2.Editor
             BakePatch(skin, posed, grinProfile, p, centre, data);
             data.sourceHash = InputHash();
             EditorUtility.SetDirty(mesh); EditorUtility.SetDirty(data); AssetDatabase.SaveAssets();
-            ExportAuthoring(skin, posed, opened, mesh, centre, data.mouthUV);
-            Debug.Log("CYCLOPSE_CABINET_FACE_IMPORT_PASS teeth=" + p.teethPerRow * 2 + " vertices=" + posed.Length);
+            ExportAuthoring(skin, posed, opened, mesh, centre, data.mouthUV, mouthClosed);
+            Debug.Log("CYCLOPSE_CABINET_FACE_IMPORT_PASS teeth=" + (p.upperTeeth.Length+p.lowerTeeth.Length) + " vertices=" + posed.Length);
             return data;
         }
 
@@ -150,10 +165,10 @@ namespace HappyToy.V2.Editor
             m.SetColor("_BaseColor", colour); m.SetFloat("_Smoothness", smoothness); m.SetFloat("_Cull", 0);
             EditorUtility.SetDirty(m); return m;
         }
-        public static Mesh BuildMouth(Profile p)
+        public static Mesh BuildMouth(Profile p, out Vector3[] closed)
         {
-            var v = new List<Vector3>(); var toothUV = new Dictionary<int,Vector2>(); var indices = Enumerable.Range(0, 5).Select(_ => new List<int>()).ToArray();
-            float width = p.radius.x * (1 + p.widthStretch), height = p.radius.y * (1 + p.stretch);
+            var v = new List<Vector3>(); var toothOpened = new Dictionary<int,Vector3>(); var toothUV = new Dictionary<int,Vector2>(); var indices = Enumerable.Range(0, 5).Select(_ => new List<int>()).ToArray();
+            float width = p.radius.x, height = p.radius.y;
             const int segments = 64;
             // Concave bowl, recessed 24cm, with a closed back. Its front edge
             // sits beneath the lip ring; the skin's opening is clipped in every
@@ -189,30 +204,36 @@ namespace HappyToy.V2.Editor
                 indices[2].AddRange(new[] {a,c,b,b,c,d});
             }
             var random = new System.Random(p.seed);
-            for (int row = 0; row < 2; row++) for (int tooth = 0; tooth < p.teethPerRow; tooth++)
+            for (int row=0;row<2;row++)
             {
-                float f = tooth / (p.teethPerRow - 1f), a = Mathf.Lerp(.13f, Mathf.PI-.13f, f);
-                float sign = row == 0 ? 1 : -1;
-                var start = new Vector3(Mathf.Cos(a)*width*.94f, sign*Mathf.Sin(a)*height*.93f, -.002f);
-                bool canine = tooth == 3 || tooth == p.teethPerRow-4;
-                float length = (canine ? .104f : .058f + (float)random.NextDouble()*.025f) * (row==0?1:.85f);
-                var end = start + new Vector3(-start.x*.16f+(float)(random.NextDouble()-.5)*.014f,-sign*length,.016f);
-                int first = v.Count; const int rings = 6, radial = 10;
-                for (int r = 0; r < rings; r++) for (int j = 0; j < radial; j++)
+                var teeth=row==0?p.upperTeeth:p.lowerTeeth;
+                for(int tooth=0;tooth<teeth.Length;tooth++)
                 {
-                    float t = r / (rings-1f), b = j * Mathf.PI*2/radial;
-                    float bulge = (canine ? Mathf.Pow(1-t,.64f) : Mathf.Lerp(1,.32f,t)) * (1+.18f*Mathf.Sin(t*Mathf.PI));
-                    float thick = canine ? .014f : .0175f;
-                    var c = Vector3.Lerp(start,end,t); c.z += Mathf.Sin(t*Mathf.PI)*.009f;
-                    toothUV[v.Count]=new Vector2(.49f+Mathf.Cos(b)*.018f+(tooth%3-1)*.008f,.34f-t*.12f);
-                    v.Add(c+new Vector3(Mathf.Cos(b)*thick*bulge,t*t*.004f*Mathf.Sin(b*3+tooth),Mathf.Sin(b)*.012f*bulge));
-                }
-                int material = tooth%4==1?1:0;
-                for (int r = 0; r < rings-1; r++) for (int j = 0; j < radial; j++)
-                {
-                    int a0=first+r*radial+j,b=first+r*radial+(j+1)%radial;
-                    if(row==0) indices[material].AddRange(new[] {a0,b,a0+radial,b,b+radial,a0+radial});
-                    else indices[material].AddRange(new[] {a0,a0+radial,b,b,a0+radial,b+radial});
+                    var spec=teeth[tooth];float sign=row==0?1:-1;
+                    var start=new Vector3(spec.position*width*.94f,sign*Mathf.Sqrt(1-spec.position*spec.position)*height*.94f,.004f+spec.depth);
+                    var orientation=Quaternion.Euler(0,spec.twist,spec.lean);
+                    var targetRoot=Sculpt(p.mouth+start,p)-p.mouth;
+                    var jawRotation=row==0?Quaternion.identity:Quaternion.Euler(p.lowerJawAngle,0,-5);
+                    int first=v.Count;const int rings=7,radial=10;
+                    float bend=(float)(random.NextDouble()-.5)*.022f;
+                    for(int r=0;r<rings;r++)for(int j=0;j<radial;j++)
+                    {
+                        float t=r/(rings-1f),b=j*Mathf.PI*2/radial;
+                        float bulge=(spec.pointed?Mathf.Pow(1-t,.7f):Mathf.Lerp(1,spec.broken?.64f:.4f,t))*(1+.14f*Mathf.Sin(t*Mathf.PI));
+                        float chip=spec.broken?Mathf.Sin(b*3+tooth)*.008f*t*t:0;
+                        var local=new Vector3(Mathf.Cos(b)*spec.width*bulge+bend*t*t,-sign*(spec.length*t+chip),Mathf.Sin(b)*spec.width*.62f*bulge+Mathf.Sin(t*Mathf.PI)*.01f);
+                        var offset=orientation*local;
+                        toothOpened[v.Count]=targetRoot+jawRotation*offset;
+                        toothUV[v.Count]=new Vector2(.49f+Mathf.Cos(b)*.018f+(tooth%3-1)*.008f,.34f-t*.12f);
+                        v.Add(start+offset);
+                    }
+                    int material=(tooth+row*2)%4==1?1:0;
+                    for(int r=0;r<rings-1;r++)for(int j=0;j<radial;j++)
+                    {
+                        int a=first+r*radial+j,b=first+r*radial+(j+1)%radial;
+                        if(row==0)indices[material].AddRange(new[]{a,b,a+radial,b,b+radial,a+radial});
+                        else indices[material].AddRange(new[]{a,a+radial,b,b,a+radial,b+radial});
+                    }
                 }
             }
             // Small raised tongue, visible only behind the lower teeth.
@@ -220,27 +241,29 @@ namespace HappyToy.V2.Editor
             for(int y=0;y<=lat;y++) for(int x=0;x<=lon;x++)
             {
                 float a=x*Mathf.PI*2/lon,b=y*Mathf.PI/lat;
-                v.Add(new Vector3(Mathf.Cos(a)*Mathf.Sin(b)*.084f,-height*.53f+Mathf.Cos(b)*.022f,-.08f+Mathf.Sin(a)*Mathf.Sin(b)*.07f));
+                v.Add(new Vector3(Mathf.Cos(a)*Mathf.Sin(b)*.084f,-height*.76f+Mathf.Cos(b)*.022f,-.08f+Mathf.Sin(a)*Mathf.Sin(b)*.07f));
             }
             for(int y=0;y<lat;y++)for(int x=0;x<lon;x++)
             {
                 int a=tongue+y*(lon+1)+x,b=a+1,c=a+lon+1;
                 indices[4].AddRange(new[]{a,b,c,b,c+1,c});
             }
-            var mesh = new Mesh { name = "Cyclopse cabinet anatomical mouth 26 crooked teeth", subMeshCount=5 };
+            closed=v.ToArray();
+            for(int i=0;i<v.Count;i++)v[i]=toothOpened.TryGetValue(i,out var target)?target:Sculpt(p.mouth+v[i],p)-p.mouth;
+            var mesh = new Mesh { name = "Cyclopse hinged cabinet jaw and 22 irregular teeth", subMeshCount=5 };
             mesh.SetVertices(v); mesh.uv=Enumerable.Range(0,v.Count).Select(i=>toothUV.TryGetValue(i,out var uv)?uv:Vector2.zero).ToArray(); for(int i=0;i<5;i++)mesh.SetTriangles(indices[i],i);
             mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
         }
-        static void ExportAuthoring(SkinnedMeshRenderer skin, Vector3[] neutral, Vector3[] opened, Mesh mouth, Vector3 centre, Vector3[] mouthUV)
+        static void ExportAuthoring(SkinnedMeshRenderer skin, Vector3[] neutral, Vector3[] opened, Mesh mouth, Vector3 centre, Vector3[] mouthUV, Vector3[] closed)
         {
             string folder="Builds/CyclopseCabinetFace/authoring"; Directory.CreateDirectory(folder);
             File.WriteAllText(folder+"/face.json",JsonUtility.ToJson(new Authoring { neutral=neutral,opened=opened,uv=skin.sharedMesh.uv,
                 triangles=skin.sharedMesh.triangles,mouthUV=mouthUV,mouthCentre=centre },true));
-            File.WriteAllText(folder+"/mouth.json",JsonUtility.ToJson(new MouthAuthoring { vertices=mouth.vertices, uv=mouth.uv,
+            File.WriteAllText(folder+"/mouth.json",JsonUtility.ToJson(new MouthAuthoring { vertices=mouth.vertices, closed=closed, uv=mouth.uv,
                 parts=Enumerable.Range(0,mouth.subMeshCount).Select(i=>new Part { triangles=mouth.GetTriangles(i) }).ToArray() },true));
         }
         [Serializable] sealed class Authoring { public Vector3[] neutral,opened,mouthUV; public Vector2[] uv; public int[] triangles; public Vector3 mouthCentre; }
         [Serializable] sealed class Part { public int[] triangles; }
-        [Serializable] sealed class MouthAuthoring { public Vector3[] vertices; public Vector2[] uv; public Part[] parts; }
+        [Serializable] sealed class MouthAuthoring { public Vector3[] vertices,closed; public Vector2[] uv; public Part[] parts; }
     }
 }

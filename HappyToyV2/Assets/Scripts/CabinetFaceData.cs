@@ -9,7 +9,7 @@ namespace HappyToy.V2
         public Vector3[] mouthUV;
         public Texture2D lipTexture;
         public Mesh mouth, facePatch;
-        public Vector3[] patchDeltas;
+        public Vector3[] patchDeltas, mouthClosed;
         public Material[] materials;
         public string headBone, sourceHash;
         public Vector3 localPosition, localScale;

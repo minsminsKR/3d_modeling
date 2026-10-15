@@ -11,19 +11,29 @@ Only Cyclopse's expression resource has `cabinetFace` assigned. Ordinary chase,
 Uncat/Baby, detection probabilities, navigation, attack timing and saves retain
 their existing rules. The layer opens over 0.6 seconds during detected rush,
 closes over 0.7 seconds after escape, freezes in pause, stays open in defeat,
-and resets on disable. Every owned patch mesh/material/object is released.
+and resets on disable. The mouth now uses paired closed/open vertex poses instead of scaling the
+mouth vertically. Upper crowns retain their shape and position while the lower
+row follows the dropped and pitched jaw; broken tips, long crooked fangs and
+missing-tooth gaps remain different throughout opening. Mouth and lip vertices
+share the same sculpt and aperture, including depth/shadow passes. Every owned
+mouth/patch mesh, material and object is released.
 
 The original generated Cyclopse base/rig remains in
 `../CreatureStudio/Cyclopse/`, including its original webapp GLBs and editable
 Blender source. This work is local facial finishing of that existing base:
 
 - `gape-profile.json`: bind-space cheek/jaw/lid sculpt, mouth dimensions and
-  deterministic tooth construction settings. No replacement creature generator.
+  deterministic tooth construction settings. The 2026-10-15 revision drops
+  the lower jaw by 32.5cm, tapers/cants it, and keeps a shallow upper arch.
+  `upperTeeth`/`lowerTeeth` specify each of 22 crowns independently: position,
+  length, width, lean, twist, depth, pointed/broken tip. Gaps and clusters are
+  authored explicitly instead of using equally spaced angular rows.
+  No replacement creature generator.
 - `closed-lips-generated-original.png`: built-in image_gen edit used only on
   the lower-face patch. Removes painted teeth to prevent a second tooth row
   appearing while the modeled mouth opens. `generation-edit-target.png` is the
   exact input; `generation.json` preserves the exact prompt, settings and hashes.
-- Actual geometry: 26 irregular curved teeth, a continuous gum rim, a recessed
+- Actual geometry: 22 individually authored irregular curved teeth, a continuous gum rim, a recessed
   closed mouth bowl, and tongue. Enamel UVs reuse detailed pixels from the
   existing approved chase-face texture. Five URP Lit materials retain scene
   lighting/shadows. The lip patch uses the new generated skin texture.
@@ -34,7 +44,7 @@ Blender source. This work is local facial finishing of that existing base:
   original eye is outside the patch and retains MonsterRedEyes ownership.
 - `Cyclopse_CabinetFace_Editable.blend`: packed original-skin reference with
   neutral/gape shape key; editable lower-face patch with its own gape shape key;
-  separate enamel, gums, cavity and tongue geometry. The hidden full original
+  separate enamel, gums, cavity and tongue geometry with paired hinged-gape shape keys. The hidden full original
   body is a reference, not another runtime model. Authoring JSON uses Unity Y-up
   axes deliberately. `make_blend.py` reconstructs this file from the importer
   export. Canonical runtime construction is the profile plus the import script;

@@ -117291,5 +117291,5 @@ MonoBehaviour:
   cabinetFace: {fileID: 11400000, guid: ce3068b89e542b648ac439634dfc2bba, type: 2}
   mouthLiner: {fileID: 0}
   mouthLinerMaterial: {fileID: 0}
-  mouthLinerBone:
+  mouthLinerBone: 
   mouthLinerOffset: {x: 0, y: 0, z: 0}

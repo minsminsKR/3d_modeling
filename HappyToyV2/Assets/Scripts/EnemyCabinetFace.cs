@@ -10,7 +10,8 @@ namespace HappyToy.V2
     {
         readonly CabinetFaceData data;
         readonly GameObject mouth, patch;
-        readonly Mesh patchMesh;
+        readonly Mesh patchMesh, mouthMesh;
+        readonly Vector3[] mouthOpened, mouthAnimated;
         readonly Vector3[] patchNeutral, patchAnimated;
         readonly Material patchMaterial;
         readonly Material[] faceMaterials;
@@ -18,7 +19,7 @@ namespace HappyToy.V2
         public EnemyCabinetFace(CabinetFaceData source, SkinnedMeshRenderer skin, Mesh owned, Material[] materials)
         {
             data = source; faceMaterials = materials;
-            if (data.bindDeltas.Length != owned.vertexCount || data.mouthUV.Length != owned.vertexCount || !data.mouth || !data.facePatch || data.patchDeltas.Length != data.facePatch.vertexCount || data.openingSeconds <= 0 || data.closingSeconds <= 0)
+            if (data.bindDeltas.Length != owned.vertexCount || data.mouthUV.Length != owned.vertexCount || !data.mouth || data.mouthClosed.Length != data.mouth.vertexCount || !data.facePatch || data.patchDeltas.Length != data.facePatch.vertexCount || data.openingSeconds <= 0 || data.closingSeconds <= 0)
                 throw new InvalidOperationException("Cabinet face does not match the authored skin");
             owned.SetUVs(2, data.mouthUV.ToList());
             var bone = skin.bones.Single(t => t.name == data.headBone);
@@ -26,7 +27,10 @@ namespace HappyToy.V2
             mouth.transform.SetParent(bone, false);
             mouth.transform.localPosition = data.localPosition;
             mouth.transform.localRotation = data.localRotation;
-            mouth.AddComponent<MeshFilter>().sharedMesh = data.mouth;
+            mouth.transform.localScale = data.localScale;
+            mouthMesh = UnityEngine.Object.Instantiate(data.mouth); mouthMesh.MarkDynamic();
+            mouthOpened = mouthMesh.vertices; mouthAnimated = new Vector3[mouthOpened.Length];
+            mouth.AddComponent<MeshFilter>().sharedMesh = mouthMesh;
             var renderer = mouth.AddComponent<MeshRenderer>();
             renderer.sharedMaterials = data.materials;
             renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
@@ -60,11 +64,10 @@ namespace HappyToy.V2
             patchMaterial.SetFloat("_ExpressionWeight", chaseWeight);
             for (int i = 0; i < patchAnimated.Length; i++) patchAnimated[i] = patchNeutral[i] + data.patchDeltas[i] * Weight;
             patchMesh.vertices = patchAnimated; patchMesh.RecalculateNormals(); patchMesh.RecalculateBounds();
-            // Teeth stay attached to the authored head, while the whole aperture
-            // unfolds from a thin slit into its full, deeply recessed mouth.
-            mouth.transform.localPosition = data.localPosition + (data.localRotation * Vector3.up) * data.localScale.y * data.jawDrop * (1-Weight);
-            var scale = data.localScale; scale.y *= Mathf.Lerp(.045f, 1, Weight) * (1+data.jawStretch*Weight) / (1+data.jawStretch);
-            mouth.transform.localScale = scale;
+            // Separate paired mouth poses move the lower jaw as a hinge;
+            // crowns keep their individual shape instead of stretching taller.
+            for(int i=0;i<mouthAnimated.Length;i++)mouthAnimated[i]=Vector3.LerpUnclamped(data.mouthClosed[i],mouthOpened[i],Weight);
+            mouthMesh.vertices=mouthAnimated;mouthMesh.RecalculateNormals();mouthMesh.RecalculateBounds();
         }
         public void Reset()
         {
@@ -76,6 +79,7 @@ namespace HappyToy.V2
             if (mouth) UnityEngine.Object.Destroy(mouth);
             if (patch) UnityEngine.Object.Destroy(patch);
             if (patchMesh) UnityEngine.Object.Destroy(patchMesh);
+            if (mouthMesh) UnityEngine.Object.Destroy(mouthMesh);
             if (patchMaterial) UnityEngine.Object.Destroy(patchMaterial);
         }
     }
