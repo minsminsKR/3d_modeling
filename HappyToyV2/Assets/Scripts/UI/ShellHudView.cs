@@ -159,7 +159,7 @@ namespace HappyToy.V2
             stamina.style.backgroundColor = state.SprintExhausted ? Rust : Gold;
             batteryMeter.SetCharge(state.BatteryFraction, state.FlashlightLit);
             int count = state.Firecrackers;
-            meter.text = $"콩알탄 {SnapperStockRules.CurrentPack(count)}/6 · 예비 {SnapperStockRules.ReservePacks(count)}묶음";
+            meter.text = $"콩알탄 {SnapperStockRules.CurrentPack(count)}/6 · 예비 {SnapperStockRules.ReservePacks(count)}묶음 · 덫 {state.Traps}개";
             bool hasFocus = state.Hidden || state.Focused;
             string interact = usingGamepad ? "[아래 버튼]  " : "[E]  ";
             focus.text = state.Hidden ? interact + "숨은 곳에서 나오기" : state.Focused ? interact + state.FocusLabel : string.Empty;
@@ -181,7 +181,7 @@ namespace HappyToy.V2
         {
             public bool HasPlayer, CaptionVisible, SprintExhausted, FlashlightLit, Hidden, Focused;
             public bool ItemFeedbackVisible, Threatened;
-            public int RecordsRecovered, Firecrackers;
+            public int RecordsRecovered, Firecrackers, Traps;
             public string Caption, FocusLabel, ItemFeedback;
             public float Stamina, BatteryFraction, FeedbackOpacity, PeripheralStrength;
             public Texture2D PeripheralTexture;
@@ -192,17 +192,19 @@ namespace HappyToy.V2
                 if (!player) return default;
                 var charge = player.FlashlightSystem;
                 var inventory = player.Firecrackers;
+                var traps = player.Traps;
+                bool trapFeedback = traps && traps.FeedbackVisible;
                 var detection = player.GetComponent<DetectionFeedback>();
                 bool showAim = inventory && inventory.Aim && inventory.Aim.Visible;
-                bool showItem = inventory && (inventory.FeedbackVisible || showAim);
+                bool showItem = trapFeedback || inventory && (inventory.FeedbackVisible || showAim);
                 return new State {
                     HasPlayer = true, RecordsRecovered = session.RecordsRecovered, Caption = shell.Caption, CaptionVisible = shell.CaptionVisible,
                     Stamina = player.Stamina, SprintExhausted = player.SprintExhausted,
                     BatteryFraction = charge.Fraction, FlashlightLit = charge.Lit,
-                    Firecrackers = inventory ? inventory.Count : 0,
+                    Firecrackers = inventory ? inventory.Count : 0, Traps = traps ? traps.Count : 0,
                     Hidden = player.Hidden, Focused = player.Focus, FocusLabel = player.Focus ? player.Focus.DisplayLabel : string.Empty,
-                    ItemFeedbackVisible = showItem, ItemFeedback = showAim ? inventory.Aim.Hint : showItem ? inventory.ActionFeedback : string.Empty,
-                    FeedbackOpacity = showAim ? 1 : inventory ? Mathf.Clamp01(inventory.FeedbackRemaining / .25f) : 0,
+                    ItemFeedbackVisible = showItem, ItemFeedback = trapFeedback ? traps.Feedback : showAim ? inventory.Aim.Hint : showItem ? inventory.ActionFeedback : string.Empty,
+                    FeedbackOpacity = trapFeedback ? Mathf.Clamp01(traps.FeedbackRemaining/.25f) : showAim ? 1 : inventory ? Mathf.Clamp01(inventory.FeedbackRemaining / .25f) : 0,
                     Threatened = detection && detection.PeripheralStrength > .001f,
                     PeripheralTexture = detection ? detection.PeripheralTexture : null,
                     OverlayColor = detection ? detection.OverlayColor : Color.clear,

@@ -25,6 +25,7 @@
 !/SourceArt/CreatureStudio/**/*.glb
 !/SourceArt/KoreanCorridorProps/*-original.glb
 !/SourceArt/Snappers/*-original.glb
+!/SourceArt/Traps/*-original.glb
 
 # Reproducible authoring tools write review candidates and previews here.
 /SourceArt/**/proposed/

@@ -1,0 +1,26 @@
+{
+  "tool": "Blender 4.0.2",
+  "widthMetres": 0.55,
+  "source": "trap-original.glb",
+  "sourceSHA256": "3729043d040946e123b55337fe13f81b84ebe855ec36add44f2148949fa629d1",
+  "originalFaces": 981102,
+  "gameFaces": 23529,
+  "gameTriangles": 23704,
+  "parts": {
+    "Base": 3554,
+    "JawFront": 9548,
+    "JawBack": 9459,
+    "PressurePlate": 968
+  },
+  "materials": [
+    {
+      "name": "TR_Iron",
+      "roughness": 0.55,
+      "baseColor": "TR_baseColor.png",
+      "normal": "TR_normal.png",
+      "metallicSmoothness": "TR_metallicSmoothness.png"
+    }
+  ],
+  "editable": "Trap_Editable.blend",
+  "animation": "24fps editable open/snap/hold/release keys; runtime owns the exact 5s clock"
+}

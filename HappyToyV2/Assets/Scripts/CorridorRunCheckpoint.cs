@@ -19,7 +19,7 @@ namespace HappyToy.V2
                 token=Guid.NewGuid().ToString("N"),seed=Seed,seconds=session.ElapsedPlayTime,
                 recovered=Enumerable.Range(0,5).Select(i=>recovered.Contains("memory-"+i)).ToArray(),
                 supplies=CheckpointItems(Interactable.Kind.FirecrackerSupply).Select(x=>x.gameObject.activeSelf).ToArray(),
-                player=session.player.CaptureProgress(),threats=threats.Select(x=>x.CaptureProgress()).ToArray(),
+                traps=TrapWorld.Capture(session.player),player=session.player.CaptureProgress(),threats=threats.Select(x=>x.CaptureProgress()).ToArray(),
                 threatVersion=1,mask=Mask.CaptureChapterProgress(),
                 doors=CheckpointDoors.Select(x=>new CorridorCheckpoint.Door { id=x.stableId,open=x.IsOpen,broken=x.DoorBroken,locked=x.DoorLocked,
                     leaf=x.movingLeaf.localPosition }).ToArray() };
@@ -30,6 +30,7 @@ namespace HappyToy.V2
             get
             {
                 if(!Ready || session.Finished || session.Shell.Screen!=GameShell.Page.Pause) return "탐색 중 일시정지 메뉴에서 중단 저장하세요.";
+                if(TrapWorld.Holding) return "덫에 붙잡힌 몬스터가 풀린 뒤 중단 저장하세요.";
                 if(session.player.Hidden) return "은신처에서 나온 뒤 중단 저장할 수 있습니다.";
                 if(threats.Any(x=>x.AttackActive)) return "공격 동작이 끝난 뒤 일시정지해 중단 저장하세요.";
                 if(Mask.AttackActive || Mask.State==LanternMaskEncounter.Phase.Transforming || Mask.IntroStarted && !Mask.IntroCompleted)
@@ -74,6 +75,7 @@ namespace HappyToy.V2
                 foreach(var drawer in drawers)
                 { savedDrawers.TryGetValue(drawer.StableId,out var state); drawer.Restore(state!=null && state.open,state?.travel ?? 0); }
                 Physics.SyncTransforms();
+                TrapWorld.ValidateRestore(data.traps,session.player);
                 if(!session.player.CanRestoreProgress(data.player)) throw new ArgumentException("Invalid saved player clearance");
             }
             finally
@@ -103,6 +105,7 @@ namespace HappyToy.V2
             if(Recovered<2) threats[1].gameObject.SetActive(false);
             if(Recovered<4) threats[2].gameObject.SetActive(false);
             session.player.RestoreProgress(data.player);
+            TrapWorld.Restore(data.traps,session.player);
             Lighting.Restore(data.lightingVersion==0?null:data.lighting); Physics.SyncTransforms();
         }
     }

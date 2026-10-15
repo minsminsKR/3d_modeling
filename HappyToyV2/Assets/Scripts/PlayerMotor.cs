@@ -55,6 +55,7 @@ namespace HappyToy.V2
         public int MovementUpdates { get; private set; }
         public CollisionFlags LastCollision { get; private set; }
         public FirecrackerInventory Firecrackers { get; private set; }
+        public MonsterTrapInventory Traps { get; private set; }
         public PlayerFeedback Feedback { get; private set; }
         public float SlowRemaining { get; private set; }
         public float MovementMultiplier => SlowRemaining > 0 ? .5f : 1;
@@ -83,6 +84,8 @@ namespace HappyToy.V2
             gameObject.layer = 2;
             Firecrackers = GetComponent<FirecrackerInventory>();
             if (!Firecrackers) Firecrackers = gameObject.AddComponent<FirecrackerInventory>();
+            Traps = GetComponent<MonsterTrapInventory>();
+            if (!Traps) Traps = gameObject.AddComponent<MonsterTrapInventory>();
             Feedback = GetComponent<PlayerFeedback>();
             if (!Feedback) Feedback = gameObject.AddComponent<PlayerFeedback>();
             Lock(GameSession.Current && GameSession.Current.InputAllowed);

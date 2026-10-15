@@ -1,0 +1,19 @@
+{
+  "widthMetres": 0.55,
+  "triangleBudget": 24000,
+  "rotationDegrees": [
+    0,
+    0,
+    0
+  ],
+  "voxelDivisor": 300,
+  "plateRadius": 0.091,
+  "plateMinHeight": 0.035,
+  "hingeStrip": 0.035,
+  "jawInnerRadius": 0.13,
+  "hingeHeight": 0.04,
+  "review": "Original top view: hinge crossbar is X, jaw halves extend along +/-Y, original up is +Z. Original retained unchanged.",
+  "baseSpineHalfWidth": 0.04,
+  "baseSpineReach": 0.22,
+  "baseSpineTop": 0.075
+}

@@ -3431,5 +3431,479 @@
     "peak": 0.42,
     "rms": 0.03556792612214715,
     "sha256": "38b66355c49cc02993128c7e9ba18cf06a05fae7312011f9f82bcf76035e8622"
+  },
+  {
+    "file": "trap-place-0.wav",
+    "pack": "recorded-trap-foley",
+    "creator": "blacklodgegames",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+    "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+    "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/metal_grit_01_44k_32bit_stereo.wav",
+    "source_file_sha256": "6796f591a50587eb26473711b0f6fb562c5358e056f7ed70c9d15e8c42ef9cfc",
+    "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232",
+    "resource": "Audio/External/trap-place-0",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM24 WAV",
+      "loop": false,
+      "recordings": [
+        {
+          "file": "metal_grit_01_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/metal_grit_01_44k_32bit_stereo.wav",
+          "source_file_sha256": "6796f591a50587eb26473711b0f6fb562c5358e056f7ed70c9d15e8c42ef9cfc",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        },
+        {
+          "file": "large-spring-0206.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "Joseph SARDIN / BigSoundBank",
+          "license": "CC0-1.0",
+          "page": "https://bigsoundbank.com/gros-ressort-s0206.html",
+          "download": "https://bigsoundbank.com/UPLOAD/bwf-en/0206.wav",
+          "source_file": "0206.wav",
+          "source_file_sha256": "5e50b11ff1dedd755844748ccda9aded49f6ab375486258a1925139933cad178"
+        },
+        {
+          "file": "dull_metal_collision_01_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/dull_metal_collision_01_44k_32bit_stereo.wav",
+          "source_file_sha256": "eb4c67932581343c7ed7373ce9f00a0ddb1aec5bd21507df3f3de43eabf067e7",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        }
+      ],
+      "layers": [
+        {
+          "source": "metal_grit_01_44k_32bit_stereo.wav",
+          "start": 0.01,
+          "end": 0.56,
+          "gain": 0.42,
+          "at": 0
+        },
+        {
+          "source": "large-spring-0206.wav",
+          "start": 6.94,
+          "end": 7.68,
+          "gain": 0.25,
+          "at": 0.035
+        },
+        {
+          "source": "dull_metal_collision_01_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.315,
+          "gain": 0.9,
+          "at": 0.64
+        }
+      ],
+      "method": "Original recorded layers, highpass 65 Hz, edit fades and linear peak normalization only"
+    },
+    "seconds": 1.0148125,
+    "peak": 0.9199998378753662,
+    "rms": 0.08283234089133208,
+    "sha256": "a0581977a5996ab82065d7cd63e1aaec4bc1ebb8180bc6e2c55cc59f2a056abc"
+  },
+  {
+    "file": "trap-place-1.wav",
+    "pack": "recorded-trap-foley",
+    "creator": "blacklodgegames",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+    "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+    "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/metal_grit_02_44k_32bit_stereo.wav",
+    "source_file_sha256": "1444da4af9dc5038831e59808f22f1d9e6cb7160797a9b5b10412120c0789187",
+    "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232",
+    "resource": "Audio/External/trap-place-1",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM24 WAV",
+      "loop": false,
+      "recordings": [
+        {
+          "file": "metal_grit_02_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/metal_grit_02_44k_32bit_stereo.wav",
+          "source_file_sha256": "1444da4af9dc5038831e59808f22f1d9e6cb7160797a9b5b10412120c0789187",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        },
+        {
+          "file": "large-spring-0206.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "Joseph SARDIN / BigSoundBank",
+          "license": "CC0-1.0",
+          "page": "https://bigsoundbank.com/gros-ressort-s0206.html",
+          "download": "https://bigsoundbank.com/UPLOAD/bwf-en/0206.wav",
+          "source_file": "0206.wav",
+          "source_file_sha256": "5e50b11ff1dedd755844748ccda9aded49f6ab375486258a1925139933cad178"
+        },
+        {
+          "file": "dull_metal_collision_03_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/dull_metal_collision_03_44k_32bit_stereo.wav",
+          "source_file_sha256": "2b12a8e0829e20b7f0825e1abdefaa5028bcaa2d9a912de039f3d1e8cb0e83f1",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        }
+      ],
+      "layers": [
+        {
+          "source": "metal_grit_02_44k_32bit_stereo.wav",
+          "start": 0.03,
+          "end": 0.66,
+          "gain": 0.38,
+          "at": 0
+        },
+        {
+          "source": "large-spring-0206.wav",
+          "start": 28.22,
+          "end": 28.96,
+          "gain": 0.23,
+          "at": 0.03
+        },
+        {
+          "source": "dull_metal_collision_03_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.244,
+          "gain": 1,
+          "at": 0.67
+        }
+      ],
+      "method": "Original recorded layers, highpass 65 Hz, edit fades and linear peak normalization only"
+    },
+    "seconds": 0.9739791666666666,
+    "peak": 0.9199998378753662,
+    "rms": 0.07056421131432086,
+    "sha256": "d5a6360b8f03e22d9ff6a29d022173814e59d09af4c5123ba60340d8cb69a53c"
+  },
+  {
+    "file": "trap-trigger-0.wav",
+    "pack": "recorded-trap-foley",
+    "creator": "Joseph SARDIN / BigSoundBank",
+    "license": "CC0-1.0",
+    "page": "https://bigsoundbank.com/trap-s1234.html",
+    "download": "https://bigsoundbank.com/UPLOAD/bwf-en/1234.wav",
+    "source_file": "1234.wav",
+    "source_file_sha256": "6542c8d86e37516c738b8fac4acbbb5f37c4d0e3d9c2fe28c205993236e75661",
+    "resource": "Audio/External/trap-trigger-0",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM24 WAV",
+      "loop": false,
+      "recordings": [
+        {
+          "file": "trap-close-1234.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "Joseph SARDIN / BigSoundBank",
+          "license": "CC0-1.0",
+          "page": "https://bigsoundbank.com/trap-s1234.html",
+          "download": "https://bigsoundbank.com/UPLOAD/bwf-en/1234.wav",
+          "source_file": "1234.wav",
+          "source_file_sha256": "6542c8d86e37516c738b8fac4acbbb5f37c4d0e3d9c2fe28c205993236e75661"
+        },
+        {
+          "file": "dull_metal_collision_08_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/dull_metal_collision_08_44k_32bit_stereo.wav",
+          "source_file_sha256": "6a9646ce4df6f0173e159b8048c41f64ff447f530da34dbdda75e4721a2537bd",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        },
+        {
+          "file": "large-spring-0206.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "Joseph SARDIN / BigSoundBank",
+          "license": "CC0-1.0",
+          "page": "https://bigsoundbank.com/gros-ressort-s0206.html",
+          "download": "https://bigsoundbank.com/UPLOAD/bwf-en/0206.wav",
+          "source_file": "0206.wav",
+          "source_file_sha256": "5e50b11ff1dedd755844748ccda9aded49f6ab375486258a1925139933cad178"
+        }
+      ],
+      "layers": [
+        {
+          "source": "trap-close-1234.wav",
+          "start": 0.32,
+          "end": 1.66,
+          "gain": 0.88,
+          "at": 0
+        },
+        {
+          "source": "dull_metal_collision_08_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.807,
+          "gain": 0.48,
+          "at": 0.015
+        },
+        {
+          "source": "large-spring-0206.wav",
+          "start": 0.05,
+          "end": 0.83,
+          "gain": 0.12,
+          "at": 0.03
+        }
+      ],
+      "method": "Original recorded layers, highpass 65 Hz, edit fades and linear peak normalization only"
+    },
+    "seconds": 1.4,
+    "peak": 0.9199998378753662,
+    "rms": 0.07022748163385194,
+    "sha256": "799595faa774f42653a61950ce6d878379b91a3d2888fba39dc99da9d3252f16"
+  },
+  {
+    "file": "trap-trigger-1.wav",
+    "pack": "recorded-trap-foley",
+    "creator": "Joseph SARDIN / BigSoundBank",
+    "license": "CC0-1.0",
+    "page": "https://bigsoundbank.com/trap-s1234.html",
+    "download": "https://bigsoundbank.com/UPLOAD/bwf-en/1234.wav",
+    "source_file": "1234.wav",
+    "source_file_sha256": "6542c8d86e37516c738b8fac4acbbb5f37c4d0e3d9c2fe28c205993236e75661",
+    "resource": "Audio/External/trap-trigger-1",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM24 WAV",
+      "loop": false,
+      "recordings": [
+        {
+          "file": "trap-close-1234.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "Joseph SARDIN / BigSoundBank",
+          "license": "CC0-1.0",
+          "page": "https://bigsoundbank.com/trap-s1234.html",
+          "download": "https://bigsoundbank.com/UPLOAD/bwf-en/1234.wav",
+          "source_file": "1234.wav",
+          "source_file_sha256": "6542c8d86e37516c738b8fac4acbbb5f37c4d0e3d9c2fe28c205993236e75661"
+        },
+        {
+          "file": "dull_metal_collision_03_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/dull_metal_collision_03_44k_32bit_stereo.wav",
+          "source_file_sha256": "2b12a8e0829e20b7f0825e1abdefaa5028bcaa2d9a912de039f3d1e8cb0e83f1",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        },
+        {
+          "file": "large-spring-0206.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "Joseph SARDIN / BigSoundBank",
+          "license": "CC0-1.0",
+          "page": "https://bigsoundbank.com/gros-ressort-s0206.html",
+          "download": "https://bigsoundbank.com/UPLOAD/bwf-en/0206.wav",
+          "source_file": "0206.wav",
+          "source_file_sha256": "5e50b11ff1dedd755844748ccda9aded49f6ab375486258a1925139933cad178"
+        }
+      ],
+      "layers": [
+        {
+          "source": "trap-close-1234.wav",
+          "start": 0.33,
+          "end": 1.52,
+          "gain": 0.84,
+          "at": 0
+        },
+        {
+          "source": "dull_metal_collision_03_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.244,
+          "gain": 0.72,
+          "at": 0.008
+        },
+        {
+          "source": "large-spring-0206.wav",
+          "start": 35.25,
+          "end": 36.06,
+          "gain": 0.14,
+          "at": 0.02
+        }
+      ],
+      "method": "Original recorded layers, highpass 65 Hz, edit fades and linear peak normalization only"
+    },
+    "seconds": 1.25,
+    "peak": 0.9199998378753662,
+    "rms": 0.05475423663284961,
+    "sha256": "7a3bf768b66dd1e0b9fb5b349b56d514cb4cc9a95048d1aaa4bc0e367044032b"
+  },
+  {
+    "file": "trap-release-0.wav",
+    "pack": "recorded-trap-foley",
+    "creator": "Joseph SARDIN / BigSoundBank",
+    "license": "CC0-1.0",
+    "page": "https://bigsoundbank.com/gros-ressort-s0206.html",
+    "download": "https://bigsoundbank.com/UPLOAD/bwf-en/0206.wav",
+    "source_file": "0206.wav",
+    "source_file_sha256": "5e50b11ff1dedd755844748ccda9aded49f6ab375486258a1925139933cad178",
+    "resource": "Audio/External/trap-release-0",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM24 WAV",
+      "loop": false,
+      "recordings": [
+        {
+          "file": "large-spring-0206.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "Joseph SARDIN / BigSoundBank",
+          "license": "CC0-1.0",
+          "page": "https://bigsoundbank.com/gros-ressort-s0206.html",
+          "download": "https://bigsoundbank.com/UPLOAD/bwf-en/0206.wav",
+          "source_file": "0206.wav",
+          "source_file_sha256": "5e50b11ff1dedd755844748ccda9aded49f6ab375486258a1925139933cad178"
+        },
+        {
+          "file": "metal_grit_02_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/metal_grit_02_44k_32bit_stereo.wav",
+          "source_file_sha256": "1444da4af9dc5038831e59808f22f1d9e6cb7160797a9b5b10412120c0789187",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        },
+        {
+          "file": "dull_metal_collision_01_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/dull_metal_collision_01_44k_32bit_stereo.wav",
+          "source_file_sha256": "eb4c67932581343c7ed7373ce9f00a0ddb1aec5bd21507df3f3de43eabf067e7",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        }
+      ],
+      "layers": [
+        {
+          "source": "large-spring-0206.wav",
+          "start": 15.0,
+          "end": 16.23,
+          "gain": 0.42,
+          "at": 0
+        },
+        {
+          "source": "metal_grit_02_44k_32bit_stereo.wav",
+          "start": 0.13,
+          "end": 0.91,
+          "gain": 0.52,
+          "at": 0.055
+        },
+        {
+          "source": "dull_metal_collision_01_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.315,
+          "gain": 0.35,
+          "at": 0.39
+        }
+      ],
+      "method": "Original recorded layers, highpass 65 Hz, edit fades and linear peak normalization only"
+    },
+    "seconds": 1.29,
+    "peak": 0.9199998378753662,
+    "rms": 0.1344928359305301,
+    "sha256": "127f51caf0e894c14358df68c1542dcabdd4a06153fc291dd169625b8f0173ae"
+  },
+  {
+    "file": "trap-release-1.wav",
+    "pack": "recorded-trap-foley",
+    "creator": "Joseph SARDIN / BigSoundBank",
+    "license": "CC0-1.0",
+    "page": "https://bigsoundbank.com/gros-ressort-s0206.html",
+    "download": "https://bigsoundbank.com/UPLOAD/bwf-en/0206.wav",
+    "source_file": "0206.wav",
+    "source_file_sha256": "5e50b11ff1dedd755844748ccda9aded49f6ab375486258a1925139933cad178",
+    "resource": "Audio/External/trap-release-1",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM24 WAV",
+      "loop": false,
+      "recordings": [
+        {
+          "file": "large-spring-0206.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "Joseph SARDIN / BigSoundBank",
+          "license": "CC0-1.0",
+          "page": "https://bigsoundbank.com/gros-ressort-s0206.html",
+          "download": "https://bigsoundbank.com/UPLOAD/bwf-en/0206.wav",
+          "source_file": "0206.wav",
+          "source_file_sha256": "5e50b11ff1dedd755844748ccda9aded49f6ab375486258a1925139933cad178"
+        },
+        {
+          "file": "metal_grit_01_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/metal_grit_01_44k_32bit_stereo.wav",
+          "source_file_sha256": "6796f591a50587eb26473711b0f6fb562c5358e056f7ed70c9d15e8c42ef9cfc",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        },
+        {
+          "file": "dull_metal_collision_03_44k_32bit_stereo.wav",
+          "pack": "recorded-trap-foley",
+          "creator": "blacklodgegames",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/27-metal-audio-samples-sfx",
+          "download": "https://opengameart.org/sites/default/files/27-Metal-Audio-Samples-blacklodgegames.com_.zip",
+          "source_file": "27-Metal-Audio-Samples-blacklodgegames.com/dull_metal_collision_03_44k_32bit_stereo.wav",
+          "source_file_sha256": "2b12a8e0829e20b7f0825e1abdefaa5028bcaa2d9a912de039f3d1e8cb0e83f1",
+          "archive_sha256": "479e85403898c2ff2d1e2d6a130b8cfb4ae00fbd8cbcaf440917450f996f5232"
+        }
+      ],
+      "layers": [
+        {
+          "source": "large-spring-0206.wav",
+          "start": 23.1,
+          "end": 24.28,
+          "gain": 0.44,
+          "at": 0
+        },
+        {
+          "source": "metal_grit_01_44k_32bit_stereo.wav",
+          "start": 0.08,
+          "end": 0.83,
+          "gain": 0.46,
+          "at": 0.06
+        },
+        {
+          "source": "dull_metal_collision_03_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.244,
+          "gain": 0.38,
+          "at": 0.42
+        }
+      ],
+      "method": "Original recorded layers, highpass 65 Hz, edit fades and linear peak normalization only"
+    },
+    "seconds": 1.24,
+    "peak": 0.9199998378753662,
+    "rms": 0.1407900011689789,
+    "sha256": "1da27c8ef9707d79a96c49acbde592997656c1beb58d385066619979ccea7454"
   }
 ]

@@ -32,6 +32,7 @@ namespace HappyToy.V2
             get
             {
                 if(!Ready || session.Finished || session.Shell.Screen!=GameShell.Page.Pause) return "일시정지 메뉴에서 학교 탐색을 저장하세요.";
+                if(TrapWorld.Holding) return "덫에 붙잡힌 몬스터가 풀린 뒤 중단 저장하세요.";
                 if(session.player.Hidden) return "은신처에서 나온 뒤 학교 탐색을 저장할 수 있습니다.";
                 if(FirstAppearances.CameraOwned || Portrait.Triggered && !Portrait.Completed || Nursery.Triggered && !Nursery.Released ||
                     Mannequin.Triggered && !Mannequin.Released || Mask.IntroStarted && !Mask.IntroCompleted ||
@@ -50,7 +51,7 @@ namespace HappyToy.V2
             if(!string.IsNullOrEmpty(SuspendBlockReason)) throw new InvalidOperationException(SuspendBlockReason);
             EnsureCheckpointIdentities();
             var data=new ChapterCheckpoint { simulationVersion=LayoutVersion,lightingVersion=1,lighting=Lighting.Capture(), token=Guid.NewGuid().ToString("N"),scene=gameObject.scene.path,recovered=Recovered,
-                seconds=session.ElapsedPlayTime,player=session.player.CaptureProgress(),cyclopse=Cyclopse.CaptureProgress(),
+                seconds=session.ElapsedPlayTime,traps=TrapWorld.Capture(session.player),player=session.player.CaptureProgress(),cyclopse=Cyclopse.CaptureProgress(),
                 portraitActor=Portrait.angry.CaptureProgress(),nurseryActor=Nursery.monster.CaptureProgress(),
                 mannequin=Mannequin.CaptureChapterProgress(),mask=Mask.CaptureChapterProgress(),
                 portraitCompleted=Portrait.Completed,portraitWitnessed=Portrait.ChapterWitnessed,nurseryReleased=Nursery.Released,
@@ -103,6 +104,7 @@ namespace HappyToy.V2
                 for(int i=0;i<doors.Length;i++)
                 { doors[i].movingLeaf.localPosition=data.doors[i].leaf; if(doors[i].secondaryLeaf) doors[i].secondaryLeaf.localPosition=data.doors[i].secondary; }
                 Physics.SyncTransforms();
+                TrapWorld.ValidateRestore(data.traps,session.player);
                 if(!session.player.CanRestoreChapterProgress(data.player)) throw new ArgumentException("Invalid saved school player clearance");
             }
             finally
@@ -127,6 +129,7 @@ namespace HappyToy.V2
             Nursery.monster.RestoreChapterProgress(data.nurseryActor,doors);
             Mannequin.RestoreChapterProgress(data.mannequin); Mask.RestoreChapterProgress(data.mask);
             session.player.RestoreChapterProgress(data.player);
+            TrapWorld.Restore(data.traps,session.player);
             Lighting.Restore(data.lightingVersion==0?null:data.lighting); Physics.SyncTransforms();
         }
     }

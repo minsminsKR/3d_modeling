@@ -1,0 +1,186 @@
+{
+  "format": "48000 Hz mono PCM24",
+  "method": "Original recorded layers, highpass 65 Hz, edit fades and linear peak normalization only",
+  "cues": [
+    {
+      "cue": "trap-place-0",
+      "layers": [
+        {
+          "source": "metal_grit_01_44k_32bit_stereo.wav",
+          "start": 0.01,
+          "end": 0.56,
+          "gain": 0.42,
+          "at": 0
+        },
+        {
+          "source": "large-spring-0206.wav",
+          "start": 6.94,
+          "end": 7.68,
+          "gain": 0.25,
+          "at": 0.035
+        },
+        {
+          "source": "dull_metal_collision_01_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.315,
+          "gain": 0.9,
+          "at": 0.64
+        }
+      ],
+      "seconds": 1.0148125,
+      "peakDbFS": -0.7242434530888943,
+      "rmsDbFS": -21.63600028236369,
+      "sha256": "a0581977a5996ab82065d7cd63e1aaec4bc1ebb8180bc6e2c55cc59f2a056abc"
+    },
+    {
+      "cue": "trap-place-1",
+      "layers": [
+        {
+          "source": "metal_grit_02_44k_32bit_stereo.wav",
+          "start": 0.03,
+          "end": 0.66,
+          "gain": 0.38,
+          "at": 0
+        },
+        {
+          "source": "large-spring-0206.wav",
+          "start": 28.22,
+          "end": 28.96,
+          "gain": 0.23,
+          "at": 0.03
+        },
+        {
+          "source": "dull_metal_collision_03_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.244,
+          "gain": 1,
+          "at": 0.67
+        }
+      ],
+      "seconds": 0.9739791666666666,
+      "peakDbFS": -0.7242434530888943,
+      "rmsDbFS": -23.028309107724066,
+      "sha256": "d5a6360b8f03e22d9ff6a29d022173814e59d09af4c5123ba60340d8cb69a53c"
+    },
+    {
+      "cue": "trap-trigger-0",
+      "layers": [
+        {
+          "source": "trap-close-1234.wav",
+          "start": 0.32,
+          "end": 1.66,
+          "gain": 0.88,
+          "at": 0
+        },
+        {
+          "source": "dull_metal_collision_08_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.807,
+          "gain": 0.48,
+          "at": 0.015
+        },
+        {
+          "source": "large-spring-0206.wav",
+          "start": 0.05,
+          "end": 0.83,
+          "gain": 0.12,
+          "at": 0.03
+        }
+      ],
+      "seconds": 1.4,
+      "peakDbFS": -0.7242434530888943,
+      "rmsDbFS": -23.069857087674283,
+      "sha256": "799595faa774f42653a61950ce6d878379b91a3d2888fba39dc99da9d3252f16"
+    },
+    {
+      "cue": "trap-trigger-1",
+      "layers": [
+        {
+          "source": "trap-close-1234.wav",
+          "start": 0.33,
+          "end": 1.52,
+          "gain": 0.84,
+          "at": 0
+        },
+        {
+          "source": "dull_metal_collision_03_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.244,
+          "gain": 0.72,
+          "at": 0.008
+        },
+        {
+          "source": "large-spring-0206.wav",
+          "start": 35.25,
+          "end": 36.06,
+          "gain": 0.14,
+          "at": 0.02
+        }
+      ],
+      "seconds": 1.25,
+      "peakDbFS": -0.7242434530888943,
+      "rmsDbFS": -25.23164440990007,
+      "sha256": "7a3bf768b66dd1e0b9fb5b349b56d514cb4cc9a95048d1aaa4bc0e367044032b"
+    },
+    {
+      "cue": "trap-release-0",
+      "layers": [
+        {
+          "source": "large-spring-0206.wav",
+          "start": 15.0,
+          "end": 16.23,
+          "gain": 0.42,
+          "at": 0
+        },
+        {
+          "source": "metal_grit_02_44k_32bit_stereo.wav",
+          "start": 0.13,
+          "end": 0.91,
+          "gain": 0.52,
+          "at": 0.055
+        },
+        {
+          "source": "dull_metal_collision_01_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.315,
+          "gain": 0.35,
+          "at": 0.39
+        }
+      ],
+      "seconds": 1.29,
+      "peakDbFS": -0.7242434530888932,
+      "rmsDbFS": -17.426015934681345,
+      "sha256": "127f51caf0e894c14358df68c1542dcabdd4a06153fc291dd169625b8f0173ae"
+    },
+    {
+      "cue": "trap-release-1",
+      "layers": [
+        {
+          "source": "large-spring-0206.wav",
+          "start": 23.1,
+          "end": 24.28,
+          "gain": 0.44,
+          "at": 0
+        },
+        {
+          "source": "metal_grit_01_44k_32bit_stereo.wav",
+          "start": 0.08,
+          "end": 0.83,
+          "gain": 0.46,
+          "at": 0.06
+        },
+        {
+          "source": "dull_metal_collision_03_44k_32bit_stereo.wav",
+          "start": 0,
+          "end": 0.244,
+          "gain": 0.38,
+          "at": 0.42
+        }
+      ],
+      "seconds": 1.24,
+      "peakDbFS": -0.7242434530888953,
+      "rmsDbFS": -17.0285627093627,
+      "sha256": "1da27c8ef9707d79a96c49acbde592997656c1beb58d385066619979ccea7454"
+    }
+  ]
+}

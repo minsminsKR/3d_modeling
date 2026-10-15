@@ -19,7 +19,7 @@ import wave
 
 PROJECT = Path(__file__).resolve().parents[2]
 SCOPE = ("Mandatory resource inventory, canonical hashes, retained recording "
-         "hashes, mono PCM16 data and Unity GUIDs only; not Unity import, native "
+         "hashes, mono PCM16/24 data and Unity GUIDs only; not Unity import, native "
          "mix, pause/mute output or human/device listening certification.")
 
 
@@ -123,19 +123,24 @@ def verify() -> dict:
         try:
             with wave.open(str(path), "rb") as wav:
                 channels, width, rate, frames = wav.getnchannels(), wav.getsampwidth(), wav.getframerate(), wav.getnframes()
-                require(channels == 1 and width == 2 and wav.getcomptype() == "NONE", f"Expected mono PCM16: {name}")
+                require(channels == 1 and (width == 2 or width == 3 and name.startswith("trap-")) and wav.getcomptype() == "NONE", f"Expected mono PCM16 or authored trap PCM24: {name}")
                 require(rate == item["modifications"].get("sample_rate"), f"Sample-rate metadata differs: {name}")
                 require(frames > 0 and abs(frames/rate-item["seconds"]) < 1/rate, f"Duration metadata differs: {name}")
-                samples = array("h", wav.readframes(frames))
-                if sys.byteorder != "little":
-                    samples.byteswap()
+                pcm = wav.readframes(frames)
+                if width == 3:
+                    samples = array("i", (int.from_bytes(pcm[i:i+3],"little",signed=True) for i in range(0,len(pcm),3)))
+                else:
+                    samples = array("h", pcm)
+                    if sys.byteorder != "little":
+                        samples.byteswap()
         except (wave.Error, ValueError) as error:
             errors.append(f"Invalid WAV {name}: {error}")
             continue
         if not samples:
             continue
-        peak = max(abs(value) for value in samples) / 32768
-        rms = math.sqrt(sum(value*value for value in samples)/len(samples)) / 32768
+        full_scale = 2**(8*width-1)
+        peak = max(abs(value) for value in samples) / full_scale
+        rms = math.sqrt(sum(value*value for value in samples)/len(samples)) / full_scale
         require(0 < peak < 1, f"Silent or clipped PCM: {name}")
         require(abs(peak-item["peak"]) < 2/32768 and abs(rms-item["rms"]) < 2/32768,
                 f"Canonical PCM metrics differ: {name}")

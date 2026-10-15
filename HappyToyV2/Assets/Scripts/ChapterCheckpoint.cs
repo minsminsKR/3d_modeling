@@ -12,6 +12,7 @@ namespace HappyToy.V2
         public string token, scene;
         public int lightingVersion;
         public LightExplorationCheckpoint lighting;
+        public TrapExplorationCheckpoint traps;
         public float seconds;
         public PlayerMotor.Progress player;
         public ChapterRunProgress runProgress;
@@ -44,6 +45,7 @@ namespace HappyToy.V2
                 lightingVersion==0 && lighting!=null && !lighting.LegacyEmpty)
                 throw new ArgumentException("Invalid lighting checkpoint version");
             if(lightingVersion==1) lighting.Validate();
+            traps?.Validate(Point);
             player.ValidateChapter(); cyclopse.ValidateChapter(); portraitActor.ValidateChapter(); nurseryActor.ValidateChapter();
             runProgress?.Validate();
             mannequin.Validate(); mask.Validate();

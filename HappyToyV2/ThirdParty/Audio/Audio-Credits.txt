@@ -175,3 +175,13 @@ Paper snappers (콩알탄): Whipper Snappers/Bullet Hits.wav by deleted_user_137
 https://freesound.org/people/deleted_user_1371021/sounds/161001/
 CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
 Public high-quality MP3 preview retained; three recorded impacts trimmed, DC removed, gain-limited and edge-faded. No synthetic layers.
+
+TRAP FOLEY (installed, triggered, released; two recorded variants each)
+Joseph SARDIN / BigSoundBank — Trap #1234 and Large spring #0206. CC0-1.0.
+https://bigsoundbank.com/trap-s1234.html
+https://bigsoundbank.com/gros-ressort-s0206.html
+blacklodgegames — 27 Metal Audio Samples (SFX). CC0-1.0.
+https://opengameart.org/content/27-metal-audio-samples-sfx
+Original recordings, license evidence and SHA256: ThirdParty/Audio/Traps.
+Editing/layer recipe: SourceArt/Audio/render_traps.py and traps-foley-recipe.json.
+All layers are recorded foley; no oscillators or synthetic impact substitutes.

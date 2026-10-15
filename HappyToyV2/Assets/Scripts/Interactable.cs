@@ -6,7 +6,7 @@ namespace HappyToy.V2
 {
     public sealed partial class Interactable : MonoBehaviour
     {
-        public enum Kind { Door, NameSlip, HidingPlace, Exit, Inspect, CorridorMemory, FirecrackerSupply, ChapterMemory, Decoration, FlashlightBattery, Candle, Drawer }
+        public enum Kind { Door, NameSlip, HidingPlace, Exit, Inspect, CorridorMemory, FirecrackerSupply, ChapterMemory, Decoration, FlashlightBattery, Candle, Drawer, TrapSupply }
         public Kind kind;
         public string label;
         public string stableId;
@@ -264,6 +264,9 @@ namespace HappyToy.V2
                     break;
                 case Kind.CorridorMemory:
                     if (GameSession.Current.Corridor && GameSession.Current.Corridor.Collect(stableId)) gameObject.SetActive(false);
+                    break;
+                case Kind.TrapSupply:
+                    if (player.Traps && player.Traps.AddSupply()) gameObject.SetActive(false);
                     break;
                 case Kind.FirecrackerSupply:
                     if (player.Firecrackers && player.Firecrackers.AddSupply()) gameObject.SetActive(false);

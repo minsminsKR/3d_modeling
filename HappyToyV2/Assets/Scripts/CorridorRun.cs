@@ -263,6 +263,7 @@ namespace HappyToy.V2
             var dressing=Presentation.PrepareRoutine(this,incremental);while(dressing.MoveNext())yield return dressing.Current;
             Lighting.DimCorridor(this,world);
             var batches=CombineArchitectureRoutine(incremental);while(batches.MoveNext())yield return batches.Current;
+            TrapWorld.Populate(world,session.player,CheckpointItems(Interactable.Kind.FirecrackerSupply));
             Physics.SyncTransforms(); Ready = true;
             session.Notify(Layout.Version >= 3 ?
                 "다섯 기억을 회수하고 붉은 교실의 제단에 돌려놓으세요. 콩알탄은 회랑에서 보충할 수 있습니다." :

@@ -97,7 +97,7 @@ namespace HappyToy.V2
         void Update()
         {
             if(!animationPlayer||GameSession.Current.Finished)return;
-            if(Time.timeScale==0)return;
+            if(Time.timeScale==0 || brain.Trapped)return;
             attackPose.Reset();
             locomotionPose?.Reset();
             introPose?.Reset();
@@ -112,7 +112,7 @@ namespace HappyToy.V2
         }
         void LateUpdate()
         {
-            if(Time.timeScale==0)return;
+            if(Time.timeScale==0 || brain.Trapped)return;
             // Keep V1 locomotion, with a skeletal anticipation/reach/recovery layered over it.
             float bend=brain.AttackWindup>0?-6*brain.AttackWindup:8*brain.AttackRecovery;
             model.localRotation=IntroPoseActive?

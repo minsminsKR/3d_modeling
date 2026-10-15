@@ -87,7 +87,7 @@ namespace HappyToy.V2
             bool integratedFace=owner.Transformed||bodyVisible;
             foreach(var r in floatingFace)if(r)r.enabled=!integratedFace;
             var session=GameSession.Current;
-            if(!session||!session.InputAllowed||Time.timeScale<=0)return;
+            if(!session||!session.InputAllowed||Time.timeScale<=0||EnemyTrapRestraint.IsHeld(owner))return;
             bool moving=bodyVisible&&agent&&agent.enabled&&agent.isOnNavMesh&&!agent.isStopped&&agent.velocity.sqrMagnitude>.01f;
             if(moving)clock+=Time.deltaTime*Mathf.Clamp(agent.velocity.magnitude/3.4f,.35f,2.4f);
             else clock=0;

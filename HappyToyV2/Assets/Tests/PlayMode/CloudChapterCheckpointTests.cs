@@ -105,7 +105,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(session,"RecordsRecovered"),Is.EqualTo(2)); Assert.That(Get<float>(session,"ElapsedPlayTime"),Is.EqualTo(seconds));
             Assert.That(Vector3.Distance(player.transform.position,pose),Is.LessThan(.001f));
             Assert.That(Get<bool>(player,"Crouching"),Is.True); Assert.That(Get<Light>(player,"flashlight").enabled,Is.False);
-            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(2));
+            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(12));
             chapter=Get<Component>(session,"Chapter"); memories=Get<Component[]>(chapter,"Memories");
             Assert.That(memories.Take(2).All(x=>!x.gameObject.activeSelf),Is.True); Assert.That(memories.Skip(2).All(x=>x.gameObject.activeSelf),Is.True);
             Assert.That(Get<Component>(chapter,"Cyclopse").gameObject.activeSelf,Is.True);

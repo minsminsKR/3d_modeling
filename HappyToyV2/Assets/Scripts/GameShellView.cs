@@ -38,8 +38,8 @@ namespace HappyToy.V2
             Gamepad.current.dpad.ReadValue().sqrMagnitude > .1f || Gamepad.current.leftStick.ReadValue().sqrMagnitude > .25f);
         bool KeyboardSubmitIntent => Keyboard.current != null && (Keyboard.current.enterKey.isPressed || Keyboard.current.numpadEnterKey.isPressed);
         string NavigationHelp => PlayerControls.UsingGamepad ? "방향 패드  선택     아래 버튼  확인     오른쪽 버튼  뒤로" : "Tab / 방향키  선택      Enter  확인      Esc  뒤로";
-        string ControlInstructions => PlayerControls.UsingGamepad ? "왼쪽 스틱  이동 / 누르며 달리기\n오른쪽 스틱  시선\n아래 버튼  조사·문·은신\n오른쪽 버튼  낮은 자세 / 위 버튼  빛\nLT 조준 / RT 콩알탄 (추격 전 유인)\nSelect 기록 / Start 일시정지" : "WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신·배터리·촛불\nF  손전등          Q  콩알탄 (추격 전 유인)\n우클릭 누르기  콩알탄 첫 충돌 조준\nJ  조사 기록      Esc  일시정지";
-        string ControlsFooter => PlayerControls.UsingGamepad ? "오른쪽  낮은 자세    위  빛    RT  콩알탄    Start  메뉴" : "C  낮은 자세    F  빛    Q  콩알탄    J  기록    Esc  메뉴";
+        string ControlInstructions => PlayerControls.UsingGamepad ? "왼쪽 스틱  이동 / 누르며 달리기\n오른쪽 스틱  시선\n아래 버튼  조사·문·은신\n오른쪽 버튼  낮은 자세 / 위 버튼  빛\nLT 조준 / RT 콩알탄 (추격 전 유인) / LB 덫\nSelect 기록 / Start 일시정지" : "WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신·배터리·촛불\nF  손전등    Q  콩알탄 (추격 전 유인)    R  덫\n우클릭 누르기  콩알탄 첫 충돌 조준\nJ  조사 기록      Esc  일시정지";
+        string ControlsFooter => PlayerControls.UsingGamepad ? "오른쪽  낮은 자세    위  빛    RT  콩알탄    LB  덫    Start  메뉴" : "C  낮은 자세    F  빛    Q  콩알탄    R  덫    J  기록    Esc  메뉴";
         GameShell.Page shown = (GameShell.Page)(-1);
         int journalStep = -1, journalExploration = -1;
         bool shownContrast, shownLargeText, shownGamepad, settingsLabelsDirty;

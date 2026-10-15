@@ -47,6 +47,7 @@ namespace HappyToy.V2
         readonly EnemyCabinetEncounter cabinetEncounter = new EnemyCabinetEncounter();
         public string CabinetStage => cabinetEncounter.Stage;
         public bool CabinetAggressive => cabinetEncounter.Aggressive;
+        public bool Trapped => EnemyTrapRestraint.IsHeld(this);
         readonly NoiseInvestigationClock investigation = new NoiseInvestigationClock();
         Quaternion investigationFacing;
         public bool InvestigationArrived => investigation.Arrived;
@@ -69,6 +70,7 @@ namespace HappyToy.V2
 
         public bool HearNoise(Vector3 point, float duration)
         {
+            if (Trapped) return false;
             if (GameSession.Current && GameSession.Current.CheatSafeMode) return false;
             if (BabyMode) return HearBabyLoudNoise(point, duration);
             var session = GameSession.Current;
@@ -85,6 +87,7 @@ namespace HappyToy.V2
         // an unseen player's position through its separate loud-noise chase rule.
         public bool HearSnapper(Vector3 point)
         {
+            if (Trapped) return false;
             var session = GameSession.Current;
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
                 !CorridorCheckpoint.Vector(point) || state == State.Chase || AttackActive || awareness.Acquired) return false;
@@ -154,6 +157,7 @@ namespace HappyToy.V2
 
         void HearFootstep(Vector3 point, float radius)
         {
+            if (Trapped) return;
             bool loudBabyStep = BabyMode && radius >= CorridorBabyBehaviour.LoudFootstepRadius;
             var session = GameSession.Current;
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
@@ -538,6 +542,7 @@ namespace HappyToy.V2
             { awareness.Reset(); attack.Reset(); cabinetEncounter.Reset(); witnessedHiding = false; EnemyNavigation.Stop(agent, true); return; }
             if (!EnemyNavigation.Ready(agent)) { attack.Reset(); repath = 0; return; }
             if (!session.InputAllowed) { EnemyNavigation.Stop(agent); repath = 0; return; }
+            if (Trapped) return;
             if (TickCabinetEncounter(session)) return;
 
             if (state != State.Chase) recognitionCueIssued = false;

@@ -301,6 +301,7 @@ namespace HappyToy.V2
             }
             if (session.CheatSafeMode && (State == Phase.Chase || State == Phase.Investigate || State == Phase.Transforming || attack.Active)) ForgetPlayerForCheat();
             if (State == Phase.Resolved) return;
+            if (EnemyTrapRestraint.IsHeld(this)) return;
             if (State == Phase.Dormant)
             {
                 if (session.EncounterStep < activationStep) { Stop(); return; }

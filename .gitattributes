@@ -26,3 +26,7 @@ HappyToyV2/SourceArt/CyclopseCabinetFace/*.blend filter=lfs diff=lfs merge=lfs -
 
 # Uncat cabinet facial finishing with packed editable textures.
 HappyToyV2/SourceArt/UncatCabinetFace/*.blend filter=lfs diff=lfs merge=lfs -text
+
+# Generated iron trap originals and packed editable mechanical source.
+HappyToyV2/SourceArt/Traps/*-original.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/Traps/*.blend filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,7 @@
+{
+  "tool": "built-in image_gen",
+  "use_case": "stylized-concept",
+  "prompt": "Use case: stylized-concept, image reference for generating one functional game prop mesh. One open, armed old steel foothold spring trap for a Korean rural horror game, isolated centered on a plain light grey background. Realistic PBR product render, high oblique three-quarter top view, entire object and base visible with generous margins. A low, broad circular pair of semicircular hinged iron jaws, distinct uneven triangular metal teeth along the inner rims, both jaws fully spread outward flat in the set/armed position. A clearly visible round pressure plate in the middle, simple heavy crossbar base and two compact side spring hinges. Dark worn forged iron with restrained orange rust, scratches and oily mechanical wear; credible old mechanical construction, no fantasy ornament. Low floor profile, approximately 55 cm across. Clear separate mechanical parts and readable hinges for later open/close animation. No text, no logo, no packaging, no hands, no creature, no environment, no gore, no watermark, no long chain or thin loose wires, no exploded diagram. Single coherent object, clean silhouette, detailed but game-ready design.",
+  "transparent_background": false,
+  "source": "C:/Users/sanguk/.codex/generated_images/01a13cdb-2e8a-71d1-9c4b-03c2eb9a3b57/exec-e48dadbb-7e1f-42ec-9f2d-a05ded8068a7.png"
+}

@@ -215,6 +215,7 @@ namespace HappyToy.V2
             if (!session.InputAllowed || !EnemyNavigation.Ready(agent)) { Stop(); repath = 0; return; }
             var player = session.player;
             if (!player || !player.eyes || !visual) { Stop(); return; }
+            if (EnemyTrapRestraint.IsHeld(this)) { Moving = false; return; }
             if (TickCabinetEncounter(session, player)) return;
             var delta = player.transform.position - transform.position;
             bool sameFloor = EnemyNavigation.SameFloor(player.transform.position, floorY);

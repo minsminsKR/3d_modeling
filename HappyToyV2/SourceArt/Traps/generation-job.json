@@ -1,0 +1,32 @@
+{
+  "application": "hunyuan3d-webapp",
+  "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "job": "d6d1f02c-07fb-4e5a-affd-3443cacb6f16",
+  "status": "completed",
+  "gpu": "0 only, explicitly selected; no auto/split",
+  "model": "TRELLIS.2",
+  "resolution": 512,
+  "textureResolution": 4096,
+  "steps": 12,
+  "seed": 1234,
+  "removeBackground": true,
+  "elapsedSeconds": 141,
+  "savedInWebapp": true,
+  "reference": "trap-reference.png",
+  "processedInput": "trap-processed-input.png",
+  "output": "trap-original.glb",
+  "originalSHA256": "3729043d040946e123b55337fe13f81b84ebe855ec36add44f2148949fa629d1",
+  "earlierFailedJobs": [
+    {
+      "id": "4babefb0-9a0a-46ee-9280-05df0e17f540",
+      "gpu": "1 shape, 0 material",
+      "result": "CUDA OOM in background removal; no output"
+    },
+    {
+      "id": "de1e1eed-ef4a-4365-9ea4-b51a026c7b34",
+      "gpu": "1 shape, 0 material",
+      "result": "CUDA OOM in shape attention; no output"
+    }
+  ],
+  "trainingSafety": "No training process was stopped, restarted or configured. GPU 1 was not used after the user disclosed active training."
+}

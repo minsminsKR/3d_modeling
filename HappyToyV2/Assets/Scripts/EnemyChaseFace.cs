@@ -59,9 +59,9 @@ namespace HappyToy.V2
             if (!Prepared || !brain || Time.timeScale == 0) return;
             var session = GameSession.Current;
             if (session && session.Finished) return; // Retain the attacking face in defeat presentation.
-            bool threatening = brain.isActiveAndEnabled && (brain.state == StalkerBrain.State.Chase || brain.AttackActive);
-            float next = Mathf.MoveTowards(Weight, threatening ? 1 : 0, Time.deltaTime / (threatening ? .45f : .7f));
-            bool cabinetChanged = cabinetFace != null && cabinetFace.Tick(brain.isActiveAndEnabled && brain.CabinetAggressive, Time.deltaTime);
+            bool threatening = brain.isActiveAndEnabled && (brain.state == StalkerBrain.State.Chase || brain.AttackActive || brain.Trapped);
+            float next = Mathf.MoveTowards(Weight, threatening ? 1 : 0, Time.deltaTime / (brain.Trapped ? .12f : threatening ? .45f : .7f));
+            bool cabinetChanged = cabinetFace != null && cabinetFace.Tick(brain.isActiveAndEnabled && (brain.CabinetAggressive || brain.Trapped), Time.deltaTime*(brain.Trapped ? 4 : 1));
             if (next != Weight || cabinetChanged) Apply(next);
         }
         void Apply(float weight)
