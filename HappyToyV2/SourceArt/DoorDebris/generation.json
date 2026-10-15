@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-15",
+  "application": "hunyuan3d-webapp (user-designated repository modeling application)",
+  "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "job": "18329bcc-f11a-4938-a5a4-6b60089945dc",
+  "jobURL": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/18329bcc-f11a-4938-a5a4-6b60089945dc",
+  "reference": "reference.png",
+  "referencePrompt": "reference-prompt.txt",
+  "referenceTool": "built-in image_gen",
+  "model": "TRELLIS.2",
+  "pipelineResolution": 512,
+  "textureResolution": 4096,
+  "steps": 12,
+  "seed": 1234,
+  "removeBackground": true,
+  "gpu": 0,
+  "gpuPolicy": "Explicit GPU 0 selection; no GPU 1 generation or rigging requested. User AI training on GPU 1 is outside this job.",
+  "original": "door-debris-original.glb",
+  "embeddedPBR": true,
+  "status": "completed",
+  "elapsedSeconds": 158,
+  "savedInWebapp": true,
+  "sha256": {
+    "reference.png": "062a2db58721fc39c7ac98534096b33a2ce3461b91aec561ddb5ded8be6bf9f2",
+    "processed-reference.png": "bebe799a5254d933e9c40003c7f7735f9c7feac5f09f9ec34cd3362df33a9b68",
+    "door-debris-original.glb": "62f387222ee2abf54fbaa60b21f70c0b9adf9b0d19cb5daa3ace0145728950f8"
+  }
+}

@@ -90,6 +90,16 @@ PROFILES = {
             PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
             PLAY + "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
             PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence"))]),
+    "wraith-hallway": ("Visual-only full-height wraith, real closed/locked/open door passage, persistent batched fragments and silent school/corridor restoration", [
+        ("PlayMode", (
+            PLAY + "HallwayWraithFillsDoorEnvelopeKeepsOriginalAgentAndFitsClonedVisualOnlyOnce",
+            PLAY + "BrokenDoorReleasesAnOrdinaryPursuerAlreadyUsingTheOpening",
+            PLAY + "MaskRunnerShattersClosedLockedDoorsPassesOpenDoorsAndRestoresRubble",
+            PLAY + "SchoolMaskShattersClosedLeavesInAllMovementStatesAndRestoresSilentRubble",
+            PLAY + "AdvancedDoorTraversalSchoolMannequinHonorsGazeLightPauseAndRestoresRealPassage",
+            PLAY + "StudioRunMovesWithTheAgentAndFreezesOnPause",
+            PLAY + "StudioCorridorCloneUsesOneReplacementAndHidesTheFloatingFace",
+            PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement"))]),
     "title": ("Title head/body/comfort behavior, real start transition and keyboard start", [
         ("PlayMode", play_tests("CloudBaeksugwiHeadTests.cs") + (
             PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",

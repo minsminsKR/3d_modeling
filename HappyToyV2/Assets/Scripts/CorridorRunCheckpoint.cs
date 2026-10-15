@@ -71,7 +71,7 @@ namespace HappyToy.V2
             try
             {
                 for(int i=0;i<doors.Length;i++)
-                { doors[i].movingLeaf.localPosition=data.doors[i].leaf; doors[i].RestoreDoorDestruction(data.doors[i].broken); }
+                { doors[i].movingLeaf.localPosition=data.doors[i].leaf; doors[i].ProbeDoorDestruction(data.doors[i].broken); }
                 foreach(var drawer in drawers)
                 { savedDrawers.TryGetValue(drawer.StableId,out var state); drawer.Restore(state!=null && state.open,state?.travel ?? 0); }
                 Physics.SyncTransforms();
@@ -81,7 +81,7 @@ namespace HappyToy.V2
             finally
             {
                 for(int i=0;i<doors.Length;i++)
-                { doors[i].movingLeaf.localPosition=freshLeaves[i]; doors[i].RestoreDoorDestruction(freshBroken[i]); }
+                { doors[i].movingLeaf.localPosition=freshLeaves[i]; doors[i].ProbeDoorDestruction(freshBroken[i]); }
                 for(int i=0;i<drawers.Count;i++) drawers[i].Restore(freshDrawers[i].open,freshDrawers[i].travel);
                 Physics.SyncTransforms();
             }

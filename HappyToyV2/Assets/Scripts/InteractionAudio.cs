@@ -84,6 +84,7 @@ namespace HappyToy.V2
 
         void LateUpdate()
         {
+            if(door && door.DoorBroken) { FinishSlide(false); if(source)source.Stop(); return; }
             var session = GameSession.Current;
             if (!Moving || !session || !session.InputAllowed) return;
             // Use can run after the leaf's Update. Its initiation frame is not a

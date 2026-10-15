@@ -59,7 +59,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(90000)]
-        public IEnumerator MaskRunnerShattersLockedAndOpenRealDoorsRunsFastestAndRestoresBrokenGeometry()
+        public IEnumerator MaskRunnerShattersClosedLockedDoorsPassesOpenDoorsAndRestoresRubble()
         {
             yield return PrepareCorridorMaskRunner();
             var run = Get<Component>(session, "Corridor"); var mask = Get<Component>(run, "Mask");
@@ -71,12 +71,12 @@ namespace HappyToy.V2.CloudTests
             Set(mask, "patrol", new[] { destination.transform, destination.transform });
             var original = Call(mask, "CaptureChapterProgress");
             float peakSpeed = 0;
-            foreach (bool locked in new[] { true, false })
+            foreach (string mode in new[] { "open", "locked", "closed" })
             {
                 ((Behaviour)mask).enabled = false;
-                Call(door, "RestoreDoor", false, closed); Set(door, "DoorLocked", locked);
+                Call(door, "RestoreDoor", false, closed); bool locked=mode=="locked"; Set(door, "DoorLocked", locked);
                 if (locked) Assert.That((bool)Call(door, "OpenForPursuer"), Is.False, "Ordinary pursuer opened a locked leaf");
-                else
+                else if(mode=="open")
                 {
                     Assert.That((bool)Call(door, "OpenForPursuer"), Is.True);
                     yield return Wait(() => Get<bool>(door, "AtRequestedDoorPose"), 3, "Actual open leaf never slid aside");
@@ -90,7 +90,7 @@ namespace HappyToy.V2.CloudTests
                 Set(state, "memory", 0f); Set(state, "doorPassage", null);
                 ((Behaviour)mask).enabled = true; Call(mask, "RestoreCorridorProgress", state);
                 var previous = mask.transform.position; float limit = Time.realtimeSinceStartup + 8;
-                while (Time.realtimeSinceStartup < limit && (!Get<bool>(door, "DoorBroken") ||
+                while (Time.realtimeSinceStartup < limit && (mode!="open" && !Get<bool>(door, "DoorBroken") ||
                     Vector3.Dot(mask.transform.position - door.transform.position, normal) < .9f))
                 {
                     yield return null; Physics.SyncTransforms(); peakSpeed = Mathf.Max(peakSpeed, agent.velocity.magnitude);
@@ -98,7 +98,13 @@ namespace HappyToy.V2.CloudTests
                         "Mask jumped through the real door instead of running");
                     previous = mask.transform.position; AdvancedDoorBodyClear(door, mask);
                 }
-                Assert.That(Get<bool>(door, "DoorBroken"), Is.True, "Runner did not shatter " + (locked ? "locked" : "open") + " route door");
+                if(mode=="open")
+                {
+                    Assert.That(Get<bool>(door,"DoorBroken"),Is.False,"An already open leaf was shattered");
+                    Assert.That(Vector3.Dot(mask.transform.position-door.transform.position,normal),Is.GreaterThan(.9f));
+                    continue;
+                }
+                Assert.That(Get<bool>(door,"DoorBroken"),Is.True,"Runner did not shatter "+mode+" route door");
                 Assert.That(Get<bool>(door, "IsOpen"), Is.True);
                 Assert.That(Get<bool>(door, "DoorOperable"), Is.False);
                 Assert.That(Get<bool>(door, "InteractionAvailable"), Is.False, "Broken door can still be closed by the player");
@@ -125,7 +131,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<Transform>(door, "movingLeaf").GetComponentsInChildren<Collider>().Any(x => x.enabled), Is.False);
             Assert.That(Get<UnityEngine.AI.NavMeshObstacle>(door, "obstacle").enabled, Is.False);
             Assert.That(Get<bool>(door, "InteractionAvailable"), Is.False);
-            Debug.Log("HAPPYTOY_MASK_RUNNER_DOORS_PASS actual speed=" + peakSpeed + " locked/open impact, native crossing, JSON/fresh-scene broken geometry");
+            var rubble=door.GetComponentInChildren(RequireType("DoorShatterDebris"));
+            Assert.That(rubble,Is.Not.Null);Assert.That(Get<bool>(rubble,"Settled"),Is.True);
+            Assert.That(Get<int>(rubble,"PieceCount"),Is.GreaterThanOrEqualTo(8),"Authored panels, rails and splinters were not restored");
+            Assert.That(door.GetComponent(RequireType("DoorDestructionAudio")),Is.Null,"Loading replayed the smash");
+            Debug.Log("HAPPYTOY_MASK_RUNNER_DOORS_PASS actual speed=" + peakSpeed + " closed/locked impact and intact open-door passage, native crossing, JSON/fresh-scene broken geometry");
             UnityEngine.Object.Destroy(destination);
         }
 

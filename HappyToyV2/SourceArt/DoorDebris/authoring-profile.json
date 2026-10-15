@@ -1,0 +1,9 @@
+{
+  "rotationDegrees": [0, 0, 0],
+  "widthMetres": 1.0,
+  "triangleBudget": 18000,
+  "textureSize": 2048,
+  "minimumSourceFaces": 200,
+  "minimumSourceSize": 0.03,
+  "review": "Generated source is already floor-flat in Blender XY, Z up. Retain 13 meaningful disconnected timber surfaces; discard tiny reconstruction specks. Separate pivots are centred by the Unity importer. Preserve generated fibrous relief with a CPU-baked normal atlas; per-part minimum detail may slightly exceed the target."
+}

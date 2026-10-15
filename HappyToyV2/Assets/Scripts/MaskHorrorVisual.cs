@@ -52,7 +52,7 @@ namespace HappyToy.V2
             var growth=owner.body.localScale;owner.body.localScale=Vector3.one;
             try
             {
-                model=owner.body.Find(ModelName);
+                model=owner.body.GetComponentsInChildren<Transform>(true).SingleOrDefault(t=>t.name==ModelName);
                 foreach(var r in owner.body.GetComponentsInChildren<Renderer>(true))r.enabled=false;
                 var oldLod=owner.body.GetComponent<LODGroup>();if(oldLod)oldLod.enabled=false;
                 if(!model)
@@ -74,6 +74,7 @@ namespace HappyToy.V2
                 head=model.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Head");
                 floatingFace=owner.mask.GetComponentsInChildren<Renderer>(true);
                 run.SampleAnimation(model.gameObject,0);
+                BaeksugwiHallwayPresentation.Fit(owner.body,model,owner.transform);
                 Prepared=true;
             }
             finally{owner.body.localScale=growth;}

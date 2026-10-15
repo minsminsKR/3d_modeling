@@ -17,7 +17,8 @@ namespace HappyToy.V2.CloudTests
             var actor=One("LanternMaskEncounter");var art=actor.GetComponent(RequireType("MaskHorrorVisual"));
             Assert.That(Get<bool>(art,"Prepared"),Is.True);
             var model=Get<Transform>(art,"BodyModel");
-            Assert.That(model.parent,Is.EqualTo(Get<Transform>(actor,"body")));
+            Assert.That(model.parent.name,Is.EqualTo("Hallway visual fit"));
+            Assert.That(model.parent.parent,Is.EqualTo(Get<Transform>(actor,"body")));
             Assert.That(model.GetComponentsInChildren<Transform>(true).Count(t=>t.name.EndsWith("_Wrist")),Is.EqualTo(18));
             var skins=model.GetComponentsInChildren<SkinnedMeshRenderer>(true);
             Assert.That(skins.Length,Is.EqualTo(1));Assert.That(skins[0].sharedMesh.vertexCount,Is.GreaterThan(900000));

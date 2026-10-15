@@ -107,10 +107,6 @@ namespace HappyToy.V2
         void Awake()
         {
             agent = GetComponent<NavMeshAgent>(); path = new NavMeshPath(); floorY = transform.position.y;
-            // Resize the imported children; the growth/mask attachment owners keep
-            // their existing animated pivots and the navigation capsule stays put.
-            if(motion && body && !body.Find("Baeksugwi Studio running model"))MonsterPresentationScale.Enlarge(motion.transform,2.24f,
-                transform.position.y-agent.baseOffset,false);
             if(mask && mask.childCount>0)
             {
                 var model=mask.GetChild(0);var bounds=MonsterPresentationScale.Bounds(model);
@@ -412,7 +408,7 @@ namespace HappyToy.V2
                 State == Phase.Chase ? (Transformed ? 3.4f * stride : 2.7f) : 1.15f;
             // Intro, transformation, attack, pause and floor gates have all passed.
             // The same physical leaf/audio/leases used by walking stalkers apply.
-            var doorResult = CorridorRunner ? TickRunnerDoor(target) : DoorTraversal.Tick(target, floorY);
+            var doorResult = TickRunnerDoor(target);
             if (doorResult != StalkerDoorTraversal.Result.Clear)
             {
                 repath = 0;

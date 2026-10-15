@@ -24,7 +24,7 @@ namespace HappyToy.V2
         public Door[] doors;
         public Supply[] supplies;
         [Serializable] public sealed class Door
-        { public string id; public bool open, hasSecondary; public Vector3 leaf, secondary; }
+        { public string id; public bool open, hasSecondary, broken, locked; public Vector3 leaf, secondary; }
         [Serializable] public sealed class Supply
         { public string id; public bool available; }
         public static bool Point(Vector3 p) => CorridorCheckpoint.Number(p.x,-100,100) &&
@@ -58,7 +58,7 @@ namespace HappyToy.V2
             var ids=new HashSet<string>();
             foreach(var door in doors)
                 if(door==null || !Identity(door.id) || !ids.Add(door.id) || !CorridorCheckpoint.Vector(door.leaf) ||
-                    !CorridorCheckpoint.Vector(door.secondary)) throw new ArgumentException("Invalid school doors");
+                    !CorridorCheckpoint.Vector(door.secondary) || door.broken && !door.open) throw new ArgumentException("Invalid school doors");
             ids.Clear();
             foreach(var supply in supplies)
                 if(supply==null || !Identity(supply.id) || !ids.Add(supply.id)) throw new ArgumentException("Invalid school supplies");

@@ -55,7 +55,7 @@ namespace HappyToy.V2
                 portraitActor=Portrait.angry.CaptureProgress(),nurseryActor=Nursery.monster.CaptureProgress(),
                 mannequin=Mannequin.CaptureChapterProgress(),mask=Mask.CaptureChapterProgress(),
                 portraitCompleted=Portrait.Completed,portraitWitnessed=Portrait.ChapterWitnessed,nurseryReleased=Nursery.Released,
-                doors=ChapterItems(Interactable.Kind.Door).Select(x=>new ChapterCheckpoint.Door { id=x.stableId,open=x.IsOpen,
+                doors=ChapterItems(Interactable.Kind.Door).Select(x=>new ChapterCheckpoint.Door { id=x.stableId,open=x.IsOpen,broken=x.DoorBroken,locked=x.DoorLocked,
                     leaf=x.movingLeaf.localPosition,hasSecondary=x.secondaryLeaf,secondary=x.secondaryLeaf?x.secondaryLeaf.localPosition:Vector3.zero }).ToArray(),
                 supplies=ChapterItems(Interactable.Kind.FirecrackerSupply).Select(x=>new ChapterCheckpoint.Supply { id=x.stableId,available=x.gameObject.activeSelf }).ToArray() };
             data.Validate(); return data;
@@ -92,17 +92,18 @@ namespace HappyToy.V2
         public void PrepareCheckpointNavigation(ChapterCheckpoint data)
         {
             var doors=ValidatedCheckpointDoors(data);
-            for(int i=0;i<doors.Length;i++) doors[i].RestoreSchoolDoor(data.doors[i].open,data.doors[i].leaf,data.doors[i].secondary);
+            for(int i=0;i<doors.Length;i++) { doors[i].DoorLocked=data.doors[i].locked; doors[i].RestoreSchoolShatteredDoor(data.doors[i].open,data.doors[i].leaf,data.doors[i].secondary,data.doors[i].broken); }
             Physics.SyncTransforms();
         }
         void RestoreValidatedCheckpoint(ChapterCheckpoint data,Interactable[] doors,Interactable[] packs)
         {
             var freshLeaves=doors.Select(x=>x.movingLeaf.localPosition).ToArray();
+            var freshBroken=doors.Select(x=>x.DoorBroken).ToArray();
             var freshSecondary=doors.Select(x=>x.secondaryLeaf?x.secondaryLeaf.localPosition:Vector3.zero).ToArray();
             try
             {
                 for(int i=0;i<doors.Length;i++)
-                { doors[i].movingLeaf.localPosition=data.doors[i].leaf; if(doors[i].secondaryLeaf) doors[i].secondaryLeaf.localPosition=data.doors[i].secondary; }
+                { doors[i].movingLeaf.localPosition=data.doors[i].leaf; if(doors[i].secondaryLeaf) doors[i].secondaryLeaf.localPosition=data.doors[i].secondary; doors[i].ProbeDoorDestruction(data.doors[i].broken); }
                 Physics.SyncTransforms();
                 TrapWorld.ValidateRestore(data.traps,session.player);
                 if(!session.player.CanRestoreChapterProgress(data.player)) throw new ArgumentException("Invalid saved school player clearance");
@@ -110,7 +111,7 @@ namespace HappyToy.V2
             finally
             {
                 for(int i=0;i<doors.Length;i++)
-                { doors[i].movingLeaf.localPosition=freshLeaves[i]; if(doors[i].secondaryLeaf) doors[i].secondaryLeaf.localPosition=freshSecondary[i]; }
+                { doors[i].movingLeaf.localPosition=freshLeaves[i]; if(doors[i].secondaryLeaf) doors[i].secondaryLeaf.localPosition=freshSecondary[i]; doors[i].ProbeDoorDestruction(freshBroken[i]); }
                 Physics.SyncTransforms();
             }
             foreach(var pose in new[]{data.cyclopse,data.portraitActor,data.nurseryActor}.Where(x=>x.active).Select(x=>x.position)
@@ -123,7 +124,7 @@ namespace HappyToy.V2
             FirstAppearances.RestoreProgress(Recovered, data.mannequin.released);
             for(int i=0;i<Memories.Length;i++) Memories[i].gameObject.SetActive(i>=Recovered);
             for(int i=0;i<packs.Length;i++) packs[i].gameObject.SetActive(data.supplies[i].available);
-            for(int i=0;i<doors.Length;i++) doors[i].RestoreSchoolDoor(data.doors[i].open,data.doors[i].leaf,data.doors[i].secondary);
+            for(int i=0;i<doors.Length;i++) { doors[i].DoorLocked=data.doors[i].locked; doors[i].RestoreSchoolShatteredDoor(data.doors[i].open,data.doors[i].leaf,data.doors[i].secondary,data.doors[i].broken); }
             Portrait.RestoreChapterCompletion(data.portraitCompleted,data.portraitWitnessed); Nursery.RestoreChapterCompletion(data.nurseryReleased);
             Cyclopse.RestoreChapterProgress(data.cyclopse,doors); Portrait.angry.RestoreChapterProgress(data.portraitActor,doors);
             Nursery.monster.RestoreChapterProgress(data.nurseryActor,doors);

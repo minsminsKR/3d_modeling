@@ -1,0 +1,29 @@
+{
+  "tool": "Blender 4.0.2 (CPU)",
+  "source": "door-debris-original.glb",
+  "sourceSHA256": "62f387222ee2abf54fbaa60b21f70c0b9adf9b0d19cb5daa3ace0145728950f8",
+  "referenceSHA256": "062a2db58721fc39c7ac98534096b33a2ce3461b91aec561ddb5ded8be6bf9f2",
+  "parts": 13,
+  "originalFaces": 990726,
+  "gameTriangles": 18365,
+  "baseColor": "DD_baseColor.png",
+  "metallicSmoothness": "DD_metallicSmoothness.png",
+  "normal": "DD_normal.png",
+  "widthMetres": 1.0,
+  "editable": "DoorDebris_Editable.blend",
+  "partTriangles": {
+    "Timber_04": 1417,
+    "Timber_00": 6506,
+    "Timber_12": 119,
+    "Timber_02": 2044,
+    "Timber_03": 1544,
+    "Timber_06": 306,
+    "Timber_01": 4975,
+    "Timber_07": 258,
+    "Timber_08": 154,
+    "Timber_11": 244,
+    "Timber_05": 558,
+    "Timber_09": 120,
+    "Timber_10": 120
+  }
+}

@@ -78,6 +78,8 @@ namespace HappyToy.V2.Editor
             CreatureFaceImport.Ensure();
             UncatCabinetFaceImport.Ensure();
             BaeksugwiHeadImport.Ensure();
+            BaeksugwiHallwayAuthoring.Ensure();
+            DoorDebrisImport.Ensure();
             GraphicsPbrImport.Ensure();
             ThreatEyeModelImport.Ensure();
             ThreatEyeMaskImport.Ensure();

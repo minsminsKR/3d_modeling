@@ -38,7 +38,7 @@ namespace HappyToy.V2
             Interactable candidate = null; float nearest = 2.4f; bool routed = false;
             foreach (var door in runnerDoors)
             {
-                if (!door || !door.DoorOperable || door.gameObject.scene != gameObject.scene ||
+                if (!door || !door.DoorOperable || door.IsOpen && door.AtRequestedDoorPose || door.gameObject.scene != gameObject.scene ||
                     !EnemyNavigation.SameActorFloor(agent, door.transform.position, floorY)) continue;
                 var delta = door.transform.position - transform.position; delta.y = 0;
                 if (delta.magnitude >= nearest) continue;

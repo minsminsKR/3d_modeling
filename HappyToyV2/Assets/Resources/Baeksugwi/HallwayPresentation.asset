@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 777b981c1b12e1847b46b974cf32e57e, type: 3}
+  m_Name: HallwayPresentation
+  m_EditorClassIdentifier: Assembly-CSharp::HappyToy.V2.BaeksugwiHallwayPresentation
+  scale: {x: 1.090651, y: 1.4688245, z: 1.05}
+  offset: {x: -0.012607496, y: -0, z: 0}
+  sourceEnvelope:
+    m_Center: {x: 0.011559606, y: 0.80336344, z: -0.8875799}
+    m_Extent: {x: 1.1552733, y: 0.80336344, z: 1.6013885}
+  targetWidth: 2.52
+  targetHeight: 2.36

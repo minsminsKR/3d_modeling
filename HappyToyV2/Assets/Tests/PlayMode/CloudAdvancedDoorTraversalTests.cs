@@ -76,59 +76,65 @@ namespace HappyToy.V2.CloudTests
             Assert.That(actor.GetComponent(RequireType("StalkerDoorTraversal")),Is.Not.Null);
         }
 
-        [UnityTest, Timeout(120000)]
-        public IEnumerator AdvancedDoorTraversalSchoolMaskOpensClosesInWanderInvestigationAndChaseAndRestoresPassage()
+        [UnityTest, Timeout(180000)]
+        public IEnumerator SchoolMaskShattersClosedLeavesInAllMovementStatesAndRestoresSilentRubble()
         {
             yield return PrepareAdvancedSchoolActor("LanternMaskEncounter");
-            var actor=Get<Component>(Get<Component>(session,"Chapter"),"Mask");
+            var chapter=Get<Component>(session,"Chapter");var actor=Get<Component>(chapter,"Mask");
             var original=Call(actor,"CaptureChapterProgress");
-            var door=TraversalDoor(false); var normal=Get<Vector3>(door,"DoorNormal");
-            var marker=new GameObject("CloudQA advanced real-door patrol"); marker.transform.position=SupportedDoorSide(door,2.1f);
+            var door=TraversalDoor(false,d=>Get<Transform>(d,"secondaryLeaf"));var normal=Get<Vector3>(door,"DoorNormal");
+            var marker=new GameObject("CloudQA physical wraith smash patrol");marker.transform.position=SupportedDoorSide(door,2.1f);
             Set(actor,"patrol",new[]{marker.transform,marker.transform});
-            var closedPrimary=Get<Transform>(door,"movingLeaf").localPosition;
-            var closedSecondary=Get<Transform>(door,"secondaryLeaf").localPosition;
+            var primary=Get<Transform>(door,"movingLeaf");var secondary=Get<Transform>(door,"secondaryLeaf");
+            var closed=primary.localPosition;var second=secondary.localPosition;
             foreach(string phase in new[]{"Wander","Investigate","Chase"})
             {
+                ((Behaviour)actor).enabled=false;Call(door,"RestoreSchoolDoor",false,closed,second);
+                Set(door,"DoorLocked",phase=="Wander");
                 var data=CopyAdvancedProgress(original);
-                Set(data,"position",SupportedDoorSide(door,-1.8f)); Set(data,"rotation",Quaternion.LookRotation(normal));
-                Set(data,"target",marker.transform.position); Set(data,"state",phase); Set(data,"memory",8f);
-                Set(data,"waypoint",0); Set(data,"doorPassage",null);
-                Call(actor,"RestoreChapterProgress",data);
-                var primary=Get<Transform>(door,"movingLeaf"); var secondary=Get<Transform>(door,"secondaryLeaf");
-                var initial=closedPrimary; var initialSecondary=closedSecondary;
-                var voice=door.GetComponent(RequireType("InteractionAudio")); int before=voice?Get<int>(voice,"CuesPlayed"):0;
-                Assert.That(Get<bool>(door,"IsOpen"),Is.False);
-                yield return Wait(()=>Get<bool>(door,"IsOpen"),6,"Mask never opened the real school door in "+phase,()=>AdvancedDoorDiagnostics(actor));
+                Set(data,"position",SupportedDoorSide(door,-2.1f));Set(data,"rotation",Quaternion.LookRotation(normal));
+                Set(data,"target",marker.transform.position);Set(data,"state",phase);Set(data,"memory",8f);Set(data,"waypoint",0);Set(data,"doorPassage",null);
+                ((Behaviour)actor).enabled=true;Call(actor,"RestoreChapterProgress",data);
+                yield return Wait(()=>Get<bool>(door,"DoorBroken"),8,"School wraith did not break a closed door in "+phase,()=>AdvancedDoorDiagnostics(actor));
+                var debris=door.GetComponentInChildren(RequireType("DoorShatterDebris"));
+                Assert.That(Get<int>(debris,"PieceCount"),Is.GreaterThanOrEqualTo(16),"Both real leaves need modeled panels, rails and splinters");
+                Assert.That(debris.GetComponentsInChildren<Collider>(),Is.Empty);
+                var voice=door.GetComponent(RequireType("DoorDestructionAudio"));
+                Assert.That(Get<int>(voice,"CuesPlayed"),Is.EqualTo(phase=="Wander"?1:phase=="Investigate"?2:3));
                 if(phase=="Investigate")
                 {
-                    Call(shell,"Pause"); var pose=actor.transform.position; var leafPose=primary.localPosition;
-                    var saved=CopyAdvancedProgress(Call(actor,"CaptureChapterProgress"));
-                    var passage=Get<object>(saved,"doorPassage");
-                    Assert.That(Get<bool>(passage,"passing"),Is.True);
-                    Assert.That(Mathf.Abs(Get<float>(passage,"entrySide")),Is.EqualTo(1));
-                    Call(actor,"RestoreChapterProgress",saved);
-                    Assert.That(Vector3.Distance(actor.transform.position,pose),Is.LessThan(.002f),"JSON/NavMesh restore changed the actor pose beyond numeric precision");
-                    pose=actor.transform.position; // subsequent pause/light assertions remain exact
+                    Call(shell,"Pause");var pieces=debris.GetComponentsInChildren<MeshRenderer>();var positions=pieces.Select(p=>p.transform.position).ToArray();
                     yield return Delay(.2f);
-                    Assert.That(actor.transform.position,Is.EqualTo(pose)); Assert.That(primary.localPosition,Is.EqualTo(leafPose));
+                    for(int i=0;i<pieces.Length;i++)Assert.That(pieces[i].transform.position,Is.EqualTo(positions[i]));
                     Call(shell,"Resume");
                 }
-                float end=Time.realtimeSinceStartup+10;
-                while(Time.realtimeSinceStartup<end)
-                {
-                    yield return null; Physics.SyncTransforms(); AdvancedDoorBodyClear(door,actor);
-                    if(Vector3.Dot(actor.transform.position-door.transform.position,normal)>.8f &&
-                        !Get<bool>(door,"IsOpen") && Get<bool>(door,"AtRequestedDoorPose") &&
-                        Vector3.Distance(primary.localPosition,closedPrimary)<.00001f &&
-                        Vector3.Distance(secondary.localPosition,closedSecondary)<.00001f) break;
-                }
-                Assert.That(Vector3.Dot(actor.transform.position-door.transform.position,normal),Is.GreaterThan(.8f));
-                Assert.That(Get<bool>(door,"IsOpen"),Is.False,"Mask never closed behind itself in "+phase+" "+AdvancedDoorDiagnostics(actor));
-                Assert.That(Vector3.Distance(primary.localPosition,initial),Is.LessThan(.00002f));
-                Assert.That(Vector3.Distance(secondary.localPosition,initialSecondary),Is.LessThan(.00002f));
-                Assert.That(Get<int>(door.GetComponent(RequireType("InteractionAudio")),"CuesPlayed"),Is.EqualTo(before+2));
+                yield return Wait(()=>Vector3.Dot(actor.transform.position-door.transform.position,normal)>.8f,8,"Wraith did not pass its broken doorway");
+                yield return Wait(()=>Get<bool>(debris,"Settled"),2,"Fragments never settled");
+                yield return Delay(1.6f);
+                Assert.That(debris&&debris.gameObject.activeSelf,Is.True,"Rubble vanished after the old 1.4 second lifetime");
+                Assert.That(debris.GetComponentsInChildren<MeshRenderer>().Length,Is.EqualTo(1),"Settled rubble should batch into one renderer");
+                AdvancedDoorBodyClear(door,actor);
+                Assert.That(Get<bool>(door,"DoorOperable"),Is.False);
             }
+            // Restore the other progression-owned actors before a real school save.
+            foreach(string name in new[]{"Cyclopse","Mannequin"})
+            {var other=Get<Component>(chapter,name);other.gameObject.SetActive(true);((Behaviour)other).enabled=false;}
+            PlacePlayer(SupportedDoorSide(door,-2.1f),false);
+            Call(shell,"Pause");var saved=SchoolCheckpointCopy(Call(session,"CaptureChapterCheckpoint"));
+            string id=Get<string>(door,"stableId");
+            Assert.That(Get<bool>(Get<Array>(saved,"doors").Cast<object>().Single(d=>Get<string>(d,"id")==id),"broken"),Is.True);
+            var previous=session;Call(shell,"Restart",false);yield return RecoveryRebind(previous);
+            Call(session,"CreateChapterForCheckpoint",saved);chapter=Get<Component>(session,"Chapter");
+            Call(chapter,"PrepareCheckpointNavigation",saved);yield return null;yield return null;Call(session,"ApplyChapterCheckpoint",saved);
+            door=Components("Interactable").Single(d=>Get<string>(d,"stableId")==id);
+            Assert.That(Get<bool>(door,"DoorBroken"),Is.True);
+            var restored=door.GetComponentInChildren(RequireType("DoorShatterDebris"));
+            Assert.That(Get<bool>(restored,"Settled"),Is.True);
+            Assert.That(door.GetComponent(RequireType("DoorDestructionAudio")),Is.Null,"Save restoration replayed a break voice");
+            Assert.That(Get<Transform>(door,"movingLeaf").GetComponentsInChildren<Collider>().Any(c=>c.enabled),Is.False);
+            UnityEngine.Object.Destroy(marker);
         }
+
 
         [UnityTest, Timeout(90000)]
         public IEnumerator AdvancedDoorTraversalSchoolMannequinHonorsGazeLightPauseAndRestoresRealPassage()

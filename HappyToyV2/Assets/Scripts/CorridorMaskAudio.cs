@@ -8,7 +8,6 @@ namespace HappyToy.V2
     [DisallowMultipleComponent, RequireComponent(typeof(LanternMaskEncounter), typeof(NavMeshAgent))]
     public sealed class CorridorMaskAudio : MonoBehaviour
     {
-        sealed class DoorVoice { public GameObject emitter; public AudioSource source; public float expires; }
         public const float ContactStride = 1.35f;
         public int ContactsPlayed { get; private set; }
         public int WhistlesPlayed { get; private set; }
@@ -18,9 +17,7 @@ namespace HappyToy.V2
         public AudioSource WhistleSource => whistle;
         public EnemyAcoustics ContactAcoustics => contactAcoustics;
         public EnemyAcoustics WhistleAcoustics => whistleAcoustics;
-        readonly List<DoorVoice> doorVoices = new List<DoorVoice>();
         AudioClip[] contactClips, whistleClips;
-        AudioClip doorClip;
         AudioSource contacts, whistle;
         EnemyAcoustics contactAcoustics, whistleAcoustics;
         LanternMaskEncounter mask;
@@ -33,7 +30,6 @@ namespace HappyToy.V2
         {
             mask = GetComponent<LanternMaskEncounter>(); agent = GetComponent<NavMeshAgent>();
             contactClips = LoadBank("mask-heavy-step"); whistleClips = LoadBank("mask-near-whistle");
-            doorClip = ExternalAudio.Required("mask-door-smash");
             contacts = MakeEmitter("Corridor mask pounding feet", .1f, 3.6f, 31f, 28, .92f, out contactAcoustics);
             whistle = MakeEmitter("Corridor mask near whistle", 1.95f, 1.8f,
                 LanternMaskEncounter.NearWhistleDistance + .25f, 22, .64f, out whistleAcoustics);
@@ -66,7 +62,6 @@ namespace HappyToy.V2
         {
             Vector3 delta = transform.position - previous; previous = transform.position;
             float vertical = Mathf.Abs(delta.y); delta.y = 0;
-            CleanupDoorVoices(false);
             if (!Live())
             {
                 travelled = 0;
@@ -111,33 +106,16 @@ namespace HappyToy.V2
         }
         public void PlayDoorSmash(Transform door)
         {
-            if (!door || !Live()) return;
-            var emitter = new GameObject("Mask broken door contact");
-            emitter.transform.position = door.position + Vector3.up * .95f;
-            var source = emitter.AddComponent<AudioSource>(); source.minDistance = 3; source.maxDistance = 27; source.priority = 20;
-            var acoustics = EnemyAcoustics.Bind(source, transform, .82f, 0);
-            source.clip = doorClip; source.Play(); DoorSmashesPlayed++;
-            doorVoices.Add(new DoorVoice { emitter = emitter, source = source, expires = Time.time + doorClip.length + .1f });
-            PerceivedTension.ReportSound(GameSession.Current, source, acoustics, true);
-        }
-        void CleanupDoorVoices(bool all)
-        {
-            for (int index = doorVoices.Count - 1; index >= 0; index--)
-            {
-                var voice = doorVoices[index];
-                if (!all && voice.emitter && (AudioListener.pause || Time.time < voice.expires)) continue;
-                if (voice.source) voice.source.Stop(); if (voice.emitter) Destroy(voice.emitter); doorVoices.RemoveAt(index);
-            }
+            if(door && Live() && DoorDestructionAudio.PlayAt(door.GetComponent<Interactable>()))DoorSmashesPlayed++;
         }
         void StopVoices()
-        { if (contacts) contacts.Stop(); if (whistle) whistle.Stop(); CleanupDoorVoices(true); }
+        { if (contacts) contacts.Stop(); if (whistle) whistle.Stop(); }
         void OnDisable() { travelled = 0; StopVoices(); }
         void OnDestroy()
         {
             StopVoices();
             if (contactClips != null) foreach (var clip in contactClips) if (clip) Destroy(clip);
             if (whistleClips != null) foreach (var clip in whistleClips) if (clip) Destroy(clip);
-            if (doorClip) Destroy(doorClip);
             if (contacts) Destroy(contacts.gameObject); if (whistle) Destroy(whistle.gameObject);
         }
     }

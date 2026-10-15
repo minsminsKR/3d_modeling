@@ -41,6 +41,7 @@ namespace HappyToy.V2
         {
             var actor = owner.transform;
             bool repath = false;
+            if (Door && Door.DoorBroken) { Clear(owner); repath = true; }
             if (Door && (!EnemyNavigation.SameActorFloor(agent, Door.transform.position, homeFloor) ||
                 HorizontalDistance(actor.position, Door.transform.position) > 4.5f)) Clear(owner);
             if (Door)
