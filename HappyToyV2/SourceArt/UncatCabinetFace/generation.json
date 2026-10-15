@@ -1,0 +1,10 @@
+{
+  "tool": "built-in image_gen",
+  "mode": "edit",
+  "prompt": "Precise edit for a horror game's existing Uncat face albedo. Edit target is the attached square frontal orange-furred human-cat monster face: two eyes, swept dark hair, a cat nose, whisker pads, and an open fanged mouth with a protruding long tongue. Preserve the exact camera, framing, head silhouette, orange fur, hair, two eyes and nose placement, existing pore detail and lighting. Change ONLY the lower mouth area: remove ALL painted teeth, black mouth opening and protruding tongue. Replace them with a tightly closed, crooked snarling lip seam and tense wrinkled muzzle/jowl skin. The lip seam is centered horizontally, about 71 percent down the square image. Continue pale whisker-pad skin naturally over the removed tongue. Keep surrounding whiskers as consistent as possible. No teeth, tongue or open black cavity painted anywhere. This image is a skin texture for a separately modeled hinged jaw, actual teeth, tongue and mouth interior. Do not create a new creature, do not move eyes or nose, no blood, no text. Match the input's photorealistic texture detail and colors.",
+  "transparent_background": false,
+  "input": "generation-edit-target.png",
+  "output": "closed-lips-generated-original.png",
+  "inputSha256": "d3d0953ea6d4305dda26de8b1a9ddbbfccda7a8a9979b18e3d98d04bfa09df9e",
+  "outputSha256": "510aeeb3936dc6b034610f33af5482600dc7fcbed12adc938e36e1c8e975aa11"
+}

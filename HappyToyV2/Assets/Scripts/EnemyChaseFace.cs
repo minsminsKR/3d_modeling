@@ -67,7 +67,7 @@ namespace HappyToy.V2
         void Apply(float weight)
         {
             Weight = weight;
-            if (mouthLiner) { mouthLiner.SetActive(weight > 0); mouthLiner.transform.localScale = Vector3.one * weight; }
+            if (mouthLiner) { mouthLiner.SetActive(weight > 0 && CabinetWeight <= .025f); mouthLiner.transform.localScale = Vector3.one * weight; }
             for (int i = 0; i < animated.Length; i++) animated[i] = neutral[i] + data.bindDeltas[i] * weight;
             cabinetFace?.Apply(animated, weight);
             owned.vertices = animated; owned.RecalculateBounds();

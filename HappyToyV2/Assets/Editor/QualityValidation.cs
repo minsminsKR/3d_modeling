@@ -76,6 +76,7 @@ namespace HappyToy.V2.Editor
             BabyEyeMaskImport.Ensure();
             CyclopseExpressionImport.Ensure();
             CreatureFaceImport.Ensure();
+            UncatCabinetFaceImport.Ensure();
             BaeksugwiHeadImport.Ensure();
             GraphicsPbrImport.Ensure();
             ThreatEyeModelImport.Ensure();

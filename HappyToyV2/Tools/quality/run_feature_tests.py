@@ -44,6 +44,12 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "uncat-cabinet-face": ("Uncat dropped cabinet jaw, modeled irregular teeth, legacy cap exclusion, pause/escape, original eyes and Cyclopse lifecycle", [
+        ("PlayMode", (
+            PLAY + "UncatCabinetDetectionRushesToKill",
+            PLAY + "UncatCabinetGapePausesAndRestoresAfterEscape",
+            PLAY + "UncatFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin",
+            PLAY + "CyclopseFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin"))]),
     "cyclopse-cabinet-face": ("Cyclopse modeled cabinet gape, actual capture/escape, pause, original pursuit and eye lifecycle", [
         ("PlayMode", (
             PLAY + "CyclopseCabinetDetectionReraisesGrinAndRushesToKill",
