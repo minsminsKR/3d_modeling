@@ -132,7 +132,9 @@ namespace HappyToy.V2
             return false;
         }
 
-        public IEnumerator Play(StalkerBrain brain)
+        public IEnumerator Play(StalkerBrain brain) => EnemyTimeStop.RunClock(PlayClocked(brain));
+
+        IEnumerator PlayClocked(StalkerBrain brain)
         {
             if (Phase != "idle") yield break;
             session = GameSession.Current; actor = brain;

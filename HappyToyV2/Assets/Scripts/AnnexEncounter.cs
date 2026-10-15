@@ -51,11 +51,11 @@ namespace HappyToy.V2
             if (!session) return;
             // Result screens pause time/input; cancellation must run before that gate.
             if(session.EncountersResolved){if(!Cancelled)CancelEncounter();return;}
-            if(Cancelled||!monster||!session.InputAllowed||!session.player||session.player.Hidden)return;
+            if(Cancelled||!monster||!session.InputAllowed||!session.player||session.player.Hidden||EnemyTimeStop.Active)return;
             var delta = session.player.transform.position - roomCenter;
             if (Mathf.Abs(delta.y)>2) return; delta.y = 0;
             if (!Triggered && session.EncounterStep >= activationStep && delta.magnitude < triggerRadius)
-                StartCoroutine(Reveal());
+                StartCoroutine(EnemyTimeStop.RunClock(Reveal()));
         }
         IEnumerator Reveal()
         {

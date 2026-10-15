@@ -14,7 +14,7 @@ namespace HappyToy.V2
         readonly List<Vector3> vertices=new List<Vector3>();
         void LateUpdate()
         {
-            if(!model||Time.timeScale==0)return;
+            if(!model||Time.timeScale==0||EnemyTimeStop.Active)return;
             if(!sampledMesh)
             {
                 restPosition=model.localPosition;skins=model.GetComponentsInChildren<SkinnedMeshRenderer>();

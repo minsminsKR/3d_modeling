@@ -29,13 +29,14 @@ namespace HappyToy.V2
         public string CabinetStage => cabinetEncounter.Stage;
         public bool CabinetAggressive => cabinetEncounter.Aggressive;
         public bool CanWitnessHiding(PlayerMotor player,Vector3 entrance) =>
-            isActiveAndEnabled && Released && !Resolved && player && !player.Hidden &&
+            !EnemyTimeStop.Active && isActiveAndEnabled && Released && !Resolved && player && !player.Hidden &&
                 (Moving || attack.Active || cabinetEncounter.Active || player.RemembersCabinetWitness(this,entrance)) &&
                 EnemyNavigation.SameActorFloor(agent, entrance, floorY) &&
                 EnemyNavigation.ClearSight(transform.position + Vector3.up * 1.7f,
                     player.transform.position + Vector3.up * player.SightTargetHeight, player);
         public void ObserveHiding(PlayerMotor player, Vector3 entrance)
         {
+            if (EnemyTimeStop.Active) return;
             bool witnessed = CanWitnessHiding(player,entrance);
             attack.Reset(); cabinetEncounter.Reset();
             if (!witnessed) return;
@@ -206,6 +207,7 @@ namespace HappyToy.V2
         }
         void Update()
         {
+            if (EnemyTimeStop.Active) return;
             var session = GameSession.Current;
             if (!session) return;
             if (session.EncountersResolved) { Resolve(); return; }

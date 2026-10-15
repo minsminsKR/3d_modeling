@@ -55,7 +55,8 @@ namespace HappyToy.V2
         }
         public void StartChapterReveal()
         {
-            if(chapterDriven && !Triggered && !Cancelled && session && session.InputAllowed) StartCoroutine(Reveal());
+            if(chapterDriven && !Triggered && !Cancelled && session && session.InputAllowed)
+            { Triggered = true; StartCoroutine(EnemyTimeStop.RunClock(Reveal())); }
         }
 
         void Start()
@@ -90,12 +91,12 @@ namespace HappyToy.V2
             if(chapterDriven) return;
             if (step >= 4) { CancelEncounter(); return; }
             if (step == 3 && isActiveAndEnabled && !Triggered && !Cancelled && session && session.InputAllowed)
-                StartCoroutine(Reveal());
+            { Triggered = true; StartCoroutine(EnemyTimeStop.RunClock(Reveal())); }
         }
 
         void Update()
         {
-            if(chapterDriven && Triggered && !ChapterWitnessed && session && session.InputAllowed)
+            if(chapterDriven && Triggered && !ChapterWitnessed && session && session.InputAllowed && !EnemyTimeStop.Active)
             {
                 var actor=normal && normal.activeInHierarchy?normal:angry && angry.gameObject.activeInHierarchy?angry.gameObject:null;
                 if(actor)

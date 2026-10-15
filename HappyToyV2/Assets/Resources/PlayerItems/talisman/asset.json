@@ -1,0 +1,12 @@
+{
+  "original": "Originals/talisman.glb",
+  "heightMetres": 0.2,
+  "vertices": 4500,
+  "triangles": 9000,
+  "rigged": false,
+  "baseColor": "albedo.png",
+  "metallicRoughness": "metalrough.png",
+  "materialNames": [
+    "talisman_surface_0"
+  ]
+}

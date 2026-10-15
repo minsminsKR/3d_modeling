@@ -36,7 +36,7 @@ namespace HappyToy.V2
         public void Play(Cue kind, Vector3 worldPosition, string caption = null, float gain = 1)
         {
             var session = GameSession.Current;
-            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.StoryStep >= 4 ||
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || EnemyTimeStop.Active || session.StoryStep >= 4 ||
                 gameObject.scene != session.gameObject.scene || !StealthRules.Finite(worldPosition.x) ||
                 !StealthRules.Finite(worldPosition.y) || !StealthRules.Finite(worldPosition.z) ||
                 !StealthRules.Finite(gain) || gain <= 0) return;

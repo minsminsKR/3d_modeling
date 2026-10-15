@@ -1,0 +1,85 @@
+{
+  "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "model": "TRELLIS.2",
+  "gpu": 0,
+  "pipeline": 512,
+  "textureSize": 4096,
+  "steps": 12,
+  "seed": 1234,
+  "removeBackground": true,
+  "jobs": [
+    {
+      "asset": "hand",
+      "id": "434f707c-7ce3-442f-bc74-a308047905c8",
+      "status": "completed",
+      "elapsedSeconds": 233,
+      "original": "Originals/hand.glb",
+      "savedOnServer": true,
+      "processedReference": "References/hand-processed.png",
+      "editable": "hand.blend"
+    },
+    {
+      "asset": "incense",
+      "id": "df49db41-fe4a-4cbb-9112-63966492bdef",
+      "status": "completed",
+      "elapsedSeconds": 1294,
+      "savedOnServer": true,
+      "original": "Originals/incense.glb",
+      "processedReference": "References/incense-processed.png",
+      "editable": "incense.blend"
+    },
+    {
+      "asset": "talisman",
+      "id": "718d7bd9-bc08-44f3-9c1b-fccebc18d3cf",
+      "status": "completed",
+      "elapsedSeconds": 741,
+      "savedOnServer": true,
+      "original": "Originals/talisman.glb",
+      "processedReference": "References/talisman-processed.png",
+      "editable": "talisman.blend"
+    },
+    {
+      "asset": "flashlight",
+      "id": "9c05ceb3-29ae-48e4-9624-65fe44a9374e",
+      "status": "completed",
+      "elapsedSeconds": 161,
+      "savedOnServer": true,
+      "original": "Originals/flashlight.glb",
+      "processedReference": "References/flashlight-processed.png",
+      "editable": "flashlight.blend"
+    }
+  ],
+  "integrationStatus": "Integrated in Unity 6000.6.0f1: modeled held items and hands, memory guidance, talisman time stop and radial loadout. Focused rule/integration checks passed and a fresh Windows player built successfully; no native playthrough performed.",
+  "batches": [
+    "9620cdfe-dc3f-43d4-a1f7-da545995895c",
+    "49ed7347-cb6b-4b0a-baa3-babc0e32a667"
+  ],
+  "imageGenerator": "Built-in image_gen for hand, incense and talisman. Existing project-owned HUD flashlight image reused byte-for-byte.",
+  "handedness": "Generated reference shows left palm despite right-hand prompt; mirror the generated base locally for the opposite hand during rigging.",
+  "inputHashes": {
+    "Originals/flashlight.glb": "fa9c8d81865233994600c05f89cfdc6f4a3f070a42655828a349c015303be428",
+    "Originals/hand.glb": "75a454b61cbfab99fe60827aa2b42b242f491290d9ded0709a05c6e91265be3e",
+    "Originals/incense.glb": "ed470dcd80292635734852f2951f0ee7c2a192d07caa5412912c8d9969f5856e",
+    "Originals/talisman.glb": "5b8e5abed808320aa77014a94385286aabce731590cb76b60eb12026e12841a8",
+    "References/flashlight-image-provenance.json": "f829d4f6290b466b92516396452ca57d37588e50e3b37cf4f08f519abf4b203d",
+    "References/flashlight-processed.png": "279472ec8668a3846fd587f3ac32cb03b4e0093e7715495feaff74a5828b21a4",
+    "References/flashlight.png": "eb2fb72105b499f1b29854ba8961f7f576c3ebb31c5858bd6ff17a23943960fa",
+    "References/hand-processed.png": "9762bdf80e0a32e5c64057ea22edc024969fd1aecb4c352db257c9af8cef8815",
+    "References/hand.png": "b3ff843f2b7ec210a75bc3b82cf454b1125174db8e91d6ead8a34ef15e050291",
+    "References/hand.prompt.txt": "3143668af038238aca0155efdf65271dbe25f980f5aef45c40c31a7eb28a7e78",
+    "References/incense-processed.png": "81c69a59512eae5e4ffcaab984579446337f15faca8564c86837ea15cb2476e5",
+    "References/incense.png": "d94454de0d3715faf0810dab66be7af04a7991f8494e2830b3f2b0230df33eeb",
+    "References/incense.prompt.txt": "e757660f2faccebff2d48f56e0d44610ea6520712cb301c863a4d1979df266c7",
+    "References/talisman-processed.png": "f6f6617abf63eb9973cb02cd4f76911401bf23b7e5b83ecee11853291edffeef",
+    "References/talisman.png": "57c166cd2449af5bcb0cc06f8b00a5cfee8a8dda0150ac66e58fbd85cbf000c9",
+    "References/talisman.prompt.txt": "8e25c1df6902ed50511344780e8dbe61f928271c8596d075ad838c0f5f565e11"
+  },
+  "authoring": {
+    "blender": "4.0.2",
+    "tool": "finish_player_items.py",
+    "geometry": "Source GLB welded across coincident UV seam vertices; original per-loop UVs retained. Mesh simplified, continuous normals recalculated. No substitute base meshes.",
+    "handRig": "17 bones: wrist, palm, five three-joint fingers. Blender bone heat skin binding, smooth wrist/palm core protection; five editable grip actions. Unity FBX coordinate conversion mirrors the generated surface; runtime mirrors once for the opposite hand.",
+    "fragments": "Five source-derived paper strips with alternating slanted cuts, original UV/PBR retained.",
+    "gameMapImport": "Original 4096 maps kept; Unity import limited to 2048."
+  }
+}

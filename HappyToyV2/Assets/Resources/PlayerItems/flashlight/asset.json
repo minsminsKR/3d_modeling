@@ -1,0 +1,12 @@
+{
+  "original": "Originals/flashlight.glb",
+  "heightMetres": 0.24,
+  "vertices": 8433,
+  "triangles": 18000,
+  "rigged": false,
+  "baseColor": "albedo.png",
+  "metallicRoughness": "metalrough.png",
+  "materialNames": [
+    "flashlight_surface_0"
+  ]
+}

@@ -41,7 +41,7 @@ namespace HappyToy.V2
             { StopVoice(); return; }
             // Explicit listener pause freezes native playback. Do not stop/restart
             // the cry at menu entry or undo a deliberately muted/stopped source.
-            if (!session.InputAllowed || !CrySource) return;
+            if (!session.InputAllowed || !CrySource || EnemyTimeStop.Active) return;
             if (!started) { CrySource.Play(); started = true; }
             UpdateMutter(session);
             float distance = Vector3.Distance(session.player.eyes.transform.position, CrySource.transform.position);
@@ -54,6 +54,11 @@ namespace HappyToy.V2
             }
         }
         public void StopVoice() { StopMutter(); if (CrySource) CrySource.Stop(); started = false; nextHeardReport = 0; }
+        internal void DelayTimeStopDeadlines(float seconds)
+        {
+            if (nextHeardReport > 0) nextHeardReport += seconds;
+            if (nextMutter > 0) nextMutter += seconds;
+        }
         void OnDisable() { StopVoice(); }
         void OnDestroy()
         {

@@ -34,7 +34,7 @@ namespace HappyToy.V2
         public static EnemyTrapRestraint TryCatch(NavMeshAgent candidate)
         {
             var session = GameSession.Current;
-            if (!session || !session.InputAllowed || session.EncountersResolved || !Eligible(candidate)) return null;
+            if (!session || !session.InputAllowed || session.EncountersResolved || EnemyTimeStop.Active || !Eligible(candidate)) return null;
             var hold = candidate.GetComponent<EnemyTrapRestraint>();
             if (!hold) hold = candidate.gameObject.AddComponent<EnemyTrapRestraint>();
             hold.agent = candidate;
@@ -61,7 +61,7 @@ namespace HappyToy.V2
             if (!owner || !owner.isActiveAndEnabled || !session || session.Finished || session.EncountersResolved)
             { Release(); return; }
             StopBody();
-            if (session.InputAllowed && clock.Tick(Time.deltaTime)) Release();
+            if (session.InputAllowed && !EnemyTimeStop.Active && clock.Tick(Time.deltaTime)) Release();
         }
         void LateUpdate() { if (Held) StopBody(); }
         void Release()

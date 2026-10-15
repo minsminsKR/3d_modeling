@@ -45,7 +45,7 @@ namespace HappyToy.V2
         // Strong enough to register at distance, bounded so original sclera,
         // iris shading and the un-emissive pupil survive a close torch view.
         static readonly Color Glow=new Color(1.1f,.012f,.008f);
-        float phase;
+        float phase, emissionClock;
         bool emissionEnabled=true;
         // A reference-authored mask can keep its actual black eye slits while
         // sharing the same material/anchor lifetime owner as the other faces.
@@ -58,7 +58,7 @@ namespace HappyToy.V2
         public IReadOnlyList<Renderer> EmissionRenderers=>emissionRenderers;
         public IReadOnlyList<float> EyeRadii=>shapes.Select(s=>Mathf.Max(
             Head.TransformVector(s.horizontal).magnitude,Head.TransformVector(s.vertical).magnitude)).ToArray();
-        void Awake()=>block=new MaterialPropertyBlock();
+        void Awake(){block=new MaterialPropertyBlock();emissionClock=Time.time;}
 
         public static MonsterRedEyes Attach(Transform model,string key)=>Prepare(model,key,true);
         public static MonsterRedEyes AttachStatic(Transform model,string key)=>Prepare(model,key,false);
@@ -280,7 +280,7 @@ namespace HappyToy.V2
         {emissionEnabled=value;if(Prepared)ApplyEmission();}
         void ApplyEmission()
         {
-            float breath=.97f+.03f*Mathf.Sin(Time.time*2.15f+phase);
+            float breath=.97f+.03f*Mathf.Sin(emissionClock*2.15f+phase);
             foreach(var state in states)
             {
                 if(!state.renderer)continue;
@@ -294,7 +294,12 @@ namespace HappyToy.V2
                 }
             }
         }
-        void LateUpdate(){if(Prepared)ApplyEmission();}
+        void LateUpdate()
+        {
+            if(EnemyTimeStop.Active)return;
+            emissionClock+=Time.deltaTime;
+            if(Prepared)ApplyEmission();
+        }
         void OnEnable()
         {
             if(!Prepared)return;

@@ -22,7 +22,7 @@ VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
-    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests"))
+    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "RitualItemRulesTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
 PLAY = CLOUD + "CloudPlayModeTests."
@@ -44,6 +44,13 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "ritual-items": ("Incense routes and offering target, optional stock save compatibility, actual wheel input/page ownership and all six frozen attackers", [
+        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualTimeStopTests.cs", "RitualItemWheelTests.cs") + (
+            PLAY + "TrapPlacementUsesSupportedGroundAndPausedInputNeverConsumesStock",
+            PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement",
+            PLAY + "PortraitFirstAppearanceUsesPhysicalFrameThenProtectedAngryGrace",
+            PLAY + "NurseryFirstCryAndCrawlPreparationKeepFullFiveSecondSafetyWindow",
+            PLAY + "ArchiveScrapePrecedesRealEmergenceAndRetryResetsItsOwner"))]),
     "traps": ("Supported placement and physical input, six actors held five paused-aware seconds without damage, capture faces, recorded cues and armed-save restoration", [
         ("PlayMode", (
             PLAY + "TrapPlacementUsesSupportedGroundAndPausedInputNeverConsumesStock",

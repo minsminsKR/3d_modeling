@@ -104,6 +104,7 @@ namespace HappyToy.V2
         public void PlayAttackCue() => PlayAttackCue(false);
         public void PlayAttackCue(bool atCabinet)
         {
+            if (EnemyTimeStop.Active) return;
             var session = GameSession.Current;
             // Lantern already owns its curse/strike warning. Never double it.
             if (!isActiveAndEnabled || !attackSource || lantern || !session || !session.InputAllowed || session.StoryStep >= 4) return;
@@ -115,6 +116,7 @@ namespace HappyToy.V2
         }
         void Update()
         {
+            if (EnemyTimeStop.Active) return;
             movedForContact = false;
             Vector3 delta = transform.position - previous; previous = transform.position;
             float vertical = Mathf.Abs(delta.y); delta.y = 0;
@@ -163,6 +165,7 @@ namespace HappyToy.V2
         { pendingContact = movedForContact = false; distance = 0; }
         internal void EmitAtRenderedLimbContact(float gap)
         {
+            if (EnemyTimeStop.Active) return;
             if (!pendingContact || !movedForContact || !isActiveAndEnabled ||
                 Profile != EnemySoundKind.Uncat || !StealthRules.Finite(gap) || Mathf.Abs(gap) > .045f) return;
             var session = GameSession.Current;

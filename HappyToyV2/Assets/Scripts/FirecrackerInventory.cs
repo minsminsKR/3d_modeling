@@ -33,7 +33,8 @@ namespace HappyToy.V2
         bool throwRequested;
 
         public bool CanAim => isActiveAndEnabled && player && player.eyes && !player.Hidden && Count > 0 && cooldown <= 0 &&
-            GameSession.Current && GameSession.Current.player == player && GameSession.Current.InputAllowed && !GameSession.Current.EncountersResolved;
+            GameSession.Current && GameSession.Current.player == player && GameSession.Current.InputAllowed && !GameSession.Current.Shell.ItemWheelOpen &&
+            !player.Rituals.Burning && player.Items.Selected == PlayerItem.Snapper && !GameSession.Current.EncountersResolved;
 
         void Awake()
         {
@@ -51,7 +52,7 @@ namespace HappyToy.V2
             cooldown = Mathf.Max(0, cooldown - Time.deltaTime);
             FeedbackRemaining = Mathf.Max(0, FeedbackRemaining - Time.deltaTime);
             if (FeedbackRemaining <= 0) ActionFeedback = string.Empty;
-            throwRequested = PlayerControls.Throw;
+            throwRequested = !session.Shell.ItemWheelOpen && session.Shell.ItemWheelChangedFrame != Time.frameCount && !player.Rituals.Burning && PlayerControls.Throw;
         }
         // The same rendered-frame Q press uses the final player/camera pose,
         // after PlayerFeedback's stance/bob, just like the held preview.
@@ -59,7 +60,8 @@ namespace HappyToy.V2
         public bool TryThrow()
         {
             var session = GameSession.Current;
-            if (!session || !session.InputAllowed || !player || !player.eyes) return false;
+            if (!session || !session.InputAllowed || !player || !player.eyes || session.Shell.ItemWheelOpen ||
+                session.Shell.ItemWheelChangedFrame == Time.frameCount || player.Rituals.Burning) return false;
             if (player.Hidden) return Deny("숨어 있는 동안에는 콩알탄을 던질 수 없습니다.");
             if (session.EncountersResolved) return Deny("이름이 복원되어 콩알탄이 필요하지 않습니다.");
             if (Count <= 0) return Deny("콩알탄을 모두 사용했습니다.");
@@ -72,6 +74,8 @@ namespace HappyToy.V2
             LastThrown = root.AddComponent<FirecrackerProjectile>();
             LastThrown.Launch(velocity);
             Count--;
+            player.Items.Select(PlayerItem.Snapper);
+            player.Hands?.PlayAction(PlayerItem.Snapper);
             session.NoteChapterAction(ChapterAction.FirecrackerThrown);
             cooldown = .5f;
             if (Aim) Aim.Cancel();

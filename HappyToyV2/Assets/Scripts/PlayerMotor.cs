@@ -42,7 +42,7 @@ namespace HappyToy.V2
         public float FootstepNoiseRemaining { get; private set; }
         public event System.Action<Vector3, float> FootstepNoiseEmitted;
         public bool SprintExhausted { get; private set; }
-        public bool Paused => !GameSession.Current || !GameSession.Current.InputAllowed ||
+        public bool Paused => !GameSession.Current || !GameSession.Current.InputAllowed || GameSession.Current.Shell.ItemWheelOpen ||
             GameSession.Current.ChapterMode && GameSession.Current.Chapter.FirstAppearances &&
             GameSession.Current.Chapter.FirstAppearances.CameraOwned;
         Interactable currentFocus;
@@ -56,6 +56,9 @@ namespace HappyToy.V2
         public CollisionFlags LastCollision { get; private set; }
         public FirecrackerInventory Firecrackers { get; private set; }
         public MonsterTrapInventory Traps { get; private set; }
+        public PlayerRitualInventory Rituals { get; private set; }
+        public PlayerItemLoadout Items { get; private set; }
+        public FirstPersonHands Hands { get; private set; }
         public PlayerFeedback Feedback { get; private set; }
         public float SlowRemaining { get; private set; }
         public float MovementMultiplier => SlowRemaining > 0 ? .5f : 1;
@@ -86,6 +89,13 @@ namespace HappyToy.V2
             if (!Firecrackers) Firecrackers = gameObject.AddComponent<FirecrackerInventory>();
             Traps = GetComponent<MonsterTrapInventory>();
             if (!Traps) Traps = gameObject.AddComponent<MonsterTrapInventory>();
+            Rituals = GetComponent<PlayerRitualInventory>();
+            if (!Rituals) Rituals = gameObject.AddComponent<PlayerRitualInventory>();
+            Items = GetComponent<PlayerItemLoadout>();
+            if (!Items) Items = gameObject.AddComponent<PlayerItemLoadout>();
+            Hands = GetComponent<FirstPersonHands>();
+            if (!Hands) Hands = gameObject.AddComponent<FirstPersonHands>();
+            if (!GetComponent<PlayerItemWheel>()) gameObject.AddComponent<PlayerItemWheel>();
             Feedback = GetComponent<PlayerFeedback>();
             if (!Feedback) Feedback = gameObject.AddComponent<PlayerFeedback>();
             Lock(GameSession.Current && GameSession.Current.InputAllowed);
@@ -118,7 +128,7 @@ namespace HappyToy.V2
             else transform.Rotate(0, delta.x, 0);
             pitch = Mathf.Clamp(pitch - delta.y, Hidden && hiddenPeek ? -25 : -78, Hidden && hiddenPeek ? 25 : 78);
             eyes.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
-            if (PlayerControls.Flashlight && flashlight)
+            if (PlayerControls.Flashlight && flashlight && session.Shell.ItemWheelChangedFrame != Time.frameCount)
             {
                 FlashlightSystem.Toggle();
             }

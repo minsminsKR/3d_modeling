@@ -96,13 +96,28 @@ namespace HappyToy.V2
             ReloadError = string.Empty;
             ApplyScreenState();
         }
+        public bool ItemWheelOpen { get; private set; }
+        public int ItemWheelChangedFrame { get; private set; } = -1;
+        bool windowHasFocus = true;
+        public void SetItemWheelOpen(bool open)
+        {
+            bool next = open && Screen == Page.Playing && !IsReloading && session && !session.Finished;
+            if (next != ItemWheelOpen) ItemWheelChangedFrame = Time.frameCount;
+            ItemWheelOpen = next;
+            ApplyScreenState();
+        }
         void ApplyScreenState()
         {
             bool playing = Screen == Page.Playing && !IsReloading;
-            Time.timeScale = playing ? 1 : 0;
+            if (!playing && ItemWheelOpen)
+            {
+                ItemWheelOpen = false;
+                ItemWheelChangedFrame = Time.frameCount;
+            }
+            Time.timeScale = playing ? (ItemWheelOpen ? ItemWheelRules.SlowTimeScale : 1) : 0;
             AudioListener.pause = !playing;
-            Cursor.lockState = playing ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !playing;
+            Cursor.lockState = playing && !ItemWheelOpen && windowHasFocus ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !playing || ItemWheelOpen || !windowHasFocus;
         }
 
         public void Begin() { if (Screen == Page.Title) Set(Page.Playing); }
@@ -422,11 +437,18 @@ namespace HappyToy.V2
         }
         void OnApplicationFocus(bool focused)
         {
-            if (focused) ApplyScreenState();
-            else { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
+            windowHasFocus = focused;
+            // Losing focus cancels a pending selection and restores normal game
+            // time. It must not leave a slow wheel running in the background.
+            if (!focused) SetItemWheelOpen(false);
+            else ApplyScreenState();
         }
         // OS window/minimize notifications do not own the explicit Esc menu.
-        void OnApplicationPause(bool paused) { if (!paused) ApplyScreenState(); }
+        void OnApplicationPause(bool paused)
+        {
+            if (paused) SetItemWheelOpen(false);
+            else ApplyScreenState();
+        }
         void OnApplicationQuit() { SaveSettings(); }
         void OnDestroy()
         {

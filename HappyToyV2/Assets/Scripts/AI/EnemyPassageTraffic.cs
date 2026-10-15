@@ -32,6 +32,7 @@ namespace HappyToy.V2
         }
         public void ObserveRoute(Vector3 point){wanted=point;intent=true;}
         public void Cancel(){if(Yielding && agent)agent.stoppingDistance=normalStoppingDistance;Yielding=false;peer=null;intent=false;if(agent && configured)agent.avoidancePriority=priority;}
+        internal void DelayTimeStopDeadline(float seconds) { if (Yielding) releaseDeadline += seconds; }
         void OnEnable(){previous=transform.position;blockedTime=0;if(identity==0)identity=++nextIdentity;if(!actors.Contains(this))actors.Add(this);if(configured && agent)agent.avoidancePriority=priority;}
         void OnDisable(){actors.Remove(this);Cancel();if(agent && configured)agent.avoidancePriority=originalPriority;}
         void OnDestroy()=>actors.Remove(this);
@@ -39,6 +40,7 @@ namespace HappyToy.V2
         Vector3 Heading { get {var d=wanted-transform.position;d.y=0;return d.sqrMagnitude>.01f?d.normalized:Vector3.zero;} }
         void LateUpdate()
         {
+            if (EnemyTimeStop.Active) return;
             var deltaMoved=transform.position-previous;deltaMoved.y=0;previous=transform.position;
             var session=GameSession.Current;
             if(!Live || !session || !session.InputAllowed || session.Finished){Cancel();return;}

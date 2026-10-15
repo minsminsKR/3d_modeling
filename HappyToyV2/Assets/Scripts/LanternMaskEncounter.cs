@@ -29,11 +29,12 @@ namespace HappyToy.V2
         readonly EnemyCabinetEncounter cabinetEncounter = new EnemyCabinetEncounter();
         public string CabinetStage => cabinetEncounter.Stage;
         public bool CabinetAggressive => cabinetEncounter.Aggressive;
-        public bool CanWitnessHiding(PlayerMotor player,Vector3 entrance) => isActiveAndEnabled && IntroCompleted && !IntroActive && State!=Phase.Resolved && player &&
+        public bool CanWitnessHiding(PlayerMotor player,Vector3 entrance) => !EnemyTimeStop.Active && isActiveAndEnabled && IntroCompleted && !IntroActive && State!=Phase.Resolved && player &&
             (State==Phase.Chase || attack.Active || cabinetEncounter.Active || player.RemembersCabinetWitness(this,entrance)) && Sees(player) &&
             EnemyNavigation.WithinFloorPolicy(agent,entrance,floorY);
         public void ObserveHiding(PlayerMotor player, Vector3 entrance)
         {
+            if (EnemyTimeStop.Active) return;
             bool witnessed = CanWitnessHiding(player,entrance);
             attack.Reset(); cabinetEncounter.Reset();
             if (!witnessed) return;
@@ -162,6 +163,7 @@ namespace HappyToy.V2
         }
         void HearFootstep(Vector3 point, float radius)
         {
+            if (EnemyTimeStop.Active) return;
             // The corridor runner's own sprint masks external footsteps.
             if (CorridorRunner) return;
             var session = GameSession.Current;
@@ -228,6 +230,7 @@ namespace HappyToy.V2
         public bool CanSeePlayer() => GameSession.Current && Sees(GameSession.Current.player);
         public bool HearNoise(Vector3 point, float duration)
         {
+            if (EnemyTimeStop.Active) return false;
             if (CorridorRunner) return false;
             var session = GameSession.Current;
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
@@ -283,6 +286,7 @@ namespace HappyToy.V2
         }
         void Update()
         {
+            if (EnemyTimeStop.Active) return;
             var session = GameSession.Current;
             BindFootsteps(session ? session.player : null);
             if (!session) return;
@@ -544,6 +548,7 @@ namespace HappyToy.V2
         }
         void LateUpdate()
         {
+            if (EnemyTimeStop.Active) return;
             var session = GameSession.Current;
             if (!session || !session.InputAllowed || Time.timeScale <= 0 || transformTime <= 4.15f ||
                 State == Phase.Resolved || !body || !mask) return;

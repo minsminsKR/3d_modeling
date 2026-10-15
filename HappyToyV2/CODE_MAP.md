@@ -7,6 +7,7 @@
 
 | 기능 | 진입점 / 실제 책임 소유자 | 검사 프로필 |
 |---|---|---|
+| 향·부적·손 액션·아이템 휠 | `PlayerRitualInventory`는 향/조각/완성 부적 재고와 10초 연소 수명을, 독립 `Core/TalismanStockRules`, `TalismanBurnClock`, `ItemWheelRules`는 조합·시계·원형 선택을 소유한다. `IncenseGuidance`는 남은 모든 기억의 실제 NavMesh 첫 경로로 연기를 갈라 보내고 회수 완료 시 봉헌 제단을 향한다. `RitualWorld`는 기억 주변 아이템과 선택적인 저장 필드를 연결한다. `AI/EnemyTimeStop`은 기존 AI의 정지 guard와 함께 원래 NavMesh/애니메이션/포즈/소리·등장 코루틴 시계를 보존·복원한다. `FirstPersonHands`는 생성 손 리그·그립·투척과 별도 시점 렌더, 위→아래 연소·컬러 불꽃을 소유한다. 세계 흑백은 소유 Volume이며 URP 자산을 변경하지 않는다. `PlayerItemLoadout`은 선택/사용, `PlayerItemWheel`은 Tab/RB hold와 선택 입력, `UI/ItemWheelOverlay`는 표시 데이터만 받는다. 시간/커서는 `GameShell`이 소유한다. `SourceArt/PlayerItems`에 GPU 0 GLB·입력·설정·리그·Blender·재현 도구가 있다. | `ritual-items`, `core`; 무음 정지 시각 검토 `PlayerHandsPreview.Render` |
 | 메뉴·일시정지·설정 | `Assets/Scripts/GameShell.cs`는 화면 전환·입력 허용을 조정한다. `Assets/Scripts/UI/ShellPauseScreen.cs`, `ShellSettingsScreen.cs`는 각 화면의 컨트롤을 소유한다. | `ui` |
 | 기록·결과·페이지 이동 | `UI/ShellJournalScreen.cs`, `ShellRecordsScreen.cs`, `ShellResultScreen.cs`. 화면용 데이터와 Action을 받아 표시하며 게임 진행을 직접 변경하지 않는다. | `ui`, 저장 변경 시 `checkpoint` |
 | HUD·메뉴 공통 스타일 | `UI/ShellHudView.cs`는 HUD 컨트롤을 소유한다. `UI/FlashlightGauge.cs`는 낡은 금속 손전등 PNG와 얇은 황동 잔량 레일을 표시한다. 아이콘 제작 원본·프롬프트는 `SourceArt/Hud`에 있다. `UI/ShellLayout.cs`는 공통 배치·스타일을 만든다. `GameShellView.cs`는 Unity 패널·입력·각 모듈 연결을 담당한다. | `ui`, 손전등 표시만 변경 시 `flashlight-hud` |
@@ -40,7 +41,7 @@
 
 ## 모듈 경계
 
-- `Assets/Scripts/Core/HappyToy.V2.Core.asmdef`: System만 사용하는 독립 규칙 15개.
+- `Assets/Scripts/Core/HappyToy.V2.Core.asmdef`: System만 사용하는 독립 규칙 18개.
   UnityEngine, 씬, `GameSession`, UI, 물리/NavMesh를 참조하지 않는다.
 - `Assets/Tests/EditMode/Core/HappyToy.V2.CoreTests.asmdef`: Core를 직접 참조하는
   빠른 규칙 검사. 씬 로드·프레임 대기·문자열 리플렉션이 없다.

@@ -30,12 +30,13 @@ namespace HappyToy.V2
             if (!session || session.Finished) { ClearFeedback(); return; }
             if (!session.InputAllowed || session.Shell.GameplayEntryFrame == Time.frameCount) return;
             Cooldown = Mathf.Max(0,Cooldown-Time.deltaTime); FeedbackRemaining = Mathf.Max(0,FeedbackRemaining-Time.deltaTime);
-            if (PlayerControls.PlaceTrap) TryPlace();
+            if (!session.Shell.ItemWheelOpen && session.Shell.ItemWheelChangedFrame != Time.frameCount && !player.Rituals.Burning && PlayerControls.PlaceTrap) TryPlace();
         }
         public bool TryPlace()
         {
             var session = GameSession.Current;
-            if (!session || !session.InputAllowed || !player) return false;
+            if (!session || !session.InputAllowed || !player || session.Shell.ItemWheelOpen ||
+                session.Shell.ItemWheelChangedFrame == Time.frameCount || player.Rituals.Burning) return false;
             if (!WorldRoot) WorldRoot = session.transform;
             if (player.Hidden) return Deny("숨어 있는 동안에는 덫을 설치할 수 없습니다.");
             if (session.EncountersResolved) return Deny("이름이 복원되어 덫이 필요하지 않습니다.");
@@ -45,6 +46,8 @@ namespace HappyToy.V2
             foreach (var trap in WorldRoot.GetComponentsInChildren<PlacedMonsterTrap>())
                 if (!trap.Spent && Vector3.Distance(trap.transform.position,point) < .7f) return Deny("다른 덫에서 조금 떨어져 설치하세요.");
             LastPlaced = PlacedMonsterTrap.Create(WorldRoot,point,facing,true);
+            player.Items.Select(PlayerItem.Trap);
+            player.Hands?.PlayAction(PlayerItem.Trap);
             Count--; Cooldown = .5f; Notice("덫 설치 · 남은 "+Count+"개 · 몬스터를 5초간 붙잡습니다."); return true;
         }
         bool Deny(string text) { Notice(text); return false; }

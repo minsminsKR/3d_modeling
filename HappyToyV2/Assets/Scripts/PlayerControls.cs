@@ -31,7 +31,7 @@ namespace HappyToy.V2
                 pad.rightStick.ReadValue().sqrMagnitude > .01f || pad.dpad.ReadValue().sqrMagnitude > .01f ||
                 pad.buttonSouth.wasPressedThisFrame || pad.buttonEast.wasPressedThisFrame || pad.buttonNorth.wasPressedThisFrame ||
                 pad.startButton.wasPressedThisFrame || pad.selectButton.wasPressedThisFrame ||
-                pad.leftStickButton.wasPressedThisFrame || pad.leftShoulder.wasPressedThisFrame || pad.leftTrigger.wasPressedThisFrame || pad.rightTrigger.wasPressedThisFrame))
+                pad.leftStickButton.wasPressedThisFrame || pad.leftShoulder.wasPressedThisFrame || pad.rightShoulder.wasPressedThisFrame || pad.leftTrigger.wasPressedThisFrame || pad.rightTrigger.wasPressedThisFrame))
                 UsingGamepad = true;
             if (pad == null || !pad.enabled) UsingGamepad = false;
         }
@@ -48,7 +48,10 @@ namespace HappyToy.V2
         public static bool Interact => AcceptsInput && (Pad != null ? Pad.buttonSouth.wasPressedThisFrame : Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame);
         public static bool Flashlight => AcceptsInput && (Pad != null ? Pad.buttonNorth.wasPressedThisFrame : Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame);
         public static bool PlaceTrap => AcceptsInput && (Pad != null ? Pad.leftShoulder.wasPressedThisFrame : Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame);
-        public static bool Throw => AcceptsInput && (Pad != null ? Pad.rightTrigger.wasPressedThisFrame : Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame);
+        public static bool Throw => AcceptsInput && Pad == null && Keyboard.current != null && Keyboard.current.qKey.wasPressedThisFrame;
+        public static bool UseItem => AcceptsInput && (Pad != null ? Pad.rightTrigger.wasPressedThisFrame : Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame);
+        public static bool UseItemHeld => AcceptsInput && (Pad != null ? Pad.rightTrigger.isPressed : Mouse.current != null && Mouse.current.leftButton.isPressed);
+        public static bool ItemWheelHeld => AcceptsInput && (Pad != null ? Pad.rightShoulder.isPressed : Keyboard.current != null && Keyboard.current.tabKey.isPressed);
         public static bool AimHeld => AcceptsInput && (Pad != null ? Pad.leftTrigger.isPressed : Mouse.current != null && Mouse.current.rightButton.isPressed);
         public static bool AimPressed => AcceptsInput && (Pad != null ? Pad.leftTrigger.wasPressedThisFrame : Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame);
     }

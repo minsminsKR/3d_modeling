@@ -10,6 +10,7 @@ namespace HappyToy.V2
         public static void Populate(Transform parent, PlayerMotor player, Interactable[] sources)
         {
             player.Traps.ConfigureWorld(parent);
+            RitualWorld.Populate(parent,player);
             Physics.SyncTransforms();
             int number = 0;
             for (int i=1;i<sources.Length;i+=3)

@@ -70,6 +70,7 @@ namespace HappyToy.V2
 
         public bool HearNoise(Vector3 point, float duration)
         {
+            if (EnemyTimeStop.Active) return false;
             if (Trapped) return false;
             if (GameSession.Current && GameSession.Current.CheatSafeMode) return false;
             if (BabyMode) return HearBabyLoudNoise(point, duration);
@@ -87,6 +88,7 @@ namespace HappyToy.V2
         // an unseen player's position through its separate loud-noise chase rule.
         public bool HearSnapper(Vector3 point)
         {
+            if (EnemyTimeStop.Active) return false;
             if (Trapped) return false;
             var session = GameSession.Current;
             if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
@@ -157,6 +159,7 @@ namespace HappyToy.V2
 
         void HearFootstep(Vector3 point, float radius)
         {
+            if (EnemyTimeStop.Active) return;
             if (Trapped) return;
             bool loudBabyStep = BabyMode && radius >= CorridorBabyBehaviour.LoudFootstepRadius;
             var session = GameSession.Current;
@@ -184,11 +187,12 @@ namespace HappyToy.V2
             return perception.CanSee(transform, agent, player, floorY, Senses, state == State.Chase);
         }
 
-        public bool CanWitnessHiding(PlayerMotor target,Vector3 entrance) => isActiveAndEnabled && target && target==player && !target.Hidden &&
+        public bool CanWitnessHiding(PlayerMotor target,Vector3 entrance) => !EnemyTimeStop.Active && isActiveAndEnabled && target && target==player && !target.Hidden &&
             (state==State.Chase || awareness.Acquired || cabinetEncounter.Active || target.RemembersCabinetWitness(this,entrance)) && CanSeePlayer() &&
             EnemyNavigation.WithinFloorPolicy(agent,entrance,floorY);
         public void ObserveHiding(Vector3 entrance)
         {
+            if (EnemyTimeStop.Active) return;
             if (!player || player.Hidden) return;
             bool witnessed=CanWitnessHiding(player,entrance);
             // A new entry changes the target from the exposed body to a door.
@@ -531,8 +535,14 @@ namespace HappyToy.V2
             return true;
         }
 
+        internal void DelayTimeStopDeadlines(float seconds)
+        {
+            if (patrolDwelling) patrolDwellUntil += seconds;
+        }
+
         void Update()
         {
+            if (EnemyTimeStop.Active) return;
             var session = GameSession.Current;
             if (!player && session) player = session.player;
             BindFootsteps(player);

@@ -81,6 +81,7 @@ namespace HappyToy.V2
         }
         void LateUpdate()
         {
+            if (EnemyTimeStop.Active) return;
             if(!Prepared||!owner)return;
             bool bodyVisible=owner.body.gameObject.activeInHierarchy;
             // The new skinned mesh contains its own face; keep the floating

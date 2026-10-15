@@ -61,7 +61,8 @@ namespace HappyToy.V2
         void OnRecord(string id)
         {
             if (id == "archive-record" && isActiveAndEnabled && !Triggered && !Cancelled &&
-                session && session.InputAllowed && session.StoryStep < 4) StartCoroutine(Reveal());
+                session && session.InputAllowed && session.StoryStep < 4)
+            { Triggered = true; StartCoroutine(EnemyTimeStop.RunClock(Reveal())); }
         }
         void OnStory(int step) { if (step >= 4) CancelEncounter(); }
         void Update()

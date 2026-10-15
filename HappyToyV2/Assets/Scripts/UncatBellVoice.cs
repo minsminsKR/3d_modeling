@@ -32,6 +32,7 @@ namespace HappyToy.V2
         }
         void LateUpdate()
         {
+            if (EnemyTimeStop.Active) return;
             var delta = transform.position - previous; previous = transform.position; delta.y = 0;
             var session = GameSession.Current;
             bool allowed = session && session.CorridorMode && session.InputAllowed && !session.Finished &&

@@ -1,0 +1,12 @@
+{
+  "original": "Originals/hand.glb",
+  "heightMetres": 0.52,
+  "vertices": 17986,
+  "triangles": 36000,
+  "rigged": true,
+  "baseColor": "albedo.png",
+  "metallicRoughness": "metalrough.png",
+  "materialNames": [
+    "hand_surface_0"
+  ]
+}

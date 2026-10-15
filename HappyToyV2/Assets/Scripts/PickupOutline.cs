@@ -14,7 +14,8 @@ namespace HappyToy.V2
         public int BorderCount => borders.Count;
         public static bool IsPickup(Interactable.Kind kind) => kind == Interactable.Kind.NameSlip ||
             kind == Interactable.Kind.CorridorMemory || kind == Interactable.Kind.ChapterMemory ||
-            kind == Interactable.Kind.FirecrackerSupply || kind == Interactable.Kind.TrapSupply || kind == Interactable.Kind.FlashlightBattery;
+            kind == Interactable.Kind.FirecrackerSupply || kind == Interactable.Kind.TrapSupply || kind == Interactable.Kind.FlashlightBattery ||
+            kind == Interactable.Kind.IncenseSupply || kind == Interactable.Kind.TalismanFragment;
         void Start()
         {
             item = GetComponent<Interactable>();

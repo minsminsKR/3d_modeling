@@ -1,0 +1,12 @@
+{
+  "original": "Originals/incense.glb",
+  "heightMetres": 0.24,
+  "vertices": 4227,
+  "triangles": 8500,
+  "rigged": false,
+  "baseColor": "albedo.png",
+  "metallicRoughness": "metalrough.png",
+  "materialNames": [
+    "incense_surface_0"
+  ]
+}

@@ -13,6 +13,7 @@ namespace HappyToy.V2
         public int lightingVersion;
         public LightExplorationCheckpoint lighting;
         public TrapExplorationCheckpoint traps;
+        public RitualCheckpoint ritualItems;
         public int furnitureVersion;
         public Drawer[] drawers;
         public float seconds;
@@ -41,6 +42,7 @@ namespace HappyToy.V2
                 throw new ArgumentException("Invalid lighting checkpoint version");
             if(lightingVersion==1) lighting.Validate();
             traps?.Validate(Point);
+            ritualItems?.Validate();
             // Marker zero is an older save with no furniture. Finite pickup
             // flags still apply unchanged; new trays simply start closed.
             if(furnitureVersion<0 || furnitureVersion>2 || furnitureVersion==0 && drawers!=null && drawers.Length!=0 ||

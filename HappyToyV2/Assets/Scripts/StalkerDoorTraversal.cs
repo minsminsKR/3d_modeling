@@ -77,6 +77,7 @@ namespace HappyToy.V2
         }
         public void Cancel()
         { ClearPassage(); deferredDoor = null; retryUntil = 0; deferredTarget = Vector3.zero; }
+        internal void DelayTimeStopDeadline(float seconds) { if (deferredDoor) retryUntil += seconds; }
         void OnDisable() { Cancel(); }
         static float Horizontal(Vector3 value) { value.y = 0; return value.magnitude; }
 
@@ -165,6 +166,7 @@ namespace HappyToy.V2
 
         public Result Tick(Vector3 intendedTarget, float floorY)
         {
+            if (EnemyTimeStop.Active) return Result.Waiting;
             lastTarget=intendedTarget; lastFloorY=floorY; lastHitCollider=null; lastHitCount=0;
             lastHitPoint=Vector3.zero; lastHitDistance=0; lastDecision="scanning physical route";
             var session = GameSession.Current;

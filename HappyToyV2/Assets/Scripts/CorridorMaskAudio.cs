@@ -55,11 +55,13 @@ namespace HappyToy.V2
             var session = GameSession.Current;
             return isActiveAndEnabled && mask && mask.isActiveAndEnabled && mask.CorridorRunner &&
                 mask.State != LanternMaskEncounter.Phase.Dormant && mask.State != LanternMaskEncounter.Phase.Resolved &&
-                session && session.InputAllowed && !session.Finished && session.StoryStep < 4 && !AudioListener.pause;
+                session && session.InputAllowed && !session.Finished && session.StoryStep < 4 && !AudioListener.pause && !EnemyTimeStop.Active;
         }
         void OnEnable() { previous = transform.position; travelled = 0; nextWhistle = Time.time + .25f; }
+        internal void DelayTimeStopDeadline(float seconds) { nextWhistle += seconds; }
         void Update()
         {
+            if (EnemyTimeStop.Active) return;
             Vector3 delta = transform.position - previous; previous = transform.position;
             float vertical = Mathf.Abs(delta.y); delta.y = 0;
             if (!Live())

@@ -215,7 +215,7 @@ namespace HappyToy.V2
         }
         public bool TryDefeat(string source, string hint)
         {
-            if (!InputAllowed || Finished || CheatSafeMode) return false;
+            if (!InputAllowed || Finished || CheatSafeMode || EnemyTimeStop.Active) return false;
             DefeatSource = string.IsNullOrWhiteSpace(source) ? "알 수 없는 기척" : source;
             if (!string.IsNullOrWhiteSpace(hint)) DefeatHint = hint;
             Debug.Log("HappyToy defeat: " + DefeatSource + " | objective=" + CurrentObjectiveId +

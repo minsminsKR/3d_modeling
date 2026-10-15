@@ -34,3 +34,9 @@ HappyToyV2/SourceArt/Traps/*.blend filter=lfs diff=lfs merge=lfs -text
 # Generated splintered door fragments and packed editable original PBR source.
 HappyToyV2/SourceArt/DoorDebris/*-original.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/DoorDebris/*.blend filter=lfs diff=lfs merge=lfs -text
+
+# Generated first-person hand rig and ritual props retain the original webapp surfaces.
+HappyToyV2/SourceArt/PlayerItems/Originals/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/PlayerItems/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/PlayerItems/References/*.prompt.txt -text
+HappyToyV2/SourceArt/PlayerItems/References/flashlight-image-provenance.json -text

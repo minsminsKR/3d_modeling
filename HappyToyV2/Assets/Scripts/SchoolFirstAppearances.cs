@@ -53,7 +53,7 @@ namespace HappyToy.V2
         Vector3 cameraPosition, shotEye, shotTarget;
         Quaternion cameraRotation;
         float cameraFov, returnStart;
-        bool cyclopseShot, returning, torchWasOn;
+        bool cyclopseShot, returning, torchWasOn, cyclopseQueued;
         struct Frozen { public Behaviour owner; public bool enabled; public NavMeshAgent agent; public bool stopped; }
         readonly List<Frozen> frozen = new List<Frozen>();
         readonly List<(Light light,bool enabled)> darkened = new List<(Light,bool)>();
@@ -132,11 +132,13 @@ namespace HappyToy.V2
         }
         public void PlayCyclopse()
         {
-            if(CameraOwned || CyclopseShown)return;
-            StartCoroutine(CyclopseShot());
+            if(CameraOwned || CyclopseShown || cyclopseQueued)return;
+            cyclopseQueued = true;
+            StartCoroutine(EnemyTimeStop.RunClock(CyclopseShot()));
         }
         IEnumerator CyclopseShot()
         {
+            cyclopseQueued = false;
             Begin(true);
             cyclopseKey.enabled=true;
             while(ShotElapsed<1.35f)yield return null;
@@ -164,7 +166,7 @@ namespace HappyToy.V2
                     !chapter.Cyclopse.gameObject.activeInHierarchy)
                 {CyclopseGraceActive=false;yield break;}
                 HoldCyclopse();
-                if(session.InputAllowed && !CameraOwned)elapsed+=Time.deltaTime;
+                if(session.InputAllowed && !CameraOwned && !EnemyTimeStop.Active)elapsed+=Time.deltaTime;
                 yield return null;
             }
             CyclopseGraceActive=false;
@@ -198,7 +200,7 @@ namespace HappyToy.V2
         public bool CanSeeMannequinForReveal()
         {
             var actor=chapter?chapter.Mannequin:null;
-            return MannequinArmed && !CameraOwned && session && session.InputAllowed &&
+            return MannequinArmed && !CameraOwned && session && session.InputAllowed && !EnemyTimeStop.Active &&
                 session.ChapterMode && actor && actor.isActiveAndEnabled && session.player && !session.player.Hidden &&
                 MannequinSpotlight && MannequinSpotlight.isActiveAndEnabled && MannequinSpotlight.intensity>.01f &&
                 EnemyNavigation.SameFloor(session.player.transform.position,actor.transform.position.y) &&
@@ -270,6 +272,7 @@ namespace HappyToy.V2
             if(CyclopseGraceActive)HoldCyclopse();
             if(CameraOwned && (!session || session.Finished))
             {StopAllCoroutines();if(cyclopseShot)CyclopseIntro.Cancel();End(false);return;}
+            if(EnemyTimeStop.Active)return;
             if(!CameraOwned && !MannequinShown && CanSeeMannequinForReveal() && chapter.Mannequin.Triggered)
                 StartCoroutine(MannequinShot());
             if(!CameraOwned || !session || !session.InputAllowed)return;
@@ -306,7 +309,7 @@ namespace HappyToy.V2
                 chapter.Cyclopse.gameObject.activeSelf && CyclopseIntro.Completed)
             {
                 HoldCyclopse();
-                StartCoroutine(ReleaseCyclopseAfterGrace());
+                StartCoroutine(EnemyTimeStop.RunClock(ReleaseCyclopseAfterGrace()));
             }
         }
         public void RestoreProgress(int recovered) => RestoreProgress(recovered,true);
@@ -319,6 +322,7 @@ namespace HappyToy.V2
         }
         void OnDisable()
         {
+            cyclopseQueued = false;
             StopAllCoroutines();
             if((CameraOwned && cyclopseShot || CyclopseGraceActive) && CyclopseIntro)CyclopseIntro.Cancel();
             CyclopseGraceActive=false;End(false);
