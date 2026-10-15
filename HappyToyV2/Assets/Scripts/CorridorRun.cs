@@ -255,7 +255,7 @@ namespace HappyToy.V2
             int entranceDirection = Enumerable.Range(0, 4).First(d => (Layout.Connections[0] & (1 << d)) != 0);
             var entranceFacing = new Vector3(CorridorLayout.DX[entranceDirection], 0, CorridorLayout.DZ[entranceDirection]);
             session.player.transform.SetPositionAndRotation(CellPosition(0), Quaternion.LookRotation(entranceFacing)); controller.enabled = true;
-            session.player.Firecrackers.SetRunStock(1);
+            session.player.Firecrackers.SetRunStock(SnapperStockRules.ShotsPerPack);
             var ambience = session.GetComponent<RoomAmbience>();
             if (ambience) ambience.ConfigureRunPositions(new[] { CellPosition(Layout.Supplies[0]) + Vector3.up,
                 CellPosition(Layout.Supplies[3]) + Vector3.up * 2.5f, CellPosition(Layout.Supplies[6]) + Vector3.up * 1.5f });
@@ -265,8 +265,8 @@ namespace HappyToy.V2
             var batches=CombineArchitectureRoutine(incremental);while(batches.MoveNext())yield return batches.Current;
             Physics.SyncTransforms(); Ready = true;
             session.Notify(Layout.Version >= 3 ?
-                "다섯 기억을 회수하고 붉은 교실의 제단에 돌려놓으세요. 폭죽은 회랑에서 보충할 수 있습니다." :
-                "다섯 기억을 회수하고 입구로 돌아오세요. 폭죽은 회랑에서 보충할 수 있습니다.");
+                "다섯 기억을 회수하고 붉은 교실의 제단에 돌려놓으세요. 콩알탄은 회랑에서 보충할 수 있습니다." :
+                "다섯 기억을 회수하고 입구로 돌아오세요. 콩알탄은 회랑에서 보충할 수 있습니다.");
         }
         // Tile the solid parts around a 2.8m central hall and its connected arms.
         // Collision, visibility and the navigation bake all use these same walls.

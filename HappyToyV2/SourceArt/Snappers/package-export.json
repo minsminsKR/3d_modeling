@@ -1,0 +1,33 @@
+{
+  "key": "package",
+  "tool": "Blender 4.0.2",
+  "original": "package-original.glb",
+  "originalSha256": "40557da7624ef14480870149e7d6cffc988f472061ab6482519d3f029589e9e7",
+  "editable": "package.blend",
+  "heightMetres": 0.112,
+  "targetTriangles": 1800,
+  "originalFaces": 999229,
+  "gameFaces": 1764,
+  "fbx": "Assets/Resources/Snappers/package/geometry.fbx",
+  "materials": [
+    {
+      "name": "SN_package_0",
+      "roughness": 0.9,
+      "baseColor": "SN_package_0-baseColor.png",
+      "normal": "SN_package_0-normal.png",
+      "metallicSmoothness": "SN_package_0-metallicSmoothness.png"
+    },
+    {
+      "name": "SN_package_print",
+      "roughness": 0.9,
+      "baseColor": "SN_package_print-baseColor.png"
+    }
+  ],
+  "textures": "Original full PBR embedded in GLB and packed blend; original surfaces rebaked to new 2048px game UV atlas (colour, roughness, tangent normals)",
+  "bounds": {
+    "width": 0.03389571508546245,
+    "depth": 0.0809566029420523,
+    "height": 0.112
+  },
+  "printFinishing": "Broad carton faces reproject the legible package-reference.png front panel; side/edge PBR and original generated GLB retained."
+}

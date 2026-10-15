@@ -181,3 +181,7 @@ manifest and distributed credits are updated together. Offline PCM validation
 checks loop duration/headroom and unusual boundary cuts in addition to the full
 mandatory inventory. It does not certify human listening or the actual game
 mix; all engine diagnostics must remain protected by `-quiet-diagnostics`.
+
+## Korean paper snappers (2026-10-15)
+
+`render_snappers.py` derives three single 280ms reports from the actual CC0 Whipper Snapper Fireworks recording retained under `ThirdParty/Audio/Snappers`. See `sources.json`, `selection.json` and the retained source page. Only segment trims, DC removal, gain limiting and 4ms fades are applied; no synthesized layers. The existing `firecracker-0..2` resource/GUID names remain compatible. Dependencies: `requirements-snappers.txt`.

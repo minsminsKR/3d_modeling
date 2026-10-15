@@ -94,7 +94,7 @@ namespace HappyToy.V2
             Mask.patrol=new[] {new Vector3(27,5,27.6f),new Vector3(30,5,30.8f),new Vector3(32,5,25)}
                 .Select(p=>{var marker=new GameObject("Upper mask patrol").transform;marker.SetParent(transform);marker.position=p;return marker;}).ToArray();
             Portrait.PrepareChapter(); Nursery.PrepareChapter();
-            session.player.Firecrackers.SetRunStock(2);
+            session.player.Firecrackers.SetRunStock(SnapperStockRules.ShotsPerPack * 2);
             if(LayoutVersion==1) gameObject.AddComponent<ChapterAtmosphere>().Prepare(Memories);
             GetComponent<GraphicsSchoolSurfaces>()?.Refresh();
             Lighting=gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareSchool(this);

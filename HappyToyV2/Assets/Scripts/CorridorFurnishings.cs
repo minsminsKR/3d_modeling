@@ -170,8 +170,8 @@ namespace HappyToy.V2
             var item=new GameObject("Firecracker pack"); item.layer=9; item.transform.SetParent(desk,false); item.transform.localPosition=position;
             var target=item.AddComponent<BoxCollider>(); target.center=new Vector3(0,.056f,.0067f); target.size=new Vector3(.124f,.112f,.120f);
             var interaction=item.AddComponent<Interactable>(); interaction.kind=Interactable.Kind.FirecrackerSupply;
-            interaction.stableId="supply-"+index; interaction.label="폭죽 한 개 줍기";
-            var visual=CorridorFurnitureLibrary.Attach("firecracker-pack",item.transform,graphicsSurfaces);
+            interaction.stableId="supply-"+index; interaction.label="콩알탄 한 묶음 줍기 (6발)";
+            var visual=SnapperVisuals.AttachPackage(item.transform);
             foreach(var child in visual.GetComponentsInChildren<Transform>(true)) child.gameObject.layer=9;
             return interaction;
         }

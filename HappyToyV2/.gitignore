@@ -24,6 +24,7 @@
 !/SourceArt/BaeksugwiStudio/Baeksugwi_Run.glb
 !/SourceArt/CreatureStudio/**/*.glb
 !/SourceArt/KoreanCorridorProps/*-original.glb
+!/SourceArt/Snappers/*-original.glb
 
 # Reproducible authoring tools write review candidates and previews here.
 /SourceArt/**/proposed/

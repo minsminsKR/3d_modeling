@@ -3,14 +3,14 @@ using UnityEngine;
 namespace HappyToy.V2
 {
     // The preview and projectile share launch clearance and one small movement step.
-    // Forecasts stop at the first contact: no promise is made about bounces, landing,
-    // moving obstacles, enemy hearing or any position beyond the fuse horizon.
+    // Forecasts stop at first contact, where the snapper pops. Moving obstacles
+    // and enemy hearing remain live decisions; the forecast is capped at 1.2s.
     public static class FirecrackerTrajectory
     {
         public const float StepSeconds = .02f;
-        public const float FuseSeconds = 1.2f;
-        public const float BurnSeconds = 11.2f;
-        public const float Radius = .08f;
+        public const float FuseSeconds = 1.2f; // Legacy API name: forecast horizon, not a physical fuse.
+        public const float BurnSeconds = 1.0f; // Impact audio/dust cleanup only; no repeated noise.
+        public const float Radius = .008f; // Pea-sized paper snapper, not a firework tube.
         public const int MaximumForecastPoints = 61;
         const float ContactGap = .005f;
 

@@ -31,7 +31,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<string>(inventory, "ActionFeedback"), Is.Empty);
             Assert.That(Get<float>(inventory, "FeedbackRemaining"), Is.Zero);
             Assert.That(Components("FirecrackerProjectile"), Is.Empty);
-            Begin();
+            Begin(); Call(inventory, "SetRunStock", 2); // Isolate two denial/cooldown attempts from packet rules.
             Assert.That((bool)Call(session, "Collect", "register"), Is.True);
             var cabinet = Components("Interactable").Single(item => item.name == "음악실 은신함");
             PlacePlayer(Get<Transform>(cabinet, "outside").position);
@@ -47,7 +47,7 @@ namespace HappyToy.V2.CloudTests
             Call(cabinet, "Use", player);
             Assert.That(Get<bool>(player, "Hidden"), Is.False);
             Assert.That((bool)Call(inventory, "TryThrow"), Is.True);
-            AssertItemFeedback(inventory, "남은 1개", 1);
+            AssertItemFeedback(inventory, "남은 1발", 1);
             Assert.That((bool)Call(inventory, "TryThrow"), Is.False);
             AssertItemFeedback(inventory, "준비 중", 1);
             string feedback = Get<string>(inventory, "ActionFeedback");
@@ -63,7 +63,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(inventory, "TryThrow"), Is.False, "Paused wall time must not advance cooldown");
             yield return new WaitForSeconds(.55f);
             Assert.That((bool)Call(inventory, "TryThrow"), Is.True);
-            AssertItemFeedback(inventory, "남은 0개", 0);
+            AssertItemFeedback(inventory, "남은 0발", 0);
             for (int i = 0; i < 4; i++) Assert.That((bool)Call(inventory, "TryThrow"), Is.False);
             AssertItemFeedback(inventory, "모두 사용", 0);
             Assert.That(Components("FirecrackerProjectile").Length, Is.EqualTo(2));
@@ -90,68 +90,44 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator FirecrackerFirstPopIsSingleAndComfortSettingsApplyWhilePaused()
         {
             IsolateThreats(); Begin();
-            Call(shell, "RestoreDefaultSettings");
-            Call(shell, "ToggleReducedMotion");
+            Call(shell, "RestoreDefaultSettings"); Call(shell, "ToggleReducedMotion");
             ((Behaviour)player).enabled = false;
             PlacePlayer(new Vector3(500, 0, 500), false);
-            Cube("CloudQA firecracker floor", player.transform.position - Vector3.up * .2f, new Vector3(30, .4f, 30));
+            Cube("CloudQA snapper floor", player.transform.position - Vector3.up * .2f, new Vector3(30, .4f, 30));
             Physics.SyncTransforms();
             var inventory = Get<Component>(player, "Firecrackers");
             Assert.That((bool)Call(inventory, "TryThrow"), Is.True);
             var fire = Get<Component>(inventory, "LastThrown");
-            // Controlled stationary launch isolates the real fuse, collision, sound
-            // emission and comfort behavior; normal Q trajectory is covered separately.
             Call(fire, "Launch", Vector3.zero);
-            var body = fire.transform.GetChild(0);
-            Quaternion orientation = body.localRotation;
+            var body = fire.transform.GetChild(0); Quaternion orientation = body.localRotation;
             var source = fire.GetComponent<AudioSource>();
-            var glow = fire.GetComponent<Light>();
             Assert.That(source.ignoreListenerPause, Is.False);
             Assert.That(source.ignoreListenerVolume, Is.False);
             Assert.That(source.dopplerLevel, Is.Zero);
-            yield return new WaitForSeconds(.3f);
-            Assert.That(Quaternion.Angle(body.localRotation, orientation), Is.LessThan(.01f), "Reduced motion kept fuse spinning");
+            yield return new WaitForSeconds(.15f);
+            Assert.That(Quaternion.Angle(body.localRotation, orientation), Is.LessThan(.01f));
             Assert.That(Get<int>(fire, "PopsPlayed"), Is.Zero);
-            yield return Wait(() => Get<bool>(fire, "Exploded"), 4, "Real fuse did not reach the first pulse");
-            Assert.That(Get<int>(fire, "PopsPlayed"), Is.EqualTo(1), "First explosion emitted overlapping pops");
+            yield return Wait(() => Get<bool>(fire, "Exploded"), 3, "Snapper did not pop on actual floor contact");
+            Assert.That(Get<bool>(fire, "HasFirstContact"), Is.True);
+            Assert.That(Get<int>(fire, "PopsPlayed"), Is.EqualTo(1));
             Assert.That(body.gameObject.activeSelf, Is.False);
-            Assert.That(glow.intensity, Is.EqualTo(.45f).Within(.001f));
-            Assert.That(Get<string>(shell, "Caption"), Is.EqualTo("[폭죽 터지는 소리]"));
-            Assert.That(Get<bool>(shell, "CaptionVisible"), Is.True);
-            Call(shell, "ToggleSubtitles");
-            Assert.That(Get<bool>(shell, "CaptionVisible"), Is.False);
-            Call(shell, "AdjustSettings", -1f, 0f);
-            Assert.That(AudioListener.volume, Is.Zero, "Item audio must use the global listener volume");
-            Call(shell, "Pause");
-            Vector3 pausedAt = fire.transform.position;
+            var glow = fire.GetComponentInChildren<Light>(true);
+            Assert.That(glow, Is.Not.Null); Assert.That(glow.intensity, Is.Zero);
+            Assert.That(Get<string>(shell, "Caption"), Does.Contain("콩알탄"));
+            Call(shell, "ToggleSubtitles"); Assert.That(Get<bool>(shell, "CaptionVisible"), Is.False);
+            Call(shell, "AdjustSettings", -1f, 0f); Assert.That(AudioListener.volume, Is.Zero);
+            Call(shell, "Pause"); Vector3 pausedAt = fire.transform.position;
             yield return Delay(.7f);
             Assert.That(AudioListener.pause, Is.True);
             Assert.That(fire.transform.position, Is.EqualTo(pausedAt));
-            Assert.That(Get<int>(fire, "PopsPlayed"), Is.EqualTo(1), "Pause emitted another pop");
-            Call(shell, "Resume");
-            yield return Wait(() => Get<int>(fire, "PopsPlayed") >= 2, 2, "Resume never reached next pulse");
-            Assert.That(Get<int>(fire, "PopsPlayed"), Is.EqualTo(2));
-            Assert.That(glow.intensity, Is.EqualTo(.45f).Within(.001f));
-            Assert.That(Get<bool>(shell, "CaptionVisible"), Is.False);
-            Call(shell, "ToggleReducedMotion");
-            float brightDeadline = Time.realtimeSinceStartup + 2;
-            while ((Get<int>(fire, "PopsPlayed") < 3 || glow.intensity <= 1) && Time.realtimeSinceStartup < brightDeadline)
-                yield return null;
-            // Observe and pause the real bright pulse in this same coroutine step.
-            // A nested Wait could return after another Update decayed its exact peak.
-            Assert.That(Get<int>(fire, "PopsPlayed"), Is.GreaterThanOrEqualTo(3));
-            Assert.That(glow.intensity, Is.InRange(1.00001f, 4.00001f), "No genuinely bright ordinary pulse was observed");
-            int pausedPops = Get<int>(fire, "PopsPlayed");
-            Call(shell, "Pause"); Call(shell, "ToggleReducedMotion");
-            yield return null;
-            Assert.That(glow.intensity, Is.EqualTo(.45f).Within(.001f), "Paused settings left a bright flash frozen");
-            Assert.That(Get<int>(fire, "PopsPlayed"), Is.EqualTo(pausedPops));
-            Call(shell, "Resume");
+            Assert.That(Get<int>(fire, "PopsPlayed"), Is.EqualTo(1));
+            Assert.That(glow.intensity, Is.Zero);
+            Call(shell, "Resume"); yield return new WaitForSeconds(.2f);
+            Assert.That(Get<int>(fire, "PopsPlayed"), Is.EqualTo(1), "Resume must not repeat a snapper report");
             Call(session, "Finish", false);
-            yield return Wait(() => Components("FirecrackerProjectile").Length == 0, 2, "Result screen left firecracker effects alive");
+            yield return Wait(() => Components("FirecrackerProjectile").Length == 0, 2, "Result left snapper effects alive");
             Assert.That(Get<bool>(inventory, "FeedbackVisible"), Is.False);
-            Assert.That(Get<string>(inventory, "ActionFeedback"), Is.Empty);
-            Debug.Log("HAPPYTOY_ITEM_PASS effects: one first pop, finite pulse cadence, global mute/pause, sound-caption option, reduced spin/flash, paused comfort change, result cleanup");
+            Debug.Log("HAPPYTOY_ITEM_PASS snapper: first-contact single report, global mute/pause, subtitles, reduced flash/spin and result cleanup");
         }
 
         [UnityTest, Timeout(40000)]
@@ -162,7 +138,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(inventory, "TryThrow"), Is.True);
             var fire = Get<Component>(inventory, "LastThrown");
             var source = fire.GetComponent<AudioSource>();
-            var material = fire.GetComponentInChildren<Renderer>().sharedMaterial;
+            var ownedClip = Get<AudioClip>(fire, "crack");
             Assert.That(Get<bool>(inventory, "FeedbackVisible"), Is.True);
             var previous = session;
             Call(shell, "Restart", true);
@@ -171,15 +147,15 @@ namespace HappyToy.V2.CloudTests
             yield return null; yield return null;
             session = One("GameSession"); player = Get<Component>(session, "player"); shell = Get<Component>(session, "Shell");
             inventory = Get<Component>(player, "Firecrackers");
-            Assert.That(fire == null, Is.True); Assert.That(source == null, Is.True); Assert.That(material == null, Is.True);
+            Assert.That(fire == null, Is.True); Assert.That(source == null, Is.True); Assert.That(ownedClip == null, Is.True);
             Assert.That(Components("FirecrackerProjectile"), Is.Empty);
-            Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(2));
+            Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(12));
             Assert.That(Get<Component>(inventory, "LastThrown"), Is.Null);
             Assert.That(Get<string>(inventory, "ActionFeedback"), Is.Empty);
             Assert.That(Get<float>(inventory, "FeedbackRemaining"), Is.Zero);
             Assert.That(Get<bool>(inventory, "FeedbackVisible"), Is.False);
             Assert.That((bool)Call(inventory, "TryThrow"), Is.True, "Restart inherited the previous cooldown");
-            Debug.Log("HAPPYTOY_ITEM_PASS restart: live effect/source/material removed; two items, empty feedback and ready cooldown restored");
+            Debug.Log("HAPPYTOY_ITEM_PASS restart: live effect/source/owned clip removed; two six-shot packets, empty feedback and ready cooldown restored");
         }
     }
 }

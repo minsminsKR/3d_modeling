@@ -40,7 +40,7 @@ namespace HappyToy.V2
                 if(Cyclopse.AttackActive || Portrait.angry.AttackActive || Nursery.monster.AttackActive || Mannequin.AttackActive || Mask.AttackActive)
                     return "공격 동작이 끝난 뒤 다시 일시정지해 저장하세요.";
                 if(FindObjectsByType<FirecrackerProjectile>(FindObjectsSortMode.None).Any(x=>x.gameObject.scene==gameObject.scene))
-                    return "던진 폭죽의 효과가 끝난 뒤 저장하세요.";
+                    return "던진 콩알탄의 효과가 끝난 뒤 저장하세요.";
                 var cue=session.player.GetComponent<DetectionFeedback>();
                 return cue && cue.Active?"인식 연출이 끝난 뒤 다시 일시정지해 저장하세요.":"";
             }

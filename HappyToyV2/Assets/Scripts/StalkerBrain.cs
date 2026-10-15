@@ -81,6 +81,21 @@ namespace HappyToy.V2
             return true;
         }
 
+        // Paper snappers are decoy evidence, including for the Baby: never reveal
+        // an unseen player's position through its separate loud-noise chase rule.
+        public bool HearSnapper(Vector3 point)
+        {
+            var session = GameSession.Current;
+            if (!isActiveAndEnabled || !session || !session.InputAllowed || session.CheatSafeMode || session.EncountersResolved ||
+                !CorridorCheckpoint.Vector(point) || state == State.Chase || AttackActive || awareness.Acquired) return false;
+            float range = 28 * EnemyNavigation.SoundTransmission(point + Vector3.up * .5f,
+                transform.position + Vector3.up, transform, null);
+            if (!perception.TryResolveSnapperRoute(transform, agent, point, range, floorY, path, out var evidence)) return false;
+            if (BabyMode && !CorridorBaby.Memory.HearSmall()) return false;
+            lastKnown = evidence; BeginNoiseInvestigation(SnapperStockRules.InspectionSeconds); NoisesAccepted++;
+            return true;
+        }
+
         void BeginNoiseInvestigation(float dwell)
         {
             NoiseInvestigationRoute.Begin(investigation,transform.position,lastKnown,path,CalmNavigationSpeed,dwell);

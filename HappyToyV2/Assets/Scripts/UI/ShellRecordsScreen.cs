@@ -23,7 +23,7 @@ namespace HappyToy.V2
                 string source=string.IsNullOrEmpty(run.defeatSource)?"기록 미완료":run.defeatSource;
                 if(source.Length>32) source=source.Substring(0,32)+"…";
                 layout.Text($"{(run.escaped?"탈출 성공":"포획 · "+source)}    기억 {run.recovered}/5    {ShellLayout.RunTime(run.seconds)}",174,y+12,1240,40,layout.LargeText?24:22).name="school-history-run-"+index;
-                layout.Small($"폭죽 {run.throws}회 · 은신 {run.hides}회 · 문 닫기 {run.closedDoors}회 · 이동 {run.distance:0.0} m · 남은 폭죽 {run.firecrackersRemaining}개"+
+                layout.Small($"콩알탄 {run.throws}회 · 은신 {run.hides}회 · 문 닫기 {run.closedDoors}회 · 이동 {run.distance:0.0} m · 남은 콩알탄 {run.firecrackersRemaining}발"+
                     (run.actionsComplete?"":"  (이어하기 이후 행동)"),174,y+54,1240,36);
             }
             layout.Button("back","돌아가기  [Esc]",775,back,primary:true);

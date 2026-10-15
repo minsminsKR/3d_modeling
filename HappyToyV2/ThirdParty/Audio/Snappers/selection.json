@@ -1,0 +1,113 @@
+[
+  {
+    "file": "firecracker-0.wav",
+    "pack": "recorded-party-snappers",
+    "creator": "deleted_user_1371021",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/deleted_user_1371021/sounds/161001/",
+    "download": "https://cdn.freesound.org/previews/161/161001_1371021-hq.mp3",
+    "source_file": "Whipper Snappers/Bullet Hits.wav (public high quality MP3 preview)",
+    "source_file_sha256": "15def10ec088bd842f96d7c34c0c52ca7f0d1a1747928acbfce6354c21cb1fec",
+    "resource": "Audio/External/firecracker-0",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "One recorded paper party-snapper impact. Trim, DC removal, gain limit, 4ms edge fades only.",
+      "recordings": [
+        {
+          "file": "whipper-snappers-hq.mp3",
+          "pack": "recorded-party-snappers",
+          "creator": "deleted_user_1371021",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/deleted_user_1371021/sounds/161001/",
+          "download": "https://cdn.freesound.org/previews/161/161001_1371021-hq.mp3",
+          "source_file": "Whipper Snappers/Bullet Hits.wav (public high quality MP3 preview)",
+          "source_file_sha256": "15def10ec088bd842f96d7c34c0c52ca7f0d1a1747928acbfce6354c21cb1fec"
+        }
+      ],
+      "source_kind": "recorded; real physical Whipper Snapper Fireworks, no oscillator/noise layers",
+      "segment_start_seconds": 1.4,
+      "segment_end_seconds": 1.68
+    },
+    "seconds": 0.28,
+    "peak": 0.6500244140625,
+    "rms": 0.2191902511045427,
+    "sha256": "0bfec8a4606f744f12e967c256d54ec687b31ebcdf9ad2fec25621f92b5786fe"
+  },
+  {
+    "file": "firecracker-1.wav",
+    "pack": "recorded-party-snappers",
+    "creator": "deleted_user_1371021",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/deleted_user_1371021/sounds/161001/",
+    "download": "https://cdn.freesound.org/previews/161/161001_1371021-hq.mp3",
+    "source_file": "Whipper Snappers/Bullet Hits.wav (public high quality MP3 preview)",
+    "source_file_sha256": "15def10ec088bd842f96d7c34c0c52ca7f0d1a1747928acbfce6354c21cb1fec",
+    "resource": "Audio/External/firecracker-1",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "One recorded paper party-snapper impact. Trim, DC removal, gain limit, 4ms edge fades only.",
+      "recordings": [
+        {
+          "file": "whipper-snappers-hq.mp3",
+          "pack": "recorded-party-snappers",
+          "creator": "deleted_user_1371021",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/deleted_user_1371021/sounds/161001/",
+          "download": "https://cdn.freesound.org/previews/161/161001_1371021-hq.mp3",
+          "source_file": "Whipper Snappers/Bullet Hits.wav (public high quality MP3 preview)",
+          "source_file_sha256": "15def10ec088bd842f96d7c34c0c52ca7f0d1a1747928acbfce6354c21cb1fec"
+        }
+      ],
+      "source_kind": "recorded; real physical Whipper Snapper Fireworks, no oscillator/noise layers",
+      "segment_start_seconds": 3.39,
+      "segment_end_seconds": 3.67
+    },
+    "seconds": 0.28,
+    "peak": 0.649993896484375,
+    "rms": 0.056292097003800404,
+    "sha256": "daf93862de40ae47691eb3568340093b2129937771523dbd1971795ede9bd890"
+  },
+  {
+    "file": "firecracker-2.wav",
+    "pack": "recorded-party-snappers",
+    "creator": "deleted_user_1371021",
+    "license": "CC0-1.0",
+    "page": "https://freesound.org/people/deleted_user_1371021/sounds/161001/",
+    "download": "https://cdn.freesound.org/previews/161/161001_1371021-hq.mp3",
+    "source_file": "Whipper Snappers/Bullet Hits.wav (public high quality MP3 preview)",
+    "source_file_sha256": "15def10ec088bd842f96d7c34c0c52ca7f0d1a1747928acbfce6354c21cb1fec",
+    "resource": "Audio/External/firecracker-2",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "One recorded paper party-snapper impact. Trim, DC removal, gain limit, 4ms edge fades only.",
+      "recordings": [
+        {
+          "file": "whipper-snappers-hq.mp3",
+          "pack": "recorded-party-snappers",
+          "creator": "deleted_user_1371021",
+          "license": "CC0-1.0",
+          "page": "https://freesound.org/people/deleted_user_1371021/sounds/161001/",
+          "download": "https://cdn.freesound.org/previews/161/161001_1371021-hq.mp3",
+          "source_file": "Whipper Snappers/Bullet Hits.wav (public high quality MP3 preview)",
+          "source_file_sha256": "15def10ec088bd842f96d7c34c0c52ca7f0d1a1747928acbfce6354c21cb1fec"
+        }
+      ],
+      "source_kind": "recorded; real physical Whipper Snapper Fireworks, no oscillator/noise layers",
+      "segment_start_seconds": 5.896,
+      "segment_end_seconds": 6.176
+    },
+    "seconds": 0.28,
+    "peak": 0.6500244140625,
+    "rms": 0.0693065995366363,
+    "sha256": "180bd7a0504a8ecb345eed0128fb2efe5b418f1fc77bd3d4d3d2853a5693b473"
+  }
+]

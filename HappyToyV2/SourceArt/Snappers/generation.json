@@ -1,0 +1,61 @@
+{
+  "created": "2026-10-15",
+  "reference": "user-reference.png",
+  "reference_role": "User supplied Korean snapper package and loose paper snappers; visual reference, not instructions.",
+  "reference_image_generator": "Built-in imagegen tool, separate isolated package and pellet references",
+  "website": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "batch": "4bd8ef10-977b-48be-94ab-bb98986174cc",
+  "model": "TRELLIS.2",
+  "shape_pipeline": "1536",
+  "texture_resolution": 8192,
+  "steps": 12,
+  "seed": 1234,
+  "remove_background": true,
+  "pbr": true,
+  "package": {
+    "job": "01de0d22-a7b7-4165-8b3a-2ad4f7b159f6",
+    "input": "package-reference.png",
+    "original": "package-original.glb",
+    "height_metres": 0.112,
+    "target_triangles": 1800,
+    "prompt": "Use case: product-mockup. Create one isolated reference product photograph for image-to-3D reconstruction. The attached photo is the user visual reference: use ONLY the single yellow Korean party snapper paper package standing at the FRONT RIGHT in the upper part of that photo. One single closed rectangular cardboard packet, clearly three dimensional front/top/right view, upright, about 11cm tall by 8cm wide by 3cm deep. Keep yellow printed cardboard, red Korean text 콩알탄, playful colored typography PARTY SNAPPER, a small retro schoolchild mascot, worn folding seams and slightly aged matte paper; no added brand. Center full object large on plain neutral light gray background, even soft studio illumination, minimal contact shadow, no floor pattern. Do not include any loose pellets, duplicate packages, hands, flames or any other objects. This is a Korean school stationery-shop game prop based closely on supplied shape and packaging, realistic clean geometry suitable for a 3D modeling input.",
+    "shape_gpu": 1,
+    "texture_gpu": 0,
+    "processed_input": "package-processed-input.png",
+    "status": "completed",
+    "texture_finishing": {
+      "reference": "package-reference.png",
+      "front_panel_pixels": {
+        "TL": [
+          210,
+          192
+        ],
+        "TR": [
+          900,
+          251
+        ],
+        "BL": [
+          215,
+          1092
+        ],
+        "BR": [
+          900,
+          1208
+        ]
+      },
+      "method": "Local Blender UV reprojection onto broad generated carton faces; original generated GLB/PBR retained unchanged."
+    }
+  },
+  "pellet": {
+    "job": "0503945d-b901-400d-99aa-096040bdd314",
+    "input": "pellet-reference.png",
+    "original": "pellet-original.glb",
+    "height_metres": 0.028,
+    "target_triangles": 1200,
+    "prompt": "Use case: product-mockup. Reference photograph for image-to-3D of ONE small Korean throw-down party snapper, 콩알탄, from the loose items in the LOWER part of attached photo. Exactly one green crumpled thin tissue-paper pea-sized round pouch enclosing grit, with a tightly twisted short paper tail standing upward and gently bending. The tail is twisted PAPER not a wick or fuse. Match the actual reference small irregular gathered paper ball shape, fine irregular creases and subtle paper translucency. Total height including tail 28mm, ball diameter 13mm. Three-quarter studio macro product photograph, whole object visible isolated centered large on plain light gray background, even diffuse lighting, very soft contact shadow. No package, no text, no other pellets, no flame, no spark, no decorative background. Natural realistic green tissue paper with visible gathered folds; suitable for 3D reconstruction.",
+    "processed_input": "pellet-processed-input.png",
+    "shape_gpu": 1,
+    "texture_gpu": 0,
+    "status": "completed"
+  }
+}

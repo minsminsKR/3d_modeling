@@ -1,0 +1,14 @@
+{
+  "scope": "Byte-identical binary generation inputs, original outputs and packed editable authoring sources; text files use Git line-ending normalization.",
+  "files": {
+    "package-original.glb": "40557da7624ef14480870149e7d6cffc988f472061ab6482519d3f029589e9e7",
+    "package-processed-input.png": "73b61953efc849f3624a1fadf8c9319d6bbbc551d978c60eda92d17615e21e73",
+    "package-reference.png": "fc651d6dc389a4fc74255e8eb48a539b0849ab7ef3217bf500699eff679ff78f",
+    "package.blend": "9688de62a9e5edff7677dc6a7166f53fc1da2cc48a8728e7fb6f4b973c4c9199",
+    "pellet-original.glb": "efc52c21c385e2d6e6ee4c614f117b304b91b9793585c391c49accfa18040d08",
+    "pellet-processed-input.png": "f6c111082ffc50dbb888d33d98de01c6d9efda5c5e68a9776c7c7207acb5f792",
+    "pellet-reference.png": "3eb697f35ed4893693f9283b2407d1fe870220422db8688498bc0825fa43727e",
+    "pellet.blend": "c0a10403737eeaca3f6cc2e3c9ef062232d52d7d388bb839fb55875ac817ac1d",
+    "user-reference.png": "90c848aa7c94500cd8304c61c2a9d431a2bf1ae689d6a62535a4cc9f249ad01e"
+  }
+}

@@ -231,7 +231,7 @@ namespace HappyToy.V2
             }
         }
         void Awake() { RememberDoorGeometry(); }
-        void Start() { if (PickupOutline.IsPickup(kind) && !GetComponent<PickupOutline>()) gameObject.AddComponent<PickupOutline>(); }
+        void Start() { SnapperVisuals.PrepareSupply(this); if (PickupOutline.IsPickup(kind) && !GetComponent<PickupOutline>()) gameObject.AddComponent<PickupOutline>(); }
         void Update()
         {
             if (!DoorOperable) return;
@@ -267,7 +267,7 @@ namespace HappyToy.V2
                     break;
                 case Kind.FirecrackerSupply:
                     if (player.Firecrackers && player.Firecrackers.AddSupply()) gameObject.SetActive(false);
-                    else GameSession.Current.Notify("폭죽은 다섯 개까지 소지할 수 있습니다.");
+                    else GameSession.Current.Notify("콩알탄은 최대 다섯 묶음(30발)까지 소지합니다. 한 묶음(6발)을 담을 공간이 필요합니다.");
                     break;
                 case Kind.FlashlightBattery:
                     var battery = GetComponent<FlashlightBattery>();

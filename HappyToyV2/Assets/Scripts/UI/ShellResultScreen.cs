@@ -57,7 +57,7 @@ namespace HappyToy.V2
             layout.Text(state.Escaped?"다섯 이름이 돌아왔다.\n학교 밖의 공기를 다시 마신다.":"기억은 아직 학교 안에 남아 있다.\n들었던 소리를 기억하고 다시 들어가세요.",153,294,650,109,layout.LargeText?30:27);
             layout.Panel(895,245,540,583,layout.CardSurface);
             layout.Small("이번 학교 탐색",920,269,490);
-            layout.Text($"기억 {result.recovered} / 5\n탐색 시간  {ShellLayout.RunTime(result.seconds)}\n남은 폭죽 {result.firecrackersRemaining}개 · 호흡 {Mathf.RoundToInt(result.staminaRemaining*100)}%\n이동 거리 {result.distance:0.0} m\n폭죽 {result.throws}회 · 은신 {result.hides}회 · 문 닫기 {result.closedDoors}회",920,320,490,176,layout.LargeText?23:21).name="school-result-details";
+            layout.Text($"기억 {result.recovered} / 5\n탐색 시간  {ShellLayout.RunTime(result.seconds)}\n남은 콩알탄 {result.firecrackersRemaining}발 · 호흡 {Mathf.RoundToInt(result.staminaRemaining*100)}%\n이동 거리 {result.distance:0.0} m\n콩알탄 {result.throws}회 · 은신 {result.hides}회 · 문 닫기 {result.closedDoors}회",920,320,490,176,layout.LargeText?23:21).name="school-result-details";
             layout.Text(state.Escaped?"결과: 학교 탈출 성공":"마지막 기척: "+(string.IsNullOrEmpty(result.defeatSource)?"기록되지 않음":result.defeatSource),920,498,490,54,layout.ReadingSize).name="school-result-source";
             layout.Small(result.actionsComplete?"행동 기록은 이번 탐색 전체를 포함합니다.\n일시정지와 중단 시간은 탐색 시간에서 제외됩니다.":"이전 저장에는 행동 기록이 없어 이어하기 이후 행동만 표시합니다. 탐색 시간과 기억은 전체 진행입니다.",920,559,490,77).name="school-result-scope";
             string advice=state.Escaped?"모든 기억을 회수하고 1층 출입문으로 돌아왔습니다. 다른 탐색 기록은 최근 기록에서 확인할 수 있습니다.":

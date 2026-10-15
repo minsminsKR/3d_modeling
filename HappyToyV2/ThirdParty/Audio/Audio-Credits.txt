@@ -170,3 +170,8 @@ ldk1609, violin tremolo F3.aif, violin tremolo instrument sample: https://freeso
 Both source previews are CC0 1.0: https://creativecommons.org/publicdomain/zero/1.0/
 Modified recorded excerpts, mono conversion, filtering/rate edits and original 150BPM percussion/string arrangement. Existing bart physical workshop contacts and OwlishMedia real human frightened-breath/scream sources supply the sting/percussion body, with origins credited above and in the canonical manifest. No copied game music or added oscillator/noise synthesis. Originals, candidate decisions and complete transformations retained in ThirdParty/Audio/DetectionPursuit.
 
+
+Paper snappers (콩알탄): Whipper Snappers/Bullet Hits.wav by deleted_user_1371021
+https://freesound.org/people/deleted_user_1371021/sounds/161001/
+CC0 1.0 Universal — https://creativecommons.org/publicdomain/zero/1.0/
+Public high-quality MP3 preview retained; three recorded impacts trimmed, DC removed, gain-limited and edge-faded. No synthetic layers.

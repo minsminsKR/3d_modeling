@@ -73,6 +73,13 @@ redundant previews, or personal machine settings.
 
 # HappyToyV2 pull means latest playable GitHub main
 
+User clarification, 2026-10-15: a pull/update request means update latest GitHub
+main and build the Windows player once. Do not run Unity test suites, launch the
+player, or run play/native diagnostics for a pull/update request unless the user
+separately asks for those tests. Confirm the build command succeeded and return
+the executable link. This clarification takes precedence over broader release
+verification requirements for pull/update tasks.
+
 User reaffirmed on 2026-10-12: every Git pull must use the latest remote `main`
 branch. Always fetch `origin/main` at request time, regardless of the current branch.
 
@@ -144,3 +151,5 @@ this repository's modeling webapp, using the user's open right-sidebar browser.
   gives better quality and is more efficient. The webapp also supports AI rigging
   and joint editing; local Blender rig/weight/animation finishing is authorized.
   Preserve the editable source and reproducible tools with the resulting game.
+
+User preference, 2026-10-15: the designated modeling webapp login normally has the password already populated. Click the workspace-open button directly; do not ask the user to log in before trying the populated form. Never log or disclose the password.

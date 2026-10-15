@@ -13,6 +13,7 @@ namespace HappyToy.V2
             public float yaw, pitch, stamina, slow, noiseRadius, noiseRemaining, itemCooldown;
             public bool crouched, exhausted, light;
             public int stock;
+            public int snapperStockVersion; // Omitted in legacy saves: old single items become six-shot packets.
             // Legacy checkpoints omit these fields and correctly start with no prior entry.
             public int hidingEntry, hidingRolls;
             public CabinetHidingOutcome hidingOutcome;
@@ -28,7 +29,8 @@ namespace HappyToy.V2
                 if(!(chapter ? ChapterCheckpoint.Point(position) : CorridorCheckpoint.Point(position)) || !CorridorCheckpoint.Number(yaw,0,360) || !CorridorCheckpoint.Number(pitch,-78,78) ||
                     !CorridorCheckpoint.Number(stamina,0,1) || !CorridorCheckpoint.Number(slow,0,3600) ||
                     !CorridorCheckpoint.Number(noiseRadius,0,28) || !CorridorCheckpoint.Number(noiseRemaining,0,.81f) ||
-                    !CorridorCheckpoint.Number(itemCooldown,0,.51f) || stock < 0 || stock > FirecrackerInventory.Capacity)
+                    !CorridorCheckpoint.Number(itemCooldown,0,.51f) || stock < 0 || snapperStockVersion < 0 || snapperStockVersion > 1 ||
+                    stock > (snapperStockVersion == 0 ? SnapperStockRules.MaximumPacks : FirecrackerInventory.Capacity))
                     throw new ArgumentException("Invalid player checkpoint");
             }
         }
@@ -37,7 +39,7 @@ namespace HappyToy.V2
             if(Hidden) throw new InvalidOperationException("Leave hiding before suspending");
             return new Progress { position=transform.position,yaw=transform.eulerAngles.y,pitch=pitch,stamina=Stamina,
                 slow=SlowRemaining,noiseRadius=FootstepNoiseRadius,noiseRemaining=FootstepNoiseRemaining,
-                itemCooldown=Firecrackers.Cooldown,stock=Firecrackers.Count,crouched=Crouching,exhausted=SprintExhausted,
+                itemCooldown=Firecrackers.Cooldown,stock=Firecrackers.Count,snapperStockVersion=1,crouched=Crouching,exhausted=SprintExhausted,
                 light=flashlight&&flashlight.enabled,hidingEntry=HidingEntryId,hidingRolls=HidingRolls,hidingOutcome=HidingOutcome,
                 cabinetTaunts=cabinetMemory.Capture(transform.position) };
         }
@@ -60,7 +62,7 @@ namespace HappyToy.V2
             Running=sprintRequested=false; ActualSpeed=0; moveDirection=Vector3.zero; fallSpeed=-2;
             if(eyes) eyes.transform.localRotation=Quaternion.Euler(pitch,0,0);
             if(flashlight) flashlight.enabled=data.light;
-            Firecrackers.RestoreStock(data.stock,data.itemCooldown); controller.enabled=true;
+            Firecrackers.RestoreStock(SnapperStockRules.Restore(data.stock,data.snapperStockVersion),data.itemCooldown); controller.enabled=true;
         }
         public bool CanRestoreProgress(Progress data)
         { data.Validate(); return CanRestoreValidatedProgress(data,(1<<8)|(1<<9)); }

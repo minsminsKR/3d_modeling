@@ -1,0 +1,27 @@
+{
+  "key": "pellet",
+  "tool": "Blender 4.0.2",
+  "original": "pellet-original.glb",
+  "originalSha256": "efc52c21c385e2d6e6ee4c614f117b304b91b9793585c391c49accfa18040d08",
+  "editable": "pellet.blend",
+  "heightMetres": 0.028,
+  "targetTriangles": 1200,
+  "originalFaces": 926113,
+  "gameFaces": 1176,
+  "fbx": "Assets/Resources/Snappers/pellet/geometry.fbx",
+  "materials": [
+    {
+      "name": "SN_pellet_0",
+      "roughness": 0.9,
+      "baseColor": "SN_pellet_0-baseColor.png",
+      "normal": "SN_pellet_0-normal.png",
+      "metallicSmoothness": "SN_pellet_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Original full PBR embedded in GLB and packed blend; original surfaces rebaked to new 2048px game UV atlas (colour, roughness, tangent normals)",
+  "bounds": {
+    "width": 0.014290785611449051,
+    "depth": 0.014688087359591451,
+    "height": 0.028
+  }
+}

@@ -19,6 +19,7 @@ namespace HappyToy.V2
         {
             item = GetComponent<Interactable>();
             if (!item || !IsPickup(item.kind)) { enabled = false; return; }
+            SnapperVisuals.PrepareSupply(item);
             var shader = Resources.Load<Shader>("PickupOutline");
             if (!shader) throw new System.InvalidOperationException("Missing pickup silhouette shader");
             material = new Material(shader) { name = "Thin white pickup silhouette" };

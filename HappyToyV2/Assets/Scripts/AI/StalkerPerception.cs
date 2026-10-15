@@ -36,6 +36,25 @@ namespace HappyToy.V2
             return TryResolveNoiseRoute(actor, navigation, point, radius, radius, homeFloor, route, out evidence);
         }
 
+        internal bool TryResolveSnapperRoute(Transform actor, NavMeshAgent navigation, Vector3 point,
+            float audibleRadius, float homeFloor, NavMeshPath route, out Vector3 evidence)
+        {
+            evidence = point;
+            if (!CorridorCheckpoint.Vector(point) || Vector3.Distance(point, actor.position) > audibleRadius) return false;
+            Vector3 ground = point;
+            if (!EnemyNavigation.AllowsCrossFloor(navigation)) ground.y = homeFloor;
+            else
+            {
+                // A report on a wall/ceiling is investigated from the supporting
+                // walkable floor below it, not an unreachable point in the air.
+                var toward = actor.position - point; toward.y = 0;
+                if (Physics.Raycast(point + toward.normalized * .08f + Vector3.up * .12f, Vector3.down,
+                    out var hit, 6, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) && hit.normal.y > .6f)
+                    ground = hit.point;
+            }
+            return TryResolveNoiseRoute(actor, navigation, ground, audibleRadius, 38, homeFloor, route, out evidence);
+        }
+
         internal bool TryResolveNoiseRoute(Transform actor, NavMeshAgent navigation, Vector3 point,
             float audibleRadius, float routeLimit, float homeFloor, NavMeshPath route, out Vector3 evidence)
         {

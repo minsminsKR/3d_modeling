@@ -11,6 +11,7 @@
 | 기록·결과·페이지 이동 | `UI/ShellJournalScreen.cs`, `ShellRecordsScreen.cs`, `ShellResultScreen.cs`. 화면용 데이터와 Action을 받아 표시하며 게임 진행을 직접 변경하지 않는다. | `ui`, 저장 변경 시 `checkpoint` |
 | HUD·메뉴 공통 스타일 | `UI/ShellHudView.cs`는 HUD 컨트롤을 소유한다. `UI/FlashlightGauge.cs`는 낡은 금속 손전등 PNG와 얇은 황동 잔량 레일을 표시한다. 아이콘 제작 원본·프롬프트는 `SourceArt/Hud`에 있다. `UI/ShellLayout.cs`는 공통 배치·스타일을 만든다. `GameShellView.cs`는 Unity 패널·입력·각 모듈 연결을 담당한다. | `ui`, 손전등 표시만 변경 시 `flashlight-hud` |
 | 타이틀·게임 시작 전환 | `GameShellTitleView.cs`, `CinematicTitleScene.cs`, `GameShellStartTransition.cs`. 타이틀·접근 장면은 60Hz 예약을 유지하고, 동작 감소 시 정적인 타이틀은 저빈도 갱신한다. `UI/TitleApproachFootsteps.cs`는 로딩 접근 중 기존 `mask-heavy-step` 녹음을 2D로 재생한다. 타이틀 일시정지만 우회하며 마스터 음량·진단 무음·종료 정리를 따른다. 실제 로딩 중 입력 차단과 접근 연출을 보존한다. | `title`, 공통 UI 변경 시 `ui` |
+| 콩알탄 6발 묶음·충돌·유인 | `Core/SnapperStockRules.cs`는 묶음당 6발·최대 30발·구형 저장 변환을, `FirecrackerInventory.cs`는 입력과 재고를 소유한다. 기존 이름/GUID/enum은 저장 호환을 위해 유지한다. `FirecrackerProjectile.cs`는 첫 고체 충돌에서 한 번만 파열하고 `SnapperImpactEffect.cs`는 짧은 종이 먼지·작은 섬광을 표시한다. `StalkerBrain.HearSnapper`는 실제 소리 경로를 거쳐 위치를 기억하며 베이비도 숨은 플레이어 좌표 대신 그 위치를 수색한다. 기존 `NoiseInvestigationClock`은 도착 후 6초를 보장한다. 백수귀의 청각 무반응·목격 추격 우선은 유지한다. `SnapperVisuals`는 학교/회랑 공급품과 투척 낱알에 웹앱 모델을 붙인다. `Assets/Editor/SnapperAssetsImport.cs`, `SourceArt/Snappers/`, `SourceArt/Audio/render_snappers.py`, `ThirdParty/Audio/Snappers/`가 PBR 원본·Blender·참조·실제 CC0 녹음·재생성 경로다. | `snappers`, `core`; 실제 플레이 검증은 사용자 요청 시 별도 |
 | 적의 시야·청각 | `StalkerBrain.cs`와 `AI/StalkerPerception.cs`가 실제 가림·층·소리 경로를 처리한다. 회랑 백수귀는 `LanternMaskEncounter.cs` / `LanternMaskRunner.cs`의 정면 시야만 사용하며 발소리·폭죽 콜백을 거부한다. | `core`, `ai`, `corridor` |
 | 공격·캐비닛 은신 | `AI/StalkerAttack.cs`는 일반 공격 예고/회복과 표적을 소유한다. `Core/CabinetEncounterClock.cs`는 목격한 진입의 접근→두리번거림→후퇴 또는 발각 돌진→문 앞 예고를 판정한다. `AI/EnemyCabinetEncounter.cs`가 실제 NavMesh·문·현재 가림을 연결하며 Stalker/백수귀/마네킹이 공유한다. `PlayerMotor.Hide`는 콜라이더를 숨기기 전에 모든 관찰자에게 알린다. `Core/CabinetTauntMemory`가 동일 캐비닛·몬스터의 4m 이내 실제 목격 진입을 세며 세 번째에는 확률을 덮어쓰고 바로 돌진한다. `AI/PlayerCabinetMemory`는 실제 관찰자와 돌진 중 재출입 금지, 12m 이탈 시 초기화, 선택 체크포인트 기록을 연결한다. 일반 진입의 75%/25% 한 번 판정과 구형 저장 호환은 유지한다. | `core`, `cabinet-expression`, `ai`, 저장 변경 시 `checkpoint` |
 | 적의 문 통과·추적 경로 | `AI/StalkerDoorPassage.cs`는 문 통과와 제한된 대기를 소유한다. `AI/CorridorRouteGuide.cs`는 지도 4의 타일 중앙 경유와 회전을, 독립 `Core/CorridorRouteRules.cs`는 연결된 다음 타일을 선택한다. `EnemyNavigation.FollowPath`는 원래 최종 목표·경로 증거를 보존하며 실제 이동을 연결한다. | `ai-doors`, `corridor` |
@@ -36,7 +37,7 @@
 
 ## 모듈 경계
 
-- `Assets/Scripts/Core/HappyToy.V2.Core.asmdef`: System만 사용하는 독립 규칙 13개.
+- `Assets/Scripts/Core/HappyToy.V2.Core.asmdef`: System만 사용하는 독립 규칙 14개.
   UnityEngine, 씬, `GameSession`, UI, 물리/NavMesh를 참조하지 않는다.
 - `Assets/Tests/EditMode/Core/HappyToy.V2.CoreTests.asmdef`: Core를 직접 참조하는
   빠른 규칙 검사. 씬 로드·프레임 대기·문자열 리플렉션이 없다.

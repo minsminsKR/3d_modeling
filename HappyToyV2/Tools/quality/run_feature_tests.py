@@ -21,7 +21,7 @@ PROJECT = Path(__file__).resolve().parents[2]
 VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
-    "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests",
+    "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
     "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
@@ -44,6 +44,8 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "snappers": ("Six throws per pack, capacity and legacy checkpoint conversion; no PlayMode/player launch", [
+        ("EditMode", ("HappyToy.V2.CoreTests.SnapperStockRulesTests",))]),
     "graphics": ("Owned URP depth SSAO, unchanged shadow selection/restore and school/corridor presentation", [
         ("EditMode", (CLOUD + "GraphicsLightingRulesTests",)),
         ("PlayMode", play_tests("CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs"))]),

@@ -272,7 +272,7 @@ namespace HappyToy.V2
             result.inspectionReset = current.ExplorationCount == 0;
             result.restartRequestsDeduplicated = pending && current.InputAllowed && !current.Shell.IsReloading;
             result.restartResourcesClean = !current.player.Crouching && current.player.SlowRemaining == 0 &&
-                current.player.Stamina > .95f && current.player.Firecrackers.Count == 2 && current.player.FootstepNoiseRadius == 0;
+                current.player.Stamina > .95f && current.player.Firecrackers.Count == SnapperStockRules.ShotsPerPack * 2 && current.player.FootstepNoiseRadius == 0;
             var restarted = current.Shell;
             result.settingsPersisted = Mathf.Approximately(restarted.Volume, changedVolume) && Mathf.Approximately(restarted.Sensitivity, changedSensitivity) &&
                 Mathf.Approximately(current.player.sensitivity, changedSensitivity) && Mathf.Approximately(restarted.FieldOfView, changedFov) &&

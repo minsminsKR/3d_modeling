@@ -6,8 +6,8 @@ namespace HappyToy.V2
     [DefaultExecutionOrder(50)]
     public sealed class FirecrackerInventory : MonoBehaviour
     {
-        public int Count { get; private set; } = 2;
-        public const int Capacity = 5;
+        public int Count { get; private set; } = SnapperStockRules.ShotsPerPack * 2;
+        public const int Capacity = SnapperStockRules.Capacity;
         public void SetRunStock(int count) { Count = Mathf.Clamp(count, 0, Capacity); }
         public float Cooldown => cooldown;
         public void RestoreStock(int count, float seconds)
@@ -18,8 +18,8 @@ namespace HappyToy.V2
         public bool AddSupply()
         {
             var session = GameSession.Current;
-            if (!session || !session.InputAllowed || Count >= Capacity) return false;
-            Count++; ShowFeedback("폭죽 +1 · " + Count + "/" + Capacity, 1.6f); return true;
+            if (!session || !session.InputAllowed || !SnapperStockRules.CanCollect(Count)) return false;
+            Count += SnapperStockRules.ShotsPerPack; ShowFeedback("콩알탄 한 묶음 +6발 · 총 " + Count + "발", 1.6f); return true;
         }
         public FirecrackerProjectile LastThrown { get; private set; }
         public FirecrackerAim Aim { get; private set; }
@@ -60,14 +60,14 @@ namespace HappyToy.V2
         {
             var session = GameSession.Current;
             if (!session || !session.InputAllowed || !player || !player.eyes) return false;
-            if (player.Hidden) return Deny("숨어 있는 동안에는 폭죽을 던질 수 없습니다.");
-            if (session.EncountersResolved) return Deny("이름이 복원되어 폭죽이 필요하지 않습니다.");
-            if (Count <= 0) return Deny("폭죽을 모두 사용했습니다.");
-            if (cooldown > 0) return Deny("다음 폭죽을 준비 중입니다. 잠시 기다리세요.");
+            if (player.Hidden) return Deny("숨어 있는 동안에는 콩알탄을 던질 수 없습니다.");
+            if (session.EncountersResolved) return Deny("이름이 복원되어 콩알탄이 필요하지 않습니다.");
+            if (Count <= 0) return Deny("콩알탄을 모두 사용했습니다.");
+            if (cooldown > 0) return Deny("다음 콩알탄을 준비 중입니다. 잠시 기다리세요.");
             var eye = player.eyes.transform;
             FirecrackerTrajectory.GetLaunch(eye.position, eye.forward, out var point, out var velocity);
             if (FirecrackerTrajectory.IsInitialOverlap(point)) return Deny("던질 공간이 없습니다. 벽에서 조금 물러나세요.");
-            var root = new GameObject("Thrown firecracker");
+            var root = new GameObject("Thrown paper snapper");
             root.transform.position = point;
             LastThrown = root.AddComponent<FirecrackerProjectile>();
             LastThrown.Launch(velocity);
@@ -75,7 +75,7 @@ namespace HappyToy.V2
             session.NoteChapterAction(ChapterAction.FirecrackerThrown);
             cooldown = .5f;
             if (Aim) Aim.Cancel();
-            ShowFeedback("폭죽 사용 · 남은 " + Count + "개", 1.6f);
+            ShowFeedback("콩알탄 사용 · 남은 " + Count + "발", 1.6f);
             return true;
         }
         bool Deny(string text) { ShowFeedback(text, 1.8f); return false; }

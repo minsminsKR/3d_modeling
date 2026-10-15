@@ -205,7 +205,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(60000)]
         public IEnumerator ForecastMatchesPhysicalFirstContactAtLowAndHighSimulatedFrameRates()
         {
-            IsolateThreats(); Begin();
+            IsolateThreats(); Begin(); Call(Get<Component>(player, "Firecrackers"), "SetRunStock", 2);
             AimFixturePose(new Vector3(500, 0, 500), Vector3.forward);
             var floor = Cube("CloudQA aim physical floor fixture", new Vector3(500, -.2f, 500), new Vector3(80, .4f, 80));
             var wall = Cube("CloudQA aim physical wall fixture", new Vector3(500, 3, 505), new Vector3(20, 8, .3f));
@@ -287,7 +287,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(35000)]
         public IEnumerator AimedQStillDistractsNaturallyAndCannotEraseGenuineChase()
         {
-            IsolateThreats(); Begin();
+            IsolateThreats(); Begin(); Call(Get<Component>(player, "Firecrackers"), "SetRunStock", 2);
             using (var mouse = new CloudFirecrackerAimTests.AimMouse())
             {
                 Vector3 origin = MainCorridorPoint();
@@ -299,7 +299,7 @@ namespace HappyToy.V2.CloudTests
                 var first = Get<Component>(inventory, "LastThrown");
                 // Separate player recognition from acoustic acceptance, as an explicit encounter fixture.
                 AimFixturePose(origin + Vector3.up * 5, Vector3.right);
-                yield return Wait(() => Get<bool>(first, "Exploded") && Get<int>(enemy, "NoisesAccepted") > 0, 5, "Aimed physical fuse did not naturally reach enemy hearing");
+                yield return Wait(() => Get<bool>(first, "Exploded") && Get<int>(enemy, "NoisesAccepted") > 0, 5, "Aimed physical impact did not naturally reach enemy hearing");
                 Assert.That(Get<int>(first, "Attracted"), Is.GreaterThan(0));
                 Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Investigate"));
                 yield return Wait(() => Vector3.Distance(enemy.transform.position, origin) > .3f, 3, "Actual heard decoy never moved the enemy");
@@ -312,8 +312,8 @@ namespace HappyToy.V2.CloudTests
                 yield return FreshAim(mouse);
                 Keys(Key.Q); yield return Wait(() => Get<int>(inventory, "Count") == 0, 2, "Second aimed Q did not consume final item"); Keys();
                 var second = Get<Component>(inventory, "LastThrown");
-                yield return Wait(() => Get<int>(second, "PopsPlayed") >= 2, 5, "Chase test never received actual fuse pulses");
-                Assert.That(Get<int>(pursuer, "NoisesAccepted"), Is.EqualTo(accepted), "A real firecracker pulse overwrote established chase");
+                yield return Wait(() => Get<int>(second, "PopsPlayed") == 1, 5, "Chase test never received the actual impact report");
+                Assert.That(Get<int>(pursuer, "NoisesAccepted"), Is.EqualTo(accepted), "A real snapper report overwrote established chase");
                 Assert.That(Get<object>(pursuer, "state").ToString(), Is.EqualTo("Chase"));
                 Assert.That(Get<int>(second, "Attracted"), Is.Zero);
                 Assert.That(Get<int>(inventory, "Count"), Is.Zero);
@@ -326,7 +326,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(35000)]
         public IEnumerator AuthoredCameraRendersWorldAimAndStopsAtPhysicalWall()
         {
-            IsolateThreats(); Begin(); Call(shell, "RestoreDefaultSettings");
+            IsolateThreats(); Begin(); Call(Get<Component>(player, "Firecrackers"), "SetRunStock", 2); Call(shell, "RestoreDefaultSettings");
             Assert.That(SystemInfo.graphicsDeviceType, Is.Not.EqualTo(GraphicsDeviceType.Null));
             using (var mouse = new CloudFirecrackerAimTests.AimMouse())
             {

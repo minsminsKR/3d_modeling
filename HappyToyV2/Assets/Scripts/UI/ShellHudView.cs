@@ -159,7 +159,7 @@ namespace HappyToy.V2
             stamina.style.backgroundColor = state.SprintExhausted ? Rust : Gold;
             batteryMeter.SetCharge(state.BatteryFraction, state.FlashlightLit);
             int count = state.Firecrackers;
-            meter.text = $"폭죽 {count}개";
+            meter.text = $"콩알탄 {SnapperStockRules.CurrentPack(count)}/6 · 예비 {SnapperStockRules.ReservePacks(count)}묶음";
             bool hasFocus = state.Hidden || state.Focused;
             string interact = usingGamepad ? "[아래 버튼]  " : "[E]  ";
             focus.text = state.Hidden ? interact + "숨은 곳에서 나오기" : state.Focused ? interact + state.FocusLabel : string.Empty;
