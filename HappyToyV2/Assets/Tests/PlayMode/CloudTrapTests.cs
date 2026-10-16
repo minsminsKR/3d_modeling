@@ -13,6 +13,17 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        static bool TrapModelVisible(Component trap) => trap.GetComponentsInChildren<Renderer>(true)
+            .Any(renderer=>renderer.enabled && renderer.gameObject.activeInHierarchy);
+
+        static void AssertConsumedTrapStillRuns(Component trap, string phase)
+        {
+            Assert.That(trap.gameObject.activeInHierarchy,Is.True,phase+" disabled the restraint owner with its model");
+            Assert.That(((Behaviour)trap).isActiveAndEnabled,Is.True,phase+" stopped the trap lifecycle");
+            Assert.That(Get<bool>(trap,"Armed"),Is.False,phase+" armed a consumed trap again");
+            Assert.That(TrapModelVisible(trap),Is.False,phase+" left a consumed trap model visible");
+        }
+
         Component PlaceTestTrapThroughInventory()
         {
             var inventory=Get<Component>(player,"Traps");
@@ -50,6 +61,7 @@ namespace HappyToy.V2.CloudTests
             var trap=PlaceTestTrapThroughInventory();
             var look=Get<Camera>(player,"eyes").transform.rotation;
             Assert.That(Get<bool>(trap,"Armed"),Is.True);
+            Assert.That(TrapModelVisible(trap),Is.True,"An untriggered installed trap must remain visible");
             Assert.That(trap.GetComponentsInChildren<MeshRenderer>().Length,Is.GreaterThanOrEqualTo(3));
             Assert.That(trap.GetComponentsInChildren<Transform>().Count(t=>t.name=="JawFront"||t.name=="JawBack"),Is.EqualTo(2));
             var cue=trap.GetComponent(RequireType("TrapAudio"));
@@ -81,8 +93,12 @@ namespace HappyToy.V2.CloudTests
                 yield return Wait(()=>Get<bool>(actor,"AttackActive"),10,key+" never reached its genuine physical attack warning");
                 var agent=actor.GetComponent<NavMeshAgent>();
                 var trap=(Component)Call(RequireType("PlacedMonsterTrap"),"Create",session.transform,actor.transform.position,Quaternion.identity,false);
+                Assert.That(TrapModelVisible(trap),Is.True,key+" started with an invisible armed trap");
                 yield return Wait(()=>Get<bool>(trap,"Triggered"),1,key+" did not step on its real trap footprint");
                 var hold=Get<Component>(trap,"Captured");var position=actor.transform.position;var rotation=actor.transform.rotation;
+                AssertConsumedTrapStillRuns(trap,key+" trigger");
+                Assert.That(Get<bool>(hold,"Held"),Is.True,key+" lost its restraint when the model disappeared");
+                int captureSequence=Get<int>(hold,"Sequence");
                 float warning=Get<float>(actor,"AttackWindup");
                 float start=Time.time-(5-Get<float>(hold,"Remaining"));
                 yield return Delay(.24f);
@@ -91,9 +107,11 @@ namespace HappyToy.V2.CloudTests
                 if(key=="Cyclopse"||key=="Uncat")Assert.That(Get<float>(face,"CabinetWeight"),Is.GreaterThan(.95f));
                 Assert.That(Get<float>(actor,"AttackWindup"),Is.EqualTo(warning),key+" advanced its paused attack");
                 Call(shell,"Pause");float remaining=Get<float>(hold,"Remaining");yield return Delay(.18f);
-                Assert.That(Get<float>(hold,"Remaining"),Is.EqualTo(remaining));Call(shell,"Resume");
+                Assert.That(Get<float>(hold,"Remaining"),Is.EqualTo(remaining));
+                AssertConsumedTrapStillRuns(trap,key+" paused hold");Call(shell,"Resume");
                 yield return Delay(3.8f);
                 Assert.That(Get<bool>(hold,"Held"),Is.True,key+" released before five gameplay seconds");
+                AssertConsumedTrapStillRuns(trap,key+" five-second hold");
                 Assert.That(Vector3.Distance(actor.transform.position,position),Is.LessThan(.002f),key+" moved while caught");
                 Assert.That(Quaternion.Angle(actor.transform.rotation,rotation),Is.LessThan(.01f));
                 Assert.That(Get<bool>(session,"Finished"),Is.False,key+" killed the player while trapped");
@@ -104,10 +122,23 @@ namespace HappyToy.V2.CloudTests
                 yield return Wait(()=>Get<bool>(trap,"Spent"),.6f,key+" did not release its trap");
                 var cue=trap.GetComponent(RequireType("TrapAudio"));
                 Assert.That(Get<string>(cue,"LastCue"),Is.EqualTo("trap-release"));Assert.That(Get<int>(cue,"CuesPlayed"),Is.EqualTo(2));
+                AssertConsumedTrapStillRuns(trap,key+" release");
+                Assert.That(Get<int>(hold,"Sequence"),Is.EqualTo(captureSequence),key+" was caught twice by one trap");
                 Assert.That(Get<bool>(session,"Finished"),Is.False);
                 Assert.That(agent.updateRotation,Is.True,"Trap leaked its rotation lock");
                 if(key=="Cyclopse"||key=="Uncat")
                     yield return Wait(()=>Get<float>(face,"CabinetWeight")==0,1,"Release did not restore the ordinary face");
+                if(key=="Cyclopse")
+                {
+                    Assert.That(agent.Warp(position),Is.True,"Could not re-enter the consumed physical footprint");
+                    Assert.That((bool)Call(RequireType("EnemyTrapRestraint"),"Eligible",agent),Is.True,
+                        "The repeat-step probe requires a genuinely trappable released monster");
+                    yield return Delay(.12f);
+                    Assert.That(Get<bool>(hold,"Held"),Is.False,"Stepping on a consumed trap restrained the monster again");
+                    Assert.That(Get<int>(hold,"Sequence"),Is.EqualTo(captureSequence));
+                    Assert.That(Get<int>(cue,"CuesPlayed"),Is.EqualTo(2),"A consumed trap replayed its trigger or release cue");
+                    AssertConsumedTrapStillRuns(trap,key+" repeat step");
+                }
                 actor.gameObject.SetActive(false);Object.Destroy(trap.gameObject);yield return null;
             }
         }
@@ -117,6 +148,7 @@ namespace HappyToy.V2.CloudTests
         {
             Call(session,"CreateCorridor",73);Begin();IsolateThreats();
             var trap=PlaceTestTrapThroughInventory();var position=trap.transform.position;
+            Assert.That(TrapModelVisible(trap),Is.True,"The armed model was already consumed before saving");
             var pickup=Components("Interactable").First(x=>Get<object>(x,"kind").ToString()=="TrapSupply");
             string pickupId=Get<string>(pickup,"stableId");
             Call(pickup,"Use",player);Assert.That(pickup.gameObject.activeSelf,Is.False);
@@ -129,6 +161,8 @@ namespace HappyToy.V2.CloudTests
             var restored=Components("PlacedMonsterTrap").Single();
             Assert.That(Vector3.Distance(restored.transform.position,position),Is.LessThan(.003f));
             Assert.That(Get<bool>(restored,"Armed"),Is.True);
+            Assert.That(TrapModelVisible(restored),Is.True,"Restoring an armed trap hid its unused model");
+            Assert.That(restored.gameObject.activeInHierarchy,Is.True);
             Assert.That(Get<int>(restored.GetComponent(RequireType("TrapAudio")),"CuesPlayed"),Is.Zero,"Restoring a paused save replayed placement audio");
             Assert.That(Components("Interactable").Single(x=>Get<object>(x,"kind").ToString()=="TrapSupply" && Get<string>(x,"stableId")==pickupId).gameObject.activeSelf,Is.False);
         }

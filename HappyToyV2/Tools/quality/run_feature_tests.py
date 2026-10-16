@@ -44,10 +44,17 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
-    "incense": ("Single stable nearest reachable memory, retarget on collection, offering fallback, continuous plume pause and optional stock save compatibility", [
-        ("PlayMode", play_tests("RitualWorldTests.cs"))]),
-    "ritual-items": ("Single-target incense and offering guidance, optional stock save compatibility, 0.25-speed wheel, anatomical hand grips/rendering and all six frozen attackers", [
-        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualTimeStopTests.cs", "RitualItemWheelTests.cs", "PlayerHandsTests.cs") + (
+    "incense": ("Single stable nearest reachable memory, retarget on collection, offering fallback, continuous plume pause, physically supported pickups and optional stock save compatibility", [
+        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs"))]),
+    "ritual-pickups": ("Real support surfaces, rotated visual contact, above-surface focus targets and preserved pickup/save/presentation ownership", [
+        ("PlayMode", play_tests("RitualPickupSupportTests.cs") + (
+            PLAY + "RitualStocksFragmentsAndSuppliesRoundTripWithLegacyOptionalState",
+            PLAY + "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
+            PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
+            PLAY + "FurnishedCorridorThreeSeedNavigationKeepsEveryRoomPickupCabinetAndDoorwayReachable",
+            PLAY + "EntranceCavernHasWideTallPhysicalClearanceAndRealInputReachesTheMaze"))]),
+    "ritual-items": ("Single-target incense and offering guidance, supported pickups, optional stock save compatibility, 0.25-speed wheel, anatomical hand grips/rendering and all six frozen attackers", [
+        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs", "RitualTimeStopTests.cs", "RitualItemWheelTests.cs", "PlayerHandsTests.cs") + (
             PLAY + "TrapPlacementUsesSupportedGroundAndPausedInputNeverConsumesStock",
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement",
             PLAY + "PortraitFirstAppearanceUsesPhysicalFrameThenProtectedAngryGrace",

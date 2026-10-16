@@ -26,7 +26,7 @@ namespace HappyToy.V2
                 }
                 if (!found) continue;
                 var root = new GameObject("Iron trap supply "+number); root.layer = 9;
-                root.transform.SetParent(parent,false); root.transform.position = point+Vector3.up*.035f;
+                root.transform.SetParent(parent,false); root.transform.position = point+Vector3.up*.002f;
                 var collider = root.AddComponent<BoxCollider>(); collider.center = new Vector3(0,.07f,0); collider.size = new Vector3(.29f,.14f,.27f);
                 var item = root.AddComponent<Interactable>(); item.kind = Interactable.Kind.TrapSupply;
                 item.stableId = "trap-supply-"+number++; item.label = "덫 줍기";

@@ -10,6 +10,7 @@ namespace HappyToy.V2
         public static void Populate(Transform root,PlayerMotor player)
         {
             player.Rituals.ConfigureWorld(root);
+            Physics.SyncTransforms();
             var memories = root.GetComponentsInChildren<Interactable>(true).Where(x=>x.kind==Interactable.Kind.CorridorMemory || x.kind==Interactable.Kind.ChapterMemory)
                 .OrderBy(x=>x.stableId,StringComparer.Ordinal).ToArray();
             for (int i=0;i<memories.Length;i++)
@@ -24,10 +25,11 @@ namespace HappyToy.V2
         {
             var root = new GameObject(label) { layer=9 }; root.transform.SetParent(parent,false); root.transform.position=position;
             var item = root.AddComponent<Interactable>(); item.kind=kind; item.stableId=id; item.label=label;
-            var box = root.AddComponent<BoxCollider>(); box.size=new Vector3(.16f,.05f,.12f);
+            var box = root.AddComponent<BoxCollider>();
             var visual = PlayerItemVisuals.Attach(model,root.transform);
-            visual.localRotation=Quaternion.Euler(80,15,0);
             if (kind==Interactable.Kind.IncenseSupply) visual.localScale=Vector3.one*.7f;
+            RitualPickupPlacement.Place(root.transform,visual,box,position);
+            foreach (var child in visual.GetComponentsInChildren<Transform>(true)) child.gameObject.layer=9;
         }
         public static RitualCheckpoint Capture(PlayerMotor player)
         {

@@ -72,7 +72,7 @@ namespace HappyToy.V2
             var candidates = new List<(int direction,float offset,int score)>();
             for (int direction=0;direction<4;direction++)
             {
-                bool passage = (Layout.Connections[cell] & (1<<direction)) != 0 || Layout.IsAltarPortal(cell,direction);
+                bool passage = (Layout.Connections[cell] & (1<<direction)) != 0 || Layout.IsAltarPortal(cell,direction) || Entrance && cell == 0 && direction == 2;
                 foreach(float offset in passage ? new[]{-2.1f,2.1f} : new[]{0f,-1.0f,1.0f,-2.1f,2.1f})
                 {
                     int score=(passage ? 100 : 0) + (Mathf.Abs(offset)>1.5f ? 30 : Mathf.Abs(offset)>.5f ? 10 : 0);

@@ -269,7 +269,10 @@ namespace HappyToy.V2
                 var model=GraphicsPropLibrary.Attach("seal-altar",altar.transform,graphicsSurfaces.Resolve,owned);
                 // Seat the model on the stand's floor without moving gameplay
                 // colliders, collectible identities or checkpoint coordinates.
-                altar.transform.position=new Vector3(center.x,center.y-GraphicsPropLibrary.LocalBounds(model).min.y,center.z);
+                var modelBounds=GraphicsPropLibrary.LocalBounds(model);
+                float heightScale=supportBounds.size.y/modelBounds.size.y;
+                altar.transform.localScale=new Vector3(1,heightScale,1);
+                altar.transform.position=new Vector3(center.x,center.y-modelBounds.min.y*heightScale,center.z);
                 foreach(var renderer in model.GetComponentsInChildren<MeshRenderer>())
                 {renderer.receiveShadows=true;VisualBatches++;}
                 Hide(item.GetComponent<MeshRenderer>());

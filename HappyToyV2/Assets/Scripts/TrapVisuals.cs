@@ -42,5 +42,6 @@ namespace HappyToy.V2
             back.localRotation = backRest*Quaternion.AngleAxis(78*backSign*ClosedAmount,backAxis);
             plate.localPosition = plateRest-plateTravel*ClosedAmount;
         }
+        public void Consume() => gameObject.SetActive(false);
     }
 }

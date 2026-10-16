@@ -51,7 +51,8 @@ namespace HappyToy.V2
                     if (offset.magnitude > TrapPlacement.Radius+Mathf.Min(.16f,actor.radius*.5f)) continue;
                     captured = EnemyTrapRestraint.TryCatch(actor);
                     if (!captured) continue;
-                    Triggered = true; ticket = captured.Sequence; previous.Clear(); audioCue.Play("trap-trigger"); break;
+                    Triggered = true; ticket = captured.Sequence; previous.Clear();
+                    visual.Consume(); audioCue.Play("trap-trigger"); break;
                 }
             }
             if (Triggered && !Spent && (!captured || !captured.Held || captured.Sequence != ticket))

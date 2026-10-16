@@ -28,6 +28,17 @@ are in `SourceArt/CorridorEntrance/README.md`.
 UV0 span/count, texture GUID/size and material/keyword/property-block bindings.
 It is separate from actual rendered appearance and does not run in ordinary play.
 
+`ritual-pickups` selects Core and `RitualPickupSupportTests.cs` for actual visible
+mesh contact with support, real E collection and fresh-scene restoration. It also
+checks basement tables, bare/raised floors and rejection when no support exists,
+plus the existing ritual stock/supply JSON round trip, school suspend/restore and
+corridor presentation ownership regressions. Three-seed furnishing reachability
+and actual cavern-to-maze walking cover the entrance portal's furnishing boundary.
+`RitualPickupPlacement` owns physical
+support and the interaction box above it;
+`RitualWorld` retains pickup identities and optional save-state ownership. The same
+support tests also run in `incense` and `ritual-items`. Model originals are unchanged.
+
 `ritual-items` includes `PlayerHandsTests.cs`: imported articulated skin and contact
 markers, wrapped flashlight, thumb/index incense and talisman grips, palm-supported
 snapper/trap, lower-corner rendering and action/pause lifecycle. `RitualItemWheelTests`
@@ -37,6 +48,14 @@ Use `PlayerHandsPreview.Render` / `RenderActions` for silent visual review of th
 runtime poses; numerical contact/render coverage does not certify realistic art.
 The visibility/action test uses actual URP offscreen projections at 16:9, 4:3 and
 21:9 with matching render-target ratios. It does not resize a native game window.
+
+`traps` checks that successful monster capture immediately consumes the trap model
+through `TrapVisuals.Consume`, while its root, five-second restraint clock and
+trigger/release audio continue. The restraint clock pauses with gameplay.
+The six-monster capture test keeps the model
+hidden through pause and release. The armed-trap checkpoint regression restores a
+visible waiting trap without replaying placement audio; inventory and save formats
+remain unchanged.
 
 `cabinet-expression` includes the committed death presentation after a real lethal
 cabinet strike. `CabinetDeathSequence` freezes gameplay, faces the actual visual
