@@ -6,7 +6,7 @@ namespace HappyToy.V2
     // Simulation snapshot, separate from aggregate finished-run records.
     // File storage and the user-facing suspend flow are layered above this codec.
     [Serializable]
-    public sealed class CorridorCheckpoint
+    public sealed partial class CorridorCheckpoint
     {
         public int version = 1, simulationVersion = 1, seed;
         public string token;
@@ -26,7 +26,10 @@ namespace HappyToy.V2
         [Serializable] public sealed class Door { public string id; public bool open, broken, locked; public Vector3 leaf; }
         [Serializable] public sealed class Drawer { public string id; public bool open; public float travel; }
         public static bool Number(float value, float min, float max) => StealthRules.Finite(value) && value >= min && value <= max;
-        public static bool Point(Vector3 p) => Number(p.x,193,268) && Number(p.z,193,268) && Number(p.y,-.15f,.85f);
+        public static bool Point(Vector3 p) => Number(p.y,-.15f,.85f) &&
+            (Number(p.x,193,268) && Number(p.z,193,268) ||
+             Number(p.x,186,214) && Number(p.z,163,193) ||
+             Number(p.x,197.6f,202.4f) && Number(p.z,193,197));
         public static bool Vector(Vector3 p) => Number(p.x,-10000,10000) && Number(p.y,-10000,10000) && Number(p.z,-10000,10000);
         public void Validate()
         {

@@ -61,7 +61,7 @@ class FeatureRoutingTests(unittest.TestCase):
             for _, selectors in runner.stages(profile):
                 for selector in selectors:
                     if selector in declarations:
-                        self.assertTrue(re.search(r"\[(?:Test|UnityTest)(?:,|\])", declarations[selector]), selector)
+                        self.assertTrue(re.search(r"\[(?:Test|UnityTest|TestCase)(?:,|\]|\()", declarations[selector]), selector)
                     else:
                         fixture, method = selector.rsplit(".", 1)
                         self.assertTrue(fixture in declarations, selector)

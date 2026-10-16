@@ -28,10 +28,11 @@
 | 서랍·가구 상호작용 | `CorridorDrawer.cs`, `CorridorFurniturePlacement.cs`, `CorridorFurnitureLibrary.cs`, `PlayerMotor.cs`. 움직이는 서랍과 플레이어 충돌·상호작용 거리를 확인한다. | `drawer` |
 | 기억 단상 표시·정렬 | `HauntedCorridorPresentation.DressShrines`는 실제 `Memory altar` 충돌 단상의 위치를 기준으로 모델을 놓는다. 기억 위치·통로·저장 좌표는 유지한다. | `shrines`, 새 플레이어 표면 확인 |
 | 회랑 생성·방·제단 | `CorridorLayout.cs` / `CorridorRun.cs`의 새 지도 버전은 5다. `Core/CorridorShelterRules.cs`는 한 문짜리 막다른 방과 우회로 위의 두 문짜리 방을 선택한다. `CorridorShelterRoom.cs`는 각 방의 실제 문 목록을 연결한다. 기존 지도 1~4는 같은 버전으로 재구성한다. | 방·출구 선택/저장 변경은 `shelter`, 일반 회랑은 `corridor`, 전체 연결망 변경 시 `full` |
+| 동굴 시작 공간·봉인된 사찰 대문 | `CorridorEntranceChamber`는 지도 5의 큰 동굴 방·바닥/벽/천장·cell 0 연결 통로·시작 위치·봉인 대문 상호작용을 소유한다. 배치된 바위의 가장 낮은 LOD 메시를 정적 충돌에 연결하고, 대문은 실제 모델 메시와 닫힌 문 몸체를 사용한다. `CorridorEntrancePresentation`은 지정 웹앱 대문/바위의 실제 모델·LOD·PBR 배치를 담당한다. `Model`은 FBX와 Resources 키가 겹치지 않는 `<key>-visual` prefab을 직접 생성하고 외부 재질·메시·맵을 공유하며 생성한 인스턴스만 소유한다. `CorridorRun`이 NavMesh 베이크 전에 연결하며 `HauntedCorridorPresentation`은 기존 입구 문구와 통로를 막는 시각 패널을 만들지 않는다. `CorridorCheckpoint`는 기존 회랑 영역에 동굴의 실제 바닥 영역을 합쳐 좌표를 허용하고 복원은 기존 NavMesh/몸체 여유 검사를 따른다. 지도 1~4의 시작·출구와 저장 형식·기존 seeded cell 연결망은 유지한다. 웹앱 원본·입력·설정/작업 기록·편집 Blender·재현 도구·라이선스는 `SourceArt/CorridorEntrance/`, 게임 자산은 `Resources/CorridorEntrance/`다. | `entrance`, 좌표/저장 변경 시 `checkpoint`, 기존 회랑 경로 변경 시 `corridor` |
 | 운냥이 배회·추격 종소리 | `UncatBellVoice.cs`는 실제 움직임·추격 상태와 녹음 기반 공간 음원을 연결한다. `Core/EnemyBellClock.cs`는 배회/추격 간격과 음량을 판정한다. 제작 원본·비교는 `SourceArt/Audio/render_uncat_bell.py`와 `uncat-bell-selection.json`에 있다. | `core`, `corridor`, 기존 무음 음향 검사 |
 | 한국적인 소품 | `KoreanCorridorDressing.cs`는 위치 데이터만 받아 중앙 경로·가구·문 이동을 피한다. `KoreanCorridorProp.cs`는 자산/구역 정체성을 제공한다. `SourceArt/KoreanCorridorProps/`에는 웹앱 GLB/PBR·입력·프롬프트·Blender·LOD 재생성 도구가 있다. | `corridor`, `readability`, `full`, 새 플레이어 표면 확인 |
 | 학교 공간·첫 등장 | `SchoolCampusLayout.cs`, `SchoolCampusArchitecture.cs`, `SchoolCampusRooms.cs`, `SchoolFirstAppearances.cs`, 각 등장 이벤트. | `ai`, 공간/저장 버전 변경 시 `full` |
-| 저장·재개·게임 진행 | `GameSession.cs`, `CorridorRunCheckpoint.cs`, `ChapterRunCheckpoint.cs`, 각 `*CheckpointStore.cs` / `*Checkpoint.cs`. 체크포인트 partial은 기존 저장 형식을 연결하는 어댑터다. | `core`, `checkpoint` |
+| 저장·재개·게임 진행 | `GameSession.cs`, `CorridorRunCheckpoint.cs`, `ChapterRunCheckpoint.cs`, 각 `*CheckpointStore.cs` / `*Checkpoint.cs`. `CorridorCheckpointCodec.cs` / `ChapterCheckpointCodec.cs`가 검증된 JSON·복사 경계를 소유하며 `CheckpointJsonFields`는 root의 선택 `traps` 필드 누락/null을 보존한다. JsonUtility가 구형 누락 필드를 빈 inline 객체로 만드는 경우도 빈 덫 데이터로 오인하지 않으며, 실제 존재하는 잘못된 덫 데이터는 계속 거부한다. 저장소는 이 codec을 거쳐 복사/직렬화/역직렬화한다. 체크포인트 partial은 기존 저장 형식을 연결하는 어댑터다. | `core`, `checkpoint`; 덫 codec 변경 시 학교/회랑 중단 복원·덫 저장 회귀 |
 | 그래픽 설정·그림자 예산·성능 비교 | `Assets/Editor/GraphicsLightingSetup.cs`가 소유 URP 자산의 HDR·MSAA4·SMAA·깊이 재구성 SSAO를 재생성한다. `GraphicsLightingPresentation.cs`는 모드별 조명/반사를 복원한다. `LocalShadowBudget.cs`는 매 프레임 실제 광원에서 `ShadowAtlasPlan.Rebuild`의 재사용 목록을 채우며 동일 거리/ID 우선순위로 그림자를 선택한다. `GraphicsOptimizationProbe.cs`는 명시된 인자로만 정적 카메라의 GPU 완료 대기 렌더링 시간을 측정한다. | `graphics`, 공통 렌더링 변경/배포는 `full` 및 새 플레이어 표면·안광 검사 |
 | 소리·자산 | `ExternalAudio.cs`, `EnemyAcoustics.cs`, `EnemyStudioVisual.cs`와 각 자산의 SourceArt/ThirdParty 안내. | 해당 기능 검사 및 기존 무음 네이티브 진단 |
 
@@ -106,6 +107,17 @@ PCM24와 기존 PCM16 자원의 필수 목록·원본/완성 해시·CC0 출처�
 기본은 한 문/두 문 방 1:1, 최대 8개다. 안전한 막다른 방 후보가 없는 시드에서도
 우회로 위에 두 문 방 2개를 확보한다. 연결망 자체는 지도 4와 동일하다.
 
+`entrance`는 지도 5의 실제 동굴 시작 위치·몸체 여유·물리 바닥/높은 천장·cell 0까지의
+NavMesh 경로와 봉인 대문의 실제 E 상호작용·이동 차단·게임 계속을 검사한다.
+새 동굴 위치에서 저장한 뒤 fresh scene으로 복원하며 구형 지도의 출구를 보존한다.
+기존 회랑 체크포인트 및 표시 소유자의 충돌/문/아이템/NavMesh 보존 검사도 함께 실행한다.
+EditMode는 Core와 학교/회랑 저장소·선택 덫 JSON codec·조명 저장 규칙을 포함하며,
+실제 시작 전환·학교 중단 복원·설치된 덫 복원도 관련 회귀로 실행한다.
+실제 시작점에서 대문을 보는 카메라는 UV0·`-visual` prefab의 공유 모델/외부 재질과
+Resources 맵 정체성 및 흰 알베도 대체 비교의 실제 텍스처 픽셀 기여를 확인한다. 대문 렌더러 기여·배경색 교체 비교도
+확인해 보이는 하늘·천장/벽 틈을 검출한다. 원래 14m 적 가독성 검사는 유지한다.
+새 모델의 렌더링·외관 검토와 Windows 플레이어 빌드는 별도 확인이다.
+
 `title`은 원본 머리 클립·몸체 고정·일시정지·동작 감소와 실제 메뉴 시작 전환을
 검사한다. `-quiet-diagnostics -v2-start-loading-output <새 결과 폴더>` 네이티브
 검사는 준비된 타이틀에서 캡처/읽기/디스크 쓰기 없이 5초간 실제 타이틀 카메라의
@@ -127,7 +139,9 @@ PCM24와 기존 PCM16 자원의 필수 목록·원본/완성 해시·CC0 출처�
 
 `ritual-items`는 향·재고·시간 정지·실제 아이템 휠 입력과 손 통합 검사를 묶는다.
 손 검사는 가져온 해부학 리그·끝점 마커와 손전등 감싸기·향/부적 집기·콩알탄/덫
-손바닥 지지를 확인한다. 휠을 연 동안 게임 시간은 평소의 0.25배이며, 명시적
+손바닥 지지를 확인한다. 중앙 시야·액션/일시정지는 16:9·4:3·21:9의 실제 URP
+오프스크린 투영으로 확인하며 네이티브 창 크기 변경 검사는 아니다.
+휠을 연 동안 게임 시간은 평소의 0.25배이며, 명시적
 일시정지는 계속 0이다. 시각 검토는 `PlayerHandsPreview.Render` / `RenderActions`의
 실제 runtime 포즈를 사용한다. Blender 참조 액션만으로 게임 손 포즈를 검증하지 않는다.
 

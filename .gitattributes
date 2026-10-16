@@ -40,3 +40,7 @@ HappyToyV2/SourceArt/PlayerItems/Originals/*.glb filter=lfs diff=lfs merge=lfs -
 HappyToyV2/SourceArt/PlayerItems/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/PlayerItems/References/*.prompt.txt -text
 HappyToyV2/SourceArt/PlayerItems/References/flashlight-image-provenance.json -text
+
+# Generated cavern entrance originals and packed editable source stay together.
+HappyToyV2/SourceArt/CorridorEntrance/*/original.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/CorridorEntrance/**/*.blend filter=lfs diff=lfs merge=lfs -text

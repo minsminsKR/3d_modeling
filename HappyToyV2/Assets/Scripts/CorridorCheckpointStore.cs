@@ -18,7 +18,7 @@ namespace HappyToy.V2
         // Diagnostic only: never persisted, displayed as product copy, or used
         // to bypass an atomic operation or its token/lease checks.
         public string StorageDiagnostic { get; private set; } = "";
-        public CorridorCheckpoint Snapshot => state == null ? null : JsonUtility.FromJson<CorridorCheckpoint>(JsonUtility.ToJson(state));
+        public CorridorCheckpoint Snapshot => state?.Copy();
         public CorridorCheckpointStore(string directory,bool write)
         {
             path=Path.Combine(Path.GetFullPath(directory),"corridor-suspend-v1.json"); allowWrite=write;
@@ -26,7 +26,7 @@ namespace HappyToy.V2
             {
                 if(!File.Exists(path)) return;
                 if(new FileInfo(path).Length>128*1024) throw new ArgumentException("Oversized save");
-                var data=JsonUtility.FromJson<CorridorCheckpoint>(File.ReadAllText(path)); data?.Validate();
+                var data=CorridorCheckpoint.FromJson(File.ReadAllText(path));
                 if(data==null) throw new ArgumentException("Empty save"); state=data;
             }
             catch(Exception error) when(error is ArgumentException || error is IOException || error is UnauthorizedAccessException)
@@ -52,9 +52,9 @@ namespace HappyToy.V2
                     if(!Same(fresh)) { Status="다른 실행에서 중단 기록이 변경되어 저장하지 않았습니다."; return false; }
                     using(var stream=new FileStream(temporary,FileMode.CreateNew,FileAccess.Write,FileShare.None))
                     using(var writer=new StreamWriter(stream))
-                    { writer.Write(JsonUtility.ToJson(data,true)); writer.Flush(); stream.Flush(true); }
+                    { writer.Write(data.ToJson()); writer.Flush(); stream.Flush(true); }
                     if(File.Exists(path)) File.Replace(temporary,path,path+".bak"); else File.Move(temporary,path);
-                    state=JsonUtility.FromJson<CorridorCheckpoint>(JsonUtility.ToJson(data));
+                    state=data.Copy();
                     Status="탐색을 중단 저장했습니다."; return true;
                 }
             }

@@ -54,12 +54,10 @@ namespace HappyToy.V2
         CorridorRun run;
         Material timber, paper, ink, cloth, warmShade, redShade;
         Transform additions;
-        TextMesh returnClue;
         bool originalFog, ownsFog;
         FogMode originalFogMode;
         float originalFogDensity;
         Color originalFogColor;
-        int lastRecovered=-1;
         public bool Prepared { get; private set; }
         public int CladWallFaces { get; private set; }
         public int LayeredPassages { get; private set; }
@@ -69,7 +67,6 @@ namespace HappyToy.V2
         public int PreservedColliders => physical.Count;
         public int PreservedObstacles => obstacles.Count;
         public Transform AdditionRoot => additions;
-        public TextMesh ReturnClue => returnClue;
         // Eligibility only: LocalShadowBudget owns all Light.shadows decisions.
         public IReadOnlyList<Light> Lanterns => eligibleLanterns;
 
@@ -121,6 +118,9 @@ namespace HappyToy.V2
                 AddDetail(cell,"ceiling-joist",center+Vector3.up*2.935f,Quaternion.Euler(0,90,0),new Vector3(5.78f,1,1));
                 for (int direction=0;direction<4;direction++)
                 {
+                    // The new outer cavern owns this boundary's visual arch.
+                    // It is deliberately absent from seeded maze connections.
+                    if (run.Entrance && cell == 0 && direction == 2) continue;
                     int neighbor=CorridorLayout.Neighbor(cell,direction);
                     if ((direction==2 || direction==3) && neighbor>=0) continue;
                     Vector3 normal=new Vector3(CorridorLayout.DX[direction],0,CorridorLayout.DZ[direction]);
@@ -141,7 +141,6 @@ namespace HappyToy.V2
             DressShrines();
             if(incremental)yield return null;
             DressCabinets();
-            DressEntrance();
             if(incremental)yield return null;
             DressAuthoredFloorsAndCeilings();
             if(incremental)yield return null;
@@ -153,7 +152,6 @@ namespace HappyToy.V2
             ApplyFog();
             Prepared=true;
             if(!PhysicalStateIntact) throw new InvalidOperationException("Visual dressing changed corridor physics");
-            RefreshReturnClue();
         }
 
         void DressNarrowHall(int cell)
@@ -331,38 +329,10 @@ namespace HappyToy.V2
             }
         }
 
-        void DressEntrance()
-        {
-            var exit=GetComponentsInChildren<Interactable>(true).Single(item=>item.name=="Sealed entrance");
-            Vector3 center=exit.transform.position;
-            Quaternion basis=Quaternion.Euler(0,90,0);
-            AddDetail(0,"entrance-panel",center,basis,Vector3.one);
-            returnClue=new GameObject("Memory-return door clue").AddComponent<TextMesh>();
-            returnClue.transform.SetParent(additions,false);
-            returnClue.transform.SetPositionAndRotation(center+Vector3.right*.085f+Vector3.up*.20f,Quaternion.Euler(0,-90,0));
-            returnClue.anchor=TextAnchor.MiddleCenter;returnClue.alignment=TextAlignment.Center;
-            returnClue.fontSize=72;returnClue.characterSize=.016f;returnClue.color=new Color(.18f,.105f,.06f);
-            returnClue.gameObject.AddComponent<AnnexSignFont>().Apply();
-        }
-
-        void RefreshReturnClue()
-        {
-            if(!returnClue || !run || lastRecovered==run.Recovered) return;
-            lastRecovered=run.Recovered;
-            if(run.Layout.Version>=3) { returnClue.text="돌아갈 수 없는 입구\n기억은 붉은 교실로"; return; }
-            returnClue.text=lastRecovered<CorridorRun.Required?"기억을 돌려놓는 문\n봉인 "+lastRecovered+" / 5":"다섯 봉인이 풀렸다\n돌아갈 수 있다";
-        }
         void LateUpdate()
         {
             if(!Prepared) return;
-            RefreshReturnClue();
             FitSectorClues();
-            if(!returnClue) return;
-            // This physical plaque faces +X, so its world Z/Y bounds are its
-            // printed width/height. Fit live glyph bounds after native font updates.
-            var bounds=returnClue.GetComponent<MeshRenderer>().bounds;
-            float fit=Mathf.Max(bounds.size.z/1.05f,bounds.size.y/.60f);
-            if(fit>1.001f) returnClue.transform.localScale/=fit;
         }
 
         int NearestCell(Vector3 position)

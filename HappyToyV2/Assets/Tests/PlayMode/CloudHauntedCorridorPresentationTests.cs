@@ -22,13 +22,104 @@ namespace HappyToy.V2.CloudTests
         }
         [Serializable] sealed class HauntedCameraReport
         {
-            public string scope="Controlled art views of the actual seeded runtime corridor using the production player camera. Doors are opened and threats isolated for review; the 14m visibility view repositions one unchanged authored monster with its behaviour disabled. Separate seed73/211 input runs certify survival.";
-            public int seed,wallFaces,layeredPassages,shrines,lanterns,visualBatches,physicalColliders,obstacles,geometryChangedPixels,clueChangedPixels,visibleGuardPixels;
+            public string scope="Controlled art views of the actual seeded runtime corridor using the production player camera, including the sealed temple gate from the cave start. Doors are opened and threats isolated for review; the 14m visibility view repositions one unchanged authored monster with its behaviour disabled. These views do not certify survival.";
+            public int seed,wallFaces,layeredPassages,shrines,lanterns,visualBatches,physicalColliders,obstacles,geometryChangedPixels,templeGateChangedPixels,templeAlbedoChangedPixels,caveBackgroundChangedPixels,visibleGuardPixels;
             public float fogDensity,contrastRetentionAt18m,guardDistance;
             public HauntedView[] views;
         }
         static Component HauntedRun(Component session)=>Get<Component>(session,"Corridor");
         static Vector3 HauntedCell(Component run,int cell)=>(Vector3)Call(run,"CellPosition",cell);
+        static Renderer[] AssertTempleGateSourceSurfaces(Transform gate)
+        {
+            var prefab=Resources.Load<GameObject>("CorridorEntrance/temple-gate-visual");Assert.That(prefab,Is.Not.Null);
+            var originals=prefab.GetComponentsInChildren<MeshRenderer>(true);
+            var renderers=gate.GetComponentsInChildren<MeshRenderer>(true);
+            Assert.That(renderers.Length,Is.EqualTo(originals.Length),"The runtime temple replaced or duplicated its authored surfaces");
+            var albedo=Resources.Load<Texture2D>("CorridorEntrance/temple-gate/CE_temple-gate_0-baseColor");
+            var packed=Resources.Load<Texture2D>("CorridorEntrance/temple-gate/CE_temple-gate_0-metallicSmoothness");
+            Assert.That(albedo,Is.Not.Null);Assert.That(packed,Is.Not.Null);
+            var block=new MaterialPropertyBlock();
+            foreach(var renderer in renderers)
+            {
+                var mesh=renderer.GetComponent<MeshFilter>().sharedMesh;Assert.That(mesh,Is.Not.Null);Assert.That(mesh.vertexCount,Is.GreaterThan(0));
+                var matches=originals.Where(source=>source.GetComponent<MeshFilter>().sharedMesh==mesh).ToArray();
+                Assert.That(matches.Length,Is.EqualTo(1),"The gate no longer renders its actual imported prefab mesh");
+                var expected=matches[0].sharedMaterials;var actual=renderer.sharedMaterials;
+                Assert.That(actual.Length,Is.EqualTo(expected.Length));
+                block.Clear();renderer.GetPropertyBlock(block);
+                Assert.That(block.HasProperty("_BaseMap") || block.HasProperty("_MetallicGlossMap") || block.HasProperty("_BaseColor"),Is.False,
+                    "A renderer-wide property block hides the canonical prefab's original texture bindings");
+                for(int slot=0;slot<actual.Length;slot++)
+                {
+                    Assert.That(expected[slot],Is.Not.Null);
+                    Assert.That(actual[slot],Is.Not.Null);
+                    Assert.That(actual[slot],Is.SameAs(expected[slot]),"Runtime gate did not use its canonical visual prefab's original external material");
+                    Assert.That(expected[slot].GetTexture("_BaseMap"),Is.SameAs(albedo),"The canonical visual prefab lost its original external albedo binding");
+                    Assert.That(expected[slot].GetTexture("_MetallicGlossMap"),Is.SameAs(packed));
+                    Assert.That(actual[slot].GetTexture("_BaseMap"),Is.SameAs(albedo),"Runtime gate did not load the explicit original albedo Resource");
+                    Assert.That(actual[slot].GetTexture("_MetallicGlossMap"),Is.SameAs(packed));
+                    Assert.That(actual[slot].GetColor("_BaseColor"),Is.EqualTo(Color.white));
+                    block.Clear();renderer.GetPropertyBlock(block,slot);
+                    Assert.That(block.HasProperty("_BaseMap") || block.HasProperty("_MetallicGlossMap") || block.HasProperty("_BaseColor"),Is.False,
+                        "A material-slot property block hides the canonical prefab's original texture bindings");
+                }
+                var uv=mesh.uv;Assert.That(uv.Length,Is.EqualTo(mesh.vertexCount),"The runtime gate lost UV0 vertices");
+                Assert.That(uv.All(point=>!float.IsNaN(point.x)&&!float.IsInfinity(point.x)&&!float.IsNaN(point.y)&&!float.IsInfinity(point.y)),Is.True);
+                var span=new Vector2(uv.Max(point=>point.x)-uv.Min(point=>point.x),uv.Max(point=>point.y)-uv.Min(point=>point.y));
+                Assert.That(span.x,Is.GreaterThan(.3f));Assert.That(span.y,Is.GreaterThan(.3f),"Gate UV0 collapsed to a flat atlas sample");
+            }
+            Assert.That(renderers.SelectMany(renderer=>renderer.sharedMaterials).Distinct().Count(),Is.EqualTo(1),
+                "The single-material gate allocated separate materials instead of sharing its external source asset");
+            return renderers.Cast<Renderer>().ToArray();
+        }
+        static MaterialPropertyBlock TempleGateProperties(Renderer renderer,int slot=-1)
+        {
+            var block=new MaterialPropertyBlock();
+            if(slot<0)renderer.GetPropertyBlock(block);else renderer.GetPropertyBlock(block,slot);
+            return block;
+        }
+        static int TempleGateAlbedoDifference(Camera camera,Renderer[] renderers,Texture2D original,Rect screen)
+        {
+            var materials=renderers.ToDictionary(renderer=>renderer,renderer=>renderer.sharedMaterials);
+            var properties=renderers.ToDictionary(renderer=>renderer,renderer=>new {
+                global=TempleGateProperties(renderer),
+                slots=Enumerable.Range(0,renderer.sharedMaterials.Length).Select(slot=>TempleGateProperties(renderer,slot)).ToArray()});
+            var controls=new List<Material>();Texture2D frame=null;
+            try
+            {
+                foreach(var renderer in renderers)
+                {
+                    var replacements=materials[renderer].Select(source=>
+                    {
+                        var control=new Material(source) {name="Opt-in gate white-albedo control"};controls.Add(control);
+                        control.SetTexture("_BaseMap",Texture2D.whiteTexture);return control;
+                    }).ToArray();
+                    renderer.sharedMaterials=replacements;
+                    for(int slot=0;slot<replacements.Length;slot++)
+                    {
+                        var block=TempleGateProperties(renderer,slot);block.SetTexture("_BaseMap",Texture2D.whiteTexture);
+                        renderer.SetPropertyBlock(block,slot);
+                    }
+                }
+                frame=SchoolCameraFrame(camera,out _,out _,out _);
+                int changed=HauntedChanged(original,frame,screen);
+                if(changed<=500)CloudExperienceTests.Artifact("haunted-corridor-gate-white-albedo-control.png",frame.EncodeToPNG());
+                Assert.That(changed,Is.GreaterThan(500),"The actual temple-gate raster does not visibly use its imported base-color atlas");
+                return changed;
+            }
+            finally
+            {
+                foreach(var pair in materials)if(pair.Key)
+                {
+                    pair.Key.sharedMaterials=pair.Value;var saved=properties[pair.Key];
+                    pair.Key.SetPropertyBlock(saved.global.isEmpty?null:saved.global);
+                    for(int slot=0;slot<saved.slots.Length;slot++)
+                        pair.Key.SetPropertyBlock(saved.slots[slot].isEmpty?null:saved.slots[slot],slot);
+                }
+                if(frame)Object.Destroy(frame);
+                foreach(var control in controls)if(control)Object.Destroy(control);
+            }
+        }
         static ulong HauntedNavigationHash()
         {
             var mesh=NavMesh.CalculateTriangulation();ulong hash=14695981039346656037UL;
@@ -192,7 +283,18 @@ namespace HappyToy.V2.CloudTests
                 !collider.GetComponentInParent(RequireType("LanternMaskEncounter")) && !(collider.isTrigger&&collider.gameObject.layer==2))
                 .ToDictionary(collider=>collider,collider=>new {collider.enabled,collider.bounds,position=collider.transform.position,
                     rotation=collider.transform.rotation,scale=collider.transform.lossyScale,layer=collider.gameObject.layer});
-            Assert.That(physical.Count,Is.EqualTo(Get<int>(art,"PreservedColliders")),"New decoration introduced a physical collider");
+            // TrapWorld creates its finite trap/ritual pickups after the art
+            // owner captures its original geometry. They own real interaction
+            // colliders, and the teardown checks below still preserve all of
+            // them. Only those explicit gameplay pickups are outside the art's
+            // earlier physical baseline; arbitrary decoration remains forbidden.
+            var latePickupKinds=new[]{"TrapSupply","IncenseSupply","TalismanFragment"};
+            int latePickupColliders=physical.Keys.Count(collider=>
+            {
+                var item=collider.GetComponentInParent(RequireType("Interactable"));
+                return item && latePickupKinds.Contains(Get<object>(item,"kind").ToString());
+            });
+            Assert.That(physical.Count-latePickupColliders,Is.EqualTo(Get<int>(art,"PreservedColliders")),"New decoration introduced a physical collider");
             var obstacles=art.GetComponentsInChildren<NavMeshObstacle>(true).ToDictionary(obstacle=>obstacle,
                 obstacle=>new {obstacle.enabled,obstacle.carving,obstacle.center,obstacle.size,obstacle.shape});
             Assert.That(obstacles.Count,Is.EqualTo(Get<int>(art,"PreservedObstacles")));
@@ -277,7 +379,7 @@ namespace HappyToy.V2.CloudTests
             return count;
         }
         [UnityTest,Timeout(120000)]
-        public IEnumerator HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight()
+        public IEnumerator HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndTempleGateWithFourteenMetreSight()
         {
             Call(session,"CreateCorridor",73);IsolateThreats();Begin();yield return null;yield return null;
             var run=HauntedRun(session);var art=Get<Component>(run,"Presentation");
@@ -336,10 +438,13 @@ namespace HappyToy.V2.CloudTests
             var memory=run.GetComponentsInChildren(RequireType("Interactable"),true).Cast<Component>()
                 .First(item=>Get<string>(item,"stableId")=="memory-0");
             Vector3 shrine=memory.transform.position;shrine.y=.03f;
-            var positions=new[]{entrance+Vector3.back*1.4f,hallFeet,HauntedCell(run,Get<int[]>(layout,"Relics")[0]),entrance+Vector3.left*.9f};
+            var cavern=Get<Component>(run,"Entrance");Assert.That(cavern,Is.Not.Null);
+            var templePresentation=cavern.GetComponent(RequireType("CorridorEntrancePresentation"));Assert.That(templePresentation,Is.Not.Null);
+            var templeGate=Get<Transform>(templePresentation,"TempleGateRoot");Assert.That(templeGate,Is.Not.Null);
+            var positions=new[]{entrance+Vector3.back*1.4f,hallFeet,HauntedCell(run,Get<int[]>(layout,"Relics")[0]),Get<Vector3>(cavern,"StartPoint")};
             var targets=new[]{entrance+new Vector3(0,2.0f,2.7f),hallFeet+forward*16+Vector3.up*1.6f,memory.transform.position-Vector3.up*.12f,
-                Get<TextMesh>(art,"ReturnClue").transform.position};
-            var names=new[]{"haunted-corridor-timber-paper-close.png","haunted-corridor-layered-passage.png","haunted-corridor-memory-seal.png","haunted-corridor-exit-clue.png"};
+                Get<Vector3>(cavern,"GatePosition")+Vector3.up*4.5f};
+            var names=new[]{"haunted-corridor-timber-paper-close.png","haunted-corridor-layered-passage.png","haunted-corridor-memory-seal.png","haunted-corridor-sealed-temple-gate.png"};
             for(int index=0;index<positions.Length;index++)
             {
                 PlacePlayer(positions[index],false);camera.transform.rotation=Quaternion.LookRotation(targets[index]-camera.transform.position);
@@ -350,16 +455,57 @@ namespace HappyToy.V2.CloudTests
                     CloudExperienceTests.Artifact(names[index],frame.EncodeToPNG());
                     views.Add(new HauntedView {image=names[index],feet=positions[index],camera=camera.transform.position,target=targets[index],flashlight=flashlight.enabled});
                     if(index!=3)continue;
-                    var clue=Get<TextMesh>(art,"ReturnClue");Assert.That(clue.text,Is.EqualTo("돌아갈 수 없는 입구\n기억은 붉은 교실로"));
-                    Assert.That(clue.font,Is.SameAs(Resources.Load<Font>("Fonts/Korean")));
-                    var renderer=clue.GetComponent<MeshRenderer>();var screen=SchoolScreenBounds(projection,viewport,renderer.bounds);
-                    Assert.That(renderer.bounds.size.z,Is.LessThanOrEqualTo(1.052f),"Printed clue extends past its physical paper width");
-                    Assert.That(renderer.bounds.size.y,Is.LessThanOrEqualTo(.602f),"Printed clue extends past its physical paper height");
+                    AssertNoEntranceGuide(run);
+                    var originalClear=camera.clearFlags;var originalBackground=camera.backgroundColor;
+                    Texture2D backgroundProbe=null;
+                    try
+                    {
+                        // A fully enclosed cave must render the same image
+                        // even when otherwise exposed sky is vivid magenta.
+                        camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.magenta;
+                        backgroundProbe=SchoolCameraFrame(camera,out _,out _,out _);
+                        report.caveBackgroundChangedPixels=HauntedChanged(frame,backgroundProbe);
+                        if(report.caveBackgroundChangedPixels>=30)
+                            CloudExperienceTests.Artifact("haunted-corridor-cave-magenta-background.png",backgroundProbe.EncodeToPNG());
+                        Assert.That(report.caveBackgroundChangedPixels,Is.LessThan(30),"The cave-start camera sees the sky through an unsealed wall or roof");
+                    }
+                    finally
+                    {
+                        camera.clearFlags=originalClear;camera.backgroundColor=originalBackground;
+                        if(backgroundProbe)Object.Destroy(backgroundProbe);
+                    }
+                    var gateRenderers=AssertTempleGateSourceSurfaces(templeGate).Where(renderer=>renderer.enabled).ToArray();
+                    Assert.That(gateRenderers,Is.Not.Empty,"The sealed gate has no visible authored temple model");
+                    var gateBounds=gateRenderers[0].bounds;foreach(var renderer in gateRenderers.Skip(1))gateBounds.Encapsulate(renderer.bounds);
+                    var screen=SchoolScreenBounds(projection,viewport,gateBounds);
                     Assert.That(screen.xMin,Is.InRange(0,1));Assert.That(screen.xMax,Is.InRange(0,1));
                     Assert.That(screen.yMin,Is.InRange(0,1));Assert.That(screen.yMax,Is.InRange(0,1));
-                    renderer.enabled=false;var absent=SchoolCameraFrame(camera,out _,out _,out _);renderer.enabled=true;
-                    try {report.clueChangedPixels=HauntedChanged(frame,absent,screen);Assert.That(report.clueChangedPixels,Is.GreaterThan(12),"Korean exit clue produced no visible glyph raster");}
-                    finally {Object.Destroy(absent);}
+                    report.templeAlbedoChangedPixels=TempleGateAlbedoDifference(camera,gateRenderers,frame,screen);
+                    Texture2D absent=null;
+                    try
+                    {
+                        foreach(var renderer in gateRenderers)renderer.enabled=false;
+                        absent=SchoolCameraFrame(camera,out _,out _,out _);
+                        report.templeGateChangedPixels=HauntedChanged(frame,absent,screen);
+                        Assert.That(report.templeGateChangedPixels,Is.GreaterThan(1500),"The temple gate is occluded or absent in the actual cave-start camera raster");
+                    }
+                    finally {foreach(var renderer in gateRenderers)if(renderer)renderer.enabled=true;if(absent)Object.Destroy(absent);}
+                    var originalFeet=player.transform.position;var originalFacing=player.transform.rotation;var originalCameraRotation=camera.transform.rotation;
+                    Texture2D close=null;
+                    try
+                    {
+                        var gate=Get<Component>(cavern,"Gate");var front=gate.GetComponent<Collider>().bounds;
+                        PlacePlayer(new Vector3(front.center.x,.03f,front.max.z+4),false);
+                        var target=Get<Vector3>(cavern,"GatePosition")+Vector3.up*3.5f+Vector3.forward*1.7f;
+                        camera.transform.rotation=Quaternion.LookRotation(target-camera.transform.position);
+                        close=SchoolCameraFrame(camera,out _,out _,out _);
+                        CloudExperienceTests.Artifact("entrance-gate-close-pbr.png",close.EncodeToPNG());
+                    }
+                    finally
+                    {
+                        PlacePlayer(originalFeet,false);player.transform.rotation=originalFacing;camera.transform.rotation=originalCameraRotation;
+                        if(close)Object.Destroy(close);
+                    }
                 }
                 finally {Object.Destroy(frame);}
             }
@@ -391,8 +537,8 @@ namespace HappyToy.V2.CloudTests
             }
             finally {Object.Destroy(visible);guard.gameObject.SetActive(false);}
             report.views=views.ToArray();CloudExperienceTests.Artifact("haunted-corridor-presentation.json",System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(report,true)));
-            Debug.Log("HAPPYTOY_HAUNTED_PRESENTATION_PASS controlled production-camera timber/paper/lamp/seal/exit renders; geometryChanged="+report.geometryChangedPixels+
-                "; clueGlyphChanged="+report.clueChangedPixels+"; guard14mChanged="+report.visibleGuardPixels+"; no physics/navigation tuning");
+            Debug.Log("HAPPYTOY_HAUNTED_PRESENTATION_PASS controlled production-camera timber/paper/lamp/seal/temple-gate renders; geometryChanged="+report.geometryChangedPixels+
+                "; templeGateChanged="+report.templeGateChangedPixels+"; templeAlbedoChanged="+report.templeAlbedoChangedPixels+"; caveBackgroundChanged="+report.caveBackgroundChangedPixels+"; guard14mChanged="+report.visibleGuardPixels+"; no physics/navigation tuning");
         }
     }
 }

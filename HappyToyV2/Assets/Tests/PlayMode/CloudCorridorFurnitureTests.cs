@@ -324,7 +324,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(120000)]
         public IEnumerator ExistingVersionOneCheckpointReconstructsItsOriginalRoomsAndDoors()
         {
-            var saved=JsonUtility.FromJson(System.IO.File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"),RequireType("CorridorCheckpoint"));
+            var saved=Call(RequireType("CorridorCheckpoint"),"FromJson",System.IO.File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"));
             Call(session,"CreateCorridorForCheckpoint",saved); Call(session,"ApplyCheckpoint",saved);
             Assert.That(Get<int>(Get<object>(Get<Component>(session,"Corridor"),"Layout"),"Version"),Is.EqualTo(1));
             Assert.That(player.transform.position,Is.EqualTo(Get<Vector3>(Get<object>(saved,"player"),"position")));

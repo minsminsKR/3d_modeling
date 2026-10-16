@@ -25,15 +25,19 @@ namespace HappyToy.V2.CloudTests
         object Store(bool write=true) => Activator.CreateInstance(storeType,directory,write);
         object Data()
         {
-            var data=JsonUtility.FromJson(File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"),dataType);
-            RuntimeAccess.Set(data,"token",Guid.NewGuid().ToString("N")); return data;
+            var data=RuntimeAccess.Call(dataType,"FromJson",File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"));
+            RuntimeAccess.Set(data,"token",Guid.NewGuid().ToString("N"));
+            // Keep the historical fixture honest before exercising file storage.
+            // Save intentionally turns validation errors into a safe false; this
+            // direct call preserves the offending rule's exception and stack.
+            RuntimeAccess.Call(data,"Validate"); return data;
         }
         bool Save(object store,object data) => (bool)RuntimeAccess.Call(store,"Save",data);
         string ConsumeDiagnostic(object store) => "Status="+RuntimeAccess.Get<string>(store,"Status")+
             "; Conflict="+RuntimeAccess.Get<bool>(store,"Conflict")+"; "+RuntimeAccess.Get<string>(store,"StorageDiagnostic");
         [Test] public void RoundTripIsImmutableAndConsumeCannotReviveOldBackups()
         {
-            var store=Store(); var data=Data(); Assert.That(Save(store,data),Is.True);
+            var store=Store(); var data=Data(); Assert.That(Save(store,data),Is.True,ConsumeDiagnostic(store));
             var token=RuntimeAccess.Get<string>(data,"token");
             RuntimeAccess.Set(RuntimeAccess.Get<object>(data,"player"),"stock",0);
             Assert.That(RuntimeAccess.Get<int>(RuntimeAccess.Get<object>(RuntimeAccess.Get<object>(store,"Snapshot"),"player"),"stock"),Is.EqualTo(2));
@@ -51,7 +55,7 @@ namespace HappyToy.V2.CloudTests
         {
             if(Application.platform!=RuntimePlatform.WindowsEditor)
                 Assert.Ignore("This archive sharing case verifies Windows FileShare.None replacement semantics.");
-            var store=Store(); var first=Data(); Assert.That(Save(store,first),Is.True);
+            var store=Store(); var first=Data(); Assert.That(Save(store,first),Is.True,ConsumeDiagnostic(store));
             Assert.That((bool)RuntimeAccess.Call(store,"Consume",RuntimeAccess.Get<string>(first,"token")),Is.True,ConsumeDiagnostic(store));
             string oldUsed=File.ReadAllText(path+".used");
             Assert.That(Save(store,Data()),Is.True); Assert.That(Save(store,Data()),Is.True);
@@ -92,12 +96,12 @@ namespace HappyToy.V2.CloudTests
             using(var lease=new FileStream(path+".lock",FileMode.OpenOrCreate,FileAccess.ReadWrite,FileShare.None))
                 Assert.That(Save(store,data),Is.False);
             Assert.That(File.Exists(path),Is.False); Assert.That(RuntimeAccess.Get<bool>(store,"HasRun"),Is.False);
-            Assert.That(Save(store,data),Is.True); Assert.That(Directory.GetFiles(directory,"*.tmp-*").Length,Is.Zero);
+            Assert.That(Save(store,data),Is.True,ConsumeDiagnostic(store)); Assert.That(Directory.GetFiles(directory,"*.tmp-*").Length,Is.Zero);
         }
         [Test] public void StaleInstancesCannotOverwriteOrConsumeAnotherRun()
         {
             var first=Store(); var stale=Store(); var a=Data(); var b=Data();
-            Assert.That(Save(first,a),Is.True); Assert.That(Save(stale,b),Is.False);
+            Assert.That(Save(first,a),Is.True,ConsumeDiagnostic(first)); Assert.That(Save(stale,b),Is.False);
             Assert.That((bool)RuntimeAccess.Call(stale,"Consume",RuntimeAccess.Get<string>(a,"token")),Is.False);
             var oldReader=Store(); Assert.That(Save(first,b),Is.True);
             Assert.That((bool)RuntimeAccess.Call(oldReader,"Consume",RuntimeAccess.Get<string>(a,"token")),Is.False);

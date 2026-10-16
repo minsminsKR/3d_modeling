@@ -1,0 +1,54 @@
+{
+  "key": "temple-gate",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "b501cfcfa5d668a0be1df7aa6af9f15fa7689e321a761ee75c74be47da541659",
+  "editable": "temple-gate/temple-gate.blend",
+  "widthMetres": 14.998959064483643,
+  "heightMetres": 10.771793316322146,
+  "depthMetres": 9.480430126190186,
+  "normalizedAxis": "width",
+  "normalizedMetres": 15.0,
+  "gateYawDegrees": 0,
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 4096,
+  "originalFaces": 941519,
+  "originalTriangles": 941519,
+  "lods": [
+    {
+      "file": "temple-gate.fbx",
+      "targetTriangles": 100000,
+      "triangles": 100000,
+      "vertices": 46212,
+      "boundsMin": [
+        -7.499051570892334,
+        -4.741777420043945,
+        0.00022893099230714142
+      ],
+      "boundsMax": [
+        7.499907493591309,
+        4.73865270614624,
+        10.772022247314453
+      ],
+      "sha256": "96716291d523a95bbfc1e8b3b79dc39f6d80b4aa2c9ab0169b83667282ef1f0d"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_temple-gate_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_temple-gate_0-baseColor.png",
+      "metallicSmoothness": "CE_temple-gate_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

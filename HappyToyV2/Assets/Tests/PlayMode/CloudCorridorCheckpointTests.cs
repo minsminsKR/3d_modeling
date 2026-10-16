@@ -13,7 +13,7 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
-        object CheckpointCopy(object data) => JsonUtility.FromJson(JsonUtility.ToJson(data),RequireType("CorridorCheckpoint"));
+        object CheckpointCopy(object data) => Call(data,"Copy");
         Component[] CheckpointThreats() => Components("StalkerBrain").Where(x=>x.name.EndsWith("— corridor")).ToArray();
         Component[] CheckpointItems(string kind) => Components("Interactable").Where(x=>Get<object>(x,"kind").ToString()==kind && (kind!="Door" || x.name=="Corridor sliding door"))
             .OrderBy(x=>Get<string>(x,"stableId"),StringComparer.Ordinal).ToArray();
@@ -91,7 +91,8 @@ namespace HappyToy.V2.CloudTests
             var data=Call(session,"CaptureCheckpoint"); var json=JsonUtility.ToJson(data,true);
             CloudExperienceTests.Artifact("corridor-checkpoint-state.json",Encoding.UTF8.GetBytes(json));
             var parsed=CheckpointCopy(data); var p=Get<object>(parsed,"player");
-            Assert.That(Get<int>(p,"stock"),Is.EqualTo(2)); Assert.That(Get<bool>(p,"crouched"),Is.True);
+            Assert.That(Get<int>(p,"stock"),Is.EqualTo(12),"One starting six-shot pack plus one collected pack must save twelve shots");
+            Assert.That(Get<int>(p,"snapperStockVersion"),Is.EqualTo(1)); Assert.That(Get<bool>(p,"crouched"),Is.True);
             var savedDoor=Get<Array>(parsed,"doors").GetValue(0); var leaf=Get<Vector3>(savedDoor,"leaf");
             Assert.That(leaf.x,Is.InRange(.01f,2.7f),"Fixture did not capture a partly sliding leaf");
             float seconds=Get<float>(parsed,"seconds");
@@ -102,7 +103,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Vector3.Distance(player.transform.position,Get<Vector3>(p,"position")),Is.LessThan(.001f));
             Assert.That(Get<float>(player,"Stamina"),Is.EqualTo(Get<float>(p,"stamina")).Within(.0001f));
             Assert.That(Get<bool>(player,"Crouching"),Is.True); Assert.That(Get<Light>(player,"flashlight").enabled,Is.False);
-            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(2));
+            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(12));
             Assert.That(CheckpointItems("CorridorMemory").Take(2).All(x=>!x.gameObject.activeSelf),Is.True);
             HauntedShrinesAligned(Get<Component>(session,"Corridor"));
             Assert.That(CheckpointItems("FirecrackerSupply")[0].gameObject.activeSelf,Is.False);

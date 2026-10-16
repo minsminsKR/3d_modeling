@@ -97,7 +97,7 @@ PROFILES = {
         ("PlayMode", (
             PLAY + "MemorySealsStayAboveTheirVisibleStandsOnCurrentAndLegacyMaps",
             PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
-            PLAY + "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndReadableExitWithFourteenMetreSight",
+            PLAY + "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndTempleGateWithFourteenMetreSight",
             PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence"))]),
     "door-dust": ("Actual wood dust at door impact, frozen particles on pause, transient cleanup and silent rubble restoration", [
         ("PlayMode", (
@@ -125,6 +125,16 @@ PROFILES = {
             PLAY + "CorridorAltarRoomIsDistantReachableAndRestoresTheSamePhysicalSeededChamber"))]),
     "corridor": ("Opened-door E focus, visual-only runner, one/two-door shelters and real corner navigation", [
         ("PlayMode", play_tests("CloudCorridorRevisionTests.cs"))]),
+    "entrance": ("Wide tall cave spawn, real input and NavMesh access, sealed temple gate, fresh checkpoint restoration and legacy entrances", [
+        ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests",
+                      CLOUD + "CheckpointTrapCodecTests", CLOUD + "LightExplorationRulesTests")),
+        ("PlayMode", play_tests("CorridorEntranceChamberTests.cs") + (
+            PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
+            PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
+            PLAY + "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndTempleGateWithFourteenMetreSight",
+            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
+            PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement"))]),
     "core": ("Engine-independent rules; no scene setup", []),
     "readability": ("Rendered body wall clearance, pickup borders, candle blackout and creature gait", [
         ("PlayMode", play_tests("CloudGameplayReadabilityTests.cs") + (
@@ -155,7 +165,8 @@ PROFILES = {
     "drawer": ("Actual E interaction, collision exclusion and restoration", [
         ("PlayMode", (PLAY + "DrawerRealEOpensAndClosesAtTouchingDistanceWithoutShovingPlayerAndRestoresCollisionPairs",))]),
     "checkpoint": ("Checkpoint validation/storage and actual save/resume", [
-        ("EditMode", (CLOUD + "ChapterCheckpointStoreTests", CLOUD + "CorridorCheckpointStoreTests")),
+        ("EditMode", (CLOUD + "ChapterCheckpointStoreTests", CLOUD + "CorridorCheckpointStoreTests",
+                      CLOUD + "CheckpointTrapCodecTests", CLOUD + "LightExplorationRulesTests")),
         ("PlayMode", play_tests("CloudChapterCheckpointTests.cs", "CloudCorridorCheckpointTests.cs",
                                 "CloudCorridorSuspendTests.cs"))]),
     "full": ("All EditMode and PlayMode tests; player build/native review remains separate", [

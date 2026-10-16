@@ -1,0 +1,293 @@
+{
+  "asset": "cave-rock",
+  "createdOn": "2026-10-16",
+  "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "origin": "Original project-generated reference submitted to the designated repository modeling webapp; unchanged downloaded original GLB retained locally.",
+  "imageGeneration": {
+    "tool": "built-in image_gen",
+    "generatedOn": "2026-10-16",
+    "useCase": "stylized-concept",
+    "prompt": "Use case: stylized-concept. Asset type: reference image for high quality 3D reconstruction of a modular natural cave wall rock asset for a realistic horror game. Subject: one massive dark grey basalt and granite rock cliff segment, tall broad roughly rectangular rugged rock massif about 6 metres high by 5 metres wide by 2 metres thick, irregular fully rocky silhouette with no straight cut edges, naturally vertically fractured face, deep fissures, layered jagged shelves, fine weathered mineral surface, damp charcoal grey stone with restrained dark moss in cracks. This is a solid freestanding 3D boulder mass, not an interior room. Entire object visible, detached isolated asset on plain light grey background. Front three-quarter view with slight angle to show depth, evenly diffused neutral lighting suitable for physically based texture reconstruction. Realistic high detail and natural surface texture. No ground plane extension, no scenic background, no trees or plants, no people, no objects, no writing or watermark.",
+    "actualInput": {
+      "path": "SourceArt/CorridorEntrance/cave-rock/reference.png",
+      "bytes": 2799549,
+      "sha256": "fc0a541bf180bf27621adcc756a3d5dce565fd1af67ed2be58f80c66a5f20139"
+    },
+    "promptManifest": {
+      "path": "SourceArt/CorridorEntrance/reference-prompts.json",
+      "bytes": 2599,
+      "sha256": "a8964a6e7ff4e42bb3abc0d80001aa0701a777488209f0f35e4981c258c951d2"
+    }
+  },
+  "modelGeneration": {
+    "backend": "TRELLIS.2",
+    "jobId": "62a4dd86-7aac-4ca6-8cdc-28808f2e724e",
+    "batchId": "929457a6-f752-46a2-855c-4dadd81cece2",
+    "status": "completed",
+    "elapsedSeconds": 898,
+    "options": {
+      "gpu_id": 1,
+      "gpu_mode": "split",
+      "guidance_scale": 7.5,
+      "model": "trellis2",
+      "num_chunks": 50000,
+      "num_inference_steps": 50,
+      "octree_resolution": 512,
+      "omni_use_ema": false,
+      "output_format": "glb",
+      "remove_background": true,
+      "seed": 1234,
+      "texture": true,
+      "texture_gpu_id": 0,
+      "texture_profile": "detail",
+      "trellis_max_tokens": 65536,
+      "trellis_pipeline": "1536_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 8192
+    },
+    "jobRecord": {
+      "path": "SourceArt/CorridorEntrance/cave-rock/job.json",
+      "bytes": 2281,
+      "sha256": "69ce2e54f3f7172ee8d31472cc8094b732db2101ce047c3671e44fedf2067998"
+    },
+    "savedOnServer": true,
+    "remoteRecordNote": "The saved server paths/URLs are historical job evidence only. Regeneration/export and clone handoff use the repository-relative local files.",
+    "processedInput": {
+      "path": "SourceArt/CorridorEntrance/cave-rock/processed.png",
+      "bytes": 1349215,
+      "sha256": "4bd6dfacbb1aab32432623e4140344e9128bd876a22101524f794200f8b53e40",
+      "pixels": [
+        918,
+        918
+      ]
+    },
+    "processedInputNote": "Exact background-processed image downloaded from this job; the originally submitted image is preserved separately."
+  },
+  "original": {
+    "path": "SourceArt/CorridorEntrance/cave-rock/original.glb",
+    "bytes": 154003884,
+    "sha256": "96e99333989b6d5a783b7a72d41e37f7dfaec06ad3b3dcc3b6e5fb5e4a8ffc66"
+  },
+  "finishing": {
+    "tool": "Blender 4.0.2",
+    "script": {
+      "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+      "bytes": 14440,
+      "sha256": "01139d8ece4f420ee5f98a6bbe7f7ae6ff21b5f7520439cbbcf4e237c18eb88d"
+    },
+    "command": "blender --background --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/CorridorEntrance/finish_entrance_assets.py -- --only cave-rock",
+    "editable": {
+      "path": "SourceArt/CorridorEntrance/cave-rock/cave-rock.blend",
+      "bytes": 167377003,
+      "sha256": "dd3d80ced284ff7a1b6c5ffadac78cd630b2c7093ae7f0db4cf06eda11340d56"
+    },
+    "embeddedSourceText": "SOURCE - finish_entrance_assets.py",
+    "exportReport": {
+      "path": "SourceArt/CorridorEntrance/cave-rock/export.json",
+      "bytes": 2016,
+      "sha256": "e08243cb54ca2dd182c3a01b1b1b673b3f27941a5d5aa9e36ec9eefa43fe09d6"
+    },
+    "sourceTriangles": 975251,
+    "lods": [
+      {
+        "file": "cave-rock-lod0.fbx",
+        "targetTriangles": 30000,
+        "triangles": 30000,
+        "vertices": 13956,
+        "boundsMin": [
+          -3.3602678775787354,
+          -2.546726703643799,
+          0.0007369662052951753
+        ],
+        "boundsMax": [
+          3.361764430999756,
+          2.551924228668213,
+          6.012319564819336
+        ],
+        "sha256": "2854d751c2a2d4aad883b5a1b4d7e36bf564a8656434b82b331ac457c365e69a"
+      },
+      {
+        "file": "cave-rock-lod1.fbx",
+        "targetTriangles": 8000,
+        "triangles": 8000,
+        "vertices": 2956,
+        "boundsMin": [
+          -3.4081807136535645,
+          -2.5811307430267334,
+          -0.009733367711305618
+        ],
+        "boundsMax": [
+          3.3154256343841553,
+          2.519707441329956,
+          6.0240020751953125
+        ],
+        "sha256": "a558827e19b7826ee8d361004cfd122de6f8911054c10f1fbd29907a78d50477"
+      }
+    ],
+    "exportedBoundsMetres": {
+      "width": 6.722032308578491,
+      "height": 6.011582598614041,
+      "depth": 5.098650932312012
+    },
+    "normalizedAxis": "height",
+    "normalizedMetres": 6.0,
+    "gateYawDegrees": 0,
+    "textureMaxSize": 2048,
+    "method": "UV-preserving weld and decimation of the original generated surface, full original geometry/PBR plus editable LOD packed once in a compressed blend. No substitute base geometry."
+  },
+  "exportedResources": [
+    {
+      "path": "Assets/Resources/CorridorEntrance/cave-rock-lod0.fbx",
+      "bytes": 1526940,
+      "sha256": "2854d751c2a2d4aad883b5a1b4d7e36bf564a8656434b82b331ac457c365e69a"
+    },
+    {
+      "path": "Assets/Resources/CorridorEntrance/cave-rock-lod1.fbx",
+      "bytes": 438540,
+      "sha256": "a558827e19b7826ee8d361004cfd122de6f8911054c10f1fbd29907a78d50477"
+    },
+    {
+      "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0-baseColor.png",
+      "bytes": 7850294,
+      "sha256": "d8c816399b0b4f6563eea4676990bc17b272d418f2ce805f31f24b42237b1c89"
+    },
+    {
+      "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0-metallicSmoothness.png",
+      "bytes": 2564051,
+      "sha256": "a6693fa9b06d8b085bc6a79b1c28fb590f1054d6bdb366f03e5de9d320443357"
+    },
+    {
+      "path": "Assets/Resources/CorridorEntrance/cave-rock/asset.json",
+      "bytes": 2016,
+      "sha256": "e08243cb54ca2dd182c3a01b1b1b673b3f27941a5d5aa9e36ec9eefa43fe09d6"
+    }
+  ],
+  "unityImport": {
+    "editor": "6000.6.0f1",
+    "method": "HappyToy.V2.Editor.CorridorEntranceImport.Apply",
+    "script": {
+      "path": "Assets/Editor/CorridorEntranceImport.cs",
+      "bytes": 17816,
+      "sha256": "2aac4769819f43ba2cfde7d8a3d80ee07360c553ddc8ddb56e9d96e26e6ab531"
+    },
+    "prefab": "Assets/Resources/CorridorEntrance/cave-rock-visual.prefab",
+    "note": "Importer creates external URP PBR materials and a visual-only prefab, validates normalization/UV0 and preserves Unity metadata. The rock prefab has two LOD levels with shared normalization; physical colliders belong to CorridorEntranceChamber.",
+    "outputs": [
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock/asset.json.meta",
+        "bytes": 155,
+        "sha256": "ea59d1be8b8e7a0a5d87b562bcd61f040d7dbc59708850498a95892f862d1df8",
+        "guid": "0d13a98b2186f2a4d911494a18655a04"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0-baseColor.png.meta",
+        "bytes": 2707,
+        "sha256": "32b9a131c13a0246538fced44a75cb0b96f582fad6da148a2b32665cd973ede9",
+        "guid": "b82e2e1cf42cd5f4f948c339fdf88713"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0-metallicSmoothness.png.meta",
+        "bytes": 2707,
+        "sha256": "f0139f85410a125e69f8a2389b1756122f84ec6650154cbe862e268b48da067a",
+        "guid": "76cc479ff8adecc44a74386efbeacfe2"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0.mat",
+        "bytes": 4078,
+        "sha256": "4aa113bf4a6a0bea087951249a575ed7d43c8c2dd1d5170ca011001217f079cf"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0.mat.meta",
+        "bytes": 185,
+        "sha256": "ef918470974958aacdf134f2943459f83502bf65ae452a536a53d8a864ad62f6",
+        "guid": "267c4fee6c2e57a4292c2bb823e2e717"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock-lod0.fbx.meta",
+        "bytes": 3055,
+        "sha256": "4bd5c557badbdd1fe44bb3a557c4761a40f7210c9408f67d97691f7492bf1e19",
+        "guid": "546a001ffb8c1ed4cad6f80d74f03738"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock-lod1.fbx.meta",
+        "bytes": 3055,
+        "sha256": "42e2965f650fc86375db37103b254c535126ad1b27535914bda1e42fb95ca2b6",
+        "guid": "92128d66e83d1694dbacb1df88138ce9"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock.meta",
+        "bytes": 169,
+        "sha256": "a05bc61b83b477c7d417aa039734bd8e48ea7074dfcceb29686b9e932846262b",
+        "guid": "d3e4bcd8a866e0440a2a385eae684084"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock-visual.prefab",
+        "bytes": 8027,
+        "sha256": "1221ffd9aeef435cc4c8199df937393dadf1e9d34468af2bd3f5c197324e1088"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/cave-rock-visual.prefab.meta",
+        "bytes": 151,
+        "sha256": "1e9708d87fa021113d2447e67d376691ae2706269f85a279e2c4cd1d2ae14305",
+        "guid": "97e16cf7afe1eaa4c998fba5eab0ca19"
+      }
+    ],
+    "sharedFolderMeta": {
+      "path": "Assets/Resources/CorridorEntrance.meta",
+      "bytes": 169,
+      "sha256": "166507b12b7a0a98b159ace09a8ae8bdf7f59433d84183b9f43504141a1be4db",
+      "guid": "7d8e1b174db2d0d4a84514f5954f1fa7"
+    },
+    "dimensions": {
+      "rockLod0HeightMetres": 6,
+      "lodsShareNormalization": true
+    },
+    "scriptMeta": {
+      "path": "Assets/Editor/CorridorEntranceImport.cs.meta",
+      "bytes": 62,
+      "sha256": "13badf6a9c213c3074a4ace9639ea32b4a386b4c2fa0c2b57630c474b53af704",
+      "guid": "8cb52d9a7414427f9f837af195e49a8f"
+    },
+    "resourcesKey": "CorridorEntrance/cave-rock-visual",
+    "prefabGuid": "97e16cf7afe1eaa4c998fba5eab0ca19",
+    "runtimePresentation": {
+      "path": "Assets/Scripts/CorridorEntrancePresentation.cs",
+      "bytes": 11772,
+      "sha256": "32f7fac320588e7815233722f666a5d0edf013ebb0af4fd5f546623c3299abd9"
+    },
+    "runtimePresentationMeta": {
+      "path": "Assets/Scripts/CorridorEntrancePresentation.cs.meta",
+      "bytes": 59,
+      "sha256": "80428e4fca19b4a64d93bdfbca4ce23876e884589312c618f2cac253f7f00671",
+      "guid": "fb7b5441fec37b9479ac3c92ffbfd154"
+    },
+    "runtimeBinding": "Instantiate the visual prefab directly with shared imported meshes, external URP materials and PBR maps. The -visual suffix prevents an extensionless Resources GameObject key collision with the FBX. No runtime material clone or property-block fallback.",
+    "materialBindings": [
+      {
+        "material": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0.mat",
+        "guid": "267c4fee6c2e57a4292c2bb823e2e717",
+        "baseColor": {
+          "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0-baseColor.png",
+          "guid": "b82e2e1cf42cd5f4f948c339fdf88713"
+        },
+        "metallicSmoothness": {
+          "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0-metallicSmoothness.png",
+          "guid": "76cc479ff8adecc44a74386efbeacfe2"
+        }
+      }
+    ]
+  },
+  "licenses": [
+    {
+      "path": "SourceArt/CorridorEntrance/LICENSE.md",
+      "bytes": 1443,
+      "sha256": "689ab09e512a568ab5aaa8f5dc7584ddf0e0ae19b178b1c138fe79dc76626dd6"
+    },
+    {
+      "path": "SourceArt/CorridorEntrance/TRELLIS.2-LICENSE.txt",
+      "bytes": 1160,
+      "sha256": "5baa259ffd1a975780869d7d2925212224c92206cefb96fb2bf0b146650e5029"
+    }
+  ],
+  "verificationScope": "Source/input/export hashes and files. Unity import, actual camera appearance, integration tests and player build are separate validation steps."
+}

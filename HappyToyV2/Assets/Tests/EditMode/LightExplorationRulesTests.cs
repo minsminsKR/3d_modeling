@@ -51,18 +51,18 @@ namespace HappyToy.V2.CloudTests
         public void MissingLightingMarkerOnSubstantiveDepletedSaveIsCorruptionInsteadOfMigration()
         {
             var type=RequireType("CorridorCheckpoint");
-            var data=JsonUtility.FromJson(File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"),type);
+            var data=Call(type,"FromJson",File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"));
             Set(data,"lightingVersion",1); Set(data,"lighting",Lighting(Valid.Replace("\"charge\":45","\"charge\":0")));
             Call(data,"Validate");
-            var json=JsonUtility.ToJson(data).Replace("\"lightingVersion\":1,","");
+            var json=((string)Call(data,"ToJson")).Replace("\"lightingVersion\": 1,","");
             var missing=JsonUtility.FromJson(json,type);
             Assert.That(Get<int>(missing,"lightingVersion"),Is.Zero);
-            Assert.Throws<ArgumentException>(()=>Call(missing,"Validate"),"Marker loss silently made a depleted new save legacy");
+            Assert.Throws<ArgumentException>(()=>Call(type,"FromJson",json),"Marker loss silently made a depleted new save legacy");
         }
         [Test]
         public void LegacyCorridorFixtureRemainsValidButNewLightingCannotOmitChargeState()
         {
-            var data = JsonUtility.FromJson(File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"), RequireType("CorridorCheckpoint"));
+            var data = Call(RequireType("CorridorCheckpoint"),"FromJson",File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"));
             Assert.That(Get<int>(data, "lightingVersion"), Is.Zero); Call(data, "Validate");
             Set(data, "lightingVersion", 1); Set(data, "lighting", null);
             Assert.Throws<ArgumentException>(() => Call(data, "Validate"));

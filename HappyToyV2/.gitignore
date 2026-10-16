@@ -27,6 +27,7 @@
 !/SourceArt/Snappers/*-original.glb
 !/SourceArt/Traps/*-original.glb
 !/SourceArt/DoorDebris/*-original.glb
+!/SourceArt/CorridorEntrance/*/original.glb
 
 # Reproducible authoring tools write review candidates and previews here.
 /SourceArt/**/proposed/

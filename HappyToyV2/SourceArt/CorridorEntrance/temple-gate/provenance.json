@@ -1,0 +1,265 @@
+{
+  "asset": "temple-gate",
+  "createdOn": "2026-10-16",
+  "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+  "origin": "Original project-generated reference submitted to the designated repository modeling webapp; unchanged downloaded original GLB retained locally.",
+  "imageGeneration": {
+    "tool": "built-in image_gen",
+    "generatedOn": "2026-10-16",
+    "useCase": "stylized-concept",
+    "prompt": "Use case: stylized-concept. Asset type: reference image for high quality 3D reconstruction of a horror game architecture prop. Primary request: a monumental closed Korean Buddhist temple gate, a frightening ancient sealed sanctuary entrance that will stand inside a huge dark cave. Subject: ONE freestanding complete gate building, dominant towering double wooden doors tightly closed within massive weathered red-brown timber pillars, faded Korean dancheong muted teal and ochre decorative crossbeams, heavy dark iron door studs and two ring handles, heavy black-grey curved Korean giwa tiled hip-and-gable roof with restrained upturned eaves, rough grey granite footing. Doors have no window openings. Coherent real joinery and worn natural materials, exquisitely realistic detail and strong architectural silhouette, solemn oppressive proportions. Entire object visible including roof corners and ground-level base, front three-quarter view with very slight side angle, eye near middle of doors, neutral evenly lit 3D asset catalogue render against plain light grey background, isolated object only. Wide 3:2 landscape frame. No cave or scenery, no surrounding wall or buildings, no people, no text or signage, no writing, no lanterns, no floating ornaments, no watermark. The large double doors must be the main central opaque surface, roof mounted to the columns, all construction connected as one object.",
+    "actualInput": {
+      "path": "SourceArt/CorridorEntrance/temple-gate/reference.png",
+      "bytes": 2646818,
+      "sha256": "5182d2b8c464c4f893d0e0c6af86646d3803010b094ca90d49ac71de9a98b4b9"
+    },
+    "promptManifest": {
+      "path": "SourceArt/CorridorEntrance/reference-prompts.json",
+      "bytes": 2599,
+      "sha256": "a8964a6e7ff4e42bb3abc0d80001aa0701a777488209f0f35e4981c258c951d2"
+    }
+  },
+  "modelGeneration": {
+    "backend": "TRELLIS.2",
+    "jobId": "3e64cf74-d522-485b-8eba-7c0f6c869efa",
+    "batchId": "929457a6-f752-46a2-855c-4dadd81cece2",
+    "status": "completed",
+    "elapsedSeconds": 425,
+    "options": {
+      "gpu_id": 1,
+      "gpu_mode": "split",
+      "guidance_scale": 7.5,
+      "model": "trellis2",
+      "num_chunks": 50000,
+      "num_inference_steps": 50,
+      "octree_resolution": 512,
+      "omni_use_ema": false,
+      "output_format": "glb",
+      "remove_background": true,
+      "seed": 1234,
+      "texture": true,
+      "texture_gpu_id": 0,
+      "texture_profile": "detail",
+      "trellis_max_tokens": 65536,
+      "trellis_pipeline": "1536_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 8192
+    },
+    "jobRecord": {
+      "path": "SourceArt/CorridorEntrance/temple-gate/job.json",
+      "bytes": 2282,
+      "sha256": "fc2e5b45a83624e0b928399c95fa5ca0e5299c7501e11ec3cafaddfc305c1a3c"
+    },
+    "savedOnServer": true,
+    "remoteRecordNote": "The saved server paths/URLs are historical job evidence only. Regeneration/export and clone handoff use the repository-relative local files.",
+    "processedInput": {
+      "path": "SourceArt/CorridorEntrance/temple-gate/processed.png",
+      "bytes": 853055,
+      "sha256": "58afb662dc13fb321d00cc22350d660af70830138a3dcf9b4da7295195a3380f",
+      "pixels": [
+        962,
+        962
+      ]
+    },
+    "processedInputNote": "Exact background-processed image downloaded from this job; the originally submitted image is preserved separately."
+  },
+  "original": {
+    "path": "SourceArt/CorridorEntrance/temple-gate/original.glb",
+    "bytes": 154495504,
+    "sha256": "b501cfcfa5d668a0be1df7aa6af9f15fa7689e321a761ee75c74be47da541659"
+  },
+  "finishing": {
+    "tool": "Blender 4.0.2",
+    "script": {
+      "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+      "bytes": 14440,
+      "sha256": "01139d8ece4f420ee5f98a6bbe7f7ae6ff21b5f7520439cbbcf4e237c18eb88d"
+    },
+    "command": "blender --background --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/CorridorEntrance/finish_entrance_assets.py -- --only temple-gate",
+    "editable": {
+      "path": "SourceArt/CorridorEntrance/temple-gate/temple-gate.blend",
+      "bytes": 169005509,
+      "sha256": "bdd3cdbda2030a1895cf09c9b12883c055dc8af483e23b5b9a06e41dcf6c2623"
+    },
+    "embeddedSourceText": "SOURCE - finish_entrance_assets.py",
+    "exportReport": {
+      "path": "SourceArt/CorridorEntrance/temple-gate/export.json",
+      "bytes": 1570,
+      "sha256": "d79416840836979c6b276a174d23fd8ce1a8166425eb3b4c1b65a94b0b114039"
+    },
+    "sourceTriangles": 941519,
+    "lods": [
+      {
+        "file": "temple-gate.fbx",
+        "targetTriangles": 100000,
+        "triangles": 100000,
+        "vertices": 46212,
+        "boundsMin": [
+          -7.499051570892334,
+          -4.741777420043945,
+          0.00022893099230714142
+        ],
+        "boundsMax": [
+          7.499907493591309,
+          4.73865270614624,
+          10.772022247314453
+        ],
+        "sha256": "96716291d523a95bbfc1e8b3b79dc39f6d80b4aa2c9ab0169b83667282ef1f0d"
+      }
+    ],
+    "exportedBoundsMetres": {
+      "width": 14.998959064483643,
+      "height": 10.771793316322146,
+      "depth": 9.480430126190186
+    },
+    "normalizedAxis": "width",
+    "normalizedMetres": 15.0,
+    "gateYawDegrees": 0,
+    "textureMaxSize": 4096,
+    "method": "UV-preserving weld and decimation of the original generated surface, full original geometry/PBR plus editable LOD packed once in a compressed blend. No substitute base geometry."
+  },
+  "exportedResources": [
+    {
+      "path": "Assets/Resources/CorridorEntrance/temple-gate.fbx",
+      "bytes": 5061468,
+      "sha256": "96716291d523a95bbfc1e8b3b79dc39f6d80b4aa2c9ab0169b83667282ef1f0d"
+    },
+    {
+      "path": "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0-baseColor.png",
+      "bytes": 32345766,
+      "sha256": "88fa2de72e553ebe57443bf6af718068b877325e4990f5e76beb724a540c545c"
+    },
+    {
+      "path": "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0-metallicSmoothness.png",
+      "bytes": 5914731,
+      "sha256": "ffafc1e2708b4954a239ff499ee7d9bd5032188a684b3c647caca2b33357d502"
+    },
+    {
+      "path": "Assets/Resources/CorridorEntrance/temple-gate/asset.json",
+      "bytes": 1570,
+      "sha256": "d79416840836979c6b276a174d23fd8ce1a8166425eb3b4c1b65a94b0b114039"
+    }
+  ],
+  "unityImport": {
+    "editor": "6000.6.0f1",
+    "method": "HappyToy.V2.Editor.CorridorEntranceImport.Apply",
+    "script": {
+      "path": "Assets/Editor/CorridorEntranceImport.cs",
+      "bytes": 17816,
+      "sha256": "2aac4769819f43ba2cfde7d8a3d80ee07360c553ddc8ddb56e9d96e26e6ab531"
+    },
+    "prefab": "Assets/Resources/CorridorEntrance/temple-gate-visual.prefab",
+    "note": "Importer creates external URP PBR materials and a visual-only prefab, validates normalization/UV0 and preserves Unity metadata. The rock prefab has two LOD levels with shared normalization; physical colliders belong to CorridorEntranceChamber.",
+    "outputs": [
+      {
+        "path": "Assets/Resources/CorridorEntrance/temple-gate/asset.json.meta",
+        "bytes": 155,
+        "sha256": "2e3cdb1526caf68636624db9280e2f81676fe06f61b807a795015bd2b0607f5a",
+        "guid": "af6a44bcd66b5334d8ae326ab2af0906"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0-baseColor.png.meta",
+        "bytes": 2707,
+        "sha256": "7286437fa52aa4c83b959f3ed7f809b57b9193693756a5c4fcf9cf4d96a205e4",
+        "guid": "501df7b4ce92e404d89e28b900f6184b"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0-metallicSmoothness.png.meta",
+        "bytes": 2707,
+        "sha256": "4a5a0e166a7e20d4fd9d00d13714c48f6b9c2ff8ceb2b17a3cefe24b002ac10c",
+        "guid": "4263f2a0fd4197041bfce39bf491476e"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0.mat",
+        "bytes": 4081,
+        "sha256": "9a40040f53ff249c0c71238db597b6c12208d749cae6dfa85939f8ae891177b8"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0.mat.meta",
+        "bytes": 185,
+        "sha256": "60201e029999827aa31f67bf59ca14cb39028ca1a9df3b2f507d71d838bd6633",
+        "guid": "eebc1f82254aaab4496a778f1ef6b723"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/temple-gate.fbx.meta",
+        "bytes": 3055,
+        "sha256": "7ec42835c47aff0dc9e3b53a27ef9d696841fd1b44b4cf718f77cb7d5ae8ede6",
+        "guid": "a0968875c54c25a429419f8be8f14a0e"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/temple-gate.meta",
+        "bytes": 169,
+        "sha256": "a95f6556868462bee5c877bcc67584fbaa51226ae073638228e2d17ecbdb791f",
+        "guid": "7d7ab560edcce9d42b7ee735a4eecd9a"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/temple-gate-visual.prefab",
+        "bytes": 4587,
+        "sha256": "962f9302abea3ea76aa5c0e4550d6239afbd73f4d7503b2c1215e09d44cdb725"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/temple-gate-visual.prefab.meta",
+        "bytes": 151,
+        "sha256": "f015c27360b35b31b2ce054090b55fb9d99c23dd39e4504bc7d54ad12bb42cac",
+        "guid": "08da17a74f4882c449400e7504f02ecd"
+      }
+    ],
+    "sharedFolderMeta": {
+      "path": "Assets/Resources/CorridorEntrance.meta",
+      "bytes": 169,
+      "sha256": "166507b12b7a0a98b159ace09a8ae8bdf7f59433d84183b9f43504141a1be4db",
+      "guid": "7d8e1b174db2d0d4a84514f5954f1fa7"
+    },
+    "dimensions": {
+      "gateWidthMetres": 15,
+      "gateApproximateHeightMetres": 10.77
+    },
+    "scriptMeta": {
+      "path": "Assets/Editor/CorridorEntranceImport.cs.meta",
+      "bytes": 62,
+      "sha256": "13badf6a9c213c3074a4ace9639ea32b4a386b4c2fa0c2b57630c474b53af704",
+      "guid": "8cb52d9a7414427f9f837af195e49a8f"
+    },
+    "resourcesKey": "CorridorEntrance/temple-gate-visual",
+    "prefabGuid": "08da17a74f4882c449400e7504f02ecd",
+    "runtimePresentation": {
+      "path": "Assets/Scripts/CorridorEntrancePresentation.cs",
+      "bytes": 11772,
+      "sha256": "32f7fac320588e7815233722f666a5d0edf013ebb0af4fd5f546623c3299abd9"
+    },
+    "runtimePresentationMeta": {
+      "path": "Assets/Scripts/CorridorEntrancePresentation.cs.meta",
+      "bytes": 59,
+      "sha256": "80428e4fca19b4a64d93bdfbca4ce23876e884589312c618f2cac253f7f00671",
+      "guid": "fb7b5441fec37b9479ac3c92ffbfd154"
+    },
+    "runtimeBinding": "Instantiate the visual prefab directly with shared imported meshes, external URP materials and PBR maps. The -visual suffix prevents an extensionless Resources GameObject key collision with the FBX. No runtime material clone or property-block fallback.",
+    "materialBindings": [
+      {
+        "material": "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0.mat",
+        "guid": "eebc1f82254aaab4496a778f1ef6b723",
+        "baseColor": {
+          "path": "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0-baseColor.png",
+          "guid": "501df7b4ce92e404d89e28b900f6184b"
+        },
+        "metallicSmoothness": {
+          "path": "Assets/Resources/CorridorEntrance/temple-gate/CE_temple-gate_0-metallicSmoothness.png",
+          "guid": "4263f2a0fd4197041bfce39bf491476e"
+        }
+      }
+    ]
+  },
+  "licenses": [
+    {
+      "path": "SourceArt/CorridorEntrance/LICENSE.md",
+      "bytes": 1443,
+      "sha256": "689ab09e512a568ab5aaa8f5dc7584ddf0e0ae19b178b1c138fe79dc76626dd6"
+    },
+    {
+      "path": "SourceArt/CorridorEntrance/TRELLIS.2-LICENSE.txt",
+      "bytes": 1160,
+      "sha256": "5baa259ffd1a975780869d7d2925212224c92206cefb96fb2bf0b146650e5029"
+    }
+  ],
+  "verificationScope": "Source/input/export hashes and files. Unity import, actual camera appearance, integration tests and player build are separate validation steps."
+}

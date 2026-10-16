@@ -24,6 +24,7 @@ namespace HappyToy.V2
         readonly List<UnityEngine.Object> generated = new List<UnityEngine.Object>();
         readonly List<StalkerBrain> threats = new List<StalkerBrain>();
         public LanternMaskEncounter Mask { get; private set; }
+        public CorridorEntranceChamber Entrance { get; private set; }
         public int ActiveThreatCount => threats.Count(x => x.gameObject.activeSelf) + (Mask && Mask.gameObject.activeSelf ? 1 : 0);
         GameSession session;
         Transform world;
@@ -75,9 +76,10 @@ namespace HappyToy.V2
                     var normal = new Vector3(CorridorLayout.DX[d], 0, CorridorLayout.DZ[d]);
                     var across = new Vector3(normal.z, 0, -normal.x);
                     var edge = p + normal * 3;
-                    bool passage = (Layout.Connections[cell] & (1 << d)) != 0 || Layout.IsAltarPortal(cell,d);
+                    bool entrancePortal = Layout.Version >= 5 && cell == 0 && d == 2;
+                    bool passage = (Layout.Connections[cell] & (1 << d)) != 0 || Layout.IsAltarPortal(cell,d) || entrancePortal;
                     if (!passage) Box("Plaster wall", edge + Vector3.up * 1.5f, d % 2 == 0 ? new Vector3(6, 3, .22f) : new Vector3(.22f, 3, 6), plaster);
-                    else if (Layout.FramedPassage(cell, d))
+                    else if (Layout.FramedPassage(cell, d) || entrancePortal)
                     {
                         foreach (int side in new[] { -1, 1 })
                         {
@@ -176,11 +178,22 @@ namespace HappyToy.V2
                 var room = new GameObject("Corridor shelter room — " + cell); room.transform.SetParent(world, false);
                 room.transform.position = CellPosition(cell); room.AddComponent<CorridorShelterRoom>().Configure(cell, roomDoors);
             }
-            var exit = Box("Sealed entrance", CellPosition(0) + new Vector3(-2.72f, 1.1f, 0), new Vector3(.12f, 2.2f, 1.6f), timber);
-            var exitInteraction = exit.AddComponent<Interactable>();
-            exitInteraction.kind = Layout.Version >= 3 ? Interactable.Kind.Inspect : Interactable.Kind.Exit;
-            exitInteraction.stableId="corridor-entrance"; exitInteraction.label=Layout.Version>=3 ? "닫힌 입구 확인" : "회랑 출구";
-            exitInteraction.inspectionText="문은 안쪽에서 봉인되었다. 다섯 기억을 회랑 끝 붉은 교실의 제단에 돌려놓아야 한다.";
+            if (Layout.Version >= 5)
+            {
+                var chamber = new GameObject("The sealed temple — entrance cavern"); chamber.transform.SetParent(world, false);
+                Entrance = chamber.AddComponent<CorridorEntranceChamber>(); Entrance.Prepare(CellPosition(0));
+                // Presentation supplies the generated gate's measured closed
+                // leaf collider before the existing physical NavMesh bake.
+                CorridorEntrancePresentation.Attach(Entrance);
+            }
+            else
+            {
+                var exit = Box("Sealed entrance", CellPosition(0) + new Vector3(-2.72f, 1.1f, 0), new Vector3(.12f, 2.2f, 1.6f), timber);
+                var exitInteraction = exit.AddComponent<Interactable>();
+                exitInteraction.kind = Layout.Version >= 3 ? Interactable.Kind.Inspect : Interactable.Kind.Exit;
+                exitInteraction.stableId="corridor-entrance"; exitInteraction.label=Layout.Version>=3 ? "닫힌 입구 확인" : "회랑 출구";
+                exitInteraction.inspectionText="문은 굳게 닫혀있다";
+            }
             if (Layout.Version >= 3) BuildAltarRoom();
             if(incremental)yield return null;
             var furniture=BuildFurnishingsRoutine(incremental);while(furniture.MoveNext())yield return furniture.Current;
@@ -254,7 +267,8 @@ namespace HappyToy.V2
             var controller = session.player.GetComponent<CharacterController>(); controller.enabled = false;
             int entranceDirection = Enumerable.Range(0, 4).First(d => (Layout.Connections[0] & (1 << d)) != 0);
             var entranceFacing = new Vector3(CorridorLayout.DX[entranceDirection], 0, CorridorLayout.DZ[entranceDirection]);
-            session.player.transform.SetPositionAndRotation(CellPosition(0), Quaternion.LookRotation(entranceFacing)); controller.enabled = true;
+            session.player.transform.SetPositionAndRotation(Entrance ? Entrance.StartPoint : CellPosition(0),
+                Entrance ? Entrance.StartRotation : Quaternion.LookRotation(entranceFacing)); controller.enabled = true;
             session.player.Firecrackers.SetRunStock(SnapperStockRules.ShotsPerPack);
             var ambience = session.GetComponent<RoomAmbience>();
             if (ambience) ambience.ConfigureRunPositions(new[] { CellPosition(Layout.Supplies[0]) + Vector3.up,

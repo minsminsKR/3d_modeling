@@ -23,7 +23,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(mask,Is.Not.Null,"Main entry must retain the actual lantern mask encounter");
             Assert.That(mask.GetType(),Is.EqualTo(RequireType("LanternMaskEncounter")));
             Assert.That(CheckpointItems("CorridorMemory").Length,Is.EqualTo(5));
-            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(1));
+            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(6),"A new corridor starts with one six-shot snapper pack");
         }
 
         [UnityTest, Timeout(120000)]

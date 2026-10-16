@@ -5,6 +5,29 @@ Use `--profile core|ui|ai|ai-doors|drawer|checkpoint|full` for fast rules, the a
 scene behavior, or both complete Unity suites. All runs use pinned Unity
 6000.6.0f1, fresh result directories and strict nonempty/pass validation.
 Player build and native/visual verification remain separate checks.
+`entrance` selects Core, both checkpoint stores, `CheckpointTrapCodecTests` and
+`LightExplorationRulesTests`, then the four actual
+`CorridorEntranceChamberTests` cases: cavern body/roof clearance and real walking
+to the maze, E inspection/physical gate blocking, fresh-scene saves from the cavern
+and existing maze, and legacy versions 1/4. It also includes existing checkpoint,
+presentation ownership, production gate-camera/14m visibility, and actual loading
+transition regressions, plus school suspend/restore and armed-trap save restoration.
+The production gate-camera case compares an alternate clear-background colour to
+detect visible sky or cave-shell gaps while retaining the original 14m enemy check.
+It also checks the `-visual` prefab's shared runtime mesh/material and explicit
+Resources albedo/MR identity, then compares a temporary white-albedo render to
+measure actual texture contribution. Material/property-block bindings are restored
+and temporary materials released; imported source assets stay shared and unchanged.
+The visual-prefab Resources key must differ from the FBX key because paths omit
+extensions; the runtime instantiates the prefab with its external PBR materials.
+The checkpoint codecs preserve omitted/null optional root `traps` fields through
+copy/JSON/store boundaries while rejecting malformed present trap state. Gate artwork/render inspection and a fresh player build
+remain separate from these integration checks. Full source and repro commands
+are in `SourceArt/CorridorEntrance/README.md`.
+`CorridorEntranceImport.InspectMeshes` is an opt-in read-only Editor asset log for
+UV0 span/count, texture GUID/size and material/keyword/property-block bindings.
+It is separate from actual rendered appearance and does not run in ordinary play.
+
 `ritual-items` includes `PlayerHandsTests.cs`: imported articulated skin and contact
 markers, wrapped flashlight, thumb/index incense and talisman grips, palm-supported
 snapper/trap, lower-corner rendering and action/pause lifecycle. `RitualItemWheelTests`
@@ -12,6 +35,8 @@ checks the actual Tab/RB wheel and 0.25 gameplay time scale; explicit pause rema
 zero. `core` covers the independent `ItemWheelRules` constant and selection rules.
 Use `PlayerHandsPreview.Render` / `RenderActions` for silent visual review of the
 runtime poses; numerical contact/render coverage does not certify realistic art.
+The visibility/action test uses actual URP offscreen projections at 16:9, 4:3 and
+21:9 with matching render-target ratios. It does not resize a native game window.
 
 `cabinet-expression` includes the committed death presentation after a real lethal
 cabinet strike. `CabinetDeathSequence` freezes gameplay, faces the actual visual

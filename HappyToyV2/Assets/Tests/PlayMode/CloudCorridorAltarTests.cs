@@ -371,7 +371,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator CorridorAltarLegacyVersionOneJsonRestoresAndKeepsItsSealedEntranceResult()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
-            var saved = JsonUtility.FromJson(File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"), RequireType("CorridorCheckpoint"));
+            var saved = Call(RequireType("CorridorCheckpoint"),"FromJson",File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"));
             Assert.That(Get<int>(saved, "simulationVersion"), Is.EqualTo(1));
             Call(session, "CreateCorridorForCheckpoint", saved); Call(session, "ApplyCheckpoint", saved);
             var run = Get<Component>(session, "Corridor"); AltarIsolateFixture(run);
@@ -396,7 +396,7 @@ namespace HappyToy.V2.CloudTests
             string directory = NewRecordFixture(); Call(session, "ConfigureRecordDirectory", directory);
             // The old fixture supplies a valid schema to request version two;
             // its version-one poses are not applied to different geometry.
-            var request = JsonUtility.FromJson(File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"), RequireType("CorridorCheckpoint"));
+            var request = Call(RequireType("CorridorCheckpoint"),"FromJson",File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"));
             Set(request, "simulationVersion", 2);
             Call(session, "CreateCorridorForCheckpoint", request); Begin();
             var run = Get<Component>(session, "Corridor"); AltarIsolateFixture(run);

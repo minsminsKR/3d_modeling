@@ -1,0 +1,71 @@
+{
+  "key": "cave-rock",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "96e99333989b6d5a783b7a72d41e37f7dfaec06ad3b3dcc3b6e5fb5e4a8ffc66",
+  "editable": "cave-rock/cave-rock.blend",
+  "widthMetres": 6.722032308578491,
+  "heightMetres": 6.011582598614041,
+  "depthMetres": 5.098650932312012,
+  "normalizedAxis": "height",
+  "normalizedMetres": 6.0,
+  "gateYawDegrees": 0,
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 975251,
+  "originalTriangles": 975251,
+  "lods": [
+    {
+      "file": "cave-rock-lod0.fbx",
+      "targetTriangles": 30000,
+      "triangles": 30000,
+      "vertices": 13956,
+      "boundsMin": [
+        -3.3602678775787354,
+        -2.546726703643799,
+        0.0007369662052951753
+      ],
+      "boundsMax": [
+        3.361764430999756,
+        2.551924228668213,
+        6.012319564819336
+      ],
+      "sha256": "2854d751c2a2d4aad883b5a1b4d7e36bf564a8656434b82b331ac457c365e69a"
+    },
+    {
+      "file": "cave-rock-lod1.fbx",
+      "targetTriangles": 8000,
+      "triangles": 8000,
+      "vertices": 2956,
+      "boundsMin": [
+        -3.4081807136535645,
+        -2.5811307430267334,
+        -0.009733367711305618
+      ],
+      "boundsMax": [
+        3.3154256343841553,
+        2.519707441329956,
+        6.0240020751953125
+      ],
+      "sha256": "a558827e19b7826ee8d361004cfd122de6f8911054c10f1fbd29907a78d50477"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_cave-rock_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_cave-rock_0-baseColor.png",
+      "metallicSmoothness": "CE_cave-rock_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}
