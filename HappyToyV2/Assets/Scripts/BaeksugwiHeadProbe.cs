@@ -15,7 +15,7 @@ namespace HappyToy.V2
     {
         string output;bool finished;float started;
         readonly List<string> errors=new List<string>();readonly List<Frame> frames=new List<Frame>();
-        [Serializable]sealed class Frame{public string image,stage;public float time,headAngle,rollDegrees,bodyRotationError,bodyPositionError,soleY,roofY;}
+        [Serializable]sealed class Frame{public string image,stage;public double wallSeconds;public float time,headAngle,rollDegrees,bodyRotationError,bodyPositionError,soleY,roofY;}
         [Serializable]sealed class Report
         {
             public string status,failure;
@@ -32,7 +32,7 @@ namespace HappyToy.V2
         void OnEnable()=>Application.logMessageReceived+=Log;
         void OnDisable()=>Application.logMessageReceived-=Log;
         void Log(string message,string trace,LogType type){if(type==LogType.Error||type==LogType.Exception||type==LogType.Assert)errors.Add(message);}
-        void Update(){if(!finished&&started>0&&Time.realtimeSinceStartup-started>240)Finish("Native head diagnostic timeout");}
+        void Update(){if(!finished&&started>0&&Time.realtimeSinceStartup-started>420)Finish("Native head diagnostic timeout");}
         IEnumerator Start()
         {
             started=Time.realtimeSinceStartup;Directory.CreateDirectory(output);var stack=new Stack<IEnumerator>();stack.Push(Run());
@@ -73,10 +73,13 @@ namespace HappyToy.V2
             var head=creature.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Head");var first=head.localRotation;var body=new BodyPose(creature);
             title.HeadMotionClip.SampleAnimation(creature,0);var neutral=head.rotation;
             report.clipSeconds=title.HeadMotionClip.length;
+            float titleClockStart=title.HeadMotionTime;
             for(int i=0;i<96;i++)
             {
-                yield return new WaitForSecondsRealtime(report.clipSeconds/96);yield return new WaitForEndOfFrame();
-                var frame=new Frame{stage="title",image="title-"+i.ToString("D2")+".png",time=title.HeadMotionTime,headAngle=Quaternion.Angle(first,head.localRotation),rollDegrees=Roll(creature.transform,head,neutral)};
+                float targetClock=titleClockStart+report.clipSeconds*(i+1)/96;
+                while(title.HeadMotionTime<targetClock)yield return null;
+                yield return new WaitForEndOfFrame();
+                var frame=new Frame{stage="title",image="title-"+i.ToString("D2")+".png",wallSeconds=Time.realtimeSinceStartupAsDouble,time=title.HeadMotionTime,headAngle=Quaternion.Angle(first,head.localRotation),rollDegrees=Roll(creature.transform,head,neutral)};
                 report.titleMinRoll=Mathf.Min(report.titleMinRoll,frame.rollDegrees);report.titleMaxRoll=Mathf.Max(report.titleMaxRoll,frame.rollDegrees);
                 body.Check(frame);report.titleHeadSwing=Mathf.Max(report.titleHeadSwing,frame.headAngle);frames.Add(frame);
                 var screenshot=ReadUi(view.CaptureTarget);File.WriteAllBytes(Path.Combine(output,frame.image),screenshot.EncodeToPNG());Destroy(screenshot);
@@ -110,7 +113,7 @@ namespace HappyToy.V2
                 for(int i=0;i<96;i++)
                 {
                     yield return new WaitForSeconds(report.clipSeconds/96);
-                    var frame=new Frame{stage="chase",image="chase-"+i.ToString("D2")+".png",time=visual.HeadMotionTime,headAngle=Quaternion.Angle(first,head.localRotation),rollDegrees=Roll(visual.BodyModel,head,neutral),soleY=float.MaxValue,roofY=float.MinValue};body.Check(frame);
+                    var frame=new Frame{stage="chase",image="chase-"+i.ToString("D2")+".png",wallSeconds=Time.realtimeSinceStartupAsDouble,time=visual.HeadMotionTime,headAngle=Quaternion.Angle(first,head.localRotation),rollDegrees=Roll(visual.BodyModel,head,neutral),soleY=float.MaxValue,roofY=float.MinValue};body.Check(frame);
                     report.chaseMinRoll=Mathf.Min(report.chaseMinRoll,frame.rollDegrees);report.chaseMaxRoll=Mathf.Max(report.chaseMaxRoll,frame.rollDegrees);
                     foreach(var skin in visual.BodyModel.GetComponentsInChildren<SkinnedMeshRenderer>())
                     {

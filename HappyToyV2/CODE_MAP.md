@@ -11,7 +11,7 @@
 | 메뉴·일시정지·설정 | `Assets/Scripts/GameShell.cs`는 화면 전환·입력 허용을 조정한다. `Assets/Scripts/UI/ShellPauseScreen.cs`, `ShellSettingsScreen.cs`는 각 화면의 컨트롤을 소유한다. | `ui` |
 | 기록·결과·페이지 이동 | `UI/ShellJournalScreen.cs`, `ShellRecordsScreen.cs`, `ShellResultScreen.cs`. 화면용 데이터와 Action을 받아 표시하며 게임 진행을 직접 변경하지 않는다. | `ui`, 저장 변경 시 `checkpoint` |
 | HUD·메뉴 공통 스타일 | `UI/ShellHudView.cs`는 HUD 컨트롤을 소유한다. `UI/FlashlightGauge.cs`는 낡은 금속 손전등 PNG와 얇은 황동 잔량 레일을 표시한다. 아이콘 제작 원본·프롬프트는 `SourceArt/Hud`에 있다. `UI/ShellLayout.cs`는 공통 배치·스타일을 만든다. `GameShellView.cs`는 Unity 패널·입력·각 모듈 연결을 담당한다. | `ui`, 손전등 표시만 변경 시 `flashlight-hud` |
-| 타이틀·게임 시작 전환 | `GameShellTitleView.cs`, `CinematicTitleScene.cs`, `GameShellStartTransition.cs`. 타이틀·접근 장면은 60Hz 예약을 유지하고, 동작 감소 시 정적인 타이틀은 저빈도 갱신한다. `UI/TitleApproachFootsteps.cs`는 로딩 접근 중 기존 `mask-heavy-step` 녹음을 2D로 재생한다. 타이틀 일시정지만 우회하며 마스터 음량·진단 무음·종료 정리를 따른다. 실제 로딩 중 입력 차단과 접근 연출을 보존한다. | `title`, 공통 UI 변경 시 `ui` |
+| 타이틀·게임 시작 전환 | `GameShellTitleView.cs`, `CinematicTitleScene.cs`, `GameShellStartTransition.cs`. `CinematicTitleScene`은 타이틀 전용 백수귀 복제본의 거대한 크기·고정된 몸체/발 지지·느린 머리 클립 재생과 별도 카메라를 소유하며, `Resources/TitleAtmosphere.shader`는 어두운 실루엣과 강한 원래 눈 표면의 안광을 담당한다. 공유 원본 모델/재질/클립과 게임 백수귀 크기·AI는 유지한다. 타이틀·접근 장면은 60Hz 예약을 유지하고, 동작 감소 시 머리를 멈추며 정적인 타이틀은 저빈도 갱신한다. `UI/TitleApproachFootsteps.cs`는 로딩 접근 중 기존 `mask-heavy-step` 녹음을 2D로 재생한다. 타이틀 일시정지만 우회하며 마스터 음량·진단 무음·종료 정리를 따른다. 실제 로딩 중 입력 차단과 접근 연출을 보존한다. | `title`, 공통 UI 변경 시 `ui` |
 | 콩알탄 6발 묶음·충돌·유인 | `Core/SnapperStockRules.cs`는 묶음당 6발·최대 30발·구형 저장 변환을, `FirecrackerInventory.cs`는 입력과 재고를 소유한다. 기존 이름/GUID/enum은 저장 호환을 위해 유지한다. `FirecrackerProjectile.cs`는 첫 고체 충돌에서 한 번만 파열하고 `SnapperImpactEffect.cs`는 짧은 종이 먼지·작은 섬광을 표시한다. `StalkerBrain.HearSnapper`는 실제 소리 경로를 거쳐 위치를 기억하며 베이비도 숨은 플레이어 좌표 대신 그 위치를 수색한다. 기존 `NoiseInvestigationClock`은 도착 후 6초를 보장한다. 백수귀의 청각 무반응·목격 추격 우선은 유지한다. `SnapperVisuals`는 학교/회랑 공급품과 투척 낱알에 웹앱 모델을 붙인다. `Assets/Editor/SnapperAssetsImport.cs`, `SourceArt/Snappers/`, `SourceArt/Audio/render_snappers.py`, `ThirdParty/Audio/Snappers/`가 PBR 원본·Blender·참조·실제 CC0 녹음·재생성 경로다. | `snappers`, `core`; 실제 플레이 검증은 사용자 요청 시 별도 |
 | 몬스터 덫·5초 구속 | `MonsterTrapInventory`는 R/LB 입력·재고·설치 피드백을, `TrapPlacement`는 실제 NavMesh/물리 바닥·빈 설치 면적을 소유한다. `PlacedMonsterTrap`은 발밑/이동 구간 충돌·한 번 발동·성공 직후 모델 소비·해제/수명을, 독립 `Core/TrapHoldClock`은 일시정지 중 소비되지 않는 5초를 소유한다. `EnemyTrapRestraint`는 위치·회전·몸체 클립을 고정/복원하며 각 AI 소유자가 자신의 감각·공격·이동 시계를 정지한다. `EnemyChaseFace`는 구속 중 잡아죽일 때의 얼굴을 펼친다. `TrapWorld`는 학교/회랑 공급품과 선택 저장 필드·실제 바닥 복원을, `TrapVisuals`는 웹앱 기반 기계 턱/압력판과 `Consume`의 모델 비활성화를, `TrapAudio`는 실제 CC0 덫·스프링·금속 녹음 3종을 소유한다. 모델이 사라져도 덫 root·5초 구속·발동/해제 소리는 유지한다. `Assets/Editor/TrapAssetsImport`, `TrapAssetsPreview`, `SourceArt/Traps/`, `SourceArt/Audio/render_traps.py`, `ThirdParty/Audio/Traps/`에 원본·편집 Blender·프롬프트·GPU 0 생성 설정·재현 도구·라이선스가 있다. | `traps`, `core`; 플레이어 실행은 별도 요청 시 |
 | 백수귀 외형 크기·문 파괴·잔해 | `BaeksugwiHallwayPresentation`은 게임 모델에만 별도 자식 피벗을 두고 32개 달리기/머리 포즈의 측정 외곽을 폭 2.52m·높이 2.36m로 맞춘다. `MaskHorrorVisual`이 이 피벗을 연결하며 root/NavMesh 반경 .3m·높이 2.1m·공격 판정과 원본/타이틀 프리팹은 보존한다. `LanternMaskRunner.TickRunnerDoor`는 학교/회랑의 실제 경로를 따라 닫힌 문에 접근하고 `InteractableDoorDestruction`이 접촉·파괴/복원·문짝 물리를 소유한다. 열린 문은 그대로 통과한다. `DoorShatterDebris`는 지정 웹앱 GPU 0 모델의 갈라진 목재·문틀·작은 파편을 흩뜨린 뒤 바닥 잔해로 합쳐 보존하며 충돌·NavMesh는 만들지 않는다. `DoorDestructionAudio`가 기존 실제 CC0 목재/금속 파괴 녹음을 문 위치에서 한 번 재생한다. 학교의 선택 broken/locked 저장 필드와 기존 회랑 broken 필드는 잔해를 무음 복원한다. `BaeksugwiHallwayAuthoring.Apply`, `SourceArt/BaeksugwiStudio/hallway-presentation.json`이 측정/재현 원본이다. | `wraith-hallway`, `core`; 수동 플레이어 실행은 별도 요청 시 |
@@ -120,8 +120,10 @@ Resources 맵 정체성 및 흰 알베도 대체 비교의 실제 텍스처 픽�
 확인해 보이는 하늘·천장/벽 틈을 검출한다. 원래 14m 적 가독성 검사는 유지한다.
 새 모델의 렌더링·외관 검토와 Windows 플레이어 빌드는 별도 확인이다.
 
-`title`은 원본 머리 클립·몸체 고정·일시정지·동작 감소와 실제 메뉴 시작 전환을
-검사한다. `-quiet-diagnostics -v2-start-loading-output <새 결과 폴더>` 네이티브
+`title`은 `CloudBaeksugwiHeadTests.cs`의 새 검사도 자동 선택한다. 원본 머리 클립·
+느린 타이틀 재생·몸체/발 고정·Time.timeScale 0에서의 재생과 숨김/동작 감소 시 정지·실제 메뉴 시작 전환을
+검사하며, 16:9·4:3·21:9의 실제 타이틀 렌더와 UI 표시 영역에서 큰 실루엣·안광을
+확인한다. `-quiet-diagnostics -v2-start-loading-output <새 결과 폴더>` 네이티브
 검사는 준비된 타이틀에서 캡처/읽기/디스크 쓰기 없이 5초간 실제 타이틀 카메라의
 렌더 완료 콜백을 센다. 메인 Update FPS와 타이틀 텍스처 갱신률을 별도로 보고한다.
 이는 하드웨어에 표시된 FPS나 GPU 시간 측정이 아니며, 이후 기존 시작 전환·서랍

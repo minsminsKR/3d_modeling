@@ -57,6 +57,21 @@ hidden through pause and release. The armed-trap checkpoint regression restores 
 visible waiting trap without replaying placement audio; inventory and save formats
 remain unchanged.
 
+`title` automatically selects the real methods in `CloudBaeksugwiHeadTests.cs`,
+including the title render/crop check at 16:9, 4:3 and 21:9. It checks the larger
+title-only silhouette and stronger eye glow in the actual camera output and UI
+display area, using a GPU body mask and original-eye on/off comparisons. The UI
+crop also preserves both eyes, menu layout and input picking at the three ratios.
+It checks slow head motion with planted body supports, reduced motion
+and the existing loading/start transition. `CinematicTitleScene` owns clone scale,
+head sampling and its camera; `TitleAtmosphere.shader` owns the dark surface and
+eye lighting. Shared source models/materials/clips and gameplay Baeksugwi AI remain
+unchanged. Rendered appearance and timing are separate from native frame-rate checks.
+The opt-in `BaeksugwiHeadProbe` waits for the slow title clock to cover the full
+clip (420-second timeout), retaining clip-clock `time` and recording actual capture
+`wallSeconds`. `preview_baeksugwi_head.py` uses `wallSeconds` for real GIF intervals;
+older manifests retain their existing `time` fallback.
+
 `cabinet-expression` includes the committed death presentation after a real lethal
 cabinet strike. `CabinetDeathSequence` freezes gameplay, faces the actual visual
 towards the cabinet/player and holds its open-mouth approach for 1.65 unscaled

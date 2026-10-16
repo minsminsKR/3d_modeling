@@ -1,10 +1,15 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.TestTools;
+using UnityEngine.UIElements;
 using static HappyToy.V2.CloudTests.RuntimeAccess;
 using Object=UnityEngine.Object;
 
@@ -122,7 +127,8 @@ namespace HappyToy.V2.CloudTests
             var nodes=creature.GetComponentsInChildren<Transform>(true);var head=nodes.Single(t=>t.name=="Head");
             var others=nodes.Where(t=>t!=head).ToArray();var rotations=others.Select(t=>t.localRotation).ToArray();var positions=others.Select(t=>t.localPosition).ToArray();
             var first=head.localRotation;float swing=0;
-            for(int phase=0;phase<16;phase++)
+            float motionStart=Get<float>(title,"HeadMotionTime"),wallStart=Time.realtimeSinceStartup;
+            while(Get<float>(title,"HeadMotionTime")-motionStart<2.4f && Time.realtimeSinceStartup-wallStart<18)
             {
                 yield return Delay(.15f);swing=Mathf.Max(swing,Quaternion.Angle(first,head.localRotation));
                 for(int i=0;i<others.Length;i++)
@@ -131,6 +137,9 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(Vector3.Distance(positions[i],others[i].localPosition),Is.LessThan(.00001f),"Title joint moved: "+others[i].name);
                 }
             }
+            Assert.That(Get<float>(title,"HeadMotionTime")-motionStart,Is.GreaterThanOrEqualTo(2.4f),"The looming title head did not advance");
+            Assert.That((Get<float>(title,"HeadMotionTime")-motionStart)/(Time.realtimeSinceStartup-wallStart),Is.InRange(.12f,.25f),
+                "The giant title head must turn slowly in unscaled time");
             Assert.That(swing,Is.GreaterThan(15));Assert.That(Get<int>(title,"PlantedLimbCount"),Is.EqualTo(12));
             Assert.That(Get<float>(title,"MaximumSupportFloorGap"),Is.LessThan(.006f));
             Call(title,"SetVisible",false);float clock=Get<float>(title,"HeadMotionTime");yield return Delay(.15f);
@@ -138,6 +147,154 @@ namespace HappyToy.V2.CloudTests
             Call(title,"SetVisible",true);Call(shell,"ToggleReducedMotion");yield return Delay(1.1f);
             first=head.localRotation;clock=Get<float>(title,"HeadMotionTime");yield return Delay(1.1f);
             Assert.That(Get<float>(title,"HeadMotionTime"),Is.EqualTo(clock));Assert.That(Quaternion.Angle(first,head.localRotation),Is.LessThan(.01f));
+        }
+
+        static T TitleSceneField<T>(Component title,string name) => (T)title.GetType()
+            .GetField(name,BindingFlags.Instance|BindingFlags.NonPublic).GetValue(title);
+
+        static Color32[] TitleRenderedPixels(Camera camera,RenderTexture target,string artifact=null)
+        {
+            RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest{destination=target});
+            var frame=CloudExperienceTests.Read(target);
+            try
+            {
+                if(artifact!=null)CloudExperienceTests.Artifact(artifact,frame.EncodeToPNG());
+                return frame.GetPixels32();
+            }
+            finally{Object.Destroy(frame);}
+        }
+
+        static int TitleEyeContribution(Color32[] bright,Color32[] dark,int width,int height,Vector2 eye,int radius)
+        {
+            int count=0,cx=Mathf.RoundToInt(eye.x*width),cy=Mathf.RoundToInt(eye.y*height);
+            for(int y=Mathf.Max(0,cy-radius);y<=Mathf.Min(height-1,cy+radius);y++)
+                for(int x=Mathf.Max(0,cx-radius);x<=Mathf.Min(width-1,cx+radius);x++)
+                {
+                    int i=y*width+x;
+                    if(bright[i].r-dark[i].r>30 && bright[i].r>bright[i].g*1.5f && bright[i].r>100)count++;
+                }
+            return count;
+        }
+
+        IEnumerator CaptureLoomingTitleMenu(Component view,string artifact,int width,int height,List<string> layoutErrors)
+        {
+            // Retain the actual UI paint, PNG and font checks. The title's
+            // safe area excludes the hidden, separately attached item wheel.
+            yield return CaptureMenu(view,artifact,width,height,new List<string>());
+            var root=Get<VisualElement>(view,"Root");var menu=root.Q<VisualElement>("safe-area");
+            Assert.That(menu,Is.Not.Null);Assert.That(menu.visible,Is.True);
+            Assert.That(menu.resolvedStyle.display,Is.Not.EqualTo(DisplayStyle.None));
+            Assert.That(menu.Q<Label>("title-brand"),Is.Not.Null);
+            Assert.That(menu.Q<Button>("begin").enabledInHierarchy,Is.True);
+            var bounds=root.worldBound;var area=menu.worldBound;
+            Assert.That(area.xMin,Is.GreaterThanOrEqualTo(bounds.xMin-1));Assert.That(area.xMax,Is.LessThanOrEqualTo(bounds.xMax+1));
+            Assert.That(area.yMin,Is.GreaterThanOrEqualTo(bounds.yMin-1));Assert.That(area.yMax,Is.LessThanOrEqualTo(bounds.yMax+1));
+            layoutErrors.AddRange(CloudExperienceTests.Layout(menu).Select(error=>artifact+": "+error));
+        }
+
+        [UnityTest,Timeout(90000)]
+        public IEnumerator BaeksugwiTitleRendersLoomingDarkBodyAndStrongOriginalEyesAcrossMenuAspectRatios()
+        {
+            yield return RecoveryUiReady();Call(shell,"RestoreDefaultSettings");yield return null;yield return null;
+            var title=One("CinematicTitleScene");var view=One("GameShellView");
+            var camera=TitleSceneField<Camera>(title,"camera");var set=TitleSceneField<GameObject>(title,"set");
+            var creature=TitleSceneField<GameObject>(title,"creature");var target=Get<RenderTexture>(title,"Image");
+            var head=creature.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Head");
+            var renderers=set.GetComponentsInChildren<Renderer>(true);
+            var priorMaterials=renderers.Select(renderer=>renderer.sharedMaterials).ToArray();
+            var skins=creature.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            var creatureRenderers=new HashSet<Renderer>(skins);
+            var eyeMaterials=skins.SelectMany(skin=>skin.sharedMaterials).Distinct().ToArray();
+            var eyeGlow=eyeMaterials.Select(material=>material.GetFloat("_EyeGlow")).ToArray();
+            bool titleEnabled=((Behaviour)title).enabled;var clear=camera.clearFlags;var background=camera.backgroundColor;
+            var previousTarget=Get<RenderTexture>(view,"CaptureTarget");
+            var previousSize=previousTarget?new Vector2Int(previousTarget.width,previousTarget.height):Vector2Int.zero;
+            Material white=null,black=null;
+            try
+            {
+                // Freeze only this owned visual scene while comparing the same real
+                // pose/materials through its production camera. Game actors stay untouched.
+                ((Behaviour)title).enabled=false;
+                Assert.That(eyeGlow.All(value=>value>0),Is.True,"Both original eye surfaces need real emission");
+                var eyes=new[]{"LeftEyeSurface","RightEyeSurface"}.Select(name=>
+                    camera.WorldToViewportPoint(head.TransformPoint((Vector3)title.GetType().GetField(name).GetValue(null)))).ToArray();
+                Assert.That(eyes.All(point=>point.z>camera.nearClipPlane),Is.True);
+                var native=TitleRenderedPixels(camera,target,"title-looming-background.png");
+                foreach(var material in eyeMaterials)material.SetFloat("_EyeGlow",0);
+                var withoutEyes=TitleRenderedPixels(camera,target,"title-looming-eyes-off.png");
+                for(int eye=0;eye<eyes.Length;eye++)
+                    Assert.That(TitleEyeContribution(native,withoutEyes,target.width,target.height,eyes[eye],32),Is.GreaterThan(12),
+                        "Original eye "+eye+" made no strong local contribution to the actual camera frame");
+                for(int i=0;i<eyeMaterials.Length;i++)eyeMaterials[i].SetFloat("_EyeGlow",eyeGlow[i]);
+
+                // GPU geometry mask includes real perspective, skinning and doorway
+                // occlusion; a black environment cannot be mistaken for body pixels.
+                white=new Material(Shader.Find("Universal Render Pipeline/Unlit"));white.SetColor("_BaseColor",Color.white);
+                black=new Material(white);black.SetColor("_BaseColor",Color.black);
+                camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.black;
+                for(int i=0;i<renderers.Length;i++)renderers[i].sharedMaterials=priorMaterials[i]
+                    .Select(_=>creatureRenderers.Contains(renderers[i])?white:black).ToArray();
+                var geometry=TitleRenderedPixels(camera,target,"title-looming-visible-body-mask.png");
+                var body=Enumerable.Range(0,geometry.Length).Where(i=>geometry[i].r>220&&geometry[i].g>220&&geometry[i].b>220).ToArray();
+                Assert.That(body.Length/(float)geometry.Length,Is.GreaterThan(.07f),"Visible geometry became a small or obscured figure");
+                float width=(body.Max(i=>i%target.width)-body.Min(i=>i%target.width))/(float)target.width;
+                float height=(body.Max(i=>i/target.width)-body.Min(i=>i/target.width))/(float)target.height;
+                Assert.That(width,Is.GreaterThan(.42f),"The creature no longer spans a large portion of the title frame");
+                Assert.That(height,Is.GreaterThan(.48f),"The title silhouette lost its looming height");
+                var luminance=body.Select(i=>(.2126f*withoutEyes[i].r+.7152f*withoutEyes[i].g+.0722f*withoutEyes[i].b)/255).OrderBy(value=>value).ToArray();
+                float bodyP95=luminance[Mathf.FloorToInt((luminance.Length-1)*.95f)];
+                Assert.That(bodyP95,Is.LessThan(.09f),"Bright skin still reveals the body instead of a dark silhouette");
+                TestContext.Out.WriteLine("TITLE_LOOMING_RENDER visibleFraction="+body.Length/(float)geometry.Length+" width="+width+" height="+height+" eyeOffBodyP95="+bodyP95);
+                for(int i=0;i<renderers.Length;i++)renderers[i].sharedMaterials=priorMaterials[i];
+                camera.clearFlags=clear;camera.backgroundColor=background;
+                TitleRenderedPixels(camera,target);
+
+                var layoutErrors=new List<string>();
+                yield return CaptureLoomingTitleMenu(view,"title-looming-default-1280x720.png",1280,720,layoutErrors);
+                Call(shell,"ToggleLargeText");Call(shell,"ToggleHighContrast");yield return null;yield return null;
+                foreach(var size in new[]{new Vector2Int(1280,720),new Vector2Int(1024,768),new Vector2Int(2560,1080)})
+                {
+                    for(int i=0;i<eyeMaterials.Length;i++)eyeMaterials[i].SetFloat("_EyeGlow",eyeGlow[i]);
+                    TitleRenderedPixels(camera,target);
+                    yield return CaptureLoomingTitleMenu(view,"title-looming-large-contrast-"+size.x+"x"+size.y+".png",size.x,size.y,layoutErrors);
+                    var image=CloudExperienceTests.Read(Get<RenderTexture>(view,"CaptureTarget"));
+                    Color32[] shown;try{shown=image.GetPixels32();}finally{Object.Destroy(image);}
+                    foreach(var material in eyeMaterials)material.SetFloat("_EyeGlow",0);
+                    TitleRenderedPixels(camera,target);for(int paint=0;paint<4;paint++)yield return null;
+                    image=CloudExperienceTests.Read(Get<RenderTexture>(view,"CaptureTarget"));
+                    Color32[] hidden;try{hidden=image.GetPixels32();}finally{Object.Destroy(image);}
+                    var root=Get<VisualElement>(view,"Root");
+                    var backdrop=root.Q<VisualElement>("menu-face-background");
+                    Assert.That(backdrop.pickingMode,Is.EqualTo(PickingMode.Ignore));
+                    float scale=Mathf.Max(size.x/(float)target.width,size.y/(float)target.height);
+                    foreach(var eye in eyes)
+                    {
+                        var uv=new Vector2(.5f+(eye.x-.5f)*target.width*scale/size.x,.5f+(eye.y-.5f)*target.height*scale/size.y);
+                        Assert.That(uv.x,Is.InRange(.03f,.97f),"Cover crop cut off an original eye at "+size);
+                        Assert.That(uv.y,Is.InRange(.03f,.97f),"Cover crop cut off an original eye at "+size);
+                        Assert.That(TitleEyeContribution(shown,hidden,size.x,size.y,uv,Mathf.CeilToInt(32*scale)),Is.GreaterThan(2),
+                            "Menu scrim or crop hid an original glowing eye at "+size);
+                        var point=new Vector2(root.worldBound.xMin+uv.x*root.worldBound.width,root.worldBound.yMax-uv.y*root.worldBound.height);
+                        Assert.That(root.Query<Button>().ToList().Any(button=>button.worldBound.Contains(point)),Is.False,"An eye was placed under a menu button");
+                    }
+                    foreach(var button in root.Query<Button>().ToList().Where(button=>button.enabledInHierarchy))
+                    {
+                        var picked=root.panel.Pick(button.worldBound.center);
+                        Assert.That(picked==button||picked!=null&&button.Contains(picked),Is.True,"The title art blocks menu input: "+button.name);
+                    }
+                }
+                Assert.That(layoutErrors,Is.Empty,string.Join("\n",layoutErrors));
+            }
+            finally
+            {
+                for(int i=0;i<renderers.Length;i++)if(renderers[i])renderers[i].sharedMaterials=priorMaterials[i];
+                for(int i=0;i<eyeMaterials.Length;i++)if(eyeMaterials[i])eyeMaterials[i].SetFloat("_EyeGlow",eyeGlow[i]);
+                camera.clearFlags=clear;camera.backgroundColor=background;
+                TitleRenderedPixels(camera,target);((Behaviour)title).enabled=titleEnabled;
+                Call(shell,"RestoreDefaultSettings");
+                if(previousSize!=Vector2Int.zero)Call(view,"SetCaptureSize",previousSize.x,previousSize.y);else Call(view,"RestoreDisplayOutput");
+                if(white)Object.Destroy(white);if(black)Object.Destroy(black);
+            }
         }
     }
 }

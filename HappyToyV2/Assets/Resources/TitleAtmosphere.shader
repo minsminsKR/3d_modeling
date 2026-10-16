@@ -56,7 +56,7 @@ Shader "HappyToy/TitleAtmosphere"
                 if (_Creature > .5)
                 {
                     float rim = pow(1 - saturate(dot(n,view)), 3);
-                    colour = surface * float3(.003,.0015,.0015) + rim * float3(.035,.007,.004) * saturate(red);
+                    colour = surface * float3(.0003,.00015,.00015) + rim * float3(.012,.0022,.0016) * saturate(red);
                     float3 face = mul(_WorldToFace, float4(i.positionWS,1)).xyz;
                     float3 faceExtent = (face - float3(.013,-.01,-.04)) / float3(.075,.15,.05);
                     float facePool = exp(-dot(faceExtent,faceExtent) * 1.5) * saturate(dot(n,view));
@@ -64,7 +64,10 @@ Shader "HappyToy/TitleAtmosphere"
                     float3 left = (face - _EyeLeft.xyz) / float3(.013,.0045,.015);
                     float3 right = (face - _EyeRight.xyz) / float3(.013,.0045,.015);
                     float eyes = exp(-dot(left,left)*2.5) + exp(-dot(right,right)*2.5);
-                    colour += float3(1,.025,.008) * eyes * _EyeGlow;
+                    float3 haloLeft = (face - _EyeLeft.xyz) / float3(.021,.008,.022);
+                    float3 haloRight = (face - _EyeRight.xyz) / float3(.021,.008,.022);
+                    float halo = exp(-dot(haloLeft,haloLeft)*2.5) + exp(-dot(haloRight,haloRight)*2.5);
+                    colour += float3(1,.018,.006) * (eyes + halo*.07) * _EyeGlow;
                 }
                 else
                 {
@@ -72,7 +75,7 @@ Shader "HappyToy/TitleAtmosphere"
                     float haze = saturate((p.z + 1) / 14) * .45;
                     colour = lerp(colour, float3(.18,.009,.006), haze);
                     // Broad dark contact pool under the planted creature, before the red floor reflection.
-                    float contact = exp(-pow((p.x-2.0)/2.0,2) - pow((p.z-3.6)/3.2,2)) * saturate(n.y);
+                    float contact = exp(-pow((p.x-2.0)/2.6,2) - pow((p.z-3.6)/3.8,2)) * saturate(n.y);
                     colour *= 1 - contact * .72;
                     float reflection = exp(-abs(p.x - 2.1) * 1.3) * saturate(n.y) * .025;
                     colour += float3(1,.09,.025) * reflection;

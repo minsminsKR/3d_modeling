@@ -3,6 +3,12 @@ import argparse,json
 from pathlib import Path
 from PIL import Image,ImageDraw
 
+def frame_intervals(records):
+    clock='wallSeconds' if all('wallSeconds' in frame for frame in records) else 'time'
+    intervals=[max(20,round((b[clock]-a[clock])*1000)) for a,b in zip(records,records[1:])]
+    # Older manifests retain their original animation-clock preview behavior.
+    return [min(1000,value) for value in intervals] if clock=='time' else intervals
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('native_output',type=Path);args=parser.parse_args()
     report=json.loads((args.native_output/'baeksugwi-head.json').read_text(encoding='utf-8-sig'))
@@ -14,7 +20,7 @@ def main():
             with Image.open(args.native_output/record['image']) as source:
                 panel=Image.new('RGB',(640,384),(12,12,14));panel.paste(source.resize((640,360),Image.Resampling.LANCZOS),(0,24))
             ImageDraw.Draw(panel).text((10,6),f"Baeksugwi / {stage} / head only",fill=(240,240,240));frames.append(panel)
-        intervals=[max(20,min(1000,round((b['time']-a['time'])*1000))) for a,b in zip(records,records[1:])]
+        intervals=frame_intervals(records)
         intervals.append(round(sum(intervals)/len(intervals)))
         frames[0].save(args.native_output/f'{stage}-head.gif',save_all=True,append_images=frames[1:],duration=intervals,loop=0)
         extremes=sorted(range(len(records)),key=lambda index:records[index].get('rollDegrees',0))

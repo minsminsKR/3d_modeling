@@ -13,6 +13,7 @@ namespace HappyToy.V2
     {
         public const string CreatureResource = "Baeksugwi/Baeksugwi";
         const int Layer = 29;
+        const float HeadPlaybackSpeed = .18f;
         readonly List<Material> materials = new List<Material>();
         GameObject set, creature;
         Camera camera;
@@ -68,21 +69,21 @@ namespace HappyToy.V2
             var floor = floorMaterial = Material(new Color(.45f, .29f, .22f), "Corridor/aged-floor-v2");
             var iron = Material(new Color(.24f, .16f, .12f), "GraphicsPbr/metal-rust/albedo");
             Box("floor", new Vector3(0, -.13f, 3), new Vector3(13, .25f, 20), floor);
-            Box("left wall", new Vector3(-4.1f, 2, 3), new Vector3(.25f, 4, 20), wall);
-            Box("right wall", new Vector3(4.5f, 2, 3), new Vector3(.25f, 4, 20), wall);
-            Box("ceiling", new Vector3(0, 4.05f, 3), new Vector3(9, .25f, 20), iron);
+            Box("left wall", new Vector3(-4.1f, 2.6f, 3), new Vector3(.25f, 5.2f, 20), wall);
+            Box("right wall", new Vector3(5.6f, 2.6f, 3), new Vector3(.25f, 5.2f, 20), wall);
+            Box("ceiling", new Vector3(.7f, 5.25f, 3), new Vector3(11.4f, .25f, 20), iron);
             for (int i = 0; i < 6; i++)
             {
                 float z = -3 + i * 2.7f;
-                Box("wall column", new Vector3(-3.92f, 1.95f, z), new Vector3(.26f, 3.9f, .21f), iron);
-                Box("wall column", new Vector3(4.3f, 1.95f, z), new Vector3(.26f, 3.9f, .21f), iron);
-                Box("ceiling rib", new Vector3(.1f, 3.85f, z), new Vector3(8.3f, .23f, .2f), iron);
+                Box("wall column", new Vector3(-3.92f, 2.55f, z), new Vector3(.26f, 5.1f, .21f), iron);
+                Box("wall column", new Vector3(5.4f, 2.55f, z), new Vector3(.26f, 5.1f, .21f), iron);
+                Box("ceiling rib", new Vector3(.7f, 5.05f, z), new Vector3(9.6f, .23f, .2f), iron);
             }
-            Box("door left jamb", new Vector3(-.48f, 1.9f, 3.4f), new Vector3(.34f, 3.8f, .55f), iron);
-            Box("door right jamb", new Vector3(3.64f, 1.9f, 3.4f), new Vector3(.34f, 3.8f, .55f), iron);
-            Box("door lintel", new Vector3(1.58f, 3.8f, 3.4f), new Vector3(4.46f, .26f, .55f), iron);
-            Box("dark doorway wall", new Vector3(-2.5f, 1.95f, 3.5f), new Vector3(3.75f, 3.9f, .3f), wall);
-            Box("rear wall", new Vector3(0, 2, 11.5f), new Vector3(9, 4, .3f), wall);
+            Box("door left jamb", new Vector3(-.48f, 2.45f, 3.4f), new Vector3(.34f, 4.9f, .55f), iron);
+            Box("door right jamb", new Vector3(4.5f, 2.45f, 3.4f), new Vector3(.34f, 4.9f, .55f), iron);
+            Box("door lintel", new Vector3(2.01f, 4.9f, 3.4f), new Vector3(5.32f, .26f, .55f), iron);
+            Box("dark doorway wall", new Vector3(-2.5f, 2.55f, 3.5f), new Vector3(3.75f, 5.1f, .3f), wall);
+            Box("rear wall", new Vector3(.7f, 2.6f, 11.5f), new Vector3(11.4f, 5.2f, .3f), wall);
             for (int i = 0; i < 8; i++)
                 Box("floor debris", new Vector3(-2.7f + i * .36f, .04f, -1.8f + i * .14f), new Vector3(.17f, .055f, .4f), iron);
             var source = Resources.Load<GameObject>(CreatureResource);
@@ -114,7 +115,7 @@ namespace HappyToy.V2
                 skin.sharedMaterials = copies;
             }
             if (bounds.size.x < .01f) throw new InvalidOperationException("Empty title creature geometry");
-            float scale = 4.8f / bounds.size.x;
+            float scale = 6.2f / bounds.size.x;
             pivot.transform.localScale = Vector3.one * scale;
             pivot.transform.localRotation = Quaternion.Euler(0, 180, 0);
             bounds = EnemyStudioRig.PosedBounds(skins);
@@ -128,10 +129,15 @@ namespace HappyToy.V2
             var eye = new GameObject("Title-only camera"); eye.transform.SetParent(set.transform, false);
             camera = eye.AddComponent<Camera>(); camera.enabled = false;
             camera.cullingMask = 1 << Layer; camera.clearFlags = CameraClearFlags.SolidColor;
-            camera.backgroundColor = new Color(.008f, .002f, .002f); camera.fieldOfView = 57;
+            camera.backgroundColor = new Color(.008f, .002f, .002f); camera.fieldOfView = 52;
             camera.nearClipPlane = .08f; camera.farClipPlane = 30; camera.aspect = 16f / 9f;
             camera.transform.localPosition = new Vector3(-1.2f, .72f, -4.9f);
-            camera.transform.LookAt(set.transform.position + new Vector3(.35f, 1.25f, 4.1f));
+            // Keep both original eye slits inside the central crop retained by
+            // 4:3 and 21:9 Cover backgrounds, while the vast body can leave frame.
+            var eyeCentre=faceJoint.TransformPoint((LeftEyeSurface+RightEyeSurface)*.5f);
+            camera.transform.LookAt(eyeCentre);
+            float halfHeight=Vector3.Distance(camera.transform.position,eyeCentre)*Mathf.Tan(camera.fieldOfView*Mathf.Deg2Rad*.5f);
+            camera.transform.LookAt(eyeCentre-camera.transform.right*(halfHeight*camera.aspect*.4f)-camera.transform.up*(halfHeight*.14f));
             idlePivotPosition=titlePivot.position;idleCameraRotation=camera.transform.rotation;
             approachDirection=camera.transform.position-faceJoint.position;approachDirection.y=0;
             maximumApproach=Mathf.Max(.5f,approachDirection.magnitude-1.8f);approachDirection.Normalize();
@@ -161,7 +167,7 @@ namespace HappyToy.V2
             if (!visible || !Image || !camera || Time.frameCount < 3) return;
             // Title time is unscaled; the game intentionally pauses on this page.
             // Sampling only Head leaves every planted limb and body pose fixed.
-            if(!shell || !shell.ReducedMotion)headClock+=Time.unscaledDeltaTime;
+            if(!shell || !shell.ReducedMotion)headClock+=Time.unscaledDeltaTime*HeadPlaybackSpeed;
             double now=Time.unscaledTimeAsDouble;
             if(now < nextFrame)return;
             bool approaching=shell && shell.CinematicLoading;
@@ -328,8 +334,8 @@ namespace HappyToy.V2
                 material.SetMatrix("_WorldToFace", faceJoint.worldToLocalMatrix);
                 material.SetVector("_EyeLeft", LeftEyeSurface);
                 material.SetVector("_EyeRight", RightEyeSurface);
-                material.SetFloat("_FaceLight", .016f);
-                material.SetFloat("_EyeGlow", shell && shell.ReducedMotion ? 1.25f : 1.25f + .04f * Mathf.Sin(Time.unscaledTime * .7f));
+                material.SetFloat("_FaceLight", .001f);
+                material.SetFloat("_EyeGlow", shell && shell.ReducedMotion ? 2.8f : 2.8f + .06f * Mathf.Sin(Time.unscaledTime * .35f));
             }
         }
         void OnDisable() => approachFootsteps?.Stop();
