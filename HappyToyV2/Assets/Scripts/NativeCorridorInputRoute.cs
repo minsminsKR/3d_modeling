@@ -23,7 +23,20 @@ namespace HappyToy.V2
         readonly Vector2[] speeds;
         readonly List<string> milestones = new List<string>();
         readonly float wallStart; readonly string evidenceDirectory;
+        readonly int performancePatrolSeconds;
+        readonly NativeAuditMovement movement;
+        public NativeAuditMovement Movement=>movement;
+        float movementLastGame;
         public bool Passed => passed; public Mouse VirtualMouse => mouse;
+        [Serializable] public sealed class PatrolEvidence
+        {
+            public int requestedSeconds,waypointCount,completedLegs,activeThreatsAtStart,minimumActiveThreats;
+            public bool started,completed;
+            public float preparationWallSeconds,observationStartRouteWallSeconds,observationStartRouteGameSeconds,wallSeconds,gameSeconds,physicalMeters,hiddenGameSeconds;
+            public string scope="Optional movement after the fourth memory. Observation starts only after four production enemies are active. Uses the existing keyboard/mouse Walk, doors, finite supplies, evasion and natural hiding RNG. Duration ends after the current real movement leg; no teleport, AI/speed edit or safe mode.";
+        }
+        public PatrolEvidence PerformancePatrol {get;private set;}
+        bool patrolRunning;float patrolPreparationStart,patrolWallStart,patrolGameStart,patrolLastGame;
         float meters, gameStart;
         Vector3 previous;
         int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, lastRecovered, batteriesCollected, candlesIgnited, lastHidingEntry, lastHidingRolls;
@@ -33,9 +46,21 @@ namespace HappyToy.V2
         float alertUntil, lastThrow = -100, lastDodge = -100, lastHide = -100, lastGameTime;
         bool expectEscape, passed, disposed, seekingHiding;
         string stage = "startup";
-        public NativeCorridorInputRoute(GameSession session, PlayerMotor player, GameShell shell, Action<Key[]> keys, string evidenceDirectory)
+        public NativeCorridorInputRoute(GameSession session, PlayerMotor player, GameShell shell, Action<Key[]> keys, string evidenceDirectory,int performancePatrolSeconds=0,float movementMultiplier=1)
         {
+            if(performancePatrolSeconds!=0 && (performancePatrolSeconds<300||performancePatrolSeconds>480||
+                Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-corridor-performance")<0))
+                throw new ArgumentException("A 300–480 second patrol requires explicit corridor performance mode");
+            this.performancePatrolSeconds=performancePatrolSeconds;
             this.session = session; this.player = player; this.shell = shell; this.keys = keys; this.evidenceDirectory = evidenceDirectory;
+            if(float.IsNaN(movementMultiplier)||float.IsInfinity(movementMultiplier)||movementMultiplier<1||movementMultiplier>12)
+                throw new ArgumentOutOfRangeException(nameof(movementMultiplier));
+            if(movementMultiplier>1)
+            {
+                movement=NativeAuditMovement.Attach(player,movementMultiplier);
+                this.keys=held=>{if(Array.IndexOf(held,Key.W)<0)movement.Restore();keys(held);};
+                movementLastGame=session.ElapsedPlayTime;
+            }
             eyes = player.eyes; capsule = player.GetComponent<CharacterController>();
             monsters = Stalkers().Where(x => x.name.EndsWith("— corridor")).ToArray();
             speeds = monsters.Select(x => new Vector2(x.patrolSpeed, x.chaseSpeed)).ToArray();
@@ -44,18 +69,21 @@ namespace HappyToy.V2
         }
         void Check()
         {
-            meters += Vector3.Distance(previous, player.transform.position); previous = player.transform.position;
+            float travelled=Vector3.Distance(previous, player.transform.position);
+            meters += travelled; previous = player.transform.position;
+            if(movement){movement.ObserveStep(travelled,session.ElapsedPlayTime-movementLastGame);movementLastGame=session.ElapsedPlayTime;}
             lastGameTime = session.ElapsedPlayTime - gameStart; lastRecovered = session.RecordsRecovered;
             observedKeyboard = Keyboard.current;
-            maximumThreats = Mathf.Max(maximumThreats, session.Corridor.ActiveThreatCount);
+            int activeThreats=session.Corridor.ActiveThreatCount;
+            maximumThreats = Mathf.Max(maximumThreats, activeThreats);
             lastCharge = player.FlashlightSystem.Charge; lastHidingEntry = player.HidingEntryId;
             lastHidingRolls = player.HidingRolls; lastHidingOutcome = player.HidingOutcome.ToString();
             Require(player.HidingRandomSample == null, "Native route may not override the production hiding RNG");
             bool terminal = session.Finished && !(expectEscape && session.Escaped);
             if (terminal) SaveEvidence();
             Require(!(terminal), "Run ended at " + stage + " after " + session.ElapsedPlayTime + "s; " + session.DefeatSource + "; at " + player.transform.position);
-            Require((Time.realtimeSinceStartup - wallStart) < (590), "Wall budget expired at " + stage);
-            Require((session.ElapsedPlayTime - gameStart) < (580), "Game budget expired at " + stage);
+            Require((Time.realtimeSinceStartup - wallStart) < (590+performancePatrolSeconds), "Wall budget expired at " + stage);
+            Require((session.ElapsedPlayTime - gameStart) < (580+performancePatrolSeconds), "Game budget expired at " + stage);
             bool expectedResult=expectEscape && session.Finished && session.Escaped;
             Require(Time.timeScale==(expectedResult?0:1) && Time.captureDeltaTime==0 && player.enabled,
                 "Native natural clock/motor changed: scale="+Time.timeScale+" capture="+Time.captureDeltaTime+
@@ -67,6 +95,7 @@ namespace HappyToy.V2
             Require((player.transform.position.y) >= (-.15f) && (player.transform.position.y) <= (.85f), "Left the walkable floor/low-step range at " + player.transform.position);
             Require((Physics.Raycast(player.transform.position + Vector3.up * .15f, Vector3.down, .95f,
                 (1 << 8) | (1 << 9), QueryTriggerInteraction.Ignore)), "No physical support below feet at " + player.transform.position);
+            if(patrolRunning)TrackPatrol(activeThreats,travelled);
         }
         void Mark(string text)
         { string entry = session.ElapsedPlayTime.ToString("F2") + "s " + text + " at " + player.transform.position; milestones.Add(entry); Debug.Log("CORRIDOR_INPUT_MILESTONE " + entry); SaveEvidence(); }
@@ -87,6 +116,7 @@ namespace HappyToy.V2
                 stage = selected.name; yield return Walk(at); yield return Interact(selected);
                 Require((session.RecordsRecovered) == (i + 1), "Native corridor invariant failed: Is.EqualTo(i + 1)"); Mark("recovered " + selected.name + " through E");
                 if (i < 4) yield return TopUpNearbySupply(14);
+                if(i==3&&performancePatrolSeconds>0)yield return Patrol();
             }
             var exit = session.Corridor.Layout.Version>=3 ? session.Corridor.AltarChamber.Offering : Items().Single(x => x.name == "Sealed entrance");
             stage = session.Corridor.Layout.Version>=3 ? "return memories to distant classroom altar" : "return to entrance";
@@ -95,6 +125,87 @@ namespace HappyToy.V2
             for (int i = 0; i < monsters.Length; i++) Require(new Vector2(monsters[i].patrolSpeed,monsters[i].chaseSpeed)==speeds[i],"Authored corridor threat speed changed");
             Require((maximumThreats) == (4), "Native corridor invariant failed: Is.EqualTo(4)"); Require((meters) > (80), "Native corridor invariant failed: Is.GreaterThan(80)");
             passed = true; Mark("escaped with all five memories through the active layout's actual exit");
+        }
+        void TrackPatrol(int activeThreats,float travelled)
+        {
+            float game=session.ElapsedPlayTime;
+            if(!PerformancePatrol.started)
+            {
+                PerformancePatrol.preparationWallSeconds=Time.realtimeSinceStartup-patrolPreparationStart;
+                if(activeThreats==4)
+                {
+                    PerformancePatrol.started=true;PerformancePatrol.activeThreatsAtStart=4;PerformancePatrol.minimumActiveThreats=4;
+                    patrolWallStart=Time.realtimeSinceStartup;patrolGameStart=game;
+                    PerformancePatrol.observationStartRouteWallSeconds=patrolWallStart-wallStart;
+                    PerformancePatrol.observationStartRouteGameSeconds=game-gameStart;
+                    Mark("performance patrol observation began with all four real enemies active");
+                }
+            }
+            if(PerformancePatrol.started)
+            {
+                PerformancePatrol.minimumActiveThreats=Mathf.Min(PerformancePatrol.minimumActiveThreats,activeThreats);
+                Require(activeThreats==4,"Late patrol lost its four active production enemies");
+                PerformancePatrol.wallSeconds=Time.realtimeSinceStartup-patrolWallStart;
+                PerformancePatrol.gameSeconds=game-patrolGameStart;PerformancePatrol.physicalMeters+=travelled;
+                if(player.Hidden)PerformancePatrol.hiddenGameSeconds+=Mathf.Max(0,game-patrolLastGame);
+            }
+            patrolLastGame=game;
+        }
+        IEnumerator Patrol()
+        {
+            RestoreMovement();
+            string priorStage=stage;stage="optional four-enemy performance patrol";
+            PerformancePatrol=new PatrolEvidence{requestedSeconds=performancePatrolSeconds};
+            patrolPreparationStart=Time.realtimeSinceStartup;patrolLastGame=session.ElapsedPlayTime;patrolRunning=true;
+            try
+            {
+                // Build a deterministic graph traversal once. Successive cells
+                // follow actual layout edges; the normal Walk still plans from
+                // current feet and handles physical doors and observed threats.
+                var points=PatrolWaypoints();int cursor=0;float nextSupply=GameTime+60;
+                Mark("optional performance patrol requested "+performancePatrolSeconds+" seconds after fourth memory");
+                Check();
+                while(!PerformancePatrol.started||PerformancePatrol.wallSeconds<performancePatrolSeconds)
+                {
+                    Require(session.RecordsRecovered==4,"Performance patrol must retain exactly four recovered memories");
+                    yield return Walk(points[cursor]);cursor=(cursor+1)%points.Length;
+                    PerformancePatrol.completedLegs++;Check();
+                    if(GameTime>=nextSupply)
+                    {
+                        nextSupply=GameTime+60;yield return TopUpNearbySupply(14);
+                    }
+                }
+                PerformancePatrol.completed=true;Mark("completed optional four-enemy performance patrol through real movement");
+            }
+            finally{patrolRunning=false;keys(Array.Empty<Key>());stage=priorStage;}
+        }
+        Vector3[] PatrolWaypoints()
+        {
+            var run=session.Corridor;var layout=run.Layout;
+            int start=Enumerable.Range(0,CorridorLayout.Count).OrderBy(cell=>Vector3.SqrMagnitude(run.CellPosition(cell)-player.transform.position)).First();
+            var sequence=new List<int>(CorridorLayout.Count*2);var seen=new bool[CorridorLayout.Count];
+            void Visit(int cell)
+            {
+                seen[cell]=true;sequence.Add(cell);
+                foreach(int next in layout.Neighbors(cell))if(!seen[next]){Visit(next);sequence.Add(cell);}
+            }
+            Visit(start);
+            var supported=new Dictionary<int,Vector3>();
+            foreach(int cell in sequence.Distinct())
+            {
+                var centre=run.CellPosition(cell);
+                foreach(var offset in new[]{Vector3.zero,Vector3.right*.55f,Vector3.left*.55f,Vector3.forward*.55f,Vector3.back*.55f})
+                {
+                    if(!NavMesh.SamplePosition(centre+offset,out var hit,.35f,NavMesh.AllAreas)||Mathf.Abs(hit.position.y)>.15f)continue;
+                    var body=hit.position+capsule.center;float half=capsule.height*.5f-capsule.radius;
+                    if(Physics.OverlapCapsule(body-Vector3.up*half,body+Vector3.up*half,capsule.radius-.02f,
+                        Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore).Any(collider=>
+                            !collider.GetComponentInParent<PlayerMotor>()&&!collider.GetComponentInParent<NavMeshAgent>()))continue;
+                    supported.Add(cell,hit.position);break;
+                }
+            }
+            Require(supported.Count>=4,"Too few physically supported patrol waypoints");PerformancePatrol.waypointCount=supported.Count;
+            return sequence.Where(supported.ContainsKey).Select(cell=>supported[cell]).ToArray();
         }
         IEnumerator TopUpNearbySupply(float maximumDetour)
         {
@@ -122,7 +233,8 @@ namespace HappyToy.V2
                 yield return Walk(pickupAt); Mark("opened actual desk drawer through E");
             }
             int before = stock.Count; yield return Interact(selected);
-            Require((stock.Count) == (before + 1), "Native corridor invariant failed: Is.EqualTo(before + 1)"); suppliesCollected++;
+            Require(stock.Count == before + SnapperStockRules.ShotsPerPack && !selected.gameObject.activeSelf,
+                "Actual snapper supply did not consume its pickup and add one six-shot pack"); suppliesCollected++;
             Mark("collected finite supply through E"); stage = previousStage;
         }
         IEnumerator Pulse(Key key)
@@ -280,6 +392,7 @@ namespace HappyToy.V2
         }
         IEnumerator Walk(Vector3 at)
         {
+            RestoreMovement();
             var path = new NavMeshPath(); Require((NavMesh.CalculatePath(player.transform.position, at, NavMesh.AllAreas, path)), "Native corridor invariant failed: Is.True");
             Require((path.status) == (NavMeshPathStatus.PathComplete), "Native corridor invariant failed: Is.EqualTo(NavMeshPathStatus.PathComplete)");
             foreach (var corner in path.corners.Skip(1))
@@ -292,6 +405,7 @@ namespace HappyToy.V2
                     if (distance < best - .035f) { best = distance; progressTime = Time.realtimeSinceStartup; }
                     Require((Time.realtimeSinceStartup - progressTime) < (12), "Physically stuck toward " + corner + " at " + player.transform.position);
                     var guard = VisibleThreat();
+                    if(guard)RestoreMovement();
                     if (guard)
                     {
                         float separation = Vector3.Distance(player.transform.position, guard.transform.position);
@@ -318,6 +432,7 @@ namespace HappyToy.V2
                     var blockingDoor = DoorOnRoute(delta, distance);
                     if (blockingDoor)
                     {
+                        RestoreMovement();
                         int before=dodges;
                         yield return OpenPhysicalDoor(blockingDoor,at);
                         progressTime = Time.realtimeSinceStartup;
@@ -325,11 +440,27 @@ namespace HappyToy.V2
                         continue; // recompute actual feet/direction after a moving leaf
                     }
                     Steer(eyes.transform.position + delta, true);
+                    if(movement)movement.Apply(CanAccelerate(delta,distance,guard));
                     keys(Vector3.Angle(player.transform.forward, delta) > 12 ? Array.Empty<Key>() : !player.Crouching && !player.SprintExhausted ? new[] { Key.W, Key.LeftShift } : new[] { Key.W }); yield return null;
                 }
             }
             keys(Array.Empty<Key>()); yield return null; Check();
         }
+        bool CanAccelerate(Vector3 direction,float distance,MonoBehaviour visibleGuard)
+        {
+            float brakingDistance=Mathf.Max(2.75f,movement.Data.originalRunSpeed*movement.Data.requestedMultiplier*Time.unscaledDeltaTime*3+.75f);
+            if(patrolRunning||visibleGuard||RecognitionCue||player.Hidden||GameTime<alertUntil||distance<brakingDistance+.25f||
+                Vector3.Angle(player.transform.forward,direction)>4)return false;
+            // Conservative proximity gating changes speed only, never selects a
+            // route using hidden actors. All evasion still uses observed cues.
+            foreach(var actor in monsters)if(actor&&actor.gameObject.activeInHierarchy&&Vector3.Distance(actor.transform.position,player.transform.position)<12)return false;
+            var mask=session.Corridor.Mask;
+            if(mask&&mask.gameObject.activeInHierarchy&&Vector3.Distance(mask.transform.position,player.transform.position)<12)return false;
+            var body=player.transform.position+capsule.center+Vector3.up*.08f;float half=Mathf.Max(0,capsule.height*.5f-capsule.radius);
+            return !Physics.CapsuleCast(body-Vector3.up*half,body+Vector3.up*half,capsule.radius+.02f,direction.normalized,out _,
+                Mathf.Min(distance,brakingDistance),Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
+        }
+        public void RestoreMovement(){if(movement)movement.Restore();}
         Interactable DoorOnRoute(Vector3 direction, float distance)
         {
             float radius = capsule.radius + .02f;
@@ -511,6 +642,8 @@ namespace HappyToy.V2
             public int maximumThreats, doorsOpened, throws, dodges, hidingEntries, suppliesCollected, recovered,
                 batteriesCollected, candlesIgnited, hidingEntryId, hidingRolls;
             public string[] milestones;
+            public PatrolEvidence performancePatrol;
+            public NativeAuditMovement.Evidence movement;
         }
         void SaveEvidence()
         {
@@ -520,7 +653,7 @@ namespace HappyToy.V2
                 doorsOpened = doorsOpened, throws = throws, dodges = dodges, hidingEntries = hidingEntries,
                 suppliesCollected = suppliesCollected, recovered = lastRecovered, batteriesCollected = batteriesCollected,
                 candlesIgnited = candlesIgnited, flashlightCharge = lastCharge, hidingEntryId = lastHidingEntry,
-                hidingRolls = lastHidingRolls, hidingOutcome = lastHidingOutcome, milestones = milestones.ToArray() }, true));
+                hidingRolls = lastHidingRolls, hidingOutcome = lastHidingOutcome, milestones = milestones.ToArray(),performancePatrol=PerformancePatrol,movement=movement?movement.Data:null }, true));
         }
 
         Interactable[] Items() => UnityEngine.Object.FindObjectsByType<Interactable>(FindObjectsInactive.Include, FindObjectsSortMode.None)
@@ -532,6 +665,7 @@ namespace HappyToy.V2
         public void Dispose()
         {
             if (disposed) return; disposed = true;
+            RestoreMovement();
             SaveEvidence();
             if (observedKeyboard != null && observedKeyboard.added) InputSystem.QueueStateEvent(observedKeyboard, new KeyboardState());
             if (mouse.added) InputSystem.RemoveDevice(mouse); if (previousMouse != null && previousMouse.added) previousMouse.MakeCurrent();

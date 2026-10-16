@@ -25,9 +25,17 @@ namespace HappyToy.V2.Editor
             {
                 Shader.SetGlobalFloat("_RitualMonochrome",0);
                 var hands = root.AddComponent<FirstPersonHands>();
-                void Capture(string name, PlayerItem item, float burned = -1, float action = -1, float fingers = -1)
+                void Capture(string name, PlayerItem item, float burned = -1, float action = -1, float fingers = -1, Vector3? gripAngle = null)
                 {
                     var camera = hands.PrepareEditorPreview(item,burned,action,fingers);
+                    if (gripAngle.HasValue)
+                    {
+                        // Move the hand and flashlight together, preserving the
+                        // solved contacts while comparing camera presentation.
+                        var grip = root.transform.Find("First person hand studio/Left flashlight grip");
+                        grip.localPosition = new Vector3(-.260f,-.230f,.50f);
+                        grip.localRotation = Quaternion.Euler(gripAngle.Value);
+                    }
                     var report = new System.Text.StringBuilder();
                     foreach (var node in hands.GetComponentsInChildren<Transform>(true))
                         if (node.name == "palm_contact" || node.name.EndsWith("_tip") || node.name == "hand" || node.name == "flashlight")
@@ -58,6 +66,13 @@ namespace HappyToy.V2.Editor
                 Capture("hand-curl40",PlayerItem.Snapper,-1,-1,40);
                 Capture("hand-curl60",PlayerItem.Snapper,-1,-1,60);
                 Capture("flashlight-repeat",PlayerItem.Flashlight);
+                if (Array.IndexOf(args,"-player-hands-grip-review") >= 0)
+                {
+                    Capture("flashlight-grip-x15",PlayerItem.Flashlight,gripAngle:new Vector3(15,0,0));
+                    Capture("flashlight-grip-x25",PlayerItem.Flashlight,gripAngle:new Vector3(25,0,0));
+                    Capture("flashlight-grip-x35",PlayerItem.Flashlight,gripAngle:new Vector3(35,0,0));
+                    Capture("flashlight-grip-x25-yminus20",PlayerItem.Flashlight,gripAngle:new Vector3(25,-20,0));
+                }
                 Debug.Log("Player hands authoring stills: "+output);
             }
             finally

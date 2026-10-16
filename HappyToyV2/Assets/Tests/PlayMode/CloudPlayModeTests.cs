@@ -22,6 +22,9 @@ namespace HappyToy.V2.CloudTests
         Keyboard keyboard, previousKeyboard;
         InputSettings.BackgroundBehavior oldBackground;
         InputSettings.EditorInputBehaviorInPlayMode oldEditorInputBehavior;
+        readonly List<InputDevice> isolatedDesktopInputs = new List<InputDevice>();
+        InputDevice[] priorDesktopCurrent = Array.Empty<InputDevice>();
+        bool desktopInputSnapshotTaken;
         readonly Dictionary<string, float> floats = new Dictionary<string, float>();
         readonly Dictionary<string, int> ints = new Dictionary<string, int>();
         readonly HashSet<string> existing = new HashSet<string>();
@@ -59,6 +62,7 @@ namespace HappyToy.V2.CloudTests
             oldCursorLock = UnityEngine.Cursor.lockState; oldCursorVisible = UnityEngine.Cursor.visible;
             oldBackground = InputSystem.settings.backgroundBehavior; previousKeyboard = Keyboard.current;
             oldEditorInputBehavior = InputSystem.settings.editorInputBehaviorInPlayMode;
+            if(UsesExplicitBatchDesktopPolicy()) IsolateExistingDesktopInputs();
             existing.Clear(); floats.Clear(); ints.Clear();
             dynamicInputUpdates = 0; observedCPress = observedWHeld = false;
             InputSystem.onAfterUpdate += ObserveInput;
@@ -98,7 +102,7 @@ namespace HappyToy.V2.CloudTests
                 InputSystem.onAfterUpdate -= ObserveInput;
                 if (keyboard != null && keyboard.added) InputSystem.RemoveDevice(keyboard);
                 keyboard = null;
-                if (previousKeyboard != null && previousKeyboard.added) previousKeyboard.MakeCurrent();
+                if (!desktopInputSnapshotTaken && previousKeyboard != null && previousKeyboard.added) previousKeyboard.MakeCurrent();
                 previousKeyboard = null;
                 // Only unload our actual game scene. A failed setup must not destroy
                 // the UTF runner's own scene before it can report that failure.
@@ -124,21 +128,59 @@ namespace HappyToy.V2.CloudTests
                 }
                 finally
                 {
-                    foreach (string key in FloatKeys) if (existing.Contains(key)) PlayerPrefs.SetFloat(key, floats[key]); else PlayerPrefs.DeleteKey(key);
-                    foreach (string key in IntKeys) if (existing.Contains(key)) PlayerPrefs.SetInt(key, ints[key]); else PlayerPrefs.DeleteKey(key);
-                    PlayerPrefs.Save();
-                    InputSystem.settings.backgroundBehavior = oldBackground;
-                    InputSystem.settings.editorInputBehaviorInPlayMode = oldEditorInputBehavior;
-                    Time.timeScale = oldTimeScale; Time.captureDeltaTime = oldCaptureDeltaTime;
-                    AudioListener.pause = oldAudioPause; AudioListener.volume = oldVolume;
-                    Application.runInBackground = oldBackgroundRun; Application.targetFrameRate = oldFrameRate;
-                    UnityEngine.Cursor.lockState = oldCursorLock; UnityEngine.Cursor.visible = oldCursorVisible;
-                    session = player = shell = null;
+                    try
+                    {
+                        foreach (string key in FloatKeys) if (existing.Contains(key)) PlayerPrefs.SetFloat(key, floats[key]); else PlayerPrefs.DeleteKey(key);
+                        foreach (string key in IntKeys) if (existing.Contains(key)) PlayerPrefs.SetInt(key, ints[key]); else PlayerPrefs.DeleteKey(key);
+                        PlayerPrefs.Save();
+                        InputSystem.settings.backgroundBehavior = oldBackground;
+                        InputSystem.settings.editorInputBehaviorInPlayMode = oldEditorInputBehavior;
+                        Time.timeScale = oldTimeScale; Time.captureDeltaTime = oldCaptureDeltaTime;
+                        AudioListener.pause = oldAudioPause; AudioListener.volume = oldVolume;
+                        Application.runInBackground = oldBackgroundRun; Application.targetFrameRate = oldFrameRate;
+                        if(!UsesExplicitBatchDesktopPolicy())
+                        {UnityEngine.Cursor.lockState=oldCursorLock;UnityEngine.Cursor.visible=oldCursorVisible;}
+                        session = player = shell = null;
+                    }
+                    finally { RestoreIsolatedDesktopInputs(); }
                 }
             }
             Assert.That(audioInitializationWarnings, Is.Empty,
                 "Empty filtered AudioSource attempted automatic playback during scene load, intro or retry: " +
                 string.Join("\n", audioInitializationWarnings));
+        }
+
+        static bool UsesExplicitBatchDesktopPolicy()
+        {
+            var property=RequireType("DiagnosticDesktopPolicy").GetProperty("SuppressCursorWrites",
+                System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Static);
+            Assert.That(property,Is.Not.Null);
+            return (bool)property.GetValue(null);
+        }
+        void IsolateExistingDesktopInputs()
+        {
+            desktopInputSnapshotTaken=true;
+            priorDesktopCurrent=new InputDevice[]{Keyboard.current,Mouse.current,Gamepad.current,Joystick.current};
+            // Snapshot before IgnoreFocus is enabled. Later virtual devices made
+            // by a test are outside this list; OS input is never injected/blocked.
+            foreach(var device in InputSystem.devices.ToArray())
+                if(device.enabled && (device is Keyboard || device is Mouse || device is Gamepad || device is Joystick))
+                {isolatedDesktopInputs.Add(device);InputSystem.DisableDevice(device);}
+        }
+        void RestoreIsolatedDesktopInputs()
+        {
+            if(!desktopInputSnapshotTaken)return;
+            try
+            {
+                foreach(var device in isolatedDesktopInputs)
+                    if(device.added&&!device.enabled)InputSystem.EnableDevice(device);
+                foreach(var device in priorDesktopCurrent)
+                    if(device!=null&&device.added)device.MakeCurrent();
+            }
+            finally
+            {
+                isolatedDesktopInputs.Clear();priorDesktopCurrent=Array.Empty<InputDevice>();desktopInputSnapshotTaken=false;
+            }
         }
 
         bool StartOwnedAudioRenderer()
@@ -283,7 +325,7 @@ namespace HappyToy.V2.CloudTests
             session = One("GameSession"); shell = Get<Component>(session, "Shell"); player = Get<Component>(session, "player");
             Assert.That(Get<bool>(session, "InputAllowed"), Is.True); Assert.That(Get<int>(session, "StoryStep"), Is.Zero);
             Assert.That(Get<bool>(player, "Crouching"), Is.False); Assert.That(Get<float>(player, "SlowRemaining"), Is.Zero);
-            Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(2));
+            Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(12), "A restarted school run restores two six-shot packs");
             previous = session; Call(shell, "Restart", false); Call(shell, "Restart", true);
             yield return Wait(() => Components("GameSession").Length == 1 && One("GameSession") != previous, 20, "Return to title did not replace session");
             yield return null; yield return null;

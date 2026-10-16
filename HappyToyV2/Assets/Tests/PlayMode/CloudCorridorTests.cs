@@ -122,11 +122,11 @@ namespace HappyToy.V2.CloudTests
                     "Patrol waypoint remained inside furniture");
                 Assert.That(Vector3.Distance(marker.position, destination.position), Is.LessThan(.1f));
             }
-            var stock = Get<Component>(player, "Firecrackers"); Assert.That(Get<int>(stock, "Count"), Is.EqualTo(1));
+            var stock = Get<Component>(player, "Firecrackers"); Assert.That(Get<int>(stock, "Count"), Is.EqualTo(6), "The corridor starts with one six-shot pack");
             var supplies = Components("Interactable").Where(x => Get<object>(x, "kind").ToString() == "FirecrackerSupply").ToArray();
             Assert.That(supplies.Length, Is.EqualTo(8));
             for (int i = 0; i < 4; i++) { yield return FurnitureExposeForFixture(supplies[i]); Call(supplies[i], "Use", player); }
-            Assert.That(Get<int>(stock, "Count"), Is.EqualTo(5));
+            Assert.That(Get<int>(stock, "Count"), Is.EqualTo(30), "The starting pack and four collected packs must fill the five-pack capacity");
             yield return FurnitureExposeForFixture(supplies[4]);
             Call(supplies[4], "Use", player); Assert.That(supplies[4].gameObject.activeSelf, Is.True, "Full stock consumed a pickup");
             Call(session, "TryEscape"); Assert.That(Get<bool>(session, "Finished"), Is.False);

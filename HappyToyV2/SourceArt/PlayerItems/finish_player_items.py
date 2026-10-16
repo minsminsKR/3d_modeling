@@ -2,7 +2,7 @@
 Run: blender -b --python HappyToyV2/SourceArt/PlayerItems/finish_player_items.py
 No GPU model generation: all base surfaces are the preserved GPU 0 webapp GLBs.
 """
-import bpy, bmesh, json, pathlib, math, sys
+import bpy, bmesh, json, pathlib, math, sys, hashlib, struct, zlib
 import numpy as np
 from mathutils import Vector
 from mathutils.bvhtree import BVHTree
@@ -11,6 +11,27 @@ ROOT=pathlib.Path(__file__).resolve().parent
 OUT=ROOT.parents[1]/'Assets'/'Resources'/'PlayerItems'
 OUT.mkdir(parents=True,exist_ok=True)
 
+def save_texture(image,destination):
+    # Blender image.save can leave an incomplete PNG without raising an error
+    # when disk space runs out. Certify its chunks before replacing valid input.
+    temporary=destination.with_name(destination.stem+'-export.png')
+    image.filepath_raw=str(temporary);image.file_format='PNG'
+    try:
+        image.save()
+        with temporary.open('rb') as stream:
+            if stream.read(8)!=b'\x89PNG\r\n\x1a\n':raise RuntimeError('Invalid exported PNG: '+destination.name)
+            while True:
+                encoded=stream.read(4)
+                if len(encoded)!=4:raise RuntimeError('Incomplete exported PNG: '+destination.name)
+                length=struct.unpack('>I',encoded)[0];kind=stream.read(4);data=stream.read(length);crc=stream.read(4)
+                if len(data)!=length or len(crc)!=4 or zlib.crc32(kind+data)&0xffffffff!=int.from_bytes(crc,'big'):
+                    raise RuntimeError('Incomplete exported PNG chunk: '+destination.name)
+                if kind==b'IEND':break
+        temporary.replace(destination)
+    finally:
+        image.filepath_raw=str(destination)
+        temporary.unlink(missing_ok=True)
+
 def hand_point(p):
     x,y,z=p
     def ease(a,b,t):
@@ -18,8 +39,13 @@ def hand_point(p):
     # Sculpt the preserved webapp surface, with the same UVs. Its palm was
     # almost as deep as it was wide; retain volume at the forearm and round
     # phalanges while removing that inflated palm silhouette.
-    thickness=.65-.21*ease(.005,.05,z)+.28*ease(.125,.16,z)
-    return Vector(((x+.02)*.88,y*thickness,z+max(0,z-.13)*.10))
+    palm=.65-.13*ease(.005,.05,z)
+    fingers=1-ease(.03,.07,x)
+    digit=max(ease(.105,.145,z)*fingers,ease(.03,.065,x)*ease(.045,.085,z))
+    thickness=palm+(.92-palm)*digit
+    # The generated fingers were longer than their palm. Finish them locally
+    # beyond the MCP fan; do not lengthen the distal surface or flatten digits.
+    return Vector(((x+.02)*.88,y*thickness,z-max(0,z-.12)*.25*fingers))
 
 def finish_hand_surface(obj):
     for v in obj.data.vertices:v.co=hand_point(v.co)
@@ -73,18 +99,25 @@ def rig_hand(obj):
     chains={name:[hand_point(p) for p in points] for name,points in chains.items()}
     wrist=arm.edit_bones.new('wrist'); wrist.head=hand_point((-.02,0,-.26)); wrist.tail=hand_point((-.02,0,.025))
     palm=arm.edit_bones.new('palm'); palm.head=wrist.tail; palm.tail=hand_point((-.02,0,.13)); palm.parent=wrist
+    # The skin's palmar side is -Y in this preserved GLB. Make every local X
+    # hinge bend towards that surface; default rolls vary with the digit fan.
+    palmar=Vector((0,-1,0));wrist.align_roll(palmar);palm.align_roll(palmar)
     segments=[]
     for name,points in chains.items():
         parent=palm
         for i,(a,b) in enumerate(zip(points,points[1:])):
             bone=arm.edit_bones.new(f'{name}_{i+1}'); bone.head=a; bone.tail=b; bone.parent=parent
+            bone.align_roll(palmar)
             parent=bone; segments.append((bone.name,Vector(bone.head),Vector(bone.tail)))
         tip=arm.edit_bones.new(name+'_tip');tip.head=points[-1];tip.tail=points[-1]+Vector((0,0,.003));tip.parent=parent;tip.use_deform=False
     contact=arm.edit_bones.new('palm_contact');contact.head=hand_point((-.022,-.027,.085));contact.tail=contact.head+Vector((0,-.003,0));contact.parent=palm;contact.use_deform=False
     bpy.ops.object.mode_set(mode='OBJECT')
     finish_hand_nails(obj,chains)
     obj.parent=rig
-    modifier=obj.modifiers.new('Anatomical hand skin','ARMATURE');modifier.object=rig;modifier.use_deform_preserve_volume=True
+    modifier=obj.modifiers.new('Anatomical hand skin','ARMATURE');modifier.object=rig
+    # Unity uses linear skinning. Author and inspect that same deformation,
+    # rather than hiding collapsed knuckles with Blender-only dual quaternions.
+    modifier.use_deform_preserve_volume=False
     for bone in arm.bones:
         if bone.use_deform:obj.vertex_groups.new(name=bone.name)
     def smooth(a,b,t):
@@ -99,28 +132,54 @@ def rig_hand(obj):
                 d=(v.co-a.lerp(b,t)).length
                 if d<best[0]:best=(d,i,t)
             return best
-        digit=min(chains,key=lambda name:closest(name)[0]);d,i,t=closest(digit)
+        distances={name:closest(name) for name in chains}
+        digit=min(distances,key=lambda name:distances[name][0]);d,i,t=distances[digit]
         points=chains[digit]
         gate=smooth(points[0].x-.005,points[0].x+.022,v.co.x) if digit=='thumb' else smooth(points[0].z-.012,points[0].z+.02,v.co.z)
         influence=gate*(1-smooth(.020,.034,d))
+        if digit=='thumb' and i==0:influence*=.35+.65*smooth(0,.9,t)
         wrist_weight=1-smooth(.01,.045,v.co.z)
         weights={'wrist':(1-influence)*wrist_weight,'palm':(1-influence)*(1-wrist_weight)}
         u=i+t;weights[digit+'_'+str(i+1)]=influence
-        if t<.22 and i>0:
-            blend=(1-smooth(0,.22,t))*.5;weights[digit+'_'+str(i+1)]-=influence*blend;weights[digit+'_'+str(i)]=influence*blend
-        elif t>.78 and i<2:
-            blend=smooth(.78,1,t)*.5;weights[digit+'_'+str(i+1)]-=influence*blend;weights[digit+'_'+str(i+2)]=influence*blend
+        if t<.32 and i>0:
+            blend=(1-smooth(0,.32,t))*.5;weights[digit+'_'+str(i+1)]-=influence*blend;weights[digit+'_'+str(i)]=influence*blend
+        elif t>.68 and i<2:
+            blend=smooth(.68,1,t)*.5;weights[digit+'_'+str(i+1)]-=influence*blend;weights[digit+'_'+str(i+2)]=influence*blend
         for name,weight in weights.items():
             if weight>0:obj.vertex_groups[name].add([v.index],weight,'REPLACE')
     rig['handedness']='left; mirror root X for right hand'
-    for pose,amount in [('relaxed',.2),('flashlight_grip',1),('palm_support',.08),('talisman_pinch',.5),('throw_release',0)]:
+    rig['flexion_axis']='local +X; local +Z faces palmar -Y; no unconstrained thumb roll'
+    rig['runtime_skinning']='linear blend; same as Unity'
+    for pose in ('relaxed','flashlight_grip','palm_support','talisman_pinch','throw_release'):
         rig.animation_data_create(); action=bpy.data.actions.new(pose); rig.animation_data.action=action
         for b in rig.pose.bones:
             if not b.name[-1:].isdigit(): continue
-            b.rotation_mode='XYZ'; b.rotation_euler.x=amount*(.7 if b.name.startswith('thumb') else 1.05)
+            digit,joint=b.name.rsplit('_',1);joint=int(joint)-1
+            curls={'relaxed':(8,16,9),'flashlight_grip':(44,64,42),'palm_support':(10,52,34),
+                   'talisman_pinch':(38,58,32),'throw_release':(4,8,5)}[pose]
+            if digit=='thumb':curls=(14,28,20) if pose=='palm_support' else (-20,56,42) if pose=='flashlight_grip' else (20,30,18)
+            elif pose=='talisman_pinch' and digit=='index':curls=(28,38,25)
+            extra=(6 if digit=='little' else 4 if digit=='ring' else 2 if digit=='middle' else 0) if pose=='palm_support' else 0
+            spread=(30 if digit=='thumb' else 4 if digit=='index' else -4 if digit=='ring' else -9 if digit=='little' else 0) if joint==0 else 0
+            # FBX's handedness conversion reverses local Y/Z rotations in
+            # Unity, while preserving the flexion X axis.
+            twist=(-40 if pose=='flashlight_grip' else 10 if pose=='palm_support' else 18) if digit=='thumb' and joint==0 else 0
+            b.rotation_mode='XYZ';b.rotation_euler=tuple(math.radians(x) for x in (curls[joint]+extra,twist,spread))
             b.keyframe_insert(data_path='rotation_euler',frame=1,group=b.name)
         for b in rig.pose.bones: b.rotation_euler=(0,0,0)
     rig.animation_data.action=None
+    # Small reproducible checks on the actual exported rig, including nails.
+    # Natural source curvature stays in the bind pose; actions add joint curls.
+    sums=[sum(g.weight for g in v.groups) for v in obj.data.vertices]
+    maximum_influences=max(sum(g.weight>1e-6 for g in v.groups) for v in obj.data.vertices)
+    error=max(abs(total-1) for total in sums)
+    if error>1e-5 or maximum_influences>4:raise RuntimeError('Hand skin weights must be normalized and use at most four bones')
+    axis_dots={b.name:(b.matrix_local.to_3x3()@Vector((0,0,1))).dot(palmar) for b in arm.bones if b.name[-1:].isdigit()}
+    if min(axis_dots.values())<.85:raise RuntimeError('Finger flexion hinge lost its palmar orientation')
+    rig['validation']=json.dumps({'maxWeightSumError':error,'maxInfluences':maximum_influences,'palmarAxisDots':axis_dots,
+        'digitLengthsMetres':{digit:sum((b-a).length for a,b in zip(points,points[1:])) for digit,points in chains.items()},
+        'palmLengthMetres':(hand_point((-.02,0,.13))-hand_point((-.02,0,.025))).length,
+        'neutralJointDegrees':{digit:[math.degrees((points[i+1]-points[i]).angle(points[i+2]-points[i+1])) for i in range(2)] for digit,points in chains.items()}})
     return rig
 
 def prepare(key):
@@ -140,7 +199,7 @@ def prepare(key):
             im=node.image
             # GLB packs roughness/metallic in one linear image; preserve it too.
             suffix='albedo' if im.colorspace_settings.name=='sRGB' else 'metalrough'
-            im.filepath_raw=str(folder/f'{suffix}.png'); im.file_format='PNG'; im.save()
+            save_texture(im,folder/f'{suffix}.png')
     height={'hand':.52,'incense':.24,'talisman':.20,'flashlight':.24}[key]
     axis=0 if key=='flashlight' else 2
     coords=np.array([v.co[:] for v in obj.data.vertices]); factor=height/(coords[:,axis].max()-coords[:,axis].min())
@@ -182,13 +241,30 @@ def prepare(key):
     # Export completely before replacing the existing Unity source; a failed
     # authoring run must not truncate the last valid imported model.
     export=folder/'geometry-export.fbx'
-    bpy.ops.export_scene.fbx(filepath=str(export),use_selection=True,add_leaf_bones=False,bake_anim=False,axis_forward='-Z',axis_up='Y')
-    export.replace(folder/'geometry.fbx')
-    bpy.ops.file.pack_all()
-    bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/f'{key}.blend'))
+    packed=ROOT/f'{key}-export.blend'
+    try:
+        bpy.ops.export_scene.fbx(filepath=str(export),use_selection=True,add_leaf_bones=False,bake_anim=False,axis_forward='-Z',axis_up='Y')
+        bpy.ops.file.pack_all()
+        bpy.ops.wm.save_as_mainfile(filepath=str(packed))
+        if not export.stat().st_size or not packed.stat().st_size:raise RuntimeError('Empty player item export: '+key)
+        export.replace(folder/'geometry.fbx');packed.replace(ROOT/f'{key}.blend')
+    finally:
+        export.unlink(missing_ok=True);packed.unlink(missing_ok=True)
     report={'original':f'Originals/{key}.glb','heightMetres':height,'vertices':len(obj.data.vertices),'triangles':sum(len(p.vertices)-2 for p in obj.data.polygons),
             'rigged':bool(rig),'baseColor':'albedo.png','metallicRoughness':'metalrough.png','materialNames':[m.name for m in obj.data.materials]}
-    (folder/'asset.json').write_text(json.dumps(report,indent=2)+'\n')
+    if rig:
+        report['rigValidation']=json.loads(rig['validation'])
+        references=ROOT.parent/'CorridorEntrance'/'References'
+        report['gripReviewInputs']={label:{'path':'SourceArt/CorridorEntrance/References/'+name,
+            'sha256':hashlib.sha256((references/name).read_bytes()).hexdigest()}
+            for label,name in [('target','user-target-20261016.png'),('before','user-before-20261016.png')]}
+        report['originalSha256']=hashlib.sha256((ROOT/'Originals'/f'{key}.glb').read_bytes()).hexdigest()
+        report['outputSha256']={name:hashlib.sha256(path.read_bytes()).hexdigest() for name,path in
+            [('geometry',folder/'geometry.fbx'),('packedBlend',ROOT/f'{key}.blend'),('albedo',folder/'albedo.png'),('metallicRoughness',folder/'metalrough.png')]}
+    temporary=folder/'asset-export.json'
+    try:
+        temporary.write_text(json.dumps(report,indent=2)+'\n');temporary.replace(folder/'asset.json')
+    finally:temporary.unlink(missing_ok=True)
     print('PREPARED',key,report)
 
 keys=('hand','incense','talisman','flashlight')

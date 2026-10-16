@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6614175289158845976}
   m_Layer: 8
-  m_Name: temple-gate
+  m_Name: temple-gate-visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

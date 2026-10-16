@@ -1,11 +1,16 @@
 # Asset origin and licenses
 
-The temple-gate and cave-rock references are original generated project images.
+The temple-gate, cave-rock, ritual-floor and guardian-statue references are
+original generated project images.
 Their prompts, generator settings and exact uploaded inputs are preserved with
 each asset's provenance. The base meshes and embedded PBR were generated through
 the repository's designated modeling webapp; `job.json` and `provenance.json`
 identify the actual backend, settings and source files. No third-party game model
-or reference artwork is supplied as part of this bundle.
+or third-party reference artwork is supplied as part of this bundle. The user's
+target and previous in-game screenshots are preserved under `References/` and
+`RitualDressing/` as project direction; they are not texture inputs copied onto
+the generated meshes. The two ritual additions preserve their submitted and
+processed PNGs, exact UI settings and webapp job identifiers in provenance.
 
 The local finishing script, editable Blender sources and Unity integration are
 HappyToyV2 project authoring work. Preserve their source and these origin records

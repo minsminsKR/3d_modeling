@@ -9,5 +9,73 @@
   "materialNames": [
     "hand_surface_0",
     "hand_nail"
-  ]
+  ],
+  "rigValidation": {
+    "maxWeightSumError": 4.0978193283081055e-08,
+    "maxInfluences": 3,
+    "palmarAxisDots": {
+      "little_1": 0.9505087733268738,
+      "little_2": 0.9323018193244934,
+      "little_3": 0.9199620485305786,
+      "ring_1": 0.9641419053077698,
+      "ring_2": 0.9301743507385254,
+      "ring_3": 0.9228599071502686,
+      "middle_1": 0.976451575756073,
+      "middle_2": 0.9648194909095764,
+      "middle_3": 0.9230199456214905,
+      "index_1": 0.897566020488739,
+      "index_2": 0.9611650705337524,
+      "index_3": 0.9585499167442322,
+      "thumb_1": 0.9737700819969177,
+      "thumb_2": 0.9446113109588623,
+      "thumb_3": 0.9966330528259277
+    },
+    "digitLengthsMetres": {
+      "little": 0.07744921270498512,
+      "ring": 0.08961686016549628,
+      "middle": 0.09599631116676183,
+      "index": 0.09376361953808049,
+      "thumb": 0.12788588901539671
+    },
+    "palmLengthMetres": 0.10249999982554737,
+    "neutralJointDegrees": {
+      "little": [
+        3.8857970716578043,
+        30.853467122565
+      ],
+      "ring": [
+        8.307824611090494,
+        1.1446629719876802
+      ],
+      "middle": [
+        3.2388191419159824,
+        9.39412777876694
+      ],
+      "index": [
+        10.30902649544827,
+        2.2211418730384156
+      ],
+      "thumb": [
+        7.987851592816552,
+        16.840468313806543
+      ]
+    }
+  },
+  "gripReviewInputs": {
+    "target": {
+      "path": "SourceArt/CorridorEntrance/References/user-target-20261016.png",
+      "sha256": "b16cb63ab8872b392c092240bd25eb39805eab249734b5469a08940071be3941"
+    },
+    "before": {
+      "path": "SourceArt/CorridorEntrance/References/user-before-20261016.png",
+      "sha256": "7d624adf187b7e014b11e119206586b5b32fc9a24cf31d472e660b5943660d7d"
+    }
+  },
+  "originalSha256": "75a454b61cbfab99fe60827aa2b42b242f491290d9ded0709a05c6e91265be3e",
+  "outputSha256": {
+    "geometry": "f19d69f3dd26615ebbda0c637b4ac1a067d69adcb14d609259b90a8ae83a28fd",
+    "packedBlend": "25c91f49fc82d2e5bbaa33c8bd48c7db9529c387102408f53a1222eb5d5e8a2f",
+    "albedo": "80b4f5ca6d64d71fe2dbff0fc918067a159c0b74e546e610685f22f929a621df",
+    "metallicRoughness": "aa9a17d6cf45d194f57cb5448f85de9d4d7d8afb3ed162c200393ea4ae3872e3"
+  }
 }

@@ -1,0 +1,120 @@
+{
+  "samples": 952517,
+  "surfaceDistanceP95": 0.0,
+  "surfaceDistanceP99": 0.0,
+  "surfaceDistanceMaximum": 0.0,
+  "protectedSamples": 57518,
+  "protectedDistanceMaximum": 0.0,
+  "maximumProtectedSourcePoint": [
+    -0.3114122450351715,
+    0.18308910727500916,
+    -0.21940192580223083
+  ],
+  "maximumSourcePoint": [
+    -0.3114122450351715,
+    0.18308910727500916,
+    -0.21940192580223083
+  ],
+  "maximumSourcePointWeights": [
+    [
+      "Arm4L_Wrist",
+      1.0
+    ]
+  ],
+  "faceCentresDistanceMaximum": 1.6727224647183903e-05,
+  "faceCentresWorstPoint": [
+    0.08675402402877808,
+    -0.41302284598350525,
+    0.12915171682834625
+  ],
+  "edgeMidpoints01DistanceMaximum": 4.214684778958144e-08,
+  "edgeMidpoints01WorstPoint": [
+    -0.29197800159454346,
+    0.39951086044311523,
+    -0.13946324586868286
+  ],
+  "edgeMidpoints12DistanceMaximum": 4.2311164349939645e-08,
+  "edgeMidpoints12WorstPoint": [
+    0.029768403619527817,
+    -0.31793004274368286,
+    0.30156266689300537
+  ],
+  "edgeMidpoints20DistanceMaximum": 4.214684778958144e-08,
+  "edgeMidpoints20WorstPoint": [
+    -0.29197800159454346,
+    0.39951086044311523,
+    -0.13946324586868286
+  ],
+  "reverseInteriorSamples": 3952756,
+  "reverseInteriorDistanceP99": 3.0719530030864917e-08,
+  "reverseInteriorDistanceMaximum": 1.6727224647183903e-05,
+  "maximumTriangleEdge": 0.02517734467983246,
+  "maximumEdgeTrianglePoints": [
+    [
+      0.08045122772455215,
+      0.46162712574005127,
+      -0.0586656779050827
+    ],
+    [
+      0.08031728863716125,
+      0.46708258986473083,
+      -0.08324450254440308
+    ],
+    [
+      0.08542319387197495,
+      0.4643480181694031,
+      -0.07380639761686325
+    ]
+  ],
+  "maximumEdgeTriangleWeights": [
+    [
+      [
+        "ArmRearR_Elbow",
+        0.9521484375
+      ],
+      [
+        "ArmRearR_Wrist",
+        0.0478515625
+      ],
+      [
+        "GameLOD_FaceAndContactPriority",
+        0.9200000166893005
+      ]
+    ],
+    [
+      [
+        "ArmRearR_Elbow",
+        0.7998046875
+      ],
+      [
+        "ArmRearR_Wrist",
+        0.2001953125
+      ],
+      [
+        "GameLOD_FaceAndContactPriority",
+        1.0
+      ]
+    ],
+    [
+      [
+        "ArmRearR_Elbow",
+        0.8291015625
+      ],
+      [
+        "ArmRearR_Wrist",
+        0.1708984375
+      ],
+      [
+        "GameLOD_FaceAndContactPriority",
+        0.9200000166893005
+      ]
+    ]
+  ],
+  "regionalMaximumTriangleEdges": {
+    "body": 0.024381712079048157,
+    "head": 0.02127264440059662,
+    "arms": 0.022927947342395782,
+    "hands": 0.02517734467983246
+  },
+  "poseEnvelopeMaximum": 0.0
+}

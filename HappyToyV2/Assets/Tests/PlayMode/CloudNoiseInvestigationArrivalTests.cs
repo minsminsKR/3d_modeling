@@ -153,6 +153,8 @@ namespace HappyToy.V2.CloudTests
             yield return PrepareAdvancedSchoolActor("LanternMaskEncounter");
             var actor=Get<Component>(Get<Component>(session,"Chapter"),"Mask");
             var door=SchoolNoiseDoor(); var normal=Get<Vector3>(door,"DoorNormal");
+            Assert.That(Get<bool>(door,"DoorBroken"),Is.False,"School footstep fixture requires an intact physical leaf");
+            int impacts=Get<int>(door,"MaskImpacts");
             var initial=CopyAdvancedProgress(Call(actor,"CaptureChapterProgress"));
             Set(initial,"position",SupportedDoorSide(door,.95f,.35f)); Set(initial,"rotation",Quaternion.LookRotation(normal));
             Set(initial,"target",SupportedDoorSide(door,.95f,.35f)); Set(initial,"state","Wander"); Set(initial,"doorPassage",null);
@@ -166,8 +168,23 @@ namespace HappyToy.V2.CloudTests
             yield return WaitForNoiseArrival(actor,15,"School mask abandoned a heard footstep before arrival");
             Assert.That(Get<Vector3>(actor,"InvestigationPoint"),Is.EqualTo(evidence));
             Assert.That(Get<float>(actor,"Awareness"),Is.Zero);
+            var at=actor.transform.position;float dwell=Get<float>(actor,"InvestigationDwellRemaining");
+            Call(shell,"Pause");yield return Delay(.25f);
+            Assert.That(actor.transform.position,Is.EqualTo(at),"Paused school inspection moved the actor");
+            Assert.That(Get<float>(actor,"InvestigationDwellRemaining"),Is.EqualTo(dwell).Within(.0001f),"Pause consumed actual event-point dwell");
+            Assert.That(Get<Vector3>(actor,"InvestigationPoint"),Is.EqualTo(evidence));
+            Call(shell,"Resume");
             yield return Wait(()=>Get<object>(actor,"State").ToString()=="Wander",5,"School event-point inspection never ended",()=>NoiseInvestigationDiagnostics(actor));
-            Assert.That(Get<int>(door.GetComponent(RequireType("InteractionAudio")),"CuesPlayed"),Is.GreaterThanOrEqualTo(2));
+            // The school mask now shatters a closed leaf while investigating;
+            // it does not use the ordinary pursuer's open/close door voices.
+            Assert.That(Get<bool>(door,"DoorBroken"),Is.True,"Real heard-footstep travel never broke its blocking leaf");
+            Assert.That(Get<int>(door,"MaskImpacts"),Is.EqualTo(impacts+1),"One physical crossing must shatter its leaf once");
+            Assert.That(Vector3.Dot(actor.transform.position-door.transform.position,normal),Is.LessThan(-.5f),
+                "School mask did not actually cross the destroyed doorway");
+            var breakVoice=door.GetComponent(RequireType("DoorDestructionAudio"));
+            Assert.That(breakVoice,Is.Not.Null,"Real school leaf destruction omitted its recorded impact voice");
+            Assert.That(Get<int>(breakVoice,"CuesPlayed"),Is.EqualTo(1));
+            Assert.That(CloudExternalAudioTests.MatchesFamily(Get<AudioSource>(breakVoice,"Source").clip,"mask-door-smash",1),Is.True);
         }
     }
 }

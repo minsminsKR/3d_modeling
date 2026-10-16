@@ -134,11 +134,25 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator FirecrackerRestartDestroysEffectsAndResetsItsFeedback()
         {
             IsolateThreats(); Begin();
+            ((Behaviour)player).enabled = false;
+            PlacePlayer(new Vector3(500, 0, 500), false);
+            Cube("CloudQA retry snapper floor", player.transform.position - Vector3.up * .2f, new Vector3(30, .4f, 30));
+            Physics.SyncTransforms();
             var inventory = Get<Component>(player, "Firecrackers");
             Assert.That((bool)Call(inventory, "TryThrow"), Is.True);
             var fire = Get<Component>(inventory, "LastThrown");
             var source = fire.GetComponent<AudioSource>();
-            var ownedClip = Get<AudioClip>(fire, "crack");
+            var ownedClip = RecordedPrivate<AudioClip>(fire, "crack");
+            Assert.That(ownedClip, Is.Not.Null);
+            Assert.That(CloudExternalAudioTests.MatchesFamily(ownedClip, "firecracker", 3), Is.True);
+            Call(fire, "Launch", Vector3.zero);
+            yield return Wait(() => Get<int>(fire, "PopsPlayed") == 1, 5, "Retry fixture never made its real single-pellet impact");
+            var impact = fire.GetComponentInChildren(RequireType("SnapperImpactEffect"));
+            Assert.That(impact, Is.Not.Null);
+            var particles = impact.GetComponentsInChildren<ParticleSystem>();
+            Assert.That(particles.Length, Is.EqualTo(2));
+            var impactMaterial = particles[0].GetComponent<ParticleSystemRenderer>().sharedMaterial;
+            Assert.That(impactMaterial, Is.Not.Null);
             Assert.That(Get<bool>(inventory, "FeedbackVisible"), Is.True);
             var previous = session;
             Call(shell, "Restart", true);
@@ -148,7 +162,12 @@ namespace HappyToy.V2.CloudTests
             session = One("GameSession"); player = Get<Component>(session, "player"); shell = Get<Component>(session, "Shell");
             inventory = Get<Component>(player, "Firecrackers");
             Assert.That(fire == null, Is.True); Assert.That(source == null, Is.True); Assert.That(ownedClip == null, Is.True);
+            Assert.That(impact == null && impactMaterial == null && particles.All(system => system == null), Is.True,
+                "Restart retained the impact owner's particles/material");
+            Assert.That(Enumerable.Range(0, 3).All(index => CloudExternalAudioTests.Shared("firecracker", index)), Is.True,
+                "Restart destroyed a shared imported snapper recording");
             Assert.That(Components("FirecrackerProjectile"), Is.Empty);
+            Assert.That(Components("SnapperImpactEffect"), Is.Empty);
             Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(12));
             Assert.That(Get<Component>(inventory, "LastThrown"), Is.Null);
             Assert.That(Get<string>(inventory, "ActionFeedback"), Is.Empty);

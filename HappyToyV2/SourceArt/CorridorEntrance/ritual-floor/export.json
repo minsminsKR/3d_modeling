@@ -1,0 +1,85 @@
+{
+  "key": "ritual-floor",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "dfdebb08b6b713b3bd5580e48ca10b8311012831595805733d48bb02ff82b072",
+  "editable": "ritual-floor/ritual-floor.blend",
+  "widthMetres": 8.000175714492798,
+  "heightMetres": 0.1384831153554842,
+  "depthMetres": 7.998141765594482,
+  "normalizedAxis": "width",
+  "normalizedMetres": 8.0,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 0,
+    "metres": 8.0,
+    "texture": 4096,
+    "budgets": [
+      18000,
+      8000
+    ],
+    "square": true,
+    "max_height": 0.14,
+    "roughness_multiplier": 0.36
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 4096,
+  "originalFaces": 948722,
+  "originalTriangles": 948722,
+  "lods": [
+    {
+      "file": "ritual-floor-lod0.fbx",
+      "targetTriangles": 18000,
+      "triangles": 18000,
+      "vertices": 7716,
+      "boundsMin": [
+        -3.9994704723358154,
+        -3.9987757205963135,
+        0.0014566100435331464
+      ],
+      "boundsMax": [
+        4.000705242156982,
+        3.999366044998169,
+        0.13993972539901733
+      ],
+      "sha256": "909e121e4aa8d049a89fc6d65d608a5b5f53b8e1402d8fc6f5512e6bdc074233"
+    },
+    {
+      "file": "ritual-floor-lod1.fbx",
+      "targetTriangles": 8000,
+      "triangles": 8000,
+      "vertices": 2716,
+      "boundsMin": [
+        -3.9958157539367676,
+        -3.9984164237976074,
+        -0.017165418714284897
+      ],
+      "boundsMax": [
+        3.9978318214416504,
+        4.001673221588135,
+        0.16703298687934875
+      ],
+      "sha256": "686ea1fba2d1a277d374d4a198e15bebdfb1c8faa71942cfcd2b127139ff2da1"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_ritual-floor_0",
+      "roughness": 0.36,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "sourceRoughnessFactor": 1.0,
+      "wetFinishRoughnessMultiplier": 0.36,
+      "baseColor": "CE_ritual-floor_0-baseColor.png",
+      "metallicSmoothness": "CE_ritual-floor_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

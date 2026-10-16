@@ -1,4 +1,4 @@
-"""Blender 4.0.2: finish preserved webapp gate/rock surfaces; no new base geometry.
+"""Blender 4.0.2: finish preserved webapp cavern surfaces; no new base geometry.
 
 blender -b --factory-startup --python-exit-code 1 --python <this-file> -- --only temple-gate
 Originals and packed full-resolution PBR remain in each editable compressed blend.
@@ -22,6 +22,9 @@ OUTPUT = PROJECT / 'Assets/Resources/CorridorEntrance'
 SETTINGS = {
     'temple-gate': dict(axis=0, metres=15.0, texture=4096, budgets=(100000,)),
     'cave-rock': dict(axis=2, metres=6.0, texture=2048, budgets=(30000, 8000)),
+    'ritual-floor': dict(axis=0, metres=8.0, texture=4096, budgets=(18000, 8000),
+                         square=True, max_height=.14, roughness_multiplier=.36),
+    'guardian-statue': dict(axis=2, metres=2.8, texture=4096, budgets=(30000, 8000)),
 }
 
 
@@ -102,7 +105,7 @@ def save_image(image, destination, limit):
     save_pixels(sample(image, size), size, destination, image.colorspace_settings.name)
 
 
-def material_maps(old, name, destination, limit, source):
+def material_maps(old, name, destination, limit, source, roughness_multiplier=1):
     shader = next((node for node in old.node_tree.nodes if node.type == 'BSDF_PRINCIPLED'), None)
     if shader is None:
         raise RuntimeError('Generated surface lacks Principled PBR: ' + old.name)
@@ -112,6 +115,10 @@ def material_maps(old, name, destination, limit, source):
                  baseColorFactor=pbr.get('baseColorFactor', [1, 1, 1, 1]),
                  normalScale=source.get('normalTexture', {}).get('scale', 1),
                  occlusionStrength=source.get('occlusionTexture', {}).get('strength', 1))
+    if roughness_multiplier != 1:
+        entry['sourceRoughnessFactor'] = entry['roughness']
+        entry['wetFinishRoughnessMultiplier'] = roughness_multiplier
+        entry['roughness'] *= roughness_multiplier
     albedo = image_for(shader.inputs['Base Color'])
     if not albedo:
         raise RuntimeError('Generated surface lacks original base colour: ' + old.name)
@@ -174,8 +181,18 @@ def simplify(obj, budget):
     bpy.ops.object.modifier_apply(modifier=modifier.name)
     for face in obj.data.polygons:
         face.use_smooth = True
+    # Collapse can round above its requested face count on open generated
+    # surfaces. Correct that bounded overshoot from this same derived mesh.
+    for _ in range(2):
+        count = triangles(obj)
+        if count <= budget + 4:
+            break
+        modifier = obj.modifiers.new('Source-derived budget rounding correction', 'DECIMATE')
+        modifier.ratio = max(1, budget - 12) / count
+        bpy.ops.object.modifier_apply(modifier=modifier.name)
     if triangles(obj) > budget + 4:
-        raise RuntimeError('Source-derived LOD exceeded its triangle budget: ' + obj.name)
+        raise RuntimeError('Source-derived LOD exceeded its triangle budget: '
+                           + obj.name + ' ' + str(triangles(obj)) + ' > ' + str(budget))
 
 
 def prepare(key, yaw):
@@ -226,6 +243,15 @@ def prepare(key, yaw):
     game = bpy.context.object
     game.name = 'CE_' + key + '_LOD0'
     bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    # A repeatable, shallow walking tile is derived from the actual generated
+    # rock surface. Its full unmodified source stays in the hidden collection.
+    if settings.get('square'):
+        low, high = bounds([game])
+        game.scale.y = settings['metres'] / max(.00001, high.y - low.y)
+    if 'max_height' in settings:
+        low, high = bounds([game])
+        game.scale.z = min(1, settings['max_height'] / max(.00001, high.z - low.z))
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     # Preserve per-loop atlas UVs while welding glTF's coincident seam vertices.
     bm = bmesh.new()
     bm.from_mesh(game.data)
@@ -245,7 +271,24 @@ def prepare(key, yaw):
             new.name = 'CE_' + key + '_' + str(len(surfaces))
             definition = next((item for item in original_materials if item.get('name') == old.name),
                               original_materials[0] if len(original_materials) == 1 else {})
-            surfaces.append(material_maps(old, new.name, destination, settings['texture'], definition))
+            surfaces.append(material_maps(old, new.name, destination, settings['texture'], definition,
+                                          settings.get('roughness_multiplier', 1)))
+            wet = settings.get('roughness_multiplier', 1)
+            if wet != 1:
+                # Match the editable game material to the exported wet PBR;
+                # leave the complete original material in its source collection.
+                shader = next(node for node in new.node_tree.nodes if node.type == 'BSDF_PRINCIPLED')
+                rough = shader.inputs['Roughness']
+                if rough.is_linked:
+                    upstream = rough.links[0].from_socket
+                    multiply = new.node_tree.nodes.new('ShaderNodeMath')
+                    multiply.name = 'Editable wet surface roughness'
+                    multiply.operation = 'MULTIPLY'
+                    multiply.inputs[1].default_value = wet
+                    new.node_tree.links.new(upstream, multiply.inputs[0])
+                    new.node_tree.links.new(multiply.outputs[0], rough)
+                else:
+                    rough.default_value *= wet
             mapped[old.name] = new
         slot.material = mapped[old.name]
     simplify(game, settings['budgets'][0])
@@ -289,6 +332,7 @@ def prepare(key, yaw):
                   heightMetres=float(high.z - low.z), depthMetres=float(high.y - low.y),
                   normalizedAxis='width' if settings['axis'] == 0 else 'height',
                   normalizedMetres=settings['metres'], gateYawDegrees=yaw if key == 'temple-gate' else 0,
+                  finishing=settings,
                   front='Blender -Y / Unity +Z; confirm generated facing in Unity preview',
                   textureMaxSize=settings['texture'], originalFaces=original_faces,
                   originalTriangles=original_triangles, lods=reports, materials=surfaces,

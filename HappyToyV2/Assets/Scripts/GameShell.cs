@@ -116,8 +116,11 @@ namespace HappyToy.V2
             }
             Time.timeScale = playing && !session.CabinetDeathActive ? (ItemWheelOpen ? ItemWheelRules.SlowTimeScale : 1) : 0;
             AudioListener.pause = !playing;
-            Cursor.lockState = playing && !ItemWheelOpen && windowHasFocus ? CursorLockMode.Locked : CursorLockMode.None;
-            Cursor.visible = !playing || ItemWheelOpen || !windowHasFocus;
+            if (!DiagnosticDesktopPolicy.SuppressCursorWrites)
+            {
+                Cursor.lockState = playing && !ItemWheelOpen && windowHasFocus ? CursorLockMode.Locked : CursorLockMode.None;
+                Cursor.visible = !playing || ItemWheelOpen || !windowHasFocus;
+            }
         }
 
         public void Begin() { if (Screen == Page.Title) Set(Page.Playing); }
@@ -458,8 +461,11 @@ namespace HappyToy.V2
             {
                 Time.timeScale = 1;
                 AudioListener.pause = false;
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                if (!DiagnosticDesktopPolicy.SuppressCursorWrites)
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                }
             }
             if (ownsFont && font) Destroy(font);
         }

@@ -1,0 +1,283 @@
+{
+  "asset": "ritual-floor",
+  "reference": {
+    "path": "SourceArt/CorridorEntrance/ritual-floor/reference.png",
+    "bytes": 2524381,
+    "sha256": "97f8d0de0d31bf1439ae20e142ab43ba3c70c481b37ff238ea070452de2ccce3"
+  },
+  "referenceGeneration": {
+    "path": "SourceArt/CorridorEntrance/ritual-floor/reference-generation.json",
+    "bytes": 1548,
+    "sha256": "e25b034f1a3270d8e45b5031c0d9ccd5a0a4208901e65db8ff12667e42062766"
+  },
+  "processedInput": {
+    "path": "SourceArt/CorridorEntrance/ritual-floor/processed.png",
+    "bytes": 2131858,
+    "sha256": "c0c40c9096d98367bea01a2a7477ab3d071267a61c6f83a0dbc0b27b419b2521"
+  },
+  "generator": {
+    "application": "hunyuan3d-webapp",
+    "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+    "jobId": "d5fd0bce-0ef5-4eaf-9a81-ff149fc27a90",
+    "batchId": "f26a1862-f1fb-4483-89d0-6b4b25b51e9a",
+    "options": {
+      "gpu_id": 1,
+      "gpu_mode": "split",
+      "guidance_scale": 7.5,
+      "model": "trellis2",
+      "num_chunks": 50000,
+      "num_inference_steps": 50,
+      "octree_resolution": 512,
+      "omni_use_ema": false,
+      "output_format": "glb",
+      "remove_background": false,
+      "seed": 1234,
+      "texture": true,
+      "texture_gpu_id": 0,
+      "texture_profile": "detail",
+      "trellis_max_tokens": 65536,
+      "trellis_pipeline": "1536_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 8192
+    },
+    "elapsedSeconds": 464,
+    "record": {
+      "path": "SourceArt/CorridorEntrance/ritual-floor/job.json",
+      "bytes": 2280,
+      "sha256": "645ab412ce48c325bc533e1335b64edb0c1e6f668529fc8f60a66b6dfd6408db"
+    },
+    "savedOnServer": true,
+    "note": "Server paths and links are historical evidence only; all required inputs and outputs are local."
+  },
+  "original": {
+    "path": "SourceArt/CorridorEntrance/ritual-floor/original.glb",
+    "bytes": 179721068,
+    "sha256": "dfdebb08b6b713b3bd5580e48ca10b8311012831595805733d48bb02ff82b072"
+  },
+  "finishing": {
+    "tool": "Blender 4.0.2",
+    "script": {
+      "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+      "bytes": 17066,
+      "sha256": "477f5511be6e111a2a5be7c029fe9b92bd16e7f05d24f08c2212322978a81360"
+    },
+    "command": "blender --background --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/CorridorEntrance/finish_entrance_assets.py -- --only ritual-floor",
+    "editable": {
+      "path": "SourceArt/CorridorEntrance/ritual-floor/ritual-floor.blend",
+      "bytes": 191355818,
+      "sha256": "78852f6ddeff74ac5be0f6e3c5ae9749ee5e7f21f3a4d4ebc60a57221bcc9b0e"
+    },
+    "exportReport": {
+      "path": "SourceArt/CorridorEntrance/ritual-floor/export.json",
+      "bytes": 2340,
+      "sha256": "215c3fbb9798117e400757dbd457d2ade2eeb88224ed310108a35ab633436b36"
+    },
+    "currentReproductionScript": {
+      "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+      "bytes": 17066,
+      "sha256": "477f5511be6e111a2a5be7c029fe9b92bd16e7f05d24f08c2212322978a81360"
+    },
+    "currentReproductionExportReport": {
+      "path": "SourceArt/CorridorEntrance/ritual-floor/export.json",
+      "bytes": 2255,
+      "sha256": "c29d5f5b9b999466c02787b91c2f6f4b812d9150edc3f9ee01a405a72738b404"
+    },
+    "historicalExportNote": "The script/exportReport records retain the raw hashes for this preserved editable export. Current reproduction records reflect LF-normalized local text; binary originals and editable artifacts are unchanged.",
+    "embeddedSourceText": "SOURCE - finish_entrance_assets.py",
+    "settings": {
+      "axis": 0,
+      "metres": 8.0,
+      "texture": 4096,
+      "budgets": [
+        18000,
+        8000
+      ],
+      "square": true,
+      "max_height": 0.14,
+      "roughness_multiplier": 0.36
+    },
+    "originalTriangles": 948722,
+    "lods": [
+      {
+        "file": "ritual-floor-lod0.fbx",
+        "targetTriangles": 18000,
+        "triangles": 18000,
+        "vertices": 7716,
+        "boundsMin": [
+          -3.9994704723358154,
+          -3.9987757205963135,
+          0.0014566100435331464
+        ],
+        "boundsMax": [
+          4.000705242156982,
+          3.999366044998169,
+          0.13993972539901733
+        ],
+        "sha256": "909e121e4aa8d049a89fc6d65d608a5b5f53b8e1402d8fc6f5512e6bdc074233"
+      },
+      {
+        "file": "ritual-floor-lod1.fbx",
+        "targetTriangles": 8000,
+        "triangles": 8000,
+        "vertices": 2716,
+        "boundsMin": [
+          -3.9958157539367676,
+          -3.9984164237976074,
+          -0.017165418714284897
+        ],
+        "boundsMax": [
+          3.9978318214416504,
+          4.001673221588135,
+          0.16703298687934875
+        ],
+        "sha256": "686ea1fba2d1a277d374d4a198e15bebdfb1c8faa71942cfcd2b127139ff2da1"
+      }
+    ]
+  },
+  "unityImport": {
+    "editor": "6000.6.0f1",
+    "method": "HappyToy.V2.Editor.CorridorEntranceImport.Apply",
+    "script": {
+      "path": "Assets/Editor/CorridorEntranceImport.cs",
+      "bytes": 17896,
+      "sha256": "a38b521b6cfef650d233263367b0db1cf3e3bd91a16afa54481035ceb435648f"
+    },
+    "scriptMeta": {
+      "path": "Assets/Editor/CorridorEntranceImport.cs.meta",
+      "bytes": 60,
+      "sha256": "91b9b9407d739efb79368716e84a1b5faba9c061f3a238a7a9055a3b2c860ed3",
+      "guid": "8cb52d9a7414427f9f837af195e49a8f"
+    },
+    "runtimePresentation": {
+      "path": "Assets/Scripts/CorridorEntrancePresentation.cs",
+      "bytes": 2009,
+      "sha256": "6c7b558837da80de415cd6fc3726c966bf79b242d3b0e4124a0a1483865563a4"
+    },
+    "runtimeCollaborators": [
+      {
+        "path": "Assets/Scripts/CorridorEntranceModels.cs",
+        "bytes": 3042,
+        "sha256": "f1a6e68dc07b7151f56188b7b831709f64b33b4d162f8fddfb61e9544b4f2a81"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceCavern.cs",
+        "bytes": 5716,
+        "sha256": "75d9852defa86f39461267688e6dfd35a4c0ed22ad9979565eb95e8c06b80418"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceRitualDressing.cs",
+        "bytes": 17516,
+        "sha256": "433024c5f794b59aa69d918be120081c09cbedb1375e4e2b01a53ff072a7dd54"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceSealInk.cs",
+        "bytes": 4028,
+        "sha256": "0f85e0aca7a22448d412b4e7b062ab59efd0f6ae832c2986a3690307e3228839"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceVapour.cs",
+        "bytes": 2024,
+        "sha256": "afb4c6f34eb8f99e88046eb83ba2fe50c18a34ce0ffa98c1dd25c00350ff91d6"
+      }
+    ],
+    "resourcesKey": "CorridorEntrance/ritual-floor-visual",
+    "outputs": [
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor/asset.json",
+        "bytes": 2255,
+        "sha256": "c29d5f5b9b999466c02787b91c2f6f4b812d9150edc3f9ee01a405a72738b404"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor/asset.json.meta",
+        "bytes": 158,
+        "sha256": "7cdb5effa5ed492790c7069ac00194df3b86e468a626ea158bad0e80d9e09913",
+        "guid": "72105a91c5d59d8478643a886107c561"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor/CE_ritual-floor_0-baseColor.png",
+        "bytes": 31024453,
+        "sha256": "f8c5901fc534f952bccd2df2fb59d97b2aaaa367adf25a380bb6451bfa08ad3f"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor/CE_ritual-floor_0-baseColor.png.meta",
+        "bytes": 2714,
+        "sha256": "1900a87ab4bef37acc493ffd4720c96455105a8260d93636e3396dcec537f6b0",
+        "guid": "027b7ea60ef69564c92b6033c6c10eb8"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor/CE_ritual-floor_0-metallicSmoothness.png",
+        "bytes": 17947746,
+        "sha256": "4b8b79b8eb8592bdfd45ecf3993c27cf18807c66c8001c0c6805b3391286ebb5"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor/CE_ritual-floor_0-metallicSmoothness.png.meta",
+        "bytes": 2714,
+        "sha256": "70901b1269e055ceb96103c58bb30932e1cff94e3e11d6b417d98434b8303fca",
+        "guid": "c1d45f96dec1f494993b77f11eaf511d"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor/CE_ritual-floor_0.mat",
+        "bytes": 4083,
+        "sha256": "551e2228c718e54ab086558bd249884ed3e85dc452030f12360c4d707639ccfa"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor/CE_ritual-floor_0.mat.meta",
+        "bytes": 188,
+        "sha256": "cc9bc0a8debff313db45c164872d8ea15b5e41dd176d3686aafd44a3cadf9ec5",
+        "guid": "6346ea87c7754484c9c9eebd8de70475"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor-lod0.fbx",
+        "bytes": 921756,
+        "sha256": "909e121e4aa8d049a89fc6d65d608a5b5f53b8e1402d8fc6f5512e6bdc074233"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor-lod0.fbx.meta",
+        "bytes": 3063,
+        "sha256": "50f5185e00eac7f06cf474027531d5cd8a505c243ad47f88485a8dad602b9b9c",
+        "guid": "62b94b9e9da503b4985703a2a7b17958"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor-lod1.fbx",
+        "bytes": 436780,
+        "sha256": "686ea1fba2d1a277d374d4a198e15bebdfb1c8faa71942cfcd2b127139ff2da1"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor-lod1.fbx.meta",
+        "bytes": 3063,
+        "sha256": "72cb2ffe4fabcf251ffebb7aa0224eb8ab094c4abc00085387797577256565f6",
+        "guid": "dfdf654106bbbab4fb4ef3d0729ab9f9"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor-visual.prefab",
+        "bytes": 8057,
+        "sha256": "c31997c04045d261eba5994625b2f816670cc88165a733efae259a8a018d6913"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor-visual.prefab.meta",
+        "bytes": 154,
+        "sha256": "f9b44fd850629ed4fd652758bd860b9cacdd2644e8dbb5a79b9cd5a39655b5fc",
+        "guid": "189b5f044dc7f234aa03d6d11a34c5dd"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/ritual-floor.meta",
+        "bytes": 172,
+        "sha256": "116102a2261c02aa4698f947fb23285a952a638ff4b22af3d72dfac9f0d36cfb",
+        "guid": "52b49ef363bea6b4d827df973bea3a28"
+      }
+    ]
+  },
+  "licenses": [
+    {
+      "path": "SourceArt/CorridorEntrance/LICENSE.md",
+      "bytes": 1807,
+      "sha256": "3245d57f85d956b6bf6085b1192982951cfb489ee0fdf1be210659c2118c97c7"
+    },
+    {
+      "path": "SourceArt/CorridorEntrance/TRELLIS.2-LICENSE.txt",
+      "bytes": 1140,
+      "sha256": "d9a1b1e30d633d5732ea18e3cba9538d293ebc53e1a9e4e96ab739e0c5c4f1cb"
+    }
+  ],
+  "verificationScope": "Source handoff hashes only; actual camera review, focused integration checks and native performance are separate evidence."
+}

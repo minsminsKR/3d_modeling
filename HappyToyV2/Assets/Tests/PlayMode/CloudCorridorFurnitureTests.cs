@@ -179,14 +179,14 @@ namespace HappyToy.V2.CloudTests
             Assert.That(FurnitureApproach(pickup, player.transform.position, out approach), Is.True);
             PlacePlayer(approach); yield return null;
             yield return FurniturePressE(pickup);
-            Assert.That(Get<int>(stock, "Count"), Is.EqualTo(before + 1), "E did not collect one original finite supply");
+            Assert.That(Get<int>(stock, "Count"), Is.EqualTo(before + 6), "E did not collect one finite six-shot pack");
             Assert.That(pickup.gameObject.activeSelf, Is.False);
             yield return null; Call(drawer, "Use", player);
             yield return Wait(() => !Get<bool>(drawer, "IsOpen") && Get<bool>(drawer, "AtRequestedPose"), 3, "Drawer failed to close");
             yield return null; Call(drawer, "Use", player);
             yield return Wait(() => Get<bool>(drawer, "IsOpen") && Get<bool>(drawer, "AtRequestedPose"), 3, "Drawer failed to reopen");
             Assert.That(pickup.gameObject.activeSelf, Is.False, "Reopening regenerated a consumed item");
-            Assert.That(Get<int>(stock, "Count"), Is.EqualTo(before + 1));
+            Assert.That(Get<int>(stock, "Count"), Is.EqualTo(before + 6));
             Call(shell, "Pause"); var moving = Get<Transform>(drawer, "MovingDrawer"); Vector3 paused = moving.position;
             yield return Delay(.2f); Assert.That(moving.position, Is.EqualTo(paused), "Pause moved the physical drawer");
             var saved = Call(session, "CaptureCheckpoint");
@@ -201,7 +201,7 @@ namespace HappyToy.V2.CloudTests
             pickup = Get<Component>(drawer, "ContainedPickup");
             Assert.That(Get<bool>(drawer, "IsOpen"), Is.True); Assert.That(Get<float>(drawer, "Travel"), Is.EqualTo(.3f).Within(.002f));
             Assert.That(pickup.gameObject.activeSelf, Is.False, "Checkpoint regenerated consumed drawer contents");
-            Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(before + 1));
+            Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(before + 6));
             yield return RestoreCheckpointInFreshScene(legacy);
             drawer = FurnitureDrawers.Single(item => Get<string>(item, "StableId") == id);
             Assert.That(Get<bool>(drawer, "IsOpen") || Get<bool>(drawer, "ExposesPickup"), Is.False, "Legacy save must begin with drawers shut");

@@ -9,6 +9,8 @@ namespace HappyToy.V2
     public sealed class EnemyPassageTraffic : MonoBehaviour
     {
         static readonly List<EnemyPassageTraffic> actors=new List<EnemyPassageTraffic>();
+        static readonly float[] retreats={1.25f,2.2f,.65f}, sides={.85f,-.85f,1.3f,-1.3f};
+        const float SidingRetrySeconds=.25f, YieldRepathSeconds=.2f;
         static int nextIdentity;int identity;float normalStoppingDistance;
         NavMeshAgent agent;Behaviour owner;
         int originalPriority,priority;
@@ -16,10 +18,16 @@ namespace HappyToy.V2
         Vector3 wanted,yieldPoint,yieldHeading;
         EnemyPassageTraffic peer;
         NavMeshPath path;
+        Vector3[] corners=new Vector3[32];
+        EnemyPassageTraffic retryPeer;
+        Vector3 retryPosition,retryPeerPosition,retryTarget;
+        float sidingRetry,yieldRepath;
         float releaseDeadline,blockedTime;Vector3 previous;
         public bool Yielding { get; private set; }
         public int YieldsStarted { get; private set; }
         public int RoutesResumed { get; private set; }
+        public int SidingSearches { get; private set; }
+        public int YieldPathPlans { get; private set; }
         public Vector3 IntendedPoint => wanted;
         public int RightOfWayPriority => priority;
         public void Configure(Behaviour navigationOwner)
@@ -31,7 +39,7 @@ namespace HappyToy.V2
             configured=true;agent.avoidancePriority=priority;
         }
         public void ObserveRoute(Vector3 point){wanted=point;intent=true;}
-        public void Cancel(){if(Yielding && agent)agent.stoppingDistance=normalStoppingDistance;Yielding=false;peer=null;intent=false;if(agent && configured)agent.avoidancePriority=priority;}
+        public void Cancel(){if(Yielding && agent)agent.stoppingDistance=normalStoppingDistance;Yielding=false;peer=retryPeer=null;intent=false;sidingRetry=yieldRepath=0;if(agent && configured)agent.avoidancePriority=priority;}
         internal void DelayTimeStopDeadline(float seconds) { if (Yielding) releaseDeadline += seconds; }
         void OnEnable(){previous=transform.position;blockedTime=0;if(identity==0)identity=++nextIdentity;if(!actors.Contains(this))actors.Add(this);if(configured && agent)agent.avoidancePriority=priority;}
         void OnDisable(){actors.Remove(this);Cancel();if(agent && configured)agent.avoidancePriority=originalPriority;}
@@ -44,6 +52,7 @@ namespace HappyToy.V2
             var deltaMoved=transform.position-previous;deltaMoved.y=0;previous=transform.position;
             var session=GameSession.Current;
             if(!Live || !session || !session.InputAllowed || session.Finished){Cancel();return;}
+            sidingRetry=Mathf.Max(0,sidingRetry-Time.deltaTime);
             if(Yielding)
             {
                 var delta=peer?peer.transform.position-transform.position:Vector3.zero;delta.y=0;
@@ -56,8 +65,20 @@ namespace HappyToy.V2
                 }
                 // AI retains and refreshes its true target; it never saves this
                 // local manoeuvre as a noise/player/checkpoint target.
-                if(agent.CalculatePath(yieldPoint,path) && path.status==NavMeshPathStatus.PathComplete)
-                {agent.SetPath(path);agent.isStopped=(transform.position-yieldPoint).sqrMagnitude<.04f;}
+                yieldRepath-=Time.deltaTime;
+                bool arrived=(transform.position-yieldPoint).sqrMagnitude<.04f;
+                if(arrived){agent.isStopped=true;return;}
+                if(yieldRepath<=0)
+                {
+                    yieldRepath=YieldRepathSeconds;YieldPathPlans++;
+                    if(agent.CalculatePath(yieldPoint,path) && path.status==NavMeshPathStatus.PathComplete)
+                    {agent.SetPath(path);agent.isStopped=false;}
+                }
+                // A normal AI refresh may replace this short local route. Reuse
+                // the accepted corridor until its next timed navigation query.
+                else if(path.status==NavMeshPathStatus.PathComplete &&
+                    (!agent.hasPath || (agent.destination-yieldPoint).sqrMagnitude>.0001f))
+                {agent.SetPath(path);agent.isStopped=false;}
                 return;
             }
             if(agent.isStopped || !agent.hasPath || Heading.sqrMagnitude<.5f){blockedTime=0;return;}
@@ -75,24 +96,37 @@ namespace HappyToy.V2
                 if((delta+relative*time).magnitude>agent.radius+other.agent.radius+.45f)continue;
                 nearest=distance;blocker=other;
             }
-            if(!blocker || !TrySiding(blocker,out var point))return;
+            if(!blocker){retryPeer=null;sidingRetry=0;return;}
+            // A different blocker or a material route/position change warrants
+            // an immediate retry; tiny crowd jitter must not defeat the budget.
+            if(blocker!=retryPeer || (transform.position-retryPosition).sqrMagnitude>.25f ||
+                (blocker.transform.position-retryPeerPosition).sqrMagnitude>.25f || (wanted-retryTarget).sqrMagnitude>.25f)
+                sidingRetry=0;
+            if(sidingRetry>0)return;
+            retryPeer=blocker;retryPosition=transform.position;retryPeerPosition=blocker.transform.position;retryTarget=wanted;
+            sidingRetry=SidingRetrySeconds;
+            if(!TrySiding(blocker,out var point))return;
             peer=blocker;yieldPoint=point;yieldHeading=Heading;
             fromBehind=Vector3.Dot(peer.transform.position-transform.position,yieldHeading)<0;
             Yielding=true;blockedTime=0;YieldsStarted++;releaseDeadline=Time.time+4;
             agent.avoidancePriority=80;normalStoppingDistance=agent.stoppingDistance;agent.stoppingDistance=.08f;
-            if(agent.CalculatePath(yieldPoint,path)){agent.SetPath(path);agent.isStopped=false;}
+            // TrySiding already calculated this complete, length-checked path.
+            agent.SetPath(path);agent.isStopped=false;yieldRepath=YieldRepathSeconds;YieldPathPlans++;
         }
         bool TrySiding(EnemyPassageTraffic other,out Vector3 point)
         {
+            SidingSearches++;
             var forward=Heading;var right=Vector3.Cross(Vector3.up,forward);
             var filter=new NavMeshQueryFilter{agentTypeID=agent.agentTypeID,areaMask=agent.areaMask};
-            foreach(float retreat in new[]{1.25f,2.2f,.65f})foreach(float side in new[]{.85f,-.85f,1.3f,-1.3f})
+            foreach(float retreat in retreats)foreach(float side in sides)
             {
                 var candidate=transform.position-forward*retreat+right*side;
                 if(!NavMesh.SamplePosition(candidate,out var hit,.18f,filter) || Mathf.Abs(hit.position.y-transform.position.y)>.2f ||
                     Vector3.Distance(hit.position,other.transform.position)<agent.radius+other.agent.radius+.35f ||
                     !agent.CalculatePath(hit.position,path) || path.status!=NavMeshPathStatus.PathComplete)continue;
-                float length=0;var previous=transform.position;foreach(var corner in path.corners){length+=Vector3.Distance(previous,corner);previous=corner;}
+                int count=path.GetCornersNonAlloc(corners);
+                while(count==corners.Length){corners=new Vector3[corners.Length*2];count=path.GetCornersNonAlloc(corners);}
+                float length=0;var previous=transform.position;for(int i=0;i<count;i++){length+=Vector3.Distance(previous,corners[i]);previous=corners[i];}
                 if(length>3.5f)continue;
                 point=hit.position;return true;
             }

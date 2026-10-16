@@ -287,7 +287,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(oldSources.All(item => item == null), Is.True, "Old attack/movement source survived retry");
                 Assert.That(Get<bool>(session, "Finished"), Is.False); Assert.That(Get<int>(session, "RecordsRecovered"), Is.Zero);
                 Assert.That(Get<float>(player, "Stamina"), Is.EqualTo(1).Within(.001f));
-                Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(2));
+                Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(12));
                 Assert.That(Get<bool>(shell, "ReducedMotion"), Is.True); Assert.That(Get<bool>(shell, "LargeText"), Is.EqualTo(!large));
                 Assert.That(Get<int>(player.GetComponent(RequireType("DetectionFeedback")), "CuesPlayed"), Is.Zero);
                 yield return RecoveryUiReady(); RecoveryUiOwnership();

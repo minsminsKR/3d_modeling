@@ -161,9 +161,10 @@ namespace HappyToy.V2.CloudTests
             Call(shell,"Resume"); Call(cabinet,"Use",player); Assert.That(Get<bool>(player,"Hidden"),Is.False);
             PlacePlayer(new Vector3(200,.03f,200));
             yield return null; var stock=Get<Component>(player,"Firecrackers");
+            Assert.That(Get<int>(stock,"Count"),Is.EqualTo(6),"The corridor starts with one six-shot pack");
             Assert.That((bool)Call(stock,"TryThrow"),Is.True); Call(shell,"Pause");
             Assert.Throws<InvalidOperationException>(()=>Call(session,"CaptureCheckpoint"));
-            Assert.That(Get<int>(stock,"Count"),Is.Zero); yield return null;
+            Assert.That(Get<int>(stock,"Count"),Is.EqualTo(5),"One live thrown snapper consumes one shot while still blocking a checkpoint"); yield return null;
         }
     }
 }

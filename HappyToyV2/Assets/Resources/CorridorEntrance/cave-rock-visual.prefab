@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3206081053471217536}
   - component: {fileID: 2858514555837635657}
   m_Layer: 8
-  m_Name: cave-rock
+  m_Name: cave-rock-visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

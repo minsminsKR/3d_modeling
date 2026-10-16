@@ -176,6 +176,10 @@ namespace HappyToy.V2.CloudTests
             PlacePlayer(anchor.position + Vector3.right * 2); player.transform.rotation = Quaternion.Euler(0, 90, 0);
             var enemy = MovingStalker(anchor.position, Vector3.left);
             var inventory = Get<Component>(player, "Firecrackers");
+            Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(12), "The school starts with two six-shot packs");
+            // This distraction/expiry fixture exercises a real partial pack:
+            // two individual shots, rather than assuming the default is two.
+            Call(inventory, "SetRunStock", 2);
             yield return KeysObserved(Key.Q);
             yield return Wait(() => Get<int>(inventory, "Count") == 1, 2, "Real Q input did not consume one firecracker");
             Keys(); var fire = Get<Component>(inventory, "LastThrown"); Assert.That(fire, Is.Not.Null);
@@ -185,18 +189,85 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(inventory, "TryThrow"), Is.False); Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(1));
             Call(shell, "Resume");
             yield return Wait(() => Get<bool>(fire, "Exploded") && Get<int>(fire, "Attracted") > 0, 5,
-                "Physical thrown fuse did not attract a real enemy", () => PursuitDiagnostics(enemy) + ", fuse=" + fire.transform.position);
+                "Physical snapper impact did not attract a real enemy", () => PursuitDiagnostics(enemy) + ", pellet=" + fire.transform.position);
             Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Investigate"));
-            yield return Wait(() => FlatDistance(enemy.transform.position, anchor.position) > .3f, 3, "Accepted decoy never moved the enemy");
+            const float inspectionSeconds = 6;
+            int heard = Get<int>(enemy, "NoisesAccepted");
+            Assert.That(heard, Is.EqualTo(1), "One physical pellet should publish one accepted noise");
+            Vector3 evidence = Get<Vector3>(enemy, "InvestigationPoint");
+            float lastNoiseAt = Get<float>(session, "ElapsedPlayTime");
+            float travelDeadline = lastNoiseAt + Get<float>(enemy, "InvestigationTravelRemaining");
+            float arrivedAt = float.NaN;
+            void ObserveInvestigation()
+            {
+                float now = Get<float>(session, "ElapsedPlayTime");
+                int accepted = Get<int>(enemy, "NoisesAccepted");
+                if (accepted != heard)
+                {
+                    Assert.That(accepted, Is.EqualTo(heard + 1), "A single-pellet impact repeated its noise");
+                    heard = accepted; evidence = Get<Vector3>(enemy, "InvestigationPoint");
+                    lastNoiseAt = now; arrivedAt = float.NaN;
+                    travelDeadline = now + Get<float>(enemy, "InvestigationTravelRemaining");
+                }
+                Assert.That(heard, Is.InRange(1, 2), "Two finite pellets generated additional decoy pulses");
+                Assert.That(Get<Vector3>(enemy, "InvestigationPoint"), Is.EqualTo(evidence), "No new noise retargeted saved evidence");
+                Assert.That(Get<Vector3>(enemy, "LastKnownPosition"), Is.EqualTo(evidence), "Unseen upstairs player replaced the heard point");
+                if (Get<bool>(enemy, "InvestigationArrived"))
+                {
+                    if (float.IsNaN(arrivedAt))
+                    {
+                        float dwell = Get<float>(enemy, "InvestigationDwellRemaining");
+                        Assert.That(dwell, Is.EqualTo(inspectionSeconds).Within(Time.deltaTime + .001f),
+                            "Travel consumed the six-second arrival inspection");
+                        // Account for at most the first observed frame of dwell.
+                        arrivedAt = now - (inspectionSeconds - dwell);
+                        Assert.That(arrivedAt, Is.GreaterThanOrEqualTo(lastNoiseAt - Time.deltaTime - .001f));
+                        Assert.That(FlatDistance(enemy.transform.position, evidence), Is.LessThanOrEqualTo(.65f),
+                            "Actor claimed arrival without reaching actual noise evidence");
+                    }
+                }
+                else
+                {
+                    Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Investigate"),
+                        "Actor abandoned a reachable noise before arrival");
+                    Assert.That(Get<float>(enemy, "InvestigationDwellRemaining"), Is.EqualTo(inspectionSeconds).Within(.0001f),
+                        "Travelling advanced the arrival-only inspection clock");
+                    Assert.That(now, Is.LessThanOrEqualTo(travelDeadline + Time.deltaTime + .001f),
+                        "Travel exceeded its captured production route budget");
+                }
+            }
+            yield return Wait(() => { ObserveInvestigation(); return FlatDistance(enemy.transform.position, anchor.position) > .3f; },
+                3, "Accepted decoy never moved the enemy");
             Assert.That((bool)Call(enemy, "HearNoise", anchor.position + Vector3.up * 5, 3f), Is.False);
             Assert.That((bool)Call(inventory, "TryThrow"), Is.True); Assert.That(Get<int>(inventory, "Count"), Is.Zero);
-            yield return Delay(.6f);
+            float denialAt = Get<float>(session, "ElapsedPlayTime") + .6f;
+            yield return Wait(() => { ObserveInvestigation(); return Get<float>(session, "ElapsedPlayTime") >= denialAt; },
+                2, "Natural finite-shot cooldown did not advance");
             for (int i = 0; i < 4; i++) Assert.That((bool)Call(inventory, "TryThrow"), Is.False);
             Assert.That(Get<int>(inventory, "Count"), Is.Zero);
-            yield return Wait(() => Components("FirecrackerProjectile").Length == 0, 14, "Burned firecrackers never cleaned up");
-            yield return Wait(() => Get<object>(enemy, "state").ToString() == "Patrol", 3, "Repeated finite pulses caused permanent investigation");
+            yield return Wait(() => { ObserveInvestigation(); return Components("FirecrackerProjectile").Length == 0; },
+                14, "Finite snapper projectiles never cleaned up");
+            // Cleanup belongs to the pellet. The actor has its own captured route
+            // budget followed by six seconds of inspection at the actual arrival.
+            float travelRemaining = Get<float>(enemy, "InvestigationTravelRemaining");
+            yield return Wait(() => { ObserveInvestigation(); return Get<bool>(enemy, "InvestigationArrived"); },
+                travelRemaining + 1, "Actor never reached the last accepted snapper noise", () => NoiseInvestigationDiagnostics(enemy));
+            Assert.That(Get<object>(enemy, "state").ToString(), Is.EqualTo("Investigate"));
+            Call(shell, "Pause"); var pausedAt = enemy.transform.position;
+            float pausedDwell = Get<float>(enemy, "InvestigationDwellRemaining");
+            yield return Delay(.3f);
+            Assert.That(enemy.transform.position, Is.EqualTo(pausedAt));
+            Assert.That(Get<float>(enemy, "InvestigationDwellRemaining"), Is.EqualTo(pausedDwell));
+            ObserveInvestigation(); Call(shell, "Resume");
+            yield return Wait(() => { ObserveInvestigation(); return Get<object>(enemy, "state").ToString() == "Patrol"; },
+                pausedDwell + 1, "Completed six-second snapper inspection never returned to patrol", () => NoiseInvestigationDiagnostics(enemy));
+            Assert.That(Get<float>(session, "ElapsedPlayTime") - arrivedAt,
+                Is.EqualTo(inspectionSeconds).Within(Time.deltaTime + .001f), "Inspection must expire after six playing seconds from arrival");
+            Assert.That(Get<bool>(enemy, "InvestigationActive"), Is.False);
+            Assert.That(Get<float>(enemy, "InvestigationDwellRemaining"), Is.Zero);
+            Assert.That(Get<int>(enemy, "NoisesAccepted"), Is.EqualTo(heard), "Expired pellets emitted another noise");
             Assert.That(Get<bool>(session, "Finished"), Is.False);
-            Debug.Log("HAPPYTOY_PURSUIT_PASS firecracker: Q input, finite inventory, pause, physical fuse, heard distraction, finite burn and investigation");
+            Debug.Log("HAPPYTOY_PURSUIT_PASS snapper: Q input, finite partial pack, paused flight/inspection, actual impact, saved noise travel, six-second arrival dwell, bounded cleanup/patrol");
         }
 
         [UnityTest, Timeout(20000)]

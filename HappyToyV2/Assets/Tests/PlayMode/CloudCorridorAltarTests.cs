@@ -267,7 +267,7 @@ namespace HappyToy.V2.CloudTests
             var chapter = Get<Component>(session, "Chapter");
             Assert.That(Get<Component[]>(chapter, "Memories").Select(memory => Get<string>(memory, "stableId")),
                 Is.EqualTo(Enumerable.Range(0, 5).Select(index => "chapter-memory-" + index)));
-            Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(2));
+            Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(12));
             Assert.That(File.ReadAllText(schoolPath), Is.EqualTo(schoolBytes),
                 "Automatic continuation consumed or rewrote the independent school suspension slot");
             Assert.That(File.Exists(schoolPath + ".used"), Is.False);

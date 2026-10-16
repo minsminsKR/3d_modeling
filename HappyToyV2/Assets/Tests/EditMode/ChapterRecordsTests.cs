@@ -111,7 +111,8 @@ namespace HappyToy.V2.CloudTests
         {
             Assert.That(Record(Store(false),Report()),Is.False); Assert.That(Record(Store(),Report(4,true)),Is.False);
             var invalid=Report(); Set(invalid,"staminaRemaining",float.NaN); Assert.That(Record(Store(),invalid),Is.False);
-            invalid=Report(); Set(invalid,"firecrackersRemaining",6); Assert.That(Record(Store(),invalid),Is.False);
+            int capacity=(int)RequireType("FirecrackerInventory").GetField("Capacity").GetRawConstantValue();
+            invalid=Report(); Set(invalid,"firecrackersRemaining",capacity+1); Assert.That(Record(Store(),invalid),Is.False);
             invalid=Report(); Set(invalid,"throws",-1); Assert.That(Record(Store(),invalid),Is.False);
             Assert.That(Record(Store(),null),Is.False); Assert.That(File.Exists(path),Is.False);
         }

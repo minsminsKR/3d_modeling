@@ -12,7 +12,7 @@ namespace HappyToy.V2.Editor
     public static class CorridorEntranceImport
     {
         const string Folder = "Assets/Resources/CorridorEntrance/";
-        static readonly string[] Keys = { "temple-gate", "cave-rock" };
+        static readonly string[] Keys = { "temple-gate", "cave-rock", "ritual-floor", "guardian-statue" };
         [Serializable] sealed class Report
         {
             public string key, normalizedAxis;
@@ -74,9 +74,9 @@ namespace HappyToy.V2.Editor
             if (!File.Exists(path)) throw new InvalidOperationException("Finish the preserved entrance original first: " + key);
             var report = JsonUtility.FromJson<Report>(File.ReadAllText(path));
             if (report == null || report.key != key || report.materials == null || report.materials.Length == 0 ||
-                report.lods == null || report.lods.Length != (key == "cave-rock" ? 2 : 1) ||
+                report.lods == null || report.lods.Length != (key == "temple-gate" ? 1 : 2) ||
                 report.normalizedMetres <= 0 || report.widthMetres <= 0 || report.heightMetres <= 0 || report.depthMetres <= 0 ||
-                report.textureMaxSize != (key == "temple-gate" ? 4096 : 2048))
+                report.textureMaxSize != (key == "cave-rock" ? 2048 : 4096))
                 throw new InvalidOperationException("Generated entrance inventory is incomplete: " + key);
             return report;
         }
@@ -102,7 +102,7 @@ namespace HappyToy.V2.Editor
             {
                 var shader = Shader.Find("Universal Render Pipeline/Lit");
                 if (!shader) throw new InvalidOperationException("Pinned URP Lit shader is missing");
-                material = new Material(shader);
+                material = new Material(shader) { enableInstancing = true };
                 AssetDatabase.CreateAsset(material, path);
             }
             var tint = surface.baseColorFactor;
@@ -181,7 +181,7 @@ namespace HappyToy.V2.Editor
                 visual.localScale = Vector3.one * scale;
                 visual.localPosition = -new Vector3(low.center.x, low.min.y, low.center.z) * scale;
                 foreach (var child in root.GetComponentsInChildren<Transform>(true)) child.gameObject.layer = 8;
-                if (key == "cave-rock")
+                if (report.lods.Length == 2)
                 {
                     var group = root.AddComponent<LODGroup>();
                     group.fadeMode = LODFadeMode.None;
@@ -297,9 +297,9 @@ namespace HappyToy.V2.Editor
                 if (Mathf.Abs(span - report.normalizedMetres) > .08f || Mathf.Abs(bound.min.y) > .05f)
                     throw new InvalidOperationException("Generated entrance dimensions or ground origin changed: " + key);
                 var group = prefab.GetComponent<LODGroup>();
-                if (key == "cave-rock" && (!group || group.GetLODs().Length != 2 ||
+                if (report.lods.Length == 2 && (!group || group.GetLODs().Length != 2 ||
                     group.GetLODs().Any(level => level.renderers.Length == 0)))
-                    throw new InvalidOperationException("Source-derived cave rock LODs are missing");
+                    throw new InvalidOperationException("Source-derived entrance LODs are missing: " + key);
                 foreach (var level in report.lods)
                     if (level.triangles <= 0 || level.triangles > level.targetTriangles + 4)
                         throw new InvalidOperationException("Generated entrance LOD budget exceeded: " + level.file);

@@ -41,7 +41,9 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce()
         {
             string directory=NewRecordFixture(); Call(session,"ConfigureRecordDirectory",directory);
-            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school"); yield return SchoolAcceptedActionsFixture();
+            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school");
+            int initialSnappers=Get<int>(Get<Component>(player,"Firecrackers"),"Count");
+            yield return SchoolAcceptedActionsFixture();
             Call(shell,"Pause"); var before=Call(session,"CaptureChapterMetrics");
             Call(session,"NoteChapterAction",Enum.Parse(RequireType("ChapterAction"),"FirecrackerThrown"));
             Assert.That(Get<int>(Call(session,"CaptureChapterMetrics"),"throws"),Is.EqualTo(Get<int>(before,"throws")));
@@ -51,10 +53,10 @@ namespace HappyToy.V2.CloudTests
             var summary=Get<object>(Get<object>(session,"ChapterRecords"),"Snapshot"); Assert.That(Get<int>(summary,"attempts"),Is.EqualTo(1));
             var report=Get<Array>(summary,"recent").GetValue(0); Assert.That(Get<string>(report,"defeatSource"),Is.EqualTo("Weeping mannequin"));
             Assert.That(Get<int>(report,"throws"),Is.EqualTo(1)); Assert.That(Get<int>(report,"hides"),Is.EqualTo(1)); Assert.That(Get<int>(report,"closedDoors"),Is.EqualTo(1));
-            Assert.That(Get<int>(report,"firecrackersRemaining"),Is.EqualTo(1)); Assert.That(Get<bool>(report,"actionsComplete"),Is.True);
+            Assert.That(Get<int>(report,"firecrackersRemaining"),Is.EqualTo(initialSnappers-1)); Assert.That(Get<bool>(report,"actionsComplete"),Is.True);
             Assert.That(File.Exists(Path.Combine(directory,"corridor-records-v1.json")),Is.False);
             var view=One("GameShellView"); var root=Get<VisualElement>(view,"Root");
-            Assert.That(root.Q<Label>("school-result-details").text,Does.Contain("폭죽 1회"));
+            Assert.That(root.Q<Label>("school-result-details").text,Does.Contain("콩알탄 1회"));
             Assert.That(root.Q<Label>("school-result-source").text,Does.Contain("Weeping mannequin"));
             if(!Get<bool>(shell,"LargeText")) Call(shell,"ToggleLargeText"); var errors=new List<string>();
             foreach(var size in new[]{new Vector2Int(1280,720),new Vector2Int(1024,768),new Vector2Int(2560,1080)})

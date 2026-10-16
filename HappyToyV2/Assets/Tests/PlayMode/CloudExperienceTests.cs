@@ -93,7 +93,7 @@ namespace HappyToy.V2.CloudTests
             var failures = new List<string>();
             Action<VisualElement> check = element =>
             {
-                if (element.resolvedStyle.display == DisplayStyle.None || !element.visible) return;
+                if (!ParticipatesInLayoutReview(element)) return;
                 var rect = element.worldBound;
                 if (float.IsNaN(rect.x) || float.IsNaN(rect.y) || rect.xMin < bounds.xMin - 1 || rect.yMin < bounds.yMin - 1 ||
                     rect.xMax > bounds.xMax + 1 || rect.yMax > bounds.yMax + 1)
@@ -116,6 +116,16 @@ namespace HappyToy.V2.CloudTests
             root.Query<Label>().ForEach(label => check(label));
             return failures.ToArray();
         }
+        static bool ParticipatesInLayoutReview(VisualElement element)
+        {
+            // Resolved visibility includes inheritance and permits a child to
+            // explicitly become visible. Display:none suppresses every child,
+            // even when that child's own resolved display remains Flex.
+            if (!element.visible) return false;
+            for (var ancestor = element; ancestor != null; ancestor = ancestor.parent)
+                if (ancestor.resolvedStyle.display == DisplayStyle.None) return false;
+            return true;
+        }
         internal static byte[] Wave(List<float> values, int rate, int channels)
         {
             using (var stream = new MemoryStream())
@@ -133,6 +143,67 @@ namespace HappyToy.V2.CloudTests
 
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest]
+        public IEnumerator LayoutReviewSkipsHiddenBranchesButDetectsVisibleClipping()
+        {
+            var root = Get<VisualElement>(One("GameShellView"), "Root");
+            var probe = new VisualElement { name = "layout-visibility-probe", pickingMode = PickingMode.Ignore };
+            probe.style.position = Position.Absolute;
+            probe.style.left = 16; probe.style.top = 16; probe.style.width = 320; probe.style.height = 180;
+            var displayBranch = new VisualElement();
+            var nested = new VisualElement(); displayBranch.Add(nested);
+            var visibilityBranch = new VisualElement();
+            Label AddLabel(VisualElement parent, string text, float height)
+            {
+                var label = new Label(text);
+                label.style.width = 240; label.style.height = height; label.style.fontSize = 18;
+                label.style.flexShrink = 0; label.style.whiteSpace = WhiteSpace.Normal;
+                label.style.marginLeft = label.style.marginRight = label.style.marginTop = label.style.marginBottom = 0;
+                label.style.paddingLeft = label.style.paddingRight = label.style.paddingTop = label.style.paddingBottom = 0;
+                parent.Add(label); return label;
+            }
+            AddLabel(probe, "Fitting control", 40);
+            var displayLabel = AddLabel(nested, "Display child", 1);
+            var visibilityLabel = AddLabel(visibilityBranch, "Visibility child", 1);
+            displayLabel.style.visibility = Visibility.Visible;
+            displayBranch.style.display = DisplayStyle.None;
+            visibilityBranch.style.visibility = Visibility.Hidden;
+            probe.Add(displayBranch); probe.Add(visibilityBranch); root.Add(probe);
+            try
+            {
+                yield return null; yield return null;
+                Assert.That(probe.panel, Is.Not.Null, "Use an actual panel's resolved layout and inherited visibility");
+                Assert.That(displayLabel.resolvedStyle.display, Is.EqualTo(DisplayStyle.Flex));
+                Assert.That(displayLabel.visible, Is.True, "Display:none must suppress even an explicitly visible descendant");
+                Assert.That(visibilityLabel.visible, Is.False, "The child must inherit its ancestor's hidden visibility");
+                Assert.That(CloudExperienceTests.Layout(probe), Is.Empty);
+
+                displayBranch.style.display = DisplayStyle.Flex;
+                yield return null; yield return null;
+                var failures = CloudExperienceTests.Layout(probe);
+                Assert.That(failures, Has.Length.EqualTo(1));
+                Assert.That(failures[0], Does.StartWith("Text clipped: Display child"));
+
+                displayBranch.style.display = DisplayStyle.None;
+                visibilityBranch.style.visibility = Visibility.Visible;
+                yield return null; yield return null;
+                failures = CloudExperienceTests.Layout(probe);
+                Assert.That(failures, Has.Length.EqualTo(1));
+                Assert.That(failures[0], Does.StartWith("Text clipped: Visibility child"));
+
+                // Visibility can be overridden by a child, unlike display:none.
+                // A blanket ancestor-hidden exclusion would miss this real clip.
+                visibilityBranch.style.visibility = Visibility.Hidden;
+                visibilityLabel.style.visibility = Visibility.Visible;
+                yield return null; yield return null;
+                Assert.That(visibilityLabel.visible, Is.True);
+                failures = CloudExperienceTests.Layout(probe);
+                Assert.That(failures, Has.Length.EqualTo(1));
+                Assert.That(failures[0], Does.StartWith("Text clipped: Visibility child"));
+            }
+            finally { probe.RemoveFromHierarchy(); }
+        }
+
         [UnityTest]
         public IEnumerator KoreanMenusRenderAcrossSupportedAspectRatios()
         {

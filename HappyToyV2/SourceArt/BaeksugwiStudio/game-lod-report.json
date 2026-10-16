@@ -1,0 +1,954 @@
+{
+  "status": "PASS",
+  "blender": "4.0.2",
+  "source": "Baeksugwi_Run.blend",
+  "sourceSHA256": "213685f06749853e1fd619d30d223ddbac1a9d183efbf0bd4b70a6e72eaaf0aa",
+  "recipeSHA256": "a4d2f896b578809d75f9f781c53e5fed06e50d0e96b82bf87d42e4a89d2265de",
+  "bones": 63,
+  "originalVertices": 952517,
+  "originalActionsPreserved": {
+    "Head_Writhe": "381fd46f459b3d65a205955aa18ae7a74d6c5580b5ed53f335ab1ff36fb17653",
+    "Run_Forward": "ef8cd3d0dfbde97c2365aee6be43eedffdfdbe5f83cf5032a8c5814f92418c19",
+    "Run_InPlace": "79b49935791b71b426bd86d1da1b800d460d7c63d10a52e35ad28dd57547d13e"
+  },
+  "generatedPbrMaterialsUnchanged": [
+    "Material_0"
+  ],
+  "protection": {
+    "headVertices": 135291,
+    "frontHeadVertices": 34100,
+    "priorityVertices": 57518,
+    "softArmVertices": 507545,
+    "fullHandSurfaceVertices": 23407,
+    "animatedEnvelopePins": 24,
+    "forwardAxis": [
+      0.0,
+      -1.0,
+      0.0
+    ],
+    "method": "Original front face and complete eighteen wrist-influenced hand surfaces; soft priority on every arm; unchanged per-corner source UVs."
+  },
+  "sourcePoseBounds": [
+    {
+      "frame": 1,
+      "minimum": [
+        -0.4006970524787903,
+        -0.5603913068771362,
+        -0.20020157098770142
+      ],
+      "maximum": [
+        0.3778138756752014,
+        0.5413057804107666,
+        0.3502350449562073
+      ],
+      "extremeVertexIndices": [
+        18070,
+        171566,
+        87602,
+        921490,
+        560473,
+        309919
+      ],
+      "handMinimumZ": {
+        "Arm6L_Wrist": -0.15441328287124634,
+        "Arm6R_Wrist": -0.20000001788139343,
+        "Arm4L_Wrist": -0.20000004768371582,
+        "Arm4R_Wrist": -0.17870211601257324,
+        "Arm5L_Wrist": -0.18340831995010376,
+        "Arm5R_Wrist": -0.2000000774860382,
+        "ArmRearCenter_Wrist": -0.16134482622146606,
+        "ArmRearL_Wrist": -0.16365200281143188,
+        "ArmRearR_Wrist": -0.16596472263336182,
+        "Arm1L_Wrist": -0.20000077784061432,
+        "Arm1R_Wrist": -0.1976112574338913,
+        "Arm2L_Wrist": -0.20020157098770142,
+        "ArmFrontInside_Wrist": -0.16585849225521088,
+        "Arm2R_Wrist": -0.16207218170166016,
+        "ArmInnerL_Wrist": -0.15737412869930267,
+        "ArmInnerR_Wrist": -0.16144515573978424,
+        "Arm3L_Wrist": -0.20000697672367096,
+        "Arm3R_Wrist": -0.15190397202968597
+      }
+    },
+    {
+      "frame": 6,
+      "minimum": [
+        -0.40241292119026184,
+        -0.5310608744621277,
+        -0.20002615451812744
+      ],
+      "maximum": [
+        0.3792618215084076,
+        0.5350725650787354,
+        0.3669455647468567
+      ],
+      "extremeVertexIndices": [
+        18070,
+        171566,
+        146322,
+        921490,
+        560473,
+        521683
+      ],
+      "handMinimumZ": {
+        "Arm6L_Wrist": -0.15525782108306885,
+        "Arm6R_Wrist": -0.2000000774860382,
+        "Arm4L_Wrist": -0.19039541482925415,
+        "Arm4R_Wrist": -0.20000003278255463,
+        "Arm5L_Wrist": -0.15237551927566528,
+        "Arm5R_Wrist": -0.2000001072883606,
+        "ArmRearCenter_Wrist": -0.1626785695552826,
+        "ArmRearL_Wrist": -0.16543425619602203,
+        "ArmRearR_Wrist": -0.16588683426380157,
+        "Arm1L_Wrist": -0.20000068843364716,
+        "Arm1R_Wrist": -0.17026090621948242,
+        "Arm2L_Wrist": -0.20001186430454254,
+        "ArmFrontInside_Wrist": -0.16670864820480347,
+        "Arm2R_Wrist": -0.1501266062259674,
+        "ArmInnerL_Wrist": -0.15874922275543213,
+        "ArmInnerR_Wrist": -0.16587567329406738,
+        "Arm3L_Wrist": -0.20002615451812744,
+        "Arm3R_Wrist": -0.1742314100265503
+      }
+    },
+    {
+      "frame": 12,
+      "minimum": [
+        -0.409821093082428,
+        -0.4972006678581238,
+        -0.2000153660774231
+      ],
+      "maximum": [
+        0.37868818640708923,
+        0.5074253082275391,
+        0.35214078426361084
+      ],
+      "extremeVertexIndices": [
+        9063,
+        561964,
+        898533,
+        921490,
+        560475,
+        521683
+      ],
+      "handMinimumZ": {
+        "Arm6L_Wrist": -0.18797144293785095,
+        "Arm6R_Wrist": -0.20000001788139343,
+        "Arm4L_Wrist": -0.15488062798976898,
+        "Arm4R_Wrist": -0.19999989867210388,
+        "Arm5L_Wrist": -0.15032148361206055,
+        "Arm5R_Wrist": -0.20000004768371582,
+        "ArmRearCenter_Wrist": -0.16511794924736023,
+        "ArmRearL_Wrist": -0.16541510820388794,
+        "ArmRearR_Wrist": -0.1659969985485077,
+        "Arm1L_Wrist": -0.2000005692243576,
+        "Arm1R_Wrist": -0.15448351204395294,
+        "Arm2L_Wrist": -0.19991721212863922,
+        "ArmFrontInside_Wrist": -0.1665341854095459,
+        "Arm2R_Wrist": -0.17438936233520508,
+        "ArmInnerL_Wrist": -0.1643788069486618,
+        "ArmInnerR_Wrist": -0.17023080587387085,
+        "Arm3L_Wrist": -0.19019219279289246,
+        "Arm3R_Wrist": -0.2000153660774231
+      }
+    },
+    {
+      "frame": 18,
+      "minimum": [
+        -0.4147653579711914,
+        -0.48547038435935974,
+        -0.21397927403450012
+      ],
+      "maximum": [
+        0.3808445334434509,
+        0.48860979080200195,
+        0.33799296617507935
+      ],
+      "extremeVertexIndices": [
+        9063,
+        562042,
+        497706,
+        874886,
+        671992,
+        102710
+      ],
+      "handMinimumZ": {
+        "Arm6L_Wrist": -0.20000000298023224,
+        "Arm6R_Wrist": -0.17653238773345947,
+        "Arm4L_Wrist": -0.1537497639656067,
+        "Arm4R_Wrist": -0.1999998539686203,
+        "Arm5L_Wrist": -0.1867530345916748,
+        "Arm5R_Wrist": -0.19999998807907104,
+        "ArmRearCenter_Wrist": -0.1658223271369934,
+        "ArmRearL_Wrist": -0.1654205322265625,
+        "ArmRearR_Wrist": -0.16509957611560822,
+        "Arm1L_Wrist": -0.20000067353248596,
+        "Arm1R_Wrist": -0.17798557877540588,
+        "Arm2L_Wrist": -0.18911711871623993,
+        "ArmFrontInside_Wrist": -0.1652572751045227,
+        "Arm2R_Wrist": -0.1997659057378769,
+        "ArmInnerL_Wrist": -0.1697685271501541,
+        "ArmInnerR_Wrist": -0.17082655429840088,
+        "Arm3L_Wrist": -0.15717367827892303,
+        "Arm3R_Wrist": -0.20002594590187073
+      }
+    },
+    {
+      "frame": 23,
+      "minimum": [
+        -0.41293826699256897,
+        -0.50126713514328,
+        -0.20003607869148254
+      ],
+      "maximum": [
+        0.38272857666015625,
+        0.5170910358428955,
+        0.35257238149642944
+      ],
+      "extremeVertexIndices": [
+        9063,
+        561964,
+        898533,
+        921490,
+        671907,
+        309919
+      ],
+      "handMinimumZ": {
+        "Arm6L_Wrist": -0.20000013709068298,
+        "Arm6R_Wrist": -0.15250632166862488,
+        "Arm4L_Wrist": -0.18213336169719696,
+        "Arm4R_Wrist": -0.2000000774860382,
+        "Arm5L_Wrist": -0.20000006258487701,
+        "Arm5R_Wrist": -0.17997018992900848,
+        "ArmRearCenter_Wrist": -0.1656554937362671,
+        "ArmRearL_Wrist": -0.1655489057302475,
+        "ArmRearR_Wrist": -0.1624796986579895,
+        "Arm1L_Wrist": -0.1948595941066742,
+        "Arm1R_Wrist": -0.2000008523464203,
+        "Arm2L_Wrist": -0.16048990190029144,
+        "ArmFrontInside_Wrist": -0.16294148564338684,
+        "Arm2R_Wrist": -0.19995446503162384,
+        "ArmInnerL_Wrist": -0.1712931990623474,
+        "ArmInnerR_Wrist": -0.1680610179901123,
+        "Arm3L_Wrist": -0.15388336777687073,
+        "Arm3R_Wrist": -0.20003607869148254
+      }
+    },
+    {
+      "frame": 29,
+      "minimum": [
+        -0.40919554233551025,
+        -0.5105909705162048,
+        -0.2000342756509781
+      ],
+      "maximum": [
+        0.38219600915908813,
+        0.541565477848053,
+        0.36660224199295044
+      ],
+      "extremeVertexIndices": [
+        9063,
+        561959,
+        898533,
+        921490,
+        671907,
+        309919
+      ],
+      "handMinimumZ": {
+        "Arm6L_Wrist": -0.2000001072883606,
+        "Arm6R_Wrist": -0.16085799038410187,
+        "Arm4L_Wrist": -0.20000001788139343,
+        "Arm4R_Wrist": -0.1806575208902359,
+        "Arm5L_Wrist": -0.20000004768371582,
+        "Arm5R_Wrist": -0.14734776318073273,
+        "ArmRearCenter_Wrist": -0.16583217680454254,
+        "ArmRearL_Wrist": -0.16359484195709229,
+        "ArmRearR_Wrist": -0.16066554188728333,
+        "Arm1L_Wrist": -0.16002428531646729,
+        "Arm1R_Wrist": -0.20000064373016357,
+        "Arm2L_Wrist": -0.15394391119480133,
+        "ArmFrontInside_Wrist": -0.16074103116989136,
+        "Arm2R_Wrist": -0.19998124241828918,
+        "ArmInnerL_Wrist": -0.16943122446537018,
+        "ArmInnerR_Wrist": -0.16277533769607544,
+        "Arm3L_Wrist": -0.18373888731002808,
+        "Arm3R_Wrist": -0.2000342756509781
+      }
+    },
+    {
+      "frame": 35,
+      "minimum": [
+        -0.4070869982242584,
+        -0.5314359068870544,
+        -0.20000068843364716
+      ],
+      "maximum": [
+        0.3789892792701721,
+        0.5433878302574158,
+        0.344943642616272
+      ],
+      "extremeVertexIndices": [
+        18070,
+        171566,
+        694368,
+        874872,
+        371650,
+        309919
+      ],
+      "handMinimumZ": {
+        "Arm6L_Wrist": -0.20000004768371582,
+        "Arm6R_Wrist": -0.1961192488670349,
+        "Arm4L_Wrist": -0.19999998807907104,
+        "Arm4R_Wrist": -0.14995978772640228,
+        "Arm5L_Wrist": -0.2000000774860382,
+        "Arm5R_Wrist": -0.1572507917881012,
+        "ArmRearCenter_Wrist": -0.16437925398349762,
+        "ArmRearL_Wrist": -0.16112259030342102,
+        "ArmRearR_Wrist": -0.1624751091003418,
+        "Arm1L_Wrist": -0.1539219617843628,
+        "Arm1R_Wrist": -0.20000068843364716,
+        "Arm2L_Wrist": -0.18432049453258514,
+        "ArmFrontInside_Wrist": -0.1621067225933075,
+        "Arm2R_Wrist": -0.19990284740924835,
+        "ArmInnerL_Wrist": -0.16367441415786743,
+        "ArmInnerR_Wrist": -0.1585572361946106,
+        "Arm3L_Wrist": -0.19999998807907104,
+        "Arm3R_Wrist": -0.1810310035943985
+      }
+    },
+    {
+      "frame": 41,
+      "minimum": [
+        -0.40213778614997864,
+        -0.5626580119132996,
+        -0.20971637964248657
+      ],
+      "maximum": [
+        0.37814438343048096,
+        0.5412917733192444,
+        0.33888259530067444
+      ],
+      "extremeVertexIndices": [
+        18070,
+        171566,
+        497706,
+        874876,
+        371650,
+        108683
+      ],
+      "handMinimumZ": {
+        "Arm6L_Wrist": -0.16784287989139557,
+        "Arm6R_Wrist": -0.20000013709068298,
+        "Arm4L_Wrist": -0.19999998807907104,
+        "Arm4R_Wrist": -0.16026784479618073,
+        "Arm5L_Wrist": -0.20000001788139343,
+        "Arm5R_Wrist": -0.19604097306728363,
+        "ArmRearCenter_Wrist": -0.16180893778800964,
+        "ArmRearL_Wrist": -0.16215582191944122,
+        "ArmRearR_Wrist": -0.16543768346309662,
+        "Arm1L_Wrist": -0.18545794486999512,
+        "Arm1R_Wrist": -0.20000062882900238,
+        "Arm2L_Wrist": -0.20033596456050873,
+        "ArmFrontInside_Wrist": -0.16502854228019714,
+        "Arm2R_Wrist": -0.1799512803554535,
+        "ArmInnerL_Wrist": -0.15839655697345734,
+        "ArmInnerR_Wrist": -0.15925759077072144,
+        "Arm3L_Wrist": -0.19999997317790985,
+        "Arm3R_Wrist": -0.1520409882068634
+      }
+    },
+    {
+      "frame": 44,
+      "minimum": [
+        -0.4006970524787903,
+        -0.5603913068771362,
+        -0.20020157098770142
+      ],
+      "maximum": [
+        0.3778138756752014,
+        0.5413057804107666,
+        0.3502350449562073
+      ],
+      "extremeVertexIndices": [
+        18070,
+        171566,
+        87602,
+        921490,
+        560473,
+        309919
+      ],
+      "handMinimumZ": {
+        "Arm6L_Wrist": -0.15441328287124634,
+        "Arm6R_Wrist": -0.20000001788139343,
+        "Arm4L_Wrist": -0.20000004768371582,
+        "Arm4R_Wrist": -0.17870211601257324,
+        "Arm5L_Wrist": -0.18340831995010376,
+        "Arm5R_Wrist": -0.2000000774860382,
+        "ArmRearCenter_Wrist": -0.16134482622146606,
+        "ArmRearL_Wrist": -0.16365200281143188,
+        "ArmRearR_Wrist": -0.16596472263336182,
+        "Arm1L_Wrist": -0.20000077784061432,
+        "Arm1R_Wrist": -0.1976112574338913,
+        "Arm2L_Wrist": -0.20020157098770142,
+        "ArmFrontInside_Wrist": -0.16585849225521088,
+        "Arm2R_Wrist": -0.16207218170166016,
+        "ArmInnerL_Wrist": -0.15737412869930267,
+        "ArmInnerR_Wrist": -0.16144515573978424,
+        "Arm3L_Wrist": -0.20000697672367096,
+        "Arm3R_Wrist": -0.15190397202968597
+      }
+    }
+  ],
+  "levels": [
+    {
+      "inputTriangles": 985806,
+      "weightedPassTriangles": 398000,
+      "triangles": 397726,
+      "vertices": 184924,
+      "sourceAtlasRetained": true,
+      "looseVerticesRemoved": 48,
+      "level": "LOD0",
+      "skin": {
+        "maximumInfluences": 4,
+        "weightBins": 1024,
+        "zeroWeightVertices": 0,
+        "maximumWeightSumError": 0.0
+      },
+      "surfaceError": {
+        "samples": 952517,
+        "surfaceDistanceP95": 0.0012642706278711557,
+        "surfaceDistanceP99": 0.0019418451702222228,
+        "surfaceDistanceMaximum": 0.004873580764979124,
+        "protectedSamples": 57518,
+        "protectedDistanceMaximum": 0.000317340629408136,
+        "maximumProtectedSourcePoint": [
+          0.08675774186849594,
+          -0.4129142463207245,
+          0.12915802001953125
+        ],
+        "maximumSourcePoint": [
+          0.005922358483076096,
+          0.009117248468101025,
+          0.3559587895870209
+        ],
+        "maximumSourcePointWeights": [
+          [
+            "BodyRoot",
+            0.3017578125
+          ],
+          [
+            "SpineRear",
+            0.1875
+          ],
+          [
+            "SpineBack",
+            0.0185546875
+          ],
+          [
+            "SpineFront",
+            0.4921875
+          ]
+        ],
+        "faceCentresDistanceMaximum": 0.0024997424334287643,
+        "faceCentresWorstPoint": [
+          0.013195681385695934,
+          0.12044418603181839,
+          0.2204301357269287
+        ],
+        "edgeMidpoints01DistanceMaximum": 0.002993037924170494,
+        "edgeMidpoints01WorstPoint": [
+          -0.02653699368238449,
+          -0.19923913478851318,
+          0.3060380816459656
+        ],
+        "edgeMidpoints12DistanceMaximum": 0.0035619742702692747,
+        "edgeMidpoints12WorstPoint": [
+          -0.0215280931442976,
+          0.3144315481185913,
+          0.36697638034820557
+        ],
+        "edgeMidpoints20DistanceMaximum": 0.0035619742702692747,
+        "edgeMidpoints20WorstPoint": [
+          -0.0215280931442976,
+          0.3144315481185913,
+          0.36697638034820557
+        ],
+        "reverseInteriorSamples": 1590904,
+        "reverseInteriorDistanceP99": 0.0010947979183401906,
+        "reverseInteriorDistanceMaximum": 0.0035619742702692747,
+        "maximumTriangleEdge": 0.038509171456098557,
+        "maximumEdgeTrianglePoints": [
+          [
+            0.005030419677495956,
+            -0.1812765896320343,
+            0.3349900245666504
+          ],
+          [
+            0.014285197481513023,
+            -0.1775047928094864,
+            0.3295230567455292
+          ],
+          [
+            0.012787355110049248,
+            -0.14435909688472748,
+            0.34272855520248413
+          ]
+        ],
+        "maximumEdgeTriangleWeights": [
+          [
+            [
+              "GameLOD_FaceAndContactPriority",
+              0.7799999713897705
+            ],
+            [
+              "SpineRear",
+              0.009765625
+            ],
+            [
+              "BodyRoot",
+              0.021484375
+            ],
+            [
+              "Chest",
+              0.1142578125
+            ],
+            [
+              "SpineFront",
+              0.8544921875
+            ]
+          ],
+          [
+            [
+              "GameLOD_FaceAndContactPriority",
+              0.7799999713897705
+            ],
+            [
+              "SpineRear",
+              0.0087890625
+            ],
+            [
+              "SpineFront",
+              0.8583984375
+            ],
+            [
+              "BodyRoot",
+              0.01953125
+            ],
+            [
+              "Chest",
+              0.11328125
+            ]
+          ],
+          [
+            [
+              "GameLOD_FaceAndContactPriority",
+              0.7799999713897705
+            ],
+            [
+              "BodyRoot",
+              0.025390625
+            ],
+            [
+              "SpineRear",
+              0.01171875
+            ],
+            [
+              "Chest",
+              0.0517578125
+            ],
+            [
+              "SpineFront",
+              0.9111328125
+            ]
+          ]
+        ],
+        "regionalMaximumTriangleEdges": {
+          "body": 0.038509171456098557,
+          "head": 0.03369555622339249,
+          "arms": 0.03663447126746178,
+          "hands": 0.02517734467983246
+        }
+      },
+      "smoothFaceFraction": 1.0,
+      "maximumRestHandUndersideError": 0.0,
+      "poseBounds": [
+        {
+          "frame": 1,
+          "minimum": [
+            -0.4006970524787903,
+            -0.5603913068771362,
+            -0.20020157098770142
+          ],
+          "maximum": [
+            0.37824389338493347,
+            0.5413057804107666,
+            0.3503440320491791
+          ],
+          "extremeVertexIndices": [
+            9709,
+            50302,
+            29895,
+            183059,
+            117771,
+            109979
+          ],
+          "handMinimumZ": {
+            "Arm6L_Wrist": -0.15441328287124634,
+            "Arm6R_Wrist": -0.20000001788139343,
+            "Arm4L_Wrist": -0.20000004768371582,
+            "Arm4R_Wrist": -0.17870211601257324,
+            "Arm5L_Wrist": -0.18340831995010376,
+            "Arm5R_Wrist": -0.2000000774860382,
+            "ArmRearCenter_Wrist": -0.16134482622146606,
+            "ArmRearL_Wrist": -0.16365200281143188,
+            "ArmRearR_Wrist": -0.16596472263336182,
+            "Arm1L_Wrist": -0.20000077784061432,
+            "Arm1R_Wrist": -0.1976112574338913,
+            "Arm2L_Wrist": -0.20020157098770142,
+            "ArmFrontInside_Wrist": -0.16585849225521088,
+            "Arm2R_Wrist": -0.16207218170166016,
+            "ArmInnerL_Wrist": -0.15737412869930267,
+            "ArmInnerR_Wrist": -0.16144515573978424,
+            "Arm3L_Wrist": -0.20000697672367096,
+            "Arm3R_Wrist": -0.15190397202968597
+          }
+        },
+        {
+          "frame": 6,
+          "minimum": [
+            -0.40241292119026184,
+            -0.5310608744621277,
+            -0.20002615451812744
+          ],
+          "maximum": [
+            0.37972602248191833,
+            0.5350725650787354,
+            0.3669455647468567
+          ],
+          "extremeVertexIndices": [
+            9709,
+            50302,
+            45218,
+            183059,
+            117771,
+            112254
+          ],
+          "handMinimumZ": {
+            "Arm6L_Wrist": -0.15525782108306885,
+            "Arm6R_Wrist": -0.2000000774860382,
+            "Arm4L_Wrist": -0.19039541482925415,
+            "Arm4R_Wrist": -0.20000003278255463,
+            "Arm5L_Wrist": -0.15237551927566528,
+            "Arm5R_Wrist": -0.2000001072883606,
+            "ArmRearCenter_Wrist": -0.1626785695552826,
+            "ArmRearL_Wrist": -0.16543425619602203,
+            "ArmRearR_Wrist": -0.16588683426380157,
+            "Arm1L_Wrist": -0.20000068843364716,
+            "Arm1R_Wrist": -0.17026090621948242,
+            "Arm2L_Wrist": -0.20001186430454254,
+            "ArmFrontInside_Wrist": -0.16670864820480347,
+            "Arm2R_Wrist": -0.1501266062259674,
+            "ArmInnerL_Wrist": -0.15874922275543213,
+            "ArmInnerR_Wrist": -0.16587567329406738,
+            "Arm3L_Wrist": -0.20002615451812744,
+            "Arm3R_Wrist": -0.1742314100265503
+          }
+        },
+        {
+          "frame": 12,
+          "minimum": [
+            -0.409821093082428,
+            -0.4972006678581238,
+            -0.2000153660774231
+          ],
+          "maximum": [
+            0.3791550397872925,
+            0.5074253082275391,
+            0.35214078426361084
+          ],
+          "extremeVertexIndices": [
+            3816,
+            118229,
+            174667,
+            183059,
+            117773,
+            112254
+          ],
+          "handMinimumZ": {
+            "Arm6L_Wrist": -0.18797144293785095,
+            "Arm6R_Wrist": -0.20000001788139343,
+            "Arm4L_Wrist": -0.15488062798976898,
+            "Arm4R_Wrist": -0.19999989867210388,
+            "Arm5L_Wrist": -0.15032148361206055,
+            "Arm5R_Wrist": -0.20000004768371582,
+            "ArmRearCenter_Wrist": -0.16511794924736023,
+            "ArmRearL_Wrist": -0.16541510820388794,
+            "ArmRearR_Wrist": -0.1659969985485077,
+            "Arm1L_Wrist": -0.2000005692243576,
+            "Arm1R_Wrist": -0.15448351204395294,
+            "Arm2L_Wrist": -0.19991721212863922,
+            "ArmFrontInside_Wrist": -0.1665341854095459,
+            "Arm2R_Wrist": -0.17438936233520508,
+            "ArmInnerL_Wrist": -0.1643788069486618,
+            "ArmInnerR_Wrist": -0.17023080587387085,
+            "Arm3L_Wrist": -0.19019219279289246,
+            "Arm3R_Wrist": -0.2000153660774231
+          }
+        },
+        {
+          "frame": 18,
+          "minimum": [
+            -0.4147653579711914,
+            -0.48547038435935974,
+            -0.21397927403450012
+          ],
+          "maximum": [
+            0.3811732232570648,
+            0.48860979080200195,
+            0.33803823590278625
+          ],
+          "extremeVertexIndices": [
+            3816,
+            118289,
+            109584,
+            167707,
+            136025,
+            36030
+          ],
+          "handMinimumZ": {
+            "Arm6L_Wrist": -0.20000000298023224,
+            "Arm6R_Wrist": -0.17653238773345947,
+            "Arm4L_Wrist": -0.1537497639656067,
+            "Arm4R_Wrist": -0.1999998539686203,
+            "Arm5L_Wrist": -0.1867530345916748,
+            "Arm5R_Wrist": -0.19999998807907104,
+            "ArmRearCenter_Wrist": -0.1658223271369934,
+            "ArmRearL_Wrist": -0.1654205322265625,
+            "ArmRearR_Wrist": -0.16509957611560822,
+            "Arm1L_Wrist": -0.20000067353248596,
+            "Arm1R_Wrist": -0.17798557877540588,
+            "Arm2L_Wrist": -0.18911711871623993,
+            "ArmFrontInside_Wrist": -0.1652572751045227,
+            "Arm2R_Wrist": -0.1997659057378769,
+            "ArmInnerL_Wrist": -0.1697685271501541,
+            "ArmInnerR_Wrist": -0.17082655429840088,
+            "Arm3L_Wrist": -0.15717367827892303,
+            "Arm3R_Wrist": -0.20002594590187073
+          }
+        },
+        {
+          "frame": 23,
+          "minimum": [
+            -0.41293826699256897,
+            -0.50126713514328,
+            -0.20003607869148254
+          ],
+          "maximum": [
+            0.38318753242492676,
+            0.5170910358428955,
+            0.35267600417137146
+          ],
+          "extremeVertexIndices": [
+            3816,
+            118229,
+            174667,
+            183059,
+            135948,
+            109979
+          ],
+          "handMinimumZ": {
+            "Arm6L_Wrist": -0.20000013709068298,
+            "Arm6R_Wrist": -0.15250632166862488,
+            "Arm4L_Wrist": -0.18213336169719696,
+            "Arm4R_Wrist": -0.2000000774860382,
+            "Arm5L_Wrist": -0.20000006258487701,
+            "Arm5R_Wrist": -0.17997018992900848,
+            "ArmRearCenter_Wrist": -0.1656554937362671,
+            "ArmRearL_Wrist": -0.1655489057302475,
+            "ArmRearR_Wrist": -0.1624796986579895,
+            "Arm1L_Wrist": -0.1948595941066742,
+            "Arm1R_Wrist": -0.2000008523464203,
+            "Arm2L_Wrist": -0.16048990190029144,
+            "ArmFrontInside_Wrist": -0.16294148564338684,
+            "Arm2R_Wrist": -0.19995446503162384,
+            "ArmInnerL_Wrist": -0.1712931990623474,
+            "ArmInnerR_Wrist": -0.1680610179901123,
+            "Arm3L_Wrist": -0.15388336777687073,
+            "Arm3R_Wrist": -0.20003607869148254
+          }
+        },
+        {
+          "frame": 29,
+          "minimum": [
+            -0.40919554233551025,
+            -0.5105909705162048,
+            -0.2000342756509781
+          ],
+          "maximum": [
+            0.38261836767196655,
+            0.541565477848053,
+            0.36666473746299744
+          ],
+          "extremeVertexIndices": [
+            3816,
+            118226,
+            174667,
+            183059,
+            135948,
+            109979
+          ],
+          "handMinimumZ": {
+            "Arm6L_Wrist": -0.2000001072883606,
+            "Arm6R_Wrist": -0.16085799038410187,
+            "Arm4L_Wrist": -0.20000001788139343,
+            "Arm4R_Wrist": -0.1806575208902359,
+            "Arm5L_Wrist": -0.20000004768371582,
+            "Arm5R_Wrist": -0.14734776318073273,
+            "ArmRearCenter_Wrist": -0.16583217680454254,
+            "ArmRearL_Wrist": -0.16359484195709229,
+            "ArmRearR_Wrist": -0.16066554188728333,
+            "Arm1L_Wrist": -0.16002428531646729,
+            "Arm1R_Wrist": -0.20000064373016357,
+            "Arm2L_Wrist": -0.15394391119480133,
+            "ArmFrontInside_Wrist": -0.16074103116989136,
+            "Arm2R_Wrist": -0.19998124241828918,
+            "ArmInnerL_Wrist": -0.16943122446537018,
+            "ArmInnerR_Wrist": -0.16277533769607544,
+            "Arm3L_Wrist": -0.18373888731002808,
+            "Arm3R_Wrist": -0.2000342756509781
+          }
+        },
+        {
+          "frame": 35,
+          "minimum": [
+            -0.4070869982242584,
+            -0.5314359068870544,
+            -0.20000068843364716
+          ],
+          "maximum": [
+            0.37914466857910156,
+            0.5433878302574158,
+            0.34504929184913635
+          ],
+          "extremeVertexIndices": [
+            9709,
+            50302,
+            141599,
+            167700,
+            87613,
+            109979
+          ],
+          "handMinimumZ": {
+            "Arm6L_Wrist": -0.20000004768371582,
+            "Arm6R_Wrist": -0.1961192488670349,
+            "Arm4L_Wrist": -0.19999998807907104,
+            "Arm4R_Wrist": -0.14995978772640228,
+            "Arm5L_Wrist": -0.2000000774860382,
+            "Arm5R_Wrist": -0.1572507917881012,
+            "ArmRearCenter_Wrist": -0.16437925398349762,
+            "ArmRearL_Wrist": -0.16112259030342102,
+            "ArmRearR_Wrist": -0.1624751091003418,
+            "Arm1L_Wrist": -0.1539219617843628,
+            "Arm1R_Wrist": -0.20000068843364716,
+            "Arm2L_Wrist": -0.18432049453258514,
+            "ArmFrontInside_Wrist": -0.1621067225933075,
+            "Arm2R_Wrist": -0.19990284740924835,
+            "ArmInnerL_Wrist": -0.16367441415786743,
+            "ArmInnerR_Wrist": -0.1585572361946106,
+            "Arm3L_Wrist": -0.19999998807907104,
+            "Arm3R_Wrist": -0.1810310035943985
+          }
+        },
+        {
+          "frame": 41,
+          "minimum": [
+            -0.40213778614997864,
+            -0.5626580119132996,
+            -0.20971637964248657
+          ],
+          "maximum": [
+            0.3783382475376129,
+            0.5412917733192444,
+            0.3389359712600708
+          ],
+          "extremeVertexIndices": [
+            9709,
+            50302,
+            109584,
+            167700,
+            87613,
+            36030
+          ],
+          "handMinimumZ": {
+            "Arm6L_Wrist": -0.16784287989139557,
+            "Arm6R_Wrist": -0.20000013709068298,
+            "Arm4L_Wrist": -0.19999998807907104,
+            "Arm4R_Wrist": -0.16026784479618073,
+            "Arm5L_Wrist": -0.20000001788139343,
+            "Arm5R_Wrist": -0.19604097306728363,
+            "ArmRearCenter_Wrist": -0.16180893778800964,
+            "ArmRearL_Wrist": -0.16215582191944122,
+            "ArmRearR_Wrist": -0.16543768346309662,
+            "Arm1L_Wrist": -0.18545794486999512,
+            "Arm1R_Wrist": -0.20000062882900238,
+            "Arm2L_Wrist": -0.20033596456050873,
+            "ArmFrontInside_Wrist": -0.16502854228019714,
+            "Arm2R_Wrist": -0.1799512803554535,
+            "ArmInnerL_Wrist": -0.15839655697345734,
+            "ArmInnerR_Wrist": -0.15925759077072144,
+            "Arm3L_Wrist": -0.19999997317790985,
+            "Arm3R_Wrist": -0.1520409882068634
+          }
+        },
+        {
+          "frame": 44,
+          "minimum": [
+            -0.4006970524787903,
+            -0.5603913068771362,
+            -0.20020157098770142
+          ],
+          "maximum": [
+            0.37824389338493347,
+            0.5413057804107666,
+            0.3503440320491791
+          ],
+          "extremeVertexIndices": [
+            9709,
+            50302,
+            29895,
+            183059,
+            117771,
+            109979
+          ],
+          "handMinimumZ": {
+            "Arm6L_Wrist": -0.15441328287124634,
+            "Arm6R_Wrist": -0.20000001788139343,
+            "Arm4L_Wrist": -0.20000004768371582,
+            "Arm4R_Wrist": -0.17870211601257324,
+            "Arm5L_Wrist": -0.18340831995010376,
+            "Arm5R_Wrist": -0.2000000774860382,
+            "ArmRearCenter_Wrist": -0.16134482622146606,
+            "ArmRearL_Wrist": -0.16365200281143188,
+            "ArmRearR_Wrist": -0.16596472263336182,
+            "Arm1L_Wrist": -0.20000077784061432,
+            "Arm1R_Wrist": -0.1976112574338913,
+            "Arm2L_Wrist": -0.20020157098770142,
+            "ArmFrontInside_Wrist": -0.16585849225521088,
+            "Arm2R_Wrist": -0.16207218170166016,
+            "ArmInnerL_Wrist": -0.15737412869930267,
+            "ArmInnerR_Wrist": -0.16144515573978424,
+            "Arm3L_Wrist": -0.20000697672367096,
+            "Arm3R_Wrist": -0.15190397202968597
+          }
+        }
+      ],
+      "maximumPoseEnvelopeError": 0.00046685338020324707,
+      "maximumPosedHandUndersideError": 0.0
+    }
+  ],
+  "blend": "Baeksugwi_GameLOD.blend",
+  "blendSHA256": "9be2999cf0c54aae72a0bb1998eeb43c19c85d06129a0250071d708614e5bec9",
+  "fbx": "Baeksugwi_GameLOD.fbx",
+  "fbxSHA256": "2206248fb87f9bb03d51a5081674eac41731b01a2109361a7ffcc82cdb1fde43",
+  "note": "Derived authoring candidate only; Unity import, visual comparison and performance validation remain separate."
+}

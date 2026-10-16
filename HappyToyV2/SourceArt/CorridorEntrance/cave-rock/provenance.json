@@ -133,7 +133,18 @@
     "normalizedMetres": 6.0,
     "gateYawDegrees": 0,
     "textureMaxSize": 2048,
-    "method": "UV-preserving weld and decimation of the original generated surface, full original geometry/PBR plus editable LOD packed once in a compressed blend. No substitute base geometry."
+    "method": "UV-preserving weld and decimation of the original generated surface, full original geometry/PBR plus editable LOD packed once in a compressed blend. No substitute base geometry.",
+    "currentReproductionScript": {
+      "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+      "bytes": 17066,
+      "sha256": "477f5511be6e111a2a5be7c029fe9b92bd16e7f05d24f08c2212322978a81360"
+    },
+    "historicalExportNote": "Original geometry, PBR and packed Blender are unchanged. The original script/exportReport records retain the raw hashes for that historical export; currentReproductionExportReport has the same report data with LF-normalized text. currentReproductionScript adds the two ritual assets and bounded budget-rounding correction. exportedResources records the current local Unity resource bytes, including the LF-normalized asset.json copy of that report. Only current Unity import metadata/prefab serialization and shared presentation references are refreshed; no original geometry or PBR was regenerated.",
+    "currentReproductionExportReport": {
+      "path": "SourceArt/CorridorEntrance/cave-rock/export.json",
+      "bytes": 1945,
+      "sha256": "f47ceabafe589dbed23b0963997876fe03e6b3041d374942f1381e1159acd8e7"
+    }
   },
   "exportedResources": [
     {
@@ -158,8 +169,8 @@
     },
     {
       "path": "Assets/Resources/CorridorEntrance/cave-rock/asset.json",
-      "bytes": 2016,
-      "sha256": "e08243cb54ca2dd182c3a01b1b1b673b3f27941a5d5aa9e36ec9eefa43fe09d6"
+      "bytes": 1945,
+      "sha256": "f47ceabafe589dbed23b0963997876fe03e6b3041d374942f1381e1159acd8e7"
     }
   ],
   "unityImport": {
@@ -167,8 +178,8 @@
     "method": "HappyToy.V2.Editor.CorridorEntranceImport.Apply",
     "script": {
       "path": "Assets/Editor/CorridorEntranceImport.cs",
-      "bytes": 17816,
-      "sha256": "2aac4769819f43ba2cfde7d8a3d80ee07360c553ddc8ddb56e9d96e26e6ab531"
+      "bytes": 17896,
+      "sha256": "a38b521b6cfef650d233263367b0db1cf3e3bd91a16afa54481035ceb435648f"
     },
     "prefab": "Assets/Resources/CorridorEntrance/cave-rock-visual.prefab",
     "note": "Importer creates external URP PBR materials and a visual-only prefab, validates normalization/UV0 and preserves Unity metadata. The rock prefab has two LOD levels with shared normalization; physical colliders belong to CorridorEntranceChamber.",
@@ -181,20 +192,20 @@
       },
       {
         "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0-baseColor.png.meta",
-        "bytes": 2707,
-        "sha256": "32b9a131c13a0246538fced44a75cb0b96f582fad6da148a2b32665cd973ede9",
+        "bytes": 2714,
+        "sha256": "c3ed528a9a94ecac366e3f827bdde3bfa6722f4dd40f8e98275da01abc785367",
         "guid": "b82e2e1cf42cd5f4f948c339fdf88713"
       },
       {
         "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0-metallicSmoothness.png.meta",
-        "bytes": 2707,
-        "sha256": "f0139f85410a125e69f8a2389b1756122f84ec6650154cbe862e268b48da067a",
+        "bytes": 2714,
+        "sha256": "1d4282ac99d6b02a0721c191da5ae19122730e58bf83778dedfca8166785d650",
         "guid": "76cc479ff8adecc44a74386efbeacfe2"
       },
       {
         "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0.mat",
-        "bytes": 4078,
-        "sha256": "4aa113bf4a6a0bea087951249a575ed7d43c8c2dd1d5170ca011001217f079cf"
+        "bytes": 4080,
+        "sha256": "f4db106eb20dd5dded42c310acf357cc4c97409b78aa9816d57fad69dcc91b62"
       },
       {
         "path": "Assets/Resources/CorridorEntrance/cave-rock/CE_cave-rock_0.mat.meta",
@@ -222,8 +233,8 @@
       },
       {
         "path": "Assets/Resources/CorridorEntrance/cave-rock-visual.prefab",
-        "bytes": 8027,
-        "sha256": "1221ffd9aeef435cc4c8199df937393dadf1e9d34468af2bd3f5c197324e1088"
+        "bytes": 8034,
+        "sha256": "9cadafb6048d95a5d4a0a22a972ef7329e7abc1acda28174e33d51a15c6ba584"
       },
       {
         "path": "Assets/Resources/CorridorEntrance/cave-rock-visual.prefab.meta",
@@ -244,16 +255,16 @@
     },
     "scriptMeta": {
       "path": "Assets/Editor/CorridorEntranceImport.cs.meta",
-      "bytes": 62,
-      "sha256": "13badf6a9c213c3074a4ace9639ea32b4a386b4c2fa0c2b57630c474b53af704",
+      "bytes": 60,
+      "sha256": "91b9b9407d739efb79368716e84a1b5faba9c061f3a238a7a9055a3b2c860ed3",
       "guid": "8cb52d9a7414427f9f837af195e49a8f"
     },
     "resourcesKey": "CorridorEntrance/cave-rock-visual",
     "prefabGuid": "97e16cf7afe1eaa4c998fba5eab0ca19",
     "runtimePresentation": {
       "path": "Assets/Scripts/CorridorEntrancePresentation.cs",
-      "bytes": 11772,
-      "sha256": "32f7fac320588e7815233722f666a5d0edf013ebb0af4fd5f546623c3299abd9"
+      "bytes": 2009,
+      "sha256": "6c7b558837da80de415cd6fc3726c966bf79b242d3b0e4124a0a1483865563a4"
     },
     "runtimePresentationMeta": {
       "path": "Assets/Scripts/CorridorEntrancePresentation.cs.meta",
@@ -275,18 +286,45 @@
           "guid": "76cc479ff8adecc44a74386efbeacfe2"
         }
       }
+    ],
+    "runtimeCollaborators": [
+      {
+        "path": "Assets/Scripts/CorridorEntranceModels.cs",
+        "bytes": 3042,
+        "sha256": "f1a6e68dc07b7151f56188b7b831709f64b33b4d162f8fddfb61e9544b4f2a81"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceCavern.cs",
+        "bytes": 5716,
+        "sha256": "75d9852defa86f39461267688e6dfd35a4c0ed22ad9979565eb95e8c06b80418"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceRitualDressing.cs",
+        "bytes": 17516,
+        "sha256": "433024c5f794b59aa69d918be120081c09cbedb1375e4e2b01a53ff072a7dd54"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceSealInk.cs",
+        "bytes": 4028,
+        "sha256": "0f85e0aca7a22448d412b4e7b062ab59efd0f6ae832c2986a3690307e3228839"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceVapour.cs",
+        "bytes": 2024,
+        "sha256": "afb4c6f34eb8f99e88046eb83ba2fe50c18a34ce0ffa98c1dd25c00350ff91d6"
+      }
     ]
   },
   "licenses": [
     {
       "path": "SourceArt/CorridorEntrance/LICENSE.md",
-      "bytes": 1443,
-      "sha256": "689ab09e512a568ab5aaa8f5dc7584ddf0e0ae19b178b1c138fe79dc76626dd6"
+      "bytes": 1807,
+      "sha256": "3245d57f85d956b6bf6085b1192982951cfb489ee0fdf1be210659c2118c97c7"
     },
     {
       "path": "SourceArt/CorridorEntrance/TRELLIS.2-LICENSE.txt",
-      "bytes": 1160,
-      "sha256": "5baa259ffd1a975780869d7d2925212224c92206cefb96fb2bf0b146650e5029"
+      "bytes": 1140,
+      "sha256": "d9a1b1e30d633d5732ea18e3cba9538d293ebc53e1a9e4e96ab739e0c5c4f1cb"
     }
   ],
   "verificationScope": "Source/input/export hashes and files. Unity import, actual camera appearance, integration tests and player build are separate validation steps."

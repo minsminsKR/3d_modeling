@@ -1,0 +1,80 @@
+{
+  "key": "guardian-statue",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "4545a2dfab9f25c0b0dcaa5da3673d46335984cc9ee193129fd745933b20fa9d",
+  "editable": "guardian-statue/guardian-statue.blend",
+  "widthMetres": 2.71484112739563,
+  "heightMetres": 2.8000829018783406,
+  "depthMetres": 2.759328603744507,
+  "normalizedAxis": "height",
+  "normalizedMetres": 2.8,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 2,
+    "metres": 2.8,
+    "texture": 4096,
+    "budgets": [
+      30000,
+      8000
+    ]
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 4096,
+  "originalFaces": 997618,
+  "originalTriangles": 997618,
+  "lods": [
+    {
+      "file": "guardian-statue-lod0.fbx",
+      "targetTriangles": 30000,
+      "triangles": 30000,
+      "vertices": 14431,
+      "boundsMin": [
+        -1.3573695421218872,
+        -1.3794454336166382,
+        3.077610017498955e-05
+      ],
+      "boundsMax": [
+        1.3574715852737427,
+        1.3798831701278687,
+        2.8001136779785156
+      ],
+      "sha256": "02e78680a6b0e22faad49752c4cab3363f090695c52b4a5bb40c19a34b467d9f"
+    },
+    {
+      "file": "guardian-statue-lod1.fbx",
+      "targetTriangles": 8000,
+      "triangles": 8000,
+      "vertices": 3431,
+      "boundsMin": [
+        -1.3572410345077515,
+        -1.3796602487564087,
+        -0.0013825511559844017
+      ],
+      "boundsMax": [
+        1.3568077087402344,
+        1.3794766664505005,
+        2.806070327758789
+      ],
+      "sha256": "5b6c7100ee44ae42541672ed9661428dad25528479220eb494230abbcfedc5ec"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_guardian-statue_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_guardian-statue_0-baseColor.png",
+      "metallicSmoothness": "CE_guardian-statue_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

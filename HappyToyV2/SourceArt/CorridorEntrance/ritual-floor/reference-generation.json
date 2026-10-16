@@ -1,0 +1,9 @@
+{
+  "kind": "project-generated 3D asset reference",
+  "tool": "built-in image_gen",
+  "transparent_background": true,
+  "reference_role": "User-supplied desired entrance screenshot, style/material only",
+  "reference": "../RitualDressing/reference-layout.png",
+  "prompt": "Create a brand-new production reference image for a single 3D game environment asset. Use the attached Korean horror cave image ONLY as a material and mood reference. Subject: one modular square patch of very dark wet basalt cave paving, 4 metres wide, low relief, irregular fractured overlapping stone plates with fine cracks and small shallow puddle recesses, enough broad mostly level rock tops to walk on naturally. A thin solid rocky slab, 12 centimetres thick; no tall rocks, no architecture, no decorative objects, no text, no hands, no candles, no smoke, no door, no floor extending beyond this square. Shape is a regular square with subtly chipped edges, isolated on transparent background. Three-quarter elevated product view showing the entire top and two thin edges. Photorealistic scanned material with rich micro roughness, neutral diffuse overcast lighting suitable for PBR reconstruction, wet dark charcoal rock and subtle brown mineral variation. Maintain realistic uneven geological layers and tactile cracks. No strong cast shadows, no dramatic coloured lighting baked into texture. One coherent asset, no collage.",
+  "note": "Reference raster; actual model must be generated through the designated modeling webapp, and its original GLB/PBR retained."
+}

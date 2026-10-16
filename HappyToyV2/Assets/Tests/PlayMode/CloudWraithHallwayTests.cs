@@ -38,6 +38,8 @@ namespace HappyToy.V2.CloudTests
                 {
                     var skin=skins[skinIndex];var bones=skin.bones;
                     var matrices=Enumerable.Range(0,bones.Length).Select(i=>actor.transform.worldToLocalMatrix*bones[i].localToWorldMatrix*bind[skinIndex][i]).ToArray();
+                    var actorToSkin=skin.transform.worldToLocalMatrix*actor.transform.localToWorldMatrix;
+                    var skinLow=Vector3.positiveInfinity;var skinHigh=Vector3.negativeInfinity;
                     for(int i=0;i<vertices[skinIndex].Length;i++)
                     {
                         var v=vertices[skinIndex][i];var w=weights[skinIndex][i];
@@ -46,7 +48,12 @@ namespace HappyToy.V2.CloudTests
                         if(w.weight2>0)point+=matrices[w.boneIndex2].MultiplyPoint3x4(v)*w.weight2;
                         if(w.weight3>0)point+=matrices[w.boneIndex3].MultiplyPoint3x4(v)*w.weight3;
                         low=Vector3.Min(low,point);high=Vector3.Max(high,point);
+                        var local=actorToSkin.MultiplyPoint3x4(point);
+                        skinLow=Vector3.Min(skinLow,local);skinHigh=Vector3.Max(skinHigh,local);
                     }
+                    var culling=skin.localBounds;culling.Expand(.0001f);
+                    Assert.That(culling.Contains(skinLow)&&culling.Contains(skinHigh),Is.True,
+                        skin.name+" culls real geometry in gait "+gait+" head "+pose+"; geometry="+skinLow+".."+skinHigh+" culling="+culling);
                 }
             }
             Debug.Log("WRAITH_CANONICAL_SKIN_ENVELOPE min="+low+" max="+high+" body="+Get<Transform>(actor,"body").localPosition+" fit="+model.parent.localPosition);

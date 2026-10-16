@@ -17,7 +17,8 @@ namespace HappyToy.V2
     {
         string output,failure="";int seed=73;
         GameSession session;PlayerMotor player;NativeCorridorInputRoute route;RouteAudioCapture capture;
-        Keyboard keyboard,oldKeyboard;Mouse oldMouse;
+        bool performanceMode;int performancePatrolSeconds,auditMovementMultiplier=1;CorridorPerformanceSampling performance;
+        Keyboard keyboard,oldKeyboard;Mouse oldMouse;Gamepad oldGamepad;Joystick oldJoystick;
         readonly List<InputDevice> isolatedDevices=new List<InputDevice>();
         InputSettings.BackgroundBehavior oldBackground;
         bool oldBackgroundRun,oldCursorVisible,settingsSaved,restored,ready;
@@ -76,6 +77,7 @@ namespace HappyToy.V2
         }
         RouteAudioCapture.Report RetainCapturedAudio()
         {
+            if(performanceMode){captureEndClock=ReadClock("performance-route-before-report-retention");return null;}
             // This boundary immediately precedes Complete(), which freezes the
             // real listener tap and writes/hashes the remaining original PCM.
             captureEndClock=ReadClock("capture-before-PCM-retention");
@@ -123,6 +125,11 @@ namespace HappyToy.V2
         [Serializable] sealed class Report
         {
             public string status,failure,unity,graphics,device,cpu,profileDirectory,audioDirectory;
+            public bool performanceMode;public string performanceReport;
+            public bool batchMode,noDesktopInteractionRequested,cursorWritesSuppressed;
+            public string desktopPolicy="Only explicit -v2-audit-no-desktop-interaction together with batch mode suppresses the gameplay shell, motor, item-wheel cursor warp and this audit's cursor writes. This does not control OS windows/focus or establish foreground rendering/FPS. Normal player cursor behavior is unchanged.";
+            public NativeCorridorInputRoute.PatrolEvidence performancePatrol;
+            public NativeAuditMovement.Evidence movement;
             public int width,height;public bool developmentBuild;
             public int lastMeasuredTargetFrameRate,lastMeasuredVSyncCount;
             public bool frameSettingsMeasured;
@@ -130,7 +137,7 @@ namespace HappyToy.V2
             public string frameMeasurement="Active Update unscaled frame intervals including audit screenshots/audio/disk overhead; not GPU timings or hardware presentation timestamps. Audit requests Application.targetFrameRate=60; Desktop VSync can override it. originalTargetFrameRate records the prior property setting.";
             public string scope="Native rendered Windows seeded main corridor. Existing known-map nearest-goal stealth strategy uses only keyboard/mouse events after public level preparation. Natural listener DSP callbacks preserve the complete pre-device PCM stream in bounded 180-second WAV parts. No AI suppression/speed edits, teleport/Use/Collect calls or forced audio rendering/capture clock. Milestone screenshots add offscreen camera rendering and readback overhead. Audit overhead and concurrent external GPU load are not removed; no device listening, human fear or first-player difficulty certification.";
             public int seed,records,movementUpdates,footsteps,contacts,recognition,frames,isolatedInputDeviceCount,auditTargetFrameRate=60;
-            public string inputIsolation="Pre-existing keyboard and mouse devices are disabled and restored only inside this diagnostic player; the native scripted devices drive the unchanged production motor. Desktop OS input remains usable.";
+            public string inputIsolation="Pre-existing keyboard, mouse, gamepad and joystick devices are disabled and restored only inside this diagnostic player; in-process scripted devices drive the unchanged production motor. No OS input injection or foreground-window operation is used. Later device hotplug is outside this pre-existing-device snapshot.";
             public bool escaped,routePassed,inputDevicesRestored,externalGpuWorkloadUncontrolled=true;
             public float gameSeconds,wallSeconds,meanFrameMs,p95FrameMs,worstFrameMs,userVolume,userFov,userSensitivity,flashlightCharge;
             public int batteriesCollected,candlesIgnited,hidingRolls;
@@ -145,8 +152,18 @@ namespace HappyToy.V2
         {
             var args=Environment.GetCommandLineArgs();int at=Array.IndexOf(args,"-v2-corridor-play-output");if(at<0||at+1>=args.Length)return;
             var audit=new GameObject("Explicit natural-clock main corridor play audit").AddComponent<NativeCorridorPlayAudit>();audit.output=Path.GetFullPath(args[at+1]);
+            audit.performanceMode=Array.IndexOf(args,"-v2-corridor-performance")>=0;
+            int patrolAt=Array.IndexOf(args,"-v2-corridor-performance-patrol-seconds");
+            if(patrolAt>=0&&(!audit.performanceMode||patrolAt+1>=args.Length||!int.TryParse(args[patrolAt+1],out audit.performancePatrolSeconds)||
+                audit.performancePatrolSeconds<300||audit.performancePatrolSeconds>480))
+                audit.failure="Explicit patrol requires performance mode and 300–480 seconds";
+            int movementAt=Array.IndexOf(args,"-v2-audit-movement-multiplier");
+            if(movementAt>=0&&(movementAt+1>=args.Length||!int.TryParse(args[movementAt+1],out audit.auditMovementMultiplier)||
+                audit.auditMovementMultiplier<1||audit.auditMovementMultiplier>12))audit.failure="Explicit audit movement multiplier must be 1–12";
             int seedAt=Array.IndexOf(args,"-v2-audit-seed");
             if(seedAt>=0&&(seedAt+1>=args.Length||!int.TryParse(args[seedAt+1],out audit.seed)))audit.failure="Invalid explicit audit seed";
+            if(DiagnosticDesktopPolicy.Requested&&!Application.isBatchMode)
+                audit.failure="-v2-audit-no-desktop-interaction requires -batchmode; no desktop-safe native audit was started";
         }
         void OnEnable(){Application.logMessageReceived+=Log;}
         void OnDisable(){Application.logMessageReceived-=Log;Restore();}
@@ -166,13 +183,14 @@ namespace HappyToy.V2
                     if(!more){stack.Pop();(iterator as IDisposable)?.Dispose();continue;}
                     if(next is IEnumerator nested){stack.Push(nested);continue;}
                     yield return next;
-                    if(Time.realtimeSinceStartup-began>=600)failure="Native audit exceeded the 600-second wall deadline";
+                    if(Time.realtimeSinceStartup-began>=600+performancePatrolSeconds)failure="Native audit exceeded its "+(600+performancePatrolSeconds)+"-second wall deadline";
                 }
             }
             finally
             {
                 SnapshotInterruptedRoute();
                 while(stack.Count>0)(stack.Pop() as IDisposable)?.Dispose();
+                route?.RestoreMovement();performance?.Complete(routeCompleted&&string.IsNullOrEmpty(failure),failure);
                 route?.Dispose();Keys();Restore();var audio=RetainCapturedAudio();Save(audio);
                 Debug.Log("HAPPYTOY_NATIVE_CORRIDOR_PLAY_"+(string.IsNullOrEmpty(failure)?"PASS":"FAIL"));Application.Quit(string.IsNullOrEmpty(failure)?0:2);
             }
@@ -182,42 +200,49 @@ namespace HappyToy.V2
             yield return null;yield return null;session=GameSession.Current;Require(session&&session.player&&session.Shell,"Authored session unavailable");player=session.player;
             Require(Application.platform==RuntimePlatform.WindowsPlayer&&Time.captureDeltaTime==0,"Natural native Windows player required");
             Require(session.Shell.Screen==GameShell.Page.Title,"Native main audit must start at Title");
+            if(performanceMode)yield return DiagnosticAudioSilence.WaitForSafeAudio(output,false);
             profileDirectory=Path.Combine(output,"isolated-profile",Guid.NewGuid().ToString("N"));session.ConfigureRecordDirectory(profileDirectory);
             oldBackground=InputSystem.settings.backgroundBehavior;oldBackgroundRun=Application.runInBackground;oldFrameRate=Application.targetFrameRate;
-            oldCursorLock=Cursor.lockState;oldCursorVisible=Cursor.visible;oldKeyboard=Keyboard.current;oldMouse=Mouse.current;settingsSaved=true;
-            Application.runInBackground=true;Application.targetFrameRate=60;InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
+            oldCursorLock=Cursor.lockState;oldCursorVisible=Cursor.visible;oldKeyboard=Keyboard.current;oldMouse=Mouse.current;
+            oldGamepad=Gamepad.current;oldJoystick=Joystick.current;settingsSaved=true;
+            Application.runInBackground=true;Application.targetFrameRate=performanceMode?120:60;InputSystem.settings.backgroundBehavior=InputSettings.BackgroundBehavior.IgnoreFocus;
             // App-local isolation keeps physical desktop mouse activity from
             // taking Mouse.current away from the scripted native input route.
             // OS devices stay usable by the user outside this diagnostic player.
             foreach(var device in InputSystem.devices.ToArray())
-                if(device.enabled && (device is Mouse || device is Keyboard))
+                if(device.enabled && (device is Mouse || device is Keyboard || device is Gamepad || device is Joystick))
                 {isolatedDevices.Add(device);InputSystem.DisableDevice(device);}
             keyboard=InputSystem.AddDevice<Keyboard>("Native corridor audit keyboard");keyboard.MakeCurrent();
-            capture=RouteAudioCapture.Attach(Path.Combine(output,"audio"));
+            if(!performanceMode)capture=RouteAudioCapture.Attach(Path.Combine(output,"audio"));
             session.CreateCorridor(seed);session.Shell.Begin();Require(session.CorridorMode&&session.Corridor.Seed==seed,"Public seeded main-game preparation failed");
+            if(performanceMode)performance=CorridorPerformanceSampling.Attach(session,output,seed);
             ready=true;
-            foreach(var steps in FindObjectsByType<StalkerFootsteps>(FindObjectsInactive.Include,FindObjectsSortMode.None))enemyCounts[steps]=Vector2Int.zero;
+            if(!performanceMode)foreach(var steps in FindObjectsByType<StalkerFootsteps>(FindObjectsInactive.Include,FindObjectsSortMode.None))enemyCounts[steps]=Vector2Int.zero;
             // A quiet entrance can legitimately be beyond all spatial room emitters.
             // Use an actual F contact as the native-audio positive control, retaining
             // the non-silent callback gate instead of requiring an omnipresent drone.
             yield return Pulse(Key.F);
             float deadline=Time.realtimeSinceStartup+8;
-            while(!player.Grounded||!capture.HasCallbacks||!capture.Snapshot().nonSilent)
-            {Require(Time.realtimeSinceStartup<deadline,"Native listener supplied no non-silent raw callbacks at the live entrance");yield return null;}
-            Frame("native-corridor-entrance.png");Debug.Log("HAPPYTOY_NATIVE_CORRIDOR_CALLBACKS "+capture.CallbackCount);
+            while(!player.Grounded||!performanceMode&&(!capture.HasCallbacks||!capture.Snapshot().nonSilent))
+            {Require(Time.realtimeSinceStartup<deadline,performanceMode?"Player did not settle on the real entrance floor":"Native listener supplied no non-silent raw callbacks at the live entrance");yield return null;}
+            Frame("native-corridor-entrance.png");if(capture)Debug.Log("HAPPYTOY_NATIVE_CORRIDOR_CALLBACKS "+capture.CallbackCount);
             yield return Pulse(Key.Escape);Require(session.Shell.Screen==GameShell.Page.Pause,"Real Escape did not pause main game");
             float game=session.ElapsedPlayTime,stamina=player.Stamina,charge=player.FlashlightSystem.Charge;Vector3 position=player.transform.position;double dsp=AudioSettings.dspTime;
-            pause=new PauseProof {listenerPaused=AudioListener.pause,callbacksBefore=capture.CallbackCount};yield return new WaitForSecondsRealtime(.45f);
-            pause.callbacksAfter=capture.CallbackCount;pause.dspAdvance=AudioSettings.dspTime-dsp;pause.gameFrozen=session.ElapsedPlayTime==game;
+            pause=new PauseProof {listenerPaused=AudioListener.pause,callbacksBefore=capture?capture.CallbackCount:0};yield return new WaitForSecondsRealtime(.45f);
+            pause.callbacksAfter=capture?capture.CallbackCount:0;pause.dspAdvance=AudioSettings.dspTime-dsp;pause.gameFrozen=session.ElapsedPlayTime==game;
             pause.playerFrozen=player.transform.position==position;pause.staminaFrozen=player.Stamina==stamina;pause.flashlightFrozen=player.FlashlightSystem.Charge==charge;
             Require(pause.listenerPaused&&pause.gameFrozen&&pause.playerFrozen&&pause.staminaFrozen&&pause.flashlightFrozen,"Actual main-game pause changed live player state");
             yield return Pulse(Key.Escape);Require(session.Shell.Screen==GameShell.Page.Playing,"Real Escape did not resume main game");
             routeWallStart=Time.realtimeSinceStartup;routeDspStart=AudioSettings.dspTime;routeGameStart=session.ElapsedPlayTime;
             routeBeginClock=ReadClock("active-route-begin");
-            route=new NativeCorridorInputRoute(session,player,session.Shell,Keys,output);yield return route.Run();
+            if(performanceMode)performance.Begin();
+            route=new NativeCorridorInputRoute(session,player,session.Shell,Keys,output,performancePatrolSeconds,auditMovementMultiplier);
+            if(performanceMode)performance.ObserveMovement(route.Movement);
+            yield return route.Run();
             Require(route.Passed&&session.Escaped&&session.RecordsRecovered==5&&route.BatteriesCollected>=1&&route.CandlesIgnited>=1,
                 "Natural native main route did not prove full escape and actual finite-light input use");
             EndGameplayClock("five-memory-input-route-complete",true);
+            if(performanceMode){Require(errors.Count==0,"Native performance run logged runtime errors");yield break;}
             audioSettlingRequested=true;
             yield return new WaitForSecondsRealtime(.2f);
             settlingEndClock=ReadClock("natural-audio-settling-complete");audioSettlingCompleted=true;
@@ -234,8 +259,11 @@ namespace HappyToy.V2
             {
                 lastMeasuredTargetFrameRate=Application.targetFrameRate;
                 lastMeasuredVSyncCount=QualitySettings.vSyncCount;
-                frames.Add(Time.unscaledDeltaTime);
+                if(!performanceMode)frames.Add(Time.unscaledDeltaTime);
             }
+            // Audio/door evidence polling belongs to the audio audit only.
+            // In particular, do not enumerate all doors every performance frame.
+            if(performanceMode){lastSteps=player.Feedback.FootstepsPlayed;lastRecovered=session.RecordsRecovered;return;}
             if(route!=null && route.CandlesIgnited>0 && !firstCandleImage)
             {
                 firstCandleImage=true;
@@ -280,6 +308,7 @@ namespace HappyToy.V2
         void Require(bool condition,string reason){if(!condition)throw new InvalidOperationException(reason);}
         void Frame(string name)
         {
+            if(performanceMode)return;
             var target=new RenderTexture(640,360,24);target.Create();var previous=RenderTexture.active;Texture2D frame=null;
             try
             {
@@ -290,15 +319,21 @@ namespace HappyToy.V2
         }
         void Restore()
         {
+            route?.RestoreMovement();
             if(restored)return;restored=true;
             if(keyboard!=null&&keyboard.added)InputSystem.RemoveDevice(keyboard);
             foreach(var device in isolatedDevices)if(device.added&&!device.enabled)InputSystem.EnableDevice(device);
             if(oldKeyboard!=null&&oldKeyboard.added)oldKeyboard.MakeCurrent();if(oldMouse!=null&&oldMouse.added)oldMouse.MakeCurrent();
-            if(settingsSaved){InputSystem.settings.backgroundBehavior=oldBackground;Application.runInBackground=oldBackgroundRun;Application.targetFrameRate=oldFrameRate;Cursor.lockState=oldCursorLock;Cursor.visible=oldCursorVisible;}
+            if(oldGamepad!=null&&oldGamepad.added)oldGamepad.MakeCurrent();if(oldJoystick!=null&&oldJoystick.added)oldJoystick.MakeCurrent();
+            if(settingsSaved)
+            {
+                InputSystem.settings.backgroundBehavior=oldBackground;Application.runInBackground=oldBackgroundRun;Application.targetFrameRate=oldFrameRate;
+                if(!DiagnosticDesktopPolicy.SuppressCursorWrites){Cursor.lockState=oldCursorLock;Cursor.visible=oldCursorVisible;}
+            }
         }
         void Save(RouteAudioCapture.Report audio)
         {
-            if(string.IsNullOrEmpty(failure)&&(!session||!session.Escaped||audio==null||audio.truncated||!string.IsNullOrEmpty(audio.writerError)))failure="Native main completion/audio retention unproven";
+            if(string.IsNullOrEmpty(failure)&&(!session||!session.Escaped||!performanceMode&&(audio==null||audio.truncated||!string.IsNullOrEmpty(audio.writerError))))failure="Native main completion/audio retention unproven";
             var sorted=frames.OrderBy(value=>value).ToArray();var clocks=ClockEvidence();
             float game=clocks.routeGameSeconds,wall=(float)clocks.routeWallSeconds;
             double dsp=clocks.routeDspSeconds;var shell=session?session.Shell:null;
@@ -313,8 +348,20 @@ namespace HappyToy.V2
                 p95FrameMs=sorted.Length>0?sorted[Math.Min(sorted.Length-1,Mathf.FloorToInt(sorted.Length*.95f))]*1000:0,worstFrameMs=sorted.Length>0?sorted.Last()*1000:0,
                 userVolume=shell?shell.Volume:0,userFov=shell?shell.FieldOfView:0,userSensitivity=shell?shell.Sensitivity:0,userReducedMotion=shell&&shell.ReducedMotion,
                 userSubtitles=shell&&shell.Subtitles,vSyncCount=QualitySettings.vSyncCount,originalTargetFrameRate=oldFrameRate,inputDevicesRestored=restored,
-                lastMeasuredTargetFrameRate=lastMeasuredTargetFrameRate,lastMeasuredVSyncCount=lastMeasuredVSyncCount,frameSettingsMeasured=sorted.Length>0,
+                performanceMode=performanceMode,performanceReport=performanceMode?"corridor-performance.json":"",auditTargetFrameRate=performanceMode?120:60,
+                batchMode=Application.isBatchMode,noDesktopInteractionRequested=DiagnosticDesktopPolicy.Requested,
+                cursorWritesSuppressed=DiagnosticDesktopPolicy.SuppressCursorWrites,
+                performancePatrol=route?.PerformancePatrol,
+                movement=route!=null&&route.Movement!=null?route.Movement.Data:null,
+                lastMeasuredTargetFrameRate=lastMeasuredTargetFrameRate,lastMeasuredVSyncCount=lastMeasuredVSyncCount,frameSettingsMeasured=performanceMode?lastMeasuredTargetFrameRate>=0:sorted.Length>0,
                 errors=errors.ToArray(),images=images.ToArray(),cues=cues.ToArray(),pause=pause,audio=audio,timing=clocks};
+            if(!performanceMode&&auditMovementMultiplier>1)
+                report.scope+=" Explicit diagnostic player movement acceleration was requested and is recorded in movement; AI speeds remain authored. This accelerated preparation is not normal-speed survival/performance evidence.";
+            if(performanceMode)
+            {
+                report.frameMeasurement="Performance-only route: actual main-camera endCameraRendering wall intervals and available CPU/GPU counters are in corridor-performance.json. Requests normal gameplay target 120; no extra renders/readbacks, images or PCM capture. Frame-budget results are independent of route success.";
+                report.scope="Explicit performance mode of the seeded keyboard/mouse route and production AI. Optional clear-straight diagnostic movement acceleration is recorded separately and disabled throughout the optional four-enemy patrol. Process audio-silence guard remains active. PNG, audio capture and per-frame audio/door evidence polling are skipped; existing route state, input isolation and original settings/speed restoration remain. No AI/survival rule changes or hardware presentation claim.";
+            }
             File.WriteAllText(Path.Combine(output,"native-corridor-play.json"),JsonUtility.ToJson(report,true));
         }
     }

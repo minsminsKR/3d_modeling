@@ -5,6 +5,59 @@ Use `--profile core|ui|ai|ai-doors|drawer|checkpoint|full` for fast rules, the a
 scene behavior, or both complete Unity suites. All runs use pinned Unity
 6000.6.0f1, fresh result directories and strict nonempty/pass validation.
 Player build and native/visual verification remain separate checks.
+
+For a fresh Windows player's actual corridor frame evidence, use
+`-quiet-diagnostics -v2-corridor-play-output <new-directory> -v2-corridor-performance
+-v2-audit-seed 73 -screen-width 1920 -screen-height 1080 -screen-fullscreen 0`.
+Record the actual graphics API and keep the same seed, build type, API, resolution,
+quality, vSync and target settings for before/after runs. This mode requests the
+normal gameplay target of 120, preserves production AI and the real input route,
+and skips extra rendering, readback, screenshots, PCM and per-frame audio auditing.
+`CorridorPerformanceSampling` observes only the actual main-camera render callback;
+fewer than 300 callbacks, a bounded-buffer overflow, headless mode or a null
+graphics device is a measurement failure.
+
+Optional `-v2-corridor-performance-patrol-seconds 360` requires performance mode
+and accepts 300–480 seconds; omission keeps the original route. After the fourth
+memory it cycles real supported maze waypoints through the existing Walk/door/
+evasion inputs, starting its observation only once all four enemies are active.
+It completes the current movement leg before stopping. The original game/wall/
+audit limits of 580/590/600 seconds increase only by the requested patrol duration.
+Natural defeat remains a route failure; it does not invalidate already recorded
+frame intervals or establish a successful long observation.
+
+`-v2-audit-movement-multiplier 8` optionally accelerates preparation travel by 1–12
+(default 1). Only long clear straight segments qualify; corners, doors, item input,
+nearby enemies and the entire patrol retain original speeds. Original walk/run
+values and restoration are recorded. Clearance uses the original run speed,
+requested multiplier and actual frame delta to reserve a braking distance before
+the next corner; the forward capsule must clear that same distance.
+`renderedOverall` retains accelerated travel, the quarter-speed item wheel and
+global enemy time stop. `normalSpeedRenderedOverall`, normal-speed 10-second
+windows and the separate minimum normal-speed rolling FPS exclude those states,
+pause and their transitions. Normal pace requires the original global time scale,
+at least eight real frames and .25 seconds after an excluded state; the entire
+rolling history must follow that stabilization. It needs 300 normal-speed samples.
+`excludedFromNormalSpeedIntervals` counts these exclusions; the window's legacy
+`acceleratedOrTransitionIntervals` field remains an alias for existing readers.
+Snapshots include the actual time scale, item-wheel and enemy-time-stop state.
+
+The bounded report records p50/p95/p99/max, intervals over 16.67/20/33.33/50ms,
+one-second rolling FPS minima, and one-second memory/profiler-counter snapshots.
+CPU/GPU timings are cached delayed `FrameTimingManager` data; valid CPU samples
+survive unavailable GPU data. GPU/CPU recorders remain alive for release timing.
+Their transition exclusion is a heuristic: delayed timing samples are diagnostic
+context, with `cpuGpuNormalSpeedAttributionVerified=false`, and do not establish
+normal-pace CPU/GPU attribution. Use the render intervals and clean rolling
+history for that pace subset.
+Unknown counters are explicitly unavailable, with units and -1 snapshot values.
+Loaded object/material/mesh/texture enumeration occurs only before/after collection;
+supported counters provide intermediate counts. Ten-second aggregation, one-second
+snapshots, 30-second live logs and the route's existing milestone JSON/log writes
+have observer cost included. No forced GC or additional render fallback is used.
+Route success, measurement validity and the 16.67ms budget are distinct results;
+neither a route nor a capture PASS certifies sustained 60fps or hardware presentation.
+
 `entrance` selects Core, both checkpoint stores, `CheckpointTrapCodecTests` and
 `LightExplorationRulesTests`, then the four actual
 `CorridorEntranceChamberTests` cases: cavern body/roof clearance and real walking
@@ -20,6 +73,26 @@ measure actual texture contribution. Material/property-block bindings are restor
 and temporary materials released; imported source assets stay shared and unchanged.
 The visual-prefab Resources key must differ from the FBX key because paths omit
 extensions; the runtime instantiates the prefab with its external PBR materials.
+`CorridorEntranceRitualDressingTests.cs` adds real generated floor/guardian LODs,
+physical support and central navigation, fixed spatial batches, shared source
+retention and owned mesh/material/texture teardown. Its production-camera renders
+at 16:9/4:3/21:9 independently toggle floor, hanging paper, curved brush ink, candles and guardians
+to establish actual pixel contributions with the ambient warm lighting. The actual
+start orientation is preserved, and each view records user FOV, feet and camera pose. These are
+offscreen projection checks, not resized native-window or performance claims.
+The owned room probe must cover the actual cavern floor instead of nearest maze
+cell zero; its completed-capture/three-second guard, pause, original maze plan and
+scope disposal remain in place. Two eligible local shadow lights stay under the
+existing global budget. Only two bounded incense histories supply smoke; there
+are no grazing ground-fog sheets. Their clock pauses with gameplay without changing
+the existing corridor fog, exposure or pickup/collision state.
+Floor placement preserves the .14m relief cap, with only .025m above the unchanged
+physical support. The canonical 2.8m guardian is uniformly placed at 3.5m beside
+the gate; source normalization and scene scale are distinct and intentional.
+The fresh-run start is chamber-local `(0, .03, 8)` with yaw 170 degrees; the gate,
+physical boundaries, NavMesh and checkpoint positions are retained. A 1.25m hero
+lantern and two extra foreground candle gatherings establish nearby visual depth
+while the existing nine lights and two shadow candidates are retained.
 The checkpoint codecs preserve omitted/null optional root `traps` fields through
 copy/JSON/store boundaries while rejecting malformed present trap state. Gate artwork/render inspection and a fresh player build
 remain separate from these integration checks. Full source and repro commands
@@ -71,6 +144,23 @@ The opt-in `BaeksugwiHeadProbe` waits for the slow title clock to cover the full
 clip (420-second timeout), retaining clip-clock `time` and recording actual capture
 `wallSeconds`. `preview_baeksugwi_head.py` uses `wallSeconds` for real GIF intervals;
 older manifests retain their existing `time` fallback.
+
+Game-only Baeksugwi geometry is derived by
+`SourceArt/BaeksugwiStudio/derive_game_lod.py`; keep its recipe, identity/report and
+editable `Baeksugwi_GameLOD.blend`/FBX with the work. `BaeksugwiGameLodImport`
+validates original bone-name/bind order and the single protected game mesh before
+`MaskHorrorVisual` binds a game clone. The recipe targets 400,000 triangles with a
+400,000 maximum and protects complete hands plus all arms. Every source vertex
+passes P95/P99/maximum distance guards, and all derived triangle centres and edge
+midpoints are checked against the original surface. The former 122,713-triangle
+candidate was rejected after images exposed collapsed limbs despite passing its
+weaker contact/bounds checks. A regenerated report still requires actual
+original-versus-derived Unity image review. Original 32-pose conservative bounds and `updateWhenOffscreen=false`
+retain culling. The original source, full title mesh, PBR, clips and AI remain
+shared and unchanged. `CloudMaskHorrorModelTests` checks actual bindings/LOD and
+eye-bearing UV/render contribution; `CloudWraithHallwayTests` retains the 32-pose
+culling/envelope checks. A passing derivation report does not establish 60fps;
+compare the same actual corridor route, graphics API and measurement conditions.
 
 `cabinet-expression` includes the committed death presentation after a real lethal
 cabinet strike. `CabinetDeathSequence` freezes gameplay, faces the actual visual
@@ -419,6 +509,65 @@ artifact envelope. Pixel assertions measure the original unencoded textures.
 checks that the severe near-warning freezes during pause and that automatic recovery
 retains durable ignition without replaying the match. Keep contact blackout,
 ownership, comfort and checkpoint tests in the same focused test run.
+
+## Background validation
+
+When the user is working or gaming, keep editor/authoring work in batch or
+`--background` mode without opening windows, changing focus or using OS input.
+Use BelowNormal process priority. Pure rule/source checks can continue; defer
+sustained GPU rendering and native FPS measurements while they would compete
+with the user's game. The route's simulated keys/mouse are in-process Unity
+Input System devices, never desktop input.
+
+`run_feature_tests.py --profile core --no-desktop-interaction --dry-run` previews
+the explicit `-v2-audit-no-desktop-interaction` Editor argument. Omit `--dry-run`
+to execute the selected batch checks. The option defaults off and
+is recorded as `noDesktopInteractionRequested` in the plan and run summary.
+The same option passes `-job-worker-count 2` to limit the diagnostic Editor's Job System workers.
+On Windows, the runner also starts each test child with
+`STARTF_USESHOWWINDOW`/`SW_HIDE`, `CREATE_NO_WINDOW`, and
+`BELOW_NORMAL_PRIORITY_CLASS`; the run summary records
+`windowsHiddenBelowNormalRequested`. With the option off, or on non-Windows
+hosts, it adds no subprocess startup/creation options. BelowNormal requests CPU
+scheduling priority; it does not cap GPU work or guarantee that another game's
+frame rate is unaffected. Direct editor/authoring launches outside this runner
+still need their own hidden batch/background launch and priority settings.
+`DiagnosticDesktopPolicy` suppresses the shell/motor/native-corridor audit's
+cursor writes and the item wheel's OS cursor-centering command only when that
+explicit flag and `Application.isBatchMode` are
+both true, including initial scene Awake and the common PlayMode fixture cleanup.
+Under that same opt-in condition, the common scene fixture snapshots and disables
+only the initially enabled keyboard/mouse/gamepad/joystick devices before enabling
+background input. Its final cleanup re-enables only that snapshot and restores
+the prior current devices that still exist. Initially disabled devices stay
+disabled; virtual devices created later by tests are untouched. Later physical
+hotplug is outside this initial snapshot and remains unsupported during a run.
+No cursor unlock, focus
+operation, desktop input or global argument mutation is used to test the policy;
+`DiagnosticDesktopCursorSuppressionRequiresExplicitBatchOptIn` checks all four
+pure input combinations in the `corridor-performance` profile.
+
+The native corridor audit rejects this flag outside batch mode. Its report records
+batch/request/suppression separately; suppression is not a claim that a window is
+hidden or that its frame rate represents foreground play. It snapshots and
+disables pre-existing keyboard, mouse, gamepad and joystick devices inside that
+Unity process and restores them plus their prior current devices. Later device
+hotplug is outside this snapshot. No OS-wide input suppression is performed.
+Other native audits such as `NativeSchoolPlayAudit` and `FlowAudit` are not covered
+by this cursor policy and are not supported by this background validation mode.
+
+Unity player `-batchmode` is headless; `-nographics` omits the graphics device.
+Neither certifies foreground gameplay frame rate. The native performance report
+rejects those modes even if callbacks occur. A hidden startup request, whether
+from this runner or `Start-Process -WindowStyle Hidden`, does not guarantee that
+Unity's later window/cursor operations stay hidden; retain batch execution and
+the explicit cursor policy together.
+Use the editor's explicit camera stills for background visual checks when GPU
+work is appropriate; label them as offscreen evidence, separate from player FPS.
+
+See the pinned Unity manual's Player command-line arguments and the
+`RenderPipelineManager.endCameraRendering` API documentation. The latter reports
+camera rendering, not hardware presentation.
 
 ## Authored corridor furniture
 

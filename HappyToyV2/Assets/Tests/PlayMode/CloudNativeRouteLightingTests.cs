@@ -86,7 +86,7 @@ namespace HappyToy.V2.CloudTests
             yield return KeysObserved();
             string directory=System.IO.Path.Combine(Application.temporaryCachePath,"happytoy-route-door-reach-"+Guid.NewGuid().ToString("N"));
             var route=Activator.CreateInstance(RequireType("NativeCorridorInputRoute"),
-                session,player,shell,(Action<Key[]>)Keys,directory);
+                session,player,shell,(Action<Key[]>)Keys,directory,0,1f);
             try
             {
                 var collider=Get<Transform>(door,"movingLeaf").GetComponent<Collider>();
@@ -137,7 +137,7 @@ namespace HappyToy.V2.CloudTests
             yield return KeysObserved();
             string directory=System.IO.Path.Combine(Application.temporaryCachePath,"happytoy-route-door-warning-"+Guid.NewGuid().ToString("N"));
             var route=Activator.CreateInstance(RequireType("NativeCorridorInputRoute"),
-                session,player,shell,(Action<Key[]>)Keys,directory);
+                session,player,shell,(Action<Key[]>)Keys,directory,0,1f);
             try
             {
                 // Explicit private helper invocation is a controlled regression,
@@ -169,7 +169,7 @@ namespace HappyToy.V2.CloudTests
             yield return KeysObserved();
             string directory=System.IO.Path.Combine(Application.temporaryCachePath,"happytoy-route-light-"+Guid.NewGuid().ToString("N"));
             var route=Activator.CreateInstance(RequireType("NativeCorridorInputRoute"),
-                session,player,shell,(Action<Key[]>)Keys,directory);
+                session,player,shell,(Action<Key[]>)Keys,directory,0,1f);
             try
             {
                 yield return (IEnumerator)Call(route,"DemonstrateLighting");

@@ -76,7 +76,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(session,"RecordsRecovered"),Is.EqualTo(2));
             Assert.That(Get<float>(session,"ElapsedPlayTime"),Is.EqualTo(Get<float>(source,"seconds")));
             Assert.That(Vector3.Distance(player.transform.position,Get<Vector3>(Get<object>(source,"player"),"position")),Is.LessThan(.001f));
-            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(2));
+            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(12),"The saved starting pack plus one collected pack must restore twelve individual shots");
             Assert.That(Get<bool>(Get<object>(session,"Suspension"),"HasRun"),Is.False);
             Assert.That(File.Exists(Path.Combine(directory,"corridor-suspend-v1.json")),Is.False);
             Assert.That(File.Exists(Path.Combine(directory,"corridor-suspend-v1.json.used")),Is.True);
@@ -88,7 +88,7 @@ namespace HappyToy.V2.CloudTests
             yield return RecoveryClick("begin-school");
             Assert.That(RecoveryPage,Is.EqualTo("Playing")); Assert.That(Get<int>(session,"RecordsRecovered"),Is.Zero);
             Assert.That(Get<bool>(session,"ChapterMode"),Is.True);
-            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(2));
+            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(12),"A new school run starts with two six-shot packs");
             Assert.That(Get<bool>(Get<object>(session,"Suspension"),"HasRun"),Is.True,"New school chapter erased the earlier corridor checkpoint");
             Assert.That(failures,Is.Empty);
         }

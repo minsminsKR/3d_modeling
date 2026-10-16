@@ -7,6 +7,8 @@ HappyToyV2/ProjectSettings/EditorBuildSettings.asset text eol=lf
 HappyToyV2/SourceArt/BaeksugwiStudio/*.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/BaeksugwiStudio/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/BaeksugwiStudio/*.npz filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/BaeksugwiStudio/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/BaeksugwiStudio/game-lod-recipe.json text eol=lf
 HappyToyV2/Assets/Resources/Baeksugwi/*.fbx filter=lfs diff=lfs merge=lfs -text
 # Newly generated editable creature sculpts, rigs and game meshes.
 HappyToyV2/SourceArt/CreatureStudio/**/*.glb filter=lfs diff=lfs merge=lfs -text
@@ -44,3 +46,23 @@ HappyToyV2/SourceArt/PlayerItems/References/flashlight-image-provenance.json -te
 # Generated cavern entrance originals and packed editable source stay together.
 HappyToyV2/SourceArt/CorridorEntrance/*/original.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/CorridorEntrance/**/*.blend filter=lfs diff=lfs merge=lfs -text
+
+# Exact source-handoff SHA inputs must retain the same bytes after clone/pull.
+# Keep this limited to the entrance pipeline and derived game/hand recipes.
+HappyToyV2/SourceArt/CorridorEntrance/*.py text eol=lf
+HappyToyV2/SourceArt/CorridorEntrance/**/*.json text eol=lf
+HappyToyV2/SourceArt/CorridorEntrance/LICENSE.md text eol=lf
+HappyToyV2/SourceArt/CorridorEntrance/TRELLIS.2-LICENSE.txt text eol=lf
+HappyToyV2/Assets/Editor/CorridorEntranceImport.cs text eol=lf
+HappyToyV2/Assets/Editor/CorridorEntranceImport.cs.meta text eol=lf
+HappyToyV2/Assets/Scripts/CorridorEntrance*.cs text eol=lf
+HappyToyV2/Assets/Scripts/CorridorEntrance*.cs.meta text eol=lf
+HappyToyV2/Assets/Resources/CorridorEntrance.meta text eol=lf
+HappyToyV2/Assets/Resources/CorridorEntrance/**/*.meta text eol=lf
+HappyToyV2/Assets/Resources/CorridorEntrance/**/*.json text eol=lf
+HappyToyV2/Assets/Resources/CorridorEntrance/**/*.mat text eol=lf
+HappyToyV2/Assets/Resources/CorridorEntrance/*-visual.prefab text eol=lf
+HappyToyV2/SourceArt/BaeksugwiStudio/derive_game_lod.py text eol=lf
+HappyToyV2/SourceArt/BaeksugwiStudio/game-lod-*.json text eol=lf
+HappyToyV2/SourceArt/PlayerItems/finish_player_items.py text eol=lf
+HappyToyV2/SourceArt/PlayerItems/finish_skin_detail.py text eol=lf

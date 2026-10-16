@@ -1,0 +1,22 @@
+{
+  "inputs": [
+    {
+      "sha256": "b16cb63ab8872b392c092240bd25eb39805eab249734b5469a08940071be3941",
+      "role": "desired cave temple mood and realistic hands",
+      "bytes": 1550195,
+      "originalFilename": "codex-clipboard-21103a2e-1338-444e-9939-b1a63c3e1bb5.png",
+      "path": "SourceArt/CorridorEntrance/References/user-target-20261016.png"
+    },
+    {
+      "sha256": "7d624adf187b7e014b11e119206586b5b32fc9a24cf31d472e660b5943660d7d",
+      "role": "actual game before this entrance and grip revision",
+      "bytes": 990214,
+      "originalFilename": "codex-clipboard-babb416c-c289-47cc-8de4-5f75c3245b45.png",
+      "path": "SourceArt/CorridorEntrance/References/user-before-20261016.png"
+    }
+  ],
+  "schema": 1,
+  "origin": "Two user-supplied design-review screenshots, preserved unchanged",
+  "scope": "Visual design and grip review inputs; actual generated model reference images and webapp job settings are preserved separately per asset",
+  "date": "2026-10-16"
+}

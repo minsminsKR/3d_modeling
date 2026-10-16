@@ -61,8 +61,11 @@ namespace HappyToy.V2
                     if(!source)throw new InvalidOperationException("Missing reviewed Baeksugwi game prefab");
                     model=Instantiate(source,owner.body,false).transform;model.name=ModelName;
                 }
+                var gameLod=Resources.Load<BaeksugwiGameLod>("Baeksugwi/GameLod");
+                if(!gameLod)throw new InvalidOperationException("Missing derived Baeksugwi game LOD profile");
+                gameLod.Apply(model);
                 skins=model.GetComponentsInChildren<Renderer>(true);
-                foreach(var r in skins){r.enabled=true;if(r is SkinnedMeshRenderer s)s.updateWhenOffscreen=true;}
+                foreach(var r in skins){r.enabled=true;if(r is SkinnedMeshRenderer s)s.updateWhenOffscreen=false;}
                 var animation=model.GetComponent<Animation>();
                 run=Resources.Load<AnimationClip>("Baeksugwi/Run_InPlace");
                 headMotion=Resources.Load<AnimationClip>("Baeksugwi/Head_Writhe");

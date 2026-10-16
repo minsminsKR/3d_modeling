@@ -101,7 +101,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<bool>(session, "requireAnnexRecords"), Is.True);
                 Assert.That(Get<int>(session, "StoryStep"), Is.Zero);
                 Assert.That(Get<int>(session, "RecordsRecovered"), Is.Zero);
-                Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(2));
+                Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(12), "The authored school starts with two six-shot packs");
                 yield return Await(() => NavMesh.CalculateTriangulation().vertices.Length > 0 &&
                     Components("NavMeshStartup").All(item => Get<bool>(item, "Ready")) &&
                     Get<int>(player, "MovementUpdates") >= movementStart + 3 && Get<bool>(player, "Grounded"),

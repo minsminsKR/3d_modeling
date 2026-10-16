@@ -46,7 +46,7 @@ namespace HappyToy.V2
                 shell.SetItemWheelOpen(true);
                 ownedOpen = shell.ItemWheelOpen;
                 player.Firecrackers.Aim?.Cancel();
-                if (!PlayerControls.UsingGamepad && Mouse.current != null)
+                if (!DiagnosticDesktopPolicy.SuppressCursorWrites && !PlayerControls.UsingGamepad && Mouse.current != null)
                     Mouse.current.WarpCursorPosition(new Vector2(Screen.width, Screen.height) * .5f);
             }
             if (!held && shell.ItemWheelOpen)

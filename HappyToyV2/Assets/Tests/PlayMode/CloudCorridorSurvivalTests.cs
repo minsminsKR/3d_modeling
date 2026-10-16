@@ -156,7 +156,7 @@ namespace HappyToy.V2.CloudTests
                 {Assert.That(Time.realtimeSinceStartup,Is.LessThan(deadline),"Actual drawer never exposed the finite supply");yield return null;Check();}
             }
             int before = Get<int>(stock, "Count"); yield return Interact(selected);
-            Assert.That(Get<int>(stock, "Count"), Is.EqualTo(before + 1)); suppliesCollected++;
+            Assert.That(Get<int>(stock, "Count"), Is.EqualTo(before + 6)); suppliesCollected++;
             Mark("collected finite supply through E"); stage = previousStage;
         }
         IEnumerator Pulse(Key key)

@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1a4e25c142d4cf0a4c366b98e5969c7, type: 3}
+  m_Name: GameLod
+  m_EditorClassIdentifier: Assembly-CSharp::HappyToy.V2.BaeksugwiGameLod
+  levels:
+  - mesh: {fileID: 5858916888946578522, guid: 81b962f966475824499ad03478c26f59, type: 3}
+    boneNames:
+    - BodyRoot
+    - SpineRear
+    - SpineBack
+    - Tail
+    - Arm6L_Shoulder
+    - Arm6L_Elbow
+    - Arm6L_Wrist
+    - Arm6R_Shoulder
+    - Arm6R_Elbow
+    - Arm6R_Wrist
+    - Arm4L_Shoulder
+    - Arm4L_Elbow
+    - Arm4L_Wrist
+    - Arm4R_Shoulder
+    - Arm4R_Elbow
+    - Arm4R_Wrist
+    - Arm5L_Shoulder
+    - Arm5L_Elbow
+    - Arm5L_Wrist
+    - Arm5R_Shoulder
+    - Arm5R_Elbow
+    - Arm5R_Wrist
+    - ArmRearCenter_Shoulder
+    - ArmRearCenter_Elbow
+    - ArmRearCenter_Wrist
+    - ArmRearL_Shoulder
+    - ArmRearL_Elbow
+    - ArmRearL_Wrist
+    - ArmRearR_Shoulder
+    - ArmRearR_Elbow
+    - ArmRearR_Wrist
+    - SpineFront
+    - Chest
+    - Neck
+    - Head
+    - MaskTip
+    - Arm1L_Shoulder
+    - Arm1L_Elbow
+    - Arm1L_Wrist
+    - Arm1R_Shoulder
+    - Arm1R_Elbow
+    - Arm1R_Wrist
+    - Arm2L_Shoulder
+    - Arm2L_Elbow
+    - Arm2L_Wrist
+    - ArmFrontInside_Shoulder
+    - ArmFrontInside_Elbow
+    - ArmFrontInside_Wrist
+    - Arm2R_Shoulder
+    - Arm2R_Elbow
+    - Arm2R_Wrist
+    - ArmInnerL_Shoulder
+    - ArmInnerL_Elbow
+    - ArmInnerL_Wrist
+    - ArmInnerR_Shoulder
+    - ArmInnerR_Elbow
+    - ArmInnerR_Wrist
+    - Arm3L_Shoulder
+    - Arm3L_Elbow
+    - Arm3L_Wrist
+    - Arm3R_Shoulder
+    - Arm3R_Elbow
+    - Arm3R_Wrist
+    localBounds:
+      m_Center: {x: 0.01519388, y: -0.008754492, z: 0.07653627}
+      m_Extent: {x: 0.42819133, y: 0.58163667, z: 0.30673784}
+    screenHeight: 0.008
+  sourceHash: 2206248fb87f9bb03d51a5081674eac41731b01a2109361a7ffcc82cdb1fde43

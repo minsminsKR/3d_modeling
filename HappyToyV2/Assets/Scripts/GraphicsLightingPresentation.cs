@@ -156,7 +156,17 @@ namespace HappyToy.V2
             Vector3 center;Vector3 size;
             if(session.CorridorMode)
             {
-                if(session.Corridor.InAltarChamber(session.player.transform.position))
+                var entrance=session.Corridor.Entrance;
+                if(entrance&&entrance.Bounds.Contains(session.player.transform.position))
+                {
+                    // The cavern has its own room-sized box. Selecting nearest
+                    // maze cell zero would leave the actual wet floor outside it.
+                    if(!force&&!lightChanged&&lastCell==CorridorLayout.Count+1)return;
+                    lastCell=CorridorLayout.Count+1;
+                    center=entrance.transform.position+Vector3.up*2;
+                    size=new Vector3(CorridorEntranceChamber.Width,CorridorEntranceChamber.Height,CorridorEntranceChamber.Depth);
+                }
+                else if(session.Corridor.InAltarChamber(session.player.transform.position))
                 {
                     if(!force&&!lightChanged&&lastCell==CorridorLayout.Count)return;
                     lastCell=CorridorLayout.Count;

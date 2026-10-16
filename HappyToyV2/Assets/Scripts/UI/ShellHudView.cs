@@ -106,11 +106,12 @@ namespace HappyToy.V2
             meter = layout.Text("", 47, 837, 860, 36, layout.LargeText ? 23 : 19);
             batteryMeter = new FlashlightGauge(Gold, Rust, layout.HighContrast);
             layout.Place(batteryMeter, 47, 735, 265, 38);
-            // Fit the message instead of covering the upper-right view with an empty box.
-            // This sits above the lower-left inventory and leaves the aiming path clear.
+            // Keep a compact column above the lower-left inventory. An explicit
+            // text width avoids shrink-to-content rounding that wraps a line
+            // after Yoga has already assigned a single-line height at 21:9.
             itemFeedbackPanel = layout.Panel(47, 672, 365, 42, new Color(.015f, .027f, .022f, layout.HighContrast ? .95f : .58f));
             itemFeedbackPanel.name = "item-action-feedback-panel";
-            itemFeedbackPanel.style.width = itemFeedbackPanel.style.height = StyleKeyword.Auto;
+            itemFeedbackPanel.style.height = StyleKeyword.Auto;
             itemFeedbackPanel.style.maxWidth = 365;
             itemFeedbackPanel.style.paddingLeft = itemFeedbackPanel.style.paddingRight = 10;
             itemFeedbackPanel.style.paddingTop = itemFeedbackPanel.style.paddingBottom = 5;
@@ -118,7 +119,9 @@ namespace HappyToy.V2
             itemFeedbackPanel.Add(itemFeedback);
             itemFeedback.style.fontSize = layout.LargeText ? 21 : 18;
             itemFeedback.style.whiteSpace = WhiteSpace.Normal;
+            itemFeedback.style.width = 345;
             itemFeedback.style.maxWidth = 345;
+            itemFeedback.style.flexShrink = 0;
             itemFeedback.style.marginLeft = itemFeedback.style.marginRight = 0;
             itemFeedback.style.marginTop = itemFeedback.style.marginBottom = 0;
             itemFeedback.style.paddingLeft = itemFeedback.style.paddingRight = 0;

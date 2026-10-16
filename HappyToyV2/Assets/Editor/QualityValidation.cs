@@ -10,7 +10,8 @@ using UnityEngine;
 
 namespace HappyToy.V2.Editor
 {
-    // Safe opt-in batch commands. Never call Generate, Expand, Apply, or save the authored scene.
+    // Opt-in checks/builds never regenerate or save the authored scene. Builds
+    // retain the project-owned batched GPU deformation setting explicitly.
     public static class QualityValidation
     {
         const string ScenePath = "Assets/Annex/SchoolAnnex.unity";
@@ -72,6 +73,7 @@ namespace HappyToy.V2.Editor
         }
         public static void BuildWindows()
         {
+            SkinnedMeshPerformanceSetup.Apply();
             EnemyStudioGameImport.Ensure();
             BabyEyeMaskImport.Ensure();
             CyclopseExpressionImport.Ensure();
@@ -79,6 +81,7 @@ namespace HappyToy.V2.Editor
             UncatCabinetFaceImport.Ensure();
             BaeksugwiHeadImport.Ensure();
             BaeksugwiHallwayAuthoring.Ensure();
+            BaeksugwiGameLodImport.Ensure();
             DoorDebrisImport.Ensure();
             GraphicsPbrImport.Ensure();
             ThreatEyeModelImport.Ensure();

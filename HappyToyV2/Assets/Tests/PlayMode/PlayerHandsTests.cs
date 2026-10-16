@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
@@ -61,6 +62,67 @@ namespace HappyToy.V2.CloudTests
             Assert.That(vertices, Is.Not.Empty, "Held supply has no imported surface");
             return vertices;
         }
+        sealed class HandShaftSurface
+        {
+            readonly Transform prop;
+            readonly List<Vector3> triangles=new List<Vector3>();
+            public readonly float minimum,maximum,radius;
+            public readonly Vector3 centre;
+            public HandShaftSurface(Transform model,Vector3[] worldVertices)
+            {
+                prop=model;var local=worldVertices.Select(prop.InverseTransformPoint).ToArray();
+                float low=local.Min(v=>v.y),height=local.Max(v=>v.y)-low;
+                // Measured anatomy of this imported model: its broad head is
+                // confined to the first 30% of its longitudinal extent. Sample
+                // the actual central barrel to derive its radius independently.
+                minimum=low+height*.31f;maximum=low+height*.88f;
+                var middle=local.Where(v=>v.y>=low+height*.45f && v.y<=low+height*.7f).ToArray();
+                Assert.That(middle,Is.Not.Empty,"The real flashlight has no cylindrical grip surface");
+                centre=new Vector3((middle.Min(v=>v.x)+middle.Max(v=>v.x))*.5f,0,
+                    (middle.Min(v=>v.z)+middle.Max(v=>v.z))*.5f);
+                radius=middle.Select(v=>Vector3.ProjectOnPlane(v-centre,Vector3.up).magnitude).OrderBy(x=>x).ElementAt(middle.Length/2);
+                Assert.That(radius,Is.InRange(.015f,.035f),"The sampled surface is not the handheld barrel");
+                foreach(var filter in prop.GetComponentsInChildren<MeshFilter>())
+                {
+                    if(!filter.sharedMesh)continue;
+                    var vertices=filter.sharedMesh.vertices.Select(v=>prop.InverseTransformPoint(filter.transform.TransformPoint(v))).ToArray();
+                    var indices=filter.sharedMesh.triangles;
+                    for(int i=0;i<indices.Length;i+=3)
+                    {
+                        var a=vertices[indices[i]];var b=vertices[indices[i+1]];var c=vertices[indices[i+2]];
+                        if(Vector3.Cross(b-a,c-a).sqrMagnitude<1e-16f)continue;
+                        if(Mathf.Max(a.y,b.y,c.y)<minimum || Mathf.Min(a.y,b.y,c.y)>maximum)continue;
+                        if(new[]{a,b,c}.Any(v=>Vector3.ProjectOnPlane(v-centre,Vector3.up).magnitude>radius*1.25f))continue;
+                        triangles.Add(a);triangles.Add(b);triangles.Add(c);
+                    }
+                }
+                Assert.That(triangles,Is.Not.Empty,"No actual barrel triangles survived head exclusion");
+            }
+            public Vector3 Local(Vector3 point)=>prop.InverseTransformPoint(point);
+            public Vector3 Radial(Vector3 point)=>Vector3.ProjectOnPlane(Local(point)-centre,Vector3.up);
+            public float Distance(Vector3 point)
+            {
+                var local=Local(point);float best=float.PositiveInfinity;
+                for(int i=0;i<triangles.Count;i+=3)
+                {
+                    var near=ClosestTrianglePoint(local,triangles[i],triangles[i+1],triangles[i+2]);
+                    if(near.y<minimum || near.y>maximum)continue;
+                    best=Mathf.Min(best,Vector3.Distance(point,prop.TransformPoint(near)));
+                }
+                return best;
+            }
+            static Vector3 ClosestTrianglePoint(Vector3 p,Vector3 a,Vector3 b,Vector3 c)
+            {
+                var ab=b-a;var ac=c-a;var ap=p-a;float d1=Vector3.Dot(ab,ap),d2=Vector3.Dot(ac,ap);
+                if(d1<=0 && d2<=0)return a;
+                var bp=p-b;float d3=Vector3.Dot(ab,bp),d4=Vector3.Dot(ac,bp);if(d3>=0 && d4<=d3)return b;
+                float vc=d1*d4-d3*d2;if(vc<=0 && d1>=0 && d3<=0)return a+ab*(d1/(d1-d3));
+                var cp=p-c;float d5=Vector3.Dot(ab,cp),d6=Vector3.Dot(ac,cp);if(d6>=0 && d5<=d6)return c;
+                float vb=d5*d2-d1*d6;if(vb<=0 && d2>=0 && d6<=0)return a+ac*(d2/(d2-d6));
+                float va=d3*d6-d5*d4;if(va<=0 && d4-d3>=0 && d5-d6>=0)return b+(c-b)*((d4-d3)/((d4-d3)+(d5-d6)));
+                float inverse=1/(va+vb+vc);return a+ab*(vb*inverse)+ac*(vc*inverse);
+            }
+        }
         IEnumerator SelectHandItem(string name)
         {
             Call(Get<Component>(player, "Items"), "Select", Enum.Parse(RequireType("PlayerItem"), name));
@@ -102,16 +164,19 @@ namespace HappyToy.V2.CloudTests
                 // The torch's long axis passes through its imported surface
                 // centre. Opposed radial tips distinguish a wrap from a fist
                 // hovering beside the handle.
-                var anchor = torchVertices[0];
-                var center = anchor + torchVertices.Aggregate(Vector3.zero, (sum, point) => sum + point - anchor) / torchVertices.Length;
+                var shaft = new HandShaftSurface(torch,torchVertices);
                 var thumb = HandMarker(leftHand, "thumb_tip").position;
-                var thumbRadial = Vector3.ProjectOnPlane(thumb - center, axis);
+                var thumbRadial = shaft.Radial(thumb);
                 var otherTips = HandDigits.Skip(1).Select(digit => HandMarker(leftHand, digit + "_tip").position).ToArray();
                 foreach (var tip in otherTips.Append(thumb))
-                    Assert.That(torchVertices.Min(point => Vector3.Distance(point, tip)), Is.LessThan(.027f),
-                        item + ": a flashlight fingertip is detached from the actual handle surface");
+                {
+                    Assert.That(shaft.Local(tip).y,Is.InRange(shaft.minimum-.004f,shaft.maximum+.004f),item+": a finger is gripping the flashlight head instead of its barrel");
+                    Assert.That(shaft.Radial(tip).magnitude,Is.InRange(shaft.radius-.003f,shaft.radius+.014f),item+": a fingertip is buried inside or detached from the actual barrel");
+                    Assert.That(shaft.Distance(tip), Is.LessThan(.0115f),
+                        item + ": a flashlight fingertip is detached from the actual shaft triangles");
+                }
                 Assert.That(otherTips.Any(tip => Vector3.Dot(thumbRadial.normalized,
-                    Vector3.ProjectOnPlane(tip - center, axis).normalized) < -.1f), Is.True,
+                    shaft.Radial(tip).normalized) < -.2f), Is.True,
                     item + ": the thumb does not oppose the fingers around the flashlight");
                 Assert.That(otherTips.Max(tip => Vector3.Dot(tip, axis)) - otherTips.Min(tip => Vector3.Dot(tip, axis)),
                     Is.GreaterThan(.025f), "The four flashlight fingers collapse into a single grip point");

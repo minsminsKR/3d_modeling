@@ -105,9 +105,9 @@ namespace HappyToy.V2.CloudTests
                 yield return AimHold(mouse, true); AssertAimHidden("Title");
                 yield return RecoveryClick("begin"); yield return AimFrames();
                 IsolateThreats();
-                // The production title now enters a corridor with one initial item.
+                // Counts are individual shots: one corridor pack or two school packs.
                 int initialStock = Get<int>(inventory, "Count");
-                Assert.That(initialStock, Is.EqualTo(Get<bool>(session, "CorridorMode") ? 1 : 2));
+                Assert.That(initialStock, Is.EqualTo(Get<bool>(session, "CorridorMode") ? 6 : 12));
                 AssertAimHidden("RMB inherited from title");
                 yield return FreshAim(mouse);
                 Quaternion beforeLook = Get<Camera>(player, "eyes").transform.rotation;
@@ -180,6 +180,10 @@ namespace HappyToy.V2.CloudTests
                     Call(supply,"Use",player);
                     Assert.That(supply.gameObject.activeSelf, Is.False);
                 }
+                Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(12), "Retry plus the controlled corridor pickup must retain two six-shot packs");
+                // Controlled partial-pack fixture for the two Q presses below;
+                // default and collected pack counts were verified independently.
+                Call(inventory, "SetRunStock", 2);
                 Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(2));
                 yield return FreshAim(mouse); yield return AimHold(mouse, false);
                 Assert.That(Get<bool>(inventory, "CanAim"), Is.True, "Repeated aim cancellation spent cooldown");
@@ -198,7 +202,7 @@ namespace HappyToy.V2.CloudTests
                 yield return AimHold(mouse, false); yield return AimHold(mouse, true); AssertAimHidden("Fresh RMB with no inventory");
                 Assert.That((bool)Call(inventory, "TryThrow"), Is.False);
                 Assert.That(Get<int>(inventory, "Count"), Is.Zero);
-                Debug.Log("HAPPYTOY_AIM_PASS lifecycle: real RMB cancel, title/pause/settings/journal/hide/death/retry no ghost hold; native preview cleanup; Q press immediate and nonrepeating; finite two-item inventory; controlled encounter fixture, not survival");
+                Debug.Log("HAPPYTOY_AIM_PASS lifecycle: real RMB cancel, title/pause/settings/journal/hide/death/retry no ghost hold; native preview cleanup; real six-shot packs, Q press immediate and nonrepeating, finite two-shot remainder fixture; controlled encounter fixture, not survival");
             }
         }
 

@@ -103,6 +103,7 @@ namespace HappyToy.V2
         }
         void Lock(bool locked)
         {
+            if (DiagnosticDesktopPolicy.SuppressCursorWrites) return;
             Cursor.lockState = locked ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !locked;
         }

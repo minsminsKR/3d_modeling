@@ -16,21 +16,34 @@ editable cut fragments of the generated paper, preserving its texture coordinate
 Full input originals remain available if further topology work is needed.
 
 The October 16 hand finish reshapes that preserved surface into a shallower palm
-and slimmer fingers while retaining its UVs and original textures. Its skin mesh
+while retaining rounded digits, its UVs and original textures. The depth mask
+excludes the thumb base and fingers from the palm correction. The generated long
+fingers are shortened locally beyond the MCP fan: index centre-line length is
+93.8 mm against a 102.5 mm palm. The thenar weights blend back into the palm to
+avoid folding the thumb base as a single thin flap. Its skin mesh
 targets 80,000 triangles, with five small editable keratin nail caps conformed to
 the original distal skin surface. Each cap follows its finger's skin weights and
 uses the separate `hand_nail` material slot. The rig follows measured curved digit centre lines:
 17 deform bones, five nondeforming fingertip markers and `palm_contact` (23 bones
-in total). Nearest-digit weights blend along the knuckles without allowing one
+in total). Each digit explicitly aligns its hinge frame to the original palmar
+surface. Nearest-digit weights blend across 32% of each knuckle segment without allowing one
 finger to pull the adjacent finger across a pinch. The packed `hand.blend` keeps
 the finished geometry and editable rig; `Originals/hand.glb` stays unchanged.
 The exported `hand/asset.json` records 40,586 vertices and 80,960 triangles in total
 (the 80,000-triangle skin plus 960 nail triangles), with both skin and nail slots.
+It also records actual normalized-weight error, the four-influence limit,
+palmar hinge directions, neutral joint curvature and output SHA-256 values.
+Blender uses linear skinning, matching Unity, for an honest deformation preview.
+
+The October 16 grip review uses the preserved user target and before images in
+`SourceArt/CorridorEntrance/References/user-target-20261016.png` and
+`user-before-20261016.png`. `hand/asset.json` links both files and their hashes;
+these review inputs do not replace the original webapp hand GLB or its provenance.
 
 From the repository root, use **Blender 4.0.2** (its bundled Python and NumPy):
 
 ```powershell
-blender -b --python HappyToyV2/SourceArt/PlayerItems/finish_player_items.py
+blender -b --python-exit-code 1 --python HappyToyV2/SourceArt/PlayerItems/finish_player_items.py
 python HappyToyV2/SourceArt/PlayerItems/finish_skin_detail.py
 ```
 
@@ -39,6 +52,9 @@ and the game FBX/PBR resources under `Assets/Resources/PlayerItems`. For one ite
 append `-- --only=hand` (or `incense`, `talisman`, `flashlight`). In pinned Unity
 **6000.6.0f1**, run `HappyToy.V2.Editor.PlayerItemsImport.Apply` to regenerate
 material/prefab assets through Editor APIs. Keep all resulting `.meta` files.
+PNG exports require complete CRC-checked chunks before replacement. Geometry
+and packed Blender sources are written completely to temporary files before
+replacing their prior versions; the JSON report is replaced atomically too.
 
 Run `finish_skin_detail.py` after the hand export with Python 3.11 and the pinned
 NumPy 1.26.4 / Pillow 10.2.0 in `Tools/requirements-authoring.txt`. It derives subtle
@@ -53,10 +69,25 @@ and are recreated by `finish_player_items.py`; the original hand GLB is untouche
 
 `FirstPersonHands` owns the live poses and contact placement: the flashlight is
 wrapped by all fingers, incense and talisman sit between the index/thumb tips,
-and the snapper/trap rest on `palm_contact` with the hand turned upwards. These
+and the snapper/trap rest on `palm_contact` with the hand turned upwards and
+the fingers gently cupped together. The thumb separates bounded metacarpal
+opposition/spread from phalanx flexion, with bounded extension at the thumb base;
+the distal joint follows the middle joint instead of folding independently to
+reach a target. Contact solving cannot add free axial roll. The flashlight grip
+uses its narrow shaft, with its broad head excluded from contact checks against
+the actual imported mesh triangles. The supporting palm turns diagonally toward
+the view with a relaxed C-shaped finger cup. The snapper hand opens during release and
+returns to its supporting cup. These
 runtime poses use the imported rig and contact markers. Hands remain near the
 lower corners of the view; throw/place motion is applied to their grip sockets.
-The standalone Blender actions remain editable authoring references.
+The flashlight socket tilts 15 degrees to show the wrist and back of the hand
+instead of only the stacked fingers, while the solved hand/handle contacts move
+together. Pinched-item use lifts outward, keeping tall paper out of the central
+forward sightline. `PlayerHandsPreview.Render` accepts the optional
+`-player-hands-grip-review` flag to compare the measured camera-presentation variants.
+The standalone Blender actions remain editable authoring references. FBX's
+handedness conversion reverses local Y/Z pose rotations in Unity while retaining
+the local X flexion axis.
 
 `render_icons.py` renders transparent inventory icons from these editable sources
 and the existing `SourceArt/Snappers/package.blend` / `SourceArt/Traps/Trap_Editable.blend`.

@@ -18,6 +18,7 @@ namespace HappyToy.V2.CloudTests
             var inventory = Get<Component>(player, "Firecrackers");
             Call(inventory, "SetRunStock", 1);
             Assert.That((bool)Call(inventory, "AddSupply"), Is.True);
+            Assert.That(Get<int>(inventory, "Count"), Is.EqualTo(7), "A collected pack adds six shots to the remaining individual shot");
             var view = One("GameShellView"); var errors = new List<string>();
             float timeScale = Time.timeScale;
             try
@@ -32,7 +33,8 @@ namespace HappyToy.V2.CloudTests
                         var hud = Get<VisualElement>(view, "Root");
                         var panel = hud.Q("item-action-feedback-panel");
                         var label = hud.Q<Label>("item-action-feedback");
-                        Assert.That(label.text, Does.Contain("폭죽 +1"));
+                        Assert.That(label.text, Does.Contain("콩알탄 한 묶음 +6발"));
+                        Assert.That(label.text, Does.Contain("총 7발"));
                         Assert.That(panel.resolvedStyle.display, Is.EqualTo(DisplayStyle.Flex));
                         Assert.That(panel.worldBound.width, Is.LessThan(hud.worldBound.width * .25f));
                         Assert.That(panel.worldBound.height, Is.LessThan(hud.worldBound.height * .1f));

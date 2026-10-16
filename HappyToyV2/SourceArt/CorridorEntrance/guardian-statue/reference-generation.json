@@ -1,0 +1,9 @@
+{
+  "kind": "project-generated 3D asset reference",
+  "tool": "built-in image_gen",
+  "transparent_background": true,
+  "reference_role": "User-supplied desired entrance screenshot, style/material only",
+  "reference": "../RitualDressing/reference-layout.png",
+  "prompt": "Create a brand-new production reference image for a single 3D game prop. The attached Korean temple horror cave image is a style reference only. Subject: one ancient Korean Buddhist temple stone guardian statue, full body standing on a low square stone plinth, about 2 metres tall, stern carved face, traditional armour and flowing robe details, both arms close to the torso with one hand holding a short vertical ritual staff integrated with the body. Weathered dark granite, chipped edges, fine erosion and restrained moss in recesses, sombre realistic sculpted stone rather than a living person. It should feel like a sacred guardian in a haunted Korean cave shrine. Include the entire statue, plinth and top of head, clean readable silhouette. Isolated on genuinely transparent background, three-quarter front product view, neutral diffuse lighting suitable for reconstructing a PBR model. No lanterns, no candles, no surrounding cave, no modern objects, no text, no hands of a player, no human skin. One coherent complete statue, no separate floating parts, no collage.",
+  "note": "Reference raster; actual model must be generated through the designated modeling webapp, and its original GLB/PBR retained."
+}

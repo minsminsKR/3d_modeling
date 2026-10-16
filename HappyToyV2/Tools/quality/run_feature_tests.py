@@ -95,6 +95,14 @@ PROFILES = {
             PLAY + "CorridorTemporarilyOccupiedDoorMakesOnlyBlockedActorYieldAndResume",
             PLAY + "CorridorCreaturesNavigateARealCornerWithoutWalkingInPlaceAtMarkers",
             PLAY + "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches"))]),
+    "corridor-performance": ("Bounded passage queries, shared live trap discovery, preserved capture/pause/door behavior and original-bound gameplay LODs; wall-clock player profiling remains separate", [
+        ("PlayMode", play_tests("CloudCorridorPerformanceTests.cs", "CloudMaskHorrorModelTests.cs") + (
+            PLAY + "CorridorLargeMonstersPassHeadOnThroughAnActualOpenDoor",
+            PLAY + "CorridorTemporarilyOccupiedDoorMakesOnlyBlockedActorYieldAndResume",
+            PLAY + "TrapPlacementUsesSupportedGroundAndPausedInputNeverConsumesStock",
+            PLAY + "AllSixMonstersAreRestrainedFiveSecondsWithoutAttackingAndKeepCaptureFaces",
+            PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement",
+            PLAY + "HallwayWraithFillsDoorEnvelopeKeepsOriginalAgentAndFitsClonedVisualOnlyOnce"))]),
     "flashlight-hud": ("Flashlight depletion/refill, real icon/charge captures and HUD layout at supported sizes", [
         ("PlayMode", (
             PLAY + "FlashlightBatteryPhysicalInputDepletionPauseOffFullCapAndRefill",
@@ -118,6 +126,7 @@ PROFILES = {
             PLAY + "SchoolMaskShattersClosedLeavesInAllMovementStatesAndRestoresSilentRubble",
             PLAY + "AdvancedDoorTraversalSchoolMannequinHonorsGazeLightPauseAndRestoresRealPassage",
             PLAY + "StudioRunMovesWithTheAgentAndFreezesOnPause",
+            PLAY + "StudioWraithKeepsNavigationAndImportsEighteenSkinnedArms",
             PLAY + "StudioCorridorCloneUsesOneReplacementAndHidesTheFloatingFace",
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement"))]),
     "title": ("Title head/body/comfort behavior, real start transition and keyboard start", [
@@ -132,10 +141,10 @@ PROFILES = {
             PLAY + "CorridorAltarRoomIsDistantReachableAndRestoresTheSamePhysicalSeededChamber"))]),
     "corridor": ("Opened-door E focus, visual-only runner, one/two-door shelters and real corner navigation", [
         ("PlayMode", play_tests("CloudCorridorRevisionTests.cs"))]),
-    "entrance": ("Wide tall cave spawn, real input and NavMesh access, sealed temple gate, fresh checkpoint restoration and legacy entrances", [
+    "entrance": ("Wet ritual cavern art, supported clear route, owned ambient/reflection resources, real input and NavMesh access, sealed temple gate and current/legacy checkpoint restoration", [
         ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests",
                       CLOUD + "CheckpointTrapCodecTests", CLOUD + "LightExplorationRulesTests")),
-        ("PlayMode", play_tests("CorridorEntranceChamberTests.cs") + (
+        ("PlayMode", play_tests("CorridorEntranceChamberTests.cs", "CorridorEntranceRitualDressingTests.cs") + (
             PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
             PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
             PLAY + "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndTempleGateWithFourteenMetreSight",
@@ -193,7 +202,7 @@ def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
 
 def commands(profile: str, project: Path, output: Path, unity: str = "unity",
              editor_path: str | None = None, timeout: int | None = None,
-             graphics_api: str | None = None) -> list[dict]:
+             graphics_api: str | None = None, no_desktop_interaction: bool = False) -> list[dict]:
     timeout = timeout if timeout is not None else (7200 if profile == "full" else 1800)
     result = []
     for index, (mode, selectors) in enumerate(stages(profile), 1):
@@ -207,6 +216,8 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]
+        if no_desktop_interaction:
+            editor_args += ["-v2-audit-no-desktop-interaction", "-job-worker-count", "2"]
         command += ["--", *editor_args]
         result.append({"mode": mode, "selectors": selectors, "report": str(report),
                        "editorArguments": editor_args, "command": command})
@@ -263,6 +274,8 @@ def main() -> int:
     parser.add_argument("--editor-path", help="Optional path to the installed pinned Unity executable")
     parser.add_argument("--graphics-api", choices=("d3d11", "d3d12"),
                         help="Optional Windows Editor-only override; leaves project/player settings unchanged")
+    parser.add_argument("--no-desktop-interaction", action="store_true",
+                        help="Isolate batch test input/cursor writes; on Windows hide child windows and use BelowNormal CPU priority")
     parser.add_argument("--timeout", type=int, help="Timeout per Unity stage in seconds (full: 7200; focused profiles: 1800)")
     args = parser.parse_args()
     if args.list:
@@ -285,20 +298,31 @@ def main() -> int:
     if not unity and not args.dry_run:
         parser.error("The Unity CLI is unavailable; install the documented project tools before running tests.")
     plan = commands(args.profile, project, output, unity or "unity", args.editor_path,
-                    args.timeout, args.graphics_api)
+                    args.timeout, args.graphics_api, args.no_desktop_interaction)
     scope = PROFILES[args.profile][0]
     if args.dry_run:
-        print(json.dumps({"profile": args.profile, "scope": scope, "stages": plan}, indent=2), flush=True)
+        print(json.dumps({"profile": args.profile, "scope": scope,
+                          "noDesktopInteractionRequested": args.no_desktop_interaction, "stages": plan}, indent=2), flush=True)
         return 0
     print(json.dumps({"profile": args.profile, "scope": scope,
+                      "noDesktopInteractionRequested": args.no_desktop_interaction,
                       "stages": [{"mode": stage["mode"], "requiredSelectors": len(stage["selectors"]),
                                   "report": stage["report"]} for stage in plan]}, indent=2), flush=True)
     output.mkdir(parents=True)
     summary = {"profile": args.profile, "scope": scope, "status": "RUNNING", "stages": []}
     summary["graphicsApi"] = args.graphics_api or "project-default"
+    summary["noDesktopInteractionRequested"] = args.no_desktop_interaction
+    process_options = {}
+    if args.no_desktop_interaction and sys.platform == "win32":
+        startup = subprocess.STARTUPINFO()
+        startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startup.wShowWindow = subprocess.SW_HIDE
+        process_options = {"startupinfo": startup,
+                           "creationflags": subprocess.CREATE_NO_WINDOW | subprocess.BELOW_NORMAL_PRIORITY_CLASS}
+    summary["windowsHiddenBelowNormalRequested"] = bool(process_options)
     try:
         for stage in plan:
-            completed = subprocess.run(stage["command"], cwd=project, check=False)
+            completed = subprocess.run(stage["command"], cwd=project, check=False, **process_options)
             recorded = {"mode": stage["mode"], "selectors": stage["selectors"],
                         "exitCode": completed.returncode, "report": stage["report"],
                         "editorArguments": stage["editorArguments"]}
