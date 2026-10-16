@@ -11,7 +11,7 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(120000)]
-        public IEnumerator IncenseFollowsAllRemainingMemoriesThenOfferingAndFreezesOnPause()
+        public IEnumerator IncenseKeepsOneMemoryUntilCollectedThenRetargetsOfferingAndFreezesOnPause()
         {
             Call(session,"CreateCorridor",73); Begin(); IsolateThreats(); yield return null;
             var ritual=Get<Component>(player,"Rituals");
@@ -19,32 +19,57 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(ritual,"Incense"),Is.Zero);
             Assert.That((bool)Call(ritual,"UseIncense"),Is.False,"An active stick must not consume another supply");
             var smoke=Get<Component>(ritual,"Smoke");yield return Delay(.3f);
-            Assert.That(Get<int>(smoke,"TargetCount"),Is.EqualTo(5));
-            Assert.That(smoke.GetComponent<ParticleSystem>().particleCount,Is.GreaterThan(100));
+            Assert.That(Get<int>(smoke,"TargetCount"),Is.EqualTo(1),"Incense must guide toward one memory at a time");
+            var trail=smoke.GetComponent(RequireType("IncenseSmokeTrail"));
+            var filter=smoke.GetComponent<MeshFilter>();
+            Assert.That(trail,Is.Not.Null);Assert.That(smoke.GetComponent<MeshRenderer>(),Is.Not.Null);
+            Assert.That(filter,Is.Not.Null);Assert.That(filter.sharedMesh,Is.Not.Null);
+            Assert.That(filter.sharedMesh.vertexCount,Is.GreaterThan(0),"Fresh incense must begin growing a visible smoke trail");
+            Assert.That(Get<int>(trail,"SampleCount"),Is.GreaterThan(0));
             var memories=CheckpointItems("CorridorMemory");
-            for (int i=0;i<4;i++)
-            {
-                Call(memories[i],"Use",player);
-                Assert.That(memories[i].gameObject.activeSelf,Is.False,"The memory must actually be collected");
-                int expected=4-i;
-                // Guidance refresh uses gameplay time; a loaded batch Editor can
-                // cross .26 wall seconds before its .25 gameplay-second interval.
-                yield return Wait(()=>Get<int>(smoke,"TargetCount")==expected,2,"Smoke retained a collected memory");
-            }
-            Call(memories[4],"Use",player);
-            Assert.That(memories[4].gameObject.activeSelf,Is.False);
-            yield return Wait(()=>Get<int>(smoke,"TargetCount")==1 &&
-                Get<System.Collections.Generic.IReadOnlyList<Vector3>>(smoke,"TargetPoints")[0]!=memories[4].transform.position,
-                2,"Smoke did not switch from the last memory to the altar");
-            Assert.That(Get<int>(smoke,"TargetCount"),Is.EqualTo(1),"Completed memory guidance must point to the offering altar");
+            Assert.That(memories.Count(x=>x.gameObject.activeSelf),Is.EqualTo(5));
+            var firstTarget=Get<System.Collections.Generic.IReadOnlyList<Vector3>>(smoke,"TargetPoints")[0];
+            var alternative=memories.First(x=>x.gameObject.activeSelf && Vector3.Distance(x.transform.position,firstTarget)>.01f);
+            var origin=player.transform.position;
+            // Moving beside another memory must not make the chosen guide
+            // oscillate between targets before the first memory is recovered.
+            PlacePlayer(new Vector3(alternative.transform.position.x,origin.y,alternative.transform.position.z),false);
+            yield return Delay(.55f);
+            Assert.That(Get<int>(smoke,"TargetCount"),Is.EqualTo(1));
+            Assert.That(Get<System.Collections.Generic.IReadOnlyList<Vector3>>(smoke,"TargetPoints")[0],Is.EqualTo(firstTarget),
+                "A still-active guide target changed merely because the player moved");
+            PlacePlayer(origin,false);
             var offering=Get<Component>(Get<Component>(Get<Component>(session,"Corridor"),"AltarChamber"),"Offering");
-            Assert.That(Get<System.Collections.Generic.IReadOnlyList<Vector3>>(smoke,"TargetPoints")[0],Is.EqualTo(offering.transform.position));
-            Call(shell,"Pause");float remaining=Get<float>(smoke,"Remaining");
-            var particles=new ParticleSystem.Particle[480];int count=smoke.GetComponent<ParticleSystem>().GetParticles(particles);
+            for (int remaining=5;remaining>0;remaining--)
+            {
+                Assert.That(Get<int>(smoke,"TargetCount"),Is.EqualTo(1));
+                var target=Get<System.Collections.Generic.IReadOnlyList<Vector3>>(smoke,"TargetPoints")[0];
+                var chosen=memories.SingleOrDefault(x=>x.gameObject.activeSelf && Vector3.Distance(x.transform.position,target)<.01f);
+                Assert.That(chosen,Is.Not.Null,"The single guide target must be an actual remaining memory");
+                Call(chosen,"Use",player);
+                Assert.That(chosen.gameObject.activeSelf,Is.False,"The selected memory must actually be collected");
+                Assert.That(memories.Count(x=>x.gameObject.activeSelf),Is.EqualTo(remaining-1));
+                // Refresh uses gameplay time. Wait for the collected target to
+                // be replaced, rather than assuming a particular Editor frame.
+                yield return Wait(()=>Get<int>(smoke,"TargetCount")==1 &&
+                    Get<System.Collections.Generic.IReadOnlyList<Vector3>>(smoke,"TargetPoints")[0]!=target,
+                    2,"Incense retained the memory that was just collected");
+                var next=Get<System.Collections.Generic.IReadOnlyList<Vector3>>(smoke,"TargetPoints")[0];
+                if (remaining>1)
+                    Assert.That(memories.Any(x=>x.gameObject.activeSelf && Vector3.Distance(x.transform.position,next)<.01f),Is.True,
+                        "Incense must choose another active memory after collection");
+                else Assert.That(next,Is.EqualTo(offering.transform.position),"The final guide must point at the real offering altar");
+            }
+            Assert.That(Get<int>(smoke,"TargetCount"),Is.EqualTo(1));
+            Call(shell,"Pause");float remainingTime=Get<float>(smoke,"Remaining");
+            double simulationTime=Convert.ToDouble(Get<object>(trail,"SimulationTime"));
+            int samples=Get<int>(trail,"SampleCount");var vertices=filter.sharedMesh.vertices;
+            Assert.That(vertices.Length,Is.GreaterThan(0));
             yield return Delay(.2f);
-            var after=new ParticleSystem.Particle[480];Assert.That(smoke.GetComponent<ParticleSystem>().GetParticles(after),Is.EqualTo(count));
-            Assert.That(Get<float>(smoke,"Remaining"),Is.EqualTo(remaining));
-            for (int i=0;i<count;i++)Assert.That(after[i].position,Is.EqualTo(particles[i].position));
+            Assert.That(Get<float>(smoke,"Remaining"),Is.EqualTo(remainingTime));
+            Assert.That(Convert.ToDouble(Get<object>(trail,"SimulationTime")),Is.EqualTo(simulationTime));
+            Assert.That(Get<int>(trail,"SampleCount"),Is.EqualTo(samples));
+            CollectionAssert.AreEqual(vertices,filter.sharedMesh.vertices,"Paused incense changed its rendered smoke geometry");
         }
 
         [UnityTest, Timeout(120000)]

@@ -50,3 +50,21 @@ hand-layer renders, not native gameplay recordings. The GIF assembler crops
 unused transparent space and adds labels with the project's Korean font. Its
 duration checks retain the renderer's time base. Frames, GIFs and manifests are
 optional review outputs outside required source assets.
+
+Incense now selects one nearby reachable memory by NavMesh route length and
+keeps that target until collection; after all memories it selects the offering.
+`IncenseSmokeTrail` and `IncenseSmoke.shader` render one continuous, softly
+feathered plume with world-space motion history. Both simulation and shader
+flow use the same pause-aware gameplay clock. No circular particle cards are
+used for this plume. To review it without starting a player:
+
+```powershell
+unity run HappyToyV2 --editor-version 6000.6.0f1 --timeout 600 -- -force-d3d11 -executeMethod HappyToy.V2.Editor.IncenseSmokePreview.Render -quiet-diagnostics
+python HappyToyV2/Tools/quality/preview_incense_smoke.py game/verification/ritual-items/incense-smoke-review
+```
+
+The comparison includes the archived original shader/equations and the current
+renderer in a controlled dim corridor, with the actual held incense tip. It is
+an Editor visual review rather than native gameplay footage. `--profile incense`
+in `Tools/quality/run_feature_tests.py` checks target collection, altar fallback,
+pause and optional inventory-save compatibility.

@@ -44,7 +44,9 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
-    "ritual-items": ("Incense routes and offering target, optional stock save compatibility, actual wheel input/page ownership and all six frozen attackers", [
+    "incense": ("Single stable nearest reachable memory, retarget on collection, offering fallback, continuous plume pause and optional stock save compatibility", [
+        ("PlayMode", play_tests("RitualWorldTests.cs"))]),
+    "ritual-items": ("Single-target incense and offering guidance, optional stock save compatibility, actual wheel input/page ownership and all six frozen attackers", [
         ("PlayMode", play_tests("RitualWorldTests.cs", "RitualTimeStopTests.cs", "RitualItemWheelTests.cs") + (
             PLAY + "TrapPlacementUsesSupportedGroundAndPausedInputNeverConsumesStock",
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement",
