@@ -20,6 +20,12 @@ namespace HappyToy.V2
         public float Weight { get; private set; }
         public float CabinetWeight => cabinetFace?.Weight ?? 0;
         public bool Prepared => owned && data;
+        internal void HoldCabinetDeathFace()
+        {
+            if (!Prepared) return;
+            cabinetFace?.Tick(true, 10);
+            Apply(1);
+        }
         public void Configure(SkinnedMeshRenderer renderer, StalkerBrain owner, string resource)
         {
             if (Prepared) return;

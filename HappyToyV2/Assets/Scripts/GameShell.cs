@@ -101,7 +101,7 @@ namespace HappyToy.V2
         bool windowHasFocus = true;
         public void SetItemWheelOpen(bool open)
         {
-            bool next = open && Screen == Page.Playing && !IsReloading && session && !session.Finished;
+            bool next = open && Screen == Page.Playing && !IsReloading && session && !session.Finished && !session.CabinetDeathActive;
             if (next != ItemWheelOpen) ItemWheelChangedFrame = Time.frameCount;
             ItemWheelOpen = next;
             ApplyScreenState();
@@ -114,7 +114,7 @@ namespace HappyToy.V2
                 ItemWheelOpen = false;
                 ItemWheelChangedFrame = Time.frameCount;
             }
-            Time.timeScale = playing ? (ItemWheelOpen ? ItemWheelRules.SlowTimeScale : 1) : 0;
+            Time.timeScale = playing && !session.CabinetDeathActive ? (ItemWheelOpen ? ItemWheelRules.SlowTimeScale : 1) : 0;
             AudioListener.pause = !playing;
             Cursor.lockState = playing && !ItemWheelOpen && windowHasFocus ? CursorLockMode.Locked : CursorLockMode.None;
             Cursor.visible = !playing || ItemWheelOpen || !windowHasFocus;
@@ -181,7 +181,7 @@ namespace HappyToy.V2
         }
         public void SuspendCorridor()
         {
-            if(Screen!=Page.Pause || IsReloading || !session.CorridorMode) return;
+            if(Screen!=Page.Pause || IsReloading || !session.CorridorMode || session.CabinetDeathActive) return;
             try
             {
                 var checkpoint=session.CaptureCheckpoint();
@@ -195,7 +195,7 @@ namespace HappyToy.V2
         }
         public void SuspendChapter()
         {
-            if(Screen!=Page.Pause || IsReloading || !session.ChapterMode) return;
+            if(Screen!=Page.Pause || IsReloading || !session.ChapterMode || session.CabinetDeathActive) return;
             try
             {
                 var checkpoint=session.CaptureChapterCheckpoint();

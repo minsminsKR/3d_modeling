@@ -4,7 +4,7 @@ namespace HappyToy.V2
 {
     public static class ItemWheelRules
     {
-        public const float SlowTimeScale = .1f;
+        public const float SlowTimeScale = .25f;
         public const float StickDeadZone = .25f;
 
         // x points right, y points up. Slot zero is at twelve o'clock.

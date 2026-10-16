@@ -5,56 +5,118 @@ No GPU model generation: all base surfaces are the preserved GPU 0 webapp GLBs.
 import bpy, bmesh, json, pathlib, math, sys
 import numpy as np
 from mathutils import Vector
+from mathutils.bvhtree import BVHTree
 
 ROOT=pathlib.Path(__file__).resolve().parent
 OUT=ROOT.parents[1]/'Assets'/'Resources'/'PlayerItems'
 OUT.mkdir(parents=True,exist_ok=True)
 
+def hand_point(p):
+    x,y,z=p
+    def ease(a,b,t):
+        t=max(0,min(1,(t-a)/(b-a)));return t*t*(3-2*t)
+    # Sculpt the preserved webapp surface, with the same UVs. Its palm was
+    # almost as deep as it was wide; retain volume at the forearm and round
+    # phalanges while removing that inflated palm silhouette.
+    thickness=.65-.21*ease(.005,.05,z)+.28*ease(.125,.16,z)
+    return Vector(((x+.02)*.88,y*thickness,z+max(0,z-.13)*.10))
+
+def finish_hand_surface(obj):
+    for v in obj.data.vertices:v.co=hand_point(v.co)
+
+def finish_hand_nails(obj,chains):
+    # Thin keratin caps conform to the actual generated distal skin. These are
+    # editable finishing surfaces, not replacement fingers or a new base hand.
+    bm=bmesh.new();bm.from_mesh(obj.data);surface=BVHTree.FromBMesh(bm)
+    mat=bpy.data.materials.new('hand_nail');mat.use_nodes=True
+    bsdf=mat.node_tree.nodes.get('Principled BSDF');bsdf.inputs['Base Color'].default_value=(.63,.42,.36,1)
+    bsdf.inputs['Roughness'].default_value=.32
+    verts=[];faces=[]
+    for digit,points in chains.items():
+        a,b=points[-2:];direction=(b-a).normalized();side=direction.cross(Vector((0,1,0))).normalized()
+        center=a.lerp(b,.61);width=.0065 if digit!='little' else .005
+        half_length=min(.012,(b-a).length*.32)
+        start=len(verts)
+        for ring in range(5):
+            radius=ring/4
+            for segment in range(24):
+                theta=segment/24*math.tau
+                point=center+direction*(math.cos(theta)*half_length*radius)+side*(math.sin(theta)*width*radius)
+                origin=point+Vector((0,.045,0))
+                hit,normal,_,_=surface.ray_cast(origin,Vector((0,-1,0)),.09)
+                if hit is None:
+                    hit,normal,_,gap=surface.find_nearest(point)
+                    if hit is None or gap>.012:raise RuntimeError('Nail finishing lost original '+digit+' skin')
+                verts.append(hit+normal*.00035)
+        for ring in range(4):
+            for j in range(24):
+                p=start+ring*24+j;q=start+ring*24+(j+1)%24
+                faces.append((p,q,q+24,p+24))
+    bm.free()
+    mesh=bpy.data.meshes.new('Source-conforming keratin');mesh.from_pydata(verts,[],faces);mesh.materials.append(mat)
+    nails=bpy.data.objects.new('Anatomical fingernails',mesh);bpy.context.collection.objects.link(nails)
+    for p in mesh.polygons:p.use_smooth=True
+    bpy.ops.object.select_all(action='DESELECT');obj.select_set(True);nails.select_set(True);bpy.context.view_layer.objects.active=obj
+    bpy.ops.object.join()
+
 def rig_hand(obj):
     arm=bpy.data.armatures.new('PlayerHandRig'); rig=bpy.data.objects.new('HandRig',arm)
     bpy.context.collection.objects.link(rig); bpy.context.view_layer.objects.active=rig
     rig.select_set(True); obj.select_set(False); bpy.ops.object.mode_set(mode='EDIT')
-    scale=.52
-    chains={'little':[(-.12,.22),(-.17,.28),(-.205,.33),(-.22,.365)],
-            'ring':[(-.065,.26),(-.085,.335),(-.105,.405),(-.115,.46)],
-            'middle':[(-.005,.27),(-.012,.36),(-.017,.44),(-.02,.50)],
-            'index':[(.065,.245),(.08,.33),(.09,.407),(.095,.47)],
-            'thumb':[(.09,.08),(.15,.145),(.20,.20),(.23,.25)]}
-    wrist=arm.edit_bones.new('wrist'); wrist.head=(0,0,-.5*scale); wrist.tail=(0,0,.04*scale)
-    palm=arm.edit_bones.new('palm'); palm.head=wrist.tail; palm.tail=(0,0,.245*scale); palm.parent=wrist
+    # Centres measured on THIS original GLB, including its curved fingers.
+    # The old symmetric template placed the index/middle bones outside skin.
+    chains={'little':[(-.073,.005,.118),(-.091,-.007,.15),(-.106,-.018,.18),(-.105,-.026,.203)],
+            'ring':[(-.047,.012,.135),(-.052,.003,.171),(-.061,-.01,.21),(-.069,-.022,.244)],
+            'middle':[(-.019,.012,.138),(-.021,.004,.18),(-.022,-.006,.225),(-.026,-.018,.26)],
+            'index':[(.009,.006,.129),(.015,-.01,.166),(.02,-.019,.204),(.024,-.029,.245)],
+            'thumb':[(.026,0,.05),(.06,-.013,.09),(.091,-.028,.12),(.112,-.031,.148)]}
+    chains={name:[hand_point(p) for p in points] for name,points in chains.items()}
+    wrist=arm.edit_bones.new('wrist'); wrist.head=hand_point((-.02,0,-.26)); wrist.tail=hand_point((-.02,0,.025))
+    palm=arm.edit_bones.new('palm'); palm.head=wrist.tail; palm.tail=hand_point((-.02,0,.13)); palm.parent=wrist
     segments=[]
     for name,points in chains.items():
         parent=palm
         for i,(a,b) in enumerate(zip(points,points[1:])):
-            bone=arm.edit_bones.new(f'{name}_{i+1}'); bone.head=(a[0]*scale,0,a[1]*scale); bone.tail=(b[0]*scale,0,b[1]*scale); bone.parent=parent
+            bone=arm.edit_bones.new(f'{name}_{i+1}'); bone.head=a; bone.tail=b; bone.parent=parent
             parent=bone; segments.append((bone.name,Vector(bone.head),Vector(bone.tail)))
+        tip=arm.edit_bones.new(name+'_tip');tip.head=points[-1];tip.tail=points[-1]+Vector((0,0,.003));tip.parent=parent;tip.use_deform=False
+    contact=arm.edit_bones.new('palm_contact');contact.head=hand_point((-.022,-.027,.085));contact.tail=contact.head+Vector((0,-.003,0));contact.parent=palm;contact.use_deform=False
     bpy.ops.object.mode_set(mode='OBJECT')
-    # Heat weights diffuse smoothly across the welded anatomical surface.
-    bpy.ops.object.select_all(action='DESELECT');obj.select_set(True);rig.select_set(True)
-    bpy.context.view_layer.objects.active=rig
-    bpy.ops.object.parent_set(type='ARMATURE_AUTO')
-    if not any(m.type=='ARMATURE' for m in obj.modifiers):raise RuntimeError('Automatic hand skin binding failed')
+    finish_hand_nails(obj,chains)
+    obj.parent=rig
+    modifier=obj.modifiers.new('Anatomical hand skin','ARMATURE');modifier.object=rig;modifier.use_deform_preserve_volume=True
+    for bone in arm.bones:
+        if bone.use_deform:obj.vertex_groups.new(name=bone.name)
     def smooth(a,b,t):
         t=max(0,min(1,(t-a)/(b-a)));return t*t*(3-2*t)
-    # Keep the fleshy palm and forearm stable when finger heat envelopes overlap.
-    # Smooth transitions retain the generated knuckles and thumb webbing.
+    # A digit owns only its own surface. Blend at knuckles longitudinally,
+    # keeping the palm stable even when fingertips touch across a pinch.
     for v in obj.data.vertices:
-        x,z=v.co.x/scale,v.co.z/scale
-        wrist=1-smooth(.025,.065,z)
-        core=(1-smooth(.075,.12,abs(x)))*(1-smooth(.19,.26,z))
-        influence=max(wrist,core)
-        if influence<=0:continue
-        old=[(entry.group,entry.weight) for entry in v.groups]
-        for index,weight in old:obj.vertex_groups[index].add([v.index],weight*(1-influence),'REPLACE')
-        for name,weight in [('wrist',influence*wrist),('palm',influence*(1-wrist))]:
-            group=obj.vertex_groups[name]
-            remaining=next((w*(1-influence) for index,w in old if index==group.index),0)
-            group.add([v.index],remaining+weight,'REPLACE')
+        def closest(name):
+            points=chains[name];best=(1e6,0,0)
+            for i,(a,b) in enumerate(zip(points,points[1:])):
+                t=max(0,min(1,(v.co-a).dot(b-a)/(b-a).length_squared))
+                d=(v.co-a.lerp(b,t)).length
+                if d<best[0]:best=(d,i,t)
+            return best
+        digit=min(chains,key=lambda name:closest(name)[0]);d,i,t=closest(digit)
+        points=chains[digit]
+        gate=smooth(points[0].x-.005,points[0].x+.022,v.co.x) if digit=='thumb' else smooth(points[0].z-.012,points[0].z+.02,v.co.z)
+        influence=gate*(1-smooth(.020,.034,d))
+        wrist_weight=1-smooth(.01,.045,v.co.z)
+        weights={'wrist':(1-influence)*wrist_weight,'palm':(1-influence)*(1-wrist_weight)}
+        u=i+t;weights[digit+'_'+str(i+1)]=influence
+        if t<.22 and i>0:
+            blend=(1-smooth(0,.22,t))*.5;weights[digit+'_'+str(i+1)]-=influence*blend;weights[digit+'_'+str(i)]=influence*blend
+        elif t>.78 and i<2:
+            blend=smooth(.78,1,t)*.5;weights[digit+'_'+str(i+1)]-=influence*blend;weights[digit+'_'+str(i+2)]=influence*blend
+        for name,weight in weights.items():
+            if weight>0:obj.vertex_groups[name].add([v.index],weight,'REPLACE')
     rig['handedness']='left; mirror root X for right hand'
-    for pose,amount in [('relaxed',.2),('flashlight_grip',1),('snapper_pinch',.7),('talisman_pinch',.5),('throw_release',0)]:
+    for pose,amount in [('relaxed',.2),('flashlight_grip',1),('palm_support',.08),('talisman_pinch',.5),('throw_release',0)]:
         rig.animation_data_create(); action=bpy.data.actions.new(pose); rig.animation_data.action=action
         for b in rig.pose.bones:
-            if '_' not in b.name: continue
+            if not b.name[-1:].isdigit(): continue
             b.rotation_mode='XYZ'; b.rotation_euler.x=amount*(.7 if b.name.startswith('thumb') else 1.05)
             b.keyframe_insert(data_path='rotation_euler',frame=1,group=b.name)
         for b in rig.pose.bones: b.rotation_euler=(0,0,0)
@@ -94,7 +156,8 @@ def prepare(key):
     bmesh.ops.remove_doubles(bm,verts=list(bm.verts),dist=.000002)
     bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(obj.data);bm.free()
     if obj.data.has_custom_normals:bpy.ops.mesh.customdata_custom_splitnormals_clear()
-    target={'hand':36000,'incense':8500,'talisman':9000,'flashlight':18000}[key]
+    if key=='hand':finish_hand_surface(obj)
+    target={'hand':80000,'incense':8500,'talisman':9000,'flashlight':18000}[key]
     dec=obj.modifiers.new('Source surface game LOD','DECIMATE');dec.ratio=min(1,target/len(obj.data.polygons))
     bpy.ops.object.modifier_apply(modifier=dec.name)
     for p in obj.data.polygons:p.use_smooth=True
@@ -116,7 +179,11 @@ def prepare(key):
     bpy.ops.object.select_all(action='DESELECT');obj.select_set(True)
     if rig:rig.select_set(True);bpy.context.view_layer.objects.active=rig
     else:bpy.context.view_layer.objects.active=obj
-    bpy.ops.export_scene.fbx(filepath=str(folder/'geometry.fbx'),use_selection=True,add_leaf_bones=False,bake_anim=False,axis_forward='-Z',axis_up='Y')
+    # Export completely before replacing the existing Unity source; a failed
+    # authoring run must not truncate the last valid imported model.
+    export=folder/'geometry-export.fbx'
+    bpy.ops.export_scene.fbx(filepath=str(export),use_selection=True,add_leaf_bones=False,bake_anim=False,axis_forward='-Z',axis_up='Y')
+    export.replace(folder/'geometry.fbx')
     bpy.ops.file.pack_all()
     bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/f'{key}.blend'))
     report={'original':f'Originals/{key}.glb','heightMetres':height,'vertices':len(obj.data.vertices),'triangles':sum(len(p.vertices)-2 for p in obj.data.polygons),

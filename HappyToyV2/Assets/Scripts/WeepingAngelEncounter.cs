@@ -53,7 +53,7 @@ namespace HappyToy.V2
                 AttacksStarted++; sound.PlayOneShot(creak, 1.3f); player.ReportHidingDoorAttack(1.5f);
                 session.WarnThreat("마네킹이 은신처를 발견했습니다 · 캐비닛으로 돌진합니다.", 1.5f);
             }
-            if (step == CabinetEncounterClock.Step.Impact) session.TryDefeat("Weeping mannequin", CabinetHidingRules.RiskExplanation);
+            if (step == CabinetEncounterClock.Step.Impact) session.TryCabinetDefeat(this, "Weeping mannequin", CabinetHidingRules.RiskExplanation);
             else if (!cabinetEncounter.Active) { repath = unobservedFor = 0; Stop(); }
             return true;
         }

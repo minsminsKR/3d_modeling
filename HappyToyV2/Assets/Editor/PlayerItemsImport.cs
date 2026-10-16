@@ -11,10 +11,12 @@ namespace HappyToy.V2.Editor
         const string Root="Assets/Resources/PlayerItems/";
         public static void ApplyAndReview() { Apply(); PlayerHandsPreview.Render(); }
         [Serializable] sealed class Report { public string baseColor,metallicRoughness; public bool rigged; }
-        public static void Apply()
+        public static void Apply() => ApplyItems(new[]{"hand","incense","talisman","flashlight"});
+        public static void ApplyHand() => ApplyItems(new[]{"hand"});
+        static void ApplyItems(string[] keys)
         {
             AssetDatabase.Refresh();
-            foreach (string key in new[]{"hand","incense","talisman","flashlight"})
+            foreach (string key in keys)
             {
                 string folder=Root+key+"/";
                 var report=JsonUtility.FromJson<Report>(File.ReadAllText(folder+"asset.json"));
@@ -28,6 +30,19 @@ namespace HappyToy.V2.Editor
                 }
                 var shader=Resources.Load<Shader>("PlayerItemSurface");
                 var surface=Surface("surface",shader); Surface("held",shader);
+                if (key == "hand")
+                {
+                    var normalImporter = (TextureImporter)AssetImporter.GetAtPath(folder+"skin-normal.png");
+                    normalImporter.textureType = TextureImporterType.NormalMap;
+                    normalImporter.maxTextureSize = 4096; normalImporter.SaveAndReimport();
+                    foreach (string name in new[] { "surface", "held" })
+                    {
+                        var material = AssetDatabase.LoadAssetAtPath<Material>(folder+name+".mat");
+                        material.SetTexture("_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(folder+"skin-normal.png"));
+                        material.SetFloat("_HasNormal", 1); material.SetFloat("_BumpScale", .55f);
+                        material.SetFloat("_Smoothness", .32f); EditorUtility.SetDirty(material);
+                    }
+                }
                 Prefab(key,folder+"geometry.fbx",surface,report.rigged);
                 if (key=="talisman")
                     for (int i=0;i<5;i++) Prefab("fragment_"+i,folder+"fragment_"+i+".fbx",surface,false);
@@ -44,7 +59,7 @@ namespace HappyToy.V2.Editor
                     prefab.GetComponentsInChildren<Renderer>().Any(r=>r.sharedMaterials.Any(m=>!m || !m.GetTexture("_BaseMap"))))
                     throw new InvalidOperationException("Generated player item is incomplete: "+key);
                 if (key=="hand" && (prefab.GetComponentsInChildren<SkinnedMeshRenderer>().Length!=1 ||
-                    prefab.GetComponentsInChildren<Transform>().Count(t=>t.name.StartsWith("index_"))!=3))
+                    prefab.GetComponentsInChildren<Transform>().Count(t=>t.name=="index_1" || t.name=="index_2" || t.name=="index_3")!=3))
                     throw new InvalidOperationException("Editable player hand rig is missing");
             }
         }
@@ -52,7 +67,7 @@ namespace HappyToy.V2.Editor
         {
             var importer=AssetImporter.GetAtPath(path) as TextureImporter;
             if (!importer) throw new InvalidOperationException("Missing generated player item map: "+path);
-            importer.sRGBTexture=!linear; importer.maxTextureSize=2048; importer.mipmapEnabled=true; importer.SaveAndReimport();
+            importer.sRGBTexture=!linear; importer.maxTextureSize=path.Contains("/hand/")?4096:2048; importer.mipmapEnabled=true; importer.SaveAndReimport();
             return AssetDatabase.LoadAssetAtPath<Texture2D>(path);
         }
         static void Prefab(string key,string path,Material material,bool rigged)
@@ -65,8 +80,19 @@ namespace HappyToy.V2.Editor
             try
             {
                 var model=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path),root.transform);
+                Material nail = null;
+                if (key == "hand")
+                {
+                    string nailPath = Root+"hand/nail.mat";
+                    nail = AssetDatabase.LoadAssetAtPath<Material>(nailPath);
+                    if (!nail) { nail = new Material(material.shader); AssetDatabase.CreateAsset(nail,nailPath); }
+                    nail.SetTexture("_BaseMap",Texture(Root+"hand/nail-white.png",false));
+                    nail.SetColor("_BaseColor",new Color(.63f,.42f,.36f));
+                    nail.SetFloat("_Smoothness",.68f); nail.SetFloat("_Viewmodel",1); EditorUtility.SetDirty(nail);
+                    nail.SetFloat("_HasMetalRough",0); nail.SetFloat("_HasNormal",0); nail.SetFloat("_Metallic",0);
+                }
                 foreach (var renderer in model.GetComponentsInChildren<Renderer>())
-                    renderer.sharedMaterials=renderer.sharedMaterials.Select(_=>material).ToArray();
+                    renderer.sharedMaterials=renderer.sharedMaterials.Select(source=>nail && source && source.name.Contains("hand_nail") ? nail : material).ToArray();
                 PrefabUtility.SaveAsPrefabAsset(root,Root+key+".prefab");
             }
             finally { UnityEngine.Object.DestroyImmediate(root); }

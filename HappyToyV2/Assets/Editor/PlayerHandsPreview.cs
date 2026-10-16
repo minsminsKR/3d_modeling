@@ -11,6 +11,7 @@ namespace HappyToy.V2.Editor
     public static class PlayerHandsPreview
     {
         public static void ImportAndRender() { PlayerItemsImport.Apply(); Render(); }
+        public static void ImportHandAndRender() { PlayerItemsImport.ApplyHand(); Render(); }
         public static void Render()
         {
             string output = Path.GetFullPath(Path.Combine(Application.dataPath,"../../game/verification/ritual-items/hands"));
@@ -27,6 +28,11 @@ namespace HappyToy.V2.Editor
                 void Capture(string name, PlayerItem item, float burned = -1, float action = -1, float fingers = -1)
                 {
                     var camera = hands.PrepareEditorPreview(item,burned,action,fingers);
+                    var report = new System.Text.StringBuilder();
+                    foreach (var node in hands.GetComponentsInChildren<Transform>(true))
+                        if (node.name == "palm_contact" || node.name.EndsWith("_tip") || node.name == "hand" || node.name == "flashlight")
+                            report.AppendLine(node.name+" position="+camera.transform.InverseTransformPoint(node.position).ToString("F5")+" forward="+node.forward.ToString("F4")+" up="+node.up.ToString("F4"));
+                    File.WriteAllText(Path.Combine(output,name+"-pose.txt"),report.ToString());
                     RenderPipeline.SubmitRenderRequest(camera,new UniversalRenderPipeline.SingleCameraRequest { destination = hands.Output });
                     var previous = RenderTexture.active;
                     var pixels = new Texture2D(hands.Output.width,hands.Output.height,TextureFormat.RGBA32,false);

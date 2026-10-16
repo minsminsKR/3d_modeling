@@ -1,10 +1,15 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.TestTools;
+using UnityEngine.UIElements;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using static HappyToy.V2.CloudTests.RuntimeAccess;
 
 namespace HappyToy.V2.CloudTests
@@ -87,6 +92,45 @@ namespace HappyToy.V2.CloudTests
                 if(key=="Uncat")Assert.That(actor.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Owned chase mouth interior").gameObject.activeSelf,Is.False,"Legacy mouth cap must not cover the dropped cabinet jaw");
             }
             yield return CabinetMustStayAliveFor(.45f);
+            yield return Wait(() => Get<bool>(session, "CabinetDeathActive"), 2, key + " skipped its committed death presentation");
+            Assert.That(Get<bool>(session, "Finished"), Is.False, "Result covered the monster before the scare");
+            Assert.That(Get<bool>(session, "InputAllowed"), Is.False);
+            Assert.That(Time.timeScale, Is.Zero);
+            var death = session.GetComponent(RequireType("CabinetDeathSequence"));
+            string source = Get<string>(session, "DefeatSource");
+            Assert.That((bool)Call(session, "TryDefeat", "Simultaneous strike", "Other"), Is.False);
+            Assert.That((bool)Call(session, "TryCabinetDefeat", (Behaviour)actor, "Simultaneous cabinet strike", "Other"), Is.False);
+            Assert.That(Get<string>(session, "DefeatSource"), Is.EqualTo(source), "Another attack replaced the committed monster");
+            Call(shell, "Pause"); float elapsed = Get<float>(death, "Elapsed");
+            yield return Delay(.15f);
+            Assert.That(Get<float>(death, "Elapsed"), Is.EqualTo(elapsed), "Scare advanced under the pause menu");
+            Call(shell, "Resume"); Assert.That(Time.timeScale, Is.Zero);
+            Call(shell, "SetItemWheelOpen", true); Assert.That(Get<bool>(shell, "ItemWheelOpen"), Is.False);
+            Call(player, "LeaveHiding"); Assert.That(Get<bool>(player, "Hidden"), Is.True);
+            yield return Delay(.6f);
+            Assert.That(Get<VisualElement>(One("GameShellView"), "Root").Q<VisualElement>("safe-area").resolvedStyle.visibility,
+                Is.EqualTo(Visibility.Hidden), "Unavailable exit prompt and HUD covered the cabinet scare");
+            var eyes = Get<Camera>(player, "eyes");
+            CaptureCabinetDeathReview(eyes, key);
+            var point = eyes.WorldToViewportPoint(Get<Vector3>(death, "FacePosition"));
+            Assert.That(point.z, Is.GreaterThan(.3f), key + " face crossed behind the camera");
+            Assert.That(Vector2.Distance(new Vector2(point.x, point.y), Vector2.one * .5f), Is.LessThan(.025f), key + " did not lunge straight into view");
+            bool covered = Physics.Linecast(eyes.transform.position, Get<Vector3>(death, "FacePosition"), out var cover, ~0, QueryTriggerInteraction.Ignore);
+            string obstruction = covered ? CabinetDeathTransformPath(cover.transform) + " collider=" + cover.collider.GetType().Name +
+                " point=" + cover.point.ToString("F3") + " bounds=" + cover.collider.bounds.ToString("F3") : "none";
+            Assert.That(!covered || cover.transform.IsChildOf(actor.transform), Is.True, key +
+                " face was still hidden behind the cabinet; hit=" + obstruction + " camera=" + eyes.transform.position.ToString("F3") +
+                " face=" + Get<Vector3>(death, "FacePosition").ToString("F3"));
+            var eyeSurface = actor.GetComponentsInChildren(RequireType("MonsterRedEyes")).Cast<Component>().FirstOrDefault();
+            if (eyeSurface)
+                foreach (var eyeAnchor in Get<IReadOnlyList<Transform>>(eyeSurface, "EyeAnchors"))
+                {
+                    var view = eyes.WorldToViewportPoint(eyeAnchor.position);
+                    Assert.That(view.z, Is.GreaterThan(.05f), key + " original eye was behind the player");
+                    Assert.That(view.x, Is.InRange(.05f, .95f), key + " original eye was outside the scare view");
+                    Assert.That(view.y, Is.InRange(.05f, .95f), key + " original eye was outside the scare view");
+                }
+            Assert.That(Get<bool>(session, "Finished"), Is.False, "Scare did not hold before game over");
             yield return Wait(() => Get<bool>(session, "Finished"), 3, key + " failed to resolve its witnessed physical strike");
             Assert.That(Get<bool>(session, "Escaped"), Is.False);
             if (key == "Cyclopse" || key == "Uncat")
@@ -94,6 +138,34 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<float>(face, "CabinetWeight"), Is.GreaterThan(.9f), "Defeat did not retain the fully gaping face");
                 float held=Get<float>(face,"CabinetWeight");yield return Delay(.15f);
                 Assert.That(Get<float>(face,"CabinetWeight"),Is.EqualTo(held));
+            }
+        }
+        static string CabinetDeathTransformPath(Transform target)
+        {
+            var names = new Stack<string>();
+            for (var node = target; node; node = node.parent) names.Push(node.name);
+            return string.Join("/", names);
+        }
+        static void CaptureCabinetDeathReview(Camera eyes, string key)
+        {
+            // Explicit opt-in only: focused tests remain silent and produce no
+            // routine screenshots. Capture the player's camera with the real
+            // cabinet, lighting and monster still present for visual review.
+            string output = Environment.GetEnvironmentVariable("HAPPYTOY_CABINET_DEATH_REVIEW");
+            if (string.IsNullOrWhiteSpace(output)) return;
+            Directory.CreateDirectory(output);
+            var target = new RenderTexture(1280, 720, 24); target.Create();
+            var image = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+            var previous = RenderTexture.active;
+            try
+            {
+                RenderPipeline.SubmitRenderRequest(eyes, new UniversalRenderPipeline.SingleCameraRequest { destination = target });
+                RenderTexture.active = target; image.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0); image.Apply();
+                File.WriteAllBytes(Path.Combine(output, key + "-player-cabinet-death.png"), image.EncodeToPNG());
+            }
+            finally
+            {
+                RenderTexture.active = previous; target.Release(); UnityEngine.Object.Destroy(target); UnityEngine.Object.Destroy(image);
             }
         }
         [UnityTest, Timeout(60000)] public IEnumerator CyclopseCabinetDetectionReraisesGrinAndRushesToKill() { yield return CabinetActorRush("Cyclopse"); }

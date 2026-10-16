@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: d21ef023c55b44246b820d5a609dc02e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetalRough:
@@ -37,15 +37,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BumpScale: 1
+    - _BumpScale: 0.55
     - _Burn: 0
     - _Burning: 0
     - _HasMetalRough: 1
-    - _HasNormal: 0
+    - _HasNormal: 1
     - _Metallic: 0
     - _Monochrome: 0
     - _PbrLayout: 0
-    - _Smoothness: 0.45
+    - _Smoothness: 0.32
     - _Viewmodel: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

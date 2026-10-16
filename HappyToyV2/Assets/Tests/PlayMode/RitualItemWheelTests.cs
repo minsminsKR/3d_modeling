@@ -44,7 +44,7 @@ namespace HappyToy.V2.CloudTests
             Keys(); RitualMouseState(RitualSlot(0)); yield return Delay(.08f);
             Keys(Key.Tab, Key.W);
             yield return Wait(() => WheelOpen, 2, "Tab did not open the real item wheel");
-            Assert.That(Time.timeScale, Is.EqualTo(.1f)); Assert.That(AudioListener.pause, Is.False);
+            Assert.That(Time.timeScale, Is.EqualTo(.25f)); Assert.That(AudioListener.pause, Is.False);
             var origin = player.transform.position;
             var rituals = Get<Component>(player, "Rituals"); int incense = Get<int>(rituals, "Incense");
             RitualMouseState(RitualSlot(2), true); yield return Delay(.15f);
@@ -69,7 +69,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreateCorridor", 73); IsolateThreats(); Begin(); AddAuditPad();
             yield return PadState(new GamepadState());
             yield return PadState(new GamepadState { rightStick = new Vector2(-.59f, -.81f) }.WithButton(GamepadButton.RightShoulder));
-            Assert.That(WheelOpen, Is.True); Assert.That(Time.timeScale, Is.EqualTo(.1f));
+            Assert.That(WheelOpen, Is.True); Assert.That(Time.timeScale, Is.EqualTo(.25f));
             Assert.That(SelectedItem, Is.EqualTo("Snapper"));
             Call(shell, "Pause"); Assert.That(WheelOpen, Is.False); Assert.That(Time.timeScale, Is.Zero);
             Call(shell, "Resume"); yield return Delay(.15f);
@@ -113,7 +113,7 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(icon, Is.Not.Null); Assert.That(icon.image, Is.Not.Null);
                     Assert.That(root.worldBound.Contains(icon.worldBound.min) && root.worldBound.Contains(icon.worldBound.max - Vector2.one), Is.True, "Item icon left safe area");
                 }
-                Assert.That(WheelOpen, Is.True); Assert.That(Time.timeScale, Is.EqualTo(.1f));
+                Assert.That(WheelOpen, Is.True); Assert.That(Time.timeScale, Is.EqualTo(.25f));
                 // Check every centre description too, including the longer
                 // incense/talisman text, rather than only the initial snapper.
                 for (int slot = 0; slot < 5; slot++)

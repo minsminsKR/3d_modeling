@@ -5,6 +5,27 @@ Use `--profile core|ui|ai|ai-doors|drawer|checkpoint|full` for fast rules, the a
 scene behavior, or both complete Unity suites. All runs use pinned Unity
 6000.6.0f1, fresh result directories and strict nonempty/pass validation.
 Player build and native/visual verification remain separate checks.
+`ritual-items` includes `PlayerHandsTests.cs`: imported articulated skin and contact
+markers, wrapped flashlight, thumb/index incense and talisman grips, palm-supported
+snapper/trap, lower-corner rendering and action/pause lifecycle. `RitualItemWheelTests`
+checks the actual Tab/RB wheel and 0.25 gameplay time scale; explicit pause remains
+zero. `core` covers the independent `ItemWheelRules` constant and selection rules.
+Use `PlayerHandsPreview.Render` / `RenderActions` for silent visual review of the
+runtime poses; numerical contact/render coverage does not certify realistic art.
+
+`cabinet-expression` includes the committed death presentation after a real lethal
+cabinet strike. `CabinetDeathSequence` freezes gameplay, faces the actual visual
+towards the cabinet/player and holds its open-mouth approach for 1.65 unscaled
+seconds before the result screen. The integration checks include delayed results,
+pause and source restoration. Enemy detection/attack and save rules remain in their
+existing owners; the sequence receives an explicit playing predicate and callback.
+Asset-only facial previews do not replace these actual death-flow checks.
+For explicit visual review, set `HAPPYTOY_CABINET_DEATH_REVIEW` to a new local
+output directory before running `cabinet-expression`. The six real death-flow
+cases then save `<Monster>-player-cabinet-death.png` at 1280×720 from the production
+camera with its cabinet and lighting. Ordinary tests do not take these screenshots;
+keep optional captures under `Builds/` or another local evidence directory.
+
 `readability` selects rendered torso wall clearance, pickup visibility, temporary
 candle blackout/recovery, enlarged creature gait and real large-monster door
 passage. Its silent native companion is `-quiet-diagnostics -v2-readability-output

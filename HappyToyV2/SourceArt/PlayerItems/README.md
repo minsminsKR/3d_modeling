@@ -15,10 +15,23 @@ Runtime mirrors it for the opposite hand. The talisman includes five separately
 editable cut fragments of the generated paper, preserving its texture coordinates.
 Full input originals remain available if further topology work is needed.
 
+The October 16 hand finish reshapes that preserved surface into a shallower palm
+and slimmer fingers while retaining its UVs and original textures. Its skin mesh
+targets 80,000 triangles, with five small editable keratin nail caps conformed to
+the original distal skin surface. Each cap follows its finger's skin weights and
+uses the separate `hand_nail` material slot. The rig follows measured curved digit centre lines:
+17 deform bones, five nondeforming fingertip markers and `palm_contact` (23 bones
+in total). Nearest-digit weights blend along the knuckles without allowing one
+finger to pull the adjacent finger across a pinch. The packed `hand.blend` keeps
+the finished geometry and editable rig; `Originals/hand.glb` stays unchanged.
+The exported `hand/asset.json` records 40,586 vertices and 80,960 triangles in total
+(the 80,000-triangle skin plus 960 nail triangles), with both skin and nail slots.
+
 From the repository root, use **Blender 4.0.2** (its bundled Python and NumPy):
 
 ```powershell
 blender -b --python HappyToyV2/SourceArt/PlayerItems/finish_player_items.py
+python HappyToyV2/SourceArt/PlayerItems/finish_skin_detail.py
 ```
 
 The script resolves paths relative to itself, writes the packed Blender sources
@@ -26,6 +39,24 @@ and the game FBX/PBR resources under `Assets/Resources/PlayerItems`. For one ite
 append `-- --only=hand` (or `incense`, `talisman`, `flashlight`). In pinned Unity
 **6000.6.0f1**, run `HappyToy.V2.Editor.PlayerItemsImport.Apply` to regenerate
 material/prefab assets through Editor APIs. Keep all resulting `.meta` files.
+
+Run `finish_skin_detail.py` after the hand export with Python 3.11 and the pinned
+NumPy 1.26.4 / Pillow 10.2.0 in `Tools/requirements-authoring.txt`. It derives subtle
+tangent-space micro relief from the original albedo's high-frequency detail and
+writes `hand/skin-normal.png`; it adds no replacement mesh or external texture.
+The Unity importer keeps the hand's albedo, roughness/metallic and normal at up to
+4096px, connects the normal to the world/held materials, and preserves the other
+items' 2048px game import limit. Source GLBs retain their embedded 4096px maps.
+`PlayerItemsImport` maps `hand_nail` to `hand/nail.mat`, a subtle glossy keratin
+material. Nail geometry and source material remain editable inside `hand.blend`
+and are recreated by `finish_player_items.py`; the original hand GLB is untouched.
+
+`FirstPersonHands` owns the live poses and contact placement: the flashlight is
+wrapped by all fingers, incense and talisman sit between the index/thumb tips,
+and the snapper/trap rest on `palm_contact` with the hand turned upwards. These
+runtime poses use the imported rig and contact markers. Hands remain near the
+lower corners of the view; throw/place motion is applied to their grip sockets.
+The standalone Blender actions remain editable authoring references.
 
 `render_icons.py` renders transparent inventory icons from these editable sources
 and the existing `SourceArt/Snappers/package.blend` / `SourceArt/Traps/Trap_Editable.blend`.

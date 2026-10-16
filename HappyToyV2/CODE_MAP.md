@@ -7,7 +7,7 @@
 
 | 기능 | 진입점 / 실제 책임 소유자 | 검사 프로필 |
 |---|---|---|
-| 향·부적·손 액션·아이템 휠 | `PlayerRitualInventory`는 향/조각/완성 부적 재고와 10초 연소 수명을, 독립 `Core/TalismanStockRules`, `TalismanBurnClock`, `ItemWheelRules`는 조합·시계·원형 선택을 소유한다. `IncenseGuidance`는 실제 NavMesh 경로 거리로 가까운 기억 하나를 골라 수집까지 유지하고 회수 완료 시 봉헌 제단을 향한다. `IncenseSmokeTrail`은 향 끝에서 피어올라 이동하는 하나의 연속 메시와 흐르는 밀도·잔류 흔적을 소유하며 일시정지에서 함께 멈춘다. `RitualWorld`는 기억 주변 아이템과 선택적인 저장 필드를 연결한다. `AI/EnemyTimeStop`은 기존 AI의 정지 guard와 함께 원래 NavMesh/애니메이션/포즈/소리·등장 코루틴 시계를 보존·복원한다. `FirstPersonHands`는 생성 손 리그·그립·투척과 별도 시점 렌더, 위→아래 연소·컬러 불꽃을 소유한다. 세계 흑백은 소유 Volume이며 URP 자산을 변경하지 않는다. `PlayerItemLoadout`은 선택/사용, `PlayerItemWheel`은 Tab/RB hold와 선택 입력, `UI/ItemWheelOverlay`는 표시 데이터만 받는다. 시간/커서는 `GameShell`이 소유한다. `SourceArt/PlayerItems`에 GPU 0 GLB·입력·설정·리그·Blender·재현 도구가 있다. | `ritual-items`, 향만 변경 시 `incense`; `core`; 무음 연기 시각 검토 `IncenseSmokePreview.Render`, 정지/동작 미리보기 `PlayerHandsPreview.Render` / `RenderActions`, GIF 조립 `Tools/quality/render_hand_action_gifs.py` |
+| 향·부적·손 액션·아이템 휠 | `PlayerRitualInventory`는 향/조각/완성 부적 재고와 10초 연소 수명을, 독립 `Core/TalismanStockRules`, `TalismanBurnClock`, `ItemWheelRules`는 조합·시계·원형 선택을 소유한다. `IncenseGuidance`는 실제 NavMesh 경로 거리로 가까운 기억 하나를 골라 수집까지 유지하고 회수 완료 시 봉헌 제단을 향한다. `IncenseSmokeTrail`은 향 끝에서 피어올라 이동하는 하나의 연속 메시와 흐르는 밀도·잔류 흔적을 소유하며 일시정지에서 함께 멈춘다. `RitualWorld`는 기억 주변 아이템과 선택적인 저장 필드를 연결한다. `AI/EnemyTimeStop`은 기존 AI의 정지 guard와 함께 원래 NavMesh/애니메이션/포즈/소리·등장 코루틴 시계를 보존·복원한다. `FirstPersonHands`는 해부학적으로 마감한 생성 손 리그·손끝/손바닥 접촉점 기반 그립·투척과 하단 모서리 별도 시점 렌더, 위→아래 연소·컬러 불꽃을 소유한다. 손전등은 감싸 쥐고 향/부적은 검지·엄지로 집으며 콩알탄/덫은 손바닥으로 지지한다. 세계 흑백은 소유 Volume이며 URP 자산을 변경하지 않는다. `PlayerItemLoadout`은 선택/사용, `PlayerItemWheel`은 Tab/RB hold와 선택 입력, `UI/ItemWheelOverlay`는 표시 데이터만 받는다. 시간/커서는 `GameShell`이 소유하며 `Core/ItemWheelRules.SlowTimeScale`의 0.25배를 적용한다. `SourceArt/PlayerItems`에 GPU 0 GLB·입력·설정·리그·Blender·재현 도구가 있다. | `ritual-items`, 향만 변경 시 `incense`; `core`; 무음 연기 시각 검토 `IncenseSmokePreview.Render`, 정지/동작 미리보기 `PlayerHandsPreview.Render` / `RenderActions`, GIF 조립 `Tools/quality/render_hand_action_gifs.py` |
 | 메뉴·일시정지·설정 | `Assets/Scripts/GameShell.cs`는 화면 전환·입력 허용을 조정한다. `Assets/Scripts/UI/ShellPauseScreen.cs`, `ShellSettingsScreen.cs`는 각 화면의 컨트롤을 소유한다. | `ui` |
 | 기록·결과·페이지 이동 | `UI/ShellJournalScreen.cs`, `ShellRecordsScreen.cs`, `ShellResultScreen.cs`. 화면용 데이터와 Action을 받아 표시하며 게임 진행을 직접 변경하지 않는다. | `ui`, 저장 변경 시 `checkpoint` |
 | HUD·메뉴 공통 스타일 | `UI/ShellHudView.cs`는 HUD 컨트롤을 소유한다. `UI/FlashlightGauge.cs`는 낡은 금속 손전등 PNG와 얇은 황동 잔량 레일을 표시한다. 아이콘 제작 원본·프롬프트는 `SourceArt/Hud`에 있다. `UI/ShellLayout.cs`는 공통 배치·스타일을 만든다. `GameShellView.cs`는 Unity 패널·입력·각 모듈 연결을 담당한다. | `ui`, 손전등 표시만 변경 시 `flashlight-hud` |
@@ -17,7 +17,7 @@
 | 백수귀 외형 크기·문 파괴·잔해 | `BaeksugwiHallwayPresentation`은 게임 모델에만 별도 자식 피벗을 두고 32개 달리기/머리 포즈의 측정 외곽을 폭 2.52m·높이 2.36m로 맞춘다. `MaskHorrorVisual`이 이 피벗을 연결하며 root/NavMesh 반경 .3m·높이 2.1m·공격 판정과 원본/타이틀 프리팹은 보존한다. `LanternMaskRunner.TickRunnerDoor`는 학교/회랑의 실제 경로를 따라 닫힌 문에 접근하고 `InteractableDoorDestruction`이 접촉·파괴/복원·문짝 물리를 소유한다. 열린 문은 그대로 통과한다. `DoorShatterDebris`는 지정 웹앱 GPU 0 모델의 갈라진 목재·문틀·작은 파편을 흩뜨린 뒤 바닥 잔해로 합쳐 보존하며 충돌·NavMesh는 만들지 않는다. `DoorDestructionAudio`가 기존 실제 CC0 목재/금속 파괴 녹음을 문 위치에서 한 번 재생한다. 학교의 선택 broken/locked 저장 필드와 기존 회랑 broken 필드는 잔해를 무음 복원한다. `BaeksugwiHallwayAuthoring.Apply`, `SourceArt/BaeksugwiStudio/hallway-presentation.json`이 측정/재현 원본이다. | `wraith-hallway`, `core`; 수동 플레이어 실행은 별도 요청 시 |
 | 문 파괴 연기·먼지 | `DoorShatterDebris.Launch`가 실제 파괴 순간에만 `DoorBreakDust`를 생성한다. 문 높이의 목재 가루와 .85초 뒤 바닥 착지 먼지를 방출하며 3.8초 안에 사라진다. `Resources/DoorBreakDust.shader`가 부드러운 깊이 경계·절차적 구름·주변 조명을 처리한다. 수동 파티클 시뮬레이션은 게임 입력이 허용될 때만 전진해 일시정지에서 고정되며, 사망/리셋 시 정리된다. 저장 복원은 잔해를 Seal만 하므로 먼지를 재생하지 않는다. `DoorBreakDustPreview.Render`는 실제 효과와 파편을 무음 렌더링한다. | `door-dust`, `core`; 플레이어 실행은 별도 요청 시 |
 | 적의 시야·청각 | `StalkerBrain.cs`와 `AI/StalkerPerception.cs`가 실제 가림·층·소리 경로를 처리한다. 회랑 백수귀는 `LanternMaskEncounter.cs` / `LanternMaskRunner.cs`의 정면 시야만 사용하며 발소리·폭죽 콜백을 거부한다. | `core`, `ai`, `corridor` |
-| 공격·캐비닛 은신 | `AI/StalkerAttack.cs`는 일반 공격 예고/회복과 표적을 소유한다. `Core/CabinetEncounterClock.cs`는 목격한 진입의 접근→두리번거림→후퇴 또는 발각 돌진→문 앞 예고를 판정한다. `AI/EnemyCabinetEncounter.cs`가 실제 NavMesh·문·현재 가림을 연결하며 Stalker/백수귀/마네킹이 공유한다. `PlayerMotor.Hide`는 콜라이더를 숨기기 전에 모든 관찰자에게 알린다. `Core/CabinetTauntMemory`가 동일 캐비닛·몬스터의 4m 이내 실제 목격 진입을 세며 세 번째에는 확률을 덮어쓰고 바로 돌진한다. `AI/PlayerCabinetMemory`는 실제 관찰자와 돌진 중 재출입 금지, 12m 이탈 시 초기화, 선택 체크포인트 기록을 연결한다. 일반 진입의 75%/25% 한 번 판정과 구형 저장 호환은 유지한다. | `core`, `cabinet-expression`, `ai`, 저장 변경 시 `checkpoint` |
+| 공격·캐비닛 은신 | `AI/StalkerAttack.cs`는 일반 공격 예고/회복과 표적을 소유한다. `Core/CabinetEncounterClock.cs`는 목격한 진입의 접근→두리번거림→후퇴 또는 발각 돌진→문 앞 예고를 판정한다. `AI/EnemyCabinetEncounter.cs`가 실제 NavMesh·문·현재 가림을 연결하며 Stalker/백수귀/마네킹이 공유한다. 실제 캐비닛 치명타 뒤에는 `CabinetDeathSequence`가 게임 진행을 고정한 채 열린 입·캐비닛 정면 접근·플레이어 시점을 1.65초 표시하며, `GameSession`/`GameShell`의 완료 콜백이 결과 화면을 연다. 명시적 일시정지와 동작 감소를 따른다. `PlayerMotor.Hide`는 콜라이더를 숨기기 전에 모든 관찰자에게 알린다. `Core/CabinetTauntMemory`가 동일 캐비닛·몬스터의 4m 이내 실제 목격 진입을 세며 세 번째에는 확률을 덮어쓰고 바로 돌진한다. `AI/PlayerCabinetMemory`는 실제 관찰자와 돌진 중 재출입 금지, 12m 이탈 시 초기화, 선택 체크포인트 기록을 연결한다. 일반 진입의 75%/25% 한 번 판정과 구형 저장 호환은 유지한다. | `core`, `cabinet-expression`, `ai`, 저장 변경 시 `checkpoint` |
 | 적의 문 통과·추적 경로 | `AI/StalkerDoorPassage.cs`는 문 통과와 제한된 대기를 소유한다. `AI/CorridorRouteGuide.cs`는 지도 4의 타일 중앙 경유와 회전을, 독립 `Core/CorridorRouteRules.cs`는 연결된 다음 타일을 선택한다. `EnemyNavigation.FollowPath`는 원래 최종 목표·경로 증거를 보존하며 실제 이동을 연결한다. | `ai-doors`, `corridor` |
 | 몬스터 간 통행·양보 | `AI/EnemyPassageTraffic.cs`가 실제 NavMesh 위의 짧은 양보 이동과 경로 복귀를 소유한다. `Core/MonsterPassingRules.cs`는 통행 우선권을 한쪽에만 준다. 기존 AI의 목표·저장 위치는 바꾸지 않는다. | `traffic-loading`, 문/공통 경로 변경 시 `ai-doors` |
 | 열린 문 다시 닫기 | `DoorInteractionTarget.cs`의 물리·NavMesh 제외 문틀 쿼리를 `PlayerMotor.FindFocus`가 실제 가림과 함께 판정한다. `Interactable.cs`는 문짝 이동·점유·소리의 기존 소유자다. | `corridor`, `ai-doors`, `ui` |
@@ -124,6 +124,24 @@ PCM24와 기존 PCM16 자원의 필수 목록·원본/완성 해시·CC0 출처�
 도깨비 기와와 숨는 방, 다섯 기억의 단상 정렬 화면과 금속 손전등 HUD의 완충·절반·부족·방전 실제 플레이어 화면을 캡처한다. 프로세스 무음 가드에서 시작하며, 표면 검사는
 가드 실패 시에도 리스너 0을 유지한다. 일반 플레이에는 설치되지 않는다. 이 검사는
 생존 난이도나 최종 음향 믹스를 인증하지 않는다.
+
+`ritual-items`는 향·재고·시간 정지·실제 아이템 휠 입력과 손 통합 검사를 묶는다.
+손 검사는 가져온 해부학 리그·끝점 마커와 손전등 감싸기·향/부적 집기·콩알탄/덫
+손바닥 지지를 확인한다. 휠을 연 동안 게임 시간은 평소의 0.25배이며, 명시적
+일시정지는 계속 0이다. 시각 검토는 `PlayerHandsPreview.Render` / `RenderActions`의
+실제 runtime 포즈를 사용한다. Blender 참조 액션만으로 게임 손 포즈를 검증하지 않는다.
+
+`cabinet-expression`은 발각 돌진과 실제 치명타 뒤의 `CabinetDeathSequence`도 검사한다.
+치명타가 확정되면 게임 진행을 고정하고 실제 몬스터 시각 몸체를 캐비닛 정면에서
+플레이어로 향하게 해 열린 입을 가까이 들이댄다. 1.65초의 별도 시각 시계가 끝나야
+게임오버 화면으로 넘어간다. 이 시계는 unscaled delta를 사용하지만 명시적 일시정지에서는
+멈추고 동작 감소 설정을 따른다. 은신 확률·충돌·원래 공격 판정·저장 형식은 바꾸지 않는다.
+
+`HAPPYTOY_CABINET_DEATH_REVIEW` 환경변수에 새 로컬 출력 폴더를 지정한 뒤
+`cabinet-expression`을 실행하면 여섯 몬스터의 실제 플레이어 카메라·캐비닛·조명을
+사용한 1280×720 PNG를 선택적으로 저장한다. 파일명은
+`<몬스터>-player-cabinet-death.png`다. 평상시 검사에는 캡처를 추가하지 않으며,
+결과 이미지는 선택 검토 자료로 `Builds/` 아래 등에 보관하고 소스에 넣지 않는다.
 
 `uncat-cabinet-face`는 Core와 운캣 실제 캐비닛 발각/사망·탈출/일시정지·
 원래 추격 얼굴/양눈 안광 검사, 사이클롭스 기존 얼굴 수명 검사 4개만 실행한다.

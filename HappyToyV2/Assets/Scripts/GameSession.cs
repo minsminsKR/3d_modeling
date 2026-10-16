@@ -112,6 +112,8 @@ namespace HappyToy.V2
         public bool AnnexRecordsComplete => !requireAnnexRecords || System.Array.TrueForAll(annexIds, inspected.Contains);
         public event System.Action<string> RecordInspected;
         public bool Finished { get; private set; }
+        public bool CabinetDeathActive => cabinetDeath && cabinetDeath.Active;
+        CabinetDeathSequence cabinetDeath;
         public bool Escaped { get; private set; }
         public string DefeatSource { get; private set; } = "";
         public string DefeatHint { get; private set; } = "문을 닫아 시선을 끊고, 숨을 회복한 뒤 이동하세요.";
@@ -130,7 +132,7 @@ namespace HappyToy.V2
         public int TotalRecords => ChapterMode ? 5 : CorridorMode ? CorridorRun.Required : requireAnnexRecords ? 7 : 4;
         public bool HasInspected(string id) => !string.IsNullOrEmpty(id) && inspected.Contains(id);
         public int StoryStep => names.Count;
-        public bool InputAllowed => Shell && Shell.Screen==GameShell.Page.Playing && !Shell.IsReloading && !Finished;
+        public bool InputAllowed => Shell && Shell.Screen==GameShell.Page.Playing && !Shell.IsReloading && !Finished && !CabinetDeathActive;
         public GameShell Shell { get; private set; }
         public string Objective
         {
@@ -221,6 +223,19 @@ namespace HappyToy.V2
             Debug.Log("HappyToy defeat: " + DefeatSource + " | objective=" + CurrentObjectiveId +
                 " | position=" + (player ? player.transform.position.ToString("F2") : "unknown"), this);
             Finish(false);
+            return true;
+        }
+        public bool TryCabinetDefeat(Behaviour attacker, string source, string hint)
+        {
+            // Only an AI-confirmed physical hit commits this presentation. The
+            // existing warning/escape, protection and time-stop rules run first.
+            if (!attacker || !player || !player.Hidden || !InputAllowed || CheatSafeMode || EnemyTimeStop.Active) return false;
+            DefeatSource = source; DefeatHint = hint;
+            Shell.SetItemWheelOpen(false);
+            if (!cabinetDeath) cabinetDeath = gameObject.AddComponent<CabinetDeathSequence>();
+            cabinetDeath.Begin(player, attacker, () => Shell.Screen == GameShell.Page.Playing,
+                Shell.ReducedMotion, () => Finish(false));
+            Time.timeScale = 0;
             return true;
         }
         public bool Collect(string id)

@@ -52,7 +52,7 @@ namespace HappyToy.V2
                 AttacksStarted++; sound.PlayOneShot(warning); player.ReportHidingDoorAttack(1.5f);
                 session.WarnThreat("가면이 은신처를 발견했습니다 · 캐비닛으로 돌진합니다.", 1.5f);
             }
-            if (step == CabinetEncounterClock.Step.Impact) session.TryDefeat("Lantern mask", CabinetHidingRules.RiskExplanation);
+            if (step == CabinetEncounterClock.Step.Impact) session.TryCabinetDefeat(this, "Lantern mask", CabinetHidingRules.RiskExplanation);
             else if (!cabinetEncounter.Active) { State = Phase.Wander; repath = memory = 0; }
             Visual(); return true;
         }

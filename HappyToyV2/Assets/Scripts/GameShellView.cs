@@ -305,7 +305,14 @@ namespace HappyToy.V2
             settingsScreen.Refresh(ShellSettingsScreen.State.Read(shell));
             settingsLabelsDirty = false;
         }
-        void UpdateHud() => hud?.Update(ShellHudView.State.Read(session, shell), shownGamepad);
+        void UpdateHud()
+        {
+            hud?.Update(ShellHudView.State.Read(session, shell), shownGamepad);
+            // A committed cabinet strike owns the view until its result. The
+            // exit/use prompts and crosshair would suggest unavailable actions.
+            if (stage != null) stage.style.visibility = session.CabinetDeathActive ? Visibility.Hidden : Visibility.Visible;
+            if (session.CabinetDeathActive && threatVeil != null) threatVeil.style.display = DisplayStyle.None;
+        }
         void LateUpdate()
         {
             if (root == null || !shell || !session) return;

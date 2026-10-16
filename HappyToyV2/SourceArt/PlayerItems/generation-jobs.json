@@ -61,7 +61,7 @@
     "Originals/hand.glb": "75a454b61cbfab99fe60827aa2b42b242f491290d9ded0709a05c6e91265be3e",
     "Originals/incense.glb": "ed470dcd80292635734852f2951f0ee7c2a192d07caa5412912c8d9969f5856e",
     "Originals/talisman.glb": "5b8e5abed808320aa77014a94385286aabce731590cb76b60eb12026e12841a8",
-    "References/flashlight-image-provenance.json": "f829d4f6290b466b92516396452ca57d37588e50e3b37cf4f08f519abf4b203d",
+    "References/flashlight-image-provenance.json": "3fa9d2f312f52724db34c28e0711991eee2d83bc6fd429c7898a525952d07cdf",
     "References/flashlight-processed.png": "279472ec8668a3846fd587f3ac32cb03b4e0093e7715495feaff74a5828b21a4",
     "References/flashlight.png": "eb2fb72105b499f1b29854ba8961f7f576c3ebb31c5858bd6ff17a23943960fa",
     "References/hand-processed.png": "9762bdf80e0a32e5c64057ea22edc024969fd1aecb4c352db257c9af8cef8815",
@@ -77,9 +77,37 @@
   "authoring": {
     "blender": "4.0.2",
     "tool": "finish_player_items.py",
-    "geometry": "Source GLB welded across coincident UV seam vertices; original per-loop UVs retained. Mesh simplified, continuous normals recalculated. No substitute base meshes.",
-    "handRig": "17 bones: wrist, palm, five three-joint fingers. Blender bone heat skin binding, smooth wrist/palm core protection; five editable grip actions. Unity FBX coordinate conversion mirrors the generated surface; runtime mirrors once for the opposite hand.",
+    "geometry": "Source GLB welded across coincident UV seam vertices; original per-loop UVs retained. Mesh simplified, continuous normals recalculated. Hand source skin finished locally with shallower palm and slimmer digits at an 80,000-triangle target; five small keratin nail caps conform to the preserved distal skin and share its rig weights. No substitute base meshes.",
+    "handRig": "23 bones: 17 deform bones (wrist, palm, five three-joint fingers), five nondeforming fingertip markers and palm_contact. Measured digit centre lines; nearest-digit weights blended along knuckles with wrist/palm protection; five editable grip actions. Unity FBX coordinate conversion mirrors the generated surface; runtime mirrors once for the opposite hand.",
     "fragments": "Five source-derived paper strips with alternating slanted cuts, original UV/PBR retained.",
-    "gameMapImport": "Original 4096 maps kept; Unity import limited to 2048."
+    "gameMapImport": "Original embedded 4096px maps kept. Unity hand maps and albedo-derived skin normal import at up to 4096px; other items import at up to 2048px.",
+    "skinDetail": {
+      "tool": "finish_skin_detail.py",
+      "python": "3.11",
+      "numpy": "1.26.4",
+      "pillow": "10.2.0",
+      "input": "../../Assets/Resources/PlayerItems/hand/albedo.png",
+      "output": "../../Assets/Resources/PlayerItems/hand/skin-normal.png",
+      "method": "High-pass luminance of the unchanged source albedo, Gaussian sigma 5px, gradient strength 1.4, tangent-space normal. Re-run after hand export; no new model generation."
+    },
+    "nails": {
+      "tool": "finish_player_items.py",
+      "source": "Originals/hand.glb distal finger surfaces after source-derived finishing",
+      "count": 5,
+      "materialSlot": "hand_nail",
+      "unityMaterial": "../../Assets/Resources/PlayerItems/hand/nail.mat",
+      "method": "Editable keratin caps follow the actual source skin using BVH ray projection, offset 0.35mm; same nearest-digit skin weights. Local finishing only; original GLB untouched."
+    },
+    "finishedHand": {
+      "vertices": 40586,
+      "triangles": 80960,
+      "skinTriangleTarget": 80000,
+      "nailTriangles": 960,
+      "materialNames": [
+        "hand_surface_0",
+        "hand_nail"
+      ],
+      "statistics": "Assets/Resources/PlayerItems/hand/asset.json"
+    }
   }
 }

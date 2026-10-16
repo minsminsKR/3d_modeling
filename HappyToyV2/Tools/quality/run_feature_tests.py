@@ -46,8 +46,8 @@ def play_tests(*files: str) -> tuple[str, ...]:
 PROFILES = {
     "incense": ("Single stable nearest reachable memory, retarget on collection, offering fallback, continuous plume pause and optional stock save compatibility", [
         ("PlayMode", play_tests("RitualWorldTests.cs"))]),
-    "ritual-items": ("Single-target incense and offering guidance, optional stock save compatibility, actual wheel input/page ownership and all six frozen attackers", [
-        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualTimeStopTests.cs", "RitualItemWheelTests.cs") + (
+    "ritual-items": ("Single-target incense and offering guidance, optional stock save compatibility, 0.25-speed wheel, anatomical hand grips/rendering and all six frozen attackers", [
+        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualTimeStopTests.cs", "RitualItemWheelTests.cs", "PlayerHandsTests.cs") + (
             PLAY + "TrapPlacementUsesSupportedGroundAndPausedInputNeverConsumesStock",
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement",
             PLAY + "PortraitFirstAppearanceUsesPhysicalFrameThenProtectedAngryGrace",
@@ -76,7 +76,7 @@ PROFILES = {
     "graphics": ("Owned URP depth SSAO, unchanged shadow selection/restore and school/corridor presentation", [
         ("EditMode", (CLOUD + "GraphicsLightingRulesTests",)),
         ("PlayMode", play_tests("CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs"))]),
-    "cabinet-expression": ("Eye emission through chase faces, third-entry captures and physical/save safety for all monsters", [
+    "cabinet-expression": ("Eye emission, physical and third-entry captures, frontal open-mouth death hold, delayed results/pause and save safety for all monsters", [
         ("PlayMode", play_tests("CloudCabinetSurvivalTests.cs", "CloudCabinetExpressionTests.cs", "CloudCabinetTauntTests.cs") + (
             PLAY + "NaturalEyeLifecycleRestoresCallerMaterialAndIndexedPropertiesAndHonoursLaterMaterialOwner",
             PLAY + "NaturalEyeEmissionTogglePreservesPausedChapterCheckpointPhysicsAndSourceAssetsAcrossReload"))]),

@@ -28,6 +28,7 @@ namespace HappyToy.V2
         // while hidden only the eye occupies this outward-facing peek position.
         public Vector3 HiddenCameraLocalPosition => hiddenPeek ? transform.InverseTransformPoint(hiddenPeek.EyePosition) : new Vector3(.272f, 1.645f, 0);
         public CabinetPeekWindow ActivePeekWindow => Hidden ? hiddenPeek : null;
+        public Interactable ActiveHidingPlace => Hidden ? hidingPlace : null;
         // A short remembered cue from an actual attack at this cabinet door.
         // This is not a query of unseen enemy awareness or general hiding safety.
         public bool HidingThreatCueActive => Hidden && hidingPlace && warnedHidingPlace == hidingPlace && Time.time < hidingThreatUntil;

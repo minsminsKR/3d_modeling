@@ -69,7 +69,7 @@ namespace HappyToy.V2.CoreTests
         [Test]
         public void ReleasedStickAndNonFiniteInputKeepTheCurrentItem()
         {
-            Assert.That(ItemWheelRules.SlowTimeScale, Is.EqualTo(.1f));
+            Assert.That(ItemWheelRules.SlowTimeScale, Is.EqualTo(.25f));
             Assert.That(ItemWheelRules.Select(0, 0, 5, 3), Is.EqualTo(3));
             Assert.That(ItemWheelRules.Select(.1, .1, 5, 3), Is.EqualTo(3));
             Assert.That(ItemWheelRules.Select(double.NaN, 1, 5, 3), Is.EqualTo(3));

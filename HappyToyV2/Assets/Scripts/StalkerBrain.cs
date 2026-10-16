@@ -224,7 +224,7 @@ namespace HappyToy.V2
                 session.WarnThreat(player.HidingForcedCapture ? "반복한 은신을 간파당했습니다 · 몬스터가 출구를 막고 돌진합니다." :
                     "은신처를 들켰습니다 · 캐비닛으로 돌진합니다. 지금 빠져나오세요.", 1.5f);
             }
-            if (step == CabinetEncounterClock.Step.Impact) session.TryDefeat(name, CabinetHidingRules.RiskExplanation);
+            if (step == CabinetEncounterClock.Step.Impact) session.TryCabinetDefeat(this, name, CabinetHidingRules.RiskExplanation);
             else if (!cabinetEncounter.Active)
             {
                 state = State.Patrol; witnessedHiding = false; memory = repath = 0; awareness.Reset();
