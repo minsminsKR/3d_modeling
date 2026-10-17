@@ -2,7 +2,10 @@
 
 이미지 기반 3D 모델링·모션 관련 실험 저장소입니다.
 
-## 그림자복도 플레이
+## 모델링 웹앱 모델 테스트 플레이
+
+모델링 웹앱으로 만든 3D 모델을 활용해 테스트 플레이 게임을 만들었습니다.
+Unity 기반 HappyToyV2는 [프로젝트 README](HappyToyV2/README.md)를 참고하세요.
 
 캐릭터 FBX, 소품 GLB, 텍스처는 `game/assets`에 포함되어 있습니다. clone 후 Python만으로 실행합니다.
 
@@ -31,7 +34,8 @@ python3 web_server.py --host 127.0.0.1 --port 8010
 
 ## 하위 프로젝트
 
-- **game/happy_toy** — 그림자복도 1인칭 공포 게임. 에셋은 `game/assets`에 포함.
+- **HappyToyV2** — 모델링 웹앱으로 만든 모델을 활용한 Unity 테스트 플레이 게임 ([상세 README](HappyToyV2/README.md)).
+- **game/happy_toy** — 모델링 웹앱으로 만든 모델을 활용한 브라우저 테스트 플레이 게임. 에셋은 `game/assets`에 포함.
 - **hunyuan3d-webapp** — Hunyuan3D 2.1 Flask 웹앱 ([상세 README](hunyuan3d-webapp/README.md))
 - **Hunyuan3D-2.1**, **Hunyuan3D-Omni** — 업스트림/실험용 서브모듈성 디렉터리
 - **model_test** — 에셋 테스트
