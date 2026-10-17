@@ -12,6 +12,9 @@ for folder in ('Assets','Packages','ProjectSettings','SourceArt','Tools','ThirdP
         excluded={'__pycache__','.git','.pytest_cache'}
         if folder in ('SourceArt','Tools'):
             excluded.update(('proposed','staged','previews','work','bin','obj','.venv','venv'))
+            # Documented authoring environments (.venv-corridor, etc.) are
+            # rebuildable caches; retain their pinned requirements, not binaries.
+            excluded.update(name for name in dirs if name.startswith('.venv-'))
         dirs[:]=[name for name in dirs if name not in excluded]
         for filename in files:
             path=Path(directory)/filename

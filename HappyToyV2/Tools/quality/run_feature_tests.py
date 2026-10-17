@@ -44,6 +44,12 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "corridor-feedback": ("Moving quarter-time item selection, pursuit screams, three-tick snappers, louder bells, actual animal contacts and brighter local entrance camera", [
+        ("PlayMode", play_tests("RitualItemWheelTests.cs", "CreatureBreathingAudioTests.cs", "CorridorSoundFeedbackTests.cs", "EntranceBrightnessTests.cs") + (
+            PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies",
+            PLAY + "UncatActualWalkingBellsAccelerateAfterRecognitionAndStopDuringPause",
+            PLAY + "RealThrownFirecrackerUsesThreeRecordedTakesAndReleasesOnlyOwnedAudio",
+            PLAY + "EntranceRitualActualCameraShowsWetFloorSealsCandlesAndGuardiansAcrossAspectRatios"))]),
     "supplies-voices": ("Supported finite ritual shelf/drawer supplies, version-one save migration, louder walking/pursuit bells and quiet recorded Cyclopse breathing lifecycle/mix", [
         ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
         ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs", "RitualFurnitureSupplyTests.cs", "CreatureBreathingAudioTests.cs") + (

@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 namespace HappyToy.V2
 {
-    /// <summary>The corridor runner owns recorded heavy contacts and its near human whistle.</summary>
+    /// <summary>The corridor runner owns recorded animal paw contacts and its near human whistle.</summary>
     [DisallowMultipleComponent, RequireComponent(typeof(LanternMaskEncounter), typeof(NavMeshAgent))]
     public sealed class CorridorMaskAudio : MonoBehaviour
     {
@@ -29,8 +29,8 @@ namespace HappyToy.V2
         void Awake()
         {
             mask = GetComponent<LanternMaskEncounter>(); agent = GetComponent<NavMeshAgent>();
-            contactClips = LoadBank("mask-heavy-step"); whistleClips = LoadBank("mask-near-whistle");
-            contacts = MakeEmitter("Corridor mask pounding feet", .1f, 3.6f, 31f, 28, .92f, out contactAcoustics);
+            contactClips = LoadBank("mask-beast-step"); whistleClips = LoadBank("mask-near-whistle");
+            contacts = MakeEmitter("Corridor mask recorded beast paws", .1f, 3.6f, 31f, 28, .92f, out contactAcoustics);
             whistle = MakeEmitter("Corridor mask near whistle", 1.95f, 1.8f,
                 LanternMaskEncounter.NearWhistleDistance + .25f, 22, .64f, out whistleAcoustics);
         }

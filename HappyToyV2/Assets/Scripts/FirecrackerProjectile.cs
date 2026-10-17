@@ -2,7 +2,7 @@ using UnityEngine;
 namespace HappyToy.V2
 {
     // Existing component/API is retained for scene GUIDs and old interactions.
-    // A snapper has no fuse: first solid contact produces exactly one report.
+    // No fuse: first solid contact triggers one recorded three-tick burst.
     public sealed class FirecrackerProjectile : MonoBehaviour
     {
         public bool Exploded { get; private set; }
@@ -86,7 +86,7 @@ namespace HappyToy.V2
             foreach (var mask in FindObjectsByType<LanternMaskEncounter>(FindObjectsSortMode.None))
                 if (mask.HearNoise(point, SnapperStockRules.InspectionSeconds)) Attracted++;
             if (session.player && session.player.eyes && Vector3.Distance(session.player.eyes.transform.position, point) <= 18)
-                session.Shell.ShowCaption("[콩알탄이 바닥이나 벽에 탁 터지는 소리]", 1.2f);
+                session.Shell.ShowCaption("[콩알탄이 티티틱, 빠르게 세 번 터지는 소리]", 1.2f);
         }
         void OnDisable() { if (source) source.Stop(); }
         void OnDestroy() { if (crack) Destroy(crack); }

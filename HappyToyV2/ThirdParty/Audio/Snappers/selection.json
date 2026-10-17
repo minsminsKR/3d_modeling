@@ -14,7 +14,7 @@
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "One recorded paper party-snapper impact. Trim, DC removal, gain limit, 4ms edge fades only.",
+      "scope": "One collision plays three distinct recorded paper snapper ticks at 0/75/150ms. Source windows are -6/+54ms around 1.418/3.408/5.914s; DC removal, peak .65, 1/12ms fades, second tick gain .9. One AI hearing observation per burst.",
       "recordings": [
         {
           "file": "whipper-snappers-hq.mp3",
@@ -28,13 +28,21 @@
         }
       ],
       "source_kind": "recorded; real physical Whipper Snapper Fireworks, no oscillator/noise layers",
-      "segment_start_seconds": 1.4,
-      "segment_end_seconds": 1.68
+      "tick_offsets_seconds": [
+        0,
+        0.075,
+        0.15
+      ],
+      "source_peak_seconds": [
+        1.418,
+        3.408,
+        5.914
+      ]
     },
     "seconds": 0.28,
     "peak": 0.6500244140625,
-    "rms": 0.2191902511045427,
-    "sha256": "0bfec8a4606f744f12e967c256d54ec687b31ebcdf9ad2fec25621f92b5786fe"
+    "rms": 0.17417918313648623,
+    "sha256": "dd336b7206c9405863b343174e060f9d28839b3948474d548a791b63588b062c"
   },
   {
     "file": "firecracker-1.wav",
@@ -51,7 +59,7 @@
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "One recorded paper party-snapper impact. Trim, DC removal, gain limit, 4ms edge fades only.",
+      "scope": "One collision plays three distinct recorded paper snapper ticks at 0/75/150ms. Source windows are -6/+54ms around 1.418/3.408/5.914s; DC removal, peak .65, 1/12ms fades, second tick gain .9. One AI hearing observation per burst.",
       "recordings": [
         {
           "file": "whipper-snappers-hq.mp3",
@@ -65,13 +73,21 @@
         }
       ],
       "source_kind": "recorded; real physical Whipper Snapper Fireworks, no oscillator/noise layers",
-      "segment_start_seconds": 3.39,
-      "segment_end_seconds": 3.67
+      "tick_offsets_seconds": [
+        0,
+        0.075,
+        0.15
+      ],
+      "source_peak_seconds": [
+        1.418,
+        3.408,
+        5.914
+      ]
     },
     "seconds": 0.28,
-    "peak": 0.649993896484375,
-    "rms": 0.056292097003800404,
-    "sha256": "daf93862de40ae47691eb3568340093b2129937771523dbd1971795ede9bd890"
+    "peak": 0.6500244140625,
+    "rms": 0.1735181426323462,
+    "sha256": "8bc2cdb404537124d1c4b1893332aeb25f95660b5922ff13725fec3a620ce158"
   },
   {
     "file": "firecracker-2.wav",
@@ -88,7 +104,7 @@
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "One recorded paper party-snapper impact. Trim, DC removal, gain limit, 4ms edge fades only.",
+      "scope": "One collision plays three distinct recorded paper snapper ticks at 0/75/150ms. Source windows are -6/+54ms around 1.418/3.408/5.914s; DC removal, peak .65, 1/12ms fades, second tick gain .9. One AI hearing observation per burst.",
       "recordings": [
         {
           "file": "whipper-snappers-hq.mp3",
@@ -102,12 +118,20 @@
         }
       ],
       "source_kind": "recorded; real physical Whipper Snapper Fireworks, no oscillator/noise layers",
-      "segment_start_seconds": 5.896,
-      "segment_end_seconds": 6.176
+      "tick_offsets_seconds": [
+        0,
+        0.075,
+        0.15
+      ],
+      "source_peak_seconds": [
+        1.418,
+        3.408,
+        5.914
+      ]
     },
     "seconds": 0.28,
     "peak": 0.6500244140625,
-    "rms": 0.0693065995366363,
-    "sha256": "180bd7a0504a8ecb345eed0128fb2efe5b418f1fc77bd3d4d3d2853a5693b473"
+    "rms": 0.16263164708267075,
+    "sha256": "bbe19de7b96514101f945d4dce07b42dd813162f20189dc7fb518594df9022eb"
   }
 ]

@@ -626,3 +626,16 @@ talisman time stop and independent owned-clip cleanup, using the quiet guard.
 기존 열린/잠긴 문·학교 파괴·캐비닛 강제 포획·덫 회귀를 무음 검사한다.
 24초는 이동을 포함한 이탈 시간이며 실제 시야를 무효화하지 않는다.
 새 플레이어 실행·생존 난이도·기기 청감 인증은 포함하지 않는다.
+
+## 회랑 음향·Tab 이동·입구 밝기
+
+`python HappyToyV2/Tools/quality/run_feature_tests.py --profile corridor-feedback --graphics-api d3d11 --no-desktop-interaction`
+는 Core와 실제 키보드/패드의 .25배 이동·선택/해제·사용 차단, 녹음 비명 전환과
+벽/거리/음소거/일시정지/부적 정지·자원 정리, 세 틱 PCM/충돌 및 실제 동물 발소리
+믹서, 운캣 종 간격을 무음 검사한다. 실제 시작 카메라는 같은 노출·물리에서 이전
+국소 조명과 밝기를 비교하고 기존 3개 화면비의 사찰/부적/기둥/바닥 표면도 검사한다.
+기기 청감이나 생존 난이도 인증을 대신하지 않는다. 비교 PNG는 테스트의 로컬
+`Temp/HappyToyCloudEvidence`에 생성되며 필요하면 `Builds/Verification`에 보관한다.
+`HAPPYTOY_ENTRANCE_LIGHTING_REVIEW=1`은 시작 카메라 검사에서 40/160/320 상부
+조명의 비교 PNG를 추가하는 선택 진단이다. 평상시 검사에는 추가하지 않는다.
+제작용 `.venv-*`는 고정 requirements로 재생성하는 캐시이며 소스 누락 검사에서 제외한다.

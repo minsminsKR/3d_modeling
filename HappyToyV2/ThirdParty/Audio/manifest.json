@@ -1468,7 +1468,7 @@
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "One recorded paper party-snapper impact. Trim, DC removal, gain limit, 4ms edge fades only.",
+      "scope": "One collision plays three distinct recorded paper snapper ticks at 0/75/150ms. Source windows are -6/+54ms around 1.418/3.408/5.914s; DC removal, peak .65, 1/12ms fades, second tick gain .9. One AI hearing observation per burst.",
       "recordings": [
         {
           "file": "whipper-snappers-hq.mp3",
@@ -1482,13 +1482,21 @@
         }
       ],
       "source_kind": "recorded; real physical Whipper Snapper Fireworks, no oscillator/noise layers",
-      "segment_start_seconds": 1.4,
-      "segment_end_seconds": 1.68
+      "tick_offsets_seconds": [
+        0,
+        0.075,
+        0.15
+      ],
+      "source_peak_seconds": [
+        1.418,
+        3.408,
+        5.914
+      ]
     },
     "seconds": 0.28,
     "peak": 0.6500244140625,
-    "rms": 0.2191902511045427,
-    "sha256": "0bfec8a4606f744f12e967c256d54ec687b31ebcdf9ad2fec25621f92b5786fe"
+    "rms": 0.17417918313648623,
+    "sha256": "dd336b7206c9405863b343174e060f9d28839b3948474d548a791b63588b062c"
   },
   {
     "file": "firecracker-1.wav",
@@ -1505,7 +1513,7 @@
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "One recorded paper party-snapper impact. Trim, DC removal, gain limit, 4ms edge fades only.",
+      "scope": "One collision plays three distinct recorded paper snapper ticks at 0/75/150ms. Source windows are -6/+54ms around 1.418/3.408/5.914s; DC removal, peak .65, 1/12ms fades, second tick gain .9. One AI hearing observation per burst.",
       "recordings": [
         {
           "file": "whipper-snappers-hq.mp3",
@@ -1519,13 +1527,21 @@
         }
       ],
       "source_kind": "recorded; real physical Whipper Snapper Fireworks, no oscillator/noise layers",
-      "segment_start_seconds": 3.39,
-      "segment_end_seconds": 3.67
+      "tick_offsets_seconds": [
+        0,
+        0.075,
+        0.15
+      ],
+      "source_peak_seconds": [
+        1.418,
+        3.408,
+        5.914
+      ]
     },
     "seconds": 0.28,
-    "peak": 0.649993896484375,
-    "rms": 0.056292097003800404,
-    "sha256": "daf93862de40ae47691eb3568340093b2129937771523dbd1971795ede9bd890"
+    "peak": 0.6500244140625,
+    "rms": 0.1735181426323462,
+    "sha256": "8bc2cdb404537124d1c4b1893332aeb25f95660b5922ff13725fec3a620ce158"
   },
   {
     "file": "firecracker-2.wav",
@@ -1542,7 +1558,7 @@
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "One recorded paper party-snapper impact. Trim, DC removal, gain limit, 4ms edge fades only.",
+      "scope": "One collision plays three distinct recorded paper snapper ticks at 0/75/150ms. Source windows are -6/+54ms around 1.418/3.408/5.914s; DC removal, peak .65, 1/12ms fades, second tick gain .9. One AI hearing observation per burst.",
       "recordings": [
         {
           "file": "whipper-snappers-hq.mp3",
@@ -1556,13 +1572,21 @@
         }
       ],
       "source_kind": "recorded; real physical Whipper Snapper Fireworks, no oscillator/noise layers",
-      "segment_start_seconds": 5.896,
-      "segment_end_seconds": 6.176
+      "tick_offsets_seconds": [
+        0,
+        0.075,
+        0.15
+      ],
+      "source_peak_seconds": [
+        1.418,
+        3.408,
+        5.914
+      ]
     },
     "seconds": 0.28,
     "peak": 0.6500244140625,
-    "rms": 0.0693065995366363,
-    "sha256": "180bd7a0504a8ecb345eed0128fb2efe5b418f1fc77bd3d4d3d2853a5693b473"
+    "rms": 0.16263164708267075,
+    "sha256": "bbe19de7b96514101f945d4dce07b42dd813162f20189dc7fb518594df9022eb"
   },
   {
     "pack": "recorded-match",
@@ -3396,43 +3420,6 @@
     "sha256": "3b4fcdcdfa009584d8ea060b7d6dd2695ff3320e96857df2e0de9c13d6730d77"
   },
   {
-    "pack": "recorded-household-rubberduck",
-    "creator": "rubberduck",
-    "license": "CC0-1.0",
-    "page": "https://opengameart.org/content/100-cc0-sfx",
-    "download": "https://opengameart.org/sites/default/files/100-CC0-SFX_0.zip",
-    "source_file": "bell_01.ogg",
-    "source_file_sha256": "b29cf8f3885eb2a266a16455227288dd3e004ea0414d2823b1a8677915f862d1",
-    "archive_sha256": "a5c135878c132f1c59cca54e60061c296cd0ac27ad031ca2c41b8cd5cab3c706",
-    "resource": "Audio/External/enemy-uncat-bell-0",
-    "file": "enemy-uncat-bell-0.wav",
-    "modifications": {
-      "sample_rate": 48000,
-      "mono": true,
-      "format": "PCM16 WAV",
-      "loop": false,
-      "scope": "Actual recorded small bell onset and ring, shortened with a 100ms tail fade. Runtime uses soft isolated patrol rings and faster pursuit rings; no synthesized layers.",
-      "recordings": [
-        {
-          "file": "bell.ogg",
-          "pack": "recorded-household-rubberduck",
-          "creator": "rubberduck",
-          "license": "CC0-1.0",
-          "page": "https://opengameart.org/content/100-cc0-sfx",
-          "download": "https://opengameart.org/sites/default/files/100-CC0-SFX_0.zip",
-          "source_file": "bell_01.ogg",
-          "source_file_sha256": "b29cf8f3885eb2a266a16455227288dd3e004ea0414d2823b1a8677915f862d1",
-          "archive_sha256": "a5c135878c132f1c59cca54e60061c296cd0ac27ad031ca2c41b8cd5cab3c706"
-        }
-      ],
-      "source_kind": "recorded physical bell"
-    },
-    "seconds": 0.7,
-    "peak": 0.42,
-    "rms": 0.03556792612214715,
-    "sha256": "38b66355c49cc02993128c7e9ba18cf06a05fae7312011f9f82bcf76035e8622"
-  },
-  {
     "file": "trap-place-0.wav",
     "pack": "recorded-trap-foley",
     "creator": "blacklodgegames",
@@ -3942,5 +3929,205 @@
       "source_kind": "Recorded human vocal breathing; no synthetic layers",
       "scope": "Original source 1-9 seconds; mono, 0.88x playback-rate edit, 65Hz-5kHz bandpass, 150ms loop wrap crossfade and peak .58. Spatial actor gain .44 patrol/.66 pursuit; pursuit pitch 1.12."
     }
+  },
+  {
+    "file": "enemy-cyclopse-chase-0.wav",
+    "pack": "owlish-recorded-foley",
+    "creator": "OwlishMedia",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/sound-effects-pack",
+    "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+    "source_file": "Human/SCREAM.wav",
+    "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
+    "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18",
+    "resource": "Audio/External/enemy-cyclopse-chase-0",
+    "seconds": 2.542854166666667,
+    "peak": 0.759979248046875,
+    "rms": 0.25504035451449064,
+    "sha256": "5bc80282cdbfa71b5e3f56b4b9ebf3dd841f3b70111d3a8b914b403a5d975ce0",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "recordings": [
+        {
+          "file": "scream.wav",
+          "pack": "owlish-recorded-foley",
+          "creator": "OwlishMedia",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/sound-effects-pack",
+          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+          "source_file": "Human/SCREAM.wav",
+          "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
+          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+        }
+      ],
+      "source_kind": "Recorded performance and physical animal contacts; no synthesized layers",
+      "scope": "Full recorded human scream at 0.82x speed; mono, 90Hz-6.5kHz bandpass, 8/90ms fades and .45s recovery gap. Repeated only during Chase. Peak .76.",
+      "loop": true
+    }
+  },
+  {
+    "file": "mask-beast-step-0.wav",
+    "creator": "15GPanskaBokstefflova_Nicola",
+    "license": "CC0-1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+    "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+    "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+    "pack": "recorded-animal-paws",
+    "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+    "license_verified": "2026-10-17",
+    "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3",
+    "resource": "Audio/External/mask-beast-step-0",
+    "seconds": 0.26,
+    "peak": 0.760009765625,
+    "rms": 0.13208322438956616,
+    "sha256": "cad32435a59357b63699209a8e5739f3a55f501089967dbce63189329ca8e9a1",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "recordings": [
+        {
+          "file": "dog-wood-461524-hq.mp3",
+          "creator": "15GPanskaBokstefflova_Nicola",
+          "license": "CC0-1.0",
+          "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+          "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+          "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+          "pack": "recorded-animal-paws",
+          "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+          "license_verified": "2026-10-17",
+          "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3"
+        }
+      ],
+      "source_kind": "Recorded performance and physical animal contacts; no synthesized layers",
+      "scope": "Real dog paw contact on wood; source window centre-22ms to centre+85ms, 0.72x pad/nail layer and 0.48x low body from the same recording, 65Hz-6.5kHz and 45-420Hz bands, 3/25ms fades, .26s length, peak .76. No human shoe, metal or synthetic layers.",
+      "loop": false,
+      "source_centre_seconds": 0.92
+    }
+  },
+  {
+    "file": "mask-beast-step-1.wav",
+    "creator": "15GPanskaBokstefflova_Nicola",
+    "license": "CC0-1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+    "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+    "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+    "pack": "recorded-animal-paws",
+    "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+    "license_verified": "2026-10-17",
+    "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3",
+    "resource": "Audio/External/mask-beast-step-1",
+    "seconds": 0.26,
+    "peak": 0.760009765625,
+    "rms": 0.04812035903726097,
+    "sha256": "011e4cda2fd1f25b96049b117a23335ab62c4db2281870a81c506a44a50990ca",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "recordings": [
+        {
+          "file": "dog-wood-461524-hq.mp3",
+          "creator": "15GPanskaBokstefflova_Nicola",
+          "license": "CC0-1.0",
+          "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+          "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+          "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+          "pack": "recorded-animal-paws",
+          "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+          "license_verified": "2026-10-17",
+          "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3"
+        }
+      ],
+      "source_kind": "Recorded performance and physical animal contacts; no synthesized layers",
+      "scope": "Real dog paw contact on wood; source window centre-22ms to centre+85ms, 0.72x pad/nail layer and 0.48x low body from the same recording, 65Hz-6.5kHz and 45-420Hz bands, 3/25ms fades, .26s length, peak .76. No human shoe, metal or synthetic layers.",
+      "loop": false,
+      "source_centre_seconds": 1.17
+    }
+  },
+  {
+    "file": "mask-beast-step-2.wav",
+    "creator": "15GPanskaBokstefflova_Nicola",
+    "license": "CC0-1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+    "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+    "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+    "pack": "recorded-animal-paws",
+    "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+    "license_verified": "2026-10-17",
+    "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3",
+    "resource": "Audio/External/mask-beast-step-2",
+    "seconds": 0.26,
+    "peak": 0.759979248046875,
+    "rms": 0.11434798719497484,
+    "sha256": "e949da525e022413cc94e97b8fd93fbf60d57cf0ef441a60f45ffb27fbddda97",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "recordings": [
+        {
+          "file": "dog-wood-461524-hq.mp3",
+          "creator": "15GPanskaBokstefflova_Nicola",
+          "license": "CC0-1.0",
+          "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+          "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+          "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+          "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+          "pack": "recorded-animal-paws",
+          "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+          "license_verified": "2026-10-17",
+          "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3"
+        }
+      ],
+      "source_kind": "Recorded performance and physical animal contacts; no synthesized layers",
+      "scope": "Real dog paw contact on wood; source window centre-22ms to centre+85ms, 0.72x pad/nail layer and 0.48x low body from the same recording, 65Hz-6.5kHz and 45-420Hz bands, 3/25ms fades, .26s length, peak .76. No human shoe, metal or synthetic layers.",
+      "loop": false,
+      "source_centre_seconds": 1.55
+    }
+  },
+  {
+    "pack": "recorded-household-rubberduck",
+    "creator": "rubberduck",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/100-cc0-sfx",
+    "download": "https://opengameart.org/sites/default/files/100-CC0-SFX_0.zip",
+    "source_file": "bell_01.ogg",
+    "source_file_sha256": "b29cf8f3885eb2a266a16455227288dd3e004ea0414d2823b1a8677915f862d1",
+    "archive_sha256": "a5c135878c132f1c59cca54e60061c296cd0ac27ad031ca2c41b8cd5cab3c706",
+    "resource": "Audio/External/enemy-uncat-bell-0",
+    "file": "enemy-uncat-bell-0.wav",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Actual recorded small bell onset and ring, shortened with a 100ms tail fade. Runtime uses soft isolated patrol rings and faster pursuit rings; no synthesized layers.",
+      "recordings": [
+        {
+          "file": "bell.ogg",
+          "pack": "recorded-household-rubberduck",
+          "creator": "rubberduck",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/100-cc0-sfx",
+          "download": "https://opengameart.org/sites/default/files/100-CC0-SFX_0.zip",
+          "source_file": "bell_01.ogg",
+          "source_file_sha256": "b29cf8f3885eb2a266a16455227288dd3e004ea0414d2823b1a8677915f862d1",
+          "archive_sha256": "a5c135878c132f1c59cca54e60061c296cd0ac27ad031ca2c41b8cd5cab3c706"
+        }
+      ],
+      "source_kind": "recorded physical bell"
+    },
+    "seconds": 0.7,
+    "peak": 0.6,
+    "rms": 0.050811323031638794,
+    "sha256": "10ad5754c3ffca459ebf09406a6b1b2ad7bf53150f37e68fe1b7733748a1c8a7"
   }
 ]

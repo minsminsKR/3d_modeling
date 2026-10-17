@@ -40,17 +40,29 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator ItemWheelTabSlowsTimeSelectsOnReleaseAndRequiresFreshUsePress()
         {
             Call(session, "CreateCorridor", 73); IsolateThreats(); Begin(); AddRitualMouse();
-            PlacePlayer(new Vector3(200, .03f, 200), false);
+            PlacePlayer(Get<Vector3>(Get<Component>(Get<Component>(session,"Corridor"),"Entrance"),"StartPoint"));
             Keys(); RitualMouseState(RitualSlot(0)); yield return Delay(.08f);
             Keys(Key.Tab, Key.W);
             yield return Wait(() => WheelOpen, 2, "Tab did not open the real item wheel");
             Assert.That(Time.timeScale, Is.EqualTo(.25f)); Assert.That(AudioListener.pause, Is.False);
             var origin = player.transform.position;
+            var facing = player.transform.rotation;
             var rituals = Get<Component>(player, "Rituals"); int incense = Get<int>(rituals, "Incense");
             RitualMouseState(RitualSlot(2), true); yield return Delay(.15f);
             Assert.That(Get<int>(rituals, "Incense"), Is.EqualTo(incense), "Clicking the wheel consumed an item");
             Assert.That((bool)Call(ItemLoadout, "UseSelected"), Is.False);
-            Assert.That(Vector3.Distance(origin, player.transform.position), Is.LessThan(.01f), "Wheel input moved the player");
+            int snapperCount=Get<int>(Get<Component>(player,"Firecrackers"),"Count");
+            int trapCount=Get<int>(Get<Component>(player,"Traps"),"Count");bool torch=Get<Light>(player,"flashlight").enabled;
+            Keys(Key.Tab,Key.W,Key.Q,Key.R,Key.F,Key.E);yield return Delay(.08f);
+            Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(snapperCount));
+            Assert.That(Get<int>(Get<Component>(player,"Traps"),"Count"),Is.EqualTo(trapCount));
+            Assert.That(Get<Light>(player,"flashlight").enabled,Is.EqualTo(torch),"Selection leaked a flashlight action");
+            var displacement=player.transform.position-origin;displacement.y=0;
+            Assert.That(displacement.magnitude, Is.InRange(.03f,.30f), "Held movement must continue at quarter time while choosing an item");
+            Assert.That(Quaternion.Angle(facing,player.transform.rotation),Is.LessThan(.01f),"Selecting with the mouse also turned the player");
+            Keys(Key.Tab);var stopped=player.transform.position;yield return Delay(.15f);
+            Assert.That(Vector2.Distance(new Vector2(stopped.x,stopped.z),new Vector2(player.transform.position.x,player.transform.position.z)),Is.LessThan(.015f),
+                "Releasing W while holding Tab retained a movement command");
             Assert.That(SelectedItem, Is.EqualTo("Snapper"), "Hovering changed the equipped item before release");
             Keys(); yield return Wait(() => !WheelOpen, 2, "Releasing Tab did not close the wheel");
             Assert.That(SelectedItem, Is.EqualTo("Incense")); Assert.That(Time.timeScale, Is.EqualTo(1));
@@ -68,8 +80,12 @@ namespace HappyToy.V2.CloudTests
         {
             Call(session, "CreateCorridor", 73); IsolateThreats(); Begin(); AddAuditPad();
             yield return PadState(new GamepadState());
-            yield return PadState(new GamepadState { rightStick = new Vector2(-.59f, -.81f) }.WithButton(GamepadButton.RightShoulder));
+            var origin=player.transform.position;var facing=player.transform.rotation;
+            yield return PadState(new GamepadState { leftStick=Vector2.up,rightStick = new Vector2(-.59f, -.81f) }.WithButton(GamepadButton.RightShoulder));
             Assert.That(WheelOpen, Is.True); Assert.That(Time.timeScale, Is.EqualTo(.25f));
+            yield return Delay(.2f);
+            Assert.That(Vector3.Distance(origin,player.transform.position),Is.GreaterThan(.03f),"The gamepad left stick stopped while RB selected an item");
+            Assert.That(Quaternion.Angle(facing,player.transform.rotation),Is.LessThan(.01f),"The selection stick rotated the camera");
             Assert.That(SelectedItem, Is.EqualTo("Snapper"));
             Call(shell, "Pause"); Assert.That(WheelOpen, Is.False); Assert.That(Time.timeScale, Is.Zero);
             Call(shell, "Resume"); yield return Delay(.15f);
