@@ -3931,43 +3931,6 @@
     }
   },
   {
-    "file": "enemy-cyclopse-chase-0.wav",
-    "pack": "owlish-recorded-foley",
-    "creator": "OwlishMedia",
-    "license": "CC0-1.0",
-    "page": "https://opengameart.org/content/sound-effects-pack",
-    "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
-    "source_file": "Human/SCREAM.wav",
-    "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
-    "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18",
-    "resource": "Audio/External/enemy-cyclopse-chase-0",
-    "seconds": 2.542854166666667,
-    "peak": 0.759979248046875,
-    "rms": 0.25504035451449064,
-    "sha256": "5bc80282cdbfa71b5e3f56b4b9ebf3dd841f3b70111d3a8b914b403a5d975ce0",
-    "modifications": {
-      "sample_rate": 48000,
-      "mono": true,
-      "format": "PCM16 WAV",
-      "recordings": [
-        {
-          "file": "scream.wav",
-          "pack": "owlish-recorded-foley",
-          "creator": "OwlishMedia",
-          "license": "CC0-1.0",
-          "page": "https://opengameart.org/content/sound-effects-pack",
-          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
-          "source_file": "Human/SCREAM.wav",
-          "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
-          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
-        }
-      ],
-      "source_kind": "Recorded performance and physical animal contacts; no synthesized layers",
-      "scope": "Full recorded human scream at 0.82x speed; mono, 90Hz-6.5kHz bandpass, 8/90ms fades and .45s recovery gap. Repeated only during Chase. Peak .76.",
-      "loop": true
-    }
-  },
-  {
     "file": "mask-beast-step-0.wav",
     "creator": "15GPanskaBokstefflova_Nicola",
     "license": "CC0-1.0",

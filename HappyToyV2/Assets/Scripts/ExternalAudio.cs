@@ -15,7 +15,7 @@ namespace HappyToy.V2
             {"ambience-ground",1},{"ambience-upper",1},{"ambience-basement",1},{"ambience-basement-bed",1},
             {"ambience-corridor",3},
             {"enemy-cyclopse-movement",3},{"enemy-cyclopse-attack",1},
-            {"enemy-cyclopse-breath",1},{"enemy-cyclopse-chase",1},
+            {"enemy-cyclopse-breath",1},
             {"enemy-hwacat-movement",3},{"enemy-hwacat-attack",1},
             {"enemy-uncat-movement",3},{"enemy-uncat-attack",1},
             {"enemy-uncat-bell",1},

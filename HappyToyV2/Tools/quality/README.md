@@ -630,7 +630,7 @@ talisman time stop and independent owned-clip cleanup, using the quiet guard.
 ## 회랑 음향·Tab 이동·입구 밝기
 
 `python HappyToyV2/Tools/quality/run_feature_tests.py --profile corridor-feedback --graphics-api d3d11 --no-desktop-interaction`
-는 Core와 실제 키보드/패드의 .25배 이동·선택/해제·사용 차단, 녹음 비명 전환과
+는 Core와 실제 키보드/패드의 .25배 이동·선택/해제·사용 차단, 녹음 호흡의 추격 전환과
 벽/거리/음소거/일시정지/부적 정지·자원 정리, 세 틱 PCM/충돌 및 실제 동물 발소리
 믹서, 운캣 종 간격을 무음 검사한다. 실제 시작 카메라는 같은 노출·물리에서 이전
 국소 조명과 밝기를 비교하고 기존 3개 화면비의 사찰/부적/기둥/바닥 표면도 검사한다.
@@ -639,3 +639,7 @@ talisman time stop and independent owned-clip cleanup, using the quiet guard.
 `HAPPYTOY_ENTRANCE_LIGHTING_REVIEW=1`은 시작 카메라 검사에서 40/160/320 상부
 조명의 비교 PNG를 추가하는 선택 진단이다. 평상시 검사에는 추가하지 않는다.
 제작용 `.venv-*`는 고정 requirements로 재생성하는 캐시이며 소스 누락 검사에서 제외한다.
+
+싸이클롭스 음성만 바꿀 때는 `--profile cyclopse-voice --graphics-api d3d11 --no-desktop-interaction`을
+사용한다. Core와 실제 공간 호흡의 추격/배회 전환·벽·일시정지·음소거·거리·부적 정지·
+소유 자원 정리, 제거한 추격 비명의 카탈로그/Resources 부재를 무음 검사한다.

@@ -1,9 +1,10 @@
 # Recorded horror audio authoring
 
-2026-10-17 pursuit feedback: `render_chase_voices.py` compares retained human
-scream/gasp/breath performances and two actual dog-running recordings. It makes
-the Cyclopse pursuit scream (calm breathing remains separate) and three wooden
-paw contacts for the corridor wraith. Exact windows, rate/filter/layer edits and
+2026-10-17 pursuit feedback: the Cyclopse pursuit scream was removed at the
+user's request; patrol and pursuit use the existing recorded breathing loop.
+`render_chase_voices.py` (legacy filename) compares two actual dog-running
+recordings and makes three wooden paw contacts for the corridor wraith.
+Exact windows, rate/filter/layer edits and
 hashes are in `chase-voice-selection.json`; original unaltered HQ MP3 previews,
 licenses and source attribution are in `ThirdParty/Audio/BeastFootfalls`.
 Reproduce with CPython 3.11 and `requirements-corridor.txt`. The pinned sources

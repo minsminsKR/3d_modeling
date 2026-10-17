@@ -1,58 +1,6 @@
 {
-  "selected_voice": "scream",
   "selected_paws": "dog-wood",
   "candidates": [
-    {
-      "kind": "voice",
-      "key": "scream",
-      "source": {
-        "file": "scream.wav",
-        "pack": "owlish-recorded-foley",
-        "creator": "OwlishMedia",
-        "license": "CC0-1.0",
-        "page": "https://opengameart.org/content/sound-effects-pack",
-        "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
-        "source_file": "Human/SCREAM.wav",
-        "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
-        "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
-      },
-      "seconds": 1.716125,
-      "rms": 0.158228593014006
-    },
-    {
-      "kind": "voice",
-      "key": "panic",
-      "source": {
-        "file": "panic.wav",
-        "pack": "owlish-recorded-foley",
-        "creator": "OwlishMedia",
-        "license": "CC0-1.0",
-        "page": "https://opengameart.org/content/sound-effects-pack",
-        "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
-        "source_file": "Human/freakedbreath.wav",
-        "source_file_sha256": "10881ee9d5c83b15e269762ccc89cc932173d2c720588e9303e0995ff32b69db",
-        "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
-      },
-      "seconds": 1.2626041666666667,
-      "rms": 0.10309044392167291
-    },
-    {
-      "kind": "voice",
-      "key": "scared",
-      "source": {
-        "file": "scared.wav",
-        "pack": "owlish-recorded-foley",
-        "creator": "OwlishMedia",
-        "license": "CC0-1.0",
-        "page": "https://opengameart.org/content/sound-effects-pack",
-        "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
-        "source_file": "Human/scared-breathing.wav",
-        "source_file_sha256": "3adbe6f518576fa67308cfac57e6238249244f9e043d675fce9d80b853690eb1",
-        "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
-      },
-      "seconds": 15.350395833333334,
-      "rms": 0.0170816456652386
-    },
     {
       "kind": "paws",
       "key": "dog-wood",
@@ -93,48 +41,10 @@
     }
   ],
   "reasons": {
-    "scream": "Sustained human vocal performance rather than a brief gasp or soft pant.",
     "dog-wood": "Close, separated real paw/nail transients on the same broad surface family as the corridor.",
     "dog-linoleum": "Real animal comparator retained with attribution; the pass-by has changing distance and a different floor."
   },
   "outputs": [
-    {
-      "file": "enemy-cyclopse-chase-0.wav",
-      "pack": "owlish-recorded-foley",
-      "creator": "OwlishMedia",
-      "license": "CC0-1.0",
-      "page": "https://opengameart.org/content/sound-effects-pack",
-      "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
-      "source_file": "Human/SCREAM.wav",
-      "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
-      "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18",
-      "resource": "Audio/External/enemy-cyclopse-chase-0",
-      "seconds": 2.542854166666667,
-      "peak": 0.759979248046875,
-      "rms": 0.25504035451449064,
-      "sha256": "5bc80282cdbfa71b5e3f56b4b9ebf3dd841f3b70111d3a8b914b403a5d975ce0",
-      "modifications": {
-        "sample_rate": 48000,
-        "mono": true,
-        "format": "PCM16 WAV",
-        "recordings": [
-          {
-            "file": "scream.wav",
-            "pack": "owlish-recorded-foley",
-            "creator": "OwlishMedia",
-            "license": "CC0-1.0",
-            "page": "https://opengameart.org/content/sound-effects-pack",
-            "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
-            "source_file": "Human/SCREAM.wav",
-            "source_file_sha256": "34cad64fdef681b7a3ce84e7ebfbe20aa3aad2c06e6ad2e9280718fe2e7da63e",
-            "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
-          }
-        ],
-        "source_kind": "Recorded performance and physical animal contacts; no synthesized layers",
-        "scope": "Full recorded human scream at 0.82x speed; mono, 90Hz-6.5kHz bandpass, 8/90ms fades and .45s recovery gap. Repeated only during Chase. Peak .76.",
-        "loop": true
-      }
-    },
     {
       "file": "mask-beast-step-0.wav",
       "creator": "15GPanskaBokstefflova_Nicola",

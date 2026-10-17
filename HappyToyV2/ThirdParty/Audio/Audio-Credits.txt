@@ -191,9 +191,6 @@ https://opengameart.org/content/sound-effects-pack
 Recorded human performance excerpt, slowed to 0.88x, filtered and loop-crossfaded.
 Original source/hash and complete edits: SourceArt/Audio/render_cyclopse_breath.py, cyclopse-breath-selection.json and ThirdParty/Audio/manifest.json.
 
-Cyclopse pursuit scream: OwlishMedia, recorded human scream, Sound Effects Pack. CC0-1.0.
-https://opengameart.org/content/sound-effects-pack
-Slowed to 0.82x, band-pass filtered and faded with a short recovery gap. No synthetic layers.
 Corridor wraith animal paw contacts: 15GPanskaBokstefflova_Nicola, dog_running on wood floor 2.wav. CC0-1.0.
 https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/
 Real recorded dog paws on wood, isolated and layered at two playback rates for pad/nail and body weight.

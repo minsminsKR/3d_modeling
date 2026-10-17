@@ -1,4 +1,4 @@
-"""Build performed pursuit screams and recorded animal paw contacts, silently.
+"""Build recorded animal paw contacts, silently (legacy tool filename).
 
 Python 3.11 + requirements-corridor.txt. No synthesis, AI service or downloads.
 Retained originals and candidates are hash-checked before producing Unity WAVs.
@@ -39,17 +39,13 @@ def fade(audio, attack=.003, release=.025):
 def main():
     manifest_path = PROJECT / 'ThirdParty/Audio/manifest.json'
     manifest = json.loads(manifest_path.read_text(encoding='utf-8-sig'))
-    human = PROJECT / 'ThirdParty/Audio/RecordedHorror'
     animal = PROJECT / 'ThirdParty/Audio/BeastFootfalls'
-    catalog = json.loads((human/'sources.json').read_text(encoding='utf-8-sig'))
     paws = json.loads((animal/'sources.json').read_text(encoding='utf-8-sig'))
     comparisons = []
-    for kind, folder, candidates in [('voice', human, {key:catalog[key] for key in ('scream','panic','scared')}),
-                                     ('paws', animal, paws)]:
-        for key, entry in candidates.items():
-            audio = load(folder, entry)
-            comparisons.append(dict(kind=kind, key=key, source=entry, seconds=len(audio)/RATE,
-                                    rms=float(np.sqrt(np.mean(audio**2)))))
+    for key, entry in paws.items():
+        audio = load(animal, entry)
+        comparisons.append(dict(kind='paws', key=key, source=entry, seconds=len(audio)/RATE,
+                                rms=float(np.sqrt(np.mean(audio**2)))))
     outputs = []
 
     def save(cue, audio, sources, edits, **settings):
@@ -62,14 +58,6 @@ def main():
                         recordings=sources, source_kind='Recorded performance and physical animal contacts; no synthesized layers',
                         scope=edits, **settings))
         outputs.append(entry)
-
-    # A sustained performed scream is more distinct than the former short gasp.
-    scream = load(human, catalog['scream'])
-    scream = resample_poly(scream, 50, 41)  # 0.82x playback, with natural pitch lowering.
-    scream = sosfiltfilt(butter(2, [90, 6500], btype='bandpass', fs=RATE, output='sos'), scream)
-    scream = np.pad(fade(scream, .008, .09), (0, round(.45*RATE)))
-    save('enemy-cyclopse-chase-0', scream, [catalog['scream']],
-         'Full recorded human scream at 0.82x speed; mono, 90Hz-6.5kHz bandpass, 8/90ms fades and .45s recovery gap. Repeated only during Chase. Peak .76.', loop=True)
 
     # Preserve real nail/pad transients, replacing human shoes and metal clangs.
     original = load(animal, paws['dog-wood'])
@@ -88,10 +76,9 @@ def main():
     names={entry['resource'] for entry in outputs}
     manifest=[entry for entry in manifest if entry['resource'] not in names]+outputs
     manifest_path.write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-    report=dict(selected_voice='scream',selected_paws='dog-wood',candidates=comparisons,
-                reasons=dict(scream='Sustained human vocal performance rather than a brief gasp or soft pant.',
-                    **{'dog-wood':'Close, separated real paw/nail transients on the same broad surface family as the corridor.',
-                       'dog-linoleum':'Real animal comparator retained with attribution; the pass-by has changing distance and a different floor.'}),
+    report=dict(selected_paws='dog-wood',candidates=comparisons,
+                reasons={'dog-wood':'Close, separated real paw/nail transients on the same broad surface family as the corridor.',
+                         'dog-linoleum':'Real animal comparator retained with attribution; the pass-by has changing distance and a different floor.'},
                 outputs=outputs,scope='Recorded-source and PCM comparison; no claim of final device listening or subjective realism certification.')
     (PROJECT/'SourceArt/Audio/chase-voice-selection.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
     print(json.dumps([dict(resource=entry['resource'],seconds=entry['seconds'],sha256=entry['sha256']) for entry in outputs],indent=2))
