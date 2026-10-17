@@ -27,7 +27,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         public static IEnumerator Write(string output,Camera camera,IReadOnlyList<Light> lights,
-            Transform chamber,ReflectionProbe[] probes)
+            Transform chamber,ReflectionProbe[] probes,float selectedGain)
         {
             string root=Path.GetFullPath(output),builds=Path.GetFullPath(Path.Combine(Application.dataPath,"../Builds"));
             if(!root.StartsWith(builds+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase))
@@ -35,10 +35,12 @@ namespace HappyToy.V2.CloudTests
             if(Directory.Exists(Path.Combine(root,"frames")))throw new InvalidOperationException("Use a fresh lighting review output");
             Directory.CreateDirectory(Path.Combine(root,"frames"));
             var intensities=lights.Select(light=>light.intensity).ToArray();
+            if(selectedGain<=0)throw new ArgumentOutOfRangeException(nameof(selectedGain));
+            var baseline=intensities.Select(intensity=>intensity/selectedGain).ToArray();
             var position=camera.transform.position;var rotation=camera.transform.rotation;
             var manifest=new Manifest {unity=Application.unityVersion,gameCommit=Environment.GetEnvironmentVariable("HAPPYTOY_REVIEW_COMMIT")??"",
                 createdUtc=DateTime.UtcNow.ToString("o"),levels=Enumerable.Range(0,41).Select(index=>index*.05f).ToArray(),
-                baseLightIntensities=intensities,lightNames=lights.Select(light=>light.name).ToArray(),views=new[]{
+                defaultGain=selectedGain,baseLightIntensities=baseline,lightNames=lights.Select(light=>light.name).ToArray(),views=new[]{
                     new View {id="start",label="시작 정면",position=position,rotation=rotation,frames=new Frame[41]},
                     new View {id="gate",label="대문 전체",position=chamber.TransformPoint(new Vector3(0,1.8f,0)),
                         rotation=Quaternion.LookRotation(chamber.TransformPoint(new Vector3(0,4,-12))-chamber.TransformPoint(new Vector3(0,1.8f,0))),frames=new Frame[41]},
@@ -48,7 +50,7 @@ namespace HappyToy.V2.CloudTests
                 for(int index=0;index<manifest.levels.Length;index++)
                 {
                     float gain=manifest.levels[index];
-                    for(int light=0;light<lights.Count;light++)lights[light].intensity=intensities[light]*gain;
+                    for(int light=0;light<lights.Count;light++)lights[light].intensity=baseline[light]*gain;
                     yield return RefreshReflections(probes);
                     foreach(var view in manifest.views)
                     {
@@ -72,7 +74,7 @@ namespace HappyToy.V2.CloudTests
             }
             yield return RefreshReflections(probes);
         }
-        static IEnumerator RefreshReflections(ReflectionProbe[] probes)
+        internal static IEnumerator RefreshReflections(ReflectionProbe[] probes)
         {
             foreach(var probe in probes.Where(probe=>probe))
             {

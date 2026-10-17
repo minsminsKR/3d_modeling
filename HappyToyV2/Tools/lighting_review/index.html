@@ -30,7 +30,9 @@ input[type=range]{width:100%;margin:15px 0 8px;accent-color:#d8b989;cursor:ew-re
   let manifest,view,index=20,sequence=0,displayed=null,wheel=0;
   try{const response=await fetch('manifest.json');if(!response.ok)throw new Error('manifest');manifest=await response.json();}
   catch(_){status.textContent='화면을 불러오지 못했습니다. 새로고침해 주세요.';return;}
-  slider.max=manifest.levels.length-1;index=manifest.levels.reduce((best,gain,i)=>Math.abs(gain-1)<Math.abs(manifest.levels[best]-1)?i:best,0);view=manifest.views[0];
+  const defaultGain=manifest.defaultGain??1;
+  const currentIndex=manifest.levels.reduce((best,gain,i)=>Math.abs(gain-defaultGain)<Math.abs(manifest.levels[best]-defaultGain)?i:best,0);
+  slider.max=manifest.levels.length-1;index=currentIndex;view=manifest.views[0];
   const storageKey='happytoy-lighting-'+manifest.gameCommit;
   try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved&&Number.isInteger(saved.index)&&saved.index>=0&&saved.index<manifest.levels.length)index=saved.index;}catch(_){}
   function remember(){try{localStorage.setItem(storageKey,JSON.stringify({index,view:view.id}));}catch(_){}}
@@ -52,7 +54,7 @@ input[type=range]{width:100%;margin:15px 0 8px;accent-color:#d8b989;cursor:ew-re
   slider.addEventListener('input',()=>{index=Number(slider.value);show();});
   document.addEventListener('wheel',event=>{event.preventDefault();wheel+=event.deltaY*(event.deltaMode===1?24:1);if(Math.abs(wheel)>=35){change(wheel<0?1:-1);wheel=0;}},{passive:false});
   document.addEventListener('keydown',event=>{if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();change(event.key==='ArrowUp'?1:-1);}});
-  document.getElementById('reset').addEventListener('click',()=>{index=manifest.levels.findIndex(gain=>Math.abs(gain-1)<.001);show();});
+  document.getElementById('reset').addEventListener('click',()=>{index=currentIndex;show();});
   document.getElementById('copy').addEventListener('click',async()=>{if(!displayed)return;const text='시작 공간 조명 '+displayed.gain.toFixed(2)+'배로 적용해줘';try{await navigator.clipboard.writeText(text);status.textContent='복사했습니다';setTimeout(()=>{status.textContent='';},1600);}catch(_){status.textContent=text;}});
   document.getElementById('fullscreen').addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen();else document.getElementById('review').requestFullscreen().catch(()=>{});});
   show();

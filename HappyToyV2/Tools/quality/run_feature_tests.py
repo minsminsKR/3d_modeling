@@ -44,6 +44,12 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "entrance-lighting": ("Selected absolute entrance light gain, actual camera/aspect ratios, corridor-mouth floor and owned cavern reflections", [
+        ("EditMode", (CLOUD + "GraphicsLightingRulesTests",)),
+        ("PlayMode", play_tests("EntranceBrightnessTests.cs") + (
+            PLAY + "EntranceRitualActualCameraShowsWetFloorSealsCandlesAndGuardiansAcrossAspectRatios",
+            PLAY + "EntranceFloorStaysDarkWhenBackingAcrossTheCorridorMouth",
+            PLAY + "EntranceReflectionUsesActualCavernBoxAndPauseRetainsTheOwnedScope"))]),
     "cyclopse-voice": ("Recorded breathing during patrol and pursuit, removed scream resources, quiet spatial mixer/pause/mute/time-stop and owned cleanup", [
         ("PlayMode", play_tests("CreatureBreathingAudioTests.cs") + (
             PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies",))]),

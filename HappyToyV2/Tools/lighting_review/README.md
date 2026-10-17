@@ -1,7 +1,10 @@
 # Local entrance lighting chooser
 
 The viewer scrolls through **actual Unity renders**, not an image brightness
-filter. One value multiplies all nine local entrance lights by 0–2 in 0.05 steps.
+filter. One absolute value multiplies all nine local entrance lights against the
+original 1.00 review baseline by 0–2 in 0.05 steps. The selected game value is
+currently 0.45; future exports divide that applied gain out before rendering
+levels, so choosing 0.45 again does not multiply the lights by 0.45 twice.
 It offers the real start camera, a gate view and a raised vault view. Player
 hands/HUD and flashlight are omitted, game simulation is paused, and both owned
 reflection probes are recaptured for each level. The maze and game sources are
@@ -13,7 +16,7 @@ From the repository root, choose new output directories and run:
 ```powershell
 $env:HAPPYTOY_ENTRANCE_LIGHTING_REVIEW_DIR = Join-Path (Resolve-Path HappyToyV2).Path 'Builds/LightingReview-new'
 $env:HAPPYTOY_REVIEW_COMMIT = git rev-parse HEAD
-unity test HappyToyV2 --editor-version 6000.6.0f1 --mode PlayMode --filter HappyToy.V2.CloudTests.CloudPlayModeTests.EntranceStartCameraRevealsTheVaultWithoutIncreasingTheShadowBudget --output HappyToyV2/Builds/Verification/LightingReview-new.xml --timeout 900 -- -force-d3d11 -v2-audit-no-desktop-interaction -job-worker-count 2
+unity test HappyToyV2 --editor-version 6000.6.0f1 --mode PlayMode --filter HappyToy.V2.CloudTests.CloudPlayModeTests.EntranceStartCameraUsesSelectedLightingWithoutIncreasingTheShadowBudget --output HappyToyV2/Builds/Verification/LightingReview-new.xml --timeout 900 -- -force-d3d11 -v2-audit-no-desktop-interaction -job-worker-count 2
 python HappyToyV2/Tools/lighting_review/serve.py --directory HappyToyV2/Builds/LightingReview-new
 ```
 

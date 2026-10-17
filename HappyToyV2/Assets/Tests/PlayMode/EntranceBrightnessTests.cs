@@ -12,20 +12,26 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest,Timeout(180000)]
-        public IEnumerator EntranceStartCameraRevealsTheVaultWithoutIncreasingTheShadowBudget()
+        public IEnumerator EntranceStartCameraUsesSelectedLightingWithoutIncreasingTheShadowBudget()
         {
             yield return PrepareEntranceCavern();
             var entrance=Get<Component>(Get<Component>(session,"Corridor"),"Entrance");
             var art=entrance.GetComponent(RequireType("CorridorEntrancePresentation"));
             var lights=Get<IReadOnlyList<Light>>(art,"Lanterns");
+            float selectedGain=Get<float>(Get<Component>(art,"Dressing"),"LightMultiplier");
+            Assert.That(selectedGain,Is.EqualTo(.45f).Within(.00001f),"Apply the user's absolute review gain, not another relative reduction");
             var camera=Get<Camera>(player,"eyes");
             ((Behaviour)player).enabled=false;Get<Light>(player,"flashlight").enabled=false;
             var gains=lights.Select(light=>light.intensity).ToArray();
             var positions=lights.Select(light=>light.transform.localPosition).ToArray();
             var modes=lights.Select(light=>light.renderMode).ToArray();
             Assert.That(lights.Count,Is.EqualTo(9));
+            var baseline=new[]{3.6f,3.3f,3.8f,3.8f,2.2f,1.8f,1.9f,320f,4.8f};
+            for(int i=0;i<lights.Count;i++)Assert.That(gains[i],Is.EqualTo(baseline[i]*.45f).Within(.0001f),"Selected light "+lights[i].name);
             Assert.That(lights.Count(light=>light.shadows!=LightShadows.None),Is.LessThanOrEqualTo(2));
             yield return Delay(.5f);
+            var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));
+            var probes=new[]{Get<ReflectionProbe>(graphics,"OwnedProbe"),Get<ReflectionProbe>(graphics,"EntranceProbe")};
             string reviewOutput=System.Environment.GetEnvironmentVariable("HAPPYTOY_ENTRANCE_LIGHTING_REVIEW_DIR");
             if(!string.IsNullOrEmpty(reviewOutput))
             {
@@ -35,9 +41,8 @@ namespace HappyToy.V2.CloudTests
                 if(hands)((Behaviour)hands).enabled=false;if(feedback)((Behaviour)feedback).enabled=false;
                 try
                 {
-                    var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));
                     yield return EntranceLightingReviewExport.Write(reviewOutput,camera,lights,entrance.transform,
-                        new[]{Get<ReflectionProbe>(graphics,"OwnedProbe"),Get<ReflectionProbe>(graphics,"EntranceProbe")});
+                        probes,selectedGain);
                 }
                 finally
                 {
@@ -45,7 +50,7 @@ namespace HappyToy.V2.CloudTests
                     Call(shell,"Resume");
                 }
             }
-            Texture2D bright=null,dim=null;
+            Texture2D selected=null,reference=null;
             try
             {
                 if(System.Environment.GetEnvironmentVariable("HAPPYTOY_ENTRANCE_LIGHTING_REVIEW")=="1")
@@ -59,13 +64,13 @@ namespace HappyToy.V2.CloudTests
                     }
                     lights[7].intensity=gains[7];
                 }
-                bright=EntranceRitualFrame(camera,1280,720);
+                yield return EntranceLightingReviewExport.RefreshReflections(probes);
+                selected=EntranceRitualFrame(camera,1280,720);
                 // A controlled local-light comparison at the same actual start
                 // camera. Global exposure, geometry and maze lighting stay fixed.
-                for(int i=0;i<lights.Count;i++)lights[i].intensity=i==0?2.4f:i==1?2.2f:i<4?2.1f:i==4?1.4f:i==5?1.25f:i==6?1.3f:i==7?1:.9f;
-                lights[7].transform.localPosition=new Vector3(0,5.5f,3);
-                lights[7].renderMode=LightRenderMode.Auto;
-                dim=EntranceRitualFrame(camera,1280,720);
+                for(int i=0;i<lights.Count;i++)lights[i].intensity=baseline[i];
+                yield return EntranceLightingReviewExport.RefreshReflections(probes);
+                reference=EntranceRitualFrame(camera,1280,720);
                 double UpperMean(Texture2D frame)
                 {
                     var pixels=frame.GetPixels32();double sum=0;int count=0;
@@ -73,17 +78,16 @@ namespace HappyToy.V2.CloudTests
                     {var p=pixels[y*frame.width+x];sum+=.2126*p.r+.7152*p.g+.0722*p.b;count++;}
                     return sum/count;
                 }
-                EntranceBrightnessEvidence("entrance-start-brighter",bright);
-                EntranceBrightnessEvidence("entrance-start-prior-local-lights",dim);
-                Assert.That(UpperMean(bright),Is.GreaterThan(UpperMean(dim)*1.15),"The upper cavern remains as dark as the previous local-light setup");
-                Assert.That(UpperMean(bright),Is.GreaterThan(18),"The vault remains too dark to read its scale");
-                Assert.That(bright.GetPixels32().Count(pixel=>pixel.r>250&&pixel.g>250&&pixel.b>250)/(float)(bright.width*bright.height),
-                    Is.LessThan(.05f),"Brightening washed out the scene");
+                EntranceBrightnessEvidence("entrance-start-selected-045",selected);
+                EntranceBrightnessEvidence("entrance-start-review-baseline-100",reference);
+                Assert.That(UpperMean(selected),Is.LessThan(UpperMean(reference)*.99),"Selected 0.45 lighting did not darken the actual view against 1.00");
+                Assert.That(selected.GetPixels32().Count(pixel=>pixel.r>250&&pixel.g>250&&pixel.b>250)/(float)(selected.width*selected.height),
+                    Is.LessThan(.05f),"Selected lighting washed out the scene");
             }
             finally
             {
                 for(int i=0;i<lights.Count;i++)if(lights[i]){lights[i].intensity=gains[i];lights[i].transform.localPosition=positions[i];lights[i].renderMode=modes[i];}
-                if(bright)Object.Destroy(bright);if(dim)Object.Destroy(dim);
+                if(selected)Object.Destroy(selected);if(reference)Object.Destroy(reference);
             }
         }
         static void EntranceBrightnessEvidence(string name,Texture2D frame)

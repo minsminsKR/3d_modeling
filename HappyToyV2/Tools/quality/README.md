@@ -640,6 +640,11 @@ talisman time stop and independent owned-clip cleanup, using the quiet guard.
 조명의 비교 PNG를 추가하는 선택 진단이다. 평상시 검사에는 추가하지 않는다.
 제작용 `.venv-*`는 고정 requirements로 재생성하는 캐시이며 소스 누락 검사에서 제외한다.
 
+입구 조명 배율만 바꿀 때는 `--profile entrance-lighting --graphics-api d3d11 --no-desktop-interaction`을
+사용한다. Core/조명 규칙과 실제 9개 광원의 선택 배율·동일 반사 재캡처 조건의 1.00배
+비교·세 화면비·회랑 입구 바닥·반사 소유권을 확인한다. 현재 사용자 선택은 원래 미리보기
+기준 절대 0.45배다. 밝기 선택 페이지를 다시 내보낼 때도 이 기준을 유지한다.
+
 싸이클롭스 음성만 바꿀 때는 `--profile cyclopse-voice --graphics-api d3d11 --no-desktop-interaction`을
 사용한다. Core와 실제 공간 호흡의 추격/배회 전환·벽·일시정지·음소거·거리·부적 정지·
 소유 자원 정리, 제거한 추격 비명의 카탈로그/Resources 부재를 무음 검사한다.

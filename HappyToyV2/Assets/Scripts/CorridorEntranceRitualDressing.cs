@@ -15,6 +15,8 @@ namespace HappyToy.V2
         readonly List<Vector3> incenseSources=new List<Vector3>();
         readonly List<Transform> toBatch=new List<Transform>();
         public IReadOnlyList<Light> Lanterns=>lanterns;
+        // Absolute gain against the original lighting-review baseline.
+        public float LightMultiplier=>.45f;
         public IReadOnlyList<Vector3> IncenseSources=>incenseSources;
         public int CandleCount {get;private set;}
         public int SealCount {get;private set;}
@@ -160,8 +162,7 @@ namespace HappyToy.V2
             Lamp("Gate candle gathering glow",new Vector3(0,1.15f,-10.3f),new Color(1,.49f,.18f),2.2f,9,false);
             Lamp("Left candle gathering glow",new Vector3(-1,1,2),new Color(1,.48f,.17f),1.8f,8,false);
             Lamp("Onward threshold candle gathering glow",new Vector3(2.8f,1,10.8f),new Color(1,.37f,.12f),1.9f,9,false);
-            // Keep this fill high enough to reveal the vault and pillars from
-            // the real start camera. It remains a local, unshadowed point light.
+            // Baseline from the lighting review; Lamp applies the selected gain.
             Lamp("Dim neutral cavern scatter",new Vector3(0,7.5f,-2),new Color(.48f,.47f,.43f),320f,25,false);
             lanterns[lanterns.Count-1].renderMode=LightRenderMode.ForcePixel;
             Lamp("Grazing dark rear rock",new Vector3(-11.5f,2,-9),new Color(.85f,.44f,.20f),4.8f,9,false);
@@ -202,7 +203,7 @@ namespace HappyToy.V2
         void Lamp(string name,Vector3 at,Color colour,float intensity,float range,bool shadow)
         {
             var light=Group(name,at).gameObject.AddComponent<Light>();light.type=LightType.Point;
-            light.color=colour;light.intensity=intensity;light.range=range;light.shadows=shadow?LightShadows.Soft:LightShadows.None;lanterns.Add(light);
+            light.color=colour;light.intensity=intensity*LightMultiplier;light.range=range;light.shadows=shadow?LightShadows.Soft:LightShadows.None;lanterns.Add(light);
         }
         void Incense()
         {
