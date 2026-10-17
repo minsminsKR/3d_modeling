@@ -129,6 +129,7 @@ namespace HappyToy.V2
     {
         public void ForgetPlayerForCheat()
         {
+            runnerRetreat.Reset();
             cabinetEncounter.Reset();
             awareness.Reset(); attack.Reset(); investigation.Reset(); memory = repath = 0;
             recognitionCueIssued = false;

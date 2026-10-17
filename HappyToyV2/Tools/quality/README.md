@@ -617,3 +617,12 @@ stocks/missing optional fields. The four-tray legacy furniture filter still
 identifies its original firecracker drawers. It also covers increased Uncat bell
 gains and actual Cyclopse panting loop PCM/occlusion/pause/master-mute/range,
 talisman time stop and independent owned-clip cleanup, using the quiet guard.
+
+## 회랑 백수귀 행동 검사
+
+`python HappyToyV2/Tools/quality/run_feature_tests.py --profile wraith-behavior --graphics-api d3d11 --no-desktop-interaction`
+는 Core와 두 저장소, 실제 추격 만료·캐비닛 생존 후 먼 곳으로 이동하는 이탈,
+일시정지/부적 정지/중단 복원과 재목격, 문 접촉 시 0속도·가림·일시정지·경로 제외,
+기존 열린/잠긴 문·학교 파괴·캐비닛 강제 포획·덫 회귀를 무음 검사한다.
+24초는 이동을 포함한 이탈 시간이며 실제 시야를 무효화하지 않는다.
+새 플레이어 실행·생존 난이도·기기 청감 인증은 포함하지 않는다.

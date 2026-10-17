@@ -8,6 +8,10 @@ namespace HappyToy.V2
         public const float RunnerPatrolSpeed = 6.6f, RunnerChaseSpeed = 7.2f, NearWhistleDistance = 7f;
         public bool CorridorRunner { get; private set; }
         public int DoorsShattered { get; private set; }
+        readonly WraithRetreatNavigation runnerRetreat = new WraithRetreatNavigation();
+        public bool RunnerRetreatActive => CorridorRunner && runnerRetreat.Active;
+        public float RunnerRetreatRemaining => CorridorRunner ? runnerRetreat.Remaining : 0;
+        public Vector3 RunnerRetreatTarget => RunnerRetreatActive ? runnerRetreat.Destination : Vector3.zero;
         Interactable[] runnerDoors;
         NavMeshPath runnerDoorRoute, runnerApproach;
         public void ConfigureCorridorRunner()
@@ -29,6 +33,13 @@ namespace HappyToy.V2
             IntroStarted = IntroCompleted = true; IntroElapsed = 2.2f; riseCueIssued = true;
             Transformed = true; transformTime = 5;
             var oldFeet = GetComponent<StalkerFootsteps>(); if (oldFeet) oldFeet.enabled = false;
+        }
+        void BeginRunnerRetreat()
+        {
+            if (!CorridorRunner || !runnerRetreat.Begin(agent, target, patrol, floorY)) return;
+            target = runnerRetreat.Destination;
+            awareness.Reset(); investigation.Cancel(); memory = repath = 0;
+            if (doorTraversal) doorTraversal.Cancel();
         }
         StalkerDoorTraversal.Result TickRunnerDoor(Vector3 destination)
         {
@@ -55,7 +66,7 @@ namespace HappyToy.V2
                 nearest = delta.magnitude; candidate = door;
             }
             if (!candidate) return StalkerDoorTraversal.Result.Clear;
-            if (candidate.BreakForMask(this))
+            if (candidate.BreakForMaskOnRoute(this, destination, runnerDoorRoute))
             {
                 DoorsShattered++; if (doorTraversal) doorTraversal.Cancel(); repath = 0;
                 return StalkerDoorTraversal.Result.Clear;

@@ -22,7 +22,7 @@ VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
-    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "RitualItemRulesTests"))
+    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
 PLAY = CLOUD + "CloudPlayModeTests."
@@ -126,6 +126,15 @@ PROFILES = {
         ("PlayMode", (
             PLAY + "SchoolMaskShattersClosedLeavesInAllMovementStatesAndRestoresSilentRubble",
             PLAY + "MaskRunnerShattersClosedLockedDoorsPassesOpenDoorsAndRestoresRubble"))]),
+    "wraith-behavior": ("Corridor post-pursuit/cabinet respite, paused and restored retreat, normal sight and low-velocity route-door contact; school and trapping regression", [
+        ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests")),
+        ("PlayMode", play_tests("CloudWraithRetreatTests.cs") + (
+            PLAY + "MaskRunnerShattersRouteDoorAfterContactAvoidanceStopsItsVelocity",
+            PLAY + "MaskRunnerShattersClosedLockedDoorsPassesOpenDoorsAndRestoresRubble",
+            PLAY + "MaskRunnerNearWhistleSightStillRespectsRealRoomCoverAndHiding",
+            PLAY + "SchoolMaskShattersClosedLeavesInAllMovementStatesAndRestoresSilentRubble",
+            PLAY + "MaskThirdOvertCabinetEntryCannotRerollOrEscape",
+            PLAY + "AllSixMonstersAreRestrainedFiveSecondsWithoutAttackingAndKeepCaptureFaces"))]),
     "wraith-hallway": ("Visual-only full-height wraith, real closed/locked/open door passage, persistent batched fragments and silent school/corridor restoration", [
         ("PlayMode", (
             PLAY + "HallwayWraithFillsDoorEnvelopeKeepsOriginalAgentAndFitsClonedVisualOnlyOnce",

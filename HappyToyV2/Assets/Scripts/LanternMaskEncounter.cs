@@ -40,6 +40,7 @@ namespace HappyToy.V2
             if (!witnessed) return;
             if (doorTraversal) doorTraversal.Cancel(); investigation.Cancel(); awareness.Reset();
             cabinetEncounter.Begin(this, agent, entrance, player.HidingEntryId, player.HidingOutcome,player.HidingForcedCapture);
+            if (CorridorRunner) target = entrance;
             State = player.HidingForcedCapture ? Phase.Chase : Phase.Investigate; repath = 0;
         }
         bool TickCabinetEncounter(GameSession session, PlayerMotor player)
@@ -53,7 +54,7 @@ namespace HappyToy.V2
                 session.WarnThreat("가면이 은신처를 발견했습니다 · 캐비닛으로 돌진합니다.", 1.5f);
             }
             if (step == CabinetEncounterClock.Step.Impact) session.TryCabinetDefeat(this, "Lantern mask", CabinetHidingRules.RiskExplanation);
-            else if (!cabinetEncounter.Active) { State = Phase.Wander; repath = memory = 0; }
+            else if (!cabinetEncounter.Active) { State = Phase.Wander; repath = memory = 0; BeginRunnerRetreat(); }
             Visual(); return true;
         }
         public float AttackRecovery => Mathf.Max(attack.Recovery, cabinetEncounter.Recovery);
@@ -277,6 +278,7 @@ namespace HappyToy.V2
         }
         void Resolve()
         {
+            runnerRetreat.Reset();
             cabinetEncounter.Reset();
             if (doorTraversal) doorTraversal.Cancel();
             State = Phase.Resolved; awareness.Reset(); attack.Reset(); EnemyNavigation.Stop(agent, true); SetVisible(false);
@@ -302,6 +304,7 @@ namespace HappyToy.V2
             if (session.CheatSafeMode && (State == Phase.Chase || State == Phase.Investigate || State == Phase.Transforming || attack.Active)) ForgetPlayerForCheat();
             if (State == Phase.Resolved) return;
             if (EnemyTrapRestraint.IsHeld(this)) return;
+            if (CorridorRunner) runnerRetreat.Tick(Time.deltaTime);
             if (State == Phase.Dormant)
             {
                 if (session.EncounterStep < activationStep) { Stop(); return; }
@@ -363,6 +366,7 @@ namespace HappyToy.V2
             }
             if (sees)
             {
+                runnerRetreat.Reset();
                 if (!recognitionCueIssued) { DetectionFeedback.Signal(session, transform); recognitionCueIssued = true; }
                 if (State != Phase.Chase) repath = 0;
                 awareness.Restore(1); investigation.Cancel();
@@ -380,7 +384,7 @@ namespace HappyToy.V2
             else if (State == Phase.Chase)
             {
                 memory-=Time.deltaTime;
-                if(memory<=0) { awareness.Reset(); State=Phase.Wander; repath=0; }
+                if(memory<=0) { memory=0; awareness.Reset(); State=Phase.Wander; repath=0; BeginRunnerRetreat(); }
             }
             if (sees && State == Phase.Chase && distance < (Transformed ? .75f : .85f))
             {
@@ -400,7 +404,13 @@ namespace HappyToy.V2
             // stairs. Other modes retain their original floor restriction.
             if (State == Phase.Chase && !EnemyNavigation.WithinFloorPolicy(agent, player.transform.position, floorY))
             { Stop(); repath = 0; Visual(); return; }
-            if (State == Phase.Wander && patrol != null && patrol.Length > 0)
+            if (State == Phase.Wander && RunnerRetreatActive)
+            {
+                target = runnerRetreat.Destination;
+                if (Vector3.Distance(transform.position, target) < .8f)
+                { Stop(); Visual(); return; }
+            }
+            else if (State == Phase.Wander && patrol != null && patrol.Length > 0)
             {
                 waypoint %= patrol.Length;
                 if (patrol[waypoint] && Vector3.Distance(transform.position, patrol[waypoint].position) < .6f)
@@ -427,7 +437,7 @@ namespace HappyToy.V2
             {
                 repath = .35f;
                 if (Route(target)) { EnemyNavigation.FollowPath(agent,path); }
-                else { EnemyNavigation.Stop(agent, true); if (patrol != null && patrol.Length > 0) waypoint = (waypoint + 1) % patrol.Length; }
+                else { runnerRetreat.Reset(); EnemyNavigation.Stop(agent, true); if (patrol != null && patrol.Length > 0) waypoint = (waypoint + 1) % patrol.Length; }
             }
             Visual();
         }
@@ -581,6 +591,7 @@ namespace HappyToy.V2
         }
         void OnDisable()
         {
+            runnerRetreat.Reset();
             cabinetEncounter.Reset();
             if (doorTraversal) doorTraversal.Cancel();
             BindFootsteps(null); awareness.Reset(); attack.Reset(); investigation.Reset(); EnemyNavigation.Stop(agent, true);
