@@ -11,7 +11,7 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
-        [UnityTest,Timeout(90000)]
+        [UnityTest,Timeout(180000)]
         public IEnumerator EntranceStartCameraRevealsTheVaultWithoutIncreasingTheShadowBudget()
         {
             yield return PrepareEntranceCavern();
@@ -26,6 +26,25 @@ namespace HappyToy.V2.CloudTests
             Assert.That(lights.Count,Is.EqualTo(9));
             Assert.That(lights.Count(light=>light.shadows!=LightShadows.None),Is.LessThanOrEqualTo(2));
             yield return Delay(.5f);
+            string reviewOutput=System.Environment.GetEnvironmentVariable("HAPPYTOY_ENTRANCE_LIGHTING_REVIEW_DIR");
+            if(!string.IsNullOrEmpty(reviewOutput))
+            {
+                Call(shell,"Pause");
+                var hands=Get<Component>(player,"Hands");var feedback=Get<Component>(player,"Feedback");
+                bool oldHands=hands&&((Behaviour)hands).enabled,oldFeedback=feedback&&((Behaviour)feedback).enabled;
+                if(hands)((Behaviour)hands).enabled=false;if(feedback)((Behaviour)feedback).enabled=false;
+                try
+                {
+                    var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));
+                    yield return EntranceLightingReviewExport.Write(reviewOutput,camera,lights,entrance.transform,
+                        new[]{Get<ReflectionProbe>(graphics,"OwnedProbe"),Get<ReflectionProbe>(graphics,"EntranceProbe")});
+                }
+                finally
+                {
+                    if(hands)((Behaviour)hands).enabled=oldHands;if(feedback)((Behaviour)feedback).enabled=oldFeedback;
+                    Call(shell,"Resume");
+                }
+            }
             Texture2D bright=null,dim=null;
             try
             {
@@ -54,8 +73,8 @@ namespace HappyToy.V2.CloudTests
                     {var p=pixels[y*frame.width+x];sum+=.2126*p.r+.7152*p.g+.0722*p.b;count++;}
                     return sum/count;
                 }
-                CloudExperienceTests.Artifact("entrance-start-brighter.png",bright.EncodeToPNG());
-                CloudExperienceTests.Artifact("entrance-start-prior-local-lights.png",dim.EncodeToPNG());
+                EntranceBrightnessEvidence("entrance-start-brighter",bright);
+                EntranceBrightnessEvidence("entrance-start-prior-local-lights",dim);
                 Assert.That(UpperMean(bright),Is.GreaterThan(UpperMean(dim)*1.15),"The upper cavern remains as dark as the previous local-light setup");
                 Assert.That(UpperMean(bright),Is.GreaterThan(18),"The vault remains too dark to read its scale");
                 Assert.That(bright.GetPixels32().Count(pixel=>pixel.r>250&&pixel.g>250&&pixel.b>250)/(float)(bright.width*bright.height),
@@ -66,6 +85,12 @@ namespace HappyToy.V2.CloudTests
                 for(int i=0;i<lights.Count;i++)if(lights[i]){lights[i].intensity=gains[i];lights[i].transform.localPosition=positions[i];lights[i].renderMode=modes[i];}
                 if(bright)Object.Destroy(bright);if(dim)Object.Destroy(dim);
             }
+        }
+        static void EntranceBrightnessEvidence(string name,Texture2D frame)
+        {
+            var bytes=frame.EncodeToPNG();string extension=".png";
+            if(bytes.Length>1500000){bytes=frame.EncodeToJPG(95);extension=".jpg";}
+            CloudExperienceTests.Artifact(name+extension,bytes);
         }
     }
 }
