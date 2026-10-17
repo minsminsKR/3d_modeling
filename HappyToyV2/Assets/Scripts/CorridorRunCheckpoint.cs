@@ -49,7 +49,7 @@ namespace HappyToy.V2
             Lighting.ValidateRestore(data.lightingVersion==0?null:data.lighting);
             var savedDrawers=data.furnitureVersion==0 ? new System.Collections.Generic.Dictionary<string,CorridorCheckpoint.Drawer>() :
                 data.drawers.ToDictionary(x=>x.id,StringComparer.Ordinal);
-            var expectedDrawers=data.furnitureVersion==1 ? drawers.Where(x=>x.ContainedPickup) : drawers;
+            var expectedDrawers=data.furnitureVersion==1 ? drawers.Where(x=>x.ContainedPickup&&x.ContainedPickup.kind==Interactable.Kind.FirecrackerSupply) : drawers;
             if(data.furnitureVersion>=1 && (!expectedDrawers.Select(x=>x.StableId).SequenceEqual(data.drawers.Select(x=>x.id)) ||
                 drawers.Any(x=>savedDrawers.TryGetValue(x.StableId,out var state) && !x.CanRestore(state.travel))))
                 throw new ArgumentException("Checkpoint drawer geometry mismatch");

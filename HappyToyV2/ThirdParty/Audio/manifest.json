@@ -3905,5 +3905,42 @@
     "peak": 0.9199998378753662,
     "rms": 0.1407900011689789,
     "sha256": "1da27c8ef9707d79a96c49acbde592997656c1beb58d385066619979ccea7454"
+  },
+  {
+    "pack": "owlish-recorded-foley",
+    "creator": "OwlishMedia",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/sound-effects-pack",
+    "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+    "source_file": "Human/scared-breathing.wav",
+    "source_file_sha256": "3adbe6f518576fa67308cfac57e6238249244f9e043d675fce9d80b853690eb1",
+    "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18",
+    "resource": "Audio/External/enemy-cyclopse-breath-0",
+    "file": "enemy-cyclopse-breath-0.wav",
+    "seconds": 8.940916666666666,
+    "peak": 0.58,
+    "rms": 0.04491019987147062,
+    "sha256": "63f36a1186e62f9880ad46c3a4d3cba7d4fe26b554fb595debee8ce690b32adf",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": true,
+      "recordings": [
+        {
+          "file": "scared.wav",
+          "pack": "owlish-recorded-foley",
+          "creator": "OwlishMedia",
+          "license": "CC0-1.0",
+          "page": "https://opengameart.org/content/sound-effects-pack",
+          "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+          "source_file": "Human/scared-breathing.wav",
+          "source_file_sha256": "3adbe6f518576fa67308cfac57e6238249244f9e043d675fce9d80b853690eb1",
+          "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+        }
+      ],
+      "source_kind": "Recorded human vocal breathing; no synthetic layers",
+      "scope": "Original source 1-9 seconds; mono, 0.88x playback-rate edit, 65Hz-5kHz bandpass, 150ms loop wrap crossfade and peak .58. Spatial actor gain .44 patrol/.66 pursuit; pursuit pitch 1.12."
+    }
   }
 ]

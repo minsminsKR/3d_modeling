@@ -185,3 +185,8 @@ https://opengameart.org/content/27-metal-audio-samples-sfx
 Original recordings, license evidence and SHA256: ThirdParty/Audio/Traps.
 Editing/layer recipe: SourceArt/Audio/render_traps.py and traps-foley-recipe.json.
 All layers are recorded foley; no oscillators or synthetic impact substitutes.
+
+Cyclopse laboured panting: OwlishMedia, Human/scared-breathing.wav, Sound Effects Pack. CC0-1.0.
+https://opengameart.org/content/sound-effects-pack
+Recorded human performance excerpt, slowed to 0.88x, filtered and loop-crossfaded.
+Original source/hash and complete edits: SourceArt/Audio/render_cyclopse_breath.py, cyclopse-breath-selection.json and ThirdParty/Audio/manifest.json.

@@ -20,20 +20,46 @@ namespace HappyToy.V2
                 if (i==0 || i==memories.Length-1)
                     Add(root,anchor.position-anchor.right*.28f,Interactable.Kind.IncenseSupply,"ritual-incense-"+i,"향 줍기","incense");
             }
+            var corridor=root.GetComponentInParent<CorridorRun>();
+            if(corridor)PopulateFurniture(corridor);
         }
-        static void Add(Transform parent,Vector3 position,Interactable.Kind kind,string id,string label,string model)
+        static void PopulateFurniture(CorridorRun corridor)
+        {
+            int index=0;
+            foreach(var drawer in corridor.Drawers.Where(x=>!x.ContainedPickup&&x.StableId.StartsWith("drawer-supply-",StringComparison.Ordinal)).OrderBy(x=>x.StableId,StringComparer.Ordinal))
+            {
+                var support=drawer.PickupSupport;
+                var at=new Vector3(support.bounds.center.x,support.bounds.max.y,support.bounds.center.z);
+                bool incense=index++%2==0;
+                drawer.AddPickup(Add(drawer.GetComponentInParent<CorridorFurniturePlacement>().transform,at,incense?Interactable.Kind.IncenseSupply:Interactable.Kind.TalismanFragment,
+                    "ritual-drawer-"+drawer.StableId,incense?"향 줍기":"부적의 조각 줍기",incense?"incense":"fragment_"+(index%5),support));
+            }
+            index=0;
+            foreach(var shelf in corridor.Furnishings.Where(x=>x.PropKey=="archive-shelf").OrderBy(x=>x.StableId,StringComparer.Ordinal))
+            {
+                bool incense=index++%2==0;
+                // Lower left bay, alongside the finite battery pack, clear of
+                // the books on the right and supported by the same real board.
+                Add(shelf.transform,shelf.transform.TransformPoint(new Vector3(-.12f,.504f,-.09f)),
+                    incense?Interactable.Kind.IncenseSupply:Interactable.Kind.TalismanFragment,"ritual-shelf-"+index,
+                    incense?"향 줍기":"부적의 조각 줍기",incense?"incense":"fragment_"+(index%5));
+            }
+        }
+        static Interactable Add(Transform parent,Vector3 position,Interactable.Kind kind,string id,string label,string model,Collider support=null)
         {
             var root = new GameObject(label) { layer=9 }; root.transform.SetParent(parent,false); root.transform.position=position;
             var item = root.AddComponent<Interactable>(); item.kind=kind; item.stableId=id; item.label=label;
             var box = root.AddComponent<BoxCollider>();
             var visual = PlayerItemVisuals.Attach(model,root.transform);
             if (kind==Interactable.Kind.IncenseSupply) visual.localScale=Vector3.one*.7f;
-            RitualPickupPlacement.Place(root.transform,visual,box,position);
+            if(support)RitualPickupPlacement.PlaceOnSupport(root.transform,visual,box,position,support);
+            else RitualPickupPlacement.Place(root.transform,visual,box,position);
             foreach (var child in visual.GetComponentsInChildren<Transform>(true)) child.gameObject.layer=9;
+            return item;
         }
         public static RitualCheckpoint Capture(PlayerMotor player)
         {
-            return new RitualCheckpoint { version=1,incense=player.Rituals.Incense,fragments=player.Rituals.Fragments,talismans=player.Rituals.Talismans,
+            return new RitualCheckpoint { version=2,incense=player.Rituals.Incense,fragments=player.Rituals.Fragments,talismans=player.Rituals.Talismans,
                 selected=(int)player.Items.Selected, smoke=player.Rituals.Smoke ? player.Rituals.Smoke.Remaining : 0,
                 supplies=player.Rituals.WorldRoot.GetComponentsInChildren<Interactable>(true).Where(Pickup).OrderBy(x=>x.stableId,StringComparer.Ordinal)
                     .Select(x=>new RitualCheckpoint.Supply { id=x.stableId,available=x.gameObject.activeSelf }).ToArray() };
@@ -41,7 +67,9 @@ namespace HappyToy.V2
         public static void ValidateRestore(RitualCheckpoint data,PlayerMotor player)
         {
             if (data==null || data.LegacyEmpty) return; data.Validate();
-            if (!player.Rituals.WorldRoot.GetComponentsInChildren<Interactable>(true).Where(Pickup).Select(x=>x.stableId).OrderBy(x=>x,StringComparer.Ordinal)
+            var expected=player.Rituals.WorldRoot.GetComponentsInChildren<Interactable>(true).Where(Pickup);
+            if(data.version==1)expected=expected.Where(x=>x.stableId.StartsWith("ritual-fragment-",StringComparison.Ordinal)||x.stableId.StartsWith("ritual-incense-",StringComparison.Ordinal));
+            if (!expected.Select(x=>x.stableId).OrderBy(x=>x,StringComparer.Ordinal)
                 .SequenceEqual(data.supplies.Select(x=>x.id))) throw new ArgumentException("Ritual item geometry mismatch");
         }
         public static void Restore(RitualCheckpoint data,PlayerMotor player)
@@ -49,7 +77,8 @@ namespace HappyToy.V2
             if (data==null || data.LegacyEmpty) return;
             player.Rituals.Restore(data.incense,data.fragments,data.talismans); player.Items.Select((PlayerItem)data.selected);
             var states=data.supplies.ToDictionary(x=>x.id,StringComparer.Ordinal);
-            foreach (var item in player.Rituals.WorldRoot.GetComponentsInChildren<Interactable>(true).Where(Pickup)) item.gameObject.SetActive(states[item.stableId].available);
+            foreach (var item in player.Rituals.WorldRoot.GetComponentsInChildren<Interactable>(true).Where(Pickup))
+                item.gameObject.SetActive(!states.TryGetValue(item.stableId,out var state)||state.available);
             if (data.smoke>0) player.Rituals.RestoreSmoke(data.smoke);
         }
     }
@@ -66,7 +95,7 @@ namespace HappyToy.V2
         {
             if (LegacyEmpty) return;
             TalismanStockRules.Validate(fragments,talismans);
-            if (version!=1 || incense<0 || selected<0 || selected>4 || !CorridorCheckpoint.Number(smoke,0,IncenseGuidance.Duration) || supplies==null || supplies.Length>32)
+            if ((version!=1&&version!=2) || incense<0 || selected<0 || selected>4 || !CorridorCheckpoint.Number(smoke,0,IncenseGuidance.Duration) || supplies==null || supplies.Length>32)
                 throw new ArgumentException("Invalid ritual item stock");
             string prior="";
             foreach (var item in supplies)

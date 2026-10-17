@@ -44,6 +44,14 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "supplies-voices": ("Supported finite ritual shelf/drawer supplies, version-one save migration, louder walking/pursuit bells and quiet recorded Cyclopse breathing lifecycle/mix", [
+        ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
+        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs", "RitualFurnitureSupplyTests.cs", "CreatureBreathingAudioTests.cs") + (
+            PLAY + "UncatActualWalkingBellsAccelerateAfterRecognitionAndStopDuringPause",
+            PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies",
+            PLAY + "CorridorDrawerRealERevealsFinitePickupAndRestoresConsumedStateWithNewAndLegacyCheckpoints",
+            PLAY + "EmptyDrawersOpenThroughRealInputAndDenseHallCandlesKeepTheirSavedWaymarks",
+            PLAY + "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce"))]),
     "incense": ("Single stable nearest reachable memory, retarget on collection, offering fallback, continuous plume pause, physically supported pickups and optional stock save compatibility", [
         ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs"))]),
     "ritual-pickups": ("Real support surfaces, rotated visual contact, above-surface focus targets and preserved pickup/save/presentation ownership", [

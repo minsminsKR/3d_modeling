@@ -1,5 +1,19 @@
 # Recorded horror audio authoring
 
+The Cyclopse now owns a recorded 8.94-second laboured human panting loop.
+`render_cyclopse_breath.py` compares retained scared/panic/solo-breath performances,
+then edits the scared performance (1-9 seconds, 0.88x rate, 65Hz-5kHz bandpass,
+150ms wrap crossfade). No synthesized layers or new download is required.
+Reproduce with the pinned `requirements-corridor.txt` environment (also verified
+with CPython 3.12) and run `python SourceArt/Audio/render_cyclopse_breath.py`.
+Original hashes/CC0 metadata remain in `ThirdParty/Audio/RecordedHorror/sources.json`;
+candidates and exact edits are in `cyclopse-breath-selection.json` and the canonical
+manifest. Runtime uses gains .44/.66 and pursuit pitch 1.12, with actual actor
+position, walls/range, pause/mute, time stop and owned cleanup. Uncat bell gains
+are now .32 patrol/.84 pursuit; the original bell waveform/cadence remain.
+`run_feature_tests.py --profile supplies-voices --no-desktop-interaction` includes
+quiet pre-device mixer checks; it is not a device-listening verdict.
+
 The corridor Uncat uses a soft carried-bell ring during actual movement and a
 faster, stronger rhythm during pursuit. `render_uncat_bell.py` derives the cue
 from the retained CC0 physical bell recording, after comparing it with the

@@ -42,7 +42,7 @@ def main():
         reason='A real pitched bell ring reads as a small carried bell; retain its natural pitch.'),
         compared=dict(file=candidate.relative_to(PROJECT).as_posix(), sha256=sha(candidate),
         reason='Loose metal jingle is noisier and less clearly a bell, so it is not mixed into the cue.'),
-        gain='Patrol 0.18; pursuit 0.58 on the same spatial emitter',
+        gain='Patrol 0.32; pursuit 0.84 on the same spatial emitter',
         interval_seconds=dict(patrol=.88,pursuit=.23), licensing=entry['license'],
         listening_scope='Selection from known retained physical recordings; PCM/source checks do not certify the final device mix.')
     (PROJECT/'SourceArt/Audio/uncat-bell-selection.json').write_text(json.dumps(selection,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

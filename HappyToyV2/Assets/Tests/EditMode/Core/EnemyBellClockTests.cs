@@ -25,5 +25,12 @@ namespace HappyToy.V2.CoreTests
             Assert.That(clock.Tick(.01f, true, true), Is.True);
             clock.Reset(); Assert.That(clock.Tick(.01f, true, false), Is.False);
         }
+        [Test]
+        public void LouderPatrolAndPursuitStayBelowFullEmitterGain()
+        {
+            var clock=new EnemyBellClock();
+            Assert.That(clock.Gain(false),Is.InRange(.30f,.40f));
+            Assert.That(clock.Gain(true),Is.InRange(.80f,1f));
+        }
     }
 }

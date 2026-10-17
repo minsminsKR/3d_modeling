@@ -1,0 +1,44 @@
+{
+  "selected": "scared",
+  "candidates": [
+    {
+      "key": "scared",
+      "file": "ThirdParty/Audio/RecordedHorror/sources/scared.wav",
+      "sha256": "3adbe6f518576fa67308cfac57e6238249244f9e043d675fce9d80b853690eb1",
+      "seconds": 15.350395833333334,
+      "rms": 0.017083979613549693,
+      "reason": "Repeated performed frightened inhales/exhales, suitable for ongoing laboured creature breathing."
+    },
+    {
+      "key": "panic",
+      "file": "ThirdParty/Audio/RecordedHorror/sources/panic.wav",
+      "sha256": "10881ee9d5c83b15e269762ccc89cc932173d2c720588e9303e0995ff32b69db",
+      "seconds": 1.2626041666666667,
+      "rms": 0.10310996973596319,
+      "reason": "Short vocal gasp already used for the entrance roar; unsuitable as the ongoing panting loop."
+    },
+    {
+      "key": "breath",
+      "file": "ThirdParty/Audio/RecordedHorror/sources/breath.wav",
+      "sha256": "20fa189254f8befac5ee4b710a417fb02e4e0b4b66631585d8a57e170ad3a930",
+      "seconds": 4.269002267573696,
+      "rms": 0.019654819190067816,
+      "reason": "Quieter solo breath retained for the player; keep the creature distinct."
+    }
+  ],
+  "source": {
+    "file": "scared.wav",
+    "pack": "owlish-recorded-foley",
+    "creator": "OwlishMedia",
+    "license": "CC0-1.0",
+    "page": "https://opengameart.org/content/sound-effects-pack",
+    "download": "https://opengameart.org/sites/default/files/Owlish%20Media%20Sound%20Effects.zip",
+    "source_file": "Human/scared-breathing.wav",
+    "source_file_sha256": "3adbe6f518576fa67308cfac57e6238249244f9e043d675fce9d80b853690eb1",
+    "archive_sha256": "57d7059fe2c0ea5f47c7554ace22a538ea22ab40bfc0906b71aa259afffd3d18"
+  },
+  "resource": "Audio/External/enemy-cyclopse-breath-0",
+  "outputSha256": "63f36a1186e62f9880ad46c3a4d3cba7d4fe26b554fb595debee8ce690b32adf",
+  "edits": "Original source 1-9 seconds; mono, 0.88x playback-rate edit, 65Hz-5kHz bandpass, 150ms loop wrap crossfade and peak .58. Spatial actor gain .44 patrol/.66 pursuit; pursuit pitch 1.12.",
+  "scope": "Source/performance comparison and measured edits; does not certify the final device mix or subjective listening quality."
+}

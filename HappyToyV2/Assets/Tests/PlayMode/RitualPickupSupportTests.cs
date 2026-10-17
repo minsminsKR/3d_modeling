@@ -38,8 +38,9 @@ namespace HappyToy.V2.CloudTests
                 {
                     // An item or memory cannot certify its own support. The
                     // independent table/floor must carry its lowest visible skin.
+                    var owner=hit.collider.GetComponentInParent(RequireType("Interactable"));
                     if(hit.collider.transform.IsChildOf(item.transform) || hit.normal.y<.95f ||
-                        hit.collider.GetComponentInParent(RequireType("Interactable")) ||
+                        owner&&Get<object>(owner,"kind").ToString()!="Drawer" ||
                         hit.collider.GetComponentInParent(RequireType("PlayerMotor")) || hit.collider.GetComponentInParent<NavMeshAgent>())continue;
                     float gap=point.y-hit.point.y;best=Mathf.Min(best,Mathf.Abs(gap));
                     if(Mathf.Abs(gap)<=.01f)return hit;
@@ -70,9 +71,12 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator CorridorRitualPickupsRestOnRealSurfacesAndRealECollectionSurvivesContinuation()
         {
             Call(session,"CreateCorridor",73);IsolateThreats();Begin();yield return null;
-            var run=Get<Component>(session,"Corridor");var items=RitualWorldPickups(run);
+            var run=Get<Component>(session,"Corridor");
             var ids=Enumerable.Range(0,5).Select(index=>"ritual-fragment-"+index)
                 .Concat(new[]{"ritual-incense-0","ritual-incense-4"}).OrderBy(id=>id,StringComparer.Ordinal).ToArray();
+            // Altar-specific alignment stays independent of the additional
+            // shelf/tray supplies, whose real support/input has its own test.
+            var items=RitualWorldPickups(run).Where(item=>ids.Contains(Get<string>(item,"stableId"))).ToArray();
             Assert.That(items.Select(item=>Get<string>(item,"stableId")),Is.EqualTo(ids));
             var positions=items.ToDictionary(item=>Get<string>(item,"stableId"),item=>item.transform.position);
             var stands=run.GetComponentsInChildren<Transform>(true).Where(node=>node.name=="Graphics joined seal altar").ToArray();
@@ -107,7 +111,7 @@ namespace HappyToy.V2.CloudTests
                 .ToDictionary(item=>Get<string>(item,"id"),item=>Get<bool>(item,"available"));
             Assert.That(supplyState["ritual-fragment-0"],Is.False);Assert.That(supplyState["ritual-incense-0"],Is.False);
             yield return RestoreCheckpointInFreshScene(saved);
-            run=Get<Component>(session,"Corridor");items=RitualWorldPickups(run);
+            run=Get<Component>(session,"Corridor");items=RitualWorldPickups(run).Where(item=>ids.Contains(Get<string>(item,"stableId"))).ToArray();
             Assert.That(items.Select(item=>Get<string>(item,"stableId")),Is.EqualTo(ids));
             foreach(var item in items)
             {

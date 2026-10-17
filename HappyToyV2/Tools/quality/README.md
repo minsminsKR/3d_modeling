@@ -609,3 +609,11 @@ fixtures now expose their real drawer before collecting; the dedicated drawer
 test retains closed rejection and real input coverage. The finite supply and
 battery identities/counts remain eight and six. Summary:
 `Verification/corridor-furnishings/summary.json`.
+
+`supplies-voices` adds finite incense/fragments to four empty supply drawers and
+six lower shelf bays, preserving the original memory-side identities. It checks
+real support/real E input, version-two exact identities and legacy version-one
+stocks/missing optional fields. The four-tray legacy furniture filter still
+identifies its original firecracker drawers. It also covers increased Uncat bell
+gains and actual Cyclopse panting loop PCM/occlusion/pause/master-mute/range,
+talisman time stop and independent owned-clip cleanup, using the quiet guard.

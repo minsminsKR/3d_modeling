@@ -76,19 +76,19 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator RitualStocksFragmentsAndSuppliesRoundTripWithLegacyOptionalState()
         {
             Call(session,"CreateCorridor",73);Begin();IsolateThreats();yield return null;
-            var ritual=Get<Component>(player,"Rituals");var fragments=CheckpointItems("TalismanFragment");
+            var ritual=Get<Component>(player,"Rituals");var fragments=CheckpointItems("TalismanFragment").Where(x=>Get<string>(x,"stableId").StartsWith("ritual-fragment-",StringComparison.Ordinal)).ToArray();
             Assert.That(fragments.Length,Is.EqualTo(5));
             foreach (var item in fragments.Take(3)) Call(item,"Use",player);
             Assert.That(Get<int>(ritual,"Fragments"),Is.EqualTo(3));
-            Call(CheckpointItems("IncenseSupply")[0],"Use",player);
+            Call(CheckpointItems("IncenseSupply").Single(x=>Get<string>(x,"stableId")=="ritual-incense-0"),"Use",player);
             Call(shell,"Pause");var data=Call(session,"CaptureCheckpoint");var saved=Get<object>(data,"ritualItems");
             Assert.That(Get<int>(saved,"fragments"),Is.EqualTo(3));Assert.That(Get<int>(saved,"incense"),Is.EqualTo(2));
             yield return RestoreCheckpointInFreshScene(data);
             ritual=Get<Component>(player,"Rituals");
             Assert.That(Get<int>(ritual,"Fragments"),Is.EqualTo(3));Assert.That(Get<int>(ritual,"Incense"),Is.EqualTo(2));
-            Assert.That(CheckpointItems("TalismanFragment").Count(x=>x.gameObject.activeSelf),Is.EqualTo(2));
+            Assert.That(CheckpointItems("TalismanFragment").Count(x=>x.gameObject.activeSelf&&Get<string>(x,"stableId").StartsWith("ritual-fragment-",StringComparison.Ordinal)),Is.EqualTo(2));
             Begin();yield return null;
-            foreach (var item in CheckpointItems("TalismanFragment").Where(x=>x.gameObject.activeSelf))Call(item,"Use",player);
+            foreach (var item in CheckpointItems("TalismanFragment").Where(x=>x.gameObject.activeSelf&&Get<string>(x,"stableId").StartsWith("ritual-fragment-",StringComparison.Ordinal)))Call(item,"Use",player);
             Assert.That(Get<int>(ritual,"Fragments"),Is.Zero);Assert.That(Get<int>(ritual,"Talismans"),Is.EqualTo(1));
             Call(shell,"Pause");var current=Call(session,"CaptureCheckpoint");
             var malformed=CheckpointCopy(current);Set(Get<object>(malformed,"ritualItems"),"fragments",5);

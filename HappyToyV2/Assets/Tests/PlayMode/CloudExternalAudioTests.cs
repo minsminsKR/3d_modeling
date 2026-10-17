@@ -72,6 +72,7 @@ namespace HappyToy.V2.CloudTests
                 {"frame-strain",3}, {"frame-impact",3},
                 {"ambience-ground",1}, {"ambience-upper",1}, {"ambience-basement",1}, {"ambience-basement-bed",1},
                 {"enemy-cyclopse-movement",3}, {"enemy-cyclopse-attack",1},
+                {"enemy-cyclopse-breath",1},
                 {"enemy-hwacat-movement",3}, {"enemy-hwacat-attack",1},
                 {"enemy-uncat-movement",3}, {"enemy-uncat-attack",1},
                 {"enemy-baby-movement",3}, {"enemy-baby-attack",1},

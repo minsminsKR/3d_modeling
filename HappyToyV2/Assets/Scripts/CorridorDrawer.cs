@@ -12,6 +12,7 @@ namespace HappyToy.V2
         public string StableId { get; private set; }
         public Transform MovingDrawer => transform;
         public Interactable ContainedPickup { get; private set; }
+        public Collider PickupSupport { get; private set; }
         public float Travel { get; private set; }
         public bool IsOpen { get; private set; }
         public bool AtRequestedPose => Mathf.Abs(Travel - (IsOpen ? OpenTravel : 0)) < .0001f;
@@ -32,8 +33,16 @@ namespace HappyToy.V2
             // in the identity wrapper's physical metres, keeping those transforms.
             parentSlide = transform.parent.InverseTransformVector(furniture.TransformVector(Vector3.back * OpenTravel));
             trayColliders = GetComponentsInChildren<Collider>(true);
+            foreach(var collider in trayColliders)if(collider.name=="Drawer physical bottom")PickupSupport=collider;
             pickupColliders = pickup ? pickup.GetComponentsInChildren<Collider>(true) : Array.Empty<Collider>();
             RefreshPickup();
+        }
+        public void AddPickup(Interactable pickup)
+        {
+            if(!pickup||ContainedPickup||!PickupSupport)throw new ArgumentException("An empty prepared drawer and pickup are required");
+            ContainedPickup=pickup;pickup.transform.SetParent(transform,true);
+            pickupColliders=pickup.GetComponentsInChildren<Collider>(true);
+            trayColliders=GetComponentsInChildren<Collider>(true);RefreshPickup();
         }
         public bool CanRestore(float distance) => CorridorCheckpoint.Number(distance, 0, OpenTravel);
         public void Restore(bool open, float distance)

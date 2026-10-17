@@ -27,7 +27,19 @@ namespace HappyToy.V2
 
         public static void Place(Transform root, Transform visual, BoxCollider target, Vector3 desired)
         {
-            root.position = Support(desired);
+            Seat(root,visual,target,Support(desired));
+        }
+        public static void PlaceOnSupport(Transform root,Transform visual,BoxCollider target,Vector3 desired,Collider support)
+        {
+            // A closed drawer's tabletop is above its contents. Query the real
+            // tray directly instead of accidentally seating the item on the desk.
+            if(!support||!support.Raycast(new Ray(desired+Vector3.up*.10f,Vector3.down),out var hit,.3f)||hit.normal.y<.95f)
+                throw new InvalidOperationException("Ritual pickup has no drawer support at "+desired);
+            Seat(root,visual,target,hit.point);
+        }
+        static void Seat(Transform root,Transform visual,BoxCollider target,Vector3 support)
+        {
+            root.position = support;
             // Both source models are upright, centred meshes. Lay them flat,
             // then align their measured geometry instead of assuming a pivot.
             visual.localRotation = Quaternion.Euler(90, 15, 0);

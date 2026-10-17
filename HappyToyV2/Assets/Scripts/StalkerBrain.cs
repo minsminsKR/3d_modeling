@@ -128,6 +128,8 @@ namespace HappyToy.V2
             agent = GetComponent<NavMeshAgent>(); motion = GetComponent<V1MonsterMotion>(); path = new NavMeshPath();
             footsteps = GetComponent<StalkerFootsteps>();
             if (!footsteps) footsteps = gameObject.AddComponent<StalkerFootsteps>();
+            if(EnemySoundProfile.Identify(transform)==EnemySoundKind.Cyclopse&&!GetComponent<CyclopseBreathingVoice>())
+                gameObject.AddComponent<CyclopseBreathingVoice>();
             floorY = transform.position.y;
         }
 
