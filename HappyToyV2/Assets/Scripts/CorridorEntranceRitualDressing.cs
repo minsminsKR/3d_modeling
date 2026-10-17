@@ -38,7 +38,47 @@ namespace HappyToy.V2
             sealInk=new Material(surfaces.Get("cloth-charred",new Color(.045f,.027f,.017f))) {name="Owned curved talisman ink"};
             seal=new Material(surfaces.Get("paper-aged",new Color(.78f,.65f,.43f))) {name="Owned aged talisman paper"};
             owned.Add(seal);owned.Add(sealInk);
-            Ropes();Guardians();Candles();LanternsAndLight();Incense();GroundMarks();WetAccents();BatchStaticDetails();
+            Ropes();Guardians();OnwardPassage();Candles();LanternsAndLight();Incense();GroundMarks();WetAccents();BatchStaticDetails();
+        }
+        void OnwardPassage()
+        {
+            // Reuse authored Korean props and timber joinery. All dressing stays
+            // outside the original capsule opening and owns no collision.
+            foreach(int side in new[]{-1,1})
+            {
+                ReusedProp("KoreanCorridorProps/jangseung","Onward passage carved jangseung",
+                    new Vector3(side*4.1f,1.55f,10.6f),new Vector3(.80f,3.1f,.66f),Quaternion.Euler(0,180-side*12,side*2));
+                ReusedProp("KoreanCorridorProps/onggi","Abandoned passage offering jar",
+                    new Vector3(side*3.15f,.32f,12.4f),new Vector3(.60f,.64f,.60f),Quaternion.Euler(0,side*17,0));
+                ReusedProp("CorridorArchitecture/door-post-lod0","Smoke darkened cave threshold post",
+                    new Vector3(side*2.33f,1.95f,14.65f),new Vector3(.23f,3.9f,.30f),Quaternion.identity,true);
+            }
+            ReusedProp("CorridorArchitecture/door-lintel-lod0","Heavy dark cave threshold lintel",
+                new Vector3(0,3.75f,14.65f),new Vector3(5.05f,.42f,.44f),Quaternion.identity,true);
+            // Cover the bright flat fascia at the maze mouth with retained dark
+            // joinery; preserve the original 2.58m physical opening below it.
+            ReusedProp("CorridorArchitecture/door-lintel-lod0","Receding smoke stained passage lintel",
+                new Vector3(0,2.72f,18.72f),new Vector3(2.94f,.56f,.36f),Quaternion.identity,true);
+            SaggingRope(new Vector3(-5.5f,4.2f,10.8f),new Vector3(5.5f,4,11.5f),.65f,15);
+            SaggingRope(new Vector3(-2.3f,3.6f,14.3f),new Vector3(2.3f,3.55f,14.3f),.25f,7);
+            CandleCluster(new Vector3(-2.9f,0,8.4f),7);CandleCluster(new Vector3(3.1f,0,11.2f),6);
+        }
+        void ReusedProp(string key,string name,Vector3 centre,Vector3 size,Quaternion rotation,bool timber=false)
+        {
+            var source=Resources.Load<GameObject>(key);
+            if(!source)throw new InvalidOperationException("Retained passage dressing missing: "+key);
+            var holder=Group(name,Vector3.zero);var model=Instantiate(source,holder,false).transform;
+            model.localRotation=rotation;
+            GraphicsPropLibrary.Fit(holder,new Bounds(centre,size));
+            foreach(var child in holder.GetComponentsInChildren<Transform>(true))child.gameObject.layer=8;
+            if(holder.GetComponentsInChildren<Collider>(true).Length!=0)throw new InvalidOperationException("Passage art must not own physics");
+            if(timber)foreach(var renderer in holder.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                var slots=renderer.sharedMaterials;
+                for(int i=0;i<slots.Length;i++)slots[i]=surfaces.Get("wood-aged",new Color(.19f,.115f,.067f));
+                renderer.sharedMaterials=slots;
+            }
+            toBatch.Add(holder);
         }
         void Guardians()
         {
@@ -112,15 +152,15 @@ namespace HappyToy.V2
         void LanternsAndLight()
         {
             Lantern(new Vector3(5,3.1f,4),1.8f,2.4f,11,false,1.25f);
-            Lantern(new Vector3(8.5f,4.6f,-8.5f),1.35f,2.5f,12,false);
+            Lantern(new Vector3(-4.5f,3.5f,9.8f),1.35f,2.2f,10,false);
             Lantern(new Vector3(-6,4.1f,-11),1.1f,2.1f,11,true);
             Lantern(new Vector3(6,4.4f,-11),1.1f,2.1f,11,true);
             // Only two lanterns are point-shadow eligible. LocalShadowBudget
             // continues to select at most two casters across the whole scene.
             Lamp("Gate candle gathering glow",new Vector3(0,1.15f,-10.3f),new Color(1,.49f,.18f),1.4f,9,false);
             Lamp("Left candle gathering glow",new Vector3(-1,1,2),new Color(1,.48f,.17f),1.25f,8,false);
-            Lamp("Right candle gathering glow",new Vector3(8,1,3),new Color(1,.45f,.15f),1.15f,8,false);
-            Lamp("Dim neutral cavern scatter",new Vector3(0,5.5f,1),new Color(.48f,.47f,.43f),1.4f,25,false);
+            Lamp("Onward threshold candle gathering glow",new Vector3(2.8f,1,10.8f),new Color(1,.37f,.12f),1.3f,9,false);
+            Lamp("Dim neutral cavern scatter",new Vector3(0,5.5f,3),new Color(.48f,.47f,.43f),1.0f,25,false);
             Lamp("Grazing dark rear rock",new Vector3(-11.5f,2,-9),new Color(.85f,.44f,.20f),.9f,9,false);
         }
         void Lantern(Vector3 at,float scale,float intensity,float range,bool shadow,float fittedHeight=0)

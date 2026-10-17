@@ -13,10 +13,34 @@
       "bytes": 990214,
       "originalFilename": "codex-clipboard-babb416c-c289-47cc-8de4-5f75c3245b45.png",
       "path": "SourceArt/CorridorEntrance/References/user-before-20261016.png"
+    },
+    {
+      "sha256": "1e90232f3140e2d7d11a6cc91646e635db7a7777c3b570bae0637404f0bac1a3",
+      "role": "Desired dark wet floor retained when backing out",
+      "bytes": 1379386,
+      "originalFilename": "codex-clipboard-e489e905-93da-41a6-9823-1f2f1cb09183.png",
+      "path": "SourceArt/CorridorEntrance/References/user-dark-floor-target-20261017.png",
+      "date": "2026-10-17"
+    },
+    {
+      "sha256": "2bbf03d11c395a2a1d897bad7f442f07f8f76c2a5e1b87a1916657a059d3b37a",
+      "role": "Reported abrupt bright floor after backing across the cave boundary",
+      "bytes": 3637109,
+      "originalFilename": "codex-clipboard-eab3dcc5-4a04-4f51-bcc7-a600e81e38b7.png",
+      "path": "SourceArt/CorridorEntrance/References/user-floor-reflection-bug-20261017.png",
+      "date": "2026-10-17"
+    },
+    {
+      "sha256": "1e25bd416d59d9ca4d5ef5e4d8795e2ff96257490e5249ad3532a11f3c8dc4e8",
+      "role": "Requested gate-side spawn facing the onward corridor and stronger horror composition",
+      "bytes": 2387349,
+      "originalFilename": "codex-clipboard-1255f663-9a3d-4147-89ca-e2d7a9215129.png",
+      "path": "SourceArt/CorridorEntrance/References/user-gate-side-start-20261017.png",
+      "date": "2026-10-17"
     }
   ],
   "schema": 1,
-  "origin": "Two user-supplied design-review screenshots, preserved unchanged",
+  "origin": "User-supplied design-review screenshots, preserved unchanged",
   "scope": "Visual design and grip review inputs; actual generated model reference images and webapp job settings are preserved separately per asset",
   "date": "2026-10-16"
 }

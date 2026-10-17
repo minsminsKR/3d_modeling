@@ -48,7 +48,7 @@ namespace HappyToy.V2.CloudTests
             AssertEntrancePath(start,approach);
             foreach(var delta in new[]{Vector3.zero,Vector3.left*1.8f,Vector3.right*1.8f,Vector3.back*6,Vector3.forward*10})
             {
-                var feet=start+delta;
+                var feet=entrance.transform.position+Vector3.up*.03f+delta;
                 Assert.That(Physics.Raycast(feet+Vector3.up*.4f,Vector3.down,out var support,1,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore),Is.True);
                 Assert.That(support.point.y,Is.EqualTo(0).Within(.03f));
             }
@@ -83,7 +83,7 @@ namespace HappyToy.V2.CloudTests
 
         [Serializable] sealed class EntranceRitualView
         {
-            public string image;public int width,height,changedArtPixels,changedFloorPixels,changedSealsPixels,changedInkPixels,changedCandlesPixels,changedGuardianPixels;
+            public string image;public int width,height,changedArtPixels,changedFloorPixels,changedSealsPixels,changedInkPixels,changedCandlesPixels,changedGuardianPixels,exposedBackgroundPixels;
             public float fieldOfView;public Vector3 feet,cameraPosition;public Quaternion cameraRotation;
         }
         [Serializable] sealed class EntranceRitualCameraReport
@@ -112,6 +112,56 @@ namespace HappyToy.V2.CloudTests
             }
             finally{foreach(var pair in states)if(pair.Key)pair.Key.enabled=pair.Value;if(absent)Object.Destroy(absent);}
         }
+        static int EntranceBackgroundExposure(Texture2D original,Texture2D probe)
+        {
+            // Detect the diagnostic magenta itself. Ordinary frame differences
+            // also count animated orange candle flames and are not sky evidence.
+            var before=original.GetPixels32();var after=probe.GetPixels32();int count=0;
+            for(int i=0;i<after.Length;i++)
+            {
+                var a=after[i];var b=before[i];
+                if(a.r>76&&a.b>76&&a.r>a.g*2+38&&a.b>a.g*2+38&&
+                    Mathf.Abs(a.r-b.r)+Mathf.Abs(a.g-b.g)+Mathf.Abs(a.b-b.b)>50)count++;
+            }
+            return count;
+        }
+        [UnityTest,Timeout(120000)]
+        public IEnumerator EntranceFloorStaysDarkWhenBackingAcrossTheCorridorMouth()
+        {
+            yield return PrepareEntranceCavern();
+            var entrance=Get<Component>(Get<Component>(session,"Corridor"),"Entrance");
+            var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));
+            var camera=Get<Camera>(player,"eyes");var torch=Get<Light>(player,"flashlight");
+            bool oldPlayer=((Behaviour)player).enabled,oldTorch=torch.enabled;
+            var means=new List<float>();
+            try
+            {
+                ((Behaviour)player).enabled=false;torch.enabled=false;
+                foreach(float z in new[]{8f,12f,14.6f,15.2f,17.6f,20f})
+                {
+                    PlacePlayer(entrance.transform.TransformPoint(new Vector3(0,.03f,z)),false);
+                    player.transform.rotation=Quaternion.Euler(0,180,0);camera.transform.localRotation=Quaternion.identity;
+                    yield return Delay(3.7f);
+                    var frame=EntranceRitualFrame(camera,960,540);
+                    try
+                    {
+                        CloudExperienceTests.Artifact("entrance-floor-boundary-"+z.ToString("0.0",System.Globalization.CultureInfo.InvariantCulture).Replace('.','p')+".png",frame.EncodeToPNG());
+                        float sum=0;int count=0;
+                        for(int y=54;y<243;y++)for(int x=144;x<816;x++)
+                        {var p=frame.GetPixel(x,y);sum+=p.grayscale;count++;}
+                        means.Add(sum/count);
+                        Debug.Log("ENTRANCE_FLOOR_BOUNDARY z="+z+" mean="+means.Last()+" ready="+Get<bool>(graphics,"ReflectionReady")+" probe="+Get<ReflectionProbe>(graphics,"OwnedProbe").transform.position);
+                    }
+                    finally{Object.Destroy(frame);}
+                }
+                Assert.That(means.Max(),Is.LessThan(.18f),"The dark wet cave floor picks up bright outdoor reflections near the corridor boundary");
+                Assert.That(means.Max()-means.Min(),Is.LessThan(.09f),"Backing across the portal abruptly changes the whole floor brightness");
+                var room=Get<ReflectionProbe>(graphics,"EntranceProbe");Assert.That(room,Is.Not.Null);
+                Assert.That(room.IsFinishedRendering(Get<int>(graphics,"EntranceReflectionRenderId")),Is.True);
+                Assert.That(room.bounds.Contains(entrance.transform.position+new Vector3(0,.025f,18.9f)),Is.True,"Persistent reflections miss the connecting passage floor");
+            }
+            finally{torch.enabled=oldTorch;((Behaviour)player).enabled=oldPlayer;}
+        }
         [UnityTest,Timeout(120000)]
         public IEnumerator EntranceRitualActualCameraShowsWetFloorSealsCandlesAndGuardiansAcrossAspectRatios()
         {
@@ -126,8 +176,7 @@ namespace HappyToy.V2.CloudTests
             var seals=details.Where(x=>x.sharedMaterials.Any(m=>m&&m.name=="Owned aged talisman paper")).ToArray();
             var ink=details.Where(x=>x.sharedMaterials.Any(m=>m&&m.name=="Owned curved talisman ink")).ToArray();
             var candles=details.Where(x=>x.sharedMaterials.Any(m=>m&&(m.name.Contains("wax-tallow")||m.name=="Owned photographic candle flame"))).ToArray();
-            var guardians=dressing.GetComponentsInChildren<Transform>(true).Where(x=>x.name=="Weathered stone sanctuary guardian")
-                .SelectMany(x=>x.GetComponentsInChildren<Renderer>(true)).Where(x=>x.enabled).ToArray();
+            var guardians=details.Where(x=>x.sharedMaterials.Any(m=>m&&m.name.IndexOf("jangseung",StringComparison.OrdinalIgnoreCase)>=0)).ToArray();
             Assert.That(seals,Is.Not.Empty);Assert.That(ink,Is.Not.Empty);Assert.That(candles,Is.Not.Empty);Assert.That(guardians,Is.Not.Empty);
             var views=new List<EntranceRitualView>();
             try
@@ -135,6 +184,12 @@ namespace HappyToy.V2.CloudTests
                 torch.enabled=false;
                 // Keep the genuine start composition rather than centring the gate.
                 yield return Delay(.35f);
+                var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));
+                var roomProbe=Get<ReflectionProbe>(graphics,"EntranceProbe");
+                // Time-sliced cubemaps must finish before renderer/background
+                // comparisons, otherwise their initial sky-to-room transition
+                // is incorrectly counted as a visible geometry gap.
+                yield return Wait(()=>Get<bool>(graphics,"ReflectionReady")&&roomProbe.IsFinishedRendering(Get<int>(graphics,"EntranceReflectionRenderId")),12,"Entrance reflection captures did not finish before the camera comparison");
                 foreach(var size in new[]{new Vector2Int(1280,720),new Vector2Int(960,720),new Vector2Int(1680,720)})
                 {
                     var frame=EntranceRitualFrame(camera,size.x,size.y);
@@ -147,12 +202,22 @@ namespace HappyToy.V2.CloudTests
                             changedArtPixels=EntranceRendererContribution(camera,frame,details),changedFloorPixels=EntranceRendererContribution(camera,frame,floor),
                             changedSealsPixels=EntranceRendererContribution(camera,frame,seals),changedInkPixels=EntranceRendererContribution(camera,frame,ink),changedCandlesPixels=EntranceRendererContribution(camera,frame,candles),
                             changedGuardianPixels=EntranceRendererContribution(camera,frame,guardians)};
+                        var clear=camera.clearFlags;var background=camera.backgroundColor;Texture2D skyProbe=null;
+                        try
+                        {
+                            camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.magenta;
+                            skyProbe=EntranceRitualFrame(camera,size.x,size.y);
+                            view.exposedBackgroundPixels=EntranceBackgroundExposure(frame,skyProbe);
+                            if(view.exposedBackgroundPixels>=30)CloudExperienceTests.Artifact("entrance-onward-background-probe.png",skyProbe.EncodeToPNG());
+                            Assert.That(view.exposedBackgroundPixels,Is.LessThan(30),"The onward view sees outdoor sky through the cave-to-maze ceiling joint");
+                        }
+                        finally{camera.clearFlags=clear;camera.backgroundColor=background;if(skyProbe)Object.Destroy(skyProbe);}
                         Assert.That(view.changedArtPixels,Is.GreaterThan(500),"Ritual detail is absent from the actual start view");
                         Assert.That(view.changedFloorPixels,Is.GreaterThan(2000),"Broken floor is absent or unlit in the real ambient view");
                         Assert.That(view.changedSealsPixels,Is.GreaterThan(25),"Suspended seals never reach the actual raster");
                         Assert.That(view.changedInkPixels,Is.GreaterThan(8),"Hanging seals are blank in the actual camera view");
                         Assert.That(view.changedCandlesPixels,Is.GreaterThan(20),"Candle gatherings are invisible");
-                        Assert.That(view.changedGuardianPixels,Is.GreaterThan(30),"Generated gate guardians are hidden or unlit");views.Add(view);
+                        Assert.That(view.changedGuardianPixels,Is.GreaterThan(30),"Generated passage guardians are hidden or unlit");views.Add(view);
                     }
                     finally{Object.Destroy(frame);}
                 }
@@ -170,6 +235,8 @@ namespace HappyToy.V2.CloudTests
             var oldGlobal=(RenderSettings.fog,RenderSettings.fogColor,RenderSettings.fogDensity);
             var run=Get<Component>(session,"Corridor");var entrance=Get<Component>(run,"Entrance");
             var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));var probe=Get<ReflectionProbe>(graphics,"OwnedProbe");
+            var roomProbe=Get<ReflectionProbe>(graphics,"EntranceProbe");Assert.That(roomProbe,Is.Not.Null);
+            var roomPosition=roomProbe.transform.position;int roomCapture=Get<int>(graphics,"EntranceReflectionRenderId");
             var vapour=Get<Component>(entrance.GetComponent(RequireType("CorridorEntrancePresentation")),"Vapour");
             yield return Wait(()=>Vector3.Distance(probe.transform.position,entrance.transform.position+Vector3.up*2)<.01f,12,"Cave spawn chose the nearest maze-cell reflection instead of the actual room");
             Assert.That(probe.size,Is.EqualTo(new Vector3(28,12,30)));Assert.That(probe.center,Is.EqualTo(Vector3.zero));
@@ -192,9 +259,11 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(graphics,"ReflectionCaptures"),Is.EqualTo(requests),"Pause issued new reflection work");
             Call(shell,"Resume");yield return Wait(()=>Vector3.Distance(probe.transform.position,(Vector3)Call(run,"CellPosition",0)+Vector3.up*1.5f)<.01f,12,"Leaving the cave lost original maze reflection planning");
             Assert.That(probe.size,Is.EqualTo(new Vector3(5.5f,3,5.5f)));
+            Assert.That(roomProbe.transform.position,Is.EqualTo(roomPosition));
+            Assert.That(Get<int>(graphics,"EntranceReflectionRenderId"),Is.EqualTo(roomCapture),"Leaving the cave recaptured its fixed lantern reflection");
             Assert.That((RenderSettings.fog,RenderSettings.fogColor,RenderSettings.fogDensity),Is.EqualTo(oldGlobal),"Local atmosphere changed global fog");
             Call(RequireType("GraphicsLightingPresentation"),"EndMode",session);yield return null;yield return null;
-            Assert.That(!probe,Is.True,"Reflection scope did not release its owned probe");
+            Assert.That(!probe&&!roomProbe,Is.True,"Reflection scope did not release both owned probes");
             Debug.Log("HAPPYTOY_ENTRANCE_REFLECTION_PASS actual cave floor box, unchanged bounded capture schedule, local lights, paused bounded smoke/probe and original maze plan/owned teardown");
         }
     }

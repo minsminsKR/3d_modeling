@@ -29,12 +29,14 @@ namespace HappyToy.V2
         AmbientMode oldAmbientMode;Color oldAmbient,oldSky,oldEquator,oldGround;
         float oldAmbientIntensity,oldReflectionIntensity;int oldReflectionBounces;
         bool oldFog;FogMode oldFogMode;Color oldFogColor;float oldFogDensity,oldFogStart,oldFogEnd;
-        Transform root;Volume volume;VolumeProfile profile;Texture2D cookie;ReflectionProbe probe;
+        Transform root;Volume volume;VolumeProfile profile;Texture2D cookie;ReflectionProbe probe,entranceProbe;
         int probeRenderId=-1,lastCell=-1,lastSchoolX=int.MinValue,lastSchoolZ=int.MinValue,lastLitCandles=-1;float nextProbe,lastSchoolY=float.NaN;
         EntityId lastSchoolFloor=EntityId.None;bool lastTorchLit;
         public bool Prepared=>applied;
         public Volume OwnedVolume=>volume;
         public ReflectionProbe OwnedProbe=>probe;
+        public ReflectionProbe EntranceProbe=>entranceProbe;
+        public int EntranceReflectionRenderId {get;private set;}=-1;
         public int ReflectionCaptures {get;private set;}
         public int ReflectionRenderId=>probeRenderId;
         public bool ReflectionReady=>probe&&probeRenderId>=0&&probe.IsFinishedRendering(probeRenderId);
@@ -101,18 +103,38 @@ namespace HappyToy.V2
                 torch.color=Color.white;torch.intensity=5;torch.range=18;torch.spotAngle=52;torch.innerSpotAngle=22;torch.shadowNearPlane=.05f;
                 // enabled/charge belong exclusively to PlayerFlashlight.
             }
-            var probeObject=new GameObject("Local room reflection (128 HDR, bounded refresh)");probeObject.transform.SetParent(root,false);
             // Low authored quality tiers disable realtime probes globally. This owned,
             // bounded 128 px probe must be allowed to finish on every supported tier.
             QualitySettings.realtimeReflectionProbes=true;
-            probe=probeObject.AddComponent<ReflectionProbe>();probe.mode=ReflectionProbeMode.Realtime;
-            probe.refreshMode=ReflectionProbeRefreshMode.ViaScripting;probe.timeSlicingMode=ReflectionProbeTimeSlicingMode.IndividualFaces;
-            probe.resolution=128;probe.hdr=true;probe.boxProjection=true;probe.blendDistance=.65f;probe.intensity=.6f;
-            probe.importance=50;probe.cullingMask=camera.cullingMask;probe.shadowDistance=16;probe.nearClipPlane=.08f;probe.farClipPlane=24;
+            probe=CreateProbe("Local room reflection (128 HDR, bounded refresh)");
+            var entrance=session.CorridorMode?session.Corridor.Entrance:null;
+            if(entrance)
+            {
+                // The wet cavern remains visible after crossing into the maze.
+                // Keep its local capture instead of exposing the sky fallback
+                // when the travelling room probe moves to cell zero. Fixed
+                // lanterns need one capture, not another refresh on every step.
+                entranceProbe=CreateProbe("Persistent sealed cavern reflection (one capture)");
+                entranceProbe.transform.position=entrance.transform.position+Vector3.up*2;
+                entranceProbe.size=new Vector3(CorridorEntranceChamber.Width+.8f,CorridorEntranceChamber.Height,CorridorEntranceChamber.Depth+5);
+                entranceProbe.center=Vector3.forward*2;entranceProbe.importance=60;
+                entranceProbe.clearFlags=ReflectionProbeClearFlags.SolidColor;entranceProbe.backgroundColor=Color.black;
+                entranceProbe.farClipPlane=32;
+                EntranceReflectionRenderId=entranceProbe.RenderProbe();
+            }
             applied=true;lastCell=-1;lastSchoolX=lastSchoolZ=int.MinValue;lastSchoolFloor=EntityId.None;lastSchoolY=float.NaN;
             lastLitCandles=-1;lastTorchLit=false;nextProbe=0;ReflectionCaptures=0;
             var budget=session.GetComponent<LocalShadowBudget>();if(budget)budget.RefreshNow();
             PositionProbe(true);
+        }
+        ReflectionProbe CreateProbe(string name)
+        {
+            var holder=new GameObject(name);holder.transform.SetParent(root,false);
+            var result=holder.AddComponent<ReflectionProbe>();result.mode=ReflectionProbeMode.Realtime;
+            result.refreshMode=ReflectionProbeRefreshMode.ViaScripting;result.timeSlicingMode=ReflectionProbeTimeSlicingMode.IndividualFaces;
+            result.resolution=128;result.hdr=true;result.boxProjection=true;result.blendDistance=.65f;result.intensity=.6f;
+            result.importance=50;result.cullingMask=camera.cullingMask;result.shadowDistance=16;result.nearClipPlane=.08f;result.farClipPlane=24;
+            return result;
         }
         public static VolumeProfile CreateProfile()
         {
@@ -230,6 +252,7 @@ namespace HappyToy.V2
         {
             if(volume)volume.enabled=false;
             if(probe)probe.enabled=false;
+            if(entranceProbe)entranceProbe.enabled=false;
             if(captured)
             {
                 foreach(var state in originals)
@@ -262,9 +285,9 @@ namespace HappyToy.V2
             if(root)Destroy(root.gameObject);
             if(profile){foreach(var component in profile.components)if(component)Destroy(component);Destroy(profile);}
             if(cookie)Destroy(cookie);
-            originals.Clear();root=null;volume=null;probe=null;profile=null;cookie=null;modeOwner=null;cameraData=null;
+            originals.Clear();root=null;volume=null;probe=null;entranceProbe=null;profile=null;cookie=null;modeOwner=null;cameraData=null;
             if(renderOwner==this)renderOwner=null;
-            captured=applied=false;addedCameraData=false;probeRenderId=-1;
+            captured=applied=false;addedCameraData=false;probeRenderId=-1;EntranceReflectionRenderId=-1;
         }
         void OnDisable(){End();}
         void OnDestroy(){End();}

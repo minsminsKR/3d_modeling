@@ -13,8 +13,8 @@ namespace HappyToy.V2
         public Transform VisualRoot { get; private set; }
         public Interactable Gate { get; private set; }
         public Bounds Bounds => new Bounds(transform.position + Vector3.up * (Height * .5f), new Vector3(Width, Height, Depth));
-        public Vector3 StartPoint => transform.TransformPoint(new Vector3(0, .03f, 8));
-        public Quaternion StartRotation => Quaternion.Euler(0, 170, 0);
+        public Vector3 StartPoint => transform.TransformPoint(new Vector3(0, .03f, -9.2f));
+        public Quaternion StartRotation => transform.rotation;
         public Vector3 MazeApproach => transform.TransformPoint(new Vector3(0, .03f, 19));
         public Vector3 ChamberApproach => transform.TransformPoint(new Vector3(0, .03f, 15));
         public Vector3 GatePosition => transform.TransformPoint(new Vector3(0, 0, -14));

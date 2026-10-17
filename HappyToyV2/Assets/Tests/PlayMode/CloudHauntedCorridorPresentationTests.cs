@@ -441,7 +441,9 @@ namespace HappyToy.V2.CloudTests
             var cavern=Get<Component>(run,"Entrance");Assert.That(cavern,Is.Not.Null);
             var templePresentation=cavern.GetComponent(RequireType("CorridorEntrancePresentation"));Assert.That(templePresentation,Is.Not.Null);
             var templeGate=Get<Transform>(templePresentation,"TempleGateRoot");Assert.That(templeGate,Is.Not.Null);
-            var positions=new[]{entrance+Vector3.back*1.4f,hallFeet,HauntedCell(run,Get<int[]>(layout,"Relics")[0]),Get<Vector3>(cavern,"StartPoint")};
+            // Keep the wide gate material/cave-shell inspection camera separate
+            // from the new gate-side spawn, which looks onward into the maze.
+            var positions=new[]{entrance+Vector3.back*1.4f,hallFeet,HauntedCell(run,Get<int[]>(layout,"Relics")[0]),cavern.transform.TransformPoint(new Vector3(0,.03f,8))};
             var targets=new[]{entrance+new Vector3(0,2.0f,2.7f),hallFeet+forward*16+Vector3.up*1.6f,memory.transform.position-Vector3.up*.12f,
                 Get<Vector3>(cavern,"GatePosition")+Vector3.up*4.5f};
             var names=new[]{"haunted-corridor-timber-paper-close.png","haunted-corridor-layered-passage.png","haunted-corridor-memory-seal.png","haunted-corridor-sealed-temple-gate.png"};

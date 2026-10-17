@@ -89,10 +89,19 @@ the existing corridor fog, exposure or pickup/collision state.
 Floor placement preserves the .14m relief cap, with only .025m above the unchanged
 physical support. The canonical 2.8m guardian is uniformly placed at 3.5m beside
 the gate; source normalization and scene scale are distinct and intentional.
-The fresh-run start is chamber-local `(0, .03, 8)` with yaw 170 degrees; the gate,
+The fresh-run start is gate-side chamber-local `(0, .03, -9.2)` with yaw 0 degrees toward the maze; the gate,
 physical boundaries, NavMesh and checkpoint positions are retained. A 1.25m hero
 lantern and two extra foreground candle gatherings establish nearby visual depth
-while the existing nine lights and two shadow candidates are retained.
+while the existing nine lights and two shadow candidates are retained. Reused
+jangseung, jars, dark timber frames and hanging seals now frame the onward view.
+The gate material inspection keeps its separate wide overview camera. A fixed
+one-shot 128px cavern reflection covers the passage and remains when the travelling reflection moves
+into the maze. The real-camera boundary test backs through local z=8/12/14.6/
+15.2/17.6/20, checks dark floor brightness and confirms the fixed capture finished.
+The profile also checks shared graphics scope restoration in school and corridor.
+The cave-to-maze ceiling height step and first timber-floor underside have continuous stone backing. Each actual
+start-camera aspect ratio also compares a magenta background to reject exposed
+sky above the original lintel, without changing the physical doorway.
 The checkpoint codecs preserve omitted/null optional root `traps` fields through
 copy/JSON/store boundaries while rejecting malformed present trap state. Gate artwork/render inspection and a fresh player build
 remain separate from these integration checks. Full source and repro commands

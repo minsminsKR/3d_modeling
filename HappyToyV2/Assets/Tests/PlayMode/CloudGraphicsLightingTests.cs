@@ -72,6 +72,8 @@ namespace HappyToy.V2.CloudTests
                 yield return null;yield return null;
                 var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));Assert.That(Get<bool>(graphics,"Prepared"),Is.True);
                 var volume=Get<Volume>(graphics,"OwnedVolume");var probe=Get<ReflectionProbe>(graphics,"OwnedProbe");
+                var roomProbe=Get<ReflectionProbe>(graphics,"EntranceProbe");
+                Assert.That((bool)roomProbe,Is.EqualTo(!chapter),"Only the current corridor's entrance owns a persistent cavern capture");
                 Assert.That(volume,Is.Not.Null);Assert.That(volume.sharedProfile,Is.Not.SameAs(sourceProfile));Assert.That(probe.resolution,Is.EqualTo(128));
                 Assert.That(probe.boxProjection,Is.True);Assert.That(probe.refreshMode,Is.EqualTo(ReflectionProbeRefreshMode.ViaScripting));
                 Assert.That(eyes.allowHDR&&data.renderPostProcessing,Is.True);Assert.That(data.antialiasing,Is.EqualTo(AntialiasingMode.SubpixelMorphologicalAntiAliasing));
@@ -79,7 +81,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(sourceVolume.sharedProfile,Is.SameAs(sourceProfile));Assert.That(sourceBloom.intensity.value,Is.EqualTo(.025f));
                 var colliderCount=UnityEngine.Object.FindObjectsByType<Collider>(FindObjectsInactive.Include,FindObjectsSortMode.None).Length;
                 Call(RequireType("GraphicsLightingPresentation"),"EndMode",session);yield return null;yield return null;
-                Assert.That(Get<bool>(graphics,"Prepared"),Is.False);Assert.That(!volume&&!probe,Is.True,"Owned render components survived teardown");
+                Assert.That(Get<bool>(graphics,"Prepared"),Is.False);Assert.That(!volume&&!probe&&!roomProbe,Is.True,"Owned render components survived teardown");
                 Assert.That((eyes.allowHDR,eyes.allowMSAA,data.renderPostProcessing,data.volumeLayerMask,data.antialiasing,data.antialiasingQuality,data.requiresDepthOption),Is.EqualTo(settings));
                 Assert.That((torch.color,torch.intensity,torch.range,torch.spotAngle,torch.innerSpotAngle,torch.cookie,torch.useColorTemperature,torch.colorTemperature),Is.EqualTo(lamp));
                 Assert.That((RenderSettings.ambientMode,RenderSettings.ambientLight,RenderSettings.ambientIntensity,RenderSettings.reflectionIntensity),Is.EqualTo(ambient));

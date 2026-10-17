@@ -46,6 +46,9 @@ namespace HappyToy.V2
             }
             Backing("Continuous cave portal crown",new Vector3(0,7.9f,15),new Vector3(4.8f,8.2f,.22f));
             Backing("Continuous cave passage roof",new Vector3(0,3.95f,17),new Vector3(4.8f,.3f,4));
+            // The maze ceiling is lower than the cave passage. Close the height
+            // step above its lintel so the gate-side camera cannot see the sky.
+            Backing("Continuous dark stone over the maze threshold",new Vector3(0,3.55f,18.95f),new Vector3(5.2f,1.3f,.3f));
             for(int side=-1;side<=1;side+=2)for(int row=0;row<3;row++)
                 Rock("Fractured cavern side wall",new Vector3(side*14.35f,6.05f,-10+row*10),new Vector3(11.2f,12.3f,4.1f),Quaternion.Euler(0,-side*90,0));
             foreach(int side in new[]{-1,1})
@@ -66,6 +69,7 @@ namespace HappyToy.V2
             // All relief extends downwards; no invisible steps or navigation edits.
             Backing("Continuous dark stone below floor cracks",new Vector3(0,-.135f,0),new Vector3(28.4f,.02f,30.4f));
             Backing("Continuous dark stone below passage cracks",new Vector3(0,-.135f,17),new Vector3(4.8f,.02f,4.2f));
+            Backing("Continuous dark stone under the maze threshold",new Vector3(0,-.135f,22),new Vector3(6.2f,.02f,6.2f));
             for(int x=0;x<4;x++)for(int z=0;z<4;z++)
             {
                 var tile=CorridorEntranceModels.Pending("ritual-floor",transform,"Wet broken cavern floor tile",Vector3.zero,out bool fallback);

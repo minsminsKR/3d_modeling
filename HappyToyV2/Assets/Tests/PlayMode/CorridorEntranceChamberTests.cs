@@ -43,14 +43,15 @@ namespace HappyToy.V2.CloudTests
             Assert.That(bounds.size.y, Is.GreaterThan(8));
             Assert.That(Vector2.Distance(new Vector2(player.transform.position.x, player.transform.position.z),
                 new Vector2(start.x, start.z)), Is.LessThan(.05f), "A fresh run still starts in the old six-metre maze cell");
-            var towardGate = Get<Vector3>(entrance, "GatePosition") - start; towardGate.y = 0;
-            Assert.That(Vector3.Dot(player.transform.forward, towardGate.normalized), Is.GreaterThan(.98f), "The player does not initially face the sealed temple gate");
+            var towardMaze = Get<Vector3>(entrance, "MazeApproach") - start; towardMaze.y = 0;
+            Assert.That(Vector3.Distance(start,Get<Vector3>(entrance,"GatePosition")),Is.LessThan(6),"A fresh run does not begin beside the sealed gate");
+            Assert.That(Vector3.Dot(player.transform.forward, towardMaze.normalized), Is.GreaterThan(.99f), "The player does not initially face onward into the corridor");
             Assert.That(bounds.Contains(player.transform.position + Vector3.up), Is.True);
             // Physical rays, beyond metadata, prove the large usable floor and
             // high roof exist around the actual starting viewpoint.
             foreach (var offset in new[] { Vector3.zero, Vector3.left * 6, Vector3.right * 6, Vector3.forward * 6, Vector3.back * 6 })
             {
-                Assert.That(Physics.Raycast(start + offset + Vector3.up * .4f, Vector3.down, out var floor, 1,
+                Assert.That(Physics.Raycast(entrance.transform.position + offset + Vector3.up * .4f, Vector3.down, out var floor, 1,
                     Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore), Is.True, "Large cave floor is missing at " + offset);
                 Assert.That(floor.point.y, Is.EqualTo(start.y).Within(.15f));
             }

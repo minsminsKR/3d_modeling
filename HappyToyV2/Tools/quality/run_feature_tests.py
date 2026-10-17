@@ -143,14 +143,15 @@ PROFILES = {
         ("PlayMode", play_tests("CloudCorridorRevisionTests.cs"))]),
     "entrance": ("Wet ritual cavern art, supported clear route, owned ambient/reflection resources, real input and NavMesh access, sealed temple gate and current/legacy checkpoint restoration", [
         ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests",
-                      CLOUD + "CheckpointTrapCodecTests", CLOUD + "LightExplorationRulesTests")),
+                      CLOUD + "CheckpointTrapCodecTests", CLOUD + "LightExplorationRulesTests", CLOUD + "GraphicsLightingRulesTests")),
         ("PlayMode", play_tests("CorridorEntranceChamberTests.cs", "CorridorEntranceRitualDressingTests.cs") + (
             PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
             PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
             PLAY + "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndTempleGateWithFourteenMetreSight",
             PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
             PLAY + "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
-            PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement"))]),
+            PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement") +
+            play_tests("CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs"))]),
     "core": ("Engine-independent rules; no scene setup", []),
     "readability": ("Rendered body wall clearance, pickup borders, candle blackout and creature gait", [
         ("PlayMode", play_tests("CloudGameplayReadabilityTests.cs") + (

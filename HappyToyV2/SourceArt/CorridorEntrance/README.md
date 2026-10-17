@@ -126,8 +126,8 @@ unchanged physical floor. Their .14m total relief spans -.115m to +.025m around
 the existing y=0 support. All further relief extends downwards; there are no new steps,
 floor colliders, NavMesh obstacles or route/pickup changes.
 
-`CorridorEntranceRitualDressing` owns two guardian instances, 42 worn candles,
-four old paper lanterns, 45 hanging inked seals, sagging cords, a faded lotus
+`CorridorEntranceRitualDressing` owns two stone guardian instances, 55 worn candles,
+four old paper lanterns, 67 hanging inked seals, sagging cords, a faded lotus
 floor trace and small wet accents. It reuses the retained graphics props,
 `hanging-seal` detail's paper surface and aged-paper UVs, onggi vessel and incense
 models. Dark ink strokes follow the hanging paper's curved surface and join the
@@ -140,9 +140,14 @@ fill. The foreground hero lantern is uniformly fitted to an actual 1.25m height;
 its suspension starts at the measured model top.
 The foreground lantern's dark 佛 uses the existing bundled OFL Korean font
 and its depth-tested world lettering; its font material follows the owned sign lifecycle.
-The actual new-run start is chamber-local `(0, .03, 8)`, facing yaw 170 degrees, leaving the gate slightly
-right of centre and more room for foreground depth. Gate/collision/model scales,
-navigation and existing saved positions remain unchanged.
+The actual new-run start is chamber-local `(0, .03, -9.2)`, facing yaw 0 degrees
+from beside the sealed gate toward the onward passage. Two retained generated
+jangseung, offering jars, dark authored timber thresholds, extra hanging seals and
+foreground candle gatherings frame that view. Existing gate/collision/model
+scales, navigation and saved positions remain unchanged. These props reuse the
+tracked `KoreanCorridorProps` and `CorridorArchitecture` sources; no new base model
+or generated original is substituted. The composition retains nine local lights
+and two shadow candidates.
 Owned wet-accent material/roughness texture and batches are released on
 removal; source material maps are never replaced or edited.
 
@@ -154,6 +159,19 @@ There are no accumulating particles, extra renders/readbacks or global fog edits
 `GraphicsLightingPresentation` selects the actual 28x12x30m cave reflection box
 while inside its bounds, retaining the existing 128px probe, finished-render guard,
 three-second refresh limit, original maze/school planning and scope restoration.
+An additional owned 128px fixed cavern probe captures the static lantern-lit
+interior once and covers the floor through the connecting passage. It remains
+after the travelling probe moves into the maze, preventing the wet floor from
+falling back to bright outdoor sky reflections. It has a black clear colour,
+bounded range and higher local priority, with no movement-triggered refresh.
+Both probes are released at mode teardown. The real-camera boundary regression
+backs from local z=8 through z=20 and checks the lower floor's brightness.
+The taller cave passage meets a lower maze ceiling. A continuous stone backing
+closes the height step above the original lintel without changing collision or
+the physical doorway. Dark backing also continues under the first maze floor
+so cracks at the passage-to-timber joint cannot expose the background below.
+Production-camera renders replace the background with
+magenta at all three aspect ratios and reject visible sky leakage in this joint.
 The final entrance requires the generated floor/guardian keys; the temporary
 authoring bridge `CorridorEntranceModels.PendingAssetFallback` must be false
 before final verification/build.
