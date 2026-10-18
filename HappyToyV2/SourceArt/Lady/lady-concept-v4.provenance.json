@@ -1,0 +1,30 @@
+{
+  "character": "lady",
+  "stage": "appearance-concept-v4",
+  "clientDate": "2026-10-18",
+  "timezone": "Asia/Seoul",
+  "generator": {
+    "mode": "built-in image_gen",
+    "tool": "image_gen.imagegen",
+    "transparent_background": false,
+    "inputImages": [
+      {
+        "file": "lady-concept-v3.png",
+        "sha256": "7eb2398cfeddb8aea20f96606f6c267d3f39a244ac93ef92808739de838fe039",
+        "role": "edit target"
+      }
+    ]
+  },
+  "image": "lady-concept-v4.png",
+  "imageSha256": "57726cf0390f5a9483391c5921da6f8280a9c5ff7f872d9ed93dab79403036fe",
+  "originalGeneratedFilename": "exec-d430b8fb-b9d0-492b-9aad-c63f41300ad5.png",
+  "promptFile": "lady-concept-v4.prompt.txt",
+  "userRequest": "Open mouth with irregular severely decayed teeth",
+  "edits": [
+    "Open asymmetric mouth with dark oral cavity",
+    "Visible upper and lower human teeth with irregular shape, gaps and yellow-brown/dark decay-like surfaces"
+  ],
+  "preserved": "Character identity, white eyes, dark eye makeup, hair, sobok, broad red costume-paint patches, full-body composition and grey studio background",
+  "purpose": "Revised appearance review and potential modeling-webapp input; previous revisions retained",
+  "implementationStatus": "Concept only. No model or gameplay changes in this pass."
+}
