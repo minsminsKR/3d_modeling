@@ -1,0 +1,27 @@
+{
+  "character": "lady",
+  "clientDate": "2026-10-18",
+  "stage": "appearance first; modeling and encounter implementation remain later stages",
+  "appearance": [
+    "소복을 입은 사신 같은 여자 괴물 귀신",
+    "긴 산발 헤어스타일",
+    "P.T. 같은 현실적이고 불쾌한 공포 분위기; 독자적인 외관"
+  ],
+  "requestedEncounter": {
+    "trigger": "마지막 기억을 획득했을 때",
+    "transition": [
+      "여태 켜 두었던 촛불을 모두 끈다",
+      "기존 몬스터가 모두 멈춘다",
+      "쿵 소리와 함께 주변이 조용해진다",
+      "플레이어의 발소리와 달릴 때의 숨소리만 남는다"
+    ],
+    "spawn": "맵 어딘가에서 lady가 출현한다",
+    "pursuit": "lady는 플레이어를 무조건 추격한다",
+    "counters": {
+      "trap": "무효",
+      "talisman": "부적으로만 멈춰서 피할 수 있음"
+    }
+  },
+  "modelingWorkflow": "After the appearance phase, generate the base model with the repository's designated modeling webapp in the existing in-app browser; retain reference image, original GLB/PBR, provenance, rig/editable sources and Unity metadata.",
+  "gameplayImplementation": "To follow the appearance and model stages; not implemented by this concept asset."
+}

@@ -1,0 +1,19 @@
+{
+  "character": "lady",
+  "stage": "appearance-concept-v1",
+  "clientDate": "2026-10-18",
+  "timezone": "Asia/Seoul",
+  "generator": {
+    "mode": "built-in image_gen",
+    "tool": "image_gen.imagegen",
+    "transparent_background": false,
+    "inputImages": []
+  },
+  "image": "lady-concept-v1.png",
+  "promptFile": "lady-concept-v1.prompt.txt",
+  "purpose": "Initial appearance review and retained potential input for the designated modeling webapp.",
+  "artDirection": "Original reaper-like female Korean ghost in weathered white sobok with long dishevelled black hair; realistic psychological horror atmosphere inspired by P.T.",
+  "implementationStatus": "Concept only. No model, AI, encounter, lighting or gameplay changes have been made in this pass.",
+  "imageSha256": "72a7e784f8948d454241dd0df4f65fc13b5293fc0aa217addc0ac7d92fa84c0b",
+  "originalGeneratedFilename": "exec-e449790b-0970-439b-b5d2-b7ff475e22c0.png"
+}
