@@ -43,6 +43,7 @@ namespace HappyToy.V2
         void ApplyWorld(bool impact)
         {
             foreach(var candle in run.Lighting.Candles)candle.SetFinaleBlackout(true);
+            session.GetComponent<GraphicsLightingPresentation>().BeginFinale();
             frozen.Capture(existing);
             audioScope=gameObject.AddComponent<LadyFinaleAudio>();audioScope.Begin(session,impact);
         }

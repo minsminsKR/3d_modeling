@@ -58,6 +58,7 @@ namespace HappyToy.V2.CloudTests
             var impact=Get<AudioSource>(Get<Component>(LadyFinale,"AudioScope"),"ImpactSource");
             Assert.That(impact.isPlaying,Is.False,"Restore replayed the transition impact");
             Assert.That(Components("WaymarkCandle").All(c=>!Get<bool>(c,"Lit")),Is.True);
+            Assert.That(Get<bool>(session.GetComponent(RequireType("GraphicsLightingPresentation")),"FinaleBlackout"),Is.True,"Checkpoint restore lost the flashlight-only lighting scope");
             var legacy=CheckpointCopy(saved);Set(legacy,"ladyVersion",0);Set(legacy,"lady",null);Call(legacy,"Validate");
             var invalid=CheckpointCopy(saved);Set(Get<object>(invalid,"lady"),"position",new Vector3(0,0,0));
             Assert.Throws<System.ArgumentException>(()=>Call(LadyFinale,"ValidateRestore",Get<object>(invalid,"lady")));

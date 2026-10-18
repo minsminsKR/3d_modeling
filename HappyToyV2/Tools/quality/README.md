@@ -8,7 +8,7 @@ Player build and native/visual verification remain separate checks.
 
 `--profile lady` runs final-memory progression rules/save codecs, the actual
 Lady model/navmesh pursuit, trap immunity, talisman/pause pose holds,
-blackout/checkpoint restoration and quiet pre-device mixer isolation. It also
+flashlight-only blackout with actual torch-on/off camera frames, checkpoint/new-game lighting restoration and quiet pre-device mixer isolation. It also
 retains existing six-attacker talisman and corridor-save regressions.
 `LadyModelReview.ImportAndRender` is an explicit silent URP asset review; it
 exports 64 actual skinned action frames without starting a player.

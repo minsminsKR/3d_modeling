@@ -13,6 +13,13 @@ namespace HappyToy.V2
         static GraphicsLightingPresentation renderOwner;
         static readonly Color Bounce=new Color(.058f,.065f,.072f);
         Color appliedBounce;
+        LadyFinaleLighting finale;
+        public bool FinaleBlackout=>finale!=null;
+        public void BeginFinale()
+        {
+            if(!applied)throw new System.InvalidOperationException("Finale requires an active lighting mode");
+            if(finale==null)finale=new LadyFinaleLighting(camera,session.player.flashlight);
+        }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetOwnership(){renderOwner=null;}
         struct LightState
@@ -164,6 +171,7 @@ namespace HappyToy.V2
         {
             if(!applied)return;
             if(!session||!modeOwner||!modeOwner.isActiveAndEnabled){End();return;}
+            if(finale!=null)return; // Finale enforces darkness immediately before world-camera rendering.
             // Static grading also respects the comfort contract: motion effects are absent.
             if(session.InputAllowed)PositionProbe(false);
         }
@@ -250,6 +258,7 @@ namespace HappyToy.V2
         }
         void End()
         {
+            finale?.Dispose();finale=null;
             if(volume)volume.enabled=false;
             if(probe)probe.enabled=false;
             if(entranceProbe)entranceProbe.enabled=false;
