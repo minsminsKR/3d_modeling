@@ -18,6 +18,36 @@ namespace HappyToy.V2.CloudTests
         IEnumerator LadyPrepare()
         {yield return RevisionPrepare();Call(session,"ToggleCheatSafeMode");}
 
+        static void LadyAssertSpawnPath(Vector3 point,Vector3 target)
+        {
+            var path=new NavMeshPath();
+            Assert.That(NavMesh.CalculatePath(point,target,NavMesh.AllAreas,path)&&path.status==NavMeshPathStatus.PathComplete,Is.True);
+            float length=0;var previous=point;
+            foreach(var corner in path.corners){length+=Vector3.Distance(previous,corner);previous=corner;}
+            Assert.That(length,Is.InRange(18f-.001f,72f+.001f),"Lady spawn violated actual walking distance limits");
+        }
+
+        [UnityTest,Timeout(120000)]
+        public IEnumerator LadySpawnVariesOnSameMapAndPositionWithResetGlobalRandomAndPreservesPathLimits()
+        {
+            yield return LadyPrepare();((Behaviour)player).enabled=false;
+            var choose=LadyFinale.GetType().GetMethod("ChooseSpawn",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+            Assert.That(choose,Is.Not.Null);
+            var state=Random.state;var selected=new HashSet<Vector3>();var target=player.transform.position;
+            try
+            {
+                for(int i=0;i<32;i++)
+                {
+                    Random.InitState(73);
+                    var point=(Vector3)choose.Invoke(LadyFinale,null);
+                    LadyAssertSpawnPath(point,target);selected.Add(point);
+                }
+            }
+            finally{Random.state=state;}
+            Assert.That(selected.Count,Is.GreaterThan(1),"Same map/location/global RNG still fixed Lady's spawn");
+            Assert.That(Get<bool>(LadyFinale,"Active"),Is.False,"Choosing candidates activated the encounter");
+        }
+
         [UnityTest,Timeout(120000)]
         public IEnumerator LadyFinalMemoryBlacksOutCandlesFreezesOldActorsAndRestoresWithoutReplay()
         {
@@ -36,6 +66,7 @@ namespace HappyToy.V2.CloudTests
             RequireType("EnemyChaseFace").GetMethod("HoldCabinetDeathFace",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).Invoke(face,null);
             float expression=Get<float>(face,"Weight");Assert.That(expression,Is.GreaterThan(.95f));
             var at=old.transform.position;LadyCollect(4,5);
+            LadyAssertSpawnPath(Get<Vector3>(Call(LadyFinale,"Capture"),"position"),player.transform.position);
             Assert.That(Get<bool>(LadyFinale,"Active"),Is.True);Assert.That(Get<bool>(LadyFinale,"Hunting"),Is.False);
             Assert.That((bool)Call(LadyFinale,"Begin"),Is.False);
             Assert.That(Get<int>(LadyFinale,"FrozenActorCount"),Is.GreaterThan(0));
@@ -48,7 +79,6 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<float>(face,"Weight"),Is.EqualTo(expression),"The frozen monster's actual face continued morphing");
             Assert.That(body.gameObject.activeInHierarchy,Is.True,"Freezing the wraith hid its existing visible body");
             var actor=Get<Component>(LadyFinale,"Actor");Assert.That(actor.GetComponent<NavMeshAgent>().isOnNavMesh,Is.True);
-            Assert.That(Vector3.Distance(actor.transform.position,player.transform.position),Is.GreaterThan(8));
             yield return Delay(.12f);Call(shell,"Pause");var saved=Call(session,"CaptureCheckpoint");
             var pose=Get<object>(saved,"lady");var point=Get<Vector3>(pose,"position");float clock=Get<float>(pose,"poseClock");
             yield return RestoreCheckpointInFreshScene(saved);

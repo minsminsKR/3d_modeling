@@ -51,7 +51,7 @@ namespace HappyToy.V2
         {
             var path=new NavMeshPath();var hiding=session.player.ActiveHidingPlace;
             var target=hiding&&hiding.outside?hiding.outside.position:session.player.transform.position;
-            bool found=false;float best=float.NegativeInfinity;Vector3 selected=default;
+            var candidates=new List<Vector3>();
             for(int cell=0;cell<CorridorLayout.Count;cell++)
             {
                 if(!NavMesh.SamplePosition(run.CellPosition(cell),out var hit,1,NavMesh.AllAreas)||
@@ -59,13 +59,12 @@ namespace HappyToy.V2
                 float length=0;var previous=hit.position;
                 foreach(var corner in path.corners){length+=Vector3.Distance(previous,corner);previous=corner;}
                 if(length<18||length>72)continue;
-                bool covered=!EnemyNavigation.ClearSight(hit.position+Vector3.up*1.5f,target+Vector3.up*1.5f,session.player);
-                float score=-(Mathf.Abs(length-30))+(covered?8:0)+Mathf.Repeat(cell*.137f+run.Seed*.031f,1);
-                if(score<=best)continue;
-                found=true;best=score;selected=hit.position;
+                candidates.Add(hit.position);
             }
-            if(!found)throw new InvalidOperationException("No distant reachable Lady spawn in this corridor");
-            return selected;
+            if(candidates.Count==0)throw new InvalidOperationException("No distant reachable Lady spawn in this corridor");
+            // Fresh encounter entropy: map seeds and global gameplay RNG resets
+            // must not fix Lady's location. Saved encounters keep their position.
+            return candidates[new System.Random(Guid.NewGuid().GetHashCode()).Next(candidates.Count)];
         }
         void Spawn(Vector3 point,Quaternion rotation,float poseClock)
         {
