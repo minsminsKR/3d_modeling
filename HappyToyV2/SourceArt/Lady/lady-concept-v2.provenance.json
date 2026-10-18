@@ -1,0 +1,30 @@
+{
+  "character": "lady",
+  "stage": "appearance-concept-v2",
+  "clientDate": "2026-10-18",
+  "timezone": "Asia/Seoul",
+  "generator": {
+    "mode": "built-in image_gen",
+    "tool": "image_gen.imagegen",
+    "transparent_background": false,
+    "inputImages": [
+      {
+        "file": "lady-concept-v1.png",
+        "sha256": "72a7e784f8948d454241dd0df4f65fc13b5293fc0aa217addc0ac7d92fa84c0b",
+        "role": "edit target"
+      }
+    ]
+  },
+  "image": "lady-concept-v2.png",
+  "imageSha256": "808a2b4d26451b6a54d96ae4797c1739a028a1c8e800141034c40c0693de1f90",
+  "originalGeneratedFilename": "exec-4c10ef66-9224-4bff-9cec-d5f28e779e9b.png",
+  "promptFile": "lady-concept-v2.prompt.txt",
+  "edits": [
+    "Subtle asymmetric smile",
+    "Upward-rolled eyes with clearly visible white sclera, no glow",
+    "Small scattered ketchup-like dark-red costume stains"
+  ],
+  "preserved": "Identity, full-body pose, proportions, sobok, long dishevelled hair, background and lighting",
+  "purpose": "Revised appearance review and potential modeling-webapp input; original v1 retained",
+  "implementationStatus": "Concept only. No model or gameplay changes in this pass."
+}

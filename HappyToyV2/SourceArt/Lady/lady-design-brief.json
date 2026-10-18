@@ -23,5 +23,11 @@
     }
   },
   "modelingWorkflow": "After the appearance phase, generate the base model with the repository's designated modeling webapp in the existing in-app browser; retain reference image, original GLB/PBR, provenance, rig/editable sources and Unity metadata.",
-  "gameplayImplementation": "To follow the appearance and model stages; not implemented by this concept asset."
+  "gameplayImplementation": "To follow the appearance and model stages; not implemented by this concept asset.",
+  "latestAppearanceConcept": "lady-concept-v2.png",
+  "appearanceRevision": [
+    "살짝 웃는 표정",
+    "흰자가 드러나는 눈",
+    "소복 여기저기에 케첩처럼 묻은 짙은 붉은 얼룩"
+  ]
 }
