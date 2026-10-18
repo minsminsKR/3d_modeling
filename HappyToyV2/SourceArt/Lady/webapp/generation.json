@@ -1,0 +1,31 @@
+{
+  "jobId": "db5b4ae5-2fcd-47ae-bbab-4ae69411bba5",
+  "jobUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/db5b4ae5-2fcd-47ae-bbab-4ae69411bba5",
+  "clientDate": "2026-10-18",
+  "referenceImage": "../lady-concept-v4.png",
+  "referenceSha256": "57726cf0390f5a9483391c5921da6f8280a9c5ff7f872d9ed93dab79403036fe",
+  "generator": "TRELLIS.2 via user-designated A100 Studio webapp",
+  "settings": {
+    "pipeline": "1536 cascade",
+    "textureSize": 8192,
+    "removeBackground": true,
+    "steps": 12,
+    "seed": 1234,
+    "gpu": "shape 1 / material 0"
+  },
+  "original": "source-original.glb",
+  "originalBytes": 164577656,
+  "originalSha256": "7029294611fa6b803374599cd95b037097926d8b32d8ffd73f5289d164489eca",
+  "riggingRequest": {
+    "preserveOriginal": true,
+    "analysisFaces": 50000,
+    "seed": 1234
+  },
+  "retrieval": "Downloaded through the authenticated in-app browser; original bytes unmodified.",
+  "rigRunId": "88c04746-0095-4ad9-959a-ecbfaeba5b34",
+  "rigOriginal": {
+    "file": "source-ai-rig.glb",
+    "sha256": "ecaa7e0c1a596dda19067b5bba32c7f8c9292648f56adbd85221d1b5ab24c8ea",
+    "bytes": 185418316
+  }
+}

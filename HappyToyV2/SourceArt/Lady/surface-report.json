@@ -1,0 +1,25 @@
+{
+  "method": "actual source BVH nearest surface, barycentric UV/PBR/custom-normal transfer to continuous game atlas",
+  "size": [
+    2048,
+    2048
+  ],
+  "atlasSurfaceSamples": 1551404,
+  "sourceDistanceP99": 0.0013152649288531387,
+  "sourceDistanceMax": 0.004688785877078772,
+  "originalSourceUVAnd8KUnchanged": true,
+  "normal": {
+    "method": "actual interpolated source surface normals in new game tangent frame",
+    "size": [
+      2048,
+      2048
+    ]
+  },
+  "vertices": 37650,
+  "triangles": 79593,
+  "skin": "Reviewed smooth anatomical robe/sleeve/hand/foot branches; rigid head and black hair",
+  "rigidHeadAndHairGameVertices": 26121,
+  "sourceSkinEditedOnlyForGame": true,
+  "chartMargin": 5e-05,
+  "fusedGameSurfaceSeamsSeparated": true
+}

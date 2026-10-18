@@ -21,6 +21,7 @@ namespace HappyToy.V2
                 supplies=CheckpointItems(Interactable.Kind.FirecrackerSupply).Select(x=>x.gameObject.activeSelf).ToArray(),
                 traps=TrapWorld.Capture(session.player),ritualItems=RitualWorld.Capture(session.player),player=session.player.CaptureProgress(),threats=threats.Select(x=>x.CaptureProgress()).ToArray(),
                 threatVersion=1,mask=Mask.CaptureChapterProgress(),
+                ladyVersion=Lady?1:0,lady=Lady?Lady.Capture():null,
                 doors=CheckpointDoors.Select(x=>new CorridorCheckpoint.Door { id=x.stableId,open=x.IsOpen,broken=x.DoorBroken,locked=x.DoorLocked,
                     leaf=x.movingLeaf.localPosition }).ToArray() };
             data.Validate(); return data;
@@ -47,6 +48,7 @@ namespace HappyToy.V2
             if(!Ready || Seed!=data.seed || Layout.Version!=data.simulationVersion || session.Finished || session.InputAllowed)
                 throw new InvalidOperationException("Checkpoint must match a prepared, paused corridor");
             Lighting.ValidateRestore(data.lightingVersion==0?null:data.lighting);
+            if(Lady&&data.ladyVersion==1)Lady.ValidateRestore(data.lady);
             var savedDrawers=data.furnitureVersion==0 ? new System.Collections.Generic.Dictionary<string,CorridorCheckpoint.Drawer>() :
                 data.drawers.ToDictionary(x=>x.id,StringComparer.Ordinal);
             var expectedDrawers=data.furnitureVersion==1 ? drawers.Where(x=>x.ContainedPickup&&x.ContainedPickup.kind==Interactable.Kind.FirecrackerSupply) : drawers;
@@ -110,6 +112,7 @@ namespace HappyToy.V2
             TrapWorld.Restore(data.traps,session.player);
             RitualWorld.Restore(data.ritualItems,session.player);
             Lighting.Restore(data.lightingVersion==0?null:data.lighting); Physics.SyncTransforms();
+            if(Lady)Lady.Restore(data.ladyVersion==1?data.lady:null);
         }
     }
 }

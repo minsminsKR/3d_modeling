@@ -25,6 +25,7 @@ namespace HappyToy.V2
         readonly List<StalkerBrain> threats = new List<StalkerBrain>();
         public LanternMaskEncounter Mask { get; private set; }
         public CorridorEntranceChamber Entrance { get; private set; }
+        public LadyEncounter Lady {get;private set;}
         public int ActiveThreatCount => threats.Count(x => x.gameObject.activeSelf) + (Mask && Mask.gameObject.activeSelf ? 1 : 0);
         GameSession session;
         Transform world;
@@ -278,6 +279,11 @@ namespace HappyToy.V2
             Lighting.DimCorridor(this,world);
             var batches=CombineArchitectureRoutine(incremental);while(batches.MoveNext())yield return batches.Current;
             TrapWorld.Populate(world,session.player,CheckpointItems(Interactable.Kind.FirecrackerSupply));
+            if(Layout.Version>=5)
+            {
+                Lady=world.gameObject.AddComponent<LadyEncounter>();
+                Lady.Prepare(this,world,threats.Cast<Behaviour>().Concat(new Behaviour[]{Mask}));
+            }
             Physics.SyncTransforms(); Ready = true;
             session.Notify(Layout.Version >= 3 ?
                 "다섯 기억을 회수하고 붉은 교실의 제단에 돌려놓으세요. 콩알탄은 회랑에서 보충할 수 있습니다." :
@@ -338,7 +344,7 @@ namespace HappyToy.V2
         }
         void Update()
         {
-            if (!Ready || !session.InputAllowed) return;
+            if (!Ready || !session.InputAllowed || Lady&&Lady.Active) return;
             for (int i = 1; i < threats.Count; i++)
                 if (!threats[i].gameObject.activeSelf && Recovered >= (i == 1 ? 2 : 4) &&
                     Vector3.Distance(threats[i].transform.position, session.player.transform.position) > 12) Release(threats[i]);
@@ -350,6 +356,7 @@ namespace HappyToy.V2
             if (!Ready || !session.InputAllowed || !Enumerable.Range(0, 5).Any(i => id == "memory-" + i) || !recovered.Add(id)) return false;
             session.Inspect(id, "회수한 기억 " + Recovered + "/5 — 어두운 복도에서도 돌아갈 길을 잊지 말자.");
             session.Notify(Recovered == Required ? Objective : "기억을 회수했습니다 · " + Recovered + "/5");
+            if(Recovered==Required&&Lady)Lady.Begin();
             return true;
         }
         GameObject Box(string name, Vector3 at, Vector3 size, Material material, bool create = true)

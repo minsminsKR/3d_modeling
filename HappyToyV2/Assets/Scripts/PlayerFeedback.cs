@@ -24,6 +24,7 @@ namespace HappyToy.V2
         public AudioClip LastInteractionClip { get; private set; }
         public int InteractionCuesPlayed { get; private set; }
         public AudioSource FootstepSource => steps;
+        public AudioSource BreathingSource => breathing;
         public AudioSource InteractionSource => foley;
         public event System.Action<Vector3, bool, float> Footstep;
 
@@ -113,6 +114,7 @@ namespace HappyToy.V2
             // Recovery continues in a cabinet; hiding stops footsteps, not the breathing mix.
             float effort = Mathf.InverseLerp(.6f, .06f, player.Stamina);
             breathing.volume = Mathf.MoveTowards(breathing.volume, effort * .22f, Time.deltaTime * .18f);
+            if(LadyFinaleAudio.Active)breathing.volume=player.Running?Mathf.Max(.14f,effort*.22f):0;
             if (player.Hidden) { stride = 0; return; }
             // Teleports/hiding/audit setup must never create a burst of footsteps.
             if (displacement.magnitude > .6f) { stride = 0; return; }

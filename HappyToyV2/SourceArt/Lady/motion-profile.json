@@ -1,0 +1,41 @@
+{
+  "duration_seconds": 37.3,
+  "fps": 60,
+  "seed": 181037,
+  "stride_seconds": 0.71,
+  "head_degrees": [
+    36,
+    58,
+    72
+  ],
+  "head_tremor_degrees": [
+    5,
+    7,
+    11
+  ],
+  "head_transition_seconds": [
+    0.045,
+    0.07,
+    0.11,
+    0.19,
+    0.34
+  ],
+  "head_hold_seconds": [
+    0.08,
+    0.43
+  ],
+  "limb_transition_seconds": [
+    0.08,
+    0.15,
+    0.24,
+    0.41
+  ],
+  "limb_hold_seconds": [
+    0.11,
+    0.82
+  ],
+  "description": "Independent seeded head snaps with violent irregular fine tremor, opposing off-beat shoulders/elbows/wrists and reversed knees. Authored in-place chase with no accumulated root rotation.",
+  "stride_hip_degrees": 26,
+  "stride_knee_degrees": 35,
+  "stride_axis": "world left/right converted through each actual bone rest frame"
+}

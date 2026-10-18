@@ -6,6 +6,13 @@ scene behavior, or both complete Unity suites. All runs use pinned Unity
 6000.6.0f1, fresh result directories and strict nonempty/pass validation.
 Player build and native/visual verification remain separate checks.
 
+`--profile lady` runs final-memory progression rules/save codecs, the actual
+Lady model/navmesh pursuit, trap immunity, talisman/pause pose holds,
+blackout/checkpoint restoration and quiet pre-device mixer isolation. It also
+retains existing six-attacker talisman and corridor-save regressions.
+`LadyModelReview.ImportAndRender` is an explicit silent URP asset review; it
+exports 64 actual skinned action frames without starting a player.
+
 For a fresh Windows player's actual corridor frame evidence, use
 `-quiet-diagnostics -v2-corridor-play-output <new-directory> -v2-corridor-performance
 -v2-audit-seed 73 -screen-width 1920 -screen-height 1080 -screen-fullscreen 0`.

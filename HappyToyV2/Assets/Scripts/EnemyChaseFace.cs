@@ -62,7 +62,7 @@ namespace HappyToy.V2
         }
         protected virtual void LateUpdate()
         {
-            if (EnemyTimeStop.Active) return;
+            if (EnemyTimeStop.Active || LadyFinaleAudio.Active) return;
             if (!Prepared || !brain || Time.timeScale == 0) return;
             var session = GameSession.Current;
             if (session && session.Finished) return; // Retain the attacking face in defeat presentation.

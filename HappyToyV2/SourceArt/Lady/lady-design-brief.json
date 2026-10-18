@@ -23,12 +23,14 @@
     }
   },
   "modelingWorkflow": "After the appearance phase, generate the base model with the repository's designated modeling webapp in the existing in-app browser; retain reference image, original GLB/PBR, provenance, rig/editable sources and Unity metadata.",
-  "gameplayImplementation": "To follow the appearance and model stages; not implemented by this concept asset.",
+  "gameplayImplementation": "LadyEncounter / LadyPursuit / LadyMotion / LadyFinaleAudio; final memory, permanent old-actor hold, trap immunity, talisman-only interruption, checkpoint support.",
   "latestAppearanceConcept": "lady-concept-v4.png",
   "appearanceRevision": [
     "입을 벌린 비대칭 표정",
     "불규칙한 크기와 간격, 누렇고 검게 썩은 치아",
     "흰자가 드러나는 눈과 어두운 눈가",
     "소복 넓은 면적에 대량으로 묻은 붉은 의상 페인트 얼룩"
-  ]
+  ],
+  "modelSource": "webapp/generation.json",
+  "motion": "motion-profile.json; seeded 37.3 second authored head tremor and independent abnormal limb channels"
 }

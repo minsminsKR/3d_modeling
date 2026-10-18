@@ -115,7 +115,7 @@ namespace HappyToy.V2
                 ItemWheelChangedFrame = Time.frameCount;
             }
             Time.timeScale = playing && !session.CabinetDeathActive ? (ItemWheelOpen ? ItemWheelRules.SlowTimeScale : 1) : 0;
-            AudioListener.pause = !playing;
+            AudioListener.pause = !playing || LadyFinaleAudio.Active;
             if (!DiagnosticDesktopPolicy.SuppressCursorWrites)
             {
                 Cursor.lockState = playing && !ItemWheelOpen && windowHasFocus ? CursorLockMode.Locked : CursorLockMode.None;

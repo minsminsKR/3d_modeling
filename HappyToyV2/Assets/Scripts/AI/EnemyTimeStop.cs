@@ -90,7 +90,8 @@ namespace HappyToy.V2
             {
                 if (!InRun(agent)) continue;
                 Behaviour owner = (Behaviour)agent.GetComponent<StalkerBrain>() ??
-                    (Behaviour)agent.GetComponent<LanternMaskEncounter>() ?? agent.GetComponent<WeepingAngelEncounter>();
+                    (Behaviour)agent.GetComponent<LanternMaskEncounter>() ??
+                    (Behaviour)agent.GetComponent<LadyPursuit>() ?? agent.GetComponent<WeepingAngelEncounter>();
                 if (owner) Capture(agent.transform, owner, agent);
             }
             foreach (var reveal in Object.FindObjectsByType<V1HwacatEvent>(FindObjectsSortMode.None))
