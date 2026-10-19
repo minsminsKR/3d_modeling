@@ -46,7 +46,7 @@ namespace HappyToy.V2
             // A sweep alone cannot detect a collider containing its starting sphere.
             // Never invent a contact point or normal for this ambiguous case.
             return Physics.CheckSphere(position, Radius, Physics.DefaultRaycastLayers,
-                QueryTriggerInteraction.Ignore);
+                QueryTriggerInteraction.Ignore) || LadySnapperTarget.Overlaps(position);
         }
 
         public static ForecastResult Forecast(Vector3 position, Vector3 velocity, Vector3[] positions)
@@ -89,8 +89,12 @@ namespace HappyToy.V2
             float distance = step.magnitude;
             hit = default;
             contactFraction = 1;
-            if (distance > 0 && Physics.SphereCast(position, Radius, step / distance,
-                out hit, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+            bool contact = distance > 0 && Physics.SphereCast(position, Radius, step / distance,
+                out hit, distance, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+            if (distance > 0 && LadySnapperTarget.FirstContact(new Ray(position, step / distance),
+                contact ? hit.distance : distance, out var ladyHit))
+            { hit = ladyHit; contact = true; }
+            if (contact)
             {
                 position += step / distance * Mathf.Max(0, hit.distance - ContactGap);
                 velocity = Vector3.ProjectOnPlane(velocity, hit.normal) * .45f;

@@ -43,6 +43,7 @@ namespace HappyToy.V2
         {
             var session = GameSession.Current;
             if (!session || session.Finished || session.StoryStep >= 4) { Destroy(gameObject); return; }
+            source.ignoreListenerPause = LadyFinaleAudio.Active && session.InputAllowed;
             if (!session.InputAllowed) return;
             if (Exploded)
             {
@@ -66,14 +67,14 @@ namespace HappyToy.V2
                     FirstContactPoint = hit.point; FirstContactNormal = hit.normal;
                     FirstContactTime = (movementSteps + fraction) * FirecrackerTrajectory.StepSeconds;
                     transform.position = position;
-                    Pop(session, hit.point, hit.normal); return;
+                    Pop(session, hit.point, hit.normal, hit.collider); return;
                 }
                 movementSteps++;
             }
             transform.position = position;
             if (!session.Shell.ReducedMotion) body.Rotate(360 * Time.deltaTime, 140 * Time.deltaTime, 0);
         }
-        void Pop(GameSession session, Vector3 point, Vector3 normal)
+        void Pop(GameSession session, Vector3 point, Vector3 normal, Collider hit)
         {
             if (Exploded) return;
             Exploded = true; body.gameObject.SetActive(false);
@@ -85,6 +86,8 @@ namespace HappyToy.V2
                 if (brain.HearSnapper(point)) Attracted++;
             foreach (var mask in FindObjectsByType<LanternMaskEncounter>(FindObjectsSortMode.None))
                 if (mask.HearNoise(point, SnapperStockRules.InspectionSeconds)) Attracted++;
+            foreach (var lady in FindObjectsByType<LadyPursuit>(FindObjectsSortMode.None))
+                lady.ReactToSnapper(point, hit);
             if (session.player && session.player.eyes && Vector3.Distance(session.player.eyes.transform.position, point) <= 18)
                 session.Shell.ShowCaption("[콩알탄이 티티틱, 빠르게 세 번 터지는 소리]", 1.2f);
         }

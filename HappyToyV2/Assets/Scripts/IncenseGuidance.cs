@@ -8,6 +8,7 @@ namespace HappyToy.V2
     public sealed class IncenseGuidance : MonoBehaviour
     {
         public const float Duration = 30;
+        const float EmberRange = 2.5f, EmberIntensity = 1.5f;
         public float Remaining { get; private set; } = Duration;
         public int TargetCount => targets.Count;
         public IReadOnlyList<Vector3> TargetPoints => targets;
@@ -18,6 +19,9 @@ namespace HappyToy.V2
         NavMeshPath route;
         PlayerMotor player;
         IncenseSmokeTrail trail;
+        public Light EmberLight { get; private set; }
+        public bool Lit => isActiveAndEnabled && Remaining > 0 && player;
+        public bool Owns(Renderer renderer) => Lit && trail && renderer == trail.GetComponent<MeshRenderer>();
         Vector3 direction;
         float refresh;
 
@@ -28,6 +32,14 @@ namespace HappyToy.V2
             items = player.Rituals.WorldRoot ? player.Rituals.WorldRoot.GetComponentsInChildren<Interactable>(true) : new Interactable[0];
             trail = gameObject.AddComponent<IncenseSmokeTrail>();
             trail.Prepare(player.eyes);
+            var ember = new GameObject("Burning incense local light");
+            ember.transform.SetParent(transform, false);
+            EmberLight = ember.AddComponent<Light>();
+            EmberLight.type = LightType.Point; EmberLight.color = new Color(1, .49f, .19f);
+            EmberLight.range = EmberRange; EmberLight.intensity = EmberIntensity;
+            EmberLight.shadows = LightShadows.None; EmberLight.bounceIntensity = 0;
+            EmberLight.cullingMask = ~(1 << 30); // The hands have their own camera/studio.
+            MoveEmber();
             RefreshTarget();
         }
         static bool AvailableMemory(Interactable item) => item && item.InteractionAvailable &&
@@ -95,9 +107,18 @@ namespace HappyToy.V2
             if (Remaining <= 0) { Destroy(gameObject); return; }
             refresh -= Time.deltaTime;
             if (refresh <= 0) { RefreshTarget(); refresh = .35f; }
+            MoveEmber();
+            float fade = Mathf.Clamp01(Remaining);
+            EmberLight.intensity = EmberIntensity * fade * (1 + .045f * Mathf.Sin(trail.SimulationTime * 11));
+            trail.Advance(EmberLight.transform.position, direction, Time.deltaTime, Remaining);
+        }
+        void MoveEmber()
+        {
             Vector3 tip = new Vector3(.13f, -.18f, .48f);
             if (player.Hands && player.Hands.TryGetIncenseTip(out var actualTip)) tip = actualTip;
-            trail.Advance(player.eyes.transform.TransformPoint(tip), direction, Time.deltaTime, Remaining);
+            EmberLight.transform.position = player.eyes.transform.TransformPoint(tip);
         }
+        void OnDisable() { if (EmberLight) EmberLight.enabled = false; }
+        void OnEnable() { if (EmberLight) EmberLight.enabled = Lit; }
     }
 }

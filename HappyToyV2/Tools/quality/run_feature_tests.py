@@ -22,7 +22,7 @@ VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
-    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests", "PatrolProgressClockTests"))
+    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests", "LadySnapperFlinchTests", "PatrolProgressClockTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
 PLAY = CLOUD + "CloudPlayModeTests."
@@ -68,7 +68,7 @@ PROFILES = {
             PLAY + "MaskRunningContactsUseAnimalRecordingsReachTheMixerAndPause"))]),
     "lady": ("Generated Lady real model and irregular pose, final-memory blackout/frozen actors, unconditional navigation, trap immunity, talisman/pause, checkpoint migration and quiet actual mixer", [
         ("EditMode", CORE_FIXTURES + (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
-        ("PlayMode", play_tests("LadyEncounterTests.cs", "LadyFinaleLightingTests.cs", "LadyHeartbeatTests.cs", "RitualTimeStopTests.cs") + (
+        ("PlayMode", play_tests("LadyEncounterTests.cs", "LadyFinaleLightingTests.cs", "LadyHeartbeatTests.cs", "LadyItemResponseTests.cs", "RitualTimeStopTests.cs") + (
             PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies",
             PLAY + "EntranceStartCameraUsesSelectedLightingWithoutIncreasingTheShadowBudget",
             PLAY + "EntranceReflectionUsesActualCavernBoxAndPauseRetainsTheOwnedScope",
@@ -98,8 +98,18 @@ PROFILES = {
             PLAY + "CorridorDrawerRealERevealsFinitePickupAndRestoresConsumedStateWithNewAndLegacyCheckpoints",
             PLAY + "EmptyDrawersOpenThroughRealInputAndDenseHallCandlesKeepTheirSavedWaymarks",
             PLAY + "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce"))]),
-    "incense": ("Single stable nearest reachable memory, retarget on collection, offering fallback, continuous plume pause, physically supported pickups and optional stock save compatibility", [
-        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs"))]),
+    "lady-items": ("Actual blackout camera incense light/smoke, post-blackout ignition and burnout; real front/body snapper impacts, half-second pose/navigation hold, pause/talisman/slow time, cover and forecast regression", [
+        ("PlayMode", play_tests("LadyItemResponseTests.cs", "LadyFinaleLightingTests.cs") + (
+            PLAY + "IncenseKeepsOneMemoryUntilCollectedThenRetargetsOfferingAndFreezesOnPause",
+            PLAY + "LadyAlwaysPursuesThroughDoorsIgnoresTrapAndTalismanHoldsActualHeadAndAgent",
+            PLAY + "LadyOpensPhysicalDoorAndFindsPlayerAfterUnwitnessedCabinetEntry",
+            PLAY + "FirecrackerFirstPopIsSingleAndComfortSettingsApplyWhilePaused",
+            PLAY + "ForecastMatchesPhysicalFirstContactAtLowAndHighSimulatedFrameRates",
+            PLAY + "AuthoredCameraRendersWorldAimAndStopsAtPhysicalWall",
+            PLAY + "RealThrownFirecrackerUsesThreeRecordedTakesAndReleasesOnlyOwnedAudio"))]),
+    "incense": ("Single stable nearest reachable memory, offering fallback, blackout ember/smoke, continuous plume pause, supported pickups and stock save compatibility", [
+        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs") + (
+            PLAY + "LadyBlackoutKeepsOnlyPlayerIncenseLightAndVisibleGuidingSmokeUntilBurnout",))]),
     "ritual-pickups": ("Real support surfaces, rotated visual contact, above-surface focus targets and preserved pickup/save/presentation ownership", [
         ("PlayMode", play_tests("RitualPickupSupportTests.cs") + (
             PLAY + "RitualStocksFragmentsAndSuppliesRoundTripWithLegacyOptionalState",

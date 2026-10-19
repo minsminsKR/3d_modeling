@@ -48,10 +48,12 @@ namespace HappyToy.V2
             RenderSettings.reflectionIntensity=0;RenderSettings.skybox=null;RenderSettings.fogColor=Color.black;
             camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.black;
             // Include newly spawned effects and inactive fixtures that can later
-            // be enabled. The only exempt world light is the actual flashlight.
+            // be enabled. Only the torch and the player's lit incense survive.
             foreach(var light in UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Include,FindObjectsSortMode.None))
             {
                 if(light==torch||light.gameObject.scene!=scene)continue;
+                var incense=light.GetComponentInParent<IncenseGuidance>();
+                if(incense&&incense.Lit&&incense.EmberLight==light)continue;
                 if(!lights.ContainsKey(light))lights.Add(light,light.enabled);
                 light.enabled=false;
             }
@@ -65,6 +67,8 @@ namespace HappyToy.V2
             {
                 // Layer 30 is the separate UI hand studio, outside the world.
                 if(renderer.gameObject.scene!=scene||renderer.gameObject.layer==30)continue;
+                var incense=renderer.GetComponent<IncenseGuidance>();
+                if(incense&&incense.Owns(renderer))continue;
                 if(!surfaces.TryGetValue(renderer,out var state))
                 {
                     state=new Surface{renderer=renderer,enabled=renderer.enabled,lightmap=renderer.lightmapIndex,

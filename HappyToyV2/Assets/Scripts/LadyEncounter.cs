@@ -82,7 +82,7 @@ namespace HappyToy.V2
             Actor=root.AddComponent<LadyPursuit>();
             Actor.Prepare(session.player,()=>session&&session.InputAllowed&&!session.Finished,hidden=>
             {
-                const string hint="lady는 숨거나 덫으로 멈출 수 없습니다. 부적으로 시간을 벌어 제단으로 가세요.";
+                const string hint="lady는 숨거나 덫으로 멈출 수 없습니다. 부적이나 콩알탄으로 시간을 벌어 제단으로 가세요.";
                 bool caught=hidden?session.TryCabinetDefeat(Actor,"lady",hint):session.TryDefeat("lady",hint);
                 if(caught)PulseAudio.MarkCaught();
             });
