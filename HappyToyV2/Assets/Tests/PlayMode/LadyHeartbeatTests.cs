@@ -18,6 +18,7 @@ namespace HappyToy.V2.CloudTests
             ((Behaviour)player).enabled=false;((Behaviour)Get<Component>(player,"Feedback")).enabled=false;
             LadyCollect(0,5);var pulse=Get<Component>(LadyFinale,"PulseAudio");
             var heart=Get<AudioSource>(pulse,"HeartbeatSource");var flat=Get<AudioSource>(pulse,"FlatlineSource");
+                Assert.That(flat.clip.length,Is.EqualTo(3).Within(.001f));
             Assert.That(Get<bool>(LadyFinale,"Hunting"),Is.False);
             yield return Delay(.35f);
             Assert.That(Get<int>(pulse,"Beats"),Is.GreaterThan(0));Assert.That(heart.volume,Is.InRange(.001f,.04f));
@@ -64,9 +65,10 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<string>(session,"DefeatSource"),Is.EqualTo("lady"));Assert.That(Get<bool>(pulse,"Captured"),Is.True);
                 Assert.That(heart.isPlaying,Is.False);Assert.That(flat.ignoreListenerPause,Is.True);
                 before=Get<int>(pulse,"Beats");
-                yield return ExternalCapture("lady-terminal-tone-on-result",flat,flat.clip,"lady-flatline",1.2f,rate,montage,segments);
+                yield return ExternalCapture("lady-terminal-tone-on-result",flat,flat.clip,"lady-flatline",2.6f,rate,montage,segments);
                 Assert.That(segments.Last().rms,Is.GreaterThan(.001));Assert.That(Get<int>(pulse,"Beats"),Is.EqualTo(before));
                 Assert.That((bool)Call(pulse,"MarkCaught"),Is.False,"Repeated contact restarted the terminal tone");
+                yield return ExternalFlush(rate,.7f);Assert.That(flat.isPlaying,Is.False,"Terminal tone exceeded its three-second recorded sustain");
                 CloudExperienceTests.Artifact("lady-heartbeat-actual-mixer.json",System.Text.Encoding.UTF8.GetBytes(JsonUtility.ToJson(new CloudExternalAudioTests.Report{
                     scope="Quiet pre-device production voices: fixed-pitch heartbeat at far/near positions, pause, continuing player pulse during talisman, master mute, real lethal contact and terminal tone on Result. Far/near beat counts: "+farBeats+"/"+nearBeats,
                     segments=segments.ToArray()},true)));

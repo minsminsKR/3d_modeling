@@ -3,7 +3,7 @@ scipy 1.14.1, soundfile 0.13.1. --download obtains public licensed previews;
 normal rendering is offline. Never synthesizes oscillators or noise layers.
 """
 from pathlib import Path
-import argparse,hashlib,json,re,urllib.request,uuid
+import argparse,hashlib,io,json,re,urllib.request,uuid
 import numpy as np
 import soundfile as sf
 from scipy.signal import butter,sosfiltfilt,resample_poly
@@ -62,8 +62,11 @@ def main():
         begin=round(offset*rate);beat[begin:begin+len(y)]+=y
     monitor=next(row for row in rows if row['file']=='monitor-unhissed.mp3')
     raw,sr=audio[monitor['file']]
-    tone=resample_poly(raw[round(142*sr):round(146.4*sr)],160,147)
-    tone=fade(tone,.02,.55)
+    # Process surrounding context, then trim: no filter startup transient in
+    # the delivered clinical sustain. Remove the composition's buzzy harmonics.
+    context=resample_poly(raw[round(141*sr):round(146*sr)],160,147)
+    clinical=sosfiltfilt(butter(4,[580,900],fs=rate,btype='bandpass',output='sos'),context)
+    tone=fade(clinical[rate:4*rate],.012,.09)
     manifest_path=PROJECT/'ThirdParty/Audio/manifest.json'
     manifest=json.loads(manifest_path.read_text(encoding='utf-8'));entries=[]
     def emit(name,samples,peak,source,scope):
@@ -82,18 +85,32 @@ def main():
             meta.write_text(template.replace('normalize: 1','normalize: 0'),encoding='utf-8')
     emit('lady-heartbeat',beat,.70,heart_info,
         'Real 61 BPM stethoscope source. 25–600Hz bandpass; retained first/second heart contacts 2.415–2.595/2.790–2.930s placed at 0/170ms in a 320ms one-shot, 6/30ms fades, peak .70. Runtime changes spacing 58–168 BPM with constant pitch, not playback speed.')
-    emit('lady-flatline',tone,.32,monitor,
-        'Author hospital-beep composition, hiss-removed candidate selected after comparison. Continuous recorded 710Hz flatline at 142–146.4s; mono/48kHz, 20ms attack/550ms release, peak .32. No newly synthesized tone, no loop, runtime constant pitch.')
+    emit('lady-flatline',tone,.20,monitor,
+        'Clinical sustain from the author hospital recording: context 141–146s, zero-phase fourth-order 580–900Hz bandpass removes harsh 1420Hz and higher harmonics, then retains 142–145s. Exact 3.0s mono/48kHz, 12ms attack/90ms release, peak .20. Recorded 710Hz fundamental; no oscillator, loop or pitch shift.')
     names={entry['file'] for entry in entries}
     manifest=[entry for entry in manifest if entry['file'] not in names]+entries
     manifest_path.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     selection=dict(candidates=comparison,selected=monitor['file'],reason='Select the author-cleaned revision of the hospital-beep composition. Both retain nearly identical steady-tone level/harmonics; quiet-window metrics compare their noise floors. The purely Audacity-created 210793 candidate was rejected in favor of documented hospital-recording origin.',
         cues=entries,toolchain=dict(python='3.11',numpy='1.26.4',scipy='1.14.1',soundfile='0.13.1'))
+    def spectral(samples):
+        y=samples[round(.2*rate):round(2.7*rate)]
+        energy=abs(np.fft.rfft(y*np.hanning(len(y))))**2;freq=np.fft.rfftfreq(len(y),1/rate)
+        return dict(seconds=len(samples)/rate,peak=float(max(abs(samples))),
+            upper_harmonic_to_fundamental_db=float(10*np.log10(sum(energy[freq>1100])/sum(energy[(freq>650)&(freq<780)]))),
+            first_sample=float(samples[0]),last_sample=float(samples[-1]))
+    reference=fade(resample_poly(raw[round(142*sr):round(146.4*sr)],160,147),.02,.55)
+    reference-=reference.mean();reference*=.32/max(abs(reference))
+    buffer=io.BytesIO();sf.write(buffer,reference,rate,format='WAV',subtype='PCM_16');buffer.seek(0);reference,_=sf.read(buffer)
+    final,_=sf.read(DEST/'lady-flatline-0.wav')
+    selection['terminal_quality']=dict(scope='Recorded PCM spectrum/edge/duration comparison; no device listening certificate',before=spectral(reference),after=spectral(final))
+    assert len(final)==rate*3 and selection['terminal_quality']['after']['upper_harmonic_to_fundamental_db'] < -45
     (ROOT/'selection.json').write_text(json.dumps(selection,indent=2)+'\n',encoding='utf-8')
     credits=PROJECT/'ThirdParty/Audio/Audio-Credits.txt';text=credits.read_text(encoding='utf-8')
+    text=text.replace('Edited: recorded flatline excerpt 142–146.4s, mono/48kHz, level and edge fades.',
+        'Edited: clinical 3.0s recorded flatline excerpt 142–145s, zero-phase 580–900Hz bandpass, mono/48kHz, level and 12/90ms edge fades.')
     if 'Steady Heart Monitor To Flatline Unhissed' not in text:
-        text+='\nLady terminal tone — Steady Heart Monitor To Flatline Unhissed.wav — Benboncan\nhttps://freesound.org/people/Benboncan/sounds/63832/\nCreative Commons Attribution 4.0 International (CC BY 4.0)\nhttps://creativecommons.org/licenses/by/4.0/\nEdited: recorded flatline excerpt 142–146.4s, mono/48kHz, level and edge fades.\nLady heartbeat additionally edits the credited Benboncan Heartbeat Mono.wav recording into a short two-contact pulse; pitch remains constant while spacing changes.\n'
-        credits.write_text(text,encoding='utf-8')
+        text+='\nLady terminal tone — Steady Heart Monitor To Flatline Unhissed.wav — Benboncan\nhttps://freesound.org/people/Benboncan/sounds/63832/\nCreative Commons Attribution 4.0 International (CC BY 4.0)\nhttps://creativecommons.org/licenses/by/4.0/\nEdited: clinical 3.0s recorded flatline excerpt 142–145s, zero-phase 580–900Hz bandpass, mono/48kHz, level and 12/90ms edge fades.\nLady heartbeat additionally edits the credited Benboncan Heartbeat Mono.wav recording into a short two-contact pulse; pitch remains constant while spacing changes.\n'
+    credits.write_text(text,encoding='utf-8')
     print(json.dumps(dict(comparison=comparison,cues=[dict(file=e['file'],seconds=e['seconds'],peak=e['peak']) for e in entries]),indent=2))
 
 if __name__=='__main__':main()

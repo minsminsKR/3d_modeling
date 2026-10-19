@@ -44,6 +44,13 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "finale-start-audio": ("Three-second clinical terminal recording, native uninterrupted title contacts, visible approach before covered world preparation and shared in-game bank", [
+        ("PlayMode", play_tests("LadyHeartbeatTests.cs") + (
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
+            PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
+            PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
+            PLAY + "MaskRunningContactsUseAnimalRecordingsReachTheMixerAndPause",
+            PLAY + "LadyOpensPhysicalDoorAndFindsPlayerAfterUnwitnessedCabinetEntry"))]),
     "patrol-navigation": ("Physical patrol progress at real walls, all directed corners, native door/body clearance, deliberate waits/pause and talisman", [
         ("PlayMode", play_tests("CorridorNavigationRegressionTests.cs", "CloudMonsterDoorTraversalTests.cs", "RitualTimeStopTests.cs") + (
             PLAY + "LargeMonsterRenderedBodyClearsRealCorridorWallOnSupportedNavigation",
@@ -55,8 +62,9 @@ PROFILES = {
             PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
     "wraith-footsteps": ("Shared title/game Baeksugwi recording bank, actual start transition, quiet mixer/master mute and running/pause", [
         ("PlayMode", (
-            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
+            PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
             PLAY + "MaskRunningContactsUseAnimalRecordingsReachTheMixerAndPause"))]),
     "lady": ("Generated Lady real model and irregular pose, final-memory blackout/frozen actors, unconditional navigation, trap immunity, talisman/pause, checkpoint migration and quiet actual mixer", [
         ("EditMode", CORE_FIXTURES + (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
@@ -135,8 +143,9 @@ PROFILES = {
             PLAY + "NaturalEyeEmissionTogglePreservesPausedChapterCheckpointPhysicsAndSourceAssetsAcrossReload"))]),
     "traffic-loading": ("Real loading footsteps/mixer/master mute, physical head-on passing and related corner/door routes", [
         ("PlayMode", (
-            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
+            PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
             PLAY + "CorridorLargeMonstersPassHeadOnThroughAnActualOpenDoor",
             PLAY + "CorridorTemporarilyOccupiedDoorMakesOnlyBlockedActorYieldAndResume",
             PLAY + "CorridorCreaturesNavigateARealCornerWithoutWalkingInPlaceAtMarkers",
@@ -186,8 +195,9 @@ PROFILES = {
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement"))]),
     "title": ("Title head/body/comfort behavior, real start transition and keyboard start", [
         ("PlayMode", play_tests("CloudBaeksugwiHeadTests.cs") + (
-            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
+            PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
             PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput"))]),
     "shelter": ("One/two-door room topology, actual player/pursuer passage and current/legacy checkpoint restoration", [
         ("EditMode", (EDIT + "CorridorLayoutTests",)),
@@ -203,7 +213,7 @@ PROFILES = {
             PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
             PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
             PLAY + "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndTempleGateWithFourteenMetreSight",
-            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement") +
             play_tests("CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs"))]),
@@ -215,7 +225,7 @@ PROFILES = {
             PLAY + "CreatureStudioPursuitHasOffBeatHeadMotionAndRestoresCalmMotionAfterPause"))]),
     "ui": ("Title/loading, menu controls, results/history, retry/settings", [
         ("PlayMode", (
-            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",
             PLAY + "GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit",
             PLAY + "KoreanMenusRenderAcrossSupportedAspectRatios",

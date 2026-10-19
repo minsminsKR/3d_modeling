@@ -78,7 +78,7 @@
         "mono": true,
         "format": "PCM16 WAV",
         "loop": false,
-        "scope": "Author hospital-beep composition, hiss-removed candidate selected after comparison. Continuous recorded 710Hz flatline at 142\u2013146.4s; mono/48kHz, 20ms attack/550ms release, peak .32. No newly synthesized tone, no loop, runtime constant pitch.",
+        "scope": "Clinical sustain from the author hospital recording: context 141\u2013146s, zero-phase fourth-order 580\u2013900Hz bandpass removes harsh 1420Hz and higher harmonics, then retains 142\u2013145s. Exact 3.0s mono/48kHz, 12ms attack/90ms release, peak .20. Recorded 710Hz fundamental; no oscillator, loop or pitch shift.",
         "recordings": [
           {
             "file": "monitor-unhissed.mp3",
@@ -95,10 +95,10 @@
         ],
         "source_kind": "Retained physical human/hospital recordings; no oscillator or noise synthesis"
       },
-      "seconds": 4.4,
-      "peak": 0.319976806640625,
-      "rms": 0.0916215439912405,
-      "sha256": "30e4266dc10b2e4403b7d2101c0626b92ce4491397212818d427395d85f468e7"
+      "seconds": 3.0,
+      "peak": 0.199981689453125,
+      "rms": 0.13792468935962565,
+      "sha256": "2ebd36869e09bb8ba23b18a32a4ce93f3a7c6e23c0c5001bf991c94b21c7672b"
     }
   ],
   "toolchain": {
@@ -106,5 +106,22 @@
     "numpy": "1.26.4",
     "scipy": "1.14.1",
     "soundfile": "0.13.1"
+  },
+  "terminal_quality": {
+    "scope": "Recorded PCM spectrum/edge/duration comparison; no device listening certificate",
+    "before": {
+      "seconds": 4.4,
+      "peak": 0.319976806640625,
+      "upper_harmonic_to_fundamental_db": -1.6765405645735543,
+      "first_sample": 0.0,
+      "last_sample": 0.0
+    },
+    "after": {
+      "seconds": 3.0,
+      "peak": 0.199981689453125,
+      "upper_harmonic_to_fundamental_db": -82.55406930588262,
+      "first_sample": 0.0,
+      "last_sample": 0.0
+    }
   }
 }

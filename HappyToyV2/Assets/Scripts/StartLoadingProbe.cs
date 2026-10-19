@@ -26,8 +26,8 @@ namespace HappyToy.V2
             public int titleRenderFrames,mainFramesDuringTitle,approachFootstepCount;
             public string approachFootstepClip;public bool approachFootstepsStopped;
             public float titleRenderFps,mainFpsDuringTitle,titleP50Milliseconds,titleP95Milliseconds;
-            public string scope="Actual title pointer start, incremental corridor preparation and unscaled approach, black transition and gated corridor reveal. Screens compose the actual UI target over the actual player camera when Playing. Controlled actual entrance-drawer fixture keeps the player capsule at touching distance and uses its public interaction. PlayMode additionally verifies real E input. Not a complete survival run or audio certification.";
-            public int preparingFrames,movingPreparingFrames;public float maximumApproach,minimumMenu=1,maximumBlack,maximumArmSwing,loadingSeconds,drawerTravel,playerDrift;
+            public string scope="Actual title pointer start, unscaled approach followed by fully black incremental corridor preparation, black transition and gated corridor reveal. Screens compose the actual UI target over the actual player camera when Playing. Controlled actual entrance-drawer fixture keeps the player capsule at touching distance and uses its public interaction. PlayMode additionally verifies real E input. Not a complete survival run or audio certification.";
+            public int preparingFrames,movingPreparingFrames,movingApproachFrames;public bool preparationCovered=true;public float maximumApproach,minimumMenu=1,maximumBlack,maximumArmSwing,loadingSeconds,drawerTravel,playerDrift;
             public bool revealGated,drawerOpened,drawerClosed,playerPairRestored;
             public Frame[] frames;public string[] errors;
         }
@@ -93,7 +93,8 @@ namespace HappyToy.V2
                 report.minimumMenu=Mathf.Min(report.minimumMenu,shell.TransitionMenuOpacity);report.maximumBlack=Mathf.Max(report.maximumBlack,shell.TransitionBlack);
                 report.maximumApproach=Mathf.Max(report.maximumApproach,title.ApproachDistance);
                 report.maximumArmSwing=Mathf.Max(report.maximumArmSwing,Quaternion.Angle(armRest,arm.localRotation));
-                if(shell.CorridorPreparing){report.preparingFrames++;if(title.ApproachDistance>previousDistance+.0001f)report.movingPreparingFrames++;}
+                if(shell.CorridorPreparing){report.preparingFrames++;report.preparationCovered&=shell.TransitionBlack>=.999f;}
+                else if(shell.Screen==GameShell.Page.Title&&title.ApproachDistance>previousDistance+.0001f)report.movingApproachFrames++;
                 previousDistance=title.ApproachDistance;
                 if(shell.Screen==GameShell.Page.Playing && shell.TransitionBlack<.9f)report.revealGated=true;
                 if(Time.realtimeSinceStartup>=nextCapture)
@@ -107,7 +108,7 @@ namespace HappyToy.V2
             Require(report.approachFootstepCount>=2 && report.approachFootstepClip!=null,"Loading approach never emitted its recorded contacts");
             Require(report.approachFootstepsStopped,"Title footsteps leaked into gameplay");
             Require(session.CorridorMode&&session.InputAllowed,"Corridor never became playable");
-            Require(report.movingPreparingFrames>3&&report.maximumApproach>1,"Title approach froze during preparation");
+            Require(report.preparationCovered&&report.preparingFrames>0&&report.movingApproachFrames>3&&report.maximumApproach>1,"Visible approach/preparation isolation failed");
             Require(report.maximumArmSwing>10,"Loading creature did not use its locomotion");
             Require(report.minimumMenu<.01f&&report.maximumBlack>.99f&&report.revealGated,"Missing menu fade, full black or gated reveal");
             yield return new WaitForEndOfFrame();Capture(view,session,"corridor-ready.png",Time.realtimeSinceStartup-begin);

@@ -201,5 +201,5 @@ Lady terminal tone — Steady Heart Monitor To Flatline Unhissed.wav — Benbonc
 https://freesound.org/people/Benboncan/sounds/63832/
 Creative Commons Attribution 4.0 International (CC BY 4.0)
 https://creativecommons.org/licenses/by/4.0/
-Edited: recorded flatline excerpt 142–146.4s, mono/48kHz, level and edge fades.
+Edited: clinical 3.0s recorded flatline excerpt 142–145s, zero-phase 580–900Hz bandpass, mono/48kHz, level and 12/90ms edge fades.
 Lady heartbeat additionally edits the credited Benboncan Heartbeat Mono.wav recording into a short two-contact pulse; pitch remains constant while spacing changes.

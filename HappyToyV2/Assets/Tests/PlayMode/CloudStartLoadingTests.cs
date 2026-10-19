@@ -12,7 +12,7 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest,Timeout(120000)]
-        public IEnumerator StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput()
+        public IEnumerator StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal()
         {
             yield return RecoveryUiReady();Call(shell,"RestoreDefaultSettings");yield return null;
             var view=One("GameShellView");var root=Get<VisualElement>(view,"Root");var button=root.Q<Button>("begin");
@@ -31,13 +31,18 @@ namespace HappyToy.V2.CloudTests
                 maximumBlack=Mathf.Max(maximumBlack,Get<float>(shell,"TransitionBlack"));
                 float distance=Get<float>(title,"ApproachDistance");
                 if(Get<bool>(shell,"CorridorPreparing"))
-                {preparingFrames++;if(distance>previousDistance+.0001f)movingFrames++;}
+                {
+                    preparingFrames++;
+                    Assert.That(Get<float>(shell,"TransitionBlack"),Is.GreaterThanOrEqualTo(.999f),"World preparation interrupted the visible approach");
+                    Assert.That(Get<AudioSource>(title,"ApproachFootstepSource").isPlaying,Is.False,"Footsteps continued into heavy world preparation");
+                }
+                else if(RecoveryPage=="Title"&&distance>previousDistance+.0001f)movingFrames++;
                 previousDistance=distance;
                 if(RecoveryPage=="Title" && distance>.01f)minimumFloorGap=Mathf.Min(minimumFloorGap,Get<float>(title,"MovingFloorGap"));
                 if(RecoveryPage=="Playing" && Get<float>(shell,"TransitionBlack")<.9f && Get<bool>(shell,"IsReloading"))revealWhileGated=true;
                 yield return null;
             }
-            Assert.That(preparingFrames,Is.GreaterThan(5));Assert.That(movingFrames,Is.GreaterThan(3),"The actual title froze during world preparation");
+            Assert.That(preparingFrames,Is.GreaterThan(5));Assert.That(movingFrames,Is.GreaterThan(3),"The actual approach never moved before preparation");
             Assert.That(minimumMenu,Is.LessThan(.01f));Assert.That(maximumBlack,Is.GreaterThan(.99f));
             Assert.That(previousDistance,Is.GreaterThan(2));Assert.That(minimumFloorGap,Is.GreaterThan(-.015f));
             Assert.That(revealWhileGated,Is.True);Assert.That(Get<bool>(session,"InputAllowed"),Is.True);
@@ -69,7 +74,11 @@ namespace HappyToy.V2.CloudTests
                 Time.captureDeltaTime=1f/60;yield return null;
                 started=StartOwnedAudioRenderer();Assert.That(started,Is.True,"Process-session silence guard/main output capture unavailable");
                 Call(shell,"BeginCorridorCinematic");
-                yield return Wait(()=>Get<int>(title,"ApproachStepsPlayed")>0,8,"Approach never emitted a recorded contact");
+                yield return Wait(()=>Get<AudioSource>(title,"ApproachFootstepSource").isPlaying,8,"Approach performance never started");
+                // This fixture owns manual audio rendering. Advance native PCM
+                // before observing its sample cursor; waiting alone cannot do so.
+                yield return ExternalFlush(AudioSettings.outputSampleRate,.15f);
+                Assert.That(Get<int>(title,"ApproachStepsPlayed"),Is.GreaterThan(0));
                 Assert.That(AudioListener.pause,Is.True,"Gameplay listener must remain paused during loading");
                 var samples=new System.Collections.Generic.List<float>();
                 yield return CaptureAudio(samples,AudioSettings.outputSampleRate*2,8);

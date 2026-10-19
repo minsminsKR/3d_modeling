@@ -31,6 +31,7 @@ namespace HappyToy.V2
         TitleApproachFootsteps approachFootsteps;
         public int ApproachStepsPlayed => approachFootsteps?.StepsPlayed ?? 0;
         public AudioSource ApproachFootstepSource => approachFootsteps?.Source;
+        public AudioClip ApproachPerformanceClip => approachFootsteps?.PerformanceClip;
         public AudioClip ApproachFootstepClip => approachFootsteps?.LastClip;
         float maximumApproach;
         public float ApproachDistance { get; private set; }
@@ -165,6 +166,8 @@ namespace HappyToy.V2
         void LateUpdate()
         {
             if (!visible || !Image || !camera || Time.frameCount < 3) return;
+            if(shell&&shell.CinematicLoading&&shell.TransitionBlack>=.999f)
+            {approachFootsteps.Stop();return;}
             // Title time is unscaled; the game intentionally pauses on this page.
             // Sampling only Head leaves every planted limb and body pose fixed.
             if(!shell || !shell.ReducedMotion)headClock+=Time.unscaledDeltaTime*HeadPlaybackSpeed;
