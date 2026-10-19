@@ -84392,7 +84392,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: f4d4a3c023a82214e96270e0fc132a55, type: 2}
   - {fileID: 2100000, guid: 671b7fc1fdb422c4ca0305a04ab91165, type: 2}
   headBone: mixamorig:Head
-  sourceHash: 4a68ed96065b31d94e4cdef7a59cb4483b2e84a24e0f4bb9dd3e394e9c9f6a4e
+  sourceHash: 16eb784af0c1e7e72a9a6f20babc0caacd4299959b3b79953e84f7bbd490d940
   localPosition: {x: 0.0029275585, y: -0.271455, z: 0.49143314}
   localScale: {x: 0.7622515, y: 0.7622516, z: 0.7622518}
   localRotation: {x: 0.00000008940697, y: 0, z: 0, w: 1}
