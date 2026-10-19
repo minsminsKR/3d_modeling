@@ -91720,7 +91720,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: d705942b578537143addf10d862a55af, type: 2}
   - {fileID: 2100000, guid: b46d20933d254c542a7062e952fdbc70, type: 2}
   headBone: mixamorig:Head
-  sourceHash: 486be7fd5b4befdce895c23bd52ecb2a7d457270636cfcff0847f9cd8d92d915
+  sourceHash: 22d06e81a96de2eeb0ff64c153bb6cf79cf4e7af334a5b807c54d96da0c5afd7
   localPosition: {x: -0.12573506, y: -0.0987262, z: 0.31171584}
   localScale: {x: 0.50148433, y: 0.5014844, z: 0.50148445}
   localRotation: {x: 0.010382864, y: 0.16062945, z: -0.06366285, w: -0.9849049}
