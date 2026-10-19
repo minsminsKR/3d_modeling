@@ -22,7 +22,7 @@ VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
-    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests"))
+    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests", "PatrolProgressClockTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
 PLAY = CLOUD + "CloudPlayModeTests."
@@ -44,6 +44,12 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "patrol-navigation": ("Physical patrol progress at real walls, all directed corners, native door/body clearance, deliberate waits/pause and talisman", [
+        ("PlayMode", play_tests("CorridorNavigationRegressionTests.cs", "CloudMonsterDoorTraversalTests.cs", "RitualTimeStopTests.cs") + (
+            PLAY + "LargeMonsterRenderedBodyClearsRealCorridorWallOnSupportedNavigation",
+            PLAY + "TwoDoorShelterPursuersOpenCrossAndCloseBothPhysicalDoors",
+            PLAY + "CorridorWandererPhysicallyDwellsLooksAndResumesPatrolAfterPause",
+            PLAY + "CorridorPatrolCanLeaveItsPhysicalMemoryAltarWaypoint"))]),
     "cheats": ("F1/F2 real key presses, invulnerability/detection, infinite stamina/double sprint and normal physical sprint restoration", [
         ("PlayMode", play_tests("CloudCheatTests.cs") + (
             PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),

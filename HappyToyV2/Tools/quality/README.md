@@ -657,3 +657,5 @@ talisman time stop and independent owned-clip cleanup, using the quiet guard.
 싸이클롭스 음성만 바꿀 때는 `--profile cyclopse-voice --graphics-api d3d11 --no-desktop-interaction`을
 사용한다. Core와 실제 공간 호흡의 추격/배회 전환·벽·일시정지·음소거·거리·부적 정지·
 소유 자원 정리, 제거한 추격 비명의 카탈로그/Resources 부재를 무음 검사한다.
+
+`patrol-navigation` checks the production rendered-body/NavMesh wall mismatch, physical-displacement patrol recovery, every directed two-arm corner in seed 73 (56 actor routes), real door passage/close ownership, deliberate patrol waits/pause and talisman freezing. It retains the actual body size, normal native speed and original scene; only the broad corner sweep accelerates simulation by 3x. The Uncat wall fixture proves the raw marker cannot fit its body within its .6m arrival radius, then verify a recovery and physical return along the next route.
