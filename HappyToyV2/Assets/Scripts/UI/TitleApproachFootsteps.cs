@@ -15,9 +15,9 @@ namespace HappyToy.V2
         public AudioClip LastClip { get; private set; }
         public TitleApproachFootsteps(Transform owner)
         {
-            clips=new AudioClip[ExternalAudio.VariantCount("mask-heavy-step")];
-            if(clips.Length==0)throw new InvalidOperationException("Missing recorded Baeksugwi heavy contacts");
-            for(int i=0;i<clips.Length;i++)clips[i]=ExternalAudio.Required("mask-heavy-step",i);
+            clips=new AudioClip[ExternalAudio.VariantCount(CorridorMaskAudio.ContactCue)];
+            if(clips.Length==0)throw new InvalidOperationException("Missing recorded Baeksugwi contacts: "+CorridorMaskAudio.ContactCue);
+            for(int i=0;i<clips.Length;i++)clips[i]=ExternalAudio.Required(CorridorMaskAudio.ContactCue,i);
             emitter=new GameObject("Owned title Baeksugwi approach footsteps");emitter.transform.SetParent(owner,false);
             Source=emitter.AddComponent<AudioSource>();Source.playOnAwake=false;Source.loop=false;Source.spatialBlend=0;
             // The title intentionally pauses gameplay. Only this cinematic voice

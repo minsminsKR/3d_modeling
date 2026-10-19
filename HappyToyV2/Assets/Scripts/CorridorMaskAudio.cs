@@ -8,6 +8,8 @@ namespace HappyToy.V2
     [DisallowMultipleComponent, RequireComponent(typeof(LanternMaskEncounter), typeof(NavMeshAgent))]
     public sealed class CorridorMaskAudio : MonoBehaviour
     {
+        // Title approach and gameplay always resolve the same recorded footfall bank.
+        public const string ContactCue = "mask-beast-step";
         public const float ContactStride = 1.35f;
         public int ContactsPlayed { get; private set; }
         public int WhistlesPlayed { get; private set; }
@@ -29,7 +31,7 @@ namespace HappyToy.V2
         void Awake()
         {
             mask = GetComponent<LanternMaskEncounter>(); agent = GetComponent<NavMeshAgent>();
-            contactClips = LoadBank("mask-beast-step"); whistleClips = LoadBank("mask-near-whistle");
+            contactClips = LoadBank(ContactCue); whistleClips = LoadBank("mask-near-whistle");
             contacts = MakeEmitter("Corridor mask recorded beast paws", .1f, 3.6f, 31f, 28, .92f, out contactAcoustics);
             whistle = MakeEmitter("Corridor mask near whistle", 1.95f, 1.8f,
                 LanternMaskEncounter.NearWhistleDistance + .25f, 22, .64f, out whistleAcoustics);

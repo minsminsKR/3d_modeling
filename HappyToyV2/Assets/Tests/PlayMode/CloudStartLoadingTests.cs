@@ -48,7 +48,13 @@ namespace HappyToy.V2.CloudTests
             var voice=Get<AudioSource>(title,"ApproachFootstepSource");
             Assert.That(voice.ignoreListenerPause,Is.True);Assert.That(voice.ignoreListenerVolume,Is.False);
             Assert.That(voice.spatialBlend,Is.Zero);Assert.That(voice.isPlaying,Is.False,"Title footsteps leaked into gameplay");
-            Assert.That(CloudExternalAudioTests.MatchesFamily(Get<AudioClip>(title,"ApproachFootstepClip"),"mask-heavy-step",3),Is.True);
+            // The game runner is dormant here, so Awake has not loaded its owned clips yet.
+            var cue=(string)RequireType("CorridorMaskAudio").GetField("ContactCue").GetRawConstantValue();
+            int variants=(int)RequireType("ExternalAudio").GetMethod("VariantCount").Invoke(null,new object[]{cue});
+            var titleClip=Get<AudioClip>(title,"ApproachFootstepClip");
+            Assert.That(CloudExternalAudioTests.MatchesFamily(titleClip,cue,variants),Is.True,
+                "Title approach must use the current in-game Baeksugwi recordings");
+            Assert.That(CloudExternalAudioTests.MatchesFamily(titleClip,"mask-heavy-step",3),Is.False);
         }
 
         [UnityTest,Timeout(120000)]
