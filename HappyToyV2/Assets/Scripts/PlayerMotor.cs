@@ -218,9 +218,13 @@ namespace HappyToy.V2
                 blocker.collider.GetComponentInParent<Interactable>() == candidate) return candidate;
             return null;
         }
+        // Called when F2 is enabled and on each active cheat physics step.
+        internal void RestoreSprintForCheat() { Stamina = 1; SprintExhausted = false; }
         void FixedUpdate()
         {
             if (Paused) { sprintRequested = Running = false; moveDirection = Vector3.zero; ActualSpeed = 0; return; }
+            bool cheatSafeMode = GameSession.Current.CheatSafeMode;
+            if (cheatSafeMode) RestoreSprintForCheat();
             if (Hidden || !controller.enabled)
             {
                 Running = false; ActualSpeed = 0;
@@ -230,7 +234,7 @@ namespace HappyToy.V2
             // Re-evaluate exhaustion for every physics step, including catch-up steps
             // with no intervening Update. Never retain an exhausted sprint velocity.
             bool sprintStep = sprintRequested && !SprintExhausted && !Crouching;
-            float speed = Crouching ? walkSpeed * .55f : sprintStep ? runSpeed : walkSpeed;
+            float speed = Crouching ? walkSpeed * .55f : sprintStep ? runSpeed * (cheatSafeMode ? 2 : 1) : walkSpeed;
             fallSpeed = controller.isGrounded ? -2 : Mathf.Max(fallSpeed - 20 * Time.fixedDeltaTime, -35);
             var previous = transform.position;
             LastCollision = controller.Move((moveDirection * speed * MovementMultiplier + Vector3.up * fallSpeed) * Time.fixedDeltaTime);
@@ -240,7 +244,7 @@ namespace HappyToy.V2
             // only a physically blocked/resting player recovers. Stairs need no new
             // grounded gate, and curse-slowed sprinting still spends stamina.
             Running = sprintStep && ActualSpeed > .12f;
-            Stamina = Mathf.Clamp01(Stamina + Time.fixedDeltaTime * (Running ? -.18f : .12f));
+            Stamina = cheatSafeMode ? 1 : Mathf.Clamp01(Stamina + Time.fixedDeltaTime * (Running ? -.18f : .12f));
             if (Stamina <= .05f) SprintExhausted = true;
             MovementUpdates++;
         }
