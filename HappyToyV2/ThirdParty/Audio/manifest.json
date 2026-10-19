@@ -4092,5 +4092,81 @@
     "peak": 0.6,
     "rms": 0.050811323031638794,
     "sha256": "10ad5754c3ffca459ebf09406a6b1b2ad7bf53150f37e68fe1b7733748a1c8a7"
+  },
+  {
+    "file": "lady-heartbeat-0.wav",
+    "pack": "real-human-heart",
+    "creator": "Benboncan",
+    "license": "CC-BY-4.0",
+    "page": "https://freesound.org/people/Benboncan/sounds/62912/",
+    "download": "https://cdn.freesound.org/previews/62/62912_634166-hq.mp3",
+    "source_file": "Heartbeat Mono.wav (public high quality MP3 preview)",
+    "source_file_sha256": "403a6f61990841067331977492d16f4111cd1ddc9b642d50d5657b209dce2d10",
+    "archive_sha256": null,
+    "resource": "Audio/External/lady-heartbeat-0",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Real 61 BPM stethoscope source. 25–600Hz bandpass; retained first/second heart contacts 2.415–2.595/2.790–2.930s placed at 0/170ms in a 320ms one-shot, 6/30ms fades, peak .70. Runtime changes spacing 58–168 BPM with constant pitch, not playback speed.",
+      "recordings": [
+        {
+          "file": "heart.mp3",
+          "pack": "real-human-heart",
+          "creator": "Benboncan",
+          "license": "CC-BY-4.0",
+          "page": "https://freesound.org/people/Benboncan/sounds/62912/",
+          "download": "https://cdn.freesound.org/previews/62/62912_634166-hq.mp3",
+          "source_file": "Heartbeat Mono.wav (public high quality MP3 preview)",
+          "source_file_sha256": "403a6f61990841067331977492d16f4111cd1ddc9b642d50d5657b209dce2d10",
+          "archive_sha256": null
+        }
+      ],
+      "source_kind": "Retained physical human/hospital recordings; no oscillator or noise synthesis"
+    },
+    "seconds": 0.32,
+    "peak": 0.70001220703125,
+    "rms": 0.15340043358159303,
+    "sha256": "9973ed623220293b8433e0382d39c1ac39860f30a04b1caf16fc6d2cddf9259a"
+  },
+  {
+    "file": "lady-flatline-0.wav",
+    "creator": "Benboncan",
+    "license": "CC-BY-4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "page": "https://freesound.org/people/Benboncan/sounds/63832/",
+    "download": "https://cdn.freesound.org/previews/63/63832_634166-hq.mp3",
+    "source_file": "Steady Heart Monitor To Flatline Unhissed.wav (public HQ MP3 preview)",
+    "source_file_sha256": "82ad172e6e3ac8275fc27605d03514f54085b197b7e3f35544665acbf2fd6d10",
+    "pack": "recorded-hospital-monitor",
+    "source_kind": "Author composition from a beep recorded in a hospital; 63832 adds author Izotope RX hiss removal.",
+    "resource": "Audio/External/lady-flatline-0",
+    "modifications": {
+      "sample_rate": 48000,
+      "mono": true,
+      "format": "PCM16 WAV",
+      "loop": false,
+      "scope": "Author hospital-beep composition, hiss-removed candidate selected after comparison. Continuous recorded 710Hz flatline at 142–146.4s; mono/48kHz, 20ms attack/550ms release, peak .32. No newly synthesized tone, no loop, runtime constant pitch.",
+      "recordings": [
+        {
+          "file": "monitor-unhissed.mp3",
+          "creator": "Benboncan",
+          "license": "CC-BY-4.0",
+          "license_url": "https://creativecommons.org/licenses/by/4.0/",
+          "page": "https://freesound.org/people/Benboncan/sounds/63832/",
+          "download": "https://cdn.freesound.org/previews/63/63832_634166-hq.mp3",
+          "source_file": "Steady Heart Monitor To Flatline Unhissed.wav (public HQ MP3 preview)",
+          "source_file_sha256": "82ad172e6e3ac8275fc27605d03514f54085b197b7e3f35544665acbf2fd6d10",
+          "pack": "recorded-hospital-monitor",
+          "source_kind": "Author composition from a beep recorded in a hospital; 63832 adds author Izotope RX hiss removal."
+        }
+      ],
+      "source_kind": "Retained physical human/hospital recordings; no oscillator or noise synthesis"
+    },
+    "seconds": 4.4,
+    "peak": 0.319976806640625,
+    "rms": 0.0916215439912405,
+    "sha256": "30e4266dc10b2e4403b7d2101c0626b92ce4491397212818d427395d85f468e7"
   }
 ]

@@ -3,7 +3,8 @@ using UnityEngine;
 namespace HappyToy.V2
 {
     // Pause the world bus while the two existing player locomotion voices and
-    // the one transition impact bypass it. No clip, mixer asset or volume reset.
+    // the one transition impact bypass it. LadyHeartbeatAudio owns its separate
+    // player pulse/terminal bypass. No shared mixer asset or volume reset.
     [DefaultExecutionOrder(700),DisallowMultipleComponent]
     public sealed class LadyFinaleAudio : MonoBehaviour
     {

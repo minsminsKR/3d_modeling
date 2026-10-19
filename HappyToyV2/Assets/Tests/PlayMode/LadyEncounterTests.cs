@@ -175,6 +175,9 @@ namespace HappyToy.V2.CloudTests
             Call(session,"ToggleCheatSafeMode");Assert.That(Get<bool>(session,"CheatSafeMode"),Is.False);
             yield return Wait(()=>Get<bool>(session,"CabinetDeathActive"),8,"Hiding incorrectly defeated unconditional Lady pursuit");
             Assert.That(Get<string>(session,"DefeatSource"),Is.EqualTo("lady"));
+            var pulse=Get<Component>(LadyFinale,"PulseAudio");
+            Assert.That(Get<bool>(pulse,"Captured"),Is.True,"Confirmed cabinet contact did not stop the player's heart");
+            Assert.That(Get<AudioSource>(pulse,"FlatlineSource").ignoreListenerPause,Is.True,"Cabinet death blocked the terminal tone");
             Call(shell,"Pause");
             yield return Delay(.1f);Assert.That(Get<bool>(session,"Finished"),Is.False);
             Call(shell,"Resume");yield return Wait(()=>Get<bool>(session,"Finished"),4,"Lady's confirmed cabinet contact never completed defeat");

@@ -1,0 +1,110 @@
+{
+  "candidates": [
+    {
+      "file": "monitor-original.mp3",
+      "continuous_tone_rms": 0.20028485421869935,
+      "high_band_rms_including_tone_harmonics": 0.0874878446686601,
+      "first_30s_quiet_window_rms_p10": 0.001496338547210649,
+      "window_seconds": [
+        142,
+        146
+      ]
+    },
+    {
+      "file": "monitor-unhissed.mp3",
+      "continuous_tone_rms": 0.20026880438761047,
+      "high_band_rms_including_tone_harmonics": 0.08748964474238138,
+      "first_30s_quiet_window_rms_p10": 3.634230224631587e-05,
+      "window_seconds": [
+        142,
+        146
+      ]
+    }
+  ],
+  "selected": "monitor-unhissed.mp3",
+  "reason": "Select the author-cleaned revision of the hospital-beep composition. Both retain nearly identical steady-tone level/harmonics; quiet-window metrics compare their noise floors. The purely Audacity-created 210793 candidate was rejected in favor of documented hospital-recording origin.",
+  "cues": [
+    {
+      "file": "lady-heartbeat-0.wav",
+      "pack": "real-human-heart",
+      "creator": "Benboncan",
+      "license": "CC-BY-4.0",
+      "page": "https://freesound.org/people/Benboncan/sounds/62912/",
+      "download": "https://cdn.freesound.org/previews/62/62912_634166-hq.mp3",
+      "source_file": "Heartbeat Mono.wav (public high quality MP3 preview)",
+      "source_file_sha256": "403a6f61990841067331977492d16f4111cd1ddc9b642d50d5657b209dce2d10",
+      "archive_sha256": null,
+      "resource": "Audio/External/lady-heartbeat-0",
+      "modifications": {
+        "sample_rate": 48000,
+        "mono": true,
+        "format": "PCM16 WAV",
+        "loop": false,
+        "scope": "Real 61 BPM stethoscope source. 25\u2013600Hz bandpass; retained first/second heart contacts 2.415\u20132.595/2.790\u20132.930s placed at 0/170ms in a 320ms one-shot, 6/30ms fades, peak .70. Runtime changes spacing 58\u2013168 BPM with constant pitch, not playback speed.",
+        "recordings": [
+          {
+            "file": "heart.mp3",
+            "pack": "real-human-heart",
+            "creator": "Benboncan",
+            "license": "CC-BY-4.0",
+            "page": "https://freesound.org/people/Benboncan/sounds/62912/",
+            "download": "https://cdn.freesound.org/previews/62/62912_634166-hq.mp3",
+            "source_file": "Heartbeat Mono.wav (public high quality MP3 preview)",
+            "source_file_sha256": "403a6f61990841067331977492d16f4111cd1ddc9b642d50d5657b209dce2d10",
+            "archive_sha256": null
+          }
+        ],
+        "source_kind": "Retained physical human/hospital recordings; no oscillator or noise synthesis"
+      },
+      "seconds": 0.32,
+      "peak": 0.70001220703125,
+      "rms": 0.15340043358159303,
+      "sha256": "9973ed623220293b8433e0382d39c1ac39860f30a04b1caf16fc6d2cddf9259a"
+    },
+    {
+      "file": "lady-flatline-0.wav",
+      "creator": "Benboncan",
+      "license": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "page": "https://freesound.org/people/Benboncan/sounds/63832/",
+      "download": "https://cdn.freesound.org/previews/63/63832_634166-hq.mp3",
+      "source_file": "Steady Heart Monitor To Flatline Unhissed.wav (public HQ MP3 preview)",
+      "source_file_sha256": "82ad172e6e3ac8275fc27605d03514f54085b197b7e3f35544665acbf2fd6d10",
+      "pack": "recorded-hospital-monitor",
+      "source_kind": "Author composition from a beep recorded in a hospital; 63832 adds author Izotope RX hiss removal.",
+      "resource": "Audio/External/lady-flatline-0",
+      "modifications": {
+        "sample_rate": 48000,
+        "mono": true,
+        "format": "PCM16 WAV",
+        "loop": false,
+        "scope": "Author hospital-beep composition, hiss-removed candidate selected after comparison. Continuous recorded 710Hz flatline at 142\u2013146.4s; mono/48kHz, 20ms attack/550ms release, peak .32. No newly synthesized tone, no loop, runtime constant pitch.",
+        "recordings": [
+          {
+            "file": "monitor-unhissed.mp3",
+            "creator": "Benboncan",
+            "license": "CC-BY-4.0",
+            "license_url": "https://creativecommons.org/licenses/by/4.0/",
+            "page": "https://freesound.org/people/Benboncan/sounds/63832/",
+            "download": "https://cdn.freesound.org/previews/63/63832_634166-hq.mp3",
+            "source_file": "Steady Heart Monitor To Flatline Unhissed.wav (public HQ MP3 preview)",
+            "source_file_sha256": "82ad172e6e3ac8275fc27605d03514f54085b197b7e3f35544665acbf2fd6d10",
+            "pack": "recorded-hospital-monitor",
+            "source_kind": "Author composition from a beep recorded in a hospital; 63832 adds author Izotope RX hiss removal."
+          }
+        ],
+        "source_kind": "Retained physical human/hospital recordings; no oscillator or noise synthesis"
+      },
+      "seconds": 4.4,
+      "peak": 0.319976806640625,
+      "rms": 0.0916215439912405,
+      "sha256": "30e4266dc10b2e4403b7d2101c0626b92ce4491397212818d427395d85f468e7"
+    }
+  ],
+  "toolchain": {
+    "python": "3.11",
+    "numpy": "1.26.4",
+    "scipy": "1.14.1",
+    "soundfile": "0.13.1"
+  }
+}

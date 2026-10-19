@@ -22,7 +22,7 @@ VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
-    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests"))
+    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
 PLAY = CLOUD + "CloudPlayModeTests."
@@ -54,7 +54,8 @@ PROFILES = {
             PLAY + "MaskRunningContactsUseAnimalRecordingsReachTheMixerAndPause"))]),
     "lady": ("Generated Lady real model and irregular pose, final-memory blackout/frozen actors, unconditional navigation, trap immunity, talisman/pause, checkpoint migration and quiet actual mixer", [
         ("EditMode", CORE_FIXTURES + (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
-        ("PlayMode", play_tests("LadyEncounterTests.cs", "LadyFinaleLightingTests.cs", "RitualTimeStopTests.cs") + (
+        ("PlayMode", play_tests("LadyEncounterTests.cs", "LadyFinaleLightingTests.cs", "LadyHeartbeatTests.cs", "RitualTimeStopTests.cs") + (
+            PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies",
             PLAY + "EntranceStartCameraUsesSelectedLightingWithoutIncreasingTheShadowBudget",
             PLAY + "EntranceReflectionUsesActualCavernBoxAndPauseRetainsTheOwnedScope",
             PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",

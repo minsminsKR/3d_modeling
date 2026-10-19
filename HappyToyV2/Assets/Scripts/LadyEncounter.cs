@@ -33,6 +33,7 @@ namespace HappyToy.V2
         public int FrozenActorCount=>frozen.Count;
         public LadyPursuit Actor {get;private set;}
         public LadyFinaleAudio AudioScope=>audioScope;
+        public LadyHeartbeatAudio PulseAudio {get;private set;}
         public void Prepare(CorridorRun owner,Transform parent,IEnumerable<Behaviour> oldActors)
         {run=owner;world=parent;session=owner.GetComponent<GameSession>();existing=oldActors.ToArray();}
         public bool Begin()
@@ -46,6 +47,9 @@ namespace HappyToy.V2
             session.GetComponent<GraphicsLightingPresentation>().BeginFinale();
             frozen.Capture(existing);
             audioScope=gameObject.AddComponent<LadyFinaleAudio>();audioScope.Begin(session,impact);
+            PulseAudio=gameObject.AddComponent<LadyHeartbeatAudio>();
+            PulseAudio.Prepare(session.player.transform,()=>Actor?Actor.transform:null,()=>session&&session.InputAllowed,
+                ()=>session&&session.Shell&&(session.Shell.Screen==GameShell.Page.Playing||session.Shell.Screen==GameShell.Page.Result));
         }
         Vector3 ChooseSpawn()
         {
@@ -79,8 +83,8 @@ namespace HappyToy.V2
             Actor.Prepare(session.player,()=>session&&session.InputAllowed&&!session.Finished,hidden=>
             {
                 const string hint="lady는 숨거나 덫으로 멈출 수 없습니다. 부적으로 시간을 벌어 제단으로 가세요.";
-                if(hidden)session.TryCabinetDefeat(Actor,"lady",hint);
-                else session.TryDefeat("lady",hint);
+                bool caught=hidden?session.TryCabinetDefeat(Actor,"lady",hint):session.TryDefeat("lady",hint);
+                if(caught)PulseAudio.MarkCaught();
             });
             Actor.Motion.RestoreClock(poseClock);
         }
