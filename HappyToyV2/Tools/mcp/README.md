@@ -66,3 +66,28 @@ connection. Reports and dependency environments remain ignored under `Builds`.
 Sources: [Unity MCP](https://docs.unity.com/en-us/unity-cli/replace-mcp-server-unity-cli),
 [Codex MCP configuration](https://developers.openai.com/codex/mcp),
 [Blender MCP setup and license](https://github.com/ahujasid/mcp-for-blender).
+
+## Lady inspection while the desktop is busy
+
+`lady_snapshot_blender.py` reads only the game LODs/rig/action from the editable
+Lady source in a **disposable** Blender MCP session. It changes that session's
+viewport areas to Console, appends model datablocks, and writes a JSON report
+under `Builds/LadyMcpReview`; it never saves the `.blend`. Run it through
+`execute_blender_code` using `exec(compile(...), {"__file__": str(script)})`.
+Pass `LADY_REPORT` in that globals dictionary to select a fresh output file.
+Do not run this against a Blender session holding the user's unsaved work.
+
+`lady_snapshot_unity.csx` and `lady_pose_unity.csx` are method bodies for the
+Unity MCP `eval` tool (`code` is the file text, `timeout` can be 25000). The
+existing `Tools/quality/unity_mcp_call.py --tool eval --arguments-file ...`
+accepts a JSON file with those arguments. They inspect and destroy temporary
+prefab copies, with no `SaveAssets`, reimport, playback, or rendering. The pose
+query checks sixteen CPU skin samples of LOD2, not every pose/LOD or actual FPS.
+
+For a busy desktop, start the private Unity Editor with `-batchmode -nographics
+-noaudio -v2-audit-no-desktop-interaction -job-worker-count 1`, and Blender with
+`--no-window-focus -noaudio --threads 1 --debug-depsgraph-no-threads`. Request a
+hidden window, Idle process priority and one logical CPU for both. Close only
+those inspection processes when finished. These controls reduce contention;
+they do not certify that another game's performance is unaffected. Defer GPU
+renders, native gameplay tests and visual material judgments until requested.

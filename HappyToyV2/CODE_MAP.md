@@ -311,6 +311,9 @@ Unity/Blender MCP의 Codex 등록·Blender 애드온 설치와 고정 의존성�
 `Tools/mcp/inspect_mcp.py`는 등록된 명령/환경을 사용해 실제 MCP 초기화·도구 목록과
 명시한 도구 호출을 확인한다. 설치/연결 변경은 의존성·스크립트 구문·실제 Editor
 조회로 검증하며 게임 테스트나 플레이어 빌드는 요구하지 않는다.
+`Tools/mcp/lady_snapshot_blender.py`와 `lady_snapshot_unity.csx` / `lady_pose_unity.csx`는
+별도 저우선순위 MCP 세션에서 레이디의 메시·가중치·재질·곡선과 제한된 CPU 포즈를
+조회한다. 렌더·플레이·자산 저장 없이 `Builds/`에 결과를 쓰며 실제 외관/FPS 검증과 구분한다.
 
 2026-10-17 검증: 전체 EditMode 134/134 통과. 첫 전체 PlayMode는 265/302였으며
 숨은 휠 자식의 잘림 오탐·구형 팩/음원/생성자 기대·관측점을 보정하고 21:9 획득
