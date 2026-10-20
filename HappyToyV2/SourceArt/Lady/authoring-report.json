@@ -40,13 +40,13 @@
     },
     {
       "name": "Lady_LOD1",
-      "vertices": 19944,
-      "triangles": 44999
+      "vertices": 11852,
+      "triangles": 32000
     },
     {
       "name": "Lady_LOD2",
-      "vertices": 10803,
-      "triangles": 28851
+      "vertices": 7044,
+      "triangles": 12000
     }
   ],
   "duration": 37.3,
@@ -17336,5 +17336,48 @@
   "originalSourceSeparate": true,
   "gameSkinTransferReport": "surface-report.json",
   "boundsAuthority": "LadyGameImport measures final Unity skins at 65 real action samples and stores localBounds in LadyRuntime.prefab",
-  "allLodsPreserveAuthoredSurfaceSeams": true
+  "allLodsPreserveAuthoredSurfaceSeams": true,
+  "polish": {
+    "settings": {
+      "version": 1,
+      "intent": "A grotesquely contorting pursuer. Preserve every authored bone rotation and head tremor; only remove import noise, finish surfaces and correct support height.",
+      "uv_method": "SMART_PROJECT_DISTANT_ONLY",
+      "uv_island_margin": 0.001,
+      "preserve_near_uv": true,
+      "game_metallic": 0.0,
+      "lod1_triangles": 32000,
+      "lod2_triangles": 12000,
+      "far_voxel_size_metres": 0.02,
+      "far_atlas_size": 1024,
+      "support_target_metres": 0.025,
+      "support_fit_base_z": 1.0484072595834732,
+      "support_max_offset_metres": 0.18,
+      "support_rest_height_metres": 0.65,
+      "scale_curve_tolerance": 1e-05,
+      "static_rotation_group_tolerance": 1e-05
+    },
+    "uvSplitVerticesBefore": 123226,
+    "uvSplitVerticesAfter": 123226,
+    "nearUvPreserved": true,
+    "rotationSha256": "3f9ec6b9b15d95a6cb894f9194c4a8c201d64e8eb450b1bb20d16ba15b65f440",
+    "rotationKeysUnchanged": true,
+    "support": {
+      "samples": 2239,
+      "probeVertices": 3791,
+      "oldMinimumRange": [
+        -0.02570619260355045,
+        0.13585631602889237
+      ],
+      "offsetRange": [
+        -0.10847676257150965,
+        0.045757809642971645
+      ],
+      "method": "Visual root Z only, circular two-frame smoothing; original bone rotations unchanged"
+    },
+    "generatedOriginals": {
+      "source-ai-rig.glb": "ecaa7e0c1a596dda19067b5bba32c7f8c9292648f56adbd85221d1b5ab24c8ea",
+      "source-original.glb": "7029294611fa6b803374599cd95b037097926d8b32d8ffd73f5289d164489eca"
+    },
+    "farSurfaceReport": "far-surface-report.json"
+  }
 }

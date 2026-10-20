@@ -9,7 +9,7 @@ namespace HappyToy.V2
     [DefaultExecutionOrder(100),DisallowMultipleComponent]
     public sealed class LadyMotion : MonoBehaviour
     {
-        AnimationClip clip;GameObject visual;Transform[] bones;Quaternion[] neutral;
+        AnimationClip clip;GameObject visual;Transform[] bones;Quaternion[] neutral;Vector3[] neutralPosition;
         Func<bool> canAdvance;Func<bool> comfort;
         public float Clock {get;private set;}
         public Transform Head {get;private set;}
@@ -21,6 +21,7 @@ namespace HappyToy.V2
             if(!clip)throw new InvalidOperationException("Lady chase action is missing");
             clip.SampleAnimation(visual,0);
             bones=visual.GetComponentsInChildren<Transform>(true);neutral=bones.Select(bone=>bone.localRotation).ToArray();
+            neutralPosition=bones.Select(bone=>bone.localPosition).ToArray();
             Head=bones.Single(bone=>bone.name=="Head");
         }
         public void RestoreClock(float time){Clock=Mathf.Max(0,time);Sample();}
@@ -34,7 +35,12 @@ namespace HappyToy.V2
             if(!clip||!visual)return;
             clip.SampleAnimation(visual,Mathf.Repeat(Clock,clip.length));
             if(comfort!=null&&comfort())for(int i=0;i<bones.Length;i++)
+            {
                 bones[i].localRotation=Quaternion.Slerp(neutral[i],bones[i].localRotation,.18f);
+                // The authored support offset follows the same reduced-motion
+                // strength as the contortions that caused the foot lift.
+                bones[i].localPosition=Vector3.Lerp(neutralPosition[i],bones[i].localPosition,.18f);
+            }
         }
     }
 }

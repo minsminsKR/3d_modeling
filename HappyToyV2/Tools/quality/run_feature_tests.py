@@ -66,6 +66,8 @@ PROFILES = {
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
             PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
             PLAY + "MaskRunningContactsUseAnimalRecordingsReachTheMixerAndPause"))]),
+    "lady-polish": ("Core plus real Lady FBX-to-clip pose equivalence, original rig and reduced imported LOD budgets", [
+        ("EditMode", (CLOUD + "LadyAuthoredAssetTests",))]),
     "lady": ("Generated Lady real model and irregular pose, final-memory blackout/frozen actors, unconditional navigation, trap immunity, talisman/pause, checkpoint migration and quiet actual mixer", [
         ("EditMode", CORE_FIXTURES + (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
         ("PlayMode", play_tests("LadyEncounterTests.cs", "LadyFinaleLightingTests.cs", "LadyHeartbeatTests.cs", "LadyItemResponseTests.cs", "RitualTimeStopTests.cs") + (
@@ -290,6 +292,8 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         if editor_path:
             command += ["--editor-path", editor_path]
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
+        if profile == "lady-polish":
+            editor_args += ["-nographics", "-noaudio"]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]
         if no_desktop_interaction:

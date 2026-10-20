@@ -1,0 +1,13 @@
+{
+  "method": "pack the actual BVH-reprojected game ORM into Unity metallic/smoothness",
+  "atlas": [
+    1024,
+    1024
+  ],
+  "files": {
+    "albedo.png": "1b6ff013e7896d5928aa84a8428f3959b75dad2f003b0d3c30a8be04a37fce55",
+    "game-orm.png": "e5bcb803abf8c96acf66fddb75148d6da7c20b47a440ec7e91aa5e671a5503a8",
+    "metallic-smoothness.png": "871528951f5a9d7b34c99b7f9ca00421089be6cd7257c2f37488b62e5906c4b1",
+    "normal.png": "2d0b56c70807f5153253c01fe240be139e97fbe5cd2b181055a52d3f49bd5739"
+  }
+}

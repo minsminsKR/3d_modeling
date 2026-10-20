@@ -12,7 +12,7 @@ sys.path.insert(0,str(PROJECT/'SourceArt/CreatureStudio/tools'))
 import bake_surface_atlas as atlas
 
 
-def finish(high,obj,rig,repaint=True):
+def finish(high,obj,rig,repaint=True,write_report=True):
     rig.data.pose_position='REST'
     bpy.context.view_layer.update()
     # The surface has many hair islands; a 0.003 chart margin consumed almost
@@ -96,7 +96,8 @@ def finish(high,obj,rig,repaint=True):
                   rigidHeadAndHairGameVertices=hair_count,sourceSkinEditedOnlyForGame=True,chartMargin=.00005)
     report['fusedGameSurfaceSeamsSeparated']=True
     if report['atlasSurfaceSamples']<500000:raise ValueError('Game atlas has insufficient real surface coverage')
-    (HERE/'surface-report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+    if write_report:
+        (HERE/'surface-report.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
     rig.data.pose_position='POSE'
     return report
 

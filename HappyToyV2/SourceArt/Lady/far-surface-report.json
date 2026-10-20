@@ -1,0 +1,21 @@
+{
+  "method": "actual source BVH nearest surface, barycentric UV/PBR/custom-normal transfer to continuous game atlas; 2cm distant-only remesh fills sub-pixel tunnels",
+  "size": [
+    1024,
+    1024
+  ],
+  "atlasSurfaceSamples": 235233,
+  "sourceDistanceP99": 0.01026662304997444,
+  "sourceDistanceMax": 0.021748727187514305,
+  "originalSourceUVAnd8KUnchanged": true,
+  "normal": {
+    "method": "actual interpolated source surface normals in new game tangent frame",
+    "size": [
+      1024,
+      1024
+    ]
+  },
+  "vertices": 7044,
+  "triangles": 12000,
+  "originalRigPreserved": true
+}

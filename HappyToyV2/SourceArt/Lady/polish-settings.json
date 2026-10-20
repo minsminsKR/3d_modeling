@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "intent": "A grotesquely contorting pursuer. Preserve every authored bone rotation and head tremor; only remove import noise, finish surfaces and correct support height.",
+  "uv_method": "SMART_PROJECT_DISTANT_ONLY",
+  "uv_island_margin": 0.001,
+  "preserve_near_uv": true,
+  "game_metallic": 0.0,
+  "lod1_triangles": 32000,
+  "lod2_triangles": 12000,
+  "far_voxel_size_metres": 0.02,
+  "far_atlas_size": 1024,
+  "support_target_metres": 0.025,
+  "support_fit_base_z": 1.0484072595834733,
+  "support_max_offset_metres": 0.18,
+  "support_rest_height_metres": 0.65,
+  "scale_curve_tolerance": 0.00001,
+  "static_rotation_group_tolerance": 0.00001
+}

@@ -53,6 +53,67 @@ matrices for the 65-pose culling envelope and optional URP preview; it avoids
 legacy FBX `BakeMesh` scale conventions. `LadyModelReview.ImportAndRender`
 checks 64 visible action frames and genuine head movement before declaring pass.
 
+## 2026-10-21 game polish
+
+Lady remains a grotesquely contorting pursuer. The original 76 quaternion
+curves and their exact 170,164 keys are unchanged (`rotationSha256` in the
+authoring report). Do not replace the independent joint snaps/tremor with a
+normal walk or smooth them as an optimization. The 37.3-second clock and saved
+pose time keep their original meaning.
+
+`polish-settings.json` pins game-only UV, LOD and support-height finishing.
+`polish_game.py` preserves the reviewed near UVs and reprojects the actual
+original PBR and normals. The near geometry is unchanged. The 32k middle LOD
+keeps that atlas; the 12k far
+LOD is a 2cm remesh of the retained model, re-split at the anatomical boundaries
+by `refine_game.py`, with non-overlapping Smart Project charts (0.001 margin)
+and its own 1K source-baked atlas. `far-surface-report.json`
+records its source distance and topology. This fills distant sub-pixel tunnels,
+without replacing the generated base. The game ORM metallic channel is zero
+for skin, robe, hair and feet; original 8K material inputs remain untouched.
+
+`Lady vertical support only` is a separate editable action on `Lady_Fit`.
+It compensates only visual root height, using 2,239 samples of the actual lower
+surface, at most 18cm and two-frame circular smoothing. All original bone
+rotations remain exact. Navigation, speed, attacks, pause and checkpoint
+schemas are unchanged. `LadyMotion` attenuates this offset with joint angles
+when Reduced Motion is selected.
+
+Unity's importer evaluates the complete native FBX frame-zero baseline,
+including constant quaternion channels absent from `GetCurveBindings`. Only
+nearly constant scale channels and whole static rotation groups use 1e-5
+tolerance; moving rotation curves retain the original strict threshold.
+`lady-polish` checks every 60Hz frame against the actual imported FBX, with a
+half-millimetre positional tolerance, plus real skin support, reduced-motion
+and LOD/rig budgets. It runs without graphics/audio/desktop input.
+
+The reviewed Unity 6000.6.0f1 import retains 123,861 near vertices, reduces the
+middle LOD from 84,512 to 66,819 and the distant LOD from 61,602 to 18,681.
+Triangle counts are 79,593 / 32,000 / 12,000. The runtime action has 77 curves
+and 172,403 keys (formerly 159 / 356,001); measured clip memory is 13.08 MiB
+(formerly 22.91 MiB). This does not measure gameplay FPS. The close-up colour
+atlas retains its exact original SHA256. At 19.7 seconds, actual skinned lower
+surfaces are 2.7–3.1cm above the origin instead of 13.6–14.3cm.
+
+Reproduce on Blender 4.0.2 and the documented Python/Pillow toolchain:
+
+```powershell
+blender --background --factory-startup --threads 2 --python-exit-code 1 --python HappyToyV2/SourceArt/Lady/polish_game.py
+blender --background HappyToyV2/SourceArt/Lady/Lady_Editable.blend --threads 2 --python-exit-code 1 --python HappyToyV2/SourceArt/Lady/polish_far_lod.py
+python HappyToyV2/SourceArt/Lady/export_pbr.py
+unity run HappyToyV2 --editor-version 6000.6.0f1 -- -nographics -noaudio -executeMethod HappyToy.V2.Editor.LadyGameImport.Apply
+python HappyToyV2/Tools/quality/run_feature_tests.py --profile lady-polish --no-desktop-interaction
+```
+
+`render_polish_review.py` uses Cycles **CPU**, OpenImageDenoise, adaptive samples,
+two threads and a fixed review camera. Pass `--source <blend> --output <new
+frame-directory> --frames 64 --samples 8` after Blender's `--`. It renders every
+third actual source frame at true 20fps playback, with a temporary floor and
+studio lights. `make_polish_gifs.py --before <frames> --after <frames> --output
+<new-directory>` assembles the genuine frames with Pillow. The 3.2-second GIF
+is an excerpt, not the full loop or live gameplay/FPS evidence. Render outputs
+belong under `Builds/`; no render step saves or edits the source blend.
+
 ## Notices
 
 The input image was made with the built-in image generator; its generation

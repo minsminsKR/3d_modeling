@@ -49,6 +49,10 @@ automatically muted. Automatic command examples must include the quiet guard.
 
 # Monster identity and naming — explicit user correction, 2026-10-12
 
+User clarification, 2026-10-21: Lady is a monster that pursues the player while
+her body bends grotesquely. Preserve her abnormal joint angles, head tremor and
+irregular rhythm when polishing assets; do not turn the chase into a normal gait.
+
 - 운캣 (Uncat) is the four-legged cat monster appearing in Chapter 1.
 - 화캣 (Hwacat / Hwacat_angry) is a separate school-chapter-only monster:
   it dances, transforms into a devil-like form, and then chases the player.

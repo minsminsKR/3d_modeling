@@ -17,9 +17,9 @@
   },
   "vertices": 37650,
   "triangles": 79593,
-  "skin": "Reviewed smooth anatomical robe/sleeve/hand/foot branches; rigid head and black hair",
-  "rigidHeadAndHairGameVertices": 26121,
   "sourceSkinEditedOnlyForGame": true,
+  "fusedGameSurfaceSeamsSeparated": true,
   "chartMargin": 5e-05,
-  "fusedGameSurfaceSeamsSeparated": true
+  "nearUvPreserved": true,
+  "polishSettings": "polish-settings.json"
 }

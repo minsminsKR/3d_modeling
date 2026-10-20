@@ -118,10 +118,12 @@ def export_game(fit,rig,lods):
         # FBX exports rest mesh + skin and bakes bone curves. Evaluating a million
         # source vertices on every one of the 2239 frames is unnecessary here.
         for mod,_ in modifiers:mod.show_viewport=False
-        bpy.ops.export_scene.fbx(filepath=str(game/'Lady.fbx'),use_selection=True,object_types={'EMPTY','ARMATURE','MESH'},
+        temporary=game/'.Lady.exporting.fbx'
+        bpy.ops.export_scene.fbx(filepath=str(temporary),use_selection=True,object_types={'EMPTY','ARMATURE','MESH'},
             add_leaf_bones=False,bake_anim=True,bake_anim_use_all_bones=True,bake_anim_use_nla_strips=False,
             bake_anim_use_all_actions=False,bake_anim_simplify_factor=0,use_mesh_modifiers=False,
             axis_forward='-Z',axis_up='Y',path_mode='STRIP')
+        temporary.replace(game/'Lady.fbx')
     finally:
         for mod,visible in modifiers:mod.show_viewport=visible
     say('FBX exported')

@@ -13,6 +13,13 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 `Core/LadyHeartbeatClock`은 32m 이상 58BPM에서 2m 이내 168BPM으로 부드럽게 변하는 박동 간격·시작 페이드·정지 규칙을 소유한다.
 `LadyHeartbeatAudio`는 실제 청진 녹음의 짧은 두 접촉음을 고정 음높이로 반복하며 실시간 거리를 읽는다. 일시정지는 함께 멈추고 부적/아이템 휠에서는 플레이어 박동을 유지한다.
 `LadyEncounter`의 실제 일반/캐비닛 잡힘 성공 결과만 박동 정지와 3초 병원 녹음 심정지음으로 전환한다. 결과 화면에서도 재생하고 재시작 시 소유 음원/소스를 해제한다.
+레이디 자산 마감은 `SourceArt/Lady/polish_game.py` / `polish_far_lod.py`가 기존 생성 원본을
+사용해 UV·게임 PBR·원거리 메시·수직 지지를 정리한다. 원래 76개 관절 회전 곡선은
+그대로 보존한다. `LadyGameImport`는 FBX 전체 기준 포즈와 실제 움직이는 곡선을 유지하며
+수치 잡음 scale/정적 회전 그룹만 기준 포즈에 둔다. `LadyMotion`의 동작 감소는 수직
+지지 오프셋에도 18%를 적용한다. 자산/포즈만 변경할 때 `lady-polish`(Core·실제 FBX의
+2,239프레임 동등성·3LOD/28관절·실제 발 지지·동작 감소, 무화면/무음)를 실행하고
+새 Windows 빌드를 만든다. AI/전환/음향 변경은 기존 `lady`도 실행한다.
 심정지음은 병원 녹음의 710Hz 기본음을 남기는 zero-phase 580–900Hz 대역 처리·12/90ms 가장자리 페이드로 거친 배음을 줄인다. 제작 원본·후보 비교·CC BY 4.0 고지와 재현은 `ThirdParty/Audio/LadyFinale/` 및 `SourceArt/Audio/render_lady_heartbeat.py`에 있다. `lady` 프로필은 실제 무음 믹서에서 원/근거리·일시정지·부적·마스터 무음·잡힘 결과를 검사한다.
 
 | 기능 | 진입점 / 실제 책임 소유자 | 검사 프로필 |
