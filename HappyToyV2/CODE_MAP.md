@@ -288,6 +288,11 @@ Unity MCP는 설치된 Unity CLI의 `unity mcp --project-path <프로젝트>`와
 필요한 `--arguments-file`로 해당 목록의 스키마에 맞는 호출을 재현할 수 있다.
 연결된 Editor에서는 Pipeline 안내의 `set_autotick`을 먼저 확인한다.
 검사 실행 중 자산을 바꾸지 않으며, MCP 응답과 실제 새 빌드 검증은 구분한다.
+Unity/Blender MCP의 Codex 등록·Blender 애드온 설치와 고정 의존성은
+`Tools/mcp/README.md`와 `Setup-LocalMcp.ps1`이 담당한다.
+`Tools/mcp/inspect_mcp.py`는 등록된 명령/환경을 사용해 실제 MCP 초기화·도구 목록과
+명시한 도구 호출을 확인한다. 설치/연결 변경은 의존성·스크립트 구문·실제 Editor
+조회로 검증하며 게임 테스트나 플레이어 빌드는 요구하지 않는다.
 
 2026-10-17 검증: 전체 EditMode 134/134 통과. 첫 전체 PlayMode는 265/302였으며
 숨은 휠 자식의 잘림 오탐·구형 팩/음원/생성자 기대·관측점을 보정하고 21:9 획득
