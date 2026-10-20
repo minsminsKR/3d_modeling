@@ -4,7 +4,7 @@ namespace HappyToy.V2
     {
         float elapsed;
         bool wasChasing;
-        public float Gain(bool chasing) => chasing ? .84f : .32f;
+        public float Gain(bool chasing) => chasing ? 1f : .50f;
         public bool Tick(float seconds, bool moving, bool chasing)
         {
             if (!moving || !StealthRules.Finite(seconds) || seconds <= 0) { Reset(); return false; }

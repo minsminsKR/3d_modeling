@@ -43,7 +43,7 @@ namespace HappyToy.V2
         public float FootstepNoiseRemaining { get; private set; }
         public event System.Action<Vector3, float> FootstepNoiseEmitted;
         public bool SprintExhausted { get; private set; }
-        public bool Paused => !GameSession.Current || !GameSession.Current.InputAllowed || GameSession.Current.Shell.ItemWheelOpen ||
+        public bool Paused => !GameSession.Current || !GameSession.Current.InputAllowed ||
             GameSession.Current.ChapterMode && GameSession.Current.Chapter.FirstAppearances &&
             GameSession.Current.Chapter.FirstAppearances.CameraOwned;
         Interactable currentFocus;
@@ -121,7 +121,10 @@ namespace HappyToy.V2
             if (FootstepNoiseRemaining <= 0) FootstepNoiseRadius = 0;
             if (PlayerControls.Crouch)
                 TrySetCrouching(!Crouching);
-            var delta = PlayerControls.Look(sensitivity);
+            // The mouse/right stick selects an item while movement continues in
+            // scaled time. Selection must not also turn the player's camera.
+            bool choosingItem = session.Shell.ItemWheelOpen;
+            var delta = choosingItem ? Vector2.zero : PlayerControls.Look(sensitivity);
             if (Hidden && hiddenPeek)
             {
                 float yaw = Mathf.Clamp(Mathf.DeltaAngle(hiddenFacing, transform.eulerAngles.y) + delta.x, -55, 55);
@@ -130,7 +133,7 @@ namespace HappyToy.V2
             else transform.Rotate(0, delta.x, 0);
             pitch = Mathf.Clamp(pitch - delta.y, Hidden && hiddenPeek ? -25 : -78, Hidden && hiddenPeek ? 25 : 78);
             eyes.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
-            if (PlayerControls.Flashlight && flashlight && session.Shell.ItemWheelChangedFrame != Time.frameCount)
+            if (!choosingItem && PlayerControls.Flashlight && flashlight && session.Shell.ItemWheelChangedFrame != Time.frameCount)
             {
                 FlashlightSystem.Toggle();
             }
@@ -144,8 +147,8 @@ namespace HappyToy.V2
             // Keeping these separate also lets held input escape a wall immediately.
             sprintRequested = !Hidden && !Crouching && sprintHeld && move.sqrMagnitude > .01f && !SprintExhausted;
             moveDirection = Hidden ? Vector3.zero : transform.right * move.x + transform.forward * move.y;
-            Focus = FindFocus();
-            if (PlayerControls.Interact && Focus) Focus.Use(this);
+            Focus = choosingItem ? null : FindFocus();
+            if (!choosingItem && PlayerControls.Interact && Focus) Focus.Use(this);
         }
         /// <summary>Toggle stance without moving the feet or standing through a ceiling.</summary>
         public bool TrySetCrouching(bool crouched)
@@ -215,9 +218,13 @@ namespace HappyToy.V2
                 blocker.collider.GetComponentInParent<Interactable>() == candidate) return candidate;
             return null;
         }
+        // Called when F2 is enabled and on each active cheat physics step.
+        internal void RestoreSprintForCheat() { Stamina = 1; SprintExhausted = false; }
         void FixedUpdate()
         {
             if (Paused) { sprintRequested = Running = false; moveDirection = Vector3.zero; ActualSpeed = 0; return; }
+            bool cheatSafeMode = GameSession.Current.CheatSafeMode;
+            if (cheatSafeMode) RestoreSprintForCheat();
             if (Hidden || !controller.enabled)
             {
                 Running = false; ActualSpeed = 0;
@@ -227,7 +234,7 @@ namespace HappyToy.V2
             // Re-evaluate exhaustion for every physics step, including catch-up steps
             // with no intervening Update. Never retain an exhausted sprint velocity.
             bool sprintStep = sprintRequested && !SprintExhausted && !Crouching;
-            float speed = Crouching ? walkSpeed * .55f : sprintStep ? runSpeed : walkSpeed;
+            float speed = Crouching ? walkSpeed * .55f : sprintStep ? runSpeed * (cheatSafeMode ? 2 : 1) : walkSpeed;
             fallSpeed = controller.isGrounded ? -2 : Mathf.Max(fallSpeed - 20 * Time.fixedDeltaTime, -35);
             var previous = transform.position;
             LastCollision = controller.Move((moveDirection * speed * MovementMultiplier + Vector3.up * fallSpeed) * Time.fixedDeltaTime);
@@ -237,7 +244,7 @@ namespace HappyToy.V2
             // only a physically blocked/resting player recovers. Stairs need no new
             // grounded gate, and curse-slowed sprinting still spends stamina.
             Running = sprintStep && ActualSpeed > .12f;
-            Stamina = Mathf.Clamp01(Stamina + Time.fixedDeltaTime * (Running ? -.18f : .12f));
+            Stamina = cheatSafeMode ? 1 : Mathf.Clamp01(Stamina + Time.fixedDeltaTime * (Running ? -.18f : .12f));
             if (Stamina <= .05f) SprintExhausted = true;
             MovementUpdates++;
         }

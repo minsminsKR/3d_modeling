@@ -73,6 +73,48 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(session, "Finished"), Is.True);
         }
 
+        [UnityTest, Timeout(60000)]
+        public IEnumerator CheatF2RestoresExhaustedStaminaDoublesOnlySprintAndReturnsToNormal()
+        {
+            IsolateThreats(); Begin(); Call(shell,"RestoreDefaultSettings");
+            var origin=new Vector3(500,0,500);
+            Cube("CloudQA F2 sprint floor",origin-Vector3.up*.2f,new Vector3(240,.4f,240));
+            PlacePlayer(origin+Vector3.up*.02f);
+            yield return Wait(()=>Get<bool>(player,"Grounded"),3,"F2 fixture never grounded");
+            float run=Get<float>(player,"runSpeed"),walk=Get<float>(player,"walkSpeed");
+            yield return KeysObserved(Key.W,Key.LeftShift);
+            yield return Wait(()=>Get<bool>(player,"SprintExhausted"),9,"Normal sprint never exhausted");
+            // Keep sprint held while turning F2 on: no release/recovery latch is required.
+            yield return KeysObserved(Key.W,Key.LeftShift,Key.F2);
+            yield return Wait(()=>Get<bool>(session,"CheatSafeMode") && Get<bool>(player,"Running") &&
+                Get<float>(player,"ActualSpeed")>run*1.9f,2,"F2 did not unlock double-speed sprint");
+            Keys(Key.W,Key.LeftShift);
+            Vector3 start=player.transform.position;
+            int steps=Get<int>(player,"MovementUpdates");
+            yield return new WaitForSeconds(6);
+            int moved=Get<int>(player,"MovementUpdates")-steps;
+            Assert.That((player.transform.position.z-start.z)/(moved*Time.fixedDeltaTime),Is.EqualTo(run*2).Within(.15f));
+            Assert.That(Get<float>(player,"Stamina"),Is.EqualTo(1));
+            Assert.That(Get<bool>(player,"SprintExhausted"),Is.False);
+            Keys(Key.W);yield return new WaitForSeconds(.15f);
+            Assert.That(Get<float>(player,"ActualSpeed"),Is.EqualTo(walk).Within(.1f),"F2 accelerated walking");
+            yield return CheatTap(Key.C);Keys(Key.W,Key.LeftShift);yield return new WaitForSeconds(.15f);
+            Assert.That(Get<bool>(player,"Crouching"),Is.True);
+            Assert.That(Get<float>(player,"ActualSpeed"),Is.EqualTo(walk*.55f).Within(.1f),"F2 accelerated crouching");
+            yield return CheatTap(Key.C);Keys(Key.W,Key.LeftShift);yield return new WaitForSeconds(.15f);
+            Call(shell,"Pause");start=player.transform.position;
+            yield return Delay(.2f);Assert.That(player.transform.position,Is.EqualTo(start));
+            Assert.That(Get<float>(player,"Stamina"),Is.EqualTo(1));
+            Call(shell,"Resume");
+            yield return CheatTap(Key.F2);yield return KeysObserved(Key.W,Key.LeftShift);
+            yield return new WaitForSeconds(.5f);
+            Assert.That(Get<bool>(session,"CheatSafeMode"),Is.False);
+            Assert.That(Get<float>(player,"ActualSpeed"),Is.EqualTo(run).Within(.1f));
+            Assert.That(Get<float>(player,"Stamina"),Is.LessThan(.95f));
+            Assert.That(Get<float>(player,"runSpeed"),Is.EqualTo(run),"F2 mutated the authored run speed");
+            Keys();
+        }
+
         [UnityTest, Timeout(180000)]
         public IEnumerator CheatF1SkipsSchoolRevealGatesAndKeepsCheckpointValid()
         {

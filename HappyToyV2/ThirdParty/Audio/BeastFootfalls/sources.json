@@ -1,0 +1,28 @@
+{
+  "dog-wood": {
+    "file": "dog-wood-461524-hq.mp3",
+    "creator": "15GPanskaBokstefflova_Nicola",
+    "license": "CC0-1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+    "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+    "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+    "pack": "recorded-animal-paws",
+    "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+    "license_verified": "2026-10-17",
+    "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3"
+  },
+  "dog-linoleum": {
+    "file": "dog-linoleum-580215-hq.mp3",
+    "creator": "Trashcan_Studios",
+    "license": "CC-BY-4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "page": "https://freesound.org/people/Trashcan_Studios/sounds/580215/",
+    "download": "https://cdn.freesound.org/previews/580/580215_12973965-hq.mp3",
+    "source_file": "004 - Dog Running Past Mic on Linoleum, R-L.wav (unaltered public high-quality MP3 preview)",
+    "pack": "recorded-animal-paws",
+    "source_file_sha256": "15506de93ba5217bc3d44d25b1e6b57613eeb226a3423c1eaefd93164c6973e6",
+    "license_verified": "2026-10-17",
+    "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-linoleum-580215-hq.mp3"
+  }
+}

@@ -27,7 +27,7 @@ def main():
     audio = audio[onset:onset + 33600].copy()
     fade = min(4800, len(audio))
     audio[-fade:] *= np.linspace(1, 0, fade)
-    audio *= .42 / max(.00001, float(np.max(np.abs(audio))))
+    audio *= .60 / max(.00001, float(np.max(np.abs(audio))))
     target = PROJECT / 'Assets/Resources/Audio/External/enemy-uncat-bell-0.wav'
     sf.write(target, audio, 48000, subtype='PCM_16')
     entry = {key: origin[key] for key in ('pack','creator','license','page','download','source_file','source_file_sha256','archive_sha256')}
@@ -42,7 +42,7 @@ def main():
         reason='A real pitched bell ring reads as a small carried bell; retain its natural pitch.'),
         compared=dict(file=candidate.relative_to(PROJECT).as_posix(), sha256=sha(candidate),
         reason='Loose metal jingle is noisier and less clearly a bell, so it is not mixed into the cue.'),
-        gain='Patrol 0.32; pursuit 0.84 on the same spatial emitter',
+        gain='Patrol 0.50; pursuit 1.00 on the same spatial emitter; waveform peak 0.60 (previously 0.42)',
         interval_seconds=dict(patrol=.88,pursuit=.23), licensing=entry['license'],
         listening_scope='Selection from known retained physical recordings; PCM/source checks do not certify the final device mix.')
     (PROJECT/'SourceArt/Audio/uncat-bell-selection.json').write_text(json.dumps(selection,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

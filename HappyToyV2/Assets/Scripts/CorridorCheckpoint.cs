@@ -23,6 +23,8 @@ namespace HappyToy.V2
         public int threatVersion;
         public LanternMaskEncounter.ChapterProgress mask;
         public Door[] doors;
+        public int ladyVersion;
+        public LadyEncounter.Progress lady;
         [Serializable] public sealed class Door { public string id; public bool open, broken, locked; public Vector3 leaf; }
         [Serializable] public sealed class Drawer { public string id; public bool open; public float travel; }
         public static bool Number(float value, float min, float max) => StealthRules.Finite(value) && value >= min && value <= max;
@@ -60,6 +62,13 @@ namespace HappyToy.V2
                         !drawerIds.Add(drawer.id) || !Number(drawer.travel,0,.30f)) throw new ArgumentException("Invalid drawer checkpoint");
             }
             player.Validate();
+            if(ladyVersion<0||ladyVersion>1||ladyVersion==1&&lady==null||ladyVersion==0&&lady!=null&&!lady.LegacyEmpty)
+                throw new ArgumentException("Invalid Lady checkpoint version");
+            if(ladyVersion==1)
+            {
+                lady.Validate();
+                if((lady.phase>0)!=Array.TrueForAll(recovered,value=>value))throw new ArgumentException("Lady progression differs from recovered memories");
+            }
             foreach(var threat in threats) { if(threat == null) throw new ArgumentException("Missing threat"); threat.Validate(); }
             if(threatVersion==1) mask.ValidateCorridor();
             var ids=new System.Collections.Generic.HashSet<string>();

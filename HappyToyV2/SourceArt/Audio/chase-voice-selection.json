@@ -1,0 +1,176 @@
+{
+  "selected_paws": "dog-wood",
+  "candidates": [
+    {
+      "kind": "paws",
+      "key": "dog-wood",
+      "source": {
+        "file": "dog-wood-461524-hq.mp3",
+        "creator": "15GPanskaBokstefflova_Nicola",
+        "license": "CC0-1.0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+        "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+        "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+        "pack": "recorded-animal-paws",
+        "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+        "license_verified": "2026-10-17",
+        "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3"
+      },
+      "seconds": 2.298791666666667,
+      "rms": 0.048986906234591863
+    },
+    {
+      "kind": "paws",
+      "key": "dog-linoleum",
+      "source": {
+        "file": "dog-linoleum-580215-hq.mp3",
+        "creator": "Trashcan_Studios",
+        "license": "CC-BY-4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/",
+        "page": "https://freesound.org/people/Trashcan_Studios/sounds/580215/",
+        "download": "https://cdn.freesound.org/previews/580/580215_12973965-hq.mp3",
+        "source_file": "004 - Dog Running Past Mic on Linoleum, R-L.wav (unaltered public high-quality MP3 preview)",
+        "pack": "recorded-animal-paws",
+        "source_file_sha256": "15506de93ba5217bc3d44d25b1e6b57613eeb226a3423c1eaefd93164c6973e6",
+        "license_verified": "2026-10-17",
+        "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-linoleum-580215-hq.mp3"
+      },
+      "seconds": 5.7651875,
+      "rms": 0.013930708999429909
+    }
+  ],
+  "reasons": {
+    "dog-wood": "Close, separated real paw/nail transients on the same broad surface family as the corridor.",
+    "dog-linoleum": "Real animal comparator retained with attribution; the pass-by has changing distance and a different floor."
+  },
+  "outputs": [
+    {
+      "file": "mask-beast-step-0.wav",
+      "creator": "15GPanskaBokstefflova_Nicola",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+      "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+      "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+      "pack": "recorded-animal-paws",
+      "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+      "license_verified": "2026-10-17",
+      "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3",
+      "resource": "Audio/External/mask-beast-step-0",
+      "seconds": 0.26,
+      "peak": 0.760009765625,
+      "rms": 0.13208322438956616,
+      "sha256": "cad32435a59357b63699209a8e5739f3a55f501089967dbce63189329ca8e9a1",
+      "modifications": {
+        "sample_rate": 48000,
+        "mono": true,
+        "format": "PCM16 WAV",
+        "recordings": [
+          {
+            "file": "dog-wood-461524-hq.mp3",
+            "creator": "15GPanskaBokstefflova_Nicola",
+            "license": "CC0-1.0",
+            "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+            "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+            "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+            "pack": "recorded-animal-paws",
+            "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+            "license_verified": "2026-10-17",
+            "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3"
+          }
+        ],
+        "source_kind": "Recorded performance and physical animal contacts; no synthesized layers",
+        "scope": "Real dog paw contact on wood; source window centre-22ms to centre+85ms, 0.72x pad/nail layer and 0.48x low body from the same recording, 65Hz-6.5kHz and 45-420Hz bands, 3/25ms fades, .26s length, peak .76. No human shoe, metal or synthetic layers.",
+        "loop": false,
+        "source_centre_seconds": 0.92
+      }
+    },
+    {
+      "file": "mask-beast-step-1.wav",
+      "creator": "15GPanskaBokstefflova_Nicola",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+      "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+      "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+      "pack": "recorded-animal-paws",
+      "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+      "license_verified": "2026-10-17",
+      "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3",
+      "resource": "Audio/External/mask-beast-step-1",
+      "seconds": 0.26,
+      "peak": 0.760009765625,
+      "rms": 0.04812035903726097,
+      "sha256": "011e4cda2fd1f25b96049b117a23335ab62c4db2281870a81c506a44a50990ca",
+      "modifications": {
+        "sample_rate": 48000,
+        "mono": true,
+        "format": "PCM16 WAV",
+        "recordings": [
+          {
+            "file": "dog-wood-461524-hq.mp3",
+            "creator": "15GPanskaBokstefflova_Nicola",
+            "license": "CC0-1.0",
+            "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+            "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+            "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+            "pack": "recorded-animal-paws",
+            "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+            "license_verified": "2026-10-17",
+            "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3"
+          }
+        ],
+        "source_kind": "Recorded performance and physical animal contacts; no synthesized layers",
+        "scope": "Real dog paw contact on wood; source window centre-22ms to centre+85ms, 0.72x pad/nail layer and 0.48x low body from the same recording, 65Hz-6.5kHz and 45-420Hz bands, 3/25ms fades, .26s length, peak .76. No human shoe, metal or synthetic layers.",
+        "loop": false,
+        "source_centre_seconds": 1.17
+      }
+    },
+    {
+      "file": "mask-beast-step-2.wav",
+      "creator": "15GPanskaBokstefflova_Nicola",
+      "license": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+      "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+      "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+      "pack": "recorded-animal-paws",
+      "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+      "license_verified": "2026-10-17",
+      "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3",
+      "resource": "Audio/External/mask-beast-step-2",
+      "seconds": 0.26,
+      "peak": 0.759979248046875,
+      "rms": 0.11434798719497484,
+      "sha256": "e949da525e022413cc94e97b8fd93fbf60d57cf0ef441a60f45ffb27fbddda97",
+      "modifications": {
+        "sample_rate": 48000,
+        "mono": true,
+        "format": "PCM16 WAV",
+        "recordings": [
+          {
+            "file": "dog-wood-461524-hq.mp3",
+            "creator": "15GPanskaBokstefflova_Nicola",
+            "license": "CC0-1.0",
+            "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+            "page": "https://freesound.org/people/15GPanskaBokstefflova_Nicola/sounds/461524/",
+            "download": "https://cdn.freesound.org/previews/461/461524_9678908-hq.mp3",
+            "source_file": "dog_running on wood floor 2.wav (unaltered public high-quality MP3 preview)",
+            "pack": "recorded-animal-paws",
+            "source_file_sha256": "d378dba44ddc3d5eeb5c8a3e2661b87801dfccd4443460fbc702653e74e750d9",
+            "license_verified": "2026-10-17",
+            "retained_path": "ThirdParty/Audio/BeastFootfalls/sources/dog-wood-461524-hq.mp3"
+          }
+        ],
+        "source_kind": "Recorded performance and physical animal contacts; no synthesized layers",
+        "scope": "Real dog paw contact on wood; source window centre-22ms to centre+85ms, 0.72x pad/nail layer and 0.48x low body from the same recording, 65Hz-6.5kHz and 45-420Hz bands, 3/25ms fades, .26s length, peak .76. No human shoe, metal or synthetic layers.",
+        "loop": false,
+        "source_centre_seconds": 1.55
+      }
+    }
+  ],
+  "scope": "Recorded-source and PCM comparison; no claim of final device listening or subjective realism certification."
+}

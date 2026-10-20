@@ -141,6 +141,47 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(60000)]
+        public IEnumerator MaskRunnerShattersRouteDoorAfterContactAvoidanceStopsItsVelocity()
+        {
+            yield return PrepareCorridorMaskRunner();
+            var mask = Get<Component>(Get<Component>(session, "Corridor"), "Mask");
+            var agent = mask.GetComponent<NavMeshAgent>();
+            var door = TraversalDoor(true);
+            var destination = SupportedDoorSide(door, 2.1f);
+            var state = CopyAdvancedProgress(Call(mask, "CaptureChapterProgress"));
+            Set(state, "position", SupportedDoorSide(door, -1.1f));
+            Set(state, "rotation", Quaternion.LookRotation(destination - Get<Vector3>(state, "position")));
+            Set(state, "state", "Wander"); Set(state, "target", destination); Set(state, "memory", 0f);
+            Set(state, "doorPassage", null);
+            PlacePlayer(new Vector3(200, 5, 200), false);
+            Call(mask, "RestoreCorridorProgress", state);
+            var route = new NavMeshPath();
+            Assert.That(agent.CalculatePath(destination, route) && route.status == NavMeshPathStatus.PathComplete, Is.True);
+            Assert.That((bool)Call(RequireType("StalkerDoorTraversal"), "RouteCrossesOpening", agent, destination, door, route), Is.True);
+            agent.SetPath(route); agent.isStopped = false; agent.velocity = Vector3.zero;
+            Physics.SyncTransforms();
+            var tickDoor = mask.GetType().GetMethod("TickRunnerDoor", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            Assert.That(tickDoor, Is.Not.Null);
+            tickDoor.Invoke(mask, new object[] { SupportedDoorSide(door, -2.1f) });
+            Assert.That(Get<bool>(door, "DoorBroken"), Is.False, "A nearby door outside the intended route was shattered");
+            Call(shell, "Pause");
+            tickDoor.Invoke(mask, new object[] { destination });
+            Assert.That(Get<bool>(door, "DoorBroken"), Is.False, "Pause admitted a contact impact");
+            Call(shell, "Resume");
+            var cover = Cube("CloudQA solid door-contact cover", Vector3.Lerp(mask.transform.position, door.transform.position, .5f) + Vector3.up,
+                new Vector3(.3f, 2.5f, .3f));
+            Physics.SyncTransforms(); tickDoor.Invoke(mask, new object[] { destination });
+            Assert.That(Get<bool>(door, "DoorBroken"), Is.False, "The runner broke a door through intervening cover");
+            UnityEngine.Object.DestroyImmediate(cover); Physics.SyncTransforms();
+            tickDoor.Invoke(mask, new object[] { destination });
+            Assert.That(Get<bool>(door, "DoorBroken"), Is.True,
+                "A real closed route door at contact stayed intact because obstacle avoidance removed velocity");
+            Assert.That(Get<int>(door, "MaskImpacts"), Is.EqualTo(1));
+            tickDoor.Invoke(mask, new object[] { destination });
+            Assert.That(Get<int>(door, "MaskImpacts"), Is.EqualTo(1), "Contact replayed the same impact");
+        }
+
+        [UnityTest, Timeout(60000)]
         public IEnumerator MaskRunnerNearWhistleSightStillRespectsRealRoomCoverAndHiding()
         {
             yield return PrepareCorridorMaskRunner();

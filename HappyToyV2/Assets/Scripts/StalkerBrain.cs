@@ -24,6 +24,8 @@ namespace HappyToy.V2
         int searchCandidate;
         bool searchArrived, searchStarted;
         float memory, repath, floorY;
+        readonly StalkerPatrolProgress patrolProgress=new StalkerPatrolProgress();
+        public int PatrolRouteRecoveries=>patrolProgress.Recoveries;
         int waypoint;
         readonly StalkerPerception perception = new StalkerPerception();
         readonly StalkerDoorPassage doorPassage = new StalkerDoorPassage();
@@ -135,12 +137,14 @@ namespace HappyToy.V2
 
         void OnEnable()
         {
+            patrolProgress.Reset();
             patrolDwelling = false; investigation.Reset();
             floorY = transform.position.y; repath = 0; recognitionCueIssued = false; awareness.Reset(); BindFootsteps(player);
         }
 
         void OnDisable()
         {
+            patrolProgress.Reset();
             cabinetEncounter.Reset();
             if (CorridorBaby) CorridorBaby.StopVoice();
             ClearDoorPassage(); investigation.Reset();
@@ -460,9 +464,19 @@ namespace HappyToy.V2
         void NavigateState()
         {
             if(state==State.Investigate && investigation.Arrived) { InspectNoisePoint(); return; }
-            if (HoldWaitingBaby()) return;
+            if (HoldWaitingBaby()) {patrolProgress.Reset();return;}
             agent.speed = state == State.Chase ? chaseSpeed : CalmNavigationSpeed;
             if (state != State.Patrol) patrolDwelling = false;
+            Vector3? patrolGoal=state==State.Patrol&&!patrolDwelling&&patrol!=null&&patrol.Length>1&&patrol[waypoint%patrol.Length]
+                ?patrol[waypoint%patrol.Length].position:(Vector3?)null;
+            if(patrolProgress.Tick(agent,patrolGoal,Time.deltaTime))
+            {
+                // A complete capsule route can still be impossible for the
+                // larger rendered torso. Release the stale handle/path and
+                // let normal native routing try the next patrol marker.
+                waypoint=(waypoint+1)%patrol.Length;patrolDwelling=false;
+                ClearDoorPassage();EnemyNavigation.Stop(agent,true);repath=0;
+            }
             if (TryPassDoor())
             {
                 // A known operable leaf needs time to push/slide. Preserve the

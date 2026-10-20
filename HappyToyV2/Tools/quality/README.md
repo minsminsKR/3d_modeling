@@ -6,6 +6,15 @@ scene behavior, or both complete Unity suites. All runs use pinned Unity
 6000.6.0f1, fresh result directories and strict nonempty/pass validation.
 Player build and native/visual verification remain separate checks.
 
+`--profile lady` runs final-memory progression rules/save codecs, the actual
+Lady model/navmesh pursuit, trap immunity, talisman/pause pose holds,
+fresh random spawns on the same map/location with unchanged 18–72m actual path limits,
+recorded fixed-pitch proximity heartbeat/confirmed-capture flatline through the Result screen,
+flashlight-only blackout with actual torch-on/off camera frames, checkpoint/new-game lighting restoration and quiet pre-device mixer isolation. It also
+retains existing six-attacker talisman and corridor-save regressions.
+`LadyModelReview.ImportAndRender` is an explicit silent URP asset review; it
+exports 64 actual skinned action frames without starting a player.
+
 For a fresh Windows player's actual corridor frame evidence, use
 `-quiet-diagnostics -v2-corridor-play-output <new-directory> -v2-corridor-performance
 -v2-audit-seed 73 -screen-width 1920 -screen-height 1080 -screen-fullscreen 0`.
@@ -617,3 +626,38 @@ stocks/missing optional fields. The four-tray legacy furniture filter still
 identifies its original firecracker drawers. It also covers increased Uncat bell
 gains and actual Cyclopse panting loop PCM/occlusion/pause/master-mute/range,
 talisman time stop and independent owned-clip cleanup, using the quiet guard.
+
+## 회랑 백수귀 행동 검사
+
+`python HappyToyV2/Tools/quality/run_feature_tests.py --profile wraith-behavior --graphics-api d3d11 --no-desktop-interaction`
+는 Core와 두 저장소, 실제 추격 만료·캐비닛 생존 후 먼 곳으로 이동하는 이탈,
+일시정지/부적 정지/중단 복원과 재목격, 문 접촉 시 0속도·가림·일시정지·경로 제외,
+기존 열린/잠긴 문·학교 파괴·캐비닛 강제 포획·덫 회귀를 무음 검사한다.
+24초는 이동을 포함한 이탈 시간이며 실제 시야를 무효화하지 않는다.
+새 플레이어 실행·생존 난이도·기기 청감 인증은 포함하지 않는다.
+
+## 회랑 음향·Tab 이동·입구 밝기
+
+`python HappyToyV2/Tools/quality/run_feature_tests.py --profile corridor-feedback --graphics-api d3d11 --no-desktop-interaction`
+는 Core와 실제 키보드/패드의 .25배 이동·선택/해제·사용 차단, 녹음 호흡의 추격 전환과
+벽/거리/음소거/일시정지/부적 정지·자원 정리, 세 틱 PCM/충돌 및 실제 동물 발소리
+믹서, 운캣 종 간격을 무음 검사한다. 실제 시작 카메라는 같은 노출·물리에서 이전
+국소 조명과 밝기를 비교하고 기존 3개 화면비의 사찰/부적/기둥/바닥 표면도 검사한다.
+기기 청감이나 생존 난이도 인증을 대신하지 않는다. 비교 PNG는 테스트의 로컬
+`Temp/HappyToyCloudEvidence`에 생성되며 필요하면 `Builds/Verification`에 보관한다.
+`HAPPYTOY_ENTRANCE_LIGHTING_REVIEW=1`은 시작 카메라 검사에서 40/160/320 상부
+조명의 비교 PNG를 추가하는 선택 진단이다. 평상시 검사에는 추가하지 않는다.
+제작용 `.venv-*`는 고정 requirements로 재생성하는 캐시이며 소스 누락 검사에서 제외한다.
+
+입구 조명 배율만 바꿀 때는 `--profile entrance-lighting --graphics-api d3d11 --no-desktop-interaction`을
+사용한다. Core/조명 규칙과 실제 9개 광원의 선택 배율·동일 반사 재캡처 조건의 1.00배
+비교·세 화면비·회랑 입구 바닥·반사 소유권을 확인한다. 현재 사용자 선택은 원래 미리보기
+기준 절대 0.45배다. 밝기 선택 페이지를 다시 내보낼 때도 이 기준을 유지한다.
+
+싸이클롭스 음성만 바꿀 때는 `--profile cyclopse-voice --graphics-api d3d11 --no-desktop-interaction`을
+사용한다. Core와 실제 공간 호흡의 추격/배회 전환·벽·일시정지·음소거·거리·부적 정지·
+소유 자원 정리, 제거한 추격 비명의 카탈로그/Resources 부재를 무음 검사한다.
+
+`patrol-navigation` checks the production rendered-body/NavMesh wall mismatch, physical-displacement patrol recovery, every directed two-arm corner in seed 73 (56 actor routes), real door passage/close ownership, deliberate patrol waits/pause and talisman freezing. It retains the actual body size, normal native speed and original scene; only the broad corner sweep accelerates simulation by 3x. The Uncat wall fixture proves the raw marker cannot fit its body within its .6m arrival radius, then verify a recovery and physical return along the next route.
+
+`finale-start-audio` verifies the exact three-second clinical terminal clip through real lethal contact/result playback, the shared animal recording bank, an uninterrupted three-second native title performance after just one Tick, master mute/stop/disposal, and actual title-button approach -> full black -> world preparation -> gated reveal. The continuous title PCM is prepared once from the imported in-game bank; there is no streaming/per-frame footfall scheduling. It preserves the quiet pre-device audio guard.

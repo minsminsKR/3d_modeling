@@ -1,0 +1,32 @@
+{
+  "character": "lady",
+  "stage": "appearance-concept-v3",
+  "clientDate": "2026-10-18",
+  "timezone": "Asia/Seoul",
+  "generator": {
+    "mode": "built-in image_gen",
+    "tool": "image_gen.imagegen",
+    "transparent_background": false,
+    "inputImages": [
+      {
+        "file": "lady-concept-v2.png",
+        "sha256": "808a2b4d26451b6a54d96ae4797c1739a028a1c8e800141034c40c0693de1f90",
+        "role": "edit target"
+      }
+    ]
+  },
+  "image": "lady-concept-v3.png",
+  "imageSha256": "7eb2398cfeddb8aea20f96606f6c267d3f39a244ac93ef92808739de838fe039",
+  "originalGeneratedFilename": "exec-79d7dcc4-6adc-4269-b4e0-4311827ebae2.png",
+  "promptFile": "lady-concept-v3.prompt.txt",
+  "userRequest": "Substantially heavier ketchup-like staining and a more bizarre, frightening appearance",
+  "edits": [
+    "Large opaque tomato-red matte costume-paint patches across the upper garment, sleeves and skirt",
+    "More fixed crooked smile, visible white sclera and darker eye makeup",
+    "Eerie tilted head and slightly hunched posture"
+  ],
+  "stainingTreatment": "Dry matte theatrical fabric paint; no injuries or skin staining",
+  "preserved": "Character identity, sobok silhouette, long dishevelled hair, full-body composition and grey studio background",
+  "purpose": "Revised appearance review and potential modeling-webapp input; previous revisions retained",
+  "implementationStatus": "Concept only. No model or gameplay changes in this pass."
+}

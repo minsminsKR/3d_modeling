@@ -97785,6 +97785,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
   sourceMeshHash: 876bd87175c1991dbd693ae1f2c59c2e7a2d9137837d9574826e2fe8de2afce0:2dd72655f79d936a988fcfd51ae80721045eb44e703fe2e827122e2ada25c4cd:83b8515a1c3c09dede9b5aaf0591fb5cf5ad3fb8ff31b8441420fd9857d642c3:a6bd2d282b3e0bac1f4f0c16812eff4526fae5977d369aa959fad4f3aa6afbf7:54906e45db619d63ea4ae1a9b3181693d46beab9f97e6683353c268cb2106d00
+  cabinetFace: {fileID: 0}
   mouthLiner: {fileID: 0}
   mouthLinerMaterial: {fileID: 0}
   mouthLinerBone: 

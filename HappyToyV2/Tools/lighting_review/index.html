@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HappyToyV2 · 시작 공간 밝기</title>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:#08090b;color:#edf0f4;font:14px/1.4 system-ui,"Malgun Gothic",sans-serif;overflow:hidden}
+main{height:100%;position:relative;display:grid;place-items:center}#scene{width:100%;height:100%;object-fit:contain;display:block}
+.bar{position:absolute;display:flex;gap:8px;align-items:center;background:#11151bd9;border:1px solid #ffffff24;border-radius:12px;backdrop-filter:blur(8px);padding:9px}
+nav{top:16px;left:50%;transform:translateX(-50%);white-space:nowrap}button{border:1px solid #ffffff20;background:#202732;color:inherit;padding:8px 12px;border-radius:7px;cursor:pointer;font:inherit}
+button[aria-pressed=true]{background:#d8b989;color:#16120c;border-color:#f1d4a5}button:hover{border-color:#e1cda8}button:focus-visible,input:focus-visible{outline:2px solid #ecd0a1;outline-offset:3px}
+.controls{bottom:18px;left:50%;transform:translateX(-50%);width:min(620px,calc(100% - 24px));padding:14px 16px;display:block}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.label{color:#b8c1cd;font-size:12px}output{font:600 28px/1.2 system-ui;font-variant-numeric:tabular-nums;min-width:100px;display:block;margin-top:2px}
+input[type=range]{width:100%;margin:15px 0 8px;accent-color:#d8b989;cursor:ew-resize}.hint{font-size:12px;color:#bac2cd}.actions{display:flex;gap:6px}#status{position:absolute;left:16px;top:16px;font-size:12px;color:#c5cbd3;background:#11151bba;padding:6px 9px;border-radius:6px;max-width:180px}#status:empty{display:none}
+@media(max-width:520px){nav{top:12px}.bar{gap:5px}button{padding:7px 9px;font-size:12px}.controls{bottom:12px;padding:12px}.hint{font-size:11px}#status{top:60px;max-width:none}output{font-size:25px}}
+</style>
+<main id="review" aria-label="실제 시작 공간의 조명 밝기 비교">
+  <img id="scene" alt="시작 공간 조명을 불러오는 중">
+  <div id="status" role="status">실제 렌더를 불러오는 중…</div>
+  <nav class="bar" aria-label="시점 선택" id="views"></nav>
+  <section class="bar controls" aria-label="밝기 조절">
+    <div class="row"><div><div class="label">시작 공간 조명</div><output id="value" aria-live="polite">1.00×</output></div><div class="actions"><button id="reset">현재 게임 값</button><button id="copy">선택값 복사</button><button id="fullscreen" aria-label="전체화면">전체화면</button></div></div>
+    <input id="level" type="range" min="0" max="40" value="20" step="1" aria-label="조명 밝기 배율">
+    <div class="row hint"><span>휠 ↑ 밝게 · ↓ 어둡게 · 방향키 ↑↓</span><span id="detail">손전등 꺼짐</span></div>
+  </section>
+</main>
+<script>
+(async()=>{
+  const scene=document.getElementById('scene'),value=document.getElementById('value'),slider=document.getElementById('level'),status=document.getElementById('status'),views=document.getElementById('views');
+  let manifest,view,index=20,sequence=0,displayed=null,wheel=0;
+  try{const response=await fetch('manifest.json');if(!response.ok)throw new Error('manifest');manifest=await response.json();}
+  catch(_){status.textContent='화면을 불러오지 못했습니다. 새로고침해 주세요.';return;}
+  const defaultGain=manifest.defaultGain??1;
+  const currentIndex=manifest.levels.reduce((best,gain,i)=>Math.abs(gain-defaultGain)<Math.abs(manifest.levels[best]-defaultGain)?i:best,0);
+  slider.max=manifest.levels.length-1;index=currentIndex;view=manifest.views[0];
+  const storageKey='happytoy-lighting-'+manifest.gameCommit;
+  try{const saved=JSON.parse(localStorage.getItem(storageKey));if(saved&&Number.isInteger(saved.index)&&saved.index>=0&&saved.index<manifest.levels.length)index=saved.index;}catch(_){}
+  function remember(){try{localStorage.setItem(storageKey,JSON.stringify({index,view:view.id}));}catch(_){}}
+  async function show(){
+    const token=++sequence,frame=view.frames[index],gain=manifest.levels[index],label=view.label;
+    slider.value=index;slider.setAttribute('aria-valuetext',gain.toFixed(2)+'배');
+    for(const button of views.children)button.setAttribute('aria-pressed',String(button.dataset.view===view.id));
+    status.textContent='불러오는 중…';
+    const next=new Image();next.src=frame.file;
+    try{await next.decode();}catch(_){if(token===sequence)status.textContent='이미지를 불러오지 못했습니다.';return;}
+    if(token!==sequence)return;
+    scene.src=next.src;scene.alt=label+' · 조명 '+gain.toFixed(2)+'배';value.textContent=gain.toFixed(2)+'×';
+    displayed={gain,label};status.textContent='';remember();
+    document.getElementById('detail').textContent='손전등 꺼짐 · 상부 '+Math.round(manifest.baseLightIntensities[7]*gain);
+    for(const neighbor of [index-1,index+1])if(view.frames[neighbor]){const image=new Image();image.src=view.frames[neighbor].file;}
+  }
+  function change(amount){index=Math.max(0,Math.min(manifest.levels.length-1,index+amount));show();}
+  for(const entry of manifest.views){const button=document.createElement('button');button.textContent=entry.label;button.dataset.view=entry.id;button.addEventListener('click',()=>{view=entry;show();});views.append(button);}
+  slider.addEventListener('input',()=>{index=Number(slider.value);show();});
+  document.addEventListener('wheel',event=>{event.preventDefault();wheel+=event.deltaY*(event.deltaMode===1?24:1);if(Math.abs(wheel)>=35){change(wheel<0?1:-1);wheel=0;}},{passive:false});
+  document.addEventListener('keydown',event=>{if(event.key==='ArrowUp'||event.key==='ArrowDown'){event.preventDefault();change(event.key==='ArrowUp'?1:-1);}});
+  document.getElementById('reset').addEventListener('click',()=>{index=currentIndex;show();});
+  document.getElementById('copy').addEventListener('click',async()=>{if(!displayed)return;const text='시작 공간 조명 '+displayed.gain.toFixed(2)+'배로 적용해줘';try{await navigator.clipboard.writeText(text);status.textContent='복사했습니다';setTimeout(()=>{status.textContent='';},1600);}catch(_){status.textContent=text;}});
+  document.getElementById('fullscreen').addEventListener('click',()=>{if(document.fullscreenElement)document.exitFullscreen();else document.getElementById('review').requestFullscreen().catch(()=>{});});
+  show();
+})();
+</script>
+</html>

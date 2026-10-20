@@ -75,6 +75,7 @@ namespace HappyToy.V2.Editor
         {
             SkinnedMeshPerformanceSetup.Apply();
             EnemyStudioGameImport.Ensure();
+            LadyGameImport.Ensure();
             BabyEyeMaskImport.Ensure();
             CyclopseExpressionImport.Ensure();
             CreatureFaceImport.Ensure();

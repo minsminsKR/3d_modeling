@@ -15,6 +15,8 @@ namespace HappyToy.V2
         readonly List<Vector3> incenseSources=new List<Vector3>();
         readonly List<Transform> toBatch=new List<Transform>();
         public IReadOnlyList<Light> Lanterns=>lanterns;
+        // Absolute gain against the original lighting-review baseline.
+        public float LightMultiplier=>.45f;
         public IReadOnlyList<Vector3> IncenseSources=>incenseSources;
         public int CandleCount {get;private set;}
         public int SealCount {get;private set;}
@@ -151,17 +153,19 @@ namespace HappyToy.V2
         }
         void LanternsAndLight()
         {
-            Lantern(new Vector3(5,3.1f,4),1.8f,2.4f,11,false,1.25f);
-            Lantern(new Vector3(-4.5f,3.5f,9.8f),1.35f,2.2f,10,false);
-            Lantern(new Vector3(-6,4.1f,-11),1.1f,2.1f,11,true);
-            Lantern(new Vector3(6,4.4f,-11),1.1f,2.1f,11,true);
+            Lantern(new Vector3(5,3.1f,4),1.8f,3.6f,11,false,1.25f);
+            Lantern(new Vector3(-4.5f,3.5f,9.8f),1.35f,3.3f,10,false);
+            Lantern(new Vector3(-6,4.1f,-11),1.1f,3.8f,11,true);
+            Lantern(new Vector3(6,4.4f,-11),1.1f,3.8f,11,true);
             // Only two lanterns are point-shadow eligible. LocalShadowBudget
             // continues to select at most two casters across the whole scene.
-            Lamp("Gate candle gathering glow",new Vector3(0,1.15f,-10.3f),new Color(1,.49f,.18f),1.4f,9,false);
-            Lamp("Left candle gathering glow",new Vector3(-1,1,2),new Color(1,.48f,.17f),1.25f,8,false);
-            Lamp("Onward threshold candle gathering glow",new Vector3(2.8f,1,10.8f),new Color(1,.37f,.12f),1.3f,9,false);
-            Lamp("Dim neutral cavern scatter",new Vector3(0,5.5f,3),new Color(.48f,.47f,.43f),1.0f,25,false);
-            Lamp("Grazing dark rear rock",new Vector3(-11.5f,2,-9),new Color(.85f,.44f,.20f),.9f,9,false);
+            Lamp("Gate candle gathering glow",new Vector3(0,1.15f,-10.3f),new Color(1,.49f,.18f),2.2f,9,false);
+            Lamp("Left candle gathering glow",new Vector3(-1,1,2),new Color(1,.48f,.17f),1.8f,8,false);
+            Lamp("Onward threshold candle gathering glow",new Vector3(2.8f,1,10.8f),new Color(1,.37f,.12f),1.9f,9,false);
+            // Baseline from the lighting review; Lamp applies the selected gain.
+            Lamp("Dim neutral cavern scatter",new Vector3(0,7.5f,-2),new Color(.48f,.47f,.43f),320f,25,false);
+            lanterns[lanterns.Count-1].renderMode=LightRenderMode.ForcePixel;
+            Lamp("Grazing dark rear rock",new Vector3(-11.5f,2,-9),new Color(.85f,.44f,.20f),4.8f,9,false);
         }
         void Lantern(Vector3 at,float scale,float intensity,float range,bool shadow,float fittedHeight=0)
         {
@@ -199,7 +203,7 @@ namespace HappyToy.V2
         void Lamp(string name,Vector3 at,Color colour,float intensity,float range,bool shadow)
         {
             var light=Group(name,at).gameObject.AddComponent<Light>();light.type=LightType.Point;
-            light.color=colour;light.intensity=intensity;light.range=range;light.shadows=shadow?LightShadows.Soft:LightShadows.None;lanterns.Add(light);
+            light.color=colour;light.intensity=intensity*LightMultiplier;light.range=range;light.shadows=shadow?LightShadows.Soft:LightShadows.None;lanterns.Add(light);
         }
         void Incense()
         {

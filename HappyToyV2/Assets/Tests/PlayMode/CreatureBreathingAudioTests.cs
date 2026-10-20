@@ -46,7 +46,14 @@ namespace HappyToy.V2.CloudTests
                 yield return ExternalFlush(rate,.3f);yield return ExternalCapture("cyclopse-paused",source,clip,"enemy-cyclopse-breath",.3f,rate,montage,segments);
                 Assert.That(segments.Last().peak,Is.LessThan(.00001));Assert.That(source.timeSamples,Is.EqualTo(paused));
                 Call(shell,"Resume");Set(actor,"state","Chase");yield return null;
-                Assert.That(Get<bool>(voice,"FastBreathing"),Is.True);Assert.That(source.pitch,Is.GreaterThan(1));
+                Assert.That(Get<bool>(voice,"FastBreathing"),Is.True);
+                Assert.That(source.clip,Is.SameAs(clip),"Pursuit must keep the recorded breathing loop");
+                Assert.That(source.pitch,Is.EqualTo(1.12f).Within(.001f));
+                Assert.That(CloudExternalAudioTests.Shared("enemy-cyclopse-chase"),Is.Null,"Removed pursuit scream remains in the cue catalog");
+                Assert.That(Resources.Load<AudioClip>("Audio/External/enemy-cyclopse-chase-0"),Is.Null,"Removed pursuit scream remains in player resources");
+                yield return ExternalFlush(rate,.2f);source.timeSamples=clip.frequency*2;
+                yield return ExternalCapture("cyclopse-chase-breath",source,clip,"enemy-cyclopse-breath",1.4f,rate,montage,segments);
+                Assert.That(segments.Last().rms,Is.GreaterThan(.00002),"Actual pursuit breathing never reached the spatial mixer");
                 Call(shell,"AdjustSettings",-1f,0f);yield return ExternalFlush(rate,.3f);
                 yield return ExternalCapture("cyclopse-master-zero",source,clip,"enemy-cyclopse-breath",.3f,rate,montage,segments);
                 Assert.That(AudioListener.volume,Is.Zero);Assert.That(segments.Last().peak,Is.LessThan(.00001));
@@ -58,6 +65,8 @@ namespace HappyToy.V2.CloudTests
                 Assert.That((bool)Call(ritual,"UseTalisman"),Is.True);yield return null;int held=source.timeSamples;
                 yield return Delay(.2f);Assert.That(source.timeSamples,Is.EqualTo(held),"The held creature keeps breathing through time stop");
                 Call(ritual,"EndEffect");yield return null;
+                Set(actor,"state","Patrol");yield return null;
+                Assert.That(source.clip,Is.SameAs(clip));Assert.That(source.pitch,Is.EqualTo(1).Within(.001f));
                 ((Behaviour)actor).enabled=false;yield return null;Assert.That(source.isPlaying,Is.False);
                 Object.Destroy(voice);yield return null;yield return null;
                 Assert.That(!clip&&!source,Is.True);Assert.That(CloudExternalAudioTests.Shared("enemy-cyclopse-breath"),Is.Not.Null);

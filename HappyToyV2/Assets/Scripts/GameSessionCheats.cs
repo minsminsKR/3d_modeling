@@ -65,6 +65,7 @@ namespace HappyToy.V2
             CheatSafeMode = !CheatSafeMode;
             if (CheatSafeMode)
             {
+                if (player) player.RestoreSprintForCheat();
                 foreach (var enemy in FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include, FindObjectsSortMode.None))
                     if (enemy.gameObject.scene == gameObject.scene) enemy.ForgetPlayerForCheat();
                 foreach (var enemy in FindObjectsByType<LanternMaskEncounter>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -73,7 +74,7 @@ namespace HappyToy.V2
                     if (enemy.gameObject.scene == gameObject.scene) enemy.ForgetPlayerForCheat();
                 if (player && player.TryGetComponent<DetectionFeedback>(out var feedback)) feedback.ClearForCheat();
             }
-            Notify("치트 · 무적 / 발각 방지 " + (CheatSafeMode ? "ON" : "OFF"));
+            Notify("치트 · 무적 / 발각 방지 / 스태미나 무한 / 달리기 2배 " + (CheatSafeMode ? "ON" : "OFF"));
         }
     }
 
@@ -129,6 +130,7 @@ namespace HappyToy.V2
     {
         public void ForgetPlayerForCheat()
         {
+            runnerRetreat.Reset();
             cabinetEncounter.Reset();
             awareness.Reset(); attack.Reset(); investigation.Reset(); memory = repath = 0;
             recognitionCueIssued = false;

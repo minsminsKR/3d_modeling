@@ -29,8 +29,8 @@ namespace HappyToy.V2.CoreTests
         public void LouderPatrolAndPursuitStayBelowFullEmitterGain()
         {
             var clock=new EnemyBellClock();
-            Assert.That(clock.Gain(false),Is.InRange(.30f,.40f));
-            Assert.That(clock.Gain(true),Is.InRange(.80f,1f));
+            Assert.That(clock.Gain(false),Is.InRange(.48f,.6f));
+            Assert.That(clock.Gain(true),Is.InRange(.95f,1f));
         }
     }
 }

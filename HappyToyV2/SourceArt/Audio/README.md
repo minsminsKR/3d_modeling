@@ -1,5 +1,21 @@
 # Recorded horror audio authoring
 
+2026-10-17 pursuit feedback: the Cyclopse pursuit scream was removed at the
+user's request; patrol and pursuit use the existing recorded breathing loop.
+`render_chase_voices.py` (legacy filename) compares two actual dog-running
+recordings and makes three wooden paw contacts for the corridor wraith.
+Exact windows, rate/filter/layer edits and
+hashes are in `chase-voice-selection.json`; original unaltered HQ MP3 previews,
+licenses and source attribution are in `ThirdParty/Audio/BeastFootfalls`.
+Reproduce with CPython 3.11 and `requirements-corridor.txt`. The pinned sources
+can be restored with `fetch_beast_footfalls.py` without any account login.
+
+`render_snappers.py` now combines three distinct real snapper contacts at
+0/75/150ms in each of its three variants: one physical collision, one AI hearing
+observation, three audible ticks. `render_uncat_bell.py` uses peak .60 with
+runtime patrol/chase gains .50/1.0. The interval and physical range remain intact.
+The older paragraphs below describe the retained original authoring passes.
+
 The Cyclopse now owns a recorded 8.94-second laboured human panting loop.
 `render_cyclopse_breath.py` compares retained scared/panic/solo-breath performances,
 then edits the scared performance (1-9 seconds, 0.88x rate, 65Hz-5kHz bandpass,

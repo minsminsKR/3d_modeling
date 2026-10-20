@@ -69,16 +69,29 @@ namespace HappyToy.V2
             RestoreSchoolDoor(requestedOpen,leafPosition,secondaryPosition);RestoreDoorDestruction(broken);
         }
         public bool BreakForMask(LanternMaskEncounter actor)
+            => BreakForMask(actor, false);
+        internal bool BreakForMaskOnRoute(LanternMaskEncounter actor, Vector3 destination, UnityEngine.AI.NavMeshPath route)
+        {
+            // Obstacle avoidance can remove all velocity just before contact.
+            // A fresh native crossing route is locomotion intent for the corridor
+            // runner; all contact, cover, state and pause guards still apply.
+            var agent = actor ? actor.GetComponent<UnityEngine.AI.NavMeshAgent>() : null;
+            bool routeContact = actor && actor.CorridorRunner && EnemyNavigation.Ready(agent) &&
+                route != null && route.status == UnityEngine.AI.NavMeshPathStatus.PathComplete &&
+                StalkerDoorTraversal.RouteCrossesOpening(agent, destination, this, route);
+            return BreakForMask(actor, routeContact);
+        }
+        bool BreakForMask(LanternMaskEncounter actor, bool routeContact)
         {
             var session=GameSession.Current;
             if(!DoorOperable || IsOpen&&AtRequestedDoorPose || !actor || !actor.isActiveAndEnabled ||
-                EnemyTrapRestraint.IsHeld(actor) || actor.gameObject.scene!=gameObject.scene ||
+                EnemyTimeStop.Active || EnemyTrapRestraint.IsHeld(actor) || actor.gameObject.scene!=gameObject.scene ||
                 !session || !session.InputAllowed || session.Finished ||
                 actor.State!=LanternMaskEncounter.Phase.Wander && actor.State!=LanternMaskEncounter.Phase.Investigate &&
                 actor.State!=LanternMaskEncounter.Phase.Chase)return false;
             var agent=actor.GetComponent<UnityEngine.AI.NavMeshAgent>();
             var delta=actor.transform.position-transform.position;delta.y=0;
-            if(!EnemyNavigation.Ready(agent) || agent.isStopped || !agent.hasPath || agent.velocity.sqrMagnitude<.25f ||
+            if(!EnemyNavigation.Ready(agent) || !routeContact && (agent.isStopped || !agent.hasPath || agent.velocity.sqrMagnitude<.25f) ||
                 !EnemyNavigation.SameFloor(actor.transform.position,transform.position.y) || delta.magnitude>1.75f)return false;
             var origin=actor.transform.position+Vector3.up;var target=transform.position+Vector3.up;
             if(Physics.Linecast(origin,target,out var hit,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore) &&

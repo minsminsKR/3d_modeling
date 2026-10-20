@@ -200,3 +200,13 @@ outside required source commits. Hydrate Git LFS objects after clone/pull and ru
 
 See `LICENSE.md` for origin and tool-license notes. Verification commands and the
 entrance profile are recorded in `CODE_MAP.md` and `Tools/quality/README.md`.
+# 2026-10-17 start-space visibility
+
+The existing nine local lights keep their original physical room scope and two
+point-shadow candidates. Lantern/candle pools are stronger; the unshadowed
+neutral vault fill is at local `(0, 7.5, -2)`, intensity 320, range 25, marked
+important for local light selection. A rear rock graze uses intensity 4.8.
+`CorridorEntranceRitualDressing.LanternsAndLight` owns these values. No shared
+ambient exposure, maze illumination, authored model or collision is changed.
+The `corridor-feedback` profile compares the actual start camera with the prior
+local lights and checks existing surface views at three aspect ratios.

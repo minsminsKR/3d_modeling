@@ -22,6 +22,8 @@ namespace HappyToy.V2
         public bool IgnitionBlocked { get; private set; }
         public bool Lit { get; private set; }
         public bool HasBeenLit { get; private set; }
+        public bool FinaleBlackout {get;private set;}
+        public void SetFinaleBlackout(bool blackout){FinaleBlackout=blackout;Apply(HasBeenLit&&!IgnitionBlocked);}
         public int Ignitions { get; private set; }
         public Light LocalLight => localLight;
         public Transform Flame => flame;
@@ -33,7 +35,7 @@ namespace HappyToy.V2
         public void ApplyDanger(float danger, bool blackout)
         {
             Danger = Mathf.Clamp01(danger); IgnitionBlocked = blackout;
-            bool visible = HasBeenLit && !blackout;
+            bool visible = HasBeenLit && !blackout && !FinaleBlackout;
             if (Lit == visible) return;
             if (!visible && ignition) ignition.Stop();
             Apply(visible);
@@ -62,7 +64,7 @@ namespace HappyToy.V2
         }
         public bool TryIgnite(PlayerMotor player)
         {
-            if (HasBeenLit || !isActiveAndEnabled || !player || player.Hidden || !GameSession.Current ||
+            if (FinaleBlackout || HasBeenLit || !isActiveAndEnabled || !player || player.Hidden || !GameSession.Current ||
                 !GameSession.Current.InputAllowed || !flame || !localLight) return false;
             if (dangerOwner) dangerOwner.RefreshDanger();
             if (IgnitionBlocked) return false;
@@ -81,6 +83,7 @@ namespace HappyToy.V2
         }
         void Apply(bool lit)
         {
+            lit &= !FinaleBlackout;
             Lit = lit;
             if (flame)
             {

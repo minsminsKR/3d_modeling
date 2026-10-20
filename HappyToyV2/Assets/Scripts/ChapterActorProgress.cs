@@ -53,11 +53,15 @@ namespace HappyToy.V2
             public StalkerDoorTraversal.Progress doorPassage;
             public NoiseInvestigationClock.Progress investigation;
             public float investigationYaw;
+            // Optional corridor-only state; legacy checkpoints start with no respite.
+            public float runnerRetreatRemaining;
+            public Vector3 runnerRetreatTarget;
             // JsonUtility can turn a missing inline class into its empty fields.
             // Only this representation may accompany the legacy corridor marker.
             public bool LegacyEmpty => !active && !introComplete && !transformed && !cueIssued && state == Phase.Dormant &&
                 position == Vector3.zero && target == Vector3.zero && rotation.Equals(default(Quaternion)) && age == 0 && memory == 0 &&
                 awareness == 0 && waypoint == 0 && curses == 0 && attacks == 0 && noises == 0 && doorsShattered == 0 && investigationYaw == 0 &&
+                runnerRetreatRemaining == 0 && runnerRetreatTarget == Vector3.zero &&
                 (doorPassage == null || doorPassage.LegacyEmpty) &&
                 (investigation == null || investigation.version >= 0 && investigation.version <= 1 && investigation.LegacyEmpty);
             public void Validate() => Validate(false);
@@ -71,6 +75,11 @@ namespace HappyToy.V2
                     doorsShattered < 0 || doorsShattered > 162 || introComplete && !active || transformed && !introComplete)
                     throw new ArgumentException("Invalid mask checkpoint");
                 doorPassage?.Validate(); investigation?.Validate();
+                if (!CorridorCheckpoint.Number(runnerRetreatRemaining, 0, WraithRetreatClock.Duration) ||
+                    runnerRetreatRemaining > 0 && (!corridor || !active || state != Phase.Wander ||
+                        !CorridorCheckpoint.Point(runnerRetreatTarget)) ||
+                    runnerRetreatRemaining == 0 && runnerRetreatTarget != Vector3.zero)
+                    throw new ArgumentException("Invalid corridor wraith retreat");
                 if(!CorridorCheckpoint.Number(investigationYaw,0,360) ||
                     investigation!=null && investigation.active && state==Phase.Investigate &&
                     Vector3.Distance(investigation.point,target)>.002f) throw new ArgumentException("Invalid mask investigation evidence");
@@ -81,7 +90,8 @@ namespace HappyToy.V2
             state=State,position=transform.position,target=target,rotation=transform.rotation,age=age,memory=Mathf.Max(0,memory),
             awareness=awareness.Value,waypoint=waypoint,curses=CursesApplied,attacks=AttacksStarted,noises=FootstepNoisesAccepted,doorsShattered=DoorsShattered,
             doorPassage=doorTraversal?doorTraversal.CaptureProgress():null,
-            investigation=investigation.Capture(),investigationYaw=investigationFacing.eulerAngles.y };
+            investigation=investigation.Capture(),investigationYaw=investigationFacing.eulerAngles.y,
+            runnerRetreatRemaining=RunnerRetreatRemaining,runnerRetreatTarget=RunnerRetreatTarget };
         public void RestoreChapterProgress(ChapterProgress data)
         { data.Validate(); RestoreMaskProgress(data); }
         public void RestoreCorridorProgress(ChapterProgress data)
@@ -96,6 +106,7 @@ namespace HappyToy.V2
             Transformed=data.transformed; transformTime=data.transformed?5:0; recognitionCueIssued=data.cueIssued;
             awareness.Restore(data.awareness); CursesApplied=data.curses; AttacksStarted=data.attacks; FootstepNoisesAccepted=data.noises;
             DoorsShattered=data.doorsShattered;
+            runnerRetreat.Restore(data.runnerRetreatRemaining, data.runnerRetreatTarget);
             if (CorridorRunner && data.active) PrepareCorridorRunner();
             attack.Reset(); repath=0; EnemyNavigation.Stop(agent,true); SetVisible(data.active); if(data.active) Visual();
             DoorTraversal.RestoreProgress(data.doorPassage);

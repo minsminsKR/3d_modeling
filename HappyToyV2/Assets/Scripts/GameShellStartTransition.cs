@@ -24,8 +24,14 @@ namespace HappyToy.V2
         }
         IEnumerator StartCorridorTransition()
         {
-            // Present the first menu fade/approach frame before touching the world.
+            // Finish the visible approach before any heavy Unity world work.
+            // A separate title camera still shares the game's main thread.
             yield return null;
+            while(CinematicLoadingTime<3.4f)yield return null;
+            for(float elapsed=0;elapsed<.85f;elapsed+=Time.unscaledDeltaTime)
+            {TransitionBlack=Mathf.SmoothStep(0,1,elapsed/.85f);yield return null;}
+            TransitionBlack=1;
+            yield return null; // Present a fully black frame before preparation.
             CorridorPreparing=true;
             var preparation=session.CreateCorridorIncremental(unchecked(Environment.TickCount^Guid.NewGuid().GetHashCode()));
             while(true)
@@ -40,12 +46,6 @@ namespace HappyToy.V2
             if(!session.CorridorMode){FailCorridorTransition("회랑 준비가 완료되지 않았습니다.");yield break;}
             if(session.Suspension.HasRun && session.Suspension.Writable && !session.Suspension.Consume(session.Suspension.Snapshot.token))
             {FailCorridorTransition(session.Suspension.Status);yield break;}
-            // Even fast machines show a complete approach, while slower builds
-            // keep animating on unscaled time until actual navigation is ready.
-            while(CinematicLoadingTime<3.4f)yield return null;
-            for(float elapsed=0;elapsed<.85f;elapsed+=Time.unscaledDeltaTime)
-            {TransitionBlack=Mathf.SmoothStep(0,1,elapsed/.85f);yield return null;}
-            TransitionBlack=1;
             Screen=Page.Playing;ApplyScreenState();
             yield return null;yield return null;
             for(float elapsed=0;elapsed<1.1f;elapsed+=Time.unscaledDeltaTime)

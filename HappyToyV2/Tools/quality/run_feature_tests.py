@@ -22,7 +22,7 @@ VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
     "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
-    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "RitualItemRulesTests"))
+    "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests", "LadySnapperFlinchTests", "PatrolProgressClockTests"))
 CLOUD = "HappyToy.V2.CloudTests."
 EDIT = "HappyToy.V2.Tests.EditMode."
 PLAY = CLOUD + "CloudPlayModeTests."
@@ -44,6 +44,52 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "finale-start-audio": ("Three-second clinical terminal recording, native uninterrupted title contacts, visible approach before covered world preparation and shared in-game bank", [
+        ("PlayMode", play_tests("LadyHeartbeatTests.cs") + (
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
+            PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
+            PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
+            PLAY + "MaskRunningContactsUseAnimalRecordingsReachTheMixerAndPause",
+            PLAY + "LadyOpensPhysicalDoorAndFindsPlayerAfterUnwitnessedCabinetEntry"))]),
+    "patrol-navigation": ("Physical patrol progress at real walls, all directed corners, native door/body clearance, deliberate waits/pause and talisman", [
+        ("PlayMode", play_tests("CorridorNavigationRegressionTests.cs", "CloudMonsterDoorTraversalTests.cs", "RitualTimeStopTests.cs") + (
+            PLAY + "LargeMonsterRenderedBodyClearsRealCorridorWallOnSupportedNavigation",
+            PLAY + "TwoDoorShelterPursuersOpenCrossAndCloseBothPhysicalDoors",
+            PLAY + "CorridorWandererPhysicallyDwellsLooksAndResumesPatrolAfterPause",
+            PLAY + "CorridorPatrolCanLeaveItsPhysicalMemoryAltarWaypoint"))]),
+    "cheats": ("F1/F2 real key presses, invulnerability/detection, infinite stamina/double sprint and normal physical sprint restoration", [
+        ("PlayMode", play_tests("CloudCheatTests.cs") + (
+            PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
+    "wraith-footsteps": ("Shared title/game Baeksugwi recording bank, actual start transition, quiet mixer/master mute and running/pause", [
+        ("PlayMode", (
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
+            PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
+            PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
+            PLAY + "MaskRunningContactsUseAnimalRecordingsReachTheMixerAndPause"))]),
+    "lady": ("Generated Lady real model and irregular pose, final-memory blackout/frozen actors, unconditional navigation, trap immunity, talisman/pause, checkpoint migration and quiet actual mixer", [
+        ("EditMode", CORE_FIXTURES + (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
+        ("PlayMode", play_tests("LadyEncounterTests.cs", "LadyFinaleLightingTests.cs", "LadyHeartbeatTests.cs", "LadyItemResponseTests.cs", "RitualTimeStopTests.cs") + (
+            PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies",
+            PLAY + "EntranceStartCameraUsesSelectedLightingWithoutIncreasingTheShadowBudget",
+            PLAY + "EntranceReflectionUsesActualCavernBoxAndPauseRetainsTheOwnedScope",
+            PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
+            PLAY + "CyclopseFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin",
+            PLAY + "UncatFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin"))]),
+    "entrance-lighting": ("Selected absolute entrance light gain, actual camera/aspect ratios, corridor-mouth floor and owned cavern reflections", [
+        ("EditMode", (CLOUD + "GraphicsLightingRulesTests",)),
+        ("PlayMode", play_tests("EntranceBrightnessTests.cs") + (
+            PLAY + "EntranceRitualActualCameraShowsWetFloorSealsCandlesAndGuardiansAcrossAspectRatios",
+            PLAY + "EntranceFloorStaysDarkWhenBackingAcrossTheCorridorMouth",
+            PLAY + "EntranceReflectionUsesActualCavernBoxAndPauseRetainsTheOwnedScope"))]),
+    "cyclopse-voice": ("Recorded breathing during patrol and pursuit, removed scream resources, quiet spatial mixer/pause/mute/time-stop and owned cleanup", [
+        ("PlayMode", play_tests("CreatureBreathingAudioTests.cs") + (
+            PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies",))]),
+    "corridor-feedback": ("Moving quarter-time item selection, recorded pursuit breathing, three-tick snappers, louder bells, actual animal contacts and brighter local entrance camera", [
+        ("PlayMode", play_tests("RitualItemWheelTests.cs", "CreatureBreathingAudioTests.cs", "CorridorSoundFeedbackTests.cs", "EntranceBrightnessTests.cs") + (
+            PLAY + "ExternalCatalogContainsImportedRecordedCuesAndIndependentOwnedCopies",
+            PLAY + "UncatActualWalkingBellsAccelerateAfterRecognitionAndStopDuringPause",
+            PLAY + "RealThrownFirecrackerUsesThreeRecordedTakesAndReleasesOnlyOwnedAudio",
+            PLAY + "EntranceRitualActualCameraShowsWetFloorSealsCandlesAndGuardiansAcrossAspectRatios"))]),
     "supplies-voices": ("Supported finite ritual shelf/drawer supplies, version-one save migration, louder walking/pursuit bells and quiet recorded Cyclopse breathing lifecycle/mix", [
         ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests", CLOUD + "CheckpointTrapCodecTests")),
         ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs", "RitualFurnitureSupplyTests.cs", "CreatureBreathingAudioTests.cs") + (
@@ -52,8 +98,18 @@ PROFILES = {
             PLAY + "CorridorDrawerRealERevealsFinitePickupAndRestoresConsumedStateWithNewAndLegacyCheckpoints",
             PLAY + "EmptyDrawersOpenThroughRealInputAndDenseHallCandlesKeepTheirSavedWaymarks",
             PLAY + "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce"))]),
-    "incense": ("Single stable nearest reachable memory, retarget on collection, offering fallback, continuous plume pause, physically supported pickups and optional stock save compatibility", [
-        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs"))]),
+    "lady-items": ("Actual blackout camera incense light/smoke, post-blackout ignition and burnout; real front/body snapper impacts, half-second pose/navigation hold, pause/talisman/slow time, cover and forecast regression", [
+        ("PlayMode", play_tests("LadyItemResponseTests.cs", "LadyFinaleLightingTests.cs") + (
+            PLAY + "IncenseKeepsOneMemoryUntilCollectedThenRetargetsOfferingAndFreezesOnPause",
+            PLAY + "LadyAlwaysPursuesThroughDoorsIgnoresTrapAndTalismanHoldsActualHeadAndAgent",
+            PLAY + "LadyOpensPhysicalDoorAndFindsPlayerAfterUnwitnessedCabinetEntry",
+            PLAY + "FirecrackerFirstPopIsSingleAndComfortSettingsApplyWhilePaused",
+            PLAY + "ForecastMatchesPhysicalFirstContactAtLowAndHighSimulatedFrameRates",
+            PLAY + "AuthoredCameraRendersWorldAimAndStopsAtPhysicalWall",
+            PLAY + "RealThrownFirecrackerUsesThreeRecordedTakesAndReleasesOnlyOwnedAudio"))]),
+    "incense": ("Single stable nearest reachable memory, offering fallback, blackout ember/smoke, continuous plume pause, supported pickups and stock save compatibility", [
+        ("PlayMode", play_tests("RitualWorldTests.cs", "RitualPickupSupportTests.cs") + (
+            PLAY + "LadyBlackoutKeepsOnlyPlayerIncenseLightAndVisibleGuidingSmokeUntilBurnout",))]),
     "ritual-pickups": ("Real support surfaces, rotated visual contact, above-surface focus targets and preserved pickup/save/presentation ownership", [
         ("PlayMode", play_tests("RitualPickupSupportTests.cs") + (
             PLAY + "RitualStocksFragmentsAndSuppliesRoundTripWithLegacyOptionalState",
@@ -97,8 +153,9 @@ PROFILES = {
             PLAY + "NaturalEyeEmissionTogglePreservesPausedChapterCheckpointPhysicsAndSourceAssetsAcrossReload"))]),
     "traffic-loading": ("Real loading footsteps/mixer/master mute, physical head-on passing and related corner/door routes", [
         ("PlayMode", (
-            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
+            PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
             PLAY + "CorridorLargeMonstersPassHeadOnThroughAnActualOpenDoor",
             PLAY + "CorridorTemporarilyOccupiedDoorMakesOnlyBlockedActorYieldAndResume",
             PLAY + "CorridorCreaturesNavigateARealCornerWithoutWalkingInPlaceAtMarkers",
@@ -126,6 +183,15 @@ PROFILES = {
         ("PlayMode", (
             PLAY + "SchoolMaskShattersClosedLeavesInAllMovementStatesAndRestoresSilentRubble",
             PLAY + "MaskRunnerShattersClosedLockedDoorsPassesOpenDoorsAndRestoresRubble"))]),
+    "wraith-behavior": ("Corridor post-pursuit/cabinet respite, paused and restored retreat, normal sight and low-velocity route-door contact; school and trapping regression", [
+        ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests")),
+        ("PlayMode", play_tests("CloudWraithRetreatTests.cs") + (
+            PLAY + "MaskRunnerShattersRouteDoorAfterContactAvoidanceStopsItsVelocity",
+            PLAY + "MaskRunnerShattersClosedLockedDoorsPassesOpenDoorsAndRestoresRubble",
+            PLAY + "MaskRunnerNearWhistleSightStillRespectsRealRoomCoverAndHiding",
+            PLAY + "SchoolMaskShattersClosedLeavesInAllMovementStatesAndRestoresSilentRubble",
+            PLAY + "MaskThirdOvertCabinetEntryCannotRerollOrEscape",
+            PLAY + "AllSixMonstersAreRestrainedFiveSecondsWithoutAttackingAndKeepCaptureFaces"))]),
     "wraith-hallway": ("Visual-only full-height wraith, real closed/locked/open door passage, persistent batched fragments and silent school/corridor restoration", [
         ("PlayMode", (
             PLAY + "HallwayWraithFillsDoorEnvelopeKeepsOriginalAgentAndFitsClonedVisualOnlyOnce",
@@ -139,8 +205,9 @@ PROFILES = {
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement"))]),
     "title": ("Title head/body/comfort behavior, real start transition and keyboard start", [
         ("PlayMode", play_tests("CloudBaeksugwiHeadTests.cs") + (
-            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
+            PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
             PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput"))]),
     "shelter": ("One/two-door room topology, actual player/pursuer passage and current/legacy checkpoint restoration", [
         ("EditMode", (EDIT + "CorridorLayoutTests",)),
@@ -156,7 +223,7 @@ PROFILES = {
             PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
             PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
             PLAY + "HauntedCorridorRealCameraShowsTimberPaperLanternsSealsAndTempleGateWithFourteenMetreSight",
-            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce",
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement") +
             play_tests("CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs"))]),
@@ -168,7 +235,7 @@ PROFILES = {
             PLAY + "CreatureStudioPursuitHasOffBeatHeadMotionAndRestoresCalmMotionAfterPause"))]),
     "ui": ("Title/loading, menu controls, results/history, retry/settings", [
         ("PlayMode", (
-            PLAY + "StartLoadingRealTitleButtonFadesMenusApproachesDuringPreparationAndRevealsCorridorBeforeInput",
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",
             PLAY + "GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit",
             PLAY + "KoreanMenusRenderAcrossSupportedAspectRatios",

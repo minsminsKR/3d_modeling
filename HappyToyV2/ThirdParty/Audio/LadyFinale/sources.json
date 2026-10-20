@@ -1,0 +1,26 @@
+[
+  {
+    "file": "monitor-original.mp3",
+    "creator": "Benboncan",
+    "license": "CC-BY-4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "page": "https://freesound.org/people/Benboncan/sounds/61792/",
+    "download": "https://cdn.freesound.org/previews/61/61792_634166-hq.mp3",
+    "source_file": "Steady Heart Monitor To Flatline.wav (public HQ MP3 preview)",
+    "source_file_sha256": "3801e9d16317d68a414bf3a2a758061fb188e169f12015877af7472da90d5f01",
+    "pack": "recorded-hospital-monitor",
+    "source_kind": "Author composition from a beep recorded in a hospital; 63832 adds author Izotope RX hiss removal."
+  },
+  {
+    "file": "monitor-unhissed.mp3",
+    "creator": "Benboncan",
+    "license": "CC-BY-4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "page": "https://freesound.org/people/Benboncan/sounds/63832/",
+    "download": "https://cdn.freesound.org/previews/63/63832_634166-hq.mp3",
+    "source_file": "Steady Heart Monitor To Flatline Unhissed.wav (public HQ MP3 preview)",
+    "source_file_sha256": "82ad172e6e3ac8275fc27605d03514f54085b197b7e3f35544665acbf2fd6d10",
+    "pack": "recorded-hospital-monitor",
+    "source_kind": "Author composition from a beep recorded in a hospital; 63832 adds author Izotope RX hiss removal."
+  }
+]

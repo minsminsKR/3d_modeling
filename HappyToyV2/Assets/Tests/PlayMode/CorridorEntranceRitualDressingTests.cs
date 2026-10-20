@@ -196,7 +196,12 @@ namespace HappyToy.V2.CloudTests
                     try
                     {
                         string image="entrance-ritual-"+size.x+"x"+size.y+"-ambient.png";
-                        CloudExperienceTests.Artifact(image,frame.EncodeToPNG());Assert.That(CloudExperienceTests.HasContent(frame),Is.True);
+                        var preview=frame.EncodeToPNG();
+                        // Brighter stone reveals more texture detail. Keep the
+                        // bounded log transport; measurements below still use
+                        // the original uncompressed render, never this preview.
+                        if(preview.Length>1500000){image=image.Replace(".png",".jpg");preview=frame.EncodeToJPG(95);}
+                        CloudExperienceTests.Artifact(image,preview);Assert.That(CloudExperienceTests.HasContent(frame),Is.True);
                         var view=new EntranceRitualView {image=image,width=size.x,height=size.y,
                             fieldOfView=camera.fieldOfView,feet=player.transform.position,cameraPosition=camera.transform.position,cameraRotation=camera.transform.rotation,
                             changedArtPixels=EntranceRendererContribution(camera,frame,details),changedFloorPixels=EntranceRendererContribution(camera,frame,floor),
