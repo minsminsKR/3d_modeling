@@ -277,8 +277,13 @@ namespace HappyToy.V2.CloudTests
             yield return FurnitureRenderView(shelf, "corridor-furniture-shelf-details.jpg", 1.6f, 1.2f, views);
             foreach (var placement in FurniturePlacements)
             {
-                var materials = placement.GetComponentsInChildren<MeshRenderer>(true).Where(renderer=>renderer.name!="Pickup silhouette").SelectMany(renderer => renderer.sharedMaterials).Distinct().ToArray();
-                Assert.That(materials.All(material => material && material.shader && material.shader.name == "Universal Render Pipeline/Lit"), Is.True, "Unresolved furnishing material");
+                // New ritual supplies rest inside these drawers/shelves but own
+                // their player-item shader independently of the furnishing PBR.
+                var materials = placement.GetComponentsInChildren<MeshRenderer>(true).Where(renderer=>renderer.name!="Pickup silhouette" &&
+                    !renderer.GetComponentsInParent(RequireType("Interactable")).Cast<Component>().Any(item =>
+                        Get<object>(item,"kind").ToString()=="IncenseSupply" || Get<object>(item,"kind").ToString()=="TalismanFragment"))
+                    .SelectMany(renderer => renderer.sharedMaterials).Distinct().ToArray();
+                Assert.That(materials.All(material => material && material.shader && material.shader.name == "Universal Render Pipeline/Lit"), Is.True, "Unresolved furnishing material: " + string.Join(", ", materials.Select(material => material ? material.name + "=" + (material.shader ? material.shader.name : "missing shader") : "missing material")));
                 Assert.That(materials.Any(material => material.GetTexture("_BaseMap") && material.GetTexture("_BumpMap") &&
                     material.GetTexture("_OcclusionMap") && material.GetTexture("_MetallicGlossMap")), Is.True, "Furnishing lacks its imported PBR surface maps");
             }

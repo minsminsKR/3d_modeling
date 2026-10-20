@@ -16,6 +16,11 @@ namespace HappyToy.V2.Editor
         public const string Folder = "Assets/Resources/EnemyStudio";
         public const int MaximumPrimaryVertices = 80000;
         public const int MaximumPrimaryTriangles = 100000;
+        public static SkinnedMeshRenderer PrimarySkin(GameObject root)
+        {
+            var rig=root.GetComponent<EnemyStudioRig>();
+            return rig?rig.primarySkins.Single():root.GetComponentsInChildren<SkinnedMeshRenderer>().Single();
+        }
         const string BindingPrefix = "Rigged asset";
         static readonly string[] Keys = { "Uncat", "Cyclopse", "Baby" };
 
@@ -92,14 +97,20 @@ namespace HappyToy.V2.Editor
             var importedClips = AssetDatabase.LoadAllAssetsAtPath(modelPath).OfType<AnimationClip>()
                 .Where(clip => !clip.name.StartsWith("__preview__", StringComparison.Ordinal)).ToArray();
             var aliases = key == "Baby" ? new[] { "patrol", "chase", "cry" } : new[] { "patrol", "chase" };
-            var clips = aliases.Select(alias => CopyClip(path, alias, FindClip(importedClips, alias))).ToArray();
+            var sources=aliases.Select(alias=>FindClip(importedClips,alias)).ToArray();
+            var fixedScales=StaticScaleCurveCleanup.InvariantBindings(sources);
+            var clips = aliases.Select((alias,index) => CopyClip(path, alias, sources[index],fixedScales)).ToArray();
             var root = new GameObject(key);
             try
             {
                 var asset = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(modelPath), root.transform);
                 asset.name = BindingPrefix;
+                sources[0].SampleAnimation(asset,0);
                 foreach (var prior in asset.GetComponentsInChildren<Animation>(true)) UnityEngine.Object.DestroyImmediate(prior);
                 foreach (var prior in asset.GetComponentsInChildren<Animator>(true)) UnityEngine.Object.DestroyImmediate(prior);
+                // FBX LOD names can create an automatic nested group. The
+                // fitted runtime root alone owns renderer LOD selection.
+                foreach(var prior in asset.GetComponentsInChildren<LODGroup>(true))UnityEngine.Object.DestroyImmediate(prior);
                 if (asset.GetComponentsInChildren<Collider>(true).Length > 0)
                     throw new InvalidOperationException("Studio FBX must contain visual geometry only: " + key);
                 var skins = asset.GetComponentsInChildren<SkinnedMeshRenderer>(true);
@@ -188,7 +199,7 @@ namespace HappyToy.V2.Editor
             return matches[0];
         }
 
-        static AnimationClip CopyClip(string path, string alias, AnimationClip source)
+        static AnimationClip CopyClip(string path, string alias, AnimationClip source, HashSet<string> fixedScales)
         {
             string clipPath = path + "/" + alias + ".anim";
             var result = AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
@@ -196,6 +207,7 @@ namespace HappyToy.V2.Editor
             result.name = alias; result.legacy = true; result.frameRate = source.frameRate; result.wrapMode = WrapMode.Loop;
             foreach (var binding in AnimationUtility.GetCurveBindings(source))
             {
+                if(fixedScales.Contains(StaticScaleCurveCleanup.Key(binding)))continue;
                 var next = binding; next.path = BindingPrefix + (binding.path.Length == 0 ? "" : "/" + binding.path);
                 AnimationUtility.SetEditorCurve(result, next, AnimationUtility.GetEditorCurve(source, binding));
             }
@@ -225,7 +237,7 @@ namespace HappyToy.V2.Editor
             if (!skins.Any(skin => LodLevel(skin) > 0)) return;
             var levels = skins.GroupBy(LodLevel).OrderBy(group => group.Key).ToArray();
             var lodGroup = root.AddComponent<LODGroup>();
-            lodGroup.SetLODs(levels.Select(level => new LOD(level.Key == 0 ? .28f : level.Key == 1 ? .10f : .015f, level.Cast<Renderer>().ToArray())).ToArray());
+            lodGroup.SetLODs(levels.Select((level,index) => new LOD(index==levels.Length-1 ? .015f : level.Key==0 ? .28f : .10f, level.Cast<Renderer>().ToArray())).ToArray());
             lodGroup.fadeMode = LODFadeMode.None; lodGroup.RecalculateBounds();
         }
 

@@ -40,7 +40,9 @@ namespace HappyToy.V2.CloudTests
                     var animation=Get<Animation>(motion,"animationPlayer");animation.Play("patrol");
                     animation["patrol"].speed=0;animation["patrol"].time=animation["patrol"].length*.25f;animation.Sample();
                     yield return null;yield return null;
-                    var skins=model.GetComponentsInChildren<SkinnedMeshRenderer>().Where(skin=>skin.enabled).ToArray();
+                    var studio=model.GetComponent(RequireType("EnemyStudioRig"));
+                    var skins=studio?Get<SkinnedMeshRenderer[]>(studio,"primarySkins"):
+                        model.GetComponentsInChildren<SkinnedMeshRenderer>().Where(skin=>skin.enabled).ToArray();
                     Assert.That(skins.Length,Is.EqualTo(1),"Coordinate diagnostic requires the actual single original skin");
                     var skin=skins[0];int layer=skin.gameObject.layer;var materials=skin.sharedMaterials;
                     var snapshot=new GameObject("Skin bake coordinate comparison snapshot");snapshot.layer=31;

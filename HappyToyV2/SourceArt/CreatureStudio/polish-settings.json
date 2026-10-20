@@ -1,0 +1,10 @@
+{
+  "blender": "4.0.2",
+  "creatures": ["Baby", "Uncat", "Cyclopse"],
+  "lodRatios": [0.55],
+  "minimumDistantTriangleReduction": 0.15,
+  "maximumDistantSurfaceErrorMetres": 0.025,
+  "maximumDistantSurfaceP99Metres": 0.012,
+  "gameMetallic": 0.0,
+  "policy": "Retain exact near geometry, UVs, weights, original GLB/PBR and all action keys. Derive distant game copies only; keep original atlas and rig. Preserve original eye masks. Chase/cabinet expressions select the unchanged near mesh. Other already-budgeted legacy models and protected Baeksugwi surfaces keep their existing geometry."
+}

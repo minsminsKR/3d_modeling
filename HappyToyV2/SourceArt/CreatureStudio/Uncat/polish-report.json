@@ -1,0 +1,56 @@
+{
+  "key": "Uncat",
+  "settings": {
+    "blender": "4.0.2",
+    "creatures": [
+      "Baby",
+      "Uncat",
+      "Cyclopse"
+    ],
+    "lodRatios": [
+      0.55
+    ],
+    "minimumDistantTriangleReduction": 0.15,
+    "maximumDistantSurfaceErrorMetres": 0.025,
+    "maximumDistantSurfaceP99Metres": 0.012,
+    "gameMetallic": 0.0,
+    "policy": "Retain exact near geometry, UVs, weights, original GLB/PBR and all action keys. Derive distant game copies only; keep original atlas and rig. Preserve original eye masks. Chase/cabinet expressions select the unchanged near mesh. Other already-budgeted legacy models and protected Baeksugwi surfaces keep their existing geometry."
+  },
+  "lods": [],
+  "nearSkinSha256": "d4a46cc4b80b8ea1d0ff5ee46e2fc2998d00fb5a44957f3e3f5bb7b776bfe0e0",
+  "actionSha256": "f9939764e2b907ac07120322dfe4890c269c9daba7577f55b36a073a48fc18b7",
+  "originalFiles": {
+    "source-original.glb": "58319e2d3cfe9ef1bfb23a283e010db9aa9c71deeac0954c12646546a1f651f8",
+    "source-rigged.glb": "83f508e5c797f33b62c2ba1f7f8a4a529d6fc7be8cf1c91634f595d4a3d03549"
+  },
+  "protectedMaps": {
+    "albedo.png": "e70ae3cec1671109a873c6dadd037be6b0478acdb9a701888d19a66381f06686",
+    "eyes-emission.png": "8624fe3c0ac19d22d1c887a7c4736878186c7e696e12eea67149b49d1d70dfc7",
+    "material1-albedo.png": "e70ae3cec1671109a873c6dadd037be6b0478acdb9a701888d19a66381f06686",
+    "normal.png": "a81eb9ee844eb7f4500e14209900947c6258f08e2f5dec3db7bca5498fd79b55"
+  },
+  "gameMaps": [
+    {
+      "file": "material1-metallic-smoothness.png",
+      "previousMaximum": 0.0,
+      "metallic": 0,
+      "sha256": "92974cbc7a5c6acd3af909968a683685ff24aa2b1ffc2a8cd81ed992068a6037"
+    },
+    {
+      "file": "metallic-smoothness.png",
+      "previousMaximum": 0.0,
+      "metallic": 0,
+      "sha256": "92974cbc7a5c6acd3af909968a683685ff24aa2b1ffc2a8cd81ed992068a6037"
+    },
+    {
+      "file": "game-orm.png",
+      "previousMaximum": 0.0,
+      "metallic": 0,
+      "sha256": "8a979169f9cd76a47435e014a1739e7629645e4824947d70468897de518665e7"
+    }
+  ],
+  "fbxSha256": "c4ce58fc00b3892073844ec812ba36c08128a61e46cb38084ec4326000b909dd",
+  "blendSha256": "79b2a16d234287f22b9ac592de04509fa7ff2906a247d3bdf8f4025e01b86002",
+  "scope": "Derived distant copies and game metallic only; original near skin and actions unchanged",
+  "distanceProbes": "Every retained distant rest vertex in world metres; not a bidirectional triangle-interior certificate"
+}

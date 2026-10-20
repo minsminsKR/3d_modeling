@@ -66,6 +66,14 @@ PROFILES = {
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
             PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
             PLAY + "MaskRunningContactsUseAnimalRecordingsReachTheMixerAndPause"))]),
+    "model-polish": ("Core plus exact near-skin correspondence, native FBX pose equivalence and distant model budgets", [
+        ("EditMode", (CLOUD + "CreatureGamePolishTests", CLOUD + "LadyAuthoredAssetTests")),
+        ("PlayMode", (
+            PLAY + "StudioDistantSkinsKeepTheOriginalEyeMaskAndFollowTheSameEmissionToggle",
+            PLAY + "ModernThreeEnemiesUseTheirOwnClipsDeformAndGroundAtEverySampledPhase",
+            PLAY + "CreatureStudioPursuitHasOffBeatHeadMotionAndRestoresCalmMotionAfterPause",
+            PLAY + "NaturalEyeLifecycleRestoresCallerMaterialAndIndexedPropertiesAndHonoursLaterMaterialOwner",
+            PLAY + "ActualRenderedSkinChoosesBakeCoordinateModeAtOriginalTransformScale"))]),
     "lady-polish": ("Core plus real Lady FBX-to-clip pose equivalence, original rig and reduced imported LOD budgets", [
         ("EditMode", (CLOUD + "LadyAuthoredAssetTests",))]),
     "lady": ("Generated Lady real model and irregular pose, final-memory blackout/frozen actors, unconditional navigation, trap immunity, talisman/pause, checkpoint migration and quiet actual mixer", [
@@ -292,7 +300,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         if editor_path:
             command += ["--editor-path", editor_path]
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile == "lady-polish":
+        if profile in ("lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]

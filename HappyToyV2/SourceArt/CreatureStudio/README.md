@@ -92,6 +92,54 @@ apply last; a two-stride chase duration covers two complete gait cycles. The der
 Do not use `export_pbr.py` to overwrite a reconstructed game atlas with source UV
 textures. That extractor applies only when the original source UVs are retained.
 
+## Game asset polish, 2026-10-21
+
+`polish-settings.json` and `tools/polish_game_assets.py` finish the saved editable
+models without regenerating their base geometry or animation. Original GLB/PBR,
+near positions/UVs/weights, colour/normal/eye maps and all authored action keys
+remain exact. Per-model `polish-report.json` records hashes and source distances.
+Blender's game-only materials and Unity's metallic maps use zero metallic for
+these organic/plastic creatures; the original generated PBR remains separate.
+
+The tool derives distant copies with the existing atlas/rig, pinning rigid head,
+hand and foot surfaces. It increases the retained geometry until maximum source
+distance at retained rest vertices is below 25mm and P99 below 12mm, and keeps a LOD only if it reduces
+triangles by at least 15%. Baby has 29,985 / 16,491 triangles; Cyclopse has
+40,000 / 31,000. Uncat retains its single reviewed mesh: safe reduction was too
+small to justify another skin. Unity still binds support, eye anchors and chase
+expression deltas to the exact primary mesh. Distant skins receive the same
+independently toggled eye emission. Chase/cabinet expression transitions hold the
+unchanged near LOD; ordinary LOD selection resumes when the expression clears.
+
+`StaticScaleCurveCleanup` drops only scale bindings invariant across every
+relevant action. The complete native first pose supplies the prefab baseline.
+Rotations, joint snaps, motion clocks and state-specific scale curves remain.
+Baeksugwi uses the same scale cleanup while retaining its protected geometry,
+original title source, 63-bone rig, eighteen arms and head-writhe action.
+
+From the repository root, with documented Blender 4.0.2:
+
+```powershell
+blender --background --factory-startup --threads 2 --python-exit-code 1 --python HappyToyV2/SourceArt/CreatureStudio/tools/polish_game_assets.py -- --creature Baby
+# Repeat for Uncat and Cyclopse, then run the named importers in Unity.
+unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.Editor.CreatureGamePolishImport.Apply
+python HappyToyV2/Tools/quality/run_feature_tests.py --profile model-polish --no-desktop-interaction
+python HappyToyV2/Tools/quality/run_feature_tests.py --profile full --no-desktop-interaction --graphics-api d3d11
+```
+
+Rerun this finish after `finish_creature.py` changes an editable model/action.
+`CreatureGamePolishImport.Apply` runs studio import, the dependent eye/expression
+Ensure methods and the existing Baeksugwi importers. BuildWindows repeats its
+dependency checks. The pinned
+near-mesh fingerprint checks every imported position, UV, triangle and four-weight
+binding against the pre-polish Unity skin. Full pose tests compare every source
+FBX frame, and release checks retain the full EditMode/PlayMode suites.
+
+The read-only `Tools/quality/model_inventory_unity.csx` audits all imported model
+sources and Resources prefabs through Unity MCP. Other already-budgeted legacy
+monsters, props and architecture retain their reviewed source geometry. Review
+renders and raw inventories belong under ignored Builds, not source commits.
+
 ## Validation and ownership
 
 Run `verify_source_binding.py` for original source correspondence and seam-safe

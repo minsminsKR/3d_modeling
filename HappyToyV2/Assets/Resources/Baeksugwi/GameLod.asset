@@ -79,7 +79,7 @@ MonoBehaviour:
     - Arm3R_Elbow
     - Arm3R_Wrist
     localBounds:
-      m_Center: {x: 0.01519388, y: -0.008754492, z: 0.07653627}
-      m_Extent: {x: 0.42819133, y: 0.58163667, z: 0.30673784}
+      m_Center: {x: 0.015193909, y: -0.008754432, z: 0.07653627}
+      m_Extent: {x: 0.42819133, y: 0.5816367, z: 0.30673784}
     screenHeight: 0.008
   sourceHash: 2206248fb87f9bb03d51a5081674eac41731b01a2109361a7ffcc82cdb1fde43

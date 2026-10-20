@@ -23,7 +23,7 @@ namespace HappyToy.V2.Editor
             var root=UnityEngine.Object.Instantiate(Resources.Load<GameObject>("EnemyStudio/Uncat/UncatRuntime"));
             Resources.Load<AnimationClip>("EnemyStudio/Uncat/patrol").SampleAnimation(root,0);
             foreach(var behaviour in root.GetComponentsInChildren<Behaviour>())behaviour.enabled=false;
-            var skin=root.GetComponentsInChildren<SkinnedMeshRenderer>().Single();
+            var skin=EnemyStudioGameImport.PrimarySkin(root);
             var brain=root.AddComponent<StalkerBrain>();brain.enabled=false;
             var face=root.AddComponent<EnemyChaseFace>();face.Configure(skin,brain,"ChaseFaces/Uncat/Expression");
             var flags=BindingFlags.Instance|BindingFlags.NonPublic;

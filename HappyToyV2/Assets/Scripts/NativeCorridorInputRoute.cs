@@ -9,8 +9,8 @@ using UnityEngine.InputSystem.LowLevel;
 
 namespace HappyToy.V2
 {
-    // Typed native adaptation of the proven known-map, nearest-goal corridor
-    // input strategy. No reflection, NUnit, direct interactions or AI changes.
+    // Shared opt-in known-map input strategy for native audits and PlayMode
+    // survival tests. No reflection, NUnit, direct interactions or AI changes.
     public sealed class NativeCorridorInputRoute : IDisposable
     {
         readonly GameSession session; readonly PlayerMotor player; readonly GameShell shell;
@@ -44,6 +44,7 @@ namespace HappyToy.V2
         public int BatteriesCollected => batteriesCollected;
         public int CandlesIgnited => candlesIgnited;
         float alertUntil, lastThrow = -100, lastDodge = -100, lastHide = -100, lastGameTime;
+        MonoBehaviour lastDodgedActor;
         bool expectEscape, passed, disposed, seekingHiding;
         string stage = "startup";
         public NativeCorridorInputRoute(GameSession session, PlayerMotor player, GameShell shell, Action<Key[]> keys, string evidenceDirectory,int performancePatrolSeconds=0,float movementMultiplier=1)
@@ -117,6 +118,14 @@ namespace HappyToy.V2
                 Require((session.RecordsRecovered) == (i + 1), "Native corridor invariant failed: Is.EqualTo(i + 1)"); Mark("recovered " + selected.name + " through E");
                 if (i < 4) yield return TopUpNearbySupply(14);
                 if(i==3&&performancePatrolSeconds>0)yield return Patrol();
+            }
+            // The audible/visible finale replaces the old stealth phase.
+            // Keep actual input, original stamina and Lady's real pursuit intact.
+            if (session.Corridor.Lady && session.Corridor.Lady.Active)
+            {
+                if (player.Crouching) yield return Pulse(Key.C);
+                alertUntil = float.PositiveInfinity;
+                Mark("responded to finale blackout by running directly to the altar");
             }
             var exit = session.Corridor.Layout.Version>=3 ? session.Corridor.AltarChamber.Offering : Items().Single(x => x.name == "Sealed entrance");
             stage = session.Corridor.Layout.Version>=3 ? "return memories to distant classroom altar" : "return to entrance";
@@ -248,6 +257,37 @@ namespace HappyToy.V2
             InputSystem.QueueDeltaStateEvent(mouse.delta, new Vector2(Mathf.Clamp(Mathf.DeltaAngle(player.transform.eulerAngles.y, yaw), -40, 40),
                 -Mathf.Clamp(Mathf.DeltaAngle(eyes.transform.localEulerAngles.x, pitch), -30, 30)) / sensitivity);
         }
+        Key[] EvasionKeys(Vector3 direction)
+        {
+            // Move immediately with actual backward/strafe keys while the
+            // mouse turns. Waiting to face forward can consume a short windup.
+            direction.y=0;direction.Normalize();
+            float forward=Vector3.Dot(player.transform.forward,direction),right=Vector3.Dot(player.transform.right,direction);
+            var held=new List<Key>();
+            if(forward>.3f)held.Add(Key.W);else if(forward<-.3f)held.Add(Key.S);
+            if(right>.3f)held.Add(Key.D);else if(right<-.3f)held.Add(Key.A);
+            if(!player.Crouching&&!player.SprintExhausted)held.Add(Key.LeftShift);
+            return held.ToArray();
+        }
+        bool EvasionPathClear(NavMeshPath route)
+        {
+            var previous=player.transform.position;
+            float half=Mathf.Max(0,capsule.height*.5f-capsule.radius);
+            foreach(var corner in route.corners.Skip(1))
+            {
+                var delta=corner-previous;delta.y=0;
+                if(delta.sqrMagnitude>.0001f)
+                {
+                    var centre=previous+capsule.center+Vector3.up*.06f;
+                    foreach(var hit in Physics.CapsuleCastAll(centre-Vector3.up*half,centre+Vector3.up*half,
+                        Mathf.Max(.05f,capsule.radius-.015f),delta.normalized,delta.magnitude,
+                        Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore))
+                        if(!hit.collider.transform.IsChildOf(player.transform))return false;
+                }
+                previous=corner;previous.y=player.transform.position.y;
+            }
+            return true;
+        }
         bool FindApproach(Interactable item, out Vector3 at, out float length, Vector3? observer = null)
         {
             at = Vector3.zero; length = float.PositiveInfinity;
@@ -283,15 +323,20 @@ namespace HappyToy.V2
         }
         MonoBehaviour VisibleThreat()
         {
-            MonoBehaviour closest = null; float nearest = 8;
+            MonoBehaviour closest = null; float nearest = 8, urgency = -1;
             foreach (var monster in monsters.Cast<MonoBehaviour>().Concat(new MonoBehaviour[]{session.Corridor.Mask}))
             {
-                if (!monster || !monster.gameObject.activeSelf) continue;
+                if (!monster || !monster.isActiveAndEnabled) continue;
                 var delta = monster.transform.position + Vector3.up - eyes.transform.position;
-                if (delta.magnitude >= nearest || !RecognitionCue && Vector3.Angle(eyes.transform.forward, delta) > 80) continue;
+                bool heard=session.Corridor.Lighting.HeardMovement(monster);
+                if (delta.magnitude >= 8 || !RecognitionCue && !heard && Vector3.Angle(eyes.transform.forward, delta) > 80) continue;
                 if (Physics.Linecast(eyes.transform.position, monster.transform.position + Vector3.up, out var hit,
                     Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore) && !hit.collider.transform.IsChildOf(monster.transform)) continue;
-                closest = monster; nearest = delta.magnitude;
+                // A second actor's imminent swing takes priority over a closer
+                // actor that is merely recovering from the previous dodge.
+                float danger=AttackActive(monster)&&AttackRecovery(monster)<=0?1+AttackWindup(monster):0;
+                if(danger<urgency || danger==urgency&&delta.magnitude>=nearest)continue;
+                closest = monster; nearest = delta.magnitude;urgency=danger;
             }
             return closest;
         }
@@ -313,12 +358,13 @@ namespace HappyToy.V2
         }
         MonoBehaviour StationaryThreat()
         {
-            // The same actual line of sight / recognition cue as Walk, including
-            // a pursuer behind us when its real sting tells us to look around.
-            // No unseen actor position or future warning is consulted.
+            // Actual sight, recognition or admitted audible movement can warn
+            // about a pursuer behind us. A real windup must not be ignored just
+            // because the creature's navigation pivot is outside a fixed radius.
             var guard=VisibleThreat();
-            return guard && Vector3.Distance(player.transform.position,guard.transform.position)<3.2f &&
-                (AttackActive(guard) || RecognitionCue) && GameTime-lastDodge>.9f ? guard : null;
+            return guard && (AttackActive(guard) || RecognitionCue &&
+                Vector3.Distance(player.transform.position,guard.transform.position)<3.2f) &&
+                (guard!=lastDodgedActor||GameTime-lastDodge>.9f) ? guard : null;
         }
         IEnumerator Dodge(MonoBehaviour monster, Vector3 destination, bool continuePast = true)
         {
@@ -342,29 +388,34 @@ namespace HappyToy.V2
             var away = player.transform.position - observedGuard; away.y = 0;
             var tangent = Vector3.Cross(Vector3.up, away.normalized);
             var selected = new NavMeshPath(); bool found = false; float best = 0;
-            foreach (var direction in new[] { tangent, -tangent, away.normalized })
+            foreach(float distance in new[]{2.2f,1.4f,.85f})
+            foreach (var direction in new[] { tangent, -tangent, away.normalized,
+                (away.normalized+tangent).normalized,(away.normalized-tangent).normalized })
             {
-                var at = player.transform.position + direction * 2.2f;
+                var at = player.transform.position + direction * distance;
                 if (!NavMesh.SamplePosition(at, out var sample, .4f, NavMesh.AllAreas) || Mathf.Abs(sample.position.y) > .15f) continue;
                 var path = new NavMeshPath();
                 if (!NavMesh.CalculatePath(player.transform.position, sample.position, NavMesh.AllAreas, path) || path.status != NavMeshPathStatus.PathComplete) continue;
                 float length = 0; for (int n = 1; n < path.corners.Length; n++) length += Vector3.Distance(path.corners[n - 1], path.corners[n]);
                 float clearance = Vector3.Distance(sample.position, observedGuard);
-                if (length > 3 || clearance < best) continue;
+                if (length > 3 || clearance < best || !EvasionPathClear(path)) continue;
                 selected = path; best = clearance; found = true;
             }
             if (!found) yield break;
-            alertUntil = GameTime + 6; lastDodge = GameTime;
+            alertUntil = GameTime + 6; lastDodge = GameTime;lastDodgedActor=monster;
+            var retreatStart=player.transform.position;
             foreach (var corner in selected.corners.Skip(1))
             {
                 float deadline = Time.realtimeSinceStartup + 2;
                 while (Vector3.Distance(player.transform.position, corner) > .25f && Time.realtimeSinceStartup < deadline)
                 {
                     Check(); var delta = corner - player.transform.position; delta.y = 0; Steer(eyes.transform.position + delta, true);
-                    keys(Vector3.Angle(player.transform.forward, delta) > 12 ? Array.Empty<Key>() : new[] { Key.W, Key.LeftShift }); yield return null;
+                    keys(EvasionKeys(delta)); yield return null;
                 }
             }
-            keys(Array.Empty<Key>()); dodges++; Mark(observedStrike ? "evaded an observed committed swing through real movement" : "retreated from observed guard through real movement");
+            keys(Array.Empty<Key>());
+            if(Vector3.Distance(player.transform.position,retreatStart)<.4f)yield break;
+            dodges++; Mark(observedStrike ? "evaded an observed committed swing through real movement" : "retreated from observed guard through real movement");
             if (!observedStrike || !continuePast) yield break;
             // Keep the observation's finite warning time; don't query unseen
             // movement/attack state after turning toward the escape route.
@@ -379,12 +430,18 @@ namespace HappyToy.V2
                 if (NavMesh.CalculatePath(player.transform.position, landing.position, NavMesh.AllAreas, crossing) && crossing.status == NavMeshPathStatus.PathComplete)
                 {
                     float length = 0; for (int n = 1; n < crossing.corners.Length; n++) length += Vector3.Distance(crossing.corners[n - 1], crossing.corners[n]);
-                    if (length < 7) foreach (var corner in crossing.corners.Skip(1))
+                    if (length < 7 && EvasionPathClear(crossing)) foreach (var corner in crossing.corners.Skip(1))
                     {
                         float deadline = Time.realtimeSinceStartup + 2;
                         while (Vector3.Distance(player.transform.position, corner) > .25f && Time.realtimeSinceStartup < deadline)
-                        { Check(); var delta = corner - player.transform.position; delta.y = 0; Steer(eyes.transform.position + delta, true);
-                            keys(Vector3.Angle(player.transform.forward, delta) > 12 ? Array.Empty<Key>() : new[] { Key.W, Key.LeftShift }); yield return null; }
+                        {
+                            Check();
+                            var nextStrike=StationaryThreat();
+                            if(nextStrike&&AttackRecovery(nextStrike)<=0)
+                            {yield return Dodge(nextStrike,destination,false);yield break;}
+                            var delta=corner-player.transform.position;delta.y=0;Steer(eyes.transform.position+delta,true);
+                            keys(EvasionKeys(delta));yield return null;
+                        }
                     }
                 }
             }
@@ -418,7 +475,7 @@ namespace HappyToy.V2
                         { yield return Decoy(guard); progressTime = Time.realtimeSinceStartup; continue; }
                         if ((separation < 4.5f || RecognitionCue) && player.Crouching)
                         { yield return Pulse(Key.C); alertUntil = GameTime + 6; progressTime = Time.realtimeSinceStartup; }
-                        if (separation < 3.2f && Vector3.Dot(delta.normalized, (guard.transform.position - player.transform.position).normalized) > .15f && GameTime - lastDodge > .9f)
+                        if ((separation < 3.2f || AttackActive(guard)) && Vector3.Dot(delta.normalized, (guard.transform.position - player.transform.position).normalized) > .15f && (guard!=lastDodgedActor||GameTime-lastDodge>.9f))
                         {
                             int before = dodges; yield return Dodge(guard, corner); progressTime = Time.realtimeSinceStartup;
                             // Evasion can carry us past the old corner. Re-plan
@@ -427,7 +484,7 @@ namespace HappyToy.V2
                             continue;
                         }
                     }
-                    if (!player.Crouching && GameTime > alertUntil && !RecognitionCue)
+                    if (!seekingHiding && !player.Crouching && GameTime > alertUntil && !RecognitionCue)
                         yield return Pulse(Key.C);
                     var blockingDoor = DoorOnRoute(delta, distance);
                     if (blockingDoor)
@@ -511,7 +568,9 @@ namespace HappyToy.V2
             float beforeDrain = lamp.Charge, waitUntil = GameTime + .3f;
             while (GameTime < waitUntil) { keys(Array.Empty<Key>()); yield return null; Check(); }
             Require(lamp.Charge < beforeDrain, "The lit flashlight did not consume real gameplay charge");
-            Interactable battery = null; Vector3 batteryAt = Vector3.zero; float best = 24;
+            // Current maps start in the cavern before cell zero. Select the
+            // nearest reachable supply by actual path, including that approach.
+            Interactable battery = null; Vector3 batteryAt = Vector3.zero; float best = float.PositiveInfinity;
             foreach (var item in Items().Where(x => x.gameObject.activeSelf && x.kind == Interactable.Kind.FlashlightBattery))
                 if (FindApproach(item, out var at, out var length) && length < best) { battery = item; batteryAt = at; best = length; }
             Require(battery, "No finite early battery has a physical input route");
@@ -520,7 +579,7 @@ namespace HappyToy.V2
             Require(!battery.gameObject.activeSelf && lamp.PacksCollected == packs + 1 && lamp.Charge > beforeRefill,
                 "Actual E did not consume one finite battery and refill the lamp");
             batteriesCollected++; Mark("picked up finite battery through E after actual lit drain");
-            Interactable marker = null; Vector3 markerAt = Vector3.zero; best = 24;
+            Interactable marker = null; Vector3 markerAt = Vector3.zero; best = float.PositiveInfinity;
             foreach (var item in Items().Where(x => x.gameObject.activeSelf && x.kind == Interactable.Kind.Candle))
                 if (FindApproach(item, out var at, out var length) && length < best) { marker = item; markerAt = at; best = length; }
             Require(marker, "No nearby candle has a physical input route");
@@ -552,10 +611,17 @@ namespace HappyToy.V2
 
         IEnumerator Interact(Interactable item)
         {
-            keys(Array.Empty<Key>()); float deadline = Time.realtimeSinceStartup + 4;
+            keys(Array.Empty<Key>()); float deadline = Time.realtimeSinceStartup + 4, retryAt = Time.realtimeSinceStartup + .8f;
+            bool reapproached = false;
             while (player.Focus != item)
             {
                 Check(); Require((Time.realtimeSinceStartup) < (deadline), "Could not focus " + item.name);
+                if (!reapproached && Time.realtimeSinceStartup > retryAt && item.kind!=Interactable.Kind.Door &&
+                    FindApproach(item,out var retry,out _))
+                {
+                    reapproached=true;yield return Walk(retry);keys(Array.Empty<Key>());yield return null;Check();
+                    deadline=Time.realtimeSinceStartup+4;continue;
+                }
                 var guard=StationaryThreat();
                 if(guard)
                 {

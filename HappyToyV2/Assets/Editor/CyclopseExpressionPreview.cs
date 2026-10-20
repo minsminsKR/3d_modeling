@@ -36,7 +36,7 @@ namespace HappyToy.V2.Editor
             var source = UnityEngine.Object.Instantiate(Resources.Load<GameObject>("EnemyStudio/Cyclopse/CyclopseRuntime"));
             Resources.Load<AnimationClip>("EnemyStudio/Cyclopse/patrol").SampleAnimation(source, 0);
             foreach (var behaviour in source.GetComponentsInChildren<Behaviour>()) behaviour.enabled = false;
-            var skin = source.GetComponentsInChildren<SkinnedMeshRenderer>().Single();
+            var skin = EnemyStudioGameImport.PrimarySkin(source);
             var posed = EnemyStudioRig.PosedVertices(skin);
             var mesh = new Mesh { indexFormat = skin.sharedMesh.indexFormat, name = "Cyclopse expression proposal posed surface" };
             mesh.vertices = posed; mesh.uv = skin.sharedMesh.uv;

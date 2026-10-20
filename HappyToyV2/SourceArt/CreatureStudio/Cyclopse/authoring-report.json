@@ -311,7 +311,7 @@
   ],
   "fbx": {
     "file": "Assets/Resources/EnemyStudio/Cyclopse/Cyclopse.fbx",
-    "sha256": "f878364482c798eac4c823887b2065ca49a6c97d82fb6ae418c0d447a3b98b0f"
+    "sha256": "5563d6fd113f4b29fc8db81ee0ea7a61ab7ae92bd971bb4e1fdd2ecdfcfda174"
   },
   "optionalGameGLB": {
     "file": "Cyclopse/previews/Cyclopse_Game.glb",
@@ -333,5 +333,6 @@
     "topologyValidatedBeforeExport": true,
     "derivedGLBActualGeometryValidated": true
   },
-  "status": "EXPORTED_VALIDATED"
+  "status": "EXPORTED_VALIDATED",
+  "gamePolish": "polish-report.json"
 }

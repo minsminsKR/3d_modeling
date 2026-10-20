@@ -50,7 +50,9 @@ namespace HappyToy.V2.CloudTests
             // Isolate timing from combat without changing actor speed or memory.
             foreach(var actor in actors) ((Behaviour)actor).enabled=false;
             ((Behaviour)mask).enabled=false;
-            for(int memories=0;memories<=5;memories++)
+            // Check all four release stages before the fifth memory permanently
+            // freezes these actors. Lady's fresh-scene restore is tested separately.
+            for(int memories=0;memories<=4;memories++)
             {
                 if(memories>0) Assert.That((bool)Call(run,"Collect","memory-"+(memories-1)),Is.True);
                 yield return null;

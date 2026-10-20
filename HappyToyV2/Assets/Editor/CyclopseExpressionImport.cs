@@ -43,7 +43,7 @@ namespace HappyToy.V2.Editor
             try
             {
                 Resources.Load<AnimationClip>("EnemyStudio/Cyclopse/patrol").SampleAnimation(root, 0);
-                var skin = root.GetComponentsInChildren<SkinnedMeshRenderer>().Single();
+                var skin = EnemyStudioGameImport.PrimarySkin(root);
                 var posed = EnemyStudioRig.PosedVertices(skin); var mesh = skin.sharedMesh;
                 var profile = JsonUtility.FromJson<CyclopseExpressionPreview.Profile>(File.ReadAllText("SourceArt/CyclopseExpression/grin-profile.json"));
                 var data = AssetDatabase.LoadAssetAtPath<CyclopseExpressionData>(Folder + "/Expression.asset");

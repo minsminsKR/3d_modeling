@@ -131,7 +131,7 @@ namespace HappyToy.V2.CloudTests
             Call(supplies[4], "Use", player); Assert.That(supplies[4].gameObject.activeSelf, Is.True, "Full stock consumed a pickup");
             Call(session, "TryEscape"); Assert.That(Get<bool>(session, "Finished"), Is.False);
             // Any-order progression fixture; this does not claim a full input survival route.
-            foreach (var item in memories.Reverse()) Call(item, "Use", player);
+            foreach (var item in memories.Reverse()) { Call(item, "Use", player); yield return null; }
             Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(5));
             yield return null;
             Assert.That(memories.All(x => !x.GetComponent<AudioSource>().isPlaying), Is.True, "Collected memories continued sounding");

@@ -117287,7 +117287,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
-  sourceMeshHash: f878364482c798eac4c823887b2065ca49a6c97d82fb6ae418c0d447a3b98b0f
+  sourceMeshHash: 5563d6fd113f4b29fc8db81ee0ea7a61ab7ae92bd971bb4e1fdd2ecdfcfda174
   cabinetFace: {fileID: 11400000, guid: ce3068b89e542b648ac439634dfc2bba, type: 2}
   mouthLiner: {fileID: 0}
   mouthLinerMaterial: {fileID: 0}

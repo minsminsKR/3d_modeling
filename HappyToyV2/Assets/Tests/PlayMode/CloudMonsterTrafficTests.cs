@@ -37,14 +37,16 @@ namespace HappyToy.V2.CloudTests
             agents[0].radius=1.2f;agents[0].isStopped=true;
             // Hold requested forward displacement briefly, modelling the
             // reported zero-progress crowd lock while a native route remains live.
+            agents[1].updatePosition=false;
             float blockUntil=Time.realtimeSinceStartup+1.3f;
             while(!Get<bool>(traffic[1],"Yielding") && Time.realtimeSinceStartup<blockUntil)
-            {agents[1].velocity=Vector3.zero;yield return null;}
+            {agents[1].nextPosition=actors[1].transform.position;agents[1].velocity=Vector3.zero;yield return null;}
             Assert.That(Get<bool>(traffic[1],"Yielding"),Is.True,"Zero-progress actor never chose a siding; position="+actors[1].transform.position+
                 " hasPath="+agents[1].hasPath+" stopped="+agents[1].isStopped+" intent="+Get<Vector3>(traffic[1],"IntendedPoint"));
             Assert.That(Get<int>(traffic[0],"YieldsStarted"),Is.Zero,"Both actors yielded at once");
             // Release the occupied lane; the manoeuvre must restore the true
             // endpoint itself, without an AI refresh or fixture reissuing it.
+            agents[1].nextPosition=actors[1].transform.position;agents[1].updatePosition=true;
             agents[0].radius=normalRadius;agents[0].isStopped=false;
             yield return Wait(()=>Vector3.Distance(actors[1].transform.position,goals[1])<1,16,"Yielded actor never returned to its original endpoint");
             Assert.That(Get<int>(traffic[1],"RoutesResumed"),Is.GreaterThan(0),"No natural route recovery occurred");

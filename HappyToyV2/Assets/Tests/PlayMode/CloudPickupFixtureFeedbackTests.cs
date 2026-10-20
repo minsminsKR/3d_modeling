@@ -64,6 +64,8 @@ namespace HappyToy.V2.CloudTests
         {
             yield return CandleDangerPrepare(corridor);
             ((Behaviour)player).enabled = false;
+            // Cavern entrance lamps are outside the local maze fixture pools.
+            if (corridor) PlacePlayer((Vector3)Call(Get<Component>(session, "Corridor"), "CellPosition", 0), false);
             var fixture = Components("ThreatFixtureFlicker")
                 .Where(item => item.gameObject.activeInHierarchy)
                 .OrderBy(item => Vector3.Distance(item.transform.position, player.transform.position)).First();

@@ -21,10 +21,11 @@ def main():
     parser.add_argument('--height',type=int,default=640)
     parser.add_argument('--start-frame',type=int,default=13)
     parser.add_argument('--lod',type=int,choices=(0,1,2),default=0)
+    parser.add_argument('--creature',choices=('Lady','Baby','Uncat','Cyclopse'),default='Lady')
     args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
     bpy.ops.wm.open_mainfile(filepath=str(args.source.resolve()),load_ui=False)
     scene=bpy.context.scene
-    model_name='Lady_LOD'+str(args.lod)
+    model_name=args.creature+'_LOD'+str(args.lod)
     for obj in scene.objects:
         if obj.type=='MESH':obj.hide_render=obj.name!=model_name
         elif obj.type=='LIGHT':obj.hide_render=True
@@ -40,7 +41,8 @@ def main():
                 normal_image.colorspace_settings.name='Non-Color'
                 texture=nodes.new('ShaderNodeTexImage');texture.image=normal_image
                 normal=nodes.new('ShaderNodeNormalMap');links.new(texture.outputs['Color'],normal.inputs['Color']);links.new(normal.outputs['Normal'],bsdf.inputs['Normal'])
-    rig=bpy.data.objects['Lady_Rig'];rig.data.pose_position='POSE'
+    rig=next(modifier.object for modifier in model.modifiers if modifier.type=='ARMATURE');rig.data.pose_position='POSE'
+    if args.creature!='Lady':rig.animation_data.action=bpy.data.actions['chase']
     for modifier in model.modifiers:
         if modifier.type=='ARMATURE':modifier.show_render=True
     scene.render.engine='CYCLES';scene.cycles.device='CPU';scene.cycles.samples=args.samples
@@ -51,6 +53,7 @@ def main():
     scene.render.resolution_x=args.width;scene.render.resolution_y=args.height;scene.render.resolution_percentage=100
     scene.render.image_settings.file_format='PNG';scene.render.image_settings.color_mode='RGB'
     scene.render.film_transparent=False;scene.render.use_persistent_data=True
+    if not scene.world:scene.world=bpy.data.worlds.new('Temporary CPU review world')
     scene.world.use_nodes=True
     background=next(node for node in scene.world.node_tree.nodes if node.type=='BACKGROUND')
     background.inputs['Color'].default_value=(.055,.065,.08,1);background.inputs['Strength'].default_value=.25

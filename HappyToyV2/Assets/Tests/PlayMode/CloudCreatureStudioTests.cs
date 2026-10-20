@@ -46,7 +46,9 @@ namespace HappyToy.V2.CloudTests
         {
             Call(session,"ConfigureRecordDirectory",NewRecordFixture());
             Call(session,"CreateCorridor",73);Begin();Call(session,"ToggleCheatSafeMode");
-            for(int i=0;i<5;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
+            // All three studio actors are released at four memories. The fifth
+            // deliberately freezes them for Lady's finale.
+            for(int i=0;i<4;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
             yield return Delay(.4f);
             foreach(string key in new[]{"Cyclopse","Uncat","Baby"})
             {
@@ -63,7 +65,8 @@ namespace HappyToy.V2.CloudTests
         {
             Call(session,"ConfigureRecordDirectory",NewRecordFixture());
             Call(session,"CreateCorridor",73);Begin();Call(session,"ToggleCheatSafeMode");
-            for(int i=0;i<5;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
+            // Exercise pursuit before Lady owns the permanent finale hold.
+            for(int i=0;i<4;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
             foreach(var built in Components("StalkerBrain")) ((Behaviour)built).enabled=false;
             yield return Delay(.2f);
             var anchor=Components("StalkerBrain").Single(x=>x.name.EndsWith("— corridor") && x.name.Contains("Cyclopse")).transform.position;

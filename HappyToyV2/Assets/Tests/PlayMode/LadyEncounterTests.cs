@@ -16,7 +16,7 @@ namespace HappyToy.V2.CloudTests
         void LadyCollect(int first,int last)
         {for(int i=first;i<last;i++)Call(session,"CheatCollectNextMemory");}
         IEnumerator LadyPrepare()
-        {yield return RevisionPrepare();Call(session,"ToggleCheatSafeMode");}
+        {yield return RevisionPrepare();Call(shell,"RestoreDefaultSettings");Call(session,"ToggleCheatSafeMode");}
 
         static void LadyAssertSpawnPath(Vector3 point,Vector3 target)
         {

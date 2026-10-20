@@ -55,7 +55,7 @@ namespace HappyToy.V2.Editor
             try
             {
                 Resources.Load<AnimationClip>("EnemyStudio/Uncat/patrol").SampleAnimation(root,0);
-                var skin=root.GetComponentsInChildren<SkinnedMeshRenderer>().Single();var posed=EnemyStudioRig.PosedVertices(skin);
+                var skin=EnemyStudioGameImport.PrimarySkin(root);var posed=EnemyStudioRig.PosedVertices(skin);
                 var head=skin.bones.Single(t=>t.name=="mixamorig:Head");
                 if(p.lipCorners==null||p.lipCorners.Length!=2)throw new InvalidDataException("Uncat needs its two original lip-corner landmarks");
                 // Photo projection remains fixed for the skin UVs. Jaw anatomy

@@ -44,7 +44,7 @@ namespace HappyToy.V2.Editor
             try
             {
                 Resources.Load<AnimationClip>($"EnemyStudio/{key}/patrol").SampleAnimation(root, 0);
-                var skin = root.GetComponentsInChildren<SkinnedMeshRenderer>().Single();
+                var skin = EnemyStudioGameImport.PrimarySkin(root);
                 var posed = EnemyStudioRig.PosedVertices(skin);
                 var profile = JsonUtility.FromJson<CreatureFaceAuthoring.Profile>(File.ReadAllText($"SourceArt/ChaseFaces/{key}/projection.json"));
                 var data = AssetDatabase.LoadAssetAtPath<CyclopseExpressionData>(folder + "/Expression.asset");

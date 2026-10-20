@@ -10,7 +10,7 @@
     "targetHeight": 2.380000114440918,
     "posedHeight": 2.380000352859497,
     "groundMin": 0.0,
-    "maximumSupportGap": 0.003975230734795332,
+    "maximumSupportGap": 0.003975234925746918,
     "clips": [
         "patrol",
         "chase"
@@ -20,7 +20,7 @@
         1.1166666746139526
     ],
     "clipCurves": [
-        230,
-        230
+        161,
+        161
     ]
 }

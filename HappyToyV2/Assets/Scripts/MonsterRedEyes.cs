@@ -165,6 +165,13 @@ namespace HappyToy.V2
                     art.anchors.Add(anchor);art.shapes.Add(new EyeShape {anchor=anchor,
                         horizontal=head.InverseTransformVector(anchor.right*radius),vertical=head.InverseTransformVector(anchor.up*radius)});
                 }
+                // Distant studio copies retain the same UV atlas. Anchors and
+                // anatomy remain on the exact near skin; every visible LOD
+                // receives the same independently toggled emission material.
+                if(studio)foreach(var distant in model.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                    .Where(s=>!studio.primarySkins.Contains(s)))
+                    foreach(int slot in profile.eyes.Select(eye=>eye.materialSlot).Distinct())
+                        art.Mount(distant,slot,mask);
                 art.Prepared=true;art.SetEmissionEnabled(true);return art;
             }
             catch {GraphicsSurfaceLibrary.DestroyOwned(root);throw;}

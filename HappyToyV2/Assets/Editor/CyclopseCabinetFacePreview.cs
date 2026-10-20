@@ -23,7 +23,7 @@ namespace HappyToy.V2.Editor
             var root=UnityEngine.Object.Instantiate(Resources.Load<GameObject>("EnemyStudio/Cyclopse/CyclopseRuntime"));
             Resources.Load<AnimationClip>("EnemyStudio/Cyclopse/patrol").SampleAnimation(root,0);
             foreach(var behaviour in root.GetComponentsInChildren<Behaviour>())behaviour.enabled=false;
-            var skin=root.GetComponentsInChildren<SkinnedMeshRenderer>().Single();
+            var skin=EnemyStudioGameImport.PrimarySkin(root);
             var brain=root.AddComponent<StalkerBrain>();brain.enabled=false;
             var face=root.AddComponent<CyclopseChaseFace>();face.Configure(skin,brain);
             var flags=BindingFlags.Instance|BindingFlags.NonPublic;

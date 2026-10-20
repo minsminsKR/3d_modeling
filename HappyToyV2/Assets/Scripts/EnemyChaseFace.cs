@@ -17,6 +17,7 @@ namespace HappyToy.V2
         GameObject mouthLiner;
         MonsterRedEyes eyes;
         EnemyCabinetFace cabinetFace;
+        LODGroup detail;
         public float Weight { get; private set; }
         public float CabinetWeight => cabinetFace?.Weight ?? 0;
         public bool Prepared => owned && data;
@@ -33,6 +34,7 @@ namespace HappyToy.V2
             if (!data || !data.chaseFace || !data.shader || data.bindDeltas.Length != renderer.sharedMesh.vertexCount)
                 throw new InvalidOperationException("Chase face requires its authored expression resource: " + resource);
             brain = owner; skin = renderer; original = skin.sharedMesh; previous = skin.sharedMaterials;
+            detail=skin.GetComponentInParent<LODGroup>();
             block = new MaterialPropertyBlock();
             owned = Instantiate(original); owned.name = "Owned " + owner.name + " chase-expression skin"; owned.MarkDynamic();
             neutral = original.vertices; animated = new Vector3[neutral.Length];
@@ -79,6 +81,9 @@ namespace HappyToy.V2
             cabinetFace?.Apply(animated, weight);
             owned.vertices = animated; owned.RecalculateBounds();
             skin.sharedMesh = owned; skin.sharedMaterials = weight > 0 ? materials : previous;
+            // Expressions are authored against the exact near vertex order.
+            // Hold that reviewed skin throughout chase/cabinet transitions.
+            if(detail&&detail.enabled&&detail.gameObject.activeInHierarchy)detail.ForceLOD(weight>0||CabinetWeight>0?0:-1);
             for (int slot = 0; slot < materials.Length; slot++)
             {
                 skin.GetPropertyBlock(block, slot); block.SetFloat("_ExpressionWeight", weight); skin.SetPropertyBlock(block, slot);
@@ -88,6 +93,7 @@ namespace HappyToy.V2
         protected virtual void OnDisable() { cabinetFace?.Reset(); if (Prepared && skin) Apply(0); }
         protected virtual void OnDestroy()
         {
+            if(detail&&detail.enabled&&detail.gameObject.activeInHierarchy)detail.ForceLOD(-1);
             if (skin) { skin.sharedMesh = original; skin.sharedMaterials = previous; }
             if(eyes && skin)eyes.BindExpressionMaterials(skin,null);
             cabinetFace?.Dispose();

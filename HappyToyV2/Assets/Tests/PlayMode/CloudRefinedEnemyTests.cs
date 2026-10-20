@@ -65,11 +65,13 @@ namespace HappyToy.V2.CloudTests
                         if (key == "Uncat") Assert.That(Get<bool>(motion, "LimbContactRigAvailable"), Is.True);
                     var skins = model.GetComponentsInChildren<SkinnedMeshRenderer>();
                     Assert.That(skins.Length, Is.GreaterThan(0));
+                    var primary = Get<SkinnedMeshRenderer[]>(model.GetComponent(RequireType("EnemyStudioRig")), "primarySkins").Single();
+                    int primaryTriangles = Enumerable.Range(0, primary.sharedMesh.subMeshCount).Sum(sub => (int)primary.sharedMesh.GetIndexCount(sub) / 3);
                     var priorMeshes = Resources.Load<GameObject>("EnemyRefinement/" + key + "-v2").GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(skin => skin.sharedMesh).ToArray();
                     foreach (var skin in skins)
                     {
                         int triangles = Enumerable.Range(0, skin.sharedMesh.subMeshCount).Sum(sub => (int)skin.sharedMesh.GetIndexCount(sub) / 3);
-                        Assert.That(triangles, studio ? Is.InRange(20000, 160000) : Is.InRange(9980, 10000), "Unexpected runtime surface budget");
+                        Assert.That(triangles, skin == primary ? Is.InRange(20000, 160000) : Is.InRange(1, primaryTriangles * .85f), "Unexpected near/distant surface budget");
                         if (studio) Assert.That(skin.sharedMesh.vertexCount, Is.LessThanOrEqualTo(80000), "Source sculpt was imported without a game mesh");
                         if (studio) Assert.That(priorMeshes.Contains(skin.sharedMesh), Is.False, "New visual retained an old scanned mesh");
                         Assert.That(skin.bones.All(bone => bone && bone.IsChildOf(model)), Is.True);

@@ -67,6 +67,26 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 
 ## 모듈 경계
 
+몬스터 자산 마감은 `SourceArt/CreatureStudio/tools/polish_game_assets.py`와
+`polish-settings.json`이 기존 근접 메시·UV·가중치·원본 동작을 보존하며 게임 전용
+비금속 PBR과 보수적인 원거리 복사본을 만든다. `EnemyStudioGameImport.PrimarySkin`은
+지지·눈·표정 제작 도구의 근접 스킨 기준을 소유한다. `StaticScaleCurveCleanup`은
+모든 관련 액션에서 같은 scale 곡선만 기준 포즈에 둔다. `MonsterRedEyes`는 같은
+UV의 원거리 스킨에도 기존 발광 토글을 연결하고 `EnemyChaseFace`는 표정이 켜진 동안
+근접 LOD를 유지한다. `V1MonsterMotion`과 캐비닛 사망 구도는 primary skin으로
+해부학·접촉·표정 기준을 유지한다. `model-polish`는 기존 근접 정점 대응과 전체
+FBX 포즈/LOD, 실제 재생·지면 접촉·전체 LOD 눈 발광·재질 소유권 복원을 검사한다.
+공유 시각 연결 변경 및 푸시 전에는 `full` 양쪽 스위트와
+새 Windows 빌드·소스 해시 검증을 실행한다. 읽기 전용 전체 모델 목록 도구는
+`Tools/quality/model_inventory_unity.csx`다.
+
+회랑 두 시드 전체 생존 검사와 네이티브 감사는 `NativeCorridorInputRoute`의 같은
+실제 입력 경로를 사용한다. 별도 테스트 전용 탐색기는 두지 않는다. 동굴 시작에서
+배터리·촛불까지 실제 최단 접근 경로를 고르며, 조준 중 공격은 관측한 경고로
+피하고 필요하면 현재 자세의 접근점을 다시 구해 걸어간다. 마지막 기억의 피날레는
+기존 적의 정지를 존중하고 실제 C/Shift 입력으로 제단에 달려간다. AI·이동 속도·
+체력·은신 RNG는 바꾸지 않는다.
+
 - `Assets/Scripts/Core/HappyToy.V2.Core.asmdef`: System만 사용하는 독립 규칙 모듈.
   UnityEngine, 씬, `GameSession`, UI, 물리/NavMesh를 참조하지 않는다.
 - `Assets/Tests/EditMode/Core/HappyToy.V2.CoreTests.asmdef`: Core를 직접 참조하는

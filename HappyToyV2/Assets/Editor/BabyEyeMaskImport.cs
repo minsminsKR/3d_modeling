@@ -40,7 +40,7 @@ namespace HappyToy.V2.Editor
             try
             {
                 Resources.Load<AnimationClip>("EnemyStudio/Baby/patrol").SampleAnimation(root,0);
-                var skin=root.GetComponentsInChildren<SkinnedMeshRenderer>().Single();var source=skin.sharedMesh;
+                var skin=EnemyStudioGameImport.PrimarySkin(root);var source=skin.sharedMesh;
                 var vertices=EnemyStudioRig.PosedVertices(skin);var uv=source.uv;var triangles=source.triangles;
                 var profile=JsonUtility.FromJson<Profile>(File.ReadAllText(Source+"eyes-authoring.json"));
                 if(profile.eyes.Length!=2)throw new InvalidDataException("Baby requires two original eye landmarks");
@@ -102,7 +102,11 @@ namespace HappyToy.V2.Editor
                 importer.sRGBTexture=false;importer.maxTextureSize=Size;importer.textureCompression=TextureImporterCompression.Uncompressed;
                 importer.mipmapEnabled=true;importer.filterMode=FilterMode.Trilinear;importer.SaveAndReimport();
                 recipe.inputHash=Inputs();recipe.maskHash=Hash(png);recipe.profileHash=Hash(json);
-                File.WriteAllText(Source+"eyes-surface-mask.json",JsonUtility.ToJson(recipe,true));
+                // Source indexers can hold the existing recipe memory-mapped.
+                // Replace a complete file instead of truncating that mapping.
+                string recipePath=Source+"eyes-surface-mask.json",temporary=Source+".eyes-surface-mask.generated.json";
+                File.WriteAllText(temporary,JsonUtility.ToJson(recipe,true));
+                if(File.Exists(recipePath))File.Replace(temporary,recipePath,null);else File.Move(temporary,recipePath);
                 Debug.Log("BABY_ANATOMICAL_EYE_MASK_PASS triangles="+string.Join(",",recipe.visibleTriangles)+" texels="+string.Join(",",recipe.whiteTexels));
             }
             finally

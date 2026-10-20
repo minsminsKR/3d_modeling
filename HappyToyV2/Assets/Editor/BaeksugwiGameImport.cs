@@ -36,8 +36,10 @@ namespace HappyToy.V2.Editor
             var clip=AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
             if(!clip){clip=new AnimationClip();AssetDatabase.CreateAsset(clip,clipPath);}else clip.ClearCurves();
             clip.name="Run_InPlace";clip.legacy=true;clip.frameRate=60;clip.wrapMode=WrapMode.Loop;
+            var fixedScales=StaticScaleCurveCleanup.InvariantBindings(new[]{imported});
             foreach(var binding in AnimationUtility.GetCurveBindings(imported))
             {
+                if(fixedScales.Contains(StaticScaleCurveCleanup.Key(binding)))continue;
                 var target=binding;target.path="Rigged asset"+(binding.path.Length==0?"":"/"+binding.path);
                 AnimationUtility.SetEditorCurve(clip,target,AnimationUtility.GetEditorCurve(imported,binding));
             }
@@ -47,6 +49,7 @@ namespace HappyToy.V2.Editor
             {
                 var asset=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/Baeksugwi.fbx"),root.transform);
                 asset.name="Rigged asset";
+                imported.SampleAnimation(asset,0);
                 foreach(var a in asset.GetComponentsInChildren<Animation>(true))UnityEngine.Object.DestroyImmediate(a);
                 foreach(var r in asset.GetComponentsInChildren<Renderer>(true))
                 {r.sharedMaterials=r.sharedMaterials.Select(_=>material).ToArray();if(r is SkinnedMeshRenderer s)s.updateWhenOffscreen=true;}

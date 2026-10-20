@@ -136,7 +136,9 @@ namespace HappyToy.V2
             var scratch = new Mesh();
             try
             {
-                foreach (var skin in visual.GetComponentsInChildren<SkinnedMeshRenderer>())
+                var studio=visual.GetComponent<EnemyStudioRig>();
+                var headSkins=studio?studio.primarySkins:visual.GetComponentsInChildren<SkinnedMeshRenderer>();
+                foreach (var skin in headSkins)
                 {
                     if (!skin.sharedMesh || !skin.sharedMesh.isReadable) continue;
                     EnemyStudioRig.BakeLocalPose(skin, scratch);

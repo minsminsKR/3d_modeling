@@ -88,7 +88,8 @@ namespace HappyToy.V2.CloudTests
             var sourceEye = Components("MonsterRedEyes").First(eye => Get<string>(eye, "ProfileKey") == "Cyclopse");
             var motion = sourceEye.GetComponentInParent(RequireType("V1MonsterMotion")) as Component;
             var visual = Get<Transform>(motion, "model");
-            var sourceRenderer = Get<IReadOnlyList<Renderer>>(sourceEye, "EmissionRenderers").Single();
+            var primary = Get<SkinnedMeshRenderer[]>(visual.GetComponent(RequireType("EnemyStudioRig")), "primarySkins").Single();
+            var sourceRenderer = Get<IReadOnlyList<Renderer>>(sourceEye, "EmissionRenderers").Single(renderer => renderer == primary);
             int slot = ((int[])Call(sourceEye, "GetAffectedSlots", sourceRenderer)).Single();
             var baseline = (Material)Call(sourceEye, "GetOriginalMaterial", sourceRenderer, slot);
             GameObject clone = null; Material laterOwner = null;

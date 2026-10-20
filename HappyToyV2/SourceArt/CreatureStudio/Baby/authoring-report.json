@@ -350,7 +350,7 @@
   ],
   "fbx": {
     "file": "Assets/Resources/EnemyStudio/Baby/Baby.fbx",
-    "sha256": "876bd87175c1991dbd693ae1f2c59c2e7a2d9137837d9574826e2fe8de2afce0"
+    "sha256": "0bec6b2148f334038efe071a1b081cce27e003d378ae186befd4fd3a3c20a375"
   },
   "optionalGameGLB": {
     "file": "Baby/previews/Baby_Game.glb",
@@ -373,5 +373,6 @@
     "topologyValidatedBeforeExport": true,
     "derivedGLBActualGeometryValidated": true
   },
-  "status": "EXPORTED_VALIDATED"
+  "status": "EXPORTED_VALIDATED",
+  "gamePolish": "polish-report.json"
 }

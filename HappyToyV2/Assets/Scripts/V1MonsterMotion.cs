@@ -73,7 +73,8 @@ namespace HappyToy.V2
                 var body=EnemyBodyClearance.RenderedBodyBounds(model,transform);
                 model.position-=transform.TransformVector(new Vector3(body.center.x,0,body.center.z));
             }
-            rest=model.localRotation;restPosition=model.localPosition;skins=model.GetComponentsInChildren<SkinnedMeshRenderer>();
+            rest=model.localRotation;restPosition=model.localPosition;
+            skins=StudioVisual?model.GetComponent<EnemyStudioRig>().primarySkins:model.GetComponentsInChildren<SkinnedMeshRenderer>();
             sampledMesh=StudioVisual?null:new Mesh();attackPose=new V1AttackPose(model);
             if(EnemySoundProfile.Identify(transform)==EnemySoundKind.Cyclopse)
                 introPose=new CyclopseStumblePose(model);

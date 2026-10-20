@@ -1,0 +1,68 @@
+{
+  "scope": "Creature game asset polish: original inputs and exact near geometry/UV/weights/actions retained, conservative distant LODs and nonmetallic game PBR. This records all full-suite failures and does not certify whole-game autonomous survival or FPS.",
+  "unity": "6000.6.0f1",
+  "blender": "4.0.2",
+  "unityTests": {
+    "scope": "All complete Unity suites executed. Model-specific asset and runtime checks must pass. Existing autonomous whole-run survival gaps are recorded without weakening or skipping those tests; whole-game survival balance is not certified.",
+    "status": "MODEL_CHECKS_PASS_ROUTE_GAPS_RECORDED",
+    "fullSuitesPassed": false,
+    "suites": [
+      {
+        "mode": "EditMode",
+        "result": "Passed",
+        "total": "157",
+        "passed": "157",
+        "failed": "0",
+        "skipped": "0",
+        "inconclusive": "0"
+      },
+      {
+        "mode": "PlayMode",
+        "result": "Failed(Child)",
+        "total": "332",
+        "passed": "331",
+        "failed": "1",
+        "skipped": "0",
+        "inconclusive": "0"
+      }
+    ],
+    "knownRouteFailures": [
+      {
+        "test": "HappyToy.V2.CloudTests.CloudPlayModeTests.CorridorFiveMemoryRunSurvivesThroughRealKeyboardMouseAndDoors",
+        "result": "Failed",
+        "message": "System.InvalidOperationException : Run ended at Memory 5 after 152.5948s; V1 Cyclopse \u2014 corridor; at (205.83, 0.08, 229.11); stage=Memory 5; records=2; at=(205.83, 0.08, 229.11)"
+      }
+    ],
+    "modelChecksPassed": true
+  },
+  "nativeModelReview": {
+    "status": "PASS",
+    "scope": "Controlled native seed-73 corridor: newly generated meshes/materials, live clip aliases, 32 sampled deformation/ground phases and 16 pursuit frames with measured head rotation, actual player-camera views, Baby cry and Cyclopse stumble joints. AI is disabled for the art fixture. Does not certify survival balance or perceived fear.",
+    "checks": 311,
+    "errors": []
+  },
+  "windowsBuild": {
+    "status": "BUILD_INPUTS_PASS",
+    "inputCount": 3668,
+    "inputManifest": "Builds/Windows-ModelPolish-20261021/quality-build.json"
+  },
+  "animationKeysBefore": 157420,
+  "animationKeysAfter": 110194,
+  "distantTriangles": {
+    "Baby": {
+      "near": 29985,
+      "distant": 16491
+    },
+    "Cyclopse": {
+      "near": 40000,
+      "distant": 31000
+    },
+    "Uncat": "Existing near mesh retained; meaningful safe reduction was unavailable"
+  },
+  "authoringReports": [
+    "Baby/polish-report.json",
+    "Uncat/polish-report.json",
+    "Cyclopse/polish-report.json"
+  ],
+  "reproduction": "README.md; tools/polish_game_assets.py; Assets/Editor/CreatureGamePolishImport.cs; Tools/quality/run_feature_tests.py --profile model-polish and --profile full"
+}

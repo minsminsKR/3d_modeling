@@ -249,6 +249,9 @@ namespace HappyToy.V2.CloudTests
             var target = LightTargets("Candle")[0]; PlacePlayer(LightApproach(target), false);
             var actor = CandleDangerOwnedBrain();
             Vector3 start = Vector3.zero, end = Vector3.zero, away = Vector3.zero; bool walkFound = false;
+            // This fixture isolates foot contacts. The recorded breathing loop
+            // legitimately produces audible warning even while standing still.
+            foreach (var breathing in actor.GetComponents(RequireType("CyclopseBreathingVoice"))) ((Behaviour)breathing).enabled = false;
             var path = new NavMeshPath();
             for (int ray = 0; ray < 96; ray++)
             {

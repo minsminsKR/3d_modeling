@@ -40,7 +40,7 @@ namespace HappyToy.V2.Editor
             string folder = "SourceArt/ChaseFaces/" + key; Directory.CreateDirectory(folder);
             var root = UnityEngine.Object.Instantiate(Resources.Load<GameObject>($"EnemyStudio/{key}/{key}Runtime"));
             Resources.Load<AnimationClip>($"EnemyStudio/{key}/patrol").SampleAnimation(root, 0);
-            var skin = root.GetComponentsInChildren<SkinnedMeshRenderer>().Single();
+            var skin = EnemyStudioGameImport.PrimarySkin(root);
             var posed = EnemyStudioRig.PosedVertices(skin); var uv = skin.sharedMesh.uv;
             var eyes = JsonUtility.FromJson<Eyes>(File.ReadAllText($"Assets/Resources/EnemyStudio/{key}/eyes-profile.json"));
             var anchors = eyes.eyes.Select(e => posed[Enumerable.Range(0, uv.Length).OrderBy(i => (uv[i] - e.uv).sqrMagnitude).First()]).ToArray();
