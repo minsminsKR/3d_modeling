@@ -1,0 +1,301 @@
+{
+  "asset": "buddhist-lantern",
+  "reference": {
+    "path": "SourceArt/CorridorEntrance/buddhist-lantern/reference.png",
+    "bytes": 2522669,
+    "sha256": "7821b74cbdd0e0baa00af6cdf09cd39bfb04f848feb831de7e536485f03710b1"
+  },
+  "referenceGeneration": {
+    "path": "SourceArt/CorridorEntrance/buddhist-lantern/reference-generation.json",
+    "bytes": 1964,
+    "sha256": "244a2c7af7cb6cc10437f55081ad26534afaed634306dcf3d0e2b4e51e2cfd8c"
+  },
+  "processedInput": {
+    "path": "SourceArt/CorridorEntrance/buddhist-lantern/processed.png",
+    "bytes": 741786,
+    "sha256": "9f868d6b01a7e4ac232ddad1892d22b45002cb32d8e00f1a83c0bfa79c75e08f"
+  },
+  "generator": {
+    "application": "hunyuan3d-webapp",
+    "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+    "jobId": "d0415406-c037-42a1-bd2b-ed84b595d651",
+    "batchId": null,
+    "options": {
+      "gpu_id": 1,
+      "gpu_mode": "split",
+      "guidance_scale": 7.5,
+      "model": "trellis2",
+      "num_chunks": 50000,
+      "num_inference_steps": 50,
+      "octree_resolution": 512,
+      "omni_use_ema": false,
+      "output_format": "glb",
+      "remove_background": true,
+      "seed": 1234,
+      "texture": true,
+      "texture_gpu_id": 0,
+      "texture_profile": "detail",
+      "trellis_max_tokens": 65536,
+      "trellis_pipeline": "1536_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 8192
+    },
+    "elapsedSeconds": 489,
+    "record": {
+      "path": "SourceArt/CorridorEntrance/buddhist-lantern/job.json",
+      "bytes": 1959,
+      "sha256": "e65be102b810e60b6734a202a4e110130f4c1b9b691684c75081f1b91550012b"
+    },
+    "savedOnServer": true,
+    "note": "Server paths and links are historical evidence only; all required inputs and outputs are local."
+  },
+  "original": {
+    "path": "SourceArt/CorridorEntrance/buddhist-lantern/original.glb",
+    "bytes": 170869068,
+    "sha256": "9518c69e66de3011ef05f225e867689140a4b596861381c140435e96639d7eee"
+  },
+  "finishing": {
+    "tool": "Blender 4.0.2",
+    "script": {
+      "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+      "bytes": 19976,
+      "sha256": "1a41b6d980514f28d1fabc545e8a5b26d49d3488b41545fab4e9df3efd487333"
+    },
+    "command": "blender --background --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/CorridorEntrance/finish_entrance_assets.py -- --only buddhist-lantern",
+    "editable": {
+      "path": "SourceArt/CorridorEntrance/buddhist-lantern/buddhist-lantern.blend",
+      "bytes": 186421739,
+      "sha256": "f03f1e24903117c82e86f0d1322c229b8fae015c1633d825a1e20a65eff304e1"
+    },
+    "exportReport": {
+      "path": "SourceArt/CorridorEntrance/buddhist-lantern/export.json",
+      "bytes": 2730,
+      "sha256": "2ba778a8f1371a14a43f84fbfa63263f97d197f301f0258e1d7c7d34f9c629c5"
+    },
+    "currentReproductionScript": {
+      "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+      "bytes": 19990,
+      "sha256": "565994cee8535a1cdd814264041bc47a497e185ab25c26f2298c309c60e37c82"
+    },
+    "currentReproductionExportReport": {
+      "path": "SourceArt/CorridorEntrance/buddhist-lantern/export.json",
+      "bytes": 2639,
+      "sha256": "f4f18d1ff000318b5a5bea22bb11dc1605b2b90e47a88595793e02d6298b7029"
+    },
+    "historicalExportNote": "The script/exportReport records retain the raw hashes for this preserved editable export. Current reproduction records reflect LF-normalized local text; binary originals and editable artifacts are unchanged.",
+    "embeddedSourceText": "SOURCE - finish_entrance_assets.py",
+    "settings": {
+      "axis": 2,
+      "metres": 1.0,
+      "texture": 2048,
+      "budgets": [
+        20000,
+        12000
+      ],
+      "paper_emission": true,
+      "rebake_atlas": true
+    },
+    "originalTriangles": 948015,
+    "lods": [
+      {
+        "file": "buddhist-lantern-lod0.fbx",
+        "targetTriangles": 20000,
+        "triangles": 19999,
+        "vertices": 8630,
+        "boundsMin": [
+          -0.2852058410644531,
+          -0.2509136199951172,
+          -0.0003840094432234764
+        ],
+        "boundsMax": [
+          0.2851839065551758,
+          0.25048601627349854,
+          1.0006688833236694
+        ],
+        "sha256": "4af70dd9389c093276e5fd95bfdd2c45d7b7eef07bc479a192692ca51f0b6003"
+      },
+      {
+        "file": "buddhist-lantern-lod1.fbx",
+        "targetTriangles": 12000,
+        "triangles": 11999,
+        "vertices": 4630,
+        "boundsMin": [
+          -0.2848024368286133,
+          -0.24858178198337555,
+          0.008955989964306355
+        ],
+        "boundsMax": [
+          0.2860586941242218,
+          0.2480325698852539,
+          1.0007507801055908
+        ],
+        "sha256": "87581afc45e81c63caf4633444f38d258ed72a6a90fc274f2919ab5b0a0ff487"
+      }
+    ],
+    "supportingRecipes": [
+      {
+        "path": "SourceArt/CorridorEntrance/rebake_lantern_atlas.py",
+        "bytes": 6567,
+        "sha256": "369fed6c1399428c03ee86ef8888c58e35fdc97d6a995cf5493134486c963aa1"
+      }
+    ],
+    "embeddedSupportingSourceText": "SOURCE - rebake_lantern_atlas.py"
+  },
+  "unityImport": {
+    "editor": "6000.6.0f1",
+    "method": "HappyToy.V2.Editor.CorridorEntranceImport.ImportBuddhistLantern",
+    "script": {
+      "path": "Assets/Editor/CorridorEntranceImport.cs",
+      "bytes": 19187,
+      "sha256": "28f87eb8bbfbea9f4bc4d24032770044abd4ce4dae4646f9aa51d4e403dfbaf6"
+    },
+    "scriptMeta": {
+      "path": "Assets/Editor/CorridorEntranceImport.cs.meta",
+      "bytes": 60,
+      "sha256": "91b9b9407d739efb79368716e84a1b5faba9c061f3a238a7a9055a3b2c860ed3",
+      "guid": "8cb52d9a7414427f9f837af195e49a8f"
+    },
+    "runtimePresentation": {
+      "path": "Assets/Scripts/CorridorEntrancePresentation.cs",
+      "bytes": 2009,
+      "sha256": "6c7b558837da80de415cd6fc3726c966bf79b242d3b0e4124a0a1483865563a4"
+    },
+    "runtimeCollaborators": [
+      {
+        "path": "Assets/Scripts/CorridorEntranceModels.cs",
+        "bytes": 3042,
+        "sha256": "f1a6e68dc07b7151f56188b7b831709f64b33b4d162f8fddfb61e9544b4f2a81"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceCavern.cs",
+        "bytes": 6127,
+        "sha256": "2b1ec2c2c3717d2746e83ce994dfc44541466337013c8ca1e873bea039a783e9"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceRitualDressing.cs",
+        "bytes": 20690,
+        "sha256": "d6ac2cbcc791757fe22b8cee1b6132a540fbe5a55be5977b1a840ff49b2285f5"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceSealInk.cs",
+        "bytes": 4028,
+        "sha256": "0f85e0aca7a22448d412b4e7b062ab59efd0f6ae832c2986a3690307e3228839"
+      },
+      {
+        "path": "Assets/Scripts/CorridorEntranceVapour.cs",
+        "bytes": 2024,
+        "sha256": "afb4c6f34eb8f99e88046eb83ba2fe50c18a34ce0ffa98c1dd25c00350ff91d6"
+      }
+    ],
+    "resourcesKey": "CorridorEntrance/buddhist-lantern-visual",
+    "outputs": [
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/asset.json",
+        "bytes": 2639,
+        "sha256": "f4f18d1ff000318b5a5bea22bb11dc1605b2b90e47a88595793e02d6298b7029"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/asset.json.meta",
+        "bytes": 158,
+        "sha256": "240bfe1232ee9e3c6b13f7a5ea456c4baa079471302cff12d4ced6967e146dd3",
+        "guid": "eb18ea7360b4e584a8139bc39bc54d2c"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/CE_buddhist-lantern_0-baseColor.png",
+        "bytes": 1479917,
+        "sha256": "6457edcf881868ae25c1b3a7775f169bd4ed8a232c93bb0c9b855ba2f013a0f6"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/CE_buddhist-lantern_0-baseColor.png.meta",
+        "bytes": 2714,
+        "sha256": "a924d6fa2f0a83117ef99e2b1aa9b1fe34acd583a27d0af76991145033f06cce",
+        "guid": "a046a5bbd8ba38940a3cbad0e8c13985"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/CE_buddhist-lantern_0-metallicSmoothness.png",
+        "bytes": 1705691,
+        "sha256": "5322e865f1449034dff5d70287c903c6791b7e7badbdec05a27d8b1c11bb7986"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/CE_buddhist-lantern_0-metallicSmoothness.png.meta",
+        "bytes": 2714,
+        "sha256": "164621b1eacf8a3be821e1c73dac5fef0502bbde174db773b45654fdf51f5c4f",
+        "guid": "2727577fc3140694091ac8544ab21990"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/CE_buddhist-lantern_0-paperEmission.png",
+        "bytes": 434425,
+        "sha256": "ca9119192730b42022dc911607d3b7ad23582b2e9559766be6446feb64b308c1"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/CE_buddhist-lantern_0-paperEmission.png.meta",
+        "bytes": 2714,
+        "sha256": "369277a569bdf460cf056ede4cb0e189980965c1a2a6a21380055468bdafa39d",
+        "guid": "9065d2e87f0d15c4dab8c24b0c860ed4"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/CE_buddhist-lantern_0.mat",
+        "bytes": 4167,
+        "sha256": "bcae74fc51928be19f80c60415d0d56c37806d3e846f86601c1bfddca2c75b62"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern/CE_buddhist-lantern_0.mat.meta",
+        "bytes": 188,
+        "sha256": "bb0784a3adb7759786809cbfe33ccad319057af386bc03f922c76bc0c621255e",
+        "guid": "dd625f744cd3dca44b212bec24016a58"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern-lod0.fbx",
+        "bytes": 1032140,
+        "sha256": "4af70dd9389c093276e5fd95bfdd2c45d7b7eef07bc479a192692ca51f0b6003"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern-lod0.fbx.meta",
+        "bytes": 3063,
+        "sha256": "89cdf32d4236c6abb3ac864a6e2238f07550548d367a9521d1d87aaa08c92535",
+        "guid": "acb51da878623b6448621678a12875f1"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern-lod1.fbx",
+        "bytes": 653756,
+        "sha256": "87581afc45e81c63caf4633444f38d258ed72a6a90fc274f2919ab5b0a0ff487"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern-lod1.fbx.meta",
+        "bytes": 3063,
+        "sha256": "1249591054edb2d767f5f752653af17d0ee8033ca6e59f40f19279ac002a0eb7",
+        "guid": "c95e893066feea141b9cbda7555c0935"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern-visual.prefab",
+        "bytes": 8041,
+        "sha256": "44883ceee8507db2c1883ef5aab18e6239c5c89b59d865aba97f21328cc45203"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern-visual.prefab.meta",
+        "bytes": 154,
+        "sha256": "c0c3fb330051b073ec0b8ad533719243d5aee4ee526919e2cd1394fcfde27d57",
+        "guid": "0b53e3897f9d0804796c8ecd550f1865"
+      },
+      {
+        "path": "Assets/Resources/CorridorEntrance/buddhist-lantern.meta",
+        "bytes": 172,
+        "sha256": "fed9bf31035cdd66dc7efa0b7aab25031463e23580d1c687a5edb51e759f7b57",
+        "guid": "583044fd770ad2c44b7967f6ea50b268"
+      }
+    ]
+  },
+  "licenses": [
+    {
+      "path": "SourceArt/CorridorEntrance/LICENSE.md",
+      "bytes": 1807,
+      "sha256": "3245d57f85d956b6bf6085b1192982951cfb489ee0fdf1be210659c2118c97c7"
+    },
+    {
+      "path": "SourceArt/CorridorEntrance/TRELLIS.2-LICENSE.txt",
+      "bytes": 1140,
+      "sha256": "d9a1b1e30d633d5732ea18e3cba9538d293ebc53e1a9e4e96ab739e0c5c4f1cb"
+    }
+  ],
+  "verificationScope": "Source handoff hashes only; actual camera review, focused integration checks and native performance are separate evidence."
+}

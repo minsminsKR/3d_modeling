@@ -1,0 +1,91 @@
+{
+  "key": "buddhist-lantern",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "9518c69e66de3011ef05f225e867689140a4b596861381c140435e96639d7eee",
+  "editable": "buddhist-lantern/buddhist-lantern.blend",
+  "widthMetres": 0.5703897476196289,
+  "heightMetres": 1.001052892766893,
+  "depthMetres": 0.5013996362686157,
+  "normalizedAxis": "height",
+  "normalizedMetres": 1.0,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 2,
+    "metres": 1.0,
+    "texture": 2048,
+    "budgets": [
+      20000,
+      12000
+    ],
+    "paper_emission": true,
+    "rebake_atlas": true
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 948015,
+  "originalTriangles": 948015,
+  "lods": [
+    {
+      "file": "buddhist-lantern-lod0.fbx",
+      "targetTriangles": 20000,
+      "triangles": 19999,
+      "vertices": 8630,
+      "boundsMin": [
+        -0.2852058410644531,
+        -0.2509136199951172,
+        -0.0003840094432234764
+      ],
+      "boundsMax": [
+        0.2851839065551758,
+        0.25048601627349854,
+        1.0006688833236694
+      ],
+      "sha256": "4af70dd9389c093276e5fd95bfdd2c45d7b7eef07bc479a192692ca51f0b6003"
+    },
+    {
+      "file": "buddhist-lantern-lod1.fbx",
+      "targetTriangles": 12000,
+      "triangles": 11999,
+      "vertices": 4630,
+      "boundsMin": [
+        -0.2848024368286133,
+        -0.24858178198337555,
+        0.008955989964306355
+      ],
+      "boundsMax": [
+        0.2860586941242218,
+        0.2480325698852539,
+        1.0007507801055908
+      ],
+      "sha256": "87581afc45e81c63caf4633444f38d258ed72a6a90fc274f2919ab5b0a0ff487"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_buddhist-lantern_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_buddhist-lantern_0-baseColor.png",
+      "metallicSmoothness": "CE_buddhist-lantern_0-metallicSmoothness.png",
+      "emission": "CE_buddhist-lantern_0-paperEmission.png",
+      "emissionColor": [
+        0.16,
+        0.072,
+        0.023,
+        1
+      ],
+      "emissionMaskRecipe": "linear green ramp .12-.40 times blue ramp .055-.215 on the rebaked original colour; ink and wood stay dark",
+      "atlasRecipe": "Cycles CPU selected-to-active EMIT, 1 sample, 16px margin, .015m extrusion/.05m ray; Smart UV 66deg/.012 margin; original colour and ORM retained"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

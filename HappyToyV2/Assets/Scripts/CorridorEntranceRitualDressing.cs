@@ -171,15 +171,18 @@ namespace HappyToy.V2
         void Lantern(Vector3 at,float scale,float intensity,float range,bool shadow,float fittedHeight=0,string fixtureName=null)
         {
             var holder=Group(fixtureName??"Old inked temple paper lantern",at);holder.localScale=Vector3.one*scale;
-            var paper=surfaces.Get("paper-aged",new Color(.48f,.32f,.17f),new Color(.22f,.09f,.025f));
-            var lantern=GraphicsPropLibrary.Attach("paper-lantern",holder,slot=>slot=="GU_washi"?paper:surfaces.Resolve(slot));
-            lantern.localRotation=Quaternion.Euler(0,at.x<0?14:-12,at.x<0?-4:3);
+            // Real webapp-generated geometry and UV-painted ink; keep shared
+            // PBR/LODs intact instead of combining them into generic props.
+            var lantern=CorridorEntranceModels.Attach("buddhist-lantern",holder,"Generated hexagonal Buddhist lantern",Vector3.zero);
+            var viewer=transform.TransformPoint(new Vector3(0,1.6f,-9.2f));
+            holder.rotation=Quaternion.LookRotation(Vector3.ProjectOnPlane(viewer-holder.position,Vector3.up).normalized,Vector3.up);
             var bounds=GraphicsPropLibrary.LocalBounds(holder);
+            lantern.localPosition-=bounds.center;
+            bounds=GraphicsPropLibrary.LocalBounds(holder);
             if(fittedHeight>0)holder.localScale=Vector3.one*(fittedHeight/Mathf.Max(.001f,bounds.size.y));
             float top=bounds.max.y*holder.localScale.y;
-            if(fittedHeight>0)BuddhistLanternInk(holder,bounds);
             foreach(var renderer in holder.GetComponentsInChildren<MeshRenderer>(true))renderer.shadowCastingMode=ShadowCastingMode.Off;
-            toBatch.Add(holder);var cord=new GraphicsSurfaceLibrary.Geometry(Vector3.zero,.15f);
+            var cord=new GraphicsSurfaceLibrary.Geometry(Vector3.zero,.15f);
             Tube(cord,at+Vector3.up*top,new Vector3(at.x,11.9f,at.z),.012f);
             MeshPart("Old lantern suspension cord",cord.Mesh("Owned lantern suspension"),rope);
             var fire=Group("Candle flame inside the Buddhist lantern",Vector3.zero);fire.SetParent(holder,false);
@@ -188,24 +191,6 @@ namespace HappyToy.V2
             GraphicsPropLibrary.Fit(flame,new Bounds(Vector3.zero,new Vector3(.05f,.13f,.05f)/holder.localScale.x));
             var sourceAt=transform.InverseTransformPoint(fire.position);
             Lamp("Candle-lit Buddhist paper lantern",sourceAt,new Color(1,.54f,.22f),intensity,range,shadow,holder);
-        }
-        void BuddhistLanternInk(Transform holder,Bounds bounds)
-        {
-            var viewer=transform.TransformPoint(new Vector3(0,1.6f,-9.2f));
-            var outward=Vector3.ProjectOnPlane(viewer-holder.position,Vector3.up).normalized;
-            float radius=Mathf.Min(bounds.extents.x,bounds.extents.z)*holder.localScale.x;
-            var glyph=Group("Weathered Buddhist lantern ink",Vector3.zero);
-            glyph.SetParent(holder,false);
-            glyph.position=holder.TransformPoint(bounds.center)+outward*(radius+.006f);
-            glyph.rotation=Quaternion.LookRotation(-outward,Vector3.up);
-            glyph.localScale=Vector3.one/holder.localScale.x;
-            var text=glyph.gameObject.AddComponent<TextMesh>();
-            text.text="佛";text.fontSize=80;text.characterSize=.065f;
-            text.anchor=TextAnchor.MiddleCenter;text.alignment=TextAlignment.Center;
-            text.color=new Color(.055f,.025f,.012f);
-            glyph.gameObject.AddComponent<AnnexSignFont>().Apply();
-            var renderer=glyph.GetComponent<MeshRenderer>();
-            renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
         }
         void Lamp(string name,Vector3 at,Color colour,float intensity,float range,bool shadow,Transform fixture)
         {

@@ -8,7 +8,7 @@ image downloaded from the corresponding webapp job. Keep the image-generation pr
 webapp settings, job identity and original SHA-256 with those inputs. A temporary
 server job or a download URL is not a replacement for these local source files.
 
-The four base meshes come from the repository's modeling webapp. Local
+The five base meshes come from the repository's modeling webapp. Local
 Blender finishing preserves the original surfaces, UVs and PBR while creating
 editable sources and bounded game LODs. Return to the designated webapp when a
 base needs regeneration. Do not replace these generated originals with another
@@ -126,28 +126,36 @@ unchanged physical floor. Their .14m total relief spans -.115m to +.025m around
 the existing y=0 support. All further relief extends downwards; there are no new steps,
 floor colliders, NavMesh obstacles or route/pickup changes.
 
-`CorridorEntranceRitualDressing` owns two stone guardian instances, 55 worn candles,
-four old paper lanterns, 67 hanging inked seals, sagging cords, a faded lotus
-floor trace and small wet accents. It reuses the retained graphics props,
-`hanging-seal` detail's paper surface and aged-paper UVs, onggi vessel and incense
-models. Dark ink strokes follow the hanging paper's curved surface and join the
-static detail batches. These are visuals only. Fixed small detail combines once by
-material/shadow state in four
-spatial zones; floor and guardian LODGroups remain independent. Only two local
-point lights are shadow candidates, with the existing global shadow selector
-still authoritative. The nine local lights use warm pools and a dim neutral
-fill. The foreground hero lantern is uniformly fitted to an actual 1.25m height;
-its suspension starts at the measured model top.
-The foreground lantern's dark 佛 uses the existing bundled OFL Korean font
-and its depth-tested world lettering; its font material follows the owned sign lifecycle.
-The actual new-run start is chamber-local `(0, .03, -9.2)`, facing yaw 0 degrees
-from beside the sealed gate toward the onward passage. Two retained generated
-jangseung, offering jars, dark authored timber thresholds, extra hanging seals and
-foreground candle gatherings frame that view. Existing gate/collision/model
-scales, navigation and saved positions remain unchanged. These props reuse the
-tracked `KoreanCorridorProps` and `CorridorArchitecture` sources; no new base model
-or generated original is substituted. The composition retains nine local lights
-and two shadow candidates.
+`CorridorEntranceRitualDressing` owns two stone guardian instances, worn
+candle gatherings, five generated hexagonal Buddhist lanterns, hanging inked
+seals, sagging cords, a faded lotus floor trace and small wet accents. The
+lantern is the designated webapp's job `d0415406-c037-42a1-bd2b-ed84b595d651`,
+preserved in `buddhist-lantern/` with its exact input/prompt, processed input,
+completed/saved server record, original GLB/8K PBR and packed editable Blender.
+The actual 佛 ink belongs to the UV atlas; no floating font overlay remains.
+The 948,015-triangle original is finished to 19,999/11,999-triangle LODs with
+2K game maps. `rebake_lantern_atlas.py` transfers original colour/ORM onto coherent
+game UVs after reduction. Its selective pale-paper emission mask leaves brush
+ink and dark timber unlit. Both recipes are standalone and embedded in the blend.
+
+Reproduce this prop with Blender 4.0.2 using `finish_entrance_assets.py -- --only
+buddhist-lantern`, then run Unity method
+`HappyToy.V2.Editor.CorridorEntranceImport.ImportBuddhistLantern` and
+`python HappyToyV2/SourceArt/CorridorEntrance/record_ritual_assets.py --only buddhist-lantern`.
+Blender MCP can run the same finishing recipe in a disposable editor; the
+connection and read-only Blender/Unity static-asset review tools are documented
+in `Tools/mcp/README.md`.
+
+The five models retain shared imported PBR and independent LODGroups. Other
+small fixed details combine by material/shadow state in spatial zones. These
+are visual-only: original floor support, colliders, NavMesh and E targets stay
+with the chamber. Nine actual warm local firelights (range at most 7m), two
+shadow candidates and the .45 light gain remain. The two gate offerings stand
+at ±3.8m and illuminate the real closed leaves; the high vault has no fill.
+The actual start is chamber-local `(0, .03, -9.2)`, facing yaw 0 toward the
+onward passage. Each lantern faces this view; the actual start, near prop and
+gate views are included in `entrance-lighting`. Other retained Korean props
+frame the onward route without new physical obstacles.
 Owned wet-accent material/roughness texture and batches are released on
 removal; source material maps are never replaced or edited.
 

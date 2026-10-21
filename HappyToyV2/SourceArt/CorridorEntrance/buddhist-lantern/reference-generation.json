@@ -1,0 +1,9 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "mode": "generate",
+  "useCase": "stylized-concept",
+  "transparent_background": true,
+  "prompt": "Use case: stylized-concept. Asset type: single reference image for image-to-3D reconstruction of a game prop. Primary request: one antique Korean Buddhist temple hanging lantern, a convincing handcrafted artifact for an eerie abandoned mountain temple. Make a NEW distinctly shaped model: tall six-sided lantern with broad flat aged hanji paper panels, a dark scorched wooden hexagonal frame, simple small pagoda-shaped sloping wooden cap with lifted corners, worn bronze hanging loop attached to cap, carved lotus-petal lower wooden rim. One large, correctly written Chinese character '佛' in irregular black brush ink centered on the front paper panel; a second visible side paper panel may also carry '佛'. The paper panels have unobstructed faces, no grid crossing the glyph. Warm ivory and ochre stained paper, dark brown wood grain, tarnished bronze details, subtle soot and age stains. Realistic PBR game asset reference with clear solid geometry, no tiny chains or dangling tassels. Composition: one whole isolated object, three-quarter front view, centered with generous margin, front and right face visible, full cap and hanging loop and lower rim visible. Proportions: lantern body is about 1.5 times as tall as it is wide. Neutral soft studio light, all materials readable, no dramatic shadow, no baked glow or painted illumination. Transparent background. Constraints: exactly one lantern, no people, no scene, no pedestal, no floor, no extraneous text, no diagram, no multiple views, no watermark. Clearly legible exact glyph '佛'. The silhouette must be hexagonal architecture and lotus carving, not a spherical ribbed paper balloon.",
+  "savedFile": "reference.png",
+  "note": "The original returned bitmap is preserved unchanged; background removal was enabled in the designated modeling webapp."
+}

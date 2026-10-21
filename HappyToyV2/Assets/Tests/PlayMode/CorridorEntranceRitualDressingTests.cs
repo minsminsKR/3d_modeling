@@ -53,7 +53,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(support.point.y,Is.EqualTo(0).Within(.03f));
             }
             var sourceMaterials=new Dictionary<Material,(Texture,Texture)>();
-            foreach(string key in new[]{"temple-gate","cave-rock","ritual-floor","guardian-statue"})
+            foreach(string key in new[]{"temple-gate","cave-rock","ritual-floor","guardian-statue","buddhist-lantern"})
             {
                 var prefab=Resources.Load<GameObject>("CorridorEntrance/"+key+"-visual");Assert.That(prefab,Is.Not.Null);
                 foreach(var material in prefab.GetComponentsInChildren<MeshRenderer>(true).SelectMany(x=>x.sharedMaterials).Distinct())
@@ -79,6 +79,59 @@ namespace HappyToy.V2.CloudTests
             foreach(var pair in sourceMaterials)
             {Assert.That(pair.Key,Is.Not.Null);Assert.That(pair.Key.GetTexture("_BaseMap"),Is.SameAs(pair.Value.Item1));Assert.That(pair.Key.GetTexture("_MetallicGlossMap"),Is.SameAs(pair.Value.Item2));}
             Debug.Log("HAPPYTOY_ENTRANCE_RITUAL_OWNERSHIP_PASS real generated floor/guardians, visual relief/support, clear NavMesh, bounded batches, shared PBR retention and owned teardown");
+        }
+
+        [UnityTest,Timeout(120000)]
+        public IEnumerator GeneratedBuddhistLanternsKeepPaintedInkSharedLodsAndAppearInActualCamera()
+        {
+            yield return PrepareEntranceCavern();
+            var entrance=Get<Component>(Get<Component>(session,"Corridor"),"Entrance");
+            var art=entrance.GetComponent(RequireType("CorridorEntrancePresentation"));
+            var dressing=Get<Component>(art,"Dressing");
+            var prefab=Resources.Load<GameObject>("CorridorEntrance/buddhist-lantern-visual");
+            Assert.That(prefab,Is.Not.Null);
+            var sourceMeshes=prefab.GetComponentsInChildren<MeshFilter>(true).Select(x=>x.sharedMesh).ToArray();
+            var sourceMaterials=prefab.GetComponentsInChildren<MeshRenderer>(true).SelectMany(x=>x.sharedMaterials).Distinct().ToArray();
+            var models=dressing.GetComponentsInChildren<Transform>(true).Where(x=>x.name=="Generated hexagonal Buddhist lantern").ToArray();
+            Assert.That(models.Length,Is.EqualTo(5),"An entrance lantern still uses the generic balloon");
+            foreach(var model in models)
+            {
+                Assert.That(model.GetComponentsInChildren<TextMesh>(true),Is.Empty,"Ink must belong to the generated UV atlas, not a floating sign");
+                var group=model.GetComponentInChildren<LODGroup>(true);
+                Assert.That(group,Is.Not.Null);Assert.That(group.GetLODs().Length,Is.EqualTo(2));
+                var meshes=model.GetComponentsInChildren<MeshFilter>(true).Select(x=>x.sharedMesh).ToArray();
+                CollectionAssert.AreEquivalent(sourceMeshes,meshes,"Imported shared LODs were replaced or combined away");
+                foreach(var renderer in model.GetComponentsInChildren<MeshRenderer>(true))
+                    foreach(var material in renderer.sharedMaterials)
+                    {
+                        CollectionAssert.Contains(sourceMaterials,material);
+                        Assert.That(material.GetTexture("_BaseMap"),Is.Not.Null);
+                        Assert.That(material.GetTexture("_EmissionMap"),Is.Not.Null,"Hanji and dark ink need the selective original-atlas mask");
+                        Assert.That(material.IsKeywordEnabled("_EMISSION"),Is.True);
+                    }
+            }
+            Assert.That(dressing.GetComponentsInChildren<Collider>(true),Is.Empty);
+            var camera=Get<Camera>(player,"eyes");((Behaviour)player).enabled=false;Get<Light>(player,"flashlight").enabled=false;
+            Call(shell,"Pause");
+            var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));
+            yield return EntranceLightingReviewExport.RefreshReflections(new[]{Get<ReflectionProbe>(graphics,"OwnedProbe"),Get<ReflectionProbe>(graphics,"EntranceProbe")});
+            var frame=EntranceRitualFrame(camera,1280,720);
+            try
+            {
+                EntranceBrightnessEvidence("buddhist-lantern-start",frame);
+                Assert.That(EntranceRendererContribution(camera,frame,models.SelectMany(x=>x.GetComponentsInChildren<Renderer>(true))),Is.GreaterThan(200),"New geometry contributes nothing to the real start view");
+            }
+            finally{Object.Destroy(frame);}
+            var fixture=models.First(x=>x.parent.name=="Old inked temple paper lantern").parent;
+            var eye=fixture.position+fixture.forward*1.9f+Vector3.up*.06f;
+            camera.transform.SetPositionAndRotation(eye,Quaternion.LookRotation(fixture.position-eye,Vector3.up));
+            frame=EntranceRitualFrame(camera,1280,720);
+            try
+            {
+                EntranceBrightnessEvidence("buddhist-lantern-near",frame);
+                Assert.That(EntranceRendererContribution(camera,frame,fixture.GetComponentsInChildren<Renderer>(true)),Is.GreaterThan(6000),"The actual imported near model is invisible");
+            }
+            finally{Object.Destroy(frame);}
         }
 
         [Serializable] sealed class EntranceRitualView

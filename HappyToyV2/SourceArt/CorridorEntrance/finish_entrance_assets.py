@@ -25,6 +25,7 @@ SETTINGS = {
     'ritual-floor': dict(axis=0, metres=8.0, texture=4096, budgets=(18000, 8000),
                          square=True, max_height=.14, roughness_multiplier=.36),
     'guardian-statue': dict(axis=2, metres=2.8, texture=4096, budgets=(30000, 8000)),
+    'buddhist-lantern': dict(axis=2, metres=1.0, texture=2048, budgets=(20000, 12000), paper_emission=True, rebake_atlas=True),
 }
 
 
@@ -195,7 +196,7 @@ def simplify(obj, budget):
                            + obj.name + ' ' + str(triangles(obj)) + ' > ' + str(budget))
 
 
-def prepare(key, yaw):
+def prepare(key, yaw, keep_editor_session=False):
     settings = SETTINGS[key]
     source = SOURCE / key
     original = source / 'original.glb'
@@ -204,7 +205,13 @@ def prepare(key, yaw):
     original_materials = source_materials(original)
     destination = OUTPUT / key
     destination.mkdir(parents=True, exist_ok=True)
-    bpy.ops.wm.read_factory_settings(use_empty=True)
+    if keep_editor_session:
+        # Only use in a disposable MCP editor; preserve its live addon/connection.
+        for obj in list(bpy.context.scene.objects):
+            bpy.data.objects.remove(obj,do_unlink=True)
+        bpy.data.orphans_purge(do_recursive=True)
+    else:
+        bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.import_scene.gltf(filepath=str(original))
     originals = list(bpy.context.scene.objects)
@@ -273,6 +280,31 @@ def prepare(key, yaw):
                               original_materials[0] if len(original_materials) == 1 else {})
             surfaces.append(material_maps(old, new.name, destination, settings['texture'], definition,
                                           settings.get('roughness_multiplier', 1)))
+            if settings.get('paper_emission'):
+                # Derived from the original atlas: pale hanji emits softly, dark
+                # brush ink/wood remain dark. Never replace the source PBR.
+                shader = next(node for node in old.node_tree.nodes if node.type == 'BSDF_PRINCIPLED')
+                image = image_for(shader.inputs['Base Color'])[0]
+                size = image_size(image, settings['texture'])
+                pixels = sample(image, size)
+                paper = np.clip((pixels[:,1]-.12)/.28,0,1) * np.clip((pixels[:,2]-.055)/.16,0,1)
+                emission = np.ones_like(pixels)
+                emission[:,:3] = paper[:,None]
+                entry = surfaces[-1]
+                entry['emission'] = new.name+'-paperEmission.png'
+                entry['emissionColor'] = [.16,.072,.023,1]
+                entry['emissionMaskRecipe'] = 'linear green smooth ramp .12-.40 multiplied by blue ramp .055-.215; original atlas ink retained dark'
+                save_pixels(emission,size,destination/entry['emission'],'Non-Color')
+                mask = bpy.data.images.load(str(destination/entry['emission']), check_existing=False)
+                mask.colorspace_settings.name = 'Non-Color'
+                derived = next(node for node in new.node_tree.nodes if node.type == 'BSDF_PRINCIPLED')
+                node = new.node_tree.nodes.new('ShaderNodeTexImage');node.image = mask
+                warm = new.node_tree.nodes.new('ShaderNodeMixRGB')
+                warm.blend_type='MULTIPLY';warm.inputs[0].default_value=1
+                warm.inputs[2].default_value=(.16,.072,.023,1)
+                new.node_tree.links.new(node.outputs['Color'],warm.inputs[1])
+                new.node_tree.links.new(warm.outputs[0],derived.inputs['Emission Color'])
+                derived.inputs['Emission Strength'].default_value = 1
             wet = settings.get('roughness_multiplier', 1)
             if wet != 1:
                 # Match the editable game material to the exported wet PBR;
@@ -292,6 +324,13 @@ def prepare(key, yaw):
             mapped[old.name] = new
         slot.material = mapped[old.name]
     simplify(game, settings['budgets'][0])
+    if settings.get('rebake_atlas'):
+        import runpy
+        atlas=runpy.run_path(str(SOURCE/'rebake_lantern_atlas.py'),run_name='lantern_atlas_recipe')
+        if len(meshes)!=1:
+            raise RuntimeError('Lantern atlas recipe requires one preserved original mesh')
+        surfaces=[atlas['bake'](game,meshes[0],normalization@rotation,destination,
+                                'CE_'+key+'_0',settings['texture'],save_pixels)]
     lods = [game]
     for index, budget in enumerate(settings['budgets'][1:], 1):
         clone = game.copy()
@@ -319,6 +358,8 @@ def prepare(key, yaw):
     bpy.ops.file.pack_all()
     text = bpy.data.texts.new('SOURCE - finish_entrance_assets.py')
     text.write(Path(__file__).read_text(encoding='utf-8'))
+    if settings.get('rebake_atlas'):
+        bpy.data.texts.new('SOURCE - rebake_lantern_atlas.py').write((SOURCE/'rebake_lantern_atlas.py').read_text(encoding='utf-8'))
     original_collection.hide_render = True
     original_collection.hide_viewport = True
     for obj in lods[1:]:
@@ -338,7 +379,7 @@ def prepare(key, yaw):
                   originalTriangles=original_triangles, lods=reports, materials=surfaces,
                   textures='Full original PBR packed once in editable blend; game PNGs derived at the configured size')
     for path in (source / 'export.json', destination / 'asset.json'):
-        path.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
+        path.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
     print('CORRIDOR_ENTRANCE_ASSET ' + json.dumps(report), flush=True)
 
 

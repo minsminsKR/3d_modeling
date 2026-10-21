@@ -12,7 +12,7 @@ namespace HappyToy.V2.Editor
     public static class CorridorEntranceImport
     {
         const string Folder = "Assets/Resources/CorridorEntrance/";
-        static readonly string[] Keys = { "temple-gate", "cave-rock", "ritual-floor", "guardian-statue" };
+        static readonly string[] Keys = { "temple-gate", "cave-rock", "ritual-floor", "guardian-statue", "buddhist-lantern" };
         [Serializable] sealed class Report
         {
             public string key, normalizedAxis;
@@ -23,7 +23,8 @@ namespace HappyToy.V2.Editor
         }
         [Serializable] sealed class Surface
         {
-            public string name, baseColor, metallicSmoothness, normal, occlusion;
+            public string name, baseColor, metallicSmoothness, normal, occlusion, emission;
+            public float[] emissionColor;
             public float roughness, metallic, normalScale, occlusionStrength;
             public float[] baseColorFactor;
         }
@@ -68,6 +69,12 @@ namespace HappyToy.V2.Editor
             Debug.Log("CORRIDOR_ENTRANCE_IMPORT_PASS");
         }
 
+        public static void ImportBuddhistLantern()
+        {
+            AssetDatabase.Refresh();Import("buddhist-lantern");AssetDatabase.SaveAssets();Ensure();
+            Debug.Log("BUDDHIST_LANTERN_IMPORT_PASS");
+        }
+
         static Report Read(string key)
         {
             string path = Folder + key + "/asset.json";
@@ -76,7 +83,7 @@ namespace HappyToy.V2.Editor
             if (report == null || report.key != key || report.materials == null || report.materials.Length == 0 ||
                 report.lods == null || report.lods.Length != (key == "temple-gate" ? 1 : 2) ||
                 report.normalizedMetres <= 0 || report.widthMetres <= 0 || report.heightMetres <= 0 || report.depthMetres <= 0 ||
-                report.textureMaxSize != (key == "cave-rock" ? 2048 : 4096))
+                report.textureMaxSize != (key == "cave-rock" || key == "buddhist-lantern" ? 2048 : 4096))
                 throw new InvalidOperationException("Generated entrance inventory is incomplete: " + key);
             return report;
         }
@@ -124,6 +131,13 @@ namespace HappyToy.V2.Editor
             material.SetTexture("_OcclusionMap", occlusion ? Texture(folder + surface.occlusion, size, true) : null);
             material.SetFloat("_OcclusionStrength", surface.occlusionStrength);
             Keyword(material, "_OCCLUSIONMAP", occlusion);
+            bool emits = !string.IsNullOrEmpty(surface.emission);
+            material.SetTexture("_EmissionMap", emits ? Texture(folder + surface.emission, size, true) : null);
+            var glow = surface.emissionColor;
+            material.SetColor("_EmissionColor", emits && glow != null && glow.Length == 4 ?
+                new Color(glow[0],glow[1],glow[2],glow[3]) : Color.black);
+            material.globalIlluminationFlags=emits?MaterialGlobalIlluminationFlags.BakedEmissive:MaterialGlobalIlluminationFlags.EmissiveIsBlack;
+            Keyword(material,"_EMISSION",emits);
             EditorUtility.SetDirty(material);
             return material;
         }
@@ -292,6 +306,9 @@ namespace HappyToy.V2.Editor
                     prefab.GetComponentsInChildren<Renderer>(true).Any(renderer => renderer.sharedMaterials.Any(material =>
                         !material || !material.GetTexture("_BaseMap"))))
                     throw new InvalidOperationException("Generated entrance prefab/PBR is incomplete: " + key);
+                if(key=="buddhist-lantern" && prefab.GetComponentsInChildren<Renderer>(true).SelectMany(renderer=>renderer.sharedMaterials).Any(material=>
+                    !material.GetTexture("_EmissionMap") || !material.IsKeywordEnabled("_EMISSION")))
+                    throw new InvalidOperationException("Generated lantern hanji emission was disabled during import");
                 var bound = GraphicsPropLibrary.LocalBounds(prefab.transform);
                 float span = report.normalizedAxis == "width" ? bound.size.x : bound.size.y;
                 if (Mathf.Abs(span - report.normalizedMetres) > .08f || Mathf.Abs(bound.min.y) > .05f)

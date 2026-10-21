@@ -55,7 +55,7 @@ def capture(key):
     for material in exported['materials']:
         path = output / key / (material['name'] + '.mat')
         required += [path, Path(str(path) + '.meta')]
-        for field in ('baseColor', 'metallicSmoothness', 'normal', 'occlusion'):
+        for field in ('baseColor', 'metallicSmoothness', 'normal', 'occlusion', 'emission'):
             if field in material:
                 path = output / key / material[field]
                 required += [path, Path(str(path) + '.meta')]
@@ -80,7 +80,7 @@ def capture(key):
         processedInput=record(folder / 'processed.png'),
         generator=dict(application='hunyuan3d-webapp',
                        site='https://agrees-mic-icon-contribution.trycloudflare.com/',
-                       jobId=job['id'], batchId=job['batch_id'],
+                       jobId=job['id'], batchId=job.get('batch_id'),
                        options=job['options'], elapsedSeconds=job['elapsed_seconds'],
                        record=record(folder / 'job.json'), savedOnServer=job['saved'],
                        note='Server paths and links are historical evidence only; all required inputs and outputs are local.'),
@@ -98,7 +98,7 @@ def capture(key):
                        settings=exported['finishing'],
                        originalTriangles=exported['originalTriangles'], lods=exported['lods']),
         unityImport=dict(editor='6000.6.0f1',
-                         method='HappyToy.V2.Editor.CorridorEntranceImport.Apply',
+                         method='HappyToy.V2.Editor.CorridorEntranceImport.ImportBuddhistLantern' if key=='buddhist-lantern' else 'HappyToy.V2.Editor.CorridorEntranceImport.Apply',
                          script=record(PROJECT / 'Assets/Editor/CorridorEntranceImport.cs'),
                          scriptMeta=record(PROJECT / 'Assets/Editor/CorridorEntranceImport.cs.meta'),
                          runtimePresentation=record(PROJECT / 'Assets/Scripts/CorridorEntrancePresentation.cs'),
@@ -109,6 +109,9 @@ def capture(key):
                          outputs=[record(path) for path in resources]),
         licenses=[record(SOURCE / name) for name in ('LICENSE.md', 'TRELLIS.2-LICENSE.txt')],
         verificationScope='Source handoff hashes only; actual camera review, focused integration checks and native performance are separate evidence.')
+    if key=='buddhist-lantern':
+        value['finishing']['supportingRecipes']=[record(SOURCE/'rebake_lantern_atlas.py')]
+        value['finishing']['embeddedSupportingSourceText']='SOURCE - rebake_lantern_atlas.py'
     provenance.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n', encoding='utf-8', newline='\n')
     print('RITUAL_ENTRANCE_HANDOFF ' + key + ' ' + str(len(resources)) + ' resource files')
 
@@ -142,7 +145,14 @@ def refresh_existing_import(key):
 
 
 if __name__ == '__main__':
-    for requested in ('ritual-floor', 'guardian-statue'):
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--only',choices=('ritual-floor','guardian-statue','buddhist-lantern'))
+    args=parser.parse_args()
+    if args.only:
+        capture(args.only)
+        raise SystemExit(0)
+    for requested in ('ritual-floor', 'guardian-statue', 'buddhist-lantern'):
         capture(requested)
     for requested in ('temple-gate', 'cave-rock'):
         refresh_existing_import(requested)
