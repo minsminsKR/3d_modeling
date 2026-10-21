@@ -1,0 +1,11 @@
+{
+  "key": "grand-piano",
+  "prompt": "Use case: product-mockup. A single isolated realistic 3D asset reference image for a survival horror game music classroom in a Korean secondary school. One complete aged ebony black baby grand piano with raised triangular grand lid on its diagonal support stick, realistic open curved wing silhouette and visible warm wood soundboard, three sturdy tapered piano legs with small aged brass casters, full continuous black and ivory keyboard facing front-left, pedals clearly attached below the keyboard. Include one matching rectangular padded black wooden piano bench centered in front of the keyboard with a small clear separation, all four bench legs visible. Three-quarter front view slightly elevated at 25 degrees, showing the keyboard and broad curved piano body. The full piano and the bench fit comfortably inside the frame with a 12 percent margin, on a neutral very light grey seamless background. Photorealistic physical materials, worn subtly satin ebony lacquer, warm brown soundboard, readable ivory keys and black key groups, moderate dust and realistic edge wear, controlled diffuse neutral studio light, clear unobscured geometry, sharp edges and accurate proportions. No people, no hands, no room or walls, no floor slab, no text, no logo, no background props, no extra musical instruments. All piano pieces connected; the lid and legs are solid and substantial enough for reconstruction. Intended for image-to-3D reconstruction, high geometric clarity, no deep black crushed shadows.",
+  "input": "reference.png",
+  "jobId": "7375a264-26cc-46db-8a18-b509df131a47",
+  "tool": "built-in image_gen.imagegen",
+  "mode": "generate",
+  "transparent_background": false,
+  "batchId": "2cab6bd0-3a67-47f0-aeb7-a87c25af0209",
+  "submittedOptionsRecord": "job.json"
+}

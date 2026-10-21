@@ -160,6 +160,8 @@ namespace HappyToy.V2.CloudTests
                 "Firecracker restart did not replace its scene");
             yield return null; yield return null;
             session = One("GameSession"); player = Get<Component>(session, "player"); shell = Get<Component>(session, "Shell");
+            // Scene replacement precedes the real black loading curtain releasing input.
+            yield return Wait(() => !Get<bool>(shell, "IsReloading"), 30, "Restart loading curtain did not finish");
             inventory = Get<Component>(player, "Firecrackers");
             Assert.That(fire == null, Is.True); Assert.That(source == null, Is.True); Assert.That(ownedClip == null, Is.True);
             Assert.That(impact == null && impactMaterial == null && particles.All(system => system == null), Is.True,

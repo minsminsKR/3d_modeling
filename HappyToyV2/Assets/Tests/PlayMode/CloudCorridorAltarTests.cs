@@ -262,11 +262,13 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(session, "CorridorMode"), Is.False);
             Assert.That(Get<bool>(session, "Finished"), Is.False);
             Assert.That(Get<int>(session, "RecordsRecovered"), Is.Zero);
-            Assert.That(Get<int>(session, "TotalRecords"), Is.EqualTo(5));
+            Assert.That(Get<int>(session, "TotalRecords"), Is.Zero);
             Assert.That(Get<Component>(session, "Corridor"), Is.Null);
             var chapter = Get<Component>(session, "Chapter");
-            Assert.That(Get<Component[]>(chapter, "Memories").Select(memory => Get<string>(memory, "stableId")),
-                Is.EqualTo(Enumerable.Range(0, 5).Select(index => "chapter-memory-" + index)));
+            Assert.That(Get<int>(chapter,"LayoutVersion"),Is.EqualTo(3));
+            Assert.That(Get<Component>(chapter,"Loop"),Is.Not.Null);
+            Assert.That(Get<Component[]>(chapter,"Memories"),Is.Empty,"Retired school memories leaked into the current school");
+            Assert.That(Vector3.Distance(player.transform.position,new Vector3(-4.6f,.03f,47.2f)),Is.LessThan(.15f));
             Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(12));
             Assert.That(File.ReadAllText(schoolPath), Is.EqualTo(schoolBytes),
                 "Automatic continuation consumed or rewrote the independent school suspension slot");

@@ -91,6 +91,7 @@ namespace HappyToy.V2.Editor
             CorridorFurnitureImport.Ensure();
             KoreanCorridorPropsImport.Ensure();
             CorridorEntranceImport.Ensure();
+            SchoolLoopAssetsImport.Ensure();
             SnapperAssetsImport.Ensure();
             TrapAssetsImport.Ensure();
             PlayerItemsImport.Ensure();

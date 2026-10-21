@@ -55,7 +55,7 @@ namespace HappyToy.V2.CloudTests
             using (var up = PointerUpEvent.GetPooled(new Event { type = EventType.MouseUp, mousePosition = position, button = 0, clickCount = 1 }))
                 target.SendEvent(up);
             yield return Delay(.15f);
-            if(id=="begin")yield return Wait(()=>!Get<bool>(shell,"CinematicLoading"),45,"Cinematic title entry did not finish preparing/fading into the corridor");
+            if(id=="begin"||id=="begin-school")yield return Wait(()=>!Get<bool>(shell,"CinematicLoading"),45,"Cinematic title entry did not finish preparing/fading into the selected chapter");
             if (id == "continue-chapter" || id == "continue-run" || id == "begin-school")
                 yield return Wait(() => !Get<bool>(shell, "IsReloading"), 30,
                     "School checkpoint restore did not finish its navigation preparation");

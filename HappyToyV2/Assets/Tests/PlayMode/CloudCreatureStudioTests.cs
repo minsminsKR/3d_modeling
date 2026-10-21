@@ -118,7 +118,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator CreatureStudioSchoolKeepsDistinctHwacatAndUpdatesCyclopseNurseryWithValidSave()
         {
             Call(session,"ConfigureRecordDirectory",NewRecordFixture());
-            yield return RecoveryUiReady();yield return RecoveryClick("begin-school");
+            yield return RecoveryUiReady();yield return BeginLegacySchoolFixture();
             Call(session,"ToggleCheatSafeMode");
             for(int i=0;i<5;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
             yield return Delay(.2f);

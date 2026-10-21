@@ -56,7 +56,7 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 | 운냥이 배회·추격 종소리 | `UncatBellVoice.cs`는 실제 움직임·추격 상태와 녹음 기반 공간 음원을 연결한다. `Core/EnemyBellClock.cs`는 배회/추격 간격과 음량을 판정한다. 제작 원본·비교는 `SourceArt/Audio/render_uncat_bell.py`와 `uncat-bell-selection.json`에 있다. | `core`, `supplies-voices`, `corridor`, 기존 무음 음향 검사 |
 | 사이클롭스 거친 호흡 | `CyclopseBreathingVoice`는 가슴 위치의 독립 3D 녹음 루프·배회/추격 음량과 속도·정지/종료/소유 자원 정리를 소유한다. `StalkerBrain.Awake`가 해당 정체성에만 연결하며 AI 감각/이동 규칙은 바꾸지 않는다. `EnemyAcoustics`의 벽·층·거리 차폐와 공통 일시정지/음소거·부적 시간 정지를 따른다. 원본 CC0 사람 호흡·후보 비교·재현 도구는 `ThirdParty/Audio/RecordedHorror`, `SourceArt/Audio/render_cyclopse_breath.py`, `cyclopse-breath-selection.json`에 있다. | `cyclopse-voice` (Core·추격/배회 호흡·비명 제거·무음 실제 믹서), `supplies-voices` |
 | 한국적인 소품 | `KoreanCorridorDressing.cs`는 위치 데이터만 받아 중앙 경로·가구·문 이동을 피한다. `KoreanCorridorProp.cs`는 자산/구역 정체성을 제공한다. `SourceArt/KoreanCorridorProps/`에는 웹앱 GLB/PBR·입력·프롬프트·Blender·LOD 재생성 도구가 있다. | `corridor`, `readability`, `full`, 새 플레이어 표면 확인 |
-| 학교 공간·첫 등장 | `SchoolCampusLayout.cs`, `SchoolCampusArchitecture.cs`, `SchoolCampusRooms.cs`, `SchoolFirstAppearances.cs`, 각 등장 이벤트. | `ai`, 공간/저장 버전 변경 시 `full` |
+| 학교 관찰 루프·음악실 | 현재 메뉴/제단 뒤 학교는 지도 버전 3이다. `Core/SchoolLoopPlan`은 치수·세 방·양 끝 연결 평면을, `SchoolLoopWorld`는 구역별 조립/배칭·물리/NavMesh·시선/자세를 보존하는 연결 이동을 소유한다. `SchoolLoopArchitecture`는 늘 열린 철문과 잠긴 교실/닫힌 창문·국소 형광등을, `SchoolMusicRoomDressing`은 생성 피아노/악보대·공유 좌석·음악실 마감을 담당한다. `LegacySchoolRetirement`가 이 모드에서만 구형 지형/조명/충돌/배우를 제외한다. `MemoryChapter.Loop`은 기존 학교 facade와 새 지도 사이의 명시적 경계다. 현재 시작은 `BeginSchoolLoop`/`CreateSchoolLoop`; 기존 `BeginChapter`/`CreateChapter`와 `SchoolCampus*`/`SchoolFirstAppearances`는 구형 버전 1/2 저장 및 기존 회귀를 보존한다. 새 지도에 구형 수집/계단/추격을 적용하지 않는다. `SchoolLoopCheckpoint`는 버전 3의 위치·연결 횟수·조명/아이템 저장을 검사한다. 원본·사용자 평면도·Blender/PBR/LOD·재현 도구는 `SourceArt/SchoolLoop`에 있다. | `school-loop`; 학교 전체 교체/저장 경계는 `full` 두 모드와 새 Windows 빌드. 이상현상/8회 탈출 규칙은 별도 후속 범위 |
 | 저장·재개·게임 진행 | `GameSession.cs`, `CorridorRunCheckpoint.cs`, `ChapterRunCheckpoint.cs`, 각 `*CheckpointStore.cs` / `*Checkpoint.cs`. `CorridorCheckpointCodec.cs` / `ChapterCheckpointCodec.cs`가 검증된 JSON·복사 경계를 소유하며 `CheckpointJsonFields`는 root의 선택 `traps` 필드 누락/null을 보존한다. JsonUtility가 구형 누락 필드를 빈 inline 객체로 만드는 경우도 빈 덫 데이터로 오인하지 않으며, 실제 존재하는 잘못된 덫 데이터는 계속 거부한다. 저장소는 이 codec을 거쳐 복사/직렬화/역직렬화한다. 체크포인트 partial은 기존 저장 형식을 연결하는 어댑터다. | `core`, `checkpoint`; 덫 codec 변경 시 학교/회랑 중단 복원·덫 저장 회귀 |
 | 그래픽 설정·그림자 예산·성능 비교 | `Assets/Editor/GraphicsLightingSetup.cs`가 소유 URP 자산의 HDR·MSAA4·SMAA·깊이 재구성 SSAO를 재생성한다. `GraphicsLightingPresentation.cs`는 모드별 조명/반사를 복원한다. `LocalShadowBudget.cs`는 매 프레임 실제 광원에서 `ShadowAtlasPlan.Rebuild`의 재사용 목록을 채우며 동일 거리/ID 우선순위로 그림자를 선택한다. `GraphicsOptimizationProbe.cs`는 명시된 인자로만 정적 카메라의 GPU 완료 대기 렌더링 시간을 측정한다. | `graphics`, 공통 렌더링 변경/배포는 `full` 및 새 플레이어 표면·안광 검사 |
 | 회랑 진행 중 프레임·장시간 관찰 | 명시적 `NativeCorridorPlayAudit` 성능 모드는 `CorridorPerformanceSampling`으로 실제 주 카메라 콜백 간격·지원 CPU/GPU/메모리 counter를 제한된 버퍼에 기록한다. PNG·추가 렌더·readback·PCM은 생략한다. `NativeCorridorInputRoute`의 선택 patrol은 네 번째 기억 뒤 실제 적 4종 활성부터 기존 입력 이동을 순환한다. `NativeAuditMovement`는 선택한 준비 이동의 긴 안전 직선만 가속하고 원래 walk/run 값을 복원한다. patrol·문·상호작용·위험 주변은 정속이며 가속/전환 프레임은 정속 성능 근거에서 제외한다. 일반 실행·AI·저장·시간 배율은 유지한다. | 새 네이티브 플레이어의 동일 seed/API/해상도/설정 경로 비교; 경로 변경 시 `corridor`, 공유 규칙 변경 시 `core` |
@@ -266,7 +266,7 @@ fresh scene 복원 검사를 실행한다. 지하 테이블·맨바닥·높은 �
 
 고정된 옛 학교/회랑 좌표를 사용하는 회귀 검사는 `BeginLegacyChapterFixture` /
 `CreateLegacyCorridorFixture`로 지도 1을 명시한다. 최신 회랑 통합 검사는 기본 지도
-5, 최신 학교 공간/계단 검사는 기본 지도 2를 사용한다. 자연 입력 생존 검사는
+5, 구형 학교 공간/계단 검사는 기존 호환 API의 지도 2를 사용한다. 실제 메뉴/제단 뒤 학교와 `school-loop`는 새 지도 3을 사용한다. 자연 입력 생존 검사는
 `Time.captureDeltaTime=0`을 유지한다. 명시적인 전체 음향 캡처 검사의 고정 믹서
 스텝은 별도 `controlledMixer` 입력으로 구분하며 자연 시간 생존 증거로 취급하지 않는다.
 
@@ -369,3 +369,21 @@ unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.E
 변경 범위에 대한 검사로 문제가 해결되면 새 근거 없이 같은 전체 검사를 반복하지 않는다.
 
 `supplies-voices`는 Core와 두 체크포인트 저장소/선택 codec, 실제 선반·서랍의 향/조각 지지면·E 수집·유한 재고·버전 1 복원을 검사한다. 기존 서랍/학교 저장, 운냥이 실제 배회→추격 종소리와 새 사이클롭스 공간 호흡의 벽·일시정지·음소거·거리·시간 정지·자원 정리를 무음으로 확인한다. 종소리는 배회 .32/추격 .84이며 기존 .88/.23초 간격과 음원은 유지한다. 실제 기기 청감·생존 플레이 인증은 별도다.
+
+
+`school-loop`는 Core 지도 규칙과 실제 학교 메뉴 버튼, 구형 지형/배우 제외,
+잠긴 세 출입문·물리 유리·실내로 갈 수 없는 경로, 실제 W 이동의 양방향 연결과
+시선/지지면 보존·일시정지 중 무전환, 버전 3 저장·복원/불법 실내 좌표 거부를 확인한다.
+음악실의 원본 기반 두 LOD·공유 PBR·좌석/악보대 배치, 실제 복도 창문을 통한
+피아노 기여와 복도/천장을 제거한 실제 Unity 평면 화면도 기록한다.
+현재 학교는 관찰형 맵/음악실 제작 단계로, 이상현상 판정이나 최종 탈출을 구현하지 않는다.
+
+
+## 빠른 검증 반복
+
+일상 수정은 위 기능 프로필로 검증한다. 전체 실행에서 실패한 항목을 고친 뒤에는
+`Tools/quality/retry_failed_tests.py --results <NUnit XML> --mode PlayMode`로 실패·미완료
+사례만 새로 실행하고 `--include-profile <기능>`으로 영향받은 기능을 추가한다.
+`--timings-only`는 Unity를 실행하지 않고 사례별 시간과 느린 검사를 읽는다.
+`run_feature_tests.py`의 결과에도 이 시간 분석이 자동으로 남는다. 원본 전체 결과와
+부분 재검사의 범위·판정은 함께 보존한다. 공유 경계/전체 개편/배포의 전체 검사 요구는 유지한다.

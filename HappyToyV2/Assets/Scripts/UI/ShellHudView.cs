@@ -58,10 +58,11 @@ namespace HappyToy.V2
 
         public void Build(int totalRecords, string controlText)
         {
-            int tokenCount = Mathf.Clamp(totalRecords, 1, memoryTokens.Length);
+            int tokenCount = Mathf.Clamp(totalRecords, 0, memoryTokens.Length);
             float tokenWidth = layout.LargeText ? 24 : 20, tokenHeight = tokenWidth * 1.3f, pitch = tokenWidth + 10;
-            memoryStrip = layout.Panel(42, 36, pitch * tokenCount - 10, tokenHeight, Color.clear);
+            memoryStrip = layout.Panel(42, 36, Mathf.Max(0,pitch * tokenCount - 10), tokenHeight, Color.clear);
             memoryStrip.name = "memory-progress";
+            Visible(memoryStrip,tokenCount>0);
             for (int i = 0; i < tokenCount; i++)
             {
                 var token = new MemoryToken(layout.HighContrast) { name = "memory-token-" + i };

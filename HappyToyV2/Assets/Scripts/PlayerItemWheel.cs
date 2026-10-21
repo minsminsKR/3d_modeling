@@ -27,7 +27,7 @@ namespace HappyToy.V2
             if (!shell) return;
             bool held = PlayerControls.ItemWheelHeld;
             bool allowed = session.InputAllowed && !player.Hidden && !player.Rituals.Burning &&
-                (!session.ChapterMode || !session.Chapter.FirstAppearances.CameraOwned) && PlayerControls.AcceptsInput;
+                (!session.ChapterMode || !session.Chapter.FirstAppearances || !session.Chapter.FirstAppearances.CameraOwned) && PlayerControls.AcceptsInput;
             if (!allowed)
             {
                 if (shell.ItemWheelOpen) shell.SetItemWheelOpen(false);

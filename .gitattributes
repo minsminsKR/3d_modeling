@@ -77,3 +77,18 @@ HappyToyV2/Assets/Resources/Lady/*.anim filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Scripts/BuddhistLanternVisual.cs text eol=lf
 HappyToyV2/Assets/Scripts/BuddhistLanternVisual.cs.meta text eol=lf
 HappyToyV2/Assets/Scripts/HauntedCorridorPresentation.cs text eol=lf
+
+# Current school-loop generated originals and packed editable sources.
+HappyToyV2/SourceArt/SchoolLoop/*/original.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolLoop/**/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolLoop/*.py text eol=lf
+HappyToyV2/SourceArt/SchoolLoop/**/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolLoop/*.md text eol=lf
+HappyToyV2/Assets/Editor/SchoolLoopAssetsImport.cs text eol=lf
+HappyToyV2/Assets/Editor/SchoolLoopAssetsImport.cs.meta text eol=lf
+HappyToyV2/Assets/Resources/SchoolLoop/**/*.json text eol=lf
+HappyToyV2/Assets/Resources/SchoolLoop/**/*.meta text eol=lf
+HappyToyV2/Assets/Resources/SchoolLoop/*.prefab text eol=lf
+HappyToyV2/Assets/Resources/SchoolLoop/*.mat text eol=lf
+HappyToyV2/Assets/Resources/SchoolLoop/**/*.mat text eol=lf
+HappyToyV2/Assets/Resources/SchoolLoop.meta text eol=lf

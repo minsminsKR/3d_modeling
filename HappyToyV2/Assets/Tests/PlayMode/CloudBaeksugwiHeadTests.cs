@@ -103,7 +103,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(90000)]
         public IEnumerator BaeksugwiHeadWritheAlsoMovesTheSchoolFloatingMaskBeforeTransformation()
         {
-            yield return RecoveryUiReady();yield return RecoveryClick("begin-school");
+            yield return RecoveryUiReady();yield return BeginLegacySchoolFixture();
             var actor=Get<Component>(Get<Component>(session,"Chapter"),"Mask");((Behaviour)actor).enabled=false;
             var state=Call(actor,"CaptureChapterProgress");Set(state,"active",true);Set(state,"introComplete",true);
             Set(state,"transformed",false);Set(state,"state","Chase");Set(state,"memory",3f);Call(actor,"RestoreChapterProgress",state);

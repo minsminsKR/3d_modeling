@@ -1,0 +1,96 @@
+{
+  "key": "music-stand",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "54a49b9204b9e41f08f67ab9e33f86614b4b8da692c5afb4d8996b3ec433ce71",
+  "editable": "music-stand/music-stand.blend",
+  "widthMetres": 0.6260289251804352,
+  "heightMetres": 1.160775978140009,
+  "depthMetres": 0.5602882504463196,
+  "normalizedAxis": "height",
+  "normalizedMetres": 1.16,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 2,
+    "metres": 1.16,
+    "texture": 2048,
+    "budgets": [
+      30000,
+      4000
+    ],
+    "distantLodRepair": "Source-derived voxel surface repair (piano 6mm, stand 3mm), bounded collapse, original colour/ORM selected-to-active rebake at 1K. Near LOD retains its source atlas."
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 974226,
+  "originalTriangles": 974226,
+  "lods": [
+    {
+      "file": "music-stand-lod0.fbx",
+      "targetTriangles": 30000,
+      "triangles": 29999,
+      "vertices": 11858,
+      "boundsMin": [
+        -0.3129781484603882,
+        -0.2803058922290802,
+        -0.00011869149602716789
+      ],
+      "boundsMax": [
+        0.313050776720047,
+        0.2799823582172394,
+        1.160657286643982
+      ],
+      "sha256": "349a1ba6aad53a64056c354306edfe18e936ef18ed7df3a97feaaeb77c9360a7"
+    },
+    {
+      "file": "music-stand-lod1.fbx",
+      "targetTriangles": 4000,
+      "triangles": 4000,
+      "vertices": 2306,
+      "boundsMin": [
+        -0.3119615912437439,
+        -0.2797105014324188,
+        0.0017116016242653131
+      ],
+      "boundsMax": [
+        0.3125782907009125,
+        0.27912744879722595,
+        1.1600663661956787
+      ],
+      "sha256": "4bb7265752fc8213f2a4e0b9370c0c162766c0d96eb71d550999f690e443863e"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_music-stand_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_music-stand_0-baseColor.png",
+      "metallicSmoothness": "CE_music-stand_0-metallicSmoothness.png"
+    },
+    {
+      "name": "CE_music-stand_Distant",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_music-stand_Distant-baseColor.png",
+      "metallicSmoothness": "CE_music-stand_Distant-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

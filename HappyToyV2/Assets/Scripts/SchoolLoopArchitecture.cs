@@ -1,0 +1,150 @@
+using System;
+using UnityEngine;
+
+namespace HappyToy.V2
+{
+    // Walls/windows/doors follow the reference plan. The three room interiors
+    // are visible but physically sealed; only the corridor belongs to the route.
+    public sealed class SchoolLoopArchitecture
+    {
+        readonly SchoolLoopWorld world;
+        Transform root;bool physical;
+        Material plaster,paint,tile,timber,iron,ceiling,glass;
+        public SchoolLoopArchitecture(SchoolLoopWorld owner)
+        {
+            world=owner;var pool=world.Surfaces;
+            plaster=pool.Get("concrete-rough",new Color(.72f,.70f,.64f));
+            paint=pool.Get("concrete-rough",new Color(.48f,.54f,.47f));
+            tile=pool.Get("ceramic-tile",new Color(.78f,.76f,.65f));
+            timber=pool.Get("wood-aged",new Color(.45f,.37f,.25f));
+            iron=pool.Get("painted-metal",new Color(.24f,.27f,.25f));
+            ceiling=pool.Get("concrete-rough",new Color(.67f,.69f,.66f));
+            glass=Resources.Load<Material>("SchoolLoop/window-glass");
+            if(!glass)throw new InvalidOperationException("School loop window glass missing");
+            // Painted school plaster retains measured micro-normal/roughness,
+            // with a neutral coating instead of the scan's large stone stains.
+            foreach(var coating in new[]{plaster,paint,ceiling})
+            {coating.SetTexture("_BaseMap",Texture2D.whiteTexture);coating.SetFloat("_BumpScale",.12f);coating.SetFloat("_OcclusionStrength",.15f);}
+        }
+        GameObject Box(string name,Vector3 p,Vector3 size,Material material,bool body=false,bool floor=false)=>world.Box(root,name,p,size,material,physical&&body,floor);
+        void Slab(float x0,float z0,float x1,float z1,bool wood=false)
+        {
+            // Split long slabs so spatial light selection and culling follow
+            // the actual corridor rather than one 38m-wide renderer.
+            if(z1-z0>4.41f)
+            {for(float z=z0;z<z1-.001f;z+=4.4f)Slab(x0,z,x1,Mathf.Min(z+4.4f,z1),wood);return;}
+            var centre=new Vector3((x0+x1)*.5f,-.12f,(z0+z1)*.5f);
+            Box("School loop physical floor",centre,new Vector3(x1-x0,.24f,z1-z0),wood?world.Surfaces.Get("wood-floor",new Color(.89f,.78f,.59f)):tile,true,true);
+            centre.y=3.34f;Box("School acoustic ceiling",centre,new Vector3(x1-x0,.18f,z1-z0),ceiling,true);
+            for(float z=z0+.6f;z<z1;z+=.6f)Box("Ceiling tile cross seam",new Vector3(centre.x,3.244f,z),new Vector3(x1-x0,.009f,.012f),iron);
+            for(float x=x0+.6f;x<x1;x+=.6f)Box("Ceiling tile long seam",new Vector3(x,3.244f,(z0+z1)*.5f),new Vector3(.012f,.009f,z1-z0),iron);
+        }
+        void Wall(float x,float z,float sx,float sz)
+        {
+            if(sz>6)
+            {int count=Mathf.CeilToInt(sz/4.4f);float span=sz/count;for(int i=0;i<count;i++)Wall(x,z-sz*.5f+(i+.5f)*span,sx,span);return;}
+            if(sx>6)
+            {int count=Mathf.CeilToInt(sx/4.4f);float span=sx/count;for(int i=0;i<count;i++)Wall(x-sx*.5f+(i+.5f)*span,z,span,sz);return;}
+            Box("School solid wall",new Vector3(x,1.625f,z),new Vector3(sx,3.25f,sz),plaster,true);
+            Box("School muted green lower paint",new Vector3(x,.60f,z),new Vector3(sx+.012f,1.20f,sz+.012f),paint);
+            Box("School dark skirting",new Vector3(x,.065f,z),new Vector3(sx+.026f,.13f,sz+.026f),iron);
+            Box("School waist rail",new Vector3(x,1.215f,z),new Vector3(sx+.022f,.045f,sz+.022f),timber);
+        }
+        public void Build(Transform chunk,bool collision)
+        {
+            root=chunk;physical=collision;
+            Slab(-2.2f,0,2.2f,38.4f);Slab(-7,0,-2.2f,4.4f);Slab(2.2f,34,7,38.4f);
+            Wall(0,0,4.58f,.18f);Wall(-4.6f,0,4.8f,.18f);Wall(-4.6f,4.4f,4.8f,.18f);
+            Wall(-2.2f,5.2f,.18f,1.6f);Wall(2.2f,17,.18f,34);
+            Wall(0,38.4f,4.58f,.18f);Wall(4.6f,38.4f,4.8f,.18f);Wall(4.6f,34,4.8f,.18f);
+            float last=6;
+            foreach(var room in SchoolLoopPlan.Rooms)
+            {
+                if(room.Near>last)Wall(-2.2f,(last+room.Near)*.5f,.18f,room.Near-last);
+                Room(room);last=room.Far;
+            }
+            Wall(-2.2f,(last+38.4f)*.5f,.18f,38.4f-last);
+            for(float z=2.2f;z<38;z+=4.4f)world.Fixture(root,new Vector3(0,3.08f,z),false);
+            world.Fixture(root,new Vector3(-4.9f,3.08f,2.2f),false,2.8f);
+            world.Fixture(root,new Vector3(4.9f,3.08f,36.2f),false,2.8f);
+            Gate();CorridorDetails();
+        }
+        void Room(SchoolLoopPlan.Room room)
+        {
+            Slab(room.West,room.Near,-2.2f,room.Far,true);
+            Wall(room.West,(room.Near+room.Far)*.5f,.18f,room.Far-room.Near);
+            Wall((room.West-2.2f)*.5f,room.Near,room.Width,.18f);
+            Wall((room.West-2.2f)*.5f,room.Far,room.Width,.18f);
+            // A real locked leaf occupies the door section. No invisible room barrier.
+            Wall(-2.2f,room.Near+.13f,.18f,.26f);
+            Door(room,room.DoorZ,"front");
+            if(room.DoorCount==2)Door(room,room.BackDoorZ,"rear");
+            float doorEnd=room.DoorZ+.56f;
+            if(room.WindowNear>doorEnd)Wall(-2.2f,(doorEnd+room.WindowNear)*.5f,.18f,room.WindowNear-doorEnd);
+            float middle=(room.WindowNear+room.WindowFar)*.5f,span=room.WindowFar-room.WindowNear;
+            Box("School corridor window solid sill",new Vector3(-2.2f,.48f,middle),new Vector3(.18f,.96f,span),paint,true);
+            Box("School corridor window head wall",new Vector3(-2.2f,2.91f,middle),new Vector3(.18f,.68f,span),plaster,true);
+            Box("Closed classroom window glass",new Vector3(-2.2f,1.77f,middle),new Vector3(.018f,1.60f,span),glass,true);
+            foreach(float y in new[]{.98f,2.57f})Box("Classroom window horizontal frame",new Vector3(-2.2f,y,middle),new Vector3(.24f,.065f,span),iron);
+            int panes=Mathf.CeilToInt(span/1.15f);
+            for(int i=0;i<=panes;i++)Box("Classroom window upright",new Vector3(-2.2f,1.77f,Mathf.Lerp(room.WindowNear,room.WindowFar,i/(float)panes)),new Vector3(.24f,1.65f,.055f),iron);
+            Box("Classroom transom rail",new Vector3(-2.2f,2.23f,middle),new Vector3(.24f,.035f,span),iron);
+            if(room.DoorCount==2)
+            {
+                float rearStart=room.BackDoorZ-.56f;
+                Wall(-2.2f,(room.WindowFar+rearStart)*.5f,.18f,rearStart-room.WindowFar);
+                Wall(-2.2f,room.Far-.13f,.18f,.26f);
+            }
+            else Wall(-2.2f,(room.WindowFar+room.Far)*.5f,.18f,room.Far-room.WindowFar);
+            var board=Box("School classroom enamel sign",new Vector3(-2.06f,2.76f,room.DoorZ),new Vector3(.035f,.29f,1.05f),paint);
+            world.Label(root,room.Label,new Vector3(-2.032f,2.76f,room.DoorZ),Quaternion.Euler(0,270,0),new Vector2(.91f,.22f),new Color(.90f,.88f,.76f));
+            if(room.Id!="music")
+            {
+                // Map shell only; detailed furniture for these rooms comes later.
+                world.Fixture(root,new Vector3(-5.8f,3.08f,middle),true,2.2f);
+                Box("Unfurnished "+room.Id+" rear board",new Vector3(room.West+.12f,1.65f,middle),new Vector3(.05f,1.0f,2.4f),paint);
+            }
+        }
+        void Door(SchoolLoopPlan.Room room,float z,string end)
+        {
+            var leaf=Box("Locked "+room.Id+" "+end+" classroom door",new Vector3(-2.2f,1.22f,z),new Vector3(.10f,2.44f,.95f),paint,true);
+            Box("School door upper lintel",new Vector3(-2.2f,2.86f,z),new Vector3(.18f,.78f,1.04f),plaster,true);
+            foreach(float side in new[]{-.53f,.53f})Box("School door metal jamb",new Vector3(-2.2f,1.24f,z+side),new Vector3(.22f,2.48f,.055f),iron,true);
+            Box("Classroom door pull",new Vector3(-2.115f,1.04f,z+.33f),new Vector3(.08f,.20f,.045f),iron);
+            if(!physical)return;
+            var inspect=leaf.AddComponent<Interactable>();inspect.kind=Interactable.Kind.Inspect;
+            inspect.stableId="school-loop-"+room.Id+"-"+end+"-door";inspect.label=room.Label+" 출입문 확인";
+            inspect.inspectionText="문이 잠겨 있다. "+room.Label+" 내부는 복도 창문으로 볼 수 있다.";world.doors.Add(inspect);
+        }
+        void Gate()
+        {
+            // Permanent open steel fire doors frame the entry; no door script can close them.
+            var steel=world.Surfaces.Get("painted-metal",new Color(.50f,.53f,.49f));
+            foreach(float z in new[]{.5f,3.9f})
+            {
+                Box("Permanently open steel fire door",new Vector3(-3.9f,1.30f,z),new Vector3(1.55f,2.6f,.07f),steel,true);
+                Box("Fire door reinforced upper pane",new Vector3(-3.91f,1.81f,z+.04f),new Vector3(.95f,.62f,.015f),iron);
+                Box("Fire door push rail",new Vector3(-3.91f,1.05f,z+.07f),new Vector3(1.05f,.06f,.055f),iron);
+            }
+            Box("Fire gate lintel",new Vector3(-4.6f,2.85f,2.2f),new Vector3(.16f,.30f,4.4f),iron);
+            var sign=world.Surfaces.Get("painted-metal",new Color(.12f,.28f,.21f),new Color(.07f,.15f,.09f));
+            Box("Entry exit sign",new Vector3(-4.58f,2.96f,2.2f),new Vector3(.10f,.23f,.72f),sign);
+        }
+        void CorridorDetails()
+        {
+            for(float z=7;z<33;z+=4.4f)
+            {
+                // Wall-mounted shallow notice cabinets and utility trim stay outside the clear aisle.
+                Box("Corridor cork notice surround",new Vector3(2.075f,1.73f,z),new Vector3(.07f,1.05f,1.65f),timber);
+                Box("Corridor cork notice board",new Vector3(2.03f,1.73f,z),new Vector3(.015f,.91f,1.49f),world.Surfaces.Get("paper-aged",new Color(.42f,.36f,.23f)));
+                for(int i=0;i<4;i++)Box("Pinned school paper notice",new Vector3(2.012f,1.60f+(i/2)*.30f,z-.48f+(i%2)*.48f),new Vector3(.007f,.27f,.34f),world.Surfaces.Get("paper-aged",new Color(.84f,.81f,.67f)));
+            }
+            for(float z=4.8f;z<35;z+=3.1f)
+            {
+                Box("School wall service conduit",new Vector3(2.06f,2.94f,z),new Vector3(.055f,.055f,3.12f),iron);
+                Box("School radiator wall cover",new Vector3(2.02f,.36f,z),new Vector3(.17f,.55f,.88f),paint);
+                for(int i=0;i<8;i++)Box("School radiator vent",new Vector3(1.925f,.36f,z-.35f+i*.1f),new Vector3(.01f,.43f,.022f),iron);
+            }
+        }
+    }
+}

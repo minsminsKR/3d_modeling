@@ -1,0 +1,279 @@
+{
+  "asset": "grand-piano",
+  "reference": {
+    "path": "SourceArt/SchoolLoop/grand-piano/reference.png",
+    "bytes": 2197188,
+    "sha256": "c4ef20f9f717c35b5bca5c89cc600fcc52d789e252f47eb803fec7ca8217fc64"
+  },
+  "referenceGeneration": {
+    "path": "SourceArt/SchoolLoop/grand-piano/reference-generation.json",
+    "bytes": 1814,
+    "sha256": "bdde245dffbc26c93ad91a6c95e56a1fbcf7994ef026d65ff64f602c8e05c273"
+  },
+  "processedInput": {
+    "path": "SourceArt/SchoolLoop/grand-piano/processed.png",
+    "bytes": 829941,
+    "sha256": "8aa4fbd750e635a16e648a662772d939e9838d33059e59c0f2019e24b38ab03a"
+  },
+  "job": {
+    "path": "SourceArt/SchoolLoop/grand-piano/job.json",
+    "bytes": 2103,
+    "sha256": "c5b2bb76cb90276fae53459e2bcf1edd46ede77fa47000f24a6f194745bb722d"
+  },
+  "generation": {
+    "application": "designated hunyuan3d-webapp",
+    "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+    "jobId": "7375a264-26cc-46db-8a18-b509df131a47",
+    "batchId": "2cab6bd0-3a67-47f0-aeb7-a87c25af0209",
+    "options": {
+      "gpu_id": 1,
+      "gpu_mode": "split",
+      "guidance_scale": 7.5,
+      "model": "trellis2",
+      "num_chunks": 50000,
+      "num_inference_steps": 50,
+      "octree_resolution": 512,
+      "omni_use_ema": false,
+      "output_format": "glb",
+      "remove_background": true,
+      "seed": 1234,
+      "texture": true,
+      "texture_gpu_id": 0,
+      "texture_profile": "detail",
+      "trellis_max_tokens": 65536,
+      "trellis_pipeline": "1536_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 8192
+    },
+    "elapsedSeconds": 417,
+    "saved": true
+  },
+  "original": {
+    "path": "SourceArt/SchoolLoop/grand-piano/original.glb",
+    "bytes": 204146280,
+    "sha256": "fb241d148f624bc19413e0196469d46e97c21d091126ad9385b39b695004e0af"
+  },
+  "editable": {
+    "path": "SourceArt/SchoolLoop/grand-piano/grand-piano.blend",
+    "bytes": 218452629,
+    "sha256": "64bfe44402660973b52d26ebe0204f6e4fc8e2ba1076729d02598c2e249fcdb1"
+  },
+  "exportReport": {
+    "path": "SourceArt/SchoolLoop/grand-piano/export.json",
+    "bytes": 2654,
+    "sha256": "01fcf9212ff01f9be14475de5ef8a0c1efe1e4698d54f5b9869725b224e4af1b"
+  },
+  "finishing": {
+    "tool": "Blender 4.0.2",
+    "recipes": [
+      {
+        "path": "SourceArt/SchoolLoop/finish_music_assets.py",
+        "bytes": 4387,
+        "sha256": "b37632e7e4279f46fa79cea34a2fba09f04841b7fea2de9040c639f4445b5016"
+      },
+      {
+        "path": "SourceArt/SchoolLoop/rebake_music_lod.py",
+        "bytes": 5196,
+        "sha256": "12d43acc885ca1ee67c0143d53c37c64c4cf37a9b544ce41dc49a33f365eba6d"
+      },
+      {
+        "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+        "bytes": 19990,
+        "sha256": "565994cee8535a1cdd814264041bc47a497e185ab25c26f2298c309c60e37c82"
+      }
+    ],
+    "command": "blender -b --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/SchoolLoop/finish_music_assets.py -- --only grand-piano",
+    "embeddedRecipes": [
+      "SOURCE - finish_music_assets.py",
+      "SOURCE - finish_entrance_assets.py",
+      "SOURCE - rebake_music_lod.py"
+    ],
+    "settings": {
+      "axis": 2,
+      "metres": 1.75,
+      "texture": 2048,
+      "budgets": [
+        100000,
+        40000
+      ],
+      "distantLodRepair": "Source-derived voxel surface repair (piano 6mm, stand 3mm), bounded collapse, original colour/ORM selected-to-active rebake at 1K. Near LOD retains its source atlas."
+    },
+    "originalTriangles": 954190,
+    "lods": [
+      {
+        "file": "grand-piano-lod0.fbx",
+        "targetTriangles": 100000,
+        "triangles": 99987,
+        "vertices": 33015,
+        "boundsMin": [
+          -0.8686808347702026,
+          -1.195623517036438,
+          0.007776582147926092
+        ],
+        "boundsMax": [
+          0.87067711353302,
+          1.1897120475769043,
+          1.745410442352295
+        ],
+        "sha256": "ecc3d0cbbc615bca9e9f5fbd2022404a6201758f1b2b3ce8d2f2318c03997a0c"
+      },
+      {
+        "file": "grand-piano-lod1.fbx",
+        "targetTriangles": 40000,
+        "triangles": 39992,
+        "vertices": 22804,
+        "boundsMin": [
+          -0.8677896857261658,
+          -1.1950345039367676,
+          0.0179870817810297
+        ],
+        "boundsMax": [
+          0.8696969747543335,
+          1.1886345148086548,
+          1.7433744668960571
+        ],
+        "sha256": "8d079e5285c99eb6b2e15bcb2766430b5ce89e281be2109baf3ca69fb6338426"
+      }
+    ]
+  },
+  "unityImport": {
+    "editor": "6000.6.0f1",
+    "method": "HappyToy.V2.Editor.SchoolLoopAssetsImport.Apply",
+    "importer": {
+      "path": "Assets/Editor/SchoolLoopAssetsImport.cs",
+      "bytes": 10786,
+      "sha256": "1fcfd8168ea99f9d17f2cb3c6cb9e603fd99996a35fdefde800834c0c418fccd"
+    },
+    "importerMeta": {
+      "path": "Assets/Editor/SchoolLoopAssetsImport.cs.meta",
+      "bytes": 59,
+      "sha256": "4afec82ef8b76b5c0ba743d89a3a331daeb60d1847934350c6f06db258a7530a",
+      "guid": "d9f421045f01b134dab009d14a225b43"
+    },
+    "resourceKey": "SchoolLoop/grand-piano-visual",
+    "outputs": [
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/asset.json",
+        "bytes": 2654,
+        "sha256": "01fcf9212ff01f9be14475de5ef8a0c1efe1e4698d54f5b9869725b224e4af1b"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/asset.json.meta",
+        "bytes": 158,
+        "sha256": "6e42617740f6a81e47faeed01646f5e0de874edb21903389846ce7d71b861bb6",
+        "guid": "684f5b94f6e0aa949a3d79b6464ee1c7"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_0-baseColor.png",
+        "bytes": 8520241,
+        "sha256": "46f6bbcbafb8c14ceae9ad81026f2454a3d7057a1b399cd06ead593c262c5ac2"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_0-baseColor.png.meta",
+        "bytes": 2714,
+        "sha256": "5c0dcd524a67ac789a76888ab34686fb8ec22d8fcfaf6a5bd314cf97d80e76ae",
+        "guid": "80fa77b2e760c2e4cb659027a71f8e40"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_0-metallicSmoothness.png",
+        "bytes": 8065409,
+        "sha256": "1152da4ec8bf9671c353dba97a6367488b2488dca684920da0ed3911700dea7a"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_0-metallicSmoothness.png.meta",
+        "bytes": 2714,
+        "sha256": "6536d229b2b3773d97f8e0c0f2039d7d1ddc046c519270efe45cda487df6ea11",
+        "guid": "f6c9dbc4eb2681c4d9524da90b8a15c3"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_0.mat",
+        "bytes": 4082,
+        "sha256": "735e5287eaa20cf20c652f2b08d1aa82b06ca4a0578b000e8d70d00876e5de1e"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_0.mat.meta",
+        "bytes": 188,
+        "sha256": "52eacd671ad0762bf479908ec25656d1fd53cd71661429d9ae2ef78bb07bd187",
+        "guid": "fbb9556e8d58bc3498d4b8828e281101"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_Distant-baseColor.png",
+        "bytes": 259588,
+        "sha256": "1137b779ce8784eb36475d0f59417da5ad8318c1834913d3c4d8547a4224a56d"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_Distant-baseColor.png.meta",
+        "bytes": 2714,
+        "sha256": "b7d0a7f3f45f4401771dbc2de8f572fdfac0c37dcfd632d6311f4b9e5586f78c",
+        "guid": "ea21db55a166c0143afc012629f20e60"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_Distant-metallicSmoothness.png",
+        "bytes": 273759,
+        "sha256": "5fce2f4bf0b3ea2abdd3ea52fdc955951b3ccbd0e51bdbedba1022528780944a"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_Distant-metallicSmoothness.png.meta",
+        "bytes": 2714,
+        "sha256": "c79d83ff51525c61d022152b698369b349a7274afdb7b6dc6e679d42d56f4d41",
+        "guid": "58375826eae0b2f4c8fb869d52c4dfc0"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_Distant.mat",
+        "bytes": 4088,
+        "sha256": "50a125f367d1bd56f3db5b9665f3a56c4bd9e48377509e3177ac20046cfdd5c3"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano/CE_grand-piano_Distant.mat.meta",
+        "bytes": 188,
+        "sha256": "7713fb181d14c9382c6d1b13944cf842a461d4f7230da24668c8e983e200c994",
+        "guid": "83d8c6a82a7e5fe44b9ba7cdfec9d0c1"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano-lod0.fbx",
+        "bytes": 5153036,
+        "sha256": "ecc3d0cbbc615bca9e9f5fbd2022404a6201758f1b2b3ce8d2f2318c03997a0c"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano-lod0.fbx.meta",
+        "bytes": 3063,
+        "sha256": "6931ecf6645ec0f9fe829aaa58a3ee3656291b835408074ef942a073a3d387d5",
+        "guid": "0005faea51edc9149aaf8136281f5b0b"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano-lod1.fbx",
+        "bytes": 2327100,
+        "sha256": "8d079e5285c99eb6b2e15bcb2766430b5ce89e281be2109baf3ca69fb6338426"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano-lod1.fbx.meta",
+        "bytes": 3063,
+        "sha256": "a9c3ccb1f124066b0ca213c125855949496772a512e0ae7b6cd937dc4650123f",
+        "guid": "fbfd3d34d09ea6f4086564fa1b15c55a"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano-visual.prefab",
+        "bytes": 8025,
+        "sha256": "96bc4b961121987d8cea2080f4ec09132ce5ee69d8bf5927f1e759275dfccab3"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano-visual.prefab.meta",
+        "bytes": 154,
+        "sha256": "a1d884d62d0dd03b046b825c51a4a3e737772bfd8f9f36fb0ded2781bf098e0b",
+        "guid": "fc76c5b2c6cd2e148a91402dafba5744"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/grand-piano.meta",
+        "bytes": 172,
+        "sha256": "bccd5ea95aa78d48b5ab9428e4b65dbfd0056fdf8e32ce00d5de5d9ed1a44efd",
+        "guid": "231c38b08ee41344495233ffda646cca"
+      }
+    ]
+  },
+  "license": {
+    "path": "SourceArt/SchoolLoop/LICENSE.md",
+    "bytes": 1090,
+    "sha256": "eadb712b8da36ad8e72f17f3348a7756b019337245c9e582b7cb3566e3758f44"
+  },
+  "scope": "Exact local source handoff. Render review, loop physics, frame timing and native build verification are separate evidence."
+}

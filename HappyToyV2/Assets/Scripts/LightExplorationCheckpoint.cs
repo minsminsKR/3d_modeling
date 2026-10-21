@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace HappyToy.V2
 {
     [Serializable]
-    public sealed class LightExplorationCheckpoint
+    public sealed partial class LightExplorationCheckpoint
     {
         public int version = 1, packsCollected, depletions;
         public float charge;
@@ -20,6 +20,7 @@ namespace HappyToy.V2
             (batteries==null || batteries.Length==0) && (candles==null || candles.Length==0);
         public void Validate()
         {
+            if(version==2){ValidateObservationSchool();return;}
             if (version != 1 || !FlashlightChargeRules.Valid(charge) || packsCollected < 0 || packsCollected > 128 ||
                 depletions < 0 || depletions > 1000000 || batteries == null || batteries.Length < 1 || batteries.Length > 128 ||
                 candles == null || candles.Length < 1 || candles.Length > 128)

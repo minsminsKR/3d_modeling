@@ -325,6 +325,8 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(() => Components("GameSession").Length == 1 && One("GameSession") != previous, 20, "Restart did not replace session");
             yield return null; yield return null;
             session = One("GameSession"); shell = Get<Component>(session, "Shell"); player = Get<Component>(session, "player");
+            // Scene replacement precedes the real black loading curtain releasing input.
+            yield return Wait(() => !Get<bool>(shell, "IsReloading"), 30, "Restart loading curtain did not finish");
             Assert.That(Get<bool>(session, "InputAllowed"), Is.True); Assert.That(Get<int>(session, "StoryStep"), Is.Zero);
             Assert.That(Get<bool>(player, "Crouching"), Is.False); Assert.That(Get<float>(player, "SlowRemaining"), Is.Zero);
             Assert.That(Get<int>(Get<Component>(player, "Firecrackers"), "Count"), Is.EqualTo(12), "A restarted school run restores two six-shot packs");
@@ -332,6 +334,8 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(() => Components("GameSession").Length == 1 && One("GameSession") != previous, 20, "Return to title did not replace session");
             yield return null; yield return null;
             session = One("GameSession"); shell = Get<Component>(session, "Shell"); player = Get<Component>(session, "player");
+            // Scene replacement precedes the real black loading curtain releasing input.
+            yield return Wait(() => !Get<bool>(shell, "IsReloading"), 30, "Restart loading curtain did not finish");
             Assert.That(Get<object>(shell, "Screen").ToString(), Is.EqualTo("Title"));
             Assert.That(Get<bool>(session, "InputAllowed"), Is.False); Assert.That(Time.timeScale, Is.Zero);
         }

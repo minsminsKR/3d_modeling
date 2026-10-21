@@ -120,7 +120,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator CheatF1SkipsSchoolRevealGatesAndKeepsCheckpointValid()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());
-            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school"); yield return null;
+            yield return RecoveryUiReady(); yield return BeginLegacySchoolFixture(); yield return null;
             yield return CheatTap(Key.F2);
             var chapter = Get<Component>(session, "Chapter");
             for (int count = 1; count <= 5; count++)

@@ -35,6 +35,7 @@ namespace HappyToy.V2
                 if(TrapWorld.Holding) return "덫에 붙잡힌 몬스터가 풀린 뒤 중단 저장하세요.";
                 if(session.player.Rituals.Burning) return "부적이 모두 탄 뒤 중단 저장하세요.";
                 if(session.player.Hidden) return "은신처에서 나온 뒤 학교 탐색을 저장할 수 있습니다.";
+                if(Loop)return FindObjectsByType<FirecrackerProjectile>(FindObjectsSortMode.None).Any(x=>x.gameObject.scene==gameObject.scene)?"던진 콩알탄의 효과가 끝난 뒤 저장하세요.":"";
                 if(FirstAppearances.CameraOwned || Portrait.Triggered && !Portrait.Completed || Nursery.Triggered && !Nursery.Released ||
                     Mannequin.Triggered && !Mannequin.Released || Mask.IntroStarted && !Mask.IntroCompleted ||
                     Mask.State==LanternMaskEncounter.Phase.Transforming)
@@ -50,6 +51,7 @@ namespace HappyToy.V2
         public ChapterCheckpoint CaptureCheckpoint()
         {
             if(!string.IsNullOrEmpty(SuspendBlockReason)) throw new InvalidOperationException(SuspendBlockReason);
+            if(Loop)return CaptureLoopCheckpoint();
             EnsureCheckpointIdentities();
             var data=new ChapterCheckpoint { simulationVersion=LayoutVersion,lightingVersion=1,lighting=Lighting.Capture(), token=Guid.NewGuid().ToString("N"),scene=gameObject.scene.path,recovered=Recovered,
                 seconds=session.ElapsedPlayTime,traps=TrapWorld.Capture(session.player),ritualItems=RitualWorld.Capture(session.player),player=session.player.CaptureProgress(),cyclopse=Cyclopse.CaptureProgress(),
@@ -63,6 +65,7 @@ namespace HappyToy.V2
         }
         public void RestoreCheckpoint(ChapterCheckpoint data)
         {
+            if(Loop){RestoreLoopCheckpoint(data);return;}
             var doors=ValidatedCheckpointDoors(data);
             var packs=ChapterItems(Interactable.Kind.FirecrackerSupply);
             RestoreValidatedCheckpoint(data,doors,packs);
@@ -92,6 +95,7 @@ namespace HappyToy.V2
         // Invalid schemas/door movement are rejected before touching geometry.
         public void PrepareCheckpointNavigation(ChapterCheckpoint data)
         {
+            if(Loop){ValidateLoopCheckpoint(data);return;}
             var doors=ValidatedCheckpointDoors(data);
             for(int i=0;i<doors.Length;i++) { doors[i].DoorLocked=data.doors[i].locked; doors[i].RestoreSchoolShatteredDoor(data.doors[i].open,data.doors[i].leaf,data.doors[i].secondary,data.doors[i].broken); }
             Physics.SyncTransforms();

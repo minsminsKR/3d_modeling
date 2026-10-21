@@ -37,7 +37,7 @@ namespace HappyToy.V2.CloudTests
             var root=Get<VisualElement>(view,"Root");
             Assert.That(((VisualElement)root.panel.focusController.focusedElement).name,Is.EqualTo("begin"));
             Assert.That(root.Q<Button>("begin").text,Does.Contain("회랑"));
-            Assert.That(root.Q<Button>("begin-school").text,Does.Contain("폐교의 기억"));
+            Assert.That(root.Q<Button>("begin-school").text,Does.Contain("학교 복도"));
             Assert.That(root.Q<Label>("corridor-record-summary").text,Does.Contain("회랑 탐색 0회"));
             Assert.That(root.Q<Label>("school-record-summary").text,Does.Contain("학교 탐색 0회"));
             yield return RecoveryClick("begin"); AssertMainCorridor();
@@ -173,7 +173,9 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(120000)]
         public IEnumerator SchoolPortraitHintDistinguishesCompletedUnwitnessedRevealAndNurseryWaitsForRelease()
         {
-            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school");
+            // Compatibility fixture for version-2 suspended school runs. Current
+            // menu v3 is covered independently by SchoolLoopMenuLoadsOnlyTheNewCorridorAndSealsAllThreeRooms.
+            Call(shell,"BeginChapter");yield return null;yield return null;
             var chapter=Get<Component>(session,"Chapter"); var memories=Get<Component[]>(chapter,"Memories");
             for(int i=0;i<2;i++)Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
             Get<Component>(chapter,"Cyclopse").gameObject.SetActive(false); Get<Component>(chapter,"Mannequin").gameObject.SetActive(false);

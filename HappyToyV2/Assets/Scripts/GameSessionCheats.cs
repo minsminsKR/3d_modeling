@@ -82,7 +82,7 @@ namespace HappyToy.V2
     {
         public bool CheatCollectNextMemory()
         {
-            if (!Ready || !session.InputAllowed || Recovered >= 5) return false;
+            if (Loop || !Ready || !session.InputAllowed || Recovered >= 5) return false;
             // Complete skipped reveals through the same state used by checkpoint restoration.
             FirstAppearances.SkipForCheat(Recovered + 1);
             Memories[Recovered].gameObject.SetActive(false);

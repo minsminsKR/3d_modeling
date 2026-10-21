@@ -259,7 +259,7 @@ namespace HappyToy.V2
             if (shown == GameShell.Page.Title) return;
             Panel(105, 80, 3, 705, Gold);
             Panel(150, 115, 1300, 1, Edge);
-            Small(session.ChapterMode || shown==GameShell.Page.Records ? "폐교의 기억  /  마지막 출석" : session.CorridorMode || shown==GameShell.Page.Title ? "잊힌 회랑  /  소리를 따라 남은 기억을 찾다" : "폐교 조사 기록  /  마지막 출석", 150, 78, 1050);
+            Small(session.ChapterMode && session.Chapter.Loop ? "학교  /  반복되는 복도" : session.ChapterMode || shown==GameShell.Page.Records ? "폐교의 기억  /  마지막 출석" : session.CorridorMode || shown==GameShell.Page.Title ? "잊힌 회랑  /  소리를 따라 남은 기억을 찾다" : "폐교 조사 기록  /  마지막 출석", 150, 78, 1050);
             var paused = Small(shown == GameShell.Page.Title ? "기억을 돌려놓을 제단을 찾으세요" : "시간이 멈춰 있습니다", 1060, 78, 390);
             paused.style.unityTextAlign = TextAnchor.UpperRight;
             string title = shown == GameShell.Page.Title ? "잊힌 회랑" : shown == GameShell.Page.Pause ? "숨을 고르다" :

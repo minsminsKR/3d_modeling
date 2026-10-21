@@ -36,6 +36,7 @@ namespace HappyToy.V2
         static bool Identity(string id) => !string.IsNullOrEmpty(id) && id.Length<=40;
         public void Validate()
         {
+            if(simulationVersion==SchoolLoopPlan.Version){ValidateSchoolLoop();return;}
             if(version!=1 || simulationVersion<1 || simulationVersion>SchoolCampusLayout.Version || !Guid.TryParseExact(token,"N",out _) ||
                 scene!="Assets/Annex/SchoolAnnex.unity" || !CorridorCheckpoint.Number(seconds,0,1000000000) ||
                 recovered<0 || recovered>5 || player==null || cyclopse==null || portraitActor==null || nurseryActor==null ||

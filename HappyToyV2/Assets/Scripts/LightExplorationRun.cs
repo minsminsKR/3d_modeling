@@ -173,7 +173,7 @@ namespace HappyToy.V2
         {
             if (!Prepared) throw new InvalidOperationException("Lighting not prepared");
             var lamp = player.FlashlightSystem;
-            var data = new LightExplorationCheckpoint { charge = lamp.Charge, packsCollected = lamp.PacksCollected, depletions = lamp.Depletions,
+            var data = new LightExplorationCheckpoint { version=observationSchool?2:1, charge = lamp.Charge, packsCollected = lamp.PacksCollected, depletions = lamp.Depletions,
                 batteries = batteries.Select(x => new LightExplorationCheckpoint.Battery { id = x.stableId, available = x.gameObject.activeSelf }).ToArray(),
                 candles = candles.Select(x => new LightExplorationCheckpoint.Candle { id = x.GetComponent<Interactable>().stableId, lit = x.HasBeenLit }).ToArray() };
             data.Validate(); return data;

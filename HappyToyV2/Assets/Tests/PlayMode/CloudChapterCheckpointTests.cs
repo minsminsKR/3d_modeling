@@ -19,7 +19,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolContinueRehydratesOpenDoorCarvingBeforeRestoringPlayerInsideTheDoorway()
         {
             string directory=NewRecordFixture(); Call(session,"ConfigureRecordDirectory",directory);
-            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school");
+            yield return RecoveryUiReady(); yield return BeginLegacySchoolFixture();
             var door=Components("Interactable").First(x=>Get<object>(x,"kind").ToString()=="Door" && Get<Transform>(x,"secondaryLeaf"));
             Assert.That((bool)Call(door,"OpenForPursuer"),Is.True); yield return Delay(1);
             PlacePlayer(door.transform.position+Vector3.up*.02f); yield return null;
@@ -37,7 +37,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolCheckpointRestoresCompletedAuthoredPortraitAndNurseryWithoutReplayingReveals()
         {
             string directory=NewRecordFixture(); Call(session,"ConfigureRecordDirectory",directory);
-            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school"); yield return null;
+            yield return RecoveryUiReady(); yield return BeginLegacySchoolFixture(); yield return null;
             var chapter=Get<Component>(session,"Chapter"); var memories=Get<Component[]>(chapter,"Memories");
             Call(memories[0],"Use",player);yield return ChapterAwaitAppearance();
             Call(memories[1],"Use",player);yield return ChapterAwaitAppearance();((Behaviour)player).enabled=false;
@@ -75,7 +75,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolSuspendAndContinueRestoreRealTwoLeafDoorsPlayerMemoriesAndActorsOnce()
         {
             string directory=NewRecordFixture(); Call(session,"ConfigureRecordDirectory",directory);
-            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school"); yield return null;
+            yield return RecoveryUiReady(); yield return BeginLegacySchoolFixture(); yield return null;
             var chapter=Get<Component>(session,"Chapter"); var memories=Get<Component[]>(chapter,"Memories");
             Call(memories[0],"Use",player);yield return ChapterAwaitAppearance();
             Call(memories[1],"Use",player);yield return ChapterAwaitAppearance();

@@ -11,6 +11,7 @@ namespace HappyToy.V2
         public bool Ready { get; private set; }
         public int LayoutVersion { get; private set; } = 1;
         public SchoolCampusLayout Campus { get; private set; }
+        public SchoolLoopWorld Loop {get;private set;}
         public int Recovered { get; private set; }
         public Interactable[] Memories { get; private set; }
         public StalkerBrain Cyclopse { get; private set; }
@@ -32,6 +33,7 @@ namespace HappyToy.V2
         {
             get
             {
+                if(Loop)return Loop.Objective;
                 if(Recovered==3 && Portrait && Portrait.Triggered)
                 {
                     if(!Portrait.ChapterWitnessed) return "액자에서 나온 인형을 잠시 바라보세요. 거리를 두고 모습을 확인하세요.";
@@ -53,11 +55,19 @@ namespace HappyToy.V2
         };
         public string JournalEntry(int index)=>index>=0&&index<Recovered?
             LayoutVersion>=2&&index==2?"2층 음악실 — 합창 명단. 종이 사이로 떠다니는 가면이 깨어났다.":memories[index]:null;
-        public void Prepare(int layoutVersion = SchoolCampusLayout.Version)
+        public void Prepare(int layoutVersion = SchoolLoopPlan.Version)
         {
             if(Ready) throw new InvalidOperationException("Chapter already prepared");
             LayoutVersion=layoutVersion;
             session=GetComponent<GameSession>();
+            if(layoutVersion==SchoolLoopPlan.Version)
+            {
+                Memories=Array.Empty<Interactable>();
+                Loop=gameObject.AddComponent<SchoolLoopWorld>();Loop.Prepare(session);
+                Lighting=gameObject.AddComponent<LightExplorationRun>();Lighting.PrepareSchoolLoop(this);
+                TrapWorld.Populate(Loop.Centre,session.player,Array.Empty<Interactable>());
+                Ready=true;session.Notify(Loop.Objective);return;
+            }
             var scripts=FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include,FindObjectsSortMode.None)
                 .Where(x=>x.gameObject.scene==gameObject.scene).ToArray();
             Portrait=scripts.OfType<V1HwacatEvent>().Single(); Nursery=scripts.OfType<AnnexEncounter>().Single();
@@ -119,7 +129,7 @@ namespace HappyToy.V2
         }
         public bool Collect(string id)
         {
-            if(!Ready||!session.InputAllowed||Recovered>=5||FirstAppearances.CameraOwned) return false;
+            if(Loop||!Ready||!session.InputAllowed||Recovered>=5||FirstAppearances.CameraOwned) return false;
             if(id!="chapter-memory-"+Recovered) {session.Notify(Objective);return false;}
             if(Recovered==3 && (!Portrait.Completed || !Portrait.ChapterWitnessed))
             {

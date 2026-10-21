@@ -120,7 +120,7 @@ namespace HappyToy.V2
                 nextThreatRefresh = Time.time + 1;
             }
             float nearest = float.PositiveInfinity, nearestPursuit = float.PositiveInfinity, perceived = 0; bool attacking = false;
-            if (!session.EncountersResolved)
+            if (!session.EncountersResolved && !observationSchool)
             {
                 foreach (var actor in candleStalkers)
                 {

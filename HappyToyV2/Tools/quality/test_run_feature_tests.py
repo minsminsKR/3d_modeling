@@ -108,5 +108,60 @@ class FeatureRoutingTests(unittest.TestCase):
                 runner.read_results(report, ("A",))
 
 
+class SelectedRecheckTests(unittest.TestCase):
+    def setUp(self):
+        spec=importlib.util.spec_from_file_location("selected_retry",MODULE.with_name("retry_failed_tests.py"))
+        self.retry=importlib.util.module_from_spec(spec);spec.loader.exec_module(self.retry)
+
+    def sample(self, directory, content):
+        path=Path(directory)/"current.xml";path.write_text(content,encoding="utf-8");return path
+
+    def test_only_nonpassing_exact_cases_are_selected_and_passing_cases_stay_out(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report=self.sample(directory,'<test-run result="Failed">'
+                '<test-case fullname="A.Pass" result="Passed" />'
+                '<test-case fullname="A.Fail(2)" result="Failed" />'
+                '<test-case fullname="A.Skip" result="Skipped" /></test-run>')
+            source,selected=self.retry.retry_selectors(report)
+            self.assertEqual(selected,("A.Fail(2)","A.Skip"))
+            self.assertEqual(source["passed"],1)
+            plan=runner.commands("retry-failed",Path("Project"),Path("Fresh"),
+                selected_stages=[("PlayMode",selected)])
+            self.assertEqual(len(plan),1);self.assertEqual(plan[0]["mode"],"PlayMode")
+            command=plan[0]["command"]
+            self.assertEqual(command[command.index("--filter")+1],"A.Fail(2);A.Skip")
+
+    def test_empty_or_fixture_only_failure_cannot_become_a_passing_empty_rerun(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for content in ('<test-run result="Failed" />',
+                '<test-run result="Failed"><test-case fullname="A.Pass" result="Passed" /></test-run>'):
+                with self.assertRaises(ValueError):self.retry.retry_selectors(self.sample(directory,content))
+            report=self.sample(directory,'<test-run result="Passed"><test-case fullname="A.Pass" result="Passed" /></test-run>')
+            _,selected=self.retry.retry_selectors(report)
+            self.assertEqual(selected,())
+
+    def test_selector_separator_and_missing_identity_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for identity in ('fullname="A.Fail;Other"',''):
+                report=self.sample(directory,'<test-run result="Failed"><test-case '+identity+' result="Failed" /></test-run>')
+                with self.assertRaises(ValueError):self.retry.retry_selectors(report)
+
+    def test_timings_retain_results_and_ignore_unavailable_nonfinite_or_negative_values(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report=self.sample(directory,'<test-run result="Passed" duration="70.2">'
+                '<test-case fullname="A.Small" result="Passed" duration="0.2" />'
+                '<test-case fullname="A.Slow" result="Passed" duration="70" />'
+                '<test-case fullname="A.Nan" result="Passed" duration="NaN" />'
+                '<test-case fullname="A.Negative" result="Passed" duration="-4" />'
+                '<test-case fullname="A.Missing" result="Passed" /></test-run>')
+            result=runner.read_results(report,())
+            self.assertEqual(result["passed"],5)
+            timing=result["timing"]
+            self.assertEqual(timing["reportedCases"],2)
+            self.assertAlmostEqual(timing["summedCaseSeconds"],70.2)
+            self.assertEqual(timing["over60Count"],1)
+            self.assertEqual(timing["slowest"][0]["name"],"A.Slow")
+
+
 if __name__ == "__main__":
     unittest.main()

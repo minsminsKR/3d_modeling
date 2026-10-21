@@ -263,7 +263,7 @@ namespace HappyToy.V2
         {
             var session = GameSession.Current;
             bool visible = player && player.eyes && !player.Hidden && session && session.InputAllowed &&
-                (!session.ChapterMode || !session.Chapter.FirstAppearances.CameraOwned);
+                (!session.ChapterMode || !session.Chapter.FirstAppearances || !session.Chapter.FirstAppearances.CameraOwned);
             if (!studio && visible) Prepare();
             if (!studio) return;
             viewCamera.enabled = visible;

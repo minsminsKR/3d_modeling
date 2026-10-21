@@ -120,7 +120,10 @@ namespace HappyToy.V2
             }
             if (schoolSaved)
             {
-                TitleButton("continue-chapter", $"폐교 계속 · 기억 {session.ChapterSuspension.Snapshot.recovered}/5", $"중단한 학교 탐색으로 돌아갑니다. 회수한 기억 {session.ChapterSuspension.Snapshot.recovered}/5", next, shell.ContinueChapterWithLoading)
+                var schoolResume=session.ChapterSuspension.Snapshot;bool loopSaved=schoolResume.simulationVersion==SchoolLoopPlan.Version;
+                string resumeTitle=loopSaved?$"학교 계속 · 구간 {schoolResume.loop.traversals:00}":$"폐교 계속 · 기억 {schoolResume.recovered}/5";
+                string resumeHint=loopSaved?"중단한 복도의 위치와 손전등·아이템 상태로 돌아갑니다.":$"중단한 학교 탐색으로 돌아갑니다. 회수한 기억 {schoolResume.recovered}/5";
+                TitleButton("continue-chapter", resumeTitle, resumeHint, next, shell.ContinueChapterWithLoading)
                     .SetEnabled(session.ChapterSuspension.Writable); next += 48;
             }
             if (!saved && !schoolSaved)
@@ -128,7 +131,7 @@ namespace HappyToy.V2
                 TitleButton("continue-unavailable", "계속 · 저장된 탐색 없음", "저장된 탐색이 있으면 이곳에서 이어갈 수 있습니다.", next, () => { }).SetEnabled(false); next += 48;
             }
             TitleButton("begin", "새 회랑 시작", "남겨진 기억의 흔적을 따라, 돌아갈 문을 찾으세요.\n다섯 기억은 붉은 교실의 제단으로 이어집니다.", next, shell.BeginCorridorCinematic); next += 48;
-            TitleButton("begin-school", "폐교의 기억", "세 층의 폐교를 탐색하며, 마지막 출석의 흔적을 찾으세요.", next, shell.BeginChapterCinematic); next += 48;
+            TitleButton("begin-school", "학교 복도", "반복되는 복도와 창문 너머의 음악실을 살펴보세요.", next, shell.BeginChapterCinematic); next += 48;
             TitleButton("settings", "설정", "화면과 조작, 사운드 및 접근성 옵션을 조정합니다.", next, shell.Settings); next += 48;
             TitleButton("school-records", "탐색 기록", "최근 학교 탐색의 기록을 확인합니다.", next, shell.ChapterHistory); next += 48;
             TitleButton("quit", "종료", "Happy Toy를 종료합니다.", next, () => Application.Quit());

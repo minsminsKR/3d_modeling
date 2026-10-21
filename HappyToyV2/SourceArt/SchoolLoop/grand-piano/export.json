@@ -1,0 +1,96 @@
+{
+  "key": "grand-piano",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "fb241d148f624bc19413e0196469d46e97c21d091126ad9385b39b695004e0af",
+  "editable": "grand-piano/grand-piano.blend",
+  "widthMetres": 1.7393579483032227,
+  "heightMetres": 1.7376338602043688,
+  "depthMetres": 2.3853355646133423,
+  "normalizedAxis": "height",
+  "normalizedMetres": 1.75,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 2,
+    "metres": 1.75,
+    "texture": 2048,
+    "budgets": [
+      100000,
+      40000
+    ],
+    "distantLodRepair": "Source-derived voxel surface repair (piano 6mm, stand 3mm), bounded collapse, original colour/ORM selected-to-active rebake at 1K. Near LOD retains its source atlas."
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 954190,
+  "originalTriangles": 954190,
+  "lods": [
+    {
+      "file": "grand-piano-lod0.fbx",
+      "targetTriangles": 100000,
+      "triangles": 99987,
+      "vertices": 33015,
+      "boundsMin": [
+        -0.8686808347702026,
+        -1.195623517036438,
+        0.007776582147926092
+      ],
+      "boundsMax": [
+        0.87067711353302,
+        1.1897120475769043,
+        1.745410442352295
+      ],
+      "sha256": "ecc3d0cbbc615bca9e9f5fbd2022404a6201758f1b2b3ce8d2f2318c03997a0c"
+    },
+    {
+      "file": "grand-piano-lod1.fbx",
+      "targetTriangles": 40000,
+      "triangles": 39992,
+      "vertices": 22804,
+      "boundsMin": [
+        -0.8677896857261658,
+        -1.1950345039367676,
+        0.0179870817810297
+      ],
+      "boundsMax": [
+        0.8696969747543335,
+        1.1886345148086548,
+        1.7433744668960571
+      ],
+      "sha256": "8d079e5285c99eb6b2e15bcb2766430b5ce89e281be2109baf3ca69fb6338426"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_grand-piano_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_grand-piano_0-baseColor.png",
+      "metallicSmoothness": "CE_grand-piano_0-metallicSmoothness.png"
+    },
+    {
+      "name": "CE_grand-piano_Distant",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_grand-piano_Distant-baseColor.png",
+      "metallicSmoothness": "CE_grand-piano_Distant-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

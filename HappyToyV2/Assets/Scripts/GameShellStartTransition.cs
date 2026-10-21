@@ -59,7 +59,7 @@ namespace HappyToy.V2
         public void BeginChapterCinematic()
         {
             if(Screen!=Page.Title || IsReloading)return;
-            StartCoroutine(PrepareTitleOperation(BeginChapter));
+            StartCoroutine(PrepareTitleOperation(BeginSchoolLoop));
         }
         public void ContinueChapterWithLoading()
         { if(Screen==Page.Title && !IsReloading)StartCoroutine(PrepareTitleOperation(ContinueChapter)); }

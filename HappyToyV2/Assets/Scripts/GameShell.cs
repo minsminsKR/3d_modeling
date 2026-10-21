@@ -36,6 +36,8 @@ namespace HappyToy.V2
         static readonly SceneRestartGate restartGate = new SceneRestartGate();
         static bool corridorRestart;
         static bool chapterRestart;
+        static int restartChapterVersion=SchoolCampusLayout.Version;
+        int requestedChapterVersion=SchoolCampusLayout.Version;
         static bool chapterFromOffering;
         static string checkpointReloadError;
         string pendingSavedToken;
@@ -81,7 +83,7 @@ namespace HappyToy.V2
             if(SceneLoadingOverlay.Current && SceneLoadingOverlay.Current.LoadingScene) SceneLoadingOverlay.Current.Report(.88f);
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
-            { if (playAfterLoad) { if (chapterRestart) BeginChapter(); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
+            { if (playAfterLoad) { if (chapterRestart) BeginChapterVersion(restartChapterVersion); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
             else if (autoStartAudit) Begin();
             else Set(Page.Title);
             if (!GetComponent<GameShellView>()) gameObject.AddComponent<GameShellView>();
@@ -127,15 +129,17 @@ namespace HappyToy.V2
         }
 
         public void Begin() { if (Screen == Page.Title) Set(Page.Playing); }
-        public void BeginChapter()
+        public void BeginChapter()=>BeginChapterVersion(SchoolCampusLayout.Version);
+        public void BeginSchoolLoop()=>BeginChapterVersion(SchoolLoopPlan.Version);
+        void BeginChapterVersion(int layoutVersion)
         {
             if(Screen!=Page.Title || IsReloading) return;
             try
             {
                 if(session.ChapterMode || session.CorridorMode)
-                { requestChapterOnReload=true; requestCorridorOnReload=false; Restart(true); return; }
+                { requestedChapterVersion=layoutVersion; requestChapterOnReload=true; requestCorridorOnReload=false; Restart(true); return; }
                 bool storyEntry=chapterFromOffering; chapterFromOffering=false;
-                session.CreateChapter();
+                session.CreateChapterVersion(layoutVersion);
                 if(!storyEntry && session.ChapterSuspension.HasRun && session.ChapterSuspension.Writable &&
                     !session.ChapterSuspension.Consume(session.ChapterSuspension.Snapshot.token))
                 { ReloadError=session.ChapterSuspension.Status; return; }
@@ -157,7 +161,7 @@ namespace HappyToy.V2
         {
             yield return new WaitForSecondsRealtime(1.2f);
             if(Screen!=Page.ChapterTransition || IsReloading) yield break;
-            chapterFromOffering=true; requestChapterOnReload=true; requestCorridorOnReload=false;
+            requestedChapterVersion=SchoolLoopPlan.Version; chapterFromOffering=true; requestChapterOnReload=true; requestCorridorOnReload=false;
             Restart(true);
             if(!IsReloading)
             {
@@ -319,6 +323,7 @@ namespace HappyToy.V2
                 SaveSettings();
                 chapterRestart = requestChapterOnReload || !requestCorridorOnReload && session && session.ChapterMode;
                 corridorRestart = requestCorridorOnReload || !chapterRestart && session && session.CorridorMode;
+                if(chapterRestart)restartChapterVersion=requestChapterOnReload?requestedChapterVersion:session.Chapter.LayoutVersion;
                 if (!restartGate.TryRequest(scene.path, play)) return;
                 IsReloading = true; ReloadError = string.Empty; ApplyScreenState();
                 SceneLoadingOverlay.Show(HighContrast,LargeText).LoadScene(scene.path, FailSceneReload);

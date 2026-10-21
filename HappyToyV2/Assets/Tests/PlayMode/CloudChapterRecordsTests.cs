@@ -41,7 +41,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolResultCountsAcceptedActionsAndPersistsActualDefeatMetadataOnce()
         {
             string directory=NewRecordFixture(); Call(session,"ConfigureRecordDirectory",directory);
-            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school");
+            yield return RecoveryUiReady(); yield return BeginLegacySchoolFixture();
             int initialSnappers=Get<int>(Get<Component>(player,"Firecrackers"),"Count");
             yield return SchoolAcceptedActionsFixture();
             Call(shell,"Pause"); var before=Call(session,"CaptureChapterMetrics");
@@ -90,7 +90,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolActionMetricsSurviveSuspendAndRawOldVersionOneWithoutMetricsResumesHonestly()
         {
             string directory=NewRecordFixture(); Call(session,"ConfigureRecordDirectory",directory);
-            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school"); yield return SchoolAcceptedActionsFixture();
+            yield return RecoveryUiReady(); yield return BeginLegacySchoolFixture(); yield return SchoolAcceptedActionsFixture();
             yield return Wait(()=>Components("FirecrackerProjectile").Length==0,15,"Actual thrown firecracker never expired");
             Call(shell,"Pause"); var before=Call(session,"CaptureChapterMetrics"); var previous=session;
             yield return RecoveryClick("suspend-chapter"); yield return RecoveryRebind(previous); yield return RefreshSlotTitle(directory);

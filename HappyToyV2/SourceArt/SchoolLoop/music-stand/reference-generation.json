@@ -1,0 +1,11 @@
+{
+  "key": "music-stand",
+  "prompt": "Use case: product-mockup. Single isolated professional reference for image-to-3D reconstruction: one old secondary-school music room orchestra sheet music stand, sturdy black enamel metal standing pedestal and tripod foot, wide flat rectangular dark matte desk with rounded corners, gently tilted toward the viewer, with a modest lower lip and three narrow horizontal slots in the desk, fixed at typical seated musician height. A slightly aged cream double-page sheet music book lies open on the desk, resting on the lower ledge, with subtle printed staves and notes only, no readable title. The thin stem must be thick and continuous, 2 cm wide in real scale, tripod legs spread clearly, all parts connected. Full body shown, no crop, generous 15 percent padding, three-quarter front-left view from slightly above so sheet music and full tripod are visible. True realistic PBR materials, dusty charcoal black metal, gentle chipped edges and aged pale paper, understated wear. Neutral light grey seamless background with minimal soft contact shadow, balanced bright diffuse studio light, no harsh shadows or dark crushed areas. No people, no hands, no room, no floor slab, no instrument, no extra objects, no watermark. Accurate freestanding music stand silhouette, suitable for a believable Korean school music classroom horror game.",
+  "input": "reference.png",
+  "jobId": "c81cc469-0009-4872-a0b0-4a0e6b9f888f",
+  "tool": "built-in image_gen.imagegen",
+  "mode": "generate",
+  "transparent_background": false,
+  "batchId": "2cab6bd0-3a67-47f0-aeb7-a87c25af0209",
+  "submittedOptionsRecord": "job.json"
+}

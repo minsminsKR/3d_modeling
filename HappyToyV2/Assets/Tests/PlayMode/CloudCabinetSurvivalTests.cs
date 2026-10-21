@@ -357,7 +357,7 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator CabinetEntryDecisionSurvivesRealSchoolAndCorridorCheckpointRoundTrips()
         {
             // Both mode schemas use PlayerMotor.Progress. Hidden suspension stays explicitly blocked.
-            yield return RecoveryUiReady(); yield return RecoveryClick("begin-school");
+            yield return RecoveryUiReady(); yield return BeginLegacySchoolFixture();
             IsolateThreats(); ((Behaviour)player).enabled = false;
             var cabinet = CheckpointCabinetFixture(false); PlacePlayer(Get<Transform>(cabinet, "outside").position);
             Assert.That(Get<string>(cabinet, "stableId"), Is.EqualTo("campus-hide-u-class-a"));

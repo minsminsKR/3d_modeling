@@ -665,3 +665,34 @@ talisman time stop and independent owned-clip cleanup, using the quiet guard.
 입구 수호상 불빛과 일반 회랑의 생성 사찰등을 함께 바꿀 때는
 `--profile temple-lanterns --no-desktop-interaction`을 사용한다. 위 검사에 일반 회랑 천장 등의
 실제 카메라 렌더·공유 PBR/2LOD·천장 여유·위험 점멸·해제 시 공유 자원 보존을 더한다.
+
+
+## 학교 관찰 루프 (지도 3)
+
+`python HappyToyV2/Tools/quality/run_feature_tests.py --profile school-loop --no-desktop-interaction`
+는 새 학교의 지도 규칙과 실제 메뉴·잠긴 문/유리·양방향 실제 이동·일시정지·저장 및
+음악실 생성 모델의 공유 LOD/PBR과 실제 창문/복도/평면 렌더를 확인한다.
+기존 학교 API/검사와 버전 1/2 저장은 호환 경로로 유지하며 현재 메뉴/제단 뒤 학교는 지도 3이다.
+학교 전체 교체와 저장 경계를 검증할 때는 `full`의 EditMode/PlayMode 두 전체 실행과
+새 Windows 빌드·`verify_build_inputs.py`를 함께 수행한다.
+
+
+## 검사 시간을 줄이는 반복 작업
+
+개발 중에는 `CODE_MAP.md`의 기능 프로필을 실행한다. 공유 경계·전체 개편·배포 준비의
+전체 검사는 `run_feature_tests.py --profile full`로 두 모드를 계속 실행한다.
+각 결과 `summary.json`의 `timing`은 실제 NUnit 사례별 소요 시간·중앙값·느린 10개를
+남긴다. 준비/정리 시간은 사례 소요 시간에 포함되며 따로 계측했다고 해석하지 않는다.
+
+전체 실행 뒤 실패 수정은 정확한 실패 사례와 필요한 기능 프로필만 새로 실행할 수 있다.
+
+```powershell
+python HappyToyV2/Tools/quality/retry_failed_tests.py --results <current-playmode.xml> --mode PlayMode --include-profile school-loop --graphics-api d3d11 --no-desktop-interaction
+python HappyToyV2/Tools/quality/retry_failed_tests.py --results <current-playmode.xml> --timings-only
+```
+
+재검사는 실패·건너뜀·미완료 사례의 정확한 이름을 선택하고, 새 결과에 모든 선택
+사례가 실제 존재하고 통과했는지 확인한다. 원본 결과의 SHA256과 선택 범위를 보존하며
+새로운 전체 통과 판정을 만들지 않는다. 사례 밖에서 실패한 스위트와 빈 결과는 거부한다.
+실패가 없는 원본은 실행 0건임을 명시한다. 기존 결과 폴더 재사용은 계속 거부한다.
+시간 배율·AI·플레이어 속도·기존 검증 조건·전체 검사 목록을 바꾸지 않는다.

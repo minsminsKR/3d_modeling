@@ -1,0 +1,279 @@
+{
+  "asset": "music-stand",
+  "reference": {
+    "path": "SourceArt/SchoolLoop/music-stand/reference.png",
+    "bytes": 1848714,
+    "sha256": "6047093480285330bb7a561956280912d866992bfb34afb1d7332819424e9ea7"
+  },
+  "referenceGeneration": {
+    "path": "SourceArt/SchoolLoop/music-stand/reference-generation.json",
+    "bytes": 1647,
+    "sha256": "c65e833479d31112b77bf41e492172da8f204560c5b60d8c3d6173cd9fab92ac"
+  },
+  "processedInput": {
+    "path": "SourceArt/SchoolLoop/music-stand/processed.png",
+    "bytes": 305344,
+    "sha256": "d85656f6040233adbbeba1d1a9efadf79a91d33e71a9fa675b0be5c350781f6c"
+  },
+  "job": {
+    "path": "SourceArt/SchoolLoop/music-stand/job.json",
+    "bytes": 2376,
+    "sha256": "55e9bdd115f45150c95afda27543154370f4baa65f5fab7f9c5c87d76f2dae8e"
+  },
+  "generation": {
+    "application": "designated hunyuan3d-webapp",
+    "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+    "jobId": "c81cc469-0009-4872-a0b0-4a0e6b9f888f",
+    "batchId": "2cab6bd0-3a67-47f0-aeb7-a87c25af0209",
+    "options": {
+      "gpu_id": 1,
+      "gpu_mode": "split",
+      "guidance_scale": 7.5,
+      "model": "trellis2",
+      "num_chunks": 50000,
+      "num_inference_steps": 50,
+      "octree_resolution": 512,
+      "omni_use_ema": false,
+      "output_format": "glb",
+      "remove_background": true,
+      "seed": 1234,
+      "texture": true,
+      "texture_gpu_id": 0,
+      "texture_profile": "detail",
+      "trellis_max_tokens": 65536,
+      "trellis_pipeline": "1536_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 8192
+    },
+    "elapsedSeconds": 1102,
+    "saved": true
+  },
+  "original": {
+    "path": "SourceArt/SchoolLoop/music-stand/original.glb",
+    "bytes": 168089044,
+    "sha256": "54a49b9204b9e41f08f67ab9e33f86614b4b8da692c5afb4d8996b3ec433ce71"
+  },
+  "editable": {
+    "path": "SourceArt/SchoolLoop/music-stand/music-stand.blend",
+    "bytes": 181849188,
+    "sha256": "7d9fbd461147839c1524bc88d241b73b56e5368d05b0c3781c46ba7fd983435a"
+  },
+  "exportReport": {
+    "path": "SourceArt/SchoolLoop/music-stand/export.json",
+    "bytes": 2656,
+    "sha256": "0fb5176ef54d926a6dc92f82728b1505b52805efcde8da427cdd3ffa803e8a9e"
+  },
+  "finishing": {
+    "tool": "Blender 4.0.2",
+    "recipes": [
+      {
+        "path": "SourceArt/SchoolLoop/finish_music_assets.py",
+        "bytes": 4387,
+        "sha256": "b37632e7e4279f46fa79cea34a2fba09f04841b7fea2de9040c639f4445b5016"
+      },
+      {
+        "path": "SourceArt/SchoolLoop/rebake_music_lod.py",
+        "bytes": 5196,
+        "sha256": "12d43acc885ca1ee67c0143d53c37c64c4cf37a9b544ce41dc49a33f365eba6d"
+      },
+      {
+        "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+        "bytes": 19990,
+        "sha256": "565994cee8535a1cdd814264041bc47a497e185ab25c26f2298c309c60e37c82"
+      }
+    ],
+    "command": "blender -b --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/SchoolLoop/finish_music_assets.py -- --only music-stand",
+    "embeddedRecipes": [
+      "SOURCE - finish_music_assets.py",
+      "SOURCE - finish_entrance_assets.py",
+      "SOURCE - rebake_music_lod.py"
+    ],
+    "settings": {
+      "axis": 2,
+      "metres": 1.16,
+      "texture": 2048,
+      "budgets": [
+        30000,
+        4000
+      ],
+      "distantLodRepair": "Source-derived voxel surface repair (piano 6mm, stand 3mm), bounded collapse, original colour/ORM selected-to-active rebake at 1K. Near LOD retains its source atlas."
+    },
+    "originalTriangles": 974226,
+    "lods": [
+      {
+        "file": "music-stand-lod0.fbx",
+        "targetTriangles": 30000,
+        "triangles": 29999,
+        "vertices": 11858,
+        "boundsMin": [
+          -0.3129781484603882,
+          -0.2803058922290802,
+          -0.00011869149602716789
+        ],
+        "boundsMax": [
+          0.313050776720047,
+          0.2799823582172394,
+          1.160657286643982
+        ],
+        "sha256": "349a1ba6aad53a64056c354306edfe18e936ef18ed7df3a97feaaeb77c9360a7"
+      },
+      {
+        "file": "music-stand-lod1.fbx",
+        "targetTriangles": 4000,
+        "triangles": 4000,
+        "vertices": 2306,
+        "boundsMin": [
+          -0.3119615912437439,
+          -0.2797105014324188,
+          0.0017116016242653131
+        ],
+        "boundsMax": [
+          0.3125782907009125,
+          0.27912744879722595,
+          1.1600663661956787
+        ],
+        "sha256": "4bb7265752fc8213f2a4e0b9370c0c162766c0d96eb71d550999f690e443863e"
+      }
+    ]
+  },
+  "unityImport": {
+    "editor": "6000.6.0f1",
+    "method": "HappyToy.V2.Editor.SchoolLoopAssetsImport.Apply",
+    "importer": {
+      "path": "Assets/Editor/SchoolLoopAssetsImport.cs",
+      "bytes": 10786,
+      "sha256": "1fcfd8168ea99f9d17f2cb3c6cb9e603fd99996a35fdefde800834c0c418fccd"
+    },
+    "importerMeta": {
+      "path": "Assets/Editor/SchoolLoopAssetsImport.cs.meta",
+      "bytes": 59,
+      "sha256": "4afec82ef8b76b5c0ba743d89a3a331daeb60d1847934350c6f06db258a7530a",
+      "guid": "d9f421045f01b134dab009d14a225b43"
+    },
+    "resourceKey": "SchoolLoop/music-stand-visual",
+    "outputs": [
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/asset.json",
+        "bytes": 2656,
+        "sha256": "0fb5176ef54d926a6dc92f82728b1505b52805efcde8da427cdd3ffa803e8a9e"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/asset.json.meta",
+        "bytes": 158,
+        "sha256": "103b019559a95853e54e1bdf295c769cd77763d06c54f9702a9f869de9f9f27b",
+        "guid": "8c423443880962243aeac6d652b8fdf3"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_0-baseColor.png",
+        "bytes": 7528087,
+        "sha256": "a94e444aef7c4781fab5d5df86350b0dac912fe97f5cc2ca50999ab318383a1d"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_0-baseColor.png.meta",
+        "bytes": 2714,
+        "sha256": "f4a2ac9e0961a891512d886c4ea80e1fdc088f38741f0c9a703609702c8ffebe",
+        "guid": "4eda501e602c789408b2a8189e0e0bf0"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_0-metallicSmoothness.png",
+        "bytes": 6825210,
+        "sha256": "d07da421cddc6224b7483d4e4d492c7cb044a7bfcec7bfb27fd38f142f84137f"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_0-metallicSmoothness.png.meta",
+        "bytes": 2714,
+        "sha256": "4919a4bf5db45a8bc25d7dea1782a39851c5a9f8b90108ea90576154b1ddf7d1",
+        "guid": "9dbf792ba6c509a46b2326378367ea88"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_0.mat",
+        "bytes": 4082,
+        "sha256": "4de2bc64a4f9ad0b2e8ef8dc0b8cecd6502d2cc386d4119fb540f792878b698c"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_0.mat.meta",
+        "bytes": 188,
+        "sha256": "a67007f9e9e5dfdcd0f534732fbf74a52c5f2387c3ac725c470658909153848d",
+        "guid": "bb1f76c4179d0df4a8e726187aa069ac"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_Distant-baseColor.png",
+        "bytes": 860108,
+        "sha256": "bc32305e03ceee73f110e6d39e594e14696d1364196d4d8350eb53094f7e97c2"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_Distant-baseColor.png.meta",
+        "bytes": 2714,
+        "sha256": "55973a18bfbc196f8802b4be1001d8307d7282a431535bbb3beb456cd9d147a9",
+        "guid": "5b566defe4d527343bfcc738345a4f18"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_Distant-metallicSmoothness.png",
+        "bytes": 984860,
+        "sha256": "4521d5da1878df600870e5e46a0160988eb264b0cb28c4965a3097c984f4c8a3"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_Distant-metallicSmoothness.png.meta",
+        "bytes": 2714,
+        "sha256": "655cc0addcbd0f93f805c9455a96433414cbfd8b5287f7b94f80004507b747cb",
+        "guid": "674711283dab6594eb60119744c5e187"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_Distant.mat",
+        "bytes": 4089,
+        "sha256": "e2ab56f2029967216cd79239e87f4ea1be74dc255bfc12563ded4f69ca9539ac"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand/CE_music-stand_Distant.mat.meta",
+        "bytes": 188,
+        "sha256": "ab0969b9ae4d446e9bd0fca0446f79b902b5a6ea8689f3bedf8df61660affd22",
+        "guid": "8d05980daf106b542888ae1a1fa56980"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand-lod0.fbx",
+        "bytes": 1485020,
+        "sha256": "349a1ba6aad53a64056c354306edfe18e936ef18ed7df3a97feaaeb77c9360a7"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand-lod0.fbx.meta",
+        "bytes": 3063,
+        "sha256": "3d8bd3160533fde2530329ab0f7f9939689f1ebf79d0dd1a5f5d5d9ce4a27c31",
+        "guid": "2112fb08826e3e644abf6ce7176d3206"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand-lod1.fbx",
+        "bytes": 256972,
+        "sha256": "4bb7265752fc8213f2a4e0b9370c0c162766c0d96eb71d550999f690e443863e"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand-lod1.fbx.meta",
+        "bytes": 3063,
+        "sha256": "95f667b4c87a2ca22cc29d83ab2a90fb3812feb0a5a6d27e8a8ce1cddb2c0eaf",
+        "guid": "d8ae54c6c6f2e4348ab240f2eead2da9"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand-visual.prefab",
+        "bytes": 8042,
+        "sha256": "9a2f19a838fdde33848c1a4f8f61ee8c43832e4f22460ba0f3524550f6c18453"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand-visual.prefab.meta",
+        "bytes": 154,
+        "sha256": "741f7baa1e60542a6f482166ac17c32b46ff65aaa2cbfe71c54869a98a13676c",
+        "guid": "b7c7a6146c5c5db4986e3207334ee52b"
+      },
+      {
+        "path": "Assets/Resources/SchoolLoop/music-stand.meta",
+        "bytes": 172,
+        "sha256": "55057e868b6e8d3b61875b8cea3478141fe434b88ce8f15432af5fb0fd9c8988",
+        "guid": "0316ad57703b5f04e97ab51a806cc70e"
+      }
+    ]
+  },
+  "license": {
+    "path": "SourceArt/SchoolLoop/LICENSE.md",
+    "bytes": 1090,
+    "sha256": "eadb712b8da36ad8e72f17f3348a7756b019337245c9e582b7cb3566e3758f44"
+  },
+  "scope": "Exact local source handoff. Render review, loop physics, frame timing and native build verification are separate evidence."
+}

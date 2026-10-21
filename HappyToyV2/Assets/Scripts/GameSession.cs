@@ -14,12 +14,13 @@ namespace HappyToy.V2
         public int EncounterStep => ChapterMode ? Chapter.Recovered : StoryStep;
         public bool EncountersResolved => Finished || (!ChapterMode && StoryStep >= 4);
         public void CreateChapter() => CreateChapterVersion(SchoolCampusLayout.Version);
+        public void CreateSchoolLoop() => CreateChapterVersion(SchoolLoopPlan.Version);
         public void CreateChapterForCheckpoint(ChapterCheckpoint data)
         { data.Validate(); CreateChapterVersion(data.simulationVersion); }
         public void CreateChapterVersion(int layoutVersion)
         {
             if(Chapter || Corridor || Finished) return;
-            if(layoutVersion!=1 && layoutVersion!=SchoolCampusLayout.Version) throw new System.ArgumentException("Unknown school layout");
+            if(layoutVersion!=1 && layoutVersion!=SchoolCampusLayout.Version && layoutVersion!=SchoolLoopPlan.Version) throw new System.ArgumentException("Unknown school layout");
             GraphicsLightingPresentation.BeginTransition(this);
             // Restart enters from GameShell.Start, before default-order presentation Start.
             // Complete that idempotent dressing while its authored interaction IDs still exist.
@@ -29,7 +30,7 @@ namespace HappyToy.V2
             // their pooled meshes belong to the previous presentation owner.
             if(layoutVersion>=2 && surfaces) surfaces.enabled=false;
             Chapter=gameObject.AddComponent<MemoryChapter>(); Chapter.Prepare(layoutVersion);
-            if(surfaces) { surfaces.enabled=true; surfaces.Refresh(); }
+            if(surfaces && layoutVersion<SchoolLoopPlan.Version) { surfaces.enabled=true; surfaces.Refresh(); }
             GraphicsLightingPresentation.BeginMode(this,transform);
             BeginChapterMetrics();
         }
@@ -129,7 +130,7 @@ namespace HappyToy.V2
                 return count;
             }
         }
-        public int TotalRecords => ChapterMode ? 5 : CorridorMode ? CorridorRun.Required : requireAnnexRecords ? 7 : 4;
+        public int TotalRecords => ChapterMode ? (Chapter.Loop ? 0 : 5) : CorridorMode ? CorridorRun.Required : requireAnnexRecords ? 7 : 4;
         public bool HasInspected(string id) => !string.IsNullOrEmpty(id) && inspected.Contains(id);
         public int StoryStep => names.Count;
         public bool InputAllowed => Shell && Shell.Screen==GameShell.Page.Playing && !Shell.IsReloading && !Finished && !CabinetDeathActive;
@@ -150,6 +151,7 @@ namespace HappyToy.V2
         {
             get
             {
+                if (ChapterMode && Chapter.Loop) return "school-loop";
                 if (ChapterMode) return Chapter.Recovered>=5 ? "exit" : "chapter-memory-"+Chapter.Recovered;
                 if (CorridorMode) return Corridor.Recovered >= CorridorRun.Required ? (Corridor.Layout.Version>=3 ? "altar" : "exit") : "memories";
                 if(StoryStep>=4)return "exit";
@@ -160,7 +162,7 @@ namespace HappyToy.V2
         }
         public string Notice => notice;
         public int NoticeRevision { get; private set; }
-        public int JournalCount => ChapterMode ? 5 : 4;
+        public int JournalCount => ChapterMode ? (Chapter.Loop ? 0 : 5) : 4;
         public string JournalEntry(int index)=>ChapterMode ? Chapter.JournalEntry(index) : index>=0&&index<StoryStep?clues[index]:null;
         public string ExplorationEntry(int index)=>index>=0&&index<exploration.Count?exploration[index]:null;
         public int ExplorationCount=>exploration.Count;

@@ -9,6 +9,8 @@ from __future__ import annotations
 import argparse
 from datetime import datetime
 import json
+import math
+import statistics
 from pathlib import Path
 import re
 import shutil
@@ -298,6 +300,11 @@ PROFILES["temple-lanterns"]=("Guardian face uplighting and generated corridor ce
         PLAY + "CorridorCeilingFixturesShareRealCandleDangerAndRecover"))])
 
 
+PROFILES["school-loop"]=("New reference school plan, retired old gameplay, locked classrooms, real bidirectional seam walking, v3 saves and generated music-room PBR/LOD camera review", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
+    ("PlayMode", play_tests("SchoolLoopTests.cs"))])
+
+
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
     selected = list(PROFILES[profile][1])
     if profile != "full":
@@ -310,10 +317,12 @@ def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
 
 def commands(profile: str, project: Path, output: Path, unity: str = "unity",
              editor_path: str | None = None, timeout: int | None = None,
-             graphics_api: str | None = None, no_desktop_interaction: bool = False) -> list[dict]:
+             graphics_api: str | None = None, no_desktop_interaction: bool = False,
+             selected_stages: list[tuple[str, tuple[str, ...]]] | None = None) -> list[dict]:
     timeout = timeout if timeout is not None else (7200 if profile == "full" else 1800)
     result = []
-    for index, (mode, selectors) in enumerate(stages(profile), 1):
+    planned_stages = stages(profile) if selected_stages is None else selected_stages
+    for index, (mode, selectors) in enumerate(planned_stages, 1):
         report = output / f"{index:02d}-{mode.lower()}.xml"
         command = [unity, "test", str(project), "--editor-version", VERSION,
                    "--mode", mode, "--output", str(report), "--timeout", str(timeout)]
@@ -339,7 +348,7 @@ def inspect_results(report: Path, selectors: tuple[str, ...]) -> dict:
         raise ValueError(f"No current NUnit results: {report}")
     # Audio/visual diagnostics can make XML very large. Retain case identities
     # and results, not the embedded waveform/capture output or full XML tree.
-    attributes, cases = None, []
+    attributes, cases, timings = None, [], []
     for event, element in ET.iterparse(report, events=("start", "end")):
         if attributes is None:
             attributes = dict(element.attrib)
@@ -347,6 +356,12 @@ def inspect_results(report: Path, selectors: tuple[str, ...]) -> dict:
             if element.tag == "test-case":
                 cases.append((element.get("fullname", element.get("name", "unknown")),
                               element.get("result", "").lower()))
+                try:
+                    seconds = float(element.get("duration", ""))
+                except ValueError:
+                    seconds = None
+                if seconds is not None and math.isfinite(seconds) and seconds >= 0:
+                    timings.append({"name": cases[-1][0], "seconds": seconds})
             element.clear()
     incomplete = [name for name, result in cases if result != "passed"]
     names = [name for name, _ in cases]
@@ -364,7 +379,14 @@ def inspect_results(report: Path, selectors: tuple[str, ...]) -> dict:
             "failed": sum(result == "failed" for _, result in cases),
             "skipped": sum(result == "skipped" for _, result in cases),
             "incomplete": incomplete, "missing": missing, "errors": errors,
-            "duration": attributes.get("duration"), "report": str(report)}
+            "duration": attributes.get("duration"), "report": str(report),
+            "sourceResult": attributes.get("result"),
+            "timing": {"reportedCases": len(timings),
+                       "summedCaseSeconds": sum(row["seconds"] for row in timings),
+                       "medianCaseSeconds": statistics.median(row["seconds"] for row in timings) if timings else None,
+                       "over60Count": sum(row["seconds"] > 60 for row in timings),
+                       "over60Seconds": sum(row["seconds"] for row in timings if row["seconds"] > 60),
+                       "slowest": sorted(timings, key=lambda row: row["seconds"], reverse=True)[:10]}}
 
 
 def read_results(report: Path, selectors: tuple[str, ...]) -> dict:
