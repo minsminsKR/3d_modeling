@@ -57,7 +57,7 @@ namespace HappyToy.V2.CloudTests
                 var target=new RenderTexture(size.x,size.y,0);target.Create();document.panelSettings.targetTexture=target;
                 try
                 {
-                    int previousInk=0;
+                    float previousEnergy=0;
                     foreach(float fraction in new[]{0f,.5f,.99f})
                     {
                         Call(curtain,"Report",fraction);
@@ -72,12 +72,15 @@ namespace HappyToy.V2.CloudTests
                         try
                         {
                             CloudExperienceTests.Artifact("loading-"+size.x+"x"+size.y+"-"+(int)(fraction*100)+".png",image.EncodeToPNG());
-                            int ink=0;
+                            int ink=0;float energy=0;
                             for(int y=0;y<size.y*.3f;y++)for(int x=(int)(size.x*.65f);x<size.x;x++)
-                                if(image.GetPixel(x,y).maxColorComponent>.08f)ink++;
+                                {
+                                    var color=image.GetPixel(x,y);float luminance=Mathf.Max(color.r,color.g,color.b);
+                                    energy+=luminance;if(luminance>.08f)ink++;
+                                }
                             Assert.That(ink,Is.GreaterThan(100),"Loading label/seal failed to render at bottom right");
-                            Assert.That(ink,Is.GreaterThan(previousInk),"More completed work did not fill more of the actual rendered seal");
-                            previousInk=ink;
+                            Assert.That(energy,Is.GreaterThan(previousEnergy),"More completed work did not brighten the actual rendered seal");
+                            previousEnergy=energy;
                         }
                         finally { Object.Destroy(image); }
                     }

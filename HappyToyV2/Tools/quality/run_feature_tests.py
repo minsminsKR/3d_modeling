@@ -61,7 +61,7 @@ PROFILES = {
         ("PlayMode", play_tests("CloudCheatTests.cs") + (
             PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
     "wraith-footsteps": ("Shared title/game Baeksugwi recording bank, actual start transition, quiet mixer/master mute and running/pause", [
-        ("PlayMode", play_tests("CloudLoadingIndicatorTests.cs") + (
+        ("PlayMode", (
             PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
             PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
@@ -249,7 +249,7 @@ PROFILES = {
             PLAY + "MainCorridorAndSchoolRealEntriesKeepBothSuspendSlotsAndRecordsSeparate",
             PLAY + "ActualDeathRetryAndRepeatedUiNavigationKeepOwnedResourcesBounded"))]),
     "ui": ("Title/loading, menu controls, results/history, retry/settings", [
-        ("PlayMode", (
+        ("PlayMode", play_tests("CloudLoadingIndicatorTests.cs") + (
             PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",
             PLAY + "GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit",
