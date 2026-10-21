@@ -14,10 +14,12 @@ namespace HappyToy.V2
         static readonly Color Bounce=new Color(.058f,.065f,.072f);
         Color appliedBounce;
         LadyFinaleLighting finale;
+        EntranceFirelightEnvironment entranceFirelight;
         public bool FinaleBlackout=>finale!=null;
         public void BeginFinale()
         {
             if(!applied)throw new System.InvalidOperationException("Finale requires an active lighting mode");
+            entranceFirelight?.Dispose();entranceFirelight=null;
             if(finale==null)finale=new LadyFinaleLighting(camera,session.player.flashlight);
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -117,6 +119,7 @@ namespace HappyToy.V2
             var entrance=session.CorridorMode?session.Corridor.Entrance:null;
             if(entrance)
             {
+                entranceFirelight=new EntranceFirelightEnvironment(camera,entrance);
                 // The wet cavern remains visible after crossing into the maze.
                 // Keep its local capture instead of exposing the sky fallback
                 // when the travelling room probe moves to cell zero. Fixed
@@ -258,6 +261,7 @@ namespace HappyToy.V2
         }
         void End()
         {
+            entranceFirelight?.Dispose();entranceFirelight=null;
             finale?.Dispose();finale=null;
             if(volume)volume.enabled=false;
             if(probe)probe.enabled=false;

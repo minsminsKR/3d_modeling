@@ -89,9 +89,13 @@ PROFILES = {
             PLAY + "CorridorCheckpointJsonRestoresRealScenePickupsDoorsPlayerAndThreatEvidence",
             PLAY + "CyclopseFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin",
             PLAY + "UncatFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin"))]),
-    "entrance-lighting": ("Selected absolute entrance light gain, actual camera/aspect ratios, corridor-mouth floor and owned cavern reflections", [
+    "entrance-lighting": ("Flame-motivated entrance lighting, no ceiling/ambient fill, actual camera/aspects, pause/comfort, reflections and preserved routes", [
         ("EditMode", (CLOUD + "GraphicsLightingRulesTests",)),
         ("PlayMode", play_tests("EntranceBrightnessTests.cs") + (
+            PLAY + "EntranceRitualArtKeepsSupportedFloorClearRouteAndReleasesOwnedResources",
+            PLAY + "LadyFinaleRealCameraNeedsTorchAndRestartRestoresNormalLighting",
+            PLAY + "CorridorGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState",
+            PLAY + "SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState",
             PLAY + "EntranceRitualActualCameraShowsWetFloorSealsCandlesAndGuardiansAcrossAspectRatios",
             PLAY + "EntranceFloorStaysDarkWhenBackingAcrossTheCorridorMouth",
             PLAY + "EntranceReflectionUsesActualCavernBoxAndPauseRetainsTheOwnedScope"))]),

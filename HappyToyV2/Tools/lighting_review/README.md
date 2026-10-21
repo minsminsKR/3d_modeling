@@ -1,10 +1,13 @@
 # Local entrance lighting chooser
 
 The viewer scrolls through **actual Unity renders**, not an image brightness
-filter. One absolute value multiplies all nine local entrance lights against the
-original 1.00 review baseline by 0–2 in 0.05 steps. The selected game value is
-currently 0.45; future exports divide that applied gain out before rendering
-levels, so choosing 0.45 again does not multiply the lights by 0.45 twice.
+filter. The current firelight rig contains five candle-lit Buddhist paper lanterns
+and four low candle gatherings. There is no ceiling/rock fill; cave cameras and
+reflection captures use no ambient fill. Each visible source varies gently during
+play and stops while paused (reduced motion stays steady). The 2026-10-21 rig
+supersedes the old ceiling-fill brightness bank. One gain scales these nine sources
+by 0–2 in 0.05 steps; the current value is 0.45. Exports divide out that gain before
+rendering levels, so selecting 0.45 again never multiplies it twice.
 It offers the real start camera, a gate view and a raised vault view. Player
 hands/HUD and flashlight are omitted, game simulation is paused, and both owned
 reflection probes are recaptured for each level. The maze and game sources are

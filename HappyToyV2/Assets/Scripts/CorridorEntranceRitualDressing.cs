@@ -15,7 +15,7 @@ namespace HappyToy.V2
         readonly List<Vector3> incenseSources=new List<Vector3>();
         readonly List<Transform> toBatch=new List<Transform>();
         public IReadOnlyList<Light> Lanterns=>lanterns;
-        // Absolute gain against the original lighting-review baseline.
+        // Gain for the firelight rig. The old ceiling-fill rig has been retired.
         public float LightMultiplier=>.45f;
         public IReadOnlyList<Vector3> IncenseSources=>incenseSources;
         public int CandleCount {get;private set;}
@@ -94,24 +94,27 @@ namespace HappyToy.V2
         }
         void Candles()
         {
-            CandleCluster(new Vector3(-7.2f,0,-2),6);CandleCluster(new Vector3(8.3f,0,-1),5);
-            CandleCluster(new Vector3(-6.3f,0,-10.5f),6);CandleCluster(new Vector3(6.4f,0,-10.1f),6);
-            CandleCluster(new Vector3(-11,0,-7.3f),4);CandleCluster(new Vector3(11,0,-5.5f),4);
-            CandleCluster(new Vector3(8,0,3),5);CandleCluster(new Vector3(-1,0,2),6);
+            // Four pools mark the sides of the route, never its walking centre.
+            CandleCluster(new Vector3(-3.4f,0,-7.2f),7,true);CandleCluster(new Vector3(3.4f,0,-6.6f),6,true);
+            CandleCluster(new Vector3(-3.6f,0,1.2f),6,true);CandleCluster(new Vector3(3.3f,0,8.4f),6,true);
+            CandleCluster(new Vector3(-10,0,-10.5f),6);CandleCluster(new Vector3(10,0,-10.5f),6);
+            CandleCluster(new Vector3(-10,0,-3),4);CandleCluster(new Vector3(10,0,3),4);
         }
-        void CandleCluster(Vector3 centre,int count)
+        void CandleCluster(Vector3 centre,int count,bool illuminate=false)
         {
+            var cluster=Group("Offerings of gathered beeswax candles",centre);
             for(int i=0;i<count;i++)
             {
                 float angle=i*2.399963f,spread=.14f+Mathf.Sqrt(i)*.17f,height=.12f+(i%4)*.065f;
                 var at=centre+new Vector3(Mathf.Cos(angle)*spread,.026f,Mathf.Sin(angle)*spread);
-                var holder=Group("Gathered worn ritual candle",at);
+                var holder=Group("Gathered worn ritual candle",at);holder.SetParent(cluster,true);
                 var candle=GraphicsPropLibrary.Attach("candle-waymark",holder,surfaces.Resolve);
                 GraphicsPropLibrary.Fit(candle,new Bounds(new Vector3(0,height*.5f,0),new Vector3(.085f,height,.085f)));
                 var flame=GraphicsPropLibrary.CreateFlame(holder,owned);
                 GraphicsPropLibrary.Fit(flame,new Bounds(new Vector3(0,height+.043f,0),new Vector3(.032f,.105f,.032f)));
                 toBatch.Add(holder);CandleCount++;
             }
+            if(illuminate)Lamp("Candle gathering firelight",centre+Vector3.up*.29f,new Color(1,.43f,.13f),6.8f,4.7f,false,cluster);
         }
         void Ropes()
         {
@@ -153,19 +156,13 @@ namespace HappyToy.V2
         }
         void LanternsAndLight()
         {
-            Lantern(new Vector3(5,3.1f,4),1.8f,3.6f,11,false,1.25f);
-            Lantern(new Vector3(-4.5f,3.5f,9.8f),1.35f,3.3f,10,false);
-            Lantern(new Vector3(-6,4.1f,-11),1.1f,3.8f,11,true);
-            Lantern(new Vector3(6,4.4f,-11),1.1f,3.8f,11,true);
-            // Only two lanterns are point-shadow eligible. LocalShadowBudget
-            // continues to select at most two casters across the whole scene.
-            Lamp("Gate candle gathering glow",new Vector3(0,1.15f,-10.3f),new Color(1,.49f,.18f),2.2f,9,false);
-            Lamp("Left candle gathering glow",new Vector3(-1,1,2),new Color(1,.48f,.17f),1.8f,8,false);
-            Lamp("Onward threshold candle gathering glow",new Vector3(2.8f,1,10.8f),new Color(1,.37f,.12f),1.9f,9,false);
-            // Baseline from the lighting review; Lamp applies the selected gain.
-            Lamp("Dim neutral cavern scatter",new Vector3(0,7.5f,-2),new Color(.48f,.47f,.43f),320f,25,false);
-            lanterns[lanterns.Count-1].renderMode=LightRenderMode.ForcePixel;
-            Lamp("Grazing dark rear rock",new Vector3(-11.5f,2,-9),new Color(.85f,.44f,.20f),4.8f,9,false);
+            // Every light belongs to a visible flame or a candle-lit paper shade.
+            // Their short ranges leave the high vault and gaps between pools dark.
+            Lantern(new Vector3(3.8f,2.05f,-4.8f),1,8.5f,7,true,1.05f);
+            Lantern(new Vector3(-4.4f,2.1f,6.8f),1,7,6,false,.95f);
+            Lantern(new Vector3(2.8f,1.9f,11.3f),1,6.5f,5.5f,false,1.15f);
+            Lantern(new Vector3(-7.8f,2.2f,-11.2f),1,8,6,true,1.05f);
+            Lantern(new Vector3(7.8f,2.4f,-11.2f),1,7.2f,6,false,1.05f);
         }
         void Lantern(Vector3 at,float scale,float intensity,float range,bool shadow,float fittedHeight=0)
         {
@@ -181,7 +178,12 @@ namespace HappyToy.V2
             toBatch.Add(holder);var cord=new GraphicsSurfaceLibrary.Geometry(Vector3.zero,.15f);
             Tube(cord,at+Vector3.up*top,new Vector3(at.x,11.9f,at.z),.012f);
             MeshPart("Old lantern suspension cord",cord.Mesh("Owned lantern suspension"),rope);
-            Lamp("Warm temple paper lantern",at,new Color(1,.62f,.29f),intensity,range,shadow);
+            var fire=Group("Candle flame inside the Buddhist lantern",Vector3.zero);fire.SetParent(holder,false);
+            fire.localPosition=bounds.center;
+            var flame=GraphicsPropLibrary.CreateFlame(fire,owned);
+            GraphicsPropLibrary.Fit(flame,new Bounds(Vector3.zero,new Vector3(.05f,.13f,.05f)/holder.localScale.x));
+            var sourceAt=transform.InverseTransformPoint(fire.position);
+            Lamp("Candle-lit Buddhist paper lantern",sourceAt,new Color(1,.54f,.22f),intensity,range,shadow,holder);
         }
         void BuddhistLanternInk(Transform holder,Bounds bounds)
         {
@@ -200,10 +202,13 @@ namespace HappyToy.V2
             var renderer=glyph.GetComponent<MeshRenderer>();
             renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;
         }
-        void Lamp(string name,Vector3 at,Color colour,float intensity,float range,bool shadow)
+        void Lamp(string name,Vector3 at,Color colour,float intensity,float range,bool shadow,Transform fixture)
         {
             var light=Group(name,at).gameObject.AddComponent<Light>();light.type=LightType.Point;
-            light.color=colour;light.intensity=intensity*LightMultiplier;light.range=range;light.shadows=shadow?LightShadows.Soft:LightShadows.None;lanterns.Add(light);
+            light.transform.SetParent(fixture,true);
+            light.color=colour;light.intensity=intensity*LightMultiplier;light.range=range;
+            light.shadows=shadow?LightShadows.Soft:LightShadows.None;lanterns.Add(light);
+            light.gameObject.AddComponent<EntranceFirelight>().Configure(light,fixture,at.x*.19f+at.z*.11f+21);
         }
         void Incense()
         {
