@@ -16,3 +16,7 @@ Source models and attribution records preserved under SourceArt/GraphicsUpgrade.
 
 Korean corridor jangseung, onggi and dokkaebi-inspired roof tile: generated for this project with the designated A100 Studio / TRELLIS.2 webapp, using original built-in ImageGen references; locally finished in Blender 4.0.2.
 References, original GLB/PBR, prompts, job provenance, editable Blender and backend license are preserved under SourceArt/KoreanCorridorProps.
+
+School horror surfaces: school-specific derivatives of worn_plaster_wall and floor_tiles_06 scans listed above (CC0 1.0).
+Correlated mold, leak, crack and wetness finishing, physical material shader and Korean notice layouts are authored for HappyToyV2.
+Original user visual reference, exact map/font inputs, reproducible generators and output hashes: SourceArt/SchoolHorror.

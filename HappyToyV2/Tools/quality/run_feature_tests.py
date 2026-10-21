@@ -304,6 +304,12 @@ PROFILES["school-loop"]=("New reference school plan, retired old gameplay, locke
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
     ("PlayMode", play_tests("SchoolLoopTests.cs"))])
 
+PROFILES["school-horror"]=("School-only decayed PBR, wet floor, lighting pause/cleanup and actual camera review; preserved loop navigation, closed classrooms, saves and music asset identity", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", "HappyToy.V2.CoreTests.SchoolFluorescentClockTests", CLOUD+"SchoolLoopCheckpointTests")),
+    ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolHorrorEnvironmentTests.cs")+(
+        PLAY+"SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState",
+        PLAY+"CorridorGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState"))])
+
 
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
     selected = list(PROFILES[profile][1])

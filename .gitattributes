@@ -92,3 +92,15 @@ HappyToyV2/Assets/Resources/SchoolLoop/*.prefab text eol=lf
 HappyToyV2/Assets/Resources/SchoolLoop/*.mat text eol=lf
 HappyToyV2/Assets/Resources/SchoolLoop/**/*.mat text eol=lf
 HappyToyV2/Assets/Resources/SchoolLoop.meta text eol=lf
+
+# Stable source fingerprints for school horror scan derivatives.
+HappyToyV2/SourceArt/SchoolHorror/*.py text eol=lf
+HappyToyV2/SourceArt/SchoolHorror/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolHorror/**/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolHorror/*.md text eol=lf
+HappyToyV2/SourceArt/SchoolHorror/*.txt text eol=lf
+HappyToyV2/Assets/Resources/SchoolHorror/**/*.meta text eol=lf
+HappyToyV2/Assets/Resources/SchoolHorror/*.shader text eol=lf
+HappyToyV2/Assets/Scripts/SchoolHorror*.cs text eol=lf
+HappyToyV2/Assets/Scripts/SchoolDecayDressing.cs text eol=lf
+HappyToyV2/Assets/Scripts/SchoolFluorescent.cs text eol=lf

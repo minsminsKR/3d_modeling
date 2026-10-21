@@ -1,0 +1,83 @@
+{
+  "purpose": "Original faded Korean school notices for the derelict school; no copied document or external logo.",
+  "generator": "SourceArt/SchoolHorror/build_notices.py",
+  "generatorSha256": "5ad2c01ec8e50eed2299a17190a05672f43c3aa6863f52aac6bc4f602a9b0e4b",
+  "dependencies": "SourceArt/SchoolHorror/requirements-surfaces.txt",
+  "software": {
+    "Pillow": "10.4.0",
+    "numpy": "1.26.4"
+  },
+  "inputs": [
+    {
+      "path": "Assets/Resources/GraphicsPbr/paper-aged/albedo.png",
+      "sha256": "b9474f1e4c5712d88093f8ccd5b59efee28095448dcba9e2dcfcb3e914123caf"
+    },
+    {
+      "path": "Assets/Resources/Fonts/Korean.ttf",
+      "sha256": "b9605a45a4811dc98c5005819fbc60b2ba581c835f087608cbe151a527624af5"
+    },
+    {
+      "path": "Assets/Resources/Fonts/OFL.txt",
+      "sha256": "7accca2f29220c9ab44e4950799b821f36ebf5bbe6b5fb5342724b32228a8daf"
+    }
+  ],
+  "paperCredit": "Retained paper-aged photographic PBR scan; see ThirdParty/Graphics/Graphics-Credits.txt and source manifests.",
+  "fontCredit": "Retained Korean.ttf, Adobe Source font, SIL Open Font License 1.1; original OFL.txt remains beside font.",
+  "method": "Scanned paper fibres, deterministic grey water staining, original Korean text and rule forms, spatially correlated faded photocopy ink.",
+  "outputs": [
+    {
+      "path": "Assets/Resources/SchoolHorror/notices/notice-0.png",
+      "sha256": "00001ec019ff481fe7cd843f4a14d49b8743e2c17be20a5eeca354c6c57c121e",
+      "title": "교내 안전 수칙",
+      "size": [
+        512,
+        768
+      ]
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/notices/notice-1.png",
+      "sha256": "dbdb174664449025dfd8bc9f80b93ab899a0ea2ef728814166752630aa67a3ed",
+      "title": "도서 반납 안내",
+      "size": [
+        512,
+        768
+      ]
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/notices/notice-2.png",
+      "sha256": "efa201d16fe4cd4639df1e971116ee0452c9e43b47b66f143bffef13a0659976",
+      "title": "정독실 이용 안내",
+      "size": [
+        512,
+        768
+      ]
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/notices/notice-3.png",
+      "sha256": "1ef06c859554d6c724f89d675a0fc90aea7217b9a5e4dfeffa13807093100b15",
+      "title": "가 정 통 신 문",
+      "size": [
+        512,
+        768
+      ]
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/notices/notice-4.png",
+      "sha256": "865d637b828a13017bca2fea0dc8f6d950e2ad576e7d7769bfd42ded59a59455",
+      "title": "시 설 점 검 표",
+      "size": [
+        512,
+        768
+      ]
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/notices/notice-5.png",
+      "sha256": "b90df079b4ad3013e9aa44531f1af29bdb647841eef25deabeb44fda782d23ea",
+      "title": "음악실 사용 안내",
+      "size": [
+        512,
+        768
+      ]
+    }
+  ]
+}

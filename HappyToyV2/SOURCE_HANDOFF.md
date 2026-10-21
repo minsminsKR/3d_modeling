@@ -23,6 +23,13 @@ pull은 요청 시점의 GitHub `origin/main`을 가져오고 필요한 Git LFS 
 
 ## 현재 게임 소스와 빌드
 
+2026-10-21 현재 메뉴/제단 이후의 학교는 관찰 복도 지도 버전 3이다.
+`SourceArt/SchoolLoop`의 배치와 잠긴 방/연결 이동을 유지하면서,
+`SourceArt/SchoolHorror`의 사용자 참조·스캔 파생 PBR·인쇄물 제작 도구·학교 전용
+조명/안개를 적용한다. 현재 환경 재현과 선택 무음 카메라/플레이어 검토는 해당
+README와 `school-horror` 검사 프로필을 따른다. 아래 버전 1/2 학교 설명은 구형
+저장/회귀 경로에도 계속 필요한 이전 캠퍼스 소스다.
+
 학교 기본 지도 버전은 2다. 학교의 직사각 공간·복도·문 계획은
 `Assets/Scripts/SchoolCampusLayout.cs`, 건물과 소품 배치는
 `SchoolCampusArchitecture.cs`, `SchoolCampusRooms.cs`가 원본이다.

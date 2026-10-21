@@ -12,19 +12,9 @@ namespace HappyToy.V2
         Material plaster,paint,tile,timber,iron,ceiling,glass;
         public SchoolLoopArchitecture(SchoolLoopWorld owner)
         {
-            world=owner;var pool=world.Surfaces;
-            plaster=pool.Get("concrete-rough",new Color(.72f,.70f,.64f));
-            paint=pool.Get("concrete-rough",new Color(.48f,.54f,.47f));
-            tile=pool.Get("ceramic-tile",new Color(.78f,.76f,.65f));
-            timber=pool.Get("wood-aged",new Color(.45f,.37f,.25f));
-            iron=pool.Get("painted-metal",new Color(.24f,.27f,.25f));
-            ceiling=pool.Get("concrete-rough",new Color(.67f,.69f,.66f));
-            glass=Resources.Load<Material>("SchoolLoop/window-glass");
-            if(!glass)throw new InvalidOperationException("School loop window glass missing");
-            // Painted school plaster retains measured micro-normal/roughness,
-            // with a neutral coating instead of the scan's large stone stains.
-            foreach(var coating in new[]{plaster,paint,ceiling})
-            {coating.SetTexture("_BaseMap",Texture2D.whiteTexture);coating.SetFloat("_BumpScale",.12f);coating.SetFloat("_OcclusionStrength",.15f);}
+            world=owner;var surfaces=world.HorrorSurfaces;
+            plaster=surfaces.Wall;paint=surfaces.LowerWall;tile=surfaces.Floor;
+            timber=surfaces.Timber;iron=surfaces.Rust;ceiling=surfaces.Ceiling;glass=surfaces.Glass;
         }
         GameObject Box(string name,Vector3 p,Vector3 size,Material material,bool body=false,bool floor=false)=>world.Box(root,name,p,size,material,physical&&body,floor);
         void Slab(float x0,float z0,float x1,float z1,bool wood=false)
@@ -34,7 +24,7 @@ namespace HappyToy.V2
             if(z1-z0>4.41f)
             {for(float z=z0;z<z1-.001f;z+=4.4f)Slab(x0,z,x1,Mathf.Min(z+4.4f,z1),wood);return;}
             var centre=new Vector3((x0+x1)*.5f,-.12f,(z0+z1)*.5f);
-            Box("School loop physical floor",centre,new Vector3(x1-x0,.24f,z1-z0),wood?world.Surfaces.Get("wood-floor",new Color(.89f,.78f,.59f)):tile,true,true);
+            Box("School loop physical floor",centre,new Vector3(x1-x0,.24f,z1-z0),wood?world.Surfaces.Get("wood-floor",new Color(.41f,.37f,.28f)):tile,true,true);
             centre.y=3.34f;Box("School acoustic ceiling",centre,new Vector3(x1-x0,.18f,z1-z0),ceiling,true);
             for(float z=z0+.6f;z<z1;z+=.6f)Box("Ceiling tile cross seam",new Vector3(centre.x,3.244f,z),new Vector3(x1-x0,.009f,.012f),iron);
             for(float x=x0+.6f;x<x1;x+=.6f)Box("Ceiling tile long seam",new Vector3(x,3.244f,(z0+z1)*.5f),new Vector3(.012f,.009f,z1-z0),iron);
@@ -85,6 +75,12 @@ namespace HappyToy.V2
             Box("School corridor window solid sill",new Vector3(-2.2f,.48f,middle),new Vector3(.18f,.96f,span),paint,true);
             Box("School corridor window head wall",new Vector3(-2.2f,2.91f,middle),new Vector3(.18f,.68f,span),plaster,true);
             Box("Closed classroom window glass",new Vector3(-2.2f,1.77f,middle),new Vector3(.018f,1.60f,span),glass,true);
+            Box("Deep water-darkened classroom window sill",new Vector3(-2.11f,.955f,middle),new Vector3(.32f,.075f,span+.10f),timber);
+            foreach(float edge in new[]{room.WindowNear-.07f,room.WindowFar+.07f})
+            {
+                Box("Flaked projecting classroom pilaster",new Vector3(-2.15f,1.625f,edge),new Vector3(.29f,3.25f,.17f),plaster,true);
+                Box("Damp pilaster lower coating",new Vector3(-2.145f,.59f,edge),new Vector3(.30f,1.18f,.18f),paint);
+            }
             foreach(float y in new[]{.98f,2.57f})Box("Classroom window horizontal frame",new Vector3(-2.2f,y,middle),new Vector3(.24f,.065f,span),iron);
             int panes=Mathf.CeilToInt(span/1.15f);
             for(int i=0;i<=panes;i++)Box("Classroom window upright",new Vector3(-2.2f,1.77f,Mathf.Lerp(room.WindowNear,room.WindowFar,i/(float)panes)),new Vector3(.24f,1.65f,.055f),iron);
@@ -96,18 +92,21 @@ namespace HappyToy.V2
                 Wall(-2.2f,room.Far-.13f,.18f,.26f);
             }
             else Wall(-2.2f,(room.WindowFar+room.Far)*.5f,.18f,room.Far-room.WindowFar);
-            var board=Box("School classroom enamel sign",new Vector3(-2.06f,2.76f,room.DoorZ),new Vector3(.035f,.29f,1.05f),paint);
+            Box("School classroom enamel sign",new Vector3(-2.06f,2.76f,room.DoorZ),new Vector3(.035f,.29f,1.05f),iron);
             world.Label(root,room.Label,new Vector3(-2.032f,2.76f,room.DoorZ),Quaternion.Euler(0,270,0),new Vector2(.91f,.22f),new Color(.90f,.88f,.76f));
             if(room.Id!="music")
             {
-                // Map shell only; detailed furniture for these rooms comes later.
+                // Furniture, exterior glazing and the teaching wall are owned by the decay dressing.
                 world.Fixture(root,new Vector3(-5.8f,3.08f,middle),true,2.2f);
-                Box("Unfurnished "+room.Id+" rear board",new Vector3(room.West+.12f,1.65f,middle),new Vector3(.05f,1.0f,2.4f),paint);
             }
         }
         void Door(SchoolLoopPlan.Room room,float z,string end)
         {
             var leaf=Box("Locked "+room.Id+" "+end+" classroom door",new Vector3(-2.2f,1.22f,z),new Vector3(.10f,2.44f,.95f),paint,true);
+            Box("Worn classroom door lower timber panel",new Vector3(-2.139f,.60f,z),new Vector3(.025f,.88f,.73f),timber);
+            Box("Old classroom door inspection pane",new Vector3(-2.139f,1.74f,z),new Vector3(.025f,.72f,.64f),glass);
+            foreach(float edge in new[]{-.35f,.35f})Box("Door inspection pane timber edge",new Vector3(-2.12f,1.74f,z+edge),new Vector3(.04f,.79f,.045f),timber);
+            foreach(float y in new[]{1.34f,2.14f})Box("Door inspection pane timber rail",new Vector3(-2.12f,y,z),new Vector3(.04f,.045f,.74f),timber);
             Box("School door upper lintel",new Vector3(-2.2f,2.86f,z),new Vector3(.18f,.78f,1.04f),plaster,true);
             foreach(float side in new[]{-.53f,.53f})Box("School door metal jamb",new Vector3(-2.2f,1.24f,z+side),new Vector3(.22f,2.48f,.055f),iron,true);
             Box("Classroom door pull",new Vector3(-2.115f,1.04f,z+.33f),new Vector3(.08f,.20f,.045f),iron);
@@ -137,7 +136,6 @@ namespace HappyToy.V2
                 // Wall-mounted shallow notice cabinets and utility trim stay outside the clear aisle.
                 Box("Corridor cork notice surround",new Vector3(2.075f,1.73f,z),new Vector3(.07f,1.05f,1.65f),timber);
                 Box("Corridor cork notice board",new Vector3(2.03f,1.73f,z),new Vector3(.015f,.91f,1.49f),world.Surfaces.Get("paper-aged",new Color(.42f,.36f,.23f)));
-                for(int i=0;i<4;i++)Box("Pinned school paper notice",new Vector3(2.012f,1.60f+(i/2)*.30f,z-.48f+(i%2)*.48f),new Vector3(.007f,.27f,.34f),world.Surfaces.Get("paper-aged",new Color(.84f,.81f,.67f)));
             }
             for(float z=4.8f;z<35;z+=3.1f)
             {

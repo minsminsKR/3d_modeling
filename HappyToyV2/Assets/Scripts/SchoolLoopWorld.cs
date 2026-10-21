@@ -22,6 +22,7 @@ namespace HappyToy.V2
         public int StaticBatches {get;private set;}
         public string Objective=>"복도와 창문 너머의 방을 살펴보세요. 양 끝은 같은 구조의 다음·이전 구역으로 이어집니다.";
         public GraphicsSurfaceLibrary.Pool Surfaces {get;}=new GraphicsSurfaceLibrary.Pool();
+        public SchoolHorrorSurfaces HorrorSurfaces {get;private set;}
         internal readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
         internal readonly List<Light> fixtures=new List<Light>();
         internal readonly List<Interactable> doors=new List<Interactable>();
@@ -36,6 +37,7 @@ namespace HappyToy.V2
             session=owner;retired.Apply(owner);
             Root=new GameObject("School — repeating observation corridor v3").transform;
             Root.SetParent(transform,false);Root.position=Origin;
+            HorrorSurfaces=new SchoolHorrorSurfaces(Surfaces);
             var architecture=new SchoolLoopArchitecture(this);
             for(int index=-1;index<=1;index++)
             {
@@ -44,12 +46,14 @@ namespace HappyToy.V2
                 if(index==0)Centre=chunk;
                 architecture.Build(chunk,index==0);
                 new SchoolMusicRoomDressing(this).Build(chunk,index==0);
+                new SchoolDecayDressing(this,HorrorSurfaces).Build(chunk,index==0);
             }
             Batch();Physics.SyncTransforms();
             navigation=Centre.gameObject.AddComponent<NavMeshSurface>();
             navigation.collectObjects=CollectObjects.Children;navigation.useGeometry=NavMeshCollectGeometry.PhysicsColliders;
             navigation.overrideVoxelSize=true;navigation.voxelSize=.10f;
             navigation.BuildNavMesh();
+            Root.gameObject.AddComponent<SchoolHorrorLighting>().Prepare(this);
             session.player.RelocateWorld(Origin+new Vector3(-4.6f,.03f,2.2f),Quaternion.Euler(0,90,0));
             previous=session.player.transform.position;
         }
@@ -98,29 +102,28 @@ namespace HappyToy.V2
         }
         internal Light Fixture(Transform parent,Vector3 at,bool warm,float intensity=3.4f)
         {
-            var iron=Surfaces.Get("painted-metal",new Color(.6f,.61f,.57f));
-            var diffuse=Surfaces.Get("painted-metal",new Color(.85f,.85f,.73f),warm?new Color(1.4f,1.1f,.65f):new Color(1.1f,1.16f,1.04f));
-            Box(parent,"School twin fluorescent metal housing",at,new Vector3(.37f,.09f,1.22f),iron);
-            foreach(float side in new[]{-.09f,.09f})Box(parent,"School fluorescent diffuser",at+new Vector3(side,-.06f,0),new Vector3(.08f,.035f,1.10f),diffuse);
-            var lamp=new GameObject("School loop fluorescent pool").AddComponent<Light>();lamp.transform.SetParent(parent,false);
-            lamp.transform.localPosition=at-Vector3.up*.23f;lamp.type=LightType.Point;
-            lamp.color=warm?new Color(1,.79f,.48f):new Color(.82f,.87f,.78f);lamp.intensity=intensity;lamp.range=7;
-            lamp.shadows=LightShadows.None;fixtures.Add(lamp);return lamp;
+            return SchoolHorrorLighting.Fixture(this,parent,at,warm,intensity);
         }
         void Batch()
         {
             var renderers=Root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.enabled&&!r.GetComponent<TextMesh>()&&
                 !r.GetComponentInParent<LODGroup>()&&r.sharedMaterials.Length==1&&r.GetComponent<MeshFilter>()&&
+                r.GetComponent<MeshFilter>().sharedMesh&&r.GetComponent<MeshFilter>().sharedMesh.isReadable&&
                 GraphicsSurfaceLibrary.SurfaceKey(r.sharedMaterial).Length>0).ToArray();
             Transform Section(Transform item){while(item.parent!=Root)item=item.parent;return item;}
-            var groups=renderers.GroupBy(r=>Section(r.transform).GetEntityId()+":"+r.name.ToLowerInvariant().Contains("ceiling")+":"+r.sharedMaterial.GetEntityId()+":"+Mathf.FloorToInt(r.bounds.center.x/8)+":"+Mathf.FloorToInt(r.bounds.center.z/8));
+            var groups=renderers.GroupBy(r=>Section(r.transform).GetEntityId()+":"+r.name.ToLowerInvariant().Contains("ceiling")+":"+r.sharedMaterial.GetEntityId()+":"+
+                r.shadowCastingMode+":"+r.receiveShadows+":"+r.lightProbeUsage+":"+r.reflectionProbeUsage+":"+
+                Mathf.FloorToInt(r.bounds.center.x/8)+":"+Mathf.FloorToInt(r.bounds.center.z/8));
             foreach(var group in groups)
             {
                 var members=group.ToArray();if(members.Length<2)continue;var parent=Section(members[0].transform);
                 var mesh=new Mesh{name="Owned school loop spatial batch",indexFormat=IndexFormat.UInt32};owned.Add(mesh);
                 mesh.CombineMeshes(members.Select(r=>new CombineInstance{mesh=r.GetComponent<MeshFilter>().sharedMesh,transform=parent.worldToLocalMatrix*r.transform.localToWorldMatrix}).ToArray());
                 var go=new GameObject(members[0].name.ToLowerInvariant().Contains("ceiling")?"School loop ceiling batch":"School loop spatial batch",typeof(MeshFilter),typeof(MeshRenderer));go.layer=8;go.transform.SetParent(parent,false);
-                go.GetComponent<MeshFilter>().sharedMesh=mesh;go.GetComponent<MeshRenderer>().sharedMaterial=members[0].sharedMaterial;
+                go.GetComponent<MeshFilter>().sharedMesh=mesh;var renderer=go.GetComponent<MeshRenderer>();
+                renderer.sharedMaterial=members[0].sharedMaterial;renderer.shadowCastingMode=members[0].shadowCastingMode;
+                renderer.receiveShadows=members[0].receiveShadows;renderer.lightProbeUsage=members[0].lightProbeUsage;
+                renderer.reflectionProbeUsage=members[0].reflectionProbeUsage;
                 foreach(var member in members)member.enabled=false;StaticBatches++;
             }
         }
@@ -129,6 +132,7 @@ namespace HappyToy.V2
             if(navigation){navigation.RemoveData();if(navigation.navMeshData)Destroy(navigation.navMeshData);}
             if(Root)Destroy(Root.gameObject);
             foreach(var item in owned)if(item)GraphicsSurfaceLibrary.DestroyOwned(item);
+            HorrorSurfaces?.Dispose();
             Surfaces.Dispose();
             // A chapter changes by loading a fresh scene. Never reactivate old
             // agents/lights while their scene and NavMesh are being unloaded.
