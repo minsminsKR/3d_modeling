@@ -77,7 +77,7 @@ namespace HappyToy.V2
             if (!session.InputAllowed) return;
             for (int i = 0; i < stock.Length; i++) stock[i] = player.Items.Count((PlayerItem)i);
             overlay.Present(choice, (int)player.Items.Selected, stock, player.Rituals.Fragments,
-                PlayerControls.UsingGamepad, session.Shell.ItemWheelOpen, highContrast, largeText);
+                PlayerControls.UsingGamepad, session.Shell.ItemWheelOpen, highContrast, largeText, player.Items.Unlimited);
         }
         void OnApplicationFocus(bool focused) { if (!focused) requireRelease = true; }
         void OnDisable()

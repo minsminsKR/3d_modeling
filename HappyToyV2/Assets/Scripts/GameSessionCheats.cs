@@ -74,7 +74,7 @@ namespace HappyToy.V2
                     if (enemy.gameObject.scene == gameObject.scene) enemy.ForgetPlayerForCheat();
                 if (player && player.TryGetComponent<DetectionFeedback>(out var feedback)) feedback.ClearForCheat();
             }
-            Notify("치트 · 무적 / 발각 방지 / 스태미나 무한 / 달리기 2배 " + (CheatSafeMode ? "ON" : "OFF"));
+            Notify("치트 · 무적 / 발각 방지 / 스태미나·아이템·손전등 무한 / 달리기 2배 " + (CheatSafeMode ? "ON" : "OFF"));
         }
     }
 

@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
+using UnityEngine.UIElements;
 using static HappyToy.V2.CloudTests.RuntimeAccess;
 
 namespace HappyToy.V2.CloudTests
@@ -136,5 +137,104 @@ namespace HappyToy.V2.CloudTests
             Call(shell, "Pause");
             Assert.DoesNotThrow(() => Call(session, "CaptureChapterCheckpoint"));
         }
+        bool CheatUseSelected(string item)
+        {
+            var selected=Get<object>(ItemLoadout,"Selected");
+            Call(ItemLoadout,"Select",System.Enum.Parse(selected.GetType(),item));
+            return (bool)Call(ItemLoadout,"UseSelected");
+        }
+
+        [UnityTest,Timeout(120000)]
+        public IEnumerator CheatF2UsesEveryEmptyItemAndEmptyFlashlightShowsInfinityAndTurnsOffCleanly()
+        {
+            Call(session,"CreateCorridor",73);Begin();IsolateThreats();yield return null;
+            yield return RecoveryUiReady();
+            var snappers=Get<Component>(player,"Firecrackers");var traps=Get<Component>(player,"Traps");
+            var rituals=Get<Component>(player,"Rituals");var charge=Get<Component>(player,"FlashlightSystem");
+            Call(snappers,"RestoreStock",0,0f);Call(traps,"Restore",0,0f);Call(rituals,"Restore",0,0,0);
+            Call(charge,"Restore",0f,0,0);yield return null;
+            yield return CheatTap(Key.F2);
+            Assert.That(Get<bool>(ItemLoadout,"Unlimited"),Is.True);
+            var root=Get<VisualElement>(One("GameShellView"),"Root");
+            for(int i=0;i<5;i++)Assert.That(root.Q<Label>("item-wheel-count-"+i).text,Is.EqualTo("∞"));
+            Assert.That(Get<float>(root.Q("flashlight-battery-meter"),"Fraction"),Is.EqualTo(1));
+            yield return CheatTap(Key.F);
+            yield return Delay(.6f);
+            Assert.That(Get<Light>(player,"flashlight").enabled,Is.True,"Empty cheat flashlight refused to stay lit");
+            Assert.That(Get<float>(charge,"Charge"),Is.Zero);
+            Assert.That(Get<bool>(charge,"Depleted"),Is.False);
+            Assert.That(Get<int>(charge,"Depletions"),Is.Zero);
+            var firstTrap=PlaceTestTrapThroughInventory(true);Assert.That(firstTrap,Is.Not.Null);
+            yield return Delay(.6f);
+            var secondTrap=PlaceTestTrapThroughInventory(true);Assert.That(secondTrap,Is.Not.SameAs(firstTrap));
+            var selected=Get<object>(ItemLoadout,"Selected");
+            Call(ItemLoadout,"Select",System.Enum.Parse(selected.GetType(),"Snapper"));
+            Assert.That(Get<bool>(snappers,"CanAim"),Is.True,"Empty infinite stock cannot aim");
+            for(int i=0;i<2;i++)
+            {
+                var previous=Get<Component>(snappers,"LastThrown");
+                yield return CheatTap(Key.Q);
+                Assert.That(Get<Component>(snappers,"LastThrown"),Is.Not.Null.And.Not.SameAs(previous));
+                Assert.That(Get<int>(snappers,"Count"),Is.Zero);
+                yield return Delay(.6f);
+            }
+            Assert.That(CheatUseSelected("Incense"),Is.True);
+            Assert.That(Get<Component>(rituals,"Smoke"),Is.Not.Null);
+            Assert.That(Get<int>(rituals,"Incense"),Is.Zero);
+            Assert.That(CheatUseSelected("Talisman"),Is.True);
+            Assert.That(Get<int>(rituals,"Talismans"),Is.Zero);
+            yield return Wait(()=>!Get<bool>(rituals,"Burning"),12,"Infinite stock accidentally made a talisman burn forever");
+            Call(shell,"Pause");
+            var checkpoint=Call(session,"CaptureCheckpoint");Call(checkpoint,"Validate");
+            Assert.That(Get<int>(Get<object>(checkpoint,"ritualItems"),"incense"),Is.Zero);
+            Call(shell,"Resume");yield return null;
+            yield return CheatTap(Key.F2);
+            Assert.That(Get<bool>(ItemLoadout,"Unlimited"),Is.False);
+            Assert.That(Get<Light>(player,"flashlight").enabled,Is.False);
+            Assert.That(Get<bool>(charge,"Depleted"),Is.True);
+            Assert.That((bool)Call(snappers,"TryThrow"),Is.False);
+            Assert.That((bool)Call(traps,"TryPlace"),Is.False);
+            Assert.That((bool)Call(rituals,"UseTalisman"),Is.False);
+            Assert.That(Get<int>(traps,"Count"),Is.Zero);
+            root=Get<VisualElement>(One("GameShellView"),"Root");
+            for(int i=0;i<4;i++)Assert.That(root.Q<Label>("item-wheel-count-"+i).text,Is.EqualTo("없음"));
+        }
+
+        [UnityTest,Timeout(120000)]
+        public IEnumerator CheatF2PreservesSchoolStocksAndBatteryThenOffSpendsNormally()
+        {
+            Call(session,"CreateChapter");Begin();IsolateThreats();yield return null;
+            var snappers=Get<Component>(player,"Firecrackers");var traps=Get<Component>(player,"Traps");
+            var rituals=Get<Component>(player,"Rituals");var charge=Get<Component>(player,"FlashlightSystem");
+            Call(snappers,"RestoreStock",3,0f);Call(traps,"Restore",2,0f);Call(rituals,"Restore",2,3,2);
+            Call(charge,"Restore",90f,0,0);Get<Light>(player,"flashlight").enabled=true;
+            yield return CheatTap(Key.F2);
+            float stored=Get<float>(charge,"Charge");yield return Delay(.6f);
+            Assert.That(Get<float>(charge,"Charge"),Is.EqualTo(stored));
+            PlaceTestTrapThroughInventory(true);
+            Assert.That(CheatUseSelected("Snapper"),Is.True);
+            Assert.That(Get<int>(snappers,"Count"),Is.EqualTo(3));
+            Assert.That(CheatUseSelected("Incense"),Is.True);
+            Assert.That(Get<int>(rituals,"Incense"),Is.EqualTo(2));
+            Assert.That(CheatUseSelected("Talisman"),Is.True);
+            Assert.That(Get<int>(rituals,"Talismans"),Is.EqualTo(2));
+            Assert.That(Get<int>(rituals,"Fragments"),Is.EqualTo(3));
+            Call(rituals,"EndEffect");Call(rituals,"RestoreSmoke",.05f);yield return Delay(.65f);
+            yield return Wait(()=>Components("FirecrackerProjectile").Length==0,10,"School save still has a live snapper effect");
+            Call(shell,"Pause");Call(Call(session,"CaptureChapterCheckpoint"),"Validate");Call(shell,"Resume");
+            yield return CheatTap(Key.F2);
+            Assert.That(Get<bool>(ItemLoadout,"Unlimited"),Is.False);
+            yield return Delay(.2f);
+            Assert.That(Get<float>(charge,"Charge"),Is.LessThan(stored).And.GreaterThan(stored-1));
+            Assert.That(CheatUseSelected("Snapper"),Is.True);
+            Assert.That(Get<int>(snappers,"Count"),Is.EqualTo(2));
+            PlaceTestTrapThroughInventory();
+            Assert.That(Get<int>(traps,"Count"),Is.EqualTo(1));
+            Assert.That(CheatUseSelected("Incense"),Is.True);
+            Assert.That(Get<int>(rituals,"Incense"),Is.EqualTo(1));
+            Assert.That(CheatUseSelected("Talisman"),Is.True);
+            Assert.That(Get<int>(rituals,"Talismans"),Is.EqualTo(1));
+        }
+
     }
 }

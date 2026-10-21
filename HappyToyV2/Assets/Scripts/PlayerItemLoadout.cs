@@ -10,6 +10,8 @@ namespace HappyToy.V2
     public sealed class PlayerItemLoadout : MonoBehaviour
     {
         public const int SlotCount = 5;
+        // A player capability, never a fabricated stock count or checkpoint value.
+        public bool Unlimited => player && GameSession.Current && GameSession.Current.player == player && GameSession.Current.CheatSafeMode;
         public PlayerItem Selected { get; private set; }
         PlayerMotor player;
         bool requireUseRelease = true;

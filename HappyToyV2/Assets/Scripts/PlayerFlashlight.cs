@@ -28,8 +28,9 @@ namespace HappyToy.V2
     {
         PlayerMotor player;
         public float Charge { get; private set; } = FlashlightChargeRules.Capacity;
-        public float Fraction => Charge / FlashlightChargeRules.Capacity;
-        public bool Depleted => Charge <= 0;
+        bool Unlimited => player && player.Items.Unlimited;
+        public float Fraction => Unlimited ? 1 : Charge / FlashlightChargeRules.Capacity;
+        public bool Depleted => !Unlimited && Charge <= 0;
         public bool Lit => player && player.flashlight && player.flashlight.enabled;
         public int PacksCollected { get; private set; }
         public int Depletions { get; private set; }
@@ -37,7 +38,7 @@ namespace HappyToy.V2
         void Awake() { player = GetComponent<PlayerMotor>(); }
         void Update()
         {
-            if (!player || !player.flashlight) return;
+            if (!player || !player.flashlight || Unlimited) return;
             // The actual switch drains charge in a cabinet too. Pauses still cost zero.
             float before = Charge;
             Charge = FlashlightChargeRules.Drain(Charge, Time.deltaTime,

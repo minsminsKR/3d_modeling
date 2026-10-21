@@ -24,7 +24,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(TrapModelVisible(trap),Is.False,phase+" left a consumed trap model visible");
         }
 
-        Component PlaceTestTrapThroughInventory()
+        Component PlaceTestTrapThroughInventory(bool unlimited = false)
         {
             var inventory=Get<Component>(player,"Traps");
             var mesh=NavMesh.CalculateTriangulation();
@@ -44,7 +44,7 @@ namespace HappyToy.V2.CloudTests
                     int before=Get<int>(inventory,"Count");
                     if((bool)Call(inventory,"TryPlace"))
                     {
-                        Assert.That(Get<int>(inventory,"Count"),Is.EqualTo(before-1));
+                        Assert.That(Get<int>(inventory,"Count"),Is.EqualTo(before-(unlimited ? 0 : 1)));
                         return Get<Component>(inventory,"LastPlaced");
                     }
                     Assert.That(Get<int>(inventory,"Count"),Is.EqualTo(before),"Invalid ground consumed a trap");

@@ -23,7 +23,7 @@ namespace HappyToy.V2
         readonly Label[] labels = new Label[PlayerItemLoadout.SlotCount], counts = new Label[PlayerItemLoadout.SlotCount];
         readonly int[] previousStock = new int[PlayerItemLoadout.SlotCount];
         int selected, equippedItem, fragments;
-        bool highContrast, largeText, open, gamepad, presented;
+        bool highContrast, largeText, open, gamepad, presented, unlimited;
         Color Paper => highContrast ? Color.white : new Color(.94f, .91f, .82f);
         Color Gold => highContrast ? new Color(1, .88f, .53f) : new Color(.93f, .77f, .45f);
 
@@ -74,24 +74,25 @@ namespace HappyToy.V2
             label.style.paddingLeft = label.style.paddingRight = label.style.paddingTop = label.style.paddingBottom = 0;
             parent.Add(label); return label;
         }
-        public void Present(int choice, int equippedChoice, int[] stock, int fragmentCount, bool usingGamepad, bool isOpen, bool contrast, bool largerText)
+        public void Present(int choice, int equippedChoice, int[] stock, int fragmentCount, bool usingGamepad, bool isOpen, bool contrast, bool largerText, bool infiniteItems)
         {
             bool changed = !presented || choice != selected || equippedChoice != equippedItem || fragmentCount != fragments ||
-                usingGamepad != gamepad || isOpen != open || contrast != highContrast || largerText != largeText;
+                usingGamepad != gamepad || isOpen != open || contrast != highContrast || largerText != largeText || infiniteItems != unlimited;
             for (int i = 0; i < previousStock.Length; i++) changed |= stock[i] != previousStock[i];
             if (!changed) return;
             selected = choice; equippedItem = equippedChoice; fragments = fragmentCount;
+            unlimited = infiniteItems;
             gamepad = usingGamepad; open = isOpen; highContrast = contrast; largeText = largerText; presented = true;
             Array.Copy(stock, previousStock, previousStock.Length);
             wheel.style.display = open ? DisplayStyle.Flex : DisplayStyle.None;
             equipped.style.display = open ? DisplayStyle.None : DisplayStyle.Flex;
             wheel.style.backgroundColor = new Color(.008f, .014f, .011f, highContrast ? .7f : .46f);
             title.text = Names[choice]; title.style.color = Paper;
-            count.text = Availability(choice, stock[choice], fragments); count.style.color = stock[choice] > 0 ? Gold : Paper;
+            count.text = unlimited ? choice == (int)PlayerItem.Flashlight ? "배터리 무한 ∞" : "소지품 무한 ∞" : Availability(choice, stock[choice], fragments); count.style.color = unlimited || stock[choice] > 0 ? Gold : Paper;
             detail.text = Descriptions[choice]; detail.style.color = Paper;
             eyebrow.style.color = Gold; hint.style.color = Paper;
             hint.text = gamepad ? "오른쪽 스틱  선택    RB 놓기  장착    RT  사용" : "마우스  선택    Tab 놓기  장착    왼쪽 클릭  사용";
-            string itemStock = equippedChoice == (int)PlayerItem.Flashlight ? "" : "  "+stock[equippedChoice]+(equippedChoice == 0 ? "발" : "개");
+            string itemStock = unlimited ? "  ∞" : equippedChoice == (int)PlayerItem.Flashlight ? "" : "  "+stock[equippedChoice]+(equippedChoice == 0 ? "발" : "개");
             equipped.text = Names[equippedChoice] + itemStock + (gamepad ? "   [RB]" : "   [Tab]") +
                 (fragments > 0 ? "\n부적 조각  "+fragments+" / 5" : "");
             equipped.style.color = Paper;
@@ -100,10 +101,10 @@ namespace HappyToy.V2
             equipped.style.height = fragments > 0 ? (largeText ? 90 : 80) : (largeText ? 56 : 50);
             for (int i = 0; i < slots.Length; i++)
             {
-                bool available = stock[i] > 0;
+                bool available = unlimited || stock[i] > 0;
                 Color colour = i == choice ? Gold : available ? Paper : highContrast ? new Color(.8f, .8f, .76f) : new Color(.64f, .66f, .6f);
                 labels[i].style.color = colour; counts[i].style.color = colour;
-                counts[i].text = i == 4 ? "" : stock[i] == 0 ? "없음" : stock[i]+(i == 0 ? "발" : "개");
+                counts[i].text = unlimited ? "∞" : i == 4 ? "" : stock[i] == 0 ? "없음" : stock[i]+(i == 0 ? "발" : "개");
                 icons[i].tintColor = available || i == choice ? Color.white : new Color(.56f, .58f, .54f);
                 labels[i].style.unityFontStyleAndWeight = i == choice ? FontStyle.Bold : FontStyle.Normal;
             }

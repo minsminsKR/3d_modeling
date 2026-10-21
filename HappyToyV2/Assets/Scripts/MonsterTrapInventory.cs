@@ -40,7 +40,7 @@ namespace HappyToy.V2
             if (!WorldRoot) WorldRoot = session.transform;
             if (player.Hidden) return Deny("숨어 있는 동안에는 덫을 설치할 수 없습니다.");
             if (session.EncountersResolved) return Deny("이름이 복원되어 덫이 필요하지 않습니다.");
-            if (Count <= 0) return Deny("가지고 있는 덫이 없습니다.");
+            if (Count <= 0 && !player.Items.Unlimited) return Deny("가지고 있는 덫이 없습니다.");
             if (Cooldown > 0) return Deny("다음 덫을 준비 중입니다.");
             if (!TrapPlacement.InFront(player,out var point,out var facing)) return Deny("평평하고 비어 있는 바닥을 향해 덫을 설치하세요.");
             foreach (var trap in WorldRoot.GetComponentsInChildren<PlacedMonsterTrap>())
@@ -48,7 +48,8 @@ namespace HappyToy.V2
             LastPlaced = PlacedMonsterTrap.Create(WorldRoot,point,facing,true);
             player.Items.Select(PlayerItem.Trap);
             player.Hands?.PlayAction(PlayerItem.Trap);
-            Count--; Cooldown = .5f; Notice("덫 설치 · 남은 "+Count+"개 · 몬스터를 5초간 붙잡습니다."); return true;
+            if (!player.Items.Unlimited) Count--;
+            Cooldown = .5f; Notice(player.Items.Unlimited ? "덫 설치 · 무한 ∞ · 몬스터를 5초간 붙잡습니다." : "덫 설치 · 남은 "+Count+"개 · 몬스터를 5초간 붙잡습니다."); return true;
         }
         bool Deny(string text) { Notice(text); return false; }
         void Notice(string text) { Feedback = text; FeedbackRemaining = 1.8f; }

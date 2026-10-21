@@ -40,16 +40,16 @@ namespace HappyToy.V2
         }
         public bool UseIncense()
         {
-            if (!CanUse || Incense <= 0 || Smoke) return false;
-            Incense--; var root = new GameObject("Memory guiding incense");
+            if (!CanUse || Incense <= 0 && !player.Items.Unlimited || Smoke) return false;
+            if (!player.Items.Unlimited) Incense--; var root = new GameObject("Memory guiding incense");
             root.transform.SetParent(WorldRoot ? WorldRoot : GameSession.Current.transform,false);
             Smoke = root.AddComponent<IncenseGuidance>(); Smoke.Prepare(player);
             player.Hands?.PlayAction(PlayerItem.Incense); return true;
         }
         public bool UseTalisman()
         {
-            if (!CanUse || GameSession.Current.EncountersResolved || Talismans <= 0 || !burn.Begin()) return false;
-            Talismans--; stop.Begin(); player.Hands?.PlayAction(PlayerItem.Talisman);
+            if (!CanUse || GameSession.Current.EncountersResolved || Talismans <= 0 && !player.Items.Unlimited || !burn.Begin()) return false;
+            if (!player.Items.Unlimited) Talismans--; stop.Begin(); player.Hands?.PlayAction(PlayerItem.Talisman);
             GameSession.Current.Notify("부적이 타는 동안 모든 괴물의 시간이 멈춥니다."); return true;
         }
         public void RestoreSmoke(float remaining)

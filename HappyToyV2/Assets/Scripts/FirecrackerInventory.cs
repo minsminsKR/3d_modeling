@@ -32,7 +32,7 @@ namespace HappyToy.V2
         float cooldown;
         bool throwRequested;
 
-        public bool CanAim => isActiveAndEnabled && player && player.eyes && !player.Hidden && Count > 0 && cooldown <= 0 &&
+        public bool CanAim => isActiveAndEnabled && player && player.eyes && !player.Hidden && (Count > 0 || player.Items.Unlimited) && cooldown <= 0 &&
             GameSession.Current && GameSession.Current.player == player && GameSession.Current.InputAllowed && !GameSession.Current.Shell.ItemWheelOpen &&
             !player.Rituals.Burning && player.Items.Selected == PlayerItem.Snapper && !GameSession.Current.EncountersResolved;
 
@@ -64,7 +64,7 @@ namespace HappyToy.V2
                 session.Shell.ItemWheelChangedFrame == Time.frameCount || player.Rituals.Burning) return false;
             if (player.Hidden) return Deny("숨어 있는 동안에는 콩알탄을 던질 수 없습니다.");
             if (session.EncountersResolved) return Deny("이름이 복원되어 콩알탄이 필요하지 않습니다.");
-            if (Count <= 0) return Deny("콩알탄을 모두 사용했습니다.");
+            if (Count <= 0 && !player.Items.Unlimited) return Deny("콩알탄을 모두 사용했습니다.");
             if (cooldown > 0) return Deny("다음 콩알탄을 준비 중입니다. 잠시 기다리세요.");
             var eye = player.eyes.transform;
             FirecrackerTrajectory.GetLaunch(eye.position, eye.forward, out var point, out var velocity);
@@ -73,13 +73,13 @@ namespace HappyToy.V2
             root.transform.position = point;
             LastThrown = root.AddComponent<FirecrackerProjectile>();
             LastThrown.Launch(velocity);
-            Count--;
+            if (!player.Items.Unlimited) Count--;
             player.Items.Select(PlayerItem.Snapper);
             player.Hands?.PlayAction(PlayerItem.Snapper);
             session.NoteChapterAction(ChapterAction.FirecrackerThrown);
             cooldown = .5f;
             if (Aim) Aim.Cancel();
-            ShowFeedback("콩알탄 사용 · 남은 " + Count + "발", 1.6f);
+            ShowFeedback(player.Items.Unlimited ? "콩알탄 사용 · 무한 ∞" : "콩알탄 사용 · 남은 " + Count + "발", 1.6f);
             return true;
         }
         bool Deny(string text) { ShowFeedback(text, 1.8f); return false; }

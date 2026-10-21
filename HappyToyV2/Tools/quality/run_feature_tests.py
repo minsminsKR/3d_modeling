@@ -57,9 +57,13 @@ PROFILES = {
             PLAY + "TwoDoorShelterPursuersOpenCrossAndCloseBothPhysicalDoors",
             PLAY + "CorridorWandererPhysicallyDwellsLooksAndResumesPatrolAfterPause",
             PLAY + "CorridorPatrolCanLeaveItsPhysicalMemoryAltarWaypoint"))]),
-    "cheats": ("F1/F2 real key presses, invulnerability/detection, infinite stamina/double sprint and normal physical sprint restoration", [
+    "cheats": ("F1/F2 real keys, infinite stamina/items/flashlight, preserved finite stock/checkpoints, OFF restoration and normal item use", [
         ("PlayMode", play_tests("CloudCheatTests.cs") + (
-            PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
+            PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",
+            PLAY + "FlashlightBatteryPhysicalInputDepletionPauseOffFullCapAndRefill",
+            PLAY + "TrapPlacementUsesSupportedGroundAndPausedInputNeverConsumesStock",
+            PLAY + "IncenseKeepsOneMemoryUntilCollectedThenRetargetsOfferingAndFreezesOnPause",
+            PLAY + "ItemWheelTabSlowsTimeSelectsOnReleaseAndRequiresFreshUsePress"))]),
     "wraith-footsteps": ("Shared title/game Baeksugwi recording bank, actual start transition, quiet mixer/master mute and running/pause", [
         ("PlayMode", (
             PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
