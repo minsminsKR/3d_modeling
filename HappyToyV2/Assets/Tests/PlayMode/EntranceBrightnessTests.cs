@@ -36,7 +36,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(source.type,Is.EqualTo(LightType.Point));Assert.That(source.range,Is.LessThanOrEqualTo(7));
                 Assert.That(entrance.transform.InverseTransformPoint(source.transform.position).y,Is.LessThan(3.5f),"A high vault fill returned");
                 Assert.That(source.color.r,Is.GreaterThan(source.color.g));Assert.That(source.color.g,Is.GreaterThan(source.color.b));
-                Assert.That(Get<float>(fire,"BaselineIntensity"),Is.LessThan(4));
+                Assert.That(Get<float>(fire,"BaselineIntensity"),Is.LessThan(fixture.name=="Sealed gate offering lantern"?6:4));
             }
             Assert.That(lights.Count(x=>x.shadows!=LightShadows.None),Is.LessThanOrEqualTo(2));
             var camera=Get<Camera>(player,"eyes");((Behaviour)player).enabled=false;Get<Light>(player,"flashlight").enabled=false;
@@ -93,6 +93,59 @@ namespace HappyToy.V2.CloudTests
             foreach(var fire in fires)Assert.That(Get<Light>(fire,"Source").intensity,Is.EqualTo(Get<float>(fire,"BaselineIntensity")));
             var source=Get<Light>(fires[0],"Source");source.enabled=false;yield return Delay(.2f);
             Assert.That(source.enabled,Is.False,"Flame writer bypassed a blackout");
+        }
+        [UnityTest,Timeout(180000)]
+        public IEnumerator SealedGateOfferingFlamesRevealActualDoorPanelsWithoutLightingTheVault()
+        {
+            yield return PrepareEntranceCavern();
+            var entrance=Get<Component>(Get<Component>(session,"Corridor"),"Entrance");
+            var art=entrance.GetComponent(RequireType("CorridorEntrancePresentation"));
+            var lights=Get<IReadOnlyList<Light>>(art,"Lanterns");
+            var offerings=lights.Where(x=>x.transform.parent.name=="Sealed gate offering lantern").ToArray();
+            Assert.That(offerings.Length,Is.EqualTo(2));
+            var camera=Get<Camera>(player,"eyes");((Behaviour)player).enabled=false;Get<Light>(player,"flashlight").enabled=false;
+            var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));
+            var probes=new[]{Get<ReflectionProbe>(graphics,"OwnedProbe"),Get<ReflectionProbe>(graphics,"EntranceProbe")};
+            var gate=Get<Component>(entrance,"Gate");var leaf=gate.GetComponent<BoxCollider>().bounds;
+            Call(shell,"Pause");
+            double PanelMean(Texture2D frame)
+            {
+                var lo=camera.WorldToViewportPoint(new Vector3(leaf.center.x-leaf.extents.x*.55f,leaf.min.y+.8f,leaf.max.z+.03f));
+                var hi=camera.WorldToViewportPoint(new Vector3(leaf.center.x+leaf.extents.x*.55f,leaf.min.y+leaf.size.y*.70f,leaf.max.z+.03f));
+                int x0=Mathf.Clamp((int)(Mathf.Min(lo.x,hi.x)*frame.width),0,frame.width-1),x1=Mathf.Clamp((int)(Mathf.Max(lo.x,hi.x)*frame.width),1,frame.width);
+                int y0=Mathf.Clamp((int)(Mathf.Min(lo.y,hi.y)*frame.height),0,frame.height-1),y1=Mathf.Clamp((int)(Mathf.Max(lo.y,hi.y)*frame.height),1,frame.height);
+                Assert.That((x1-x0)*(y1-y0),Is.GreaterThan(1000),"Real closed leaves are not in the gate camera");
+                double sum=0;for(int y=y0;y<y1;y++)for(int x=x0;x<x1;x++){var p=frame.GetPixel(x,y);sum+=p.grayscale;}
+                return sum/((x1-x0)*(y1-y0));
+            }
+            try
+            {
+                foreach(float z in new[]{-9.2f,-6.4f})
+                {
+                    PlacePlayer(entrance.transform.TransformPoint(new Vector3(0,.03f,z)),false);
+                    player.transform.rotation=Quaternion.Euler(0,180,0);camera.transform.localRotation=Quaternion.Euler(-18,0,0);
+                    foreach(var source in offerings)source.enabled=false;
+                    yield return EntranceLightingReviewExport.RefreshReflections(probes);
+                    var absent=EntranceRitualFrame(camera,1280,720);
+                    foreach(var source in offerings)source.enabled=true;
+                    yield return EntranceLightingReviewExport.RefreshReflections(probes);
+                    var lit=EntranceRitualFrame(camera,1280,720);
+                    try
+                    {
+                        string view=z< -8?"spawn":"approach";
+                        EntranceBrightnessEvidence("gate-offerings-"+view+"-lit",lit);
+                        EntranceBrightnessEvidence("gate-offerings-"+view+"-unlit-control",absent);
+                        double before=PanelMean(absent),after=PanelMean(lit);
+                        Debug.Log("GATE_OFFERING_VISIBILITY view="+view+" panelBefore="+before+" panelAfter="+after);
+                        Assert.That(after,Is.GreaterThan(.03),"Gate panels remain too dark to read without the flashlight");
+                        Assert.That(after,Is.GreaterThan(before+.012),"The visible offering flames do not illuminate the actual closed leaves");
+                        Assert.That(EntranceRegionMean(lit,.76f,.98f),Is.LessThan(.22),"Gate lighting washed out the roof/vault");
+                        Assert.That(EntranceRendererContribution(camera,lit,Get<Transform>(art,"TempleGateRoot").GetComponentsInChildren<Renderer>(true)),Is.GreaterThan(1500),"The actual temple gate model is still invisible");
+                    }
+                    finally{Object.Destroy(lit);Object.Destroy(absent);}
+                }
+            }
+            finally{foreach(var source in offerings)if(source)source.enabled=true;}
         }
         static void EntranceBrightnessEvidence(string name,Texture2D frame)
         {

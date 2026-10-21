@@ -97,6 +97,8 @@ namespace HappyToy.V2
             // Four pools mark the sides of the route, never its walking centre.
             CandleCluster(new Vector3(-3.4f,0,-7.2f),7,true);CandleCluster(new Vector3(3.4f,0,-6.6f),6,true);
             CandleCluster(new Vector3(-3.6f,0,1.2f),6,true);CandleCluster(new Vector3(3.3f,0,8.4f),6,true);
+            // Offerings sit in front of the gate steps, leaving its centre clear.
+            CandleCluster(new Vector3(-3.8f,0,-10.2f),9);CandleCluster(new Vector3(3.8f,0,-10.2f),9);
             CandleCluster(new Vector3(-10,0,-10.5f),6);CandleCluster(new Vector3(10,0,-10.5f),6);
             CandleCluster(new Vector3(-10,0,-3),4);CandleCluster(new Vector3(10,0,3),4);
         }
@@ -161,12 +163,14 @@ namespace HappyToy.V2
             Lantern(new Vector3(3.8f,2.05f,-4.8f),1,8.5f,7,true,1.05f);
             Lantern(new Vector3(-4.4f,2.1f,6.8f),1,7,6,false,.95f);
             Lantern(new Vector3(2.8f,1.9f,11.3f),1,6.5f,5.5f,false,1.15f);
-            Lantern(new Vector3(-7.8f,2.2f,-11.2f),1,8,6,true,1.05f);
-            Lantern(new Vector3(7.8f,2.4f,-11.2f),1,7.2f,6,false,1.05f);
+            // Visible votive lanterns, close enough for their light to reach the
+            // closed leaves and carved posts rather than only the side rocks.
+            Lantern(new Vector3(-3.8f,2.15f,-10.2f),1,13,7,true,1.25f,"Sealed gate offering lantern");
+            Lantern(new Vector3(3.8f,2.15f,-10.2f),1,12,7,false,1.25f,"Sealed gate offering lantern");
         }
-        void Lantern(Vector3 at,float scale,float intensity,float range,bool shadow,float fittedHeight=0)
+        void Lantern(Vector3 at,float scale,float intensity,float range,bool shadow,float fittedHeight=0,string fixtureName=null)
         {
-            var holder=Group("Old inked temple paper lantern",at);holder.localScale=Vector3.one*scale;
+            var holder=Group(fixtureName??"Old inked temple paper lantern",at);holder.localScale=Vector3.one*scale;
             var paper=surfaces.Get("paper-aged",new Color(.48f,.32f,.17f),new Color(.22f,.09f,.025f));
             var lantern=GraphicsPropLibrary.Attach("paper-lantern",holder,slot=>slot=="GU_washi"?paper:surfaces.Resolve(slot));
             lantern.localRotation=Quaternion.Euler(0,at.x<0?14:-12,at.x<0?-4:3);

@@ -2,7 +2,9 @@
 
 The viewer scrolls through **actual Unity renders**, not an image brightness
 filter. The current firelight rig contains five candle-lit Buddhist paper lanterns
-and four low candle gatherings. There is no ceiling/rock fill; cave cameras and
+and four low candle gatherings. The two gate lanterns stand 3.8m either side
+of the closed leaves with additional votive candles; they illuminate the wood
+and posts at spawn/approach distance while leaving the high roof dark. There is no ceiling/rock fill; cave cameras and
 reflection captures use no ambient fill. Each visible source varies gently during
 play and stops while paused (reduced motion stays steady). The 2026-10-21 rig
 supersedes the old ceiling-fill brightness bank. One gain scales these nine sources

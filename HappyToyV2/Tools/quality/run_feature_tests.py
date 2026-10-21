@@ -93,6 +93,7 @@ PROFILES = {
         ("EditMode", (CLOUD + "GraphicsLightingRulesTests",)),
         ("PlayMode", play_tests("EntranceBrightnessTests.cs") + (
             PLAY + "EntranceRitualArtKeepsSupportedFloorClearRouteAndReleasesOwnedResources",
+            PLAY + "SealedTempleGateRespondsToRealEAndPhysicallyStopsThePlayer",
             PLAY + "LadyFinaleRealCameraNeedsTorchAndRestartRestoresNormalLighting",
             PLAY + "CorridorGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState",
             PLAY + "SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState",
