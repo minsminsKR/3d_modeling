@@ -99,8 +99,26 @@ HappyToyV2/SourceArt/SchoolHorror/*.json text eol=lf
 HappyToyV2/SourceArt/SchoolHorror/**/*.json text eol=lf
 HappyToyV2/SourceArt/SchoolHorror/*.md text eol=lf
 HappyToyV2/SourceArt/SchoolHorror/*.txt text eol=lf
+HappyToyV2/SourceArt/SchoolHorror/**/*.py text eol=lf
+HappyToyV2/SourceArt/SchoolHorror/**/*.md text eol=lf
+HappyToyV2/SourceArt/SchoolHorror/**/*.txt text eol=lf
 HappyToyV2/Assets/Resources/SchoolHorror/**/*.meta text eol=lf
 HappyToyV2/Assets/Resources/SchoolHorror/*.shader text eol=lf
 HappyToyV2/Assets/Scripts/SchoolHorror*.cs text eol=lf
 HappyToyV2/Assets/Scripts/SchoolDecayDressing.cs text eol=lf
 HappyToyV2/Assets/Scripts/SchoolFluorescent.cs text eol=lf
+
+# Downloaded CC0 school scan originals and editable derivatives travel with the project.
+HappyToyV2/SourceArt/SchoolHorror/Acquired/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/Acquired/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/Acquired/**/*.exr filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/Acquired/**/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/Acquired/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/Acquired/**/*.zip filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/**/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/**/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/StructuralDecay/Originals/**/*.png filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/StructuralDecay/Originals/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolHorror/StructuralDecay/Originals/**/*.exr filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Scripts/SchoolStructuralDecay.cs text eol=lf
+HappyToyV2/Assets/Scripts/SchoolPlanarReflection.cs text eol=lf

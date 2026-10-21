@@ -1,0 +1,98 @@
+{
+  "blender": "4.0.2",
+  "script": "derive_game_assets.py",
+  "scriptSha256": "78fedf732beaf92bee6f70df26196534f4d693699d15e4943b0fd2846bd1cd23",
+  "method": "Original LOD0 stone scans decimated with original UVs; concrete rubble relief samples the acquired photographic heightfield with authored tapered footprint. No synthesized base model.",
+  "heightfieldScaleMetres": 0.075,
+  "gameMapResolution": 2048,
+  "models": [
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/aggregate-a.fbx",
+      "sha256": "f5dc36dc5ade13a82d309abb9292b2dc4e27f405134e9ab9802d97b030db15ac",
+      "triangles": 1500,
+      "vertices": 752,
+      "originalTriangles": 24220
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/aggregate-b.fbx",
+      "sha256": "76ccc32454f50c3750cb15f69b6b8012ed290ec187fcb606a5431b8660508bd4",
+      "triangles": 1500,
+      "vertices": 752,
+      "originalTriangles": 9086
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/aggregate-c.fbx",
+      "sha256": "6ef4ccec7c891e2dff82ea5e455da6d8d5011c6becb053bfe74e4c8ce021e153",
+      "triangles": 1500,
+      "vertices": 752,
+      "originalTriangles": 19794
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/aggregate-d.fbx",
+      "sha256": "4c2e918ee78fa2414c1e4afdc1422467f5e8186d2ccb38a01a7518061aff82d9",
+      "triangles": 1500,
+      "vertices": 752,
+      "originalTriangles": 5864
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/aggregate-e.fbx",
+      "sha256": "82ddd0de5f0097cc91e1691554537315e9c62b5e224ee040f6fd4d12d855d779",
+      "triangles": 1500,
+      "vertices": 752,
+      "originalTriangles": 11160
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/scan-rubble-a.fbx",
+      "sha256": "ebbe8749ca092cbab3158c7dea1c8c03773f2586709df905b5fa09b2cf9237a9",
+      "triangles": 2880,
+      "vertices": 1525
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/scan-rubble-b.fbx",
+      "sha256": "4506d7fbc287bb723246077607c6cf652118b054be9bf627ae87c08d4e26165c",
+      "triangles": 2880,
+      "vertices": 1525
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/scan-rubble-c.fbx",
+      "sha256": "e987f55b4e6c1a9b7e541d428e81ba859843ffbaf3b7a6417b8dc632ce30b283",
+      "triangles": 2880,
+      "vertices": 1525
+    }
+  ],
+  "gameMaps": [
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/aggregate-albedo.png",
+      "sha256": "4674564797f4361c525e77d4746c7baece9a0806fe4508adb1cbdc0192b180d4"
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/aggregate-ao.png",
+      "sha256": "9a1e5d47cc1a8bebeb4cf1e1249d28e5a09b01c663e70e0b87e48493ad77bdaf"
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/aggregate-metallic-smoothness.png",
+      "sha256": "1d3c1e00d146ce450eef550cf6520821dae0ec1b5afe96acb16cbd2184f0bba5"
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/aggregate-normal.png",
+      "sha256": "36d22b160783e04d4f394c53b6ac36c0195071307adb154fa2f3e9f7ec4e0d23"
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/debris-albedo.png",
+      "sha256": "130c729dfa4d0c26c6c91655a4de6ed65c7373953c6c27052829678a6bcf8c81"
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/debris-ao.png",
+      "sha256": "4c6a60eef8d84f461f78428c9c9f8938970438f16e75c7fef08670650d40ccf7"
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/debris-metallic-smoothness.png",
+      "sha256": "0ab5d354b27df7e8893e65156bd620587c9be822c8594ee255d36bbd75c54cc8"
+    },
+    {
+      "path": "Assets/Resources/SchoolHorror/Structural/debris-normal.png",
+      "sha256": "c9298813bed1e6a4525a844727eefe1a182670567feadeea63a4a76bd2f4f26e"
+    }
+  ],
+  "editableBlendSha256": "d3826cddafad317ee26857f65cf0b42d7564d6eddfba93d4eb93d85f6dd208f7"
+}

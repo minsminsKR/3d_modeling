@@ -1,0 +1,125 @@
+{
+  "license": "CC0-1.0",
+  "licenseUrl": "https://polyhaven.com/license",
+  "assets": [
+    {
+      "id": "concrete_debris",
+      "source": "https://polyhaven.com/a/concrete_debris",
+      "authors": {
+        "Amal Kumar": "All"
+      },
+      "type": 1,
+      "dimensionsMm": [
+        2000,
+        2000
+      ],
+      "originalTriangles": null,
+      "apiFilesHash": "5d84bb0ab4e9ed647dbcbb1d12a44a8db6ca32e2",
+      "sourceKind": "Photographed concrete-debris heightfield PBR scan"
+    },
+    {
+      "id": "namaqualand_stones_01",
+      "source": "https://polyhaven.com/a/namaqualand_stones_01",
+      "authors": {
+        "Greg Zaal": "Photography",
+        "Jenelle van Heerden": "modeling"
+      },
+      "type": 2,
+      "dimensionsMm": [
+        1022.2714990377426,
+        112.1760904788971,
+        84.22087505459785
+      ],
+      "originalTriangles": 106602,
+      "apiFilesHash": "56a5d069e1b0eb31d342e677d39a23649a5265dd",
+      "sourceKind": "Photogrammetric stone-set mesh; used as small loose aggregate, not mislabelled as plaster"
+    }
+  ],
+  "files": [
+    {
+      "path": "Originals/concrete_debris/concrete_debris_4k.blend",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/blend/4k/concrete_debris/concrete_debris_4k.blend",
+      "bytes": 225536,
+      "officialMd5": "d12c9fe1231e19dd1398aadb647a4b0f",
+      "sha256": "a83715590c19d8b326a0caf0ec4a36003e80bfe6c31c5c32b53c112919de70b0"
+    },
+    {
+      "path": "Originals/concrete_debris/textures/concrete_debris_disp_4k.png",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/4k/concrete_debris/concrete_debris_disp_4k.png",
+      "bytes": 24952443,
+      "officialMd5": "037784575ffffc692eb4d979f1aa99d3",
+      "sha256": "72b633491164b7de3890ac9ae79702aaf9a2726667e01608695c4c1e16459194"
+    },
+    {
+      "path": "Originals/concrete_debris/textures/concrete_debris_rough_4k.exr",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/exr/4k/concrete_debris/concrete_debris_rough_4k.exr",
+      "bytes": 16686212,
+      "officialMd5": "f941026d649904acc1c391fe5bf94c0d",
+      "sha256": "77710e395f2365139367f778d44943cc77ef406081d739aa8d8170f3120aac22"
+    },
+    {
+      "path": "Originals/concrete_debris/textures/concrete_debris_nor_gl_4k.exr",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/exr/4k/concrete_debris/concrete_debris_nor_gl_4k.exr",
+      "bytes": 39502536,
+      "officialMd5": "a3de1a41dafa6812ff56f0f34560cef7",
+      "sha256": "dcaf64451d3b0bb999b000e543e0e89f43898e60aa30a15d1197c6027bbd1263"
+    },
+    {
+      "path": "Originals/concrete_debris/textures/concrete_debris_diff_4k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/4k/concrete_debris/concrete_debris_diff_4k.jpg",
+      "bytes": 11877451,
+      "officialMd5": "6f123c611770e7382d7df50d406a1236",
+      "sha256": "a95b4b6ad725eaea7e942358ac1f093ac8b952639d51727374aadc892aaf59c8"
+    },
+    {
+      "path": "Originals/concrete_debris/textures/concrete_debris_ao_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/concrete_debris/concrete_debris_ao_2k.jpg",
+      "bytes": 3466003,
+      "officialMd5": "6bc7b32b3c08aecc6dfa7a794104c336",
+      "sha256": "63c4ec5bfa35dec6bd974ed1aab3e893119ddcf5cc284ca5abe3feeaeff99abd"
+    },
+    {
+      "path": "Originals/namaqualand_stones_01/namaqualand_stones_01_4k.blend",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/blend/4k/namaqualand_stones_01/namaqualand_stones_01_4k.blend",
+      "bytes": 3155646,
+      "officialMd5": "5b7378e426ac70d5d4f68b3dbdadebb1",
+      "sha256": "4c8076eb680a650667311056530a9d600c54c718af1df7b419529b8f5d57c3b8"
+    },
+    {
+      "path": "Originals/namaqualand_stones_01/textures/namaqualand_stones_01_mask_4k.png",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/4k/namaqualand_stones_01/namaqualand_stones_01_mask_4k.png",
+      "bytes": 9829145,
+      "officialMd5": "aa5407b52a4881640ff0bfee15e96299",
+      "sha256": "2d658aa8bccc3e359f2349a93eb24fa9fbc555c1452d8d6ef850006c5f73f756"
+    },
+    {
+      "path": "Originals/namaqualand_stones_01/textures/namaqualand_stones_01_rough_4k.exr",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/4k/namaqualand_stones_01/namaqualand_stones_01_rough_4k.exr",
+      "bytes": 5396903,
+      "officialMd5": "51851f6a67c30d59ab39964db2055bfc",
+      "sha256": "2116f2fd80c85b291de8c5695f56c63700677558f7994df07f393d76cbf3ea0d"
+    },
+    {
+      "path": "Originals/namaqualand_stones_01/textures/namaqualand_stones_01_nor_gl_4k.exr",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/4k/namaqualand_stones_01/namaqualand_stones_01_nor_gl_4k.exr",
+      "bytes": 27890770,
+      "officialMd5": "1733d07a456b9e645ef039104251f24d",
+      "sha256": "2693057eb3831fff3a2c9348fbe0c00bad92b543d8345acd38c631ab0508ae6b"
+    },
+    {
+      "path": "Originals/namaqualand_stones_01/textures/namaqualand_stones_01_diff_4k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/4k/namaqualand_stones_01/namaqualand_stones_01_diff_4k.jpg",
+      "bytes": 8871970,
+      "officialMd5": "d7631eb0b15e29e03dff795d4db82cca",
+      "sha256": "ad9f490662e62df2fbdc45cd243e7e061e117db7fd876fd0a77102e8d6e36811"
+    },
+    {
+      "path": "Originals/namaqualand_stones_01/textures/namaqualand_stones_01_ao_2k.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/namaqualand_stones_01/namaqualand_stones_01_ao_2k.jpg",
+      "bytes": 2261157,
+      "officialMd5": "864f192b54d5a62fcf885657ca4ada76",
+      "sha256": "398d96f73509a554063638713a9ef4b5f3708680550c86064c18fe7180b811df"
+    }
+  ],
+  "totalOriginalBytes": 154115772
+}

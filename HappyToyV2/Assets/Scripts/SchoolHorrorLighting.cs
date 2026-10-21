@@ -34,11 +34,13 @@ namespace HappyToy.V2
         SchoolLoopWorld world;GameSession session;Transform root;
         Volume volume;VolumeProfile profile;Bounds cameraBounds;
         Cubemap pendingReflection;
+        SchoolPlanarReflection planar;
         int preparedFrame,nextProbe,renderId=-1;bool subscribed;
         public bool Prepared {get;private set;}
         public Volume OwnedVolume=>volume;
         public IReadOnlyList<ReflectionProbe> OwnedProbes=>probes;
         public IReadOnlyList<Light> WindowLights=>windowLights;
+        public SchoolPlanarReflection PlanarReflection=>planar;
         public bool ReflectionReady=>Prepared&&nextProbe>=probes.Count&&(renderId<0||probes[probes.Count-1].IsFinishedRendering(renderId));
 
         public static Light Fixture(SchoolLoopWorld world,Transform parent,Vector3 at,bool warm,float intensity)
@@ -88,8 +90,8 @@ namespace HappyToy.V2
                 // Its short reach cannot fill the long corridor like an omnidirectional main lamp.
                 backscatter=new GameObject("School fluorescent local diffuser backscatter").AddComponent<Light>();
                 backscatter.transform.SetParent(holder,false);backscatter.transform.localPosition=new Vector3(0,-.12f,0);
-                backscatter.type=LightType.Point;backscatter.color=color;backscatter.intensity=.33f;
-                backscatter.range=2.35f;backscatter.shadows=LightShadows.None;backscatter.bounceIntensity=0;
+                backscatter.type=LightType.Point;backscatter.color=color;backscatter.intensity=.68f;
+                backscatter.range=3.15f;backscatter.shadows=LightShadows.None;backscatter.bounceIntensity=0;
             }
             holder.gameObject.AddComponent<SchoolFluorescent>().Configure(lamp,tube,glow,index*1.71f+at.x*.37f,backscatter);
             return lamp;
@@ -135,6 +137,8 @@ namespace HappyToy.V2
             AddHaze();
             cameraBounds=new Bounds(world.Root.position+new Vector3(-3,1.6f,19.2f),new Vector3(55,8,115));
             preparedFrame=Time.frameCount;Prepared=true;Subscribe();
+            // Subscribe after this component: the reflected view inherits the same reversible school environment.
+            planar=world.Root.gameObject.AddComponent<SchoolPlanarReflection>();planar.Prepare(world);
             session.GetComponent<LocalShadowBudget>()?.RefreshNow();
         }
 
@@ -159,6 +163,10 @@ namespace HappyToy.V2
                 var bounce=new GameObject("Cold classroom indirect fill").AddComponent<Light>();bounce.transform.SetParent(sourceRoot.transform,false);
                 bounce.transform.localPosition=new Vector3(-5.6f,2.45f,middle);bounce.type=LightType.Point;
                 bounce.color=new Color(.38f,.54f,.71f);bounce.intensity=.72f;bounce.range=6.3f;bounce.shadows=LightShadows.None;windowLights.Add(bounce);
+                var transmission=new GameObject("Cold light transmitted through classroom glazing").AddComponent<Light>();
+                transmission.transform.SetParent(sourceRoot.transform,false);transmission.transform.localPosition=new Vector3(-2.58f,2.35f,middle);
+                transmission.type=LightType.Point;transmission.color=new Color(.39f,.57f,.78f);transmission.intensity=.60f;
+                transmission.range=3.8f;transmission.shadows=LightShadows.None;windowLights.Add(transmission);
             }
         }
         void AddAlarm(Transform chunk)
@@ -218,7 +226,7 @@ namespace HappyToy.V2
             RenderSettings.ambientSkyColor=RenderSettings.ambientEquatorColor=RenderSettings.ambientGroundColor=ambient;
             RenderSettings.ambientIntensity=.65f;var harmonics=new SphericalHarmonicsL2();harmonics.AddAmbientLight(ambient*.65f);RenderSettings.ambientProbe=harmonics;
             RenderSettings.fog=true;RenderSettings.fogMode=FogMode.ExponentialSquared;
-            RenderSettings.fogColor=new Color(.008f,.014f,.023f);RenderSettings.fogDensity=.0285f;
+            RenderSettings.fogColor=new Color(.006f,.010f,.017f);RenderSettings.fogDensity=.0135f;
         }
         void AfterCamera(ScriptableRenderContext context,Camera camera)
         {if(renders.Count>0&&renders.Peek().camera==camera)renders.Pop().Restore();}
@@ -227,18 +235,21 @@ namespace HappyToy.V2
             if(subscribed){RenderPipelineManager.beginCameraRendering-=BeforeCamera;RenderPipelineManager.endCameraRendering-=AfterCamera;subscribed=false;}
             while(renders.Count>0)renders.Pop().Restore();
             if(volume)volume.enabled=false;
+            if(planar)planar.enabled=false;
             foreach(var probe in probes)if(probe)probe.enabled=false;
             foreach(var addition in additions)if(addition)addition.SetActive(false);
         }
         void OnEnable()
         {
             if(!Prepared)return;Subscribe();if(volume)volume.enabled=true;
+            if(planar)planar.enabled=true;
             foreach(var probe in probes)if(probe)probe.enabled=true;
             foreach(var addition in additions)if(addition)addition.SetActive(true);
         }
         void OnDestroy()
         {
             OnDisable();Prepared=false;
+            if(planar)GraphicsSurfaceLibrary.DestroyOwned(planar);planar=null;
             foreach(var addition in additions)if(addition)GraphicsSurfaceLibrary.DestroyOwned(addition);
             additions.Clear();windowLights.Clear();probes.Clear();
             if(root)GraphicsSurfaceLibrary.DestroyOwned(root.gameObject);

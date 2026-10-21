@@ -13,7 +13,7 @@ namespace HappyToy.V2
     {
         readonly SchoolLoopWorld world;
         readonly SchoolHorrorSurfaces surfaces;
-        readonly Material paper, plaster, board, chalk, dark;
+        readonly Material paper, board, chalk, dark;
         readonly Material[] printedPaper;
         Transform root;
         Transform deskTemplate;
@@ -28,7 +28,6 @@ namespace HappyToy.V2
             world=owner??throw new ArgumentNullException(nameof(owner));
             surfaces=materials??throw new ArgumentNullException(nameof(materials));
             paper=world.Surfaces.Get("paper-aged",new Color(.48f,.45f,.35f));
-            plaster=world.Surfaces.Get("plaster-damp",new Color(.46f,.44f,.37f));
             chalk=world.Surfaces.Get("paper-aged",new Color(.48f,.49f,.41f));
             dark=world.Surfaces.Get("cloth-charred",new Color(.25f,.29f,.27f));
             board=Blackboard();
@@ -40,7 +39,8 @@ namespace HappyToy.V2
             physical=collision;random=new System.Random(76193);
             root=new GameObject("School — accumulated neglect and retained furniture").transform;
             root.SetParent(chunk,false);
-            StudyRoom();Shop();CorridorStorage();Pipes();DamagedCeiling();Residue();WallRelics();
+            StudyRoom();Shop();CorridorStorage();Pipes();Residue();WallRelics();
+            new SchoolStructuralDecay(world,surfaces).Build(chunk);
         }
         Material[] PrintedPapers()
         {
@@ -52,7 +52,8 @@ namespace HappyToy.V2
                 var material=new Material(world.Surfaces.Get("paper-aged",Color.white))
                     {name="Water-damaged Korean school form "+i,enableInstancing=true};
                 material.SetTexture("_BaseMap",texture);material.SetTextureScale("_BaseMap",Vector2.one);
-                material.SetColor("_BaseColor",new Color(.89f,.88f,.82f));material.SetFloat("_BumpScale",.20f);
+                float shade=.52f+(i%3)*.045f;
+                material.SetColor("_BaseColor",new Color(shade,shade+.005f,shade*.96f));material.SetFloat("_BumpScale",.50f);
                 material.SetOverrideTag("GraphicsSurface","school-printed-paper-"+i);
                 material.SetOverrideTag("GraphicsTileMetres",".6");world.owned.Add(material);materials[i]=material;
             }
@@ -218,15 +219,19 @@ namespace HappyToy.V2
         }
         void WallRelics()
         {
+            var counts=new[]{2,8,1,6,3,7};
             for(int b=0;b<6;b++)
             {
                 float z=7.0f+b*4.4f;
-                for(int i=0;i<4;i++)
+                for(int i=0;i<counts[b];i++)
                 {
-                    float height=i==3?.27f:.46f+(i%2)*.04f,width=i==3?.27f:.32f;
-                    var at=new Vector3(1.995f-(i==3?.008f:0),i==3?1.39f:1.75f+(i-1)*.035f,z+(i==3?.14f:-.47f+i*.43f));
-                    PinnedPage(at,width,height,(b+i)%6,i==3?-7:i*3-3);
-                    Box("Old notice thumbtack",at+new Vector3(-.011f,height*.43f,-width*.32f),new Vector3(.009f,.014f,.014f),surfaces.Rust);
+                    bool scrap=i>=6;float height=scrap?Range(.22f,.31f):Range(.39f,.53f),width=scrap?Range(.18f,.26f):Range(.26f,.38f);
+                    float offset=counts[b]<4?Range(-.46f,.46f):-.43f+(i%3)*.39f+Range(-.07f,.07f);
+                    float y=counts[b]<4?Range(1.55f,1.88f):1.87f-(i/3)*.27f+Range(-.07f,.05f);
+                    var at=new Vector3(2.012f-i*.0017f,y,z+offset);
+                    float tilt=Range(-13,13);PinnedPage(at,width,height,(b+i)%6,tilt);
+                    var pin=Quaternion.Euler(tilt,0,0)*new Vector3(-.006f,height*.43f,-width*.16f);
+                    Box("Old notice thumbtack",at+pin,new Vector3(.009f,.014f,.014f),surfaces.Rust);
                 }
             }
             // Small red enamel fire hardware is a material landmark, not a new warning light.
@@ -237,14 +242,24 @@ namespace HappyToy.V2
         }
         void PinnedPage(Vector3 centre,float width,float height,int form,float tilt)
         {
-            var rotation=Quaternion.Euler(tilt,0,0);
-            var vertices=new[]{new Vector3(-.018f,-height*.5f,-width*.47f),new Vector3(-.012f,-height*.46f,width*.49f),
-                new Vector3(-.006f,height*.20f,-width*.5f),new Vector3(-.002f,height*.20f,width*.49f),
-                new Vector3(-.004f,height*.5f,-width*.50f),new Vector3(0,height*.5f,width*.46f)};
-            for(int i=0;i<vertices.Length;i++)vertices[i]=centre+rotation*vertices[i];
+            const int columns=4,rows=5;var rotation=Quaternion.Euler(tilt,0,0);
+            var vertices=new Vector3[columns*rows];var uv=new Vector2[vertices.Length];var triangles=new List<int>();
+            float curl=Range(.014f,.043f);
+            for(int row=0;row<rows;row++)for(int col=0;col<columns;col++)
+            {
+                int i=row*columns+col;float u=col/(float)(columns-1),v=row/(float)(rows-1);
+                float torn=(row==0?Range(.65f,1):Range(.93f,1));
+                var at=new Vector3(-.002f-curl*(1-v)*(col==0||col==columns-1?1:.25f),
+                    (v-.5f)*height*torn,(u-.5f)*width*Range(.92f,1));
+                vertices[i]=centre+rotation*at;uv[i]=new Vector2(1-u,v);
+                if(row<rows-1&&col<columns-1)
+                {
+                    if(!(row==0&&col==0))triangles.AddRange(new[]{i,i+1,i+columns});
+                    if(!(form%2==0&&row==0&&col==columns-2))triangles.AddRange(new[]{i+1,i+columns+1,i+columns});
+                }
+            }
             // A corridor observer looks toward +X; their screen-right is -Z.
-            MeshObject("Faded Korean notice with water-curled torn edge",vertices,new[]{0,1,2,1,3,2,2,3,4,3,5,4},
-                new[]{Vector2.right,Vector2.zero,new Vector2(1,.7f),new Vector2(0,.7f),Vector2.one,Vector2.up},null,printedPaper[form]);
+            MeshObject("Faded Korean notice with water-curled torn edge",vertices,triangles.ToArray(),uv,null,printedPaper[form]);
         }
         void Pipes()
         {
@@ -283,74 +298,52 @@ namespace HappyToy.V2
             }
             MeshObject("Round corroded school service pipe",vertices,triangles,uv,normals,surfaces.Rust);
         }
-        void DamagedCeiling()
-        {
-            // A few soaked finish tiles hang below the retained structural slab.
-            // There are real irregular edges and exposed supports, not dark quads pretending to be holes.
-            foreach(var panel in new[]{new Vector3(-1.46f,3.219f,10.53f),new Vector3(1.42f,3.217f,11.11f),
-                new Vector3(-1.38f,3.217f,24.12f),new Vector3(1.32f,3.219f,24.86f)})
-            {
-                float yaw=panel.x<0?3:-8;var rotation=Quaternion.Euler(0,yaw,0);
-                var local=new[]{new Vector3(-.29f,0,0),new Vector3(.28f,-.003f,0),new Vector3(.28f,-.12f,.36f),
-                    new Vector3(.13f,-.19f,.58f),new Vector3(-.12f,-.20f,.54f),new Vector3(-.29f,-.15f,.48f)};
-                var vertices=local.Select(v=>panel+rotation*v).ToArray();
-                var uv=local.Select(v=>new Vector2((v.x+.3f)/.6f,v.z/.6f)).ToArray();
-                MeshObject("Hanging broken acoustic ceiling finish",vertices,new[]{0,1,2,0,2,3,0,3,4,0,4,5},uv,null,surfaces.Ceiling);
-                var edges=new Vector3[local.Length*4];var triangles=new int[local.Length*6];var edgeUv=new Vector2[edges.Length];
-                for(int i=0;i<local.Length;i++)
-                {
-                    int j=(i+1)%local.Length,k=i*4,t=i*6;
-                    edges[k]=vertices[i];edges[k+1]=vertices[j];edges[k+2]=vertices[i]+Vector3.up*.021f;edges[k+3]=vertices[j]+Vector3.up*.021f;
-                    edgeUv[k]=Vector2.zero;edgeUv[k+1]=Vector2.right;edgeUv[k+2]=new Vector2(0,.07f);edgeUv[k+3]=new Vector2(1,.07f);
-                    triangles[t]=k;triangles[t+1]=k+2;triangles[t+2]=k+1;triangles[t+3]=k+1;triangles[t+4]=k+2;triangles[t+5]=k+3;
-                }
-                MeshObject("Exposed chipped acoustic ceiling edge",edges,triangles,edgeUv,null,plaster);
-                var support=panel+rotation*new Vector3(.12f,-.185f,.55f);
-                Pipe(support,support+new Vector3(.025f,.19f,-.025f),.0035f);
-            }
-        }
         void Residue()
         {
-            // Cluster density follows wall edges, furniture and the two roof leaks.
-            // The middle contains only a few pages so wet tile reflections remain legible.
-            for(int cluster=0;cluster<18;cluster++)
+            // Water carries printed leaves into uneven edge heaps between the
+            // acquired rubble patches, rather than evenly spacing clean squares.
+            var heaps=new[]{new Vector2(-1.83f,7.95f),new Vector2(-1.83f,10.1f),new Vector2(-1.83f,13.1f),
+                new Vector2(1.83f,11.2f),new Vector2(1.83f,22.3f),new Vector2(-1.83f,24.45f),new Vector2(1.83f,30.9f),
+                new Vector2(-1.83f,16.65f),new Vector2(1.83f,25.55f),new Vector2(-1.83f,28.85f)};
+            for(int cluster=0;cluster<heaps.Length;cluster++)
             {
-                float z=2.9f+cluster*1.93f;float edge=cluster%3==0?-1.78f:1.72f;
-                for(int item=0;item<9;item++)
+                var heap=heaps[cluster];int count=cluster%3==0?31:19;
+                for(int item=0;item<count;item++)
                 {
-                    var at=new Vector3(edge+Range(-.30f,.25f),.006f+item*.0006f,z+Range(-.75f,.75f));
-                    if(item%3==0)Page(at,Range(.12f,.23f),Range(.16f,.31f),Range(0,360));
-                    else Chip(at,Range(.035f,.13f),Range(0,360));
+                    // Wider heaps mix soaked whole leaves and narrow torn scraps.
+                    // Every layer has different creasing and a missing corner.
+                    var at=new Vector3(heap.x+Range(-.13f,.13f),.008f+(item%7)*.003f,heap.y+Range(-.40f,.40f));
+                    bool scrap=item%4==0;
+                    Page(at,Range(scrap?.055f:.11f,scrap?.095f:.18f),Range(scrap?.10f:.17f,scrap?.18f:.27f),Range(0,360));
                 }
             }
-            foreach(float z in new[]{10.8f,24.3f})for(int i=0;i<11;i++)
-                Chip(new Vector3(Range(-1.65f,1.65f),.006f,z+Range(-.65f,.65f)),Range(.04f,.12f),Range(0,360));
-            for(int i=0;i<9;i++)Page(new Vector3(Range(-1.3f,1.3f),.008f,4.0f+i*3.43f),Range(.15f,.21f),Range(.23f,.30f),Range(0,360));
+            foreach(var p in new[]{new Vector2(-.41f,11.9f),new Vector2(.9f,22.9f),new Vector2(-.7f,30.1f)})
+                Page(new Vector3(p.x,.008f,p.y),.16f,.22f,Range(0,360));
         }
         void Page(Vector3 centre,float width,float length,float yaw)
         {
             var rotation=Quaternion.Euler(0,yaw,0);
-            // Six vertices give a lifted, ragged edge instead of a floating flat cube.
-            var vertices=new[]{new Vector3(-width*.5f,.001f,-length*.5f),new Vector3(width*.5f,.002f,-length*.5f),
-                new Vector3(-width*.48f,.002f,length*.23f),new Vector3(width*.47f,.003f,length*.22f),
-                new Vector3(-width*.45f,.014f,length*.5f),new Vector3(width*.41f,.025f,length*.46f)};
-            for(int i=0;i<vertices.Length;i++)vertices[i]=centre+rotation*vertices[i];
-            MeshObject("Damp curled school exercise paper",vertices,new[]{0,2,1,1,2,3,2,4,3,3,4,5},
-                new[]{Vector2.zero,Vector2.right,new Vector2(0,.72f),new Vector2(1,.72f),Vector2.up,Vector2.one},null,printedPaper[nextPaper++%printedPaper.Length]);
-            LooseResidue++;
-        }
-        void Chip(Vector3 centre,float radius,float yaw)
-        {
-            var rotation=Quaternion.Euler(0,yaw,0);
-            var vertices=new Vector3[6];vertices[0]=centre+Vector3.up*.008f;
-            for(int i=0;i<5;i++)
+            const int columns=4,rows=5;int form=nextPaper++;
+            var vertices=new Vector3[columns*rows];var uv=new Vector2[vertices.Length];var triangles=new List<int>();
+            float crease=Range(.014f,.040f),curl=Range(.010f,.038f),skew=Range(-.10f,.10f);
+            for(int row=0;row<rows;row++)for(int col=0;col<columns;col++)
             {
-                float angle=i*Mathf.PI*2/5,extent=radius*Range(.65f,1.13f);
-                vertices[i+1]=centre+rotation*new Vector3(Mathf.Cos(angle)*extent,Range(0,.008f),Mathf.Sin(angle)*extent);
+                int i=row*columns+col;float u=col/(float)(columns-1),v=row/(float)(rows-1);
+                float edge=(col==0||col==columns-1?curl:0)*(row==0||row==rows-1?1:.22f);
+                float fold=crease*Mathf.Max(0,1-Mathf.Abs(u-(.28f+v*.26f))*4)*(1-v*.55f);
+                float torn=(row==0||row==rows-1?Range(.76f,1):Range(.94f,1));
+                var at=new Vector3(((u-.5f)+(v-.5f)*skew)*width*Range(.91f,1),.001f+edge+fold,(v-.5f)*length*torn);
+                vertices[i]=centre+rotation*at;uv[i]=new Vector2(u,v);
+                if(row<rows-1&&col<columns-1)
+                {
+                    // A corner triangle is physically absent, with a second tear
+                    // on alternate leaves. No alpha rectangle hides the silhouette.
+                    if(!(row==0&&col==0))triangles.AddRange(new[]{i,i+columns,i+1});
+                    if(!(form%2==0&&row==rows-2&&col==columns-2))triangles.AddRange(new[]{i+1,i+columns,i+columns+1});
+                }
             }
-            var triangles=new int[15];for(int i=0;i<5;i++){triangles[i*3]=0;triangles[i*3+1]=1+(i+1)%5;triangles[i*3+2]=i+1;}
-            var uv=vertices.Select(v=>new Vector2(v.x,v.z)*2.5f).ToArray();
-            MeshObject("Fallen irregular ceiling plaster",vertices,triangles,uv,null,plaster);LooseResidue++;
+            MeshObject("Soaked wrinkled torn school exercise paper",vertices,triangles.ToArray(),uv,null,printedPaper[form%printedPaper.Length]);
+            LooseResidue++;
         }
         void MeshObject(string name,Vector3[] vertices,int[] triangles,Vector2[] uv,Vector3[] normals,Material material)
         {
@@ -359,7 +352,7 @@ namespace HappyToy.V2
             mesh.RecalculateBounds();mesh.RecalculateTangents();world.owned.Add(mesh);
             var go=new GameObject(name,typeof(MeshFilter),typeof(MeshRenderer));go.layer=8;go.transform.SetParent(root,false);
             go.GetComponent<MeshFilter>().sharedMesh=mesh;var renderer=go.GetComponent<MeshRenderer>();renderer.sharedMaterial=material;
-            renderer.shadowCastingMode=name.Contains("paper")||name.Contains("notice")||name.Contains("plaster")?ShadowCastingMode.Off:ShadowCastingMode.On;
+            renderer.shadowCastingMode=name.Contains("notice")?ShadowCastingMode.Off:ShadowCastingMode.On;
             renderer.receiveShadows=true;
         }
         float Range(float min,float max)=>Mathf.Lerp(min,max,(float)random.NextDouble());

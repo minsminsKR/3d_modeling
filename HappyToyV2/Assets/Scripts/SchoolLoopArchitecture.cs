@@ -8,26 +8,71 @@ namespace HappyToy.V2
     public sealed class SchoolLoopArchitecture
     {
         readonly SchoolLoopWorld world;
+        static readonly Vector4[] CeilingOpenings={new Vector4(-.75f,10.1f,.95f,1.28f),
+            new Vector4(.55f,24.3f,1.05f,1.40f),new Vector4(-.55f,31f,.85f,1f)};
         Transform root;bool physical;
-        Material plaster,paint,tile,timber,iron,ceiling,glass;
+        Material plaster,plasterAlternate,paint,tile,timber,iron,ceiling,ceilingAlternate,glass;
         public SchoolLoopArchitecture(SchoolLoopWorld owner)
         {
             world=owner;var surfaces=world.HorrorSurfaces;
-            plaster=surfaces.Wall;paint=surfaces.LowerWall;tile=surfaces.Floor;
-            timber=surfaces.Timber;iron=surfaces.Rust;ceiling=surfaces.Ceiling;glass=surfaces.Glass;
+            plaster=surfaces.Wall;plasterAlternate=surfaces.WallAlternate;paint=surfaces.LowerWall;tile=surfaces.Floor;
+            timber=surfaces.Timber;iron=surfaces.Rust;ceiling=surfaces.Ceiling;ceilingAlternate=surfaces.CeilingAlternate;glass=surfaces.Glass;
         }
         GameObject Box(string name,Vector3 p,Vector3 size,Material material,bool body=false,bool floor=false)=>world.Box(root,name,p,size,material,physical&&body,floor);
         void Slab(float x0,float z0,float x1,float z1,bool wood=false)
         {
-            // Split long slabs so spatial light selection and culling follow
-            // the actual corridor rather than one 38m-wide renderer.
-            if(z1-z0>4.41f)
-            {for(float z=z0;z<z1-.001f;z+=4.4f)Slab(x0,z,x1,Mathf.Min(z+4.4f,z1),wood);return;}
-            var centre=new Vector3((x0+x1)*.5f,-.12f,(z0+z1)*.5f);
-            Box("School loop physical floor",centre,new Vector3(x1-x0,.24f,z1-z0),wood?world.Surfaces.Get("wood-floor",new Color(.41f,.37f,.28f)):tile,true,true);
-            centre.y=3.34f;Box("School acoustic ceiling",centre,new Vector3(x1-x0,.18f,z1-z0),ceiling,true);
-            for(float z=z0+.6f;z<z1;z+=.6f)Box("Ceiling tile cross seam",new Vector3(centre.x,3.244f,z),new Vector3(x1-x0,.009f,.012f),iron);
-            for(float x=x0+.6f;x<x1;x+=.6f)Box("Ceiling tile long seam",new Vector3(x,3.244f,(z0+z1)*.5f),new Vector3(.012f,.009f,z1-z0),iron);
+            // Floor bodies remain continuous and independent of the missing finish above.
+            for(float z=z0;z<z1-.001f;z+=4.4f)
+            {
+                float end=Mathf.Min(z+4.4f,z1);
+                Box("School loop physical floor",new Vector3((x0+x1)*.5f,-.12f,(z+end)*.5f),
+                    new Vector3(x1-x0,.24f,end-z),wood?world.Surfaces.Get("wood-floor",new Color(.41f,.37f,.28f)):tile,true,true);
+            }
+            if(Mathf.Abs(x0+2.2f)<.01f&&Mathf.Abs(x1-2.2f)<.01f)
+            {BrokenCorridorCeiling(x0,z0,x1,z1);return;}
+            for(float z=z0;z<z1-.001f;z+=4.4f)
+            {
+                float end=Mathf.Min(z+4.4f,z1);var centre=new Vector3((x0+x1)*.5f,3.34f,(z+end)*.5f);
+                Box("School acoustic ceiling",centre,new Vector3(x1-x0,.18f,end-z),ceiling,true);
+                for(float seam=z+.6f;seam<end;seam+=.6f)Box("Ceiling tile cross seam",new Vector3(centre.x,3.244f,seam),new Vector3(x1-x0,.009f,.012f),iron);
+                for(float x=x0+.6f;x<x1;x+=.6f)Box("Ceiling tile long seam",new Vector3(x,3.244f,centre.z),new Vector3(.012f,.009f,end-z),iron);
+            }
+        }
+        // Used by the finish-edge dressing too: each missing cell is a real opening
+        // between the ceiling finish and a separate structural roof 43cm above it.
+        internal static bool MissingCeilingPanel(float x,float z)
+        {
+            foreach(var patch in CeilingOpenings)
+            {
+                float dx=(x-patch.x)/patch.z,dz=(z-patch.y)/patch.w;
+                float edge=1+.16f*Mathf.Sin(x*17.3f+z*9.7f);
+                if(dx*dx+dz*dz<edge)return true;
+            }
+            return false;
+        }
+        void BrokenCorridorCeiling(float x0,float z0,float x1,float z1)
+        {
+            var concrete=world.Surfaces.Get("concrete-rough",new Color(.27f,.29f,.27f));
+            for(float z=z0;z<z1-.001f;z+=4.4f)
+            {
+                float end=Mathf.Min(z+4.4f,z1);
+                Box("Exposed structural concrete roof above real ceiling openings",new Vector3((x0+x1)*.5f,3.77f,(z+end)*.5f),
+                    new Vector3(x1-x0,.18f,end-z),concrete,true);
+            }
+            for(float z=z0;z<z1-.001f;z+=.6f)for(float x=x0;x<x1-.001f;x+=.6f)
+            {
+                float width=Mathf.Min(.6f,x1-x),length=Mathf.Min(.6f,z1-z);
+                if(MissingCeilingPanel(x+width*.5f,z+length*.5f))continue;
+                bool saturated=Mathf.Abs(z-10.1f)<2.5f||Mathf.Abs(z-24.3f)<2.7f||Mathf.Abs(z-31)<2;
+                Box("Retained water-damaged acoustic ceiling panel",new Vector3(x+width*.5f,3.305f,z+length*.5f),
+                    new Vector3(width-.014f,.11f,length-.014f),saturated?ceilingAlternate:ceiling);
+            }
+            // Continuous thin tees cross the voids; fallen sheets no longer hide
+            // their corroded supporting grid, while the playable floor stays clear.
+            for(float x=x0+.6f;x<x1;x+=.6f)
+                Box("Exposed acoustic ceiling longitudinal tee",new Vector3(x,3.275f,(z0+z1)*.5f),new Vector3(.016f,.045f,z1-z0),iron);
+            for(float z=z0+.6f;z<z1;z+=.6f)
+                Box("Exposed acoustic ceiling transverse tee",new Vector3((x0+x1)*.5f,3.275f,z),new Vector3(x1-x0,.045f,.016f),iron);
         }
         void Wall(float x,float z,float sx,float sz)
         {
@@ -35,7 +80,8 @@ namespace HappyToy.V2
             {int count=Mathf.CeilToInt(sz/4.4f);float span=sz/count;for(int i=0;i<count;i++)Wall(x,z-sz*.5f+(i+.5f)*span,sx,span);return;}
             if(sx>6)
             {int count=Mathf.CeilToInt(sx/4.4f);float span=sx/count;for(int i=0;i<count;i++)Wall(x-sx*.5f+(i+.5f)*span,z,span,sz);return;}
-            Box("School solid wall",new Vector3(x,1.625f,z),new Vector3(sx,3.25f,sz),plaster,true);
+            var finish=Mathf.Sin(x*.71f+z*.39f)>.18f?plasterAlternate:plaster;
+            Box("School solid wall",new Vector3(x,1.625f,z),new Vector3(sx,3.25f,sz),finish,true);
             Box("School muted green lower paint",new Vector3(x,.60f,z),new Vector3(sx+.012f,1.20f,sz+.012f),paint);
             Box("School dark skirting",new Vector3(x,.065f,z),new Vector3(sx+.026f,.13f,sz+.026f),iron);
             Box("School waist rail",new Vector3(x,1.215f,z),new Vector3(sx+.022f,.045f,sz+.022f),timber);

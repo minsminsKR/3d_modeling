@@ -15,8 +15,10 @@ namespace HappyToy.V2
         readonly Shader shader;
         readonly Texture2D moisture;
         public Material Wall {get;}
+        public Material WallAlternate {get;}
         public Material LowerWall {get;}
         public Material Ceiling {get;}
+        public Material CeilingAlternate {get;}
         public Material Floor {get;}
         public Material Glass {get;}
         public Material Rust {get;}
@@ -30,13 +32,19 @@ namespace HappyToy.V2
             shader=Resources.Load<Shader>("SchoolHorror/SchoolDecaySurface");
             moisture=Texture("moisture-macro");
             if(!shader)throw new InvalidOperationException("School decay PBR shader is missing");
-            Wall=Surface("wall",1.8f,new Color(.97f,.97f,.94f),1,.92f,.20f);
-            LowerWall=Surface("lower-wall",1.8f,Color.white,1,.92f,.20f);
-            Ceiling=Surface("ceiling",2.4f,new Color(.91f,.93f,.92f),.85f,.95f,.27f);
-            Floor=Surface("floor",1.28f,Color.white,.88f,.88f,.16f);
+            Wall=Surface("wall",1.5f,Color.white,1.25f,.88f,.12f);
+            WallAlternate=Surface("wall-alternate",1.8f,Color.white,1.20f,.88f,.14f);
+            LowerWall=Surface("lower-wall",1.8f,Color.white,1.15f,.90f,.15f);
+            Ceiling=Surface("ceiling",1.8f,new Color(.96f,.97f,.95f),1.18f,.90f,.18f);
+            CeilingAlternate=Surface("ceiling-alternate",1.5f,new Color(.94f,.96f,.93f),1.25f,.90f,.16f);
+            Ceiling.SetFloat("_WorldCeiling",1);Ceiling.SetFloat("_CeilingSpan",1.8f);
+            CeilingAlternate.SetFloat("_WorldCeiling",1);CeilingAlternate.SetFloat("_CeilingSpan",1.5f);
+            Floor=Surface("floor",2.26f,Color.white,.92f,.90f,.07f);
             Floor.SetFloat("_WetStrength",1);
             Floor.SetFloat("_WorldFloor",1);
-            Floor.SetFloat("_FloorSpan",1.28f);
+            Floor.SetFloat("_FloorSpan",2.26f);
+            Floor.SetTexture("_PuddleField",Texture("puddle-field"));
+            Floor.SetFloat("_PuddleSpan",24);
             Floor.SetVector("_SchoolOrigin",SchoolLoopWorld.Origin);
             Glass=Create("Streaked damp classroom glass",1.6f,"school-glass");
             Glass.SetTexture("_BaseMap",Texture("glass/albedo"));
@@ -60,6 +68,8 @@ namespace HappyToy.V2
             Puddle.SetColor("_BaseColor",new Color(.055f,.061f,.057f,.72f));
             Puddle.SetFloat("_BumpScale",.018f);
             Puddle.SetFloat("_WetStrength",1);
+            Puddle.SetTexture("_PuddleField",Texture("puddle-field"));
+            Puddle.SetFloat("_PuddleSpan",24);
             Puddle.SetFloat("_MacroStrength",.12f);
             Transparent(Puddle,2);
         }

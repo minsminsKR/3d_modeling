@@ -17,6 +17,18 @@ Source models and attribution records preserved under SourceArt/GraphicsUpgrade.
 Korean corridor jangseung, onggi and dokkaebi-inspired roof tile: generated for this project with the designated A100 Studio / TRELLIS.2 webapp, using original built-in ImageGen references; locally finished in Blender 4.0.2.
 References, original GLB/PBR, prompts, job provenance, editable Blender and backend license are preserved under SourceArt/KoreanCorridorProps.
 
-School horror surfaces: school-specific derivatives of worn_plaster_wall and floor_tiles_06 scans listed above (CC0 1.0).
+School horror surfaces also retain finishing inputs from worn_plaster_wall listed above (CC0 1.0).
 Correlated mold, leak, crack and wetness finishing, physical material shader and Korean notice layouts are authored for HappyToyV2.
 Original user visual reference, exact map/font inputs, reproducible generators and output hashes: SourceArt/SchoolHorror.
+
+Additional photographed school surface scans — Poly Haven, CC0 1.0:
+rough_plaster_broken — Rob Tuytel — https://polyhaven.com/a/rough_plaster_broken
+worn_mossy_plasterwall — Amal Kumar — https://polyhaven.com/a/worn_mossy_plasterwall
+peeling_painted_wall — Dimitrios Savva — https://polyhaven.com/a/peeling_painted_wall
+dirty_tiles — Matterfield (photography), Jenelle van Heerden (processing) — https://polyhaven.com/a/dirty_tiles
+Original lossless map downloads, official checksums, local hashes, license and reproducible finishing: SourceArt/SchoolHorror/Acquired.
+
+Concrete Debris — Amal Kumar — https://polyhaven.com/a/concrete_debris
+Namaqualand Stones 01 — Greg Zaal (photography), Jenelle van Heerden (modeling) — https://polyhaven.com/a/namaqualand_stones_01
+Both assets: Poly Haven CC0 1.0. Concrete debris is acquired photographed height/PBR data used for relief patches; the small aggregate pieces derive from the actual individual photogrammetry meshes.
+Original editable Blender files and referenced maps, source checksums, pinned Blender derivative tools and packed game authoring source: SourceArt/SchoolHorror/StructuralDecay.

@@ -18,6 +18,7 @@ OUT = PROJECT / "Assets/Resources/SchoolHorror/notices"
 FONT = PROJECT / "Assets/Resources/Fonts/Korean.ttf"
 OFL = FONT.with_name("OFL.txt")
 PAPER = PROJECT / "Assets/Resources/GraphicsPbr/paper-aged/albedo.png"
+DIRT = PROJECT / "Assets/Resources/SchoolHorror/wall-alternate/albedo.png"
 NAMESPACE = uuid.UUID("0f39c6b3-8f9f-49a6-966b-a8ec45eed318")
 FORMS = [
     ("교내 안전 수칙", "학생 생활 지도부", ["복도에서는 뛰지 않습니다.", "창문과 난간에 기대지 않습니다.", "마지막 사람이 전등을 끕니다.", "파손된 시설은 선생님께 알립니다."], "1998년 7월 16일"),
@@ -55,12 +56,33 @@ def render(index, form):
     crop = source.crop((x, y, x + 680, y + 1000)).resize((width, height), Image.Resampling.LANCZOS)
     scan = np.asarray(crop).astype(np.float32) / 255
     luminance = scan.mean(axis=2)
-    # Actual scanned fibres remain; old forms are a grey, water-darkened paper,
-    # rather than a uniformly bright yellow rectangle under every lamp.
+    # Preserve actual fibres and transfer a little of the acquired damp plaster
+    # scan as surface dirt. Broad tide marks remain visible at gameplay distance.
     yy, xx = np.mgrid[0:height, 0:width]
     edge = np.minimum.reduce((xx / width, (width - xx) / width, yy / height, (height - yy) / height))
-    density = np.clip(.67 + (luminance - .5) * .27 - np.exp(-edge * 25) * .12, .25, .83)
-    colour = np.stack((density * 1.01, density, density * .91), axis=2)
+    dirt_image = Image.open(DIRT).convert("RGB")
+    dx, dy = (index * 193) % 900, (index * 271) % 900
+    dirt_crop = dirt_image.crop((dx, dy, dx + 900, dy + 900)).resize((width, height), Image.Resampling.LANCZOS)
+    dirt = np.asarray(dirt_crop).astype(np.float32).mean(axis=2) / 255
+    dirt = np.clip((.54 - dirt) * 2.0, 0, 1)
+    wet = np.zeros((height, width), dtype=np.float32)
+    tide = np.zeros_like(wet)
+    for stain in range(3):
+        cx, cy = rng.uniform(-.25, 1.25) * width, rng.uniform(-.15, 1.15) * height
+        rx, ry = rng.uniform(.35, .85) * width, rng.uniform(.18, .48) * height
+        radius = np.sqrt(((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2)
+        broken_edge = radius + .055 * np.sin(xx / 21 + np.sin(yy / 49)) + .025 * np.cos(yy / 17)
+        wet = np.maximum(wet, np.clip((1.06 - broken_edge) * 5, 0, 1))
+        tide += np.exp(-((broken_edge - 1.0) / .028) ** 2)
+    diagonal = xx - (width * (.20 + .04 * index) + yy * .32)
+    fold = np.exp(-(diagonal / 3.2) ** 2)
+    fold_light = np.exp(-((diagonal - 4.5) / 2.6) ** 2)
+    horizontal = np.exp(-((yy - height * .52 - 8 * np.sin(xx / 94)) / 3.2) ** 2)
+    ragged_edge = np.exp(-edge * (22 + 4 * np.sin(xx / 17) + 3 * np.cos(yy / 29)))
+    density = np.clip(.64 + (luminance - .7) * .48 - ragged_edge * .13
+                      - wet * .13 - tide * .08 - dirt * (.035 + .065 * wet)
+                      - fold * .09 + fold_light * .035 - horizontal * .045, .23, .78)
+    colour = np.stack((density * .995, density * 1.015, density * .975), axis=2)
     base = Image.fromarray(np.uint8(np.clip(colour, 0, 1) * 255), "RGB")
     ink = Image.new("L", (width, height), 0)
     draw = ImageDraw.Draw(ink)
@@ -84,8 +106,7 @@ def render(index, form):
     alpha = np.asarray(ink.filter(ImageFilter.GaussianBlur(.32))).astype(np.float32) / 255
     # Broad soaked fold bands erase ink, correlated across each physical sheet.
     wear = np.asarray(Image.fromarray(np.uint8(rng.uniform(0, 255, (24, 16))), "L").resize((width, height), Image.Resampling.BICUBIC)).astype(np.float32) / 255
-    crease = .18 * np.exp(-((xx - (width * .36 + 10 * np.sin(yy / 140))) / 4.5) ** 2)
-    alpha *= np.clip(.45 + wear * .55 - crease, .1, 1)
+    alpha *= np.clip(.45 + wear * .55 - fold * .32 - horizontal * .20 - wet * .12, .1, 1)
     pixels = np.asarray(base).astype(np.float32)
     inkcolour = np.array([39, 43, 37] if index % 3 else [44, 46, 40], dtype=np.float32)
     pixels = pixels * (1 - alpha[..., None]) + inkcolour * alpha[..., None]
@@ -107,10 +128,11 @@ def main():
         "generatorSha256": sha(Path(__file__)),
         "dependencies": "SourceArt/SchoolHorror/requirements-surfaces.txt",
         "software": {"Pillow": PIL.__version__, "numpy": np.__version__},
-        "inputs": [{"path": p.relative_to(PROJECT).as_posix(), "sha256": sha(p)} for p in (PAPER, FONT, OFL)],
+        "inputs": [{"path": p.relative_to(PROJECT).as_posix(), "sha256": sha(p)} for p in (PAPER, DIRT, FONT, OFL)],
         "paperCredit": "Retained paper-aged photographic PBR scan; see ThirdParty/Graphics/Graphics-Credits.txt and source manifests.",
+        "dirtCredit": "Poly Haven peeling_painted_wall CC0 scan, preserved in SourceArt/SchoolHorror/Acquired; see surface-manifest.json for primary attribution, original files and hashes.",
         "fontCredit": "Retained Korean.ttf, Adobe Source font, SIL Open Font License 1.1; original OFL.txt remains beside font.",
-        "method": "Scanned paper fibres, deterministic grey water staining, original Korean text and rule forms, spatially correlated faded photocopy ink.",
+        "method": "Scanned paper fibres and acquired plaster dirt transfer, deterministic irregular grey water tide marks and diagonal folds, original Korean text and rule forms, spatially correlated faded photocopy ink.",
         "outputs": outputs,
     }
     (HERE / "notice-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")

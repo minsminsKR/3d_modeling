@@ -1,7 +1,7 @@
 {
   "purpose": "Original faded Korean school notices for the derelict school; no copied document or external logo.",
   "generator": "SourceArt/SchoolHorror/build_notices.py",
-  "generatorSha256": "5ad2c01ec8e50eed2299a17190a05672f43c3aa6863f52aac6bc4f602a9b0e4b",
+  "generatorSha256": "5c86683295c4329ef616ba343b7fa071973ab918e99ddeaa1ef33ba1eeeb0103",
   "dependencies": "SourceArt/SchoolHorror/requirements-surfaces.txt",
   "software": {
     "Pillow": "10.4.0",
@@ -13,6 +13,10 @@
       "sha256": "b9474f1e4c5712d88093f8ccd5b59efee28095448dcba9e2dcfcb3e914123caf"
     },
     {
+      "path": "Assets/Resources/SchoolHorror/wall-alternate/albedo.png",
+      "sha256": "724b2a00d632842fc7b675e662f23ccb73ef58a476e3092fd86bedcf9eff5200"
+    },
+    {
       "path": "Assets/Resources/Fonts/Korean.ttf",
       "sha256": "b9605a45a4811dc98c5005819fbc60b2ba581c835f087608cbe151a527624af5"
     },
@@ -22,12 +26,13 @@
     }
   ],
   "paperCredit": "Retained paper-aged photographic PBR scan; see ThirdParty/Graphics/Graphics-Credits.txt and source manifests.",
+  "dirtCredit": "Poly Haven peeling_painted_wall CC0 scan, preserved in SourceArt/SchoolHorror/Acquired; see surface-manifest.json for primary attribution, original files and hashes.",
   "fontCredit": "Retained Korean.ttf, Adobe Source font, SIL Open Font License 1.1; original OFL.txt remains beside font.",
-  "method": "Scanned paper fibres, deterministic grey water staining, original Korean text and rule forms, spatially correlated faded photocopy ink.",
+  "method": "Scanned paper fibres and acquired plaster dirt transfer, deterministic irregular grey water tide marks and diagonal folds, original Korean text and rule forms, spatially correlated faded photocopy ink.",
   "outputs": [
     {
       "path": "Assets/Resources/SchoolHorror/notices/notice-0.png",
-      "sha256": "00001ec019ff481fe7cd843f4a14d49b8743e2c17be20a5eeca354c6c57c121e",
+      "sha256": "87a46b7e5946e8f8266583ffba6fb300ec9c8e227c289f111afa7069c5c562e1",
       "title": "교내 안전 수칙",
       "size": [
         512,
@@ -36,7 +41,7 @@
     },
     {
       "path": "Assets/Resources/SchoolHorror/notices/notice-1.png",
-      "sha256": "dbdb174664449025dfd8bc9f80b93ab899a0ea2ef728814166752630aa67a3ed",
+      "sha256": "b83b37db78a178defb5c4d59a2de710d1738b29387a8bbdd856e6d87d1624308",
       "title": "도서 반납 안내",
       "size": [
         512,
@@ -45,7 +50,7 @@
     },
     {
       "path": "Assets/Resources/SchoolHorror/notices/notice-2.png",
-      "sha256": "efa201d16fe4cd4639df1e971116ee0452c9e43b47b66f143bffef13a0659976",
+      "sha256": "71f2298a333ca600caead66c955370a515858562fc36fe96cd4a51bff0b62d34",
       "title": "정독실 이용 안내",
       "size": [
         512,
@@ -54,7 +59,7 @@
     },
     {
       "path": "Assets/Resources/SchoolHorror/notices/notice-3.png",
-      "sha256": "1ef06c859554d6c724f89d675a0fc90aea7217b9a5e4dfeffa13807093100b15",
+      "sha256": "7d0dce54005d7a4d73b7857e2a9562c37803be7ac46250f1aadc01a5285b6b12",
       "title": "가 정 통 신 문",
       "size": [
         512,
@@ -63,7 +68,7 @@
     },
     {
       "path": "Assets/Resources/SchoolHorror/notices/notice-4.png",
-      "sha256": "865d637b828a13017bca2fea0dc8f6d950e2ad576e7d7769bfd42ded59a59455",
+      "sha256": "20146e42573de5e46ba5c3cbb55ddff9e381177c5223a4b77ff5ace52e870d3d",
       "title": "시 설 점 검 표",
       "size": [
         512,
@@ -72,7 +77,7 @@
     },
     {
       "path": "Assets/Resources/SchoolHorror/notices/notice-5.png",
-      "sha256": "b90df079b4ad3013e9aa44531f1af29bdb647841eef25deabeb44fda782d23ea",
+      "sha256": "cc28405d9f1ff8ddb20c3afc320a16b102d51d75e9831776aafe7bbb36404b13",
       "title": "음악실 사용 안내",
       "size": [
         512,

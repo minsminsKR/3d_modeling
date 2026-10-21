@@ -1,8 +1,9 @@
-"""Reproducible school decay finish over the project's preserved CC0 scans.
+"""Offline school finish from newly acquired photographed CC0 PBR surfaces.
 
-The photographs remain the source of surface grain and normal detail. This tool
-adds correlated, authored moisture, mold, paint edges and water roughness; it
-does not bake lighting into albedo or invent a replacement 3D model.
+Acquire original source bytes once with acquire_photographed_sources.py. This
+tool reads the tracked originals offline. Photographs supply actual flaking,
+organic black staining, chips, worn grout, normal detail and roughness. It does
+not bake lighting into albedo or invent a replacement 3D model.
 Run from any directory with Python 3.11, NumPy 1.26.4 and Pillow 10.4.0.
 """
 from pathlib import Path
@@ -16,22 +17,39 @@ from PIL import Image, ImageDraw, ImageFilter
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parents[1]
 SCANS = PROJECT / 'Assets/Resources/GraphicsPbr'
+ACQUIRED = HERE / 'Acquired'
 OUT = PROJECT / 'Assets/Resources/SchoolHorror'
 SIZE = 2048
 SEED = 2026102119
 rng = np.random.default_rng(SEED)
 inputs = {}
 outputs = {}
+scan_cache = {}
 
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def load(key, channel):
-    path = SCANS / key / (channel + '.png')
-    inputs[path.relative_to(PROJECT).as_posix()] = sha(path)
-    return np.asarray(Image.open(path).convert('RGB' if channel != 'metallic-smoothness' else 'RGBA'), np.float32) / 255
+def load_scan(slug):
+    if slug in scan_cache:
+        return scan_cache[slug]
+    manifest = json.loads((ACQUIRED / 'acquisition-manifest.json').read_text(encoding='utf-8-sig'))
+    record = next(asset for asset in manifest['assets'] if asset['slug'] == slug)
+    result = {}
+    for channel, entry in record['sources'].items():
+        path = PROJECT / entry['path']
+        if not path.is_file() or sha(path) != entry['sha256']:
+            raise ValueError('Missing or changed photographed source: ' + str(path))
+        inputs[path.relative_to(PROJECT).as_posix()] = entry['sha256']
+        image = Image.open(path)
+        if channel == 'Displacement':
+            values = np.asarray(image, np.float32)
+            result[channel] = values / (65535 if values.max() > 255 else 255)
+        else:
+            result[channel] = np.asarray(image.convert('RGB'), np.float32) / 255
+    scan_cache[slug] = result
+    return result
 
 
 def noise(cells, size=SIZE, shape=None):
@@ -46,33 +64,6 @@ def noise(cells, size=SIZE, shape=None):
 def smooth(a, low, high):
     t = np.clip((a - low) / (high - low), 0, 1)
     return t * t * (3 - 2 * t)
-
-
-def cracks(count, width=2):
-    canvas = Image.new('L', (SIZE, SIZE))
-    draw = ImageDraw.Draw(canvas)
-    for _ in range(count):
-        x, y = rng.uniform(0, SIZE, 2)
-        theta = rng.uniform(0, np.pi * 2)
-        points = [(x, y)]
-        for step in range(int(rng.integers(9, 32))):
-            theta += rng.normal(0, .32)
-            x += np.cos(theta) * rng.uniform(7, 32)
-            y += np.sin(theta) * rng.uniform(7, 32)
-            points.append((x, y))
-        draw.line(points, fill=int(rng.integers(90, 220)), width=width)
-    return np.asarray(canvas.filter(ImageFilter.GaussianBlur(.45)), np.float32) / 255
-
-
-def normal_from_height(height, scan_normal, strength=1):
-    dx = (np.roll(height, -1, axis=1) - np.roll(height, 1, axis=1)) * SIZE / 2
-    dy = (np.roll(height, -1, axis=0) - np.roll(height, 1, axis=0)) * SIZE / 2
-    n = scan_normal * 2 - 1
-    n[:, :, 0] -= dx * strength
-    n[:, :, 1] += dy * strength
-    n[:, :, 2] = np.maximum(n[:, :, 2], .25)
-    n /= np.maximum(np.linalg.norm(n, axis=2, keepdims=True), .00001)
-    return n * .5 + .5
 
 
 def guid(name):
@@ -108,75 +99,63 @@ def save_set(name, albedo, normal, ao, smoothness, metal=0):
     save_image(root / 'metallic-smoothness.png', packed, linear=True)
 
 
-def plaster(name, lower=False, ceiling=False):
-    base = load('plaster-damp', 'albedo').copy()
-    scan_normal = load('plaster-damp', 'normal').copy()
-    scan_ao = load('plaster-damp', 'ao').mean(axis=2)
-    if ceiling:
-        base = np.rot90(base).copy()
-        scan_normal = np.rot90(scan_normal).copy()
-        # Reorient the tangent normal with the rotated source photograph.
-        old_x = scan_normal[:, :, 0].copy()
-        scan_normal[:, :, 0] = scan_normal[:, :, 1]
-        scan_normal[:, :, 1] = 1 - old_x
-        scan_ao = np.rot90(scan_ao).copy()
-    broad, medium, fine, micro = noise(5), noise(23), noise(115), noise(490)
-    streak = noise(1, shape=(5, 95))
-    mold = smooth(broad * .42 + medium * .34 + fine * .24, .55, .75)
-    damp = smooth(broad * .67 + streak * .33, .32, .77)
-    crack = cracks(22 if ceiling else 12)
-    luminance = base.mean(axis=2)
-    exposed = 1 - smooth(luminance, .30, .52)
-    # Concentrate growth in the photograph's exposed substrate and actual paint
-    # edges. Dense high-contrast procedural clouds read as repeating camouflage.
-    mold *= .17 + exposed * .83
+def plaster(name, slug, lower=False, ceiling=False, rotation=0):
+    scan = load_scan(slug)
+    mold_scan = load_scan('worn_mossy_plasterwall')
+    base = scan['Diffuse'].copy()
+    luminance = base[:, :, 0] * .2126 + base[:, :, 1] * .7152 + base[:, :, 2] * .0722
+    normals = scan['nor_gl'].copy()
+    packed = scan['arm'].copy()
+    mold_rgb = np.roll(mold_scan['Diffuse'], (363 if lower else 0, 641 if ceiling else 0), axis=(0, 1))
+    mold_luma = mold_rgb[:, :, 0] * .2126 + mold_rgb[:, :, 1] * .7152 + mold_rgb[:, :, 2] * .0722
+    # This mask comes from real photographed organic staining, not Gaussian
+    # noise spots. Its channels remain correlated with the acquired scan.
+    organic = 1 - smooth(mold_luma, .18, .64)
     if lower:
-        # The scan's detached paint exposes the same ochre plaster below a
-        # subdued old school green coating. Grain and actual cracks remain.
-        enamel = np.array((.31, .36, .30), np.float32)
-        coating = smooth(luminance, .29, .49) * .64
-        base = base * (1 - coating[:, :, None]) + enamel[None, None, :] * coating[:, :, None]
-    elif ceiling:
-        grey = base.mean(axis=2)
-        base = np.dstack((grey * .94, grey * .96, grey * .91))
-    mold_colour = np.array((.035, .040, .028), np.float32)
-    amount = mold * (.36 if ceiling else .31 if lower else .25)
-    base = base * (1 - amount[:, :, None]) + mold_colour[None, None, :] * amount[:, :, None]
-    base *= (1 - damp * .16 - crack * .63)[:, :, None]
-    base += ((fine - .5) * .018)[:, :, None]
-    height = -mold * .00036 - crack * .0010 + (micro - .5) * .000025
-    normal = normal_from_height(height, scan_normal, .7)
-    ao = scan_ao * (1 - exposed * .13 - crack * .30 - mold * .12)
-    gloss = .10 + damp * .17 + exposed * .035 - mold * .07
-    save_set(name, base, normal, ao, gloss)
+        coating = smooth(base[:, :, 0] - base[:, :, 2], .012, .075)
+        pale_substrate = luminance[:, :, None] * np.array((1.07, 1.03, .94))
+        paint = luminance[:, :, None] * np.array((.64, .75, .66))
+        base = pale_substrate * (1 - coating[:, :, None]) + paint * coating[:, :, None]
+        amount = organic * .80
+    else:
+        # Retain photographed warm exposed plaster and its irregular peel edge,
+        # removing the original outdoor paint's strong salmon/brown cast.
+        base = luminance[:, :, None] * np.array((1.045, 1.015, .945))
+        amount = organic * (.66 if ceiling else .68)
+    stain = np.array((.025, .030, .022), np.float32)
+    base = base * (1 - amount[:, :, None]) + stain[None, None, :] * amount[:, :, None]
+    # Preserve the source normals. Add only a restrained share of the actual
+    # organic wall's high-frequency relief, weighted by that photographed stain.
+    original_n = normals * 2 - 1
+    organic_n = mold_scan['nor_gl'] * 2 - 1
+    original_n[:, :, :2] += organic_n[:, :, :2] * (organic * .22)[:, :, None]
+    original_n /= np.maximum(np.linalg.norm(original_n, axis=2, keepdims=True), .00001)
+    normals = original_n * .5 + .5
+    ao = packed[:, :, 0] * (1 - organic * .13)
+    gloss = np.clip(1 - packed[:, :, 1], .055, .28) * (1 - organic * .35)
+    if rotation:
+        base, ao, gloss = (np.rot90(field, rotation).copy() for field in (base, ao, gloss))
+        normals = np.rot90(normals, rotation).copy()
+        for _ in range(rotation):
+            old_x = normals[:, :, 0].copy()
+            # np.rot90 is CCW in image coordinates (rows point down). For an
+            # OpenGL +Y normal this maps tangent (X,Y) to (-Y,X).
+            normals[:, :, 0] = 1 - normals[:, :, 1]
+            normals[:, :, 1] = old_x
+    save_set(name, base, normals, ao, gloss)
 
 
 def floor():
-    base = load('ceramic-tile', 'albedo').copy()
-    scan_normal = load('ceramic-tile', 'normal')
-    scan_ao = load('ceramic-tile', 'ao').mean(axis=2)
-    # Preserve the scan's scratches/veins while bringing contrasting marble
-    # squares into the neutral grey-beige range of the reference school tile.
-    lum = base.mean(axis=2)
-    neutral = np.zeros_like(lum)
-    for row in range(4):
-        for col in range(4):
-            part = lum[row * 512:(row + 1) * 512, col * 512:(col + 1) * 512]
-            neutral[row * 512:(row + 1) * 512, col * 512:(col + 1) * 512] = np.clip((part - part.mean()) * .65 + rng.uniform(.28, .40), .12, .57)
-    base = np.dstack((neutral * 1.06, neutral * 1.025, neutral * .94))
-    broad, medium, fine = noise(5), noise(29), noise(187)
-    dirt = smooth(broad * .6 + medium * .4, .31, .76)
-    crack = cracks(18, width=2)
-    # Real grout and chips remain in the source normal/AO; damage correlates
-    # roughness and albedo, while the pooled water flattens the final normal.
-    base *= (1 - dirt * .25 - crack * .64)[:, :, None]
-    height = -crack * .0012 + (fine - .5) * .000015
-    normal = normal_from_height(height, scan_normal, .55)
-    # The tile texture carries only dry ceramic roughness. Actual water is a
-    # continuous metre-space leak field in the shader, never a 1.28m repeat.
-    smoothness = .20 + fine * .10 - crack * .09
-    ao = scan_ao * (1 - crack * .35 - dirt * .08)
-    save_set('floor', base, normal, ao, smoothness)
+    scan = load_scan('dirty_tiles')
+    raw = scan['Diffuse']
+    lum = raw[:, :, 0] * .2126 + raw[:, :, 1] * .7152 + raw[:, :, 2] * .0722
+    # This is a different photographed single-colour quarry tile, not a graded
+    # checkerboard. Keep its actual grout, chips and dirty micro-detail intact.
+    charcoal = np.clip(lum * .84 + .055, .055, .33)
+    base = charcoal[:, :, None] * np.array((1.035, 1.0, .945))
+    packed = scan['arm']
+    smoothness = np.clip(.17 + (1 - packed[:, :, 1]) * .24, .16, .38)
+    save_set('floor', base, scan['nor_gl'], packed[:, :, 0], smoothness)
 
 
 def glass_and_macro():
@@ -195,8 +174,18 @@ def glass_and_macro():
     colour = np.zeros((n, n, 4), np.float32)
     colour[:, :, :3] = (.22 + streaks * .055 + fine * .018)[:, :, None] * np.array((.91, .98, 1.0))
     colour[:, :, 3] = .012 + streaks * .048 + smooth(broad, .57, .78) * .028 + droplets * .025
+    photo = load_scan('worn_mossy_plasterwall')['Diffuse'].mean(axis=2)
+    photo = np.asarray(Image.fromarray(photo, 'F').resize((n, n), Image.Resampling.LANCZOS), np.float32)
+    growth = 1 - smooth(photo, .20, .62)
+    y = np.arange(n, dtype=np.float32)[:, None] / n
+    # MetreBox UV places the pane's top/bottom at repeat phase .5. Organic
+    # residue is localized there and narrow runoff trails leave clear areas.
+    edge = np.exp(-((y - .5) / .085) ** 2)
+    drip = np.exp(-((y - .5) / .20) ** 2) * smooth(vertical, .74, .94)
+    colour[:, :, 3] += edge * growth * .075 + drip * .04
+    colour[:, :, :3] *= (1 - edge * growth * .25)[:, :, None]
     save_image(OUT / 'glass/albedo.png', colour)
-    height = streaks * .000009 + (fine - .5) * .0000015 + droplets * .000004
+    height = streaks * .000009 + (fine - .5) * .0000015 + droplets * .000004 + edge * growth * .000005 + drip * .000004
     dx = (np.roll(height, -1, axis=1) - np.roll(height, 1, axis=1)) * n / 2
     dy = (np.roll(height, -1, axis=0) - np.roll(height, 1, axis=0)) * n / 2
     normal = np.dstack((-dx, dy, np.ones_like(dx)))
@@ -204,6 +193,34 @@ def glass_and_macro():
     save_image(OUT / 'glass/normal.png', normal * .5 + .5, normal=True, linear=True)
     macro = np.dstack((broad, noise(29, size=n), streaks, noise(55, size=n)))
     save_image(OUT / 'moisture-macro.png', macro, linear=True)
+
+
+def puddle_field():
+    # This independent seed keeps every photographed/glass output byte-identical
+    # when the water-placement field changes. No glass runoff channel is reused.
+    n = 1024
+    water_rng = np.random.default_rng(SEED + 449)
+
+    def isotropic(cells):
+        source = water_rng.random((cells, cells), dtype=np.float32)
+        tiled = np.tile(source, (3, 3))
+        up = Image.fromarray(tiled, 'F').resize((n * 3, n * 3), Image.Resampling.BICUBIC)
+        return np.clip(np.asarray(up, np.float32)[n:n * 2, n:n * 2], 0, 1)
+
+    # One repeat spans 24 physical metres: R has broad 2--3.4m connected
+    # features, while G offers only gentle ~1m edge variation in the shader.
+    broad = isotropic(7) * .72 + isotropic(12) * .28
+    detail = isotropic(24)
+    height = isotropic(63) * .72 + isotropic(151) * .28
+    dx = (np.roll(height, -1, axis=1) - np.roll(height, 1, axis=1)) * .5
+    dy = (np.roll(height, -1, axis=0) - np.roll(height, 1, axis=0)) * .5
+    slope_rms = np.sqrt(np.mean(dx * dx + dy * dy))
+    slopes = np.dstack((-dx, dy)) / max(float(slope_rms) * 3, .00001)
+    # BA stores normalized tangent-water XY, not additional pool coverage.
+    # Shader scale .02 makes RMS slope .00165, preserving the reflected tube.
+    slopes = np.clip(slopes, -1, 1) * .35
+    data = np.dstack((broad, detail, slopes * .5 + .5))
+    save_image(OUT / 'puddle-field.png', data, linear=True)
 
 
 def folder_metadata():
@@ -217,22 +234,27 @@ def folder_metadata():
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    plaster('wall')
-    plaster('lower-wall', lower=True)
-    plaster('ceiling', ceiling=True)
+    plaster('wall', 'rough_plaster_broken')
+    plaster('wall-alternate', 'peeling_painted_wall', rotation=2)
+    plaster('lower-wall', 'peeling_painted_wall', lower=True)
+    plaster('ceiling', 'peeling_painted_wall', ceiling=True, rotation=1)
+    plaster('ceiling-alternate', 'rough_plaster_broken', ceiling=True, rotation=3)
     floor()
     glass_and_macro()
+    puddle_field()
     folder_metadata()
-    source_manifest = json.loads((PROJECT / 'ThirdParty/Graphics/polyhaven-pbr-manifest.json').read_text(encoding='utf-8-sig'))
-    credits = [record for record in source_manifest['maps'] if record['key'] in ('plaster-damp', 'ceramic-tile')]
-    manifest = {'finishRevision': 3, 'seed': SEED, 'generator': 'SourceArt/SchoolHorror/build_surfaces.py', 'generatorSha256': sha(Path(__file__)),
+    source_manifest = json.loads((ACQUIRED / 'acquisition-manifest.json').read_text(encoding='utf-8-sig'))
+    credits = source_manifest['assets']
+    manifest = {'finishRevision': 5, 'seed': SEED, 'generator': 'SourceArt/SchoolHorror/build_surfaces.py', 'generatorSha256': sha(Path(__file__)),
                 'python': '3.11', 'numpy': '1.26.4', 'pillow': '10.4.0', 'resolution': [SIZE, SIZE],
-                'normalConvention': 'Tangent +Y/OpenGL; Unity NormalMap importer. Rotated ceiling normals reoriented with scan.',
+                'normalConvention': 'Tangent +Y/OpenGL; Unity NormalMap importer. Image CCW90 rotates tangent XY to (-Y,X), matching the rotated photographed ceiling relief.',
                 'packedChannels': 'Metallic red (dielectric zero), smoothness alpha, G/B zero; AO separate linear grayscale.',
-                'physicalRepeatMetres': {'wall': 1.8, 'lower-wall': 1.8, 'ceiling': 2.4, 'floor': 1.28},
-                'waterPlacement': 'Continuous world-space runoff from the z10.8 roof leak is centred at school local (-.35,9.8), radii(1.2,3.7); second pool (.55,24.3), radii(1.3,2.4). A narrow irregular route film has roughly .50-.59 smoothness, pools reach .94, wall edges stay dry. Source tile texture is dry; world wetness controls darkening and roughness.',
+                'physicalRepeatMetres': {'wall': 1.5, 'wall-alternate': 1.8, 'lower-wall': 1.8, 'ceiling': 1.8, 'ceiling-alternate': 1.5, 'floor': 2.26, 'puddle-field': 24},
+                'puddleFieldChannels': 'Linear RGBA1024; R isotropic broad 2--3.4m water-placement field; G isotropic ~1m gentle breakup; BA normalized shallow water-normal XY encoded around 0.5 (decoded max +/-0.35, RMS0.0825 before shader scale0.02). Separate deterministic seed +449, seamless24m world repeat. No glass drip channels.',
+                'waterPlacement': 'Dry acquired quarry-tile map is unchanged. A separate isotropic puddle-field supplies broad water placement and shallow water normals; shader controls world-space coverage and the actual planar reflection comes from SchoolPlanarReflection. Neither lighting nor reflection is painted into albedo.',
                 'sourceScans': credits, 'inputs': inputs, 'outputs': outputs,
-                'limits': 'Photographed scan detail plus reproducible authored moisture/mold/crack finish. No captured target-school scan, displacement geometry, pre-baked GI or painted reflections.'}
+                'acquisitionManifestSha256': sha(ACQUIRED / 'acquisition-manifest.json'),
+                'limits': 'New photographed CC0 plaster/organic-stain/paint/quarry-tile originals are preserved. Ceiling finish adapts photographed peeling wall paint to authored damaged ceiling geometry; it is not a capture of the target school. No painted light/reflection in albedo.'}
     (HERE / 'surface-manifest.json').write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8', newline='\n')
     print(json.dumps({'status': 'SCHOOL_SURFACES_GENERATED', 'outputs': len(outputs), 'sourceInputs': len(inputs)}))
 

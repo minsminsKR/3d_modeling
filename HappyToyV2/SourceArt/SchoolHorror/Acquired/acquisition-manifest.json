@@ -1,0 +1,214 @@
+{
+  "acquiredUtc": "2026-10-21T14:58:59.536225+00:00",
+  "provider": "Poly Haven",
+  "api": "https://api.polyhaven.com",
+  "apiCredit": "Powered by Poly Haven",
+  "resolution": [
+    2048,
+    2048
+  ],
+  "generator": "SourceArt/SchoolHorror/acquire_photographed_sources.py",
+  "generatorSha256": "8deb2552024483d90035622f95d853753f9e7538f2e2a06b005bf43741ff0cea",
+  "licenseFile": "SourceArt/SchoolHorror/Acquired/CC0-1.0.txt",
+  "licenseSha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+  "licenseSource": "https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt",
+  "assets": [
+    {
+      "slug": "rough_plaster_broken",
+      "sourcePage": "https://polyhaven.com/a/rough_plaster_broken",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Rob Tuytel": "All"
+      },
+      "physicalMetres": [
+        1.5,
+        1.5
+      ],
+      "apiInfoSha256": "c23c7a7f3761931708b48d145526cde06a45d30aa0b54a8be41f83c710080cd4",
+      "apiFilesSha256": "469f46a9763278fb6d76b041fdd334f8e3f1b851c780693dc22c790e0b2a1857",
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rough_plaster_broken/rough_plaster_broken_diff_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/rough_plaster_broken/rough_plaster_broken_diff_2k.png",
+          "officialMd5": "e6d429ec7e002019eb256c071b7ba307",
+          "officialBytes": 8536666,
+          "bytes": 8536666,
+          "sha256": "41063e5c7f6dd1d71e5f82f61ed6af63e685c6a14e2accf413e724ee520b7a9f"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rough_plaster_broken/rough_plaster_broken_nor_gl_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/rough_plaster_broken/rough_plaster_broken_nor_gl_2k.png",
+          "officialMd5": "71de3ab9636bfd6963f56614b8f58104",
+          "officialBytes": 3889888,
+          "bytes": 3889888,
+          "sha256": "5b2e5e131230d416c8073cae9bc7888e3daa18225afaebdc4e6a962c24cfd2fd"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rough_plaster_broken/rough_plaster_broken_arm_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/rough_plaster_broken/rough_plaster_broken_arm_2k.png",
+          "officialMd5": "a3d7abeb7f4ad48385e77b7d6947dd76",
+          "officialBytes": 5596606,
+          "bytes": 5596606,
+          "sha256": "8050fa167ce78a4072c62091176e0d292600ac5ed7e1eddf39cc926bf26c9d18"
+        },
+        "Displacement": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/rough_plaster_broken/rough_plaster_broken_disp_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/rough_plaster_broken/rough_plaster_broken_disp_2k.png",
+          "officialMd5": "081f934c1befea257f5dd6c4e9c39059",
+          "officialBytes": 8023239,
+          "bytes": 8023239,
+          "sha256": "6e9e8be70bcea30cd3a0c8fe2a3f8f1ef295185f6b03b62ca32f0d4f7d9c53f4"
+        }
+      }
+    },
+    {
+      "slug": "worn_mossy_plasterwall",
+      "sourcePage": "https://polyhaven.com/a/worn_mossy_plasterwall",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Amal Kumar": "All"
+      },
+      "physicalMetres": [
+        1.8000000715255737,
+        1.8000000715255737
+      ],
+      "apiInfoSha256": "f14a2dd603b9e0bd396f5f9d5074789a121169ac524b365454c1cc929eaa2225",
+      "apiFilesSha256": "b327d3422bc686cf2222d3fe505311108d05294e03b17768092d9b5113a15de3",
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/worn_mossy_plasterwall/worn_mossy_plasterwall_diff_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/worn_mossy_plasterwall/worn_mossy_plasterwall_diff_2k.png",
+          "officialMd5": "84426bd6e9831b3e05f246eec5b66863",
+          "officialBytes": 23606167,
+          "bytes": 23606167,
+          "sha256": "2521af06bc2a4da797e8a4bfeb2682cbb46d21c9c36a89f448a5cca7cbc2ce0f"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/worn_mossy_plasterwall/worn_mossy_plasterwall_nor_gl_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/worn_mossy_plasterwall/worn_mossy_plasterwall_nor_gl_2k.png",
+          "officialMd5": "48389835e4ca7b224daa511c80ecec27",
+          "officialBytes": 22596346,
+          "bytes": 22596346,
+          "sha256": "09715473cc4fa6f59dbaf2596d277f297eb2038f73a7f7f547409064ad72d407"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/worn_mossy_plasterwall/worn_mossy_plasterwall_arm_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/worn_mossy_plasterwall/worn_mossy_plasterwall_arm_2k.png",
+          "officialMd5": "4107e82d4d9a6f3020a0cb620e817fe6",
+          "officialBytes": 15508519,
+          "bytes": 15508519,
+          "sha256": "2c361a9004116b666a525313787776b87e42860ada46165346ea1bb2c2e681a2"
+        },
+        "Displacement": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/worn_mossy_plasterwall/worn_mossy_plasterwall_disp_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/worn_mossy_plasterwall/worn_mossy_plasterwall_disp_2k.png",
+          "officialMd5": "a4abf12f36e4e1f6428eae89850d31ad",
+          "officialBytes": 6854899,
+          "bytes": 6854899,
+          "sha256": "1d891bf5a1aec4b0f67f16188918724231aada1763666186bde8512edf6385e7"
+        }
+      }
+    },
+    {
+      "slug": "peeling_painted_wall",
+      "sourcePage": "https://polyhaven.com/a/peeling_painted_wall",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Dimitrios Savva": "All"
+      },
+      "physicalMetres": [
+        1.8000000715255737,
+        1.8000000715255737
+      ],
+      "apiInfoSha256": "7a8ea9adb3eee359688619c3a2b56032ab19524a1ec762d00f1fa47eb0bbf0ea",
+      "apiFilesSha256": "09467952d6922685afae7f01cda4ddcc39ad216ba4ee06c75becdf977289d662",
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/peeling_painted_wall/peeling_painted_wall_diff_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/peeling_painted_wall/peeling_painted_wall_diff_2k.png",
+          "officialMd5": "ffb655635d4026959ffefb5b120f53e7",
+          "officialBytes": 20153247,
+          "bytes": 20153247,
+          "sha256": "0141fc203bedd570ca5d1cc162d22fab341e4f1b4639af6e74237ff7f0701bf4"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/peeling_painted_wall/peeling_painted_wall_nor_gl_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/peeling_painted_wall/peeling_painted_wall_nor_gl_2k.png",
+          "officialMd5": "4e48dbaa691cec7c3e2c5da11526237e",
+          "officialBytes": 22895707,
+          "bytes": 22895707,
+          "sha256": "ea7c70d43c8851ad74ed2c9a545be8dd6352c2951faf1c51b9834b0b641da553"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/peeling_painted_wall/peeling_painted_wall_arm_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/peeling_painted_wall/peeling_painted_wall_arm_2k.png",
+          "officialMd5": "5fe4e8229de9b60605757be5f4fcd4c2",
+          "officialBytes": 16134549,
+          "bytes": 16134549,
+          "sha256": "4a6ce8ce4027cdfd3205eaed793fb76194abc3d627f182f996fe006aeceb431b"
+        },
+        "Displacement": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/peeling_painted_wall/peeling_painted_wall_disp_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/peeling_painted_wall/peeling_painted_wall_disp_2k.png",
+          "officialMd5": "43fd82452efefbcc409c09e0540390a5",
+          "officialBytes": 6189561,
+          "bytes": 6189561,
+          "sha256": "0a2d0d707eaa6749bfc98c983bfb628e1ac55090a7a14c0389c66d2717e2bd28"
+        }
+      }
+    },
+    {
+      "slug": "dirty_tiles",
+      "sourcePage": "https://polyhaven.com/a/dirty_tiles",
+      "license": "CC0-1.0",
+      "licensePage": "https://polyhaven.com/license",
+      "authors": {
+        "Matterfield": "Photography",
+        "Jenelle van Heerden": "Processing"
+      },
+      "physicalMetres": [
+        2.259999990463257,
+        2.259999990463257
+      ],
+      "apiInfoSha256": "6e1061426701687c3502bc85070c24c62c51a16529fac281049c3780914cf714",
+      "apiFilesSha256": "4ada9ba69ae20cd6e33acd1cd1a81724376a3cfae492c5f68c2945b8b41879e6",
+      "sources": {
+        "Diffuse": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/dirty_tiles/dirty_tiles_diff_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/dirty_tiles/dirty_tiles_diff_2k.png",
+          "officialMd5": "98168d55837bb299c2e32de9b4b85944",
+          "officialBytes": 21274218,
+          "bytes": 21274218,
+          "sha256": "0040e602063d9f6c2794e74d7002807816606a50a4e34effb49cec4b68dede96"
+        },
+        "nor_gl": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/dirty_tiles/dirty_tiles_nor_gl_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/dirty_tiles/dirty_tiles_nor_gl_2k.png",
+          "officialMd5": "77eaeb91cb7e5555107913f9924f0539",
+          "officialBytes": 21281973,
+          "bytes": 21281973,
+          "sha256": "44ff3a5721fb6e3016f3409d0fd355c0f766b7eb6eb7dc4cfc56a2e6e99b7b0d"
+        },
+        "arm": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/dirty_tiles/dirty_tiles_arm_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/dirty_tiles/dirty_tiles_arm_2k.png",
+          "officialMd5": "03af409ffdc7c6bfcb1c3c804d3cd31e",
+          "officialBytes": 15408268,
+          "bytes": 15408268,
+          "sha256": "9e6914d5c4b7b06325837100f5fc0eb625dae78bab0d6bea8f1175526d4c5ba6"
+        },
+        "Displacement": {
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/png/2k/dirty_tiles/dirty_tiles_disp_2k.png",
+          "path": "SourceArt/SchoolHorror/Acquired/dirty_tiles/dirty_tiles_disp_2k.png",
+          "officialMd5": "6ac220146e677c62b84f5f160d5ce304",
+          "officialBytes": 5639813,
+          "bytes": 5639813,
+          "sha256": "844e50328f3a59561143152699cbca30526cd3ea0f6f06fbc442282f3bbada73"
+        }
+      }
+    }
+  ]
+}

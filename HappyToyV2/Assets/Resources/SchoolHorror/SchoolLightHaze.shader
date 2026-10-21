@@ -2,7 +2,7 @@ Shader "HappyToy/SchoolLightHaze"
 {
     Properties
     {
-        _Density("Moisture extinction per metre",Float)=0.008
+        _Density("Moisture extinction per metre",Float)=0.0025
         _SourcePower("Actual lamp scattering power",Float)=0.25
         _ScatterColor("Actual lamp color",Color)=(1,0.86,0.62,1)
     }
