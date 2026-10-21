@@ -20,12 +20,13 @@ PATH. Close Blender first, then run from the repository root with local paths:
 ```
 
 This creates an isolated, disposable environment in `Builds/LocalMcp/venv`,
-installs the locked dependencies, copies the bundled addon into Blender's user
+installs the locked public dependencies from PyPI (ignoring unrelated machine indexes only during this process and restoring the environment), copies the bundled addon into Blender's user
 addons directory, enables it, and saves addon preferences. A replaced addon is
 backed up under `Builds/LocalMcp/backups`. Existing models and startup scenes are
 not saved. It adds the named `unity` and `blender` servers to the user's Codex
 configuration, retaining other server entries. Existing entries with those two
-names are updated. Local paths and personal configuration are not source files.
+names are updated. Their startup/tool timeouts are bounded at 30/180 seconds
+for geometry/import work, with all unrelated configuration retained. Local paths and personal configuration are not source files.
 
 Open the project in Unity and launch Blender normally (GUI mode). The Blender
 addon starts its localhost bridge on port 9876 automatically. A `.blend` file
@@ -91,3 +92,37 @@ hidden window, Idle process priority and one logical CPU for both. Close only
 those inspection processes when finished. These controls reduce contention;
 they do not certify that another game's performance is unaffected. Defer GPU
 renders, native gameplay tests and visual material judgments until requested.
+
+## Static prop finishing and review
+
+Use the designated webapp for original generation, then finish a copy through
+Blender MCP `execute_blender_code`. Keep each recipe as a standalone script and
+embed it in the packed authoring `.blend`. For the Buddhist lantern the recipe is
+`SourceArt/CorridorEntrance/finish_entrance_assets.py` plus
+`rebake_lantern_atlas.py`. The optional `keep_editor_session=True` argument clears
+the **disposable** editor's scene/orphans while retaining its MCP bridge; never
+use it in a session holding the user's unsaved work. Normal background exports
+keep the existing factory-reset workflow.
+
+Inspect each LOD's silhouette and UV-painted details with `look` (angles and
+material shading), not triangle counts alone. The lantern's first aggressive
+reduction damaged the ring/roof and fragmented painted ink; its final 20k/12k
+budgets retain the silhouette and a selected-to-active original colour/ORM
+rebake restores coherent UVs. The original 8K PBR and 948,015 triangles remain
+unchanged; game maps are 2K. This is asset cost reduction, not an FPS claim.
+
+`review_static_blender.py` reads live LOD topology, UV finiteness/range, bounds
+and packed images. Run via `execute_blender_code` with `__file__` pointing to
+the script, and optionally `MODEL_QUERY` / `MODEL_REPORT`. It never saves art.
+`review_static_unity.csx` is an `eval` method body; set its Resources key to read
+the actual imported meshes, UVs, PBR maps and LOD transitions without modifying
+the prefab or scene. Follow this with the affected feature's actual camera checks.
+
+The inspector accepts `--arguments-file <UTF-8 JSON>` and `--timeout <seconds>`
+for code tools, avoiding shell quoting and permitting longer bounded geometry
+work. It fails on reported execution errors as well as protocol errors. Image
+responses stay in the local JSON report with a compact stdout summary. Copy
+recipes and model results into SourceArt; leave diagnostic reports under Builds.
+Both registered servers require their editors to be running. Existing Codex
+chats may need MCP restart/reopening before new native tool names appear; the
+stdio inspector can exercise the same registered connections immediately.

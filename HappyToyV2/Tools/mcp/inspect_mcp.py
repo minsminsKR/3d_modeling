@@ -13,10 +13,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--server", choices=("unity", "blender"), required=True)
     parser.add_argument("--tool")
-    parser.add_argument("--arguments", type=json.loads, default={})
+    inputs = parser.add_mutually_exclusive_group()
+    inputs.add_argument("--arguments", type=json.loads, default={})
+    inputs.add_argument("--arguments-file", type=Path)
+    parser.add_argument("--timeout", type=float, default=60)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--config", type=Path, default=Path.home() / ".codex" / "config.toml")
     args = parser.parse_args()
+    if args.arguments_file:
+        args.arguments = json.loads(args.arguments_file.read_text(encoding="utf-8-sig"))
     config = tomllib.loads(args.config.read_text(encoding="utf-8-sig"))["mcp_servers"][args.server]
     environment = dict(os.environ, **config.get("env", {}))
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -49,7 +54,7 @@ def main():
             if number is None:
                 return None
             while True:
-                message = incoming.get(timeout=60)
+                message = incoming.get(timeout=args.timeout)
                 if message is None:
                     raise RuntimeError(f"MCP exited; inspect {stderr.name}")
                 if message.get("id") == number:
@@ -71,12 +76,18 @@ def main():
             args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
             print(json.dumps(dict(server=initialized["serverInfo"],
                                   tool_count=len(report["tools"]),
-                                  result=report.get("result")), ensure_ascii=True, indent=2))
+                                  result=(dict(isError=report["result"].get("isError", False),
+                                               imageCount=sum(x.get("type")=="image" for x in report["result"].get("content", [])),
+                                               savedTo=str(args.output))
+                                          if any(x.get("type")=="image" for x in report.get("result", {}).get("content", []))
+                                          else report.get("result"))), ensure_ascii=True, indent=2))
             result = report.get("result", {})
             if result.get("isError"):
                 raise RuntimeError("MCP tool reported an error")
             for item in result.get("content", []):
                 if item.get("type") == "text":
+                    if item.get("text","").startswith(("Error executing code:","Error:")):
+                        raise RuntimeError("Editor execution failed; inspect the saved response")
                     try:
                         payload = json.loads(item["text"])
                     except (ValueError, KeyError):
