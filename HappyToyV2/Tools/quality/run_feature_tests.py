@@ -20,7 +20,7 @@ import xml.etree.ElementTree as ET
 PROJECT = Path(__file__).resolve().parents[2]
 VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
-    "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests",
+    "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests", "LoadingProgressTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
     "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests", "LadySnapperFlinchTests", "PatrolProgressClockTests"))
 CLOUD = "HappyToy.V2.CloudTests."
@@ -61,7 +61,7 @@ PROFILES = {
         ("PlayMode", play_tests("CloudCheatTests.cs") + (
             PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
     "wraith-footsteps": ("Shared title/game Baeksugwi recording bank, actual start transition, quiet mixer/master mute and running/pause", [
-        ("PlayMode", (
+        ("PlayMode", play_tests("CloudLoadingIndicatorTests.cs") + (
             PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",
             PLAY + "TitleRecordedPerformanceKeepsEveryContactWithoutFurtherMainThreadTicks",
@@ -243,6 +243,11 @@ PROFILES = {
             PLAY + "ActualCorridorMonstersOpenClosedDoorsFromDiagonalPatrolApproaches",
             PLAY + "CandleProximityFlickersAndTemporarilyBlackoutsOnlyPreviouslyLitMarkers",
             PLAY + "CreatureStudioPursuitHasOffBeatHeadMotionAndRestoresCalmMotionAfterPause"))]),
+    "loading": ("Loading work progress, lotus renders, real title start and corridor-to-school/retry", [
+        ("PlayMode", play_tests("CloudLoadingIndicatorTests.cs") + (
+            PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
+            PLAY + "MainCorridorAndSchoolRealEntriesKeepBothSuspendSlotsAndRecordsSeparate",
+            PLAY + "ActualDeathRetryAndRepeatedUiNavigationKeepOwnedResourcesBounded"))]),
     "ui": ("Title/loading, menu controls, results/history, retry/settings", [
         ("PlayMode", (
             PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",

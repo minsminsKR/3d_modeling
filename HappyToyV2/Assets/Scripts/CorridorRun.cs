@@ -38,8 +38,8 @@ namespace HappyToy.V2
             var build=BuildRoutine(seed,layoutVersion,false);
             while(build.MoveNext()) { }
         }
-        public IEnumerator BuildIncremental(int seed,int layoutVersion=CorridorLayout.CurrentVersion) => BuildRoutine(seed,layoutVersion,true);
-        IEnumerator BuildRoutine(int seed,int layoutVersion,bool incremental)
+        public IEnumerator BuildIncremental(int seed,int layoutVersion=CorridorLayout.CurrentVersion,Action<float> progress=null) => BuildRoutine(seed,layoutVersion,true,progress);
+        IEnumerator BuildRoutine(int seed,int layoutVersion,bool incremental,Action<float> progress=null)
         {
             if (Ready || Layout!=null) throw new InvalidOperationException("Run already built");
             session = GetComponent<GameSession>(); Layout = new CorridorLayout(seed, layoutVersion);
@@ -64,6 +64,7 @@ namespace HappyToy.V2
             var brass = MakeMaterial("Memory brass", new Color(.64f, .41f, .13f), 53);
             var paperLamp = MakeMaterial("Warm paper lantern", new Color(.7f, .45f, .2f), 13);
             paperLamp.SetColor("_EmissionColor", new Color(1f, .45f, .12f) * 1.4f); paperLamp.EnableKeyword("_EMISSION");
+            progress?.Invoke(.04f);
             if(incremental)yield return null;
             for (int cell = 0; cell < CorridorLayout.Count; cell++)
             {
@@ -117,6 +118,7 @@ namespace HappyToy.V2
                     light.color = new Color(.95f, .68f, .36f); light.shadows = LightShadows.None;
                     Box("Lamp housing", lamp.transform.position, new Vector3(.35f, .20f, .35f), paperLamp);
                 }
+                progress?.Invoke(.04f + .28f * (cell+1) / CorridorLayout.Count);
                 if(incremental && cell%2==1)yield return null;
             }
             // Only generated geometry contributes to this NavMesh; the old school remains separate.
@@ -196,8 +198,10 @@ namespace HappyToy.V2
                 exitInteraction.inspectionText="문은 굳게 닫혀있다";
             }
             if (Layout.Version >= 3) BuildAltarRoom();
+            progress?.Invoke(.43f);
             if(incremental)yield return null;
             var furniture=BuildFurnishingsRoutine(incremental);while(furniture.MoveNext())yield return furniture.Current;
+            progress?.Invoke(.57f);
             Lighting = gameObject.AddComponent<LightExplorationRun>(); Lighting.PrepareCorridor(this, world);
             if(Layout.Version>=4)
             {
@@ -207,6 +211,7 @@ namespace HappyToy.V2
                 dressingRoot.AddComponent<KoreanCorridorDressing>().Prepare(zones,Seed);
             }
             if(incremental)yield return null;
+            progress?.Invoke(.65f);
             // Rebuild after all physical furniture is present. Walkable routes include actual obstacles.
             Physics.SyncTransforms();
             if(incremental)
@@ -217,6 +222,7 @@ namespace HappyToy.V2
                 surface.AddData();yield return null;
             }
             else surface.BuildNavMesh();
+            progress?.Invoke(.76f);
             for (int i = 0; i < 4; i++)
             {
                 // Slot two belongs to the actual lantern/mask encounter. Hwacat's
@@ -274,9 +280,11 @@ namespace HappyToy.V2
             var ambience = session.GetComponent<RoomAmbience>();
             if (ambience) ambience.ConfigureRunPositions(new[] { CellPosition(Layout.Supplies[0]) + Vector3.up,
                 CellPosition(Layout.Supplies[3]) + Vector3.up * 2.5f, CellPosition(Layout.Supplies[6]) + Vector3.up * 1.5f });
+            progress?.Invoke(.84f);
             Presentation=world.gameObject.AddComponent<HauntedCorridorPresentation>();
             var dressing=Presentation.PrepareRoutine(this,incremental);while(dressing.MoveNext())yield return dressing.Current;
             Lighting.DimCorridor(this,world);
+            progress?.Invoke(.92f);
             var batches=CombineArchitectureRoutine(incremental);while(batches.MoveNext())yield return batches.Current;
             TrapWorld.Populate(world,session.player,CheckpointItems(Interactable.Kind.FirecrackerSupply));
             if(Layout.Version>=5)
@@ -284,7 +292,7 @@ namespace HappyToy.V2
                 Lady=world.gameObject.AddComponent<LadyEncounter>();
                 Lady.Prepare(this,world,threats.Cast<Behaviour>().Concat(new Behaviour[]{Mask}));
             }
-            Physics.SyncTransforms(); Ready = true;
+            Physics.SyncTransforms(); Ready = true; progress?.Invoke(1);
             session.Notify(Layout.Version >= 3 ?
                 "다섯 기억을 회수하고 붉은 교실의 제단에 돌려놓으세요. 콩알탄은 회랑에서 보충할 수 있습니다." :
                 "다섯 기억을 회수하고 입구로 돌아오세요. 콩알탄은 회랑에서 보충할 수 있습니다.");

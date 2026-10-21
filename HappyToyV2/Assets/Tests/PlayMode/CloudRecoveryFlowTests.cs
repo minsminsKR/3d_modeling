@@ -56,7 +56,7 @@ namespace HappyToy.V2.CloudTests
                 target.SendEvent(up);
             yield return Delay(.15f);
             if(id=="begin")yield return Wait(()=>!Get<bool>(shell,"CinematicLoading"),45,"Cinematic title entry did not finish preparing/fading into the corridor");
-            if (id == "continue-chapter")
+            if (id == "continue-chapter" || id == "continue-run" || id == "begin-school")
                 yield return Wait(() => !Get<bool>(shell, "IsReloading"), 30,
                     "School checkpoint restore did not finish its navigation preparation");
         }
@@ -65,6 +65,7 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(() => Components("GameSession").Length == 1 && One("GameSession") != previous, 20, "UI action did not load a fresh game scene");
             yield return null; yield return null;
             session = One("GameSession"); player = Get<Component>(session, "player"); shell = Get<Component>(session, "Shell");
+            yield return Wait(() => !Get<bool>(shell,"IsReloading"), 30, "Destination did not finish its loading curtain");
             Assert.That(Get<bool>(shell, "IsReloading"), Is.False); Assert.That(Get<string>(shell, "ReloadError"), Is.Empty);
         }
         void RecoveryUiOwnership()

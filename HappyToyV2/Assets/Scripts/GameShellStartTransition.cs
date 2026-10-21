@@ -33,7 +33,9 @@ namespace HappyToy.V2
             TransitionBlack=1;
             yield return null; // Present a fully black frame before preparation.
             CorridorPreparing=true;
-            var preparation=session.CreateCorridorIncremental(unchecked(Environment.TickCount^Guid.NewGuid().GetHashCode()));
+            var loading=SceneLoadingOverlay.Show(HighContrast,LargeText);
+            yield return null; yield return null;
+            var preparation=session.CreateCorridorIncremental(unchecked(Environment.TickCount^Guid.NewGuid().GetHashCode()), value => loading.Report(value*.96f));
             while(true)
             {
                 bool more=false;object next=null;Exception failure=null;
@@ -47,14 +49,45 @@ namespace HappyToy.V2
             if(session.Suspension.HasRun && session.Suspension.Writable && !session.Suspension.Consume(session.Suspension.Snapshot.token))
             {FailCorridorTransition(session.Suspension.Status);yield break;}
             Screen=Page.Playing;ApplyScreenState();
+            yield return loading.Finish();
             yield return null;yield return null;
             for(float elapsed=0;elapsed<1.1f;elapsed+=Time.unscaledDeltaTime)
             {TransitionBlack=1-Mathf.SmoothStep(0,1,elapsed/1.1f);yield return null;}
             TransitionBlack=0;CinematicLoading=false;IsReloading=false;
             GameplayEntryFrame=Time.frameCount;ApplyScreenState();
         }
+        public void BeginChapterCinematic()
+        {
+            if(Screen!=Page.Title || IsReloading)return;
+            StartCoroutine(PrepareTitleOperation(BeginChapter));
+        }
+        public void ContinueChapterWithLoading()
+        { if(Screen==Page.Title && !IsReloading)StartCoroutine(PrepareTitleOperation(ContinueChapter)); }
+        public void ContinueCorridorWithLoading()
+        { if(Screen==Page.Title && !IsReloading)StartCoroutine(PrepareTitleOperation(ContinueCorridor)); }
+        IEnumerator PrepareTitleOperation(Action operation)
+        {
+            var loading=SceneLoadingOverlay.Show(HighContrast,LargeText);
+            IsReloading=true;ApplyScreenState();
+            yield return null;yield return null;
+            loading.Report(.15f);
+            IsReloading=false;operation();
+            while(IsReloading)
+            { if(loading.LoadingScene)yield break; yield return null; }
+            if(!string.IsNullOrEmpty(ReloadError)){loading.Hide();ApplyScreenState();yield break;}
+            IsReloading=true;ApplyScreenState();
+            yield return loading.Finish();
+            IsReloading=false;GameplayEntryFrame=Time.frameCount;ApplyScreenState();
+        }
+        IEnumerator FinishSceneLoading(SceneLoadingOverlay loading)
+        {
+            IsReloading=true;ApplyScreenState();
+            yield return loading.Finish();
+            IsReloading=false;GameplayEntryFrame=Time.frameCount;ApplyScreenState();
+        }
         void FailCorridorTransition(string detail)
         {
+            if(SceneLoadingOverlay.Current)SceneLoadingOverlay.Current.Hide();
             CorridorPreparing=false;TransitionBlack=0;CinematicLoading=false;IsReloading=false;
             string message="회랑을 준비하지 못했습니다. 다시 시작해 주세요. "+detail;
             Set(Page.Title);ReloadError=message;

@@ -78,6 +78,7 @@ namespace HappyToy.V2
             // Existing standalone audits enter through Begin; the flow audit retains the title.
             bool autoStartAudit = auditMode && !args.Contains("-v2-flow-output") && !args.Contains("-v2-chapter-output") &&
                 !args.Contains("-v2-school-play-output") && !args.Contains("-v2-corridor-play-output") && !args.Contains("-v2-cabinet-peek-output") && !args.Contains("-v2-altar-output") && !args.Contains("-v2-school-reveal-output") && !args.Contains("-v2-school-stair-output") && !args.Contains("-v2-school-campus-output") && !args.Contains("-v2-threat-visual-output") && !args.Contains("-v2-menu-face-output") && !args.Contains("-v2-baeksugwi-head-output") && !args.Contains("-v2-start-loading-output") && !args.Contains("-v3-graphics-output");
+            if(SceneLoadingOverlay.Current && SceneLoadingOverlay.Current.LoadingScene) SceneLoadingOverlay.Current.Report(.88f);
             // A requested return to Title takes precedence over audit auto-start.
             if (restartGate.TryConsume(gameObject.scene.path, out bool playAfterLoad))
             { if (playAfterLoad) { if (chapterRestart) BeginChapter(); else if (corridorRestart) BeginCorridor(); else Begin(); } else Set(Page.Title); }
@@ -85,6 +86,8 @@ namespace HappyToy.V2
             else Set(Page.Title);
             if (!GetComponent<GameShellView>()) gameObject.AddComponent<GameShellView>();
             if(!string.IsNullOrEmpty(checkpointReloadError)) { ReloadError=checkpointReloadError; checkpointReloadError=null; }
+            if(SceneLoadingOverlay.Current && SceneLoadingOverlay.Current.LoadingScene)
+                StartCoroutine(FinishSceneLoading(SceneLoadingOverlay.Current));
         }
 
         void Set(Page page)
@@ -318,16 +321,21 @@ namespace HappyToy.V2
                 corridorRestart = requestCorridorOnReload || !chapterRestart && session && session.CorridorMode;
                 if (!restartGate.TryRequest(scene.path, play)) return;
                 IsReloading = true; ReloadError = string.Empty; ApplyScreenState();
-                if (scene.buildIndex >= 0) SceneManager.LoadScene(scene.buildIndex);
-                else SceneManager.LoadScene(scene.path);
+                SceneLoadingOverlay.Show(HighContrast,LargeText).LoadScene(scene.path, FailSceneReload);
             }
             catch (Exception error)
             {
-                restartGate.Cancel(); IsReloading = false;
-                ReloadError = "다시 시작하지 못했습니다. 탐색 기록은 유지됩니다. 잠시 후 다시 시도하세요.";
-                ApplyScreenState();
-                Debug.LogWarning("HappyToy restart failed: " + error.Message, this);
+                FailSceneReload(error.Message);
             }
+        }
+
+        void FailSceneReload(string detail)
+        {
+            if(SceneLoadingOverlay.Current)SceneLoadingOverlay.Current.Hide();
+            restartGate.Cancel(); IsReloading=false;
+            chapterFromOffering=false;requestChapterOnReload=false;requestCorridorOnReload=false;
+            ReloadError="다시 시작하지 못했습니다. 탐색 기록은 유지됩니다. 잠시 후 다시 시도하세요.";
+            ApplyScreenState();Debug.LogWarning("HappyToy restart failed: "+detail,this);
         }
 
         public void AdjustSettings(float sound, float mouse)

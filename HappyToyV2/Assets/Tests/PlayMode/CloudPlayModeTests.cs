@@ -104,6 +104,8 @@ namespace HappyToy.V2.CloudTests
                 keyboard = null;
                 if (!desktopInputSnapshotTaken && previousKeyboard != null && previousKeyboard.added) previousKeyboard.MakeCurrent();
                 previousKeyboard = null;
+                var curtain=RequireType("SceneLoadingOverlay").GetProperty("Current").GetValue(null) as Component;
+                if(curtain)Call(curtain,"Hide");
                 // Only unload our actual game scene. A failed setup must not destroy
                 // the UTF runner's own scene before it can report that failure.
                 var game = SceneManager.GetSceneByPath(ScenePath);
