@@ -187,7 +187,8 @@ namespace HappyToy.V2
         }
         void BuddhistLanternInk(Transform holder,Bounds bounds)
         {
-            var outward=transform.TransformDirection(new Vector3(-1,0,1).normalized);
+            var viewer=transform.TransformPoint(new Vector3(0,1.6f,-9.2f));
+            var outward=Vector3.ProjectOnPlane(viewer-holder.position,Vector3.up).normalized;
             float radius=Mathf.Min(bounds.extents.x,bounds.extents.z)*holder.localScale.x;
             var glyph=Group("Weathered Buddhist lantern ink",Vector3.zero);
             glyph.SetParent(holder,false);
