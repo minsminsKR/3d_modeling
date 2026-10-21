@@ -112,6 +112,9 @@ def capture(key):
     if key=='buddhist-lantern':
         value['finishing']['supportingRecipes']=[record(SOURCE/'rebake_lantern_atlas.py')]
         value['finishing']['embeddedSupportingSourceText']='SOURCE - rebake_lantern_atlas.py'
+        value['unityImport']['sharedVisualLoader']=[record(PROJECT/'Assets/Scripts'/name) for name in (
+            'BuddhistLanternVisual.cs','BuddhistLanternVisual.cs.meta')]
+        value['unityImport']['corridorPresentation']=record(PROJECT/'Assets/Scripts/HauntedCorridorPresentation.cs')
     provenance.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n', encoding='utf-8', newline='\n')
     print('RITUAL_ENTRANCE_HANDOFF ' + key + ' ' + str(len(resources)) + ' resource files')
 

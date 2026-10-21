@@ -52,7 +52,7 @@ namespace HappyToy.V2
         readonly List<Light> eligibleLanterns = new List<Light>();
         readonly List<Transform> externalVisualRoots = new List<Transform>();
         CorridorRun run;
-        Material timber, paper, ink, cloth, warmShade, redShade;
+        Material timber, paper, ink, cloth;
         Transform additions;
         bool originalFog, ownsFog;
         FogMode originalFogMode;
@@ -104,8 +104,6 @@ namespace HappyToy.V2
             paper=Surface("Smoke-stained handmade paper",new Color(.77f,.71f,.56f),fibers);
             cloth=Surface("Oxide-red seal cloth",new Color(.38f,.12f,.075f),fibers);
             ink=Surface("Faded seal ink",new Color(.12f,.075f,.035f),fibers);
-            warmShade=Surface("Translucent amber paper lantern",new Color(.79f,.54f,.26f),fibers,new Color(.70f,.31f,.085f)*.75f);
-            redShade=Surface("Translucent vermilion paper lantern",new Color(.69f,.20f,.09f),fibers,new Color(.52f,.085f,.025f)*.72f);
             PrepareSectors();
             float yieldAt=Time.realtimeSinceStartup+.004f;
             for (int cell=0;cell<CorridorLayout.Count;cell++)
@@ -221,8 +219,10 @@ namespace HappyToy.V2
                 Vector3 center=light.transform.position;
                 var lanternRoot=new GameObject("Graphics paper lantern composition").transform;
                 lanternRoot.SetParent(additions,false);lanternRoot.position=center;
-                var lantern=GraphicsPropLibrary.Attach("paper-lantern",lanternRoot,
-                    slot=>slot=="GU_washi"?(red?redShade:warmShade):graphicsSurfaces.Resolve(slot),owned);
+                // Uniform fit keeps the cap below the original ceiling/joists.
+                // Shared imported PBR/LODs survive teardown and the danger owner
+                // continues to dim both visible LOD shades through property blocks.
+                var lantern=BuddhistLanternVisual.Attach(lanternRoot,.58f,Quaternion.Euler(0,(cell%4)*90,0));
                 foreach(var renderer in lantern.GetComponentsInChildren<MeshRenderer>())
                 {renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=true;}
                 var threatFlicker=light.gameObject.AddComponent<ThreatFixtureFlicker>();

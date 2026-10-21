@@ -25,7 +25,7 @@ namespace HappyToy.V2.CloudTests
             var entrance=Get<Component>(Get<Component>(session,"Corridor"),"Entrance");
             var art=entrance.GetComponent(RequireType("CorridorEntrancePresentation"));
             var lights=Get<IReadOnlyList<Light>>(art,"Lanterns");
-            Assert.That(lights.Count,Is.EqualTo(9));
+            Assert.That(lights.Count,Is.EqualTo(11));
             Assert.That(Get<float>(Get<Component>(art,"Dressing"),"LightMultiplier"),Is.EqualTo(.45f));
             foreach(var source in lights)
             {
@@ -36,7 +36,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(source.type,Is.EqualTo(LightType.Point));Assert.That(source.range,Is.LessThanOrEqualTo(7));
                 Assert.That(entrance.transform.InverseTransformPoint(source.transform.position).y,Is.LessThan(3.5f),"A high vault fill returned");
                 Assert.That(source.color.r,Is.GreaterThan(source.color.g));Assert.That(source.color.g,Is.GreaterThan(source.color.b));
-                Assert.That(Get<float>(fire,"BaselineIntensity"),Is.LessThan(fixture.name=="Sealed gate offering lantern"?6:4));
+                Assert.That(Get<float>(fire,"BaselineIntensity"),Is.LessThan(fixture.name=="Guardian offering candles"?15:fixture.name=="Sealed gate offering lantern"?6:4));
             }
             Assert.That(lights.Count(x=>x.shadows!=LightShadows.None),Is.LessThanOrEqualTo(2));
             var camera=Get<Camera>(player,"eyes");((Behaviour)player).enabled=false;Get<Light>(player,"flashlight").enabled=false;
@@ -84,7 +84,7 @@ namespace HappyToy.V2.CloudTests
             yield return PrepareEntranceCavern();
             var entrance=Get<Component>(Get<Component>(session,"Corridor"),"Entrance");
             var fires=entrance.GetComponentsInChildren(RequireType("EntranceFirelight"),true).Cast<Component>().ToArray();
-            Assert.That(fires.Length,Is.EqualTo(9));yield return Delay(.25f);
+            Assert.That(fires.Length,Is.EqualTo(11));yield return Delay(.25f);
             Assert.That(fires.All(x=>Get<float>(x,"SimulationTime")>.1f),Is.True);
             Call(shell,"Pause");var times=fires.Select(x=>Get<float>(x,"SimulationTime")).ToArray();
             var intensities=fires.Select(x=>Get<Light>(x,"Source").intensity).ToArray();yield return Delay(.2f);

@@ -149,9 +149,18 @@ in `Tools/mcp/README.md`.
 The five models retain shared imported PBR and independent LODGroups. Other
 small fixed details combine by material/shadow state in spatial zones. These
 are visual-only: original floor support, colliders, NavMesh and E targets stay
-with the chamber. Nine actual warm local firelights (range at most 7m), two
+with the chamber. Eleven actual warm local firelights (five lanterns, four
+route candle pools and two guardian candle pools; range at most 7m), two
 shadow candidates and the .45 light gain remain. The two gate offerings stand
 at ±3.8m and illuminate the real closed leaves; the high vault has no fill.
+Two visible eleven-candle offerings at local `(±9.8, 0, -8.35)` illuminate the
+3.5m stone guardians from below with 5.8m light ranges and no additional shadows.
+`BuddhistLanternVisual` also instantiates the same shared prefab in ordinary maze
+ceiling fixtures at .58m high, centred on the existing light. It preserves the
+actual mounting, light, two LODs, imported maps and threat flicker.
+The `temple-lanterns` profile captures both guardian faces with their candles
+on/off, the wide gate and the actual maze start/memory-room ceiling fixtures.
+It also checks headroom, shared-resource lifetime and existing danger flicker.
 The actual start is chamber-local `(0, .03, -9.2)`, facing yaw 0 toward the
 onward passage. Each lantern faces this view; the actual start, near prop and
 gate views are included in `entrance-lighting`. Other retained Korean props

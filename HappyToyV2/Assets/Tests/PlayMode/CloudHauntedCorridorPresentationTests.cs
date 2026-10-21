@@ -320,7 +320,10 @@ namespace HappyToy.V2.CloudTests
             var importedProps=new[]{"seal-altar","paper-lantern","cabinet-timber","door-hardware"}
                 .Select(key=>Resources.Load<GameObject>("GraphicsUpgrade/Props/"+key)).ToArray();
             Assert.That(importedProps.All(asset=>asset),Is.True);
-            var importedMeshes=importedProps.SelectMany(asset=>asset.GetComponentsInChildren<MeshFilter>(true)).Select(filter=>filter.sharedMesh).Distinct().ToArray();
+            var buddhistLantern=Resources.Load<GameObject>("CorridorEntrance/buddhist-lantern-visual");
+            Assert.That(buddhistLantern,Is.Not.Null);
+            var lanternMaterials=buddhistLantern.GetComponentsInChildren<MeshRenderer>(true).SelectMany(renderer=>renderer.sharedMaterials).Distinct().ToArray();
+            var importedMeshes=importedProps.Append(buddhistLantern).SelectMany(asset=>asset.GetComponentsInChildren<MeshFilter>(true)).Select(filter=>filter.sharedMesh).Distinct().ToArray();
             var texture=Resources.Load<Texture2D>("GraphicsPbr/wood-aged/albedo");var font=Resources.Load<Font>("Fonts/Korean");
             Assert.That(materials.Any(material=>material.HasProperty("_BaseMap") && material.GetTexture("_BaseMap")==texture),Is.True);
             var lanterns=((IEnumerable<Light>)Get<object>(art,"Lanterns")).ToArray();
@@ -331,8 +334,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(cabinetVisuals.All(child=>child==null),Is.True,"Cabinet child skin leaked outside dressing root");
             Assert.That(meshes.Where(mesh=>!importedMeshes.Contains(mesh)).All(mesh=>mesh==null),Is.True,"Owned room batch mesh leaked");
             Assert.That(importedMeshes.All(mesh=>mesh!=null),Is.True,"Art cleanup destroyed shared imported altar meshes");
-            Assert.That(materials.Where(material=>material && material.name!="World sign font").Any(),Is.False,"Owned art material leaked");
+            Assert.That(materials.Where(material=>material && material.name!="World sign font" && !lanternMaterials.Contains(material)).Any(),Is.False,"Owned art material leaked");
             Assert.That(texture && font,Is.True,"Removing corridor art destroyed an imported shared asset");
+            Assert.That(lanternMaterials.All(material=>material&&material.GetTexture("_BaseMap")&&material.GetTexture("_EmissionMap")),Is.True,"Corridor teardown destroyed shared lantern PBR");
             Assert.That(memoryRenderers.All(renderer=>renderer.enabled),Is.True,"Removing art did not restore original memory renderers");
             Assert.That(altarRenderers.All(renderer=>renderer.enabled),Is.True,"Removing art did not restore original altar renderers");
             foreach(var pair in cabinetMeshes)Assert.That(pair.Key.sharedMesh,Is.SameAs(pair.Value),"Timber skin changed original cabinet mesh identity");

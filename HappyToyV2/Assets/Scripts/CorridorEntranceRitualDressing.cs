@@ -40,7 +40,7 @@ namespace HappyToy.V2
             sealInk=new Material(surfaces.Get("cloth-charred",new Color(.045f,.027f,.017f))) {name="Owned curved talisman ink"};
             seal=new Material(surfaces.Get("paper-aged",new Color(.78f,.65f,.43f))) {name="Owned aged talisman paper"};
             owned.Add(seal);owned.Add(sealInk);
-            Ropes();Guardians();OnwardPassage();Candles();LanternsAndLight();Incense();GroundMarks();WetAccents();BatchStaticDetails();
+            Ropes();Guardians();GuardianOfferings();OnwardPassage();Candles();LanternsAndLight();Incense();GroundMarks();WetAccents();BatchStaticDetails();
         }
         void OnwardPassage()
         {
@@ -92,6 +92,13 @@ namespace HappyToy.V2
                 GuardianCount++;
             }
         }
+        void GuardianOfferings()
+        {
+            // Visible low votive flames reveal the carved faces from below.
+            // They do not reach the vault or consume another shadow candidate.
+            foreach(int side in new[]{-1,1})
+                CandleCluster(new Vector3(side*9.8f,0,-8.35f),11,true,"Guardian offering candles",32,5.8f);
+        }
         void Candles()
         {
             // Four pools mark the sides of the route, never its walking centre.
@@ -102,9 +109,9 @@ namespace HappyToy.V2
             CandleCluster(new Vector3(-10,0,-10.5f),6);CandleCluster(new Vector3(10,0,-10.5f),6);
             CandleCluster(new Vector3(-10,0,-3),4);CandleCluster(new Vector3(10,0,3),4);
         }
-        void CandleCluster(Vector3 centre,int count,bool illuminate=false)
+        void CandleCluster(Vector3 centre,int count,bool illuminate=false,string fixtureName=null,float intensity=6.8f,float range=4.7f)
         {
-            var cluster=Group("Offerings of gathered beeswax candles",centre);
+            var cluster=Group(fixtureName??"Offerings of gathered beeswax candles",centre);
             for(int i=0;i<count;i++)
             {
                 float angle=i*2.399963f,spread=.14f+Mathf.Sqrt(i)*.17f,height=.12f+(i%4)*.065f;
@@ -116,7 +123,7 @@ namespace HappyToy.V2
                 GraphicsPropLibrary.Fit(flame,new Bounds(new Vector3(0,height+.043f,0),new Vector3(.032f,.105f,.032f)));
                 toBatch.Add(holder);CandleCount++;
             }
-            if(illuminate)Lamp("Candle gathering firelight",centre+Vector3.up*.29f,new Color(1,.43f,.13f),6.8f,4.7f,false,cluster);
+            if(illuminate)Lamp("Candle gathering firelight",centre+Vector3.up*.29f,new Color(1,.43f,.13f),intensity,range,false,cluster);
         }
         void Ropes()
         {
@@ -173,7 +180,7 @@ namespace HappyToy.V2
             var holder=Group(fixtureName??"Old inked temple paper lantern",at);holder.localScale=Vector3.one*scale;
             // Real webapp-generated geometry and UV-painted ink; keep shared
             // PBR/LODs intact instead of combining them into generic props.
-            var lantern=CorridorEntranceModels.Attach("buddhist-lantern",holder,"Generated hexagonal Buddhist lantern",Vector3.zero);
+            var lantern=BuddhistLanternVisual.Attach(holder,1);
             var viewer=transform.TransformPoint(new Vector3(0,1.6f,-9.2f));
             holder.rotation=Quaternion.LookRotation(Vector3.ProjectOnPlane(viewer-holder.position,Vector3.up).normalized,Vector3.up);
             var bounds=GraphicsPropLibrary.LocalBounds(holder);

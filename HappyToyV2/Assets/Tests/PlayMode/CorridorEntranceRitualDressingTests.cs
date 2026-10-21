@@ -304,7 +304,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(probe.bounds.Contains(entrance.transform.position+new Vector3(x*13.9f,.025f,z*14.9f)),Is.True,"The real wet floor extends beyond its reflection box");
             var budget=session.GetComponent(RequireType("LocalShadowBudget"));Call(budget,"RefreshNow");AssertAtlas(budget);
             var lights=Get<IReadOnlyList<Light>>(entrance.GetComponent(RequireType("CorridorEntrancePresentation")),"Lanterns");
-            Assert.That(lights.Count,Is.LessThanOrEqualTo(9));Assert.That(lights.Count(x=>x.shadows!=LightShadows.None),Is.LessThanOrEqualTo(2));
+            Assert.That(lights.Count,Is.LessThanOrEqualTo(11));Assert.That(lights.Count(x=>x.shadows!=LightShadows.None),Is.LessThanOrEqualTo(2));
             Assert.That(lights.All(x=>x.type==LightType.Point&&x.range<=25),Is.True);
             Assert.That(Get<int>(vapour,"PlumeCount"),Is.EqualTo(2));
             Assert.That(vapour.GetComponent<MeshFilter>(),Is.Null,"The removed grazing fog sheets survived on the local owner");

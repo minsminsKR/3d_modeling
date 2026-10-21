@@ -91,7 +91,7 @@ PROFILES = {
             PLAY + "UncatFaceFollowsChasePauseCalmAndDisableWithoutEditingSharedSkin"))]),
     "entrance-lighting": ("Flame-motivated entrance lighting, no ceiling/ambient fill, actual camera/aspects, pause/comfort, reflections and preserved routes", [
         ("EditMode", (CLOUD + "GraphicsLightingRulesTests",)),
-        ("PlayMode", play_tests("EntranceBrightnessTests.cs") + (
+        ("PlayMode", play_tests("EntranceBrightnessTests.cs", "EntranceGuardianFirelightTests.cs") + (
             PLAY + "EntranceRitualArtKeepsSupportedFloorClearRouteAndReleasesOwnedResources",
             PLAY + "GeneratedBuddhistLanternsKeepPaintedInkSharedLodsAndAppearInActualCamera",
             PLAY + "SealedTempleGateRespondsToRealEAndPhysicallyStopsThePlayer",
@@ -289,6 +289,13 @@ PROFILES = {
     "full": ("All EditMode and PlayMode tests; player build/native review remains separate", [
         ("EditMode", ()), ("PlayMode", ())]),
 }
+
+
+PROFILES["temple-lanterns"]=("Guardian face uplighting and generated corridor ceiling lanterns, original routes, shared PBR/LODs, danger/pause/blackout and owned teardown", [
+    PROFILES["entrance-lighting"][1][0],
+    ("PlayMode", PROFILES["entrance-lighting"][1][1][1] + play_tests("CorridorBuddhistLanternTests.cs") + (
+        PLAY + "HauntedCorridorDressingPreservesColliderDoorItemAndNavigationStateAndReleasesOwnedArt",
+        PLAY + "CorridorCeilingFixturesShareRealCandleDangerAndRecover"))])
 
 
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:

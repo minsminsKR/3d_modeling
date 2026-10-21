@@ -173,8 +173,8 @@
       },
       {
         "path": "Assets/Scripts/CorridorEntranceRitualDressing.cs",
-        "bytes": 20690,
-        "sha256": "d6ac2cbcc791757fe22b8cee1b6132a540fbe5a55be5977b1a840ff49b2285f5"
+        "bytes": 21084,
+        "sha256": "d60177850d11cb0d9822de3e7656c55d8004d17438d2a14b802a809c92e96abe"
       },
       {
         "path": "Assets/Scripts/CorridorEntranceSealInk.cs",
@@ -283,7 +283,25 @@
         "sha256": "fed9bf31035cdd66dc7efa0b7aab25031463e23580d1c687a5edb51e759f7b57",
         "guid": "583044fd770ad2c44b7967f6ea50b268"
       }
-    ]
+    ],
+    "sharedVisualLoader": [
+      {
+        "path": "Assets/Scripts/BuddhistLanternVisual.cs",
+        "bytes": 1910,
+        "sha256": "39f1c26e9df408dd6ec34c3a947b5659d07a19a63aae0e7e3cb6d695f763f2c8"
+      },
+      {
+        "path": "Assets/Scripts/BuddhistLanternVisual.cs.meta",
+        "bytes": 59,
+        "sha256": "56cf1ac2fce8b86bd828a7fa688f6282cc1cd29fc5dcab60c0993b588dd03010",
+        "guid": "c58cba2d5cc987c46908eed2cfb34e01"
+      }
+    ],
+    "corridorPresentation": {
+      "path": "Assets/Scripts/HauntedCorridorPresentation.cs",
+      "bytes": 23682,
+      "sha256": "7388f2c93a0b1dd29dfd69a2549f57de7bd762823ef506c066a6024560949803"
+    }
   },
   "licenses": [
     {

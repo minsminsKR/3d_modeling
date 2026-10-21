@@ -650,8 +650,8 @@ talisman time stop and independent owned-clip cleanup, using the quiet guard.
 제작용 `.venv-*`는 고정 requirements로 재생성하는 캐시이며 소스 누락 검사에서 제외한다.
 
 입구 조명 배율만 바꿀 때는 `--profile entrance-lighting --graphics-api d3d11 --no-desktop-interaction`을
-사용한다. Core/조명 규칙과 실제 9개 광원의 선택 배율·동일 반사 재캡처 조건의 1.00배
-비교·세 화면비·회랑 입구 바닥·반사 소유권을 확인한다. 현재 사용자 선택은 원래 미리보기
+사용한다. Core/조명 규칙과 실제 11개 불빛의 선택 배율·같은 반사 재캡처 조건의 소등/폐기한 천장 채움광
+비교·세 화면비·회랑 입구 바닥·반사 소유권·대문/수호상 얼굴을 확인한다. 현재 사용자 선택은 원래 미리보기
 기준 절대 0.45배다. 밝기 선택 페이지를 다시 내보낼 때도 이 기준을 유지한다.
 
 싸이클롭스 음성만 바꿀 때는 `--profile cyclopse-voice --graphics-api d3d11 --no-desktop-interaction`을
@@ -661,3 +661,7 @@ talisman time stop and independent owned-clip cleanup, using the quiet guard.
 `patrol-navigation` checks the production rendered-body/NavMesh wall mismatch, physical-displacement patrol recovery, every directed two-arm corner in seed 73 (56 actor routes), real door passage/close ownership, deliberate patrol waits/pause and talisman freezing. It retains the actual body size, normal native speed and original scene; only the broad corner sweep accelerates simulation by 3x. The Uncat wall fixture proves the raw marker cannot fit its body within its .6m arrival radius, then verify a recovery and physical return along the next route.
 
 `finale-start-audio` verifies the exact three-second clinical terminal clip through real lethal contact/result playback, the shared animal recording bank, an uninterrupted three-second native title performance after just one Tick, master mute/stop/disposal, and actual title-button approach -> full black -> world preparation -> gated reveal. The continuous title PCM is prepared once from the imported in-game bank; there is no streaming/per-frame footfall scheduling. It preserves the quiet pre-device audio guard.
+
+입구 수호상 불빛과 일반 회랑의 생성 사찰등을 함께 바꿀 때는
+`--profile temple-lanterns --no-desktop-interaction`을 사용한다. 위 검사에 일반 회랑 천장 등의
+실제 카메라 렌더·공유 PBR/2LOD·천장 여유·위험 점멸·해제 시 공유 자원 보존을 더한다.
