@@ -53,11 +53,17 @@ Remove-Item Env:HAPPYTOY_SCHOOL_HORROR_REVIEW_DIR
 
 새 플레이어의 선택 무음 표면 검토는 다음 인자로만 설치된다. 일반 플레이에는
 카메라 촬영이나 진단 오브젝트를 만들지 않는다. 소유 음소거 guard와 별도 기록
-폴더를 사용하고, 반사 캡처 완료 후 실제 URP 카메라 PNG와
-`school-horror-review.json`을 만든다. 실제 표시 FPS/청감/자연 플레이 인증은 아니다.
+폴더를 사용한다. `-batchmode`와 `-v2-audit-no-desktop-interaction`의 실제 커서 쓰기
+억제를 학교 생성 전에 확인하며, 배치 실행에서는 생산 카메라의 StandardRequest를
+160×90 화면 밖 렌더 타깃으로 매 프레임 요청해 분할 반사 캡처의 진행을 유도한다.
+실제 `ReflectionReady` 완료를 최대 25초만 기다리며, 완료되지 않으면 실패로 기록한다.
+`reflection-progress.json`과 최종 `school-horror-review.json`에는 단계·렌더 요청 수·
+반사/조명/품질 상태와 실제 완료 여부를 남긴다. 완료한 경우에만 일시정지 후 실제
+URP 카메라 PNG를 저장한다. 임시 타깃과 카메라 설정은 성공/실패 모두 정리·복원한다.
+실제 표시 FPS/청감/자연 플레이 인증은 아니다.
 
 ```powershell
-& '<fresh-build>/HappyToyV2.exe' -quiet-diagnostics -v2-audit-no-desktop-interaction -v2-school-horror-review-output '<new-evidence-folder>' -v2-school-horror-review-torch -screen-width 1280 -screen-height 720 -screen-fullscreen 0 -logFile '<new-evidence-folder>/Player.log'
+& '<fresh-build>/HappyToyV2.exe' -batchmode -quiet-diagnostics -v2-audit-no-desktop-interaction -v2-school-horror-review-output '<new-evidence-folder>' -v2-school-horror-review-torch -screen-width 1280 -screen-height 720 -screen-fullscreen 0 -logFile '<new-evidence-folder>/Player.log'
 ```
 
 6종 한국어 공지/시간표는 기존 촬영 종이 표면과 저장된 OFL 한국어 글꼴을
