@@ -35,6 +35,7 @@ namespace HappyToy.V2
         Volume volume;VolumeProfile profile;Bounds cameraBounds;
         Cubemap pendingReflection;
         SchoolPlanarReflection planar;
+        SchoolLightOverlapScope overlap;
         int preparedFrame,nextProbe,renderId=-1;bool subscribed;
         public bool Prepared {get;private set;}
         public Volume OwnedVolume=>volume;
@@ -102,6 +103,7 @@ namespace HappyToy.V2
             if(Prepared||!owner||!owner.Root||!owner.Centre)throw new InvalidOperationException("Built school required once");
             world=owner;session=owner.GetComponent<GameSession>();
             if(!session||!session.player)throw new InvalidOperationException("School atmosphere needs its player camera");
+            overlap=new SchoolLightOverlapScope(GraphicsSettings.currentRenderPipeline as UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset);
             root=new GameObject("Owned derelict school light and mist scope").transform;root.SetParent(world.Centre,false);
             profile=ScriptableObject.CreateInstance<VolumeProfile>();profile.name="Owned derelict school cinematic profile";owned.Add(profile);
             // The school is already lit at night-time scene values. ACES plus positive contrast
@@ -234,6 +236,7 @@ namespace HappyToy.V2
         {if(renders.Count>0&&renders.Peek().camera==camera)renders.Pop().Restore();}
         void OnDisable()
         {
+            overlap?.Dispose();
             if(subscribed){RenderPipelineManager.beginCameraRendering-=BeforeCamera;RenderPipelineManager.endCameraRendering-=AfterCamera;subscribed=false;}
             while(renders.Count>0)renders.Pop().Restore();
             if(volume)volume.enabled=false;
@@ -243,7 +246,7 @@ namespace HappyToy.V2
         }
         void OnEnable()
         {
-            if(!Prepared)return;Subscribe();if(volume)volume.enabled=true;
+            if(!Prepared)return;overlap?.Apply();Subscribe();if(volume)volume.enabled=true;
             if(planar)planar.enabled=true;
             foreach(var probe in probes)if(probe)probe.enabled=true;
             foreach(var addition in additions)if(addition)addition.SetActive(true);

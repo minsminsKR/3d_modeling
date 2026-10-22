@@ -400,3 +400,9 @@ unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.E
 ## 학교 시작 자바라 · 2026-10-22
 
 `SchoolLoopArchitecture.Gate`는 `SchoolRetractableGate`에 열린 입구 조립을 맡긴다. 지정 웹앱 생성 원본의 접힌 자바라 한 장과 자유단 보관 고리의 자물쇠 하나를 사용한다. `SchoolRetractableGateImport`가2LOD/외부 PBR prefab과 자물쇠 위치를 만들며 `QualityValidation.BuildWindows`가 자산 완전성을 확인한다. 닫기/잠금 상호작용·저장 버전은 추가하지 않는다. `school-gate` 프로필은 실제 원본 메시/PBR/LOD 정체성·3m 이상 열린 시작 동선의 CapsuleCast/NavMesh/W 이동·학교 이동/저장/밝기 회귀와 정상 카메라의 입구 전체/자물쇠 근접/시작 시점을 검사한다. `HAPPYTOY_SCHOOL_GATE_REVIEW_DIR`를 새 Builds 하위 폴더로 명시할 때만 렌더를 저장한다. 원본 이미지·프롬프트·실제 작업·GLB/8K·packed Blender·고정 도구·해시는 `SourceArt/SchoolRetractableGate/README.md`에 있다.
+
+## 학교 이동 중 광원 겹침 · 2026-10-22
+
+`SchoolLightOverlapScope`는 학교 전용 조명 범위 동안 URP Forward의 물체당 추가 광원 한도를8로 소유하고, disable/unload에서 이전 값을 복원한다. `SchoolHorrorLighting`이 이 범위를 조립한다. 형광등·창문·확산광이 겹칠 때 기존4개 목록이 카메라 이동에 따라 바뀌며 벽/천장의 빛을 갑자기 누락한 문제다. 광원 자체의 출력·노출·그림자 지도2048/손전등1024/국소512·최대 두 point caster·반사 해상도는 그대로다. 공용 파이프라인 자산과 다른 모드의 기본 한도는 저장해서 바꾸지 않는다.
+
+`school-lighting-continuity`는 Core/atlas/그래픽 자산과 실제25cm 입구 이동·고정 형광등·손전등 on/off·4개 제한 음성 대조군·8개 실제 렌더의 밝기 변화·학교 범위 disable/re-enable/다음 모드 복원을 검사한다. 기존 학교 전체 표면/밝기/반사/조명 pause·실제 통행/저장/자바라와 회랑 그림자/렌더 범위도 포함한다. `HAPPYTOY_SCHOOL_STEP_LIGHT_REVIEW_DIR`를 Builds 하위로 명시할 때만 프레임과 실제 trace를 쓴다. 입력 피드백·해시와 재현은 `SourceArt/SchoolHorror/LightContinuity/README.md`에 있다.

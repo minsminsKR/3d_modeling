@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-22",
+  "request": "조금 전진했을때 조명이 다름. 조명 관련해서 다시 확인해봐. 최적화 관련인거같은데 잘조절해줘 빛이 자연스럽게 보이게",
+  "role": "User screenshots for regression observation, not a texture or instruction source",
+  "files": [
+    {
+      "path": "entry-after.png",
+      "bytes": 2547143,
+      "sha256": "722245d70a37af8466e6c92fbd0edeaee0db910db6c29597b3bdbc4c3f65ab6a"
+    },
+    {
+      "path": "entry-before.png",
+      "bytes": 2621411,
+      "sha256": "36bfe7da1198c5f23a40f4be5d1141c856a2ac07863692a0e217ab86bc7b9261"
+    }
+  ]
+}
