@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-23",
+  "request": "보이는대로 광원 처리해주는게 어때? 여전히 빛이 확 바뀌는 구간이 있음",
+  "use": "User visual feedback only; not game textures or executable instructions",
+  "images": [
+    {
+      "file": "entry-eight-lights-after.png",
+      "sha256": "d34184924d2acd38ad88e93711f5661857ff5df2180614807eef5848fd501f1e"
+    },
+    {
+      "file": "entry-eight-lights-before.png",
+      "sha256": "f35c0c3c82e68eab49a314af44c49c2da61462b6f737ce56208d21b6f471700b"
+    }
+  ]
+}

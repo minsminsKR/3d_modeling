@@ -70,6 +70,27 @@ namespace HappyToy.V2.CloudTests
             Assert.That(originals.Select(Hash).ToArray(),Is.EqualTo(hashes));
         }
         [Test]
+        public void SchoolClusteredPipelineRetainsIndependentAoAndBuildVariantsWithoutChangingDefaultForward()
+        {
+            Call(RequireType("Editor.GraphicsLightingSetup","Assembly-CSharp-Editor"),"EnsureAndActivate");
+            const string path="Assets/Resources/SchoolRendering/SchoolPipeline.asset",rendererPath="Assets/Resources/SchoolRendering/SchoolRenderer.asset";
+            var pipeline=AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);
+            var renderer=AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(rendererPath);
+            var standard=AssetDatabase.LoadAssetAtPath<UnityEngine.Object>("Assets/GraphicsUpgrade/Settings/GraphicsRenderer.asset");
+            Assert.That(Get<object>(renderer,"renderingMode").ToString(),Is.EqualTo("ForwardPlus"));
+            Assert.That(Get<object>(standard,"renderingMode").ToString(),Is.EqualTo("Forward"));
+            Assert.That(UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline,Is.Not.SameAs(pipeline));
+            Assert.That(AssetDatabase.GetLabels(pipeline),Is.Not.Empty,"Player shader stripping must see the runtime pipeline");
+            var ao=((IEnumerable)Get<object>(renderer,"rendererFeatures")).Cast<UnityEngine.Object>().Single();
+            var standardAo=((IEnumerable)Get<object>(standard,"rendererFeatures")).Cast<UnityEngine.Object>().Single();
+            Assert.That(ao,Is.Not.SameAs(standardAo));
+            Assert.That(AssetDatabase.GetAssetPath(ao),Is.EqualTo(rendererPath));
+            string pipelineGuid=AssetDatabase.AssetPathToGUID(path),rendererGuid=AssetDatabase.AssetPathToGUID(rendererPath);
+            Call(RequireType("Editor.GraphicsLightingSetup","Assembly-CSharp-Editor"),"EnsureAndActivate");
+            Assert.That(AssetDatabase.AssetPathToGUID(path),Is.EqualTo(pipelineGuid));
+            Assert.That(AssetDatabase.AssetPathToGUID(rendererPath),Is.EqualTo(rendererGuid));
+        }
+        [Test]
         public void ReusedShadowPlanClearsOldSelectionsAndPreservesDistanceTiesAndTorchPriority()
         {
             var rules=RequireType("ShadowAtlasPlan");var type=RequireType("ShadowAtlasPlan+Candidate");

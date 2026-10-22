@@ -148,6 +148,27 @@ def graphics_inventory(project, expected=None):
     for name in ('ProjectSettings/GraphicsSettings.asset', 'ProjectSettings/QualitySettings.asset'):
         text = (project / name).read_text(encoding='utf-8-sig')
         check(pipeline_guid is not None and pipeline_guid in text, 'Owned pipeline missing from current settings: ' + name)
+    school_path = 'Assets/Resources/SchoolRendering/SchoolPipeline.asset'
+    school, school_meta = asset(school_path)
+    school_renderer_path = 'Assets/Resources/SchoolRendering/SchoolRenderer.asset'
+    school_renderer, _ = asset(school_renderer_path)
+    include('Assets/Resources/SchoolRendering.meta')
+    asset('Assets/Editor/SchoolLightingSetup.cs')
+    asset('Assets/Scripts/SchoolLightOverlapScope.cs')
+    globals_path, _ = asset('Assets/UniversalRenderPipelineGlobalSettings.asset')
+    if school:
+        check(guids.get(school_renderer_path, 'MISSING') in school.read_text(encoding='utf-8-sig'),
+              'School pipeline does not reference its own renderer')
+    if school_renderer:
+        text = school_renderer.read_text(encoding='utf-8-sig')
+        check(re.search(r'^\s*m_RenderingMode: 2\s*$', text, re.M) is not None, 'School renderer is not Forward+')
+        check('Universal.ScreenSpaceAmbientOcclusion' in text, 'School owned AO feature missing')
+    if globals_path and school_meta:
+        text = globals_path.read_text(encoding='utf-8-sig')
+        label = re.search(r'^\s*m_LabelToInclude: (.+)$', text, re.M)
+        check(re.search(r'^\s*m_IncludeAssetsByLabel: 1\s*$', text, re.M) is not None and label is not None
+              and label.group(1).strip() in school_meta.read_text(encoding='utf-8-sig'),
+              'Build-time Forward+ pipeline/shader inclusion label is missing')
     return {'errors': errors, 'requiredInputs': records, 'metadataGuids': guids,
             'pbrSets': list(PBR_KEYS), 'pbrPngCount': len(maps), 'pbrMaterialCount': 14,
             'propModels': list(PROP_KEYS), 'protectedOriginals': PROTECTED}

@@ -88,6 +88,7 @@ namespace HappyToy.V2.Editor
             // Register the owned settings for shader stripping and for the shipped player.
             GraphicsSettings.defaultRenderPipeline=pipeline;QualitySettings.renderPipeline=pipeline;
             AssetDatabase.SaveAssets();
+            SchoolLightingSetup.Ensure(pipeline,renderer);
             if(GraphicsSettings.defaultRenderPipeline!=pipeline||QualitySettings.renderPipeline!=pipeline)
                 throw new InvalidOperationException("Owned pipeline not registered as current graphics and quality settings");
             if(!pipeline.supportsHDR||!pipeline.supportsCameraDepthTexture||!pipeline.reflectionProbeBlending||!pipeline.reflectionProbeBoxProjection ||

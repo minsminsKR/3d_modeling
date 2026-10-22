@@ -318,7 +318,7 @@ PROFILES["school-gate"]=("Generated folded school scissor gate, one stored padlo
         PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",
         PLAY+"SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState"))])
 
-PROFILES["school-lighting-continuity"]=("School-only bounded eight-light overlap, frozen-lamp 25cm entry traces with torch on/off and four-light negative control; atlas, pipeline restore, real school surfaces, brightness, walking and saves", [
+PROFILES["school-lighting-continuity"]=("School-only Forward+ with player shader retention, frozen-lamp 12.5cm entry traces and reprojected ceiling patches against Forward8, nine-light/offscreen receiver, atlas/pipeline restoration, real surfaces, brightness, walking and saves", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", "HappyToy.V2.CoreTests.SchoolFluorescentClockTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"GraphicsLightingRulesTests")),
     ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolHorrorEnvironmentTests.cs", "SchoolLightingContinuityTests.cs", "SchoolRetractableGateTests.cs",
         "CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs", "CloudLocalShadowTests.cs"))])
