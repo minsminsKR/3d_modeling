@@ -104,8 +104,10 @@ namespace HappyToy.V2
             if(!session||!session.player)throw new InvalidOperationException("School atmosphere needs its player camera");
             root=new GameObject("Owned derelict school light and mist scope").transform;root.SetParent(world.Centre,false);
             profile=ScriptableObject.CreateInstance<VolumeProfile>();profile.name="Owned derelict school cinematic profile";owned.Add(profile);
-            var tone=profile.Add<Tonemapping>(true);tone.mode.value=TonemappingMode.ACES;
-            var grade=profile.Add<ColorAdjustments>(true);grade.postExposure.value=.10f;grade.contrast.value=10;grade.saturation.value=-18;
+            // The school is already lit at night-time scene values. ACES plus positive contrast
+            // crushed its shadows in normal play; the old standalone preview skipped volume updates.
+            var tone=profile.Add<Tonemapping>(true);tone.mode.value=TonemappingMode.Neutral;
+            var grade=profile.Add<ColorAdjustments>(true);grade.postExposure.value=-.10f;grade.contrast.value=0;grade.saturation.value=-18;
             var bloom=profile.Add<Bloom>(true);bloom.threshold.value=1.25f;bloom.intensity.value=.12f;bloom.scatter.value=.48f;bloom.maxIterations.value=4;bloom.clamp.value=8;
             var vignette=profile.Add<Vignette>(true);vignette.intensity.value=.12f;vignette.smoothness.value=.65f;
             volume=root.gameObject.AddComponent<Volume>();volume.isGlobal=true;volume.priority=55;volume.sharedProfile=profile;

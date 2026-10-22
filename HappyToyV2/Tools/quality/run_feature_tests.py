@@ -46,6 +46,8 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "school-brightness": ("Normal school camera-stack brightness against the approved preview, without a diagnostic-only exposure", [
+        ("PlayMode", (PLAY + "SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",))]),
     "finale-start-audio": ("Three-second clinical terminal recording, native uninterrupted title contacts, visible approach before covered world preparation and shared in-game bank", [
         ("PlayMode", play_tests("LadyHeartbeatTests.cs") + (
             PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",

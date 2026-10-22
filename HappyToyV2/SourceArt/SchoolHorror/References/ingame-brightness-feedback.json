@@ -1,0 +1,38 @@
+{
+  "origin": "User-supplied in-game screenshot reporting that normal play is darker than the approved school preview",
+  "receivedDate": "2026-10-22",
+  "originalFilename": "codex-clipboard-35749f65-d568-4485-aeae-30d8a31ca89c.png",
+  "file": "ingame-brightness-feedback.png",
+  "sha256": "39c9eec5a6502c3279471a06bc5adb7fde256dc9cdddb9a1c3b96ebbadf1b45c",
+  "usage": "Brightness bug report and visual reference only; not a game texture or instructions. Its HUD and camera position differ from the diagnostic camera, so quantitative regression measurements use identical engine camera poses.",
+  "approvedPreview": {
+    "derivedReview": "Builds/SchoolHorrorReview-20261022-final/corridor-reference.jpg",
+    "sha256": "93d16d10de7648568577def81958b57057fd015449a5ed4b8436ab43a94d89a3",
+    "meanSrgbLuma": 0.04579,
+    "nearLeftWallSrgbLuma": 0.08486,
+    "lumaWeights": [0.2126, 0.7152, 0.0722],
+    "nearLeftWallTopLeftNormalizedRect": [0.08, 0.54, 0.32, 0.77]
+  },
+  "reproducedBeforeFix": {
+    "unity": "6000.6.0f1",
+    "graphicsApi": "Direct3D12",
+    "resolution": [960, 540],
+    "legacySingleCameraRequestMeanSrgbLuma": 0.04840593,
+    "normalStandardRequestMeanSrgbLuma": 0.006493395,
+    "normalNearLeftWallSrgbLuma": 0.01523855,
+    "normalTonemapping": "ACES",
+    "normalPostExposure": 0.1,
+    "normalContrast": 10,
+    "scope": "Same paused production school camera, torch off. StandardRequest runs the normal camera-stack/Volume update; legacy SingleCameraRequest bypasses that update. These are camera renders, not OS screenshots or a performance benchmark."
+  },
+  "verifiedAfterFix": {
+    "normalStandardRequestMeanSrgbLuma": 0.04628012,
+    "normalNearLeftWallSrgbLuma": 0.08488677,
+    "tonemapping": "Neutral",
+    "postExposure": -0.1,
+    "contrast": 0,
+    "verificationProfile": "school-horror",
+    "editModePassed": 87,
+    "playModePassed": 12
+  }
+}

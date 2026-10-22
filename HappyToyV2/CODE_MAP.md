@@ -392,3 +392,7 @@ unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.E
 `school-horror`의 선택 렌더 내보내기는 `HAPPYTOY_SCHOOL_HORROR_REVIEW_DIR`를 새 `Builds/` 하위 폴더로 명시한다. 복도 정/역방향·정독반/음악실 창문·바닥/누수·파손 천장/박리 벽 근접·손전등 켜짐의9시점을 실제1920×1080 게임 카메라로 저장한다. 평면 반사 검사는 실제 바닥의 활성/비활성 픽셀 차이·소유 타깃과 카메라 수명·GL/전역 셰이더 원복을 확인한다. 화면은 참조 학교 전체의 포토그래메트리·볼류메트릭 그림자 또는 실제 플레이 FPS의 인증이 아니다. 재현과 남은 고품질 리소스는 `SourceArt/SchoolHorror/README.md`에 기록한다.
 
 `SchoolHorrorReviewProbe`는 `-batchmode -v2-audit-no-desktop-interaction -quiet-diagnostics -v2-school-horror-review-output <새 폴더>`에만 설치되는 Windows 플레이어 표면 검토다. 별도 기록·현재 프로세스 음소거 guard를 사용하며 초기 반사 프로브 완료 후 실제 카메라 PNG를 저장한다. 배치 실행에서 캡처가 대기하면25초 제한 후 실패/상태를 기록하며 완료를 주장하지 않는다. 이 경로가 에디터 렌더 검토나 일반 플레이의 반사 완료를 대신 검증하지 않는다. `GameShell`은 이 명시 플래그에서만 자동 Begin을 생략한다. 일반 시작/플레이에는 촬영을 추가하지 않는다.
+
+## 학교 인게임 밝기 · 2026-10-22
+
+`SchoolHorrorLighting`은 학교 전용 Neutral/−0.1EV/contrast0 프로필로 승인된 복도 밝기를 유지한다. 검토의 `SingleCameraRequest`는 정상 카메라의 Volume 갱신을 생략하므로, 공개하는 학교 프리뷰와 `SchoolHorrorReviewProbe.Pose`는 `StandardRequest`의 정상 스택을 사용한다. `school-brightness`는 다른 카메라의 Volume 상태를 먼저 설치하고도 정상 스택에서 승인된 전체/벽 밝기가 나오는지 검사한다. `school-horror`에도 이 검사가 포함된다. Windows 밝기 검토는 기존 명시 옵션에 `-v2-school-horror-brightness-only`를 더하고 반사 프로브 완료와 밝기 판정을 분리해 기록한다. 재현·수치 기준·피드백 원본은 `SourceArt/SchoolHorror/BRIGHTNESS.md`에 있다.

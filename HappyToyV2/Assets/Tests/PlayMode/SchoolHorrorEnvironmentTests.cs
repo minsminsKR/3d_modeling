@@ -156,6 +156,69 @@ namespace HappyToy.V2.CloudTests
             finally{RenderTexture.active=previous;if(readback)Object.Destroy(readback);}
         }
 
+        static Texture2D SchoolHorrorFrame(Camera camera,int width,int height)
+        {
+            var target=new RenderTexture(width,height,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB);
+            var previous=camera.targetTexture;float aspect=camera.aspect;
+            try
+            {
+                Assert.That(target.Create(),Is.True);camera.targetTexture=target;camera.aspect=width/(float)height;
+                // StandardRequest enters the same volume update and camera-stack path as normal play.
+                RenderPipeline.SubmitRenderRequest(camera,new RenderPipeline.StandardRequest {destination=target});
+                return CloudExperienceTests.Read(target);
+            }
+            finally{camera.targetTexture=previous;camera.aspect=aspect;target.Release();Object.Destroy(target);}
+        }
+        static float SchoolDisplayLuma(Texture2D frame,Rect region)
+        {
+            var pixels=frame.GetPixels32();double sum=0;int count=0;
+            for(int y=(int)(frame.height*region.yMin);y<(int)(frame.height*region.yMax);y++)
+                for(int x=(int)(frame.width*region.xMin);x<(int)(frame.width*region.xMax);x++)
+                {var p=pixels[y*frame.width+x];sum+=(p.r*.2126+p.g*.7152+p.b*.0722)/255;count++;}
+            return (float)(sum/Math.Max(1,count));
+        }
+        [UnityTest,Timeout(120000)]
+        public IEnumerator SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness()
+        {
+            yield return BeginObservationSchool();yield return Delay(3.2f);
+            var camera=Get<Camera>(player,"eyes");var torch=Get<Light>(player,"flashlight");
+            ((Behaviour)player).enabled=false;torch.enabled=false;Call(shell,"Pause");
+            PlacePlayer(LoopOrigin+new Vector3(.72f,.03f,6.3f),false);
+            camera.transform.rotation=Quaternion.LookRotation(LoopOrigin+new Vector3(-.15f,1.58f,36)-camera.transform.position);
+            Physics.SyncTransforms();Call(session.GetComponent(RequireType("LocalShadowBudget")),"RefreshNow");
+            Texture2D normal=null;
+            try
+            {
+                // Model the hand camera/another camera leaving a different Volume stack behind.
+                // The preview must update the school's own stack, rather than reuse that state.
+                VolumeManager.instance.Update(camera.transform,0);
+                normal=SchoolHorrorFrame(camera,960,540);
+                float normalMean=SchoolDisplayLuma(normal,new Rect(0,0,1,1));
+                float wall=SchoolDisplayLuma(normal,new Rect(.08f,.23f,.24f,.23f));
+                var tone=VolumeManager.instance.stack.GetComponent<Tonemapping>();
+                var grade=VolumeManager.instance.stack.GetComponent<ColorAdjustments>();
+                Debug.Log("HAPPYTOY_SCHOOL_NORMAL_BRIGHTNESS normal="+normalMean+" wall="+wall+
+                    " tone="+tone.mode.value+" exposure="+grade.postExposure.value+" contrast="+grade.contrast.value);
+                var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+                var lighting=Get<Transform>(world,"Root").GetComponent(RequireType("SchoolHorrorLighting"));
+                var profile=Get<Volume>(lighting,"OwnedVolume").sharedProfile;
+                Assert.That(profile.TryGet<Tonemapping>(out var configuredTone),Is.True);
+                Assert.That(tone.mode.value,Is.EqualTo(configuredTone.mode.value),"Preview reused a stale unrelated camera Volume stack");
+                string output=Environment.GetEnvironmentVariable("HAPPYTOY_SCHOOL_HORROR_REVIEW_DIR");
+                if(!string.IsNullOrWhiteSpace(output))
+                {
+                    output=Path.GetFullPath(output);string builds=Path.GetFullPath(Path.Combine(Application.dataPath,"../Builds"));
+                    Assert.That(output.StartsWith(builds+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase),Is.True);
+                    Directory.CreateDirectory(output);
+                    File.WriteAllBytes(Path.Combine(output,"brightness-normal-stack.png"),normal.EncodeToPNG());
+                }
+                // Approved preview: weighted sRGB luma .04579; wall region .08486, torch off.
+                Assert.That(normalMean,Is.InRange(.038f,.055f),"Normal play must retain the approved preview's readable shadows");
+                Assert.That(wall,Is.InRange(.065f,.115f),"The nearby moulded corridor wall must retain the preview's readable detail");
+            }
+            finally{if(normal)Object.Destroy(normal);}
+        }
+
         [Serializable] sealed class SchoolHorrorView
         {
             public string id,file;public Vector3 eye;public Quaternion rotation;
@@ -237,7 +300,7 @@ namespace HappyToy.V2.CloudTests
                 // with this explicit diagnostic pose without changing its power/cookie.
                 if(torch.enabled)torch.transform.SetPositionAndRotation(camera.transform.position,camera.transform.rotation);
                 Physics.SyncTransforms();Call(session.GetComponent(RequireType("LocalShadowBudget")),"RefreshNow");
-                var frame=EntranceRitualFrame(camera,1920,1080);
+                var frame=SchoolHorrorFrame(camera,1920,1080);
                 try
                 {
                     long sum=0;int visible=0,magenta=0;var pixels=frame.GetPixels32();
