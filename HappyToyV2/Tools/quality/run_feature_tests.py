@@ -306,6 +306,10 @@ PROFILES["school-loop"]=("New reference school plan, retired old gameplay, locke
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
     ("PlayMode", play_tests("SchoolLoopTests.cs"))])
 
+PROFILES["uncat-bell-distance"]=("Recorded Uncat bell at 3/24/36/50m, approaching gain, stereo bearing, physical wall, pause/master mute and real walking-to-pursuit rhythm", [
+    ("PlayMode", play_tests("UncatBellDistanceTests.cs")+(
+        PLAY+"UncatActualWalkingBellsAccelerateAfterRecognitionAndStopDuringPause",))])
+
 PROFILES["school-horror"]=("Acquired scanned school decay, breached ceiling, actual planar-reflection contribution/cleanup, lighting pause and camera review; preserved loop navigation, closed classrooms, saves and music asset identity", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", "HappyToy.V2.CoreTests.SchoolFluorescentClockTests", CLOUD+"SchoolLoopCheckpointTests")),
     ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolHorrorEnvironmentTests.cs")+(

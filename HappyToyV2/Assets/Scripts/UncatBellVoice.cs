@@ -7,6 +7,7 @@ namespace HappyToy.V2
     [DisallowMultipleComponent, RequireComponent(typeof(StalkerBrain))]
     public sealed class UncatBellVoice : MonoBehaviour
     {
+        public const float NearDistance=3f, AudibleDistance=48f;
         StalkerBrain brain;
         NavMeshAgent agent;
         AudioSource voice;
@@ -25,7 +26,9 @@ namespace HappyToy.V2
             var emitter = existing ? existing.gameObject : new GameObject("Uncat recorded bell voice");
             emitter.transform.SetParent(transform, false); emitter.transform.localPosition = Vector3.up * .65f;
             voice = emitter.GetComponent<AudioSource>(); if (!voice) voice = emitter.AddComponent<AudioSource>();
-            voice.minDistance = 1.5f; voice.maxDistance = 18; voice.priority = 55;
+            // A carried bell warns across several corridor sections. Keep a smooth
+            // linear falloff, real panning and the existing wall/floor transmission.
+            voice.minDistance = NearDistance; voice.maxDistance = AudibleDistance; voice.priority = 55;
             acoustics = EnemyAcoustics.Bind(voice, transform, rhythm.Gain(false), 0);
             bell = ExternalAudio.Required("enemy-uncat-bell");
             previous = transform.position;
