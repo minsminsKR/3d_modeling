@@ -48,7 +48,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(ui.Q("memory-progress").resolvedStyle.display,Is.EqualTo(DisplayStyle.None));
         }
         [UnityTest,Timeout(180000)]
-        public IEnumerator SchoolLoopRealWalkingWrapsBothEndsWithoutRotatingTheViewOrFalling()
+        public IEnumerator SchoolLoopRealWalkingReturnsFromEitherEndToTheSameLeftRoomEntrance()
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
             PlacePlayer(LoopOrigin+new Vector3(6.45f,.03f,36.2f));player.transform.rotation=Quaternion.Euler(0,90,0);
@@ -60,8 +60,16 @@ namespace HappyToy.V2.CloudTests
             PlacePlayer(LoopOrigin+new Vector3(-6.45f,.03f,2.2f));player.transform.rotation=Quaternion.Euler(0,270,0);
             Keys(Key.W);yield return Delay(.6f);Keys();yield return null;
             local=player.transform.position-LoopOrigin;
-            Assert.That(Get<int>(world,"Traversals"),Is.Zero);Assert.That(local.x,Is.InRange(4f,7f));
-            Assert.That(local.z,Is.EqualTo(36.2f).Within(.08f));Assert.That(local.y,Is.GreaterThan(-.10f));
+            Assert.That(Get<int>(world,"Traversals"),Is.EqualTo(2));Assert.That(local.x,Is.InRange(-7f,-4f));
+            Assert.That(local.z,Is.EqualTo(2.2f).Within(.08f));Assert.That(local.y,Is.GreaterThan(-.10f));
+            Assert.That(Mathf.DeltaAngle(player.transform.eulerAngles.y,90),Is.EqualTo(0).Within(.01f));
+            foreach(float z in new[]{8.5f,18.5f,29.5f})
+            {
+                // The route after either departure is entered northbound. All
+                // three real classroom fronts are on that traveller's left.
+                Assert.That(Physics.Raycast(LoopOrigin+new Vector3(0,1.65f,z),Vector3.left,out var hit,4),Is.True);
+                Assert.That(hit.collider.name,Does.Contain("Closed classroom window glass"));
+            }
             Call(shell,"Pause");PlacePlayer(LoopOrigin+new Vector3(7.1f,.03f,36.2f));yield return Delay(.1f);
             Assert.That(player.transform.position.x,Is.EqualTo(7.1f).Within(.01f),"Paused school teleported the player");
         }

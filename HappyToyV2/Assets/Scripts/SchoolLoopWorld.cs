@@ -20,7 +20,7 @@ namespace HappyToy.V2
         public IReadOnlyList<Interactable> LockedDoors=>doors;
         public Transform MusicRoom {get;internal set;}
         public int StaticBatches {get;private set;}
-        public string Objective=>"복도와 창문 너머의 방을 살펴보세요. 양 끝은 같은 구조의 다음·이전 구역으로 이어집니다.";
+        public string Objective=>"복도와 창문 너머의 방을 살펴보세요. 어느 쪽 끝으로 나가도 같은 복도가 이어집니다.";
         public GraphicsSurfaceLibrary.Pool Surfaces {get;}=new GraphicsSurfaceLibrary.Pool();
         public SchoolHorrorSurfaces HorrorSurfaces {get;private set;}
         internal readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
@@ -42,7 +42,13 @@ namespace HappyToy.V2
             for(int index=-1;index<=1;index++)
             {
                 var chunk=new GameObject("School loop section "+index).transform;
-                chunk.SetParent(Root,false);chunk.localPosition=new Vector3(index*SchoolLoopPlan.LinkX,0,index*SchoolLoopPlan.LinkZ);
+                chunk.SetParent(Root,false);
+                if(index!=0)
+                {
+                    var continuation=SchoolLoopPlan.Continuation(index);
+                    chunk.localPosition=new Vector3(continuation.X,0,continuation.Z);
+                    chunk.localRotation=Quaternion.Euler(0,continuation.Yaw,0);
+                }
                 if(index==0)Centre=chunk;
                 architecture.Build(chunk,index==0);
                 new SchoolMusicRoomDressing(this).Build(chunk,index==0);
@@ -67,9 +73,10 @@ namespace HappyToy.V2
             int direction=SchoolLoopPlan.Crossing(last.x,local.x,local.z);
             if(direction!=0)
             {
-                feet-=direction*new Vector3(SchoolLoopPlan.LinkX,0,SchoolLoopPlan.LinkZ);
-                session.player.RelocateWorld(feet,session.player.transform.rotation);
-                Traversals=Mathf.Clamp(Traversals+direction,0,1000000);
+                var pose=SchoolLoopPlan.ReturnToCentre(local.x,local.z,direction);
+                feet=Origin+new Vector3(pose.X,local.y,pose.Z);
+                session.player.RelocateWorld(feet,Quaternion.Euler(0,pose.Yaw,0)*session.player.transform.rotation);
+                Traversals=Mathf.Clamp(Traversals+1,0,1000000);
             }
             previous=feet;
             foreach(var sign in signs)

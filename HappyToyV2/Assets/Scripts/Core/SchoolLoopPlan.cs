@@ -8,6 +8,26 @@ namespace HappyToy.V2
         public const int Version=3;
         public const float HalfWidth=2.2f, Length=38.4f, Height=3.25f;
         public const float PortalX=7, LinkX=14, LinkZ=34;
+        public const float EntryDepth=Length-LinkZ;
+        public readonly struct SeamPose
+        {
+            public readonly float X,Z,Yaw;
+            public SeamPose(float x,float z,float yaw){X=x;Z=z;Yaw=yaw;}
+        }
+        // Both departures lead to the same room order on the traveller's left.
+        // The rear continuation is a rigid half-turn, never a mirrored model.
+        public static SeamPose Continuation(int direction)
+        {
+            if(direction==1)return new SeamPose(LinkX,LinkZ,0);
+            if(direction==-1)return new SeamPose(-LinkX,EntryDepth,180);
+            throw new ArgumentOutOfRangeException(nameof(direction));
+        }
+        public static SeamPose ReturnToCentre(float x,float z,int direction)
+        {
+            if(!Finite(x)||!Finite(z))throw new ArgumentException("Finite school seam position required");
+            var next=Continuation(direction);
+            return direction<0?new SeamPose(next.X-x,next.Z-z,180):new SeamPose(x-next.X,z-next.Z,0);
+        }
         public readonly struct Room
         {
             public readonly string Id, Label;

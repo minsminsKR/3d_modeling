@@ -302,9 +302,9 @@ PROFILES["temple-lanterns"]=("Guardian face uplighting and generated corridor ce
         PLAY + "CorridorCeilingFixturesShareRealCandleDangerAndRecover"))])
 
 
-PROFILES["school-loop"]=("New reference school plan, retired old gameplay, locked classrooms, real bidirectional seam walking, v3 saves and generated music-room PBR/LOD camera review", [
+PROFILES["school-loop"]=("Same left-room entrance after either departure, rigid rear half-turn/preview, real bidirectional seam walking, retired old gameplay, locked classrooms, v3 saves and generated music-room PBR/LOD camera review", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
-    ("PlayMode", play_tests("SchoolLoopTests.cs"))])
+    ("PlayMode", play_tests("SchoolLoopTests.cs","SchoolLoopSeamTests.cs"))])
 
 PROFILES["uncat-bell-distance"]=("Recorded Uncat bell at 3/24/36/50m, approaching gain, stereo bearing, physical wall, pause/master mute and real walking-to-pursuit rhythm", [
     ("PlayMode", play_tests("UncatBellDistanceTests.cs")+(
@@ -312,7 +312,7 @@ PROFILES["uncat-bell-distance"]=("Recorded Uncat bell at 3/24/36/50m, approachin
 
 PROFILES["school-horror"]=("Acquired scanned school decay, breached ceiling, actual planar-reflection contribution/cleanup, lighting pause and camera review; preserved loop navigation, closed classrooms, saves and music asset identity", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", "HappyToy.V2.CoreTests.SchoolFluorescentClockTests", CLOUD+"SchoolLoopCheckpointTests")),
-    ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolHorrorEnvironmentTests.cs")+(
+    ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolLoopSeamTests.cs", "SchoolHorrorEnvironmentTests.cs")+(
         PLAY+"SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState",
         PLAY+"CorridorGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState"))])
 
