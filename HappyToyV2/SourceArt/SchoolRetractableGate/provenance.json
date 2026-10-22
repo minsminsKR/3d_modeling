@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "date": "2026-10-22",
+  "purpose": "One folded school entry scissor gate, with one padlock stored on the free end post",
+  "generation": {
+    "site": "https://agrees-mic-icon-contribution.trycloudflare.com/",
+    "jobId": "3164025e-2ee4-400b-90e6-7054d65d9084",
+    "saved": true,
+    "options": {
+      "gpu_id": 1,
+      "gpu_mode": "split",
+      "guidance_scale": 7.5,
+      "model": "trellis2",
+      "num_chunks": 50000,
+      "num_inference_steps": 50,
+      "octree_resolution": 512,
+      "omni_use_ema": false,
+      "output_format": "glb",
+      "remove_background": true,
+      "seed": 1234,
+      "texture": true,
+      "texture_gpu_id": 0,
+      "texture_profile": "detail",
+      "trellis_max_tokens": 65536,
+      "trellis_pipeline": "1536_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 8192
+    },
+    "input": "reference.png",
+    "original": "retractable-gate/original.glb"
+  },
+  "derivation": {
+    "tool": "Blender 4.0.2",
+    "buildHash": "9be62e85b727",
+    "recipe": "finish_gate.py",
+    "sharedRecipe": "../CorridorEntrance/finish_entrance_assets.py",
+    "description": "Original geometry and 8K PBR packed unchanged in hidden collection; copied game meshes normalized, welded, degenerate faces repaired and reduced; 2K game PBR exported from real base color and metallic/roughness, no invented normal/AO",
+    "originalTriangles": 984090,
+    "lodTriangles": [
+      99999,
+      64999
+    ],
+    "unityOrientation": {
+      "front": "-Z",
+      "freeEndPost": "-X",
+      "placementYawDegrees": -90
+    },
+    "normalizedHeightMetres": 2.55,
+    "textureMaxSize": 2048
+  },
+  "sourceFiles": [
+    {
+      "path": "SourceArt/SchoolRetractableGate/user-gate-reference.png",
+      "bytes": 303754,
+      "sha256": "1aa2e7fe5c5cb341c3453fc79964e9a6537a0d22a2ba6c93df7b265c89eb7793"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/reference.png",
+      "bytes": 2180035,
+      "sha256": "619a214a81be2a967fa3767a49e6e78c4fbbfda2ee9f2ab0edec1a1ca86d390f"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/reference-prompt.json",
+      "bytes": 2033,
+      "sha256": "c7ddf15ee3bc768bac659f05a078d1aa59701e5986f3309cdbd03b373f4fc28a"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/retractable-gate/processed.png",
+      "bytes": 507707,
+      "sha256": "21ef70f8e9c4b6a3cd48ea945cc9e308ad3da88727ef0948af37108168acbea7"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/retractable-gate/job.json",
+      "bytes": 2226,
+      "sha256": "2ea91c41c04eb580be965979b3e1ed8aed33b8cad9c06740f66090fea7293f7b"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/retractable-gate/original.glb",
+      "bytes": 167005596,
+      "sha256": "d4fbf2bfa0b0a596ece81adff095b53b255283d9c443543663ef2208fabdf62d"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/retractable-gate/retractable-gate.blend",
+      "bytes": 183161209,
+      "sha256": "7a876050e7aa77491aa21ced6a3b252cc0e0dc2d38826e8b8ea280024a8d309c"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/retractable-gate/export.json",
+      "bytes": 2141,
+      "sha256": "ea5756b2d01c162220465c69cadd99667ed51499e19eb32f35b41d1fe294ed00"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/finish_gate.py",
+      "bytes": 1738,
+      "sha256": "64014af3fee04a89fe4ffab10e876ee99d8fedc32b920778a748df7f7b99d4c2"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/record_provenance.py",
+      "bytes": 3256,
+      "sha256": "6b2ef3fb907f9322508e93b5109b5de5fa1ffa855d6e89b26f5c8769bd020bd6"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/README.md",
+      "bytes": 5212,
+      "sha256": "d8bebb43685f1dfa9836461829b5302904732ecc5237f0f5c56eb39e50096c34"
+    },
+    {
+      "path": "SourceArt/SchoolRetractableGate/TRELLIS.2-LICENSE.txt",
+      "bytes": 1140,
+      "sha256": "d9a1b1e30d633d5732ea18e3cba9538d293ebc53e1a9e4e96ab739e0c5c4f1cb"
+    },
+    {
+      "path": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+      "bytes": 19990,
+      "sha256": "565994cee8535a1cdd814264041bc47a497e185ab25c26f2298c309c60e37c82"
+    }
+  ],
+  "unityFiles": [
+    {
+      "path": "Assets/Resources/SchoolRetractableGate/retractable-gate/asset.json",
+      "bytes": 2141,
+      "sha256": "ea5756b2d01c162220465c69cadd99667ed51499e19eb32f35b41d1fe294ed00"
+    },
+    {
+      "path": "Assets/Resources/SchoolRetractableGate/retractable-gate/CE_retractable-gate_0-baseColor.png",
+      "bytes": 8075177,
+      "sha256": "52c8131b4af4cc7f85e5a4588b40a49afd01a1bcb2ffa2863899bed3fdb65325"
+    },
+    {
+      "path": "Assets/Resources/SchoolRetractableGate/retractable-gate/CE_retractable-gate_0-metallicSmoothness.png",
+      "bytes": 5372956,
+      "sha256": "bd43a8b13f6fd5fd62327a7e9351bafeaf830218e8c08ab87739f72624b7c11f"
+    },
+    {
+      "path": "Assets/Resources/SchoolRetractableGate/retractable-gate/CE_retractable-gate_0.mat",
+      "bytes": 4085,
+      "sha256": "9797fa6e297e8a62c66263ce0bbcc61d0cd788289b1b93a8757b2a7074340f23"
+    },
+    {
+      "path": "Assets/Resources/SchoolRetractableGate/retractable-gate-lod0.fbx",
+      "bytes": 5018684,
+      "sha256": "a800c2340665b61b232ee2155b31c3a7da8be37c8e3925623b7c6f897d859008"
+    },
+    {
+      "path": "Assets/Resources/SchoolRetractableGate/retractable-gate-lod1.fbx",
+      "bytes": 3290844,
+      "sha256": "9d98cfecbb9b51a93e3611ada7ddc098bfed2d7920d2dc8b412da61ec781e436"
+    },
+    {
+      "path": "Assets/Resources/SchoolRetractableGate/retractable-gate-visual.prefab",
+      "bytes": 8990,
+      "sha256": "0f51c33459d302fae550073789d144b450486b5a5faca63d4eff624bebbb0799"
+    }
+  ],
+  "dependencies": "Pinned Unity/URP and Blender installation are documented in README.md; no server job, Downloads directory, build cache or other checkout is required",
+  "rights": "User supplied photo is a visual reference; generated reference and model are project work. TRELLIS.2 upstream software notice is retained separately."
+}

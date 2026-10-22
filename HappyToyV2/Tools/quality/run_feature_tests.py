@@ -312,6 +312,12 @@ PROFILES["school-horror"]=("Acquired scanned school decay, breached ceiling, act
         PLAY+"SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState",
         PLAY+"CorridorGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState"))])
 
+PROFILES["school-gate"]=("Generated folded school scissor gate, one stored padlock, actual spawn walking/NavMesh, PBR/LOD source identity and normal camera review with preserved school brightness", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
+    ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolRetractableGateTests.cs")+(
+        PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",
+        PLAY+"SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState"))])
+
 
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
     selected = list(PROFILES[profile][1])

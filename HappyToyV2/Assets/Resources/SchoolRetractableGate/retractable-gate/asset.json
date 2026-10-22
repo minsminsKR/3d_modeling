@@ -1,0 +1,80 @@
+{
+  "key": "retractable-gate",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "d4fbf2bfa0b0a596ece81adff095b53b255283d9c443543663ef2208fabdf62d",
+  "editable": "retractable-gate/retractable-gate.blend",
+  "widthMetres": 1.1566098928451538,
+  "heightMetres": 2.549738482601242,
+  "depthMetres": 0.2105392888188362,
+  "normalizedAxis": "height",
+  "normalizedMetres": 2.55,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 2,
+    "metres": 2.55,
+    "texture": 2048,
+    "budgets": [
+      100000,
+      65000
+    ]
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 2048,
+  "originalFaces": 984090,
+  "originalTriangles": 984090,
+  "lods": [
+    {
+      "file": "retractable-gate-lod0.fbx",
+      "targetTriangles": 100000,
+      "triangles": 99999,
+      "vertices": 41804,
+      "boundsMin": [
+        -0.5784448385238647,
+        -0.10532227903604507,
+        -0.0002949992485810071
+      ],
+      "boundsMax": [
+        0.5781650543212891,
+        0.10521700978279114,
+        2.549443483352661
+      ],
+      "sha256": "a800c2340665b61b232ee2155b31c3a7da8be37c8e3925623b7c6f897d859008"
+    },
+    {
+      "file": "retractable-gate-lod1.fbx",
+      "targetTriangles": 65000,
+      "triangles": 64999,
+      "vertices": 24276,
+      "boundsMin": [
+        -0.572841465473175,
+        -0.1044251099228859,
+        -0.011747774668037891
+      ],
+      "boundsMax": [
+        0.5672757625579834,
+        0.09898101538419724,
+        2.545870542526245
+      ],
+      "sha256": "9d98cfecbb9b51a93e3611ada7ddc098bfed2d7920d2dc8b412da61ec781e436"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_retractable-gate_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_retractable-gate_0-baseColor.png",
+      "metallicSmoothness": "CE_retractable-gate_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

@@ -100,6 +100,12 @@ Unity CLI는 별도 설치 도구이며 기본 빌드 결과는 `HappyToyV2/Buil
 
 ## 제작 원본과 도구
 
+- `SourceArt/SchoolRetractableGate/`: 학교 시작점의 열린 자바라·끝 기둥의 자물쇠 한 개.
+  지정 웹앱의 실제 원본 GLB/8K PBR·사용자 참고·생성 입력/프롬프트·저장된 작업 설정·
+  packed Blender·2LOD/2K 변환 도구와 해시/고지를 보관한다. 게임 자산과 메타는
+  `Assets/Resources/SchoolRetractableGate/`, 가져오기는 `SchoolRetractableGateImport.Apply`,
+  통행·학교 저장/밝기·정상 카메라 검사는 `school-gate` 프로필을 따른다.
+
 코드의 기능별 진입점과 검사 명령은 [CODE_MAP.md](CODE_MAP.md)에 있다.
 `Assets/Scripts/Core`는 Unity에 의존하지 않는 `HappyToy.V2.Core` 어셈블리이며,
 `Assets/Tests/EditMode/Core`는 이를 직접 참조하는 빠른 규칙 검사다.

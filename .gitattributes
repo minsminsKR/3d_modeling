@@ -122,3 +122,24 @@ HappyToyV2/SourceArt/SchoolHorror/StructuralDecay/Originals/**/*.jpg filter=lfs 
 HappyToyV2/SourceArt/SchoolHorror/StructuralDecay/Originals/**/*.exr filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Scripts/SchoolStructuralDecay.cs text eol=lf
 HappyToyV2/Assets/Scripts/SchoolPlanarReflection.cs text eol=lf
+
+# Generated folded school gate: original PBR and editable authoring source.
+HappyToyV2/SourceArt/SchoolRetractableGate/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolRetractableGate/**/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolRetractableGate/**/*.py text eol=lf
+HappyToyV2/SourceArt/SchoolRetractableGate/**/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolRetractableGate/*.py text eol=lf
+HappyToyV2/SourceArt/SchoolRetractableGate/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolRetractableGate/*.md text eol=lf
+HappyToyV2/SourceArt/SchoolRetractableGate/*.txt text eol=lf
+HappyToyV2/Assets/Resources/SchoolRetractableGate/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/SchoolRetractableGate/**/*.meta text eol=lf
+HappyToyV2/Assets/Resources/SchoolRetractableGate/**/*.json text eol=lf
+HappyToyV2/Assets/Resources/SchoolRetractableGate/**/*.mat text eol=lf
+HappyToyV2/Assets/Resources/SchoolRetractableGate/*.prefab text eol=lf
+HappyToyV2/Assets/Scripts/SchoolRetractableGate.cs text eol=lf
+HappyToyV2/Assets/Scripts/SchoolRetractableGate.cs.meta text eol=lf
+HappyToyV2/Assets/Editor/SchoolRetractableGateImport.cs text eol=lf
+HappyToyV2/Assets/Editor/SchoolRetractableGateImport.cs.meta text eol=lf
+HappyToyV2/Assets/Tests/PlayMode/SchoolRetractableGateTests.cs text eol=lf
+HappyToyV2/Assets/Tests/PlayMode/SchoolRetractableGateTests.cs.meta text eol=lf

@@ -396,3 +396,7 @@ unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.E
 ## 학교 인게임 밝기 · 2026-10-22
 
 `SchoolHorrorLighting`은 학교 전용 Neutral/−0.1EV/contrast0 프로필로 승인된 복도 밝기를 유지한다. 검토의 `SingleCameraRequest`는 정상 카메라의 Volume 갱신을 생략하므로, 공개하는 학교 프리뷰와 `SchoolHorrorReviewProbe.Pose`는 `StandardRequest`의 정상 스택을 사용한다. `school-brightness`는 다른 카메라의 Volume 상태를 먼저 설치하고도 정상 스택에서 승인된 전체/벽 밝기가 나오는지 검사한다. `school-horror`에도 이 검사가 포함된다. Windows 밝기 검토는 기존 명시 옵션에 `-v2-school-horror-brightness-only`를 더하고 반사 프로브 완료와 밝기 판정을 분리해 기록한다. 재현·수치 기준·피드백 원본은 `SourceArt/SchoolHorror/BRIGHTNESS.md`에 있다.
+
+## 학교 시작 자바라 · 2026-10-22
+
+`SchoolLoopArchitecture.Gate`는 `SchoolRetractableGate`에 열린 입구 조립을 맡긴다. 지정 웹앱 생성 원본의 접힌 자바라 한 장과 자유단 보관 고리의 자물쇠 하나를 사용한다. `SchoolRetractableGateImport`가2LOD/외부 PBR prefab과 자물쇠 위치를 만들며 `QualityValidation.BuildWindows`가 자산 완전성을 확인한다. 닫기/잠금 상호작용·저장 버전은 추가하지 않는다. `school-gate` 프로필은 실제 원본 메시/PBR/LOD 정체성·3m 이상 열린 시작 동선의 CapsuleCast/NavMesh/W 이동·학교 이동/저장/밝기 회귀와 정상 카메라의 입구 전체/자물쇠 근접/시작 시점을 검사한다. `HAPPYTOY_SCHOOL_GATE_REVIEW_DIR`를 새 Builds 하위 폴더로 명시할 때만 렌더를 저장한다. 원본 이미지·프롬프트·실제 작업·GLB/8K·packed Blender·고정 도구·해시는 `SourceArt/SchoolRetractableGate/README.md`에 있다.

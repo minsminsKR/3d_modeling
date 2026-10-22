@@ -163,14 +163,7 @@ namespace HappyToy.V2
         }
         void Gate()
         {
-            // Permanent open steel fire doors frame the entry; no door script can close them.
-            var steel=world.Surfaces.Get("painted-metal",new Color(.50f,.53f,.49f));
-            foreach(float z in new[]{.5f,3.9f})
-            {
-                Box("Permanently open steel fire door",new Vector3(-3.9f,1.30f,z),new Vector3(1.55f,2.6f,.07f),steel,true);
-                Box("Fire door reinforced upper pane",new Vector3(-3.91f,1.81f,z+.04f),new Vector3(.95f,.62f,.015f),iron);
-                Box("Fire door push rail",new Vector3(-3.91f,1.05f,z+.07f),new Vector3(1.05f,.06f,.055f),iron);
-            }
+            SchoolRetractableGate.Build(world,root,physical);
             Box("Fire gate lintel",new Vector3(-4.6f,2.85f,2.2f),new Vector3(.16f,.30f,4.4f),iron);
             var sign=world.Surfaces.Get("painted-metal",new Color(.12f,.28f,.21f),new Color(.07f,.15f,.09f));
             Box("Entry exit sign",new Vector3(-4.58f,2.96f,2.2f),new Vector3(.10f,.23f,.72f),sign);

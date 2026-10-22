@@ -32,3 +32,5 @@ Concrete Debris — Amal Kumar — https://polyhaven.com/a/concrete_debris
 Namaqualand Stones 01 — Greg Zaal (photography), Jenelle van Heerden (modeling) — https://polyhaven.com/a/namaqualand_stones_01
 Both assets: Poly Haven CC0 1.0. Concrete debris is acquired photographed height/PBR data used for relief patches; the small aggregate pieces derive from the actual individual photogrammetry meshes.
 Original editable Blender files and referenced maps, source checksums, pinned Blender derivative tools and packed game authoring source: SourceArt/SchoolHorror/StructuralDecay.
+
+학교 시작 자바라: 지정 modeling webapp / TRELLIS.2에서 생성한 접힌 철문과 단일 자물쇠 원본을 Blender4.0.2에서 게임 LOD/PBR로 마감했다. 사용자 참조·ImageGen 입력/프롬프트·실제 완료 작업·원본 GLB/8K·packed Blender·도구 고지와 재현 해시는 SourceArt/SchoolRetractableGate에 보존한다.
