@@ -12,7 +12,7 @@ namespace HappyToy.V2.Editor
         public static void Apply()
         {
             AssetDatabase.Refresh();
-            var importer=(ModelImporter)AssetImporter.GetAtPath(Folder+"/Baeksugwi.fbx");
+            var importer=(ModelImporter)AssetImporter.GetAtPath(Folder+"/Baeksugwi_Source.fbx");
             if(!importer)throw new InvalidOperationException("Export the reviewed Blender rig first");
             importer.animationType=ModelImporterAnimationType.Legacy;importer.importAnimation=true;
             importer.animationCompression=ModelImporterAnimationCompression.Off;importer.resampleCurves=true;
@@ -31,7 +31,7 @@ namespace HappyToy.V2.Editor
             material.SetTexture("_MetallicGlossMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"/metallic-smoothness.png"));
             material.EnableKeyword("_METALLICSPECGLOSSMAP");material.SetFloat("_Metallic",1);material.SetFloat("_Smoothness",1);
             EditorUtility.SetDirty(material);
-            var imported=AssetDatabase.LoadAllAssetsAtPath(Folder+"/Baeksugwi.fbx").OfType<AnimationClip>().Single(c=>!c.name.StartsWith("__preview__"));
+            var imported=AssetDatabase.LoadAllAssetsAtPath(Folder+"/Baeksugwi_Source.fbx").OfType<AnimationClip>().Single(c=>!c.name.StartsWith("__preview__"));
             var clipPath=Folder+"/Run_InPlace.anim";
             var clip=AssetDatabase.LoadAssetAtPath<AnimationClip>(clipPath);
             if(!clip){clip=new AnimationClip();AssetDatabase.CreateAsset(clip,clipPath);}else clip.ClearCurves();
@@ -47,7 +47,7 @@ namespace HappyToy.V2.Editor
             var root=new GameObject("Baeksugwi");
             try
             {
-                var asset=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/Baeksugwi.fbx"),root.transform);
+                var asset=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/Baeksugwi_Source.fbx"),root.transform);
                 asset.name="Rigged asset";
                 imported.SampleAnimation(asset,0);
                 foreach(var a in asset.GetComponentsInChildren<Animation>(true))UnityEngine.Object.DestroyImmediate(a);

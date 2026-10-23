@@ -52,7 +52,7 @@ assert len(action.fcurves)==4 and all(c.data_path=='pose.bones["Head"].rotation_
 assert original=={a.name:action_hash(a) for a in bpy.data.actions if a.name in original}
 scene.render.fps=profile['fps'];scene.frame_start=1;scene.frame_end=count+1;scene.frame_set(1)
 bpy.ops.object.select_all(action='DESELECT');rig.select_set(True);bpy.context.view_layer.objects.active=rig
-output=PROJECT/'Assets/Resources/Baeksugwi/Head_Writhe.fbx'
+output=PROJECT/'Assets/Resources/Baeksugwi/Head_Writhe_Source.fbx'
 # The take is armature-only. Avoid re-skinning the full source mesh on each
 # FBX bake frame; restore these authoring settings before saving the source.
 modifiers=[m for obj in scene.objects for m in obj.modifiers if m.type=='ARMATURE']

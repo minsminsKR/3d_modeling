@@ -123,10 +123,17 @@ namespace HappyToy.V2.CloudTests
             yield return RecoveryUiReady();Call(shell,"RestoreDefaultSettings");yield return null;yield return null;
             var title=One("CinematicTitleScene");Assert.That(Time.timeScale,Is.Zero);
             Assert.That(Get<AnimationClip>(title,"HeadMotionClip"),Is.SameAs(Resources.Load<AnimationClip>("Baeksugwi/Head_Writhe")));
+            Assert.That(Get<AnimationClip>(title,"HeadMotionClip").name,Is.EqualTo("Head_Writhe"),
+                "The runtime key must resolve the extracted head-only clip, not the source FBX Scene take");
             var creature=GameObject.Find("Actual Baeksugwi source clone");Assert.That(creature,Is.Not.Null);
             var nodes=creature.GetComponentsInChildren<Transform>(true);var head=nodes.Single(t=>t.name=="Head");
             var others=nodes.Where(t=>t!=head).ToArray();var rotations=others.Select(t=>t.localRotation).ToArray();var positions=others.Select(t=>t.localPosition).ToArray();
             var first=head.localRotation;float swing=0;
+            var titleTarget=Get<RenderTexture>(title,"Image");
+            var firstImage=CloudExperienceTests.Read(titleTarget);Color32[] firstPixels;
+            try{firstPixels=firstImage.GetPixels32();}finally{Object.Destroy(firstImage);}
+            var titleCamera=TitleSceneField<Camera>(title,"camera");
+            var headCentre=titleCamera.WorldToViewportPoint(head.position);
             float motionStart=Get<float>(title,"HeadMotionTime"),wallStart=Time.realtimeSinceStartup;
             while(Get<float>(title,"HeadMotionTime")-motionStart<2.4f && Time.realtimeSinceStartup-wallStart<18)
             {
@@ -141,6 +148,18 @@ namespace HappyToy.V2.CloudTests
             Assert.That((Get<float>(title,"HeadMotionTime")-motionStart)/(Time.realtimeSinceStartup-wallStart),Is.InRange(.12f,.25f),
                 "The giant title head must turn slowly in unscaled time");
             Assert.That(swing,Is.GreaterThan(15));Assert.That(Get<int>(title,"PlantedLimbCount"),Is.EqualTo(12));
+            // Check the production texture separately: moving CPU joints alone
+            // cannot prove that an offscreen camera presents a moving head.
+            var lastImage=CloudExperienceTests.Read(titleTarget);Color32[] lastPixels;
+            try{lastPixels=lastImage.GetPixels32();}finally{Object.Destroy(lastImage);}
+            int changed=0,cx=Mathf.RoundToInt(headCentre.x*titleTarget.width),cy=Mathf.RoundToInt(headCentre.y*titleTarget.height);
+            for(int y=Mathf.Max(0,cy-150);y<Mathf.Min(titleTarget.height,cy+150);y++)
+                for(int x=Mathf.Max(0,cx-150);x<Mathf.Min(titleTarget.width,cx+150);x++)
+                {
+                    int i=y*titleTarget.width+x;var a=firstPixels[i];var b=lastPixels[i];
+                    if(Mathf.Max(Mathf.Abs(a.r-b.r),Mathf.Abs(a.g-b.g),Mathf.Abs(a.b-b.b))>12)changed++;
+                }
+            Assert.That(changed,Is.GreaterThanOrEqualTo(24),"Actual title head-region texture stayed still while CPU joints moved");
             Assert.That(Get<float>(title,"MaximumSupportFloorGap"),Is.LessThan(.006f));
             Call(title,"SetVisible",false);float clock=Get<float>(title,"HeadMotionTime");yield return Delay(.15f);
             Assert.That(Get<float>(title,"HeadMotionTime"),Is.EqualTo(clock));

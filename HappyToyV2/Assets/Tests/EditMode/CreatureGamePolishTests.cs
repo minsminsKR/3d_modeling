@@ -100,7 +100,7 @@ namespace HappyToy.V2.CloudTests
         {
             var folder="Assets/Resources/Baeksugwi/";
             CheckAction(AssetDatabase.LoadAssetAtPath<GameObject>(folder+"Baeksugwi.prefab"),
-                AssetDatabase.LoadAllAssetsAtPath(folder+"Baeksugwi.fbx").OfType<AnimationClip>().Single(c=>!c.name.StartsWith("__preview__")),
+                AssetDatabase.LoadAllAssetsAtPath(folder+"Baeksugwi_Source.fbx").OfType<AnimationClip>().Single(c=>!c.name.StartsWith("__preview__")),
                 AssetDatabase.LoadAssetAtPath<AnimationClip>(folder+"Run_InPlace.anim"));
         }
     }

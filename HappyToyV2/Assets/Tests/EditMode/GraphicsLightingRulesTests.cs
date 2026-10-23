@@ -91,6 +91,38 @@ namespace HappyToy.V2.CloudTests
             Assert.That(AssetDatabase.AssetPathToGUID(rendererPath),Is.EqualTo(rendererGuid));
         }
         [Test]
+        public void SchoolNativeShaderPrefilterIncludesBothPipelinesWithoutChangingExistingQualityChoices()
+        {
+            var originalNames=QualitySettings.names.ToArray();
+            var originalPipelines=Enumerable.Range(0,originalNames.Length).Select(QualitySettings.GetRenderPipelineAssetAt).ToArray();
+            int active=QualitySettings.GetQualityLevel();
+            var getDefault=typeof(QualitySettings).GetMethod("GetDefaultQualityForPlatform",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);
+            Assert.That(getDefault,Is.Not.Null);
+            int platformDefault=(int)getDefault.Invoke(null,new object[]{"Standalone"});
+            var setup=RequireType("Editor.GraphicsLightingSetup","Assembly-CSharp-Editor");
+            Call(setup,"EnsureAndActivate");
+            const string reserved="School runtime shader variants";
+            var names=QualitySettings.names;
+            Assert.That(names.Take(originalNames.Length),Is.EqualTo(originalNames),"Existing quality indices must stay stable");
+            for(int i=0;i<originalPipelines.Length;i++)
+                Assert.That(QualitySettings.GetRenderPipelineAssetAt(i),Is.SameAs(originalPipelines[i]),"Existing quality pipeline changed at "+i);
+            Assert.That(QualitySettings.GetQualityLevel(),Is.EqualTo(active));
+            Assert.That((int)getDefault.Invoke(null,new object[]{"Standalone"}),Is.EqualTo(platformDefault));
+            Assert.That(names.Count(name=>name==reserved),Is.EqualTo(1));
+            int schoolIndex=Array.IndexOf(names,reserved);
+            Assert.That(QualitySettings.GetActiveQualityLevelsForPlatform("Standalone"),Does.Contain(schoolIndex));
+            var school=AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.RenderPipelineAsset>("Assets/Resources/SchoolRendering/SchoolPipeline.asset");
+            Assert.That(QualitySettings.GetRenderPipelineAssetAt(schoolIndex),Is.SameAs(school));
+            var nativeAssets=new System.Collections.Generic.List<UnityEngine.Rendering.RenderPipelineAsset>();
+            QualitySettings.GetAllRenderPipelineAssetsForPlatform("Standalone",ref nativeAssets);
+            Assert.That(nativeAssets,Does.Contain(school),"Labels alone do not feed the engine's native prefilter");
+            Assert.That(nativeAssets,Does.Contain(UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline));
+            Call(setup,"EnsureAndActivate");
+            Assert.That(QualitySettings.names,Is.EqualTo(names),"Repeated setup must not append another reserved tier");
+            Assert.That(QualitySettings.GetQualityLevel(),Is.EqualTo(active));
+            Assert.That((int)getDefault.Invoke(null,new object[]{"Standalone"}),Is.EqualTo(platformDefault));
+        }
+        [Test]
         public void ReusedShadowPlanClearsOldSelectionsAndPreservesDistanceTiesAndTorchPriority()
         {
             var rules=RequireType("ShadowAtlasPlan");var type=RequireType("ShadowAtlasPlan+Candidate");

@@ -1,7 +1,7 @@
 {
   "source": "Baeksugwi_Run.blend",
   "sourceSha256": "3a03ed2fb76b6627c3349a9a1ef104c6d3bcbe4deea641d6faab87c409209f5a",
-  "fbx": "Assets/Resources/Baeksugwi/Baeksugwi.fbx",
+  "fbx": "Assets/Resources/Baeksugwi/Baeksugwi_Source.fbx",
   "fbxSha256": "5ba5677a7a47f7adb0e68cb59c6283b5d5e6fa12ef808f1aa2db66950d3ff1bb",
   "bones": 63,
   "vertices": 952517,

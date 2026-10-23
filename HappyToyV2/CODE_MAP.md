@@ -202,7 +202,12 @@ offscreen 렌더에서 바닥·부적줄·촛불·수호상의 독립 픽셀 기
 
 `temple-lanterns`는 `entrance-lighting`의 Core/조명 규칙과 실제 카메라 검사에 수호상 좌우 얼굴의 촛불 켜짐/꺼짐 비교, 일반 회랑 천장 등의 공유 메시/PBR/2LOD·천장 여유·실제 시작/기억 방 렌더, 장식 해제 시 공유 자원 보존과 위험 점멸 회귀를 묶는다. 별도의 손전등 없이 실제 조각 얼굴의 밝기와 모델 픽셀 기여를 확인한다.
 
-`title`은 `CloudBaeksugwiHeadTests.cs`의 새 검사도 자동 선택한다. 원본 머리 클립·
+`title`은 `BaeksugwiHeadResourceTests`의 EditMode 검사와 `CloudBaeksugwiHeadTests.cs`의 새 검사도 자동 선택한다.
+`Resources/Baeksugwi/Baeksugwi`는 런타임 prefab만, `Resources/Baeksugwi/Head_Writhe`는
+prefab-relative 머리 회전 clip만 반환해야 한다. 이름이 겹치던 원본 FBX는 각각
+`Baeksugwi_Source.fbx`·`Head_Writhe_Source.fbx`로 구분하고 GUID를 보존한다.
+EditMode 검사는 Resources 키의 유일성·원본/prefab/clip GUID·실제 머리 경로 바인딩을 확인한다.
+원본 머리 클립·
 느린 타이틀 재생·몸체/발 고정·Time.timeScale 0에서의 재생과 숨김/동작 감소 시 정지·실제 메뉴 시작 전환을
 검사하며, 16:9·4:3·21:9의 실제 타이틀 렌더와 UI 표시 영역에서 큰 실루엣·안광을
 확인한다. `-quiet-diagnostics -v2-start-loading-output <새 결과 폴더>` 네이티브
@@ -405,6 +410,19 @@ unity run HappyToyV2 --editor-version 6000.6.0f1 -- -executeMethod HappyToy.V2.E
 
 ## 학교 이동 중 광원 겹침 · 2026-10-23
 
-`SchoolLightOverlapScope`는 학교 전용 Forward+ 품질 파이프라인을 소유하고 disable/unload에서 이전 override를 복원한다. `SchoolHorrorLighting`이 이 범위를 조립한다. 4→8 완화 후에도 물체별 목록 교체로 남은 천장 빛 단절을 화면/깊이 cluster 계산으로 제거한다. 화면 밖 광원도 보이는 표면에 기여하면 포함한다. `Editor/SchoolLightingSetup`은 공용 설정을 `Resources/SchoolRendering/`의 별도 파이프라인·렌더러·독립 AO에 복제하고 공식 `IncludeAdditionalRPAssets` 라벨과 Windows 수집기로 셰이더 보존을 확인한다. 공용 기본 렌더러는 Forward다. 광원 출력·노출·그림자 지도2048/손전등1024/국소512·최대 두 point caster·반사 해상도는 유지한다.
+`SchoolLightOverlapScope`는 학교 전용 Forward+ 품질 파이프라인을 소유하고 disable/unload에서 이전 override를 복원한다. `SchoolHorrorLighting`이 이 범위를 조립한다. 4→8 완화 후에도 물체별 목록 교체로 남은 천장 빛 단절을 화면/깊이 cluster 계산으로 제거한다. 화면 밖 광원도 보이는 표면에 기여하면 포함한다. `Editor/SchoolLightingSetup`은 공용 설정을 `Resources/SchoolRendering/`의 별도 파이프라인·렌더러·독립 AO에 복제하고 공식 `IncludeAdditionalRPAssets` 라벨과 예약 품질 단계 `School runtime shader variants`를 함께 등록한다. 엔진 native `QualitySettings.GetAllRenderPipelineAssetsForPlatform` 수집기도 학교·공용 파이프라인을 모두 포함해야 하며, 라벨만으로 엔진 prefilter의 cluster 변형 제거를 막았다고 간주하지 않는다. 공용 기본 렌더러는 Forward다. 광원 출력·노출·그림자 지도2048/손전등1024/국소512·최대 두 point caster·반사 해상도는 유지한다.
 
 `school-lighting-continuity`는 Core/atlas/그래픽 자산·Forward+ 빌드 수집과 실제12.5cm 입구 이동·고정 형광등·손전등 on/off·Forward8 대조군·동일 월드 천장12지점 재투영·9개 겹친 광원 각각의 픽셀 기여/카메라 뒤 광원·학교 범위 disable/re-enable/다음 모드 파이프라인 복원을 검사한다. 기존 학교 전체 표면/밝기/반사/조명 pause·실제 통행/저장/자바라와 회랑 그림자/렌더 범위도 포함한다. `HAPPYTOY_SCHOOL_STEP_LIGHT_REVIEW_DIR`를 Builds 하위로 명시할 때만 프레임과 실제 trace를 쓴다. 입력 피드백·해시와 재현은 `SourceArt/SchoolHorror/LightContinuity/README.md`에 있다.
+
+
+학교 Windows 조명 변형의 엔진 prefilter 등록은 `Editor/SchoolLightingSetup`이 소유한다.
+라벨 기반 URP 수집과 별도로 `QualitySettings.GetAllRenderPipelineAssetsForPlatform`에서
+학교·공통 자산을 모두 확인한다. 예약 학교 품질 단계는 끝에만 추가하며 기존 선택을 보존한다.
+관련 단일 EditMode 검사는 `SchoolNativeShaderPrefilterIncludesBothPipelinesWithoutChangingExistingQualityChoices`다.
+명시 `HAPPYTOY_SCHOOL_SHADER_AUDIT_DIR`와 새 Windows 밝기 검토로 실제 cluster 변형 보존과
+기본 Forward+의 벽/바닥 밝기를 확인한다. 재현은 `SourceArt/SchoolHorror/BRIGHTNESS.md`의 Windows 복구 절에 있다.
+
+타이틀 머리 검사는 회전 값과 실제 타이틀 텍스처 변화를 함께 확인한다.
+`-v2-baeksugwi-head-output <새 폴더> -v2-baeksugwi-title-only`는 기존 진단 무음 guard를
+사용해 3초 동안 타이틀 텍스처3장과 머리 영역 픽셀 변화를 검사하고 회랑을 만들지 않는다.
+batch 모드에서도 앞선 LateUpdate의 완성된 텍스처를 읽으며15초 안에 종료한다.

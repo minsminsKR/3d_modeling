@@ -227,7 +227,8 @@ PROFILES = {
             PLAY + "StudioWraithKeepsNavigationAndImportsEighteenSkinnedArms",
             PLAY + "StudioCorridorCloneUsesOneReplacementAndHidesTheFloatingFace",
             PLAY + "ArmedTrapCheckpointRestoresStockSuppliesAndModelWithoutReplayingPlacement"))]),
-    "title": ("Title head/body/comfort behavior, real start transition and keyboard start", [
+    "title": ("Unique creature/head Resources keys, title head/body/comfort behavior, real start transition and keyboard start", [
+        ("EditMode", (CLOUD + "BaeksugwiHeadResourceTests",)),
         ("PlayMode", play_tests("CloudBaeksugwiHeadTests.cs") + (
             PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "TitleApproachRecordedContactsReachTheMixerAndObeyMasterMute",

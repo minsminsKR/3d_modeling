@@ -15,14 +15,14 @@ bpy.context.scene.frame_set(1)
 bpy.ops.object.select_all(action='DESELECT')
 for o in meshes+[rig]:o.select_set(True)
 bpy.context.view_layer.objects.active=rig
-target=OUTPUT/'Baeksugwi.fbx'
+target=OUTPUT/'Baeksugwi_Source.fbx'
 bpy.ops.export_scene.fbx(filepath=str(target),use_selection=True,object_types={'MESH','ARMATURE'},
     axis_forward='-Z',axis_up='Y',apply_unit_scale=True,apply_scale_options='FBX_SCALE_UNITS',global_scale=1,
     add_leaf_bones=False,use_armature_deform_only=True,bake_anim=True,
     bake_anim_use_all_actions=False,bake_anim_use_nla_strips=False,bake_anim_simplify_factor=0,
     bake_anim_step=1,mesh_smooth_type='FACE',use_tspace=True,path_mode='AUTO',embed_textures=False)
 report=dict(source='Baeksugwi_Run.blend',sourceSha256=hashlib.sha256((HERE/'Baeksugwi_Run.blend').read_bytes()).hexdigest(),
-    fbx='Assets/Resources/Baeksugwi/Baeksugwi.fbx',fbxSha256=hashlib.sha256(target.read_bytes()).hexdigest(),
+    fbx='Assets/Resources/Baeksugwi/Baeksugwi_Source.fbx',fbxSha256=hashlib.sha256(target.read_bytes()).hexdigest(),
     bones=len(rig.data.bones),vertices=sum(len(o.data.vertices) for o in meshes),clip='Run_InPlace',
     note='Exact reviewed mesh and skin; in-place clip lets the original NavMeshAgent own locomotion.')
 (HERE/'game-export.json').write_text(json.dumps(report,indent=2),encoding='utf8')

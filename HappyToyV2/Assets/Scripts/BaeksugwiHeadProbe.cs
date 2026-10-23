@@ -13,12 +13,13 @@ namespace HappyToy.V2
     // Explicit silent native proof of head-only animation; absent in ordinary play.
     public sealed class BaeksugwiHeadProbe:MonoBehaviour
     {
-        string output;bool finished;float started;
+        string output;bool finished,titleOnly;float started;
         readonly List<string> errors=new List<string>();readonly List<Frame> frames=new List<Frame>();
         [Serializable]sealed class Frame{public string image,stage;public double wallSeconds;public float time,headAngle,rollDegrees,bodyRotationError,bodyPositionError,soleY,roofY;}
         [Serializable]sealed class Report
         {
             public string status,failure;
+            public bool titleOnly;public int titleChangedPixels,titleRegionX,titleRegionY,titleRegionWidth,titleRegionHeight;
             public string scope="Actual title UI at timeScale zero, followed by controlled seed-73 corridor Chase using the real actor/prefab/camera. AI stopped for pose capture. Body joints compared while the head moves; pause and calm transition checked. Not a full survival, audio or hardware performance certification.";
             public float titleHeadSwing,chaseHeadSwing,titleMinRoll,titleMaxRoll,chaseMinRoll,chaseMaxRoll,clipSeconds;public bool pauseFrozen,calmHeadStopped,titleBodyFixed,chaseBodyFixed;
             public Frame[] frames;public string[] errors;
@@ -27,12 +28,16 @@ namespace HappyToy.V2
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Install()
         {
             var args=Environment.GetCommandLineArgs();int at=Array.IndexOf(args,"-v2-baeksugwi-head-output");
-            if(at>=0&&at+1<args.Length)new GameObject("Explicit Baeksugwi head diagnostic").AddComponent<BaeksugwiHeadProbe>().output=Path.GetFullPath(args[at+1]);
+            if(at>=0&&at+1<args.Length)
+            {
+                var probe=new GameObject("Explicit Baeksugwi head diagnostic").AddComponent<BaeksugwiHeadProbe>();
+                probe.output=Path.GetFullPath(args[at+1]);probe.titleOnly=args.Contains("-v2-baeksugwi-title-only");
+            }
         }
         void OnEnable()=>Application.logMessageReceived+=Log;
         void OnDisable()=>Application.logMessageReceived-=Log;
         void Log(string message,string trace,LogType type){if(type==LogType.Error||type==LogType.Exception||type==LogType.Assert)errors.Add(message);}
-        void Update(){if(!finished&&started>0&&Time.realtimeSinceStartup-started>420)Finish("Native head diagnostic timeout");}
+        void Update(){if(!finished&&started>0&&Time.realtimeSinceStartup-started>(titleOnly?15:420))Finish("Native head diagnostic timeout");}
         IEnumerator Start()
         {
             started=Time.realtimeSinceStartup;Directory.CreateDirectory(output);var stack=new Stack<IEnumerator>();stack.Push(Run());
@@ -66,6 +71,7 @@ namespace HappyToy.V2
             yield return DiagnosticAudioSilence.WaitForSafeAudio(output);yield return null;yield return null;
             var session=GameSession.Current;Require(session&&session.Shell&&session.player,"Actual session missing");
             session.ConfigureRecordDirectory(Path.Combine(output,"isolated-profile"));session.Shell.RestoreDefaultSettings();
+            if(titleOnly){yield return CaptureTitleOnly();yield break;}
             var view=session.GetComponent<GameShellView>();view.SetCaptureSize(1280,720);
             for(int i=0;i<5;i++)yield return null;
             var title=FindAnyObjectByType<CinematicTitleScene>();var creature=GameObject.Find("Actual Baeksugwi source clone");
@@ -131,6 +137,55 @@ namespace HappyToy.V2
             report.pauseFrozen=visual.HeadMotionTime==paused&&Quaternion.Angle(rotation,head.localRotation)<.01f;Require(report.pauseFrozen,"Chase head moved during pause");
             session.Shell.Resume();state=mask.CaptureChapterProgress();state.state=LanternMaskEncounter.Phase.Wander;state.memory=0;state.doorPassage=null;state.investigation=null;mask.RestoreCorridorProgress(state);
             yield return null;yield return null;report.calmHeadStopped=visual.HeadMotionTime==0&&!visual.HeadWrithing;Require(report.calmHeadStopped,"Calm head still writhing");
+        }
+        IEnumerator CaptureTitleOnly()
+        {
+            report.titleOnly=true;
+            report.scope="Title only: three production title render-texture captures over three unscaled seconds at timeScale zero. CPU head quaternion and head-region RGB changes are separate requirements; no corridor, AI, audio or hardware performance certification. Quiet diagnostic guard restores user preferences.";
+            for(int i=0;i<5;i++)yield return null;
+            var title=FindAnyObjectByType<CinematicTitleScene>();
+            var creature=GameObject.Find("Actual Baeksugwi source clone");
+            var camera=GameObject.Find("Title-only camera").GetComponent<Camera>();
+            Require(title&&creature&&camera&&Time.timeScale==0,"Actual title at paused game clock missing");
+            var head=creature.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Head");
+            var first=head.localRotation;var body=new BodyPose(creature);
+            var images=new List<Color32[]>();int width=title.Image.width,height=title.Image.height;
+            int left=width,bottom=height,right=0,top=0;
+            report.clipSeconds=title.HeadMotionClip.length;
+            for(int sample=0;sample<3;sample++)
+            {
+                if(sample>0)yield return new WaitForSecondsRealtime(1.5f);
+                // The preceding LateUpdate already submitted the production
+                // texture. EOF is not delivered by Unity's batch player loop.
+                yield return null;
+                var frame=new Frame{stage="title-only",image="title-only-"+sample+".png",wallSeconds=Time.realtimeSinceStartupAsDouble,
+                    time=title.HeadMotionTime,headAngle=Quaternion.Angle(first,head.localRotation)};
+                body.Check(frame);frames.Add(frame);report.titleHeadSwing=Mathf.Max(report.titleHeadSwing,frame.headAngle);
+                var centre=camera.WorldToViewportPoint(head.position);
+                Require(centre.z>camera.nearClipPlane,"Title head is behind its production camera");
+                int x=Mathf.RoundToInt(centre.x*width),y=Mathf.RoundToInt(centre.y*height);
+                left=Mathf.Min(left,x-150);right=Mathf.Max(right,x+150);bottom=Mathf.Min(bottom,y-150);top=Mathf.Max(top,y+150);
+                var image=ReadUi(title.Image);
+                try{images.Add(image.GetPixels32());File.WriteAllBytes(Path.Combine(output,frame.image),image.EncodeToPNG());}
+                finally{Destroy(image);}
+            }
+            left=Mathf.Clamp(left,0,width-1);right=Mathf.Clamp(right,left+1,width);
+            bottom=Mathf.Clamp(bottom,0,height-1);top=Mathf.Clamp(top,bottom+1,height);
+            report.titleRegionX=left;report.titleRegionY=bottom;report.titleRegionWidth=right-left;report.titleRegionHeight=top-bottom;
+            for(int sample=1;sample<images.Count;sample++)
+            {
+                int changed=0;
+                for(int y=bottom;y<top;y++)for(int x=left;x<right;x++)
+                {
+                    int index=y*width+x;var a=images[0][index];var b=images[sample][index];
+                    // The small normal eye pulse cannot explain a 12/255 change.
+                    if(Mathf.Max(Mathf.Abs(a.r-b.r),Mathf.Abs(a.g-b.g),Mathf.Abs(a.b-b.b))>12)changed++;
+                }
+                report.titleChangedPixels=Mathf.Max(report.titleChangedPixels,changed);
+            }
+            report.titleBodyFixed=true;
+            Require(report.titleHeadSwing>8,"CPU title head stayed still during the short capture");
+            Require(report.titleChangedPixels>=24,"Production title head-region image stayed still despite CPU motion");
         }
         static Texture2D ReadUi(RenderTexture target)
         {

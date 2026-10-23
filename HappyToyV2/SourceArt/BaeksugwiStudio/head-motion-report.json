@@ -565,7 +565,7 @@
     "Run_Forward": "ef8cd3d0dfbde97c2365aee6be43eedffdfdbe5f83cf5032a8c5814f92418c19",
     "Run_InPlace": "79b49935791b71b426bd86d1da1b800d460d7c63d10a52e35ad28dd57547d13e"
   },
-  "fbx": "Assets/Resources/Baeksugwi/Head_Writhe.fbx",
+  "fbx": "Assets/Resources/Baeksugwi/Head_Writhe_Source.fbx",
   "fbxSHA256": "75f4847a5436eeea6ed3498b0f6085066640867dc31ca6632f428c2d086ff4eb",
   "scope": "Existing mesh/weights/texture data untouched; only a Head quaternion action replaced. Unity imports Head rotation curves only."
 }

@@ -14,6 +14,7 @@ namespace HappyToy.V2.Editor
     {
         public const string PipelinePath="Assets/Resources/SchoolRendering/SchoolPipeline.asset";
         public const string RendererPath="Assets/Resources/SchoolRendering/SchoolRenderer.asset";
+        public const string ShaderQualityName="School runtime shader variants";
         public static void Ensure(UniversalRenderPipelineAsset template,UniversalRendererData sourceRenderer)
         {
             const string folder="Assets/Resources/SchoolRendering";
@@ -47,10 +48,44 @@ namespace HappyToy.V2.Editor
             AssetDatabase.SetLabels(pipeline,AssetDatabase.GetLabels(pipeline).Concat(new[]{included.labelToInclude}).Distinct().ToArray());
             var globals=GraphicsSettings.GetSettingsForRenderPipeline<UniversalRenderPipeline>();
             if(globals)EditorUtility.SetDirty(globals);
+            EnsureNativeShaderInclusion(pipeline);
             AssetDatabase.SaveAssets();
+            var nativeAssets=new List<RenderPipelineAsset>();
+            QualitySettings.GetAllRenderPipelineAssetsForPlatform("Standalone",ref nativeAssets);
+            if(!nativeAssets.Contains(pipeline)||!nativeAssets.Contains(template))
+                throw new InvalidOperationException("Native Windows shader prefilter omitted a runtime pipeline");
             var buildAssets=new List<UniversalRenderPipelineAsset>();
             if(!BuildTarget.StandaloneWindows64.TryGetRenderPipelineAssets(buildAssets)||!buildAssets.Contains(pipeline)||!buildAssets.Contains(template))
                 throw new InvalidOperationException("Windows shader collector omitted a runtime pipeline");
+        }
+        static void EnsureNativeShaderInclusion(UniversalRenderPipelineAsset pipeline)
+        {
+            // Unity 6000.6 ShaderKeywordFilterUtil reads native QualitySettings assets,
+            // not the managed IncludeAdditionalRPAssets label collector. A reserved
+            // appended tier retains clustered variants without replacing any existing
+            // quality index, platform default or the active common Forward pipeline.
+            var settings=new SerializedObject(QualitySettings.GetQualitySettings());
+            var levels=settings.FindProperty("m_QualitySettings");
+            if(levels==null||levels.arraySize==0)throw new InvalidOperationException("Missing authored quality levels");
+            int index=-1;
+            for(int i=0;i<levels.arraySize;i++)
+                if(levels.GetArrayElementAtIndex(i).FindPropertyRelative("name").stringValue==ShaderQualityName)
+                {
+                    if(index>=0)throw new InvalidOperationException("Duplicate school shader quality tier");
+                    index=i;
+                }
+            if(index<0)
+            {
+                // Duplicate the last authored tier. Its former index keeps an identical
+                // copy, while the duplicate at the end becomes the reserved school tier.
+                index=levels.arraySize;levels.InsertArrayElementAtIndex(index-1);
+            }
+            var school=levels.GetArrayElementAtIndex(index);
+            school.FindPropertyRelative("name").stringValue=ShaderQualityName;
+            school.FindPropertyRelative("customRenderPipeline").objectReferenceValue=pipeline;
+            // The tier must participate in Standalone's native shader collection.
+            school.FindPropertyRelative("excludedTargetPlatforms").arraySize=0;
+            settings.ApplyModifiedPropertiesWithoutUndo();
         }
         static void CopyMissing(string source,string target)
         {

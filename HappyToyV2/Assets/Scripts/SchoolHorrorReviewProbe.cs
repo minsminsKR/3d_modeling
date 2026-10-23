@@ -12,7 +12,7 @@ namespace HappyToy.V2
     public sealed class SchoolHorrorReviewProbe : MonoBehaviour
     {
         const int Width=1280,Height=720;
-        string output,phase="install";bool finished,brightnessOnly;float started;
+        string output,phase="install";bool finished,brightnessOnly,forwardControl;float started;
         int reflectionPumpFrames;float reflectionWaitSeconds;
         readonly Stack<IEnumerator> routines=new Stack<IEnumerator>();
         readonly List<string> errors=new List<string>();
@@ -35,13 +35,13 @@ namespace HappyToy.V2
             public string id,file;public Vector3 feet,eye,look;public Quaternion rotation;
             public int width=Width,height=Height,frame,visiblePixels,magentaPixels;
             public float meanDisplayLuma,nearWallLuma,fieldOfView,postExposure,contrast;public bool flashlight;
-            public string tonemapping;
+            public string tonemapping,pipeline,rendererMode;public bool clusterKeyword,additionalKeyword;public Vector4 fp0,fp1,fp2,additionalCount;
         }
         [Serializable] sealed class Report
         {
             public string status,failure,phase,unity,device,api,createdUtc;
             public string scope="Diagnostic-only fresh isolated school-v3 run using the production URP camera. Batch mode pumps StandardRequest into a 160x90 offscreen target while awaiting actual reflection completion, with a 25-second bound. Reflection completion, phase and captured views are reported separately; no completed surface review is claimed on a failed initialization. Exported PNGs are unfiltered 1280x720 sRGB readbacks, gameplay paused and torch off except explicitly named torch view. This does not certify manual survival, subjective realism or displayed FPS.";
-            public bool deviceSessionMuted,quietGuardActive,reviewWritesUserPreferences,reflectionReady,batchMode,desktopInteractionSuppressed,brightnessOnly;
+            public bool forwardControl;public bool deviceSessionMuted,quietGuardActive,reviewWritesUserPreferences,reflectionReady,batchMode,desktopInteractionSuppressed,brightnessOnly;
             public int reflectionPumpFrames;public float listenerVolume,reflectionWaitSeconds;
             public View[] views;public string[] errors;public ReflectionState[] reflectionStates;
         }
@@ -53,6 +53,7 @@ namespace HappyToy.V2
             if(at>=0&&at+1<args.Length)
             {
                 var probe=new GameObject("Explicit silent school horror surface review").AddComponent<SchoolHorrorReviewProbe>();
+                probe.forwardControl=Array.IndexOf(args,"-v2-school-horror-forward-control")>=0;
                 probe.output=args[at+1];probe.brightnessOnly=Array.IndexOf(args,"-v2-school-horror-brightness-only")>=0;
             }
         }
@@ -117,6 +118,13 @@ namespace HappyToy.V2
             {
                 yield return AwaitReflections(session,lighting);
                 Require(lighting.ReflectionReady,"School reflection completion was lost before capture");reflectionReady=true;
+            }
+            if(forwardControl)
+            {
+                // Explicit isolated negative/control experiment only; never selected in ordinary play.
+                QualitySettings.renderPipeline=GraphicsSettings.defaultRenderPipeline;
+                ((UniversalRenderPipelineAsset)QualitySettings.renderPipeline).maxAdditionalLightsCount=8;
+                yield return null;yield return null;yield return null;
             }
             phase="pause-for-capture";session.Shell.Pause();yield return null;
             yield return Pose(session,"corridor-reference",new Vector3(.72f,.03f,6.3f),new Vector3(-.15f,1.58f,36));
@@ -238,6 +246,10 @@ namespace HappyToy.V2
                 views.Add(new View{id=id,file=file,feet=origin+feet,eye=camera.transform.position,look=origin+look,
                     rotation=camera.transform.rotation,frame=Time.frameCount,visiblePixels=visible,magentaPixels=magenta,
                     meanDisplayLuma=sum/(255f*pixels.Length),nearWallLuma=(float)(wallSum/Math.Max(1,wallCount)),
+                    pipeline=GraphicsSettings.currentRenderPipeline.name,
+                    rendererMode=camera.GetUniversalAdditionalCameraData().scriptableRenderer.GetType().GetProperty("renderingModeActual",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(camera.GetUniversalAdditionalCameraData().scriptableRenderer)?.ToString(),
+                    clusterKeyword=Shader.IsKeywordEnabled("_CLUSTER_LIGHT_LOOP"),additionalKeyword=Shader.IsKeywordEnabled("_ADDITIONAL_LIGHTS"),
+                    fp0=Shader.GetGlobalVector("_FPParams0"),fp1=Shader.GetGlobalVector("_FPParams1"),fp2=Shader.GetGlobalVector("_FPParams2"),additionalCount=Shader.GetGlobalVector("_AdditionalLightsCount"),
                     tonemapping=tone.mode.value.ToString(),postExposure=grade.postExposure.value,contrast=grade.contrast.value,
                     fieldOfView=camera.fieldOfView,flashlight=player.flashlight.enabled});
                 Require(magenta<40,"Native review contains error shader pixels: "+id+" count="+magenta);
@@ -265,12 +277,13 @@ namespace HappyToy.V2
             }
             var report=new Report{status=failure==null&&errors.Count==0&&(brightnessOnly||reflectionReady)&&views.Count>=3?"PASS":"FAIL",failure=failure,phase=phase,
                 unity=Application.unityVersion,device=SystemInfo.graphicsDeviceName,api=SystemInfo.graphicsDeviceType.ToString(),
-                createdUtc=DateTime.UtcNow.ToString("o"),deviceSessionMuted=DiagnosticAudioSilence.DeviceSessionMuted,
+                createdUtc=DateTime.UtcNow.ToString("o"),forwardControl=forwardControl,deviceSessionMuted=DiagnosticAudioSilence.DeviceSessionMuted,
                 quietGuardActive=DiagnosticAudioSilence.Enabled,listenerVolume=AudioListener.volume,reflectionReady=reflectionReady,
                 batchMode=Application.isBatchMode,desktopInteractionSuppressed=DiagnosticDesktopPolicy.SuppressCursorWrites,
                 reflectionPumpFrames=reflectionPumpFrames,reflectionWaitSeconds=reflectionWaitSeconds,reflectionStates=reflectionStates.ToArray(),
                 reviewWritesUserPreferences=false,brightnessOnly=brightnessOnly,views=views.ToArray(),errors=errors.ToArray()};
             if(brightnessOnly)report.scope="Native Windows school brightness review through the normal URP camera-stack/Volume update, private sRGB render target and unchanged production lights. No manual backbuffer/FPS or box-probe completion certification. Actual reflection readiness is recorded separately; pending probes do not block diffuse/tonemapping brightness measurements. No user preferences are written.";
+            if(forwardControl)report.scope="Explicit isolated Forward8 control; does not certify the production school Forward+ rendering path. "+report.scope;
             int exit=report.status=="PASS"?0:1;
             try
             {

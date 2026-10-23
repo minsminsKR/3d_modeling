@@ -96,7 +96,7 @@ Its endpoints are neutral and still, so the loop closes without a jump.
 `author_head_motion.py` records all beats, peak roll and unchanged
 Run curve hashes in `head-motion-report.json`. The original full run GLB and
 base Unity FBX still contain their existing gait; the new armature-only
-`Assets/Resources/Baeksugwi/Head_Writhe.fbx` supplies the independent head take.
+`Assets/Resources/Baeksugwi/Head_Writhe_Source.fbx` supplies the independent head take.
 
 From repository root, with Blender 4.0.2 and Unity 6000.6.0f1:
 

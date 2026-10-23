@@ -16,13 +16,13 @@ namespace HappyToy.V2.Editor
         public static void Apply()
         {
             AssetDatabase.Refresh();
-            var importer=AssetImporter.GetAtPath(Folder+"/Head_Writhe.fbx") as ModelImporter;
+            var importer=AssetImporter.GetAtPath(Folder+"/Head_Writhe_Source.fbx") as ModelImporter;
             if(!importer)throw new InvalidOperationException("Author the reviewed Baeksugwi head action first");
             importer.animationType=ModelImporterAnimationType.Legacy;importer.importAnimation=true;
             importer.animationCompression=ModelImporterAnimationCompression.Off;importer.resampleCurves=true;
             importer.optimizeGameObjects=false;importer.preserveHierarchy=true;importer.importCameras=false;importer.importLights=false;
             importer.materialImportMode=ModelImporterMaterialImportMode.None;importer.SaveAndReimport();
-            var source=AssetDatabase.LoadAllAssetsAtPath(Folder+"/Head_Writhe.fbx").OfType<AnimationClip>().Single(c=>!c.name.StartsWith("__preview__"));
+            var source=AssetDatabase.LoadAllAssetsAtPath(Folder+"/Head_Writhe_Source.fbx").OfType<AnimationClip>().Single(c=>!c.name.StartsWith("__preview__"));
             var bindings=AnimationUtility.GetCurveBindings(source).Where(b=>b.path.Split('/').Last()=="Head" &&
                 (b.propertyName.StartsWith("m_LocalRotation.")||b.propertyName.StartsWith("localEulerAnglesRaw."))).ToArray();
             if(bindings.Length<3||source.length<2)throw new InvalidOperationException("Missing bounded head quaternion action");
