@@ -1,0 +1,84 @@
+{
+  "key": "clock",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "9508e91ead6f0b101c803350b702a4e9b50ef6e4856c1597f9d1827c7a22b0a4",
+  "editable": "clock/clock.blend",
+  "normalizedAxis": "width",
+  "normalizedMetres": 1.4,
+  "widthMetres": 1.3997668623924255,
+  "heightMetres": 0.3922112716609263,
+  "depthMetres": 0.4082159399986267,
+  "textureMaxSize": 1024,
+  "originalTriangles": 970494,
+  "lods": [
+    {
+      "file": "clock-lod0.fbx",
+      "targetTriangles": 12000,
+      "triangles": 11998,
+      "vertices": 5735,
+      "boundsMin": [
+        -0.6999132633209229,
+        -0.20344576239585876,
+        9.38938683248125e-05
+      ],
+      "boundsMax": [
+        0.6998535990715027,
+        0.20477017760276794,
+        0.3923051655292511
+      ],
+      "sha256": "d277ce92c8ea538bb68b36251ad716d9d131131b3298a99e62462e8e93bdefea"
+    },
+    {
+      "file": "clock-lod1.fbx",
+      "targetTriangles": 8000,
+      "triangles": 8000,
+      "vertices": 3736,
+      "boundsMin": [
+        -0.6998146772384644,
+        -0.20352494716644287,
+        -0.0006080963066779077
+      ],
+      "boundsMax": [
+        0.6998075246810913,
+        0.20122693479061127,
+        0.3920705020427704
+      ],
+      "sha256": "98944190d172003be7d73467082253b0c8ff2dd1d8154677852c5dbbcb972030"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_clock_Near",
+      "baseColor": "CE_clock_Near-baseColor.png",
+      "metallicSmoothness": "CE_clock_Near-metallicSmoothness.png",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1
+    },
+    {
+      "name": "CE_clock_Distant",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_clock_Distant-baseColor.png",
+      "metallicSmoothness": "CE_clock_Distant-metallicSmoothness.png"
+    }
+  ],
+  "finishing": "Source-derived bounded collapse with thin housing surfaces preserved; both LODs rebaked from unchanged original colour/ORM.",
+  "front": "Generated display faces Blender +Y; confirm Unity facing in actual school camera"
+}

@@ -3,11 +3,21 @@ using UnityEngine;
 
 namespace HappyToy.V2
 {
+    [Serializable] public sealed class SchoolClockProgress
+    {
+        public int hours;
+        public void Validate()=>SchoolProgressClock.Validate(hours);
+    }
     [Serializable] public sealed class SchoolLoopProgress
     {
         public int traversals;
+        // Optional: old v3 saves counted both seam directions and cannot imply successful hours.
+        public SchoolClockProgress clock;
         public void Validate()
-        {if(traversals<0||traversals>1000000)throw new ArgumentException("Invalid school loop progress");}
+        {
+            if(traversals<0||traversals>1000000)throw new ArgumentException("Invalid school loop progress");
+            clock?.Validate();
+        }
     }
     public sealed partial class ChapterCheckpoint
     {
@@ -29,7 +39,7 @@ namespace HappyToy.V2
         ChapterCheckpoint CaptureLoopCheckpoint()
         {
             var data=new ChapterCheckpoint{simulationVersion=SchoolLoopPlan.Version,token=Guid.NewGuid().ToString("N"),scene=gameObject.scene.path,
-                seconds=session.ElapsedPlayTime,player=session.player.CaptureProgress(),loop=new SchoolLoopProgress{traversals=Loop.Traversals},
+                seconds=session.ElapsedPlayTime,player=session.player.CaptureProgress(),loop=new SchoolLoopProgress{traversals=Loop.Traversals,clock=new SchoolClockProgress{hours=Loop.ClockHours}},
                 lightingVersion=1,lighting=Lighting.Capture(),traps=TrapWorld.Capture(session.player),ritualItems=RitualWorld.Capture(session.player),
                 doors=Array.Empty<ChapterCheckpoint.Door>(),supplies=Array.Empty<ChapterCheckpoint.Supply>()};
             data.Validate();return data;
@@ -44,7 +54,7 @@ namespace HappyToy.V2
         }
         void RestoreLoopCheckpoint(ChapterCheckpoint data)
         {
-            ValidateLoopCheckpoint(data);session.player.RestoreChapterProgress(data.player);Loop.RestoreTraversal(data.loop.traversals);
+            ValidateLoopCheckpoint(data);session.player.RestoreChapterProgress(data.player);Loop.RestoreTraversal(data.loop.traversals);Loop.RestoreClock(data.loop.clock?.hours??0);
             Lighting.Restore(data.lighting);TrapWorld.Restore(data.traps,session.player);RitualWorld.Restore(data.ritualItems,session.player);
             Physics.SyncTransforms();
         }

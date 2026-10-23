@@ -16,11 +16,15 @@ namespace HappyToy.V2
         public Transform Root {get;private set;}
         public Transform Centre {get;private set;}
         public int Traversals {get;private set;}
+        readonly SchoolProgressClock progressClock=new SchoolProgressClock();
+        readonly List<SchoolProgressClockDisplay> clocks=new List<SchoolProgressClockDisplay>();
+        public int ClockHours=>progressClock.Hours;
+        public IReadOnlyList<SchoolProgressClockDisplay> Clocks=>clocks;
         public IReadOnlyList<Light> Fixtures=>fixtures;
         public IReadOnlyList<Interactable> LockedDoors=>doors;
         public Transform MusicRoom {get;internal set;}
         public int StaticBatches {get;private set;}
-        public string Objective=>"복도와 창문 너머의 방을 살펴보세요. 어느 쪽 끝으로 나가도 같은 복도가 이어집니다.";
+        public string Objective=>"복도를 따라 앞으로 나아가세요. 끝을 통과할 때마다 입구의 디지털 시계가 한 시간씩 올라갑니다.";
         public GraphicsSurfaceLibrary.Pool Surfaces {get;}=new GraphicsSurfaceLibrary.Pool();
         public SchoolHorrorSurfaces HorrorSurfaces {get;private set;}
         internal readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
@@ -51,6 +55,7 @@ namespace HappyToy.V2
                 }
                 if(index==0)Centre=chunk;
                 architecture.Build(chunk,index==0);
+                clocks.Add(SchoolProgressClockDisplay.Build(chunk));
                 new SchoolMusicRoomDressing(this).Build(chunk,index==0);
                 new SchoolDecayDressing(this,HorrorSurfaces).Build(chunk,index==0);
             }
@@ -65,6 +70,11 @@ namespace HappyToy.V2
         }
         public Vector3 ToWorld(Vector3 point)=>Origin+point;
         public void RestoreTraversal(int count){if(count<0||count>1000000)throw new ArgumentException("Invalid traversal count");Traversals=count;previous=session.player.transform.position;}
+        public void RestoreClock(int hours)
+        {
+            progressClock.Restore(hours);
+            foreach(var clock in clocks)if(clock)clock.SetHours(progressClock.Hours);
+        }
         void LateUpdate()
         {
             if(!Root||!session||!session.InputAllowed)return;
@@ -77,6 +87,8 @@ namespace HappyToy.V2
                 feet=Origin+new Vector3(pose.X,local.y,pose.Z);
                 session.player.RelocateWorld(feet,Quaternion.Euler(0,pose.Yaw,0)*session.player.transform.rotation);
                 Traversals=Mathf.Clamp(Traversals+1,0,1000000);
+                if(progressClock.AdvanceForTraversal(direction))
+                    foreach(var clock in clocks)if(clock)clock.SetHours(progressClock.Hours);
             }
             previous=feet;
             foreach(var sign in signs)

@@ -143,3 +143,17 @@ HappyToyV2/Assets/Editor/SchoolRetractableGateImport.cs text eol=lf
 HappyToyV2/Assets/Editor/SchoolRetractableGateImport.cs.meta text eol=lf
 HappyToyV2/Assets/Tests/PlayMode/SchoolRetractableGateTests.cs text eol=lf
 HappyToyV2/Assets/Tests/PlayMode/SchoolRetractableGateTests.cs.meta text eol=lf
+
+# Generated school progress clock originals and portable source/input hashes.
+HappyToyV2/SourceArt/SchoolProgressClock/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolProgressClock/**/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/SchoolProgressClock/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolProgressClock/*.py text eol=lf
+HappyToyV2/SourceArt/SchoolProgressClock/**/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolProgressClock/*.md text eol=lf
+HappyToyV2/Assets/Resources/SchoolProgressClock/**/*.meta text eol=lf
+HappyToyV2/Assets/Resources/SchoolProgressClock/**/*.json text eol=lf
+HappyToyV2/Assets/Resources/SchoolProgressClock/**/*.mat text eol=lf
+HappyToyV2/Assets/Resources/SchoolProgressClock/*.prefab text eol=lf
+HappyToyV2/Assets/Resources/SchoolProgressClock/*.shader text eol=lf
+HappyToyV2/Assets/Resources/SchoolProgressClock.meta text eol=lf

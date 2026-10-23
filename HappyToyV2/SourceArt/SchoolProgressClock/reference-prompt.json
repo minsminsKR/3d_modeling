@@ -1,0 +1,7 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "created_date": "2026-10-23",
+  "use": "Image-to-3D input to the user-designated A100 service",
+  "transparent_background": false,
+  "prompt": "Use case: product-mockup. Asset type: image-to-3D reference for an old Korean school wall-mounted digital clock used as progress signage in a realistic horror game. Generate ONE isolated complete solid clock, centered on a plain light gray background. Broad rectangular 1980s/1990s industrial wall clock, width to height ratio about 2.5:1 and shallow but clearly visible depth, approximately 80cm wide, 32cm high, 10cm thick. Slightly elevated three-quarter frontal view with front almost straight-on so face is rectangular; show right side and upper bevel. Weathered warm cream painted metal housing with dark brown rubber bezel, small rusty corner screws, grime and subtle peeling paint; credible aged school equipment. A large inset matte smoked nearly black flat display window occupies most of the front face. Crucial: the display is completely blank and empty, no numbers, no LED segments, no colon, no lettering, no logo, no lighting glow. Display must be one clean planar dark rectangle so live game digits can be overlaid later. Intact functional geometry, no dangling wires, no stand, no wall, no floor, no extra objects, no dramatic shadows, no decorations, no watermark. Neutral studio lighting, physically plausible detailed PBR materials, crisp readable silhouette, not cartoon. Output includes ample clear margin around the object."
+}

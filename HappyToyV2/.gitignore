@@ -36,3 +36,6 @@
 /SourceArt/**/staged/
 /SourceArt/**/previews/
 /SourceArt/EnemyRefinementV2/work/
+
+# Preserved designated-service school progress clock original.
+!/SourceArt/SchoolProgressClock/clock/original.glb

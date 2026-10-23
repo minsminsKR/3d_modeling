@@ -1,0 +1,229 @@
+{
+  "schema": 1,
+  "request_id": "791d5129-4cc1-466c-9b50-dfd870ee55bd",
+  "job_id": "ed7b69e1-6a28-4779-95eb-7f902a9889d1",
+  "service": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "blender": "4.0.2",
+  "unity": "6000.6.0f1",
+  "original_unchanged": true,
+  "game_width_metres": 1.4,
+  "game_triangle_budgets": [
+    12000,
+    8000
+  ],
+  "game_texture_limit": 1024,
+  "recipe": "SourceArt/SchoolProgressClock/finish_clock.py",
+  "shared_recipe": "SourceArt/CorridorEntrance/finish_entrance_assets.py",
+  "files": [
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/asset.json",
+      "bytes": 2275,
+      "sha256": "c602cd581b4090f91f37d5b4ad67478a6a3ec5200ae96d8a0412f1d894ed59bd"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/asset.json.meta",
+      "bytes": 155,
+      "sha256": "3401ed5608b776cf0134f010837d05fbd9deec4e1fe07d4cf559ed068679c08f"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Distant-baseColor.png",
+      "bytes": 849599,
+      "sha256": "e0e25ec037a24cfc4c6b6e8d0e256b7e527ab568e2194a49e77d46439c7e34eb"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Distant-baseColor.png.meta",
+      "bytes": 2707,
+      "sha256": "25f30e3d65f1e8cb1404e68d5a647e44acadac27ab2dbdd006a9d901b4e05de0"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Distant-metallicSmoothness.png",
+      "bytes": 790419,
+      "sha256": "909e5c81a9c976eb8f3a2fc459eae37e8f841791cf7a9a6eb7f865fccfe2b1e8"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Distant-metallicSmoothness.png.meta",
+      "bytes": 2707,
+      "sha256": "eebb2207c07bb1c2445570997435a70f55d461019f5f1c148d06d74cfe965889"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Distant.mat",
+      "bytes": 4081,
+      "sha256": "9e117daeb05ad04da357d24bb1386bbb4afda142ce24bd311eec0ce2e261434e"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Distant.mat.meta",
+      "bytes": 185,
+      "sha256": "628188d8949d3a2acc57192456617e8704e5112cbda2fb09e2d3a721cc7c30a3"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Near-baseColor.png",
+      "bytes": 822602,
+      "sha256": "753c30b5b14b8594cab6edb687e94f95f7b12970da0d931047140117be9018c9"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Near-baseColor.png.meta",
+      "bytes": 2707,
+      "sha256": "c052b0a1cfff1ce779732e40cb8b16f8faf0390adeeae8e8aa87412bf038cd80"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Near-metallicSmoothness.png",
+      "bytes": 781536,
+      "sha256": "298d037d83774fece44b3bf1ad516b7332aa0217658fbe3d893aef8bb7d86484"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Near-metallicSmoothness.png.meta",
+      "bytes": 2707,
+      "sha256": "45a326ab40629465e69272c549953628e3554262cbef139d48eddb255a517cc7"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Near.mat",
+      "bytes": 4078,
+      "sha256": "61aaab3794def79c2628769a1109e8d360617dd8540d6f1bd9da09710c607f1c"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock/CE_clock_Near.mat.meta",
+      "bytes": 185,
+      "sha256": "2ad9c8b3a5b265484e406ce1962cdea9905e00e80b438dd271de75e9bb0c0ba5"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock-led.mat",
+      "bytes": 803,
+      "sha256": "98a01e0dcb2355cc41bcb0ddf5286d4fca36b19bdb444ae9b88be5fa146bfe4b"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock-led.mat.meta",
+      "bytes": 185,
+      "sha256": "825b1d78385961aad40ab413572607fcba4550fa683ef6655d48d8f426eae708"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock-lod0.fbx",
+      "bytes": 592284,
+      "sha256": "d277ce92c8ea538bb68b36251ad716d9d131131b3298a99e62462e8e93bdefea"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock-lod0.fbx.meta",
+      "bytes": 3055,
+      "sha256": "e91927b70b6ab175148d4ed9f721ae6b9e2381223a9ca2014828d3b3d0bab429"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock-lod1.fbx",
+      "bytes": 410108,
+      "sha256": "98944190d172003be7d73467082253b0c8ff2dd1d8154677852c5dbbcb972030"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock-lod1.fbx.meta",
+      "bytes": 3055,
+      "sha256": "f117574b3416cd58b6adf17672f5a8a8dcb2242ed9bad73c1b5ca23708984201"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock-visual.prefab",
+      "bytes": 7988,
+      "sha256": "4b25aff99010b82c966cc26b4d031e9bfad85d3dbf74b5120b96a7298565f353"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock-visual.prefab.meta",
+      "bytes": 151,
+      "sha256": "8fe54fc325be921a2ae7b06eb782773fb1287779d1a0a2f880e21feeace0fa2f"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/clock.meta",
+      "bytes": 169,
+      "sha256": "ddda1f0b414d31427bb4d8f1d5871c516f2448e783f80296f14047fce0a8ff53"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/SchoolClockLED.shader",
+      "bytes": 1193,
+      "sha256": "fbe41dbd788fefeb1d99645a21d5e1e22e663dd00768c81873ae5ddcba914ff5"
+    },
+    {
+      "path": "Assets/Resources/SchoolProgressClock/SchoolClockLED.shader.meta",
+      "bytes": 60,
+      "sha256": "1ad3b4bf5bf23ef8b8b05f2844ab4ed7d396497861ae38cb99a9893ed32ecab9"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/archive-preservation.json",
+      "bytes": 282,
+      "sha256": "362398c607c647bde1ea9f67a8ea8b195d371539830f416f661f9db9fcccf331"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/clock.blend",
+      "bytes": 173615984,
+      "sha256": "e1587205db048abd480657c1b190abe4fbdbb0497a22b5ab4e2d5af4c3095a69"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/export.json",
+      "bytes": 2275,
+      "sha256": "c602cd581b4090f91f37d5b4ad67478a6a3ec5200ae96d8a0412f1d894ed59bd"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/generation-record.json",
+      "bytes": 3486,
+      "sha256": "df870bff0efd600030f90d15a579fe353f91f420b28adbaa20291306329be2ad"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/inputs/01_reference.png",
+      "bytes": 1727867,
+      "sha256": "d445be82077dfdb05492969cdcc21ebe82323a45aec690ab025bf46336b294fe"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/metadata.json",
+      "bytes": 2925,
+      "sha256": "a9c0d45f1c40669f114de7eb7e917028dfce0477b230916459c854937541b254"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/original.glb",
+      "bytes": 158909928,
+      "sha256": "9508e91ead6f0b101c803350b702a4e9b50ef6e4856c1597f9d1827c7a22b0a4"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/outputs/generation_request.json",
+      "bytes": 813,
+      "sha256": "57ba52153eaf37aab6f9c0cc489f05673c5f3d461e38ebe1ad674ecbceb7dd77"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/outputs/generation_result.json",
+      "bytes": 333,
+      "sha256": "bbfceee672e4b56c1327322e9909f852032a7a4d8ce47e77192bc619d6c4290b"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/clock/processed_inputs/01.png",
+      "bytes": 349335,
+      "sha256": "5bb10e35031ef4683a2e37e9793bc598afdf514510220dd01646f0c05787a150"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/finish_clock.py",
+      "bytes": 7247,
+      "sha256": "95d6b8474a8cc9a4ed9878a34e8a269d1462cf8568376f9d232fdf5d9a6ee0a3"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/README.md",
+      "bytes": 5117,
+      "sha256": "acb287d66f7a78cbbde603c90f715a38ec6c363a3314c965e179b36e43ebaf81"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/record_sources.py",
+      "bytes": 3775,
+      "sha256": "25dbc7ea091494b5b69a010f2774e0d954abfdec106e8b5e7517c949dbe74b1d"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/reference-prompt.json",
+      "bytes": 1539,
+      "sha256": "845d36ef3e0d55b8f1b7aefb32b889f3e2cc9e842fdcb80c114a0533358ccfb4"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/reference.png",
+      "bytes": 1727867,
+      "sha256": "d445be82077dfdb05492969cdcc21ebe82323a45aec690ab025bf46336b294fe"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/request.json",
+      "bytes": 2066,
+      "sha256": "0ae7412db72277ece7329ccec8fd3bc86a526e9939c612d576c4ab869bed5394"
+    },
+    {
+      "path": "SourceArt/SchoolProgressClock/visual-review.json",
+      "bytes": 3210,
+      "sha256": "cf22b62058685d566aa31fab6f4125ca96c13b357da73a461dc5950c194995a8"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "archive_sha256": "4e0da1ea2a0f929faa017896bed5c1e093aa06924f21dd89ba2bcbaf168bf0ba",
+  "canonical_original": "original.glb",
+  "archive_original": "model.glb",
+  "note": "Archive model.glb is preserved byte-for-byte as original.glb; outputs and inputs retain archive paths."
+}

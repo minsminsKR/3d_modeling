@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-23",
+  "job_id": "ed7b69e1-6a28-4779-95eb-7f902a9889d1",
+  "web_inspection": {
+    "url": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/ed7b69e1-6a28-4779-95eb-7f902a9889d1",
+    "interactive_rotation": true,
+    "inspected": [
+      "blank front display",
+      "aged frame and material",
+      "side thickness",
+      "back housing"
+    ],
+    "rig_or_animation": "Not applicable to this static wall prop. No web rig edits."
+  },
+  "blender": {
+    "version": "4.0.2",
+    "original_triangles": 970494,
+    "near_triangles": 11998,
+    "far_triangles": 8000,
+    "game_texture_size": 1024,
+    "inspection": "Isolated both final LODs in material view; inspected front and oblique side. Final direct-collapse far mesh preserves the complete top and side panels.",
+    "finishing": "Original-based bounded collapse and selected-to-active colour/ORM bake for both LODs; editable complete original and original PBR packed with game LODs. Original GLB unchanged.",
+    "source_handoff": "clock/clock.blend, clock/original.glb, clock/export.json, finish_clock.py and repository shared helpers"
+  },
+  "unity": {
+    "version": "6000.6.0f1",
+    "placement": "School loop east wall opposite the entry, local clock centre y=2.34m, z=2.2m; front faces west. Shared clock in each of the three repeating sections.",
+    "reviewed_normal_camera_states": [
+      "00:00 at the entry",
+      "01:00 approaching",
+      "08:00 close view"
+    ],
+    "review_frames_optional": "Builds/SchoolProgressClock/review-final-02/",
+    "rules_and_editmode": "94/94 passed in checks-EditMode-20261023-180550",
+    "playmode": "All 9 selected unique outcomes passed: 8/9 in checks-PlayMode-20261023-183017, then the corrected whitespace-independent JSON round-trip/legacy-save check 1/1 in checks-PlayMode-20261023-183301. This is not one all-green complete-suite run.",
+    "checks": [
+      "two real forward passes yield 02:00 exactly once per crossing",
+      "rear traversal preserves hours",
+      "pause suppresses crossing progress",
+      "three display instances agree",
+      "serialized save round-trip preserves hours",
+      "legacy v3 starts at 00:00 and retains traversal count",
+      "shared generated mesh/PBR/LOD identity and budgets",
+      "actual normal-camera LED pixel contribution",
+      "owned LED mesh released on chapter unload",
+      "existing school menu, locked rooms, walking, seam views, music and save regressions"
+    ],
+    "cost_scope": "3 shared source-derived clock instances, one small change-driven LED mesh per display, no added lights or physical colliders. Native sustained FPS was not measured.",
+    "native_build": {
+      "command_result": "PASS",
+      "executable": "Builds/SchoolProgressClock/build-20261023-183943/Windows/HappyToyV2.exe",
+      "input_verification": "BUILD_INPUTS_PASS",
+      "verified_current_inputs": 3991,
+      "scope": "Fresh Windows build and complete input/artifact hashes. Player was not launched for native performance verification."
+    }
+  },
+  "current_scope": "No anomaly, wrong-passage reset, clock-based ending or eight-pass escape rule yet. Forward seam passage alone adds one hour; rear passage keeps it."
+}

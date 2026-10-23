@@ -303,6 +303,10 @@ PROFILES["temple-lanterns"]=("Guardian face uplighting and generated corridor ce
         PLAY + "CorridorCeilingFixturesShareRealCandleDangerAndRecover"))])
 
 
+PROFILES["school-clock"]=("Forward-only progress hours, legacy v3 save migration, real seam walking/pause, generated clock PBR/LOD identity and normal-camera LED readability", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolProgressClockTests", "HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
+    ("PlayMode", play_tests("SchoolProgressClockIntegrationTests.cs", "SchoolLoopTests.cs", "SchoolLoopSeamTests.cs"))])
+
 PROFILES["school-loop"]=("Same left-room entrance after either departure, rigid rear half-turn/preview, real bidirectional seam walking, retired old gameplay, locked classrooms, v3 saves and generated music-room PBR/LOD camera review", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
     ("PlayMode", play_tests("SchoolLoopTests.cs","SchoolLoopSeamTests.cs"))])

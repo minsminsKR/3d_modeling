@@ -7,6 +7,17 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed class SchoolLoopCheckpointTests
     {
+        [Test] public void LegacySchoolLoopProgressDoesNotInventClockHours()
+        {
+            var data=JsonUtility.FromJson("{\"traversals\":7}",RequireType("SchoolLoopProgress"));
+            Assert.DoesNotThrow(()=>Call(data,"Validate"));var clock=Get<object>(data,"clock");Assert.That(clock==null?0:Get<int>(clock,"hours"),Is.Zero);
+        }
+        [TestCase(-1)] [TestCase(1000001)]
+        public void InvalidSchoolClockHoursAreRejected(int hours)
+        {
+            var data=JsonUtility.FromJson("{\"traversals\":7,\"clock\":{\"hours\":"+hours+"}}",RequireType("SchoolLoopProgress"));
+            Assert.Throws<ArgumentOutOfRangeException>(()=>Call(data,"Validate"));
+        }
         static object Lighting(int version,string batteries="[]",string candles="[]",int packs=0,float charge=10)
         {
             string json="{\"version\":"+version+",\"charge\":"+charge+",\"packsCollected\":"+packs+",\"depletions\":0,\"batteries\":"+batteries+",\"candles\":"+candles+"}";
