@@ -136,6 +136,35 @@ designated A100 modeling service, job queue and stored results.
   `hunyuan3d-webapp/CLI-A100.md`. Prefer `--json` and documented exit codes for
   agent automation. Retain request/job IDs and reuse the original request ID
   when recovering an uncertain submission to prevent duplicate generation.
+- Follow-up user instruction, 2026-10-23: actively use capabilities/doctor and
+  collect/resume in future modeling work. Commands below run from the repository
+  root; select the current service with `--server URL` or the saved CLI setting.
+  At the start of a modeling session, run
+  `python hunyuan3d-webapp/modeling_cli.py capabilities --json` and
+  `python hunyuan3d-webapp/modeling_cli.py doctor --json`. Read supported models,
+  parameters, actual API defaults, upload limits and default GPU validity before
+  selecting generation options. Refresh these checks when the server, model
+  configuration or relevant error changes; do not repeat them on every poll.
+  Doctor checks configuration/CUDA/storage readiness without loading models or
+  running inference; it does not establish visual quality or generation success.
+- For immediate batch recovery, use
+  `python hunyuan3d-webapp/modeling_cli.py collect REQUEST_UUID --output DIR --json`.
+  It collects completed results once and reports pending/failed jobs. To wait
+  for remaining work and collect it, use
+  `python hunyuan3d-webapp/modeling_cli.py resume REQUEST_UUID --output DIR --json`
+  with an appropriate `--timeout` and `--poll-interval`. Keep the same UUID and
+  original server. Collect never submits generation; resume only replays a
+  locally preserved uncertain submission with its original UUID/inputs after
+  confirming that no corresponding server jobs exist. Neither regenerates
+  failed or missing previously submitted jobs automatically.
+- Inspect `summary`, `failed_jobs`, `pending_jobs`, `download_errors` and
+  `status_errors`, not just the process exit code. Codes are 0=success,
+  1=access/network/input/readiness error, 2=job failure/partial success (or CLI
+  syntax error), 3=wait timeout. Preserve completed downloads on partial failure
+  or timeout. Follow `code`, `retryable`, `next_action` and any retry delay;
+  inspect per-job errors even when aggregate `PARTIAL_FAILURE.retryable` is false.
+  Verified ZIP/receipt reuse is normal. Use `--refresh` when later web rigging or
+  joint edits must be included in a new archive, while retaining authoring sources.
 - Open a CLI result's `web_url` in the existing in-app browser for visual review
   and joint editing, and continue using the same job rather than generating a
   second model for the web. Preserve the existing private workspace login and
