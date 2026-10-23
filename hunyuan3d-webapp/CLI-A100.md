@@ -10,7 +10,8 @@
 
 Python 3.10 이상과 외부 Python 의존성 `requests`가 필요합니다. 클라이언트를
 다른 컴퓨터로 옮길 때 `modeling_cli.py`, `modeling_contract.py`,
-`modeling_collection.py` 세 파일을 모두 같은 디렉터리에 보존합니다.
+`modeling_collection.py`, `modeling_state.py`, `modeling_download.py` 다섯 파일을
+모두 같은 디렉터리에 보존합니다.
 CUDA, PyTorch, 모델 가중치나 서버의 웹앱 패키지는 클라이언트에 설치하지 않습니다.
 
 Windows PowerShell:
@@ -198,6 +199,57 @@ Ctrl+C는 로컬 대기만 중단하며 서버 작업은 계속
 프로필 폴더 또는 접근 권한을 제한한 폴더를 사용합니다. 쿠키 파일은 로그인 세션을
 포함하므로 소스 저장소나 공유 폴더에 복사하지 않습니다. CLI는 다른 origin으로의
 리다이렉트·결과 URL을 거부하며, 세션을 다른 서버에 전송하지 않습니다.
+
+## ZIP 캐시와 다운로드 이어받기
+
+이어받기는 `download`, `generate --download`, `collect`, `resume`에서 자동으로
+사용합니다. 전송 중단 후에는 같은 서버·작업 ID·출력 폴더로 다시 실행합니다.
+
+```bash
+python3 modeling_cli.py download JOB_ID --output ./generated --json
+# 전송 중단 후 같은 명령을 실행합니다.
+python3 modeling_cli.py download JOB_ID --output ./generated --json
+python3 modeling_cli.py resume REQUEST_UUID --output ./generated --json
+# 웹에서 관절/리깅을 수정한 결과를 새로 회수합니다.
+python3 modeling_cli.py collect REQUEST_UUID --output ./generated --refresh --json
+```
+
+출력 폴더의 `.JOB_ID.zip.part`와 `.JOB_ID.zip.part.json`은 같은 버전의 검증된
+전송 지점입니다. 두 파일을 함께 보존합니다. 프로세스 종료·네트워크 중단·Ctrl+C
+후 다음 실행은 prefix SHA-256을 확인하고 강한 ETag와 `Range`/`If-Range`로
+남은 바이트를 요청합니다. 하드 종료로 체크포인트 이후 바이트만 남은 경우 그 꼬리를
+잘라냅니다. 체크포인트는 32 MiB 또는 5초마다 기록하며 정상적인 중단에도 기록합니다.
+동일 출력 폴더의 동일 작업은 프로세스 잠금으로 동시에 덮어쓰지 않습니다.
+
+서버 버전이 바뀌거나 Range를 무시하여 `200`을 반환하면 전체 응답으로 새로 시작합니다.
+기존 서버에 강한 ETag가 없으면 전체 다운로드를 사용합니다. 잘못된 `206`, 범위·크기·
+ETag 불일치, 압축 전송, 로그인 HTML은 결과에 붙이지 않습니다. 완료 ZIP은 외부
+SHA-256과 내부 원본·입력·텍스처·리깅 파일 해시를 검증한 뒤 최종 파일로 교체합니다.
+검증 실패 때 기존 최종 ZIP과 영수증은 유지됩니다.
+
+JSON과 다운로드 영수증의 `archive_etag`, `archive_bytes`, `resumed_bytes`,
+`received_bytes`, `transfer_seconds`로 이번 전송을 확인합니다. 오류의
+`details.partial_bytes`, `resume_available`도 확인합니다. `collect`/`resume`는
+검증된 최종 ZIP과 영수증을 기본 재사용하며 이때 `skipped: true`, 수신 바이트 `0`입니다.
+웹에서 수정한 파일을 반영하려면 `--refresh`를 사용합니다.
+
+서버는 `instance/archive-cache`에 버전별 불변 ZIP을 저장합니다. 입력, 모델, 텍스처,
+리깅 파일 목록·파일 식별 정보·공개 생성 기록이 같으면 다시 압축하거나 원본 전체를
+해시하지 않습니다. 완료 작업의 `/record`도 이 스냅샷을 공유하며 외부 JSON에
+`archive: {etag, sha256, size, version}`을 추가합니다. ZIP 내부 기록에는 자기 자신의
+해시를 넣지 않습니다. API는 HEAD, ETag 조건부 요청, 단일 Range, If-Range를 지원합니다.
+
+캐시 기본 상한은 10 GiB이며 `MODELING_ARCHIVE_CACHE_MAX_BYTES`에 양의 바이트 수로
+설정합니다. 오래된 스냅샷은 사용 중인 다운로드를 보호하며 정리하고 원본 작업 파일은
+삭제하지 않습니다. 단일 ZIP이 상한보다 크면 `ARTIFACT_UNAVAILABLE`로 반환하므로
+서버 디스크 여유를 확인한 뒤 상한을 늘립니다. 빌드 중인 임시 ZIP의 디스크 공간도
+별도로 필요합니다. 동시 최초 요청은 같은 버전을 한 번만 만듭니다.
+
+상태와 쿠키는 실제 변경 때만 원자적으로 저장합니다. `elapsed_seconds`만 변하면
+manifest를 다시 쓰지 않으며 상태·메시지·서버 수정 시각 등 의미 있는 변경은 보존합니다.
+서버 이력은 정렬 인덱스로 페이지를 선택하고, 로컬 이력은 변경 파일을 감지하여 재사용합니다.
+요청 UUID를 아는 경우 `history --request-id UUID`는 그 manifest를 바로 조회합니다.
+측정 조건과 재현 명령은 [CLI-PERFORMANCE.md](CLI-PERFORMANCE.md)에 있습니다.
 
 ## 스크립트 연동과 종료 코드
 

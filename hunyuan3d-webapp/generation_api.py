@@ -4,14 +4,14 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-import tempfile
 import uuid
-import zipfile
 from pathlib import Path
 
-from flask import abort, send_file
+from flask import abort, jsonify, send_file
+from werkzeug.exceptions import RequestedRangeNotSatisfiable
 from modeling_contract import ModelingError
 from modeling_capabilities import validate_submission_fields
+from modeling_archives import Source, reject_links, snapshot_for_job
 
 GENERATION_FIELDS = {"model", "gpu_id", "seed", "remove_background", "texture", "trellis_pipeline",
                      "trellis_steps", "trellis_texture_size", "num_inference_steps", "guidance_scale",
@@ -19,6 +19,35 @@ GENERATION_FIELDS = {"model", "gpu_id", "seed", "remove_background", "texture", 
 SOURCE_SUFFIXES = {".glb", ".gltf", ".bin", ".obj", ".mtl", ".ply", ".stl", ".fbx", ".dae",
                    ".blend", ".bvh", ".abc", ".usd", ".usda", ".usdc", ".usdz", ".npz", ".npy",
                    ".png", ".jpg", ".jpeg", ".webp", ".exr", ".hdr", ".json", ".txt"}
+
+
+class _LeasedBody:
+    """Release on both WSGI close and full consumption by test/proxy clients."""
+    def __init__(self, body, release):
+        self.body = body
+        self.iterator = iter(body)
+        self.release = release
+        self.closed = False
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            return next(self.iterator)
+        except BaseException:
+            self.close()
+            raise
+
+    def close(self):
+        if self.closed:
+            return
+        self.closed = True
+        try:
+            if hasattr(self.body, "close"):
+                self.body.close()
+        finally:
+            self.release()
 
 
 def file_digest(path: Path) -> dict:
@@ -84,6 +113,7 @@ def confined_file(path: str | Path, root: Path) -> Path:
     except ValueError:
         raise ModelingError("An artifact is outside this job's storage directory.", "ARTIFACT_UNAVAILABLE", http_status=409)
     current = root
+    reject_links(root)
     if current.is_symlink():
         raise ModelingError("Symbolic-link artifacts cannot be exported.", "ARTIFACT_UNAVAILABLE", http_status=409)
     for part in relative.parts:
@@ -116,6 +146,12 @@ def output_artifacts(job: dict, output_root: Path) -> list[tuple[str, Path]]:
 
 
 def record_for_job(job: dict, public_job: dict, upload_root: Path, output_root: Path) -> dict:
+    if job.get("status") == "completed":
+        snapshot = _snapshot(job, public_job, upload_root, output_root)
+        try:
+            return {**snapshot.record, "archive": snapshot.archive}
+        finally:
+            snapshot.close()
     record = {"schema_version": 1, **safe_public(public_job)}
     inputs = []
     for index, filename in enumerate(job.get("image_paths", [])):
@@ -124,46 +160,55 @@ def record_for_job(job: dict, public_job: dict, upload_root: Path, output_root: 
         inputs.append({"name": original, "archive_name": f"inputs/{index + 1:02d}_{path.name}", **file_digest(path)})
     record["inputs"] = inputs
     record["artifacts"] = []
-    if job.get("status") == "completed":
-        record["artifacts"] = [{"name": name, **file_digest(path)} for name, path in output_artifacts(job, output_root)]
     return record
+
+
+def _snapshot(job, public_job, upload_root, output_root):
+    def sources():
+        items = [Source(name, path, "output", path.relative_to(output_root / job["id"]).as_posix())
+                 for name, path in output_artifacts(job, output_root)]
+        for index, filename in enumerate(job.get("image_paths", [])):
+            path = confined_file(filename, upload_root / job["id"])
+            original = (job.get("inputs") or [{}])[0].get("name") or job.get("source_filename") or path.name
+            items.append(Source(f"inputs/{index + 1:02d}_{path.name}", path, "input",
+                                path.relative_to(upload_root / job["id"]).as_posix(), original))
+        return items
+
+    record = {"schema_version": 1, **safe_public(public_job)}
+    # Archive metadata describes the final ZIP; embedding it would create a
+    # self-referential digest. It is exposed only by the external record API.
+    record.pop("archive", None)
+    return snapshot_for_job(job["id"], output_root, record, sources)
 
 
 def archive_for_job(job: dict, public_job: dict, upload_root: Path, output_root: Path):
     if job.get("status") != "completed":
         raise ModelingError("Wait for the model to complete before downloading its archive.", "JOB_NOT_READY", http_status=409)
-    artifacts = output_artifacts(job, output_root)
-    record = {"schema_version": 1, **safe_public(public_job), "inputs": [], "artifacts": []}
-    stream = tempfile.TemporaryFile(mode="w+b")
+    snapshot = _snapshot(job, public_job, upload_root, output_root)
     try:
-        with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED, allowZip64=True) as archive:
-            def copy_file(path, name):
-                digest = hashlib.sha256()
-                size = 0
-                with path.open("rb") as source, archive.open(name, "w", force_zip64=True) as destination:
-                    for chunk in iter(lambda: source.read(1024 * 1024), b""):
-                        destination.write(chunk)
-                        digest.update(chunk)
-                        size += len(chunk)
-                return {"sha256": digest.hexdigest(), "size": size}
-
-            for name, path in artifacts:
-                record["artifacts"].append({"name": name, **copy_file(path, name)})
-            for index, filename in enumerate(job.get("image_paths", [])):
-                path = confined_file(filename, upload_root / job["id"])
-                original = (job.get("inputs") or [{}])[0].get("name") or job.get("source_filename") or path.name
-                name = f"inputs/{index + 1:02d}_{path.name}"
-                record["inputs"].append({"name": original, "archive_name": name, **copy_file(path, name)})
-            # Hash the exact bytes written into this ZIP. A separately requested
-            # record may have observed a different rigging/editing snapshot.
-            archive.writestr("generation-record.json", json.dumps(record, ensure_ascii=False, indent=2))
-        size = stream.tell()
-        stream.seek(0)
-        response = send_file(stream, mimetype="application/zip", as_attachment=True,
-                             download_name=f"model_{job['id']}.zip")
-        response.content_length = size
-        response.call_on_close(stream.close)
+        try:
+            response = send_file(snapshot.path, mimetype="application/zip", as_attachment=True,
+                                 download_name=f"model_{job['id']}.zip", conditional=True,
+                                 etag=snapshot.archive["sha256"], max_age=0)
+        except RequestedRangeNotSatisfiable:
+            # Keep the validator on 416 as well: a client with an already
+            # complete checkpoint can verify it without transferring the ZIP.
+            error = ModelingError("Requested archive range is outside this snapshot.", "INVALID_INPUT", http_status=416,
+                                  next_action="Read this job's current record and retry a valid byte range with its strong ETag, or download the complete archive.")
+            response = jsonify(error.as_dict())
+            response.status_code = 416
+            response.headers["Content-Range"] = f"bytes */{snapshot.archive['size']}"
+            response.set_etag(snapshot.archive["sha256"])
+            snapshot.close()
+        response.headers["Accept-Ranges"] = "bytes"
+        response.headers["Cache-Control"] = "private, no-cache, max-age=0, must-revalidate"
+        response.headers["X-Archive-SHA256"] = snapshot.archive["sha256"]
+        response.headers["X-Archive-Version"] = snapshot.archive["version"]
+        # send_file uses direct_passthrough: wrap its file iterable so WSGI
+        # close releases the lease even if Response.close is bypassed.
+        response.response = _LeasedBody(response.response, snapshot.close)
+        response.call_on_close(snapshot.close)
         return response
     except BaseException:
-        stream.close()
+        snapshot.close()
         raise

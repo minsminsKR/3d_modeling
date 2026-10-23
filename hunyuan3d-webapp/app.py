@@ -198,6 +198,8 @@ def create_app() -> Flask:
     jobs_lock = threading.Lock()
     jobs = load_jobs()
     cleanup_unsaved_jobs(jobs)
+    from modeling_history import JobHistory
+    history = JobHistory(jobs)
     executor = ThreadPoolExecutor(max_workers=env_int("GENERATION_WORKERS", 2))
     gpu_load = {gpu_id: 0 for gpu_id in available_gpu_ids()}
     rigging_executor = ThreadPoolExecutor(max_workers=1)
@@ -439,6 +441,7 @@ def create_app() -> Flask:
                 jobs[job_id] = job
                 created_jobs.append(job)
             save_jobs(jobs)
+            history.register(created_jobs)
 
         for job in created_jobs:
             executor.submit(run_generation, job["id"], job["image_paths"], GenerationOptions(**job["options"]))
@@ -508,12 +511,10 @@ def create_app() -> Flask:
             abort(400, "source must be cli, api or web.")
         request_id = request.args.get("request_id")
         with jobs_lock:
-            selected = [dict(job) for job in jobs.values()
-                        if (source is None or job.get("source", "web") == source)
-                        and (request_id is None or job.get("request_id") == request_id)]
-        selected.sort(key=lambda job: (job.get("created_at", 0), job["id"]), reverse=True)
-        return jsonify(jobs=[public_job(job) for job in selected[offset:offset + limit]],
-                       total=len(selected), limit=limit, offset=offset)
+            selected, total = history.page(jobs, source=source, request_id=request_id,
+                                           limit=limit, offset=offset)
+        return jsonify(jobs=[public_job(job) for job in selected],
+                       total=total, limit=limit, offset=offset)
 
     @app.get("/api/jobs/<job_id>/record")
     def job_record(job_id):

@@ -115,6 +115,8 @@ def build_capabilities(facts):
                           "boolean_values": {"true": "on", "false": "off"}},
             "features": {"idempotent_submissions": True, "request_history": True,
                          "per_image_batch": True, "provenance_archives": True,
+                         "versioned_archive_cache": True, "archive_http_range": True,
+                         "resumable_downloads": "client",
                          "partial_collection": "client", "structured_errors": True,
                          "rigging": facts["rigging_ready"], "visual_joint_editor": "web"},
             "endpoints": {"capabilities": "/api/capabilities", "doctor": "/api/doctor",

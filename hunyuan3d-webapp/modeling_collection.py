@@ -22,10 +22,7 @@ def local_manifest(client, request_id):
     path = client.state.manifest_path(request_id)
     if not path.exists():
         return None
-    try:
-        manifest = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as exc:
-        raise ModelingError("Cannot read the preserved request manifest.", code="LOCAL_IO_ERROR") from exc
+    manifest = client.state.load_manifest(request_id)
     if not isinstance(manifest, dict) or manifest.get("server") != client.server:
         raise ModelingError("Preserved request belongs to another server.", code="REQUEST_CONFLICT")
     if manifest.get("request_id") != request_id:

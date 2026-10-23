@@ -2,13 +2,21 @@
 
 CLI 클라이언트는 Python 3.10 이상과 `requests`만 필요하며 GPU 런타임은 설치하지 않습니다.
 [CLI-A100.md](CLI-A100.md)의 설치·로그인·생성·복구 예시를 따르세요.
-CLI에는 `modeling_cli.py`, `modeling_collection.py`, `modeling_contract.py`를
+CLI에는 `modeling_cli.py`, `modeling_collection.py`, `modeling_contract.py`,
+`modeling_state.py`, `modeling_download.py`를
 같은 폴더에 함께 보존합니다. 서버에는 `app.py`, `generation_api.py`,
-`modeling_capabilities.py`, `modeling_contract.py`를 함께 배포해야 합니다.
+`modeling_capabilities.py`, `modeling_contract.py`, `modeling_history.py`,
+`modeling_archives.py`를 함께 배포해야 합니다.
 `python scripts/validate_cli_api.py`는 별도 임시 저장소에서 웹/CLI 계약과
 실제 HTTP 클라이언트 동작을 검사하며 GPU 추론이나 운영 작업 저장소를 사용하지 않습니다.
 `python scripts/validate_cli_agent.py`는 기능·준비 상태 조회, 오류 복구 계약,
 부분 성공 배치 회수와 재개를 같은 방식으로 검사합니다.
+`scripts/validate_cli_state.py`, `scripts/validate_history_index.py`,
+`scripts/validate_archive_cache.py`, `scripts/validate_download_resume.py`는
+상태/쿠키 변경 저장, 외부 변경, 이력 페이지, 캐시 무효화·동시 접근, 대용량 ZIP의
+전송 중단·프로세스 종료 후 이어받기를 검사합니다. 측정은
+[CLI-PERFORMANCE.md](CLI-PERFORMANCE.md)를 따릅니다. 운영 설정의
+`MODELING_ARCHIVE_CACHE_MAX_BYTES`는 기본 10 GiB이며 디스크 공간에 맞게 조정합니다.
 
 CHG-20261011-A100-011: 검증된 서버 버전 2026.10.11.11의 GitHub 소스 반영.
 이 문서는 새 Linux 사본을 준비하기 위한 안내다. 실행 중인 서버와 모델·결과·인증정보는 별도로 보존한다.

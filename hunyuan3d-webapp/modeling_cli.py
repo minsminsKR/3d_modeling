@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Thin, resumable client for the existing Hunyuan3D web application's job API.
 
-Python >= 3.10, requests >= 2.31, and the bundled modeling_contract.py and
-modeling_collection.py modules are the client dependencies. This file does not
+Python >= 3.10, requests >= 2.31, and the bundled modeling_contract.py,
+modeling_collection.py, modeling_state.py and modeling_download.py modules are
+the client dependencies. This file does not
 import the server, torch, or any model runtime.
 """
 from __future__ import annotations
@@ -27,6 +28,8 @@ from urllib.parse import quote, urlencode, urljoin, urlsplit
 import zipfile
 
 from modeling_contract import ModelingError, error_payload, http_error
+from modeling_state import State, now, private_directory, atomic_json, read_json, cookie_signature, save_cookie_jar
+from modeling_download import download_lock, safe_download_paths, transfer_archive
 
 try:
     import requests
@@ -65,45 +68,6 @@ class ArgumentParser(argparse.ArgumentParser):
     def error(self, message):
         # main handles this exception before any client or state is initialized.
         raise ClientError(message, code="INVALID_INPUT", details={"argument_error": True})
-
-
-def now():
-    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-
-
-def private_directory(path: Path):
-    path.mkdir(parents=True, exist_ok=True)
-    if os.name != "nt":
-        path.chmod(0o700)
-    return path
-
-
-def atomic_json(path: Path, value):
-    """Write one whole document; never leave a half-written manifest/cookie file."""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, temporary = tempfile.mkstemp(prefix=".writing-", dir=path.parent)
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as handle:
-            if os.name != "nt":
-                os.fchmod(handle.fileno(), 0o600)
-            json.dump(value, handle, ensure_ascii=False, indent=2, allow_nan=False)
-            handle.write("\n")
-            handle.flush()
-            os.fsync(handle.fileno())
-        os.replace(temporary, path)
-    finally:
-        with contextlib.suppress(FileNotFoundError):
-            os.unlink(temporary)
-
-
-def read_json(path: Path):
-    try:
-        result = json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(result, dict):
-            raise ValueError("Local state must be a JSON object.")
-        return result
-    except (OSError, ValueError) as exc:
-        raise ClientError(f"Cannot read local JSON file: {path}", code="LOCAL_IO_ERROR") from exc
 
 
 def normalize_server(value: str):
@@ -277,114 +241,6 @@ class LoginForm(HTMLParser):
                 self.hidden[values["name"]] = values.get("value", "")
 
 
-class State:
-    def __init__(self, root: Path, server: str):
-        self.root = private_directory(root.expanduser().resolve())
-        self.server = server
-        namespace = hashlib.sha256(server.encode()).hexdigest()[:24]
-        self.directory = private_directory(self.root / "servers" / namespace)
-        self.requests = private_directory(self.directory / "requests")
-        self.records = private_directory(self.directory / "records")
-        self.cookies = self.directory / "cookies.lwp"
-
-    def manifest_path(self, request_id):
-        return self.requests / validate_request_id(request_id) / "manifest.json"
-
-    def manifests(self):
-        return [read_json(path) for path in sorted(self.requests.glob("*/manifest.json"))]
-
-    def write_manifest(self, manifest):
-        manifest["updated_at"] = now()
-        atomic_json(self.manifest_path(manifest["request_id"]), manifest)
-
-    def recover_manifest(self, request_id, jobs):
-        """Attach remote jobs without replacing preserved local request inputs."""
-        path = self.manifest_path(request_id)
-        if path.exists():
-            manifest = read_json(path)
-            if manifest.get("server") != self.server:
-                raise ClientError("Stored request belongs to another server.", code="REQUEST_CONFLICT")
-            if manifest.get("request_id") != request_id:
-                raise ClientError("Stored request ID does not match its manifest path.", code="INTEGRITY_ERROR")
-        else:
-            manifest = {"schema_version": SCHEMA_VERSION, "server": self.server,
-                        "request_id": request_id, "created_at": now(), "state": "recovered",
-                        "submitted_options": {}, "inputs": [], "jobs": [], "downloads": [],
-                        "recovered_from_server": True}
-        manifest["jobs"] = jobs
-        self.write_manifest(manifest)
-        return manifest
-
-    def prepare(self, request_id, images, options):
-        """Persist the exact submitted bytes and request key before network I/O."""
-        path = self.manifest_path(request_id)
-        if path.exists():
-            manifest = read_json(path)
-            if manifest.get("server") != self.server:
-                raise ClientError("Stored request belongs to another server.", code="REQUEST_CONFLICT")
-            if manifest.get("request_id") != request_id:
-                raise ClientError("Stored request ID does not match its manifest path.", code="INTEGRITY_ERROR")
-            if options and options != manifest["submitted_options"]:
-                raise ClientError("Request ID already has different options. Reuse without options, or use a new UUID.", code="REQUEST_CONFLICT")
-            if not manifest.get("inputs"):
-                raise ClientError("This request was recovered from the server without local input copies. Use resume or collect with its UUID.", code="INVALID_INPUT")
-            if images:
-                supplied = [(Path(p).name, sha256_file(Path(p).expanduser())) for p in images]
-                original = [(item["filename"], item["sha256"]) for item in manifest["inputs"]]
-                if supplied != original:
-                    raise ClientError("Request ID already has different images. Use a new UUID for a new request.", code="REQUEST_CONFLICT")
-            for item in manifest["inputs"]:
-                copied = path.parent / item["local_path"]
-                if not copied.is_file() or sha256_file(copied) != item["sha256"]:
-                    raise ClientError("Preserved input is missing or modified; refusing to alter an existing request.", code="INTEGRITY_ERROR")
-            return manifest
-        if not images:
-            raise ClientError("Supply one or more images, or an existing local --request-id to resume.")
-        private_directory(path.parent)
-        private_directory(path.parent / "inputs")
-        inputs = []
-        for index, raw in enumerate(images):
-            source = Path(raw).expanduser().resolve()
-            extension = source.suffix.lower()
-            if extension not in {".png", ".jpg", ".jpeg", ".webp"} or not source.is_file():
-                raise ClientError(f"Not a supported image file: {source}")
-            local_path = f"inputs/{index:03d}{extension}"
-            copied = path.parent / local_path
-            digest = hashlib.sha256()
-            fd, temporary = tempfile.mkstemp(prefix=".input-", dir=copied.parent)
-            try:
-                with os.fdopen(fd, "wb") as output, source.open("rb") as original:
-                    if os.name != "nt":
-                        os.fchmod(output.fileno(), 0o600)
-                    for chunk in iter(lambda: original.read(1024 * 1024), b""):
-                        output.write(chunk)
-                        digest.update(chunk)
-                    output.flush()
-                    os.fsync(output.fileno())
-                os.replace(temporary, copied)
-            finally:
-                with contextlib.suppress(FileNotFoundError):
-                    os.unlink(temporary)
-            inputs.append({"filename": source.name, "local_path": local_path,
-                           "sha256": digest.hexdigest(), "size": copied.stat().st_size})
-        manifest = {"schema_version": SCHEMA_VERSION, "server": self.server,
-                    "request_id": request_id, "created_at": now(), "state": "prepared",
-                    "submitted_options": options, "inputs": inputs, "jobs": [], "downloads": []}
-        self.write_manifest(manifest)
-        return manifest
-
-    def remember_job(self, job):
-        job_id = validate_job_id(job.get("id"))
-        for manifest in self.manifests():
-            changed = False
-            for index, existing in enumerate(manifest.get("jobs", [])):
-                if existing.get("id") == job_id:
-                    manifest["jobs"][index] = job
-                    changed = True
-            if changed:
-                self.write_manifest(manifest)
-
-
 class Client:
     def __init__(self, state: State, timeout):
         if requests is None:
@@ -403,6 +259,7 @@ class Client:
             except (OSError, http.cookiejar.LoadError) as exc:
                 raise ClientError("Cannot read saved session. Move aside cookies.lwp and log in again.", code="LOCAL_IO_ERROR") from exc
         self.session.cookies = self.jar
+        self._cookie_signature = cookie_signature(self.jar)
 
     def url(self, path):
         if not isinstance(path, str) or "\\" in path:
@@ -417,16 +274,7 @@ class Client:
         return target
 
     def save_cookies(self):
-        fd, temporary = tempfile.mkstemp(prefix=".cookies-", dir=self.state.directory)
-        os.close(fd)
-        try:
-            self.jar.save(temporary, ignore_discard=True, ignore_expires=False)
-            if os.name != "nt":
-                os.chmod(temporary, 0o600)
-            os.replace(temporary, self.state.cookies)
-        finally:
-            with contextlib.suppress(FileNotFoundError):
-                os.unlink(temporary)
+        self._cookie_signature = save_cookie_jar(self.jar, self.state.cookies, self._cookie_signature)
 
     def request(self, method, path, *, login_redirects=False, timeout=None, **kwargs):
         url = self.url(path)
@@ -653,6 +501,7 @@ class Client:
         """Only reuse an archive whose same-origin receipt and full hash verify."""
         output = Path(output).expanduser().resolve()
         final, receipt_path = output / f"{job_id}.zip", output / f"{job_id}.download.json"
+        safe_download_paths(output, job_id, ClientError)
         try:
             receipt = read_json(receipt_path)
             record = receipt.get("generation_record", {})
@@ -670,10 +519,16 @@ class Client:
         return {"job": job or {"id": job_id, "status": "completed", "request_id": record.get("request_id")},
                 "archive": str(final), "receipt": str(receipt_path),
                 "archive_sha256": receipt["archive_sha256"], "archive_bytes": receipt["archive_bytes"],
+                "archive_etag": receipt.get("archive_etag"), "resumed_bytes": 0, "received_bytes": 0,
                 "skipped": True}
 
     def download(self, job_id, output, *, refresh=True, job=None):
         job_id = validate_job_id(job_id)
+        output = Path(output).expanduser().resolve()
+        with download_lock(output, job_id, ClientError, self.timeout):
+            return self._download_locked(job_id, output, refresh=refresh, job=job)
+
+    def _download_locked(self, job_id, output, *, refresh=True, job=None):
         if not refresh:
             cached = self.cached_download(job_id, output, job)
             if cached:
@@ -684,50 +539,36 @@ class Client:
         if job["status"] != "completed":
             raise ClientError("Job is not completed. Run wait first, or use generate --download.", code="JOB_NOT_READY")
         record = self.json("GET", job.get("record_url") or f"/api/jobs/{job_id}/record")
-        output = Path(output).expanduser().resolve()
-        output.mkdir(parents=True, exist_ok=True)
         final = output / f"{job_id}.zip"
-        fd, temporary = tempfile.mkstemp(prefix=f".{job_id}-", suffix=".part", dir=output)
-        digest = hashlib.sha256()
-        count = 0
-        try:
-            with os.fdopen(fd, "wb") as handle:
-                with self.request("GET", job.get("archive_url") or f"/api/jobs/{job_id}/archive", stream=True) as response:
-                    self.check(response)
-                    try:
-                        for chunk in response.iter_content(1024 * 1024):
-                            if chunk:
-                                handle.write(chunk)
-                                digest.update(chunk)
-                                count += len(chunk)
-                    except requests.Timeout as exc:
-                        raise ClientError("Archive download timed out; rerun download with the same job ID.", code="REQUEST_TIMEOUT") from exc
-                    except requests.RequestException as exc:
-                        raise ClientError("Archive download interrupted; rerun download with the same job ID.", code="NETWORK_ERROR") from exc
-                handle.flush()
-                os.fsync(handle.fileno())
-            try:
-                with zipfile.ZipFile(temporary) as archive:
-                    record = verify_archive(archive, record, job_id)
-            except (zipfile.BadZipFile, ValueError, KeyError, RuntimeError) as exc:
-                raise ClientError("Downloaded file is not a valid provenance ZIP.", code="INTEGRITY_ERROR") from exc
-            os.replace(temporary, final)
-        finally:
-            with contextlib.suppress(FileNotFoundError):
-                os.unlink(temporary)
+        transfer = transfer_archive(self, job_id, output, record,
+                                    job.get("archive_url") or f"/api/jobs/{job_id}/archive",
+                                    verify=verify_archive, atomic_json=atomic_json, error=ClientError)
         receipt = {"schema_version": SCHEMA_VERSION, "server": self.server, "job_id": job_id,
-                   "downloaded_at": now(), "archive": str(final), "archive_sha256": digest.hexdigest(),
-                   "archive_bytes": count, "generation_record": record}
+                   "downloaded_at": now(), "archive": str(final), **transfer}
         receipt_path = output / f"{job_id}.download.json"
         atomic_json(receipt_path, receipt)
         atomic_json(self.state.records / f"{job_id}.json", receipt)
-        for manifest in self.state.manifests():
+        request_id = transfer["generation_record"].get("request_id")
+        try:
+            request_id = validate_request_id(request_id)
+        except ClientError:
+            # Web/API jobs predate the CLI UUID contract. Their verified result
+            # and receipt remain downloadable without inventing a CLI manifest.
+            request_id = None
+        if request_id and hasattr(self.state, "load_manifest"):
+            manifest = self.state.load_manifest(request_id) if self.state.manifest_path(request_id).exists() else None
+            manifests = [manifest] if manifest else []
+        elif not request_id:
+            manifests = []
+        else:
+            manifests = self.state.manifests()
+        for manifest in manifests:
             if any(item.get("id") == job_id for item in manifest.get("jobs", [])):
                 manifest["downloads"] = [item for item in manifest.get("downloads", []) if item.get("job_id") != job_id]
                 manifest["downloads"].append({key: value for key, value in receipt.items() if key != "generation_record"})
                 self.state.write_manifest(manifest)
         return {"job": job, "archive": str(final), "receipt": str(receipt_path),
-                "archive_sha256": digest.hexdigest(), "archive_bytes": count, "skipped": False}, 0
+                **{key: value for key, value in transfer.items() if key != "generation_record"}, "skipped": False}, 0
 
 
 def parser():
@@ -774,8 +615,8 @@ def parser():
     history = commands.add_parser("history", parents=[common], help="show local request manifests, or server CLI job history")
     history.add_argument("--remote", action="store_true", help="query server's persistent CLI job history")
     history.add_argument("--request-id", help="filter one UUID (also recovers a submitted ID from another client)")
-    history.add_argument("--limit", type=nonnegative, default=50, help="remote page size, 1 to 200 (default: 50)")
-    history.add_argument("--offset", type=nonnegative, default=0, help="remote pagination offset")
+    history.add_argument("--limit", type=nonnegative, default=50, help="local/remote page size, 1 to 200 (default: 50)")
+    history.add_argument("--offset", type=nonnegative, default=0, help="local/remote pagination offset")
     return root
 
 
@@ -843,11 +684,16 @@ def main(argv=None):
             raise ClientError("Set --server or MODELING_SERVER to the existing webapp origin.")
         state = State(state_root, normalize_server(server))
         if args.command == "history" and not args.remote:
-            manifests = state.manifests()
+            if not 1 <= args.limit <= 200:
+                raise ClientError("--limit must be between 1 and 200.")
             if args.request_id:
                 request_id = validate_request_id(args.request_id)
-                manifests = [item for item in manifests if item["request_id"] == request_id]
-            render({"server": state.server, "requests": manifests, "total": len(manifests)}, json_output)
+                manifests = ([state.load_manifest(request_id)]
+                             if state.manifest_path(request_id).is_file() else [])
+                page = {"requests": manifests, "total": len(manifests)}
+            else:
+                page = state.manifest_page(args.limit, args.offset)
+            render({"server": state.server, **page}, json_output)
             return 0
         client = Client(state, getattr(args, "request_timeout", 120))
         if args.command == "login":

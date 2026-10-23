@@ -165,6 +165,30 @@ designated A100 modeling service, job queue and stored results.
   inspect per-job errors even when aggregate `PARTIAL_FAILURE.retryable` is false.
   Verified ZIP/receipt reuse is normal. Use `--refresh` when later web rigging or
   joint edits must be included in a new archive, while retaining authoring sources.
+- Follow-up user instruction, 2026-10-23: use automatic archive caching and byte
+  resume during modeling work. After a disconnected download, rerun
+  `python hunyuan3d-webapp/modeling_cli.py download JOB_ID --output DIR --json`,
+  or the same `collect`/`resume` command with the original UUID and output folder.
+  Keep `.JOB_ID.zip.part` and `.JOB_ID.zip.part.json` together; they contain the
+  durable checkpoint used by the next process. Inspect `archive_etag`,
+  `resumed_bytes`, `received_bytes` and error `details.resume_available`.
+  The CLI verifies the stored prefix, server version and completed ZIP hashes;
+  a changed snapshot or server that ignores Range starts a fresh full response.
+  Failed integrity checks preserve the last verified final ZIP and receipt.
+- The A100 service shares immutable, versioned ZIP snapshots between record and
+  download requests. It supports strong ETag, Range/If-Range and HEAD. Web rigging,
+  joint edits, changed inputs or authoring files invalidate the snapshot. Use
+  collect/resume `--refresh` to fetch those later edits instead of reusing a local
+  verified receipt. Server cache eviction can require rebuilding a ZIP and does
+  not delete generation originals. `MODELING_ARCHIVE_CACHE_MAX_BYTES` defaults
+  to 10 GiB; an oversized archive requires an adequate server cache limit.
+- Status polling persists meaningful changes only; a changing `elapsed_seconds`
+  display alone does not rewrite the request. Cookies persist when their content
+  changes. Local `history --request-id UUID --json` reads that request directly;
+  use `history --remote --limit 50 --offset 0 --json` for server records. Preserve
+  the state directory across sessions. Performance checks and fixture conditions
+  are documented in `hunyuan3d-webapp/CLI-PERFORMANCE.md`; transport/storage gains
+  do not imply faster GPU generation.
 - Open a CLI result's `web_url` in the existing in-app browser for visual review
   and joint editing, and continue using the same job rather than generating a
   second model for the web. Preserve the existing private workspace login and

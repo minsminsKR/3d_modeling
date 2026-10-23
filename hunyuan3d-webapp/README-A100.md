@@ -13,6 +13,13 @@ without running inference. Errors include a stable code, retryability and recove
 instructions. `collect REQUEST_UUID --output DIR` recovers completed results;
 `resume REQUEST_UUID --output DIR` also waits for remaining jobs. Neither command
 regenerates failed jobs. See CLI-A100.md for partial results and exit codes.
+
+Archives use a versioned on-disk cache with a default 10 GiB limit and strong
+ETag/Range support. Interrupted CLI downloads resume from verified checkpoints
+when rerun with the same job and output directory. State and cookies are written
+only when changed; history queries select indexed pages. See
+[CLI-PERFORMANCE.md](CLI-PERFORMANCE.md) for measured scope and reproduction.
+
 Server: ai-server-04@192.168.0.16
 Project: <checkout>/hunyuan3d-webapp
 Change: CHG-20261011-A100-010 / version 2026.10.11.11

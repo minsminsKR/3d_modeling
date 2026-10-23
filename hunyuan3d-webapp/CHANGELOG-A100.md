@@ -1,5 +1,19 @@
 # A100 deployment changes
 
+## CHG-20261023-A100-CLI-IO
+
+- Reduced unchanged status/cookie writes and indexed server history. Local
+  request lookups use the UUID directly; paged local history reads selected files.
+- Added shared immutable ZIP snapshots, strong SHA-256 ETags, conditional HEAD/GET,
+  HTTP Range/If-Range and a configurable 10 GiB cache limit. Source/rig/provenance
+  changes invalidate a version; eviction and abandoned-build cleanup affect only
+  generated cache files and protect active downloads.
+- Added durable download checkpoints, prefix verification and process locks.
+  Download/collect/resume reuse remaining bytes across client restarts, verify
+  final archives and preserve verified results on corrupt replacement downloads.
+- Added isolated state/history/cache/real-HTTP interruption suites and reproducible
+  benchmarks. See [CLI-PERFORMANCE.md](CLI-PERFORMANCE.md) for results and scope.
+
 ## CHG-20261023-A100-CLI-AI
 
 - Added read-only capabilities and doctor endpoints/CLI commands. They expose
