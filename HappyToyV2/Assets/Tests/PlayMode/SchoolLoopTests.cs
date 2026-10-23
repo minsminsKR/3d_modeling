@@ -51,18 +51,18 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolLoopRealWalkingReturnsFromEitherEndToTheSameLeftRoomEntrance()
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
-            PlacePlayer(LoopOrigin+new Vector3(6.45f,.03f,36.2f));player.transform.rotation=Quaternion.Euler(0,90,0);
+            PlacePlayer(LoopOrigin+new Vector3(6.6f,.03f,45.85f));player.transform.rotation=Quaternion.identity;
             Keys(Key.W);yield return Delay(.6f);Keys();yield return null;
             var local=player.transform.position-LoopOrigin;
-            Assert.That(Get<int>(world,"Traversals"),Is.EqualTo(1));Assert.That(local.x,Is.InRange(-7f,-4f));
-            Assert.That(local.z,Is.EqualTo(2.2f).Within(.08f));Assert.That(local.y,Is.GreaterThan(-.10f));
-            Assert.That(Mathf.DeltaAngle(player.transform.eulerAngles.y,90),Is.EqualTo(0).Within(.01f));
-            PlacePlayer(LoopOrigin+new Vector3(-6.45f,.03f,2.2f));player.transform.rotation=Quaternion.Euler(0,270,0);
+            Assert.That(Get<int>(world,"Traversals"),Is.EqualTo(1));Assert.That(local.x,Is.EqualTo(-6.6f).Within(.08f));
+            Assert.That(local.z,Is.InRange(-8f,-5f));Assert.That(local.y,Is.GreaterThan(-.10f));
+            Assert.That(Mathf.DeltaAngle(player.transform.eulerAngles.y,0),Is.EqualTo(0).Within(.01f));
+            PlacePlayer(LoopOrigin+new Vector3(-6.6f,.03f,-7.45f));player.transform.rotation=Quaternion.Euler(0,180,0);
             Keys(Key.W);yield return Delay(.6f);Keys();yield return null;
             local=player.transform.position-LoopOrigin;
-            Assert.That(Get<int>(world,"Traversals"),Is.EqualTo(2));Assert.That(local.x,Is.InRange(-7f,-4f));
-            Assert.That(local.z,Is.EqualTo(2.2f).Within(.08f));Assert.That(local.y,Is.GreaterThan(-.10f));
-            Assert.That(Mathf.DeltaAngle(player.transform.eulerAngles.y,90),Is.EqualTo(0).Within(.01f));
+            Assert.That(Get<int>(world,"Traversals"),Is.EqualTo(2));Assert.That(local.x,Is.EqualTo(-6.6f).Within(.08f));
+            Assert.That(local.z,Is.InRange(-8f,-5f));Assert.That(local.y,Is.GreaterThan(-.10f));
+            Assert.That(Mathf.DeltaAngle(player.transform.eulerAngles.y,0),Is.EqualTo(0).Within(.01f));
             foreach(float z in new[]{8.5f,18.5f,29.5f})
             {
                 // The route after either departure is entered northbound. All
@@ -70,8 +70,8 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Physics.Raycast(LoopOrigin+new Vector3(0,1.65f,z),Vector3.left,out var hit,4),Is.True);
                 Assert.That(hit.collider.name,Does.Contain("Closed classroom window glass"));
             }
-            Call(shell,"Pause");PlacePlayer(LoopOrigin+new Vector3(7.1f,.03f,36.2f));yield return Delay(.1f);
-            Assert.That(player.transform.position.x,Is.EqualTo(7.1f).Within(.01f),"Paused school teleported the player");
+            Call(shell,"Pause");PlacePlayer(LoopOrigin+new Vector3(6.6f,.03f,46.5f));yield return Delay(.1f);
+            Assert.That(player.transform.position.z,Is.EqualTo(LoopOrigin.z+46.5f).Within(.01f),"Paused school teleported the player");
         }
         [UnityTest,Timeout(120000)]
         public IEnumerator SchoolLoopF2StillAllowsRealThrowsAndTrapPlacementWithZeroRawStock()
@@ -95,13 +95,13 @@ namespace HappyToy.V2.CloudTests
         {
             string directory=NewRecordFixture();Call(session,"ConfigureRecordDirectory",directory);
             yield return BeginObservationSchool();var chapter=Get<Component>(session,"Chapter");var world=Get<Component>(chapter,"Loop");
-            Call(world,"RestoreTraversal",3);PlacePlayer(LoopOrigin+new Vector3(.5f,.03f,19));Call(shell,"Pause");
+            Call(world,"RestoreTraversal",3);PlacePlayer(LoopOrigin+new Vector3(-6.6f,.03f,-6));Call(shell,"Pause");
             var snapshot=Call(session,"CaptureChapterCheckpoint");Assert.That(Get<int>(snapshot,"simulationVersion"),Is.EqualTo(3));
             string json=(string)Call(snapshot,"ToJson");Assert.That(json,Does.Contain("\"loop\""));
             var previous=session;Call(shell,"Restart",false);yield return RecoveryRebind(previous);
             Call(session,"ConfigureRecordDirectory",directory);Call(session,"CreateChapterForCheckpoint",snapshot);
             Call(session,"ApplyChapterCheckpoint",snapshot);chapter=Get<Component>(session,"Chapter");world=Get<Component>(chapter,"Loop");
-            Assert.That(Get<int>(world,"Traversals"),Is.EqualTo(3));Assert.That(Vector3.Distance(player.transform.position,LoopOrigin+new Vector3(.5f,.03f,19)),Is.LessThan(.05f));
+            Assert.That(Get<int>(world,"Traversals"),Is.EqualTo(3));Assert.That(Vector3.Distance(player.transform.position,LoopOrigin+new Vector3(-6.6f,.03f,-6)),Is.LessThan(.05f));
             var copy=Call(snapshot,"Copy");Set(Get<object>(copy,"player"),"position",LoopOrigin+new Vector3(-6,.03f,29));
             Assert.Throws<ArgumentException>(()=>Call(copy,"Validate"));
         }
@@ -140,15 +140,21 @@ namespace HappyToy.V2.CloudTests
             var neighbours=root.Cast<Transform>().Where(t=>t!=centre).ToArray();
             var roofs=centre.GetComponentsInChildren<MeshRenderer>().Where(r=>r.enabled&&r.name.ToLowerInvariant().Contains("ceiling")).ToArray();
             var clear=camera.clearFlags;var background=camera.backgroundColor;bool ortho=camera.orthographic;float size=camera.orthographicSize;var pose=(camera.transform.position,camera.transform.rotation);
+            GameObject mapLight=null;bool fog=RenderSettings.fog;
             try
             {
                 foreach(var neighbour in neighbours)neighbour.gameObject.SetActive(false);foreach(var roof in roofs)roof.enabled=false;
-                camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.012f,.016f,.018f);camera.orthographic=true;camera.orthographicSize=21;
-                camera.transform.SetPositionAndRotation(LoopOrigin+new Vector3(-1.2f,35,19.2f),Quaternion.Euler(90,0,0));
+                camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.012f,.016f,.018f);camera.orthographic=true;camera.orthographicSize=29;
+                camera.transform.SetPositionAndRotation(LoopOrigin+new Vector3(-.3f,35,19.2f),Quaternion.Euler(90,0,0));
+                // Readable plan-only illumination; production lighting is not edited.
+                mapLight=new GameObject("Temporary plan cutaway inspection light");
+                var fill=mapLight.AddComponent<Light>();fill.type=LightType.Directional;fill.intensity=1.35f;fill.shadows=LightShadows.None;
+                fill.transform.rotation=Quaternion.Euler(65,-25,0);RenderSettings.fog=false;
                 frame=EntranceRitualFrame(camera,900,1500);try{EntranceBrightnessEvidence("school-loop-actual-map-cutaway",frame);}finally{Object.Destroy(frame);}
             }
             finally
             {
+                if(mapLight)Object.Destroy(mapLight);RenderSettings.fog=fog;
                 foreach(var roof in roofs)if(roof)roof.enabled=true;foreach(var neighbour in neighbours)if(neighbour)neighbour.gameObject.SetActive(true);
                 camera.clearFlags=clear;camera.backgroundColor=background;camera.orthographic=ortho;camera.orthographicSize=size;camera.transform.SetPositionAndRotation(pose.Item1,pose.Item2);
             }

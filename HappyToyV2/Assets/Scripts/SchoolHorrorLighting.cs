@@ -51,7 +51,7 @@ namespace HappyToy.V2
             bool corridor=Mathf.Abs(at.x)<.2f;
             int index=Mathf.RoundToInt((at.z-2.2f)/4.4f);
             bool live=!corridor||index==0||index==2||index==5||index==7;
-            bool connecting=Mathf.Abs(at.x)>2.2f&&Mathf.Abs(at.x)<5.1f;
+            bool connecting=Mathf.Abs(at.x)>2.2f&&Mathf.Abs(at.x)<5.1f||at.z<0||at.z>SchoolLoopPlan.Length;
             float power=live?(corridor?(index==0?7.2f:index==2?6.3f:index==5?4.9f:2.6f):connecting?1.6f:intensity*.56f):0;
             var holder=new GameObject(live?"Failing school fluorescent fixture":"Burned-out school fluorescent fixture").transform;
             holder.SetParent(parent,false);holder.localPosition=at;

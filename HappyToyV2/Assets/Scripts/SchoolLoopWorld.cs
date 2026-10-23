@@ -80,12 +80,12 @@ namespace HappyToy.V2
             if(!Root||!session||!session.InputAllowed)return;
             var feet=session.player.transform.position;
             var local=feet-Origin;var last=previous-Origin;
-            int direction=SchoolLoopPlan.Crossing(last.x,local.x,local.z);
+            int direction=SchoolLoopPlan.Crossing(last.z,local.x,local.z);
             if(direction!=0)
             {
                 var pose=SchoolLoopPlan.ReturnToCentre(local.x,local.z,direction);
                 feet=Origin+new Vector3(pose.X,local.y,pose.Z);
-                session.player.RelocateWorld(feet,Quaternion.Euler(0,pose.Yaw,0)*session.player.transform.rotation);
+                session.player.TraverseWorldSeam(feet,Quaternion.Euler(0,pose.Yaw,0));
                 Traversals=Mathf.Clamp(Traversals+1,0,1000000);
                 if(progressClock.AdvanceForTraversal(direction))
                     foreach(var clock in clocks)if(clock)clock.SetHours(progressClock.Hours);

@@ -21,14 +21,14 @@ namespace HappyToy.V2.CloudTests
             Assert.That(clocks.Length,Is.EqualTo(3));AssertClocks(0,"00:00");
             for(int hour=1;hour<=2;hour++)
             {
-                PlacePlayer(LoopOrigin+new Vector3(6.45f,.03f,36.2f));player.transform.rotation=Quaternion.Euler(0,90,0);
+                PlacePlayer(LoopOrigin+new Vector3(6.6f,.03f,45.85f));player.transform.rotation=Quaternion.identity;
                 Keys(Key.W);yield return Delay(.6f);Keys();yield return null;AssertClocks(hour,"0"+hour+":00");
                 yield return Delay(.15f);AssertClocks(hour,"0"+hour+":00");
             }
-            PlacePlayer(LoopOrigin+new Vector3(-6.45f,.03f,2.2f));player.transform.rotation=Quaternion.Euler(0,270,0);
+            PlacePlayer(LoopOrigin+new Vector3(-6.6f,.03f,-7.45f));player.transform.rotation=Quaternion.Euler(0,180,0);
             Keys(Key.W);yield return Delay(.6f);Keys();yield return null;
             Assert.That(Get<int>(world,"Traversals"),Is.EqualTo(3));AssertClocks(2,"02:00");
-            Call(shell,"Pause");PlacePlayer(LoopOrigin+new Vector3(7.1f,.03f,36.2f));yield return Delay(.2f);AssertClocks(2,"02:00");
+            Call(shell,"Pause");PlacePlayer(LoopOrigin+new Vector3(6.6f,.03f,46.5f));yield return Delay(.2f);AssertClocks(2,"02:00");
             void AssertClocks(int hour,string text)
             {
                 Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(hour));

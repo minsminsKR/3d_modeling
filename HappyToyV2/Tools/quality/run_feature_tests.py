@@ -311,6 +311,11 @@ PROFILES["school-loop"]=("Same left-room entrance after either departure, rigid 
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
     ("PlayMode", play_tests("SchoolLoopTests.cs","SchoolLoopSeamTests.cs"))])
 
+PROFILES["school-turnbacks"]=("Opaque extended school bends, full-width standing/crouched occlusion, real corner walking and delayed transfers, preserved seam motion, clock/save compatibility, gate and unchanged main-hall brightness", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", CLOUD+"SchoolLoopCheckpointTests")),
+    ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolLoopSeamTests.cs", "SchoolProgressClockIntegrationTests.cs", "SchoolRetractableGateTests.cs")+(
+        PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",))])
+
 PROFILES["uncat-bell-distance"]=("Recorded Uncat bell at 3/24/36/50m, approaching gain, stereo bearing, physical wall, pause/master mute and real walking-to-pursuit rhythm", [
     ("PlayMode", play_tests("UncatBellDistanceTests.cs")+(
         PLAY+"UncatActualWalkingBellsAccelerateAfterRecognitionAndStopDuringPause",))])

@@ -89,10 +89,9 @@ namespace HappyToy.V2
         public void Build(Transform chunk,bool collision)
         {
             root=chunk;physical=collision;
-            Slab(-2.2f,0,2.2f,38.4f);Slab(-7,0,-2.2f,4.4f);Slab(2.2f,34,7,38.4f);
-            Wall(0,0,4.58f,.18f);Wall(-4.6f,0,4.8f,.18f);Wall(-4.6f,4.4f,4.8f,.18f);
+            Slab(-2.2f,0,2.2f,38.4f);
+            TurnbackConnectors();
             Wall(-2.2f,5.2f,.18f,1.6f);Wall(2.2f,17,.18f,34);
-            Wall(0,38.4f,4.58f,.18f);Wall(4.6f,38.4f,4.8f,.18f);Wall(4.6f,34,4.8f,.18f);
             float last=6;
             foreach(var room in SchoolLoopPlan.Rooms)
             {
@@ -104,6 +103,26 @@ namespace HappyToy.V2
             world.Fixture(root,new Vector3(-4.9f,3.08f,2.2f),false,2.8f);
             world.Fixture(root,new Vector3(4.9f,3.08f,36.2f),false,2.8f);
             Gate();CorridorDetails();
+        }
+        void TurnbackConnectors()
+        {
+            float outer=SchoolLoopPlan.ConnectorOuterX,inner=SchoolLoopPlan.ConnectorInnerX;
+            float width=SchoolLoopPlan.EntryDepth,end=SchoolLoopPlan.Length;
+            float entry=SchoolLoopPlan.EntryPortalZ,exit=SchoolLoopPlan.ExitPortalZ;
+            // Two opaque bends separate the main hall from either transfer plane.
+            // The wider elbows retain every old v3 connector save position.
+            Slab(-outer,0,-2.2f,width);Slab(2.2f,end-width,outer,end);
+            Slab(-outer,entry,-inner,0);Slab(inner,end,outer,exit);
+            Edge(-inner,0,2.2f,0);Edge(-outer,width,-2.2f,width);
+            Edge(-outer,entry,-outer,width);Edge(-inner,entry,-inner,0);
+            Edge(-2.2f,end,inner,end);Edge(2.2f,end-width,outer,end-width);
+            Edge(outer,end-width,outer,exit);Edge(inner,end,inner,exit);
+            world.Fixture(root,new Vector3(-SchoolLoopPlan.ConnectorCentreX,3.08f,entry*.5f),false,2.8f);
+            world.Fixture(root,new Vector3(SchoolLoopPlan.ConnectorCentreX,3.08f,(end+exit)*.5f),false,2.8f);
+        }
+        void Edge(float x0,float z0,float x1,float z1)
+        {
+            Wall((x0+x1)*.5f,(z0+z1)*.5f,Mathf.Abs(x1-x0)+.18f,Mathf.Abs(z1-z0)+.18f);
         }
         void Room(SchoolLoopPlan.Room room)
         {

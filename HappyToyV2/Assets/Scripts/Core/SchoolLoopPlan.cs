@@ -7,8 +7,10 @@ namespace HappyToy.V2
     {
         public const int Version=3;
         public const float HalfWidth=2.2f, Length=38.4f, Height=3.25f;
-        public const float PortalX=7, LinkX=14, LinkZ=34;
-        public const float EntryDepth=Length-LinkZ;
+        public const float EntryDepth=4.4f, ConnectorOuterX=8.8f, ConnectorInnerX=4.4f;
+        public const float ConnectorCentreX=(ConnectorOuterX+ConnectorInnerX)*.5f;
+        public const float TurnbackLength=8, EntryPortalZ=-TurnbackLength, ExitPortalZ=Length+TurnbackLength;
+        public const float LinkX=ConnectorCentreX*2, LinkZ=ExitPortalZ-EntryPortalZ;
         public readonly struct SeamPose
         {
             public readonly float X,Z,Yaw;
@@ -19,7 +21,7 @@ namespace HappyToy.V2
         public static SeamPose Continuation(int direction)
         {
             if(direction==1)return new SeamPose(LinkX,LinkZ,0);
-            if(direction==-1)return new SeamPose(-LinkX,EntryDepth,180);
+            if(direction==-1)return new SeamPose(-LinkX,EntryPortalZ*2,180);
             throw new ArgumentOutOfRangeException(nameof(direction));
         }
         public static SeamPose ReturnToCentre(float x,float z,int direction)
@@ -46,19 +48,21 @@ namespace HappyToy.V2
             new Room("shop","매점",6,12.8f),
             new Room("study","정독반",14.4f,23.6f),
             new Room("music","음악실",25.2f,33.4f)};
-        public static int Crossing(float previousX,float x,float z)
+        public static int Crossing(float previousZ,float x,float z)
         {
-            if(!Finite(previousX)||!Finite(x)||!Finite(z))return 0;
-            if(previousX<=PortalX&&x>PortalX&&z>LinkZ&&z<Length)return 1;
-            if(previousX>=-PortalX&&x<-PortalX&&z>0&&z<4.4f)return -1;
+            if(!Finite(previousZ)||!Finite(x)||!Finite(z))return 0;
+            if(previousZ<=ExitPortalZ&&z>ExitPortalZ&&x>ConnectorInnerX&&x<ConnectorOuterX)return 1;
+            if(previousZ>=EntryPortalZ&&z<EntryPortalZ&&x>-ConnectorOuterX&&x<-ConnectorInnerX)return -1;
             return 0;
         }
         public static bool Walkable(float x,float z)
         {
             if(!Finite(x)||!Finite(z))return false;
             return z>=0&&z<=Length&&x>=-HalfWidth&&x<=HalfWidth ||
-                x>=-PortalX&&x<=-HalfWidth&&z>=0&&z<=4.4f ||
-                x>=HalfWidth&&x<=PortalX&&z>=LinkZ&&z<=Length;
+                x>=-ConnectorOuterX&&x<=-HalfWidth&&z>=0&&z<=EntryDepth ||
+                x>=HalfWidth&&x<=ConnectorOuterX&&z>=Length-EntryDepth&&z<=Length ||
+                x>=-ConnectorOuterX&&x<=-ConnectorInnerX&&z>=EntryPortalZ&&z<=0 ||
+                x>=ConnectorInnerX&&x<=ConnectorOuterX&&z>=Length&&z<=ExitPortalZ;
         }
         static bool Finite(float value)=>!float.IsNaN(value)&&!float.IsInfinity(value);
     }
