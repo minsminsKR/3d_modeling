@@ -10,6 +10,8 @@ import zipfile
 from pathlib import Path
 
 from flask import abort, send_file
+from modeling_contract import ModelingError
+from modeling_capabilities import validate_submission_fields
 
 GENERATION_FIELDS = {"model", "gpu_id", "seed", "remove_background", "texture", "trellis_pipeline",
                      "trellis_steps", "trellis_texture_size", "num_inference_steps", "guidance_scale",
@@ -30,6 +32,7 @@ def file_digest(path: Path) -> dict:
 
 
 def prepare_submission(request, validated_files: list) -> dict:
+    validate_submission_fields(request.form)
     if set(request.form) - GENERATION_FIELDS:
         abort(400, "Unsupported generation fields: " + ", ".join(sorted(set(request.form) - GENERATION_FIELDS)))
     request_id = request.headers.get("Idempotency-Key") or str(uuid.uuid4())
@@ -57,7 +60,8 @@ def prepare_submission(request, validated_files: list) -> dict:
 def find_submission(jobs: dict, submission: dict) -> list[dict]:
     matches = [job for job in jobs.values() if job.get("request_id") == submission["request_id"]]
     if matches and any(job.get("submission_fingerprint") != submission["submission_fingerprint"] for job in matches):
-        abort(409, "This request ID already belongs to different images or settings. Use a new request ID.")
+        raise ModelingError("This request ID already belongs to different images or settings.",
+                            "REQUEST_CONFLICT", http_status=409)
     return sorted(matches, key=lambda job: job.get("batch_index", 0))
 
 
@@ -78,16 +82,16 @@ def confined_file(path: str | Path, root: Path) -> Path:
         relative = candidate.absolute().relative_to(root)
         candidate.resolve().relative_to(root.resolve())
     except ValueError:
-        abort(409, "An artifact is outside this job's storage directory.")
+        raise ModelingError("An artifact is outside this job's storage directory.", "ARTIFACT_UNAVAILABLE", http_status=409)
     current = root
     if current.is_symlink():
-        abort(409, "Symbolic-link artifacts cannot be exported.")
+        raise ModelingError("Symbolic-link artifacts cannot be exported.", "ARTIFACT_UNAVAILABLE", http_status=409)
     for part in relative.parts:
         current = current / part
         if current.is_symlink():
-            abort(409, "Symbolic-link artifacts cannot be exported.")
+            raise ModelingError("Symbolic-link artifacts cannot be exported.", "ARTIFACT_UNAVAILABLE", http_status=409)
     if not candidate.is_file():
-        abort(409, "A required job artifact is missing.")
+        raise ModelingError("A required job artifact is missing.", "ARTIFACT_UNAVAILABLE", http_status=409)
     return candidate
 
 
@@ -127,7 +131,7 @@ def record_for_job(job: dict, public_job: dict, upload_root: Path, output_root: 
 
 def archive_for_job(job: dict, public_job: dict, upload_root: Path, output_root: Path):
     if job.get("status") != "completed":
-        abort(409, "Wait for the model to complete before downloading its archive.")
+        raise ModelingError("Wait for the model to complete before downloading its archive.", "JOB_NOT_READY", http_status=409)
     artifacts = output_artifacts(job, output_root)
     record = {"schema_version": 1, **safe_public(public_job), "inputs": [], "artifacts": []}
     stream = tempfile.TemporaryFile(mode="w+b")

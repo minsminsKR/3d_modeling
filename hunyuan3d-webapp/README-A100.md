@@ -6,6 +6,13 @@
 this same running service, GPU queue and durable job store. CLI jobs appear in
 the existing web result pages and saved models. No local GPU installation is
 needed. The existing HTTPS gateway login and browser access remain supported.
+
+`capabilities --json` describes model parameters, actual API defaults and setup
+readiness. `doctor --json` checks CUDA, default GPU placement, storage and workers
+without running inference. Errors include a stable code, retryability and recovery
+instructions. `collect REQUEST_UUID --output DIR` recovers completed results;
+`resume REQUEST_UUID --output DIR` also waits for remaining jobs. Neither command
+regenerates failed jobs. See CLI-A100.md for partial results and exit codes.
 Server: ai-server-04@192.168.0.16
 Project: <checkout>/hunyuan3d-webapp
 Change: CHG-20261011-A100-010 / version 2026.10.11.11

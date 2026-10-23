@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Thin, resumable client for the existing Hunyuan3D web application's job API.
 
-Python >= 3.10 and requests >= 2.31 are the only client dependencies. This file
-does not import the server, torch, or any model runtime.
+Python >= 3.10, requests >= 2.31, and the bundled modeling_contract.py and
+modeling_collection.py modules are the client dependencies. This file does not
+import the server, torch, or any model runtime.
 """
 from __future__ import annotations
 
@@ -24,6 +25,8 @@ import uuid
 from html.parser import HTMLParser
 from urllib.parse import quote, urlencode, urljoin, urlsplit
 import zipfile
+
+from modeling_contract import ModelingError, error_payload, http_error
 
 try:
     import requests
@@ -47,14 +50,21 @@ INTEGER_OPTIONS = {
 JOB_ID = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
 
 
-class ClientError(Exception):
-    pass
+class ClientError(ModelingError):
+    """A client failure using the same stable error contract as the server."""
 
 
 class WaitTimeout(ClientError):
     def __init__(self, jobs):
-        super().__init__("Wait timed out; server jobs continue. Run status or wait with the preserved job ID.")
+        super().__init__("Wait timed out; server jobs continue. Run status or wait with the preserved job ID.",
+                         code="WAIT_TIMEOUT")
         self.jobs = jobs
+
+
+class ArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        # main handles this exception before any client or state is initialized.
+        raise ClientError(message, code="INVALID_INPUT", details={"argument_error": True})
 
 
 def now():
@@ -88,9 +98,12 @@ def atomic_json(path: Path, value):
 
 def read_json(path: Path):
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        result = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(result, dict):
+            raise ValueError("Local state must be a JSON object.")
+        return result
     except (OSError, ValueError) as exc:
-        raise ClientError(f"Cannot read local JSON file: {path}") from exc
+        raise ClientError(f"Cannot read local JSON file: {path}", code="LOCAL_IO_ERROR") from exc
 
 
 def normalize_server(value: str):
@@ -111,9 +124,9 @@ def normalize_server(value: str):
     return f"{parts.scheme}://{host}{suffix}"
 
 
-def validate_job_id(value):
+def validate_job_id(value, code="INVALID_INPUT"):
     if not isinstance(value, str) or not JOB_ID.fullmatch(value):
-        raise ClientError("Invalid job ID.")
+        raise ClientError("Invalid job ID.", code=code)
     return value
 
 
@@ -139,45 +152,45 @@ def verify_archive(archive, record, job_id):
     """Verify one ZIP snapshot; web rigging may change extras after GET /record."""
     names = archive.namelist()
     if len(names) != len(set(names)):
-        raise ClientError("Archive contains duplicate filenames.")
+        raise ClientError("Archive contains duplicate filenames.", code="INTEGRITY_ERROR")
     if not {"model.glb", "generation-record.json"}.issubset(names):
-        raise ClientError("Archive is missing model or provenance files.")
+        raise ClientError("Archive is missing model or provenance files.", code="INTEGRITY_ERROR")
     for item in archive.infolist():
         path = PurePosixPath(item.filename)
         if path.is_absolute() or ".." in path.parts or "\\" in item.filename or ":" in item.filename:
-            raise ClientError("Archive contains an unsafe filename.")
+            raise ClientError("Archive contains an unsafe filename.", code="INTEGRITY_ERROR")
         if (item.external_attr >> 16) & 0o170000 == 0o120000:
-            raise ClientError("Archive contains a symbolic link.")
+            raise ClientError("Archive contains a symbolic link.", code="INTEGRITY_ERROR")
     if archive.getinfo("generation-record.json").file_size > 2 * 1024 * 1024:
-        raise ClientError("Archive generation record is unexpectedly large.")
+        raise ClientError("Archive generation record is unexpectedly large.", code="INTEGRITY_ERROR")
     embedded = json.loads(archive.read("generation-record.json"))
     if not isinstance(embedded, dict) or embedded.get("id") != job_id or record.get("id") != job_id:
-        raise ClientError("Archive generation record belongs to a different job.")
+        raise ClientError("Archive generation record belongs to a different job.", code="INTEGRITY_ERROR")
     if embedded.get("request_id") != record.get("request_id"):
-        raise ClientError("Archive generation record belongs to a different request.")
+        raise ClientError("Archive generation record belongs to a different request.", code="INTEGRITY_ERROR")
     for key in ("inputs", "artifacts"):
         if not isinstance(embedded.get(key), list) or not embedded[key]:
-            raise ClientError("Archive generation record is missing input or artifact hashes.")
+            raise ClientError("Archive generation record is missing input or artifact hashes.", code="INTEGRITY_ERROR")
     expected = {}
     for key in ("inputs", "artifacts"):
         for entry in embedded[key]:
             if not isinstance(entry, dict):
-                raise ClientError("Generation record contains an invalid artifact entry.")
+                raise ClientError("Generation record contains an invalid artifact entry.", code="INTEGRITY_ERROR")
             name = entry.get("archive_name") if key == "inputs" else entry.get("name")
             if not isinstance(name, str) or name in expected:
-                raise ClientError("Generation record contains invalid or duplicate artifact names.")
+                raise ClientError("Generation record contains invalid or duplicate artifact names.", code="INTEGRITY_ERROR")
             expected[name] = entry
     if set(names) != set(expected) | {"generation-record.json"}:
-        raise ClientError("Archive contains missing or unrecorded artifacts.")
+        raise ClientError("Archive contains missing or unrecorded artifacts.", code="INTEGRITY_ERROR")
     for name, entry in expected.items():
         if archive.getinfo(name).file_size != entry.get("size"):
-            raise ClientError(f"Archive size differs from generation record: {name}")
+            raise ClientError(f"Archive size differs from generation record: {name}", code="INTEGRITY_ERROR")
         digest = hashlib.sha256()
         with archive.open(name) as handle:
             for chunk in iter(lambda: handle.read(1024 * 1024), b""):
                 digest.update(chunk)
         if digest.hexdigest() != entry.get("sha256"):
-            raise ClientError(f"Archive SHA-256 differs from generation record: {name}")
+            raise ClientError(f"Archive SHA-256 differs from generation record: {name}", code="INTEGRITY_ERROR")
     return embedded
 
 
@@ -284,24 +297,46 @@ class State:
         manifest["updated_at"] = now()
         atomic_json(self.manifest_path(manifest["request_id"]), manifest)
 
+    def recover_manifest(self, request_id, jobs):
+        """Attach remote jobs without replacing preserved local request inputs."""
+        path = self.manifest_path(request_id)
+        if path.exists():
+            manifest = read_json(path)
+            if manifest.get("server") != self.server:
+                raise ClientError("Stored request belongs to another server.", code="REQUEST_CONFLICT")
+            if manifest.get("request_id") != request_id:
+                raise ClientError("Stored request ID does not match its manifest path.", code="INTEGRITY_ERROR")
+        else:
+            manifest = {"schema_version": SCHEMA_VERSION, "server": self.server,
+                        "request_id": request_id, "created_at": now(), "state": "recovered",
+                        "submitted_options": {}, "inputs": [], "jobs": [], "downloads": [],
+                        "recovered_from_server": True}
+        manifest["jobs"] = jobs
+        self.write_manifest(manifest)
+        return manifest
+
     def prepare(self, request_id, images, options):
         """Persist the exact submitted bytes and request key before network I/O."""
         path = self.manifest_path(request_id)
         if path.exists():
             manifest = read_json(path)
             if manifest.get("server") != self.server:
-                raise ClientError("Stored request belongs to another server.")
+                raise ClientError("Stored request belongs to another server.", code="REQUEST_CONFLICT")
+            if manifest.get("request_id") != request_id:
+                raise ClientError("Stored request ID does not match its manifest path.", code="INTEGRITY_ERROR")
             if options and options != manifest["submitted_options"]:
-                raise ClientError("Request ID already has different options. Reuse without options, or use a new UUID.")
+                raise ClientError("Request ID already has different options. Reuse without options, or use a new UUID.", code="REQUEST_CONFLICT")
+            if not manifest.get("inputs"):
+                raise ClientError("This request was recovered from the server without local input copies. Use resume or collect with its UUID.", code="INVALID_INPUT")
             if images:
                 supplied = [(Path(p).name, sha256_file(Path(p).expanduser())) for p in images]
                 original = [(item["filename"], item["sha256"]) for item in manifest["inputs"]]
                 if supplied != original:
-                    raise ClientError("Request ID already has different images. Use a new UUID for a new request.")
+                    raise ClientError("Request ID already has different images. Use a new UUID for a new request.", code="REQUEST_CONFLICT")
             for item in manifest["inputs"]:
                 copied = path.parent / item["local_path"]
                 if not copied.is_file() or sha256_file(copied) != item["sha256"]:
-                    raise ClientError("Preserved input is missing or modified; refusing to alter an existing request.")
+                    raise ClientError("Preserved input is missing or modified; refusing to alter an existing request.", code="INTEGRITY_ERROR")
             return manifest
         if not images:
             raise ClientError("Supply one or more images, or an existing local --request-id to resume.")
@@ -353,32 +388,32 @@ class State:
 class Client:
     def __init__(self, state: State, timeout):
         if requests is None:
-            raise ClientError("Install the client dependency: python -m pip install 'requests>=2.31,<3'")
+            raise ClientError("Install the client dependency: python -m pip install 'requests>=2.31,<3'", code="LOCAL_IO_ERROR")
         self.state = state
         self.server = state.server
         self.timeout = timeout
         self.session = requests.Session()
         # Never send ambient .netrc credentials or inherit a workstation proxy.
         self.session.trust_env = False
-        self.session.headers.update({"X-Client-Type": "cli", "User-Agent": "hunyuan3d-cli/1"})
+        self.session.headers.update({"X-Client-Type": "cli", "User-Agent": "hunyuan3d-cli/1.1"})
         self.jar = http.cookiejar.LWPCookieJar(str(state.cookies))
         if state.cookies.exists():
             try:
                 self.jar.load(ignore_discard=True, ignore_expires=False)
             except (OSError, http.cookiejar.LoadError) as exc:
-                raise ClientError("Cannot read saved session. Move aside cookies.lwp and log in again.") from exc
+                raise ClientError("Cannot read saved session. Move aside cookies.lwp and log in again.", code="LOCAL_IO_ERROR") from exc
         self.session.cookies = self.jar
 
     def url(self, path):
         if not isinstance(path, str) or "\\" in path:
-            raise ClientError("Server returned an invalid URL.")
+            raise ClientError("Server returned an invalid URL.", code="PROTOCOL_ERROR")
         target = urljoin(self.server + "/", path)
         parts = urlsplit(target)
         if parts.username or parts.password or parts.fragment:
-            raise ClientError("Refusing a URL containing credentials or a fragment.")
+            raise ClientError("Refusing a URL containing credentials or a fragment.", code="PROTOCOL_ERROR")
         origin = normalize_server(f"{parts.scheme}://{parts.netloc}")
         if origin != self.server:
-            raise ClientError("Refusing a redirect or download URL to another origin.")
+            raise ClientError("Refusing a redirect or download URL to another origin.", code="PROTOCOL_ERROR")
         return target
 
     def save_cookies(self):
@@ -402,8 +437,10 @@ class Client:
             try:
                 response = self.session.request(method, url, headers=headers, allow_redirects=False,
                                                 timeout=timeout or self.timeout, **kwargs)
+            except requests.Timeout as exc:
+                raise ClientError("Request timed out; preserved request IDs can be resumed.", code="REQUEST_TIMEOUT") from exc
             except requests.RequestException as exc:
-                raise ClientError(f"Request failed ({type(exc).__name__}); preserved request IDs can be resumed.") from exc
+                raise ClientError(f"Request failed ({type(exc).__name__}); preserved request IDs can be resumed.", code="NETWORK_ERROR") from exc
             self.save_cookies()
             if response.status_code not in {301, 302, 303, 307, 308}:
                 return response
@@ -414,25 +451,25 @@ class Client:
                 response.close()
             if not login_redirects:
                 if urlsplit(next_url).path.startswith("/access/login"):
-                    raise ClientError("Login required. Run the login command for this server.")
-                raise ClientError("Unexpected redirect; use the server's final origin.")
+                    raise ClientError("Login required. Run the login command for this server.", code="AUTH_REQUIRED")
+                raise ClientError("Unexpected redirect; use the server's final origin.", code="PROTOCOL_ERROR")
             if response.status_code in {307, 308} and method.upper() != "GET":
-                raise ClientError("Refusing to replay login credentials through a redirect.")
+                raise ClientError("Refusing to replay login credentials through a redirect.", code="PROTOCOL_ERROR")
             method, url, kwargs = "GET", next_url, {}
             headers = {}
-        raise ClientError("Too many same-origin login redirects.")
+        raise ClientError("Too many same-origin login redirects.", code="PROTOCOL_ERROR")
 
     @staticmethod
     def check(response):
-        if response.status_code in {401, 403}:
-            raise ClientError(f"Server rejected access (HTTP {response.status_code}). Run login or verify the server access policy.")
         if not response.ok:
-            detail = ""
+            body = None
             with contextlib.suppress(ValueError):
-                body = response.json()
-                if isinstance(body, dict):
-                    detail = str(body.get("error") or body.get("message") or "")[:300]
-            raise ClientError(f"Server returned HTTP {response.status_code}" + (f": {detail}" if detail else "."))
+                candidate = response.json()
+                if isinstance(candidate, dict):
+                    body = candidate
+            raise http_error(response.status_code, payload=body,
+                             path=urlsplit(getattr(response, "url", "")).path,
+                             retry_after=response.headers.get("Retry-After"))
 
     def json(self, method, path, **kwargs):
         with self.request(method, path, **kwargs) as response:
@@ -440,9 +477,9 @@ class Client:
             try:
                 result = response.json()
             except ValueError as exc:
-                raise ClientError("Expected JSON from the job API; check the server origin and login.") from exc
+                raise ClientError("Expected JSON from the job API; check the server origin and login.", code="PROTOCOL_ERROR") from exc
             if not isinstance(result, dict):
-                raise ClientError("Unexpected API response shape.")
+                raise ClientError("Unexpected API response shape.", code="PROTOCOL_ERROR")
             targets = [result]
             if isinstance(result.get("job"), dict):
                 targets.append(result["job"])
@@ -481,7 +518,7 @@ class Client:
                               data={"password": password, "csrf": csrf, "next": "/api/jobs?limit=1"}) as response:
                 self.check(response)
                 if "/access/login" in urlsplit(response.url).path:
-                    raise ClientError("Login failed.")
+                    raise ClientError("Login failed.", code="AUTH_REJECTED")
         finally:
             password = None
         self.json("GET", "/api/jobs?limit=1")
@@ -493,9 +530,72 @@ class Client:
         # Existing API returns the public job directly; accept an explicit wrapper too.
         job = result.get("job", result)
         if not isinstance(job, dict) or job.get("id") != job_id or not isinstance(job.get("status"), str):
-            raise ClientError("Unexpected job status response.")
+            raise ClientError("Unexpected job status response.", code="PROTOCOL_ERROR")
         self.state.remember_job(job)
         return job
+
+    def capabilities(self):
+        try:
+            result = self.json("GET", "/api/capabilities")
+        except ModelingError as exc:
+            if exc.http_status == 404:
+                raise ClientError("This server does not support capabilities. Update the server CLI/API.", code="UNSUPPORTED_API", http_status=404) from exc
+            raise
+        if result.get("schema_version") != 1 or not isinstance(result.get("models"), dict):
+            raise ClientError("Unsupported capabilities schema; update the client and server together.", code="UNSUPPORTED_API")
+        return result
+
+    def doctor(self):
+        try:
+            result = self.json("GET", "/api/doctor")
+        except ModelingError as exc:
+            if exc.http_status == 404:
+                raise ClientError("This server does not support doctor. Update the server CLI/API.", code="UNSUPPORTED_API", http_status=404) from exc
+            raise
+        if result.get("schema_version") != 1 or not isinstance(result.get("ok"), bool) or not isinstance(result.get("checks"), dict):
+            raise ClientError("Unsupported doctor schema; update the client and server together.", code="UNSUPPORTED_API")
+        return result
+
+    def request_jobs(self, request_id):
+        """Recover every remote job for one UUID, including pages after 200."""
+        request_id = validate_request_id(request_id)
+        jobs, seen, offset = [], set(), 0
+        while True:
+            result = self.json("GET", "/api/jobs?" + urlencode({
+                "request_id": request_id, "limit": 200, "offset": offset}))
+            page = result.get("jobs")
+            if not isinstance(page, list):
+                raise ClientError("Unexpected request history response.", code="PROTOCOL_ERROR")
+            for job in page:
+                if (not isinstance(job, dict) or job.get("request_id") != request_id
+                        or not isinstance(job.get("status"), str)):
+                    raise ClientError("Server returned a job outside the requested UUID.", code="PROTOCOL_ERROR")
+                job_id = validate_job_id(job.get("id"), code="PROTOCOL_ERROR")
+                if job_id in seen:
+                    raise ClientError("Request history pagination repeated a job.", code="PROTOCOL_ERROR")
+                seen.add(job_id)
+                jobs.append(job)
+            offset += len(page)
+            total = result.get("total")
+            if isinstance(total, int) and total >= 0:
+                if offset >= total:
+                    break
+                if not page:
+                    raise ClientError("Request history pagination ended before its total.", code="PROTOCOL_ERROR")
+            elif len(page) < 200:
+                break
+        return jobs
+
+    def collect(self, request_id, output, *, wait=False, timeout=86400, interval=5,
+                refresh=False, jobs=None):
+        from modeling_collection import collect_request
+        return collect_request(self, request_id, output, wait=wait, timeout=timeout,
+                               interval=interval, refresh=refresh, jobs=jobs)
+
+    def resume(self, request_id, output, *, timeout=86400, interval=5, refresh=False):
+        from modeling_collection import resume_request
+        return resume_request(self, request_id, output, timeout=timeout,
+                              interval=interval, refresh=refresh)
 
     def generate(self, manifest):
         path = self.state.manifest_path(manifest["request_id"]).parent
@@ -508,11 +608,11 @@ class Client:
             result = self.json("POST", "/api/jobs", data=manifest["submitted_options"], files=files,
                                headers={"Idempotency-Key": manifest["request_id"]})
         if result.get("request_id") != manifest["request_id"] or not isinstance(result.get("jobs"), list) or not result["jobs"]:
-            raise ClientError("Unexpected create response; request ID is preserved. Check history --remote before retrying.")
+            raise ClientError("Unexpected create response; request ID is preserved. Check history --remote before retrying.", code="PROTOCOL_ERROR")
         for job in result["jobs"]:
             if not isinstance(job, dict) or not isinstance(job.get("status"), str):
-                raise ClientError("Unexpected job in create response; the request ID is preserved.")
-            validate_job_id(job.get("id"))
+                raise ClientError("Unexpected job in create response; the request ID is preserved.", code="PROTOCOL_ERROR")
+            validate_job_id(job.get("id"), code="PROTOCOL_ERROR")
         manifest.update(state="submitted", jobs=result["jobs"], batch_id=result.get("batch_id"),
                         web_url=result.get("web_url"), replayed=bool(result.get("replayed")))
         self.state.write_manifest(manifest)
@@ -526,14 +626,14 @@ class Client:
             return [latest.get(job_id, {"id": job_id, "status": "unknown"}) for job_id in job_ids]
         while True:
             for job_id in job_ids:
-                if latest.get(job_id, {}).get("status") == "completed":
+                if latest.get(job_id, {}).get("status") in {"completed", "failed", "cancelled", "canceled"}:
                     continue
                 remaining = deadline - time.monotonic()
                 if remaining <= 0:
                     raise WaitTimeout(snapshot())
                 try:
                     job = self.status(job_id, timeout=min(self.timeout, remaining))
-                except ClientError:
+                except ModelingError:
                     if time.monotonic() >= deadline:
                         raise WaitTimeout(snapshot()) from None
                     raise
@@ -542,21 +642,47 @@ class Client:
                 if marker != shown.get(job_id):
                     print(f"{job_id}: {job['status']} {job.get('message', '')}", file=sys.stderr)
                     shown[job_id] = marker
-                if job["status"] in {"failed", "cancelled", "canceled"}:
-                    return snapshot(), 2
-            if len(latest) == len(job_ids) and all(job["status"] == "completed" for job in latest.values()):
-                return [latest[job_id] for job_id in job_ids], 0
+            if len(latest) == len(job_ids) and all(job["status"] in {"completed", "failed", "cancelled", "canceled"} for job in latest.values()):
+                return snapshot(), 2 if any(job["status"] != "completed" for job in latest.values()) else 0
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 raise WaitTimeout(snapshot())
             time.sleep(min(interval, remaining))
 
-    def download(self, job_id, output):
-        job = self.status(job_id)
+    def cached_download(self, job_id, output, job=None):
+        """Only reuse an archive whose same-origin receipt and full hash verify."""
+        output = Path(output).expanduser().resolve()
+        final, receipt_path = output / f"{job_id}.zip", output / f"{job_id}.download.json"
+        try:
+            receipt = read_json(receipt_path)
+            record = receipt.get("generation_record", {})
+            if (not isinstance(record, dict) or receipt.get("schema_version") != 1 or receipt.get("server") != self.server
+                    or receipt.get("job_id") != job_id or not final.is_file()
+                    or Path(receipt.get("archive", "")).resolve() != final
+                    or final.stat().st_size != receipt.get("archive_bytes")
+                    or sha256_file(final) != receipt.get("archive_sha256")
+                    or (job and job.get("request_id") != record.get("request_id"))):
+                return None
+            with zipfile.ZipFile(final) as archive:
+                verify_archive(archive, record, job_id)
+        except (ModelingError, OSError, ValueError, TypeError, KeyError, RuntimeError, zipfile.BadZipFile):
+            return None
+        return {"job": job or {"id": job_id, "status": "completed", "request_id": record.get("request_id")},
+                "archive": str(final), "receipt": str(receipt_path),
+                "archive_sha256": receipt["archive_sha256"], "archive_bytes": receipt["archive_bytes"],
+                "skipped": True}
+
+    def download(self, job_id, output, *, refresh=True, job=None):
+        job_id = validate_job_id(job_id)
+        if not refresh:
+            cached = self.cached_download(job_id, output, job)
+            if cached:
+                return cached, 0
+        job = job or self.status(job_id)
         if job["status"] in {"failed", "cancelled", "canceled"}:
-            return {"job": job, "error": "Job failed; no completed archive is available."}, 2
+            return {**error_payload("JOB_FAILED", "Job failed; no completed archive is available."), "job": job}, 2
         if job["status"] != "completed":
-            raise ClientError("Job is not completed. Run wait first, or use generate --download.")
+            raise ClientError("Job is not completed. Run wait first, or use generate --download.", code="JOB_NOT_READY")
         record = self.json("GET", job.get("record_url") or f"/api/jobs/{job_id}/record")
         output = Path(output).expanduser().resolve()
         output.mkdir(parents=True, exist_ok=True)
@@ -574,15 +700,17 @@ class Client:
                                 handle.write(chunk)
                                 digest.update(chunk)
                                 count += len(chunk)
+                    except requests.Timeout as exc:
+                        raise ClientError("Archive download timed out; rerun download with the same job ID.", code="REQUEST_TIMEOUT") from exc
                     except requests.RequestException as exc:
-                        raise ClientError("Archive download interrupted; rerun download with the same job ID.") from exc
+                        raise ClientError("Archive download interrupted; rerun download with the same job ID.", code="NETWORK_ERROR") from exc
                 handle.flush()
                 os.fsync(handle.fileno())
             try:
                 with zipfile.ZipFile(temporary) as archive:
                     record = verify_archive(archive, record, job_id)
             except (zipfile.BadZipFile, ValueError, KeyError, RuntimeError) as exc:
-                raise ClientError("Downloaded file is not a valid provenance ZIP.") from exc
+                raise ClientError("Downloaded file is not a valid provenance ZIP.", code="INTEGRITY_ERROR") from exc
             os.replace(temporary, final)
         finally:
             with contextlib.suppress(FileNotFoundError):
@@ -599,7 +727,7 @@ class Client:
                 manifest["downloads"].append({key: value for key, value in receipt.items() if key != "generation_record"})
                 self.state.write_manifest(manifest)
         return {"job": job, "archive": str(final), "receipt": str(receipt_path),
-                "archive_sha256": digest.hexdigest(), "archive_bytes": count}, 0
+                "archive_sha256": digest.hexdigest(), "archive_bytes": count, "skipped": False}, 0
 
 
 def parser():
@@ -609,8 +737,10 @@ def parser():
     common.add_argument("--state-dir", default=argparse.SUPPRESS, help="private local state (default: ~/.hunyuan3d-cli)")
     common.add_argument("--json", action="store_true", default=argparse.SUPPRESS, help="JSON results on stdout; progress remains on stderr")
     common.add_argument("--request-timeout", type=positive, default=argparse.SUPPRESS, help="HTTP connect/read inactivity timeout seconds (default: 120)")
-    root = argparse.ArgumentParser(description=__doc__, parents=[common])
+    root = ArgumentParser(description=__doc__, parents=[common])
     commands = root.add_subparsers(dest="command", required=True)
+    commands.add_parser("capabilities", parents=[common], help="inspect server models, defaults, limits, and supported API features")
+    commands.add_parser("doctor", parents=[common], help="check authentication, worker/GPU readiness, and runtime health")
     login = commands.add_parser("login", parents=[common], help="log in through the existing private gateway")
     login.add_argument("--password-file", help="read password from a private UTF-8 file; default: hidden terminal prompt")
     for command in ("status", "wait", "download"):
@@ -621,6 +751,15 @@ def parser():
             child.add_argument("--poll-interval", type=poll_interval, default=5, help="seconds, at least 1 (default: 5)")
         if command == "download":
             child.add_argument("--output", required=True, help="directory for provenance ZIP and download receipt")
+    for command in ("collect", "resume"):
+        child = commands.add_parser(command, parents=[common], help="recover every job in an existing request and collect completed archives")
+        child.add_argument("request", help="preserved request UUID; works on another client using the same server")
+        child.add_argument("--output", required=True, help="directory for provenance ZIPs and download receipts")
+        if command == "collect":
+            child.add_argument("--wait", action="store_true", help="continue tracking every job until all are terminal")
+        child.add_argument("--timeout", type=positive, default=86400, help="total wait budget in seconds (default: 86400)")
+        child.add_argument("--poll-interval", type=poll_interval, default=5, help="seconds, at least 1 (default: 5)")
+        child.add_argument("--refresh", action="store_true", help="download again, including new web rigging outputs, instead of reusing verified archives")
     generate = commands.add_parser("generate", parents=[common], help="submit images to the same queue used by the web UI")
     generate.add_argument("images", nargs="*", help="PNG/JPEG/WebP files; omit when resuming a local request ID")
     generate.add_argument("--model", choices=sorted(MODELS), help="omit to retain the server default")
@@ -628,8 +767,8 @@ def parser():
     generate.add_argument("--gpu", help="auto, split, or GPU index; omit to retain the server default")
     generate.add_argument("--option", action="append", default=[], metavar="KEY=VALUE", help="repeatable; allowed: " + ", ".join(sorted(OPTION_NAMES)))
     generate.add_argument("--request-id", help="UUID; reuse to recover an uncertain submission without duplicate inference")
-    generate.add_argument("--wait", action="store_true", help="wait until all submitted jobs complete or a job fails")
-    generate.add_argument("--download", metavar="DIR", help="wait, then save each completed provenance ZIP into DIR")
+    generate.add_argument("--wait", action="store_true", help="track every job until completed, failed, or cancelled")
+    generate.add_argument("--download", metavar="DIR", help="wait and save completed provenance ZIPs, including partial batch successes")
     generate.add_argument("--timeout", type=positive, default=86400, help="total wait budget in seconds (default: 86400)")
     generate.add_argument("--poll-interval", type=poll_interval, default=5, help="seconds, at least 1 (default: 5)")
     history = commands.add_parser("history", parents=[common], help="show local request manifests, or server CLI job history")
@@ -641,11 +780,25 @@ def parser():
 
 
 def render(result, json_output):
+    result = {"schema_version": SCHEMA_VERSION, **result}
     if json_output:
         print(json.dumps(result, ensure_ascii=False, allow_nan=False))
         return
     if result.get("error"):
         print(result["error"])
+        if result.get("code"):
+            print(f"Code: {result['code']}  Retryable: {str(result.get('retryable', False)).lower()}")
+        if result.get("next_action"):
+            print(f"Next: {result['next_action']}")
+    if "checks" in result:
+        print(f"Server: {result.get('status', 'unknown')}")
+        for name, check in result["checks"].items():
+            print(f"  {name}: {json.dumps(check, ensure_ascii=False)}")
+    if "models" in result:
+        print(f"API: {result.get('api_version', 'unknown')}")
+        for name, model in result["models"].items():
+            available = model.get("available") if isinstance(model, dict) else model
+            print(f"  {name}: {'available' if available else 'unavailable'}")
     if "archive" in result:
         print(f"Archive: {result['archive']}\nSHA-256: {result['archive_sha256']}\nReceipt: {result['receipt']}")
     if "request_id" in result:
@@ -669,14 +822,18 @@ def render(result, json_output):
     if result.get("total") is not None:
         print(f"Total: {result['total']}")
     for download in result.get("downloads", []):
-        print(f"Archive: {download['archive']}")
+        print(f"Archive: {download['archive']}" + (" (verified; reused)" if download.get("skipped") else ""))
+    if result.get("summary"):
+        print("Summary: " + json.dumps(result["summary"], ensure_ascii=False))
 
 
 def main(argv=None):
-    args = parser().parse_args(argv)
-    json_output = getattr(args, "json", False)
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    json_output = "--json" in arguments
     request_id = None
     try:
+        args = parser().parse_args(arguments)
+        json_output = getattr(args, "json", False)
         state_root = Path(getattr(args, "state_dir", "~/.hunyuan3d-cli")).expanduser().resolve()
         configured = state_root / "config.json"
         server = getattr(args, "server", None) or os.environ.get("MODELING_SERVER")
@@ -697,20 +854,41 @@ def main(argv=None):
             result, code = client.login(args.password_file), 0
             # Remember a direct internal origin as well as a gateway login.
             atomic_json(state.root / "config.json", {"server": state.server})
+        elif args.command == "capabilities":
+            result, code = client.capabilities(), 0
+        elif args.command == "doctor":
+            result = client.doctor()
+            code = 0 if result["ok"] else 1
+            if code:
+                result.update(error_payload("SERVER_NOT_READY"))
         elif args.command == "status":
             job = client.status(args.job)
             result, code = {"job": job}, 2 if job["status"] in {"failed", "cancelled", "canceled"} else 0
+            if code:
+                result.update(error_payload("JOB_FAILED"))
         elif args.command == "wait":
             jobs, code = client.wait([validate_job_id(args.job)], args.timeout, args.poll_interval)
             result = {"jobs": jobs}
+            if code:
+                result.update(error_payload("JOB_FAILED"))
         elif args.command == "download":
             result, code = client.download(validate_job_id(args.job), args.output)
+        elif args.command in {"collect", "resume"}:
+            request_id = validate_request_id(args.request)
+            if args.command == "resume":
+                result, code = client.resume(request_id, args.output, timeout=args.timeout,
+                                             interval=args.poll_interval, refresh=args.refresh)
+            else:
+                result, code = client.collect(request_id, args.output, wait=args.wait,
+                                              timeout=args.timeout, interval=args.poll_interval,
+                                              refresh=args.refresh)
         elif args.command == "history":
             if not 1 <= args.limit <= 200:
                 raise ClientError("--limit must be between 1 and 200.")
             query = {"source": "cli", "limit": args.limit, "offset": args.offset}
             if args.request_id:
-                query["request_id"] = validate_request_id(args.request_id)
+                request_id = validate_request_id(args.request_id)
+                query["request_id"] = request_id
             result, code = client.json("GET", "/api/jobs?" + urlencode(query)), 0
         else:
             options = generation_options(args)
@@ -721,30 +899,31 @@ def main(argv=None):
             print("Job IDs: " + ", ".join(job["id"] for job in result["jobs"]), file=sys.stderr)
             code = 0
             if args.wait or args.download:
-                result["jobs"], code = client.wait([job["id"] for job in result["jobs"]], args.timeout, args.poll_interval)
-            if args.download and code == 0:
-                result["downloads"] = [client.download(job["id"], args.download)[0] for job in result["jobs"]]
+                collected, code = client.collect(request_id, args.download, wait=True,
+                                                 timeout=args.timeout, interval=args.poll_interval,
+                                                 jobs=result["jobs"])
+                result.update(collected)
         render(result, json_output)
         return code
     except WaitTimeout as exc:
-        result = {"error": str(exc), "jobs": exc.jobs}
-        if request_id:
-            result["request_id"] = request_id
+        result = {**exc.as_dict(request_id=request_id), "jobs": exc.jobs}
         render(result, json_output)
         return 3
-    except (ClientError, OSError, ValueError) as exc:
-        result = {"error": str(exc)}
-        if request_id:
-            result["request_id"] = request_id
+    except (ModelingError, OSError, ValueError) as exc:
+        if isinstance(exc, ModelingError):
+            result = exc.as_dict(request_id=request_id)
+        else:
+            result = error_payload("LOCAL_IO_ERROR" if isinstance(exc, OSError) else "INVALID_INPUT",
+                                   str(exc), request_id=request_id)
         if json_output:
             render(result, True)
         else:
             print(f"Error: {exc}", file=sys.stderr)
-        return 1
+            print(f"Code: {result['code']}  Next: {result['next_action']}", file=sys.stderr)
+        return 2 if result.get("details", {}).get("argument_error") else 1
     except KeyboardInterrupt:
-        result = {"error": "Interrupted locally; server jobs continue. IDs and inputs remain in local history."}
-        if request_id:
-            result["request_id"] = request_id
+        result = error_payload("INTERRUPTED", "Interrupted locally; server jobs continue. IDs and inputs remain in local history.",
+                               request_id=request_id)
         if json_output:
             render(result, True)
         else:

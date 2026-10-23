@@ -2,9 +2,13 @@
 
 CLI 클라이언트는 Python 3.10 이상과 `requests`만 필요하며 GPU 런타임은 설치하지 않습니다.
 [CLI-A100.md](CLI-A100.md)의 설치·로그인·생성·복구 예시를 따르세요.
-서버에는 `app.py`와 `generation_api.py`를 함께 배포해야 합니다.
+CLI에는 `modeling_cli.py`, `modeling_collection.py`, `modeling_contract.py`를
+같은 폴더에 함께 보존합니다. 서버에는 `app.py`, `generation_api.py`,
+`modeling_capabilities.py`, `modeling_contract.py`를 함께 배포해야 합니다.
 `python scripts/validate_cli_api.py`는 별도 임시 저장소에서 웹/CLI 계약과
 실제 HTTP 클라이언트 동작을 검사하며 GPU 추론이나 운영 작업 저장소를 사용하지 않습니다.
+`python scripts/validate_cli_agent.py`는 기능·준비 상태 조회, 오류 복구 계약,
+부분 성공 배치 회수와 재개를 같은 방식으로 검사합니다.
 
 CHG-20261011-A100-011: 검증된 서버 버전 2026.10.11.11의 GitHub 소스 반영.
 이 문서는 새 Linux 사본을 준비하기 위한 안내다. 실행 중인 서버와 모델·결과·인증정보는 별도로 보존한다.

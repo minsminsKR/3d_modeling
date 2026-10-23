@@ -1,5 +1,36 @@
 # A100 deployment changes
 
+## CHG-20261023-A100-CLI-AI
+
+- Added read-only capabilities and doctor endpoints/CLI commands. They expose
+  supported parameters, actual API defaults, upload limits and configuration /
+  CUDA / storage / default-GPU readiness without loading generation models.
+- Added a shared versioned error contract: stable code, retryable, next_action,
+  request ID and supported details. CLI HTTP/network/argument/timeout/integrity
+  failures and API validation errors are machine-readable. The existing gateway's
+  authentication errors are translated by the CLI without changing its login.
+- Added request-level collect/resume, complete remote-history pagination and
+  incremental result collection. A failed job or download does not discard other
+  successes; timeout results retain completed downloads and pending IDs.
+  Existing archives are reused only after receipt and full-content validation.
+  Failed jobs are not automatically regenerated; uncertain submissions replay
+  only their original UUID and preserved inputs after checking server history.
+- Invalid API numeric options and unavailable explicit GPU IDs now return input
+  errors instead of silently changing the requested setting. Existing web form
+  handling and production generation defaults remain unchanged.
+- Added `scripts/validate_cli_agent.py`; retained existing CLI/API, upload,
+  GPU-allocation and private-gateway regression suites. CLI-A100.md documents the
+  helper files, diagnostics, structured errors, recovery and partial results.
+- A100 Linux validation: all 119 checks passed (29 existing CLI/API, 27 new agent
+  workflows, 12 PNG upload, 15 GPU allocation and 36 gateway checks), with no skips.
+  Real HTTPS capabilities/doctor, authentication and invalid-GPU errors passed.
+- A real two-image batch deliberately failed one invalid PNG while the public
+  demo completed using reduced Hunyuan settings (5 steps, Octree 128, GPU 1,
+  no texture). Its archive was collected despite the other failure; collect and
+  resume reused the verified archive without creating replacement GPU jobs.
+  Web result/saved-model links passed and all 139 previous jobs were unchanged.
+  Two additional validation jobs were retained. Diagnosis itself runs no inference.
+
 ## CHG-20261023-A100-CLI
 
 - Added `modeling_cli.py`: existing-gateway login, generation submission, status,

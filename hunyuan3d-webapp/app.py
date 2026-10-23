@@ -23,6 +23,8 @@ from werkzeug.utils import secure_filename
 from werkzeug.exceptions import HTTPException
 
 from generation_api import archive_for_job, find_submission, prepare_submission, record_for_job, safe_public
+from modeling_contract import ModelingError, error_payload, http_error
+from modeling_capabilities import build_capabilities, build_doctor
 
 from rigging_runtime import rigging_ready, run_rigging
 from rigging_motion import MOTION_VERSION
@@ -176,8 +178,19 @@ def create_app() -> Flask:
     @app.errorhandler(HTTPException)
     def api_error(error):
         if request.path.startswith("/api/"):
-            return jsonify(error=error.name, message=error.description), error.code
+            result = http_error(error.code or 500, error.description,
+                                retry_after=(error.get_response().headers.get("Retry-After"))).as_dict(api_request_id())
+            result["error"] = error.name
+            return jsonify(result), error.code
         return error
+
+    @app.errorhandler(ModelingError)
+    def modeling_error(error):
+        return jsonify(error.as_dict(api_request_id())), error.http_status or 400
+
+    def api_request_id():
+        value = request.headers.get("Idempotency-Key") or request.args.get("request_id", "")
+        return value if re.fullmatch(r"[A-Za-z0-9._-]{8,120}", value) else None
 
     for path in [INSTANCE_DIR, UPLOAD_DIR, OUTPUT_DIR]:
         path.mkdir(parents=True, exist_ok=True)
@@ -312,13 +325,22 @@ def create_app() -> Flask:
         if model not in {"hunyuan3d-2.1", "hunyuan3d-omni", "trellis2"}:
             abort(400, "Unsupported model selection.")
         if model == "trellis2" and not trellis_ready():
+            if submission:
+                raise ModelingError("TRELLIS.2 is not configured for generation; inspect doctor.",
+                                    "SERVER_NOT_READY", http_status=503, details={"model": model})
             abort(400, "TRELLIS.2 모델 접근 승인과 서버 검증이 아직 완료되지 않았습니다.")
         if model == "hunyuan3d-omni" and omni_dependency_issues():
+            if submission:
+                raise ModelingError("Hunyuan3D-Omni is not configured for generation; inspect doctor.",
+                                    "SERVER_NOT_READY", http_status=503, details={"model": model})
             abort(400, f"Hunyuan3D-Omni is not ready: {', '.join(omni_dependency_issues())}")
 
         texture_requested = request.form.get("texture") == "on" or model == "trellis2"
         gpu_ids = available_gpu_ids()
         requested_gpu = request.form.get("gpu_id", default_gpu_mode_for_model(model))
+        if submission and "gpu_id" in request.form and requested_gpu not in {"auto", "split"} and int(requested_gpu) not in gpu_ids:
+            raise ModelingError("The requested physical GPU is not available on this server.",
+                                "INVALID_INPUT", http_status=400, details={"field": "gpu_id"})
         gpu_mode = requested_gpu if requested_gpu in {"auto", "split"} else "manual"
         shape_gpu = env_int("HUNYUAN_SHAPE_GPU", 0) if gpu_mode == "split" else form_gpu_id(gpu_ids)
         texture_gpu = env_int("HUNYUAN_TEXTURE_GPU", 1) if gpu_mode == "split" else None
@@ -338,6 +360,9 @@ def create_app() -> Flask:
         if model == "trellis2":
             if gpu_mode == "split":
                 if not trellis_dual_ready() or len(gpu_ids) < 2:
+                    if submission:
+                        raise ModelingError("The verified TRELLIS.2 two-GPU configuration is unavailable.",
+                                            "SERVER_NOT_READY", http_status=503, details={"model": model})
                     abort(503, "TRELLIS.2 두 GPU 분담 모드가 아직 준비되지 않았습니다.")
                 shape_gpu = env_int("HUNYUAN_TEXTURE_GPU", 1)
                 texture_gpu = next(gpu for gpu in gpu_ids if gpu != shape_gpu)
@@ -850,6 +875,73 @@ def create_app() -> Flask:
             abort(404)
         return send_file(file_path, as_attachment=True, download_name=safe_name)
 
+    def capability_facts():
+        diagnostics = runtime_diagnostics()
+        # available_gpu_ids() deliberately falls back to [0] for the old web
+        # form. Diagnostics must never mistake that fallback for a real GPU.
+        count = diagnostics.get("cuda_device_count", 0) if diagnostics.get("cuda_available") else 0
+        gpu_ids = list(range(count)) if isinstance(count, int) and count > 0 else []
+        defaults = generation_defaults()
+        shape_repo = resolve_repo_env_path(os.getenv("HUNYUAN3D_REPO"))
+        shape_root = resolve_repo_env_path(os.getenv("HY3DGEN_MODELS"))
+        shape_weights = shape_root / os.getenv("HUNYUAN_MODEL_PATH", "tencent/Hunyuan3D-2.1") / os.getenv("HUNYUAN_SUBFOLDER", "hunyuan3d-dit-v2-1") if shape_root else None
+        shape_files = bool(shape_weights and any((shape_weights / name).is_file() for name in
+                           ["model.fp16.safetensors", "model.fp16.ckpt"]))
+        shape_configured = bool(shape_repo and (shape_repo / "hy3dshape").is_dir())
+        omni_root = resolve_repo_env_path(os.getenv("HUNYUAN_OMNI_MODEL_PATH"))
+        use_ema = omni_ema_ready() and env_bool("HUNYUAN_OMNI_USE_EMA", True)
+        omni_file = "pytorch_model_ema.bin" if use_ema else "pytorch_model.bin"
+        omni_files = bool(omni_root and (omni_root / "model" / omni_file).is_file())
+        configured = {"hunyuan3d-2.1": shape_configured and shape_files,
+                      "hunyuan3d-omni": not omni_dependency_issues() and omni_files,
+                      "trellis2": trellis_ready()}
+        models = {}
+        for name, ready in configured.items():
+            reasons = []
+            if not gpu_ids:
+                reasons.append("cuda_unavailable")
+            if not ready:
+                reasons.append("local_model_configuration_or_files_missing")
+            models[name] = {"available": bool(ready and gpu_ids), "configured": bool(ready),
+                            "unavailable_reasons": reasons,
+                            "readiness": "configured" if ready else "setup_or_download_required",
+                            "automatic_download_may_be_required": not ready and name != "trellis2"}
+        return {"defaults": defaults, "gpu_ids": gpu_ids, "gpu_stats": gpu_stats(),
+                "shape_gpu": env_int("HUNYUAN_SHAPE_GPU", 0),
+                "texture_gpu": env_int("HUNYUAN_TEXTURE_GPU", 1),
+                "default_gpu": default_gpu_id(gpu_ids) if gpu_ids else None,
+                "gpu_modes": {name: default_gpu_mode_for_model(name) for name in models},
+                "model_readiness": models,
+                "trellis_defaults": trellis_generation_defaults(default_gpu_mode_for_model("trellis2")),
+                "trellis_dual_ready": trellis_dual_ready(), "texture_ready": texture_dependencies_ready(),
+                "texture_profile": os.getenv("HUNYUAN_DEFAULT_TEXTURE_PROFILE", "detail"),
+                "rigging_ready": rigging_ready(), "workers": env_int("GENERATION_WORKERS", 2),
+                "limits": {"max_upload_files": env_int("MAX_UPLOAD_FILES", 15),
+                           "max_upload_bytes": app.config["MAX_CONTENT_LENGTH"],
+                           "upload_limit_scope": "Application limit; the public gateway may impose a smaller request limit.",
+                           "allowed_extensions": sorted(ALLOWED_EXTENSIONS), "history_page_max": 200}}
+
+    @app.get("/api/capabilities")
+    def api_capabilities():
+        return jsonify(build_capabilities(capability_facts()))
+
+    @app.get("/api/doctor")
+    def api_doctor():
+        facts = capability_facts()
+        with jobs_lock:
+            queue = dict(gpu_load)
+            job_count = len(jobs)
+            rigging_tasks = sum((job.get("rigging") or {}).get("status") in {"queued", "running"} for job in jobs.values())
+        try:
+            usage = shutil.disk_usage(INSTANCE_DIR)
+            storage = {"writable": os.access(INSTANCE_DIR, os.W_OK), "free_bytes": usage.free}
+        except OSError:
+            storage = {"writable": False, "free_bytes": 0}
+        result = build_doctor(build_capabilities(facts), facts, storage, queue, job_count, rigging_tasks)
+        if not result["ok"]:
+            result.update(error_payload("SERVER_NOT_READY", "Server readiness checks need attention."))
+        return jsonify(result)
+
     @app.get("/health")
     def health():
         with jobs_lock:
@@ -868,6 +960,9 @@ def create_app() -> Flask:
                       status_url=url_for("job_status", job_id=job["id"]),
                       archive_url=url_for("job_archive", job_id=job["id"]),
                       record_url=url_for("job_record", job_id=job["id"]))
+        if job.get("status") == "failed":
+            result["failure"] = error_payload("JOB_FAILED", "This generation failed; inspect its message and retained diagnostics.",
+                                              request_id=job.get("request_id"), details={"job_id": job["id"]})
         rig = dict(job.get("rigging") or {})
         result["rigging"] = {key:value for key,value in rig.items() if key not in {"model_path","preview_path"}}
         result["rigging"].setdefault("status", "idle")
