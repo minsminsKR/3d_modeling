@@ -1,5 +1,32 @@
 # A100 deployment changes
 
+## CHG-20261023-A100-CLI
+
+- Added `modeling_cli.py`: existing-gateway login, generation submission, status,
+  bounded wait, verified provenance ZIP downloads, and local/remote history.
+- `POST /api/jobs` reuses the existing web upload validation, generation defaults,
+  GPU executor and `instance/jobs.json`. UUID request IDs and persisted input/form
+  fingerprints recover interrupted submissions without duplicate inference.
+- API-created jobs are retained from submission and appear in existing web result
+  pages and saved models after completion. Failed submissions remain in history.
+- Job listing, safe generation records and export archives include original
+  inputs, applied settings and SHA-256 manifests; generated GLB, OBJ/MTL, textures
+  and editable/rigging sidecars are preserved when present. Public job JSON no
+  longer exposes internal file paths or submission fingerprints.
+- Passwords are entered privately or read from an owner-controlled file. Existing
+  HTTPS session/CSRF/Origin protection is reused without a new public port.
+- Added isolated web/API and real HTTP subprocess regression tests in
+  `scripts/validate_cli_api.py`. Installation and recovery: [CLI-A100.md](CLI-A100.md).
+- A100 validation on 2026-10-23: 29 CLI/API tests and 63 existing web/gateway
+  regression checks passed. A real HTTPS CLI login, reduced Hunyuan generation
+  (5 steps, Octree 128, GPU 1, no texture), wait, verified ZIP download, history,
+  replay and web home/result/saved-model checks passed. This smoke test checks
+  functionality; the existing production quality defaults remain unchanged.
+- Deployment backed up the previous sources and all 138 existing job records,
+  restarted only the idle GPU webapp and preserved those records exactly. One
+  additional validation model was retained. Gateway, tunnel and model runtimes
+  were not reconfigured.
+
 ## CHG-20261010-A100-001 (complete)
 - Backed up original .env; converted Windows model paths to project vendor paths.
 - Dedicated Python 3.10 venv, PyTorch 2.5.1 CUDA 12.4, CUDA extension build with toolkit 12.6.

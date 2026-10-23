@@ -1,4 +1,11 @@
 # A100 deployment
+
+## Shared web / CLI workspace (2026-10-23)
+
+[CLI-A100.md](CLI-A100.md) documents the lightweight Python client. It submits to
+this same running service, GPU queue and durable job store. CLI jobs appear in
+the existing web result pages and saved models. No local GPU installation is
+needed. The existing HTTPS gateway login and browser access remain supported.
 Server: ai-server-04@192.168.0.16
 Project: <checkout>/hunyuan3d-webapp
 Change: CHG-20261011-A100-010 / version 2026.10.11.11

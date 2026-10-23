@@ -20,6 +20,9 @@ from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask, abort, jsonify, redirect, render_template, request, send_file, url_for
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import HTTPException
+
+from generation_api import archive_for_job, find_submission, prepare_submission, record_for_job, safe_public
 
 from rigging_runtime import rigging_ready, run_rigging
 from rigging_motion import MOTION_VERSION
@@ -170,6 +173,12 @@ def create_app() -> Flask:
     app.config["SECRET_KEY"] = os.getenv("FLASK_SECRET_KEY", "dev-secret")
     app.config["MAX_CONTENT_LENGTH"] = env_int("MAX_CONTENT_LENGTH_MB", 200) * 1024 * 1024
 
+    @app.errorhandler(HTTPException)
+    def api_error(error):
+        if request.path.startswith("/api/"):
+            return jsonify(error=error.name, message=error.description), error.code
+        return error
+
     for path in [INSTANCE_DIR, UPLOAD_DIR, OUTPUT_DIR]:
         path.mkdir(parents=True, exist_ok=True)
 
@@ -262,6 +271,14 @@ def create_app() -> Flask:
             multiview_ready=multiview_shape_ready(),
         )
 
+    def submission_response(created_jobs, submission, replayed=False):
+        batch_id = created_jobs[0].get("batch_id")
+        return jsonify(request_id=submission["request_id"], batch_id=batch_id,
+                       jobs=[public_job(job) for job in created_jobs], replayed=replayed,
+                       web_url=url_for("batch_detail", batch_id=batch_id) if batch_id else
+                       url_for("job_detail", job_id=created_jobs[0]["id"])), 200 if replayed else 201
+
+    @app.post("/api/jobs")
     @app.post("/jobs")
     def create_job():
         uploaded_files = [file for file in request.files.getlist("images") if file and file.filename]
@@ -282,6 +299,13 @@ def create_app() -> Flask:
             stem = secure_filename(original_name.rsplit(".", 1)[0])[:160] or "image"
             filename = f"{stem}.{extension}"
             validated_files.append((file, filename, original_name))
+
+        submission = prepare_submission(request, validated_files) if request.path == "/api/jobs" else None
+        if submission:
+            with jobs_lock:
+                existing = find_submission(jobs, submission)
+                if existing:
+                    return submission_response(existing, submission, replayed=True)
 
         defaults = generation_defaults()
         model = request.form.get("model", defaults["model"])
@@ -346,6 +370,10 @@ def create_app() -> Flask:
         batch_id = str(uuid.uuid4()) if len(uploaded_files) > 1 else None
         created_jobs = []
         with jobs_lock:
+            if submission:
+                existing = find_submission(jobs, submission)
+                if existing:
+                    return submission_response(existing, submission, replayed=True)
             for index, (file, filename, original_name) in enumerate(validated_files, start=1):
                 job_options = options
                 if gpu_mode == "auto":
@@ -380,12 +408,18 @@ def create_app() -> Flask:
                 }
                 if batch_id is not None:
                     job["batch_id"] = batch_id
+                if submission:
+                    job.update({key: value for key, value in submission.items() if key != "inputs"})
+                    job.update(inputs=[submission["inputs"][index - 1]], saved=True, saved_at=now)
                 jobs[job_id] = job
                 created_jobs.append(job)
             save_jobs(jobs)
 
         for job in created_jobs:
             executor.submit(run_generation, job["id"], job["image_paths"], GenerationOptions(**job["options"]))
+
+        if submission:
+            return submission_response(created_jobs, submission)
 
         if batch_id is not None:
             return redirect(url_for("batch_detail", batch_id=batch_id))
@@ -434,6 +468,43 @@ def create_app() -> Flask:
         if job is None:
             abort(404)
         return render_template("job.html", job=public_job(job))
+
+    @app.get("/api/jobs")
+    def job_history():
+        try:
+            limit = int(request.args.get("limit", "50"))
+            offset = int(request.args.get("offset", "0"))
+        except ValueError:
+            abort(400, "limit and offset must be integers.")
+        if not 1 <= limit <= 200 or offset < 0:
+            abort(400, "limit must be 1-200 and offset must be nonnegative.")
+        source = request.args.get("source")
+        if source is not None and source not in {"cli", "api", "web"}:
+            abort(400, "source must be cli, api or web.")
+        request_id = request.args.get("request_id")
+        with jobs_lock:
+            selected = [dict(job) for job in jobs.values()
+                        if (source is None or job.get("source", "web") == source)
+                        and (request_id is None or job.get("request_id") == request_id)]
+        selected.sort(key=lambda job: (job.get("created_at", 0), job["id"]), reverse=True)
+        return jsonify(jobs=[public_job(job) for job in selected[offset:offset + limit]],
+                       total=len(selected), limit=limit, offset=offset)
+
+    @app.get("/api/jobs/<job_id>/record")
+    def job_record(job_id):
+        with jobs_lock:
+            job = dict(jobs.get(job_id) or {})
+        if not job:
+            abort(404)
+        return jsonify(record_for_job(job, public_job(job), UPLOAD_DIR, OUTPUT_DIR))
+
+    @app.get("/api/jobs/<job_id>/archive")
+    def job_archive(job_id):
+        with jobs_lock:
+            job = dict(jobs.get(job_id) or {})
+        if not job:
+            abort(404)
+        return archive_for_job(job, public_job(job), UPLOAD_DIR, OUTPUT_DIR)
 
     @app.get("/api/jobs/<job_id>")
     def job_status(job_id: str):
@@ -793,6 +864,10 @@ def create_app() -> Flask:
 
     def public_job(job: dict) -> dict:
         result = dict(job)
+        result.update(web_url=url_for("job_detail", job_id=job["id"]),
+                      status_url=url_for("job_status", job_id=job["id"]),
+                      archive_url=url_for("job_archive", job_id=job["id"]),
+                      record_url=url_for("job_record", job_id=job["id"]))
         rig = dict(job.get("rigging") or {})
         result["rigging"] = {key:value for key,value in rig.items() if key not in {"model_path","preview_path"}}
         result["rigging"].setdefault("status", "idle")
@@ -839,7 +914,7 @@ def create_app() -> Flask:
         result["saved_at"] = saved_at
         result["saved_at_label"] = format_timestamp(saved_at)
         result["created_at_label"] = format_timestamp(job.get("created_at"))
-        return result
+        return safe_public(result)
 
     return app
 
