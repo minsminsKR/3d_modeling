@@ -1,0 +1,13 @@
+{
+  "key": "wall-panel",
+  "jobId": "838f97dc-630b-4bc8-893f-be5abf8bf609",
+  "requestId": "a2929154-6538-4783-b09c-84c59a8ed541",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/838f97dc-630b-4bc8-893f-be5abf8bf609",
+  "original": "original.glb",
+  "originalSha256": "97978561f8337f9171359e05198fe390cfbe60978d367056c84640435d145566",
+  "reference": "reference.png",
+  "referenceSha256": "95cb1796ed561bd4db1b9a1361e8ffff4232f3aa35589ac2ce04d124f0e15813",
+  "generationRecord": "service/generation-record.json",
+  "referencePrompt": "reference-prompt.json",
+  "license": "Original project-generated image and model; see ../LICENSE.md"
+}

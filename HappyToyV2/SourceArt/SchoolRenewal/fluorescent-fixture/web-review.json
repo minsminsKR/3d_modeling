@@ -1,0 +1,12 @@
+{
+  "schema_version":1,
+  "approvedForBlenderFinishing":true,
+  "jobId":"0f72152d-83e3-426b-8fc5-d37fbe188ee8",
+  "webUrl":"https://agrees-mic-icon-contribution.trycloudflare.com/jobs/0f72152d-83e3-426b-8fc5-d37fbe188ee8",
+  "reviewer":"Root integration agent using the user's existing in-app modeling webapp",
+  "interaction":"Actual interactive generated GLB top casing and underside orbit: ArrowDown1300ms / ArrowUp2600ms / ArrowUp1400ms",
+  "observations":"Two physically separated tubes, folded reflector and corroded metal; appropriate surface and depth",
+  "decision":"Approve generated source for LOD/PBR finishing and emission masks restricted to the actual tube geometry; never emit the whole casing",
+  "orientation":"Already horizontal long axis Blender X; generated physical tube underside points -Z",
+  "tubeMaskSettings":"tube-emission-regions.json"
+}

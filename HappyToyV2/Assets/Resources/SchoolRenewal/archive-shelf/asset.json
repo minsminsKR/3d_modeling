@@ -1,0 +1,192 @@
+{
+  "key": "archive-shelf",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "bae5af1b06418c6c3d7b95d80e478f2431459cf3b304dc71fc400508d30d5ed6",
+  "editable": "archive-shelf.blend",
+  "normalizedAxis": "z",
+  "normalizedMetres": 1.25,
+  "widthMetres": 1.357969582080841,
+  "heightMetres": 1.247317792614922,
+  "depthMetres": 0.4929039031267166,
+  "originalTriangles": 960907,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "archive-shelf",
+    "axis": "z",
+    "metres": 1.25,
+    "budgets": [
+      6000,
+      2200
+    ],
+    "texture": 2048,
+    "far_from_source": true,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 90.0
+  },
+  "lods": [
+    {
+      "file": "archive-shelf-lod0.fbx",
+      "targetTriangles": 6000,
+      "triangles": 6000,
+      "vertices": 2608,
+      "boundsMin": [
+        -0.6791687607765198,
+        -0.24731700122356415,
+        0.0022953732404857874
+      ],
+      "boundsMax": [
+        0.6788008213043213,
+        0.24558690190315247,
+        1.2496131658554077
+      ],
+      "sha256": "89eb2ac40426fef66995050185dbde89b776836f678bfb9da0362d9da1532cdd",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.0020381882786750793,
+        "components": 5,
+        "vertices": 40
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "archive-shelf-lod1.fbx",
+      "targetTriangles": 2200,
+      "triangles": 2188,
+      "vertices": 684,
+      "boundsMin": [
+        -0.6697368025779724,
+        -0.24881567060947418,
+        0.04963896423578262
+      ],
+      "boundsMax": [
+        0.6709633469581604,
+        0.24169869720935822,
+        1.2482320070266724
+      ],
+      "sha256": "56e7bf153f82d97754d767c161292509e33d0a3e24c91bde85b8435cb069e0ed",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.01087033748626709,
+        "components": 14,
+        "vertices": 188
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_archive-shelf_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_archive-shelf_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_archive-shelf_LOD0-metallicSmoothness.png",
+      "normal": "SR_archive-shelf_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_archive-shelf_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_archive-shelf_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_archive-shelf_LOD1-metallicSmoothness.png",
+      "normal": "SR_archive-shelf_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "tool": "Source-derived 3mm voxel surface retopology before low-LOD collapse",
+    "originalUnchanged": true,
+    "voxelMetres": 0.003,
+    "preserveVolume": true,
+    "sourceCopyFacesBefore": 960500,
+    "sourceCopyFacesAfter": 2191356,
+    "openingValidation": [
+      {
+        "name": "lower compartment",
+        "centreHeightMetres": 0.24,
+        "clearToDepthY": 0,
+        "backY": -0.2003057599067688
+      },
+      {
+        "name": "middle compartment",
+        "centreHeightMetres": 0.64,
+        "clearToDepthY": 0,
+        "backY": -0.20071911811828613
+      },
+      {
+        "name": "upper compartment",
+        "centreHeightMetres": 1.04,
+        "clearToDepthY": 0,
+        "backY": -0.19718194007873535
+      }
+    ],
+    "midDepthBoardCrossSections": [
+      {
+        "top": 1.2478679418563843,
+        "bottom": 1.2088911533355713,
+        "outerThicknessMetres": 0.03897678852081299,
+        "surfaceIntersections": [
+          1.2478679418563843,
+          1.2452090978622437,
+          1.2115497589111328,
+          1.2088911533355713
+        ]
+      },
+      {
+        "top": 0.8329802751541138,
+        "bottom": 0.8053138256072998,
+        "outerThicknessMetres": 0.027666449546813965,
+        "surfaceIntersections": [
+          0.8329802751541138,
+          0.8303206562995911,
+          0.8094421029090881,
+          0.8053138256072998
+        ]
+      },
+      {
+        "top": 0.44722673296928406,
+        "bottom": 0.41776618361473083,
+        "outerThicknessMetres": 0.029460549354553223,
+        "surfaceIntersections": [
+          0.44722673296928406,
+          0.4445679187774658,
+          0.4204256534576416,
+          0.41776618361473083
+        ]
+      },
+      {
+        "top": 0.08817660808563232,
+        "bottom": 0.05482044443488121,
+        "outerThicknessMetres": 0.033356163650751114,
+        "surfaceIntersections": [
+          0.08817660808563232,
+          0.08551827073097229,
+          0.0574796125292778,
+          0.05482044443488121
+        ]
+      }
+    ],
+    "note": "Retains generated width/height/depth, real three compartments and back; original normalized high geometry remains the source of all game PBR/normal bakes"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

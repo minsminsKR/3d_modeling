@@ -1,0 +1,154 @@
+{
+  "key": "classroom-door",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "80d02e534da355b3db88ec227ea5d085d9af82c9c92202c1a8b19d677eee87bf",
+  "editable": "classroom-door.blend",
+  "normalizedAxis": "z",
+  "normalizedMetres": 2.44,
+  "widthMetres": 1.0461528301239014,
+  "heightMetres": 2.439866468510445,
+  "depthMetres": 0.34724634885787964,
+  "originalTriangles": 984372,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "classroom-door",
+    "axis": "z",
+    "metres": 2.44,
+    "budgets": [
+      10000,
+      3000
+    ],
+    "texture": 2048,
+    "far_from_source": false,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 0
+  },
+  "lods": [
+    {
+      "file": "classroom-door-lod0.fbx",
+      "targetTriangles": 10000,
+      "triangles": 10000,
+      "vertices": 4878,
+      "boundsMin": [
+        -0.5230618715286255,
+        -0.1736365556716919,
+        3.5121836845064536e-05
+      ],
+      "boundsMax": [
+        0.5230909585952759,
+        0.17360979318618774,
+        2.43990159034729
+      ],
+      "sha256": "95c0718582821b73dc758001bd700eb0708794c2f2f0213655fb3aac95ebc174",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.003659979093528818,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "classroom-door-lod1.fbx",
+      "targetTriangles": 3000,
+      "triangles": 3000,
+      "vertices": 1370,
+      "boundsMin": [
+        -0.5225691199302673,
+        -0.1734601855278015,
+        0.0003493486437946558
+      ],
+      "boundsMax": [
+        0.5219144821166992,
+        0.17498089373111725,
+        2.439815044403076
+      ],
+      "sha256": "eabaa1030697f57a293081c2a03f0c6ce497d907327271ebf76cd3f05ab7b83d",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.01951893174808356,
+        "components": 4,
+        "vertices": 12
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_classroom-door_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_classroom-door_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_classroom-door_LOD0-metallicSmoothness.png",
+      "normal": "SR_classroom-door_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_classroom-door_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_classroom-door_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_classroom-door_LOD1-metallicSmoothness.png",
+      "normal": "SR_classroom-door_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "tool": "Source-derived3mm voxel surface repair before LOD/PBR bake",
+    "originalUnchanged": true,
+    "voxelMetres": 0.003,
+    "preserveVolume": true,
+    "sourceCopyFacesBefore": 984349,
+    "sourceCopyFacesAfter": 1306238,
+    "dimensionsMetres": [
+      1.0460891723632812,
+      0.34541676938533783,
+      2.4399860623525456
+    ],
+    "closedLeafSurfaceRays": [
+      {
+        "x": 0,
+        "height": 0.4,
+        "surfaceY": 0.03243178129196167
+      },
+      {
+        "x": 0,
+        "height": 1.2,
+        "surfaceY": 0.03243139386177063
+      },
+      {
+        "x": 0,
+        "height": 2.25,
+        "surfaceY": 0.03242909908294678
+      },
+      {
+        "x": -0.25,
+        "height": 1.75,
+        "surfaceY": 0.00694999098777771
+      }
+    ],
+    "glazing": "Original opaque dirty wired glass appearance retained for the inspect-only locked door",
+    "frame": "This generated model is a bare leaf with hardware, not an architectural jamb/frame"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

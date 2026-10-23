@@ -1,0 +1,22 @@
+{
+  "key": "shoe-bank",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "requestId": "5e8352fe-77b6-4338-bbd1-21446cdbb893",
+  "jobId": "2d68af60-b6bf-46ca-9f11-a244cf6d5fb5",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/2d68af60-b6bf-46ca-9f11-a244cf6d5fb5",
+  "archiveSha256": "6cd71cc478cf447404ffb0fb615a1826dd59fe8ef9d07f3581283c4a74d7d00f",
+  "archiveBytes": 55192589,
+  "original": "original.glb",
+  "originalSha256": "4d364bb371a99c6ce1d5c94e621bfd7343c7d3febb5c5e10fa06ab489522de2f",
+  "reference": "reference.png",
+  "referenceSha256": "ad19823e41dd3855ee104c94e26497af0c8619ed4ef78e4b7f5d1cb5def4642f",
+  "referencePrompt": "reference-prompt.txt",
+  "referenceTool": "built-in image_gen",
+  "sourceRecord": "service/generation-record.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "*": "service/*"
+  },
+  "visualReview": "web-review.json",
+  "license": "New project-generated reference and model; no third-party stock model used."
+}

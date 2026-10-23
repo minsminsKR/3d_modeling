@@ -1,0 +1,22 @@
+{
+  "key": "classroom-window",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "requestId": "fc400121-c8ad-43b0-a311-cf2ac241d18d",
+  "jobId": "5473c862-b2d4-4201-80ff-b710da7d3638",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/5473c862-b2d4-4201-80ff-b710da7d3638",
+  "archiveSha256": "a74d12cc2e9701dbec7c4f587f7730a02a65bf1fb0f6ea21f0cf8e8161aef965",
+  "archiveBytes": 53451919,
+  "original": "original.glb",
+  "originalSha256": "d39fa04ccc174c4560164be0e4a0570b960ea6cb8cf432c9b6a0a2bcba686572",
+  "reference": "reference.png",
+  "referenceSha256": "5a4772e3016ed20d37e2ad14aa0e4330d3b06da1ce8a8e27eaf3c6314df4346f",
+  "referencePrompt": "reference-prompt.txt",
+  "referenceTool": "built-in image_gen",
+  "sourceRecord": "service/generation-record.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "*": "service/*"
+  },
+  "visualReview": "web-review.json",
+  "license": "New project-generated reference and model; no third-party stock model used."
+}

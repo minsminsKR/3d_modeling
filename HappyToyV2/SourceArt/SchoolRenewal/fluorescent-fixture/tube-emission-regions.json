@@ -1,0 +1,40 @@
+{
+  "coordinateSystem": "Normalized Blender X/Y/Z metres, width1.2m, no rotation, tube underside is -Z",
+  "inspection": "Actual generated top/underside orthographic renders; two physical tube bands separated from reflector/casing and end sockets",
+  "minimumAlbedoLuma": 0.22,
+  "emissionColor": [
+    1.0,
+    0.94,
+    0.78,
+    1.0
+  ],
+  "boxes": [
+    {
+      "name": "first-generated-glass-tube",
+      "min": [
+        -0.485,
+        -0.004,
+        -0.006
+      ],
+      "max": [
+        0.485,
+        0.048,
+        0.075
+      ]
+    },
+    {
+      "name": "second-generated-glass-tube",
+      "min": [
+        -0.485,
+        -0.08,
+        -0.006
+      ],
+      "max": [
+        0.485,
+        -0.027,
+        0.075
+      ]
+    }
+  ],
+  "measuredReflectorExclusionZ": 0.11662147802114486
+}

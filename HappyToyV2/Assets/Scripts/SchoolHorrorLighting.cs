@@ -46,8 +46,6 @@ namespace HappyToy.V2
 
         public static Light Fixture(SchoolLoopWorld world,Transform parent,Vector3 at,bool warm,float intensity)
         {
-            var source=Resources.Load<GameObject>("CorridorAltarChamber/fluorescent-fixture");
-            if(!source)throw new InvalidOperationException("Authored school fluorescent fixture missing");
             bool corridor=Mathf.Abs(at.x)<.2f;
             int index=Mathf.RoundToInt((at.z-2.2f)/4.4f);
             bool live=!corridor||index==0||index==2||index==5||index==7;
@@ -55,28 +53,38 @@ namespace HappyToy.V2
             float power=live?(corridor?(index==0?7.2f:index==2?6.3f:index==5?4.9f:2.6f):connecting?1.6f:intensity*.56f):0;
             var holder=new GameObject(live?"Failing school fluorescent fixture":"Burned-out school fluorescent fixture").transform;
             holder.SetParent(parent,false);holder.localPosition=at;
-            var model=UnityEngine.Object.Instantiate(source,holder,false);
-            var casing=world.Surfaces.Get("metal-rust",new Color(.76f,.70f,.56f));
-            var dark=world.Surfaces.Get("wax-tallow",new Color(.33f,.35f,.29f));
+            var model=SchoolRenewalModels.Attach("fluorescent-fixture",holder,
+                new Bounds(Vector3.zero,new Vector3(1.2f,.16f,.22f)));
             var color=corridor?new Color(.96f,.94f,.79f):warm?new Color(.72f,.82f,.85f):new Color(.60f,.74f,.86f);
             Color glow=live?color*(corridor?3.8f:2.4f):Color.black;
-            var tube=new Material(world.Surfaces.Get("painted-metal",new Color(.65f,.68f,.58f),new Color(.1f,.1f,.1f)))
-                {name="Owned school tube phosphor",enableInstancing=true};
-            tube.SetTexture("_BaseMap",Texture2D.whiteTexture);tube.SetTexture("_EmissionMap",Texture2D.whiteTexture);
-            tube.SetColor("_BaseColor",live?new Color(.74f,.72f,.58f):new Color(.18f,.20f,.18f));
-            tube.SetColor("_EmissionColor",glow);tube.SetOverrideTag("GraphicsSurface","");world.owned.Add(tube);
-            foreach(var renderer in model.GetComponentsInChildren<MeshRenderer>())
+            var clones=new Dictionary<Material,Material>();var tubes=new List<Material>();
+            foreach(var renderer in model.GetComponentsInChildren<MeshRenderer>(true))
             {
                 var materials=renderer.sharedMaterials;
                 for(int i=0;i<materials.Length;i++)
                 {
-                    string slot=materials[i]?materials[i].name:"";
-                    bool phosphor=renderer.name.IndexOf("tube",StringComparison.OrdinalIgnoreCase)>=0;
-                    materials[i]=phosphor?tube:slot=="CA_DeadGlass"?dark:casing;
+                    var original=materials[i];
+                    if(!original||!original.GetTexture("_EmissionMap"))
+                        throw new InvalidOperationException("Generated fluorescent physical tube emission atlas missing");
+                    if(!clones.TryGetValue(original,out var tube))
+                    {
+                        // Each generated LOD has its own coherent atlas. Only its
+                        // inspected tube texels glow; the original casing PBR stays intact.
+                        tube=new Material(original){name="Owned school tube phosphor — "+original.name,enableInstancing=true};
+                        tube.SetColor("_EmissionColor",glow);tube.EnableKeyword("_EMISSION");
+                        tube.SetOverrideTag("GraphicsSurface","");world.owned.Add(tube);
+                        clones.Add(original,tube);tubes.Add(tube);
+                    }
+                    materials[i]=tube;
                 }
                 renderer.sharedMaterials=materials;renderer.shadowCastingMode=ShadowCastingMode.On;
                 renderer.gameObject.layer=8;
             }
+            // The authored mounting tabs stop at the fitted housing top. These
+            // short secondary drops bridge its 9cm gap to the existing ceiling.
+            foreach(float x in new[]{-.36f,.36f})
+                world.Box(holder,"Renewed school fluorescent mounting drop rod",new Vector3(x,.125f,0),
+                    new Vector3(.008f,.09f,.008f),world.HorrorSurfaces.Rust);
             var lamp=new GameObject("School loop fluorescent pool").AddComponent<Light>();lamp.transform.SetParent(holder,false);
             lamp.transform.localPosition=new Vector3(0,-.20f,0);lamp.type=corridor?LightType.Spot:LightType.Point;lamp.color=color;
             // A folded reflector sends the tube output into the aisle, not through its back onto the ceiling.
@@ -94,7 +102,10 @@ namespace HappyToy.V2
                 backscatter.type=LightType.Point;backscatter.color=color;backscatter.intensity=.68f;
                 backscatter.range=3.15f;backscatter.shadows=LightShadows.None;backscatter.bounceIntensity=0;
             }
-            holder.gameObject.AddComponent<SchoolFluorescent>().Configure(lamp,tube,glow,index*1.71f+at.x*.37f,backscatter);
+            if(tubes.Count==0)throw new InvalidOperationException("Generated fluorescent LOD materials missing");
+            var additional=new Material[tubes.Count-1];
+            for(int i=1;i<tubes.Count;i++)additional[i-1]=tubes[i];
+            holder.gameObject.AddComponent<SchoolFluorescent>().Configure(lamp,tubes[0],glow,index*1.71f+at.x*.37f,backscatter,additional);
             return lamp;
         }
 

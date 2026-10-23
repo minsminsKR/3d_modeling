@@ -1,0 +1,11 @@
+{
+  "schema_version":1,
+  "approvedForBlenderFinishing":true,
+  "jobId":"5473c862-b2d4-4201-80ff-b710da7d3638",
+  "webUrl":"https://agrees-mic-icon-contribution.trycloudflare.com/jobs/5473c862-b2d4-4201-80ff-b710da7d3638",
+  "reviewer":"Root integration agent using the user's existing in-app modeling webapp",
+  "interaction":"Actual interactive generated GLB inspected from front and with 1400ms orbit rotation",
+  "observations":"Timber/metal rails, runners, handle and wear are appropriate; generated glass is opaque and blocks classroom visibility",
+  "decision":"Approve the generated frame as the actual source; remove only eight inspected pane regions on the derived copy before LOD/PBR baking, keep unchanged original GLB/PBR",
+  "derivedPaneSettings":"pane-cutouts.json"
+}

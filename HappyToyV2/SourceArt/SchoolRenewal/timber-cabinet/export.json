@@ -1,0 +1,136 @@
+{
+  "key": "timber-cabinet",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "c6a0bb18828d17788d07d78a094aa610fc1855a99e6f3145f09ed55ad79cbb8f",
+  "editable": "timber-cabinet.blend",
+  "normalizedAxis": "z",
+  "normalizedMetres": 0.85,
+  "widthMetres": 0.9941019117832184,
+  "heightMetres": 0.8498784356488613,
+  "depthMetres": 0.5507846176624298,
+  "originalTriangles": 997163,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "timber-cabinet",
+    "axis": "z",
+    "metres": 0.85,
+    "budgets": [
+      8000,
+      3500
+    ],
+    "texture": 2048,
+    "far_from_source": true,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 180.0
+  },
+  "lods": [
+    {
+      "file": "timber-cabinet-lod0.fbx",
+      "targetTriangles": 8000,
+      "triangles": 8000,
+      "vertices": 3998,
+      "boundsMin": [
+        -0.49704718589782715,
+        -0.27539053559303284,
+        0.00011032291513402015
+      ],
+      "boundsMax": [
+        0.49705472588539124,
+        0.275394082069397,
+        0.8499887585639954
+      ],
+      "sha256": "50ceb8dac6dc5f9bf5613434e62b900d4c64475c98e00b7391cd3e43e024b041",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.0014911629259586334,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "timber-cabinet-lod1.fbx",
+      "targetTriangles": 3500,
+      "triangles": 3500,
+      "vertices": 1748,
+      "boundsMin": [
+        -0.49704694747924805,
+        -0.2753550112247467,
+        8.280274050775915e-05
+      ],
+      "boundsMax": [
+        0.4970543384552002,
+        0.2753460705280304,
+        0.8499882221221924
+      ],
+      "sha256": "ebf827e85a5bccb08feab96e427211070ebc53cf43811ea2199ae342798d6d64",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.007952868938446045,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_timber-cabinet_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_timber-cabinet_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_timber-cabinet_LOD0-metallicSmoothness.png",
+      "normal": "SR_timber-cabinet_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_timber-cabinet_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_timber-cabinet_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_timber-cabinet_LOD1-metallicSmoothness.png",
+      "normal": "SR_timber-cabinet_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "tool": "Source-derived 3mm voxel surface retopology before LOD collapse",
+    "voxelMetres": 0.003,
+    "originalUnchanged": true,
+    "preserveVolume": true,
+    "sourceCopyFacesBefore": 997118,
+    "sourceCopyFacesAfter": 401786,
+    "dimensionsMetres": [
+      0.9941086173057556,
+      0.5507129430770874,
+      0.8498939264100045
+    ],
+    "realFrontRayHit": [
+      0.0,
+      0.24771666526794434,
+      0.41999998688697815
+    ],
+    "note": "Closed twin door cupboard silhouette retained from generated source; untouched high model supplies all colour/ORM/normal detail"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

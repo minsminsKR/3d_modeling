@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "jobId": "b8665a3b-8732-4106-914f-e13b21902674",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/b8665a3b-8732-4106-914f-e13b21902674",
+  "reviewer": "Root agent through existing in-app modeling webapp",
+  "review": {
+    "interactiveResultLoaded": true,
+    "rotation": "Interactive viewer orbit for 1400 ms",
+    "observations": [
+      "Steel frame, four legs, curved seat and separate backrest have coherent geometry",
+      "Worn plywood surface and dark metal material are retained"
+    ],
+    "decision": "Approved for Blender finishing"
+  },
+  "finishingReview": {
+    "method": "Orthogonal original model views in pinned Blender, before LOD baking",
+    "rotationZDegrees": 180,
+    "frontAfter": "Blender +Y / Unity -Z"
+  }
+}

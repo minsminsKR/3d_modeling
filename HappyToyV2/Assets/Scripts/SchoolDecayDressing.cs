@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -16,7 +15,6 @@ namespace HappyToy.V2
         readonly Material paper, board, chalk, dark, connectorWater;
         readonly Material[] printedPaper;
         Transform root;
-        Transform deskTemplate;
         bool physical;
         int nextPaper;
         System.Random random;
@@ -85,16 +83,29 @@ namespace HappyToy.V2
         Transform Furniture(string key,Vector3 at,Vector3 size,float yaw,bool collision=false)
         {
             var holder=Holder("Retained school furnishing — "+key,at,yaw);
-            var visual=CorridorFurnitureLibrary.Attach(key,holder,world.Surfaces);
-            GraphicsPropLibrary.Fit(visual,new Bounds(Vector3.up*size.y*.5f,size));
+            string model=key=="writing-desk"?"school-desk":key=="archive-shelf"?"archive-shelf":
+                throw new ArgumentException("Unknown renewed school furnishing: "+key);
+            // The shop shelves sit on the opposite wall from corridor storage.
+            // Their open sides face the room while the existing guard stays put.
+            float facing=key=="archive-shelf"&&at.x<-8f?180:0;
+            if(key=="writing-desk"&&size.x>1.6f)
+            {
+                // A pair of real school desks forms the old shop counter;
+                // Stretching one student desk across 2 m distorts its frame.
+                foreach(float side in new[]{-1f,1f})
+                    SchoolRenewalModels.AtFeet(model,holder,new Vector3(side*size.x*.25f,0,0),
+                        new Vector3(size.x*.5f-.008f,size.y,size.z));
+            }
+            else SchoolRenewalModels.AtFeet(model,holder,Vector3.zero,size,facing);
             if(collision&&physical)Physical(holder,size);
             ReusedProps++;return holder;
         }
         Transform Cabinet(string key,Vector3 at,Vector3 size,float yaw)
         {
             var holder=Holder("School salvaged storage — "+key,at,yaw);
-            var visual=GraphicsPropLibrary.Attach(key,holder,world.Surfaces.Resolve);
-            GraphicsPropLibrary.Fit(visual,new Bounds(Vector3.up*size.y*.5f,size));
+            string model=key=="cabinet-shell"?"metal-cabinet":key=="cabinet-timber"?"timber-cabinet":
+                throw new ArgumentException("Unknown renewed school storage: "+key);
+            SchoolRenewalModels.AtFeet(model,holder,Vector3.zero,size,at.x<-8f?180:0);
             if(physical)Physical(holder,size);
             ReusedProps++;return holder;
         }
@@ -105,48 +116,21 @@ namespace HappyToy.V2
         }
         Transform RetainedDesk(Vector3 at,float yaw)
         {
-            // The original scene's FBX remains available after its old gameplay is retired.
-            if(!deskTemplate)deskTemplate=world.gameObject.scene.GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<Transform>(true))
-                .FirstOrDefault(t=>t.name=="classroom-desk"&&!t.IsChildOf(world.Root));
-            var source=deskTemplate;
-            if(!source)throw new InvalidOperationException("Retained school classroom desk FBX is missing");
             var holder=Holder("Retained Korean classroom desk",at,yaw);
-            var frame=new GameObject("Immutable desk mesh assembly").transform;frame.SetParent(holder,false);
-            var toAssembly=Matrix4x4.TRS(source.position,source.rotation,Vector3.one).inverse;
-            foreach(var filter in source.GetComponentsInChildren<MeshFilter>(true))
-            {
-                var oldRenderer=filter.GetComponent<MeshRenderer>();if(!oldRenderer||!filter.sharedMesh)continue;
-                var part=new GameObject(filter.name,typeof(MeshFilter),typeof(MeshRenderer)).transform;
-                part.gameObject.layer=8;part.SetParent(frame,false);
-                var matrix=toAssembly*filter.transform.localToWorldMatrix;
-                part.localPosition=matrix.GetColumn(3);part.localRotation=matrix.rotation;part.localScale=matrix.lossyScale;
-                part.GetComponent<MeshFilter>().sharedMesh=filter.sharedMesh;
-                var renderer=part.GetComponent<MeshRenderer>();
-                renderer.sharedMaterials=oldRenderer.sharedMaterials.Select(material=>
-                {
-                    string name=material?material.name.ToLowerInvariant():"";
-                    return name.Contains("metal")||name.Contains("steel")||name.Contains("iron")?surfaces.Rust:surfaces.Timber;
-                }).ToArray();
-                renderer.shadowCastingMode=ShadowCastingMode.On;renderer.receiveShadows=true;
-            }
-            var bounds=GraphicsPropLibrary.LocalBounds(frame);
-            float scale=.73f/Mathf.Max(.001f,bounds.size.y);
-            frame.localScale=Vector3.one*scale;frame.localPosition=-new Vector3(bounds.center.x,bounds.min.y,bounds.center.z)*scale;
+            var source=SchoolRenewalModels.Source("school-desk");
+            var size=GraphicsPropLibrary.LocalBounds(source.transform).size;
+            size*=.73f/Mathf.Max(.001f,size.y);
+            SchoolRenewalModels.AtFeet("school-desk",holder,Vector3.zero,size);
             ReusedProps++;return holder;
         }
         void Chair(Vector3 at,float yaw)
         {
-            var prefab=Resources.Load<GameObject>("SchoolLoop/classroom-chair-visual");
-            if(!prefab)throw new InvalidOperationException("Retained authored school chair is missing");
             var holder=Holder("Unoccupied study chair",at,yaw);
-            var model=UnityEngine.Object.Instantiate(prefab,holder,false).transform;
-            var bounds=GraphicsPropLibrary.LocalBounds(holder);float scale=.82f/Mathf.Max(.001f,bounds.size.y);
-            model.localScale*=scale;model.localPosition=(model.localPosition-new Vector3(bounds.center.x,bounds.min.y,bounds.center.z))*scale;
-            foreach(var renderer in model.GetComponentsInChildren<MeshRenderer>())
-            {
-                renderer.gameObject.layer=8;
-                renderer.sharedMaterials=renderer.sharedMaterials.Select(m=>m&&m.name.ToLowerInvariant().Contains("metal")?surfaces.Rust:surfaces.Timber).ToArray();
-            }
+            var source=SchoolRenewalModels.Source("school-chair");
+            var size=GraphicsPropLibrary.LocalBounds(source.transform).size;
+            size*=.82f/Mathf.Max(.001f,size.y);
+            // New authored chairs face local -Z; study seating faces the +Z board.
+            SchoolRenewalModels.AtFeet("school-chair",holder,Vector3.zero,size,180);
             ReusedProps++;
         }
         void StudyRoom()
@@ -191,9 +175,8 @@ namespace HappyToy.V2
                 float z=first+i*spacing;
                 Box("Cold exterior window recess",new Vector3(-9.285f,1.83f,z),new Vector3(.032f,1.60f,1.72f),dark);
                 Box("Grimed old exterior glass",new Vector3(-9.25f,1.83f,z),new Vector3(.018f,1.50f,1.61f),surfaces.Glass);
-                foreach(float end in new[]{-.84f,.84f})Box("Corroded exterior window jamb",new Vector3(-9.22f,1.83f,z+end),new Vector3(.065f,1.66f,.055f),surfaces.Rust);
-                foreach(float y in new[]{1.02f,1.83f,2.64f})Box("Corroded exterior window rail",new Vector3(-9.22f,y,z),new Vector3(.065f,.045f,1.72f),surfaces.Rust);
-                Box("Exterior window centre upright",new Vector3(-9.22f,1.83f,z),new Vector3(.065f,1.62f,.045f),surfaces.Rust);
+                SchoolRenewalModels.Attach("classroom-window",root,
+                    new Bounds(new Vector3(-9.22f,1.83f,z),new Vector3(1.72f,1.66f,.065f)),-90);
             }
         }
         void CorridorStorage()
@@ -206,12 +189,10 @@ namespace HappyToy.V2
             }
             Cabinet("cabinet-shell",new Vector3(1.79f,0,18.4f),new Vector3(1.18f,1.75f,.46f),90);
             Cabinet("cabinet-timber",new Vector3(-1.79f,0,35.5f),new Vector3(1.0f,.83f,.46f),-90);
-            // A low open shoe bank is recognizable from its divided cubbies and toe rails.
+            // Generated open cubbies use the same shallow route envelope.
             foreach(float z in new[]{9.45f,28.0f})
             {
-                Box("Abandoned school shoe bank back",new Vector3(2.015f,.53f,z),new Vector3(.065f,.94f,1.92f),surfaces.Timber);
-                foreach(float y in new[]{.08f,.40f,.73f,1.05f})Box("Shoe bank worn horizontal board",new Vector3(1.83f,y,z),new Vector3(.42f,.035f,1.96f),surfaces.Timber);
-                for(int div=0;div<=6;div++)Box("Shoe bank thin cubby divider",new Vector3(1.83f,.56f,z-.96f+div*.32f),new Vector3(.42f,.96f,.025f),surfaces.Timber);
+                SchoolRenewalModels.AtFeet("shoe-bank",root,new Vector3(1.83f,0,z),new Vector3(1.96f,1.07f,.42f),90);
                 if(physical)
                 {
                     var guard=Holder("School shoe bank physical body",new Vector3(1.84f,0,z));
@@ -265,22 +246,11 @@ namespace HappyToy.V2
         }
         void Pipes()
         {
-            for(int block=0;block<5;block++)
-            {
-                float near=block*7.6f,far=Mathf.Min(38.2f,near+7.65f);
-                Pipe(new Vector3(1.83f,2.99f,near),new Vector3(1.83f,2.99f,far),.037f);
-                Pipe(new Vector3(1.65f,3.03f,near),new Vector3(1.65f,3.03f,far),.022f);
-                foreach(float z in new[]{near+.42f,near+3.7f})
-                {
-                    Pipe(new Vector3(1.83f,2.99f,z-.035f),new Vector3(1.83f,2.99f,z+.035f),.052f);
-                    Box("Rusted pipe ceiling hanger",new Vector3(1.83f,3.14f,z),new Vector3(.021f,.22f,.034f),surfaces.Rust);
-                }
-            }
+            ServicePipeRun(new Vector3(1.77f,3.145f,0),new Vector3(1.77f,3.145f,38.2f));
+            foreach(float z in new[]{4.1f,11.7f,19.3f,26.9f,34.5f})
+                SchoolRenewalModels.AtFeet("pipe-manifold",root,new Vector3(1.77f,2.83f,z),new Vector3(2,.50f,.18f),90);
             foreach(float z in new[]{10.7f,24.4f})
-            {
-                Pipe(new Vector3(-2.07f,3.12f,z),new Vector3(1.83f,3.12f,z),.032f);
-                Pipe(new Vector3(1.83f,2.99f,z),new Vector3(1.83f,3.12f,z),.032f);
-            }
+                ServicePipeRun(new Vector3(-2.07f,3.145f,z),new Vector3(1.77f,3.145f,z));
         }
         void ConnectorHistory()
         {
@@ -300,16 +270,9 @@ namespace HappyToy.V2
                 world.Label(root,"교내 안전 수칙",new Vector3(1.958f,2.16f,4.10f),Quaternion.Euler(0,90,0),new Vector2(1.1f,.13f),new Color(.48f,.49f,.38f));
                 for(int i=0;i<5;i++)
                     PinnedPage(new Vector3(1.955f-i*.001f,1.84f-(i/3)*.32f,3.57f+(i%3)*.48f),Range(.27f,.34f),Range(.36f,.46f),i,Range(-9,9));
-                foreach(float x in new[]{1.86f,1.68f})
-                {
-                    Pipe(new Vector3(x,3.03f,0),new Vector3(x,3.03f,8),x>1.8f?.034f:.020f);
-                    foreach(float z in new[]{.45f,3.15f,6.60f})
-                    {
-                        Pipe(new Vector3(x,3.03f,z-.03f),new Vector3(x,3.03f,z+.03f),x>1.8f?.047f:.031f);
-                        Box("Connector corroded service pipe ceiling strap",new Vector3(x,3.14f,z),new Vector3(.02f,.22f,.035f),surfaces.Rust);
-                    }
-                }
-                Pipe(new Vector3(-2.05f,2.87f,3.3f),new Vector3(-2.05f,.34f,3.3f),.029f);
+                ServicePipeRun(new Vector3(1.77f,3.145f,0),new Vector3(1.77f,3.145f,8));
+                SchoolRenewalModels.AtFeet("pipe-manifold",root,new Vector3(1.77f,2.83f,4.5f),new Vector3(2,.50f,.18f),90);
+                ServicePipeRun(new Vector3(-2.05f,2.87f,3.3f),new Vector3(-2.05f,.34f,3.3f));
                 Box("Connector old utility access lid",new Vector3(-2.035f,1.42f,2.7f),new Vector3(.06f,.49f,.39f),surfaces.Rust);
                 for(int heap=0;heap<4;heap++)for(int i=0;i<17;i++)
                 {
@@ -340,23 +303,25 @@ namespace HappyToy.V2
             }
             MeshObject("Irregular shallow connector leak water film",vertices,triangles,uv,null,connectorWater);
         }
-        void Pipe(Vector3 start,Vector3 end,float radius)
+        void ServicePipeRun(Vector3 start,Vector3 end)
         {
-            const int sides=12;var axis=(end-start).normalized;
-            var tangent=Vector3.Cross(axis,Mathf.Abs(axis.y)<.9f?Vector3.up:Vector3.right).normalized;
-            var bitangent=Vector3.Cross(axis,tangent);float length=Vector3.Distance(start,end);
-            var vertices=new Vector3[(sides+1)*2];var normals=new Vector3[vertices.Length];var uv=new Vector2[vertices.Length];
-            var triangles=new int[sides*6];
-            for(int side=0;side<=sides;side++)
+            var direction=end-start;float length=direction.magnitude;
+            if(length<.01f)return;
+            int count=Mathf.CeilToInt(length/2f);float span=length/count;
+            var rotation=Quaternion.FromToRotation(Vector3.right,direction/length);
+            // Along the right wall, expose the inspected coupling faces toward
+            // the corridor instead of burying them in the plaster.
+            if(Mathf.Abs(direction.normalized.z)>.9f)
+                rotation=Quaternion.Euler(0,90,0);
+            else if(direction.normalized.y<-.9f)
+                rotation*=Quaternion.AngleAxis(180,Vector3.right);
+            for(int segment=0;segment<count;segment++)
             {
-                float angle=side*Mathf.PI*2/sides;var normal=tangent*Mathf.Cos(angle)+bitangent*Mathf.Sin(angle);
-                int index=side*2;vertices[index]=start+normal*radius;vertices[index+1]=end+normal*radius;
-                normals[index]=normals[index+1]=normal;uv[index]=new Vector2(side/(float)sides,0);uv[index+1]=new Vector2(side/(float)sides,length);
-                if(side==sides)continue;int t=side*6;
-                triangles[t]=index;triangles[t+1]=index+2;triangles[t+2]=index+1;
-                triangles[t+3]=index+2;triangles[t+4]=index+3;triangles[t+5]=index+1;
+                var centre=start+direction*((segment+.5f)/count);
+                var model=SchoolRenewalModels.Attach("pipe-run",root,
+                    new Bounds(centre,new Vector3(span+.012f,.231f,.08f)),spatialBatch:true);
+                model.localRotation=rotation;
             }
-            MeshObject("Round corroded school service pipe",vertices,triangles,uv,normals,surfaces.Rust);
         }
         void Residue()
         {

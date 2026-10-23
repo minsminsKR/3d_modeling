@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "jobId": "fc8bc2f7-0e4f-493d-87e2-7f06f2b812ee",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/fc8bc2f7-0e4f-493d-87e2-7f06f2b812ee",
+  "reviewer": "Root agent through existing in-app modeling webapp",
+  "review": {
+    "interactiveResultLoaded": true,
+    "rotation": "Interactive viewer orbit for 1400 ms in opposite direction",
+    "observations": [
+      "Coherent double-door vented gray steel cabinet",
+      "Rust wear, short legs and cabinet depth are real geometry"
+    ],
+    "decision": "Approved for Blender finishing"
+  },
+  "finishingReview": {
+    "method": "Orthogonal original model views in pinned Blender, before LOD baking",
+    "rotationZDegrees": 180,
+    "frontAfter": "Blender +Y / Unity -Z",
+    "finalGameLodReview": {
+      "method": "Pinned Blender Eevee orthogonal views of the final packed near LOD",
+      "observations": [
+        "Double doors, handles, vent details and short legs remain coherent",
+        "Source-derived retopology removes the tearing seen in the superseded direct-collapse preview",
+        "Rusted seams and worn gray-green steel suit the abandoned school"
+      ],
+      "status": "PASS"
+    }
+  }
+}

@@ -46,10 +46,12 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Physics.CapsuleCast(from+Vector3.up*.30f,from+Vector3.up*1.5f,.30f,Vector3.forward,6.8f,1<<8),Is.False);
                 var route=new NavMeshPath();Assert.That(NavMesh.CalculatePath(from,to,NavMesh.AllAreas,route),Is.True);
                 Assert.That(route.status,Is.EqualTo(NavMeshPathStatus.PathComplete));
-                var damage=centre.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Connector scan rubble and broken wall finish"&&Vector3.Distance(t.position,history.position)<.01f);
-                Assert.That(damage.GetComponentsInChildren<Transform>(true).Count(t=>t.name.StartsWith("Acquired scan —")),Is.GreaterThanOrEqualTo(20));
+                var damage=centre.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Connector generated broken concrete and aggregate"&&Vector3.Distance(t.position,history.position)<.01f);
+                Assert.That(damage.GetComponentsInChildren<Transform>(true).Count(t=>t.name.StartsWith("New school model —")),Is.GreaterThanOrEqualTo(20));
                 Assert.That(damage.GetComponentsInChildren<Collider>(true),Is.Empty);
-                Assert.That(damage.GetComponentsInChildren<Transform>(true).Count(t=>t.name=="Connector raised curling wall coating"),Is.GreaterThan(40));
+                var modelMaterials=damage.GetComponentsInChildren<Renderer>(true).SelectMany(r=>r.sharedMaterials).ToArray();
+                Assert.That(modelMaterials.Length,Is.GreaterThanOrEqualTo(20));
+                Assert.That(modelMaterials.All(m=>m&&m.GetTexture("_BaseMap")&&m.GetTexture("_BumpMap")&&m.GetTexture("_MetallicGlossMap")),Is.True);
             }
         }
 

@@ -20,6 +20,9 @@ namespace HappyToy.V2
         public Material Ceiling {get;}
         public Material CeilingAlternate {get;}
         public Material Floor {get;}
+        public Material RenewedFloor {get;}
+        public Material RenewedWall {get;}
+        public Material RenewedCeiling {get;}
         public Material Glass {get;}
         public Material Rust {get;}
         public Material Timber {get;}
@@ -46,6 +49,16 @@ namespace HappyToy.V2
             Floor.SetTexture("_PuddleField",Texture("puddle-field"));
             Floor.SetFloat("_PuddleSpan",24);
             Floor.SetVector("_SchoolOrigin",SchoolLoopWorld.Origin);
+            // Calibrate new source albedos to the approved school exposure.
+            RenewedWall=Generated(Wall,"wall-panel","Generated school plaster with continuous damp variation",.17f,.52f);
+            RenewedCeiling=Generated(Ceiling,"ceiling-panel","Generated school acoustic panels with continuous damp variation",.12f,.42f);
+            RenewedFloor=Clone(Floor,"Generated broken school tile with continuous shallow water");
+            var floorSource=SchoolRenewalModels.Source("floor-slab").GetComponent<LODGroup>().GetLODs()[0].renderers[0].sharedMaterial;
+            foreach(string channel in new[]{"_BaseMap","_BumpMap","_MetallicGlossMap","_OcclusionMap"})
+                if(floorSource.GetTexture(channel))RenewedFloor.SetTexture(channel,floorSource.GetTexture(channel));
+            if(!floorSource.GetTexture("_OcclusionMap"))RenewedFloor.SetTexture("_OcclusionMap",Texture2D.whiteTexture);
+            RenewedFloor.SetColor("_BaseColor",floorSource.GetColor("_BaseColor")*new Color(.44f,.44f,.44f,1));
+            RenewedFloor.SetFloat("_AuthoredFloor",1);RenewedFloor.SetFloat("_BumpScale",1);RenewedFloor.SetFloat("_MacroStrength",.05f);
             Glass=Create("Streaked damp classroom glass",1.6f,"school-glass");
             Glass.SetTexture("_BaseMap",Texture("glass/albedo"));
             Glass.SetTexture("_BumpMap",Texture("glass/normal"));
@@ -78,6 +91,16 @@ namespace HappyToy.V2
             var texture=Resources.Load<Texture2D>("SchoolHorror/"+name);
             if(!texture)throw new InvalidOperationException("Required school surface map missing: "+name);
             return texture;
+        }
+        Material Generated(Material basis,string key,string name,float macro,float reflectance)
+        {
+            var result=Clone(basis,name);
+            var source=SchoolRenewalModels.Source(key).GetComponent<LODGroup>().GetLODs()[0].renderers[0].sharedMaterial;
+            foreach(string channel in new[]{"_BaseMap","_BumpMap","_MetallicGlossMap","_OcclusionMap"})
+                result.SetTexture(channel,source.GetTexture(channel)?source.GetTexture(channel):Texture2D.whiteTexture);
+            result.SetColor("_BaseColor",source.GetColor("_BaseColor")*new Color(reflectance,reflectance,reflectance,1));result.SetFloat("_BumpScale",1);
+            result.SetFloat("_WorldCeiling",0);result.SetFloat("_MacroStrength",macro);
+            return result;
         }
         Texture2D Constant(Color value,string name)
         {

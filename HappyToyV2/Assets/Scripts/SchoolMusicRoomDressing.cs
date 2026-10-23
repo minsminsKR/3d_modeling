@@ -10,6 +10,15 @@ namespace HappyToy.V2
         public SchoolMusicRoomDressing(SchoolLoopWorld owner){world=owner;}
         Transform Prop(Transform parent,string key,Vector3 at,float height,float yaw)
         {
+            if(key=="classroom-chair")
+            {
+                var chair=SchoolRenewalModels.Source("school-chair");
+                var size=GraphicsPropLibrary.LocalBounds(chair.transform).size;
+                size*=height/Mathf.Max(.001f,size.y);
+                var seating=SchoolRenewalModels.AtFeet("school-chair",parent,at,size,yaw);
+                seating.name="Music room classroom-chair";
+                return seating;
+            }
             var prefab=Resources.Load<GameObject>("SchoolLoop/"+key+"-visual");
             if(!prefab)throw new InvalidOperationException("Required school music prop missing: "+key);
             var holder=new GameObject("Music room "+key).transform;holder.SetParent(parent,false);
@@ -49,9 +58,8 @@ namespace HappyToy.V2
             {
                 float z=26.1f+i*2.6f;
                 world.Box(root,"Music exterior window dark recess",new Vector3(-9.285f,1.84f,z),new Vector3(.035f,1.48f,1.65f),world.Surfaces.Get("painted-metal",new Color(.06f,.08f,.085f)));
-                foreach(float s in new[]{-.81f,.81f})world.Box(root,"Music exterior timber window frame",new Vector3(-9.23f,1.84f,z+s),new Vector3(.08f,1.6f,.06f),wood);
-                world.Box(root,"Music exterior window centre mullion",new Vector3(-9.20f,1.84f,z),new Vector3(.08f,1.6f,.045f),wood);
-                foreach(float y in new[]{1.06f,1.84f,2.62f})world.Box(root,"Music exterior timber window rail",new Vector3(-9.23f,y,z),new Vector3(.08f,.055f,1.65f),wood);
+                SchoolRenewalModels.Attach("classroom-window",root,
+                    new Bounds(new Vector3(-9.20f,1.84f,z),new Vector3(1.65f,1.6f,.08f)),-90);
             }
             foreach(float x in new[]{-7.7f,-4.3f})foreach(float z in new[]{27.2f,31.0f})world.Fixture(root,new Vector3(x,3.08f,z),true,3.0f);
         }

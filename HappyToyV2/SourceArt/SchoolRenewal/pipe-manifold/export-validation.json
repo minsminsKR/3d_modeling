@@ -1,0 +1,23 @@
+{
+  "key": "pipe-manifold",
+  "sourceUnchanged": true,
+  "lodTriangles": [
+    7999,
+    7000
+  ],
+  "textureSizes": [
+    2048,
+    1024
+  ],
+  "tangentNormalVariation": [
+    [
+      28.215979954065144,
+      27.991390225336527
+    ],
+    [
+      36.46606674822189,
+      37.10708950220881
+    ]
+  ],
+  "limitations": "File/geometry/PBR validation only; see root webapp/Unity review."
+}

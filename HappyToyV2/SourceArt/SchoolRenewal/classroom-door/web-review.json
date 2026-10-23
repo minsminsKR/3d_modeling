@@ -1,0 +1,12 @@
+{
+  "schema_version":1,
+  "approvedForBlenderFinishing":true,
+  "jobId":"31ea452d-6f95-440d-a4d9-b958be4c4c40",
+  "webUrl":"https://agrees-mic-icon-contribution.trycloudflare.com/jobs/31ea452d-6f95-440d-a4d9-b958be4c4c40",
+  "reviewer":"Root integration agent using the user's existing in-app modeling webapp",
+  "interaction":"Actual generated interactive GLB front view and1400ms orbit",
+  "observations":"Worn pale grey-green leaf, narrow recessed wired-glass panel, coherent handle and hinges",
+  "decision":"Approve3mm source-derived surface repair and10K/3K LOD/PBR finishing. Retain opaque grimed wired glass for this inspect-only closed door. Preserve original GLB/PBR",
+  "architecture":"Actual model is a bare leaf with hardware; existing rusted jambs/top profile provide its structural surround",
+  "orientation":"Actual front Blender+Y, no rotation required"
+}

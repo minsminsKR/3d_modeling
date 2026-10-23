@@ -1,0 +1,23 @@
+{
+  "key": "concrete-rubble",
+  "sourceUnchanged": true,
+  "lodTriangles": [
+    7000,
+    6604
+  ],
+  "textureSizes": [
+    2048,
+    1024
+  ],
+  "tangentNormalVariation": [
+    [
+      29.43036949584967,
+      29.562816206680157
+    ],
+    [
+      38.80311970056349,
+      37.94744235350072
+    ]
+  ],
+  "limitations": "File/geometry/PBR validation only; see root webapp/Unity review."
+}

@@ -69,8 +69,8 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 배열이 있다는 이유만으로 학교 음원을 회랑 음원으로 교체하지 않는다.
 
 학교 연결 통로의 마감은 `SchoolDecayDressing.ConnectorHistory`와
-`SchoolStructuralDecay.ConnectorDamage`가 기존 학교 집기·촬영 스캔·종이·물막을
-재사용한다. `SchoolLoopArchitecture`는 새 통로의 실제 천장 개구부와 철문 보에서
+`SchoolStructuralDecay.ConnectorDamage`가 새 생성 집기·콘크리트/돌과 기존 종이·물막을
+배치한다. `SchoolLoopArchitecture`는 새 통로의 실제 천장 개구부와 철문 보에서
 분리된 형광등 위치를 소유한다. `SchoolExitSign`은 기존 생성 케이스/공유 LOD·PBR을
 재사용한 천장 중앙 양면 녹색 비상구 표시와 국소 불빛만 소유한다. 진행 출구나
 새 상호작용을 추가하지 않는다. `school-connectors`는 기존 `school-turnbacks`와
@@ -78,6 +78,18 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 원본 사용자 참조와 자산 재사용 내역은 `SourceArt/SchoolHorror/ConnectorPresentation`이다.
 
 ## 모듈 경계
+
+학교 새 모델 키트는 `SchoolRenewalModels`가 생성 자원 경계를,
+`SchoolRenewalArchitecture`가 기존 물리 벽/바닥에 맞춘 시각 마감과 원본 벽의
+창턱/상부 절단을 소유한다. `Editor/SchoolRenewalImport`는 16종의 PBR/노멀·2LOD를
+재구성하고 빌드 완전성을 검사한다. 집기 배치는 기존 두 Dressing 모듈,
+잔해는 `SchoolStructuralDecay`, 두 LOD의 튜브 발광은 `SchoolFluorescent`가 맡는다.
+`SchoolHorrorSurfaces.RenewedFloor`는 새 UV 아틀라스와 기존 월드 수분/평면 반사를
+결합한다. 충돌·저장·루프 평면·광원 출력/노출은 유지한다. 원본 GLB/PBR·입력·생성
+작업·packed Blender·재현 도구/라이선스는 `SourceArt/SchoolRenewal`에 있다.
+`school-renewal`은 Core·16종 실제 배치·PBR·좌석 방향·튜브 LOD/pause·기존 이동/닫힌
+교실·젖은 반사·시계/자바라/연결부와 정상 카메라 검사를 묶는다. 새 Windows 빌드와
+`validate_kit.py`/스테이징 후 소스 완전성 확인을 함께 수행한다.
 
 몬스터 자산 마감은 `SourceArt/CreatureStudio/tools/polish_game_assets.py`와
 `polish-settings.json`이 기존 근접 메시·UV·가중치·원본 동작을 보존하며 게임 전용

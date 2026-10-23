@@ -1,0 +1,118 @@
+{
+  "key": "pipe-run",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "8f76559023c5c61d15407d7636dd7a30240684fdc0a5da297aa010e38d09d068",
+  "editable": "pipe-run.blend",
+  "normalizedAxis": "x",
+  "normalizedMetres": 2.0,
+  "widthMetres": 1.9999914765357971,
+  "heightMetres": 0.23016429465496913,
+  "depthMetres": 0.07942365854978561,
+  "originalTriangles": 930490,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "pipe-run",
+    "axis": "x",
+    "metres": 2.0,
+    "budgets": [
+      4000,
+      1500
+    ],
+    "texture": 2048,
+    "far_from_source": false,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 90.0
+  },
+  "lods": [
+    {
+      "file": "pipe-run-lod0.fbx",
+      "targetTriangles": 4000,
+      "triangles": 4000,
+      "vertices": 2002,
+      "boundsMin": [
+        -1.000083327293396,
+        -0.0398966483771801,
+        0.0005821235827170312
+      ],
+      "boundsMax": [
+        0.9999081492424011,
+        0.039527010172605515,
+        0.23074641823768616
+      ],
+      "sha256": "05259692e008251319c323f9bcddbcec7cfbed946c9b5253b7064fbe7be224a4",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.0029999997317790984,
+        "components": 6,
+        "vertices": 49
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "pipe-run-lod1.fbx",
+      "targetTriangles": 1500,
+      "triangles": 1500,
+      "vertices": 746,
+      "boundsMin": [
+        -0.9998825788497925,
+        -0.03995287045836449,
+        0.0006754558999091387
+      ],
+      "boundsMax": [
+        0.9997653365135193,
+        0.039527010172605515,
+        0.23074641823768616
+      ],
+      "sha256": "5a9aa10c1190725f3402d8e190c853a32ae1a51fffa8bee6a117bf28c647d5db",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.01599993181228638,
+        "components": 4,
+        "vertices": 19
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_pipe-run_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_pipe-run_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_pipe-run_LOD0-metallicSmoothness.png",
+      "normal": "SR_pipe-run_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_pipe-run_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_pipe-run_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_pipe-run_LOD1-metallicSmoothness.png",
+      "normal": "SR_pipe-run_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": null,
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

@@ -1,0 +1,20 @@
+{
+  "owner": "Assets/Scripts/SchoolStructuralDecay.cs",
+  "sourceModels": ["concrete-rubble", "loose-stones"],
+  "replaces": [
+    "SchoolHorror/Structural/scan-rubble-a through c in the current school loop",
+    "SchoolHorror/Structural/aggregate-a through e in the current school loop",
+    "Procedural fallen plaster polygon shells",
+    "Procedural flat skirting slabs"
+  ],
+  "materials": "Retain each new generated model's source-derived PBR; no old acquired-scan material override",
+  "placement": "Former main-hall and extended-connector deposit positions retained, explicit metre-scale bounds",
+  "geometryBudget": "Large piles use new near geometry; small repeated chips/stone clusters use authored distant geometry and construction-time spatial batches",
+  "density": "Fewer multi-fragment source clusters replace old single-stone and hand-built chip swarms",
+  "minimumClearCentralWidthMetres": 3.15,
+  "clearanceEvidence": "Conservative yaw-expanded bounds for all wall-edge parameter ranges; the three tiny existing centre-floor clusters remain cosmetic, max height .028m",
+  "physics": "No model collision or navigation changes; route is owned by SchoolLoopArchitecture",
+  "wallFinish": "Old stylized curling plaster overlays removed; new generated wall panels own visible delamination",
+  "retainedCeilingStructure": ["Actual missing ceiling finish cells", "Exposed lath and hanger wires", "Fractured ceiling opening lips"],
+  "verification": "Source review and git diff --check only at integration handoff; root owns Unity camera, route, material and performance verification"
+}

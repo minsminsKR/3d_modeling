@@ -1,0 +1,14 @@
+{
+  "jobId": "3c8d0abc-5b34-44f0-862f-2a0e3e9ee49e",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/3c8d0abc-5b34-44f0-862f-2a0e3e9ee49e",
+  "reviewDate": "2026-10-24",
+  "reviewer": "root integration agent in user's existing right-sidebar webapp",
+  "method": "Actual interactive viewer; front/side/opposite rotations using Right 1000ms then Right 1300ms",
+  "observations": [
+    "Three parallel pipes, large flanges and rusty valve/hanger rods remain coherent",
+    "No enclosing terrain blob and no severe hole observed",
+    "Source long axis is Blender +Y; rotate Z by 90 degrees for game X module"
+  ],
+  "approvedForBlenderFinishing": true,
+  "placementConstraint": "Keep lowest pipe body above 2.55m; upper hanging rods may enter ceiling structure. Integration may scale vertical extent independently."
+}

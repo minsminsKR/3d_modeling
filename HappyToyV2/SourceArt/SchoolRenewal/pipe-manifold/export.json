@@ -1,0 +1,114 @@
+{
+  "key": "pipe-manifold",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "557ddbf14173105a43d76ea4b7283c2f7ada47eb6e09ea4a7d7153b4d576215e",
+  "editable": "pipe-manifold.blend",
+  "normalizedAxis": "x",
+  "normalizedMetres": 2.0,
+  "widthMetres": 2.0002810955047607,
+  "heightMetres": 0.943934160284698,
+  "depthMetres": 0.25895340740680695,
+  "originalTriangles": 926962,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "pipe-manifold",
+    "axis": "x",
+    "metres": 2.0,
+    "budgets": [
+      8000,
+      7000
+    ],
+    "texture": 2048,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 90.0
+  },
+  "lods": [
+    {
+      "file": "pipe-manifold-lod0.fbx",
+      "targetTriangles": 8000,
+      "triangles": 7999,
+      "vertices": 3405,
+      "boundsMin": [
+        -1.0017101764678955,
+        -0.1268862783908844,
+        0.00862548965960741
+      ],
+      "boundsMax": [
+        0.9985709190368652,
+        0.13206712901592255,
+        0.9525596499443054
+      ],
+      "sha256": "5b235af6e4f46ace23227a9eb6b5473db013697a2dc8462be034e8167a84c423",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.002999999821186066,
+        "components": 6,
+        "vertices": 39
+      }
+    },
+    {
+      "file": "pipe-manifold-lod1.fbx",
+      "targetTriangles": 7000,
+      "triangles": 7000,
+      "vertices": 2809,
+      "boundsMin": [
+        -0.9997565150260925,
+        -0.12933318316936493,
+        0.008806026540696621
+      ],
+      "boundsMax": [
+        0.9980756640434265,
+        0.13206712901592255,
+        0.8194214105606079
+      ],
+      "sha256": "45d52e6b365020b63d34982711215841e5583cde4cce8a333c0438a3e0996dfc",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.016002248764038086,
+        "components": 50,
+        "vertices": 197
+      }
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_pipe-manifold_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_pipe-manifold_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_pipe-manifold_LOD0-metallicSmoothness.png",
+      "normal": "SR_pipe-manifold_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_pipe-manifold_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_pipe-manifold_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_pipe-manifold_LOD1-metallicSmoothness.png",
+      "normal": "SR_pipe-manifold_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

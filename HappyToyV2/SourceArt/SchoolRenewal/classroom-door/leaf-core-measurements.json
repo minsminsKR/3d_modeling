@@ -1,0 +1,60 @@
+{
+  "method": "Dominant area-like vertex density of actual front/back normals; 2mm depth histogram, \u00b13mm selection",
+  "normalizedHeightMetres": 2.44,
+  "wholeModelMin": [
+    -0.5230769515037537,
+    -0.17275206744670868,
+    0.0
+  ],
+  "wholeModelMax": [
+    0.5230769515037537,
+    0.17275206744670868,
+    2.440000057220459
+  ],
+  "dominantLeafPlanes": [
+    {
+      "side": -1,
+      "dominantY": -0.036999999999999866,
+      "vertices": 108656,
+      "boundsMin": [
+        -0.5055787563323975,
+        -0.039999593049287796,
+        0.011348200030624866
+      ],
+      "boundsMax": [
+        0.4793286621570587,
+        -0.03400076553225517,
+        2.425124168395996
+      ]
+    },
+    {
+      "side": 1,
+      "dominantY": 0.033000000000000196,
+      "vertices": 108746,
+      "boundsMin": [
+        -0.5065926909446716,
+        0.03000209480524063,
+        0.016765112057328224
+      ],
+      "boundsMax": [
+        0.48655596375465393,
+        0.035980381071567535,
+        2.423243999481201
+      ]
+    }
+  ],
+  "leafPlaneEnvelopeMin": [
+    -0.5065926909446716,
+    -0.039999593049287796,
+    0.011348200030624866
+  ],
+  "leafPlaneEnvelopeMax": [
+    0.48655596375465393,
+    0.035980381071567535,
+    2.425124168395996
+  ],
+  "leafPlaneWidthMetres": 0.9931486546993256,
+  "leafPlaneHeightMetres": 2.4137759683653712,
+  "approximateLeafThicknessMetres": 0.07000000000000006,
+  "note": "Conservative planar-surface measurement, not a new fitted cuboid or geometry substitution; original GLB unchanged"
+}

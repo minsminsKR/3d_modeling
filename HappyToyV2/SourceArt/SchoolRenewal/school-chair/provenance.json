@@ -1,0 +1,32 @@
+{
+  "key": "school-chair",
+  "requestId": "0d94581b-051e-47be-b7dd-9e27d1debca3",
+  "jobId": "b8665a3b-8732-4106-914f-e13b21902674",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/b8665a3b-8732-4106-914f-e13b21902674",
+  "archiveSha256": "c9bbd063185c10500756e928bc9d00f6d3a624c19c587e5c4d01c624eafd7171",
+  "archiveBytes": 57915177,
+  "original": "original.glb",
+  "originalSha256": "b8780a40bad40fa19535b08db58150957f4adfcea79760ac907d8c988fb88cea",
+  "reference": "reference.png",
+  "referenceSha256": "c9f37cf3ceba7e02472ecdff0f6b9651d10c1ed0e2c122576d703c78eb43c765",
+  "referencePrompt": "reference-prompt.txt",
+  "referencePromptSha256": "385b38b05d6ebdccdd1ea1c825f09aec4d5567fe826fb0c841475c7d2f869382",
+  "referenceTool": "built-in image_gen",
+  "settings": "generation-settings.json",
+  "sourceRecord": "generation-record.json",
+  "sourceRecordSha256": "11ffc3f1c5df931c672e83f8a533758b386de85424d917ee0497fa4e4e384439",
+  "downloadReceipt": "download-receipt.json",
+  "visualReview": "web-review.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "inputs/01_reference.png": "reference.png",
+    "processed_inputs/01.png": "processed-reference.png",
+    "metadata.json": "metadata.json",
+    "generation-record.json": "generation-record.json",
+    "*": "generation/*"
+  },
+  "license": "New project-generated reference and model; no third-party stock model used.",
+  "licenseNotice": "../LICENSE.md",
+  "generatorLicense": "../TRELLIS.2-LICENSE.txt"
+}

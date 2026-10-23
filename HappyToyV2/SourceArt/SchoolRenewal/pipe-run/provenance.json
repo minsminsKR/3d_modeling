@@ -1,0 +1,22 @@
+{
+  "key": "pipe-run",
+  "requestId": "4810cde1-a314-459a-950e-a8c8747e3c45",
+  "jobId": "ca3dd93f-8f1a-47fe-be77-ea77dfc4b5dd",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/ca3dd93f-8f1a-47fe-be77-ea77dfc4b5dd",
+  "archiveSha256": "1b61d3c534ebb1e0f0e8c70e609724717144e7e3eb0bf477f88a726a1f0bc33d",
+  "archiveBytes": 51664255,
+  "original": "original.glb",
+  "originalSha256": "8f76559023c5c61d15407d7636dd7a30240684fdc0a5da297aa010e38d09d068",
+  "reference": "reference.png",
+  "referenceSha256": "45c625ceb541b88c562af741b637113dd369b250c06980a29ae5c0f608c7d4ad",
+  "referencePrompt": "reference-prompt.txt",
+  "referenceTool": "built-in image_gen",
+  "sourceRecord": "service/generation-record.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "*": "service/*"
+  },
+  "visualReview": "web-review.json",
+  "license": "New project-generated reference and model; no third-party stock model used."
+}

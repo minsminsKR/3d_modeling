@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "jobId": "9eea13d3-1a90-4e92-a16e-d541f6cc09ad",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/9eea13d3-1a90-4e92-a16e-d541f6cc09ad",
+  "reviewer": "Root agent through existing in-app modeling webapp",
+  "review": {
+    "interactiveResultLoaded": true,
+    "rotation": "Right rotation for 1300 ms",
+    "observations": [
+      "Worn wooden top and green steel frame are coherent",
+      "Open underside and four separate legs",
+      "No unwanted floor blob"
+    ],
+    "decision": "Approved for Blender finishing"
+  },
+  "finishingReview": {
+    "method": "Four orthogonal Eevee views of the real finished LOD0",
+    "frontBefore": "Blender +X",
+    "correction": "Rigidly rotate derived LODs +90 degrees around Blender Z; unchanged original stays in original coordinates",
+    "frontAfter": "Blender +Y",
+    "observations": [
+      "Open book shelf is truly modeled",
+      "No filled knee opening",
+      "Rust and wood wear retained by generated PBR and high-to-low normal transfer"
+    ]
+  }
+}

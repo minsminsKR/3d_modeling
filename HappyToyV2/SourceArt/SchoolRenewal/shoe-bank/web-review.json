@@ -1,0 +1,11 @@
+{
+  "schema_version":1,
+  "approvedForBlenderFinishing":true,
+  "jobId":"2d68af60-b6bf-46ca-9f11-a244cf6d5fb5",
+  "webUrl":"https://agrees-mic-icon-contribution.trycloudflare.com/jobs/2d68af60-b6bf-46ca-9f11-a244cf6d5fb5",
+  "reviewer":"Root integration agent using the user's existing in-app modeling webapp",
+  "interaction":"Actual generated interactive GLB front view and1400ms orbit rotation",
+  "observations":"Sixteen real open cubbies with separated shelf depths; suitable worn palette and water damage",
+  "decision":"Approve source-derived3mm topology repair if needed, preserve actual cavities/dividers and original dense GLB/PBR, bake2LODs from unchanged original",
+  "orientation":"Original front Blender-Y, rotate180degrees aboutZ so final open front is Blender+Y / standard Unity-Z"
+}

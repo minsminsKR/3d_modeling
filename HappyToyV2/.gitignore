@@ -39,3 +39,4 @@
 
 # Preserved designated-service school progress clock original.
 !/SourceArt/SchoolProgressClock/clock/original.glb
+!/SourceArt/SchoolRenewal/**/*.glb

@@ -1,0 +1,210 @@
+{
+  "key": "fluorescent-fixture",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "67a375307b683a0c53ffb52f0ec68b19c0b82182e606053ebe2d68f6bffb6c6e",
+  "editable": "fluorescent-fixture.blend",
+  "normalizedAxis": "x",
+  "normalizedMetres": 1.2,
+  "widthMetres": 1.2000778317451477,
+  "heightMetres": 0.17288215042935917,
+  "depthMetres": 0.2660587430000305,
+  "originalTriangles": 943369,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "fluorescent-fixture",
+    "axis": "x",
+    "metres": 1.2,
+    "budgets": [
+      8000,
+      2000
+    ],
+    "texture": 2048,
+    "far_from_source": false,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 0
+  },
+  "lods": [
+    {
+      "file": "fluorescent-fixture-lod0.fbx",
+      "targetTriangles": 8000,
+      "triangles": 7998,
+      "vertices": 3975,
+      "boundsMin": [
+        -0.6000576615333557,
+        -0.13303068280220032,
+        7.133601320674643e-05
+      ],
+      "boundsMax": [
+        0.600020170211792,
+        0.1330280601978302,
+        0.17295348644256592
+      ],
+      "sha256": "87feb54793e60146cbcb8092efda17e58d1580802f103db59e4c815ba02ca269",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.001799999088048935,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "fluorescent-fixture-lod1.fbx",
+      "targetTriangles": 2000,
+      "triangles": 2000,
+      "vertices": 976,
+      "boundsMin": [
+        -0.5995983481407166,
+        -0.13280239701271057,
+        -3.766694135265425e-05
+      ],
+      "boundsMax": [
+        0.5998141765594482,
+        0.1329626888036728,
+        0.172615185379982
+      ],
+      "sha256": "18012d57dbcd7560c1dd536b6497e798e27bb62114efa8166f578379668815aa",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.009600622653961182,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_fluorescent-fixture_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_fluorescent-fixture_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_fluorescent-fixture_LOD0-metallicSmoothness.png",
+      "normal": "SR_fluorescent-fixture_LOD0-normal.png",
+      "textureMaxSize": 2048,
+      "emission": "SR_fluorescent-fixture_LOD0-emission.png",
+      "emissionColor": [
+        1.0,
+        0.94,
+        0.78,
+        1.0
+      ]
+    },
+    {
+      "name": "SR_fluorescent-fixture_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_fluorescent-fixture_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_fluorescent-fixture_LOD1-metallicSmoothness.png",
+      "normal": "SR_fluorescent-fixture_LOD1-normal.png",
+      "textureMaxSize": 1024,
+      "emission": "SR_fluorescent-fixture_LOD1-emission.png",
+      "emissionColor": [
+        1.0,
+        0.94,
+        0.78,
+        1.0
+      ]
+    }
+  ],
+  "geometryFinishing": {
+    "tool": "Source-derived 1.5mm voxel surface repair before LOD collapse/bake",
+    "originalUnchanged": true,
+    "voxelMetres": 0.0015,
+    "preserveVolume": true,
+    "sourceCopyFacesBefore": 942692,
+    "sourceCopyFacesAfter": 1022016,
+    "tubeUndersideRays": [
+      {
+        "y": 0.022,
+        "undersideZ": 0.04298786073923111
+      },
+      {
+        "y": -0.054,
+        "undersideZ": 0.043091438710689545
+      }
+    ],
+    "separatingReflectorZ": 0.11962147802114487,
+    "tubeGeometry": "Both actual generated glass cylinders retained; no primitive replacement"
+  },
+  "front": "Physical tube emitting face Blender -Z / Unity -Y after standard FBX; long axis Blender X / Unity X, ceiling attachments Blender +Z / Unity +Y",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation.",
+  "tubeEmission": {
+    "method": "Inspected physical generated-tube boxes AND original albedo luma; selected-source-to-game-UV bake, no replacement geometry",
+    "regions": {
+      "coordinateSystem": "Normalized Blender X/Y/Z metres, width1.2m, no rotation, tube underside is -Z",
+      "inspection": "Actual generated top/underside orthographic renders; two physical tube bands separated from reflector/casing and end sockets",
+      "minimumAlbedoLuma": 0.22,
+      "emissionColor": [
+        1.0,
+        0.94,
+        0.78,
+        1.0
+      ],
+      "boxes": [
+        {
+          "name": "first-generated-glass-tube",
+          "min": [
+            -0.485,
+            -0.004,
+            -0.006
+          ],
+          "max": [
+            0.485,
+            0.048,
+            0.075
+          ]
+        },
+        {
+          "name": "second-generated-glass-tube",
+          "min": [
+            -0.485,
+            -0.08,
+            -0.006
+          ],
+          "max": [
+            0.485,
+            -0.027,
+            0.075
+          ]
+        }
+      ],
+      "measuredReflectorExclusionZ": 0.11662147802114486
+    },
+    "atlases": [
+      {
+        "lod": 0,
+        "file": "SR_fluorescent-fixture_LOD0-emission.png",
+        "litPixels": 308782,
+        "pixels": 4194304,
+        "sha256": "58b3eb4193a07eafb9a0bbd57a1bf9296f192a6a652d61137d86777f2a3e711d"
+      },
+      {
+        "lod": 1,
+        "file": "SR_fluorescent-fixture_LOD1-emission.png",
+        "litPixels": 117185,
+        "pixels": 1048576,
+        "sha256": "7c08fbd1d37c5025e68ae7f8244b27e1ec6e88e302380f75bd69c5e5990be305"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "requestId": "a2929154-6538-4783-b09c-84c59a8ed541",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "keys": [
+    "wall-panel",
+    "floor-slab",
+    "ceiling-panel"
+  ],
+  "options": {
+    "seed": 1234,
+    "model": "trellis2",
+    "gpu": "split",
+    "remove_background": "on",
+    "trellis_pipeline": "1536_cascade",
+    "trellis_texture_size": 8192,
+    "trellis_steps": 12
+  }
+}

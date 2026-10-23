@@ -1,0 +1,136 @@
+{
+  "key": "floor-slab",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "b25b4cec38da8e2cc4bcdef014fb850d938419092e2ff35dfc2e61cbfdc5f5f9",
+  "editable": "floor-slab.blend",
+  "normalizedAxis": "x",
+  "normalizedMetres": 1.2,
+  "widthMetres": 1.1760214567184448,
+  "heightMetres": 0.06017920820158906,
+  "depthMetres": 1.1766545176506042,
+  "originalTriangles": 946998,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "floor-slab",
+    "axis": "x",
+    "metres": 1.2,
+    "budgets": [
+      1000,
+      400
+    ],
+    "texture": 2048,
+    "far_from_source": true,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 0
+  },
+  "lods": [
+    {
+      "file": "floor-slab-lod0.fbx",
+      "targetTriangles": 1000,
+      "triangles": 1000,
+      "vertices": 502,
+      "boundsMin": [
+        -0.5879999399185181,
+        -0.5883078575134277,
+        0.0003371790226083249
+      ],
+      "boundsMax": [
+        0.5880215167999268,
+        0.5883466601371765,
+        0.06051638722419739
+      ],
+      "sha256": "2d1e87cc3516cc3c0547d3b5ad260cecae4ad64b827e977f8bdc95149e9427eb",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.001764924019575119,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "floor-slab-lod1.fbx",
+      "targetTriangles": 400,
+      "triangles": 400,
+      "vertices": 202,
+      "boundsMin": [
+        -0.5879999399185181,
+        -0.5883078575134277,
+        0.0002917347301263362
+      ],
+      "boundsMax": [
+        0.5879999995231628,
+        0.5883087515830994,
+        0.060508277267217636
+      ],
+      "sha256": "5ce266487887f09222d2e5a19c848d417e3c3794ef8d7269f021c45ed41a3635",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.009412928104400635,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_floor-slab_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_floor-slab_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_floor-slab_LOD0-metallicSmoothness.png",
+      "normal": "SR_floor-slab_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_floor-slab_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_floor-slab_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_floor-slab_LOD1-metallicSmoothness.png",
+      "normal": "SR_floor-slab_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "method": "Source-derived voxel retopology and planar mating cuts",
+    "voxelMetres": 0.004999999888241291,
+    "originalRegisteredCoordinates": true,
+    "inputPolygons": 946271,
+    "derivedPolygons": 140633,
+    "boundsMin": [
+      -0.5879999995231628,
+      -0.5883079767227173,
+      2.45822570832388e-06
+    ],
+    "boundsMax": [
+      0.5879999995231628,
+      0.5883080363273621,
+      0.06051220744848251
+    ],
+    "quadrant": false,
+    "unchangedSource": "original.glb"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

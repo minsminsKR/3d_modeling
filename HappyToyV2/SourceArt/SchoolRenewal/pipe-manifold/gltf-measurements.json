@@ -1,0 +1,28 @@
+{
+  "key": "pipe-manifold",
+  "source": "original.glb",
+  "method": "GLB accessor scene bounds with standard glTF-to-Blender basis",
+  "blenderBoundsMin": [
+    -0.06646354496479034,
+    -0.5009030103683472,
+    -0.23839715123176575
+  ],
+  "blenderBoundsMax": [
+    0.06648232787847519,
+    0.5009831190109253,
+    0.2387201339006424
+  ],
+  "blenderSize": [
+    0.13294587284326553,
+    1.0018861293792725,
+    0.47711728513240814
+  ],
+  "primitives": [
+    {
+      "vertices": 657150,
+      "triangles": 926975,
+      "mode": 4
+    }
+  ],
+  "scope": "Metadata-only preflight; final Blender export records actual mesh bounds"
+}

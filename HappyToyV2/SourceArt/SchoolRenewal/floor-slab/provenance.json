@@ -1,0 +1,13 @@
+{
+  "key": "floor-slab",
+  "jobId": "2b706300-e051-453f-b1db-022c53a3b9dd",
+  "requestId": "a2929154-6538-4783-b09c-84c59a8ed541",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/2b706300-e051-453f-b1db-022c53a3b9dd",
+  "original": "original.glb",
+  "originalSha256": "b25b4cec38da8e2cc4bcdef014fb850d938419092e2ff35dfc2e61cbfdc5f5f9",
+  "reference": "reference.png",
+  "referenceSha256": "4565dff3eecef8588b81404c153deadff2e73ae39445fe2679a2bd78467ef546",
+  "generationRecord": "service/generation-record.json",
+  "referencePrompt": "reference-prompt.json",
+  "license": "Original project-generated image and model; see ../LICENSE.md"
+}

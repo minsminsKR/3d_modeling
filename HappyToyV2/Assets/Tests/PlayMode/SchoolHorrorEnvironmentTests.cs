@@ -25,11 +25,14 @@ namespace HappyToy.V2.CloudTests
             var surfaces=Get<object>(world,"HorrorSurfaces");
             var imported=Get<Transform>(world,"Root").GetComponentsInChildren<MeshFilter>()
                 .Where(f=>f.sharedMesh&&!f.sharedMesh.isReadable&&!f.GetComponentInParent<LODGroup>()).ToArray();
-            Assert.That(imported.Length,Is.GreaterThan(0),"The retained furnishings are absent from the real school");
             Assert.That(imported.All(f=>f.GetComponent<Renderer>()&&f.GetComponent<Renderer>().enabled),Is.True,
                 "Batching discarded an imported furnishing whose CPU mesh data is unavailable");
+            var desk=Resources.Load<GameObject>("SchoolRenewal/school-desk/school-desk-visual");
+            var generatedMeshes=desk.GetComponentsInChildren<MeshFilter>(true).Select(f=>f.sharedMesh).ToArray();
+            Assert.That(Get<Transform>(world,"Centre").GetComponentsInChildren<MeshFilter>(true).Count(f=>generatedMeshes.Contains(f.sharedMesh)),Is.GreaterThan(10),
+                "New generated furnishings are absent from the real school");
             var materials=new List<Material>();
-            foreach(string name in new[]{"Wall","WallAlternate","LowerWall","Ceiling","CeilingAlternate","Floor"})
+            foreach(string name in new[]{"Wall","WallAlternate","LowerWall","Ceiling","CeilingAlternate","Floor","RenewedFloor","RenewedWall","RenewedCeiling"})
             {
                 var material=Get<Material>(surfaces,name);materials.Add(material);
                 Assert.That(material&&material.shader&&material.shader.isSupported,Is.True,name+" has an unavailable shader");

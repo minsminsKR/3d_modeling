@@ -1,0 +1,13 @@
+{
+  "jobId": "0d29e70e-1537-46ae-a7bb-731e75571052",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/0d29e70e-1537-46ae-a7bb-731e75571052",
+  "reviewDate": "2026-10-24",
+  "reviewer": "root integration agent in user's existing right-sidebar webapp",
+  "method": "Actual interactive GLB viewer front view plus 1400ms orbit",
+  "observations": [
+    "Several true coarse irregular pieces show varied depth and separation",
+    "No flat blob observed"
+  ],
+  "approvedForBlenderFinishing": true,
+  "finishingOrientation": "Original long Blender Y rotates 90 degrees around Z, then X width normalizes to .45m"
+}

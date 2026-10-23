@@ -110,7 +110,9 @@ namespace HappyToy.V2.CloudTests
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
             var music=Get<Transform>(world,"MusicRoom");var piano=music.Find("Music room grand-piano");
-            Assert.That(piano,Is.Not.Null);Assert.That(music.GetComponentsInChildren<LODGroup>().Length,Is.EqualTo(6));
+            // Six preserved piano/stand models, twelve chairs, three window
+            // frames and four newly generated fluorescent housings.
+            Assert.That(piano,Is.Not.Null);Assert.That(music.GetComponentsInChildren<LODGroup>().Length,Is.EqualTo(25));
             Assert.That(music.GetComponentsInChildren<Transform>().Count(t=>t.name=="Music room classroom-chair"),Is.EqualTo(12));
             foreach(string key in new[]{"grand-piano","music-stand"})
             {

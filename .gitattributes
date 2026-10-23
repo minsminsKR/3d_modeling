@@ -157,3 +157,26 @@ HappyToyV2/Assets/Resources/SchoolProgressClock/**/*.mat text eol=lf
 HappyToyV2/Assets/Resources/SchoolProgressClock/*.prefab text eol=lf
 HappyToyV2/Assets/Resources/SchoolProgressClock/*.shader text eol=lf
 HappyToyV2/Assets/Resources/SchoolProgressClock.meta text eol=lf
+
+# Renewed school generated originals, editable packed sources and game meshes.
+HappyToyV2/SourceArt/SchoolRenewal/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolRenewal/**/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/SchoolRenewal/**/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolRenewal/**/*.py text eol=lf
+HappyToyV2/SourceArt/SchoolRenewal/**/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolRenewal/*.py text eol=lf
+HappyToyV2/SourceArt/SchoolRenewal/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolRenewal/*.md text eol=lf
+HappyToyV2/SourceArt/SchoolRenewal/*.txt text eol=lf
+HappyToyV2/SourceArt/SchoolRenewal/**/*.txt text eol=lf
+HappyToyV2/Assets/Resources/SchoolRenewal/**/*.meta text eol=lf
+HappyToyV2/Assets/Resources/SchoolRenewal/**/*.json text eol=lf
+HappyToyV2/Assets/Resources/SchoolRenewal/**/*.mat text eol=lf
+HappyToyV2/Assets/Resources/SchoolRenewal/**/*.prefab text eol=lf
+HappyToyV2/Assets/Resources/SchoolRenewal.meta text eol=lf
+HappyToyV2/Assets/Scripts/SchoolRenewal*.cs text eol=lf
+HappyToyV2/Assets/Scripts/SchoolRenewal*.cs.meta text eol=lf
+HappyToyV2/Assets/Editor/SchoolRenewalImport.cs text eol=lf
+HappyToyV2/Assets/Editor/SchoolRenewalImport.cs.meta text eol=lf
+HappyToyV2/Assets/Tests/PlayMode/SchoolRenewal*.cs text eol=lf
+HappyToyV2/Assets/Tests/PlayMode/SchoolRenewal*.cs.meta text eol=lf

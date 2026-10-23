@@ -1,0 +1,22 @@
+{
+  "key": "concrete-rubble",
+  "requestId": "4810cde1-a314-459a-950e-a8c8747e3c43",
+  "jobId": "3701cae2-3b9a-4417-b0cf-36e224e1d624",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/3701cae2-3b9a-4417-b0cf-36e224e1d624",
+  "archiveSha256": "984b1ac9a650b74d773626d96eb8fde3aa1f36e9b118df3af7aac162f1325d4e",
+  "archiveBytes": 53142237,
+  "original": "original.glb",
+  "originalSha256": "1f3cc8f8dfb547bc229075d2926c9256986c7e50f800cbac98931d79098f33be",
+  "reference": "reference.png",
+  "referenceSha256": "6391eb4d4fd9935650f4d87003c18f14e72737250161a7b775a7a2ca03c794b7",
+  "referencePrompt": "reference-prompt.txt",
+  "referenceTool": "built-in image_gen",
+  "sourceRecord": "service/generation-record.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "*": "service/*"
+  },
+  "visualReview": "web-review.json",
+  "license": "New project-generated reference and model; no third-party stock model used."
+}

@@ -17,6 +17,7 @@ Shader "HappyToy/SchoolDecaySurface"
         _WorldScale("World moisture repeat metres",Float)=5.7
         _WetStrength("Water normal flattening",Range(0,1))=0
         _WorldFloor("Continuous school floor mapping",Float)=0
+        _AuthoredFloor("Generated floor atlas UVs",Float)=0
         _FloorSpan("School tile scan repeat metres",Float)=1.28
         _WorldCeiling("Continuous ceiling scan mapping",Float)=0
         _CeilingSpan("Ceiling scan repeat metres",Float)=2.4
@@ -52,7 +53,7 @@ Shader "HappyToy/SchoolDecaySurface"
             half4 _BaseColor;
             half _BumpScale,_Smoothness,_OcclusionStrength,_MacroStrength;
             half _WetStrength,_SurfaceMode;
-            float _WorldScale,_WorldFloor,_FloorSpan,_WorldCeiling,_CeilingSpan,_PuddleSpan;
+            float _WorldScale,_WorldFloor,_FloorSpan,_WorldCeiling,_CeilingSpan,_PuddleSpan,_AuthoredFloor;
             half _SchoolPlanarStrength,_SchoolPlanarRoughness,_SchoolPlanarDistortion;
         CBUFFER_END
         struct Attributes
@@ -98,7 +99,7 @@ Shader "HappyToy/SchoolDecaySurface"
         {
             // Geometry is split for culling every 4.4m. World mapping keeps
             // 0.32m grout lines continuous across those renderer boundaries.
-            if(_WorldFloor>.5)return (i.positionWS.xz-_SchoolOrigin.xz)/max(.1,_FloorSpan);
+            if(_WorldFloor>.5&&_AuthoredFloor<.5)return (i.positionWS.xz-_SchoolOrigin.xz)/max(.1,_FloorSpan);
             if(_WorldCeiling>.5&&abs(i.normalWS.y)>.65)return (i.positionWS.xz-_SchoolOrigin.xz)/max(.1,_CeilingSpan);
             return i.uv;
         }
@@ -125,6 +126,9 @@ Shader "HappyToy/SchoolDecaySurface"
         half SurfaceSmoothness(half packedSmoothness,half water)
         {
             half dry=saturate(packedSmoothness*_Smoothness);
+            // Dusty ceramic stays rough between pools. The generated atlas has
+            // fully glossy texels which otherwise create square dry mirror patches.
+            if(_AuthoredFloor>.5)dry=min(dry,.52);
             return _WorldFloor>.5 ? lerp(dry,.92,smoothstep(.10,.93,water)) : (_SurfaceMode>1.5?min(dry,.92):dry);
         }
         half3 SurfaceNormal(Varyings i,half smoothness,half water,half4 puddle)
@@ -142,7 +146,16 @@ Shader "HappyToy/SchoolDecaySurface"
                 normalTS.xy+=(puddle.ba*2-1)*(.05*wet);
                 normalTS=normalize(normalTS);
             }
-            return normalize(TransformTangentToWorld(normalTS,half3x3(tangent,bitangent,n)));
+            half3 worldNormal=normalize(TransformTangentToWorld(normalTS,half3x3(tangent,bitangent,n)));
+            if(_AuthoredFloor>.5&&_WorldFloor>.5)
+            {
+                // Standing water levels across the generated tile facets;
+                // flattening only the tangent map leaves a separate mirror on each tile.
+                half level=smoothstep(.18,.85,water)*smoothstep(.65,.93,n.y);
+                half3 waterNormal=normalize(half3((puddle.b-.5)*.018,1,(puddle.a-.5)*.018));
+                worldNormal=normalize(lerp(worldNormal,waterNormal,level*.98));
+            }
+            return worldNormal;
         }
         ENDHLSL
         Pass
@@ -175,7 +188,7 @@ Shader "HappyToy/SchoolDecaySurface"
             half3 SchoolPlanarSpecular(Varyings i,InputData input,SurfaceData surface,half water,half3 lit)
             {
                 half wet=_WorldFloor>.5?water:(_SurfaceMode>1.5?1:0);
-                half upward=smoothstep(.80,.97,i.normalWS.y);
+                half upward=smoothstep(.80,.97,_AuthoredFloor>.5?input.normalWS.y:i.normalWS.y);
                 if(_SchoolPlanarAvailable<.5||_SchoolPlanarCapture>.5||wet<.02||upward<.01)return lit;
                 float4 projected=mul(_SchoolPlanarVP,float4(i.positionWS,1));
                 if(projected.w<=.001)return lit;

@@ -1,0 +1,22 @@
+{
+  "key": "loose-stones",
+  "requestId": "4810cde1-a314-459a-950e-a8c8747e3c44",
+  "jobId": "0d29e70e-1537-46ae-a7bb-731e75571052",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/0d29e70e-1537-46ae-a7bb-731e75571052",
+  "archiveSha256": "f33bbed3219c832aebbf57c21077b7204841205efdcbe303fd4e1d7a35998895",
+  "archiveBytes": 55705205,
+  "original": "original.glb",
+  "originalSha256": "5298e29559f5013bfc9c245d624f7c48d6f90f275c75c40d8a657268ba4d4d48",
+  "reference": "reference.png",
+  "referenceSha256": "859ddf0ff127f7c07e3c2ba52e5c31faa84f5c9ffc88f7a2583e7e1a4b8840f1",
+  "referencePrompt": "reference-prompt.txt",
+  "referenceTool": "built-in image_gen",
+  "sourceRecord": "service/generation-record.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "*": "service/*"
+  },
+  "visualReview": "web-review.json",
+  "license": "New project-generated reference and model; no third-party stock model used."
+}

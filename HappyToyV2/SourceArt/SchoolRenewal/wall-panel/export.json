@@ -1,0 +1,136 @@
+{
+  "key": "wall-panel",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "97978561f8337f9171359e05198fe390cfbe60978d367056c84640435d145566",
+  "editable": "wall-panel.blend",
+  "normalizedAxis": "z",
+  "normalizedMetres": 3.25,
+  "widthMetres": 1.8886098861694336,
+  "heightMetres": 3.238246811553836,
+  "depthMetres": 0.3629688322544098,
+  "originalTriangles": 953654,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "wall-panel",
+    "axis": "z",
+    "metres": 3.25,
+    "budgets": [
+      2000,
+      700
+    ],
+    "texture": 2048,
+    "far_from_source": true,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 0
+  },
+  "lods": [
+    {
+      "file": "wall-panel-lod0.fbx",
+      "targetTriangles": 2000,
+      "triangles": 2000,
+      "vertices": 1002,
+      "boundsMin": [
+        -0.9439045190811157,
+        -0.1817837804555893,
+        0.005930053070187569
+      ],
+      "boundsMax": [
+        0.9447053670883179,
+        0.1811850517988205,
+        3.2441768646240234
+      ],
+      "sha256": "74c77eb55fa20639db71a9be5847a18addcb5f38d59b6eb86e60518a37c08e60",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.0048570152744650845,
+        "components": 2,
+        "vertices": 10
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "wall-panel-lod1.fbx",
+      "targetTriangles": 700,
+      "triangles": 700,
+      "vertices": 352,
+      "boundsMin": [
+        -0.9446174502372742,
+        -0.18431535363197327,
+        0.005882170982658863
+      ],
+      "boundsMax": [
+        0.9451556205749512,
+        0.18074345588684082,
+        3.243992328643799
+      ],
+      "sha256": "9265a2186c30b8a103f6185978eccd0bb789741675c4f1ad8518426b9989e006",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.02590408146381378,
+        "components": 2,
+        "vertices": 10
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_wall-panel_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_wall-panel_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_wall-panel_LOD0-metallicSmoothness.png",
+      "normal": "SR_wall-panel_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_wall-panel_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_wall-panel_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_wall-panel_LOD1-metallicSmoothness.png",
+      "normal": "SR_wall-panel_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "method": "Source-derived voxel retopology and planar mating cuts",
+    "voxelMetres": 0.00800000037997961,
+    "originalRegisteredCoordinates": true,
+    "inputPolygons": 953359,
+    "derivedPolygons": 217105,
+    "boundsMin": [
+      -0.9438494443893433,
+      -0.18138235807418823,
+      0.005999550223350525
+    ],
+    "boundsMax": [
+      0.9438506364822388,
+      0.18130874633789062,
+      3.2440097332000732
+    ],
+    "quadrant": false,
+    "unchangedSource": "original.glb"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

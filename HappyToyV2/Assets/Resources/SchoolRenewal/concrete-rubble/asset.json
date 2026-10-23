@@ -1,0 +1,117 @@
+{
+  "key": "concrete-rubble",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "1f3cc8f8dfb547bc229075d2926c9256986c7e50f800cbac98931d79098f33be",
+  "editable": "concrete-rubble.blend",
+  "normalizedAxis": "x",
+  "normalizedMetres": 1.0,
+  "widthMetres": 0.9931790828704834,
+  "heightMetres": 0.3109781639650464,
+  "depthMetres": 1.0035264492034912,
+  "originalTriangles": 919890,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "concrete-rubble",
+    "axis": "x",
+    "metres": 1.0,
+    "budgets": [
+      7000,
+      6600
+    ],
+    "texture": 2048,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 0
+  },
+  "lods": [
+    {
+      "file": "concrete-rubble-lod0.fbx",
+      "targetTriangles": 7000,
+      "triangles": 7000,
+      "vertices": 2541,
+      "boundsMin": [
+        -0.495357871055603,
+        -0.5028032064437866,
+        0.004796127788722515
+      ],
+      "boundsMax": [
+        0.49782121181488037,
+        0.5007232427597046,
+        0.3157742917537689
+      ],
+      "sha256": "becbd15fef9ed4e58627c8b50716116f16b029e6c29536d727a3e0ad39ffca2b",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.001516717404127121,
+        "components": 1,
+        "vertices": 6
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "concrete-rubble-lod1.fbx",
+      "targetTriangles": 6600,
+      "triangles": 6604,
+      "vertices": 2339,
+      "boundsMin": [
+        -0.4954647123813629,
+        -0.5028032064437866,
+        0.004796127788722515
+      ],
+      "boundsMax": [
+        0.4746655821800232,
+        0.5007232427597046,
+        0.31512343883514404
+      ],
+      "sha256": "25a03ac117ea9d74ba1a22242969c70b91d6fcb3cf73e1e4b72b0cf5f9fa9144",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.00802821159362793,
+        "components": 2,
+        "vertices": 6
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_concrete-rubble_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_concrete-rubble_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_concrete-rubble_LOD0-metallicSmoothness.png",
+      "normal": "SR_concrete-rubble_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_concrete-rubble_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_concrete-rubble_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_concrete-rubble_LOD1-metallicSmoothness.png",
+      "normal": "SR_concrete-rubble_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": null,
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

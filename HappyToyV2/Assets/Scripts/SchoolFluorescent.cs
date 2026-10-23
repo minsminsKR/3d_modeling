@@ -11,14 +11,17 @@ namespace HappyToy.V2
         public float BaselineIntensity {get;private set;}
         public double SimulationTime=>clock==null?0:clock.Elapsed;
         Material tube;
+        Material[] additionalTubes;
         float backscatterIntensity;
         Color emission;
         SchoolFluorescentClock clock;
         MeshRenderer haze;
         MaterialPropertyBlock values;
-        public void Configure(Light source,Material tubeMaterial,Color glow,float phase,Light backscatter=null)
+        public void Configure(Light source,Material tubeMaterial,Color glow,float phase,Light backscatter=null,
+            Material[] additionalTubeMaterials=null)
         {
             Source=source;BaselineIntensity=source.intensity;tube=tubeMaterial;emission=glow;
+            additionalTubes=additionalTubeMaterials;
             Backscatter=backscatter;backscatterIntensity=backscatter?backscatter.intensity:0;
             clock=new SchoolFluorescentClock(phase);values=new MaterialPropertyBlock();
         }
@@ -38,6 +41,8 @@ namespace HappyToy.V2
             Source.intensity=BaselineIntensity*gain;
             if(Backscatter)Backscatter.intensity=backscatterIntensity*gain;
             if(tube)tube.SetColor("_EmissionColor",emission*gain);
+            if(additionalTubes!=null)
+                foreach(var other in additionalTubes)if(other)other.SetColor("_EmissionColor",emission*gain);
             if(!haze)return;
             values.SetVector("_SourcePosition",Source.transform.position);
             values.SetColor("_ScatterColor",Source.color.linear);

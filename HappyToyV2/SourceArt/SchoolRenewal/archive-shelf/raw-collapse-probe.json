@@ -1,0 +1,19 @@
+{
+  "ok": false,
+  "triangles": 15610,
+  "error": "Source-derived LOD exceeded its triangle budget: geometry_0.001 15610 > 6000",
+  "key": "archive-shelf",
+  "settings": {
+    "key": "archive-shelf",
+    "axis": "z",
+    "metres": 1.25,
+    "yaw": 90.0,
+    "budget": 6000
+  },
+  "rawTopology": {
+    "nonManifoldEdges": 0,
+    "boundaryEdges": 375731
+  },
+  "weld": false,
+  "purpose": "Compare raw dense topology to cleaned-source collapse floor without changing geometry"
+}

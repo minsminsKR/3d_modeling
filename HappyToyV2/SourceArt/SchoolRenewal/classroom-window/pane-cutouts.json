@@ -1,0 +1,18 @@
+{
+  "coordinateSystem": "Blender normalized X/Z metres, after +90 degree Z rotation and 1.6m height normalization",
+  "inspection": "Actual source GLB orthographic front/back renders in Builds/ModelingDownloads/SchoolRenewal/classroom-window; frame rails and jambs retained",
+  "tinyDisconnectedMaxExtent":0.022,
+  "thinDetachedAreaRatio":0.004,
+  "derivedWeldMetres":0.0008,
+  "voxelMetres":0.004,
+  "panes": [
+    {"name":"lower-left", "min":[-1.34,0.19], "max":[-0.73,1.075]},
+    {"name":"lower-middle-left", "min":[-0.666,0.19], "max":[-0.072,1.075]},
+    {"name":"lower-middle-right", "min":[0.072,0.19], "max":[0.666,1.075]},
+    {"name":"lower-right", "min":[0.73,0.19], "max":[1.34,1.075]},
+    {"name":"transom-left", "min":[-1.34,1.285], "max":[-0.73,1.455]},
+    {"name":"transom-middle-left", "min":[-0.666,1.285], "max":[-0.072,1.455]},
+    {"name":"transom-middle-right", "min":[0.072,1.285], "max":[0.666,1.455]},
+    {"name":"transom-right", "min":[0.73,1.285], "max":[1.34,1.455]}
+  ]
+}

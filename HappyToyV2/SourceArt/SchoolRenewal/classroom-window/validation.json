@@ -1,0 +1,14 @@
+{
+  "actualExports": [
+    {
+      "lod": 0,
+      "triangles": 7998,
+      "realPaneClearanceRays": 72
+    },
+    {
+      "lod": 1,
+      "triangles": 2500,
+      "realPaneClearanceRays": 72
+    }
+  ]
+}

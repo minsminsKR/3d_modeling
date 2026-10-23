@@ -1,0 +1,22 @@
+{
+  "key": "classroom-door",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "requestId": "98467d50-7fea-4a3d-8537-ea5b91d87c2b",
+  "jobId": "31ea452d-6f95-440d-a4d9-b958be4c4c40",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/31ea452d-6f95-440d-a4d9-b958be4c4c40",
+  "archiveSha256": "c61414fae3e22d8249cbab90a15d77734137c596530be0ce6cc8b2f509125743",
+  "archiveBytes": 59429494,
+  "original": "original.glb",
+  "originalSha256": "80d02e534da355b3db88ec227ea5d085d9af82c9c92202c1a8b19d677eee87bf",
+  "reference": "reference.png",
+  "referenceSha256": "a70befded5c5eec8fdc1fbee51fb1b4cab783d2f32617fbd5ca9f79b0fcf6d0f",
+  "referencePrompt": "reference-prompt.txt",
+  "referenceTool": "built-in image_gen",
+  "sourceRecord": "service/generation-record.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "*": "service/*"
+  },
+  "visualReview": "web-review.json",
+  "license": "New project-generated reference and model; no third-party stock model used."
+}

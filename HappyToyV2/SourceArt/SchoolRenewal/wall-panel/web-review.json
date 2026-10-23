@@ -1,0 +1,9 @@
+{
+  "jobId": "838f97dc-630b-4bc8-893f-be5abf8bf609",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/838f97dc-630b-4bc8-893f-be5abf8bf609",
+  "reviewDate": "2026-10-24",
+  "method": "Actual interactive webapp GLB viewer, front and Right 1500ms oblique-side rotation",
+  "observations": ["Closed rectangular wall, shallow damaged edges, damp mottling and lower faded green coating", "Dark horizontal waist rail and skirting remain coherent across the front-side views", "No terrain blob or collapsed slab silhouette"],
+  "finishingReview": "Near 2K/far 700 mesh and source-derived normal atlases rendered in Blender. Front +Y has the intended plaster/green paint. The generated reverse side includes a hallucinated utility panel, so runtime skins always present their +Y front outward on both physical wall faces; reverse surfaces are inside the structural envelope.",
+  "approvedForBlenderFinishing": true
+}

@@ -1,0 +1,32 @@
+{
+  "key": "metal-cabinet",
+  "requestId": "0d94581b-051e-47be-b7dd-9e27d1debca3",
+  "jobId": "fc8bc2f7-0e4f-493d-87e2-7f06f2b812ee",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/fc8bc2f7-0e4f-493d-87e2-7f06f2b812ee",
+  "archiveSha256": "326cd152cc06aef7c977ca0e24e6cd66ce75eb566336b69b56889f66b44a901d",
+  "archiveBytes": 61477174,
+  "original": "original.glb",
+  "originalSha256": "bdbfc29c69228c87d97e2097f6edcb5f9bdf4fb9ab337b605ca0f46f232dd675",
+  "reference": "reference.png",
+  "referenceSha256": "ea0783dcc989b6e75aaf3cbf2192d7a0722e10b18101733f78bc988757bd8873",
+  "referencePrompt": "reference-prompt.txt",
+  "referencePromptSha256": "1fe011bfc93afc1075980a20b027185e1e7dacbbab7ee2847fab58012cdde67e",
+  "referenceTool": "built-in image_gen",
+  "settings": "generation-settings.json",
+  "sourceRecord": "generation-record.json",
+  "sourceRecordSha256": "7bfa9535c9558df93f6775e1dccc1f8e5f7e863fed0efca34f235b45a7751025",
+  "downloadReceipt": "download-receipt.json",
+  "visualReview": "web-review.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "inputs/01_reference.png": "reference.png",
+    "processed_inputs/01.png": "processed-reference.png",
+    "metadata.json": "metadata.json",
+    "generation-record.json": "generation-record.json",
+    "*": "generation/*"
+  },
+  "license": "New project-generated reference and model; no third-party stock model used.",
+  "licenseNotice": "../LICENSE.md",
+  "generatorLicense": "../TRELLIS.2-LICENSE.txt"
+}

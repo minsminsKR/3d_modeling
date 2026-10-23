@@ -1,0 +1,23 @@
+{
+  "key": "loose-stones",
+  "sourceUnchanged": true,
+  "lodTriangles": [
+    2500,
+    1100
+  ],
+  "textureSizes": [
+    2048,
+    1024
+  ],
+  "tangentNormalVariation": [
+    [
+      28.914301624974975,
+      22.552797728533694
+    ],
+    [
+      43.861078913127216,
+      36.524461303768206
+    ]
+  ],
+  "limitations": "File/geometry/PBR validation only; see root webapp/Unity review."
+}

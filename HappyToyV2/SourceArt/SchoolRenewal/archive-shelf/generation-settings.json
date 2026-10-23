@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "key": "archive-shelf",
+  "purpose": "School chapter abandoned Korean school environmental renewal",
+  "image": {
+    "tool": "image_gen.imagegen",
+    "mode": "new-image",
+    "transparent_background": false,
+    "promptFile": "reference-prompt.txt",
+    "input": "reference.png",
+    "review": "Complete isolated reference visually inspected before modeling submission."
+  },
+  "model": {
+    "service": "https://agrees-mic-icon-contribution.trycloudflare.com",
+    "generator": "trellis2",
+    "requestId": "0d94581b-051e-47be-b7dd-9e27d1debca3",
+    "jobId": "b3122104-6481-4f8f-8b7a-8d8d33a3ee81",
+    "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/b3122104-6481-4f8f-8b7a-8d8d33a3ee81",
+    "seed": 76294,
+    "gpu": "split",
+    "remove_background": "on",
+    "trellis_pipeline": "1024_cascade",
+    "trellis_texture_size": 4096,
+    "trellis_steps": 12
+  },
+  "license": {
+    "source": "Newly generated for HappyToyV2 from preserved generated reference; no third-party asset pack is used.",
+    "notes": "Do not describe generated materials as photographic scans or CC0 source photography."
+  }
+}

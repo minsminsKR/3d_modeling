@@ -1,0 +1,30 @@
+{
+  "actualExports": [
+    {
+      "lod": 0,
+      "triangles": 9996,
+      "closedPanelFrontY": [
+        0.03243139386177063,
+        0.032429039478302,
+        0.03242385387420654
+      ],
+      "wiredPaneY": 0.006938189268112183,
+      "recessMetres": 0.02548566460609436,
+      "handleFrontY": 0.17155078053474426,
+      "handleProtrusionMetres": 0.13911938667297363
+    },
+    {
+      "lod": 1,
+      "triangles": 3000,
+      "closedPanelFrontY": [
+        0.032504111528396606,
+        0.0325760543346405,
+        0.03268149495124817
+      ],
+      "wiredPaneY": 0.008394807577133179,
+      "recessMetres": 0.024109303951263428,
+      "handleFrontY": 0.17226958274841309,
+      "handleProtrusionMetres": 0.13958808779716492
+    }
+  ]
+}

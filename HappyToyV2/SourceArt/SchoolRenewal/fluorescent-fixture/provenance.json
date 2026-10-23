@@ -1,0 +1,22 @@
+{
+  "key": "fluorescent-fixture",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "requestId": "ae1e1353-37fc-43a4-b10a-5f8abb82f62d",
+  "jobId": "0f72152d-83e3-426b-8fc5-d37fbe188ee8",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/0f72152d-83e3-426b-8fc5-d37fbe188ee8",
+  "archiveSha256": "e3d80007bfa552f30e442272962b171c197d690403e8a544c653362f59c609d5",
+  "archiveBytes": 51637426,
+  "original": "original.glb",
+  "originalSha256": "67a375307b683a0c53ffb52f0ec68b19c0b82182e606053ebe2d68f6bffb6c6e",
+  "reference": "reference.png",
+  "referenceSha256": "21754d09a683771854526011ad1a272edc95a44710ae4365e2cb23cc26cba9ea",
+  "referencePrompt": "reference-prompt.txt",
+  "referenceTool": "built-in image_gen",
+  "sourceRecord": "service/generation-record.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "*": "service/*"
+  },
+  "visualReview": "web-review.json",
+  "license": "New project-generated reference and model; no third-party stock model used."
+}

@@ -1,0 +1,23 @@
+{
+  "key": "pipe-run",
+  "sourceUnchanged": true,
+  "lodTriangles": [
+    4000,
+    1500
+  ],
+  "textureSizes": [
+    2048,
+    1024
+  ],
+  "tangentNormalVariation": [
+    [
+      17.865876010074228,
+      15.591076634603215
+    ],
+    [
+      21.91860850664437,
+      17.91939544182914
+    ]
+  ],
+  "limitations": "File/geometry/PBR validation only; see root webapp/Unity review."
+}

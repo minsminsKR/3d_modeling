@@ -1,0 +1,224 @@
+{
+  "key": "classroom-window",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "d39fa04ccc174c4560164be0e4a0570b960ea6cb8cf432c9b6a0a2bcba686572",
+  "editable": "classroom-window.blend",
+  "normalizedAxis": "z",
+  "normalizedMetres": 1.6,
+  "widthMetres": 2.9270397424697876,
+  "heightMetres": 1.5988356852030847,
+  "depthMetres": 0.19372480362653732,
+  "originalTriangles": 960726,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "classroom-window",
+    "axis": "z",
+    "metres": 1.6,
+    "budgets": [
+      8000,
+      2500
+    ],
+    "texture": 2048,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 90.0
+  },
+  "lods": [
+    {
+      "file": "classroom-window-lod0.fbx",
+      "targetTriangles": 8000,
+      "triangles": 7998,
+      "vertices": 3802,
+      "boundsMin": [
+        -1.4635573625564575,
+        -0.09734988957643509,
+        0.0003987765812780708
+      ],
+      "boundsMax": [
+        1.46348237991333,
+        0.09637491405010223,
+        1.5992344617843628
+      ],
+      "sha256": "5b364eb2c56466304d652b9cd7aada2ad7e0f8ff238a6ccaa75c63c474a8e7f7",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.004390825867652893,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "classroom-window-lod1.fbx",
+      "targetTriangles": 2500,
+      "triangles": 2500,
+      "vertices": 1032,
+      "boundsMin": [
+        -1.4629442691802979,
+        -0.09334034472703934,
+        -0.0016905287047848105
+      ],
+      "boundsMax": [
+        1.460137963294983,
+        0.08702588826417923,
+        1.5982698202133179
+      ],
+      "sha256": "a5a7d2f23ba76f9934e757eed24370c47a9af52e43338ca4e08a2aa82f5dd972",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.0234163179397583,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_classroom-window_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_classroom-window_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_classroom-window_LOD0-metallicSmoothness.png",
+      "normal": "SR_classroom-window_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_classroom-window_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_classroom-window_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_classroom-window_LOD1-metallicSmoothness.png",
+      "normal": "SR_classroom-window_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "tool": "Generated frame pane separation before LOD/bake",
+    "source": "pane-cutouts.json",
+    "coordinateSystem": "Normalized Blender X/Z metres; through all Y",
+    "paneCount": 8,
+    "panes": [
+      {
+        "name": "lower-left",
+        "min": [
+          -1.34,
+          0.19
+        ],
+        "max": [
+          -0.73,
+          1.075
+        ]
+      },
+      {
+        "name": "lower-middle-left",
+        "min": [
+          -0.666,
+          0.19
+        ],
+        "max": [
+          -0.072,
+          1.075
+        ]
+      },
+      {
+        "name": "lower-middle-right",
+        "min": [
+          0.072,
+          0.19
+        ],
+        "max": [
+          0.666,
+          1.075
+        ]
+      },
+      {
+        "name": "lower-right",
+        "min": [
+          0.73,
+          0.19
+        ],
+        "max": [
+          1.34,
+          1.075
+        ]
+      },
+      {
+        "name": "transom-left",
+        "min": [
+          -1.34,
+          1.285
+        ],
+        "max": [
+          -0.73,
+          1.455
+        ]
+      },
+      {
+        "name": "transom-middle-left",
+        "min": [
+          -0.666,
+          1.285
+        ],
+        "max": [
+          -0.072,
+          1.455
+        ]
+      },
+      {
+        "name": "transom-middle-right",
+        "min": [
+          0.072,
+          1.285
+        ],
+        "max": [
+          0.666,
+          1.455
+        ]
+      },
+      {
+        "name": "transom-right",
+        "min": [
+          0.73,
+          1.285
+        ],
+        "max": [
+          1.34,
+          1.455
+        ]
+      }
+    ],
+    "sourceCopyFacesBefore": 1284214,
+    "unchangedDenseSourceFaces": 960363,
+    "voxelMetres": 0.004,
+    "removedFaces": 329731,
+    "sourceCopyFacesAfter": 965313,
+    "tinyDisconnectedRemnantsRemoved": 0,
+    "tinyDisconnectedMaxExtent": 0.022,
+    "thinDetachedAreaRatio": 0.004,
+    "derivedWeldMetres": 0.0008,
+    "verticesMerged": 10606,
+    "verification": "All pane centre rays pass through the actual derived frame mesh",
+    "glass": "Existing school transparent glass is assembled behind the generated frame"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

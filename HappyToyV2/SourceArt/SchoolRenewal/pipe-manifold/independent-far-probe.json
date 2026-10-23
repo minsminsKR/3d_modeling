@@ -1,0 +1,5 @@
+{
+  "ok": false,
+  "triangles": 6577,
+  "error": "Source-derived LOD exceeded its triangle budget: geometry_0.001 6577 > 2000"
+}

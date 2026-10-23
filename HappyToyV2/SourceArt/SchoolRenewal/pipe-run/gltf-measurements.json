@@ -1,0 +1,28 @@
+{
+  "key": "pipe-run",
+  "source": "original.glb",
+  "method": "GLB accessor scene bounds with standard glTF-to-Blender basis",
+  "blenderBoundsMin": [
+    -0.01902962476015091,
+    -0.501079797744751,
+    -0.059611257165670395
+  ],
+  "blenderBoundsMax": [
+    0.020638851448893547,
+    0.5010376572608948,
+    0.05629987642168999
+  ],
+  "blenderSize": [
+    0.039668476209044456,
+    1.0021174550056458,
+    0.11591113358736038
+  ],
+  "primitives": [
+    {
+      "vertices": 626965,
+      "triangles": 930490,
+      "mode": 4
+    }
+  ],
+  "scope": "Metadata-only preflight; final Blender export records actual mesh bounds"
+}

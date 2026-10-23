@@ -1,0 +1,132 @@
+{
+  "key": "metal-cabinet",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "bdbfc29c69228c87d97e2097f6edcb5f9bdf4fb9ab337b605ca0f46f232dd675",
+  "editable": "metal-cabinet.blend",
+  "normalizedAxis": "z",
+  "normalizedMetres": 1.8,
+  "widthMetres": 0.7184318006038666,
+  "heightMetres": 1.7959300000220537,
+  "depthMetres": 0.4356446862220764,
+  "originalTriangles": 994615,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "metal-cabinet",
+    "axis": "z",
+    "metres": 1.8,
+    "budgets": [
+      8000,
+      6500
+    ],
+    "texture": 2048,
+    "far_from_source": true,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 180.0
+  },
+  "lods": [
+    {
+      "file": "metal-cabinet-lod0.fbx",
+      "targetTriangles": 8000,
+      "triangles": 8000,
+      "vertices": 2688,
+      "boundsMin": [
+        -0.3583887815475464,
+        -0.21765588223934174,
+        0.004001287743449211
+      ],
+      "boundsMax": [
+        0.3600430190563202,
+        0.21798880398273468,
+        1.799931287765503
+      ],
+      "sha256": "79e6651add68cc36da693f10b4b67d8eeef7cf81ccdd26b76751d44dea8a519b",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.0026999288954029908,
+        "components": 6,
+        "vertices": 52
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "metal-cabinet-lod1.fbx",
+      "targetTriangles": 6500,
+      "triangles": 6488,
+      "vertices": 1886,
+      "boundsMin": [
+        -0.3558606505393982,
+        -0.2174033671617508,
+        0.135760098695755
+      ],
+      "boundsMax": [
+        0.3545360863208771,
+        0.2033734917640686,
+        1.799444556236267
+      ],
+      "sha256": "f2bd916d013745d232b888e47d25a6ecc7727c2a14ae80304458f65bdbbdf610",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.014399620775482617,
+        "components": 29,
+        "vertices": 508
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_metal-cabinet_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_metal-cabinet_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_metal-cabinet_LOD0-metallicSmoothness.png",
+      "normal": "SR_metal-cabinet_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_metal-cabinet_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_metal-cabinet_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_metal-cabinet_LOD1-metallicSmoothness.png",
+      "normal": "SR_metal-cabinet_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "tool": "Source-derived 3mm voxel surface retopology before low-LOD collapse",
+    "originalUnchanged": true,
+    "voxelMetres": 0.003,
+    "preserveVolume": true,
+    "sourceCopyFacesBefore": 994198,
+    "sourceCopyFacesAfter": 1375754,
+    "dimensionsMetres": [
+      0.7211287617683411,
+      0.43261638283729553,
+      1.7999525969353272
+    ],
+    "undersideCentreRay": "Clear at55mm above original feet",
+    "note": "Closed cabinet remains generated shape; original dense vents/door recesses supply high-to-low tangent normal and original colour/ORM transfer"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

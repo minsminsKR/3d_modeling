@@ -1,0 +1,240 @@
+{
+  "key": "shoe-bank",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "4d364bb371a99c6ce1d5c94e621bfd7343c7d3febb5c5e10fa06ab489522de2f",
+  "editable": "shoe-bank.blend",
+  "normalizedAxis": "z",
+  "normalizedMetres": 1.05,
+  "widthMetres": 1.5564632415771484,
+  "heightMetres": 1.0496964472695254,
+  "depthMetres": 0.41657961905002594,
+  "originalTriangles": 994767,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "shoe-bank",
+    "axis": "z",
+    "metres": 1.05,
+    "budgets": [
+      12000,
+      3000
+    ],
+    "texture": 2048,
+    "far_from_source": false,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 180.0
+  },
+  "lods": [
+    {
+      "file": "shoe-bank-lod0.fbx",
+      "targetTriangles": 12000,
+      "triangles": 12000,
+      "vertices": 6002,
+      "boundsMin": [
+        -0.7782171368598938,
+        -0.20841804146766663,
+        0.0002613049582578242
+      ],
+      "boundsMax": [
+        0.7782461047172546,
+        0.20816157758235931,
+        1.0499577522277832
+      ],
+      "sha256": "278bfe2c2ab4d79d36e8188e4422ea32ebac74cbe1e5dddcd0c61385c3be4aa3",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.0023348219096660616,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "shoe-bank-lod1.fbx",
+      "targetTriangles": 3000,
+      "triangles": 3000,
+      "vertices": 1502,
+      "boundsMin": [
+        -0.7781567573547363,
+        -0.20841804146766663,
+        0.00023841921938583255
+      ],
+      "boundsMax": [
+        0.7780004143714905,
+        0.2081889659166336,
+        1.0499582290649414
+      ],
+      "sha256": "119aaa8729cb0655a142289ed17c4ff4b510282b72af10667b3e87750c8feb9e",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.012451705932617187,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_shoe-bank_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_shoe-bank_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_shoe-bank_LOD0-metallicSmoothness.png",
+      "normal": "SR_shoe-bank_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_shoe-bank_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_shoe-bank_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_shoe-bank_LOD1-metallicSmoothness.png",
+      "normal": "SR_shoe-bank_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "tool": "Source-derived3mm voxel retopology before collapse/bake",
+    "originalUnchanged": true,
+    "voxelMetres": 0.003,
+    "preserveVolume": true,
+    "sourceCopyFacesBefore": 994691,
+    "sourceCopyFacesAfter": 1170450,
+    "cavityRays": [
+      {
+        "column": 0,
+        "row": 0,
+        "x": -0.575,
+        "height": 0.145,
+        "backY": -0.0867341160774231
+      },
+      {
+        "column": 0,
+        "row": 1,
+        "x": -0.575,
+        "height": 0.4,
+        "backY": -0.08673399686813354
+      },
+      {
+        "column": 0,
+        "row": 2,
+        "x": -0.575,
+        "height": 0.65,
+        "backY": -0.0867348313331604
+      },
+      {
+        "column": 0,
+        "row": 3,
+        "x": -0.575,
+        "height": 0.91,
+        "backY": -0.08673453330993652
+      },
+      {
+        "column": 1,
+        "row": 0,
+        "x": -0.187,
+        "height": 0.145,
+        "backY": -0.0867314338684082
+      },
+      {
+        "column": 1,
+        "row": 1,
+        "x": -0.187,
+        "height": 0.4,
+        "backY": -0.0867355465888977
+      },
+      {
+        "column": 1,
+        "row": 2,
+        "x": -0.187,
+        "height": 0.65,
+        "backY": -0.08673524856567383
+      },
+      {
+        "column": 1,
+        "row": 3,
+        "x": -0.187,
+        "height": 0.91,
+        "backY": -0.08673393726348877
+      },
+      {
+        "column": 2,
+        "row": 0,
+        "x": 0.187,
+        "height": 0.145,
+        "backY": -0.0867350697517395
+      },
+      {
+        "column": 2,
+        "row": 1,
+        "x": 0.187,
+        "height": 0.4,
+        "backY": -0.08673542737960815
+      },
+      {
+        "column": 2,
+        "row": 2,
+        "x": 0.187,
+        "height": 0.65,
+        "backY": -0.0867345929145813
+      },
+      {
+        "column": 2,
+        "row": 3,
+        "x": 0.187,
+        "height": 0.91,
+        "backY": -0.08673381805419922
+      },
+      {
+        "column": 3,
+        "row": 0,
+        "x": 0.575,
+        "height": 0.145,
+        "backY": -0.08673369884490967
+      },
+      {
+        "column": 3,
+        "row": 1,
+        "x": 0.575,
+        "height": 0.4,
+        "backY": -0.08673352003097534
+      },
+      {
+        "column": 3,
+        "row": 2,
+        "x": 0.575,
+        "height": 0.65,
+        "backY": -0.08673471212387085
+      },
+      {
+        "column": 3,
+        "row": 3,
+        "x": 0.575,
+        "height": 0.91,
+        "backY": -0.08673620223999023
+      }
+    ],
+    "openFront": "Blender+Y after180degree Z normalization"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

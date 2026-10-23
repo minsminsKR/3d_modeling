@@ -1,0 +1,1159 @@
+{
+  "status": "PASS",
+  "count": 16,
+  "sourceScope": "Original GLB/reference/records, packed Blender, source-derived game LODs/PBR; no manual-play or FPS claim",
+  "assets": [
+    {
+      "key": "wall-panel",
+      "originalSha256": "97978561f8337f9171359e05198fe390cfbe60978d367056c84640435d145566",
+      "originalBytes": 145643924,
+      "editable": "wall-panel.blend",
+      "editableSha256": "4d617d10952c82f25fb7b24b9898c63f0003f5b5306e446255310dc27537e73f",
+      "referenceSha256": "95cb1796ed561bd4db1b9a1361e8ffff4232f3aa35589ac2ce04d124f0e15813",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "wall-panel-lod0.fbx",
+          "triangles": 2000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_wall-panel_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "64025e8c287e4546ec1218eb3b2af6af08747cebe3128033f9bb5c46685fb334"
+            },
+            "metallicSmoothness": {
+              "file": "SR_wall-panel_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "4920439f286dc947cd46c384baf228a56c8bb65bd9acc4b685d13a3ee998bb38"
+            },
+            "normal": {
+              "file": "SR_wall-panel_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "ceeae00d77eac45ea1f3f891ddd81fd704768c60940f40a68d9272b0e4aa79af"
+            }
+          }
+        },
+        {
+          "file": "wall-panel-lod1.fbx",
+          "triangles": 700,
+          "maps": {
+            "baseColor": {
+              "file": "SR_wall-panel_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "b9332a05c8bbb67b4bdd818d347cb32d0e9057f79a29e84985039feeceafa294"
+            },
+            "metallicSmoothness": {
+              "file": "SR_wall-panel_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "1b80def22f8574acb53170ae827571bcb64f2d7eea24e0689bb45ea8b4c9e173"
+            },
+            "normal": {
+              "file": "SR_wall-panel_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "828b82a7637bb3074c38dc9b348992edae51b71cf9979d4100760c128fa69e28"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "floor-slab",
+      "originalSha256": "b25b4cec38da8e2cc4bcdef014fb850d938419092e2ff35dfc2e61cbfdc5f5f9",
+      "originalBytes": 149193928,
+      "editable": "floor-slab.blend",
+      "editableSha256": "2e50c6ed74ebbc071533801fd6dd553c3c9b5a395abb16016edd25b1deb8c3d1",
+      "referenceSha256": "4565dff3eecef8588b81404c153deadff2e73ae39445fe2679a2bd78467ef546",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "floor-slab-lod0.fbx",
+          "triangles": 1000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_floor-slab_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "aaa1ec5680fce98e4415b95c108750fb584bea068dd6dc6fa7ee2ce560ff824c"
+            },
+            "metallicSmoothness": {
+              "file": "SR_floor-slab_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "8b807e6be94798d8e35e86c33bbc0cd10ee78e4b6868e87d79905de68a4ce650"
+            },
+            "normal": {
+              "file": "SR_floor-slab_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "20774893c73ab91a485bdf51ac43df6a647c12d49e5b626b52e39580f56e908e"
+            }
+          }
+        },
+        {
+          "file": "floor-slab-lod1.fbx",
+          "triangles": 400,
+          "maps": {
+            "baseColor": {
+              "file": "SR_floor-slab_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "169e29d31eaed06a7d4c901fddd550d44155bfd3b107d6fa6ce646bc0a3ff989"
+            },
+            "metallicSmoothness": {
+              "file": "SR_floor-slab_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "f5bc2fd7e2e4ce9dd41a266e69f9eafcaa77afe35c5ab32d9587ace6437fc415"
+            },
+            "normal": {
+              "file": "SR_floor-slab_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "5a2d8cb201a0078e94516d57e73002edf0490b17f0a783741e18c132d1e00f2f"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "ceiling-panel",
+      "originalSha256": "1079c5ddca79f7fdba3e83029707686d94a4c9881428f5e04eb8397a51bddfc5",
+      "originalBytes": 173991144,
+      "editable": "ceiling-panel.blend",
+      "editableSha256": "cc7deef935202170881fe014c9b596b4923e95d14e849d42815926fd59ddc243",
+      "referenceSha256": "ba81a9c0a16275c42787806a0abb22274c5923009ef1c02cd185f2bb5b17d13d",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "ceiling-panel-lod0.fbx",
+          "triangles": 500,
+          "maps": {
+            "baseColor": {
+              "file": "SR_ceiling-panel_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "6d101b10b6e0549dd9ff3a9e2dd5f5c721d6249d3496b53656c42d4af8520ea6"
+            },
+            "metallicSmoothness": {
+              "file": "SR_ceiling-panel_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "4a48a0f236489327db8d1fa6518ff2c070ac6cdfb8a6ecb519eb180b8c07c63c"
+            },
+            "normal": {
+              "file": "SR_ceiling-panel_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "e70bc6891bd4e885e45b01f05418daa3bd949ae9256866f9077a9b40dccecc3c"
+            }
+          }
+        },
+        {
+          "file": "ceiling-panel-lod1.fbx",
+          "triangles": 200,
+          "maps": {
+            "baseColor": {
+              "file": "SR_ceiling-panel_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "24baf97bb0dbb88b001c9ff916957f2020080a2855cc64d5d88014920d44a2c9"
+            },
+            "metallicSmoothness": {
+              "file": "SR_ceiling-panel_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "788e1506d0d09c3371ef5c9b8edf3e74c7ff258e7dcc7819cc35c8f3478b33fc"
+            },
+            "normal": {
+              "file": "SR_ceiling-panel_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "335260ca749d679dd842dad3481979619d23c86a10b3fa86d2fc8d1046a004be"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "classroom-door",
+      "originalSha256": "80d02e534da355b3db88ec227ea5d085d9af82c9c92202c1a8b19d677eee87bf",
+      "originalBytes": 70668788,
+      "editable": "classroom-door.blend",
+      "editableSha256": "18bf4acdf1db078dea81ab54a545b89d57332b3357a048e014ec2486098253a6",
+      "referenceSha256": "a70befded5c5eec8fdc1fbee51fb1b4cab783d2f32617fbd5ca9f79b0fcf6d0f",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "classroom-door-lod0.fbx",
+          "triangles": 10000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_classroom-door_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "0ee9a80ffbde3f5bda76377efbf8a848ddd74cf8a9c5b392459e2c462acf397c"
+            },
+            "metallicSmoothness": {
+              "file": "SR_classroom-door_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "b01db0513468bf6b55d7cd17a76b7cd6338ede28a4695ccc61c5829c7680f95e"
+            },
+            "normal": {
+              "file": "SR_classroom-door_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "f863450e80112d9741edb280805444ec749f7e393fd35d7734592b916493456a"
+            }
+          }
+        },
+        {
+          "file": "classroom-door-lod1.fbx",
+          "triangles": 3000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_classroom-door_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "724ea47b2976a896f28fe8e83af84d1c5d8005b7e666174c8e30e73fb5d8903a"
+            },
+            "metallicSmoothness": {
+              "file": "SR_classroom-door_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "8453e4d789422eb7a95513ec2cb97ed0074b5d5f8d07fb58279d92fbfc169a66"
+            },
+            "normal": {
+              "file": "SR_classroom-door_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "def37ce0986cc6c891122c45da5b9f71cd873e1801f474c6a12f4496300573dd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "classroom-window",
+      "originalSha256": "d39fa04ccc174c4560164be0e4a0570b960ea6cb8cf432c9b6a0a2bcba686572",
+      "originalBytes": 63232076,
+      "editable": "classroom-window.blend",
+      "editableSha256": "d3d059fbb5ee8be31e0bb465ab6b75f84f38f28e4e4624a06aa40f8c98909e56",
+      "referenceSha256": "5a4772e3016ed20d37e2ad14aa0e4330d3b06da1ce8a8e27eaf3c6314df4346f",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "classroom-window-lod0.fbx",
+          "triangles": 7998,
+          "maps": {
+            "baseColor": {
+              "file": "SR_classroom-window_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "9eca54d7cad7fb29cd7b49b7f3c51bdc09a42c7de90c40440158dfacc01795bf"
+            },
+            "metallicSmoothness": {
+              "file": "SR_classroom-window_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "27c6e838087ca12e64e29de60d7f949959a63af5c01a3c795cdbfce4e973afe6"
+            },
+            "normal": {
+              "file": "SR_classroom-window_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "2818601682e9160d559d460b4b5c74a06db66e41353875f7e8bbf56cf3f28820"
+            }
+          }
+        },
+        {
+          "file": "classroom-window-lod1.fbx",
+          "triangles": 2500,
+          "maps": {
+            "baseColor": {
+              "file": "SR_classroom-window_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "11affbdbe5f57730221c0a5f3f1cdb7137312de49b21ba68ffb79e080e8c4114"
+            },
+            "metallicSmoothness": {
+              "file": "SR_classroom-window_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "3cc593e2f617996771d889b081b3c26687a2eca39a51060a24bcac60e732dcec"
+            },
+            "normal": {
+              "file": "SR_classroom-window_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "d4cc97249be72d88f2b3bfbc04e518b6b4577d87da503b8ad8d36bd910101c7c"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "pipe-manifold",
+      "originalSha256": "557ddbf14173105a43d76ea4b7283c2f7ada47eb6e09ea4a7d7153b4d576215e",
+      "originalBytes": 72526508,
+      "editable": "pipe-manifold.blend",
+      "editableSha256": "577fcb8e2740aeebf7f2de37ce8296fd8f7cb2057a8daa8d7a007bab3648be5f",
+      "referenceSha256": "7306a28208e6623a6457c4087428da941737b400ab1ae03322aae726732f0bc2",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "pipe-manifold-lod0.fbx",
+          "triangles": 7999,
+          "maps": {
+            "baseColor": {
+              "file": "SR_pipe-manifold_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "29067ecde2ee4da2379b63bae5fbe9ca638b1c34426b8382335e3db12588fbb9"
+            },
+            "metallicSmoothness": {
+              "file": "SR_pipe-manifold_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "e7535e7749a2774662a5f1f57e41850fad0aeefb7d2103c376b0adfb11b7c38b"
+            },
+            "normal": {
+              "file": "SR_pipe-manifold_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "05919165653b4faba60cdc83613bea5a0c3db825600fb561e3689edfec1bdb01"
+            }
+          }
+        },
+        {
+          "file": "pipe-manifold-lod1.fbx",
+          "triangles": 7000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_pipe-manifold_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "20df9eed9c7425d72a459a7182ff0fca20664022ed2245fdc4393c248b9a8145"
+            },
+            "metallicSmoothness": {
+              "file": "SR_pipe-manifold_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "404deccc8dd4f8ec6daf914cd9be22e006643189c16f173dec8314732ceb8857"
+            },
+            "normal": {
+              "file": "SR_pipe-manifold_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "ab2a02b6fbdf866bbbb737af1ed834e0b0e9c6ec3d227a2664cb91bd564ed042"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "pipe-run",
+      "originalSha256": "8f76559023c5c61d15407d7636dd7a30240684fdc0a5da297aa010e38d09d068",
+      "originalBytes": 63016696,
+      "editable": "pipe-run.blend",
+      "editableSha256": "cdf85b12d329220a1fdfd2a67129cac96037275400df5af8a94a8d4180d16733",
+      "referenceSha256": "45c625ceb541b88c562af741b637113dd369b250c06980a29ae5c0f608c7d4ad",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "pipe-run-lod0.fbx",
+          "triangles": 4000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_pipe-run_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "c26abb469c4e71f9d9291818608b92db4a4fa13651ee78373b011ccda5ae55e2"
+            },
+            "metallicSmoothness": {
+              "file": "SR_pipe-run_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "1ebb59ad8f59277c0cd8e6feba25a76a6a0e9acec20c7c48952e5bbc2286e8e5"
+            },
+            "normal": {
+              "file": "SR_pipe-run_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "f618f82fd4a5057ff3cd29df8de50e8c2d9eb34a5171a2992739758909673ca4"
+            }
+          }
+        },
+        {
+          "file": "pipe-run-lod1.fbx",
+          "triangles": 1500,
+          "maps": {
+            "baseColor": {
+              "file": "SR_pipe-run_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "3f5e700a15d2e3e12304cde169c182f6be335b606089d9927444424555177705"
+            },
+            "metallicSmoothness": {
+              "file": "SR_pipe-run_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "65a199b3841051755e54a29f76bc487f95b3160d157f3eba72b79764f3b6160f"
+            },
+            "normal": {
+              "file": "SR_pipe-run_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "2a94f7cb32f3dd2050f6ccdea01921c511f47c885c4e9ab929e3c0449be49029"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "shoe-bank",
+      "originalSha256": "4d364bb371a99c6ce1d5c94e621bfd7343c7d3febb5c5e10fa06ab489522de2f",
+      "originalBytes": 63970664,
+      "editable": "shoe-bank.blend",
+      "editableSha256": "9fbe07aa5d053d37e75b83cef817694378b984d19229f4f396a2191ed7c1617d",
+      "referenceSha256": "ad19823e41dd3855ee104c94e26497af0c8619ed4ef78e4b7f5d1cb5def4642f",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "shoe-bank-lod0.fbx",
+          "triangles": 12000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_shoe-bank_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "457154a9c0f43d32a18dbad9f34650b98f6f275446bfc71ef9e0b649f35e87ef"
+            },
+            "metallicSmoothness": {
+              "file": "SR_shoe-bank_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "5e77b870268fe6d373fb2e323187f72cfb3703c4ef4b5a0da78f39df547bfb71"
+            },
+            "normal": {
+              "file": "SR_shoe-bank_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "61c84403817597be6cf0a67c39928f57fea9532314d69801c5c618e057f1a41f"
+            }
+          }
+        },
+        {
+          "file": "shoe-bank-lod1.fbx",
+          "triangles": 3000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_shoe-bank_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "05ba08f1b720116a2ae640ef2d2d3f0777a2d14496162d7802e525822e98cd15"
+            },
+            "metallicSmoothness": {
+              "file": "SR_shoe-bank_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "4b7c6500853f0fdace317603a7e3a083fd56f1d40ad98dc78ec27fffb1ae178e"
+            },
+            "normal": {
+              "file": "SR_shoe-bank_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "0b34616a70fb7dbfcd1cecabda50be33eef983078699b770c60be4dca5f79782"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "school-desk",
+      "originalSha256": "8a483809780aa36a55999ccd28e0e31e533a5075de9b0b73706c454395dfa36b",
+      "originalBytes": 70721724,
+      "editable": "school-desk.blend",
+      "editableSha256": "0c279be7157be488cfb9f0825e68427ee8dcd3809999531085da1b0b1cfa6451",
+      "referenceSha256": "48ff90f46acfcc60a5d2d3e318d02aa42b43ebe90802fffab3d305ff08951d3d",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "school-desk-lod0.fbx",
+          "triangles": 11999,
+          "maps": {
+            "baseColor": {
+              "file": "SR_school-desk_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "27d2fd920335307a7627a4a136614ed1f5050535c0f52eb90757989103cadb20"
+            },
+            "metallicSmoothness": {
+              "file": "SR_school-desk_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "42be7c6e1584d2f3b71320291500bf6cf2180945fd2b53878681b8842667de41"
+            },
+            "normal": {
+              "file": "SR_school-desk_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "9c9a3010464736c554d480b3d82241bea6e8993d4fb3cf999b74ea0f83bc2114"
+            }
+          }
+        },
+        {
+          "file": "school-desk-lod1.fbx",
+          "triangles": 3999,
+          "maps": {
+            "baseColor": {
+              "file": "SR_school-desk_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "14d24016a3b3a2e3f8e0af72a07f78f33b6000de1edaecf6398d7d56b8147afc"
+            },
+            "metallicSmoothness": {
+              "file": "SR_school-desk_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "4071f591bf3ad919da5d58518488f6bf0f8727fd85134c9072b2e5dd1f38183a"
+            },
+            "normal": {
+              "file": "SR_school-desk_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "0b11dfefb4482c2974bceee8737b6e4d58f00eb3e22bd95ddc5b9ad4a352c556"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "school-chair",
+      "originalSha256": "b8780a40bad40fa19535b08db58150957f4adfcea79760ac907d8c988fb88cea",
+      "originalBytes": 67300336,
+      "editable": "school-chair.blend",
+      "editableSha256": "a92bdb7133534cc295e0411fdea36817645c406cf07394bff628827379fa0d21",
+      "referenceSha256": "c9f37cf3ceba7e02472ecdff0f6b9651d10c1ed0e2c122576d703c78eb43c765",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "school-chair-lod0.fbx",
+          "triangles": 10000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_school-chair_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "3d475ed2dc5b0a38c490dcdd67eab59c5f4b0fa7bcdedbd82d1cec22e9f27ef5"
+            },
+            "metallicSmoothness": {
+              "file": "SR_school-chair_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "781bed3ff197059503fb8e8b2cd840469794b6822b70c51844a75a4c73885b58"
+            },
+            "normal": {
+              "file": "SR_school-chair_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "e9c05c7201f451c14672c2716ee0a336d8fc613d3c9d3305a1767adaf93a9d54"
+            }
+          }
+        },
+        {
+          "file": "school-chair-lod1.fbx",
+          "triangles": 3499,
+          "maps": {
+            "baseColor": {
+              "file": "SR_school-chair_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "098a36c42519e7d2698e11b8360309a0ce547a1012b4e4352208f8b96f361f09"
+            },
+            "metallicSmoothness": {
+              "file": "SR_school-chair_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "50d8ba1bcdec0a5bcabb5fcac043ab811ad4debff621848b7980dd0a7381154a"
+            },
+            "normal": {
+              "file": "SR_school-chair_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "aeb0827888e6b5af326bc267f8711478f87ad2003e84ff6ec2ff6150ba4be175"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "archive-shelf",
+      "originalSha256": "bae5af1b06418c6c3d7b95d80e478f2431459cf3b304dc71fc400508d30d5ed6",
+      "originalBytes": 68302864,
+      "editable": "archive-shelf.blend",
+      "editableSha256": "02f34bca5ef960c892783c9a2dd64e7c2f219311147fad515f65ca18f66caedd",
+      "referenceSha256": "22b04e71fd755f847b5ad198a8446d738fef16ad106fafa44588ba38cc268457",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "archive-shelf-lod0.fbx",
+          "triangles": 6000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_archive-shelf_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "0d265ca518b087c442c222b0436e3ccdd6797b40644f26d18e4e4857de83e742"
+            },
+            "metallicSmoothness": {
+              "file": "SR_archive-shelf_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "3d263a1a302ae07270646f860abeeeb9dcd818a95f2600f800de8dd2b4456bec"
+            },
+            "normal": {
+              "file": "SR_archive-shelf_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "9eead3cc5eaf1977af6d490d5e848370675ccded77ebbe18bce783a16721ad74"
+            }
+          }
+        },
+        {
+          "file": "archive-shelf-lod1.fbx",
+          "triangles": 2188,
+          "maps": {
+            "baseColor": {
+              "file": "SR_archive-shelf_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "9675a02f96f62a7482b51fe619379e3dc1b65a166c1b1228829b2b3bc4306499"
+            },
+            "metallicSmoothness": {
+              "file": "SR_archive-shelf_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "a6c0adf7dd2b76927636d29717b76004b3d48e4ebfb905a7335f69331034c6a4"
+            },
+            "normal": {
+              "file": "SR_archive-shelf_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "ea496ad0c8d322fc0b0c778d19cb1db3ee68078c8c2f7170c3cd66d9e5bc6d90"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "metal-cabinet",
+      "originalSha256": "bdbfc29c69228c87d97e2097f6edcb5f9bdf4fb9ab337b605ca0f46f232dd675",
+      "originalBytes": 72741652,
+      "editable": "metal-cabinet.blend",
+      "editableSha256": "9725389ce29f90d00ca1f6c0d27cdff573da2ccaa3a041bdb825029516051f9a",
+      "referenceSha256": "ea0783dcc989b6e75aaf3cbf2192d7a0722e10b18101733f78bc988757bd8873",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "metal-cabinet-lod0.fbx",
+          "triangles": 8000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_metal-cabinet_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "32ba9d051519fd366500bdb9f86d89e717e14a50618cb5fb3ee4eb9b837950e4"
+            },
+            "metallicSmoothness": {
+              "file": "SR_metal-cabinet_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "fa237b48650e5c8b91f88968d974baa35bd662c240e8f1777853d5371dc2762d"
+            },
+            "normal": {
+              "file": "SR_metal-cabinet_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "760a1c3de6324bb021856d9e7969dc25fc18595f4fb9013859b35efcc1a2fab7"
+            }
+          }
+        },
+        {
+          "file": "metal-cabinet-lod1.fbx",
+          "triangles": 6488,
+          "maps": {
+            "baseColor": {
+              "file": "SR_metal-cabinet_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "4dcded58b6e78a330c8c9149c4a2774351df96298ee99f8597db2443fe2dc926"
+            },
+            "metallicSmoothness": {
+              "file": "SR_metal-cabinet_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "d433b64692a8d249ff4e283afcc6de238f05f9ef3d7465851cf7a2d0725d473c"
+            },
+            "normal": {
+              "file": "SR_metal-cabinet_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "d3a4309f0424ef3c1580380f090efc19da9cc25c11d22576c57e961b141e67bb"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "timber-cabinet",
+      "originalSha256": "c6a0bb18828d17788d07d78a094aa610fc1855a99e6f3145f09ed55ad79cbb8f",
+      "originalBytes": 63625412,
+      "editable": "timber-cabinet.blend",
+      "editableSha256": "755db46117e23ef5588c10634f0d172d967d324acea6b475134d851071133a7a",
+      "referenceSha256": "02b2c2272189d10231b25b2ae7232db06c85b8a9b919c45810af73ca611d3d60",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "timber-cabinet-lod0.fbx",
+          "triangles": 8000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_timber-cabinet_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "a202cee47f72dcd3f29d453f12392cf5293055d95671e423e68b4964d8855ce1"
+            },
+            "metallicSmoothness": {
+              "file": "SR_timber-cabinet_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "aab607d5f92292b16f751e6194cdba2d491cdad5c538dc70dc8da388d5948797"
+            },
+            "normal": {
+              "file": "SR_timber-cabinet_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "05df02b3d6c7e763ccfd394d5dec1d55311caf90fdeb5d4e0cbe6830d12ead51"
+            }
+          }
+        },
+        {
+          "file": "timber-cabinet-lod1.fbx",
+          "triangles": 3500,
+          "maps": {
+            "baseColor": {
+              "file": "SR_timber-cabinet_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "dfa0f114bd376d7083080bc58e48d6a511974ff8ed8f6ed2501763330b87704a"
+            },
+            "metallicSmoothness": {
+              "file": "SR_timber-cabinet_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "8fe1537e6aa6c3236f66d0ccb6561b3e7b6e19a80aeaed0441bf9148820d3bda"
+            },
+            "normal": {
+              "file": "SR_timber-cabinet_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "947f6f841c37ab0f00a4414e04a92c03b5d66fbc1cdac7a63915cdc724733881"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "fluorescent-fixture",
+      "originalSha256": "67a375307b683a0c53ffb52f0ec68b19c0b82182e606053ebe2d68f6bffb6c6e",
+      "originalBytes": 62498820,
+      "editable": "fluorescent-fixture.blend",
+      "editableSha256": "724d9338316161dd555cf070b2bba93a17331a797cb65b936807b7fdf9d6e587",
+      "referenceSha256": "21754d09a683771854526011ad1a272edc95a44710ae4365e2cb23cc26cba9ea",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "fluorescent-fixture-lod0.fbx",
+          "triangles": 7998,
+          "maps": {
+            "baseColor": {
+              "file": "SR_fluorescent-fixture_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "1ac54f1538927d16a0281ee612c0a7dddce988775bb0ebe21e3c208de910e360"
+            },
+            "metallicSmoothness": {
+              "file": "SR_fluorescent-fixture_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "ac00dfdc5667c72b3cc23746dae6fa31772aa2f3397f11358c578212a5a2805d"
+            },
+            "normal": {
+              "file": "SR_fluorescent-fixture_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "1cfe92d97137ac37310ea04e856b549b35270396c97b1da893d00fa93bead1ed"
+            }
+          }
+        },
+        {
+          "file": "fluorescent-fixture-lod1.fbx",
+          "triangles": 2000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_fluorescent-fixture_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "c6c4a084f38e41fe2172636f2547d861f797edeafc5c632b73da35ceae8d8258"
+            },
+            "metallicSmoothness": {
+              "file": "SR_fluorescent-fixture_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "9a66f999713a41d056619b2ee11f8152929b5e06d5e8a6d7ceae630daff48521"
+            },
+            "normal": {
+              "file": "SR_fluorescent-fixture_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "4ba37b642e6a0f5c2a4b38e435594c09513c42698f63e24ec2b68cc70d48e4a0"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "concrete-rubble",
+      "originalSha256": "1f3cc8f8dfb547bc229075d2926c9256986c7e50f800cbac98931d79098f33be",
+      "originalBytes": 61175516,
+      "editable": "concrete-rubble.blend",
+      "editableSha256": "03fecf70a2acb3d53505d65052b64034b1583b1029806abb4dd3717af988574a",
+      "referenceSha256": "6391eb4d4fd9935650f4d87003c18f14e72737250161a7b775a7a2ca03c794b7",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "concrete-rubble-lod0.fbx",
+          "triangles": 7000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_concrete-rubble_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "2bffae5450096ec2353693aed99a659e321c43ce462fa6804e268436bacac5ae"
+            },
+            "metallicSmoothness": {
+              "file": "SR_concrete-rubble_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "56e4a2d9ea96817dcb59b6eefe56ab6e1b9645f60bc35115d8d061254faf674c"
+            },
+            "normal": {
+              "file": "SR_concrete-rubble_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "6571ae3ac07031a10751e28f73b01f97ca6a5da48f93d350ea0aac929ab0d203"
+            }
+          }
+        },
+        {
+          "file": "concrete-rubble-lod1.fbx",
+          "triangles": 6604,
+          "maps": {
+            "baseColor": {
+              "file": "SR_concrete-rubble_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "2a65143b747cad6a371389c3723e38bbfb2e8a61845441746038a7c5862f203b"
+            },
+            "metallicSmoothness": {
+              "file": "SR_concrete-rubble_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "e7c04e0d0582c76273a05dd4388a685e353f3a980df1fe0b32d421406d0c128e"
+            },
+            "normal": {
+              "file": "SR_concrete-rubble_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "bd1f1e23004fe52250e1761ec93e24cc028240eacaa8e7fb106dcaf0cf083a13"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "loose-stones",
+      "originalSha256": "5298e29559f5013bfc9c245d624f7c48d6f90f275c75c40d8a657268ba4d4d48",
+      "originalBytes": 63440968,
+      "editable": "loose-stones.blend",
+      "editableSha256": "aad59c4e2e8a3f6918215ed3479ad4098e67d1c5326044233bac722587a86972",
+      "referenceSha256": "859ddf0ff127f7c07e3c2ba52e5c31faa84f5c9ffc88f7a2583e7e1a4b8840f1",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "loose-stones-lod0.fbx",
+          "triangles": 2500,
+          "maps": {
+            "baseColor": {
+              "file": "SR_loose-stones_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "51ca2da52d04fbc3af4b61aa5a621a0b4cf4ab1c2b3e06d29e3f73419ce96151"
+            },
+            "metallicSmoothness": {
+              "file": "SR_loose-stones_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "1dafbf1d1bf4e00b7a14e9074efc185a310c3b175f84f231e526ae5865c87c6c"
+            },
+            "normal": {
+              "file": "SR_loose-stones_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "f626ae7eb46c5652516b804a1f2ac2f1da0c4576e4c87caef9cc6081bd3d9301"
+            }
+          }
+        },
+        {
+          "file": "loose-stones-lod1.fbx",
+          "triangles": 1100,
+          "maps": {
+            "baseColor": {
+              "file": "SR_loose-stones_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "6c095ddc77ea04040b6ebe195830ae1aecdef28712118de8262f43dbb5bfd5ee"
+            },
+            "metallicSmoothness": {
+              "file": "SR_loose-stones_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "0d51e7c8650fa6c47888a8e6f2a8f2de9e15ba8232ca6652a9b5efd8c2dc5d6a"
+            },
+            "normal": {
+              "file": "SR_loose-stones_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "1842d17888ca6b085db6a6718e87ab8178342f6c5124b938bd918465d04e983b"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

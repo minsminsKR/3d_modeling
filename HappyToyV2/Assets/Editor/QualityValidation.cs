@@ -94,6 +94,7 @@ namespace HappyToy.V2.Editor
             SchoolLoopAssetsImport.Ensure();
             SchoolRetractableGateImport.Ensure();
             SchoolProgressClockImport.Ensure();
+            SchoolRenewalImport.Ensure();
             SnapperAssetsImport.Ensure();
             TrapAssetsImport.Ensure();
             PlayerItemsImport.Ensure();

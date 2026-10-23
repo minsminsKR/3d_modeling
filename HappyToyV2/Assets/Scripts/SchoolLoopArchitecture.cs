@@ -8,6 +8,7 @@ namespace HappyToy.V2
     public sealed class SchoolLoopArchitecture
     {
         readonly SchoolLoopWorld world;
+        readonly SchoolRenewalArchitecture renewal;
         static readonly Vector4[] CeilingOpenings={new Vector4(-.75f,10.1f,.95f,1.28f),
             new Vector4(.55f,24.3f,1.05f,1.40f),new Vector4(-.55f,31f,.85f,1f),
             new Vector4(-7.25f,-3.2f,.75f,1.1f),new Vector4(-5.85f,-6.7f,.60f,.75f),
@@ -17,7 +18,7 @@ namespace HappyToy.V2
         Material plaster,plasterAlternate,paint,tile,timber,iron,ceiling,ceilingAlternate,glass;
         public SchoolLoopArchitecture(SchoolLoopWorld owner)
         {
-            world=owner;var surfaces=world.HorrorSurfaces;
+            world=owner;renewal=new SchoolRenewalArchitecture(owner);var surfaces=world.HorrorSurfaces;
             plaster=surfaces.Wall;plasterAlternate=surfaces.WallAlternate;paint=surfaces.LowerWall;tile=surfaces.Floor;
             timber=surfaces.Timber;iron=surfaces.Rust;ceiling=surfaces.Ceiling;ceilingAlternate=surfaces.CeilingAlternate;glass=surfaces.Glass;
         }
@@ -29,16 +30,16 @@ namespace HappyToy.V2
             {
                 float end=Mathf.Min(z+4.4f,z1);
                 Box("School loop physical floor",new Vector3((x0+x1)*.5f,-.12f,(z+end)*.5f),
-                    new Vector3(x1-x0,.24f,end-z),wood?world.Surfaces.Get("wood-floor",new Color(.41f,.37f,.28f)):tile,true,true);
+                    new Vector3(x1-x0,.24f,end-z),tile,true,true).GetComponent<MeshRenderer>().enabled=false;
+                renewal.Floor(root,x0,z,x1,end);
             }
             if(damaged||Mathf.Abs(x0+2.2f)<.01f&&Mathf.Abs(x1-2.2f)<.01f)
             {BrokenCorridorCeiling(x0,z0,x1,z1);return;}
             for(float z=z0;z<z1-.001f;z+=4.4f)
             {
                 float end=Mathf.Min(z+4.4f,z1);var centre=new Vector3((x0+x1)*.5f,3.34f,(z+end)*.5f);
-                Box("School acoustic ceiling",centre,new Vector3(x1-x0,.18f,end-z),ceiling,true);
-                for(float seam=z+.6f;seam<end;seam+=.6f)Box("Ceiling tile cross seam",new Vector3(centre.x,3.244f,seam),new Vector3(x1-x0,.009f,.012f),iron);
-                for(float x=x0+.6f;x<x1;x+=.6f)Box("Ceiling tile long seam",new Vector3(x,3.244f,centre.z),new Vector3(.012f,.009f,end-z),iron);
+                Box("School acoustic ceiling",centre,new Vector3(x1-x0,.18f,end-z),ceiling,true).GetComponent<MeshRenderer>().enabled=false;
+                renewal.Ceiling(root,new Bounds(centre,new Vector3(x1-x0,.18f,end-z)));
             }
         }
         // Used by the finish-edge dressing too: each missing cell is a real opening
@@ -68,8 +69,8 @@ namespace HappyToy.V2
                 if(MissingCeilingPanel(x+width*.5f,z+length*.5f))continue;
                 bool saturated=MissingCeilingPanel(x+width*.5f,z+length*.5f+.6f)||
                     MissingCeilingPanel(x+width*.5f,z+length*.5f-.6f)||Mathf.Abs(z-10.1f)<2.5f||Mathf.Abs(z-24.3f)<2.7f||Mathf.Abs(z-31)<2;
-                Box("Retained water-damaged acoustic ceiling panel",new Vector3(x+width*.5f,3.305f,z+length*.5f),
-                    new Vector3(width-.014f,.11f,length-.014f),saturated?ceilingAlternate:ceiling);
+                renewal.Ceiling(root,new Bounds(new Vector3(x+width*.5f,3.305f,z+length*.5f),
+                    new Vector3(width-.014f,.11f,length-.014f)));
             }
             // Continuous thin tees cross the voids; fallen sheets no longer hide
             // their corroded supporting grid, while the playable floor stays clear.
@@ -85,10 +86,9 @@ namespace HappyToy.V2
             if(sx>6)
             {int count=Mathf.CeilToInt(sx/4.4f);float span=sx/count;for(int i=0;i<count;i++)Wall(x-sx*.5f+(i+.5f)*span,z,span,sz);return;}
             var finish=Mathf.Sin(x*.71f+z*.39f)>.18f?plasterAlternate:plaster;
-            Box("School solid wall",new Vector3(x,1.625f,z),new Vector3(sx,3.25f,sz),finish,true);
-            Box("School muted green lower paint",new Vector3(x,.60f,z),new Vector3(sx+.012f,1.20f,sz+.012f),paint);
-            Box("School dark skirting",new Vector3(x,.065f,z),new Vector3(sx+.026f,.13f,sz+.026f),iron);
-            Box("School waist rail",new Vector3(x,1.215f,z),new Vector3(sx+.022f,.045f,sz+.022f),timber);
+            var envelope=new Bounds(new Vector3(x,1.625f,z),new Vector3(sx,3.25f,sz));
+            Box("School solid wall",envelope.center,envelope.size,finish,true).GetComponent<MeshRenderer>().enabled=false;
+            renewal.Wall(root,envelope);
         }
         public void Build(Transform chunk,bool collision)
         {
@@ -143,19 +143,20 @@ namespace HappyToy.V2
             float doorEnd=room.DoorZ+.56f;
             if(room.WindowNear>doorEnd)Wall(-2.2f,(doorEnd+room.WindowNear)*.5f,.18f,room.WindowNear-doorEnd);
             float middle=(room.WindowNear+room.WindowFar)*.5f,span=room.WindowFar-room.WindowNear;
-            Box("School corridor window solid sill",new Vector3(-2.2f,.48f,middle),new Vector3(.18f,.96f,span),paint,true);
-            Box("School corridor window head wall",new Vector3(-2.2f,2.91f,middle),new Vector3(.18f,.68f,span),plaster,true);
-            Box("Closed classroom window glass",new Vector3(-2.2f,1.77f,middle),new Vector3(.018f,1.60f,span),glass,true);
-            Box("Deep water-darkened classroom window sill",new Vector3(-2.11f,.955f,middle),new Vector3(.32f,.075f,span+.10f),timber);
+            var sill=new Bounds(new Vector3(-2.2f,.48f,middle),new Vector3(.18f,.96f,span));
+            var head=new Bounds(new Vector3(-2.2f,2.91f,middle),new Vector3(.18f,.68f,span));
+            Box("School corridor window solid sill",sill.center,sill.size,paint,true).GetComponent<MeshRenderer>().enabled=false;
+            Box("School corridor window head wall",head.center,head.size,plaster,true).GetComponent<MeshRenderer>().enabled=false;
+            renewal.Wall(root,sill,0,.96f/3.25f);renewal.Wall(root,head,2.57f/3.25f,1);
+            var glazing=new Bounds(new Vector3(-2.2f,1.77f,middle),new Vector3(.018f,1.60f,span));
+            Box("Closed classroom window glass",glazing.center,glazing.size,glass,true);
+            renewal.Window(root,glazing);
             foreach(float edge in new[]{room.WindowNear-.07f,room.WindowFar+.07f})
             {
-                Box("Flaked projecting classroom pilaster",new Vector3(-2.15f,1.625f,edge),new Vector3(.29f,3.25f,.17f),plaster,true);
-                Box("Damp pilaster lower coating",new Vector3(-2.145f,.59f,edge),new Vector3(.30f,1.18f,.18f),paint);
+                var pilaster=new Bounds(new Vector3(-2.15f,1.625f,edge),new Vector3(.29f,3.25f,.17f));
+                Box("Flaked projecting classroom pilaster",pilaster.center,pilaster.size,plaster,true).GetComponent<MeshRenderer>().enabled=false;
+                renewal.Wall(root,pilaster,forceAlongZ:true);
             }
-            foreach(float y in new[]{.98f,2.57f})Box("Classroom window horizontal frame",new Vector3(-2.2f,y,middle),new Vector3(.24f,.065f,span),iron);
-            int panes=Mathf.CeilToInt(span/1.15f);
-            for(int i=0;i<=panes;i++)Box("Classroom window upright",new Vector3(-2.2f,1.77f,Mathf.Lerp(room.WindowNear,room.WindowFar,i/(float)panes)),new Vector3(.24f,1.65f,.055f),iron);
-            Box("Classroom transom rail",new Vector3(-2.2f,2.23f,middle),new Vector3(.24f,.035f,span),iron);
             if(room.DoorCount==2)
             {
                 float rearStart=room.BackDoorZ-.56f;
@@ -174,13 +175,17 @@ namespace HappyToy.V2
         void Door(SchoolLoopPlan.Room room,float z,string end)
         {
             var leaf=Box("Locked "+room.Id+" "+end+" classroom door",new Vector3(-2.2f,1.22f,z),new Vector3(.10f,2.44f,.95f),paint,true);
-            Box("Worn classroom door lower timber panel",new Vector3(-2.139f,.60f,z),new Vector3(.025f,.88f,.73f),timber);
-            Box("Old classroom door inspection pane",new Vector3(-2.139f,1.74f,z),new Vector3(.025f,.72f,.64f),glass);
-            foreach(float edge in new[]{-.35f,.35f})Box("Door inspection pane timber edge",new Vector3(-2.12f,1.74f,z+edge),new Vector3(.04f,.79f,.045f),timber);
-            foreach(float y in new[]{1.34f,2.14f})Box("Door inspection pane timber rail",new Vector3(-2.12f,y,z),new Vector3(.04f,.045f,.74f),timber);
-            Box("School door upper lintel",new Vector3(-2.2f,2.86f,z),new Vector3(.18f,.78f,1.04f),plaster,true);
-            foreach(float side in new[]{-.53f,.53f})Box("School door metal jamb",new Vector3(-2.2f,1.24f,z+side),new Vector3(.22f,2.48f,.055f),iron,true);
-            Box("Classroom door pull",new Vector3(-2.115f,1.04f,z+.33f),new Vector3(.08f,.20f,.045f),iron);
+            leaf.GetComponent<MeshRenderer>().enabled=false;
+            renewal.Door(root,new Bounds(new Vector3(-2.2f,1.22f,z),new Vector3(.10f,2.44f,.95f)));
+            var lintel=new Bounds(new Vector3(-2.2f,2.86f,z),new Vector3(.18f,.78f,1.04f));
+            Box("School door upper lintel",lintel.center,lintel.size,plaster,true).GetComponent<MeshRenderer>().enabled=false;
+            renewal.Wall(root,lintel,2.47f/3.25f,1);
+            foreach(float side in new[]{-.53f,.53f})
+            {
+                var jamb=new Bounds(new Vector3(-2.2f,1.24f,z+side),new Vector3(.22f,2.48f,.055f));
+                Box("School door metal jamb",jamb.center,jamb.size,iron,true);
+            }
+            Box("School door corroded metal header",new Vector3(-2.2f,2.475f,z),new Vector3(.22f,.055f,1.12f),iron);
             if(!physical)return;
             var inspect=leaf.AddComponent<Interactable>();inspect.kind=Interactable.Kind.Inspect;
             inspect.stableId="school-loop-"+room.Id+"-"+end+"-door";inspect.label=room.Label+" 출입문 확인";
@@ -201,7 +206,6 @@ namespace HappyToy.V2
             }
             for(float z=4.8f;z<35;z+=3.1f)
             {
-                Box("School wall service conduit",new Vector3(2.06f,2.94f,z),new Vector3(.055f,.055f,3.12f),iron);
                 Box("School radiator wall cover",new Vector3(2.02f,.36f,z),new Vector3(.17f,.55f,.88f),paint);
                 for(int i=0;i<8;i++)Box("School radiator vent",new Vector3(1.925f,.36f,z-.35f+i*.1f),new Vector3(.01f,.43f,.022f),iron);
             }

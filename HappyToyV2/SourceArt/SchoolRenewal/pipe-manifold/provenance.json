@@ -1,0 +1,22 @@
+{
+  "key": "pipe-manifold",
+  "requestId": "4810cde1-a314-459a-950e-a8c8747e3c42",
+  "jobId": "3c8d0abc-5b34-44f0-862f-2a0e3e9ee49e",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/3c8d0abc-5b34-44f0-862f-2a0e3e9ee49e",
+  "archiveSha256": "27ff4ad7cc9562a98a03306d85be8a20e32bad5b22c5ed9b1f6b479f8cf44437",
+  "archiveBytes": 61824057,
+  "original": "original.glb",
+  "originalSha256": "557ddbf14173105a43d76ea4b7283c2f7ada47eb6e09ea4a7d7153b4d576215e",
+  "reference": "reference.png",
+  "referenceSha256": "7306a28208e6623a6457c4087428da941737b400ab1ae03322aae726732f0bc2",
+  "referencePrompt": "reference-prompt.txt",
+  "referenceTool": "built-in image_gen",
+  "sourceRecord": "service/generation-record.json",
+  "archivePathMapping": {
+    "model.glb": "original.glb",
+    "*": "service/*"
+  },
+  "visualReview": "web-review.json",
+  "license": "New project-generated reference and model; no third-party stock model used."
+}

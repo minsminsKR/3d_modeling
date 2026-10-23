@@ -1,0 +1,117 @@
+{
+  "key": "loose-stones",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "5298e29559f5013bfc9c245d624f7c48d6f90f275c75c40d8a657268ba4d4d48",
+  "editable": "loose-stones.blend",
+  "normalizedAxis": "x",
+  "normalizedMetres": 0.45,
+  "widthMetres": 0.4537511169910431,
+  "heightMetres": 0.131445985956816,
+  "depthMetres": 0.3885229527950287,
+  "originalTriangles": 938322,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "loose-stones",
+    "axis": "x",
+    "metres": 0.45,
+    "budgets": [
+      2500,
+      1100
+    ],
+    "texture": 2048,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 90.0
+  },
+  "lods": [
+    {
+      "file": "loose-stones-lod0.fbx",
+      "targetTriangles": 2500,
+      "triangles": 2500,
+      "vertices": 1159,
+      "boundsMin": [
+        -0.22601473331451416,
+        -0.1955588161945343,
+        -0.0004737942654173821
+      ],
+      "boundsMax": [
+        0.22773638367652893,
+        0.19296413660049438,
+        0.13097219169139862
+      ],
+      "sha256": "ad0e504c598bd41649e0485b5e33d4cca155f9dbd5889dff5a04d4e081e22bee",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.0006749998480081558,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "loose-stones-lod1.fbx",
+      "targetTriangles": 1100,
+      "triangles": 1100,
+      "vertices": 459,
+      "boundsMin": [
+        -0.230691596865654,
+        -0.18342255055904388,
+        -0.01184474490582943
+      ],
+      "boundsMax": [
+        0.22437609732151031,
+        0.20531432330608368,
+        0.12430927157402039
+      ],
+      "sha256": "49f146978eadc8082d389b4ffc535e225fb83671f45833935b6c936a903bd7df",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.003630008935928345,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_loose-stones_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_loose-stones_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_loose-stones_LOD0-metallicSmoothness.png",
+      "normal": "SR_loose-stones_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_loose-stones_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_loose-stones_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_loose-stones_LOD1-metallicSmoothness.png",
+      "normal": "SR_loose-stones_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": null,
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

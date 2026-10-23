@@ -1,0 +1,13 @@
+{
+  "key": "ceiling-panel",
+  "jobId": "b1c1dc08-d260-4492-8263-468a92ca6b16",
+  "requestId": "a2929154-6538-4783-b09c-84c59a8ed541",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/b1c1dc08-d260-4492-8263-468a92ca6b16",
+  "original": "original.glb",
+  "originalSha256": "1079c5ddca79f7fdba3e83029707686d94a4c9881428f5e04eb8397a51bddfc5",
+  "reference": "reference.png",
+  "referenceSha256": "ba81a9c0a16275c42787806a0abb22274c5923009ef1c02cd185f2bb5b17d13d",
+  "generationRecord": "service/generation-record.json",
+  "referencePrompt": "reference-prompt.json",
+  "license": "Original project-generated image and model; see ../LICENSE.md"
+}

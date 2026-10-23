@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "approvedForBlenderFinishing": true,
+  "jobId": "bb44564e-f1cb-4f64-a7d3-36f242057c15",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/bb44564e-f1cb-4f64-a7d3-36f242057c15",
+  "reviewer": "Root agent through existing in-app modeling webapp",
+  "review": {
+    "interactiveResultLoaded": true,
+    "rotation": "Right viewer orbit 1400 ms, then 2000 ms, then 1400 ms across side/back/front",
+    "observations": [
+      "Two recessed wooden doors with separate handles and hinges",
+      "Stub feet and worn lower wood surfaces are coherent",
+      "Silhouette and materials suit the abandoned school corridor"
+    ],
+    "decision": "Approved for source-derived 3 mm retopology and finishing"
+  },
+  "finishingReview": {
+    "method": "Four orthogonal original model views in pinned Blender",
+    "frontBefore": "Blender -Y",
+    "rotationZDegrees": 180,
+    "frontAfter": "Blender +Y / Unity -Z",
+    "finalGameLodReview": {
+      "method": "Pinned Blender Eevee orthogonal views of the final packed near LOD",
+      "observations": [
+        "Two recessed wooden doors, separate handles, hinges and short feet remain coherent",
+        "Worn lower surfaces and chipped top edges remain visible in the final baked PBR",
+        "No collapse tearing or filled cabinet underside was observed"
+      ],
+      "status": "PASS"
+    }
+  }
+}

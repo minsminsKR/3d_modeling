@@ -1,0 +1,115 @@
+{
+  "key": "school-chair",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "b8780a40bad40fa19535b08db58150957f4adfcea79760ac907d8c988fb88cea",
+  "editable": "school-chair.blend",
+  "normalizedAxis": "z",
+  "normalizedMetres": 0.82,
+  "widthMetres": 0.5237228572368622,
+  "heightMetres": 0.8199224879826943,
+  "depthMetres": 0.46129268407821655,
+  "originalTriangles": 926204,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "school-chair",
+    "axis": "z",
+    "metres": 0.82,
+    "budgets": [
+      10000,
+      3500
+    ],
+    "texture": 2048,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 180.0
+  },
+  "lods": [
+    {
+      "file": "school-chair-lod0.fbx",
+      "targetTriangles": 10000,
+      "triangles": 10000,
+      "vertices": 4799,
+      "boundsMin": [
+        -0.261794775724411,
+        -0.23093074560165405,
+        5.9683075960492715e-05
+      ],
+      "boundsMax": [
+        0.26192808151245117,
+        0.2303619384765625,
+        0.8199821710586548
+      ],
+      "sha256": "87ed243185b3caf3cc885c232214172c72b4a392804d49c70eb782c8d452b480",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.001230000078678131,
+        "components": 1,
+        "vertices": 6
+      }
+    },
+    {
+      "file": "school-chair-lod1.fbx",
+      "targetTriangles": 3500,
+      "triangles": 3499,
+      "vertices": 1530,
+      "boundsMin": [
+        -0.2632710635662079,
+        -0.23160956799983978,
+        0.00012072901881765574
+      ],
+      "boundsMax": [
+        0.25916850566864014,
+        0.23208589851856232,
+        0.8200627565383911
+      ],
+      "sha256": "c3689dd440f8cc8b7c82bc6de93764b93942d2ef63b6e7dbf46d49f7e074497f",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.006559379903861555,
+        "components": 9,
+        "vertices": 23
+      }
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_school-chair_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_school-chair_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_school-chair_LOD0-metallicSmoothness.png",
+      "normal": "SR_school-chair_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_school-chair_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_school-chair_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_school-chair_LOD1-metallicSmoothness.png",
+      "normal": "SR_school-chair_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": null,
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

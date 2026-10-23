@@ -1,0 +1,110 @@
+{
+  "key": "school-desk",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "8a483809780aa36a55999ccd28e0e31e533a5075de9b0b73706c454395dfa36b",
+  "editable": "school-desk.blend",
+  "normalizedAxis": "z",
+  "normalizedMetres": 0.73,
+  "widthMetres": 0.8227480053901672,
+  "heightMetres": 0.7300634783459827,
+  "depthMetres": 0.5541133284568787,
+  "originalTriangles": 954427,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "school-desk",
+    "axis": "z",
+    "metres": 0.73,
+    "budgets": [
+      12000,
+      4000
+    ],
+    "texture": 2048,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 0
+  },
+  "lods": [
+    {
+      "file": "school-desk-lod0.fbx",
+      "targetTriangles": 12000,
+      "triangles": 11999,
+      "vertices": 5902,
+      "boundsMin": [
+        -0.41143733263015747,
+        -0.27699315547943115,
+        -7.21615506336093e-05
+      ],
+      "boundsMax": [
+        0.41131067276000977,
+        0.2771201729774475,
+        0.7299913167953491
+      ],
+      "sha256": "77b30f7d2460ff05dc6172ef48708c173f2370afbe80240424b2abf5209173e0"
+    },
+    {
+      "file": "school-desk-lod1.fbx",
+      "targetTriangles": 4000,
+      "triangles": 3999,
+      "vertices": 1902,
+      "boundsMin": [
+        -0.41143733263015747,
+        -0.2767750322818756,
+        0.0010764935286715627
+      ],
+      "boundsMax": [
+        0.4108964800834656,
+        0.27726373076438904,
+        0.730067789554596
+      ],
+      "sha256": "dd6342d10eeaab9ac791b1ff3c78439b7cdcc8b7b311ee5027c35562b5089731"
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_school-desk_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_school-desk_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_school-desk_LOD0-metallicSmoothness.png",
+      "normal": "SR_school-desk_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_school-desk_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_school-desk_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_school-desk_LOD1-metallicSmoothness.png",
+      "normal": "SR_school-desk_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "front": "Confirmed open/front side is Blender +Y / Unity -Z after standard FBX conversion",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation.",
+  "postFinishing": [
+    {
+      "tool": "reorient_finished_asset.py",
+      "rotationZDegrees": 90.0,
+      "reason": "Orthogonal actual mesh inspection established the open front",
+      "maps": "Rigid orientation preserves UV/tangent basis and the baked colour/ORM/normal detail"
+    }
+  ]
+}

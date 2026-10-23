@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "key": "timber-cabinet",
+  "purpose": "Low abandoned school corridor timber storage furniture",
+  "image": {
+    "tool": "image_gen.imagegen",
+    "mode": "new-image",
+    "transparent_background": false,
+    "promptFile": "reference-prompt.txt",
+    "input": "reference.png",
+    "review": "Isolated low wooden two-door cupboard reference visually inspected before modeling submission."
+  },
+  "model": {
+    "service": "https://agrees-mic-icon-contribution.trycloudflare.com",
+    "generator": "trellis2",
+    "requestId": "d271770b-7d45-4bf9-bc76-7b7da5c6d1ca",
+    "jobId": "bb44564e-f1cb-4f64-a7d3-36f242057c15",
+    "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/bb44564e-f1cb-4f64-a7d3-36f242057c15",
+    "seed": 76295,
+    "gpu": "split",
+    "remove_background": "on",
+    "trellis_pipeline": "1024_cascade",
+    "trellis_texture_size": 4096,
+    "trellis_steps": 12
+  },
+  "license": {
+    "source": "Newly generated for HappyToyV2 from preserved generated reference; no third-party asset pack or photograph is used."
+  }
+}

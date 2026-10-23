@@ -1,0 +1,9 @@
+{
+  "jobId": "b1c1dc08-d260-4492-8263-468a92ca6b16",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/b1c1dc08-d260-4492-8263-468a92ca6b16",
+  "reviewDate": "2026-10-24",
+  "method": "Actual interactive webapp GLB viewer, front and Right 1400ms oblique rotation; pinned Blender orthographic top/underside inspection",
+  "observations": ["Four real acoustic panels in a corroded tee grid", "Water mottling and worn fibrous edges exist on both faces", "Thin closed slab and coherent square silhouette; no topology blob"],
+  "approvedForBlenderFinishing": true,
+  "finishing": "Retain one actual source quadrant for the existing 60cm ceiling grid and real missing-panel openings; retain original registration for normal/PBR transfer. Both source sides are appropriate, so no orientation flip is needed."
+}

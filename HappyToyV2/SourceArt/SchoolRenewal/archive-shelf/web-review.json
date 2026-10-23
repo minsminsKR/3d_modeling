@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "jobId": "b3122104-6481-4f8f-8b7a-8d8d33a3ee81",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/b3122104-6481-4f8f-8b7a-8d8d33a3ee81",
+  "reviewer": "Root agent through existing in-app modeling webapp",
+  "review": {
+    "interactiveResultLoaded": true,
+    "rotation": "Interactive viewer orbit for 1400 ms",
+    "observations": [
+      "Three genuine open shelves, rather than a painted front",
+      "Worn lower corners and side panels retain a coherent freestanding silhouette"
+    ],
+    "decision": "Approved for Blender finishing"
+  },
+  "finishingReview": {
+    "method": "Orthogonal original model views in pinned Blender, before LOD baking",
+    "rotationZDegrees": 90,
+    "frontAfter": "Blender +Y / Unity -Z",
+    "finalGameLodReview": {
+      "method": "Pinned Blender Eevee orthogonal views of the final packed near LOD",
+      "observations": [
+        "Three genuine open compartments and their back panel remain visible",
+        "Source-derived retopology removes the tearing seen in the superseded direct-collapse preview",
+        "Thin shelf boards, worn wood edges and dark damp surfaces remain coherent"
+      ],
+      "status": "PASS"
+    }
+  }
+}
