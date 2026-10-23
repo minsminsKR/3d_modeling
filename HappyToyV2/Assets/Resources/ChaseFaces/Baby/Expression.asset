@@ -97784,7 +97784,7 @@ MonoBehaviour:
   - {r: 0, g: 0, b: 0, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
   - {r: 0, g: 0, b: 0, a: 1}
-  sourceMeshHash: 0bec6b2148f334038efe071a1b081cce27e003d378ae186befd4fd3a3c20a375:e18236dbc8ced12957f9d3619284992698ec59b54fcb06a2cd4ea884ec52ec5d:4fef441f6203ec93846b7f267b4125e082eac316a6d2cd4e1b54958e4c887482:a6bd2d282b3e0bac1f4f0c16812eff4526fae5977d369aa959fad4f3aa6afbf7:32aea59c28d3dc9ba614bcbf1f9beaacdc65b74f0273f7d516c54754f6d9db0f
+  sourceMeshHash: 0bec6b2148f334038efe071a1b081cce27e003d378ae186befd4fd3a3c20a375:dd047476145712d2989b71f9c9ccd41e868a469c49c321cd5ec9f629ce9e601d:4fef441f6203ec93846b7f267b4125e082eac316a6d2cd4e1b54958e4c887482:a6bd2d282b3e0bac1f4f0c16812eff4526fae5977d369aa959fad4f3aa6afbf7:32aea59c28d3dc9ba614bcbf1f9beaacdc65b74f0273f7d516c54754f6d9db0f
   cabinetFace: {fileID: 0}
   mouthLiner: {fileID: 0}
   mouthLinerMaterial: {fileID: 0}
