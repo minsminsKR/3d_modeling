@@ -316,6 +316,10 @@ PROFILES["school-turnbacks"]=("Opaque extended school bends, full-width standing
     ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolLoopSeamTests.cs", "SchoolProgressClockIntegrationTests.cs", "SchoolRetractableGateTests.cs")+(
         PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",))])
 
+PROFILES["school-connectors"]=("Dressed school connector legs, two-faced ceiling emergency sign, full fixture/gate clearance, PBR salvage and debris, real routes and existing seam/clock/brightness behaviour", [
+    PROFILES["school-turnbacks"][1][0],
+    ("PlayMode", PROFILES["school-turnbacks"][1][1][1]+play_tests("SchoolConnectorPresentationTests.cs"))])
+
 PROFILES["uncat-bell-distance"]=("Recorded Uncat bell at 3/24/36/50m, approaching gain, stereo bearing, physical wall, pause/master mute and real walking-to-pursuit rhythm", [
     ("PlayMode", play_tests("UncatBellDistanceTests.cs")+(
         PLAY+"UncatActualWalkingBellsAccelerateAfterRecognitionAndStopDuringPause",))])

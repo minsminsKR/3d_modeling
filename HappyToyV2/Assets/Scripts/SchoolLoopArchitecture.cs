@@ -9,7 +9,10 @@ namespace HappyToy.V2
     {
         readonly SchoolLoopWorld world;
         static readonly Vector4[] CeilingOpenings={new Vector4(-.75f,10.1f,.95f,1.28f),
-            new Vector4(.55f,24.3f,1.05f,1.40f),new Vector4(-.55f,31f,.85f,1f)};
+            new Vector4(.55f,24.3f,1.05f,1.40f),new Vector4(-.55f,31f,.85f,1f),
+            new Vector4(-7.25f,-3.2f,.75f,1.1f),new Vector4(-5.85f,-6.7f,.60f,.75f),
+            new Vector4(7.25f,41.6f,.75f,1.1f),new Vector4(5.85f,45.1f,.60f,.75f),
+            new Vector4(-7.1f,2.9f,.65f,.75f),new Vector4(7.1f,35.5f,.65f,.75f)};
         Transform root;bool physical;
         Material plaster,plasterAlternate,paint,tile,timber,iron,ceiling,ceilingAlternate,glass;
         public SchoolLoopArchitecture(SchoolLoopWorld owner)
@@ -19,7 +22,7 @@ namespace HappyToy.V2
             timber=surfaces.Timber;iron=surfaces.Rust;ceiling=surfaces.Ceiling;ceilingAlternate=surfaces.CeilingAlternate;glass=surfaces.Glass;
         }
         GameObject Box(string name,Vector3 p,Vector3 size,Material material,bool body=false,bool floor=false)=>world.Box(root,name,p,size,material,physical&&body,floor);
-        void Slab(float x0,float z0,float x1,float z1,bool wood=false)
+        void Slab(float x0,float z0,float x1,float z1,bool wood=false,bool damaged=false)
         {
             // Floor bodies remain continuous and independent of the missing finish above.
             for(float z=z0;z<z1-.001f;z+=4.4f)
@@ -28,7 +31,7 @@ namespace HappyToy.V2
                 Box("School loop physical floor",new Vector3((x0+x1)*.5f,-.12f,(z+end)*.5f),
                     new Vector3(x1-x0,.24f,end-z),wood?world.Surfaces.Get("wood-floor",new Color(.41f,.37f,.28f)):tile,true,true);
             }
-            if(Mathf.Abs(x0+2.2f)<.01f&&Mathf.Abs(x1-2.2f)<.01f)
+            if(damaged||Mathf.Abs(x0+2.2f)<.01f&&Mathf.Abs(x1-2.2f)<.01f)
             {BrokenCorridorCeiling(x0,z0,x1,z1);return;}
             for(float z=z0;z<z1-.001f;z+=4.4f)
             {
@@ -63,7 +66,8 @@ namespace HappyToy.V2
             {
                 float width=Mathf.Min(.6f,x1-x),length=Mathf.Min(.6f,z1-z);
                 if(MissingCeilingPanel(x+width*.5f,z+length*.5f))continue;
-                bool saturated=Mathf.Abs(z-10.1f)<2.5f||Mathf.Abs(z-24.3f)<2.7f||Mathf.Abs(z-31)<2;
+                bool saturated=MissingCeilingPanel(x+width*.5f,z+length*.5f+.6f)||
+                    MissingCeilingPanel(x+width*.5f,z+length*.5f-.6f)||Mathf.Abs(z-10.1f)<2.5f||Mathf.Abs(z-24.3f)<2.7f||Mathf.Abs(z-31)<2;
                 Box("Retained water-damaged acoustic ceiling panel",new Vector3(x+width*.5f,3.305f,z+length*.5f),
                     new Vector3(width-.014f,.11f,length-.014f),saturated?ceilingAlternate:ceiling);
             }
@@ -100,8 +104,9 @@ namespace HappyToy.V2
             }
             Wall(-2.2f,(last+38.4f)*.5f,.18f,38.4f-last);
             for(float z=2.2f;z<38;z+=4.4f)world.Fixture(root,new Vector3(0,3.08f,z),false);
-            world.Fixture(root,new Vector3(-4.9f,3.08f,2.2f),false,2.8f);
-            world.Fixture(root,new Vector3(4.9f,3.08f,36.2f),false,2.8f);
+            // Keep the complete authored housing on the elbow side of the gate beam.
+            world.Fixture(root,new Vector3(-6.8f,3.08f,2.2f),false,2.8f);
+            world.Fixture(root,new Vector3(6.8f,3.08f,36.2f),false,2.8f);
             Gate();CorridorDetails();
         }
         void TurnbackConnectors()
@@ -111,14 +116,15 @@ namespace HappyToy.V2
             float entry=SchoolLoopPlan.EntryPortalZ,exit=SchoolLoopPlan.ExitPortalZ;
             // Two opaque bends separate the main hall from either transfer plane.
             // The wider elbows retain every old v3 connector save position.
-            Slab(-outer,0,-2.2f,width);Slab(2.2f,end-width,outer,end);
-            Slab(-outer,entry,-inner,0);Slab(inner,end,outer,exit);
+            Slab(-outer,0,-2.2f,width,damaged:true);Slab(2.2f,end-width,outer,end,damaged:true);
+            Slab(-outer,entry,-inner,0,damaged:true);Slab(inner,end,outer,exit,damaged:true);
             Edge(-inner,0,2.2f,0);Edge(-outer,width,-2.2f,width);
             Edge(-outer,entry,-outer,width);Edge(-inner,entry,-inner,0);
             Edge(-2.2f,end,inner,end);Edge(2.2f,end-width,outer,end-width);
             Edge(outer,end-width,outer,exit);Edge(inner,end,inner,exit);
-            world.Fixture(root,new Vector3(-SchoolLoopPlan.ConnectorCentreX,3.08f,entry*.5f),false,2.8f);
-            world.Fixture(root,new Vector3(SchoolLoopPlan.ConnectorCentreX,3.08f,(end+exit)*.5f),false,2.8f);
+            var entryLamp=world.Fixture(root,new Vector3(-SchoolLoopPlan.ConnectorCentreX,3.08f,entry*.5f),false,2.8f);
+            var exitLamp=world.Fixture(root,new Vector3(SchoolLoopPlan.ConnectorCentreX,3.08f,(end+exit)*.5f),false,2.8f);
+            entryLamp.transform.parent.localRotation=exitLamp.transform.parent.localRotation=Quaternion.Euler(0,90,0);
         }
         void Edge(float x0,float z0,float x1,float z1)
         {
@@ -184,8 +190,6 @@ namespace HappyToy.V2
         {
             SchoolRetractableGate.Build(world,root,physical);
             Box("Fire gate lintel",new Vector3(-4.6f,2.85f,2.2f),new Vector3(.16f,.30f,4.4f),iron);
-            var sign=world.Surfaces.Get("painted-metal",new Color(.12f,.28f,.21f),new Color(.07f,.15f,.09f));
-            Box("Entry exit sign",new Vector3(-4.58f,2.96f,2.2f),new Vector3(.10f,.23f,.72f),sign);
         }
         void CorridorDetails()
         {

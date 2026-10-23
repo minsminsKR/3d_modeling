@@ -31,7 +31,7 @@ namespace HappyToy.V2
         public void Build(Transform chunk)
         {
             root=new GameObject("School — acquired scan rubble and delaminated structure").transform;root.SetParent(chunk,false);
-            RubbleHeaps();PeelingWalls();CeilingBreaks();LeanedSlabs();
+            RubbleHeaps();PeelingWalls();CeilingBreaks();LeanedSlabs();ConnectorDamage();
         }
         Material ScanMaterial(string prefix,Color tint)
         {
@@ -167,7 +167,17 @@ namespace HappyToy.V2
         void CeilingBreaks()
         {
             // Match Architecture's actual missing .6m finish cells exactly.
-            for(float z=0;z<38.39f;z+=.6f)for(float x=-2.2f;x<2.19f;x+=.6f)
+            CeilingBreakEdges(-2.2f,0,2.2f,38.4f);
+            CeilingBreakEdges(-8.8f,-8,-4.4f,0);CeilingBreakEdges(4.4f,38.4f,8.8f,46.4f);
+            CeilingBreakEdges(-8.8f,0,-2.2f,4.4f);CeilingBreakEdges(2.2f,34,8.8f,38.4f);
+            foreach(var hole in new[]{new Vector2(-.75f,10.1f),new Vector2(.55f,24.3f),new Vector2(-.55f,31.0f),
+                new Vector2(-7.25f,-3.2f),new Vector2(-5.85f,-6.7f),new Vector2(7.25f,41.6f),new Vector2(5.85f,45.1f),
+                new Vector2(-7.1f,2.9f),new Vector2(7.1f,35.5f)})
+                CeilingLath(hole);
+        }
+        void CeilingBreakEdges(float x0,float z0,float x1,float z1)
+        {
+            for(float z=z0;z<z1-.01f;z+=.6f)for(float x=x0;x<x1-.01f;x+=.6f)
             {
                 float cx=x+.3f,cz=z+.3f;
                 if(!SchoolLoopArchitecture.MissingCeilingPanel(cx,cz))continue;
@@ -176,8 +186,9 @@ namespace HappyToy.V2
                 if(!SchoolLoopArchitecture.MissingCeilingPanel(cx,cz-.6f))CeilingLip(new Vector3(x+.6f,3.249f,z),Vector3.left*.6f,Vector3.forward);
                 if(!SchoolLoopArchitecture.MissingCeilingPanel(cx,cz+.6f))CeilingLip(new Vector3(x,3.249f,z+.6f),Vector3.right*.6f,Vector3.back);
             }
-            foreach(var hole in new[]{new Vector2(-.75f,10.1f),new Vector2(.55f,24.3f),new Vector2(-.55f,31.0f)})
-            {
+        }
+        void CeilingLath(Vector2 hole)
+        {
                 var metal=new Geometry();float x0=hole.x-.65f,z0=hole.y-.68f;
                 for(int row=0;row<3;row++)for(int column=0;column<7;column++)
                 {
@@ -193,6 +204,36 @@ namespace HappyToy.V2
                 }
                 metal.Tube(new Vector3(hole.x+.45f,3.58f,hole.y-.5f),new Vector3(hole.x+.54f,3.04f,hole.y-.38f),.004f);
                 Emit("Exposed corroded ceiling lath and hanger wires",metal,surfaces.Rust);
+        }
+        void ConnectorDamage()
+        {
+            var original=root;
+            foreach(var origin in new[]{new Vector3(-6.6f,0,-8),new Vector3(6.6f,0,38.4f)})
+            {
+                root=new GameObject("Connector scan rubble and broken wall finish").transform;root.SetParent(original,false);root.localPosition=origin;
+                for(int pile=0;pile<5;pile++)
+                {
+                    float side=pile%2==0?-1:1,z=1.1f+pile*1.4f;
+                    Scan("scan-rubble-"+(char)('a'+pile%3),new Vector3(side*1.91f,.006f,z),new Vector3(.72f,1.15f,.46f),Range(-8,8),pile%2==0?dampRubble:rubble);
+                    for(int piece=0;piece<3;piece++)
+                        Scan("aggregate-"+(char)('a'+(pile+piece)%5),new Vector3(side*Range(1.76f,1.99f),.012f,z+Range(-.45f,.45f)),Vector3.one*Range(.62f,.95f),Range(0,360),aggregate);
+                    for(int shard=0;shard<7;shard++)
+                        FallenChip(new Vector3(side*Range(1.70f,1.98f),.015f,z+Range(-.54f,.54f)),Range(.09f,.23f),Range(0,360),shard%3);
+                    var normal=Vector3.left*side;
+                    var centre=new Vector3(side*2.089f,pile%2==0?.62f:1.52f,z+.10f);
+                    var boundary=FracturedBoundary(centre,Range(.8f,1.2f),Range(.40f,.68f),Range(-18,18));
+                    Polygon("Connector damp fractured exposed plaster",boundary,normal,substrate,.8f);
+                    for(int edge=0;edge<boundary.Length;edge++)
+                    {
+                        if(edge%3==0)continue;
+                        var a=boundary[edge];var b=boundary[(edge+1)%boundary.Length];
+                        var outward=((a+b)*.5f-centre).normalized;
+                        Shell("Connector raised curling wall coating",new[]{a,b,b+outward*.05f+normal*.026f,a+outward*.032f+normal*.014f},normal,
+                            centre.y<1.2f?surfaces.LowerWall:surfaces.WallAlternate,.021f);
+                    }
+                    PeelingPatches++;
+                }
+                root=original;
             }
         }
         void CeilingLip(Vector3 corner,Vector3 along,Vector3 intoHole)

@@ -68,6 +68,15 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 학교의 `ChapterAtmosphere`와 `SchoolCampusRooms`는 학교 모드를 전달한다. 위치
 배열이 있다는 이유만으로 학교 음원을 회랑 음원으로 교체하지 않는다.
 
+학교 연결 통로의 마감은 `SchoolDecayDressing.ConnectorHistory`와
+`SchoolStructuralDecay.ConnectorDamage`가 기존 학교 집기·촬영 스캔·종이·물막을
+재사용한다. `SchoolLoopArchitecture`는 새 통로의 실제 천장 개구부와 철문 보에서
+분리된 형광등 위치를 소유한다. `SchoolExitSign`은 기존 생성 케이스/공유 LOD·PBR을
+재사용한 천장 중앙 양면 녹색 비상구 표시와 국소 불빛만 소유한다. 진행 출구나
+새 상호작용을 추가하지 않는다. `school-connectors`는 기존 `school-turnbacks`와
+유도등·형광등/보 간섭·통로/NavMesh·폐교 장식·실제 게임 카메라 네 구도를 검사한다.
+원본 사용자 참조와 자산 재사용 내역은 `SourceArt/SchoolHorror/ConnectorPresentation`이다.
+
 ## 모듈 경계
 
 몬스터 자산 마감은 `SourceArt/CreatureStudio/tools/polish_game_assets.py`와

@@ -13,7 +13,7 @@ namespace HappyToy.V2
     {
         readonly SchoolLoopWorld world;
         readonly SchoolHorrorSurfaces surfaces;
-        readonly Material paper, board, chalk, dark;
+        readonly Material paper, board, chalk, dark, connectorWater;
         readonly Material[] printedPaper;
         Transform root;
         Transform deskTemplate;
@@ -32,6 +32,8 @@ namespace HappyToy.V2
             dark=world.Surfaces.Get("cloth-charred",new Color(.25f,.29f,.27f));
             board=Blackboard();
             printedPaper=PrintedPapers();
+            connectorWater=new Material(surfaces.Puddle){name="Owned translucent school connector leak film",enableInstancing=true};
+            connectorWater.SetColor("_BaseColor",new Color(.13f,.145f,.14f,.28f));world.owned.Add(connectorWater);
         }
         public void Build(Transform chunk,bool collision)
         {
@@ -39,7 +41,7 @@ namespace HappyToy.V2
             physical=collision;random=new System.Random(76193);
             root=new GameObject("School — accumulated neglect and retained furniture").transform;
             root.SetParent(chunk,false);
-            StudyRoom();Shop();CorridorStorage();Pipes();Residue();WallRelics();
+            StudyRoom();Shop();CorridorStorage();Pipes();Residue();WallRelics();ConnectorHistory();
             new SchoolStructuralDecay(world,surfaces).Build(chunk);
         }
         Material[] PrintedPapers()
@@ -279,6 +281,64 @@ namespace HappyToy.V2
                 Pipe(new Vector3(-2.07f,3.12f,z),new Vector3(1.83f,3.12f,z),.032f);
                 Pipe(new Vector3(1.83f,2.99f,z),new Vector3(1.83f,3.12f,z),.032f);
             }
+        }
+        void ConnectorHistory()
+        {
+            // The new legs share the same authored school vocabulary. Their
+            // centre 3m remains clear; shallow salvage sits against real walls.
+            var original=root;
+            foreach(var origin in new[]{new Vector3(-6.6f,0,-8),new Vector3(6.6f,0,38.4f)})
+            {
+                random=new System.Random(40271);
+                root=Holder("Abandoned school connector history",origin);
+                Furniture("archive-shelf",new Vector3(1.81f,0,1.8f),new Vector3(1.10f,.91f,.43f),90,true);
+                Cabinet("cabinet-timber",new Vector3(-1.83f,0,5.75f),new Vector3(1.04f,1.48f,.42f),-90);
+                Chair(new Vector3(1.79f,0,6.25f),-73);
+                for(int i=0;i<7;i++)Page(new Vector3(1.80f+(i%2)*.035f,.924f+i*.002f,1.52f+(i%3)*.13f),.17f,.23f,65+i*21);
+                Box("Connector neglected notice timber frame",new Vector3(2.035f,1.77f,4.10f),new Vector3(.10f,1.14f,2.0f),surfaces.Timber);
+                Box("Connector water stained notice backing",new Vector3(1.975f,1.77f,4.10f),new Vector3(.016f,1.0f,1.86f),dark);
+                world.Label(root,"교내 안전 수칙",new Vector3(1.958f,2.16f,4.10f),Quaternion.Euler(0,90,0),new Vector2(1.1f,.13f),new Color(.48f,.49f,.38f));
+                for(int i=0;i<5;i++)
+                    PinnedPage(new Vector3(1.955f-i*.001f,1.84f-(i/3)*.32f,3.57f+(i%3)*.48f),Range(.27f,.34f),Range(.36f,.46f),i,Range(-9,9));
+                foreach(float x in new[]{1.86f,1.68f})
+                {
+                    Pipe(new Vector3(x,3.03f,0),new Vector3(x,3.03f,8),x>1.8f?.034f:.020f);
+                    foreach(float z in new[]{.45f,3.15f,6.60f})
+                    {
+                        Pipe(new Vector3(x,3.03f,z-.03f),new Vector3(x,3.03f,z+.03f),x>1.8f?.047f:.031f);
+                        Box("Connector corroded service pipe ceiling strap",new Vector3(x,3.14f,z),new Vector3(.02f,.22f,.035f),surfaces.Rust);
+                    }
+                }
+                Pipe(new Vector3(-2.05f,2.87f,3.3f),new Vector3(-2.05f,.34f,3.3f),.029f);
+                Box("Connector old utility access lid",new Vector3(-2.035f,1.42f,2.7f),new Vector3(.06f,.49f,.39f),surfaces.Rust);
+                for(int heap=0;heap<4;heap++)for(int i=0;i<17;i++)
+                {
+                    float side=heap%2==0?-1:1;
+                    Page(new Vector3(side*Range(1.73f,1.97f),.012f+(i%6)*.003f,1.0f+heap*1.65f+Range(-.45f,.45f)),
+                        Range(.07f,.18f),Range(.12f,.27f),Range(0,360));
+                }
+                Page(new Vector3(-.63f,.008f,3.4f),.15f,.23f,38);
+                foreach(var p in new[]{new Vector3(-.54f,.006f,2.85f),new Vector3(.70f,.007f,5.6f)})
+                    WaterFilm(p,new Vector2(1.1f,1.55f));
+                root=original;
+            }
+            // Stacked furniture in the elbow gives a reason for the stored gate,
+            // without obscuring the clock, the gate lock or either corner route.
+            Furniture("archive-shelf",new Vector3(-7.55f,0,3.98f),new Vector3(1.35f,.92f,.39f),0,true);
+            Furniture("archive-shelf",new Vector3(7.55f,0,34.42f),new Vector3(1.35f,.92f,.39f),180,true);
+        }
+        void WaterFilm(Vector3 at,Vector2 size)
+        {
+            const int count=28;var vertices=new Vector3[count+1];var uv=new Vector2[count+1];var triangles=new int[count*3];
+            vertices[0]=at;uv[0]=Vector2.one*.5f;
+            for(int i=0;i<count;i++)
+            {
+                float angle=i*Mathf.PI*2/count;float r=1+.10f*Mathf.Sin(angle*5+.7f)+.07f*Mathf.Sin(angle*9);
+                var p=new Vector2(Mathf.Cos(angle),Mathf.Sin(angle))*r;
+                vertices[i+1]=at+new Vector3(p.x*size.x,0,p.y*size.y);uv[i+1]=(p+Vector2.one)*.5f;
+                triangles[i*3]=0;triangles[i*3+1]=(i+1)%count+1;triangles[i*3+2]=i+1;
+            }
+            MeshObject("Irregular shallow connector leak water film",vertices,triangles,uv,null,connectorWater);
         }
         void Pipe(Vector3 start,Vector3 end,float radius)
         {

@@ -51,7 +51,7 @@ namespace HappyToy.V2
             bool corridor=Mathf.Abs(at.x)<.2f;
             int index=Mathf.RoundToInt((at.z-2.2f)/4.4f);
             bool live=!corridor||index==0||index==2||index==5||index==7;
-            bool connecting=Mathf.Abs(at.x)>2.2f&&Mathf.Abs(at.x)<5.1f||at.z<0||at.z>SchoolLoopPlan.Length;
+            bool connecting=Mathf.Abs(at.x)>2.2f&&(at.z<4.4f||at.z>34)||at.z<0||at.z>SchoolLoopPlan.Length;
             float power=live?(corridor?(index==0?7.2f:index==2?6.3f:index==5?4.9f:2.6f):connecting?1.6f:intensity*.56f):0;
             var holder=new GameObject(live?"Failing school fluorescent fixture":"Burned-out school fluorescent fixture").transform;
             holder.SetParent(parent,false);holder.localPosition=at;
@@ -123,7 +123,9 @@ namespace HappyToy.V2
             foreach(Transform chunk in world.Root)
             {
                 if(!chunk.name.StartsWith("School loop section",StringComparison.Ordinal))continue;
-                AddWindows(chunk);AddAlarm(chunk);
+                AddWindows(chunk);
+                var exit=SchoolExitSign.Build(world,chunk,new Vector3(0,2.91f,35.9f));
+                additions.Add(exit.gameObject);
             }
             for(int i=0;i<2;i++)
             {
@@ -172,16 +174,6 @@ namespace HappyToy.V2
                 transmission.type=LightType.Point;transmission.color=new Color(.39f,.57f,.78f);transmission.intensity=.60f;
                 transmission.range=3.8f;transmission.shadows=LightShadows.None;windowLights.Add(transmission);
             }
-        }
-        void AddAlarm(Transform chunk)
-        {
-            var sourceRoot=new GameObject("Owned school alarm light scope");
-            sourceRoot.transform.SetParent(chunk,false);additions.Add(sourceRoot);
-            var red=new GameObject("Distant failed school alarm indicator").AddComponent<Light>();red.transform.SetParent(sourceRoot.transform,false);
-            red.transform.localPosition=new Vector3(1.96f,2.64f,35.4f);red.type=LightType.Point;
-            red.color=new Color(.8f,.016f,.008f);red.intensity=.68f;red.range=2.35f;red.shadows=LightShadows.None;
-            var glass=world.Surfaces.Get("painted-metal",new Color(.28f,.023f,.012f),new Color(1.8f,.018f,.006f));
-            world.Box(sourceRoot.transform,"Small red alarm lens",new Vector3(2.035f,2.64f,35.4f),new Vector3(.055f,.07f,.15f),glass);
         }
         void AddHaze()
         {
