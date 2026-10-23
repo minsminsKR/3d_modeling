@@ -132,6 +132,33 @@ materials and motion, and for visual joint/skeleton editing. This updates the
 2026-10-12 browser-based generation preference; both interfaces must use the same
 designated A100 modeling service, job queue and stored results.
 
+Persistent user instruction, 2026-10-23: use this default end-to-end modeling
+workflow for future modeling work:
+**CLI -> direct webapp inspection -> Blender finishing/optimization -> Unity
+integration/verification**.
+
+1. Use the modeling CLI to generate, track, recover and download models from the
+   designated service. Preserve the original request/job IDs and provenance.
+2. Open the same job in the user's existing right-sidebar webapp and inspect the
+   actual interactive 3D result. Rotate it to check silhouette, geometry and
+   materials; inspect skeleton/joints and motion when present. Use the web joint
+   editor where useful, then collect the updated result with `--refresh`.
+3. Use Blender MCP and reproducible authoring tools to finish rigging, skin
+   weights, UVs and animation, and optimize geometry, textures and game LODs for
+   the asset's intended use. Apply only necessary processing. Preserve editable
+   `.blend` sources and the tools/settings needed to reproduce exports. If the
+   base shape needs regeneration, return to the designated service through CLI.
+4. Use the project's supported Unity CLI/MCP tools to import and integrate the
+   asset. Verify scale/orientation, materials, animation, collision and LOD setup
+   as applicable, then inspect its appearance and behavior in the game context
+   and check relevant performance. Follow `HappyToyV2/CODE_MAP.md` verification
+   profiles for the affected Unity feature.
+
+Keep the generated original GLB/PBR, reference inputs, generation settings/job
+provenance, editable Blender sources, reproducible tools, and Unity assets with
+their `.meta` files together in the repository's authoring/source handoff. Record
+what was visually inspected, modified and verified, including remaining issues.
+
 - CLI entry point: `hunyuan3d-webapp/modeling_cli.py`; usage and recovery:
   `hunyuan3d-webapp/CLI-A100.md`. Prefer `--json` and documented exit codes for
   agent automation. Retain request/job IDs and reuse the original request ID
