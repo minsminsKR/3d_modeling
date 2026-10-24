@@ -48,6 +48,19 @@ namespace HappyToy.V2
             source.volume = voice.gain;
             acoustics.Refresh(true); return acoustics;
         }
+        // The emitter owns its envelope; this owner still applies physical occlusion/range.
+        public void SetBaseGain(AudioSource source,float gain)
+        {
+            if(!StealthRules.Finite(gain))throw new System.ArgumentException("Finite audio gain required");
+            foreach(var voice in voices)if(voice.source==source)
+            {
+                voice.gain=Mathf.Clamp01(gain);
+                var session=GameSession.Current;var player=session?session.player:null;
+                bool inRange=player&&player.eyes&&Vector3.Distance(player.eyes.transform.position,source.transform.position)<source.maxDistance;
+                source.volume=inRange?voice.gain*Gain:0;return;
+            }
+            throw new System.ArgumentException("Audio source is not bound to this acoustic owner");
+        }
         void Trace(PlayerMotor player)
         {
             TraceCount++; Occluded = FloorOccluded = false;

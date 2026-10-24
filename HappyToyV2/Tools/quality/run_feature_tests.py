@@ -391,6 +391,14 @@ PROFILES["school-anomalies"]=("Guaranteed normal first passage, restorable 50-pe
         PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",PLAY+"SchoolHorrorLightingFreezesOnPauseAndDoesNotLeakRenderSettings"))])
 
 
+PROFILES["school-anomaly-presentation"]=("All-nine-lamp blackout retains actual torch contribution; retiring Baby carries its rigid seam pose and fades body/cry with paused/talisman-safe cleanup, judgments, active-Baby save/cry/chase and normal camera regressions", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"CheckpointTrapCodecTests")),
+    ("PlayMode", play_tests("SchoolAnomalyTests.cs")+(
+        PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",
+        PLAY+"SchoolHorrorLightingFreezesOnPauseAndDoesNotLeakRenderSettings",
+        PLAY+"SchoolWalkerRecordedTileContactsReachTheSpatialMixerAndStopForObstructionPauseTalismanAndMute"))])
+
+
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
     selected = list(PROFILES[profile][1])
     if profile != "full":

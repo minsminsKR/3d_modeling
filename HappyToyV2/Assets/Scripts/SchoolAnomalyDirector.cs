@@ -11,6 +11,7 @@ namespace HappyToy.V2
         SchoolAnomalyDeck deck;readonly SchoolAnomalyEventClock clock=new SchoolAnomalyEventClock();
         GameSession session;SchoolLoopWorld world;
         public SchoolBabyEncounter Baby {get;private set;}
+        public SchoolBabyEncounter DepartingBaby {get;private set;}
         public SchoolBlackoutPresentation Blackout {get;private set;}
         public SchoolAnomalyKind Kind=>deck.Kind;
         public SchoolAnomalyEventClock EventClock=>clock;
@@ -21,15 +22,22 @@ namespace HappyToy.V2
             Blackout=gameObject.AddComponent<SchoolBlackoutPresentation>();Blackout.Prepare(world.Root);
         }
         public void CompleteTraversal(int direction)
-        {deck.Complete(direction);clock.Reset();ApplyPassage();}
+        {
+            deck.Complete(direction);clock.Reset();
+            if(DepartingBaby)DepartingBaby.Clear();
+            DepartingBaby=Baby;Baby=null;
+            if(DepartingBaby)DepartingBaby.BeginDeparture(direction);
+            ApplyPassage(true);
+        }
         public void RestoreLegacy(int traversal)
         {
             var value=deck.Capture();value.Passage=traversal;value.Kind=SchoolAnomalyKind.Normal;value.NormalStreak=1;
             deck.Restore(value);clock.Reset();ApplyPassage();
         }
-        void ApplyPassage()
+        void ApplyPassage(bool keepDeparture=false)
         {
             if(Baby){Baby.Clear();Baby=null;}
+            if(!keepDeparture&&DepartingBaby){DepartingBaby.Clear();DepartingBaby=null;}
             Blackout.Apply(false,0);world.Walker.SetDancing(Kind==SchoolAnomalyKind.DancingWalker);
         }
         void Update()

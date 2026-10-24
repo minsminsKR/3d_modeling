@@ -10,13 +10,18 @@ namespace HappyToy.V2
     public sealed class SchoolBabyEncounter : MonoBehaviour
     {
         public const float CloseRange=6,ChaseSpeed=3.15f;
+        public const float DepartureSeconds=1.8f;
         public static readonly Vector3 Station=new Vector3(0,.02f,35.4f);
         GameSession session;Transform section,visual;Vector3 mount;
         AnimationClip cry,chase;AudioClip ownedVoice;
-        AudioSource voice;NavMeshAgent agent;
+        AudioSource voice;NavMeshAgent agent;EnemyAcoustics acoustics;
         readonly List<(Renderer renderer,Material[] original,Material[] faded)> surfaces=new List<(Renderer,Material[],Material[])>();
         readonly List<Material> owned=new List<Material>();
         bool opaque,pausedVoice;float nextPath;
+        float departureStartOpacity;
+        public bool Departing {get;private set;}
+        public float DepartureElapsed {get;private set;}
+        public float Opacity {get;private set;}
         public Transform Visual=>visual;
         public AudioSource CrySource=>voice;
         public NavMeshAgent Agent=>agent;
@@ -74,13 +79,13 @@ namespace HappyToy.V2
             var emitter=new GameObject("School Baby recorded crying").transform;emitter.SetParent(transform,false);emitter.localPosition=Vector3.up*.85f;
             voice=emitter.gameObject.AddComponent<AudioSource>();ownedVoice=ExternalAudio.Required("enemy-baby-cry");
             voice.clip=ownedVoice;voice.loop=true;voice.playOnAwake=false;voice.minDistance=4;voice.maxDistance=42;voice.priority=50;
-            EnemyAcoustics.Bind(voice,transform,.72f,0);
+            acoustics=EnemyAcoustics.Bind(voice,transform,.72f,0);
             Sample(0,false);
         }
         bool ClearSight()=>!Physics.Linecast(transform.position+Vector3.up*.9f,session.player.eyes.transform.position,1<<8,QueryTriggerInteraction.Ignore);
         public void Tick(SchoolAnomalyEventClock clock,bool advancing)
         {
-            if(!agent||!agent.isOnNavMesh)return;
+            if(Departing||!agent||!agent.isOnNavMesh)return;
             agent.isStopped=!advancing||!clock.Pursuing;
             if(!advancing)
             {if(voice.isPlaying){voice.Pause();pausedVoice=true;}return;}
@@ -97,12 +102,44 @@ namespace HappyToy.V2
             var clip=pursuing?chase:cry;clip.SampleAnimation(visual.gameObject,Mathf.Repeat((float)elapsed,clip.length));
             float amount=Mathf.SmoothStep(0,1,Mathf.Clamp01((float)(elapsed/SchoolAnomalyEventClock.RevealSeconds)));
             visual.localPosition=mount+Vector3.down*((1-amount)*1.3f);
-            if(!opaque)
+            ApplyOpacity(amount,amount<1);
+        }
+        void ApplyOpacity(float amount,bool fading)
+        {
+            Opacity=Mathf.Clamp01(amount);
+            if(fading&&opaque)
+            {foreach(var entry in surfaces)entry.renderer.sharedMaterials=entry.faded;opaque=false;}
+            if(fading)
             {
                 foreach(var entry in surfaces)foreach(var material in entry.faded)
-                    if(material.HasProperty("_BaseColor")){var color=material.GetColor("_BaseColor");color.a=amount;material.SetColor("_BaseColor",color);}
-                if(amount>=1){foreach(var entry in surfaces)entry.renderer.sharedMaterials=entry.original;opaque=true;}
+                    if(material.HasProperty("_BaseColor")){var color=material.GetColor("_BaseColor");color.a=Opacity;material.SetColor("_BaseColor",color);}
             }
+            else if(!opaque){foreach(var entry in surfaces)entry.renderer.sharedMaterials=entry.original;opaque=true;}
+        }
+        // The player has already crossed the seam. Carry the retiring ghost through
+        // the same rigid transform so a close pursuing body cannot pop or swap sides.
+        public void BeginDeparture(int direction)
+        {
+            if(Departing)return;
+            var at=section.InverseTransformPoint(transform.position);
+            var pose=SchoolLoopPlan.ReturnToCentre(at.x,at.z,direction);
+            if(agent&&agent.isOnNavMesh){agent.isStopped=true;agent.ResetPath();}
+            if(agent)agent.enabled=false;
+            transform.SetPositionAndRotation(section.TransformPoint(new Vector3(pose.X,at.y,pose.Z)),
+                Quaternion.AngleAxis(pose.Yaw,section.up)*transform.rotation);
+            Departing=true;departureStartOpacity=Opacity;DepartureElapsed=0;ApplyOpacity(Opacity,true);
+        }
+        void Update()
+        {
+            if(!Departing)return;
+            bool advancing=session&&session.InputAllowed&&!session.Finished&&!EnemyTimeStop.Active;
+            if(!advancing)
+            {if(voice&&voice.isPlaying){voice.Pause();pausedVoice=true;}return;}
+            if(pausedVoice&&voice){voice.UnPause();pausedVoice=false;}
+            DepartureElapsed=Mathf.Min(DepartureSeconds,DepartureElapsed+Time.deltaTime);
+            float amount=departureStartOpacity*(1-Mathf.SmoothStep(0,1,DepartureElapsed/DepartureSeconds));
+            ApplyOpacity(amount,true);if(acoustics)acoustics.SetBaseGain(voice,.72f*amount);
+            if(DepartureElapsed>=DepartureSeconds)Clear();
         }
         public SchoolBabyProgress Capture()=>new SchoolBabyProgress{present=true,position=section.InverseTransformPoint(transform.position),yaw=transform.localEulerAngles.y};
         public void Restore(SchoolBabyProgress saved,SchoolAnomalyEventClock clock)

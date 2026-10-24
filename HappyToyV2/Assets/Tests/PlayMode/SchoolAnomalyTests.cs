@@ -111,7 +111,8 @@ namespace HappyToy.V2.CloudTests
             var at=baby.transform.position;yield return Delay(.4f);Assert.That(Vector3.Distance(at,baby.transform.position),Is.GreaterThan(.2f));
             Call(world,"RestoreClock",2);yield return CrossSchoolJudgmentSeam(world,-1);
             Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(3));yield return null;
-            Assert.That(!baby,Is.True,"Baby survived a successful anomaly retreat");
+            Assert.That(baby&&Get<bool>(baby,"Departing"),Is.True,"Retreat must start a visible departure, not delete Baby immediately");
+            yield return Wait(()=>!baby,3,"The retired Baby did not finish fading out");
             Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Baby");PlacePlayer(LoopOrigin+new Vector3(-1.2f,.03f,16));Call(shell,"Resume");
             yield return Wait(()=>Get<Component>(director,"Baby"),3,"The next Baby event did not appear");yield return Delay(2.3f);
             PlacePlayer(LoopOrigin+new Vector3(0,.03f,30.5f));
@@ -141,10 +142,65 @@ namespace HappyToy.V2.CloudTests
             Call(director,"Restore",saved,Get<int>(world,"Traversals"));Assert.That(Get<int>(Get<Component>(director,"Blackout"),"Extinguished"),Is.EqualTo(9));
             Assert.That(Get<float>(Get<Component>(director,"Blackout"),"Darkness"),Is.EqualTo(1));
             PlacePlayer(LoopOrigin+new Vector3(-1.2f,.03f,16));yield return Delay(.3f);Assert.That(Get<bool>(session,"Finished"),Is.False);
-            var camera=Get<Camera>(player,"eyes");var frame=SchoolHorrorFrame(camera,320,180);
-            Assert.That(SchoolDisplayLuma(frame,new Rect(.1f,.1f,.8f,.8f)),Is.LessThan(.01f),"The real production camera did not fall into darkness");Object.Destroy(frame);
+            var camera=Get<Camera>(player,"eyes");var torch=Get<Light>(player,"flashlight");
+            PlacePlayer(LoopOrigin+new Vector3(.72f,.03f,6.3f),false);
+            camera.transform.rotation=Quaternion.LookRotation(LoopOrigin+new Vector3(2.2f,1.3f,8.4f)-camera.transform.position);
+            torch.transform.SetPositionAndRotation(camera.transform.position,camera.transform.rotation);
+            torch.enabled=false;var unlit=SchoolHorrorFrame(camera,640,360);
+            torch.enabled=true;var lit=SchoolHorrorFrame(camera,640,360);
+            float off=SchoolDisplayLuma(unlit,new Rect(0,0,1,1)),on=SchoolDisplayLuma(lit,new Rect(0,0,1,1));
+            var darkPixels=unlit.GetPixels32();var litPixels=lit.GetPixels32();int brighter=0;
+            for(int i=0;i<darkPixels.Length;i++)if(litPixels[i].r+litPixels[i].g+litPixels[i].b>darkPixels[i].r+darkPixels[i].g+darkPixels[i].b+20)brighter++;
+            Debug.Log("HAPPYTOY_SCHOOL_BLACKOUT_TORCH off="+off+" on="+on+" brighterPixels="+brighter);
+            string review=Environment.GetEnvironmentVariable("HAPPYTOY_SCHOOL_ANOMALY_REVIEW_DIR");
+            if(!string.IsNullOrWhiteSpace(review))
+            {
+                review=Path.GetFullPath(review);string builds=Path.GetFullPath(Path.Combine(Application.dataPath,"../Builds"));
+                Assert.That(review.StartsWith(builds+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase),Is.True);Directory.CreateDirectory(review);
+                File.WriteAllBytes(Path.Combine(review,"blackout-torch-off.png"),unlit.EncodeToPNG());
+                File.WriteAllBytes(Path.Combine(review,"blackout-torch-on.png"),lit.EncodeToPNG());
+            }
+            Assert.That(on,Is.GreaterThan(off+.005f),"A screen-wide blackout filter is still suppressing the real flashlight");
+            Assert.That(brighter,Is.GreaterThan(2000),"The torch did not reveal enough actual school surfaces after all nine lamps went out");
+            Object.Destroy(unlit);Object.Destroy(lit);
             Call(shell,"Resume");yield return Wait(()=>Get<bool>(session,"Finished"),2,"Five seconds in full darkness did not cause defeat");
             Assert.That(Get<bool>(session,"Escaped"),Is.False);
+        }
+        [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolBabyRetreatCarriesTheGhostThroughTheSeamAndFadesBodyAndVoiceDuringSafeDeparture()
+        {
+            yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            Call(shell,"Pause");var saved=UseSchoolAnomalyFixture(world,"Baby");var timing=Get<object>(saved,"clock");
+            Set(timing,"Triggered",true);Set(timing,"Pursuing",true);Set(timing,"Elapsed",10d);Set(saved,"clock",timing);
+            var body=Get<object>(saved,"baby");Set(body,"present",true);Set(body,"position",new Vector3(-6.6f,.02f,-5f));Set(body,"yaw",180f);Set(saved,"baby",body);
+            var director=Get<Component>(world,"Anomalies");Call(director,"Restore",saved,Get<int>(world,"Traversals"));
+            var baby=Get<Component>(director,"Baby");var voice=Get<AudioSource>(baby,"CrySource");var ownedVoice=voice.clip;
+            var shared=Resources.Load<GameObject>("EnemyStudio/Baby/BabyRuntime");var sourceMaterials=shared.GetComponentsInChildren<Renderer>(true).SelectMany(r=>r.sharedMaterials).Distinct().ToArray();
+            var sourceColors=sourceMaterials.Select(m=>m.GetColor("_BaseColor")).ToArray();
+            Call(shell,"Resume");yield return CrossSchoolJudgmentSeam(world,-1);Call(shell,"Pause");
+            Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(1));Assert.That(Get<Component>(director,"Baby"),Is.Null);
+            Assert.That(baby&&Get<bool>(baby,"Departing"),Is.True);Assert.That(Get<NavMeshAgent>(baby,"Agent").enabled,Is.False);
+            Assert.That(baby.transform.position.z-LoopOrigin.z,Is.LessThan(-8),"The retiring ghost stayed on the wrong side of the rigid transfer");
+            float first=Get<float>(baby,"Opacity");Assert.That(first,Is.GreaterThan(.8f));
+            var at=baby.transform.position;yield return Delay(.2f);Assert.That(Get<float>(baby,"Opacity"),Is.EqualTo(first));
+            var checkpoint=Call(session,"CaptureChapterCheckpoint");Call(checkpoint,"Validate");
+            var next=Get<object>(Get<object>(checkpoint,"loop"),"anomalies");Assert.That(Get<bool>(Get<object>(next,"baby"),"present"),Is.False,
+                "A visual departure must not resurrect the old attacking event in the next passage's save");
+            Call(shell,"Resume");yield return Delay(.65f);
+            float middle=Get<float>(baby,"Opacity");Assert.That(middle,Is.InRange(.05f,first-.1f));
+            Assert.That(Vector3.Distance(at,baby.transform.position),Is.LessThan(.001f),"The safely retiring Baby kept pursuing");
+            Assert.That(voice.volume,Is.LessThanOrEqualTo(.72f*middle+.001f),"The crying voice ignored the actor's fade envelope");
+            foreach(var material in Get<Transform>(baby,"Visual").GetComponentsInChildren<Renderer>(true).SelectMany(r=>r.sharedMaterials))
+                Assert.That(material.GetColor("_BaseColor").a,Is.EqualTo(middle).Within(.001f));
+            Assert.That(Get<bool>(session,"Finished"),Is.False);
+            Call(shell,"Pause");var local=baby.transform.position-LoopOrigin;
+            ExportSchoolAnomalyFrame(world,"baby-departure-mid",new Vector3(-6.1f,.03f,-7.3f),local+Vector3.up*.8f);
+            Call(shell,"Resume");var rituals=Get<Component>(player,"Rituals");Call(rituals,"Restore",1,0,1);
+            Assert.That((bool)Call(rituals,"UseTalisman"),Is.True);yield return null;
+            float held=Get<float>(baby,"Opacity");yield return Delay(.2f);Assert.That(Get<float>(baby,"Opacity"),Is.EqualTo(held));
+            Call(rituals,"EndEffect");yield return Wait(()=>!baby,3,"The visual and voice departure never completed");yield return null;
+            Assert.That(!voice&&!ownedVoice,Is.True,"The retiring Baby leaked its owned cry source or recording");
+            CollectionAssert.AreEqual(sourceColors,sourceMaterials.Select(m=>m.GetColor("_BaseColor")).ToArray());
         }
         [UnityTest,Timeout(180000)]
         public IEnumerator SchoolAnomalyCheckpointKeepsTheDrawTimersBabyPoseAndLegacyNormalMigration()

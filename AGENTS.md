@@ -48,7 +48,13 @@ The user has now authorized implementation of the previously planned loop.
   player-blocking capsule and stop-on-obstruction behavior.
 - Blackout extinguishes the nine aisle lamps at one-second intervals. Five
   simulation seconds after the final light goes out causes defeat. A completed
-  backward transfer removes the old event and restores normal lighting.
+  backward transfer resolves the old event and restores normal lighting.
+  Keep normal exposure during blackout so the player flashlight remains usable;
+  the existing five-second deadline still starts at the ninth extinguished lamp.
+- On a Baby transfer, immediately stop pursuit/attacks, carry the retiring actor
+  through the same rigid seam transform as the player, and fade its body/cry
+  over 1.8 simulation seconds. Pause and talisman hold this cosmetic tail.
+  Checkpoints record the next logical passage, not the already-resolved threat.
 - Preserve RNG, current event, trigger/time, pursuit and Baby pose in optional
   v3 checkpoint data. Older saves without it resume a normal passage without
   guessing past judgments or losing saved clock hours.
