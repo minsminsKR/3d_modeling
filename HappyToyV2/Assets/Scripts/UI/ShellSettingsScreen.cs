@@ -8,21 +8,21 @@ namespace HappyToy.V2
     internal sealed class ShellSettingsScreen
     {
         Label volume, sensitivity, fieldOfView;
-        Button reducedMotionButton, subtitlesButton, contrastButton, textSizeButton;
+        Button reducedMotionButton, subtitlesButton, contrastButton, textSizeButton, fpsButton;
         internal struct State
         {
             public float Volume, Sensitivity, FieldOfView;
-            public bool ReducedMotion, Subtitles, HighContrast, LargeText;
+            public bool ReducedMotion, Subtitles, HighContrast, LargeText, ShowFps;
             public static State Read(GameShell shell) => new State {
                 Volume = shell.Volume, Sensitivity = shell.Sensitivity, FieldOfView = shell.FieldOfView,
                 ReducedMotion = shell.ReducedMotion, Subtitles = shell.Subtitles,
-                HighContrast = shell.HighContrast, LargeText = shell.LargeText };
+                HighContrast = shell.HighContrast, LargeText = shell.LargeText, ShowFps = shell.ShowFps };
         }
         internal sealed class Actions
         {
             public Action<float, float> Adjust;
             public Action<float> AdjustFieldOfView;
-            public Action ToggleReducedMotion, ToggleSubtitles, ToggleHighContrast, ToggleLargeText, Back, Defaults;
+            public Action ToggleReducedMotion, ToggleSubtitles, ToggleHighContrast, ToggleLargeText, ToggleFps, Back, Defaults;
         }
         public void Build(ShellLayout layout, Actions actions, State state)
         {
@@ -38,12 +38,13 @@ namespace HappyToy.V2
             fieldOfView = layout.Text("", 174, 555, 580, 42, layout.ReadingSize);
             layout.Button("fov-down", "− 5°", 603, () => actions.AdjustFieldOfView(-5), 174, 270);
             layout.Button("fov-up", "+ 5°", 603, () => actions.AdjustFieldOfView(5), 466, 290);
-            layout.Small("움직임 · 깜빡임 · 소리 안내 · 가독성", 836, 295, 590);
-            reducedMotionButton = layout.Button("reduced-motion", "", 341, actions.ToggleReducedMotion, 836, 588);
-            subtitlesButton = layout.Button("subtitles", "", 417, actions.ToggleSubtitles, 836, 588);
-            contrastButton = layout.Button("high-contrast", "", 493, actions.ToggleHighContrast, 836, 588);
-            textSizeButton = layout.Button("large-text", "", 569, actions.ToggleLargeText, 836, 588);
-            layout.Small("소리 자막은 들리는 효과음을 글로 안내합니다.", 836, 650, 588, 42);
+            layout.Small("화면 표시 · 움직임 · 소리 안내 · 가독성", 836, 295, 590);
+            fpsButton = layout.Button("show-fps", "", 341, actions.ToggleFps, 836, 588);
+            reducedMotionButton = layout.Button("reduced-motion", "", 405, actions.ToggleReducedMotion, 836, 588);
+            subtitlesButton = layout.Button("subtitles", "", 469, actions.ToggleSubtitles, 836, 588);
+            contrastButton = layout.Button("high-contrast", "", 533, actions.ToggleHighContrast, 836, 588);
+            textSizeButton = layout.Button("large-text", "", 597, actions.ToggleLargeText, 836, 588);
+            layout.Small("소리 자막은 들리는 효과음을 글로 안내합니다.", 836, 667, 588, 32);
             layout.Button("back", "저장하고 돌아가기  [Esc]", 753, actions.Back, primary: true);
             layout.Button("defaults", "기본값으로 되돌리기", 753, actions.Defaults, 1070, 380);
             Refresh(state);
@@ -58,10 +59,12 @@ namespace HappyToy.V2
             subtitlesButton.text = "소리 자막    " + (state.Subtitles ? "켜짐" : "꺼짐");
             contrastButton.text = "고대비 UI    " + (state.HighContrast ? "켜짐" : "꺼짐");
             textSizeButton.text = "큰 글씨    " + (state.LargeText ? "켜짐" : "꺼짐");
+            fpsButton.text = "FPS 표시 (왼쪽 위)    " + (state.ShowFps ? "켜짐" : "꺼짐");
             reducedMotionButton.tooltip = reducedMotionButton.text;
             subtitlesButton.tooltip = subtitlesButton.text;
             contrastButton.tooltip = contrastButton.text;
             textSizeButton.tooltip = textSizeButton.text;
+            fpsButton.tooltip = fpsButton.text;
         }
     }
 }

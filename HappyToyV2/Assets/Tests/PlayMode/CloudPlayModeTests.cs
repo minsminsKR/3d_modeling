@@ -39,7 +39,7 @@ namespace HappyToy.V2.CloudTests
         int dynamicInputUpdates;
         bool observedCPress, observedWHeld;
         static readonly string[] FloatKeys = { "v2.volume", "v2.sensitivity", "v2.fov" };
-        static readonly string[] IntKeys = { "v2.reducedMotion", "v2.subtitles", "v2.highContrast", "v2.largeText" };
+        static readonly string[] IntKeys = { "v2.reducedMotion", "v2.subtitles", "v2.highContrast", "v2.largeText", "v2.showFps" };
         // Fixed-coordinate regressions explicitly retain their original map.
         // Current corridor/campus suites continue to use the public defaults.
         void BeginLegacyChapterFixture(){Call(session,"CreateChapterVersion",1);Begin();}

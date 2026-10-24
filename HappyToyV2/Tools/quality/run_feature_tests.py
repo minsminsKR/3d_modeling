@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 PROJECT = Path(__file__).resolve().parents[2]
 VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
-    "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests", "LoadingProgressTests",
+    "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests", "LoadingProgressTests", "FrameRateCounterTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
     "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests", "LadySnapperFlinchTests", "PatrolProgressClockTests"))
 CLOUD = "HappyToy.V2.CloudTests."
@@ -276,8 +276,12 @@ PROFILES = {
             PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "MainCorridorAndSchoolRealEntriesKeepBothSuspendSlotsAndRecordsSeparate",
             PLAY + "ActualDeathRetryAndRepeatedUiNavigationKeepOwnedResourcesBounded"))]),
+    "fps-settings": ("Real-time FPS sampling, opt-in saved setting, actual UI clicks/reload, school HUD and supported screen sizes", [
+        ("PlayMode", play_tests("CloudFpsSettingsTests.cs") + (
+            PLAY + "GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit",
+            PLAY + "KoreanMenusRenderAcrossSupportedAspectRatios"))]),
     "ui": ("Title/loading, menu controls, results/history, retry/settings", [
-        ("PlayMode", play_tests("CloudLoadingIndicatorTests.cs") + (
+        ("PlayMode", play_tests("CloudLoadingIndicatorTests.cs", "CloudFpsSettingsTests.cs") + (
             PLAY + "StartLoadingRealTitleButtonFinishesApproachBeforeBlackScreenPreparationAndGatesReveal",
             PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",
             PLAY + "GamepadNavigatesRealMenusAndCancelsWithoutDuplicateSubmit",

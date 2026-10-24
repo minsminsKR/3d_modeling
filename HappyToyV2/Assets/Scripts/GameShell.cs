@@ -22,6 +22,7 @@ namespace HappyToy.V2
         public bool Subtitles { get; private set; } = true;
         public bool HighContrast { get; private set; }
         public bool LargeText { get; private set; }
+        public bool ShowFps { get; private set; }
         public bool NoticeVisible => noticeTime > 0 && !string.IsNullOrWhiteSpace(lastNotice);
         public string Caption { get; private set; } = string.Empty;
         public bool CaptionVisible => Subtitles && captionTime > 0 && !string.IsNullOrWhiteSpace(Caption);
@@ -359,10 +360,11 @@ namespace HappyToy.V2
         public void ToggleSubtitles() { Subtitles = !Subtitles; ChangedSettings(); }
         public void ToggleHighContrast() { HighContrast = !HighContrast; ChangedSettings(); }
         public void ToggleLargeText() { LargeText = !LargeText; ChangedSettings(); }
+        public void ToggleFps() { ShowFps = !ShowFps; ChangedSettings(); }
         public void RestoreDefaultSettings()
         {
             volume = .8f; sensitivity = .09f; fieldOfView = 72f;
-            ReducedMotion = HighContrast = LargeText = false;
+            ReducedMotion = HighContrast = LargeText = ShowFps = false;
             Subtitles = true;
             ChangedSettings();
         }
@@ -381,6 +383,7 @@ namespace HappyToy.V2
             Subtitles = PlayerPrefs.GetInt("v2.subtitles", 1) != 0;
             HighContrast = PlayerPrefs.GetInt("v2.highContrast", 0) != 0;
             LargeText = PlayerPrefs.GetInt("v2.largeText", 0) != 0;
+            ShowFps = PlayerPrefs.GetInt("v2.showFps", 0) != 0;
         }
         static float ReadPreference(string key, float fallback, float min, float max)
         {
@@ -404,6 +407,7 @@ namespace HappyToy.V2
             PlayerPrefs.SetInt("v2.subtitles", Subtitles ? 1 : 0);
             PlayerPrefs.SetInt("v2.highContrast", HighContrast ? 1 : 0);
             PlayerPrefs.SetInt("v2.largeText", LargeText ? 1 : 0);
+            PlayerPrefs.SetInt("v2.showFps", ShowFps ? 1 : 0);
             PlayerPrefs.Save();
             preferencesDirty = false;
         }

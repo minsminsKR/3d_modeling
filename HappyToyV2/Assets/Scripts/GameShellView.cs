@@ -28,6 +28,7 @@ namespace HappyToy.V2
         ShellPauseScreen pauseScreen;
         ShellSettingsScreen settingsScreen;
         ShellHudView hud;
+        ShellFrameRateOverlay frameRateOverlay;
         readonly ShellJournalScreen journalScreen = new ShellJournalScreen();
         readonly ShellRecordsScreen recordsScreen = new ShellRecordsScreen();
         bool sendingGamepadNavigation;
@@ -173,7 +174,7 @@ namespace HappyToy.V2
             journalStep = session.RecordsRecovered;
             journalExploration = session.ExplorationCount;
             root.Clear(); threatVeil = null;
-            settingsScreen = null; pauseScreen = null; hud = null; navigationHelp = null;
+            settingsScreen = null; pauseScreen = null; hud = null; frameRateOverlay = null; navigationHelp = null;
             root.style.color = Paper;
             root.style.backgroundColor = shown == GameShell.Page.Playing ? Color.clear :
                 shown == GameShell.Page.Pause ? Color.black : new Color(.013f, .025f, .021f, .97f);
@@ -285,6 +286,7 @@ namespace HappyToy.V2
                 Adjust = shell.AdjustSettings, AdjustFieldOfView = shell.AdjustFieldOfView,
                 ToggleReducedMotion = shell.ToggleReducedMotion, ToggleSubtitles = shell.ToggleSubtitles,
                 ToggleHighContrast = shell.ToggleHighContrast, ToggleLargeText = shell.ToggleLargeText,
+                ToggleFps = shell.ToggleFps,
                 Back = shell.Back, Defaults = shell.RestoreDefaultSettings }, ShellSettingsScreen.State.Read(shell));
             settingsLabelsDirty = false;
         }
@@ -297,6 +299,7 @@ namespace HappyToy.V2
         {
             hud = new ShellHudView(layout, threatVeil);
             hud.Build(session.TotalRecords, ControlsFooter);
+            frameRateOverlay = new ShellFrameRateOverlay(root, shell.HighContrast, shell.LargeText);
             UpdateHud();
         }
         void UpdateSettingsLabels()
@@ -329,6 +332,8 @@ namespace HappyToy.V2
                 Rebuild();
             if (shown == GameShell.Page.Settings && settingsLabelsDirty) UpdateSettingsLabels();
             if (shown == GameShell.Page.Playing) UpdateHud();
+            frameRateOverlay?.Update(shell.ShowFps && !shell.IsReloading && !shell.CinematicLoading && !session.CabinetDeathActive,
+                Time.realtimeSinceStartupAsDouble);
             stage.style.opacity=shown==GameShell.Page.Title?shell.TransitionMenuOpacity:1-shell.TransitionBlack;
             var scrim=menuFaceBackground?.Q<VisualElement>("menu-face-scrim");
             if(scrim!=null)scrim.style.opacity=shown==GameShell.Page.Title?shell.TransitionMenuOpacity:1;
