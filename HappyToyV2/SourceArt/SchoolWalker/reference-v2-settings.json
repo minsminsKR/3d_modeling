@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "method": "Built-in image_gen.imagegen edit",
+  "deliverable": "reference-v2-purple-flower.png",
+  "editTarget": "reference-v1.png",
+  "supportingReference": "face-reference.jpg",
+  "edit": "Add a small purple orchid-like flower above the subject's right ear (image left), matching the original photograph",
+  "invariants": "Face, body, clothing, A-pose, full-body framing, neutral studio lighting and background",
+  "subjectTargets": {
+    "heightMetres": 1.77,
+    "weightKilograms": 120
+  },
+  "transparent_background": false,
+  "prompt": "Edit Image 1 (the full-body studio modeling reference) with ONE localized change: add the purple flower tucked into the hair above the man's RIGHT ear, which is on the LEFT side of the picture, matching the flower placement and appearance in Image 2 (the original face photograph).\n\nImage 1 is the edit target and must otherwise remain unchanged: the exact same recognizable face and expression, short haircut, 177 cm / 120 kg heavy body proportions, navy T-shirt, charcoal trousers, shoes, relaxed front-facing A-pose, hands, full-body framing, light-grey seamless studio background, neutral soft lighting, and photorealistic textures. Keep the same portrait composition and resolution, with full head and both shoes visible. Do not slim him, beautify him, change his age, alter his hairline or change his facial hair.\n\nImage 2 is ONLY a reference for the flower and its placement: a small realistic purple/magenta orchid-like bloom with lighter pink-white accents near the centre, tucked naturally just above the ear into the hair at the side of the head. Match the modest relative size from that photograph, about 6–8 cm across in real-life scale. Show realistic petals and a subtle short attachment hidden in the hair; it should appear securely tucked behind/above the ear, not floating. One small flower accessory, not a crown, bouquet, giant headpiece or multiple flowers across the head. Keep the flower clearly visible from the front, near the temple/ear on the image-left side.\n\nChange only the local flower area. No text, labels, logos, watermark, additional people or other accessories. Preserve the clean isolated single-person image-to-3D input.",
+  "output": {
+    "file": "reference-v2-purple-flower.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "sha256": "29fa16d3f8b3b83b5ac7996acfdc7602fea5f2f4c7df0ac6a5f5e7403472e2b0"
+  },
+  "editTargetSha256": "c0cd805278a0d0a6abac1eb1a80166695d35c3e8aeec921c52cf5bb6770e4c26",
+  "supportingReferenceSha256": "31e552de47e4455612531082995a383b9adf419d5805c47bd7f3aacc816a52bf"
+}

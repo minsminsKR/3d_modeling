@@ -1,6 +1,11 @@
 # School walking NPC reference
 
-`reference-v1.png` is the single-person image-to-3D input created with the built-in
+`reference-v2-purple-flower.png` is the current modeling input, adding the user's
+requested small purple flower above the subject's right ear (image left), as in
+the original photograph. `reference-v2-settings.json` retains the exact localized
+edit prompt and both reference filenames. The first version remains unchanged.
+
+`reference-v1.png` is the initial single-person image-to-3D input created with the built-in
 image generation tool from the user's `face-reference.jpg`. The exact prompt and
 assumptions are preserved in `reference-settings.json`. The face reference is
 copied unchanged; the source attachment remains in place.
