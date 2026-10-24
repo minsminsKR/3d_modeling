@@ -17,6 +17,8 @@ namespace HappyToy.V2
         SchoolFluorescentClock clock;
         MeshRenderer haze;
         MaterialPropertyBlock values;
+        float eventGain=1,voltageGain=1;
+        public void SetEventGain(float gain){eventGain=Mathf.Clamp01(gain);Apply(voltageGain);}
         public void Configure(Light source,Material tubeMaterial,Color glow,float phase,Light backscatter=null,
             Material[] additionalTubeMaterials=null)
         {
@@ -38,6 +40,7 @@ namespace HappyToy.V2
         }
         void Apply(float gain,bool reduced=false)
         {
+            voltageGain=gain;gain*=eventGain;
             Source.intensity=BaselineIntensity*gain;
             if(Backscatter)Backscatter.intensity=backscatterIntensity*gain;
             if(tube)tube.SetColor("_EmissionColor",emission*gain);

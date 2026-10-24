@@ -4,7 +4,7 @@ using UnityEngine;
 namespace HappyToy.V2
 {
     // One ordinary pedestrian for each actual school traversal. The scene root
-    // owns its lifetime; it has no enemy, attack, navigation or blocking body.
+    // owns its lifetime. A separate capsule blocks the player; no attack or AI agent is added.
     [DefaultExecutionOrder(100),DisallowMultipleComponent]
     public sealed class SchoolWalkerEncounter : MonoBehaviour
     {
@@ -18,6 +18,10 @@ namespace HappyToy.V2
         public Transform Visual {get;private set;}
         public SchoolWalkerMotion Motion {get;private set;}
         public SchoolWalkerFootsteps Footsteps {get;private set;}
+        public CapsuleCollider BodyCollider {get;private set;}
+        public bool Dancing {get;private set;}
+        public const float DanceSpeedMultiplier=4;
+        public void SetDancing(bool value){Dancing=value;if(Motion){Motion.SetDancing(value);ApplyPose();}}
         public int Traversal=>route.CaptureState().Traversal;
         public int PendingTraversal=>route.CaptureState().PendingTraversal;
         public float Distance=>route.CaptureState().Distance;
@@ -35,12 +39,17 @@ namespace HappyToy.V2
                 actor.session=owner;actor.section=centre;
                 actor.Visual=Instantiate(prefab,actor.transform,false).transform;
                 if(actor.Visual.GetComponentsInChildren<Collider>(true).Length>0||actor.Visual.GetComponentsInChildren<Rigidbody>(true).Length>0)
-                    throw new InvalidOperationException("School walker art must not block the player's route");
+                    throw new InvalidOperationException("School walker visual must not supply duplicate physics bodies");
                 var group=actor.Visual.GetComponentInChildren<LODGroup>();
                 if(!group||group.GetLODs().Length!=3||actor.Visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).Length<3)
                     throw new InvalidOperationException("School walker requires three genuine rigged game LODs");
                 foreach(var item in actor.GetComponentsInChildren<Transform>(true))item.gameObject.layer=8;
                 actor.body=actor.Visual.GetComponentsInChildren<Renderer>(true);
+                // Keep this body outside architecture layer 8: visibility checks must
+                // not mistake the man's own capsule for the opaque masking corner.
+                var collision=new GameObject("School pedestrian solid body");collision.transform.SetParent(actor.transform,false);
+                actor.BodyCollider=collision.AddComponent<CapsuleCollider>();actor.BodyCollider.radius=.43f;
+                actor.BodyCollider.height=Height;actor.BodyCollider.center=Vector3.up*(Height*.5f);
                 actor.Motion=actor.gameObject.AddComponent<SchoolWalkerMotion>();
                 actor.Motion.Prepare(actor.Visual.gameObject,walk,idle,metresPerCycle);
                 actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
@@ -84,8 +93,9 @@ namespace HappyToy.V2
                 if(route.TryCommitPending(PhysicallyHidden(camera,current)&&PhysicallyHidden(camera,spawn)))ApplyPose();
             }
             var player=section.InverseTransformPoint(session.player.transform.position);
-            route.Advance(Time.deltaTime,true,player.x,player.z);ApplyPose();
-            if(Footsteps)Footsteps.Apply(route.CaptureState(),true);
+            float multiplier=Dancing?DanceSpeedMultiplier:1;
+            route.Advance(Time.deltaTime,true,player.x,player.z,multiplier);ApplyPose();
+            if(Footsteps)Footsteps.Apply(route.CaptureState(),true,multiplier);
         }
         public Bounds BodyBounds()
         {

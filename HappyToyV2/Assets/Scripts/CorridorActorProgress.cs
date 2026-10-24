@@ -76,7 +76,7 @@ namespace HappyToy.V2
             var center=standingCenter-Vector3.up*(standingHeight-height)*.5f+data.position;
             float half=Mathf.Max(0,height*.5f-controller.radius);
             return !Physics.OverlapCapsule(center-Vector3.up*half,center+Vector3.up*half,controller.radius-.02f,~0,QueryTriggerInteraction.Ignore)
-                .Any(x=>!x.transform.IsChildOf(transform)&&!x.GetComponentInParent<StalkerBrain>());
+                .Any(x=>!x.transform.IsChildOf(transform)&&!x.GetComponentInParent<StalkerBrain>()&&!x.GetComponentInParent<SchoolWalkerEncounter>());
         }
     }
     public sealed partial class StalkerBrain

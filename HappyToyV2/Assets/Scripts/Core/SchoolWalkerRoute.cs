@@ -66,19 +66,19 @@ namespace HappyToy.V2
             if(!physicallyHidden||state.PendingTraversal<0)return false;
             Reset(state.PendingTraversal);return true;
         }
-        public void Advance(double seconds,bool advancing,float playerX,float playerZ)
+        public void Advance(double seconds,bool advancing,float playerX,float playerZ,float speedMultiplier=1)
         {
-            if(!Finite(seconds)||seconds<0||!Finite(playerX)||!Finite(playerZ))
+            if(!Finite(seconds)||seconds<0||!Finite(playerX)||!Finite(playerZ)||!Finite(speedMultiplier)||speedMultiplier<=0||speedMultiplier>6)
                 throw new ArgumentException("Finite school walker step inputs required");
             if(!advancing||seconds==0)return;
             // A stalled graphics frame must never make a person jump metres.
             float dt=(float)Math.Min(seconds,.1);float oldX=state.X,oldZ=state.Z;
             state.Elapsed=Math.Min(MaximumTime,state.Elapsed+dt);
-            if(state.Leg==0)Hall(dt,playerX,playerZ);
+            if(state.Leg==0)Hall(dt,playerX,playerZ,speedMultiplier);
             else if(state.Leg==1)
             {
                 float remaining=(float)Math.Sqrt(Squared(EndX-state.X,EndZ-state.Z));
-                float fraction=remaining<.000001f?1:Math.Min(1,WalkSpeed*dt/remaining);
+                float fraction=remaining<.000001f?1:Math.Min(1,WalkSpeed*speedMultiplier*dt/remaining);
                 float nextX=state.X+(EndX-state.X)*fraction,nextZ=state.Z+(EndZ-state.Z)*fraction;
                 if(ClearStep(nextX,nextZ,playerX,playerZ))
                 {state.X=nextX;state.Z=nextZ;}
@@ -97,10 +97,10 @@ namespace HappyToy.V2
             state.IdleBlend=Towards(state.IdleBlend,moved>.00001f?0:1,dt/.22f);
             if(state.IdleBlend>0)state.IdleElapsed=Math.Min(state.Elapsed,state.IdleElapsed+dt);
         }
-        void Hall(float dt,float playerX,float playerZ)
+        void Hall(float dt,float playerX,float playerZ,float speedMultiplier)
         {
             state.PassSide=0;
-            float z=Math.Max(HallEndZ,state.Z-WalkSpeed*dt);
+            float z=Math.Max(HallEndZ,state.Z-WalkSpeed*speedMultiplier*dt);
             // Hold the current straight lane. Someone in front makes him stand,
             // while someone behind must not prevent him from moving away.
             if(ClearStep(state.X,z,playerX,playerZ))state.Z=z;

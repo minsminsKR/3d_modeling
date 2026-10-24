@@ -9,6 +9,12 @@ namespace HappyToy.V2
         public const int MaximumHours=1000000;
         public int Hours {get;private set;}
         public string Display=>Format(Hours);
+        public bool JudgeTraversal(int direction,SchoolAnomalyKind kind)
+        {
+            int before=Hours;
+            Hours=SchoolAnomalyDeck.Correct(direction,kind)?Math.Min(MaximumHours,Hours+1):0;
+            return before!=Hours;
+        }
         public bool AdvanceForTraversal(int direction)
         {
             if(direction!=1&&direction!=-1)throw new ArgumentOutOfRangeException(nameof(direction));

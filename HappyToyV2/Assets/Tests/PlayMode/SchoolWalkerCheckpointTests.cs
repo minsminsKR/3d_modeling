@@ -58,6 +58,7 @@ namespace HappyToy.V2.CloudTests
             yield return BeginObservationSchool();yield return Delay(.25f);Call(shell,"Pause");
             var captured=Call(session,"CaptureChapterCheckpoint");var loop=Get<object>(captured,"loop");
             Set(loop,"traversals",7);Set(Get<object>(loop,"walker"),"traversal",7);
+            Set(loop,"anomalies",null); // This fixture represents a genuinely pre-anomaly save.
             var playerProgress=Get<object>(captured,"player");
             Set(playerProgress,"position",LoopOrigin+new Vector3(-.5f,.03f,33));
             string negativeJson=(string)Call(captured,"ToJson");

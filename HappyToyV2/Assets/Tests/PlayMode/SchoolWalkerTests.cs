@@ -36,7 +36,8 @@ namespace HappyToy.V2.CloudTests
                     Assert.That(material&&material.GetTexture("_BaseMap")&&material.GetTexture("_BumpMap")&&material.GetTexture("_MetallicGlossMap"),Is.True,
                         "The school pedestrian lost his actual generated PBR");
             }
-            Assert.That(walker.GetComponentsInChildren<Collider>(true),Is.Empty);
+            Assert.That(walker.GetComponentsInChildren<Collider>(true).Length,Is.EqualTo(1));
+            Assert.That(Get<CapsuleCollider>(walker,"BodyCollider").isTrigger,Is.False);
             Assert.That(walker.GetComponent<NavMeshAgent>(),Is.Null,"An ordinary pedestrian acquired a blocking AI agent");
             Assert.That(walker.GetComponent(RequireType("StalkerBrain")),Is.Null);
             Assert.That(Get<AnimationClip>(motion,"WalkClip"),Is.Not.Null);Assert.That(Get<AnimationClip>(motion,"IdleClip"),Is.Not.Null);
@@ -83,7 +84,8 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(()=>walker.transform.position.z-LoopOrigin.z<10,5,"The pedestrian did not resume after his lane cleared");
             Assert.That(walker.transform.position.x-LoopOrigin.x,Is.EqualTo(.65f).Within(.001f));
             Assert.That(Get<bool>(session,"Finished"),Is.False);Assert.That(Components("SchoolWalkerEncounter").Length,Is.EqualTo(1));
-            Assert.That(walker.GetComponentsInChildren<Collider>(true),Is.Empty);
+            Assert.That(walker.GetComponentsInChildren<Collider>(true).Length,Is.EqualTo(1));
+            Assert.That(Get<CapsuleCollider>(walker,"BodyCollider").isTrigger,Is.False);
         }
 
         [UnityTest,Timeout(180000)]
@@ -100,6 +102,7 @@ namespace HappyToy.V2.CloudTests
             Call(walker,"RestoreState",original);Call(shell,"Resume");
             foreach(int direction in new[]{1,-1})
             {
+                Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Normal");Call(shell,"Resume");
                 int expected=Get<int>(world,"Traversals")+1;
                 PlacePlayer(LoopOrigin+(direction>0?new Vector3(6.6f,.03f,46.2f):new Vector3(-6.6f,.03f,-7.8f)));
                 player.transform.rotation=Quaternion.Euler(0,direction>0?0:180,0);yield return null;
@@ -110,7 +113,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(walker.transform.position.z-LoopOrigin.z,Is.GreaterThan(32));
                 Assert.That(player.transform.position.z-LoopOrigin.z,Is.InRange(-8f,-7.1f));
             }
-            Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(1),"The pedestrian changed the existing forward-only clock rule");
+            Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(0),"A backward judgment on a normal passage must reset the clock");
             // Force a legitimate parked checkpoint pose to check the full actual
             // skinned bounds, including extreme portal widths and crouched eyes.
             Call(shell,"Pause");var parked=Call(walker,"CaptureState");Set(parked,"X",-3f);Set(parked,"Z",1f);

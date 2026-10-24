@@ -16,6 +16,7 @@ namespace HappyToy.V2
         public Transform Root {get;private set;}
         public Transform Centre {get;private set;}
         public SchoolWalkerEncounter Walker {get;private set;}
+        public SchoolAnomalyDirector Anomalies {get;private set;}
         public int Traversals {get;private set;}
         readonly SchoolProgressClock progressClock=new SchoolProgressClock();
         readonly List<SchoolProgressClockDisplay> clocks=new List<SchoolProgressClockDisplay>();
@@ -25,7 +26,7 @@ namespace HappyToy.V2
         public IReadOnlyList<Interactable> LockedDoors=>doors;
         public Transform MusicRoom {get;internal set;}
         public int StaticBatches {get;private set;}
-        public string Objective=>"복도를 따라 앞으로 나아가세요. 끝을 통과할 때마다 입구의 디지털 시계가 한 시간씩 올라갑니다.";
+        public string Objective=>"이상 현상이 없으면 앞으로, 이상 현상이 있으면 뒤로 돌아가세요. 올바르게 판단하면 한 시간이 오르고, 틀리면 00:00으로 돌아갑니다.";
         public GraphicsSurfaceLibrary.Pool Surfaces {get;}=new GraphicsSurfaceLibrary.Pool();
         public SchoolHorrorSurfaces HorrorSurfaces {get;private set;}
         internal readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
@@ -71,13 +72,14 @@ namespace HappyToy.V2
                 Resources.Load<GameObject>("SchoolWalker/walker-visual"),
                 Resources.Load<AnimationClip>("SchoolWalker/walk"),
                 Resources.Load<AnimationClip>("SchoolWalker/idle"),.91f);
+            Anomalies=Root.gameObject.AddComponent<SchoolAnomalyDirector>();Anomalies.Prepare(session,this);
             previous=session.player.transform.position;
         }
         public Vector3 ToWorld(Vector3 point)=>Origin+point;
         public void RestoreTraversal(int count)
         {
             if(count<0||count>1000000)throw new ArgumentException("Invalid traversal count");
-            Traversals=count;Walker.RestoreTraversal(count);previous=session.player.transform.position;
+            Traversals=count;Walker.RestoreTraversal(count);Anomalies.RestoreLegacy(count);previous=session.player.transform.position;
         }
         public void RestoreClock(int hours)
         {
@@ -97,8 +99,9 @@ namespace HappyToy.V2
                 session.player.TraverseWorldSeam(feet,Quaternion.Euler(0,pose.Yaw,0));
                 Traversals=Mathf.Clamp(Traversals+1,0,1000000);
                 Walker.OnTraversal(Traversals);
-                if(progressClock.AdvanceForTraversal(direction))
+                if(progressClock.JudgeTraversal(direction,Anomalies.Kind))
                     foreach(var clock in clocks)if(clock)clock.SetHours(progressClock.Hours);
+                Anomalies.CompleteTraversal(direction);
             }
             previous=feet;
             foreach(var sign in signs)

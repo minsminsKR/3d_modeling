@@ -32,17 +32,28 @@ it. Run both complete Unity test suites and a player build for broad refactors
 or release readiness. Update the code map/profiles when ownership or entry points
 change. Keep diagnostic code opt-in and preserve the quiet verification policy.
 
-# Planned school anomaly loop — user direction, 2026-10-24
+# School anomaly judgment loop — user direction, 2026-10-24
 
-The school chapter is intended to follow an Exit 8-style anomaly judgment loop:
-- When there is no anomaly, continuing forward is correct and advances the clock.
-- When there is an anomaly, turning back is correct and also advances the clock.
-- Missing an anomaly and continuing resets progress to 00:00.
-
-The user will develop the anomaly events in future requests. This is a recorded
-design direction, not a request to implement events or change the current clock
-logic now. Distinguish this planned judgment-based progression from the existing
-forward-only clock implementation when discussing or extending the chapter.
+The user has now authorized implementation of the previously planned loop.
+- A new run's first passage must be normal. Later passages use a 50% anomaly
+  draw, with an anomaly guaranteed after three consecutive normal passages.
+  The three initial anomaly kinds have equal weights; these are this game's
+  initial tuning values, not a claim about Exit 8's proprietary probabilities.
+- Normal + forward and anomaly + backward advance one hour. Either wrong
+  judgment resets the clock to 00:00. Judge only at the actual masked transfer.
+- The study-room sign crossing triggers Baby or the far-to-near blackout.
+  Reuse the retained Baby's authored model/cry/chase assets. Baby approaches
+  visibly over 2.2 seconds, pursues on a clear close approach or after 60 seconds.
+- The dancing pedestrian is four times normal walking speed and retains a solid
+  player-blocking capsule and stop-on-obstruction behavior.
+- Blackout extinguishes the nine aisle lamps at one-second intervals. Five
+  simulation seconds after the final light goes out causes defeat. A completed
+  backward transfer removes the old event and restores normal lighting.
+- Preserve RNG, current event, trigger/time, pursuit and Baby pose in optional
+  v3 checkpoint data. Older saves without it resume a normal passage without
+  guessing past judgments or losing saved clock hours.
+- Pause and talisman time stop hold event timers, actors and their sound.
+  No eight-hour victory/escape rule is introduced by these initial events.
 
 # Repository handoff and push policy
 

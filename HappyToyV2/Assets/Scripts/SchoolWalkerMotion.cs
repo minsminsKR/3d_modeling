@@ -22,11 +22,15 @@ namespace HappyToy.V2
         public AnimationClip WalkClip=>walk;
         public AnimationClip IdleClip=>idle;
         public Transform Visual=>visual?visual.transform:null;
+        SchoolWalkerDance dance;
+        public bool Dancing {get;private set;}
+        public void SetDancing(bool value){Dancing=value;}
         public void Prepare(GameObject model,AnimationClip walking,AnimationClip resting,float metresPerCycle)
         {
             if(!model||!walking||walking.length<=.05f||float.IsNaN(metresPerCycle)||float.IsInfinity(metresPerCycle)||metresPerCycle<=.1f)
                 throw new ArgumentException("A rigged school walker needs its authored in-place walk and stride");
             visual=model;walk=walking;idle=resting;stride=metresPerCycle;
+            dance=new SchoolWalkerDance(visual.transform);
             foreach(var automatic in visual.GetComponentsInChildren<Animation>(true))automatic.enabled=false;
             foreach(var automatic in visual.GetComponentsInChildren<Animator>(true))automatic.enabled=false;
             if(idle&&idle.length>.05f)idle.SampleAnimation(visual,0);else walk.SampleAnimation(visual,0);
@@ -36,6 +40,11 @@ namespace HappyToy.V2
             walkPosition=new Vector3[bones.Length];walkRotation=new Quaternion[bones.Length];walkScale=new Vector3[bones.Length];
         }
         public void Apply(SchoolWalkerRoute.State state)
+        {
+            ApplyLocomotion(state);
+            if(Dancing) dance.Apply((float)state.Elapsed);
+        }
+        void ApplyLocomotion(SchoolWalkerRoute.State state)
         {
             if(!visual||!walk)return;
             Clock=(float)(state.Distance/stride*walk.length);IdleClock=(float)state.IdleElapsed;IdleBlend=state.IdleBlend;

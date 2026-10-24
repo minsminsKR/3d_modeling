@@ -316,8 +316,8 @@ PROFILES["temple-lanterns"]=("Guardian face uplighting and generated corridor ce
         PLAY + "CorridorCeilingFixturesShareRealCandleDangerAndRecover"))])
 
 
-PROFILES["school-clock"]=("Forward-only progress hours, legacy v3 save migration, real seam walking/pause, generated clock PBR/LOD identity and normal-camera LED readability", [
-    ("EditMode", ("HappyToy.V2.CoreTests.SchoolProgressClockTests", "HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
+PROFILES["school-clock"]=("Judgment-based progress hours, legacy v3 save migration, real seam walking/pause, generated clock PBR/LOD identity and normal-camera LED readability", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolProgressClockTests", "HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
     ("PlayMode", play_tests("SchoolProgressClockIntegrationTests.cs", "SchoolLoopTests.cs", "SchoolLoopSeamTests.cs"))])
 
 PROFILES["school-loop"]=("Same left-room entrance after either departure, rigid rear half-turn/preview, real bidirectional seam walking, retired old gameplay, locked classrooms, v3 saves and generated music-room PBR/LOD camera review", [
@@ -348,7 +348,7 @@ PROFILES["school-wayfinding"]=("Generated cast-iron radiators and projecting dou
         PLAY+"SchoolRetractableGateKeepsGeneratedLodsAndTheRealSpawnRouteOpen",
         PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness"))])
 
-PROFILES["school-walker"]=("One harmless generated rigged straight-lane pedestrian, blocker stop/resume, recorded distance-driven tile contacts in the quiet spatial mixer, walk/idle, physically hidden reappearance after either school seam, pause/talisman, exact v3 walker save/legacy migration, shared art teardown and normal camera", [
+PROFILES["school-walker"]=("One generated rigged straight-lane pedestrian with a solid player capsule, blocker stop/resume, recorded distance-driven tile contacts in the quiet spatial mixer, walk/idle, physically hidden reappearance after either school seam, pause/talisman, exact v3 walker save/legacy migration, shared art teardown and normal camera", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolWalkerRouteTests", "HappyToy.V2.CoreTests.SchoolLoopPlanTests",
                   "HappyToy.V2.CoreTests.SchoolProgressClockTests", CLOUD+"SchoolLoopCheckpointTests",
                   CLOUD+"CheckpointTrapCodecTests", CLOUD+"ChapterCheckpointStoreTests", CLOUD+"CorridorCheckpointStoreTests")),
@@ -358,7 +358,7 @@ PROFILES["school-walker"]=("One harmless generated rigged straight-lane pedestri
         PLAY+"SchoolBothOpaqueBendsAreWalkableAndOnlyTheExtendedEndsTeleport",
         PLAY+"SchoolBothSeamViewsMatchTheirVisibleContinuationWithoutMirroring",
         PLAY+"SchoolLoopSuspendRestoresTheNewMapAndRejectsAClassroomPose",
-        PLAY+"SchoolClockAdvancesOncePerRealForwardPassKeepsBackwardAndFreezesOnPause",
+        PLAY+"SchoolClockJudgesBothDirectionsAndFreezesOnPause",
         PLAY+"SchoolClockSaveRestoresHoursAndLegacyV3StartsAtMidnightWithoutGuessingSuccess",
         PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",
         PLAY+"SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState"))])
@@ -383,6 +383,12 @@ PROFILES["school-lighting-continuity"]=("School-only Forward+ with player shader
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", "HappyToy.V2.CoreTests.SchoolFluorescentClockTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"GraphicsLightingRulesTests")),
     ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolHorrorEnvironmentTests.cs", "SchoolLightingContinuityTests.cs", "SchoolRetractableGateTests.cs",
         "CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs", "CloudLocalShadowTests.cs"))])
+
+
+PROFILES["school-anomalies"]=("Guaranteed normal first passage, restorable 50-percent draws/three-normal cap, real forward/back judgments, solid pedestrian/dance speed, retained Baby reveal/cry/proximity/60-second chase, ordered blackout/five dark seconds, v3 migration and camera review", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", "HappyToy.V2.CoreTests.SchoolWalkerRouteTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"CheckpointTrapCodecTests", CLOUD+"ChapterCheckpointStoreTests")),
+    ("PlayMode", play_tests("SchoolAnomalyTests.cs", "SchoolProgressClockIntegrationTests.cs", "SchoolWalkerTests.cs", "SchoolWalkerCheckpointTests.cs", "SchoolWalkerAudioTests.cs", "SchoolLoopTests.cs", "SchoolLoopSeamTests.cs")+(
+        PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",PLAY+"SchoolHorrorLightingFreezesOnPauseAndDoesNotLeakRenderSettings"))])
 
 
 def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:

@@ -55,6 +55,7 @@ namespace HappyToy.V2.CloudTests
             Keys(Key.W);yield return Wait(()=>Get<int>(world,"Traversals")==1,3,"Forward turnback did not transfer");Keys();
             Assert.That(player.transform.position.z-LoopOrigin.z,Is.InRange(-8f,-7.2f));
             Assert.That(Mathf.DeltaAngle(player.transform.eulerAngles.y,0),Is.EqualTo(0).Within(.01f));
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Normal");Call(shell,"Resume");
             yield return WalkSchoolConnectorLeg(new Vector3(-6.6f,.03f,2.2f),0);
             yield return WalkSchoolConnectorLeg(new Vector3(0,.03f,2.2f),90);
             yield return WalkSchoolConnectorLeg(new Vector3(0,.03f,6.4f),0);
@@ -65,7 +66,7 @@ namespace HappyToy.V2.CloudTests
             Keys(Key.W);yield return Wait(()=>Get<int>(world,"Traversals")==2,3,"Rear turnback did not transfer");Keys();
             Assert.That(player.transform.position.z-LoopOrigin.z,Is.InRange(-8f,-7.2f));
             Assert.That(Mathf.DeltaAngle(player.transform.eulerAngles.y,0),Is.EqualTo(0).Within(.01f));
-            Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(1),"Backward transfer changed the existing clock rule");
+            Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(0),"A normal backward passage must reset judgment progress");
         }
         IEnumerator WalkSchoolConnectorLeg(Vector3 local,float yaw)
         {

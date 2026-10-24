@@ -36,11 +36,11 @@ namespace HappyToy.V2
             previousDistance=state.Distance;traversal=state.Traversal;synchronized=true;
             if(source)source.Stop();
         }
-        public void Apply(SchoolWalkerRoute.State state,bool advancing)
+        public void Apply(SchoolWalkerRoute.State state,bool advancing,float speedMultiplier=1)
         {
             if(!source||!isActiveAndEnabled)return;
             float moved=state.Distance-previousDistance;
-            if(!synchronized||state.Traversal!=traversal||moved<0||moved>SchoolWalkerRoute.WalkSpeed*.101f)
+            if(!synchronized||state.Traversal!=traversal||moved<0||moved>SchoolWalkerRoute.WalkSpeed*speedMultiplier*.101f)
             {Synchronize(state);return;}
             if(!advancing||moved<=.000001f)source.Stop();
             else if(Mathf.FloorToInt((state.Distance+.00001f)/halfStride)>
