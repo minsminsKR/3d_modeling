@@ -17,6 +17,7 @@ namespace HappyToy.V2
         public Transform Walker=>transform;
         public Transform Visual {get;private set;}
         public SchoolWalkerMotion Motion {get;private set;}
+        public SchoolWalkerFootsteps Footsteps {get;private set;}
         public int Traversal=>route.CaptureState().Traversal;
         public int PendingTraversal=>route.CaptureState().PendingTraversal;
         public float Distance=>route.CaptureState().Distance;
@@ -42,6 +43,8 @@ namespace HappyToy.V2
                 actor.body=actor.Visual.GetComponentsInChildren<Renderer>(true);
                 actor.Motion=actor.gameObject.AddComponent<SchoolWalkerMotion>();
                 actor.Motion.Prepare(actor.Visual.gameObject,walk,idle,metresPerCycle);
+                actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
+                actor.Footsteps.Prepare(metresPerCycle);actor.Footsteps.Synchronize(actor.route.CaptureState());
                 actor.ApplyPose();return actor;
             }
             catch{Destroy(actor.gameObject);throw;}
@@ -49,7 +52,7 @@ namespace HappyToy.V2
         public SchoolWalkerRoute.State CaptureState()=>route.CaptureState();
         public void ValidateRestoreState(SchoolWalkerRoute.State state)=>SchoolWalkerRoute.Validate(state);
         public void RestoreState(SchoolWalkerRoute.State state)
-        {ValidateRestoreState(state);route.RestoreState(state);ApplyPose();}
+        {ValidateRestoreState(state);route.RestoreState(state);ApplyPose();if(Footsteps)Footsteps.Synchronize(state);}
         // Called while the checkpoint loading curtain covers the restored scene.
         public void RestoreTraversal(int traversal)
         {
@@ -61,13 +64,16 @@ namespace HappyToy.V2
                 {var initial=route.CaptureState();initial.X=player.x>=0?-SchoolWalkerRoute.PassLane:SchoolWalkerRoute.PassLane;route.RestoreState(initial);}
             }
             ApplyPose();
+            if(Footsteps)Footsteps.Synchronize(route.CaptureState());
         }
         // Ordinary looking/turning never resets the actor. Only a completed map
         // traversal requests a new pass, and both old/new bodies must be hidden.
         public void OnTraversal(int traversal)=>route.RequestTraversal(traversal);
         void LateUpdate()
         {
-            if(!Prepared||!session.InputAllowed||session.Finished||EnemyTimeStop.Active)return;
+            if(!Prepared)return;
+            if(!session.InputAllowed||session.Finished||EnemyTimeStop.Active)
+            {if(Footsteps)Footsteps.Apply(route.CaptureState(),false);return;}
             var camera=session.player?session.player.eyes:null;
             if(route.CaptureState().PendingTraversal>=0&&camera)
             {
@@ -79,6 +85,7 @@ namespace HappyToy.V2
             }
             var player=section.InverseTransformPoint(session.player.transform.position);
             route.Advance(Time.deltaTime,true,player.x,player.z);ApplyPose();
+            if(Footsteps)Footsteps.Apply(route.CaptureState(),true);
         }
         public Bounds BodyBounds()
         {

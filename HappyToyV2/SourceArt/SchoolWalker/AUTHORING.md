@@ -94,3 +94,19 @@ no physics, navigation or actor logic. Source checks and authoring exports do
 not establish final game appearance: inspect mounted identity/flower, gait,
 sole contact, pause/idle blend and corridor passage through the normal game
 camera before delivery.
+
+Runtime update, 2026-10-24: the hall pass now keeps its starting lane instead
+of sidestepping around the player. A player obstructing the next step makes
+the man stand; clearing the lane resumes the same walk. The masked connector
+still provides his physical exit. Older saved passing lanes retain their exact
+position and finish on that lane without a new lateral avoidance maneuver.
+
+`SchoolWalkerFootsteps` reuses the five existing `step-stone` recordings from
+`ExternalAudio`, already attributed in the shipped Audio-Credits.txt. It owns
+runtime copies only. Each 0.91m authored cycle produces two shoe contacts from
+real travelled distance, with a 3m near distance, 38m linear rolloff, and existing
+physical wall attenuation. Blocking, pause and talisman stop contacts; restore
+and loop resets synchronize distance without replaying missed footsteps. No new
+audio asset, generated character, shared audio modification or enemy sensing is
+introduced. `SchoolWalkerAudioTests` checks the actual quiet listener mixer,
+stop/resume, pause, talisman, master mute, range and owned-clip teardown.

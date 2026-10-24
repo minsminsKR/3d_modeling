@@ -66,20 +66,22 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest,Timeout(180000)]
-        public IEnumerator SchoolWalkerSmoothlyPassesAStationaryPlayerWithoutBlockingOrStartingAnAttack()
+        public IEnumerator SchoolWalkerStopsOnHisStraightLaneForAPlayerAndWalksAgainWhenTheWayClears()
         {
             yield return BeginObservationSchool();var walker=One("SchoolWalkerEncounter");
             Call(shell,"Pause");var state=Call(walker,"CaptureState");Set(state,"Z",12f);Set(state,"Distance",21f);Call(walker,"RestoreState",state);
             PlacePlayer(LoopOrigin+new Vector3(.65f,.03f,11),false);var stationary=player.transform.position;
-            Call(shell,"Resume");float deadline=Time.realtimeSinceStartup+8;bool passed=false;
-            while(Time.realtimeSinceStartup<deadline)
-            {
-                var point=walker.transform.position-LoopOrigin;var delta=point-(player.transform.position-LoopOrigin);delta.y=0;
-                Assert.That(delta.magnitude,Is.GreaterThan(.77f),"The man walked straight through the player's personal space");
-                if(point.z<10){passed=true;break;}yield return null;
-            }
-            Assert.That(passed,Is.True,"The harmless man cannot pass a player standing in his original lane");
+            Call(shell,"Resume");var motion=Get<Component>(walker,"Motion");
+            yield return Wait(()=>Get<float>(motion,"IdleBlend")>.99f,3,"The blocked pedestrian did not stand still");
+            var stopped=walker.transform.position;float distance=Get<float>(walker,"Distance");
+            Assert.That(stopped.x-LoopOrigin.x,Is.EqualTo(.65f).Within(.001f));
+            Assert.That(stopped.z-LoopOrigin.z,Is.InRange(11.79f,11.83f));
+            yield return Delay(.8f);
+            Assert.That(walker.transform.position,Is.EqualTo(stopped));Assert.That(Get<float>(walker,"Distance"),Is.EqualTo(distance));
             Assert.That(Vector3.Distance(new Vector3(stationary.x,0,stationary.z),new Vector3(player.transform.position.x,0,player.transform.position.z)),Is.LessThan(.03f));
+            PlacePlayer(LoopOrigin+new Vector3(-.85f,.03f,11),false);
+            yield return Wait(()=>walker.transform.position.z-LoopOrigin.z<10,5,"The pedestrian did not resume after his lane cleared");
+            Assert.That(walker.transform.position.x-LoopOrigin.x,Is.EqualTo(.65f).Within(.001f));
             Assert.That(Get<bool>(session,"Finished"),Is.False);Assert.That(Components("SchoolWalkerEncounter").Length,Is.EqualTo(1));
             Assert.That(walker.GetComponentsInChildren<Collider>(true),Is.Empty);
         }

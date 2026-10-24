@@ -348,11 +348,11 @@ PROFILES["school-wayfinding"]=("Generated cast-iron radiators and projecting dou
         PLAY+"SchoolRetractableGateKeepsGeneratedLodsAndTheRealSpawnRouteOpen",
         PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness"))])
 
-PROFILES["school-walker"]=("One harmless generated rigged pedestrian, real passing and distance-driven walk/idle, physically hidden reappearance after either school seam, pause/talisman, exact v3 walker save/legacy migration, shared art teardown, normal camera and existing nested/root checkpoint codec regressions", [
+PROFILES["school-walker"]=("One harmless generated rigged straight-lane pedestrian, blocker stop/resume, recorded distance-driven tile contacts in the quiet spatial mixer, walk/idle, physically hidden reappearance after either school seam, pause/talisman, exact v3 walker save/legacy migration, shared art teardown and normal camera", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolWalkerRouteTests", "HappyToy.V2.CoreTests.SchoolLoopPlanTests",
                   "HappyToy.V2.CoreTests.SchoolProgressClockTests", CLOUD+"SchoolLoopCheckpointTests",
                   CLOUD+"CheckpointTrapCodecTests", CLOUD+"ChapterCheckpointStoreTests", CLOUD+"CorridorCheckpointStoreTests")),
-    ("PlayMode", play_tests("SchoolWalkerTests.cs", "SchoolWalkerCheckpointTests.cs")+(
+    ("PlayMode", play_tests("SchoolWalkerTests.cs", "SchoolWalkerCheckpointTests.cs", "SchoolWalkerAudioTests.cs")+(
         PLAY+"SchoolLoopMenuLoadsOnlyTheNewCorridorAndSealsAllThreeRooms",
         PLAY+"SchoolLoopRealWalkingReturnsFromEitherEndToTheSameLeftRoomEntrance",
         PLAY+"SchoolBothOpaqueBendsAreWalkableAndOnlyTheExtendedEndsTeleport",

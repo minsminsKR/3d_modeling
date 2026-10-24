@@ -26,23 +26,44 @@ namespace HappyToy.V2.CoreTests
             Assert.That(still.Distance,Is.EqualTo(parked.Distance));Assert.That(still.X,Is.EqualTo(parked.X));
             Assert.That(still.IdleElapsed,Is.GreaterThan(parked.IdleElapsed),"The authored resting pose has no idle clock");
         }
-        [TestCase(.65f,-1)]
-        [TestCase(-.65f,1)]
-        public void PassingUsesTheOpenSideAndYieldsWithoutPushingThroughAStationaryPerson(float playerX,int side)
+        [TestCase(.65f)]
+        [TestCase(0f)]
+        public void AStationaryPersonMakesTheWalkerStopOnHisStraightLaneUntilTheWayClears(float playerX)
         {
             var route=new SchoolWalkerRoute();var initial=route.CaptureState();initial.Z=15;initial.Distance=18;
-            route.RestoreState(initial);bool passed=false,usedSide=false;
-            for(int frame=0;frame<1400;frame++)
+            route.RestoreState(initial);
+            for(int frame=0;frame<200;frame++)
             {
-                var before=route.CaptureState();route.Advance(.02,true,playerX,14.2f);var after=route.CaptureState();
-                float distance=(float)Math.Sqrt((after.X-playerX)*(after.X-playerX)+(after.Z-14.2f)*(after.Z-14.2f));
-                Assert.That(distance,Is.GreaterThanOrEqualTo(SchoolWalkerRoute.PersonalSpace-.002f));
-                if(before.Leg==0&&after.Leg==0)
-                    Assert.That(Math.Abs(after.X-before.X),Is.LessThanOrEqualTo(SchoolWalkerRoute.LateralSpeed*.02f+.00002f));
-                if(Math.Abs(after.Z-14.2f)<.4f&&after.X*side>.08f)usedSide=true;
-                if(after.Z<13.1f)passed=true;
+                route.Advance(.02,true,playerX,14.2f);var state=route.CaptureState();
+                Assert.That(state.X,Is.EqualTo(initial.X));Assert.That(state.Yaw,Is.EqualTo(180));
+                Assert.That((state.X-playerX)*(state.X-playerX)+(state.Z-14.2f)*(state.Z-14.2f),
+                    Is.GreaterThanOrEqualTo(SchoolWalkerRoute.PersonalSpace*SchoolWalkerRoute.PersonalSpace-.00001f));
             }
-            Assert.That(passed&&usedSide,Is.True,"The pedestrian cannot safely pass a stationary player");
+            var stopped=route.CaptureState();Assert.That(stopped.Z,Is.GreaterThan(14.2f));
+            Assert.That(stopped.IdleBlend,Is.EqualTo(1));
+            for(int frame=0;frame<50;frame++)route.Advance(.02,true,playerX,14.2f);
+            Assert.That(route.CaptureState().Distance,Is.EqualTo(stopped.Distance));
+            for(int frame=0;frame<50;frame++)route.Advance(frame%2==0?.0001:.1,true,playerX,14.2f+(frame%2==0?.00002f:-.00002f));
+            Assert.That(route.Z,Is.EqualTo(stopped.Z));Assert.That(route.CaptureState().Distance,Is.EqualTo(stopped.Distance),
+                "Grounded-player jitter restarted a creeping walk");
+            for(int frame=0;frame<150;frame++)route.Advance(.02,true,-.85f,14.2f);
+            Assert.That(route.Z,Is.LessThan(13));Assert.That(route.X,Is.EqualTo(initial.X));
+        }
+        [TestCase(-.85f)]
+        [TestCase(.65f)]
+        [TestCase(.85f)]
+        public void LegacySavedLanesRemainExactAndCompleteTheMaskedExitWithoutNewSidestepping(float lane)
+        {
+            var route=new SchoolWalkerRoute();var saved=route.CaptureState();
+            saved.X=lane;saved.Z=2.3f;saved.Distance=30.7f;saved.PassSide=lane<0?-1:1;
+            route.RestoreState(saved);Assert.That(route.CaptureState(),Is.EqualTo(saved));
+            for(int frame=0;frame<500;frame++)
+            {
+                var before=route.CaptureState();route.Advance(.02,true,10,60);var state=route.CaptureState();
+                if(before.Leg==0)Assert.That(state.X,Is.EqualTo(lane));
+                Assert.That(SchoolLoopPlan.Walkable(state.X,state.Z),Is.True);SchoolWalkerRoute.Validate(state);
+            }
+            Assert.That(route.Completed,Is.True);
         }
         [Test]
         public void PauseAndTimeStopInputsHoldEveryRouteAndGaitFieldExactly()
@@ -81,10 +102,10 @@ namespace HappyToy.V2.CoreTests
         [Test]
         public void SnapshotRestoresTheExactPassingPhasePendingLoopAndSubsequentMotion()
         {
-            var original=new SchoolWalkerRoute();var start=original.CaptureState();start.Z=17;start.Distance=16;original.RestoreState(start);
+            var original=new SchoolWalkerRoute();var start=original.CaptureState();start.Z=17;start.Distance=16;start.X=-.65f;start.PassSide=-1;original.RestoreState(start);
             for(int i=0;i<40;i++)original.Advance(.02,true,.65f,15);
             original.RequestTraversal(3);var snapshot=original.CaptureState();
-            Assert.That(snapshot.PassSide,Is.EqualTo(-1));Assert.That(snapshot.PendingTraversal,Is.EqualTo(3));
+            Assert.That(snapshot.PassSide,Is.Zero);Assert.That(snapshot.X,Is.EqualTo(-.65f));Assert.That(snapshot.PendingTraversal,Is.EqualTo(3));
             var restored=new SchoolWalkerRoute();restored.RestoreState(snapshot);
             Assert.That(restored.CaptureState(),Is.EqualTo(snapshot));
             for(int i=0;i<100;i++)

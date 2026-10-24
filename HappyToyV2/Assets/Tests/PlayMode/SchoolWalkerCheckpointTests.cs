@@ -41,7 +41,12 @@ namespace HappyToy.V2.CloudTests
             yield return Delay(.2f);
             AssertSchoolWalkerStateClose(expected,Call(walker,"CaptureState"));
             Assert.That(Get<bool>(session,"InputAllowed"),Is.False,"Restoring a save started the walker before the player resumed");
-            Begin();yield return Delay(.25f);
+            // Restoring must not bypass the new stationary-player rule. Hold
+            // him first, then clear the lane before expecting gait to resume.
+            PlacePlayer(walker.transform.position+walker.transform.forward*.81f,false);
+            Begin();yield return Delay(.3f);
+            Assert.That(Get<float>(walker,"Distance"),Is.EqualTo(Get<float>(expected,"Distance")).Within(.00001f));
+            PlacePlayer(walker.transform.position+Vector3.left*1.5f,false);yield return Delay(.25f);
             Assert.That(Get<float>(walker,"Distance"),Is.GreaterThan(Get<float>(expected,"Distance")+.05f));
             Assert.That(Get<float>(motion,"Clock"),Is.GreaterThan(expectedWalkClock));
             Assert.That(Components("SchoolWalkerEncounter").Length,Is.EqualTo(1));

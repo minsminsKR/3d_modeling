@@ -8,6 +8,7 @@ namespace HappyToy.V2
     {
         public const float StartZ=33,HallEndZ=2.2f,EndZ=1,EndX=-3,DefaultLane=.65f,PassLane=.85f;
         public const float WalkSpeed=.70f,LateralSpeed=.65f,PersonalSpace=.80f;
+        const float StopMargin=.015f;
         public const int MaximumTraversal=1000000;
         const double MaximumTime=36000000;
         [Serializable]
@@ -41,8 +42,13 @@ namespace HappyToy.V2
                 value.Elapsed<0||value.Elapsed>MaximumTime||value.IdleElapsed<0||value.IdleElapsed>value.Elapsed+.00001)
                 throw new ArgumentException("Invalid school walker motion state");
             bool hall=value.Leg==0&&value.X>=-PassLane-.001f&&value.X<=PassLane+.001f&&value.Z>=HallEndZ-.001f&&value.Z<=StartZ+.001f;
-            float elbowZ=HallEndZ+(value.X-DefaultLane)/(EndX-DefaultLane)*(EndZ-HallEndZ);
-            bool elbow=value.Leg==1&&value.X>=EndX-.001f&&value.X<=DefaultLane+.001f&&Math.Abs(value.Z-elbowZ)<.003f;
+            // Older saves can start on either former passing lane. Keep their
+            // exact pose and finish a straight hall pass on that saved lane.
+            float elbowFraction=(value.Z-EndZ)/(HallEndZ-EndZ);
+            float elbowMinX=EndX+(-PassLane-EndX)*elbowFraction;
+            float elbowMaxX=EndX+(PassLane-EndX)*elbowFraction;
+            bool elbow=value.Leg==1&&elbowFraction>=-.001f&&elbowFraction<=1.001f&&
+                value.X>=elbowMinX-.003f&&value.X<=elbowMaxX+.003f;
             bool waiting=value.Leg==2&&Math.Abs(value.X-EndX)<.001f&&Math.Abs(value.Z-EndZ)<.001f;
             if(!hall&&!elbow&&!waiting)throw new ArgumentException("School walker pose is outside its physical route");
             if(value.Leg!=0&&value.PassSide!=0)throw new ArgumentException("A walker outside the hall cannot retain a passing lane");
@@ -74,8 +80,7 @@ namespace HappyToy.V2
                 float remaining=(float)Math.Sqrt(Squared(EndX-state.X,EndZ-state.Z));
                 float fraction=remaining<.000001f?1:Math.Min(1,WalkSpeed*dt/remaining);
                 float nextX=state.X+(EndX-state.X)*fraction,nextZ=state.Z+(EndZ-state.Z)*fraction;
-                if(Squared(nextX-playerX,nextZ-playerZ)>=PersonalSpace*PersonalSpace||
-                    Squared(nextX-playerX,nextZ-playerZ)>Squared(state.X-playerX,state.Z-playerZ))
+                if(ClearStep(nextX,nextZ,playerX,playerZ))
                 {state.X=nextX;state.Z=nextZ;}
                 if(Math.Abs(state.X-EndX)<.0001f&&Math.Abs(state.Z-EndZ)<.0001f)
                 {state.X=EndX;state.Z=EndZ;state.Leg=2;}
@@ -94,31 +99,21 @@ namespace HappyToy.V2
         }
         void Hall(float dt,float playerX,float playerZ)
         {
-            float gap=Math.Abs(state.Z-playerZ);
-            bool nearby=gap<6&&Math.Abs(playerX)<2.2f&&state.Z>6;
-            if(nearby)
-            {
-                if(state.PassSide==0)state.PassSide=playerX>0?-1:1;
-                // If someone deliberately occupies the chosen lane, yield and
-                // smoothly take the genuinely open side instead of pushing them.
-                if(gap<1.7f&&Math.Abs(state.PassSide*PassLane-playerX)<.50f)
-                    state.PassSide=playerX>0?-1:1;
-            }
-            else if(gap>6.8f||state.Z<=6)state.PassSide=0;
-            float target=state.Z<=6?DefaultLane:state.PassSide==0?DefaultLane:state.PassSide*PassLane;
-            float x=Towards(state.X,target,LateralSpeed*dt),z=Math.Max(HallEndZ,state.Z-WalkSpeed*dt);
-            float dx=x-state.X,dz=z-state.Z,distance=(float)Math.Sqrt(Squared(dx,dz));
-            if(distance>WalkSpeed*dt)
-            {float scale=WalkSpeed*dt/distance;x=state.X+dx*scale;z=state.Z+dz*scale;}
-            if(Squared(x-playerX,z-playerZ)<PersonalSpace*PersonalSpace)
-            {
-                z=state.Z;
-                // Lateral evasion is allowed only if it opens personal space.
-                if(Squared(x-playerX,z-playerZ)<Squared(state.X-playerX,state.Z-playerZ))x=state.X;
-            }
-            state.X=x;state.Z=z;
-            if(state.Z<=HallEndZ+.0001f&&Math.Abs(state.X-DefaultLane)<.0001f)
-            {state.X=DefaultLane;state.Z=HallEndZ;state.PassSide=0;state.Leg=1;}
+            state.PassSide=0;
+            float z=Math.Max(HallEndZ,state.Z-WalkSpeed*dt);
+            // Hold the current straight lane. Someone in front makes him stand,
+            // while someone behind must not prevent him from moving away.
+            if(ClearStep(state.X,z,playerX,playerZ))state.Z=z;
+            if(state.Z<=HallEndZ+.0001f)
+            {state.Z=HallEndZ;state.Leg=1;}
+        }
+        bool ClearStep(float x,float z,float playerX,float playerZ)
+        {
+            float gap=Squared(state.X-playerX,state.Z-playerZ),nextGap=Squared(x-playerX,z-playerZ);
+            // Ignore tiny grounded-player jitter at the stopping boundary. Once
+            // close, moving toward the player cannot restart a creeping gait.
+            return nextGap>gap || gap>(PersonalSpace+StopMargin)*(PersonalSpace+StopMargin)&&
+                nextGap>=PersonalSpace*PersonalSpace;
         }
         static float Towards(float current,float target,float maximum)
             =>Math.Abs(target-current)<=maximum?target:current+(target>current?maximum:-maximum);
