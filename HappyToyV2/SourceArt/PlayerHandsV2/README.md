@@ -1,5 +1,11 @@
 # Player hand replacement — 2026-10-24
 
+**Inactive authoring archive — 2026-10-25:** the user requested a rollback.
+The game hand mesh, textures, shader, rig/grips and default authoring entry points
+have been restored to `7e08761`. These generated originals and finishing recipes
+remain as an editable historical record; do not reapply them by default.
+The active authoring sources are `SourceArt/PlayerItems/`.
+
 The user's actual grip photograph is `References/user-grips.jpg`. Left hand:
 wrap the flashlight shaft with its head directed upward. Right hand: hold the
 snapper in an upright, loose closed grip, rather than on a palm-up tray.

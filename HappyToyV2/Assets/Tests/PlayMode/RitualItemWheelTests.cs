@@ -46,7 +46,6 @@ namespace HappyToy.V2.CloudTests
             yield return Wait(() => WheelOpen, 2, "Tab did not open the real item wheel");
             Assert.That(Time.timeScale, Is.EqualTo(.25f)); Assert.That(AudioListener.pause, Is.False);
             var origin = player.transform.position;
-            float simulationStart = Time.time;
             var facing = player.transform.rotation;
             var rituals = Get<Component>(player, "Rituals"); int incense = Get<int>(rituals, "Incense");
             RitualMouseState(RitualSlot(2), true); yield return Delay(.15f);
@@ -59,20 +58,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(Get<Component>(player,"Traps"),"Count"),Is.EqualTo(trapCount));
             Assert.That(Get<Light>(player,"flashlight").enabled,Is.EqualTo(torch),"Selection leaked a flashlight action");
             var displacement=player.transform.position-origin;displacement.y=0;
-            // Realtime coroutine waits can overshoot by a render frame in the
-            // quiet batch Editor. Compare movement with the actual simulation
-            // interval (plus one physics tick), not an assumed wall-clock wait.
-            float walking = Get<float>(player,"walkSpeed");
-            float permitted = walking * (Time.time-simulationStart+Time.fixedDeltaTime) + .01f;
-            Assert.That(displacement.magnitude, Is.InRange(.03f,permitted), "Held movement must follow quarter-speed simulation time while choosing an item");
+            Assert.That(displacement.magnitude, Is.InRange(.03f,.30f), "Held movement must continue at quarter time while choosing an item");
             Assert.That(Quaternion.Angle(facing,player.transform.rotation),Is.LessThan(.01f),"Selecting with the mouse also turned the player");
-            Keys(Key.Tab);
-            // The queued device event is consumed in the next Dynamic input
-            // update. A preceding FixedUpdate may legitimately finish one old
-            // walking tick; test for a latch only after release was delivered.
-            yield return Wait(()=>!keyboard.wKey.isPressed,2,"W release was not delivered to the real input device");
-            yield return null;
-            var stopped=player.transform.position;yield return Delay(.15f);
+            Keys(Key.Tab);var stopped=player.transform.position;yield return Delay(.15f);
             Assert.That(Vector2.Distance(new Vector2(stopped.x,stopped.z),new Vector2(player.transform.position.x,player.transform.position.z)),Is.LessThan(.015f),
                 "Releasing W while holding Tab retained a movement command");
             Assert.That(SelectedItem, Is.EqualTo("Snapper"), "Hovering changed the equipped item before release");

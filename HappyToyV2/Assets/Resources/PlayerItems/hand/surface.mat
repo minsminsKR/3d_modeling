@@ -45,7 +45,6 @@ Material:
     - _Metallic: 0
     - _Monochrome: 0
     - _PbrLayout: 0
-    - _Skin: 1
     - _Smoothness: 0.32
     - _Viewmodel: 0
     m_Colors:

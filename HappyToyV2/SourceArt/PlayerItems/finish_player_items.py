@@ -183,14 +183,6 @@ def rig_hand(obj):
     return rig
 
 def prepare(key):
-    if key=='hand':
-        # The 2026-10-24 A100 replacement has its own measured anatomy and UV
-        # projection. Never silently rebuild the superseded hand for a new clone.
-        source=ROOT.parent/'PlayerHandsV2'
-        for filename in ('finish_hand.py','reproject_skin.py'):
-            script=source/filename
-            exec(compile(script.read_text(encoding='utf-8'),str(script),'exec'),{'__file__':str(script),'__name__':'__main__'})
-        return
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.ops.import_scene.gltf(filepath=str(ROOT/'Originals'/f'{key}.glb'))
     objs=[o for o in bpy.context.scene.objects if o.type=='MESH']
