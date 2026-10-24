@@ -1,9 +1,14 @@
 """Checks that focused verification cannot accept absent, stale or partial results."""
 import importlib.util
+import contextlib
+import io
+import json
 from pathlib import Path
 import re
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 MODULE = Path(__file__).with_name("run_feature_tests.py")
 SPEC = importlib.util.spec_from_file_location("feature_runner", MODULE)
@@ -12,6 +17,34 @@ SPEC.loader.exec_module(runner)
 
 
 class FeatureRoutingTests(unittest.TestCase):
+    def test_every_profile_defaults_to_batch_input_and_cursor_isolation(self):
+        for profile in runner.PROFILES:
+            for stage in runner.commands(profile, Path("Project"), Path("Fresh")):
+                arguments = stage["editorArguments"]
+                self.assertIn("-batchmode", arguments, profile)
+                self.assertIn("-v2-audit-no-desktop-interaction", arguments, profile)
+                self.assertEqual(arguments[arguments.index("-job-worker-count") + 1], "2")
+        core = runner.commands("core", Path("Project"), Path("Fresh"))[0]
+        self.assertIn("-nographics", core["editorArguments"])
+        self.assertIn("-noaudio", core["editorArguments"])
+
+    def test_cli_keeps_isolation_when_the_user_omits_the_old_optional_flag(self):
+        output = io.StringIO()
+        with patch.object(sys, "argv", [str(MODULE), "--profile", "core", "--dry-run"]), \
+                patch.object(runner.subprocess, "run") as start_process, \
+                contextlib.redirect_stdout(output):
+            self.assertEqual(runner.main(), 0)
+        start_process.assert_not_called()
+        self.assertTrue(json.loads(output.getvalue())["noDesktopInteractionRequested"])
+
+    @unittest.skipUnless(sys.platform == "win32", "Windows process startup policy")
+    def test_windows_children_are_hidden_without_a_console_and_below_normal(self):
+        options = runner.desktop_process_options()
+        self.assertTrue(options["startupinfo"].dwFlags & runner.subprocess.STARTF_USESHOWWINDOW)
+        self.assertEqual(options["startupinfo"].wShowWindow, runner.subprocess.SW_HIDE)
+        for flag in (runner.subprocess.CREATE_NO_WINDOW, runner.subprocess.BELOW_NORMAL_PRIORITY_CLASS):
+            self.assertEqual(options["creationflags"] & flag, flag)
+
     def test_full_allows_the_natural_survival_suite_and_explicit_limits_still_win(self):
         for profile, expected in (("full", 7200), ("core", 1800)):
             for stage in runner.commands(profile, Path("Project"), Path("Output")):
@@ -115,6 +148,22 @@ class SelectedRecheckTests(unittest.TestCase):
 
     def sample(self, directory, content):
         path=Path(directory)/"current.xml";path.write_text(content,encoding="utf-8");return path
+
+    def test_retry_cli_also_defaults_to_isolation_without_starting_unity_in_dry_run(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report = self.sample(directory, '<test-run result="Failed">'
+                '<test-case fullname="A.Fail" result="Failed" /></test-run>')
+            output = io.StringIO()
+            with patch.object(sys, "argv", [str(self.retry.__file__), "--results", str(report),
+                    "--mode", "PlayMode", "--dry-run"]), \
+                    patch.object(self.retry.subprocess, "run") as start_process, \
+                    contextlib.redirect_stdout(output):
+                self.assertEqual(self.retry.main(), 0)
+            start_process.assert_not_called()
+            plan = json.loads(output.getvalue())
+            self.assertTrue(plan["noDesktopInteractionRequested"])
+            self.assertIn("-batchmode", plan["stages"][0]["editorArguments"])
+            self.assertIn("-v2-audit-no-desktop-interaction", plan["stages"][0]["editorArguments"])
 
     def test_only_nonpassing_exact_cases_are_selected_and_passing_cases_stay_out(self):
         with tempfile.TemporaryDirectory() as directory:

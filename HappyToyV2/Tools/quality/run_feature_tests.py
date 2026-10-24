@@ -421,7 +421,7 @@ def stages(profile: str) -> list[tuple[str, tuple[str, ...]]]:
 
 def commands(profile: str, project: Path, output: Path, unity: str = "unity",
              editor_path: str | None = None, timeout: int | None = None,
-             graphics_api: str | None = None, no_desktop_interaction: bool = False,
+             graphics_api: str | None = None, no_desktop_interaction: bool = True,
              selected_stages: list[tuple[str, tuple[str, ...]]] | None = None) -> list[dict]:
     timeout = timeout if timeout is not None else (7200 if profile == "full" else 1800)
     result = []
@@ -434,8 +434,8 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
             command += ["--filter", ";".join(selectors)]
         if editor_path:
             command += ["--editor-path", editor_path]
-        editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("lady-polish", "model-polish") and mode == "EditMode":
+        editor_args = ["-batchmode", "-logFile", str(report.with_suffix(".editor.log"))]
+        if profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]
@@ -500,6 +500,17 @@ def read_results(report: Path, selectors: tuple[str, ...]) -> dict:
     return result
 
 
+def desktop_process_options() -> dict:
+    """Request hidden, low-priority children; never manipulate desktop focus."""
+    if sys.platform != "win32":
+        return {}
+    startup = subprocess.STARTUPINFO()
+    startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startup.wShowWindow = subprocess.SW_HIDE
+    return {"startupinfo": startup,
+            "creationflags": subprocess.CREATE_NO_WINDOW | subprocess.BELOW_NORMAL_PRIORITY_CLASS}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--profile", choices=PROFILES)
@@ -510,8 +521,8 @@ def main() -> int:
     parser.add_argument("--editor-path", help="Optional path to the installed pinned Unity executable")
     parser.add_argument("--graphics-api", choices=("d3d11", "d3d12"),
                         help="Optional Windows Editor-only override; leaves project/player settings unchanged")
-    parser.add_argument("--no-desktop-interaction", action="store_true",
-                        help="Isolate batch test input/cursor writes; on Windows hide child windows and use BelowNormal CPU priority")
+    parser.add_argument("--no-desktop-interaction", action="store_true", default=True,
+                        help="Enabled by default: isolate batch input/cursor writes, hide Windows child windows and use BelowNormal CPU priority")
     parser.add_argument("--timeout", type=int, help="Timeout per Unity stage in seconds (full: 7200; focused profiles: 1800)")
     args = parser.parse_args()
     if args.list:
@@ -548,13 +559,7 @@ def main() -> int:
     summary = {"profile": args.profile, "scope": scope, "status": "RUNNING", "stages": []}
     summary["graphicsApi"] = args.graphics_api or "project-default"
     summary["noDesktopInteractionRequested"] = args.no_desktop_interaction
-    process_options = {}
-    if args.no_desktop_interaction and sys.platform == "win32":
-        startup = subprocess.STARTUPINFO()
-        startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        startup.wShowWindow = subprocess.SW_HIDE
-        process_options = {"startupinfo": startup,
-                           "creationflags": subprocess.CREATE_NO_WINDOW | subprocess.BELOW_NORMAL_PRIORITY_CLASS}
+    process_options = desktop_process_options()
     summary["windowsHiddenBelowNormalRequested"] = bool(process_options)
     try:
         for stage in plan:

@@ -45,7 +45,8 @@ def main() -> int:
     parser.add_argument('--project',type=Path,default=runner.PROJECT)
     parser.add_argument('--output-dir',type=Path)
     parser.add_argument('--graphics-api',choices=('d3d11','d3d12'))
-    parser.add_argument('--no-desktop-interaction',action='store_true')
+    parser.add_argument('--no-desktop-interaction',action='store_true',default=True,
+        help='Enabled by default: isolate batch input/cursor writes and hide low-priority Windows children')
     parser.add_argument('--timeout',type=int,default=7200)
     args=parser.parse_args()
     report=args.results.resolve()
@@ -82,17 +83,17 @@ def main() -> int:
     metadata={'scope':'Selected non-passing cases plus explicit feature checks; no new complete-suite verdict',
               'sourceReport':str(report),'sourceSha256':hashlib.sha256(report.read_bytes()).hexdigest(),
               'sourceCounts':{key:source[key] for key in ('total','passed','failed','skipped')},
-              'includedProfiles':args.include_profile,'selectors':selected,'stages':plan}
+              'includedProfiles':args.include_profile,'selectors':selected,'stages':plan,
+              'noDesktopInteractionRequested':args.no_desktop_interaction}
     if args.dry_run:
         print(json.dumps(metadata,indent=2))
         return 0
     output.mkdir(parents=True)
     (output/'plan.json').write_text(json.dumps(metadata,indent=2)+'\n',encoding='utf-8')
-    startup={}
-    if args.no_desktop_interaction and sys.platform=='win32':
-        info=subprocess.STARTUPINFO();info.dwFlags|=subprocess.STARTF_USESHOWWINDOW;info.wShowWindow=subprocess.SW_HIDE
-        startup={'startupinfo':info,'creationflags':subprocess.CREATE_NO_WINDOW|subprocess.BELOW_NORMAL_PRIORITY_CLASS}
-    result={'status':'FAIL','scope':metadata['scope'],'sourceSha256':metadata['sourceSha256']}
+    startup=runner.desktop_process_options()
+    result={'status':'FAIL','scope':metadata['scope'],'sourceSha256':metadata['sourceSha256'],
+            'noDesktopInteractionRequested':args.no_desktop_interaction,
+            'windowsHiddenBelowNormalRequested':bool(startup)}
     try:
         print('Selected recheck cases: '+str(len(selected)),flush=True)
         completed=subprocess.run(plan[0]['command'],cwd=project,check=False,**startup)

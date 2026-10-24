@@ -385,12 +385,12 @@ MSAA/샘플 수를 확인해 변경 전후 중앙값·95백분위를 비교한�
 시간 배율 귀속은 미검증이며 정속 근거는 실제 렌더 간격과 깨끗한 rolling 이력이다. 자세한 counter 범위와
 관찰 부하는 `Tools/quality/README.md`를 따른다.
 
-백그라운드 기능 검사는 `run_feature_tests.py --no-desktop-interaction`으로
-명시적으로 `-v2-audit-no-desktop-interaction`을 Editor 인자에 추가할 수 있다.
-같은 옵션은 Editor에 `-job-worker-count 2`도 전달해 진단의 Job System worker 수를 제한한다.
-기본은 꺼져 있고 계획/summary에 요청 여부를 기록한다. Windows에서는 검사 자식 프로세스에
+기능/재검사는 기본으로 `-batchmode -v2-audit-no-desktop-interaction`과
+`-job-worker-count 2`를 Editor에 전달한다. `--no-desktop-interaction`은 기존 명령 호환용으로
+유지하며 생략해도 격리가 켜져 있다. `core`의 EditMode는 `-nographics -noaudio`로 실행한다.
+계획/summary에 요청 여부를 기록한다. Windows에서는 검사 자식 프로세스에
 `STARTF_USESHOWWINDOW`/`SW_HIDE`, `CREATE_NO_WINDOW`, `BELOW_NORMAL_PRIORITY_CLASS`를
-요청하고 summary의 `windowsHiddenBelowNormalRequested`에 기록한다. 옵션이 꺼져 있거나
+요청하고 summary의 `windowsHiddenBelowNormalRequested`에 기록한다.
 Windows가 아니면 이 subprocess 설정을 추가하지 않는다. 이는 CPU 우선순위 요청이며
 GPU 부하나 다른 작업의 프레임 저하가 없음을 보증하지 않는다. `DiagnosticDesktopPolicy`는
 명시 flag와 `Application.isBatchMode`가 모두 참일 때만 `GameShell`/`PlayerMotor`/
@@ -406,6 +406,8 @@ native audit는 비배치 flag 요청을 거부하고 기존 키보드·마우�
 검사하며 실제 커서/포커스/OS 입력을 바꾸지 않는다. 자식 프로세스의 시작 창 숨김 요청이
 Unity의 후속 창 표시를 보증하지는 않으므로 batch 실행과 커서 억제를 함께 사용한다.
 전경 FPS의 근거가 아니며 사용자 작업 중 native/GPU 측정 보류 원칙을 대체하지 않는다.
+2026-10-25 사용자 재지시: 게임/작업 중에는 경량 CPU·소스 검사만 진행하고 GPU 렌더와
+새 native 플레이어 실행은 별도 요청 전까지 보류한다. 숨긴 창으로 우회 실행하지 않는다.
 
 Unity MCP는 설치된 Unity CLI의 `unity mcp --project-path <프로젝트>`와
 `com.unity.pipeline`을 사용한다. `Tools/quality/unity_mcp_call.py --output

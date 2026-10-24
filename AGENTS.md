@@ -12,6 +12,19 @@ target its GitHub `origin/main` branch.
 Persistent project preferences are recorded in `MEMORY.md`; read it when
 continuing work. The safeguards and operational instructions below still apply.
 
+# Do not interrupt the user's desktop — user instruction, 2026-10-25
+
+Keep testing, building and authoring in the background. Do not minimize, focus,
+activate, close or send OS input to the user's running game or other work.
+Do not open a new visible Unity/Blender/player window for verification.
+Use batch/background execution, hidden windows, BelowNormal priority and the
+project's desktop-input/cursor isolation flag. Feature and retry runners enable
+these safeguards by default; preserve that default. Hiding a startup window alone
+does not guarantee that later Unity windows or GPU work cannot disrupt the user.
+While the user is gaming, continue source work and lightweight CPU checks; defer
+GPU renders and native-player/FPS audits unless separately requested by the user.
+Do not use visible-window capture runners or native routes as a background fallback.
+
 # Maintainable HappyToyV2 code — user instruction, 2026-10-13
 
 For game code changes, use `HappyToyV2/CODE_MAP.md` to find the affected feature

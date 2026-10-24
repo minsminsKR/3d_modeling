@@ -4,6 +4,24 @@ The user's actual grip photograph is `References/user-grips.jpg`. Left hand:
 wrap the flashlight shaft with its head directed upward. Right hand: hold the
 snapper in an upright, loose closed grip, rather than on a palm-up tray.
 
+## Visual quality status — 2026-10-25
+
+The user rejected the current appearance as unnatural. Functional contact,
+animation and build checks do not certify anatomical or close-up art quality.
+The reviewed hand-layer frame still shows awkward bent fingers and surface
+deformation. Treat this version as a functional checkpoint, not approved final art.
+
+Public alternatives investigated, not yet imported or visually approved:
+- MakeHuman/MPFB core human assets are CC0; tool source licensing is separate:
+  https://static.makehumancommunity.org/about/license.html
+- Its `hands01` pack supplies CC0 anatomical shape targets for knuckles, fingers,
+  thenar and hypothenar regions. It is not a standalone textured FPS-hand model:
+  https://static.makehumancommunity.org/assets/assetpacks/hands01.html
+- Ultraleap UnityPlugin is Apache-2.0 and includes hand assets/interaction tools.
+  It is a tracking-oriented candidate, not established photorealistic replacement
+  art. Check the selected asset's notices before importing; no SDK was installed:
+  https://github.com/ultraleap/UnityPlugin
+
 ## Original generation and inspection
 
 The new base was generated through the designated A100 modeling CLI, not a

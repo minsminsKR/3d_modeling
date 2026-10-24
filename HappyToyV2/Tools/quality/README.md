@@ -539,17 +539,22 @@ Input System devices, never desktop input.
 
 `run_feature_tests.py --profile core --no-desktop-interaction --dry-run` previews
 the explicit `-v2-audit-no-desktop-interaction` Editor argument. Omit `--dry-run`
-to execute the selected batch checks. The option defaults off and
+to execute the selected batch checks. Desktop isolation now defaults on in both
+the feature and selected-retry runners; the flag is retained for compatibility and
 is recorded as `noDesktopInteractionRequested` in the plan and run summary.
 The same option passes `-job-worker-count 2` to limit the diagnostic Editor's Job System workers.
 On Windows, the runner also starts each test child with
 `STARTF_USESHOWWINDOW`/`SW_HIDE`, `CREATE_NO_WINDOW`, and
 `BELOW_NORMAL_PRIORITY_CLASS`; the run summary records
-`windowsHiddenBelowNormalRequested`. With the option off, or on non-Windows
+`windowsHiddenBelowNormalRequested`. On non-Windows
 hosts, it adds no subprocess startup/creation options. BelowNormal requests CPU
 scheduling priority; it does not cap GPU work or guarantee that another game's
 frame rate is unaffected. Direct editor/authoring launches outside this runner
 still need their own hidden batch/background launch and priority settings.
+All planned stages explicitly include `-batchmode`; the pure `core` EditMode
+profile also uses `-nographics -noaudio`. While the user is gaming, use lightweight
+CPU/source checks and defer GPU rendering and new native players until separately
+requested. Do not switch to visible-capture/native-route helpers as a workaround.
 `DiagnosticDesktopPolicy` suppresses the shell/motor/native-corridor audit's
 cursor writes and the item wheel's OS cursor-centering command only when that
 explicit flag and `Application.isBatchMode` are
