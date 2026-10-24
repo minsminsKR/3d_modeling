@@ -1,0 +1,13 @@
+{
+  "key": "room-sign",
+  "requestId": "c134f492-60a4-47e0-890e-4350a961b122",
+  "seed": 24102418,
+  "pipeline": "1024_cascade",
+  "texture": 4096,
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "model": "trellis2",
+  "gpu": "split",
+  "remove_background": "on",
+  "steps": 12,
+  "input": "reference.png"
+}

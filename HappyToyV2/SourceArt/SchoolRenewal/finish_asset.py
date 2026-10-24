@@ -214,6 +214,8 @@ def finish(settings):
     if near.data.has_custom_normals:
         bpy.ops.mesh.customdata_custom_splitnormals_clear()
     geometry_finishing = None
+    transfer_source = original
+    transfer_finishing = None
     geometry_recipe = source / 'finish_geometry.py'
     if geometry_recipe.is_file():
         recipe = runpy.run_path(str(geometry_recipe), run_name='school_renewal_' + key + '_geometry')
@@ -227,6 +229,20 @@ def finish(settings):
         json.dumps(geometry_finishing)
         if not near.data.vertices or not near.data.polygons:
             raise RuntimeError('Generated-derived geometry recipe removed the whole asset: ' + key)
+        prepare_transfer = recipe.get('prepare_transfer_source')
+        if callable(prepare_transfer):
+            transfer_source, transfer_finishing = prepare_transfer(original)
+            if transfer_source is original or transfer_source.type != 'MESH':
+                raise RuntimeError('Material finishing must return a separate working source: ' + key)
+            json.dumps(transfer_finishing)
+            # Retain the explicit source-derived material repair beside the
+            # unchanged original; only its UV transfer is used for colour/ORM.
+            for owner in list(transfer_source.users_collection):
+                owner.objects.unlink(transfer_source)
+            preserved.objects.link(transfer_source)
+            transfer_source.hide_render = False
+            transfer_source.hide_set(False)
+            original_objects.append(transfer_source)
     far_template = None
     if settings.get('far_from_source', False):
         # A second collapse of the already collapsed near mesh can hit newly
@@ -258,7 +274,7 @@ def finish(settings):
         collapse_attempts = bounded_simplify(game, budget, helpers)
         name = 'SR_' + key + '_LOD' + str(index)
         size = texture if index == 0 else min(texture, 1024)
-        material = bake(game, original, source_to_game, destination, name, size,
+        material = bake(game, transfer_source, source_to_game, destination, name, size,
                         helpers['save_pixels'])
         material['normal'] = normal_atlas(game, original, source_to_game, destination, name, size)
         material['textureMaxSize'] = size
@@ -290,6 +306,7 @@ def finish(settings):
                   originalTriangles=original_triangles, textureMaxSize=texture,
                   settings=settings, lods=reports, materials=materials,
                   geometryFinishing=geometry_finishing,
+                  materialFinishing=transfer_finishing,
                   front='Authored front Blender +Y / Unity -Z after standard FBX conversion; '
                         'confirm asset-specific orientation in actual Unity integration.',
                   finishing='Dense generated geometry retained unchanged; duplicate LODs receive '

@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "count": 16,
+  "count": 18,
   "sourceScope": "Original GLB/reference/records, packed Blender, source-derived game LODs/PBR; no manual-play or FPS claim",
   "assets": [
     {
@@ -1150,6 +1150,150 @@
                 1024
               ],
               "sha256": "1842d17888ca6b085db6a6718e87ab8178342f6c5124b938bd918465d04e983b"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "radiator",
+      "originalSha256": "497e3a2ef84a7a18e2cec2f683103eb0ae58a047f4088e568e0689f76f03fd1e",
+      "originalBytes": 174177188,
+      "editable": "radiator.blend",
+      "editableSha256": "1c634414a23a34027e36456cc7f5bf9cf2805ee0837979cdba66a10bac95c45a",
+      "referenceSha256": "82748a6d8d2c2ecf2432042469219507c97f45db4aa3e4e427a2c662a5c8993b",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "radiator-lod0.fbx",
+          "triangles": 12000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_radiator_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "5861cc9d77b5f9aceb4edb5e644735ddc832e8933b0327d126ae5d26faf3873a"
+            },
+            "metallicSmoothness": {
+              "file": "SR_radiator_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "e6dcd1a423275ddbac887cec2203bb5729195f59a335e4dd1126e0bc15cfe23f"
+            },
+            "normal": {
+              "file": "SR_radiator_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "8b32d47ccf1eb1e7b7413e95124ae6759c386d43ca3b56c5d63d69e6dc128b1d"
+            }
+          }
+        },
+        {
+          "file": "radiator-lod1.fbx",
+          "triangles": 4000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_radiator_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "5d84b882e552423834a7ad58cc9a00768540b75553e1d3a248384ac566254ca6"
+            },
+            "metallicSmoothness": {
+              "file": "SR_radiator_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "8164d125637ad3b7c3847af1db33175f429cef05c2a3a9fbb6d43388f0c91673"
+            },
+            "normal": {
+              "file": "SR_radiator_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "7f9179aaa9a7dd9bec80e71eff780c7351d1b9cd121a626f4c19672e3dc2c62c"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "key": "room-sign",
+      "originalSha256": "f6fb27e8a2fd5407d3112e72419b4a98e9d1d94a4aa68d5d71e96b89c22f4431",
+      "originalBytes": 64014272,
+      "editable": "room-sign.blend",
+      "editableSha256": "ab7b372f8b84c3f62df53004bdd50731fb11b51ce76838fbc50fe4dc25c24cdf",
+      "referenceSha256": "1471933db3c9c311f96dfa69029dd4c2186af29dad5c41192d619a1865c3ebe6",
+      "provenance": "provenance.json",
+      "reviewed": true,
+      "lods": [
+        {
+          "file": "room-sign-lod0.fbx",
+          "triangles": 6000,
+          "maps": {
+            "baseColor": {
+              "file": "SR_room-sign_LOD0-baseColor.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "9e52b79322b52df31b590595b81f12c422e4d43428a403412a442de363830e50"
+            },
+            "metallicSmoothness": {
+              "file": "SR_room-sign_LOD0-metallicSmoothness.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "5e897726e37ce6702e5bfe7173e5a4f2208c2ea1efe8d53942a90af7bed4761f"
+            },
+            "normal": {
+              "file": "SR_room-sign_LOD0-normal.png",
+              "size": [
+                2048,
+                2048
+              ],
+              "sha256": "99efb28f51422ece8812eceec3edd8240d00ecb0a127b7b802fb124953c349b0"
+            }
+          }
+        },
+        {
+          "file": "room-sign-lod1.fbx",
+          "triangles": 1500,
+          "maps": {
+            "baseColor": {
+              "file": "SR_room-sign_LOD1-baseColor.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "ac5d9c6516469af13ac87a6b88817df2341f36d799058858852fc79101d45011"
+            },
+            "metallicSmoothness": {
+              "file": "SR_room-sign_LOD1-metallicSmoothness.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "83a6f1ff3c402611ebe37d1e429104b41dcf3505bc3fa36faebad0c9f0b17210"
+            },
+            "normal": {
+              "file": "SR_room-sign_LOD1-normal.png",
+              "size": [
+                1024,
+                1024
+              ],
+              "sha256": "ecf10d34832ac3dcba7b6af5a8bf70e08f67f9e26098ebbd3661d3a8e140f97a"
             }
           }
         }

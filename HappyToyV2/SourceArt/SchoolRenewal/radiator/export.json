@@ -1,0 +1,126 @@
+{
+  "key": "radiator",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "497e3a2ef84a7a18e2cec2f683103eb0ae58a047f4088e568e0689f76f03fd1e",
+  "editable": "radiator.blend",
+  "normalizedAxis": "x",
+  "normalizedMetres": 0.98,
+  "widthMetres": 0.9779802560806274,
+  "heightMetres": 0.5065161358797923,
+  "depthMetres": 0.18395527452230453,
+  "originalTriangles": 983925,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "radiator",
+    "axis": "x",
+    "metres": 0.98,
+    "budgets": [
+      12000,
+      4000
+    ],
+    "texture": 2048,
+    "far_from_source": true,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 90.0
+  },
+  "lods": [
+    {
+      "file": "radiator-lod0.fbx",
+      "targetTriangles": 12000,
+      "triangles": 12000,
+      "vertices": 5756,
+      "boundsMin": [
+        -0.48987308144569397,
+        -0.09207668900489807,
+        0.0006604421650990844
+      ],
+      "boundsMax": [
+        0.48810717463493347,
+        0.09187858551740646,
+        0.5071765780448914
+      ],
+      "sha256": "e4b2839c4b22d3260b324f727beae40bd47923c8e008a1d5dcf0e9544dd2dfa3",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.0014697390049695969,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "radiator-lod1.fbx",
+      "targetTriangles": 4000,
+      "triangles": 4000,
+      "vertices": 1756,
+      "boundsMin": [
+        -0.4912376403808594,
+        -0.09064369648694992,
+        0.0005383133538998663
+      ],
+      "boundsMax": [
+        0.48740652203559875,
+        0.09071730822324753,
+        0.506503701210022
+      ],
+      "sha256": "7a68111835a90f61bfb3f19cbb932556f9970d51a6b84c6e4a3d0b56656b0bf2",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.007838608026504516,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_radiator_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_radiator_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_radiator_LOD0-metallicSmoothness.png",
+      "normal": "SR_radiator_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_radiator_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_radiator_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_radiator_LOD1-metallicSmoothness.png",
+      "normal": "SR_radiator_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "tool": "Source-derived voxel surface repair before bounded LOD collapse",
+    "voxelMetres": 0.0025,
+    "originalUnchanged": true,
+    "preserveVolume": true,
+    "sourceCopyFacesBefore": 983862,
+    "sourceCopyFacesAfter": 850060,
+    "intent": "Keep cast-iron section gaps, valve, manifolds and floor feet while removing generated microcracks"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

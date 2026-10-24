@@ -164,8 +164,7 @@ namespace HappyToy.V2
                 Wall(-2.2f,room.Far-.13f,.18f,.26f);
             }
             else Wall(-2.2f,(room.WindowFar+room.Far)*.5f,.18f,room.Far-room.WindowFar);
-            Box("School classroom enamel sign",new Vector3(-2.06f,2.76f,room.DoorZ),new Vector3(.035f,.29f,1.05f),iron);
-            world.Label(root,room.Label,new Vector3(-2.032f,2.76f,room.DoorZ),Quaternion.Euler(0,270,0),new Vector2(.91f,.22f),new Color(.90f,.88f,.76f));
+            SchoolRoomSign.Build(world,root,room);
             if(room.Id!="music")
             {
                 // Furniture, exterior glazing and the teaching wall are owned by the decay dressing.
@@ -204,11 +203,7 @@ namespace HappyToy.V2
                 Box("Corridor cork notice surround",new Vector3(2.075f,1.73f,z),new Vector3(.07f,1.05f,1.65f),timber);
                 Box("Corridor cork notice board",new Vector3(2.03f,1.73f,z),new Vector3(.015f,.91f,1.49f),world.Surfaces.Get("paper-aged",new Color(.42f,.36f,.23f)));
             }
-            for(float z=4.8f;z<35;z+=3.1f)
-            {
-                Box("School radiator wall cover",new Vector3(2.02f,.36f,z),new Vector3(.17f,.55f,.88f),paint);
-                for(int i=0;i<8;i++)Box("School radiator vent",new Vector3(1.925f,.36f,z-.35f+i*.1f),new Vector3(.01f,.43f,.022f),iron);
-            }
+            SchoolRadiatorDressing.Build(root);
         }
     }
 }

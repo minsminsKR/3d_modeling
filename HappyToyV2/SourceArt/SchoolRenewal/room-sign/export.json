@@ -1,0 +1,264 @@
+{
+  "key": "room-sign",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "f6fb27e8a2fd5407d3112e72419b4a98e9d1d94a4aa68d5d71e96b89c22f4431",
+  "editable": "room-sign.blend",
+  "normalizedAxis": "x",
+  "normalizedMetres": 0.66,
+  "widthMetres": 0.6600029170513153,
+  "heightMetres": 0.30838200068137667,
+  "depthMetres": 0.06062372960150242,
+  "originalTriangles": 952950,
+  "textureMaxSize": 2048,
+  "settings": {
+    "key": "room-sign",
+    "axis": "x",
+    "metres": 0.66,
+    "budgets": [
+      6000,
+      1500
+    ],
+    "texture": 2048,
+    "far_from_source": true,
+    "rotation_x": 0,
+    "rotation_y": 0,
+    "rotation_z": 180.0
+  },
+  "lods": [
+    {
+      "file": "room-sign-lod0.fbx",
+      "targetTriangles": 6000,
+      "triangles": 6000,
+      "vertices": 3000,
+      "boundsMin": [
+        -0.33000659942626953,
+        -0.03033263422548771,
+        2.545500137784984e-05
+      ],
+      "boundsMax": [
+        0.3299963176250458,
+        0.03029109537601471,
+        0.3084074556827545
+      ],
+      "sha256": "2deb2daa2744db467aaab98f53c415ed5d8c0ed2554ef3f483ce5755cd6cbfac",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.0015,
+        "maxExtentMetres": 0.0009899969100952148,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    },
+    {
+      "file": "room-sign-lod1.fbx",
+      "targetTriangles": 1500,
+      "triangles": 1500,
+      "vertices": 750,
+      "boundsMin": [
+        -0.33003661036491394,
+        -0.030406249687075615,
+        3.468546492513269e-05
+      ],
+      "boundsMax": [
+        0.3300122916698456,
+        0.030176956206560135,
+        0.3083977699279785
+      ],
+      "sha256": "7d082af920e7e365635ef106c9dcdf3af68509d4634edadb74efd36b4b23216e",
+      "removedGeneratedSpecks": {
+        "relativeLimit": 0.008,
+        "maxExtentMetres": 0.0052799835205078124,
+        "components": 0,
+        "vertices": 0
+      },
+      "collapseAttempts": 1
+    }
+  ],
+  "materials": [
+    {
+      "name": "SR_room-sign_LOD0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_room-sign_LOD0-baseColor.png",
+      "metallicSmoothness": "SR_room-sign_LOD0-metallicSmoothness.png",
+      "normal": "SR_room-sign_LOD0-normal.png",
+      "textureMaxSize": 2048
+    },
+    {
+      "name": "SR_room-sign_LOD1",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "SR_room-sign_LOD1-baseColor.png",
+      "metallicSmoothness": "SR_room-sign_LOD1-metallicSmoothness.png",
+      "normal": "SR_room-sign_LOD1-normal.png",
+      "textureMaxSize": 1024
+    }
+  ],
+  "geometryFinishing": {
+    "tool": "Source-derived 2mm sign surface repair before LOD/PBR bake",
+    "originalUnchanged": true,
+    "voxelMetres": 0.002,
+    "preserveVolume": true,
+    "sourceCopyFacesBefore": 952916,
+    "sourceCopyFacesAfter": 109070,
+    "dimensionsMetres": [
+      0.6599979400634766,
+      0.060709815472364426,
+      0.30836694879690185
+    ],
+    "physicalEnamelFaceRays": [
+      {
+        "x": -0.1,
+        "height": 0.15418347439845093,
+        "frontY": 0.02894100546836853,
+        "reverseY": -0.029081225395202637,
+        "thicknessMetres": 0.05802223086357117
+      },
+      {
+        "x": 0.1,
+        "height": 0.15418347439845093,
+        "frontY": 0.028945162892341614,
+        "reverseY": -0.02908802032470703,
+        "thicknessMetres": 0.058033183217048645
+      },
+      {
+        "x": 0.23,
+        "height": 0.15418347439845093,
+        "frontY": 0.02893945574760437,
+        "reverseY": -0.029082879424095154,
+        "thicknessMetres": 0.058022335171699524
+      }
+    ],
+    "geometry": "Generated enclosure, frame and wall bracket retained; no substitute plaque"
+  },
+  "materialFinishing": {
+    "tool": "Source-derived barycentric UV repair of reverse enamel only",
+    "originalUnchanged": true,
+    "sourceImagesUnchanged": true,
+    "sourceUvSha256": "0bce97d8e4e38ef8cd8913eb3330afd4069214ba23e4b19cd908219f3b0cedc7",
+    "derivedUvSha256": "b6340dfaad89758b5d4fb221afca857d00ebe8c6081b2723a08519d349d3aa0b",
+    "coordinates": "Unchanged Blender source space: width X, clean front +Y, up Z",
+    "selection": {
+      "reverseNormalYLessThan": -0.25,
+      "boardCentreXLessThan": 0.315,
+      "boardCentreAbsZLessThan": 0.18
+    },
+    "sourceMount": "Actual original mounting plate is at +X; the final rigid 180-degree Z turn puts it at canonical -X",
+    "originalGeometryVertices": 572486,
+    "originalGeometryTriangles": 952950,
+    "actualCleanFrontTriangles": 300501,
+    "repairedReversePolygons": 300709,
+    "repairedReverseLoops": 902127,
+    "transferredReverseVertices": 186228,
+    "nearestEdgeFallbackVertices": 1155,
+    "maximumEdgeFallbackSourceUnits": 0.1,
+    "sourceBounds": {
+      "min": [
+        -0.5009758472442627,
+        -0.04592554271221161,
+        -0.23446831107139587
+      ],
+      "max": [
+        0.5008996725082397,
+        0.04634462296962738,
+        0.23368492722511292
+      ]
+    },
+    "broadFaceRays": [
+      {
+        "x": -0.36,
+        "z": -0.1,
+        "frontY": 0.04433593899011612,
+        "reverseY": -0.04370056092739105
+      },
+      {
+        "x": -0.36,
+        "z": 0,
+        "frontY": 0.04435810446739197,
+        "reverseY": -0.04371872544288635
+      },
+      {
+        "x": -0.36,
+        "z": 0.1,
+        "frontY": 0.044352442026138306,
+        "reverseY": -0.04370441287755966
+      },
+      {
+        "x": -0.18,
+        "z": -0.1,
+        "frontY": 0.04434283822774887,
+        "reverseY": -0.043712638318538666
+      },
+      {
+        "x": -0.18,
+        "z": 0,
+        "frontY": 0.04436352849006653,
+        "reverseY": -0.04372844099998474
+      },
+      {
+        "x": -0.18,
+        "z": 0.1,
+        "frontY": 0.04435238987207413,
+        "reverseY": -0.0437273308634758
+      },
+      {
+        "x": 0,
+        "z": -0.1,
+        "frontY": 0.0443497970700264,
+        "reverseY": -0.04372720420360565
+      },
+      {
+        "x": 0,
+        "z": 0,
+        "frontY": 0.044364288449287415,
+        "reverseY": -0.04373212158679962
+      },
+      {
+        "x": 0,
+        "z": 0.1,
+        "frontY": 0.04435878247022629,
+        "reverseY": -0.04373547434806824
+      },
+      {
+        "x": 0.18,
+        "z": -0.1,
+        "frontY": 0.04433663934469223,
+        "reverseY": -0.043685100972652435
+      },
+      {
+        "x": 0.18,
+        "z": 0,
+        "frontY": 0.044353187084198,
+        "reverseY": -0.04371959716081619
+      },
+      {
+        "x": 0.18,
+        "z": 0.1,
+        "frontY": 0.04434950649738312,
+        "reverseY": -0.04370921850204468
+      }
+    ],
+    "normalBake": "Unchanged original geometry remains the high-to-low tangent normal source",
+    "limitation": "Native Korean ink is applied separately after the game model is imported"
+  },
+  "front": "Authored front Blender +Y / Unity -Z after standard FBX conversion; confirm asset-specific orientation in actual Unity integration.",
+  "finishing": "Dense generated geometry retained unchanged; duplicate LODs receive bounded collapse, coherent UV atlas transfer of original colour/ORM, and real selected-high-to-low tangent-space normal bake.",
+  "physics": "Visual assets contain no generated collision or animation; school assembly owns simple stable collision and navigation."
+}

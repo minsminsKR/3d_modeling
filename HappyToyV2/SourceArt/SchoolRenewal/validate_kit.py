@@ -10,7 +10,8 @@ SOURCE = Path(__file__).resolve().parent
 PROJECT = SOURCE.parents[1]
 KEYS = ('wall-panel','floor-slab','ceiling-panel','classroom-door','classroom-window',
         'pipe-manifold','pipe-run','shoe-bank','school-desk','school-chair','archive-shelf',
-        'metal-cabinet','timber-cabinet','fluorescent-fixture','concrete-rubble','loose-stones')
+        'metal-cabinet','timber-cabinet','fluorescent-fixture','concrete-rubble','loose-stones',
+        'radiator','room-sign')
 
 def sha(path):
     with path.open('rb') as stream:

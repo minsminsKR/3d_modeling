@@ -1,0 +1,22 @@
+{
+  "scope": "Generated cast-iron radiator and projecting double-sided Korean classroom signs",
+  "sourceKitValidation": {"status": "PASS", "count": 18, "tool": "validate_kit.py"},
+  "unityImport": {"status": "PASS", "method": "HappyToy.V2.Editor.SchoolRenewalImport.Apply", "unity": "6000.6.0f1"},
+  "featureChecks": {
+    "profile": "school-wayfinding",
+    "graphicsApi": "D3D11 Editor override; player graphics settings unchanged",
+    "quietBatch": true,
+    "editMode": {"passed": 94, "total": 94},
+    "playMode": {"passed": 8, "total": 8},
+    "scope": "All 30 radiator placements, generated PBR/LOD identity, clear aisles, all 9 projecting signs, exact Korean on opposing non-mirrored faces, real bidirectional loop walking, seam views, gate route and approved normal-camera brightness"
+  },
+  "actualCameraReview": {
+    "renderer": "Production UniversalRenderPipeline.StandardRequest with normal post-processing stack, existing exposure and lighting; paused after reflection initialization; torch off",
+    "radiator": "Actual game view shows the generated open rib sections, oxidized valve and feet between existing school cabinets. Neutral-source metallic highlights are restrained under the actual school lighting.",
+    "signs": "Six normal-camera views cover the three Korean room names from both approaches. Physical generated enclosures project perpendicular to the wall; labels retain opposing outward normals without negative scales.",
+    "reproduce": "Set HAPPYTOY_SCHOOL_RADIATOR_REVIEW_DIR and HAPPYTOY_SCHOOL_ROOM_SIGN_REVIEW_DIR to children of Builds, then run the school-wayfinding feature profile.",
+    "limitation": "These are actual Unity Editor camera checks, not a manual playthrough, native player capture or FPS benchmark. A fresh Windows player build is verified separately by its build/input manifest."
+  },
+  "handoff": "Unchanged generated original GLB/PBR, exact input/user references, prompts/settings, request/job records and receipts, packed Blender sources, repair/export/inspection tools, Unity assets and metadata remain in the repository. Private CLI auth and disposable downloads/renders stay outside source control.",
+  "tools": "Designated service CLI, actual web 3D orbit review, pinned Blender 4.0.2 background finishing and Unity CLI/importer. Local named Blender/Unity MCP entries were unavailable in this session."
+}

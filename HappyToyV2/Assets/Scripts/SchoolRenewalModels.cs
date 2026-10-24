@@ -11,7 +11,7 @@ namespace HappyToy.V2
     {
         public static readonly string[] Keys={"wall-panel","floor-slab","ceiling-panel","classroom-door","classroom-window",
             "pipe-manifold","pipe-run","shoe-bank","school-desk","school-chair","archive-shelf","metal-cabinet","timber-cabinet",
-            "fluorescent-fixture","concrete-rubble","loose-stones"};
+            "fluorescent-fixture","concrete-rubble","loose-stones","radiator","room-sign"};
         public const string Prefix="SchoolRenewal/";
         public static GameObject Source(string key)
         {

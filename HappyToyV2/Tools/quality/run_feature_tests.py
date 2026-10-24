@@ -320,11 +320,20 @@ PROFILES["school-connectors"]=("Dressed school connector legs, two-faced ceiling
     PROFILES["school-turnbacks"][1][0],
     ("PlayMode", PROFILES["school-turnbacks"][1][1][1]+play_tests("SchoolConnectorPresentationTests.cs"))])
 
-PROFILES["school-renewal"]=("Sixteen newly generated school asset types, original PBR/normal maps, furniture orientation, both tube-emission LODs and pause, structural collision, closed transparent windows, wet floor reflection and real loop seam continuity", [
+PROFILES["school-renewal"]=("Eighteen newly generated school asset types, original PBR/normal maps, cast-iron radiators and double-sided Korean room signs, furniture orientation, both tube-emission LODs and pause, structural collision, closed transparent windows, wet floor reflection and real loop seam continuity", [
     ("EditMode",PROFILES["school-turnbacks"][1][0][1]+("HappyToy.V2.CoreTests.SchoolFluorescentClockTests",)),
     ("PlayMode", tuple(dict.fromkeys(PROFILES["school-turnbacks"][1][1][1]+play_tests(
         "SchoolRenewalArchitectureTests.cs", "SchoolRenewalFurnitureTests.cs", "SchoolFluorescentLodTests.cs",
-        "SchoolConnectorPresentationTests.cs", "SchoolHorrorEnvironmentTests.cs", "SchoolLightingContinuityTests.cs"))))])
+        "SchoolConnectorPresentationTests.cs", "SchoolHorrorEnvironmentTests.cs", "SchoolLightingContinuityTests.cs",
+        "SchoolRadiatorTests.cs", "SchoolRoomSignTests.cs"))))])
+
+PROFILES["school-wayfinding"]=("Generated cast-iron radiators and projecting double-sided Korean room signs, shared PBR/LODs, clear aisles, normal production-camera views, real bidirectional loop walking, matching seam views, gate clearance and approved brightness", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", CLOUD+"SchoolLoopCheckpointTests")),
+    ("PlayMode", play_tests("SchoolRadiatorTests.cs", "SchoolRoomSignTests.cs")+(
+        PLAY+"SchoolLoopRealWalkingReturnsFromEitherEndToTheSameLeftRoomEntrance",
+        PLAY+"SchoolBothSeamViewsMatchTheirVisibleContinuationWithoutMirroring",
+        PLAY+"SchoolRetractableGateKeepsGeneratedLodsAndTheRealSpawnRouteOpen",
+        PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness"))])
 
 PROFILES["uncat-bell-distance"]=("Recorded Uncat bell at 3/24/36/50m, approaching gain, stereo bearing, physical wall, pause/master mute and real walking-to-pursuit rhythm", [
     ("PlayMode", play_tests("UncatBellDistanceTests.cs")+(

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "approvedForBlenderFinishing": true,
+  "jobId": "b1e29407-07b5-42ff-993f-9d87d1207e31",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31",
+  "reviewer": "Root agent in the user's existing in-app modeling browser",
+  "interaction": "Focused the actual interactive 3D model; stage-front/end view, Right arrow held 1300ms to inspect broad cast-iron sections, gaps, valve and feet",
+  "observations": "Connected cast-iron rib sections have true open vertical gaps rather than a flat slat texture; enamel wear, rusty valve and floor feet are visible. Source is oriented end-on at initial stage-front and requires canonical axis inspection before game fitting.",
+  "decision": "Approve source-derived Blender LOD/PBR finishing; preserve the real section openings and short end valve/feet geometry.",
+  "remainingChecks": "Exact source axes, low-LOD gaps and actual game camera appearance remain to be verified. This record is not an FPS or manual-play claim."
+}

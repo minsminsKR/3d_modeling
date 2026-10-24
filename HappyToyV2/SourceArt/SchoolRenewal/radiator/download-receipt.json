@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "job_id": "b1e29407-07b5-42ff-993f-9d87d1207e31",
+  "downloaded_at": "2026-10-24T04:10:06Z",
+  "archive": "b1e29407-07b5-42ff-993f-9d87d1207e31.zip",
+  "generation_record": {
+    "schema_version": 1,
+    "id": "b1e29407-07b5-42ff-993f-9d87d1207e31",
+    "status": "completed",
+    "message": "Model is ready.",
+    "created_at": 1792814629.4362013,
+    "updated_at": 1792814985.8898032,
+    "source_filename": "reference.png",
+    "batch_index": 1,
+    "batch_total": 1,
+    "options": {
+      "model": "trellis2",
+      "gpu_id": 1,
+      "texture_gpu_id": 0,
+      "gpu_mode": "split",
+      "texture_profile": "detail",
+      "omni_use_ema": false,
+      "trellis_pipeline": "1536_cascade",
+      "trellis_steps": 12,
+      "trellis_texture_size": 8192,
+      "trellis_max_tokens": 65536,
+      "texture": true,
+      "remove_background": true,
+      "seed": 24102417,
+      "num_inference_steps": 50,
+      "guidance_scale": 7.5,
+      "octree_resolution": 512,
+      "num_chunks": 50000,
+      "output_format": "glb"
+    },
+    "request_id": "5d96d4f1-2b1c-4676-8d68-92aa3e81c852",
+    "submitted_options": {
+      "gpu_id": [
+        "split"
+      ],
+      "model": [
+        "trellis2"
+      ],
+      "remove_background": [
+        "on"
+      ],
+      "seed": [
+        "24102417"
+      ],
+      "trellis_pipeline": [
+        "1536_cascade"
+      ],
+      "trellis_steps": [
+        "12"
+      ],
+      "trellis_texture_size": [
+        "8192"
+      ]
+    },
+    "source": "cli",
+    "inputs": [
+      {
+        "name": "reference.png",
+        "archive_name": "inputs/01_reference.png",
+        "sha256": "82748a6d8d2c2ecf2432042469219507c97f45db4aa3e4e427a2c662a5c8993b",
+        "size": 2461209
+      }
+    ],
+    "saved": true,
+    "saved_at": 1792814629.4362013,
+    "started_at": 1792814629.4452465,
+    "finished_at": 1792814985.889794,
+    "used_texture": true,
+    "warnings": [],
+    "web_url": "/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31",
+    "status_url": "/api/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31",
+    "archive_url": "/api/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31/archive",
+    "record_url": "/api/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31/record",
+    "rigging": {
+      "status": "idle",
+      "ready": true,
+      "start_url": "/api/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31/rigging",
+      "status_url": "/api/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31/rigging"
+    },
+    "elapsed_seconds": 356,
+    "display_name": "reference",
+    "download_url": "/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31/download",
+    "model_url": "/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31/model",
+    "mixamo_package_url": "/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31/mixamo/package",
+    "mixamo_upload_url": "/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31/mixamo/upload",
+    "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+    "mixamo_files": [],
+    "processed_input_url": "/jobs/b1e29407-07b5-42ff-993f-9d87d1207e31/processed/1",
+    "saved_at_label": "2026-10-24 13:03",
+    "created_at_label": "2026-10-24 13:03",
+    "artifacts": [
+      {
+        "name": "model.glb",
+        "sha256": "497e3a2ef84a7a18e2cec2f683103eb0ae58a047f4088e568e0689f76f03fd1e",
+        "size": 174177188
+      },
+      {
+        "name": "metadata.json",
+        "sha256": "3389907328e23f097f5aab09e3734e8e37a128611d9b8d601a73d07fad76c419",
+        "size": 2929
+      },
+      {
+        "name": "outputs/generation_request.json",
+        "sha256": "ec5efb41e9b299e67238b2d4ce786dfdadbd47e3d039b1fa456279c55773c7ac",
+        "size": 817
+      },
+      {
+        "name": "outputs/generation_result.json",
+        "sha256": "3435b25d853feea150330d75f98eb8b3166caffc49a24766e83f0f8d6af605a2",
+        "size": 333
+      },
+      {
+        "name": "processed_inputs/01.png",
+        "sha256": "0449d98c4bda9a751ed3cc0c1fd9ab388b9639608b4294e053b86339775615be",
+        "size": 710903
+      }
+    ]
+  },
+  "archive_sha256": "3958eedc70c1e54078b46203e193ea96e9109996183bcdeba7efd3f9eb55c5b9",
+  "archive_bytes": 165855820,
+  "archive_etag": "\"3958eedc70c1e54078b46203e193ea96e9109996183bcdeba7efd3f9eb55c5b9\"",
+  "resumed_bytes": 0,
+  "received_bytes": 165855820,
+  "transfer_seconds": 7.078
+}

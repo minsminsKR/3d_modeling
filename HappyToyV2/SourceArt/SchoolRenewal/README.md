@@ -1,11 +1,11 @@
 # Renewed Korean school environment
 
-The visual kit covers sixteen new generated assets: wall panel, quarry-tile floor
+The visual kit covers eighteen new generated assets: wall panel, quarry-tile floor
 slab, damaged acoustic ceiling panel, classroom door and window frame, straight
 heating pipes and a valve manifold, shoe bank, student desk and chair, open archive
 shelf, steel cabinet, low timber cabinet, fluorescent housing/tubes, concrete
-fragments and loose stones. The two pipe types prevent large valves repeating
-at every short section of corridor.
+fragments, loose stones, cast-iron radiator and projecting classroom sign. The
+two pipe types prevent large valves repeating at every short section of corridor.
 
 ## Origin and editable sources
 
@@ -27,6 +27,16 @@ repair microtriangle tearing, or crop actual source panels. They retain source
 coordinates for registered bakes. The fluorescent emission mask is derived from
 the actual two tube surfaces and source albedo, leaving its casing dark.
 
+The generated `room-sign` reverse face contains unwanted pseudo-symbols.
+Its optional `finish_geometry.py.prepare_transfer_source` hook makes a separate
+paint-transfer copy and remaps only reverse-enamel UVs to the same model's clean
+front enamel, using BVH surface hits and barycentric interpolation of the actual
+front triangles. The original GLB, original UVs and source images stay unchanged;
+the corrected copy supplies game colour/ORM, while the untouched original remains
+the high-to-low normal source. `finish_asset.py` runs this hook automatically and
+records its source/derived UV hashes, surface measurements and limitations in
+each export's `materialFinishing`. Korean names remain separate native lettering.
+
 ## Reproduction
 
 Use the pinned Unity `6000.6.0f1` and Blender `4.0.2`. The repository's existing
@@ -37,6 +47,9 @@ Python/NumPy; standalone measurement/validation uses the NumPy and Pillow pins
 in `Tools/requirements-authoring.txt`. Shared dependencies are checked in at
 `SourceArt/CorridorEntrance/finish_entrance_assets.py` and
 `SourceArt/SchoolLoop/rebake_music_lod.py`.
+The commands below use the pinned Blender CLI; Unity reconstruction uses the
+project's CLI-invoked editor importer. These are reproducible CLI operations and
+do not depend on a Blender or Unity MCP connection.
 
 With a logged-in local CLI, use `python hunyuan3d-webapp/modeling_cli.py resume
 <preserved request UUID> --output <Builds download folder>` to recover the same
@@ -83,6 +96,17 @@ shadow/reflection budgets; `SchoolFluorescent` drives both LOD emission atlases
 with one paused-aware voltage clock. No new resource changes map version 3,
 transfer coordinates, saves, player handling or progression.
 
+`SchoolRadiatorDressing` replaces the old flat radiator covers with the generated
+cast-iron assembly, including its feet, section gaps and short end connections.
+Ten shared near/far assemblies face the aisle in each repeated section, retaining
+the old clear walking width and the existing wall connection. They add no route
+colliders or NavMesh obstacles. `SchoolRoomSign` mounts the generated enamel
+casing and wall bracket perpendicular to each classroom wall, above the existing
+door header. Two depth-tested text faces display the exact Korean names
+매점 / 정독반 / 음악실 without mirroring either walking direction. The casing
+uses generated source PBR and LODs; Korean lettering uses the bundled sign font.
+Neither presentation module adds light sources or changes locked-door IDs.
+
 `school-renewal` verifies generated resource use, PBR identity, seating direction,
 both tube LODs and pause, physical navigation, transparency, actual wet reflection,
 clock/gate/loop continuity and normal production-camera views. Explicit review
@@ -91,6 +115,14 @@ output uses the existing `HAPPYTOY_SCHOOL_HORROR_REVIEW_DIR` and
 original/source/export/map hashes; the repository source-completeness audit runs
 after staging. No credentials, build caches, redundant previews or private
 machine state are authoring inputs.
+
+For these two prop types alone, `school-wayfinding` selects the new radiator and
+double-sided nameplate integration/camera tests, actual bidirectional loop walking,
+matching seam views, gate/aisle navigation and the approved camera brightness,
+alongside Core and school loop/save rules. Optional source review captures use
+`HAPPYTOY_SCHOOL_RADIATOR_REVIEW_DIR` and `HAPPYTOY_SCHOOL_ROOM_SIGN_REVIEW_DIR`
+under Builds. Production-camera tests use the normal camera render request, not
+a preview-only exposure.
 
 These are newly generated game assets with source-derived detail, not a whole
 school captured by photogrammetry. Repeated modules, baked microdetail and

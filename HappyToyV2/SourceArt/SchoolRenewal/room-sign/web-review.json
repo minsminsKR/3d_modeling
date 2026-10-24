@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "approvedForBlenderFinishing": true,
+  "jobId": "fcac9c34-bece-4450-b42a-9a2dfd921e4e",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/fcac9c34-bece-4450-b42a-9a2dfd921e4e",
+  "reviewer": "Root agent using the user's existing in-app modeling browser",
+  "interaction": "Actual interactive model focused; Right arrow held 1000ms, 1800ms and1500ms to inspect front enamel, physical blade depth, bracket and reverse face",
+  "observations": "Generated rectangular enamel blade, blue rim and two rigid bracket arms are appropriate. The left mounting plate is perpendicular to the blade. Blender +Y front is blank; the -Y back has unwanted generated dark pseudo-symbols.",
+  "decision": "Approve generated base geometry for Blender finishing with mandatory reverse-face material repair: transfer the clean front enamel UV to the corresponding back broad surface, retain worn rim/hardware, then apply exact native Korean labels to both sides.",
+  "orientation": "Actual coordinate-ray measurements establish raw long axis Blender X, mounting plate +X, up Z and broad faces +/-Y. The +Y camera image reverses screen-horizontal X. Blender finishing rotates the source-derived copy 180 degrees around Z to put the mount at canonical -X, without mirroring. The original remains unchanged.",
+  "remainingChecks": "Repaired back material, actual label face depths, pilaster contact, both normal game camera approaches and LOD appearance require verification before completion."
+}

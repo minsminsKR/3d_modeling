@@ -1,0 +1,13 @@
+{
+  "key": "radiator",
+  "requestId": "5d96d4f1-2b1c-4676-8d68-92aa3e81c852",
+  "seed": 24102417,
+  "pipeline": "1536_cascade",
+  "texture": 8192,
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "model": "trellis2",
+  "gpu": "split",
+  "remove_background": "on",
+  "steps": 12,
+  "input": "reference.png"
+}

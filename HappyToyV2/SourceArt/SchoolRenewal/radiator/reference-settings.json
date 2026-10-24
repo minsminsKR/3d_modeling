@@ -1,0 +1,8 @@
+{
+  "method": "OpenAI built-in image_gen.imagegen",
+  "prompt": "Create one photorealistic physically credible 1970s-1990s Korean school cast-iron hot-water radiator as a 3D modeling reference. Single complete isolated object, neutral very light grey studio background, soft even catalog lighting, three-quarter front view slightly from above, full object unclipped. It has TWELVE distinct connected vertical cast-iron sections with rounded hollow three-column ribs and REAL OPEN AIR GAPS between every section, interconnected small top and bottom water manifolds, two sturdy short floor feet, a small aged handwheel valve on one end and short capped supply/return pipe stubs. Approximately 1 metre wide, .64 metre tall and .23 metre deep. Worn grey-green/off-white thick enamel, realistic chipped paint exposing rust at seams, oxidized valve, subtle mineral staining and accumulated dust, aged but recognizable and structurally intact. Sharp authentic cast metal geometry, rounded cast edges, believable roughness and fine PBR detail. Absolutely not a flat slatted rectangular vent cover, not a box with painted lines. No background wall, no floor context, no cables or long pipes, no words, no text, no numbers, no labels, no dimensions, no diagrams, no inset or multiple views, no watermark, no cartoon or low-poly style. This asset will stand in a cinematic abandoned Korean school horror game.",
+  "transparent_background": false,
+  "generatedImage": "exec-ca7ebc06-fb2d-4f7c-8b84-5c0e4adf4b8d.png",
+  "userReference": "codex-clipboard-1fb9c0f6-e386-4041-92b6-8f3c9780d925.png",
+  "purpose": "Reference image for designated A100 TRELLIS.2 model generation; original input retained"
+}

@@ -1,0 +1,44 @@
+{
+  "reviewedUtc": "2026-10-24T04:39:28.536448+00:00",
+  "reviewer": "Codex school sign integration agent",
+  "stage": "Actual finished packed Blender source, both game LODs",
+  "original": "original.glb",
+  "originalSha256": "f6fb27e8a2fd5407d3112e72419b4a98e9d1d94a4aa68d5d71e96b89c22f4431",
+  "editable": "room-sign.blend",
+  "editableSha256": "ab7b372f8b84c3f62df53004bdd50731fb11b51ce76838fbc50fe4dc25c24cdf",
+  "readOnlyInspection": true,
+  "sourceModified": false,
+  "method": "Blender 4.0.2 EEVEE cardinal orthographic renders, 1024x1024, neutral lights, unchanged game PBR",
+  "viewsInspected": [
+    "LOD0 camera +Y",
+    "LOD0 camera -Y",
+    "LOD0 camera +X",
+    "LOD0 camera -X",
+    "LOD1 camera +Y",
+    "LOD1 camera -Y",
+    "LOD1 camera +X",
+    "LOD1 camera -X"
+  ],
+  "observations": [
+    "Both actual broad enamel faces are blank in both LODs; the hallucinated reverse dark characters are removed from the derived game paint.",
+    "Original worn ivory enamel, dark blue perimeter, rusted mounting plate, two metal bracket arms and fasteners remain visible.",
+    "The rigid 180-degree finishing turn places the actual mounting plate at canonical Blender -X without mirroring.",
+    "The 1500-triangle far model retains the same panel, bracket and source-derived weathering as the 6000-triangle near model.",
+    "Free panel edge and mounting plate remain physically distinct and the bracket openings are retained."
+  ],
+  "gameLods": [
+    {
+      "file": "room-sign-lod0.fbx",
+      "triangles": 6000,
+      "sha256": "2deb2daa2744db467aaab98f53c415ed5d8c0ed2554ef3f483ce5755cd6cbfac"
+    },
+    {
+      "file": "room-sign-lod1.fbx",
+      "triangles": 1500,
+      "sha256": "7d082af920e7e365635ef106c9dcdf3af68509d4634edadb74efd36b4b23216e"
+    }
+  ],
+  "reproduce": "blender -b --factory-startup --threads 2 --python-exit-code 1 --python HappyToyV2/SourceArt/SchoolRenewal/inspect_generated_prop.py -- --key room-sign --finished --lod N --render",
+  "optionalReviewOutput": "Builds/SchoolWayfindingReview/finished-room-sign-lodN/",
+  "remainingVerification": "Unity import, exact mounted Korean text and real in-game camera/navigation tests are performed separately by the root task."
+}
