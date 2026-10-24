@@ -92,6 +92,10 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 기존 통행 폭과 벽 연결을 유지한다. `SchoolRoomSign`은 벽에 수직인 생성 법랑 간판과
 정확한 한글 양면 이름을 소유한다. 매점·정독반·음악실은 양방향에서 읽히며 문 ID,
 충돌·NavMesh·광원을 추가하지 않는다. 두 모델은 공용 PBR·2LOD 자원을 재사용한다.
+방 이름은 실제 Unity 메시/UV의 법랑면 중심 X=-.06m에 맞추고 공통 높이·내부 여백을
+유지한다. 글자 bounds 중심 보정과 네이티브 폰트 크기 갱신 후 맞춤은 `SchoolRoomSign`이
+로딩/일시정지 중에도 처리한다. `SchoolRoomSignTests`는 18면의 실제 글자 모서리 포함과
+정지 중 폰트 갱신, 양방향 근접/보행 카메라를 확인한다.
 `school-renewal`은 Core·18종 실제 배치·PBR·좌석 방향·튜브 LOD/pause·기존 이동/닫힌
 교실·젖은 반사·시계/자바라/연결부와 정상 카메라 검사를 묶는다. 새 Windows 빌드와
 `validate_kit.py`/스테이징 후 소스 완전성 확인을 함께 수행한다.

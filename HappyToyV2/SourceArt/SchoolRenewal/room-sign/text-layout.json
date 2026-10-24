@@ -1,0 +1,14 @@
+{
+  "coordinates": "Actual imported Unity mesh transformed into the mounted SchoolRoomSign local space",
+  "source": "room-sign-visual.prefab near LOD, actual generated UV and SR_room-sign_LOD0-baseColor.png",
+  "measurement": "Barycentric XY triangle intersections and original PBR texel samples; the broad ivory surface has imported X opposite the Blender authoring coordinate",
+  "ivoryCentrelineXMetres": [-0.319, 0.197],
+  "commonIvoryCentrelineYMetres": [-0.118, 0.110],
+  "inkCentreMetres": [-0.060, -0.004],
+  "maximumGlyphBoundsMetres": [0.400, 0.180],
+  "inkPlaneZMetres": [-0.041, 0.041],
+  "layoutOwner": "Assets/Scripts/SchoolRoomSign.cs",
+  "verification": "SchoolRoomSignTests: all 18 faces, actual transformed glyph bounds, paused native font/bounds refresh (including cached glyph sizes), both directions at 4.2m and 1.25m approach offsets",
+  "optionalGeometryCapture": "Set HAPPYTOY_SCHOOL_ROOM_SIGN_REVIEW_DIR under Builds and run school-wayfinding; panel-geometry.json retains the actual imported vertices, UVs, triangles and glyph bounds",
+  "modelAndTexturesModified": false
+}
