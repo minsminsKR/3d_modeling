@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "asset": "school-walking-npc",
+  "deliverable": "reference-v1.png",
+  "phase": "Image reference only; no 3D generation or game integration in this request",
+  "method": "Built-in image_gen.imagegen",
+  "referencedImage": "face-reference.jpg",
+  "subjectTargets": {
+    "heightMetres": 1.77,
+    "weightKilograms": 120,
+    "build": "Heavyset adult man with realistic obese proportions"
+  },
+  "pose": "Symmetric relaxed A-pose, front view, full body, open arm/leg gaps and visible hands",
+  "wardrobeAssumption": "Plain navy crew-neck T-shirt based on user photo; charcoal trousers and unbranded dark walking shoes",
+  "background": "Uniform light-grey studio, balanced neutral lighting",
+  "transparent_background": false,
+  "prompt": "Use case: identity-preserve, photorealistic-natural.\nAsset type: one image-to-3D modeling input for a realistic walking adult human NPC in a Korean abandoned-school horror game.\nInput image: the supplied portrait is the FACE IDENTITY reference. Preserve this particular adult man's recognizable facial likeness: his round broad face and full cheeks, narrow eyes and eyelid shape, eyebrows, nose shape, lips and jaw/chin, short straight dark fringe, sparse moustache and chin/jaw stubble, and natural skin pores/blemishes. Do not replace him with a generic handsome man or beautify/slim the face. Use natural neutral facial expression with mouth gently closed, eyes open looking straight ahead. The expression and pose may change but facial identity should stay consistent.\n\nCreate a SINGLE high-resolution photorealistic FULL-BODY straight FRONT VIEW of this same adult man standing in a relaxed symmetrical A-pose. His specified real-world build is 177 cm tall and 120 kg: naturally obese/heavyset with a broad thick torso, a prominent rounded belly, wide waist, full neck/double chin, thick upper arms, hips and thighs, and realistic human proportions. Portray the build matter-of-factly, not exaggerated, comic or grotesque. No muscular or slim athletic physique. Keep the head/body ratio adult and proportionate.\n\nWardrobe: plain dark navy short-sleeve crew-neck T-shirt like the reference, untucked, following the heavy belly without compressing it; charcoal dark-grey full-length everyday trousers with realistic fabric folds; simple dark-grey closed walking sneakers without logos. Both short sleeves and separate visible bare hands. No bags, hats, jewellery, equipment or handheld objects. REMOVE the flower by the ear, the portrait's raised hand gesture, and all background people/room details.\n\nPose and visibility: upright and balanced, weight evenly on both feet, face/chest/pelvis/knees pointing directly toward the camera, shoulders level. Arms angled approximately 30 degrees away from the torso so the armpits and sides remain visibly separated; elbows nearly straight; hands relaxed with palms facing forward, all five anatomically correct fingers on each hand gently separated and the thumbs clear. Legs slightly apart with visible negative space below the thighs, feet planted and pointing forward, both shoes clearly separate. Keep the anatomy natural for a heavy man. Hair, head, both fingertips and both soles must all be fully inside the frame with clear margin.\n\nCamera/style: neutral straight-on eye-level long-lens catalog camera with minimal perspective distortion, no dramatic lens, no foreshortening, no tilted camera. The whole single person fills most of a PORTRAIT image with adequate border all around. Plain seamless uniform light-grey studio backdrop, soft balanced frontal illumination plus very gentle fill on both sides, realistic color and fine skin and fabric texture, faint contact shadow only, crisp clean silhouette. The reference is for the face and basic T-shirt only, not for its camera angle or cropped composition.\n\nThis is a clean 3D reconstruction/rigging reference, not a horror scene or beauty portrait. No multiple views, no turnaround sheet, no duplicated person, no inset portrait, no labels, no writing, no ruler, no dimensions, no logos, no watermark. No monster features, no wounds, no blood, no cinematic darkness, no cartoon, anime, illustration or low-poly aesthetic.",
+  "output": {
+    "file": "reference-v1.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "sha256": "c0cd805278a0d0a6abac1eb1a80166695d35c3e8aeec921c52cf5bb6770e4c26"
+  },
+  "referencedImageSha256": "31e552de47e4455612531082995a383b9adf419d5805c47bd7f3aacc816a52bf"
+}
