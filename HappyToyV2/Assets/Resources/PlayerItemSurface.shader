@@ -12,6 +12,7 @@ Shader "HappyToy/PlayerItemSurface"
         _HasMetalRough("Packed map present",Float)=1
         _HasNormal("Normal map present",Float)=0
         _BumpScale("Normal scale",Float)=1
+        _Skin("Close-up skin shading",Float)=0
         _Metallic("Metallic without map",Range(0,1))=0
         _Smoothness("Smoothness",Range(0,1))=.45
         _Burn("Burn fraction",Range(0,1))=0
@@ -30,7 +31,7 @@ Shader "HappyToy/PlayerItemSurface"
             half4 _BaseColor;
             float4 _BaseMap_ST, _BurnHeight;
             float _Viewmodel, _Monochrome, _PbrLayout, _HasMetalRough;
-            float _HasNormal, _BumpScale, _Metallic, _Smoothness, _Burn, _Burning;
+            float _HasNormal, _BumpScale, _Metallic, _Smoothness, _Burn, _Burning, _Skin;
         CBUFFER_END
         float _RitualMonochrome;
         ENDHLSL
@@ -66,6 +67,24 @@ Shader "HappyToy/PlayerItemSurface"
                 o.uv=TRANSFORM_TEX(a.uv,_BaseMap);
                 o.height=dot(float4(a.p.xyz,1),_BurnHeight);
                 return o;
+            }
+            half3 SkinLight(half3 colour, half3 n, half3 v, half3 l, half3 energy, half roughness)
+            {
+                // Energy-conserving dielectric GGX and a restrained warm wrap
+                // approximate shallow skin scattering without a full-screen blur.
+                half3 h=normalize(l+v);
+                half nl=saturate(dot(n,l)), nv=max(.05h,saturate(dot(n,v)));
+                half nh=saturate(dot(n,h)), vh=saturate(dot(v,h));
+                half a=roughness*roughness, a2=a*a;
+                half denominator=nh*nh*(a2-1)+1;
+                half distribution=a2/max(.0001h,PI*denominator*denominator);
+                half k=(roughness+1)*(roughness+1)*.125h;
+                half visibility=(nv/(nv*(1-k)+k))*(nl/max(.001h,nl*(1-k)+k));
+                half fresnel=.028h+.972h*pow(1-vh,5);
+                half specular=distribution*visibility*fresnel/max(.001h,4*nv*nl);
+                half wrap=saturate((dot(n,l)+.35h)/1.35h);
+                half3 diffuse=colour*(1-fresnel)*(nl*.75h+wrap*half3(.25h,.15h,.11h));
+                return (diffuse/PI+specular*nl)*energy;
             }
             half4 frag(V i, bool front:SV_IsFrontFace):SV_Target
             {
@@ -108,6 +127,16 @@ Shader "HappyToy/PlayerItemSurface"
                 half fresnel=pow(1-saturate(dot(view,halfDirection)),5);
                 half3 specular=lerp(f0,half3(1,1,1),fresnel)*pow(saturate(dot(n,halfDirection)),lerp(112,5,roughness));
                 half3 lit=tex.rgb*(ambient+irradiance*ndl)*(1-metallic*.65)+specular*irradiance*ndl;
+                if (_Skin>.5 && _Viewmodel>.5)
+                {
+                    // Close hands share one fixed, soft photographic lighting rig.
+                    // Roughness variation and true normals replace the old hard
+                    // Phong highlight that made fingers resemble polished rubber.
+                    half skinRoughness=clamp(roughness,.36h,.78h);
+                    lit=tex.rgb*half3(.105h,.112h,.125h);
+                    lit+=SkinLight(tex.rgb,n,view,normalize(half3(-.4h,.7h,-.8h)),half3(2.05h,1.97h,1.85h),skinRoughness);
+                    lit+=SkinLight(tex.rgb,n,view,normalize(half3(.8h,.15h,-.35h)),half3(.46h,.50h,.56h),skinRoughness);
+                }
                 if (_Viewmodel<.5)
                 {
                     // Pickups receive the player's spotlight and nearby candle lights.

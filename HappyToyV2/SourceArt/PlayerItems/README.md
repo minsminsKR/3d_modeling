@@ -1,5 +1,11 @@
 # Player hands and ritual items
 
+The 2026-10-24 hand replacement is authored in [PlayerHandsV2](../PlayerHandsV2/README.md).
+Its new A100 original, photographic skin projection, measured rig and editable Blender
+source supersede the historical hand described below. The old hand originals are
+retained for provenance; the incense, talisman and flashlight sources remain here.
+The hand export entry points now delegate to the replacement recipe.
+
 The hand, incense, talisman and flashlight base surfaces were generated through
 the repository's designated modeling webapp, on GPU 0. `generation-jobs.json`
 records job IDs, batches, settings and SHA-256 values. `Originals/` contains the

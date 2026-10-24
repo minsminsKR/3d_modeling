@@ -1,0 +1,41 @@
+{
+  "original": "SourceArt/PlayerHandsV2/Originals/model.glb",
+  "originalSha256": "e41a6cca3cd5829106a5458be1bee73043b02291c6ba6e27465a62458531b551",
+  "originalTriangles": 921038,
+  "heightMetres": 0.3753410577774048,
+  "vertices": 70010,
+  "triangles": 140000,
+  "rigged": true,
+  "baseColor": "albedo.png",
+  "metallicRoughness": "metalrough.png",
+  "materialNames": [
+    "hand_v2_surface"
+  ],
+  "rigValidation": {
+    "maxWeightSumError": 1.1920928955078125e-07,
+    "maxInfluences": 3,
+    "bones": 23,
+    "correctiveShapes": 10,
+    "digitLengthsMetres": {
+      "little": 0.06618180081341421,
+      "ring": 0.08416766763621676,
+      "middle": 0.09397009207643287,
+      "index": 0.0893053546112125,
+      "thumb": 0.12339692535320292
+    }
+  },
+  "generationRequest": "SourceArt/PlayerHandsV2/generation-request.json",
+  "outputSha256": {
+    "geometry": "5d0910feda85ca70904a7749c83e5b93010ff68ae2b7f3fe7878a83e43921f7d",
+    "packedBlend": "07c638506be51f5197bb237f4ad254ee084c657789a77b2e4cbd33f6c1882b99",
+    "albedo": "eb9437f2450889aef4ee205ac581d3ce39af14ff3d136215b0fba385d66db6c8",
+    "metallicRoughness": "510c76b1bfc2d3ababbfaec24671193d4194a08fcb66a23561044e45315ddf8a",
+    "normal": "364ef48b8979c4a815b675e33ffa01bb39f4bc9486648a02762f3dba25a09e6b"
+  },
+  "photographicSkin": {
+    "front": "SourceArt/PlayerHandsV2/References/neutral-hand.png",
+    "back": "SourceArt/PlayerHandsV2/References/dorsal-hand.png",
+    "textureSize": 4096,
+    "method": "Two-sided neutral-reference emission projection to retained A100 UVs; soft side blend"
+  }
+}

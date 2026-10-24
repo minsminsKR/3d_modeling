@@ -37,6 +37,7 @@ namespace HappyToy.V2.Editor
                         grip.localRotation = Quaternion.Euler(gripAngle.Value);
                     }
                     var report = new System.Text.StringBuilder();
+                    report.AppendLine(hands.EditorGripReport());
                     foreach (var node in hands.GetComponentsInChildren<Transform>(true))
                         if (node.name == "palm_contact" || node.name.EndsWith("_tip") || node.name == "hand" || node.name == "flashlight")
                             report.AppendLine(node.name+" position="+camera.transform.InverseTransformPoint(node.position).ToString("F5")+" forward="+node.forward.ToString("F4")+" up="+node.up.ToString("F4"));

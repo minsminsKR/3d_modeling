@@ -140,6 +140,8 @@ namespace HappyToy.V2.CloudTests
             {
                 var skins = hand.GetComponentsInChildren<SkinnedMeshRenderer>(true);
                 Assert.That(skins, Is.Not.Empty);
+                Assert.That(skins.Any(skin => skin.sharedMesh.blendShapeCount >= 10), Is.True,
+                    "The finished hand lost its authored knuckle-volume corrections");
                 foreach (string digit in HandDigits)
                 {
                     HandMarker(hand, digit + "_tip");
@@ -196,6 +198,17 @@ namespace HappyToy.V2.CloudTests
                     foreach (var tip in new[] { index, pinchThumb })
                         Assert.That(surface.Min(point => Vector3.Distance(point, tip)), Is.LessThan(.025f),
                             item + ": a pinching fingertip misses the actual item surface");
+                }
+                else if (item == "Snapper")
+                {
+                    var palm = HandMarker(rightHand, "palm_contact").position;
+                    var index = HandMarker(rightHand, "index_tip").position;
+                    var gripThumb = HandMarker(rightHand, "thumb_tip").position;
+                    Assert.That(Vector3.Dot(rightHand.forward, HandStudio.forward), Is.LessThan(-.6f),
+                        "Snapper must use the reference's upright loose grip rather than an upward-facing tray");
+                    Assert.That(Vector3.Distance(index, gripThumb), Is.LessThan(.05f), "Loose grip thumb is detached from the index finger");
+                    Assert.That(Vector3.Distance(index,palm), Is.LessThan(.08f), "Snapper fingers did not curl toward the palm");
+                    Assert.That(surface.Min(point=>Vector3.Distance(point,palm)), Is.LessThan(.035f), "Snapper is floating outside the grip");
                 }
                 else
                 {

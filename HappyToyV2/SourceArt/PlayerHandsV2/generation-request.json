@@ -1,0 +1,88 @@
+{
+  "requestId": "72ba34a8-f692-44fc-b448-7ce47c1dc225",
+  "jobId": "05c59e51-fe74-4da5-a864-1e115ca917be",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "submittedOptions": {
+    "gpu_id": [
+      "split"
+    ],
+    "model": [
+      "trellis2"
+    ],
+    "remove_background": [
+      "on"
+    ],
+    "seed": [
+      "20261024"
+    ],
+    "trellis_pipeline": [
+      "1536_cascade"
+    ],
+    "trellis_steps": [
+      "24"
+    ],
+    "trellis_texture_size": [
+      "8192"
+    ]
+  },
+  "actualOptions": {
+    "gpu_id": 1,
+    "gpu_mode": "split",
+    "guidance_scale": 7.5,
+    "model": "trellis2",
+    "num_chunks": 50000,
+    "num_inference_steps": 50,
+    "octree_resolution": 512,
+    "omni_use_ema": false,
+    "output_format": "glb",
+    "remove_background": true,
+    "seed": 20261024,
+    "texture": true,
+    "texture_gpu_id": 0,
+    "texture_profile": "detail",
+    "trellis_max_tokens": 65536,
+    "trellis_pipeline": "1536_cascade",
+    "trellis_steps": 24,
+    "trellis_texture_size": 8192
+  },
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/05c59e51-fe74-4da5-a864-1e115ca917be",
+  "input": {
+    "path": "References/neutral-hand.png",
+    "sha256": "0b3a756e330f95c58d1cc2117561c3f6e8239be2d1649a3216e8d14ab1f34982",
+    "createdWith": "built-in image_gen",
+    "prompt": "References/neutral-hand.prompt.txt",
+    "userGripReference": "References/user-grips.jpg"
+  },
+  "anatomyReferences": [
+    {
+      "url": "https://www.artec3d.com/3d-models/top-hand",
+      "use": "Reference for cuticle, nail borders, dorsal wrinkles and finger web detail; no downloaded mesh used"
+    },
+    {
+      "url": "https://doi.org/10.1038/s41598-023-48658-5",
+      "use": "Grasped hand skin deformation and cylinder contact reference"
+    }
+  ],
+  "skinProjectionInputs": [
+    {
+      "path": "References/neutral-hand.png",
+      "prompt": "References/neutral-hand.prompt.txt",
+      "sha256": "0b3a756e330f95c58d1cc2117561c3f6e8239be2d1649a3216e8d14ab1f34982",
+      "creator": "built-in image_gen"
+    },
+    {
+      "path": "References/dorsal-hand.png",
+      "prompt": "References/dorsal-hand.prompt.txt",
+      "sha256": "0920f416191df1672571f3ec13d030c89048b39fcd929ed6b8bc09f0614d3cff",
+      "creator": "built-in image_gen"
+    }
+  ],
+  "webReview": {
+    "views": [
+      "palm",
+      "side",
+      "dorsal"
+    ],
+    "observations": "Five distinct fingers; generated palm depth, imported split normals and faceted-looking PBR required local finishing. No web joint edits were made."
+  }
+}

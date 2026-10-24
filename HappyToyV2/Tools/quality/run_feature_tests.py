@@ -46,6 +46,12 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "item-wheel": ("Real quarter-time movement measured over simulation time, input isolation, selection, fresh press, pause and focus", [
+        ("PlayMode", (PLAY + "ItemWheelTabSlowsTimeSelectsOnReleaseAndRequiresFreshUsePress",))]),
+    "player-hands": ("Retained A100 hand/photographic skin, real wrap/pinch/loose grip, knuckle corrections, throw/pause and supported camera aspects", [
+        ("PlayMode", play_tests("PlayerHandsTests.cs") + (
+            PLAY + "ItemWheelTabSlowsTimeSelectsOnReleaseAndRequiresFreshUsePress",
+            PLAY + "LadyBlackoutKeepsOnlyPlayerIncenseLightAndVisibleGuidingSmokeUntilBurnout"))]),
     "corridor-roster": ("Four-memory current corridor without Baby, three staged threats, fourth-memory Lady, real altar/school transition, current UI and legacy checkpoint/record compatibility", [
         ("EditMode", (EDIT + "CorridorLayoutTests", CLOUD + "CorridorSectorPlanTests",
                       CLOUD + "CorridorCheckpointStoreTests", EDIT + "CorridorRecordsTests", CLOUD + "CheckpointTrapCodecTests")),

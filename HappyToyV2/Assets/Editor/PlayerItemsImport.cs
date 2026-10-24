@@ -40,6 +40,7 @@ namespace HappyToy.V2.Editor
                         var material = AssetDatabase.LoadAssetAtPath<Material>(folder+name+".mat");
                         material.SetTexture("_BumpMap", AssetDatabase.LoadAssetAtPath<Texture2D>(folder+"skin-normal.png"));
                         material.SetFloat("_HasNormal", 1); material.SetFloat("_BumpScale", .55f);
+                        material.SetFloat("_Skin", 1);
                         material.SetFloat("_Smoothness", .32f); EditorUtility.SetDirty(material);
                     }
                 }
