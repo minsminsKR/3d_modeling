@@ -29,6 +29,18 @@ it. Run both complete Unity test suites and a player build for broad refactors
 or release readiness. Update the code map/profiles when ownership or entry points
 change. Keep diagnostic code opt-in and preserve the quiet verification policy.
 
+# Planned school anomaly loop — user direction, 2026-10-24
+
+The school chapter is intended to follow an Exit 8-style anomaly judgment loop:
+- When there is no anomaly, continuing forward is correct and advances the clock.
+- When there is an anomaly, turning back is correct and also advances the clock.
+- Missing an anomaly and continuing resets progress to 00:00.
+
+The user will develop the anomaly events in future requests. This is a recorded
+design direction, not a request to implement events or change the current clock
+logic now. Distinguish this planned judgment-based progression from the existing
+forward-only clock implementation when discussing or extending the chapter.
+
 # Repository handoff and push policy
 
 The user requires every related source needed to pull this repository on another
