@@ -9,6 +9,9 @@ so development can continue on another machine. The repository is
 https://github.com/minsminsKR/3d_modeling ; HappyToyV2 pull and push requests
 target its GitHub `origin/main` branch.
 
+Persistent project preferences are recorded in `MEMORY.md`; read it when
+continuing work. The safeguards and operational instructions below still apply.
+
 # Maintainable HappyToyV2 code — user instruction, 2026-10-13
 
 For game code changes, use `HappyToyV2/CODE_MAP.md` to find the affected feature
@@ -114,26 +117,30 @@ latest GitHub `origin/main` playable on this machine, not merely update sources.
   latest-main playable build is not yet ready. Do not label an older executable
   as the latest main build.
 
-# Clean superseded HappyToyV2 builds after pushing
+# Group superseded HappyToyV2 builds after every verified new build
 
-User reaffirmed on 2026-10-12: after pushing, keep only the newest local build
-and delete past builds to reclaim disk space, following the safeguards below.
+Persistent user instruction, 2026-10-24: after successfully creating and verifying
+a new player build, create `HappyToyV2/Builds/구버전_삭제대기/` when necessary and
+move superseded player build folders into it. This applies whether or not a Git
+push was requested. It supersedes the older automatic post-push deletion policy.
 
-Persistent user instruction, 2026-10-12: after a successful HappyToyV2 push,
-remove superseded local HappyToyV2 player builds to prevent disk accumulation.
-
-- Keep one latest verified playable build, including its executable, _Data,
-  DLLs, credits and build/input manifest. Documentation-only pushes may retain
-  the existing verified player when its gameplay inputs are unchanged.
-- After confirming the remote branch matches the pushed commit and the retained
-  player is valid, delete older build directories only inside HappyToyV2/Builds.
-- Resolve and validate every deletion target as a child of that exact Builds
-  directory. Do not follow reparse points or delete the retained build, source
-  assets, authoring originals, saves or unrelated projects.
-- Do not delete a running player's build; report it and defer that directory.
-  If no verified replacement exists or the push failed, keep the last playable
-  build until a valid replacement is available.
-- Report the cleanup and provide the retained executable link when relevant.
+- Keep the latest verified playable build directly under `HappyToyV2/Builds/`,
+  including its executable, _Data, DLLs, credits and build/input manifest. Update
+  `HappyToyV2-Latest.lnk`, when present, to that retained executable.
+- Group each old player build as a complete folder under `구버전_삭제대기`,
+  preserving its name. Never overwrite an existing destination; defer a name
+  collision and report it. Already grouped builds stay in that folder.
+- Resolve and validate source and destination paths as children of the exact
+  project's Builds directory before moving. Reject reparse points. Identify
+  actual player builds; do not group source assets, editable authoring originals,
+  modeling downloads, tools, test reports, saves or unrelated projects as builds.
+- Never move the retained latest build or a running player's build. Report and
+  defer a running old build until it has exited. If no verified replacement
+  exists or the new build fails, preserve the last playable build in place.
+- Grouping is automatic under this standing instruction; permanent deletion is
+  a separate action requiring an explicit user request. A Git push alone does
+  not authorize deletion. Grouping does not reclaim disk space.
+- Report the grouping and provide the retained executable link when relevant.
 
 # Preferred 3D model generation workflow
 
