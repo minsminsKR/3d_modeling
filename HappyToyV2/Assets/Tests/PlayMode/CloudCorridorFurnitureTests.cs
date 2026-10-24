@@ -151,7 +151,7 @@ namespace HappyToy.V2.CloudTests
                     var threshold = (Vector3)Call(run, "CellPosition", cell) + normal * 3;
                     Assert.That(FurnitureBodyClear(threshold), Is.True, "Furniture intrudes into the actual open doorway capsule");
                 }
-                Assert.That(CheckpointItems("CorridorMemory").Length, Is.EqualTo(5));
+                Assert.That(CheckpointItems("CorridorMemory").Length, Is.EqualTo(Get<int>(run,"RequiredMemories")));
                 Assert.That(CheckpointItems("FirecrackerSupply").Length, Is.EqualTo(8));
                 Assert.That(CheckpointItems("FlashlightBattery").Length, Is.EqualTo(6));
                 Debug.Log("HAPPYTOY_FURNITURE_NAV_PASS seed=" + seed + "; all 81 rooms, pickups, cabinet exits and open doorway capsules remain reachable");

@@ -36,36 +36,36 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(60000)]
-        public IEnumerator CorridorReleasesCyclopsUncatMaskBabyAtExactMemoryStages()
+        public IEnumerator CorridorReleasesCyclopsUncatMaskAtExactMemoryStagesWithoutBaby()
         {
             Call(session,"CreateCorridor",73); Begin();
             var run=Get<Component>(session,"Corridor");
             var actors=Components("StalkerBrain").Where(x=>x.name.EndsWith("— corridor")).ToArray();
             var cyclops=actors.Single(x=>x.name.Contains("Cyclopse"));
             var uncat=actors.Single(x=>x.name.Contains("Uncat"));
-            var baby=actors.Single(x=>x.name.Contains("Baby"));
             var mask=Get<Component>(run,"Mask");
+            Assert.That(actors.Length,Is.EqualTo(2));
+            Assert.That(actors.Any(x=>x.name.Contains("Baby")),Is.False);
             Assert.That(actors.Any(x=>x.name.Contains("Hwacat")),Is.False);
             ((Behaviour)player).enabled=false;
             // Isolate timing from combat without changing actor speed or memory.
             foreach(var actor in actors) ((Behaviour)actor).enabled=false;
             ((Behaviour)mask).enabled=false;
-            // Check all four release stages before the fifth memory permanently
+            // Check the surviving release stages before the fourth memory permanently
             // freezes these actors. Lady's fresh-scene restore is tested separately.
-            for(int memories=0;memories<=4;memories++)
+            for(int memories=0;memories<=3;memories++)
             {
                 if(memories>0) Assert.That((bool)Call(run,"Collect","memory-"+(memories-1)),Is.True);
                 yield return null;
                 Assert.That(cyclops.gameObject.activeSelf,Is.True);
                 Assert.That(uncat.gameObject.activeSelf,Is.EqualTo(memories>=2),"Uncat at "+memories);
                 Assert.That(mask.gameObject.activeSelf,Is.EqualTo(memories>=3),"Mask at "+memories);
-                Assert.That(baby.gameObject.activeSelf,Is.EqualTo(memories>=4),"Baby at "+memories);
-                Assert.That(Get<int>(run,"ActiveThreatCount"),Is.EqualTo(1+(memories>=2?1:0)+(memories>=3?1:0)+(memories>=4?1:0)));
+                Assert.That(Get<int>(run,"ActiveThreatCount"),Is.EqualTo(1+(memories>=2?1:0)+(memories>=3?1:0)));
             }
             Call(shell,"Pause");
             var data=Call(run,"CaptureCheckpoint");
-            Assert.That(Get<int>(data,"threatVersion"),Is.EqualTo(1));
-            Assert.That(Get<System.Array>(data,"threats").Length,Is.EqualTo(3));
+            Assert.That(Get<int>(data,"threatVersion"),Is.EqualTo(2));
+            Assert.That(Get<System.Array>(data,"threats").Length,Is.EqualTo(2));
             var savedMask=Get<object>(data,"mask");
             Assert.That(Get<bool>(savedMask,"active"),Is.True);
             var corrupt=JsonUtility.FromJson(JsonUtility.ToJson(data),RequireType("CorridorCheckpoint"));
@@ -111,7 +111,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<float>(mask,"IntroElapsed"),Is.EqualTo(frozen));
             Assert.That(mask.transform.position,Is.EqualTo(paused));
             var data=Call(run,"CaptureCheckpoint");var saved=Get<object>(data,"mask");
-            Assert.That(Get<int>(data,"threatVersion"),Is.EqualTo(1));
+            Assert.That(Get<int>(data,"threatVersion"),Is.EqualTo(2));
             Assert.That(Get<bool>(saved,"introComplete"),Is.True);Assert.That(Get<bool>(saved,"transformed"),Is.True);
             Assert.That(Get<int>(saved,"curses"),Is.Zero);Assert.That(Get<int>(saved,"attacks"),Is.Zero);
             // A real resume creates the fresh inactive mask and applies its
@@ -126,31 +126,38 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<object>(restored,"state"),Is.EqualTo(Get<object>(saved,"state")));
             Assert.That(Get<Vector3>(restored,"target"),Is.EqualTo(Get<Vector3>(saved,"target")));
             Assert.That(Vector3.Distance(Get<Vector3>(restored,"position"),Get<Vector3>(saved,"position")),Is.LessThan(.002f));
-            Debug.Log("HAPPYTOY_CORRIDOR_REAL_MASK_PASS actual third-memory grown-runner release, genuine torso-sight chase, pause, version-one owned mask checkpoint round trip");
+            Debug.Log("HAPPYTOY_CORRIDOR_REAL_MASK_PASS actual third-memory grown-runner release, genuine torso-sight chase, pause, version-two owned mask checkpoint round trip");
         }
 
         [UnityTest, Timeout(120000)]
-        public IEnumerator LegacyFourThreatSnapshotsMapSlotsZeroOneThreeAndKeepUncatDormantAtZeroAndOneMemory()
+        public IEnumerator LegacyThreatSnapshotsPreserveCyclopsUncatAndDropBabyAtZeroOneAndFourMemories()
         {
-            foreach(int memories in new[]{0,1,4})
+            int visited=0;
+            foreach(int marker in new[]{0,1}) foreach(int memories in new[]{0,1,4})
             {
-                Call(session,"CreateCorridor",73);Begin();((Behaviour)player).enabled=false;
+                var request=Call(RequireType("CorridorCheckpoint"),"FromJson",System.IO.File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"));
+                Set(request,"simulationVersion",5);
+                Call(session,"CreateCorridorForCheckpoint",request);Begin();((Behaviour)player).enabled=false;
                 var run=Get<Component>(session,"Corridor");var mask=Get<Component>(run,"Mask");((Behaviour)mask).enabled=false;
+                Assert.That(Get<int>(run,"RequiredMemories"),Is.EqualTo(5));
                 var actors=Components("StalkerBrain").Where(x=>x.name.EndsWith("— corridor"))
                     .OrderBy(x=>Convert.ToInt32(Get<object>(x,"corridorRole"))).ToArray();
                 foreach(var actor in actors)((Behaviour)actor).enabled=false;
                 for(int i=0;i<memories;i++){Assert.That((bool)Call(run,"Collect","memory-"+i),Is.True);yield return null;}
                 Call(shell,"Pause");var data=Call(run,"CaptureCheckpoint");
                 var legacy=JsonUtility.FromJson(JsonUtility.ToJson(data),RequireType("CorridorCheckpoint"));
-                var current=Get<Array>(legacy,"threats");var type=RequireType("StalkerBrain+Progress");var old=Array.CreateInstance(type,4);
+                var current=Get<Array>(legacy,"threats");var type=RequireType("StalkerBrain+Progress");var old=Array.CreateInstance(type,marker==0?4:3);
                 object Copy(object value)=>JsonUtility.FromJson(JsonUtility.ToJson(value),type);
                 old.SetValue(Copy(current.GetValue(0)),0);old.SetValue(Copy(current.GetValue(1)),1);
-                old.SetValue(Copy(current.GetValue(1)),2);old.SetValue(Copy(current.GetValue(2)),3);
-                Set(old.GetValue(0),"noises",101);Set(old.GetValue(1),"noises",103);Set(old.GetValue(2),"noises",777);Set(old.GetValue(3),"noises",107);
+                old.SetValue(Copy(current.GetValue(1)),2);
+                if(marker==0)old.SetValue(Copy(current.GetValue(1)),3);
+                Set(old.GetValue(0),"noises",101);Set(old.GetValue(1),"noises",103);Set(old.GetValue(2),"noises",777);
+                if(marker==0)Set(old.GetValue(3),"noises",107);
                 // Older rules could release Uncat at one memory. A valid legacy
                 // active flag must not bypass the new two-memory gate on resume.
-                Set(old.GetValue(1),"active",true);Set(old.GetValue(2),"active",false);
-                Set(legacy,"threatVersion",0);Set(legacy,"mask",null);Set(legacy,"threats",old);
+                Set(old.GetValue(1),"active",true);Set(old.GetValue(2),"active",marker==1&&memories>=4);
+                if(marker==0)Set(old.GetValue(3),"active",memories>=4);
+                Set(legacy,"threatVersion",marker);if(marker==0)Set(legacy,"mask",null);Set(legacy,"threats",old);
                 // Real old files pass through Unity's inline-object JSON codec.
                 // Null can return as a default mask object; the presence marker
                 // must still mean no legacy mask and must not reject this save.
@@ -159,16 +166,17 @@ namespace HappyToy.V2.CloudTests
                 Call(run,"RestoreCheckpoint",legacy);
                 Assert.That(Get<int>(actors[0],"NoisesAccepted"),Is.EqualTo(101));
                 Assert.That(Get<int>(actors[1],"NoisesAccepted"),Is.EqualTo(103));
-                Assert.That(Get<int>(actors[2],"NoisesAccepted"),Is.EqualTo(107),"Removed Hwacat slot two overwrote Baby's slot-three evidence");
+                Assert.That(actors.Length,Is.EqualTo(2));
+                Assert.That(actors.Any(x=>x.name.Contains("Baby")),Is.False,"An active historical Baby slot must not recreate the retired actor");
                 Assert.That(actors[1].gameObject.activeSelf,Is.EqualTo(memories>=2));
-                Assert.That(actors[2].gameObject.activeSelf,Is.EqualTo(memories>=4));
                 Assert.That(mask.gameObject.activeSelf,Is.EqualTo(memories>=3));
                 Assert.That(Get<int>(session,"RecordsRecovered"),Is.EqualTo(memories));
-                var migrated=Call(run,"CaptureCheckpoint");Assert.That(Get<int>(migrated,"threatVersion"),Is.EqualTo(1));
-                Assert.That(Get<Array>(migrated,"threats").Length,Is.EqualTo(3));Assert.That(Get<object>(migrated,"mask"),Is.Not.Null);
-                if(memories!=4){var previous=session;Call(shell,"Restart",false);yield return RecoveryRebind(previous);}
+                var migrated=Call(run,"CaptureCheckpoint");Assert.That(Get<int>(migrated,"threatVersion"),Is.EqualTo(2));
+                Assert.That(Get<Array>(migrated,"threats").Length,Is.EqualTo(2));Assert.That(Get<object>(migrated,"mask"),Is.Not.Null);
+                Assert.That(Get<bool[]>(migrated,"recovered").Length,Is.EqualTo(5));
+                if(++visited<6){var previous=session;Call(shell,"Restart",false);yield return RecoveryRebind(previous);}
             }
-            Debug.Log("HAPPYTOY_CORRIDOR_LEGACY_THREATS_PASS original slots 0/1/3 preserved, Hwacat slot two omitted, zero/one-memory Uncat gate and new mask snapshot codec retained");
+            Debug.Log("HAPPYTOY_CORRIDOR_LEGACY_THREATS_PASS original slots 0/1 preserved, historical Baby/Hwacat omitted, zero/one-memory Uncat gate and owned mask snapshot codec retained");
         }
     }
 }

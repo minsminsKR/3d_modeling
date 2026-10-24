@@ -13,7 +13,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(180000)]
         public IEnumerator LadyFinaleRealCameraNeedsTorchAndRestartRestoresNormalLighting()
         {
-            yield return LadyPrepare();LadyCollect(0,4);
+            yield return LadyPrepare();LadyCollect(0,3);
             var graphics=session.GetComponent(RequireType("GraphicsLightingPresentation"));
             var camera=Get<Camera>(player,"eyes");var torch=Get<Light>(player,"flashlight");
             ((Behaviour)player).enabled=false;torch.enabled=false;
@@ -23,7 +23,7 @@ namespace HappyToy.V2.CloudTests
             try{CloudExperienceTests.Artifact("lady-finale-normal-torch-off.png",normal.EncodeToPNG());}
             finally{Object.Destroy(normal);}
             Assert.That(Get<bool>(graphics,"FinaleBlackout"),Is.False);
-            LadyCollect(4,5);Call(shell,"Pause");
+            LadyCollect(3,4);Call(shell,"Pause");
             // A new light created after the transition must not reopen a light
             // pool. Existing fixture flicker/eye writers must also stay black.
             var late=new GameObject("late finale light fixture");var light=late.AddComponent<Light>();

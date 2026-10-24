@@ -41,18 +41,30 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(motion, key=="Cyclopse" ? "IntroPoseRigAvailable" : key=="Uncat" ? "LimbContactRigAvailable" : "RefinedVisual"), Is.True);
         }
 
+        Component StudioSubject(string key, Vector3 at)
+        {
+            if (key != "Baby") return Components("StalkerBrain").Single(actor => actor.name.EndsWith("— corridor") && actor.name.Contains(key));
+            // Preserve the authored school-event asset and motion coverage
+            // without returning Baby to the normal corridor roster.
+            return (Component)Call(RequireType("CorridorBabyProbe"),"CreateAuthoredDiagnosticFixture",session,at);
+        }
+
         [UnityTest, Timeout(120000)]
-        public IEnumerator CreatureStudioAllThreeReplaceActualCorridorActorsWithOwnClipsAndMaterials()
+        public IEnumerator CreatureStudioCorridorKeepsTwoActorsAndPreservesAuthoredSchoolBabyClipsAndMaterials()
         {
             Call(session,"ConfigureRecordDirectory",NewRecordFixture());
             Call(session,"CreateCorridor",73);Begin();Call(session,"ToggleCheatSafeMode");
-            // All three studio actors are released at four memories. The fifth
-            // deliberately freezes them for Lady's finale.
-            for(int i=0;i<4;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
+            // Three memories precede the fourth-memory Lady finale. The
+            // preserved Baby is mounted only by an explicit asset fixture.
+            for(int i=0;i<3;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
             yield return Delay(.4f);
+            var corridorActors=Components("StalkerBrain").Where(actor=>actor.name.EndsWith("— corridor")).ToArray();
+            Assert.That(corridorActors.Length,Is.EqualTo(2));
+            Assert.That(corridorActors.Any(actor=>actor.name.Contains("Baby")),Is.False);
+            var anchor=corridorActors.Single(actor=>actor.name.Contains("Cyclopse")).transform.position;
             foreach(string key in new[]{"Cyclopse","Uncat","Baby"})
             {
-                var actor=Components("StalkerBrain").Single(x=>x.name.EndsWith("— corridor") && x.name.Contains(key));
+                var actor=StudioSubject(key,anchor);
                 actor.gameObject.SetActive(true);
                 yield return null;
                 AssertStudioActor(actor,key);
@@ -66,14 +78,14 @@ namespace HappyToy.V2.CloudTests
             Call(session,"ConfigureRecordDirectory",NewRecordFixture());
             Call(session,"CreateCorridor",73);Begin();Call(session,"ToggleCheatSafeMode");
             // Exercise pursuit before Lady owns the permanent finale hold.
-            for(int i=0;i<4;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
+            for(int i=0;i<3;i++) Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
             foreach(var built in Components("StalkerBrain")) ((Behaviour)built).enabled=false;
             yield return Delay(.2f);
             var anchor=Components("StalkerBrain").Single(x=>x.name.EndsWith("— corridor") && x.name.Contains("Cyclopse")).transform.position;
             Assert.That(NavMesh.SamplePosition(anchor,out var site,1,NavMesh.AllAreas),Is.True);
             foreach(string key in new[]{"Cyclopse","Uncat","Baby"})
             {
-                var actor=Components("StalkerBrain").Single(x=>x.name.EndsWith("— corridor") && x.name.Contains(key));
+                var actor=StudioSubject(key,site.position);
                 var agent=actor.GetComponent<NavMeshAgent>();agent.enabled=false;
                 actor.transform.position=site.position;actor.gameObject.SetActive(true);((Behaviour)actor).enabled=false;
                 agent.enabled=true;

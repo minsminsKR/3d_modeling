@@ -107,5 +107,36 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)RuntimeAccess.Call(oldReader,"Consume",RuntimeAccess.Get<string>(a,"token")),Is.False);
             Assert.That(RuntimeAccess.Get<string>(RuntimeAccess.Get<object>(Store(),"Snapshot"),"token"),Is.EqualTo(RuntimeAccess.Get<string>(b,"token")));
         }
+        [Test] public void FourMemoryCheckpointUsesTwoStalkersWhileHistoricalSchemasRemainReadable()
+        {
+            var legacy=Data();
+            Assert.That(RuntimeAccess.Get<bool[]>(legacy,"recovered").Length,Is.EqualTo(5));
+            Assert.That(RuntimeAccess.Get<Array>(legacy,"threats").Length,Is.EqualTo(4));
+            var original=RuntimeAccess.Get<Array>(legacy,"threats");
+            var maskType=dataType.GetField("mask").FieldType;
+            var mask=JsonUtility.FromJson("{\"position\":{\"x\":200,\"y\":0.03,\"z\":200},\"rotation\":{\"w\":1}}",maskType);
+            var previous=Data(); var previousThreats=Array.CreateInstance(original.GetType().GetElementType(),3);
+            previousThreats.SetValue(original.GetValue(0),0); previousThreats.SetValue(original.GetValue(1),1); previousThreats.SetValue(original.GetValue(3),2);
+            RuntimeAccess.Set(previous,"simulationVersion",5); RuntimeAccess.Set(previous,"threatVersion",1);
+            RuntimeAccess.Set(previous,"threats",previousThreats); RuntimeAccess.Set(previous,"mask",mask);
+            RuntimeAccess.Call(previous,"Validate");
+            Assert.That(RuntimeAccess.Get<Array>(RuntimeAccess.Call(previous,"Copy"),"threats").Length,Is.EqualTo(3));
+
+            var current=Data(); var currentThreats=Array.CreateInstance(original.GetType().GetElementType(),2);
+            Array.Copy(original,currentThreats,2);
+            RuntimeAccess.Set(current,"simulationVersion",6); RuntimeAccess.Set(current,"threatVersion",2);
+            RuntimeAccess.Set(current,"recovered",new[]{true,true,false,false});
+            RuntimeAccess.Set(current,"threats",currentThreats); RuntimeAccess.Set(current,"mask",mask);
+            RuntimeAccess.Call(current,"Validate"); Assert.That(Save(Store(),current),Is.True);
+            var restored=RuntimeAccess.Get<object>(Store(),"Snapshot");
+            Assert.That(RuntimeAccess.Get<bool[]>(restored,"recovered"),Is.EqualTo(new[]{true,true,false,false}));
+            Assert.That(RuntimeAccess.Get<Array>(restored,"threats").Length,Is.EqualTo(2));
+            RuntimeAccess.Set(current,"recovered",new bool[5]);
+            Assert.Throws<ArgumentException>(()=>RuntimeAccess.Call(current,"Validate"));
+            RuntimeAccess.Set(current,"recovered",new bool[4]); RuntimeAccess.Set(current,"threatVersion",1);
+            Assert.Throws<ArgumentException>(()=>RuntimeAccess.Call(current,"Validate"),"New saves may not lose their roster marker");
+            RuntimeAccess.Set(current,"threatVersion",2); RuntimeAccess.Set(current,"simulationVersion",5);
+            Assert.Throws<ArgumentException>(()=>RuntimeAccess.Call(current,"Validate"),"Historical map identity must retain its fifth pickup flag");
+        }
     }
 }

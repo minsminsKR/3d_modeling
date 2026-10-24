@@ -72,15 +72,15 @@ namespace HappyToy.V2.CloudTests
         {
             Call(session,"CreateCorridor",73);IsolateThreats();Begin();yield return null;
             var run=Get<Component>(session,"Corridor");
-            var ids=Enumerable.Range(0,5).Select(index=>"ritual-fragment-"+index)
-                .Concat(new[]{"ritual-incense-0","ritual-incense-4"}).OrderBy(id=>id,StringComparer.Ordinal).ToArray();
+            var ids=Enumerable.Range(0,4).Select(index=>"ritual-fragment-"+index)
+                .Concat(new[]{"ritual-incense-0","ritual-incense-3"}).OrderBy(id=>id,StringComparer.Ordinal).ToArray();
             // Altar-specific alignment stays independent of the additional
             // shelf/tray supplies, whose real support/input has its own test.
             var items=RitualWorldPickups(run).Where(item=>ids.Contains(Get<string>(item,"stableId"))).ToArray();
             Assert.That(items.Select(item=>Get<string>(item,"stableId")),Is.EqualTo(ids));
             var positions=items.ToDictionary(item=>Get<string>(item,"stableId"),item=>item.transform.position);
             var stands=run.GetComponentsInChildren<Transform>(true).Where(node=>node.name=="Graphics joined seal altar").ToArray();
-            Assert.That(stands.Length,Is.EqualTo(5));
+            Assert.That(stands.Length,Is.EqualTo(4));
             foreach(var item in items)
             {
                 var support=AssertRitualVisualTouchesSupport(item);

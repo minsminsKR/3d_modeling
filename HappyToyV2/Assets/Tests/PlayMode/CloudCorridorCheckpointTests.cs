@@ -91,6 +91,10 @@ namespace HappyToy.V2.CloudTests
             var data=Call(session,"CaptureCheckpoint"); var json=JsonUtility.ToJson(data,true);
             CloudExperienceTests.Artifact("corridor-checkpoint-state.json",Encoding.UTF8.GetBytes(json));
             var parsed=CheckpointCopy(data); var p=Get<object>(parsed,"player");
+            Assert.That(Get<int>(parsed,"simulationVersion"),Is.EqualTo(6));
+            Assert.That(Get<bool[]>(parsed,"recovered").Length,Is.EqualTo(4));
+            Assert.That(Get<int>(parsed,"threatVersion"),Is.EqualTo(2));
+            Assert.That(Get<Array>(parsed,"threats").Length,Is.EqualTo(2));
             Assert.That(Get<int>(p,"stock"),Is.EqualTo(12),"One starting six-shot pack plus one collected pack must save twelve shots");
             Assert.That(Get<int>(p,"snapperStockVersion"),Is.EqualTo(1)); Assert.That(Get<bool>(p,"crouched"),Is.True);
             var savedDoor=Get<Array>(parsed,"doors").GetValue(0); var leaf=Get<Vector3>(savedDoor,"leaf");
@@ -139,7 +143,6 @@ namespace HappyToy.V2.CloudTests
             var corrupt=CheckpointCopy(data); var p=Get<object>(corrupt,"player"); Set(p,"stamina",float.NaN);
             Assert.Throws<ArgumentException>(()=>Call(run,"RestoreCheckpoint",corrupt));
             var blocked=CheckpointCopy(data); Set(Get<object>(blocked,"player"),"position",new Vector3(197,.08f,200));
-            Set(blocked,"recovered",Enumerable.Repeat(true,5).ToArray());
             var leaves=CheckpointItems("Door").Select(x=>Get<Transform>(x,"movingLeaf").localPosition).ToArray();
             var position=player.transform.position; var evidence=CheckpointThreats().Select(x=>Get<Vector3>(x,"LastKnownPosition")).ToArray();
             Assert.Throws<ArgumentException>(()=>Call(run,"RestoreCheckpoint",blocked));
@@ -148,6 +151,32 @@ namespace HappyToy.V2.CloudTests
             Assert.That(CheckpointItems("Door").Select(x=>Get<Transform>(x,"movingLeaf").localPosition).ToArray(),Is.EqualTo(leaves));
             Assert.That(CheckpointThreats().Select(x=>Get<Vector3>(x,"LastKnownPosition")).ToArray(),Is.EqualTo(evidence));
             yield return null;
+        }
+        [UnityTest, Timeout(120000)]
+        public IEnumerator CorridorHistoricalFiveMemoryCheckpointResumesAndResavesWithoutRecreatingBaby()
+        {
+            var saved=Call(RequireType("CorridorCheckpoint"),"FromJson",System.IO.File.ReadAllText("Assets/Tests/Fixtures/corridor-checkpoint-state.json"));
+            Assert.That(Get<bool[]>(saved,"recovered").Length,Is.EqualTo(5));
+            Assert.That(Get<Array>(saved,"threats").Length,Is.EqualTo(4));
+            Call(session,"CreateCorridorForCheckpoint",saved); Call(session,"ApplyCheckpoint",saved);
+            var run=Get<Component>(session,"Corridor");
+            Assert.That(Get<int>(run,"RequiredMemories"),Is.EqualTo(5));
+            Assert.That(CheckpointItems("CorridorMemory").Length,Is.EqualTo(5));
+            Assert.That(CheckpointItems("CorridorMemory").Take(2).All(x=>!x.gameObject.activeSelf),Is.True);
+            Assert.That(CheckpointThreats().Length,Is.EqualTo(2));
+            Assert.That(CheckpointThreats().Any(x=>x.name.Contains("Baby")),Is.False);
+            // Resaving an old map preserves its topology/count, while all new
+            // snapshots use the Baby-free two-stalker roster.
+            Begin(); Call(shell,"Pause");
+            var resumed=Call(session,"CaptureCheckpoint");
+            Assert.That(Get<int>(resumed,"simulationVersion"),Is.EqualTo(1));
+            Assert.That(Get<bool[]>(resumed,"recovered"),Is.EqualTo(Get<bool[]>(saved,"recovered")));
+            Assert.That(Get<int>(resumed,"threatVersion"),Is.EqualTo(2));
+            Assert.That(Get<Array>(resumed,"threats").Length,Is.EqualTo(2));
+            yield return RestoreCheckpointInFreshScene(resumed);
+            Assert.That(Get<int>(session,"RecordsRecovered"),Is.EqualTo(2));
+            Assert.That(CheckpointThreats().Length,Is.EqualTo(2));
+            Assert.That(CheckpointThreats().Any(x=>x.name.Contains("Baby")),Is.False);
         }
         [UnityTest, Timeout(60000)]
         public IEnumerator CorridorCheckpointRefusesHiddenPlayerAndLiveThrownItem()

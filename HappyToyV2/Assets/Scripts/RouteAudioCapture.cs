@@ -20,7 +20,7 @@ namespace HappyToy.V2
         Chunk pending,writingChunk;Task<FileSegment> writing;
         readonly List<FileSegment> files=new List<FileSegment>();
         bool ready,truncated,written,initialized;
-        int currentStage,currentFloor;bool paused,steadyPaused;long pauseChangedTicks;
+        int currentStage,currentFloor,stageCount=6;bool paused,steadyPaused;long pauseChangedTicks;
         double dspStart,lastDsp;float gameStart,lastGame;
         readonly long[] counts=new long[6],clips=new long[6],floorCounts=new long[3],floorClips=new long[3];
         readonly double[] sums=new double[6],peaks=new double[6],floorSums=new double[3],floorPeaks=new double[3];
@@ -82,6 +82,7 @@ namespace HappyToy.V2
             lock(gate)
             {
                 currentStage=stage;currentFloor=y>3?1:y< -2?2:0;
+                stageCount=session&&session.CorridorMode?session.Corridor.RequiredMemories+1:6;
                 progressMode=session&&session.ChapterMode?"school-memories":session&&session.CorridorMode?"corridor-memories":"legacy-story";
                 if(pause!=paused){paused=pause;pauseChangedTicks=now;}
                 steadyPaused=paused&&(now-pauseChangedTicks)/(double)Stopwatch.Frequency>=.1;
@@ -137,11 +138,11 @@ namespace HappyToy.V2
                     dspSeconds=lastDsp-dspStart,gameSeconds=lastGame-gameStart,
                     callbackWallSeconds=firstCallbackTicks>0?(lastCallbackTicks-firstCallbackTicks)/(double)Stopwatch.Frequency:0,
                     firstCallbackAfterStartSeconds=firstCallbackTicks>0?(firstCallbackTicks-startedTicks)/(double)Stopwatch.Frequency:-1,
-                    truncated=truncated,writerError=writerError,progressMode=progressMode,files=files.ToArray(),stages=new Segment[6],floors=new Segment[3],
+                    truncated=truncated,writerError=writerError,progressMode=progressMode,files=files.ToArray(),stages=new Segment[stageCount],floors=new Segment[3],
                     pause=new PauseEvidence {samples=pausedSamples,steadySamples=steadyPausedSamples,peak=pausedPeak,
                         rms=pausedSamples>0?Math.Sqrt(pausedSum/pausedSamples):0,steadyPeak=steadyPausedPeak,
                         steadyRms=steadyPausedSamples>0?Math.Sqrt(steadyPausedSum/steadyPausedSamples):0}};
-                for(int i=0;i<6;i++)
+                for(int i=0;i<stageCount;i++)
                 {report.stages[i]=new Segment{storyStep=i,name="progress-"+i,samples=counts[i],clipped=clips[i],peak=peaks[i],rms=counts[i]>0?Math.Sqrt(sums[i]/counts[i]):0};report.nonSilent|=peaks[i]>.00001;}
                 for(int i=0;i<3;i++)report.floors[i]=new Segment{storyStep=i,name=new[]{"ground","upper","basement"}[i],samples=floorCounts[i],clipped=floorClips[i],peak=floorPeaks[i],rms=floorCounts[i]>0?Math.Sqrt(floorSums[i]/floorCounts[i]):0};
                 return report;

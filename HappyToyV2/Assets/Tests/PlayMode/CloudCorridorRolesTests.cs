@@ -17,7 +17,7 @@ namespace HappyToy.V2.CloudTests
             Call(session, "CreateCorridor", 73); Begin();
             var actors = Components("StalkerBrain").Where(x => x.name.EndsWith("— corridor")).ToArray();
             Assert.That(actors.Select(x => Get<object>(x, "corridorRole").ToString()),
-                Is.EquivalentTo(new[] { "Watchman", "Listener", "Wanderer" }));
+                Is.EquivalentTo(new[] { "Watchman", "Listener" }));
             foreach (var actor in actors) actor.gameObject.SetActive(false);
             foreach (var door in Components("Interactable").Where(x => x.name == "Corridor sliding door")) Call(door, "OpenForPursuer");
             return actors;

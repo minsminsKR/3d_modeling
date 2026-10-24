@@ -51,7 +51,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(120000)]
         public IEnumerator LadyFinalMemoryBlacksOutCandlesFreezesOldActorsAndRestoresWithoutReplay()
         {
-            yield return LadyPrepare();LadyCollect(0,4);IsolateThreats();
+            yield return LadyPrepare();LadyCollect(0,3);IsolateThreats();
             var candles=Components("WaymarkCandle");Assert.That(candles.Length,Is.GreaterThan(10));
             Call(candles[0],"Restore",true);Assert.That(Get<bool>(candles[0],"HasBeenLit"),Is.True);
             var old=ReadabilityActor("Cyclopse");old.gameObject.SetActive(true);((Behaviour)old).enabled=true;
@@ -65,7 +65,7 @@ namespace HappyToy.V2.CloudTests
             // morphing; this fixture tests holding an already open mouth.
             RequireType("EnemyChaseFace").GetMethod("HoldCabinetDeathFace",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).Invoke(face,null);
             float expression=Get<float>(face,"Weight");Assert.That(expression,Is.GreaterThan(.95f));
-            var at=old.transform.position;LadyCollect(4,5);
+            var at=old.transform.position;LadyCollect(3,4);
             LadyAssertSpawnPath(Get<Vector3>(Call(LadyFinale,"Capture"),"position"),player.transform.position);
             Assert.That(Get<bool>(LadyFinale,"Active"),Is.True);Assert.That(Get<bool>(LadyFinale,"Hunting"),Is.False);
             Assert.That((bool)Call(LadyFinale,"Begin"),Is.False);
@@ -97,7 +97,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(120000)]
         public IEnumerator LadyAlwaysPursuesThroughDoorsIgnoresTrapAndTalismanHoldsActualHeadAndAgent()
         {
-            yield return LadyPrepare();LadyCollect(0,5);
+            yield return LadyPrepare();LadyCollect(0,4);
             yield return Wait(()=>Get<Component>(LadyFinale,"Actor"),3,"Lady model did not spawn");
             var actor=Get<Component>(LadyFinale,"Actor");var agent=actor.GetComponent<NavMeshAgent>();
             foreach(var door in CheckpointItems("Door"))Call(door,"OpenForPursuer");
@@ -153,7 +153,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(120000)]
         public IEnumerator LadyOpensPhysicalDoorAndFindsPlayerAfterUnwitnessedCabinetEntry()
         {
-            yield return LadyPrepare();LadyCollect(0,5);
+            yield return LadyPrepare();LadyCollect(0,4);
             yield return Wait(()=>Get<Component>(LadyFinale,"Actor"),5,"Lady did not spawn");
             var actor=Get<Component>(LadyFinale,"Actor");var agent=actor.GetComponent<NavMeshAgent>();
             ((Behaviour)player).enabled=false;
@@ -188,7 +188,7 @@ namespace HappyToy.V2.CloudTests
         {
             yield return LadyPrepare();Call(shell,"RestoreDefaultSettings");
             ((Behaviour)player).enabled=false;((Behaviour)Get<Component>(player,"Feedback")).enabled=false;
-            LadyCollect(0,5);var scope=Get<Component>(LadyFinale,"AudioScope");
+            LadyCollect(0,4);var scope=Get<Component>(LadyFinale,"AudioScope");
             var impact=Get<AudioSource>(scope,"ImpactSource");
             var feedback=Get<Component>(player,"Feedback");var steps=Get<AudioSource>(feedback,"FootstepSource");var breath=Get<AudioSource>(feedback,"BreathingSource");
             Assert.That(AudioListener.pause&&steps.ignoreListenerPause&&breath.ignoreListenerPause,Is.True);

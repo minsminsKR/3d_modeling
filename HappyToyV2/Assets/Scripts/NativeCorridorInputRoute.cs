@@ -33,7 +33,7 @@ namespace HappyToy.V2
             public int requestedSeconds,waypointCount,completedLegs,activeThreatsAtStart,minimumActiveThreats;
             public bool started,completed;
             public float preparationWallSeconds,observationStartRouteWallSeconds,observationStartRouteGameSeconds,wallSeconds,gameSeconds,physicalMeters,hiddenGameSeconds;
-            public string scope="Optional movement after the fourth memory. Observation starts only after four production enemies are active. Uses the existing keyboard/mouse Walk, doors, finite supplies, evasion and natural hiding RNG. Duration ends after the current real movement leg; no teleport, AI/speed edit or safe mode.";
+            public string scope="Optional movement before the final memory. Observation starts only after all three production patrol enemies are active. Uses the existing keyboard/mouse Walk, doors, finite supplies, evasion and natural hiding RNG. Duration ends after the current real movement leg; no teleport, AI/speed edit or safe mode.";
         }
         public PatrolEvidence PerformancePatrol {get;private set;}
         bool patrolRunning;float patrolPreparationStart,patrolWallStart,patrolGameStart,patrolLastGame;
@@ -108,7 +108,7 @@ namespace HappyToy.V2
             yield return DemonstrateLighting();
             Mark("finite light, battery and candle demonstrated through F/E; quiet stance through C");
             yield return TopUpNearbySupply(18);
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < session.Corridor.RequiredMemories; i++)
             {
                 var choices = Items().Where(x => x.gameObject.activeSelf && x.kind == Interactable.Kind.CorridorMemory).ToArray();
                 Interactable selected = null; Vector3 at = Vector3.zero; float best = float.PositiveInfinity;
@@ -116,8 +116,8 @@ namespace HappyToy.V2
                 Require((selected) != null, "No physically accessible remaining memory");
                 stage = selected.name; yield return Walk(at); yield return Interact(selected);
                 Require((session.RecordsRecovered) == (i + 1), "Native corridor invariant failed: Is.EqualTo(i + 1)"); Mark("recovered " + selected.name + " through E");
-                if (i < 4) yield return TopUpNearbySupply(14);
-                if(i==3&&performancePatrolSeconds>0)yield return Patrol();
+                if (i < session.Corridor.RequiredMemories - 1) yield return TopUpNearbySupply(14);
+                if(i==session.Corridor.RequiredMemories-2&&performancePatrolSeconds>0)yield return Patrol();
             }
             // The audible/visible finale replaces the old stealth phase.
             // Keep actual input, original stamina and Lady's real pursuit intact.
@@ -132,8 +132,8 @@ namespace HappyToy.V2
             Require((FindApproach(exit, out var exitAt, out _)), "Native corridor invariant failed: Is.True"); yield return Walk(exitAt);
             expectEscape = true; yield return Interact(exit); Require((session.Escaped), "Native corridor invariant failed: Is.True");
             for (int i = 0; i < monsters.Length; i++) Require(new Vector2(monsters[i].patrolSpeed,monsters[i].chaseSpeed)==speeds[i],"Authored corridor threat speed changed");
-            Require((maximumThreats) == (4), "Native corridor invariant failed: Is.EqualTo(4)"); Require((meters) > (80), "Native corridor invariant failed: Is.GreaterThan(80)");
-            passed = true; Mark("escaped with all five memories through the active layout's actual exit");
+            Require((maximumThreats) == (3), "Native corridor invariant failed: expected three patrol enemies"); Require((meters) > (80), "Native corridor invariant failed: Is.GreaterThan(80)");
+            passed = true; Mark("escaped with all "+session.Corridor.RequiredMemories+" memories through the active layout's actual exit");
         }
         void TrackPatrol(int activeThreats,float travelled)
         {
@@ -141,19 +141,19 @@ namespace HappyToy.V2
             if(!PerformancePatrol.started)
             {
                 PerformancePatrol.preparationWallSeconds=Time.realtimeSinceStartup-patrolPreparationStart;
-                if(activeThreats==4)
+                if(activeThreats==3)
                 {
-                    PerformancePatrol.started=true;PerformancePatrol.activeThreatsAtStart=4;PerformancePatrol.minimumActiveThreats=4;
+                    PerformancePatrol.started=true;PerformancePatrol.activeThreatsAtStart=3;PerformancePatrol.minimumActiveThreats=3;
                     patrolWallStart=Time.realtimeSinceStartup;patrolGameStart=game;
                     PerformancePatrol.observationStartRouteWallSeconds=patrolWallStart-wallStart;
                     PerformancePatrol.observationStartRouteGameSeconds=game-gameStart;
-                    Mark("performance patrol observation began with all four real enemies active");
+                    Mark("performance patrol observation began with all three real patrol enemies active");
                 }
             }
             if(PerformancePatrol.started)
             {
                 PerformancePatrol.minimumActiveThreats=Mathf.Min(PerformancePatrol.minimumActiveThreats,activeThreats);
-                Require(activeThreats==4,"Late patrol lost its four active production enemies");
+                Require(activeThreats==3,"Late patrol lost its three active production enemies");
                 PerformancePatrol.wallSeconds=Time.realtimeSinceStartup-patrolWallStart;
                 PerformancePatrol.gameSeconds=game-patrolGameStart;PerformancePatrol.physicalMeters+=travelled;
                 if(player.Hidden)PerformancePatrol.hiddenGameSeconds+=Mathf.Max(0,game-patrolLastGame);
@@ -163,7 +163,7 @@ namespace HappyToy.V2
         IEnumerator Patrol()
         {
             RestoreMovement();
-            string priorStage=stage;stage="optional four-enemy performance patrol";
+            string priorStage=stage;stage="optional three-enemy performance patrol";
             PerformancePatrol=new PatrolEvidence{requestedSeconds=performancePatrolSeconds};
             patrolPreparationStart=Time.realtimeSinceStartup;patrolLastGame=session.ElapsedPlayTime;patrolRunning=true;
             try
@@ -172,11 +172,11 @@ namespace HappyToy.V2
                 // follow actual layout edges; the normal Walk still plans from
                 // current feet and handles physical doors and observed threats.
                 var points=PatrolWaypoints();int cursor=0;float nextSupply=GameTime+60;
-                Mark("optional performance patrol requested "+performancePatrolSeconds+" seconds after fourth memory");
+                Mark("optional performance patrol requested "+performancePatrolSeconds+" seconds before the final memory");
                 Check();
                 while(!PerformancePatrol.started||PerformancePatrol.wallSeconds<performancePatrolSeconds)
                 {
-                    Require(session.RecordsRecovered==4,"Performance patrol must retain exactly four recovered memories");
+                    Require(session.RecordsRecovered==session.Corridor.RequiredMemories-1,"Performance patrol must remain before the final memory");
                     yield return Walk(points[cursor]);cursor=(cursor+1)%points.Length;
                     PerformancePatrol.completedLegs++;Check();
                     if(GameTime>=nextSupply)
@@ -184,7 +184,7 @@ namespace HappyToy.V2
                         nextSupply=GameTime+60;yield return TopUpNearbySupply(14);
                     }
                 }
-                PerformancePatrol.completed=true;Mark("completed optional four-enemy performance patrol through real movement");
+                PerformancePatrol.completed=true;Mark("completed optional three-enemy performance patrol through real movement");
             }
             finally{patrolRunning=false;keys(Array.Empty<Key>());stage=priorStage;}
         }

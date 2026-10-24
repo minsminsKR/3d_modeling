@@ -15,11 +15,12 @@ namespace HappyToy.V2.CloudTests
         {
             Call(session,"ConfigureRecordDirectory",NewRecordFixture());
             Call(session,"CreateCorridor",73);Begin();Call(session,"ToggleCheatSafeMode");
-            for(int i=0;i<4;i++)Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
+            for(int i=0;i<3;i++)Assert.That((bool)Call(session,"CheatCollectNextMemory"),Is.True);
             yield return Delay(.2f);
+            var anchor=Components("StalkerBrain").Single(actor=>actor.name.EndsWith("— corridor")&&actor.name.Contains("Cyclopse")).transform.position;
             foreach(string key in new[]{"Baby","Uncat","Cyclopse"})
             {
-                var actor=Components("StalkerBrain").Single(a=>a.name.EndsWith("— corridor")&&a.name.Contains(key));
+                var actor=StudioSubject(key,anchor);
                 actor.gameObject.SetActive(true);yield return null;
                 var model=Get<Transform>(actor.GetComponent(RequireType("V1MonsterMotion")),"model");
                 var eyes=model.GetComponentsInChildren(RequireType("MonsterRedEyes"),true).Cast<Component>().Single();

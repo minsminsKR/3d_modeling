@@ -80,7 +80,7 @@ namespace HappyToy.V2.CloudTests
             var gate = Get<Component>(entrance, "Gate"); var gatePosition = Get<Vector3>(entrance, "GatePosition");
             Assert.That(Get<string>(gate, "stableId"), Is.EqualTo("corridor-entrance"));
             Assert.That(Get<object>(gate, "kind").ToString(), Is.EqualTo("Inspect"));
-            Assert.That(Get<string>(session, "Notice"), Does.Contain("다섯 기억"), "Removing the physical plaque also removed the separate starting objective notice");
+            Assert.That(Get<string>(session, "Notice"), Does.Contain("기억 4개"), "Removing the physical plaque also removed the separate starting objective notice");
             var body = gate.GetComponent<Collider>(); Assert.That(body, Is.Not.Null);
             var front = body.bounds; // Measured leaf face, including the imported temple's local depth.
             PlacePlayer(new Vector3(front.center.x, gatePosition.y + .03f, front.max.z + 1.3f));
@@ -112,7 +112,7 @@ namespace HappyToy.V2.CloudTests
                 var saved = CheckpointCopy(Call(session, "CaptureCheckpoint")); Call(saved, "Validate");
                 var pose = Get<object>(saved, "player"); var actualPosition = Get<Vector3>(pose, "position");
                 var doorIds = Get<Array>(saved, "doors").Cast<object>().Select(door => Get<string>(door, "id")).ToArray();
-                Assert.That(Get<int>(saved, "version"), Is.EqualTo(1)); Assert.That(Get<int>(saved, "simulationVersion"), Is.EqualTo(5));
+                Assert.That(Get<int>(saved, "version"), Is.EqualTo(1)); Assert.That(Get<int>(saved, "simulationVersion"), Is.EqualTo(6));
                 yield return RestoreCheckpointInFreshScene(saved);
                 Assert.That(Vector3.Distance(player.transform.position, actualPosition), Is.LessThan(.001f), "Restoring moved the player back to the new-run cave spawn");
                 Assert.That(Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y, 137)), Is.LessThan(.01f));

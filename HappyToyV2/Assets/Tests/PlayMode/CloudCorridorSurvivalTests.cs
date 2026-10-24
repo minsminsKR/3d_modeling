@@ -35,7 +35,7 @@ namespace HappyToy.V2.CloudTests
                 corridorRouteEvidence=route;
                 yield return (IEnumerator)Call(route,"Run");
                 Assert.That(Get<bool>(session,"Escaped"),Is.True);
-                Assert.That(Get<int>(session,"RecordsRecovered"),Is.EqualTo(5));
+                Assert.That(Get<int>(session,"RecordsRecovered"),Is.EqualTo(Get<int>(Get<UnityEngine.Component>(session,"Corridor"),"RequiredMemories")));
             }
         }
         [UnityTearDown]

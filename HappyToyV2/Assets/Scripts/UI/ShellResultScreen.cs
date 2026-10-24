@@ -33,11 +33,11 @@ namespace HappyToy.V2
             if(state.ChapterMode) { BuildSchoolResult(layout, state, actions); return; }
             layout.Small(state.CorridorMode?(state.Escaped?"회랑 탐색 종료  /  탈출 성공":"회랑 탐색 중단  /  기억 미완료"):state.Escaped ? "조사 종료  /  하교 확인" : "조사 중단  /  기록 미완료", 153, 247, 1170);
             string message = state.Escaped ? "지워졌던 이름을 다시 적었다.\n복도 너머에서 마지막 문이 닫힌다." : "이곳에는 아직 돌아오지 못한 기록이 있습니다.\n다시 들어가 마지막 이름을 찾아주세요.";
-            if (state.CorridorMode) message = state.Escaped ? (state.CorridorVersion>=3 ? "기억을 제단에 돌려놓았다.\n문 너머로 폐교의 기억이 이어진다." : "다섯 기억이 모이자 봉인이 풀렸다.\n처음 들어온 문 너머로 돌아왔다.") : "돌아갈 길을 잃었다.\n들었던 발소리를 기억하고 다음 회랑에 들어가세요.";
+            if (state.CorridorMode) message = state.Escaped ? (state.CorridorVersion>=3 ? "기억을 제단에 돌려놓았다.\n문 너머로 폐교의 기억이 이어진다." : $"기억 {state.TotalRecords}개가 모이자 봉인이 풀렸다.\n처음 들어온 문 너머로 돌아왔다.") : "돌아갈 길을 잃었다.\n들었던 발소리를 기억하고 다음 회랑에 들어가세요.";
             layout.Text(message, 153, 294, 1210, 103, layout.LargeText ? 30 : 27);
             layout.Panel(895, 437, 540, 391, layout.CardSurface);
             layout.Small(state.CorridorMode?"이번 회랑 탐색":state.Escaped ? "마지막 출석 확인" : "다음 탐색을 위한 기록", 920, 460, 490);
-            layout.Text($"복원한 기록  {state.RecordsRecovered} / {state.TotalRecords}\n탐색 시간  {Mathf.FloorToInt(state.ElapsedPlayTime / 60)}분 {Mathf.FloorToInt(state.ElapsedPlayTime % 60):00}초", 920, 505, 490, 85, layout.ReadingSize);
+            layout.Text($"복원한 기록  {state.RecordsRecovered} / {state.TotalRecords}\n탐색 시간  {Mathf.FloorToInt(state.ElapsedPlayTime / 60)}분 {Mathf.FloorToInt(state.ElapsedPlayTime % 60):00}초", 920, 505, 490, 85, layout.ReadingSize).name = "result-progress";
             string hint = state.Escaped ? "모든 이름이 제자리로 돌아왔습니다." : !string.IsNullOrWhiteSpace(state.DefeatHint) ? state.DefeatHint : "문을 닫아 시선을 끊고 걸으며 숨을 회복하세요.";
             layout.Text(hint, 920, 603, 490, 211, layout.LargeText ? 23 : 20).style.color = state.Escaped ? layout.Gold : layout.Muted;
             layout.Button("restart", state.Escaped ? "다시 탐색하기" : "다시 시작", 447, () => actions.Restart(), primary: true);

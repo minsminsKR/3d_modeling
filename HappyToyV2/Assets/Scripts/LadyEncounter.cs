@@ -38,7 +38,7 @@ namespace HappyToy.V2
         {run=owner;world=parent;session=owner.GetComponent<GameSession>();existing=oldActors.ToArray();}
         public bool Begin()
         {
-            if(!clock.Begin(run.Recovered,CorridorRun.Required))return false;
+            if(!clock.Begin(run.Recovered,run.RequiredMemories))return false;
             spawn=ChooseSpawn();ApplyWorld(true);return true;
         }
         void ApplyWorld(bool impact)
@@ -109,7 +109,7 @@ namespace HappyToy.V2
         }
         public void Restore(Progress data)
         {
-            if(run.Recovered<CorridorRun.Required)return;
+            if(run.Recovered<run.RequiredMemories)return;
             if(data==null)
             {
                 // Old completed-memory saves do not replay the transition impact.

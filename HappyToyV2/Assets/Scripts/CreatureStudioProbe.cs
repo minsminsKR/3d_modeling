@@ -20,7 +20,7 @@ namespace HappyToy.V2
         [Serializable] sealed class Report
         {
             public string status,failure,unity,graphics;
-            public string scope="Controlled native seed-73 corridor: newly generated meshes/materials, live clip aliases, 32 sampled deformation/ground phases and 16 pursuit frames with measured head rotation, actual player-camera views, Baby cry and Cyclopse stumble joints. AI is disabled for the art fixture. Does not certify survival balance or perceived fear.";
+            public string scope="Controlled native seed-73 corridor: two normal corridor actors plus an explicitly cloned retained authored Baby for asset coverage only. Normal corridor creation has no Baby. Newly generated meshes/materials, live clip aliases, 32 sampled deformation/ground phases and 16 pursuit frames with measured head rotation, actual player-camera views, Baby cry and Cyclopse stumble joints. AI is disabled for the art fixture. Does not certify survival balance or perceived fear.";
             public Check[] checks; public string[] errors;
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] static void Install()
@@ -60,8 +60,10 @@ namespace HappyToy.V2
             session.ConfigureRecordDirectory(Path.Combine(output,"isolated-profile"));
             session.CreateCorridor(73);session.Shell.Begin();yield return null;
             var all=FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include,FindObjectsSortMode.None);
-            var subjects=all.Where(actor=>actor.name.EndsWith("— corridor")).ToArray();
+            var subjects=all.Where(actor=>actor.name.EndsWith("— corridor")).ToList();
             var fixtureAnchor=subjects.Single(actor=>actor.name.Contains("Cyclopse")).transform.position;
+            AssertValue("normal corridor excludes Baby",subjects.All(actor=>EnemySoundProfile.Identify(actor.transform)!=EnemySoundKind.Baby));
+            subjects.Add(CorridorBabyProbe.CreateAuthoredDiagnosticFixture(session,fixtureAnchor));
             foreach(var actor in all){actor.enabled=false;actor.gameObject.SetActive(false);}
             session.player.enabled=false;session.player.GetComponent<CharacterController>().enabled=false;
             session.player.flashlight.enabled=true;

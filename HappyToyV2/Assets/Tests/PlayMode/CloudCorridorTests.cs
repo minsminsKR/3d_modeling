@@ -79,7 +79,7 @@ namespace HappyToy.V2.CloudTests
             }
             Assert.That(spatialVoices, Is.EqualTo(3), "Old-school ambience was not moved into the playable corridor");
             var memories = Components("Interactable").Where(x => Get<object>(x, "kind").ToString() == "CorridorMemory").ToArray();
-            Assert.That(memories.Length, Is.EqualTo(5));
+            Assert.That(memories.Length, Is.EqualTo(4));
             yield return null;
             foreach (var item in memories)
             {
@@ -91,7 +91,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(memories.All(x => !x.GetComponent<AudioSource>().isPlaying), Is.True, "Collectible bells continued while paused");
             Call(shell, "Resume"); yield return null;
             Assert.That(memories.All(x => x.GetComponent<AudioSource>().isPlaying), Is.True);
-            Assert.That(Get<int>(session, "TotalRecords"), Is.EqualTo(5));
+            Assert.That(Get<int>(session, "TotalRecords"), Is.EqualTo(4));
             var start = player.transform.position;
             var doors = Components("Interactable").Where(x => x.name == "Corridor sliding door").ToArray();
             Assert.That(doors.Length, Is.GreaterThan(0));
@@ -109,7 +109,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(path.status, Is.EqualTo(NavMeshPathStatus.PathComplete), "Unreachable generated memory " + item.name);
             }
             var threats = Components("StalkerBrain").Where(x => x.name.EndsWith("— corridor")).ToArray();
-            Assert.That(threats.Length, Is.EqualTo(3));
+            Assert.That(threats.Length, Is.EqualTo(2));
             Assert.That(threats.Any(x => x.name.Contains("Hwacat")), Is.False);
             Assert.That(threats.Count(x => x.gameObject.activeSelf), Is.EqualTo(1));
             var mask = Get<Component>(run, "Mask");
@@ -132,10 +132,10 @@ namespace HappyToy.V2.CloudTests
             Call(session, "TryEscape"); Assert.That(Get<bool>(session, "Finished"), Is.False);
             // Any-order progression fixture; this does not claim a full input survival route.
             foreach (var item in memories.Reverse()) { Call(item, "Use", player); yield return null; }
-            Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(5));
+            Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(4));
             yield return null;
             Assert.That(memories.All(x => !x.GetComponent<AudioSource>().isPlaying), Is.True, "Collected memories continued sounding");
-            Assert.That(threats.Count(x => x.gameObject.activeSelf), Is.EqualTo(3));
+            Assert.That(threats.Count(x => x.gameObject.activeSelf), Is.EqualTo(2));
             Assert.That(mask.gameObject.activeSelf, Is.True);
             // Genuine keyboard movement at the generated entrance; no teleport/path injection.
             float distance = 0; var previous = player.transform.position;

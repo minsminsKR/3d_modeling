@@ -16,7 +16,7 @@ namespace HappyToy.V2.CloudTests
         {
             yield return LadyPrepare();Call(shell,"RestoreDefaultSettings");
             ((Behaviour)player).enabled=false;((Behaviour)Get<Component>(player,"Feedback")).enabled=false;
-            LadyCollect(0,5);var pulse=Get<Component>(LadyFinale,"PulseAudio");
+            LadyCollect(0,4);var pulse=Get<Component>(LadyFinale,"PulseAudio");
             var heart=Get<AudioSource>(pulse,"HeartbeatSource");var flat=Get<AudioSource>(pulse,"FlatlineSource");
                 Assert.That(flat.clip.length,Is.EqualTo(3).Within(.001f));
             Assert.That(Get<bool>(LadyFinale,"Hunting"),Is.False);

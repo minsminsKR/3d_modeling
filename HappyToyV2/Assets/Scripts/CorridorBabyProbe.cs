@@ -11,6 +11,37 @@ namespace HappyToy.V2
 {
     public sealed class CorridorBabyProbe : MonoBehaviour
     {
+        // Explicit diagnostics may exercise the retained authored Baby on the
+        // maze NavMesh. Normal corridor creation never invokes this fixture.
+        public static StalkerBrain CreateAuthoredDiagnosticFixture(GameSession session, Vector3 at)
+        {
+            if (!session || !session.CorridorMode || !session.Corridor.Ready)
+                throw new InvalidOperationException("Baby diagnostic requires a prepared corridor navigation fixture");
+            var source = FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include)
+                .Single(actor => EnemySoundProfile.Identify(actor.transform) == EnemySoundKind.Baby &&
+                    !actor.CorridorBaby && !actor.name.EndsWith("— corridor"));
+            var clone = Instantiate(source.gameObject, session.Corridor.transform);
+            clone.name = source.name + " — explicit authored Baby fixture";
+            clone.SetActive(false); clone.transform.position = at;
+            var brain = clone.GetComponent<StalkerBrain>();
+            brain.player = session.player; brain.enabled = false; brain.corridorRole = CorridorThreatRole.Wanderer;
+            var agent = clone.GetComponent<NavMeshAgent>(); agent.enabled = false;
+            foreach (var startup in clone.GetComponents<NavMeshStartup>()) startup.enabled = false;
+            var motion = clone.GetComponent<V1MonsterMotion>(); if (motion) motion.enabled = true;
+            clone.AddComponent<CorridorRouteGuide>().Configure(session.Corridor.Layout.Connections,
+                CorridorLayout.Width, session.Corridor.CellPosition(0), 6, brain);
+            brain.patrol = session.Corridor.Layout.Relics.Select(cell =>
+            {
+                var centre = session.Corridor.CellPosition(cell);
+                if (!NavMesh.SamplePosition(centre, out var site, 1.5f, agent.areaMask) || Mathf.Abs(site.position.y-centre.y) > .25f)
+                    throw new InvalidOperationException("No supported authored Baby diagnostic patrol at cell " + cell);
+                var marker = new GameObject("Explicit Baby diagnostic patrol").transform;
+                marker.SetParent(session.Corridor.transform); marker.position = site.position;
+                return marker;
+            }).ToArray();
+            brain.ConfigureCorridorBaby();
+            return brain;
+        }
         string output; float started; bool finished;
         GameSession session; StalkerBrain brain; CorridorBabyBehaviour baby;
         RouteAudioCapture capture; CorridorAudioPhaseProbe tap;
@@ -26,7 +57,7 @@ namespace HappyToy.V2
         [Serializable] sealed class Report
         {
             public string status, failure, unity, device;
-            public string scope = "Controlled native corridor Baby fixture. Public CreateCorridor prepares the actual actor/model/resources; its release is explicitly forced for this diagnostic. Initial wait, admitted small-sound navigation, actual sight/chase loss and slow patrol use production brain/agent. Footstep and loud-noise callbacks are controlled stimuli using production physical-range/NavMesh guards, not claims of keyboard footsteps or natural firecracker throwing. Other enemies are disabled; player positions are controlled teleports. Actor speeds are set to zero only after state/movement proof for isolated crying PCM/pause/mute/cabinet/cleanup controls. Other sources are muted during isolation. Cabinet RNG is explicitly fixed to the successful outcome for that acoustic fixture. Listener DSP is natural, pre-device and retained as a WAV; no synthetic samples or forced AudioRenderer. This does not certify natural survival, full mix, human/device listening, fear or hardware performance.";
+            public string scope = "Explicit authored Baby diagnostic fixture on the corridor NavMesh; normal corridor creation has no Baby. This diagnostic alone clones the retained school-event source and enables its preserved behavior/model/resources. Initial wait, admitted small-sound navigation, actual sight/chase loss and slow patrol use production brain/agent. Footstep and loud-noise callbacks are controlled stimuli using production physical-range/NavMesh guards, not claims of keyboard footsteps or natural firecracker throwing. Other enemies are disabled; player positions are controlled teleports. Actor speeds are set to zero only after state/movement proof for isolated crying PCM/pause/mute/cabinet/cleanup controls. Other sources are muted during isolation. Cabinet RNG is explicitly fixed to the successful outcome for that acoustic fixture. Listener DSP is natural, pre-device and retained as a WAV; no synthetic samples or forced AudioRenderer. This does not certify natural survival, full mix, human/device listening, fear or hardware performance.";
             public Check[] checks; public string[] errors;
             public CorridorAudioPhaseProbe.Phase[] phases;
             public RouteAudioCapture.Report audio;
@@ -116,7 +147,8 @@ namespace HappyToy.V2
             SavePreferences(); oldVolume = session.Shell.Volume;
             session.ConfigureRecordDirectory(Path.Combine(output, "isolated-profile", Guid.NewGuid().ToString("N")));
             session.CreateCorridor(211); session.Shell.Begin(); session.Shell.AdjustSettings(.8f - session.Shell.Volume, 0);
-            brain = FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include).Single(actor => actor.CorridorBaby);
+            CheckValue("normal corridor excludes Baby", !session.Corridor.GetComponentsInChildren<StalkerBrain>(true).Any(actor => actor.CorridorBaby || EnemySoundProfile.Identify(actor.transform) == EnemySoundKind.Baby));
+            brain = CreateAuthoredDiagnosticFixture(session, session.Corridor.CellPosition(session.Corridor.Layout.Threats[0]));
             baby = brain.CorridorBaby; var agent = brain.GetComponent<NavMeshAgent>(); oldPatrol = brain.patrolSpeed; oldChase = brain.chaseSpeed;
             foreach (var component in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include))
                 if (component is StalkerBrain && component != brain || component is NavMeshStartup || component is StoryDirector ||

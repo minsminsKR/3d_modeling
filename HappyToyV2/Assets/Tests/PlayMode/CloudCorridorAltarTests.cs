@@ -151,7 +151,7 @@ namespace HappyToy.V2.CloudTests
             var run = Get<Component>(session, "Corridor"); AltarIsolateFixture(run);
             yield return null; yield return null;
             var layout = Get<object>(run, "Layout");
-            Assert.That(Get<int>(layout, "Version"), Is.EqualTo(5));
+            Assert.That(Get<int>(layout, "Version"), Is.EqualTo(6));
             int cell = Get<int>(layout, "AltarCell");
             Assert.That(cell, Is.InRange(1, 80), "The offering room must not occupy the entrance");
             Assert.That(cell % 9 == 8 || cell / 9 == 8, Is.True);
@@ -167,7 +167,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(colliders.Length, Is.GreaterThan(5), "Chamber shell did not contribute physical geometry");
             int[] connections = Get<int[]>(layout, "Connections").ToArray();
             Vector3 approach = Get<Vector3>(run, "AltarApproach");
-            foreach (var memory in CheckpointItems("CorridorMemory").Take(4)) Call(memory, "Use", player);
+            // Geometry/save fixture stays before the final memory. Production
+            // finale and completed offering are covered separately with lighting active.
+            foreach (var memory in CheckpointItems("CorridorMemory").Take(3)) Call(memory, "Use", player);
             AltarAimFromApproach(run);
             yield return Wait(() => Get<Component>(player, "Focus") == AltarOffering(run), 3,
                 "The reachable offering cannot be focused through the production camera ray");
@@ -181,20 +183,20 @@ namespace HappyToy.V2.CloudTests
             finally { Object.Destroy(frame); }
             Call(shell, "Pause");
             var saved = Call(session, "CaptureCheckpoint");
-            Assert.That(Get<int>(saved, "simulationVersion"), Is.EqualTo(5));
-            Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(4));
+            Assert.That(Get<int>(saved, "simulationVersion"), Is.EqualTo(6));
+            Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(3));
             Vector3 position = Get<Vector3>(Get<object>(saved, "player"), "position");
             Assert.That(position.x > 251 || position.z > 251, Is.True,
                 "Fixture must exercise the expanded checkpoint bounds in the exterior chamber");
             yield return RestoreCheckpointInFreshScene(saved);
             run = Get<Component>(session, "Corridor"); AltarIsolateFixture(run);
-            Assert.That(Get<int>(Get<object>(run, "Layout"), "Version"), Is.EqualTo(5));
+            Assert.That(Get<int>(Get<object>(run, "Layout"), "Version"), Is.EqualTo(6));
             Assert.That(Get<int[]>(Get<object>(run, "Layout"), "Connections"), Is.EqualTo(connections));
             Assert.That(Get<int>(Get<object>(run, "Layout"), "AltarCell"), Is.EqualTo(cell));
             Assert.That(Get<Vector3>(run, "AltarApproach"), Is.EqualTo(approach));
             Assert.That(AltarColliderSnapshot(Get<Transform>(run, "AltarRoomRoot")), Is.EqualTo(colliders));
             Assert.That(Vector3.Distance(player.transform.position, position), Is.LessThan(.001f));
-            Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(4));
+            Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(3));
             Assert.That(Get<bool>(session, "InputAllowed"), Is.False);
             AltarAssertReachable(run);
             Begin(); AltarAimFromApproach(run);
@@ -203,7 +205,7 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest, Timeout(180000)]
-        public IEnumerator CorridorAltarRequiresAllFiveMemoriesAndRealOfferingInputContinuesIntoSchoolWithoutConsumingItsSave()
+        public IEnumerator CorridorAltarRequiresAllFourMemoriesAndRealOfferingInputContinuesIntoSchoolWithoutConsumingItsSave()
         {
             string directory = NewRecordFixture(); Call(session, "ConfigureRecordDirectory", directory);
             // Produce a valid independent school save before starting the corridor.
@@ -217,7 +219,8 @@ namespace HappyToy.V2.CloudTests
             var run = Get<Component>(session, "Corridor"); AltarIsolateFixture(run);
             var offering = AltarOffering(run); var memories = CheckpointItems("CorridorMemory");
             AltarAimFromApproach(run);
-            for (int count = 0; count < 5; count++)
+            Assert.That(memories.Length,Is.EqualTo(4));
+            for (int count = 0; count < memories.Length; count++)
             {
                 Call(offering, "Use", player);
                 Assert.That(Get<bool>(session, "Finished"), Is.False, "Offering accepted only " + count + " memories");
@@ -226,7 +229,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(count));
                 Call(memories[count], "Use", player);
             }
-            Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(5));
+            Assert.That(Get<int>(session, "RecordsRecovered"), Is.EqualTo(4));
             Assert.That(Get<string>(session, "Objective"), Does.Contain("제단"));
             Assert.That(Get<string>(offering, "DisplayLabel"), Does.Contain("기억"),
                 "The offering prompt must describe returning memories");
@@ -238,7 +241,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(session, "Finished"), Is.False, "Paused offering accepted gameplay input");
             Call(shell, "Resume");
             yield return Wait(() => Get<Component>(player, "Focus") == offering, 3,
-                "Actual camera focus cannot reach the five-memory offering");
+                "Actual camera focus cannot reach the four-memory offering");
             var errors = new List<string>();
             foreach (var size in new[] { new Vector2Int(1280, 720), new Vector2Int(1024, 768), new Vector2Int(2560, 1080) })
                 yield return CaptureMenu(One("GameShellView"), "corridor-altar-ready-ui-" + size.x + "x" + size.y + ".png", size.x, size.y, errors);
@@ -249,7 +252,7 @@ namespace HappyToy.V2.CloudTests
             previous = session;
             Keys(Key.E);
             yield return Wait(() => RecoveryPage == "ChapterTransition", 1,
-                "Real E input did not activate the focused five-memory offering");
+                "Real E input did not activate the focused four-memory offering");
             Keys();
             // Observe the short transition before waiting for its automatic reload.
             Assert.That(Get<bool>(session, "Escaped"), Is.True);
@@ -309,7 +312,7 @@ namespace HappyToy.V2.CloudTests
             AltarAimFromApproach(run);
             var offering = AltarOffering(run);
             yield return Wait(() => Get<Component>(player, "Focus") == offering, 3,
-                "Failure fixture could not focus the actual five-memory offering");
+                "Failure fixture could not focus the actual four-memory offering");
             yield return RecoveryUiReady(); var view = One("GameShellView");
             var original = session.gameObject.scene;
             var temporary = SceneManager.CreateScene("Owned altar transition unloadable scene");

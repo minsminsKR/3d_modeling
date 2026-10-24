@@ -16,14 +16,14 @@ namespace HappyToy.V2.CloudTests
         [UnityTest, Timeout(120000)]
         public IEnumerator LadyBlackoutKeepsOnlyPlayerIncenseLightAndVisibleGuidingSmokeUntilBurnout()
         {
-            yield return LadyPrepare(); LadyCollect(0, 4);
+            yield return LadyPrepare(); LadyCollect(0, 3);
             ((Behaviour)player).enabled = false;
             PlacePlayer((Vector3)Call(LadyRun, "CellPosition", 0) + Vector3.up * .03f, false);
             var camera = Get<Camera>(player, "eyes"); var torch = Get<Light>(player, "flashlight");
             torch.enabled = false; camera.transform.localRotation = Quaternion.Euler(10, -30, 0);
             var ritual = Get<Component>(player, "Rituals");
             Assert.That((bool)Call(ritual, "UseIncense"), Is.True);
-            yield return Delay(.4f); LadyCollect(4, 5); yield return Delay(2);
+            yield return Delay(.4f); LadyCollect(3, 4); yield return Delay(2);
             var smoke = Get<Component>(ritual, "Smoke"); var plume = smoke.GetComponent<MeshRenderer>();
             var ember = Get<Light>(smoke, "EmberLight");
             Call(shell, "Pause"); float remaining = Get<float>(smoke, "Remaining");
@@ -77,7 +77,7 @@ namespace HappyToy.V2.CloudTests
         }
         IEnumerator LadySnapperFixture()
         {
-            yield return LadyPrepare(); LadyCollect(0, 5);
+            yield return LadyPrepare(); LadyCollect(0, 4);
             yield return Wait(() => Get<Component>(LadyFinale, "Actor"), 4, "Lady did not spawn");
             ((Behaviour)player).enabled = false;
             foreach (var door in CheckpointItems("Door")) Call(door, "OpenForPursuer");

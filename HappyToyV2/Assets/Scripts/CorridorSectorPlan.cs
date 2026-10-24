@@ -16,13 +16,14 @@ namespace HappyToy.V2
         public int BranchCount { get; private set; }
         public CorridorSectorPlan(CorridorLayout layout)
         {
-            if(layout==null || layout.Relics.Length!=5 || layout.Relics.Distinct().Count()!=5)
-                throw new ArgumentException("Five distinct connected corridor goals required");
+            if(layout==null || layout.Relics.Length!=CorridorLayout.MemoryCountForVersion(layout.Version) ||
+                layout.Relics.Distinct().Count()!=layout.Relics.Length)
+                throw new ArgumentException("Distinct connected corridor goals required");
             GoalCells=(int[])layout.Relics.Clone(); Connections=(int[])layout.Connections.Clone();
             for(int cell=0;cell<Sectors.Length;cell++) Sectors[cell]=GoalDistance[cell]=-1;
             var queue=new Queue<int>();
             // Tie priority changes with the seed, but the same seed reconstructs identical regions.
-            foreach(int sector in Enumerable.Range(0,5).OrderBy(i=>Tie(layout.Seed,i)))
+            foreach(int sector in Enumerable.Range(0,GoalCells.Length).OrderBy(i=>Tie(layout.Seed,i)))
             { int goal=GoalCells[sector]; Sectors[goal]=sector; GoalDistance[goal]=0; queue.Enqueue(goal); }
             while(queue.Count>0)
             {

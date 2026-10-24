@@ -25,7 +25,7 @@ namespace HappyToy.V2
             public string status, failure;
             public Check[] checks; public string[] errors;
             public CorridorAudioPhaseProbe.Phase[] phases; public RouteAudioCapture.Report audio;
-            public string scope = "Controlled corridor Baby post-chase legal checkpoint restore, two local supported patrol markers and actual agent movement beside a real occupied cabinet. Other sources are muted, cabinet RNG is fixed only for this acoustic fixture, and pre-device natural listener DSP is retained. Speech is generated from the documented Korean text, not a recorded child. Not a natural full survival route or human listening certification.";
+            public string scope = "Explicit retained authored Baby fixture on the corridor NavMesh; normal corridor creation has no Baby. Controlled post-chase legal actor-state restore, two local supported patrol markers and actual agent movement beside a real occupied cabinet. Other sources are muted, cabinet RNG is fixed only for this acoustic fixture, and pre-device natural listener DSP is retained. Speech is generated from the documented Korean text, not a recorded child. Not a natural full survival route or human listening certification.";
         }
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] static void Install()
         {
@@ -96,7 +96,7 @@ namespace HappyToy.V2
             yield return DiagnosticAudioSilence.WaitForSafeAudio(output); yield return null; yield return null;
             session=GameSession.Current; session.ConfigureRecordDirectory(Path.Combine(output,"isolated-profile",Guid.NewGuid().ToString("N")));
             session.CreateCorridor(211); session.Shell.Begin(); session.Shell.AdjustSettings(.8f-session.Shell.Volume,0);
-            brain=FindObjectsByType<StalkerBrain>(FindObjectsInactive.Include).Single(actor=>actor.CorridorBaby);baby=brain.CorridorBaby;
+            brain=CorridorBabyProbe.CreateAuthoredDiagnosticFixture(session,session.Corridor.CellPosition(session.Corridor.Layout.Threats[0]));baby=brain.CorridorBaby;
             foreach(var actor in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include))
                 if(actor is StalkerBrain&&actor!=brain||actor is LanternMaskEncounter||actor is WeepingAngelEncounter||actor is NavMeshStartup||
                     actor is StoryDirector||actor is AnnexEncounter||actor is UncatAnnexEvent||actor is V1HwacatEvent||actor is LovelyDollGuide)

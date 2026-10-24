@@ -11,12 +11,13 @@ namespace HappyToy.V2
     // A new playable run built alongside the preserved authored school scene.
     public sealed partial class CorridorRun : MonoBehaviour
     {
-        public const int Required = 5;
+        public const int Required = 4;
         public CorridorLayout Layout { get; private set; }
         public bool Ready { get; private set; }
         public int Recovered => recovered.Count;
+        public int RequiredMemories => Layout == null ? Required : Layout.Relics.Length;
         public int Seed => Layout == null ? 0 : Layout.Seed;
-        public string Objective => Recovered < Required ? "회랑에 흩어진 기억 다섯 개를 찾으세요. 발소리를 듣고 길을 고르세요." :
+        public string Objective => Recovered < RequiredMemories ? $"회랑에 흩어진 기억 {RequiredMemories}개를 찾으세요. 발소리를 듣고 길을 고르세요." :
             Layout.Version >= 3 ? "기억을 모두 찾았습니다. 회랑 끝의 붉은 교실 제단에 기억을 바치세요." : "기억을 모두 찾았습니다. 입구의 봉인된 문으로 돌아가세요.";
         readonly HashSet<string> recovered = new HashSet<string>();
         readonly List<Material> materials = new List<Material>();
@@ -223,7 +224,9 @@ namespace HappyToy.V2
             }
             else surface.BuildNavMesh();
             progress?.Invoke(.76f);
-            for (int i = 0; i < 4; i++)
+            // Baby remains an authored school-event resource, never a corridor
+            // participant (including resumed older layouts with a reserved slot).
+            for (int i = 0; i < 3; i++)
             {
                 // Slot two belongs to the actual lantern/mask encounter. Hwacat's
                 // first appearance is preserved for the later school chapter.
@@ -255,14 +258,13 @@ namespace HappyToy.V2
                     Mask.patrol = BuildPatrol(i, maskAgent);
                     continue;
                 }
-                var template = actors.FirstOrDefault(x => i == 0 ? x.name.Contains("Cyclopse") : i == 1 ? x.name.Contains("Uncat") : x.name.Contains("Baby"));
+                var template = actors.FirstOrDefault(x => i == 0 ? x.name.Contains("Cyclopse") : x.name.Contains("Uncat"));
                 if (!template) throw new InvalidOperationException("Missing existing monster " + i);
                 var clone = Instantiate(template.gameObject, world); clone.name = template.name + " — corridor";
                 clone.transform.position = CellPosition(Layout.Threats[i]);
                 var brain = clone.GetComponent<StalkerBrain>(); brain.player = session.player; brain.enabled = true;
                 brain.corridorRole = (CorridorThreatRole)(i + 1);
                 if (i == 1 && !clone.GetComponent<UncatBellVoice>()) clone.AddComponent<UncatBellVoice>();
-                if (i == 3) brain.ConfigureCorridorBaby();
                 var agent = clone.GetComponent<NavMeshAgent>(); agent.enabled = false;
                 if (Layout.Version >= 4) clone.AddComponent<CorridorRouteGuide>().Configure(Layout.Connections, CorridorLayout.Width, CellPosition(0), 6, brain);
                 foreach (var startup in clone.GetComponents<NavMeshStartup>()) startup.enabled = false;
@@ -294,8 +296,8 @@ namespace HappyToy.V2
             }
             Physics.SyncTransforms(); Ready = true; progress?.Invoke(1);
             session.Notify(Layout.Version >= 3 ?
-                "다섯 기억을 회수하고 붉은 교실의 제단에 돌려놓으세요. 콩알탄은 회랑에서 보충할 수 있습니다." :
-                "다섯 기억을 회수하고 입구로 돌아오세요. 콩알탄은 회랑에서 보충할 수 있습니다.");
+                $"기억 {RequiredMemories}개를 회수하고 붉은 교실의 제단에 돌려놓으세요. 콩알탄은 회랑에서 보충할 수 있습니다." :
+                $"기억 {RequiredMemories}개를 회수하고 입구로 돌아오세요. 콩알탄은 회랑에서 보충할 수 있습니다.");
         }
         // Tile the solid parts around a 2.8m central hall and its connected arms.
         // Collision, visibility and the navigation bake all use these same walls.
@@ -333,7 +335,7 @@ namespace HappyToy.V2
         Transform[] BuildPatrol(int slot, NavMeshAgent agent)
         {
             var markers = new List<Transform>();
-            foreach (int target in new[] { Layout.Threats[slot], Layout.Relics[(slot + 1) % 5], Layout.Supplies[(slot * 2) % 8], Layout.Relics[(slot + 3) % 5] })
+            foreach (int target in new[] { Layout.Threats[slot], Layout.Relics[(slot + 1) % RequiredMemories], Layout.Supplies[(slot * 2) % 8], Layout.Relics[(slot + 3) % RequiredMemories] })
             {
                 var center = CellPosition(target);
                 if (!NavMesh.SamplePosition(center, out var destination, 1.5f, agent.areaMask) || Mathf.Abs(destination.position.y - center.y) > .25f)
@@ -353,18 +355,17 @@ namespace HappyToy.V2
         void Update()
         {
             if (!Ready || !session.InputAllowed || Lady&&Lady.Active) return;
-            for (int i = 1; i < threats.Count; i++)
-                if (!threats[i].gameObject.activeSelf && Recovered >= (i == 1 ? 2 : 4) &&
-                    Vector3.Distance(threats[i].transform.position, session.player.transform.position) > 12) Release(threats[i]);
+            if (!threats[1].gameObject.activeSelf && Recovered >= 2 &&
+                Vector3.Distance(threats[1].transform.position, session.player.transform.position) > 12) Release(threats[1]);
             if (Mask && !Mask.gameObject.activeSelf && Recovered >= 3 &&
                 Vector3.Distance(Mask.transform.position, session.player.transform.position) > 12) Release(Mask);
         }
         public bool Collect(string id)
         {
-            if (!Ready || !session.InputAllowed || !Enumerable.Range(0, 5).Any(i => id == "memory-" + i) || !recovered.Add(id)) return false;
-            session.Inspect(id, "회수한 기억 " + Recovered + "/5 — 어두운 복도에서도 돌아갈 길을 잊지 말자.");
-            session.Notify(Recovered == Required ? Objective : "기억을 회수했습니다 · " + Recovered + "/5");
-            if(Recovered==Required&&Lady)Lady.Begin();
+            if (!Ready || !session.InputAllowed || !Enumerable.Range(0, RequiredMemories).Any(i => id == "memory-" + i) || !recovered.Add(id)) return false;
+            session.Inspect(id, "회수한 기억 " + Recovered + "/" + RequiredMemories + " — 어두운 복도에서도 돌아갈 길을 잊지 말자.");
+            session.Notify(Recovered == RequiredMemories ? Objective : "기억을 회수했습니다 · " + Recovered + "/" + RequiredMemories);
+            if(Recovered==RequiredMemories&&Lady)Lady.Begin();
             return true;
         }
         GameObject Box(string name, Vector3 at, Vector3 size, Material material, bool create = true)

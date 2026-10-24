@@ -36,10 +36,11 @@ namespace HappyToy.V2
         public void Validate()
         {
             if (version != 1 || simulationVersion < 1 || simulationVersion > CorridorLayout.CurrentVersion || !Guid.TryParseExact(token,"N",out _) || !Number(seconds,0,1000000000) ||
-                recovered == null || recovered.Length != 5 || supplies == null || supplies.Length != 8 ||
+                recovered == null || recovered.Length != CorridorLayout.MemoryCountForVersion(simulationVersion) || supplies == null || supplies.Length != 8 ||
                 doors == null || doors.Length > 162 || threats == null || player == null ||
-                threatVersion < 0 || threatVersion > 1 || threats.Length != (threatVersion == 0 ? 4 : 3) ||
-                (threatVersion == 1 && mask == null) || (threatVersion == 0 && mask != null && !mask.LegacyEmpty))
+                threatVersion < 0 || threatVersion > 2 || simulationVersion >= 6 && threatVersion != 2 ||
+                threats.Length != (threatVersion == 0 ? 4 : threatVersion == 1 ? 3 : 2) ||
+                (threatVersion >= 1 && mask == null) || (threatVersion == 0 && mask != null && !mask.LegacyEmpty))
                 throw new ArgumentException("Invalid checkpoint schema");
             // Legacy marker 0 means this run predates batteries/candles. New captures always write 1.
             if(lightingVersion<0 || lightingVersion>1 || lightingVersion==1 && lighting==null ||
@@ -70,7 +71,7 @@ namespace HappyToy.V2
                 if((lady.phase>0)!=Array.TrueForAll(recovered,value=>value))throw new ArgumentException("Lady progression differs from recovered memories");
             }
             foreach(var threat in threats) { if(threat == null) throw new ArgumentException("Missing threat"); threat.Validate(); }
-            if(threatVersion==1) mask.ValidateCorridor();
+            if(threatVersion>=1) mask.ValidateCorridor();
             var ids=new System.Collections.Generic.HashSet<string>();
             foreach(var door in doors)
                 if(door == null || string.IsNullOrEmpty(door.id) || door.id.Length > 40 || !ids.Add(door.id) ||

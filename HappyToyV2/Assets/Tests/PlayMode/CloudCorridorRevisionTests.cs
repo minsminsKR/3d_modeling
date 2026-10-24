@@ -88,7 +88,7 @@ namespace HappyToy.V2.CloudTests
         {
             yield return RevisionPrepare(); ((Behaviour)player).enabled=false;
             var run=Get<Component>(session,"Corridor"); var rooms=Components("CorridorShelterRoom");
-            Assert.That(Get<int>(Get<object>(run,"Layout"),"Version"),Is.EqualTo(5));
+            Assert.That(Get<int>(Get<object>(run,"Layout"),"Version"),Is.EqualTo(6));
             Assert.That(rooms.Length,Is.GreaterThanOrEqualTo(2));
             var route=new NavMeshPath(); var start=(Vector3)Call(run,"CellPosition",0);
             foreach(var room in rooms)
@@ -110,7 +110,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(mask,"CanSeePlayer"),Is.True,"Opened room unexpectedly remained invisible");
             mask.gameObject.SetActive(false); Call(shell,"Pause"); yield return null;
             var checkpoint=Call(run,"CaptureCheckpoint"); Call(checkpoint,"Validate");
-            Assert.That(Get<int>(checkpoint,"simulationVersion"),Is.EqualTo(5));
+            Assert.That(Get<int>(checkpoint,"simulationVersion"),Is.EqualTo(6));
             Assert.That(Get<Array>(checkpoint,"doors").Length,Is.GreaterThanOrEqualTo(rooms.Length));
         }
 
@@ -204,7 +204,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That((bool)Call(doors[1],"OpenForPursuer"),Is.True);
             yield return Wait(()=>Get<bool>(doors[1],"AtRequestedDoorPose"),4,"Separate exit did not finish opening");
             Call(shell,"Pause");yield return null;var saved=CheckpointCopy(Call(session,"CaptureCheckpoint"));
-            Assert.That(Get<int>(saved,"simulationVersion"),Is.EqualTo(5));
+            Assert.That(Get<int>(saved,"simulationVersion"),Is.EqualTo(6));
             yield return RestoreCheckpointInFreshScene(saved);
             room=Components("CorridorShelterRoom").Single(item=>Get<int>(item,"Cell")==cell);doors=ShelterDoors(room);
             Assert.That(doors.Select(door=>Get<string>(door,"stableId")),Is.EqualTo(ids));

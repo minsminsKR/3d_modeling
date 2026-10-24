@@ -104,28 +104,28 @@ namespace HappyToy.V2
 
         void BuildOffering()
         {
-            var root = Group(additions, "Five memories offering altar", new Vector3(0, .90f, 2.8f));
+            var root = Group(additions, "Memory offering altar", new Vector3(0, .90f, 2.8f));
             Offering = root.gameObject.AddComponent<Interactable>(); Offering.kind = Interactable.Kind.Exit;
-            Offering.stableId = "corridor-offering"; Offering.label = "다섯 기억을 제단에 돌려놓기";
+            Offering.stableId = "corridor-offering"; Offering.label = $"기억 {run.RequiredMemories}개를 제단에 돌려놓기";
             // An actual closed-panel chest, not a trigger or invisible waypoint.
             // Its proxy fits the broad wood body including drawer hardware.
             Physical(root, "Offering chest solid body", new Vector3(0, -.345f, 0), new Vector3(2.22f, 1.11f, 1.14f));
             NoWalkableTop(root);
             Model("offering-table", root, new Vector3(0, -.90f, 0));
-            // Five discrete paper sockets are readable in the torch. Each returns
+            // Discrete paper sockets are readable in the torch. Each returns
             // its quiet ember colour only when the actual run records that memory.
-            for (int i = 0; i < CorridorRun.Required; i++)
+            for (int i = 0; i < run.RequiredMemories; i++)
             {
-                var paper = DetailModel("memory-socket", root, new Vector3((i - 2) * .285f, .126f, -.265f), blankSeal,
+                var paper = DetailModel("memory-socket", root, new Vector3((i - (run.RequiredMemories - 1) * .5f) * .285f, .126f, -.265f), blankSeal,
                     Quaternion.Euler(0, (i % 2 == 0 ? 1 : -1) * (i + 1) * 1.7f, 0), false);
                 // Exactly one merged paper renderer per memory keeps the original
-                // five readiness states; binding and ink retain their own surfaces.
+                // readiness states; binding and ink retain their own surfaces.
                 sockets.Add(paper.GetComponentsInChildren<MeshRenderer>().Single(r => r.enabled && r.sharedMaterial == blankSeal));
             }
             DetailModel("timber-plaque", root, new Vector3(0, -.033f, -.544f), null, default, false);
-            offeringClue = Label(root, "Memory offering instruction", "기억을 돌려놓는 자리\n0 / 5", new Vector3(0, -.033f, -.561f),
+            offeringClue = Label(root, "Memory offering instruction", "기억을 돌려놓는 자리\n0 / " + run.RequiredMemories, new Vector3(0, -.033f, -.561f),
                 .023f, new Color(.77f, .73f, .60f));
-            readyLight = Lamp("Altar five memories reflected ember", new Vector3(0, 1.15f, 2.45f), new Color(.88f, .53f, .31f), 0, 2.3f, false);
+            readyLight = Lamp("Altar memories reflected ember", new Vector3(0, 1.15f, 2.45f), new Color(.88f, .53f, .31f), 0, 2.3f, false);
         }
 
         void BuildTeachingWall()
@@ -133,7 +133,7 @@ namespace HappyToy.V2
             Blackboard = Model("lesson-blackboard", additions, new Vector3(0, 2.09f, 4.78f));
             var lesson = Blackboard.gameObject.AddComponent<Interactable>(); lesson.kind = Interactable.Kind.Inspect;
             lesson.stableId = "corridor-last-lesson"; lesson.label = "지워진 마지막 수업 확인";
-            lesson.inspectionText = "마지막 출석 — 다섯 이름을 기억하고, 자리를 비워 두고, 제단에 돌려놓는다. 칠판 아래쪽에 지운 이름의 분필 자국이 남아 있다.";
+            lesson.inspectionText = "마지막 출석 — 남겨진 이름을 기억하고, 자리를 비워 두고, 제단에 돌려놓는다. 칠판 아래쪽에 지운 이름의 분필 자국이 남아 있다.";
             Physical(Blackboard, "Blackboard actual timber backing", Vector3.zero, new Vector3(4.82f, 1.71f, .14f));
             // Crooked notice frames and tide lines bind the altar into an actual
             // abandoned teaching room, rather than a generic fantasy shrine.
@@ -481,10 +481,10 @@ namespace HappyToy.V2
         void RefreshMemoryState()
         {
             if (!run || lastRecovered == run.Recovered) return;
-            lastRecovered = Mathf.Clamp(run.Recovered, 0, CorridorRun.Required);
+            lastRecovered = Mathf.Clamp(run.Recovered, 0, run.RequiredMemories);
             for (int i = 0; i < sockets.Count; i++) sockets[i].sharedMaterial = i < lastRecovered ? recoveredSeal : blankSeal;
-            bool ready = lastRecovered == CorridorRun.Required;
-            offeringClue.text = ready ? "다섯 이름이 돌아왔다\n기억을 내려놓으세요" : "기억을 돌려놓는 자리\n" + lastRecovered + " / 5";
+            bool ready = lastRecovered == run.RequiredMemories;
+            offeringClue.text = ready ? "모든 이름이 돌아왔다\n기억을 내려놓으세요" : "기억을 돌려놓는 자리\n" + lastRecovered + " / " + run.RequiredMemories;
             readyLight.intensity = ready ? .45f : .025f;
             // Stable, quiet readiness. No flashing lights or forced camera effect.
         }

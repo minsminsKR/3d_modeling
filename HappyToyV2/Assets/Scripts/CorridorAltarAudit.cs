@@ -77,7 +77,7 @@ namespace HappyToy.V2
             if(report.memoryHudRequested)
             {
                 var memories=run.GetComponentsInChildren<Interactable>().Where(x=>x.kind==Interactable.Kind.CorridorMemory).ToArray();
-                for(int count=0;count<=CorridorRun.Required;count++)
+                for(int count=0;count<=run.RequiredMemories;count++)
                 {
                     if(count>0) { player.enabled=true; memories[count-1].Use(player); }
                     string filename="memory-hud-"+count+".png";
@@ -88,7 +88,7 @@ namespace HappyToy.V2
                     var frame=new MemoryHudFrame{recovered=run.Recovered,iconCount=icons.Length,
                         size=new Vector2(strip.resolvedStyle.width,strip.resolvedStyle.height),
                         opacity=icons.Select(icon=>icon.resolvedStyle.opacity).ToArray(),image=filename};
-                    if(frame.recovered!=count || icons.Length!=5 || frame.size.x>180 || frame.size.y>40 ||
+                    if(frame.recovered!=count || icons.Length!=run.RequiredMemories || frame.size.x>180 || frame.size.y>40 ||
                         icons.Where((icon,index)=>icon.ClassListContains("recovered")!=(index<count)).Any() ||
                         frame.opacity.Where((alpha,index)=>index<count?alpha<.99f:alpha>.5f).Any())
                         throw new InvalidOperationException("Memory HUD does not match actual collected progress");

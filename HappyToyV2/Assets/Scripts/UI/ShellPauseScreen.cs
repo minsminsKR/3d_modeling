@@ -13,11 +13,11 @@ namespace HappyToy.V2
         {
             public string Objective, SuspensionMessage;
             public bool CorridorMode, ChapterMode, CanSuspendCorridor, CanSuspendChapter, ShowSuspensionMessage;
-            public int CorridorVersion, RecordsRecovered, StoryStep;
+            public int CorridorVersion, RecordsRecovered, TotalRecords, StoryStep;
             public static State Read(GameSession session, GameShell shell) => new State {
                 Objective = session.Objective, CorridorMode = session.CorridorMode, ChapterMode = session.ChapterMode,
                 CorridorVersion = session.CorridorMode ? session.Corridor.Layout.Version : 0,
-                RecordsRecovered = session.RecordsRecovered, StoryStep = session.StoryStep,
+                RecordsRecovered = session.RecordsRecovered, TotalRecords = session.TotalRecords, StoryStep = session.StoryStep,
                 CanSuspendCorridor = session.CorridorMode && session.Suspension.Writable && string.IsNullOrEmpty(session.Corridor.SuspendBlockReason),
                 CanSuspendChapter = session.ChapterMode && session.ChapterSuspension.Writable && string.IsNullOrEmpty(session.Chapter.SuspendBlockReason),
                 ShowSuspensionMessage = string.IsNullOrEmpty(shell.ReloadError),
@@ -60,9 +60,10 @@ namespace HappyToy.V2
             layout.Outline(card, layout.Edge);
             layout.Panel(x + 26, y + 27, 3, 70, layout.Gold);
             layout.Small(state.CorridorMode?(state.CorridorVersion>=3 ? "CORRIDOR  /  붉은 교실에 기억을 돌려놓으세요" : "CORRIDOR  /  돌아갈 문을 기억하세요"):"SCHOOL ARCHIVE  /  출석 확인", x + 46, y + 28, 450);
-            layout.Text(state.CorridorMode || state.ChapterMode ? $"회수한 기억  {state.RecordsRecovered} / 5" : $"주요 단계  {state.StoryStep} / 4", x + 46, y + 61, 460, 48, 30);
+            int memoryTotal = state.CorridorMode ? state.TotalRecords : 5;
+            layout.Text(state.CorridorMode || state.ChapterMode ? $"회수한 기억  {state.RecordsRecovered} / {memoryTotal}" : $"주요 단계  {state.StoryStep} / 4", x + 46, y + 61, 460, 48, 30).name = "pause-progress";
             bool corridorCard = state.CorridorMode || state.ChapterMode;
-            for (int i = 0; i < (corridorCard ? 5 : 4); i++)
+            for (int i = 0; i < (corridorCard ? memoryTotal : 4); i++)
             {
                 float lineY = y + 136 + i * (corridorCard ? 35 : 43);
                 layout.Small($"0{i + 1}", x + 30, lineY, 46);

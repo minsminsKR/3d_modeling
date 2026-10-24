@@ -239,9 +239,9 @@ namespace HappyToy.V2
             route=new NativeCorridorInputRoute(session,player,session.Shell,Keys,output,performancePatrolSeconds,auditMovementMultiplier);
             if(performanceMode)performance.ObserveMovement(route.Movement);
             yield return route.Run();
-            Require(route.Passed&&session.Escaped&&session.RecordsRecovered==5&&route.BatteriesCollected>=1&&route.CandlesIgnited>=1,
+            Require(route.Passed&&session.Escaped&&session.RecordsRecovered==session.Corridor.RequiredMemories&&route.BatteriesCollected>=1&&route.CandlesIgnited>=1,
                 "Natural native main route did not prove full escape and actual finite-light input use");
-            EndGameplayClock("five-memory-input-route-complete",true);
+            EndGameplayClock("all-memories-input-route-complete",true);
             if(performanceMode){Require(errors.Count==0,"Native performance run logged runtime errors");yield break;}
             audioSettlingRequested=true;
             yield return new WaitForSecondsRealtime(.2f);
@@ -277,7 +277,7 @@ namespace HappyToy.V2
             if(session.RecordsRecovered!=lastRecovered)
             {
                 lastRecovered=session.RecordsRecovered;Cue("memory",session.name,feedback.LastInteractionClip,"recovered="+lastRecovered);
-                if(lastRecovered==2||lastRecovered==5)Frame("native-corridor-memory-"+lastRecovered+".png");
+                if(lastRecovered==2||lastRecovered==session.Corridor.RequiredMemories)Frame("native-corridor-memory-"+lastRecovered+".png");
             }
             if(tension&&tension.ContactEvents!=lastContacts){lastContacts=tension.ContactEvents;Cue("perceived-contact",player.name,null,"count="+lastContacts);}
             if(tension&&tension.RecognitionEvents!=lastRecognition){lastRecognition=tension.RecognitionEvents;Cue("witnessed-recognition",player.name,null,"count="+lastRecognition);}
@@ -360,7 +360,7 @@ namespace HappyToy.V2
             if(performanceMode)
             {
                 report.frameMeasurement="Performance-only route: actual main-camera endCameraRendering wall intervals and available CPU/GPU counters are in corridor-performance.json. Requests normal gameplay target 120; no extra renders/readbacks, images or PCM capture. Frame-budget results are independent of route success.";
-                report.scope="Explicit performance mode of the seeded keyboard/mouse route and production AI. Optional clear-straight diagnostic movement acceleration is recorded separately and disabled throughout the optional four-enemy patrol. Process audio-silence guard remains active. PNG, audio capture and per-frame audio/door evidence polling are skipped; existing route state, input isolation and original settings/speed restoration remain. No AI/survival rule changes or hardware presentation claim.";
+                report.scope="Explicit performance mode of the seeded keyboard/mouse route and production AI. Optional clear-straight diagnostic movement acceleration is recorded separately and disabled throughout the optional three-enemy patrol. Process audio-silence guard remains active. PNG, audio capture and per-frame audio/door evidence polling are skipped; existing route state, input isolation and original settings/speed restoration remain. No AI/survival rule changes or hardware presentation claim.";
             }
             File.WriteAllText(Path.Combine(output,"native-corridor-play.json"),JsonUtility.ToJson(report,true));
         }

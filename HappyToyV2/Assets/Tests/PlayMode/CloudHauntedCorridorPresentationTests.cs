@@ -136,7 +136,7 @@ namespace HappyToy.V2.CloudTests
             var art=Get<Component>(run,"Presentation");
             var stands=Get<Transform>(art,"AdditionRoot").GetComponentsInChildren<Transform>(true)
                 .Where(root=>root.name=="Graphics joined seal altar").ToArray();
-            Assert.That(memories.Length,Is.EqualTo(5));Assert.That(stands.Length,Is.EqualTo(5));
+            Assert.That(memories.Length,Is.EqualTo(Get<int>(run,"RequiredMemories")));Assert.That(stands.Length,Is.EqualTo(Get<int>(run,"RequiredMemories")));
             foreach(var memory in memories)
             {
                 var stand=stands.OrderBy(root=>Vector2.Distance(new Vector2(root.position.x,root.position.z),
@@ -230,7 +230,7 @@ namespace HappyToy.V2.CloudTests
             var layout=Get<object>(run,"Layout"); var connections=Get<int[]>(layout,"Connections");
             int framed=Enumerable.Range(0,81).Sum(cell=>Enumerable.Range(0,2).Count(d=>((connections[cell]&(1<<d))!=0 || (bool)Call(layout,"IsAltarPortal",cell,d)) && (bool)Call(layout,"FramedPassage",cell,d)));
             Assert.That(Get<int>(art,"LayeredPassages"),Is.EqualTo(framed),"Frames must follow room thresholds, leaving hall-to-hall edges continuous");
-            Assert.That(Get<int>(art,"SealShrines"),Is.EqualTo(5));
+            Assert.That(Get<int>(art,"SealShrines"),Is.EqualTo(Get<int>(run,"RequiredMemories")));
             var root=Get<Transform>(art,"AdditionRoot");
             Assert.That(root.GetComponentsInChildren<Collider>(true),Is.Empty);
             Assert.That(root.GetComponentsInChildren<NavMeshObstacle>(true),Is.Empty);
@@ -238,7 +238,7 @@ namespace HappyToy.V2.CloudTests
             var items=run.GetComponentsInChildren(RequireType("Interactable"),true).Cast<Component>().ToArray();
             var itemStates=items.ToDictionary(item=>item,item=>new {position=item.transform.position,rotation=item.transform.rotation,
                 scale=item.transform.lossyScale,id=Get<string>(item,"stableId"),kind=Get<object>(item,"kind").ToString()});
-            Assert.That(items.Count(item=>Get<object>(item,"kind").ToString()=="CorridorMemory"),Is.EqualTo(5));
+            Assert.That(items.Count(item=>Get<object>(item,"kind").ToString()=="CorridorMemory"),Is.EqualTo(Get<int>(run,"RequiredMemories")));
             Assert.That(items.Count(item=>Get<object>(item,"kind").ToString()=="FirecrackerSupply"),Is.EqualTo(8));
             Assert.That(Get<int>(art,"TimberCabinets"),Is.EqualTo(items.Count(item=>Get<object>(item,"kind").ToString()=="HidingPlace")),
                 "Some live hiding cabinets retained school enamel");
@@ -276,7 +276,7 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(Vector3.Distance(cabinet.transform.InverseTransformPoint(outside.position),outsideLocal),Is.LessThan(.0001f));
             }
             var altarRenderers=art.GetComponentsInChildren<MeshRenderer>(true).Where(renderer=>renderer.name=="Memory altar").ToArray();
-            Assert.That(altarRenderers.Length,Is.EqualTo(5));
+            Assert.That(altarRenderers.Length,Is.EqualTo(Get<int>(run,"RequiredMemories")));
             HauntedShrinesAligned(run);
             Assert.That(altarRenderers.All(renderer=>!renderer.enabled),Is.True,"Original opaque altar still conceals its new timber skin");
             var physical=art.GetComponentsInChildren<Collider>(true).Where(collider=>!collider.GetComponentInParent(RequireType("StalkerBrain")) &&

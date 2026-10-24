@@ -16,16 +16,17 @@ namespace HappyToy.V2.CloudTests
             {int next=cell+(d==0?9:d==1?1:d==2?-9:-1);if(next>=0 && next<81)yield return next;}
         }
         [TestCase(73)] [TestCase(211)] [TestCase(42661)]
-        public void AllFiveVisualRegionsAreDeterministicConnectedAndNearestByRealTopology(int seed)
+        public void AllFourVisualRegionsAreDeterministicConnectedAndNearestByRealTopology(int seed)
         {
             var layout=Layout(seed);var before=(int[])Get<int[]>(layout,"Connections").Clone();
             var plan=Plan(layout);var sectors=Get<int[]>(plan,"Sectors");var goals=Get<int[]>(plan,"GoalCells");
             var distance=Get<int[]>(plan,"GoalDistance");var connections=Get<int[]>(plan,"Connections");
-            Assert.That(sectors.Distinct().OrderBy(x=>x),Is.EqualTo(new[]{0,1,2,3,4}));
+            Assert.That(goals.Length,Is.EqualTo(4));
+            Assert.That(sectors.Distinct().OrderBy(x=>x),Is.EqualTo(new[]{0,1,2,3}));
             Assert.That(Get<int[]>(Plan(Layout(seed)),"Sectors"),Is.EqualTo(sectors));
             Assert.That(Get<int[]>(layout,"Connections"),Is.EqualTo(before),"Visual plan changed physical topology");
             var nearest=Enumerable.Repeat(int.MaxValue,81).ToArray();
-            for(int sector=0;sector<5;sector++)
+            for(int sector=0;sector<goals.Length;sector++)
             {
                 Assert.That(sectors[goals[sector]],Is.EqualTo(sector));
                 var visited=new HashSet<int>{goals[sector]};var queue=new Queue<int>();queue.Enqueue(goals[sector]);

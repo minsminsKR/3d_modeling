@@ -21,7 +21,7 @@ namespace HappyToy.V2
             if (ChapterMode) collected = Chapter.CheatCollectNextMemory();
             else if (CorridorMode)
             {
-                for (int i = 0; i < CorridorRun.Required; i++)
+                for (int i = 0; i < Corridor.RequiredMemories; i++)
                 {
                     string id = "memory-" + i;
                     if (!Corridor.Collect(id)) continue;

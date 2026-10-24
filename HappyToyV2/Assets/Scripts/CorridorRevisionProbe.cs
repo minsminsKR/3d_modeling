@@ -90,7 +90,7 @@ namespace HappyToy.V2
                 .Where(item=>item.kind==Interactable.Kind.CorridorMemory).OrderBy(item=>item.stableId).ToArray();
             var stands=session.Corridor.GetComponentsInChildren<Transform>(true)
                 .Where(item=>item.name=="Graphics joined seal altar").ToArray();
-            Require(memories.Length==5 && stands.Length==5,"Five actual memory objects and visible stands");
+            Require(memories.Length==session.Corridor.RequiredMemories && stands.Length==memories.Length,"Actual memory objects and visible stands match this run");
             for(int i=0;i<memories.Length;i++)
             {
                 var memory=memories[i];

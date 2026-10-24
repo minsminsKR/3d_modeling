@@ -42,7 +42,7 @@ namespace HappyToy.V2
         public bool RetryRecordSave()
         {
             if (!Finished || !CorridorMode || !Records.PersistenceEnabled || RecordSaved) return false;
-            RecordSaved = Records.Record(Corridor.Seed, Corridor.Recovered, Escaped, ElapsedPlayTime);
+            RecordSaved = Records.RecordForGoal(Corridor.Seed, Corridor.Recovered, Escaped, ElapsedPlayTime, Corridor.RequiredMemories);
             RecordSaveMessage = Records.Status; return RecordSaved;
         }
         public void ConfigureRecordDirectory(string directory)
@@ -130,7 +130,7 @@ namespace HappyToy.V2
                 return count;
             }
         }
-        public int TotalRecords => ChapterMode ? (Chapter.Loop ? 0 : 5) : CorridorMode ? CorridorRun.Required : requireAnnexRecords ? 7 : 4;
+        public int TotalRecords => ChapterMode ? (Chapter.Loop ? 0 : 5) : CorridorMode ? Corridor.RequiredMemories : requireAnnexRecords ? 7 : 4;
         public bool HasInspected(string id) => !string.IsNullOrEmpty(id) && inspected.Contains(id);
         public int StoryStep => names.Count;
         public bool InputAllowed => Shell && Shell.Screen==GameShell.Page.Playing && !Shell.IsReloading && !Finished && !CabinetDeathActive;
@@ -153,7 +153,7 @@ namespace HappyToy.V2
             {
                 if (ChapterMode && Chapter.Loop) return "school-loop";
                 if (ChapterMode) return Chapter.Recovered>=5 ? "exit" : "chapter-memory-"+Chapter.Recovered;
-                if (CorridorMode) return Corridor.Recovered >= CorridorRun.Required ? (Corridor.Layout.Version>=3 ? "altar" : "exit") : "memories";
+                if (CorridorMode) return Corridor.Recovered >= Corridor.RequiredMemories ? (Corridor.Layout.Version>=3 ? "altar" : "exit") : "memories";
                 if(StoryStep>=4)return "exit";
                 if(StoryStep==3&&requireAnnexRecords)
                     foreach(var id in annexIds)if(!inspected.Contains(id))return id;
@@ -261,7 +261,7 @@ namespace HappyToy.V2
             }
             if (CorridorMode)
             {
-                if (Corridor.Recovered < CorridorRun.Required) { Notify(Corridor.Objective); return; }
+                if (Corridor.Recovered < Corridor.RequiredMemories) { Notify(Corridor.Objective); return; }
                 if (Corridor.Layout.Version>=3 && !Corridor.AtOffering(player)) { Notify(Corridor.Objective); return; }
                 Finish(true);
                 if(Corridor.Layout.Version>=3) Shell.BeginSchoolFromOffering();

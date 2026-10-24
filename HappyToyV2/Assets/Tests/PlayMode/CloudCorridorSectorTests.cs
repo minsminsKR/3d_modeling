@@ -30,22 +30,22 @@ namespace HappyToy.V2.CloudTests
             public SectorViewEvidence[] views;
         }
         [UnityTest,Timeout(120000)]
-        public IEnumerator CorridorSectorsShowFiveGoalIdentitiesAndRealBranchesWithoutChangingPhysics()
+        public IEnumerator CorridorSectorsShowFourGoalIdentitiesAndRealBranchesWithoutChangingPhysics()
         {
             Call(session,"CreateCorridor",73);IsolateThreats();Begin();yield return null;yield return null;
             var run=HauntedRun(session);var art=Get<Component>(run,"Presentation");
             var plan=Get<object>(art,"SectorPlan");var goals=Get<int[]>(plan,"GoalCells");
             var sectors=Get<int[]>(plan,"Sectors");var branches=Get<int[]>(plan,"BranchOrdinals");
             var clues=((IEnumerable<TextMesh>)Get<object>(art,"SectorClues")).ToArray();
-            Assert.That(Get<int>(art,"GoalRoomClues"),Is.EqualTo(5));
+            Assert.That(Get<int>(art,"GoalRoomClues"),Is.EqualTo(4));
             Assert.That(Get<int>(art,"BranchClues"),Is.Zero,"Removed branch-number signage returned");
             Assert.That(Get<bool>(art,"PhysicalStateIntact"),Is.True);HauntedCompleteApproaches(run);
             ulong nav=HauntedNavigationHash();
             var additions=Get<Transform>(art,"AdditionRoot");
             Assert.That(additions.GetComponentsInChildren<Collider>(true),Is.Empty);
             Assert.That(additions.GetComponentsInChildren<NavMeshObstacle>(true),Is.Empty);
-            var papers=Enumerable.Range(0,5).Select(i=>(Material)Call(art,"SectorPaper",goals[i])).ToArray();
-            Assert.That(papers.Distinct().Count(),Is.EqualTo(5),"Sector pigment materials collapsed into one cache entry");
+            var papers=goals.Select(cell=>(Material)Call(art,"SectorPaper",cell)).ToArray();
+            Assert.That(papers.Distinct().Count(),Is.EqualTo(4),"Sector pigment materials collapsed into one cache entry");
             var sharedPaper=Resources.Load<Texture2D>("GraphicsPbr/paper-aged/albedo");
             Assert.That(sharedPaper,Is.Not.Null);
             foreach(var material in papers)
@@ -64,11 +64,11 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(meshes.All(filter=>filter.sharedMesh.uv.Length==filter.sharedMesh.vertexCount),Is.True);
                 Assert.That(clues.Single(clue=>clue.name=="Goal chamber clue "+cell).text,Does.Contain("봉인 "+(Array.IndexOf(goals,cell)+1).ToString("D2")));
             }
-            Assert.That(papers.Select(x=>x.GetColor("_BaseColor")).Distinct().Count(),Is.EqualTo(5));
+            Assert.That(papers.Select(x=>x.GetColor("_BaseColor")).Distinct().Count(),Is.EqualTo(4));
             var camera=Get<Camera>(player,"eyes");var torch=Get<Light>(player,"flashlight");
             ((Behaviour)player).enabled=false;player.GetComponent<CharacterController>().enabled=false;torch.enabled=true;
             var pointStates=run.GetComponentsInChildren<Light>(true).Where(x=>x.type==LightType.Point).ToDictionary(x=>x,x=>x.enabled);
-            var evidence=new SectorRenderEvidence {seed=73,goalClues=5,branchClues=Get<int>(art,"BranchClues"),
+            var evidence=new SectorRenderEvidence {seed=73,goalClues=4,branchClues=Get<int>(art,"BranchClues"),
                 visualBatches=Get<int>(art,"VisualBatches"),torchIntensity=torch.intensity,torchRange=torch.range,
                 fogDensity=RenderSettings.fogDensity,ambient=RenderSettings.ambientLight};
             var views=new List<SectorViewEvidence>();

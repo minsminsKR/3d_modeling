@@ -40,11 +40,12 @@ namespace HappyToy.V2.CloudTests
             var stored = Get<object>(Get<object>(session, "Records"), "Snapshot");
             Assert.That(Get<int>(stored, "attempts"), Is.EqualTo(1)); Assert.That(Get<int>(stored, "escapes"), Is.EqualTo(1));
             Assert.That(Get<int>(stored, "lastSeed"), Is.EqualTo(73));
+            Assert.That(Get<int>(stored, "bestRecovered"), Is.EqualTo(4)); Assert.That(Get<int>(stored, "bestMemoryGoal"), Is.EqualTo(4));
             var previous = session; Call(shell, "Restart", false); yield return RecoveryRebind(previous);
             Call(session, "ConfigureRecordDirectory", directory);
             Call(shell, "Settings"); yield return Delay(.1f); Call(shell, "Back"); yield return Delay(.1f);
             var label = Get<VisualElement>(One("GameShellView"), "Root").Q<Label>("corridor-record-summary");
-            Assert.That(label.text, Does.Contain("탈출 1회")); Assert.That(label.text, Does.Contain("최고 기억 5/5"));
+            Assert.That(label.text, Does.Contain("탈출 1회")); Assert.That(label.text, Does.Contain("최고 기억 4/4"));
             Call(shell, "ToggleLargeText"); yield return Delay(.1f);
             var errors = new List<string>();
             foreach (var size in new[] { new Vector2Int(1280, 720), new Vector2Int(1024, 768), new Vector2Int(2560, 1080) })

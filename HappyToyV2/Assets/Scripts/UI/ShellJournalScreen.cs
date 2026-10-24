@@ -17,7 +17,7 @@ namespace HappyToy.V2
             public static State Read(GameSession session) => new State {
                 CorridorMode = session.CorridorMode,
                 Required = session.CorridorMode ? 0 : session.JournalCount,
-                Total = session.CorridorMode ? Mathf.Max(CorridorRun.Required, session.ExplorationCount) : session.JournalCount + session.ExplorationCount,
+                Total = session.CorridorMode ? Mathf.Max(session.TotalRecords, session.ExplorationCount) : session.JournalCount + session.ExplorationCount,
                 RecordsRecovered = session.RecordsRecovered, TotalRecords = session.TotalRecords,
                 ExplorationCount = session.ExplorationCount, JournalEntry = session.JournalEntry, ExplorationEntry = session.ExplorationEntry };
         }
@@ -27,7 +27,7 @@ namespace HappyToy.V2
             int total = state.Total;
             int pages = Mathf.Max(1, Mathf.CeilToInt(total / 6f));
             journalPage = Mathf.Clamp(journalPage, 0, pages - 1);
-            layout.Small(state.CorridorMode?$"회수한 기억 {state.RecordsRecovered} / 5     ·     발견한 순서대로 보관합니다":$"복원 {state.RecordsRecovered} / {state.TotalRecords}     주변 기록 {state.ExplorationCount}개     ·     발견한 내용만 보관합니다", 153, 218, 1290);
+            layout.Small(state.CorridorMode?$"회수한 기억 {state.RecordsRecovered} / {state.TotalRecords}     ·     발견한 순서대로 보관합니다":$"복원 {state.RecordsRecovered} / {state.TotalRecords}     주변 기록 {state.ExplorationCount}개     ·     발견한 내용만 보관합니다", 153, 218, 1290).name = "journal-progress";
             for (int slot = 0; slot < 6; slot++)
             {
                 int index = journalPage * 6 + slot;

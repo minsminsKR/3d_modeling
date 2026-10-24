@@ -27,7 +27,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(filter.sharedMesh.vertexCount,Is.GreaterThan(0),"Fresh incense must begin growing a visible smoke trail");
             Assert.That(Get<int>(trail,"SampleCount"),Is.GreaterThan(0));
             var memories=CheckpointItems("CorridorMemory");
-            Assert.That(memories.Count(x=>x.gameObject.activeSelf),Is.EqualTo(5));
+            Assert.That(memories.Count(x=>x.gameObject.activeSelf),Is.EqualTo(4));
             var firstTarget=Get<System.Collections.Generic.IReadOnlyList<Vector3>>(smoke,"TargetPoints")[0];
             var alternative=memories.First(x=>x.gameObject.activeSelf && Vector3.Distance(x.transform.position,firstTarget)>.01f);
             var origin=player.transform.position;
@@ -40,7 +40,7 @@ namespace HappyToy.V2.CloudTests
                 "A still-active guide target changed merely because the player moved");
             PlacePlayer(origin,false);
             var offering=Get<Component>(Get<Component>(Get<Component>(session,"Corridor"),"AltarChamber"),"Offering");
-            for (int remaining=5;remaining>0;remaining--)
+            for (int remaining=4;remaining>0;remaining--)
             {
                 Assert.That(Get<int>(smoke,"TargetCount"),Is.EqualTo(1));
                 var target=Get<System.Collections.Generic.IReadOnlyList<Vector3>>(smoke,"TargetPoints")[0];
@@ -77,7 +77,7 @@ namespace HappyToy.V2.CloudTests
         {
             Call(session,"CreateCorridor",73);Begin();IsolateThreats();yield return null;
             var ritual=Get<Component>(player,"Rituals");var fragments=CheckpointItems("TalismanFragment").Where(x=>Get<string>(x,"stableId").StartsWith("ritual-fragment-",StringComparison.Ordinal)).ToArray();
-            Assert.That(fragments.Length,Is.EqualTo(5));
+            Assert.That(fragments.Length,Is.EqualTo(4));
             foreach (var item in fragments.Take(3)) Call(item,"Use",player);
             Assert.That(Get<int>(ritual,"Fragments"),Is.EqualTo(3));
             Call(CheckpointItems("IncenseSupply").Single(x=>Get<string>(x,"stableId")=="ritual-incense-0"),"Use",player);
@@ -86,9 +86,13 @@ namespace HappyToy.V2.CloudTests
             yield return RestoreCheckpointInFreshScene(data);
             ritual=Get<Component>(player,"Rituals");
             Assert.That(Get<int>(ritual,"Fragments"),Is.EqualTo(3));Assert.That(Get<int>(ritual,"Incense"),Is.EqualTo(2));
-            Assert.That(CheckpointItems("TalismanFragment").Count(x=>x.gameObject.activeSelf&&Get<string>(x,"stableId").StartsWith("ritual-fragment-",StringComparison.Ordinal)),Is.EqualTo(2));
+            Assert.That(CheckpointItems("TalismanFragment").Count(x=>x.gameObject.activeSelf&&Get<string>(x,"stableId").StartsWith("ritual-fragment-",StringComparison.Ordinal)),Is.EqualTo(1));
             Begin();yield return null;
             foreach (var item in CheckpointItems("TalismanFragment").Where(x=>x.gameObject.activeSelf&&Get<string>(x,"stableId").StartsWith("ritual-fragment-",StringComparison.Ordinal)))Call(item,"Use",player);
+            Assert.That(Get<int>(ritual,"Fragments"),Is.EqualTo(4));
+            Assert.That(Get<int>(ritual,"Talismans"),Is.Zero,"Four memories must not lower the five-fragment crafting rule");
+            var shelfFragment=CheckpointItems("TalismanFragment").First(x=>x.gameObject.activeSelf&&Get<string>(x,"stableId").StartsWith("ritual-shelf-",StringComparison.Ordinal));
+            Call(shelfFragment,"Use",player);
             Assert.That(Get<int>(ritual,"Fragments"),Is.Zero);Assert.That(Get<int>(ritual,"Talismans"),Is.EqualTo(1));
             Call(shell,"Pause");var current=Call(session,"CaptureCheckpoint");
             var malformed=CheckpointCopy(current);Set(Get<object>(malformed,"ritualItems"),"fragments",5);

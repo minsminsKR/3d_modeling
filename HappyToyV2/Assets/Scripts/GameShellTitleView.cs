@@ -110,12 +110,15 @@ namespace HappyToy.V2
             var heading = Text("' 잊힌 회랑 '", 66, 120, 650, 88, shell.LargeText ? 49 : 45);
             heading.name = "title-brand"; heading.style.color = TitleInk;
             Panel(70, 224, 565, 1, new Color(.75f, .70f, .67f, .4f));
-            titleSelectionHint = Text("남겨진 기억의 흔적을 따라, 돌아갈 문을 찾으세요.\n다섯 기억은 붉은 교실의 제단으로 이어집니다.", 70, 256, 570, 106, shell.LargeText ? 23 : 20);
+            string corridorIntroduction = $"남겨진 기억의 흔적을 따라, 돌아갈 문을 찾으세요.\n기억 {CorridorRun.Required}개를 붉은 교실의 제단에 돌려놓으세요.";
+            titleSelectionHint = Text(corridorIntroduction, 70, 256, 570, 106, shell.LargeText ? 23 : 20);
             titleSelectionHint.name = "title-introduction"; titleSelectionHint.style.color = TitleInk;
             float next = 500;
             if (saved)
             {
-                TitleButton("continue-run", "회랑 계속 · 기억 " + session.Suspension.Snapshot.recovered.Count(value => value) + "/5", "중단한 회랑으로 돌아갑니다. 회수한 기억 " + session.Suspension.Snapshot.recovered.Count(value => value) + "/5", next, shell.ContinueCorridorWithLoading)
+                var corridorResume = session.Suspension.Snapshot;
+                int recovered = corridorResume.recovered.Count(value => value), total = CorridorLayout.MemoryCountForVersion(corridorResume.simulationVersion);
+                TitleButton("continue-run", $"회랑 계속 · 기억 {recovered}/{total}", $"중단한 회랑으로 돌아갑니다. 회수한 기억 {recovered}/{total}", next, shell.ContinueCorridorWithLoading)
                     .SetEnabled(session.Suspension.Writable); next += 48;
             }
             if (schoolSaved)
@@ -130,7 +133,7 @@ namespace HappyToy.V2
             {
                 TitleButton("continue-unavailable", "계속 · 저장된 탐색 없음", "저장된 탐색이 있으면 이곳에서 이어갈 수 있습니다.", next, () => { }).SetEnabled(false); next += 48;
             }
-            TitleButton("begin", "새 회랑 시작", "남겨진 기억의 흔적을 따라, 돌아갈 문을 찾으세요.\n다섯 기억은 붉은 교실의 제단으로 이어집니다.", next, shell.BeginCorridorCinematic); next += 48;
+            TitleButton("begin", "새 회랑 시작", corridorIntroduction, next, shell.BeginCorridorCinematic); next += 48;
             TitleButton("begin-school", "학교 복도", "반복되는 복도와 창문 너머의 음악실을 살펴보세요.", next, shell.BeginChapterCinematic); next += 48;
             TitleButton("settings", "설정", "화면과 조작, 사운드 및 접근성 옵션을 조정합니다.", next, shell.Settings); next += 48;
             TitleButton("school-records", "탐색 기록", "최근 학교 탐색의 기록을 확인합니다.", next, shell.ChapterHistory); next += 48;
@@ -149,7 +152,7 @@ namespace HappyToy.V2
             // Keep separate profile summaries available to history/data consumers;
             // the title's visual focus is its chapter, navigation and real creature.
             var corridor = session.Records.Snapshot; var school = session.ChapterRecords.Snapshot;
-            var first = Text($"회랑 탐색 {corridor.attempts}회 · 탈출 {corridor.escapes}회\n최고 기억 {corridor.bestRecovered}/5", 0, 0, 1, 1);
+            var first = Text($"회랑 탐색 {corridor.attempts}회 · 탈출 {corridor.escapes}회\n최고 기억 {corridor.bestRecovered}/{corridor.bestMemoryGoal}", 0, 0, 1, 1);
             first.name = "corridor-record-summary"; first.style.display = DisplayStyle.None;
             var second = Text($"학교 탐색 {school.attempts}회 · 탈출 {school.escapes}회\n최고 기억 {school.bestRecovered}/5", 0, 0, 1, 1);
             second.name = "school-record-summary"; second.style.display = DisplayStyle.None;

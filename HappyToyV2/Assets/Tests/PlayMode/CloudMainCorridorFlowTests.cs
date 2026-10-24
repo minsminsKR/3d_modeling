@@ -17,12 +17,15 @@ namespace HappyToy.V2.CloudTests
         {
             Assert.That(Get<bool>(session,"CorridorMode"),Is.True);
             Assert.That(Get<bool>(session,"ChapterMode"),Is.False);
-            Assert.That(Get<int>(session,"TotalRecords"),Is.EqualTo(5));
-            Assert.That(CheckpointThreats().Length,Is.EqualTo(3),"Main entry must create Cyclops, Uncat and Baby stalkers");
+            Assert.That(Get<int>(session,"TotalRecords"),Is.EqualTo(4));
+            var threats = CheckpointThreats();
+            Assert.That(threats.Length,Is.EqualTo(2),"Main entry must retain Cyclops and Uncat without spawning Baby");
+            Assert.That(threats.Any(x=>x.name.Contains("Baby")),Is.False);
             var mask=Get<Component>(Get<Component>(session,"Corridor"),"Mask");
             Assert.That(mask,Is.Not.Null,"Main entry must retain the actual lantern mask encounter");
             Assert.That(mask.GetType(),Is.EqualTo(RequireType("LanternMaskEncounter")));
-            Assert.That(CheckpointItems("CorridorMemory").Length,Is.EqualTo(5));
+            Assert.That(CheckpointItems("CorridorMemory").Length,Is.EqualTo(4));
+            Assert.That(Get<VisualElement>(One("GameShellView"),"Root").Q<VisualElement>("memory-progress").childCount,Is.EqualTo(4));
             Assert.That(Get<int>(Get<Component>(player,"Firecrackers"),"Count"),Is.EqualTo(6),"A new corridor starts with one six-shot snapper pack");
         }
 
@@ -37,15 +40,18 @@ namespace HappyToy.V2.CloudTests
             var root=Get<VisualElement>(view,"Root");
             Assert.That(((VisualElement)root.panel.focusController.focusedElement).name,Is.EqualTo("begin"));
             Assert.That(root.Q<Button>("begin").text,Does.Contain("회랑"));
+            Assert.That(root.Q<Button>("begin").tooltip,Does.Contain("기억 4개"));
             Assert.That(root.Q<Button>("begin-school").text,Does.Contain("학교 복도"));
             Assert.That(root.Q<Label>("corridor-record-summary").text,Does.Contain("회랑 탐색 0회"));
             Assert.That(root.Q<Label>("school-record-summary").text,Does.Contain("학교 탐색 0회"));
             yield return RecoveryClick("begin"); AssertMainCorridor();
             yield return RecoveryPulse(Key.Escape); Assert.That(RecoveryPage,Is.EqualTo("Pause"));
+            Assert.That(Get<VisualElement>(view,"Root").Q<Label>("pause-progress").text,Does.Contain("0 / 4"));
             Assert.That(Get<VisualElement>(view,"Root").Q<Button>("suspend-run"),Is.Not.Null);
             Assert.That(Get<VisualElement>(view,"Root").Q<Button>("suspend-chapter"),Is.Null);
             yield return RecoveryClick("journal"); root=Get<VisualElement>(view,"Root");
-            Assert.That(root.Query<Label>().ToList().Count(x=>x.name.StartsWith("corridor-memory-")),Is.EqualTo(5));
+            Assert.That(root.Query<Label>().ToList().Count(x=>x.name.StartsWith("corridor-memory-")),Is.EqualTo(4));
+            Assert.That(root.Q<Label>("journal-progress").text,Does.Contain("0 / 4"));
             Assert.That(root.Q<Label>("record-0"),Is.Null,"School's required records leaked into the corridor journal");
             Assert.That(root.Q<Label>("corridor-memory-0").text,Does.Contain("아직 회수하지 못했습니다"));
             yield return CaptureMenu(view,"main-corridor-journal-large.png",1280,720,errors);
@@ -53,6 +59,7 @@ namespace HappyToy.V2.CloudTests
             yield return RecoveryClick("restart"); yield return RecoveryRebind(previous); AssertMainCorridor();
             Assert.That(Get<int>(session,"RecordsRecovered"),Is.Zero); Assert.That(RecoveryPage,Is.EqualTo("Playing"));
             Call(session,"Finish",false); yield return null; Assert.That(RecoveryPage,Is.EqualTo("Result"));
+            Assert.That(Get<VisualElement>(One("GameShellView"),"Root").Q<Label>("result-progress").text,Does.Contain("0 / 4"));
             yield return CaptureMenu(One("GameShellView"),"main-corridor-result-large.png",1280,720,errors);
             previous=session; yield return RecoveryClick("restart"); yield return RecoveryRebind(previous); AssertMainCorridor();
             Assert.That(Get<bool>(session,"Finished"),Is.False); Assert.That(RecoveryPage,Is.EqualTo("Playing"));
@@ -105,7 +112,7 @@ namespace HappyToy.V2.CloudTests
             foreach(var size in new[]{new Vector2Int(1280,720),new Vector2Int(1024,768),new Vector2Int(2560,1080)})
                 yield return CaptureMenu(view,"main-corridor-both-slots-large-"+size.x+"x"+size.y+".png",size.x,size.y,errors);
             var root=Get<VisualElement>(view,"Root");
-            Assert.That(root.Q<Button>("continue-run"),Is.Not.Null); Assert.That(root.Q<Button>("continue-run").text,Does.Contain("기억 2/5"));
+            Assert.That(root.Q<Button>("continue-run"),Is.Not.Null); Assert.That(root.Q<Button>("continue-run").text,Does.Contain("기억 2/4"));
             Assert.That(root.Q<Button>("continue-chapter"),Is.Not.Null);
             Assert.That(((VisualElement)root.panel.focusController.focusedElement).name,Is.EqualTo("begin"));
             yield return RecoveryClick("continue-chapter"); Assert.That(RecoveryPage,Is.EqualTo("Pause"));

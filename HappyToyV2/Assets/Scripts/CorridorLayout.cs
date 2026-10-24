@@ -7,12 +7,13 @@ namespace HappyToy.V2
     public sealed class CorridorLayout
     {
         public const int Width = 9, Count = Width * Width;
-        public const int CurrentVersion = 5;
+        public const int CurrentVersion = 6;
+        public static int MemoryCountForVersion(int version) => version >= 6 ? 4 : 5;
         public readonly int[] Connections = new int[Count];
         public readonly int[] Distance = new int[Count];
-        public readonly int[] Relics = new int[5];
+        public readonly int[] Relics;
         public readonly int[] Supplies = new int[8];
-        public readonly int[] Threats = new int[4];
+        public readonly int[] Threats;
         public readonly int Seed;
         public readonly int Version;
         public readonly int AltarCell = -1, AltarDirection = -1;
@@ -22,6 +23,8 @@ namespace HappyToy.V2
         public CorridorLayout(int seed, int version)
         {
             if (version < 1 || version > CurrentVersion) throw new ArgumentException("Unknown corridor layout version");
+            Relics = new int[MemoryCountForVersion(version)];
+            Threats = new int[version >= 6 ? 3 : 4];
             Seed = seed; Version = version; var random = new Random(seed);
             var seen = new bool[Count]; var stack = new Stack<int>(); seen[0] = true; stack.Push(0);
             var headings = new int[Count];

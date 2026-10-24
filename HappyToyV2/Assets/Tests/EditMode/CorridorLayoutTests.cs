@@ -45,6 +45,19 @@ namespace HappyToy.V2.Tests.EditMode
             Assert.That((int[])type.GetField("ShelterCells").GetValue(saved),Is.EqualTo(rooms));
             Assert.That((int[])type.GetField("Supplies").GetValue(saved),Is.EqualTo(supplies));
         }
+        [TestCase(73)] [TestCase(211)]
+        public void SavedVersionsKeepFiveMemoryIdentitiesAndTheReservedFourthTopologySpawn(int seed)
+        {
+            var type=Type.GetType("HappyToy.V2.CorridorLayout, Assembly-CSharp",true);
+            for(int version=1;version<=5;version++)
+            {
+                var legacy=Activator.CreateInstance(type,new object[]{seed,version});
+                Assert.That(((int[])type.GetField("Relics").GetValue(legacy)).Length,Is.EqualTo(5),
+                    "Legacy memory identities changed: seed "+seed+" version "+version);
+                Assert.That(((int[])type.GetField("Threats").GetValue(legacy)).Length,Is.EqualTo(4),
+                    "Legacy topology lost its reserved fourth spawn cell: seed "+seed+" version "+version);
+            }
+        }
         [Test]
         public void FiveHundredSeedsHaveConnectedLoopsSeparatedGoalsAndSafeThreatSpawns()
         {
@@ -58,10 +71,10 @@ namespace HappyToy.V2.Tests.EditMode
                 var supplies = (int[])type.GetField("Supplies").GetValue(layout);
                 var threats = (int[])type.GetField("Threats").GetValue(layout);
                 Assert.That(distance.All(x => x >= 0), Is.True, "Unreachable cell in seed " + seed);
-                Assert.That(relics.Distinct().Count(), Is.EqualTo(5));
+                Assert.That(relics.Distinct().Count(), Is.EqualTo(4));
                 Assert.That(supplies.Distinct().Count(), Is.EqualTo(8));
                 Assert.That(distance[supplies[0]], Is.InRange(1, 2), "Early supply was placed beyond the opening area");
-                Assert.That(threats.Distinct().Count(), Is.EqualTo(4));
+                Assert.That(threats.Distinct().Count(), Is.EqualTo(3));
                 Assert.That(relics.All(x => distance[x] >= 6), Is.True);
                 Assert.That(threats.All(x => distance[x] >= 8 && !relics.Contains(x)), Is.True);
                 Assert.That(supplies.All(x => !relics.Contains(x) && !threats.Contains(x)), Is.True);
