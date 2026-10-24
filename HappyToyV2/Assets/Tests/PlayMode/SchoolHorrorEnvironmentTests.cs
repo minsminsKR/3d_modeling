@@ -215,11 +215,11 @@ namespace HappyToy.V2.CloudTests
                     Directory.CreateDirectory(output);
                     File.WriteAllBytes(Path.Combine(output,"brightness-normal-stack.png"),normal.EncodeToPNG());
                 }
-                // Approved preview: weighted sRGB luma .04579; wall region .08486, torch off.
-                // Match the native review's existing upper limit: completed probes and
-                // the bounded fluorescent voltage phase can lift the mean slightly.
+                // The nine-tube baseline intentionally lifts the old four-tube mean (.04579).
+                // Reviewed production frames measure .059-.061, with the same readable wall detail.
+                // Allow the bounded voltage phase, completed probes and resolution differences.
                 // The dark missing-cluster regression is .004, well below this lower bound.
-                Assert.That(normalMean,Is.InRange(.038f,.057f),"Normal play must retain the approved preview's readable shadows");
+                Assert.That(normalMean,Is.InRange(.048f,.075f),"All nine tubes must light the real camera without washing out the school");
                 Assert.That(wall,Is.InRange(.065f,.115f),"The nearby moulded corridor wall must retain the preview's readable detail");
             }
             finally{if(normal)Object.Destroy(normal);}

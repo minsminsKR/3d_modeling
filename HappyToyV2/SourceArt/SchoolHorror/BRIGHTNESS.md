@@ -89,3 +89,19 @@ callback이 없으면 미관측으로 기록하며 보존 성공으로 간주하
 이 밝기 검토는 반사 프로브 완료나 자연 플레이 FPS를 인증하지 않는다.
 
 공식 규칙: https://docs.unity3d.com/6000.6/Documentation/ScriptReference/ShaderKeywordFilter.FilterAttribute.html
+
+## 일자 복도 전체 형광등 점등 · 2026-10-24
+
+사용자 요청으로 일자 복도 9개 중 꺼져 있던 5개도 켰다. 세 반복 구역에 동일하게
+적용하며, 기존 4개의 출력은 유지하고 추가 5개는 기존 원거리 등의 2.6 출력을 쓴다.
+각 등의 실제 광원·양쪽 LOD 발광·국소 천장 반사광을 함께 켠다. 기존 Forward+,
+그림자 예산, Neutral/−0.1EV/대비0, 전압 변동과 일시정지 규칙은 유지한다.
+
+새 정상 카메라의 손전등 OFF 실측은 1920×1080 검토에서 평균0.058883,
+960×540 밝기 검사에서 평균0.060810/가까운 벽0.088007이다. 실제 렌더를 확인하고
+의도한 추가 점등을 밝기 기준에 반영했다. Editor 평균 허용 범위는0.048–0.075,
+native 검토 범위는 해상도 차이를 고려해0.045–0.075이며, 벽 기준0.065–0.115는
+유지한다. 과거 4개 점등의 평균 상한0.057에 맞추려고 노출이나 기존 광원을 낮추지 않는다.
+`SchoolGeneratedTubeAtlasesShareLiveAndPausedPowerAcrossBothLods`는 세 구역의
+일자 복도 형광등27개가 실제 빛과 각 LOD 발광을 유지하는지도 검사한다.
+검토 출력은 `Builds/Verification/SchoolAllLights-Review-20261024-185040/`에 있다.

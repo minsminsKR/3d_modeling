@@ -257,8 +257,8 @@ namespace HappyToy.V2
                 if(brightnessOnly&&id=="corridor-reference")
                 {
                     float mean=sum/(255f*pixels.Length),wall=(float)(wallSum/Math.Max(1,wallCount));
-                    Require(mean>=.035f&&mean<=.057f&&wall>=.065f&&wall<=.115f,
-                        "Native normal camera-stack brightness differs from approved preview: mean="+mean+" wall="+wall);
+                    Require(mean>=.045f&&mean<=.075f&&wall>=.065f&&wall<=.115f,
+                        "Native normal camera-stack brightness differs from the all-tube baseline: mean="+mean+" wall="+wall);
                 }
             }
             finally

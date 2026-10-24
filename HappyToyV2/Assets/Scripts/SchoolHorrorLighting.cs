@@ -48,15 +48,16 @@ namespace HappyToy.V2
         {
             bool corridor=Mathf.Abs(at.x)<.2f;
             int index=Mathf.RoundToInt((at.z-2.2f)/4.4f);
-            bool live=!corridor||index==0||index==2||index==5||index==7;
             bool connecting=Mathf.Abs(at.x)>2.2f&&(at.z<4.4f||at.z>34)||at.z<0||at.z>SchoolLoopPlan.Length;
-            float power=live?(corridor?(index==0?7.2f:index==2?6.3f:index==5?4.9f:2.6f):connecting?1.6f:intensity*.56f):0;
-            var holder=new GameObject(live?"Failing school fluorescent fixture":"Burned-out school fluorescent fixture").transform;
+            // Every installed tube is live, including the five formerly burned-out aisle fixtures.
+            // Preserve the established pools; the added tubes use the subdued far-aisle output.
+            float power=corridor?(index==0?7.2f:index==2?6.3f:index==5?4.9f:2.6f):connecting?1.6f:intensity*.56f;
+            var holder=new GameObject("School fluorescent fixture").transform;
             holder.SetParent(parent,false);holder.localPosition=at;
             var model=SchoolRenewalModels.Attach("fluorescent-fixture",holder,
                 new Bounds(Vector3.zero,new Vector3(1.2f,.16f,.22f)));
             var color=corridor?new Color(.96f,.94f,.79f):warm?new Color(.72f,.82f,.85f):new Color(.60f,.74f,.86f);
-            Color glow=live?color*(corridor?3.8f:2.4f):Color.black;
+            Color glow=color*(corridor?3.8f:2.4f);
             var clones=new Dictionary<Material,Material>();var tubes=new List<Material>();
             foreach(var renderer in model.GetComponentsInChildren<MeshRenderer>(true))
             {
@@ -90,10 +91,10 @@ namespace HappyToy.V2
             // A folded reflector sends the tube output into the aisle, not through its back onto the ceiling.
             if(corridor){lamp.transform.localRotation=Quaternion.Euler(90,0,0);lamp.spotAngle=132;lamp.innerSpotAngle=100;}
             lamp.intensity=power;lamp.range=corridor?8.0f:connecting?6:6.2f;
-            lamp.shadows=live&&corridor?LightShadows.Soft:LightShadows.None;
+            lamp.shadows=corridor?LightShadows.Soft:LightShadows.None;
             lamp.shadowNearPlane=.08f;lamp.bounceIntensity=.5f;world.fixtures.Add(lamp);
             Light backscatter=null;
-            if(live&&corridor)
+            if(corridor)
             {
                 // Small diffuser/reflector backscatter reveals this physical housing and adjacent ceiling.
                 // Its short reach cannot fill the long corridor like an omnidirectional main lamp.

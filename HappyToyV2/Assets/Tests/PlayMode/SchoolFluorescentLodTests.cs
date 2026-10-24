@@ -21,6 +21,25 @@ namespace HappyToy.V2.CloudTests
             yield return BeginObservationSchool();
             var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
             var centre=Get<Transform>(world,"Centre");
+            var chunks=Get<Transform>(world,"Root").Cast<Transform>()
+                .Where(t=>t.name.StartsWith("School loop section",StringComparison.Ordinal)).ToArray();
+            Assert.That(chunks.Length,Is.EqualTo(3));
+            foreach(var chunk in chunks)
+            {
+                var aisle=chunk.GetComponentsInChildren(RequireType("SchoolFluorescent"),true)
+                    .Where(f=>Mathf.Abs(f.transform.localPosition.x)<.2f).ToArray();
+                Assert.That(aisle.Length,Is.EqualTo(9),"Every repeated aisle must retain its nine physical fixtures");
+                foreach(var installed in aisle)
+                {
+                    var light=Get<Light>(installed,"Source");
+                    Assert.That(light&&light.enabled&&light.intensity>0,Is.True,"An installed aisle lamp remained dark");
+                    Assert.That(Get<Light>(installed,"Backscatter").intensity,Is.GreaterThan(0));
+                    foreach(var material in installed.GetComponentInChildren<LODGroup>().GetLODs()
+                        .SelectMany(l=>l.renderers).SelectMany(r=>r.sharedMaterials).Distinct())
+                        Assert.That(material.GetColor("_EmissionColor").maxColorComponent,Is.GreaterThan(0),
+                            "A physical tube went dark in one of its viewing distances");
+                }
+            }
             var fixture=centre.GetComponentsInChildren(RequireType("SchoolFluorescent"),true)
                 .Single(f=>Vector3.Distance(f.transform.localPosition,new Vector3(0,3.08f,2.2f))<.01f);
             var lamp=Get<Light>(fixture,"Source");

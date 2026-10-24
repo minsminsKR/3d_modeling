@@ -369,7 +369,7 @@ PROFILES["uncat-bell-distance"]=("Recorded Uncat bell at 3/24/36/50m, approachin
 
 PROFILES["school-horror"]=("Acquired scanned school decay, breached ceiling, actual planar-reflection contribution/cleanup, lighting pause and camera review; preserved loop navigation, closed classrooms, saves and music asset identity", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolLoopPlanTests", "HappyToy.V2.CoreTests.SchoolFluorescentClockTests", CLOUD+"SchoolLoopCheckpointTests")),
-    ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolLoopSeamTests.cs", "SchoolHorrorEnvironmentTests.cs")+(
+    ("PlayMode", play_tests("SchoolLoopTests.cs", "SchoolLoopSeamTests.cs", "SchoolHorrorEnvironmentTests.cs", "SchoolFluorescentLodTests.cs")+(
         PLAY+"SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState",
         PLAY+"CorridorGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState"))])
 
