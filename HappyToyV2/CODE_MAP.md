@@ -58,6 +58,7 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 | 한국적인 소품 | `KoreanCorridorDressing.cs`는 위치 데이터만 받아 중앙 경로·가구·문 이동을 피한다. `KoreanCorridorProp.cs`는 자산/구역 정체성을 제공한다. `SourceArt/KoreanCorridorProps/`에는 웹앱 GLB/PBR·입력·프롬프트·Blender·LOD 재생성 도구가 있다. | `corridor`, `readability`, `full`, 새 플레이어 표면 확인 |
 | 학교 진행 디지털 시계 | `Core/SchoolProgressClock`은 전진 통과당 +1시간과 누적 표기를, `SchoolLoopWorld`는 기존 연결 결과 전달과 세 구역 동기화를, `SchoolProgressClockDisplay`는 생성 원본/공유 PBR·LOD와 변경 시 갱신되는 7세그먼트 표시를 소유한다. 새 시작 00:00, 역방향 유지, pause 중 무증가다. `SchoolLoopCheckpoint`는 선택적 `loop.clock.hours`를 보존하고 구형 지도3 저장은 00:00으로 복원한다. 입구 맞은편 동쪽 벽에 설치하며 추가 광원·통행 충돌이 없다. 원본/프롬프트/작업/packed Blender/재현 도구는 `SourceArt/SchoolProgressClock`이다. | `school-clock` (Core·실제 W 이동/역방향/pause·저장 이행·원본 PBR/LOD·정상 카메라 LED 가독성·해제); 이상현상/실패/8회 탈출은 후속 범위 |
 | 학교 관찰 루프·음악실 | 현재 메뉴/제단 뒤 학교는 지도 버전 3이다. `Core/SchoolLoopPlan`은 치수·세 방·양 끝 연결 평면을, `SchoolLoopWorld`는 구역별 조립/배칭·물리/NavMesh·시선/자세를 보존하는 연결 이동을 소유한다. `SchoolLoopArchitecture`는 늘 열린 철문과 잠긴 교실/닫힌 창문·국소 형광등을, `SchoolMusicRoomDressing`은 생성 피아노/악보대·공유 좌석·음악실 마감을 담당한다. `LegacySchoolRetirement`가 이 모드에서만 구형 지형/조명/충돌/배우를 제외한다. `MemoryChapter.Loop`은 기존 학교 facade와 새 지도 사이의 명시적 경계다. 현재 시작은 `BeginSchoolLoop`/`CreateSchoolLoop`; 기존 `BeginChapter`/`CreateChapter`와 `SchoolCampus*`/`SchoolFirstAppearances`는 구형 버전 1/2 저장 및 기존 회귀를 보존한다. 새 지도에 구형 수집/계단/추격을 적용하지 않는다. `SchoolLoopCheckpoint`는 버전 3의 위치·연결 횟수·조명/아이템 저장을 검사한다. 원본·사용자 평면도·Blender/PBR/LOD·재현 도구는 `SourceArt/SchoolLoop`에 있다. | `school-loop`; 학교 전체 교체/저장 경계는 `full` 두 모드와 새 Windows 빌드. 이상현상/8회 탈출 규칙은 별도 후속 범위 |
+| 학교 반복 보행 인물 | `Core/SchoolWalkerRoute`는 한 차례 보행·양보·진행 거리/회전·대기와 다음 통과 요청을 소유한다. `SchoolWalkerEncounter`는 중앙 구역의 인물 하나와 실제 카메라/벽 가림을, `SchoolWalkerMotion`은 실제 이동 거리에 맞춘 생성 리그의 walk/idle 샘플링을 소유한다. `SchoolLoopWorld`가 정적 배칭 뒤 한 번 조립하고 실제 양방향 연결 통과를 전달한다. `SchoolWalkerCheckpoint`와 `SchoolLoopCheckpoint`가 선택 `loop.walker` 상태를 저장하며 지도 버전 3을 유지한다. `Editor/SchoolWalkerImport`와 `SourceArt/SchoolWalker`가 지정 서비스 원본·리그/동작·Blender·PBR·3LOD를 소유한다. | `school-walker` (Core·실제 한 인물/걷기/양보·양방향 숨은 재등장·pause/부적·구형 저장/현재 보행 복원·공유 자원/해제·정상 카메라·기존 JSON codec); 새 Windows 빌드 |
 | 저장·재개·게임 진행 | `GameSession.cs`, `CorridorRunCheckpoint.cs`, `ChapterRunCheckpoint.cs`, 각 `*CheckpointStore.cs` / `*Checkpoint.cs`. `CorridorCheckpointCodec.cs` / `ChapterCheckpointCodec.cs`가 검증된 JSON·복사 경계를 소유하며 `CheckpointJsonFields`는 root의 선택 `traps` 필드 누락/null을 보존한다. JsonUtility가 구형 누락 필드를 빈 inline 객체로 만드는 경우도 빈 덫 데이터로 오인하지 않으며, 실제 존재하는 잘못된 덫 데이터는 계속 거부한다. 저장소는 이 codec을 거쳐 복사/직렬화/역직렬화한다. 체크포인트 partial은 기존 저장 형식을 연결하는 어댑터다. | `core`, `checkpoint`; 덫 codec 변경 시 학교/회랑 중단 복원·덫 저장 회귀 |
 | 폐교 노후화·젖은 바닥·학교 전용 조명 | `SchoolHorrorSurfaces`는 확보한 촬영 스캔 파생 2K PBR와 학교 전용 URP 표면/유리를 소유한다. `SchoolLoopArchitecture`는 실제 마감판 개구부와 별도 구조 천장을, `SchoolStructuralDecay`는 두꺼운 박리·파손 가장자리·노출 천장틀과 스캔 잔해를 담당한다. `SchoolDecayDressing`은 기존 저작 모델의 정독반/매점·복도 수납과 배관/종이를 묶는다. `SchoolHorrorLighting`은 학교 카메라 범위의 안개·색보정·부분 형광등·차가운 창문광·128px 초기 반사 프로브 2개를 담당한다. `SchoolPlanarReflection`은 최대640×360 HDR의 실제 반사 카메라·사선 바닥 클리핑·재귀 차단과 카메라 범위 GL/셰이더 상태 복원을 소유하며 젖은 바닥의 실제 반사를 만든다. `Core/SchoolFluorescentClock`은 완만한 전압 저하와 pause/동작 감소를 소유한다. `SchoolLoopWorld`가 조립하고 소유 자원을 해제한다. 지도3·닫힌 교실·이동/저장과 기존 생성 음악실을 유지한다. 촬영 스캔 원본·CC0·Blender 제작 파일·재현/해시·한계는 `SourceArt/SchoolHorror`에 있다. | `school-horror` (Core·실제 이동/저장/아이템·평면 반사 on/off 화면 기여·자산 해제·pause·렌더 상태 원복·실제 URP 카메라) + 새 Windows 빌드; 공통 파이프라인 변경 시 `graphics`/`full` |
 | 그래픽 설정·그림자 예산·성능 비교 | `Assets/Editor/GraphicsLightingSetup.cs`가 소유 URP 자산의 HDR·MSAA4·SMAA·깊이 재구성 SSAO를 재생성한다. `GraphicsLightingPresentation.cs`는 모드별 조명/반사를 복원한다. `LocalShadowBudget.cs`는 매 프레임 실제 광원에서 `ShadowAtlasPlan.Rebuild`의 재사용 목록을 채우며 동일 거리/ID 우선순위로 그림자를 선택한다. `GraphicsOptimizationProbe.cs`는 명시된 인자로만 정적 카메라의 GPU 완료 대기 렌더링 시간을 측정한다. | `graphics`, 공통 렌더링 변경/배포는 `full` 및 새 플레이어 표면·안광 검사 |
@@ -98,6 +99,25 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 실제 배치/정상 카메라, 양면 한글/방향별 정상 카메라, 실제 왕복 루프 이동·양쪽
 시임 화면·자바라 통행·승인 밝기를 검사한다. 선택 이미지 출력은 Builds 아래의
 `HAPPYTOY_SCHOOL_RADIATOR_REVIEW_DIR`와 `HAPPYTOY_SCHOOL_ROOM_SIGN_REVIEW_DIR`다.
+
+학교 보행 인물은 세 개의 반복 건축물에 복제하지 않고 중앙 구역에 하나만 둔다.
+`Core/SchoolWalkerRoute`는 `(0.65, 33)`에서 남쪽 `(0.65, 2.2)`로 걸은 뒤
+입구의 `(-3, 1)`로 꺾여 이동하며, 플레이어와 가까우면 열린 쪽으로 양보한다.
+일반적인 뒤돌아보기로 재등장하지 않는다. 양쪽 실제 전환 평면을 지난 경우에만
+`SchoolWalkerEncounter.OnTraversal`이 다음 통과를 예약하며, 현재 몸 전체와 새 시작
+위치가 실제 벽에 가려진 뒤 같은 인물을 재배치한다. 화면 밖이라는 이유만으로
+재배치하지 않으며 젖은 바닥의 반사 카메라와 공유되는 `Renderer.isVisible`에 의존하지
+않는다. 본인만의 텔레포트나 적 AI·공격·플레이어를 미는 충돌체는 추가하지 않는다.
+`SchoolWalkerMotion`은 자동 Animator 시계 대신 진행 거리와 저장된 대기 시간을 사용해
+walk/idle을 혼합하고, 일시정지·부적의 시간 정지에서 실제 뼈 자세까지 고정한다.
+`loop.walker`는 경로·통과/예약 번호·동작 위상을 보존한다. 구형 v3 JSON의 누락/null은
+`ChapterCheckpointCodec`의 중첩 필드 경계에서 보존해 새 보행의 먼 시작점으로 복원하며,
+시작점 가까이에 저장된 플레이어는 반대 보행 차선으로 피한다. 실제 존재하는 잘못된
+상태·미래 통과 번호는 계속 거부한다. 시계의 전진 전용 규칙·지도·문 ID는 유지한다.
+`school-walker`는 보행/저장과 기존 통과·시계·밝기·소유 자원 및 공용 JSON codec 회귀를
+집중 검사한다. `HAPPYTOY_SCHOOL_WALKER_REVIEW_DIR`를 Builds 아래에 명시하면 실제
+정상 카메라의 일반 조명/손전등 화면을 저장한다. 제작·검토·남은 한계는
+`SourceArt/SchoolWalker`의 인계 문서를 따른다.
 
 몬스터 자산 마감은 `SourceArt/CreatureStudio/tools/polish_game_assets.py`와
 `polish-settings.json`이 기존 근접 메시·UV·가중치·원본 동작을 보존하며 게임 전용

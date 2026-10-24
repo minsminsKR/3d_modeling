@@ -15,6 +15,7 @@ namespace HappyToy.V2
         public static readonly Vector3 Origin=new Vector3(0,0,45);
         public Transform Root {get;private set;}
         public Transform Centre {get;private set;}
+        public SchoolWalkerEncounter Walker {get;private set;}
         public int Traversals {get;private set;}
         readonly SchoolProgressClock progressClock=new SchoolProgressClock();
         readonly List<SchoolProgressClockDisplay> clocks=new List<SchoolProgressClockDisplay>();
@@ -66,10 +67,18 @@ namespace HappyToy.V2
             navigation.BuildNavMesh();
             Root.gameObject.AddComponent<SchoolHorrorLighting>().Prepare(this);
             session.player.RelocateWorld(Origin+new Vector3(-4.6f,.03f,2.2f),Quaternion.Euler(0,90,0));
+            Walker=SchoolWalkerEncounter.Build(session,Centre,
+                Resources.Load<GameObject>("SchoolWalker/walker-visual"),
+                Resources.Load<AnimationClip>("SchoolWalker/walk"),
+                Resources.Load<AnimationClip>("SchoolWalker/idle"),.91f);
             previous=session.player.transform.position;
         }
         public Vector3 ToWorld(Vector3 point)=>Origin+point;
-        public void RestoreTraversal(int count){if(count<0||count>1000000)throw new ArgumentException("Invalid traversal count");Traversals=count;previous=session.player.transform.position;}
+        public void RestoreTraversal(int count)
+        {
+            if(count<0||count>1000000)throw new ArgumentException("Invalid traversal count");
+            Traversals=count;Walker.RestoreTraversal(count);previous=session.player.transform.position;
+        }
         public void RestoreClock(int hours)
         {
             progressClock.Restore(hours);
@@ -87,6 +96,7 @@ namespace HappyToy.V2
                 feet=Origin+new Vector3(pose.X,local.y,pose.Z);
                 session.player.TraverseWorldSeam(feet,Quaternion.Euler(0,pose.Yaw,0));
                 Traversals=Mathf.Clamp(Traversals+1,0,1000000);
+                Walker.OnTraversal(Traversals);
                 if(progressClock.AdvanceForTraversal(direction))
                     foreach(var clock in clocks)if(clock)clock.SetHours(progressClock.Hours);
             }

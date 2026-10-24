@@ -335,6 +335,21 @@ PROFILES["school-wayfinding"]=("Generated cast-iron radiators and projecting dou
         PLAY+"SchoolRetractableGateKeepsGeneratedLodsAndTheRealSpawnRouteOpen",
         PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness"))])
 
+PROFILES["school-walker"]=("One harmless generated rigged pedestrian, real passing and distance-driven walk/idle, physically hidden reappearance after either school seam, pause/talisman, exact v3 walker save/legacy migration, shared art teardown, normal camera and existing nested/root checkpoint codec regressions", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolWalkerRouteTests", "HappyToy.V2.CoreTests.SchoolLoopPlanTests",
+                  "HappyToy.V2.CoreTests.SchoolProgressClockTests", CLOUD+"SchoolLoopCheckpointTests",
+                  CLOUD+"CheckpointTrapCodecTests", CLOUD+"ChapterCheckpointStoreTests", CLOUD+"CorridorCheckpointStoreTests")),
+    ("PlayMode", play_tests("SchoolWalkerTests.cs", "SchoolWalkerCheckpointTests.cs")+(
+        PLAY+"SchoolLoopMenuLoadsOnlyTheNewCorridorAndSealsAllThreeRooms",
+        PLAY+"SchoolLoopRealWalkingReturnsFromEitherEndToTheSameLeftRoomEntrance",
+        PLAY+"SchoolBothOpaqueBendsAreWalkableAndOnlyTheExtendedEndsTeleport",
+        PLAY+"SchoolBothSeamViewsMatchTheirVisibleContinuationWithoutMirroring",
+        PLAY+"SchoolLoopSuspendRestoresTheNewMapAndRejectsAClassroomPose",
+        PLAY+"SchoolClockAdvancesOncePerRealForwardPassKeepsBackwardAndFreezesOnPause",
+        PLAY+"SchoolClockSaveRestoresHoursAndLegacyV3StartsAtMidnightWithoutGuessingSuccess",
+        PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",
+        PLAY+"SchoolGraphicsVolumeCameraCookieAndReflectionScopeRestoreAllOwnedState"))])
+
 PROFILES["uncat-bell-distance"]=("Recorded Uncat bell at 3/24/36/50m, approaching gain, stereo bearing, physical wall, pause/master mute and real walking-to-pursuit rhythm", [
     ("PlayMode", play_tests("UncatBellDistanceTests.cs")+(
         PLAY+"UncatActualWalkingBellsAccelerateAfterRecognitionAndStopDuringPause",))])

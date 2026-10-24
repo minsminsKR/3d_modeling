@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "requestId": "b8396dba-7db3-4a61-8c64-f198cba664b4",
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "input": "reference-v2-purple-flower.png",
+  "model": "trellis2",
+  "gpu": "split",
+  "seed": 24102420,
+  "options": {
+    "remove_background": "on",
+    "trellis_pipeline": "1536_cascade",
+    "trellis_texture_size": 8192,
+    "trellis_steps": 12
+  },
+  "purpose": "1.77m/120kg flower-wearing civilian school corridor walker; generated base then rigging/Blender finishing"
+}

@@ -13,10 +13,13 @@ namespace HappyToy.V2
         public int traversals;
         // Optional: old v3 saves counted both seam directions and cannot imply successful hours.
         public SchoolClockProgress clock;
+        // Optional for older observation-school saves with no walking civilian.
+        public SchoolWalkerProgress walker;
         public void Validate()
         {
             if(traversals<0||traversals>1000000)throw new ArgumentException("Invalid school loop progress");
             clock?.Validate();
+            walker?.Validate(traversals);
         }
     }
     public sealed partial class ChapterCheckpoint
@@ -39,7 +42,7 @@ namespace HappyToy.V2
         ChapterCheckpoint CaptureLoopCheckpoint()
         {
             var data=new ChapterCheckpoint{simulationVersion=SchoolLoopPlan.Version,token=Guid.NewGuid().ToString("N"),scene=gameObject.scene.path,
-                seconds=session.ElapsedPlayTime,player=session.player.CaptureProgress(),loop=new SchoolLoopProgress{traversals=Loop.Traversals,clock=new SchoolClockProgress{hours=Loop.ClockHours}},
+                seconds=session.ElapsedPlayTime,player=session.player.CaptureProgress(),loop=new SchoolLoopProgress{traversals=Loop.Traversals,clock=new SchoolClockProgress{hours=Loop.ClockHours},walker=SchoolWalkerProgress.Capture(Loop.Walker.CaptureState())},
                 lightingVersion=1,lighting=Lighting.Capture(),traps=TrapWorld.Capture(session.player),ritualItems=RitualWorld.Capture(session.player),
                 doors=Array.Empty<ChapterCheckpoint.Door>(),supplies=Array.Empty<ChapterCheckpoint.Supply>()};
             data.Validate();return data;
@@ -50,11 +53,13 @@ namespace HappyToy.V2
             if(!Ready||!Loop||session.Finished||session.InputAllowed||LayoutVersion!=data.simulationVersion)
                 throw new InvalidOperationException("Prepare a fresh paused observation school");
             Lighting.ValidateRestore(data.lighting);TrapWorld.ValidateRestore(data.traps,session.player);RitualWorld.ValidateRestore(data.ritualItems,session.player);
+            if(data.loop.walker!=null)Loop.Walker.ValidateRestoreState(data.loop.walker.ToState());
             if(!session.player.CanRestoreChapterProgress(data.player))throw new ArgumentException("Saved school loop player is obstructed");
         }
         void RestoreLoopCheckpoint(ChapterCheckpoint data)
         {
             ValidateLoopCheckpoint(data);session.player.RestoreChapterProgress(data.player);Loop.RestoreTraversal(data.loop.traversals);Loop.RestoreClock(data.loop.clock?.hours??0);
+            if(data.loop.walker!=null)Loop.Walker.RestoreState(data.loop.walker.ToState());
             Lighting.Restore(data.lighting);TrapWorld.Restore(data.traps,session.player);RitualWorld.Restore(data.ritualItems,session.player);
             Physics.SyncTransforms();
         }

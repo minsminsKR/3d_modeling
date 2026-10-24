@@ -1,0 +1,111 @@
+{
+  "source_images": [
+    "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/uploads/ba4c614f-570d-4433-b6ae-950ebaefadfe/reference-v2-purple-flower.png"
+  ],
+  "model_path": "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/outputs/ba4c614f-570d-4433-b6ae-950ebaefadfe/model.glb",
+  "used_texture": true,
+  "warnings": [],
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": 0,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1536_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 8192,
+    "trellis_max_tokens": 65536,
+    "texture": true,
+    "remove_background": true,
+    "seed": 24102420,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "actual_pipeline": "1536_cascade",
+  "actual_steps_per_stage": 12,
+  "effective_voxel_size": 0.0006510416666666666,
+  "actual_resolution": 1536,
+  "effective_max_tokens": 65536,
+  "cross_gpu_transfer": "cpu_staging",
+  "actual_gpu_mode": "split",
+  "gpu_devices_used": [
+    1,
+    0
+  ],
+  "gpu_stage_timings": {
+    "TRELLIS.2 \uc7ac\uc9c8 \uc0dd\uc131 \u00b7 GPU 0": 8.816057404503226,
+    "TRELLIS.2 \ud615\uc0c1 \ubcf5\uc6d0 \u00b7 GPU 1": 1.1535787228494883,
+    "mesh_repair": 0.03758663684129715,
+    "TRELLIS.2 \uc7ac\uc9c8 \ubcf5\uc6d0 \u00b7 GPU 0 / GPU 1 \uba54\uc2dc \ubcf4\uc815 \ubcd1\ud589": 1.1244407761842012
+  },
+  "gpu_memory_snapshots": [
+    {
+      "logical_gpu": 0,
+      "free_mib": 36520,
+      "allocated_mib": 56,
+      "reserved_mib": 128
+    },
+    {
+      "logical_gpu": 1,
+      "free_mib": 31930,
+      "allocated_mib": 43,
+      "reserved_mib": 84
+    },
+    {
+      "logical_gpu": 0,
+      "free_mib": 36400,
+      "allocated_mib": 166,
+      "reserved_mib": 248
+    },
+    {
+      "logical_gpu": 1,
+      "free_mib": 31950,
+      "allocated_mib": 44,
+      "reserved_mib": 64
+    },
+    {
+      "logical_gpu": 0,
+      "free_mib": 36420,
+      "allocated_mib": 166,
+      "reserved_mib": 228
+    },
+    {
+      "logical_gpu": 1,
+      "free_mib": 31802,
+      "allocated_mib": 164,
+      "reserved_mib": 204
+    },
+    {
+      "logical_gpu": 0,
+      "free_mib": 36300,
+      "allocated_mib": 282,
+      "reserved_mib": 348
+    },
+    {
+      "logical_gpu": 1,
+      "free_mib": 31802,
+      "allocated_mib": 164,
+      "reserved_mib": 204
+    }
+  ],
+  "auxiliary_memory_fraction": 0.6926241288189025,
+  "material_decode_fallback": false,
+  "torch_peak_memory_mib": [
+    {
+      "physical_gpu": 1,
+      "allocated": 10989.9,
+      "reserved": 11466.0
+    },
+    {
+      "physical_gpu": 0,
+      "allocated": 4050.8,
+      "reserved": 4564.0
+    }
+  ],
+  "elapsed_seconds": 474.07,
+  "note": "Official native generation with shape/material GPU placement, independent mesh-repair overlap, and released sparse caches."
+}

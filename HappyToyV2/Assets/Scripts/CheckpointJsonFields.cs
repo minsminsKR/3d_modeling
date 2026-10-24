@@ -64,6 +64,22 @@ namespace HappyToy.V2
         }
         internal static bool AbsentOrNull(string json,string field) =>
             !Field(json,field,out _,out int start,out int end) || json.Substring(start,end-start).Trim()=="null";
+        internal static bool AbsentOrNullInObject(string json,string parent,string field)
+        {
+            if(!Field(json,parent,out _,out int start,out int end))return true;
+            string value=json.Substring(start,end-start).Trim();
+            if(value=="null")return true;
+            if(value.Length==0||value[0]!='{')throw new ArgumentException("Checkpoint parent is not an object: "+parent);
+            return AbsentOrNull(value,field);
+        }
+        internal static string OmitInObject(string json,string parent,string field)
+        {
+            if(!Field(json,parent,out _,out int start,out int end))return json;
+            string value=json.Substring(start,end-start).Trim();
+            if(value=="null")return json;
+            if(value.Length==0||value[0]!='{')throw new ArgumentException("Checkpoint parent is not an object: "+parent);
+            return json.Substring(0,start)+Omit(value,field)+json.Substring(end);
+        }
         internal static string Omit(string json,string field)
         {
             if(!Field(json,field,out int start,out _,out int end)) return json;

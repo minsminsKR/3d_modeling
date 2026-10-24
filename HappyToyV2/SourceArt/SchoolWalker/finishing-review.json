@@ -1,0 +1,269 @@
+{
+  "status": "PASS",
+  "reviewedUtc": "2026-10-24T06:10:10.882948+00:00",
+  "reviewer": "School asset handoff agent; root independently approved hero front/side/face",
+  "stage": "Actual finished packed Blender source and all three game LODs; Unity verification remains separate",
+  "method": "Pinned Blender 4.0.2 CLI, real EEVEE game-PBR renders with neutral AgX, full-clip evaluated-skin measurements",
+  "approvedForUnityIntegration": true,
+  "generatedSourceSha256": "f571b585a4db13b924a6a2b053a1e995520a239eb562743d8d462d4a2379290a",
+  "riggedSourceSha256": "6db03c1865b3199e55343483d44ad811d4e2d475a5bde934dda97ec0d8ef8356",
+  "editable": "SchoolWalker.blend",
+  "editableSha256": "d0b2e139adc936d857fbff779bd90a674bd6ed33a898d36697456a75deb8c7b7",
+  "originalAIDataExactlyPreserved": true,
+  "originalBones": 34,
+  "packedImages": [
+    {
+      "name": "Image_0",
+      "size": [
+        8192,
+        8192
+      ],
+      "packed": true
+    },
+    {
+      "name": "Image_1",
+      "size": [
+        8192,
+        8192
+      ],
+      "packed": true
+    },
+    {
+      "name": "SW_LOD0-baseColor",
+      "size": [
+        4096,
+        4096
+      ],
+      "packed": true
+    },
+    {
+      "name": "SW_LOD0-metallicSmoothness",
+      "size": [
+        4096,
+        4096
+      ],
+      "packed": true
+    },
+    {
+      "name": "SW_LOD0-normal",
+      "size": [
+        4096,
+        4096
+      ],
+      "packed": true
+    },
+    {
+      "name": "SW_LOD0-baseColor.001",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed": true
+    },
+    {
+      "name": "SW_LOD0-metallicSmoothness.001",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed": true
+    },
+    {
+      "name": "SW_LOD0-normal.001",
+      "size": [
+        1024,
+        1024
+      ],
+      "packed": true
+    }
+  ],
+  "actions": [
+    {
+      "name": "walk",
+      "curves": 340
+    },
+    {
+      "name": "idle",
+      "curves": 340
+    }
+  ],
+  "gameLODs": [
+    {
+      "name": "SW_LOD0",
+      "triangles": 49992,
+      "vertices": 24984,
+      "skin": {
+        "method": "Closest source triangle / barycentric AI skin transfer, normalized strongest four",
+        "maximumSourceDistanceMetres": 0.0039064111188054085,
+        "maximumNormalizationError": 2.220446049250313e-16,
+        "maximumInfluences": 4,
+        "bones": 34
+      }
+    },
+    {
+      "name": "SW_LOD1",
+      "triangles": 11992,
+      "vertices": 5984,
+      "skin": {
+        "method": "Closest source triangle / barycentric AI skin transfer, normalized strongest four",
+        "maximumSourceDistanceMetres": 0.0039064111188054085,
+        "maximumNormalizationError": 2.220446049250313e-16,
+        "maximumInfluences": 4,
+        "bones": 34
+      }
+    },
+    {
+      "name": "SW_LOD2",
+      "triangles": 3992,
+      "vertices": 1984,
+      "skin": {
+        "method": "Closest source triangle / barycentric AI skin transfer, normalized strongest four",
+        "maximumSourceDistanceMetres": 0.008356173522770405,
+        "maximumNormalizationError": 2.220446049250313e-16,
+        "maximumInfluences": 4,
+        "bones": 34
+      }
+    }
+  ],
+  "maps": [
+    {
+      "file": "SW_LOD0-baseColor.png",
+      "sha256": "c6c52e07d28bab0590196f9ea3ca6fbd6071887c2758c49dd15178cb494dc89c"
+    },
+    {
+      "file": "SW_LOD0-metallicSmoothness.png",
+      "sha256": "eb57a6a71d4c97eec884b791f4836caf0297fc8afdc55b1d5dc0b833449c0c95"
+    },
+    {
+      "file": "SW_LOD0-normal.png",
+      "sha256": "9918981092b2f251ee0dae5c4c0045605243135db60f8b93571e5fc7514f3971"
+    },
+    {
+      "file": "SW_LOD2-baseColor.png",
+      "sha256": "574c51f35f2a55c5923734c9f1ba84a39e4a02e5ac11ad19e2ead0e46e247ae4"
+    },
+    {
+      "file": "SW_LOD2-metallicSmoothness.png",
+      "sha256": "528a253e37c71789523a86bdcd3ca5cd8fad7bae968cafb3e5f217eab236042f"
+    },
+    {
+      "file": "SW_LOD2-normal.png",
+      "sha256": "f2639ab9b5f9bf731e380ceaf32203d1d83cc75b19601cb2279279beb6a832f9"
+    }
+  ],
+  "canonicalHeightMetres": 1.77,
+  "canonicalForward": "Unity +Z; actual Blender -Y; no mirror",
+  "walk": {
+    "durationSeconds": 1.3,
+    "worldTravelPerCycleMetres": 0.9099999999999999,
+    "speedMetresPerSecond": 0.7,
+    "stanceFraction": 0.6,
+    "hipsMetres": 0.7973873305911938,
+    "idleHipsMetres": 0.8533821189961197,
+    "maximumIKCorrectionMetres": 1.2036781326982014e-07
+  },
+  "contactMeasurements": [
+    {
+      "lod": 0,
+      "triangles": 49992,
+      "vertices": 24984,
+      "soleVertices": {
+        "Left": 45,
+        "Right": 29
+      },
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "maximumHandEdgeStretchRatio": 2.3998542529915414,
+      "maximumPenetrationMetres": 0.004678135272115469,
+      "maximumStanceSoleGapMetres": 0.009326272644102573,
+      "clipEndpointContinuous": true
+    },
+    {
+      "lod": 1,
+      "triangles": 11992,
+      "vertices": 5984,
+      "soleVertices": {
+        "Left": 33,
+        "Right": 19
+      },
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "maximumHandEdgeStretchRatio": 1.1992259942926673,
+      "maximumPenetrationMetres": 0.004678135272115469,
+      "maximumStanceSoleGapMetres": 0.009435681626200676,
+      "clipEndpointContinuous": true
+    },
+    {
+      "lod": 2,
+      "triangles": 3992,
+      "vertices": 1984,
+      "soleVertices": {
+        "Left": 16,
+        "Right": 8
+      },
+      "boundaryEdges": 0,
+      "nonmanifoldEdges": 0,
+      "maximumHandEdgeStretchRatio": 1.070540257195145,
+      "maximumPenetrationMetres": 0.0023734106216579676,
+      "maximumStanceSoleGapMetres": 0.01029058825224638,
+      "clipEndpointContinuous": true
+    }
+  ],
+  "observations": [
+    "Source-derived 2mm voxel closure removes the initial disconnected triangle cracks; all game LODs are closed manifold meshes with zero boundary/nonmanifold edges.",
+    "Original 34-bone AI hierarchy and full 8K original PBR are retained unchanged in the reopened packed source.",
+    "Measured visible wrist/palm positions correct the AI joint Y offset of about10-12cm. New hand masks contain15927/17417 original vertices; the large animated palm/wrist wedges are absent in the actual final gait views.",
+    "Hero face/flower density protection and49,992-triangle/4K near preserve substantially more identity detail than the rejected25K/2K version.",
+    "The0.91m stride at0.70m/s reduces excessive crouch; hip bob is lower at double support and lateral weight transfer follows the support leg.",
+    "The navy shirt, heavy abdomen/limbs, natural empty hands, original hair and purple ear flower remain source-derived."
+  ],
+  "imagesViewed": [
+    {
+      "file": "lod0-walk-25-front.png",
+      "optionalBuildsPath": "SchoolWalkerReview/finished-hero/lod0-walk-25-front.png",
+      "sha256": "b5d9f666e9e42fa18ab8f95f0955ac23a107dff9a60294c1d8bea487ea1a294c"
+    },
+    {
+      "file": "lod0-walk-0-side.png",
+      "optionalBuildsPath": "SchoolWalkerReview/finished-hero/lod0-walk-0-side.png",
+      "sha256": "0f7f61413fa37109b3e31fe4fbf064ee806dbfe41f7e0804b706eda4233ac784"
+    },
+    {
+      "file": "lod0-idle-face-flower.png",
+      "optionalBuildsPath": "SchoolWalkerReview/finished-hero/lod0-idle-face-flower.png",
+      "sha256": "e8f86f66994eabebb20340dad72390bca907eae8eb2b23f88ac1c496efbbf8cb"
+    },
+    {
+      "file": "lod0-walk-75-front.png",
+      "optionalBuildsPath": "SchoolWalkerReview/finished-hero/lod0-walk-75-front.png",
+      "sha256": "f75532a2231ed7282a63f1ad5fc75dcff7688e9b33245af81625f41e83382c5d"
+    },
+    {
+      "file": "lod0-walk-50-side.png",
+      "optionalBuildsPath": "SchoolWalkerReview/finished-hero/lod0-walk-50-side.png",
+      "sha256": "11b09f0bf5620871f45375351935f50218513795f0be8505882322743390ab1b"
+    },
+    {
+      "file": "lod1-walk-25-front.png",
+      "optionalBuildsPath": "SchoolWalkerReview/finished-hero/lod1-walk-25-front.png",
+      "sha256": "fe9c0de5a7afb73e621de1ce98981d2e7257ed17b75ac6db808576fa245c52f3"
+    },
+    {
+      "file": "lod2-walk-25-front.png",
+      "optionalBuildsPath": "SchoolWalkerReview/finished-hero/lod2-walk-25-front.png",
+      "sha256": "8de7b8d9849c227b9748c5442389ea6cd04f88670bf90be80d06df1e6698d00e"
+    }
+  ],
+  "limitations": [
+    "Source-generated eye/skin detail remains softer than the photo; no photogrammetry claim.",
+    "The4K-triangle far model is intended for distance and shows visible faceting if enlarged to hero closeup.",
+    "Hand edge stretch ratios include small wrist-blend edges; manual front/side full-stride review confirms the former large palm wedges are gone.",
+    "No Unity appearance, performance, navigation, checkpoint or player-build success is claimed by this Blender source review."
+  ],
+  "reproduce": [
+    "Pinned Blender4.0.2: --python SourceArt/SchoolWalker/finish_character.py -- --plan rig-plan.json",
+    "Pinned Blender4.0.2: --python SourceArt/SchoolWalker/review_character.py -- --output SchoolWalkerReview/finished-hero --render",
+    "Pinned Blender4.0.2: --python SourceArt/SchoolWalker/verify_packed.py"
+  ],
+  "remainingVerification": "Root owns actual Unity importer, source/instance PBR/skeleton identity, normal game camera, walking/pause/seams/checkpoints and fresh player build."
+}

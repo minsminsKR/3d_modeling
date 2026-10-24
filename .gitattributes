@@ -174,6 +174,23 @@ HappyToyV2/Assets/Resources/SchoolRenewal/**/*.json text eol=lf
 HappyToyV2/Assets/Resources/SchoolRenewal/**/*.mat text eol=lf
 HappyToyV2/Assets/Resources/SchoolRenewal/**/*.prefab text eol=lf
 HappyToyV2/Assets/Resources/SchoolRenewal.meta text eol=lf
+
+# Generated school pedestrian: immutable originals, AI skin/motions and editable rig.
+HappyToyV2/SourceArt/SchoolWalker/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolWalker/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolWalker/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/SchoolWalker/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/SchoolWalker/*.anim filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolWalker/**/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolWalker/*.json text eol=lf
+HappyToyV2/SourceArt/SchoolWalker/*.py text eol=lf
+HappyToyV2/SourceArt/SchoolWalker/*.md text eol=lf
+HappyToyV2/SourceArt/SchoolWalker/*.txt text eol=lf
+HappyToyV2/Assets/Resources/SchoolWalker/**/*.meta text eol=lf
+HappyToyV2/Assets/Resources/SchoolWalker/*.meta text eol=lf
+HappyToyV2/Assets/Resources/SchoolWalker/*.json text eol=lf
+HappyToyV2/Assets/Resources/SchoolWalker/*.mat text eol=lf
+HappyToyV2/Assets/Resources/SchoolWalker/*.prefab text eol=lf
 HappyToyV2/Assets/Scripts/SchoolRenewal*.cs text eol=lf
 HappyToyV2/Assets/Scripts/SchoolRenewal*.cs.meta text eol=lf
 HappyToyV2/Assets/Editor/SchoolRenewalImport.cs text eol=lf

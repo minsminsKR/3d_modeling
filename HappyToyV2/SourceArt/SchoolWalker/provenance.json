@@ -1,0 +1,37 @@
+{
+  "server": "https://agrees-mic-icon-contribution.trycloudflare.com",
+  "requestId": "b8396dba-7db3-4a61-8c64-f198cba664b4",
+  "jobId": "ba4c614f-570d-4433-b6ae-950ebaefadfe",
+  "webUrl": "https://agrees-mic-icon-contribution.trycloudflare.com/jobs/ba4c614f-570d-4433-b6ae-950ebaefadfe",
+  "original": "original.glb",
+  "originalSha256": "f571b585a4db13b924a6a2b053a1e995520a239eb562743d8d462d4a2379290a",
+  "reference": "reference-v2-purple-flower.png",
+  "referenceSha256": "29fa16d3f8b3b83b5ac7996acfdc7602fea5f2f4c7df0ac6a5f5e7403472e2b0",
+  "userFaceReference": "face-reference.jpg",
+  "userFaceReferenceSha256": "31e552de47e4455612531082995a383b9adf419d5805c47bd7f3aacc816a52bf",
+  "settings": "generation-request.json",
+  "referencePrompts": [
+    "reference-settings.json",
+    "reference-v2-settings.json"
+  ],
+  "origin": "User-provided portrait and project-generated reference/base model; no stock character model",
+  "license": "LICENSE.md",
+  "generatorLicense": "TRELLIS.2-LICENSE.txt",
+  "baseArchive": {
+    "sha256": "86f6a59ddf39e5e2d83ab67dd223b01a4de2319557c149becde774e5fdb7c65a",
+    "bytes": 132446652,
+    "receipt": "download-receipt-base.json",
+    "records": "service/base"
+  },
+  "riggedArchive": {
+    "sha256": "9e4eb8de5ac5a2937b1e9f0dd637ab158918ce9617e069f72a0ddd35ff0ad153",
+    "bytes": 672972544,
+    "receipt": "download-receipt-rigged.json",
+    "records": "service/rigged"
+  },
+  "riggedOriginal": {
+    "file": "rigged-original.glb",
+    "sha256": "6db03c1865b3199e55343483d44ad811d4e2d475a5bde934dda97ec0d8ef8356",
+    "archiveEntry": "outputs/rigging/51fa4f72-d3c6-475c-bf13-4599c16eb4d3/rigged.glb"
+  }
+}
