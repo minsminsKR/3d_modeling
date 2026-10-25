@@ -126,7 +126,10 @@ namespace HappyToy.V2.CloudTests
         IEnumerator SelectHandItem(string name)
         {
             Call(Get<Component>(player, "Items"), "Select", Enum.Parse(RequireType("PlayerItem"), name));
-            yield return Delay(.35f); // Let the real pose blending settle after the previous item.
+            var hands = Get<Component>(player, "Hands");
+            yield return Wait(() => Get<bool>(hands, "EquipmentSettled") && Get<object>(hands, "PresentedItem").ToString() == name,
+                6, "The authored equip/recovery did not settle on " + name);
+            yield return null;
         }
 
         [UnityTest, Timeout(120000)]
@@ -165,13 +168,14 @@ namespace HappyToy.V2.CloudTests
                 // centre. Opposed radial tips distinguish a wrap from a fist
                 // hovering beside the handle.
                 var shaft = new HandShaftSurface(torch,torchVertices);
+                var contactReport = Get<string>(Get<Component>(player, "Hands"), "ContactDiagnostics");
                 var thumb = HandMarker(leftHand, "thumb_tip").position;
                 var thumbRadial = shaft.Radial(thumb);
                 var otherTips = HandDigits.Skip(1).Select(digit => HandMarker(leftHand, digit + "_tip").position).ToArray();
                 foreach (var tip in otherTips.Append(thumb))
                 {
                     Assert.That(shaft.Local(tip).y,Is.InRange(shaft.minimum-.004f,shaft.maximum+.004f),item+": a finger is gripping the flashlight head instead of its barrel");
-                    Assert.That(shaft.Radial(tip).magnitude,Is.InRange(shaft.radius-.003f,shaft.radius+.014f),item+": a fingertip is buried inside or detached from the actual barrel");
+                    Assert.That(shaft.Radial(tip).magnitude,Is.InRange(shaft.radius-.003f,shaft.radius+.014f),item+": a fingertip is buried inside or detached from the actual barrel "+contactReport);
                     Assert.That(shaft.Distance(tip), Is.LessThan(.0115f),
                         item + ": a flashlight fingertip is detached from the actual shaft triangles");
                 }
@@ -188,7 +192,7 @@ namespace HappyToy.V2.CloudTests
                 }
                 Assert.That(rightHand.gameObject.activeInHierarchy, Is.True);
                 var held = HandProp(rightGrip); var surface = HandPropVertices(held);
-                if (item == "Incense" || item == "Talisman")
+                if (item == "Incense" || item == "Talisman" || item == "Snapper")
                 {
                     var index = HandMarker(rightHand, "index_tip").position;
                     var pinchThumb = HandMarker(rightHand, "thumb_tip").position;
@@ -199,10 +203,19 @@ namespace HappyToy.V2.CloudTests
                 }
                 else
                 {
-                    var palm = HandMarker(rightHand, "palm_contact").position;
-                    var up = rightHand.forward;
+                    var contact = HandMarker(rightHand, "palm_contact");
+                    var palm = contact.position;
+                    // This authored marker's +Y is the palm normal and follows
+                    // the independent forearm/wrist. The hand root no longer
+                    // defines the deformed palm's surface orientation.
+                    var up = contact.up;
                     Assert.That(Vector3.Dot(up, HandStudio.up), Is.GreaterThan(.75f), item + " hand is not palm-up");
-                    Assert.That(surface.Min(point => Vector3.Dot(point - palm, up)), Is.InRange(-.025f, .025f),
+                    // Inspect the support under the palm, not the opposite end
+                    // of a 55cm trap which can cross an infinite tilted plane
+                    // while remaining well outside the hand.
+                    var support = surface.Where(point => Vector3.ProjectOnPlane(point - palm, up).magnitude < .045f).ToArray();
+                    Assert.That(support, Is.Not.Empty, item + " has no actual surface above the supporting palm");
+                    Assert.That(support.Min(point => Vector3.Dot(point - palm, up)), Is.InRange(-.025f, .025f),
                         item + " does not rest at the open palm surface");
                     Assert.That(surface.Min(point => Vector3.ProjectOnPlane(point - palm, up).magnitude), Is.LessThan(.045f),
                         item + " is balanced outside the supporting palm");

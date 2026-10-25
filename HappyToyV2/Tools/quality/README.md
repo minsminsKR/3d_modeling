@@ -551,10 +551,17 @@ hosts, it adds no subprocess startup/creation options. BelowNormal requests CPU
 scheduling priority; it does not cap GPU work or guarantee that another game's
 frame rate is unaffected. Direct editor/authoring launches outside this runner
 still need their own hidden batch/background launch and priority settings.
-All planned stages explicitly include `-batchmode`; the pure `core` EditMode
+`unity test` itself supplies its reserved `-batchmode` argument; stages record
+`batchModeManagedByUnityCli`. Do not repeat that flag after `--`: the CLI rejects
+managed-argument collisions before starting the Editor. The pure `core` EditMode
 profile also uses `-nographics -noaudio`. While the user is gaming, use lightweight
 CPU/source checks and defer GPU rendering and new native players until separately
 requested. Do not switch to visible-capture/native-route helpers as a workaround.
+`hand-animation-logic` uses `-nographics -noaudio` for both stages. It checks real
+imported hand skin/Actions and scene item commits without certifying rendered
+appearance, native audio or FPS. On this explicit null-device diagnostic path,
+title texture rendering and reflection capture requests are skipped; capture
+counters are not fabricated. Normal rendered gameplay keeps those operations.
 `DiagnosticDesktopPolicy` suppresses the shell/motor/native-corridor audit's
 cursor writes and the item wheel's OS cursor-centering command only when that
 explicit flag and `Application.isBatchMode` are

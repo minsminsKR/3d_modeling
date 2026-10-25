@@ -144,6 +144,7 @@ namespace HappyToy.V2
                 var probe=new GameObject("School wet-floor reflection zone "+i).AddComponent<ReflectionProbe>();
                 probe.transform.SetParent(root,false);probe.transform.localPosition=new Vector3(0,1.55f,i==0?9.6f:28.8f);
                 probe.mode=ReflectionProbeMode.Realtime;probe.refreshMode=ReflectionProbeRefreshMode.ViaScripting;
+                probe.enabled=!DiagnosticDesktopPolicy.CpuOnly;
                 probe.timeSlicingMode=ReflectionProbeTimeSlicingMode.IndividualFaces;probe.resolution=128;probe.hdr=true;
                 // The floor must be INSIDE the influence volume, not within its fading lower edge.
                 // Otherwise Forward+ gives a wet surface almost entirely the default sky reflection.
@@ -207,6 +208,7 @@ namespace HappyToy.V2
         }
         void LateUpdate()
         {
+            if(DiagnosticDesktopPolicy.CpuOnly)return;
             if(!Prepared||Time.frameCount<=preparedFrame+2||nextProbe>=probes.Count)return;
             var graphics=session.GetComponent<GraphicsLightingPresentation>();if(!graphics||!graphics.Prepared)return;
             if(nextProbe>0&&!probes[nextProbe-1].IsFinishedRendering(renderId))return;

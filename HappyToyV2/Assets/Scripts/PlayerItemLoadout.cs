@@ -52,6 +52,9 @@ namespace HappyToy.V2
                 default: return player.FlashlightSystem.Toggle();
             }
         }
+        // Real player input uses authored prepare/contact/recovery. The direct
+        // compatibility API above remains for saved probes/scripted interactions.
+        public bool RequestSelected() => player && player.HandActions && player.HandActions.Request(Selected);
         void Update()
         {
             var session = GameSession.Current;
@@ -60,7 +63,7 @@ namespace HappyToy.V2
                 session.Shell.GameplayEntryFrame != Time.frameCount && session.Shell.ItemWheelChangedFrame != Time.frameCount;
             if (!allowed) { requireUseRelease = true; return; }
             if (!PlayerControls.UseItemHeld) requireUseRelease = false;
-            if (!requireUseRelease && PlayerControls.UseItem) UseSelected();
+            if (!requireUseRelease && PlayerControls.UseItem) RequestSelected();
         }
         void OnApplicationFocus(bool focused) { if (!focused) requireUseRelease = true; }
         void OnDisable() { requireUseRelease = true; }

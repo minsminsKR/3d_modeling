@@ -44,6 +44,8 @@ Material:
     - _HasNormal: 0
     - _Metallic: 0
     - _Monochrome: 0
+    - _PaperFlex: 0
+    - _PaperTime: 0
     - _PbrLayout: 0
     - _Smoothness: 0.68
     - _Viewmodel: 1

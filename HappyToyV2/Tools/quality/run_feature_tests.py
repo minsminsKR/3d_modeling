@@ -22,7 +22,7 @@ import xml.etree.ElementTree as ET
 PROJECT = Path(__file__).resolve().parents[2]
 VERSION = "6000.6.0f1"
 CORE_FIXTURES = tuple("HappyToy.V2.CoreTests." + name for name in (
-    "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests", "LoadingProgressTests", "FrameRateCounterTests",
+    "EnemyAttackClockTests", "StealthRulesTests", "SceneRestartGateTests", "LoadingProgressTests", "FrameRateCounterTests", "HandActionTimelineTests", "HandMotionStateTests",
     "SurfaceRippleBufferTests", "CabinetHidingRulesTests", "CabinetEncounterClockTests", "CabinetTauntMemoryTests", "SnapperStockRulesTests",
     "CorridorBabyMemoryTests", "CorridorThreatRulesTests", "EnemyBellClockTests", "CorridorShelterRulesTests", "CorridorRouteRulesTests", "MonsterPassingRulesTests", "TrapHoldClockTests", "WraithRetreatClockTests", "RitualItemRulesTests", "LadyFinaleClockTests", "LadyHeartbeatClockTests", "LadySnapperFlinchTests", "PatrolProgressClockTests"))
 CLOUD = "HappyToy.V2.CloudTests."
@@ -46,9 +46,12 @@ def play_tests(*files: str) -> tuple[str, ...]:
 # Exact fixture/method names, rather than fuzzy substrings. Each required selector
 # must appear in fresh NUnit results, so a renamed or mistyped test cannot pass.
 PROFILES = {
+    "hand-animation-logic": ("Authored hand rig and grips, prepare/release/recovery, no early stock spend, pause/wheel/cancel, physical throw and fixed trap placement; CPU/headless scene evidence only, no pixel or FPS certification", [
+        ("EditMode", (CLOUD + "HandAnimationAssetTests",)),
+        ("PlayMode", play_tests("HandActionIntegrationTests.cs") + (PLAY + "SelectedHandsWrapFlashlightPinchPaperAndSupportSuppliesOnThePalm",))]),
     "item-wheel": ("Real quarter-time movement measured over simulation time, input isolation, selection, fresh press, pause and focus", [
         ("PlayMode", (PLAY + "ItemWheelTabSlowsTimeSelectsOnReleaseAndRequiresFreshUsePress",))]),
-    "player-hands": ("Retained A100 hand/photographic skin, real wrap/pinch/loose grip, knuckle corrections, throw/pause and supported camera aspects", [
+    "player-hands": ("Retained original hand/skin, authored articulated forearm and grips, real throw/pause and supported rendered camera aspects", [
         ("PlayMode", play_tests("PlayerHandsTests.cs") + (
             PLAY + "ItemWheelTabSlowsTimeSelectsOnReleaseAndRequiresFreshUsePress",
             PLAY + "LadyBlackoutKeepsOnlyPlayerIncenseLightAndVisibleGuidingSmokeUntilBurnout"))]),
@@ -434,8 +437,10 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
             command += ["--filter", ";".join(selectors)]
         if editor_path:
             command += ["--editor-path", editor_path]
-        editor_args = ["-batchmode", "-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        # `unity test` owns -batchmode and rejects it in passthrough arguments.
+        # Keep the CLI's batch launch and our separate input/window safeguards.
+        editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
+        if profile == "hand-animation-logic" or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]
@@ -443,7 +448,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
             editor_args += ["-v2-audit-no-desktop-interaction", "-job-worker-count", "2"]
         command += ["--", *editor_args]
         result.append({"mode": mode, "selectors": selectors, "report": str(report),
-                       "editorArguments": editor_args, "command": command})
+                       "editorArguments": editor_args, "batchModeManagedByUnityCli": True, "command": command})
     return result
 
 
@@ -563,10 +568,15 @@ def main() -> int:
     summary["windowsHiddenBelowNormalRequested"] = bool(process_options)
     try:
         for stage in plan:
-            completed = subprocess.run(stage["command"], cwd=project, check=False, **process_options)
+            completed = subprocess.run(stage["command"], cwd=project, check=False,
+                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                       text=True, encoding="utf-8", errors="replace", **process_options)
+            cli_log = Path(stage["report"]).with_suffix(".cli.log")
+            cli_log.write_text(completed.stdout or "", encoding="utf-8")
             recorded = {"mode": stage["mode"], "selectors": stage["selectors"],
                         "exitCode": completed.returncode, "report": stage["report"],
-                        "editorArguments": stage["editorArguments"]}
+                        "editorArguments": stage["editorArguments"], "cliLog": str(cli_log),
+                        "batchModeManagedByUnityCli": stage["batchModeManagedByUnityCli"]}
             summary["stages"].append(recorded)
             result = inspect_results(Path(stage["report"]), stage["selectors"])
             recorded.update(result)

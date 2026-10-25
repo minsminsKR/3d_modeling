@@ -5,6 +5,7 @@ using UnityEngine.AI;
 namespace HappyToy.V2
 {
     // One stable, reachable memory; the renderer owns its continuous plume.
+    [DefaultExecutionOrder(760)]
     public sealed class IncenseGuidance : MonoBehaviour
     {
         public const float Duration = 30;
@@ -98,7 +99,7 @@ namespace HappyToy.V2
             if (direction.sqrMagnitude < .01f) direction = player.eyes ? player.eyes.transform.forward : player.transform.forward;
             direction.Normalize();
         }
-        void Update()
+        void LateUpdate()
         {
             var session = GameSession.Current;
             if (!session || session.Finished) { Destroy(gameObject); return; }

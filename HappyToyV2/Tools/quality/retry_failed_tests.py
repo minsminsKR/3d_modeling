@@ -96,7 +96,10 @@ def main() -> int:
             'windowsHiddenBelowNormalRequested':bool(startup)}
     try:
         print('Selected recheck cases: '+str(len(selected)),flush=True)
-        completed=subprocess.run(plan[0]['command'],cwd=project,check=False,**startup)
+        completed=subprocess.run(plan[0]['command'],cwd=project,check=False,stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,text=True,encoding='utf-8',errors='replace',**startup)
+        cli_log=Path(plan[0]['report']).with_suffix('.cli.log')
+        cli_log.write_text(completed.stdout or '',encoding='utf-8');result['cliLog']=str(cli_log)
         result.update(runner.inspect_results(Path(plan[0]['report']),selected))
         result['exitCode']=completed.returncode
         if not completed.returncode and not result['errors']:result['status']='PASS'

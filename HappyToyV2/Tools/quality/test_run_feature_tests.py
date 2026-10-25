@@ -21,7 +21,9 @@ class FeatureRoutingTests(unittest.TestCase):
         for profile in runner.PROFILES:
             for stage in runner.commands(profile, Path("Project"), Path("Fresh")):
                 arguments = stage["editorArguments"]
-                self.assertIn("-batchmode", arguments, profile)
+                self.assertTrue(stage["batchModeManagedByUnityCli"], profile)
+                self.assertEqual(stage["command"][1], "test")
+                self.assertNotIn("-batchmode", arguments, "Reserved CLI-owned argument must not be repeated")
                 self.assertIn("-v2-audit-no-desktop-interaction", arguments, profile)
                 self.assertEqual(arguments[arguments.index("-job-worker-count") + 1], "2")
         core = runner.commands("core", Path("Project"), Path("Fresh"))[0]
@@ -162,7 +164,7 @@ class SelectedRecheckTests(unittest.TestCase):
             start_process.assert_not_called()
             plan = json.loads(output.getvalue())
             self.assertTrue(plan["noDesktopInteractionRequested"])
-            self.assertIn("-batchmode", plan["stages"][0]["editorArguments"])
+            self.assertTrue(plan["stages"][0]["batchModeManagedByUnityCli"])
             self.assertIn("-v2-audit-no-desktop-interaction", plan["stages"][0]["editorArguments"])
 
     def test_only_nonpassing_exact_cases_are_selected_and_passing_cases_stay_out(self):

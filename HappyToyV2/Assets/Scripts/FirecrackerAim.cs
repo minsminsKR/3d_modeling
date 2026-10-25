@@ -6,7 +6,7 @@ namespace HappyToy.V2
 {
     /// <summary>Optional held preview of the first physical contact, never a landing or enemy-success forecast.</summary>
     [DisallowMultipleComponent]
-    [DefaultExecutionOrder(150)]
+    [DefaultExecutionOrder(800)]
     public sealed class FirecrackerAim : MonoBehaviour
     {
         readonly Vector3[] points = new Vector3[FirecrackerTrajectory.MaximumForecastPoints];
@@ -45,7 +45,10 @@ namespace HappyToy.V2
             if (PlayerControls.AimPressed) held = true;
             if (!held) { Hide(); return; }
             var eye = player.eyes.transform;
-            FirecrackerTrajectory.GetLaunch(eye.position, eye.forward, out var position, out var velocity);
+            Vector3 position, velocity;
+            if (player.Hands && player.Hands.TryGetSnapperLaunch(out position, out var handForward))
+                velocity = handForward.normalized * 14 + Vector3.up * 3.5f;
+            else FirecrackerTrajectory.GetLaunch(eye.position, eye.forward, out position, out velocity);
             forecast = FirecrackerTrajectory.Forecast(position, velocity, points);
             EnsureVisuals();
             if (!visuals) { Hide(); return; }

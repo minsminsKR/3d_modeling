@@ -60,6 +60,7 @@ namespace HappyToy.V2
         public PlayerRitualInventory Rituals { get; private set; }
         public PlayerItemLoadout Items { get; private set; }
         public FirstPersonHands Hands { get; private set; }
+        public PlayerHandActions HandActions { get; private set; }
         public PlayerFeedback Feedback { get; private set; }
         public float SlowRemaining { get; private set; }
         public float MovementMultiplier => SlowRemaining > 0 ? .5f : 1;
@@ -96,6 +97,8 @@ namespace HappyToy.V2
             if (!Items) Items = gameObject.AddComponent<PlayerItemLoadout>();
             Hands = GetComponent<FirstPersonHands>();
             if (!Hands) Hands = gameObject.AddComponent<FirstPersonHands>();
+            HandActions = GetComponent<PlayerHandActions>();
+            if (!HandActions) HandActions = gameObject.AddComponent<PlayerHandActions>();
             if (!GetComponent<PlayerItemWheel>()) gameObject.AddComponent<PlayerItemWheel>();
             Feedback = GetComponent<PlayerFeedback>();
             if (!Feedback) Feedback = gameObject.AddComponent<PlayerFeedback>();
@@ -135,7 +138,7 @@ namespace HappyToy.V2
             eyes.transform.localRotation = Quaternion.Euler(pitch, 0, 0);
             if (!choosingItem && PlayerControls.Flashlight && flashlight && session.Shell.ItemWheelChangedFrame != Time.frameCount)
             {
-                FlashlightSystem.Toggle();
+                if (Hidden) FlashlightSystem.Toggle(); else HandActions.Request(PlayerItem.Flashlight);
             }
             var move = PlayerControls.Movement;
             move = Vector2.ClampMagnitude(move, 1);

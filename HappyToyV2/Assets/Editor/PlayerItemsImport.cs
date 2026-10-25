@@ -43,7 +43,8 @@ namespace HappyToy.V2.Editor
                         material.SetFloat("_Smoothness", .32f); EditorUtility.SetDirty(material);
                     }
                 }
-                Prefab(key,folder+"geometry.fbx",surface,report.rigged);
+                string geometry = key == "hand" ? "Assets/Resources/PlayerHandAnimation/geometry.fbx" : folder+"geometry.fbx";
+                Prefab(key,geometry,surface,report.rigged);
                 if (key=="talisman")
                     for (int i=0;i<5;i++) Prefab("fragment_"+i,folder+"fragment_"+i+".fbx",surface,false);
             }
@@ -59,7 +60,8 @@ namespace HappyToy.V2.Editor
                     prefab.GetComponentsInChildren<Renderer>().Any(r=>r.sharedMaterials.Any(m=>!m || !m.GetTexture("_BaseMap"))))
                     throw new InvalidOperationException("Generated player item is incomplete: "+key);
                 if (key=="hand" && (prefab.GetComponentsInChildren<SkinnedMeshRenderer>().Length!=1 ||
-                    prefab.GetComponentsInChildren<Transform>().Count(t=>t.name=="index_1" || t.name=="index_2" || t.name=="index_3")!=3))
+                    prefab.GetComponentsInChildren<Transform>().Count(t=>t.name=="index_1" || t.name=="index_2" || t.name=="index_3")!=3 ||
+                    !prefab.GetComponentsInChildren<Transform>().Any(t=>t.name=="forearm")))
                     throw new InvalidOperationException("Editable player hand rig is missing");
             }
         }

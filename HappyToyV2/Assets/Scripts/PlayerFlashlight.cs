@@ -34,6 +34,8 @@ namespace HappyToy.V2
         public bool Lit => player && player.flashlight && player.flashlight.enabled;
         public int PacksCollected { get; private set; }
         public int Depletions { get; private set; }
+        public bool CanToggle => player && !player.Paused && player.flashlight &&
+            (player.flashlight.enabled || !Depleted);
 
         void Awake() { player = GetComponent<PlayerMotor>(); }
         void Update()
@@ -50,7 +52,8 @@ namespace HappyToy.V2
             if (player.Feedback) player.Feedback.PlayFlashlight(false);
             if (GameSession.Current) GameSession.Current.Notify("손전등 배터리가 고갈됐습니다. 배터리를 주운 뒤 F로 다시 켜세요.");
         }
-        public bool Toggle()
+        public bool Toggle() => Toggle(false);
+        public bool Toggle(bool playHandAction)
         {
             if (!player || player.Paused || !player.flashlight) return false;
             if (!player.flashlight.enabled && Depleted)
@@ -60,6 +63,7 @@ namespace HappyToy.V2
             }
             player.flashlight.enabled = !player.flashlight.enabled;
             if (player.Feedback) player.Feedback.PlayFlashlight(player.flashlight.enabled);
+            if (playHandAction) player.Hands?.PlayAction(PlayerItem.Flashlight);
             return true;
         }
         public bool TryRefill()
@@ -79,6 +83,7 @@ namespace HappyToy.V2
         {
             if (!FlashlightChargeRules.Valid(charge) || packs < 0 || packs > 128 || depletions < 0 || depletions > 1000000)
                 throw new ArgumentException("Invalid flashlight checkpoint");
+            if (player && player.HandActions) player.HandActions.Reset();
             Charge = charge; PacksCollected = packs; Depletions = depletions;
             if (Depleted && player && player.flashlight) player.flashlight.enabled = false;
         }

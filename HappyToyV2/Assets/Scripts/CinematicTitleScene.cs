@@ -63,7 +63,7 @@ namespace HappyToy.V2
             if (!titleShader || !titleShader.isSupported) throw new InvalidOperationException("Missing or unsupported title atmosphere shader");
             Image = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear)
                 { name = "Baeksugwi red corridor title", antiAliasing = 1 };
-            Image.Create();
+            if (!DiagnosticDesktopPolicy.CpuOnly) Image.Create();
             set = new GameObject("Owned title corridor set");
             set.transform.position = new Vector3(0, -3000, 0);
             var wall = Material(new Color(.62f, .38f, .28f), "GraphicsPbr/plaster-damp/albedo");
@@ -206,7 +206,8 @@ namespace HappyToy.V2
                 camera.transform.rotation=Quaternion.Slerp(idleCameraRotation,facing,Mathf.Clamp01(ApproachDistance/maximumApproach));
             }
             UpdateFaceLighting();
-            RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = Image });
+            if (!DiagnosticDesktopPolicy.CpuOnly)
+                RenderPipeline.SubmitRenderRequest(camera, new UniversalRenderPipeline.SingleCameraRequest { destination = Image });
             double interval=!approaching && shell && shell.ReducedMotion ? 1d : 1d/60;
             // Keep a 60 Hz phase instead of scheduling from each late frame.
             // Tiny frame-time differences must not turn 60 Hz into skipped frames.

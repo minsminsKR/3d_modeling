@@ -12,48 +12,61 @@ namespace HappyToy.V2
     public sealed class FirstPersonHands : MonoBehaviour
     {
         const int ViewLayer = 30;
-        const float ActionDuration = .55f;
         // Measured on the imported flashlight: the broad head ends below -.07
         // local Y; the cylindrical grip is about 24mm in radius.
         const float HandleRadius = .024f, HandleCenterY = .035f;
-        static readonly string[] WrappedDigits = { "index", "middle", "ring", "little" };
-        sealed class Finger
-        {
-            public Transform bone;
-            public Quaternion rest;
-            public string digit;
-            public int joint;
-            public bool left;
-            public Transform tip;
-            public float curl, spread, twist;
-        }
+        HandAnimationLibrary library;
+        HandAnimationRig leftRig, rightRig;
+        HandCylinderContact torchContact;
+        readonly HandActionTimeline cosmeticAction = new HandActionTimeline();
+        readonly HandEquipTransition equip = new HandEquipTransition();
+        readonly HandMotionState leftMotion = new HandMotionState(), rightMotion = new HandMotionState();
+        HandMotionSample leftSway, rightSway;
+        Vector3 previousPlayerPosition;
+        float previousYaw, previousPitch, replenish = 1, paperRetire = -1;
+        bool motionReady, lastReleased;
+        PlayerFeedback footsteps;
+        float stepImpulse;
+        HeldPaperEffects paperEffects;
         PlayerMotor player;
         Camera viewCamera;
         Transform studio, leftGrip, rightGrip, left, right, held, torch;
-        Transform leftPalm, rightPalm;
         RenderTexture target;
         Image image;
         Shader surfaceShader;
         readonly List<Material> materials = new List<Material>();
         readonly List<Material> heldMaterials = new List<Material>();
-        readonly List<Finger> fingers = new List<Finger>();
         readonly List<Transform> flameCards = new List<Transform>();
         readonly List<MaterialPropertyBlock> flameProperties = new List<MaterialPropertyBlock>();
         Material flameMaterial;
         Bounds heldBounds;
         PlayerItem displayed = (PlayerItem)(-1), actionItem;
-        bool displayedBurning, displayedAvailable, posed;
-        float action, age;
+        bool displayedBurning, displayedAvailable;
+        float age;
 #if UNITY_EDITOR
         float previewFingerDegrees = -1;
+        float previewActionTime = -1;
 #endif
         public RenderTexture Output => target;
+        public PlayerItem PresentedItem => displayed;
+        public bool EquipmentSettled => studio && !equip.Busy && replenish >= .999f;
 
-        public void PlayAction(PlayerItem item) { action = ActionDuration; actionItem = item; }
+        public void PlayAction(PlayerItem item)
+        {
+            library = library ?? HandAnimationLibrary.Load();
+            var clip = library.GetClip("Use" + item);
+            cosmeticAction.Reset();
+            cosmeticAction.TryBegin(PlayerHandActions.Kind(item), new HandActionTiming(clip.duration,
+                HandActionTiming.For(PlayerHandActions.Kind(item)).PrepareEnds, clip.releaseTime));
+            actionItem = item;
+        }
         void Awake() { player = GetComponent<PlayerMotor>(); }
 
         void Prepare()
         {
+            library = HandAnimationLibrary.Load();
+            if (player && player.Feedback)
+            { footsteps = player.Feedback; footsteps.Footstep += OnFootstep; }
             studio = new GameObject("First person hand studio").transform;
             studio.SetParent(transform, false);
             studio.position = new Vector3(1000, 1000, 1000);
@@ -62,6 +75,7 @@ namespace HappyToy.V2
             viewCamera.backgroundColor = Color.clear;
             viewCamera.cullingMask = 1 << ViewLayer;
             viewCamera.fieldOfView = 58;
+            viewCamera.aspect = 16f / 9;
             viewCamera.nearClipPlane = .01f;
             viewCamera.farClipPlane = 3;
             viewCamera.depth = -20;
@@ -84,6 +98,7 @@ namespace HappyToy.V2
             torch.localPosition = new Vector3(0, .04f, .03f);
             torch.localRotation = Quaternion.Euler(-90, 0, 0);
             ConfigureMaterials(torch, false, false);
+            torchContact = new HandCylinderContact(torch);
             Layer(studio);
         }
         Transform Socket(string name)
@@ -94,17 +109,9 @@ namespace HappyToy.V2
         }
         void AddHand(Transform root, bool isLeft)
         {
-            foreach (var bone in root.GetComponentsInChildren<Transform>(true))
-            {
-                int separator = bone.name.LastIndexOf('_');
-                if (separator < 0 || !int.TryParse(bone.name.Substring(separator + 1), out int joint)) continue;
-                string digit = bone.name.Substring(0, separator);
-                if (digit != "thumb" && digit != "index" && digit != "middle" && digit != "ring" && digit != "little") continue;
-                fingers.Add(new Finger { bone = bone, rest = bone.localRotation, digit = digit, joint = joint, left = isLeft,
-                    tip = joint == 3 ? bone.Find(digit + "_tip") : null });
-            }
-            if (isLeft) leftPalm = FindMarker(root,"palm_contact"); else rightPalm = FindMarker(root,"palm_contact");
-            foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>(true)) { skin.updateWhenOffscreen = true; skin.forceMatrixRecalculationPerRender = true; }
+            if (isLeft) leftRig = new HandAnimationRig(root, library); else rightRig = new HandAnimationRig(root, library);
+            foreach (var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            { skin.quality = SkinQuality.Bone4; skin.updateWhenOffscreen = true; skin.forceMatrixRecalculationPerRender = true; }
             ConfigureMaterials(root, false, false);
         }
         static void Layer(Transform node)
@@ -198,6 +205,7 @@ namespace HappyToy.V2
         }
         void ShowItem(PlayerItem item, bool burning, bool available)
         {
+            paperEffects?.Dispose(); paperEffects = null;
             if (held) Discard(held.gameObject);
             held = null;
             foreach (var material in heldMaterials) { materials.Remove(material); Discard(material); }
@@ -209,7 +217,7 @@ namespace HappyToy.V2
                 switch (item)
                 {
                     case PlayerItem.Snapper: held = SnapperVisuals.AttachPellet(rightGrip); held.localScale *= .85f; break;
-                    case PlayerItem.Trap: held = TrapVisuals.Attach(rightGrip, .23f).transform; break;
+                    case PlayerItem.Trap: held = TrapVisuals.Attach(rightGrip).transform; break;
                     case PlayerItem.Incense: held = PlayerItemVisuals.Attach("incense", rightGrip); break;
                     case PlayerItem.Talisman: held = PlayerItemVisuals.Attach("talisman", rightGrip); break;
                 }
@@ -218,6 +226,13 @@ namespace HappyToy.V2
             {
                 heldBounds = LocalBounds(held);
                 ConfigureMaterials(held, burning, true);
+                if (item == PlayerItem.Talisman)
+                {
+                    foreach (var renderer in held.GetComponentsInChildren<Renderer>(true))
+                        foreach (var material in renderer.sharedMaterials)
+                        { SetBurnHeight(material, renderer, held); material.SetFloat("_PaperFlex", 1); }
+                    paperEffects = new HeldPaperEffects(held, heldBounds, ViewLayer);
+                }
                 Layer(held);
                 if (burning) PrepareFlames();
             }
@@ -266,7 +281,8 @@ namespace HappyToy.V2
                 (!session.ChapterMode || !session.Chapter.FirstAppearances || !session.Chapter.FirstAppearances.CameraOwned);
             if (!studio && visible) Prepare();
             if (!studio) return;
-            viewCamera.enabled = visible;
+            bool graphics = SystemInfo.graphicsDeviceType != GraphicsDeviceType.Null;
+            viewCamera.enabled = visible && graphics;
             var view = session ? session.GetComponent<GameShellView>() : null;
             if (view && view.Root != null)
             {
@@ -282,250 +298,268 @@ namespace HappyToy.V2
             }
             if (!visible) return;
             float scale = Mathf.Min(1, 2560f / Mathf.Max(1, Screen.width), 1440f / Mathf.Max(1, Screen.height));
-            EnsureTarget(Mathf.Max(1, Mathf.RoundToInt(Screen.width * scale)), Mathf.Max(1, Mathf.RoundToInt(Screen.height * scale)));
+            if (graphics) EnsureTarget(Mathf.Max(1, Mathf.RoundToInt(Screen.width * scale)), Mathf.Max(1, Mathf.RoundToInt(Screen.height * scale)));
             bool burning = player.Rituals && player.Rituals.Burning;
             var item = burning ? PlayerItem.Talisman : player.Items.Selected;
             bool available = burning || item == PlayerItem.Flashlight || player.Items.Count(item) > 0 ||
                 (item == PlayerItem.Incense && player.Rituals.Smoke);
-            age += Time.deltaTime; action = Mathf.Max(0, action - Time.deltaTime);
+            age += Time.deltaTime; cosmeticAction.Advance(Time.deltaTime);
+            AdvanceMotion(Time.deltaTime, player.Running);
             DrawPose(item, burning, available, burning ? player.Rituals.BurnedFraction : 0,
                 Time.deltaTime, player.ActualSpeed > .1f, player.Running, session.Shell.ReducedMotion);
         }
-        void DrawPose(PlayerItem item, bool burning, bool available, float burnFraction, float delta, bool walking, bool running, bool reducedMotion)
+        public bool ReadyForAction(PlayerItem item) => studio && (item == PlayerItem.Flashlight ||
+            !equip.Busy && displayed == item && replenish >= .999f);
+
+        bool HasItem(PlayerItem item, bool burning, bool fallback)
         {
-            if (displayed != item || displayedBurning != burning || displayedAvailable != available) ShowItem(item, burning, available);
-            float sway = reducedMotion ? 0 : Mathf.Sin(age * (running ? 10 : 6)) * (walking ? .006f : .001f);
+            if (!player || !player.Items) return fallback;
+            return item == PlayerItem.Flashlight || burning && item == PlayerItem.Talisman ||
+                player.Items.Count(item) > 0 || item == PlayerItem.Incense && player.Rituals.Smoke;
+        }
+        void DrawPose(PlayerItem requested, bool burning, bool available, float burnFraction, float delta, bool walking, bool running, bool reducedMotion)
+        {
+            var actionOwner = player ? player.HandActions : null;
+            bool owned = actionOwner && actionOwner.Playing;
+            bool playing = owned || cosmeticAction.Busy;
+            var used = owned ? actionOwner.PendingItem : actionItem;
+            float time = owned ? actionOwner.AnimationTime : cosmeticAction.Elapsed;
+            bool released = owned && actionOwner.Released && (used == PlayerItem.Snapper || used == PlayerItem.Trap);
+#if UNITY_EDITOR
+            if (previewActionTime >= 0)
+            {
+                playing = true; used = requested; time = previewActionTime;
+                released = (used == PlayerItem.Snapper || used == PlayerItem.Trap) && time > library.GetClip("Use" + used).releaseTime;
+            }
+#endif
+            if (lastReleased && !released) replenish = 0;
+            lastReleased = released;
+            replenish = Mathf.Min(1, replenish + Mathf.Max(0, delta) / .30f);
+            var desired = playing && used != PlayerItem.Flashlight ? used : requested;
+            if ((int)displayed < 0) equip.Reset((int)desired);
+            if (!playing && !equip.Busy && equip.VisibleItem != (int)desired)
+                equip.TryBegin(equip.VisibleItem, (int)desired);
+#if UNITY_EDITOR
+            if (!Application.isPlaying) equip.Reset((int)desired);
+#endif
+            equip.Advance(delta);
+            var item = (PlayerItem)equip.VisibleItem;
+            bool paperBurning = burning && item == PlayerItem.Talisman;
+            bool present = HasItem(item, burning, available);
+            // The paper lifetime still ends at the inventory clock. Keep the
+            // empty fingers visible long enough to lower them after the last
+            // sheet burns, instead of removing a raised hand in one frame.
+            if (displayedBurning && !paperBurning && item == PlayerItem.Talisman && !present)
+                paperRetire = 0;
+            if (present || item != PlayerItem.Talisman) paperRetire = -1;
+            if (paperRetire >= 0) paperRetire = Mathf.Min(.30f, paperRetire + Mathf.Max(0, delta));
+            bool retiringPaper = paperRetire >= 0 && paperRetire < .30f;
+            // Removing/adding a supply happens under a lowered hand or at its
+            // actual release, never while changing a fully visible grip.
+            if (displayed != item || displayedBurning != paperBurning || displayedAvailable != present)
+                ShowItem(item, paperBurning, present);
+            var leftClip = playing && used == PlayerItem.Flashlight ? library.GetClip("UseFlashlight") : null;
+            var rightClip = playing && used == item && used != PlayerItem.Flashlight ? library.GetClip("Use" + item) : null;
+            float rightTime = time;
+            if (equip.Busy)
+            {
+                bool leaving = equip.Progress < .5f;
+                rightClip = library.GetClip((leaving ? "Unequip" : "Equip") + item);
+                rightTime = (leaving ? equip.Progress * 2 : (equip.Progress - .5f) * 2) * rightClip.duration;
+            }
+            else if (retiringPaper && rightClip == null)
+            {
+                rightClip = library.GetClip("UnequipTalisman");
+                rightTime = paperRetire / .30f * rightClip.duration;
+            }
             float sideScale = Mathf.Max(1, viewCamera.aspect / (16f / 9));
-            leftGrip.localPosition = new Vector3(-.260f * sideScale, -.230f + sway, .50f);
+            leftGrip.localPosition = new Vector3(-.260f * sideScale, -.230f, .50f);
             leftGrip.localRotation = Quaternion.Euler(15, 0, 0);
-            bool palmUp = item == PlayerItem.Trap || item == PlayerItem.Snapper;
-            rightGrip.localPosition = new Vector3((palmUp ? .235f : .315f) * sideScale, (palmUp ? -.195f : -.245f) - sway, .50f);
+            bool support = item == PlayerItem.Trap;
+            float height = support ? -.305f : item == PlayerItem.Talisman ? -.10f : -.245f;
+            rightGrip.localPosition = new Vector3((support ? .300f : .315f) * sideScale, height, support ? .62f : .50f);
             rightGrip.localRotation = Quaternion.identity;
             left.localPosition = new Vector3(0, -.062f, -.036f);
             left.localRotation = Quaternion.Euler(0, 90, -6);
             right.localPosition = new Vector3(0, -.07f, -.036f);
-            right.localRotation = palmUp ? Quaternion.Euler(-65, 132, -8) : Quaternion.Euler(4, -24, 8);
-            right.gameObject.SetActive(item != PlayerItem.Flashlight && (available || action > 0));
-            float phase = 1 - action / ActionDuration;
-            float flick = action > 0 ? Mathf.Sin(phase * Mathf.PI) : 0;
-            if (actionItem == PlayerItem.Snapper && action > 0)
-            {
-                rightGrip.localPosition += new Vector3(flick * .10f * sideScale, flick * .015f, flick * .10f);
-                rightGrip.localRotation = Quaternion.Euler(-flick * 8, 0, flick * 8);
-            }
-            else if (actionItem == PlayerItem.Trap) rightGrip.localPosition += new Vector3(0, -flick * .09f, flick * .05f);
-            else if (actionItem == PlayerItem.Incense || actionItem == PlayerItem.Talisman)
-                // Lift the pinched item along the outer edge; bringing tall
-                // paper inward crosses the protected forward sightline.
-                rightGrip.localPosition += new Vector3(flick * .02f, flick * .025f, 0);
-            if (held)
-            {
-                held.gameObject.SetActive(!(actionItem == PlayerItem.Snapper && action > 0 && phase > .38f));
-                switch (item)
-                {
-                    case PlayerItem.Talisman:
-                        held.localPosition = new Vector3(-.035f, .17f, -.005f);
-                        held.localRotation = Quaternion.Euler(0, 165, -8);
-                        break;
-                    case PlayerItem.Incense:
-                        held.localPosition = new Vector3(-.025f, .04f, .025f);
-                        held.localRotation = Quaternion.Euler(-5, 0, -8);
-                        break;
-                    case PlayerItem.Trap:
-                        held.localPosition = new Vector3(-.02f, .03f, .045f);
-                        held.localRotation = Quaternion.Euler(0, 0, -8);
-                        break;
-                    default:
-                        held.localPosition = new Vector3(-.035f, .04f, .05f);
-                        held.localRotation = Quaternion.Euler(12, 0, -10);
-                        break;
-                }
-            }
-            float poseBlend = posed ? 1 - Mathf.Exp(-18 * delta) : 1;
-            foreach (var finger in fingers)
-            {
-                float angle = FingerCurl(finger, item, available);
-                if (!finger.left && actionItem == PlayerItem.Snapper && action > 0)
-                    angle = Mathf.Lerp(angle, 8, Ease(.22f, .42f, phase) * (1 - Ease(.72f, 1, phase)));
+            right.localRotation = support ? Quaternion.Euler(-65, 132, -8) : Quaternion.Euler(4, -24, 8);
+            right.gameObject.SetActive(item != PlayerItem.Flashlight && (present || rightClip != null || retiringPaper));
+            ApplySocket(leftGrip, leftClip, time, reducedMotion ? default : leftSway);
+            ApplySocket(rightGrip, rightClip, rightTime, reducedMotion ? default : rightSway);
+            if (!reducedMotion)
+            { leftGrip.localPosition += Vector3.down * stepImpulse; rightGrip.localPosition += Vector3.down * stepImpulse * .75f; }
+            rightGrip.localPosition += Vector3.down * (.34f * (1 - equip.Visibility) + .30f * (1 - Ease(0, 1, replenish)));
+            if (retiringPaper) rightGrip.localPosition += Vector3.down * (.34f * Ease(0, .30f, paperRetire));
+            if (released)
+                rightGrip.localPosition += Vector3.down * (.28f * Ease(library.GetClip("Use" + used).releaseTime,
+                    library.GetClip("Use" + used).duration, time));
+            leftRig.Apply(library.GetPose("Flashlight"), leftClip, time);
+            rightRig.Apply(library.GetPose(present ? item.ToString() : "Relaxed"), rightClip, rightTime);
 #if UNITY_EDITOR
-                if (previewFingerDegrees >= 0) angle = previewFingerDegrees;
+            if (previewFingerDegrees >= 0) { leftRig.PreviewCurl(previewFingerDegrees); rightRig.PreviewCurl(previewFingerDegrees); }
 #endif
-                float spread = FingerSpread(finger, palmUp);
-                float twist = finger.digit == "thumb" && finger.joint == 1 ? finger.left ? 40 : palmUp ? -10 : -18 : 0;
-#if UNITY_EDITOR
-                if (previewFingerDegrees >= 0) spread = twist = 0;
-#endif
-                finger.curl = Mathf.Lerp(finger.curl, angle, poseBlend);
-                finger.spread = Mathf.Lerp(finger.spread, spread, poseBlend);
-                finger.twist = Mathf.Lerp(finger.twist, twist, poseBlend);
-                ApplyFingerPose(finger);
-            }
-            bool pinch = available && (item == PlayerItem.Talisman || item == PlayerItem.Incense);
-#if UNITY_EDITOR
-            if (previewFingerDegrees >= 0) pinch = false;
-#endif
-            bool gripTorch = true;
-#if UNITY_EDITOR
-            if (previewFingerDegrees >= 0) gripTorch = false;
-#endif
-            // Set the actual handle first, then solve skin contact around it.
-            torch.position = Palm(true) + left.forward * (HandleRadius + .001f) - torch.up * HandleCenterY;
-            if (gripTorch) GripFlashlight();
-            if (pinch) PinchFingers(right);
+            SetPropTransform(item);
+            torch.localRotation = Quaternion.Euler(-90, 0, 0);
+            torch.rotation = leftRig.PalmRotationDelta * torch.rotation;
+            if (held) held.rotation = rightRig.PalmRotationDelta * held.rotation;
+            var torchPose = library.GetPose("Flashlight");
+            var handleOffset = torchPose.handleOffset == Vector3.zero ? new Vector3(0, .020f, HandleRadius + .001f) : torchPose.handleOffset;
+            torch.position = leftRig.Palm + leftRig.PalmRotationDelta * left.TransformVector(handleOffset) - torch.up * HandleCenterY;
+            torchContact.Correct(leftRig, skipThumb: leftClip != null, maxDegrees: 6);
             AlignProps(item);
-            posed = true;
+            if (owned && used == PlayerItem.Trap && item == PlayerItem.Trap) MoveTrapToFloor(actionOwner, time);
+            if (held) held.gameObject.SetActive(!released);
+            if (item == PlayerItem.Snapper && held && !released) PredictSnapper(sideScale, reducedMotion ? default : rightSway);
             foreach (var material in materials) if (material) material.SetFloat("_Monochrome", burning ? 1 : 0);
-            foreach (var material in heldMaterials) if (material) material.SetFloat("_Burn", burnFraction);
+            foreach (var material in heldMaterials) if (material)
+            { material.SetFloat("_Burn", burnFraction); material.SetFloat("_PaperTime", age); }
             DrawFlames(burnFraction);
+            paperEffects?.Advance(age, delta, burnFraction, viewCamera, paperBurning);
+            UpdatePhysicalTorch();
         }
-        Finger FindFinger(bool isLeft, string digit, int joint)
+        static void ApplySocket(Transform socket, HandAnimationLibrary.Clip clip, float time, HandMotionSample motion)
         {
-            foreach (var finger in fingers) if (finger.left == isLeft && finger.digit == digit && finger.joint == joint) return finger;
-            return null;
+            socket.localPosition += new Vector3(motion.OffsetH, motion.OffsetV, motion.OffsetZ);
+            socket.localRotation *= Quaternion.Euler(motion.LookPitch, motion.LookYaw, motion.Roll);
+            if (clip != null) { socket.localPosition += clip.Position(time); socket.localRotation *= clip.Rotation(time); }
         }
-        Vector3 Tip(bool isLeft, string digit)
+        void SetPropTransform(PlayerItem item)
         {
-            var finger = FindFinger(isLeft, digit, 3);
-            if (finger == null) return isLeft ? leftGrip.position : rightGrip.position;
-            if (finger.tip) return finger.tip.position;
-            // Exported phalanges point along local Y; the final length is close
-            // to the previous joint span and scales with the imported armature.
-            return finger.bone.TransformPoint(Vector3.up * (Mathf.Abs(finger.bone.localPosition.y) * .8f));
-        }
-        static Transform FindMarker(Transform root, string name)
-        {
-            foreach (var node in root.GetComponentsInChildren<Transform>()) if (node.name == name) return node;
-            return null;
-        }
-        Vector3 Palm(bool isLeft)
-        {
-            var hand = isLeft ? left : right;
-            var marker = isLeft ? leftPalm : rightPalm;
-            return marker ? marker.position : hand.TransformPoint(new Vector3(0, .085f, .014f));
-        }
-        static void ApplyFingerPose(Finger finger)
-        {
-            // Separate anatomical axes: flexion at each phalanx, metacarpal
-            // spread, and the thumb's fixed opposition. CCD never adds roll.
-            finger.bone.localRotation = finger.rest * Quaternion.AngleAxis(finger.spread, Vector3.forward) *
-                Quaternion.AngleAxis(finger.twist, Vector3.up) * Quaternion.AngleAxis(finger.curl, Vector3.right);
-        }
-        void SolveFinger(bool isLeft, string digit, Vector3 target)
-        {
-            for (int iteration = 0; iteration < 14; iteration++)
+            if (!held) return;
+            held.localScale = item == PlayerItem.Snapper ? Vector3.one * .85f : Vector3.one;
+            switch (item)
             {
-                for (int joint = 2; joint >= 1; joint--)
-                {
-                    var finger = FindFinger(isLeft, digit, joint);
-                    if (finger == null) continue;
-                    var bone = finger.bone;
-                    var current = Tip(isLeft, digit) - bone.position;
-                    var desired = target - bone.position;
-                    // Solve in parent space, including the opposite hand's
-                    // reflected scale. World quaternions cannot encode it.
-                    current = bone.parent.InverseTransformVector(current);
-                    desired = bone.parent.InverseTransformVector(desired);
-                    if (current.sqrMagnitude < 1e-16f || desired.sqrMagnitude < 1e-16f) continue;
-                    if (digit == "thumb" && joint == 1)
-                    {
-                        var spreadAxis = finger.rest * Vector3.forward;
-                        float spreadChange = Vector3.SignedAngle(Vector3.ProjectOnPlane(current, spreadAxis),
-                            Vector3.ProjectOnPlane(desired, spreadAxis), spreadAxis);
-                        finger.spread = Mathf.Clamp(finger.spread + spreadChange * .55f, -65, 20);
-                        ApplyFingerPose(finger);
-                        current = bone.parent.InverseTransformVector(Tip(isLeft, digit) - bone.position);
-                    }
-                    var axis = finger.rest * Quaternion.AngleAxis(finger.spread, Vector3.forward) *
-                        Quaternion.AngleAxis(finger.twist, Vector3.up) * Vector3.right;
-                    float change = Vector3.SignedAngle(Vector3.ProjectOnPlane(current, axis), Vector3.ProjectOnPlane(desired, axis), axis);
-                    float limit = digit == "thumb" ? joint == 1 ? 48 : 70 : joint == 1 ? 68 : 85;
-                    float minimum = digit == "thumb" && joint == 1 ? -35 : 0;
-                    finger.curl = Mathf.Clamp(finger.curl + change * .65f, minimum, limit);
-                    ApplyFingerPose(finger);
-                    if (joint == 2)
-                    {
-                        // A relaxed distal joint follows the middle phalanx;
-                        // tip-only CCD otherwise folds it into a sharp hook.
-                        var distal = FindFinger(isLeft, digit, 3);
-                        if (distal != null)
-                        {
-                            distal.curl = Mathf.Min(digit == "thumb" ? 50 : 55, finger.curl * (digit == "thumb" ? .75f : .65f));
-                            ApplyFingerPose(distal);
-                        }
-                    }
-                }
-                if ((Tip(isLeft, digit) - target).sqrMagnitude < .000001f) break;
+                case PlayerItem.Talisman: held.localPosition = new Vector3(-.035f, .17f, -.005f); held.localRotation = Quaternion.Euler(0, 165, -8); break;
+                case PlayerItem.Incense: held.localPosition = new Vector3(-.025f, .04f, .025f); held.localRotation = Quaternion.Euler(-5, 0, -8); break;
+                case PlayerItem.Trap: held.localPosition = new Vector3(-.02f, .03f, .045f); held.localRotation = Quaternion.Euler(0, 0, -8); break;
+                default: held.localPosition = Vector3.zero; held.localRotation = Quaternion.Euler(12, 0, -10); break;
             }
-        }
-        void GripFlashlight()
-        {
-            var axis = -torch.up;
-            var center = torch.TransformPoint(new Vector3(0, HandleCenterY, 0));
-            var around = left.forward;
-            SolveFinger(true, "thumb", center - around * .010f + left.up * .026f + axis * .018f);
-            for (int i = 0; i < WrappedDigits.Length; i++)
-            {
-                // Follow the knuckles' real order along the handle. A fixed
-                // reversed list crossed the index/little targets on the mirror.
-                var knuckle = FindFinger(true, WrappedDigits[i], 1);
-                float along = Mathf.Clamp(Vector3.Dot(knuckle.bone.position - center, axis), -.045f, .045f);
-                SolveFinger(true, WrappedDigits[i], center + around * (HandleRadius + .0085f) - left.up * .005f + axis * along);
-            }
-        }
-        void PinchFingers(Transform hand)
-        {
-            var target = hand.TransformPoint(new Vector3(-.031f, .16f, .065f));
-            SolveFinger(false, "thumb", target - hand.right * .003f);
-            SolveFinger(false, "index", target + hand.right * .003f);
         }
         void AlignProps(PlayerItem item)
         {
-            // Keep the handle in the palm and every small prop between actual
-            // fingertips, including during the shared wrist/action motion.
             if (!held) return;
-            var pinch = (Tip(false, "thumb") + Tip(false, "index")) * .5f;
             switch (item)
             {
                 case PlayerItem.Talisman:
-                    held.position = pinch + held.up * (heldBounds.size.y * .5f - .008f) + held.right * (heldBounds.size.x * .28f);
-                    break;
+                    // Hang from an upper corner. The upper edge stays pinned
+                    // while the free lower sheet flexes in the paper shader.
+                    held.position = rightRig.Pinch - held.up * (heldBounds.max.y - .008f) + held.right * heldBounds.size.x * .28f; break;
                 case PlayerItem.Incense:
-                    held.position = pinch + held.up * (heldBounds.size.y * .5f - .035f);
-                    break;
-                case PlayerItem.Snapper:
-                    held.position = Palm(false) + right.forward * .006f;
-                    break;
-                case PlayerItem.Trap:
-                    // The base rests on the open palm, with teeth pointing up.
-                    held.position = Palm(false) - held.up * heldBounds.min.y;
-                    break;
+                    held.position = rightRig.Pinch + held.up * (heldBounds.size.y * .5f - .035f); break;
+                case PlayerItem.Snapper: held.position = rightRig.Pinch; break;
+                case PlayerItem.Trap: held.position = rightRig.Palm - held.up * heldBounds.min.y; break;
             }
         }
-        static float FingerCurl(Finger finger, PlayerItem item, bool available)
+        void MoveTrapToFloor(PlayerHandActions owner, float time)
         {
-            int joint = Mathf.Clamp(finger.joint - 1, 0, 2);
-            if (!finger.left && !available) return joint == 1 ? 18 : 12;
-            bool support = !finger.left && (item == PlayerItem.Trap || item == PlayerItem.Snapper);
-            if (support)
+            var clip = library.GetClip("UseTrap");
+            float blend = time <= clip.releaseTime ? Ease(.14f, clip.releaseTime, time) : 1 - Ease(clip.releaseTime, clip.duration, time);
+            Vector3 floor = owner.Placement.position + Vector3.up * .006f;
+            if (player.eyes.WorldToViewportPoint(floor).z <= .08f) return;
+            Vector3 targetPoint = ViewPoint(floor);
+            Quaternion targetRotation = viewCamera.transform.rotation * Quaternion.Inverse(player.eyes.transform.rotation) * owner.Placement.rotation;
+            Vector3 source = rightRig.Palm - (rightGrip.rotation * Quaternion.Euler(0, 0, -8) * Vector3.up) * heldBounds.min.y;
+            var offset = (targetPoint - source) * blend;
+            rightGrip.position += offset;
+            if (held)
             {
-                if (finger.digit == "thumb") return joint == 0 ? 14 : joint == 1 ? 28 : 20;
-                float cup = finger.digit == "little" ? 6 : finger.digit == "ring" ? 4 : finger.digit == "middle" ? 2 : 0;
-                return (joint == 0 ? 10 : joint == 1 ? 52 : 34) + cup;
+                held.position = source + offset;
+                held.rotation = Quaternion.Slerp(held.rotation, targetRotation, blend);
+                float lens = Mathf.Tan(viewCamera.fieldOfView * Mathf.Deg2Rad * .5f) / Mathf.Tan(player.eyes.fieldOfView * Mathf.Deg2Rad * .5f);
+                held.localScale = Vector3.one * Mathf.Lerp(1, lens, blend);
             }
-            if (finger.digit == "thumb") return joint == 0 ? 22 : joint == 1 ? 28 : 16;
-            bool pinch = !finger.left && (item == PlayerItem.Talisman || item == PlayerItem.Incense);
-            if (pinch && finger.digit == "index") return joint == 0 ? 18 : joint == 1 ? 32 : 18;
-            float extra = finger.digit == "little" ? 8 : finger.digit == "ring" ? 4 : 0;
-            return (joint == 0 ? 26 : joint == 1 ? 52 : 32) + extra;
         }
-        static float FingerSpread(Finger finger, bool palmUp)
+        Vector3 predictedSnapperPoint, predictedSnapperDirection;
+        bool predictedSnapper;
+        void PredictSnapper(float sideScale, HandMotionSample motion)
         {
-            if (finger.joint != 1) return 0;
-            if (finger.digit == "thumb") return -30;
-            if (!finger.left && palmUp)
-                return finger.digit == "index" ? -4 : finger.digit == "ring" ? 4 : finger.digit == "little" ? 9 : 0;
-            return finger.digit == "index" ? -2 : finger.digit == "ring" ? 2 : finger.digit == "little" ? 4 : 0;
+            var clip = library.GetClip("UseSnapper");
+            var socketPosition = rightGrip.localPosition; var socketRotation = rightGrip.localRotation;
+            var propPosition = held.position; var propRotation = held.rotation;
+            rightRig.SavePose();
+            rightGrip.localPosition = new Vector3(.315f * sideScale, -.245f, .50f);
+            rightGrip.localRotation = Quaternion.identity;
+            ApplySocket(rightGrip, clip, clip.releaseTime, motion);
+            rightRig.Apply(library.GetPose("Snapper"), clip, clip.releaseTime);
+            held.position = rightRig.Pinch;
+            predictedSnapperPoint = WorldPoint(held.position);
+            predictedSnapperDirection = WorldDirection(rightGrip.forward);
+            predictedSnapper = true;
+            rightRig.RestorePose();
+            rightGrip.SetLocalPositionAndRotation(socketPosition, socketRotation);
+            held.SetPositionAndRotation(propPosition, propRotation);
         }
+        Vector3 WorldPoint(Vector3 point)
+        {
+            var viewport = viewCamera.WorldToViewportPoint(point);
+            return player && player.eyes ? player.eyes.ViewportToWorldPoint(viewport) : viewCamera.transform.InverseTransformPoint(point);
+        }
+        Vector3 ViewPoint(Vector3 point) => viewCamera.ViewportToWorldPoint(player.eyes.WorldToViewportPoint(point));
+        Vector3 WorldDirection(Vector3 direction)
+        {
+            if (!player || !player.eyes) return direction.normalized;
+            var local = viewCamera.transform.InverseTransformDirection(direction);
+            float lens = Mathf.Tan(player.eyes.fieldOfView * Mathf.Deg2Rad * .5f) / Mathf.Tan(viewCamera.fieldOfView * Mathf.Deg2Rad * .5f);
+            local.x *= lens * player.eyes.aspect / viewCamera.aspect; local.y *= lens;
+            return player.eyes.transform.TransformDirection(local).normalized;
+        }
+        public bool TryGetSnapperLaunch(out Vector3 point, out Vector3 forward)
+        {
+            point = predictedSnapperPoint; forward = predictedSnapperDirection;
+            if (!studio || !predictedSnapper || displayed != PlayerItem.Snapper || !held) return false;
+            if (player && player.HandActions && player.HandActions.CommitPending && player.HandActions.PendingItem == PlayerItem.Snapper)
+            { point = WorldPoint(held.position); forward = WorldDirection(rightGrip.forward); }
+            return true;
+        }
+        public bool TryGetHeldRootWorld(PlayerItem item, out Vector3 point)
+        {
+            point = default;
+            if (!studio || displayed != item || !held || !held.gameObject.activeInHierarchy) return false;
+            point = WorldPoint(held.position); return true;
+        }
+        public string ContactDiagnostics => torchContact == null ? "Unprepared" : JsonUtility.ToJson(new ContactReport {
+            digits = new List<HandCylinderContact.Diagnostic>(torchContact.LastDiagnostics).ToArray() });
+        [Serializable] sealed class ContactReport { public HandCylinderContact.Diagnostic[] digits; }
+        void UpdatePhysicalTorch()
+        {
+            if (!player || !player.eyes || !player.flashlight || player.Hidden) return;
+            var head = torch.TransformPoint(new Vector3(0, -.14f, 0));
+            var beam = WorldDirection(-torch.up);
+            var origin = WorldPoint(head);
+            // Never originate the real beam beyond a wall merely because the
+            // isolated near-hand layer remains visible in front of it.
+            var from = player.eyes.transform.position; var path = origin - from;
+            if (Physics.SphereCast(from, .018f, path.normalized, out var hit, path.magnitude,
+                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) origin = hit.point - path.normalized * .025f;
+            player.flashlight.transform.SetPositionAndRotation(origin, Quaternion.LookRotation(beam, player.eyes.transform.up));
+        }
+        public void RefreshAfterCommit()
+        {
+            if (!studio || !player || !GameSession.Current) return;
+            bool burning = player.Rituals.Burning;
+            var item = burning ? PlayerItem.Talisman : player.Items.Selected;
+            DrawPose(item, burning, HasItem(item, burning, true), burning ? player.Rituals.BurnedFraction : 0,
+                0, player.ActualSpeed > .1f, player.Running, GameSession.Current.Shell.ReducedMotion);
+        }
+        void AdvanceMotion(float delta, bool running)
+        {
+            if (!player || !player.eyes || delta <= 0) return;
+            var position = player.transform.position;
+            float yaw = player.eyes.transform.eulerAngles.y, pitch = player.eyes.transform.eulerAngles.x;
+            var displacement = position - previousPlayerPosition;
+            if (!motionReady || displacement.sqrMagnitude > 4)
+            { leftMotion.Reset(); rightMotion.Reset(); displacement = Vector3.zero; previousYaw = yaw; previousPitch = pitch; motionReady = true; }
+            float speed = Mathf.Max(.1f, running ? player.runSpeed : player.walkSpeed);
+            var local = player.transform.InverseTransformDirection(displacement / delta) / speed;
+            float turn = Mathf.DeltaAngle(previousYaw, yaw) / delta, tilt = Mathf.DeltaAngle(previousPitch, pitch) / delta;
+            leftSway = leftMotion.Advance(delta, local.z, local.x, turn, tilt, running, 1.1f);
+            float mass = player.Items.Selected == PlayerItem.Trap ? 2.4f : player.Items.Selected == PlayerItem.Incense ? .7f : .85f;
+            rightSway = rightMotion.Advance(delta, local.z, local.x, turn, tilt, running, mass);
+            previousPlayerPosition = position; previousYaw = yaw; previousPitch = pitch;
+            stepImpulse *= Mathf.Exp(-24 * delta);
+        }
+        void OnFootstep(Vector3 point, bool wet, float strength)
+        { stepImpulse = Mathf.Clamp(strength * .0025f, .0006f, .0045f); }
         static float Ease(float from, float to, float value) => Mathf.SmoothStep(0, 1, Mathf.InverseLerp(from, to, value));
         void DrawFlames(float burnFraction)
         {
@@ -557,14 +591,25 @@ namespace HappyToy.V2
             return true;
         }
 #if UNITY_EDITOR
+        // CPU-only geometry review: no RenderTexture, draw call or play session.
+        public Camera PrepareCpuPreview(PlayerItem item, float burnFraction = -1, float actionProgress = -1, float aspect = 16f / 9)
+        {
+            if (!studio) Prepare();
+            lastReleased = false; replenish = 1; paperRetire = -1; cosmeticAction.Reset(); equip.Reset((int)item);
+            viewCamera.enabled = false; viewCamera.aspect = aspect;
+            age = 1.3f; previewFingerDegrees = -1;
+            actionItem = item; previewActionTime = actionProgress < 0 ? -1 : library.GetClip("Use" + item).duration * Mathf.Clamp01(actionProgress);
+            DrawPose(item, burnFraction >= 0, true, Mathf.Max(0, burnFraction), 0, false, false, true);
+            return viewCamera;
+        }
         // Opt-in still rendering; no player launch or game/session clock is needed.
         public Camera PrepareEditorPreview(PlayerItem item, float burnFraction, float actionProgress = -1, float fingerDegrees = -1)
         {
             if (!studio) Prepare();
+            lastReleased = false; replenish = 1; cosmeticAction.Reset(); equip.Reset((int)item);
             EnsureTarget(1280, 720);
             age = 1.3f; previewFingerDegrees = fingerDegrees;
-            actionItem = item; action = actionProgress < 0 ? 0 : ActionDuration * (1 - Mathf.Clamp01(actionProgress));
-            posed = false;
+            actionItem = item; previewActionTime = actionProgress < 0 ? -1 : library.GetClip("Use" + item).duration * Mathf.Clamp01(actionProgress);
             DrawPose(item, burnFraction >= 0, true, Mathf.Max(0, burnFraction), 0, false, false, true);
             if (fingerDegrees >= 0)
             {
@@ -586,6 +631,8 @@ namespace HappyToy.V2
         }
         void OnDestroy()
         {
+            if (footsteps) footsteps.Footstep -= OnFootstep;
+            paperEffects?.Dispose();
             image?.RemoveFromHierarchy();
             if (target) { target.Release(); Discard(target); }
             foreach (var material in materials) Discard(material);

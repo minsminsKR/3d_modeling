@@ -114,7 +114,7 @@ namespace HappyToy.V2
             }
             // Low authored quality tiers disable realtime probes globally. This owned,
             // bounded 128 px probe must be allowed to finish on every supported tier.
-            QualitySettings.realtimeReflectionProbes=true;
+            QualitySettings.realtimeReflectionProbes=!DiagnosticDesktopPolicy.CpuOnly;
             probe=CreateProbe("Local room reflection (128 HDR, bounded refresh)");
             var entrance=session.CorridorMode?session.Corridor.Entrance:null;
             if(entrance)
@@ -130,7 +130,7 @@ namespace HappyToy.V2
                 entranceProbe.center=Vector3.forward*2;entranceProbe.importance=60;
                 entranceProbe.clearFlags=ReflectionProbeClearFlags.SolidColor;entranceProbe.backgroundColor=Color.black;
                 entranceProbe.farClipPlane=32;
-                EntranceReflectionRenderId=entranceProbe.RenderProbe();
+                if (!DiagnosticDesktopPolicy.CpuOnly) EntranceReflectionRenderId=entranceProbe.RenderProbe();
             }
             applied=true;lastCell=-1;lastSchoolX=lastSchoolZ=int.MinValue;lastSchoolFloor=EntityId.None;lastSchoolY=float.NaN;
             lastLitCandles=-1;lastTorchLit=false;nextProbe=0;ReflectionCaptures=0;
@@ -141,6 +141,7 @@ namespace HappyToy.V2
         {
             var holder=new GameObject(name);holder.transform.SetParent(root,false);
             var result=holder.AddComponent<ReflectionProbe>();result.mode=ReflectionProbeMode.Realtime;
+            result.enabled=!DiagnosticDesktopPolicy.CpuOnly;
             result.refreshMode=ReflectionProbeRefreshMode.ViaScripting;result.timeSlicingMode=ReflectionProbeTimeSlicingMode.IndividualFaces;
             result.resolution=128;result.hdr=true;result.boxProjection=true;result.blendDistance=.65f;result.intensity=.6f;
             result.importance=50;result.cullingMask=camera.cullingMask;result.shadowDistance=16;result.nearClipPlane=.08f;result.farClipPlane=24;
@@ -225,6 +226,7 @@ namespace HappyToy.V2
             }
             lastLitCandles=litCandles;lastTorchLit=torchLit;
             probe.transform.position=center;probe.size=size;probe.center=Vector3.zero;
+            if (DiagnosticDesktopPolicy.CpuOnly) return;
             probeRenderId=probe.RenderProbe();ReflectionCaptures++;nextProbe=Time.unscaledTime+3;
         }
         public readonly struct SchoolReflectionPlacement
@@ -293,7 +295,7 @@ namespace HappyToy.V2
                     RenderSettings.fogColor=oldFogColor;RenderSettings.fogDensity=oldFogDensity;RenderSettings.fogStartDistance=oldFogStart;RenderSettings.fogEndDistance=oldFogEnd;
                 }
             }
-            if(renderOwner==this&&captured&&QualitySettings.realtimeReflectionProbes)
+            if(renderOwner==this&&captured&&(QualitySettings.realtimeReflectionProbes||DiagnosticDesktopPolicy.CpuOnly))
                 QualitySettings.realtimeReflectionProbes=oldRealtimeReflections;
             if(root)Destroy(root.gameObject);
             if(profile){foreach(var component in profile.components)if(component)Destroy(component);Destroy(profile);}

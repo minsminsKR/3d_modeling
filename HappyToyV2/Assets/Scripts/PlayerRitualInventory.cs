@@ -38,18 +38,22 @@ namespace HappyToy.V2
             bool completed = talismans > Talismans; Fragments = fragments; Talismans = talismans;
             GameSession.Current.Notify(completed ? "다섯 조각이 하나의 부적이 되었습니다." : "부적의 조각 "+Fragments+" / 5"); return true;
         }
-        public bool UseIncense()
+        public bool CanUseIncense => CanUse && (Incense > 0 || player.Items.Unlimited) && !Smoke;
+        public bool CanUseTalisman => CanUse && !Burning && !GameSession.Current.EncountersResolved && (Talismans > 0 || player.Items.Unlimited);
+        public bool UseIncense() => UseIncense(true);
+        public bool UseIncense(bool playHandAction)
         {
             if (!CanUse || Incense <= 0 && !player.Items.Unlimited || Smoke) return false;
             if (!player.Items.Unlimited) Incense--; var root = new GameObject("Memory guiding incense");
             root.transform.SetParent(WorldRoot ? WorldRoot : GameSession.Current.transform,false);
             Smoke = root.AddComponent<IncenseGuidance>(); Smoke.Prepare(player);
-            player.Hands?.PlayAction(PlayerItem.Incense); return true;
+            if (playHandAction) player.Hands?.PlayAction(PlayerItem.Incense); return true;
         }
-        public bool UseTalisman()
+        public bool UseTalisman() => UseTalisman(true);
+        public bool UseTalisman(bool playHandAction)
         {
             if (!CanUse || GameSession.Current.EncountersResolved || Talismans <= 0 && !player.Items.Unlimited || !burn.Begin()) return false;
-            if (!player.Items.Unlimited) Talismans--; stop.Begin(); player.Hands?.PlayAction(PlayerItem.Talisman);
+            if (!player.Items.Unlimited) Talismans--; stop.Begin(); if (playHandAction) player.Hands?.PlayAction(PlayerItem.Talisman);
             GameSession.Current.Notify("부적이 타는 동안 모든 괴물의 시간이 멈춥니다."); return true;
         }
         public void RestoreSmoke(float remaining)
@@ -68,6 +72,7 @@ namespace HappyToy.V2
         {
             if (incense < 0) throw new System.ArgumentOutOfRangeException(nameof(incense));
             TalismanStockRules.Validate(fragments,talismans);
+            if (player && player.HandActions) player.HandActions.Reset();
             EndEffect(); Incense = incense; Fragments = fragments; Talismans = talismans;
         }
         public void EndEffect() { burn.Reset(); if (stop) stop.End(); }

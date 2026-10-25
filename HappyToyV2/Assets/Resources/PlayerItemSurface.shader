@@ -17,6 +17,8 @@ Shader "HappyToy/PlayerItemSurface"
         _Burn("Burn fraction",Range(0,1))=0
         _Burning("Burn enabled",Float)=0
         _BurnHeight("Prefab normalised height",Vector)=(0,5,0,.5)
+        _PaperFlex("Held paper flex",Range(0,1))=0
+        _PaperTime("Held paper simulation time",Float)=0
     }
     SubShader
     {
@@ -31,8 +33,37 @@ Shader "HappyToy/PlayerItemSurface"
             float4 _BaseMap_ST, _BurnHeight;
             float _Viewmodel, _Monochrome, _PbrLayout, _HasMetalRough;
             float _HasNormal, _BumpScale, _Metallic, _Smoothness, _Burn, _Burning;
+            float _PaperFlex, _PaperTime;
         CBUFFER_END
         float _RitualMonochrome;
+        float PaperHeight(float3 positionOS)
+        {
+            return dot(float4(positionOS,1),_BurnHeight);
+        }
+        float3 PaperWorldPosition(float3 positionOS)
+        {
+            float3 world=TransformObjectToWorld(positionOS);
+            // Height 1 is the pinched top; only the hanging lower edge moves.
+            // Displace in metres after exporter scale/orientation has been applied.
+            float height=saturate(PaperHeight(positionOS)), free=1-height;
+            float wave=(sin(_PaperTime*2.1+height*4.7)*.0025+
+                sin(_PaperTime*1.13+height*2.3)*.0008)*free*free*_PaperFlex;
+            world+=GetWorldSpaceNormalizeViewDir(world)*wave;
+            return world;
+        }
+        float PaperBurnDistance(float height,float2 uv)
+        {
+            float irregular=(sin(uv.x*173+sin(uv.y*107)*2.1)+sin(uv.x*71+uv.y*63))*.003;
+            return 1-_Burn-height+irregular;
+        }
+        void ClipBurnedPaper(float height,float2 uv)
+        {
+            if (_Burning>.5)
+            {
+                clip(PaperBurnDistance(height,uv));
+                clip(.99999-_Burn);
+            }
+        }
         ENDHLSL
         Pass
         {
@@ -59,25 +90,20 @@ Shader "HappyToy/PlayerItemSurface"
             V vert(A a)
             {
                 V o;
-                o.w=TransformObjectToWorld(a.p.xyz);
+                o.w=PaperWorldPosition(a.p.xyz);
                 o.p=TransformWorldToHClip(o.w);
                 o.n=TransformObjectToWorldNormal(a.n);
                 o.t=half4(TransformObjectToWorldDir(a.t.xyz),a.t.w*GetOddNegativeScale());
                 o.uv=TRANSFORM_TEX(a.uv,_BaseMap);
-                o.height=dot(float4(a.p.xyz,1),_BurnHeight);
+                o.height=PaperHeight(a.p.xyz);
                 return o;
             }
             half4 frag(V i, bool front:SV_IsFrontFace):SV_Target
             {
                 half4 tex=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,i.uv)*_BaseColor;
                 // The cutoff is evaluated in upright prefab space, not exporter axes.
-                float irregular=(sin(i.uv.x*173+sin(i.uv.y*107)*2.1)+sin(i.uv.x*71+i.uv.y*63))*.003;
-                float distance=1-_Burn-i.height+irregular;
-                if (_Burning>.5)
-                {
-                    clip(distance);
-                    clip(.99999-_Burn);
-                }
+                float distance=PaperBurnDistance(i.height,i.uv);
+                ClipBurnedPaper(i.height,i.uv);
                 half3 n=normalize(i.n)*(front?1:-1);
                 if (_HasNormal>.5)
                 {
@@ -154,19 +180,23 @@ Shader "HappyToy/PlayerItemSurface"
             #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
             float3 _LightDirection, _LightPosition;
-            struct DepthA { float4 p:POSITION; float3 n:NORMAL; };
-            float4 shadowVert(DepthA input):SV_POSITION
+            struct DepthA { float4 p:POSITION; float3 n:NORMAL; float2 uv:TEXCOORD0; };
+            struct DepthV { float4 p:SV_POSITION; float height:TEXCOORD0; float2 uv:TEXCOORD1; };
+            DepthV shadowVert(DepthA input)
             {
-                float3 p=TransformObjectToWorld(input.p.xyz);
+                DepthV o;
+                float3 p=PaperWorldPosition(input.p.xyz);
                 float3 n=TransformObjectToWorldNormal(input.n);
                 #if _CASTING_PUNCTUAL_LIGHT_SHADOW
                     float3 direction=normalize(_LightPosition-p);
                 #else
                     float3 direction=_LightDirection;
                 #endif
-                return ApplyShadowClamping(TransformWorldToHClip(ApplyShadowBias(p,n,direction)));
+                o.p=ApplyShadowClamping(TransformWorldToHClip(ApplyShadowBias(p,n,direction)));
+                o.height=PaperHeight(input.p.xyz); o.uv=TRANSFORM_TEX(input.uv,_BaseMap);
+                return o;
             }
-            half4 depthFrag():SV_Target { return 0; }
+            half4 depthFrag(DepthV i):SV_Target { ClipBurnedPaper(i.height,i.uv); return 0; }
             ENDHLSL
         }
         Pass
@@ -177,8 +207,15 @@ Shader "HappyToy/PlayerItemSurface"
             HLSLPROGRAM
             #pragma vertex depthVert
             #pragma fragment depthFrag
-            float4 depthVert(float4 position:POSITION):SV_POSITION { return TransformObjectToHClip(position.xyz); }
-            half4 depthFrag():SV_Target { return 0; }
+            struct DepthA { float4 p:POSITION; float2 uv:TEXCOORD0; };
+            struct DepthV { float4 p:SV_POSITION; float height:TEXCOORD0; float2 uv:TEXCOORD1; };
+            DepthV depthVert(DepthA input)
+            {
+                DepthV o; o.p=TransformWorldToHClip(PaperWorldPosition(input.p.xyz));
+                o.height=PaperHeight(input.p.xyz); o.uv=TRANSFORM_TEX(input.uv,_BaseMap);
+                return o;
+            }
+            half4 depthFrag(DepthV i):SV_Target { ClipBurnedPaper(i.height,i.uv); return 0; }
             ENDHLSL
         }
     }
