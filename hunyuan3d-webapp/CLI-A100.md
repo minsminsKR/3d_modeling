@@ -337,3 +337,22 @@ python3 modeling_cli.py wait JOB_ID --timeout 3600 --poll-interval 5 --json
 python3 modeling_cli.py --help
 python3 modeling_cli.py generate --help
 ```
+
+### Windows에서 로그인 유지
+
+`pywin32`가 설치된 Windows에서는 다음 명령을 **한 번** 실행해 비밀번호를 숨김 입력한다.
+
+```powershell
+python -m pip install pywin32
+python hunyuan3d-webapp/modeling_cli.py --server https://YOUR-CURRENT-TUNNEL login --remember
+```
+
+인증 성공 후에만 Windows 자격 증명 관리자에 현재 사용자용 일반 자격 증명을
+서버 origin별로 저장한다. 비밀번호는 저장소, CLI 상태 파일, 출력에 쓰지 않는다.
+서버의 12시간 세션이 만료되어도 이후 인증 필요 응답을 받으면 같은 origin에
+자동 로그인하고 읽기 요청을 한 번 재시도한다. 변경 요청은 전송 전에 인증을
+확인하며, 전송된 변경 요청을 자동으로 다시 보내지는 않는다. `wait`/`resume`
+중 읽기 요청도 재인증할 수 있다. 터널 주소가 바뀌면 새 origin에서 한 번 다시
+등록해야 하며, 비밀번호 변경이나 서버 측 권한 철회는 별도 확인이 필요하다.
+저장된 자격 증명은 Windows 자격 증명 관리자에서 `Hunyuan3D-CLI:` 접두어의
+항목을 삭제해 해제한다. 다른 운영체제에서는 기존 수동 로그인 방식을 사용한다.

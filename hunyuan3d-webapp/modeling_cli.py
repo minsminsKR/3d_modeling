@@ -260,6 +260,40 @@ class Client:
                 raise ClientError("Cannot read saved session. Move aside cookies.lwp and log in again.", code="LOCAL_IO_ERROR") from exc
         self.session.cookies = self.jar
         self._cookie_signature = cookie_signature(self.jar)
+        self._auth_in_progress = False
+
+    def credential_target(self):
+        return "Hunyuan3D-CLI:" + hashlib.sha256(self.server.encode()).hexdigest()
+
+    def saved_password(self):
+        if os.name != "nt":
+            return None
+        try:
+            import win32cred
+            import pywintypes
+        except ImportError:
+            return None
+        try:
+            entry = win32cred.CredRead(self.credential_target(), win32cred.CRED_TYPE_GENERIC)
+        except pywintypes.error as exc:
+            if exc.winerror == 1168:
+                return None
+            raise ClientError("Cannot read Windows Credential Manager.", code="LOCAL_IO_ERROR") from exc
+        return bytes(entry["CredentialBlob"]).decode("utf-16-le")
+
+    def remember_password(self, password):
+        if os.name != "nt":
+            return False
+        try:
+            import win32cred
+        except ImportError as exc:
+            raise ClientError("Install pywin32 to remember login in Windows Credential Manager.", code="LOCAL_IO_ERROR") from exc
+        win32cred.CredWrite({"Type": win32cred.CRED_TYPE_GENERIC,
+                             "TargetName": self.credential_target(),
+                             "UserName": "hunyuan3d-workspace",
+                             "CredentialBlob": password,
+                             "Persist": win32cred.CRED_PERSIST_LOCAL_MACHINE}, 0)
+        return True
 
     def url(self, path):
         if not isinstance(path, str) or "\\" in path:
@@ -276,7 +310,9 @@ class Client:
     def save_cookies(self):
         self._cookie_signature = save_cookie_jar(self.jar, self.state.cookies, self._cookie_signature)
 
-    def request(self, method, path, *, login_redirects=False, timeout=None, **kwargs):
+    def request(self, method, path, *, login_redirects=False, timeout=None, _auth_retry=True, **kwargs):
+        if method.upper() not in {"GET", "HEAD", "OPTIONS"} and not self._auth_in_progress and not path.startswith("/access/") and self.saved_password():
+            self.json("GET", "/api/jobs?limit=1")
         url = self.url(path)
         headers = dict(kwargs.pop("headers", {}))
         if method.upper() not in {"GET", "HEAD", "OPTIONS"}:
@@ -290,6 +326,22 @@ class Client:
             except requests.RequestException as exc:
                 raise ClientError(f"Request failed ({type(exc).__name__}); preserved request IDs can be resumed.", code="NETWORK_ERROR") from exc
             self.save_cookies()
+            if response.status_code == 401 and method.upper() in {"GET", "HEAD"} and not self._auth_in_progress and _auth_retry:
+                try:
+                    payload = response.json()
+                except ValueError:
+                    payload = None
+                if isinstance(payload, dict) and payload.get("error") == "authentication_required":
+                    password = self.saved_password()
+                    if password:
+                        response.close()
+                        self._auth_in_progress = True
+                        try:
+                            self.login(password_value=password)
+                        finally:
+                            self._auth_in_progress = False
+                            password = None
+                        return self.request(method, path, login_redirects=login_redirects, timeout=timeout, _auth_retry=False, **kwargs)
             if response.status_code not in {301, 302, 303, 307, 308}:
                 return response
             location = response.headers.get("Location", "")
@@ -338,7 +390,16 @@ class Client:
                     target["web_url"] = self.url(target["web_url"])
             return result
 
-    def login(self, password_file=None):
+    def login(self, password_file=None, password_value=None, remember=False):
+        if remember:
+            if os.name != "nt":
+                raise ClientError("Remembered login is currently supported only on Windows.", code="LOCAL_IO_ERROR")
+            try:
+                import win32cred
+            except ImportError as exc:
+                raise ClientError("Install pywin32 to remember login in Windows Credential Manager.", code="LOCAL_IO_ERROR") from exc
+            # Obtain a fresh login form so the remembered password is actually verified.
+            self.jar.clear()
         with self.request("GET", "/access/login?next=%2Fapi%2Fjobs", login_redirects=True) as response:
             if response.status_code == 404:
                 self.json("GET", "/api/jobs?limit=1")
@@ -355,7 +416,9 @@ class Client:
             # Direct internal app URLs have no private gateway login form.
             self.json("GET", "/api/jobs?limit=1")
             return {"server": self.server, "authenticated": True, "message": "Direct API access; no gateway login required."}
-        if password_file:
+        if password_value is not None:
+            password = password_value
+        elif password_file:
             password = Path(password_file).expanduser().read_text(encoding="utf-8").rstrip("\r\n")
         else:
             password = getpass.getpass("Workspace password: ")
@@ -367,6 +430,8 @@ class Client:
                 self.check(response)
                 if "/access/login" in urlsplit(response.url).path:
                     raise ClientError("Login failed.", code="AUTH_REJECTED")
+            if remember:
+                self.remember_password(password)
         finally:
             password = None
         self.json("GET", "/api/jobs?limit=1")
@@ -584,6 +649,7 @@ def parser():
     commands.add_parser("doctor", parents=[common], help="check authentication, worker/GPU readiness, and runtime health")
     login = commands.add_parser("login", parents=[common], help="log in through the existing private gateway")
     login.add_argument("--password-file", help="read password from a private UTF-8 file; default: hidden terminal prompt")
+    login.add_argument("--remember", action="store_true", help="save password to Windows Credential Manager for automatic re-login")
     for command in ("status", "wait", "download"):
         child = commands.add_parser(command, parents=[common], help=f"{command} an existing server job")
         child.add_argument("job", help="preserved server job ID")
@@ -697,7 +763,7 @@ def main(argv=None):
             return 0
         client = Client(state, getattr(args, "request_timeout", 120))
         if args.command == "login":
-            result, code = client.login(args.password_file), 0
+            result, code = client.login(args.password_file, remember=args.remember), 0
             # Remember a direct internal origin as well as a gateway login.
             atomic_json(state.root / "config.json", {"server": state.server})
         elif args.command == "capabilities":

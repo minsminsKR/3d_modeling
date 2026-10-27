@@ -106,3 +106,12 @@ On this attempt both capabilities and doctor returned HTTP 401 AUTH_REQUIRED for
 the designated server. No generation request was submitted and no 3D or Unity
 replacement exists yet. Restore the CLI login before proceeding; do not treat the
 concept as an in-game result. Preserve the original concept and face source.
+
+## Flower and facial hair revision — 2026-10-28
+
+`Reference/concept-face-flower.png` supersedes the earlier face concept as the
+next image-to-3D input. Built-in image generation edited `concept-face-reference.png`
+using `user-face-reference.png`: preserve the distinctive purple flower at the
+ear and the subject's visible moustache and chin/jaw beard, keeping the original
+creature body and neutral full-body composition. The revised image is a concept;
+no creature model or in-game replacement has yet been generated.
