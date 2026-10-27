@@ -398,10 +398,22 @@ PROFILES["school-lighting-continuity"]=("School-only Forward+ with player shader
         "CloudGraphicsLightingTests.cs", "CloudGraphicsProbeSupportTests.cs", "CloudLocalShadowTests.cs"))])
 
 
-PROFILES["school-anomalies"]=("Guaranteed normal first passage, restorable 50-percent draws/three-normal cap, real forward/back judgments, solid pedestrian/dance speed, retained Baby reveal/cry/proximity/60-second chase, ordered blackout/five dark seconds, v3 migration and camera review", [
+PROFILES["school-anomalies"]=("Guaranteed normal first passage, restorable 50-percent draws/three-normal cap, real forward/back judgments, solid walker flicker/pose, Baby shop blackout/cry/60-second chase, ordered blackout/five dark seconds, v3 migration and camera review", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", "HappyToy.V2.CoreTests.SchoolWalkerRouteTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"CheckpointTrapCodecTests", CLOUD+"ChapterCheckpointStoreTests")),
     ("PlayMode", play_tests("SchoolAnomalyTests.cs", "SchoolProgressClockIntegrationTests.cs", "SchoolWalkerTests.cs", "SchoolWalkerCheckpointTests.cs", "SchoolWalkerAudioTests.cs", "SchoolLoopTests.cs", "SchoolLoopSeamTests.cs")+(
         PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",PLAY+"SchoolHorrorLightingFreezesOnPauseAndDoesNotLeakRenderSettings"))])
+
+PROFILES["school-anomalies-logic"]=("CPU-only school anomaly rules, physical seams, solid walker and flickering pose, Baby blackout/shop/timeout/contact and save restoration; no GPU appearance or listening certification", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", "HappyToy.V2.CoreTests.SchoolWalkerRouteTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"CheckpointTrapCodecTests", CLOUD+"ChapterCheckpointStoreTests")),
+    ("PlayMode", (
+        PLAY+"SchoolAnomalyFirstPassIsNormalAndActualSeamsJudgeBothDirections",
+        PLAY+"SchoolWalkerSolidCapsuleAndFlickerTrembleAdvanceAndPause",
+        PLAY+"SchoolBabyBlackoutShopTimeoutContactAndPauseAreHeadlessSafe",
+        PLAY+"SchoolBabyRetreatCarriesTheGhostThroughTheSeamAndFadesBodyAndVoiceDuringSafeDeparture",
+        PLAY+"SchoolAnomalyCheckpointKeepsTheDrawTimersBabyPoseAndLegacyNormalMigration",
+        PLAY+"SchoolWalkerUsesOneSharedRiggedPersonAndHoldsItsActualPoseDuringPauseAndTalisman",
+        PLAY+"SchoolWalkerStopsOnHisStraightLaneForAPlayerAndWalksAgainWhenTheWayClears",
+        PLAY+"SchoolWalkerCheckpointJsonAndCopyRestoreTheExactPausedPassAndAuthoredPose"))])
 
 
 PROFILES["school-anomaly-presentation"]=("All-nine-lamp blackout retains actual torch contribution; retiring Baby carries its rigid seam pose and fades body/cry with paused/talisman-safe cleanup, judgments, active-Baby save/cry/chase and normal camera regressions", [
@@ -440,7 +452,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile == "hand-animation-logic" or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("hand-animation-logic", "school-anomalies-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]

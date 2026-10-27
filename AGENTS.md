@@ -55,10 +55,14 @@ The user has now authorized implementation of the previously planned loop.
 - Normal + forward and anomaly + backward advance one hour. Either wrong
   judgment resets the clock to 00:00. Judge only at the actual masked transfer.
 - The study-room sign crossing triggers Baby or the far-to-near blackout.
-  Reuse the retained Baby's authored model/cry/chase assets. Baby approaches
-  visibly over 2.2 seconds, pursues on a clear close approach or after 60 seconds.
-- The dancing pedestrian is four times normal walking speed and retains a solid
-  player-blocking capsule and stop-on-obstruction behavior.
+  As updated by the user on 2026-10-28, Baby is scaled to two thirds and appears
+  crying behind the player at the shop as the school lights go out. A witnessed
+  heartbeat and low ambience build tension; pursuit begins after 60 simulation
+  seconds and contact causes defeat. Reuse the authored model/cry/chase assets.
+- As updated on 2026-10-28, the pedestrian anomaly uses the existing rig: a
+  steady red-light pose trembles, while irregular dark pulses change the limbs
+  and advance it in steps. Preserve the solid player-blocking capsule and
+  stop-on-obstruction behavior.
 - Blackout extinguishes the nine aisle lamps at one-second intervals. Five
   simulation seconds after the final light goes out causes defeat. A completed
   backward transfer resolves the old event and restores normal lighting.

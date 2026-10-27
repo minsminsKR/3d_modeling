@@ -68,7 +68,7 @@ namespace HappyToy.V2
         }
         public void Advance(double seconds,bool advancing,float playerX,float playerZ,float speedMultiplier=1)
         {
-            if(!Finite(seconds)||seconds<0||!Finite(playerX)||!Finite(playerZ)||!Finite(speedMultiplier)||speedMultiplier<=0||speedMultiplier>6)
+            if(!Finite(seconds)||seconds<0||!Finite(playerX)||!Finite(playerZ)||!Finite(speedMultiplier)||speedMultiplier<0||speedMultiplier>6)
                 throw new ArgumentException("Finite school walker step inputs required");
             if(!advancing||seconds==0)return;
             // A stalled graphics frame must never make a person jump metres.

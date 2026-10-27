@@ -9,12 +9,13 @@ namespace HappyToy.V2
     // Reuses the retained authored Baby/PBR/cry/chase clips; no corridor roster or old AI is enabled.
     public sealed class SchoolBabyEncounter : MonoBehaviour
     {
-        public const float CloseRange=6,ChaseSpeed=3.15f;
+        public const float CloseRange=6,ChaseSpeed=3.15f,VisualScale=2f/3f;
         public const float DepartureSeconds=1.8f;
-        public static readonly Vector3 Station=new Vector3(0,.02f,35.4f);
+        // The shop lies behind the player at the study sign, beside its open frontage.
+        public static readonly Vector3 Station=new Vector3(-.95f,.02f,9.4f);
         GameSession session;Transform section,visual;Vector3 mount;
         AnimationClip cry,chase;AudioClip ownedVoice;
-        AudioSource voice;NavMeshAgent agent;EnemyAcoustics acoustics;
+        AudioSource voice;NavMeshAgent agent;EnemyAcoustics acoustics;SchoolBabyAtmosphere atmosphere;
         readonly List<(Renderer renderer,Material[] original,Material[] faded)> surfaces=new List<(Renderer,Material[],Material[])>();
         readonly List<Material> owned=new List<Material>();
         bool opaque,pausedVoice;float nextPath;
@@ -25,6 +26,7 @@ namespace HappyToy.V2
         public Transform Visual=>visual;
         public AudioSource CrySource=>voice;
         public NavMeshAgent Agent=>agent;
+        public SchoolBabyAtmosphere Atmosphere=>atmosphere;
         public bool CloseToPlayer
         {
             get
@@ -37,7 +39,7 @@ namespace HappyToy.V2
         public static SchoolBabyEncounter Build(GameSession owner,Transform centre)
         {
             var actor=new GameObject("School anomaly — crying Baby").AddComponent<SchoolBabyEncounter>();
-            actor.transform.SetParent(centre,false);actor.transform.localPosition=Station;actor.transform.localRotation=Quaternion.Euler(0,180,0);
+            actor.transform.SetParent(centre,false);actor.transform.localPosition=Station;actor.transform.localRotation=Quaternion.identity;
             try{actor.Prepare(owner,centre);return actor;}catch{actor.Clear();throw;}
         }
         void Prepare(GameSession owner,Transform centre)
@@ -46,6 +48,7 @@ namespace HappyToy.V2
             var prefab=Resources.Load<GameObject>("EnemyStudio/Baby/BabyRuntime");
             if(!prefab)throw new InvalidOperationException("Retained authored Baby is missing");
             visual=Instantiate(prefab,transform,false).transform;
+            visual.localScale*=VisualScale;
             var rig=visual.GetComponent<EnemyStudioRig>();var animation=rig.EnsureAnimationAliases();
             cry=animation.GetClip("cry");chase=animation.GetClip("chase");animation.Stop();animation.enabled=false;
             foreach(var automatic in visual.GetComponentsInChildren<Animator>(true))automatic.enabled=false;
@@ -70,22 +73,24 @@ namespace HappyToy.V2
                 }
                 surfaces.Add((renderer,originals,faded));renderer.sharedMaterials=faded;
             }
-            agent=gameObject.AddComponent<NavMeshAgent>();agent.enabled=false;agent.radius=.30f;agent.height=1.6f;
+            agent=gameObject.AddComponent<NavMeshAgent>();agent.enabled=false;agent.radius=.20f;agent.height=1.07f;
             agent.speed=ChaseSpeed;agent.acceleration=8;agent.angularSpeed=300;agent.stoppingDistance=.60f;
             if(!NavMesh.SamplePosition(transform.position,out var site,.8f,NavMesh.AllAreas))throw new InvalidOperationException("Baby station has no school navigation");
             transform.position=site.position;agent.enabled=true;
             if(!agent.Warp(site.position))throw new InvalidOperationException("Baby cannot enter the school NavMesh");
             agent.isStopped=true;
-            var emitter=new GameObject("School Baby recorded crying").transform;emitter.SetParent(transform,false);emitter.localPosition=Vector3.up*.85f;
+            var emitter=new GameObject("School Baby recorded crying").transform;emitter.SetParent(transform,false);emitter.localPosition=Vector3.up*.57f;
             voice=emitter.gameObject.AddComponent<AudioSource>();ownedVoice=ExternalAudio.Required("enemy-baby-cry");
             voice.clip=ownedVoice;voice.loop=true;voice.playOnAwake=false;voice.minDistance=4;voice.maxDistance=42;voice.priority=50;
             acoustics=EnemyAcoustics.Bind(voice,transform,.72f,0);
+            atmosphere=SchoolBabyAtmosphere.Build(session,transform);
             Sample(0,false);
         }
-        bool ClearSight()=>!Physics.Linecast(transform.position+Vector3.up*.9f,session.player.eyes.transform.position,1<<8,QueryTriggerInteraction.Ignore);
+        bool ClearSight()=>!Physics.Linecast(transform.position+Vector3.up*.6f,session.player.eyes.transform.position,1<<8,QueryTriggerInteraction.Ignore);
         public void Tick(SchoolAnomalyEventClock clock,bool advancing)
         {
             if(Departing||!agent||!agent.isOnNavMesh)return;
+            if(atmosphere)atmosphere.Tick(clock.Elapsed,clock.Pursuing,advancing);
             agent.isStopped=!advancing||!clock.Pursuing;
             if(!advancing)
             {if(voice.isPlaying){voice.Pause();pausedVoice=true;}return;}
@@ -94,15 +99,16 @@ namespace HappyToy.V2
             if(clock.Pursuing&&Time.time>=nextPath)
             {nextPath=Time.time+.12f;agent.SetDestination(session.player.transform.position);}
             Sample(clock.Elapsed,clock.Pursuing);
-            if(clock.Pursuing&&Vector3.Distance(transform.position,session.player.transform.position)<.90f&&ClearSight())
-                session.TryDefeat("학교 복도의 베이비","이상 현상이 있는 통로에서는 뒤로 돌아가세요. 아기는 가까이 접근하거나 나타난 뒤 1분이 지나면 추격합니다.");
+            if(Vector3.Distance(transform.position,session.player.transform.position)<.65f&&ClearSight())
+                session.TryDefeat("학교 복도의 베이비","이상 현상이 있는 통로에서는 뒤로 돌아가세요. 울고 있는 아기는 1분이 지나면 추격합니다.");
         }
         void Sample(double elapsed,bool pursuing)
         {
             var clip=pursuing?chase:cry;clip.SampleAnimation(visual.gameObject,Mathf.Repeat((float)elapsed,clip.length));
-            float amount=Mathf.SmoothStep(0,1,Mathf.Clamp01((float)(elapsed/SchoolAnomalyEventClock.RevealSeconds)));
-            visual.localPosition=mount+Vector3.down*((1-amount)*1.3f);
-            ApplyOpacity(amount,amount<1);
+            // The blackout reveals a real crying figure at the shop immediately;
+            // only the resolved event uses the retained transparent departure.
+            visual.localPosition=mount;
+            ApplyOpacity(1,false);
         }
         void ApplyOpacity(float amount,bool fading)
         {
@@ -127,6 +133,7 @@ namespace HappyToy.V2
             if(agent)agent.enabled=false;
             transform.SetPositionAndRotation(section.TransformPoint(new Vector3(pose.X,at.y,pose.Z)),
                 Quaternion.AngleAxis(pose.Yaw,section.up)*transform.rotation);
+            if(atmosphere)atmosphere.Stop();
             Departing=true;departureStartOpacity=Opacity;DepartureElapsed=0;ApplyOpacity(Opacity,true);
         }
         void Update()
@@ -141,13 +148,14 @@ namespace HappyToy.V2
             ApplyOpacity(amount,true);if(acoustics)acoustics.SetBaseGain(voice,.72f*amount);
             if(DepartureElapsed>=DepartureSeconds)Clear();
         }
-        public SchoolBabyProgress Capture()=>new SchoolBabyProgress{present=true,position=section.InverseTransformPoint(transform.position),yaw=transform.localEulerAngles.y};
+        public SchoolBabyProgress Capture()=>new SchoolBabyProgress{present=true,witnessed=atmosphere&&atmosphere.Witnessed,position=section.InverseTransformPoint(transform.position),yaw=transform.localEulerAngles.y};
         public void Restore(SchoolBabyProgress saved,SchoolAnomalyEventClock clock)
         {
             saved.Validate();var point=section.TransformPoint(saved.position);
             if(!NavMesh.SamplePosition(point,out var hit,.35f,agent.areaMask)||Vector3.Distance(point,hit.position)>.25f||!agent.Warp(hit.position))
                 throw new ArgumentException("Saved Baby is outside the school NavMesh");
-            transform.localRotation=Quaternion.Euler(0,saved.yaw,0);Sample(clock.Elapsed,clock.Pursuing);nextPath=0;
+            transform.localRotation=Quaternion.Euler(0,saved.yaw,0);if(atmosphere)atmosphere.RestoreWitnessed(saved.witnessed);
+            Sample(clock.Elapsed,clock.Pursuing);nextPath=0;
         }
         public void Clear()
         {

@@ -6,6 +6,8 @@ namespace HappyToy.V2
     [Serializable] public struct SchoolBabyProgress
     {
         public bool present;
+        // Optional in existing v3 JSON. Missing fields default to false.
+        public bool witnessed;
         public Vector3 position;public float yaw;
         public void Validate()
         {

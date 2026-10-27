@@ -14,6 +14,7 @@ namespace HappyToy.V2
         GameSession session;
         Transform section;
         Renderer[] body;
+        SchoolWalkerFlickerLighting flicker;
         public Transform Walker=>transform;
         public Transform Visual {get;private set;}
         public SchoolWalkerMotion Motion {get;private set;}
@@ -21,7 +22,12 @@ namespace HappyToy.V2
         public CapsuleCollider BodyCollider {get;private set;}
         public bool Dancing {get;private set;}
         public const float DanceSpeedMultiplier=4;
-        public void SetDancing(bool value){Dancing=value;if(Motion){Motion.SetDancing(value);ApplyPose();}}
+        public void SetDancing(bool value)
+        {
+            Dancing=value;
+            if(Motion){Motion.SetDancing(value);ApplyPose();}
+            if(flicker!=null)flicker.SetActive(value,route.CaptureState().Elapsed);
+        }
         public int Traversal=>route.CaptureState().Traversal;
         public int PendingTraversal=>route.CaptureState().PendingTraversal;
         public float Distance=>route.CaptureState().Distance;
@@ -37,6 +43,7 @@ namespace HappyToy.V2
             try
             {
                 actor.session=owner;actor.section=centre;
+                actor.flicker=new SchoolWalkerFlickerLighting(centre.parent);
                 actor.Visual=Instantiate(prefab,actor.transform,false).transform;
                 if(actor.Visual.GetComponentsInChildren<Collider>(true).Length>0||actor.Visual.GetComponentsInChildren<Rigidbody>(true).Length>0)
                     throw new InvalidOperationException("School walker visual must not supply duplicate physics bodies");
@@ -93,9 +100,11 @@ namespace HappyToy.V2
                 if(route.TryCommitPending(PhysicallyHidden(camera,current)&&PhysicallyHidden(camera,spawn)))ApplyPose();
             }
             var player=section.InverseTransformPoint(session.player.transform.position);
-            float multiplier=Dancing?DanceSpeedMultiplier:1;
-            route.Advance(Time.deltaTime,true,player.x,player.z,multiplier);ApplyPose();
-            if(Footsteps)Footsteps.Apply(route.CaptureState(),true,multiplier);
+            float dt=Mathf.Min(Time.deltaTime,.1f);
+            float multiplier=Dancing&&dt>0
+                ?DanceSpeedMultiplier*(float)(SchoolWalkerFlicker.MovingSeconds(route.CaptureState().Elapsed,dt)/dt):1;
+            route.Advance(dt,true,player.x,player.z,multiplier);ApplyPose();
+            if(Footsteps)Footsteps.Apply(route.CaptureState(),!Dancing,multiplier);
         }
         public Bounds BodyBounds()
         {
@@ -137,6 +146,8 @@ namespace HappyToy.V2
             var state=route.CaptureState();
             transform.localPosition=new Vector3(state.X,FeetHeight,state.Z);
             transform.localRotation=Quaternion.Euler(0,state.Yaw,0);Motion.Apply(state);
+            if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
         }
+        void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);}
     }
 }

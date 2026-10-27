@@ -31,7 +31,9 @@ namespace HappyToy.V2
             if(!advancing||kind!=SchoolAnomalyKind.Baby&&kind!=SchoolAnomalyKind.Blackout)return;
             if(!state.Triggered&&!atStudySign)return;
             state.Triggered=true;state.Elapsed=Math.Min(1000000,state.Elapsed+seconds);
-            if(kind==SchoolAnomalyKind.Baby&&state.Elapsed>=RevealSeconds&&(closeToBaby||state.Elapsed>=BabyWaitSeconds))state.Pursuing=true;
+            // Closing in does not start the chase: give the player the full minute
+            // to decide whether to approach the crying figure or turn back.
+            if(kind==SchoolAnomalyKind.Baby&&state.Elapsed>=BabyWaitSeconds)state.Pursuing=true;
         }
     }
 }

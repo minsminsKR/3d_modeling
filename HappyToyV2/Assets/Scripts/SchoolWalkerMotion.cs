@@ -41,8 +41,13 @@ namespace HappyToy.V2
         }
         public void Apply(SchoolWalkerRoute.State state)
         {
-            ApplyLocomotion(state);
-            if(Dancing) dance.Apply((float)state.Elapsed);
+            if(!Dancing){ApplyLocomotion(state);return;}
+            // Restore one authored neutral pose each frame: neither the walk nor
+            // idle animation may move the limbs between the strobe impulses.
+            for(int i=0;i<bones.Length;i++)
+            {bones[i].localPosition=contactPosition[i];bones[i].localRotation=contactRotation[i];bones[i].localScale=contactScale[i];}
+            if(idle&&idle.length>.05f)idle.SampleAnimation(visual,0);else walk.SampleAnimation(visual,0);
+            dance.Apply(state.Elapsed);
         }
         void ApplyLocomotion(SchoolWalkerRoute.State state)
         {

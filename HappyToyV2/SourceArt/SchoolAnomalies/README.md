@@ -23,24 +23,35 @@ clips. Existing recorded `enemy-baby-cry` is loaded through `ExternalAudio`;
 its original audio attribution and license remain in the audio catalog/credits.
 Baby never re-enters the corridor roster and no old school quest is activated.
 
-`Assets/Scripts/SchoolWalkerDance.cs` is the editable additive choreography,
-aiming the actual upper/lower arm segments in model space and using the 34-bone names in `SourceArt/SchoolWalker/rig-plan.json`. Base walk/idle
-poses are resampled before every additive offset, preventing accumulated bone
-rotation. The route moves at 2.8m/s (four times 0.7), stops for the player's
-obstruction, and shares its actual distance phase with recorded footsteps.
-An independent radius-0.43m, 1.77m capsule blocks the CharacterController; it is
-outside architecture layer 8 so it cannot fake corner visibility occlusion.
+## 2026-10-28 presentation revision
 
-Baby triggers at canonical Z=15.88m (the front study sign), at station Z=35.4m.
-Owned temporary PBR copies and a 1.3m emergence give a 2.2-second apparition;
-shared imported materials are restored afterwards.
-`prepare_fade_materials.py` derives the two tracked `Resources/SchoolAnomalies`
-PBR material hints from the existing Baby Skin, preserving normal/metallic plus
-transparent/emissive keyword combinations for player shader retention. Runtime
-fade copies disable shadow casting until the opaque authored materials return. Original cry/chase clips
-are sampled explicitly. A clear approach within 6m or 60 simulation seconds
-from appearance starts 3.15m/s native NavMesh pursuit; a clear contact under
-0.9m requests the game's existing defeat path. Spatial crying reaches 42m.
+The user supplied a 7.3-second screen recording of the reference Instagram reel
+https://www.instagram.com/reel/DehELDOvhj2/ . Its red hold, irregular rapid dark
+pulses and asymmetrical changes informed the timing, not a new model or copied
+animation asset. Exact movement distance cannot be inferred from the small,
+moving-camera recording. The supplied third-party reel capture is preserved as
+`Reference/user-reel-capture-20261028.mp4` (SHA-256
+`c3371b3e4b9e624498f8909b65fed6d83ffcd8e90d8e48ffbc32dcefd3e2c7c5`) for
+authoring reference only; it is not a game asset and does not grant rights to
+the original creator's video. It is not needed by the runtime.
+
+`SchoolWalkerDance` applies reproducible asymmetric limb poses and upper-body
+and head tremor to the existing 34-bone SchoolWalker rig. `SchoolWalkerFlicker`
+owns the 7.3-second light/pose timeline, and the real fluorescent lights and
+movement use the same state. Movement happens only in the dark pulses, with
+collision and obstruction stopping retained. The source model, rig, motions and
+licenses remain in `SourceArt/SchoolWalker`; no new generated base is required.
+
+Baby appears immediately at the shop (canonical Z=9.4), behind the player at
+the study sign. All school fluorescent fixtures extinguish at that trigger;
+the player's flashlight remains available. The existing Baby model is scaled
+to 2/3 with its retained cry/chase animation and spatial recording.
+`SchoolBabyAtmosphere` uses existing licensed tension air and heartbeat recordings;
+seeing Baby starts a heartbeat, and the ambience grows over the minute. Baby
+starts pursuit after 60 simulation seconds regardless of proximity and contact
+causes defeat. The same pause, talisman, saved state and 1.8-second seam departure
+rules remain in effect. Baby witness state survives checkpoint JSON; older saves
+without it restore as unwitnessed. Previously saved pursuit remains compatible.
 
 Blackout uses actual SchoolFluorescent event gain on all three visible repeats,
 including each LOD's tube emission, downward light and ceiling backscatter.
@@ -52,19 +63,24 @@ and wet-floor reflections remain natural parts of the unpowered aisle.
 Completing a backward seam clears the effect before the next passage renders.
 Pause and talisman hold event clocks, movement, manual poses and Baby crying.
 
-## Verification
+## Historical verification (2026-10-24)
 
-Run `python HappyToyV2/Tools/quality/run_feature_tests.py --profile school-anomalies
+The following results predate the 2026-10-28 revision. For non-disruptive CPU
+checks of the current revision, run `python HappyToyV2/Tools/quality/run_feature_tests.py
+--profile school-anomalies-logic --no-desktop-interaction` on one command line.
+This uses `-nographics -noaudio`; it cannot verify appearance or audio quality.
+
+For graphical verification when separately appropriate, run `python HappyToyV2/Tools/quality/run_feature_tests.py --profile school-anomalies
 --graphics-api d3d11 --no-desktop-interaction` (single command line). The profile
 includes independent probability/judgment/deadline rules, real seam choices,
-actual CharacterController obstruction, dance movement/pose, recorded Baby cry
-in the quiet DSP mixer, proximity/timeout pursuit, ordered real lamp power,
+actual CharacterController obstruction, flicker movement/pose, recorded Baby cry
+in the quiet DSP mixer, 60-second pursuit, ordered real lamp power,
 production-camera torch OFF/ON contribution after all nine lamps extinguish and defeat, JSON/old-v3 restoration and rejection before mutation of Baby poses outside the
 real NavMesh, current school
 navigation/geometry/clock/walker/audio and normal brightness.
 
 Set `HAPPYTOY_SCHOOL_ANOMALY_REVIEW_DIR` to a new child of `Builds/` for opt-in
-unfiltered production-camera PNGs of the dance, crying Baby and partial blackout.
+unfiltered production-camera PNGs of the walker, crying Baby and partial blackout.
 This is controlled scene/camera verification, not a claim of manual survival
 balance or displayed FPS. Player builds use the pinned project pipeline and
 input-hash verifier. No player or native diagnostic is launched automatically.

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.AI;
@@ -47,7 +48,7 @@ namespace HappyToy.V2.CloudTests
             }
         }
         [UnityTest,Timeout(180000)]
-        public IEnumerator SchoolWalkerSolidCapsuleStopsActualPlayerInputAndDancerMovesFourTimesFaster()
+        public IEnumerator SchoolWalkerSolidCapsuleAndFlickerTrembleAdvanceAndPause()
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
             var walker=Get<Component>(world,"Walker");var collider=Get<CapsuleCollider>(walker,"BodyCollider");
@@ -63,10 +64,14 @@ namespace HappyToy.V2.CloudTests
             var bones=Get<Transform>(walker,"Visual").GetComponentsInChildren<Transform>();var before=bones.Select(b=>b.localRotation).ToArray();
             float distance=Get<float>(walker,"Distance");Call(shell,"Resume");yield return Delay(.55f);
             Assert.That(Get<bool>(walker,"Dancing")&&Get<bool>(motion,"Dancing"),Is.True);
-            Assert.That(Get<float>(walker,"Distance")-distance,Is.GreaterThan(1.1f));
-            Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.GreaterThan(80));
-            Call(shell,"Pause");var paused=bones.Select(b=>(b.localPosition,b.localRotation)).ToArray();yield return Delay(.2f);
+            Assert.That(Get<float>(walker,"Distance")-distance,Is.LessThan(.01f),"The red hold must keep the walker in place");
+            Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.GreaterThan(.1f),"The held pose must still tremble");
+            yield return Delay(1.7f);
+            Assert.That(Get<float>(walker,"Distance")-distance,Is.GreaterThan(.1f),"The flashes must advance the walker");
+            Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.GreaterThan(20),"The flashes must change the rig pose");
+            Call(shell,"Pause");var paused=bones.Select(b=>(b.localPosition,b.localRotation)).ToArray();float stopped=Get<float>(walker,"Distance");yield return Delay(.2f);
             CollectionAssert.AreEqual(paused,bones.Select(b=>(b.localPosition,b.localRotation)).ToArray());
+            Assert.That(Get<float>(walker,"Distance"),Is.EqualTo(stopped),"Pause must hold the flicker advance");
             ExportSchoolAnomalyFrame(world,"dancing-walker",new Vector3(-1.2f,.03f,25),new Vector3(.65f,1.3f,31));
         }
         [UnityTest,Timeout(180000)]
@@ -74,11 +79,25 @@ namespace HappyToy.V2.CloudTests
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
             Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Baby");PlacePlayer(LoopOrigin+new Vector3(-1.2f,.03f,15));Call(shell,"Resume");
-            var director=Get<Component>(world,"Anomalies");yield return Delay(.15f);Assert.That(Get<Component>(director,"Baby"),Is.Null);
+            var director=Get<Component>(world,"Anomalies");var babyTorch=Get<Light>(player,"flashlight");bool torchEnabled=babyTorch.enabled;
+            yield return Delay(.15f);Assert.That(Get<Component>(director,"Baby"),Is.Null);
             PlacePlayer(LoopOrigin+new Vector3(-1.2f,.03f,16.1f));yield return Wait(()=>Get<Component>(director,"Baby"),3,"Passing the actual study sign did not summon Baby");
             var baby=Get<Component>(director,"Baby");var source=Get<AudioSource>(baby,"CrySource");var visual=Get<Transform>(baby,"Visual");
             Assert.That(source.spatialBlend,Is.EqualTo(1));Assert.That(source.loop,Is.True);Assert.That(source.maxDistance,Is.GreaterThanOrEqualTo(40));
             Assert.That(visual.GetComponent(RequireType("EnemyStudioRig")),Is.Not.Null);
+            Assert.That(visual.localScale.x,Is.EqualTo(Resources.Load<GameObject>("EnemyStudio/Baby/BabyRuntime").transform.localScale.x*2f/3f).Within(.001f));
+            Assert.That(baby.transform.position.z-LoopOrigin.z,Is.EqualTo(9.4f).Within(.5f),"Baby must wait behind the study sign at the shop");
+            Assert.That(Get<float>(baby,"Opacity"),Is.EqualTo(1),"Baby must be visible as soon as the lights go out");
+            var allFixtures=Get<Transform>(world,"Root").GetComponentsInChildren(RequireType("SchoolFluorescent"));
+            Assert.That(allFixtures.All(f=>Get<Light>(f,"Source").intensity==0),Is.True,"All school fixtures must switch off together");
+            Assert.That(babyTorch.enabled,Is.EqualTo(torchEnabled),"The player flashlight must survive the Baby blackout");
+            var atmosphere=Get<Component>(baby,"Atmosphere");var camera=Get<Camera>(player,"eyes");
+            camera.transform.rotation=Quaternion.LookRotation(baby.transform.position+Vector3.up*.5f-camera.transform.position);
+            Call(atmosphere,"Tick",1d,false,true);
+            Assert.That(Get<bool>(atmosphere,"Witnessed"),Is.True,"Looking directly at the crying Baby must introduce the player heartbeat");
+            float firstPulse=Get<AudioSource>(atmosphere,"PulseSource").volume;
+            Call(atmosphere,"Tick",59d,false,true);
+            Assert.That(Get<AudioSource>(atmosphere,"PulseSource").volume,Is.GreaterThan(firstPulse),"The pulse must build towards the deadline");
             foreach(string materialName in new[]{"BabyFade","BabyFadeEmissive"})
             {
                 var retained=Resources.Load<Material>("SchoolAnomalies/"+materialName);
@@ -102,23 +121,26 @@ namespace HappyToy.V2.CloudTests
             var frozenClock=Call(Get<object>(director,"EventClock"),"Capture");var frozenPosition=baby.transform.position;
             yield return Delay(.25f);Assert.That(Call(Get<object>(director,"EventClock"),"Capture"),Is.EqualTo(frozenClock));
             Assert.That(baby.transform.position,Is.EqualTo(frozenPosition));Assert.That(source.isPlaying,Is.False);
+            Assert.That(Get<AudioSource>(atmosphere,"AirSource").isPlaying||Get<AudioSource>(atmosphere,"PulseSource").isPlaying,Is.False,
+                "Both subjective tension sounds must pause with the Baby");
             Call(rituals,"EndEffect");yield return null;
-            Call(shell,"Pause");ExportSchoolAnomalyFrame(world,"baby-crying",new Vector3(-1.2f,.03f,23),new Vector3(0,1,35.4f));
+            Call(shell,"Pause");ExportSchoolAnomalyFrame(world,"baby-crying",new Vector3(-1.2f,.03f,16),new Vector3(-.95f,.6f,9.4f));
             var saved=Call(director,"Capture");var clock=Get<object>(saved,"clock");Set(clock,"Elapsed",59.8);Set(saved,"clock",clock);
             Call(director,"Restore",saved,Get<int>(world,"Traversals"));baby=Get<Component>(director,"Baby");agent=Get<NavMeshAgent>(baby,"Agent");
+            Assert.That(allFixtures.All(f=>Get<Light>(f,"Source").intensity==0),Is.True,"Restoring an active Baby must restore its blackout");
             var held=Call(Get<object>(director,"EventClock"),"Capture");yield return Delay(.3f);Assert.That(Call(Get<object>(director,"EventClock"),"Capture"),Is.EqualTo(held));
             Call(shell,"Resume");yield return Wait(()=>Get<bool>(Get<object>(director,"EventClock"),"Pursuing"),1,"The 60-second pursuit deadline did not fire");
             var at=baby.transform.position;yield return Delay(.4f);Assert.That(Vector3.Distance(at,baby.transform.position),Is.GreaterThan(.2f));
             Call(world,"RestoreClock",2);yield return CrossSchoolJudgmentSeam(world,-1);
             Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(3));yield return null;
+            Assert.That(allFixtures.All(f=>Get<Light>(f,"Source").intensity>0),Is.True,"Retreat must restore the extinguished fixtures");
             Assert.That(baby&&Get<bool>(baby,"Departing"),Is.True,"Retreat must start a visible departure, not delete Baby immediately");
             yield return Wait(()=>!baby,3,"The retired Baby did not finish fading out");
             Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Baby");PlacePlayer(LoopOrigin+new Vector3(-1.2f,.03f,16));Call(shell,"Resume");
             yield return Wait(()=>Get<Component>(director,"Baby"),3,"The next Baby event did not appear");yield return Delay(2.3f);
-            PlacePlayer(LoopOrigin+new Vector3(0,.03f,30.5f));
-            yield return Wait(()=>Get<bool>(Get<object>(director,"EventClock"),"Pursuing"),1,"Actual close approach did not start pursuit");
-            Assert.That(Get<double>(Get<object>(director,"EventClock"),"Elapsed"),Is.LessThan(60));
-            baby=Get<Component>(director,"Baby");PlacePlayer(baby.transform.position+Vector3.forward*.55f);
+            PlacePlayer(LoopOrigin+new Vector3(-.95f,.03f,12.5f));yield return Delay(.2f);
+            Assert.That(Get<bool>(Get<object>(director,"EventClock"),"Pursuing"),Is.False,"Close approach must not shorten the full minute");
+            baby=Get<Component>(director,"Baby");PlacePlayer(baby.transform.position+Vector3.forward*.45f);
             yield return Wait(()=>Get<bool>(session,"Finished"),2,"Actual Baby contact did not cause defeat");
             Assert.That(Get<string>(session,"DefeatSource"),Does.Contain("베이비"));
         }
@@ -229,6 +251,56 @@ namespace HappyToy.V2.CloudTests
             previous=session;Call(shell,"Restart",false);yield return RecoveryRebind(previous);
             Call(session,"CreateChapterForCheckpoint",legacy);Call(session,"ApplyChapterCheckpoint",legacy);world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
             Assert.That(Get<object>(Get<Component>(world,"Anomalies"),"Kind").ToString(),Is.EqualTo("Normal"));
+        }
+        [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolBabyBlackoutShopTimeoutContactAndPauseAreHeadlessSafe()
+        {
+            yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            var director=Get<Component>(world,"Anomalies");
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Baby");
+            PlacePlayer(LoopOrigin+new Vector3(-1.2f,.03f,15));Call(shell,"Resume");yield return Delay(.1f);
+            Assert.That(Get<Component>(director,"Baby"),Is.Null,"Baby appeared before the study sign");
+            PlacePlayer(LoopOrigin+new Vector3(-1.2f,.03f,16.1f));
+            yield return Wait(()=>Get<Component>(director,"Baby"),3,"The study sign did not trigger Baby");
+            var baby=Get<Component>(director,"Baby");var clock=Get<object>(director,"EventClock");
+            var visual=Get<Transform>(baby,"Visual");var source=Resources.Load<GameObject>("EnemyStudio/Baby/BabyRuntime");
+            Assert.That(visual.localScale.x,Is.EqualTo(source.transform.localScale.x*2f/3f).Within(.001f));
+            Assert.That(baby.transform.position.z-LoopOrigin.z,Is.EqualTo(9.4f).Within(.5f));
+            Assert.That(Get<float>(baby,"Opacity"),Is.EqualTo(1));
+            var fixtures=Get<Transform>(world,"Root").GetComponentsInChildren(RequireType("SchoolFluorescent"));
+            Assert.That(fixtures.Length,Is.GreaterThan(27));
+            Assert.That(fixtures.All(f=>Get<Light>(f,"Source").intensity==0),Is.True,"Room, connector and corridor lamps must all go out");
+            var camera=Get<Camera>(player,"eyes");camera.transform.rotation=Quaternion.LookRotation(baby.transform.position+Vector3.up*.5f-camera.transform.position);
+            Physics.SyncTransforms();var atmosphere=Get<Component>(baby,"Atmosphere");Call(atmosphere,"Tick",1d,false,true);
+            Assert.That(Get<bool>(atmosphere,"Witnessed"),Is.True,"Looking at Baby must introduce the witness heartbeat");
+            float pulse=Get<AudioSource>(atmosphere,"PulseSource").volume;Call(atmosphere,"Tick",59d,false,true);
+            Assert.That(Get<AudioSource>(atmosphere,"PulseSource").volume,Is.GreaterThan(pulse));
+            Call(shell,"Pause");var held=Call(clock,"Capture");var position=baby.transform.position;yield return Delay(.2f);
+            Assert.That(Call(clock,"Capture"),Is.EqualTo(held));Assert.That(baby.transform.position,Is.EqualTo(position));
+            PlacePlayer(LoopOrigin+new Vector3(-.95f,.03f,12.5f));Call(shell,"Resume");yield return Delay(.2f);
+            Assert.That(Get<bool>(clock,"Pursuing"),Is.False,"Close approach must not shorten the full minute");
+            Call(shell,"Pause");var saved=Call(director,"Capture");var timing=Get<object>(saved,"clock");
+            Assert.That(Get<bool>(Get<object>(saved,"baby"),"witnessed"),Is.True,"Capture must preserve that Baby was witnessed");
+            var checkpoint=Call(session,"CaptureChapterCheckpoint");string json=(string)Call(checkpoint,"ToJson");
+            var decoded=Call(RequireType("ChapterCheckpoint"),"FromJson",json);
+            Assert.That(Get<bool>(Get<object>(Get<object>(Get<object>(decoded,"loop"),"anomalies"),"baby"),"witnessed"),Is.True,
+                "The actual JSON codec must preserve a witnessed Baby");
+            string oldJson=Regex.Replace(json,"\\\"witnessed\\\"\\s*:\\s*(?:true|false)\\s*,","");
+            Assert.That(oldJson,Does.Not.Contain("\"witnessed\""),"Legacy JSON fixture must omit the optional field");
+            var legacy=Call(RequireType("ChapterCheckpoint"),"FromJson",oldJson);
+            Assert.That(Get<bool>(Get<object>(Get<object>(Get<object>(legacy,"loop"),"anomalies"),"baby"),"witnessed"),Is.False,
+                "Old v3 saves must default to an unwitnessed Baby");
+            Set(timing,"Elapsed",59.8d);Set(saved,"clock",timing);Call(director,"Restore",saved,Get<int>(world,"Traversals"));
+            Assert.That(fixtures.All(f=>Get<Light>(f,"Source").intensity==0),Is.True,"A saved active event must restore darkness");
+            baby=Get<Component>(director,"Baby");atmosphere=Get<Component>(baby,"Atmosphere");
+            Assert.That(Get<bool>(atmosphere,"Witnessed"),Is.True,"Restoring must retain the heartbeat after looking away");
+            camera.transform.rotation=Quaternion.Euler(0,0,0);Call(shell,"Resume");
+            Call(atmosphere,"Tick",59.8d,false,true);
+            Assert.That(Get<AudioSource>(atmosphere,"PulseSource").volume,Is.GreaterThan(0),"The witnessed heartbeat must continue without another look");
+            yield return Wait(()=>Get<bool>(clock,"Pursuing"),2,"The 60-second deadline did not start the chase");
+            PlacePlayer(baby.transform.position+Vector3.forward*.45f);
+            yield return Wait(()=>Get<bool>(session,"Finished"),2,"Touching Baby must immediately defeat the player");
+            Assert.That(Get<string>(session,"DefeatSource"),Does.Contain("베이비"));
         }
         void ExportSchoolAnomalyFrame(Component world,string name,Vector3 feet,Vector3 target)
         {

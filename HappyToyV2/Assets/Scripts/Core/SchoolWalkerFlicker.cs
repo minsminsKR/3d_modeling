@@ -1,0 +1,50 @@
+using System;
+
+namespace HappyToy.V2
+{
+    // A restorable timeline: long red holds alternate with irregular dark
+    // pulses. Pose and displacement advance only during the same dark pulses.
+    public static class SchoolWalkerFlicker
+    {
+        public const double CycleSeconds=7.3;
+        static readonly double[] starts={1.60,1.73,1.84,1.97,2.10,2.23,2.35,2.48,
+            3.90,4.02,4.14,4.27,4.42};
+        static readonly double[] ends={1.69,1.80,1.93,2.06,2.19,2.31,2.44,2.56,
+            3.98,4.10,4.23,4.38,4.56};
+
+        public static bool Dark(double elapsed)
+        {
+            double phase=Phase(elapsed);
+            for(int i=0;i<starts.Length;i++)if(phase>=starts[i]&&phase<ends[i])return true;
+            return false;
+        }
+        // The integer part selects an asymmetrical fixed pose. Its fractional
+        // part changes behind the flash, so each lit frame holds the new pose.
+        public static double Pose(double elapsed)
+        {
+            double cycles=Math.Floor(Math.Max(0,elapsed)/CycleSeconds),phase=Phase(elapsed);
+            double pose=cycles*starts.Length;
+            for(int i=0;i<starts.Length;i++)
+            {
+                if(phase<starts[i])break;
+                pose+=Math.Min(1,(phase-starts[i])/(ends[i]-starts[i]));
+                if(phase<ends[i])break;
+            }
+            return pose;
+        }
+        public static double MovingSeconds(double start,double duration)
+        {
+            if(double.IsNaN(start)||double.IsInfinity(start)||start<0||double.IsNaN(duration)||double.IsInfinity(duration)||duration<0)
+                throw new ArgumentException("Finite nonnegative flicker interval required");
+            return Accumulated(start+duration)-Accumulated(start);
+        }
+        static double Accumulated(double elapsed)
+        {
+            double cycles=Math.Floor(elapsed/CycleSeconds),phase=Phase(elapsed),perCycle=0,result=0;
+            for(int i=0;i<starts.Length;i++)
+            {perCycle+=ends[i]-starts[i];result+=Math.Max(0,Math.Min(phase,ends[i])-starts[i]);}
+            return cycles*perCycle+result;
+        }
+        static double Phase(double elapsed)=>Math.Max(0,elapsed)%CycleSeconds;
+    }
+}

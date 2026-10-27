@@ -56,7 +56,8 @@ namespace HappyToy.V2.CoreTests
             clock.Step(0,true,true,false,SchoolAnomalyKind.Baby);clock.Step(59.99,true,false,false,SchoolAnomalyKind.Baby);
             Assert.That(clock.Pursuing,Is.False);clock.Step(.02,true,false,false,SchoolAnomalyKind.Baby);Assert.That(clock.Pursuing,Is.True);
             clock.Reset();clock.Step(1,true,true,true,SchoolAnomalyKind.Baby);Assert.That(clock.Pursuing,Is.False);
-            clock.Step(1.3,true,false,true,SchoolAnomalyKind.Baby);Assert.That(clock.Pursuing,Is.True);
+            clock.Step(1.3,true,false,true,SchoolAnomalyKind.Baby);Assert.That(clock.Pursuing,Is.False, "Approaching must not start pursuit before the full minute");
+            clock.Step(57.7,true,false,true,SchoolAnomalyKind.Baby);Assert.That(clock.Pursuing,Is.True);
         }
         [Test] public void DarknessDeadlineStartsOnlyAfterAllNineLightsAndPausePreservesItsRemainingTime()
         {

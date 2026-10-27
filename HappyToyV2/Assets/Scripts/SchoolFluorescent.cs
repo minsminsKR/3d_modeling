@@ -13,18 +13,19 @@ namespace HappyToy.V2
         Material tube;
         Material[] additionalTubes;
         float backscatterIntensity;
-        Color emission;
+        Color emission,sourceColor,backscatterColor,eventTint=Color.white;
         SchoolFluorescentClock clock;
         MeshRenderer haze;
         MaterialPropertyBlock values;
         float eventGain=1,voltageGain=1;
         public void SetEventGain(float gain){eventGain=Mathf.Clamp01(gain);Apply(voltageGain);}
+        public void SetEventTint(Color tint){eventTint=tint;Apply(voltageGain);}
         public void Configure(Light source,Material tubeMaterial,Color glow,float phase,Light backscatter=null,
             Material[] additionalTubeMaterials=null)
         {
-            Source=source;BaselineIntensity=source.intensity;tube=tubeMaterial;emission=glow;
+            Source=source;BaselineIntensity=source.intensity;sourceColor=source.color;tube=tubeMaterial;emission=glow;
             additionalTubes=additionalTubeMaterials;
-            Backscatter=backscatter;backscatterIntensity=backscatter?backscatter.intensity:0;
+            Backscatter=backscatter;backscatterIntensity=backscatter?backscatter.intensity:0;backscatterColor=backscatter?backscatter.color:Color.white;
             clock=new SchoolFluorescentClock(phase);values=new MaterialPropertyBlock();
         }
         public void SetHaze(MeshRenderer renderer){haze=renderer;Apply(1);}
@@ -32,7 +33,7 @@ namespace HappyToy.V2
         {
             if(!Source||clock==null)return;
             var session=GameSession.Current;
-            bool playing=session&&session.InputAllowed&&!session.Finished;
+            bool playing=session&&session.InputAllowed&&!session.Finished&&!EnemyTimeStop.Active;
             // Pausing never changes an already rendered fixture, even for a newly opened settings panel.
             if(!playing)return;
             bool reduced=session.Shell&&session.Shell.ReducedMotion;
@@ -41,11 +42,12 @@ namespace HappyToy.V2
         void Apply(float gain,bool reduced=false)
         {
             voltageGain=gain;gain*=eventGain;
+            Source.color=sourceColor*eventTint;
             Source.intensity=BaselineIntensity*gain;
-            if(Backscatter)Backscatter.intensity=backscatterIntensity*gain;
-            if(tube)tube.SetColor("_EmissionColor",emission*gain);
+            if(Backscatter){Backscatter.color=backscatterColor*eventTint;Backscatter.intensity=backscatterIntensity*gain;}
+            if(tube)tube.SetColor("_EmissionColor",emission*eventTint*gain);
             if(additionalTubes!=null)
-                foreach(var other in additionalTubes)if(other)other.SetColor("_EmissionColor",emission*gain);
+                foreach(var other in additionalTubes)if(other)other.SetColor("_EmissionColor",emission*eventTint*gain);
             if(!haze)return;
             values.SetVector("_SourcePosition",Source.transform.position);
             values.SetColor("_ScatterColor",Source.color.linear);

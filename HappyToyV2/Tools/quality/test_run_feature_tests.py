@@ -30,6 +30,20 @@ class FeatureRoutingTests(unittest.TestCase):
         self.assertIn("-nographics", core["editorArguments"])
         self.assertIn("-noaudio", core["editorArguments"])
 
+    def test_school_anomaly_logic_runs_both_stages_without_graphics_or_audio(self):
+        stages = runner.commands("school-anomalies-logic", Path("Project"), Path("Fresh"))
+        self.assertEqual([stage["mode"] for stage in stages], ["EditMode", "PlayMode"])
+        for stage in stages:
+            self.assertIn("-nographics", stage["editorArguments"])
+            self.assertIn("-noaudio", stage["editorArguments"])
+            self.assertIn("-v2-audit-no-desktop-interaction", stage["editorArguments"])
+        selectors = stages[1]["selectors"]
+        self.assertTrue(any(name.endswith("SchoolBabyBlackoutShopTimeoutContactAndPauseAreHeadlessSafe") for name in selectors))
+        self.assertFalse(any(name.endswith("SchoolBlackoutExtinguishesFromFarEndRestoresOnRetreatAndKillsAfterFiveDarkSeconds") for name in selectors))
+        self.assertFalse(any(name.endswith("SchoolBabyAppearsAtTheStudySignCriesPursuesAfterTimeoutAndRetreatRemovesIt") for name in selectors))
+        graphical = runner.commands("school-anomalies", Path("Project"), Path("Fresh"))
+        self.assertTrue(all("-nographics" not in stage["editorArguments"] for stage in graphical))
+
     def test_cli_keeps_isolation_when_the_user_omits_the_old_optional_flag(self):
         output = io.StringIO()
         with patch.object(sys, "argv", [str(MODULE), "--profile", "core", "--dry-run"]), \

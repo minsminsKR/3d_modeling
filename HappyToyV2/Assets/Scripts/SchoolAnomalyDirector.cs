@@ -46,8 +46,9 @@ namespace HappyToy.V2
             bool advancing=session.InputAllowed&&!session.Finished&&!EnemyTimeStop.Active;
             var local=world.Centre.InverseTransformPoint(session.player.transform.position);
             bool sign=Mathf.Abs(local.x)<=SchoolLoopPlan.HalfWidth&&local.z>=StudySignZ&&local.z<=SchoolLoopPlan.Length;
-            clock.Step(Time.deltaTime,advancing,sign,Baby&&Baby.CloseToPlayer,Kind);
-            if(Kind==SchoolAnomalyKind.Baby&&clock.Triggered&&!Baby)Baby=SchoolBabyEncounter.Build(session,world.Centre);
+            clock.Step(Time.deltaTime,advancing,sign,false,Kind);
+            if(Kind==SchoolAnomalyKind.Baby&&clock.Triggered&&!Baby)
+            {Blackout.ApplyBaby(true);Baby=SchoolBabyEncounter.Build(session,world.Centre);}
             if(Baby)Baby.Tick(clock,advancing);
             if(Kind==SchoolAnomalyKind.Blackout)
             {
@@ -71,7 +72,7 @@ namespace HappyToy.V2
         public void Restore(SchoolAnomalyProgress saved,int traversal)
         {
             ValidateRestore(saved,traversal);deck.Restore(saved.deck);clock.Restore(saved.clock,Kind);ApplyPassage();
-            if(saved.baby.present){Baby=SchoolBabyEncounter.Build(session,world.Centre);Baby.Restore(saved.baby,clock);}
+            if(saved.baby.present){Blackout.ApplyBaby(true);Baby=SchoolBabyEncounter.Build(session,world.Centre);Baby.Restore(saved.baby,clock);}
             if(Kind==SchoolAnomalyKind.Blackout)Blackout.Apply(clock.Triggered,clock.Elapsed);
         }
     }

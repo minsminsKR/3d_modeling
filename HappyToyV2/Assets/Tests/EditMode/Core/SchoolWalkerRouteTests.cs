@@ -6,6 +6,45 @@ namespace HappyToy.V2.CoreTests
     public sealed class SchoolWalkerRouteTests
     {
         [Test]
+        public void FlickerHoldsPoseAndPositionInRedAndMovesOnlyWhileTheLightsPulse()
+        {
+            Assert.That(SchoolWalkerFlicker.Dark(.8),Is.False);
+            Assert.That(SchoolWalkerFlicker.Pose(1.5),Is.EqualTo(0));
+            Assert.That(SchoolWalkerFlicker.MovingSeconds(0,1.6),Is.EqualTo(0).Within(1e-8));
+            Assert.That(SchoolWalkerFlicker.Dark(1.65),Is.True);
+            Assert.That(SchoolWalkerFlicker.Pose(1.65),Is.InRange(.01,.99));
+            Assert.That(SchoolWalkerFlicker.Dark(1.71),Is.False);
+            Assert.That(SchoolWalkerFlicker.Pose(1.70),Is.EqualTo(SchoolWalkerFlicker.Pose(1.72)).Within(1e-8));
+            Assert.That(SchoolWalkerFlicker.MovingSeconds(2.6,1.3),Is.EqualTo(0).Within(1e-8));
+            Assert.That(SchoolWalkerFlicker.MovingSeconds(1.6,1),Is.GreaterThan(.5));
+            var route=new SchoolWalkerRoute();
+            for(int i=0;i<150;i++)route.Advance(.01,true,10,60,0);
+            Assert.That(route.Z,Is.EqualTo(SchoolWalkerRoute.StartZ));
+            var held=route.CaptureState();
+            route.Advance(.1,false,10,60,4);
+            Assert.That(route.CaptureState(),Is.EqualTo(held));
+        }
+        [Test]
+        public void FlickerApproachIsIndependentOfFramePartitionAndRespectsTheSolidPlayer()
+        {
+            SchoolWalkerRoute Run(double step,float playerZ)
+            {
+                var route=new SchoolWalkerRoute();
+                for(double time=0;time<7.3-1e-8;)
+                {
+                    double dt=Math.Min(step,7.3-time);
+                    float speed=(float)(4*SchoolWalkerFlicker.MovingSeconds(time,dt)/dt);
+                    route.Advance(dt,true,.65f,playerZ,speed);time+=dt;
+                }
+                return route;
+            }
+            var fine=Run(.01,0);var coarse=Run(.05,0);
+            Assert.That(fine.CaptureState().Distance,Is.GreaterThan(2));
+            Assert.That(coarse.CaptureState().Distance,Is.EqualTo(fine.CaptureState().Distance).Within(.002));
+            var blocked=Run(.01,32);
+            Assert.That(blocked.Z,Is.GreaterThanOrEqualTo(32+SchoolWalkerRoute.PersonalSpace));
+        }
+        [Test]
         public void APassStaysOnThePhysicalFloorAndSettlesAtTheMaskedElbow()
         {
             var route=new SchoolWalkerRoute();
