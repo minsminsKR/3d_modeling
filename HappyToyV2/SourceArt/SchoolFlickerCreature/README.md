@@ -85,3 +85,24 @@ already on `origin/main` before this handoff.
    Track the full original input, service and Blender sources, exported Unity
    assets with `.meta`, reproducible tools and attribution. Group superseded builds
    only after the new build is verified, as the project instructions require.
+
+## Face reference update — 2026-10-28
+
+The user requested the red-flicker creature use the face in
+`Reference/user-face-reference.png`, a face source previously used for an NPC.
+`Reference/concept-face-reference.png` is the new image-to-3D concept: the built-in
+image generation tool edited `concept-original.png` using the user photo as the
+face reference. Prompt: "Edit the first image, a full-body horror game creature
+modeling reference. Replace only its face/head front with the recognizable human
+face from the second image: preserve the person's facial proportions, eyes, nose,
+mouth, hair and likeness, adapted naturally into the creature's dark organic head
+with an uncanny threatening expression. Keep the original creature's body,
+silhouette, limbs, claws, back tendrils, full-body composition, neutral gray
+background and lighting intact. One creature, full body visible, suitable as
+image-to-3D reference, no text."
+
+Use this new concept as the image input for the pending generation workflow above.
+On this attempt both capabilities and doctor returned HTTP 401 AUTH_REQUIRED for
+the designated server. No generation request was submitted and no 3D or Unity
+replacement exists yet. Restore the CLI login before proceeding; do not treat the
+concept as an in-game result. Preserve the original concept and face source.
