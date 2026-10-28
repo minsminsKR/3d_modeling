@@ -29,6 +29,10 @@ namespace HappyToy.V2
         readonly Stack<Environment> renders=new Stack<Environment>();
         readonly List<ReflectionProbe> probes=new List<ReflectionProbe>();
         readonly List<Light> windowLights=new List<Light>();
+        readonly Dictionary<Light,bool> flickerLightStates=new Dictionary<Light,bool>();
+        readonly Dictionary<ReflectionProbe,bool> flickerProbeStates=new Dictionary<ReflectionProbe,bool>();
+        bool flickerDark,planarBeforeFlicker;
+        public bool FlickerDark=>flickerDark;
         readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
         readonly List<GameObject> additions=new List<GameObject>();
         SchoolLoopWorld world;GameSession session;Transform root;
@@ -162,6 +166,37 @@ namespace HappyToy.V2
             session.GetComponent<LocalShadowBudget>()?.RefreshNow();
         }
 
+        // Called only by the school strobe owner, on its simulation clock.
+        // Save exact per-light state; the player flashlight is explicitly exempt.
+        public void SetFlickerDark(bool dark)
+        {
+            if(flickerDark==dark)return;
+            if(dark)
+            {
+                if(!Prepared||!world||!world.Root)throw new InvalidOperationException("School lighting must be prepared before flicker blackout");
+                flickerLightStates.Clear();
+                var flashlight=session&&session.player?session.player.flashlight:null;
+                foreach(var light in world.Root.GetComponentsInChildren<Light>(true))
+                {
+                    if(!light||light==flashlight)continue;
+                    flickerLightStates[light]=light.enabled;light.enabled=false;
+                }
+                flickerProbeStates.Clear();
+                foreach(var probe in probes)if(probe){flickerProbeStates[probe]=probe.enabled;probe.enabled=false;}
+                planarBeforeFlicker=planar&&planar.enabled;if(planar)planar.enabled=false;
+                flickerDark=true;
+            }
+            else
+            {
+                foreach(var item in flickerLightStates)if(item.Key)item.Key.enabled=item.Value;
+                flickerLightStates.Clear();
+                foreach(var item in flickerProbeStates)if(item.Key)item.Key.enabled=item.Value;
+                flickerProbeStates.Clear();
+                if(planar)planar.enabled=planarBeforeFlicker;
+                flickerDark=false;
+            }
+        }
+
         void AddWindows(Transform chunk)
         {
             var sourceRoot=new GameObject("Owned school cold-window light scope");
@@ -209,7 +244,7 @@ namespace HappyToy.V2
         }
         void LateUpdate()
         {
-            if(DiagnosticDesktopPolicy.CpuOnly)return;
+            if(DiagnosticDesktopPolicy.CpuOnly||flickerDark)return;
             if(!Prepared||Time.frameCount<=preparedFrame+2||nextProbe>=probes.Count)return;
             var graphics=session.GetComponent<GraphicsLightingPresentation>();if(!graphics||!graphics.Prepared)return;
             if(nextProbe>0&&!probes[nextProbe-1].IsFinishedRendering(renderId))return;
@@ -225,24 +260,26 @@ namespace HappyToy.V2
             if(!Prepared||!session||!session.ChapterMode||!session.Chapter||session.Chapter.Loop!=world||!camera||
                 camera!=session.player.eyes&&camera.cameraType!=CameraType.Reflection||!cameraBounds.Contains(camera.transform.position))return;
             bool pending=!ReflectionReady;
+            bool blackReflection=pending||flickerDark;
             renders.Push(new Environment{camera=camera,ambientMode=RenderSettings.ambientMode,ambient=RenderSettings.ambientLight,
                 sky=RenderSettings.ambientSkyColor,equator=RenderSettings.ambientEquatorColor,ground=RenderSettings.ambientGroundColor,
                 ambientIntensity=RenderSettings.ambientIntensity,harmonics=RenderSettings.ambientProbe,fog=RenderSettings.fog,
                 fogMode=RenderSettings.fogMode,fogColor=RenderSettings.fogColor,fogDensity=RenderSettings.fogDensity,
                 fogStart=RenderSettings.fogStartDistance,fogEnd=RenderSettings.fogEndDistance,
-                reflectionOverride=pending,reflectionMode=RenderSettings.defaultReflectionMode,reflection=pending?RenderSettings.customReflectionTexture:null});
-            if(pending){RenderSettings.defaultReflectionMode=DefaultReflectionMode.Custom;RenderSettings.customReflectionTexture=pendingReflection;}
-            var ambient=new Color(.028f,.040f,.058f);
+                reflectionOverride=blackReflection,reflectionMode=RenderSettings.defaultReflectionMode,reflection=blackReflection?RenderSettings.customReflectionTexture:null});
+            if(blackReflection){RenderSettings.defaultReflectionMode=DefaultReflectionMode.Custom;RenderSettings.customReflectionTexture=pendingReflection;}
+            var ambient=flickerDark?Color.black:new Color(.028f,.040f,.058f);
             RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=ambient;
             RenderSettings.ambientSkyColor=RenderSettings.ambientEquatorColor=RenderSettings.ambientGroundColor=ambient;
             RenderSettings.ambientIntensity=.65f;var harmonics=new SphericalHarmonicsL2();harmonics.AddAmbientLight(ambient*.65f);RenderSettings.ambientProbe=harmonics;
             RenderSettings.fog=true;RenderSettings.fogMode=FogMode.ExponentialSquared;
-            RenderSettings.fogColor=new Color(.006f,.010f,.017f);RenderSettings.fogDensity=.0135f;
+            RenderSettings.fogColor=flickerDark?Color.black:new Color(.006f,.010f,.017f);RenderSettings.fogDensity=.0135f;
         }
         void AfterCamera(ScriptableRenderContext context,Camera camera)
         {if(renders.Count>0&&renders.Peek().camera==camera)renders.Pop().Restore();}
         void OnDisable()
         {
+            if(flickerDark)SetFlickerDark(false);
             overlap?.Dispose();
             if(subscribed){RenderPipelineManager.beginCameraRendering-=BeforeCamera;RenderPipelineManager.endCameraRendering-=AfterCamera;subscribed=false;}
             while(renders.Count>0)renders.Pop().Restore();

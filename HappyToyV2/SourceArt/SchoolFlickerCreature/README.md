@@ -260,3 +260,11 @@ and its input fingerprint are recorded separately after they complete.
 Player build: `Builds/Windows-StrobeGrounded-20261028` completed under Unity
 6000.6.0f1; `verify_build_inputs.py` passed all 4614 current inputs. No GPU or
 native player screenshot was produced while respecting desktop isolation.
+
+
+2026-10-28 visibility revision: The opaque strobe curtain is no longer created.
+During each dark pulse school lights, ambient and reflections are suppressed while
+the player flashlight retains its own settings. On red-lit holds the existing
+texture-based creature emission is strengthened with per-renderer property blocks;
+it is zero during dark pulses. Model geometry, rig, calibration and source textures
+are unchanged. Visual brightness and readability still require in-game review.

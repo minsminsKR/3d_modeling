@@ -17,7 +17,8 @@ namespace HappyToy.V2
         Transform creature;
         SchoolFlickerCreatureMotion creatureMotion;
         SchoolWalkerFlickerLighting flicker;
-        public SchoolFlickerCurtain FlickerCurtain {get;private set;}
+        SchoolFlickerCreatureVisibility creatureVisibility;
+        public bool FlickerDark=>flicker!=null&&flicker.Dark;
         public Transform Walker=>transform;
         public Transform Visual {get;private set;}
         public Transform Creature=>creature;
@@ -36,7 +37,7 @@ namespace HappyToy.V2
             if(creature)creature.gameObject.SetActive(value);
             if(Motion){Motion.SetDancing(value);ApplyPose();}
             if(flicker!=null)flicker.SetActive(value,route.CaptureState().Elapsed);
-            if(FlickerCurtain)FlickerCurtain.Set(value&&flicker!=null&&flicker.Dark);
+            if(creatureVisibility!=null)creatureVisibility.Set(value,FlickerDark);
         }
         public int Traversal=>route.CaptureState().Traversal;
         public int PendingTraversal=>route.CaptureState().PendingTraversal;
@@ -54,7 +55,6 @@ namespace HappyToy.V2
             {
                 actor.session=owner;actor.section=centre;
                 actor.flicker=new SchoolWalkerFlickerLighting(centre.parent);
-                actor.FlickerCurtain=actor.gameObject.AddComponent<SchoolFlickerCurtain>();actor.FlickerCurtain.Prepare();
                 actor.Visual=Instantiate(prefab,actor.transform,false).transform;
                 if(actor.Visual.GetComponentsInChildren<Collider>(true).Length>0||actor.Visual.GetComponentsInChildren<Rigidbody>(true).Length>0)
                     throw new InvalidOperationException("School walker visual must not supply duplicate physics bodies");
@@ -74,6 +74,7 @@ namespace HappyToy.V2
                 if(!creaturePrefab)throw new InvalidOperationException("Flicker creature prefab is missing");
                 actor.creature=Instantiate(creaturePrefab,actor.transform,false).transform;
                 actor.creatureMotion=new SchoolFlickerCreatureMotion(actor.creature);
+                actor.creatureVisibility=new SchoolFlickerCreatureVisibility(actor.creature);
                 actor.creature.gameObject.SetActive(false);
                 actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
                 actor.Footsteps.Prepare(metresPerCycle);actor.Footsteps.Synchronize(actor.route.CaptureState());
@@ -166,8 +167,8 @@ namespace HappyToy.V2
             transform.localRotation=Quaternion.Euler(0,state.Yaw,0);if(!Dancing)Motion.Apply(state);
             if(Dancing&&creatureMotion!=null)creatureMotion.Apply(state.Elapsed);
             if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
-            if(FlickerCurtain)FlickerCurtain.Set(Dancing&&flicker!=null&&flicker.Dark);
+            if(creatureVisibility!=null)creatureVisibility.Set(Dancing,FlickerDark);
         }
-        void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);if(creatureMotion!=null)creatureMotion.Dispose();}
+        void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);if(creatureMotion!=null)creatureMotion.Dispose();if(creatureVisibility!=null)creatureVisibility.Dispose();}
     }
 }

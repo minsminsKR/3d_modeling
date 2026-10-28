@@ -9,7 +9,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
-using UnityEngine.UIElements;
 using static HappyToy.V2.CloudTests.RuntimeAccess;
 using Object=UnityEngine.Object;
 
@@ -95,12 +94,33 @@ namespace HappyToy.V2.CloudTests
             CollectionAssert.AreEqual(paused,bones.Select(b=>(b.localPosition,b.localRotation)).ToArray());
             Assert.That(Get<float>(walker,"Distance"),Is.EqualTo(stopped),"Pause must hold the flicker advance");
             ExportSchoolAnomalyFrame(world,"dancing-walker",new Vector3(-1.2f,.03f,25),new Vector3(.65f,1.3f,31));
-            var snapState=Call(walker,"CaptureState");Set(snapState,"Elapsed",1.60d);Set(snapState,"IdleElapsed",0d);Call(walker,"RestoreState",snapState);
-            var curtain=Get<Component>(walker,"FlickerCurtain");Assert.That(Get<bool>(curtain,"Black"),Is.True,"The screen must be black while the flicker lights are off");
-            var document=UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsInactive.Include,FindObjectsSortMode.None).Single(d=>d.name=="School flicker independent screen curtain");
-            Assert.That(document,Is.Not.Null);Assert.That(document.panelSettings.sortingOrder,Is.GreaterThan(500));
-            Assert.That(document.rootVisualElement.style.backgroundColor.value,Is.EqualTo(Color.black));
-            Assert.That(document.rootVisualElement.style.display.value,Is.EqualTo(DisplayStyle.Flex));
+            var snapState=Call(walker,"CaptureState");Set(snapState,"IdleElapsed",0d);
+            var lighting=Get<Transform>(world,"Root").GetComponent(RequireType("SchoolHorrorLighting"));
+            Assert.That(lighting,Is.Not.Null);
+            var torch=Get<Light>(player,"flashlight");bool originalTorchEnabled=torch.enabled;float originalTorchIntensity=torch.intensity;
+            Set(snapState,"Elapsed",1.50d);Call(walker,"RestoreState",snapState);
+            var windows=Get<IReadOnlyList<Light>>(lighting,"WindowLights").ToArray();
+            Assert.That(windows.Length,Is.GreaterThan(0));
+            var originalWindows=windows.Select(l=>(l.enabled,l.intensity)).ToArray();
+            var labels=Get<Transform>(world,"Root").GetComponentsInChildren<TextMesh>(true).Select(t=>t.GetComponent<Renderer>()).Where(r=>r).ToArray();
+            var originalLabels=labels.Select(r=>r.enabled).ToArray();
+            Assert.That(labels.Length,Is.GreaterThan(0));
+            var litBlock=new MaterialPropertyBlock();
+            foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            {skin.GetPropertyBlock(litBlock);var color=litBlock.GetColor("_EmissionColor");
+                Assert.That(Mathf.Max(color.r,color.g,color.b),Is.GreaterThanOrEqualTo(.6f),"The creature must have a visible red-light fill");}
+            torch.enabled=true;Set(snapState,"Elapsed",1.60d);Call(walker,"RestoreState",snapState);
+            Assert.That(Get<bool>(walker,"FlickerDark")&&Get<bool>(lighting,"FlickerDark"),Is.True);
+            Assert.That(torch.enabled,Is.True,"Dark flicker must not disable the flashlight");
+            Assert.That(torch.intensity,Is.EqualTo(originalTorchIntensity).Within(.0001f));
+            Assert.That(windows.All(l=>!l.enabled||l.intensity==0),Is.True,"Window lights must be off during a dark pulse");
+            Assert.That(labels.All(r=>!r.enabled),Is.True,"Unlit world lettering must not glow during a dark pulse");
+            var darkBlock=new MaterialPropertyBlock();
+            foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            {skin.GetPropertyBlock(darkBlock);var color=darkBlock.GetColor("_EmissionColor");
+                Assert.That(Mathf.Max(color.r,color.g,color.b),Is.EqualTo(0).Within(.00001f),"Monster fill must be off during the dark pulse");}
+            Assert.That(UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include,FindObjectsSortMode.None)
+                .Any(c=>c&&c.GetType().Name=="SchoolFlickerCurtain"),Is.False,"No opaque screen curtain may obscure the flashlight");
             bool invertedAtStart=Get<bool>(walker,"CreatureInverted");
             var flashPose=bones.Select(b=>b.localRotation).ToArray();
             var fixtures=Get<Transform>(world,"Root").GetComponentsInChildren(RequireType("SchoolFluorescent"));
@@ -108,15 +128,27 @@ namespace HappyToy.V2.CloudTests
             Set(snapState,"Elapsed",1.65d);Call(walker,"RestoreState",snapState);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.LessThan(.01f),"The entire dark interval must hold one pose");
             Assert.That(Get<bool>(walker,"CreatureInverted"),Is.EqualTo(invertedAtStart),"Orientation must remain fixed throughout each flash");
-            Set(snapState,"Elapsed",1.70d);Call(walker,"RestoreState",snapState);Assert.That(Get<bool>(curtain,"Black"),Is.False,"The curtain must clear as soon as lights return");
-            Set(snapState,"Elapsed",1.73d);Call(walker,"RestoreState",snapState);Assert.That(Get<bool>(curtain,"Black"),Is.True);
+            torch.enabled=false;Set(snapState,"Elapsed",1.65d);Call(walker,"RestoreState",snapState);
+            Assert.That(torch.enabled,Is.False);Assert.That(torch.intensity,Is.EqualTo(originalTorchIntensity).Within(.0001f));
+            Set(snapState,"Elapsed",1.70d);Call(walker,"RestoreState",snapState);
+            Assert.That(Get<bool>(walker,"FlickerDark")||Get<bool>(lighting,"FlickerDark"),Is.False);
+            CollectionAssert.AreEqual(originalWindows,windows.Select(l=>(l.enabled,l.intensity)).ToArray(),"Window light state must restore on red");
+            CollectionAssert.AreEqual(originalLabels,labels.Select(r=>r.enabled).ToArray(),"World lettering must restore on red");
+            foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            {skin.GetPropertyBlock(litBlock);var color=litBlock.GetColor("_EmissionColor");
+                Assert.That(Mathf.Max(color.r,color.g,color.b),Is.GreaterThanOrEqualTo(.6f));}
+            Assert.That(torch.enabled,Is.False,"Red light must not force the player's flashlight on");
+            Set(snapState,"Elapsed",1.73d);Call(walker,"RestoreState",snapState);Assert.That(Get<bool>(walker,"FlickerDark"),Is.True);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.GreaterThan(100),"The next light-off must snap to a different contortion");
             bool sawInverted=false,sawUpright=false;
             foreach(double t in new[]{1.60,1.73,1.84,1.97,2.10,2.23,2.35,2.48,3.90,4.02,4.14,4.27,4.42})
             {Set(snapState,"Elapsed",t);Call(walker,"RestoreState",snapState);bool upsideDown=Get<bool>(walker,"CreatureInverted");sawInverted|=upsideDown;sawUpright|=!upsideDown;}
             Assert.That(sawInverted&&sawUpright,Is.True,"The saved event seed must produce both orientations");
             Call(walker,"SetDancing",false);
-            Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);Assert.That(Get<bool>(curtain,"Black"),Is.False);
+            Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);
+            Assert.That(Get<bool>(lighting,"FlickerDark"),Is.False,"Leaving the event must restore its environment");
+            CollectionAssert.AreEqual(originalWindows,windows.Select(l=>(l.enabled,l.intensity)).ToArray());
+            torch.enabled=originalTorchEnabled;
         }
         [UnityTest,Timeout(180000)]
         public IEnumerator SchoolBabyAppearsAtTheStudySignCriesPursuesAfterTimeoutAndRetreatRemovesIt()
