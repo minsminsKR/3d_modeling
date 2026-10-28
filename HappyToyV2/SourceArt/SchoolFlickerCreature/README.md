@@ -280,3 +280,12 @@ calibration and textures are unchanged; actual visual appearance still needs rev
 2026-10-28 timing rollback: the three-second lit hold was reverted to the
 previous irregular flicker timeline. The red backlight and lit-phase tremor
 remain; position and contorted pose change at each dark-pulse onset.
+
+
+Readability: adjust Assets/Resources/SchoolFlickerCreature/ReadabilitySettings.asset
+in the Unity Inspector. The skin-only directional and Fresnel overlay is synced
+to the strobe and disabled in dark pulses, as is the red backdrop. Near/far
+fill follows camera distance. Existing neutral tonemapping, -0.10 exposure,
+0 contrast, 0.12 bloom and 0.12 vignette remain a starting point; assess the
+actual distant and close camera views before making visual quality claims. The
+additional skinned pass requires separate GPU performance measurement.

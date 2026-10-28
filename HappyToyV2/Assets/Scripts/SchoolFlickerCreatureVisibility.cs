@@ -8,14 +8,17 @@ namespace HappyToy.V2
     public sealed class SchoolFlickerCreatureVisibility : IDisposable
     {
         static readonly int EmissionColor=Shader.PropertyToID("_EmissionColor");
-        static readonly Color FlashEmission=new Color(.65f,.48f,.40f,1);
         readonly Renderer[] renderers;
         readonly MaterialPropertyBlock[] original;
         readonly MaterialPropertyBlock[] applied;
+        readonly Camera camera;
+        readonly SchoolFlickerCreatureReadabilitySettings settings;
+        readonly Transform creature;
         bool controlled,previousDark;
-        public SchoolFlickerCreatureVisibility(Transform creature)
+        public SchoolFlickerCreatureVisibility(Transform creature, Camera camera=null, SchoolFlickerCreatureReadabilitySettings settings=null)
         {
             if(!creature)throw new ArgumentNullException(nameof(creature));
+            this.creature=creature;this.camera=camera;this.settings=settings;
             renderers=creature.GetComponentsInChildren<Renderer>(true);
             original=new MaterialPropertyBlock[renderers.Length];
             applied=new MaterialPropertyBlock[renderers.Length];
@@ -28,11 +31,13 @@ namespace HappyToy.V2
         public void Set(bool active,bool dark)
         {
             if(!active){Restore();return;}
-            if(controlled&&previousDark==dark)return;
+            if(controlled&&previousDark==dark&&(dark||!settings||!camera))return;
             controlled=true;previousDark=dark;
+            float fill=settings&&camera?settings.FillAtDistance(Vector3.Distance(camera.transform.position,creature.position)):.65f;
+            var colour=new Color(fill,fill*(.48f/.65f),fill*(.40f/.65f),1);
             for(int i=0;i<renderers.Length;i++)if(renderers[i])
             {
-                applied[i].SetColor(EmissionColor,dark?Color.black:FlashEmission);
+                applied[i].SetColor(EmissionColor,dark?Color.black:colour);
                 renderers[i].SetPropertyBlock(applied[i]);
             }
         }

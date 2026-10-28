@@ -10,6 +10,7 @@ namespace HappyToy.V2
     {
         readonly Transform owner;
         readonly Camera camera;
+        readonly SchoolFlickerCreatureReadabilitySettings settings;
         readonly GameObject halo;
         readonly Mesh mesh;
         readonly Material material;
@@ -17,10 +18,10 @@ namespace HappyToy.V2
         public bool Visible=>renderer&&renderer.enabled;
         public Renderer HaloRenderer=>renderer;
 
-        public SchoolFlickerCreatureHalo(Transform owner,Camera camera)
+        public SchoolFlickerCreatureHalo(Transform owner,Camera camera,SchoolFlickerCreatureReadabilitySettings settings=null)
         {
             if(!owner||!camera)throw new ArgumentException("Creature halo needs the actor and player camera");
-            this.owner=owner;this.camera=camera;
+            this.owner=owner;this.camera=camera;this.settings=settings;
             var shader=Resources.Load<Shader>("SchoolFlickerCreature/SchoolFlickerHalo");
             if(!shader)throw new InvalidOperationException("Creature backlight shader missing");
             material=new Material(shader){name="Owned red creature backlight"};
@@ -44,9 +45,11 @@ namespace HappyToy.V2
             var direction=Vector3.ProjectOnPlane(owner.position-camera.transform.position,Vector3.up);
             if(direction.sqrMagnitude<.0001f)direction=Vector3.ProjectOnPlane(owner.forward,Vector3.up);
             direction.Normalize();
-            halo.transform.position=owner.position+Vector3.up*1.50f+direction*1.35f;
+            float height=settings?settings.haloCentreHeight:1.5f,behind=settings?settings.haloBehind:1.35f;
+            halo.transform.position=owner.position+Vector3.up*height+direction*behind;
             halo.transform.rotation=Quaternion.LookRotation(direction,Vector3.up);
-            halo.transform.localScale=new Vector3(4.8f,3.6f,1);
+            halo.transform.localScale=new Vector3(settings?settings.haloWidth:4.8f,settings?settings.haloHeight:3.6f,1);
+            if(settings)material.SetColor("_Tint",new Color(1.1f,.035f,.012f,settings.haloIntensity));
         }
         public void Dispose()
         {

@@ -20,6 +20,8 @@ namespace HappyToy.V2
         SchoolFlickerCreatureVisibility creatureVisibility;
         SchoolFlickerCreatureTremor creatureTremor;
         public SchoolFlickerCreatureHalo Halo {get;private set;}
+        public SchoolFlickerCreatureRim Rim {get;private set;}
+        public SchoolFlickerCreatureReadabilitySettings ReadabilitySettings {get;private set;}
         public bool FlickerDark=>flicker!=null&&flicker.Dark;
         public Transform Walker=>transform;
         public Transform Visual {get;private set;}
@@ -41,6 +43,7 @@ namespace HappyToy.V2
             if(flicker!=null)flicker.SetActive(value,route.CaptureState().Elapsed);
             if(creatureVisibility!=null)creatureVisibility.Set(value,FlickerDark);
             if(Halo!=null)Halo.Set(value,FlickerDark);
+            if(Rim!=null)Rim.Set(value,FlickerDark);
         }
         public int Traversal=>route.CaptureState().Traversal;
         public int PendingTraversal=>route.CaptureState().PendingTraversal;
@@ -77,9 +80,12 @@ namespace HappyToy.V2
                 if(!creaturePrefab)throw new InvalidOperationException("Flicker creature prefab is missing");
                 actor.creature=Instantiate(creaturePrefab,actor.transform,false).transform;
                 actor.creatureMotion=new SchoolFlickerCreatureMotion(actor.creature);
-                actor.creatureVisibility=new SchoolFlickerCreatureVisibility(actor.creature);
+                actor.ReadabilitySettings=Resources.Load<SchoolFlickerCreatureReadabilitySettings>("SchoolFlickerCreature/ReadabilitySettings");
+                if(!actor.ReadabilitySettings)throw new InvalidOperationException("Creature readability settings missing");
+                actor.creatureVisibility=new SchoolFlickerCreatureVisibility(actor.creature,owner.player.eyes,actor.ReadabilitySettings);
+                actor.Rim=new SchoolFlickerCreatureRim(actor.creature);
                 actor.creatureTremor=new SchoolFlickerCreatureTremor(actor.creature);
-                actor.Halo=new SchoolFlickerCreatureHalo(actor.transform,owner.player.eyes);
+                actor.Halo=new SchoolFlickerCreatureHalo(actor.transform,owner.player.eyes,actor.ReadabilitySettings);
                 actor.creature.gameObject.SetActive(false);
                 actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
                 actor.Footsteps.Prepare(metresPerCycle);actor.Footsteps.Synchronize(actor.route.CaptureState());
@@ -174,7 +180,8 @@ namespace HappyToy.V2
             if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
             if(creatureVisibility!=null)creatureVisibility.Set(Dancing,FlickerDark);
             if(Halo!=null)Halo.Set(Dancing,FlickerDark);
+            if(Rim!=null){if(ReadabilitySettings)Rim.Configure(ReadabilitySettings.rimColor,ReadabilitySettings.rimIntensity,ReadabilitySettings.rimPower,ReadabilitySettings.sideStrength);Rim.Set(Dancing,FlickerDark);}
         }
-        void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);if(creatureMotion!=null)creatureMotion.Dispose();if(creatureVisibility!=null)creatureVisibility.Dispose();if(Halo!=null)Halo.Dispose();}
+        void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);if(creatureMotion!=null)creatureMotion.Dispose();if(creatureVisibility!=null)creatureVisibility.Dispose();if(Halo!=null)Halo.Dispose();if(Rim!=null)Rim.Dispose();}
     }
 }

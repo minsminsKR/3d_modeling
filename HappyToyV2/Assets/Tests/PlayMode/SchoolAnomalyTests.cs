@@ -99,6 +99,20 @@ namespace HappyToy.V2.CloudTests
             var lighting=Get<Transform>(world,"Root").GetComponent(RequireType("SchoolHorrorLighting"));
             Assert.That(lighting,Is.Not.Null);
             var torch=Get<Light>(player,"flashlight");bool originalTorchEnabled=torch.enabled;float originalTorchIntensity=torch.intensity;
+            var readability=Get<object>(walker,"ReadabilitySettings");
+            Assert.That(readability,Is.Not.Null,"Creature presentation must expose inspector controls");
+            var rim=Get<object>(walker,"Rim");
+            var rimOverlays=Get<IReadOnlyList<SkinnedMeshRenderer>>(rim,"Overlays").ToArray();
+            Assert.That(rimOverlays.Length,Is.EqualTo(3),"Each real creature LOD needs its matching rim skin");
+            var creatureLods=creature.GetComponentInChildren<LODGroup>(true).GetLODs();
+            for(int i=0;i<rimOverlays.Length;i++)
+            {
+                var overlay=rimOverlays[i];
+                Assert.That(creatureLods[i].renderers,Does.Contain(overlay),"The rim must follow the actual LOD selection");
+                var originalSkin=creatureLods[i].renderers.OfType<SkinnedMeshRenderer>().First(r=>r!=overlay);
+                Assert.That(overlay.sharedMesh,Is.SameAs(originalSkin.sharedMesh));
+                CollectionAssert.AreEqual(originalSkin.bones,overlay.bones,"The rim must follow the same animated rig");
+            }
             var halo=Get<object>(walker,"Halo");var haloRenderer=Get<Renderer>(halo,"HaloRenderer");
             Assert.That(haloRenderer,Is.Not.Null);
             Set(snapState,"Elapsed",1.00d);Call(walker,"RestoreState",snapState);
@@ -108,6 +122,7 @@ namespace HappyToy.V2.CloudTests
             var soleJoints=new[]{bones.Single(b=>b.name=="bone_46"),bones.Single(b=>b.name=="bone_50")};
             var solePositions=soleJoints.Select(b=>b.position).ToArray();
             Assert.That(Get<bool>(halo,"Visible"),Is.True,"The red halo must be visible behind the creature during the red hold");
+            Assert.That(Get<bool>(rim,"Visible")&&rimOverlays.All(r=>r.enabled),Is.True,"The rim must appear on lit frames");
             var toActor=Vector3.ProjectOnPlane(walker.transform.position-Get<Camera>(player,"eyes").transform.position,Vector3.up).normalized;
             Assert.That(Vector3.Dot(haloRenderer.transform.position-walker.transform.position,toActor),Is.GreaterThan(1f));
             Set(snapState,"Elapsed",1.10d);Call(walker,"RestoreState",snapState);
@@ -123,22 +138,42 @@ namespace HappyToy.V2.CloudTests
             var originalLabels=labels.Select(r=>r.enabled).ToArray();
             Assert.That(labels.Length,Is.GreaterThan(0));
             var litBlock=new MaterialPropertyBlock();
-            foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            float expectedFill=(float)Call(readability,"FillAtDistance",Vector3.Distance(Get<Camera>(player,"eyes").transform.position,creature.position));
+            foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(s=>!rimOverlays.Contains(s)))
             {skin.GetPropertyBlock(litBlock);var color=litBlock.GetColor("_EmissionColor");
-                Assert.That(Mathf.Max(color.r,color.g,color.b),Is.GreaterThanOrEqualTo(.6f),"The creature must have a visible red-light fill");}
+                Assert.That(color.r,Is.EqualTo(expectedFill).Within(.001f),"The creature fill must match the configured viewing distance");}
+            float nearFill=Get<float>(readability,"nearFill"),farFill=Get<float>(readability,"farFill"),rimIntensity=Get<float>(readability,"rimIntensity");
+            var rimColor=Get<Color>(readability,"rimColor");var tunedRimColor=new Color(.8f,.16f,.08f,1);
+            try
+            {
+                Set(readability,"nearFill",.73f);Set(readability,"farFill",.73f);Set(readability,"rimIntensity",1.25f);Set(readability,"rimColor",tunedRimColor);
+                Call(walker,"RestoreState",snapState);
+                foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(s=>!rimOverlays.Contains(s)))
+                {skin.GetPropertyBlock(litBlock);Assert.That(litBlock.GetColor("_EmissionColor").r,Is.EqualTo(.73f).Within(.001f),"Inspector fill changes must apply while lit");}
+                Assert.That(rimOverlays[0].sharedMaterial.GetFloat("_RimIntensity"),Is.EqualTo(1.25f).Within(.001f),"Inspector rim intensity must update its material");
+                Assert.That(Vector4.Distance((Vector4)rimOverlays[0].sharedMaterial.GetColor("_RimColor"),(Vector4)tunedRimColor),Is.LessThan(.001f),"Inspector rim color must update its material");
+            }
+            finally
+            {
+                Set(readability,"nearFill",nearFill);Set(readability,"farFill",farFill);Set(readability,"rimIntensity",rimIntensity);Set(readability,"rimColor",rimColor);
+                Call(walker,"RestoreState",snapState);
+            }
             torch.enabled=true;Set(snapState,"Elapsed",1.60d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark")&&Get<bool>(lighting,"FlickerDark"),Is.True);
             Assert.That(Get<bool>(halo,"Visible"),Is.False,"Only the flashlight may light a dark pulse");
+            Assert.That(Get<bool>(rim,"Visible")||rimOverlays.Any(r=>r.enabled),Is.False,"The creature rim must extinguish during dark pulses");
             Assert.That(torch.enabled,Is.True,"Dark flicker must not disable the flashlight");
             Assert.That(torch.intensity,Is.EqualTo(originalTorchIntensity).Within(.0001f));
             Assert.That(windows.All(l=>!l.enabled||l.intensity==0),Is.True,"Window lights must be off during a dark pulse");
             Assert.That(labels.All(r=>!r.enabled),Is.True,"Unlit world lettering must not glow during a dark pulse");
             var darkBlock=new MaterialPropertyBlock();
-            foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(s=>!rimOverlays.Contains(s)))
             {skin.GetPropertyBlock(darkBlock);var color=darkBlock.GetColor("_EmissionColor");
                 Assert.That(Mathf.Max(color.r,color.g,color.b),Is.EqualTo(0).Within(.00001f),"Monster fill must be off during the dark pulse");}
             Assert.That(UnityEngine.Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include,FindObjectsSortMode.None)
                 .Any(c=>c&&c.GetType().Name=="SchoolFlickerCurtain"),Is.False,"No opaque screen curtain may obscure the flashlight");
+            yield return Delay(.15f);
+            Assert.That(Get<bool>(walker,"FlickerDark")&&Get<bool>(lighting,"FlickerDark")&&!Get<bool>(rim,"Visible")&&!Get<bool>(halo,"Visible"),Is.True,"Pause must preserve the dark presentation");
             bool invertedAtStart=Get<bool>(walker,"CreatureInverted");
             var flashPose=bones.Select(b=>b.localRotation).ToArray();
             var fixtures=Get<Transform>(world,"Root").GetComponentsInChildren(RequireType("SchoolFluorescent"));
@@ -151,11 +186,13 @@ namespace HappyToy.V2.CloudTests
             Set(snapState,"Elapsed",1.70d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark")||Get<bool>(lighting,"FlickerDark"),Is.False);
             Assert.That(Get<bool>(halo,"Visible"),Is.True);
+            Assert.That(Get<bool>(rim,"Visible"),Is.True,"The rim must return with the flash");
+            expectedFill=(float)Call(readability,"FillAtDistance",Vector3.Distance(Get<Camera>(player,"eyes").transform.position,creature.position));
             CollectionAssert.AreEqual(originalWindows,windows.Select(l=>(l.enabled,l.intensity)).ToArray(),"Window light state must restore on red");
             CollectionAssert.AreEqual(originalLabels,labels.Select(r=>r.enabled).ToArray(),"World lettering must restore on red");
-            foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(s=>!rimOverlays.Contains(s)))
             {skin.GetPropertyBlock(litBlock);var color=litBlock.GetColor("_EmissionColor");
-                Assert.That(Mathf.Max(color.r,color.g,color.b),Is.GreaterThanOrEqualTo(.6f));}
+                Assert.That(color.r,Is.EqualTo(expectedFill).Within(.001f));}
             Assert.That(torch.enabled,Is.False,"Red light must not force the player's flashlight on");
             Set(snapState,"Elapsed",1.73d);Call(walker,"RestoreState",snapState);Assert.That(Get<bool>(walker,"FlickerDark"),Is.True);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.GreaterThan(100),"The next light-off must snap to a different contortion");
@@ -167,6 +204,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);
             Assert.That(Get<bool>(lighting,"FlickerDark"),Is.False,"Leaving the event must restore its environment");
             Assert.That(Get<bool>(halo,"Visible"),Is.False);
+            Assert.That(Get<bool>(rim,"Visible"),Is.False,"Leaving the event must remove the rim");
             CollectionAssert.AreEqual(originalWindows,windows.Select(l=>(l.enabled,l.intensity)).ToArray());
             torch.enabled=originalTorchEnabled;
         }

@@ -517,3 +517,5 @@ batch 모드에서도 앞선 LateUpdate의 완성된 텍스처를 읽으며15초
 점멸 괴물은 이전의 불규칙하고 빠른 점멸 주기로 돌아가며 소등 경계마다 이동·자세를 전환한다. 점등 중 접지 본 고정 떨림과 후광, 소등 순간의 기존 이동·자세 전환 및 손전등 보존을 `school-anomalies-logic`에서 검사한다. 후광과 떨림의 실제 시각적 효과는 별도 화면 검토가 필요하다.
 
 테스트용 임시 설정: 새 게임의 첫 학교 통과는 붉은 점멸 괴물로 시작한다. 기존 저장은 저장된 이벤트를 복원하며 이후 통과는 기존 추첨을 사용한다.
+
+괴물 저조도 가독성: `SchoolFlickerCreatureRim`은 실제 스킨 및 LOD를 공유하는 프레넬/측면광 pass를 추가하며, `SchoolFlickerCreatureVisibility`는 거리별 원본 텍스처 발광을 조절한다. `SchoolFlickerCreatureReadabilitySettings`의 `Resources/SchoolFlickerCreature/ReadabilitySettings.asset`에서 강도·거리·후광을 Inspector로 조정한다. 모두 같은 점멸 시계를 사용하고 소등 중 손전등만 남긴다. `school-anomalies-logic`은 LOD 연결 및 소등/복원을 검사한다. 실제 GPU 화면과 비용은 별도 확인이 필요하다.
