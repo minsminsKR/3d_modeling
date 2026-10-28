@@ -19,7 +19,7 @@ namespace HappyToy.V2
         {
             session=owner;world=loop;uint seed=BitConverter.ToUInt32(Guid.NewGuid().ToByteArray(),0);
             deck=new SchoolAnomalyDeck(seed==0?1:seed);
-            Blackout=gameObject.AddComponent<SchoolBlackoutPresentation>();Blackout.Prepare(world.Root);
+            Blackout=gameObject.AddComponent<SchoolBlackoutPresentation>();Blackout.Prepare(world.Root);ApplyPassage();
         }
         public void CompleteTraversal(int direction)
         {

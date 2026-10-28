@@ -18,7 +18,7 @@ namespace HappyToy.V2
         public SchoolAnomalyDeck(uint seed)
         {
             if(seed==0)throw new ArgumentOutOfRangeException(nameof(seed));
-            state=new State{Random=seed,NormalStreak=1};
+            state=new State{Random=seed,Kind=SchoolAnomalyKind.DancingWalker,NormalStreak=0};
         }
         public SchoolAnomalyKind Kind=>state.Kind;
         public State Capture()=>state;
@@ -28,7 +28,7 @@ namespace HappyToy.V2
             if(value.Random==0||value.Passage<0||value.Passage>1000000||!Enum.IsDefined(typeof(SchoolAnomalyKind),value.Kind)||
                 value.NormalStreak<0||value.NormalStreak>MaximumNormalStreak||
                 (value.Kind==SchoolAnomalyKind.Normal)!=(value.NormalStreak>0)||
-                value.Passage==0&&(value.Kind!=SchoolAnomalyKind.Normal||value.NormalStreak!=1))
+                value.Passage==0&&!((value.Kind==SchoolAnomalyKind.Normal&&value.NormalStreak==1)||(value.Kind==SchoolAnomalyKind.DancingWalker&&value.NormalStreak==0)))
                 throw new ArgumentException("Invalid school anomaly deck");
         }
         public static bool Correct(int direction,SchoolAnomalyKind kind)

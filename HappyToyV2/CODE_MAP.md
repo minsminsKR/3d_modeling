@@ -515,3 +515,5 @@ batch 모드에서도 앞선 LateUpdate의 완성된 텍스처를 읽으며15초
 점멸 소등 중 `SchoolWalkerFlickerLighting`과 `SchoolHorrorLighting`이 학교 광원·환경광·반사를 억제하고 손전등을 유지한다. `SchoolFlickerCreatureVisibility`는 붉은등 구간에만 텍스처 기반 표면 발광을 강화한다. 저장된 anomaly deck RNG와 점멸 횟수로 반전을 재현하고, `SchoolFlickerCreatureMotion`이 사전 계산된 32개 보정값으로 일반 양발 또는 반전 머리 접지와 각 자세 폭 3.9m를 유지한다. `FlickerCreatureDiagnostics.Inspect`는 실제 스킨 접지·경계 검증과 `pose-calibration.json` 생성을 소유한다. 프리팹·동작 코드 변경 시 진단을 다시 실행해야 빌드가 통과한다. `school-anomalies-logic`은 소등과 손전등 보존, 괴물 발광 전환, 광원 복원·반전·기존 저장/정지를 검사한다.
 
 점멸 괴물은 이전의 불규칙하고 빠른 점멸 주기로 돌아가며 소등 경계마다 이동·자세를 전환한다. 점등 중 접지 본 고정 떨림과 후광, 소등 순간의 기존 이동·자세 전환 및 손전등 보존을 `school-anomalies-logic`에서 검사한다. 후광과 떨림의 실제 시각적 효과는 별도 화면 검토가 필요하다.
+
+테스트용 임시 설정: 새 게임의 첫 학교 통과는 붉은 점멸 괴물로 시작한다. 기존 저장은 저장된 이벤트를 복원하며 이후 통과는 기존 추첨을 사용한다.

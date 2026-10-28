@@ -17,7 +17,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(180000)]
         public IEnumerator SchoolWalkerUsesOneSharedRiggedPersonAndHoldsItsActualPoseDuringPauseAndTalisman()
         {
-            yield return BeginObservationSchool();var walker=One("SchoolWalkerEncounter");
+            yield return BeginObservationSchool();Call(Get<Component>(Get<Component>(Get<Component>(session,"Chapter"),"Loop"),"Anomalies"),"RestoreLegacy",0);var walker=One("SchoolWalkerEncounter");Call(walker,"RestoreTraversal",0);
             var visual=Get<Transform>(walker,"Visual");var motion=Get<Component>(walker,"Motion");
             var source=Resources.Load<GameObject>("SchoolWalker/walker-visual");Assert.That(source,Is.Not.Null);
             var levels=visual.GetComponentInChildren<LODGroup>().GetLODs();Assert.That(levels.Length,Is.EqualTo(3));
@@ -69,8 +69,8 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(180000)]
         public IEnumerator SchoolWalkerStopsOnHisStraightLaneForAPlayerAndWalksAgainWhenTheWayClears()
         {
-            yield return BeginObservationSchool();var walker=One("SchoolWalkerEncounter");
-            Call(shell,"Pause");var state=Call(walker,"CaptureState");Set(state,"Z",12f);Set(state,"Distance",21f);Call(walker,"RestoreState",state);
+            yield return BeginObservationSchool();Call(Get<Component>(Get<Component>(Get<Component>(session,"Chapter"),"Loop"),"Anomalies"),"RestoreLegacy",0);var walker=One("SchoolWalkerEncounter");Call(walker,"RestoreTraversal",0);
+            Call(shell,"Pause");var state=Call(walker,"CaptureState");Set(state,"Z",12f);Set(state,"Distance",21f);Set(state,"IdleBlend",0f);Set(state,"IdleElapsed",0d);Call(walker,"RestoreState",state);
             PlacePlayer(LoopOrigin+new Vector3(.65f,.03f,11),false);var stationary=player.transform.position;
             Call(shell,"Resume");var motion=Get<Component>(walker,"Motion");
             yield return Wait(()=>Get<float>(motion,"IdleBlend")>.99f,3,"The blocked pedestrian did not stand still");
@@ -91,7 +91,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(180000)]
         public IEnumerator SchoolWalkerKeepsTheSameActorAcrossBothOpaqueSeamsAndOldSaveSpawnLanes()
         {
-            yield return BeginObservationSchool();var walker=One("SchoolWalkerEncounter");
+            yield return BeginObservationSchool();Call(Get<Component>(Get<Component>(Get<Component>(session,"Chapter"),"Loop"),"Anomalies"),"RestoreLegacy",0);var walker=One("SchoolWalkerEncounter");Call(walker,"RestoreTraversal",0);
             var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");var identity=walker.GetEntityId();
             Call(shell,"Pause");var original=Call(walker,"CaptureState");
             foreach(float x in new[]{-.5f,0f,.5f})

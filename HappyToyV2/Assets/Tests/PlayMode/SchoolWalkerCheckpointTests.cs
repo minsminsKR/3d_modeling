@@ -15,7 +15,7 @@ namespace HappyToy.V2.CloudTests
         [UnityTest,Timeout(180000)]
         public IEnumerator SchoolWalkerCheckpointJsonAndCopyRestoreTheExactPausedPassAndAuthoredPose()
         {
-            yield return BeginObservationSchool();var walker=One("SchoolWalkerEncounter");
+            yield return BeginObservationSchool();Call(Get<Component>(Get<Component>(Get<Component>(session,"Chapter"),"Loop"),"Anomalies"),"RestoreLegacy",0);var walker=One("SchoolWalkerEncounter");Call(walker,"RestoreTraversal",0);
             PlacePlayer(LoopOrigin+new Vector3(.65f,.03f,31));var start=player.transform.position;
             player.transform.rotation=Quaternion.identity;Keys(Key.W);yield return Delay(.25f);Keys();yield return Delay(.25f);
             Assert.That(player.transform.position.z,Is.GreaterThan(start.z+.2f),"The fixture did not actually walk through the school");

@@ -35,9 +35,9 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolAnomalyFirstPassIsNormalAndActualSeamsJudgeBothDirections()
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
-            var director=Get<Component>(world,"Anomalies");Assert.That(Get<object>(director,"Kind").ToString(),Is.EqualTo("Normal"));
-            Assert.That(Get<Component>(director,"Baby"),Is.Null);Assert.That(Get<bool>(Get<Component>(world,"Walker"),"Dancing"),Is.False);
-            yield return CrossSchoolJudgmentSeam(world,1);Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(1));
+            var director=Get<Component>(world,"Anomalies");Assert.That(Get<object>(director,"Kind").ToString(),Is.EqualTo("DancingWalker"));
+            Assert.That(Get<Component>(director,"Baby"),Is.Null);Assert.That(Get<bool>(Get<Component>(world,"Walker"),"Dancing"),Is.True);
+            yield return CrossSchoolJudgmentSeam(world,-1);Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(1));
             foreach(var choice in new[]{("Normal",1,4),("Normal",-1,0),("Baby",1,0),("Blackout",-1,4),("DancingWalker",-1,4)})
             {
                 Call(shell,"Pause");UseSchoolAnomalyFixture(world,choice.Item1);Call(world,"RestoreClock",3);Call(shell,"Resume");
@@ -51,7 +51,8 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolWalkerSolidCapsuleAndFlickerTrembleAdvanceAndPause()
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
-            var walker=Get<Component>(world,"Walker");var collider=Get<CapsuleCollider>(walker,"BodyCollider");
+            Call(Get<Component>(world,"Anomalies"),"RestoreLegacy",0);
+            var walker=Get<Component>(world,"Walker");Call(walker,"RestoreTraversal",0);var collider=Get<CapsuleCollider>(walker,"BodyCollider");
             Assert.That(collider.enabled&&!collider.isTrigger,Is.True);Assert.That(collider.radius,Is.GreaterThan(.4f));
             Call(shell,"Pause");var state=Call(walker,"CaptureState");Set(state,"Z",12f);Call(walker,"RestoreState",state);
             PlacePlayer(LoopOrigin+new Vector3(.65f,.03f,10.5f));player.transform.rotation=Quaternion.identity;Call(shell,"Resume");

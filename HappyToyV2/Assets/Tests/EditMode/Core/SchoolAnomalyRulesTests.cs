@@ -9,8 +9,8 @@ namespace HappyToy.V2.CoreTests
         {
             for(uint seed=1;seed<=1000;seed++)
             {
-                var deck=new SchoolAnomalyDeck(seed);Assert.That(deck.Kind,Is.EqualTo(SchoolAnomalyKind.Normal));
-                int streak=1;
+                var deck=new SchoolAnomalyDeck(seed);Assert.That(deck.Kind,Is.EqualTo(SchoolAnomalyKind.DancingWalker));
+                int streak=0;
                 for(int i=0;i<30;i++)
                 {
                     deck.Complete(1);streak=deck.Kind==SchoolAnomalyKind.Normal?streak+1:0;
