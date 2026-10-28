@@ -40,7 +40,7 @@ namespace HappyToy.V2
             if(active!=value)
             {
                 active=value;
-                foreach(var fixture in fixtures)if(fixture){fixture.SetEventSteady(active);fixture.SetEventTint(active?Red:Color.white);}
+                foreach(var fixture in fixtures)if(fixture)fixture.SetEventTint(active?Red:Color.white);
             }
             Apply(elapsed);
         }

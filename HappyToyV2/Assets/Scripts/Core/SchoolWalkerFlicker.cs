@@ -6,13 +6,11 @@ namespace HappyToy.V2
     // pulses. Pose and displacement advance only during the same dark pulses.
     public static class SchoolWalkerFlicker
     {
-        // Every full red hold is exactly three simulation seconds; the brief
-        // irregular dark pulses conceal each pose/position snap.
-        public const double LitSeconds=3.0,CycleSeconds=40.18;
-        static readonly double[] starts={3.00,6.09,9.16,12.25,15.34,18.43,21.51,24.60,
-            27.68,30.76,33.84,36.93,40.04};
-        static readonly double[] ends={3.09,6.16,9.25,12.34,15.43,18.51,21.60,24.68,
-            27.76,30.84,33.93,37.04,40.18};
+        public const double CycleSeconds=7.3;
+        static readonly double[] starts={1.60,1.73,1.84,1.97,2.10,2.23,2.35,2.48,
+            3.90,4.02,4.14,4.27,4.42};
+        static readonly double[] ends={1.69,1.80,1.93,2.06,2.19,2.31,2.44,2.56,
+            3.98,4.10,4.23,4.38,4.56};
 
         public static bool Dark(double elapsed)
         {

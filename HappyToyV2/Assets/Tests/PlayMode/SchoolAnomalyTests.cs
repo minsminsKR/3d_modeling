@@ -86,7 +86,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(walker,"Dancing")&&Get<bool>(motion,"Dancing"),Is.True);
             Assert.That(Get<float>(walker,"Distance")-distance,Is.LessThan(.01f),"The red hold must keep the walker in place");
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.GreaterThan(1f),"The creature must tremble throughout the red hold");
-            yield return Wait(()=>Get<double>(Call(walker,"CaptureState"),"Elapsed")>=heldTime+3.2,15,"The three-second hold did not reach its next dark pulse");
+            yield return Wait(()=>Get<double>(Call(walker,"CaptureState"),"Elapsed")>=heldTime+1.9,15,"The flicker did not reach its next dark pulse");
             Assert.That(Get<float>(walker,"Distance")-distance,Is.GreaterThan(.1f),"The flashes must advance the walker");
             Assert.That(walker.transform.localPosition.x,Is.EqualTo(0).Within(.001f),"The approaching creature must stay on the centre line");
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.GreaterThan(20),"The flashes must change the rig pose");
@@ -100,7 +100,7 @@ namespace HappyToy.V2.CloudTests
             var torch=Get<Light>(player,"flashlight");bool originalTorchEnabled=torch.enabled;float originalTorchIntensity=torch.intensity;
             var halo=Get<object>(walker,"Halo");var haloRenderer=Get<Renderer>(halo,"HaloRenderer");
             Assert.That(haloRenderer,Is.Not.Null);
-            Set(snapState,"Elapsed",2.50d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",1.00d);Call(walker,"RestoreState",snapState);
             var tremorNames=new[]{"bone_1","bone_6","bone_25","bone_44","bone_48"};
             var tremorJoints=tremorNames.Select(n=>bones.Single(b=>b.name==n)).ToArray();
             var tremorSample=tremorJoints.Select(b=>b.localRotation).ToArray();
@@ -109,12 +109,12 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(halo,"Visible"),Is.True,"The red halo must be visible behind the creature during the red hold");
             var toActor=Vector3.ProjectOnPlane(walker.transform.position-Get<Camera>(player,"eyes").transform.position,Vector3.up).normalized;
             Assert.That(Vector3.Dot(haloRenderer.transform.position-walker.transform.position,toActor),Is.GreaterThan(1f));
-            Set(snapState,"Elapsed",2.60d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",1.10d);Call(walker,"RestoreState",snapState);
             Assert.That(tremorJoints.Select((b,i)=>Quaternion.Angle(tremorSample[i],b.localRotation)).Count(a=>a>.1f),Is.GreaterThanOrEqualTo(4),"Torso and limbs must tremble together");
             for(int i=0;i<soleJoints.Length;i++)Assert.That(Vector3.Distance(solePositions[i],soleJoints[i].position),Is.LessThan(.003f),"Trembling must preserve grounded feet");
-            Set(snapState,"Elapsed",2.50d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",1.00d);Call(walker,"RestoreState",snapState);
             Assert.That(tremorJoints.Select((b,i)=>Quaternion.Angle(tremorSample[i],b.localRotation)).Sum(),Is.LessThan(.01f),"Tremor must reproduce the same pose at the same simulation time");
-            Set(snapState,"Elapsed",2.90d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",1.50d);Call(walker,"RestoreState",snapState);
             var windows=Get<IReadOnlyList<Light>>(lighting,"WindowLights").ToArray();
             Assert.That(windows.Length,Is.GreaterThan(0));
             var originalWindows=windows.Select(l=>(l.enabled,l.intensity)).ToArray();
@@ -125,7 +125,7 @@ namespace HappyToy.V2.CloudTests
             foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
             {skin.GetPropertyBlock(litBlock);var color=litBlock.GetColor("_EmissionColor");
                 Assert.That(Mathf.Max(color.r,color.g,color.b),Is.GreaterThanOrEqualTo(.6f),"The creature must have a visible red-light fill");}
-            torch.enabled=true;Set(snapState,"Elapsed",3.01d);Call(walker,"RestoreState",snapState);
+            torch.enabled=true;Set(snapState,"Elapsed",1.60d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark")&&Get<bool>(lighting,"FlickerDark"),Is.True);
             Assert.That(Get<bool>(halo,"Visible"),Is.False,"Only the flashlight may light a dark pulse");
             Assert.That(torch.enabled,Is.True,"Dark flicker must not disable the flashlight");
@@ -142,25 +142,24 @@ namespace HappyToy.V2.CloudTests
             var flashPose=bones.Select(b=>b.localRotation).ToArray();
             var fixtures=Get<Transform>(world,"Root").GetComponentsInChildren(RequireType("SchoolFluorescent"));
             Assert.That(fixtures.All(f=>Get<Light>(f,"Source").intensity==0),Is.True,"The pose must snap at light-off");
-            Set(snapState,"Elapsed",3.04d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",1.65d);Call(walker,"RestoreState",snapState);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.LessThan(.01f),"The entire dark interval must hold one pose");
             Assert.That(Get<bool>(walker,"CreatureInverted"),Is.EqualTo(invertedAtStart),"Orientation must remain fixed throughout each flash");
-            torch.enabled=false;Set(snapState,"Elapsed",3.04d);Call(walker,"RestoreState",snapState);
+            torch.enabled=false;Set(snapState,"Elapsed",1.65d);Call(walker,"RestoreState",snapState);
             Assert.That(torch.enabled,Is.False);Assert.That(torch.intensity,Is.EqualTo(originalTorchIntensity).Within(.0001f));
-            Set(snapState,"Elapsed",3.10d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",1.70d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark")||Get<bool>(lighting,"FlickerDark"),Is.False);
             Assert.That(Get<bool>(halo,"Visible"),Is.True);
-            Assert.That(fixtures.All(f=>Mathf.Abs(Get<Light>(f,"Source").intensity-Get<float>(f,"BaselineIntensity"))<.001f),Is.True,"Red hold must remain fully lit");
             CollectionAssert.AreEqual(originalWindows,windows.Select(l=>(l.enabled,l.intensity)).ToArray(),"Window light state must restore on red");
             CollectionAssert.AreEqual(originalLabels,labels.Select(r=>r.enabled).ToArray(),"World lettering must restore on red");
             foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
             {skin.GetPropertyBlock(litBlock);var color=litBlock.GetColor("_EmissionColor");
                 Assert.That(Mathf.Max(color.r,color.g,color.b),Is.GreaterThanOrEqualTo(.6f));}
             Assert.That(torch.enabled,Is.False,"Red light must not force the player's flashlight on");
-            Set(snapState,"Elapsed",6.10d);Call(walker,"RestoreState",snapState);Assert.That(Get<bool>(walker,"FlickerDark"),Is.True);
+            Set(snapState,"Elapsed",1.73d);Call(walker,"RestoreState",snapState);Assert.That(Get<bool>(walker,"FlickerDark"),Is.True);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.GreaterThan(100),"The next light-off must snap to a different contortion");
             bool sawInverted=false,sawUpright=false;
-            foreach(double t in new[]{3.01,6.10,9.17,12.26,15.35,18.44,21.52,24.61,27.69,30.77,33.85,36.94,40.05})
+            foreach(double t in new[]{1.60,1.73,1.84,1.97,2.10,2.23,2.35,2.48,3.90,4.02,4.14,4.27,4.42})
             {Set(snapState,"Elapsed",t);Call(walker,"RestoreState",snapState);bool upsideDown=Get<bool>(walker,"CreatureInverted");sawInverted|=upsideDown;sawUpright|=!upsideDown;}
             Assert.That(sawInverted&&sawUpright,Is.True,"The saved event seed must produce both orientations");
             Call(walker,"SetDancing",false);

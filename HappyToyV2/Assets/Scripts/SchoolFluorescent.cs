@@ -18,8 +18,6 @@ namespace HappyToy.V2
         MeshRenderer haze;
         MaterialPropertyBlock values;
         float eventGain=1,voltageGain=1;
-        bool eventSteady;
-        public void SetEventSteady(bool value){eventSteady=value;Apply(voltageGain);}
         public void SetEventGain(float gain){eventGain=Mathf.Clamp01(gain);Apply(voltageGain);}
         public void SetEventTint(Color tint){eventTint=tint;Apply(voltageGain);}
         public void Configure(Light source,Material tubeMaterial,Color glow,float phase,Light backscatter=null,
@@ -43,7 +41,7 @@ namespace HappyToy.V2
         }
         void Apply(float gain,bool reduced=false)
         {
-            voltageGain=gain;if(eventSteady)gain=1;gain*=eventGain;
+            voltageGain=gain;gain*=eventGain;
             Source.color=sourceColor*eventTint;
             Source.intensity=BaselineIntensity*gain;
             if(Backscatter){Backscatter.color=backscatterColor*eventTint;Backscatter.intensity=backscatterIntensity*gain;}

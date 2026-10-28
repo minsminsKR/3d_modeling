@@ -275,3 +275,8 @@ with discrete full-body tremor over the unchanged calibrated pose. Feet or the
 inverted head remain anchored. A depth-tested red billboard sits behind the
 creature and is disabled during the short dark pulse. The generated model, pose
 calibration and textures are unchanged; actual visual appearance still needs review.
+
+
+2026-10-28 timing rollback: the three-second lit hold was reverted to the
+previous irregular flicker timeline. The red backlight and lit-phase tremor
+remain; position and contorted pose change at each dark-pulse onset.
