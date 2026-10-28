@@ -63,13 +63,32 @@ namespace HappyToy.V2.CloudTests
             Call(walker,"RestoreTraversal",Get<int>(world,"Traversals"));var motion=Get<Component>(walker,"Motion");
             var human=Get<Transform>(walker,"Visual");var creature=Get<Transform>(walker,"Creature");
             Assert.That(human.gameObject.activeSelf,Is.False);Assert.That(creature.gameObject.activeSelf,Is.True);
+            Assert.That(walker.transform.localPosition.x,Is.EqualTo(0).Within(.001f),"The flicker creature must approach along the centre of the hall");
+            var creatureSkin=creature.GetComponentsInChildren<SkinnedMeshRenderer>().OrderByDescending(s=>s.sharedMesh.triangles.Length).First();
+            var creatureMaterial=creatureSkin.sharedMaterial;
+            Assert.That(creatureMaterial.GetTexture("_BaseMap"),Is.Not.Null,"The generated colour map must reach the active creature: "+creatureMaterial.name+" / "+creatureMaterial.shader.name+" / "+creatureSkin.name);
+            Assert.That(creatureMaterial.IsKeywordEnabled("_EMISSION"),Is.True,"The actual colour map must remain visible under red lighting");
+            Assert.That(creatureMaterial.GetTexture("_EmissionMap"),Is.EqualTo(creatureMaterial.GetTexture("_BaseMap")));
+            var neutral=UnityEngine.Object.Instantiate(Resources.Load<GameObject>("SchoolFlickerCreature/creature-visual"));
+            try
+            {
+                var skin=neutral.GetComponentsInChildren<SkinnedMeshRenderer>().OrderByDescending(s=>s.sharedMesh.triangles.Length).First();
+                var baked=new Mesh();try{skin.BakeMesh(baked);var points=baked.vertices.Select(v=>neutral.transform.InverseTransformPoint(skin.transform.TransformPoint(v))).ToArray();
+                    var actual=new Bounds(points[0],Vector3.zero);foreach(var point in points)actual.Encapsulate(point);
+                    Assert.That(actual.size.x,Is.EqualTo(2.2f).Within(.04f),"The real skinned geometry must span half the 4.4m corridor");
+                    Assert.That(actual.min.y,Is.EqualTo(0).Within(.04f),"The actual creature feet must be grounded");
+                    Assert.That(actual.size.y,Is.LessThan(3.2f),"The creature must fit below the ceiling in its neutral pose");
+                }finally{UnityEngine.Object.Destroy(baked);}
+            }finally{UnityEngine.Object.Destroy(neutral);}
             var bones=creature.GetComponentsInChildren<Transform>();var before=bones.Select(b=>b.localRotation).ToArray();
-            float distance=Get<float>(walker,"Distance");Call(shell,"Resume");yield return Delay(.55f);
+            float distance=Get<float>(walker,"Distance");var heldState=Call(walker,"CaptureState");double heldTime=Get<double>(heldState,"Elapsed");
+            Call(shell,"Resume");yield return Wait(()=>Get<double>(Call(walker,"CaptureState"),"Elapsed")>=heldTime+.3,10,"The flicker clock did not advance");
             Assert.That(Get<bool>(walker,"Dancing")&&Get<bool>(motion,"Dancing"),Is.True);
             Assert.That(Get<float>(walker,"Distance")-distance,Is.LessThan(.01f),"The red hold must keep the walker in place");
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.GreaterThan(.1f),"The held pose must still tremble");
             yield return Delay(1.7f);
             Assert.That(Get<float>(walker,"Distance")-distance,Is.GreaterThan(.1f),"The flashes must advance the walker");
+            Assert.That(walker.transform.localPosition.x,Is.EqualTo(0).Within(.001f),"The approaching creature must stay on the centre line");
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.GreaterThan(20),"The flashes must change the rig pose");
             Call(shell,"Pause");var paused=bones.Select(b=>(b.localPosition,b.localRotation)).ToArray();float stopped=Get<float>(walker,"Distance");yield return Delay(.2f);
             CollectionAssert.AreEqual(paused,bones.Select(b=>(b.localPosition,b.localRotation)).ToArray());

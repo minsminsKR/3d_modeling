@@ -159,3 +159,38 @@ checks creature/human visibility, flicker movement and pause. Windows player
 its 4608 current inputs and required artifacts passed `verify_build_inputs.py`.
 `check_source_completeness.py` passed after staging. No player was launched and
 no in-game visual, collision-envelope or performance review is claimed.
+
+## In-game size, colour and centre-line correction — 2026-10-28
+
+The user's game screenshot showed a small, pale creature. The original colour
+texture is retained; the generated high metallic response was replaced by a low
+metallic/smoothness response and a subtle albedo-driven emission fill so colour
+is less easily washed out or lost in the red corridor. UV comparison against the
+original source using nearby candidate vertices found median difference 0.00014
+and 90th percentile 0.00043; this is a geometry/UV check, not rendered evidence.
+
+`SchoolFlickerCreatureImport` now measures the actual baked skinned vertices,
+normalizes the neutral silhouette to 2.2m wide and places its lowest vertex at
+floor level (the corridor is 4.4m wide). It validates the 3.2m ceiling bound.
+The renderer's inflated culling bounds are not used as size measurements. The
+flicker passage recentres the actual walker route at x=0, including restored
+hall states and pending spawns; regular pedestrians keep their existing lane.
+The replacement player must be visually checked after the build, since the
+user's game is not interrupted and CPU tests cannot certify apparent size,
+colour, shader presentation or animated clearance in the running player.
+
+Root cause confirmed by the previously failing scene test: both `creature.fbx`
+and `creature.prefab` shared the Resources key `SchoolFlickerCreature/creature`.
+The runtime resolved the FBX's untextured default `Lit` material and unnormalized
+source geometry. The prefab is now `creature-visual.prefab` and the encounter
+loads only that unambiguous key; its GUID is preserved when renaming the asset.
+
+
+Corrected build verification: `school-anomalies-logic` passed 152 EditMode
+and 8 PlayMode tests in `Builds/Verification/feature-tests/20261028-095520-f70f2ddc`.
+The scene test asserts the loaded creature's actual texture, emission, centred
+approach, baked neutral 2.2m geometry, floor and ceiling. A Windows player was
+built at `Builds/Windows-FlickerFix-20261028`; the complete 4610-input build
+fingerprint passed. No native player or GPU appearance audit was run while
+protecting the user's desktop, so the final screenshot appearance remains to be
+checked in ordinary play.

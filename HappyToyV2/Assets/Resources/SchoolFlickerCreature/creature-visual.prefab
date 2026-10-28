@@ -475,7 +475,7 @@ GameObject:
   - component: {fileID: 8142105198941413025}
   - component: {fileID: 5334613499579862038}
   m_Layer: 8
-  m_Name: creature
+  m_Name: creature-visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -505,8 +505,8 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1602932532878961626}
   serializedVersion: 3
-  m_LocalReferencePoint: {x: 0, y: 1.249055, z: -0.0009941757}
-  m_Size: 2.50189
+  m_LocalReferencePoint: {x: -0.10538268, y: 1.2406625, z: -0.12451449}
+  m_Size: 2.317478
   m_FadeMode: 0
   m_AnimateCrossFading: 0
   m_LastLODIsBillboard: 0
@@ -1493,7 +1493,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8851041083773387528}
-  - component: {fileID: 5424611257800285696}
   m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
@@ -1510,8 +1509,8 @@ Transform:
   m_GameObject: {fileID: 4936129168443183092}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.11713834, y: 1.2484009, z: 0.14401771}
-  m_LocalScale: {x: 1.6979549, y: 1.6979549, z: 1.6979549}
+  m_LocalPosition: {x: 0.0031214952, y: 1.2400565, z: 0.009808719}
+  m_LocalScale: {x: 1.5728003, y: 1.5728003, z: 1.5728003}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8589421806804640807}
@@ -1520,34 +1519,6 @@ Transform:
   - {fileID: 342843053679038879}
   m_Father: {fileID: 8142105198941413025}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!205 &5424611257800285696
-LODGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4936129168443183092}
-  serializedVersion: 3
-  m_LocalReferencePoint: {x: -0.068987906, y: 0.00038528442, z: -0.085403875}
-  m_Size: 1.2234727
-  m_FadeMode: 0
-  m_AnimateCrossFading: 0
-  m_LastLODIsBillboard: 0
-  m_LODs:
-  - screenRelativeHeight: 0.25
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 8874490204337858736}
-  - screenRelativeHeight: 0.125
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 5217901418155720966}
-  - screenRelativeHeight: 0.01
-    fadeTransitionWidth: 0
-    renderers:
-    - renderer: {fileID: 1351900864981075252}
-  m_Enabled: 1
-  m_GlobalIlluminationLOD: 0
 --- !u!1 &5086648529628068377
 GameObject:
   m_ObjectHideFlags: 0

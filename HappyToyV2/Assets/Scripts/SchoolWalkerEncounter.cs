@@ -28,6 +28,7 @@ namespace HappyToy.V2
         public void SetDancing(bool value)
         {
             Dancing=value;
+            if(value)route.CenterHallLane();
             if(Visual)Visual.gameObject.SetActive(!value);
             if(creature)creature.gameObject.SetActive(value);
             if(Motion){Motion.SetDancing(value);ApplyPose();}
@@ -64,7 +65,7 @@ namespace HappyToy.V2
                 actor.BodyCollider.height=Height;actor.BodyCollider.center=Vector3.up*(Height*.5f);
                 actor.Motion=actor.gameObject.AddComponent<SchoolWalkerMotion>();
                 actor.Motion.Prepare(actor.Visual.gameObject,walk,idle,metresPerCycle);
-                var creaturePrefab=Resources.Load<GameObject>("SchoolFlickerCreature/creature");
+                var creaturePrefab=Resources.Load<GameObject>("SchoolFlickerCreature/creature-visual");
                 if(!creaturePrefab)throw new InvalidOperationException("Flicker creature prefab is missing");
                 actor.creature=Instantiate(creaturePrefab,actor.transform,false).transform;
                 actor.creatureMotion=new SchoolFlickerCreatureMotion(actor.creature);
@@ -78,7 +79,7 @@ namespace HappyToy.V2
         public SchoolWalkerRoute.State CaptureState()=>route.CaptureState();
         public void ValidateRestoreState(SchoolWalkerRoute.State state)=>SchoolWalkerRoute.Validate(state);
         public void RestoreState(SchoolWalkerRoute.State state)
-        {ValidateRestoreState(state);route.RestoreState(state);ApplyPose();if(Footsteps)Footsteps.Synchronize(state);}
+        {ValidateRestoreState(state);route.RestoreState(state);if(Dancing)route.CenterHallLane();ApplyPose();if(Footsteps)Footsteps.Synchronize(route.CaptureState());}
         // Called while the checkpoint loading curtain covers the restored scene.
         public void RestoreTraversal(int traversal)
         {
@@ -89,6 +90,7 @@ namespace HappyToy.V2
                 if(Mathf.Abs(player.z-SchoolWalkerRoute.StartZ)<1.5f&&Mathf.Abs(player.x-SchoolWalkerRoute.DefaultLane)<1.5f)
                 {var initial=route.CaptureState();initial.X=player.x>=0?-SchoolWalkerRoute.PassLane:SchoolWalkerRoute.PassLane;route.RestoreState(initial);}
             }
+            if(Dancing)route.CenterHallLane();
             ApplyPose();
             if(Footsteps)Footsteps.Synchronize(route.CaptureState());
         }
@@ -105,9 +107,9 @@ namespace HappyToy.V2
             {
                 var current=BodyBounds();
                 float radius=Mathf.Max(.52f,current.extents.x,current.extents.z);
-                var spawn=new Bounds(section.TransformPoint(new Vector3(SchoolWalkerRoute.DefaultLane,FeetHeight+Height*.5f,SchoolWalkerRoute.StartZ)),
+                var spawn=new Bounds(section.TransformPoint(new Vector3(Dancing?0:SchoolWalkerRoute.DefaultLane,FeetHeight+Height*.5f,SchoolWalkerRoute.StartZ)),
                     new Vector3(radius*2,Mathf.Max(Height,current.size.y),radius*2));
-                if(route.TryCommitPending(PhysicallyHidden(camera,current)&&PhysicallyHidden(camera,spawn)))ApplyPose();
+                if(route.TryCommitPending(PhysicallyHidden(camera,current)&&PhysicallyHidden(camera,spawn))){if(Dancing)route.CenterHallLane();ApplyPose();}
             }
             var player=section.InverseTransformPoint(session.player.transform.position);
             float dt=Mathf.Min(Time.deltaTime,.1f);

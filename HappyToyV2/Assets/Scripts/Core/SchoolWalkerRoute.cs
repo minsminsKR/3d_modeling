@@ -54,6 +54,9 @@ namespace HappyToy.V2
             if(value.Leg!=0&&value.PassSide!=0)throw new ArgumentException("A walker outside the hall cannot retain a passing lane");
         }
         public void RestoreState(State value){Validate(value);state=value;}
+        // The flickering creature uses the centre of the main hall. Existing
+        // checkpoint coordinates remain valid and normal pedestrians keep their lane.
+        public void CenterHallLane(){if(state.Leg==0)state.X=0;}
         public void RequestTraversal(int traversal)
         {
             Traversal(traversal);
