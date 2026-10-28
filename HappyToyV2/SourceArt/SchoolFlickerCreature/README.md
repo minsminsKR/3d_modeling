@@ -295,3 +295,21 @@ Grounding revision: after pose and tremor, sampled Unity skinned foot/head
 vertices are aligned to the school floor; results are cached per tremor step.
 The calibrated 3.9m width is retained in the 4.4m hallway. This CPU skinning
 work requires separate performance and player-view review.
+
+
+2026-10-28 environment-backlight revision (supersedes the older visibility,
+red-hold and readability notes above): The creature material has no emission,
+actor-following halo or separate rim pass. A school-owned fixed spot and an
+end-wall wash at the far end provide the red background; school-scoped ambient,
+reflection and fog settings are restored when the event ends. Short irregular
+reveals alternate with darkness; each position/pose step happens at dark onset.
+The player's flashlight remains independent. Adjust the fixture position, wall
+position/size, colour, range, intensity, cone angle and wall brightness in
+`Assets/Resources/SchoolFlickerCreature/EmergencyBacklightSettings.asset`.
+The wash is a depth-tested approximation, and fog is ordinary school-wide fog,
+not a volumetric simulation. GPU appearance, legibility and performance require
+a separate player-camera review. Source model, rig and calibration are unchanged.
+
+Verification: `school-anomalies-logic` passed 153 EditMode and 8 PlayMode tests;
+Unity 6000.6.0f1 Windows build and current build-input verification passed.
+No GPU render, player-view inspection or performance audit was run.

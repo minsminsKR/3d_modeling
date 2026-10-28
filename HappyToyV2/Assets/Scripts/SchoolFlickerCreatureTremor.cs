@@ -54,7 +54,9 @@ namespace HappyToy.V2
             long step=(long)Math.Floor(Math.Max(0,seconds)*StepsPerSecond);
             for(int i=0;i<joints.Length;i++)
             {
-                float amount=Degrees[i];
+                // Keep the previous restrained unease without making the lit
+                // silhouette read as continuously moving between flash poses.
+                float amount=Degrees[i]*.25f;
                 joints[i].localRotation*=Quaternion.Euler(Signed(step,i,0)*amount,Signed(step,i,1)*amount,Signed(step,i,2)*amount);
             }
             // Restore both contact joints after deforming their parents. For an

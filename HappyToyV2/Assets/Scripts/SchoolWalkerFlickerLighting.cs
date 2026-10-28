@@ -12,13 +12,15 @@ namespace HappyToy.V2
         static readonly Color Red=new Color(1,.035f,.012f,1);
         readonly SchoolFluorescent[] fixtures;
         readonly SchoolHorrorLighting environment;
+        readonly SchoolEmergencyBacklight backlight;
         readonly List<Renderer> emissiveSigns=new List<Renderer>();
         readonly List<bool> savedEnabled=new List<bool>();
         bool active;
         public bool Dark {get;private set;}
-        public SchoolWalkerFlickerLighting(Transform root)
+        public SchoolWalkerFlickerLighting(Transform root,SchoolEmergencyBacklight backlight)
         {
             if(!root)throw new ArgumentNullException(nameof(root));
+            this.backlight=backlight?backlight:throw new ArgumentNullException(nameof(backlight));
             fixtures=root.GetComponentsInChildren<SchoolFluorescent>(true);
             environment=root.GetComponent<SchoolHorrorLighting>();
             if(!environment)throw new InvalidOperationException("School flicker requires school environment lighting");
@@ -62,8 +64,13 @@ namespace HappyToy.V2
                 }
             }
             Dark=dark;
+            // Enter suppression before the first dark-state capture; on exit,
+            // unwind the dark capture first and then restore original room lights.
+            if(active)environment.SetFlickerBacklit(true);
             environment.SetFlickerDark(Dark);
-            foreach(var fixture in fixtures)if(fixture)fixture.SetEventGain(Dark?0:1);
+            if(!active)environment.SetFlickerBacklit(false);
+            backlight.Set(active,Dark);
+            foreach(var fixture in fixtures)if(fixture)fixture.SetEventGain(Dark?0:active?.06f:1);
         }
     }
 }

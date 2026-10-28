@@ -32,13 +32,14 @@ namespace HappyToy.V2.Editor
             if(!material){material=new Material(Shader.Find("Universal Render Pipeline/Lit"));AssetDatabase.CreateAsset(material,materialPath);}
             material.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"/creature-base.png"));
             // The source's metallic map makes the dark skin appear pale under the
-            // flashlight. Keep its authored albedo and use a restrained dielectric
-            // response with a small textured fill in the red-lit corridor.
+            // flashlight. Keep its authored albedo and a restrained dielectric
+            // response. The emergency light belongs to the environment; the
+            // creature must never generate a textured glow of its own.
             material.SetTexture("_MetallicGlossMap",null);material.DisableKeyword("_METALLICSPECGLOSSMAP");
             material.SetColor("_BaseColor",Color.white);material.SetFloat("_Metallic",.05f);material.SetFloat("_Smoothness",.35f);
-            material.SetTexture("_EmissionMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"/creature-base.png"));
-            material.SetColor("_EmissionColor",new Color(.12f,.12f,.12f,1));material.EnableKeyword("_EMISSION");
-            material.globalIlluminationFlags=MaterialGlobalIlluminationFlags.BakedEmissive;EditorUtility.SetDirty(material);
+            material.SetTexture("_EmissionMap",null);
+            material.SetColor("_EmissionColor",Color.black);material.DisableKeyword("_EMISSION");
+            material.globalIlluminationFlags=MaterialGlobalIlluminationFlags.EmissiveIsBlack;EditorUtility.SetDirty(material);
             var root=new GameObject("Flickering school creature");
             try
             {

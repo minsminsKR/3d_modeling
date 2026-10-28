@@ -2,15 +2,16 @@ using System;
 
 namespace HappyToy.V2
 {
-    // A restorable timeline: long red holds alternate with irregular dark
-    // pulses. Pose and displacement advance only during the same dark pulses.
+    // A restorable timeline: brief irregular red reveals alternate with longer
+    // darkness. Pose and displacement change at each dark onset, so the next
+    // reveal shows the completed step rather than the movement itself.
     public static class SchoolWalkerFlicker
     {
         public const double CycleSeconds=7.3;
-        static readonly double[] starts={1.60,1.73,1.84,1.97,2.10,2.23,2.35,2.48,
-            3.90,4.02,4.14,4.27,4.42};
-        static readonly double[] ends={1.69,1.80,1.93,2.06,2.19,2.31,2.44,2.56,
-            3.98,4.10,4.23,4.38,4.56};
+        static readonly double[] starts={.12,.75,1.21,1.75,2.21,2.89,3.48,
+            4.02,4.55,5.19,5.80,6.37,7.02};
+        static readonly double[] ends={.64,1.12,1.65,2.12,2.78,3.38,3.91,
+            4.45,5.10,5.70,6.27,6.91,7.30};
 
         public static bool Dark(double elapsed)
         {

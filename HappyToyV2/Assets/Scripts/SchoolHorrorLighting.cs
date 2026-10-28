@@ -30,8 +30,33 @@ namespace HappyToy.V2
         readonly List<ReflectionProbe> probes=new List<ReflectionProbe>();
         readonly List<Light> windowLights=new List<Light>();
         readonly Dictionary<Light,bool> flickerLightStates=new Dictionary<Light,bool>();
+        readonly Dictionary<Light,bool> backlitLightStates=new Dictionary<Light,bool>();
         readonly Dictionary<ReflectionProbe,bool> flickerProbeStates=new Dictionary<ReflectionProbe,bool>();
-        bool flickerDark,planarBeforeFlicker;
+        bool flickerDark,flickerBacklit,planarBeforeFlicker;
+        // Hold unrelated room/window lighting off for the entire anomaly, so
+        // each red reveal is lit from the end of the hall. Save exact states.
+        public void SetFlickerBacklit(bool active)
+        {
+            if(flickerBacklit==active)return;
+            if(active)
+            {
+                if(!Prepared||!world||!world.Root)throw new InvalidOperationException("School lighting must be prepared before backlight");
+                backlitLightStates.Clear();
+                var flashlight=session&&session.player?session.player.flashlight:null;
+                foreach(var light in world.Root.GetComponentsInChildren<Light>(true))
+                {
+                    if(!light||light==flashlight||light.GetComponentInParent<SchoolFluorescent>()||
+                        light.GetComponentInParent<SchoolEmergencyBacklight>())continue;
+                    backlitLightStates[light]=light.enabled;light.enabled=false;
+                }
+            }
+            else
+            {
+                foreach(var item in backlitLightStates)if(item.Key)item.Key.enabled=item.Value;
+                backlitLightStates.Clear();
+            }
+            flickerBacklit=active;
+        }
         public bool FlickerDark=>flickerDark;
         readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
         readonly List<GameObject> additions=new List<GameObject>();
@@ -260,7 +285,7 @@ namespace HappyToy.V2
             if(!Prepared||!session||!session.ChapterMode||!session.Chapter||session.Chapter.Loop!=world||!camera||
                 camera!=session.player.eyes&&camera.cameraType!=CameraType.Reflection||!cameraBounds.Contains(camera.transform.position))return;
             bool pending=!ReflectionReady;
-            bool blackReflection=pending||flickerDark;
+            bool blackReflection=pending||flickerDark||flickerBacklit;
             renders.Push(new Environment{camera=camera,ambientMode=RenderSettings.ambientMode,ambient=RenderSettings.ambientLight,
                 sky=RenderSettings.ambientSkyColor,equator=RenderSettings.ambientEquatorColor,ground=RenderSettings.ambientGroundColor,
                 ambientIntensity=RenderSettings.ambientIntensity,harmonics=RenderSettings.ambientProbe,fog=RenderSettings.fog,
@@ -268,18 +293,19 @@ namespace HappyToy.V2
                 fogStart=RenderSettings.fogStartDistance,fogEnd=RenderSettings.fogEndDistance,
                 reflectionOverride=blackReflection,reflectionMode=RenderSettings.defaultReflectionMode,reflection=blackReflection?RenderSettings.customReflectionTexture:null});
             if(blackReflection){RenderSettings.defaultReflectionMode=DefaultReflectionMode.Custom;RenderSettings.customReflectionTexture=pendingReflection;}
-            var ambient=flickerDark?Color.black:new Color(.028f,.040f,.058f);
+            var ambient=flickerDark?Color.black:flickerBacklit?new Color(.003f,.003f,.004f):new Color(.028f,.040f,.058f);
             RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=ambient;
             RenderSettings.ambientSkyColor=RenderSettings.ambientEquatorColor=RenderSettings.ambientGroundColor=ambient;
             RenderSettings.ambientIntensity=.65f;var harmonics=new SphericalHarmonicsL2();harmonics.AddAmbientLight(ambient*.65f);RenderSettings.ambientProbe=harmonics;
             RenderSettings.fog=true;RenderSettings.fogMode=FogMode.ExponentialSquared;
-            RenderSettings.fogColor=flickerDark?Color.black:new Color(.006f,.010f,.017f);RenderSettings.fogDensity=.0135f;
+            RenderSettings.fogColor=flickerDark?Color.black:flickerBacklit?new Color(.018f,.002f,.002f):new Color(.006f,.010f,.017f);RenderSettings.fogDensity=.0135f;
         }
         void AfterCamera(ScriptableRenderContext context,Camera camera)
         {if(renders.Count>0&&renders.Peek().camera==camera)renders.Pop().Restore();}
         void OnDisable()
         {
             if(flickerDark)SetFlickerDark(false);
+            if(flickerBacklit)SetFlickerBacklit(false);
             overlap?.Dispose();
             if(subscribed){RenderPipelineManager.beginCameraRendering-=BeforeCamera;RenderPipelineManager.endCameraRendering-=AfterCamera;subscribed=false;}
             while(renders.Count>0)renders.Pop().Restore();
