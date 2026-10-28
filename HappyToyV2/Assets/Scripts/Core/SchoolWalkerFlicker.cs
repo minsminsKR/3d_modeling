@@ -2,45 +2,38 @@ using System;
 
 namespace HappyToy.V2
 {
-    // A restorable timeline: brief irregular red reveals alternate with longer
-    // darkness. Pose and displacement change at each dark onset, so the next
-    // reveal shows the completed step rather than the movement itself.
+    // Four fixed red reveals per simulation second. A short lit frame is
+    // followed by darkness; the actor snaps once at the dark boundary.
+    // Elapsed simulation time is the only state, so older checkpoints remain valid.
     public static class SchoolWalkerFlicker
     {
-        public const double CycleSeconds=7.3;
-        static readonly double[] starts={.12,.75,1.21,1.75,2.21,2.89,3.48,
-            4.02,4.55,5.19,5.80,6.37,7.02};
-        static readonly double[] ends={.64,1.12,1.65,2.12,2.78,3.38,3.91,
-            4.45,5.10,5.70,6.27,6.91,7.30};
+        public const double CycleSeconds=.25;
+        public const double LitSeconds=.09;
+        const double BoundaryTolerance=1e-10;
 
         public static bool Dark(double elapsed)
         {
+            if(double.IsNaN(elapsed)||double.IsInfinity(elapsed)||elapsed<0)throw new ArgumentException("Finite nonnegative flicker time required");
             double phase=Phase(elapsed);
-            for(int i=0;i<starts.Length;i++)if(phase>=starts[i]&&phase<ends[i])return true;
-            return false;
+            return phase+BoundaryTolerance>=LitSeconds;
         }
         // Count dark-onset boundaries, including one exactly at elapsed.
-        // The same count drives both the instantaneous pose and route jump.
+        // This shared index drives both the instantaneous pose and route step.
         public static long FlashIndex(double elapsed)
         {
             if(double.IsNaN(elapsed)||double.IsInfinity(elapsed)||elapsed<0)throw new ArgumentException("Finite nonnegative flicker time required");
-            long cycles=(long)Math.Floor(elapsed/CycleSeconds);double phase=Phase(elapsed);
-            long count=cycles*starts.Length;for(int i=0;i<starts.Length;i++)if(phase>=starts[i])count++;else break;
-            return count;
+            long cycles=(long)Math.Floor((elapsed+BoundaryTolerance)/CycleSeconds);
+            double phase=elapsed-cycles*CycleSeconds;
+            return cycles+(phase+BoundaryTolerance>=LitSeconds?1:0);
         }
-        // The integer part selects an asymmetrical fixed pose. Its fractional
-        // part changes behind the flash, so each lit frame holds the new pose.
+        // The integer part selects an asymmetrical fixed pose. During darkness
+        // the fractional part evolves; the next reveal holds the new pose.
         public static double Pose(double elapsed)
         {
-            double cycles=Math.Floor(Math.Max(0,elapsed)/CycleSeconds),phase=Phase(elapsed);
-            double pose=cycles*starts.Length;
-            for(int i=0;i<starts.Length;i++)
-            {
-                if(phase<starts[i])break;
-                pose+=Math.Min(1,(phase-starts[i])/(ends[i]-starts[i]));
-                if(phase<ends[i])break;
-            }
-            return pose;
+            if(double.IsNaN(elapsed)||double.IsInfinity(elapsed)||elapsed<0)throw new ArgumentException("Finite nonnegative flicker time required");
+            long cycles=(long)Math.Floor((elapsed+BoundaryTolerance)/CycleSeconds);
+            double phase=elapsed-cycles*CycleSeconds;
+            return cycles+Math.Max(0,Math.Min(1,(phase-LitSeconds)/(CycleSeconds-LitSeconds)));
         }
         public static double MovingSeconds(double start,double duration)
         {
@@ -50,11 +43,13 @@ namespace HappyToy.V2
         }
         static double Accumulated(double elapsed)
         {
-            double cycles=Math.Floor(elapsed/CycleSeconds),phase=Phase(elapsed),perCycle=0,result=0;
-            for(int i=0;i<starts.Length;i++)
-            {perCycle+=ends[i]-starts[i];result+=Math.Max(0,Math.Min(phase,ends[i])-starts[i]);}
-            return cycles*perCycle+result;
+            double cycles=Math.Floor(elapsed/CycleSeconds),phase=elapsed-cycles*CycleSeconds;
+            return cycles*(CycleSeconds-LitSeconds)+Math.Max(0,phase-LitSeconds);
         }
-        static double Phase(double elapsed)=>Math.Max(0,elapsed)%CycleSeconds;
+        static double Phase(double elapsed)
+        {
+            double cycles=Math.Floor((elapsed+BoundaryTolerance)/CycleSeconds);
+            return Math.Max(0,elapsed-cycles*CycleSeconds);
+        }
     }
 }

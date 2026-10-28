@@ -105,7 +105,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(backlight.transform.IsChildOf(walker.transform),Is.False,"The backlight belongs to the school, not the actor");
             var fixedPosition=source.transform.position;var backdropPosition=backdrop.transform.position;
             Assert.That(backlight.transform.InverseTransformPoint(fixedPosition).z,Is.GreaterThan(30),"The fixture belongs at the far end of the corridor");
-            Set(snapState,"Elapsed",.65d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",.27d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(backlight,"Visible"),Is.True,"The environment fixture is visible during a reveal");
             Assert.That(Get<bool>(walker,"FlickerDark"),Is.False);
             var litBlock=new MaterialPropertyBlock();
@@ -116,7 +116,7 @@ namespace HappyToy.V2.CloudTests
             var originalWindows=windows.Select(l=>(l.enabled,l.intensity)).ToArray();
             var labels=Get<Transform>(world,"Root").GetComponentsInChildren<TextMesh>(true).Select(t=>t.GetComponent<Renderer>()).Where(r=>r).ToArray();
             var originalLabels=labels.Select(r=>r.enabled).ToArray();
-            torch.enabled=true;Set(snapState,"Elapsed",.80d);Call(walker,"RestoreState",snapState);
+            torch.enabled=true;Set(snapState,"Elapsed",.35d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark")&&Get<bool>(lighting,"FlickerDark"),Is.True);
             Assert.That(Get<bool>(backlight,"Visible"),Is.False,"The fixed fixture goes dark between reveals");
             Assert.That(torch.enabled,Is.True,"Dark flicker must not disable the flashlight");
@@ -130,22 +130,22 @@ namespace HappyToy.V2.CloudTests
             bool invertedAtStart=Get<bool>(walker,"CreatureInverted");var flashPose=bones.Select(b=>b.localRotation).ToArray();
             var fixtures=Get<Transform>(world,"Root").GetComponentsInChildren(RequireType("SchoolFluorescent"));
             Assert.That(fixtures.All(f=>Get<Light>(f,"Source").intensity==0),Is.True);
-            Set(snapState,"Elapsed",1.00d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",.40d);Call(walker,"RestoreState",snapState);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.LessThan(.01f),"A dark interval holds the snapped pose");
             Assert.That(Get<bool>(walker,"CreatureInverted"),Is.EqualTo(invertedAtStart));
-            torch.enabled=false;Set(snapState,"Elapsed",1.15d);Call(walker,"RestoreState",snapState);
+            torch.enabled=false;Set(snapState,"Elapsed",.51d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark")||Get<bool>(lighting,"FlickerDark"),Is.False);
             Assert.That(Get<bool>(backlight,"Visible"),Is.True);
             CollectionAssert.AreEqual(originalWindows,windows.Select(l=>(l.enabled,l.intensity)).ToArray());
             CollectionAssert.AreEqual(originalLabels,labels.Select(r=>r.enabled).ToArray());
             Assert.That(torch.enabled,Is.False,"A reveal must not force the flashlight on");
-            Set(snapState,"Elapsed",1.76d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",.85d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark"),Is.True);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.GreaterThan(100),"The next dark intervals snap to different contortions");
             Assert.That(source.transform.position,Is.EqualTo(fixedPosition),"The environment light must not follow the actor");
             Assert.That(backdrop.transform.position,Is.EqualTo(backdropPosition),"The background must not follow the actor");
             bool sawInverted=false,sawUpright=false;
-            foreach(double t in new[]{.12,.75,1.21,1.75,2.21,2.89,3.48,4.02,4.55,5.19,5.80,6.37,7.02})
+            foreach(double t in new[]{.10,.35,.60,.85,1.10,1.35,1.60,1.85,2.10,2.35,2.60,2.85,3.10})
             {Set(snapState,"Elapsed",t);Call(walker,"RestoreState",snapState);bool upsideDown=Get<bool>(walker,"CreatureInverted");sawInverted|=upsideDown;sawUpright|=!upsideDown;}
             Assert.That(sawInverted&&sawUpright,Is.True,"The saved event seed must produce both orientations");
             // Bake the actual animated skin after pose, tremor and ground correction.
@@ -167,7 +167,7 @@ namespace HappyToy.V2.CloudTests
             var bakedGround=new Mesh();
             try
             {
-                foreach(double t in new[]{.12,.65,.75,1.13,1.21,1.66,1.75,2.13,2.21,2.79,2.89,3.39,3.48,3.92,4.02,4.46,4.55,5.11,5.19,5.71,5.80,6.28,6.37,6.92,7.02,7.30})
+                foreach(double t in new[]{.10,.26,.35,.51,.60,.76,.85,1.01,1.10,1.26,1.35,1.51,1.60,1.76,1.85,2.01,2.10,2.26,2.35,2.51,2.60,2.76,2.85,3.01,3.10,3.26})
                 {
                     Set(snapState,"Elapsed",t);Call(walker,"RestoreState",snapState);
                     actualSkin.BakeMesh(bakedGround);var vertices=bakedGround.vertices;

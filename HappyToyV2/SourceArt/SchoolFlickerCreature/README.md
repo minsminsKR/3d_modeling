@@ -313,3 +313,16 @@ a separate player-camera review. Source model, rig and calibration are unchanged
 Verification: `school-anomalies-logic` passed 153 EditMode and 8 PlayMode tests;
 Unity 6000.6.0f1 Windows build and current build-input verification passed.
 No GPU render, player-view inspection or performance audit was run.
+
+
+2026-10-28 rapid strobe revision: the fixed environment backlight reveals the
+creature four times per simulation second: 0.09 s lit and 0.16 s dark. Each dark
+onset snaps the pose and advances up to 0.45 m, with the full movement segment
+checked against the player. Pause and talisman hold elapsed time. Existing
+checkpoint elapsed time is retained and interpreted using the new strobe cycle.
+GPU presentation, eye-level silhouette and runtime performance remain unverified.
+
+Verification: `school-anomalies-logic` passed 153 EditMode and 8 PlayMode
+tests; `hand-animation-logic` passed 104 EditMode and 11 PlayMode tests.
+The Unity Windows build and input verification passed. No GPU view or FPS
+audit was run under the desktop isolation policy.

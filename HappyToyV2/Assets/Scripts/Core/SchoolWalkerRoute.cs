@@ -111,11 +111,11 @@ namespace HappyToy.V2
         }
         void SnapTowardExit(float playerX,float playerZ)
         {
-            const float step=.25f;float oldX=state.X,oldZ=state.Z;
+            const float step=.45f;float oldX=state.X,oldZ=state.Z;
             if(state.Leg==0)
             {
                 float z=Math.Max(HallEndZ,state.Z-step);
-                if(ClearStep(state.X,z,playerX,playerZ))state.Z=z;
+                if(ClearFlickerStep(state.X,z,playerX,playerZ))state.Z=z;
                 if(state.Z<=HallEndZ+.0001f){state.Z=HallEndZ;state.Leg=1;}
             }
             else if(state.Leg==1)
@@ -123,7 +123,7 @@ namespace HappyToy.V2
                 float remaining=(float)Math.Sqrt(Squared(EndX-state.X,EndZ-state.Z));
                 float fraction=remaining<.000001f?1:Math.Min(1,step/remaining);
                 float x=state.X+(EndX-state.X)*fraction,z=state.Z+(EndZ-state.Z)*fraction;
-                if(ClearStep(x,z,playerX,playerZ)){state.X=x;state.Z=z;}
+                if(ClearFlickerStep(x,z,playerX,playerZ)){state.X=x;state.Z=z;}
                 if(Math.Abs(state.X-EndX)<.0001f&&Math.Abs(state.Z-EndZ)<.0001f){state.X=EndX;state.Z=EndZ;state.Leg=2;}
             }
             float dx=state.X-oldX,dz=state.Z-oldZ;float moved=(float)Math.Sqrt(Squared(dx,dz));
@@ -146,6 +146,20 @@ namespace HappyToy.V2
             // close, moving toward the player cannot restart a creeping gait.
             return nextGap>gap || gap>(PersonalSpace+StopMargin)*(PersonalSpace+StopMargin)&&
                 nextGap>=PersonalSpace*PersonalSpace;
+        }
+        // The entire snapped segment must clear the player, not just its
+        // endpoints. This also lets an already-close actor move away safely.
+        bool ClearFlickerStep(float x,float z,float playerX,float playerZ)
+        {
+            float dx=x-state.X,dz=z-state.Z,relativeX=state.X-playerX,relativeZ=state.Z-playerZ;
+            float gap=Squared(relativeX,relativeZ),nextGap=Squared(x-playerX,z-playerZ);
+            float length=Squared(dx,dz),dot=relativeX*dx+relativeZ*dz;
+            if(length<.00000001f)return true;
+            if(gap<=(PersonalSpace+StopMargin)*(PersonalSpace+StopMargin))
+                return dot>=0&&nextGap>gap;
+            float t=Math.Max(0,Math.Min(1,-dot/length));
+            float closest=Squared(relativeX+t*dx,relativeZ+t*dz);
+            return closest>=PersonalSpace*PersonalSpace;
         }
         static float Towards(float current,float target,float maximum)
             =>Math.Abs(target-current)<=maximum?target:current+(target>current?maximum:-maximum);

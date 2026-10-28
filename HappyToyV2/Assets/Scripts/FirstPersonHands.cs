@@ -523,15 +523,14 @@ namespace HappyToy.V2
         void UpdatePhysicalTorch()
         {
             if (!player || !player.eyes || !player.flashlight || player.Hidden) return;
-            var head = torch.TransformPoint(new Vector3(0, -.14f, 0));
-            var beam = WorldDirection(-torch.up);
-            var origin = WorldPoint(head);
-            // Never originate the real beam beyond a wall merely because the
-            // isolated near-hand layer remains visible in front of it.
-            var from = player.eyes.transform.position; var path = origin - from;
-            if (Physics.SphereCast(from, .018f, path.normalized, out var hit, path.magnitude,
-                Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)) origin = hit.point - path.normalized * .025f;
-            player.flashlight.transform.SetPositionAndRotation(origin, Quaternion.LookRotation(beam, player.eyes.transform.up));
+            // The visual hand is a separate close-up camera and can sway away
+            // from the reticle. Place the physical spot at the gameplay eye and
+            // aim along its centre ray: it stays centred at every distance and
+            // cannot be projected through a nearby wall by the hand camera.
+            var eye = player.eyes;
+            var centre = eye.ViewportPointToRay(new Vector3(.5f, .5f, 0));
+            player.flashlight.transform.SetPositionAndRotation(eye.transform.position,
+                Quaternion.LookRotation(centre.direction, eye.transform.up));
         }
         public void RefreshAfterCommit()
         {

@@ -6,25 +6,26 @@ namespace HappyToy.V2.CoreTests
     public sealed class SchoolWalkerRouteTests
     {
         [Test]
-        public void FlickerStepsOnlyAtLightOffAndHandlesSkippedBoundaries()
+        public void FourHertzRevealSnapsOnlyAtDarkOnset()
         {
-            Assert.That(SchoolWalkerFlicker.FlashIndex(.119),Is.EqualTo(0));
-            Assert.That(SchoolWalkerFlicker.FlashIndex(.12),Is.EqualTo(1));
-            Assert.That(SchoolWalkerFlicker.FlashIndex(.749),Is.EqualTo(1));
-            Assert.That(SchoolWalkerFlicker.FlashIndex(.75),Is.EqualTo(2));
-            var route=new SchoolWalkerRoute();route.CenterHallLane();var saved=route.CaptureState();saved.Elapsed=.11;route.RestoreState(saved);
+            Assert.That(SchoolWalkerFlicker.Dark(.089),Is.False);
+            Assert.That(SchoolWalkerFlicker.Dark(.09),Is.True);
+            Assert.That(SchoolWalkerFlicker.Dark(.249),Is.True);
+            Assert.That(SchoolWalkerFlicker.Dark(.25),Is.False);
+            Assert.That(SchoolWalkerFlicker.FlashIndex(.089),Is.EqualTo(0));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(.09),Is.EqualTo(1));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(.339),Is.EqualTo(1));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(.34),Is.EqualTo(2));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(1),Is.EqualTo(4));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(36000000),Is.EqualTo(144000000));
+            Assert.That(SchoolWalkerFlicker.Dark(36000000),Is.False);
+            Assert.That(SchoolWalkerFlicker.MovingSeconds(0,1),Is.EqualTo(.64).Within(1e-8));
+            Assert.That(SchoolWalkerFlicker.Pose(.25),Is.EqualTo(SchoolWalkerFlicker.Pose(.33)).Within(1e-8));
+            var route=new SchoolWalkerRoute();route.CenterHallLane();var saved=route.CaptureState();saved.Elapsed=.08;route.RestoreState(saved);
             float initial=route.Z;route.AdvanceFlicker(.005,true,10,0);Assert.That(route.Z,Is.EqualTo(initial));
-            route.AdvanceFlicker(.01,true,10,0);Assert.That(route.Z,Is.EqualTo(initial-.25f).Within(.0001f));
+            route.AdvanceFlicker(.01,true,10,0);Assert.That(route.Z,Is.EqualTo(initial-.45f).Within(.0001f));
             var snapped=route.CaptureState();route.AdvanceFlicker(.05,true,10,0);Assert.That(route.Z,Is.EqualTo(snapped.Z));
             var paused=route.CaptureState();route.AdvanceFlicker(.1,false,10,0);Assert.That(route.CaptureState(),Is.EqualTo(paused));
-            Assert.That(SchoolWalkerFlicker.FlashIndex(7.3),Is.EqualTo(13));
-            Assert.That(SchoolWalkerFlicker.FlashIndex(7.421),Is.EqualTo(14));
-            var skipped=new SchoolWalkerRoute();skipped.CenterHallLane();
-            float beforeSkipped=skipped.Z;for(int i=0;i<8;i++)skipped.AdvanceFlicker(.1,true,10,0);
-            Assert.That(skipped.Z,Is.EqualTo(beforeSkipped-.5f).Within(.0001f));
-            var sameFrameSteps=new SchoolWalkerRoute();sameFrameSteps.CenterHallLane();
-            for(int i=0;i<80;i++)sameFrameSteps.AdvanceFlicker(.01,true,10,0);
-            Assert.That(skipped.Z,Is.EqualTo(sameFrameSteps.Z).Within(.0001f));
         }
         [Test]
         public void CreatureCenterLaneApproachesAndPreservesCheckpointCompatibility()
@@ -39,44 +40,41 @@ namespace HappyToy.V2.CoreTests
             restored.Reset(1);Assert.That(restored.X,Is.EqualTo(SchoolWalkerRoute.DefaultLane));
         }
         [Test]
-        public void FlickerUsesIrregularPulsesAndMovesOnlyAtTheirBoundaries()
-        {
-            Assert.That(SchoolWalkerFlicker.Dark(.119),Is.False);
-            Assert.That(SchoolWalkerFlicker.Pose(.10),Is.EqualTo(0));
-            Assert.That(SchoolWalkerFlicker.MovingSeconds(0,.12),Is.EqualTo(0).Within(1e-8));
-            Assert.That(SchoolWalkerFlicker.Dark(.3),Is.True);
-            Assert.That(SchoolWalkerFlicker.Pose(.3),Is.InRange(.01,.99));
-            Assert.That(SchoolWalkerFlicker.Dark(.65),Is.False);
-            Assert.That(SchoolWalkerFlicker.Pose(.65),Is.EqualTo(SchoolWalkerFlicker.Pose(.74)).Within(1e-8));
-            Assert.That(SchoolWalkerFlicker.Dark(.75),Is.True);
-            Assert.That(SchoolWalkerFlicker.MovingSeconds(.12,.52),Is.EqualTo(.52).Within(1e-8));
-            Assert.That(SchoolWalkerFlicker.MovingSeconds(.65,.08),Is.EqualTo(0).Within(1e-8));
-            Assert.That(SchoolWalkerFlicker.MovingSeconds(0,SchoolWalkerFlicker.CycleSeconds),Is.GreaterThan(5.8));
-            var route=new SchoolWalkerRoute();
-            for(int i=0;i<65;i++)route.AdvanceFlicker(.01,true,10,60);
-            Assert.That(route.Z,Is.EqualTo(SchoolWalkerRoute.StartZ-.25f).Within(.001f));
-            var held=route.CaptureState();
-            route.AdvanceFlicker(.1,false,10,60);
-            Assert.That(route.CaptureState(),Is.EqualTo(held));
-        }
-        [Test]
-        public void FlickerApproachIsIndependentOfFramePartitionAndRespectsTheSolidPlayer()
+        public void FlickerApproachIsFastFrameIndependentAndRestorable()
         {
             SchoolWalkerRoute Run(double step,float playerZ)
             {
                 var route=new SchoolWalkerRoute();
-                for(double time=0;time<7.30-1e-8;)
+                for(double time=0;time<2-1e-8;)
                 {
-                    double dt=Math.Min(step,7.30-time);
+                    double dt=Math.Min(step,2-time);
                     route.AdvanceFlicker(dt,true,.65f,playerZ);time+=dt;
                 }
                 return route;
             }
             var fine=Run(.01,0);var coarse=Run(.05,0);
-            Assert.That(fine.CaptureState().Distance,Is.EqualTo(3.25).Within(.001));
+            Assert.That(fine.CaptureState().Distance,Is.EqualTo(3.6).Within(.001));
             Assert.That(coarse.CaptureState().Distance,Is.EqualTo(fine.CaptureState().Distance).Within(.001));
+            var restored=new SchoolWalkerRoute();restored.RestoreState(fine.CaptureState());
+            fine.AdvanceFlicker(.1,true,.65f,0);restored.AdvanceFlicker(.1,true,.65f,0);
+            Assert.That(restored.CaptureState(),Is.EqualTo(fine.CaptureState()));
             var blocked=Run(.01,32);
             Assert.That(blocked.Z,Is.GreaterThanOrEqualTo(32+SchoolWalkerRoute.PersonalSpace));
+        }
+        [Test]
+        public void FlickerSweepBlocksNearMissBetweenTwoClearEndpoints()
+        {
+            var route=new SchoolWalkerRoute();
+            // Both endpoints are outside the player's radius, but their segment
+            // crosses its boundary. Endpoint-only checks would tunnel through.
+            const float playerX=1.44f,playerZ=32.775f;
+            route.AdvanceFlicker(.1,true,playerX,playerZ);
+            Assert.That(route.Z,Is.EqualTo(SchoolWalkerRoute.StartZ));
+            var held=route.CaptureState();route.AdvanceFlicker(.25,false,playerX,playerZ);
+            Assert.That(route.CaptureState(),Is.EqualTo(held));
+            // Once the path is clear, the next flash can advance again.
+            route.AdvanceFlicker(.1,true,5,0);route.AdvanceFlicker(.1,true,5,0);route.AdvanceFlicker(.1,true,5,0);
+            Assert.That(route.Z,Is.EqualTo(SchoolWalkerRoute.StartZ-.45f).Within(.001f));
         }
         [Test]
         public void APassStaysOnThePhysicalFloorAndSettlesAtTheMaskedElbow()

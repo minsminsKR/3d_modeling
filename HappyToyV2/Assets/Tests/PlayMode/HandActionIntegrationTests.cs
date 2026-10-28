@@ -266,15 +266,63 @@ namespace HappyToy.V2.CloudTests
             Assert.That(light.enabled, Is.EqualTo(!wasLit));
             Assert.That(Get<int>(feedback, "InteractionCuesPlayed"), Is.EqualTo(cues + 1));
             var eye = Get<Camera>(player, "eyes");
-            var torch = HandProp(HandStudio.Find("Left flashlight grip"));
-            var handCamera = HandStudio.GetComponent<Camera>();
-            var worldA = eye.ViewportToWorldPoint(handCamera.WorldToViewportPoint(torch.position));
-            var worldB = eye.ViewportToWorldPoint(handCamera.WorldToViewportPoint(torch.position - torch.up * .1f));
-            var physicalDirection = (worldB - worldA).normalized;
-            Assert.That(Vector3.Dot(light.transform.forward, physicalDirection), Is.GreaterThan(.999f),
-                "World illumination and the visible lamp's emitting axis disagree");
+            var centre = eye.ViewportPointToRay(new Vector3(.5f, .5f, 0));
+            Assert.That(Vector3.Distance(light.transform.position, eye.transform.position), Is.LessThan(.0001f),
+                "The real light must originate at the gameplay camera, including during the switch animation");
+            Assert.That(Vector3.Angle(light.transform.forward, centre.direction), Is.LessThan(.01f),
+                "The beam must follow the actual centre reticle, not the swaying held prop");
             yield return Wait(() => !Get<bool>(actions, "Busy"), 5, "Flashlight thumb recovery did not finish");
             Assert.That(Get<int>(actions, "CommittedCount"), Is.EqualTo(committed + 1));
+        }
+
+        [UnityTest, Timeout(90000)]
+        public IEnumerator FlashlightBeamStaysOnTheScreenCentreAtDifferentViewsAndWallDistances()
+        {
+            yield return PrepareHandFixture();
+            var hands = Get<Component>(player, "Hands");
+            var eye = Get<Camera>(player, "eyes"); var light = Get<Light>(player, "flashlight");
+            var savedRotation = eye.transform.localRotation; float savedFov = eye.fieldOfView, savedAspect = eye.aspect;
+            var obstacle = GameObject.CreatePrimitive(PrimitiveType.Cube); obstacle.name = "Flashlight aim wall";
+            obstacle.layer = 29; obstacle.transform.localScale = new Vector3(1, 1, .04f);
+            ((Behaviour)hands).enabled = false; // deterministically sample the real authored hand poses
+            try
+            {
+                foreach (float aspect in new[] { 4f / 3, 16f / 9, 21f / 9 })
+                foreach (float fov in new[] { 60f, 90f })
+                foreach (float pitch in new[] { -35f, 25f })
+                {
+                    eye.aspect = aspect; eye.fieldOfView = fov;
+                    eye.transform.localRotation = Quaternion.Euler(pitch, 31, 0);
+                    foreach (float action in new[] { -1f, .5f, .9f })
+                    {
+                        Call(hands, "PrepareCpuPreview", AnimatedItem("Flashlight"), -1f, action, aspect);
+                        var ray = eye.ViewportPointToRay(new Vector3(.5f, .5f, 0));
+                        Assert.That(Vector3.Distance(light.transform.position, eye.transform.position), Is.LessThan(.0001f));
+                        Assert.That(Vector3.Angle(light.transform.forward, ray.direction), Is.LessThan(.01f));
+                        foreach (float distance in new[] { .35f, 4f })
+                        {
+                            obstacle.transform.SetPositionAndRotation(eye.transform.position + ray.direction * distance,
+                                Quaternion.LookRotation(ray.direction, eye.transform.up));
+                            Physics.SyncTransforms();
+                            Assert.That(Physics.Raycast(eye.transform.position, ray.direction, out var aimHit, distance + .2f, 1 << 29), Is.True);
+                            Assert.That(Physics.Raycast(light.transform.position, light.transform.forward, out var beamHit, distance + .2f, 1 << 29), Is.True);
+                            Assert.That(beamHit.collider, Is.SameAs(obstacle.GetComponent<Collider>()));
+                            Assert.That(Vector3.Distance(aimHit.point, beamHit.point), Is.LessThan(.001f),
+                                "The flashlight hotspot must meet the reticle at near and far walls");
+                        }
+                    }
+                }
+                Call(shell, "Pause"); var before = (light.transform.position, light.transform.rotation);
+                yield return null; yield return null;
+                Assert.That(light.transform.position, Is.EqualTo(before.position));
+                Assert.That(light.transform.rotation, Is.EqualTo(before.rotation));
+                Call(shell, "Resume");
+            }
+            finally
+            {
+                ((Behaviour)hands).enabled = true; eye.transform.localRotation = savedRotation;
+                eye.fieldOfView = savedFov; eye.aspect = savedAspect; Object.Destroy(obstacle);
+            }
         }
 
         [UnityTest, Timeout(90000)]
