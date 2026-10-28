@@ -115,6 +115,11 @@ namespace HappyToy.V2.CloudTests
             var revealPose=bones.Select(b=>(b.localPosition,b.localRotation)).ToArray();
             Set(snapState,"Elapsed",.28d);Call(walker,"RestoreState",snapState);
             CollectionAssert.AreEqual(revealPose,bones.Select(b=>(b.localPosition,b.localRotation)).ToArray(),"The visible pose must remain frozen during each reveal");
+            var corridorLights=Get<Transform>(world,"Root").GetComponentsInChildren(RequireType("SchoolFluorescent"))
+                .Select(f=>Get<Light>(f,"Source")).Where(l=>l.type==LightType.Spot).ToArray();
+            Assert.That(corridorLights.Length,Is.GreaterThanOrEqualTo(9));
+            Assert.That(corridorLights.All(l=>l.enabled&&l.intensity>.1f&&l.color.r>l.color.g*5),Is.True,
+                "Every corridor fixture must illuminate the world red in the same reveal");
             var litBlock=new MaterialPropertyBlock();
             foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
             {skin.GetPropertyBlock(litBlock);var color=litBlock.GetColor("_EmissionColor");

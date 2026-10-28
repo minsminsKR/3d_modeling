@@ -356,3 +356,9 @@ outputs reproducible with the review runner, not source assets.
 Verification: `school-anomalies-logic` passed 153 EditMode and 8 PlayMode,
 `local-shadow-logic` passed 100 EditMode and 1 PlayMode; the isolated GPU
 review passed, and the Windows build/input verification succeeded.
+
+2026-10-28 corridor lights: the actual corridor fluorescent spotlights and
+tubes now flash red at normal event gain in sync with the fixed emergency light;
+room lights stay subdued and all fixtures restore after the event. The
+`school-anomalies-logic` profile passed 153 EditMode and 8 PlayMode cases.
+Rendered appearance and runtime performance were not reviewed for this change.
