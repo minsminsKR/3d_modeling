@@ -200,6 +200,47 @@ namespace HappyToy.V2.CloudTests
             foreach(double t in new[]{1.60,1.73,1.84,1.97,2.10,2.23,2.35,2.48,3.90,4.02,4.14,4.27,4.42})
             {Set(snapState,"Elapsed",t);Call(walker,"RestoreState",snapState);bool upsideDown=Get<bool>(walker,"CreatureInverted");sawInverted|=upsideDown;sawUpright|=!upsideDown;}
             Assert.That(sawInverted&&sawUpright,Is.True,"The saved event seed must produce both orientations");
+            // Bake the actual animated skin after pose, tremor and ground correction.
+            // Compare the selected foot/head vertices with the physical floor, not
+            // a neutral prefab bound or the contact-joint transform alone.
+            var floorRay=walker.transform.position+Vector3.up*.75f;
+            var floorHits=Physics.RaycastAll(floorRay,Vector3.down,1.5f,1<<8,QueryTriggerInteraction.Ignore)
+                .Where(hit=>hit.collider&&hit.collider.name=="School loop physical floor").OrderByDescending(hit=>hit.point.y).ToArray();
+            Assert.That(floorHits.Length,Is.GreaterThan(0),"Physical school floor missing below creature");
+            var groundHit=floorHits[0];
+            Debug.Log("FLICKER_GROUND_TEST floor="+groundHit.point.y+" collider="+groundHit.collider.name+" actor="+walker.transform.position.y);
+            var actualSkin=creature.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(r=>!rimOverlays.Contains(r)).OrderByDescending(r=>r.sharedMesh.vertexCount).First();
+            var weights=actualSkin.sharedMesh.boneWeights;var skinBones=actualSkin.bones;
+            var leftMask=skinBones.Select(b=>b&&(b.name=="bone_46"||b.name=="bone_47")).ToArray();
+            var rightMask=skinBones.Select(b=>b&&(b.name=="bone_50"||b.name=="bone_51")).ToArray();
+            var headMask=skinBones.Select(b=>b&&(b.name=="bone_4"||b.name=="bone_5")).ToArray();
+            bool Influenced(BoneWeight w,bool[] mask)=>w.weight0>=.5f&&mask[w.boneIndex0]||w.weight1>=.5f&&mask[w.boneIndex1]||w.weight2>=.5f&&mask[w.boneIndex2]||w.weight3>=.5f&&mask[w.boneIndex3];
+            var bakedGround=new Mesh();
+            try
+            {
+                foreach(double t in new[]{1.60,1.70,1.73,1.81,1.84,1.94,1.97,2.07,2.10,2.20,2.23,2.32,2.35,2.45,2.48,2.57,3.90,3.99,4.02,4.11,4.14,4.24,4.27,4.39,4.42,4.57})
+                {
+                    Set(snapState,"Elapsed",t);Call(walker,"RestoreState",snapState);
+                    actualSkin.BakeMesh(bakedGround);var vertices=bakedGround.vertices;
+                    float left=float.PositiveInfinity,right=float.PositiveInfinity,head=float.PositiveInfinity;
+                    for(int i=0;i<vertices.Length;i++)
+                    {
+                        var w=weights[i];bool l=Influenced(w,leftMask),r=Influenced(w,rightMask),h=Influenced(w,headMask);
+                        if(!l&&!r&&!h)continue;
+                        float y=actualSkin.transform.TransformPoint(vertices[i]).y-groundHit.point.y;
+                        if(l)left=Mathf.Min(left,y);if(r)right=Mathf.Min(right,y);if(h)head=Mathf.Min(head,y);
+                    }
+                    if(Get<bool>(walker,"CreatureInverted"))
+                        Assert.That(head,Is.InRange(-.025f,.025f),"Inverted head must touch the real floor at "+t);
+                    else
+                    {
+                        Assert.That(left,Is.InRange(-.025f,.025f),"Left sole must touch physical floor at "+t+" floor="+groundHit.point.y+" collider="+groundHit.collider.name+" actor="+walker.transform.position.y);
+                        Assert.That(right,Is.InRange(-.025f,.025f),"Right sole must touch the real floor at "+t);
+                    }
+                }
+            }
+            finally{Object.Destroy(bakedGround);}
             Call(walker,"SetDancing",false);
             Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);
             Assert.That(Get<bool>(lighting,"FlickerDark"),Is.False,"Leaving the event must restore its environment");

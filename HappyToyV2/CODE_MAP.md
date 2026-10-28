@@ -519,3 +519,5 @@ batch 모드에서도 앞선 LateUpdate의 완성된 텍스처를 읽으며15초
 테스트용 임시 설정: 새 게임의 첫 학교 통과는 붉은 점멸 괴물로 시작한다. 기존 저장은 저장된 이벤트를 복원하며 이후 통과는 기존 추첨을 사용한다.
 
 괴물 저조도 가독성: `SchoolFlickerCreatureRim`은 실제 스킨 및 LOD를 공유하는 프레넬/측면광 pass를 추가하며, `SchoolFlickerCreatureVisibility`는 거리별 원본 텍스처 발광을 조절한다. `SchoolFlickerCreatureReadabilitySettings`의 `Resources/SchoolFlickerCreature/ReadabilitySettings.asset`에서 강도·거리·후광을 Inspector로 조정한다. 모두 같은 점멸 시계를 사용하고 소등 중 손전등만 남긴다. `school-anomalies-logic`은 LOD 연결 및 소등/복원을 검사한다. 실제 GPU 화면과 비용은 별도 확인이 필요하다.
+
+`SchoolFlickerCreatureGrounding`은 포즈·떨림 뒤 실제 스키닝된 접촉 정점으로 일반 양발 또는 반전 머리를 바닥에 맞춘다. 동일 단계는 보정을 재사용하며 새 단계의 BakeMesh는 CPU 비용이 있으므로 성능을 별도 확인한다. `school-anomalies-logic`은 물리 바닥과 26개 점멸 시점의 스킨 접지를 비교한다. 복도 폭 4.4m 중 기본 자세 폭은 3.9m로 유지한다.

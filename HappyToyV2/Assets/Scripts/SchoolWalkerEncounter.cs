@@ -19,6 +19,7 @@ namespace HappyToy.V2
         SchoolWalkerFlickerLighting flicker;
         SchoolFlickerCreatureVisibility creatureVisibility;
         SchoolFlickerCreatureTremor creatureTremor;
+        SchoolFlickerCreatureGrounding creatureGrounding;
         public SchoolFlickerCreatureHalo Halo {get;private set;}
         public SchoolFlickerCreatureRim Rim {get;private set;}
         public SchoolFlickerCreatureReadabilitySettings ReadabilitySettings {get;private set;}
@@ -85,6 +86,7 @@ namespace HappyToy.V2
                 actor.creatureVisibility=new SchoolFlickerCreatureVisibility(actor.creature,owner.player.eyes,actor.ReadabilitySettings);
                 actor.Rim=new SchoolFlickerCreatureRim(actor.creature);
                 actor.creatureTremor=new SchoolFlickerCreatureTremor(actor.creature);
+                actor.creatureGrounding=new SchoolFlickerCreatureGrounding(actor.creature,centre);
                 actor.Halo=new SchoolFlickerCreatureHalo(actor.transform,owner.player.eyes,actor.ReadabilitySettings);
                 actor.creature.gameObject.SetActive(false);
                 actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
@@ -176,12 +178,12 @@ namespace HappyToy.V2
             var state=route.CaptureState();
             transform.localPosition=new Vector3(state.X,FeetHeight,state.Z);
             transform.localRotation=Quaternion.Euler(0,state.Yaw,0);if(!Dancing)Motion.Apply(state);
-            if(Dancing&&creatureMotion!=null){creatureMotion.Apply(state.Elapsed);if(creatureTremor!=null)creatureTremor.Apply(state.Elapsed,creatureMotion.Inverted);}
+            if(Dancing&&creatureMotion!=null){creatureMotion.Apply(state.Elapsed);if(creatureTremor!=null)creatureTremor.Apply(state.Elapsed,creatureMotion.Inverted);if(creatureGrounding!=null)creatureGrounding.Apply(state.Elapsed,creatureMotion.Inverted);}
             if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
             if(creatureVisibility!=null)creatureVisibility.Set(Dancing,FlickerDark);
             if(Halo!=null)Halo.Set(Dancing,FlickerDark);
             if(Rim!=null){if(ReadabilitySettings)Rim.Configure(ReadabilitySettings.rimColor,ReadabilitySettings.rimIntensity,ReadabilitySettings.rimPower,ReadabilitySettings.sideStrength);Rim.Set(Dancing,FlickerDark);}
         }
-        void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);if(creatureMotion!=null)creatureMotion.Dispose();if(creatureVisibility!=null)creatureVisibility.Dispose();if(Halo!=null)Halo.Dispose();if(Rim!=null)Rim.Dispose();}
+        void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);if(creatureMotion!=null)creatureMotion.Dispose();if(creatureGrounding!=null)creatureGrounding.Dispose();if(creatureVisibility!=null)creatureVisibility.Dispose();if(Halo!=null)Halo.Dispose();if(Rim!=null)Rim.Dispose();}
     }
 }

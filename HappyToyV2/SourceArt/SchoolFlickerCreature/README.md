@@ -289,3 +289,9 @@ fill follows camera distance. Existing neutral tonemapping, -0.10 exposure,
 0 contrast, 0.12 bloom and 0.12 vignette remain a starting point; assess the
 actual distant and close camera views before making visual quality claims. The
 additional skinned pass requires separate GPU performance measurement.
+
+
+Grounding revision: after pose and tremor, sampled Unity skinned foot/head
+vertices are aligned to the school floor; results are cached per tremor step.
+The calibrated 3.9m width is retained in the 4.4m hallway. This CPU skinning
+work requires separate performance and player-view review.
