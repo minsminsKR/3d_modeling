@@ -14,9 +14,12 @@ namespace HappyToy.V2
         GameSession session;
         Transform section;
         Renderer[] body;
+        Transform creature;
+        SchoolFlickerCreatureMotion creatureMotion;
         SchoolWalkerFlickerLighting flicker;
         public Transform Walker=>transform;
         public Transform Visual {get;private set;}
+        public Transform Creature=>creature;
         public SchoolWalkerMotion Motion {get;private set;}
         public SchoolWalkerFootsteps Footsteps {get;private set;}
         public CapsuleCollider BodyCollider {get;private set;}
@@ -25,6 +28,8 @@ namespace HappyToy.V2
         public void SetDancing(bool value)
         {
             Dancing=value;
+            if(Visual)Visual.gameObject.SetActive(!value);
+            if(creature)creature.gameObject.SetActive(value);
             if(Motion){Motion.SetDancing(value);ApplyPose();}
             if(flicker!=null)flicker.SetActive(value,route.CaptureState().Elapsed);
         }
@@ -59,6 +64,11 @@ namespace HappyToy.V2
                 actor.BodyCollider.height=Height;actor.BodyCollider.center=Vector3.up*(Height*.5f);
                 actor.Motion=actor.gameObject.AddComponent<SchoolWalkerMotion>();
                 actor.Motion.Prepare(actor.Visual.gameObject,walk,idle,metresPerCycle);
+                var creaturePrefab=Resources.Load<GameObject>("SchoolFlickerCreature/creature");
+                if(!creaturePrefab)throw new InvalidOperationException("Flicker creature prefab is missing");
+                actor.creature=Instantiate(creaturePrefab,actor.transform,false).transform;
+                actor.creatureMotion=new SchoolFlickerCreatureMotion(actor.creature);
+                actor.creature.gameObject.SetActive(false);
                 actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
                 actor.Footsteps.Prepare(metresPerCycle);actor.Footsteps.Synchronize(actor.route.CaptureState());
                 actor.ApplyPose();return actor;
@@ -110,6 +120,7 @@ namespace HappyToy.V2
         {
             var bounds=new Bounds(transform.position+Vector3.up*Height*.5f,new Vector3(.9f,Height,.65f));
             if(body!=null)foreach(var renderer in body)if(renderer)bounds.Encapsulate(renderer.bounds);
+            if(Dancing&&creature)foreach(var renderer in creature.GetComponentsInChildren<Renderer>(true))if(renderer)bounds.Encapsulate(renderer.bounds);
             return bounds;
         }
         bool PhysicallyHidden(Camera camera,Bounds bounds)
@@ -146,6 +157,7 @@ namespace HappyToy.V2
             var state=route.CaptureState();
             transform.localPosition=new Vector3(state.X,FeetHeight,state.Z);
             transform.localRotation=Quaternion.Euler(0,state.Yaw,0);Motion.Apply(state);
+            if(Dancing&&creatureMotion!=null)creatureMotion.Apply(state.Elapsed);
             if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
         }
         void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);}

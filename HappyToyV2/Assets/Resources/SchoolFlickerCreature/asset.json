@@ -1,0 +1,9 @@
+{
+  "source": "Generated/rigged.glb",
+  "bones": 52,
+  "lodFaces": [
+    120000,
+    45000,
+    15000
+  ]
+}

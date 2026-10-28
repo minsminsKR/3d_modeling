@@ -204,3 +204,10 @@ HappyToyV2/Assets/Editor/SchoolRenewalImport.cs text eol=lf
 HappyToyV2/Assets/Editor/SchoolRenewalImport.cs.meta text eol=lf
 HappyToyV2/Assets/Tests/PlayMode/SchoolRenewal*.cs text eol=lf
 HappyToyV2/Assets/Tests/PlayMode/SchoolRenewal*.cs.meta text eol=lf
+
+# School flicker creature: generated originals and editable source.
+HappyToyV2/SourceArt/SchoolFlickerCreature/Generated/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolFlickerCreature/Generated/*.zip filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolFlickerCreature/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/SchoolFlickerCreature/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/SchoolFlickerCreature/*.png filter=lfs diff=lfs merge=lfs -text

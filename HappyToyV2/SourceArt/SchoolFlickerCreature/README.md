@@ -115,3 +115,47 @@ using `user-face-reference.png`: preserve the distinctive purple flower at the
 ear and the subject's visible moustache and chin/jaw beard, keeping the original
 creature body and neutral full-body composition. The revised image is a concept;
 no creature model or in-game replacement has yet been generated.
+
+## Generation request — 2026-10-28
+
+Submitted `Reference/concept-face-flower.png` to the designated A100 service.
+Request UUID `12e1b63d-755a-45b8-a174-da212049c751`; job
+`aedf9323-2d12-489b-a093-1335ab24ba53`. TRELLIS.2, seed 1234, split GPU,
+1536 cascade, 12 steps, 8192 texture, background removal. Input SHA-256
+`f0591dc2fee005ac3668b8718bec88926318dfc842002106a0d0eaf695dd5abf`.
+Use the same UUID for resume/collect; do not resubmit while this request exists.
+
+## Generated and integrated asset — 2026-10-28
+
+Rig run `746c2d23-78ec-468e-b011-2163acef4078` retains the original 52-bone,
+735159-vertex AI skin and four procedural service motion presets. `Generated/`
+contains the original model, rigged original, animated rig and generation and
+rigging records. The verified 844428085-byte versioned collection archive has
+SHA-256 `a4a6ee1786f2ae211bb419a77f4003c3396e9f7492f16a73476a19dd512c02ff`;
+the archive cache is optional, and originals/records are retained separately here.
+The web model was rotated to inspect front, side and back, and the web joint editor
+and waving preview were inspected; no joint edits were made. The flower is visible.
+
+Blender 4.0.2 `finish_creature.py` preserves the source rig in the packed
+`SchoolFlickerCreature.blend`, creates 120000/45000/15000-face skinned collapse
+LODs and exports `Assets/Resources/SchoolFlickerCreature/creature.fbx`. The source
+mesh's UVs and AI weights are kept by the decimator; thin tendrils and facial
+fidelity still require in-game visual review. `export_textures.py` extracts PBR
+from `Generated/rigged.glb`, resizes the source base color and converts glTF ORM
+to Unity metallic/smoothness with Pillow/numpy from `requirements.txt`.
+Unity 6000.6.0f1 `SchoolFlickerCreatureImport.Apply` produces the material,
+normalized 2.5m prefab and LOD group. `SchoolFlickerCreatureMotion` maps the
+actual inspected 52-joint skeleton and uses the existing flicker clock; normal
+passages retain the existing person. Collider and stop policy remain the existing
+pedestrian body. Run `school-anomalies-logic` for the headless rules and scene
+integration. GPU appearance, floor/ceiling clearance through animated poses,
+facial/flower fidelity after decimation, and native player performance require
+separate in-game review; automated headless tests do not establish these.
+
+Validation: `school-anomalies-logic` 151 EditMode and 8 PlayMode tests passed
+in `Builds/Verification/feature-tests/20261028-092504-3cd4e00f`; the play test
+checks creature/human visibility, flicker movement and pause. Windows player
+`Builds/Windows-FlickerCreature-20261028` built successfully with Unity 6000.6.0f1;
+its 4608 current inputs and required artifacts passed `verify_build_inputs.py`.
+`check_source_completeness.py` passed after staging. No player was launched and
+no in-game visual, collision-envelope or performance review is claimed.

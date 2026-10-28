@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "id": "aedf9323-2d12-489b-a093-1335ab24ba53",
+  "status": "completed",
+  "message": "Model is ready.",
+  "created_at": 1793145940.9447992,
+  "updated_at": 1793146434.828923,
+  "source_filename": "concept-face-flower.png",
+  "batch_index": 1,
+  "batch_total": 1,
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": 0,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1536_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 8192,
+    "trellis_max_tokens": 65536,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "request_id": "12e1b63d-755a-45b8-a174-da212049c751",
+  "submitted_options": {
+    "gpu_id": [
+      "split"
+    ],
+    "model": [
+      "trellis2"
+    ],
+    "seed": [
+      "1234"
+    ],
+    "trellis_pipeline": [
+      "1536_cascade"
+    ],
+    "trellis_texture_size": [
+      "8192"
+    ]
+  },
+  "source": "cli",
+  "inputs": [
+    {
+      "name": "concept-face-flower.png",
+      "archive_name": "inputs/01_concept-face-flower.png",
+      "sha256": "f0591dc2fee005ac3668b8718bec88926318dfc842002106a0d0eaf695dd5abf",
+      "size": 2044406
+    }
+  ],
+  "saved": true,
+  "saved_at": 1793145940.9447992,
+  "started_at": 1793145940.9569905,
+  "finished_at": 1793146434.8289137,
+  "used_texture": true,
+  "warnings": [],
+  "rigging": {
+    "status": "completed",
+    "message": "AI 리깅과 동작 프리셋이 준비됐습니다. 아래에서 동작을 재생하세요.",
+    "run_id": "746c2d23-78ec-468e-b011-2163acef4078",
+    "options": {
+      "seed": 1234,
+      "analysis_faces": 50000,
+      "preserve_original": true
+    },
+    "created_at": 1793146466.6220975,
+    "started_at": 1793146466.6374638,
+    "finished_at": 1793146587.6548352,
+    "updated_at": 1793146587.6548429,
+    "bone_count": 52,
+    "skin_count": 1,
+    "vertices": 735159,
+    "faces": 991617,
+    "skinned_vertices": 735159,
+    "max_weight_error": 1.7881393432617188e-07,
+    "texture_sizes": [
+      [
+        8192,
+        8192
+      ],
+      [
+        8192,
+        8192
+      ]
+    ],
+    "bytes": 191102484,
+    "animations": [],
+    "preview_joint_count": 12,
+    "source": {
+      "bone_count": 0,
+      "skin_count": 0,
+      "vertices": 733506,
+      "faces": 991629,
+      "skinned_vertices": 0,
+      "max_weight_error": 0.0,
+      "texture_sizes": [
+        [
+          8192,
+          8192
+        ],
+        [
+          8192,
+          8192
+        ]
+      ],
+      "bytes": 176330072,
+      "animations": []
+    },
+    "preserve_original": true,
+    "preparation": {
+      "source_faces": 991617,
+      "analysis_faces": 50000,
+      "face_budget": 50000
+    },
+    "gpu_id": 1,
+    "model": "SkinTokens / TokenRig",
+    "torch_peak_allocated_mib": 2174.7,
+    "torch_peak_reserved_mib": 4172.0,
+    "elapsed_seconds": 121,
+    "ready": true,
+    "start_url": "/api/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/rigging",
+    "status_url": "/api/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/rigging",
+    "editor_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/rigging/edit",
+    "model_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/rigging/model?v=746c2d23-78ec-468e-b011-2163acef4078",
+    "download_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/rigging/download?v=746c2d23-78ec-468e-b011-2163acef4078",
+    "preview_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/rigging/action-preview?v=746c2d23-78ec-468e-b011-2163acef4078&motion=actions-v2",
+    "motion_clips": [
+      {
+        "name": "Idle",
+        "label": "대기",
+        "duration": 3.2,
+        "channels": 4
+      },
+      {
+        "name": "Wave",
+        "label": "팔 흔들기",
+        "duration": 2.4,
+        "channels": 4
+      },
+      {
+        "name": "Bow",
+        "label": "인사",
+        "duration": 2.8,
+        "channels": 4
+      },
+      {
+        "name": "Hop",
+        "label": "점프",
+        "duration": 2.4,
+        "channels": 5
+      }
+    ],
+    "motion_method": "procedural presets on AI-inferred skeleton",
+    "motion_download_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/rigging/motion-download?v=746c2d23-78ec-468e-b011-2163acef4078",
+    "preview_faces": 991617
+  },
+  "web_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53",
+  "status_url": "/api/jobs/aedf9323-2d12-489b-a093-1335ab24ba53",
+  "archive_url": "/api/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/archive",
+  "record_url": "/api/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/record",
+  "elapsed_seconds": 493,
+  "display_name": "concept-face-flower",
+  "download_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/download",
+  "model_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/model",
+  "mixamo_package_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/mixamo/package",
+  "mixamo_upload_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/mixamo/upload",
+  "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+  "mixamo_files": [],
+  "processed_input_url": "/jobs/aedf9323-2d12-489b-a093-1335ab24ba53/processed/1",
+  "saved_at_label": "2026-10-28 09:05",
+  "created_at_label": "2026-10-28 09:05",
+  "artifacts": [
+    {
+      "name": "model.glb",
+      "sha256": "00af82603fdbf009ea2b87ff16cf9385c6a4ff518dda2a40d288b8cc68dbe71d",
+      "size": 176330072
+    },
+    {
+      "name": "metadata.json",
+      "sha256": "c7376c8cbc057b7562db7a8597bfb594aff3dbf09ec14d1e7052eb2f68ff55f8",
+      "size": 2934
+    },
+    {
+      "name": "outputs/generation_request.json",
+      "sha256": "a86db99d511acc9fee8e88224b04e3d5d9bceaad38aa9530093c2c7c684c98c6",
+      "size": 823
+    },
+    {
+      "name": "outputs/generation_result.json",
+      "sha256": "34fe1d9f9da5964a4627b1aa5463a580fd89b16f30c4145e7500abff0263f7ab",
+      "size": 333
+    },
+    {
+      "name": "processed_inputs/01.png",
+      "sha256": "df0f06760f8d6646811fbb83f3c8c14915a3fb3cb230b811d4f4bfb40fb89825",
+      "size": 539193
+    },
+    {
+      "name": "outputs/rigging/746c2d23-78ec-468e-b011-2163acef4078/analysis.glb",
+      "sha256": "edea9e207614579587e6bda4eb151eeb50ba175bd816993dde9cf7c47e049e3e",
+      "size": 143321848
+    },
+    {
+      "name": "outputs/rigging/746c2d23-78ec-468e-b011-2163acef4078/motion-actions-v2.json",
+      "sha256": "e9077b1773572ca22404b2490174a72d7304366ebd1fb3790ea12d73f5c5b69a",
+      "size": 4570
+    },
+    {
+      "name": "outputs/rigging/746c2d23-78ec-468e-b011-2163acef4078/preparation.json",
+      "sha256": "cd52807fbbc67cbf3e922fffabe3d118568d508a4217a1e961a2f14c9dfb2f71",
+      "size": 71
+    },
+    {
+      "name": "outputs/rigging/746c2d23-78ec-468e-b011-2163acef4078/preview-actions-v2.glb",
+      "sha256": "52fe65f7bca7e1c00baeef27ba1282fb6526314d4cff09ba8614ad66fe9e6d75",
+      "size": 62719432
+    },
+    {
+      "name": "outputs/rigging/746c2d23-78ec-468e-b011-2163acef4078/rig-actions-v2.glb",
+      "sha256": "5e0be618cc32b353c66598c8ae96ea666c911896dff2ff044ba6eaf2d82a0157",
+      "size": 191121424
+    },
+    {
+      "name": "outputs/rigging/746c2d23-78ec-468e-b011-2163acef4078/rig-preview.glb",
+      "sha256": "f1bab0e21b1c5c56c0f233b626d84323015bfd6030073185fc01c3d5a37fddd8",
+      "size": 191106268
+    },
+    {
+      "name": "outputs/rigging/746c2d23-78ec-468e-b011-2163acef4078/rigged.glb",
+      "sha256": "66cdf9c74acb6c4304bf3e742f768ca3afc09eb0e78ce402da61c809280d1988",
+      "size": 191102484
+    },
+    {
+      "name": "outputs/rigging/746c2d23-78ec-468e-b011-2163acef4078/rigging-request.json",
+      "sha256": "87b9fee27b6a95404185f6f926e927ad58d612d86920ea7fb837c8361851ad5a",
+      "size": 638
+    },
+    {
+      "name": "outputs/rigging/746c2d23-78ec-468e-b011-2163acef4078/rigging-result.json",
+      "sha256": "6f3bd83461c6781215726048a1bb61d7dff0d443a7ec3314bcac56b423739207",
+      "size": 1328
+    }
+  ]
+}

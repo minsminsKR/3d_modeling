@@ -1,0 +1,54 @@
+{
+  "bone_count": 52,
+  "skin_count": 1,
+  "vertices": 735159,
+  "faces": 991617,
+  "skinned_vertices": 735159,
+  "max_weight_error": 1.7881393432617188e-07,
+  "texture_sizes": [
+    [
+      8192,
+      8192
+    ],
+    [
+      8192,
+      8192
+    ]
+  ],
+  "bytes": 191102484,
+  "animations": [],
+  "preview_joint_count": 12,
+  "model_path": "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/outputs/aedf9323-2d12-489b-a093-1335ab24ba53/rigging/746c2d23-78ec-468e-b011-2163acef4078/rigged.glb",
+  "preview_path": "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/outputs/aedf9323-2d12-489b-a093-1335ab24ba53/rigging/746c2d23-78ec-468e-b011-2163acef4078/rig-preview.glb",
+  "source": {
+    "bone_count": 0,
+    "skin_count": 0,
+    "vertices": 733506,
+    "faces": 991629,
+    "skinned_vertices": 0,
+    "max_weight_error": 0.0,
+    "texture_sizes": [
+      [
+        8192,
+        8192
+      ],
+      [
+        8192,
+        8192
+      ]
+    ],
+    "bytes": 176330072,
+    "animations": []
+  },
+  "preserve_original": true,
+  "preparation": {
+    "source_faces": 991617,
+    "analysis_faces": 50000,
+    "face_budget": 50000
+  },
+  "gpu_id": 1,
+  "model": "SkinTokens / TokenRig",
+  "torch_peak_allocated_mib": 2174.7,
+  "torch_peak_reserved_mib": 4172.0,
+  "elapsed_seconds": 121
+}

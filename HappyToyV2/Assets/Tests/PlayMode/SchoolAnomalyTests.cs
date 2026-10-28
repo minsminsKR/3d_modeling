@@ -61,7 +61,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Mathf.Abs(walker.transform.position.x-.65f),Is.LessThan(.01f));
             Call(shell,"Pause");PlacePlayer(LoopOrigin+new Vector3(-1.2f,.03f,8));UseSchoolAnomalyFixture(world,"DancingWalker");
             Call(walker,"RestoreTraversal",Get<int>(world,"Traversals"));var motion=Get<Component>(walker,"Motion");
-            var bones=Get<Transform>(walker,"Visual").GetComponentsInChildren<Transform>();var before=bones.Select(b=>b.localRotation).ToArray();
+            var human=Get<Transform>(walker,"Visual");var creature=Get<Transform>(walker,"Creature");
+            Assert.That(human.gameObject.activeSelf,Is.False);Assert.That(creature.gameObject.activeSelf,Is.True);
+            var bones=creature.GetComponentsInChildren<Transform>();var before=bones.Select(b=>b.localRotation).ToArray();
             float distance=Get<float>(walker,"Distance");Call(shell,"Resume");yield return Delay(.55f);
             Assert.That(Get<bool>(walker,"Dancing")&&Get<bool>(motion,"Dancing"),Is.True);
             Assert.That(Get<float>(walker,"Distance")-distance,Is.LessThan(.01f),"The red hold must keep the walker in place");
@@ -73,6 +75,8 @@ namespace HappyToy.V2.CloudTests
             CollectionAssert.AreEqual(paused,bones.Select(b=>(b.localPosition,b.localRotation)).ToArray());
             Assert.That(Get<float>(walker,"Distance"),Is.EqualTo(stopped),"Pause must hold the flicker advance");
             ExportSchoolAnomalyFrame(world,"dancing-walker",new Vector3(-1.2f,.03f,25),new Vector3(.65f,1.3f,31));
+            Call(walker,"SetDancing",false);
+            Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);
         }
         [UnityTest,Timeout(180000)]
         public IEnumerator SchoolBabyAppearsAtTheStudySignCriesPursuesAfterTimeoutAndRetreatRemovesIt()
