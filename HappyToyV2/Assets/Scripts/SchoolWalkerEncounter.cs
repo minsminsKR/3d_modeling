@@ -18,6 +18,8 @@ namespace HappyToy.V2
         SchoolFlickerCreatureMotion creatureMotion;
         SchoolWalkerFlickerLighting flicker;
         SchoolFlickerCreatureVisibility creatureVisibility;
+        SchoolFlickerCreatureTremor creatureTremor;
+        public SchoolFlickerCreatureHalo Halo {get;private set;}
         public bool FlickerDark=>flicker!=null&&flicker.Dark;
         public Transform Walker=>transform;
         public Transform Visual {get;private set;}
@@ -38,6 +40,7 @@ namespace HappyToy.V2
             if(Motion){Motion.SetDancing(value);ApplyPose();}
             if(flicker!=null)flicker.SetActive(value,route.CaptureState().Elapsed);
             if(creatureVisibility!=null)creatureVisibility.Set(value,FlickerDark);
+            if(Halo!=null)Halo.Set(value,FlickerDark);
         }
         public int Traversal=>route.CaptureState().Traversal;
         public int PendingTraversal=>route.CaptureState().PendingTraversal;
@@ -75,6 +78,8 @@ namespace HappyToy.V2
                 actor.creature=Instantiate(creaturePrefab,actor.transform,false).transform;
                 actor.creatureMotion=new SchoolFlickerCreatureMotion(actor.creature);
                 actor.creatureVisibility=new SchoolFlickerCreatureVisibility(actor.creature);
+                actor.creatureTremor=new SchoolFlickerCreatureTremor(actor.creature);
+                actor.Halo=new SchoolFlickerCreatureHalo(actor.transform,owner.player.eyes);
                 actor.creature.gameObject.SetActive(false);
                 actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
                 actor.Footsteps.Prepare(metresPerCycle);actor.Footsteps.Synchronize(actor.route.CaptureState());
@@ -165,10 +170,11 @@ namespace HappyToy.V2
             var state=route.CaptureState();
             transform.localPosition=new Vector3(state.X,FeetHeight,state.Z);
             transform.localRotation=Quaternion.Euler(0,state.Yaw,0);if(!Dancing)Motion.Apply(state);
-            if(Dancing&&creatureMotion!=null)creatureMotion.Apply(state.Elapsed);
+            if(Dancing&&creatureMotion!=null){creatureMotion.Apply(state.Elapsed);if(creatureTremor!=null)creatureTremor.Apply(state.Elapsed,creatureMotion.Inverted);}
             if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
             if(creatureVisibility!=null)creatureVisibility.Set(Dancing,FlickerDark);
+            if(Halo!=null)Halo.Set(Dancing,FlickerDark);
         }
-        void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);if(creatureMotion!=null)creatureMotion.Dispose();if(creatureVisibility!=null)creatureVisibility.Dispose();}
+        void OnDestroy(){if(flicker!=null&&Dancing)flicker.SetActive(false,0);if(creatureMotion!=null)creatureMotion.Dispose();if(creatureVisibility!=null)creatureVisibility.Dispose();if(Halo!=null)Halo.Dispose();}
     }
 }

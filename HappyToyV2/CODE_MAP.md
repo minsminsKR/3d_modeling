@@ -510,6 +510,8 @@ batch 모드에서도 앞선 LateUpdate의 완성된 텍스처를 읽으며15초
 
 점멸 괴물의 기본 크기는 렌더러 여유 경계가 아닌 실제 스킨 정점으로 폭 2.2m와 바닥 높이를 검사한다. 생성 색상 맵을 보존하고 금속 반사를 낮추며 색상 맵 기반 약한 발광을 적용한다. `SchoolWalkerRoute.CenterHallLane`은 점멸 통과에서만 중앙 접근을 선택하고 일반 보행자 경로와 구형 저장 검증은 유지한다. `Editor/FlickerCreatureDiagnostics.Inspect`는 선택 실행으로 메시/재질/정점 경계를 기록한다. `school-anomalies-logic`에 크기·색상 맵·중앙 통행 검사를 포함한다.
 
-점멸 괴물 기본 자세는 실제 스킨 정점 기준 폭 3.9m·높이 3.0m다. `SchoolWalkerFlicker.FlashIndex`는 형광등 소등 시작을 세며, `SchoolWalkerRoute.AdvanceFlicker`는 그 경계마다 장애물을 고려해 0.25m 순간 이동한다. `SchoolFlickerCreatureMotion`은 같은 인덱스에서 17개 관절을 즉시 바꾼 뒤 다음 소등까지 정지한다. 학교 volume은 모션 블러를 0으로 제한하고 괴물의 모션 벡터를 끈다. 실제 극단 자세의 벽·천장 여유와 화면 표현은 별도 시각 검토가 필요하다.
+점멸 괴물 기본 자세는 실제 스킨 정점 기준 폭 3.9m·높이 3.0m다. `SchoolWalkerFlicker.FlashIndex`는 형광등 소등 시작을 세며, `SchoolWalkerRoute.AdvanceFlicker`는 그 경계마다 장애물을 고려해 0.25m 순간 이동한다. `SchoolFlickerCreatureMotion`은 같은 인덱스에서 17개 관절을 즉시 바꾸고, 별도 `SchoolFlickerCreatureTremor`가 3초 점등 중 접지점을 유지하며 계단식으로 몸을 떨게 한다. `SchoolFlickerCreatureHalo`는 괴물 뒤에 깊이 검사된 붉은 후광을 표시하고 소등 시 끈다. 학교 volume은 모션 블러를 0으로 제한하고 괴물의 모션 벡터를 끈다. 실제 극단 자세의 벽·천장 여유와 화면 표현은 별도 시각 검토가 필요하다.
 
 점멸 소등 중 `SchoolWalkerFlickerLighting`과 `SchoolHorrorLighting`이 학교 광원·환경광·반사를 억제하고 손전등을 유지한다. `SchoolFlickerCreatureVisibility`는 붉은등 구간에만 텍스처 기반 표면 발광을 강화한다. 저장된 anomaly deck RNG와 점멸 횟수로 반전을 재현하고, `SchoolFlickerCreatureMotion`이 사전 계산된 32개 보정값으로 일반 양발 또는 반전 머리 접지와 각 자세 폭 3.9m를 유지한다. `FlickerCreatureDiagnostics.Inspect`는 실제 스킨 접지·경계 검증과 `pose-calibration.json` 생성을 소유한다. 프리팹·동작 코드 변경 시 진단을 다시 실행해야 빌드가 통과한다. `school-anomalies-logic`은 소등과 손전등 보존, 괴물 발광 전환, 광원 복원·반전·기존 저장/정지를 검사한다.
+
+점멸 괴물의 각 점등 구간은 3초이며 형광등 자체의 전압 변동을 이벤트 동안 억제한다. 점등 중 접지 본 고정 떨림과 후광, 소등 순간의 기존 이동·자세 전환 및 손전등 보존을 `school-anomalies-logic`에서 검사한다. 후광과 떨림의 실제 시각적 효과는 별도 화면 검토가 필요하다.

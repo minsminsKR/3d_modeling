@@ -268,3 +268,10 @@ the player flashlight retains its own settings. On red-lit holds the existing
 texture-based creature emission is strengthened with per-renderer property blocks;
 it is zero during dark pulses. Model geometry, rig, calibration and source textures
 are unchanged. Visual brightness and readability still require in-game review.
+
+
+2026-10-28 red hold revision: every lit hold lasts three simulation seconds,
+with discrete full-body tremor over the unchanged calibrated pose. Feet or the
+inverted head remain anchored. A depth-tested red billboard sits behind the
+creature and is disabled during the short dark pulse. The generated model, pose
+calibration and textures are unchanged; actual visual appearance still needs review.
