@@ -100,6 +100,35 @@ namespace HappyToy.V2
             state.IdleBlend=Towards(state.IdleBlend,moved>.00001f?0:1,dt/.22f);
             if(state.IdleBlend>0)state.IdleElapsed=Math.Min(state.Elapsed,state.IdleElapsed+dt);
         }
+        // Each dark onset is one instantaneous step. The normal clock still
+        // advances during the whole interval, including a held red frame.
+        public void AdvanceFlicker(double seconds,bool advancing,float playerX,float playerZ)
+        {
+            if(!advancing||seconds==0){Advance(seconds,advancing,playerX,playerZ,0);return;}
+            double before=state.Elapsed;Advance(seconds,true,playerX,playerZ,0);
+            long flashes=SchoolWalkerFlicker.FlashIndex(state.Elapsed)-SchoolWalkerFlicker.FlashIndex(before);
+            for(long i=0;i<flashes;i++)SnapTowardExit(playerX,playerZ);
+        }
+        void SnapTowardExit(float playerX,float playerZ)
+        {
+            const float step=.25f;float oldX=state.X,oldZ=state.Z;
+            if(state.Leg==0)
+            {
+                float z=Math.Max(HallEndZ,state.Z-step);
+                if(ClearStep(state.X,z,playerX,playerZ))state.Z=z;
+                if(state.Z<=HallEndZ+.0001f){state.Z=HallEndZ;state.Leg=1;}
+            }
+            else if(state.Leg==1)
+            {
+                float remaining=(float)Math.Sqrt(Squared(EndX-state.X,EndZ-state.Z));
+                float fraction=remaining<.000001f?1:Math.Min(1,step/remaining);
+                float x=state.X+(EndX-state.X)*fraction,z=state.Z+(EndZ-state.Z)*fraction;
+                if(ClearStep(x,z,playerX,playerZ)){state.X=x;state.Z=z;}
+                if(Math.Abs(state.X-EndX)<.0001f&&Math.Abs(state.Z-EndZ)<.0001f){state.X=EndX;state.Z=EndZ;state.Leg=2;}
+            }
+            float dx=state.X-oldX,dz=state.Z-oldZ;float moved=(float)Math.Sqrt(Squared(dx,dz));
+            if(moved>.000001f){state.Distance=Math.Min(10000000,state.Distance+moved);state.Yaw=((float)(Math.Atan2(dx,dz)*180/Math.PI)+360)%360;state.IdleBlend=0;}
+        }
         void Hall(float dt,float playerX,float playerZ,float speedMultiplier)
         {
             state.PassSide=0;

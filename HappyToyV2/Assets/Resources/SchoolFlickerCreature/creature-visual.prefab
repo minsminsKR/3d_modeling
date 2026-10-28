@@ -332,7 +332,7 @@ SkinnedMeshRenderer:
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
-  m_MotionVectors: 1
+  m_MotionVectors: 2
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
@@ -371,7 +371,7 @@ SkinnedMeshRenderer:
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
-  m_SkinnedMotionVectors: 1
+  m_SkinnedMotionVectors: 0
   m_Mesh: {fileID: 4294295727008355266, guid: 10871cab330a50d4da90bf5d476d96db, type: 3}
   m_Bones:
   - {fileID: 8119819071300719298}
@@ -505,8 +505,8 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1602932532878961626}
   serializedVersion: 3
-  m_LocalReferencePoint: {x: -0.10538268, y: 1.2406625, z: -0.12451449}
-  m_Size: 2.317478
+  m_LocalReferencePoint: {x: -0.13893318, y: 1.502918, z: -0.16145468}
+  m_Size: 2.9447918
   m_FadeMode: 0
   m_AnimateCrossFading: 0
   m_LastLODIsBillboard: 0
@@ -793,7 +793,7 @@ SkinnedMeshRenderer:
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
-  m_MotionVectors: 1
+  m_MotionVectors: 2
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
@@ -832,7 +832,7 @@ SkinnedMeshRenderer:
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
-  m_SkinnedMotionVectors: 1
+  m_SkinnedMotionVectors: 0
   m_Mesh: {fileID: 6434716316942417213, guid: 10871cab330a50d4da90bf5d476d96db, type: 3}
   m_Bones:
   - {fileID: 8119819071300719298}
@@ -1225,7 +1225,7 @@ SkinnedMeshRenderer:
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
-  m_MotionVectors: 1
+  m_MotionVectors: 2
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
@@ -1264,7 +1264,7 @@ SkinnedMeshRenderer:
   serializedVersion: 2
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
-  m_SkinnedMotionVectors: 1
+  m_SkinnedMotionVectors: 0
   m_Mesh: {fileID: -1353441759613993237, guid: 10871cab330a50d4da90bf5d476d96db, type: 3}
   m_Bones:
   - {fileID: 8119819071300719298}
@@ -1509,8 +1509,8 @@ Transform:
   m_GameObject: {fileID: 4936129168443183092}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.0031214952, y: 1.2400565, z: 0.009808719}
-  m_LocalScale: {x: 1.5728003, y: 1.5728003, z: 1.5728003}
+  m_LocalPosition: {x: 0.005533457, y: 1.5022511, z: 0.017388344}
+  m_LocalScale: {x: 2.094086, y: 1.7311076, z: 2.094086}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8589421806804640807}

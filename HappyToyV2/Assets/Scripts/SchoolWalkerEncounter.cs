@@ -113,10 +113,10 @@ namespace HappyToy.V2
             }
             var player=section.InverseTransformPoint(session.player.transform.position);
             float dt=Mathf.Min(Time.deltaTime,.1f);
-            float multiplier=Dancing&&dt>0
-                ?DanceSpeedMultiplier*(float)(SchoolWalkerFlicker.MovingSeconds(route.CaptureState().Elapsed,dt)/dt):1;
-            route.Advance(dt,true,player.x,player.z,multiplier);ApplyPose();
-            if(Footsteps)Footsteps.Apply(route.CaptureState(),!Dancing,multiplier);
+            if(Dancing)route.AdvanceFlicker(dt,true,player.x,player.z);
+            else route.Advance(dt,true,player.x,player.z);
+            ApplyPose();
+            if(Footsteps)Footsteps.Apply(route.CaptureState(),!Dancing,1);
         }
         public Bounds BodyBounds()
         {
@@ -158,7 +158,7 @@ namespace HappyToy.V2
             if(!section||!Motion)return;
             var state=route.CaptureState();
             transform.localPosition=new Vector3(state.X,FeetHeight,state.Z);
-            transform.localRotation=Quaternion.Euler(0,state.Yaw,0);Motion.Apply(state);
+            transform.localRotation=Quaternion.Euler(0,state.Yaw,0);if(!Dancing)Motion.Apply(state);
             if(Dancing&&creatureMotion!=null)creatureMotion.Apply(state.Elapsed);
             if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
         }

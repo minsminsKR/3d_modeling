@@ -50,7 +50,7 @@ namespace HappyToy.V2.Editor
                 foreach(var animation in model.GetComponentsInChildren<Animation>(true))Object.DestroyImmediate(animation);
                 var skins=model.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(s=>s.sharedMesh?s.sharedMesh.triangles.Length:0).ToArray();
                 if(skins.Length!=3||skins.Any(s=>!s.sharedMesh||!s.rootBone||s.bones.Length<30))throw new InvalidOperationException("Creature needs three skinned LODs on its actual rig");
-                foreach(var skin in skins){skin.sharedMaterials=Enumerable.Repeat(material,skin.sharedMesh.subMeshCount).ToArray();skin.updateWhenOffscreen=false;skin.shadowCastingMode=ShadowCastingMode.On;}
+                foreach(var skin in skins){skin.sharedMaterials=Enumerable.Repeat(material,skin.sharedMesh.subMeshCount).ToArray();skin.updateWhenOffscreen=false;skin.shadowCastingMode=ShadowCastingMode.On;skin.skinnedMotionVectors=false;skin.motionVectorGenerationMode=MotionVectorGenerationMode.ForceNoMotion;}
                 // Measure the deformed vertices, not renderer culling bounds or
                 // the safety padding. This captures the imported armature scale.
                 Bounds Measure()
@@ -61,10 +61,10 @@ namespace HappyToy.V2.Editor
                         var result=new Bounds(Point(vertices[0]),Vector3.zero);foreach(var vertex in vertices)result.Encapsulate(Point(vertex));return result;
                     }finally{Object.DestroyImmediate(mesh);}
                 }
-                for(int i=0;i<12;i++){var measured=Measure();if(measured.size.x<.1f)throw new InvalidOperationException("Invalid creature width");
-                    float factor=Mathf.Sqrt(2.2f/measured.size.x);model.transform.localScale*=factor;}
+                for(int i=0;i<20;i++){var measured=Measure();if(measured.size.x<.1f||measured.size.y<.1f)throw new InvalidOperationException("Invalid creature dimensions");
+                    var scale=model.transform.localScale;scale.x*=Mathf.Sqrt(3.9f/measured.size.x);scale.y*=Mathf.Sqrt(3.0f/measured.size.y);scale.z=scale.x;model.transform.localScale=scale;}
                 var bounds=Measure();model.transform.localPosition-=new Vector3(bounds.center.x,bounds.min.y,bounds.center.z);
-                bounds=Measure();if(Mathf.Abs(bounds.size.x-2.2f)>.03f||bounds.size.y>3.2f||Mathf.Abs(bounds.min.y)>.03f)
+                bounds=Measure();if(Mathf.Abs(bounds.size.x-3.9f)>.04f||Mathf.Abs(bounds.size.y-3.0f)>.04f||Mathf.Abs(bounds.min.y)>.03f)
                     throw new InvalidOperationException("Creature geometry does not fit the school corridor: "+bounds);
                 foreach(var skin in skins){var envelope=skin.localBounds;envelope.Expand(.25f);skin.localBounds=envelope;}
                 Debug.Log("SCHOOL_FLICKER_CREATURE_GEOMETRY "+bounds);

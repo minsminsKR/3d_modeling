@@ -124,6 +124,7 @@ namespace HappyToy.V2
             var grade=profile.Add<ColorAdjustments>(true);grade.postExposure.value=-.10f;grade.contrast.value=0;grade.saturation.value=-18;
             var bloom=profile.Add<Bloom>(true);bloom.threshold.value=1.25f;bloom.intensity.value=.12f;bloom.scatter.value=.48f;bloom.maxIterations.value=4;bloom.clamp.value=8;
             var vignette=profile.Add<Vignette>(true);vignette.intensity.value=.12f;vignette.smoothness.value=.65f;
+            var blur=profile.Add<MotionBlur>(true);blur.intensity.Override(0);
             volume=root.gameObject.AddComponent<Volume>();volume.isGlobal=true;volume.priority=55;volume.sharedProfile=profile;
             pendingReflection=new Cubemap(8,TextureFormat.RGBAHalf,true){name="Owned black reflection during school capture initialization"};
             for(int mip=0;mip<4;mip++)

@@ -75,7 +75,7 @@ namespace HappyToy.V2.CloudTests
                 var skin=neutral.GetComponentsInChildren<SkinnedMeshRenderer>().OrderByDescending(s=>s.sharedMesh.triangles.Length).First();
                 var baked=new Mesh();try{skin.BakeMesh(baked);var points=baked.vertices.Select(v=>neutral.transform.InverseTransformPoint(skin.transform.TransformPoint(v))).ToArray();
                     var actual=new Bounds(points[0],Vector3.zero);foreach(var point in points)actual.Encapsulate(point);
-                    Assert.That(actual.size.x,Is.EqualTo(2.2f).Within(.04f),"The real skinned geometry must span half the 4.4m corridor");
+                    Assert.That(actual.size.x,Is.EqualTo(3.9f).Within(.05f),"The creature must fill most of the 4.4m corridor");
                     Assert.That(actual.min.y,Is.EqualTo(0).Within(.04f),"The actual creature feet must be grounded");
                     Assert.That(actual.size.y,Is.LessThan(3.2f),"The creature must fit below the ceiling in its neutral pose");
                 }finally{UnityEngine.Object.Destroy(baked);}
@@ -85,7 +85,7 @@ namespace HappyToy.V2.CloudTests
             Call(shell,"Resume");yield return Wait(()=>Get<double>(Call(walker,"CaptureState"),"Elapsed")>=heldTime+.3,10,"The flicker clock did not advance");
             Assert.That(Get<bool>(walker,"Dancing")&&Get<bool>(motion,"Dancing"),Is.True);
             Assert.That(Get<float>(walker,"Distance")-distance,Is.LessThan(.01f),"The red hold must keep the walker in place");
-            Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.GreaterThan(.1f),"The held pose must still tremble");
+            Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.LessThan(.01f),"The lit pose must remain completely still");
             yield return Delay(1.7f);
             Assert.That(Get<float>(walker,"Distance")-distance,Is.GreaterThan(.1f),"The flashes must advance the walker");
             Assert.That(walker.transform.localPosition.x,Is.EqualTo(0).Within(.001f),"The approaching creature must stay on the centre line");
@@ -94,6 +94,14 @@ namespace HappyToy.V2.CloudTests
             CollectionAssert.AreEqual(paused,bones.Select(b=>(b.localPosition,b.localRotation)).ToArray());
             Assert.That(Get<float>(walker,"Distance"),Is.EqualTo(stopped),"Pause must hold the flicker advance");
             ExportSchoolAnomalyFrame(world,"dancing-walker",new Vector3(-1.2f,.03f,25),new Vector3(.65f,1.3f,31));
+            var snapState=Call(walker,"CaptureState");Set(snapState,"Elapsed",1.60d);Set(snapState,"IdleElapsed",0d);Call(walker,"RestoreState",snapState);
+            var flashPose=bones.Select(b=>b.localRotation).ToArray();
+            var fixtures=Get<Transform>(world,"Root").GetComponentsInChildren(RequireType("SchoolFluorescent"));
+            Assert.That(fixtures.All(f=>Get<Light>(f,"Source").intensity==0),Is.True,"The pose must snap at light-off");
+            Set(snapState,"Elapsed",1.65d);Call(walker,"RestoreState",snapState);
+            Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.LessThan(.01f),"The entire dark interval must hold one pose");
+            Set(snapState,"Elapsed",1.73d);Call(walker,"RestoreState",snapState);
+            Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.GreaterThan(100),"The next light-off must snap to a different contortion");
             Call(walker,"SetDancing",false);
             Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);
         }

@@ -6,6 +6,20 @@ namespace HappyToy.V2.CoreTests
     public sealed class SchoolWalkerRouteTests
     {
         [Test]
+        public void FlickerStepsOnlyAtLightOffAndHandlesSkippedBoundaries()
+        {
+            Assert.That(SchoolWalkerFlicker.FlashIndex(1.599),Is.EqualTo(0));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(1.60),Is.EqualTo(1));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(1.689),Is.EqualTo(1));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(1.73),Is.EqualTo(2));
+            var route=new SchoolWalkerRoute();route.CenterHallLane();var saved=route.CaptureState();saved.Elapsed=1.59;route.RestoreState(saved);
+            float initial=route.Z;route.AdvanceFlicker(.005,true,10,0);Assert.That(route.Z,Is.EqualTo(initial));
+            route.AdvanceFlicker(.01,true,10,0);Assert.That(route.Z,Is.EqualTo(initial-.25f).Within(.0001f));
+            var snapped=route.CaptureState();route.AdvanceFlicker(.05,true,10,0);Assert.That(route.Z,Is.EqualTo(snapped.Z));
+            var paused=route.CaptureState();route.AdvanceFlicker(.1,false,10,0);Assert.That(route.CaptureState(),Is.EqualTo(paused));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(7.3),Is.EqualTo(13));
+        }
+        [Test]
         public void CreatureCenterLaneApproachesAndPreservesCheckpointCompatibility()
         {
             var route=new SchoolWalkerRoute();

@@ -509,3 +509,5 @@ batch 모드에서도 앞선 LateUpdate의 완성된 텍스처를 읽으며15초
 학교 점멸 괴물: `SchoolWalkerEncounter`는 정상 보행자와 점멸 괴물의 표시 전환과 기존 충돌·경로를 소유하고 `SchoolFlickerCreatureMotion`은 실제 52관절과 기존 점멸 시간으로 자세를 갱신한다. `Editor/SchoolFlickerCreatureImport`는 별도 3단계 피부 메시·PBR prefab을 구성한다. `SourceArt/SchoolFlickerCreature`에 지정 서비스 원본·리그·제작 스크립트와 packed Blender를 보존한다. 검증은 `school-anomalies-logic` 및 별도 실제 카메라/성능 검토다.
 
 점멸 괴물의 기본 크기는 렌더러 여유 경계가 아닌 실제 스킨 정점으로 폭 2.2m와 바닥 높이를 검사한다. 생성 색상 맵을 보존하고 금속 반사를 낮추며 색상 맵 기반 약한 발광을 적용한다. `SchoolWalkerRoute.CenterHallLane`은 점멸 통과에서만 중앙 접근을 선택하고 일반 보행자 경로와 구형 저장 검증은 유지한다. `Editor/FlickerCreatureDiagnostics.Inspect`는 선택 실행으로 메시/재질/정점 경계를 기록한다. `school-anomalies-logic`에 크기·색상 맵·중앙 통행 검사를 포함한다.
+
+점멸 괴물 기본 자세는 실제 스킨 정점 기준 폭 3.9m·높이 3.0m다. `SchoolWalkerFlicker.FlashIndex`는 형광등 소등 시작을 세며, `SchoolWalkerRoute.AdvanceFlicker`는 그 경계마다 장애물을 고려해 0.25m 순간 이동한다. `SchoolFlickerCreatureMotion`은 같은 인덱스에서 17개 관절을 즉시 바꾼 뒤 다음 소등까지 정지한다. 학교 volume은 모션 블러를 0으로 제한하고 괴물의 모션 벡터를 끈다. 실제 극단 자세의 벽·천장 여유와 화면 표현은 별도 시각 검토가 필요하다.

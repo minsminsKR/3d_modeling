@@ -194,3 +194,35 @@ built at `Builds/Windows-FlickerFix-20261028`; the complete 4610-input build
 fingerprint passed. No native player or GPU appearance audit was run while
 protecting the user's desktop, so the final screenshot appearance remains to be
 checked in ordinary play.
+
+## Abrupt strobe performance — 2026-10-28
+
+At the user's request the neutral skinned silhouette is 3.9m wide and 3.0m
+high in the 4.4m school corridor. Width and height are adjusted independently
+to fit the existing ceiling. Each light-off boundary increments the shared
+`SchoolWalkerFlicker.FlashIndex`: the creature's 17 selected actual rig joints
+snap directly to a deterministic contorted pose and its route takes a 0.25m
+obstruction-checked step. The pose and position remain fixed between boundaries;
+there is no interpolation or tremor. The same saved passage elapsed time
+reconstructs the index on restore; pause and talisman hold it. Normal pedestrian
+movement is unchanged. Creature renderer motion vectors are forced off and the
+school volume overrides motion-blur intensity to zero. The test suite verifies
+boundary counts, obstruction, holds, route/pose and normal checkpoint behavior.
+Extreme poses can extend beyond the neutral fitted bounds; wall/ceiling
+clearance and the final strobe impression still need in-game visual review.
+
+The 16 repeating pose seeds were chosen from 128 candidates by baking the
+actual high-detail skinned mesh in a headless editor. The selected poses fit
+within x = ±2.16m and y = -0.06m..3.20m before the tiny feet offset. The
+reproducible diagnostic checks all 16 with the fitted prefab; it is geometric
+evidence, not a rendered camera or lighting-quality review. The former 13
+unrestricted random poses could cross the walls or ceiling and are not used.
+
+Validation: `school-anomalies-logic` passed 153 EditMode and 8 PlayMode tests
+in `Builds/Verification/feature-tests/20261028-101532-19f0128d`; the actual
+light-off/held-dark/next-light-off pose assertions are included. The fitted
+16-pose skinned geometry diagnostic completed without out-of-hall bounds.
+Unity 6000.6.0f1 built `Builds/Windows-StrobeCreature-20261028` and all 4610
+current build input hashes passed. No GPU presentation or native-player
+inspection was run; visual impression and rotated elbow-corner clearance remain
+unverified in actual gameplay.

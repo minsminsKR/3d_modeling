@@ -13,6 +13,21 @@ namespace HappyToy.V2.Editor
    var root=Object.Instantiate(prefab);
    try {
     var motion=new SchoolFlickerCreatureMotion(root.transform);motion.Apply(0);
+    foreach(double t in new[]{0d,1.601d,1.731d,1.841d,1.971d,2.101d,2.231d,2.351d,2.481d,3.901d,4.021d,4.141d,4.271d,4.421d,8.901d,9.031d})
+    {
+      motion.Apply(t);var skin=root.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(s=>s.sharedMesh.triangles.Length).First();
+      var baked=new Mesh();try{skin.BakeMesh(baked);var v=baked.vertices;Vector3 Point(Vector3 x)=>root.transform.InverseTransformPoint(skin.transform.TransformPoint(x));var b=new Bounds(Point(v[0]),Vector3.zero);foreach(var p in v)b.Encapsulate(Point(p));Debug.Log("FLICKER_SNAP_BOUNDS t="+t+" "+b);
+        if(b.min.x< -2.2f||b.max.x>2.2f||b.min.y<-.07f||b.max.y>3.25f)throw new InvalidOperationException("Creature pose exceeds school hall bounds at "+t+": "+b);}
+      finally{Object.DestroyImmediate(baked);}
+    }
+    motion.Apply(0);
+    var searchSkin=root.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(s=>s.sharedMesh.triangles.Length).First();
+    for(int index=0;index<128;index++)
+    {
+      motion.ApplyPoseIndex(index);var sample=new Mesh();try{searchSkin.BakeMesh(sample);var v=sample.vertices;Vector3 Point(Vector3 x)=>root.transform.InverseTransformPoint(searchSkin.transform.TransformPoint(x));var b=new Bounds(Point(v[0]),Vector3.zero);foreach(var p in v)b.Encapsulate(Point(p));
+       if(b.min.x>=-2.16f&&b.max.x<=2.16f&&b.min.y>=-.06f&&b.max.y<=3.2f)Debug.Log("FLICKER_SAFE_POSE "+index+" "+b);
+      }finally{Object.DestroyImmediate(sample);}
+    }
     foreach(var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>(true)){
      var mesh=new Mesh();skin.BakeMesh(mesh);var vertices=mesh.vertices;
      var points=vertices.Select(v=>root.transform.InverseTransformPoint(skin.transform.TransformPoint(v))).ToArray();
