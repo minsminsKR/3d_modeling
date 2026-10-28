@@ -403,6 +403,9 @@ PROFILES["school-anomalies"]=("Guaranteed normal first passage, restorable 50-pe
     ("PlayMode", play_tests("SchoolAnomalyTests.cs", "SchoolProgressClockIntegrationTests.cs", "SchoolWalkerTests.cs", "SchoolWalkerCheckpointTests.cs", "SchoolWalkerAudioTests.cs", "SchoolLoopTests.cs", "SchoolLoopSeamTests.cs")+(
         PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness",PLAY+"SchoolHorrorLightingFreezesOnPauseAndDoesNotLeakRenderSettings"))])
 
+PROFILES["local-shadow-logic"]=("CPU-only corridor shadow selection, atlas limits and restoration", [
+    ("PlayMode", (PLAY+"LocalLanternShadowsKeepTorchAndAtMostTwoPointCastersAndRestoreOnRemoval",))])
+
 PROFILES["school-anomalies-logic"]=("CPU-only school anomaly rules, physical seams, solid walker and flickering pose, Baby blackout/shop/timeout/contact and save restoration; no GPU appearance or listening certification", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", "HappyToy.V2.CoreTests.SchoolWalkerRouteTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"CheckpointTrapCodecTests", CLOUD+"ChapterCheckpointStoreTests")),
     ("PlayMode", (
@@ -452,7 +455,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("hand-animation-logic", "school-anomalies-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("hand-animation-logic", "school-anomalies-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]

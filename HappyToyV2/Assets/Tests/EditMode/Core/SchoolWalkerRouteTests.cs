@@ -6,21 +6,21 @@ namespace HappyToy.V2.CoreTests
     public sealed class SchoolWalkerRouteTests
     {
         [Test]
-        public void FourHertzRevealSnapsOnlyAtDarkOnset()
+        public void UnevenFourHertzRevealSnapsOnlyAtDarkOnset()
         {
             Assert.That(SchoolWalkerFlicker.Dark(.089),Is.False);
             Assert.That(SchoolWalkerFlicker.Dark(.09),Is.True);
-            Assert.That(SchoolWalkerFlicker.Dark(.249),Is.True);
-            Assert.That(SchoolWalkerFlicker.Dark(.25),Is.False);
+            Assert.That(SchoolWalkerFlicker.Dark(.199),Is.True);
+            Assert.That(SchoolWalkerFlicker.Dark(.20),Is.False);
             Assert.That(SchoolWalkerFlicker.FlashIndex(.089),Is.EqualTo(0));
             Assert.That(SchoolWalkerFlicker.FlashIndex(.09),Is.EqualTo(1));
-            Assert.That(SchoolWalkerFlicker.FlashIndex(.339),Is.EqualTo(1));
-            Assert.That(SchoolWalkerFlicker.FlashIndex(.34),Is.EqualTo(2));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(.289),Is.EqualTo(1));
+            Assert.That(SchoolWalkerFlicker.FlashIndex(.29),Is.EqualTo(2));
             Assert.That(SchoolWalkerFlicker.FlashIndex(1),Is.EqualTo(4));
             Assert.That(SchoolWalkerFlicker.FlashIndex(36000000),Is.EqualTo(144000000));
             Assert.That(SchoolWalkerFlicker.Dark(36000000),Is.False);
             Assert.That(SchoolWalkerFlicker.MovingSeconds(0,1),Is.EqualTo(.64).Within(1e-8));
-            Assert.That(SchoolWalkerFlicker.Pose(.25),Is.EqualTo(SchoolWalkerFlicker.Pose(.33)).Within(1e-8));
+            Assert.That(SchoolWalkerFlicker.Pose(.20),Is.EqualTo(SchoolWalkerFlicker.Pose(.28)).Within(1e-8));
             var route=new SchoolWalkerRoute();route.CenterHallLane();var saved=route.CaptureState();saved.Elapsed=.08;route.RestoreState(saved);
             float initial=route.Z;route.AdvanceFlicker(.005,true,10,0);Assert.That(route.Z,Is.EqualTo(initial));
             route.AdvanceFlicker(.01,true,10,0);Assert.That(route.Z,Is.EqualTo(initial-.45f).Within(.0001f));

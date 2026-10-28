@@ -99,15 +99,22 @@ namespace HappyToy.V2.CloudTests
             var lighting=Get<Transform>(world,"Root").GetComponent(RequireType("SchoolHorrorLighting"));
             var torch=Get<Light>(player,"flashlight");bool originalTorchEnabled=torch.enabled;float originalTorchIntensity=torch.intensity;
             var backlight=Get<Component>(walker,"Backlight");
-            var source=Get<Light>(backlight,"Source");var backdrop=Get<Renderer>(backlight,"BackdropRenderer");
-            Assert.That(source,Is.Not.Null);Assert.That(backdrop,Is.Not.Null);
+            var source=Get<Light>(backlight,"Source");var fill=Get<Light>(backlight,"FillSource");var fixture=Get<Renderer>(backlight,"FixtureRenderer");
+            Assert.That(source,Is.Not.Null);Assert.That(fill,Is.Not.Null);Assert.That(fixture,Is.Not.Null);
             Assert.That(source.type,Is.EqualTo(LightType.Spot),"The environment uses a fixed directional spot");
             Assert.That(backlight.transform.IsChildOf(walker.transform),Is.False,"The backlight belongs to the school, not the actor");
-            var fixedPosition=source.transform.position;var backdropPosition=backdrop.transform.position;
+            var fixedPosition=source.transform.position;var fixturePosition=fixture.transform.position;
             Assert.That(backlight.transform.InverseTransformPoint(fixedPosition).z,Is.GreaterThan(30),"The fixture belongs at the far end of the corridor");
             Set(snapState,"Elapsed",.27d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(backlight,"Visible"),Is.True,"The environment fixture is visible during a reveal");
+            Assert.That(fill.enabled,Is.True,"The physical wall fill must turn on with the spot");
+            Assert.That(Vector3.Distance(source.transform.position,Get<Camera>(player,"eyes").transform.position),Is.GreaterThan(16),"Exercise the far-end shadow budget");
+            var shadowBudget=session.GetComponent(RequireType("LocalShadowBudget"));Call(shadowBudget,"RefreshNow");
+            Assert.That(source.shadows,Is.EqualTo(LightShadows.Soft),"The distant school emergency spot must remain eligible for shadows");
             Assert.That(Get<bool>(walker,"FlickerDark"),Is.False);
+            var revealPose=bones.Select(b=>(b.localPosition,b.localRotation)).ToArray();
+            Set(snapState,"Elapsed",.28d);Call(walker,"RestoreState",snapState);
+            CollectionAssert.AreEqual(revealPose,bones.Select(b=>(b.localPosition,b.localRotation)).ToArray(),"The visible pose must remain frozen during each reveal");
             var litBlock=new MaterialPropertyBlock();
             foreach(var skin in creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
             {skin.GetPropertyBlock(litBlock);var color=litBlock.GetColor("_EmissionColor");
@@ -119,6 +126,7 @@ namespace HappyToy.V2.CloudTests
             torch.enabled=true;Set(snapState,"Elapsed",.35d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark")&&Get<bool>(lighting,"FlickerDark"),Is.True);
             Assert.That(Get<bool>(backlight,"Visible"),Is.False,"The fixed fixture goes dark between reveals");
+            Assert.That(fill.enabled,Is.False,"The physical wall fill must turn off in darkness");
             Assert.That(torch.enabled,Is.True,"Dark flicker must not disable the flashlight");
             Assert.That(torch.intensity,Is.EqualTo(originalTorchIntensity).Within(.0001f));
             Assert.That(windows.All(l=>!l.enabled||l.intensity==0),Is.True);
@@ -139,11 +147,11 @@ namespace HappyToy.V2.CloudTests
             CollectionAssert.AreEqual(originalWindows,windows.Select(l=>(l.enabled,l.intensity)).ToArray());
             CollectionAssert.AreEqual(originalLabels,labels.Select(r=>r.enabled).ToArray());
             Assert.That(torch.enabled,Is.False,"A reveal must not force the flashlight on");
-            Set(snapState,"Elapsed",.85d);Call(walker,"RestoreState",snapState);
+            Set(snapState,"Elapsed",.87d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark"),Is.True);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.GreaterThan(100),"The next dark intervals snap to different contortions");
             Assert.That(source.transform.position,Is.EqualTo(fixedPosition),"The environment light must not follow the actor");
-            Assert.That(backdrop.transform.position,Is.EqualTo(backdropPosition),"The background must not follow the actor");
+            Assert.That(fixture.transform.position,Is.EqualTo(fixturePosition),"The fixture must not follow the actor");
             bool sawInverted=false,sawUpright=false;
             foreach(double t in new[]{.10,.35,.60,.85,1.10,1.35,1.60,1.85,2.10,2.35,2.60,2.85,3.10})
             {Set(snapState,"Elapsed",t);Call(walker,"RestoreState",snapState);bool upsideDown=Get<bool>(walker,"CreatureInverted");sawInverted|=upsideDown;sawUpright|=!upsideDown;}

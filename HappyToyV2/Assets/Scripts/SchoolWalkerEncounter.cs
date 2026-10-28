@@ -18,7 +18,6 @@ namespace HappyToy.V2
         SchoolFlickerCreatureMotion creatureMotion;
         SchoolWalkerFlickerLighting flicker;
         SchoolFlickerCreatureVisibility creatureVisibility;
-        SchoolFlickerCreatureTremor creatureTremor;
         SchoolFlickerCreatureGrounding creatureGrounding;
         public SchoolEmergencyBacklight Backlight {get;private set;}
         public bool FlickerDark=>flicker!=null&&flicker.Dark;
@@ -81,7 +80,6 @@ namespace HappyToy.V2
                 actor.creature=Instantiate(creaturePrefab,actor.transform,false).transform;
                 actor.creatureMotion=new SchoolFlickerCreatureMotion(actor.creature);
                 actor.creatureVisibility=new SchoolFlickerCreatureVisibility(actor.creature);
-                actor.creatureTremor=new SchoolFlickerCreatureTremor(actor.creature);
                 actor.creatureGrounding=new SchoolFlickerCreatureGrounding(actor.creature,centre);
                 actor.creature.gameObject.SetActive(false);
                 actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
@@ -173,7 +171,7 @@ namespace HappyToy.V2
             var state=route.CaptureState();
             transform.localPosition=new Vector3(state.X,FeetHeight,state.Z);
             transform.localRotation=Quaternion.Euler(0,state.Yaw,0);if(!Dancing)Motion.Apply(state);
-            if(Dancing&&creatureMotion!=null){creatureMotion.Apply(state.Elapsed);if(creatureTremor!=null)creatureTremor.Apply(state.Elapsed,creatureMotion.Inverted);if(creatureGrounding!=null)creatureGrounding.Apply(state.Elapsed,creatureMotion.Inverted);}
+            if(Dancing&&creatureMotion!=null){creatureMotion.Apply(state.Elapsed);if(creatureGrounding!=null)creatureGrounding.Apply(state.Elapsed,creatureMotion.Inverted);}
             if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
             if(creatureVisibility!=null)creatureVisibility.Set(Dancing,FlickerDark);
         }

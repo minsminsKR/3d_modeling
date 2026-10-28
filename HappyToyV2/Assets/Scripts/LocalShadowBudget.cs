@@ -75,7 +75,14 @@ namespace HappyToy.V2
                 var light=saved.light;
                 if(!light||light==Torch||!light.isActiveAndEnabled||light.intensity<=.01f)continue;
                 float distance=(light.transform.position-eye).sqrMagnitude;
-                float reach=Mathf.Min(16,light.range+3);
+                // The school emergency spot is a fixed far-end light. Its
+                // shadows must remain eligible while the visible corridor is
+                // within the school pipeline shadow distance, even when the
+                // fixture itself is farther than the usual local-light limit.
+                var emergency=light.GetComponentInParent<SchoolEmergencyBacklight>();
+                bool schoolEmergency=emergency&&emergency.Source==light;
+                float limit=schoolEmergency&&pipeline?Mathf.Max(16,pipeline.shadowDistance):16;
+                float reach=schoolEmergency?limit:Mathf.Min(limit,light.range+3);
                 if(distance>reach*reach)continue;
                 candidates.Add(new ShadowAtlasPlan.Candidate {id=saved.selectionId,point=light.type==LightType.Point,distanceSquared=distance});
             }

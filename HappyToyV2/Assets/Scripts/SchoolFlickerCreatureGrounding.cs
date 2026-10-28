@@ -5,9 +5,8 @@ using UnityEngine;
 
 namespace HappyToy.V2
 {
-    // Keep the weighted visible contact skin on the school floor after tremor.
-    // Sample contact vertices from Unity's baked skin. Recalculate only when
-    // the discrete pose/tremor step changes; never bake on unchanged frames.
+    // Keep the weighted visible contact skin on the school floor.
+    // Sample Unity's baked skin only when the discrete pose changes.
     public sealed class SchoolFlickerCreatureGrounding : IDisposable
     {
         readonly Transform visual,section,leftJoint,rightJoint;
@@ -17,8 +16,8 @@ namespace HappyToy.V2
         readonly BoneWeight[] weights;
         readonly Transform[] bones;
         readonly int[] left,right,head;
-        long cachedFlash=long.MinValue,cachedStep=long.MinValue;
-        bool cachedInverted,cachedDark;
+        long cachedFlash=long.MinValue;
+        bool cachedInverted;
         Vector3 leftDelta,rightDelta;
         float visualDelta;
         const float SurfaceHeight=.002f;
@@ -66,11 +65,9 @@ namespace HappyToy.V2
         public void Apply(double seconds,bool inverted)
         {
             long flash=SchoolWalkerFlicker.FlashIndex(seconds);
-            bool dark=SchoolWalkerFlicker.Dark(seconds);
-            long step=dark?0:(long)Math.Floor(Math.Max(0,seconds)*14);
-            if(flash!=cachedFlash||step!=cachedStep||dark!=cachedDark||inverted!=cachedInverted)
+            if(flash!=cachedFlash||inverted!=cachedInverted)
             {
-                cachedFlash=flash;cachedStep=step;cachedDark=dark;cachedInverted=inverted;
+                cachedFlash=flash;cachedInverted=inverted;
                 var l0=leftJoint.localPosition;var r0=rightJoint.localPosition;
                 if(!inverted)
                 {

@@ -326,3 +326,33 @@ Verification: `school-anomalies-logic` passed 153 EditMode and 8 PlayMode
 tests; `hand-animation-logic` passed 104 EditMode and 11 PlayMode tests.
 The Unity Windows build and input verification passed. No GPU view or FPS
 audit was run under the desktop isolation policy.
+
+
+2026-10-28 real-emergency-light correction (supersedes the fixed wall wash
+and rapid-strobe notes above): The former large transparent red wall mesh and
+its unlit shader have been removed. A small fixed school fixture supplies a
+real corridor-facing spot and a short-range point light for the actual rear
+wall and surrounding geometry. The school shadow budget includes the spot at
+the pipeline shadow distance; no light or billboard follows the actor. Four
+0.09-second reveals per second occur at uneven intervals. Pose and 0.45 m
+steps change at each dark onset; each lit pose is static. Geometry, generated
+model and saved elapsed time are retained, although a previously saved event
+may resume at a different pose under the revised schedule.
+
+`Tools/quality/run_school_backlight_review.py` runs the opt-in isolated real
+URP player-camera comparison; its reports and PNGs are generated under Builds.
+The school fog is ordinary global fog, not volumetric light scattering.
+
+Actual-camera isolated GPU review (2026-10-28): the fixed fixture illuminates
+the school floor, walls and ceiling, and spot-shadow on/off comparison changes
+visible structure surfaces. The same camera produced empty, distant-creature
+and near-creature frames. A baked-skin foreground mask found only a small
+number of changed background pixels with creature shadow casting enabled;
+reflections and LOD differences remain possible, so creature-shadow quality is
+not certified. These stationary captures do not verify FPS, moving presentation
+or all player approach directions. Measurements and frames are optional build
+outputs reproducible with the review runner, not source assets.
+
+Verification: `school-anomalies-logic` passed 153 EditMode and 8 PlayMode,
+`local-shadow-logic` passed 100 EditMode and 1 PlayMode; the isolated GPU
+review passed, and the Windows build/input verification succeeded.

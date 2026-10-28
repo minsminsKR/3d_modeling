@@ -4,52 +4,73 @@ using UnityEngine.Rendering;
 
 namespace HappyToy.V2
 {
-    // A fixture and illuminated end wall belong to the school section, not to
-    // the actor or the camera. Their positions remain fixed for the passage.
+    // The fixture belongs to the school section. Both lights illuminate the
+    // actual geometry and never track the actor or the camera.
     [DisallowMultipleComponent]
     public sealed class SchoolEmergencyBacklight : MonoBehaviour
     {
         public Light Source {get;private set;}
-        public Renderer BackdropRenderer {get;private set;}
+        public Light FillSource {get;private set;}
+        public Renderer FixtureRenderer {get;private set;}
         public bool Visible=>Source&&Source.enabled;
-        Mesh mesh;Material material;
+        Material housingMaterial,lensMaterial;
+
         public void Prepare()
         {
             if(Source)throw new InvalidOperationException("Emergency light already prepared");
             var settings=Resources.Load<SchoolEmergencyBacklightSettings>("SchoolFlickerCreature/EmergencyBacklightSettings");
             if(!settings)throw new InvalidOperationException("Emergency backlight settings missing");
-            var shader=Resources.Load<Shader>("SchoolFlickerCreature/SchoolEmergencyWall");
-            if(!shader)throw new InvalidOperationException("Emergency wall shader missing");
-            var fixture=new GameObject("Fixed red emergency spotlight");fixture.transform.SetParent(transform,false);
-            fixture.transform.localPosition=settings.fixturePosition;fixture.transform.localRotation=Quaternion.Euler(5,180,0);
+            var casingShader=Resources.Load<Shader>("SchoolHorror/SchoolDecaySurface");
+            var lensShader=Resources.Load<Shader>("SchoolProgressClock/SchoolClockLED");
+            if(!casingShader||!lensShader)throw new InvalidOperationException("Emergency fixture shaders missing");
+
+            // A small, physically modelled fixture is attached inside the end
+            // wall; its front lens is the only emissive surface. No camera-facing
+            // plane or painted wash is created.
+            var housing=Primitive("Emergency lamp housing",PrimitiveType.Cube,settings.fixturePosition+new Vector3(0,0,.20f),new Vector3(.34f,.18f,.20f));
+            housingMaterial=new Material(casingShader){name="Owned emergency fixture dark metal"};
+            housingMaterial.SetColor("_BaseColor",new Color(.15f,.14f,.13f,1));
+            housingMaterial.SetFloat("_MacroStrength",0);housing.GetComponent<Renderer>().sharedMaterial=housingMaterial;
+            var lens=Primitive("Emergency lamp small red lens",PrimitiveType.Sphere,settings.fixturePosition+new Vector3(0,-.005f,.075f),new Vector3(.12f,.12f,.12f));
+            lensMaterial=new Material(lensShader){name="Owned emergency lamp lens"};
+            lensMaterial.SetColor("_BaseColor",new Color(.08f,.004f,.002f,1));
+            FixtureRenderer=lens.GetComponent<Renderer>();FixtureRenderer.sharedMaterial=lensMaterial;
+            FixtureRenderer.shadowCastingMode=ShadowCastingMode.Off;
+
+            var fixture=new GameObject("Fixed red emergency corridor spotlight");fixture.transform.SetParent(transform,false);
+            fixture.transform.localPosition=settings.fixturePosition;fixture.transform.localRotation=Quaternion.Euler(settings.downAngle,180,0);
             Source=fixture.AddComponent<Light>();Source.type=LightType.Spot;Source.color=settings.lightColor;
-            Source.intensity=settings.intensity;Source.range=settings.range;Source.spotAngle=settings.spotAngle;Source.innerSpotAngle=settings.spotAngle*.75f;
+            Source.intensity=settings.intensity;Source.range=settings.range;Source.spotAngle=settings.spotAngle;Source.innerSpotAngle=spotInner(settings.spotAngle);
             Source.shadows=LightShadows.Soft;Source.shadowNearPlane=.08f;Source.bounceIntensity=0;Source.enabled=false;
-            var panel=new GameObject("Fixed red illuminated end wall",typeof(MeshFilter),typeof(MeshRenderer));
-            panel.layer=8;panel.transform.SetParent(transform,false);panel.transform.localPosition=settings.backdropPosition;
-            panel.transform.localScale=new Vector3(settings.backdropSize.x,settings.backdropSize.y,1);
-            mesh=new Mesh{name="Owned emergency end wall"};
-            mesh.vertices=new[]{new Vector3(-.5f,-.5f,0),new Vector3(-.5f,.5f,0),new Vector3(.5f,.5f,0),new Vector3(.5f,-.5f,0)};
-            mesh.uv=new[]{new Vector2(0,0),new Vector2(0,1),new Vector2(1,1),new Vector2(1,0)};
-            mesh.triangles=new[]{0,1,2,0,2,3};mesh.RecalculateBounds();
-            panel.GetComponent<MeshFilter>().sharedMesh=mesh;
-            material=new Material(shader){name="Owned emergency illuminated wall"};material.SetColor("_WallColor",settings.lightColor*settings.wallBrightness);
-            BackdropRenderer=panel.GetComponent<Renderer>();BackdropRenderer.sharedMaterial=material;
-            BackdropRenderer.shadowCastingMode=ShadowCastingMode.Off;BackdropRenderer.receiveShadows=false;BackdropRenderer.enabled=false;
+            // A compact backscatter at the same installed fixture illuminates the
+            // real end wall and adjacent wall/floor/ceiling behind the spotlight.
+            var fill=new GameObject("Fixed emergency fixture local backscatter");fill.transform.SetParent(transform,false);
+            fill.transform.localPosition=settings.fixturePosition+new Vector3(0,0,.12f);
+            FillSource=fill.AddComponent<Light>();FillSource.type=LightType.Point;FillSource.color=settings.lightColor;
+            FillSource.intensity=settings.fillIntensity;FillSource.range=settings.fillRange;FillSource.shadows=LightShadows.None;
+            FillSource.bounceIntensity=0;FillSource.enabled=false;
+        }
+        static float spotInner(float angle)=>angle*.72f;
+        GameObject Primitive(string name,PrimitiveType type,Vector3 position,Vector3 scale)
+        {
+            var item=GameObject.CreatePrimitive(type);item.name=name;item.layer=8;
+            item.transform.SetParent(transform,false);item.transform.localPosition=position;item.transform.localScale=scale;
+            var collider=item.GetComponent<Collider>();if(collider){collider.enabled=false;DestroyOwned(collider);}
+            return item;
         }
         public void Set(bool active,bool dark)
         {
             bool lit=active&&!dark;
             if(Source)Source.enabled=lit;
-            if(BackdropRenderer)BackdropRenderer.enabled=lit;
+            if(FillSource)FillSource.enabled=lit;
+            if(lensMaterial)lensMaterial.SetColor("_BaseColor",lit?new Color(2.0f,.07f,.025f,1):new Color(.08f,.004f,.002f,1));
         }
         void OnDestroy()
         {
-            if(mesh)DestroyOwned(mesh);
-            if(material)DestroyOwned(material);
+            if(housingMaterial)DestroyOwned(housingMaterial);
+            if(lensMaterial)DestroyOwned(lensMaterial);
         }
         static void DestroyOwned(UnityEngine.Object value)
         {if(Application.isPlaying)Destroy(value);else DestroyImmediate(value);}
     }
 }
-
