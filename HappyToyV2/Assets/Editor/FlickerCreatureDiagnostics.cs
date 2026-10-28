@@ -10,35 +10,28 @@ namespace HappyToy.V2.Editor
   public static void Inspect()
   {
    var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/SchoolFlickerCreature/creature-visual.prefab");
-   var root=Object.Instantiate(prefab);
+   var actor=new GameObject("Flicker ground diagnostic");var root=Object.Instantiate(prefab,actor.transform);
+   var motion=new SchoolFlickerCreatureMotion(root.transform,false);motion.SetSeed(1234);
    try {
-    var motion=new SchoolFlickerCreatureMotion(root.transform);motion.Apply(0);
-    foreach(double t in new[]{0d,1.601d,1.731d,1.841d,1.971d,2.101d,2.231d,2.351d,2.481d,3.901d,4.021d,4.141d,4.271d,4.421d,8.901d,9.031d})
-    {
-      motion.Apply(t);var skin=root.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(s=>s.sharedMesh.triangles.Length).First();
-      var baked=new Mesh();try{skin.BakeMesh(baked);var v=baked.vertices;Vector3 Point(Vector3 x)=>root.transform.InverseTransformPoint(skin.transform.TransformPoint(x));var b=new Bounds(Point(v[0]),Vector3.zero);foreach(var p in v)b.Encapsulate(Point(p));Debug.Log("FLICKER_SNAP_BOUNDS t="+t+" "+b);
-        if(b.min.x< -2.2f||b.max.x>2.2f||b.min.y<-.07f||b.max.y>3.25f)throw new InvalidOperationException("Creature pose exceeds school hall bounds at "+t+": "+b);}
-      finally{Object.DestroyImmediate(baked);}
-    }
-    motion.Apply(0);
-    var searchSkin=root.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(s=>s.sharedMesh.triangles.Length).First();
-    for(int index=0;index<128;index++)
-    {
-      motion.ApplyPoseIndex(index);var sample=new Mesh();try{searchSkin.BakeMesh(sample);var v=sample.vertices;Vector3 Point(Vector3 x)=>root.transform.InverseTransformPoint(searchSkin.transform.TransformPoint(x));var b=new Bounds(Point(v[0]),Vector3.zero);foreach(var p in v)b.Encapsulate(Point(p));
-       if(b.min.x>=-2.16f&&b.max.x<=2.16f&&b.min.y>=-.06f&&b.max.y<=3.2f)Debug.Log("FLICKER_SAFE_POSE "+index+" "+b);
-      }finally{Object.DestroyImmediate(sample);}
-    }
-    foreach(var skin in root.GetComponentsInChildren<SkinnedMeshRenderer>(true)){
-     var mesh=new Mesh();skin.BakeMesh(mesh);var vertices=mesh.vertices;
-     var points=vertices.Select(v=>root.transform.InverseTransformPoint(skin.transform.TransformPoint(v))).ToArray();
-     var bounds=new Bounds(points[0],Vector3.zero);foreach(var p in points)bounds.Encapsulate(p);
-     var xs=points.Select(p=>p.x).OrderBy(x=>x).ToArray();var ys=points.Select(p=>p.y).OrderBy(y=>y).ToArray();
-     Debug.Log("FLICKER_PERCENTILES x05="+xs[xs.Length/20]+" x95="+xs[xs.Length*19/20]+" y05="+ys[ys.Length/20]+" y95="+ys[ys.Length*19/20]);
-     var uv=mesh.uv;var mat=skin.sharedMaterial;
-     Debug.Log("FLICKER_MEASURE "+skin.name+" baked="+mesh.bounds+" mesh="+skin.sharedMesh.bounds+" scale="+skin.transform.lossyScale+" vertexBounds="+bounds+" renderBounds="+skin.bounds+" uv="+uv.Length+" material="+(mat?mat.name:"null")+" shader="+(mat&&mat.shader?mat.shader.name:"null")+" base="+(mat?mat.GetTexture("_BaseMap"):null));
-     Object.DestroyImmediate(mesh);
-    }
-   }finally{Object.DestroyImmediate(root);}
+    var skin=root.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(s=>s.sharedMesh.triangles.Length).First();
+    var weights=skin.sharedMesh.boneWeights;var bones=skin.bones;var sampled=new Mesh();
+    try{
+     for(int cycle=0;cycle<2;cycle++)for(int slot=0;slot<16;slot++){
+      double t=slot;motion.ApplyState(slot,cycle==1);skin.BakeMesh(sampled);var v=sampled.vertices;var b=new Bounds(actor.transform.InverseTransformPoint(skin.transform.TransformPoint(v[0])),Vector3.zero);float contact=float.PositiveInfinity,left=float.PositiveInfinity,right=float.PositiveInfinity;
+      for(int i=0;i<v.Length;i++){var point=actor.transform.InverseTransformPoint(skin.transform.TransformPoint(v[i]));b.Encapsulate(point);var w=weights[i];int idx=w.boneIndex0;string name=bones[idx].name;
+       if(w.weight0>=.5f&&(name=="bone_46"||name=="bone_47"))left=Mathf.Min(left,point.y);if(w.weight0>=.5f&&(name=="bone_50"||name=="bone_51"))right=Mathf.Min(right,point.y);
+       if(w.weight0>=.5f&&(motion.Inverted?(name=="bone_4"||name=="bone_5"):(name=="bone_46"||name=="bone_47"||name=="bone_50"||name=="bone_51")))contact=Mathf.Min(contact,point.y);}
+      Debug.Log("FLICKER_CONTACT t="+t+" inverted="+motion.Inverted+" contact="+contact+" left="+left+" right="+right+" "+b);
+      if(float.IsInfinity(contact)||Mathf.Abs(contact)>.03f||(!motion.Inverted&&(Mathf.Abs(left)>.01f||Mathf.Abs(right)>.01f))||Mathf.Abs(b.size.x-3.9f)>.05f||b.min.y<-.035f||b.max.y>3.25f||b.min.x< -2.2f||b.max.x>2.2f)throw new InvalidOperationException("Ground anchor is invalid at "+t);
+     }
+    var calibration=motion.CaptureCalibration();
+     string Hash(string path){using(var h=System.Security.Cryptography.SHA256.Create()){var text=System.IO.File.ReadAllText(path).Replace("\r\n","\n");return BitConverter.ToString(h.ComputeHash(System.Text.Encoding.UTF8.GetBytes(text))).Replace("-","").ToLowerInvariant();}}
+     calibration.prefabSha256=Hash("Assets/Resources/SchoolFlickerCreature/creature-visual.prefab");
+     calibration.motionSha256=Hash("Assets/Scripts/SchoolFlickerCreatureMotion.cs");
+     System.IO.File.WriteAllText("Assets/Resources/SchoolFlickerCreature/pose-calibration.json",JsonUtility.ToJson(calibration,true)+"\n");
+     AssetDatabase.Refresh();Debug.Log("FLICKER_CALIBRATION_PASS 32");
+    }finally{Object.DestroyImmediate(sampled);}
+   }finally{motion.Dispose();Object.DestroyImmediate(actor);}
   }
  }
 }

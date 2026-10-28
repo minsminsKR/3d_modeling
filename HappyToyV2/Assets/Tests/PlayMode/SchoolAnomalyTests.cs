@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
 using UnityEngine.TestTools;
+using UnityEngine.UIElements;
 using static HappyToy.V2.CloudTests.RuntimeAccess;
 using Object=UnityEngine.Object;
 
@@ -95,15 +96,27 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<float>(walker,"Distance"),Is.EqualTo(stopped),"Pause must hold the flicker advance");
             ExportSchoolAnomalyFrame(world,"dancing-walker",new Vector3(-1.2f,.03f,25),new Vector3(.65f,1.3f,31));
             var snapState=Call(walker,"CaptureState");Set(snapState,"Elapsed",1.60d);Set(snapState,"IdleElapsed",0d);Call(walker,"RestoreState",snapState);
+            var curtain=Get<Component>(walker,"FlickerCurtain");Assert.That(Get<bool>(curtain,"Black"),Is.True,"The screen must be black while the flicker lights are off");
+            var document=UnityEngine.Object.FindObjectsByType<UIDocument>(FindObjectsInactive.Include,FindObjectsSortMode.None).Single(d=>d.name=="School flicker independent screen curtain");
+            Assert.That(document,Is.Not.Null);Assert.That(document.panelSettings.sortingOrder,Is.GreaterThan(500));
+            Assert.That(document.rootVisualElement.style.backgroundColor.value,Is.EqualTo(Color.black));
+            Assert.That(document.rootVisualElement.style.display.value,Is.EqualTo(DisplayStyle.Flex));
+            bool invertedAtStart=Get<bool>(walker,"CreatureInverted");
             var flashPose=bones.Select(b=>b.localRotation).ToArray();
             var fixtures=Get<Transform>(world,"Root").GetComponentsInChildren(RequireType("SchoolFluorescent"));
             Assert.That(fixtures.All(f=>Get<Light>(f,"Source").intensity==0),Is.True,"The pose must snap at light-off");
             Set(snapState,"Elapsed",1.65d);Call(walker,"RestoreState",snapState);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.LessThan(.01f),"The entire dark interval must hold one pose");
-            Set(snapState,"Elapsed",1.73d);Call(walker,"RestoreState",snapState);
+            Assert.That(Get<bool>(walker,"CreatureInverted"),Is.EqualTo(invertedAtStart),"Orientation must remain fixed throughout each flash");
+            Set(snapState,"Elapsed",1.70d);Call(walker,"RestoreState",snapState);Assert.That(Get<bool>(curtain,"Black"),Is.False,"The curtain must clear as soon as lights return");
+            Set(snapState,"Elapsed",1.73d);Call(walker,"RestoreState",snapState);Assert.That(Get<bool>(curtain,"Black"),Is.True);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.GreaterThan(100),"The next light-off must snap to a different contortion");
+            bool sawInverted=false,sawUpright=false;
+            foreach(double t in new[]{1.60,1.73,1.84,1.97,2.10,2.23,2.35,2.48,3.90,4.02,4.14,4.27,4.42})
+            {Set(snapState,"Elapsed",t);Call(walker,"RestoreState",snapState);bool upsideDown=Get<bool>(walker,"CreatureInverted");sawInverted|=upsideDown;sawUpright|=!upsideDown;}
+            Assert.That(sawInverted&&sawUpright,Is.True,"The saved event seed must produce both orientations");
             Call(walker,"SetDancing",false);
-            Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);
+            Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);Assert.That(Get<bool>(curtain,"Black"),Is.False);
         }
         [UnityTest,Timeout(180000)]
         public IEnumerator SchoolBabyAppearsAtTheStudySignCriesPursuesAfterTimeoutAndRetreatRemovesIt()

@@ -226,3 +226,37 @@ Unity 6000.6.0f1 built `Builds/Windows-StrobeCreature-20261028` and all 4610
 current build input hashes passed. No GPU presentation or native-player
 inspection was run; visual impression and rotated elbow-corner clearance remain
 unverified in actual gameplay.
+
+## Ground contact, inversion and opaque strobe — 2026-10-28
+
+The flicker-only `SchoolFlickerCurtain` owns an independent non-interactive
+UI Toolkit panel above the HUD: the entire screen is black exactly while the
+school flicker lights are off, then clears without a fade. Pause and talisman
+hold the existing timeline. Other blackout events retain their previous rules.
+
+The actual walker root uses the preserved deck RNG and flash index to select
+upright or 180-degree inverted poses deterministically; checkpoint restoration
+therefore does not reroll the orientation. Upright poses keep both soles on the
+floor (within 1cm in the baked geometry check); inverted poses anchor the head
+at the floor. Hip and leg rotations are held at their bind pose to keep the
+soles grounded while torso, neck, arms and wrists snap. Three inverted variants
+use alternative fitted seeds to keep projections out of the floor. Each of
+32 pose/orientation combinations is measured at 3.9m width and within the
+4.4m corridor and 3.25m ceiling. The independent UI curtain obscures the
+camera including flashlight and HUD only during the flicker dark interval.
+
+`FlickerCreatureDiagnostics.Inspect` bakes and verifies all 32 fitted poses,
+then generates `Assets/Resources/SchoolFlickerCreature/pose-calibration.json`.
+The runtime reads these offsets/scales and foot corrections without baking per
+flash. The build validates hashes of the prefab and motion script and rejects
+stale calibration; rerun the diagnostic after either changes. User desktop
+isolation and GPU/native-player deferral remain in force. The CPU checks do not
+certify actual screen pixels, limb appearance or performance in gameplay.
+
+Validation: headless fitted-skin diagnostic passed 32 variants; the
+`school-anomalies-logic` profile passed 153 EditMode and 8 PlayMode cases in
+`Builds/Verification/feature-tests/20261028-110020-44090363`. A new player build
+and its input fingerprint are recorded separately after they complete.
+Player build: `Builds/Windows-StrobeGrounded-20261028` completed under Unity
+6000.6.0f1; `verify_build_inputs.py` passed all 4614 current inputs. No GPU or
+native player screenshot was produced while respecting desktop isolation.

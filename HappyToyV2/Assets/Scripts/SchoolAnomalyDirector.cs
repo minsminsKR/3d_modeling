@@ -38,7 +38,7 @@ namespace HappyToy.V2
         {
             if(Baby){Baby.Clear();Baby=null;}
             if(!keepDeparture&&DepartingBaby){DepartingBaby.Clear();DepartingBaby=null;}
-            Blackout.Apply(false,0);world.Walker.SetDancing(Kind==SchoolAnomalyKind.DancingWalker);
+            Blackout.Apply(false,0);world.Walker.SetFlickerSeed(deck.Capture().Random);world.Walker.SetDancing(Kind==SchoolAnomalyKind.DancingWalker);
         }
         void Update()
         {
