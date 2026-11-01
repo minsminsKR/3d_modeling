@@ -74,6 +74,11 @@ service GPU for other work. Do not submit another GPU generation or rigging job
 as part of this handoff. The current assets and test build are usable for review,
 but are not a final visual-quality approval.
 
+The final CPU-only checks passed on 2026-11-02: `school-new-anomalies-logic`
+(125 EditMode and 6 PlayMode cases) and `school-anomalies-logic` (154 EditMode
+and 12 PlayMode cases). Both ran with Unity `-nographics -noaudio`; they check
+logic and integration rather than rendered appearance, sound quality or FPS.
+
 1. Using the preserved rigs and packed Blender sources, repair the second
    student's skirt and the first and third students' knees, clothing holes and
    hand/neck deformation where visible. Check source-to-LOD texture rebakes and
