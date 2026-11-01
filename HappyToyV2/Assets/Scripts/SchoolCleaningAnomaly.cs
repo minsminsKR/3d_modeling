@@ -13,9 +13,10 @@ namespace HappyToy.V2
         readonly List<GameObject> marks=new List<GameObject>();
         AudioClip[] steps;AudioSource audioSource;ParticleSystem splash;
         Material markMaterial,particleMaterial;Texture2D shoe;
-        float elapsed;int emitted;bool held;
+        float elapsed;int emitted;bool held,triggered;
         public int StepsEmitted=>emitted;
         public float Elapsed=>elapsed;
+        public bool Triggered=>triggered;
 
         public void Prepare(SchoolLoopWorld world)
         {
@@ -58,7 +59,7 @@ namespace HappyToy.V2
             material.SetFloat("_DstBlend",(float)BlendMode.OneMinusSrcAlpha);material.SetFloat("_ZWrite",0);material.SetFloat("_Cull",0);
             material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");material.SetTexture("_BaseMap",texture);return material;
         }
-        public void Tick(float delta,bool advancing)
+        public void Tick(float delta,bool advancing,Vector3 playerLocal)
         {
             if(!advancing)
             {
@@ -66,14 +67,20 @@ namespace HappyToy.V2
                 return;
             }
             if(held){audioSource.UnPause();splash.Play();held=false;}
+            if(!triggered)
+            {
+                if((new Vector2(playerLocal.x,playerLocal.z)-new Vector2(0,12)).sqrMagnitude>81)return;
+                triggered=true;
+            }
             elapsed=Mathf.Min(1000000,elapsed+Mathf.Max(0,delta));
             while(emitted<12&&elapsed>=emitted*StepInterval)
                 EmitStep(true);
         }
-        public void RestoreElapsed(float value)
+        public void RestoreElapsed(float value,bool wasTriggered)
         {
             if(!StealthRules.Finite(value)||value<0||value>1000000)throw new ArgumentException("Invalid cleaning elapsed time");
-            elapsed=value;
+            triggered=wasTriggered||value>0;elapsed=value;
+            if(!triggered)return;
             while(emitted<12&&elapsed>=emitted*StepInterval)EmitStep(false);
         }
         void EmitStep(bool audible)

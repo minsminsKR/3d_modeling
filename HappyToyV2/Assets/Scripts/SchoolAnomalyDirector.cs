@@ -51,7 +51,7 @@ namespace HappyToy.V2
         {
             if(deck==null||!session||!world||!session.player)return;
             bool advancing=session.InputAllowed&&!session.Finished&&!EnemyTimeStop.Active;
-            if(Cleaning)Cleaning.Tick(Time.deltaTime,advancing);
+            if(Cleaning)Cleaning.Tick(Time.deltaTime,advancing,world.Centre.InverseTransformPoint(session.player.transform.position));
             world.MovingDoors.Tick(Time.deltaTime,advancing);
             world.MovingDrawers.Tick(Time.deltaTime,advancing);
             var local=world.Centre.InverseTransformPoint(session.player.transform.position);
@@ -67,7 +67,7 @@ namespace HappyToy.V2
                     session.TryDefeat("복도의 정전","복도 끝부터 등이 꺼지면 뒤로 돌아가세요. 완전히 어두워진 뒤 5초가 지나면 늦습니다.");
             }
         }
-        public SchoolAnomalyProgress Capture()=>new SchoolAnomalyProgress{deck=deck.Capture(),clock=clock.Capture(),baby=Baby?Baby.Capture():default,cleaningElapsed=Cleaning?Cleaning.Elapsed:0,furnitureElapsed=Kind==SchoolAnomalyKind.MovingFurniture?world.MovingDoors.Elapsed:0};
+        public SchoolAnomalyProgress Capture()=>new SchoolAnomalyProgress{deck=deck.Capture(),clock=clock.Capture(),baby=Baby?Baby.Capture():default,cleaningElapsed=Cleaning?Cleaning.Elapsed:0,cleaningTriggered=Cleaning&&Cleaning.Triggered,furnitureElapsed=Kind==SchoolAnomalyKind.MovingFurniture?world.MovingDoors.Elapsed:0};
         public void ValidateRestore(SchoolAnomalyProgress saved,int traversal)
         {
             saved.Validate(traversal);
@@ -82,7 +82,7 @@ namespace HappyToy.V2
         public void Restore(SchoolAnomalyProgress saved,int traversal)
         {
             ValidateRestore(saved,traversal);deck.Restore(saved.deck);clock.Restore(saved.clock,Kind);ApplyPassage();
-            if(Cleaning)Cleaning.RestoreElapsed(saved.cleaningElapsed);
+            if(Cleaning)Cleaning.RestoreElapsed(saved.cleaningElapsed,saved.cleaningTriggered);
             if(Kind==SchoolAnomalyKind.MovingFurniture){world.MovingDoors.RestoreElapsed(saved.furnitureElapsed);world.MovingDrawers.RestoreElapsed(saved.furnitureElapsed);}
             if(saved.baby.present){Blackout.ApplyBaby(true);Baby=SchoolBabyEncounter.Build(session,world.Centre);Baby.Restore(saved.baby,clock);}
             if(Kind==SchoolAnomalyKind.Blackout)Blackout.Apply(clock.Triggered,clock.Elapsed);

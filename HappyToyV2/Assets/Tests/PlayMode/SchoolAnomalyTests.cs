@@ -37,7 +37,7 @@ namespace HappyToy.V2.CloudTests
             yield return BeginObservationSchool();
             var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
             var director=Get<Component>(world,"Anomalies");
-            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Cleaning");
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Cleaning");PlacePlayer(LoopOrigin+new Vector3(-1f,.03f,8));
             var cleaning=Get<Component>(director,"Cleaning");
             Assert.That(cleaning,Is.Not.Null);
             Call(shell,"Resume");yield return Wait(()=>Get<int>(cleaning,"StepsEmitted")>=2,8,"Wet footsteps did not advance");
@@ -96,7 +96,7 @@ namespace HappyToy.V2.CloudTests
         {
             int traversal=Math.Max(1,Get<int>(world,"Traversals"));Call(world,"RestoreTraversal",traversal);
             var director=Get<Component>(world,"Anomalies");var data=Call(director,"Capture");var deck=Get<object>(data,"deck");
-            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),kind));Set(deck,"NormalStreak",kind=="Normal"?1:0);Set(data,"deck",deck);Set(data,"cleaningElapsed",0f);Set(data,"furnitureElapsed",0f);
+            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),kind));Set(deck,"NormalStreak",kind=="Normal"?1:0);Set(data,"deck",deck);Set(data,"cleaningElapsed",0f);Set(data,"cleaningTriggered",false);Set(data,"furnitureElapsed",0f);
             Call(director,"Restore",data,traversal);return data;
         }
         IEnumerator CrossSchoolJudgmentSeam(Component world,int direction)
