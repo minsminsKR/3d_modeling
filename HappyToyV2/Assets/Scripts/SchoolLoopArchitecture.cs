@@ -143,12 +143,15 @@ namespace HappyToy.V2
             float doorEnd=room.DoorZ+.56f;
             if(room.WindowNear>doorEnd)Wall(-2.2f,(doorEnd+room.WindowNear)*.5f,.18f,room.WindowNear-doorEnd);
             float middle=(room.WindowNear+room.WindowFar)*.5f,span=room.WindowFar-room.WindowNear;
-            var sill=new Bounds(new Vector3(-2.2f,.48f,middle),new Vector3(.18f,.96f,span));
+            // The study-room window reaches lower so seated students can be
+            // judged from the corridor; the solid glass still seals the room.
+            float sillHeight=room.Id=="study"?.60f:.96f;
+            var sill=new Bounds(new Vector3(-2.2f,sillHeight*.5f,middle),new Vector3(.18f,sillHeight,span));
             var head=new Bounds(new Vector3(-2.2f,2.91f,middle),new Vector3(.18f,.68f,span));
             Box("School corridor window solid sill",sill.center,sill.size,paint,true).GetComponent<MeshRenderer>().enabled=false;
             Box("School corridor window head wall",head.center,head.size,plaster,true).GetComponent<MeshRenderer>().enabled=false;
-            renewal.Wall(root,sill,0,.96f/3.25f);renewal.Wall(root,head,2.57f/3.25f,1);
-            var glazing=new Bounds(new Vector3(-2.2f,1.77f,middle),new Vector3(.018f,1.60f,span));
+            renewal.Wall(root,sill,0,sillHeight/3.25f);renewal.Wall(root,head,2.57f/3.25f,1);
+            var glazing=new Bounds(new Vector3(-2.2f,(sillHeight+2.57f)*.5f,middle),new Vector3(.018f,2.57f-sillHeight,span));
             Box("Closed classroom window glass",glazing.center,glazing.size,glass,true);
             renewal.Window(root,glazing);
             foreach(float edge in new[]{room.WindowNear-.07f,room.WindowFar+.07f})

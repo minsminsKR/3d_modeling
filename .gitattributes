@@ -218,3 +218,4 @@ HappyToyV2/SourceArt/SchoolStudyStudents/generated/*.zip filter=lfs diff=lfs mer
 HappyToyV2/SourceArt/SchoolStudyStudents/**/*.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/SchoolStudyStudents/**/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/SchoolStudyStudents/**/*.json text eol=lf
+HappyToyV2/Assets/Resources/SchoolStudyStudents/**/*.fbx filter=lfs diff=lfs merge=lfs -text

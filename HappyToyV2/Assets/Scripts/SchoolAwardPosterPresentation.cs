@@ -26,8 +26,9 @@ namespace HappyToy.V2
                 poster.name="School award poster";poster.layer=8;
                 Destroy(poster.GetComponent<Collider>());
                 poster.transform.SetParent(section,false);
-                poster.transform.localPosition=new Vector3(2.095f,1.65f,13.6f);
-                poster.transform.localRotation=Quaternion.Euler(0,-90,0);
+                // The generated wall finish protrudes past the structural wall.
+                poster.transform.localPosition=new Vector3(2.04f,1.65f,13.6f);
+                poster.transform.localRotation=Quaternion.Euler(0,90,0);
                 poster.transform.localScale=new Vector3(.64f,.96f,1);
                 var renderer=poster.GetComponent<MeshRenderer>();renderer.sharedMaterial=normal;
                 renderer.shadowCastingMode=ShadowCastingMode.Off;posters.Add(renderer);

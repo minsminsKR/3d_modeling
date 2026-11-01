@@ -1,0 +1,10 @@
+{
+  "job": "0ac03514-069f-4afc-a8cc-90d4d86cff8f",
+  "editable_sha256": "21c33f71359fd3c26cdf48a78b69494739149eea4fc8a41cc18877100ff93f3d",
+  "assets": {
+    "student.fbx": "e757debb14225a0f67da062bf44096af9bc75818930909c6462e112ea9fec3a5",
+    "student-baseColor.png": "9e232537b14bb6a64cd7f5c7dad86747230bd9cda77aec848f266bad1c8efe31",
+    "student-metallicSmoothness.png": "8add87b659ab995357da63ac8c2d8bd4c50837aae43feb3e8fb90a1aa85038a2",
+    "student-normal.png": "45db1621bc588c7cd60ba6ac0064477241e4033a3f3a1e47a93485791ac03bb4"
+  }
+}

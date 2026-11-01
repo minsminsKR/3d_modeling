@@ -21,6 +21,7 @@ parser.add_argument('--hips',required=True,help='comma-separated upper leg bone 
 parser.add_argument('--knees',required=True,help='comma-separated lower leg bone names')
 parser.add_argument('--hands',help='two hand bones and their forearms as hand,forearm,hand,forearm')
 parser.add_argument('--corrected',action='store_true')
+parser.add_argument('--bend',type=float,default=85)
 args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
 source=HERE/('rigged-corrected' if args.corrected else 'rigged')/args.job/'rigged.glb'
 output=PROJECT/'Builds'/'SchoolStudyStudentsReview'/args.job/'seated-probe.blend'
@@ -48,8 +49,8 @@ def rotate_world(name,degrees):
     bone.matrix=Matrix.Translation(point) @ Matrix.Rotation(math.radians(degrees),4,'X') @ Matrix.Translation(-point) @ bone.matrix
     bpy.context.view_layer.update()
 
-for bone in args.hips.split(','):rotate_world(bone,-85)
-for bone in args.knees.split(','):rotate_world(bone,85)
+for bone in args.hips.split(','):rotate_world(bone,-args.bend)
+for bone in args.knees.split(','):rotate_world(bone,args.bend)
 output.parent.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.save_as_mainfile(filepath=str(output))
 print('SEATED_PROBE_SAVED',output,flush=True)

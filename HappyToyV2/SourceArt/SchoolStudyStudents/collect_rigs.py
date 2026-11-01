@@ -10,6 +10,7 @@ from pathlib import Path
 import zipfile
 
 HERE = Path(__file__).resolve().parent
+CACHE = HERE.parents[1] / "Builds" / "ModelingCache" / "SchoolStudyStudents" / "rigged-archives"
 JOBS = ("10c8d883-8918-44d3-bcd5-7cf85bffff26",
         "b1f35610-5dd0-4d0d-ac15-e9c109bba82f",
         "0ac03514-069f-4afc-a8cc-90d4d86cff8f")
@@ -26,7 +27,7 @@ def sha(path):
 
 
 for job in JOBS:
-    archive = HERE / "rigged-archives" / (job + ".zip")
+    archive = CACHE / (job + ".zip")
     receipt = archive.with_name(job + ".download.json")
     result = json.loads(receipt.read_text(encoding="utf-8"))
     if result.get("archive_sha256") != sha(archive):

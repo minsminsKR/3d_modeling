@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -14,12 +15,14 @@ namespace HappyToy.V2
         public SchoolBabyEncounter DepartingBaby {get;private set;}
         public SchoolBlackoutPresentation Blackout {get;private set;}
         public SchoolCleaningAnomaly Cleaning {get;private set;}
+        public SchoolStudyStudents Students {get;private set;}
         public SchoolAnomalyKind Kind=>deck.Kind;
         public SchoolAnomalyEventClock EventClock=>clock;
         public void Prepare(GameSession owner,SchoolLoopWorld loop)
         {
             session=owner;world=loop;uint seed=BitConverter.ToUInt32(Guid.NewGuid().ToByteArray(),0);
-            bool review=Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-school-anomaly-review")>=0;
+            bool review=Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-school-anomaly-review")>=0||
+                !Application.isEditor&&File.Exists(Path.Combine(Path.GetDirectoryName(Application.dataPath),"school-anomaly-review.flag"));
             deck=new SchoolAnomalyDeck(seed==0?1:seed,review);
             Blackout=gameObject.AddComponent<SchoolBlackoutPresentation>();Blackout.Prepare(world.Root);ApplyPassage();
         }
@@ -41,17 +44,20 @@ namespace HappyToy.V2
             if(Baby){Baby.Clear();Baby=null;}
             if(!keepDeparture&&DepartingBaby){DepartingBaby.Clear();DepartingBaby=null;}
             if(Cleaning){Destroy(Cleaning.gameObject);Cleaning=null;}
+            if(Students){Destroy(Students.gameObject);Students=null;}
             Blackout.Apply(false,0);world.Walker.SetFlickerSeed(deck.Capture().Random);world.Walker.SetDancing(Kind==SchoolAnomalyKind.DancingWalker);
             world.AwardPoster.SetAnomaly(Kind==SchoolAnomalyKind.AwardPoster);
             world.MovingDoors.SetActive(Kind==SchoolAnomalyKind.MovingFurniture);
             world.MovingDrawers.SetActive(Kind==SchoolAnomalyKind.MovingFurniture);
             if(Kind==SchoolAnomalyKind.Cleaning){Cleaning=new GameObject("School cleaning anomaly").AddComponent<SchoolCleaningAnomaly>();Cleaning.Prepare(world);}
+            if(Kind==SchoolAnomalyKind.StudyStudents){Students=new GameObject("School study students anomaly").AddComponent<SchoolStudyStudents>();Students.Prepare(world);}
         }
         void Update()
         {
             if(deck==null||!session||!world||!session.player)return;
             bool advancing=session.InputAllowed&&!session.Finished&&!EnemyTimeStop.Active;
             if(Cleaning)Cleaning.Tick(Time.deltaTime,advancing,world.Centre.InverseTransformPoint(session.player.transform.position));
+            if(Students)Students.Tick(session.player.eyes?session.player.eyes.transform.position:session.player.transform.position+Vector3.up*1.5f,advancing,Time.deltaTime);
             world.MovingDoors.Tick(Time.deltaTime,advancing);
             world.MovingDrawers.Tick(Time.deltaTime,advancing);
             var local=world.Centre.InverseTransformPoint(session.player.transform.position);

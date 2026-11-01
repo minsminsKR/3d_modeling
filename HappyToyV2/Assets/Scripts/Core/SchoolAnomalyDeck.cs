@@ -21,7 +21,7 @@ namespace HappyToy.V2
         public SchoolAnomalyDeck(uint seed,bool reviewSequence=false)
         {
             if(seed==0)throw new ArgumentOutOfRangeException(nameof(seed));
-            state=new State{Random=seed,Kind=reviewSequence?SchoolAnomalyKind.StudyStudents:SchoolAnomalyKind.DancingWalker,NormalStreak=0,ReviewSequence=reviewSequence};
+            state=new State{Random=seed,Kind=reviewSequence?SchoolAnomalyKind.StudyStudents:SchoolAnomalyKind.Normal,NormalStreak=reviewSequence?0:1,ReviewSequence=reviewSequence};
         }
         public SchoolAnomalyKind Kind=>state.Kind;
         public State Capture()=>state;
@@ -53,7 +53,7 @@ namespace HappyToy.V2
             }
             state.ReviewSequence=false;
             bool anomaly=state.NormalStreak>=MaximumNormalStreak||Next()%100<AnomalyPercent;
-            state.Kind=anomaly?(SchoolAnomalyKind)(1+Next()%3):SchoolAnomalyKind.Normal;
+            state.Kind=anomaly?(SchoolAnomalyKind)(1+Next()%7):SchoolAnomalyKind.Normal;
             state.NormalStreak=anomaly?0:state.NormalStreak+1;
             return correct;
         }

@@ -17,6 +17,36 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolStudyStudentsRemainSeatedAndTurnOnlyHeads()
+        {
+            yield return BeginObservationSchool();
+            var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            var director=Get<Component>(world,"Anomalies");
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"StudyStudents");
+            var students=Get<Component>(director,"Students");Assert.That(Get<int>(students,"Count"),Is.EqualTo(27));
+            var roots=Get<Transform>(world,"Root").GetComponentsInChildren<Transform>()
+                .Where(t=>t.name.StartsWith("Study room ghost student ",StringComparison.Ordinal)).ToArray();
+            Assert.That(roots.Length,Is.EqualTo(27));
+            Assert.That(roots.All(r=>r.GetComponentsInChildren<Collider>().Length==0),Is.True);
+            Assert.That(roots.All(r=>r.GetComponentInChildren<LODGroup>()&&r.GetComponentInChildren<LODGroup>().lodCount==3),Is.True);
+            var heads=roots.Select(r=>r.GetComponentsInChildren<Transform>().First(t=>t.name=="HeadPivot")).ToArray();
+            var sampleSkin=roots[0].GetComponentsInChildren<SkinnedMeshRenderer>(true)[0];
+            var baked=new Mesh();sampleSkin.BakeMesh(baked);
+            var sampleBounds=baked.bounds;
+            Assert.That(sampleBounds.size.magnitude,Is.InRange(.5f,3f),"The actual seated skin must be human sized");
+            Assert.That(sampleSkin.bounds.size.magnitude,Is.LessThan(5),"Skin culling bounds must not grow to tens of metres");
+            Object.Destroy(baked);
+            var bodyPositions=roots.Select(r=>(r.localPosition,r.localRotation)).ToArray();var before=heads.Select(h=>h.localRotation).ToArray();
+            PlacePlayer(LoopOrigin+new Vector3(1f,.03f,17));Call(shell,"Resume");yield return Delay(.7f);
+            Assert.That(heads.Select((h,i)=>Quaternion.Angle(h.localRotation,before[i])).Max(),Is.GreaterThan(5));
+            CollectionAssert.AreEqual(bodyPositions,roots.Select(r=>(r.localPosition,r.localRotation)).ToArray());
+            Call(shell,"Pause");var held=heads.Select(h=>h.localRotation).ToArray();yield return Delay(.2f);
+            CollectionAssert.AreEqual(held,heads.Select(h=>h.localRotation).ToArray());
+            ExportSchoolAnomalyFrame(world,"study-students",new Vector3(1f,.03f,17),new Vector3(-6.2f,1.05f,17));
+            ExportSchoolAnomalyFrame(world,"study-student-close",new Vector3(-3.2f,.03f,15.5f),new Vector3(-4.45f,1.1f,15.5f));
+            UseSchoolAnomalyFixture(world,"Normal");Assert.That(Get<Component>(director,"Students"),Is.Null);Call(shell,"Resume");
+        }
+        [UnityTest,Timeout(180000)]
         public IEnumerator SchoolAwardPosterChangesForAnomalyAndRestoresAfterward()
         {
             yield return BeginObservationSchool();
@@ -27,6 +57,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(posters.All(r=>r.sharedMaterial.name=="Normal school award poster"),Is.True);
             Call(shell,"Pause");UseSchoolAnomalyFixture(world,"AwardPoster");
             Assert.That(posters.All(r=>r.sharedMaterial.name=="Haunted school award poster"),Is.True);
+            ExportSchoolAnomalyFrame(world,"award-poster",new Vector3(.5f,.03f,13.6f),new Vector3(2.04f,1.65f,13.6f));
             UseSchoolAnomalyFixture(world,"Normal");
             Assert.That(posters.All(r=>r.sharedMaterial.name=="Normal school award poster"),Is.True);
             Call(shell,"Resume");
@@ -112,9 +143,9 @@ namespace HappyToy.V2.CloudTests
         public IEnumerator SchoolAnomalyFirstPassIsNormalAndActualSeamsJudgeBothDirections()
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
-            var director=Get<Component>(world,"Anomalies");Assert.That(Get<object>(director,"Kind").ToString(),Is.EqualTo("DancingWalker"));
-            Assert.That(Get<Component>(director,"Baby"),Is.Null);Assert.That(Get<bool>(Get<Component>(world,"Walker"),"Dancing"),Is.True);
-            yield return CrossSchoolJudgmentSeam(world,-1);Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(1));
+            var director=Get<Component>(world,"Anomalies");Assert.That(Get<object>(director,"Kind").ToString(),Is.EqualTo("Normal"));
+            Assert.That(Get<Component>(director,"Baby"),Is.Null);Assert.That(Get<bool>(Get<Component>(world,"Walker"),"Dancing"),Is.False);
+            yield return CrossSchoolJudgmentSeam(world,1);Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(1));
             foreach(var choice in new[]{("Normal",1,4),("Normal",-1,0),("Baby",1,0),("Blackout",-1,4),("DancingWalker",-1,4)})
             {
                 Call(shell,"Pause");UseSchoolAnomalyFixture(world,choice.Item1);Call(world,"RestoreClock",3);Call(shell,"Resume");

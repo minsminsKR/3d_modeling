@@ -25,7 +25,7 @@ namespace HappyToy.V2.CoreTests
         {
             for(uint seed=1;seed<=1000;seed++)
             {
-                var deck=new SchoolAnomalyDeck(seed);Assert.That(deck.Kind,Is.EqualTo(SchoolAnomalyKind.DancingWalker));
+                var deck=new SchoolAnomalyDeck(seed);Assert.That(deck.Kind,Is.EqualTo(SchoolAnomalyKind.Normal));
                 int streak=0;
                 for(int i=0;i<30;i++)
                 {
@@ -34,9 +34,9 @@ namespace HappyToy.V2.CoreTests
                 }
             }
         }
-        [Test] public void UnforcedDrawsUseHalfAnomaliesAndAllThreeEventsHaveEqualWeight()
+        [Test] public void UnforcedDrawsUseHalfAnomaliesAndAllSevenEventsHaveEqualWeight()
         {
-            var deck=new SchoolAnomalyDeck(731251);int draws=0,anomalies=0;var events=new int[3];
+            var deck=new SchoolAnomalyDeck(731251);int draws=0,anomalies=0;var events=new int[7];
             for(int i=0;i<100000;i++)
             {
                 bool forced=deck.Capture().NormalStreak==3;deck.Complete(1);
@@ -44,7 +44,8 @@ namespace HappyToy.V2.CoreTests
                 if(deck.Kind!=SchoolAnomalyKind.Normal)events[(int)deck.Kind-1]++;
             }
             Assert.That(anomalies/(double)draws,Is.InRange(.485,.515));
-            int total=events[0]+events[1]+events[2];foreach(int count in events)Assert.That(count/(double)total,Is.InRange(.32,.347));
+            int total=0;foreach(int count in events)total+=count;
+            foreach(int count in events)Assert.That(count/(double)total,Is.InRange(.133,.153));
         }
         [TestCase(1,SchoolAnomalyKind.Normal,6)]
         [TestCase(-1,SchoolAnomalyKind.Normal,0)]

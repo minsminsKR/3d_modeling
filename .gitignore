@@ -43,6 +43,7 @@ model_test/model/
 !HappyToyV2/SourceArt/SchoolStudyStudents/rigged/**/*.glb
 !HappyToyV2/SourceArt/SchoolStudyStudents/rigged-corrected/**/*.glb
 !HappyToyV2/SourceArt/SchoolStudyStudents/**/*.blend
+!HappyToyV2/Assets/Resources/SchoolStudyStudents/**/*.fbx
 
 # Runtime assets needed by the checked-in browser game.
 !model_test/model/

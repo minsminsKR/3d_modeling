@@ -6,7 +6,7 @@ import zipfile
 
 HERE=Path(__file__).resolve().parent
 JOB='10c8d883-8918-44d3-bcd5-7cf85bffff26'
-archive=HERE/'corrected-archive'/(JOB+'.zip')
+archive=HERE.parents[1]/'Builds'/'ModelingCache'/'SchoolStudyStudents'/'corrected-archive'/(JOB+'.zip')
 receipt=json.loads((archive.parent/(JOB+'.download.json')).read_text(encoding='utf-8'))
 def digest(path):
     h=hashlib.sha256()

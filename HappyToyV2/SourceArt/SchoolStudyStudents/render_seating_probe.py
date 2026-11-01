@@ -6,10 +6,17 @@ import bpy
 from mathutils import Vector
 
 path=Path(sys.argv[sys.argv.index('--')+1])
+extra=sys.argv[sys.argv.index('--')+2:]
 if not path.is_absolute() or 'Builds' not in path.parts:
     raise RuntimeError('Preview output must be an absolute path under Builds')
 path.parent.mkdir(parents=True,exist_ok=True)
 scene=bpy.context.scene
+if extra:
+    rig=bpy.data.objects.get('Seated student head rig')
+    if not rig or 'HeadPivot' not in rig.pose.bones:raise RuntimeError('Head preview rig missing')
+    # A Blender bone's local Y axis follows its head-to-tail direction.
+    head=rig.pose.bones['HeadPivot'];head.rotation_mode='XYZ';head.rotation_euler.y=math.radians(float(extra[0]))
+    bpy.context.view_layer.update()
 scene.render.engine='BLENDER_EEVEE'
 scene.render.resolution_x=800;scene.render.resolution_y=800;scene.render.resolution_percentage=100
 scene.view_settings.view_transform='Standard'
