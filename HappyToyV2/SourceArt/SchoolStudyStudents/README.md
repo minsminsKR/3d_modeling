@@ -20,9 +20,9 @@ python hunyuan3d-webapp/modeling_cli.py resume 96264b4f-316d-41e1-afd0-b15451e5f
 ```
 
 The earlier three model archives have also been collected and retained as
-superseded source material. Interactive visual review, rigging, seated poses,
-Blender sources, Unity integration and verification are still outstanding. Do
-not consider the generated reference images proof of model or animation quality.
+superseded source material. The subsequent status and actual visual review of
+the revised models are recorded below; generated reference images alone do not
+prove model or animation quality.
 
 On 2026-11-01 the user requested a much more frightening ghost appearance.
 The built-in image tool edited each original into `student01-ghost.png` through
@@ -39,8 +39,8 @@ Collect the revised results separately with:
 python hunyuan3d-webapp/modeling_cli.py resume 048b8dcc-d20c-4354-8b88-75eaad870879 --output HappyToyV2/Builds/ModelingCache/SchoolStudyStudents/generated-ghost --json
 ```
 
-The revised jobs still need visual review, rigging, editable Blender sources,
-Unity integration and verification. Do not assume the output matches the input.
+The revised jobs were subsequently reviewed, rigged and integrated as described
+below. The resulting appearance still needs the follow-up work listed here.
 
 All three revised archives were collected successfully and verified by the CLI
 on 2026-11-02; the archives preserve the generated model and generation record.
@@ -66,6 +66,36 @@ both were corrected. The corridor view and close study-room view were captured
 with the opt-in camera profile. The second model's skirt and the first and third
 models' knees still show deformation artifacts; normal-camera captures and logic
 tests do not certify animation quality or native-player FPS.
+
+## Follow-up deferred until GPU work is available
+
+The user requested CPU-only completion on 2026-11-02 and reserved the modeling
+service GPU for other work. Do not submit another GPU generation or rigging job
+as part of this handoff. The current assets and test build are usable for review,
+but are not a final visual-quality approval.
+
+1. Using the preserved rigs and packed Blender sources, repair the second
+   student's skirt and the first and third students' knees, clothing holes and
+   hand/neck deformation where visible. Check source-to-LOD texture rebakes and
+   seated poses. These edits can use local Blender; reserve any visual renders
+   and interactive graphics review for an approved GPU session. Regenerate a
+   base model through the designated service only if repair proves inadequate.
+2. In the actual game camera, review all three students from the corridor and
+   close up: the figures are still very dark at normal viewing distance. Adjust
+   room lighting/material readability and increase ghostly impact as needed,
+   while preserving the horror mood and head-only tracking. Verify the award
+   poster's normal and ghost faces and inspect the moving doors and drawers.
+3. Run the full Unity EditMode and PlayMode suites with a supported graphics
+   backend, plus a native Windows player appearance and FPS review when permitted.
+   The 2026-11-02 full EditMode suite passed 262 tests; the first full PlayMode
+   run stopped on a D3D12 device error and its D3D11 retry was interrupted before
+   completion. Focused anomaly logic and rendered-camera checks do not replace
+   the full suite or native-player performance review. Listen to the cleaning
+   footsteps and splashes in-game when audio review is permitted.
+4. Rebuild and revalidate after any changes; keep the editable assets, source
+   generation provenance, LODs and Unity metadata together. Do not mistake the
+   review build's `school-anomaly-review.flag` sequence for the normal new-run
+   behavior. Follow the project desktop-isolation and old-build grouping rules.
 
 To reproduce the local sequence with the pinned Blender 4.0.2 executable, use
 `preview_seating.py` with the following inputs, run `export_seated_probe.py`
