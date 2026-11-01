@@ -44,4 +44,17 @@ Unity integration and verification. Do not assume the output matches the input.
 
 All three revised archives were collected successfully and verified by the CLI
 on 2026-11-02; the archives preserve the generated model and generation record.
-The interactive web review and subsequent finishing are still pending.
+The three actual results were reviewed in the designated webapp from the front
+and back on 2026-11-02. Their app-generated 28, 28 and 52-joint rigs were also
+inspected in the web joint editor. The first rig's inferred vertical positions
+were inverted: every joint's Y was corrected to `0.2 - originalY`, visually
+checked against the body, and AI weights recalculated on GPU 1. Its edited run
+is `ecd69124-6446-460a-b12e-69bbff01f29e`; the original run remains preserved.
+`collect_rigs.py` and `collect_corrected_rig.py` verify the CLI receipts and
+extract the original, AI analysis, edited inputs, joint edits and result records.
+
+Blender 4.0.2 batch inspection records the actual bones under Builds. The
+current `preview_seating.py` is a probe, not a final game export: a first seated
+female preview had severe hand distortion; a second repaired the hands but the
+skirt still deformed poorly. Final seating, skin repair, source-derived game
+LODs, editable final Blender files and game appearance verification remain open.

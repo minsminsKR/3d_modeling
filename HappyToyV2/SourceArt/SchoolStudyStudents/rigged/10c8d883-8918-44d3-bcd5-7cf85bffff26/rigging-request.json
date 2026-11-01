@@ -1,0 +1,10 @@
+{
+  "source": "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/outputs/10c8d883-8918-44d3-bcd5-7cf85bffff26/model.glb",
+  "output_dir": "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/outputs/10c8d883-8918-44d3-bcd5-7cf85bffff26/rigging/93e86ab7-ad34-46ea-9e5c-777207ac09ce",
+  "analysis_mesh": "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/outputs/10c8d883-8918-44d3-bcd5-7cf85bffff26/rigging/93e86ab7-ad34-46ea-9e5c-777207ac09ce/analysis.glb",
+  "analysis_faces": 50000,
+  "preserve_original": true,
+  "seed": 1234,
+  "use_skeleton": false,
+  "editor": false
+}

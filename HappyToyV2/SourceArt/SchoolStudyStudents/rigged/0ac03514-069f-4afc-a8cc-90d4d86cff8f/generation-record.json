@@ -1,0 +1,243 @@
+{
+  "schema_version": 1,
+  "id": "0ac03514-069f-4afc-a8cc-90d4d86cff8f",
+  "status": "completed",
+  "message": "Model is ready.",
+  "created_at": 1793544556.0877721,
+  "updated_at": 1793546464.343792,
+  "source_filename": "student03-ghost.png",
+  "batch_index": 3,
+  "batch_total": 3,
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": 0,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1536_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 8192,
+    "trellis_max_tokens": 65536,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "batch_id": "f5ac5cea-3b6b-4a5b-a491-1a8d2ddc6e23",
+  "request_id": "048b8dcc-d20c-4354-8b88-75eaad870879",
+  "submitted_options": {
+    "gpu_id": [
+      "split"
+    ],
+    "model": [
+      "trellis2"
+    ]
+  },
+  "source": "cli",
+  "inputs": [
+    {
+      "name": "student03-ghost.png",
+      "archive_name": "inputs/01_student03-ghost.png",
+      "sha256": "80d38219802e6b9490931c45ff25f103b27a324c87f043486985f0637214e254",
+      "size": 1983701
+    }
+  ],
+  "saved": true,
+  "saved_at": 1793544556.0877721,
+  "started_at": 1793546063.2287002,
+  "finished_at": 1793546464.3437831,
+  "used_texture": true,
+  "warnings": [],
+  "rigging": {
+    "status": "completed",
+    "message": "AI 리깅과 동작 프리셋이 준비됐습니다. 아래에서 동작을 재생하세요.",
+    "run_id": "4b2effdf-c8be-4093-b9a2-dd80cada4bd5",
+    "options": {
+      "seed": 1234,
+      "analysis_faces": 50000,
+      "preserve_original": true
+    },
+    "created_at": 1793549152.8381584,
+    "started_at": 1793549219.0502112,
+    "finished_at": 1793549336.9610548,
+    "updated_at": 1793549336.9610627,
+    "bone_count": 52,
+    "skin_count": 1,
+    "vertices": 947046,
+    "faces": 982070,
+    "skinned_vertices": 947046,
+    "max_weight_error": 1.7881393432617188e-07,
+    "texture_sizes": [
+      [
+        8192,
+        8192
+      ],
+      [
+        8192,
+        8192
+      ]
+    ],
+    "bytes": 216963544,
+    "animations": [],
+    "preview_joint_count": 12,
+    "source": {
+      "bone_count": 0,
+      "skin_count": 0,
+      "vertices": 945055,
+      "faces": 982120,
+      "skinned_vertices": 0,
+      "max_weight_error": 0.0,
+      "texture_sizes": [
+        [
+          8192,
+          8192
+        ],
+        [
+          8192,
+          8192
+        ]
+      ],
+      "bytes": 197942912,
+      "animations": []
+    },
+    "preserve_original": true,
+    "preparation": {
+      "source_faces": 982070,
+      "analysis_faces": 50000,
+      "face_budget": 50000
+    },
+    "gpu_id": 1,
+    "model": "SkinTokens / TokenRig",
+    "torch_peak_allocated_mib": 2174.7,
+    "torch_peak_reserved_mib": 4192.0,
+    "elapsed_seconds": 117,
+    "ready": true,
+    "start_url": "/api/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/rigging",
+    "status_url": "/api/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/rigging",
+    "editor_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/rigging/edit",
+    "model_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/rigging/model?v=4b2effdf-c8be-4093-b9a2-dd80cada4bd5",
+    "download_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/rigging/download?v=4b2effdf-c8be-4093-b9a2-dd80cada4bd5",
+    "preview_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/rigging/action-preview?v=4b2effdf-c8be-4093-b9a2-dd80cada4bd5&motion=actions-v2",
+    "motion_clips": [
+      {
+        "name": "Idle",
+        "label": "대기",
+        "duration": 3.2,
+        "channels": 4
+      },
+      {
+        "name": "Wave",
+        "label": "팔 흔들기",
+        "duration": 2.4,
+        "channels": 4
+      },
+      {
+        "name": "Bow",
+        "label": "인사",
+        "duration": 2.8,
+        "channels": 4
+      },
+      {
+        "name": "Hop",
+        "label": "점프",
+        "duration": 2.4,
+        "channels": 5
+      }
+    ],
+    "motion_method": "procedural presets on AI-inferred skeleton",
+    "motion_download_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/rigging/motion-download?v=4b2effdf-c8be-4093-b9a2-dd80cada4bd5",
+    "preview_faces": 982070
+  },
+  "web_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f",
+  "status_url": "/api/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f",
+  "archive_url": "/api/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/archive",
+  "record_url": "/api/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/record",
+  "elapsed_seconds": 401,
+  "display_name": "student03-ghost",
+  "download_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/download",
+  "model_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/model",
+  "mixamo_package_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/mixamo/package",
+  "mixamo_upload_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/mixamo/upload",
+  "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+  "mixamo_files": [],
+  "processed_input_url": "/jobs/0ac03514-069f-4afc-a8cc-90d4d86cff8f/processed/1",
+  "saved_at_label": "2026-11-01 23:49",
+  "created_at_label": "2026-11-01 23:49",
+  "artifacts": [
+    {
+      "name": "model.glb",
+      "sha256": "f22e8c457553bdf3e907e312bb88779d5b61ee7bdbf54e3aa948e9af98ff7e1b",
+      "size": 197942912
+    },
+    {
+      "name": "metadata.json",
+      "sha256": "408f93bf3cb75bf29b10ab72dcdfd9a7e1e8369dbfaf47d20b71ff2a627400f0",
+      "size": 2915
+    },
+    {
+      "name": "outputs/generation_request.json",
+      "sha256": "85fef2b23b420f8555486739f10fbca82ca04e0eeef8041d2c2f5d4319ab77f3",
+      "size": 819
+    },
+    {
+      "name": "outputs/generation_result.json",
+      "sha256": "8010ce0ffefdf72909ef6f7c22c6d5851ed48a59f5978d160396bd313b29462a",
+      "size": 333
+    },
+    {
+      "name": "processed_inputs/01.png",
+      "sha256": "44c1c5130d979044f7c791568557f7de5a796706c238f68713d2ff5982c08adc",
+      "size": 481006
+    },
+    {
+      "name": "outputs/rigging/4b2effdf-c8be-4093-b9a2-dd80cada4bd5/analysis.glb",
+      "sha256": "ecedd9e8230714a8cc5c49adf0b57d740c8298c55b07b3bcc6483ed956d84a74",
+      "size": 158762296
+    },
+    {
+      "name": "outputs/rigging/4b2effdf-c8be-4093-b9a2-dd80cada4bd5/motion-actions-v2.json",
+      "sha256": "c31d3515901a154750ce00dfbd44769d76befccb63a583b7ab40ed7c866d5862",
+      "size": 4570
+    },
+    {
+      "name": "outputs/rigging/4b2effdf-c8be-4093-b9a2-dd80cada4bd5/preparation.json",
+      "sha256": "5c4d6b2883b72fec033078bc536e9d6fbd1a68cc697851ca00c666c11e9ee158",
+      "size": 71
+    },
+    {
+      "name": "outputs/rigging/4b2effdf-c8be-4093-b9a2-dd80cada4bd5/preview-actions-v2.glb",
+      "sha256": "f08fa8ed6a10563ac86895ad9635a66f14e36ae53c7d4b3c4d6aa8446d905a74",
+      "size": 76061952
+    },
+    {
+      "name": "outputs/rigging/4b2effdf-c8be-4093-b9a2-dd80cada4bd5/rig-actions-v2.glb",
+      "sha256": "2af2dfc5eaec8db404b1de73fccee688d80b4c6b75b9344b64c4076aaae90992",
+      "size": 216982484
+    },
+    {
+      "name": "outputs/rigging/4b2effdf-c8be-4093-b9a2-dd80cada4bd5/rig-preview.glb",
+      "sha256": "e8f8817953442db29adca62c5da5be24fc1e307aee0de5d5ec09a8a381d48778",
+      "size": 216967328
+    },
+    {
+      "name": "outputs/rigging/4b2effdf-c8be-4093-b9a2-dd80cada4bd5/rigged.glb",
+      "sha256": "ee16bf76297b9f0873b7306ed057e1c87d74230553f84767dbeef291148e8803",
+      "size": 216963544
+    },
+    {
+      "name": "outputs/rigging/4b2effdf-c8be-4093-b9a2-dd80cada4bd5/rigging-request.json",
+      "sha256": "e77118c687836a9475f182927b5195f01cb4d752f4def02012aa31800be9c7f8",
+      "size": 638
+    },
+    {
+      "name": "outputs/rigging/4b2effdf-c8be-4093-b9a2-dd80cada4bd5/rigging-result.json",
+      "sha256": "18dc8fe11319671d893e70012044eb4904cc63c8010369ef6b17ae90152c5c92",
+      "size": 1328
+    }
+  ]
+}

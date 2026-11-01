@@ -1,0 +1,13 @@
+{
+  "job": "b1f35610-5dd0-4d0d-ac15-e9c109bba82f",
+  "archive_sha256": "06091a0d31f10dfe0ac90ed568b75fe74d7b61cf1228d975f985cedfb4e4c30f",
+  "files": {
+    "analysis.glb": "69f14f526a8f1234b8d20098bfb9c2bde8f4380682f07f76107e055cb94eac6f",
+    "generation-record.json": "2d285bb25adccd737db5b73d891d679150851b16f62f10ae275bcb4be3899447",
+    "motion-actions-v2.json": "aa4a8b4010ad735926f2d8daa00ed3d8a5aea528dc792fa7b76151ef0aee25f0",
+    "preparation.json": "b2670d81b43de5fd47c491352e535a980a481b19e51078dbf159f339080790b5",
+    "rigged.glb": "c104d32b9a0fb7638f9c0d1ac3b65e8388e8e0ed10896c44a70aeb80b92a0785",
+    "rigging-request.json": "bfbe48963648f84937a86b079ccb84ee6860d8741861ce0213fcdf63b6dc307c",
+    "rigging-result.json": "626599249e43547c143b58f6de4f946c1f68d947924ac0a3336b80b60b0fb5c4"
+  }
+}

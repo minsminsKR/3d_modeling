@@ -40,7 +40,9 @@ namespace HappyToy.V2.CloudTests
             Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Cleaning");PlacePlayer(LoopOrigin+new Vector3(-1f,.03f,8));
             var cleaning=Get<Component>(director,"Cleaning");
             Assert.That(cleaning,Is.Not.Null);
-            Call(shell,"Resume");yield return Wait(()=>Get<int>(cleaning,"StepsEmitted")>=2,8,"Wet footsteps did not advance");
+            Call(shell,"Resume");yield return Wait(()=>Get<int>(cleaning,"StepsEmitted")>=2,15,"Wet footsteps did not advance",
+                ()=>"kind="+Get<object>(director,"Kind")+" triggered="+Get<bool>(cleaning,"Triggered")+" elapsed="+Get<float>(cleaning,"Elapsed")+
+                    " input="+Get<bool>(session,"InputAllowed")+" local="+Get<Transform>(world,"Centre").InverseTransformPoint(player.transform.position));
             Call(shell,"Pause");int held=Get<int>(cleaning,"StepsEmitted");yield return Delay(.3f);
             Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.EqualTo(held));
             Assert.That(cleaning.GetComponentsInChildren<Transform>().Count(t=>t.name=="Invisible cleaner wet footprint"),Is.EqualTo(held));

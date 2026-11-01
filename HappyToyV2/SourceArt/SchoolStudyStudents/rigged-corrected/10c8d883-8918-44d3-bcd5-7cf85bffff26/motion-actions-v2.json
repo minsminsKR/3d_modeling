@@ -1,0 +1,277 @@
+{
+  "version": "actions-v2",
+  "clips": [
+    {
+      "name": "Idle",
+      "label": "대기",
+      "duration": 3.2,
+      "channels": 4
+    },
+    {
+      "name": "Wave",
+      "label": "팔 흔들기",
+      "duration": 2.4,
+      "channels": 4
+    },
+    {
+      "name": "Bow",
+      "label": "인사",
+      "duration": 2.8,
+      "channels": 4
+    },
+    {
+      "name": "Hop",
+      "label": "점프",
+      "duration": 2.4,
+      "channels": 5
+    },
+    {
+      "name": "GroupAction",
+      "label": "전체 팔다리 그룹",
+      "duration": 3.2,
+      "channels": 2
+    },
+    {
+      "name": "Limb_auto-arm-1",
+      "label": "팔 1",
+      "duration": 3.2,
+      "channels": 1
+    },
+    {
+      "name": "Limb_auto-arm-2",
+      "label": "팔 2",
+      "duration": 3.2,
+      "channels": 1
+    }
+  ],
+  "roles": {
+    "roots": [
+      27
+    ],
+    "arms": [
+      {
+        "node": 6,
+        "side": -1
+      },
+      {
+        "node": 13,
+        "side": 1
+      }
+    ],
+    "head": 16,
+    "height": 0.9981315433979034,
+    "convention": "glTF Y-up; geometric lateral-branch classification",
+    "joint_names": {
+      "27": "bone_0",
+      "18": "bone_1",
+      "17": "bone_2",
+      "16": "bone_3",
+      "1": "bone_4",
+      "0": "bone_5",
+      "8": "bone_6",
+      "7": "bone_7",
+      "6": "bone_8",
+      "5": "bone_9",
+      "4": "bone_10",
+      "3": "bone_11",
+      "2": "bone_12",
+      "15": "bone_13",
+      "14": "bone_14",
+      "13": "bone_15",
+      "12": "bone_16",
+      "11": "bone_17",
+      "10": "bone_18",
+      "9": "bone_19",
+      "22": "bone_20",
+      "21": "bone_21",
+      "20": "bone_22",
+      "19": "bone_23",
+      "26": "bone_24",
+      "25": "bone_25",
+      "24": "bone_26",
+      "23": "bone_27"
+    },
+    "groups": [
+      {
+        "id": "auto-arm-1",
+        "name": "팔 1",
+        "type": "arm",
+        "joints": [
+          "6",
+          "5",
+          "4",
+          "3",
+          "2"
+        ],
+        "amplitude": 20.0,
+        "phase": 0.0,
+        "anchors": [
+          6
+        ]
+      },
+      {
+        "id": "auto-arm-2",
+        "name": "팔 2",
+        "type": "arm",
+        "joints": [
+          "13",
+          "12",
+          "11",
+          "10",
+          "9"
+        ],
+        "amplitude": 20.0,
+        "phase": 0.5,
+        "anchors": [
+          13
+        ]
+      }
+    ]
+  },
+  "method": "procedural presets on AI-inferred skeleton",
+  "model_file": "rig-actions-v2.glb",
+  "preview_file": "preview-actions-v2.glb",
+  "source_file": "rigged.glb",
+  "full_model": {
+    "bone_count": 28,
+    "skin_count": 1,
+    "vertices": 886301,
+    "faces": 989582,
+    "skinned_vertices": 886301,
+    "max_weight_error": 1.7881393432617188e-07,
+    "texture_sizes": [
+      [
+        8192,
+        8192
+      ],
+      [
+        8192,
+        8192
+      ]
+    ],
+    "bytes": 178845168,
+    "animations": [
+      "Idle",
+      "Wave",
+      "Bow",
+      "Hop",
+      "GroupAction",
+      "Limb_auto-arm-1",
+      "Limb_auto-arm-2"
+    ]
+  },
+  "preview_model": {
+    "bone_count": 28,
+    "skin_count": 1,
+    "vertices": 886301,
+    "faces": 989582,
+    "skinned_vertices": 886301,
+    "max_weight_error": 1.7881393432617188e-07,
+    "texture_sizes": [
+      [
+        2048,
+        2048
+      ],
+      [
+        2048,
+        2048
+      ]
+    ],
+    "bytes": 69598692,
+    "animations": [
+      "Idle",
+      "Wave",
+      "Bow",
+      "Hop",
+      "GroupAction",
+      "Limb_auto-arm-1",
+      "Limb_auto-arm-2"
+    ]
+  },
+  "preview_roles": {
+    "roots": [
+      27
+    ],
+    "arms": [
+      {
+        "node": 6,
+        "side": -1
+      },
+      {
+        "node": 13,
+        "side": 1
+      }
+    ],
+    "head": 16,
+    "height": 0.9981315433979034,
+    "convention": "glTF Y-up; geometric lateral-branch classification",
+    "joint_names": {
+      "27": "bone_0",
+      "18": "bone_1",
+      "17": "bone_2",
+      "16": "bone_3",
+      "1": "bone_4",
+      "0": "bone_5",
+      "8": "bone_6",
+      "7": "bone_7",
+      "6": "bone_8",
+      "5": "bone_9",
+      "4": "bone_10",
+      "3": "bone_11",
+      "2": "bone_12",
+      "15": "bone_13",
+      "14": "bone_14",
+      "13": "bone_15",
+      "12": "bone_16",
+      "11": "bone_17",
+      "10": "bone_18",
+      "9": "bone_19",
+      "22": "bone_20",
+      "21": "bone_21",
+      "20": "bone_22",
+      "19": "bone_23",
+      "26": "bone_24",
+      "25": "bone_25",
+      "24": "bone_26",
+      "23": "bone_27"
+    },
+    "groups": [
+      {
+        "id": "auto-arm-1",
+        "name": "팔 1",
+        "type": "arm",
+        "joints": [
+          "6",
+          "5",
+          "4",
+          "3",
+          "2"
+        ],
+        "amplitude": 20.0,
+        "phase": 0.0,
+        "anchors": [
+          6
+        ]
+      },
+      {
+        "id": "auto-arm-2",
+        "name": "팔 2",
+        "type": "arm",
+        "joints": [
+          "13",
+          "12",
+          "11",
+          "10",
+          "9"
+        ],
+        "amplitude": 20.0,
+        "phase": 0.5,
+        "anchors": [
+          13
+        ]
+      }
+    ]
+  },
+  "geometry_preserved": true,
+  "preview_texture_size": 2048
+}

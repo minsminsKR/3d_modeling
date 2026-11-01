@@ -39,6 +39,11 @@ model_test/model/
 *.onnx
 *.gguf
 
+# Editable AI rig originals and authored school student sources are handoff data.
+!HappyToyV2/SourceArt/SchoolStudyStudents/rigged/**/*.glb
+!HappyToyV2/SourceArt/SchoolStudyStudents/rigged-corrected/**/*.glb
+!HappyToyV2/SourceArt/SchoolStudyStudents/**/*.blend
+
 # Runtime assets needed by the checked-in browser game.
 !model_test/model/
 !model_test/model/.gitkeep

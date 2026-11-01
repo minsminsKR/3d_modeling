@@ -1,0 +1,17 @@
+{
+  "job": "10c8d883-8918-44d3-bcd5-7cf85bffff26",
+  "run": "ecd69124-6446-460a-b12e-69bbff01f29e",
+  "archive_sha256": "99d806a4fd81402fcea10d392d1cd79a0f71eb6d375d1f1056f4e366ed762a1f",
+  "files": {
+    "analysis.glb": "181263480cbb8caeac48163b86b41bf1a27425ca39927a4bda0ea2321f62ecab",
+    "edited-input.glb": "7554155e2fdc94dd73cdedf5a43371b4e2612bfe03c646d1c439084dab858be9",
+    "editor-request.json": "dfdb5e542cd776ce449123579ce1ac9f0ff2426cf315fa658b9c208c1fa1fb71",
+    "editor-state.json": "8f2d3d938d95f72dee55cdd270af4c03fd03ed52a6afbb0e7d2006530587b4fb",
+    "generation-record.json": "863e6111b99205dae4a6aff1833198862cae8f4339ff5839adbbd0c821cc7f68",
+    "motion-actions-v2.json": "4061520701fa55ca0f503820052fde196875b4b88508272b6c6d67015a0a3f15",
+    "preparation.json": "6fdf15a8e2ca1f958ae38d51e9e344aaafd677bb4f5f154e60a8b1267f2a65ef",
+    "rigged.glb": "8d47da0fcb35c682057264e07bc7553836b914f7d3f76adb61e3802df602f95a",
+    "rigging-request.json": "34267a3399a9656f8d7c01846a2e55b734d9cdc95caef4c2e7af0c66151e057e",
+    "rigging-result.json": "98b1882bfdf996f05e1445c932aedc76007d3f8c3a4a5505a3e4c68542facd0f"
+  }
+}
