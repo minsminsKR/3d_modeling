@@ -19,9 +19,10 @@ Collect with the same request and output directory:
 python hunyuan3d-webapp/modeling_cli.py resume 96264b4f-316d-41e1-afd0-b15451e5f125 --output HappyToyV2/SourceArt/SchoolStudyStudents/generated --json
 ```
 
-The model archives, interactive visual review, rigging, seated poses, Blender
-sources, Unity integration and verification are still outstanding. Do not
-consider the generated reference images proof of model or animation quality.
+The earlier three model archives have also been collected and retained as
+superseded source material. Interactive visual review, rigging, seated poses,
+Blender sources, Unity integration and verification are still outstanding. Do
+not consider the generated reference images proof of model or animation quality.
 
 On 2026-11-01 the user requested a much more frightening ghost appearance.
 The built-in image tool edited each original into `student01-ghost.png` through
