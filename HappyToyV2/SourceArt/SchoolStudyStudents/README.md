@@ -40,3 +40,7 @@ python hunyuan3d-webapp/modeling_cli.py resume 048b8dcc-d20c-4354-8b88-75eaad870
 
 The revised jobs still need visual review, rigging, editable Blender sources,
 Unity integration and verification. Do not assume the output matches the input.
+
+All three revised archives were collected successfully and verified by the CLI
+on 2026-11-02; the archives preserve the generated model and generation record.
+The interactive web review and subsequent finishing are still pending.

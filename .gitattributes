@@ -211,3 +211,8 @@ HappyToyV2/SourceArt/SchoolFlickerCreature/Generated/*.zip filter=lfs diff=lfs m
 HappyToyV2/SourceArt/SchoolFlickerCreature/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/SchoolFlickerCreature/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/Assets/Resources/SchoolFlickerCreature/*.png filter=lfs diff=lfs merge=lfs -text
+
+# Original generated school ghost students and editable finishing sources.
+HappyToyV2/SourceArt/SchoolStudyStudents/generated-ghost/*.zip filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolStudyStudents/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/SchoolStudyStudents/**/*.blend filter=lfs diff=lfs merge=lfs -text
