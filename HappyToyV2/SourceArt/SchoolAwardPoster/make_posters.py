@@ -33,3 +33,4 @@ def make(source, destination):
 if __name__ == "__main__":
     make(HERE / "normal.png", HERE / "poster-normal.png")
     make(HERE / "anomaly.png", HERE / "poster-anomaly.png")
+    make(HERE / "anomaly-ghost.png", HERE / "poster-anomaly-ghost.png")
