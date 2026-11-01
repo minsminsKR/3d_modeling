@@ -2,7 +2,8 @@ using System;
 
 namespace HappyToy.V2
 {
-    public enum SchoolAnomalyKind { Normal, Baby, DancingWalker, Blackout }
+    // Append new values: existing checkpoints serialize the numeric enum.
+    public enum SchoolAnomalyKind { Normal, Baby, DancingWalker, Blackout, StudyStudents, AwardPoster, Cleaning, MovingFurniture }
 
     // Restorable private RNG: looking, saving and loading never reroll a passage.
     public sealed class SchoolAnomalyDeck
@@ -13,12 +14,14 @@ namespace HappyToy.V2
             public uint Random;
             public int Passage,NormalStreak;
             public SchoolAnomalyKind Kind;
+            // Optional in older checkpoints. Review runs start at event one.
+            public bool ReviewSequence;
         }
         State state;
-        public SchoolAnomalyDeck(uint seed)
+        public SchoolAnomalyDeck(uint seed,bool reviewSequence=false)
         {
             if(seed==0)throw new ArgumentOutOfRangeException(nameof(seed));
-            state=new State{Random=seed,Kind=SchoolAnomalyKind.DancingWalker,NormalStreak=0};
+            state=new State{Random=seed,Kind=reviewSequence?SchoolAnomalyKind.StudyStudents:SchoolAnomalyKind.DancingWalker,NormalStreak=0,ReviewSequence=reviewSequence};
         }
         public SchoolAnomalyKind Kind=>state.Kind;
         public State Capture()=>state;
@@ -28,7 +31,8 @@ namespace HappyToy.V2
             if(value.Random==0||value.Passage<0||value.Passage>1000000||!Enum.IsDefined(typeof(SchoolAnomalyKind),value.Kind)||
                 value.NormalStreak<0||value.NormalStreak>MaximumNormalStreak||
                 (value.Kind==SchoolAnomalyKind.Normal)!=(value.NormalStreak>0)||
-                value.Passage==0&&!((value.Kind==SchoolAnomalyKind.Normal&&value.NormalStreak==1)||(value.Kind==SchoolAnomalyKind.DancingWalker&&value.NormalStreak==0)))
+                value.ReviewSequence&&(value.Passage>=4||value.Kind!=(SchoolAnomalyKind)((int)SchoolAnomalyKind.StudyStudents+value.Passage))||
+                value.Passage==0&&!((value.Kind==SchoolAnomalyKind.Normal&&value.NormalStreak==1)||(value.Kind==SchoolAnomalyKind.DancingWalker&&value.NormalStreak==0)||(value.ReviewSequence&&value.Kind==SchoolAnomalyKind.StudyStudents&&value.NormalStreak==0)))
                 throw new ArgumentException("Invalid school anomaly deck");
         }
         public static bool Correct(int direction,SchoolAnomalyKind kind)
@@ -41,6 +45,13 @@ namespace HappyToy.V2
         {
             bool correct=Correct(direction,state.Kind);
             state.Passage=Math.Min(1000000,state.Passage+1);
+            if(state.ReviewSequence&&state.Passage<4)
+            {
+                state.Kind=(SchoolAnomalyKind)((int)SchoolAnomalyKind.StudyStudents+state.Passage);
+                state.NormalStreak=0;
+                return correct;
+            }
+            state.ReviewSequence=false;
             bool anomaly=state.NormalStreak>=MaximumNormalStreak||Next()%100<AnomalyPercent;
             state.Kind=anomaly?(SchoolAnomalyKind)(1+Next()%3):SchoolAnomalyKind.Normal;
             state.NormalStreak=anomaly?0:state.NormalStreak+1;

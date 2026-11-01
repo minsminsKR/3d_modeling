@@ -131,7 +131,7 @@ namespace HappyToy.V2
             for(int i=0;i<count;i++)SchoolRenewalModels.Attach("classroom-window",parent,new Bounds(
                 new Vector3(glass.center.x,glass.center.y,glass.min.z+(i+.5f)*width),new Vector3(width,glass.size.y+.06f,.18f)),270);
         }
-        public void Door(Transform parent,Bounds leaf)
+        public Transform Door(Transform parent,Bounds leaf)
             // The source width includes its handle and hinges. The surrounding
             // structural jambs remain separate from the generated moving leaf.
             =>SchoolRenewalModels.Attach("classroom-door",parent,new Bounds(leaf.center+Vector3.up*.005f,new Vector3(1.054f,2.46f,.22f)),270);

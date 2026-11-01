@@ -16,12 +16,87 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolAwardPosterChangesForAnomalyAndRestoresAfterward()
+        {
+            yield return BeginObservationSchool();
+            var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            var root=Get<Transform>(world,"Root");
+            var posters=root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name=="School award poster").ToArray();
+            Assert.That(posters.Length,Is.EqualTo(3));
+            Assert.That(posters.All(r=>r.sharedMaterial.name=="Normal school award poster"),Is.True);
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"AwardPoster");
+            Assert.That(posters.All(r=>r.sharedMaterial.name=="Haunted school award poster"),Is.True);
+            UseSchoolAnomalyFixture(world,"Normal");
+            Assert.That(posters.All(r=>r.sharedMaterial.name=="Normal school award poster"),Is.True);
+            Call(shell,"Resume");
+        }
+        [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange()
+        {
+            yield return BeginObservationSchool();
+            var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            var director=Get<Component>(world,"Anomalies");
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Cleaning");
+            var cleaning=Get<Component>(director,"Cleaning");
+            Assert.That(cleaning,Is.Not.Null);
+            Call(shell,"Resume");yield return Wait(()=>Get<int>(cleaning,"StepsEmitted")>=2,8,"Wet footsteps did not advance");
+            Call(shell,"Pause");int held=Get<int>(cleaning,"StepsEmitted");yield return Delay(.3f);
+            Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.EqualTo(held));
+            Assert.That(cleaning.GetComponentsInChildren<Transform>().Count(t=>t.name=="Invisible cleaner wet footprint"),Is.EqualTo(held));
+            var saved=Call(director,"Capture");Call(director,"Restore",saved,Get<int>(world,"Traversals"));
+            cleaning=Get<Component>(director,"Cleaning");
+            Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.EqualTo(held),"Loading must reconstruct existing wet marks");
+            UseSchoolAnomalyFixture(world,"Normal");Assert.That(Get<Component>(director,"Cleaning"),Is.Null);
+            Call(shell,"Resume");
+        }
+        [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolMovingDoorsHoldDuringPauseAndRestoreClosed()
+        {
+            yield return BeginObservationSchool();
+            var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            var root=Get<Transform>(world,"Root");
+            var hinges=root.GetComponentsInChildren<Transform>().Where(t=>t.name=="School classroom door hinge").ToArray();
+            var drawers=root.GetComponentsInChildren<Transform>().Where(t=>t.name=="School desk sliding drawer").ToArray();
+            Assert.That(hinges.Length,Is.GreaterThan(0));
+            Assert.That(drawers.Length,Is.GreaterThan(0));
+            Assert.That(hinges.Any(h=>h.GetComponentInChildren<BoxCollider>()),Is.True);
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"MovingFurniture");Call(shell,"Resume");
+            yield return Delay(.5f);
+            Assert.That(hinges.Any(h=>Quaternion.Angle(h.localRotation,Quaternion.identity)>5),Is.True);
+            Assert.That(drawers.Any(d=>d.localPosition.z<-.02f),Is.True);
+            Call(shell,"Pause");var held=hinges.Select(h=>h.localRotation).ToArray();yield return Delay(.2f);
+            CollectionAssert.AreEqual(held,hinges.Select(h=>h.localRotation).ToArray());
+            var heldDrawers=drawers.Select(d=>d.localPosition).ToArray();yield return Delay(.2f);
+            CollectionAssert.AreEqual(heldDrawers,drawers.Select(d=>d.localPosition).ToArray());
+            UseSchoolAnomalyFixture(world,"Normal");
+            Assert.That(hinges.All(h=>Quaternion.Angle(h.localRotation,Quaternion.identity)<.01f),Is.True);
+            Assert.That(drawers.All(d=>d.localPosition==Vector3.zero),Is.True);
+            Call(shell,"Resume");
+        }
+        [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolReviewSequenceFollowsActualBackwardTransfers()
+        {
+            yield return BeginObservationSchool();
+            var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            var director=Get<Component>(world,"Anomalies");Call(shell,"Pause");
+            var data=Call(director,"Capture");var deck=Get<object>(data,"deck");
+            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),"StudyStudents"));
+            Set(deck,"ReviewSequence",true);Set(deck,"NormalStreak",0);Set(data,"deck",deck);
+            Call(director,"Restore",data,0);Call(shell,"Resume");
+            foreach(string expected in new[]{"StudyStudents","AwardPoster","Cleaning","MovingFurniture"})
+            {
+                Assert.That(Get<object>(director,"Kind").ToString(),Is.EqualTo(expected));
+                yield return CrossSchoolJudgmentSeam(world,-1);
+            }
+            Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(4));
+        }
         // Controlled validated checkpoint input, not a production event selector.
         object UseSchoolAnomalyFixture(Component world,string kind)
         {
             int traversal=Math.Max(1,Get<int>(world,"Traversals"));Call(world,"RestoreTraversal",traversal);
             var director=Get<Component>(world,"Anomalies");var data=Call(director,"Capture");var deck=Get<object>(data,"deck");
-            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),kind));Set(deck,"NormalStreak",kind=="Normal"?1:0);Set(data,"deck",deck);
+            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),kind));Set(deck,"NormalStreak",kind=="Normal"?1:0);Set(data,"deck",deck);Set(data,"cleaningElapsed",0f);Set(data,"furnitureElapsed",0f);
             Call(director,"Restore",data,traversal);return data;
         }
         IEnumerator CrossSchoolJudgmentSeam(Component world,int direction)
@@ -371,7 +446,10 @@ namespace HappyToy.V2.CloudTests
             var previous=session;Call(shell,"Restart",false);yield return RecoveryRebind(previous);
             Call(session,"CreateChapterForCheckpoint",copy);Call(session,"ApplyChapterCheckpoint",copy);world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");director=Get<Component>(world,"Anomalies");
             var restored=Call(director,"Capture");Assert.That(Get<object>(restored,"deck"),Is.EqualTo(Get<object>(saved,"deck")));
-            Assert.That(Get<object>(restored,"clock"),Is.EqualTo(Get<object>(saved,"clock")));
+            var restoredClock=Get<object>(restored,"clock");var savedClock=Get<object>(saved,"clock");
+            Assert.That(Get<bool>(restoredClock,"Triggered"),Is.EqualTo(Get<bool>(savedClock,"Triggered")));
+            Assert.That(Get<bool>(restoredClock,"Pursuing"),Is.EqualTo(Get<bool>(savedClock,"Pursuing")));
+            Assert.That(Get<double>(restoredClock,"Elapsed"),Is.EqualTo(Get<double>(savedClock,"Elapsed")).Within(.00001),"JSON must preserve the event timer within ten microseconds");
             Assert.That(Vector3.Distance(Get<Component>(director,"Baby").transform.position,expectedBaby),Is.LessThan(.02f));
             var invalid=Call(copy,"Copy");var bad=Get<object>(Get<object>(invalid,"loop"),"anomalies");var body=Get<object>(bad,"baby");
             Assert.That(Physics.Raycast(LoopOrigin+new Vector3(0,.9f,20),Vector3.right,out var wall,3,1<<8,QueryTriggerInteraction.Ignore),Is.True,

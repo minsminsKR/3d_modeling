@@ -175,7 +175,11 @@ namespace HappyToy.V2
         {
             var leaf=Box("Locked "+room.Id+" "+end+" classroom door",new Vector3(-2.2f,1.22f,z),new Vector3(.10f,2.44f,.95f),paint,true);
             leaf.GetComponent<MeshRenderer>().enabled=false;
-            renewal.Door(root,new Bounds(new Vector3(-2.2f,1.22f,z),new Vector3(.10f,2.44f,.95f)));
+            var visual=renewal.Door(root,new Bounds(new Vector3(-2.2f,1.22f,z),new Vector3(.10f,2.44f,.95f)));
+            var hinge=new GameObject("School classroom door hinge").transform;hinge.SetParent(root,false);
+            hinge.localPosition=new Vector3(-2.2f,0,z-.475f);
+            leaf.transform.SetParent(hinge,true);visual.SetParent(hinge,true);
+            world.MovingDoors.Register(hinge,leaf.GetComponent<Collider>());
             var lintel=new Bounds(new Vector3(-2.2f,2.86f,z),new Vector3(.18f,.78f,1.04f));
             Box("School door upper lintel",lintel.center,lintel.size,plaster,true).GetComponent<MeshRenderer>().enabled=false;
             renewal.Wall(root,lintel,2.47f/3.25f,1);

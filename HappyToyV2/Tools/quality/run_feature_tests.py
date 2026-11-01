@@ -409,6 +409,10 @@ PROFILES["local-shadow-logic"]=("CPU-only corridor shadow selection, atlas limit
 PROFILES["school-anomalies-logic"]=("CPU-only school anomaly rules, physical seams, solid walker and flickering pose, Baby blackout/shop/timeout/contact and save restoration; no GPU appearance or listening certification", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", "HappyToy.V2.CoreTests.SchoolWalkerRouteTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"CheckpointTrapCodecTests", CLOUD+"ChapterCheckpointStoreTests")),
     ("PlayMode", (
+        PLAY+"SchoolAwardPosterChangesForAnomalyAndRestoresAfterward",
+        PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",
+        PLAY+"SchoolMovingDoorsHoldDuringPauseAndRestoreClosed",
+        PLAY+"SchoolReviewSequenceFollowsActualBackwardTransfers",
         PLAY+"SchoolAnomalyFirstPassIsNormalAndActualSeamsJudgeBothDirections",
         PLAY+"SchoolWalkerSolidCapsuleAndFlickerTrembleAdvanceAndPause",
         PLAY+"SchoolBabyBlackoutShopTimeoutContactAndPauseAreHeadlessSafe",
@@ -418,6 +422,14 @@ PROFILES["school-anomalies-logic"]=("CPU-only school anomaly rules, physical sea
         PLAY+"SchoolWalkerStopsOnHisStraightLaneForAPlayerAndWalksAgainWhenTheWayClears",
         PLAY+"SchoolWalkerCheckpointJsonAndCopyRestoreTheExactPausedPassAndAuthoredPose"))])
 
+
+PROFILES["school-new-anomalies-logic"]=("CPU-only review sequence, award poster, cleaning and animated door/drawer rules and integration; no rendered or audio quality certification", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", CLOUD+"SchoolLoopCheckpointTests")),
+    ("PlayMode", (PLAY+"SchoolAwardPosterChangesForAnomalyAndRestoresAfterward",
+                  PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",
+                  PLAY+"SchoolMovingDoorsHoldDuringPauseAndRestoreClosed",
+                  PLAY+"SchoolReviewSequenceFollowsActualBackwardTransfers",
+                  PLAY+"SchoolAnomalyCheckpointKeepsTheDrawTimersBabyPoseAndLegacyNormalMigration"))])
 
 PROFILES["school-anomaly-presentation"]=("All-nine-lamp blackout retains actual torch contribution; retiring Baby carries its rigid seam pose and fades body/cry with paused/talisman-safe cleanup, judgments, active-Baby save/cry/chase and normal camera regressions", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"CheckpointTrapCodecTests")),

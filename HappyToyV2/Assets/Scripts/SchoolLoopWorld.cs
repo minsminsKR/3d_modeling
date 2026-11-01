@@ -17,6 +17,9 @@ namespace HappyToy.V2
         public Transform Centre {get;private set;}
         public SchoolWalkerEncounter Walker {get;private set;}
         public SchoolAnomalyDirector Anomalies {get;private set;}
+        public SchoolAwardPosterPresentation AwardPoster {get;private set;}
+        public SchoolMovingDoors MovingDoors {get;private set;}
+        public SchoolMovingDrawers MovingDrawers {get;private set;}
         public int Traversals {get;private set;}
         readonly SchoolProgressClock progressClock=new SchoolProgressClock();
         readonly List<SchoolProgressClockDisplay> clocks=new List<SchoolProgressClockDisplay>();
@@ -44,6 +47,8 @@ namespace HappyToy.V2
             Root=new GameObject("School — repeating observation corridor v3").transform;
             Root.SetParent(transform,false);Root.position=Origin;
             HorrorSurfaces=new SchoolHorrorSurfaces(Surfaces);
+            MovingDoors=Root.gameObject.AddComponent<SchoolMovingDoors>();MovingDoors.Prepare(owner);
+            MovingDrawers=Root.gameObject.AddComponent<SchoolMovingDrawers>();
             var architecture=new SchoolLoopArchitecture(this);
             for(int index=-1;index<=1;index++)
             {
@@ -62,6 +67,7 @@ namespace HappyToy.V2
                 new SchoolDecayDressing(this,HorrorSurfaces).Build(chunk,index==0);
             }
             Batch();Physics.SyncTransforms();
+            AwardPoster=Root.gameObject.AddComponent<SchoolAwardPosterPresentation>();AwardPoster.Prepare(this);
             navigation=Centre.gameObject.AddComponent<NavMeshSurface>();
             navigation.collectObjects=CollectObjects.Children;navigation.useGeometry=NavMeshCollectGeometry.PhysicsColliders;
             navigation.overrideVoxelSize=true;navigation.voxelSize=.10f;
@@ -139,7 +145,7 @@ namespace HappyToy.V2
         void Batch()
         {
             var renderers=Root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.enabled&&!r.GetComponent<TextMesh>()&&
-                !r.GetComponentInParent<LODGroup>()&&r.sharedMaterials.Length==1&&r.GetComponent<MeshFilter>()&&
+                !r.GetComponentInParent<LODGroup>()&&!r.GetComponentInParent<SchoolDrawerMovingPart>()&&r.sharedMaterials.Length==1&&r.GetComponent<MeshFilter>()&&
                 r.GetComponent<MeshFilter>().sharedMesh&&r.GetComponent<MeshFilter>().sharedMesh.isReadable&&
                 GraphicsSurfaceLibrary.SurfaceKey(r.sharedMaterial).Length>0).ToArray();
             Transform Section(Transform item){while(item.parent!=Root)item=item.parent;return item;}

@@ -12,3 +12,6 @@ they have not yet been imported or verified in Unity.
 
 `anomaly-ghost.png` is a stronger haunted-photograph edit requested on
 2026-11-01; the same script creates `poster-anomaly-ghost.png` from it.
+The source is imported as a texture and `SchoolAwardPosterPresentation` switches
+the three loop-section copies in response to the anomaly director. A visual
+in-game review remains pending.

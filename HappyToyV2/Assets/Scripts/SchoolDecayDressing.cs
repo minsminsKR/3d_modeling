@@ -121,6 +121,7 @@ namespace HappyToy.V2
             var size=GraphicsPropLibrary.LocalBounds(source.transform).size;
             size*=.73f/Mathf.Max(.001f,size.y);
             SchoolRenewalModels.AtFeet("school-desk",holder,Vector3.zero,size);
+            world.MovingDrawers.Add(world,holder,surfaces.Timber);
             ReusedProps++;return holder;
         }
         void Chair(Vector3 at,float yaw)

@@ -5,6 +5,22 @@ namespace HappyToy.V2.CoreTests
 {
     public sealed class SchoolAnomalyRulesTests
     {
+        [Test] public void ReviewSequenceStartsWithStudentsAndSurvivesSaveRestore()
+        {
+            var deck=new SchoolAnomalyDeck(7,true);
+            var kinds=new[]{SchoolAnomalyKind.StudyStudents,SchoolAnomalyKind.AwardPoster,SchoolAnomalyKind.Cleaning,SchoolAnomalyKind.MovingFurniture};
+            foreach(var kind in kinds)
+            {
+                Assert.That(deck.Kind,Is.EqualTo(kind));
+                SchoolAnomalyDeck.Validate(deck.Capture());
+                var restored=new SchoolAnomalyDeck(8);restored.Restore(deck.Capture());
+                Assert.That(restored.Kind,Is.EqualTo(kind));
+                Assert.That(deck.Complete(-1),Is.True);
+                restored.Complete(-1);Assert.That(restored.Capture(),Is.EqualTo(deck.Capture()));
+            }
+            Assert.That(deck.Capture().ReviewSequence,Is.False);
+            SchoolAnomalyDeck.Validate(deck.Capture());
+        }
         [Test] public void FirstPassageIsAlwaysNormalAndNoMoreThanThreeNormalsCanRepeat()
         {
             for(uint seed=1;seed<=1000;seed++)
