@@ -69,8 +69,9 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 
 새 학교 이상현상의 학생과 머리 추적은 `SchoolStudyStudents`, 포스터는
 `SchoolAwardPosterPresentation`, 핏빛 발자국은 `SchoolCleaningAnomaly`, 문·서랍·창문은
-`SchoolMovingDoors`/`SchoolMovingDrawers`/`SchoolMovingWindows`가 소유한다. `Core/SchoolFrenzyMotion`은 복원 가능한 고속 비동기 움직임을 계산하며 창문 유리 충돌은 유지되고 문은 중간 회전을 검사해 플레이어 관통을 방지한다. 일반 진행은 첫 구간 정상,
-이후 기존 세 종류와 새 네 종류를 같은 가중치로 선택한다. `SchoolStudyStudentsImport`는
+`SchoolMovingDoors`/`SchoolMovingDrawers`/`SchoolMovingWindows`가 소유한다. `Core/SchoolFrenzyMotion`은 복원 가능한 고속 비동기 움직임을 계산하며 창문 유리 충돌은 유지되고 문은 중간 회전을 검사해 플레이어 관통을 방지한다.
+문·서랍·창문 이상현상은 정독반 표지판에 도달하기 전에는 정지하고, 도달 후에만 시작한다. 시작 여부와 경과 시간을 v3 선택 필드로 보존하며, 시작 여부 필드가 없는 이전 저장은 경과 시간이 양수일 때 진행 중으로 복원한다.
+일반 진행은 첫 구간 정상, 이후 기존 세 종류와 새 네 종류를 같은 가중치로 선택한다. `SchoolStudyStudentsImport`는
 지정 서비스 원본에서 착석·보정한 세 모델의 50k/12k/10k LOD·PBR을 가져온다.
 관련 CPU 규칙·장면 검사는 `school-new-anomalies-logic`, 기존 사건 회귀는
 `school-anomalies-logic`이다. 두 프로필 모두 렌더·청음 품질 인증이 아니다.

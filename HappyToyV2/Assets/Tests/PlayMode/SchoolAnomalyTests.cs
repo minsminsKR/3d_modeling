@@ -139,7 +139,19 @@ namespace HappyToy.V2.CloudTests
             Assert.That(windows.Length,Is.GreaterThan(1));
             Assert.That(root.GetComponentsInChildren<Collider>().Any(c=>c.name=="Closed classroom window glass"&&c.enabled),Is.True);
             Assert.That(hinges.Any(h=>h.GetComponentInChildren<BoxCollider>()),Is.True);
-            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"MovingFurniture");Call(shell,"Resume");
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"MovingFurniture");
+            var director=Get<Component>(world,"Anomalies");
+            PlacePlayer(LoopOrigin+new Vector3(0,.03f,14.8f));Call(shell,"Resume");
+            yield return Delay(.5f);
+            Assert.That(Get<bool>(director,"FurnitureTriggered"),Is.False,"Furniture must remain still before the study-room sign");
+            Assert.That(hinges.All(h=>Quaternion.Angle(h.localRotation,Quaternion.identity)<.01f),Is.True);
+            Assert.That(drawers.All(d=>d.localPosition==Vector3.zero),Is.True);
+            CollectionAssert.AreEqual(windowRest,windows.Select(w=>w.localPosition).ToArray());
+            Call(shell,"Pause");var waiting=Call(director,"Capture");Call(director,"Restore",waiting,Get<int>(world,"Traversals"));
+            Assert.That(Get<bool>(director,"FurnitureTriggered"),Is.False,"A pre-trigger save must remain dormant");
+            PlacePlayer(LoopOrigin+new Vector3(0,.03f,16.1f));yield return Delay(.2f);
+            Assert.That(Get<bool>(director,"FurnitureTriggered"),Is.False,"A paused player cannot trigger the anomaly");
+            Call(shell,"Resume");yield return Wait(()=>Get<bool>(director,"FurnitureTriggered"),3,"Furniture did not start at the study-room sign");
             yield return Delay(.5f);
             Assert.That(hinges.Any(h=>Quaternion.Angle(h.localRotation,Quaternion.identity)>5),Is.True);
             Assert.That(drawers.Any(d=>d.localPosition.z<-.02f),Is.True);
@@ -152,8 +164,17 @@ namespace HappyToy.V2.CloudTests
             var heldWindows=windows.Select(w=>w.localPosition).ToArray();yield return Delay(.2f);
             CollectionAssert.AreEqual(heldWindows,windows.Select(w=>w.localPosition).ToArray());
             var savedFurniture=Call(Get<Component>(world,"Anomalies"),"Capture");
+            Assert.That(Get<bool>(savedFurniture,"furnitureTriggered"),Is.True);
+            string furnitureJson=JsonUtility.ToJson(savedFurniture);
+            var decodedFurniture=JsonUtility.FromJson(furnitureJson,RequireType("SchoolAnomalyProgress"));
+            Assert.That(Get<bool>(decodedFurniture,"furnitureTriggered"),Is.True,"The triggered state must survive actual JSON serialization");
             Call(Get<Component>(world,"Anomalies"),"Restore",savedFurniture,Get<int>(world,"Traversals"));
             CollectionAssert.AreEqual(heldWindows,windows.Select(w=>w.localPosition).ToArray(),"Window positions must resume from the saved event time");
+            string legacyFurnitureJson=furnitureJson.Replace(",\"furnitureTriggered\":true","");
+            Assert.That(legacyFurnitureJson,Does.Not.Contain("furnitureTriggered"));
+            var legacyFurniture=JsonUtility.FromJson(legacyFurnitureJson,RequireType("SchoolAnomalyProgress"));
+            Call(director,"Restore",legacyFurniture,Get<int>(world,"Traversals"));
+            Assert.That(Get<bool>(director,"FurnitureTriggered"),Is.True,"A legacy save with positive furniture time must remain active");
             UseSchoolAnomalyFixture(world,"Normal");
             Assert.That(hinges.All(h=>Quaternion.Angle(h.localRotation,Quaternion.identity)<.01f),Is.True);
             Assert.That(drawers.All(d=>d.localPosition==Vector3.zero),Is.True);
@@ -182,7 +203,7 @@ namespace HappyToy.V2.CloudTests
         {
             int traversal=Math.Max(1,Get<int>(world,"Traversals"));Call(world,"RestoreTraversal",traversal);
             var director=Get<Component>(world,"Anomalies");var data=Call(director,"Capture");var deck=Get<object>(data,"deck");
-            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),kind));Set(deck,"NormalStreak",kind=="Normal"?1:0);Set(data,"deck",deck);Set(data,"cleaningElapsed",0f);Set(data,"cleaningTriggered",false);Set(data,"furnitureElapsed",0f);
+            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),kind));Set(deck,"NormalStreak",kind=="Normal"?1:0);Set(data,"deck",deck);Set(data,"cleaningElapsed",0f);Set(data,"cleaningTriggered",false);Set(data,"furnitureElapsed",0f);Set(data,"furnitureTriggered",false);
             Call(director,"Restore",data,traversal);return data;
         }
         IEnumerator CrossSchoolJudgmentSeam(Component world,int direction)

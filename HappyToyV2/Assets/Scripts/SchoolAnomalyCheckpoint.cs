@@ -26,6 +26,8 @@ namespace HappyToy.V2
         public float cleaningElapsed;
         public bool cleaningTriggered;
         public float furnitureElapsed;
+        // Missing in older saves; positive elapsed time implies it had started.
+        public bool furnitureTriggered;
         public void Validate(int traversal)
         {
             if(version!=1||deck.Passage!=traversal)throw new ArgumentException("School anomaly and loop traversal disagree");
@@ -33,7 +35,7 @@ namespace HappyToy.V2
             if(!StealthRules.Finite(cleaningElapsed)||cleaningElapsed<0||cleaningElapsed>1000000||
                 deck.Kind!=SchoolAnomalyKind.Cleaning&&(cleaningElapsed!=0||cleaningTriggered))throw new ArgumentException("Invalid cleaning anomaly time");
             if(!StealthRules.Finite(furnitureElapsed)||furnitureElapsed<0||furnitureElapsed>1000000||
-                deck.Kind!=SchoolAnomalyKind.MovingFurniture&&furnitureElapsed!=0)throw new ArgumentException("Invalid furniture anomaly time");
+                deck.Kind!=SchoolAnomalyKind.MovingFurniture&&(furnitureElapsed!=0||furnitureTriggered))throw new ArgumentException("Invalid furniture anomaly time");
             if(baby.present!=(deck.Kind==SchoolAnomalyKind.Baby&&clock.Triggered))throw new ArgumentException("School Baby state is missing or unexpected");
             if(baby.present)baby.Validate();
         }
