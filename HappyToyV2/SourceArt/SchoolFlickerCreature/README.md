@@ -293,6 +293,28 @@ additional skinned pass requires separate GPU performance measurement.
 
 Grounding revision: after pose and tremor, sampled Unity skinned foot/head
 vertices are aligned to the school floor; results are cached per tremor step.
+
+## Larger confined creature and stronger tremor — 2026-11-02
+
+The existing rig now enlarges its chest/head chain by 1.55 and folds the arm
+chains to 0.70 before fitting the actual skinned silhouette to approximately
+4.05 m wide and 3.08 m high. During red-lit holds, three deterministic tremor
+steps change the torso, head and shoulders at 24 Hz; dark intervals retain the
+snapped pose. Inverted shaking uses floor-safe silhouettes and a restrained neck
+motion. Elapsed passage time reconstructs every step on restore, and pause and
+talisman hold the event clock. The existing collision capsule is unchanged.
+
+`FlickerCreatureDiagnostics.Inspect` bakes all 128 combinations (16 poses,
+two orientations and four hold/tremor states), verifies skin and floor/ceiling
+contact, and checks the actual vertices at six hall/elbow positions. Its v3
+`pose-calibration.json` stores bounds as well as width, height and ground offsets.
+`SchoolFlickerCreatureFit` uses those bounds to compress the visual along the
+school axes at the turn without scaling the collider. Ground contact corrections
+are cached per state. Calibration validates the script/prefab hashes at build.
+`FlickerCreaturePoseReview.Export` provides an opt-in CPU mesh review under
+`Builds/FlickerLargeCpuReview`; it does not exercise the real game camera or GPU.
+The user was running another local GPU workload during this change, so rendered
+game-camera and native-player appearance/performance checks remain outstanding.
 The calibrated 3.9m width is retained in the 4.4m hallway. This CPU skinning
 work requires separate performance and player-view review.
 

@@ -86,7 +86,7 @@ namespace HappyToy.V2.Editor
             if(!data)throw new InvalidOperationException("Run FlickerCreatureDiagnostics.Inspect to create pose calibration");
             var c=JsonUtility.FromJson<SchoolFlickerCreatureMotion.Calibration>(data.text);
             string Hash(string path){using(var h=System.Security.Cryptography.SHA256.Create()){var text=System.IO.File.ReadAllText(path).Replace("\r\n","\n");return BitConverter.ToString(h.ComputeHash(System.Text.Encoding.UTF8.GetBytes(text))).Replace("-","").ToLowerInvariant();}}
-            if(c==null||c.version!=1||c.prefabSha256!=Hash(Folder+"/creature-visual.prefab")||c.motionSha256!=Hash("Assets/Scripts/SchoolFlickerCreatureMotion.cs"))
+            if(c==null||c.version!=3||c.prefabSha256!=Hash(Folder+"/creature-visual.prefab")||c.motionSha256!=Hash("Assets/Scripts/SchoolFlickerCreatureMotion.cs"))
                 throw new InvalidOperationException("Creature pose calibration is stale; run FlickerCreatureDiagnostics.Inspect");
         }
     }

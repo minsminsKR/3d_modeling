@@ -10,23 +10,28 @@ namespace HappyToy.V2
         readonly Transform visual,owner;
         readonly Transform[] joints;
         readonly Quaternion[] rest;
+        readonly Vector3[] restScale;
         readonly SkinnedMeshRenderer skin;
         readonly BoneWeight[] weights;
         readonly bool[] feet,head,leftFoot,rightFoot;
         readonly Transform leftJoint,rightJoint;
         readonly Vector3 leftRest,rightRest;
-        readonly Vector3?[] leftPositions=new Vector3?[32],rightPositions=new Vector3?[32];
-        readonly Vector3?[] adjustments=new Vector3?[32];
-        readonly float?[] widthScales=new float?[32];
+        const int TremorVariants=4,CalibrationCount=32*TremorVariants;
+        readonly Vector3?[] leftPositions=new Vector3?[CalibrationCount],rightPositions=new Vector3?[CalibrationCount];
+        readonly Vector3?[] adjustments=new Vector3?[CalibrationCount];
+        readonly Bounds?[] poseBounds=new Bounds?[CalibrationCount];
+        readonly float?[] widthScales=new float?[CalibrationCount],heightScales=new float?[CalibrationCount];
         readonly Mesh baked=new Mesh();
         static readonly float[] ranges={0,14,18,48,65,24,34,85,110,24,34,85,110,0,0,0,0};
         static readonly int[] fittedSeeds={3,16,36,47,55,59,66,70,72,74,75,83,86,102,105,106};
         uint seed;
         [Serializable] public sealed class Calibration
         {
-            public int version=1;public string prefabSha256,motionSha256;public float[] scales;public Vector3[] offsets,leftFeet,rightFeet;
+            public int version=3;public string prefabSha256,motionSha256;public float[] scales,heights;public Vector3[] offsets,leftFeet,rightFeet,boundsMin,boundsMax;
         }
         public bool Inverted {get;private set;}
+        public int TremorStep {get;private set;}
+        public Bounds CurrentBounds {get;private set;}
         public void SetSeed(uint value){seed=value;}
         public SchoolFlickerCreatureMotion(Transform model,bool useStoredCalibration=true)
         {
@@ -35,6 +40,7 @@ namespace HappyToy.V2
             string[] names={"bone_0","bone_1","bone_3","bone_4","bone_5","bone_6","bone_7","bone_8","bone_9","bone_25","bone_26","bone_27","bone_28","bone_44","bone_45","bone_48","bone_49"};
             joints=names.Select(name=>all.SingleOrDefault(t=>t.name==name)??throw new InvalidOperationException("Creature joint missing: "+name)).ToArray();
             rest=joints.Select(t=>t.localRotation).ToArray();
+            restScale=joints.Select(t=>t.localScale).ToArray();
             skin=visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(s=>s.sharedMesh?s.sharedMesh.triangles.Length:0).First();
             weights=skin.sharedMesh.boneWeights;
             feet=skin.bones.Select(b=>b&&(b.name=="bone_46"||b.name=="bone_47"||b.name=="bone_50"||b.name=="bone_51")).ToArray();
@@ -47,8 +53,8 @@ namespace HappyToy.V2
                 var data=Resources.Load<TextAsset>("SchoolFlickerCreature/pose-calibration");
                 if(!data)throw new InvalidOperationException("Creature pose calibration is missing");
                 var c=JsonUtility.FromJson<Calibration>(data.text);
-                if(c==null||c.version!=1||c.scales==null||c.scales.Length!=32||c.offsets==null||c.offsets.Length!=32||c.leftFeet==null||c.leftFeet.Length!=32||c.rightFeet==null||c.rightFeet.Length!=32)throw new InvalidOperationException("Creature pose calibration is invalid");
-                for(int i=0;i<32;i++){if(!(c.scales[i]>.1f&&c.scales[i]<10f))throw new InvalidOperationException("Creature pose scale is invalid");widthScales[i]=c.scales[i];adjustments[i]=c.offsets[i];leftPositions[i]=c.leftFeet[i];rightPositions[i]=c.rightFeet[i];}
+                if(c==null||c.version!=3||c.scales==null||c.scales.Length!=CalibrationCount||c.heights==null||c.heights.Length!=CalibrationCount||c.offsets==null||c.offsets.Length!=CalibrationCount||c.leftFeet==null||c.leftFeet.Length!=CalibrationCount||c.rightFeet==null||c.rightFeet.Length!=CalibrationCount||c.boundsMin==null||c.boundsMin.Length!=CalibrationCount||c.boundsMax==null||c.boundsMax.Length!=CalibrationCount)throw new InvalidOperationException("Creature pose calibration is invalid");
+                for(int i=0;i<CalibrationCount;i++){if(!(c.scales[i]>.1f&&c.scales[i]<10f&&c.heights[i]>.1f&&c.heights[i]<10f))throw new InvalidOperationException("Creature pose scale is invalid");widthScales[i]=c.scales[i];heightScales[i]=c.heights[i];adjustments[i]=c.offsets[i];leftPositions[i]=c.leftFeet[i];rightPositions[i]=c.rightFeet[i];var box=new Bounds();box.SetMinMax(c.boundsMin[i],c.boundsMax[i]);poseBounds[i]=box;}
             }
         }
         static float Signed(long pose,int joint,int axis)
@@ -64,20 +70,37 @@ namespace HappyToy.V2
         public void Apply(double seconds)
         {
             long flash=SchoolWalkerFlicker.FlashIndex(seconds);
-            unchecked{uint x=seed^(uint)flash*0x9e3779b9u;x^=x>>16;x*=0x7feb352du;x^=x>>15;x*=0x846ca68bu;x^=x>>16;ApplyState(flash,flash>0&&(x&1)!=0);}
+            int tremor=SchoolWalkerFlicker.Dark(seconds)?0:1+(int)(Math.Floor(seconds*24)%3);
+            unchecked{uint x=seed^(uint)flash*0x9e3779b9u;x^=x>>16;x*=0x7feb352du;x^=x>>15;x*=0x846ca68bu;x^=x>>16;ApplyState(flash,flash>0&&(x&1)!=0,tremor);}
         }
-        public void ApplyState(long flash,bool inverted)
+        public void ApplyState(long flash,bool inverted,int tremor=0)
         {
-            int slot=(int)(flash%fittedSeeds.Length);Inverted=inverted;
+            if(tremor<0||tremor>=TremorVariants)throw new ArgumentOutOfRangeException(nameof(tremor));
+            int slot=(int)(flash%fittedSeeds.Length);Inverted=inverted;TremorStep=tremor;
             visual.localPosition=Vector3.zero;visual.localRotation=Inverted?Quaternion.Euler(0,0,180):Quaternion.identity;
             // Three upright-safe silhouettes have tendrils above the head and
             // would pierce the floor upside down. Use different fitted poses.
             int fittedSlot=Inverted?(slot==7?0:slot==9?3:slot==12?5:slot):slot;
-            ApplyPoseIndex(fittedSeeds[fittedSlot]);leftJoint.localPosition=leftRest;rightJoint.localPosition=rightRest;
-            int key=slot*2+(Inverted?1:0);
+            // The head is the floor contact when inverted. Keep the stronger
+            // shaking to two independently checked inverted silhouettes so
+            // nearby tendrils do not swing through the floor.
+            if(Inverted&&tremor!=0)fittedSlot=slot%2;
+            ApplyPoseIndex(fittedSeeds[fittedSlot]);
+            if(tremor!=0)
+            {
+                float side=tremor==2?-1:1,twist=tremor==3?-1:1;
+                float neck=Inverted?.20f:1f;
+                joints[2].localRotation*=Quaternion.Euler(7*twist*neck,10*side*neck,13*side*neck);
+                joints[3].localRotation*=Quaternion.Euler(-10*twist*neck,8*side*neck,-11*side*neck);
+                joints[4].localRotation*=Quaternion.Euler(12*twist*neck,-14*side*neck,16*side*neck);
+                joints[5].localRotation*=Quaternion.Euler(12*side,0,10*twist);
+                joints[9].localRotation*=Quaternion.Euler(-12*side,0,-10*twist);
+            }
+            leftJoint.localPosition=leftRest;rightJoint.localPosition=rightRest;
+            int key=(slot*2+(Inverted?1:0))*TremorVariants+tremor;
             if(!widthScales[key].HasValue)
             {
-                float widthScale=1;
+                float widthScale=1,heightScale=1;
                 // Fit the actual posed silhouette, instead of the neutral
                 // bounding box, so each visible pose fills the corridor.
                 for(int iteration=0;iteration<9;iteration++)
@@ -86,9 +109,19 @@ namespace HappyToy.V2
                     float minX=float.PositiveInfinity,maxX=float.NegativeInfinity;
                     foreach(var vertex in sample){float x=owner.InverseTransformPoint(skin.transform.TransformPoint(vertex)).x;minX=Mathf.Min(minX,x);maxX=Mathf.Max(maxX,x);}
                     float width=maxX-minX;if(width<.1f)throw new InvalidOperationException("Creature silhouette is invalid");
-                    widthScale*=Mathf.Sqrt(3.9f/width);
+                    widthScale*=Mathf.Sqrt(4.05f/width);
                 }
-                visual.localScale=new Vector3(widthScale,1,1);
+                // Preserve the enlarged body while fitting its posed skin below
+                // the ceiling; each discrete pose gets its own vertical fit.
+                for(int iteration=0;iteration<9;iteration++)
+                {
+                    visual.localScale=new Vector3(widthScale,heightScale,1);skin.BakeMesh(baked);var sample=baked.vertices;
+                    float minY=float.PositiveInfinity,maxY=float.NegativeInfinity;
+                    foreach(var vertex in sample){float y=owner.InverseTransformPoint(skin.transform.TransformPoint(vertex)).y;minY=Mathf.Min(minY,y);maxY=Mathf.Max(maxY,y);}
+                    float height=maxY-minY;if(height<.1f)throw new InvalidOperationException("Creature height is invalid");
+                    heightScale*=Mathf.Sqrt(3.08f/height);
+                }
+                visual.localScale=new Vector3(widthScale,heightScale,1);
                 if(!Inverted)
                 {
                     // The imported soles differ by roughly 2 cm. Adjust only
@@ -112,27 +145,34 @@ namespace HappyToy.V2
                 skin.BakeMesh(baked);var vertices=baked.vertices;
                 if(vertices.Length!=weights.Length)throw new InvalidOperationException("Creature skin/weight geometry mismatch");
                 var target=Inverted?head:feet;float min=float.PositiveInfinity,minX2=float.PositiveInfinity,maxX2=float.NegativeInfinity;
+                var bounds=new Bounds(owner.InverseTransformPoint(skin.transform.TransformPoint(vertices[0])),Vector3.zero);
                 for(int i=0;i<vertices.Length;i++)
                 {
                     var point=owner.InverseTransformPoint(skin.transform.TransformPoint(vertices[i]));
+                    bounds.Encapsulate(point);
                     minX2=Mathf.Min(minX2,point.x);maxX2=Mathf.Max(maxX2,point.x);
                     if(Influenced(weights[i],target))min=Mathf.Min(min,point.y);
                 }
                 if(float.IsInfinity(min))throw new InvalidOperationException("Creature ground anchor has no strongly weighted vertices");
-                widthScales[key]=widthScale;adjustments[key]=new Vector3(-(minX2+maxX2)*.5f,-min,0);
+                widthScales[key]=widthScale;heightScales[key]=heightScale;adjustments[key]=new Vector3(-(minX2+maxX2)*.5f,-min,0);
+                bounds.center+=adjustments[key].Value;poseBounds[key]=bounds;
             }
             leftJoint.localPosition=leftPositions[key].Value;rightJoint.localPosition=rightPositions[key].Value;
-            visual.localScale=new Vector3(widthScales[key].Value,1,1);visual.localPosition=adjustments[key].Value;
+            visual.localScale=new Vector3(widthScales[key].Value,heightScales[key].Value,1);visual.localPosition=adjustments[key].Value;
+            CurrentBounds=poseBounds[key].Value;
         }
         public void ApplyPoseIndex(long pose)
         {
             for(int i=0;i<joints.Length;i++)
+            {
+                joints[i].localScale=restScale[i]*(i==2?1.55f:(i==5||i==9)?.70f:1f);
                 joints[i].localRotation=rest[i]*Quaternion.Euler(Signed(pose,i,0)*ranges[i],Signed(pose,i,1)*ranges[i],Signed(pose,i,2)*ranges[i]);
+            }
         }
         public Calibration CaptureCalibration()
         {
-            if(widthScales.Any(x=>!x.HasValue)||adjustments.Any(x=>!x.HasValue)||leftPositions.Any(x=>!x.HasValue)||rightPositions.Any(x=>!x.HasValue))throw new InvalidOperationException("Calibrate every pose and orientation first");
-            return new Calibration{scales=widthScales.Select(x=>x.Value).ToArray(),offsets=adjustments.Select(x=>x.Value).ToArray(),leftFeet=leftPositions.Select(x=>x.Value).ToArray(),rightFeet=rightPositions.Select(x=>x.Value).ToArray()};
+            if(widthScales.Any(x=>!x.HasValue)||heightScales.Any(x=>!x.HasValue)||adjustments.Any(x=>!x.HasValue)||leftPositions.Any(x=>!x.HasValue)||rightPositions.Any(x=>!x.HasValue))throw new InvalidOperationException("Calibrate every pose and orientation first");
+            return new Calibration{scales=widthScales.Select(x=>x.Value).ToArray(),heights=heightScales.Select(x=>x.Value).ToArray(),offsets=adjustments.Select(x=>x.Value).ToArray(),leftFeet=leftPositions.Select(x=>x.Value).ToArray(),rightFeet=rightPositions.Select(x=>x.Value).ToArray(),boundsMin=poseBounds.Select(x=>x.Value.min).ToArray(),boundsMax=poseBounds.Select(x=>x.Value.max).ToArray()};
         }
         public void Dispose(){if(baked){if(Application.isPlaying)UnityEngine.Object.Destroy(baked);else UnityEngine.Object.DestroyImmediate(baked);}}
     }

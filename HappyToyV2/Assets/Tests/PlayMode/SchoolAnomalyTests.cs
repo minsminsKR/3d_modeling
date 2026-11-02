@@ -334,6 +334,11 @@ namespace HappyToy.V2.CloudTests
             CollectionAssert.AreEqual(originalWindows,windows.Select(l=>(l.enabled,l.intensity)).ToArray());
             CollectionAssert.AreEqual(originalLabels,labels.Select(r=>r.enabled).ToArray());
             Assert.That(torch.enabled,Is.False,"A reveal must not force the flashlight on");
+            var visibleTremor=bones.Select(b=>b.localRotation).ToArray();
+            Set(snapState,"Elapsed",.55d);Call(walker,"RestoreState",snapState);
+            Assert.That(Get<bool>(walker,"FlickerDark"),Is.False);
+            Assert.That(bones.Select((b,i)=>Quaternion.Angle(visibleTremor[i],b.localRotation)).Sum(),Is.GreaterThan(40),
+                "The lit creature must shake visibly even within a single flash");
             Set(snapState,"Elapsed",.87d);Call(walker,"RestoreState",snapState);
             Assert.That(Get<bool>(walker,"FlickerDark"),Is.True);
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(flashPose[i],b.localRotation)).Sum(),Is.GreaterThan(100),"The next dark intervals snap to different contortions");
@@ -384,6 +389,30 @@ namespace HappyToy.V2.CloudTests
                 }
             }
             finally{Object.Destroy(bakedGround);}
+            // Validate the live hierarchy as it rotates and compresses at the
+            // elbow, not only the standalone fitting calculation.
+            var section=walker.transform.parent;var fitted=new Mesh();
+            try
+            {
+                foreach(var point in new[]{new Vector3(0,0,12),new Vector3(0,0,2.2f),new Vector3(-1,0,1.8f),new Vector3(-2,0,1.4f),new Vector3(-3,0,1)})
+                foreach(double t in new[]{.04,.08})
+                {
+                    Set(snapState,"Leg",point.x<0?1:0);Set(snapState,"PassSide",0);
+                    Set(snapState,"X",point.x);Set(snapState,"Z",point.z);Set(snapState,"Yaw",point.x<0?248.2f:180f);
+                    Set(snapState,"Elapsed",t);Call(walker,"RestoreState",snapState);
+                    actualSkin.BakeMesh(fitted);bool elbow=point.z<=2.201f;
+                    float left=elbow?-8.68f:-2.08f,right=2.08f,near=.12f,far=elbow?4.28f:38.28f;
+                    var vertices=fitted.vertices;var bounds=new Bounds(section.InverseTransformPoint(actualSkin.transform.TransformPoint(vertices[0])),Vector3.zero);
+                    foreach(var vertex in vertices)bounds.Encapsulate(section.InverseTransformPoint(actualSkin.transform.TransformPoint(vertex)));
+                    Assert.That(bounds.min.x,Is.GreaterThanOrEqualTo(left-.01f),"Creature crossed a wall at "+point);
+                    Assert.That(bounds.max.x,Is.LessThanOrEqualTo(right+.01f),"Creature crossed a wall at "+point);
+                    Assert.That(bounds.min.z,Is.GreaterThanOrEqualTo(near-.01f),"Creature crossed a bend wall at "+point);
+                    Assert.That(bounds.max.z,Is.LessThanOrEqualTo(far+.01f),"Creature crossed a bend wall at "+point);
+                    Assert.That(bounds.min.y,Is.GreaterThanOrEqualTo(-.04f),"Creature crossed the floor at "+point);
+                    Assert.That(bounds.max.y,Is.LessThanOrEqualTo(3.25f),"Creature crossed the ceiling at "+point);
+                }
+            }
+            finally{Object.Destroy(fitted);}
             Call(walker,"SetDancing",false);
             Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);
             Assert.That(Get<bool>(lighting,"FlickerDark"),Is.False,"Leaving the event must restore its environment");

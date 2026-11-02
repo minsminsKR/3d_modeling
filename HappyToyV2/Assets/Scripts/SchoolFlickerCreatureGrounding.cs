@@ -16,10 +16,8 @@ namespace HappyToy.V2
         readonly BoneWeight[] weights;
         readonly Transform[] bones;
         readonly int[] left,right,head;
-        long cachedFlash=long.MinValue;
-        bool cachedInverted;
-        Vector3 leftDelta,rightDelta;
-        float visualDelta;
+        struct Correction { public bool ready;public Vector3 left,right;public float visual; }
+        readonly Correction[] corrections=new Correction[128];
         const float SurfaceHeight=.002f;
         public SchoolFlickerCreatureGrounding(Transform visual,Transform section)
         {
@@ -62,12 +60,13 @@ namespace HappyToy.V2
             if(Application.isPlaying)UnityEngine.Object.Destroy(baked);
             else UnityEngine.Object.DestroyImmediate(baked);
         }
-        public void Apply(double seconds,bool inverted)
+        public void Apply(double seconds,bool inverted,int tremor)
         {
             long flash=SchoolWalkerFlicker.FlashIndex(seconds);
-            if(flash!=cachedFlash||inverted!=cachedInverted)
+            int key=((int)(flash%16)*2+(inverted?1:0))*4+tremor;
+            var correction=corrections[key];
+            if(!correction.ready)
             {
-                cachedFlash=flash;cachedInverted=inverted;
                 var l0=leftJoint.localPosition;var r0=rightJoint.localPosition;
                 if(!inverted)
                 {
@@ -81,16 +80,16 @@ namespace HappyToy.V2
                         joint.position+=Vector3.down*Mathf.Abs(difference);
                     }
                 }
-                leftDelta=leftJoint.localPosition-l0;rightDelta=rightJoint.localPosition-r0;
+                correction.left=leftJoint.localPosition-l0;correction.right=rightJoint.localPosition-r0;
                 RefreshMatrices();float contact=inverted?Minimum(head):Mathf.Min(Minimum(left),Minimum(right));
                 float floorY=section.TransformPoint(new Vector3(0,SurfaceHeight,0)).y;
-                visualDelta=floorY-contact;
-                visual.position+=Vector3.up*visualDelta;
+                correction.visual=floorY-contact;correction.ready=true;corrections[key]=correction;
+                visual.position+=Vector3.up*correction.visual;
             }
             else
             {
-                leftJoint.localPosition+=leftDelta;rightJoint.localPosition+=rightDelta;
-                visual.position+=Vector3.up*visualDelta;
+                leftJoint.localPosition+=correction.left;rightJoint.localPosition+=correction.right;
+                visual.position+=Vector3.up*correction.visual;
             }
         }
     }

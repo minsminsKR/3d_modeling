@@ -15,6 +15,7 @@ namespace HappyToy.V2
         Transform section;
         Renderer[] body;
         Transform creature;
+        Transform creatureFit,creatureFacing;
         SchoolFlickerCreatureMotion creatureMotion;
         SchoolWalkerFlickerLighting flicker;
         SchoolFlickerCreatureVisibility creatureVisibility;
@@ -77,7 +78,11 @@ namespace HappyToy.V2
                 actor.Motion.Prepare(actor.Visual.gameObject,walk,idle,metresPerCycle);
                 var creaturePrefab=Resources.Load<GameObject>("SchoolFlickerCreature/creature-visual");
                 if(!creaturePrefab)throw new InvalidOperationException("Flicker creature prefab is missing");
-                actor.creature=Instantiate(creaturePrefab,actor.transform,false).transform;
+                actor.creatureFit=new GameObject("Creature corridor compression").transform;actor.creatureFit.SetParent(actor.transform,false);
+                actor.creatureFacing=new GameObject("Creature route facing").transform;actor.creatureFacing.SetParent(actor.creatureFit,false);
+                actor.creature=Instantiate(creaturePrefab,actor.creatureFacing,false).transform;
+                foreach(var skin in actor.creature.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                {var envelope=skin.localBounds;envelope.Expand(envelope.size);skin.localBounds=envelope;}
                 actor.creatureMotion=new SchoolFlickerCreatureMotion(actor.creature);
                 actor.creatureVisibility=new SchoolFlickerCreatureVisibility(actor.creature);
                 actor.creatureGrounding=new SchoolFlickerCreatureGrounding(actor.creature,centre);
@@ -179,7 +184,14 @@ namespace HappyToy.V2
             var state=route.CaptureState();
             transform.localPosition=new Vector3(state.X,FeetHeight,state.Z);
             transform.localRotation=Quaternion.Euler(0,state.Yaw,0);if(!Dancing)Motion.Apply(state);
-            if(Dancing&&creatureMotion!=null){creatureMotion.Apply(state.Elapsed);if(creatureGrounding!=null)creatureGrounding.Apply(state.Elapsed,creatureMotion.Inverted);}
+            if(Dancing&&creatureMotion!=null)
+            {
+                creatureFit.localRotation=Quaternion.Inverse(transform.localRotation);creatureFit.localScale=Vector3.one;
+                creatureFacing.localRotation=transform.localRotation;
+                creatureMotion.Apply(state.Elapsed);
+                if(creatureGrounding!=null)creatureGrounding.Apply(state.Elapsed,creatureMotion.Inverted,creatureMotion.TremorStep);
+                creatureFit.localScale=SchoolFlickerCreatureFit.Scale(creatureMotion.CurrentBounds,transform.localPosition,transform.localRotation);
+            }
             if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
             if(creatureVisibility!=null)creatureVisibility.Set(Dancing,FlickerDark);
         }
