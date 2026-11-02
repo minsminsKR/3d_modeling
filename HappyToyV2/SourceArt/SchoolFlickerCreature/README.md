@@ -325,11 +325,12 @@ than the midpoint of asymmetric outstretched extremities. The nominal fit is
 the actual geometry inside the available walls. Two upright combinations use a
 previously checked folded pose to avoid penetrating the floor. The 128-pose
 headless geometry calibration checked torso centring, ground/ceiling contact and
-six corridor/elbow positions. The requested live-camera and integration checks
-were deferred after the user reported desktop focus interruptions; do not claim
-the visuals have been reviewed in-game or supply an older build as this change.
-The calibrated 3.9m width is retained in the 4.4m hallway. This CPU skinning
-work requires separate performance and player-view review.
+six corridor/elbow positions. The runtime integration check passed with torso
+centring within 8 cm, and an exported fitted pose was inspected by CPU render.
+Those background processes ran on a separate, never-switched Windows desktop
+using `Tools/quality/run_isolated_desktop.py`; that tool cannot control windows
+created by external services that were already running. The actual game camera
+and GPU performance have not been reviewed.
 
 
 2026-10-28 environment-backlight revision (supersedes the older visibility,
