@@ -14,6 +14,7 @@ namespace HappyToy.V2
         }
         readonly List<Student> students=new List<Student>();
         readonly List<GameObject> roomLights=new List<GameObject>();
+        readonly List<Material> studentMaterials=new List<Material>();
         public int Count=>students.Count;
         public void Prepare(SchoolLoopWorld world)
         {
@@ -24,6 +25,9 @@ namespace HappyToy.V2
             {
                 sources[i]=Resources.Load<GameObject>($"SchoolStudyStudents/student0{i+1}/student-visual");
                 if(!sources[i])throw new InvalidOperationException("Reviewed seated student prefab is missing: "+(i+1));
+                var sourceMaterial=sources[i].GetComponentInChildren<SkinnedMeshRenderer>(true).sharedMaterial;
+                var readable=new Material(sourceMaterial);readable.SetTexture("_EmissionMap",sourceMaterial.GetTexture("_BaseMap"));
+                readable.SetColor("_EmissionColor",new Color(.8f,.85f,.9f));readable.EnableKeyword("_EMISSION");studentMaterials.Add(readable);
             }
             foreach(Transform section in world.Root)
             {
@@ -39,6 +43,7 @@ namespace HappyToy.V2
                     if(col==2&&row==1)x+=.13f;
                     var instance=Instantiate(sources[(row*3+col)%sources.Length],section,false);
                     instance.name="Study room ghost student "+row+"-"+col;
+                    foreach(var skin in instance.GetComponentsInChildren<SkinnedMeshRenderer>(true))skin.sharedMaterial=studentMaterials[(row*3+col)%sources.Length];
                     instance.transform.localPosition=new Vector3(x,0,z);
                     instance.transform.localRotation=Quaternion.Euler(0,yaw,0);
                     Transform head=null;
@@ -67,6 +72,7 @@ namespace HappyToy.V2
         {
             foreach(var student in students)if(student.root)Destroy(student.root.gameObject);
             foreach(var light in roomLights)if(light)Destroy(light);
+            foreach(var material in studentMaterials)if(material)Destroy(material);
         }
     }
 }

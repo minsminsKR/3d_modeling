@@ -69,6 +69,14 @@ tests do not certify animation quality or native-player FPS.
 
 ## Follow-up deferred until GPU work is available
 
+2026-11-02 local GPU follow-up: the normal Unity camera confirmed the students
+were difficult to distinguish from the corridor. A low, albedo-textured
+emissive contribution on anomaly-only material copies improves their visibility
+without adding room lights; the corresponding runtime shader variant is retained
+for builds. The corridor and close views passed the focused presentation profile.
+This does not repair the existing skirt, knee, hand or clothing geometry; those
+items and the remaining native/audio checks below still require work.
+
 The user requested CPU-only completion on 2026-11-02 and reserved the modeling
 service GPU for other work. Do not submit another GPU generation or rigging job
 as part of this handoff. The current assets and test build are usable for review,

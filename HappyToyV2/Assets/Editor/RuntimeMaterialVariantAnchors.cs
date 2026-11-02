@@ -107,6 +107,14 @@ namespace HappyToy.V2.Editor
                         Add(eyeGlow,key+" / original eye surface emission / "+prior.name);
                     }
                 }
+                for(int i=1;i<=3;i++)
+                {
+                    var source=AssetDatabase.LoadAssetAtPath<Material>($"Assets/Resources/SchoolStudyStudents/student0{i}/student.mat");
+                    if(!source)throw new InvalidOperationException("Missing study student material: "+i);
+                    var readable=new Material(source);readable.SetTexture("_EmissionMap",source.GetTexture("_BaseMap"));
+                    readable.SetColor("_EmissionColor",new Color(.8f,.85f,.9f));readable.EnableKeyword("_EMISSION");
+                    Add(readable,"SchoolStudyStudents textured ghost visibility / student "+i);
+                }
                 // Static faces keep their own original surface properties too;
                 // these exact inherited keyword combinations need emission.
                 var staticFaces=scene.GetRootGameObjects().SelectMany(root=>root.GetComponentsInChildren<Renderer>(true))
