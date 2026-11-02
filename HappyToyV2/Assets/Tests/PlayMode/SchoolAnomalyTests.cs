@@ -420,7 +420,18 @@ namespace HappyToy.V2.CloudTests
                     actualSkin.BakeMesh(fitted);bool elbow=point.z<=2.201f;
                     float left=elbow?-8.68f:-2.08f,right=2.08f,near=.12f,far=elbow?4.28f:38.28f;
                     var vertices=fitted.vertices;var bounds=new Bounds(section.InverseTransformPoint(actualSkin.transform.TransformPoint(vertices[0])),Vector3.zero);
-                    foreach(var vertex in vertices)bounds.Encapsulate(section.InverseTransformPoint(actualSkin.transform.TransformPoint(vertex)));
+                    double bodyX=0;int bodyCount=0;
+                    for(int i=0;i<vertices.Length;i++)
+                    {
+                        var p=section.InverseTransformPoint(actualSkin.transform.TransformPoint(vertices[i]));bounds.Encapsulate(p);
+                        var weight=weights[i];var bone=skinBones[weight.boneIndex0];
+                        if(weight.weight0>=.5f&&bone&&(bone.name=="bone_1"||bone.name=="bone_2"||bone.name=="bone_3")){bodyX+=p.x;bodyCount++;}
+                    }
+                    if(point.x==0)
+                    {
+                        Assert.That(bodyCount,Is.GreaterThan(0),"The actual torso skin must be present");
+                        Assert.That(bodyX/bodyCount,Is.EqualTo(0).Within(.04),"The visible torso must approach along the corridor centre");
+                    }
                     Assert.That(bounds.min.x,Is.GreaterThanOrEqualTo(left-.01f),"Creature crossed a wall at "+point);
                     Assert.That(bounds.max.x,Is.LessThanOrEqualTo(right+.01f),"Creature crossed a wall at "+point);
                     Assert.That(bounds.min.z,Is.GreaterThanOrEqualTo(near-.01f),"Creature crossed a bend wall at "+point);

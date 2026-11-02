@@ -13,7 +13,7 @@ namespace HappyToy.V2
         readonly Vector3[] restScale;
         readonly SkinnedMeshRenderer skin;
         readonly BoneWeight[] weights;
-        readonly bool[] feet,head,leftFoot,rightFoot;
+        readonly bool[] feet,head,leftFoot,rightFoot,torso;
         readonly Transform leftJoint,rightJoint;
         readonly Vector3 leftRest,rightRest;
         const int TremorVariants=4,CalibrationCount=32*TremorVariants;
@@ -45,9 +45,10 @@ namespace HappyToy.V2
             weights=skin.sharedMesh.boneWeights;
             feet=skin.bones.Select(b=>b&&(b.name=="bone_46"||b.name=="bone_47"||b.name=="bone_50"||b.name=="bone_51")).ToArray();
             head=skin.bones.Select(b=>b&&(b.name=="bone_4"||b.name=="bone_5")).ToArray();
+            torso=skin.bones.Select(b=>b&&(b.name=="bone_1"||b.name=="bone_2"||b.name=="bone_3")).ToArray();
             leftFoot=skin.bones.Select(b=>b&&(b.name=="bone_46"||b.name=="bone_47")).ToArray();rightFoot=skin.bones.Select(b=>b&&(b.name=="bone_50"||b.name=="bone_51")).ToArray();
             leftJoint=all.Single(t=>t.name=="bone_46");rightJoint=all.Single(t=>t.name=="bone_50");leftRest=leftJoint.localPosition;rightRest=rightJoint.localPosition;
-            if(weights.Length==0||!feet.Any(x=>x)||!head.Any(x=>x))throw new InvalidOperationException("Creature needs weighted feet and head for ground contact");
+            if(weights.Length==0||!feet.Any(x=>x)||!head.Any(x=>x)||!torso.Any(x=>x))throw new InvalidOperationException("Creature needs weighted feet, head and torso");
             if(useStoredCalibration)
             {
                 var data=Resources.Load<TextAsset>("SchoolFlickerCreature/pose-calibration");
@@ -81,6 +82,9 @@ namespace HappyToy.V2
             // Three upright-safe silhouettes have tendrils above the head and
             // would pierce the floor upside down. Use different fitted poses.
             int fittedSlot=Inverted?(slot==7?0:slot==9?3:slot==12?5:slot):slot;
+            // The larger torso pushes two upright silhouettes through the
+            // floor; reuse the checked folded pose for those exact steps.
+            if(!Inverted&&((slot==1&&tremor==0)||(slot==3&&tremor==3)))fittedSlot=0;
             // The head is the floor contact when inverted. Keep the stronger
             // shaking to two independently checked inverted silhouettes so
             // nearby tendrils do not swing through the floor.
@@ -109,7 +113,7 @@ namespace HappyToy.V2
                     float minX=float.PositiveInfinity,maxX=float.NegativeInfinity;
                     foreach(var vertex in sample){float x=owner.InverseTransformPoint(skin.transform.TransformPoint(vertex)).x;minX=Mathf.Min(minX,x);maxX=Mathf.Max(maxX,x);}
                     float width=maxX-minX;if(width<.1f)throw new InvalidOperationException("Creature silhouette is invalid");
-                    widthScale*=Mathf.Sqrt(4.05f/width);
+                    widthScale*=Mathf.Sqrt(4.12f/width);
                 }
                 // Preserve the enlarged body while fitting its posed skin below
                 // the ceiling; each discrete pose gets its own vertical fit.
@@ -119,7 +123,7 @@ namespace HappyToy.V2
                     float minY=float.PositiveInfinity,maxY=float.NegativeInfinity;
                     foreach(var vertex in sample){float y=owner.InverseTransformPoint(skin.transform.TransformPoint(vertex)).y;minY=Mathf.Min(minY,y);maxY=Mathf.Max(maxY,y);}
                     float height=maxY-minY;if(height<.1f)throw new InvalidOperationException("Creature height is invalid");
-                    heightScale*=Mathf.Sqrt(3.08f/height);
+                    heightScale*=Mathf.Sqrt(3.14f/height);
                 }
                 visual.localScale=new Vector3(widthScale,heightScale,1);
                 if(!Inverted)
@@ -144,17 +148,17 @@ namespace HappyToy.V2
                 leftPositions[key]=leftJoint.localPosition;rightPositions[key]=rightJoint.localPosition;
                 skin.BakeMesh(baked);var vertices=baked.vertices;
                 if(vertices.Length!=weights.Length)throw new InvalidOperationException("Creature skin/weight geometry mismatch");
-                var target=Inverted?head:feet;float min=float.PositiveInfinity,minX2=float.PositiveInfinity,maxX2=float.NegativeInfinity;
+                var target=Inverted?head:feet;float min=float.PositiveInfinity;double torsoX=0;int torsoCount=0;
                 var bounds=new Bounds(owner.InverseTransformPoint(skin.transform.TransformPoint(vertices[0])),Vector3.zero);
                 for(int i=0;i<vertices.Length;i++)
                 {
                     var point=owner.InverseTransformPoint(skin.transform.TransformPoint(vertices[i]));
                     bounds.Encapsulate(point);
-                    minX2=Mathf.Min(minX2,point.x);maxX2=Mathf.Max(maxX2,point.x);
+                    if(Influenced(weights[i],torso)){torsoX+=point.x;torsoCount++;}
                     if(Influenced(weights[i],target))min=Mathf.Min(min,point.y);
                 }
-                if(float.IsInfinity(min))throw new InvalidOperationException("Creature ground anchor has no strongly weighted vertices");
-                widthScales[key]=widthScale;heightScales[key]=heightScale;adjustments[key]=new Vector3(-(minX2+maxX2)*.5f,-min,0);
+                if(float.IsInfinity(min)||torsoCount==0)throw new InvalidOperationException("Creature ground or torso anchor has no strongly weighted vertices");
+                widthScales[key]=widthScale;heightScales[key]=heightScale;adjustments[key]=new Vector3(-(float)(torsoX/torsoCount),-min,0);
                 bounds.center+=adjustments[key].Value;poseBounds[key]=bounds;
             }
             leftJoint.localPosition=leftPositions[key].Value;rightJoint.localPosition=rightPositions[key].Value;
@@ -165,7 +169,7 @@ namespace HappyToy.V2
         {
             for(int i=0;i<joints.Length;i++)
             {
-                joints[i].localScale=restScale[i]*(i==2?1.55f:(i==5||i==9)?.70f:1f);
+                joints[i].localScale=restScale[i]*(i==2?2f:(i==5||i==9)?.60f:1f);
                 joints[i].localRotation=rest[i]*Quaternion.Euler(Signed(pose,i,0)*ranges[i],Signed(pose,i,1)*ranges[i],Signed(pose,i,2)*ranges[i]);
             }
         }

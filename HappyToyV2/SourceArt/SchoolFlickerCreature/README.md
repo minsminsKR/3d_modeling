@@ -315,6 +315,19 @@ are cached per state. Calibration validates the script/prefab hashes at build.
 `Builds/FlickerLargeCpuReview`; it does not exercise the real game camera or GPU.
 The user was running another local GPU workload during this change, so rendered
 game-camera and native-player appearance/performance checks remain outstanding.
+
+## Larger centred torso — 2026-11-02
+
+The chest/head chain is enlarged from 1.55 to 2.0 and the arm chains are folded
+to 0.60. Each posed skin is centred on the actual torso-weighted vertices rather
+than the midpoint of asymmetric outstretched extremities. The nominal fit is
+4.12 m wide and 3.14 m high; the existing corridor and elbow compression keeps
+the actual geometry inside the available walls. Two upright combinations use a
+previously checked folded pose to avoid penetrating the floor. The 128-pose
+headless geometry calibration checked torso centring, ground/ceiling contact and
+six corridor/elbow positions. The requested live-camera and integration checks
+were deferred after the user reported desktop focus interruptions; do not claim
+the visuals have been reviewed in-game or supply an older build as this change.
 The calibrated 3.9m width is retained in the 4.4m hallway. This CPU skinning
 work requires separate performance and player-view review.
 
