@@ -5,6 +5,15 @@ namespace HappyToy.V2.CoreTests
 {
     public sealed class SchoolAnomalyRulesTests
     {
+        [Test] public void BloodSpreadUsesSimulationTimeAndClampsAtFullCoverage()
+        {
+            Assert.That(SchoolBloodSpread.Progress(0),Is.Zero);
+            Assert.That(SchoolBloodSpread.Progress(15),Is.EqualTo(.5f).Within(.00001f));
+            Assert.That(SchoolBloodSpread.Progress(30),Is.EqualTo(1));
+            Assert.That(SchoolBloodSpread.Progress(900000),Is.EqualTo(1));
+            Assert.Throws<ArgumentOutOfRangeException>(()=>SchoolBloodSpread.Progress(float.NaN));
+            Assert.Throws<ArgumentOutOfRangeException>(()=>SchoolBloodSpread.Progress(-1));
+        }
         [Test] public void FurnitureFrenzyIsFastIndependentAndRestorable()
         {
             Assert.That(SchoolFrenzyMotion.Amount(.2f,0,0),Is.GreaterThan(.75f));

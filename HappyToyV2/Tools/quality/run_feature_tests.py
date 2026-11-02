@@ -433,9 +433,11 @@ PROFILES["school-new-anomalies-logic"]=("CPU-only review sequence, award poster,
                   PLAY+"SchoolAnomalyCheckpointKeepsTheDrawTimersBabyPoseAndLegacyNormalMigration"))])
 
 PROFILES["school-cleaning-logic"]=("CPU-only invisible wet footsteps, pause and checkpoint restoration; no rendered or audio quality certification", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests",)),
     ("PlayMode", (PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",))])
 
 PROFILES["school-cleaning-presentation"]=("Barefoot blood, splash and stained-water camera, school surface ownership, normal brightness and planar reflection", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests",)),
     ("PlayMode", (PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",
                   PLAY+"SchoolHorrorSurfacesKeepRealPbrInputsAndReleaseOnlyOwnedCopies",
                   PLAY+"SchoolWetFloorReflectsTheActualViewAndReleasesItsPrivateCamera",

@@ -77,7 +77,9 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 청소 연출은 플레이어가 복도 중앙에 접근하면 시작한다. `SchoolCleaningAnomaly`는
 투명 맨발 원본을 좌우 반전한 핏발자국·붉은 입자를 복도 왕복 경로에 계속 만들며
 최근 48개 발자국을 재사용한다. `SchoolBloodPuddles`는 최근 16개 위치를 학교 바닥
-셰이더에 전달해 실제 물웅덩이 마스크가 있는 부분만 붉게 물들이고 종료 시 복원한다.
+셰이더에 전달해 실제 물웅덩이 마스크가 있는 부분만 붉게 물들인다. 발자국 발생부터
+`Core/SchoolBloodSpread`의 시뮬레이션 시간 30초 동안 핏빛 물이 발자국 시작점에서
+복도와 연결 통로의 물막까지 번지며, 정지·부적에서 멈추고 이벤트 종료 시 복원한다.
 선택적 v3 저장 필드의 발동 여부·경과 시간으로 최근 흔적을 재구성한다.
 `school-cleaning-logic`은 발동·지속·정지·복원을 검사하고 `school-cleaning-presentation`은 실제 카메라·학교 표면·밝기·바닥 반사 회귀를 검사한다. 원본과 프롬프트는
 `SourceArt/SchoolCleaningBlood/README.md`에 있다.

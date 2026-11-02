@@ -12,6 +12,7 @@ namespace HappyToy.V2
     {
         readonly List<Material> materials=new List<Material>();
         readonly List<Texture2D> textures=new List<Texture2D>();
+        readonly List<Material> additionalWater=new List<Material>();
         readonly Shader shader;
         readonly Texture2D moisture;
         public Material Wall {get;}
@@ -27,6 +28,8 @@ namespace HappyToy.V2
         public Material Rust {get;}
         public Material Timber {get;}
         public Material Puddle {get;}
+        public IReadOnlyList<Material> AdditionalWater=>additionalWater;
+        public void RegisterWater(Material material){if(!material)throw new ArgumentNullException(nameof(material));additionalWater.Add(material);}
         public bool Disposed {get;private set;}
 
         public SchoolHorrorSurfaces(GraphicsSurfaceLibrary.Pool pool)
@@ -156,7 +159,7 @@ namespace HappyToy.V2
             if(Disposed)return;Disposed=true;
             foreach(var material in materials)GraphicsSurfaceLibrary.DestroyOwned(material);
             foreach(var texture in textures)GraphicsSurfaceLibrary.DestroyOwned(texture);
-            materials.Clear();textures.Clear();
+            materials.Clear();textures.Clear();additionalWater.Clear();
         }
     }
 }

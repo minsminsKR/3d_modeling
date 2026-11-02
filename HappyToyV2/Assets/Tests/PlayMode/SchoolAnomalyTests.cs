@@ -88,8 +88,24 @@ namespace HappyToy.V2.CloudTests
             Assert.That(markMaterial.GetTexture("_BaseMap"),Is.EqualTo(Resources.Load<Texture2D>("SchoolCleaningBlood/bare-blood-footprint")));
             var floor=Get<Material>(Get<object>(world,"HorrorSurfaces"),"RenewedFloor");
             Assert.That(floor.GetFloat("_BloodMarkCount"),Is.GreaterThan(0),"Footsteps must stain the school's actual water field");
+            float initialSpread=floor.GetFloat("_BloodSpread");
+            Assert.That(initialSpread,Is.InRange(0f,.1f));
+            Call(cleaning,"Tick",5f,false,new Vector3(0,0,12));
+            Assert.That(floor.GetFloat("_BloodSpread"),Is.EqualTo(initialSpread),"Pause or time stop must hold the spread");
             ExportSchoolAnomalyFrame(world,"bloody-footprints",new Vector3(0,.03f,7.2f),new Vector3(0,.02f,9.5f));
+            Call(cleaning,"Tick",12f,true,new Vector3(0,0,12));
+            float middleSpread=floor.GetFloat("_BloodSpread");
+            Assert.That(middleSpread,Is.InRange(.4f,.5f),"Blood must gradually spread before the water is fully red");
+            ExportSchoolAnomalyFrame(world,"blood-spread-middle",new Vector3(0,.03f,7.2f),new Vector3(0,.02f,14));
+            var water=Get<System.Collections.Generic.IReadOnlyList<Material>>(Get<object>(world,"HorrorSurfaces"),"AdditionalWater");
+            Assert.That(water.Count,Is.GreaterThan(0));
+            Assert.That(water.All(m=>Mathf.Abs(m.GetFloat("_BloodSpread")-middleSpread)<.00001f),Is.True,"Connector water must share the spread");
+            var intermediate=Call(director,"Capture");Call(director,"Restore",intermediate,Get<int>(world,"Traversals"));
+            cleaning=Get<Component>(director,"Cleaning");yield return null;
+            Assert.That(floor.GetFloat("_BloodSpread"),Is.EqualTo(middleSpread).Within(.00001f),"Loading must preserve partial spread");
             Call(cleaning,"Tick",40f,true,new Vector3(0,0,12));
+            Assert.That(floor.GetFloat("_BloodSpread"),Is.EqualTo(1),"Water must eventually become fully blood-coloured");
+            ExportSchoolAnomalyFrame(world,"blood-spread-complete",new Vector3(0,.03f,7.2f),new Vector3(0,.02f,14));
             held=Get<int>(cleaning,"StepsEmitted");
             Assert.That(held,Is.GreaterThan(12),"The cleaner must continue after the original twelve steps");
             Assert.That(cleaning.GetComponentsInChildren<Transform>().Count(t=>t.name=="Invisible cleaner wet footprint"),Is.LessThanOrEqualTo(48),"Long events must reuse bounded footprints");
@@ -104,6 +120,8 @@ namespace HappyToy.V2.CloudTests
             Assert.That(floor.GetFloat("_BloodMarkCount"),Is.EqualTo(16),"Water stains must remain bounded after a long event");
             UseSchoolAnomalyFixture(world,"Normal");Assert.That(Get<Component>(director,"Cleaning"),Is.Null);
             Assert.That(floor.GetFloat("_BloodMarkCount"),Is.Zero,"Leaving the event must restore clean water");
+            Assert.That(floor.GetFloat("_BloodSpread"),Is.Zero);
+            Assert.That(water.All(m=>m.GetFloat("_BloodSpread")==0),Is.True);
             Call(shell,"Resume");
         }
         [UnityTest,Timeout(180000)]

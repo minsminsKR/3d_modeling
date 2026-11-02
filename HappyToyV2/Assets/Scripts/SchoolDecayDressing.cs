@@ -31,6 +31,7 @@ namespace HappyToy.V2
             board=Blackboard();
             printedPaper=PrintedPapers();
             connectorWater=new Material(surfaces.Puddle){name="Owned translucent school connector leak film",enableInstancing=true};
+            surfaces.RegisterWater(connectorWater);
             connectorWater.SetColor("_BaseColor",new Color(.13f,.145f,.14f,.28f));world.owned.Add(connectorWater);
         }
         public void Build(Transform chunk,bool collision)

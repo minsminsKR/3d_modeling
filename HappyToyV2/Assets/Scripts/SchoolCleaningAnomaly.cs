@@ -75,6 +75,7 @@ namespace HappyToy.V2
                 triggered=true;
             }
             elapsed=Mathf.Min(1000000,elapsed+Mathf.Max(0,delta));
+            bloodWater.SetElapsed(elapsed);
             int wanted=StepsAt(elapsed);
             if(wanted-emitted>MaximumVisibleMarks)emitted=wanted-MaximumVisibleMarks;
             while(emitted<wanted)EmitStep(emitted==wanted-1);
@@ -84,6 +85,7 @@ namespace HappyToy.V2
             if(!StealthRules.Finite(value)||value<0||value>1000000)throw new ArgumentException("Invalid cleaning elapsed time");
             triggered=wasTriggered||value>0;elapsed=value;
             if(!triggered)return;
+            bloodWater.SetElapsed(elapsed);
             int wanted=StepsAt(elapsed);emitted=Mathf.Max(0,wanted-MaximumVisibleMarks);
             while(emitted<wanted)EmitStep(false);
         }

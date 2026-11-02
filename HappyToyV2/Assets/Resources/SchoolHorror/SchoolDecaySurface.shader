@@ -26,6 +26,7 @@ Shader "HappyToy/SchoolDecaySurface"
         _SchoolPlanarDistortion("Water film normal distortion",Range(0,.6))=.35
         _SchoolOrigin("School root world position",Vector)=(0,0,45,0)
         _BloodMarkCount("Active local blood marks",Float)=0
+        _BloodSpread("Blood spreading through water",Range(0,1))=0
         _SurfaceMode("Opaque 0 / glass 1 / puddle 2",Float)=0
         _SrcBlend("Blend source",Float)=1
         _DstBlend("Blend destination",Float)=0
@@ -57,6 +58,7 @@ Shader "HappyToy/SchoolDecaySurface"
             float _WorldScale,_WorldFloor,_FloorSpan,_WorldCeiling,_CeilingSpan,_PuddleSpan,_AuthoredFloor;
             half _SchoolPlanarStrength,_SchoolPlanarRoughness,_SchoolPlanarDistortion;
             float _BloodMarkCount;
+            float _BloodSpread;
             float4 _BloodMarks[16];
         CBUFFER_END
         struct Attributes
@@ -230,7 +232,7 @@ Shader "HappyToy/SchoolDecaySurface"
                 half dirt=_WorldFloor>.5?puddle.r*.5+puddle.g*.5:moisture.r*.65+moisture.g*.35;
                 albedo.rgb*=1-_MacroStrength*dirt;
                 albedo.rgb*=1-water*.20;
-                if(_WorldFloor>.5&&_BloodMarkCount>.5)
+                if((_WorldFloor>.5||_SurfaceMode>1.5)&&(_BloodMarkCount>.5||_BloodSpread>.0001))
                 {
                     half blood=0;
                     [loop] for(int mark=0;mark<min((int)_BloodMarkCount,16);mark++)
@@ -238,8 +240,16 @@ Shader "HappyToy/SchoolDecaySurface"
                         float distanceToMark=distance(i.positionWS.xz,_BloodMarks[mark].xy);
                         blood=max(blood,1-smoothstep(_BloodMarks[mark].z*.25,_BloodMarks[mark].z,distanceToMark));
                     }
-                    // The coloured layer is confined to the authored water field.
-                    blood*=smoothstep(.08,.55,water);
+                    // The wave expands through all standing water from the first footprint.
+                    // Existing water masks and reflections remain intact.
+                    if(_BloodSpread>.0001)
+                    {
+                        float2 school=PuddleUv(i)*max(1,_PuddleSpan);
+                        float front=_BloodSpread*64;
+                        float distanceFromStart=distance(school,float2(0,7.5))+(moisture.r-.5)*1.5;
+                        blood=max(blood,1-smoothstep(front-1,front+1,distanceFromStart));
+                    }
+                    blood*=(_WorldFloor>.5?smoothstep(.08,.55,water):1);
                     albedo.rgb=lerp(albedo.rgb,half3(.27,.009,.006),blood*.88);
                 }
                 half alpha=1;
