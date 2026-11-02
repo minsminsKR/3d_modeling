@@ -16,12 +16,16 @@ namespace HappyToy.V2
             public SchoolAnomalyKind Kind;
             // Optional in older checkpoints. Review runs start at event one.
             public bool ReviewSequence;
+            // Optional in older checkpoints: prepend the flicker to review runs.
+            public bool FlickerFirstReview;
         }
         State state;
-        public SchoolAnomalyDeck(uint seed,bool reviewSequence=false)
+        public SchoolAnomalyDeck(uint seed,bool reviewSequence=false,bool flickerFirstReview=false)
         {
             if(seed==0)throw new ArgumentOutOfRangeException(nameof(seed));
-            state=new State{Random=seed,Kind=reviewSequence?SchoolAnomalyKind.StudyStudents:SchoolAnomalyKind.Normal,NormalStreak=reviewSequence?0:1,ReviewSequence=reviewSequence};
+            bool review=reviewSequence||flickerFirstReview;
+            state=new State{Random=seed,Kind=flickerFirstReview?SchoolAnomalyKind.DancingWalker:review?SchoolAnomalyKind.StudyStudents:SchoolAnomalyKind.Normal,
+                NormalStreak=review?0:1,ReviewSequence=review,FlickerFirstReview=flickerFirstReview};
         }
         public SchoolAnomalyKind Kind=>state.Kind;
         public State Capture()=>state;
@@ -31,10 +35,13 @@ namespace HappyToy.V2
             if(value.Random==0||value.Passage<0||value.Passage>1000000||!Enum.IsDefined(typeof(SchoolAnomalyKind),value.Kind)||
                 value.NormalStreak<0||value.NormalStreak>MaximumNormalStreak||
                 (value.Kind==SchoolAnomalyKind.Normal)!=(value.NormalStreak>0)||
-                value.ReviewSequence&&(value.Passage>=4||value.Kind!=(SchoolAnomalyKind)((int)SchoolAnomalyKind.StudyStudents+value.Passage))||
+                value.FlickerFirstReview&&!value.ReviewSequence||
+                value.ReviewSequence&&(value.Passage>=(value.FlickerFirstReview?5:4)||value.Kind!=ReviewKind(value.Passage,value.FlickerFirstReview))||
                 value.Passage==0&&!((value.Kind==SchoolAnomalyKind.Normal&&value.NormalStreak==1)||(value.Kind==SchoolAnomalyKind.DancingWalker&&value.NormalStreak==0)||(value.ReviewSequence&&value.Kind==SchoolAnomalyKind.StudyStudents&&value.NormalStreak==0)))
                 throw new ArgumentException("Invalid school anomaly deck");
         }
+        static SchoolAnomalyKind ReviewKind(int passage,bool flickerFirst)
+            =>flickerFirst&&passage==0?SchoolAnomalyKind.DancingWalker:(SchoolAnomalyKind)((int)SchoolAnomalyKind.StudyStudents+passage-(flickerFirst?1:0));
         public static bool Correct(int direction,SchoolAnomalyKind kind)
         {
             if(direction!=1&&direction!=-1)throw new ArgumentOutOfRangeException(nameof(direction));
@@ -45,13 +52,13 @@ namespace HappyToy.V2
         {
             bool correct=Correct(direction,state.Kind);
             state.Passage=Math.Min(1000000,state.Passage+1);
-            if(state.ReviewSequence&&state.Passage<4)
+            if(state.ReviewSequence&&state.Passage<(state.FlickerFirstReview?5:4))
             {
-                state.Kind=(SchoolAnomalyKind)((int)SchoolAnomalyKind.StudyStudents+state.Passage);
+                state.Kind=ReviewKind(state.Passage,state.FlickerFirstReview);
                 state.NormalStreak=0;
                 return correct;
             }
-            state.ReviewSequence=false;
+            state.ReviewSequence=false;state.FlickerFirstReview=false;
             bool anomaly=state.NormalStreak>=MaximumNormalStreak||Next()%100<AnomalyPercent;
             state.Kind=anomaly?(SchoolAnomalyKind)(1+Next()%7):SchoolAnomalyKind.Normal;
             state.NormalStreak=anomaly?0:state.NormalStreak+1;

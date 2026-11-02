@@ -25,7 +25,9 @@ namespace HappyToy.V2
             session=owner;world=loop;uint seed=BitConverter.ToUInt32(Guid.NewGuid().ToByteArray(),0);
             bool review=Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-school-anomaly-review")>=0||
                 !Application.isEditor&&File.Exists(Path.Combine(Path.GetDirectoryName(Application.dataPath),"school-anomaly-review.flag"));
-            deck=new SchoolAnomalyDeck(seed==0?1:seed,review);
+            bool flickerFirst=Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-school-flicker-first")>=0||
+                !Application.isEditor&&File.Exists(Path.Combine(Path.GetDirectoryName(Application.dataPath),"school-flicker-first.flag"));
+            deck=new SchoolAnomalyDeck(seed==0?1:seed,review,flickerFirst);
             Blackout=gameObject.AddComponent<SchoolBlackoutPresentation>();Blackout.Prepare(world.Root);ApplyPassage();
         }
         public void CompleteTraversal(int direction)
@@ -38,7 +40,7 @@ namespace HappyToy.V2
         }
         public void RestoreLegacy(int traversal)
         {
-            var value=deck.Capture();value.Passage=traversal;value.Kind=SchoolAnomalyKind.Normal;value.NormalStreak=1;value.ReviewSequence=false;
+            var value=deck.Capture();value.Passage=traversal;value.Kind=SchoolAnomalyKind.Normal;value.NormalStreak=1;value.ReviewSequence=false;value.FlickerFirstReview=false;
             deck.Restore(value);clock.Reset();ApplyPassage();
         }
         void ApplyPassage(bool keepDeparture=false)

@@ -198,6 +198,23 @@ namespace HappyToy.V2.CloudTests
             }
             Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(4));
         }
+        [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolFlickerFirstReviewFollowsActualBackwardTransfers()
+        {
+            yield return BeginObservationSchool();
+            var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            var director=Get<Component>(world,"Anomalies");Call(shell,"Pause");
+            var data=Call(director,"Capture");var deck=Get<object>(data,"deck");
+            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),"DancingWalker"));
+            Set(deck,"ReviewSequence",true);Set(deck,"FlickerFirstReview",true);Set(deck,"NormalStreak",0);Set(data,"deck",deck);
+            Call(director,"Restore",data,0);Call(shell,"Resume");
+            foreach(string expected in new[]{"DancingWalker","StudyStudents","AwardPoster","Cleaning","MovingFurniture"})
+            {
+                Assert.That(Get<object>(director,"Kind").ToString(),Is.EqualTo(expected));
+                yield return CrossSchoolJudgmentSeam(world,-1);
+            }
+            Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(5));
+        }
         // Controlled validated checkpoint input, not a production event selector.
         object UseSchoolAnomalyFixture(Component world,string kind)
         {

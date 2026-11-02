@@ -413,6 +413,7 @@ PROFILES["school-anomalies-logic"]=("CPU-only school anomaly rules, physical sea
         PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",
         PLAY+"SchoolMovingDoorsHoldDuringPauseAndRestoreClosed",
         PLAY+"SchoolReviewSequenceFollowsActualBackwardTransfers",
+        PLAY+"SchoolFlickerFirstReviewFollowsActualBackwardTransfers",
         PLAY+"SchoolAnomalyFirstPassIsNormalAndActualSeamsJudgeBothDirections",
         PLAY+"SchoolWalkerSolidCapsuleAndFlickerTrembleAdvanceAndPause",
         PLAY+"SchoolBabyBlackoutShopTimeoutContactAndPauseAreHeadlessSafe",
@@ -430,6 +431,7 @@ PROFILES["school-new-anomalies-logic"]=("CPU-only review sequence, award poster,
                   PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",
                   PLAY+"SchoolMovingDoorsHoldDuringPauseAndRestoreClosed",
                   PLAY+"SchoolReviewSequenceFollowsActualBackwardTransfers",
+                  PLAY+"SchoolFlickerFirstReviewFollowsActualBackwardTransfers",
                   PLAY+"SchoolAnomalyCheckpointKeepsTheDrawTimersBabyPoseAndLegacyNormalMigration"))])
 
 PROFILES["school-cleaning-logic"]=("CPU-only invisible wet footsteps, pause and checkpoint restoration; no rendered or audio quality certification", [

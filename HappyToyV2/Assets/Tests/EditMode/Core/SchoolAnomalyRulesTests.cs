@@ -37,6 +37,21 @@ namespace HappyToy.V2.CoreTests
             Assert.That(deck.Capture().ReviewSequence,Is.False);
             SchoolAnomalyDeck.Validate(deck.Capture());
         }
+        [Test] public void FlickerReviewStartsFirstAndPreservesFourExistingReviewsAcrossRestore()
+        {
+            var deck=new SchoolAnomalyDeck(7,true,true);
+            var kinds=new[]{SchoolAnomalyKind.DancingWalker,SchoolAnomalyKind.StudyStudents,SchoolAnomalyKind.AwardPoster,SchoolAnomalyKind.Cleaning,SchoolAnomalyKind.MovingFurniture};
+            foreach(var kind in kinds)
+            {
+                Assert.That(deck.Kind,Is.EqualTo(kind));SchoolAnomalyDeck.Validate(deck.Capture());
+                var restored=new SchoolAnomalyDeck(8);restored.Restore(deck.Capture());
+                Assert.That(deck.Complete(-1),Is.True);restored.Complete(-1);
+                Assert.That(restored.Capture(),Is.EqualTo(deck.Capture()));
+            }
+            Assert.That(deck.Capture().ReviewSequence,Is.False);
+            Assert.That(deck.Capture().FlickerFirstReview,Is.False);
+            SchoolAnomalyDeck.Validate(deck.Capture());
+        }
         [Test] public void FirstPassageIsAlwaysNormalAndNoMoreThanThreeNormalsCanRepeat()
         {
             for(uint seed=1;seed<=1000;seed++)
