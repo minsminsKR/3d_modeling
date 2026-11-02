@@ -74,18 +74,36 @@ namespace HappyToy.V2.CloudTests
             Call(shell,"Resume");yield return Wait(()=>Get<int>(cleaning,"StepsEmitted")>=2,15,"Wet footsteps did not advance",
                 ()=>"kind="+Get<object>(director,"Kind")+" triggered="+Get<bool>(cleaning,"Triggered")+" elapsed="+Get<float>(cleaning,"Elapsed")+
                     " input="+Get<bool>(session,"InputAllowed")+" local="+Get<Transform>(world,"Centre").InverseTransformPoint(player.transform.position));
+            var splash=cleaning.GetComponentInChildren<ParticleSystem>();
+            Assert.That(splash,Is.Not.Null);Assert.That(splash.particleCount,Is.GreaterThan(0),"Each footfall must emit visible blood droplets");
+            Assert.That(splash.main.startColor.color.r,Is.GreaterThan(splash.main.startColor.color.g*5));
+            yield return Delay(.1f);
+            ExportSchoolAnomalyFrame(world,"bloody-splash",new Vector3(0,.03f,7.2f),new Vector3(0,.02f,9.5f));
             Call(shell,"Pause");int held=Get<int>(cleaning,"StepsEmitted");yield return Delay(.3f);
             Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.EqualTo(held));
             Assert.That(cleaning.GetComponentsInChildren<Transform>().Count(t=>t.name=="Invisible cleaner wet footprint"),Is.EqualTo(held));
             var firstMark=cleaning.GetComponentsInChildren<Transform>().First(t=>t.name=="Invisible cleaner wet footprint");
-            var bloodTexture=(Texture2D)firstMark.GetComponent<Renderer>().sharedMaterial.GetTexture("_BaseMap");
-            var blood=bloodTexture.GetPixel(32,80);
-            Assert.That(blood.r,Is.GreaterThan(blood.g*5),"The visible footprint must be red");
+            var markMaterial=firstMark.GetComponent<Renderer>().sharedMaterial;
+            Assert.That(markMaterial.shader.name,Is.EqualTo("HappyToy/SchoolBloodDecal"),"The print must use actual transparent alpha blending");
+            Assert.That(markMaterial.GetTexture("_BaseMap"),Is.EqualTo(Resources.Load<Texture2D>("SchoolCleaningBlood/bare-blood-footprint")));
+            var floor=Get<Material>(Get<object>(world,"HorrorSurfaces"),"RenewedFloor");
+            Assert.That(floor.GetFloat("_BloodMarkCount"),Is.GreaterThan(0),"Footsteps must stain the school's actual water field");
             ExportSchoolAnomalyFrame(world,"bloody-footprints",new Vector3(0,.03f,7.2f),new Vector3(0,.02f,9.5f));
+            Call(cleaning,"Tick",40f,true,new Vector3(0,0,12));
+            held=Get<int>(cleaning,"StepsEmitted");
+            Assert.That(held,Is.GreaterThan(12),"The cleaner must continue after the original twelve steps");
+            Assert.That(cleaning.GetComponentsInChildren<Transform>().Count(t=>t.name=="Invisible cleaner wet footprint"),Is.LessThanOrEqualTo(48),"Long events must reuse bounded footprints");
             var saved=Call(director,"Capture");Call(director,"Restore",saved,Get<int>(world,"Traversals"));
             cleaning=Get<Component>(director,"Cleaning");
             Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.EqualTo(held),"Loading must reconstruct existing wet marks");
+            yield return null;
+            Assert.That(floor.GetFloat("_BloodMarkCount"),Is.GreaterThan(0),"Destroying the prior event must not clear restored blood");
+            Call(cleaning,"RestoreElapsed",900000f,true);
+            Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.GreaterThan(1000000),"Long-running saves must resume without an arbitrary walking limit");
+            Assert.That(cleaning.GetComponentsInChildren<Transform>().Count(t=>t.name=="Invisible cleaner wet footprint"),Is.LessThanOrEqualTo(48));
+            Assert.That(floor.GetFloat("_BloodMarkCount"),Is.EqualTo(16),"Water stains must remain bounded after a long event");
             UseSchoolAnomalyFixture(world,"Normal");Assert.That(Get<Component>(director,"Cleaning"),Is.Null);
+            Assert.That(floor.GetFloat("_BloodMarkCount"),Is.Zero,"Leaving the event must restore clean water");
             Call(shell,"Resume");
         }
         [UnityTest,Timeout(180000)]

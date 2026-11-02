@@ -43,7 +43,7 @@ namespace HappyToy.V2
         {
             if(Baby){Baby.Clear();Baby=null;}
             if(!keepDeparture&&DepartingBaby){DepartingBaby.Clear();DepartingBaby=null;}
-            if(Cleaning){Destroy(Cleaning.gameObject);Cleaning=null;}
+            if(Cleaning){Cleaning.ClearWater();Destroy(Cleaning.gameObject);Cleaning=null;}
             if(Students){Destroy(Students.gameObject);Students=null;}
             Blackout.Apply(false,0);world.Walker.SetFlickerSeed(deck.Capture().Random);world.Walker.SetDancing(Kind==SchoolAnomalyKind.DancingWalker);
             world.AwardPoster.SetAnomaly(Kind==SchoolAnomalyKind.AwardPoster);

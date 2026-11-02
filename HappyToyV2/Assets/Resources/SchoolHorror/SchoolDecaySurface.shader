@@ -25,6 +25,7 @@ Shader "HappyToy/SchoolDecaySurface"
         _SchoolPlanarRoughness("Wet reflection roughness",Range(0,2))=1
         _SchoolPlanarDistortion("Water film normal distortion",Range(0,.6))=.35
         _SchoolOrigin("School root world position",Vector)=(0,0,45,0)
+        _BloodMarkCount("Active local blood marks",Float)=0
         _SurfaceMode("Opaque 0 / glass 1 / puddle 2",Float)=0
         _SrcBlend("Blend source",Float)=1
         _DstBlend("Blend destination",Float)=0
@@ -55,6 +56,8 @@ Shader "HappyToy/SchoolDecaySurface"
             half _WetStrength,_SurfaceMode;
             float _WorldScale,_WorldFloor,_FloorSpan,_WorldCeiling,_CeilingSpan,_PuddleSpan,_AuthoredFloor;
             half _SchoolPlanarStrength,_SchoolPlanarRoughness,_SchoolPlanarDistortion;
+            float _BloodMarkCount;
+            float4 _BloodMarks[16];
         CBUFFER_END
         struct Attributes
         {
@@ -227,6 +230,18 @@ Shader "HappyToy/SchoolDecaySurface"
                 half dirt=_WorldFloor>.5?puddle.r*.5+puddle.g*.5:moisture.r*.65+moisture.g*.35;
                 albedo.rgb*=1-_MacroStrength*dirt;
                 albedo.rgb*=1-water*.20;
+                if(_WorldFloor>.5&&_BloodMarkCount>.5)
+                {
+                    half blood=0;
+                    [loop] for(int mark=0;mark<min((int)_BloodMarkCount,16);mark++)
+                    {
+                        float distanceToMark=distance(i.positionWS.xz,_BloodMarks[mark].xy);
+                        blood=max(blood,1-smoothstep(_BloodMarks[mark].z*.25,_BloodMarks[mark].z,distanceToMark));
+                    }
+                    // The coloured layer is confined to the authored water field.
+                    blood*=smoothstep(.08,.55,water);
+                    albedo.rgb=lerp(albedo.rgb,half3(.27,.009,.006),blood*.88);
+                }
                 half alpha=1;
                 half coverage=1;
                 if(_SurfaceMode>.5)

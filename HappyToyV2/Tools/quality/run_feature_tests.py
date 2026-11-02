@@ -435,6 +435,12 @@ PROFILES["school-new-anomalies-logic"]=("CPU-only review sequence, award poster,
 PROFILES["school-cleaning-logic"]=("CPU-only invisible wet footsteps, pause and checkpoint restoration; no rendered or audio quality certification", [
     ("PlayMode", (PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",))])
 
+PROFILES["school-cleaning-presentation"]=("Barefoot blood, splash and stained-water camera, school surface ownership, normal brightness and planar reflection", [
+    ("PlayMode", (PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",
+                  PLAY+"SchoolHorrorSurfacesKeepRealPbrInputsAndReleaseOnlyOwnedCopies",
+                  PLAY+"SchoolWetFloorReflectsTheActualViewAndReleasesItsPrivateCamera",
+                  PLAY+"SchoolNormalCameraStackKeepsTheApprovedPreviewBrightness"))])
+
 PROFILES["school-walker-seam-logic"]=("CPU-only completed walker renewal through both actual masked school seams, route rules, checkpoints and anomaly judgment", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolWalkerRouteTests", "HappyToy.V2.CoreTests.SchoolLoopPlanTests", "HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", CLOUD+"SchoolLoopCheckpointTests")),
     ("PlayMode", (PLAY+"SchoolWalkerCompletedAtAnomalyRetreatStartsTheNextPassAtTheSeam",
@@ -484,7 +490,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
         if profile in ("hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
-        if profile=="school-new-anomalies-presentation":
+        if profile in ("school-new-anomalies-presentation", "school-cleaning-presentation"):
             editor_args += ["-noaudio"]
         if graphics_api:
             editor_args += ["-force-" + graphics_api]

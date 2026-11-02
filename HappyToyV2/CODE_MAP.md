@@ -74,8 +74,13 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 지정 서비스 원본에서 착석·보정한 세 모델의 50k/12k/10k LOD·PBR을 가져온다.
 관련 CPU 규칙·장면 검사는 `school-new-anomalies-logic`, 기존 사건 회귀는
 `school-anomalies-logic`이다. 두 프로필 모두 렌더·청음 품질 인증이 아니다.
-청소 연출은 플레이어가 복도 중앙에 접근하면 시작하고, 선택적 v3 저장 필드에
-발동 여부·경과 시간을 보존한다. `school-cleaning-logic`은 발동·정지·복원을 검사한다.
+청소 연출은 플레이어가 복도 중앙에 접근하면 시작한다. `SchoolCleaningAnomaly`는
+투명 맨발 원본을 좌우 반전한 핏발자국·붉은 입자를 복도 왕복 경로에 계속 만들며
+최근 48개 발자국을 재사용한다. `SchoolBloodPuddles`는 최근 16개 위치를 학교 바닥
+셰이더에 전달해 실제 물웅덩이 마스크가 있는 부분만 붉게 물들이고 종료 시 복원한다.
+선택적 v3 저장 필드의 발동 여부·경과 시간으로 최근 흔적을 재구성한다.
+`school-cleaning-logic`은 발동·지속·정지·복원을 검사하고 `school-cleaning-presentation`은 실제 카메라·학교 표면·밝기·바닥 반사 회귀를 검사한다. 원본과 프롬프트는
+`SourceArt/SchoolCleaningBlood/README.md`에 있다.
 정독반 창의 낮은 실과 이상현상 전용 실내 조명은 복도에서 착석한 인물을 관찰할 수
 있게 하며, 창 유리 충돌은 유지한다. 학생 LOD의 렌더 범위는 FBX의 실제 스케일에
 맞춰 확장한다.
