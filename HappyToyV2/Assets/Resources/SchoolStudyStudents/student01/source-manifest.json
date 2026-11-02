@@ -1,10 +1,10 @@
 {
   "job": "10c8d883-8918-44d3-bcd5-7cf85bffff26",
-  "editable_sha256": "0abcdb9b7ea85f9bcb2c47c58c8524fd2ff949b5d9669d0f5909b1ee1926e1dc",
+  "editable_sha256": "f61f4f13136b79b30692bccb3a484380d2a4b6528847df91dc272c0bc87c6c15",
   "assets": {
-    "student.fbx": "1be6dfa6267737a4df6a7efb624e73b3573fb4d78ae2874ef49de3819f3b70b2",
-    "student-baseColor.png": "76c18396d220614032c436b81be28e1122e31f7abcbbfe6c769268a074056b29",
-    "student-metallicSmoothness.png": "2cae520161f938e3a46e4772747f46bcc0ac8cc00ef59f2156e95400d7512435",
-    "student-normal.png": "1aac8b8c7e1a2160a24090a974c24931d287b6349299d1e3ae5fd4ecb0289d48"
+    "student.fbx": "af573d81b65c27a48db264ff3d51452d9d2c2c7d6f17dc59b5aabe4d2f4ee680",
+    "student-baseColor.png": "5c610bae6fbb024f0a838423e725dec31f49c8e4a7f70a38849b82e0d658de31",
+    "student-metallicSmoothness.png": "26038ea6e81aee8039e694b1f64e2928de6a34d62f64e6aa40b1c17365d0ab64",
+    "student-normal.png": "4034703497fcc2100afdc2c0abf280f7f2ce6b743e47aa9f184e8b2427f5319c"
   }
 }

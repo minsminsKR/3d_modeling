@@ -15,6 +15,11 @@ HERE=Path(__file__).resolve().parent
 PROJECT=HERE.parents[1]
 parser=argparse.ArgumentParser();parser.add_argument('--job',required=True);parser.add_argument('--budget',type=int,default=40000)
 parser.add_argument('--repair',action='store_true',help='derive a closed surface and rebake original PBR for visual review')
+parser.add_argument('--repair-legs',action='store_true',help='correct source-derived knee and leg deformation before rebaking')
+parser.add_argument('--hips',help='two source upper leg bones')
+parser.add_argument('--knees',help='two source lower leg bones')
+parser.add_argument('--hip-angle',type=float,default=85)
+parser.add_argument('--lower-angle',type=float,help='lower-leg correction angle; defaults to the hip angle')
 args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
 if not 1000<=args.budget<=50000:raise ValueError('Invalid review triangle budget')
 rigs=[o for o in bpy.context.scene.objects if o.type=='ARMATURE']
@@ -29,6 +34,11 @@ data=bpy.data.meshes.new_from_object(evaluated,preserve_all_data_layers=True,dep
 game=bpy.data.objects.new('Student seated game review',data);bpy.context.scene.collection.objects.link(game)
 game.matrix_world=mesh.matrix_world.copy()
 for group in mesh.vertex_groups:game.vertex_groups.new(name=group.name)
+if args.repair_legs:
+    if not args.hips or not args.knees:raise ValueError('Leg repair requires source hips and knees')
+    repair=runpy.run_path(str(HERE/'repair_seated_legs.py'),run_name='student_leg_repair')['repair']
+    lower_angle=args.hip_angle if args.lower_angle is None else args.lower_angle
+    print('SOURCE_LEG_REPAIR',args.job,repair(source,mesh,game,args.hips.split(','),args.knees.split(','),args.hip_angle,lower_angle),flush=True)
 out=PROJECT/'Builds'/'SchoolStudyStudentsReview'/args.job/'export';out.mkdir(parents=True,exist_ok=True)
 high=None
 if args.repair:

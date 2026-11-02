@@ -34,7 +34,7 @@ namespace HappyToy.V2
                 if(!section.name.StartsWith("School loop section ",StringComparison.Ordinal))continue;
                 var illumination=new GameObject("Study ghost room visibility light");illumination.transform.SetParent(section,false);
                 illumination.transform.localPosition=new Vector3(-5.8f,2.65f,18.2f);
-                var light=illumination.AddComponent<Light>();light.type=LightType.Point;light.range=7;light.intensity=11;
+                var light=illumination.AddComponent<Light>();light.type=LightType.Point;light.range=7;light.intensity=2.2f;
                 light.color=new Color(.72f,.77f,.79f);light.shadows=LightShadows.None;roomLights.Add(illumination);
                 for(int row=0;row<3;row++)for(int col=0;col<3;col++)
                 {

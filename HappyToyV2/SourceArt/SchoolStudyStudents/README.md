@@ -69,6 +69,16 @@ tests do not certify animation quality or native-player FPS.
 
 ## Follow-up deferred until GPU work is available
 
+Later on 2026-11-02, the user requested a darker study room and knee/clothing
+repair. The study fixture and window spill are reduced locally, as is the
+anomaly-only room light; the students retain their existing visibility material.
+The source-weighted thigh, knee, shin and ankle are partially repositioned with
+`repair_seated_legs.py` before the existing voxel and PBR bake. This improves
+knee continuity but **does not complete the clothing repair**: large tears and
+shards remain visible in the second student's skirt and the first and third
+students' clothing. Do not mark those defects fixed. The user permitted local
+GPU checks but the modeling-service GPU remains reserved for other work.
+
 2026-11-02 local GPU follow-up: the normal Unity camera confirmed the students
 were difficult to distinguish from the corridor. A low, albedo-textured
 emissive contribution on anomaly-only material copies improves their visibility
@@ -110,9 +120,11 @@ logic and integration rather than rendered appearance, sound quality or FPS.
    review build's `school-anomaly-review.flag` sequence for the normal new-run
    behavior. Follow the project desktop-isolation and old-build grouping rules.
 
-To reproduce the local sequence with the pinned Blender 4.0.2 executable, use
+To reproduce the current partial repair with the pinned Blender 4.0.2 executable, use
 `preview_seating.py` with the following inputs, run `export_seated_probe.py`
-for each job with `--repair --budget 50000`, then run `add_student_lods.py`
+for each job with `--repair --budget 50000 --repair-legs --hips HIPS --knees
+KNEES --hip-angle 85 --lower-angle ANGLE`, where ANGLE is 38 for students 01
+and 02 and 31 for student 03, then run `add_student_lods.py`
 on each resulting `student-review.blend`. Run `pack_student_source.py` on each
 resulting `student-lods.blend` with `--student 01`, `02`, or `03`, and finally
 run `promote_students.py`. `SchoolStudyStudentsImport.Apply` builds prefabs from
@@ -121,6 +133,6 @@ in `Builds/SchoolStudyStudentsReview`; the tracked rig GLBs are the inputs.
 
 | Student | Job | `preview_seating.py` options after `--job JOB` |
 | --- | --- | --- |
-| 01 | `10c8d883-8918-44d3-bcd5-7cf85bffff26` | `--corrected --yaw 0 --hips bone_20,bone_24 --knees bone_21,bone_25 --hands bone_16,bone_15,bone_9,bone_8` |
-| 02 | `b1f35610-5dd0-4d0d-ac15-e9c109bba82f` | `--yaw 0 --hips bone_20,bone_24 --knees bone_21,bone_25 --hands bone_16,bone_15,bone_9,bone_8` |
-| 03 | `0ac03514-069f-4afc-a8cc-90d4d86cff8f` | `--yaw 0 --hips bone_44,bone_48 --knees bone_45,bone_49 --hands bone_28,bone_27,bone_9,bone_8 --bend 65` |
+| 01 | `10c8d883-8918-44d3-bcd5-7cf85bffff26` | `--corrected --yaw 0 --hips bone_20,bone_24 --knees bone_21,bone_25 --hands bone_16,bone_15,bone_9,bone_8 --bend 85 --lower-bend 38 --preserve-volume` |
+| 02 | `b1f35610-5dd0-4d0d-ac15-e9c109bba82f` | `--yaw 0 --hips bone_20,bone_24 --knees bone_21,bone_25 --hands bone_16,bone_15,bone_9,bone_8 --bend 85 --lower-bend 38 --preserve-volume` |
+| 03 | `0ac03514-069f-4afc-a8cc-90d4d86cff8f` | `--yaw 0 --hips bone_44,bone_48 --knees bone_45,bone_49 --hands bone_28,bone_27,bone_9,bone_8 --bend 85 --lower-bend 38 --preserve-volume` |

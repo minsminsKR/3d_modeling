@@ -22,6 +22,8 @@ parser.add_argument('--knees',required=True,help='comma-separated lower leg bone
 parser.add_argument('--hands',help='two hand bones and their forearms as hand,forearm,hand,forearm')
 parser.add_argument('--corrected',action='store_true')
 parser.add_argument('--bend',type=float,default=85)
+parser.add_argument('--lower-bend',type=float,help='separate lower-leg rotation for the seated pose')
+parser.add_argument('--preserve-volume',action='store_true',help='use dual-quaternion deformation on the retained source rig')
 args=parser.parse_args(sys.argv[sys.argv.index('--')+1:])
 source=HERE/('rigged-corrected' if args.corrected else 'rigged')/args.job/'rigged.glb'
 output=PROJECT/'Builds'/'SchoolStudyStudentsReview'/args.job/'seated-probe.blend'
@@ -39,7 +41,7 @@ if args.hands:
     finisher['repair_relaxed_hands'](mesh,rig,{'LeftHand':lh,'LeftForeArm':lf,'RightHand':rh,'RightForeArm':rf},
         {'radiusMetres':.105,'wristBlendStartMetres':-.025,'wristBlendEndMetres':.020})
 for modifier in mesh.modifiers:
-    if modifier.type=='ARMATURE':modifier.object=rig;modifier.show_viewport=True;modifier.show_render=True
+    if modifier.type=='ARMATURE':modifier.object=rig;modifier.show_viewport=True;modifier.show_render=True;modifier.use_deform_preserve_volume=args.preserve_volume
 rig.data.pose_position='POSE'
 
 def rotate_world(name,degrees):
@@ -50,7 +52,7 @@ def rotate_world(name,degrees):
     bpy.context.view_layer.update()
 
 for bone in args.hips.split(','):rotate_world(bone,-args.bend)
-for bone in args.knees.split(','):rotate_world(bone,args.bend)
+for bone in args.knees.split(','):rotate_world(bone,args.bend if args.lower_bend is None else args.lower_bend)
 output.parent.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.save_as_mainfile(filepath=str(output))
 print('SEATED_PROBE_SAVED',output,flush=True)

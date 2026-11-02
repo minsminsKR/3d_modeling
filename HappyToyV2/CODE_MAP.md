@@ -85,9 +85,10 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 `school-cleaning-logic`은 발동·지속·정지·복원을 검사하고 `school-cleaning-presentation`은 실제 카메라·학교 표면·밝기·바닥 반사 회귀를 검사한다. 원본과 프롬프트는
 `SourceArt/SchoolCleaningBlood/README.md`에 있다.
 정독반 창의 낮은 실과 이상현상 전용 실내 조명은 복도에서 착석한 인물을 관찰할 수
-있게 하며, 창 유리 충돌은 유지한다. 학생 LOD의 렌더 범위는 FBX의 실제 스케일에
+있게 하며, 창 유리 충돌은 유지한다. 정독반 천장등과 창문 빛은 다른 교실보다 약하고
+이상현상 전용 조명도 어둡게 설정한다. 학생 LOD의 렌더 범위는 FBX의 실제 스케일에
 맞춰 확장한다.
-학생 표면은 이상현상 수명 동안 원본 PBR 재질의 사본 3개에 원본 색상 기반의 약한 자체 발광을 더해 복도에서 구분하며, 종료 시 사본을 해제한다. `RuntimeMaterialVariantAnchors`는 이 정확한 텍스처·키워드 조합을 빌드에 유지한다. `school-new-anomalies-presentation`은 일반 카메라의 복도/근접 화면과 머리 추적을 확인한다. 학생 의복·무릎 메시 보수는 별도 미완료다.
+학생 표면은 이상현상 수명 동안 원본 PBR 재질의 사본 3개에 원본 색상 기반의 약한 자체 발광을 더해 복도에서 구분하며, 종료 시 사본을 해제한다. `RuntimeMaterialVariantAnchors`는 이 정확한 텍스처·키워드 조합을 빌드에 유지한다. `school-new-anomalies-presentation`은 일반 카메라의 복도/근접 화면과 머리 추적을 확인한다. 원본 리그 기준 무릎과 발을 부분 보정했지만 치마와 바지의 큰 찢김은 아직 보수해야 한다.
 개발용 `-v2-school-anomaly-review` 시작 인자 또는 플레이어 옆
 `school-anomaly-review.flag`는 첫 구간부터 네 종류를 순서대로 선택하며 저장에
 순서를 보존한다. 네 번째 다음 구간은 일반 RNG 추첨으로 돌아간다. 학생의 치마와

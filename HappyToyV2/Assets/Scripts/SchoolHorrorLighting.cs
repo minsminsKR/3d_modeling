@@ -86,7 +86,8 @@ namespace HappyToy.V2
             var model=SchoolRenewalModels.Attach("fluorescent-fixture",holder,
                 new Bounds(Vector3.zero,new Vector3(1.2f,.16f,.22f)));
             var color=corridor?new Color(.96f,.94f,.79f):warm?new Color(.72f,.82f,.85f):new Color(.60f,.74f,.86f);
-            Color glow=color*(corridor?3.8f:2.4f);
+            float roomGlow=!corridor&&!connecting?Mathf.Clamp01(intensity/2.2f):1;
+            Color glow=color*(corridor?3.8f:2.4f*roomGlow);
             var clones=new Dictionary<Material,Material>();var tubes=new List<Material>();
             foreach(var renderer in model.GetComponentsInChildren<MeshRenderer>(true))
             {
@@ -229,6 +230,7 @@ namespace HappyToy.V2
             foreach(var room in SchoolLoopPlan.Rooms)
             {
                 float middle=(room.Near+room.Far)*.5f;
+                float studyGain=room.Id=="study"?.30f:1f;
                 // A broad cold exterior spill reaches the visible furniture through real window openings.
                 for(int i=0;i<2;i++)
                 {
@@ -236,16 +238,16 @@ namespace HappyToy.V2
                     var light=new GameObject("Cold overcast classroom window spill").AddComponent<Light>();
                     light.transform.SetParent(sourceRoot.transform,false);light.transform.localPosition=new Vector3(-8.7f,2.35f,z);
                     light.type=LightType.Spot;light.transform.localRotation=Quaternion.Euler(6,90,0);
-                    light.color=new Color(.42f,.59f,.78f);light.intensity=2.7f;light.range=9;light.spotAngle=105;light.innerSpotAngle=65;
+                    light.color=new Color(.42f,.59f,.78f);light.intensity=2.7f*studyGain;light.range=9;light.spotAngle=105;light.innerSpotAngle=65;
                     light.shadows=LightShadows.Soft;light.shadowNearPlane=.08f;windowLights.Add(light);
                 }
                 // Dim room bounce is explicit local illumination; no emissive wall or opaque blue overlay.
                 var bounce=new GameObject("Cold classroom indirect fill").AddComponent<Light>();bounce.transform.SetParent(sourceRoot.transform,false);
                 bounce.transform.localPosition=new Vector3(-5.6f,2.45f,middle);bounce.type=LightType.Point;
-                bounce.color=new Color(.38f,.54f,.71f);bounce.intensity=.72f;bounce.range=6.3f;bounce.shadows=LightShadows.None;windowLights.Add(bounce);
+                bounce.color=new Color(.38f,.54f,.71f);bounce.intensity=.72f*studyGain;bounce.range=6.3f;bounce.shadows=LightShadows.None;windowLights.Add(bounce);
                 var transmission=new GameObject("Cold light transmitted through classroom glazing").AddComponent<Light>();
                 transmission.transform.SetParent(sourceRoot.transform,false);transmission.transform.localPosition=new Vector3(-2.58f,2.35f,middle);
-                transmission.type=LightType.Point;transmission.color=new Color(.39f,.57f,.78f);transmission.intensity=.60f;
+                transmission.type=LightType.Point;transmission.color=new Color(.39f,.57f,.78f);transmission.intensity=.60f*studyGain;
                 transmission.range=3.8f;transmission.shadows=LightShadows.None;windowLights.Add(transmission);
             }
         }

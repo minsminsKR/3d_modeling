@@ -171,7 +171,7 @@ namespace HappyToy.V2
             if(room.Id!="music")
             {
                 // Furniture, exterior glazing and the teaching wall are owned by the decay dressing.
-                world.Fixture(root,new Vector3(-5.8f,3.08f,middle),true,2.2f);
+                world.Fixture(root,new Vector3(-5.8f,3.08f,middle),true,room.Id=="study"?.66f:2.2f);
             }
         }
         void Door(SchoolLoopPlan.Room room,float z,string end)
