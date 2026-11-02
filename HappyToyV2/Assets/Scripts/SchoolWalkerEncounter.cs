@@ -106,9 +106,17 @@ namespace HappyToy.V2
             ApplyPose();
             if(Footsteps)Footsteps.Synchronize(route.CaptureState());
         }
-        // Ordinary looking/turning never resets the actor. Only a completed map
-        // traversal requests a new pass, and both old/new bodies must be hidden.
-        public void OnTraversal(int traversal)=>route.RequestTraversal(traversal);
+        // The actual seam is behind two opaque bends. Commit before the next
+        // rendered frame so a completed actor cannot remain in the new passage.
+        // Pending checkpoints from older saves still use the visibility gate below.
+        public void OnTraversal(int traversal)
+        {
+            route.RequestTraversal(traversal);
+            if(!route.TryCommitPending(true))return;
+            if(Dancing)route.CenterHallLane();
+            ApplyPose();
+            if(Footsteps)Footsteps.Synchronize(route.CaptureState());
+        }
         void LateUpdate()
         {
             if(!Prepared)return;

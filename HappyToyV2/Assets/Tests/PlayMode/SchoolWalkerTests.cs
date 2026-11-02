@@ -89,6 +89,31 @@ namespace HappyToy.V2.CloudTests
         }
 
         [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolWalkerCompletedAtAnomalyRetreatStartsTheNextPassAtTheSeam()
+        {
+            yield return BeginObservationSchool();
+            var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            var walker=One("SchoolWalkerEncounter");var identity=walker.GetEntityId();
+            foreach(int direction in new[]{-1,1})
+            {
+                Call(shell,"Pause");UseSchoolAnomalyFixture(world,"AwardPoster");
+                Call(walker,"RestoreTraversal",Get<int>(world,"Traversals"));
+                var parked=Call(walker,"CaptureState");Set(parked,"X",-3f);Set(parked,"Z",1f);
+                Set(parked,"Leg",2);Set(parked,"PassSide",0);Set(parked,"IdleBlend",1f);Set(parked,"PendingTraversal",-1);
+                Call(walker,"RestoreState",parked);
+                int expected=Get<int>(world,"Traversals")+1;
+                PlacePlayer(LoopOrigin+(direction>0?new Vector3(6.6f,.03f,46.2f):new Vector3(-6.6f,.03f,-7.8f)));
+                player.transform.rotation=Quaternion.Euler(0,direction>0?0:180,0);Call(shell,"Resume");yield return null;
+                Keys(Key.W);yield return Wait(()=>Get<int>(world,"Traversals")==expected,3,"The opaque seam did not transfer");Keys();
+                Assert.That(walker.GetEntityId(),Is.EqualTo(identity));
+                Assert.That(Get<int>(walker,"Traversal"),Is.EqualTo(expected),"The completed previous walker must not remain parked after transfer");
+                Assert.That(Get<int>(walker,"PendingTraversal"),Is.EqualTo(-1));
+                Assert.That(walker.transform.position.z-LoopOrigin.z,Is.GreaterThan(32f));
+                Assert.That(Get<float>(walker,"Distance"),Is.LessThan(1f));
+            }
+        }
+
+        [UnityTest,Timeout(180000)]
         public IEnumerator SchoolWalkerKeepsTheSameActorAcrossBothOpaqueSeamsAndOldSaveSpawnLanes()
         {
             yield return BeginObservationSchool();Call(Get<Component>(Get<Component>(Get<Component>(session,"Chapter"),"Loop"),"Anomalies"),"RestoreLegacy",0);var walker=One("SchoolWalkerEncounter");Call(walker,"RestoreTraversal",0);
@@ -120,14 +145,16 @@ namespace HappyToy.V2.CloudTests
             Set(parked,"Leg",2);Set(parked,"PassSide",0);Set(parked,"IdleBlend",1f);Set(parked,"PendingTraversal",-1);Call(walker,"RestoreState",parked);
             var bounds=(Bounds)Call(walker,"BodyBounds");
             foreach(int end in new[]{-1,1})foreach(float side in new[]{-1.5f,0,1.5f})foreach(float height in new[]{1.05f,1.65f})
+            foreach(var location in new[]{new Vector2(-3,1),new Vector2(.65f,2.2f),new Vector2(.65f,10),new Vector2(.65f,20),new Vector2(.65f,33)})
             {
                 var eye=LoopOrigin+new Vector3(end*6.6f+side,height,end<0?-7.9f:46.3f);
+                var centre=bounds.center+new Vector3(location.x+3,0,location.y-1);
                 for(int corner=0;corner<8;corner++)
                 {
                     var sign=new Vector3((corner&1)==0?-1:1,(corner&2)==0?-1:1,(corner&4)==0?-1:1);
-                    var ray=bounds.center+Vector3.Scale(bounds.extents,sign)-eye;
+                    var ray=centre+Vector3.Scale(bounds.extents,sign)-eye;
                     Assert.That(Physics.Raycast(eye,ray.normalized,ray.magnitude-.025f,1<<8,QueryTriggerInteraction.Ignore),Is.True,
-                        "The parked body is visible from a player transfer plane");
+                        "The walker route or next spawn is visible from a player transfer plane: "+location);
                 }
             }
         }

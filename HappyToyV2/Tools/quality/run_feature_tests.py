@@ -435,6 +435,14 @@ PROFILES["school-new-anomalies-logic"]=("CPU-only review sequence, award poster,
 PROFILES["school-cleaning-logic"]=("CPU-only invisible wet footsteps, pause and checkpoint restoration; no rendered or audio quality certification", [
     ("PlayMode", (PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",))])
 
+PROFILES["school-walker-seam-logic"]=("CPU-only completed walker renewal through both actual masked school seams, route rules, checkpoints and anomaly judgment", [
+    ("EditMode", ("HappyToy.V2.CoreTests.SchoolWalkerRouteTests", "HappyToy.V2.CoreTests.SchoolLoopPlanTests", "HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", CLOUD+"SchoolLoopCheckpointTests")),
+    ("PlayMode", (PLAY+"SchoolWalkerCompletedAtAnomalyRetreatStartsTheNextPassAtTheSeam",
+                  PLAY+"SchoolWalkerKeepsTheSameActorAcrossBothOpaqueSeamsAndOldSaveSpawnLanes",
+                  PLAY+"SchoolWalkerCheckpointJsonAndCopyRestoreTheExactPausedPassAndAuthoredPose",
+                  PLAY+"SchoolAnomalyCheckpointKeepsTheDrawTimersBabyPoseAndLegacyNormalMigration",
+                  PLAY+"SchoolReviewSequenceFollowsActualBackwardTransfers"))])
+
 PROFILES["school-new-anomalies-presentation"]=("Opt-in normal camera review of study students, award poster, bloody footprints and moving windows; logic plus rendered views, no player FPS certification", [
     ("PlayMode", (PLAY+"SchoolStudyStudentsRemainSeatedAndTurnOnlyHeads", PLAY+"SchoolAwardPosterChangesForAnomalyAndRestoresAfterward", PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange", PLAY+"SchoolMovingDoorsHoldDuringPauseAndRestoreClosed"))])
 
@@ -474,7 +482,7 @@ def commands(profile: str, project: Path, output: Path, unity: str = "unity",
         # `unity test` owns -batchmode and rejects it in passthrough arguments.
         # Keep the CLI's batch launch and our separate input/window safeguards.
         editor_args = ["-logFile", str(report.with_suffix(".editor.log"))]
-        if profile in ("hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
+        if profile in ("hand-animation-logic", "school-anomalies-logic", "school-new-anomalies-logic", "school-cleaning-logic", "school-walker-seam-logic", "local-shadow-logic") or profile in ("core", "lady-polish", "model-polish") and mode == "EditMode":
             editor_args += ["-nographics", "-noaudio"]
         if profile=="school-new-anomalies-presentation":
             editor_args += ["-noaudio"]

@@ -106,10 +106,10 @@ namespace HappyToy.V2
                 feet=Origin+new Vector3(pose.X,local.y,pose.Z);
                 session.player.TraverseWorldSeam(feet,Quaternion.Euler(0,pose.Yaw,0));
                 Traversals=Mathf.Clamp(Traversals+1,0,1000000);
-                Walker.OnTraversal(Traversals);
                 if(progressClock.JudgeTraversal(direction,Anomalies.Kind))
                     foreach(var clock in clocks)if(clock)clock.SetHours(progressClock.Hours);
                 Anomalies.CompleteTraversal(direction);
+                Walker.OnTraversal(Traversals);
             }
             previous=feet;
             foreach(var sign in signs)
