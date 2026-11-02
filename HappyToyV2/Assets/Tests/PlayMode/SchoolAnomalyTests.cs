@@ -265,6 +265,9 @@ namespace HappyToy.V2.CloudTests
             UseSchoolAnomalyFixture(world,"DancingWalker");
             Call(walker,"RestoreTraversal",Get<int>(world,"Traversals"));var motion=Get<Component>(walker,"Motion");
             var human=Get<Transform>(walker,"Visual");var creature=Get<Transform>(walker,"Creature");
+            var dread=Get<Component>(walker,"FlickerAtmosphere");
+            Assert.That(Get<bool>(dread,"Active"),Is.True,"The flicker must own its dread soundscape");
+            Assert.That(Get<AudioSource>(dread,"BreathSource").spatialBlend,Is.EqualTo(1),"Breathing must originate at the creature");
             Assert.That(human.gameObject.activeSelf,Is.False);Assert.That(creature.gameObject.activeSelf,Is.True);
             Assert.That(walker.transform.localPosition.x,Is.EqualTo(0).Within(.001f),"The flicker creature must approach along the centre of the hall");
             var creatureSkin=creature.GetComponentsInChildren<SkinnedMeshRenderer>().OrderByDescending(s=>s.sharedMesh.triangles.Length).First();
@@ -288,9 +291,11 @@ namespace HappyToy.V2.CloudTests
             Call(shell,"Resume");yield return Wait(()=>Get<double>(Call(walker,"CaptureState"),"Elapsed")>=heldTime+1.9,15,"The flicker clock did not advance");
             Assert.That(Get<bool>(walker,"Dancing")&&Get<bool>(motion,"Dancing"),Is.True);
             Assert.That(Get<float>(walker,"Distance")-distance,Is.GreaterThan(.1f),"Dark intervals advance the walker");
+            Assert.That(Get<int>(dread,"StepsPlayed"),Is.GreaterThan(0),"Moving flashes must trigger creature impacts");
             Assert.That(walker.transform.localPosition.x,Is.EqualTo(0).Within(.001f));
             Assert.That(bones.Select((b,i)=>Quaternion.Angle(before[i],b.localRotation)).Sum(),Is.GreaterThan(20),"The flashes must change the rig pose");
             Call(shell,"Pause");var paused=bones.Select(b=>(b.localPosition,b.localRotation)).ToArray();float stopped=Get<float>(walker,"Distance");yield return Delay(.2f);
+            Assert.That(Get<bool>(dread,"Held"),Is.True,"Pause must hold the creature soundscape");
             CollectionAssert.AreEqual(paused,bones.Select(b=>(b.localPosition,b.localRotation)).ToArray());
             Assert.That(Get<float>(walker,"Distance"),Is.EqualTo(stopped),"Pause must hold the flicker advance");
             ExportSchoolAnomalyFrame(world,"dancing-walker",new Vector3(-1.2f,.03f,25),new Vector3(.65f,1.3f,31));
@@ -445,6 +450,7 @@ namespace HappyToy.V2.CloudTests
             }
             finally{Object.Destroy(fitted);}
             Call(walker,"SetDancing",false);
+            Assert.That(Get<bool>(dread,"Active"),Is.False,"The soundscape must stop when the anomaly ends");
             Assert.That(human.gameObject.activeSelf,Is.True);Assert.That(creature.gameObject.activeSelf,Is.False);
             Assert.That(Get<bool>(lighting,"FlickerDark"),Is.False,"Leaving the event must restore its environment");
             Assert.That(Get<bool>(backlight,"Visible"),Is.False,"Leaving the event must extinguish the fixed fixture");

@@ -14,6 +14,7 @@ namespace HappyToy.V2
         public Renderer FixtureRenderer {get;private set;}
         public bool Visible=>Source&&Source.enabled;
         Material housingMaterial,lensMaterial;
+        float sourceIntensity,fillIntensity;
 
         public void Prepare()
         {
@@ -41,6 +42,7 @@ namespace HappyToy.V2
             fixture.transform.localPosition=settings.fixturePosition;fixture.transform.localRotation=Quaternion.Euler(settings.downAngle,180,0);
             Source=fixture.AddComponent<Light>();Source.type=LightType.Spot;Source.color=settings.lightColor;
             Source.intensity=settings.intensity;Source.range=settings.range;Source.spotAngle=settings.spotAngle;Source.innerSpotAngle=spotInner(settings.spotAngle);
+            sourceIntensity=settings.intensity;fillIntensity=settings.fillIntensity;
             Source.shadows=LightShadows.Soft;Source.shadowNearPlane=.08f;Source.bounceIntensity=0;Source.enabled=false;
             // A compact backscatter at the same installed fixture illuminates the
             // real end wall and adjacent wall/floor/ceiling behind the spotlight.
@@ -58,12 +60,13 @@ namespace HappyToy.V2
             var collider=item.GetComponent<Collider>();if(collider){collider.enabled=false;DestroyOwned(collider);}
             return item;
         }
-        public void Set(bool active,bool dark)
+        public void Set(bool active,bool dark,float gain=1)
         {
             bool lit=active&&!dark;
-            if(Source)Source.enabled=lit;
-            if(FillSource)FillSource.enabled=lit;
-            if(lensMaterial)lensMaterial.SetColor("_BaseColor",lit?new Color(2.0f,.07f,.025f,1):new Color(.08f,.004f,.002f,1));
+            gain=Mathf.Clamp01(gain);
+            if(Source){Source.enabled=lit;Source.intensity=sourceIntensity*gain;}
+            if(FillSource){FillSource.enabled=lit;FillSource.intensity=fillIntensity*gain;}
+            if(lensMaterial)lensMaterial.SetColor("_BaseColor",lit?new Color(2.0f*gain,.07f*gain,.025f*gain,1):new Color(.08f,.004f,.002f,1));
         }
         void OnDestroy()
         {

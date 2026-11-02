@@ -106,12 +106,13 @@ namespace HappyToy.V2
         {
             if(!advancing||seconds==0){Advance(seconds,advancing,playerX,playerZ,0);return;}
             double before=state.Elapsed;Advance(seconds,true,playerX,playerZ,0);
-            long flashes=SchoolWalkerFlicker.FlashIndex(state.Elapsed)-SchoolWalkerFlicker.FlashIndex(before);
-            for(long i=0;i<flashes;i++)SnapTowardExit(playerX,playerZ);
+            long first=SchoolWalkerFlicker.FlashIndex(before),last=SchoolWalkerFlicker.FlashIndex(state.Elapsed);
+            for(long flash=first+1;flash<=last;flash++)SnapTowardExit(playerX,playerZ,SchoolFlickerDread.Stride(flash));
         }
-        void SnapTowardExit(float playerX,float playerZ)
+        void SnapTowardExit(float playerX,float playerZ,float step)
         {
-            const float step=.45f;float oldX=state.X,oldZ=state.Z;
+            if(step<=0)return;
+            float oldX=state.X,oldZ=state.Z;
             if(state.Leg==0)
             {
                 float z=Math.Max(HallEndZ,state.Z-step);

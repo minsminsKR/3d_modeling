@@ -332,6 +332,25 @@ using `Tools/quality/run_isolated_desktop.py`; that tool cannot control windows
 created by external services that were already running. The actual game camera
 and GPU performance have not been reviewed.
 
+## Irregular approach and dread sound — 2026-11-02
+
+The user reported that the creature's approach did not feel frightening.
+`SchoolFlickerDread` replaces the uniform 0.45 m snap with a deterministic
+eight-flash pattern including a missed step and a 1.05 m lunge; the eight-step
+total stays 3.6 m, the player obstruction sweep is retained, and saved elapsed
+time reconstructs the same pattern. The ceiling fixtures and fixed emergency
+backlight vary in strength on each flash; their original values are restored.
+`SchoolFlickerAtmosphere` adds spatial low breathing, heavy movement contacts
+and metal strain using existing `ExternalAudio` recordings, plus a quiet air
+bed and distance-driven heartbeat. Pause and talisman hold the sounds, and
+leaving the event stops and releases them. No new third-party recordings were
+introduced; the existing `ThirdParty/Audio/Audio-Credits.txt` applies.
+
+`school-anomalies-logic` passed 158 EditMode and 13 focused PlayMode cases in
+`Builds/Verification/flicker-dread-v2-20261102`, including segment collision,
+pause and sound ownership. Those checks used `-nographics -noaudio` and do not
+establish the subjective fright, actual device mix, or game-camera appearance.
+
 
 2026-10-28 environment-backlight revision (supersedes the older visibility,
 red-hold and readability notes above): The creature material has no emission,

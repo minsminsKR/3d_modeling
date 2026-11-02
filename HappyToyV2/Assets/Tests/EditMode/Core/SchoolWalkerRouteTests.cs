@@ -6,6 +6,21 @@ namespace HappyToy.V2.CoreTests
     public sealed class SchoolWalkerRouteTests
     {
         [Test]
+        public void FlickerDreadBreaksTheGaitWithoutChangingTheAverageOrSavedPhase()
+        {
+            float total=0;bool stopped=false,lunged=false;
+            for(long flash=1;flash<=8;flash++)
+            {
+                float step=SchoolFlickerDread.Stride(flash);total+=step;
+                stopped|=step==0;lunged|=step>=1;
+                Assert.That(SchoolFlickerDread.Stride(flash+8),Is.EqualTo(step));
+            }
+            Assert.That(stopped&&lunged,Is.True);Assert.That(total,Is.EqualTo(3.6f).Within(.0001f));
+            Assert.That(SchoolFlickerDread.Light(0,0),Is.Not.EqualTo(SchoolFlickerDread.Light(0,1)));
+            Assert.That(SchoolFlickerDread.Nearness(20),Is.Zero);Assert.That(SchoolFlickerDread.Nearness(4),Is.EqualTo(1));
+            Assert.Throws<ArgumentOutOfRangeException>(()=>SchoolFlickerDread.Stride(0));
+        }
+        [Test]
         public void UnevenFourHertzRevealSnapsOnlyAtDarkOnset()
         {
             Assert.That(SchoolWalkerFlicker.Dark(.089),Is.False);
@@ -72,8 +87,11 @@ namespace HappyToy.V2.CoreTests
             Assert.That(route.Z,Is.EqualTo(SchoolWalkerRoute.StartZ));
             var held=route.CaptureState();route.AdvanceFlicker(.25,false,playerX,playerZ);
             Assert.That(route.CaptureState(),Is.EqualTo(held));
-            // Once the path is clear, the next flash can advance again.
+            // The second flash intentionally holds position even once clear.
             route.AdvanceFlicker(.1,true,5,0);route.AdvanceFlicker(.1,true,5,0);route.AdvanceFlicker(.1,true,5,0);
+            Assert.That(route.Z,Is.EqualTo(SchoolWalkerRoute.StartZ));
+            // The third flash advances again without tunnelling through the player.
+            route.AdvanceFlicker(.1,true,5,0);route.AdvanceFlicker(.1,true,5,0);
             Assert.That(route.Z,Is.EqualTo(SchoolWalkerRoute.StartZ-.45f).Within(.001f));
         }
         [Test]

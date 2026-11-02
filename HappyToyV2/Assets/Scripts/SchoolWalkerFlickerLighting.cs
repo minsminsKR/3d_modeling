@@ -69,13 +69,15 @@ namespace HappyToy.V2
             if(active)environment.SetFlickerBacklit(true);
             environment.SetFlickerDark(Dark);
             if(!active)environment.SetFlickerBacklit(false);
-            backlight.Set(active,Dark);
-            foreach(var fixture in fixtures)if(fixture)
+            long flash=SchoolWalkerFlicker.FlashIndex(elapsed);
+            backlight.Set(active,Dark,active?SchoolFlickerDread.Light(flash,0):1);
+            for(int i=0;i<fixtures.Length;i++)if(fixtures[i])
             {
+                var fixture=fixtures[i];
                 // The nine corridor spotlights flash at their real output along
                 // with the far emergency fixture. Room lights stay subdued.
                 bool corridor=fixture.Source&&fixture.Source.type==LightType.Spot;
-                fixture.SetEventGain(Dark?0:active?(corridor?1f:.06f):1f);
+                fixture.SetEventGain(Dark?0:active?(corridor?SchoolFlickerDread.Light(flash,i+1):.04f):1f);
             }
         }
     }

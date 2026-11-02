@@ -27,6 +27,7 @@ namespace HappyToy.V2
         public Transform Creature=>creature;
         public SchoolWalkerMotion Motion {get;private set;}
         public SchoolWalkerFootsteps Footsteps {get;private set;}
+        public SchoolFlickerAtmosphere FlickerAtmosphere {get;private set;}
         public CapsuleCollider BodyCollider {get;private set;}
         public bool Dancing {get;private set;}
         public bool CreatureInverted=>creatureMotion!=null&&creatureMotion.Inverted;
@@ -38,6 +39,7 @@ namespace HappyToy.V2
             if(value)route.CenterHallLane();
             if(Visual)Visual.gameObject.SetActive(!value);
             if(creature)creature.gameObject.SetActive(value);
+            if(FlickerAtmosphere)FlickerAtmosphere.SetActive(value,route.CaptureState());
             if(Motion){Motion.SetDancing(value);ApplyPose();}
             if(flicker!=null)flicker.SetActive(value,route.CaptureState().Elapsed);
             if(creatureVisibility!=null)creatureVisibility.Set(value,FlickerDark);
@@ -89,6 +91,7 @@ namespace HappyToy.V2
                 actor.creature.gameObject.SetActive(false);
                 actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
                 actor.Footsteps.Prepare(metresPerCycle);actor.Footsteps.Synchronize(actor.route.CaptureState());
+                actor.FlickerAtmosphere=SchoolFlickerAtmosphere.Build(owner,actor.transform);
                 actor.ApplyPose();return actor;
             }
             catch{Destroy(actor.gameObject);throw;}
@@ -96,7 +99,7 @@ namespace HappyToy.V2
         public SchoolWalkerRoute.State CaptureState()=>route.CaptureState();
         public void ValidateRestoreState(SchoolWalkerRoute.State state)=>SchoolWalkerRoute.Validate(state);
         public void RestoreState(SchoolWalkerRoute.State state)
-        {ValidateRestoreState(state);route.RestoreState(state);if(Dancing)route.CenterHallLane();ApplyPose();if(Footsteps)Footsteps.Synchronize(route.CaptureState());}
+        {ValidateRestoreState(state);route.RestoreState(state);if(Dancing)route.CenterHallLane();ApplyPose();if(Footsteps)Footsteps.Synchronize(route.CaptureState());if(FlickerAtmosphere)FlickerAtmosphere.Synchronize(route.CaptureState());}
         // Called while the checkpoint loading curtain covers the restored scene.
         public void RestoreTraversal(int traversal)
         {
@@ -110,6 +113,7 @@ namespace HappyToy.V2
             if(Dancing)route.CenterHallLane();
             ApplyPose();
             if(Footsteps)Footsteps.Synchronize(route.CaptureState());
+            if(FlickerAtmosphere)FlickerAtmosphere.Synchronize(route.CaptureState());
         }
         // The actual seam is behind two opaque bends. Commit before the next
         // rendered frame so a completed actor cannot remain in the new passage.
@@ -121,12 +125,13 @@ namespace HappyToy.V2
             if(Dancing)route.CenterHallLane();
             ApplyPose();
             if(Footsteps)Footsteps.Synchronize(route.CaptureState());
+            if(FlickerAtmosphere)FlickerAtmosphere.Synchronize(route.CaptureState());
         }
         void LateUpdate()
         {
             if(!Prepared)return;
             if(!session.InputAllowed||session.Finished||EnemyTimeStop.Active)
-            {if(Footsteps)Footsteps.Apply(route.CaptureState(),false);return;}
+            {if(Footsteps)Footsteps.Apply(route.CaptureState(),false);if(FlickerAtmosphere)FlickerAtmosphere.Tick(route.CaptureState(),false);return;}
             var camera=session.player?session.player.eyes:null;
             if(route.CaptureState().PendingTraversal>=0&&camera)
             {
@@ -142,6 +147,7 @@ namespace HappyToy.V2
             else route.Advance(dt,true,player.x,player.z);
             ApplyPose();
             if(Footsteps)Footsteps.Apply(route.CaptureState(),!Dancing,1);
+            if(FlickerAtmosphere)FlickerAtmosphere.Tick(route.CaptureState(),Dancing);
         }
         public Bounds BodyBounds()
         {
