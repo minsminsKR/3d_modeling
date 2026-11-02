@@ -28,25 +28,25 @@ namespace HappyToy.V2
             var emitter=new GameObject("Invisible cleaner wet footsteps");emitter.transform.SetParent(transform,false);
             audioSource=emitter.AddComponent<AudioSource>();audioSource.spatialBlend=1;audioSource.minDistance=2;audioSource.maxDistance=25;
             EnemyAcoustics.Bind(audioSource,emitter.transform,.85f,0);
-            shoe=new Texture2D(64,128,TextureFormat.RGBA32,false){name="Owned wet shoe mark",wrapMode=TextureWrapMode.Clamp};
+            shoe=new Texture2D(64,128,TextureFormat.RGBA32,false){name="Owned bloody shoe mark",wrapMode=TextureWrapMode.Clamp};
             var pixels=new Color[64*128];
             for(int y=0;y<128;y++)for(int x=0;x<64;x++)
             {
                 float u=(x-31.5f)/31.5f,v=(y-63.5f)/63.5f;
                 bool sole=u*u/.62f+Mathf.Pow((v-.27f)/.66f,2)<1;
                 bool heel=u*u/.34f+Mathf.Pow((v+.65f)/.27f,2)<1;
-                pixels[y*64+x]=new Color(.12f,.14f,.13f,(sole||heel)?.52f:0);
+                pixels[y*64+x]=new Color(.55f,.018f,.012f,(sole||heel)?.88f:0);
             }
             shoe.SetPixels(pixels);shoe.Apply();
             // Reuse the school's retained shader so player builds cannot strip it.
             var shader=world.Surfaces.Get("paper-aged",Color.white).shader;
             if(!shader)throw new InvalidOperationException("School surface shader is missing");
-            markMaterial=Transparent(shader,"Owned wet footmark",shoe);
-            particleMaterial=Transparent(shader,"Owned wet splash",Texture2D.whiteTexture);
+            markMaterial=Transparent(shader,"Owned bloody footmark",shoe);
+            particleMaterial=Transparent(shader,"Owned bloody splash",Texture2D.whiteTexture);
             var spray=new GameObject("Invisible cleaner water splash");spray.transform.SetParent(transform,false);spray.transform.localRotation=Quaternion.Euler(-90,0,0);
             splash=spray.AddComponent<ParticleSystem>();splash.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);var main=splash.main;
             main.playOnAwake=false;main.loop=true;main.duration=1;main.startLifetime=.32f;main.startSpeed=.75f;
-            main.startSize=.025f;main.startColor=new Color(.65f,.75f,.76f,.45f);main.gravityModifier=1;
+            main.startSize=.025f;main.startColor=new Color(.62f,.025f,.015f,.68f);main.gravityModifier=1;
             var emission=splash.emission;emission.enabled=false;
             var shape=splash.shape;shape.enabled=true;shape.shapeType=ParticleSystemShapeType.Cone;shape.angle=50;shape.radius=.08f;
             splash.GetComponent<ParticleSystemRenderer>().sharedMaterial=particleMaterial;
@@ -85,10 +85,10 @@ namespace HappyToy.V2
         }
         void EmitStep(bool audible)
         {
-                float z=8.5f+emitted*.62f,x=(emitted%2==0?-.13f:.13f);
+                float z=8.5f+emitted*.55f,x=.52f*Mathf.Sin(emitted*.65f)+(emitted%2==0?-.13f:.13f);
                 var mark=GameObject.CreatePrimitive(PrimitiveType.Quad);Destroy(mark.GetComponent<Collider>());
                 mark.name="Invisible cleaner wet footprint";mark.transform.SetParent(transform,false);
-                mark.transform.localPosition=new Vector3(x,.012f,z);mark.transform.localRotation=Quaternion.Euler(90,0,0);
+                mark.transform.localPosition=new Vector3(x,.012f,z);mark.transform.localRotation=Quaternion.Euler(90,Mathf.Atan2(.52f*.65f*Mathf.Cos(emitted*.65f),.55f)*Mathf.Rad2Deg,0);
                 mark.transform.localScale=new Vector3(.16f,.31f,1);mark.GetComponent<MeshRenderer>().sharedMaterial=markMaterial;marks.Add(mark);
                 if(audible)
                 {

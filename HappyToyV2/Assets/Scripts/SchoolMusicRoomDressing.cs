@@ -58,8 +58,9 @@ namespace HappyToy.V2
             {
                 float z=26.1f+i*2.6f;
                 world.Box(root,"Music exterior window dark recess",new Vector3(-9.285f,1.84f,z),new Vector3(.035f,1.48f,1.65f),world.Surfaces.Get("painted-metal",new Color(.06f,.08f,.085f)));
-                SchoolRenewalModels.Attach("classroom-window",root,
+                var window=SchoolRenewalModels.Attach("classroom-window",root,
                     new Bounds(new Vector3(-9.20f,1.84f,z),new Vector3(1.65f,1.6f,.08f)),-90);
+                window.name="School moving window visual";world.MovingWindows.Register(window,1.65f*.38f);
             }
             foreach(float x in new[]{-7.7f,-4.3f})foreach(float z in new[]{27.2f,31.0f})world.Fixture(root,new Vector3(x,3.08f,z),true,3.0f);
         }

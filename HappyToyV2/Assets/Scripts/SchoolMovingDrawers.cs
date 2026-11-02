@@ -30,7 +30,7 @@ namespace HappyToy.V2
             if(!active||!advancing)return;
             elapsed=Mathf.Min(1000000,elapsed+Mathf.Max(0,delta));
             for(int i=0;i<drawers.Count;i++)if(drawers[i])
-                drawers[i].localPosition=new Vector3(0,0,-.34f*(1-Mathf.Cos(elapsed*3.1f+i*.37f))*.5f);
+                drawers[i].localPosition=new Vector3(0,0,-.34f*SchoolFrenzyMotion.Amount(elapsed,i,1));
         }
     }
 }

@@ -176,8 +176,9 @@ namespace HappyToy.V2
                 float z=first+i*spacing;
                 Box("Cold exterior window recess",new Vector3(-9.285f,1.83f,z),new Vector3(.032f,1.60f,1.72f),dark);
                 Box("Grimed old exterior glass",new Vector3(-9.25f,1.83f,z),new Vector3(.018f,1.50f,1.61f),surfaces.Glass);
-                SchoolRenewalModels.Attach("classroom-window",root,
+                var window=SchoolRenewalModels.Attach("classroom-window",root,
                     new Bounds(new Vector3(-9.22f,1.83f,z),new Vector3(1.72f,1.66f,.065f)),-90);
+                window.name="School moving window visual";world.MovingWindows.Register(window,1.72f*.38f);
             }
         }
         void CorridorStorage()

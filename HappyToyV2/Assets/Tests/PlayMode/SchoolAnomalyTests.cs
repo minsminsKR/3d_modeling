@@ -77,6 +77,11 @@ namespace HappyToy.V2.CloudTests
             Call(shell,"Pause");int held=Get<int>(cleaning,"StepsEmitted");yield return Delay(.3f);
             Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.EqualTo(held));
             Assert.That(cleaning.GetComponentsInChildren<Transform>().Count(t=>t.name=="Invisible cleaner wet footprint"),Is.EqualTo(held));
+            var firstMark=cleaning.GetComponentsInChildren<Transform>().First(t=>t.name=="Invisible cleaner wet footprint");
+            var bloodTexture=(Texture2D)firstMark.GetComponent<Renderer>().sharedMaterial.GetTexture("_BaseMap");
+            var blood=bloodTexture.GetPixel(32,80);
+            Assert.That(blood.r,Is.GreaterThan(blood.g*5),"The visible footprint must be red");
+            ExportSchoolAnomalyFrame(world,"bloody-footprints",new Vector3(0,.03f,7.2f),new Vector3(0,.02f,9.5f));
             var saved=Call(director,"Capture");Call(director,"Restore",saved,Get<int>(world,"Traversals"));
             cleaning=Get<Component>(director,"Cleaning");
             Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.EqualTo(held),"Loading must reconstruct existing wet marks");
@@ -91,20 +96,32 @@ namespace HappyToy.V2.CloudTests
             var root=Get<Transform>(world,"Root");
             var hinges=root.GetComponentsInChildren<Transform>().Where(t=>t.name=="School classroom door hinge").ToArray();
             var drawers=root.GetComponentsInChildren<Transform>().Where(t=>t.name=="School desk sliding drawer").ToArray();
+            var windows=root.GetComponentsInChildren<Transform>().Where(t=>t.name=="School moving window visual").ToArray();
+            var windowRest=windows.Select(w=>w.localPosition).ToArray();
             Assert.That(hinges.Length,Is.GreaterThan(0));
             Assert.That(drawers.Length,Is.GreaterThan(0));
+            Assert.That(windows.Length,Is.GreaterThan(1));
+            Assert.That(root.GetComponentsInChildren<Collider>().Any(c=>c.name=="Closed classroom window glass"&&c.enabled),Is.True);
             Assert.That(hinges.Any(h=>h.GetComponentInChildren<BoxCollider>()),Is.True);
             Call(shell,"Pause");UseSchoolAnomalyFixture(world,"MovingFurniture");Call(shell,"Resume");
             yield return Delay(.5f);
             Assert.That(hinges.Any(h=>Quaternion.Angle(h.localRotation,Quaternion.identity)>5),Is.True);
             Assert.That(drawers.Any(d=>d.localPosition.z<-.02f),Is.True);
+            Assert.That(windows.Select((w,i)=>Vector3.Distance(w.localPosition,windowRest[i])).Max(),Is.GreaterThan(.02f));
+            ExportSchoolAnomalyFrame(world,"moving-windows-a",new Vector3(1f,.03f,17),new Vector3(-2.2f,1.55f,17));
             Call(shell,"Pause");var held=hinges.Select(h=>h.localRotation).ToArray();yield return Delay(.2f);
             CollectionAssert.AreEqual(held,hinges.Select(h=>h.localRotation).ToArray());
             var heldDrawers=drawers.Select(d=>d.localPosition).ToArray();yield return Delay(.2f);
             CollectionAssert.AreEqual(heldDrawers,drawers.Select(d=>d.localPosition).ToArray());
+            var heldWindows=windows.Select(w=>w.localPosition).ToArray();yield return Delay(.2f);
+            CollectionAssert.AreEqual(heldWindows,windows.Select(w=>w.localPosition).ToArray());
+            var savedFurniture=Call(Get<Component>(world,"Anomalies"),"Capture");
+            Call(Get<Component>(world,"Anomalies"),"Restore",savedFurniture,Get<int>(world,"Traversals"));
+            CollectionAssert.AreEqual(heldWindows,windows.Select(w=>w.localPosition).ToArray(),"Window positions must resume from the saved event time");
             UseSchoolAnomalyFixture(world,"Normal");
             Assert.That(hinges.All(h=>Quaternion.Angle(h.localRotation,Quaternion.identity)<.01f),Is.True);
             Assert.That(drawers.All(d=>d.localPosition==Vector3.zero),Is.True);
+            CollectionAssert.AreEqual(windowRest,windows.Select(w=>w.localPosition).ToArray());
             Call(shell,"Resume");
         }
         [UnityTest,Timeout(180000)]

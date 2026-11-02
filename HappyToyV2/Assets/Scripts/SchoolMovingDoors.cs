@@ -27,11 +27,18 @@ namespace HappyToy.V2
             for(int i=0;i<doors.Count;i++)
             {
                 var door=doors[i];if(!door.hinge)continue;
-                var before=door.hinge.localRotation;
-                float amount=(1-Mathf.Cos(elapsed*2.6f+i*.31f))*.5f;
-                door.hinge.localRotation=Quaternion.Euler(0,-85*amount,0);
-                if(player&&door.leaf&&door.leaf.enabled&&Physics.ComputePenetration(door.leaf,door.leaf.transform.position,door.leaf.transform.rotation,
-                    player,player.transform.position,player.transform.rotation,out _,out _))door.hinge.localRotation=before;
+                float amount=SchoolFrenzyMotion.Amount(elapsed,i,0);
+                float from=door.hinge.localEulerAngles.y,to=-85*amount;
+                float arc=Mathf.DeltaAngle(from,to);
+                int steps=Mathf.Max(1,Mathf.CeilToInt(Mathf.Abs(arc)/5));
+                var safe=door.hinge.localRotation;
+                for(int step=1;step<=steps;step++)
+                {
+                    door.hinge.localRotation=Quaternion.Euler(0,from+arc*step/steps,0);
+                    if(player&&door.leaf&&door.leaf.enabled&&Physics.ComputePenetration(door.leaf,door.leaf.transform.position,door.leaf.transform.rotation,
+                        player,player.transform.position,player.transform.rotation,out _,out _)){door.hinge.localRotation=safe;break;}
+                    safe=door.hinge.localRotation;
+                }
             }
         }
     }

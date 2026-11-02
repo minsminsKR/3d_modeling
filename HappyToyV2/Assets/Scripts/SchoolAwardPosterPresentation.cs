@@ -14,7 +14,7 @@ namespace HappyToy.V2
         public void Prepare(SchoolLoopWorld world)
         {
             var normalTexture=Resources.Load<Texture2D>("SchoolAwardPoster/poster-normal");
-            var ghostTexture=Resources.Load<Texture2D>("SchoolAwardPoster/poster-anomaly-ghost");
+            var ghostTexture=Resources.Load<Texture2D>("SchoolAwardPoster/poster-anomaly-specter");
             if(!normalTexture||!ghostTexture)throw new InvalidOperationException("School award poster textures are missing");
             var source=world.Surfaces.Get("paper-aged",Color.white);
             normal=MaterialFor(world,source,normalTexture,"Normal school award poster");

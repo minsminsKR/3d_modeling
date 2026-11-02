@@ -68,8 +68,8 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 | 학교 이상 판정·베이비·점멸·소등 | `Core/SchoolAnomalyDeck`은 첫 정상·50% 추첨·정상3연속 제한·복원 가능한 RNG를, `Core/SchoolAnomalyEventClock`은 정독반 트리거 이후 Baby 60초 추격과 별도 9등 소등/완전 암전5초를 소유한다. `SchoolAnomalyDirector`가 실제 위치·전환·이벤트 수명을 연결한다. `SchoolBabyEncounter`는 기존 Baby 모델/PBR/cry/chase를 2/3 크기로 재사용하며, 정독반 통과 시 전체 형광등을 즉시 끄고 뒤쪽 매점 앞에서 울다가 60초 뒤 추격·접촉 시 패배한다. `SchoolBabyAtmosphere`는 실제 시야에 들어온 뒤 심박과 점증하는 저음을 담당한다. Baby 퇴장은 같은 강체 전이와 1.8초 몸/울음 소거를 유지한다. `Core/SchoolWalkerFlicker`는 초당 평균 4회 불규칙 점등과 소등 중 자세/이동 경계를, `SchoolWalkerFlickerLighting`은 고정 역광과 복도 형광등의 동기 붉은 점멸 및 기존 학교 광원의 복원을 소유한다. 캡슐 충돌·장애물 정지를 유지한다. `SchoolBlackoutPresentation`은 Baby의 전체 소등과 별도 이상현상의 순차 소등을 소유하고 정상 노출·손전등을 유지한다. `SchoolAnomalyCheckpoint`는 기존 v3 RNG·타이머·Baby 위치와 목격 상태 및 보행자 시간을 보존한다. 예전 저장에 목격 필드가 없으면 미목격으로 복원한다. pause/부적은 동작·시간·음향을 멈춘다. | `school-anomalies-logic` (무화면·무음 Core/실제 장면·전환/충돌/저장/타이머, 시각·청음 검증 아님); 별도 환경에서 `school-anomalies`/`school-anomaly-presentation` 및 새 Windows 빌드; 재현 `SourceArt/SchoolAnomalies/README.md` |
 
 새 학교 이상현상의 학생과 머리 추적은 `SchoolStudyStudents`, 포스터는
-`SchoolAwardPosterPresentation`, 물 발자국은 `SchoolCleaningAnomaly`, 문·서랍은
-`SchoolMovingDoors`/`SchoolMovingDrawers`가 소유한다. 일반 진행은 첫 구간 정상,
+`SchoolAwardPosterPresentation`, 핏빛 발자국은 `SchoolCleaningAnomaly`, 문·서랍·창문은
+`SchoolMovingDoors`/`SchoolMovingDrawers`/`SchoolMovingWindows`가 소유한다. `Core/SchoolFrenzyMotion`은 복원 가능한 고속 비동기 움직임을 계산하며 창문 유리 충돌은 유지되고 문은 중간 회전을 검사해 플레이어 관통을 방지한다. 일반 진행은 첫 구간 정상,
 이후 기존 세 종류와 새 네 종류를 같은 가중치로 선택한다. `SchoolStudyStudentsImport`는
 지정 서비스 원본에서 착석·보정한 세 모델의 50k/12k/10k LOD·PBR을 가져온다.
 관련 CPU 규칙·장면 검사는 `school-new-anomalies-logic`, 기존 사건 회귀는

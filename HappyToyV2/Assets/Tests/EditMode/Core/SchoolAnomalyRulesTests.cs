@@ -5,6 +5,13 @@ namespace HappyToy.V2.CoreTests
 {
     public sealed class SchoolAnomalyRulesTests
     {
+        [Test] public void FurnitureFrenzyIsFastIndependentAndRestorable()
+        {
+            Assert.That(SchoolFrenzyMotion.Amount(.2f,0,0),Is.GreaterThan(.75f));
+            Assert.That(Math.Abs(SchoolFrenzyMotion.Amount(.2f,0,0)-SchoolFrenzyMotion.Amount(.2f,1,0)),Is.GreaterThan(.1f));
+            for(int i=0;i<50;i++)for(int family=0;family<3;family++)
+                Assert.That(SchoolFrenzyMotion.Amount(123.45f,i,family),Is.InRange(0f,1f));
+        }
         [Test] public void ReviewSequenceStartsWithStudentsAndSurvivesSaveRestore()
         {
             var deck=new SchoolAnomalyDeck(7,true);

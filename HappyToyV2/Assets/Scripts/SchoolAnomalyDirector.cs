@@ -49,6 +49,7 @@ namespace HappyToy.V2
             world.AwardPoster.SetAnomaly(Kind==SchoolAnomalyKind.AwardPoster);
             world.MovingDoors.SetActive(Kind==SchoolAnomalyKind.MovingFurniture);
             world.MovingDrawers.SetActive(Kind==SchoolAnomalyKind.MovingFurniture);
+            world.MovingWindows.SetActive(Kind==SchoolAnomalyKind.MovingFurniture);
             if(Kind==SchoolAnomalyKind.Cleaning){Cleaning=new GameObject("School cleaning anomaly").AddComponent<SchoolCleaningAnomaly>();Cleaning.Prepare(world);}
             if(Kind==SchoolAnomalyKind.StudyStudents){Students=new GameObject("School study students anomaly").AddComponent<SchoolStudyStudents>();Students.Prepare(world);}
         }
@@ -60,6 +61,7 @@ namespace HappyToy.V2
             if(Students)Students.Tick(session.player.eyes?session.player.eyes.transform.position:session.player.transform.position+Vector3.up*1.5f,advancing,Time.deltaTime);
             world.MovingDoors.Tick(Time.deltaTime,advancing);
             world.MovingDrawers.Tick(Time.deltaTime,advancing);
+            world.MovingWindows.Tick(Time.deltaTime,advancing);
             var local=world.Centre.InverseTransformPoint(session.player.transform.position);
             bool sign=Mathf.Abs(local.x)<=SchoolLoopPlan.HalfWidth&&local.z>=StudySignZ&&local.z<=SchoolLoopPlan.Length;
             clock.Step(Time.deltaTime,advancing,sign,false,Kind);
@@ -89,7 +91,7 @@ namespace HappyToy.V2
         {
             ValidateRestore(saved,traversal);deck.Restore(saved.deck);clock.Restore(saved.clock,Kind);ApplyPassage();
             if(Cleaning)Cleaning.RestoreElapsed(saved.cleaningElapsed,saved.cleaningTriggered);
-            if(Kind==SchoolAnomalyKind.MovingFurniture){world.MovingDoors.RestoreElapsed(saved.furnitureElapsed);world.MovingDrawers.RestoreElapsed(saved.furnitureElapsed);}
+            if(Kind==SchoolAnomalyKind.MovingFurniture){world.MovingDoors.RestoreElapsed(saved.furnitureElapsed);world.MovingDrawers.RestoreElapsed(saved.furnitureElapsed);world.MovingWindows.RestoreElapsed(saved.furnitureElapsed);}
             if(saved.baby.present){Blackout.ApplyBaby(true);Baby=SchoolBabyEncounter.Build(session,world.Centre);Baby.Restore(saved.baby,clock);}
             if(Kind==SchoolAnomalyKind.Blackout)Blackout.Apply(clock.Triggered,clock.Elapsed);
         }

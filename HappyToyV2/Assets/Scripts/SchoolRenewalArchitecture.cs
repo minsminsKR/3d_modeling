@@ -125,11 +125,15 @@ namespace HappyToy.V2
             var result=new Mesh{name="Owned source-derived school wall slice",indexFormat=IndexFormat.UInt32};
             result.SetVertices(positions);result.SetNormals(ns);result.SetTangents(ts);result.SetUVs(0,uvs);result.SetTriangles(triangles,0);result.RecalculateBounds();return result;
         }
-        public void Window(Transform parent,Bounds glass)
+        public void Window(Transform parent,Bounds glass,SchoolMovingWindows moving)
         {
             int count=Mathf.CeilToInt(glass.size.z/3.0f);float width=glass.size.z/count;
-            for(int i=0;i<count;i++)SchoolRenewalModels.Attach("classroom-window",parent,new Bounds(
-                new Vector3(glass.center.x,glass.center.y,glass.min.z+(i+.5f)*width),new Vector3(width,glass.size.y+.06f,.18f)),270);
+            for(int i=0;i<count;i++)
+            {
+                var visual=SchoolRenewalModels.Attach("classroom-window",parent,new Bounds(
+                    new Vector3(glass.center.x,glass.center.y,glass.min.z+(i+.5f)*width),new Vector3(width,glass.size.y+.06f,.18f)),270);
+                visual.name="School moving window visual";moving.Register(visual,width*.38f);
+            }
         }
         public Transform Door(Transform parent,Bounds leaf)
             // The source width includes its handle and hinges. The surrounding

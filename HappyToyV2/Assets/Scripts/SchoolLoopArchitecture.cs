@@ -153,7 +153,7 @@ namespace HappyToy.V2
             renewal.Wall(root,sill,0,sillHeight/3.25f);renewal.Wall(root,head,2.57f/3.25f,1);
             var glazing=new Bounds(new Vector3(-2.2f,(sillHeight+2.57f)*.5f,middle),new Vector3(.018f,2.57f-sillHeight,span));
             Box("Closed classroom window glass",glazing.center,glazing.size,glass,true);
-            renewal.Window(root,glazing);
+            renewal.Window(root,glazing,world.MovingWindows);
             foreach(float edge in new[]{room.WindowNear-.07f,room.WindowFar+.07f})
             {
                 var pilaster=new Bounds(new Vector3(-2.15f,1.625f,edge),new Vector3(.29f,3.25f,.17f));

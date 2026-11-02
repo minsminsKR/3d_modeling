@@ -435,8 +435,8 @@ PROFILES["school-new-anomalies-logic"]=("CPU-only review sequence, award poster,
 PROFILES["school-cleaning-logic"]=("CPU-only invisible wet footsteps, pause and checkpoint restoration; no rendered or audio quality certification", [
     ("PlayMode", (PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",))])
 
-PROFILES["school-new-anomalies-presentation"]=("Opt-in normal camera review of study students and award poster; logic plus rendered views, no player FPS certification", [
-    ("PlayMode", (PLAY+"SchoolStudyStudentsRemainSeatedAndTurnOnlyHeads", PLAY+"SchoolAwardPosterChangesForAnomalyAndRestoresAfterward"))])
+PROFILES["school-new-anomalies-presentation"]=("Opt-in normal camera review of study students, award poster, bloody footprints and moving windows; logic plus rendered views, no player FPS certification", [
+    ("PlayMode", (PLAY+"SchoolStudyStudentsRemainSeatedAndTurnOnlyHeads", PLAY+"SchoolAwardPosterChangesForAnomalyAndRestoresAfterward", PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange", PLAY+"SchoolMovingDoorsHoldDuringPauseAndRestoreClosed"))])
 
 PROFILES["school-anomaly-presentation"]=("All-nine-lamp blackout retains actual torch contribution; retiring Baby carries its rigid seam pose and fades body/cry with paused/talisman-safe cleanup, judgments, active-Baby save/cry/chase and normal camera regressions", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"CheckpointTrapCodecTests")),

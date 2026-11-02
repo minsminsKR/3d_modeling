@@ -20,6 +20,7 @@ namespace HappyToy.V2
         public SchoolAwardPosterPresentation AwardPoster {get;private set;}
         public SchoolMovingDoors MovingDoors {get;private set;}
         public SchoolMovingDrawers MovingDrawers {get;private set;}
+        public SchoolMovingWindows MovingWindows {get;private set;}
         public int Traversals {get;private set;}
         readonly SchoolProgressClock progressClock=new SchoolProgressClock();
         readonly List<SchoolProgressClockDisplay> clocks=new List<SchoolProgressClockDisplay>();
@@ -49,6 +50,7 @@ namespace HappyToy.V2
             HorrorSurfaces=new SchoolHorrorSurfaces(Surfaces);
             MovingDoors=Root.gameObject.AddComponent<SchoolMovingDoors>();MovingDoors.Prepare(owner);
             MovingDrawers=Root.gameObject.AddComponent<SchoolMovingDrawers>();
+            MovingWindows=Root.gameObject.AddComponent<SchoolMovingWindows>();
             var architecture=new SchoolLoopArchitecture(this);
             for(int index=-1;index<=1;index++)
             {
