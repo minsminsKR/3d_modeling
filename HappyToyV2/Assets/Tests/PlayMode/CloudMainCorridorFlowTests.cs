@@ -46,7 +46,7 @@ namespace HappyToy.V2.CloudTests
             Assert.That(root.Q<Label>("school-record-summary").text,Does.Contain("학교 탐색 0회"));
             yield return RecoveryClick("begin"); AssertMainCorridor();
             yield return RecoveryPulse(Key.Escape); Assert.That(RecoveryPage,Is.EqualTo("Pause"));
-            Assert.That(Get<VisualElement>(view,"Root").Q<Label>("pause-progress").text,Does.Contain("0 / 4"));
+            Assert.That(Get<VisualElement>(view,"Root").Q<Label>("pause-progress"),Is.Null,"Pause should not obscure the game with a progress card");
             Assert.That(Get<VisualElement>(view,"Root").Q<Button>("suspend-run"),Is.Not.Null);
             Assert.That(Get<VisualElement>(view,"Root").Q<Button>("suspend-chapter"),Is.Null);
             yield return RecoveryClick("journal"); root=Get<VisualElement>(view,"Root");

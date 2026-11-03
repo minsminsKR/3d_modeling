@@ -25,7 +25,6 @@ namespace HappyToy.V2
         VisualElement root, stage;
         Label navigationHelp;
         ShellLayout layout;
-        ShellPauseScreen pauseScreen;
         ShellSettingsScreen settingsScreen;
         ShellHudView hud;
         ShellFrameRateOverlay frameRateOverlay;
@@ -39,7 +38,6 @@ namespace HappyToy.V2
             Gamepad.current.dpad.ReadValue().sqrMagnitude > .1f || Gamepad.current.leftStick.ReadValue().sqrMagnitude > .25f);
         bool KeyboardSubmitIntent => Keyboard.current != null && (Keyboard.current.enterKey.isPressed || Keyboard.current.numpadEnterKey.isPressed);
         string NavigationHelp => PlayerControls.UsingGamepad ? "방향 패드  선택     아래 버튼  확인     오른쪽 버튼  뒤로" : "Tab / 방향키  선택      Enter  확인      Esc  뒤로";
-        string ControlInstructions => PlayerControls.UsingGamepad ? "왼쪽 스틱  이동 / 누르며 달리기\n오른쪽 스틱  시선 / RB 누르는 동안 아이템 선택\n아래 버튼  조사·문·은신\n오른쪽 버튼  낮은 자세 / 위 버튼  빛\nRT 선택 아이템 사용 / LT 콩알탄 조준 / LB 덫\nSelect 기록 / Start 일시정지" : "WASD  이동       마우스  시선\nShift  달리기     C / Ctrl  낮은 자세\nE  조사·문·은신·배터리·촛불\nTab 누르는 동안 아이템 선택 / 왼쪽 클릭 사용\nF 손전등 / Q 콩알탄 / R 덫 / 우클릭 콩알탄 조준\nJ  조사 기록      Esc  일시정지";
         string ControlsFooter => PlayerControls.UsingGamepad ? "RB  아이템 선택    RT  사용    LB  덫    위  빛    Start  메뉴" : "Tab  아이템 선택    왼쪽 클릭  사용    F  빛    J  기록    Esc  메뉴";
         GameShell.Page shown = (GameShell.Page)(-1);
         int journalStep = -1, journalExploration = -1;
@@ -174,7 +172,7 @@ namespace HappyToy.V2
             journalStep = session.RecordsRecovered;
             journalExploration = session.ExplorationCount;
             root.Clear(); threatVeil = null;
-            settingsScreen = null; pauseScreen = null; hud = null; frameRateOverlay = null; navigationHelp = null;
+            settingsScreen = null; hud = null; frameRateOverlay = null; navigationHelp = null;
             root.style.color = Paper;
             root.style.backgroundColor = shown == GameShell.Page.Playing ? Color.clear :
                 shown == GameShell.Page.Pause ? new Color(.008f, .012f, .014f, shell.HighContrast ? .78f : .48f) : new Color(.013f, .025f, .021f, .97f);
@@ -246,9 +244,10 @@ namespace HappyToy.V2
             }
             else if (!string.IsNullOrWhiteSpace(shell.ReloadError))
                 Small(shell.ReloadError, 150, 786, 1300, 48).style.color = Rust;
-            Small("HAPPY TOY  /  FORGOTTEN CORRIDOR", 150, 837, 580);
-            var navigation = navigationHelp = Small(NavigationHelp, 820, 837, 630);
-            navigation.style.unityTextAlign = TextAnchor.UpperRight;
+            if(shown!=GameShell.Page.Pause)Small("HAPPY TOY  /  FORGOTTEN CORRIDOR", 150, 837, 580);
+            var navigation = navigationHelp = shown==GameShell.Page.Pause
+                ? Small(NavigationHelp,175,837,700) : Small(NavigationHelp,820,837,630);
+            navigation.style.unityTextAlign = shown==GameShell.Page.Pause ? TextAnchor.UpperLeft : TextAnchor.UpperRight;
             string initialId = samePage && !string.IsNullOrEmpty(previousFocus) ? previousFocus :
                 shown == GameShell.Page.Title ? "begin" : shown == GameShell.Page.Pause ? "resume" : shown == GameShell.Page.Result ? "restart" : "back";
             var initial = stage.Q<Button>(initialId) ?? stage.Q<Button>("back");
@@ -280,11 +279,10 @@ namespace HappyToy.V2
         void BuildTitle() => BuildCinematicTitle();
         void BuildPause()
         {
-            pauseScreen = new ShellPauseScreen();
-            pauseScreen.Build(layout, ShellPauseScreen.State.Read(session, shell), new ShellPauseScreen.Actions {
+            new ShellPauseScreen().Build(layout, ShellPauseScreen.State.Read(session, shell), new ShellPauseScreen.Actions {
                 Resume = shell.Resume, Journal = shell.Journal, Settings = shell.Settings,
                 Restart = () => shell.Restart(true), Title = () => shell.Restart(false),
-                SuspendCorridor = shell.SuspendCorridor, SuspendChapter = shell.SuspendChapter }, ControlInstructions);
+                SuspendCorridor = shell.SuspendCorridor, SuspendChapter = shell.SuspendChapter });
         }
         void BuildJournal() => journalScreen.Build(layout, ShellJournalScreen.State.Read(session), shell.Back, Rebuild);
         void BuildSettings()
@@ -332,7 +330,6 @@ namespace HappyToy.V2
             {
                 shownGamepad = PlayerControls.UsingGamepad;
                 if (navigationHelp != null) navigationHelp.text = NavigationHelp;
-                pauseScreen?.UpdateControls(ControlInstructions);
                 hud?.UpdateControls(ControlsFooter);
             }
             if (shown != shell.Screen || shownContrast != shell.HighContrast || shownLargeText != shell.LargeText ||

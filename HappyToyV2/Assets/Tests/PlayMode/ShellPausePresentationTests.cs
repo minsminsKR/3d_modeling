@@ -28,7 +28,6 @@ namespace HappyToy.V2.CloudTests
             Assert.That(SystemInfo.graphicsDeviceType,Is.Not.EqualTo(GraphicsDeviceType.Null));
             Assert.That(Environment.GetCommandLineArgs().Contains("-noaudio"),Is.True,"Review must not play through the user's speakers");
             Call(shell,"RestoreDefaultSettings");yield return BeginObservationSchool();
-            Call(Get<Component>(Get<Component>(session,"Chapter"),"Loop"),"RestoreClock",3);
             PlacePlayer(LoopOrigin+new Vector3(0,.03f,12));
             var view=One("GameShellView");var camera=Get<Camera>(player,"eyes");
             camera.transform.rotation=Quaternion.LookRotation(LoopOrigin+new Vector3(0,1.5f,30)-camera.transform.position);
@@ -53,8 +52,9 @@ namespace HappyToy.V2.CloudTests
             var root=Get<VisualElement>(view,"Root");
             Assert.That(root.Q<VisualElement>("pause-scene-scrim"),Is.Not.Null);
             Assert.That(root.Q<Button>("resume"),Is.Not.Null);Assert.That(root.Q<Button>("settings"),Is.Not.Null);
-            Assert.That(root.Q<Button>("suspend-chapter"),Is.Not.Null);Assert.That(root.Q<Label>("pause-objective"),Is.Not.Null);
-            Assert.That(root.Q<Label>("pause-progress").text,Does.Contain("03:00"),"School pause must show the actual loop clock");
+            Assert.That(root.Q<Button>("suspend-chapter"),Is.Not.Null);
+            Assert.That(root.Q<Label>("pause-objective"),Is.Null,"The pause screen must not restore the right-hand explanation");
+            Assert.That(root.Q<Label>("pause-progress"),Is.Null,"Progress remains in the journal, not the pause screen");
             Assert.That(CloudExperienceTests.Layout(root),Is.Empty,"Pause layout clipped at "+width+"x"+height);
             var background=SchoolHorrorFrame(camera,width,height);var overlay=CloudExperienceTests.Read(Get<RenderTexture>(view,"CaptureTarget"));
             var composite=new Texture2D(width,height,TextureFormat.RGBA32,false);
