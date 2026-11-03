@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -11,10 +12,13 @@ namespace HappyToy.V2
     {
         public Light Source {get;private set;}
         public Light FillSource {get;private set;}
+        public Light FrontSource {get;private set;}
+        public IReadOnlyList<Light> FrontSources=>frontSources;
         public Renderer FixtureRenderer {get;private set;}
         public bool Visible=>Source&&Source.enabled;
         Material housingMaterial,lensMaterial;
         float sourceIntensity,fillIntensity;
+        readonly List<Light> frontSources=new List<Light>();
 
         public void Prepare()
         {
@@ -51,6 +55,17 @@ namespace HappyToy.V2
             FillSource=fill.AddComponent<Light>();FillSource.type=LightType.Point;FillSource.color=settings.lightColor;
             FillSource.intensity=settings.fillIntensity;FillSource.range=settings.fillRange;FillSource.shadows=LightShadows.None;
             FillSource.bounceIntensity=0;FillSource.enabled=false;
+            // Fixed real red fill from the entry side: reveals the folded body
+            // without making its skin emissive or attaching light to the actor.
+            foreach(float z in new[]{2.4f,14f,25.6f})
+            {
+                var front=new GameObject("Fixed red corridor front reveal");front.transform.SetParent(transform,false);
+                front.transform.localPosition=new Vector3(0,2.55f,z);front.transform.localRotation=Quaternion.Euler(2,0,0);
+                var lamp=front.AddComponent<Light>();lamp.type=LightType.Spot;lamp.color=new Color(1,.12f,.07f);
+                lamp.intensity=32;lamp.range=19;lamp.spotAngle=90;lamp.innerSpotAngle=60;
+                lamp.shadows=LightShadows.None;lamp.bounceIntensity=0;lamp.enabled=false;frontSources.Add(lamp);
+            }
+            FrontSource=frontSources[0];
         }
         static float spotInner(float angle)=>angle*.72f;
         GameObject Primitive(string name,PrimitiveType type,Vector3 position,Vector3 scale)
@@ -66,6 +81,7 @@ namespace HappyToy.V2
             gain=Mathf.Clamp01(gain);
             if(Source){Source.enabled=lit;Source.intensity=sourceIntensity*gain;}
             if(FillSource){FillSource.enabled=lit;FillSource.intensity=fillIntensity*gain;}
+            foreach(var front in frontSources)if(front){front.enabled=lit;front.intensity=32*gain;}
             if(lensMaterial)lensMaterial.SetColor("_BaseColor",lit?new Color(2.0f*gain,.07f*gain,.025f*gain,1):new Color(.08f,.004f,.002f,1));
         }
         void OnDestroy()

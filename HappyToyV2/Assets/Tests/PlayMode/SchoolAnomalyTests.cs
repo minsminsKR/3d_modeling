@@ -247,6 +247,50 @@ namespace HappyToy.V2.CloudTests
             }
         }
         [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolFlickerCreaturePursuesPlayerAndContactDefeats()
+        {
+            yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"DancingWalker");var walker=Get<Component>(world,"Walker");
+            var state=Call(walker,"CaptureState");Set(state,"X",0f);Set(state,"Z",25f);Set(state,"Yaw",180f);
+            Set(state,"Elapsed",0d);Set(state,"IdleElapsed",0d);Set(state,"FlickerPursuit",true);Call(walker,"RestoreState",state);
+            PlacePlayer(LoopOrigin+new Vector3(0,.03f,18));Call(shell,"Resume");
+            yield return Wait(()=>walker.transform.localPosition.z<24.5f,8,"The creature did not pursue the player down the hall");
+            Call(shell,"Pause");float stopped=walker.transform.localPosition.z;yield return Delay(.3f);
+            Assert.That(walker.transform.localPosition.z,Is.EqualTo(stopped).Within(.001f),"Pause must stop pursuit");
+            PlacePlayer(LoopOrigin+new Vector3(0,.03f,31));Call(shell,"Resume");
+            yield return Wait(()=>walker.transform.localPosition.z>stopped+.25f,8,"The creature did not turn to follow the player behind it");
+            Call(shell,"Pause");var saved=Call(walker,"CaptureState");var progress=Call(RequireType("SchoolWalkerProgress"),"Capture",saved);
+            var json=JsonUtility.ToJson(progress);var copy=JsonUtility.FromJson(json,RequireType("SchoolWalkerProgress"));
+            var restored=Call(copy,"ToState");Assert.That(Get<bool>(restored,"FlickerPursuit"),Is.True,"Saved pursuit state was lost");
+            Call(walker,"RestoreState",restored);var at=walker.transform.localPosition;
+            PlacePlayer(LoopOrigin+new Vector3(1.1f,.03f,at.z+.3f));Call(shell,"Resume");
+            yield return Wait(()=>Get<bool>(session,"Finished"),4,"Touching the corridor-filling creature did not defeat the player");
+        }
+        [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolFlickerCreatureLimbContactDefeats()
+        {
+            yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"DancingWalker");var walker=Get<Component>(world,"Walker");
+            var state=Call(walker,"CaptureState");Set(state,"X",0f);Set(state,"Z",20f);Set(state,"Yaw",180f);
+            Set(state,"Elapsed",.04d);Set(state,"IdleElapsed",0d);Set(state,"FlickerPursuit",true);Call(walker,"RestoreState",state);
+            var creature=Get<Transform>(walker,"Creature");var section=walker.transform.parent;
+            var names=new[]{"bone_5","bone_6","bone_7","bone_8","bone_9","bone_25","bone_26","bone_27","bone_28","bone_44","bone_45","bone_46","bone_48","bone_49","bone_50"};
+            Vector3? contact=null;
+            for(uint seed=1;seed<=8&&!contact.HasValue;seed++)
+            for(int i=0;i<32&&!contact.HasValue;i++)
+            {
+                Call(walker,"SetFlickerSeed",seed);
+                Set(state,"Elapsed",.04d+i*.25d);Call(walker,"RestoreState",state);
+                var candidates=creature.GetComponentsInChildren<Transform>(true).Where(j=>names.Contains(j.name))
+                    .Select(j=>section.InverseTransformPoint(j.position))
+                    .Where(p=>Mathf.Abs(p.x)<1.7f&&p.y>.15f&&p.y<1.65f&&Mathf.Abs(p.z-20)>1.05f&&p.z>3&&p.z<35).ToArray();
+                if(candidates.Length>0)contact=candidates[0];
+            }
+            Assert.That(contact.HasValue,Is.True,"The fixture needs a visible joint outside the central body contact zone");
+            PlacePlayer(LoopOrigin+new Vector3(contact.Value.x,.03f,contact.Value.z));Call(shell,"Resume");
+            yield return Wait(()=>Get<bool>(session,"Finished"),4,"Touching an extended creature limb did not defeat the player");
+        }
+        [UnityTest,Timeout(180000)]
         public IEnumerator SchoolWalkerSolidCapsuleAndFlickerTrembleAdvanceAndPause()
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");

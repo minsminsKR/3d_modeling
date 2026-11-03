@@ -416,6 +416,8 @@ PROFILES["school-anomalies-logic"]=("CPU-only school anomaly rules, physical sea
         PLAY+"SchoolFlickerFirstReviewFollowsActualBackwardTransfers",
         PLAY+"SchoolAnomalyFirstPassIsNormalAndActualSeamsJudgeBothDirections",
         PLAY+"SchoolWalkerSolidCapsuleAndFlickerTrembleAdvanceAndPause",
+        PLAY+"SchoolFlickerCreaturePursuesPlayerAndContactDefeats",
+        PLAY+"SchoolFlickerCreatureLimbContactDefeats",
         PLAY+"SchoolBabyBlackoutShopTimeoutContactAndPauseAreHeadlessSafe",
         PLAY+"SchoolBabyRetreatCarriesTheGhostThroughTheSeamAndFadesBodyAndVoiceDuringSafeDeparture",
         PLAY+"SchoolAnomalyCheckpointKeepsTheDrawTimersBabyPoseAndLegacyNormalMigration",

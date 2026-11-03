@@ -50,8 +50,8 @@ namespace HappyToy.V2.CloudTests
             var walker=Get<Component>(world,"Walker");Call(walker,"RestoreTraversal",Get<int>(world,"Traversals"));
             var state=Call(walker,"CaptureState");Set(state,"Elapsed",.01d);Set(state,"Z",33f);Call(walker,"RestoreState",state);
             var creature=Get<Transform>(walker,"Creature");var backlight=Get<Component>(walker,"Backlight");
-            var spot=Get<Light>(backlight,"Source");var fill=Get<Light>(backlight,"FillSource");
-            Assert.That(spot&&fill&&spot.enabled&&fill.enabled,Is.True,"The actual event lamps must both be lit");
+            var spot=Get<Light>(backlight,"Source");var fill=Get<Light>(backlight,"FillSource");var fronts=Get<System.Collections.Generic.IReadOnlyList<Light>>(backlight,"FrontSources");
+            Assert.That(spot&&fill&&fronts.Count==3&&spot.enabled&&fill.enabled&&fronts.All(light=>light&&light.enabled),Is.True,"The actual event lamps must all be lit");
             var eyes=Get<Camera>(player,"eyes");var torch=Get<Light>(player,"flashlight");
             float previousAspect=eyes.aspect;eyes.aspect=960f/540f;
             ((Behaviour)player).enabled=false;torch.enabled=false;
@@ -64,9 +64,9 @@ namespace HappyToy.V2.CloudTests
             {
                 creature.gameObject.SetActive(false);
                 lit=SchoolHorrorFrame(eyes,960,540);File.WriteAllBytes(Path.Combine(output,"01-corridor-lights-on.png"),lit.EncodeToPNG());
-                spot.enabled=false;fill.enabled=false;
+                spot.enabled=false;fill.enabled=false;foreach(var front in fronts)front.enabled=false;
                 dark=SchoolHorrorFrame(eyes,960,540);File.WriteAllBytes(Path.Combine(output,"00-corridor-lights-off.png"),dark.EncodeToPNG());
-                spot.enabled=true;fill.enabled=true;
+                spot.enabled=true;fill.enabled=true;foreach(var front in fronts)front.enabled=true;
                 var samples=BacklightGeometrySamples(eyes,lit,dark);
                 var originalSpotShadows=spot.shadows;
                 try

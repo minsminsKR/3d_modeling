@@ -85,6 +85,9 @@ namespace HappyToy.V2
             // The larger torso pushes two upright silhouettes through the
             // floor; reuse the checked folded pose for those exact steps.
             if(!Inverted&&((slot==1&&tremor==0)||(slot==3&&tremor==3)))fittedSlot=0;
+            if(!Inverted&&((slot==0&&tremor==1)||(slot==1&&tremor>0)||(slot==3&&tremor==0)||
+                (slot==9&&(tremor==1||tremor==3))||(slot==10&&(tremor==0||tremor==2))||
+                (slot==12&&tremor==1)||(slot==15&&tremor!=2)))fittedSlot=2;
             // The head is the floor contact when inverted. Keep the stronger
             // shaking to two independently checked inverted silhouettes so
             // nearby tendrils do not swing through the floor.
@@ -113,7 +116,7 @@ namespace HappyToy.V2
                     float minX=float.PositiveInfinity,maxX=float.NegativeInfinity;
                     foreach(var vertex in sample){float x=owner.InverseTransformPoint(skin.transform.TransformPoint(vertex)).x;minX=Mathf.Min(minX,x);maxX=Mathf.Max(maxX,x);}
                     float width=maxX-minX;if(width<.1f)throw new InvalidOperationException("Creature silhouette is invalid");
-                    widthScale*=Mathf.Sqrt(4.12f/width);
+                    widthScale*=Mathf.Sqrt(4.20f/width);
                 }
                 // Preserve the enlarged body while fitting its posed skin below
                 // the ceiling; each discrete pose gets its own vertical fit.
@@ -123,7 +126,7 @@ namespace HappyToy.V2
                     float minY=float.PositiveInfinity,maxY=float.NegativeInfinity;
                     foreach(var vertex in sample){float y=owner.InverseTransformPoint(skin.transform.TransformPoint(vertex)).y;minY=Mathf.Min(minY,y);maxY=Mathf.Max(maxY,y);}
                     float height=maxY-minY;if(height<.1f)throw new InvalidOperationException("Creature height is invalid");
-                    heightScale*=Mathf.Sqrt(3.14f/height);
+                    heightScale*=Mathf.Sqrt(3.18f/height);
                 }
                 visual.localScale=new Vector3(widthScale,heightScale,1);
                 if(!Inverted)
@@ -169,7 +172,7 @@ namespace HappyToy.V2
         {
             for(int i=0;i<joints.Length;i++)
             {
-                joints[i].localScale=restScale[i]*(i==2?2f:(i==5||i==9)?.60f:1f);
+                joints[i].localScale=restScale[i]*(i==2?2.5f:(i==5||i==9)?.53f:1f);
                 joints[i].localRotation=rest[i]*Quaternion.Euler(Signed(pose,i,0)*ranges[i],Signed(pose,i,1)*ranges[i],Signed(pose,i,2)*ranges[i]);
             }
         }

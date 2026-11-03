@@ -6,6 +6,18 @@ namespace HappyToy.V2.CoreTests
     public sealed class SchoolWalkerRouteTests
     {
         [Test]
+        public void FlickerPursuitCanReverseAndRestoreItsOptionalPosition()
+        {
+            var route=new SchoolWalkerRoute();route.CenterHallLane();route.BeginFlickerPursuit();
+            route.AdvancePursuitClock(.1);route.MovePursuit(0,30);route.MovePursuit(0,31);
+            var saved=route.CaptureState();Assert.That(saved.FlickerPursuit,Is.True);
+            Assert.That(saved.Z,Is.EqualTo(31));SchoolWalkerRoute.Validate(saved);
+            var restored=new SchoolWalkerRoute();restored.RestoreState(saved);Assert.That(restored.CaptureState(),Is.EqualTo(saved));
+            Assert.Throws<ArgumentException>(()=>restored.MovePursuit(9,20));
+            restored.MovePursuit(-6.6f,1);restored.MovePursuit(-6.6f,-2);
+            SchoolWalkerRoute.Validate(restored.CaptureState());
+        }
+        [Test]
         public void FlickerDreadBreaksTheGaitWithoutChangingTheAverageOrSavedPhase()
         {
             float total=0;bool stopped=false,lunged=false;

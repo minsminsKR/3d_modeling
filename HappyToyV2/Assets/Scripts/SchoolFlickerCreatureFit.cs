@@ -16,10 +16,14 @@ namespace HappyToy.V2
             }
             // The hall and its left elbow overlap in the 4.4m square. Switch
             // to the elbow rectangle only once the actor reaches its centre.
-            bool elbow=position.z<=SchoolWalkerRoute.HallEndZ+.001f;
-            float left=elbow?-SchoolLoopPlan.ConnectorOuterX+.12f:-SchoolLoopPlan.HalfWidth+.12f;
-            float right=SchoolLoopPlan.HalfWidth-.12f;
-            float near=.12f,far=elbow?SchoolLoopPlan.EntryDepth-.12f:SchoolLoopPlan.Length-.12f;
+            bool entry=position.z<=SchoolWalkerRoute.HallEndZ+.001f;
+            bool exit=position.z>=SchoolLoopPlan.Length-SchoolWalkerRoute.HallEndZ-.001f;
+            float left=entry?-SchoolLoopPlan.ConnectorOuterX+.12f:-SchoolLoopPlan.HalfWidth+.12f;
+            float right=exit?SchoolLoopPlan.ConnectorOuterX-.12f:SchoolLoopPlan.HalfWidth-.12f;
+            float near=exit?SchoolLoopPlan.Length-SchoolLoopPlan.EntryDepth+.12f:.12f;
+            float far=entry?SchoolLoopPlan.EntryDepth-.12f:SchoolLoopPlan.Length-.12f;
+            if(position.z<.12f&&position.x<=-SchoolLoopPlan.ConnectorInnerX-.12f){left=-SchoolLoopPlan.ConnectorOuterX+.12f;right=-SchoolLoopPlan.ConnectorInnerX-.12f;near=SchoolLoopPlan.EntryPortalZ+.12f;far=SchoolLoopPlan.EntryDepth-.12f;}
+            else if(position.z>SchoolLoopPlan.Length-.12f&&position.x>=SchoolLoopPlan.ConnectorInnerX+.12f){left=SchoolLoopPlan.ConnectorInnerX+.12f;right=SchoolLoopPlan.ConnectorOuterX-.12f;near=SchoolLoopPlan.Length-SchoolLoopPlan.EntryDepth+.12f;far=SchoolLoopPlan.ExitPortalZ-.12f;}
             return new Vector3(Axis(minX,maxX,position.x,left,right),1,Axis(minZ,maxZ,position.z,near,far));
         }
         static float Axis(float low,float high,float at,float minimum,float maximum)

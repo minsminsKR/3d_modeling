@@ -9,10 +9,11 @@ namespace HappyToy.V2
         public int version=1,traversal,pendingTraversal=-1,leg,passSide;
         public float x,z,yaw,distance,idleBlend;
         public double elapsed,idleElapsed;
+        public bool flickerPursuit;
         public SchoolWalkerRoute.State ToState()=>new SchoolWalkerRoute.State
         {
             Traversal=traversal,PendingTraversal=pendingTraversal,Leg=leg,PassSide=passSide,
-            X=x,Z=z,Yaw=yaw,Distance=distance,IdleBlend=idleBlend,Elapsed=elapsed,IdleElapsed=idleElapsed
+            X=x,Z=z,Yaw=yaw,Distance=distance,IdleBlend=idleBlend,Elapsed=elapsed,IdleElapsed=idleElapsed,FlickerPursuit=flickerPursuit
         };
         public void Validate(int loopTraversals)
         {
@@ -29,7 +30,7 @@ namespace HappyToy.V2
             {
                 traversal=state.Traversal,pendingTraversal=state.PendingTraversal,leg=state.Leg,passSide=state.PassSide,
                 x=state.X,z=state.Z,yaw=state.Yaw,distance=state.Distance,idleBlend=state.IdleBlend,
-                elapsed=state.Elapsed,idleElapsed=state.IdleElapsed
+                elapsed=state.Elapsed,idleElapsed=state.IdleElapsed,flickerPursuit=state.FlickerPursuit
             };
         }
     }

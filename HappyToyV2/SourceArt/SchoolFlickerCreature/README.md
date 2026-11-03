@@ -316,6 +316,32 @@ are cached per state. Calibration validates the script/prefab hashes at build.
 The user was running another local GPU workload during this change, so rendered
 game-camera and native-player appearance/performance checks remain outstanding.
 
+## Corridor-filling pursuit and direct contact — 2026-11-03
+
+The flicker creature now follows the player's current position on the school
+NavMesh. It holds the centre line in the straight hall and follows the bends
+when necessary. Its irregular flash-boundary strides remain deterministic, and
+the body zone or extended rig joints defeat the player on contact; a swept
+check prevents a snap from skipping across the player. World-wall line of
+sight and capsule checks prevent contact or travel through architecture. The
+ordinary pedestrian retains its previous harmless route and collision behavior.
+An optional `flickerPursuit` field on the existing walker progress preserves
+the threat position on save/restore; older saves default to the prior format.
+Pause and talisman still hold the creature and its sound.
+
+The chest chain is enlarged from 2.0 to 2.5, arms are folded to 0.53, and the
+nominal posed skin is fitted to 4.20 m by 3.18 m before the existing physical
+corridor compression. Three fixed, non-emissive-skin red front lights reveal the
+approaching shape. The 128 deformed poses were checked at 12 hall/connector
+positions including both bends. Actual game-camera frames are in
+`Builds/Verification/flicker-pursuit-camera-v2-20261103/frames`.
+
+An actual two-second Unity mixer recording containing a creature movement cue
+was captured at 48 kHz under process-only device mute in
+`Builds/Verification/flicker-pursuit-audio-v2-20261103/`. It measured peak
+0.312 and RMS 0.0298 without clipping; the device mute and backed-up settings
+were restored. This is mixer evidence, not a subjective listening assessment.
+
 ## Larger centred torso — 2026-11-02
 
 The chest/head chain is enlarged from 1.55 to 2.0 and the arm chains are folded

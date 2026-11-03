@@ -23,6 +23,8 @@ namespace HappyToy.V2
             clock?.Validate();
             walker?.Validate(traversals);
             anomalies?.Validate(traversals);
+            if(walker!=null&&walker.flickerPursuit&&(anomalies==null||anomalies.deck.Kind!=SchoolAnomalyKind.DancingWalker))
+                throw new ArgumentException("A pursuing flicker creature requires its active anomaly");
         }
     }
     public sealed partial class ChapterCheckpoint

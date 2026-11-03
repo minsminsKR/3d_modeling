@@ -20,6 +20,7 @@ namespace HappyToy.V2
         SchoolWalkerFlickerLighting flicker;
         SchoolFlickerCreatureVisibility creatureVisibility;
         SchoolFlickerCreatureGrounding creatureGrounding;
+        SchoolFlickerPursuit pursuit;
         public SchoolEmergencyBacklight Backlight {get;private set;}
         public bool FlickerDark=>flicker!=null&&flicker.Dark;
         public Transform Walker=>transform;
@@ -36,7 +37,8 @@ namespace HappyToy.V2
         public void SetDancing(bool value)
         {
             Dancing=value;
-            if(value)route.CenterHallLane();
+            if(value){if(!route.CaptureState().FlickerPursuit)route.CenterHallLane();route.BeginFlickerPursuit();}
+            else route.EndFlickerPursuit();
             if(Visual)Visual.gameObject.SetActive(!value);
             if(creature)creature.gameObject.SetActive(value);
             if(FlickerAtmosphere)FlickerAtmosphere.SetActive(value,route.CaptureState());
@@ -92,6 +94,7 @@ namespace HappyToy.V2
                 actor.Footsteps=actor.gameObject.AddComponent<SchoolWalkerFootsteps>();
                 actor.Footsteps.Prepare(metresPerCycle);actor.Footsteps.Synchronize(actor.route.CaptureState());
                 actor.FlickerAtmosphere=SchoolFlickerAtmosphere.Build(owner,actor.transform);
+                actor.pursuit=new SchoolFlickerPursuit(owner,centre,actor.route,actor.creature);
                 actor.ApplyPose();return actor;
             }
             catch{Destroy(actor.gameObject);throw;}
@@ -99,7 +102,7 @@ namespace HappyToy.V2
         public SchoolWalkerRoute.State CaptureState()=>route.CaptureState();
         public void ValidateRestoreState(SchoolWalkerRoute.State state)=>SchoolWalkerRoute.Validate(state);
         public void RestoreState(SchoolWalkerRoute.State state)
-        {ValidateRestoreState(state);route.RestoreState(state);if(Dancing)route.CenterHallLane();ApplyPose();if(Footsteps)Footsteps.Synchronize(route.CaptureState());if(FlickerAtmosphere)FlickerAtmosphere.Synchronize(route.CaptureState());}
+        {ValidateRestoreState(state);route.RestoreState(state);if(Dancing){if(!state.FlickerPursuit)route.CenterHallLane();route.BeginFlickerPursuit();}ApplyPose();if(Footsteps)Footsteps.Synchronize(route.CaptureState());if(FlickerAtmosphere)FlickerAtmosphere.Synchronize(route.CaptureState());}
         // Called while the checkpoint loading curtain covers the restored scene.
         public void RestoreTraversal(int traversal)
         {
@@ -110,7 +113,7 @@ namespace HappyToy.V2
                 if(Mathf.Abs(player.z-SchoolWalkerRoute.StartZ)<1.5f&&Mathf.Abs(player.x-SchoolWalkerRoute.DefaultLane)<1.5f)
                 {var initial=route.CaptureState();initial.X=player.x>=0?-SchoolWalkerRoute.PassLane:SchoolWalkerRoute.PassLane;route.RestoreState(initial);}
             }
-            if(Dancing)route.CenterHallLane();
+            if(Dancing){route.CenterHallLane();route.BeginFlickerPursuit();}
             ApplyPose();
             if(Footsteps)Footsteps.Synchronize(route.CaptureState());
             if(FlickerAtmosphere)FlickerAtmosphere.Synchronize(route.CaptureState());
@@ -122,7 +125,7 @@ namespace HappyToy.V2
         {
             route.RequestTraversal(traversal);
             if(!route.TryCommitPending(true))return;
-            if(Dancing)route.CenterHallLane();
+            if(Dancing){route.CenterHallLane();route.BeginFlickerPursuit();}
             ApplyPose();
             if(Footsteps)Footsteps.Synchronize(route.CaptureState());
             if(FlickerAtmosphere)FlickerAtmosphere.Synchronize(route.CaptureState());
@@ -139,11 +142,11 @@ namespace HappyToy.V2
                 float radius=Mathf.Max(.52f,current.extents.x,current.extents.z);
                 var spawn=new Bounds(section.TransformPoint(new Vector3(Dancing?0:SchoolWalkerRoute.DefaultLane,FeetHeight+Height*.5f,SchoolWalkerRoute.StartZ)),
                     new Vector3(radius*2,Mathf.Max(Height,current.size.y),radius*2));
-                if(route.TryCommitPending(PhysicallyHidden(camera,current)&&PhysicallyHidden(camera,spawn))){if(Dancing)route.CenterHallLane();ApplyPose();}
+                if(route.TryCommitPending(PhysicallyHidden(camera,current)&&PhysicallyHidden(camera,spawn))){if(Dancing){route.CenterHallLane();route.BeginFlickerPursuit();}ApplyPose();}
             }
             var player=section.InverseTransformPoint(session.player.transform.position);
             float dt=Mathf.Min(Time.deltaTime,.1f);
-            if(Dancing)route.AdvanceFlicker(dt,true,player.x,player.z);
+            if(Dancing)pursuit.Tick(dt);
             else route.Advance(dt,true,player.x,player.z);
             ApplyPose();
             if(Footsteps)Footsteps.Apply(route.CaptureState(),!Dancing,1);

@@ -17,6 +17,8 @@ namespace HappyToy.V2
             public int Traversal,PendingTraversal,Leg,PassSide;
             public float X,Z,Yaw,Distance,IdleBlend;
             public double Elapsed,IdleElapsed;
+            // Optional in old checkpoints: only the flicker creature pursues.
+            public bool FlickerPursuit;
         }
         State state;
         public SchoolWalkerRoute(){Reset(0);}
@@ -50,13 +52,28 @@ namespace HappyToy.V2
             bool elbow=value.Leg==1&&elbowFraction>=-.001f&&elbowFraction<=1.001f&&
                 value.X>=elbowMinX-.003f&&value.X<=elbowMaxX+.003f;
             bool waiting=value.Leg==2&&Math.Abs(value.X-EndX)<.001f&&Math.Abs(value.Z-EndZ)<.001f;
-            if(!hall&&!elbow&&!waiting)throw new ArgumentException("School walker pose is outside its physical route");
+            if(value.FlickerPursuit?!SchoolLoopPlan.Walkable(value.X,value.Z):!hall&&!elbow&&!waiting)
+                throw new ArgumentException("School walker pose is outside its physical route");
             if(value.Leg!=0&&value.PassSide!=0)throw new ArgumentException("A walker outside the hall cannot retain a passing lane");
         }
         public void RestoreState(State value){Validate(value);state=value;}
         // The flickering creature uses the centre of the main hall. Existing
         // checkpoint coordinates remain valid and normal pedestrians keep their lane.
         public void CenterHallLane(){if(state.Leg==0)state.X=0;}
+        public void BeginFlickerPursuit(){state.FlickerPursuit=true;state.PassSide=0;}
+        public void EndFlickerPursuit(){state.FlickerPursuit=false;}
+        public void AdvancePursuitClock(double seconds)
+        {
+            if(!state.FlickerPursuit||!Finite(seconds)||seconds<0)throw new ArgumentException("Active pursuit and finite time required");
+            state.Elapsed=Math.Min(MaximumTime,state.Elapsed+Math.Min(seconds,.1));
+        }
+        public void MovePursuit(float x,float z)
+        {
+            if(!state.FlickerPursuit||!SchoolLoopPlan.Walkable(x,z))throw new ArgumentException("Pursuit must stay on the school route");
+            float dx=x-state.X,dz=z-state.Z;float distance=(float)Math.Sqrt(Squared(dx,dz));
+            state.X=x;state.Z=z;state.Leg=0;state.PassSide=0;
+            if(distance>.000001f){state.Distance=Math.Min(10000000,state.Distance+distance);state.Yaw=((float)(Math.Atan2(dx,dz)*180/Math.PI)+360)%360;state.IdleBlend=0;}
+        }
         public void RequestTraversal(int traversal)
         {
             Traversal(traversal);
