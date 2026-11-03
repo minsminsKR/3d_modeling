@@ -19,7 +19,8 @@ namespace HappyToy.V2
             var normalTexture=Resources.Load<Texture2D>("SchoolAwardPoster/poster-normal");
             var ghostTexture=Resources.Load<Texture2D>("SchoolAwardPoster/poster-anomaly-specter");
             if(!normalTexture||!ghostTexture)throw new InvalidOperationException("School award poster textures are missing");
-            var source=world.Surfaces.Get("paper-aged",Color.white);
+            // The emissive template retains the required shader variant in Windows builds.
+            var source=world.Surfaces.Get("paper-aged",Color.white,new Color(.13f,.13f,.13f));
             normal=MaterialFor(world,source,normalTexture,"Normal school award poster");
             anomaly=MaterialFor(world,source,ghostTexture,"Haunted school award poster");
             foreach(Transform section in world.Root)
@@ -42,6 +43,11 @@ namespace HappyToy.V2
             var material=new Material(source){name=label};
             material.SetTexture("_BaseMap",texture);material.SetTextureScale("_BaseMap",Vector2.one);
             material.SetColor("_BaseColor",Color.white);material.SetFloat("_Cull",0);
+            // A low, even paper fill preserves the photograph in the dark hall
+            // without relying on the player aiming a flashlight at the wall.
+            material.SetTexture("_EmissionMap",texture);
+            material.SetColor("_EmissionColor",new Color(.13f,.13f,.13f));
+            material.EnableKeyword("_EMISSION");
             world.owned.Add(material);return material;
         }
         public void SetAnomaly(bool active)

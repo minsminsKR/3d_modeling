@@ -31,6 +31,8 @@ namespace HappyToy.V2
         readonly List<Light> windowLights=new List<Light>();
         readonly List<Color> nightWindowColors=new List<Color>();
         readonly List<float> nightWindowIntensities=new List<float>();
+        readonly List<Renderer> morningWindows=new List<Renderer>();
+        Material morningSky;
         Light morningSun;ColorAdjustments morningGrade;float morning;
         readonly Dictionary<Light,bool> flickerLightStates=new Dictionary<Light,bool>();
         readonly Dictionary<Light,bool> backlitLightStates=new Dictionary<Light,bool>();
@@ -82,10 +84,12 @@ namespace HappyToy.V2
             for(int i=0;i<windowLights.Count;i++)if(windowLights[i])
             {
                 windowLights[i].color=Color.Lerp(nightWindowColors[i],new Color(1f,.72f,.38f),morning);
-                windowLights[i].intensity=nightWindowIntensities[i]*Mathf.Lerp(1f,3.2f,morning);
+                windowLights[i].intensity=nightWindowIntensities[i]*Mathf.Lerp(1f,7f,morning);
             }
-            if(morningSun)morningSun.intensity=1.15f*morning;
-            if(morningGrade){morningGrade.postExposure.value=Mathf.Lerp(-.10f,.35f,morning);morningGrade.saturation.value=Mathf.Lerp(-18,0,morning);}
+            if(morningSun)morningSun.intensity=2.2f*morning;
+            if(morningSky)morningSky.SetColor("_EmissionColor",Color.white*(.58f*morning));
+            foreach(var window in morningWindows)if(window)window.enabled=morning>.001f;
+            if(morningGrade){morningGrade.postExposure.value=Mathf.Lerp(-.10f,1.0f,morning);morningGrade.saturation.value=Mathf.Lerp(-18,0,morning);}
         }
 
         public static Light Fixture(SchoolLoopWorld world,Transform parent,Vector3 at,bool warm,float intensity)
@@ -172,6 +176,14 @@ namespace HappyToy.V2
             var vignette=profile.Add<Vignette>(true);vignette.intensity.value=.12f;vignette.smoothness.value=.65f;
             var blur=profile.Add<MotionBlur>(true);blur.intensity.Override(0);
             volume=root.gameObject.AddComponent<Volume>();volume.isGlobal=true;volume.priority=55;volume.sharedProfile=profile;
+            var sky=new Texture2D(2,32,TextureFormat.RGBA32,false){name="Owned morning window sky",wrapMode=TextureWrapMode.Clamp};
+            var skyPixels=new Color[64];
+            for(int y=0;y<32;y++)for(int x=0;x<2;x++)
+                skyPixels[y*2+x]=Color.Lerp(new Color(.90f,.72f,.49f),new Color(.58f,.72f,.80f),y/31f);
+            sky.SetPixels(skyPixels);sky.Apply(false,true);owned.Add(sky);
+            morningSky=new Material(world.Surfaces.Get("paper-aged",Color.black,Color.white)){name="Owned dawn sky behind school windows"};
+            morningSky.SetTexture("_BaseMap",sky);morningSky.SetTexture("_EmissionMap",sky);
+            morningSky.SetColor("_BaseColor",Color.black);morningSky.SetColor("_EmissionColor",Color.black);morningSky.SetFloat("_Cull",0);owned.Add(morningSky);
             pendingReflection=new Cubemap(8,TextureFormat.RGBAHalf,true){name="Owned black reflection during school capture initialization"};
             for(int mip=0;mip<4;mip++)
             {
@@ -183,6 +195,7 @@ namespace HappyToy.V2
             {
                 if(!chunk.name.StartsWith("School loop section",StringComparison.Ordinal))continue;
                 AddWindows(chunk);
+                AddMorningWindows(chunk);
                 var exit=SchoolExitSign.Build(world,chunk,new Vector3(0,2.91f,35.9f));
                 additions.Add(exit.gameObject);
             }
@@ -272,6 +285,20 @@ namespace HappyToy.V2
                 transmission.range=3.8f;transmission.shadows=LightShadows.None;windowLights.Add(transmission);
             }
         }
+        void AddMorningWindows(Transform chunk)
+        {
+            // The authored exterior windows have dark recesses. A sky plane is
+            // placed behind their existing glass and frames only during sunrise.
+            foreach(float z in new[]{8f,10.7f,16.3f,18.8f,21.3f,26.1f,28.7f,31.3f})
+            {
+                var plane=GameObject.CreatePrimitive(PrimitiveType.Quad);Destroy(plane.GetComponent<Collider>());
+                plane.name="Morning sky behind exterior window";plane.layer=8;plane.transform.SetParent(chunk,false);
+                plane.transform.localPosition=new Vector3(-9.262f,1.83f,z);plane.transform.localRotation=Quaternion.Euler(0,90,0);
+                plane.transform.localScale=new Vector3(1.61f,1.50f,1);
+                var renderer=plane.GetComponent<Renderer>();renderer.sharedMaterial=morningSky;renderer.enabled=false;
+                renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveShadows=false;morningWindows.Add(renderer);additions.Add(plane);
+            }
+        }
         void AddHaze()
         {
             var shader=Resources.Load<Shader>("SchoolHorror/SchoolLightHaze");
@@ -316,7 +343,7 @@ namespace HappyToy.V2
                 fogStart=RenderSettings.fogStartDistance,fogEnd=RenderSettings.fogEndDistance,
                 reflectionOverride=blackReflection,reflectionMode=RenderSettings.defaultReflectionMode,reflection=blackReflection?RenderSettings.customReflectionTexture:null});
             if(blackReflection){RenderSettings.defaultReflectionMode=DefaultReflectionMode.Custom;RenderSettings.customReflectionTexture=pendingReflection;}
-            var ambient=flickerDark?Color.black:flickerBacklit?new Color(.003f,.003f,.004f):Color.Lerp(new Color(.028f,.040f,.058f),new Color(.32f,.25f,.17f),morning);
+            var ambient=flickerDark?Color.black:flickerBacklit?new Color(.003f,.003f,.004f):Color.Lerp(new Color(.028f,.040f,.058f),new Color(.52f,.39f,.25f),morning);
             RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=ambient;
             RenderSettings.ambientSkyColor=RenderSettings.ambientEquatorColor=RenderSettings.ambientGroundColor=ambient;
             RenderSettings.ambientIntensity=.65f;var harmonics=new SphericalHarmonicsL2();harmonics.AddAmbientLight(ambient*.65f);RenderSettings.ambientProbe=harmonics;

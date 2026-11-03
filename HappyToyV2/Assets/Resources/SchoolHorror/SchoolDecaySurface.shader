@@ -245,8 +245,8 @@ Shader "HappyToy/SchoolDecaySurface"
                     if(_BloodSpread>.0001)
                     {
                         float2 school=PuddleUv(i)*max(1,_PuddleSpan);
-                        float front=_BloodSpread*64;
-                        float distanceFromStart=distance(school,float2(0,7.5))+(moisture.r-.5)*1.5;
+                        float front=pow(_BloodSpread,1.4)*64;
+                        float distanceFromStart=distance(school,float2(0,19))+(moisture.r-.5)*1.5;
                         blood=max(blood,1-smoothstep(front-1,front+1,distanceFromStart));
                     }
                     blood*=(_WorldFloor>.5?smoothstep(.08,.55,water):1);

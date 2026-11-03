@@ -81,7 +81,8 @@ namespace HappyToy.V2
             if(introWanted>introEmitted)
             {
                 introEmitted=introWanted;
-                audioSource.transform.localPosition=new Vector3(.2f,.1f,32f);
+                var position=FootstepPosition(introWanted-6);
+                audioSource.transform.localPosition=new Vector3(position.x,.1f,position.y);
                 audioSource.PlayOneShot(steps[(introWanted-1)%steps.Length]);
             }
             bloodWater.SetElapsed(Mathf.Max(0,elapsed-ForewarningSeconds));
@@ -100,11 +101,18 @@ namespace HappyToy.V2
             while(emitted<wanted)EmitStep(false);
         }
         static int StepsAt(float time)=>time<ForewarningSeconds?0:Mathf.FloorToInt((time-ForewarningSeconds)/StepInterval)+1;
+        // Negative indices are the five unseen steps leading to the first mark.
+        // One continuous path prevents a sudden jump when the footprints appear.
+        public static Vector2 FootstepPosition(int index)
+        {
+            float z=7.5f+Mathf.PingPong(11.5f-index*.52f,22f);
+            float x=.65f*Mathf.Sin(index*.36f)+(index%2==0?-.12f:.12f);
+            return new Vector2(x,z);
+        }
         void EmitStep(bool audible)
         {
-                float distance=emitted*.52f,z=7.5f+Mathf.PingPong(distance,22f);
-                float x=.65f*Mathf.Sin(emitted*.36f)+(emitted%2==0?-.12f:.12f);
-                float heading=((Mathf.FloorToInt(distance/22f)&1)==0)?1:-1;
+                float distance=emitted*.52f;var position=FootstepPosition(emitted);float x=position.x,z=position.y;
+                float heading=Mathf.Repeat(11.5f-distance,44f)<22f?-1:1;
                 int slot=emitted%MaximumVisibleMarks;
                 while(marks.Count<=slot)
                 {

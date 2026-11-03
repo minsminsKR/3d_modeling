@@ -20,6 +20,14 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 현재 이상현상은 베이비·적색 점멸 괴물·순차 소등·정독반 학생·상장 사진·핏발자국·움직이는 문/서랍/창문이다.
 상장은 멀리서 정상이고 접근하면 귀신으로 바뀌며 발견 상태를 선택적 저장 필드로 보존한다. 핏발자국은 멀리서 젖은 발소리가 먼저 들리고 3.6초 후 자국과 고인 물의 붉은 변화가 시작된다. 시계/저장/조명과 함께 `school-anomalies-logic`으로 검증한다. 실제 아침빛 인상과 발소리 청음은 별도의 그래픽·오디오 검토가 필요하다.
 
+학교 시청각 후속 점검은 `NativeSchoolMorningReview`를 Windows 플레이어의
+`-v2-school-morning-review-output <새 폴더> -batchmode -v2-audit-no-desktop-interaction`에서만 설치한다.
+격리된 학교와 명시적 이벤트/카메라 위치를 사용해 실제 카메라와 사용자 장치에 출력되지 않는
+프로세스 전용 음소거 상태의 listener PCM을 기록한다. 수동 조작·장치 출력·직접 청음 또는 FPS 인증은 아니다.
+핏발자국의 다섯 전조와 이후 자국은 `SchoolCleaningAnomaly.FootstepPosition`의 연속 경로를 공유한다.
+물의 붉은 물결은 첫 발자국 위치에서 천천히 확산한다. 아침 전용 창밖 하늘은 기존 창 유리 뒤에
+배치되고 창문 광원·앰비언트·노출과 함께 서서히 켜지며 학교 조명 범위에서만 소유·해제된다.
+
 레이디 자산 마감은 `SourceArt/Lady/polish_game.py` / `polish_far_lod.py`가 기존 생성 원본을
 사용해 UV·게임 PBR·원거리 메시·수직 지지를 정리한다. 원래 76개 관절 회전 곡선은
 그대로 보존한다. `LadyGameImport`는 FBX 전체 기준 포즈와 실제 움직이는 곡선을 유지하며

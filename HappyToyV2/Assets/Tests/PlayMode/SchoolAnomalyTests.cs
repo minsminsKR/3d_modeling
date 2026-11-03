@@ -84,6 +84,13 @@ namespace HappyToy.V2.CloudTests
             Call(cleaning,"Tick",.8f,true,new Vector3(0,0,8));
             Assert.That(Get<int>(cleaning,"ForewarningSteps"),Is.GreaterThan(0));
             Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.Zero,"Distant wet steps precede all blood marks");
+            var cleanerType=RequireType("SchoolCleaningAnomaly");
+            for(int step=-5;step<8;step++)
+            {
+                var first=(Vector2)Call(cleanerType,"FootstepPosition",step);
+                var next=(Vector2)Call(cleanerType,"FootstepPosition",step+1);
+                Assert.That(Vector2.Distance(first,next),Is.LessThan(1f),"The sound and visible footprints must follow one continuous path");
+            }
             Assert.That(Get<Material>(Get<object>(world,"HorrorSurfaces"),"RenewedFloor").GetFloat("_BloodSpread"),Is.Zero);
             var warningSave=Call(director,"Capture");Call(director,"Restore",warningSave,Get<int>(world,"Traversals"));
             cleaning=Get<Component>(director,"Cleaning");
