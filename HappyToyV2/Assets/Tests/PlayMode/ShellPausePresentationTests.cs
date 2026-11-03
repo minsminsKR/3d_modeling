@@ -14,6 +14,45 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest,Timeout(180000)]
+        public IEnumerator LobbySettingsUsesHorrorMenuAndPreservesControls()
+        {
+            string output=Environment.GetEnvironmentVariable("HAPPYTOY_SETTINGS_REVIEW_DIR");
+            if(string.IsNullOrWhiteSpace(output))yield break;
+            output=Path.GetFullPath(output);string builds=Path.GetFullPath(Path.Combine(Application.dataPath,"../Builds"));
+            Assert.That(output.StartsWith(builds+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase),Is.True);
+            Assert.That(Directory.Exists(output),Is.False);Directory.CreateDirectory(output);
+            Assert.That(Application.isBatchMode&&Environment.GetCommandLineArgs().Contains("-v2-audit-no-desktop-interaction")&&
+                Environment.GetCommandLineArgs().Contains("-noaudio"),Is.True);
+            Assert.That(SystemInfo.graphicsDeviceType,Is.Not.EqualTo(GraphicsDeviceType.Null));
+            Call(shell,"RestoreDefaultSettings");yield return RecoveryUiReady();yield return RecoveryClick("settings");
+            Assert.That(RecoveryPage,Is.EqualTo("Settings"));var view=One("GameShellView");
+            yield return CaptureLobbySettings(view,output,"settings-normal-16x9.png",1280,720);
+            yield return CaptureLobbySettings(view,output,"settings-normal-21x9.png",1680,720);
+            float before=Get<float>(shell,"Volume");yield return RecoveryClick("volume-up");
+            Assert.That(Get<float>(shell,"Volume"),Is.EqualTo(before+.05f).Within(.001f));
+            yield return RecoveryClick("reduced-motion");Assert.That(Get<bool>(shell,"ReducedMotion"),Is.True);
+            var root=Get<VisualElement>(view,"Root");var up=root.Q<Button>("volume-up");up.Focus();yield return null;
+            Assert.That(up.Q<VisualElement>("volume-up-selection").resolvedStyle.opacity,Is.EqualTo(1).Within(.01f));
+            Assert.That(up.Q<Label>("volume-up-echo").resolvedStyle.opacity,Is.Zero,"Reduced motion must suppress the red echo");
+            Call(shell,"ToggleLargeText");Call(shell,"ToggleHighContrast");yield return null;yield return null;
+            yield return CaptureLobbySettings(view,output,"settings-large-4x3.png",1024,768);
+            yield return RecoveryClick("back");Assert.That(RecoveryPage,Is.EqualTo("Title"));
+        }
+
+        IEnumerator CaptureLobbySettings(Component view,string output,string filename,int width,int height)
+        {
+            Call(view,"SetCaptureSize",width,height);for(int i=0;i<5;i++)yield return null;yield return Delay(.25f);
+            var root=Get<VisualElement>(view,"Root");var up=root.Q<Button>("volume-up");
+            Assert.That(up,Is.Not.Null);Assert.That(root.Q<Button>("back"),Is.Not.Null);
+            Assert.That(root.Q<Button>("large-text"),Is.Not.Null);Assert.That(up.Q<VisualElement>("volume-up-selection"),Is.Not.Null);
+            Assert.That(up.resolvedStyle.unityFont,Is.SameAs(Resources.Load<Font>("Fonts/PauseMyeongjo")));
+            Assert.That(CloudExperienceTests.Layout(root),Is.Empty,"Settings layout clipped at "+width+"x"+height);
+            var frame=CloudExperienceTests.Read(Get<RenderTexture>(view,"CaptureTarget"));
+            try{Assert.That(CloudExperienceTests.HasContent(frame),Is.True);File.WriteAllBytes(Path.Combine(output,filename),frame.EncodeToPNG());}
+            finally{Object.Destroy(frame);}
+        }
+
         // Opt-in, offscreen capture of the real paused school camera and UI.
         // It does not send OS input or certify native-player performance.
         [UnityTest,Timeout(180000)]

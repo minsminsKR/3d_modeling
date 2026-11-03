@@ -18,7 +18,7 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [Serializable] sealed class PauseMotionSample
-        {public string file;public float seconds,oldOpacity,newOpacity,traceWidth,padding;}
+        {public string file;public float seconds,oldOpacity,newOpacity,traceWidth,padding,echoOpacity;}
         [Serializable] sealed class PauseMotionReport
         {public string scope="Offscreen real school camera and UI; synthetic gamepad, no audio. Not a native player or FPS audit.";public PauseMotionSample[] samples;}
 
@@ -59,6 +59,7 @@ namespace HappyToy.V2.CloudTests
                         oldOpacity=resume.Q<VisualElement>("resume-selection").resolvedStyle.opacity,
                         newOpacity=journal.Q<VisualElement>("journal-selection").resolvedStyle.opacity,
                         traceWidth=journal.Q<VisualElement>("journal-trace").resolvedStyle.width,
+                        echoOpacity=journal.Q<Label>("journal-echo").resolvedStyle.opacity,
                         padding=journal.resolvedStyle.paddingLeft});
                 }
                 InputSystem.QueueStateEvent(auditPad,new GamepadState());

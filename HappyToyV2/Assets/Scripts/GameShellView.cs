@@ -146,13 +146,15 @@ namespace HappyToy.V2
             menuFaceBackground.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Center);
             menuFaceBackground.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Center);
             menuFaceBackground.style.backgroundRepeat = new BackgroundRepeat(Repeat.NoRepeat, Repeat.NoRepeat);
-            VisualElement scrim = shown == GameShell.Page.Title
+            VisualElement scrim = shown == GameShell.Page.Title || shown == GameShell.Page.Settings
                 ? new CinematicMenuScrim(shell.HighContrast)
                 : new VisualElement { pickingMode = PickingMode.Ignore, focusable = false };
             scrim.name = "menu-face-scrim";
             scrim.style.position = Position.Absolute;
             scrim.style.left = scrim.style.top = scrim.style.right = scrim.style.bottom = 0;
-            if (shown != GameShell.Page.Title) scrim.style.backgroundColor = new Color(0, 0, 0, shell.HighContrast ? .40f : .28f);
+            if (shown != GameShell.Page.Title)
+                scrim.style.backgroundColor = new Color(0, 0, 0, shown==GameShell.Page.Settings
+                    ? (shell.HighContrast ? .78f : .58f) : (shell.HighContrast ? .40f : .28f));
             menuFaceBackground.Add(scrim);
             root.Add(menuFaceBackground);
         }
@@ -244,10 +246,10 @@ namespace HappyToy.V2
             }
             else if (!string.IsNullOrWhiteSpace(shell.ReloadError))
                 Small(shell.ReloadError, 150, 786, 1300, 48).style.color = Rust;
-            if(shown!=GameShell.Page.Pause)Small("HAPPY TOY  /  FORGOTTEN CORRIDOR", 150, 837, 580);
-            var navigation = navigationHelp = shown==GameShell.Page.Pause
+            if(shown!=GameShell.Page.Pause&&shown!=GameShell.Page.Settings)Small("HAPPY TOY  /  FORGOTTEN CORRIDOR", 150, 837, 580);
+            var navigation = navigationHelp = shown==GameShell.Page.Pause||shown==GameShell.Page.Settings
                 ? Small(NavigationHelp,175,837,700) : Small(NavigationHelp,820,837,630);
-            navigation.style.unityTextAlign = shown==GameShell.Page.Pause ? TextAnchor.UpperLeft : TextAnchor.UpperRight;
+            navigation.style.unityTextAlign = shown==GameShell.Page.Pause||shown==GameShell.Page.Settings ? TextAnchor.UpperLeft : TextAnchor.UpperRight;
             string initialId = samePage && !string.IsNullOrEmpty(previousFocus) ? previousFocus :
                 shown == GameShell.Page.Title ? "begin" : shown == GameShell.Page.Pause ? "resume" : shown == GameShell.Page.Result ? "restart" : "back";
             var initial = stage.Q<Button>(initialId) ?? stage.Q<Button>("back");
@@ -264,7 +266,7 @@ namespace HappyToy.V2
 
         void BuildFrame()
         {
-            if (shown == GameShell.Page.Title || shown == GameShell.Page.Pause) return;
+            if (shown == GameShell.Page.Title || shown == GameShell.Page.Pause || shown == GameShell.Page.Settings) return;
             Panel(105, 80, 3, 705, Gold);
             Panel(150, 115, 1300, 1, Edge);
             Small(session.ChapterMode && session.Chapter.Loop ? "학교  /  반복되는 복도" : session.ChapterMode || shown==GameShell.Page.Records ? "폐교의 기억  /  마지막 출석" : session.CorridorMode || shown==GameShell.Page.Title ? "잊힌 회랑  /  소리를 따라 남은 기억을 찾다" : "폐교 조사 기록  /  마지막 출석", 150, 78, 1050);

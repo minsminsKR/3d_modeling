@@ -9,6 +9,7 @@ namespace HappyToy.V2
     {
         Label volume, sensitivity, fieldOfView;
         Button reducedMotionButton, subtitlesButton, contrastButton, textSizeButton, fpsButton;
+        bool reducedMotion;
         internal struct State
         {
             public float Volume, Sensitivity, FieldOfView;
@@ -26,31 +27,42 @@ namespace HappyToy.V2
         }
         public void Build(ShellLayout layout, Actions actions, State state)
         {
-            layout.Small("변경 사항은 즉시 적용되며, 돌아가면 이 PC에 저장됩니다.", 153, 229, 1290);
-            layout.Panel(150, 278, 630, 426, layout.CardSurface);
-            layout.Panel(810, 278, 640, 426, layout.CardSurface);
-            volume = layout.Text("", 174, 295, 580, 42, layout.ReadingSize);
-            layout.Button("volume-down", "− 5%", 343, () => actions.Adjust(-.05f, 0), 174, 270);
-            layout.Button("volume-up", "+ 5%", 343, () => actions.Adjust(.05f, 0), 466, 290);
-            sensitivity = layout.Text("", 174, 425, 580, 42, layout.ReadingSize);
-            layout.Button("mouse-down", "감도 낮추기", 473, () => actions.Adjust(0, -.009f), 174, 270);
-            layout.Button("mouse-up", "감도 높이기", 473, () => actions.Adjust(0, .009f), 466, 290);
-            fieldOfView = layout.Text("", 174, 555, 580, 42, layout.ReadingSize);
-            layout.Button("fov-down", "− 5°", 603, () => actions.AdjustFieldOfView(-5), 174, 270);
-            layout.Button("fov-up", "+ 5°", 603, () => actions.AdjustFieldOfView(5), 466, 290);
-            layout.Small("화면 표시 · 움직임 · 소리 안내 · 가독성", 836, 295, 590);
-            fpsButton = layout.Button("show-fps", "", 341, actions.ToggleFps, 836, 588);
-            reducedMotionButton = layout.Button("reduced-motion", "", 405, actions.ToggleReducedMotion, 836, 588);
-            subtitlesButton = layout.Button("subtitles", "", 469, actions.ToggleSubtitles, 836, 588);
-            contrastButton = layout.Button("high-contrast", "", 533, actions.ToggleHighContrast, 836, 588);
-            textSizeButton = layout.Button("large-text", "", 597, actions.ToggleLargeText, 836, 588);
-            layout.Small("소리 자막은 들리는 효과음을 글로 안내합니다.", 836, 667, 588, 32);
-            layout.Button("back", "저장하고 돌아가기  [Esc]", 753, actions.Back, primary: true);
-            layout.Button("defaults", "기본값으로 되돌리기", 753, actions.Defaults, 1070, 380);
+            reducedMotion=state.ReducedMotion;var face=Resources.Load<Font>("Fonts/PauseMyeongjo");
+            Label Text(string text,float x,float y,float width,float height,int normal,int large)
+            {
+                var label=layout.Text(text,x,y,width,height,layout.LargeText?large:normal);
+                if(face)label.style.unityFont=face;label.style.letterSpacing=.45f;return label;
+            }
+            Button Button(string id,string text,float x,float y,float width,Action action)
+                => ShellMenuButton.Create(layout,id,text,x,y,width,54,action,face,()=>reducedMotion,23,26);
+
+            var heading=Text("환경 설정",175,145,620,90,47,52);heading.style.letterSpacing=1.5f;
+            heading.style.color=layout.HighContrast?Color.white:new Color(.88f,.87f,.83f);
+            var leftTitle=Text("소리 · 시점",175,245,570,40,23,26);leftTitle.style.color=layout.Muted;
+            var rightTitle=Text("화면 · 접근성",830,245,570,40,23,26);rightTitle.style.color=layout.Muted;
+
+            volume=Text("",175,295,580,42,24,27);
+            Button("volume-down","- 5%",175,343,250,()=>actions.Adjust(-.05f,0));
+            Button("volume-up","+ 5%",445,343,250,()=>actions.Adjust(.05f,0));
+            sensitivity=Text("",175,425,580,42,24,27);
+            Button("mouse-down","감도 낮추기",175,473,250,()=>actions.Adjust(0,-.009f));
+            Button("mouse-up","감도 높이기",445,473,250,()=>actions.Adjust(0,.009f));
+            fieldOfView=Text("",175,555,580,42,24,27);
+            Button("fov-down","- 5°",175,603,250,()=>actions.AdjustFieldOfView(-5));
+            Button("fov-up","+ 5°",445,603,250,()=>actions.AdjustFieldOfView(5));
+
+            fpsButton=Button("show-fps","",830,295,620,actions.ToggleFps);
+            reducedMotionButton=Button("reduced-motion","",830,360,620,actions.ToggleReducedMotion);
+            subtitlesButton=Button("subtitles","",830,425,620,actions.ToggleSubtitles);
+            contrastButton=Button("high-contrast","",830,490,620,actions.ToggleHighContrast);
+            textSizeButton=Button("large-text","",830,555,620,actions.ToggleLargeText);
+            Button("back","저장하고 돌아가기",175,745,500,actions.Back);
+            Button("defaults","기본값으로 되돌리기",830,745,600,actions.Defaults);
             Refresh(state);
         }
         public void Refresh(State state)
         {
+            reducedMotion=state.ReducedMotion;
             if (volume == null) return;
             volume.text = $"전체 음량    {Mathf.RoundToInt(state.Volume * 100)}%";
             sensitivity.text = $"마우스 감도    {state.Sensitivity / .09f:0.00}×";
