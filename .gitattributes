@@ -56,6 +56,10 @@ HappyToyV2/SourceArt/PlayerItems/References/*.prompt.txt -text
 HappyToyV2/SourceArt/PlayerItems/References/flashlight-image-provenance.json -text
 
 # Generated cavern entrance originals and packed editable source stay together.
+# Temple prologue preserves generated originals and packed editable Blender files.
+HappyToyV2/SourceArt/TemplePrologue/**/*.glb filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TemplePrologue/**/*.blend filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/SourceArt/TemplePrologue/**/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/CorridorEntrance/*/original.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/CorridorEntrance/**/*.blend filter=lfs diff=lfs merge=lfs -text
 

@@ -1,0 +1,29 @@
+{
+  "source_images": [
+    "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/uploads/25f9cb91-165b-4569-9b11-f61dc916bd4d/reference.png"
+  ],
+  "model_path": "/home/ai-server-04/mskang/0.codex_ms/projects/hunyuan3d-webapp/instance/outputs/25f9cb91-165b-4569-9b11-f61dc916bd4d/model.glb",
+  "used_texture": true,
+  "warnings": [],
+  "options": {
+    "model": "hunyuan3d-2.1",
+    "gpu_id": 0,
+    "texture_gpu_id": 1,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1536_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 8192,
+    "trellis_max_tokens": 65536,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "note": "A single image was used for shape generation."
+}

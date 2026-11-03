@@ -1,0 +1,62 @@
+{
+  "key": "temple",
+  "tool": "Blender 4.0.2",
+  "original": "original.glb",
+  "originalSha256": "9b71bf9b79a9f19fa060c2bc65b302d6287a39301fe33ca1d69b3b8200f583cd",
+  "editable": "temple/temple.blend",
+  "widthMetres": 8.980922222137451,
+  "heightMetres": 7.268345468211919,
+  "depthMetres": 8.94035530090332,
+  "normalizedAxis": "width",
+  "normalizedMetres": 9.0,
+  "gateYawDegrees": 0,
+  "finishing": {
+    "axis": 0,
+    "metres": 9.0,
+    "texture": 4096,
+    "budgets": [
+      100000
+    ]
+  },
+  "front": "Blender -Y / Unity +Z; confirm generated facing in Unity preview",
+  "textureMaxSize": 4096,
+  "originalFaces": 997059,
+  "originalTriangles": 997059,
+  "lods": [
+    {
+      "file": "temple-lod0.fbx",
+      "targetTriangles": 100000,
+      "triangles": 100000,
+      "vertices": 34977,
+      "boundsMin": [
+        -4.493709564208984,
+        -4.466920852661133,
+        0.0075630019418895245
+      ],
+      "boundsMax": [
+        4.487212657928467,
+        4.4734344482421875,
+        7.275908470153809
+      ],
+      "sha256": "202bab31937fabd012e0fc9551f34a82071ac2b290d7158f46d5fab219362f82"
+    }
+  ],
+  "materials": [
+    {
+      "name": "CE_temple_0",
+      "roughness": 1.0,
+      "metallic": 1.0,
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "normalScale": 1,
+      "occlusionStrength": 1,
+      "baseColor": "CE_temple_0-baseColor.png",
+      "metallicSmoothness": "CE_temple_0-metallicSmoothness.png"
+    }
+  ],
+  "textures": "Full original PBR packed once in editable blend; game PNGs derived at the configured size"
+}

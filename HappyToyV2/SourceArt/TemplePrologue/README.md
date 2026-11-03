@@ -25,8 +25,16 @@ out of GPU memory simplifying the 74-million-face remesh. No model resulted.
 Retry with the same reference, seed and service: request
 `31bafef0-612f-4e41-886d-1f82024795a8`, job
 `8ce11907-69d7-4b74-ba4a-ded69ff731fc`, TRELLIS.2 1024 cascade, 4K texture.
-Collect with that request ID and server; preserve the original archive and
-inspect the same job in the webapp before Blender finishing and Unity import.
+The retry completed. The webapp front and side were inspected: roof, lattice
+doors and stone base are present. The interior is not authored; this is an
+exterior building. `temple/original.glb`, `processed.png`, `job.json` and
+`metadata.json` are the downloaded source. `finish_temple.py` uses the shared
+CorridorEntrance finishing recipe with Blender 4.0.2. It preserves the original
+inside the packed editable blend and exports one 100,000-triangle derived mesh,
+9m wide, and 4K PBR maps in `game-export/`. A 25,000-triangle second LOD failed
+to reach its target (86,629 triangles remained) and was omitted. Front facing,
+appearance of the reduced mesh, collision and materials in Unity have not been
+verified; this export is not integrated into the game.
 
 ## Pine reference and generation
 
@@ -39,8 +47,11 @@ background, soft neutral studio light, no ground scenery, no shadows outside
 the tree, no people, no text, no other trees. Photorealistic.”
 Request `aad4512f-d2b9-4082-b1d0-939f0fd14b1c`, job
 `25f9cb91-165b-4569-9b11-f61dc916bd4d`, Hunyuan3D 2.1, seed 1234,
-texture on, submitted 2026-11-03. Inspect and preserve the actual output before
-using it in the game. Thin foliage may require particular visual/LOD review.
+texture on. The webapp result lost almost all foliage and was rejected; its
+original and record are preserved in `pine/`. A replacement using TRELLIS.2
+1024 cascade and 4K texture was submitted as request
+`cc51c42e-431d-4392-bd03-5e2dcb87f4f2`, job
+`4ff43435-9370-4552-9e84-30d96ac8ec80`. Collect and inspect it before use.
 
 `TemplePrologueSequence` is an unconnected, engine-independent interaction
 sequence. Its CPU check is `dotnet run --project

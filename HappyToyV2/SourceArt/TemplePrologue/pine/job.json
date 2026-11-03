@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "id": "25f9cb91-165b-4569-9b11-f61dc916bd4d",
+  "status": "completed",
+  "message": "Model is ready.",
+  "created_at": 1793696705.7060862,
+  "updated_at": 1793697156.5374725,
+  "source_filename": "reference.png",
+  "batch_index": 1,
+  "batch_total": 1,
+  "options": {
+    "model": "hunyuan3d-2.1",
+    "gpu_id": 0,
+    "texture_gpu_id": 1,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1536_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 8192,
+    "trellis_max_tokens": 65536,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "request_id": "aad4512f-d2b9-4082-b1d0-939f0fd14b1c",
+  "submitted_options": {
+    "model": [
+      "hunyuan3d-2.1"
+    ],
+    "seed": [
+      "1234"
+    ],
+    "texture": [
+      "on"
+    ]
+  },
+  "source": "cli",
+  "inputs": [
+    {
+      "name": "reference.png",
+      "archive_name": "inputs/01_reference.png",
+      "sha256": "373fc67377c04c0a8082e6b024609013139f2628dadab1896e824e40e42881ba",
+      "size": 2092077
+    }
+  ],
+  "saved": true,
+  "saved_at": 1793696705.7060862,
+  "started_at": 1793696705.7152786,
+  "finished_at": 1793697156.537442,
+  "used_texture": true,
+  "warnings": [],
+  "web_url": "/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d",
+  "status_url": "/api/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d",
+  "archive_url": "/api/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d/archive",
+  "record_url": "/api/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d/record",
+  "rigging": {
+    "status": "idle",
+    "ready": true,
+    "start_url": "/api/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d/rigging",
+    "status_url": "/api/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d/rigging"
+  },
+  "elapsed_seconds": 450,
+  "display_name": "reference",
+  "download_url": "/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d/download",
+  "model_url": "/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d/model",
+  "mixamo_package_url": "/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d/mixamo/package",
+  "mixamo_upload_url": "/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d/mixamo/upload",
+  "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+  "mixamo_files": [],
+  "processed_input_url": "/jobs/25f9cb91-165b-4569-9b11-f61dc916bd4d/processed/1",
+  "saved_at_label": "2026-11-03 18:05",
+  "created_at_label": "2026-11-03 18:05",
+  "artifacts": [
+    {
+      "name": "model.glb",
+      "sha256": "9fa070d8a29ca2ed9058e89e3c7a687facc3a3742d96aae19cd9aa1f4e8cc98f",
+      "size": 12695776
+    },
+    {
+      "name": "metadata.json",
+      "sha256": "ee4ed98443785d4aab5dd322b4d134191338f2a823af1c02408f5470e059f6e8",
+      "size": 931
+    },
+    {
+      "name": "outputs/generation_request.json",
+      "sha256": "4bf0edce3ee874dbe60f61451555f11d7e6d998cabb7c8765c932c14c4640b6a",
+      "size": 818
+    },
+    {
+      "name": "outputs/generation_result.json",
+      "sha256": "993120a0acad951bbf0025d0d7c784864b74e30f360b9192011b400010f34b33",
+      "size": 343
+    },
+    {
+      "name": "outputs/model_initial.glb",
+      "sha256": "283ee8b937e5fe01b121e4ba3b9cf3411bfdf08723d0974b2be441eccd3bc8e6",
+      "size": 8264368
+    },
+    {
+      "name": "outputs/model_textured.glb",
+      "sha256": "9fa070d8a29ca2ed9058e89e3c7a687facc3a3742d96aae19cd9aa1f4e8cc98f",
+      "size": 12695776
+    },
+    {
+      "name": "outputs/model_textured.jpg",
+      "sha256": "e4d2791b4db92fcfcff578f3ba0764d1474ec332094e40bc1532b86d07d84f97",
+      "size": 3662258
+    },
+    {
+      "name": "outputs/model_textured.mtl",
+      "sha256": "cf36962b64f05f21242eef8e6c42083dac29cf89018772f98331f45588367a28",
+      "size": 164
+    },
+    {
+      "name": "outputs/model_textured.obj",
+      "sha256": "e5786c764c272cd09ff7e64eb2713b12e8fb77fe5a6b7325125181e1bbf3a90e",
+      "size": 2808062
+    },
+    {
+      "name": "outputs/model_textured_metallic.jpg",
+      "sha256": "6b5db2eecaf0e356e60c058a44fc3ca1eb911a1b0af446527a88145f89311653",
+      "size": 1171117
+    },
+    {
+      "name": "outputs/model_textured_roughness.jpg",
+      "sha256": "0193a3d136f9be94a55b35746b2ea328a2778f0bd7db433e6b13731573246f0b",
+      "size": 1295252
+    },
+    {
+      "name": "processed_inputs/01.png",
+      "sha256": "302cb340ab47083d1e7d4bd05410bb759279f2bdf68a3c26fb66a1942b664d56",
+      "size": 380553
+    },
+    {
+      "name": "outputs/shape_request.json",
+      "sha256": "d2fcb11ae2d3f9097aad435508776a366a9b913728d75e950c37e08295e2a9fb",
+      "size": 1342
+    },
+    {
+      "name": "outputs/shape_result.json",
+      "sha256": "6949f0e36932e76b8c73f9728afdccc88931cf0ee8c96766bee0158bb26c5d57",
+      "size": 16
+    },
+    {
+      "name": "outputs/texture_inputs/01.png",
+      "sha256": "302cb340ab47083d1e7d4bd05410bb759279f2bdf68a3c26fb66a1942b664d56",
+      "size": 380553
+    },
+    {
+      "name": "outputs/texture_request.json",
+      "sha256": "9b4c561f4862390c7600ff142b36805ea040a619a220dad197f5781237d43d17",
+      "size": 930
+    },
+    {
+      "name": "outputs/white_mesh_remesh.obj",
+      "sha256": "3b1dd093142cc5f0807437e10fc3cede5c9d463276d8623cd5619e905d0ec806",
+      "size": 1467040
+    }
+  ]
+}
