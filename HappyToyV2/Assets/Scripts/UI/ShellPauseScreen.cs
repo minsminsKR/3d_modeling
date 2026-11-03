@@ -29,7 +29,7 @@ namespace HappyToy.V2
         }
         public void Build(ShellLayout layout, State state, Actions actions, bool reducedMotion)
         {
-            var accent = layout.HighContrast ? new Color(1f,.55f,.47f) : new Color(.73f,.27f,.24f);
+            var accent = layout.HighContrast ? new Color(1f,.55f,.47f) : new Color(.74f,.20f,.17f);
             var face=Resources.Load<Font>("Fonts/PauseMyeongjo");
             var heading=layout.Text("일시 정지", 175, 149, 620, 90, layout.LargeText ? 52 : 47);
             if(face)heading.style.unityFont=face;
@@ -77,30 +77,45 @@ namespace HappyToy.V2
             button.style.borderBottomLeftRadius=button.style.borderBottomRightRadius=0;
             var marker=new VisualElement{name=id+"-selection",pickingMode=PickingMode.Ignore};
             marker.style.position=Position.Absolute;marker.style.left=0;marker.style.top=14;
-            marker.style.width=layout.HighContrast?5:3;marker.style.height=28;marker.style.backgroundColor=accent;
+            marker.style.width=layout.HighContrast?6:4;marker.style.height=28;marker.style.backgroundColor=accent;
             button.Add(marker);
             var trace=new VisualElement{name=id+"-trace",pickingMode=PickingMode.Ignore};
             trace.style.position=Position.Absolute;trace.style.left=25;trace.style.top=49;
-            trace.style.height=2;trace.style.backgroundColor=accent;button.Add(trace);
+            trace.style.height=4;trace.style.overflow=Overflow.Hidden;button.Add(trace);
+            // Broken, uneven strokes avoid turning the focus treatment into a
+            // clean rectangular button or a continuous flashing decoration.
+            void Stroke(float left,float top,float width,float height,float opacity)
+            {
+                var stroke=new VisualElement{pickingMode=PickingMode.Ignore};stroke.style.position=Position.Absolute;
+                stroke.style.left=left;stroke.style.top=top;stroke.style.width=width;stroke.style.height=height;
+                stroke.style.backgroundColor=accent;stroke.style.opacity=opacity;trace.Add(stroke);
+            }
+            Stroke(0,1,23,2,.85f);Stroke(26,2,13,1,.55f);Stroke(44,1,7,1,.72f);
             button.style.backgroundColor=Color.clear;layout.Outline(button,Color.clear,0);
-            float amount=0,startAmount=0,target=0;double began=0;
+            float amount=0,startAmount=0,target=0;double began=0;bool selected=false;
             IVisualElementScheduledItem animation=null;
             void Paint(float value)
             {
                 amount=value;
-                button.style.color=Color.Lerp(new Color(.68f,.69f,.67f),Color.white,value);
-                button.style.paddingLeft=25+6*value;
-                marker.style.opacity=value;trace.style.opacity=.72f*value;trace.style.width=46*value;
+                var muted=layout.HighContrast?new Color(.84f,.84f,.82f):new Color(.64f,.65f,.63f);
+                var active=layout.HighContrast?Color.white:new Color(.97f,.92f,.88f);
+                button.style.color=Color.Lerp(muted,active,value);
+                button.style.paddingLeft=25+7*value;
+                // The focus marker always belongs to exactly one item, even
+                // while the old text and scratch are fading out.
+                marker.style.opacity=selected?1:0;trace.style.opacity=.85f*value;trace.style.width=52*value;
             }
             void Animate()
             {
-                float t=Mathf.Clamp01((float)((Time.realtimeSinceStartupAsDouble-began)/.18));
+                float t=Mathf.Clamp01((float)((Time.realtimeSinceStartupAsDouble-began)/(selected ? .22 : .07)));
                 Paint(Mathf.Lerp(startAmount,target,Mathf.SmoothStep(0,1,t)));
                 if(t>=1)animation.Pause();
             }
-            void Select(bool selected)
+            void Select(bool value)
             {
+                selected=value;
                 target=selected?1:0;
+                marker.style.opacity=selected?1:0;
                 if(reducedMotion){Paint(target);return;}
                 startAmount=amount;began=Time.realtimeSinceStartupAsDouble;animation.Resume();
             }
