@@ -37,8 +37,18 @@ namespace HappyToy.V2.CloudTests
             yield return CapturePauseComposite(view,camera,output,"pause-normal-21x9.png",1680,720);
             Call(shell,"ToggleLargeText");Call(shell,"ToggleHighContrast");yield return null;yield return null;
             yield return CapturePauseComposite(view,camera,output,"pause-large-4x3.png",1024,768);
+            var root=Get<VisualElement>(view,"Root");var journal=root.Q<Button>("journal");var resume=root.Q<Button>("resume");
+            journal.Focus();yield return Delay(.3f);
+            Assert.That(root.panel.focusController.focusedElement,Is.SameAs(journal));
+            Assert.That(journal.Q<VisualElement>("journal-selection").resolvedStyle.opacity,Is.GreaterThan(.95f));
+            Assert.That(resume.Q<VisualElement>("resume-selection").resolvedStyle.opacity,Is.LessThan(.05f));
+            Assert.That(journal.Q<VisualElement>("journal-trace").resolvedStyle.width,Is.GreaterThan(43));
             yield return RecoveryClick("settings");Assert.That(RecoveryPage,Is.EqualTo("Settings"));
+            yield return RecoveryClick("reduced-motion");Assert.That(Get<bool>(shell,"ReducedMotion"),Is.True);
             yield return RecoveryClick("back");Assert.That(RecoveryPage,Is.EqualTo("Pause"));
+            root=Get<VisualElement>(view,"Root");journal=root.Q<Button>("journal");resume=root.Q<Button>("resume");journal.Focus();yield return null;
+            Assert.That(journal.Q<VisualElement>("journal-selection").resolvedStyle.opacity,Is.EqualTo(1).Within(.01f),"Reduced motion must select immediately");
+            Assert.That(resume.Q<VisualElement>("resume-selection").resolvedStyle.opacity,Is.LessThan(.01f));
             yield return RecoveryClick("resume");Assert.That(RecoveryPage,Is.EqualTo("Playing"));
             Assert.That(Time.timeScale,Is.GreaterThan(0));
             yield return RecoveryPulse(UnityEngine.InputSystem.Key.Escape);Assert.That(RecoveryPage,Is.EqualTo("Pause"));
@@ -49,12 +59,17 @@ namespace HappyToy.V2.CloudTests
         {
             Call(view,"SetCaptureSize",width,height);
             for(int i=0;i<5;i++)yield return null;
+            yield return Delay(.25f); // Capture the settled selection, not its first transition frame.
             var root=Get<VisualElement>(view,"Root");
             Assert.That(root.Q<VisualElement>("pause-scene-scrim"),Is.Not.Null);
             Assert.That(root.Q<Button>("resume"),Is.Not.Null);Assert.That(root.Q<Button>("settings"),Is.Not.Null);
             Assert.That(root.Q<Button>("suspend-chapter"),Is.Not.Null);
             Assert.That(root.Q<Label>("pause-objective"),Is.Null,"The pause screen must not restore the right-hand explanation");
             Assert.That(root.Q<Label>("pause-progress"),Is.Null,"Progress remains in the journal, not the pause screen");
+            var font=Resources.Load<Font>("Fonts/PauseMyeongjo");Assert.That(font,Is.Not.Null,"Bundled pause font is missing");
+            Assert.That(root.Q<Button>("resume").resolvedStyle.unityFont,Is.SameAs(font));
+            foreach(char character in "일시정지계속하기조사기록환경설접근성학교저장후나가기처음부터다시작화면으로진행초기화·()")
+                Assert.That(font.HasCharacter(character),Is.True,"Pause font lacks Korean glyph "+character);
             Assert.That(CloudExperienceTests.Layout(root),Is.Empty,"Pause layout clipped at "+width+"x"+height);
             var background=SchoolHorrorFrame(camera,width,height);var overlay=CloudExperienceTests.Read(Get<RenderTexture>(view,"CaptureTarget"));
             var composite=new Texture2D(width,height,TextureFormat.RGBA32,false);

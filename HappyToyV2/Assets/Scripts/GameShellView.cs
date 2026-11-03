@@ -282,7 +282,7 @@ namespace HappyToy.V2
             new ShellPauseScreen().Build(layout, ShellPauseScreen.State.Read(session, shell), new ShellPauseScreen.Actions {
                 Resume = shell.Resume, Journal = shell.Journal, Settings = shell.Settings,
                 Restart = () => shell.Restart(true), Title = () => shell.Restart(false),
-                SuspendCorridor = shell.SuspendCorridor, SuspendChapter = shell.SuspendChapter });
+                SuspendCorridor = shell.SuspendCorridor, SuspendChapter = shell.SuspendChapter }, shell.ReducedMotion);
         }
         void BuildJournal() => journalScreen.Build(layout, ShellJournalScreen.State.Read(session), shell.Back, Rebuild);
         void BuildSettings()
