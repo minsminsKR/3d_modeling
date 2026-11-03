@@ -177,9 +177,17 @@ namespace HappyToy.V2
             settingsScreen = null; pauseScreen = null; hud = null; frameRateOverlay = null; navigationHelp = null;
             root.style.color = Paper;
             root.style.backgroundColor = shown == GameShell.Page.Playing ? Color.clear :
-                shown == GameShell.Page.Pause ? Color.black : new Color(.013f, .025f, .021f, .97f);
+                shown == GameShell.Page.Pause ? new Color(.008f, .012f, .014f, shell.HighContrast ? .78f : .48f) : new Color(.013f, .025f, .021f, .97f);
             root.pickingMode = shown == GameShell.Page.Playing ? PickingMode.Ignore : PickingMode.Position;
             BuildMenuFaceBackground();
+            if (shown == GameShell.Page.Pause)
+            {
+                // Preserve the paused world behind an independently owned, noninteractive scrim.
+                var pauseScrim = new CinematicMenuScrim(shell.HighContrast) { name = "pause-scene-scrim" };
+                pauseScrim.style.position = Position.Absolute;
+                pauseScrim.style.left = pauseScrim.style.top = pauseScrim.style.right = pauseScrim.style.bottom = 0;
+                root.Add(pauseScrim);
+            }
             stage = new VisualElement { name = "safe-area", pickingMode = PickingMode.Ignore };
             stage.style.width = 1600;
             stage.style.height = 900;
@@ -257,7 +265,7 @@ namespace HappyToy.V2
 
         void BuildFrame()
         {
-            if (shown == GameShell.Page.Title) return;
+            if (shown == GameShell.Page.Title || shown == GameShell.Page.Pause) return;
             Panel(105, 80, 3, 705, Gold);
             Panel(150, 115, 1300, 1, Edge);
             Small(session.ChapterMode && session.Chapter.Loop ? "학교  /  반복되는 복도" : session.ChapterMode || shown==GameShell.Page.Records ? "폐교의 기억  /  마지막 출석" : session.CorridorMode || shown==GameShell.Page.Title ? "잊힌 회랑  /  소리를 따라 남은 기억을 찾다" : "폐교 조사 기록  /  마지막 출석", 150, 78, 1050);
