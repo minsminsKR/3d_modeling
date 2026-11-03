@@ -23,9 +23,18 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(8));
             yield return Wait(()=>Get<bool>(world,"MorningStarted"),3,"08:00 did not start morning");
             var lighting=Get<Transform>(world,"Root").GetComponent(RequireType("SchoolHorrorLighting"));
+            var birds=Get<Component>(world,"MorningBirds");Assert.That(birds,Is.Not.Null);
+            var birdSource=Get<AudioSource>(birds,"Source");
+            Assert.That(birdSource.clip,Is.EqualTo(Resources.Load<AudioClip>("SchoolMorning/birds")));
+            Assert.That(birdSource.loop,Is.True);Assert.That(birdSource.spatialBlend,Is.Zero);
+            Assert.That(birdSource.ignoreListenerPause||birdSource.ignoreListenerVolume,Is.False);
             yield return Delay(1);Assert.That(Get<float>(lighting,"Morning"),Is.GreaterThan(0));
+            Assert.That(birdSource.volume,Is.GreaterThan(0).And.LessThan(.55f),"Birdsong must fade in with morning");
             Call(shell,"Pause");float held=Get<float>(lighting,"Morning");yield return Delay(.3f);
             Assert.That(Get<float>(lighting,"Morning"),Is.EqualTo(held),"Pause must hold sunrise");
+            Assert.That(AudioListener.pause,Is.True,"Birdsong must follow the common pause");
+            float heldVolume=birdSource.volume;yield return Delay(.15f);
+            Assert.That(birdSource.volume,Is.EqualTo(heldVolume),"Pause must hold the bird fade");
             var checkpoint=Call(session,"CaptureChapterCheckpoint");Assert.DoesNotThrow(()=>Call(checkpoint,"Validate"));
             var previous=session;Call(shell,"Restart",false);yield return RecoveryRebind(previous);
             Call(session,"CreateChapterForCheckpoint",checkpoint);Call(session,"ApplyChapterCheckpoint",checkpoint);
@@ -34,9 +43,16 @@ namespace HappyToy.V2.CloudTests
             lighting=Get<Transform>(world,"Root").GetComponent(RequireType("SchoolHorrorLighting"));
             Call(shell,"Begin");
             yield return Wait(()=>Get<bool>(world,"MorningStarted"),3,"Restored 08:00 did not restart sunrise");
+            birds=Get<Component>(world,"MorningBirds");birdSource=Get<AudioSource>(birds,"Source");
+            var rituals=Get<Component>(player,"Rituals");Call(rituals,"Restore",1,0,1);
+            Assert.That((bool)Call(rituals,"UseTalisman"),Is.True);yield return null;
+            heldVolume=birdSource.volume;yield return Delay(.25f);
+            Assert.That(birdSource.volume,Is.EqualTo(heldVolume),"Time stop must hold the bird fade");
+            Call(rituals,"EndEffect");
             yield return Wait(()=>Get<bool>(session,"Finished"),20,"Morning did not finish the school chapter");
             Assert.That(Get<bool>(session,"Escaped"),Is.True);
             Assert.That(Get<float>(lighting,"Morning"),Is.EqualTo(1).Within(.001f));
+            Assert.That(birdSource.volume,Is.Zero,"The recording must stop at the result screen");
         }
         [UnityTest,Timeout(180000)]
         public IEnumerator SchoolClockJudgesBothDirectionsAndFreezesOnPause()

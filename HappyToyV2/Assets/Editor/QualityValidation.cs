@@ -43,6 +43,8 @@ namespace HappyToy.V2.Editor
                 for (int i = 0; i < ExternalAudio.VariantCount(cue); i++)
                     if (!ExternalAudio.Shared(cue, i))
                         throw new InvalidOperationException("Missing required recorded cue: " + cue + "/" + i);
+            if(!Resources.Load<AudioClip>(SchoolMorningBirdsong.ResourcePath))
+                throw new InvalidOperationException("Missing recorded school morning birdsong");
             var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
             int worldSignCount = AnnexSignFontValidation.Run(scene);
             var transforms = scene.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<Transform>(true)).ToArray();

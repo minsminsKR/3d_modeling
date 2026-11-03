@@ -63,10 +63,12 @@ namespace HappyToy.V2
             float perceivedGain=tension?tension.AmbienceGain:1;
             StoryGain=Mathf.MoveTowards(StoryGain,session.StoryStep>=4?.25f:perceivedGain,Time.deltaTime*.7f);
             bool trace=Time.time>=nextTrace;if(trace)nextTrace=Time.time+.2f;
+            var loop=session.ChapterMode?session.Chapter.Loop:null;
+            float morningGain=loop&&loop.MorningStarted?Mathf.Lerp(1,.12f,loop.MorningLight):1;
             foreach(var voice in voices)
             {
                 if(trace)voice.occluded=Physics.Linecast(session.player.eyes.transform.position,voice.source.transform.position,Physics.DefaultRaycastLayers,QueryTriggerInteraction.Ignore);
-                voice.source.volume=Mathf.MoveTowards(voice.source.volume,voice.gain*StoryGain*(voice.occluded?.28f:1),Time.deltaTime*.5f);
+                voice.source.volume=Mathf.MoveTowards(voice.source.volume,voice.gain*StoryGain*morningGain*(voice.occluded?.28f:1),Time.deltaTime*.5f);
                 voice.filter.cutoffFrequency=Mathf.MoveTowards(voice.filter.cutoffFrequency,voice.occluded?850:6000,Time.deltaTime*9000);
             }
         }

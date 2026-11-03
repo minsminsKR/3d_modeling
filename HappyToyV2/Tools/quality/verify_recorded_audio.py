@@ -19,7 +19,7 @@ import wave
 
 PROJECT = Path(__file__).resolve().parents[2]
 SCOPE = ("Mandatory resource inventory, canonical hashes, retained recording "
-         "hashes, mono PCM16/24 data and Unity GUIDs only; not Unity import, native "
+         "hashes, mono PCM16/24 data, morning Ogg source and Unity GUIDs only; not Unity import, native "
          "mix, pause/mute output or human/device listening certification.")
 
 
@@ -52,7 +52,15 @@ def verify() -> dict:
     retained = {}
     source_count = 0
     for catalog in sorted((PROJECT / "ThirdParty/Audio").glob("*/sources.json")):
-        for key, item in json.loads(catalog.read_text(encoding="utf8")).items():
+        entries = json.loads(catalog.read_text(encoding="utf8"))
+        if isinstance(entries, dict):
+            recordings = entries.items()
+        elif isinstance(entries, list):
+            recordings = ((item.get("file", str(index)), item) for index, item in enumerate(entries))
+        else:
+            errors.append(f"Invalid recording catalog: {catalog}")
+            continue
+        for key, item in recordings:
             relative = Path(item["file"])
             require(not relative.is_absolute() and ".." not in relative.parts,
                     f"Unsafe retained recording path: {catalog.parent.name}/{key}")
@@ -160,6 +168,21 @@ def verify() -> dict:
             require(seam_rms >= rms*.25, "Pursuit loop has an unintended silent seam")
         cues.append(dict(file=name, rate=rate, seconds=frames/rate, peak=peak, rms=rms, sha256=item["sha256"]))
     credits = (PROJECT / "ThirdParty/Audio/Audio-Credits.txt").read_text(encoding="utf8")
+    bird_original = PROJECT / "ThirdParty/Audio/MorningBirds/Birds_forest.ogg"
+    bird_asset = PROJECT / "Assets/Resources/SchoolMorning/birds.ogg"
+    bird_hash = "60d77abf548030e85abec22053a6392df91320718e26b93180f562b1bf7989ac"
+    for path in (bird_original, bird_asset):
+        require(path.is_file(), f"Missing school birdsong: {path}")
+        if path.is_file():
+            require(sha(path) == bird_hash and path.read_bytes()[:4] == b"OggS",
+                    f"School birdsong source changed: {path}")
+    bird_meta = bird_asset.with_suffix(".ogg.meta")
+    require(bird_meta.is_file(), "School birdsong Unity metadata missing")
+    if bird_meta.is_file():
+        found = re.findall(r"^guid: ([0-9a-f]{32})$", bird_meta.read_text(encoding="utf8"), re.MULTILINE)
+        require(len(found) == 1 and found[0] not in guids, "Invalid or duplicate school birdsong GUID")
+    require("Barracuda1983" in credits and "https://commons.wikimedia.org/wiki/File:Birds_forest.ogg" in credits,
+            "School birdsong provenance absent from credits")
     for item in manifest:
         # Catalog descriptions may carry '(submitted by ...)' after the creator;
         # the credit can preserve the same fact with punctuation or a separate line.

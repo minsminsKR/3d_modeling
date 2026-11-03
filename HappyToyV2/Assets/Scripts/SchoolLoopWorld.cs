@@ -41,7 +41,10 @@ namespace HappyToy.V2
         NavMeshSurface navigation;
         GameSession session;
         SchoolHorrorLighting lighting;float morningElapsed;bool morningStarted;
+        SchoolMorningBirdsong morningBirds;
         public bool MorningStarted=>morningStarted;
+        public float MorningLight=>lighting?lighting.Morning:0;
+        public SchoolMorningBirdsong MorningBirds=>morningBirds;
         public const int ClearHour=8;
         public const float SunriseSeconds=8,ClearSeconds=13;
         Vector3 previous;
@@ -107,13 +110,16 @@ namespace HappyToy.V2
                 {
                     morningStarted=true;Anomalies.RestoreLegacy(Traversals);Anomalies.enabled=false;
                     Walker.gameObject.SetActive(false);session.Notify("08:00 — 학교에 아침이 찾아왔습니다.");
+                    morningBirds=Root.gameObject.AddComponent<SchoolMorningBirdsong>();morningBirds.Prepare();
                 }
                 if(!EnemyTimeStop.Active)
                 {
                     morningElapsed+=Time.deltaTime;
                     lighting.SetMorning(Mathf.SmoothStep(0,1,morningElapsed/SunriseSeconds));
-                    if(morningElapsed>=ClearSeconds)session.Finish(true);
+                    morningBirds.Tick(morningElapsed,true);
+                    if(morningElapsed>=ClearSeconds){morningBirds.Stop();session.Finish(true);}
                 }
+                else morningBirds.Tick(morningElapsed,false);
                 previous=session.player.transform.position;return;
             }
             var feet=session.player.transform.position;

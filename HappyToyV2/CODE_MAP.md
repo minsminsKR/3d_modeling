@@ -27,6 +27,11 @@ lady 피날레의 렌더링은 `GraphicsLightingPresentation`이 소유한 `Lady
 핏발자국의 다섯 전조와 이후 자국은 `SchoolCleaningAnomaly.FootstepPosition`의 연속 경로를 공유한다.
 물의 붉은 물결은 첫 발자국 위치에서 천천히 확산한다. 아침 전용 창밖 하늘은 기존 창 유리 뒤에
 배치되고 창문 광원·앰비언트·노출과 함께 서서히 켜지며 학교 조명 범위에서만 소유·해제된다.
+08:00에는 `SchoolMorningBirdsong`이 보존된 실제 새소리 녹음을 재생하며 4초간 서서히 커지고 결과 화면 직전에 사라진다.
+`RoomAmbience`는 학교의 아침 밝기에 따라 기존 실내 배경음을 낮춘다. 일시정지·부적 정지는
+녹음과 시간 진행을 함께 유지하며, 08:00 저장을 복원하면 아침과 새소리를 처음부터 재생한다.
+원본·라이선스·해시는 `ThirdParty/Audio/MorningBirds/`에 있다. 학교 시계 통합 검사에서 수명·pause·복원을 확인하고,
+선택형 `SchoolMorningBirdsongQuietMixerReview`는 프로세스 음소거 후 CPU 모드 Unity 믹서의 PCM을 기록한다.
 
 레이디 자산 마감은 `SourceArt/Lady/polish_game.py` / `polish_far_lod.py`가 기존 생성 원본을
 사용해 UV·게임 PBR·원거리 메시·수직 지지를 정리한다. 원래 76개 관절 회전 곡선은
