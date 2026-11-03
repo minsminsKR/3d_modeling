@@ -23,10 +23,10 @@ namespace HappyToy.V2
         public void Prepare(GameSession owner,SchoolLoopWorld loop)
         {
             session=owner;world=loop;uint seed=BitConverter.ToUInt32(Guid.NewGuid().ToByteArray(),0);
-            bool review=Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-school-anomaly-review")>=0||
-                !Application.isEditor&&File.Exists(Path.Combine(Path.GetDirectoryName(Application.dataPath),"school-anomaly-review.flag"));
-            bool flickerFirst=Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-school-flicker-first")>=0||
-                !Application.isEditor&&File.Exists(Path.Combine(Path.GetDirectoryName(Application.dataPath),"school-flicker-first.flag"));
+            bool review=!loop.OnePassMorning&&(Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-school-anomaly-review")>=0||
+                !Application.isEditor&&File.Exists(Path.Combine(Path.GetDirectoryName(Application.dataPath),"school-anomaly-review.flag")));
+            bool flickerFirst=!loop.OnePassMorning&&(Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-school-flicker-first")>=0||
+                !Application.isEditor&&File.Exists(Path.Combine(Path.GetDirectoryName(Application.dataPath),"school-flicker-first.flag")));
             deck=new SchoolAnomalyDeck(seed==0?1:seed,review,flickerFirst);
             Blackout=gameObject.AddComponent<SchoolBlackoutPresentation>();Blackout.Prepare(world.Root);ApplyPassage();
         }

@@ -20,7 +20,7 @@ namespace HappyToy.V2
             Source.playOnAwake=false;Source.loop=true;Source.clip=clip;Source.spatialBlend=0;
             Source.ignoreListenerPause=false;Source.ignoreListenerVolume=false;Source.volume=0;
         }
-        public void Tick(float elapsed,bool advancing)
+        public void Tick(float elapsed,bool advancing,float duration)
         {
             if(!Source)return;
             if(!advancing)
@@ -31,7 +31,7 @@ namespace HappyToy.V2
             if(!started){Source.Play();started=true;}
             else if(held){Source.UnPause();held=false;}
             float fadeIn=Mathf.SmoothStep(0,1,Mathf.Clamp01(elapsed/FadeInSeconds));
-            float fadeOut=Mathf.SmoothStep(0,1,Mathf.Clamp01((SchoolLoopWorld.ClearSeconds-elapsed)/FadeOutSeconds));
+            float fadeOut=Mathf.SmoothStep(0,1,Mathf.Clamp01((duration-elapsed)/FadeOutSeconds));
             Source.volume=FullGain*fadeIn*fadeOut;
         }
         public void Stop(){if(Source){Source.Stop();Source.volume=0;}held=false;}

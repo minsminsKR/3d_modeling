@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.AI.Navigation;
 using UnityEngine;
@@ -30,7 +31,9 @@ namespace HappyToy.V2
         public IReadOnlyList<Interactable> LockedDoors=>doors;
         public Transform MusicRoom {get;internal set;}
         public int StaticBatches {get;private set;}
-        public string Objective=>"이상 현상이 없으면 앞으로, 이상 현상이 있으면 뒤로 돌아가세요. 올바르게 판단하면 한 시간이 오르고, 틀리면 00:00으로 돌아갑니다. 08:00에 아침이 찾아옵니다.";
+        public string Objective=>onePassMorning?
+            "아침 점검 중입니다. 복도를 한 번 통과하면 08:00이 됩니다.":
+            "이상 현상이 없으면 앞으로, 이상 현상이 있으면 뒤로 돌아가세요. 올바르게 판단하면 한 시간이 오르고, 틀리면 00:00으로 돌아갑니다. 08:00에 아침이 찾아옵니다.";
         public GraphicsSurfaceLibrary.Pool Surfaces {get;}=new GraphicsSurfaceLibrary.Pool();
         public SchoolHorrorSurfaces HorrorSurfaces {get;private set;}
         internal readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
@@ -42,15 +45,20 @@ namespace HappyToy.V2
         GameSession session;
         SchoolHorrorLighting lighting;float morningElapsed;bool morningStarted;
         SchoolMorningBirdsong morningBirds;
+        bool onePassMorning;
         public bool MorningStarted=>morningStarted;
+        public bool OnePassMorning=>onePassMorning;
         public float MorningLight=>lighting?lighting.Morning:0;
         public SchoolMorningBirdsong MorningBirds=>morningBirds;
         public const int ClearHour=8;
         public const float SunriseSeconds=8,ClearSeconds=13;
+        public const float ReviewClearSeconds=60;
         Vector3 previous;
         public void Prepare(GameSession owner)
         {
             if(Root)throw new InvalidOperationException("School loop already prepared");
+            onePassMorning=Array.IndexOf(Environment.GetCommandLineArgs(),"-v2-school-one-pass-morning")>=0||
+                !Application.isEditor&&File.Exists(Path.Combine(Path.GetDirectoryName(Application.dataPath),"school-one-pass-morning.flag"));
             session=owner;retired.Apply(owner);
             Root=new GameObject("School — repeating observation corridor v3").transform;
             Root.SetParent(transform,false);Root.position=Origin;
@@ -101,6 +109,13 @@ namespace HappyToy.V2
             progressClock.Restore(hours);
             foreach(var clock in clocks)if(clock)clock.SetHours(progressClock.Hours);
         }
+        Vector3 ReturnThroughSeam(Vector3 local,int direction)
+        {
+            var pose=SchoolLoopPlan.ReturnToCentre(local.x,local.z,direction);
+            var feet=Origin+new Vector3(pose.X,local.y,pose.Z);
+            session.player.TraverseWorldSeam(feet,Quaternion.Euler(0,pose.Yaw,0));
+            return feet;
+        }
         void LateUpdate()
         {
             if(!Root||!session||!session.InputAllowed)return;
@@ -116,24 +131,30 @@ namespace HappyToy.V2
                 {
                     morningElapsed+=Time.deltaTime;
                     lighting.SetMorning(Mathf.SmoothStep(0,1,morningElapsed/SunriseSeconds));
-                    morningBirds.Tick(morningElapsed,true);
-                    if(morningElapsed>=ClearSeconds){morningBirds.Stop();session.Finish(true);}
+                    float duration=onePassMorning?ReviewClearSeconds:ClearSeconds;
+                    morningBirds.Tick(morningElapsed,true,duration);
+                    if(morningElapsed>=duration){morningBirds.Stop();session.Finish(true);}
                 }
-                else morningBirds.Tick(morningElapsed,false);
-                previous=session.player.transform.position;return;
+                else morningBirds.Tick(morningElapsed,false,onePassMorning?ReviewClearSeconds:ClearSeconds);
+                var morningFeet=session.player.transform.position;
+                var morningLocal=morningFeet-Origin;
+                int morningDirection=SchoolLoopPlan.Crossing((previous-Origin).z,morningLocal.x,morningLocal.z);
+                if(morningDirection!=0)morningFeet=ReturnThroughSeam(morningLocal,morningDirection);
+                previous=morningFeet;return;
             }
             var feet=session.player.transform.position;
             var local=feet-Origin;var last=previous-Origin;
             int direction=SchoolLoopPlan.Crossing(last.z,local.x,local.z);
             if(direction!=0)
             {
-                var pose=SchoolLoopPlan.ReturnToCentre(local.x,local.z,direction);
-                feet=Origin+new Vector3(pose.X,local.y,pose.Z);
-                session.player.TraverseWorldSeam(feet,Quaternion.Euler(0,pose.Yaw,0));
+                feet=ReturnThroughSeam(local,direction);
                 Traversals=Mathf.Clamp(Traversals+1,0,1000000);
-                if(progressClock.JudgeTraversal(direction,Anomalies.Kind))
+                bool changed=progressClock.JudgeTraversal(direction,Anomalies.Kind);
+                if(onePassMorning){progressClock.Restore(ClearHour);changed=true;}
+                if(changed)
                     foreach(var clock in clocks)if(clock)clock.SetHours(progressClock.Hours);
-                Anomalies.CompleteTraversal(direction);
+                if(onePassMorning)Anomalies.RestoreLegacy(Traversals);
+                else Anomalies.CompleteTraversal(direction);
                 Walker.OnTraversal(Traversals);
             }
             previous=feet;
