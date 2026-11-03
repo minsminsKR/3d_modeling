@@ -12,12 +12,13 @@ namespace HappyToy.V2
         public static float Stride(long flash)
         {
             if(flash<1)throw new ArgumentOutOfRangeException(nameof(flash));
-            return strides[(int)((flash-1)%strides.Length)];
+            long phase=flash-1;
+            return strides[(int)((phase%strides.Length+(phase/strides.Length%strides.Length)*3)%strides.Length)];
         }
         public static float Light(long flash,int fixture)
         {
             if(flash<0||fixture<0)throw new ArgumentOutOfRangeException();
-            return light[(int)((flash+fixture*3L)%light.Length)];
+            return light[(int)((flash%light.Length+(flash/light.Length%light.Length)*3+fixture*3L)%light.Length)];
         }
         public static float Nearness(float distance)
         {

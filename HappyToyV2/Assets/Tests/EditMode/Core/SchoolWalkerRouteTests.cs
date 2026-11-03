@@ -20,14 +20,16 @@ namespace HappyToy.V2.CoreTests
         [Test]
         public void FlickerDreadBreaksTheGaitWithoutChangingTheAverageOrSavedPhase()
         {
-            float total=0;bool stopped=false,lunged=false;
+            float total=0,nextTotal=0;bool stopped=false,lunged=false,changed=false;
             for(long flash=1;flash<=8;flash++)
             {
                 float step=SchoolFlickerDread.Stride(flash);total+=step;
                 stopped|=step==0;lunged|=step>=1;
-                Assert.That(SchoolFlickerDread.Stride(flash+8),Is.EqualTo(step));
+                float next=SchoolFlickerDread.Stride(flash+8);nextTotal+=next;changed|=next!=step;
+                Assert.That(SchoolFlickerDread.Stride(flash+8),Is.EqualTo(next));
             }
             Assert.That(stopped&&lunged,Is.True);Assert.That(total,Is.EqualTo(3.6f).Within(.0001f));
+            Assert.That(changed,Is.True);Assert.That(nextTotal,Is.EqualTo(3.6f).Within(.0001f));
             Assert.That(SchoolFlickerDread.Light(0,0),Is.Not.EqualTo(SchoolFlickerDread.Light(0,1)));
             Assert.That(SchoolFlickerDread.Nearness(20),Is.Zero);Assert.That(SchoolFlickerDread.Nearness(4),Is.EqualTo(1));
             Assert.Throws<ArgumentOutOfRangeException>(()=>SchoolFlickerDread.Stride(0));

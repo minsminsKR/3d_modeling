@@ -8,17 +8,19 @@ namespace HappyToy.V2
     public sealed class SchoolFlickerAtmosphere : MonoBehaviour
     {
         GameSession session;Transform subject;EnemyAcoustics acoustics;GameObject spatialOwner;
-        AudioClip air,heart,breath;AudioClip[] steps,strains;
+        AudioClip air,heart,breath,lunge;AudioClip[] steps,strains;
         bool active,started,held;long lastFlash;int traversal;float previousDistance;
         public AudioSource AirSource {get;private set;}
         public AudioSource HeartSource {get;private set;}
         public AudioSource BreathSource {get;private set;}
         public AudioSource StepSource {get;private set;}
         public AudioSource StrainSource {get;private set;}
+        public AudioSource LungeSource {get;private set;}
         public bool Active=>active;
         public bool Held=>held;
         public int StepsPlayed {get;private set;}
         public int StrainsPlayed {get;private set;}
+        public int LungesPlayed {get;private set;}
 
         public static SchoolFlickerAtmosphere Build(GameSession owner,Transform actor)
         {
@@ -29,6 +31,7 @@ namespace HappyToy.V2
             {
                 item.air=ExternalAudio.Required("tension-air");item.heart=ExternalAudio.Required("tension-heart");
                 item.breath=ExternalAudio.Required("enemy-cyclopse-breath");
+                item.lunge=ExternalAudio.Required("mask-beast-step",0);
                 item.steps=new[]{ExternalAudio.Required("mask-heavy-step",0),ExternalAudio.Required("mask-heavy-step",1)};
                 item.strains=new[]{ExternalAudio.Required("frame-strain",0),ExternalAudio.Required("frame-strain",1)};
                 item.AirSource=item.Make(item.gameObject,item.air,true,false);
@@ -39,9 +42,11 @@ namespace HappyToy.V2
                 item.BreathSource=item.Make(emitter,item.breath,true,true);
                 item.StepSource=item.Make(emitter,null,false,true);
                 item.StrainSource=item.Make(emitter,null,false,true);
+                item.LungeSource=item.Make(emitter,null,false,true);
                 item.acoustics=EnemyAcoustics.Bind(item.BreathSource,actor,.42f,0);
                 EnemyAcoustics.Bind(item.StepSource,actor,.78f,0);
                 EnemyAcoustics.Bind(item.StrainSource,actor,.48f,0);
+                EnemyAcoustics.Bind(item.LungeSource,actor,.58f,0);
                 item.BreathSource.pitch=.76f;emitter.SetActive(false);return item;
             }
             catch{Destroy(item.gameObject);throw;}
@@ -83,17 +88,19 @@ namespace HappyToy.V2
             float travelled=state.Distance-previousDistance;
             if(state.Traversal==traversal&&flash>lastFlash&&travelled>.08f)
             {
-                StepSource.pitch=flash%4==0?.68f:.83f;StepSource.PlayOneShot(steps[StepsPlayed%steps.Length]);StepsPlayed++;
+                bool lunged=SchoolFlickerDread.Stride(flash)>=1f;
+                StepSource.pitch=lunged?.68f:.83f;StepSource.PlayOneShot(steps[StepsPlayed%steps.Length],lunged?.7f:1f);StepsPlayed++;
+                if(lunged){LungeSource.pitch=.6f;LungeSource.PlayOneShot(lunge,.7f);LungesPlayed++;}
                 if(flash%3==0){StrainSource.pitch=flash%2==0?.68f:.84f;StrainSource.PlayOneShot(strains[StrainsPlayed%strains.Length]);StrainsPlayed++;}
             }
             lastFlash=flash;previousDistance=state.Distance;traversal=state.Traversal;
         }
-        AudioSource[] Sources()=>new[]{AirSource,HeartSource,BreathSource,StepSource,StrainSource};
+        AudioSource[] Sources()=>new[]{AirSource,HeartSource,BreathSource,StepSource,StrainSource,LungeSource};
         void StopAll(){foreach(var source in Sources())if(source)source.Stop();started=held=false;}
         void OnDisable()=>StopAll();
         void OnDestroy()
         {
-            StopAll();if(air)Destroy(air);if(heart)Destroy(heart);if(breath)Destroy(breath);
+            StopAll();if(air)Destroy(air);if(heart)Destroy(heart);if(breath)Destroy(breath);if(lunge)Destroy(lunge);
             if(steps!=null)foreach(var clip in steps)if(clip)Destroy(clip);
             if(strains!=null)foreach(var clip in strains)if(clip)Destroy(clip);
         }

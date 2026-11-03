@@ -443,3 +443,18 @@ tubes now flash red at normal event gain in sync with the fixed emergency light;
 room lights stay subdued and all fixtures restore after the event. The
 `school-anomalies-logic` profile passed 153 EditMode and 8 PlayMode cases.
 Rendered appearance and runtime performance were not reviewed for this change.
+
+2026-11-03 pursuit rhythm and audio: Each eight-flash stride sequence still
+travels 3.6 m, but the sequence and independent fixture intensities change phase
+between cycles. The long moving lunge adds a spatial, low-pitched impact from
+the existing credited `mask-beast-step` recording. Pause and time-stop retain
+the same ownership and hold behavior. The phase is derived from saved elapsed
+time; an older in-progress event can resume at a different presentation phase.
+
+The opt-in `SchoolFlickerSequenceActualCameraAndMixer` records four seconds of
+the real game camera and mixer using an isolated desktop and verified process
+audio mute. The 2026-11-03 capture contained two lunge cues, peak 0.371, RMS
+0.033 and no clipped samples. Lit and dark frames were visually inspected;
+the rendered capture is not a native FPS audit. Audio could not be subjectively
+listened to in this environment, so these measurements do not certify its impact.
+Generated frames and the WAV are optional outputs under `Builds/Verification`.
