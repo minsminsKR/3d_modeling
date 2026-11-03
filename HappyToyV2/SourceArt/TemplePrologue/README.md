@@ -60,6 +60,13 @@ the result. A Blender attempt with a 75,000-triangle budget failed at 253,120
 triangles; no editable blend or game export was produced. Do not place this
 high-poly original repeatedly without topology/UV-safe optimization and review.
 
+The rejected Hunyuan result also included independent initial and remeshed
+geometry plus an OBJ/MTL with separate albedo, metallic and roughness images.
+Those unchanged service originals and their SHA-256 hashes are retained under
+`pine/hunyuan-original-assets/`; the textured GLB, input images, full job
+record and metadata remain in `pine/`. They are preserved for authoring and
+comparison only, and do not enable the rejected tree in the game.
+
 `TemplePrologueSequence` is an unconnected, engine-independent interaction
 sequence. Its CPU check is `dotnet run --project
 HappyToyV2/Tools/quality/TemplePrologueTests.csproj` from the repository root.

@@ -39,6 +39,10 @@ model_test/model/
 *.onnx
 *.gguf
 
+# Editable meshes retained from the generated pine's original service result.
+!HappyToyV2/SourceArt/TemplePrologue/pine/hunyuan-original-assets/*.obj
+!HappyToyV2/SourceArt/TemplePrologue/pine/hunyuan-original-assets/*.glb
+
 # Editable AI rig originals and authored school student sources are handoff data.
 !HappyToyV2/SourceArt/SchoolStudyStudents/rigged/**/*.glb
 !HappyToyV2/SourceArt/SchoolStudyStudents/rigged-corrected/**/*.glb

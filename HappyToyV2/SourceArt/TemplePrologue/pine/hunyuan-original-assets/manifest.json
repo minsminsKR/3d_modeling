@@ -1,0 +1,49 @@
+{
+  "request_id": "aad4512f-d2b9-4082-b1d0-939f0fd14b1c",
+  "job_id": "25f9cb91-165b-4569-9b11-f61dc916bd4d",
+  "description": "Original additional untextured mesh, OBJ and PBR texture files from the rejected Hunyuan service result; no edits. Textured GLB, input, job record and metadata are retained separately in pine/.",
+  "files": [
+    {
+      "file": "model_initial.glb",
+      "archive_member": "outputs/model_initial.glb",
+      "bytes": 8264368,
+      "sha256": "283ee8b937e5fe01b121e4ba3b9cf3411bfdf08723d0974b2be441eccd3bc8e6"
+    },
+    {
+      "file": "model_textured.obj",
+      "archive_member": "outputs/model_textured.obj",
+      "bytes": 2808062,
+      "sha256": "e5786c764c272cd09ff7e64eb2713b12e8fb77fe5a6b7325125181e1bbf3a90e"
+    },
+    {
+      "file": "model_textured.mtl",
+      "archive_member": "outputs/model_textured.mtl",
+      "bytes": 164,
+      "sha256": "cf36962b64f05f21242eef8e6c42083dac29cf89018772f98331f45588367a28"
+    },
+    {
+      "file": "model_textured.jpg",
+      "archive_member": "outputs/model_textured.jpg",
+      "bytes": 3662258,
+      "sha256": "e4d2791b4db92fcfcff578f3ba0764d1474ec332094e40bc1532b86d07d84f97"
+    },
+    {
+      "file": "model_textured_metallic.jpg",
+      "archive_member": "outputs/model_textured_metallic.jpg",
+      "bytes": 1171117,
+      "sha256": "6b5db2eecaf0e356e60c058a44fc3ca1eb911a1b0af446527a88145f89311653"
+    },
+    {
+      "file": "model_textured_roughness.jpg",
+      "archive_member": "outputs/model_textured_roughness.jpg",
+      "bytes": 1295252,
+      "sha256": "0193a3d136f9be94a55b35746b2ea328a2778f0bd7db433e6b13731573246f0b"
+    },
+    {
+      "file": "white_mesh_remesh.obj",
+      "archive_member": "outputs/white_mesh_remesh.obj",
+      "bytes": 1467040,
+      "sha256": "3b1dd093142cc5f0807437e10fc3cede5c9d463276d8623cd5619e905d0ec806"
+    }
+  ]
+}
