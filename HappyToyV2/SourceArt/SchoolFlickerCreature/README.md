@@ -473,3 +473,13 @@ width at one 5.7 m pursuit sample; camera occupancy was 0.335 versus 0.177 for
 the preceding intermediate sample at the same distance. Poses differ, so this
 is an example, not a guaranteed factor at every angle. Those captures used an
 isolated desktop, muted process audio and are not a native FPS audit.
+
+2026-11-03 further enlargement: the existing torso/head joint uses nonuniform
+local scale (10, 4, 4), replacing the earlier uniform (4, 4, 4), to put more
+of the generated body's bulk across the available corridor. One upright tremor
+uses a floor-safe neutral twist; the other tremor phases and inverted motion
+remain active. The regenerated calibration checks 128 pose/orientation/tremor
+combinations against the floor, ceiling and twelve hall/elbow positions. The
+central 90% of vertices measured 2.09–3.06 m wide in the straight-hall fixture;
+the preceding revision measured 1.99–2.98 m. These measurements describe the
+checked poses, not a claim that the creature fills the entire screen at a distance.

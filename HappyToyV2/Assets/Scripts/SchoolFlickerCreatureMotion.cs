@@ -88,6 +88,10 @@ namespace HappyToy.V2
             if(tremor!=0)
             {
                 float side=tremor==2?-1:1,twist=tremor==3?-1:1;
+                // The expanded upright shoulder cannot swing down on the
+                // reverse beat without piercing the floor. Keep that beat as
+                // a distinct neutral twist while the inverted pose swings both ways.
+                if(!Inverted&&tremor==2){side=1;twist=0;}
                 float neck=Inverted?.20f:1f;
                 joints[2].localRotation*=Quaternion.Euler(7*twist*neck,10*side*neck,13*side*neck);
                 joints[3].localRotation*=Quaternion.Euler(-10*twist*neck,8*side*neck,-11*side*neck);
@@ -164,7 +168,8 @@ namespace HappyToy.V2
         {
             for(int i=0;i<joints.Length;i++)
             {
-                joints[i].localScale=restScale[i]*(i==2?4f:(i==5||i==9)?.42f:1f);
+                joints[i].localScale=i==2?Vector3.Scale(restScale[i],new Vector3(10f,4f,4f)):
+                    restScale[i]*((i==5||i==9)?.42f:1f);
                 joints[i].localRotation=rest[i]*Quaternion.Euler(Signed(pose,i,0)*ranges[i],Signed(pose,i,1)*ranges[i],Signed(pose,i,2)*ranges[i]);
             }
         }
