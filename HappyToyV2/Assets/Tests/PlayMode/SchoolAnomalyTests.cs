@@ -56,7 +56,17 @@ namespace HappyToy.V2.CloudTests
             Assert.That(posters.Length,Is.EqualTo(3));
             Assert.That(posters.All(r=>r.sharedMaterial.name=="Normal school award poster"),Is.True);
             Call(shell,"Pause");UseSchoolAnomalyFixture(world,"AwardPoster");
+            var presentation=Get<Component>(world,"AwardPoster");
+            Assert.That(posters.All(r=>r.sharedMaterial.name=="Normal school award poster"),Is.True,"The distant poster must start normal");
+            Call(presentation,"Tick",LoopOrigin+new Vector3(0,1.6f,4),true);
+            Assert.That(posters.All(r=>r.sharedMaterial.name=="Normal school award poster"),Is.True);
+            Call(presentation,"Tick",LoopOrigin+new Vector3(.5f,1.6f,13.6f),false);
+            Assert.That(posters.All(r=>r.sharedMaterial.name=="Normal school award poster"),Is.True,"Pause must hold the reveal");
+            Call(presentation,"Tick",LoopOrigin+new Vector3(.5f,1.6f,13.6f),true);
             Assert.That(posters.All(r=>r.sharedMaterial.name=="Haunted school award poster"),Is.True);
+            var director=Get<Component>(world,"Anomalies");var revealed=Call(director,"Capture");
+            Call(director,"Restore",revealed,Get<int>(world,"Traversals"));
+            Assert.That(posters.All(r=>r.sharedMaterial.name=="Haunted school award poster"),Is.True,"The reveal must survive a save");
             ExportSchoolAnomalyFrame(world,"award-poster",new Vector3(.5f,.03f,13.6f),new Vector3(2.04f,1.65f,13.6f));
             UseSchoolAnomalyFixture(world,"Normal");
             Assert.That(posters.All(r=>r.sharedMaterial.name=="Normal school award poster"),Is.True);
@@ -71,6 +81,14 @@ namespace HappyToy.V2.CloudTests
             Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Cleaning");PlacePlayer(LoopOrigin+new Vector3(-1f,.03f,8));
             var cleaning=Get<Component>(director,"Cleaning");
             Assert.That(cleaning,Is.Not.Null);
+            Call(cleaning,"Tick",.8f,true,new Vector3(0,0,8));
+            Assert.That(Get<int>(cleaning,"ForewarningSteps"),Is.GreaterThan(0));
+            Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.Zero,"Distant wet steps precede all blood marks");
+            Assert.That(Get<Material>(Get<object>(world,"HorrorSurfaces"),"RenewedFloor").GetFloat("_BloodSpread"),Is.Zero);
+            var warningSave=Call(director,"Capture");Call(director,"Restore",warningSave,Get<int>(world,"Traversals"));
+            cleaning=Get<Component>(director,"Cleaning");
+            Assert.That(Get<int>(cleaning,"ForewarningSteps"),Is.GreaterThan(0));
+            Assert.That(Get<int>(cleaning,"StepsEmitted"),Is.Zero);
             Call(shell,"Resume");yield return Wait(()=>Get<int>(cleaning,"StepsEmitted")>=2,15,"Wet footsteps did not advance",
                 ()=>"kind="+Get<object>(director,"Kind")+" triggered="+Get<bool>(cleaning,"Triggered")+" elapsed="+Get<float>(cleaning,"Elapsed")+
                     " input="+Get<bool>(session,"InputAllowed")+" local="+Get<Transform>(world,"Centre").InverseTransformPoint(player.transform.position));
@@ -220,7 +238,7 @@ namespace HappyToy.V2.CloudTests
         {
             int traversal=Math.Max(1,Get<int>(world,"Traversals"));Call(world,"RestoreTraversal",traversal);
             var director=Get<Component>(world,"Anomalies");var data=Call(director,"Capture");var deck=Get<object>(data,"deck");
-            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),kind));Set(deck,"NormalStreak",kind=="Normal"?1:0);Set(data,"deck",deck);Set(data,"cleaningElapsed",0f);Set(data,"cleaningTriggered",false);Set(data,"furnitureElapsed",0f);Set(data,"furnitureTriggered",false);
+            Set(deck,"Kind",Enum.Parse(RequireType("SchoolAnomalyKind"),kind));Set(deck,"NormalStreak",kind=="Normal"?1:0);Set(data,"deck",deck);Set(data,"cleaningElapsed",0f);Set(data,"cleaningTriggered",false);Set(data,"posterRevealed",false);Set(data,"furnitureElapsed",0f);Set(data,"furnitureTriggered",false);
             Call(director,"Restore",data,traversal);return data;
         }
         IEnumerator CrossSchoolJudgmentSeam(Component world,int direction)

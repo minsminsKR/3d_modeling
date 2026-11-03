@@ -25,6 +25,8 @@ namespace HappyToy.V2
         // Optional for earlier v3 saves; absence restarts the new cosmetic event.
         public float cleaningElapsed;
         public bool cleaningTriggered;
+        // Missing in older saves; the poster can be discovered again.
+        public bool posterRevealed;
         public float furnitureElapsed;
         // Missing in older saves; positive elapsed time implies it had started.
         public bool furnitureTriggered;
@@ -32,6 +34,7 @@ namespace HappyToy.V2
         {
             if(version!=1||deck.Passage!=traversal)throw new ArgumentException("School anomaly and loop traversal disagree");
             SchoolAnomalyDeck.Validate(deck);SchoolAnomalyEventClock.Validate(clock,deck.Kind);
+            if(posterRevealed&&deck.Kind!=SchoolAnomalyKind.AwardPoster)throw new ArgumentException("Invalid poster reveal");
             if(!StealthRules.Finite(cleaningElapsed)||cleaningElapsed<0||cleaningElapsed>1000000||
                 deck.Kind!=SchoolAnomalyKind.Cleaning&&(cleaningElapsed!=0||cleaningTriggered))throw new ArgumentException("Invalid cleaning anomaly time");
             if(!StealthRules.Finite(furnitureElapsed)||furnitureElapsed<0||furnitureElapsed>1000000||

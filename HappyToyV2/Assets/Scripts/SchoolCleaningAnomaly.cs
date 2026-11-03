@@ -10,15 +10,17 @@ namespace HappyToy.V2
     public sealed class SchoolCleaningAnomaly : MonoBehaviour
     {
         const float StepInterval=.72f;
+        public const float ForewarningSeconds=3.6f;
         const int MaximumVisibleMarks=48;
         readonly List<GameObject> marks=new List<GameObject>();
         AudioClip[] steps;AudioSource audioSource;ParticleSystem splash;
         Material markMaterial,particleMaterial;Texture2D footprint,droplet;
         SchoolBloodPuddles bloodWater;
-        float elapsed;int emitted;bool held,triggered;
+        float elapsed;int emitted,introEmitted;bool held,triggered;
         public int StepsEmitted=>emitted;
         public float Elapsed=>elapsed;
         public bool Triggered=>triggered;
+        public int ForewarningSteps=>introEmitted;
 
         public void Prepare(SchoolLoopWorld world)
         {
@@ -75,7 +77,14 @@ namespace HappyToy.V2
                 triggered=true;
             }
             elapsed=Mathf.Min(1000000,elapsed+Mathf.Max(0,delta));
-            bloodWater.SetElapsed(elapsed);
+            int introWanted=Mathf.Min(5,Mathf.FloorToInt(Mathf.Min(elapsed,ForewarningSeconds)/StepInterval)+1);
+            if(introWanted>introEmitted)
+            {
+                introEmitted=introWanted;
+                audioSource.transform.localPosition=new Vector3(.2f,.1f,32f);
+                audioSource.PlayOneShot(steps[(introWanted-1)%steps.Length]);
+            }
+            bloodWater.SetElapsed(Mathf.Max(0,elapsed-ForewarningSeconds));
             int wanted=StepsAt(elapsed);
             if(wanted-emitted>MaximumVisibleMarks)emitted=wanted-MaximumVisibleMarks;
             while(emitted<wanted)EmitStep(emitted==wanted-1);
@@ -85,11 +94,12 @@ namespace HappyToy.V2
             if(!StealthRules.Finite(value)||value<0||value>1000000)throw new ArgumentException("Invalid cleaning elapsed time");
             triggered=wasTriggered||value>0;elapsed=value;
             if(!triggered)return;
-            bloodWater.SetElapsed(elapsed);
+            introEmitted=Mathf.Min(5,Mathf.FloorToInt(Mathf.Min(elapsed,ForewarningSeconds)/StepInterval)+1);
+            bloodWater.SetElapsed(Mathf.Max(0,elapsed-ForewarningSeconds));
             int wanted=StepsAt(elapsed);emitted=Mathf.Max(0,wanted-MaximumVisibleMarks);
             while(emitted<wanted)EmitStep(false);
         }
-        static int StepsAt(float time)=>Mathf.FloorToInt(time/StepInterval)+1;
+        static int StepsAt(float time)=>time<ForewarningSeconds?0:Mathf.FloorToInt((time-ForewarningSeconds)/StepInterval)+1;
         void EmitStep(bool audible)
         {
                 float distance=emitted*.52f,z=7.5f+Mathf.PingPong(distance,22f);

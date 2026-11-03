@@ -409,6 +409,7 @@ PROFILES["local-shadow-logic"]=("CPU-only corridor shadow selection, atlas limit
 PROFILES["school-anomalies-logic"]=("CPU-only school anomaly rules, physical seams, solid walker and flickering pose, Baby blackout/shop/timeout/contact and save restoration; no GPU appearance or listening certification", [
     ("EditMode", ("HappyToy.V2.CoreTests.SchoolAnomalyRulesTests", "HappyToy.V2.CoreTests.SchoolProgressClockTests", "HappyToy.V2.CoreTests.SchoolWalkerRouteTests", CLOUD+"SchoolLoopCheckpointTests", CLOUD+"CheckpointTrapCodecTests", CLOUD+"ChapterCheckpointStoreTests")),
     ("PlayMode", (
+        PLAY+"SchoolEightCorrectJudgmentsBringMorningAndFinish",
         PLAY+"SchoolAwardPosterChangesForAnomalyAndRestoresAfterward",
         PLAY+"SchoolCleaningFootstepsHoldDuringPauseAndClearOnPassageChange",
         PLAY+"SchoolMovingDoorsHoldDuringPauseAndRestoreClosed",

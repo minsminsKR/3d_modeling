@@ -9,13 +9,14 @@ namespace HappyToy.V2
     {
         internal struct State
         {
-            public bool ChapterMode, CorridorMode, Escaped, RetryRecord, RetryChapterRecord;
+            public bool ChapterMode, CorridorMode, ObservationSchool, Escaped, RetryRecord, RetryChapterRecord;
             public int CorridorVersion, RecordsRecovered, TotalRecords;
             public float ElapsedPlayTime;
             public string DefeatHint, ChapterObjective, RecordSaveMessage, ChapterRecordSaveMessage;
             public ChapterRunReport ChapterResult;
             public static State Read(GameSession session) => new State {
                 ChapterMode = session.ChapterMode, CorridorMode = session.CorridorMode, Escaped = session.Escaped,
+                ObservationSchool = session.ChapterMode && session.Chapter.Loop,
                 CorridorVersion = session.CorridorMode ? session.Corridor.Layout.Version : 0,
                 RecordsRecovered = session.RecordsRecovered, TotalRecords = session.TotalRecords, ElapsedPlayTime = session.ElapsedPlayTime,
                 DefeatHint = session.DefeatHint, ChapterObjective = session.ChapterMode ? session.Chapter.Objective : string.Empty,
@@ -53,6 +54,18 @@ namespace HappyToy.V2
         void BuildSchoolResult(ShellLayout layout, State state, Actions actions)
         {
             var result=state.ChapterResult;
+            if(state.ObservationSchool)
+            {
+                layout.Small(state.Escaped?"학교  /  08:00":"학교  /  탐색 중단",153,247,675);
+                layout.Text(state.Escaped?"긴 밤이 끝나고\n학교에 아침이 찾아왔다.":"아직 밤이 끝나지 않았다.\n복도의 변화를 살펴 다시 길을 찾으세요.",153,294,900,109,layout.LargeText?30:27);
+                layout.Button("restart","학교 다시 탐색하기",447,()=>actions.Restart(),primary:true);
+                layout.Button("title","시작 화면으로",515,()=>actions.Title());
+                layout.Button("quit","종료",583,()=>Application.Quit());
+                layout.Button("school-records","최근 학교 탐색 기록",651,actions.History);
+                if(state.RetryChapterRecord)layout.Button("retry-school-record-save","학교 결과 저장 다시 시도",710,actions.RetryChapterRecord);
+                if(!string.IsNullOrEmpty(state.ChapterRecordSaveMessage))layout.Small(state.ChapterRecordSaveMessage,153,770,675,62);
+                return;
+            }
             layout.Small(state.Escaped?"학교 조사 종료  /  하교 확인":"학교 조사 중단  /  다섯 기억의 기록",153,247,675);
             layout.Text(state.Escaped?"다섯 이름이 돌아왔다.\n학교 밖의 공기를 다시 마신다.":"기억은 아직 학교 안에 남아 있다.\n들었던 소리를 기억하고 다시 들어가세요.",153,294,650,109,layout.LargeText?30:27);
             layout.Panel(895,245,540,583,layout.CardSurface);

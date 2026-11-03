@@ -10,6 +10,9 @@ namespace HappyToy.V2
     {
         readonly List<MeshRenderer> posters=new List<MeshRenderer>();
         Material normal,anomaly;
+        bool active;
+        public bool Revealed {get;private set;}
+        public const float RevealDistance=2.5f;
 
         public void Prepare(SchoolLoopWorld world)
         {
@@ -43,7 +46,16 @@ namespace HappyToy.V2
         }
         public void SetAnomaly(bool active)
         {
-            foreach(var poster in posters)if(poster)poster.sharedMaterial=active?anomaly:normal;
+            this.active=active;Revealed=false;Apply();
         }
+        public void Tick(Vector3 eye,bool advancing)
+        {
+            if(!active||Revealed||!advancing)return;
+            foreach(var poster in posters)
+                if(poster&&(poster.transform.position-eye).sqrMagnitude<=RevealDistance*RevealDistance)
+                {Reveal();break;}
+        }
+        public void Reveal(){if(active){Revealed=true;Apply();}}
+        void Apply(){foreach(var poster in posters)if(poster)poster.sharedMaterial=Revealed?anomaly:normal;}
     }
 }

@@ -64,6 +64,7 @@ namespace HappyToy.V2
             if(deck==null||!session||!world||!session.player)return;
             bool advancing=session.InputAllowed&&!session.Finished&&!EnemyTimeStop.Active;
             var local=world.Centre.InverseTransformPoint(session.player.transform.position);
+            world.AwardPoster.Tick(session.player.eyes?session.player.eyes.transform.position:session.player.transform.position+Vector3.up*1.5f,advancing);
             bool sign=Mathf.Abs(local.x)<=SchoolLoopPlan.HalfWidth&&local.z>=StudySignZ&&local.z<=SchoolLoopPlan.Length;
             if(advancing&&Kind==SchoolAnomalyKind.MovingFurniture&&!furnitureTriggered&&sign)
             {furnitureTriggered=true;SetFurnitureActive(true);}
@@ -83,7 +84,7 @@ namespace HappyToy.V2
                     session.TryDefeat("복도의 정전","복도 끝부터 등이 꺼지면 뒤로 돌아가세요. 완전히 어두워진 뒤 5초가 지나면 늦습니다.");
             }
         }
-        public SchoolAnomalyProgress Capture()=>new SchoolAnomalyProgress{deck=deck.Capture(),clock=clock.Capture(),baby=Baby?Baby.Capture():default,cleaningElapsed=Cleaning?Cleaning.Elapsed:0,cleaningTriggered=Cleaning&&Cleaning.Triggered,furnitureTriggered=furnitureTriggered,furnitureElapsed=furnitureTriggered?world.MovingDoors.Elapsed:0};
+        public SchoolAnomalyProgress Capture()=>new SchoolAnomalyProgress{deck=deck.Capture(),clock=clock.Capture(),baby=Baby?Baby.Capture():default,cleaningElapsed=Cleaning?Cleaning.Elapsed:0,cleaningTriggered=Cleaning&&Cleaning.Triggered,posterRevealed=world.AwardPoster.Revealed,furnitureTriggered=furnitureTriggered,furnitureElapsed=furnitureTriggered?world.MovingDoors.Elapsed:0};
         public void ValidateRestore(SchoolAnomalyProgress saved,int traversal)
         {
             saved.Validate(traversal);
@@ -98,6 +99,7 @@ namespace HappyToy.V2
         public void Restore(SchoolAnomalyProgress saved,int traversal)
         {
             ValidateRestore(saved,traversal);deck.Restore(saved.deck);clock.Restore(saved.clock,Kind);ApplyPassage();
+            if(saved.posterRevealed)world.AwardPoster.Reveal();
             if(Cleaning)Cleaning.RestoreElapsed(saved.cleaningElapsed,saved.cleaningTriggered);
             if(Kind==SchoolAnomalyKind.MovingFurniture&&(saved.furnitureTriggered||saved.furnitureElapsed>0))
             {furnitureTriggered=true;SetFurnitureActive(true);world.MovingDoors.RestoreElapsed(saved.furnitureElapsed);world.MovingDrawers.RestoreElapsed(saved.furnitureElapsed);world.MovingWindows.RestoreElapsed(saved.furnitureElapsed);}

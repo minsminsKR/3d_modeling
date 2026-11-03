@@ -30,7 +30,7 @@ namespace HappyToy.V2
         public IReadOnlyList<Interactable> LockedDoors=>doors;
         public Transform MusicRoom {get;internal set;}
         public int StaticBatches {get;private set;}
-        public string Objective=>"이상 현상이 없으면 앞으로, 이상 현상이 있으면 뒤로 돌아가세요. 올바르게 판단하면 한 시간이 오르고, 틀리면 00:00으로 돌아갑니다.";
+        public string Objective=>"이상 현상이 없으면 앞으로, 이상 현상이 있으면 뒤로 돌아가세요. 올바르게 판단하면 한 시간이 오르고, 틀리면 00:00으로 돌아갑니다. 08:00에 아침이 찾아옵니다.";
         public GraphicsSurfaceLibrary.Pool Surfaces {get;}=new GraphicsSurfaceLibrary.Pool();
         public SchoolHorrorSurfaces HorrorSurfaces {get;private set;}
         internal readonly List<UnityEngine.Object> owned=new List<UnityEngine.Object>();
@@ -40,6 +40,10 @@ namespace HappyToy.V2
         readonly List<(TextMesh label,Vector2 size)> signs=new List<(TextMesh,Vector2)>();
         NavMeshSurface navigation;
         GameSession session;
+        SchoolHorrorLighting lighting;float morningElapsed;bool morningStarted;
+        public bool MorningStarted=>morningStarted;
+        public const int ClearHour=8;
+        public const float SunriseSeconds=8,ClearSeconds=13;
         Vector3 previous;
         public void Prepare(GameSession owner)
         {
@@ -74,7 +78,7 @@ namespace HappyToy.V2
             navigation.collectObjects=CollectObjects.Children;navigation.useGeometry=NavMeshCollectGeometry.PhysicsColliders;
             navigation.overrideVoxelSize=true;navigation.voxelSize=.10f;
             navigation.BuildNavMesh();
-            Root.gameObject.AddComponent<SchoolHorrorLighting>().Prepare(this);
+            lighting=Root.gameObject.AddComponent<SchoolHorrorLighting>();lighting.Prepare(this);
             session.player.RelocateWorld(Origin+new Vector3(-4.6f,.03f,2.2f),Quaternion.Euler(0,90,0));
             Walker=SchoolWalkerEncounter.Build(session,Centre,
                 Resources.Load<GameObject>("SchoolWalker/walker-visual"),
@@ -97,6 +101,21 @@ namespace HappyToy.V2
         void LateUpdate()
         {
             if(!Root||!session||!session.InputAllowed)return;
+            if(progressClock.Hours>=ClearHour)
+            {
+                if(!morningStarted)
+                {
+                    morningStarted=true;Anomalies.RestoreLegacy(Traversals);Anomalies.enabled=false;
+                    Walker.gameObject.SetActive(false);session.Notify("08:00 — 학교에 아침이 찾아왔습니다.");
+                }
+                if(!EnemyTimeStop.Active)
+                {
+                    morningElapsed+=Time.deltaTime;
+                    lighting.SetMorning(Mathf.SmoothStep(0,1,morningElapsed/SunriseSeconds));
+                    if(morningElapsed>=ClearSeconds)session.Finish(true);
+                }
+                previous=session.player.transform.position;return;
+            }
             var feet=session.player.transform.position;
             var local=feet-Origin;var last=previous-Origin;
             int direction=SchoolLoopPlan.Crossing(last.z,local.x,local.z);

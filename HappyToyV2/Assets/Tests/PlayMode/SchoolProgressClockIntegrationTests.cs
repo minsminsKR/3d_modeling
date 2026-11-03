@@ -14,6 +14,31 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest,Timeout(180000)]
+        public IEnumerator SchoolEightCorrectJudgmentsBringMorningAndFinish()
+        {
+            yield return BeginObservationSchool();
+            var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            Call(shell,"Pause");UseSchoolAnomalyFixture(world,"Normal");Call(world,"RestoreClock",7);Call(shell,"Resume");
+            yield return CrossSchoolJudgmentSeam(world,1);
+            Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(8));
+            yield return Wait(()=>Get<bool>(world,"MorningStarted"),3,"08:00 did not start morning");
+            var lighting=Get<Transform>(world,"Root").GetComponent(RequireType("SchoolHorrorLighting"));
+            yield return Delay(1);Assert.That(Get<float>(lighting,"Morning"),Is.GreaterThan(0));
+            Call(shell,"Pause");float held=Get<float>(lighting,"Morning");yield return Delay(.3f);
+            Assert.That(Get<float>(lighting,"Morning"),Is.EqualTo(held),"Pause must hold sunrise");
+            var checkpoint=Call(session,"CaptureChapterCheckpoint");Assert.DoesNotThrow(()=>Call(checkpoint,"Validate"));
+            var previous=session;Call(shell,"Restart",false);yield return RecoveryRebind(previous);
+            Call(session,"CreateChapterForCheckpoint",checkpoint);Call(session,"ApplyChapterCheckpoint",checkpoint);
+            world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");
+            Assert.That(Get<int>(world,"ClockHours"),Is.EqualTo(8));
+            lighting=Get<Transform>(world,"Root").GetComponent(RequireType("SchoolHorrorLighting"));
+            Call(shell,"Begin");
+            yield return Wait(()=>Get<bool>(world,"MorningStarted"),3,"Restored 08:00 did not restart sunrise");
+            yield return Wait(()=>Get<bool>(session,"Finished"),20,"Morning did not finish the school chapter");
+            Assert.That(Get<bool>(session,"Escaped"),Is.True);
+            Assert.That(Get<float>(lighting,"Morning"),Is.EqualTo(1).Within(.001f));
+        }
+        [UnityTest,Timeout(180000)]
         public IEnumerator SchoolClockJudgesBothDirectionsAndFreezesOnPause()
         {
             yield return BeginObservationSchool();var world=Get<Component>(Get<Component>(session,"Chapter"),"Loop");

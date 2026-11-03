@@ -275,7 +275,7 @@ namespace HappyToy.V2
             string title = shown == GameShell.Page.Title ? "잊힌 회랑" : shown == GameShell.Page.Pause ? "숨을 고르다" :
                 shown == GameShell.Page.Journal ? "조사 기록" : shown == GameShell.Page.Settings ? "환경 설정" :
                 shown==GameShell.Page.Records ? "학교 탐색 기록" :
-                session.Escaped ? session.CorridorMode ? "회랑의 문이 열렸습니다" : "마지막 아이가 하교했습니다" : "발소리가 멈췄습니다";
+                session.Escaped ? session.CorridorMode ? "회랑의 문이 열렸습니다" : session.ChapterMode && session.Chapter.Loop ? "학교에 아침이 왔습니다" : "마지막 아이가 하교했습니다" : "발소리가 멈췄습니다";
             Text(title, 150, 145, 1300, shown == GameShell.Page.Title ? 110 : 82, shown == GameShell.Page.Title ? 66 : 48).style.unityFontStyleAndWeight = FontStyle.Bold;
         }
         void BuildTitle() => BuildCinematicTitle();

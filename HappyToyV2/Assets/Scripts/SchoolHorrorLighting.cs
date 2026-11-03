@@ -29,6 +29,9 @@ namespace HappyToy.V2
         readonly Stack<Environment> renders=new Stack<Environment>();
         readonly List<ReflectionProbe> probes=new List<ReflectionProbe>();
         readonly List<Light> windowLights=new List<Light>();
+        readonly List<Color> nightWindowColors=new List<Color>();
+        readonly List<float> nightWindowIntensities=new List<float>();
+        Light morningSun;ColorAdjustments morningGrade;float morning;
         readonly Dictionary<Light,bool> flickerLightStates=new Dictionary<Light,bool>();
         readonly Dictionary<Light,bool> backlitLightStates=new Dictionary<Light,bool>();
         readonly Dictionary<ReflectionProbe,bool> flickerProbeStates=new Dictionary<ReflectionProbe,bool>();
@@ -72,6 +75,18 @@ namespace HappyToy.V2
         public IReadOnlyList<Light> WindowLights=>windowLights;
         public SchoolPlanarReflection PlanarReflection=>planar;
         public bool ReflectionReady=>Prepared&&nextProbe>=probes.Count&&(renderId<0||probes[probes.Count-1].IsFinishedRendering(renderId));
+        public float Morning=>morning;
+        public void SetMorning(float value)
+        {
+            morning=Mathf.Clamp01(value);
+            for(int i=0;i<windowLights.Count;i++)if(windowLights[i])
+            {
+                windowLights[i].color=Color.Lerp(nightWindowColors[i],new Color(1f,.72f,.38f),morning);
+                windowLights[i].intensity=nightWindowIntensities[i]*Mathf.Lerp(1f,3.2f,morning);
+            }
+            if(morningSun)morningSun.intensity=1.15f*morning;
+            if(morningGrade){morningGrade.postExposure.value=Mathf.Lerp(-.10f,.35f,morning);morningGrade.saturation.value=Mathf.Lerp(-18,0,morning);}
+        }
 
         public static Light Fixture(SchoolLoopWorld world,Transform parent,Vector3 at,bool warm,float intensity)
         {
@@ -152,6 +167,7 @@ namespace HappyToy.V2
             // crushed its shadows in normal play; the old standalone preview skipped volume updates.
             var tone=profile.Add<Tonemapping>(true);tone.mode.value=TonemappingMode.Neutral;
             var grade=profile.Add<ColorAdjustments>(true);grade.postExposure.value=-.10f;grade.contrast.value=0;grade.saturation.value=-18;
+            morningGrade=grade;
             var bloom=profile.Add<Bloom>(true);bloom.threshold.value=1.25f;bloom.intensity.value=.12f;bloom.scatter.value=.48f;bloom.maxIterations.value=4;bloom.clamp.value=8;
             var vignette=profile.Add<Vignette>(true);vignette.intensity.value=.12f;vignette.smoothness.value=.65f;
             var blur=profile.Add<MotionBlur>(true);blur.intensity.Override(0);
@@ -170,6 +186,11 @@ namespace HappyToy.V2
                 var exit=SchoolExitSign.Build(world,chunk,new Vector3(0,2.91f,35.9f));
                 additions.Add(exit.gameObject);
             }
+            foreach(var light in windowLights){nightWindowColors.Add(light.color);nightWindowIntensities.Add(light.intensity);}
+            morningSun=new GameObject("School morning sunlight").AddComponent<Light>();
+            morningSun.transform.SetParent(root,false);morningSun.transform.rotation=Quaternion.Euler(32,-58,0);
+            morningSun.type=LightType.Directional;morningSun.color=new Color(1f,.76f,.47f);morningSun.intensity=0;
+            morningSun.cullingMask=1<<8;morningSun.shadows=LightShadows.Soft;
             for(int i=0;i<2;i++)
             {
                 var probe=new GameObject("School wet-floor reflection zone "+i).AddComponent<ReflectionProbe>();
@@ -295,12 +316,12 @@ namespace HappyToy.V2
                 fogStart=RenderSettings.fogStartDistance,fogEnd=RenderSettings.fogEndDistance,
                 reflectionOverride=blackReflection,reflectionMode=RenderSettings.defaultReflectionMode,reflection=blackReflection?RenderSettings.customReflectionTexture:null});
             if(blackReflection){RenderSettings.defaultReflectionMode=DefaultReflectionMode.Custom;RenderSettings.customReflectionTexture=pendingReflection;}
-            var ambient=flickerDark?Color.black:flickerBacklit?new Color(.003f,.003f,.004f):new Color(.028f,.040f,.058f);
+            var ambient=flickerDark?Color.black:flickerBacklit?new Color(.003f,.003f,.004f):Color.Lerp(new Color(.028f,.040f,.058f),new Color(.32f,.25f,.17f),morning);
             RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=ambient;
             RenderSettings.ambientSkyColor=RenderSettings.ambientEquatorColor=RenderSettings.ambientGroundColor=ambient;
             RenderSettings.ambientIntensity=.65f;var harmonics=new SphericalHarmonicsL2();harmonics.AddAmbientLight(ambient*.65f);RenderSettings.ambientProbe=harmonics;
             RenderSettings.fog=true;RenderSettings.fogMode=FogMode.ExponentialSquared;
-            RenderSettings.fogColor=flickerDark?Color.black:flickerBacklit?new Color(.018f,.002f,.002f):new Color(.006f,.010f,.017f);RenderSettings.fogDensity=.0135f;
+            RenderSettings.fogColor=flickerDark?Color.black:flickerBacklit?new Color(.018f,.002f,.002f):Color.Lerp(new Color(.006f,.010f,.017f),new Color(.28f,.22f,.16f),morning);RenderSettings.fogDensity=Mathf.Lerp(.0135f,.004f,morning);
         }
         void AfterCamera(ScriptableRenderContext context,Camera camera)
         {if(renders.Count>0&&renders.Peek().camera==camera)renders.Pop().Restore();}
@@ -312,6 +333,7 @@ namespace HappyToy.V2
             if(subscribed){RenderPipelineManager.beginCameraRendering-=BeforeCamera;RenderPipelineManager.endCameraRendering-=AfterCamera;subscribed=false;}
             while(renders.Count>0)renders.Pop().Restore();
             if(volume)volume.enabled=false;
+            if(morningSun)morningSun.enabled=false;
             if(planar)planar.enabled=false;
             foreach(var probe in probes)if(probe)probe.enabled=false;
             foreach(var addition in additions)if(addition)addition.SetActive(false);
@@ -319,6 +341,7 @@ namespace HappyToy.V2
         void OnEnable()
         {
             if(!Prepared)return;overlap?.Apply();Subscribe();if(volume)volume.enabled=true;
+            if(morningSun)morningSun.enabled=true;
             if(planar)planar.enabled=true;
             foreach(var probe in probes)if(probe)probe.enabled=true;
             foreach(var addition in additions)if(addition)addition.SetActive(true);
