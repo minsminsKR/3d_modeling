@@ -6,7 +6,7 @@ namespace HappyToy.V2
     // The physical pedestrian capsule and its saved route are independent.
     public static class SchoolFlickerCreatureFit
     {
-        public static Vector3 Scale(Bounds pose,Vector3 position,Quaternion yaw)
+        public static Vector3 Scale(Bounds pose,Vector3 position,Quaternion yaw,out Vector3 offset)
         {
             float minX=float.PositiveInfinity,maxX=float.NegativeInfinity,minZ=float.PositiveInfinity,maxZ=float.NegativeInfinity;
             for(int i=0;i<4;i++)
@@ -24,14 +24,25 @@ namespace HappyToy.V2
             float far=entry?SchoolLoopPlan.EntryDepth-.12f:SchoolLoopPlan.Length-.12f;
             if(position.z<.12f&&position.x<=-SchoolLoopPlan.ConnectorInnerX-.12f){left=-SchoolLoopPlan.ConnectorOuterX+.12f;right=-SchoolLoopPlan.ConnectorInnerX-.12f;near=SchoolLoopPlan.EntryPortalZ+.12f;far=SchoolLoopPlan.EntryDepth-.12f;}
             else if(position.z>SchoolLoopPlan.Length-.12f&&position.x>=SchoolLoopPlan.ConnectorInnerX+.12f){left=SchoolLoopPlan.ConnectorInnerX+.12f;right=SchoolLoopPlan.ConnectorOuterX-.12f;near=SchoolLoopPlan.Length-SchoolLoopPlan.EntryDepth+.12f;far=SchoolLoopPlan.ExitPortalZ-.12f;}
-            return new Vector3(Axis(minX,maxX,position.x,left,right),1,Axis(minZ,maxZ,position.z,near,far));
+            float x=Axis(minX,maxX,position.x,left,right,.25f,out float shiftX);
+            float z=Axis(minZ,maxZ,position.z,near,far,float.PositiveInfinity,out float shiftZ);
+            offset=new Vector3(shiftX,0,shiftZ);return new Vector3(x,1,z);
         }
-        static float Axis(float low,float high,float at,float minimum,float maximum)
+        static float Axis(float low,float high,float at,float minimum,float maximum,float maxShift,out float offset)
         {
-            float scale=1;
-            if(low<0)scale=Mathf.Min(scale,Mathf.Max(0,(at-minimum)/-low));
-            if(high>0)scale=Mathf.Min(scale,Mathf.Max(0,(maximum-at)/high));
-            return Mathf.Clamp01(scale);
+            float size=high-low;
+            float scale=size>0?Mathf.Clamp01((maximum-minimum)/size):1;
+            float lower=minimum-at-low*scale,upper=maximum-at-high*scale;
+            offset=Mathf.Clamp(0,lower,Mathf.Max(lower,upper));
+            // Keep the torso near the pursuit centreline whenever that line is
+            // inside the section, then compress only what the walls require.
+            float capped=Mathf.Clamp(offset,-maxShift,maxShift),centre=at+capped;
+            if(low<0&&high>0&&centre>=minimum&&centre<=maximum)
+            {
+                offset=capped;
+                scale=Mathf.Min(scale,Mathf.Min((centre-minimum)/-low,(maximum-centre)/high));
+            }
+            return scale;
         }
     }
 }

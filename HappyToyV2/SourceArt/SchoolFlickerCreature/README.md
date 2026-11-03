@@ -458,3 +458,18 @@ audio mute. The 2026-11-03 capture contained two lunge cues, peak 0.371, RMS
 the rendered capture is not a native FPS audit. Audio could not be subjectively
 listened to in this environment, so these measurements do not certify its impact.
 Generated frames and the WAV are optional outputs under `Builds/Verification`.
+
+2026-11-03 body-size correction: Earlier width measurements included long thin
+extremities and corridor compression, so the bulk could look much smaller than
+the nominal 4.20 m envelope. The existing rig's torso/head chain is 4.0 and arm
+chains 0.42; floor-safe broad silhouettes replace the visibly narrow poses.
+Fit now translates within the corridor before compressing, limiting horizontal
+translation to 0.25 m where the pursuit centreline remains inside the section.
+The 128-pose, 12-position deformed skin audit verified floor, ceiling and wall
+limits; the central 90% of vertices measured at least 1.99 m wide at the straight
+hall fixture. `FlickerCreatureDiagnostics.Inspect` rejects less than 1.9 m.
+The actual 640x360 game-camera review recorded 4.12 m total and 2.98 m central
+width at one 5.7 m pursuit sample; camera occupancy was 0.335 versus 0.177 for
+the preceding intermediate sample at the same distance. Poses differ, so this
+is an example, not a guaranteed factor at every angle. Those captures used an
+isolated desktop, muted process audio and are not a native FPS audit.

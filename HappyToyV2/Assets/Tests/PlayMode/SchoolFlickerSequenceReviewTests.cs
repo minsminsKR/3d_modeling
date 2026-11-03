@@ -16,7 +16,7 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [Serializable] sealed class FlickerSequenceFrame
-        {public string file;public float elapsed,creatureZ,distance;public bool dark;public int steps,lunges;}
+        {public string file;public float elapsed,creatureZ,distance,worldWidth,worldHeight,centralWidth,viewportWidth,fitX,fitZ;public bool dark;public int steps,lunges;}
         [Serializable] sealed class FlickerSequenceReport
         {public string scope="Actual production camera and Unity mixer; process device output muted. No subjective listening or native FPS certification.";public int rate,samples,clipped;public double peak,rms;public bool deviceSessionMuted;public FlickerSequenceFrame[] frames;}
 
@@ -45,7 +45,7 @@ namespace HappyToy.V2.CloudTests
             try
             {
                 Time.captureDeltaTime=1f/15f;yield return null;started=StartOwnedAudioRenderer();Assert.That(started,Is.True);
-                float deadline=Time.realtimeSinceStartup+50,lastLight=-10,lastDark=-10;int frame=0,target=rate*2*4;
+                float deadline=Time.realtimeSinceStartup+50,lastLight=-10,lastDark=-10;int frame=0,lastGeometrySecond=-1,target=rate*2*4;
                 while(samples.Count<target&&Time.realtimeSinceStartup<deadline&&!Get<bool>(session,"Finished"))
                 {
                     yield return null;int count=AudioRenderer.GetSampleCountForCaptureFrame();
@@ -60,8 +60,10 @@ namespace HappyToy.V2.CloudTests
                         var image=SchoolHorrorFrame(camera,640,360);string file=$"frame-{frame:000}.png";
                         try{File.WriteAllBytes(Path.Combine(output,file),image.EncodeToPNG());}finally{Object.Destroy(image);}
                         var atmosphere=Get<Component>(walker,"FlickerAtmosphere");
-                        frames.Add(new FlickerSequenceFrame{file=file,elapsed=elapsed,creatureZ=walker.transform.localPosition.z,
-                            distance=Vector3.Distance(walker.transform.position,player.transform.position),dark=dark,steps=Get<int>(atmosphere,"StepsPlayed"),lunges=Get<int>(atmosphere,"LungesPlayed")});
+                        var captured=new FlickerSequenceFrame{file=file,elapsed=elapsed,creatureZ=walker.transform.localPosition.z,
+                            distance=Vector3.Distance(walker.transform.position,player.transform.position),dark=dark,steps=Get<int>(atmosphere,"StepsPlayed"),lunges=Get<int>(atmosphere,"LungesPlayed")};
+                        if(!dark&&Mathf.FloorToInt(elapsed)>lastGeometrySecond){lastGeometrySecond=Mathf.FloorToInt(elapsed);MeasureFlickerGeometry(walker,camera,captured);}
+                        frames.Add(captured);
                     }
                     frame++;
                 }
@@ -77,6 +79,24 @@ namespace HappyToy.V2.CloudTests
                 Assert.That(rms,Is.GreaterThan(.00002));Assert.That(clipped,Is.Zero,"Real pursuit mix clips");
             }
             finally{if(started)StopOwnedAudioRenderer();Time.captureDeltaTime=previous;}
+        }
+        static void MeasureFlickerGeometry(Component walker,Camera camera,FlickerSequenceFrame frame)
+        {
+            var creature=Get<Transform>(walker,"Creature");var fit=creature.parent.parent;frame.fitX=fit.localScale.x;frame.fitZ=fit.localScale.z;
+            var skin=creature.GetComponentsInChildren<SkinnedMeshRenderer>(true).OrderByDescending(s=>s.sharedMesh.vertexCount).First();
+            var baked=new Mesh();try
+            {
+                skin.BakeMesh(baked);var xs=new List<float>();var projected=new List<float>();float lowY=float.PositiveInfinity,highY=float.NegativeInfinity;
+                foreach(var vertex in baked.vertices)
+                {
+                    var p=skin.transform.TransformPoint(vertex);xs.Add(p.x);lowY=Mathf.Min(lowY,p.y);highY=Mathf.Max(highY,p.y);
+                    var v=camera.WorldToViewportPoint(p);if(v.z>0)projected.Add(v.x);
+                }
+                xs.Sort();projected.Sort();frame.worldWidth=xs.Last()-xs[0];frame.worldHeight=highY-lowY;
+                frame.centralWidth=xs[(int)((xs.Count-1)*.95)]-xs[(int)((xs.Count-1)*.05)];
+                if(projected.Count>0)frame.viewportWidth=projected[(int)((projected.Count-1)*.95)]-projected[(int)((projected.Count-1)*.05)];
+            }
+            finally{Object.Destroy(baked);}
         }
     }
 }

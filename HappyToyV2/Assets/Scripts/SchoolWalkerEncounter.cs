@@ -195,11 +195,12 @@ namespace HappyToy.V2
             transform.localRotation=Quaternion.Euler(0,state.Yaw,0);if(!Dancing)Motion.Apply(state);
             if(Dancing&&creatureMotion!=null)
             {
-                creatureFit.localRotation=Quaternion.Inverse(transform.localRotation);creatureFit.localScale=Vector3.one;
+                creatureFit.localRotation=Quaternion.Inverse(transform.localRotation);creatureFit.localScale=Vector3.one;creatureFit.localPosition=Vector3.zero;
                 creatureFacing.localRotation=transform.localRotation;
                 creatureMotion.Apply(state.Elapsed);
                 if(creatureGrounding!=null)creatureGrounding.Apply(state.Elapsed,creatureMotion.Inverted,creatureMotion.TremorStep);
-                creatureFit.localScale=SchoolFlickerCreatureFit.Scale(creatureMotion.CurrentBounds,transform.localPosition,transform.localRotation);
+                creatureFit.localScale=SchoolFlickerCreatureFit.Scale(creatureMotion.CurrentBounds,transform.localPosition,transform.localRotation,out var offset);
+                creatureFit.localPosition=Quaternion.Inverse(transform.localRotation)*offset;
             }
             if(Dancing&&flicker!=null)flicker.Apply(state.Elapsed);
             if(creatureVisibility!=null)creatureVisibility.Set(Dancing,FlickerDark);

@@ -30,11 +30,11 @@ namespace HappyToy.V2.Editor
                 for(int inverted=0;inverted<2;inverted++)for(int tremor=0;tremor<3;tremor++)
                 {
                     motion.ApplyState(0,inverted==1,tremor+1);skin.BakeMesh(mesh);var vertices=mesh.vertices;var uv=skin.sharedMesh.uv;
-                    var fit=SchoolFlickerCreatureFit.Scale(motion.CurrentBounds,new Vector3(0,0,12),Quaternion.Euler(0,180,0));
+                    var fit=SchoolFlickerCreatureFit.Scale(motion.CurrentBounds,new Vector3(0,0,12),Quaternion.Euler(0,180,0),out var offset);
                     using(var writer=new StreamWriter(Path.Combine(output,$"pose-{inverted}-{tremor}.obj")))
                     {
                         writer.WriteLine("mtllib creature.mtl\nusemtl skin");
-                        foreach(var vertex in vertices){var p=actor.transform.InverseTransformPoint(skin.transform.TransformPoint(vertex));p=Vector3.Scale(p,fit);writer.WriteLine(FormattableString.Invariant($"v {p.x} {-p.z} {p.y}"));}
+                        foreach(var vertex in vertices){var p=actor.transform.InverseTransformPoint(skin.transform.TransformPoint(vertex));p=Quaternion.Inverse(Quaternion.Euler(0,180,0))*offset+Vector3.Scale(p,fit);writer.WriteLine(FormattableString.Invariant($"v {p.x} {-p.z} {p.y}"));}
                         foreach(var v in uv)writer.WriteLine(FormattableString.Invariant($"vt {v.x} {v.y}"));
                         var triangles=skin.sharedMesh.triangles;
                         for(int i=0;i<triangles.Length;i+=3){int a=triangles[i]+1,b=triangles[i+1]+1,c=triangles[i+2]+1;writer.WriteLine($"f {a}/{a} {b}/{b} {c}/{c}");}

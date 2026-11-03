@@ -24,6 +24,9 @@ namespace HappyToy.V2
         readonly Mesh baked=new Mesh();
         static readonly float[] ranges={0,14,18,48,65,24,34,85,110,24,34,85,110,0,0,0,0};
         static readonly int[] fittedSeeds={3,16,36,47,55,59,66,70,72,74,75,83,86,102,105,106};
+        // Chosen from measured floor-safe poses for a fuller body silhouette.
+        static readonly int[] imposingUpright={6,13};
+        static readonly int[] imposingInverted={6,4,10,13};
         uint seed;
         [Serializable] public sealed class Calibration
         {
@@ -78,21 +81,10 @@ namespace HappyToy.V2
         {
             if(tremor<0||tremor>=TremorVariants)throw new ArgumentOutOfRangeException(nameof(tremor));
             int slot=(int)(flash%fittedSeeds.Length);Inverted=inverted;TremorStep=tremor;
+            int poseSlot=Inverted?imposingInverted[slot%imposingInverted.Length]:
+                imposingUpright[tremor==0?(slot/2)%imposingUpright.Length:0];
             visual.localPosition=Vector3.zero;visual.localRotation=Inverted?Quaternion.Euler(0,0,180):Quaternion.identity;
-            // Three upright-safe silhouettes have tendrils above the head and
-            // would pierce the floor upside down. Use different fitted poses.
-            int fittedSlot=Inverted?(slot==7?0:slot==9?3:slot==12?5:slot):slot;
-            // The larger torso pushes two upright silhouettes through the
-            // floor; reuse the checked folded pose for those exact steps.
-            if(!Inverted&&((slot==1&&tremor==0)||(slot==3&&tremor==3)))fittedSlot=0;
-            if(!Inverted&&((slot==0&&tremor==1)||(slot==1&&tremor>0)||(slot==3&&tremor==0)||
-                (slot==9&&(tremor==1||tremor==3))||(slot==10&&(tremor==0||tremor==2))||
-                (slot==12&&tremor==1)||(slot==15&&tremor!=2)))fittedSlot=2;
-            // The head is the floor contact when inverted. Keep the stronger
-            // shaking to two independently checked inverted silhouettes so
-            // nearby tendrils do not swing through the floor.
-            if(Inverted&&tremor!=0)fittedSlot=slot%2;
-            ApplyPoseIndex(fittedSeeds[fittedSlot]);
+            ApplyPoseIndex(fittedSeeds[poseSlot]);
             if(tremor!=0)
             {
                 float side=tremor==2?-1:1,twist=tremor==3?-1:1;
@@ -172,7 +164,7 @@ namespace HappyToy.V2
         {
             for(int i=0;i<joints.Length;i++)
             {
-                joints[i].localScale=restScale[i]*(i==2?2.5f:(i==5||i==9)?.53f:1f);
+                joints[i].localScale=restScale[i]*(i==2?4f:(i==5||i==9)?.42f:1f);
                 joints[i].localRotation=rest[i]*Quaternion.Euler(Signed(pose,i,0)*ranges[i],Signed(pose,i,1)*ranges[i],Signed(pose,i,2)*ranges[i]);
             }
         }
