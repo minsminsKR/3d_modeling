@@ -33,8 +33,10 @@ CorridorEntrance finishing recipe with Blender 4.0.2. It preserves the original
 inside the packed editable blend and exports one 100,000-triangle derived mesh,
 9m wide, and 4K PBR maps in `game-export/`. A 25,000-triangle second LOD failed
 to reach its target (86,629 triangles remained) and was omitted. Front facing,
-appearance of the reduced mesh, collision and materials in Unity have not been
-verified; this export is not integrated into the game.
+appearance of the reduced mesh and collision have not been verified. The
+`TemplePrologueImport.ImportTemple` Unity batch importer creates the URP maps,
+material and prefab from this export; the batch import succeeded, but the
+prefab is not connected to gameplay or visually reviewed in Unity.
 
 ## Pine reference and generation
 
@@ -51,7 +53,12 @@ texture on. The webapp result lost almost all foliage and was rejected; its
 original and record are preserved in `pine/`. A replacement using TRELLIS.2
 1024 cascade and 4K texture was submitted as request
 `cc51c42e-431d-4392-bd03-5e2dcb87f4f2`, job
-`4ff43435-9370-4552-9e84-30d96ac8ec80`. Collect and inspect it before use.
+`4ff43435-9370-4552-9e84-30d96ac8ec80`. Its front and side were inspected in
+the webapp: foliage and branches are present. The downloaded `original.glb`,
+`trellis-job.json`, `trellis-metadata.json` and `trellis-processed.png` preserve
+the result. A Blender attempt with a 75,000-triangle budget failed at 253,120
+triangles; no editable blend or game export was produced. Do not place this
+high-poly original repeatedly without topology/UV-safe optimization and review.
 
 `TemplePrologueSequence` is an unconnected, engine-independent interaction
 sequence. Its CPU check is `dotnet run --project

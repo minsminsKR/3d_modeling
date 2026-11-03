@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "id": "4ff43435-9370-4552-9e84-30d96ac8ec80",
+  "status": "completed",
+  "message": "Model is ready.",
+  "created_at": 1793697353.9125676,
+  "updated_at": 1793697587.1213431,
+  "source_filename": "reference.png",
+  "batch_index": 1,
+  "batch_total": 1,
+  "options": {
+    "model": "trellis2",
+    "gpu_id": 1,
+    "texture_gpu_id": 0,
+    "gpu_mode": "split",
+    "texture_profile": "detail",
+    "omni_use_ema": false,
+    "trellis_pipeline": "1024_cascade",
+    "trellis_steps": 12,
+    "trellis_texture_size": 4096,
+    "trellis_max_tokens": 65536,
+    "texture": true,
+    "remove_background": true,
+    "seed": 1234,
+    "num_inference_steps": 50,
+    "guidance_scale": 7.5,
+    "octree_resolution": 512,
+    "num_chunks": 50000,
+    "output_format": "glb"
+  },
+  "request_id": "cc51c42e-431d-4392-bd03-5e2dcb87f4f2",
+  "submitted_options": {
+    "model": [
+      "trellis2"
+    ],
+    "seed": [
+      "1234"
+    ],
+    "trellis_pipeline": [
+      "1024_cascade"
+    ],
+    "trellis_texture_size": [
+      "4096"
+    ]
+  },
+  "source": "cli",
+  "inputs": [
+    {
+      "name": "reference.png",
+      "archive_name": "inputs/01_reference.png",
+      "sha256": "373fc67377c04c0a8082e6b024609013139f2628dadab1896e824e40e42881ba",
+      "size": 2092077
+    }
+  ],
+  "saved": true,
+  "saved_at": 1793697353.9125676,
+  "started_at": 1793697353.9237173,
+  "finished_at": 1793697587.1213276,
+  "used_texture": true,
+  "warnings": [],
+  "web_url": "/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80",
+  "status_url": "/api/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80",
+  "archive_url": "/api/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80/archive",
+  "record_url": "/api/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80/record",
+  "rigging": {
+    "status": "idle",
+    "ready": true,
+    "start_url": "/api/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80/rigging",
+    "status_url": "/api/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80/rigging"
+  },
+  "elapsed_seconds": 233,
+  "display_name": "reference",
+  "download_url": "/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80/download",
+  "model_url": "/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80/model",
+  "mixamo_package_url": "/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80/mixamo/package",
+  "mixamo_upload_url": "/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80/mixamo/upload",
+  "mixamo_url": "https://www.mixamo.com/#/?page=1&type=Character",
+  "mixamo_files": [],
+  "processed_input_url": "/jobs/4ff43435-9370-4552-9e84-30d96ac8ec80/processed/1",
+  "saved_at_label": "2026-11-03 18:15",
+  "created_at_label": "2026-11-03 18:15",
+  "artifacts": [
+    {
+      "name": "model.glb",
+      "sha256": "68621ad5e7d3e063ae4fa4c0c9224c65959b1b000389de1882f68786b8d168d3",
+      "size": 96009840
+    },
+    {
+      "name": "metadata.json",
+      "sha256": "a394c15204154c8479c4390585c745881720007c97292ee49ba544a4dfb143b6",
+      "size": 2900
+    },
+    {
+      "name": "outputs/generation_request.json",
+      "sha256": "0fa509dfd2566dd3844c314187f1d6c3a34b53780f3f17aed99a8c1669287844",
+      "size": 813
+    },
+    {
+      "name": "outputs/generation_result.json",
+      "sha256": "f503a0b2da7311609e96362a1892d77cd6cec8ae57f9600afa7aba872c029f63",
+      "size": 333
+    },
+    {
+      "name": "processed_inputs/01.png",
+      "sha256": "60211eb1155691aa7f089ffe457434f7919d6a20d5704e6b577496da10f52ccf",
+      "size": 741304
+    }
+  ]
+}

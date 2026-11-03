@@ -60,6 +60,7 @@ HappyToyV2/SourceArt/PlayerItems/References/flashlight-image-provenance.json -te
 HappyToyV2/SourceArt/TemplePrologue/**/*.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/TemplePrologue/**/*.blend filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/TemplePrologue/**/*.fbx filter=lfs diff=lfs merge=lfs -text
+HappyToyV2/Assets/Resources/TemplePrologue/*.fbx filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/CorridorEntrance/*/original.glb filter=lfs diff=lfs merge=lfs -text
 HappyToyV2/SourceArt/CorridorEntrance/**/*.blend filter=lfs diff=lfs merge=lfs -text
 
