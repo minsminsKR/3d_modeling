@@ -11,6 +11,19 @@ The CPU/physics profile does not certify rendered appearance, audio listening
 quality or player FPS. An isolated Windows player camera/mixer inspection is
 described below; it does not replace manual listening or displayed FPS.
 
+## Prayer furnishings follow-up — 2026-11-05
+
+The prayer table and side offering jar now reuse the authored
+`CorridorAltarChamber/offering-table` and `KoreanCorridorProps/onggi` assets.
+Their original editable sources, physical textures and licenses remain in
+`SourceArt/CorridorAltarChamber/`, `SourceArt/KoreanCorridorProps/` and
+`Assets/Resources/GraphicsPbr/`. The table batches its surfaces by material;
+two existing candle/flame models accompany a separate brass incense vessel.
+The closed-lid jar remains a side offering. The old top collider,
+interaction volume and incense release coordinates are unchanged. The CPU
+profile checks their physical boundary and actual focus. The revised
+arrangement has not yet received a game-camera visual or performance review.
+
 ## Isolated player inspection — 2026-11-04
 
 The first game-camera captures exposed a sideways temple, a shiny blue indoor

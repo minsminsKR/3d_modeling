@@ -59,7 +59,6 @@ namespace HappyToy.V2
             var earth = ForestEarth();
             var path = Surface(floorSource, "Old stone path", new Color(.57f, .53f, .46f), new Vector2(1, 8));
             var wood = Material("Prayer table", new Color(.16f, .095f, .055f));
-            var bronze = Material("Incense vessel", new Color(.20f, .17f, .12f));
             Box("Forest ground", new Vector3(0, -.16f, -2), new Vector3(48, .3f, 64), earth, true);
             Box("Stone approach", new Vector3(0, .005f, -5), new Vector3(3.4f, .025f, 31), path, false);
             foreach (float side in new[] { -1f, 1f })
@@ -83,13 +82,8 @@ namespace HappyToy.V2
                 Quaternion.Euler(0, 0, 90) * Quaternion.Euler(0, 90, 0));
             // The preserved model is an exterior; keep the accessible prayer space in front.
             Box("Temple front physical wall", new Vector3(0, 2, 13.8f), new Vector3(9, 4, .3f), wood, true, false);
-            Box("Prayer table top", new Vector3(0, .77f, 7.35f), new Vector3(1.8f, .15f, .75f), wood, true);
-            foreach (float side in new[] { -1f, 1f })
-                Box("Prayer table leg", new Vector3(side * .72f, .36f, 7.35f), new Vector3(.12f, .72f, .55f), wood, false);
-            var vessel = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            vessel.name = "Incense vessel"; vessel.transform.SetParent(transform, false);
-            vessel.transform.localPosition = new Vector3(0, .91f, 7.2f); vessel.transform.localScale = new Vector3(.42f, .11f, .42f);
-            vessel.GetComponent<Renderer>().sharedMaterial = bronze; Destroy(vessel.GetComponent<Collider>());
+            Box("Prayer table top", new Vector3(0, .77f, 7.35f), new Vector3(1.8f, .15f, .75f), wood, true, false);
+            gameObject.AddComponent<TemplePrayerDressing>().Prepare();
             for (int i = 0; i < 16; i++)
             {
                 float side = i % 2 == 0 ? -1 : 1;

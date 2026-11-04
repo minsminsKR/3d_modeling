@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -12,6 +13,28 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest, Timeout(90000)]
+        public IEnumerator TemplePrayerFurnishingsPreserveInteractionAndPhysics()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var table = world.transform.Find("Authored wooden prayer table");
+            var jar = world.transform.Find("Authored ceramic offering jar");
+            var vessel = world.transform.Find("Incense vessel");
+            Assert.That(table, Is.Not.Null); Assert.That(jar, Is.Not.Null); Assert.That(vessel, Is.Not.Null);
+            Assert.That(table.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(jar.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(vessel.GetComponentsInChildren<Collider>(true), Is.Empty);
+            Assert.That(table.GetComponentsInChildren<MeshRenderer>(true).Count(r => r.enabled), Is.GreaterThan(0).And.LessThanOrEqualTo(7));
+            Assert.That(jar.GetComponentsInChildren<MeshRenderer>(true).Any(r => r.enabled), Is.True);
+            Assert.That(world.transform.Find("Prayer table top").GetComponent<BoxCollider>(), Is.Not.Null);
+            Assert.That(world.transform.Find("Prayer table top").GetComponent<Renderer>().enabled, Is.False);
+            PlacePlayer(new Vector3(500, .04f, 505.2f));
+            player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, 12f);
+            yield return null; yield return null;
+            Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("향로"));
+        }
         [UnityTest, Timeout(90000)]
         public IEnumerator TempleOutdoorCameraAndFogAreRestoredWhenLeaving()
         {
