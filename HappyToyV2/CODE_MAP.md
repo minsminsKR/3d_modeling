@@ -6,6 +6,7 @@
 `Core/TemplePrologueSequence`/`TemplePrayerClock`은 향 장착·방출 후 4초 기도·정지·단계 전환을 소유하고,
 `PlayerHandActions`는 향 배치가 끝나기 전 손전등 동작이 향 동작을 덮지 않도록 막는다.
 `FirstPersonHands`는 사찰에서 배치 중에만 향을 손에 표시하고, 배치된 향과 회랑 재고는 별도로 유지한다.
+`PlayerMotor`는 향을 놓는 짧은 구간에만 수평 이동을 멈추며, 시선·중력과 이후 이동은 유지한다.
 `TempleProloguePresentation`은 숲·절·향·방향 연기·빛·기존 녹음의 수명과 전역 환경 복원을 맡고,
 `TemplePrayerDressing`은 기존 제작 제단·도자기·촛불의 시각 자산과 재질/메시 수명을 맡는다.
 가림 전환은 `GameShellStartTransition`이 관리하며 대문 사용 후 기존 회랑을 준비한다.
@@ -14,7 +15,7 @@
 `PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용하고, 숲 바람은
 실제 숲의 녹음을 좌표 감쇠 없는 배경으로 반복한다. 생성 원본·두 LOD·Blender와
 제작법은 `SourceArt/TemplePrologue/README.md`, 음원 출처는 `ThirdParty/Audio/TempleForest/`다.
-`temple-prologue-flow`는 무화면 실제 입력·양일의 향 놓기와 손의 향 제거·향 배치 중 손전등 입력·기도/연기 정지·다음 날·대문·회랑·저장 복원·대문 출현 시 플레이어 충돌 보호·카메라 환경 복원과 기도 공간의 물리 경계,
+`temple-prologue-flow`는 무화면 실제 입력·양일의 향 놓기와 손의 향 제거·향 배치 중 이동/손전등 입력·일반 달리기 회귀·기도/연기 정지·다음 날·대문·회랑·저장 복원·대문 출현 시 플레이어 충돌 보호·카메라 환경 복원과 기도 공간의 물리 경계,
 `temple-prologue-regressions`는 기존 저장·제목 진입 경계를, `temple-prologue-restore`는
 장착 중 저장·복원, 여섯 단계의 향/대문 복원과 사찰 v1 저장 이전을 확인한다. 별도 독립 규칙은
 `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.

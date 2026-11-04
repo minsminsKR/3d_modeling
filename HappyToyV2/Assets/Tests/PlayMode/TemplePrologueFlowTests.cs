@@ -14,6 +14,35 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleIncensePlacementHoldsMovementUntilRelease()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            yield return RecoveryUiReady(); yield return RecoveryClick("begin");
+            var world = Get<Component>(session, "Prologue");
+            var presentation = world.GetComponent(RequireType("TempleProloguePresentation"));
+            PlacePlayer(new Vector3(500, .04f, 505.2f));
+            player.GetType().GetField("pitch", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(player, 12f);
+            yield return null; yield return null;
+            Assert.That(Get<Component>(player, "Focus")?.name, Is.EqualTo("향로"));
+            Vector3 start = player.transform.position;
+            try
+            {
+                yield return KeysObserved(Key.E, Key.S, Key.LeftShift);
+                yield return Wait(() => Get<bool>(presentation, "IncensePending"), 2, "Incense interaction did not start");
+                Keys(Key.S, Key.LeftShift);
+                while (Get<bool>(presentation, "IncensePending"))
+                {
+                    Vector3 offset = player.transform.position - start; offset.y = 0;
+                    Assert.That(offset.magnitude, Is.LessThan(.03f), "Player walked away before placing the incense");
+                    yield return null;
+                }
+                Assert.That(Get<bool>(presentation, "IncensePlaced"), Is.True);
+                yield return Wait(() => player.transform.position.z < start.z - .3f, 3,
+                    "Held movement did not resume after incense placement");
+            }
+            finally { Keys(); }
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleRestoredPlacedIncenseDoesNotReturnToTheHand()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());

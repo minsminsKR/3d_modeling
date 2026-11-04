@@ -226,7 +226,8 @@ namespace HappyToy.V2
         void FixedUpdate()
         {
             if (Paused) { sprintRequested = Running = false; moveDirection = Vector3.zero; ActualSpeed = 0; return; }
-            bool cheatSafeMode = GameSession.Current.CheatSafeMode;
+            var session = GameSession.Current;
+            bool cheatSafeMode = session.CheatSafeMode;
             if (cheatSafeMode) RestoreSprintForCheat();
             if (Hidden || !controller.enabled)
             {
@@ -236,11 +237,16 @@ namespace HappyToy.V2
             }
             // Re-evaluate exhaustion for every physics step, including catch-up steps
             // with no intervening Update. Never retain an exhausted sprint velocity.
-            bool sprintStep = sprintRequested && !SprintExhausted && !Crouching;
+            // Keep the hand and the fixed incense vessel together until the
+            // story placement reaches its release marker. Gravity and looking
+            // remain active; held movement resumes after that marker.
+            bool placingIncense = session.PrologueMode && session.Prologue.IncensePlacementPending;
+            bool sprintStep = !placingIncense && sprintRequested && !SprintExhausted && !Crouching;
             float speed = Crouching ? walkSpeed * .55f : sprintStep ? runSpeed * (cheatSafeMode ? 2 : 1) : walkSpeed;
             fallSpeed = controller.isGrounded ? -2 : Mathf.Max(fallSpeed - 20 * Time.fixedDeltaTime, -35);
             var previous = transform.position;
-            LastCollision = controller.Move((moveDirection * speed * MovementMultiplier + Vector3.up * fallSpeed) * Time.fixedDeltaTime);
+            var horizontal = placingIncense ? Vector3.zero : moveDirection * speed * MovementMultiplier;
+            LastCollision = controller.Move((horizontal + Vector3.up * fallSpeed) * Time.fixedDeltaTime);
             var displacement = transform.position - previous; displacement.y = 0;
             ActualSpeed = displacement.magnitude / Time.fixedDeltaTime;
             // Match the foot-contact threshold. Wall slides still cost normal effort;

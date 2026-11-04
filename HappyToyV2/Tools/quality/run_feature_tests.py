@@ -49,7 +49,7 @@ PROFILES = {
     "temple-prologue-logic": ("Prayer hold, timed completion and phase transition; no scene or visual review", [
         ("PlayMode", play_tests("TemplePrologueDirectorTests.cs"))]),
     "temple-prologue-flow": ("Actual title, two prayers, hold, next day, gate and corridor transition; CPU/physics only", [
-        ("PlayMode", play_tests("TemplePrologueFlowTests.cs"))]),
+        ("PlayMode", play_tests("TemplePrologueFlowTests.cs") + (PLAY + "PhysicalSprintChargesTravelAndRecoversAtObstaclesWithoutInputLatch",))]),
     "temple-prologue-regressions": ("Title keyboard entry, replacing a prepared mode and existing school/corridor checkpoint preservation; CPU only", [
         ("EditMode", (CLOUD + "CorridorCheckpointStoreTests", CLOUD + "ChapterCheckpointStoreTests")),
         ("PlayMode", (PLAY + "MainCorridorFocusedEnterBeginsOnceThroughRealKeyboardInput",
