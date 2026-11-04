@@ -69,12 +69,17 @@ opening. A separate `-v2-temple-gate-walk-candidate` review keeps gameplay
 active, pauses the opening and its sound with the game, and starts the same
 masked transition only when the player crosses the central opening towards
 the back. The headless flow exercises E, pause, a crossing outside the gate,
-actual forward walking and corridor entry. To avoid unsafe checkpoint poses,
-this experimental route refuses suspension once gate opening starts; ordinary
-play and its save format are unchanged. The new native review path is prepared
-but has not yet been run with graphics/audio. Normal play retains the original
-gate. These checks cannot certify cut edges, material appearance, sound
-quality or FPS.
+actual forward walking and corridor entry. The experimental route writes a
+version 3 temple checkpoint with the opening state, progress and previous
+crossing position. The gate collision state is restored before validating the
+player pose, so suspension also works while opening and on the open threshold.
+A pause just after crossing retains the preceding position and completes the
+crossing after resumption. Version 1/2 saves still load; ordinary play continues
+writing version 2. The opening cue is resumed from its corresponding elapsed
+offset where its clip still has audio, but this has not been heard on a device.
+The new native review path is prepared but has not yet been run with
+graphics/audio. Normal play retains the original gate. These checks cannot
+certify cut edges, material appearance, sound quality or FPS.
 
 ## Prayer furnishings follow-up — 2026-11-05
 

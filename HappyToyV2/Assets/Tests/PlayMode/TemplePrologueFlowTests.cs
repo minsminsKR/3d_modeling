@@ -13,6 +13,59 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest, Timeout(90000)]
+        public IEnumerator TempleWalkReviewCheckpointValidatesAndRestoresBeforeOpening()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var normal = Call(world, "Capture", 0f);
+            Assert.That(Get<int>(normal, "version"), Is.EqualTo(2));
+            Call(world, "InstallGateWalkReview");
+            var data = Call(world, "Capture", 0f);
+            Assert.That(Get<int>(data, "version"), Is.EqualTo(3));
+            Assert.That(Get<bool>(data, "reviewGateWalk"), Is.True);
+            Assert.That(Get<bool>(data, "reviewGateStarted"), Is.False);
+            var copy = Call(data, "Copy");
+            Set(data, "reviewGateProgress", .5f);
+            Assert.Throws<System.ArgumentException>(() => Call(data, "Validate"));
+            Set(data, "reviewGateProgress", float.NaN);
+            Assert.Throws<System.ArgumentException>(() => Call(data, "Validate"));
+            Set(data, "reviewGateProgress", float.PositiveInfinity);
+            Assert.Throws<System.ArgumentException>(() => Call(data, "Validate"));
+            Set(data, "reviewGateProgress", 0f); Set(data, "reviewGateStarted", true);
+            Assert.Throws<System.ArgumentException>(() => Call(data, "Validate"));
+            Set(normal, "reviewGateWalk", true);
+            Assert.Throws<System.ArgumentException>(() => Call(normal, "Validate"));
+            Call(session, "RetirePrologue"); yield return null;
+            Call(session, "CreatePrologueForCheckpoint", copy); yield return null;
+            world = Get<Component>(session, "Prologue");
+            var review = world.GetComponent(RequireType("TempleGateReviewMotion"));
+            Assert.That(review, Is.Not.Null);
+            Assert.That(Get<bool>(review, "Started"), Is.False);
+            Assert.That(Get<float>(review, "Progress"), Is.Zero);
+            Assert.That(world.transform.Find("나타난 대문").gameObject.activeSelf, Is.False);
+        }
+        [UnityTest, Timeout(90000)]
+        public IEnumerator TempleWalkReviewPreservesCrossingInterruptedByPause()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            Call(world, "InstallGateWalkReview");
+            var data = Call(world, "Capture", 0f);
+            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
+            Set(data, "reviewGateStarted", true); Set(data, "reviewGateProgress", 1f);
+            Set(data, "reviewPreviousPosition", new Vector3(500, .45f, 491.1f));
+            Set(Get<object>(data, "player"), "position", new Vector3(500, .04f, 490.6f));
+            Call(shell, "Pause"); Call(session, "RetirePrologue"); yield return null;
+            Call(session, "CreatePrologueForCheckpoint", data);
+            world = Get<Component>(session, "Prologue");
+            yield return Delay(.2f);
+            Assert.That(Get<bool>(world, "TransitionRequested"), Is.False, "Paused restore transferred too early");
+            Call(shell, "Resume");
+            yield return Wait(() => Get<bool>(world, "TransitionRequested"), 3, "Crossing was lost after pause and restore");
+        }
         [UnityTest, Timeout(120000)]
         public IEnumerator TempleImmediateGateReviewStillTransitionsAfterOpening()
         {
@@ -520,14 +573,43 @@ namespace HappyToy.V2.CloudTests
             yield return Delay(.3f);
             Assert.That(Get<float>(review, "Progress"), Is.EqualTo(opening), "Gate moved while paused");
             Assert.That(world.transform.Find("Gate opening").GetComponent<AudioSource>().ignoreListenerPause, Is.False);
-            Assert.Throws<System.InvalidOperationException>(() => Call(world, "Capture", 0f));
-            Call(shell, "Resume");
+            var openingSave = Call(world, "Capture", Get<float>(session, "ElapsedPlayTime"));
+            Assert.That(Get<int>(openingSave, "version"), Is.EqualTo(3));
+            Assert.That(Get<bool>(openingSave, "reviewGateStarted"), Is.True);
+            Assert.That(Get<float>(openingSave, "reviewGateProgress"), Is.EqualTo(opening));
+            var oldSession = session;
+            yield return RecoveryClick("suspend-temple"); yield return RecoveryRebind(oldSession);
+            yield return RefreshSlotTitle(directory); yield return RecoveryClick("continue-temple");
+            Assert.That(RecoveryPage, Is.EqualTo("Pause"));
+            world = Get<Component>(session, "Prologue");
+            review = world.GetComponent(RequireType("TempleGateReviewMotion"));
+            Assert.That(review, Is.Not.Null);
+            Assert.That(Get<float>(review, "Progress"), Is.EqualTo(opening).Within(.001f));
+            Assert.That(world.transform.Find("나타난 대문").GetComponent<BoxCollider>().enabled, Is.True);
+            yield return RecoveryClick("resume");
             yield return Wait(() => Get<float>(review, "Progress") == 1f, 6, "Review gate did not open");
             Assert.That(Get<bool>(session, "CorridorMode"), Is.False, "Opening alone entered the corridor");
             PlacePlayer(origin + new Vector3(4, .04f, -10)); yield return null; yield return null;
             Assert.That(Get<bool>(world, "TransitionRequested"), Is.False, "Crossing outside the opening triggered transfer");
             PlacePlayer(origin + new Vector3(0, .04f, -5.4f)); player.transform.rotation = Quaternion.Euler(0, 180, 0);
             yield return null; yield return KeysObserved(Key.W);
+            yield return Wait(() => player.transform.position.z < 491.85f, 8, "Player did not reach the gate ramp");
+            Keys(); yield return null; Call(shell, "Pause");
+            var openSave = Call(world, "Capture", Get<float>(session, "ElapsedPlayTime"));
+            var savedPosition = Get<Vector3>(Get<object>(openSave, "player"), "position");
+            Assert.That(Get<float>(openSave, "reviewGateProgress"), Is.EqualTo(1));
+            oldSession = session;
+            yield return RecoveryClick("suspend-temple"); yield return RecoveryRebind(oldSession);
+            yield return RefreshSlotTitle(directory); yield return RecoveryClick("continue-temple");
+            Assert.That(RecoveryPage, Is.EqualTo("Pause"));
+            world = Get<Component>(session, "Prologue");
+            review = world.GetComponent(RequireType("TempleGateReviewMotion"));
+            Assert.That(Get<float>(review, "Progress"), Is.EqualTo(1));
+            Assert.That(world.transform.Find("나타난 대문").GetComponent<BoxCollider>().enabled, Is.False);
+            Assert.That(world.transform.Find("Review gate stair collision").GetComponent<BoxCollider>().enabled, Is.True);
+            Assert.That(Vector3.Distance(player.transform.position, savedPosition), Is.LessThan(.03f));
+            yield return RecoveryClick("resume");
+            yield return KeysObserved(Key.W);
             yield return Wait(() => Get<bool>(world, "TransitionRequested"), 8, "Walking through the gate did not trigger transfer");
             Keys();
             yield return Wait(() => Get<bool>(session, "CorridorMode") && !Get<bool>(shell, "IsReloading"), 60, "Gate did not enter the real corridor");

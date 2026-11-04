@@ -15,6 +15,8 @@ namespace HappyToy.V2
         Vector3 previous;
         bool completed;
         public bool Started => motion && motion.Started;
+        public float Progress => motion ? motion.Progress : 0;
+        public Vector3 PreviousPosition => previous;
 
         public void Prepare(TemplePrologueWorld owner, GameSession game, TempleGateReviewMotion gate, Action onCrossed)
         {
@@ -31,11 +33,18 @@ namespace HappyToy.V2
             StartCoroutine(motion.OpenDuringGameplay());
         }
 
+        public void Restore(bool started, float progress, Vector3 priorPosition)
+        {
+            if (!world || Started || completed) throw new InvalidOperationException("Fresh gate traversal is required");
+            previous = priorPosition;
+            if (started) StartCoroutine(motion.ResumeDuringGameplay(progress));
+        }
+
         void Update()
         {
-            if (!world || !session || !session.player || completed) return;
+            if (!world || !session || !session.player || completed || !session.InputAllowed) return;
             Vector3 current = session.player.transform.position;
-            if (session.InputAllowed && motion.Progress >= 1)
+            if (motion.Progress >= 1)
             {
                 float plane = world.GatePoint.z - 1;
                 if (previous.z > plane && current.z <= plane)

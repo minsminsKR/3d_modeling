@@ -17,13 +17,13 @@
 제작법은 `SourceArt/TemplePrologue/README.md`, 음원 출처는 `ThirdParty/Audio/TempleForest/`다.
 `temple-prologue-flow`는 무화면 실제 입력·양일의 향 놓기와 손의 향 제거·향 배치 중 이동/손전등 입력·일반 달리기 회귀·기도/연기 정지·다음 날·대문·회랑·저장 복원·대문 출현 시 플레이어 충돌 보호·카메라 환경 복원과 기도 공간의 물리 경계,
 `temple-prologue-regressions`는 기존 저장·제목 진입 경계를, `temple-prologue-restore`는
-장착 중 저장·복원, 여섯 단계의 향/대문 복원과 사찰 v1 저장 이전을 확인한다. 별도 독립 규칙은
+장착 중 저장·복원, 여섯 단계의 향/대문 복원, 사찰 v1 저장 이전과 걷기 검토용 v3 개방·통과 복원을 확인한다. 별도 독립 규칙은
 `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.
 이 CPU 검사들은 실제 게임 화면·청감·프레임 성능의 품질 승인이 아니다.
 `NativeTempleReview`는 명시 플래그의 격리 Windows 플레이어에서 실제 카메라·믹서와
 1080p 오프스크린 동기 렌더를 확인한다. 명시적 `-v2-temple-gate-candidate` 검토에서만
 `TempleGateReviewMotion`이 시제품 문을 열고 `TempleGateReviewPassage`가 완전히 열린 후 중앙 차단을 해제하고 낮은 계단 경사 충돌을 켠 뒤 같은 가림 전환으로 이어진다.
-`-v2-temple-gate-walk-candidate` 검토는 `TempleGateReviewTraversal`이 개방과 일시정지를 관리하고 중앙을 앞으로 통과할 때 회랑 전환을 시작한다. 개방 이후 검토 중단 저장은 안전하게 거부한다.
+`-v2-temple-gate-walk-candidate` 검토는 `TempleGateReviewTraversal`이 개방과 일시정지를 관리하고 중앙을 앞으로 통과할 때 회랑 전환을 시작한다. 검토 전용 v3 중단 저장은 개방 진행·통과 직전 위치를 보존하며, v1/v2와 일반 플레이 저장은 유지한다.
 무화면 검사에서는 열린 상태를 직접 설정하고 메시 임시 충돌체를 더해 세 경로의 실제 플레이어 이동을 확인하며, 별도로 E 입력부터 실제 전환까지 검토한다. 일반 플레이의 물리 통과 전환은 아직 적용하지 않았다.
 해당 수치는 모니터 표시 FPS 또는 직접 청음이 아니다.
 

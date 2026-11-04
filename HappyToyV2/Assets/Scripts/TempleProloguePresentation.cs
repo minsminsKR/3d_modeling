@@ -265,6 +265,15 @@ namespace HappyToy.V2
             gateSound.ignoreListenerPause = duringMaskedTransition;
             gateSound.Play();
         }
+        public void RestoreGateSound(float openingProgress)
+        {
+            if (!gateSound || !gateSound.clip) return;
+            float offset = openingProgress * TempleGateReviewMotion.Duration;
+            if (offset >= gateSound.clip.length) return;
+            gateSound.ignoreListenerPause = false;
+            gateSound.time = offset;
+            gateSound.Play();
+        }
         void Update()
         {
             if (!world || !world.Ready || !GameSession.Current || !GameSession.Current.InputAllowed || world.TransitionRequested) return;

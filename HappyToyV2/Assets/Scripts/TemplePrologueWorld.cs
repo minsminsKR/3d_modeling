@@ -75,6 +75,12 @@ namespace HappyToy.V2
                 if (checkpoint.phase == 1 || checkpoint.phase == 2 || checkpoint.phase >= 4)
                     presentation.RestoreIncense(checkpoint.incensePlaced, session.player);
                 if (checkpoint.gateVisible) { presentation.RevealGate(); gateTarget.gameObject.SetActive(true); }
+                if (checkpoint.version == 3)
+                {
+                    SetupGateWalkReview();
+                    walkReview.Restore(checkpoint.reviewGateStarted, checkpoint.reviewGateProgress, checkpoint.reviewPreviousPosition);
+                    if (checkpoint.reviewGateStarted) presentation.RestoreGateSound(checkpoint.reviewGateProgress);
+                }
                 Physics.SyncTransforms();
                 if (!session.player.CanRestoreTempleProgress(checkpoint.player)) throw new InvalidOperationException("Saved position is obstructed");
                 session.player.RestoreTempleProgress(checkpoint.player);
@@ -86,12 +92,14 @@ namespace HappyToy.V2
         public TemplePrologueCheckpoint Capture(float seconds)
         {
             if (!Ready || TransitionRequested) throw new InvalidOperationException("전환을 마친 뒤 저장하세요.");
-            if (walkReview && walkReview.Started)
-                throw new InvalidOperationException("대문 통과 검토 중에는 저장할 수 없습니다.");
             var light = session.player.FlashlightSystem;
             var result = new TemplePrologueCheckpoint {
                 token = Guid.NewGuid().ToString("N"), phase = (int)Director.Phase, prayerElapsed = Director.PrayerElapsed,
                 gateVisible = presentation.GateVisible, incensePlaced = presentation.IncensePlaced,
+                version = walkReview ? 3 : 2, reviewGateWalk = walkReview,
+                reviewGateStarted = walkReview && walkReview.Started,
+                reviewGateProgress = walkReview ? walkReview.Progress : 0,
+                reviewPreviousPosition = walkReview ? walkReview.PreviousPosition : Vector3.zero,
                 seconds = seconds, player = session.player.CaptureProgress(),
                 flashlightCharge = light.Charge, flashlightPacks = light.PacksCollected, flashlightDepletions = light.Depletions
             };
@@ -190,7 +198,12 @@ namespace HappyToy.V2
         }
         public TempleGateReviewMotion InstallGateWalkReview()
         {
-            var motion = InstallGateReview();
+            if (!Ready || TransitionRequested || !presentation) throw new InvalidOperationException("Temple is not ready for gate review");
+            return SetupGateWalkReview();
+        }
+        TempleGateReviewMotion SetupGateWalkReview()
+        {
+            var motion = presentation.InstallGateReview(gateTarget.GetComponent<BoxCollider>());
             walkReview = gameObject.AddComponent<TempleGateReviewTraversal>();
             walkReview.Prepare(this, session, motion, CompleteGateWalk);
             return motion;

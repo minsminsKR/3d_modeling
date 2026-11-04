@@ -8,7 +8,8 @@ namespace HappyToy.V2
     // not acquire this component until its cut surfaces have been approved.
     public sealed class TempleGateReviewMotion : MonoBehaviour
     {
-        const float Duration = 3f, Angle = 80f;
+        public const float Duration = 3f;
+        const float Angle = 80f;
         Transform left, right;
         Quaternion leftClosed, rightClosed;
         float leftSign, rightSign;
@@ -40,13 +41,16 @@ namespace HappyToy.V2
             right.rotation = Quaternion.AngleAxis(rightSign * angle, Vector3.up) * rightClosed;
             passageChanged(Progress >= 1);
         }
-        public IEnumerator Open() => Animate(true);
-        public IEnumerator OpenDuringGameplay() => Animate(false);
-        IEnumerator Animate(bool unscaled)
+        public IEnumerator Open() => Animate(true, 0);
+        public IEnumerator OpenDuringGameplay() => Animate(false, 0);
+        public IEnumerator ResumeDuringGameplay(float progress) => Animate(false, progress);
+        IEnumerator Animate(bool unscaled, float progress)
         {
             if (Started) throw new InvalidOperationException("Review gate opening already started");
+            if (float.IsNaN(progress) || float.IsInfinity(progress) || progress < 0 || progress > 1)
+                throw new ArgumentOutOfRangeException(nameof(progress));
             Started = true;
-            float elapsed = 0;
+            float elapsed = progress * Duration;
             while (elapsed < Duration)
             {
                 SetProgress(elapsed / Duration);
