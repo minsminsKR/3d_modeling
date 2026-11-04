@@ -14,6 +14,26 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest, Timeout(90000)]
+        public IEnumerator TempleItemWheelStaysDisarmedUntilHeldInputIsReleased()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null; yield return null;
+            var wheel = player.GetComponent(RequireType("PlayerItemWheel"));
+            Assert.That(wheel, Is.Not.Null);
+            var selected = Get<object>(Get<Component>(player, "Items"), "Selected");
+            yield return KeysObserved(Key.Tab); yield return null;
+            Assert.That(Get<bool>(shell, "ItemWheelOpen"), Is.False);
+            Assert.That(Time.timeScale, Is.EqualTo(1).Within(.001f));
+            Assert.That(Get<object>(Get<Component>(player, "Items"), "Selected"), Is.EqualTo(selected));
+            // A held key must not arm an item-wheel request merely because
+            // the prologue ends; require a fresh release and press.
+            Call(session, "RetirePrologue"); yield return null; yield return null;
+            Assert.That(Get<bool>(shell, "ItemWheelOpen"), Is.False, "Held temple input opened the wheel after the mode changed");
+            Keys(); yield return null; yield return KeysObserved(Key.Tab); yield return null;
+            Assert.That(Get<bool>(shell, "ItemWheelOpen"), Is.True, "A fresh post-temple press should open the normal wheel");
+            Keys(); yield return null;
+        }
         [UnityTest, Timeout(120000)]
         public IEnumerator TempleHiddenGateGuidesBlockedAndWatchingPlayersWithoutAffectingOtherHud()
         {
@@ -373,6 +393,9 @@ namespace HappyToy.V2.CloudTests
             Assert.That(Get<bool>(presentation, "IncensePending"), Is.True);
             yield return RecoveryPulse(Key.F);
             Assert.That(Get<bool>(actions, "Busy"), Is.False, "Flashlight interrupted incense equip");
+            yield return RecoveryPulse(Key.Tab);
+            Assert.That(Get<bool>(shell, "ItemWheelOpen"), Is.False, "Item wheel interrupted incense placement");
+            Assert.That(Get<object>(Get<Component>(player, "Items"), "Selected"), Is.EqualTo(incenseItem));
             var pending = presentation.GetType().GetField("pendingIncense", BindingFlags.Instance | BindingFlags.NonPublic);
             yield return Wait(() => (float)pending.GetValue(presentation) > 0, 3, "Incense action did not start");
             Assert.That((bool)(Transform)heldField.GetValue(hands), Is.True, "Incense was not held before placement");

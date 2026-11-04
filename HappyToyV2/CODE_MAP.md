@@ -7,6 +7,7 @@
 `PlayerHandActions`는 향 배치가 끝나기 전 손전등 동작이 향 동작을 덮지 않도록 막는다.
 `FirstPersonHands`는 사찰에서 배치 중에만 향을 손에 표시하고, 배치된 향과 회랑 재고는 별도로 유지한다.
 `PlayerMotor`는 향을 놓는 짧은 구간에만 수평 이동을 멈추며, 시선·중력과 이후 이동은 유지한다.
+`PlayerItemWheel`은 사찰에서 휠 요청을 미리 차단해 커서를 옮기지 않고, 누른 입력은 놓을 때까지 재사용하지 않는다.
 `TempleProloguePresentation`은 숲·절·향·방향 연기·빛·기존 녹음의 수명과 전역 환경 복원을 맡고,
 `TemplePrayerDressing`은 기존 제작 제단·도자기·촛불의 시각 자산과 재질/메시 수명을 맡는다.
 가림 전환은 `GameShellStartTransition`이 관리하며 대문 사용 후 기존 회랑을 준비한다. 회랑 암전 동안

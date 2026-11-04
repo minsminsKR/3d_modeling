@@ -26,7 +26,10 @@ namespace HappyToy.V2
             var shell = session.Shell;
             if (!shell) return;
             bool held = PlayerControls.ItemWheelHeld;
-            bool allowed = session.InputAllowed && !player.Hidden && !player.Rituals.Burning &&
+            // The shell does not permit the wheel in the prologue. Reject the
+            // request before opening side effects or cursor warping, and keep
+            // the release latch armed until the player lets go.
+            bool allowed = session.InputAllowed && !session.PrologueMode && !player.Hidden && !player.Rituals.Burning &&
                 (!session.ChapterMode || !session.Chapter.FirstAppearances || !session.Chapter.FirstAppearances.CameraOwned) && PlayerControls.AcceptsInput;
             if (!allowed)
             {
