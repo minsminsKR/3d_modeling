@@ -15,7 +15,7 @@
 `PlayerFeedback`의 이동거리 판정과 별도 녹음 뱅크를 사용하고, 숲 바람은
 실제 숲의 녹음을 좌표 감쇠 없는 배경으로 반복한다. 생성 원본·두 LOD·Blender와
 제작법은 `SourceArt/TemplePrologue/README.md`, 음원 출처는 `ThirdParty/Audio/TempleForest/`다.
-`temple-prologue-flow`는 무화면 실제 입력·양일의 향 놓기와 손의 향 제거·향 배치 중 이동/손전등 입력·일반 달리기 회귀·기도/연기 정지·다음 날·대문·회랑·저장 복원·대문 출현 시 플레이어 충돌 보호·카메라 환경 복원과 기도 공간의 물리 경계,
+`temple-prologue-flow`는 숲 바닥 반복 경계의 색 변화와 질감 범위, 무화면 실제 입력·양일의 향 놓기와 손의 향 제거·향 배치 중 이동/손전등 입력·일반 달리기 회귀·기도/연기 정지·다음 날·대문·회랑·저장 복원·대문 출현 시 플레이어 충돌 보호·카메라 환경 복원과 기도 공간의 물리 경계,
 `temple-prologue-regressions`는 기존 저장·제목 진입 경계를, `temple-prologue-restore`는
 장착 중 저장·복원, 여섯 단계의 향/대문 복원, 사찰 v1 저장 이전과 걷기 검토용 v3 개방·통과 복원을 확인한다. 별도 독립 규칙은
 `dotnet run --project HappyToyV2/Tools/quality/TemplePrologueTests.csproj`로 확인한다.

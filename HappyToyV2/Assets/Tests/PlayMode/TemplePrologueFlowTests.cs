@@ -14,6 +14,37 @@ namespace HappyToy.V2.CloudTests
     public sealed partial class CloudPlayModeTests
     {
         [UnityTest, Timeout(90000)]
+        public IEnumerator TempleForestSoilRepeatsWithoutHardSeams()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var renderer = world.transform.Find("Forest ground").GetComponent<Renderer>();
+            var texture = renderer.sharedMaterial.GetTexture("_BaseMap") as Texture2D;
+            Assert.That(texture, Is.Not.Null);
+            Assert.That(texture.wrapMode, Is.EqualTo(TextureWrapMode.Repeat));
+            var pixels = texture.GetPixels32(); int w = texture.width, h = texture.height;
+            int minimum = pixels.Min(pixel => (int)pixel.r), maximum = pixels.Max(pixel => (int)pixel.r);
+            double mean = pixels.Average(pixel => (double)pixel.r);
+            Assert.That(maximum - minimum, Is.GreaterThanOrEqualTo(5), "Forest soil lost its texture variation");
+            Assert.That(mean, Is.InRange(30, 60), "Forest soil changed its overall brightness");
+            double seamX = 0, seamY = 0, insideX = 0, insideY = 0;
+            for (int y = 0; y < h; y++)
+            {
+                seamX += System.Math.Abs(pixels[y*w].r - pixels[y*w+w-1].r);
+                for (int x = 1; x < w; x++) insideX += System.Math.Abs(pixels[y*w+x].r - pixels[y*w+x-1].r);
+            }
+            for (int x = 0; x < w; x++)
+            {
+                seamY += System.Math.Abs(pixels[x].r - pixels[(h-1)*w+x].r);
+                for (int y = 1; y < h; y++) insideY += System.Math.Abs(pixels[y*w+x].r - pixels[(y-1)*w+x].r);
+            }
+            seamX /= h; seamY /= w; insideX /= h*(w-1); insideY /= w*(h-1);
+            TestContext.WriteLine($"Forest soil mean red-step: seamX={seamX:F3}, insideX={insideX:F3}, seamY={seamY:F3}, insideY={insideY:F3}");
+            Assert.That(seamX, Is.LessThanOrEqualTo(insideX * 1.5 + .25), "Horizontal wrap creates an unusually hard seam");
+            Assert.That(seamY, Is.LessThanOrEqualTo(insideY * 1.5 + .25), "Vertical wrap creates an unusually hard seam");
+        }
+        [UnityTest, Timeout(90000)]
         public IEnumerator TempleGateAudioRestoresDuringSecondHingeCue()
         {
             Call(session, "ConfigureRecordDirectory", NewRecordFixture());

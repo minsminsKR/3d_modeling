@@ -165,8 +165,8 @@ namespace HappyToy.V2
             for (int y = 0; y < size; y++)
                 for (int x = 0; x < size; x++)
                 {
-                    float a = Mathf.PerlinNoise(x * .125f, y * .125f);
-                    float b = Mathf.PerlinNoise(x * .39f + 13, y * .39f + 7);
+                    float a = PeriodicSoilNoise(x, y, size, .125f, 0, 0);
+                    float b = PeriodicSoilNoise(x, y, size, .39f, 13, 7);
                     float shade = .72f + .34f * a + .14f * b;
                     pixels[y * size + x] = new Color(.18f * shade, .15f * shade, .105f * shade, 1);
                 }
@@ -174,6 +174,16 @@ namespace HappyToy.V2
             var soil = Material("Matte forest soil", Color.white); soil.SetTexture("_BaseMap", texture);
             soil.SetTextureScale("_BaseMap", new Vector2(14, 18)); soil.SetFloat("_Metallic", 0); soil.SetFloat("_Smoothness", .02f);
             return soil;
+        }
+        static float PeriodicSoilNoise(int x, int y, int size, float frequency, float offsetX, float offsetY)
+        {
+            float px = x * frequency + offsetX, py = y * frequency + offsetY;
+            float period = size * frequency;
+            float tx = Mathf.SmoothStep(0, 1, x / (float)size);
+            float ty = Mathf.SmoothStep(0, 1, y / (float)size);
+            float lower = Mathf.Lerp(Mathf.PerlinNoise(px, py), Mathf.PerlinNoise(px-period, py), tx);
+            float upper = Mathf.Lerp(Mathf.PerlinNoise(px, py-period), Mathf.PerlinNoise(px-period, py-period), tx);
+            return Mathf.Lerp(lower, upper, ty);
         }
         GameObject Box(string name, Vector3 pos, Vector3 scale, Material material, bool collision, bool visible = true)
         {
