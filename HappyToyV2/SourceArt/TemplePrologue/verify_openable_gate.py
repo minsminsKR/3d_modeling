@@ -104,8 +104,11 @@ for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate
     old_uv = thick.data.uv_layers.active.data; new_uv = thin.data.uv_layers.active.data
     repair = repairs[thin_name]
     faces = set(repair['uvFaces'])
+    spot_faces = set(repair['spotFaces'])
     if len(faces) != repair['expectedFaces']: raise RuntimeError('UV repair face list is inconsistent')
-    changed_loops = {i for face in thin.data.polygons if face.index in faces for i in face.loop_indices}
+    if spot_faces != ({127, 133, 2976} if thin_name.startswith('Left') else set()):
+        raise RuntimeError('Unexpected gate stud UV patch')
+    changed_loops = {i for face in thin.data.polygons if face.index in faces | spot_faces for i in face.loop_indices}
     unchanged_uv = max((old_uv[i].uv-new_uv[i].uv).length for i in range(len(old_uv)) if i not in changed_loops)
     coefficients = repair['coefficients']; corrected_errors = []
     for face in thin.data.polygons[:len(thick.data.polygons)]:
@@ -114,7 +117,25 @@ for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate
             point = thick.matrix_world @ thick.data.vertices[thick.data.loops[i].vertex_index].co
             expected = Vector((coefficients[0][0]*point.x + coefficients[1][0]*point.z + coefficients[2][0],
                                coefficients[0][1]*point.x + coefficients[1][1]*point.z + coefficients[2][1]))
+            if face.index in spot_faces: expected.y += repair['spotVOffset']
             corrected_errors.append((new_uv[i].uv-expected).length)
+    spot_errors = []
+    reference_spot_errors = []
+    for face in thin.data.polygons[:len(thick.data.polygons)]:
+        if face.index not in spot_faces: continue
+        if face.index not in faces:
+            for i in face.loop_indices:
+                spot_errors.append((new_uv[i].uv - (old_uv[i].uv + Vector((0, repair['spotVOffset'])))).length)
+        old_face = thick.data.polygons[face.index]
+        centre = sum((thick.matrix_world @ thick.data.vertices[i].co for i in old_face.vertices), Vector()) / len(old_face.vertices)
+        hit, _, index, distance = tree.find_nearest(centre)
+        if index is None or distance > .001: raise RuntimeError('Reference spot no longer matches source surface')
+        source_tri = mesh.loop_triangles[index]
+        a, b, c = (points[i] for i in source_tri.vertices)
+        ta, tb, tc = (Vector((*uvs[i].uv, 0)) for i in source_tri.loops)
+        expected_uv = barycentric_transform(hit, a, b, c, ta, tb, tc)
+        actual_uv = sum((Vector((*old_uv[i].uv, 0)) for i in old_face.loop_indices), Vector()) / len(old_face.loop_indices)
+        reference_spot_errors.append((expected_uv-actual_uv).length)
     depth = (max(ys)-min(ys))*5.5/10.771793316322146
     thin.data.calc_loop_triangles()
     degenerate = sum(1 for tri in thin.data.loop_triangles
@@ -123,7 +144,9 @@ for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate
     result['thinLeaves'][thin_name] = dict(depthAtGameScaleMetres=depth, frontVertices=front_count,
         frontMaxDisplacement=max(differences), rearVertices=len(rear_errors), rearTranslationMaxError=max(rear_errors),
         repairedFaces=len(faces), unchangedMaxUvDifference=unchanged_uv,
-        repairedMaxUvError=max(corrected_errors), degenerateTriangles=degenerate)
+        repairedMaxUvError=max(corrected_errors), spotFaces=len(spot_faces),
+        spotMaxUvError=max(spot_errors, default=0),
+        referenceSpotSourceUvMaxError=max(reference_spot_errors, default=0), degenerateTriangles=degenerate)
     caps = list(thin.data.polygons[len(thick.data.polygons):])
     cap_tree = BVHTree.FromPolygons([thin.matrix_world @ v.co for v in thin.data.vertices],
                                    [list(face.vertices) for face in caps])
@@ -133,7 +156,8 @@ for thick_name, thin_name in (('Left gate leaf', 'Left thin leaf'), ('Right gate
     result['thinLeaves'][thin_name]['edgeCapFaces'] = len(caps)
     result['thinLeaves'][thin_name]['edgeCapRayHits'] = edge_hits
     if (front_count < 100 or not rear_errors or max(differences) > 1e-5 or max(rear_errors) > 1e-5 or
-        unchanged_uv > 1e-6 or max(corrected_errors) > 1e-6 or depth > .51):
+        unchanged_uv > 1e-6 or max(corrected_errors) > 1e-6 or max(spot_errors, default=0) > 1e-6 or
+        max(reference_spot_errors, default=0) > .001 or depth > .51):
         result['status'] = 'FAIL'
 bpy.context.scene.frame_set(73)
 left = bpy.data.objects['Left gate leaf']

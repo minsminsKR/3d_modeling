@@ -24,7 +24,9 @@ surface and UVs. The hidden `PROTOTYPE - thin leaf alternative` collection
 translates the source's disconnected rear surface by 2.8 source units without
 flattening it. It also repairs 31 left and 33 right planar wood faces whose
 UVs pointed to unrelated atlas islands, using affine fits to adjacent intact
-wood faces; other UVs and every front vertex are unchanged. The repair is tied
+wood faces. Three left-side faces also sample slightly higher in the same atlas
+to remove a yellow-green speck beside a stud; two are among the 31. Other
+thin-leaf UVs and every front vertex are unchanged. The repair is tied
 to the preserved source hash and rejects changed face counts. At the game's
 5.5 m gate scale the full-depth leaves are about 1.9 m thick, while the
 repaired alternate leaves are about .47–.48 m. Low-sample CPU Blender previews
@@ -34,7 +36,11 @@ and bridges the four edges with wood-textured strips in the same leaf mesh.
 Missing boundary intervals are interpolated from neighboring source edges; the
 report records the largest midpoint-to-nearest-boundary distance. A low-sample CPU view confirms the
 previously empty free edge is filled. Its appearance and hinges still require
-Unity camera review before normal play.
+Unity camera review before normal play. The thin UV layer is explicitly
+detached before editing: Blender's shared mesh data had previously allowed the
+repair to alter the full-depth comparison copy as well. The authoring tool
+now checks every reference UV against its pre-repair value; the independent
+proof also compares the three speck locations with the original source.
 The standalone `gate-opening.fbx` embeds its original textures and exports
 the static **full-depth** parts. `gate-opening-thin.fbx` exports the static
 thin parts with a placeholder material; the Unity importer connects the
@@ -66,10 +72,10 @@ triangle pairs and their approximate locations; triangle centres do not measure
 penetration or establish acceptable appearance. On the current source, middle
 intersections after opening begins mostly cluster close to each pivot, with at
 most two sampled pairs beyond 0.5 source units. Several hundred pairs remain
-near the hinge at wide opening and must be reviewed from the game camera. A
-localized yellow-green patch beside a left-side stud also remains in the CPU
-preview; applying the planar correction to smaller outlier triangles did not
-remove it, so that experimental correction was not incorporated.
+near the hinge at wide opening and must be reviewed from the game camera. The
+yellow-green patch beside a left-side stud is no longer visible in the
+low-sample CPU preview after the three-face atlas adjustment; Unity camera
+appearance remains unverified.
 
 `geometry-report.json` records source and output hashes, repaired face indices
 and provisional cut bounds. `surface-proof.json` records 4,713 original

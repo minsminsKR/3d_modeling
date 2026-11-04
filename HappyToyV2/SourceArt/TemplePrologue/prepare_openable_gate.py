@@ -125,8 +125,20 @@ for original_leaf, name, coefficients, expected_faces in (
     (objects[1], 'Left thin leaf', uv_coefficients[0], 31),
     (objects[2], 'Right thin leaf', uv_coefficients[1], 33),
 ):
+    reference_uv = [tuple(item.uv) for item in original_leaf.data.uv_layers.active.data]
     leaf = original_leaf.copy(); leaf.data = original_leaf.data.copy(); leaf.name = name
     thin_collection.objects.link(leaf)
+    # Mesh.copy can retain shared UV CustomData until an explicit layer is
+    # rebuilt. Detach it before any UV edits so the full-depth reference and
+    # other copies cannot silently inherit the thin variant's changes.
+    if len(leaf.data.uv_layers) != 1:
+        raise RuntimeError('Expected one source UV layer on ' + name)
+    source_uv = leaf.data.uv_layers.active
+    uv_name = source_uv.name
+    uv_values = [tuple(item.uv) for item in source_uv.data]
+    leaf.data.uv_layers.remove(source_uv)
+    detached_uv = leaf.data.uv_layers.new(name=uv_name)
+    for item, coordinate in zip(detached_uv.data, uv_values): item.uv = coordinate
     for face in leaf.data.polygons:
         ys = [leaf.data.vertices[index].co.y + leaf.location.y for index in face.vertices]
         if min(ys) < 0 < max(ys): raise RuntimeError('Front/back leaf surfaces are no longer disconnected')
@@ -151,9 +163,26 @@ for original_leaf, name, coefficients, expected_faces in (
         repaired.append(face.index)
     if len(repaired) != expected_faces:
         raise RuntimeError('Unexpected planar UV repair count: ' + name + ' ' + str(len(repaired)))
+    # Three source-derived front triangles sample a yellow-green speck in the
+    # original atlas beside a stud. Move only their V coordinates to nearby
+    # wood; keep the source image and all other atlas coordinates unchanged.
+    spot_faces = (127, 133, 2976) if name == 'Left thin leaf' else ()
+    if spot_faces and (not {127, 133}.issubset(repaired) or 2976 in repaired):
+        raise RuntimeError('Unexpected source UV layout around gate stud')
+    for face_index in spot_faces:
+        face = leaf.data.polygons[face_index]
+        centre = face.center + leaf.location
+        if not (-3.0 < centre.x < -2.5 and 3.7 < centre.z < 4.2 and face.normal.y < -.95):
+            raise RuntimeError('Gate stud UV patch no longer matches source geometry')
+        for loop_index in face.loop_indices: uv[loop_index].uv.y += .005
     repair_details.append(dict(name=name, uvFaces=repaired, expectedFaces=expected_faces,
-                               coefficients=coefficients, rearTranslation=rear_shift))
+                               coefficients=coefficients, rearTranslation=rear_shift,
+                               spotFaces=list(spot_faces), spotVOffset=.005))
     repair_details[-1]['edgeFinish'] = finish_edges(leaf, half_width, bottom, top, coefficients)
+    reference_error = max(math.hypot(item.uv.x-u, item.uv.y-v)
+                          for item, (u, v) in zip(original_leaf.data.uv_layers.active.data, reference_uv))
+    if reference_error > 1e-7: raise RuntimeError('Thin repair changed full-depth reference UVs: ' + name)
+    repair_details[-1]['referenceUvMaxDifference'] = reference_error
     thin_objects.append(leaf)
 thin_collection.hide_viewport = True
 thin_collection.hide_render = True

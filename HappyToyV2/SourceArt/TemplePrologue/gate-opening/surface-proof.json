@@ -4,8 +4,8 @@
   "samples": 4713,
   "surfaceDistanceP99": 1.2157009905422456e-06,
   "surfaceDistanceMax": 0.0005772518343292177,
-  "uvDifferenceP95": 1.230372527357341e-07,
-  "uvDifferenceP99": 2.1490760299348766e-07,
+  "uvDifferenceP95": 1.228895705504749e-07,
+  "uvDifferenceP99": 1.6869502166425646e-07,
   "parts": {
     "Gate frame": {
       "triangles": 109572,
@@ -32,6 +32,9 @@
       "repairedFaces": 31,
       "unchangedMaxUvDifference": 0.0,
       "repairedMaxUvError": 0.0,
+      "spotFaces": 3,
+      "spotMaxUvError": 0.0,
+      "referenceSpotSourceUvMaxError": 1.3328003749250113e-07,
       "degenerateTriangles": 0,
       "edgeCapFaces": 454,
       "edgeCapRayHits": {
@@ -50,6 +53,9 @@
       "repairedFaces": 33,
       "unchangedMaxUvDifference": 0.0,
       "repairedMaxUvError": 0.0,
+      "spotFaces": 0,
+      "spotMaxUvError": 0,
+      "referenceSpotSourceUvMaxError": 0,
       "degenerateTriangles": 0,
       "edgeCapFaces": 461,
       "edgeCapRayHits": {

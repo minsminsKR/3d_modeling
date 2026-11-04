@@ -3,11 +3,11 @@
   "source": "SourceArt/CorridorEntrance/temple-gate/temple-gate.blend",
   "sourceSha256": "bdd3cdbda2030a1895cf09c9b12883c055dc8af483e23b5b9a06e41dcf6c2623",
   "editable": "gate-opening.blend",
-  "editableSha256": "e594276dbbf760100db5aaf836edbbd098c8bccecfb78db68230618cd800c003",
+  "editableSha256": "d70689b5c40bf8e67fc97eb559e2aca0efdc9de2b98951ea6028497718f65827",
   "export": "gate-opening.fbx",
-  "exportSha256": "3b713ea2279c6d44bc6677db9e9d770c3a951171b7d7a8e9f3c3f8fc5213a390",
+  "exportSha256": "9c60b9b2ae906ae78ad0ffe7b9c539a65bf2c6be7949a4bf0922f704b7d4b2cc",
   "thinExport": "gate-opening-thin.fbx",
-  "thinExportSha256": "dca9669a4f4c7be71325f8e41ba4890cb45a7710d31e9a2bed0fc8fc67171f66",
+  "thinExportSha256": "6d7754529722f9892274fdd56fc6a52d31a9ecc2f850a33305b059918b186f76",
   "halfWidth": 3.05,
   "bottom": 0.8,
   "top": 6.05,
@@ -108,6 +108,12 @@
         ]
       ],
       "rearTranslation": 2.8,
+      "spotFaces": [
+        127,
+        133,
+        2976
+      ],
+      "spotVOffset": 0.005,
       "edgeFinish": [
         {
           "axis": 0,
@@ -133,7 +139,8 @@
           "strips": 84,
           "maxBoundaryGap": 0.0
         }
-      ]
+      ],
+      "referenceUvMaxDifference": 0.0
     },
     {
       "name": "Right thin leaf",
@@ -188,6 +195,8 @@
         ]
       ],
       "rearTranslation": 2.8,
+      "spotFaces": [],
+      "spotVOffset": 0.005,
       "edgeFinish": [
         {
           "axis": 0,
@@ -213,7 +222,8 @@
           "strips": 86,
           "maxBoundaryGap": 0.0
         }
-      ]
+      ],
+      "referenceUvMaxDifference": 0.0
     }
   ],
   "limitations": [
