@@ -15,3 +15,10 @@ Selected: Sheyvan (Philipp Grzemba), [Steps Mud Gravel Forest Sneaker](https://f
 Compared: straget, [A Walk with stop.wav](https://freesound.org/people/straget/sounds/414921/), CC0 1.0. Its preserved public HQ preview `sources/gravel-walk-hq.mp3` has SHA-256 `a69b4e4103a0afaed1a969ce82fabcf3e035892a68b54220e97cd2e4b8e0865f`. It is a longer gravel-road walk; the selected recording specifically describes forest ground and offers separated shoe contacts. This choice is based on source descriptions and measured waveforms; no subjective listening test has been performed.
 
 `SourceArt/Audio/render_temple_forest_steps.py` decodes the selected source to mono 48 kHz and extracts four contacts around 14.28, 16.75, 18.33 and 20.63 seconds, with level adjustment and short edge fades. It requires Python 3.10+ and ffmpeg on PATH; development used ffmpeg `N-55702-g920046a`. The Unity WAVs, exact hashes and editing details are in `ThirdParty/Audio/manifest.json`. The original preview is not replaced. Test output remains muted; listening and in-game mix approval are still required.
+
+The four contacts repeat in a fixed sequence. Their original peak-normalized
+50 ms RMS maxima were approximately .0716, .0695, .0971 and .1240, making
+the last contact disproportionately strong by this measurement. The
+generator now attenuates only clips above .085 maximum 50 ms RMS; it does not
+boost quieter contacts. The resulting maxima are .0716, .0695, .0850 and
+.0850. This is a waveform consistency check, not a listening or mix verdict.

@@ -51,6 +51,19 @@ for index, centre in enumerate(centres):
     for i in range(length):
         fade = min(1.0, i / attack, (length - 1 - i) / release)
         clip[i] = max(-32768, min(32767, round(clip[i] * gain * fade)))
+    # Peak normalization alone makes the fourth regularly repeated contact
+    # much louder than the first two. Limit the loudest 50 ms window without
+    # boosting quieter recordings or removing their natural transients.
+    window = round(.05 * rate)
+    energy = sum(value * value for value in clip[:window])
+    maximum = energy
+    for i in range(window, length):
+        energy += clip[i] * clip[i] - clip[i-window] * clip[i-window]
+        maximum = max(maximum, energy)
+    window_rms = math.sqrt(maximum / window) / 32768
+    balance = min(1.0, .085 / window_rms) if window_rms else 1.0
+    if balance < 1:
+        for i, value in enumerate(clip): clip[i] = round(value * balance)
     path = destination / ('step-forest-' + str(index) + '.wav')
     if sys.byteorder != 'little': clip.byteswap()
     with wave.open(str(path), 'wb') as out:
@@ -64,8 +77,10 @@ for index, centre in enumerate(centres):
         seconds=length/rate, peak=max(abs(x) for x in clip)/32768,
         rms=math.sqrt(sum((x/32768)**2 for x in clip)/length), sha256=digest(path),
         modifications=dict(sample_rate=rate, mono=True, format='PCM16 WAV', loop=False,
-            scope='Physical forest sneaker contact, centre %.2fs; -80/+300ms, peak .65, 8ms attack and 60ms release; no synthesis.' % centre)))
-names = {entry['resource'] for entry in entries}
-manifest = [entry for entry in manifest if entry.get('resource') not in names] + entries
+            scope='Physical forest sneaker contact, centre %.2fs; -80/+300ms, peak at most .65, 8ms attack, 60ms release, maximum 50ms RMS .085 without boosting; no synthesis.' % centre)))
+by_name = {entry['resource']: entry for entry in entries}
+existing = {entry.get('resource') for entry in manifest}
+manifest = [by_name.get(entry.get('resource'), entry) for entry in manifest]
+manifest.extend(entry for entry in entries if entry['resource'] not in existing)
 manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
 print('TEMPLE_FOREST_STEPS', len(entries), 'PASS')

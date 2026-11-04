@@ -4188,7 +4188,7 @@
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "Physical forest sneaker contact, centre 14.28s; -80/+300ms, peak .65, 8ms attack and 60ms release; no synthesis."
+      "scope": "Physical forest sneaker contact, centre 14.28s; -80/+300ms, peak at most .65, 8ms attack, 60ms release, maximum 50ms RMS .085 without boosting; no synthesis."
     }
   },
   {
@@ -4210,7 +4210,7 @@
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "Physical forest sneaker contact, centre 16.75s; -80/+300ms, peak .65, 8ms attack and 60ms release; no synthesis."
+      "scope": "Physical forest sneaker contact, centre 16.75s; -80/+300ms, peak at most .65, 8ms attack, 60ms release, maximum 50ms RMS .085 without boosting; no synthesis."
     }
   },
   {
@@ -4224,15 +4224,15 @@
     "source_file": "forest-sneaker-hq.mp3",
     "source_file_sha256": "c50bc4343fce1cfdd308ab7f41334f459f1dcd9b54a94ef046d1f243385a4236",
     "seconds": 0.38,
-    "peak": 0.649993896484375,
-    "rms": 0.039427085235293896,
-    "sha256": "669f572ab9b35b0c617e6aba55d34e23b1270bed388749ed11f17d10b53f94fd",
+    "peak": 0.56915283203125,
+    "rms": 0.03452379548545193,
+    "sha256": "09f7c06cf29337847b409baa9e1fdfec47dcbd2eb8937041145edbe719d1cb6c",
     "modifications": {
       "sample_rate": 48000,
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "Physical forest sneaker contact, centre 18.33s; -80/+300ms, peak .65, 8ms attack and 60ms release; no synthesis."
+      "scope": "Physical forest sneaker contact, centre 18.33s; -80/+300ms, peak at most .65, 8ms attack, 60ms release, maximum 50ms RMS .085 without boosting; no synthesis."
     }
   },
   {
@@ -4246,15 +4246,15 @@
     "source_file": "forest-sneaker-hq.mp3",
     "source_file_sha256": "c50bc4343fce1cfdd308ab7f41334f459f1dcd9b54a94ef046d1f243385a4236",
     "seconds": 0.38,
-    "peak": 0.649993896484375,
-    "rms": 0.05869722089094438,
-    "sha256": "cae570f540ccc6891ae0faf45181a8542bb827b88f050d7c935fe6198b08993b",
+    "peak": 0.445709228515625,
+    "rms": 0.04024992283707351,
+    "sha256": "e0ded4ed1db8896cb2453a42686c06a481803738d14751f41acb3bf35224dde6",
     "modifications": {
       "sample_rate": 48000,
       "mono": true,
       "format": "PCM16 WAV",
       "loop": false,
-      "scope": "Physical forest sneaker contact, centre 20.63s; -80/+300ms, peak .65, 8ms attack and 60ms release; no synthesis."
+      "scope": "Physical forest sneaker contact, centre 20.63s; -80/+300ms, peak at most .65, 8ms attack, 60ms release, maximum 50ms RMS .085 without boosting; no synthesis."
     }
   },
   {
