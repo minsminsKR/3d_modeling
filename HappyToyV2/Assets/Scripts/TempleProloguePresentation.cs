@@ -235,7 +235,7 @@ namespace HappyToy.V2
             if (cry) cry.Play();
         }
         public void RevealGate() { if (gate) gate.gameObject.SetActive(true); }
-        public TempleGateReviewMotion InstallGateReview()
+        public TempleGateReviewMotion InstallGateReview(BoxCollider gateBlocker)
         {
             if (!world || !gate || GetComponent<TempleGateReviewMotion>())
                 throw new InvalidOperationException("Fresh temple gate is required for review");
@@ -249,9 +249,10 @@ namespace HappyToy.V2
                 if (replacement.GetComponentInChildren<Collider>(true) || replacement.GetComponentInChildren<Rigidbody>(true))
                     throw new InvalidOperationException("Review gate art must not own physics");
                 CorridorEntranceModels.GroundAtHeight(replacement, new Vector3(0, 0, -8), 5.5f, Quaternion.identity);
+                var passage = gameObject.AddComponent<TempleGateReviewPassage>();
                 var motion = gameObject.AddComponent<TempleGateReviewMotion>();
-                try { motion.Prepare(replacement); }
-                catch { Destroy(motion); throw; }
+                try { passage.Prepare(gateBlocker, world.GatePoint); motion.Prepare(replacement, passage.SetOpen); }
+                catch { Destroy(motion); Destroy(passage); throw; }
                 replacement.gameObject.SetActive(visible);
                 var old = gate; gate = replacement; old.gameObject.SetActive(false); Destroy(old.gameObject);
                 return motion;

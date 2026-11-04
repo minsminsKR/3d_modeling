@@ -12,12 +12,13 @@ namespace HappyToy.V2
         Transform left, right;
         Quaternion leftClosed, rightClosed;
         float leftSign, rightSign;
+        Action<bool> passageChanged;
         public float Progress { get; private set; }
         public bool Started { get; private set; }
 
-        public void Prepare(Transform gate)
+        public void Prepare(Transform gate, Action<bool> setPassageOpen)
         {
-            if (left || right || !gate) throw new ArgumentException("Fresh gate review is required");
+            if (left || right || !gate || setPassageOpen == null) throw new ArgumentException("Fresh gate review is required");
             foreach (var item in gate.GetComponentsInChildren<Transform>(true))
             {
                 if (item.name == "Left thin leaf") left = item;
@@ -28,6 +29,7 @@ namespace HappyToy.V2
             leftSign = Vector3.Dot(left.position - gate.position, gate.right) > 0 ? -1 : 1;
             rightSign = Vector3.Dot(right.position - gate.position, gate.right) > 0 ? -1 : 1;
             if (leftSign == rightSign) throw new InvalidOperationException("Review hinges must be on opposite sides");
+            passageChanged = setPassageOpen;
         }
         public void SetProgress(float value)
         {
@@ -36,6 +38,7 @@ namespace HappyToy.V2
             float angle = Mathf.SmoothStep(0, Angle, Progress);
             left.rotation = Quaternion.AngleAxis(leftSign * angle, Vector3.up) * leftClosed;
             right.rotation = Quaternion.AngleAxis(rightSign * angle, Vector3.up) * rightClosed;
+            passageChanged(Progress >= 1);
         }
         public IEnumerator Open()
         {

@@ -13,6 +13,75 @@ namespace HappyToy.V2.CloudTests
 {
     public sealed partial class CloudPlayModeTests
     {
+        [UnityTest, Timeout(120000)]
+        public IEnumerator TempleReviewGateAllowsPhysicalWalkingThroughOpenLeaves()
+        {
+            Call(session, "ConfigureRecordDirectory", NewRecordFixture());
+            Call(session, "CreatePrologue"); Begin(); yield return null;
+            var data = Call(Get<Component>(session, "Prologue"), "Capture", 0f);
+            Call(session, "RetirePrologue"); yield return null;
+            Set(data, "phase", 5); Set(data, "incensePlaced", true); Set(data, "gateVisible", true);
+            Call(session, "CreatePrologueForCheckpoint", data); yield return null;
+            var world = Get<Component>(session, "Prologue");
+            var motion = (Component)Call(world, "InstallGateReview");
+            var review = world.transform.Find("Review gate (opt-in)");
+            var gate = world.transform.Find("나타난 대문");
+            var blocker = gate.GetComponent<BoxCollider>();
+            var colliders = new System.Collections.Generic.List<MeshCollider>();
+            foreach (var filter in review.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var collider = filter.gameObject.AddComponent<MeshCollider>();
+                collider.sharedMesh = filter.sharedMesh; colliders.Add(collider);
+            }
+            Assert.That(colliders.Count, Is.EqualTo(3));
+            try
+            {
+                PlacePlayer(new Vector3(500, .04f, 494.6f));
+                player.transform.rotation = Quaternion.Euler(0, 180, 0);
+                Physics.SyncTransforms();
+                yield return KeysObserved(Key.W); yield return Delay(1.4f); Keys(); yield return null;
+                Assert.That(player.transform.position.z, Is.GreaterThan(493f), "Closed gate did not stop the player");
+
+                Call(motion, "SetProgress", 1f);
+                Assert.That(blocker.enabled, Is.False, "Open review gate kept its closed blocker");
+                var ramp = world.transform.Find("Review gate stair collision");
+                Assert.That(ramp, Is.Not.Null);
+                Assert.That(ramp.GetComponent<BoxCollider>().enabled, Is.True);
+                Physics.SyncTransforms();
+                var failures = new System.Collections.Generic.List<string>();
+                foreach (float x in new[] { -.6f, 0f, .6f })
+                {
+                    PlacePlayer(new Vector3(500 + x, .04f, 494.6f));
+                    player.transform.rotation = Quaternion.Euler(0, 180, 0);
+                    Physics.SyncTransforms();
+                    yield return KeysObserved(Key.W);
+                    float end = Time.realtimeSinceStartup + 5;
+                    while (player.transform.position.z >= 490.6f && Time.realtimeSinceStartup < end) yield return null;
+                    Keys(); yield return null;
+                    if (player.transform.position.z >= 490.6f)
+                    {
+                        var controller = player.GetComponent<CharacterController>();
+                        float radius = Mathf.Max(.01f, controller.radius - .01f);
+                        float half = Mathf.Max(0, controller.height * .5f - controller.radius);
+                        Vector3 center = controller.transform.TransformPoint(controller.center);
+                        var hits = Physics.CapsuleCastAll(center - Vector3.up * half, center + Vector3.up * half,
+                            radius, Vector3.back, .5f, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore)
+                            .Where(hit => !hit.collider.transform.IsChildOf(player.transform))
+                            .OrderBy(hit => hit.distance)
+                            .Select(hit => hit.collider.name + "@" + hit.distance.ToString("F3") +
+                                " point=" + hit.point.ToString("F3") + " normal=" + hit.normal.ToString("F3"));
+                        failures.Add("x=" + x + " z=" + player.transform.position.z.ToString("F3") +
+                            " hits=" + string.Join(",", hits));
+                    }
+                }
+                Assert.That(failures, Is.Empty, "Open review gate blocked walking: " + string.Join("; ", failures));
+            }
+            finally
+            {
+                Keys(); Call(motion, "SetProgress", 0f);
+                foreach (var collider in colliders) if (collider) Object.Destroy(collider);
+            }
+        }
         [UnityTest, Timeout(90000)]
         public IEnumerator TempleIncensePlacementHoldsMovementUntilRelease()
         {
@@ -138,6 +207,11 @@ namespace HappyToy.V2.CloudTests
             var review = world.transform.Find("Review gate (opt-in)");
             Assert.That(review, Is.Not.Null); Assert.That(review.gameObject.activeSelf, Is.True);
             Assert.That(review.GetComponentsInChildren<Collider>(true), Is.Empty, "Review art must not change production physics");
+            var blocker = world.transform.Find("나타난 대문").GetComponent<BoxCollider>();
+            var ramp = world.transform.Find("Review gate stair collision").GetComponent<BoxCollider>();
+            Call(motion, "SetProgress", .5f);
+            Assert.That(blocker.enabled, Is.True, "Passage opened before the leaves finished moving");
+            Assert.That(ramp.enabled, Is.False);
             var colliders = new System.Collections.Generic.List<MeshCollider>();
             foreach (var filter in review.GetComponentsInChildren<MeshFilter>(true))
             {
@@ -148,6 +222,8 @@ namespace HappyToy.V2.CloudTests
             foreach (float progress in new[] { 0f, 1f })
             {
                 Call(motion, "SetProgress", progress); Physics.SyncTransforms();
+                Assert.That(blocker.enabled, Is.EqualTo(progress == 0));
+                Assert.That(ramp.enabled, Is.EqualTo(progress == 1));
                 foreach (float x in new[] { -.6f, -.3f, 0, .3f, .6f })
                 {
                     var ray = new Ray(new Vector3(500 + x, 1.63f, 497), Vector3.back);

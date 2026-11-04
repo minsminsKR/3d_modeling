@@ -56,11 +56,18 @@ The opt-in isolated player review accepts `-v2-temple-gate-candidate` with
 the `-v2-temple-review-output` diagnostics described below. It installs the
 candidate during review only, captures the original gate camera at partially
 and almost fully open states, and opens over three unscaled seconds before the
-existing masked corridor transition. `temple-prologue-flow` verifies actual
+existing masked corridor transition. The candidate now keeps the central
+blocker until the leaves finish opening, then enables a short invisible ramp
+over the generated stone threshold. `temple-prologue-flow` verifies actual
 E input, opening progress, the corridor transition and temporary mesh-collider
-ray checks at closed/open states; the normal walking test retains the original
-gate. Collider rays and headless tests cannot certify open cut edges, material
-appearance, physical walking through the gate, sound quality or FPS.
+checks at closed/open states. A headless test configures the fully open state
+and walks the actual player through three central lanes, using temporary
+colliders on the visible gate mesh to expose contact with the stonework.
+Without the ramp, those lanes stop at the roughly 0.35 m rear threshold.
+The review transition still fades directly after opening; the walking probe
+does not implement or certify a player-triggered walking transition. Normal
+play retains the original gate. These checks cannot certify cut edges, material
+appearance, sound quality or FPS.
 
 ## Prayer furnishings follow-up — 2026-11-05
 

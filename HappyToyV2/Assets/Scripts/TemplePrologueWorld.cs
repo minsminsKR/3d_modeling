@@ -167,7 +167,7 @@ namespace HappyToy.V2
         public TempleGateReviewMotion InstallGateReview()
         {
             if (!Ready || TransitionRequested || !presentation) throw new InvalidOperationException("Temple is not ready for gate review");
-            return presentation.InstallGateReview();
+            return presentation.InstallGateReview(gateTarget.GetComponent<BoxCollider>());
         }
         void OnDestroy()
         {
