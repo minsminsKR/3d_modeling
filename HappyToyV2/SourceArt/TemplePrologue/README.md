@@ -17,9 +17,35 @@ E currently starts the masked corridor transition and does not animate the
 gate leaves. The preserved `CE_temple-gate_LOD0` is a single generated mesh:
 45,914 of its 46,212 vertices belong to the same connected component, so
 rotating an existing child transform cannot open the leaves independently.
-An actual opening needs source-derived leaf/frame separation with UVs and
-hinges, followed by visual inspection before replacing the current gate.
-No generated source or existing corridor gate was changed by this inspection.
+The source-derived `gate-opening/gate-opening.blend` now contains a
+three-part frame and two hinged leaves, with an **unreviewed** 1–73 frame
+opening at 24 fps. The full-depth leaf partition preserves the closed source
+surface and UVs; the hidden `PROTOTYPE - thin leaf alternative` collection
+clamps only the deep back and retains the original front vertices and UVs.
+At the game's 5.5 m gate scale the full-depth leaves are about 1.9 m thick,
+while the alternate leaves are about .30 m. Their cut edges, backs, hinge
+positions, animation direction and appearance still require camera review.
+The standalone `gate-opening.fbx` embeds its original textures and exports
+the static **full-depth** parts; it does not contain the blend animation or
+the thin alternative. Neither prototype is integrated into the game.
+
+Reproduce and check the prototype with Blender 4.0.2 (background):
+
+```powershell
+blender -b --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/TemplePrologue/prepare_openable_gate.py
+blender -b --factory-startup --python-exit-code 1 --python HappyToyV2/SourceArt/TemplePrologue/verify_openable_gate.py
+```
+
+`geometry-report.json` records source and output hashes and provisional cut
+bounds. `surface-proof.json` records 4,713 closed-surface/UV samples, leaf
+depth and keyframes, a static-FBX reimport check including packed textures,
+and five central geometric rays that hit the closed leaves and clear at frame
+73 in both variants. Those rays do not verify player collision.
+The source area and sampled positions are preserved to numerical tolerance;
+the FBX exporter drops 24 triangles and about 0.018 of 1,534 square model units.
+These checks do not establish that either open version looks correct or that
+the exported model is ready for runtime integration. The original corridor gate
+and its source remain unchanged.
 
 ## Prayer furnishings follow-up — 2026-11-05
 

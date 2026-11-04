@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "scope": "Closed surface/UV sampling only; open appearance and pivot quality unreviewed",
+  "samples": 4713,
+  "surfaceDistanceP99": 1.2157009905422456e-06,
+  "surfaceDistanceMax": 0.0005772518343292177,
+  "uvDifferenceP95": 1.228895705504749e-07,
+  "uvDifferenceP99": 1.6869502166425646e-07,
+  "parts": {
+    "Gate frame": {
+      "triangles": 109572,
+      "vertices": 51317
+    },
+    "Left gate leaf": {
+      "triangles": 3221,
+      "vertices": 1832,
+      "depthAtGameScaleMetres": 1.9082184882022217
+    },
+    "Right gate leaf": {
+      "triangles": 3201,
+      "vertices": 1835,
+      "depthAtGameScaleMetres": 1.9016577733578912
+    }
+  },
+  "thinLeaves": {
+    "Left thin leaf": {
+      "depthAtGameScaleMetres": 0.2972846777155802,
+      "frontVertices": 945,
+      "frontMaxDisplacement": 0.0,
+      "maxUvDifference": 0.0,
+      "degenerateTriangles": 0
+    },
+    "Right thin leaf": {
+      "depthAtGameScaleMetres": 0.29801393007950094,
+      "frontVertices": 933,
+      "frontMaxDisplacement": 0.0,
+      "maxUvDifference": 0.0,
+      "degenerateTriangles": 0
+    }
+  },
+  "openingDegrees": [
+    79.99999767274336,
+    -79.99999767274336
+  ],
+  "openingFps": 24,
+  "thinOpeningDegrees": [
+    79.99999767274336,
+    -79.99999767274336
+  ],
+  "centreRaysBlocked": {
+    "1-full": 5,
+    "1-thin": 5,
+    "73-full": 0,
+    "73-thin": 0
+  },
+  "fbxParts": {
+    "Gate frame": {
+      "vertices": 51317,
+      "triangles": 109549,
+      "material": "CE_temple-gate_0"
+    },
+    "Left gate leaf": {
+      "vertices": 1832,
+      "triangles": 3221,
+      "material": "CE_temple-gate_0"
+    },
+    "Right gate leaf": {
+      "vertices": 1835,
+      "triangles": 3200,
+      "material": "CE_temple-gate_0"
+    }
+  },
+  "fbxSurfaceArea": 1534.2947058425843,
+  "fbxPackedImages": 2
+}

@@ -1,0 +1,62 @@
+{
+  "scope": "Geometry-only prototype, not visually reviewed or integrated into Unity",
+  "source": "SourceArt/CorridorEntrance/temple-gate/temple-gate.blend",
+  "sourceSha256": "bdd3cdbda2030a1895cf09c9b12883c055dc8af483e23b5b9a06e41dcf6c2623",
+  "editable": "gate-opening.blend",
+  "editableSha256": "e5ce106c77b54eeec6d41588d6061e8089f8d1b2a6c31e1f032ef202d12159ce",
+  "export": "gate-opening.fbx",
+  "exportSha256": "bd2f2226676d6edb6a04b409687bc5bd76850186e5535eac510d431896e05542",
+  "halfWidth": 3.05,
+  "bottom": 0.8,
+  "top": 6.05,
+  "halfDepth": 1.95,
+  "areaBefore": 1534.3126740166122,
+  "areaAfter": 1534.3126686123032,
+  "triangles": [
+    109572,
+    3221,
+    3201
+  ],
+  "parts": [
+    {
+      "name": "Gate frame",
+      "hinge": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "vertices": 51317,
+      "triangles": 109572,
+      "uvLoops": 328716
+    },
+    {
+      "name": "Left gate leaf",
+      "hinge": [
+        -3.049999952316284,
+        -1.600000023841858,
+        0.0
+      ],
+      "vertices": 1832,
+      "triangles": 3221,
+      "uvLoops": 9663
+    },
+    {
+      "name": "Right gate leaf",
+      "hinge": [
+        3.049999952316284,
+        -1.600000023841858,
+        0.0
+      ],
+      "vertices": 1835,
+      "triangles": 3201,
+      "uvLoops": 9603
+    }
+  ],
+  "prototypeAnimation": "Editable blend only: frames 1\u201373 at 24 fps; static FBX has no baked animation",
+  "thinAlternative": "Hidden blend collection clamps back vertices to y=-1.30; front relief and UVs retained; static FBX uses the closed-surface parts",
+  "limitations": [
+    "cut bounds and hinge pivots are provisional",
+    "thick source depth and open borders need visual review",
+    "no runtime integration, collision or camera validation"
+  ]
+}
