@@ -43,6 +43,11 @@ FPS, GPU time, a supported-hardware guarantee or a substitute for device audio.
 
 ## Temple reference and generation
 
+`generation-pipeline-records.json` preserves path-independent generation
+stage options, outcomes and source archive-member hashes for the temple and
+both pine jobs, including the rejected pine's shape and texture settings.
+Original job records, metadata and model inputs remain alongside each model.
+
 `temple/reference.png` was created using the built-in image generation tool.
 Prompt: “Single isolated traditional small Korean Buddhist temple hall (법당),
 complete freestanding building for 3D reconstruction, front three-quarter view
